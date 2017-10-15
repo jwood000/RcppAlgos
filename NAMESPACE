@@ -1,0 +1,11 @@
+useDynLib(algosRcpp, .registration = TRUE)
+
+importFrom(Rcpp, evalCpp)
+
+export(comboGeneral,
+       primeSieve,
+       eulerPhiSieve,
+       primeFactorizationList,
+       numDivisorSieve,
+       divisorsList)
+
