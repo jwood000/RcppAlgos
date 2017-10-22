@@ -4,6 +4,6 @@ eulerPhiSieve <- function(n = 100L) {EulerPhiSieveRcpp(n)}
 
 primeSieve <- function(bound1 = 100L, bound2 = NULL) {EratosthenesRcpp(bound1, bound2)}
 
-divisorsList <- function(n) {DivisorListRcpp(n)}
+divisorsList <- function(n = 100L) {DivisorListRcpp(n)}
 
-numDivisorSieve <- function(n) {NumDivisorsSieve(n)}
+numDivisorSieve <- function(n = 100L) {NumDivisorsSieve(n)}

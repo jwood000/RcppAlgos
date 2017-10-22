@@ -1,4 +1,4 @@
-useDynLib(algosRcpp, .registration = TRUE)
+useDynLib(RcppAlgos, .registration = TRUE)
 
 importFrom(Rcpp, evalCpp)
 
@@ -8,4 +8,3 @@ export(comboGeneral,
        primeFactorizationList,
        numDivisorSieve,
        divisorsList)
-

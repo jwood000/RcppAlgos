@@ -104,12 +104,23 @@ List PrimeFactorizationListRcpp (SEXP n) {
             stop("n must be of type numeric or integer");
         }
     }
-
+    
+    if (m < 0) {
+        stop("n must be positive");
+    }
+    
     std::vector<std::vector<int> > MyPrimeList(m, std::vector<int>());
+    std::vector<std::vector<int> >::iterator it2d, itEnd;
+    itEnd = MyPrimeList.end();
     IntegerVector primes = AllPrimesCpp(m);
     IntegerVector::iterator p;
-    int i, j, limit, myStep;
+    int i, j, limit, myStep, myMalloc;
+    myMalloc = floor(log2(m));
     double myLogN = log(m);
+    
+    for (it2d = MyPrimeList.begin(); it2d < itEnd; it2d++) {
+        it2d -> reserve(myMalloc);
+    }
 
     for (p = primes.begin(); p < primes.end(); ++p) {
         limit = trunc(myLogN/log(*p));
@@ -140,6 +151,10 @@ IntegerVector EulerPhiSieveRcpp (SEXP n) {
         default: {
             stop("n must be of type numeric or integer");
         }
+    }
+    
+    if (m < 0) {
+        stop("n must be positive");
     }
 
     IntegerVector starterSequence = Rcpp::seq(1, m);

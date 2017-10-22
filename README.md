@@ -1,4 +1,4 @@
-# algosRcpp
+# RcppAlgos
 
 Overview
 ---------
