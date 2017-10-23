@@ -18,7 +18,7 @@ This function is useful when many complete factorizations are needed. Instead of
 \value{
 Returns a list of integer vectors where each index, \eqn{m}, represents the complete factorization of \eqn{m}.
 
-\emph{E.g.} \code{(1:m)[m\%\%(1:m)==0]}}
+\emph{E.g.} \code{(1:m)[m\%\%(1:m)==0]}
 }
 \author{
 Joseph Wood

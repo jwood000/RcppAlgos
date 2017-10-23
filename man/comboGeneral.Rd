@@ -17,7 +17,7 @@ comboGeneral(v, m, repetition = FALSE, constraintFun = NULL,
   \item{constraintFun}{Function to be applied to the elements of \code{v} that should be passed as a string (\emph{E.g.} \code{constraintFun = "sum"}). The possible contraint functions are: \code{"sum"}, \code{"prod"}, \code{"mean"}, \code{"max"}, & \code{"min"}. The default is \code{NULL}, meaning no function is applied.}
   \item{comparisonFun}{Comparison operator that will be used to compare \code{limitConstraints} with the result of \code{contraintFun} applied to \code{v}. Again, it should be passed as a string (\emph{E.g.} \code{comparisonFun = "<="}). The possible comparison operators are: \code{"<"}, \code{">"}, \code{"<="}, \code{">="}, \code{"=="}. The default is \code{NULL}.}
   \item{limitConstraints}{This is the value that will be used for comparison. The default is \code{NULL}.}
-  \item{rowCap}{The maximal number of expected results when a contraint is applied. Can also be used if one only needs a specific number of combinations. This is useful when the total number of combinations without contraint is large and you expect/need a small number of combinations that meet the criteria. See examples below.}
+  \item{rowCap}{The maximal number of expected results when a contraint is applied. Can also be used if you only need a specific number of combinations. This is useful when the total number of combinations without contraint is large and you expect/need a small number of combinations that meet the criteria. Using rowCap can drastically improve run time and avoid unnecessary crashes due to lack of memory. See examples below.}
 }
 \references{
 \url{http://gallery.rcpp.org/articles/passing-cpp-function-pointers/}
@@ -48,11 +48,19 @@ system.time(comboGeneral(18,9,repetition = TRUE))
 set.seed(1009)
 mySamp <- rnorm(100, 997, 23)
 
-## Using rowCap can drastically improve run time and
-## avoid unnecessary crashes due to lack of memory.
-## E.g. Researcher only needs 1000 7-tuples of mySamp
+## Using rowCap example:
+## Researcher only needs 1000 7-tuples of mySamp
 ## such that the sum is greater than 7200.
 system.time(comboGeneral(mySamp,7,FALSE,"sum",">",7200,1000))
+
+## If you leave rowCap as NULL, it can take much longer
+## (still fast enough in most cases) and in some case crach
+## your computer as the underlying code allocates
+## enough space to account for every combination
+## (e.g. In our example, there are choose(100, 7)
+## = 16007560800 rows, 7 columns, with each cell occupying
+## 8 bytes. This gives a total over 830 GB 
+## (i.e. choose(100, 7)*7*8/(2^30)).
 
 \dontrun{
 ## You must generate all combinations and subsequently
@@ -66,13 +74,5 @@ all.equal(myComb,t(myComb2))
 
 ## Any variation is much slower
 system.time(myComb2 <- combn(25,13)[,combn(25,13,mean) < 10])
-
-## If you leave rowCap as NULL, it can take much longer
-## (still fast enough in most cases) as the underlying
-## code allocates enough space to account for every
-## combination (i.e. choose(100, 7) = 16007560800). Beware:
-## The following may crash your computer as it requires
-## more than 830 GB of RAM (i.e. choose(100, 7)*7*8/(2^30)).
-system.time(comboGeneral(mySamp,7,FALSE,"sum",">",7200))
 }
 }
