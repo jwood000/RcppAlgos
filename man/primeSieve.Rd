@@ -26,6 +26,9 @@ Returns an integer vector
 \seealso{
 \code{\link[numbers]{Primes}}
 }
+\references{
+\href{https://en.wikipedia.org/wiki/Sieve_of_Eratosthenes}{Sieve of Eratosthenes}
+}
 \examples{
 primeSieve(factorial(10L)+11L)
 primeSieve(42, 1729)

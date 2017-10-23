@@ -48,10 +48,11 @@ system.time(comboGeneral(18,9,repetition = TRUE))
 set.seed(1009)
 mySamp <- rnorm(100, 997, 23)
 
-## Using rowCap can drastically improve run time.
-## E.g. Researcher only needs 1000 7-tuples such
-## that the sum is greater than 5100.
-system.time(comboGeneral(mySamp,7,FALSE,"sum",">",5100,1000))
+## Using rowCap can drastically improve run time and
+## avoid unnecessary crashes due to lack of memory.
+## E.g. Researcher only needs 1000 7-tuples of mySamp
+## such that the sum is greater than 7200.
+system.time(comboGeneral(mySamp,7,FALSE,"sum",">",7200,1000))
 
 \dontrun{
 ## You must generate all combinations and subsequently
@@ -69,7 +70,9 @@ system.time(myComb2 <- combn(25,13)[,combn(25,13,mean) < 10])
 ## If you leave rowCap as NULL, it can take much longer
 ## (still fast enough in most cases) as the underlying
 ## code allocates enough space to account for every
-## combination (i.e. choose(100, 5) = 75287520).
-system.time(comboGeneral(mySamp,5,FALSE,"sum",">",5100))
+## combination (i.e. choose(100, 7) = 16007560800). Beware:
+## The following may crash your computer as it requires
+## more than 830 GB of RAM (i.e. choose(100, 7)*7*8/(2^30)).
+system.time(comboGeneral(mySamp,7,FALSE,"sum",">",7200))
 }
 }

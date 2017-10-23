@@ -1,7 +1,7 @@
 \name{divisorsList}
 \alias{divisorsList}
 \title{
-Generate Complete Factorization of all Integers up to \code{n}
+Generate Complete Factorization of all Integers up to \eqn{n}
 }
 \description{
 Rcpp sieve implementation that quickly generates the complete factorization of all integers up to \eqn{n}.
@@ -16,7 +16,9 @@ divisorsList(n = 100L)
 This function is useful when many complete factorizations are needed. Instead of generating the complete factorization on the fly, one can reference the indices of the generated list. 
 }
 \value{
-Returns a list of integer vectors where each index, \eqn{m}, represents the complete factorization of \eqn{m} (\emph{E.g.} \code{(1:m)[m\%\%(1:m)==0]}).
+Returns a list of integer vectors where each index, \eqn{m}, represents the complete factorization of \eqn{m}.
+
+\emph{E.g.} \code{(1:m)[m\%\%(1:m)==0]}}
 }
 \author{
 Joseph Wood

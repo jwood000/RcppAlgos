@@ -23,6 +23,9 @@ Returns an integer vector
 \author{
 Joseph Wood
 }
+\references{
+\href{https://en.wikipedia.org/wiki/Euler\%27s_totient_function}{Euler's totient function}
+}
 \seealso{
 \code{\link[numbers]{eulersPhi}}
 }

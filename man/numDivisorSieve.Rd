@@ -2,7 +2,7 @@
 \alias{numDivisorSieve}
 %- Also NEED an '\alias' for EACH other topic documented here.
 \title{
-Generate Number of Divisors for all Integers up to \code{n}
+Generate Number of Divisors for all Integers up to \eqn{n}
 }
 \description{
 Rcpp sieve implementation that quickly generates the number of divisors for every integer up to \eqn{n}. This is equivalent to performing the divisor function (often written as \eqn{\sigma(n)}) for every number up to \eqn{n}.
@@ -21,6 +21,9 @@ Returns an integer vector
 }
 \author{
 Joseph Wood
+}
+\references{
+\href{https://en.wikipedia.org/wiki/Divisor_function}{Divisor function}
 }
 \examples{
 ## Generate some random data

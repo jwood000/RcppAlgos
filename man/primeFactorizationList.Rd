@@ -1,7 +1,7 @@
 \name{primeFactorizationList}
 \alias{primeFactorizationList}
 \title{
-Generate prime factorization for all integers up to \eqn{n}
+Generate Prime Factorization for all Integers up to \eqn{n}
 }
 \description{
 Efficiently generates the prime factorization of all integers up to \eqn{n} using Rcpp.
@@ -45,7 +45,7 @@ for (s in mySamp) {
 ## stand alone factoring algorithms and 2. there are fewer
 ## factorizations being performed (allPFacs above contains
 ## 10^6 factorizations and the below only generates the
-## factorizations of the numbers in mySamp (10^5 elements)).
+## factorizations of the numbers in mySamp (5*10^5 elements)).
 
 \dontrun{
 system.time(mySampPFacs <- lapply(mySamp, gmp::factorize))}
