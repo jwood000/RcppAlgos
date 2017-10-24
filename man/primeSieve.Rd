@@ -30,8 +30,14 @@ Returns an integer vector
 \href{https://en.wikipedia.org/wiki/Sieve_of_Eratosthenes}{Sieve of Eratosthenes}
 }
 \examples{
-primeSieve(factorial(10L)+11L)
+## Primes up to a thousand
+primeSieve(1000)
+
+## Primes between 42 and 1729
 primeSieve(42, 1729)
+
+## Equivalent to 
+primeSieve(1729, 42)
 
 ## Primes up to one hundred million in no time
 system.time(primeSieve(10^8))
