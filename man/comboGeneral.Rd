@@ -30,46 +30,46 @@ Joseph Wood
 }
 \note{
 If either \code{constraintFun}, \code{comparisonFun} or \code{limitConstraints} is \code{NULL}, the contraint check will not be carried out. This is equivalent to simply finding all combinations of \eqn{v} choose \eqn{m}.
+
+The maximum number of rows is \eqn{2^31 - 1}.
 }
 \examples{
-## Quickly generate all 13-tuples of 1:25
-## w/o repetition. Over 5 million combinations!
-system.time(comboGeneral(25,13))
+## 8-tuples of 1:17 w/o repetition
+system.time(comboGeneral(17,8))
 
-## Same as above, but this time we only want
-## combinations such that the mean is less than 10
-system.time(myComb <- comboGeneral(25,13,FALSE,"mean","<",10))
-
-## Quickly generate all 9-tuples of 1:18
-## w/ repetition. Over 13 million combinations!
-system.time(comboGeneral(18,9,repetition = TRUE))
+## 10-tuples of 1:13 w/ repetition
+system.time(comboGeneral(13,10,repetition = TRUE))
 
 ## Generate some random data
 set.seed(1009)
-mySamp <- rnorm(100, 997, 23)
+mySamp <- rnorm(75, 997, 23)
 
-## Using rowCap example:
+## How to use rowCap example:
 ## Researcher only needs 1000 7-tuples of mySamp
 ## such that the sum is greater than 7200.
 system.time(comboGeneral(mySamp,7,FALSE,"sum",">",7200,1000))
 
 ## If you leave rowCap as NULL, it can take much longer
-## (still fast enough in most cases) and in some case crach
-## your computer as the underlying code allocates
+## (still fast enough most of the time) and in some cases
+## crash your computer as the underlying code allocates
 ## enough space to account for every combination
-## (e.g. In our example, there are choose(100, 7)
-## = 16007560800 rows, 7 columns, with each cell occupying
-## 8 bytes. This gives a total over 830 GB 
-## (i.e. choose(100, 7)*7*8/(2^30)).
+## (e.g. In our example, there are choose(75, 7)
+## = 1984829850 rows, 7 columns, with each cell occupying
+## 8 bytes. This gives a total over 100 GB). 
+## (i.e. choose(75, 7)*7*8/(2^30)).
+
+## Find 13-tuple combinations of 1:25 such
+## that the mean is less than 10
+system.time(myComb <- comboGeneral(25,13,FALSE,"mean","<",10))
 
 \dontrun{
-## You must generate all combinations and subsequently
+## Alternatively, you must generate all combinations and subsequently
 ## subset to obtain the combinations that meet the criteria
 system.time(myComb2 <- combn(25,13))
 ystem.time(myCols <- which(apply(myComb2, 2, mean) < 10))
 system.time(myComb2 <- myComb2[,myCols])
 
-## Test equality with generated object above
+## Test equality with myComb above
 all.equal(myComb,t(myComb2))
 
 ## Any variation is much slower
