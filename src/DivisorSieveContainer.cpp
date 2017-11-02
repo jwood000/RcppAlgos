@@ -4,14 +4,15 @@ using namespace Rcpp;
 // [[Rcpp::export]]
 IntegerVector NumDivisorsSieve (SEXP n) {
     int m;
+    double mTest;
     
     switch(TYPEOF(n)) {
         case REALSXP: {
-            m = as<int>(n);
+            mTest = as<double>(n);
             break;
         }
         case INTSXP: {
-            m = as<int>(n);
+            mTest = as<double>(n);
             break;
         }
         default: {
@@ -19,9 +20,9 @@ IntegerVector NumDivisorsSieve (SEXP n) {
         }
     }
     
-    if (m < 0) {
-        stop("n must be positive");
-    }
+    if (mTest > 2147483647) {stop("n must be less than 2^31");}
+    if (mTest < 0) {stop("n must be positive");}
+    m = mTest;
     
     std::vector<int> numFacs(m, 1);
     int i, j;
@@ -36,14 +37,15 @@ IntegerVector NumDivisorsSieve (SEXP n) {
 // [[Rcpp::export]]
 List DivisorListRcpp (SEXP n) {
     int m;
+    double mTest;
     
     switch(TYPEOF(n)) {
         case REALSXP: {
-            m = as<int>(n);
+            mTest = as<double>(n);
             break;
         }
         case INTSXP: {
-            m = as<int>(n);
+            mTest = as<double>(n);
             break;
         }
         default: {
@@ -51,9 +53,9 @@ List DivisorListRcpp (SEXP n) {
         }
     }
     
-    if (m < 0) {
-        stop("n must be positive");
-    }
+    if (mTest > 2147483647) {stop("n must be less than 2^31");}
+    if (mTest < 0) {stop("n must be positive");}
+    m = mTest;
     
     std::vector<std::vector<int> > myDivList(m, std::vector<int>(1, 1));
     std::vector<std::vector<int> >::iterator it2d, itEnd;

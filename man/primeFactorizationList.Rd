@@ -21,6 +21,9 @@ Returns a list of integer vectors where each index, \eqn{j}, represents the prim
 \author{
 Joseph Wood
 }
+\note{
+The maximum allowed value is \eqn{2^{31} - 1}{2^31 - 1}.
+}
 \seealso{
 \code{\link{divisorsList}}, \code{\link[gmp]{factorize}}, \code{\link[numbers]{primeFactors}}
 }

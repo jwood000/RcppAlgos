@@ -8,7 +8,9 @@ Installation
 ------------
 
 ``` r
-# install.packages("devtools")
+install.packages("dplyr")
+
+## Or install the development version
 devtools::install_github("jwood000/RcppAlgos")
 ```
 

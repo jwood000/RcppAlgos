@@ -23,6 +23,9 @@ Returns an integer vector
 \author{
 Joseph Wood
 }
+\note{
+The maximum allowed value is \eqn{2^{31} - 1}{2^31 - 1}.
+}
 \references{
 \href{https://en.wikipedia.org/wiki/Euler\%27s_totient_function}{Euler's totient function}
 }

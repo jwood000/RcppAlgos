@@ -23,6 +23,9 @@ Returns a list of integer vectors where each index, \eqn{m}, represents the comp
 \author{
 Joseph Wood
 }
+\note{
+The maximum allowed value is \eqn{2^{31} - 1}{2^31 - 1}.
+}
 \seealso{
 \code{\link{primeFactorizationList}}, \code{\link[numbers]{divisors}}
 }

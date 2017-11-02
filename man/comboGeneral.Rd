@@ -31,7 +31,7 @@ Joseph Wood
 \note{
 If either \code{constraintFun}, \code{comparisonFun} or \code{limitConstraints} is \code{NULL}, the contraint check will not be carried out. This is equivalent to simply finding all combinations of \eqn{v} choose \eqn{m}.
 
-The maximum number of rows is \eqn{2^31 - 1}.
+The maximum number of rows is \eqn{2^{31} - 1}{2^31 - 1}.
 }
 \examples{
 ## 8-tuples of 1:17 w/o repetition
