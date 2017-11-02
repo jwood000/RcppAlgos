@@ -15,13 +15,13 @@ primeSieve(bound1 = 100L, bound2 = NULL)
 \item{bound2}{Positive integer or numeric value.}
 }
 \note{
-It does not matter which bound is larger as the resulting primes will be between \code{min(bound1, bound2)} and \code{max(bound1, bound2)} if \code{bound2} is provided. The maximum value for either of the bounds is \eqn{2^{53} - 1}{2^53 - 1}.
+It does not matter which bound is larger as the resulting primes will be between \code{min(bound1, bound2)} and \code{max(bound1, bound2)} if \code{bound2} is provided. The maximum value for either of the bounds is \eqn{2^{53} - 1}{2^53 - 1} if both bounds are provided. If only \code{bound1} is provided, the maximum value is \eqn{2^{31} - 1}{2^31 - 1}.
 }
 \details{
 Optimized implementation of the sieve of Eratosthenes. In addition to being very fast, this algorithm is particularly memory efficient when the sieving interval isn't large (\emph{E.g.} check \code{object.size} when \code{abs(bound1 - bound2) < 10^5}). This is accomplished by doing most of the work with logical vectors and only allocating enough memory for the return vector based off of the size of the interval.
 }
 \value{
-Returns an integer vector
+Returns an integer vector if only \code{bound1} is provided, otherwise a numeric vector is returned.
 }
 \seealso{
 \code{\link[numbers]{Primes}}
@@ -48,6 +48,11 @@ options(scipen = 50)
 system.time(myPs <- primeSieve(10^13+10^5, 10^13))
 ## Object created is small
 object.size(myPs)
+
+## Different classes when bound2 is provided
+class(primeSieve(10^4))
+class(primeSieve(1, 10^4))
+all.equal(primeSieve(1,10^4), primeSieve(10^4))
 
 ## Compared to generating all primes up to the 
 ## upper bound and subsetting (see below)
