@@ -59,7 +59,8 @@ integer(0)
 [1] 5
 
 ## Quickly generate large primes over small interval
-system.time(myPs <- primeSieve(1000001000, 10^9))
+options(scipen = 50)
+system.time(myPs <- primeSieve(10^13+10^3, 10^13))
 
 myPs
  [1] 1000000007 1000000009 1000000021 1000000033 1000000087

@@ -43,8 +43,9 @@ primeSieve(1729, 42)
 ## Primes up to one hundred million in no time
 system.time(primeSieve(10^8))
 
+options(scipen = 50)
 ## Quickly generate large primes over small interval
-system.time(myPs <- primeSieve(1000001000, 10^9))
+system.time(myPs <- primeSieve(10^13+10^5, 10^13))
 ## Object created is small
 object.size(myPs)
 
