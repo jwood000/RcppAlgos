@@ -3,22 +3,10 @@
 #include <string>
 using namespace Rcpp;
 
-IntegerVector whichPositive(NumericVector x) {
-    // returns the indices of a the vector x that 
-    // contains a positive number.
-    int n = x.size();
-    std::vector<int> y;
-    y.reserve(n);
-    for(int i = 0; i < n; i++) {if (x[i] > 0) y.push_back(i);}
-    return wrap(y);
-}
-
-NumericMatrix SubMat(NumericMatrix m, IntegerVector trueRows) {
-    // subsets a matrix, where "trueRows" are the row
-    // numbers that one would like to return
-    int n=trueRows.size(), k=m.ncol();
+NumericMatrix SubMat(NumericMatrix m, int n) {
+    int k = m.ncol();
     NumericMatrix subMatrix(n,k);
-    for (int i = 0; i < n; i++) {subMatrix(i,_) = m(trueRows[i],_);}
+    for (int i = 0; i < n; i++) {subMatrix(i,_) = m(i,_);}
     return subMatrix;
 }
 
@@ -49,7 +37,7 @@ double GetRowNum(int n, int r) {
         temp.clear();
         temp.reserve(n);
         for (k = 1; k <= n; k++) {
-            temp.push_back(std::accumulate(triangleVec.begin(), triangleVec.begin() + k, 0));
+            temp.push_back(std::accumulate(triangleVec.begin(), triangleVec.begin() + k, 0.0));
         }
         triangleVec = temp;
     }
@@ -352,7 +340,7 @@ NumericMatrix ComboConstraints(int n, int r, std::vector<double> v, bool repetit
             }
         }
     }
-    return(SubMat(combinationMatrix, whichPositive(combinationMatrix(_,0))));
+    return(SubMat(combinationMatrix, count));
 }
 
 NumericMatrix ComboStandardNumeric(int n, int r, std::vector<double> v,
@@ -562,7 +550,7 @@ CharacterMatrix ComboCharacter(int n, int r, std::vector<std::string > v,
 // [[Rcpp::export]]
 SEXP ComboRcpp(SEXP Rv, SEXP Rm, SEXP Rrep, SEXP fun1,
                           SEXP fun2, SEXP lim, SEXP numRow) {
-    int n, m, i, j, nRows;
+    int n, m, j, nRows;
     double testRows;
     bool rep, IsCharacter, IsConstrained;
     
@@ -579,7 +567,7 @@ SEXP ComboRcpp(SEXP Rv, SEXP Rm, SEXP Rrep, SEXP fun1,
             stop("m must be of type numeric or integer");
         }
     }
-    if (m < 1) {stop("m must be a positive");}
+    if (m < 1) {stop("m must be positive");}
     
     std::vector<double> vNum;
     
@@ -617,17 +605,16 @@ SEXP ComboRcpp(SEXP Rv, SEXP Rm, SEXP Rrep, SEXP fun1,
         nRows = testRows;
         return ComboCharacter(n, m, vStr, rep, nRows);
     } else {
-        vNum = as<std::vector<double> >(Rv);
-        n = vNum.size();
-        
-        if (n == 1) {
-            j = vNum[0];
-            vNum.clear();
-            vNum.reserve(j);
-            for (i = 0; i < j; i++) {vNum.push_back(i+1);}
-            n = j;
+        if (Rf_length(Rv) == 1) {
+            j = as<int>(Rv);
+            if (j < m) {stop("v cannot be less than m");}
+            IntegerVector vTemp = seq(1, j);
+            vNum = as<std::vector<double> >(vTemp);
+        } else {
+            vNum = as<std::vector<double> >(Rv);    
         }
         
+        n = vNum.size();
         if (m > n) {stop("m must be less than or equal to the length of v");}
         
         if (Rf_isNull(lim)) {
@@ -653,19 +640,33 @@ SEXP ComboRcpp(SEXP Rv, SEXP Rm, SEXP Rrep, SEXP fun1,
         }
         
         if (IsConstrained) {
-            double myLim = as<double >(lim);
+            double myLim, testRows2;
             int myRows;
             
+            switch(TYPEOF(lim)) {
+                case REALSXP: {
+                    myLim = as<double >(lim);
+                    break;
+                }
+                case INTSXP: {
+                    myLim = as<double >(lim);
+                    break;
+                }
+                default: {
+                    stop("limitConstraints must be of type numeric or integer");
+                }
+            }
+            
             if (Rf_isNull(numRow)) {
-                myRows = 0;
+                testRows2 = 0;
             } else {
                 switch(TYPEOF(numRow)) {
                     case REALSXP: {
-                        myRows = as<int>(numRow);
+                        testRows2 = as<double>(numRow);
                         break;
                     }
                     case INTSXP: {
-                        myRows = as<int>(numRow);
+                        testRows2 = as<double>(numRow);
                         break;
                     }
                     default: {
@@ -674,12 +675,15 @@ SEXP ComboRcpp(SEXP Rv, SEXP Rm, SEXP Rrep, SEXP fun1,
                 }
             }
         
-            if (myRows == 0) {
+            if (testRows2 == 0) {
                 if (testRows > 2147483647) {stop("The number of rows cannot exceed 2^31 - 1.");}
                 myRows = testRows;
-            } else if (myRows < 0) {
+            } else if (testRows2 < 0) {
+                stop("The number of rows must be positive");
+            } else if (testRows2 > 2147483647) {
                 stop("The number of rows cannot exceed 2^31 - 1.");
             } else {
+                myRows = testRows2;
                 if (myRows > testRows) {myRows = testRows;}
             }
             
