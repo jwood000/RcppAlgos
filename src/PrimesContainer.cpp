@@ -12,13 +12,13 @@ IntegerVector AllPrimesCpp (int n) {
     int myReserve = (int)floor((double)2*n/log((double)n));
     myps.reserve(myReserve);
 
-    unsigned long int lastP = 3, k, ind, j;
+    unsigned long int lastP = 3, k, ind, j, uN = n;
     unsigned long int fsqr = (unsigned long int)floor(sqrt((double)n));
 
-    for (j = 4; j <= n; j += 2) {primes[j] = false;}
+    for (j = 4; j <= uN; j += 2) {primes[j] = false;}
 
     while (lastP <= fsqr) {
-        for (j = lastP*lastP; j <= n; j += 2*lastP) {primes[j] = false;}
+        for (j = lastP*lastP; j <= uN; j += 2*lastP) {primes[j] = false;}
         k = lastP + 2;
         ind = 2;
         while (!primes[k]) {
@@ -30,7 +30,7 @@ IntegerVector AllPrimesCpp (int n) {
     
     myps.push_back(2);
 
-    for (j = 3; j <= n; j += 2) {
+    for (j = 3; j <= uN; j += 2) {
         if (primes[j]) {
             myps.push_back(j);
         }
@@ -69,7 +69,7 @@ NumericVector RangePrimesCpp (double m, double n) {
     for (j = strt; j <= n; j += 2) {primes[j-m] = false;}
 
     for (p = testPrimes.begin() + 1; p < maxP; p++) {
-        powTest = pow(*p, 2);
+        powTest = pow((double)*p, 2);
         if (m > powTest) {
             remTest = fmod(m,*p);
             if (remTest == 0.0) {
