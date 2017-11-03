@@ -75,7 +75,7 @@ myPs
 
 ## Object created is small
 object.size(myPs)
-240 bytes
+312 bytes
 
 ## Generate number of coprime elements for many numbers
 myPhis <- eulerPhiSieve(20)
