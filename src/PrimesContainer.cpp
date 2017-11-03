@@ -202,7 +202,7 @@ SEXP EratosthenesRcpp (SEXP Rb1, SEXP Rb2) {
         }
     }
     
-    if (bound1 < 1 || bound1 > 9007199254740991) {stop("bound1 must be a positive number less than 2^53");}
+    if (bound1 < 1 || bound1 > 9007199254740991.0) {stop("bound1 must be a positive number less than 2^53");}
 
     if (Rf_isNull(Rb2)) {
         if (bound1 == 1) {
@@ -242,7 +242,7 @@ SEXP EratosthenesRcpp (SEXP Rb1, SEXP Rb2) {
                 stop("bound2 must be of type numeric or integer");
             }
         }
-        if (bound2 < 1 || bound2 > 9007199254740991) {stop("bound2 must be a positive number less than 2^53");}
+        if (bound2 < 1 || bound2 > 9007199254740991.0) {stop("bound2 must be a positive number less than 2^53");}
 
         if (bound1 > bound2) {
             myMax = bound1;
