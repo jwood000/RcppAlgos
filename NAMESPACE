@@ -3,6 +3,7 @@ useDynLib(RcppAlgos, .registration = TRUE)
 importFrom(Rcpp, evalCpp)
 
 export(comboGeneral,
+       permuteGeneral,
        primeSieve,
        eulerPhiSieve,
        primeFactorizationList,

@@ -12,25 +12,26 @@ IntegerVector AllPrimesCpp (int n) {
     int myReserve = (int)floor((double)2*n/log((double)n));
     myps.reserve(myReserve);
 
-    unsigned long int lastP = 3, k, ind, j, uN = n;
+    unsigned long int lastP = 3, k, ind, j, uN = n, step;
     unsigned long int fsqr = (unsigned long int)floor(sqrt((double)n));
 
     for (j = 4; j <= uN; j += 2) {primes[j] = false;}
-
+    myps.push_back(2);
+    
     while (lastP <= fsqr) {
-        for (j = lastP*lastP; j <= uN; j += 2*lastP) {primes[j] = false;}
+        step = 2*lastP;
+        for (j = lastP*lastP; j <= uN; j += step) {primes[j] = false;}
         k = lastP + 2;
         ind = 2;
         while (!primes[k]) {
             k += 2;
             ind += 2;
         }
+        myps.push_back(lastP);
         lastP += ind;
     }
-    
-    myps.push_back(2);
 
-    for (j = 3; j <= uN; j += 2) {
+    for (j = lastP; j <= uN; j += 2) {
         if (primes[j]) {
             myps.push_back(j);
         }
@@ -50,7 +51,7 @@ NumericVector RangePrimesCpp (double m, double n) {
     IntegerVector::iterator p, maxP;
     maxP = testPrimes.end();
 
-    double j, strt, f_odd, remTest, nMinusM = n- m, powTest;
+    double j, strt, f_odd, remTest, nMinusM = n - m, powTest, step;
     strt = f_odd = m;
 
     if (m==1) { // Get first odd value
@@ -70,6 +71,7 @@ NumericVector RangePrimesCpp (double m, double n) {
 
     for (p = testPrimes.begin() + 1; p < maxP; p++) {
         powTest = pow((double)*p, 2);
+        step = (*p)*2;
         if (m > powTest) {
             remTest = fmod(m,*p);
             if (remTest == 0.0) {
@@ -78,11 +80,10 @@ NumericVector RangePrimesCpp (double m, double n) {
                 strt = *p - remTest;
             }
             if (fmod(m+strt, 2) == 0.0) {strt += *p;}
-            for (j = strt; j <= nMinusM; j += (*p)*2) {primes[j] = false;}
         } else {
             strt = powTest - m;
-            for (j = strt; j <= nMinusM; j += (*p)*2) {primes[j] = false;}
         }
+        for (j = strt; j <= nMinusM; j += step) {primes[j] = false;}
     }
 
     for (j = f_odd; j <= n; j += 2) {
