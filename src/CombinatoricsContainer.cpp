@@ -31,7 +31,7 @@ List rleCpp(std::vector<double> x) {
     );
 }
 
-int GetNumPerms(std::vector<double> v) {
+int NumPermsWithRep(std::vector<double> v) {
     List myRle = rleCpp(v);
     unsigned long int n = v.size(), myMax;
     std::vector<unsigned long int> myLens = myRle[0];
@@ -57,7 +57,7 @@ int GetNumPerms(std::vector<double> v) {
     return result;
 }
 
-double numPermutations(int n, int k) {
+double NumPermsNoRep(int n, int k) {
     double dblN = (double)n, result = 1;
     double i, m = dblN - (double)k;
     for (i = n; i > m; i--) {result *= i;}
@@ -282,7 +282,7 @@ NumericMatrix CombinatoricsConstraints(int n, int r, std::vector<double> v,
                     } else {
                         zPart.clear(); zPart.reserve(r);
                         for (k=0; k < r; k++) {zPart.push_back(z[k]);}
-                        numPerms = GetNumPerms(zPart);
+                        numPerms = NumPermsWithRep(zPart);
                         for (i=0; i < numPerms; i++) {
                             for (k=0; k < r; k++) {combinatoricsMatrix(count, k) = zPart[k];}
                             std::next_permutation(zPart.begin(), zPart.end());
@@ -366,7 +366,7 @@ NumericMatrix CombinatoricsConstraints(int n, int r, std::vector<double> v,
         }
     } else {
         z = v;
-        int indexRows = (int)numPermutations(r, r-1);
+        int indexRows = (int)NumPermsNoRep(r, r-1);
         IntegerMatrix indexMatrix = MakeIndexHeaps(indexRows, r);
         
         while (keepGoing) {
@@ -472,7 +472,9 @@ NumericMatrix ComboNumeric(int n, int r, std::vector<double> v,
     NumericMatrix combinationMatrix(rowNum, r);
     
     if (repetition) {
-        z.assign(r+n-1, v[0]);
+        v.erase(std::unique(v.begin(), v.end()), v.end());
+        s = v.size();
+        z.assign(r+s-1, v[0]);
         std::copy(v.begin()+1, v.end(), z.begin()+r);
         
         while (keepGoing) {
@@ -574,7 +576,9 @@ CharacterMatrix ComboCharacter(int n, int r, std::vector<std::string > v,
     CharacterMatrix combinationMatrix(rowNum, r);
     
     if (repetition) {
-        z.assign(r+n-1, v[0]);
+        v.erase(std::unique(v.begin(), v.end()), v.end());
+        s = v.size();
+        z.assign(r+s-1, v[0]);
         std::copy(v.begin()+1, v.end(), z.begin()+r);
         
         while (keepGoing) {
@@ -689,7 +693,7 @@ NumericMatrix PermuteNumeric(int n, int r, std::vector<double> v,
     } else {
         unsigned long int combRows = (int)nChooseK(n, r);
         NumericMatrix myCombs = ComboNumeric(n,r,v,false,combRows);
-        int indexRows = (int)numPermutations(r, r-1);
+        int indexRows = (int)NumPermsNoRep(r, r-1);
         IntegerMatrix indexMatrix = MakeIndexHeaps(indexRows, uR);
 
         chunk = 0;
@@ -732,7 +736,7 @@ CharacterMatrix PermuteCharacter(int n, int r, std::vector<std::string > v,
     } else {
         unsigned long int combRows = (unsigned long int)nChooseK(n, r);
         CharacterMatrix myCombs = ComboCharacter(n,r,v,false,combRows);
-        int indexRows = (int)numPermutations(r, r-1);
+        int indexRows = (int)NumPermsNoRep(r, r-1);
         IntegerMatrix indexMatrix = MakeIndexHeaps(indexRows, uR);
         
         chunk = 0;
@@ -802,7 +806,6 @@ SEXP CombinatoricsRcpp(SEXP Rv, SEXP Rm, SEXP Rrepetition, SEXP fun1,
     } else {
         if (Rf_length(Rv) == 1) {
             j = as<int>(Rv);
-            if (j < m) {stop("v cannot be less than m");}
             IntegerVector vTemp = seq(1, j);
             vNum = as<std::vector<double> >(vTemp);
         } else {
@@ -822,7 +825,7 @@ SEXP CombinatoricsRcpp(SEXP Rv, SEXP Rm, SEXP Rrepetition, SEXP fun1,
         if (IsComb) {
             testRows = nChooseK(n, m);
         } else {
-            testRows = numPermutations(n, m);
+            testRows = NumPermsNoRep(n, m);
         }
     }
     
