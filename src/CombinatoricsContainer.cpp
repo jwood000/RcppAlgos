@@ -898,7 +898,7 @@ SEXP CombinatoricsRcpp(SEXP Rv, SEXP Rm, SEXP Rrepetition, SEXP fun1,
                 myRows = testRows2;
                 if (myRows > testRows) {myRows = testRows;}
             }
-            print(wrap(testRows));
+            
             std::string mainFun = as<std::string >(fun1);
             if (mainFun != "prod" && mainFun != "sum" && mainFun != "mean"
                     && mainFun != "max" && mainFun != "min") {
