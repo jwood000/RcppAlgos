@@ -6,20 +6,21 @@
 using namespace Rcpp;
 
 // CombinatoricsRcpp
-SEXP CombinatoricsRcpp(SEXP Rv, SEXP Rm, SEXP Rrepetition, SEXP fun1, SEXP fun2, SEXP lim, SEXP numRow, SEXP RIsComb);
-RcppExport SEXP _RcppAlgos_CombinatoricsRcpp(SEXP RvSEXP, SEXP RmSEXP, SEXP RrepetitionSEXP, SEXP fun1SEXP, SEXP fun2SEXP, SEXP limSEXP, SEXP numRowSEXP, SEXP RIsCombSEXP) {
+SEXP CombinatoricsRcpp(SEXP Rv, SEXP Rm, SEXP Rrepetition, SEXP f1, SEXP f2, SEXP lim, SEXP numRow, SEXP RIsComb, SEXP RIsFactor);
+RcppExport SEXP _RcppAlgos_CombinatoricsRcpp(SEXP RvSEXP, SEXP RmSEXP, SEXP RrepetitionSEXP, SEXP f1SEXP, SEXP f2SEXP, SEXP limSEXP, SEXP numRowSEXP, SEXP RIsCombSEXP, SEXP RIsFactorSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< SEXP >::type Rv(RvSEXP);
     Rcpp::traits::input_parameter< SEXP >::type Rm(RmSEXP);
     Rcpp::traits::input_parameter< SEXP >::type Rrepetition(RrepetitionSEXP);
-    Rcpp::traits::input_parameter< SEXP >::type fun1(fun1SEXP);
-    Rcpp::traits::input_parameter< SEXP >::type fun2(fun2SEXP);
+    Rcpp::traits::input_parameter< SEXP >::type f1(f1SEXP);
+    Rcpp::traits::input_parameter< SEXP >::type f2(f2SEXP);
     Rcpp::traits::input_parameter< SEXP >::type lim(limSEXP);
     Rcpp::traits::input_parameter< SEXP >::type numRow(numRowSEXP);
     Rcpp::traits::input_parameter< SEXP >::type RIsComb(RIsCombSEXP);
-    rcpp_result_gen = Rcpp::wrap(CombinatoricsRcpp(Rv, Rm, Rrepetition, fun1, fun2, lim, numRow, RIsComb));
+    Rcpp::traits::input_parameter< SEXP >::type RIsFactor(RIsFactorSEXP);
+    rcpp_result_gen = Rcpp::wrap(CombinatoricsRcpp(Rv, Rm, Rrepetition, f1, f2, lim, numRow, RIsComb, RIsFactor));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -81,7 +82,7 @@ END_RCPP
 }
 
 static const R_CallMethodDef CallEntries[] = {
-    {"_RcppAlgos_CombinatoricsRcpp", (DL_FUNC) &_RcppAlgos_CombinatoricsRcpp, 8},
+    {"_RcppAlgos_CombinatoricsRcpp", (DL_FUNC) &_RcppAlgos_CombinatoricsRcpp, 9},
     {"_RcppAlgos_NumDivisorsSieve", (DL_FUNC) &_RcppAlgos_NumDivisorsSieve, 1},
     {"_RcppAlgos_DivisorListRcpp", (DL_FUNC) &_RcppAlgos_DivisorListRcpp, 1},
     {"_RcppAlgos_PrimeFactorizationListRcpp", (DL_FUNC) &_RcppAlgos_PrimeFactorizationListRcpp, 1},

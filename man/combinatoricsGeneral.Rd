@@ -1,7 +1,8 @@
 \name{comboGeneral}
 \alias{comboGeneral}
+\alias{permuteGeneral}
 \title{
-Generate all Combinations of a Vector with/without Constraints
+Generate all Combinations/Permutations of a Vector with/without Constraints
 }
 \description{
 Quickly generate all combinations of a vector, chosen \eqn{m} at a time, with or without constraints using Rcpp.
@@ -58,11 +59,11 @@ system.time(comboGeneral(mySamp,7,FALSE,"sum",">",7200,1000))
 ## 8 bytes. This gives a total over 100 GB). 
 ## (i.e. choose(75, 7)*7*8/(2^30)).
 
+\dontrun{
 ## Find 13-tuple combinations of 1:25 such
 ## that the mean is less than 10
 system.time(myComb <- comboGeneral(25,13,FALSE,"mean","<",10))
 
-\dontrun{
 ## Alternatively, you must generate all combinations and subsequently
 ## subset to obtain the combinations that meet the criteria
 system.time(myComb2 <- combn(25,13))
