@@ -64,10 +64,10 @@ double NumPermsNoRep(int n, int k) {
     return result;
 }
 
-template <typename TypeRcppSub>
-TypeRcppSub SubMat(TypeRcppSub m, int n) {
+template <typename TypeRcpp>
+TypeRcpp SubMat(TypeRcpp m, int n) {
     int k = m.ncol();
-    TypeRcppSub subMatrix(n,k);
+    TypeRcpp subMatrix(n,k);
     for (int i = 0; i < n; i++) {subMatrix(i,_) = m(i,_);}
     return subMatrix;
 }
@@ -218,8 +218,8 @@ IntegerMatrix MakeIndexHeaps(unsigned long int indRows, unsigned long int r) {
 // successively, until a particular combination exceeds the given constraint
 // value for a given constraint function. After this point, we can safely skip
 // several combinations knowing that they will exceed the given constraint value.
-template <typename TypeRcppConstr>
-TypeRcppConstr CombinatoricsConstraints(int n, int r, std::vector<double> v,
+template <typename TypeRcpp>
+TypeRcpp CombinatoricsConstraints(int n, int r, std::vector<double> v,
                                        bool repetition, std::string myFun, 
                                        std::string myComparison, double lim,
                                        int rowNum, bool isComb) {
@@ -256,7 +256,7 @@ TypeRcppConstr CombinatoricsConstraints(int n, int r, std::vector<double> v,
         }
     }
     
-    TypeRcppConstr combinatoricsMatrix(rowNum, r);
+    TypeRcpp combinatoricsMatrix(rowNum, r);
     std::vector<double> z, zPart;
     bool t_1, t_2, t = true, keepGoing = true;
     std::vector<double>::iterator it;
@@ -605,17 +605,17 @@ IntegerMatrix PermuteFactor(int n, int r, IntegerVector v, bool repetition, int 
     return(permuteMatrix);
 }
 
-template <typename TypeRcppC, typename myTypeC>
-TypeRcppC ComboGeneral(int n, int r, std::vector<myTypeC> v, bool repetition, int rowNum) {
+template <typename TypeRcpp, typename stdType>
+TypeRcpp ComboGeneral(int n, int r, std::vector<stdType> v, bool repetition, int rowNum) {
     std::sort(v.begin(), v.end());
-    std::vector<myTypeC> z;
+    std::vector<stdType> z;
     int count = 0, tSize = r - 1, s = v.size();
     int k, i, numIter, posMaxZ, newSize;
-    myTypeC maxV = v[s-1];
-    typename std::vector<myTypeC>::iterator it;
-    std::vector<myTypeC> temp;
+    stdType maxV = v[s-1];
+    typename std::vector<stdType>::iterator it;
+    std::vector<stdType> temp;
     bool keepGoing = true;
-    TypeRcppC combinationMatrix(rowNum, r);
+    TypeRcpp combinationMatrix(rowNum, r);
     
     if (repetition) {
         v.erase(std::unique(v.begin(), v.end()), v.end());
@@ -709,15 +709,15 @@ TypeRcppC ComboGeneral(int n, int r, std::vector<myTypeC> v, bool repetition, in
     return(combinationMatrix);
 }
 
-template <typename TypeRcppP, typename myTypeP>
-TypeRcppP PermuteGeneral(int n, int r, std::vector<myTypeP> v, bool repetition, int rowNum) {
+template <typename TypeRcpp, typename stdType>
+TypeRcpp PermuteGeneral(int n, int r, std::vector<stdType> v, bool repetition, int rowNum) {
     unsigned long int uN = n, uR = r, uRowN = rowNum;
     unsigned long int i = 0, j, k, chunk;
-    TypeRcppP permuteMatrix(uRowN, uR);
+    TypeRcpp permuteMatrix(uRowN, uR);
     
     if (repetition) {
         unsigned long int groupLen = 1, repLen = 1;
-        typename std::vector<myTypeP>::iterator m, vBeg, vEnd;
+        typename std::vector<stdType>::iterator m, vBeg, vEnd;
         vBeg = v.begin(); vEnd = v.end();
         for (i = 0; i < uR; i++) {
             groupLen *= uN;
@@ -734,7 +734,7 @@ TypeRcppP PermuteGeneral(int n, int r, std::vector<myTypeP> v, bool repetition, 
         }
     } else {
         unsigned long int combRows = (int)nChooseK(n, r);
-        TypeRcppP myCombs = ComboGeneral<TypeRcppP>(n,r,v,false,combRows);
+        TypeRcpp myCombs = ComboGeneral<TypeRcpp>(n,r,v,false,combRows);
         int indexRows = (int)NumPermsNoRep(r, r-1);
         IntegerMatrix indexMatrix = MakeIndexHeaps(indexRows, uR);
 
