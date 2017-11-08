@@ -64,9 +64,10 @@ double NumPermsNoRep(int n, int k) {
     return result;
 }
 
-NumericMatrix SubMat(NumericMatrix m, int n) {
+template <typename TypeRcppSub>
+TypeRcppSub SubMat(TypeRcppSub m, int n) {
     int k = m.ncol();
-    NumericMatrix subMatrix(n,k);
+    TypeRcppSub subMatrix(n,k);
     for (int i = 0; i < n; i++) {subMatrix(i,_) = m(i,_);}
     return subMatrix;
 }
@@ -217,8 +218,8 @@ IntegerMatrix MakeIndexHeaps(unsigned long int indRows, unsigned long int r) {
 // successively, until a particular combination exceeds the given constraint
 // value for a given constraint function. After this point, we can safely skip
 // several combinations knowing that they will exceed the given constraint value.
-
-NumericMatrix CombinatoricsConstraints(int n, int r, std::vector<double> v,
+template <typename TypeRcppConstr>
+TypeRcppConstr CombinatoricsConstraints(int n, int r, std::vector<double> v,
                                        bool repetition, std::string myFun, 
                                        std::string myComparison, double lim,
                                        int rowNum, bool isComb) {
@@ -255,7 +256,7 @@ NumericMatrix CombinatoricsConstraints(int n, int r, std::vector<double> v,
         }
     }
     
-    NumericMatrix combinatoricsMatrix(rowNum, r);
+    TypeRcppConstr combinatoricsMatrix(rowNum, r);
     std::vector<double> z, zPart;
     bool t_1, t_2, t = true, keepGoing = true;
     std::vector<double>::iterator it;
@@ -459,8 +460,7 @@ NumericMatrix CombinatoricsConstraints(int n, int r, std::vector<double> v,
     return(SubMat(combinatoricsMatrix, count));
 }
 
-IntegerMatrix ComboFactor(int n, int r, IntegerVector v,
-                           bool repetition, int rowNum) {
+IntegerMatrix ComboFactor(int n, int r, IntegerVector v, bool repetition, int rowNum) {
     v.sort();
     IntegerVector z;
     int count = 0, tSize = r - 1, s = v.size();
@@ -469,6 +469,8 @@ IntegerMatrix ComboFactor(int n, int r, IntegerVector v,
     IntegerVector temp;
     bool keepGoing = true;
     IntegerMatrix combinationMatrix(rowNum, r);
+    combinationMatrix.attr("levels") = v.attr("levels");
+    combinationMatrix.attr("class") = v.attr("class");
     
     if (repetition) {
         v = unique(v);
@@ -535,7 +537,7 @@ IntegerMatrix ComboFactor(int n, int r, IntegerVector v,
             
             posMaxZ = -1;
             for (k = z.size()-1; k >= 0; k--) {
-                if (z[k] != v[(s-r+k)]) {
+                if (z[k] != v[s-r+k]) {
                     posMaxZ = k;
                     break;
                 }
@@ -549,9 +551,8 @@ IntegerMatrix ComboFactor(int n, int r, IntegerVector v,
                     }
                 }
                 
-                temp(posMaxZ + s - k - 2);
-                for (i = 0; i <= posMaxZ; i++) {temp[i] = z[i];}
-                for (i = (k+2); i < s; i++) {temp[i] = v[i];}
+                temp.assign(z.begin(), z.begin() + posMaxZ + 1);
+                for (i = (k+2); i < s; i++) {temp.push_back(v[i]);}
                 z = temp;
             } else {
                 keepGoing = false;
@@ -561,328 +562,16 @@ IntegerMatrix ComboFactor(int n, int r, IntegerVector v,
     return(combinationMatrix);
 }
 
-NumericMatrix ComboNumeric(int n, int r, std::vector<double> v,
-                                   bool repetition, int rowNum) {
-    std::sort(v.begin(), v.end());
-    std::vector<double> z;
-    int count = 0, tSize = r - 1, s = v.size();
-    int k, i, numIter, posMaxZ, newSize;
-    double maxV = v[s-1];
-    std::vector<double>::iterator it;
-    std::vector<double> temp;
-    bool keepGoing = true;
-    NumericMatrix combinationMatrix(rowNum, r);
-    
-    if (repetition) {
-        v.erase(std::unique(v.begin(), v.end()), v.end());
-        s = v.size();
-        z.assign(r+s-1, v[0]);
-        std::copy(v.begin()+1, v.end(), z.begin()+r);
-        
-        while (keepGoing) {
-            numIter = z.size() - r;
-            for (i = 0; i < numIter; i++) {
-                for (k=0; k < r; k++) {combinationMatrix(count, k) = z[k];}
-                count++;
-                z.erase(z.begin() + tSize);
-            }
-    
-            for (k=0; k < r; k++) {combinationMatrix(count, k) = z[k];}
-            count++;
-    
-            posMaxZ = -1;
-            for (k = z.size()-1; k >= 0; k--) {
-                if (z[k] < maxV) {
-                    posMaxZ = k;
-                    break;
-                }
-            }
-    
-            if (posMaxZ > -1) {
-                for (k = 0; k < s; k++) {
-                    if (v[k] == z[posMaxZ]) {
-                        z[posMaxZ] = v[k+1];
-                        break;
-                    }
-                }
-    
-                temp.clear();
-                temp.reserve(posMaxZ);
-                for (it = z.begin(); it <= z.begin() + posMaxZ; it++) {temp.push_back(*it);}
-    
-                if (z[posMaxZ] < maxV) {
-                    newSize = tSize + s - k - 1;
-                    z.assign(newSize, z[posMaxZ]);
-                    std::copy(temp.begin(), temp.end(), z.begin());
-                    std::copy(v.begin() + (k+1), v.end(), z.begin() + tSize);
-                } else {
-                    z.assign(r, z[posMaxZ]);
-                    std::copy(temp.begin(), temp.end(), z.begin());
-                }
-            } else {
-                keepGoing = false;
-            }
-        }
-    } else {
-        z = v;
-        while (keepGoing) {
-            numIter = z.size() - r;
-            for (i = 0; i < numIter; i++) {
-                for (k=0; k < r; k++) {combinationMatrix(count, k) = z[k];}
-                count++;
-                z.erase(z.begin() + tSize);
-            }
-            
-            for (k=0; k < r; k++) {combinationMatrix(count, k) = z[k];}
-            count++;
-            
-            posMaxZ = -1;
-            for (k = z.size()-1; k >= 0; k--) {
-                if (z[k] != v[(s-r+k)]) {
-                    posMaxZ = k;
-                    break;
-                }
-            }
-            
-            if (posMaxZ > -1) {
-                for (k = 0; k < s; k++) {
-                    if (v[k] == z[posMaxZ]) {
-                        z[posMaxZ] = v[k+1];
-                        break;
-                    }
-                }
-                
-                temp.clear();
-                temp.reserve(posMaxZ + s - k - 2);
-                for (it = z.begin(); it <= z.begin() + posMaxZ; it++) {temp.push_back(*it);}
-                for (it = v.begin() + (k+2); it < v.end(); it++) {temp.push_back(*it);}
-                z = temp;
-            } else {
-                keepGoing = false;
-            }
-        }
-    }
-    return(combinationMatrix);
-}
-
-template <typename TypeRcpp, typename myType>
-
-TypeRcpp ComboGeneral(int n, int r, std::vector<myType> v, bool repetition, int rowNum) {
-    std::sort(v.begin(), v.end());
-    std::vector<myType> z;
-    int count = 0, tSize = r - 1, s = v.size();
-    int k, i, numIter, posMaxZ, newSize;
-    myType maxV = v[s-1];
-    typename std::vector<myType>::iterator it;
-    std::vector<myType> temp;
-    bool keepGoing = true;
-    TypeRcpp combinationMatrix(rowNum, r);
-    
-    if (repetition) {
-        v.erase(std::unique(v.begin(), v.end()), v.end());
-        s = v.size();
-        z.assign(r+s-1, v[0]);
-        std::copy(v.begin()+1, v.end(), z.begin()+r);
-        
-        while (keepGoing) {
-            numIter = z.size() - r;
-            for (i = 0; i < numIter; i++) {
-                for (k=0; k < r; k++) {combinationMatrix(count, k) = z[k];}
-                count++;
-                z.erase(z.begin() + tSize);
-            }
-            
-            for (k=0; k < r; k++) {combinationMatrix(count, k) = z[k];}
-            count++;
-            
-            posMaxZ = -1;
-            for (k = z.size()-1; k >= 0; k--) {
-                if (z[k] < maxV) {
-                    posMaxZ = k;
-                    break;
-                }
-            }
-            
-            if (posMaxZ > -1) {
-                for (k = 0; k < s; k++) {
-                    if (v[k] == z[posMaxZ]) {
-                        z[posMaxZ] = v[k+1];
-                        break;
-                    }
-                }
-                
-                temp.clear();
-                temp.reserve(posMaxZ);
-                for (it = z.begin(); it <= z.begin() + posMaxZ; it++) {temp.push_back(*it);}
-                
-                if (z[posMaxZ] < maxV) {
-                    newSize = tSize + s - k - 1;
-                    z.assign(newSize, z[posMaxZ]);
-                    std::copy(temp.begin(), temp.end(), z.begin());
-                    std::copy(v.begin() + (k+1), v.end(), z.begin() + tSize);
-                } else {
-                    z.assign(r, z[posMaxZ]);
-                    std::copy(temp.begin(), temp.end(), z.begin());
-                }
-            } else {
-                keepGoing = false;
-            }
-        }
-    } else {
-        z = v;
-        while (keepGoing) {
-            numIter = z.size() - r;
-            for (i = 0; i < numIter; i++) {
-                for (k=0; k < r; k++) {combinationMatrix(count, k) = z[k];}
-                count++;
-                z.erase(z.begin() + tSize);
-            }
-            
-            for (k=0; k < r; k++) {combinationMatrix(count, k) = z[k];}
-            count++;
-            
-            posMaxZ = -1;
-            for (k = z.size()-1; k >= 0; k--) {
-                if (z[k] != v[(s-r+k)]) {
-                    posMaxZ = k;
-                    break;
-                }
-            }
-            
-            if (posMaxZ > -1) {
-                for (k = 0; k < s; k++) {
-                    if (v[k] == z[posMaxZ]) {
-                        z[posMaxZ] = v[k+1];
-                        break;
-                    }
-                }
-                
-                temp.clear();
-                temp.reserve(posMaxZ + s - k - 2);
-                for (it = z.begin(); it <= z.begin() + posMaxZ; it++) {temp.push_back(*it);}
-                for (it = v.begin() + (k+2); it < v.end(); it++) {temp.push_back(*it);}
-                z = temp;
-            } else {
-                keepGoing = false;
-            }
-        }
-    }
-    return(combinationMatrix);
-}
-
-CharacterMatrix ComboCharacter(int n, int r, std::vector<std::string > v,
-                               bool repetition, int rowNum) {
-    std::sort(v.begin(), v.end());
-    std::vector<std::string > z;
-    int count = 0, tSize = r - 1, s = v.size();
-    int k, i, numIter, posMaxZ, newSize;
-    std::string maxV = v[s-1];
-    std::vector<std::string >::iterator it;
-    std::vector<std::string > temp;
-    bool keepGoing = true;
-    CharacterMatrix combinationMatrix(rowNum, r);
-    
-    if (repetition) {
-        v.erase(std::unique(v.begin(), v.end()), v.end());
-        s = v.size();
-        z.assign(r+s-1, v[0]);
-        std::copy(v.begin()+1, v.end(), z.begin()+r);
-        
-        while (keepGoing) {
-            numIter = z.size() - r;
-            for (i = 0; i < numIter; i++) {
-                for (k=0; k < r; k++) {combinationMatrix(count, k) = z[k];}
-                count++;
-                z.erase(z.begin() + tSize);
-            }
-    
-            for (k=0; k < r; k++) {combinationMatrix(count, k) = z[k];}
-            count++;
-    
-            posMaxZ = -1;
-            for (k = z.size()-1; k >= 0; k--) {
-                if (z[k] < maxV) {
-                    posMaxZ = k;
-                    break;
-                }
-            }
-    
-            if (posMaxZ > -1) {
-                for (k = 0; k < s; k++) {
-                    if (v[k] == z[posMaxZ]) {
-                        z[posMaxZ] = v[k+1];
-                        break;
-                    }
-                }
-    
-                temp.clear();
-                temp.reserve(posMaxZ);
-                for (it = z.begin(); it <= z.begin() + posMaxZ; it++) {temp.push_back(*it);}
-    
-                if (z[posMaxZ] < maxV) {
-                    newSize = tSize + s - k - 1;
-                    z.assign(newSize, z[posMaxZ]);
-                    std::copy(temp.begin(), temp.end(), z.begin());
-                    std::copy(v.begin() + (k+1), v.end(), z.begin() + tSize);
-                } else {
-                    z.assign(r, z[posMaxZ]);
-                    std::copy(temp.begin(), temp.end(), z.begin());
-                }
-            } else {
-                keepGoing = false;
-            }
-        }
-    } else {
-        z = v;
-        while (keepGoing) {
-            numIter = z.size() - r;
-            for (i = 0; i < numIter; i++) {
-                for (k=0; k < r; k++) {combinationMatrix(count, k) = z[k];}
-                count++;
-                z.erase(z.begin() + tSize);
-            }
-            
-            for (k=0; k < r; k++) {combinationMatrix(count, k) = z[k];}
-            count++;
-            
-            posMaxZ = -1;
-            for (k = z.size()-1; k >= 0; k--) {
-                if (z[k] != v[(s-r+k)]) {
-                    posMaxZ = k;
-                    break;
-                }
-            }
-            
-            if (posMaxZ > -1) {
-                for (k = 0; k < s; k++) {
-                    if (v[k] == z[posMaxZ]) {
-                        z[posMaxZ] = v[k+1];
-                        break;
-                    }
-                }
-                
-                temp.clear();
-                temp.reserve(posMaxZ + s - k - 2);
-                for (it = z.begin(); it <= z.begin() + posMaxZ; it++) {temp.push_back(*it);}
-                for (it = v.begin() + (k+2); it < v.end(); it++) {temp.push_back(*it);}
-                z = temp;
-            } else {
-                keepGoing = false;
-            }
-        }
-    }
-    return(combinationMatrix);
-}
-
-NumericMatrix PermuteNumeric(int n, int r, std::vector<double> v,
-                             bool repetition, int rowNum) {
+IntegerMatrix PermuteFactor(int n, int r, IntegerVector v, bool repetition, int rowNum) {
     unsigned long int uN = n, uR = r, uRowN = rowNum;
     unsigned long int i = 0, j, k, chunk;
-    NumericMatrix permuteMatrix(uRowN, uR);
+    IntegerMatrix permuteMatrix(uRowN, uR);
+    permuteMatrix.attr("class") = v.attr("class");
+    permuteMatrix.attr("levels") = v.attr("levels");
     
     if (repetition) {
         unsigned long int groupLen = 1, repLen = 1;
-        std::vector<double>::iterator m, vBeg, vEnd;
+        IntegerVector::iterator m, vBeg, vEnd;
         vBeg = v.begin(); vEnd = v.end();
         for (i = 0; i < uR; i++) {
             groupLen *= uN;
@@ -899,10 +588,10 @@ NumericMatrix PermuteNumeric(int n, int r, std::vector<double> v,
         }
     } else {
         unsigned long int combRows = (int)nChooseK(n, r);
-        NumericMatrix myCombs = ComboNumeric(n,r,v,false,combRows);
+        IntegerMatrix myCombs = ComboFactor(n,r,v,false,combRows);
         int indexRows = (int)NumPermsNoRep(r, r-1);
         IntegerMatrix indexMatrix = MakeIndexHeaps(indexRows, uR);
-
+        
         chunk = 0;
         for (i = 0; i < combRows; i++) {
             for (j = 0; j < indexRows; j++) {
@@ -913,19 +602,122 @@ NumericMatrix PermuteNumeric(int n, int r, std::vector<double> v,
             chunk += indexRows;
         }
     }
-    
     return(permuteMatrix);
 }
 
-CharacterMatrix PermuteCharacter(int n, int r, std::vector<std::string > v,
-                                 bool repetition, int rowNum) {
-    unsigned long int i = 0, j, k, chunk;
+template <typename TypeRcppC, typename myTypeC>
+TypeRcppC ComboGeneral(int n, int r, std::vector<myTypeC> v, bool repetition, int rowNum) {
+    std::sort(v.begin(), v.end());
+    std::vector<myTypeC> z;
+    int count = 0, tSize = r - 1, s = v.size();
+    int k, i, numIter, posMaxZ, newSize;
+    myTypeC maxV = v[s-1];
+    typename std::vector<myTypeC>::iterator it;
+    std::vector<myTypeC> temp;
+    bool keepGoing = true;
+    TypeRcppC combinationMatrix(rowNum, r);
+    
+    if (repetition) {
+        v.erase(std::unique(v.begin(), v.end()), v.end());
+        s = v.size();
+        z.assign(r+s-1, v[0]);
+        std::copy(v.begin()+1, v.end(), z.begin()+r);
+        
+        while (keepGoing) {
+            numIter = z.size() - r;
+            for (i = 0; i < numIter; i++) {
+                for (k=0; k < r; k++) {combinationMatrix(count, k) = z[k];}
+                count++;
+                z.erase(z.begin() + tSize);
+            }
+            
+            for (k=0; k < r; k++) {combinationMatrix(count, k) = z[k];}
+            count++;
+            
+            posMaxZ = -1;
+            for (k = z.size()-1; k >= 0; k--) {
+                if (z[k] < maxV) {
+                    posMaxZ = k;
+                    break;
+                }
+            }
+            
+            if (posMaxZ > -1) {
+                for (k = 0; k < s; k++) {
+                    if (v[k] == z[posMaxZ]) {
+                        z[posMaxZ] = v[k+1];
+                        break;
+                    }
+                }
+                
+                temp.clear();
+                temp.reserve(posMaxZ);
+                for (it = z.begin(); it <= z.begin() + posMaxZ; it++) {temp.push_back(*it);}
+                
+                if (z[posMaxZ] < maxV) {
+                    newSize = tSize + s - k - 1;
+                    z.assign(newSize, z[posMaxZ]);
+                    std::copy(temp.begin(), temp.end(), z.begin());
+                    std::copy(v.begin() + (k+1), v.end(), z.begin() + tSize);
+                } else {
+                    z.assign(r, z[posMaxZ]);
+                    std::copy(temp.begin(), temp.end(), z.begin());
+                }
+            } else {
+                keepGoing = false;
+            }
+        }
+    } else {
+        z = v;
+        while (keepGoing) {
+            numIter = z.size() - r;
+            for (i = 0; i < numIter; i++) {
+                for (k=0; k < r; k++) {combinationMatrix(count, k) = z[k];}
+                count++;
+                z.erase(z.begin() + tSize);
+            }
+            
+            for (k=0; k < r; k++) {combinationMatrix(count, k) = z[k];}
+            count++;
+            
+            posMaxZ = -1;
+            for (k = z.size()-1; k >= 0; k--) {
+                if (z[k] != v[(s-r+k)]) {
+                    posMaxZ = k;
+                    break;
+                }
+            }
+            
+            if (posMaxZ > -1) {
+                for (k = 0; k < s; k++) {
+                    if (v[k] == z[posMaxZ]) {
+                        z[posMaxZ] = v[k+1];
+                        break;
+                    }
+                }
+                
+                temp.clear();
+                temp.reserve(posMaxZ + s - k - 2);
+                for (it = z.begin(); it <= z.begin() + posMaxZ; it++) {temp.push_back(*it);}
+                for (it = v.begin() + (k+2); it < v.end(); it++) {temp.push_back(*it);}
+                z = temp;
+            } else {
+                keepGoing = false;
+            }
+        }
+    }
+    return(combinationMatrix);
+}
+
+template <typename TypeRcppP, typename myTypeP>
+TypeRcppP PermuteGeneral(int n, int r, std::vector<myTypeP> v, bool repetition, int rowNum) {
     unsigned long int uN = n, uR = r, uRowN = rowNum;
-    CharacterMatrix permuteMatrix(uRowN, uR);
+    unsigned long int i = 0, j, k, chunk;
+    TypeRcppP permuteMatrix(uRowN, uR);
     
     if (repetition) {
         unsigned long int groupLen = 1, repLen = 1;
-        std::vector<std::string >::iterator m, vBeg, vEnd;
+        typename std::vector<myTypeP>::iterator m, vBeg, vEnd;
         vBeg = v.begin(); vEnd = v.end();
         for (i = 0; i < uR; i++) {
             groupLen *= uN;
@@ -941,11 +733,11 @@ CharacterMatrix PermuteCharacter(int n, int r, std::vector<std::string > v,
             repLen *= uN;
         }
     } else {
-        unsigned long int combRows = (unsigned long int)nChooseK(n, r);
-        CharacterMatrix myCombs = ComboCharacter(n,r,v,false,combRows);
+        unsigned long int combRows = (int)nChooseK(n, r);
+        TypeRcppP myCombs = ComboGeneral<TypeRcppP>(n,r,v,false,combRows);
         int indexRows = (int)NumPermsNoRep(r, r-1);
         IntegerMatrix indexMatrix = MakeIndexHeaps(indexRows, uR);
-        
+
         chunk = 0;
         for (i = 0; i < combRows; i++) {
             for (j = 0; j < indexRows; j++) {
@@ -964,7 +756,7 @@ CharacterMatrix PermuteCharacter(int n, int r, std::vector<std::string > v,
 SEXP CombinatoricsRcpp(SEXP Rv, SEXP Rm, SEXP Rrepetition, 
                        SEXP f1, SEXP f2, SEXP lim, SEXP numRow,
                        SEXP RIsComb, SEXP RIsFactor) {
-    int n, m, j, nRows;
+    int n, m, j, nRows, m1, m2;
     double testRows;
     bool IsRepetition, IsCharacter, IsInteger;
     bool IsConstrained, IsComb, IsFactor;
@@ -1021,7 +813,8 @@ SEXP CombinatoricsRcpp(SEXP Rv, SEXP Rm, SEXP Rrepetition,
     } else {
         if (Rf_length(Rv) == 1) {
             j = as<int>(Rv);
-            IntegerVector vTemp = seq(1, j);
+            if (j > 1) {m1 = 1; m2 = j;} else {m1 = j; m2 = 1;}
+            IntegerVector vTemp = seq(m1, m2);
             IsInteger = true;
             vNum = as<std::vector<double> >(vTemp);
         } else {
@@ -1035,14 +828,13 @@ SEXP CombinatoricsRcpp(SEXP Rv, SEXP Rm, SEXP Rrepetition,
     if (IsFactor) {
         IntegerVector testFactor = as<IntegerVector>(Rv);
         vFactor = seq(1, n);
-        CharacterVector myClass = as<CharacterVector>(testFactor.attr("class"));
+        CharacterVector myClass = testFactor.attr("class");
+        CharacterVector myLevels = testFactor.attr("levels");
         vFactor.attr("class") = myClass;
-        Rcpp::print(wrap(Rf_length(testFactor.attr("class"))));
-        Rcpp::print(wrap(testFactor.attr("class")));
-        Rcpp::print(wrap(testFactor.attr("levels")));
-        Rcpp::print(wrap(testFactor));
+        vFactor.attr("levels") = myLevels;
+        IsCharacter = IsInteger = false;
     }
-    return wrap(true);
+    
     if (IsRepetition) {
         if (IsComb) {
             testRows = GetRowNum(n, m);
@@ -1064,7 +856,7 @@ SEXP CombinatoricsRcpp(SEXP Rv, SEXP Rm, SEXP Rrepetition,
         if (IsComb){
             return ComboGeneral<CharacterMatrix>(n, m, vStr, IsRepetition, nRows);
         } else {
-            return PermuteCharacter(n, m, vStr, IsRepetition, nRows);
+            return PermuteGeneral<CharacterMatrix>(n, m, vStr, IsRepetition, nRows);
         }
     } else {
         if (Rf_isNull(lim)) {
@@ -1075,6 +867,8 @@ SEXP CombinatoricsRcpp(SEXP Rv, SEXP Rm, SEXP Rrepetition,
             } else {
                 if (!Rf_isString(f1)) {stop("constraintFun must be passed as a character");}
                 if (Rf_isNull(f2)) {
+                    IsConstrained = false;
+                } else if (IsFactor) {
                     IsConstrained = false;
                 } else {
                     IsConstrained = true;
@@ -1142,22 +936,33 @@ SEXP CombinatoricsRcpp(SEXP Rv, SEXP Rm, SEXP Rrepetition,
                     && compFun != ">=" && compFun != "==") {
                 stop("comparisonFun must be one of the following: >, >=, <, <=, or ==");
             }
-
-            return CombinatoricsConstraints(n, m, vNum, IsRepetition,
+            
+            if (IsInteger) {
+                return CombinatoricsConstraints<IntegerMatrix>(n, m, vNum, IsRepetition,
                                             mainFun, compFun, myLim, myRows, IsComb);
+            } else {
+                return CombinatoricsConstraints<NumericMatrix>(n, m, vNum, IsRepetition,
+                                            mainFun, compFun, myLim, myRows, IsComb);
+            }
         } else {
             if (testRows > 2147483647) {stop("The number of rows cannot exceed 2^31 - 1.");}
             nRows = testRows;
             if (IsComb) {
-                if (IsFactor) {
+                if (IsInteger) {
                     return ComboGeneral<IntegerMatrix>(n, m, vInt, IsRepetition, nRows);
-                } else if (IsInteger) {
-                    return ComboGeneral<IntegerMatrix>(n, m, vInt, IsRepetition, nRows);
+                } else if (IsFactor) {
+                    return ComboFactor(n, m, vFactor, IsRepetition, nRows);
                 } else {
                     return ComboGeneral<NumericMatrix>(n, m, vNum, IsRepetition, nRows);
                 }
             } else {
-                return PermuteNumeric(n, m, vNum, IsRepetition, nRows);
+                if (IsInteger) {
+                    return PermuteGeneral<IntegerMatrix>(n, m, vNum, IsRepetition, nRows);
+                } else if (IsFactor) {
+                    return PermuteFactor(n, m, vFactor, IsRepetition, nRows);
+                } else {
+                    return PermuteGeneral<NumericMatrix>(n, m, vNum, IsRepetition, nRows);
+                }
             }
         }
     }

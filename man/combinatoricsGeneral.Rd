@@ -5,20 +5,23 @@
 Generate all Combinations/Permutations of a Vector with/without Constraints
 }
 \description{
-Quickly generate all combinations of a vector, chosen \eqn{m} at a time, with or without constraints using Rcpp.
+Quickly generate all combinations or permutations of a vector, chosen \eqn{m} at a time, with or without constraints using Rcpp.
 }
 \usage{
 comboGeneral(v, m, repetition = FALSE, constraintFun = NULL,
                 comparisonFun = NULL, limitConstraints = NULL, rowCap = NULL)
+
+permuteGeneral(v, m, repetition = FALSE, constraintFun = NULL,
+                  comparisonFun = NULL, limitConstraints = NULL, rowCap = NULL)
 }
 \arguments{
   \item{v}{Source vector. If \code{v} is an integer, it will be converted to the sequence \code{1:v}.}
-  \item{m}{Number of elements to choose.}
+  \item{m}{Number of elements to choose. If \code{repetition = TRUE}, \code{m} can exceed the length of \code{v}.}
   \item{repetition}{Logical value indicating whether combinations should be with or without repetition. The default is \code{FALSE}.}
   \item{constraintFun}{Function to be applied to the elements of \code{v} that should be passed as a string (\emph{E.g.} \code{constraintFun = "sum"}). The possible contraint functions are: \code{"sum"}, \code{"prod"}, \code{"mean"}, \code{"max"}, & \code{"min"}. The default is \code{NULL}, meaning no function is applied.}
   \item{comparisonFun}{Comparison operator that will be used to compare \code{limitConstraints} with the result of \code{contraintFun} applied to \code{v}. Again, it should be passed as a string (\emph{E.g.} \code{comparisonFun = "<="}). The possible comparison operators are: \code{"<"}, \code{">"}, \code{"<="}, \code{">="}, \code{"=="}. The default is \code{NULL}.}
   \item{limitConstraints}{This is the value that will be used for comparison. The default is \code{NULL}.}
-  \item{rowCap}{The maximal number of expected results when a contraint is applied. Can also be used if you only need a specific number of combinations. This is useful when the total number of combinations without contraint is large and you expect/need a small number of combinations that meet the criteria. Using rowCap can drastically improve run time and avoid unnecessary crashes due to lack of memory. See examples below.}
+  \item{rowCap}{The maximal number of expected results when a contraint is applied. Can also be used if you only need a specific number of combinations. This is useful when the total number of combinations without contraint is large and you expect/need a small number of combinations that meet the criteria. Using \code{rowCap} can drastically improve run time and avoid unnecessary crashes due to lack of memory. See examples below.}
 }
 \references{
 \url{http://gallery.rcpp.org/articles/passing-cpp-function-pointers/}
@@ -33,13 +36,15 @@ Joseph Wood
 If either \code{constraintFun}, \code{comparisonFun} or \code{limitConstraints} is \code{NULL}, the contraint check will not be carried out. This is equivalent to simply finding all combinations of \eqn{v} choose \eqn{m}.
 
 The maximum number of rows is \eqn{2^{31} - 1}{2^31 - 1}.
+
+Factor vectors are accepted. Class and level attributes are preserved.
 }
 \examples{
-## 8-tuples of 1:17 w/o repetition
 system.time(comboGeneral(17,8))
+system.time(permuteGeneral(13,6))
 
-## 10-tuples of 1:13 w/ repetition
 system.time(comboGeneral(13,10,repetition = TRUE))
+system.time(permuteGeneral(9,6,TRUE))
 
 ## Generate some random data
 set.seed(1009)
@@ -58,6 +63,8 @@ system.time(comboGeneral(mySamp,7,FALSE,"sum",">",7200,1000))
 ## = 1984829850 rows, 7 columns, with each cell occupying
 ## 8 bytes. This gives a total over 100 GB). 
 ## (i.e. choose(75, 7)*7*8/(2^30)).
+
+system.time(permuteGeneral(seq(0,100,20),10,T,"sum","==",100,10^5))
 
 \dontrun{
 ## Find 13-tuple combinations of 1:25 such
