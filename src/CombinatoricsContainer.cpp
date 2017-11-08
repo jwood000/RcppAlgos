@@ -933,9 +933,13 @@ SEXP CombinatoricsRcpp(SEXP Rv, SEXP Rm, SEXP Rrepetition,
 
             std::string compFun = as<std::string >(f2);
             if (compFun != "<" && compFun != "<=" && compFun != ">"
-                    && compFun != ">=" && compFun != "==") {
+                    && compFun != ">=" && compFun != "=="
+                    && compFun != "=<" && compFun != "=>") {
                 stop("comparisonFun must be one of the following: >, >=, <, <=, or ==");
             }
+            
+            if (compFun == "=<") {compFun = "<=";}
+            if (compFun == "=>") {compFun = ">=";}
             
             if (IsInteger) {
                 return CombinatoricsConstraints<IntegerMatrix>(n, m, vNum, IsRepetition,

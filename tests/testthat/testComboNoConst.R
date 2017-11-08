@@ -64,10 +64,6 @@ test_that("comboGeneral produces correct combinations with no constraints and wi
 })
 
 test_that("comboGeneral produces appropriate error messages", {
-    expect_error(comboGeneral(-9,4), "v cannot be less than m")
-    expect_error(comboGeneral(-9,4,TRUE), "v cannot be less than m")
-    expect_error(comboGeneral(c(1,4,5),4,TRUE), "m must be less than or equal to the length of v")
-    expect_error(comboGeneral(LETTERS[1:3],4,TRUE), "m must be less than or equal to the length of v")
     expect_error(comboGeneral(7,-4), "m must be positive")
     expect_error(comboGeneral(170, 7), "The number of rows cannot exceed")
     expect_error(comboGeneral(100, 10, TRUE), "The number of rows cannot exceed")

@@ -61,7 +61,7 @@ test_that("comboGeneral produces correct combinations with constraints and with 
 
 test_that("comboGeneral produces appropriate error messages", {
     expect_error(comboGeneral(9,4,TRUE,"summ","<",10), "prod, sum, mean, max, or min")
-    expect_error(comboGeneral(9,4,TRUE,"sum","=<",10), ">, >=, <, <=, or ==")
+    expect_error(comboGeneral(9,4,TRUE,"sum","==<",10), ">, >=, <, <=, or ==")
     expect_error(comboGeneral(9,4,TRUE,"sum",60,10), "must be passed as a character")
     expect_error(comboGeneral(9,4,FALSE,sum,"<",10), "must be passed as a character")
     expect_error(comboGeneral(9,4,TRUE,"sum","<",10,-1), "must be positive")

@@ -90,10 +90,6 @@ test_that("permuteGeneral produces correct combinations with no constraints and 
 })
 
 test_that("permuteGeneral produces appropriate error messages", {
-    expect_error(permuteGeneral(-9,4), "v cannot be less than m")
-    expect_error(permuteGeneral(-9,4,TRUE), "v cannot be less than m")
-    expect_error(permuteGeneral(c(1,4,5),4,TRUE), "m must be less than or equal to the length of v")
-    expect_error(permuteGeneral(LETTERS[1:3],4,TRUE), "m must be less than or equal to the length of v")
     expect_error(permuteGeneral(7,-4), "m must be positive")
     expect_error(permuteGeneral(170, 7), "The number of rows cannot exceed")
     expect_error(permuteGeneral(100, 10, TRUE), "The number of rows cannot exceed")
