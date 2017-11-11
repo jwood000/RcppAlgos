@@ -51,5 +51,6 @@ for (s in mySamp) {
 ## factorizations of the numbers in mySamp (5*10^5 elements)).
 
 \dontrun{
-system.time(mySampPFacs <- lapply(mySamp, gmp::factorize))}
+system.time(mySampPFacs <- lapply(mySamp, gmp::factorize))
+}
 }

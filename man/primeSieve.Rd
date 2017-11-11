@@ -23,12 +23,12 @@ Optimized implementation of the sieve of Eratosthenes. In addition to being very
 \value{
 Returns an integer vector if only \code{bound1} is provided, otherwise a numeric vector is returned.
 }
-\seealso{
-\code{\link[numbers]{Primes}}
-}
 \references{
 \href{https://en.wikipedia.org/wiki/Sieve_of_Eratosthenes}{Sieve of Eratosthenes}, 
 \href{https://en.wikipedia.org/wiki/Double-precision_floating-point_format}{53-bit significand precision}
+}
+\seealso{
+\code{\link[numbers]{Primes}}
 }
 \examples{
 ## Primes up to a thousand

@@ -4,7 +4,7 @@
 using namespace Rcpp;
 
 List rleCpp(std::vector<double> x) {
-    std::vector<unsigned long int> lengths;
+    std::vector<unsigned long int> lengths, numUni;
     std::vector<double> values;
     std::vector<double>::iterator it, xBeg, xEnd;
     xBeg = x.begin() + 1; xEnd = x.end();
@@ -24,22 +24,25 @@ List rleCpp(std::vector<double> x) {
             prev = *it;
         }
     }
+    
+    numUni.push_back(i);
+    
     return List::create(
         _["lengths"] = lengths,
         _["values"] = values,
-        _["uniques"] = i
+        _["uniques"] = numUni
     );
 }
 
 int NumPermsWithRep(std::vector<double> v) {
     List myRle = rleCpp(v);
     unsigned long int n = v.size(), myMax;
-    std::vector<unsigned long int> myLens = myRle[0];
+    std::vector<unsigned long int> myLens = myRle[0], myUnis = myRle[2];
     std::sort(myLens.begin(), myLens.end(),
               std::greater<unsigned long int>());
     
     myMax = myLens[0];
-    unsigned long int i, j, numUni = myRle[2];
+    unsigned long int i, j, numUni = myUnis[0];
     int result = 1;
     
     for (i = n; i > myMax; i--) {result *= i;}
@@ -222,13 +225,13 @@ template <typename TypeRcpp>
 TypeRcpp CombinatoricsConstraints(int n, int r, std::vector<double> v,
                                        bool repetition, std::string myFun, 
                                        std::string myComparison, double lim,
-                                       int rowNum, bool isComb) {
+                                       int rowNum, bool isComb, bool xtraCol) {
     // where myFun is one of the following general functions: "prod", "sum", "mean", "min", or "max"
     // and myComparison is a comparison operator: "<", "<=", ">", or ">="
     
     double extremeV, testVal;
     int count = 0, s = v.size();
-    unsigned int ur = r;
+    unsigned int ur = r, numCols;
     
     // constraintFun is a pointer to one of the functions defined above
     XPtr<funcPtr> xpFun = putFunPtrInXPtr(myFun);
@@ -256,7 +259,8 @@ TypeRcpp CombinatoricsConstraints(int n, int r, std::vector<double> v,
         }
     }
     
-    TypeRcpp combinatoricsMatrix(rowNum, r);
+    if (xtraCol) {numCols = r+1;} else {numCols = r;}
+    TypeRcpp combinatoricsMatrix(rowNum, numCols);
     std::vector<double> z, zPart;
     bool t_1, t_2, t = true, keepGoing = true;
     std::vector<double>::iterator it;
@@ -367,9 +371,13 @@ TypeRcpp CombinatoricsConstraints(int n, int r, std::vector<double> v,
         }
     } else {
         z = v;
-        int indexRows = (int)NumPermsNoRep(r, r-1);
-        IntegerMatrix indexMatrix = MakeIndexHeaps(indexRows, r);
-        
+        int indexRows;
+        IntegerMatrix indexMatrix;
+        if (!isComb) {
+            indexRows = (int)NumPermsNoRep(r, r-1);
+            indexMatrix = MakeIndexHeaps(indexRows, r);
+        }
+
         while (keepGoing) {
             t_2 = z.size() >= ur;
             testVal = constraintFun(z, r);
@@ -587,9 +595,9 @@ IntegerMatrix PermuteFactor(int n, int r, IntegerVector v, bool repetition, int 
             repLen *= uN;
         }
     } else {
-        unsigned long int combRows = (int)nChooseK(n, r);
+        unsigned long int combRows = (unsigned long int)nChooseK(n, r);
         IntegerMatrix myCombs = ComboFactor(n,r,v,false,combRows);
-        int indexRows = (int)NumPermsNoRep(r, r-1);
+        unsigned long int indexRows = (unsigned long int)NumPermsNoRep(r, r-1);
         IntegerMatrix indexMatrix = MakeIndexHeaps(indexRows, uR);
         
         chunk = 0;
@@ -606,16 +614,18 @@ IntegerMatrix PermuteFactor(int n, int r, IntegerVector v, bool repetition, int 
 }
 
 template <typename TypeRcpp, typename stdType>
-TypeRcpp ComboGeneral(int n, int r, std::vector<stdType> v, bool repetition, int rowNum) {
+TypeRcpp ComboGeneral(int n, int r, std::vector<stdType> v,
+                      bool repetition, int rowNum, bool xtraCol) {
     std::sort(v.begin(), v.end());
     std::vector<stdType> z;
     int count = 0, tSize = r - 1, s = v.size();
-    int k, i, numIter, posMaxZ, newSize;
+    int k, i, numIter, posMaxZ, newSize, numCols;
     stdType maxV = v[s-1];
     typename std::vector<stdType>::iterator it;
     std::vector<stdType> temp;
     bool keepGoing = true;
-    TypeRcpp combinationMatrix(rowNum, r);
+    if (xtraCol) {numCols  = r + 1;} else {numCols = r;}
+    TypeRcpp combinationMatrix(rowNum, numCols);
     
     if (repetition) {
         v.erase(std::unique(v.begin(), v.end()), v.end());
@@ -710,10 +720,12 @@ TypeRcpp ComboGeneral(int n, int r, std::vector<stdType> v, bool repetition, int
 }
 
 template <typename TypeRcpp, typename stdType>
-TypeRcpp PermuteGeneral(int n, int r, std::vector<stdType> v, bool repetition, int rowNum) {
+TypeRcpp PermuteGeneral(int n, int r, std::vector<stdType> v,
+                        bool repetition, int rowNum, bool xtraCol) {
     unsigned long int uN = n, uR = r, uRowN = rowNum;
-    unsigned long int i = 0, j, k, chunk;
-    TypeRcpp permuteMatrix(uRowN, uR);
+    unsigned long int i = 0, j, k, chunk, numCols;
+    if (xtraCol) {numCols  = uR + 1;} else {numCols = uR;}
+    TypeRcpp permuteMatrix(uRowN, numCols);
     
     if (repetition) {
         unsigned long int groupLen = 1, repLen = 1;
@@ -733,9 +745,9 @@ TypeRcpp PermuteGeneral(int n, int r, std::vector<stdType> v, bool repetition, i
             repLen *= uN;
         }
     } else {
-        unsigned long int combRows = (int)nChooseK(n, r);
-        TypeRcpp myCombs = ComboGeneral<TypeRcpp>(n,r,v,false,combRows);
-        int indexRows = (int)NumPermsNoRep(r, r-1);
+        unsigned long int combRows = (unsigned long int)nChooseK(n, r);
+        TypeRcpp myCombs = ComboGeneral<TypeRcpp>(n,r,v,false,combRows,false);
+        unsigned long int indexRows = (unsigned long int)NumPermsNoRep(r, r-1);
         IntegerMatrix indexMatrix = MakeIndexHeaps(indexRows, uR);
 
         chunk = 0;
@@ -748,18 +760,18 @@ TypeRcpp PermuteGeneral(int n, int r, std::vector<stdType> v, bool repetition, i
             chunk += indexRows;
         }
     }
-    
     return(permuteMatrix);
 }
 
 // [[Rcpp::export]]
 SEXP CombinatoricsRcpp(SEXP Rv, SEXP Rm, SEXP Rrepetition, 
                        SEXP f1, SEXP f2, SEXP lim, SEXP numRow,
-                       SEXP RIsComb, SEXP RIsFactor) {
-    int n, m, j, nRows, m1, m2;
+                       SEXP RIsComb, SEXP RIsFactor, SEXP RKeepRes) {
+    int n, m, i, j, m1, m2, nRows = 0;
     double testRows;
-    bool IsRepetition, IsCharacter, IsInteger;
-    bool IsConstrained, IsComb, IsFactor;
+    bool IsRepetition, IsConstrained;
+    bool IsCharacter, IsComb, IsFactor;
+    bool SpecialCase, keepRes, IsInteger;
     
     switch(TYPEOF(Rm)) {
         case REALSXP: {
@@ -780,6 +792,7 @@ SEXP CombinatoricsRcpp(SEXP Rv, SEXP Rm, SEXP Rrepetition,
     IntegerVector vFactor;
     std::vector<int> vInt;
     std::vector<std::string > vStr;
+    std::vector<double> rowVec(m);
     
     switch(TYPEOF(Rv)) {
         case REALSXP: {
@@ -806,6 +819,7 @@ SEXP CombinatoricsRcpp(SEXP Rv, SEXP Rm, SEXP Rrepetition,
     IsRepetition = as<bool >(Rrepetition);
     IsComb = as<bool>(RIsComb);
     IsFactor = as<bool>(RIsFactor);
+    keepRes = as<bool>(RKeepRes);
     
     if (IsCharacter) {
         vStr = as<std::vector<std::string > >(Rv);
@@ -854,9 +868,9 @@ SEXP CombinatoricsRcpp(SEXP Rv, SEXP Rm, SEXP Rrepetition,
         if (testRows > 2147483647) {stop("The number of rows cannot exceed 2^31 - 1.");}
         nRows = testRows;
         if (IsComb){
-            return ComboGeneral<CharacterMatrix>(n, m, vStr, IsRepetition, nRows);
+            return ComboGeneral<CharacterMatrix>(n, m, vStr, IsRepetition, nRows, false);
         } else {
-            return PermuteGeneral<CharacterMatrix>(n, m, vStr, IsRepetition, nRows);
+            return PermuteGeneral<CharacterMatrix>(n, m, vStr, IsRepetition, nRows, false);
         }
     } else {
         if (Rf_isNull(lim)) {
@@ -878,8 +892,7 @@ SEXP CombinatoricsRcpp(SEXP Rv, SEXP Rm, SEXP Rrepetition,
         }
         
         if (IsConstrained) {
-            double myLim, testRows2;
-            int myRows;
+            double myLim, RUserCap;
 
             switch(TYPEOF(lim)) {
                 case REALSXP: {
@@ -896,15 +909,15 @@ SEXP CombinatoricsRcpp(SEXP Rv, SEXP Rm, SEXP Rrepetition,
             }
 
             if (Rf_isNull(numRow)) {
-                testRows2 = 0;
+                RUserCap = 0;
             } else {
                 switch(TYPEOF(numRow)) {
                     case REALSXP: {
-                        testRows2 = as<double>(numRow);
+                        RUserCap = as<double>(numRow);
                         break;
                     }
                     case INTSXP: {
-                        testRows2 = as<double>(numRow);
+                        RUserCap = as<double>(numRow);
                         break;
                     }
                     default: {
@@ -912,22 +925,10 @@ SEXP CombinatoricsRcpp(SEXP Rv, SEXP Rm, SEXP Rrepetition,
                     }
                 }
             }
-
-            if (testRows2 == 0) {
-                if (testRows > 2147483647) {stop("The number of rows cannot exceed 2^31 - 1.");}
-                myRows = testRows;
-            } else if (testRows2 < 0) {
-                stop("The number of rows must be positive");
-            } else if (testRows2 > 2147483647) {
-                stop("The number of rows cannot exceed 2^31 - 1.");
-            } else {
-                myRows = testRows2;
-                if (myRows > testRows) {myRows = testRows;}
-            }
             
-            std::string mainFun = as<std::string >(f1);
-            if (mainFun != "prod" && mainFun != "sum" && mainFun != "mean"
-                    && mainFun != "max" && mainFun != "min") {
+            std::string mainFun1 = as<std::string >(f1);
+            if (mainFun1 != "prod" && mainFun1 != "sum" && mainFun1 != "mean"
+                    && mainFun1 != "max" && mainFun1 != "min") {
                 stop("contraintFun must be one of the following: prod, sum, mean, max, or min");
             }
 
@@ -941,31 +942,146 @@ SEXP CombinatoricsRcpp(SEXP Rv, SEXP Rm, SEXP Rrepetition,
             if (compFun == "=<") {compFun = "<=";}
             if (compFun == "=>") {compFun = ">=";}
             
-            if (IsInteger) {
-                return CombinatoricsConstraints<IntegerMatrix>(n, m, vNum, IsRepetition,
-                                            mainFun, compFun, myLim, myRows, IsComb);
+            SpecialCase = false;
+            if (mainFun1 == "prod") {
+                for (i = 0; i < n; i++) {
+                    if (vNum[i] < 0) {
+                        SpecialCase = true;
+                        break;
+                    }
+                }
+            }
+            
+            if (RUserCap == 0) {
+                if (testRows > 2147483647) {stop("The number of rows cannot exceed 2^31 - 1.");}
+                RUserCap = nRows = testRows;
+            } else if (RUserCap < 0) {
+                stop("The number of rows must be positive");
+            } else if (RUserCap > 2147483647) {
+                stop("The number of rows cannot exceed 2^31 - 1.");
             } else {
-                return CombinatoricsConstraints<NumericMatrix>(n, m, vNum, IsRepetition,
-                                            mainFun, compFun, myLim, myRows, IsComb);
+                if (SpecialCase) {
+                    if (testRows > 2147483647) {stop("The number of rows cannot exceed 2^31 - 1.");}
+                    nRows = testRows;
+                } else {
+                    nRows = RUserCap;
+                    if (nRows > testRows) {nRows = testRows;}
+                }
+            }
+            
+            XPtr<funcPtr> xpFun1 = putFunPtrInXPtr(mainFun1);
+            funcPtr myFun1 = *xpFun1;
+            
+            if (SpecialCase) {
+                NumericMatrix matRes;
+                double testVal;
+                bool test;
+                std::vector<int> indexMatch;
+                std::vector<double> matchVals;
+                indexMatch.reserve(nRows);
+                matchVals.reserve(nRows);
+                
+                if (IsComb) {
+                    matRes = ComboGeneral<NumericMatrix>(n, m, vNum, IsRepetition, nRows, keepRes);
+                } else {
+                    matRes = PermuteGeneral<NumericMatrix>(n, m, vNum, IsRepetition, nRows, keepRes);
+                }
+                
+                XPtr<compPtr> xpComp = putCompPtrInXPtr(compFun);
+                compPtr myComp = *xpComp;
+                
+                for (i = 0; i < nRows; i++) {
+                    for (j = 0; j < m; j++) {rowVec[j] = matRes(i, j);}
+                    testVal = myFun1(rowVec, m);
+                    test = myComp(testVal, myLim);
+                    if (test) {
+                        indexMatch.push_back(i);
+                        matchVals.push_back(testVal);
+                    }
+                }
+                
+                int numCols = m;
+                if (keepRes) {numCols++;}
+                testRows = indexMatch.size();
+                if (testRows > RUserCap) {nRows = RUserCap;} else {nRows = testRows;}
+                NumericMatrix returnMatrix(nRows, numCols);
+                
+                for (i = 0; i < nRows; i++) {
+                    for (j = 0; j < m; j++) {
+                        returnMatrix(i,j) = matRes(indexMatch[i],j);
+                    }
+                    if (keepRes) {returnMatrix(i,m) = matchVals[i];}
+                }
+                
+                return returnMatrix;
+            }
+            
+            if (keepRes) {
+                NumericMatrix matRes = CombinatoricsConstraints<NumericMatrix>(n, m, vNum, IsRepetition,
+                                                               mainFun1, compFun, myLim, nRows, IsComb, true);
+                int nRows = matRes.nrow();
+                
+                for (i = 0; i < nRows; i++) {
+                    for (j = 0; j < m; j++) {vNum[j] = matRes(i, j);}
+                    matRes(i, m) = myFun1(vNum, m);
+                }
+                
+                return matRes;
+            } else {
+                if (IsInteger) {
+                    return CombinatoricsConstraints<IntegerMatrix>(n, m, vNum, IsRepetition,
+                                                                   mainFun1, compFun, myLim, nRows, IsComb, false);
+                } else {
+                    return CombinatoricsConstraints<NumericMatrix>(n, m, vNum, IsRepetition,
+                                                                   mainFun1, compFun, myLim, nRows, IsComb, false);
+                }
             }
         } else {
             if (testRows > 2147483647) {stop("The number of rows cannot exceed 2^31 - 1.");}
             nRows = testRows;
-            if (IsComb) {
-                if (IsInteger) {
-                    return ComboGeneral<IntegerMatrix>(n, m, vInt, IsRepetition, nRows);
-                } else if (IsFactor) {
-                    return ComboFactor(n, m, vFactor, IsRepetition, nRows);
-                } else {
-                    return ComboGeneral<NumericMatrix>(n, m, vNum, IsRepetition, nRows);
+            if (Rf_isNull(f1)) {keepRes = false;}
+            
+            if (keepRes) {
+                NumericMatrix matRes;
+                
+                std::string mainFun2 = as<std::string >(f1);
+                if (mainFun2 != "prod" && mainFun2 != "sum" && mainFun2 != "mean"
+                        && mainFun2 != "max" && mainFun2 != "min") {
+                    stop("contraintFun must be one of the following: prod, sum, mean, max, or min");
                 }
-            } else {
-                if (IsInteger) {
-                    return PermuteGeneral<IntegerMatrix>(n, m, vNum, IsRepetition, nRows);
-                } else if (IsFactor) {
-                    return PermuteFactor(n, m, vFactor, IsRepetition, nRows);
+                
+                XPtr<funcPtr> xpFun2 = putFunPtrInXPtr(mainFun2);
+                funcPtr myFun2 = *xpFun2;
+                
+                if (IsComb) {
+                    matRes = ComboGeneral<NumericMatrix>(n, m, vNum, IsRepetition, nRows, true);
                 } else {
-                    return PermuteGeneral<NumericMatrix>(n, m, vNum, IsRepetition, nRows);
+                    matRes = PermuteGeneral<NumericMatrix>(n, m, vNum, IsRepetition, nRows, true);
+                }
+
+                for (i = 0; i < nRows; i++) {
+                    for (j = 0; j < m; j++) {rowVec[j] = matRes(i, j);}
+                    matRes(i, m) = myFun2(rowVec, m);
+                }
+                
+                return matRes;
+            } else {
+                if (IsComb) {
+                    if (IsInteger) {
+                        return ComboGeneral<IntegerMatrix>(n, m, vInt, IsRepetition, nRows, false);
+                    } else if (IsFactor) {
+                        return ComboFactor(n, m, vFactor, IsRepetition, nRows);
+                    } else {
+                        return ComboGeneral<NumericMatrix>(n, m, vNum, IsRepetition, nRows, false);
+                    }
+                } else {
+                    if (IsInteger) {
+                        return PermuteGeneral<IntegerMatrix>(n, m, vNum, IsRepetition, nRows, false);
+                    } else if (IsFactor) {
+                        return PermuteFactor(n, m, vFactor, IsRepetition, nRows);
+                    } else {
+                        return PermuteGeneral<NumericMatrix>(n, m, vNum, IsRepetition, nRows, false);
+                    }
                 }
             }
         }
