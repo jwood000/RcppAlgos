@@ -5,6 +5,34 @@
 
 using namespace Rcpp;
 
+// PermuteSpecial
+IntegerMatrix PermuteSpecial(int n, std::vector<int> v, std::vector<int> Reps, int rowNum);
+RcppExport SEXP _RcppAlgos_PermuteSpecial(SEXP nSEXP, SEXP vSEXP, SEXP RepsSEXP, SEXP rowNumSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< int >::type n(nSEXP);
+    Rcpp::traits::input_parameter< std::vector<int> >::type v(vSEXP);
+    Rcpp::traits::input_parameter< std::vector<int> >::type Reps(RepsSEXP);
+    Rcpp::traits::input_parameter< int >::type rowNum(rowNumSEXP);
+    rcpp_result_gen = Rcpp::wrap(PermuteSpecial(n, v, Reps, rowNum));
+    return rcpp_result_gen;
+END_RCPP
+}
+// PermuteSpecial2
+IntegerMatrix PermuteSpecial2(int n, std::vector<int> v, std::vector<int> Reps, int rowNum);
+RcppExport SEXP _RcppAlgos_PermuteSpecial2(SEXP nSEXP, SEXP vSEXP, SEXP RepsSEXP, SEXP rowNumSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< int >::type n(nSEXP);
+    Rcpp::traits::input_parameter< std::vector<int> >::type v(vSEXP);
+    Rcpp::traits::input_parameter< std::vector<int> >::type Reps(RepsSEXP);
+    Rcpp::traits::input_parameter< int >::type rowNum(rowNumSEXP);
+    rcpp_result_gen = Rcpp::wrap(PermuteSpecial2(n, v, Reps, rowNum));
+    return rcpp_result_gen;
+END_RCPP
+}
 // CombinatoricsRcpp
 SEXP CombinatoricsRcpp(SEXP Rv, SEXP Rm, SEXP Rrepetition, SEXP f1, SEXP f2, SEXP lim, SEXP numRow, SEXP RIsComb, SEXP RIsFactor, SEXP RKeepRes);
 RcppExport SEXP _RcppAlgos_CombinatoricsRcpp(SEXP RvSEXP, SEXP RmSEXP, SEXP RrepetitionSEXP, SEXP f1SEXP, SEXP f2SEXP, SEXP limSEXP, SEXP numRowSEXP, SEXP RIsCombSEXP, SEXP RIsFactorSEXP, SEXP RKeepResSEXP) {
@@ -83,6 +111,8 @@ END_RCPP
 }
 
 static const R_CallMethodDef CallEntries[] = {
+    {"_RcppAlgos_PermuteSpecial", (DL_FUNC) &_RcppAlgos_PermuteSpecial, 4},
+    {"_RcppAlgos_PermuteSpecial2", (DL_FUNC) &_RcppAlgos_PermuteSpecial2, 4},
     {"_RcppAlgos_CombinatoricsRcpp", (DL_FUNC) &_RcppAlgos_CombinatoricsRcpp, 10},
     {"_RcppAlgos_NumDivisorsSieve", (DL_FUNC) &_RcppAlgos_NumDivisorsSieve, 1},
     {"_RcppAlgos_DivisorListRcpp", (DL_FUNC) &_RcppAlgos_DivisorListRcpp, 1},

@@ -763,6 +763,244 @@ TypeRcpp PermuteGeneral(int n, int r, std::vector<stdType> v,
     return(permuteMatrix);
 }
 
+int SectionLength2(std::vector<int> v, unsigned long int n) {
+    unsigned long int numUni = v.size();
+    std::sort(v.begin(), v.end(),
+              std::greater<unsigned long int>());
+    
+    unsigned long int i, j, myMax;
+    int result = 1;
+    
+    myMax = v[0];
+    for (i = n; i > myMax; i--) {result *= i;}
+    
+    if (numUni > 1) {
+        for (i = 1; i < numUni; i++) {
+            // No need to divide by 1.
+            // Start j at 2 instead.
+            for (j = 2; j <= v[i]; j++) {
+                result /= j;
+            }
+        }
+    }
+    
+    return result;
+}
+
+std::vector<unsigned long int> SectionLength(std::vector<int> v,
+                                             std::vector<int> repLen) {
+    unsigned long int n = v.size(), mySum;
+    unsigned long int i, j, k, numRow = 1;
+    unsigned long int n2 = n-2, n1 = n-1, res;
+    std::vector<int>::iterator it;
+    std::vector<int> temp(n);
+    for (it = v.begin(); it < v.end(); it++) {numRow *= (*it+1);}
+    std::vector<unsigned long int> myLengths(numRow);
+    
+    for (i = 0; i < numRow; i++) {
+        temp[0] = i / repLen[0];
+        mySum = temp[0];
+        temp[n1] = (i % repLen[n2]);
+        mySum += temp[n1];
+        for (j = 1; j < n1; j++) {
+            temp[j] = (i % repLen[j-1]) / repLen[j];
+            mySum += temp[j];
+        }
+    
+        std::sort(temp.begin(), temp.end(),
+                  std::greater<unsigned long int>());
+        res = 1;
+        for (j = mySum; j > temp[0]; j--) {res *= j;}
+        
+        for (j = 1; j < n; j++) {
+            for (k = 2; k <= temp[j]; k++) {
+                res /= k;
+            }
+        }
+    
+        myLengths[i] = res;
+    }
+
+    return myLengths;
+}
+
+//template <typename TypeRcpp, typename stdType>
+// PermuteSpecial(3, c(0,1,2), c(4,2,2), 420)
+// [[Rcpp::export]]
+IntegerMatrix PermuteSpecial(int n, std::vector<int> v,
+                             std::vector<int> Reps, int rowNum) {
+    unsigned long int uRowN = rowNum, uN = n, count;
+    unsigned long int i, j, k, m = 1, r, numCols, strt, ind;
+
+    numCols = std::accumulate(Reps.begin(), Reps.end(), 0);
+    unsigned long int lastCol = numCols - 1, lastSum = 0;
+    IntegerMatrix permuteMatrix(uRowN, numCols);
+
+    std::vector<int> specPerm(uN);
+    std::vector<unsigned long int> vecLast(uRowN);
+    
+    int myInt;
+    std::vector<int> repLen(n, 1);
+    for (myInt = (n-2); myInt >= 0; myInt--) {
+        repLen[myInt] = repLen[myInt+1]*(Reps[myInt+1]+1);
+    }
+    
+    std::vector<unsigned long int> groupLen = SectionLength(Reps, repLen);
+    
+    std::vector<std::vector<int> > prevPerms(2*uRowN/5, std::vector<int>(uN));
+    std::vector<std::vector<int> > nextPerms(4*uRowN/5, std::vector<int>(uN));
+    std::vector<int>::iterator it, vBeg, vEnd;
+    vBeg = v.begin(); vEnd = v.end();
+    numCols--;
+    nextPerms[0] = Reps;
+    
+    for (i = 1; i < uN; i++) {
+        for (j = 0; j < Reps[i]; j++) {
+            lastSum += i;
+        }
+    }
+
+    for (i = 0; i < uRowN; i++) {vecLast[i] = lastSum;}
+
+    for (i = 0; i < (lastCol-1); i++) {
+        for (j = 0; j < m; j++) {prevPerms[j] = nextPerms[j];}
+        strt = count = m = r = 0;
+        while (count < uRowN) {
+            specPerm = prevPerms[r];
+            j = ind = 0;
+            for (k = 0; k < uN; k++) {ind += specPerm[k]*repLen[k];}
+            for (it = vBeg; it < vEnd; it++) {
+                if (specPerm[j] > 0) {
+                    specPerm[j]--;
+                    ind -= repLen[j];
+                    count += groupLen[ind];
+                    for (k = strt; k < count; k++) {
+                        permuteMatrix(k, i) = *it;
+                        vecLast[k] -= j;
+                    }
+                    strt = count;
+                    nextPerms[m] = specPerm;
+                    m++;
+                    specPerm[j]++;
+                    ind += repLen[j];
+                }
+                j++;
+            }
+            r++;
+        }
+    }
+    
+    for (i = (lastCol-1); i < lastCol; i++) {
+        strt = count = m = r = 0;
+        while (count < uRowN) {
+            specPerm = nextPerms[r];
+            j = ind = 0;
+            for (k = 0; k < uN; k++) {ind += specPerm[k]*repLen[k];}
+            for (it = vBeg; it < vEnd; it++) {
+                if (specPerm[j] > 0) {
+                    specPerm[j]--;
+                    ind -= repLen[j];
+                    count += groupLen[ind];
+                    for (k = strt; k < count; k++) {
+                        permuteMatrix(k, i) = *it;
+                        vecLast[k] -= j;
+                    }
+                    strt = count;
+                    specPerm[j]++;
+                    ind += repLen[j];
+                }
+                j++;
+            }
+            r++;
+        }
+    }
+
+    for (i = 0; i < uRowN; i++) {
+        permuteMatrix(i, lastCol) = v[vecLast[i]];
+    }
+    
+    return(permuteMatrix);
+}
+
+// [[Rcpp::export]]
+IntegerMatrix PermuteSpecial2(int n, std::vector<int> v,
+                             std::vector<int> Reps, int rowNum) {
+    unsigned long int uRowN = rowNum, uN = n;
+    unsigned long int i, j, k, m, r, numCols, strt;
+    unsigned long int groupLen = 1, count;
+    
+    numCols = std::accumulate(Reps.begin(), Reps.end(), 0);
+    unsigned long int lastCol = numCols - 1, lastSum = 0;
+    IntegerMatrix permuteMatrix(uRowN, numCols);
+    
+    std::vector<int> specPerm(uN);
+    std::vector<unsigned long int> vecLast(uRowN);
+    std::vector<std::vector<int> > prevPerms(uRowN, std::vector<int>(uN));
+    std::vector<std::vector<int> > nextPerms(uRowN, std::vector<int>(uN));
+    numCols--;
+    nextPerms[0] = Reps;
+    
+    for (i = 1; i < uN; i++) {
+        for (j = 0; j < Reps[i]; j++) {
+            lastSum += i;
+        }
+    }
+    
+    for (i = 0; i < uRowN; i++) {vecLast[i] = lastSum;}
+    
+    for (i = 0; i < (lastCol-1); i++) {
+        prevPerms = nextPerms;
+        strt = count = m = r = 0;
+        while (count < uRowN) {
+            specPerm = prevPerms[r];
+            for (j = 0; j < uN; j++) {
+                if (specPerm[j] > 0) {
+                    specPerm[j]--;
+                    groupLen = SectionLength2(specPerm, numCols-i);
+                    count += groupLen;
+                    for (k = strt; k < count; k++) {
+                        permuteMatrix(k, i) = v[j];
+                        vecLast[k] -= j;
+                    }
+                    strt = count;
+                    nextPerms[m] = specPerm;
+                    m++;
+                    specPerm[j]++;
+                }
+            }
+            r++;
+        }
+    }
+    
+    for (i = (lastCol-1); i < lastCol; i++) {
+        strt = count = m = r = 0;
+        while (count < uRowN) {
+            specPerm = nextPerms[r];
+            for (j = 0; j < uN; j++) {
+                if (specPerm[j] > 0) {
+                    specPerm[j]--;
+                    groupLen = SectionLength2(specPerm, numCols-i);
+                    count += groupLen;
+                    for (k = strt; k < count; k++) {
+                        permuteMatrix(k, i) = v[j];
+                        vecLast[k] -= j;
+                    }
+                    strt = count;
+                    m++;
+                    specPerm[j]++;
+                }
+            }
+            r++;
+        }
+    }
+    
+    for (i = 0; i < uRowN; i++) {
+        permuteMatrix(i, lastCol) = v[vecLast[i]];
+    }
+    
+    return(permuteMatrix);
+}
+
 // [[Rcpp::export]]
 SEXP CombinatoricsRcpp(SEXP Rv, SEXP Rm, SEXP Rrepetition, 
                        SEXP f1, SEXP f2, SEXP lim, SEXP numRow,
