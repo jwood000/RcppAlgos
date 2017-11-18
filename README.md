@@ -17,7 +17,8 @@ devtools::install_github("jwood000/RcppAlgos")
 Usage
 -----
 ``` r
-## Find all 3-tuples without repetition of the numbers c(1, 2, 3, 4).
+## Find all 3-tuples combinations without 
+## repetition of the numbers c(1, 2, 3, 4).
 comboGeneral(4, 3)
      [,1] [,2] [,3]
 [1,]   1    2    3
@@ -26,23 +27,110 @@ comboGeneral(4, 3)
 [4,]   2    3    4
 
 
-## Find all 3-tuples without repetition of c(2, 3, 5, 7, 11), such that the product is less than 130.
+## Find all 3-tuples permutations without
+## repetition of the numbers c(1, 2, 3, 4).
+permuteGeneral(4,3)
+      [,1] [,2] [,3]
+ [1,]    1    2    3
+ [2,]    2    1    3
+ [3,]    3    1    2
+ [4,]    1    3    2
+  .      .    .    .
+  .      .    .    .
+[21,]    4    2    3
+[22,]    2    4    3
+[23,]    3    4    2
+[24,]    4    3    2
+
+## Find all 3-tuples combinations without repetition of
+## c(2, 3, 5, 7, 11), such that the product is less than 130.
+## The last column is the resulting sum of each combination
 comboGeneral(v = c(2, 3, 5, 7, 11),
              m = 3, 
              constraintFun = "prod", 
              comparisonFun = "<", 
-             limitConstraints = 130)
-     [,1] [,2] [,3]
-[1,]    2    3    5
-[2,]    2    3    7
-[3,]    2    3   11
-[4,]    2    5    7
-[5,]    2    5   11
-[6,]    3    5    7
+             limitConstraints = 130,
+             keepResults = TRUE)
+     [,1] [,2] [,3] [,4]
+[1,]    2    3    5   30
+[2,]    2    3    7   42
+[3,]    2    3   11   66
+[4,]    2    5    7   70
+[5,]    2    5   11  110
+[6,]    3    5    7  105
 
 
- ## get prime factorization for every number from 1 to n
- primeFactorizationList(5)
+## Generate some random data
+set.seed(101)
+s <- sample(500, 20)
+
+## Find all 5-tuples permutations without repetition
+## of s (defined above) such that the sum is equal to 1176.
+p <- permuteGeneral(v = s,
+                    m = 5, 
+                    constraintFun = "sum", 
+                    comparisonFun = "==", 
+                    limitConstraints = 1176,
+                    keepResults = TRUE)
+                    
+head(p)
+     [,1] [,2] [,3] [,4] [,5] [,6]
+[1,]   19   22  327  354  454 1176
+[2,]   22   19  327  354  454 1176
+[3,]  327   19   22  354  454 1176
+[4,]   19  327   22  354  454 1176
+[5,]   22  327   19  354  454 1176
+[6,]  327   22   19  354  454 1176
+  
+tail(p)
+        [,1] [,2] [,3] [,4] [,5] [,6]
+[3955,]  199  187  354  287  149 1176
+[3956,]  187  199  354  287  149 1176
+[3957,]  354  199  187  287  149 1176
+[3958,]  199  354  187  287  149 1176
+[3959,]  187  354  199  287  149 1176
+[3960,]  354  187  199  287  149 1176
+
+
+## Generate all permutations of a vector with specific
+## length of repetition for each element
+permuteRepLen(3, c(1,2,2))
+      [,1] [,2] [,3] [,4] [,5]
+ [1,]    1    2    2    3    3
+ [2,]    1    2    3    2    3
+ [3,]    1    2    3    3    2
+ [4,]    1    3    2    2    3
+ [5,]    1    3    2    3    2
+  .      .    .    .    .    .
+  .      .    .    .    .    .
+[26,]    3    2    3    1    2
+[27,]    3    2    3    2    1
+[28,]    3    3    1    2    2
+[29,]    3    3    2    1    2
+[30,]    3    3    2    2    1
+
+
+## All combinatoric functions work with factors
+facPerms <- permuteRepLen(factor(c("low", "med", "high")),
+                                     repLengths = c(1,4,2))
+facPerms[1:5, ]
+     [,1] [,2] [,3] [,4] [,5] [,6] [,7]
+[1,] high low  low  low  low  med  med 
+[2,] high low  low  low  med  low  med 
+[3,] high low  low  low  med  med  low 
+[4,] high low  low  med  low  low  med 
+[5,] high low  low  med  low  med  low 
+Levels: high low med
+
+
+## They are very efficient as well!!
+system.time(permuteRepLen(4, 5:2))
+
+## That's over 2.5 million permutations instantly!!
+
+
+## get prime factorization for every number from 1 to n
+primeFactorizationList(5)
 [[1]]
 integer(0)
 
