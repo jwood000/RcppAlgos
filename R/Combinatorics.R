@@ -15,3 +15,8 @@ permuteGeneral <- function(v,m,repetition=FALSE,constraintFun=NULL,
                       comparisonFun, limitConstraints,
                       rowCap, FALSE, isFactor, keepResults)
 }
+
+permuteRepLen <- function(v, repLengths) {
+    isFactor <- is.factor(v)
+    PermsRepLenRcpp(v, repLengths, isFactor)
+}

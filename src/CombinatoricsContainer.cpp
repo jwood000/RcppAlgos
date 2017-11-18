@@ -468,151 +468,6 @@ TypeRcpp CombinatoricsConstraints(int n, int r, std::vector<double> v,
     return(SubMat(combinatoricsMatrix, count));
 }
 
-IntegerMatrix ComboFactor(int n, int r, IntegerVector v, bool repetition, int rowNum) {
-    v.sort();
-    IntegerVector z;
-    int count = 0, tSize = r - 1, s = v.size();
-    int k, i, numIter, posMaxZ, newSize;
-    int maxV = v[s-1];
-    IntegerVector temp;
-    bool keepGoing = true;
-    IntegerMatrix combinationMatrix(rowNum, r);
-    combinationMatrix.attr("levels") = v.attr("levels");
-    combinationMatrix.attr("class") = v.attr("class");
-    
-    if (repetition) {
-        v = unique(v);
-        v.sort();
-        s = v.size();
-        newSize = r + s - 1;
-        z = rep(v[0], newSize);
-        for (i = r; i < newSize; i++) {z[i] = v[i-r+1];}
-        
-        while (keepGoing) {
-            numIter = z.size() - r;
-            for (i = 0; i < numIter; i++) {
-                for (k=0; k < r; k++) {combinationMatrix(count, k) = z[k];}
-                count++;
-                z.erase(z.begin() + tSize);
-            }
-            
-            for (k=0; k < r; k++) {combinationMatrix(count, k) = z[k];}
-            count++;
-            
-            posMaxZ = -1;
-            for (k = z.size()-1; k >= 0; k--) {
-                if (z[k] < maxV) {
-                    posMaxZ = k;
-                    break;
-                }
-            }
-            
-            if (posMaxZ > -1) {
-                for (k = 0; k < s; k++) {
-                    if (v[k] == z[posMaxZ]) {
-                        z[posMaxZ] = v[k+1];
-                        break;
-                    }
-                }
-                
-                temp.assign(z.begin(), z.begin() + posMaxZ + 1);
-                
-                if (z[posMaxZ] < maxV) {
-                    newSize = tSize + s - k - 1;
-                    z = rep(z[posMaxZ], newSize);
-                    std::copy(temp.begin(), temp.end(), z.begin());
-                    std::copy(v.begin() + (k+1), v.end(), z.begin() + tSize);
-                } else {
-                    z = rep(z[posMaxZ], r);
-                    std::copy(temp.begin(), temp.end(), z.begin());
-                }
-            } else {
-                keepGoing = false;
-            }
-        }
-    } else {
-        z = v;
-        while (keepGoing) {
-            numIter = z.size() - r;
-            for (i = 0; i < numIter; i++) {
-                for (k=0; k < r; k++) {combinationMatrix(count, k) = z[k];}
-                count++;
-                z.erase(z.begin() + tSize);
-            }
-            
-            for (k=0; k < r; k++) {combinationMatrix(count, k) = z[k];}
-            count++;
-            
-            posMaxZ = -1;
-            for (k = z.size()-1; k >= 0; k--) {
-                if (z[k] != v[s-r+k]) {
-                    posMaxZ = k;
-                    break;
-                }
-            }
-            
-            if (posMaxZ > -1) {
-                for (k = 0; k < s; k++) {
-                    if (v[k] == z[posMaxZ]) {
-                        z[posMaxZ] = v[k+1];
-                        break;
-                    }
-                }
-                
-                temp.assign(z.begin(), z.begin() + posMaxZ + 1);
-                for (i = (k+2); i < s; i++) {temp.push_back(v[i]);}
-                z = temp;
-            } else {
-                keepGoing = false;
-            }
-        }
-    }
-    return(combinationMatrix);
-}
-
-IntegerMatrix PermuteFactor(int n, int r, IntegerVector v, bool repetition, int rowNum) {
-    unsigned long int uN = n, uR = r, uRowN = rowNum;
-    unsigned long int i = 0, j, k, chunk;
-    IntegerMatrix permuteMatrix(uRowN, uR);
-    permuteMatrix.attr("class") = v.attr("class");
-    permuteMatrix.attr("levels") = v.attr("levels");
-    
-    if (repetition) {
-        unsigned long int groupLen = 1, repLen = 1;
-        IntegerVector::iterator m, vBeg, vEnd;
-        vBeg = v.begin(); vEnd = v.end();
-        for (i = 0; i < uR; i++) {
-            groupLen *= uN;
-            chunk = 0;
-            for (k = 0; k < uRowN; k += groupLen) {
-                for (m = vBeg; m < vEnd; m++) {
-                    for (j = 0; j < repLen; j++) {
-                        permuteMatrix(chunk + j, i) = *m;
-                    }
-                    chunk += repLen;
-                }
-            }
-            repLen *= uN;
-        }
-    } else {
-        unsigned long int combRows = (unsigned long int)nChooseK(n, r);
-        IntegerMatrix myCombs = ComboFactor(n,r,v,false,combRows);
-        unsigned long int indexRows = (unsigned long int)NumPermsNoRep(r, r-1);
-        IntegerMatrix indexMatrix = MakeIndexHeaps(indexRows, uR);
-        
-        chunk = 0;
-        for (i = 0; i < combRows; i++) {
-            for (j = 0; j < indexRows; j++) {
-                for (k = 0; k < uR; k++) {
-                    permuteMatrix(chunk + j, k) = myCombs(i, indexMatrix(j, k));
-                }
-            }
-            chunk += indexRows;
-        }
-    }
-    return(permuteMatrix);
-}
-
 template <typename TypeRcpp, typename stdType>
 TypeRcpp ComboGeneral(int n, int r, std::vector<stdType> v,
                       bool repetition, int rowNum, bool xtraCol) {
@@ -763,244 +618,6 @@ TypeRcpp PermuteGeneral(int n, int r, std::vector<stdType> v,
     return(permuteMatrix);
 }
 
-int SectionLength2(std::vector<int> v, unsigned long int n) {
-    unsigned long int numUni = v.size();
-    std::sort(v.begin(), v.end(),
-              std::greater<unsigned long int>());
-    
-    unsigned long int i, j, myMax;
-    int result = 1;
-    
-    myMax = v[0];
-    for (i = n; i > myMax; i--) {result *= i;}
-    
-    if (numUni > 1) {
-        for (i = 1; i < numUni; i++) {
-            // No need to divide by 1.
-            // Start j at 2 instead.
-            for (j = 2; j <= v[i]; j++) {
-                result /= j;
-            }
-        }
-    }
-    
-    return result;
-}
-
-std::vector<unsigned long int> SectionLength(std::vector<int> v,
-                                             std::vector<int> repLen) {
-    unsigned long int n = v.size(), mySum;
-    unsigned long int i, j, k, numRow = 1;
-    unsigned long int n2 = n-2, n1 = n-1, res;
-    std::vector<int>::iterator it;
-    std::vector<int> temp(n);
-    for (it = v.begin(); it < v.end(); it++) {numRow *= (*it+1);}
-    std::vector<unsigned long int> myLengths(numRow);
-    
-    for (i = 0; i < numRow; i++) {
-        temp[0] = i / repLen[0];
-        mySum = temp[0];
-        temp[n1] = (i % repLen[n2]);
-        mySum += temp[n1];
-        for (j = 1; j < n1; j++) {
-            temp[j] = (i % repLen[j-1]) / repLen[j];
-            mySum += temp[j];
-        }
-    
-        std::sort(temp.begin(), temp.end(),
-                  std::greater<unsigned long int>());
-        res = 1;
-        for (j = mySum; j > temp[0]; j--) {res *= j;}
-        
-        for (j = 1; j < n; j++) {
-            for (k = 2; k <= temp[j]; k++) {
-                res /= k;
-            }
-        }
-    
-        myLengths[i] = res;
-    }
-
-    return myLengths;
-}
-
-//template <typename TypeRcpp, typename stdType>
-// PermuteSpecial(3, c(0,1,2), c(4,2,2), 420)
-// [[Rcpp::export]]
-IntegerMatrix PermuteSpecial(int n, std::vector<int> v,
-                             std::vector<int> Reps, int rowNum) {
-    unsigned long int uRowN = rowNum, uN = n, count;
-    unsigned long int i, j, k, m = 1, r, numCols, strt, ind;
-
-    numCols = std::accumulate(Reps.begin(), Reps.end(), 0);
-    unsigned long int lastCol = numCols - 1, lastSum = 0;
-    IntegerMatrix permuteMatrix(uRowN, numCols);
-
-    std::vector<int> specPerm(uN);
-    std::vector<unsigned long int> vecLast(uRowN);
-    
-    int myInt;
-    std::vector<int> repLen(n, 1);
-    for (myInt = (n-2); myInt >= 0; myInt--) {
-        repLen[myInt] = repLen[myInt+1]*(Reps[myInt+1]+1);
-    }
-    
-    std::vector<unsigned long int> groupLen = SectionLength(Reps, repLen);
-    
-    std::vector<std::vector<int> > prevPerms(2*uRowN/5, std::vector<int>(uN));
-    std::vector<std::vector<int> > nextPerms(4*uRowN/5, std::vector<int>(uN));
-    std::vector<int>::iterator it, vBeg, vEnd;
-    vBeg = v.begin(); vEnd = v.end();
-    numCols--;
-    nextPerms[0] = Reps;
-    
-    for (i = 1; i < uN; i++) {
-        for (j = 0; j < Reps[i]; j++) {
-            lastSum += i;
-        }
-    }
-
-    for (i = 0; i < uRowN; i++) {vecLast[i] = lastSum;}
-
-    for (i = 0; i < (lastCol-1); i++) {
-        for (j = 0; j < m; j++) {prevPerms[j] = nextPerms[j];}
-        strt = count = m = r = 0;
-        while (count < uRowN) {
-            specPerm = prevPerms[r];
-            j = ind = 0;
-            for (k = 0; k < uN; k++) {ind += specPerm[k]*repLen[k];}
-            for (it = vBeg; it < vEnd; it++) {
-                if (specPerm[j] > 0) {
-                    specPerm[j]--;
-                    ind -= repLen[j];
-                    count += groupLen[ind];
-                    for (k = strt; k < count; k++) {
-                        permuteMatrix(k, i) = *it;
-                        vecLast[k] -= j;
-                    }
-                    strt = count;
-                    nextPerms[m] = specPerm;
-                    m++;
-                    specPerm[j]++;
-                    ind += repLen[j];
-                }
-                j++;
-            }
-            r++;
-        }
-    }
-    
-    for (i = (lastCol-1); i < lastCol; i++) {
-        strt = count = m = r = 0;
-        while (count < uRowN) {
-            specPerm = nextPerms[r];
-            j = ind = 0;
-            for (k = 0; k < uN; k++) {ind += specPerm[k]*repLen[k];}
-            for (it = vBeg; it < vEnd; it++) {
-                if (specPerm[j] > 0) {
-                    specPerm[j]--;
-                    ind -= repLen[j];
-                    count += groupLen[ind];
-                    for (k = strt; k < count; k++) {
-                        permuteMatrix(k, i) = *it;
-                        vecLast[k] -= j;
-                    }
-                    strt = count;
-                    specPerm[j]++;
-                    ind += repLen[j];
-                }
-                j++;
-            }
-            r++;
-        }
-    }
-
-    for (i = 0; i < uRowN; i++) {
-        permuteMatrix(i, lastCol) = v[vecLast[i]];
-    }
-    
-    return(permuteMatrix);
-}
-
-// [[Rcpp::export]]
-IntegerMatrix PermuteSpecial2(int n, std::vector<int> v,
-                             std::vector<int> Reps, int rowNum) {
-    unsigned long int uRowN = rowNum, uN = n;
-    unsigned long int i, j, k, m, r, numCols, strt;
-    unsigned long int groupLen = 1, count;
-    
-    numCols = std::accumulate(Reps.begin(), Reps.end(), 0);
-    unsigned long int lastCol = numCols - 1, lastSum = 0;
-    IntegerMatrix permuteMatrix(uRowN, numCols);
-    
-    std::vector<int> specPerm(uN);
-    std::vector<unsigned long int> vecLast(uRowN);
-    std::vector<std::vector<int> > prevPerms(uRowN, std::vector<int>(uN));
-    std::vector<std::vector<int> > nextPerms(uRowN, std::vector<int>(uN));
-    numCols--;
-    nextPerms[0] = Reps;
-    
-    for (i = 1; i < uN; i++) {
-        for (j = 0; j < Reps[i]; j++) {
-            lastSum += i;
-        }
-    }
-    
-    for (i = 0; i < uRowN; i++) {vecLast[i] = lastSum;}
-    
-    for (i = 0; i < (lastCol-1); i++) {
-        prevPerms = nextPerms;
-        strt = count = m = r = 0;
-        while (count < uRowN) {
-            specPerm = prevPerms[r];
-            for (j = 0; j < uN; j++) {
-                if (specPerm[j] > 0) {
-                    specPerm[j]--;
-                    groupLen = SectionLength2(specPerm, numCols-i);
-                    count += groupLen;
-                    for (k = strt; k < count; k++) {
-                        permuteMatrix(k, i) = v[j];
-                        vecLast[k] -= j;
-                    }
-                    strt = count;
-                    nextPerms[m] = specPerm;
-                    m++;
-                    specPerm[j]++;
-                }
-            }
-            r++;
-        }
-    }
-    
-    for (i = (lastCol-1); i < lastCol; i++) {
-        strt = count = m = r = 0;
-        while (count < uRowN) {
-            specPerm = nextPerms[r];
-            for (j = 0; j < uN; j++) {
-                if (specPerm[j] > 0) {
-                    specPerm[j]--;
-                    groupLen = SectionLength2(specPerm, numCols-i);
-                    count += groupLen;
-                    for (k = strt; k < count; k++) {
-                        permuteMatrix(k, i) = v[j];
-                        vecLast[k] -= j;
-                    }
-                    strt = count;
-                    m++;
-                    specPerm[j]++;
-                }
-            }
-            r++;
-        }
-    }
-    
-    for (i = 0; i < uRowN; i++) {
-        permuteMatrix(i, lastCol) = v[vecLast[i]];
-    }
-    
-    return(permuteMatrix);
-}
-
 // [[Rcpp::export]]
 SEXP CombinatoricsRcpp(SEXP Rv, SEXP Rm, SEXP Rrepetition, 
                        SEXP f1, SEXP f2, SEXP lim, SEXP numRow,
@@ -1057,6 +674,8 @@ SEXP CombinatoricsRcpp(SEXP Rv, SEXP Rm, SEXP Rrepetition,
     IsRepetition = as<bool >(Rrepetition);
     IsComb = as<bool>(RIsComb);
     IsFactor = as<bool>(RIsFactor);
+    
+    if (!Rf_isLogical(RKeepRes)) {stop("keepResults must be a logical value");}
     keepRes = as<bool>(RKeepRes);
     
     if (IsCharacter) {
@@ -1076,16 +695,7 @@ SEXP CombinatoricsRcpp(SEXP Rv, SEXP Rm, SEXP Rrepetition,
     }
     
     if (IsInteger) {vInt.assign(vNum.begin(), vNum.end());}
-    
-    if (IsFactor) {
-        IntegerVector testFactor = as<IntegerVector>(Rv);
-        vFactor = seq(1, n);
-        CharacterVector myClass = testFactor.attr("class");
-        CharacterVector myLevels = testFactor.attr("levels");
-        vFactor.attr("class") = myClass;
-        vFactor.attr("levels") = myLevels;
-        IsCharacter = IsInteger = false;
-    }
+    if (IsFactor) {IsCharacter = IsInteger = false;}
     
     if (IsRepetition) {
         if (IsComb) {
@@ -1304,21 +914,37 @@ SEXP CombinatoricsRcpp(SEXP Rv, SEXP Rm, SEXP Rrepetition,
                 
                 return matRes;
             } else {
-                if (IsComb) {
-                    if (IsInteger) {
-                        return ComboGeneral<IntegerMatrix>(n, m, vInt, IsRepetition, nRows, false);
-                    } else if (IsFactor) {
-                        return ComboFactor(n, m, vFactor, IsRepetition, nRows);
+                if (IsFactor) {
+                    IntegerMatrix factorMat;
+                    IntegerVector testFactor = as<IntegerVector>(Rv);
+                    vFactor = seq(1, n);
+                    vInt.assign(vFactor.begin(), vFactor.end());
+                    CharacterVector myClass = testFactor.attr("class");
+                    CharacterVector myLevels = testFactor.attr("levels");
+                    
+                    if (IsComb) {
+                        factorMat = ComboGeneral<IntegerMatrix>(n, m, vInt, IsRepetition, nRows, false);
                     } else {
-                        return ComboGeneral<NumericMatrix>(n, m, vNum, IsRepetition, nRows, false);
+                        factorMat = PermuteGeneral<IntegerMatrix>(n, m, vInt, IsRepetition, nRows, false);
                     }
+                    
+                    factorMat.attr("class") = myClass;
+                    factorMat.attr("levels") = myLevels;
+                    
+                    return factorMat;
                 } else {
-                    if (IsInteger) {
-                        return PermuteGeneral<IntegerMatrix>(n, m, vNum, IsRepetition, nRows, false);
-                    } else if (IsFactor) {
-                        return PermuteFactor(n, m, vFactor, IsRepetition, nRows);
+                    if (IsComb) {
+                        if (IsInteger) {
+                            return ComboGeneral<IntegerMatrix>(n, m, vInt, IsRepetition, nRows, false);
+                        } else {
+                            return ComboGeneral<NumericMatrix>(n, m, vNum, IsRepetition, nRows, false);
+                        }
                     } else {
-                        return PermuteGeneral<NumericMatrix>(n, m, vNum, IsRepetition, nRows, false);
+                        if (IsInteger) {
+                            return PermuteGeneral<IntegerMatrix>(n, m, vInt, IsRepetition, nRows, false);
+                        } else {
+                            return PermuteGeneral<NumericMatrix>(n, m, vNum, IsRepetition, nRows, false);
+                        }
                     }
                 }
             }
