@@ -43,11 +43,12 @@ template <typename TypeRcpp, typename stdType>
 TypeRcpp PermuteSpecificReps(int n, std::vector<stdType> v, std::vector<int> Reps) {
     unsigned long int uN = n, count, strt, ind, divTest;
     unsigned long int i, j, k, m = 1, r, numCols;
+    unsigned long int prevRows, nextRows;
     
     numCols = std::accumulate(Reps.begin(), Reps.end(), 0);
     unsigned long int lastCol = numCols - 1, lastSum = 0;
     
-    int myInt;
+    int myInt, num2s = 0, num3s = 0;
     std::vector<int> repLen(n+1, 1);
     
     for (myInt = (n-1); myInt >= 0; myInt--) {
@@ -63,15 +64,11 @@ TypeRcpp PermuteSpecificReps(int n, std::vector<stdType> v, std::vector<int> Rep
     
     unsigned long int uRowN = groupLen[gLen - 1];
     TypeRcpp permuteMatrix(uRowN, numCols);
-    
     std::vector<unsigned long int> vecLast(uRowN);
-    
-    std::vector<int> prevPerms(2*uRowN/5);
-    std::vector<int> nextPerms(4*uRowN/5);
+
     typename std::vector<stdType>::iterator it, vBeg, vEnd;
     vBeg = v.begin(); vEnd = v.end();
     numCols--;
-    nextPerms[0] = gLen - 1;
     
     for (i = 1; i < uN; i++) {
         for (j = 0; j < Reps[i]; j++) {
@@ -79,17 +76,35 @@ TypeRcpp PermuteSpecificReps(int n, std::vector<stdType> v, std::vector<int> Rep
         }
     }
     
+    for (i = 0; i < uN; i++) {
+        if (Reps[i] > 2) {num3s++;}
+        if (Reps[i] > 1) {num2s++;}
+    }
+    
+    prevRows = ceil(uRowN * ((n*(n-1)*(n-2)/6) + (num2s*(num2s-1)) + num3s)
+        /  (n*(n-1)*(n-2)/2 + 2*(num2s*(num2s-1)) + num3s));
+    
+    print(wrap(prevRows));
+    
+    nextRows = ceil(uRowN * ((n*(n-1)/2) + num2s) / (n*(n-1) + num2s));
+    
+    print(wrap(nextRows));
+    
+    std::vector<int> prevPerms(uRowN);
+    std::vector<int> nextPerms(uRowN);
     for (i = 0; i < uRowN; i++) {vecLast[i] = lastSum;}
+    nextPerms[0] = gLen - 1;
     
     for (i = 0; i < (lastCol - 1); i++) {
+        print(wrap(m));
         for (j = 0; j < m; j++) {prevPerms[j] = nextPerms[j];}
         strt = count = m = r = 0;
         while (count < uRowN) {
             ind = prevPerms[r];
             j = 0;
             for (it = vBeg; it < vEnd; it++) {
-                divTest = (ind % repLen[j])/repLen[j+1];
-                if (divTest > 0) {
+                divTest = (ind % repLen[j]);
+                if (divTest >= repLen[j+1]) {
                     ind -= repLen[j+1];
                     count += groupLen[ind];
                     for (k = strt; k < count; k++) {
@@ -106,7 +121,7 @@ TypeRcpp PermuteSpecificReps(int n, std::vector<stdType> v, std::vector<int> Rep
             r++;
         }
     }
-    
+    print(wrap(m));
     for (i = (lastCol-1); i < lastCol; i++) {
         strt = count = m = r = 0;
         while (count < uRowN) {
@@ -140,8 +155,9 @@ TypeRcpp PermuteSpecificReps(int n, std::vector<stdType> v, std::vector<int> Rep
 // [[Rcpp::export]]
 SEXP PermsRepLenRcpp(SEXP Rv, SEXP Rm, SEXP RIsFactor) {
     
-    int i, j, m1, m2, lenR, lenV;
+    int i, m1, m2, lenR, lenV;
     std::vector<int> myReps;
+    double seqEnd;
     bool IsCharacter, IsInteger, IsFactor;
     
     switch(TYPEOF(Rm)) {
@@ -191,15 +207,15 @@ SEXP PermsRepLenRcpp(SEXP Rv, SEXP Rm, SEXP RIsFactor) {
             stop("Only integers, numerical, character, and factor classes are supported for v");
         }
     }
-
-
+    
     if (IsCharacter) {
         vStr = as<std::vector<std::string > >(Rv);
         lenV = vStr.size();
     } else {
         if (Rf_length(Rv) == 1) {
-            j = as<int>(Rv);
-            if (j > 1) {m1 = 1; m2 = j;} else {m1 = j; m2 = 1;}
+            seqEnd = as<double>(Rv);
+            if (NumericVector::is_na(seqEnd)) {seqEnd = 1;}
+            if (seqEnd > 1) {m1 = 1; m2 = seqEnd;} else {m1 = seqEnd; m2 = 1;}
             IntegerVector vTemp = seq(m1, m2);
             IsInteger = true;
             vNum = as<std::vector<double> >(vTemp);
@@ -208,7 +224,7 @@ SEXP PermsRepLenRcpp(SEXP Rv, SEXP Rm, SEXP RIsFactor) {
         }
         lenV = vNum.size();
     }
-    
+
     if (lenR != lenV) {
         stop("The length of the source vector, v, "
                   "must equal the length of repLens.");
@@ -225,6 +241,7 @@ SEXP PermsRepLenRcpp(SEXP Rv, SEXP Rm, SEXP RIsFactor) {
         } else if (IsFactor) {
             IntegerVector testFactor = as<IntegerVector>(Rv);
             vFactor = seq(1, lenV);
+            
             CharacterVector myClass = testFactor.attr("class");
             CharacterVector myLevels = testFactor.attr("levels");
             vInt.assign(vFactor.begin(), vFactor.end());
@@ -233,7 +250,7 @@ SEXP PermsRepLenRcpp(SEXP Rv, SEXP Rm, SEXP RIsFactor) {
             factorMat = PermuteSpecificReps<IntegerMatrix>(lenV, vInt, myReps);
             factorMat.attr("class") = myClass;
             factorMat.attr("levels") = myLevels;
-            
+
             return factorMat;
         } else {
             return PermuteSpecificReps<NumericMatrix>(lenV, vNum, myReps);
