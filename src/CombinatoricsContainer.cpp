@@ -230,8 +230,7 @@ TypeRcpp CombinatoricsConstraints(int n, int r, std::vector<double> v,
     // and myComparison is a comparison operator: "<", "<=", ">", or ">="
     
     double extremeV, testVal;
-    int count = 0, s = v.size();
-    unsigned int ur = r, numCols;
+    int count = 0, vSize = v.size(), numCols;
     
     // constraintFun is a pointer to one of the functions defined above
     XPtr<funcPtr> xpFun = putFunPtrInXPtr(myFun);
@@ -246,11 +245,11 @@ TypeRcpp CombinatoricsConstraints(int n, int r, std::vector<double> v,
 
     if (myComparison == ">" || myComparison == ">=") {
         std::sort(v.begin(), v.end(), std::greater<double>());
-        extremeV = minCpp(v, s);
+        extremeV = minCpp(v, vSize);
         comparisonFunTwo = *xpCompOne;
     } else {
         std::sort(v.begin(), v.end());
-        extremeV = maxCpp(v, s);
+        extremeV = maxCpp(v, vSize);
         if (myComparison == "==") {
             XPtr<compPtr> xpCompThree = putCompPtrInXPtr("<=");
             comparisonFunTwo = *xpCompThree;
@@ -261,116 +260,77 @@ TypeRcpp CombinatoricsConstraints(int n, int r, std::vector<double> v,
     
     if (xtraCol) {numCols = r+1;} else {numCols = r;}
     TypeRcpp combinatoricsMatrix(rowNum, numCols);
-    std::vector<double> z, zPart;
+    
+    std::vector<double> z, testVec(r), zPerm(r);
     bool t_1, t_2, t = true, keepGoing = true;
-    std::vector<double>::iterator it;
-    std::vector<double> temp;
-    int posMaxZ, tSize = r - 1, newSize;
-    int numPerms, rMinus, k, i, j, zSize;
+    int r1 = r - 1, r2 = r - 2, maxZ = n - 1;
+    int numPerms, k, i, j;
     
     if (repetition) {
+        
         v.erase(std::unique(v.begin(), v.end()), v.end());
-        s = v.size();
-        z.assign(r+s-1, v[0]);
-        std::copy(v.begin()+1, v.end(), z.begin()+r);
+        vSize = v.size();
+        z.assign(r, 0);
+        maxZ = vSize - 1;
+        
         while (keepGoing) {
-            t_2 = z.size() >= ur;
-            testVal = constraintFun(z, r);
+            
+            t_2 = true;
+            for (i = 0; i < r; i++) {testVec[i] = v[z[i]];}
+            testVal = constraintFun(testVec, r);
             t = comparisonFunTwo(testVal, lim);
+            
             while (t && t_2 && keepGoing) {
-                testVal = constraintFun(z, r);
+                
+                testVal = constraintFun(testVec, r);
                 t_1 = comparisonFunOne(testVal, lim);
+                
                 if (t_1) {
                     if (isComb) {
-                        for (k=0; k < r; k++) {combinatoricsMatrix(count, k) = z[k];}
+                        for (k=0; k < r; k++) {combinatoricsMatrix(count, k) = v[z[k]];}
                         count++;
                     } else {
-                        zPart.clear(); zPart.reserve(r);
-                        for (k=0; k < r; k++) {zPart.push_back(z[k]);}
-                        numPerms = NumPermsWithRep(zPart);
+                        zPerm = z;
+                        numPerms = NumPermsWithRep(zPerm);
                         for (i=0; i < numPerms; i++) {
-                            for (k=0; k < r; k++) {combinatoricsMatrix(count, k) = zPart[k];}
-                            std::next_permutation(zPart.begin(), zPart.end());
+                            for (k=0; k < r; k++) {combinatoricsMatrix(count, k) = v[zPerm[k]];}
+                            std::next_permutation(zPerm.begin(), zPerm.end());
                             count++;
                             if (count >= rowNum) {break;}
                         }
                     }
                     keepGoing = (count < rowNum);
                 }
-                zSize = z.size();
-                t_2 = zSize >= r;
+                
+                t_2 = (z[r1] != maxZ);
+                
                 if (t_2) {
-                    if (zSize==r) t_2 = false;
-                    z.erase(z.begin() + r - 1);
-                    testVal = constraintFun(z, r);
+                    z[r1]++;
+                    testVec[r1] = v[z[r1]];
+                    testVal = constraintFun(testVec, r);
                     t = comparisonFunTwo(testVal, lim);
                 }
             }
             
             if (keepGoing) {
-                if (t) {
-                    posMaxZ = -1;
-                    zSize = z.size();
-                    for (k = zSize-1; k >= 0; k--) {
-                        if (z[k] != extremeV) {
-                            posMaxZ = k;
-                            break;
+                for (i = r2; i >= 0; i--) {
+                    if (z[i] != maxZ) {
+                        z[i]++;
+                        testVec[i] = v[z[i]];
+                        for (k = (i+1); k < r; k++) {
+                            z[k] = z[k-1];
+                            testVec[k] = v[z[k]];
                         }
+                        testVal = constraintFun(testVec, r);
+                        t = comparisonFunTwo(testVal, lim);
+                        if (t) {break;}
                     }
-        
-                    if (posMaxZ > -1) {
-                        for (k = 0; k < s; k++) {
-                            if (v[k] == z[posMaxZ]) {
-                                z[posMaxZ] = v[k+1];
-                                break;
-                            }
-                        }
-
-                        temp.clear();
-                        temp.reserve(posMaxZ);
-                        for (it = z.begin(); it <= z.begin() + posMaxZ; it++) {temp.push_back(*it);}
-                        
-                        if (z[posMaxZ] != extremeV) {
-                            newSize = tSize + s - k - 1;
-                            z.assign(newSize, z[posMaxZ]);
-                            std::copy(temp.begin(), temp.end(), z.begin());
-                            std::copy(v.begin() + (k+1), v.end(), z.begin() + tSize);
-                        } else {
-                            z.assign(r, z[posMaxZ]);
-                            std::copy(temp.begin(), temp.end(), z.begin());
-                        }
-                    } else {
-                        keepGoing = false;
-                    }
-                } else {
-                    rMinus = r - 2;
-                    while (rMinus >= 0 && !t) {
-                        if (z[rMinus] != extremeV) {
-                            for (k = 0; k < s; k++) {
-                                if (v[k] == z[rMinus]) {
-                                    z[rMinus] = v[k+1];
-                                    break;
-                                }
-                            }
-                            temp.clear();
-                            for (it = z.begin(); it < z.begin() + rMinus; it++) {temp.push_back(*it);}
-                            newSize = tSize + s - k - 1;
-                            z.assign(newSize, z[rMinus]);
-                            std::copy(temp.begin(), temp.end(), z.begin());
-                            std::copy(v.begin() + (k+1), v.end(), z.begin() + tSize);
-                            if (z.size() >= ur) {
-                                testVal = constraintFun(z, r);
-                                t = comparisonFunTwo(testVal, lim);
-                            } else {t = false;}
-                        }
-                        --rMinus;
-                    }
-                    if (!t) {keepGoing = false;}
                 }
+                if (!t) {keepGoing = false;}
             }
         }
     } else {
-        z = v;
+        for (i = 0; i < r; i++) {z.push_back(i);}
         int indexRows;
         IntegerMatrix indexMatrix;
         if (!isComb) {
@@ -379,20 +339,25 @@ TypeRcpp CombinatoricsConstraints(int n, int r, std::vector<double> v,
         }
 
         while (keepGoing) {
-            t_2 = z.size() >= ur;
-            testVal = constraintFun(z, r);
+            
+            t_2 = true;
+            for (i = 0; i < r; i++) {testVec[i] = v[z[i]];}
+            testVal = constraintFun(testVec, r);
             t = comparisonFunTwo(testVal, lim);
+            
             while (t && t_2 && keepGoing) {
-                testVal = constraintFun(z, r);
+                
+                testVal = constraintFun(testVec, r);
                 t_1 = comparisonFunOne(testVal, lim);
+                
                 if (t_1) {
                     if (isComb) {
-                        for (k=0; k < r; k++) {combinatoricsMatrix(count, k) = z[k];}
+                        for (k=0; k < r; k++) {combinatoricsMatrix(count, k) = v[z[k]];}
                         count++;
                     } else {
                         for (j = 0; j < indexRows; j++) {
                             for (k = 0; k < r; k++) {
-                                combinatoricsMatrix(count, k) = z[indexMatrix(j, k)];
+                                combinatoricsMatrix(count, k) = v[z[indexMatrix(j, k)]];
                             }
                             count++;
                             if (count >= rowNum) {break;}
@@ -400,68 +365,32 @@ TypeRcpp CombinatoricsConstraints(int n, int r, std::vector<double> v,
                     }
                     keepGoing = (count < rowNum);
                 }
-                zSize = z.size();
-                t_2 = zSize >= r;
+                
+                t_2 = (z[r1] != maxZ);
+                
                 if (t_2) {
-                    if (zSize==r) t_2 = false;
-                    z.erase(z.begin() + r - 1);
-                    testVal = constraintFun(z, r);
+                    z[r1]++;
+                    testVec[r1] = v[z[r1]];
+                    testVal = constraintFun(testVec, r);
                     t = comparisonFunTwo(testVal, lim);
                 }
             }
             
             if (keepGoing) {
-                if (t) {
-                    zSize = z.size();
-                    posMaxZ = -1;
-                    for (k = zSize-1; k >= 0; k--) {
-                        if (z[k] != v[(s-r+k)]) {
-                            posMaxZ = k;
-                            break;
+                for (i = r2; i >= 0; i--) {
+                    if (z[i] != (n - r + i)) {
+                        z[i]++;
+                        testVec[i] = v[z[i]];
+                        for (k = (i+1); k < r; k++) {
+                            z[k] = z[k-1]+1;
+                            testVec[k] = v[z[k]];
                         }
+                        testVal = constraintFun(testVec, r);
+                        t = comparisonFunTwo(testVal, lim);
+                        if (t) {break;}
                     }
-                    
-                    if (posMaxZ > -1) {
-                        for (k = 0; k < s; k++) {
-                            if (v[k] == z[posMaxZ]) {
-                                z[posMaxZ] = v[k+1];
-                                break;
-                            }
-                        }
-                        
-                        temp.clear();
-                        temp.reserve(posMaxZ + s - k - 2);
-                        for (it = z.begin(); it <= z.begin() + posMaxZ; it++) {temp.push_back(*it);}
-                        for (it = v.begin() + (k+2); it < v.end(); it++) {temp.push_back(*it);}
-                        z = temp;
-                    } else {
-                        keepGoing = false;
-                    }
-                } else {
-                    rMinus = r - 2;
-                    while (rMinus >= 0 && !t) {
-                        for (k = 0; k < s; k++) {
-                            if (v[k] == z[rMinus]) {
-                                z[rMinus] = v[k+1];
-                                break;
-                            }
-                        }
-                        
-                        if (z[rMinus] != extremeV) {
-                            temp.clear();
-                            temp.reserve(rMinus + s - k - 2);
-                            for (it = z.begin(); it <= z.begin() + rMinus; it++) {temp.push_back(*it);}
-                            for (it = v.begin() + (k+2); it < v.end(); it++) {temp.push_back(*it);}
-                            z = temp;
-                            if (z.size() >= ur) {
-                                testVal = constraintFun(z, r);
-                                t = comparisonFunTwo(testVal, lim);
-                            } else {t = false;}
-                        }
-                        --rMinus;
-                    }
-                    if (!t) {keepGoing = false;}
                 }
+                if (!t) {keepGoing = false;}
             }
         }
     }
@@ -472,102 +401,51 @@ template <typename TypeRcpp, typename stdType>
 TypeRcpp ComboGeneral(int n, int r, std::vector<stdType> v,
                       bool repetition, int rowNum, bool xtraCol) {
     std::sort(v.begin(), v.end());
-    std::vector<stdType> z;
-    int count = 0, tSize = r - 1, s = v.size();
-    int k, i, numIter, posMaxZ, newSize, numCols;
-    stdType maxV = v[s-1];
-    typename std::vector<stdType>::iterator it;
-    std::vector<stdType> temp;
-    bool keepGoing = true;
+    std::vector<int> z;
+    int r1 = r - 1, r2 = r - 2;
+    int k, i, numIter, vSize;
+    int numCols, maxZ, count = 0;
     if (xtraCol) {numCols  = r + 1;} else {numCols = r;}
     TypeRcpp combinationMatrix(rowNum, numCols);
     
     if (repetition) {
         v.erase(std::unique(v.begin(), v.end()), v.end());
-        s = v.size();
-        z.assign(r+s-1, v[0]);
-        std::copy(v.begin()+1, v.end(), z.begin()+r);
-        
-        while (keepGoing) {
-            numIter = z.size() - r;
+        vSize = v.size();
+        z.assign(r, 0);
+        maxZ = vSize - 1;
+
+        while (count < rowNum) {
+            numIter = vSize - z[r1];
             for (i = 0; i < numIter; i++) {
-                for (k=0; k < r; k++) {combinationMatrix(count, k) = z[k];}
+                for (k=0; k < r; k++) {combinationMatrix(count, k) = v[z[k]];}
                 count++;
-                z.erase(z.begin() + tSize);
+                z[r1]++;
             }
-            
-            for (k=0; k < r; k++) {combinationMatrix(count, k) = z[k];}
-            count++;
-            
-            posMaxZ = -1;
-            for (k = z.size()-1; k >= 0; k--) {
-                if (z[k] < maxV) {
-                    posMaxZ = k;
+
+            for (i = r2; i >= 0; i--) {
+                if (z[i] != maxZ) {
+                    z[i]++;
+                    for (k = (i+1); k < r; k++) {z[k] = z[k-1];}
                     break;
                 }
-            }
-            
-            if (posMaxZ > -1) {
-                for (k = 0; k < s; k++) {
-                    if (v[k] == z[posMaxZ]) {
-                        z[posMaxZ] = v[k+1];
-                        break;
-                    }
-                }
-                
-                temp.clear();
-                temp.reserve(posMaxZ);
-                for (it = z.begin(); it <= z.begin() + posMaxZ; it++) {temp.push_back(*it);}
-                
-                if (z[posMaxZ] < maxV) {
-                    newSize = tSize + s - k - 1;
-                    z.assign(newSize, z[posMaxZ]);
-                    std::copy(temp.begin(), temp.end(), z.begin());
-                    std::copy(v.begin() + (k+1), v.end(), z.begin() + tSize);
-                } else {
-                    z.assign(r, z[posMaxZ]);
-                    std::copy(temp.begin(), temp.end(), z.begin());
-                }
-            } else {
-                keepGoing = false;
             }
         }
     } else {
-        z = v;
-        while (keepGoing) {
-            numIter = z.size() - r;
+        for (i = 0; i < r; i++) {z.push_back(i);}
+        while (count < rowNum) {
+            numIter = n - z[r1];
             for (i = 0; i < numIter; i++) {
-                for (k=0; k < r; k++) {combinationMatrix(count, k) = z[k];}
+                for (k = 0; k < r; k++) {combinationMatrix(count, k) = v[z[k]];}
                 count++;
-                z.erase(z.begin() + tSize);
+                z[r1]++;
             }
-            
-            for (k=0; k < r; k++) {combinationMatrix(count, k) = z[k];}
-            count++;
-            
-            posMaxZ = -1;
-            for (k = z.size()-1; k >= 0; k--) {
-                if (z[k] != v[(s-r+k)]) {
-                    posMaxZ = k;
+
+            for (i = r2; i >= 0; i--) {
+                if (z[i] != (n - r + i)) {
+                    z[i]++;
+                    for (k = (i+1); k < r; k++) {z[k] = z[k-1]+1;}
                     break;
                 }
-            }
-            
-            if (posMaxZ > -1) {
-                for (k = 0; k < s; k++) {
-                    if (v[k] == z[posMaxZ]) {
-                        z[posMaxZ] = v[k+1];
-                        break;
-                    }
-                }
-                
-                temp.clear();
-                temp.reserve(posMaxZ + s - k - 2);
-                for (it = z.begin(); it <= z.begin() + posMaxZ; it++) {temp.push_back(*it);}
-                for (it = v.begin() + (k+2); it < v.end(); it++) {temp.push_back(*it);}
-                z = temp;
-            } else {
-                keepGoing = false;
             }
         }
     }
@@ -623,7 +501,7 @@ SEXP CombinatoricsRcpp(SEXP Rv, SEXP Rm, SEXP Rrepetition,
                        SEXP f1, SEXP f2, SEXP lim, SEXP numRow,
                        SEXP RIsComb, SEXP RIsFactor, SEXP RKeepRes) {
     int n, m, i, j, m1, m2, nRows = 0;
-    double testRows;
+    double testRows, seqEnd;
     bool IsRepetition, IsConstrained;
     bool IsCharacter, IsComb, IsFactor;
     bool SpecialCase, keepRes, IsInteger;
@@ -683,20 +561,21 @@ SEXP CombinatoricsRcpp(SEXP Rv, SEXP Rm, SEXP Rrepetition,
         n = vStr.size();
     } else {
         if (Rf_length(Rv) == 1) {
-            j = as<int>(Rv);
-            if (j > 1) {m1 = 1; m2 = j;} else {m1 = j; m2 = 1;}
+            seqEnd = as<double>(Rv);
+            if (NumericVector::is_na(seqEnd)) {seqEnd = 1;}
+            if (seqEnd > 1) {m1 = 1; m2 = seqEnd;} else {m1 = seqEnd; m2 = 1;}
             IntegerVector vTemp = seq(m1, m2);
             IsInteger = true;
             vNum = as<std::vector<double> >(vTemp);
         } else {
-            vNum = as<std::vector<double> >(Rv);    
+            vNum = as<std::vector<double> >(Rv);
         }
         n = vNum.size();
     }
     
     if (IsInteger) {vInt.assign(vNum.begin(), vNum.end());}
     if (IsFactor) {IsCharacter = IsInteger = false;}
-    
+
     if (IsRepetition) {
         if (IsComb) {
             testRows = GetRowNum(n, m);
@@ -738,7 +617,7 @@ SEXP CombinatoricsRcpp(SEXP Rv, SEXP Rm, SEXP Rrepetition,
                 }
             }
         }
-        
+
         if (IsConstrained) {
             double myLim, RUserCap;
 
@@ -748,13 +627,15 @@ SEXP CombinatoricsRcpp(SEXP Rv, SEXP Rm, SEXP Rrepetition,
                     break;
                 }
                 case INTSXP: {
-                    myLim = as<double >(lim);
+                    myLim = as<double>(lim);
                     break;
                 }
                 default: {
                     stop("limitConstraints must be of type numeric or integer");
                 }
             }
+            
+            if (NumericVector::is_na(myLim)) {stop("limitConstraints cannot be NA");}
 
             if (Rf_isNull(numRow)) {
                 RUserCap = 0;
@@ -774,6 +655,32 @@ SEXP CombinatoricsRcpp(SEXP Rv, SEXP Rm, SEXP Rrepetition,
                 }
             }
             
+            for (i = (n-1); i >= 0; i--) {
+                if (NumericVector::is_na(vNum[i])) {
+                    vNum.erase(vNum.begin() + i);
+                }
+            }
+            
+            j = vNum.size();
+            
+            if (j < n) {
+                n = j;
+                if (IsRepetition) {
+                    if (IsComb) {
+                        testRows = GetRowNum(n, m);
+                    } else {
+                        testRows = pow((double)n, (double)m);
+                    }
+                } else {
+                    if (m > n) {stop("m must be less than or equal to the length of v");}
+                    if (IsComb) {
+                        testRows = nChooseK(n, m);
+                    } else {
+                        testRows = NumPermsNoRep(n, m);
+                    }
+                }
+            }
+            
             std::string mainFun1 = as<std::string >(f1);
             if (mainFun1 != "prod" && mainFun1 != "sum" && mainFun1 != "mean"
                     && mainFun1 != "max" && mainFun1 != "min") {
@@ -786,10 +693,10 @@ SEXP CombinatoricsRcpp(SEXP Rv, SEXP Rm, SEXP Rrepetition,
                     && compFun != "=<" && compFun != "=>") {
                 stop("comparisonFun must be one of the following: >, >=, <, <=, or ==");
             }
-            
+
             if (compFun == "=<") {compFun = "<=";}
             if (compFun == "=>") {compFun = ">=";}
-            
+
             SpecialCase = false;
             if (mainFun1 == "prod") {
                 for (i = 0; i < n; i++) {
@@ -799,7 +706,7 @@ SEXP CombinatoricsRcpp(SEXP Rv, SEXP Rm, SEXP Rrepetition,
                     }
                 }
             }
-            
+
             if (RUserCap == 0) {
                 if (testRows > 2147483647) {stop("The number of rows cannot exceed 2^31 - 1.");}
                 RUserCap = nRows = testRows;
@@ -816,64 +723,64 @@ SEXP CombinatoricsRcpp(SEXP Rv, SEXP Rm, SEXP Rrepetition,
                     if (nRows > testRows) {nRows = testRows;}
                 }
             }
-            
+
             XPtr<funcPtr> xpFun1 = putFunPtrInXPtr(mainFun1);
             funcPtr myFun1 = *xpFun1;
-            
+
             if (SpecialCase) {
                 NumericMatrix matRes;
                 double testVal;
-                bool test;
+                bool Success;
                 std::vector<int> indexMatch;
                 std::vector<double> matchVals;
                 indexMatch.reserve(nRows);
                 matchVals.reserve(nRows);
-                
+
                 if (IsComb) {
                     matRes = ComboGeneral<NumericMatrix>(n, m, vNum, IsRepetition, nRows, keepRes);
                 } else {
                     matRes = PermuteGeneral<NumericMatrix>(n, m, vNum, IsRepetition, nRows, keepRes);
                 }
-                
+
                 XPtr<compPtr> xpComp = putCompPtrInXPtr(compFun);
                 compPtr myComp = *xpComp;
-                
+
                 for (i = 0; i < nRows; i++) {
                     for (j = 0; j < m; j++) {rowVec[j] = matRes(i, j);}
                     testVal = myFun1(rowVec, m);
-                    test = myComp(testVal, myLim);
-                    if (test) {
+                    Success = myComp(testVal, myLim);
+                    if (Success) {
                         indexMatch.push_back(i);
                         matchVals.push_back(testVal);
                     }
                 }
-                
+
                 int numCols = m;
                 if (keepRes) {numCols++;}
                 testRows = indexMatch.size();
                 if (testRows > RUserCap) {nRows = RUserCap;} else {nRows = testRows;}
                 NumericMatrix returnMatrix(nRows, numCols);
-                
+
                 for (i = 0; i < nRows; i++) {
                     for (j = 0; j < m; j++) {
                         returnMatrix(i,j) = matRes(indexMatch[i],j);
                     }
                     if (keepRes) {returnMatrix(i,m) = matchVals[i];}
                 }
-                
+
                 return returnMatrix;
             }
-            
+
             if (keepRes) {
                 NumericMatrix matRes = CombinatoricsConstraints<NumericMatrix>(n, m, vNum, IsRepetition,
                                                                mainFun1, compFun, myLim, nRows, IsComb, true);
                 int nRows = matRes.nrow();
-                
+
                 for (i = 0; i < nRows; i++) {
                     for (j = 0; j < m; j++) {vNum[j] = matRes(i, j);}
                     matRes(i, m) = myFun1(vNum, m);
                 }
-                
+
                 return matRes;
             } else {
                 if (IsInteger) {
@@ -888,19 +795,19 @@ SEXP CombinatoricsRcpp(SEXP Rv, SEXP Rm, SEXP Rrepetition,
             if (testRows > 2147483647) {stop("The number of rows cannot exceed 2^31 - 1.");}
             nRows = testRows;
             if (Rf_isNull(f1)) {keepRes = false;}
-            
+
             if (keepRes) {
                 NumericMatrix matRes;
-                
+
                 std::string mainFun2 = as<std::string >(f1);
                 if (mainFun2 != "prod" && mainFun2 != "sum" && mainFun2 != "mean"
                         && mainFun2 != "max" && mainFun2 != "min") {
                     stop("contraintFun must be one of the following: prod, sum, mean, max, or min");
                 }
-                
+
                 XPtr<funcPtr> xpFun2 = putFunPtrInXPtr(mainFun2);
                 funcPtr myFun2 = *xpFun2;
-                
+
                 if (IsComb) {
                     matRes = ComboGeneral<NumericMatrix>(n, m, vNum, IsRepetition, nRows, true);
                 } else {
@@ -911,7 +818,7 @@ SEXP CombinatoricsRcpp(SEXP Rv, SEXP Rm, SEXP Rrepetition,
                     for (j = 0; j < m; j++) {rowVec[j] = matRes(i, j);}
                     matRes(i, m) = myFun2(rowVec, m);
                 }
-                
+
                 return matRes;
             } else {
                 if (IsFactor) {
@@ -921,16 +828,16 @@ SEXP CombinatoricsRcpp(SEXP Rv, SEXP Rm, SEXP Rrepetition,
                     vInt.assign(vFactor.begin(), vFactor.end());
                     CharacterVector myClass = testFactor.attr("class");
                     CharacterVector myLevels = testFactor.attr("levels");
-                    
+
                     if (IsComb) {
                         factorMat = ComboGeneral<IntegerMatrix>(n, m, vInt, IsRepetition, nRows, false);
                     } else {
                         factorMat = PermuteGeneral<IntegerMatrix>(n, m, vInt, IsRepetition, nRows, false);
                     }
-                    
+
                     factorMat.attr("class") = myClass;
                     factorMat.attr("levels") = myLevels;
-                    
+
                     return factorMat;
                 } else {
                     if (IsComb) {
