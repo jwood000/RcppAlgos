@@ -1,14 +1,13 @@
 #include <Rcpp.h>
 using namespace Rcpp;
 
-std::vector<double> SectionLength(std::vector<int> v, std::vector<int> myRep) {
+std::vector<unsigned long int> SectionLength(std::vector<int> v, std::vector<int> myRep) {
     unsigned long int n = v.size(), numRow = 1;
-    unsigned long int i, j, k, mySum, n1 = n-1;
-    double res;
+    unsigned long int i, j, k, mySum, n1 = n-1, res;
     std::vector<int>::iterator it;
     std::vector<int> temp(n);
     for (it = v.begin(); it < v.end(); it++) {numRow *= (*it+1);}
-    std::vector<double> myLengths(numRow);
+    std::vector<unsigned long int> myLengths(numRow);
     
     for (i = 0; i < numRow; i++) {
         temp[0] = i / myRep[1];
@@ -19,7 +18,6 @@ std::vector<double> SectionLength(std::vector<int> v, std::vector<int> myRep) {
             temp[j] = (i % myRep[j]) / myRep[j+1];
             mySum += temp[j];
         }
-        
         std::sort(temp.begin(), temp.end(),
                   std::greater<unsigned long int>());
         res = 1;
@@ -32,7 +30,6 @@ std::vector<double> SectionLength(std::vector<int> v, std::vector<int> myRep) {
                 }
             }
         }
-        
         myLengths[i] = res;
     }
     
@@ -41,34 +38,30 @@ std::vector<double> SectionLength(std::vector<int> v, std::vector<int> myRep) {
 
 template <typename TypeRcpp, typename stdType>
 TypeRcpp PermuteSpecificReps(int n, std::vector<stdType> v, std::vector<int> Reps) {
-    unsigned long int uN = n, count, strt, ind, divTest;
-    unsigned long int i, j, k, m = 1, r, numCols;
-    unsigned long int prevRows, nextRows;
+    unsigned long int count, indTemp, ind, divTest, uN = n;
+    unsigned long int i, j, k, strt, numCols, m = 1;
     
     numCols = std::accumulate(Reps.begin(), Reps.end(), 0);
-    unsigned long int lastCol = numCols - 1, lastSum = 0;
+    unsigned long int lastSum = 0, pentUlt;
     
-    int myInt, num2s = 0, num3s = 0;
+    int myInt;
     std::vector<int> repLen(n+1, 1);
     
     for (myInt = (n-1); myInt >= 0; myInt--) {
         repLen[myInt] = repLen[myInt+1]*(Reps[myInt]+1);
     }
     
-    std::vector<double> groupLen = SectionLength(Reps, repLen);
+    std::vector<unsigned long int> groupLen = SectionLength(Reps, repLen);
     unsigned long int gLen = groupLen.size();
-    
-    if (groupLen[gLen - 1] > 2147483647) {
-        stop("The number of rows cannot exceed 2^31 - 1.");
-    }
+    typename std::vector<stdType>::iterator it, vBeg, vEnd;
+    vBeg = v.begin(); vEnd = v.end();
     
     unsigned long int uRowN = groupLen[gLen - 1];
     TypeRcpp permuteMatrix(uRowN, numCols);
-    std::vector<unsigned long int> vecLast(uRowN);
-
-    typename std::vector<stdType>::iterator it, vBeg, vEnd;
-    vBeg = v.begin(); vEnd = v.end();
+    std::vector<unsigned long int> vecLast(uRowN), indexOne(uRowN), indexTwo(uRowN);
+    std::vector<unsigned long int>::iterator uLit, uLEnd;
     numCols--;
+    pentUlt = numCols - 1;
     
     for (i = 1; i < uN; i++) {
         for (j = 0; j < Reps[i]; j++) {
@@ -76,80 +69,128 @@ TypeRcpp PermuteSpecificReps(int n, std::vector<stdType> v, std::vector<int> Rep
         }
     }
     
-    for (i = 0; i < uN; i++) {
-        if (Reps[i] > 2) {num3s++;}
-        if (Reps[i] > 1) {num2s++;}
+    for (i = 0; i < uRowN; i++) {vecLast[i] = lastSum;}
+    indexOne[0] = gLen - 1;
+    
+    for (i = 0; i < pentUlt; i++) {
+        if (i % 2 == 0) {
+            uLEnd = indexOne.begin() + m;
+            strt = count = m = 0;
+            for (uLit = indexOne.begin(); uLit < uLEnd; uLit++) {
+                ind = *(uLit);
+                j = 0;
+                for (it = vBeg; it < vEnd; it++) {
+                    divTest = (ind % repLen[j]);
+                    if (divTest >= repLen[j+1]) {
+                        indTemp = ind;
+                        ind -= repLen[j+1];
+                        count += groupLen[ind];
+                        for (k = strt; k < count; k++) {
+                            permuteMatrix(k, i) = *it;
+                            vecLast[k] -= j;
+                        }
+                        strt = count;
+                        indexTwo[m] = ind;
+                        ind = indTemp;
+                        m++;
+                    }
+                    j++;
+                }
+            }
+        } else {
+            uLEnd = indexTwo.begin() + m;
+            strt = count = m = 0;
+            for (uLit = indexTwo.begin(); uLit < uLEnd; uLit++) {
+                ind = *(uLit);
+                j = 0;
+                for (it = vBeg; it < vEnd; it++) {
+                    divTest = (ind % repLen[j]);
+                    if (divTest >= repLen[j+1]) {
+                        indTemp = ind;
+                        ind -= repLen[j+1];
+                        count += groupLen[ind];
+                        for (k = strt; k < count; k++) {
+                            permuteMatrix(k, i) = *it;
+                            vecLast[k] -= j;
+                        }
+                        strt = count;
+                        indexOne[m] = ind;
+                        ind = indTemp;
+                        m++;
+                    }
+                    j++;
+                }
+            }
+        }
     }
     
-    prevRows = ceil(uRowN * ((n*(n-1)*(n-2)/6) + (num2s*(num2s-1)) + num3s)
-        /  (n*(n-1)*(n-2)/2 + 2*(num2s*(num2s-1)) + num3s));
-    
-    print(wrap(prevRows));
-    
-    nextRows = ceil(uRowN * ((n*(n-1)/2) + num2s) / (n*(n-1) + num2s));
-    
-    print(wrap(nextRows));
-    
-    std::vector<int> prevPerms(uRowN);
-    std::vector<int> nextPerms(uRowN);
-    for (i = 0; i < uRowN; i++) {vecLast[i] = lastSum;}
-    nextPerms[0] = gLen - 1;
-    
-    for (i = 0; i < (lastCol - 1); i++) {
-        print(wrap(m));
-        for (j = 0; j < m; j++) {prevPerms[j] = nextPerms[j];}
-        strt = count = m = r = 0;
-        while (count < uRowN) {
-            ind = prevPerms[r];
+    if (pentUlt % 2 == 0) {
+        uLEnd = indexOne.begin() + m;
+        strt = count = 0;
+        for (uLit = indexOne.begin(); uLit < uLEnd; uLit++) {
+            ind = *(uLit);
             j = 0;
             for (it = vBeg; it < vEnd; it++) {
                 divTest = (ind % repLen[j]);
                 if (divTest >= repLen[j+1]) {
+                    indTemp = ind;
                     ind -= repLen[j+1];
                     count += groupLen[ind];
                     for (k = strt; k < count; k++) {
-                        permuteMatrix(k, i) = *it;
+                        permuteMatrix(k, pentUlt) = *it;
                         vecLast[k] -= j;
+                        permuteMatrix(k, numCols) = v[vecLast[k]];
                     }
                     strt = count;
-                    nextPerms[m] = ind;
-                    ind += repLen[j+1];
-                    m++;
+                    ind = indTemp;
                 }
                 j++;
             }
-            r++;
         }
-    }
-    print(wrap(m));
-    for (i = (lastCol-1); i < lastCol; i++) {
-        strt = count = m = r = 0;
-        while (count < uRowN) {
-            ind = nextPerms[r];
+    } else {
+        uLEnd = indexTwo.begin() + m;
+        strt = count = m = 0;
+        for (uLit = indexTwo.begin(); uLit < uLEnd; uLit++) {
+            ind = *(uLit);
             j = 0;
             for (it = vBeg; it < vEnd; it++) {
-                divTest = (ind % repLen[j])/repLen[j+1];
-                if (divTest > 0) {
+                divTest = (ind % repLen[j]);
+                if (divTest >= repLen[j+1]) {
+                    indTemp = ind;
                     ind -= repLen[j+1];
                     count += groupLen[ind];
                     for (k = strt; k < count; k++) {
-                        permuteMatrix(k, i) = *it;
+                        permuteMatrix(k, pentUlt) = *it;
                         vecLast[k] -= j;
+                        permuteMatrix(k, numCols) = v[vecLast[k]];
                     }
                     strt = count;
-                    ind += repLen[j+1];
+                    ind = indTemp;
                 }
                 j++;
             }
-            r++;
         }
-    }
-    
-    for (i = 0; i < uRowN; i++) {
-        permuteMatrix(i, lastCol) = v[vecLast[i]];
     }
     
     return(permuteMatrix);
+}
+
+double NumPermsWithRep(std::vector<int> v, double myMax) {
+    std::sort(v.begin(), v.end(), std::greater<unsigned long int>());
+    unsigned long int i, j, numUni = v.size();
+    double result = 1;
+    
+    for (i = myMax; i > v[0]; i--) {result *= i;}
+    
+    if (numUni > 1) {
+        for (i = 1; i < numUni; i++) {
+            for (j = 2; j <= v[i]; j++) {
+                result /= j;
+            }
+        }
+    }
+    
+    return result;
 }
 
 // [[Rcpp::export]]
@@ -157,7 +198,7 @@ SEXP PermsRepLenRcpp(SEXP Rv, SEXP Rm, SEXP RIsFactor) {
     
     int i, m1, m2, lenR, lenV;
     std::vector<int> myReps;
-    double seqEnd;
+    double seqEnd, rowTest = 0;
     bool IsCharacter, IsInteger, IsFactor;
     
     switch(TYPEOF(Rm)) {
@@ -177,8 +218,14 @@ SEXP PermsRepLenRcpp(SEXP Rv, SEXP Rm, SEXP RIsFactor) {
     lenR = myReps.size();
     for (i = 0; i < lenR; i++) {
         if (myReps[i] < 1) {
-            stop("each element in repLen must be positive");
+            stop("each element in repLen must be a positive number");
         }
+        rowTest += myReps[i];
+    }
+    
+    rowTest = NumPermsWithRep(myReps, rowTest);
+    if (rowTest > 2147483647) {
+        stop("The number of rows cannot exceed 2^31 - 1.");
     }
     
     std::vector<double> vNum;
@@ -211,6 +258,10 @@ SEXP PermsRepLenRcpp(SEXP Rv, SEXP Rm, SEXP RIsFactor) {
     if (IsCharacter) {
         vStr = as<std::vector<std::string > >(Rv);
         lenV = vStr.size();
+        if (lenV == 1 && lenR == 1) {
+            CharacterVector strVec(myReps[0], vStr[0]);
+            return strVec;
+        }
     } else {
         if (Rf_length(Rv) == 1) {
             seqEnd = as<double>(Rv);
@@ -219,6 +270,28 @@ SEXP PermsRepLenRcpp(SEXP Rv, SEXP Rm, SEXP RIsFactor) {
             IntegerVector vTemp = seq(m1, m2);
             IsInteger = true;
             vNum = as<std::vector<double> >(vTemp);
+            
+            if (lenR == 1) {
+                if (IsFactor) {
+                    IntegerVector facVec = as<IntegerVector>(Rv);
+                    CharacterVector classVec = facVec.attr("class");
+                    CharacterVector levelVec = facVec.attr("levels");
+                    
+                    IntegerVector facRet(myReps[0], 1);
+                    facRet.attr("class") = classVec;
+                    facRet.attr("levels") = levelVec;
+                    
+                    return facRet;
+                } else {
+                    if (IsInteger) {
+                        IntegerVector intVec(myReps[0], seqEnd);
+                        return intVec;
+                    } else {
+                        NumericVector numVec(myReps[0], seqEnd);
+                        return numVec;
+                    }
+                }
+            }
         } else {
             vNum = as<std::vector<double> >(Rv);
         }
