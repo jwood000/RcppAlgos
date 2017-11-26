@@ -39,7 +39,7 @@ std::vector<unsigned long int> SectionLength(std::vector<int> v, std::vector<int
 template <typename TypeRcpp, typename stdType>
 TypeRcpp PermuteSpecificReps(int n, std::vector<stdType> v, std::vector<int> Reps) {
     unsigned long int count, indTemp, ind, divTest, uN = n;
-    unsigned long int i, j, k, strt, numCols, m = 1;
+    unsigned long int i, j, k, x, y, z, strt, numCols;
     
     numCols = std::accumulate(Reps.begin(), Reps.end(), 0);
     unsigned long int lastSum = 0, pentUlt;
@@ -50,7 +50,7 @@ TypeRcpp PermuteSpecificReps(int n, std::vector<stdType> v, std::vector<int> Rep
     for (myInt = (n-1); myInt >= 0; myInt--) {
         repLen[myInt] = repLen[myInt+1]*(Reps[myInt]+1);
     }
-    
+    print(wrap(repLen));
     std::vector<unsigned long int> groupLen = SectionLength(Reps, repLen);
     unsigned long int gLen = groupLen.size();
     typename std::vector<stdType>::iterator it, vBeg, vEnd;
@@ -58,8 +58,7 @@ TypeRcpp PermuteSpecificReps(int n, std::vector<stdType> v, std::vector<int> Rep
     
     unsigned long int uRowN = groupLen[gLen - 1];
     TypeRcpp permuteMatrix(uRowN, numCols);
-    std::vector<unsigned long int> vecLast(uRowN), indexOne(uRowN), indexTwo(uRowN);
-    std::vector<unsigned long int>::iterator uLit, uLEnd;
+    std::vector<unsigned short int> vecLast(uRowN), colCount(numCols, 0);
     numCols--;
     pentUlt = numCols - 1;
     
@@ -70,105 +69,115 @@ TypeRcpp PermuteSpecificReps(int n, std::vector<stdType> v, std::vector<int> Rep
     }
     
     for (i = 0; i < uRowN; i++) {vecLast[i] = lastSum;}
-    indexOne[0] = gLen - 1;
-    
-    for (i = 0; i < pentUlt; i++) {
-        if (i % 2 == 0) {
-            uLEnd = indexOne.begin() + m;
-            strt = count = m = 0;
-            for (uLit = indexOne.begin(); uLit < uLEnd; uLit++) {
-                ind = *(uLit);
-                j = 0;
-                for (it = vBeg; it < vEnd; it++) {
-                    divTest = (ind % repLen[j]);
-                    if (divTest >= repLen[j+1]) {
-                        indTemp = ind;
-                        ind -= repLen[j+1];
-                        count += groupLen[ind];
-                        for (k = strt; k < count; k++) {
-                            permuteMatrix(k, i) = *it;
-                            vecLast[k] -= j;
-                        }
-                        strt = count;
-                        indexTwo[m] = ind;
-                        ind = indTemp;
-                        m++;
-                    }
-                    j++;
-                }
-            }
-        } else {
-            uLEnd = indexTwo.begin() + m;
-            strt = count = m = 0;
-            for (uLit = indexTwo.begin(); uLit < uLEnd; uLit++) {
-                ind = *(uLit);
-                j = 0;
-                for (it = vBeg; it < vEnd; it++) {
-                    divTest = (ind % repLen[j]);
-                    if (divTest >= repLen[j+1]) {
-                        indTemp = ind;
-                        ind -= repLen[j+1];
-                        count += groupLen[ind];
-                        for (k = strt; k < count; k++) {
-                            permuteMatrix(k, i) = *it;
-                            vecLast[k] -= j;
-                        }
-                        strt = count;
-                        indexOne[m] = ind;
-                        ind = indTemp;
-                        m++;
-                    }
-                    j++;
-                }
-            }
-        }
-    }
-    
-    if (pentUlt % 2 == 0) {
-        uLEnd = indexOne.begin() + m;
+    int m;
+    std::vector<int> numTry(8);
+    numTry[0] = 1; numTry[1] = 3; numTry[2] = 3;
+    for (i = 0; i < 3; i++) {
         strt = count = 0;
-        for (uLit = indexOne.begin(); uLit < uLEnd; uLit++) {
-            ind = *(uLit);
-            j = 0;
-            for (it = vBeg; it < vEnd; it++) {
-                divTest = (ind % repLen[j]);
-                if (divTest >= repLen[j+1]) {
-                    indTemp = ind;
-                    ind -= repLen[j+1];
-                    count += groupLen[ind];
-                    for (k = strt; k < count; k++) {
-                        permuteMatrix(k, pentUlt) = *it;
-                        vecLast[k] -= j;
-                        permuteMatrix(k, numCols) = v[vecLast[k]];
-                    }
-                    strt = count;
-                    ind = indTemp;
-                }
-                j++;
+        colCount.assign(numCols, 0);
+        ind = gLen - 1;
+        y = 0;
+        
+        for (j = 0; j < i; j ++) {
+            divTest = (ind % repLen[y]);
+            while (divTest < repLen[y + 1]) {
+                y++;
+                divTest = (ind % repLen[y]);
             }
+            ind -= repLen[y + 1];
         }
-    } else {
-        uLEnd = indexTwo.begin() + m;
-        strt = count = m = 0;
-        for (uLit = indexTwo.begin(); uLit < uLEnd; uLit++) {
-            ind = *(uLit);
+        
+        // while (count < uRowN) {
+        for (m = 0; m < numTry[i]; m++) {
+            indTemp = ind;
+            print(wrap(ind));
+            print(wrap(" "));
             j = 0;
             for (it = vBeg; it < vEnd; it++) {
                 divTest = (ind % repLen[j]);
                 if (divTest >= repLen[j+1]) {
-                    indTemp = ind;
                     ind -= repLen[j+1];
                     count += groupLen[ind];
-                    for (k = strt; k < count; k++) {
-                        permuteMatrix(k, pentUlt) = *it;
-                        vecLast[k] -= j;
-                        permuteMatrix(k, numCols) = v[vecLast[k]];
-                    }
+                    // for (k = strt; k < count; k++) {
+                    //     permuteMatrix(k, i) = *it;
+                    //     vecLast[k] -= j;
+                    // }
                     strt = count;
                     ind = indTemp;
                 }
                 j++;
+                print(wrap(ind));
             }
+            
+            // Determine how far back we need to reset.
+            // E.g. Assume we are at (1,2,0) labeled **
+            //
+            //       (1,2,2)
+            //         ...
+            //                (1,2,1)	(0,2,1)
+            //                            ...
+            //                          (1,1,1)
+            //                            ...
+            //                        **(1,2,0)
+            //                            ...
+            //       (2,1,2)  (1,1,2)	(0,1,2)
+            //
+            // We will need to go all the way back to
+            // (1,2,2) in order to get to the next
+            // iteration (i.e (0,1,2)). Observe:
+            // (1,2,2) -> (2,1,2) -> (1,1,2) -> (0,1,2)
+            // Going back to (1,2,1) and trying
+            // to get to (1,1,2) is impossible.
+            
+            colCount[i] = (colCount[i] + 1) % uN;
+            print(wrap(colCount[i]));
+            k = i;
+            x = n - 1;
+            z = 0;
+
+            while (colCount[k] == 0) {
+                k--;
+                z++;
+                colCount[k] = (colCount[k] + 1) % uN;
+            }
+            
+            for (j = 0; j < z; j++) {
+                divTest = (ind % repLen[x])/repLen[x + 1];
+                while (divTest >= Reps[x]) {
+                    x--;
+                    divTest = (ind % repLen[x])/repLen[x + 1];
+                }
+                ind += repLen[x + 1];
+            }
+            
+            x = 0;
+
+            for (j = 0; j < colCount[k]; j++) {
+                divTest = (ind % repLen[x])/repLen[x + 1];
+                while (divTest >= Reps[x]) {
+                    x++;
+                    divTest = (ind % repLen[x])/repLen[x + 1];
+                }
+                y = x + 1;
+                ind += repLen[y];
+                divTest = (ind % repLen[y]);
+                while (divTest < repLen[y + 1]) {
+                    y++;
+                    divTest = (ind % repLen[y]);
+                }
+                ind -= repLen[y + 1];
+            }
+
+            // y = 0;
+            // 
+            // for (j = 0; j < z; j ++) {
+            //     divTest = (ind % repLen[y]);
+            //     while (divTest < repLen[y + 1]) {
+            //         y++;
+            //         divTest = (ind % repLen[y]);
+            //     }
+            //     ind -= repLen[y + 1];
+            // }
         }
     }
     
