@@ -58,8 +58,8 @@ TypeRcpp PermuteSpecificReps(int n, std::vector<stdType> v, std::vector<int> Rep
     
     unsigned long int uRowN = groupLen[gLen - 1];
     TypeRcpp permuteMatrix(uRowN, numCols);
-    std::vector<unsigned short int> vecLast(uRowN), indexOne(uRowN), indexTwo(uRowN);
-    std::vector<unsigned short int>::iterator uLit, uLEnd;
+    std::vector<unsigned long int> vecLast(uRowN), indexOne(uRowN), indexTwo(uRowN);
+    std::vector<unsigned long int>::iterator uLit, uLEnd;
     numCols--;
     pentUlt = numCols - 1;
     
