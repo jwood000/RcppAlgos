@@ -193,13 +193,39 @@ double NumPermsWithRep(std::vector<int> v, double myMax) {
     return result;
 }
 
+template <typename TypeRcpp, typename stdType>
+TypeRcpp MultisetPermutation(int n, std::vector<stdType> v, std::vector<int> Reps, int numRows) {
+    int i, j, numCols = 0;
+    std::vector<stdType> permVec;
+    
+    for (i = 0; i < n; i++) {numCols += Reps[i];}
+    
+    permVec.reserve(numCols);
+    for (i = 0; i < n; i++) {
+        for (j = 0; j < Reps[i]; j++) {
+            permVec.push_back(v[i]);
+        }
+    }
+    
+    TypeRcpp permuteMatrix(numRows, numCols);
+    
+    for (i = 0; i < numRows; i++) {
+        for (j = 0; j < numCols; j++) {
+            permuteMatrix(i, j) = permVec[j];
+        }
+        std::next_permutation(permVec.begin(), permVec.end());
+    }
+    
+    return permuteMatrix;
+}
+
 // [[Rcpp::export]]
-SEXP PermsRepLenRcpp(SEXP Rv, SEXP Rm, SEXP RIsFactor) {
+SEXP PermsRepLenRcpp(SEXP Rv, SEXP Rm, SEXP RIsFactor, SEXP isSTL) {
     
     int i, m1, m2, lenR, lenV;
     std::vector<int> myReps;
     double seqEnd, rowTest = 0;
-    bool IsCharacter, IsInteger, IsFactor;
+    bool IsCharacter, IsInteger, IsFactor, mySTL;
     
     switch(TYPEOF(Rm)) {
         case REALSXP: {
@@ -233,6 +259,7 @@ SEXP PermsRepLenRcpp(SEXP Rv, SEXP Rm, SEXP RIsFactor) {
     std::vector<int> vInt;
     std::vector<std::string > vStr;
     IsFactor = as<bool>(RIsFactor);
+    mySTL = as<bool>(isSTL);
 
     switch(TYPEOF(Rv)) {
         case REALSXP: {
@@ -307,10 +334,17 @@ SEXP PermsRepLenRcpp(SEXP Rv, SEXP Rm, SEXP RIsFactor) {
     if (IsFactor) {IsCharacter = IsInteger = false;}
 
     if (IsCharacter) {
-        return PermuteSpecificReps<CharacterMatrix>(lenV, vStr, myReps);
+        if (mySTL) {
+            return MultisetPermutation<CharacterMatrix>(lenV, vStr, myReps, (int)rowTest);
+        } else {
+            return PermuteSpecificReps<CharacterMatrix>(lenV, vStr, myReps);
+        }
     } else {
         if (IsInteger) {
-            return PermuteSpecificReps<IntegerMatrix>(lenV, vInt, myReps);
+            if (mySTL) {
+                return MultisetPermutation<IntegerMatrix>(lenV, vInt, myReps, (int)rowTest);
+            } else {
+            return PermuteSpecificReps<IntegerMatrix>(lenV, vInt, myReps);}
         } else if (IsFactor) {
             IntegerVector testFactor = as<IntegerVector>(Rv);
             vFactor = seq(1, lenV);
@@ -326,7 +360,10 @@ SEXP PermsRepLenRcpp(SEXP Rv, SEXP Rm, SEXP RIsFactor) {
 
             return factorMat;
         } else {
-            return PermuteSpecificReps<NumericMatrix>(lenV, vNum, myReps);
+            if (mySTL) {
+                return MultisetPermutation<NumericMatrix>(lenV, vNum, myReps, (int)rowTest);
+            } else {
+            return PermuteSpecificReps<NumericMatrix>(lenV, vNum, myReps);}
         }
     }
 }
