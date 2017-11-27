@@ -4,7 +4,6 @@ importFrom(Rcpp, evalCpp)
 
 export(comboGeneral,
        permuteGeneral,
-       permuteRepLen,
        primeSieve,
        eulerPhiSieve,
        primeFactorizationList,

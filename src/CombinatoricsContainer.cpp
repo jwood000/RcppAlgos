@@ -34,7 +34,7 @@ List rleCpp(std::vector<double> x) {
     );
 }
 
-int NumPermsWithRep(std::vector<double> v) {
+double NumPermsWithRep(std::vector<double> v) {
     List myRle = rleCpp(v);
     unsigned long int n = v.size(), myMax;
     std::vector<unsigned long int> myLens = myRle[0], myUnis = myRle[2];
@@ -43,7 +43,7 @@ int NumPermsWithRep(std::vector<double> v) {
     
     myMax = myLens[0];
     unsigned long int i, j, numUni = myUnis[0];
-    int result = 1;
+    double result = 1;
     
     for (i = n; i > myMax; i--) {result *= i;}
 
@@ -461,16 +461,17 @@ TypeRcpp PermuteGeneral(int n, int r, std::vector<stdType> v,
     TypeRcpp permuteMatrix(uRowN, numCols);
     
     if (repetition) {
-        unsigned long int groupLen = 1, repLen = 1;
+        unsigned long int groupLen = 1, repLen = 1, myCol;
         typename std::vector<stdType>::iterator m, vBeg, vEnd;
         vBeg = v.begin(); vEnd = v.end();
-        for (i = 0; i < uR; i++) {
+        for (i = uR; i > 0; i--) {
+            myCol = i-1;
             groupLen *= uN;
             chunk = 0;
             for (k = 0; k < uRowN; k += groupLen) {
                 for (m = vBeg; m < vEnd; m++) {
                     for (j = 0; j < repLen; j++) {
-                        permuteMatrix(chunk + j, i) = *m;
+                        permuteMatrix(chunk + j, myCol) = *m;
                     }
                     chunk += repLen;
                 }
@@ -496,36 +497,50 @@ TypeRcpp PermuteGeneral(int n, int r, std::vector<stdType> v,
     return(permuteMatrix);
 }
 
-// [[Rcpp::export]]
-SEXP CombinatoricsRcpp(SEXP Rv, SEXP Rm, SEXP Rrepetition, 
-                       SEXP f1, SEXP f2, SEXP lim, SEXP numRow,
-                       SEXP RIsComb, SEXP RIsFactor, SEXP RKeepRes) {
-    int n, m, i, j, m1, m2, nRows = 0;
-    double testRows, seqEnd;
-    bool IsRepetition, IsConstrained;
-    bool IsCharacter, IsComb, IsFactor;
-    bool SpecialCase, keepRes, IsInteger;
+template <typename TypeRcpp, typename stdType>
+TypeRcpp MultisetPermutation(int n, std::vector<stdType> v, std::vector<int> Reps, int numRows) {
+    int i, j, numCols = 0;
+    std::vector<stdType> permVec;
     
-    switch(TYPEOF(Rm)) {
-        case REALSXP: {
-            m = as<int>(Rm);
-            break;
-        }
-        case INTSXP: {
-            m = as<int>(Rm);
-            break;
-        }
-        default: {
-            stop("m must be of type numeric or integer");
+    for (i = 0; i < n; i++) {numCols += Reps[i];}
+    
+    permVec.reserve(numCols);
+    for (i = 0; i < n; i++) {
+        for (j = 0; j < Reps[i]; j++) {
+            permVec.push_back(v[i]);
         }
     }
     
-    if (m < 1) {stop("m must be positive");}
-    std::vector<double> vNum;
+    TypeRcpp permuteMatrix(numRows, numCols);
+    
+    for (i = 0; i < numRows; i++) {
+        for (j = 0; j < numCols; j++) {
+            permuteMatrix(i, j) = permVec[j];
+        }
+        std::next_permutation(permVec.begin(), permVec.end());
+    }
+    
+    return permuteMatrix;
+}
+
+// [[Rcpp::export]]
+SEXP CombinatoricsRcpp(SEXP Rv, SEXP Rm, SEXP Rrepetition, 
+                       SEXP f1, SEXP f2, SEXP lim, SEXP numRow,
+                       SEXP RIsComb, SEXP RIsFactor,
+                       SEXP RKeepRes, SEXP RFreqs) {
+    
+    int n, m = 0, i, j, m1, m2;
+    int lenFreqs, nRows = 0;
+    double testRows, seqEnd;
+    bool IsRepetition, IsInteger;
+    bool keepRes, IsComb, IsFactor;
+    bool SpecialCase, IsCharacter;
+    bool IsConstrained, IsMultiset = false;
+    
+    std::vector<double> vNum, freqsExpanded;
     IntegerVector vFactor;
-    std::vector<int> vInt;
+    std::vector<int> vInt, myReps;
     std::vector<std::string > vStr;
-    std::vector<double> rowVec(m);
     
     switch(TYPEOF(Rv)) {
         case REALSXP: {
@@ -548,11 +563,53 @@ SEXP CombinatoricsRcpp(SEXP Rv, SEXP Rm, SEXP Rrepetition,
         }
     }
     
+    IsComb = as<bool>(RIsComb);
+    
+    if (Rf_isNull(Rm)) {
+        if (Rf_isNull(RFreqs)) {
+            m = Rf_length(Rv);
+        } else {
+            IsMultiset = true;
+            switch(TYPEOF(RFreqs)) {
+                case REALSXP: {
+                    myReps = as<std::vector<int> >(RFreqs);
+                    break;
+                }
+                case INTSXP: {
+                    myReps = as<std::vector<int> >(RFreqs);
+                    break;
+                }
+                default: {
+                    stop("freqs must be of type numeric or integer");
+                }
+            }
+            lenFreqs = myReps.size();
+            for (i = 0; i < lenFreqs; i++) {
+                if (myReps[i] < 1) {stop("each element in freqs must be a positive number");}
+                for (j = 0; j < myReps[i]; j++) {freqsExpanded.push_back(i);}
+            }
+        }
+    } else {
+        switch(TYPEOF(Rm)) {
+            case REALSXP: {
+                m = as<int>(Rm);
+                break;
+            }
+            case INTSXP: {
+                m = as<int>(Rm);
+                break;
+            }
+            default: {
+                stop("m must be of type numeric or integer");
+            }
+        }
+    }
+    
+    std::vector<double> rowVec(m);
+    if (!IsMultiset) {if (m < 1) {stop("m must be positive");}}
     if (!Rf_isLogical(Rrepetition)) {stop("repetitions must be a logical value");}
     IsRepetition = as<bool >(Rrepetition);
-    IsComb = as<bool>(RIsComb);
     IsFactor = as<bool>(RIsFactor);
-    
     if (!Rf_isLogical(RKeepRes)) {stop("keepResults must be a logical value");}
     keepRes = as<bool>(RKeepRes);
     
@@ -575,29 +632,38 @@ SEXP CombinatoricsRcpp(SEXP Rv, SEXP Rm, SEXP Rrepetition,
     
     if (IsInteger) {vInt.assign(vNum.begin(), vNum.end());}
     if (IsFactor) {IsCharacter = IsInteger = false;}
-
-    if (IsRepetition) {
-        if (IsComb) {
-            testRows = GetRowNum(n, m);
-        } else {
-            testRows = pow((double)n, (double)m);
-        }
+    
+    if (IsMultiset) {
+        if (n != lenFreqs) {stop("the length of freqs must equal the length of v");}
+        testRows = NumPermsWithRep(freqsExpanded);
     } else {
-        if (m > n) {stop("m must be less than or equal to the length of v");}
-        if (IsComb) {
-            testRows = nChooseK(n, m);
+        if (IsRepetition) {
+            if (IsComb) {
+                testRows = GetRowNum(n, m);
+            } else {
+                testRows = pow((double)n, (double)m);
+            }
         } else {
-            testRows = NumPermsNoRep(n, m);
+            if (m > n) {stop("m must be less than or equal to the length of v");}
+            if (IsComb) {
+                testRows = nChooseK(n, m);
+            } else {
+                testRows = NumPermsNoRep(n, m);
+            }
         }
     }
 
     if (IsCharacter) {
         if (testRows > 2147483647) {stop("The number of rows cannot exceed 2^31 - 1.");}
         nRows = testRows;
-        if (IsComb){
-            return ComboGeneral<CharacterMatrix>(n, m, vStr, IsRepetition, nRows, false);
+        if (IsMultiset) {
+            return MultisetPermutation<CharacterMatrix>(n, vStr, myReps, nRows);
         } else {
-            return PermuteGeneral<CharacterMatrix>(n, m, vStr, IsRepetition, nRows, false);
+            if (IsComb){
+                return ComboGeneral<CharacterMatrix>(n, m, vStr, IsRepetition, nRows, false);
+            } else {
+                return PermuteGeneral<CharacterMatrix>(n, m, vStr, IsRepetition, nRows, false);
+            }
         }
     } else {
         if (Rf_isNull(lim)) {
@@ -794,8 +860,8 @@ SEXP CombinatoricsRcpp(SEXP Rv, SEXP Rm, SEXP Rrepetition,
         } else {
             if (testRows > 2147483647) {stop("The number of rows cannot exceed 2^31 - 1.");}
             nRows = testRows;
-            if (Rf_isNull(f1)) {keepRes = false;}
-
+            
+            if (Rf_isNull(f1) || IsMultiset) {keepRes = false;}
             if (keepRes) {
                 NumericMatrix matRes;
 
@@ -828,11 +894,15 @@ SEXP CombinatoricsRcpp(SEXP Rv, SEXP Rm, SEXP Rrepetition,
                     vInt.assign(vFactor.begin(), vFactor.end());
                     CharacterVector myClass = testFactor.attr("class");
                     CharacterVector myLevels = testFactor.attr("levels");
-
-                    if (IsComb) {
-                        factorMat = ComboGeneral<IntegerMatrix>(n, m, vInt, IsRepetition, nRows, false);
+                    
+                    if (IsMultiset) {
+                        factorMat = MultisetPermutation<IntegerMatrix>(n, vInt, myReps, nRows);
                     } else {
-                        factorMat = PermuteGeneral<IntegerMatrix>(n, m, vInt, IsRepetition, nRows, false);
+                        if (IsComb) {
+                            factorMat = ComboGeneral<IntegerMatrix>(n, m, vInt, IsRepetition, nRows, false);
+                        } else {
+                            factorMat = PermuteGeneral<IntegerMatrix>(n, m, vInt, IsRepetition, nRows, false);
+                        }
                     }
 
                     factorMat.attr("class") = myClass;
@@ -840,17 +910,25 @@ SEXP CombinatoricsRcpp(SEXP Rv, SEXP Rm, SEXP Rrepetition,
 
                     return factorMat;
                 } else {
-                    if (IsComb) {
+                    if (IsMultiset) {
                         if (IsInteger) {
-                            return ComboGeneral<IntegerMatrix>(n, m, vInt, IsRepetition, nRows, false);
+                            return MultisetPermutation<IntegerMatrix>(n, vInt, myReps, nRows);
                         } else {
-                            return ComboGeneral<NumericMatrix>(n, m, vNum, IsRepetition, nRows, false);
+                            return MultisetPermutation<NumericMatrix>(n, vNum, myReps, nRows);
                         }
                     } else {
-                        if (IsInteger) {
-                            return PermuteGeneral<IntegerMatrix>(n, m, vInt, IsRepetition, nRows, false);
+                        if (IsComb) {
+                            if (IsInteger) {
+                                return ComboGeneral<IntegerMatrix>(n, m, vInt, IsRepetition, nRows, false);
+                            } else {
+                                return ComboGeneral<NumericMatrix>(n, m, vNum, IsRepetition, nRows, false);
+                            }
                         } else {
-                            return PermuteGeneral<NumericMatrix>(n, m, vNum, IsRepetition, nRows, false);
+                            if (IsInteger) {
+                                return PermuteGeneral<IntegerMatrix>(n, m, vInt, IsRepetition, nRows, false);
+                            } else {
+                                return PermuteGeneral<NumericMatrix>(n, m, vNum, IsRepetition, nRows, false);
+                            }
                         }
                     }
                 }
