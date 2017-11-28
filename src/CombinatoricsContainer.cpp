@@ -116,36 +116,33 @@ double GetRowNum(int n, int r) {
 // the information posted by Dirk Eddelbuettel from
 // this Rcpp Gallery (http://gallery.rcpp.org/articles/passing-cpp-function-pointers/)
 
-double prodCpp(std::vector<double>& v, int& r) {
-    std::vector<double>::iterator i;
-    std::vector<double>::iterator myEnd = v.begin()+r;
+double prodCpp(std::vector<double>& v) {
+    std::vector<double>::iterator it, vEnd = v.end();
     double myProduct = 1.0;
-    for (i = v.begin(); i < myEnd; i++) {myProduct *= *i;}
+    for (it = v.begin(); it < vEnd; it++) {myProduct *= *it;}
     return(myProduct);
 }
 
-double sumCpp(std::vector<double>& v, int& r) {
-    std::vector<double>::iterator i;
-    std::vector<double>::iterator myEnd = v.begin()+r;
+double sumCpp(std::vector<double>& v) {
+    std::vector<double>::iterator it, vEnd = v.end();
     double mySum = 0.0;
-    for (i = v.begin(); i < myEnd; i++) {mySum += *i;}
+    for (it = v.begin(); it < vEnd; it++) {mySum += *it;}
     return(mySum);
 }
 
-double meanCpp(std::vector<double>& v, int& r){
-    double mySum = sumCpp(v, r);
-    return mySum/r;
+double meanCpp(std::vector<double>& v){
+    unsigned long int s = v.size();
+    double mySum = sumCpp(v);
+    return mySum/s;
 }
 
-double maxCpp(std::vector<double>& v, int& r) {
-    std::vector<double>::iterator myEnd = v.begin()+r;
-    std::vector<double>::iterator y = std::max_element(v.begin(), myEnd);
+double maxCpp(std::vector<double>& v) {
+    std::vector<double>::iterator y = std::max_element(v.begin(), v.end());
     return v[std::distance(v.begin(), y)];
 }
 
-double minCpp(std::vector<double>& v, int& r) {
-    std::vector<double>::iterator myEnd = v.begin()+r;
-    std::vector<double>::iterator y = std::min_element(v.begin(), myEnd);
+double minCpp(std::vector<double>& v) {
+    std::vector<double>::iterator y = std::min_element(v.begin(), v.end());
     return v[std::distance(v.begin(), y)];
 }
 
@@ -156,7 +153,7 @@ bool lessEqualCpp(double& x, double& y) {return x <= y;}
 bool greaterEqualCpp(double& x, double& y) {return x >= y;}
 bool equalCpp(double& x, double& y) {return x == y;}
 
-typedef double (*funcPtr)(std::vector<double>& x, int& y);
+typedef double (*funcPtr)(std::vector<double>& x);
 typedef bool (*compPtr)(double& x, double& y);
 
 XPtr<funcPtr> putFunPtrInXPtr(std::string fstr) {
@@ -275,12 +272,12 @@ TypeRcpp CombinatoricsConstraints(int n, int r, std::vector<double> v,
             
             t_2 = true;
             for (i = 0; i < r; i++) {testVec[i] = v[z[i]];}
-            testVal = constraintFun(testVec, r);
+            testVal = constraintFun(testVec);
             t = comparisonFunTwo(testVal, lim);
             
             while (t && t_2 && keepGoing) {
                 
-                testVal = constraintFun(testVec, r);
+                testVal = constraintFun(testVec);
                 t_1 = comparisonFunOne(testVal, lim);
                 
                 if (t_1) {
@@ -305,7 +302,7 @@ TypeRcpp CombinatoricsConstraints(int n, int r, std::vector<double> v,
                 if (t_2) {
                     z[r1]++;
                     testVec[r1] = v[z[r1]];
-                    testVal = constraintFun(testVec, r);
+                    testVal = constraintFun(testVec);
                     t = comparisonFunTwo(testVal, lim);
                 }
             }
@@ -319,7 +316,7 @@ TypeRcpp CombinatoricsConstraints(int n, int r, std::vector<double> v,
                             z[k] = z[k-1];
                             testVec[k] = v[z[k]];
                         }
-                        testVal = constraintFun(testVec, r);
+                        testVal = constraintFun(testVec);
                         t = comparisonFunTwo(testVal, lim);
                         if (t) {break;}
                     }
@@ -341,12 +338,12 @@ TypeRcpp CombinatoricsConstraints(int n, int r, std::vector<double> v,
             
             t_2 = true;
             for (i = 0; i < r; i++) {testVec[i] = v[z[i]];}
-            testVal = constraintFun(testVec, r);
+            testVal = constraintFun(testVec);
             t = comparisonFunTwo(testVal, lim);
             
             while (t && t_2 && keepGoing) {
                 
-                testVal = constraintFun(testVec, r);
+                testVal = constraintFun(testVec);
                 t_1 = comparisonFunOne(testVal, lim);
                 
                 if (t_1) {
@@ -370,7 +367,7 @@ TypeRcpp CombinatoricsConstraints(int n, int r, std::vector<double> v,
                 if (t_2) {
                     z[r1]++;
                     testVec[r1] = v[z[r1]];
-                    testVal = constraintFun(testVec, r);
+                    testVal = constraintFun(testVec);
                     t = comparisonFunTwo(testVal, lim);
                 }
             }
@@ -384,7 +381,7 @@ TypeRcpp CombinatoricsConstraints(int n, int r, std::vector<double> v,
                             z[k] = z[k-1]+1;
                             testVec[k] = v[z[k]];
                         }
-                        testVal = constraintFun(testVec, r);
+                        testVal = constraintFun(testVec);
                         t = comparisonFunTwo(testVal, lim);
                         if (t) {break;}
                     }
@@ -827,7 +824,7 @@ SEXP CombinatoricsRcpp(SEXP Rv, SEXP Rm, SEXP Rrepetition,
 
                 for (i = 0; i < nRows; i++) {
                     for (j = 0; j < m; j++) {rowVec[j] = matRes(i, j);}
-                    testVal = myFun1(rowVec, m);
+                    testVal = myFun1(rowVec);
                     Success = myComp(testVal, myLim);
                     if (Success) {
                         indexMatch.push_back(i);
@@ -858,7 +855,7 @@ SEXP CombinatoricsRcpp(SEXP Rv, SEXP Rm, SEXP Rrepetition,
 
                 for (i = 0; i < nRows; i++) {
                     for (j = 0; j < m; j++) {vNum[j] = matRes(i, j);}
-                    matRes(i, m) = myFun1(vNum, m);
+                    matRes(i, m) = myFun1(vNum);
                 }
 
                 return matRes;
@@ -896,7 +893,7 @@ SEXP CombinatoricsRcpp(SEXP Rv, SEXP Rm, SEXP Rrepetition,
 
                 for (i = 0; i < nRows; i++) {
                     for (j = 0; j < m; j++) {rowVec[j] = matRes(i, j);}
-                    matRes(i, m) = myFun2(rowVec, m);
+                    matRes(i, m) = myFun2(rowVec);
                 }
 
                 return matRes;
