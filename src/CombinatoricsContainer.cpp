@@ -229,7 +229,7 @@ TypeRcpp CombinatoricsConstraints(int n, int r, std::vector<double> v,
     // where myFun is one of the following general functions: "prod", "sum", "mean", "min", or "max"
     // and myComparison is a comparison operator: "<", "<=", ">", or ">="
     
-    double extremeV, testVal;
+    double testVal;
     int count = 0, vSize = v.size(), numCols;
     
     // constraintFun is a pointer to one of the functions defined above
@@ -245,11 +245,9 @@ TypeRcpp CombinatoricsConstraints(int n, int r, std::vector<double> v,
 
     if (myComparison == ">" || myComparison == ">=") {
         std::sort(v.begin(), v.end(), std::greater<double>());
-        extremeV = minCpp(v, vSize);
         comparisonFunTwo = *xpCompOne;
     } else {
         std::sort(v.begin(), v.end());
-        extremeV = maxCpp(v, vSize);
         if (myComparison == "==") {
             XPtr<compPtr> xpCompThree = putCompPtrInXPtr("<=");
             comparisonFunTwo = *xpCompThree;
@@ -332,7 +330,7 @@ TypeRcpp CombinatoricsConstraints(int n, int r, std::vector<double> v,
     } else {
         
         for (i = 0; i < r; i++) {z.push_back(i);}
-        int indexRows;
+        int indexRows = 0;
         IntegerMatrix indexMatrix;
         if (!isComb) {
             indexRows = (int)NumPermsNoRep(r, r-1);
@@ -543,7 +541,7 @@ SEXP CombinatoricsRcpp(SEXP Rv, SEXP Rm, SEXP Rrepetition,
                        SEXP RKeepRes, SEXP RFreqs) {
     
     int n, m = 0, i, j, m1, m2;
-    int lenFreqs, nRows = 0;
+    int lenFreqs = 0, nRows = 0;
     double testRows, seqEnd;
     bool IsRepetition, IsInteger;
     bool keepRes, IsComb, IsFactor;

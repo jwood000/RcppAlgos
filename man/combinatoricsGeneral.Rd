@@ -12,18 +12,18 @@ comboGeneral(v, m, repetition = FALSE, constraintFun = NULL,
                 comparisonFun = NULL, limitConstraints = NULL,
                 rowCap = NULL, keepResults = FALSE)
 
-permuteGeneral(v, m, repetition = FALSE, constraintFun = NULL,
+permuteGeneral(v, m = NULL, repetition = FALSE, constraintFun = NULL,
                   comparisonFun = NULL, limitConstraints = NULL,
                   rowCap = NULL, keepResults = FALSE, freqs = NULL)
 }
 \arguments{
   \item{v}{Source vector. If \code{v} is an integer, it will be converted to the sequence \code{1:v}.}
-  \item{m}{Number of elements to choose. If \code{repetition = TRUE}, \code{m} can exceed the length of \code{v}.}
+  \item{m}{Number of elements to choose. If \code{repetition = TRUE}, \code{m} can exceed the length of \code{v}. For \code{permuteGeneral}, the default is \code{NULL}. This is to allow for permutations of multisets utilizing the \code{freqs} argument (See below).}
   \item{repetition}{Logical value indicating whether combinations should be with or without repetition. The default is \code{FALSE}.}
   \item{constraintFun}{Function to be applied to the elements of \code{v} that should be passed as a string (\emph{E.g.} \code{constraintFun = "sum"}). The possible contraint functions are: \code{"sum"}, \code{"prod"}, \code{"mean"}, \code{"max"}, & \code{"min"}. The default is \code{NULL}, meaning no function is applied.}
   \item{comparisonFun}{Comparison operator that will be used to compare \code{limitConstraints} with the result of \code{contraintFun} applied to \code{v}. It should be passed as a string (\emph{E.g.} \code{comparisonFun = "<="}). The possible comparison operators are: \code{"<"}, \code{">"}, \code{"<="}, \code{">="}, \code{"=="}. The default is \code{NULL}.}
   \item{limitConstraints}{This is the value that will be used for comparison. The default is \code{NULL}.}
-  \item{rowCap}{The maximal number of expected results when a contraint is applied. Can also be used if you only need a specific number of combinations. This is useful when the total number of combinations without contraint is large and you expect/need a small number of combinations that meet the criteria. Using \code{rowCap} can drastically improve run time and avoid unnecessary crashes due to lack of memory. See examples below.}
+  \item{rowCap}{The maximal number of expected results when a contraint is applied. Can also be used if you only need a specific number of combinations/permutations. This is useful when the total number of combinations/permutations without contraint is large and you expect/need a small number of combinations/permutations that meet the criteria. Using \code{rowCap} can drastically improve run time and avoid unnecessary crashes due to lack of memory. See examples below.}
   \item{keepResults}{A logical flag indicating if the result of \code{constraintFun} applied to \code{v} should be displayed; if \code{TRUE}, an additional column of results will be added to the resulting matrix. The default is \code{FALSE}.}
 \item{freqs}{Only valid for \code{permuteGeneral}. A vector of frequencies used for producing all permutations of a multiset of \code{v}. Each element of \code{freqs} represents how many times each element of the source vector, \code{v}, is repeated. It is analogous to the \code{times} argument in \code{\link[base]{rep}}. The default value is \code{NULL}. Ignored if \code{m} is supplied.
 }
@@ -85,8 +85,8 @@ system.time(comboGeneral(mySamp,7,FALSE,"sum",">",7200,1000))
 ## (i.e. choose(75, 7)*7*8/(2^30)).
 
 ## class of the source vector is preserved
-class(comboGeneral(5,3)) == class(1:5)
-class(comboGeneral(c(1,2:5),3)) == class(c(1,2:5))
+class(comboGeneral(5,3)[1,]) == class(1:5)
+class(comboGeneral(c(1,2:5),3)[1,]) == class(c(1,2:5))
 
 \dontrun{
 ## Using keepResults will add a column of results
@@ -100,7 +100,7 @@ system.time(myComb <- comboGeneral(25,13,FALSE,"mean","<",10))
 ## Alternatively, you must generate all combinations and subsequently
 ## subset to obtain the combinations that meet the criteria
 system.time(myComb2 <- combn(25,13))
-system.time(myCols <- which(apply(myComb2, 2, mean) < 10))
+system.time(myCols <- which(colMeans(myComb2) < 10))
 system.time(myComb2 <- myComb2[,myCols])
 
 ## Any variation is much slower
