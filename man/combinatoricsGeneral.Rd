@@ -14,7 +14,7 @@ comboGeneral(v, m, repetition = FALSE, constraintFun = NULL,
 
 permuteGeneral(v, m, repetition = FALSE, constraintFun = NULL,
                   comparisonFun = NULL, limitConstraints = NULL,
-                  rowCap = NULL, keepResults = FALSE)
+                  rowCap = NULL, keepResults = FALSE, freqs = NULL)
 }
 \arguments{
   \item{v}{Source vector. If \code{v} is an integer, it will be converted to the sequence \code{1:v}.}
@@ -25,18 +25,21 @@ permuteGeneral(v, m, repetition = FALSE, constraintFun = NULL,
   \item{limitConstraints}{This is the value that will be used for comparison. The default is \code{NULL}.}
   \item{rowCap}{The maximal number of expected results when a contraint is applied. Can also be used if you only need a specific number of combinations. This is useful when the total number of combinations without contraint is large and you expect/need a small number of combinations that meet the criteria. Using \code{rowCap} can drastically improve run time and avoid unnecessary crashes due to lack of memory. See examples below.}
   \item{keepResults}{A logical flag indicating if the result of \code{constraintFun} applied to \code{v} should be displayed; if \code{TRUE}, an additional column of results will be added to the resulting matrix. The default is \code{FALSE}.}
+\item{freqs}{Only valid for \code{permuteGeneral}. A vector of frequencies used for producing all permutations of a multiset of \code{v}. Each element of \code{freqs} represents how many times each element of the source vector, \code{v}, is repeated. It is analogous to the \code{times} argument in \code{\link[base]{rep}}. The default value is \code{NULL}. Ignored if \code{m} is supplied.
+}
 }
 \value{
-Returns a matrix where each row contains a vector of length \eqn{m} or \eqn{m + 1} depending on the value of \code{keepResults}.
+In general, a matrix is returned with each row containing a vector of length \eqn{m} or \eqn{m + 1} depending on the value of \code{keepResults}. For \code{permuteGeneral}, if \code{m} isn't supplied and \code{freqs} is given, a matrix is returned with each row containing a vector of length \code{sum(freqs)}.
 }
 \details{
-Finding all combinations/permutations with constraints is optimized by organizing them in such a way that when \code{constraintFun} is applied, a monotonic sequence is produced. In this way, we can immediately terminate execution once the criteria is no longer met, thus reducing the need to generate further combinations/permutations.
+Finding all combinations/permutations with constraints is optimized by organizing them in such a way that when \code{constraintFun} is applied, a monotonic sequence is produced. Combinations/permutations are added successively, until a particular combination exceeds the given constraint value for a given constraint/comparison function combo. After this point, we can safely skip several combinations knowing that they will exceed the given constraint value.
 
 When there are any negative values in \code{v} and \code{constraintFun = "prod"}, producing a monotonic set is non-trivial for the general case. As a result, performance will suffer as all combinations/permutations must be tested against the constraint criteria. Additionally, \code{rowCap} will not have its normal effectiveness (\emph{i.e.} it will only limit the number of rows after producing all combinations/permutations).
 }
 \note{
 \itemize{
-\item If either \code{constraintFun}, \code{comparisonFun} or \code{limitConstraints} is \code{NULL}, the contraint check will not be carried out. This is equivalent to simply finding all combinations of \eqn{v} choose \eqn{m}.
+\item If either \code{constraintFun}, \code{comparisonFun} or \code{limitConstraints} is \code{NULL}, the contraint check will not be carried out. This is equivalent to simply finding all combinations/permutations of \eqn{v} choose \eqn{m}.
+\item If \code{freqs} is supplied (for \code{permuteGeneral} only), the constraint check will not be carried out. This is equivalent to finding all permutations of the multiset \code{rep(v, times = freqs)}.
 \item The maximum number of rows is \eqn{2^{31} - 1}{2^31 - 1}.
 \item Factor vectors are accepted. Class and level attributes are preserved.
 }
@@ -49,6 +52,7 @@ Joseph Wood
 \item{\href{http://gallery.rcpp.org/articles/passing-cpp-function-pointers/}{Passing user-supplied C++ functions}}
 \item{\href{https://en.wikipedia.org/wiki/Heap\%27s_algorithm}{Heap's Algorithm}}
 \item{\href{https://en.wikipedia.org/wiki/Monotonic_function}{Monotonic Sequence}}
+\item{\href{https://en.wikipedia.org/wiki/Multiset}{Multiset}}
 }
 }
 \examples{
@@ -56,7 +60,11 @@ system.time(comboGeneral(17,8))
 system.time(permuteGeneral(13,6))
 
 system.time(comboGeneral(13,10,repetition = TRUE))
-system.time(permuteGeneral(9,6,TRUE))
+system.time(permuteGeneral(factor(letters[1:9]),6,TRUE))
+
+## permutations of the multiset :
+## c(1,1,1,1,2,2,2,3,3,4,4,4,4,4)
+system.time(permuteGeneral(4, freqs = c(4,3,2,5)))
 
 ## Generate some random data
 set.seed(1009)
@@ -81,7 +89,7 @@ class(comboGeneral(5,3)) == class(1:5)
 class(comboGeneral(c(1,2:5),3)) == class(c(1,2:5))
 
 \dontrun{
-## Using keepResults will add a columns of results
+## Using keepResults will add a column of results
 permuteGeneral(-3,6,TRUE,"prod",keepResults = TRUE)
 comboGeneral(-3,6,TRUE,"sum","==",-8,keepResults = TRUE)
 
@@ -92,7 +100,7 @@ system.time(myComb <- comboGeneral(25,13,FALSE,"mean","<",10))
 ## Alternatively, you must generate all combinations and subsequently
 ## subset to obtain the combinations that meet the criteria
 system.time(myComb2 <- combn(25,13))
-ystem.time(myCols <- which(apply(myComb2, 2, mean) < 10))
+system.time(myCols <- which(apply(myComb2, 2, mean) < 10))
 system.time(myComb2 <- myComb2[,myCols])
 
 ## Any variation is much slower
@@ -101,8 +109,8 @@ system.time(myComb2 <- combn(25,13)[,combn(25,13,mean) < 10])
 ## Test equality with myComb above
 all.equal(myComb,t(myComb2))
 
-
-## Fun example
-system.time(permuteGeneral(seq(0,100,20),10,TRUE,"sum","==",100,10^5))
+## Fun example... see stackoverflow:
+## https://stackoverflow.com/q/22218640/4408538
+system.time(permuteGeneral(seq(0L,100L,10L),8,TRUE,"sum","==",100,10^5))
 }
 }

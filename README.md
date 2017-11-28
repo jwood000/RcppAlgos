@@ -63,7 +63,6 @@ comboGeneral(v = c(2, 3, 5, 7, 11),
 ## Generate some random data
 set.seed(101)
 s <- sample(500, 20)
-
 ## Find all 5-tuples permutations without repetition
 ## of s (defined above) such that the sum is equal to 1176.
 p <- permuteGeneral(v = s,
@@ -94,7 +93,7 @@ tail(p)
 
 ## Generate all permutations of a vector with specific
 ## length of repetition for each element
-permuteRepLen(3, c(1,2,2))
+permuteGeneral(3, freqs = c(1,2,2))
       [,1] [,2] [,3] [,4] [,5]
  [1,]    1    2    2    3    3
  [2,]    1    2    3    2    3
@@ -111,8 +110,8 @@ permuteRepLen(3, c(1,2,2))
 
 
 ## All combinatoric functions work with factors
-facPerms <- permuteRepLen(factor(c("low", "med", "high")),
-                                     repLengths = c(1,4,2))
+facPerms <- permuteGeneral(factor(c("low", "med", "high")),
+                                     freqs = c(1,4,2))
 facPerms[1:5, ]
      [,1] [,2] [,3] [,4] [,5] [,6] [,7]
 [1,] high low  low  low  low  med  med 
@@ -124,8 +123,7 @@ Levels: high low med
 
 
 ## They are very efficient as well!!
-system.time(permuteRepLen(4, 5:2))
-
+system.time(permuteGeneral(4, freqs = 5:2))
 ## That's over 2.5 million permutations instantly!!
 
 

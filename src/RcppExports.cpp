@@ -6,8 +6,8 @@
 using namespace Rcpp;
 
 // CombinatoricsRcpp
-SEXP CombinatoricsRcpp(SEXP Rv, SEXP Rm, SEXP Rrepetition, SEXP f1, SEXP f2, SEXP lim, SEXP numRow, SEXP RIsComb, SEXP RIsFactor, SEXP RKeepRes);
-RcppExport SEXP _RcppAlgos_CombinatoricsRcpp(SEXP RvSEXP, SEXP RmSEXP, SEXP RrepetitionSEXP, SEXP f1SEXP, SEXP f2SEXP, SEXP limSEXP, SEXP numRowSEXP, SEXP RIsCombSEXP, SEXP RIsFactorSEXP, SEXP RKeepResSEXP) {
+SEXP CombinatoricsRcpp(SEXP Rv, SEXP Rm, SEXP Rrepetition, SEXP f1, SEXP f2, SEXP lim, SEXP numRow, SEXP RIsComb, SEXP RIsFactor, SEXP RKeepRes, SEXP RFreqs);
+RcppExport SEXP _RcppAlgos_CombinatoricsRcpp(SEXP RvSEXP, SEXP RmSEXP, SEXP RrepetitionSEXP, SEXP f1SEXP, SEXP f2SEXP, SEXP limSEXP, SEXP numRowSEXP, SEXP RIsCombSEXP, SEXP RIsFactorSEXP, SEXP RKeepResSEXP, SEXP RFreqsSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -21,7 +21,8 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< SEXP >::type RIsComb(RIsCombSEXP);
     Rcpp::traits::input_parameter< SEXP >::type RIsFactor(RIsFactorSEXP);
     Rcpp::traits::input_parameter< SEXP >::type RKeepRes(RKeepResSEXP);
-    rcpp_result_gen = Rcpp::wrap(CombinatoricsRcpp(Rv, Rm, Rrepetition, f1, f2, lim, numRow, RIsComb, RIsFactor, RKeepRes));
+    Rcpp::traits::input_parameter< SEXP >::type RFreqs(RFreqsSEXP);
+    rcpp_result_gen = Rcpp::wrap(CombinatoricsRcpp(Rv, Rm, Rrepetition, f1, f2, lim, numRow, RIsComb, RIsFactor, RKeepRes, RFreqs));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -44,19 +45,6 @@ BEGIN_RCPP
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< SEXP >::type n(nSEXP);
     rcpp_result_gen = Rcpp::wrap(DivisorListRcpp(n));
-    return rcpp_result_gen;
-END_RCPP
-}
-// PermsRepLenRcpp
-SEXP PermsRepLenRcpp(SEXP Rv, SEXP Rm, SEXP RIsFactor);
-RcppExport SEXP _RcppAlgos_PermsRepLenRcpp(SEXP RvSEXP, SEXP RmSEXP, SEXP RIsFactorSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< SEXP >::type Rv(RvSEXP);
-    Rcpp::traits::input_parameter< SEXP >::type Rm(RmSEXP);
-    Rcpp::traits::input_parameter< SEXP >::type RIsFactor(RIsFactorSEXP);
-    rcpp_result_gen = Rcpp::wrap(PermsRepLenRcpp(Rv, Rm, RIsFactor));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -96,10 +84,9 @@ END_RCPP
 }
 
 static const R_CallMethodDef CallEntries[] = {
-    {"_RcppAlgos_CombinatoricsRcpp", (DL_FUNC) &_RcppAlgos_CombinatoricsRcpp, 10},
+    {"_RcppAlgos_CombinatoricsRcpp", (DL_FUNC) &_RcppAlgos_CombinatoricsRcpp, 11},
     {"_RcppAlgos_NumDivisorsSieve", (DL_FUNC) &_RcppAlgos_NumDivisorsSieve, 1},
     {"_RcppAlgos_DivisorListRcpp", (DL_FUNC) &_RcppAlgos_DivisorListRcpp, 1},
-    {"_RcppAlgos_PermsRepLenRcpp", (DL_FUNC) &_RcppAlgos_PermsRepLenRcpp, 3},
     {"_RcppAlgos_PrimeFactorizationListRcpp", (DL_FUNC) &_RcppAlgos_PrimeFactorizationListRcpp, 1},
     {"_RcppAlgos_EulerPhiSieveRcpp", (DL_FUNC) &_RcppAlgos_EulerPhiSieveRcpp, 1},
     {"_RcppAlgos_EratosthenesRcpp", (DL_FUNC) &_RcppAlgos_EratosthenesRcpp, 2},

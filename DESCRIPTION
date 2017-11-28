@@ -8,11 +8,12 @@ Description: Provides optimized functions implemented in C++ with 'Rcpp'
     There are optional contraint arguments that when employed, generate
     all combinations/permutations of a vector meeting a specific criteria
     (E.g. finding all combinations such that the sum is less than a
-    bound). Additionally, there are various sieving functions that quickly
-    generate essential components for problems common in computational
-    mathematics (E.g. number of comprime elements, divisors, prime
-    factorizations, and complete factorizations for many numbers as well
-    as generating primes in a range).
+    bound). The generalized permutation function is also capable of 
+    producing all permutations of multisets. Additionally, there are
+    various sieving functions that quickly generate essential components
+    for problems common in computational mathematics (E.g. number of
+    comprime elements, divisors, prime factorizations, and complete
+    factorizations for many numbers as well as primes in a range).
 URL: https://github.com/jwood000/RcppAlgos
 BugReports: https://github.com/jwood000/RcppAlgos/issues
 Imports: Rcpp (>= 0.12.8)
