@@ -131,9 +131,9 @@ double sumCpp(std::vector<double>& v) {
 }
 
 double meanCpp(std::vector<double>& v){
-    unsigned long int s = v.size();
+    double s = v.size();
     double mySum = sumCpp(v);
-    return mySum/s;
+    return (mySum/s);
 }
 
 double maxCpp(std::vector<double>& v) {
@@ -259,7 +259,7 @@ TypeRcpp CombinatoricsConstraints(int n, int r, std::vector<double> v,
     std::vector<double> z, testVec(r), zPerm(r);
     bool t_1, t_2, t = true, keepGoing = true;
     int r1 = r - 1, r2 = r - 2, maxZ = n - 1;
-    int numPerms, k, i, j;
+    int numPerms, k, i, j, countEdge = 0;
     
     if (repetition) {
         
@@ -321,16 +321,20 @@ TypeRcpp CombinatoricsConstraints(int n, int r, std::vector<double> v,
                         if (t) {break;}
                     }
                 }
+                if (z[0] == maxZ) {
+                    countEdge++;
+                    if (countEdge > 1) {t = false;}
+                }
                 if (!t) {keepGoing = false;}
             }
         }
     } else {
         
         for (i = 0; i < r; i++) {z.push_back(i);}
-        int indexRows = 0;
+        int indexRows = 0, nMinusR = (n - r);
         IntegerMatrix indexMatrix;
         if (!isComb) {
-            indexRows = (int)NumPermsNoRep(r, r-1);
+            indexRows = (int)NumPermsNoRep(r, r1);
             indexMatrix = MakeIndexHeaps(indexRows, r);
         }
 
@@ -374,7 +378,7 @@ TypeRcpp CombinatoricsConstraints(int n, int r, std::vector<double> v,
             
             if (keepGoing) {
                 for (i = r2; i >= 0; i--) {
-                    if (z[i] != (n - r + i)) {
+                    if (z[i] != (nMinusR + i)) {
                         z[i]++;
                         testVec[i] = v[z[i]];
                         for (k = (i+1); k < r; k++) {
@@ -385,6 +389,10 @@ TypeRcpp CombinatoricsConstraints(int n, int r, std::vector<double> v,
                         t = comparisonFunTwo(testVal, lim);
                         if (t) {break;}
                     }
+                }
+                if (z[0] == nMinusR) {
+                    countEdge++;
+                    if (countEdge > 1) {t = false;}
                 }
                 if (!t) {keepGoing = false;}
             }
@@ -818,7 +826,7 @@ SEXP CombinatoricsRcpp(SEXP Rv, SEXP Rm, SEXP Rrepetition,
                 } else {
                     matRes = PermuteGeneral<NumericMatrix>(n, m, vNum, IsRepetition, nRows, keepRes);
                 }
-
+                
                 XPtr<compPtr> xpComp = putCompPtrInXPtr(compFun);
                 compPtr myComp = *xpComp;
 
@@ -831,13 +839,13 @@ SEXP CombinatoricsRcpp(SEXP Rv, SEXP Rm, SEXP Rrepetition,
                         matchVals.push_back(testVal);
                     }
                 }
-
+                
                 int numCols = m;
                 if (keepRes) {numCols++;}
                 testRows = indexMatch.size();
                 if (testRows > RUserCap) {nRows = RUserCap;} else {nRows = testRows;}
                 NumericMatrix returnMatrix(nRows, numCols);
-
+                 
                 for (i = 0; i < nRows; i++) {
                     for (j = 0; j < m; j++) {
                         returnMatrix(i,j) = matRes(indexMatch[i],j);
@@ -854,8 +862,8 @@ SEXP CombinatoricsRcpp(SEXP Rv, SEXP Rm, SEXP Rrepetition,
                 int nRows = matRes.nrow();
 
                 for (i = 0; i < nRows; i++) {
-                    for (j = 0; j < m; j++) {vNum[j] = matRes(i, j);}
-                    matRes(i, m) = myFun1(vNum);
+                    for (j = 0; j < m; j++) {rowVec[j] = matRes(i, j);}
+                    matRes(i, m) = myFun1(rowVec);
                 }
 
                 return matRes;
