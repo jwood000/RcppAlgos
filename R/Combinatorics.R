@@ -9,7 +9,7 @@ comboGeneral <- function(v, m, repetition=FALSE, constraintFun=NULL,
 
 permuteGeneral <- function(v, m=NULL, repetition=FALSE, constraintFun=NULL,
                            comparisonFun=NULL, limitConstraints=NULL,
-                           rowCap=NULL, keepResults=FALSE, freqs = NULL) {
+                           rowCap=NULL, keepResults=FALSE, freqs=NULL) {
     isFactor <- is.factor(v)
     CombinatoricsRcpp(v, m, repetition, constraintFun, 
                       comparisonFun, limitConstraints,

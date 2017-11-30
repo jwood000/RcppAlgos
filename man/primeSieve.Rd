@@ -56,11 +56,15 @@ all.equal(primeSieve(1,10^4), primeSieve(10^4))
 
 ## Compared to generating all primes up to the 
 ## upper bound and subsetting (see below)
+system.time(bound2_used <- primeSieve(10^9, 10^9+10^3))
+object.size(bound2_used)
 
 \dontrun{
 ## Takes a decent amount of time
-system.time(p <- primeSieve(1000001000))
-system.time(p[p >= 10^9])
+system.time(bound2_notused <- primeSieve(1000001000))
+system.time(bound2_notused[bound2_notused >= 10^9])
 ## Creates large object
-object.size(p)}
+object.size(bound2_notused)
+all.equal(bound2_notused[bound2_notused >= 10^9], bound2_used)
+}
 }
