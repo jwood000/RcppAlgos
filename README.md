@@ -1,3 +1,7 @@
+> [![Rdoc](http://www.rdocumentation.org/badges/version/RcppAlgos)](http://www.rdocumentation.org/packages/RcppAlgos)
+> ![](http://cranlogs.r-pkg.org/badges/RcppAlgos?color=orange)
+> ![](http://cranlogs.r-pkg.org/badges/grand-total/RcppAlgos?color=brightgreen)
+
 # RcppAlgos
 
 Overview
