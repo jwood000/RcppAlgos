@@ -1,0 +1,31 @@
+RcppAlgos 0.2.1 (Release date: 2017-11-29)
+
+* Fixed bug that would occur in two edge case involving the constraint functions.
+* Slightly modified formatting a primeSieve.Rd
+
+
+RcppAlgos 0.2.0 (Release date: 2017-11-28)
+
+* Updated combination algorithms. They are now more than twice as fast.
+* Updated contraint functions so that memory access is always within container bounds
+* Consolidated redundant code for outputting different Rcpp types (e.g. IntegerMatrix, CharacterMatrix, etc.) via a templated approach.
+* Added the function permuteGeneral that is analogous to comboGeneral only instead of combinations, it gives all permutations. It has an additional argument (i.e. 'freqs') that is used to generate permutations of multisets.
+* All combinatoric functions now support factor types
+
+
+RcppAlgos 0.1.2 (Release date: 2017-11-03)
+
+* Corrected minor typo in README file
+* Fixed minor error regarding explicitly comparing variables to large numbers that are typed out. Simply adding a decimal along with a zero remedies the situation.
+
+
+RcppAlgos 0.1.1 (Release date: 2017-11-03)
+
+* Improved ComboContraint function by removing unnecessary subsetting.
+* Improved PrimeSieve internal C++ algorithm
+* Corrected the errors with respect to the math functions in C++. Explicitly overloaded the parameters of these functions by casting them to the double type
+
+
+RcppAlgos 0.1.0 (Release date: 2017-10-26)
+
+* Initial Release
