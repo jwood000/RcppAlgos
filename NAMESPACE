@@ -1,6 +1,6 @@
-useDynLib(RcppAlgos, .registration = TRUE)
+useDynLib("RcppAlgos", .registration = TRUE)
 
-importFrom(Rcpp, evalCpp)
+importFrom("Rcpp", "evalCpp")
 
 export(comboGeneral,
        permuteGeneral,
