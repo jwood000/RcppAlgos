@@ -1,10 +1,10 @@
-comboGeneral <- function(v, m, repetition=FALSE, constraintFun=NULL,
+comboGeneral <- function(v, m=NULL, repetition=FALSE, constraintFun=NULL,
                          comparisonFun=NULL, limitConstraints=NULL,
-                         rowCap=NULL, keepResults=FALSE) {
+                         rowCap=NULL, keepResults=FALSE, freqs=NULL) {
     isFactor <- is.factor(v)
     CombinatoricsRcpp(v, m, repetition, constraintFun, 
                       comparisonFun, limitConstraints,
-                      rowCap, TRUE, isFactor, keepResults, NULL)
+                      rowCap, TRUE, isFactor, keepResults, freqs)
 }
 
 permuteGeneral <- function(v, m=NULL, repetition=FALSE, constraintFun=NULL,

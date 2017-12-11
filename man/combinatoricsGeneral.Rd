@@ -25,7 +25,7 @@ permuteGeneral(v, m = NULL, repetition = FALSE, constraintFun = NULL,
   \item{limitConstraints}{This is the value that will be used for comparison. The default is \code{NULL}.}
   \item{rowCap}{The maximal number of expected results when a contraint is applied. Can also be used if you only need a specific number of combinations/permutations. This is useful when the total number of combinations/permutations without contraint is large and you expect/need a small number of combinations/permutations that meet the criteria. Using \code{rowCap} can drastically improve run time and avoid unnecessary crashes due to lack of memory. See examples below.}
   \item{keepResults}{A logical flag indicating if the result of \code{constraintFun} applied to \code{v} should be displayed; if \code{TRUE}, an additional column of results will be added to the resulting matrix. The default is \code{FALSE}.}
-\item{freqs}{Only valid for \code{permuteGeneral}. A vector of frequencies used for producing all permutations of a multiset of \code{v}. Each element of \code{freqs} represents how many times each element of the source vector, \code{v}, is repeated. It is analogous to the \code{times} argument in \code{\link[base]{rep}}. The default value is \code{NULL}. Ignored if \code{m} is supplied.
+\item{freqs}{A vector of frequencies used for producing all permutations/combinations of a multiset of \code{v}. Each element of \code{freqs} represents how many times each element of the source vector, \code{v}, is repeated. It is analogous to the \code{times} argument in \code{\link[base]{rep}}. The default value is \code{NULL}.
 }
 }
 \value{
@@ -39,7 +39,7 @@ When there are any negative values in \code{v} and \code{constraintFun = "prod"}
 \note{
 \itemize{
 \item If either \code{constraintFun}, \code{comparisonFun} or \code{limitConstraints} is \code{NULL}, the contraint check will not be carried out. This is equivalent to simply finding all combinations/permutations of \eqn{v} choose \eqn{m}.
-\item If \code{freqs} is supplied (for \code{permuteGeneral} only), the constraint check will not be carried out. This is equivalent to finding all permutations of the multiset \code{rep(v, times = freqs)}.
+\item If \code{freqs} is supplied and \code{m} is left blank (for \code{permuteGeneral} only), the constraint check will not be carried out. This is equivalent to finding all permutations of the multiset \code{rep(v, times = freqs)}.
 \item The maximum number of rows is \eqn{2^{31} - 1}{2^31 - 1}.
 \item Factor vectors are accepted. Class and level attributes are preserved.
 }
