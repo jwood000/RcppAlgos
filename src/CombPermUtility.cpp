@@ -1,12 +1,12 @@
 #include <Rcpp.h>
 #include "CombPermUtility.h"
 
-Rcpp::List rleCpp(std::vector<double> x) {
+Rcpp::List rleCpp(std::vector<int> x) {
     std::vector<unsigned long int> lengths, numUni;
-    std::vector<double> values;
-    std::vector<double>::iterator it, xBeg, xEnd;
+    std::vector<int> values;
+    std::vector<int>::iterator it, xBeg, xEnd;
     xBeg = x.begin() + 1; xEnd = x.end();
-    double prev = x[0];
+    int prev = x[0];
     unsigned long int n = x.size(), i = 0;
     lengths.reserve(n);
     values.reserve(n);
@@ -27,7 +27,7 @@ Rcpp::List rleCpp(std::vector<double> x) {
     return Rcpp::List::create(lengths,values,numUni);
 }
 
-double NumPermsWithRep(std::vector<double> v) {
+double NumPermsWithRep(std::vector<int> v) {
     Rcpp::List myRle = rleCpp(v);
     unsigned long int n = v.size(), myMax;
     std::vector<unsigned long int> myLens = myRle[0], myUnis = myRle[2];
@@ -80,19 +80,76 @@ double GetRowNum(int n, int r) {
     // triangle numbers, albeit in a repeating fashion.
     int i, k;
     std::vector<double> triangleVec(n);
-    std::vector<double> temp;
+    std::vector<double> temp(n);
     for (i = 0; i < n; i++) {triangleVec[i] = i+1;}
     
     for (i = 1; i < r; i++) {
-        temp.clear();
-        temp.reserve(n);
         for (k = 1; k <= n; k++) {
-            temp.push_back(std::accumulate(triangleVec.begin(), triangleVec.begin() + k, 0.0));
+            temp[k-1] = std::accumulate(triangleVec.begin(), triangleVec.begin() + k, 0.0);
         }
         triangleVec = temp;
     }
     
     return triangleVec[n-1];
+}
+
+// Slightly different than GetRowNum above as we can't
+// guarantee 1) the repetition of each element is
+// greater than or equal to n, and 2) that the
+// repetition of the each element isn't the same
+double MultisetCombRowNum(int n, int r, std::vector<int> Reps) {
+    int i, k, j, myMax, r1 = r+1;
+    std::vector<double> triangleVec(r1);
+    std::vector<double> temp(r1);
+    double tempSum;
+    
+    myMax = r1;
+    if (myMax > Reps[0] + 1) {myMax = Reps[0] + 1;}
+    
+    for (i = 0; i < myMax; i++) {triangleVec[i] = 1;}
+    temp = triangleVec;
+    
+    for (k = 1; k < n; k++) {
+        for (i = r; i > 0; i--) {
+            myMax = i - Reps[k];
+            if (myMax < 0) {myMax = 0;}
+            
+            tempSum = 0;
+            for (j = myMax; j <= i; j++) {tempSum += triangleVec[j];}
+            temp[i] = tempSum;
+        }
+        triangleVec = temp;
+    }
+    
+    return triangleVec[r];
+}
+
+
+Rcpp::IntegerMatrix MakeIndexHeaps(unsigned long int indRows, unsigned long int r) {
+    unsigned long int j, i = 0, count = 0;
+    Rcpp::IntegerMatrix indexMatrix(indRows, r);
+    
+    std::vector<unsigned long int> vecInd(r, 0);
+    Rcpp::IntegerVector mySeq = Rcpp::seq(0, r-1);
+    for (j = 0; j < r; j++) {indexMatrix(count, j) = j;}
+    
+    while (i < r) {
+        if (vecInd[i] < i) {
+            if (i % 2 == 0)
+                std::swap(mySeq[0], mySeq[i]);
+            else
+                std::swap(mySeq[vecInd[i]], mySeq[i]);
+            count++;
+            for (j = 0; j < r; j++) {indexMatrix(count,j) = mySeq[j];}
+            vecInd[i]++;
+            i = 0;
+        } else {
+            vecInd[i] = 0;
+            i++;
+        }
+    }
+    
+    return indexMatrix;
 }
 
 // Below, we define five functions that will be utilized
