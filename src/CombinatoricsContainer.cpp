@@ -68,7 +68,8 @@ TypeRcpp CombinatoricsConstraints(int n, int r, std::vector<double> v,
     // and myComparison is a comparison operator: "<", "<=", ">", or ">="
     
     double testVal;
-    int count = 0, vSize = v.size(), numCols, i, j;
+    int count = 0, vSize = v.size(), numCols;
+    int testRows, i, j, numRows2 = 0;
     
     // constraintFun is a pointer to one of the functions defined above
     XPtr<funcPtr> xpFun = putFunPtrInXPtr(myFun);
@@ -116,7 +117,30 @@ TypeRcpp CombinatoricsConstraints(int n, int r, std::vector<double> v,
             comparisonFunTwo = *xpCompOne;
         }
     }
-
+    
+    // We have to take special care for the case when we have
+    // permutations of a multiset. In the parent function
+    // CombinatoricsRcpp, when this case occurs, we set
+    // the number of rows equal to the number of rows (numRows) we would
+    // need as if we were finding all COMBINATIONS of a multiset.
+    // This is because we initially need to find all combinations
+    // that meet the constraints and subsequently find the
+    // permutations using std::next_permutation. There is logic
+    // in the parent function that accounts for the user passing
+    // a rowCap that exceeds numRows set above, as there are
+    // more possible permutations than combinations. The following
+    // captures the possible rowCap and correctly sets numRows to
+    // the number of combinations of a multiset. We then use
+    // these two numbers to determine when we need to terminate.
+    
+    bool executeCap = true;
+    testRows = numRows;
+    
+    if (!isComb && isMult) {
+        numRows = MultisetCombRowNum(n, r, Reps);
+        if (testRows == numRows) {executeCap = false;}
+    }
+    
     if (xtraCol) {numCols = r+1;} else {numCols = r;}
     TypeRcpp combinatoricsMatrix(numRows, numCols);
     
@@ -128,6 +152,8 @@ TypeRcpp CombinatoricsConstraints(int n, int r, std::vector<double> v,
     
     if (isMult) {
         int zExpSize = 0;
+        std::vector<int> eachRowCount;
+        if (!isComb) {eachRowCount.reserve(numRows);}
         std::vector<int> zExpand, zIndex, zGroup(r);
         for (i = 0; i < n; i++) {zExpSize += Reps[i];}
         
@@ -158,20 +184,19 @@ TypeRcpp CombinatoricsConstraints(int n, int r, std::vector<double> v,
                 t_1 = comparisonFunOne(testVal, lim);
                 
                 if (t_1) {
-                    if (isComb) {
-                        for (k=0; k < r; k++) {combinatoricsMatrix(count, k) = v[zExpand[zIndex[z[k]]]];}
-                        count++;
-                    } else {
+                    for (k=0; k < r; k++) {combinatoricsMatrix(count, k) = v[zExpand[zIndex[z[k]]]];}
+                    count++;
+                    
+                    if (!isComb) {
                         for (k=0; k < r; k++) {zPerm[k] = zExpand[zIndex[z[k]]];}
                         numIter = (int)NumPermsWithRep(zPerm);
-                        if (numIter + count > numRows) {numIter = numRows - count;}
-                        for (i=0; i < numIter; i++) {
-                            for (k=0; k < r; k++) {combinatoricsMatrix(count, k) = v[zPerm[k]];}
-                            std::next_permutation(zPerm.begin(), zPerm.end());
-                            count++;
-                        }
+                        numRows2 += numIter;
+                        eachRowCount.push_back(numIter);
                     }
-                    keepGoing = (count < numRows);
+                    
+                    if (executeCap) {
+                        keepGoing = (count < testRows);    
+                    }
                 }
                 
                 t_2 = (z[r1] != maxZ);
@@ -207,6 +232,39 @@ TypeRcpp CombinatoricsConstraints(int n, int r, std::vector<double> v,
                 if (!t) {keepGoing = false;}
             }
         }
+  
+        if (!isComb) {
+            TypeRcpp permuteMatrix(numRows2, numCols);
+            std::vector<double>::iterator myIter, permEnd;
+            int count2 = 0, segment = 0;
+            bool bTooMany = false;
+            
+            for (i = 0; i < count; i++) {
+                // populate permVec with next combination
+                for (j = 0; j < r; j++) {testVec[j] = combinatoricsMatrix(i, j);}
+                
+                segment = eachRowCount[i];
+                if (executeCap) {
+                    if (eachRowCount[i] + count2 > testRows) {
+                        segment = testRows - count2;
+                        bTooMany = true;
+                    }
+                }
+                
+                // populate permuteMatrix with all permutations
+                // of a particular combination
+                for (j = 0; j < segment; j++, count2++) {
+                    permEnd = testVec.end();
+                    for (myIter = testVec.begin(), k = 0; myIter < permEnd; myIter++, k++) {
+                        permuteMatrix(count2, k) = *myIter;
+                    }
+                    std::next_permutation(testVec.begin(), permEnd);
+                }
+                if (bTooMany) {break;}
+            }
+            return SubMat(permuteMatrix, count2);
+        }
+        
     } else if (repetition) {
         v.erase(std::unique(v.begin(), v.end()), v.end());
         vSize = v.size();
@@ -343,7 +401,7 @@ TypeRcpp CombinatoricsConstraints(int n, int r, std::vector<double> v,
             }
         }
     }
-    
+        
     return(SubMat(combinatoricsMatrix, count));
 }
 
@@ -526,8 +584,9 @@ TypeRcpp MultisetCombination(int n, int r, std::vector<stdType> v,
 
 template <typename TypeRcpp, typename stdType>
 TypeRcpp MultisetPermutation(int n, int r, std::vector<stdType> v,
-                             std::vector<int> Reps, int numRows, bool xtraCol) {
-    
+                             std::vector<int> Reps, int numRows,
+                             bool xtraCol, bool bUserCap) {
+
     int i, j = 0, combRows, count = 0, numCols = 0;
     // sort v and order Reps by the ordering of v.
     for (i = 0; i < (n-1); i++) {
@@ -554,8 +613,7 @@ TypeRcpp MultisetPermutation(int n, int r, std::vector<stdType> v,
         std::vector<int> stdRowVec(r);
         stdType temp;
         eachRowCount.reserve(combRows);
-        int rowCount, k;
-        numRows = 0;
+        int rowCount, k, testRows = 0;
         
         for (i = 0; i < combRows; i++) {
             j = k = 0;
@@ -570,8 +628,14 @@ TypeRcpp MultisetPermutation(int n, int r, std::vector<stdType> v,
             }
             
             rowCount = (int)NumPermsWithRep(stdRowVec);
-            numRows += rowCount;
+            testRows += rowCount;
             eachRowCount.push_back(rowCount);
+        }
+        
+        if (bUserCap) {
+            if (numRows > testRows) {numRows = testRows;}
+        } else {
+            numRows = testRows;
         }
     }
     
@@ -595,22 +659,31 @@ TypeRcpp MultisetPermutation(int n, int r, std::vector<stdType> v,
         }
     } else {
         
-        int k;
+        int k, segment = 0;
+        bool bTooMany = false;
         permVec.resize(r);
         
         for (i = 0; i < combRows; i++) {
             // populate permVec with next combination
             for (j = 0; j < r; j++) {permVec[j] = myCombs(i, j);}
             
-            // populate permuteMatrix with all permutations
-            // of a particular combination
-            for (j = 0; j < eachRowCount[i]; j++, count++) {
+            if (eachRowCount[i] + count > numRows) {
+                segment = numRows - count;
+                bTooMany = true;
+            } else {
+                segment = eachRowCount[i];
+            }
+            
+            // // populate permuteMatrix with all permutations
+            // // of a particular combination
+            for (j = 0; j < segment; j++, count++) {
                 permEnd = permVec.end();
                 for (myIter = permVec.begin(), k = 0; myIter < permEnd; myIter++, k++) {
                     permuteMatrix(count, k) = *myIter;
                 }
                 std::next_permutation(permVec.begin(), permEnd);
             }
+            if (bTooMany) {break;}
         }
     }
     
@@ -739,14 +812,32 @@ SEXP CombinatoricsRcpp(SEXP Rv, SEXP Rm, SEXP Rrepetition,
      
     if (IsInteger) {vInt.assign(vNum.begin(), vNum.end());}
     if (IsFactor) {IsCharacter = IsInteger = false;}
+    
+    if (Rf_isNull(lim)) {
+        IsConstrained = false;
+    } else {
+        if (Rf_isNull(f1)) {
+            IsConstrained = false;
+        } else {
+            if (!Rf_isString(f1)) {stop("constraintFun must be passed as a character");}
+            if (Rf_isNull(f2)) {
+                IsConstrained = false;
+            } else if (IsFactor) {
+                IsConstrained = false;
+            } else {
+                IsConstrained = true;
+                if (!Rf_isString(f2)) {stop("comparisonFun must be passed as a character");}
+            }
+        }
+    }
 
     if (IsMultiset) {
         if (n != lenFreqs) {stop("the length of freqs must equal the length of v");}
-        if (IsComb) {
+        if (!IsComb && !IsConstrained && Rf_isNull(Rm)) {
+            computedRows = NumPermsWithRep(freqsExpanded);
+        } else {
             if (m > (int)freqsExpanded.size()) {m = freqsExpanded.size();}
             computedRows = MultisetCombRowNum(n, m, myReps);
-        } else {
-            computedRows = NumPermsWithRep(freqsExpanded);
         }
     } else {
         if (IsRepetition) {
@@ -765,8 +856,10 @@ SEXP CombinatoricsRcpp(SEXP Rv, SEXP Rm, SEXP Rrepetition,
         }
     }
     
+    bool bUserRow = false;
     RUserCap = 0;
     if (!Rf_isNull(numRow)) {
+        bUserRow = true;
         switch(TYPEOF(numRow)) {
             case REALSXP: {
                 RUserCap = as<double>(numRow);
@@ -791,7 +884,9 @@ SEXP CombinatoricsRcpp(SEXP Rv, SEXP Rm, SEXP Rrepetition,
         stop("The number of rows cannot exceed 2^31 - 1.");
     } else {
         nRows = RUserCap;
-        if (nRows > computedRows) {nRows = computedRows;}
+        if (nRows > computedRows) {
+            if (!IsMultiset || IsComb || !IsConstrained) {nRows = computedRows;}
+        }
     }
 
     if (IsCharacter) {
@@ -799,7 +894,7 @@ SEXP CombinatoricsRcpp(SEXP Rv, SEXP Rm, SEXP Rrepetition,
             if (IsComb) {
                 return MultisetCombination<CharacterMatrix>(n, m, vStr, myReps, nRows, false);
             } else {
-                return MultisetPermutation<CharacterMatrix>(n, m, vStr, myReps, nRows, false);
+                return MultisetPermutation<CharacterMatrix>(n, m, vStr, myReps, nRows, false, bUserRow);
             }
         } else {
             if (IsComb){
@@ -809,24 +904,6 @@ SEXP CombinatoricsRcpp(SEXP Rv, SEXP Rm, SEXP Rrepetition,
             }
         }
     } else {
-        if (Rf_isNull(lim)) {
-            IsConstrained = false;
-        } else {
-            if (Rf_isNull(f1)) {
-                IsConstrained = false;
-            } else {
-                if (!Rf_isString(f1)) {stop("constraintFun must be passed as a character");}
-                if (Rf_isNull(f2)) {
-                    IsConstrained = false;
-                } else if (IsFactor) {
-                    IsConstrained = false;
-                } else {
-                    IsConstrained = true;
-                    if (!Rf_isString(f2)) {stop("comparisonFun must be passed as a character");}
-                }
-            }
-        }
-        
         if (IsConstrained) {
             double myLim;
 
@@ -885,11 +962,20 @@ SEXP CombinatoricsRcpp(SEXP Rv, SEXP Rm, SEXP Rrepetition,
                 std::vector<double> matchVals;
                 indexMatch.reserve(nRows);
                 matchVals.reserve(nRows);
-
+                
                 if (IsComb) {
-                    matRes = ComboGeneral<NumericMatrix>(n, m, vNum, IsRepetition, nRows, keepRes);
+                    if (IsMultiset) {
+                        matRes = MultisetCombination<NumericMatrix>(n, m, vNum, myReps, nRows, keepRes);
+                    } else {
+                        matRes = ComboGeneral<NumericMatrix>(n, m, vNum, IsRepetition, nRows, keepRes);
+                    }
                 } else {
-                    matRes = PermuteGeneral<NumericMatrix>(n, m, vNum, IsRepetition, nRows, keepRes);
+                    if (IsMultiset) {
+                        matRes = MultisetPermutation<NumericMatrix>(n, m, vNum, myReps, nRows, keepRes, bUserRow);
+                        nRows = matRes.nrow();
+                    } else {
+                        matRes = PermuteGeneral<NumericMatrix>(n, m, vNum, IsRepetition, nRows, keepRes);
+                    }
                 }
                 
                 XPtr<compPtr> xpComp = putCompPtrInXPtr(compFun);
@@ -925,7 +1011,7 @@ SEXP CombinatoricsRcpp(SEXP Rv, SEXP Rm, SEXP Rrepetition,
                 NumericMatrix matRes = CombinatoricsConstraints<NumericMatrix>(n, m, vNum, IsRepetition,
                                                                         mainFun1, compFun, myLim, nRows,
                                                                         IsComb, true, myReps, IsMultiset);
-                int nRows = matRes.nrow();
+                nRows = matRes.nrow();
 
                 for (i = 0; i < nRows; i++) {
                     for (j = 0; j < m; j++) {rowVec[j] = matRes(i, j);}
@@ -966,7 +1052,8 @@ SEXP CombinatoricsRcpp(SEXP Rv, SEXP Rm, SEXP Rrepetition,
                     }
                 } else {
                     if (IsMultiset) {
-                        matRes = MultisetPermutation<NumericMatrix>(n, m, vNum, myReps, nRows, true);
+                        matRes = MultisetPermutation<NumericMatrix>(n, m, vNum, myReps, nRows, true, bUserRow);
+                        nRows = matRes.nrow();
                     } else {
                         matRes = PermuteGeneral<NumericMatrix>(n, m, vNum, IsRepetition, nRows, true);
                     }
@@ -991,7 +1078,7 @@ SEXP CombinatoricsRcpp(SEXP Rv, SEXP Rm, SEXP Rrepetition,
                         if (IsComb) {
                             factorMat = MultisetCombination<IntegerMatrix>(n, m, vInt, myReps, nRows, false);
                         } else {
-                            factorMat = MultisetPermutation<IntegerMatrix>(n, m, vInt, myReps, nRows, false);
+                            factorMat = MultisetPermutation<IntegerMatrix>(n, m, vInt, myReps, nRows, false, bUserRow);
                         }
                     } else {
                         if (IsComb) {
@@ -1023,13 +1110,13 @@ SEXP CombinatoricsRcpp(SEXP Rv, SEXP Rm, SEXP Rrepetition,
                     } else {
                         if (IsInteger) {
                             if (IsMultiset) {
-                                return MultisetPermutation<IntegerMatrix>(n, m, vInt, myReps, nRows, false);
+                                return MultisetPermutation<IntegerMatrix>(n, m, vInt, myReps, nRows, false, bUserRow);
                             } else {
                                 return PermuteGeneral<IntegerMatrix>(n, m, vInt, IsRepetition, nRows, false);
                             }
                         } else {
                             if (IsMultiset) {
-                                return MultisetPermutation<NumericMatrix>(n, m, vNum, myReps, nRows, false);
+                                return MultisetPermutation<NumericMatrix>(n, m, vNum, myReps, nRows, false, bUserRow);
                             } else {
                                 return PermuteGeneral<NumericMatrix>(n, m, vNum, IsRepetition, nRows, false);
                             }
