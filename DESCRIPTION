@@ -1,19 +1,19 @@
 Package: RcppAlgos
-Version: 0.2.2
+Version: 0.2.3
 Title: Tools for Combinatorics and Computational Mathematics
 Description: Provides optimized functions implemented in C++ with 'Rcpp'
     for solving problems in combinatorics and computational mathematics.
     There is a combination function and a permutation function that are
     both flexible as well as efficient with respect to speed and memory.
-    There are optional contraint arguments that when employed, generate
+    There are optional contraint parameters that when utilized, generate
     all combinations/permutations of a vector meeting a specific criteria
     (E.g. finding all combinations such that the sum is less than a
-    bound). The generalized permutation function is also capable of 
-    producing all permutations of multisets. Additionally, there are
-    various sieving functions that quickly generate essential components
-    for problems common in computational mathematics (E.g. number of
-    comprime elements, divisors, prime factorizations, and complete
-    factorizations for many numbers as well as primes in a range).
+    bound). Both functions are capable of handling mulitsets as well.
+    Additionally, there are various sieving functions that quickly
+    generate essential components for problems common in computational
+    mathematics (E.g. number of comprime elements, divisors, prime
+    factorizations, and complete factorizations for many numbers as
+    well as primes numbers in a range).
 URL: https://github.com/jwood000/RcppAlgos
 BugReports: https://github.com/jwood000/RcppAlgos/issues
 Imports: Rcpp (>= 0.12.8)

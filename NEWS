@@ -1,3 +1,9 @@
+RcppAlgos 0.2.3 (Release date: 2017-12-18)
+
+* Fixed segmentation fault error highlighted by valgrind check in version 0.2.2.
+* Updated DESCRIPTION file.
+
+
 RcppAlgos 0.2.2 (Release date: 2017-12-15)
 
 * Fixed bug in contraint functions that occurred when m = 1 and the constraint limit was equal to the last element in v. It was returning a 2x1 matrix with the same value twice.  It is now correctly returning a 1x1 matrix with the correct value 1 time.
