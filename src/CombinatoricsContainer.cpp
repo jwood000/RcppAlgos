@@ -615,6 +615,7 @@ TypeRcpp MultisetPermutation(int n, int r, std::vector<stdType> v,
         myCombs =  MultisetCombination<TypeRcpp>(n,r,v,Reps,combRows,false);
         std::vector<int> stdRowVec(r);
         stdType temp;
+        bool keepGoing;
         eachRowCount.reserve(combRows);
         int rowCount, k, testRows = 0;
         
@@ -623,9 +624,17 @@ TypeRcpp MultisetPermutation(int n, int r, std::vector<stdType> v,
             while (j < r) {
                 stdRowVec[j] = k;
                 temp = myCombs(i, j);
-                while (myCombs(i, j) == temp && j < r) {
+                keepGoing = true;
+                while (keepGoing) {
                     stdRowVec[j] = k;
                     j++;
+                    if (j >= r) {
+                        keepGoing = false;
+                    } else {
+                        if (myCombs(i, j) != temp) {
+                            keepGoing = false;
+                        }
+                    }
                 }
                 k++;
             }
