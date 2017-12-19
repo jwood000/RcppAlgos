@@ -1,6 +1,10 @@
 #include <Rcpp.h>
 #include "CombPermUtility.h"
 
+// Most of the code for rleCpp was obtained
+// from Hadley Wickham's article titled 
+// "High Performance functions with Rcpp"
+// found: http://adv-r.had.co.nz/Rcpp.html
 Rcpp::List rleCpp(std::vector<int> x) {
     std::vector<unsigned long int> lengths, numUni;
     std::vector<int> values;
