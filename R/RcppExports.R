@@ -13,10 +13,6 @@ DivisorListRcpp <- function(n) {
     .Call(`_RcppAlgos_DivisorListRcpp`, n)
 }
 
-tableC <- function(x) {
-    .Call(`_RcppAlgos_tableC`, x)
-}
-
 PrimeFactorizationListRcpp <- function(n) {
     .Call(`_RcppAlgos_PrimeFactorizationListRcpp`, n)
 }

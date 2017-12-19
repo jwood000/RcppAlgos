@@ -49,17 +49,6 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
-// tableC
-std::map<double, int> tableC(NumericVector x);
-RcppExport SEXP _RcppAlgos_tableC(SEXP xSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< NumericVector >::type x(xSEXP);
-    rcpp_result_gen = Rcpp::wrap(tableC(x));
-    return rcpp_result_gen;
-END_RCPP
-}
 // PrimeFactorizationListRcpp
 List PrimeFactorizationListRcpp(SEXP n);
 RcppExport SEXP _RcppAlgos_PrimeFactorizationListRcpp(SEXP nSEXP) {
@@ -99,7 +88,6 @@ static const R_CallMethodDef CallEntries[] = {
     {"_RcppAlgos_CombinatoricsRcpp", (DL_FUNC) &_RcppAlgos_CombinatoricsRcpp, 11},
     {"_RcppAlgos_NumDivisorsSieve", (DL_FUNC) &_RcppAlgos_NumDivisorsSieve, 1},
     {"_RcppAlgos_DivisorListRcpp", (DL_FUNC) &_RcppAlgos_DivisorListRcpp, 1},
-    {"_RcppAlgos_tableC", (DL_FUNC) &_RcppAlgos_tableC, 1},
     {"_RcppAlgos_PrimeFactorizationListRcpp", (DL_FUNC) &_RcppAlgos_PrimeFactorizationListRcpp, 1},
     {"_RcppAlgos_EulerPhiSieveRcpp", (DL_FUNC) &_RcppAlgos_EulerPhiSieveRcpp, 1},
     {"_RcppAlgos_EratosthenesRcpp", (DL_FUNC) &_RcppAlgos_EratosthenesRcpp, 2},

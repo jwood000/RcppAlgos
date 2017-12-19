@@ -1,7 +1,11 @@
+RcppAlgos 0.2.5
+
+* Removed unneccessary files.
+
+
 RcppAlgos 0.2.4 (Release date: 2017-12-18)
 
 * Fixed bug that occurs when non-unique elements are present for combinations with replacement.
-* Updated DESCRIPTION file.
 
 
 RcppAlgos 0.2.3 (Release date: 2017-12-18)
