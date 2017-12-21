@@ -626,8 +626,9 @@ TypeRcpp MultisetPermutation(int n, int r, std::vector<stdType> v,
         std::vector<int> stdRowVec(r);
         stdType temp;
         bool keepGoing;
+        double testRows = 0, computedRows;
         eachRowCount.reserve(combRows);
-        int rowCount, k, testRows = 0;
+        int rowCount, k;
         
         for (i = 0; i < combRows; i++) {
             j = k = 0;
@@ -649,7 +650,9 @@ TypeRcpp MultisetPermutation(int n, int r, std::vector<stdType> v,
                 k++;
             }
             
-            rowCount = (int)NumPermsWithRep(stdRowVec);
+            computedRows = NumPermsWithRep(stdRowVec);
+            if (computedRows > 2147483647) {stop("The number of rows cannot exceed 2^31 - 1.");}
+            rowCount = (int)computedRows;
             testRows += rowCount;
             eachRowCount.push_back(rowCount);
         }
@@ -657,6 +660,7 @@ TypeRcpp MultisetPermutation(int n, int r, std::vector<stdType> v,
         if (bUserCap) {
             if (numRows > testRows) {numRows = testRows;}
         } else {
+            if (testRows > 2147483647) {stop("The number of rows cannot exceed 2^31 - 1.");}
             numRows = testRows;
         }
     }

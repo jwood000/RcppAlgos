@@ -21,8 +21,8 @@ IntegerVector NumDivisorsSieve (SEXP n) {
     }
     
     if (mTest > 2147483647) {stop("n must be less than 2^31");}
-    if (mTest < 0) {stop("n must be positive");}
-    m = mTest;
+    if (mTest <= 0) {stop("n must be positive");}
+    m = (int)ceil(mTest);
     
     std::vector<int> numFacs(m, 1);
     int i, j;
@@ -54,8 +54,8 @@ List DivisorListRcpp (SEXP n) {
     }
     
     if (mTest > 2147483647) {stop("n must be less than 2^31");}
-    if (mTest < 0) {stop("n must be positive");}
-    m = mTest;
+    if (mTest <= 0) {stop("n must be positive");}
+    m = (int)ceil(mTest);
     
     std::vector<std::vector<int> > myDivList(m, std::vector<int>(1, 1));
     std::vector<std::vector<int> >::iterator it2d, itEnd;

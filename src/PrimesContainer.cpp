@@ -115,8 +115,15 @@ List PrimeFactorizationListRcpp (SEXP n) {
     }
     
     if (mTest > 2147483647) {stop("n must be less than 2^31");}
-    if (mTest < 0) {stop("n must be positive");}
-    m = mTest;
+    
+    if (mTest <= 0) {
+        stop("n must be positive");
+    } else if (mTest < 2) {
+        List trivialReturn;
+        return trivialReturn;
+    }
+    
+    m = (int)ceil(mTest);
     
     std::vector<std::vector<int> > MyPrimeList(m, std::vector<int>());
     std::vector<std::vector<int> >::iterator it2d, itEnd;
@@ -164,9 +171,16 @@ IntegerVector EulerPhiSieveRcpp (SEXP n) {
     }
     
     if (mTest > 2147483647) {stop("n must be less than 2^31");}
-    if (mTest < 0) {stop("n must be positive");}
-    m = mTest;
-
+    
+    if (mTest <= 0) {
+        stop("n must be positive");
+    } else if (mTest <= 1) {
+        IntegerVector trivialReturn(1, 1);
+        return trivialReturn;
+    }
+    
+    m = (int)ceil(mTest);
+    
     IntegerVector starterSequence = Rcpp::seq(1, m);
     NumericVector EulerPhis = as<NumericVector>(starterSequence);
     std::vector<int> EulerInt(m);
@@ -202,11 +216,11 @@ SEXP EratosthenesRcpp (SEXP Rb1, SEXP Rb2) {
             stop("bound1 must be of type numeric or integer");
         }
     }
-    
-    if (bound1 < 1 || bound1 > 9007199254740991.0) {stop("bound1 must be a positive number less than 2^53");}
 
     if (Rf_isNull(Rb2)) {
-        if (bound1 == 1) {
+        if (bound1 <= 0) {stop("n must be positive");}
+        
+        if (bound1 < 2) {
             IntegerVector v;
             return v;
         } else {
@@ -230,6 +244,8 @@ SEXP EratosthenesRcpp (SEXP Rb1, SEXP Rb2) {
             return AllPrimesCpp((int)bound1);
         }
     } else {
+        if (bound1 <= 0 || bound1 > 9007199254740991.0) {stop("bound1 must be a positive number less than 2^53");}
+        
         switch(TYPEOF(Rb2)) {
             case REALSXP: {
                 bound2 = as<double>(Rb2);
@@ -243,7 +259,7 @@ SEXP EratosthenesRcpp (SEXP Rb1, SEXP Rb2) {
                 stop("bound2 must be of type numeric or integer");
             }
         }
-        if (bound2 < 1 || bound2 > 9007199254740991.0) {stop("bound2 must be a positive number less than 2^53");}
+        if (bound2 <= 0 || bound2 > 9007199254740991.0) {stop("bound2 must be a positive number less than 2^53");}
 
         if (bound1 > bound2) {
             myMax = bound1;
@@ -252,6 +268,9 @@ SEXP EratosthenesRcpp (SEXP Rb1, SEXP Rb2) {
             myMax = bound2;
             myMin = bound1;
         }
+        
+        myMin = ceil(myMin);
+        myMax = floor(myMax);
 
         if (myMax <= 1) {
             IntegerVector z;
