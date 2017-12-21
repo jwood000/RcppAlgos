@@ -1,6 +1,9 @@
 RcppAlgos 0.2.5
 
+* Added unit tests.
 * Removed unneccessary files.
+* Fixed bug in primeSieve that occured when a number with a decimal was passed (e.g. 2.01).
+* Adjested accepted lower bound for numDivisorSieve, eulerPhiSieve, divisorsList, primeSieve, and primeFactorizationList.
 
 
 RcppAlgos 0.2.4 (Release date: 2017-12-18)
