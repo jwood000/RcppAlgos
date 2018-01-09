@@ -7,3 +7,7 @@ primeSieve <- function(bound1 = 100L, bound2 = NULL) {EratosthenesRcpp(bound1, b
 divisorsList <- function(n = 100L) {DivisorListRcpp(n)}
 
 numDivisorSieve <- function(n = 100L) {NumDivisorsSieve(n)}
+
+primeFactorsRcpp <- function(n = 100L) {PrimeFactorsContainer(n)}
+
+getDivisorsRcpp <- function(n = 100L) {getAllDivisorsRcpp(n)}

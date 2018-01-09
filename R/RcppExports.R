@@ -13,6 +13,14 @@ DivisorListRcpp <- function(n) {
     .Call(`_RcppAlgos_DivisorListRcpp`, n)
 }
 
+getAllDivisorsRcpp <- function(n) {
+    .Call(`_RcppAlgos_getAllDivisorsRcpp`, n)
+}
+
+PrimeFactorsContainer <- function(n) {
+    .Call(`_RcppAlgos_PrimeFactorsContainer`, n)
+}
+
 PrimeFactorizationListRcpp <- function(n) {
     .Call(`_RcppAlgos_PrimeFactorizationListRcpp`, n)
 }
