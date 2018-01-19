@@ -10,4 +10,4 @@ numDivisorSieve <- function(n = 100L) {NumDivisorsSieve(n)}
 
 primeFactorsRcpp <- function(n = 100L) {PrimeFactorsContainer(n)}
 
-getDivisorsRcpp <- function(n = 100L) {getAllDivisorsRcpp(n)}
+factorizeAllRcpp <- function(n = 100L) {getAllDivisorsRcpp(n)}
