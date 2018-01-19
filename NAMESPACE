@@ -10,4 +10,4 @@ export(comboGeneral,
        numDivisorSieve,
        primeFactorsRcpp,
        divisorsList,
-       getDivisorsRcpp)
+       factorizeAllRcpp)
