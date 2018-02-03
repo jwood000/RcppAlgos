@@ -1,5 +1,5 @@
 Package: RcppAlgos
-Version: 0.2.5
+Version: 0.3.0
 Title: Tools for Combinatorics and Computational Mathematics
 Description: Provides optimized functions implemented in C++ with 'Rcpp'
     for solving problems in combinatorics and computational mathematics.
@@ -9,11 +9,19 @@ Description: Provides optimized functions implemented in C++ with 'Rcpp'
     all combinations/permutations of a vector meeting a specific criteria
     (E.g. finding all combinations such that the sum is less than a
     bound). Both functions are capable of handling mulitsets as well.
-    Additionally, there are various sieving functions that quickly
-    generate essential components for problems common in computational
-    mathematics (E.g. number of coprime elements, divisors, prime
-    factorizations, and complete factorizations for many numbers as
-    well as primes numbers in a range).
+    Additionally, there are several highly efficient number theoretic 
+    functions that are useful for problems common in computational
+    mathematics. These include various sieving functions that can quickly
+    generate the following: prime numbers, number of coprime elements, 
+    number of divisors, prime factorizations, and complete factorizations.
+    The primeSieve function implements the segmented sieve of 
+    Eratosthenes with wheel factorization. It is capable of generating
+    all primes less than a billion in under 2 seconds and 10 billion in
+    less than 20 seconds. It can also quickly generate prime numbers
+    over a range (E.g. primeSieve(10^13, 10^13+10^9)). There is a 
+    stand-alone general factoring function as well as a prime 
+    factorization function that implements a non-gmp variant of Pollard's
+    rho algorithm (original source code found here: https://gmplib.org/).
 URL: https://github.com/jwood000/RcppAlgos
 BugReports: https://github.com/jwood000/RcppAlgos/issues
 Imports: Rcpp (>= 0.12.8)
