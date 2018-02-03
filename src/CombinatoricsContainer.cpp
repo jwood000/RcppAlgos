@@ -5,10 +5,10 @@
 #include <string>
 using namespace Rcpp;
 
-template <typename TypeRcpp>
-TypeRcpp SubMat(TypeRcpp m, int n) {
+template <typename typeRcpp>
+typeRcpp SubMat(typeRcpp m, int n) {
     int k = m.ncol();
-    TypeRcpp subMatrix(n,k);
+    typeRcpp subMatrix(n,k);
     for (int i = 0; i < n; i++) {subMatrix(i,_) = m(i,_);}
     return subMatrix;
 }
@@ -58,8 +58,8 @@ XPtr<compPtr> putCompPtrInXPtr(std::string fstr) {
 // successively, until a particular combination exceeds the given constraint
 // value for a given constraint function. After this point, we can safely skip
 // several combinations knowing that they will exceed the given constraint value.
-template <typename TypeRcpp>
-TypeRcpp CombinatoricsConstraints(int n, int r, std::vector<double> v,
+template <typename typeRcpp>
+typeRcpp CombinatoricsConstraints(int n, int r, std::vector<double> v,
                                        bool repetition, std::string myFun, 
                                        std::string myComparison, double lim,
                                        int numRows, bool isComb, bool xtraCol,
@@ -143,7 +143,7 @@ TypeRcpp CombinatoricsConstraints(int n, int r, std::vector<double> v,
     }
     
     if (xtraCol) {numCols = r+1;} else {numCols = r;}
-    TypeRcpp combinatoricsMatrix(numRows, numCols);
+    typeRcpp combinatoricsMatrix(numRows, numCols);
     
     std::vector<int> z, zCheck, zPerm(r);
     std::vector<double> testVec(r);
@@ -236,7 +236,7 @@ TypeRcpp CombinatoricsConstraints(int n, int r, std::vector<double> v,
         }
   
         if (!isComb) {
-            TypeRcpp permuteMatrix(numRows2, numCols);
+            typeRcpp permuteMatrix(numRows2, numCols);
             std::vector<double>::iterator myIter, permEnd;
             int count2 = 0, segment = 0;
             bool bTooMany = false;
@@ -409,8 +409,8 @@ TypeRcpp CombinatoricsConstraints(int n, int r, std::vector<double> v,
     return(SubMat(combinatoricsMatrix, count));
 }
 
-template <typename TypeRcpp, typename stdType>
-TypeRcpp ComboGeneral(int n, int r, std::vector<stdType> v,
+template <typename typeRcpp, typename typeStd>
+typeRcpp ComboGeneral(int n, int r, std::vector<typeStd> v,
                       bool repetition, int numRows, bool xtraCol) {
     std::sort(v.begin(), v.end());
     std::vector<int> z;
@@ -419,7 +419,7 @@ TypeRcpp ComboGeneral(int n, int r, std::vector<stdType> v,
     int numCols, maxZ, count = 0;
     bool needsSubsetting = false;
     if (xtraCol) {numCols  = r + 1;} else {numCols = r;}
-    TypeRcpp combinationMatrix(numRows, numCols);
+    typeRcpp combinationMatrix(numRows, numCols);
     
     if (repetition) {
         v.erase(std::unique(v.begin(), v.end()), v.end());
@@ -477,18 +477,18 @@ TypeRcpp ComboGeneral(int n, int r, std::vector<stdType> v,
     }
 }
 
-template <typename TypeRcpp, typename stdType>
-TypeRcpp PermuteGeneral(int n, int r, std::vector<stdType> v,
+template <typename typeRcpp, typename typeStd>
+typeRcpp PermuteGeneral(int n, int r, std::vector<typeStd> v,
                         bool repetition, int numRows, bool xtraCol) {
     unsigned long int uN = n, uR = r, uRowN = numRows;
     unsigned long int i = 0, j, k, chunk, numCols, segment;
     if (xtraCol) {numCols  = uR + 1;} else {numCols = uR;}
-    TypeRcpp permuteMatrix(uRowN, numCols);
+    typeRcpp permuteMatrix(uRowN, numCols);
     bool bTooMany = false;
     
     if (repetition) {
         unsigned long int groupLen = 1, repLen = 1, myCol;
-        typename std::vector<stdType>::iterator m, vBeg, vEnd;
+        typename std::vector<typeStd>::iterator m, vBeg, vEnd;
         vBeg = v.begin(); vEnd = v.end();
         for (i = uR; i > 0; i--) {
             myCol = i-1;
@@ -512,7 +512,7 @@ TypeRcpp PermuteGeneral(int n, int r, std::vector<stdType> v,
         }
     } else {
         unsigned long int combRows = (unsigned long int)nChooseK(n, r);
-        TypeRcpp myCombs = ComboGeneral<TypeRcpp>(n,r,v,false,combRows,false);
+        typeRcpp myCombs = ComboGeneral<typeRcpp>(n,r,v,false,combRows,false);
         unsigned long int indexRows = (unsigned long int)NumPermsNoRep(r, r-1);
         IntegerMatrix indexMatrix = MakeIndexHeaps(indexRows, uR);
 
@@ -534,8 +534,8 @@ TypeRcpp PermuteGeneral(int n, int r, std::vector<stdType> v,
     return permuteMatrix;
 }
 
-template <typename TypeRcpp, typename stdType>
-TypeRcpp MultisetCombination(int n, int r, std::vector<stdType> v,
+template <typename typeRcpp, typename typeStd>
+typeRcpp MultisetCombination(int n, int r, std::vector<typeStd> v,
                              std::vector<int> Reps, int numRows, bool xtraCol) {
     
     int i, j, numIter, numCols;
@@ -569,7 +569,7 @@ TypeRcpp MultisetCombination(int n, int r, std::vector<stdType> v,
     }
     
     if (xtraCol) {numCols  = r + 1;} else {numCols = r;}
-    TypeRcpp combinationMatrix(numRows, numCols);
+    typeRcpp combinationMatrix(numRows, numCols);
     
     while (count < numRows) {
         numIter = n - z[r1];
@@ -596,8 +596,8 @@ TypeRcpp MultisetCombination(int n, int r, std::vector<stdType> v,
     return combinationMatrix;
 }
 
-template <typename TypeRcpp, typename stdType>
-TypeRcpp MultisetPermutation(int n, int r, std::vector<stdType> v,
+template <typename typeRcpp, typename typeStd>
+typeRcpp MultisetPermutation(int n, int r, std::vector<typeStd> v,
                              std::vector<int> Reps, int numRows,
                              bool xtraCol, bool bUserCap) {
 
@@ -613,19 +613,19 @@ TypeRcpp MultisetPermutation(int n, int r, std::vector<stdType> v,
     }
     
     for (i = 0; i < n; i++) {numCols += Reps[i];}
-    std::vector<stdType> permVec;
+    std::vector<typeStd> permVec;
     std::vector<int> eachRowCount;
-    typename std::vector<stdType>::iterator myIter, permEnd;
+    typename std::vector<typeStd>::iterator myIter, permEnd;
     bool retAllPerms = true;
-    TypeRcpp myCombs;
+    typeRcpp myCombs;
     
     if (r < numCols) {
         numCols = r;
         retAllPerms = false;
         combRows = (int)MultisetCombRowNum(n,r,Reps);
-        myCombs =  MultisetCombination<TypeRcpp>(n,r,v,Reps,combRows,false);
+        myCombs =  MultisetCombination<typeRcpp>(n,r,v,Reps,combRows,false);
         std::vector<int> stdRowVec(r);
-        stdType temp;
+        typeStd temp;
         bool keepGoing;
         double testRows = 0, computedRows;
         eachRowCount.reserve(combRows);
@@ -652,7 +652,7 @@ TypeRcpp MultisetPermutation(int n, int r, std::vector<stdType> v,
             }
             
             computedRows = NumPermsWithRep(stdRowVec);
-            if (computedRows > 2147483647) {stop("The number of rows cannot exceed 2^31 - 1.");}
+            if (computedRows > INT_MAX) {stop("The number of rows cannot exceed 2^31 - 1.");}
             rowCount = (int)computedRows;
             testRows += rowCount;
             eachRowCount.push_back(rowCount);
@@ -661,13 +661,13 @@ TypeRcpp MultisetPermutation(int n, int r, std::vector<stdType> v,
         if (bUserCap) {
             if (numRows > testRows) {numRows = testRows;}
         } else {
-            if (testRows > 2147483647) {stop("The number of rows cannot exceed 2^31 - 1.");}
+            if (testRows > INT_MAX) {stop("The number of rows cannot exceed 2^31 - 1.");}
             numRows = testRows;
         }
     }
     
     if (xtraCol) {numCols++;}
-    TypeRcpp permuteMatrix(numRows, numCols);
+    typeRcpp permuteMatrix(numRows, numCols);
     
     if (retAllPerms) {
         permVec.reserve(numCols);
@@ -909,11 +909,11 @@ SEXP CombinatoricsRcpp(SEXP Rv, SEXP Rm, SEXP Rrepetition,
     }
     
     if (RUserCap == 0) {
-        if (computedRows > 2147483647) {stop("The number of rows cannot exceed 2^31 - 1.");}
+        if (computedRows > INT_MAX) {stop("The number of rows cannot exceed 2^31 - 1.");}
         RUserCap = nRows = computedRows;
     } else if (RUserCap < 0) {
         stop("The number of rows must be positive");
-    } else if (RUserCap > 2147483647) {
+    } else if (RUserCap > INT_MAX) {
         stop("The number of rows cannot exceed 2^31 - 1.");
     } else {
         nRows = RUserCap;
@@ -986,7 +986,7 @@ SEXP CombinatoricsRcpp(SEXP Rv, SEXP Rm, SEXP Rrepetition,
             funcPtr myFun1 = *xpFun1;
 
             if (SpecialCase) {
-                if (computedRows > 2147483647) {stop("The number of rows cannot exceed 2^31 - 1.");}
+                if (computedRows > INT_MAX) {stop("The number of rows cannot exceed 2^31 - 1.");}
                 nRows = computedRows;
                 NumericMatrix matRes;
                 double testVal;
