@@ -83,11 +83,11 @@ List DivisorListRcpp (SEXP n) {
     return wrap(myDivList);
 }
 
-template <typename TypeRcpp, typename stdType>
-TypeRcpp Factorize (stdType t, std::vector<double>& factors) {
+template <typename typeRcpp, typename typeStd>
+typeRcpp Factorize (typeStd t, std::vector<double>& factors) {
     
     if (t == 1) {
-        std::vector<stdType> trivialReturn;
+        std::vector<typeStd> trivialReturn;
         if (factors.size() > 0) {trivialReturn.push_back(factors[0]);}
         trivialReturn.push_back(1);
         return wrap(trivialReturn);
@@ -98,7 +98,7 @@ TypeRcpp Factorize (stdType t, std::vector<double>& factors) {
         double prev = factors[0];
         
         unsigned long int i, j, k, n = factors.size(), numUni = 0;
-        stdType uniFacs[n];
+        typeStd uniFacs[n];
         uniFacs[0] = factors[0];
         lengths.reserve(n);
         lengths.push_back(1);
@@ -110,18 +110,18 @@ TypeRcpp Factorize (stdType t, std::vector<double>& factors) {
                 numUni++;
                 prev = *it;
                 lengths.push_back(1);
-                uniFacs[numUni] = (stdType)*it;
+                uniFacs[numUni] = (typeStd)*it;
             }
         }
         
         unsigned long int ind, facSize = 1, numFacs = 1;
         for (i = 0; i <= numUni; i++) {numFacs *= (lengths[i]+1);}
         
-        TypeRcpp myFacs(numFacs);
-        stdType temp;
+        std::vector<typeStd> myFacs(numFacs);
+        typeStd temp;
         
         for (i = 0; i <= lengths[0]; ++i) {
-            myFacs[i] = (stdType)std::pow(uniFacs[0], i);
+            myFacs[i] = (typeStd)std::pow(uniFacs[0], i);
         }
         
         if (numUni > 0) {
@@ -130,7 +130,7 @@ TypeRcpp Factorize (stdType t, std::vector<double>& factors) {
                 for (i = 1; i <= lengths[j]; i++) {
                     ind = i*facSize;
                     for (k = 0; k < facSize; k++) {
-                        temp = (stdType)std::pow(uniFacs[j], i);
+                        temp = (typeStd)std::pow(uniFacs[j], i);
                         temp *= myFacs[k];
                         myFacs[ind + k] = temp;
                     }
