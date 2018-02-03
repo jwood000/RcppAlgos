@@ -1,15 +1,16 @@
 #include <Rcpp.h>
 #include <math.h>
 #include <algorithm>
-#include "Primes.h"
+#include "PrimesPolRho.h"
 #include "PollardRho.h"
 using namespace Rcpp;
 
 /* Prove primality or run probabilistic tests.  */
 int FlagProvePrimality = 0;
 
-double Significand53 = 9007199254740991;
-double SqrtSig53 = floor(std::sqrt(Significand53));
+const double Significand53 = 9007199254740991;
+const double SqrtSig53 = std::floor(std::sqrt(Significand53));
+#define pDiffSize (sizeof(primesDiffPR) / sizeof(primesDiffPR[0]))
 
 /* Number of Miller-Rabin tests to run when not proving primality. */
 #define MR_REPS 25
@@ -20,9 +21,9 @@ void FactorTrialDivision (double& t,
     int i = 1;
     
     p = 2;
-    for (i = 0; i < 549;) {
+    for (i = 0; i < pDiffSize;) {
         if (std::fmod(t, p) != 0) {
-            p += primes549[i++];
+            p += primesDiffPR[i++];
             if (t < p * p)
                 break;
         } else {
@@ -65,6 +66,7 @@ double ProdBigMod(double x1, double x2, double p) {
             x1 = chunkMod; x2 = numChunkMods;
             result = std::fmod(result + part2, p);
         }
+        
         result = std::fmod(part1 + result, p);
     }
     
@@ -156,7 +158,7 @@ int IsPrime (double n) {
 
     /* Loop until Lucas proves our number prime, or Miller-Rabin proves our
     number composite.  */
-    for (r = 0; r < 549; r++) {
+    for (r = 0; r < pDiffSize; r++) {
         int i;
 
         if (FlagProvePrimality) {
@@ -174,12 +176,12 @@ int IsPrime (double n) {
         if (primeTestReturn)
             goto ret1;
 
-        a += primes549[r];	/* Establish new base.  */
+        a += primesDiffPR[r];	/* Establish new base.  */
 
-            if (!MillerRabin(n, nm1, a, tmp, q, k)) {
-                primeTestReturn = 0;
-                goto ret1;
-            }
+        if (!MillerRabin(n, nm1, a, tmp, q, k)) {
+            primeTestReturn = 0;
+            goto ret1;
+        }
     }
 
     stop("Lucas prime test failure. This should not happen");
@@ -192,65 +194,64 @@ int IsPrime (double n) {
 }
 
 void PollardRho (double n, unsigned long a, 
-                 std::vector<double>& factors)
-    {
-        double x, z, y, P, t;
-        unsigned long  k, l, i;
-        
-        y = x = z = 2;
-        P = k = l = 1;
-        
-        while (n != 1) {
-            for (;;) {
-                do {
-                    x = ProdBigMod(x, x, n);
-                    x += a;
-                    t = z - x;
-                    P = ProdBigMod(P, t, n);
-                    
-                    if (k % 32 == 1) {
-                        t = myGCD(P, n);
-                        if (t != 1)
-                            goto factor_found;
-                        y = x;
-                    }
-                } while (--k != 0);
+                 std::vector<double>& factors) {
+    double x, z, y, P, t;
+    unsigned long  k, l, i;
+    
+    y = x = z = 2;
+    P = k = l = 1;
+    
+    while (n != 1) {
+        for (;;) {
+            do {
+                x = ProdBigMod(x, x, n);
+                x += a;
+                t = z - x;
+                P = ProdBigMod(P, t, n);
                 
-                z = x;
-                k = l;
-                l = 2 * l;
-                for (i = 0; i < k; i++) {
-                    x = ProdBigMod(x, x, n);
-                    x += a;
+                if (k % 32 == 1) {
+                    t = myGCD(P, n);
+                    if (t != 1)
+                        goto factor_found;
+                    y = x;
                 }
-                y = x;
+            } while (--k != 0);
+            
+            z = x;
+            k = l;
+            l = 2 * l;
+            for (i = 0; i < k; i++) {
+                x = ProdBigMod(x, x, n);
+                x += a;
             }
-            
-            factor_found:
-                do {
-                    y = ProdBigMod(y, y, n);
-                    y += a;
-                    t = z - y;
-                    t = myGCD(t, n);
-                } while (t == 1);
-            
-            n = round(n/t);	/* divide by t, before t is overwritten */
-            
-            if (!IsPrime(t)) {
-                PollardRho(t, a + 1, factors);
-            } else {
-                factors.push_back(t);
-            }
-            
-            if (IsPrime(n)) {
-                factors.push_back(n);
-                break;
-            }
-            
-            x = PositiveMod(x, n);
-            z = PositiveMod(z, n);
-            y = PositiveMod(y, n);
+            y = x;
         }
+        
+        factor_found:
+            do {
+                y = ProdBigMod(y, y, n);
+                y += a;
+                t = z - y;
+                t = myGCD(t, n);
+            } while (t == 1);
+        
+        n = round(n/t);	/* divide by t, before t is overwritten */
+        
+        if (!IsPrime(t)) {
+            PollardRho(t, a + 1, factors);
+        } else {
+            factors.push_back(t);
+        }
+        
+        if (IsPrime(n)) {
+            factors.push_back(n);
+            break;
+        }
+        
+        x = PositiveMod(x, n);
+        z = PositiveMod(z, n);
+        y = PositiveMod(y, n);
+    }
 }
 
 void getPrimefactors (double& t, std::vector<double>& factors) {
