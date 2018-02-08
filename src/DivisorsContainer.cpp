@@ -1,5 +1,6 @@
 #include <Rcpp.h>
 #include <math.h>
+#include <stdint.h>
 #include "PollardRho.h"
 using namespace Rcpp;
 
@@ -84,7 +85,7 @@ List DivisorListRcpp (SEXP n) {
 }
 
 template <typename typeRcpp, typename typeStd>
-typeRcpp Factorize (typeStd t, std::vector<double>& factors) {
+typeRcpp Factorize (typeStd t, std::vector<int64_t>& factors) {
     
     if (t == 1) {
         std::vector<typeStd> trivialReturn;
@@ -92,13 +93,13 @@ typeRcpp Factorize (typeStd t, std::vector<double>& factors) {
         trivialReturn.push_back(1);
         return wrap(trivialReturn);
     } else {
-        std::vector<int> lengths;
-        std::vector<double>::iterator it, facEnd;
+        std::vector<unsigned long int> lengths;
+        std::vector<int64_t>::iterator it, facEnd;
         facEnd = factors.end();
-        double prev = factors[0];
+        int64_t prev = factors[0];
         
         unsigned long int i, j, k, n = factors.size(), numUni = 0;
-        typeStd uniFacs[n];
+        std::vector<typeStd> uniFacs(n);
         uniFacs[0] = factors[0];
         lengths.reserve(n);
         lengths.push_back(1);
@@ -146,8 +147,10 @@ typeRcpp Factorize (typeStd t, std::vector<double>& factors) {
 
 // [[Rcpp::export]]
 SEXP getAllDivisorsRcpp (SEXP n) {
-    double m, mPass;
-    std::vector<double> factors;
+    double m;
+    int64_t mPass;
+    std::vector<int64_t> factors;
+    bool isNegative = false;
     
     switch(TYPEOF(n)) {
         case REALSXP: {
@@ -165,20 +168,48 @@ SEXP getAllDivisorsRcpp (SEXP n) {
     
     if (m < 0) {
         m = std::abs(m);
-        factors.push_back(-1);
+        isNegative = true;
     }
     
-    mPass = m;
+    mPass = (int64_t) m;
     
     if (m > 0) {
         getPrimefactors(mPass, factors);
-        if (m <= 2147483647) {
-            int mInt = (int)m;
+        if (m <= INT_MAX) {
+            int mInt = (int) m;
             IntegerVector myIntDivisors = Factorize<IntegerVector>(mInt, factors);
-            return myIntDivisors;
+            
+            if (isNegative) {
+                unsigned int facSize = myIntDivisors.size();
+                std::vector<int> tempInt(2 * facSize);
+                unsigned int posInd = facSize, negInd = facSize - 1;
+                
+                for (std::size_t i = 0; i < facSize; i++, posInd++, negInd--) {
+                    tempInt[negInd] = -1 * myIntDivisors[i];
+                    tempInt[posInd] = myIntDivisors[i];
+                }
+                
+                return wrap(tempInt);
+            } else {
+                return myIntDivisors;
+            }
         } else {
             NumericVector myDblDivisors = Factorize<NumericVector>(m, factors);
-            return myDblDivisors;
+            
+            if (isNegative) {
+                unsigned int facSize = myDblDivisors.size();
+                std::vector<double> tempDbl(2 * facSize);
+                unsigned int posInd = facSize, negInd = facSize - 1;
+                
+                for (std::size_t i = 0; i < facSize; i++, posInd++, negInd--) {
+                    tempDbl[negInd] = -1 * myDblDivisors[i];
+                    tempDbl[posInd] = myDblDivisors[i];
+                }
+                
+                return wrap(tempDbl);
+            } else {
+                return myDblDivisors;
+            }
         }
     } else {
         return wrap(factors);
