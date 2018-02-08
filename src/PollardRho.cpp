@@ -1,83 +1,91 @@
 #include <Rcpp.h>
-#include <math.h>
+#include <cmath>
+#include <stdint.h>
 #include <algorithm>
 #include "PrimesPolRho.h"
 #include "PollardRho.h"
 using namespace Rcpp;
 
 /* Prove primality or run probabilistic tests.  */
-int FlagProvePrimality = 0;
+int FlagProvePrimality = 1;
 
-const double Significand53 = 9007199254740991;
-const double SqrtSig53 = std::floor(std::sqrt(Significand53));
+const double Significand53 = 9007199254740991.0;
+
+const int64_t myMax = UINT64_MAX / 8;
+const int64_t Sqrt32Max = (int64_t) std::floor(std::sqrt((double) INT64_MAX));
+
 #define pDiffSize (sizeof(primesDiffPR) / sizeof(primesDiffPR[0]))
 
 /* Number of Miller-Rabin tests to run when not proving primality. */
 #define MR_REPS 25
 
-void FactorTrialDivision (double& t,
-                          std::vector<double>& factors) {
+void FactorTrialDivision (int64_t& t,
+                          std::vector<int64_t>& factors) {
     unsigned long int p;
-    int i = 1;
     
-    p = 2;
-    for (i = 0; i < pDiffSize;) {
-        if (std::fmod(t, p) != 0) {
+    while ((t & 1) == 0) {
+        factors.push_back(2);
+        t /= 2;
+    }
+    
+    p = 3;
+    for (std::size_t i = 1; i < pDiffSize;) {
+        if ((t % p) != 0) {
             p += primesDiffPR[i++];
-            if (t < p * p)
+            if (t < (p * p))
                 break;
         } else {
             t /= p;
-            t = round(t);
             factors.push_back(p);
         }
     }
 }
 
-double PositiveMod(double x, double m) {
-    if (x < 0)
-        x = x + ceil(std::abs(x) / m) * m;
-    else if (x > m)
-        x = std::fmod(x, m);
-    return x;
+inline int64_t PositiveMod(int64_t i,
+                                int64_t n) {
+    return (i % n + n) % n;
 }
 
-double ProdBigMod(double x1, double x2, double p) {
-    double result = 0, prodX;
+int64_t ProdBigMod (int64_t x1_i64,
+                         int64_t x2_i64, int64_t p_i64) {
+    x1_i64 = PositiveMod(x1_i64, p_i64);
+    x2_i64 = PositiveMod(x2_i64, p_i64);
     
-    x1 = PositiveMod(x1, p);
-    x2 = PositiveMod(x2, p);
-    prodX = x1 * x2;
+    double prodX = (double) (x1_i64) * (double) (x2_i64);
+    int64_t result = 0;
     
-    if (prodX < p) {
+    if (prodX < (double) p_i64) {
         result = prodX;
-    } else if (p < SqrtSig53) {
-        result = std::fmod(prodX, p);
+    } else if (p_i64 < Sqrt32Max || prodX < INT64_MAX) {
+        result = (x1_i64 * x2_i64) % p_i64;
     } else {
-        double numChunkMods, part1 = Significand53;
-        double initialChunk, chunkMod, part2;
+        int64_t numChunkMods, part2;
+        int64_t chunkSize, chunkMod;
+        double part1 = (double) myMax;
         
-        while (part1 >= Significand53) {
-            initialChunk = floor(Significand53 / x1);
-            chunkMod = std::fmod(x1 * initialChunk, p);
-            numChunkMods = floor(x2 / initialChunk);
-            part2 = std::fmod((x2 - initialChunk * numChunkMods) * x1, p);
-            part1 = numChunkMods * chunkMod;
-            x1 = chunkMod; x2 = numChunkMods;
-            result = std::fmod(result + part2, p);
+        while (part1 >= (double) myMax) {
+            chunkSize = myMax / x1_i64;
+            chunkMod = (x1_i64 * chunkSize) % p_i64;
+            numChunkMods = x2_i64 / chunkSize;
+            part2 = ((x2_i64 - chunkSize * numChunkMods) * x1_i64) % p_i64;
+            part1 = (double) (numChunkMods) * (double) (chunkMod);
+            x1_i64 = chunkMod;
+            x2_i64 = numChunkMods;
+            result = (result + part2) % p_i64;
         }
         
-        result = std::fmod(part1 + result, p);
+        int64_t part1_i64 = (numChunkMods * chunkMod) % p_i64;
+        result = (part1_i64 + result) % p_i64;
     }
     
-    return result;
+    return (double) (result);
 }
 
-double ExpBySquaring(double x, double n, double p) {
-    double result;
+int64_t ExpBySquaring(int64_t x, int64_t n, int64_t p) {
+    int64_t result;
     if (n == 1) {
         result = PositiveMod(x, p);
-    } else if (std::fmod(n, 2) == 0) {
+    } else if (n % 2 == 0) {
         result = ExpBySquaring(ProdBigMod(x, x, p), n/2, p);
     } else {
         result = ProdBigMod(x, 
@@ -87,8 +95,8 @@ double ExpBySquaring(double x, double n, double p) {
     return result;
 }
 
-static double myGCD(double u, double v) {
-    double r;
+static int64_t myGCD(int64_t u, int64_t v) {
+    int64_t r;
     while (v != 0) {
         r = PositiveMod(u, v);
         u = v;
@@ -97,16 +105,15 @@ static double myGCD(double u, double v) {
     return u;
 }
 
-static int MillerRabin (double n, double nm1,
-                        unsigned long int x, double& y,
-                        double q, unsigned long int k)
+static int MillerRabin (int64_t n, int64_t nm1,
+                        int64_t x, int64_t& y,
+                        int64_t q, int64_t k)
 {
-    unsigned long int i;
-    y = ExpBySquaring((double)x, q, n);
+    y = ExpBySquaring(x, q, n);
     if (y == 1 || y == nm1)
         return 1;
 
-    for (i = 1; i < k; i++) {
+    for (std::size_t i = 1; i < k; i++) {
         y = ExpBySquaring(y, 2, n);
         if (y == nm1)
             return 1;
@@ -117,12 +124,11 @@ static int MillerRabin (double n, double nm1,
     return 0;
 }
 
-int IsPrime (double n) {
-    int k, r, primeTestReturn;
-    double nm1, q, tmp;
-    unsigned long int a;
+int IsPrime (int64_t n) {
+    int k, primeTestReturn;
+    int64_t nm1, q, tmp, a;
 
-    std::vector<double> factors;
+    std::vector<int64_t> factors;
 
     if (n < 2)
         return 0;
@@ -136,9 +142,8 @@ int IsPrime (double n) {
 
     /* Find q and k, where q is odd and n = 1 + 2**k * q.  */
     k = 0;
-    while (std::fmod(q, 2) == 0) {
+    while ((q & 1) == 0) {
         q /= 2;
-        q = round(q);
         k++;
     }
 
@@ -158,19 +163,18 @@ int IsPrime (double n) {
 
     /* Loop until Lucas proves our number prime, or Miller-Rabin proves our
     number composite.  */
-    for (r = 0; r < pDiffSize; r++) {
-        int i;
+    for (std::size_t r = 0; r < pDiffSize; r++) {
 
         if (FlagProvePrimality) {
             primeTestReturn = 1;
-            for (i = 0; i < factors.size() && primeTestReturn; i++) {
+            for (std::size_t i = 0; i < factors.size() && primeTestReturn; i++) {
                 tmp = nm1 / factors[i];
-                tmp = ExpBySquaring((double)a, tmp, n);
+                tmp = ExpBySquaring(a, tmp, n);
                 primeTestReturn = (tmp != 1);
             }
         } else {
             /* After enough Miller-Rabin runs, be content. */
-            primeTestReturn = (r == MR_REPS - 1);
+            primeTestReturn = (r == (MR_REPS - 1));
         }
 
         if (primeTestReturn)
@@ -193,10 +197,10 @@ int IsPrime (double n) {
         return primeTestReturn;
 }
 
-void PollardRho (double n, unsigned long a, 
-                 std::vector<double>& factors) {
-    double x, z, y, P, t;
-    unsigned long  k, l, i;
+void PollardRho (int64_t n, int64_t a, 
+                 std::vector<int64_t>& factors) {
+    int64_t x, z, y, P, t;
+    int64_t  k, l, i;
     
     y = x = z = 2;
     P = k = l = 1;
@@ -235,7 +239,7 @@ void PollardRho (double n, unsigned long a,
                 t = myGCD(t, n);
             } while (t == 1);
         
-        n = round(n/t);	/* divide by t, before t is overwritten */
+        n = n/t;	/* divide by t, before t is overwritten */
         
         if (!IsPrime(t)) {
             PollardRho(t, a + 1, factors);
@@ -254,7 +258,7 @@ void PollardRho (double n, unsigned long a,
     }
 }
 
-void getPrimefactors (double& t, std::vector<double>& factors) {
+void getPrimefactors (int64_t& t, std::vector<int64_t>& factors) {
     FactorTrialDivision(t, factors);
     
     if (t > 1) {
@@ -270,8 +274,8 @@ void getPrimefactors (double& t, std::vector<double>& factors) {
 
 // [[Rcpp::export]]
 SEXP PrimeFactorsContainer (SEXP n) {
-    double m;
-    std::vector<double> factors;
+    int64_t m;
+    std::vector<int64_t> factors;
     
     switch(TYPEOF(n)) {
         case REALSXP: {
@@ -293,10 +297,44 @@ SEXP PrimeFactorsContainer (SEXP n) {
     }
     
     if (m > 0) {
-        getPrimefactors(m, factors);
+        if (m > Significand53)
+            stop("n must be less than 2^53");
+        
+        int64_t m_i64 = (int64_t) m;
+        getPrimefactors(m_i64, factors);
         return wrap(factors);
     } else {
         IntegerVector trivialReturn;
         return trivialReturn;
     }
 }
+
+// [[Rcpp::export]]
+SEXP IsPrimeContainer (SEXP n) {
+    int64_t m;
+    
+    switch(TYPEOF(n)) {
+        case REALSXP: {
+            m = as<double>(n);
+            break;
+        }
+        case INTSXP: {
+            m = as<double>(n);
+            break;
+        }
+        default: {
+            stop("n must be of type numeric or integer");
+        }
+    }
+    
+    if (m <= 0)
+        stop("n must be positive");
+    
+    if (m > Significand53)
+        stop("n must be less than 2^53");
+    
+    int64_t m_i64 = (int64_t) m;
+    bool primeTest = IsPrime(m_i64);
+    return wrap(primeTest);
+}
+
