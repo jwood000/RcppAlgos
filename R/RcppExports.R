@@ -21,6 +21,10 @@ PrimeFactorsContainer <- function(n) {
     .Call(`_RcppAlgos_PrimeFactorsContainer`, n)
 }
 
+IsPrimeContainer <- function(n) {
+    .Call(`_RcppAlgos_IsPrimeContainer`, n)
+}
+
 PrimeFactorizationListRcpp <- function(n) {
     .Call(`_RcppAlgos_PrimeFactorizationListRcpp`, n)
 }

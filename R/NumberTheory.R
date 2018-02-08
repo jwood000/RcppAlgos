@@ -11,3 +11,5 @@ numDivisorSieve <- function(n = 100L) {NumDivisorsSieve(n)}
 primeFactorsRcpp <- function(n = 100L) {PrimeFactorsContainer(n)}
 
 factorizeAllRcpp <- function(n = 100L) {getAllDivisorsRcpp(n)}
+
+isPrimeRcpp <- function(n = 100L) {IsPrimeContainer(n)}

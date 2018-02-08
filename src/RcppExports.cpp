@@ -71,6 +71,17 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// IsPrimeContainer
+SEXP IsPrimeContainer(SEXP n);
+RcppExport SEXP _RcppAlgos_IsPrimeContainer(SEXP nSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< SEXP >::type n(nSEXP);
+    rcpp_result_gen = Rcpp::wrap(IsPrimeContainer(n));
+    return rcpp_result_gen;
+END_RCPP
+}
 // PrimeFactorizationListRcpp
 List PrimeFactorizationListRcpp(SEXP n);
 RcppExport SEXP _RcppAlgos_PrimeFactorizationListRcpp(SEXP nSEXP) {
@@ -112,6 +123,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_RcppAlgos_DivisorListRcpp", (DL_FUNC) &_RcppAlgos_DivisorListRcpp, 1},
     {"_RcppAlgos_getAllDivisorsRcpp", (DL_FUNC) &_RcppAlgos_getAllDivisorsRcpp, 1},
     {"_RcppAlgos_PrimeFactorsContainer", (DL_FUNC) &_RcppAlgos_PrimeFactorsContainer, 1},
+    {"_RcppAlgos_IsPrimeContainer", (DL_FUNC) &_RcppAlgos_IsPrimeContainer, 1},
     {"_RcppAlgos_PrimeFactorizationListRcpp", (DL_FUNC) &_RcppAlgos_PrimeFactorizationListRcpp, 1},
     {"_RcppAlgos_EulerPhiSieveRcpp", (DL_FUNC) &_RcppAlgos_EulerPhiSieveRcpp, 1},
     {"_RcppAlgos_EratosthenesRcpp", (DL_FUNC) &_RcppAlgos_EratosthenesRcpp, 2},

@@ -10,4 +10,5 @@ export(comboGeneral,
        numDivisorSieve,
        primeFactorsRcpp,
        divisorsList,
-       factorizeAllRcpp)
+       factorizeAllRcpp,
+       isPrimeRcpp)
