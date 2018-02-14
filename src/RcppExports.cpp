@@ -27,25 +27,17 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
-// NumDivisorsSieve
-IntegerVector NumDivisorsSieve(SEXP n);
-RcppExport SEXP _RcppAlgos_NumDivisorsSieve(SEXP nSEXP) {
+// DivisorsGeneral
+SEXP DivisorsGeneral(SEXP Rb1, SEXP Rb2, SEXP RIsList, SEXP RNamed);
+RcppExport SEXP _RcppAlgos_DivisorsGeneral(SEXP Rb1SEXP, SEXP Rb2SEXP, SEXP RIsListSEXP, SEXP RNamedSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< SEXP >::type n(nSEXP);
-    rcpp_result_gen = Rcpp::wrap(NumDivisorsSieve(n));
-    return rcpp_result_gen;
-END_RCPP
-}
-// DivisorListRcpp
-List DivisorListRcpp(SEXP n);
-RcppExport SEXP _RcppAlgos_DivisorListRcpp(SEXP nSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< SEXP >::type n(nSEXP);
-    rcpp_result_gen = Rcpp::wrap(DivisorListRcpp(n));
+    Rcpp::traits::input_parameter< SEXP >::type Rb1(Rb1SEXP);
+    Rcpp::traits::input_parameter< SEXP >::type Rb2(Rb2SEXP);
+    Rcpp::traits::input_parameter< SEXP >::type RIsList(RIsListSEXP);
+    Rcpp::traits::input_parameter< SEXP >::type RNamed(RNamedSEXP);
+    rcpp_result_gen = Rcpp::wrap(DivisorsGeneral(Rb1, Rb2, RIsList, RNamed));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -82,51 +74,29 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
-// PrimeFactorizationListRcpp
-List PrimeFactorizationListRcpp(SEXP n);
-RcppExport SEXP _RcppAlgos_PrimeFactorizationListRcpp(SEXP nSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< SEXP >::type n(nSEXP);
-    rcpp_result_gen = Rcpp::wrap(PrimeFactorizationListRcpp(n));
-    return rcpp_result_gen;
-END_RCPP
-}
-// EulerPhiSieveRcpp
-IntegerVector EulerPhiSieveRcpp(SEXP n);
-RcppExport SEXP _RcppAlgos_EulerPhiSieveRcpp(SEXP nSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< SEXP >::type n(nSEXP);
-    rcpp_result_gen = Rcpp::wrap(EulerPhiSieveRcpp(n));
-    return rcpp_result_gen;
-END_RCPP
-}
 // EratosthenesRcpp
-SEXP EratosthenesRcpp(SEXP Rb1, SEXP Rb2);
-RcppExport SEXP _RcppAlgos_EratosthenesRcpp(SEXP Rb1SEXP, SEXP Rb2SEXP) {
+SEXP EratosthenesRcpp(SEXP Rb1, SEXP Rb2, SEXP RIsList, SEXP RIsEuler, SEXP RNamed);
+RcppExport SEXP _RcppAlgos_EratosthenesRcpp(SEXP Rb1SEXP, SEXP Rb2SEXP, SEXP RIsListSEXP, SEXP RIsEulerSEXP, SEXP RNamedSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< SEXP >::type Rb1(Rb1SEXP);
     Rcpp::traits::input_parameter< SEXP >::type Rb2(Rb2SEXP);
-    rcpp_result_gen = Rcpp::wrap(EratosthenesRcpp(Rb1, Rb2));
+    Rcpp::traits::input_parameter< SEXP >::type RIsList(RIsListSEXP);
+    Rcpp::traits::input_parameter< SEXP >::type RIsEuler(RIsEulerSEXP);
+    Rcpp::traits::input_parameter< SEXP >::type RNamed(RNamedSEXP);
+    rcpp_result_gen = Rcpp::wrap(EratosthenesRcpp(Rb1, Rb2, RIsList, RIsEuler, RNamed));
     return rcpp_result_gen;
 END_RCPP
 }
 
 static const R_CallMethodDef CallEntries[] = {
     {"_RcppAlgos_CombinatoricsRcpp", (DL_FUNC) &_RcppAlgos_CombinatoricsRcpp, 11},
-    {"_RcppAlgos_NumDivisorsSieve", (DL_FUNC) &_RcppAlgos_NumDivisorsSieve, 1},
-    {"_RcppAlgos_DivisorListRcpp", (DL_FUNC) &_RcppAlgos_DivisorListRcpp, 1},
+    {"_RcppAlgos_DivisorsGeneral", (DL_FUNC) &_RcppAlgos_DivisorsGeneral, 4},
     {"_RcppAlgos_getAllDivisorsRcpp", (DL_FUNC) &_RcppAlgos_getAllDivisorsRcpp, 1},
     {"_RcppAlgos_PrimeFactorsContainer", (DL_FUNC) &_RcppAlgos_PrimeFactorsContainer, 1},
     {"_RcppAlgos_IsPrimeContainer", (DL_FUNC) &_RcppAlgos_IsPrimeContainer, 1},
-    {"_RcppAlgos_PrimeFactorizationListRcpp", (DL_FUNC) &_RcppAlgos_PrimeFactorizationListRcpp, 1},
-    {"_RcppAlgos_EulerPhiSieveRcpp", (DL_FUNC) &_RcppAlgos_EulerPhiSieveRcpp, 1},
-    {"_RcppAlgos_EratosthenesRcpp", (DL_FUNC) &_RcppAlgos_EratosthenesRcpp, 2},
+    {"_RcppAlgos_EratosthenesRcpp", (DL_FUNC) &_RcppAlgos_EratosthenesRcpp, 5},
     {NULL, NULL, 0}
 };
 

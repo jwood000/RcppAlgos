@@ -8,7 +8,7 @@ export(comboGeneral,
        eulerPhiSieve,
        primeFactorizationList,
        numDivisorSieve,
-       primeFactorsRcpp,
+       primeFactorize,
        divisorsList,
        factorizeAllRcpp,
        isPrimeRcpp)
