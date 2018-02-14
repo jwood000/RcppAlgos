@@ -4,64 +4,80 @@
 #include "PollardRho.h"
 using namespace Rcpp;
 
-// [[Rcpp::export]]
-IntegerVector NumDivisorsSieve (SEXP n) {
-    int m;
-    double mTest;
+const double Significand53 = 9007199254740991.0;
+
+template <typename typeInt>
+inline typeInt getStartingIndex (typeInt lowerB, typeInt step) {
     
-    switch(TYPEOF(n)) {
-        case REALSXP: {
-            mTest = as<double>(n);
-            break;
-        }
-        case INTSXP: {
-            mTest = as<double>(n);
-            break;
-        }
-        default: {
-            stop("n must be of type numeric or integer");
-        }
+    typeInt retStrt, remTest = lowerB % step;
+    
+    if (remTest == 0) {
+        retStrt = 0;
+    } else if (step < lowerB) {
+        retStrt = step - remTest;
+    } else {
+        retStrt = step - lowerB;
     }
     
-    if (mTest > 2147483647) {stop("n must be less than 2^31");}
-    if (mTest <= 0) {stop("n must be positive");}
-    m = (int)ceil(mTest);
-    
-    std::vector<int> numFacs(m, 1);
-    int i, j;
-    
-    for (i = 2; i <= m; i++) {
-        for (j = i; j <= m; j+=i) {numFacs[j - 1]++;}
-    }
-    
-    return wrap(numFacs);
+    return retStrt;
 }
 
-// [[Rcpp::export]]
-List DivisorListRcpp (SEXP n) {
-    int m;
-    double mTest;
+template <typename typeRcpp, typename typeInt>
+typeRcpp NumDivisorsSieve (typeInt m, typeInt n, bool keepNames) {
     
-    switch(TYPEOF(n)) {
-        case REALSXP: {
-            mTest = as<double>(n);
-            break;
-        }
-        case INTSXP: {
-            mTest = as<double>(n);
-            break;
-        }
-        default: {
-            stop("n must be of type numeric or integer");
+    typeInt myRange = n;
+    myRange += (1 - m);
+    std::vector<typeInt> myNames;
+    
+    typeInt myNum = m;
+    
+    if (keepNames){
+        myNames.resize(myRange);
+        for (std::size_t k = 0, j = myNum; j <= n; j++, k++)
+            myNames[k] = j;
+    }
+    
+    std::vector<typeInt> numFacs;
+    typeInt i, j;
+    
+    if (m < 2) {
+        numFacs = std::vector<typeInt> (myRange, 1);
+        for (i = 2; i <= n; i++)
+            for (j = i; j <= n; j+=i)
+                numFacs[j - 1]++;
+    } else {
+        numFacs = std::vector<typeInt> (myRange, 2);
+        int_fast32_t sqrtBound = floor(sqrt((double)n));
+        typeInt myStart, testNum;
+        
+        for (i = 2; i <= sqrtBound; i++) {
+            myStart = getStartingIndex(m, i);
+            myNum = m + myStart;
+            
+            for (j = myStart; j < myRange; j += i, myNum += i) {
+                numFacs[j]++;
+                testNum = myNum / i;
+                if (testNum > sqrtBound)
+                    numFacs[j]++;
+            }
         }
     }
     
-    if (mTest > 2147483647) {stop("n must be less than 2^31");}
-    if (mTest <= 0) {stop("n must be positive");}
-    m = (int)ceil(mTest);
+    typeRcpp myVector = wrap(numFacs);
+    if (keepNames)
+        myVector.attr("names") = myNames;
     
-    std::vector<std::vector<int> > myDivList(m, std::vector<int>(1, 1));
-    std::vector<std::vector<int> >::iterator it2d, itEnd;
+    return myVector;
+}
+
+template <typename typeInt>
+List DivisorListRcpp (typeInt m, typeInt n, bool keepNames) {
+    
+    typeInt myRange = n;
+    myRange += (1 - m);
+    
+    std::vector<std::vector<typeInt> > myDivList(myRange, std::vector<typeInt>(1, 1));
+    typename std::vector<std::vector<typeInt> >::iterator it2d, itEnd;
     itEnd = myDivList.end();
     // Most values will have fewer than 2 times the 
     // maximal number of bits in m (crude analysis).
@@ -69,20 +85,190 @@ List DivisorListRcpp (SEXP n) {
     // composite values when determing our memory
     // reservation as that will allocate way more
     // memory than necessary for the majority of values.
-    int i, j, myMalloc = 2*ceil(log2(m));
+    typeInt i, j, myMalloc = 2*ceil(log2((double) n)), myNum = m;
+    std::vector<typeInt> myNames;
     
-    for (it2d = myDivList.begin(); it2d < itEnd; it2d++) {
-        it2d -> reserve(myMalloc);
+    if (keepNames){
+        myNames.resize(myRange);
+        for (std::size_t k = 0, j = myNum; j <= n; j++, k++)
+            myNames[k] = j;
     }
     
-    for (i = 2; i <= m; i++) {
-        for (j = i; j <= m; j+=i) {
-            myDivList[j - 1].push_back(i);
+    if (m < 2) {
+        for (it2d = myDivList.begin() + 1; it2d < itEnd; it2d++)
+            it2d -> reserve(myMalloc);
+        
+        for (i = 2; i <= n; i++)
+            for (j = i; j <= n; j += i)
+                myDivList[j - 1].push_back(i);
+        
+    } else {
+        int_fast32_t sqrtBound = floor(sqrt((double)n));
+        typeInt myStart, testNum;
+        
+        for (it2d = myDivList.begin(); it2d < itEnd; it2d++, myNum++) {
+            it2d -> reserve(myMalloc);
+            it2d -> push_back(myNum);
+        }
+        
+        for (i = sqrtBound; i >= 2; i--) {
+            
+            myStart = getStartingIndex(m, i);
+            myNum = m + myStart;
+            
+            for (j = myStart; j < myRange; j += i, myNum += i) {
+                // Put element in the second position. (see comment below)
+                myDivList[j].insert(myDivList[j].begin() + 1, i);
+                testNum = myNum / i;
+                
+                // Ensure we won't duplicate adding an element. If
+                // testNum <= sqrtBound, it will be added in later
+                // iterations. Also, we insert this element in the
+                // pentultimate position as it will be the second
+                // to the largest element at the time of inclusion.
+                // E.g. let i = 5, myNum = 100, so the current
+                // vectors looks like so: v = 1, 5, 10, 100 (5 was
+                // added to the second position above). With i = 5,
+                // testNum = 100 / 5 = 20, thus we add it the second
+                // to last position to give v = 1 5 10 20 100.
+                if (testNum > sqrtBound)
+                    myDivList[j].insert(myDivList[j].end() - 1, testNum);
+            }
         }
     }
     
-    return wrap(myDivList);
+    Rcpp::List myList = wrap(myDivList);
+    if (keepNames)
+        myList.attr("names") = myNames;
+    
+    return myList;
 }
+
+// [[Rcpp::export]]
+SEXP DivisorsGeneral (SEXP Rb1, SEXP Rb2, 
+                       SEXP RIsList, SEXP RNamed) {
+    double bound1, bound2, myMax, myMin;
+    bool isList = false, isNamed = false;
+    
+    switch(TYPEOF(Rb1)) {
+        case REALSXP: {
+            bound1 = as<double>(Rb1);
+            break;
+        }
+        case INTSXP: {
+            bound1 = as<double>(Rb1);
+            break;
+        }
+        default: {
+            stop("bound1 must be of type numeric or integer");
+        }
+    }
+    
+    isList = as<bool>(RIsList);
+    isNamed = as<bool>(RNamed);
+    
+    if (Rf_isNull(Rb2)) {
+        if (bound1 <= 0) {stop("n must be positive");}
+        myMax = floor(bound1);
+        
+        if (isList) {
+            if (myMax < 2) {
+                std::vector<std::vector<int> > trivialRet(1, std::vector<int>(1, 1));
+                Rcpp::List z = wrap(trivialRet);
+                if (isNamed)
+                    z.attr("names") = 1;
+                
+                return z;
+            } else {
+                if (bound1 > (INT_MAX - 1)) {
+                    return DivisorListRcpp((int_fast64_t) 1,
+                                                  (int_fast64_t) myMax, isNamed);
+                }
+                return DivisorListRcpp((int_fast32_t) 1,
+                                              (int_fast32_t) myMax, isNamed);
+            }
+        } else {
+            if (myMax < 2) {
+                IntegerVector v(1, 1);
+                if (isNamed)
+                    v.attr("names") = 1;
+                
+                return v;
+            } else {
+                if (bound1 > (INT_MAX - 1)) {
+                    return NumDivisorsSieve<NumericVector>((int_fast64_t) 1,
+                                                       (int_fast64_t) myMax, isNamed);
+                }
+                return NumDivisorsSieve<IntegerVector>((int_fast32_t) 1,
+                                                   (int_fast32_t) myMax, isNamed);
+            }
+        }
+    } else {
+        if (bound1 <= 0 || bound1 > Significand53)
+            stop("bound1 must be a positive number less than 2^53");
+        
+        switch(TYPEOF(Rb2)) {
+            case REALSXP: {
+                bound2 = as<double>(Rb2);
+                break;
+            }
+            case INTSXP: {
+                bound2 = as<double>(Rb2);
+                break;
+            }
+            default: {
+                stop("bound2 must be of type numeric or integer");
+            }
+        }
+        if (bound2 <= 0 || bound2 > Significand53)
+            stop("bound2 must be a positive number less than 2^53");
+        
+        if (bound1 > bound2) {
+            myMax = bound1;
+            myMin = bound2;
+        } else {
+            myMax = bound2;
+            myMin = bound1;
+        }
+        
+        myMin = ceil(myMin);
+        myMax = floor(myMax);
+        
+        if (isList) {
+            if (myMax < 2) {
+                std::vector<std::vector<int> > trivialRet(1, std::vector<int>(1, 1));
+                Rcpp::List z = wrap(trivialRet);
+                if (isNamed)
+                    z.attr("names") = 1;
+                
+                return z;
+            } else {
+                if (bound1 > (INT_MAX - 1)) {
+                    return DivisorListRcpp((int_fast64_t) myMin,
+                                                  (int_fast64_t) myMax, isNamed);
+                }
+                return DivisorListRcpp((int_fast32_t) myMin,
+                                              (int_fast32_t) myMax, isNamed);
+            }
+        } else {
+            if (myMax < 2) {
+                IntegerVector v(1, 1);
+                if (isNamed)
+                    v.attr("names") = 1;
+                
+                return v;
+            } else {
+                if (bound1 > (INT_MAX - 1)) {
+                    return NumDivisorsSieve<NumericVector>((int_fast64_t) myMin,
+                                                           (int_fast64_t) myMax, isNamed);
+                }
+                return NumDivisorsSieve<IntegerVector>((int_fast32_t) myMin,
+                                                       (int_fast32_t) myMax, isNamed);
+            }
+        }
+    }
+}
+
 
 template <typename typeRcpp, typename typeStd>
 typeRcpp Factorize (typeStd t, std::vector<int64_t>& factors) {
@@ -122,7 +308,7 @@ typeRcpp Factorize (typeStd t, std::vector<int64_t>& factors) {
         typeStd temp;
         
         for (i = 0; i <= lengths[0]; ++i) {
-            myFacs[i] = (typeStd)std::pow(uniFacs[0], i);
+            myFacs[i] = (typeStd) std::pow(uniFacs[0], i);
         }
         
         if (numUni > 0) {
@@ -131,7 +317,7 @@ typeRcpp Factorize (typeStd t, std::vector<int64_t>& factors) {
                 for (i = 1; i <= lengths[j]; i++) {
                     ind = i*facSize;
                     for (k = 0; k < facSize; k++) {
-                        temp = (typeStd)std::pow(uniFacs[j], i);
+                        temp = (typeStd) std::pow(uniFacs[j], i);
                         temp *= myFacs[k];
                         myFacs[ind + k] = temp;
                     }
