@@ -9,16 +9,16 @@ DivisorsGeneral <- function(Rb1, Rb2, RIsList, RNamed) {
     .Call(`_RcppAlgos_DivisorsGeneral`, Rb1, Rb2, RIsList, RNamed)
 }
 
-getAllDivisorsRcpp <- function(n) {
-    .Call(`_RcppAlgos_getAllDivisorsRcpp`, n)
+getAllDivisorsRcpp <- function(Rv, RNamed) {
+    .Call(`_RcppAlgos_getAllDivisorsRcpp`, Rv, RNamed)
 }
 
-PrimeFactorsContainer <- function(n) {
-    .Call(`_RcppAlgos_PrimeFactorsContainer`, n)
+PrimeFactorsContainer <- function(Rv, RNamed) {
+    .Call(`_RcppAlgos_PrimeFactorsContainer`, Rv, RNamed)
 }
 
-IsPrimeContainer <- function(n) {
-    .Call(`_RcppAlgos_IsPrimeContainer`, n)
+IsPrimeContainer <- function(Rv, RNamed) {
+    .Call(`_RcppAlgos_IsPrimeContainer`, Rv, RNamed)
 }
 
 EratosthenesRcpp <- function(Rb1, Rb2, RIsList, RIsEuler, RNamed) {

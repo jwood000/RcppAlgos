@@ -42,35 +42,38 @@ BEGIN_RCPP
 END_RCPP
 }
 // getAllDivisorsRcpp
-SEXP getAllDivisorsRcpp(SEXP n);
-RcppExport SEXP _RcppAlgos_getAllDivisorsRcpp(SEXP nSEXP) {
+SEXP getAllDivisorsRcpp(SEXP Rv, SEXP RNamed);
+RcppExport SEXP _RcppAlgos_getAllDivisorsRcpp(SEXP RvSEXP, SEXP RNamedSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< SEXP >::type n(nSEXP);
-    rcpp_result_gen = Rcpp::wrap(getAllDivisorsRcpp(n));
+    Rcpp::traits::input_parameter< SEXP >::type Rv(RvSEXP);
+    Rcpp::traits::input_parameter< SEXP >::type RNamed(RNamedSEXP);
+    rcpp_result_gen = Rcpp::wrap(getAllDivisorsRcpp(Rv, RNamed));
     return rcpp_result_gen;
 END_RCPP
 }
 // PrimeFactorsContainer
-SEXP PrimeFactorsContainer(SEXP n);
-RcppExport SEXP _RcppAlgos_PrimeFactorsContainer(SEXP nSEXP) {
+SEXP PrimeFactorsContainer(SEXP Rv, SEXP RNamed);
+RcppExport SEXP _RcppAlgos_PrimeFactorsContainer(SEXP RvSEXP, SEXP RNamedSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< SEXP >::type n(nSEXP);
-    rcpp_result_gen = Rcpp::wrap(PrimeFactorsContainer(n));
+    Rcpp::traits::input_parameter< SEXP >::type Rv(RvSEXP);
+    Rcpp::traits::input_parameter< SEXP >::type RNamed(RNamedSEXP);
+    rcpp_result_gen = Rcpp::wrap(PrimeFactorsContainer(Rv, RNamed));
     return rcpp_result_gen;
 END_RCPP
 }
 // IsPrimeContainer
-SEXP IsPrimeContainer(SEXP n);
-RcppExport SEXP _RcppAlgos_IsPrimeContainer(SEXP nSEXP) {
+SEXP IsPrimeContainer(SEXP Rv, SEXP RNamed);
+RcppExport SEXP _RcppAlgos_IsPrimeContainer(SEXP RvSEXP, SEXP RNamedSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< SEXP >::type n(nSEXP);
-    rcpp_result_gen = Rcpp::wrap(IsPrimeContainer(n));
+    Rcpp::traits::input_parameter< SEXP >::type Rv(RvSEXP);
+    Rcpp::traits::input_parameter< SEXP >::type RNamed(RNamedSEXP);
+    rcpp_result_gen = Rcpp::wrap(IsPrimeContainer(Rv, RNamed));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -93,9 +96,9 @@ END_RCPP
 static const R_CallMethodDef CallEntries[] = {
     {"_RcppAlgos_CombinatoricsRcpp", (DL_FUNC) &_RcppAlgos_CombinatoricsRcpp, 11},
     {"_RcppAlgos_DivisorsGeneral", (DL_FUNC) &_RcppAlgos_DivisorsGeneral, 4},
-    {"_RcppAlgos_getAllDivisorsRcpp", (DL_FUNC) &_RcppAlgos_getAllDivisorsRcpp, 1},
-    {"_RcppAlgos_PrimeFactorsContainer", (DL_FUNC) &_RcppAlgos_PrimeFactorsContainer, 1},
-    {"_RcppAlgos_IsPrimeContainer", (DL_FUNC) &_RcppAlgos_IsPrimeContainer, 1},
+    {"_RcppAlgos_getAllDivisorsRcpp", (DL_FUNC) &_RcppAlgos_getAllDivisorsRcpp, 2},
+    {"_RcppAlgos_PrimeFactorsContainer", (DL_FUNC) &_RcppAlgos_PrimeFactorsContainer, 2},
+    {"_RcppAlgos_IsPrimeContainer", (DL_FUNC) &_RcppAlgos_IsPrimeContainer, 2},
     {"_RcppAlgos_EratosthenesRcpp", (DL_FUNC) &_RcppAlgos_EratosthenesRcpp, 5},
     {NULL, NULL, 0}
 };
