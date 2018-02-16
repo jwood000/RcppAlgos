@@ -76,9 +76,9 @@ List DivisorListRcpp (typeInt m, typeInt n, bool keepNames) {
     typeInt myRange = n;
     myRange += (1 - m);
     
-    std::vector<std::vector<typeInt> > myDivList(myRange, std::vector<typeInt>(1, 1));
+    std::vector<std::vector<typeInt> > MyDivList(myRange, std::vector<typeInt>(1, 1));
     typename std::vector<std::vector<typeInt> >::iterator it2d, itEnd;
-    itEnd = myDivList.end();
+    itEnd = MyDivList.end();
     // Most values will have fewer than 2 times the 
     // maximal number of bits in m (crude analysis).
     // We don't want to consider the few highly
@@ -95,18 +95,18 @@ List DivisorListRcpp (typeInt m, typeInt n, bool keepNames) {
     }
     
     if (m < 2) {
-        for (it2d = myDivList.begin() + 1; it2d < itEnd; it2d++)
+        for (it2d = MyDivList.begin() + 1; it2d < itEnd; it2d++)
             it2d -> reserve(myMalloc);
         
         for (i = 2; i <= n; i++)
             for (j = i; j <= n; j += i)
-                myDivList[j - 1].push_back(i);
+                MyDivList[j - 1].push_back(i);
         
     } else {
         int_fast32_t sqrtBound = floor(sqrt((double)n));
         typeInt myStart, testNum;
         
-        for (it2d = myDivList.begin(); it2d < itEnd; it2d++, myNum++) {
+        for (it2d = MyDivList.begin(); it2d < itEnd; it2d++, myNum++) {
             it2d -> reserve(myMalloc);
             it2d -> push_back(myNum);
         }
@@ -118,7 +118,7 @@ List DivisorListRcpp (typeInt m, typeInt n, bool keepNames) {
             
             for (j = myStart; j < myRange; j += i, myNum += i) {
                 // Put element in the second position. (see comment below)
-                myDivList[j].insert(myDivList[j].begin() + 1, i);
+                MyDivList[j].insert(MyDivList[j].begin() + 1, i);
                 testNum = myNum / i;
                 
                 // Ensure we won't duplicate adding an element. If
@@ -132,12 +132,12 @@ List DivisorListRcpp (typeInt m, typeInt n, bool keepNames) {
                 // testNum = 100 / 5 = 20, thus we add it the second
                 // to last position to give v = 1 5 10 20 100.
                 if (testNum > sqrtBound)
-                    myDivList[j].insert(myDivList[j].end() - 1, testNum);
+                    MyDivList[j].insert(MyDivList[j].end() - 1, testNum);
             }
         }
     }
     
-    Rcpp::List myList = wrap(myDivList);
+    Rcpp::List myList = wrap(MyDivList);
     if (keepNames)
         myList.attr("names") = myNames;
     
@@ -270,14 +270,13 @@ SEXP DivisorsGeneral (SEXP Rb1, SEXP Rb2,
 }
 
 
-template <typename typeRcpp, typename typeStd>
-typeRcpp Factorize (typeStd t, std::vector<int64_t>& factors) {
+std::vector<int64_t> Factorize (int64_t t, std::vector<int64_t>& factors) {
     
     if (t == 1) {
-        std::vector<typeStd> trivialReturn;
+        std::vector<int64_t> trivialReturn;
         if (factors.size() > 0) {trivialReturn.push_back(factors[0]);}
         trivialReturn.push_back(1);
-        return wrap(trivialReturn);
+        return trivialReturn;
     } else {
         std::vector<unsigned long int> lengths;
         std::vector<int64_t>::iterator it, facEnd;
@@ -285,7 +284,7 @@ typeRcpp Factorize (typeStd t, std::vector<int64_t>& factors) {
         int64_t prev = factors[0];
         
         unsigned long int i, j, k, n = factors.size(), numUni = 0;
-        std::vector<typeStd> uniFacs(n);
+        std::vector<int64_t> uniFacs(n);
         uniFacs[0] = factors[0];
         lengths.reserve(n);
         lengths.push_back(1);
@@ -297,18 +296,18 @@ typeRcpp Factorize (typeStd t, std::vector<int64_t>& factors) {
                 numUni++;
                 prev = *it;
                 lengths.push_back(1);
-                uniFacs[numUni] = (typeStd)*it;
+                uniFacs[numUni] = (int64_t)*it;
             }
         }
         
         unsigned long int ind, facSize = 1, numFacs = 1;
         for (i = 0; i <= numUni; i++) {numFacs *= (lengths[i]+1);}
         
-        std::vector<typeStd> myFacs(numFacs);
-        typeStd temp;
+        std::vector<int64_t> myFacs(numFacs);
+        int64_t temp;
         
         for (i = 0; i <= lengths[0]; ++i) {
-            myFacs[i] = (typeStd) std::pow(uniFacs[0], i);
+            myFacs[i] = (int64_t) std::pow(uniFacs[0], i);
         }
         
         if (numUni > 0) {
@@ -317,7 +316,7 @@ typeRcpp Factorize (typeStd t, std::vector<int64_t>& factors) {
                 for (i = 1; i <= lengths[j]; i++) {
                     ind = i*facSize;
                     for (k = 0; k < facSize; k++) {
-                        temp = (typeStd) std::pow(uniFacs[j], i);
+                        temp = (int64_t) std::pow(uniFacs[j], i);
                         temp *= myFacs[k];
                         myFacs[ind + k] = temp;
                     }
@@ -326,78 +325,102 @@ typeRcpp Factorize (typeStd t, std::vector<int64_t>& factors) {
         }
         
         std::sort(myFacs.begin(), myFacs.end());
-        return wrap(myFacs);
+        return myFacs;
     }
 }
 
 
 // [[Rcpp::export]]
-SEXP getAllDivisorsRcpp (SEXP n) {
-    double m;
+SEXP getAllDivisorsRcpp (SEXP Rv, SEXP RNamed) {
     int64_t mPass;
-    std::vector<int64_t> factors;
-    bool isNegative = false;
+    std::vector<int64_t> myNums;
+    bool isNegative = false, isNamed = false;
     
-    switch(TYPEOF(n)) {
+    switch(TYPEOF(Rv)) {
         case REALSXP: {
-            m = as<double>(n);
+            myNums = as<std::vector<int64_t> >(Rv);
             break;
         }
         case INTSXP: {
-            m = as<double>(n);
+            myNums = as<std::vector<int64_t> >(Rv);
             break;
         }
         default: {
-            stop("n must be of type numeric or integer");
+            stop("v must be of type numeric or integer");
         }
     }
     
-    if (m < 0) {
-        m = std::abs(m);
-        isNegative = true;
-    }
+    isNamed = as<bool>(RNamed);
+    unsigned int myLen = myNums.size();
     
-    mPass = (int64_t) m;
-    
-    if (m > 0) {
-        getPrimefactors(mPass, factors);
-        if (m <= INT_MAX) {
-            int mInt = (int) m;
-            IntegerVector myIntDivisors = Factorize<IntegerVector>(mInt, factors);
+    if (myLen > 1) {
+        std::vector<std::vector<int64_t> > MyDivList(myLen, std::vector<int64_t>());
+        
+        for (std::size_t j = 0; j < myLen; j++) {
+            std::vector<int64_t> myDivisors;
+            mPass = myNums[j];
             
+            if (mPass < 0) {
+                mPass = std::abs(mPass);
+                isNegative = true;
+            } else {
+                isNegative = false;
+            }
+            
+            if (mPass > 0) {
+                std::vector<int64_t> factors;
+                mPass = mPass;
+                getPrimefactors(mPass, factors);
+                myDivisors = Factorize(mPass, factors);
+                if (isNegative) {
+                    unsigned int facSize = myDivisors.size();
+                    std::vector<int64_t> tempInt(2 * facSize);
+                    unsigned int posInd = facSize, negInd = facSize - 1;
+                    
+                    for (std::size_t i = 0; i < facSize; i++, posInd++, negInd--) {
+                        tempInt[negInd] = -1 * myDivisors[i];
+                        tempInt[posInd] = myDivisors[i];
+                    }
+                    
+                    myDivisors = tempInt;
+                }
+            }
+            MyDivList[j] = myDivisors;
+        }
+        
+        Rcpp::List myList = wrap(MyDivList);
+        if (isNamed)
+            myList.attr("names") = myNums;
+        return myList;
+    } else {
+        std::vector<int64_t> myDivisors;
+        mPass = myNums[0];
+        
+        if (mPass < 0) {
+            mPass = std::abs(mPass);
+            isNegative = true;
+        } else {
+            isNegative = false;
+        }
+        
+        if (myNums[0] > 0) {
+            std::vector<int64_t> factors;
+            getPrimefactors(mPass, factors);
+            myDivisors = Factorize(mPass, factors);
             if (isNegative) {
-                unsigned int facSize = myIntDivisors.size();
-                std::vector<int> tempInt(2 * facSize);
+                unsigned int facSize = myDivisors.size();
+                std::vector<int64_t> tempInt(2 * facSize);
                 unsigned int posInd = facSize, negInd = facSize - 1;
                 
                 for (std::size_t i = 0; i < facSize; i++, posInd++, negInd--) {
-                    tempInt[negInd] = -1 * myIntDivisors[i];
-                    tempInt[posInd] = myIntDivisors[i];
+                    tempInt[negInd] = -1 * myDivisors[i];
+                    tempInt[posInd] = myDivisors[i];
                 }
                 
                 return wrap(tempInt);
-            } else {
-                return myIntDivisors;
-            }
-        } else {
-            NumericVector myDblDivisors = Factorize<NumericVector>(m, factors);
-            
-            if (isNegative) {
-                unsigned int facSize = myDblDivisors.size();
-                std::vector<double> tempDbl(2 * facSize);
-                unsigned int posInd = facSize, negInd = facSize - 1;
-                
-                for (std::size_t i = 0; i < facSize; i++, posInd++, negInd--) {
-                    tempDbl[negInd] = -1 * myDblDivisors[i];
-                    tempDbl[posInd] = myDblDivisors[i];
-                }
-                
-                return wrap(tempDbl);
-            } else {
-                return myDblDivisors;
             }
         }
-    } else {
-        return wrap(factors);
+        
+        return wrap(myDivisors);
     }
 }
