@@ -1,5 +1,5 @@
 Package: RcppAlgos
-Version: 0.3.0
+Version: 1.0.0
 Title: Tools for Combinatorics and Computational Mathematics
 Description: Provides optimized functions implemented in C++ with 'Rcpp'
     for solving problems in combinatorics and computational mathematics.
@@ -14,15 +14,21 @@ Description: Provides optimized functions implemented in C++ with 'Rcpp'
     mathematics. These include various sieving functions that can quickly
     generate the following: prime numbers, number of coprime elements, 
     number of divisors, prime factorizations, and complete factorizations.
-    The primeSieve function implements the segmented sieve of 
+    Some of these functions make use of the fast integer division library
+    'libdivide'. The primeSieve function implements the segmented sieve of 
     Eratosthenes with wheel factorization. It is capable of generating
-    all primes less than a billion in under 2 seconds and 10 billion in
-    less than 20 seconds. It can also quickly generate prime numbers
-    over a range (E.g. primeSieve(10^13, 10^13+10^9)). There is a 
-    stand-alone general factoring function as well as a prime 
-    factorization function that implements a non-gmp variant of Pollard's
-    rho algorithm (original source code found here: https://gmplib.org/).
-URL: https://github.com/jwood000/RcppAlgos
+    all primes less than a billion in just over 1 second. It can also 
+    quickly generate prime numbers over a range (e.g. primeSieve(10^13,
+    10^13+10^9)). There are stand-alone vectorized functions for general
+    factoring (e.g. all divisors of number), primality testing, as well
+    as prime factoring (this function implements a non-gmp variant of 
+    Pollard's rho algorithm). Finally, there is prime counting function
+    that implements a simple variation of Legendre's formula based off
+    of the algorithm by Kim Walisch. It is capable of returning the 
+    number of primes below a trillion in under 0.5 seconds.
+URL: https://github.com/jwood000/RcppAlgos, https://gmplib.org/,
+        http://primesieve.org/, https://github.com/kimwalisch/primesieve,
+        https://github.com/kimwalisch/primesieve, http://libdivide.com/
 BugReports: https://github.com/jwood000/RcppAlgos/issues
 Imports: Rcpp (>= 0.12.8)
 LinkingTo: Rcpp
