@@ -4,7 +4,9 @@
 Generate Prime Integers
 }
 \description{
-Rcpp implementation of the sieve of Eratosthenes. Generates all prime numbers between \code{bound1} and \code{bound2} (if supplied) or all primes up to \code{bound1}.
+Rcpp implementation of the segmented sieve of Eratosthenes with wheel factorization. Generates all prime numbers between \code{bound1} and \code{bound2} (if supplied) or all primes up to \code{bound1}. This algorithm is capable of generating primes up to ten billion (i.e. \eqn{10^{10}}{10^10}) in just over 15 seconds.
+
+The fundamental concepts of this algorithm are based off of the implementation by Kim Walisch found here: \href{https://github.com/kimwalisch/primesieve}{kimwalisch/primesieve}.
 }
 \usage{
 primeSieve(bound1 = 100L, bound2 = NULL)
@@ -15,17 +17,34 @@ primeSieve(bound1 = 100L, bound2 = NULL)
 \item{bound2}{Positive integer or numeric value.}
 }
 \note{
-It does not matter which bound is larger as the resulting primes will be between \code{min(bound1, bound2)} and \code{max(bound1, bound2)} if \code{bound2} is provided. The maximum value for either of the bounds is \eqn{2^{53} - 1}{2^53 - 1} if both bounds are provided. If only \code{bound1} is provided, the maximum value is \eqn{2^{31} - 1}{2^31 - 1}.
+\itemize{
+\item{It does not matter which bound is larger as the resulting primes will be between \code{min(bound1, bound2)} and \code{max(bound1, bound2)} if \code{bound2} is provided.}
+\item{The maximum value for either of the bounds is \eqn{2^{53} - 1}{2^53 - 1}.}
+}
 }
 \details{
-Optimized implementation of the sieve of Eratosthenes. In addition to being very fast, this algorithm is particularly memory efficient when the sieving interval isn't large (\emph{E.g.} check \code{object.size} when \code{abs(bound1 - bound2) < 10^5}). This is accomplished by doing most of the work with logical vectors and only allocating enough memory for the return vector based off of the size of the interval.
+At the heart of this algorithm is the traditional sieve of Eratosthenes (i.e. given a \href{https://en.wikipedia.org/wiki/Prime_number}{prime} \eqn{p}, mark all multiples of \eqn{p} as \href{https://en.wikipedia.org/wiki/Composite_number}{composite}), however instead of sieving the entire interval, we only consider small subintervals. The benefits of this method are two fold:
+\enumerate{
+\item Reduction of the \href{https://en.wikipedia.org/wiki/DSPACE}{space complexity} from \eqn{O(n)}, for the traditional sieve, to \eqn{O(\sqrt n))}
+\item Reduction of \href{https://en.wikipedia.org/wiki/CPU_cache#Cache_miss}{cache misses}
+}
+The latter is of particular importance as cache memory is much more efficient and closer in proximity to the CPU than \href{https://en.wikipedia.org/wiki/Computer_data_storage#Primary_storage}{main memory}. Reducing the size of the sieving interval allows for more effective utilization of the cache, which greatly impacts the overall efficiency.
+
+Another optimization over the traditional sieve is the utilization of wheel factorization. With the traditional sieve of Eratosthenes, you typically check every odd index of your logical vector and if the value is true, you have found a prime. With wheel factorization using the first four primes (i.e. 2, 3, 5, and 7) to construct your wheel (i.e. 210 wheel), you only have to check indices of your logical vector that are coprime to 210 (i.e. the product of the first four primes). As an example, with \eqn{n = 10000} and a 210 wheel, you only have to check 2285 indices vs. 5000 with the classical implementation.
 }
 \value{
-Returns an integer vector if only \code{bound1} is provided, otherwise a numeric vector is returned.
+Returns an integer vector if \code{max(bound1, bound2)} \eqn{< 2^{31}}{< 2^31}, or a numeric vector otherwise.
 }
 \references{
-\href{https://en.wikipedia.org/wiki/Sieve_of_Eratosthenes}{Sieve of Eratosthenes}, 
-\href{https://en.wikipedia.org/wiki/Double-precision_floating-point_format}{53-bit significand precision}
+\itemize{
+\item{\href{https://primesieve.org}{primesieve (Fast C/C++ prime number generator)}}
+\item{\href{https://en.wikipedia.org/wiki/Sieve_of_Eratosthenes}{Sieve of Eratosthenes}}
+\item{\href{https://en.wikipedia.org/wiki/Wheel_factorization}{Wheel factorization}}
+\item{\href{https://en.wikipedia.org/wiki/Double-precision_floating-point_format}{53-bit significand precision}}
+}
+}
+\author{
+Joseph Wood
 }
 \seealso{
 \code{\link[numbers]{Primes}}
@@ -44,27 +63,8 @@ primeSieve(1729, 42)
 system.time(primeSieve(10^8))
 
 options(scipen = 50)
-## Quickly generate large primes over small interval
-system.time(myPs <- primeSieve(10^13+10^5, 10^13))
+## Quickly generate large primes over interval
+system.time(myPs <- primeSieve(10^13+10^6, 10^13))
 ## Object created is small
 object.size(myPs)
-
-## Different classes when bound2 is provided
-class(primeSieve(10^4))
-class(primeSieve(1, 10^4))
-all.equal(primeSieve(1,10^4), primeSieve(10^4))
-
-## Compared to generating all primes up to the 
-## upper bound and subsetting (see below)
-system.time(bound2_used <- primeSieve(10^9, 10^9+10^3))
-object.size(bound2_used)
-
-\dontrun{
-## Takes a decent amount of time
-system.time(bound2_notused <- primeSieve(1000001000))
-system.time(bound2_notused[bound2_notused >= 10^9])
-## Creates large object
-object.size(bound2_notused)
-all.equal(bound2_notused[bound2_notused >= 10^9], bound2_used)
-}
 }
