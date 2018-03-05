@@ -19,7 +19,6 @@ numDivisorSieve <- function(bound1 = 100L, bound2 = NULL, namedVector = FALSE) {
 }
 
 primeFactorize <- function(v = 100L, namedList = FALSE) {PrimeFactorsContainer(v, namedList)}
-
 divisorsRcpp <- function(v = 100L, namedList = FALSE) {getAllDivisorsRcpp(v, namedList)}
-
 isPrimeRcpp <- function(v = 100L, namedVector = FALSE) {IsPrimeContainer(v, namedVector)}
+primeCount <- function(n = 100L) {MasterPrimeCount(n)}
