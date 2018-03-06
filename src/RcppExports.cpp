@@ -77,6 +77,17 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// MasterPrimeCount
+SEXP MasterPrimeCount(SEXP Rn);
+RcppExport SEXP _RcppAlgos_MasterPrimeCount(SEXP RnSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< SEXP >::type Rn(RnSEXP);
+    rcpp_result_gen = Rcpp::wrap(MasterPrimeCount(Rn));
+    return rcpp_result_gen;
+END_RCPP
+}
 // EratosthenesRcpp
 SEXP EratosthenesRcpp(SEXP Rb1, SEXP Rb2, SEXP RIsList, SEXP RIsEuler, SEXP RNamed);
 RcppExport SEXP _RcppAlgos_EratosthenesRcpp(SEXP Rb1SEXP, SEXP Rb2SEXP, SEXP RIsListSEXP, SEXP RIsEulerSEXP, SEXP RNamedSEXP) {
@@ -99,6 +110,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_RcppAlgos_getAllDivisorsRcpp", (DL_FUNC) &_RcppAlgos_getAllDivisorsRcpp, 2},
     {"_RcppAlgos_PrimeFactorsContainer", (DL_FUNC) &_RcppAlgos_PrimeFactorsContainer, 2},
     {"_RcppAlgos_IsPrimeContainer", (DL_FUNC) &_RcppAlgos_IsPrimeContainer, 2},
+    {"_RcppAlgos_MasterPrimeCount", (DL_FUNC) &_RcppAlgos_MasterPrimeCount, 1},
     {"_RcppAlgos_EratosthenesRcpp", (DL_FUNC) &_RcppAlgos_EratosthenesRcpp, 5},
     {NULL, NULL, 0}
 };

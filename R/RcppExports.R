@@ -21,6 +21,10 @@ IsPrimeContainer <- function(Rv, RNamed) {
     .Call(`_RcppAlgos_IsPrimeContainer`, Rv, RNamed)
 }
 
+MasterPrimeCount <- function(Rn) {
+    .Call(`_RcppAlgos_MasterPrimeCount`, Rn)
+}
+
 EratosthenesRcpp <- function(Rb1, Rb2, RIsList, RIsEuler, RNamed) {
     .Call(`_RcppAlgos_EratosthenesRcpp`, Rb1, Rb2, RIsList, RIsEuler, RNamed)
 }
