@@ -1,3 +1,13 @@
+RcppAlgos 1.0.0 (Release date: 2018-03-07)
+
+* Added the following functions: primeFactorize (vectorized pollard rho factorization), divisorsRcpp (vectorized factoring (complete)), isPrimeRcpp (vectorized primality testing using Miller-Rabin algorithm), & primeCount (based on the primecount algorithm by Kim Walisch)
+* Completely revamped the primeSieve function. It is now a segmented sieve of Eratosthenes with wheel factorization based on primesieve by Kim Walisch.
+* Renamed divisorsList to divisorsSieve (reason for the major version update to 1.0.0)
+* Renamed primeFactorizationList to primeFactorizeSieve
+* Made the sieving functions more flexible. They are now able to generate results over a range and can also produce named objects.
+* All number theoretic functions have been made more efficient. Some make use of the fast integer division library 'libdivide' by ridiculousfish.
+
+
 RcppAlgos 0.2.5 (Release date: 2018-01-04)
 
 * Added unit tests.
