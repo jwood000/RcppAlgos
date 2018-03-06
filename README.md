@@ -5,7 +5,15 @@
 
 Overview
 ---------
-A collection of optimized functions implemented in C++ with Rcpp for solving problems in combinatorics and computational mathematics.
+A collection of optimized functions implemented in C++ with Rcpp for solving problems in combinatorics and computational mathematics. Featured functions:
+
+* primeSieve - Generates all primes less than a billion in just over 1 second
+* primeCount -  Counts the number of primes below a trillion in under 0.5 seconds.
+* comboGeneral/permuteGeneral - Generate all combinations/permutations of a vector meeting specific criteria. Capable of efficiently handling multisets as well.
+
+The `primeSieve` function and the `primeCount` function are both based off of the excellent work by [Kim Walisch](https://github.com/kimwalisch). The respective repos can be found here: [kimwalisch/primesieve](https://github.com/kimwalisch/primesieve); [kimwalisch/primecount](https://github.com/kimwalisch/primecount)
+
+Additionally, many of the sieving functions make use of the fast integer division library [libdivide](https://github.com/ridiculousfish/libdivide) by [ridiculousfish](https://github.com/ridiculousfish).
 
 Installation
 ------------
@@ -242,32 +250,19 @@ Mathematical Computation
 `RcppAlgos` comes equipped with several functions for quickly generating essential components
 for problems common in computational mathematics.
 
+The following sieving functions (`primeFactorizeSieve`, `divisorsSieve`, `numDivisorSieve`, & `eulerPhiSieve`) are very useful and flexible. Generate components up to a number or between two bounds.
+
 ``` r
-## get prime factorization for every number from 1 to n
-primeFactorizationList(5)
-[[1]]
-integer(0)
-
-[[2]]
-[1] 2
-
-[[3]]
-[1] 3
-
-[[4]]
-[1] 2 2
-
-[[5]]
-[1] 5
+## get the number of divisors for every number from 1 to n
+numDivisorSieve(20)
+ [1] 1 2 2 3 2 4 2 4 3 4 2 6 2 4 4 5 2 6 2 6
 
 ## If you want the complete factorization from 1 to n, use divisorsList
-system.time(allFacs <- divisorsList(10^5))
+system.time(allFacs <- divisorsSieve(10^5, namedList = TRUE))
    user  system elapsed 
-  0.059   0.009   0.067
-  
-names(allFacs) <- 1:10^5
+  0.073   0.004   0.077
 
-allFacs[c(4339, 15613, 22080, 28372, 40586, 51390, 98248)]
+allFacs[c(4339, 15613, 22080)]
 $`4339`
 [1]    1 4339
 
@@ -282,28 +277,94 @@ $`22080`
 [41]   690   736   920   960  1104  1380  1472  1840  2208  2760
 [51]  3680  4416  5520  7360 11040 22080
 
-$`28372`
- [1]     1     2     4    41    82   164   173   346   692  7093
-[11] 14186 28372
 
-$`40586`
- [1]     1     2     7    13    14    26    91   182   223   446
-[11]  1561  2899  3122  5798 20293 40586
+## Between two bounds
+primeFactorizeSieve(10^12, 10^12 + 5)
+[[1]]
+ [1] 2 2 2 2 2 2 2 2 2 2 2 2 5 5 5 5 5 5 5 5 5 5 5 5
 
-$`51390`
- [1]     1     2     3     5     6     9    10    15    18    30
-[11]    45    90   571  1142  1713  2855  3426  5139  5710  8565
-[21] 10278 17130 25695 51390
+[[2]]
+[1]       73      137 99990001
 
-$`98248`
-[1]     1     2     4     8 12281 24562 49124 98248
+[[3]]
+[1]            2            3 166666666667
+
+[[4]]
+[1]      61   14221 1152763
+
+[[5]]
+[1]      2      2     17    149    197 501001
+
+[[6]]
+[1]           3           5 66666666667
 
 
+## Creating a named object
+eulerPhiSieve(20, namedVector = TRUE)
+ 1  2  3  4  5  6  7  8  9 10 11 12 13 14 15 16 17 18 19 20 
+ 1  1  2  2  4  2  6  4  6  4 10  4 12  6  8  8 16  6 18  8
+```
+
+### Vectorized Functions
+There are three very fast vectorized functions for general factoring (e.g. all divisors of number), primality testing, as well as prime factoring (`divisorsRcpp`, `isPrimeRcpp`, `primeFactorize`)
+
+``` r
+## get result for individual numbers
+primeFactorize(123456789)
+[1]    3    3 3607 3803
+
+
+## or for an entire vector
+set.seed(100)
+> myVec <- sample(-100000000:100000000, 5)
+> divisorsRcpp(myVec, namedList = TRUE)
+$`-38446778`
+[1] -38446778 -19223389        -2        -1         1
+[6]         2  19223389  38446778
+
+$`-48465500`
+ [1] -48465500 -24232750 -12116375  -9693100  -4846550
+ [6]  -2423275  -1938620   -969310   -484655   -387724
+[11]   -193862    -96931      -500      -250      -125
+[16]      -100       -50       -25       -20       -10
+[21]        -5        -4        -2        -1         1
+[26]         2         4         5        10        20
+[31]        25        50       100       125       250
+[36]       500     96931    193862    387724    484655
+[41]    969310   1938620   2423275   4846550   9693100
+[46]  12116375  24232750  48465500
+
+$`10464487`
+[1]        1       11      317     3001     3487    33011
+[7]   951317 10464487
+
+$`-88723370`
+ [1] -88723370 -44361685 -17744674  -8872337       -10
+ [6]        -5        -2        -1         1         2
+[11]         5        10   8872337  17744674  44361685
+[16]  88723370
+
+$`-6290143`
+[1] -6290143       -1        1  6290143
+
+
+## Creating a named object
+isPrimeRcpp(995:1000, namedVector = TRUE)
+  995   996   997   998   999  1000 
+FALSE FALSE  TRUE FALSE FALSE FALSE
+
+```
+
+
+### primeSieve & primeCount
+Both of these functions are based on the excellent algorithms developed by [Kim Walisch](https://github.com/kimwalisch).
+
+``` r
 ## Quickly generate large primes over small interval
 options(scipen = 50)
 system.time(myPs <- primeSieve(10^13+10^3, 10^13))
    user  system elapsed 
-  0.016   0.000   0.016
+  0.035   0.002   0.036
   
 myPs
  [1] 10000000000037 10000000000051 10000000000099 10000000000129
@@ -320,12 +381,31 @@ myPs
 object.size(myPs)
 312 bytes
 
-## Generate number of coprime elements for many numbers
-myPhis <- eulerPhiSieve(20)
-names(myPhis) <- 1:20
-myPhis
- 1  2  3  4  5  6  7  8  9 10 11 12 13 14 15 16 17 18 19 20 
- 1  1  2  2  4  2  6  4  6  4 10  4 12  6  8  8 16  6 18  8
+## primes under a billion!!!
+system.time(primeSieve(10^9))
+   user  system elapsed 
+  1.378   0.109   1.489
+  
+  
+## Enumerate the number of primes below trillion
+system.time(underOneTrillion <- primeCount(10^12))
+   user  system elapsed 
+  0.490   0.001   0.491
+  
+underOneTrillion
+[1] 37607912018
+
+
+## Enumerate the number of primes below a billion in 2 milliseconds
+library(microbenchmark)
+microbenchmark(primeCount(10^9))
+Unit: milliseconds
+             expr      min      lq    mean  median       uq      max neval
+ primeCount(10^9) 1.998919 2.00191 2.08563 2.00397 2.082288 3.043241   100
+ 
+ 
+primeCount(10^9)
+[1] 50847534
 ```
 
 Contact
