@@ -869,7 +869,7 @@ SEXP CombinatoricsRcpp(SEXP Rv, SEXP Rm, SEXP Rrepetition,
                 computedRows = NumPermsWithRep(freqsExpanded);
             } else {
                 if (m > (int)freqsExpanded.size()) {m = freqsExpanded.size();}
-                computedRows = MultisetCombRowNum(n, m, myReps); 
+                computedRows = MultisetCombRowNum(n, m, myReps);
             }
         }
     } else {

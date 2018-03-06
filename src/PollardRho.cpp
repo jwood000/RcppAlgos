@@ -21,14 +21,12 @@ const int64_t Sqrt32Max = (int64_t) std::floor(std::sqrt((double) INT64_MAX));
 
 void FactorTrialDivision (int64_t& t,
                           std::vector<int64_t>& factors) {
-    unsigned long int p;
-    
     while ((t & 1) == 0) {
         factors.push_back(2);
         t /= 2;
     }
     
-    p = 3;
+    int p = 3;
     for (std::size_t i = 1; i < pDiffSize;) {
         if ((t % p) != 0) {
             p += primesDiffPR[i++];
@@ -106,7 +104,7 @@ static int64_t myGCD(int64_t u, int64_t v) {
 
 static int MillerRabin (int64_t n, int64_t nm1,
                         int64_t x, int64_t& y,
-                        int64_t q, int64_t k)
+                        int64_t q, uint64_t k)
 {
     y = ExpBySquaring(x, q, n);
     if (y == 1 || y == nm1)
@@ -149,7 +147,7 @@ int IsPrime (int64_t n) {
     a = 2;
 
     /* Perform a Miller-Rabin test, finds most composites quickly.  */
-    if (!MillerRabin (n, nm1, a, tmp, q, k)) {
+    if (!MillerRabin (n, nm1, a, tmp, q, (uint64_t) k)) {
         primeTestReturn = 0;
         goto ret2;
     }
@@ -181,7 +179,7 @@ int IsPrime (int64_t n) {
 
         a += primesDiffPR[r];	/* Establish new base.  */
 
-        if (!MillerRabin(n, nm1, a, tmp, q, k)) {
+        if (!MillerRabin(n, nm1, a, tmp, q, (uint64_t) k)) {
             primeTestReturn = 0;
             goto ret1;
         }
@@ -273,16 +271,16 @@ void getPrimefactors (int64_t& t, std::vector<int64_t>& factors) {
 
 // [[Rcpp::export]]
 SEXP PrimeFactorsContainer (SEXP Rv, SEXP RNamed) {
-    std::vector<int64_t> myNums;
+    std::vector<double> myNums;
     bool isNamed = false;
     
     switch(TYPEOF(Rv)) {
         case REALSXP: {
-            myNums = as<std::vector<int64_t> >(Rv);
+            myNums = as<std::vector<double> >(Rv);
             break;
         }
         case INTSXP: {
-            myNums = as<std::vector<int64_t> >(Rv);
+            myNums = as<std::vector<double> >(Rv);
             break;
         }
         default: {
@@ -299,6 +297,7 @@ SEXP PrimeFactorsContainer (SEXP Rv, SEXP RNamed) {
         
         for (std::size_t i = 0; i < myLen; i++) {
             std::vector<int64_t> factors;
+            
             mPass = myNums[i];
             
             if (mPass < 0) {
@@ -333,24 +332,24 @@ SEXP PrimeFactorsContainer (SEXP Rv, SEXP RNamed) {
             getPrimefactors(mPass, factors);
             return wrap(factors);
         } else {
-            IntegerVector trivialReturn;
-            return trivialReturn;
+            return IntegerVector();
         }
     }
 }
 
 // [[Rcpp::export]]
 SEXP IsPrimeContainer (SEXP Rv, SEXP RNamed) {
-    std::vector<int64_t> myNums;
+    std::vector<double> myNums;
+    int64_t testVal;
     bool isNamed = false;
     
     switch(TYPEOF(Rv)) {
         case REALSXP: {
-            myNums = as<std::vector<int64_t> >(Rv);
+            myNums = as<std::vector<double> >(Rv);
             break;
         }
         case INTSXP: {
-            myNums = as<std::vector<int64_t> >(Rv);
+            myNums = as<std::vector<double> >(Rv);
             break;
         }
         default: {
@@ -360,8 +359,8 @@ SEXP IsPrimeContainer (SEXP Rv, SEXP RNamed) {
     
     isNamed = as<bool>(RNamed);
     unsigned int myLen = myNums.size();
-    std::vector<int> primeTest(myLen, 1);
-    unsigned long int p;
+    std::vector<bool> primeTest(myLen, true);
+    double isWhole;
     
     for (std::size_t j = 0; j < myLen; j++) {
         
@@ -369,29 +368,33 @@ SEXP IsPrimeContainer (SEXP Rv, SEXP RNamed) {
             stop("each element must be positive");
         if (myNums[j] > Significand53)
             stop("each element must be less than 2^53");
+        if (std::modf(myNums[j], &isWhole) != 0.0)
+            primeTest[j] = false;
         
-        if (myNums[j] == 1) {
-            primeTest[j] = 0;
-        } else if ((myNums[j] & 1) == 0) {
-            if (myNums[j] > 2)
-                primeTest[j] = 0;
+        testVal = (int64_t) myNums[j];
+        
+        if (testVal == 1) {
+            primeTest[j] = false;
+        } else if ((testVal & 1) == 0) {
+            if (testVal > 2)
+                primeTest[j] = false;
         } else {
-            p = 3;
+            int p = 3;
             for (std::size_t i = 1; i < pDiffSize;) {
-                if ((myNums[j] % p) != 0) {
+                if ((testVal % p) != 0) {
                     p += primesDiffPR[i++];
-                    if (myNums[j] < (p * p))
+                    if (testVal < (p * p))
                         break;
                 } else {
-                    if (myNums[j] > p)
-                        primeTest[j] = 0;
+                    if (testVal > p)
+                        primeTest[j] = false;
                     break;
                 }
             }
         }
         
         if (primeTest[j] == 1)
-            primeTest[j] = IsPrime(myNums[j]);
+            primeTest[j] = (bool) IsPrime(testVal);
     }
     
     LogicalVector isPrimeVec = wrap(primeTest);
