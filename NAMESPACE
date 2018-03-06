@@ -11,4 +11,5 @@ export(comboGeneral,
        divisorsSieve,
        primeFactorize,
        divisorsRcpp,
-       isPrimeRcpp)
+       isPrimeRcpp,
+       primeCount)
