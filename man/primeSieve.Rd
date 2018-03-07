@@ -23,7 +23,7 @@ primeSieve(bound1 = 100L, bound2 = NULL)
 }
 }
 \details{
-At the heart of this algorithm is the traditional sieve of Eratosthenes (i.e. given a \href{https://en.wikipedia.org/wiki/Prime_number}{prime} \eqn{p}, mark all multiples of \eqn{p} as \href{https://en.wikipedia.org/wiki/Composite_number}{composite}), however instead of sieving the entire interval, we only consider small subintervals. The benefits of this method are two fold:
+At the heart of this algorithm is the traditional sieve of Eratosthenes (i.e. given a \href{https://en.wikipedia.org/wiki/Prime_number}{prime} \eqn{p}, mark all multiples of \eqn{p} as \href{https://en.wikipedia.org/wiki/Composite_number}{composite}), however instead of sieving the entire interval, we only consider small sub-intervals. The benefits of this method are two fold:
 \enumerate{
 \item Reduction of the \href{https://en.wikipedia.org/wiki/DSPACE}{space complexity} from \eqn{O(n)}, for the traditional sieve, to \eqn{O(\sqrt n))}
 \item Reduction of \href{https://en.wikipedia.org/wiki/CPU_cache#Cache_miss}{cache misses}

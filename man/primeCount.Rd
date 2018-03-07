@@ -1,6 +1,5 @@
 \name{primeCount}
 \alias{primeCount}
-%- Also NEED an '\alias' for EACH other topic documented here.
 \title{
 Prime Counting Function \eqn{\pi(x)}{\pi(x)}
 }
@@ -10,7 +9,6 @@ Rcpp implementation of Legendre's formula for counting prime numbers. It is base
 \usage{
 primeCount(n = 100L)
 }
-%- maybe also 'usage' for other objects documented here.
 \arguments{
   \item{n}{Positive number}
 }
