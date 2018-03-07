@@ -157,7 +157,7 @@ example, one may need all permutations of a vector with some of the elements rep
 amount of times (i.e. a multiset). Consider the following vector `a <- c(1,1,1,1,2,2,2,7,7,7,7,7)` and one
 would like to find permutations of `a` of length 6. Using traditional methods, we would need to generate all
 permutations, then eliminate duplicate values. Even considering that `permuteGeneral` is very efficient,
-this appoach is clunky and not as fast as it could be. Observe:
+this approach is clunky and not as fast as it could be. Observe:
 
 ``` r
 getPermsWithSpecificRepetition <- function(z, n) {
