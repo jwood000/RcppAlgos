@@ -1,12 +1,18 @@
 context("testing eulerPhiSieve")
 
 test_that("eulerPhiSieve generates correct numbers", {
+    options(scipen = 999)
     expect_equal(eulerPhiSieve(10)[10], 4)
     expect_equal(length(eulerPhiSieve(1000)), 1000)
     expect_equal(eulerPhiSieve(2), c(1, 1))
     expect_equal(eulerPhiSieve(1), 1)
     expect_equal(eulerPhiSieve(1), 1)
     expect_equal(eulerPhiSieve(11, 20), c(10, 4, 12, 6, 8, 8, 16, 6, 18, 8))
+    
+    ## Test Names
+    expect_equal(as.integer(names(eulerPhiSieve(100, namedVector = TRUE))), 1:100)
+    expect_equal(as.numeric(names(eulerPhiSieve(10^12, 10^12 + 100,
+                                                namedVector = TRUE))), (10^12):(10^12 + 100))
 })
 
 test_that("eulerPhiSieve produces appropriate error messages", {

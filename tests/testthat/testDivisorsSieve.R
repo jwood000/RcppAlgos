@@ -1,6 +1,7 @@
 context("testing divisorsSieve")
 
 test_that("divisorsSieve generates correct numbers", {
+    options(scipen = 999)
     expect_equal(divisorsSieve(10)[[10]], c(1, 2, 5, 10))
     expect_equal(length(divisorsSieve(1000)), 1000)
     expect_equal(divisorsSieve(1000, 1009)[[10]], c(1, 1009))
@@ -10,6 +11,11 @@ test_that("divisorsSieve generates correct numbers", {
     expect_equal(divisorsSieve(1000, 1000)[[1]], c(1,2,4,5,8,10,20,
                                                    25,40,50,100,125,
                                                    200,250,500,1000))
+    
+    ## Test Names
+    expect_equal(as.integer(names(divisorsSieve(100, namedList = TRUE))), 1:100)
+    expect_equal(as.numeric(names(divisorsSieve(10^12, 10^12 + 100,
+                                                namedList = TRUE))), (10^12):(10^12 + 100))
 })
 
 test_that("divisorsSieve produces appropriate error messages", {
