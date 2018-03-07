@@ -1,9 +1,9 @@
 #include <Rcpp.h>
 #include <cmath>
-#include <stdint.h>
 #include <algorithm>
 #include "PrimesPolRho.h"
 #include "PollardRho.h"
+#include <stdint.h>
 using namespace Rcpp;
 
 /* Prove primality or run probabilistic tests.  */
@@ -11,16 +11,19 @@ int FlagProvePrimality = 1;
 
 const double Significand53 = 9007199254740991.0;
 
-const int64_t myMax = UINT64_MAX / 8;
-const int64_t Sqrt32Max = (int64_t) std::floor(std::sqrt((double) INT64_MAX));
+const double dbl2pow60 = std::pow(2, 60);
+const int64_t myMax = (int64_t) dbl2pow60;
+const int64_t my64Max = (int64_t) std::pow(2, 63);
+const int64_t Sqrt64Max = (int64_t) std::floor((double) std::sqrt((double) my64Max));
 
 #define pDiffSize (sizeof(primesDiffPR) / sizeof(primesDiffPR[0]))
 
 /* Number of Miller-Rabin tests to run when not proving primality. */
 #define MR_REPS 25
 
+template <typename typeReturn>
 void FactorTrialDivision (int64_t& t,
-                          std::vector<int64_t>& factors) {
+                          std::vector<typeReturn>& factors) {
     while ((t & 1) == 0) {
         factors.push_back(2);
         t /= 2;
@@ -34,7 +37,7 @@ void FactorTrialDivision (int64_t& t,
                 break;
         } else {
             t /= p;
-            factors.push_back(p);
+            factors.push_back((typeReturn) p);
         }
     }
 }
@@ -53,10 +56,10 @@ int64_t ProdBigMod (int64_t x1_i64,
     
     if (prodX < (double) p_i64) {
         result = prodX;
-    } else if (p_i64 < Sqrt32Max || prodX < INT64_MAX) {
+    } else if (p_i64 < Sqrt64Max || prodX < my64Max) {
         result = (x1_i64 * x2_i64) % p_i64;
     } else {
-        int64_t numChunkMods, part2;
+        int64_t part2, numChunkMods = 1;
         int64_t chunkSize, chunkMod;
         double part1 = (double) myMax;
         
@@ -194,8 +197,9 @@ int IsPrime (int64_t n) {
         return primeTestReturn;
 }
 
+template <typename typeReturn>
 void PollardRho (int64_t n, int64_t a, 
-                 std::vector<int64_t>& factors) {
+                 std::vector<typeReturn>& factors) {
     int64_t x, z, y, P, t;
     int64_t  k, l, i;
     
@@ -241,11 +245,11 @@ void PollardRho (int64_t n, int64_t a,
         if (!IsPrime(t)) {
             PollardRho(t, a + 1, factors);
         } else {
-            factors.push_back(t);
+            factors.push_back((typeReturn) t);
         }
         
         if (IsPrime(n)) {
-            factors.push_back(n);
+            factors.push_back((typeReturn) n);
             break;
         }
         
@@ -255,7 +259,8 @@ void PollardRho (int64_t n, int64_t a,
     }
 }
 
-void getPrimefactors (int64_t& t, std::vector<int64_t>& factors) {
+template <typename typeReturn>
+void getPrimefactors (int64_t& t, std::vector<typeReturn>& factors) {
     FactorTrialDivision(t, factors);
     
     if (t > 1) {
@@ -269,10 +274,41 @@ void getPrimefactors (int64_t& t, std::vector<int64_t>& factors) {
     std::sort(factors.begin(), factors.end());
 }
 
+template <typename typeReturn>
+List PrimeFacList (std::vector<double> myNums, bool namedList) {
+    
+    int64_t mPass;
+    unsigned int myLen = myNums.size();
+    
+    std::vector<std::vector<typeReturn> > 
+        MyPrimeList(myLen, std::vector<typeReturn>());
+    
+    for (std::size_t i = 0; i < myLen; i++) {
+        std::vector<typeReturn> factors;
+        
+        mPass = (int64_t) myNums[i];
+        
+        if (mPass < 0) {
+            mPass = std::abs(mPass);
+            factors.push_back(-1);
+        }
+        
+        if (mPass > 0) {
+            getPrimefactors(mPass, factors);
+            MyPrimeList[i] = factors;
+        }
+    }
+    
+    Rcpp::List myList = wrap(MyPrimeList);
+    if (namedList)
+        myList.attr("names") = myNums;
+    return myList;
+}
+
 // [[Rcpp::export]]
 SEXP PrimeFactorsContainer (SEXP Rv, SEXP RNamed) {
     std::vector<double> myNums;
-    bool isNamed = false;
+    bool isNamed = as<bool>(RNamed);
     
     switch(TYPEOF(Rv)) {
         case REALSXP: {
@@ -288,51 +324,47 @@ SEXP PrimeFactorsContainer (SEXP Rv, SEXP RNamed) {
         }
     }
     
-    isNamed = as<bool>(RNamed);
-    unsigned int myLen = myNums.size();
-    int64_t mPass;
-    
-    if (myLen > 1) {
-        std::vector<std::vector<int64_t> > MyPrimeList(myLen, std::vector<int64_t>());
+    if (myNums.size() > 1) {
+        double myMax = *std::max_element(myNums.begin(), myNums.end());
+        double myMin = *std::min_element(myNums.begin(), myNums.end());
         
-        for (std::size_t i = 0; i < myLen; i++) {
-            std::vector<int64_t> factors;
-            
-            mPass = myNums[i];
-            
-            if (mPass < 0) {
-                mPass = std::abs(mPass);
-                factors.push_back(-1);
-            }
-            
-            if (mPass > 0) {
-                if (mPass > Significand53)
-                    stop("each element must be less than 2^53");
-                getPrimefactors(mPass, factors);
-                MyPrimeList[i] = factors;
-            }
-        }
+        if (std::abs(myMin) > myMax)
+            myMax = std::abs(myMin);
         
-        Rcpp::List myList = wrap(MyPrimeList);
-        if (isNamed)
-            myList.attr("names") = myNums;
-        return myList;
+        if (myMax > Significand53)
+            stop("the abs value of each element must be less than 2^53");
+        
+        if (myMax > INT_MAX)
+            return PrimeFacList<double>(myNums, isNamed);
+        else
+            return PrimeFacList<int>(myNums, isNamed);
     } else {
-        std::vector<int64_t> factors;
-        mPass = myNums[0];
+        int64_t mPass = myNums[0];
+        bool isNegative = false;
         
         if (mPass < 0) {
             mPass = std::abs(mPass);
-            factors.push_back(-1);
+            isNegative = true;
         }
         
-        if (mPass > 0) {
-            if (mPass > Significand53)
-                stop("each element must be less than 2^53");
+        if (mPass == 0)
+            return IntegerVector();
+        
+        if (mPass > Significand53)
+            stop("the abs value of each element must be less than 2^53");
+        
+        if (mPass > INT_MAX) {
+            std::vector<double> factors;
+            if (isNegative)
+                factors.push_back(-1);
             getPrimefactors(mPass, factors);
             return wrap(factors);
         } else {
-            return IntegerVector();
+            std::vector<int> factors;
+            if (isNegative)
+                factors.push_back(-1);
+            getPrimefactors(mPass, factors);
+            return wrap(factors);
         }
     }
 }
@@ -404,4 +436,3 @@ SEXP IsPrimeContainer (SEXP Rv, SEXP RNamed) {
     
     return isPrimeVec;
 }
-
