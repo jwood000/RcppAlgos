@@ -10,6 +10,8 @@
  *
  * Note: this is adapted from demo "factorize.c" file from gmplib
  */
-void getPrimefactors (int64_t& t, std::vector<int64_t>&  factors);
+
+template <typename typeReturn>
+void getPrimefactors (int64_t& t, std::vector<typeReturn>&  factors);
 
 #endif
