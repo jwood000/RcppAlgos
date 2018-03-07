@@ -34,7 +34,7 @@ Where each product \eqn{(x_1 * y_j)}{x1 * yj} for \eqn{j <= n} is smaller than t
 For a more in depth examination of this topic see \href{https://codereview.stackexchange.com/questions/186751/accurate-modular-arithmetic-with-double-precision}{Accurate Modular Arithmetic with Double Precision}.
 }
 \value{
-Returns a logical vector. If an index is \code{TRUE}, the number at that index is prime, otherwise the number is composite.
+Returns a named/unnamed logical vector. If an index is \code{TRUE}, the number at that index is prime, otherwise the number is composite.
 }
 \references{
 \itemize{

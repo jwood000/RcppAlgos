@@ -21,7 +21,7 @@ This algorithm benefits greatly from the fast integer division library 'libdivid
 \itemize{\item{\dQuote{\emph{libdivide allows you to replace expensive integer divides with comparatively cheap multiplication and bitshifts. Compilers usually do this, but only when the divisor is known at compile time. libdivide allows you to take advantage of it at runtime. The result is that integer division can become faster - a lot faster.}}}}
 }
 \value{
-Returns an integer vector
+Returns a named/unnamed integer vector
 }
 \author{
 Joseph Wood

@@ -10,18 +10,18 @@ Rcpp implementation of Pollard's rho algorithm that quickly generates the prime 
 primeFactorize(v = 100L, namedList = FALSE)
 }
 \arguments{
-\item{v}{Vector of integers or numeric values. Non-integral values will be coered to whole numbers.}
+\item{v}{Vector of integers or numeric values. Non-integral values will be cured to whole numbers.}
 \item{namedList}{Logical flag. If \code{TRUE} and the \code{length(v) > 1}, a named list is returned. The default is \code{FALSE}.}
 }
 \details{
-As noted in the Description seciton above, this algorithm is based on the "factorize.c" source code from the gmp library. Much of the code in RcppAlgos::primeFactorize is a straightforward translation from multiple precision C data types to standard C++ data types. A crucial part of the algorithm's efficiency is based on quickly determing \href{https://en.wikipedia.org/wiki/Primality_test}{primality}, which is easily computed with gmp. However, with standard C++, this is quite challenging. Much of the research for RcppAlgos::primeFactorize was focused on developing an algorithm that could accurately and efficiently compute primality.
+As noted in the Description section above, this algorithm is based on the "factorize.c" source code from the gmp library. Much of the code in RcppAlgos::primeFactorize is a straightforward translation from multiple precision C data types to standard C++ data types. A crucial part of the algorithm's efficiency is based on quickly determining \href{https://en.wikipedia.org/wiki/Primality_test}{primality}, which is easily computed with gmp. However, with standard C++, this is quite challenging. Much of the research for RcppAlgos::primeFactorize was focused on developing an algorithm that could accurately and efficiently compute primality.
 
 For more details, see the documentation for \code{\link{isPrimeRcpp}}.
 }
 \value{
 \itemize{
-\item{Returns an unnamed numeric vector if \code{length(v) == 1} regardless of the value of \code{namedList}.}
-\item{If \code{length(v) > 1}, a named/unnamed list of numeric vectors will be returned.}
+\item{Returns an unnamed vector if \code{length(v) == 1} regardless of the value of \code{namedList}. If \eqn{v < 2^{31}}{v < 2^31}, the class of the returned vector will be integer, otherwise the class will be numeric.}
+\item{If \code{length(v) > 1}, a named/unnamed list of vectors will be returned. If \code{max(bound1, bound2)} \eqn{< 2^{31}}{< 2^31}, the class of each vector will be integer, otherwise the class will be numeric.}
 }
 }
 \references{
