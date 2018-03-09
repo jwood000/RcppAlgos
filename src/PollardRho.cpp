@@ -10,11 +10,9 @@ using namespace Rcpp;
 int FlagProvePrimality = 1;
 
 const double Significand53 = 9007199254740991.0;
-
-const double dbl2pow60 = std::pow(2, 60);
-const int64_t myMax = (int64_t) dbl2pow60;
-const int64_t my64Max = (int64_t) std::pow(2, 63);
-const int64_t Sqrt64Max = (int64_t) std::floor((double) std::sqrt((double) my64Max));
+const double myMax = std::pow(2, 60);
+const double my64Max = std::pow(2, 63);
+const int64_t Sqrt64Max = (int64_t) std::sqrt((double) my64Max);
 
 #define pDiffSize (sizeof(primesDiffPR) / sizeof(primesDiffPR[0]))
 
