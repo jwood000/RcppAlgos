@@ -13,7 +13,7 @@ The \strong{RcppAlgos} package attacks age-old problems in combinatorics and com
 
 \details{
     \enumerate{
-        \item{The main goal is to encourage fresh and creative approaches to foundational problems. The question that most appropriately summarizes \code{RcppAlgos} is: \strong{\emph{"Can we do better?"}}. In light of this question, if development ever ceases, \code{RcppAlgos} will have failed.}
+        \item{The main goal is to encourage fresh and creative approaches to foundational problems. The question that most appropriately summarizes \code{RcppAlgos} is: \strong{\emph{"Can we do better?"}}.}
         \item{Provide highly optimized functions that facilitates a broader spectrum of researchable cases. \emph{E.g}
             \itemize{
                 \item{Investigating the structure of large numbers over wide ranges:
