@@ -3,6 +3,7 @@ RcppAlgos 1.0.1 (Release date: 2018-03-09)
 * Corrected precision limits in documentation from 2^64 to 2^63.
 * Changed const type in PollardRho.cpp from (int64_t) to (double) to correct "UndefinedBehaviorSanitizer"
 * Changed examples in primeFactorizeSieve to reduce check time
+* Added RcppAlgos-package man file.
 
 
 RcppAlgos 1.0.0 (Release date: 2018-03-07)
