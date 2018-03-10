@@ -11,7 +11,7 @@ Tools for Combinatorics and Computational Mathematics
 The \strong{RcppAlgos} package attacks age-old problems in combinatorics and computational mathematics.
 }
 
-\details{
+\section{Goals}{
     \enumerate{
         \item{The main goal is to encourage fresh and creative approaches to foundational problems. The question that most appropriately summarizes \code{RcppAlgos} is: \strong{\emph{"Can we do better?"}}.}
         \item{Provide highly optimized functions that facilitates a broader spectrum of researchable cases. \emph{E.g}
