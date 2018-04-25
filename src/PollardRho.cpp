@@ -10,7 +10,7 @@ using namespace Rcpp;
 int FlagProvePrimality = 1;
 
 const double Significand53 = 9007199254740991.0;
-const double myMax = std::pow(2, 60);
+const double myMax = std::pow(2, 62);
 const double my64Max = std::pow(2, 63);
 const int64_t Sqrt64Max = (int64_t) std::sqrt((double) my64Max);
 
@@ -54,15 +54,15 @@ int64_t ProdBigMod (int64_t x1_i64,
     
     if (prodX < (double) p_i64) {
         result = prodX;
-    } else if (p_i64 < Sqrt64Max || prodX < my64Max) {
+    } else if (p_i64 < (int64_t) Sqrt64Max || prodX < my64Max) {
         result = (x1_i64 * x2_i64) % p_i64;
     } else {
         int64_t part2, numChunkMods = 1;
         int64_t chunkSize, chunkMod;
-        double part1 = (double) myMax;
+        double part1 = myMax;
         
-        while (part1 >= (double) myMax) {
-            chunkSize = myMax / x1_i64;
+        while (part1 >= myMax) {
+            chunkSize = (int64_t) myMax / x1_i64;
             chunkMod = (x1_i64 * chunkSize) % p_i64;
             numChunkMods = x2_i64 / chunkSize;
             part2 = ((x2_i64 - chunkSize * numChunkMods) * x1_i64) % p_i64;
