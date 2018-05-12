@@ -15,3 +15,13 @@ permuteGeneral <- function(v, m=NULL, repetition=FALSE, constraintFun=NULL,
                       comparisonFun, limitConstraints,
                       rowCap, FALSE, isFactor, keepResults, freqs)
 }
+
+nthCombination <- function(v, m=NULL, index, repetition=FALSE, freqs=NULL) {
+    isFactor <- is.factor(v)
+    NthResultRcpp(v, m, index, repetition, TRUE, isFactor, freqs)
+}
+
+nthPermutation <- function(v, m=NULL, index, repetition=FALSE, freqs=NULL) {
+    isFactor <- is.factor(v)
+    NthResultRcpp(v, m, index, repetition, FALSE, isFactor, freqs)
+}

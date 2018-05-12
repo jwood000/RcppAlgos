@@ -53,6 +53,23 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// NthResultRcpp
+SEXP NthResultRcpp(SEXP Rv, SEXP Rm, SEXP Rind, SEXP Rrepetition, SEXP RIsComb, SEXP RIsFactor, SEXP RFreqs);
+RcppExport SEXP _RcppAlgos_NthResultRcpp(SEXP RvSEXP, SEXP RmSEXP, SEXP RindSEXP, SEXP RrepetitionSEXP, SEXP RIsCombSEXP, SEXP RIsFactorSEXP, SEXP RFreqsSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< SEXP >::type Rv(RvSEXP);
+    Rcpp::traits::input_parameter< SEXP >::type Rm(RmSEXP);
+    Rcpp::traits::input_parameter< SEXP >::type Rind(RindSEXP);
+    Rcpp::traits::input_parameter< SEXP >::type Rrepetition(RrepetitionSEXP);
+    Rcpp::traits::input_parameter< SEXP >::type RIsComb(RIsCombSEXP);
+    Rcpp::traits::input_parameter< SEXP >::type RIsFactor(RIsFactorSEXP);
+    Rcpp::traits::input_parameter< SEXP >::type RFreqs(RFreqsSEXP);
+    rcpp_result_gen = Rcpp::wrap(NthResultRcpp(Rv, Rm, Rind, Rrepetition, RIsComb, RIsFactor, RFreqs));
+    return rcpp_result_gen;
+END_RCPP
+}
 // PrimeFactorsContainer
 SEXP PrimeFactorsContainer(SEXP Rv, SEXP RNamed);
 RcppExport SEXP _RcppAlgos_PrimeFactorsContainer(SEXP RvSEXP, SEXP RNamedSEXP) {
@@ -108,6 +125,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_RcppAlgos_CombinatoricsRcpp", (DL_FUNC) &_RcppAlgos_CombinatoricsRcpp, 11},
     {"_RcppAlgos_DivisorsGeneral", (DL_FUNC) &_RcppAlgos_DivisorsGeneral, 4},
     {"_RcppAlgos_getAllDivisorsRcpp", (DL_FUNC) &_RcppAlgos_getAllDivisorsRcpp, 2},
+    {"_RcppAlgos_NthResultRcpp", (DL_FUNC) &_RcppAlgos_NthResultRcpp, 7},
     {"_RcppAlgos_PrimeFactorsContainer", (DL_FUNC) &_RcppAlgos_PrimeFactorsContainer, 2},
     {"_RcppAlgos_IsPrimeContainer", (DL_FUNC) &_RcppAlgos_IsPrimeContainer, 2},
     {"_RcppAlgos_MasterPrimeCount", (DL_FUNC) &_RcppAlgos_MasterPrimeCount, 1},

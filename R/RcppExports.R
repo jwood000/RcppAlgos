@@ -13,6 +13,10 @@ getAllDivisorsRcpp <- function(Rv, RNamed) {
     .Call(`_RcppAlgos_getAllDivisorsRcpp`, Rv, RNamed)
 }
 
+NthResultRcpp <- function(Rv, Rm, Rind, Rrepetition, RIsComb, RIsFactor, RFreqs) {
+    .Call(`_RcppAlgos_NthResultRcpp`, Rv, Rm, Rind, Rrepetition, RIsComb, RIsFactor, RFreqs)
+}
+
 PrimeFactorsContainer <- function(Rv, RNamed) {
     .Call(`_RcppAlgos_PrimeFactorsContainer`, Rv, RNamed)
 }
