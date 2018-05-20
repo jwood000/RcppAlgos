@@ -1,16 +1,17 @@
-#include <RcppAlgos.h>
+#include <Combinations.h>
 using namespace Rcpp;
 
 SEXP CombinationsRcpp(int n, int m, bool repetition, CharacterVector vStr,
                       int nRows, std::vector<int> vInt, std::vector<double> vNum,
-                      bool isMult, bool isFac, bool keepRes, bool isChar, SEXP Rv,
-                      bool isInt, std::vector<int> myReps, SEXP f1, SEXP f2) {
-
+                      bool isMult, bool isFac, bool keepRes, std::vector<int> startZ,
+                      bool isChar, SEXP Rv, bool isInt, std::vector<int> myReps, 
+                      SEXP f1, SEXP f2) {
+    
     if (isChar) {
         if (isMult) {
-            return MultisetCombination<CharacterMatrix>(n, m, vStr, myReps, nRows, false);
+            return Combinations::MultisetCombination<CharacterMatrix>(n, m, vStr, myReps, nRows, false, startZ);
         } else {
-            return ComboGeneral<CharacterMatrix>(n, m, vStr, repetition, nRows, false);
+            return Combinations::ComboGeneral<CharacterMatrix>(n, m, vStr, repetition, nRows, false, startZ);
         }
     } else {
         if (Rf_isNull(f1))
@@ -30,9 +31,9 @@ SEXP CombinationsRcpp(int n, int m, bool repetition, CharacterVector vStr,
             funcPtr myFun2 = *xpFun2;
 
             if (isMult) {
-                matRes = MultisetCombination<NumericMatrix>(n, m, vNum, myReps, nRows, true);
+                matRes = Combinations::MultisetCombination<NumericMatrix>(n, m, vNum, myReps, nRows, true, startZ);
             } else {
-                matRes = ComboGeneral<NumericMatrix>(n, m, vNum, repetition, nRows, true);
+                matRes = Combinations::ComboGeneral<NumericMatrix>(n, m, vNum, repetition, nRows, true, startZ);
             }
 
             for (std::size_t i = 0; i < nRows; i++) {
@@ -52,9 +53,9 @@ SEXP CombinationsRcpp(int n, int m, bool repetition, CharacterVector vStr,
                 CharacterVector myLevels = testFactor.attr("levels");
 
                 if (isMult) {
-                    factorMat = MultisetCombination<IntegerMatrix>(n, m, vInt, myReps, nRows, false);
+                    factorMat = Combinations::MultisetCombination<IntegerMatrix>(n, m, vInt, myReps, nRows, false, startZ);
                 } else {
-                    factorMat = ComboGeneral<IntegerMatrix>(n, m, vInt, repetition, nRows, false);
+                    factorMat = Combinations::ComboGeneral<IntegerMatrix>(n, m, vInt, repetition, nRows, false, startZ);
                 }
 
                 factorMat.attr("class") = myClass;
@@ -64,15 +65,15 @@ SEXP CombinationsRcpp(int n, int m, bool repetition, CharacterVector vStr,
             } else {
                 if (isInt) {
                     if (isMult) {
-                        return MultisetCombination<IntegerMatrix>(n, m, vInt, myReps, nRows, false);
+                        return Combinations::MultisetCombination<IntegerMatrix>(n, m, vInt, myReps, nRows, false, startZ);
                     } else {
-                        return ComboGeneral<IntegerMatrix>(n, m, vInt, repetition, nRows, false);
+                        return Combinations::ComboGeneral<IntegerMatrix>(n, m, vInt, repetition, nRows, false, startZ);
                     }
                 } else {
                     if (isMult) {
-                        return MultisetCombination<NumericMatrix>(n, m, vNum, myReps, nRows, false);
+                        return Combinations::MultisetCombination<NumericMatrix>(n, m, vNum, myReps, nRows, false, startZ);
                     } else {
-                        return ComboGeneral<NumericMatrix>(n, m, vNum, repetition, nRows, false);
+                        return Combinations::ComboGeneral<NumericMatrix>(n, m, vNum, repetition, nRows, false, startZ);
                     }
                 }
             }
