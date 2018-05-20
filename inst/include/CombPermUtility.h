@@ -11,10 +11,15 @@ double NumPermsNoRep(int n, int k);
 double nChooseK(double n, double k);
 double NumCombsWithRep(int n, int r);
 double MultisetCombRowNum(int n, int r, std::vector<int> Reps);
-double MultisetPermRowNum(int n, int r, std::vector<int> Reps, 
-                          Rcpp::IntegerMatrix myCombs);
+double MultisetPermRowNum(int n, int r, std::vector<int> myReps);
 
-// Contraint functions
+void nextFullPerm(uint16_t *myArray, unsigned long int n1);
+
+void nextPartialPerm(uint16_t *myArray, unsigned long int nCols, 
+                     unsigned long int r1, unsigned long int r,
+                     unsigned long int n1, unsigned long int n);
+
+// Constraint functions
 double prodCpp(std::vector<double>& v);
 double sumCpp(std::vector<double>& v);
 double meanCpp(std::vector<double>& v);
