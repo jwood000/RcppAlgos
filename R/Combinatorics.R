@@ -1,27 +1,37 @@
-comboGeneral <- function(v, m=NULL, repetition=FALSE, constraintFun=NULL,
-                         comparisonFun=NULL, limitConstraints=NULL,
-                         rowCap=NULL, keepResults=FALSE, freqs=NULL) {
+comboGeneral <- function(v, m = NULL, repetition = FALSE, freqs = NULL,
+                         lower = NULL, upper = NULL, constraintFun = NULL,
+                         comparisonFun = NULL, limitConstraints = NULL, 
+                         keepResults = FALSE) {
+    
     isFactor <- is.factor(v)
-    CombinatoricsRcpp(v, m, repetition, constraintFun, 
+    CombinatoricsRcpp(v, m, repetition, freqs, lower,
+                      upper, constraintFun, 
                       comparisonFun, limitConstraints,
-                      rowCap, TRUE, isFactor, keepResults, freqs)
+                      TRUE, keepResults, isFactor, FALSE)
 }
 
-permuteGeneral <- function(v, m=NULL, repetition=FALSE, constraintFun=NULL,
-                           comparisonFun=NULL, limitConstraints=NULL,
-                           rowCap=NULL, keepResults=FALSE, freqs=NULL) {
+permuteGeneral <- function(v, m = NULL, repetition = FALSE, freqs = NULL,
+                           lower = NULL, upper = NULL, constraintFun = NULL,
+                           comparisonFun = NULL, limitConstraints = NULL,
+                           keepResults = FALSE) {
+    
     isFactor <- is.factor(v)
-    CombinatoricsRcpp(v, m, repetition, constraintFun, 
+    CombinatoricsRcpp(v, m, repetition, freqs, lower,
+                      upper, constraintFun, 
                       comparisonFun, limitConstraints,
-                      rowCap, FALSE, isFactor, keepResults, freqs)
+                      FALSE, keepResults, isFactor, FALSE)
 }
 
-nthCombination <- function(v, m=NULL, index, repetition=FALSE, freqs=NULL) {
-    isFactor <- is.factor(v)
-    NthResultRcpp(v, m, index, repetition, TRUE, isFactor, freqs)
+comboCount <-  function(v, m = NULL, repetition = FALSE, freqs = NULL) {
+    
+    CombinatoricsRcpp(v, m, repetition, freqs, NULL,
+                      NULL, NULL, NULL, NULL,
+                      TRUE, FALSE, FALSE, TRUE)
 }
 
-nthPermutation <- function(v, m=NULL, index, repetition=FALSE, freqs=NULL) {
-    isFactor <- is.factor(v)
-    NthResultRcpp(v, m, index, repetition, FALSE, isFactor, freqs)
+permuteCount <- function(v, m = NULL, repetition = FALSE, freqs = NULL) {
+    
+    CombinatoricsRcpp(v, m, repetition, freqs, NULL,
+                      NULL, NULL, NULL, NULL,
+                      FALSE, FALSE, FALSE, TRUE)
 }
