@@ -1,4 +1,7 @@
-#include <RcppAlgos.h>
+#include <Combinations.h>
+#include <Permutations.h>
+#include <Combinatorics.h>
+#include <NthResult.h>
 using namespace Rcpp;
 
 // This function applys a constraint function to a vector v with respect
@@ -220,7 +223,7 @@ typeRcpp CombinatoricsConstraints(int n, int r, std::vector<double> v,
                 if (bTooMany) {break;}
             }
             
-            return SubMat(permuteMatrix, count2);
+            return Combinations::SubMat(permuteMatrix, count2);
         }
         
     } else if (repetition) {
@@ -391,22 +394,20 @@ typeRcpp CombinatoricsConstraints(int n, int r, std::vector<double> v,
         delete[] indexMatrix;
     }
        
-    return(SubMat(combinatoricsMatrix, count));
+    return(Combinations::SubMat(combinatoricsMatrix, count));
 }
 
 // [[Rcpp::export]]
-SEXP CombinatoricsRcpp(SEXP Rv, SEXP Rm, SEXP Rrepetition, 
-                       SEXP f1, SEXP f2, SEXP lim, SEXP numRow,
-                       SEXP RIsComb, SEXP RIsFactor,
-                       SEXP RKeepRes, SEXP RFreqs) {
+SEXP CombinatoricsRcpp(SEXP Rv, SEXP Rm, SEXP Rrepetition, SEXP RFreqs,
+                       SEXP Rlow, SEXP Rhigh, SEXP f1, SEXP f2,
+                       SEXP lim, bool IsComb, SEXP RKeepRes, 
+                       bool IsFactor, bool IsCount) {
     
     int n, m = 0, m1, m2;
     int lenFreqs = 0, nRows = 0;
-    double computedRows, seqEnd, RUserCap;
-    bool IsRepetition, IsInteger;
-    bool IsMultiset, IsComb, keepRes;
-    bool SpecialCase, IsCharacter;
-    bool IsConstrained, IsFactor;
+    double lower = 0, upper = 0, computedRows, seqEnd;
+    bool IsRepetition, SpecialCase, IsConstrained;
+    bool IsMultiset, keepRes, IsInteger, IsCharacter;
     
     std::vector<double> vNum;
     std::vector<int> vInt, myReps, freqsExpanded;
@@ -431,8 +432,6 @@ SEXP CombinatoricsRcpp(SEXP Rv, SEXP Rm, SEXP Rrepetition,
             stop("Only integers, numerical, character, and factor classes are supported for v");   
         }
     }
-    
-    IsComb = as<bool>(RIsComb);
     
     if (Rf_isNull(RFreqs)) {
         IsMultiset = false;
@@ -497,7 +496,6 @@ SEXP CombinatoricsRcpp(SEXP Rv, SEXP Rm, SEXP Rrepetition,
         stop("repetitions must be a logical value");
     
     IsRepetition = as<bool>(Rrepetition);
-    IsFactor = as<bool>(RIsFactor);
     
     if (!Rf_isLogical(RKeepRes))
         stop("keepResults must be a logical value");
@@ -553,22 +551,54 @@ SEXP CombinatoricsRcpp(SEXP Rv, SEXP Rm, SEXP Rrepetition,
         }
     }
     
-    bool bUserRow = false;
-    RUserCap = 0;
-    if (!Rf_isNull(numRow)) {
-        bUserRow = true;
-        switch(TYPEOF(numRow)) {
-            case REALSXP: {
-                RUserCap = as<double>(numRow);
-                break;
+    bool bLower = false;
+    bool bUpper = false;
+    nRows = 0;
+    
+    if (!IsCount) {
+        if (Rf_isNull(Rlow)) {
+            lower = 0;
+        } else { 
+            bLower = true;
+            switch(TYPEOF(Rlow)) {
+                case REALSXP: {
+                    lower = as<double>(Rlow);
+                    break;
+                }
+                case INTSXP: {
+                    lower = as<double>(Rlow);
+                    break;
+                }
+                default: {
+                    stop("bounds must be of type numeric or integer");
+                }
             }
-            case INTSXP: {
-                RUserCap = as<double>(numRow);
-                break;
+            
+            lower--;
+            if (lower < 0)
+                stop("bounds must be positive");
+        }
+        
+        if (Rf_isNull(Rhigh)) {
+            upper = 0;
+        } else {
+            bUpper = true;
+            switch(TYPEOF(Rhigh)) {
+                case REALSXP: {
+                    upper = as<double>(Rhigh);
+                    break;
+                }
+                case INTSXP: {
+                    upper = as<double>(Rhigh);
+                    break;
+                }
+                default: {
+                    stop("bounds must be of type numeric or integer");
+                }
             }
-            default: {
-                stop("rowCap must be of type numeric or integer");
-            }
+        
+            if (upper < 0)
+                stop("bounds must be positive");
         }
     }
     
@@ -589,47 +619,122 @@ SEXP CombinatoricsRcpp(SEXP Rv, SEXP Rm, SEXP Rrepetition,
             } else {
                 if (m > (int) freqsExpanded.size())
                     m = freqsExpanded.size();
-
-                IntegerVector seqVec = Rcpp::seq(1, n);
-                int multiCombRows = (int) MultisetCombRowNum(n, m, myReps);
-                IntegerMatrix myCombs = MultisetCombination<IntegerMatrix>(n, m, seqVec, myReps,
-                                                                           multiCombRows, false);
-                computedRows = MultisetPermRowNum(n, m, myReps, myCombs);
+                
+                computedRows = MultisetPermRowNum(n, m, myReps);
             }
         }
     } else {
         if (IsRepetition) {
-            if (IsComb) {
+            if (IsComb)
                 computedRows = NumCombsWithRep(n, m);
-            } else {
+            else
                 computedRows = std::pow((double) n, (double) m);
-            }
         } else {
             if (m > n)
                 stop("m must be less than or equal to the length of v");
             
-            if (IsComb) {
+            if (IsComb)
                 computedRows = nChooseK(n, m);
-            } else {
+            else
                 computedRows = NumPermsNoRep(n, m);
+        }
+    }
+
+    if (lower >= computedRows)
+        stop("lower bound exceeds the maximum number of possible results");
+    
+    if (upper > computedRows)
+        stop("upper bound exceeds the maximum number of possible results");
+    
+    if (IsCount)
+        return wrap(computedRows);
+    
+    std::vector<int> startZ(m);
+    bool permNonTrivial = false;
+    
+    if (bLower && lower > 0) {
+        if (IsComb) {
+            startZ = nthCombination(n, m, lower, IsRepetition, IsMultiset, myReps);
+        } else {
+            permNonTrivial = true;
+            startZ = nthPermutation(n, m, lower, IsRepetition, IsMultiset, myReps);
+            
+            if (IsMultiset) {
+                
+                for (std::size_t j = 0; j < startZ.size(); j++) {
+                    for (std::size_t i = 0; i < freqsExpanded.size(); i++) {
+                        if (freqsExpanded[i] == startZ[j]) {
+                            freqsExpanded.erase(freqsExpanded.begin() + i);
+                            break;
+                        }
+                    }
+                }
+                
+                for (std::size_t i = 0; i < freqsExpanded.size(); i++)
+                    startZ.push_back(freqsExpanded[i]);
+                
+            } else if (!IsRepetition) {
+                
+                if (m < n) {
+                    for (int i = 0; i < n; i++) {
+                        bool bExist = false;
+                        for (std::size_t j = 0; j < startZ.size(); j++) {
+                            if (startZ[j] == i) {
+                                bExist = true;
+                                break;
+                            }
+                        }
+                        if (!bExist)
+                            startZ.push_back(i);
+                    }
+                }
+            }
+        }
+    } else {
+        if (IsComb) {
+            if (IsMultiset)
+                startZ.assign(freqsExpanded.begin(), freqsExpanded.begin() + m);
+            else if (IsRepetition)
+                std::fill(startZ.begin(), startZ.end(), 0);
+            else
+                std::iota(startZ.begin(), startZ.end(), 0);
+        } else {
+            // Both repetition and non-repetition will
+            // have an all zero vec, so there is no
+            // need to have a condition for repetition
+            if (IsMultiset) {
+                startZ = freqsExpanded;
+            } else {
+                std::fill(startZ.begin(), startZ.end(), 0);
             }
         }
     }
     
-    if (RUserCap == 0) {
+    double userNumRows = 0;
+    
+    if (bLower && bUpper) {
+        userNumRows = upper - lower;
+    } else if (bUpper) {
+        userNumRows = upper;
+    } else if (bLower) {
+        userNumRows = computedRows - lower;
+    }
+    
+    if (userNumRows == 0) {
         if (computedRows > INT_MAX)
             stop("The number of rows cannot exceed 2^31 - 1.");
         
-        RUserCap = nRows = computedRows;
-    } else if (RUserCap < 0) {
-        stop("The number of rows must be positive");
-    } else if (RUserCap > INT_MAX) {
+        userNumRows = nRows = computedRows;
+    } else if (userNumRows < 0) {
+        stop("The number of rows must be positive. Either the lowerBound "
+              "exceeds the maximum number of possible results or the "
+              "lowerBound is greater than the upperBound.");
+    } else if (userNumRows > INT_MAX) {
         stop("The number of rows cannot exceed 2^31 - 1.");
     } else {
-        nRows = RUserCap;
+        nRows = userNumRows;
         if (nRows > computedRows)
-            if (!IsMultiset || IsComb || !IsConstrained)
-                nRows = computedRows;
+            nRows = computedRows;
     }
     
     if (IsConstrained) {
@@ -696,16 +801,17 @@ SEXP CombinatoricsRcpp(SEXP Rv, SEXP Rm, SEXP Rrepetition,
             
             if (IsComb) {
                 if (IsMultiset) {
-                    matRes = MultisetCombination<NumericMatrix>(n, m, vNum, myReps, nRows, keepRes);
+                    matRes = Combinations::MultisetCombination<NumericMatrix>(n, m, vNum, myReps, nRows, keepRes, startZ);
                 } else {
-                    matRes = ComboGeneral<NumericMatrix>(n, m, vNum, IsRepetition, nRows, keepRes);
+                    matRes = Combinations::ComboGeneral<NumericMatrix>(n, m, vNum, IsRepetition, nRows, keepRes, startZ);
                 }
             } else {
                 if (IsMultiset) {
-                    matRes = MultisetPermutation<NumericMatrix>(n, m, vNum, myReps, nRows, keepRes);
+                    matRes = Permutations::MultisetPermutation<NumericMatrix>(n, m, vNum, myReps, nRows, keepRes, startZ);
                     nRows = matRes.nrow();
                 } else {
-                    matRes = PermuteGeneral<NumericMatrix>(n, m, vNum, IsRepetition, nRows, keepRes);
+                    matRes = Permutations::PermuteGeneral<NumericMatrix>(n, m, vNum, IsRepetition, nRows, 
+                                                                         keepRes, startZ, permNonTrivial);
                 }
             }
             
@@ -727,7 +833,7 @@ SEXP CombinatoricsRcpp(SEXP Rv, SEXP Rm, SEXP Rrepetition,
             int numCols = m;
             if (keepRes) {numCols++;}
             computedRows = indexMatch.size();
-            nRows  = (computedRows > RUserCap) ? RUserCap : computedRows;
+            nRows  = (computedRows > userNumRows) ? userNumRows : computedRows;
             NumericMatrix returnMatrix(nRows, numCols);
             
             for (int i = 0; i < nRows; i++) {
@@ -769,12 +875,12 @@ SEXP CombinatoricsRcpp(SEXP Rv, SEXP Rm, SEXP Rrepetition,
     } else {
         if (IsComb) {
             return CombinationsRcpp(n, m, IsRepetition, vStr, nRows, vInt,
-                                    vNum, IsMultiset, IsFactor, keepRes,
+                                    vNum, IsMultiset, IsFactor, keepRes, startZ,
                                     IsCharacter, Rv, IsInteger, myReps, f1, f2);
         } else {
             return PermutationsRcpp(n, m, IsRepetition, vStr, nRows, vInt,
-                                    vNum, IsMultiset, IsFactor, keepRes,
-                                    IsCharacter, Rv, IsInteger, myReps, f1, f2);
+                                    vNum, IsMultiset, IsFactor, keepRes, startZ,
+                                    IsCharacter, Rv, IsInteger, myReps, f1, f2, permNonTrivial);
         }
     }
 }
