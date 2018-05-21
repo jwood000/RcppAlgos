@@ -1,3 +1,12 @@
+RcppAlgos 2.0.0 (Release date: TBD)
+
+* Changed max value and explicitly casted a few values to (int64_t) in PollardRho.cpp for efficiency while still maintaining accuracy from 2^60 to 2^62 (isPrimeRcpp is roughly 10% faster now).
+* Updated core permutation algorithm for greater efficiency and generality
+* Added capability of generating specific combinations/permutations
+* Changed arguments to comboGeneral/permuteGeneral
+* Added comboSample, permuteSample, comboCount, and permuteCount
+
+
 RcppAlgos 1.0.1 (Release date: 2018-03-09)
 
 * Corrected precision limits in documentation from 2^64 to 2^63.
