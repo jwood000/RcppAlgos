@@ -35,3 +35,53 @@ permuteCount <- function(v, m = NULL, repetition = FALSE, freqs = NULL) {
                       NULL, NULL, NULL, NULL,
                       FALSE, FALSE, FALSE, TRUE)
 }
+
+comboSample <- function(v, m = NULL, repetition = FALSE, freqs = NULL,
+                         n = NULL, sampleVec = NULL) {
+    
+    myCount <- comboCount(v, m, repetition, freqs)
+    
+    if (is.null(sampleVec)) {
+        if (is.null(n)){
+            stop("n and sampleVec cannot both be NULL")
+        } else {
+            if (!is.numeric(n))
+                stop("n must be a number")
+            else if (n > myCount)
+                stop("n exceeds the maximum number of possible results")
+            else if (length(n) > 1)
+                stop("length of n must be 1. For specific combinations, use sampleVec.")
+        } 
+        sampleVec = sample(myCount, n)
+    }
+    
+    isFactor <- is.factor(v)
+    n <- length(sampleVec)
+    
+    SampleRcpp(v, m, repetition, freqs, sampleVec, TRUE, isFactor, myCount)
+}
+
+permuteSample <- function(v, m = NULL, repetition = FALSE, freqs = NULL,
+                          n = NULL, sampleVec = NULL) {
+    
+    myCount <- permuteCount(v, m, repetition, freqs)
+    
+    if (is.null(sampleVec)) {
+        if (is.null(n)){
+            stop("n and sampleVec cannot both be NULL")
+        } else {
+            if (!is.numeric(n))
+                stop("n must be a number")
+            else if (n > myCount)
+                stop("n exceeds the maximum number of possible results")
+            else if (length(n) > 1)
+                stop("length of n must be 1. For specific combinations, use sampleVec.")
+        } 
+        sampleVec = sample(myCount, n)
+    }
+    
+    isFactor <- is.factor(v)
+    n <- length(sampleVec)
+    
+    SampleRcpp(v, m, repetition, freqs, sampleVec, FALSE, isFactor, myCount)
+}
