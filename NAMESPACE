@@ -4,6 +4,10 @@ importFrom("Rcpp", "evalCpp")
 
 export(comboGeneral,
        permuteGeneral,
+       comboCount,
+       permuteCount,
+       comboSample,
+       permuteSample,
        primeSieve,
        eulerPhiSieve,
        primeFactorizeSieve,
