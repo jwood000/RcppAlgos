@@ -1,6 +1,7 @@
 #include <Combinations.h>
 #include <Permutations.h>
 #include <Combinatorics.h>
+#include <ConstraintsUtils.h>
 #include <NthResult.h>
 using namespace Rcpp;
 
@@ -21,8 +22,7 @@ typeRcpp CombinatoricsConstraints(int n, int r, std::vector<double> v,
     // and myComparison is a comparison operator: "<", "<=", ">", or ">="
     
     double testVal;
-    int count = 0, vSize = v.size(), numCols;
-    int testRows, i, j, numRows2 = 0;
+    int i, j, count = 0, vSize = v.size(), numCols;
     
     XPtr<funcPtr> xpFun = putFunPtrInXPtr(myFun);
     funcPtr constraintFun = *xpFun;
@@ -69,30 +69,6 @@ typeRcpp CombinatoricsConstraints(int n, int r, std::vector<double> v,
         }
     }
     
-    // We have to take special care for the case when we have
-    // permutations of a multiset. In the parent function
-    // CombinatoricsRcpp, when this case occurs, we set
-    // the number of rows equal to the number of rows (numRows) we would
-    // need as if we were finding all COMBINATIONS of a multiset.
-    // This is because we initially need to find all combinations
-    // that meet the constraints and subsequently find the
-    // permutations using std::next_permutation. There is logic
-    // in the parent function that accounts for the user passing
-    // a rowCap that exceeds numRows set above, as there are
-    // more possible permutations than combinations. The following
-    // captures the possible rowCap and correctly sets numRows to
-    // the number of combinations of a multiset. We then use
-    // these two numbers to determine when we need to terminate.
-    
-    bool executeCap = true;
-    testRows = numRows;
-    
-    if (!isComb && isMult) {
-        numRows = MultisetCombRowNum(n, r, Reps);
-        if (testRows == numRows)
-            executeCap = false;
-    }
-    
     numCols = xtraCol ? (r + 1) : r;
     typeRcpp combinatoricsMatrix(numRows, numCols);
     
@@ -104,10 +80,6 @@ typeRcpp CombinatoricsConstraints(int n, int r, std::vector<double> v,
     
     if (isMult) {
         int zExpSize = 0;
-        std::vector<int> eachRowCount;
-        if (!isComb)
-            eachRowCount.reserve(numRows);
-        
         std::vector<int> zExpand, zIndex, zGroup(r);
         
         for (i = 0; i < n; i++)
@@ -140,23 +112,30 @@ typeRcpp CombinatoricsConstraints(int n, int r, std::vector<double> v,
                 t_1 = comparisonFunOne(testVal, lim);
                 
                 if (t_1) {
-                    for (k = 0; k < r; k++)
-                        combinatoricsMatrix(count, k) = v[zExpand[zIndex[z[k]]]];
-                    
-                    count++;
-                    
-                    if (!isComb) {
+                    if (isComb) {
+                        for (k = 0; k < r; k++)
+                            combinatoricsMatrix(count, k) = v[zExpand[zIndex[z[k]]]];
+                        
+                        count++;
+                    } else {
                         for (k = 0; k < r; k++)
                             zPerm[k] = zExpand[zIndex[z[k]]];
                         
                         numIter = (int) NumPermsWithRep(zPerm);
-                        numRows2 += numIter;
-                        eachRowCount.push_back(numIter);
+                        if ((numIter + count) > numRows)
+                            numIter = numRows - count;
+                        
+                        for (i = 0; i < numIter; i++, count++) {
+                            for (k = 0; k < r; k++)
+                                combinatoricsMatrix(count, k) = v[zPerm[k]];
+                            
+                            std::next_permutation(zPerm.begin(), zPerm.end());
+                        }
                     }
-                    
-                    if (executeCap)
-                        keepGoing = (count < testRows);    
                 }
+                
+                    keepGoing = (count < numRows);
+                
                 
                 t_2 = (z[r1] != maxZ);
                 
@@ -192,38 +171,6 @@ typeRcpp CombinatoricsConstraints(int n, int r, std::vector<double> v,
                     keepGoing = false;
                 }
             }
-        }
-  
-        if (!isComb) {
-            typeRcpp permuteMatrix(numRows2, numCols);
-            int count2 = 0, segment = 0;
-            bool bTooMany = false;
-            
-            for (i = 0; i < count; i++) {
-                // populate permVec with next combination
-                for (j = 0; j < r; j++)
-                    testVec[j] = combinatoricsMatrix(i, j);
-                
-                segment = eachRowCount[i];
-                if (executeCap) {
-                    if ((eachRowCount[i] + count2) > testRows) {
-                        segment = testRows - count2;
-                        bTooMany = true;
-                    }
-                }
-                
-                // populate permuteMatrix with all permutations
-                // of a particular combination
-                for (j = 0; j < segment; j++, count2++) {
-                    for (k = 0; k < r; k++)
-                        permuteMatrix(count2, k) = testVec[k];
-
-                    std::next_permutation(testVec.begin(), testVec.end());
-                }
-                if (bTooMany) {break;}
-            }
-            
-            return Combinations::SubMat(permuteMatrix, count2);
         }
         
     } else if (repetition) {
@@ -606,10 +553,10 @@ SEXP CombinatoricsRcpp(SEXP Rv, SEXP Rm, SEXP Rrepetition, SEXP RFreqs,
         if (n != lenFreqs)
             stop("the length of freqs must equal the length of v");
         
-        if (IsComb || IsConstrained) {
-            if (m > (int) freqsExpanded.size())
-                m = freqsExpanded.size();
-            
+        if (m > (int) freqsExpanded.size())
+            m = freqsExpanded.size();
+        
+        if (IsComb) {
             computedRows = MultisetCombRowNum(n, m, myReps);
         } else {
             if (Rf_isNull(Rm)) {
@@ -617,9 +564,6 @@ SEXP CombinatoricsRcpp(SEXP Rv, SEXP Rm, SEXP Rrepetition, SEXP RFreqs,
             } else if (m == (int) freqsExpanded.size()) {
                 computedRows = NumPermsWithRep(freqsExpanded);
             } else {
-                if (m > (int) freqsExpanded.size())
-                    m = freqsExpanded.size();
-                
                 computedRows = MultisetPermRowNum(n, m, myReps);
             }
         }
