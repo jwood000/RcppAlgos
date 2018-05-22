@@ -1,7 +1,7 @@
 #ifndef RcppAlgos_Permutations_h
 #define RcppAlgos_Permutations_h
 
-#include <CombPermUtility.h>
+#include <CombPermUtils.h>
 
 namespace Permutations {
     
@@ -187,8 +187,9 @@ namespace Permutations {
                                    int numRows, bool xtraCol,
                                    std::vector<int> z) {
         
-        unsigned long int uN = n, count = 0, numCols;
-        unsigned long int sumReps = std::accumulate(Reps.begin(), Reps.end(), 0);
+        unsigned long int numCols, sumReps;
+        sumReps = std::accumulate(Reps.begin(), Reps.end(), 0);
+        
         bool retAllPerms = true;
         
         if (r < sumReps) {

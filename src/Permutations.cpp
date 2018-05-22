@@ -1,4 +1,5 @@
 #include <Permutations.h>
+#include <ConstraintsUtils.h>
 using namespace Rcpp;
 
 SEXP PermutationsRcpp(int n, int m, bool repetition, CharacterVector vStr,

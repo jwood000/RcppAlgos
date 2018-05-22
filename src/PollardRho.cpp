@@ -3,7 +3,6 @@
 #include <algorithm>
 #include "PrimesPolRho.h"
 #include "PollardRho.h"
-#include <stdint.h>
 using namespace Rcpp;
 
 /* Prove primality or run probabilistic tests.  */

@@ -1,7 +1,6 @@
 #include <Rcpp.h>
-#include <math.h>
+#include <cmath>
 #include <array>
-#include <stdint.h>
 #include <libdivide.h>
 #include "PrimesSegSieve.h"
 #include "PhiTinyLookup.h"
@@ -54,7 +53,7 @@ std::vector<typeReturn> AllPrimesCpp (typePrime minNum,
     std::vector<typeReturn> myPrimes;
     typePrime myRange = maxNum - minNum + 1;
     
-    // // Percentages obtained here: https://en.wikipedia.org/wiki/Prime-counting_function
+    // Percentages obtained here: https://en.wikipedia.org/wiki/Prime-counting_function
     typePrime myReserve;
     if (maxNum < 100000) {
         myReserve = (typePrime) floor((double) 2*myRange/log((double)myRange));

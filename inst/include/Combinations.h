@@ -1,7 +1,7 @@
 #ifndef RcppAlgos_Combinations_h
 #define RcppAlgos_Combinations_h
 
-#include <CombPermUtility.h>
+#include <CombPermUtils.h>
 
 namespace Combinations {
 

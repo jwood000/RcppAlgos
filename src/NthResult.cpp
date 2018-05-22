@@ -1,4 +1,4 @@
-#include <CombPermUtility.h>
+#include <CombPermUtils.h>
 
 std::vector<int> nonZeroVec(std::vector<int> &v) {
     std::vector<int> nonZero;

@@ -1,6 +1,5 @@
 #include <Rcpp.h>
-#include <math.h>
-#include <stdint.h>
+#include <cmath>
 #include <libdivide.h>
 #include "PollardRho.h"
 using namespace Rcpp;

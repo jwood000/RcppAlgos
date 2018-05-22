@@ -1,4 +1,5 @@
 #include <Combinations.h>
+#include <ConstraintsUtils.h>
 using namespace Rcpp;
 
 SEXP CombinationsRcpp(int n, int m, bool repetition, CharacterVector vStr,
