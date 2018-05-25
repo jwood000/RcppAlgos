@@ -29,7 +29,7 @@ Usage
 -----
 
 ### Common Combinatorial Functions
-Easily executed with a very simple interface.
+Easily executed with a very simple interface. Output is in [lexicographical order](https://en.wikipedia.org/wiki/Lexicographical_order).
 ``` r
 ## Find all 3-tuples combinations without 
 ## repetition of the numbers c(1, 2, 3, 4).
@@ -69,7 +69,7 @@ comboGeneral(4, 3, repetition = TRUE)
 ## They are very efficient
 system.time(comboGeneral(25,13))
    user  system elapsed 
-  0.174   0.060   0.232 
+  0.136   0.062   0.198 
 
 nrow(comboGeneral(25,13))
 [1] 5200300
