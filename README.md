@@ -9,7 +9,7 @@ A collection of optimized functions implemented in C++ with Rcpp for solving pro
 
 * primeSieve - Generates all primes less than a billion in just over 1 second
 * primeCount -  Counts the number of primes below a trillion in under 0.5 seconds.
-* comboGeneral/permuteGeneral - Generate all combinations/permutations of a vector meeting specific criteria. Capable of efficiently handling multisets as well.
+* comboGeneral/permuteGeneral - Generate all combinations/permutations of a vector (including [multisets](https://en.wikipedia.org/wiki/Multiset)) meeting specific criteria. A new feature in 2.0.0 is the ability to generate combinations/permutations in chunks allowing for parallelization (See examples below).
 
 The `primeSieve` function and the `primeCount` function are both based off of the excellent work by [Kim Walisch](https://github.com/kimwalisch). The respective repos can be found here: [kimwalisch/primesieve](https://github.com/kimwalisch/primesieve); [kimwalisch/primecount](https://github.com/kimwalisch/primecount)
 
@@ -243,6 +243,86 @@ facPerms <- permuteGeneral(factor(c("low", "med", "high"),
 [4,] low  med  med  high med  med  high
 [5,] low  med  med  high med  high med 
 Levels: low < med < high
+```
+
+### Parallel computing using _lower_ and _upper_
+In version 2.0.0, there are now arguments `lower` and `upper` that can be utilized to generate chunks of combinations/permutations without having to generate all of them followed by subsetting.  As the output is in lexicographical order, these arguments specify where to start and stop generating. For example, `comboGeneral(5, 3)` outputs 10 combinations of the vector `1:5` choosen 3 at a time. We can set `lower` to 5 in order to start generation from the 5th lexicogrphical combination. Similarly, we can set `upper` to 4 in order only generate the first 4 combinations. We can also use them together to produce only a certain chunk of combinations. For example, setting `lower` to 4 and `upper` to 6 only produces the 4th, 5th, and 6th lexicographical combinations. Observe:
+
+``` r
+comboGeneral(5, 3, lower = 4, upper = 6)
+     [,1] [,2] [,3]
+[1,]    1    3    4
+[2,]    1    3    5
+[3,]    1    4    5
+
+## is equivalent to the following:
+comboGeneral(5, 3)[4:6, ]
+     [,1] [,2] [,3]
+[1,]    1    3    4
+[2,]    1    3    5
+[3,]    1    4    5
+```
+In addtion to being useful by avoiding the unnecessary overhead of generating all combination/permutations followed by subsetting just to see a few specific results, `lower` and `upper` can be utilized to generate large number of combinations/permutations in parallel. Observe:
+
+``` r
+## Over 3 billion results
+comboCount(35, 15)
+[1] 3247943160
+
+## 10086780 evenly divided 3247943160
+
+system.time(lapply(seq(1, 3247943160, 10086780), function(x) {
+        temp <- comboGeneral(35, 15, lower = x, upper = x + 10086779)
+        ## do something
+        x
+}))
+   user  system elapsed 
+ 99.495  49.993 149.467
+
+## Enter parallel
+
+library(parallel)
+system.time(mclapply(seq(1, 3247943160, 10086780), function(x) {
+     temp <- comboGeneral(35, 15, lower = x, upper = x + 10086779)
+     ## do something
+     x
+}, mc.cores = 6))
+   user  system elapsed 
+ 63.783  26.831  45.891
+```
+
+### Sampling
+As of version 2.0.0, we can also produce random samples of combinations/permutations with `comboSample` and `permuteSample`. This is really useful when we need a reproducible set of random combinations/permutations. Many of the traditional ways of doing this involved relying on heavy use of `sample` and hoping that we don't generate duplicate results. Both functions have a similar interface to their respective `General` functions. Observe:
+
+``` r
+set.seed(84)
+comboSample(10, 8, TRUE, n = 5)
+     [,1] [,2] [,3] [,4] [,5] [,6] [,7] [,8]
+[1,]    3    3    3    6    6   10   10   10
+[2,]    1    3    3    4    4    7    9   10
+[3,]    3    7    7    7    9   10   10   10
+[4,]    3    3    3    9   10   10   10   10
+[5,]    1    2    2    3    3    4    4    7
+
+## We can also use sampleVec to generate specific results
+## E.g. the below generates the 1st, 5th, 25th, 125th, and
+## 625th lexicographical combinations
+comboSample(10, 8, TRUE, sampleVec = c(1, 5, 25, 125, 625))
+     [,1] [,2] [,3] [,4] [,5] [,6] [,7] [,8]
+[1,]    1    1    1    1    1    1    1    1
+[2,]    1    1    1    1    1    1    1    5
+[3,]    1    1    1    1    1    1    3    8
+[4,]    1    1    1    1    1    3    6    9
+[5,]    1    1    1    1    5    6   10   10
+
+## Is the same as:
+comboGeneral(10, 8, TRUE)[5^(0:4), ]
+     [,1] [,2] [,3] [,4] [,5] [,6] [,7] [,8]
+[1,]    1    1    1    1    1    1    1    1
+[2,]    1    1    1    1    1    1    1    5
+[3,]    1    1    1    1    1    1    3    8
+[4,]    1    1    1    1    1    3    6    9
+[5,]    1    1    1    1    5    6   10   10
 ```
 
 Mathematical Computation
