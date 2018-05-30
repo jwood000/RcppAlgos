@@ -1,5 +1,5 @@
-#ifndef RcppAlgos_ConstraintsUtils_h
-#define RcppAlgos_ConstraintsUtils_h
+#ifndef CONSTRAINTS_UTILS_H
+#define CONSTRAINTS_UTILS_H
 
 typedef double (*funcPtr)(std::vector<double>& x);
 typedef bool (*compPtr)(double& x, double& y);

@@ -1,17 +1,12 @@
-#ifndef POLLARDRHO_R
-#define POLLARDRHO_R 1
-
-#include <stdint.h>
+#ifndef POLLARDRHO_H
+#define POLLARDRHO_H
 
 /**
  * Get Prime Factorization
  * t: number to factorize
- * factors [out]: the list of factors
- *
- * Note: this is adapted from demo "factorize.c" file from gmplib
  */
 
 template <typename typeReturn>
-void getPrimefactors (int64_t& t, std::vector<typeReturn>&  factors);
+void getPrimefactors (int64_t &t, std::vector<typeReturn> &factors);
 
 #endif

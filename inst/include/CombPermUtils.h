@@ -1,5 +1,5 @@
-#ifndef RcppAlgos_CombPermUtils_h
-#define RcppAlgos_CombPermUtils_h
+#ifndef COMB_PERM_UTILS_H
+#define COMB_PERM_UTILS_H
 
 #include <Rcpp.h>
 

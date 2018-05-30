@@ -1,46 +1,25 @@
-#ifndef RcppAlgos_Combinations_h
-#define RcppAlgos_Combinations_h
+#ifndef COMBINATIONS_H
+#define COMBINATIONS_H
 
 #include <CombPermUtils.h>
 
 namespace Combinations {
-
-    template <typename typeRcpp>
-    typeRcpp SubMat(typeRcpp m, int n) {
-        int k = m.ncol();
-        typeRcpp subMatrix(n,k);
-        
-        for (int i = 0; i < n; i++)
-            subMatrix(i, Rcpp::_) = m(i, Rcpp::_);
-        
-        return subMatrix;
-    }
     
     template <typename typeMatrix, typename typeVector>
     typeMatrix ComboGeneral(int n, int r, typeVector v, bool repetition, 
                             int numRows, bool xtraCol, std::vector<int> z) {
         
         int r1 = r - 1, r2 = r - 2;
-        int k, i, numIter, vSize;
+        int k, i, numIter;
         int numCols, maxZ, count = 0;
-        bool needsSubsetting = false;
         numCols = xtraCol ? (r + 1) : r;
         typeMatrix combinationMatrix(numRows, numCols);
         
         if (repetition) {
-            v.erase(std::unique(v.begin(), v.end()), v.end());
-            vSize = v.size();
-            int testRows = NumCombsWithRep(vSize, r);
-            
-            if (testRows < numRows) {
-                needsSubsetting = true;
-                numRows = testRows;
-            }
-            
-            maxZ = vSize - 1;
+            maxZ = n - 1;
             
             while (count < numRows) {
-                numIter = vSize - z[r1];
+                numIter = n - z[r1];
                 if (numIter + count > numRows)
                     numIter = numRows - count;
                 
@@ -79,12 +58,8 @@ namespace Combinations {
                 }
             }
         }
-        
-        if (needsSubsetting) {
-            return SubMat(combinationMatrix, count);
-        } else {
-            return combinationMatrix;
-        }
+
+        return combinationMatrix;
     }
     
     template <typename typeMatrix, typename typeVector>
