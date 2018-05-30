@@ -33,20 +33,20 @@ std::vector<std::vector<int> > rleCpp(std::vector<int> x) {
 
 double NumPermsWithRep(std::vector<int> v) {
     std::vector<std::vector<int> > myRle = rleCpp(v);
-    unsigned long int n = v.size(), myMax;
+    int n = v.size(), myMax;
     std::vector<int> myLens = myRle[0], myUnis = myRle[2];
     std::sort(myLens.begin(), myLens.end(), std::greater<int>());
     
     myMax = myLens[0];
-    int i, j, numUni = myUnis[0];
+    int numUni = myUnis[0];
     double result = 1;
     
-    for (i = n; i > myMax; i--)
+    for (int i = n; i > myMax; i--)
         result *= i;
     
     if (numUni > 0)
-        for (i = 1; i <= numUni; i++)
-            for (j = 2; j <= myLens[i]; j++)
+        for (int i = 1; i <= numUni; i++)
+            for (int j = 2; j <= myLens[i]; j++)
                 result /= j;
     
     return result;

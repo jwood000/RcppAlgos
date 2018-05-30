@@ -84,6 +84,7 @@ std::vector<int> nthCombination(int n, int r, double myIndex, bool isRep,
     int j = 0, n1 = n, r1 = r - 1;
     double test, temp, index1 = myIndex, index2 = myIndex;
     std::vector<int> res(r);
+    unsigned long int uR = r;
     
     if (isMult) {
         
@@ -103,7 +104,7 @@ std::vector<int> nthCombination(int n, int r, double myIndex, bool isRep,
                 index2 -= temp;
                 Reps[j] = 0;
                 
-                if (Counts.size() == (n - j)) {
+                if ((int) Counts.size() == (n - j)) {
                     n1--;
                     Counts.erase(Counts.begin());
                 }
@@ -128,7 +129,7 @@ std::vector<int> nthCombination(int n, int r, double myIndex, bool isRep,
         }
     } else if (isRep) {
         
-        for (std::size_t k = 0; k < r; k++, r1--) {
+        for (std::size_t k = 0; k < uR; k++, r1--) {
             temp = test = NumCombsWithRep(n1, r1);
             while (test <= index1) {
                 index2 -= temp;
@@ -145,7 +146,7 @@ std::vector<int> nthCombination(int n, int r, double myIndex, bool isRep,
         
         n1--;
         
-        for (std::size_t k = 0; k < r; k++, n1--, r1--, j++) {
+        for (std::size_t k = 0; k < uR; k++, n1--, r1--, j++) {
             temp = test = nChooseK(n1, r1);
             while (test <= index1) {
                 index2 -= temp;
@@ -161,5 +162,3 @@ std::vector<int> nthCombination(int n, int r, double myIndex, bool isRep,
     
     return res;
 }
-
-
