@@ -1,6 +1,5 @@
 #include <NthResult.h>
 #include <Rcpp.h>
-using namespace Rcpp;
 
 template <typename typeRcpp, typename typeVector>
 typeRcpp SampleResults(typeVector v, unsigned long int m, 
@@ -8,7 +7,7 @@ typeRcpp SampleResults(typeVector v, unsigned long int m,
                        unsigned long int n, bool IsComb,
                        std::vector<double> mySample) {
     
-    typeRcpp sampleMatrix(n, m);
+    typeRcpp sampleMatrix = Rcpp::no_init_matrix(n, m);
     int lenV = v.size();
     std::vector<int> z(m);
     bool IsMult = false;
@@ -52,7 +51,7 @@ SEXP SampleRcpp(SEXP Rv, SEXP Rm, SEXP Rrepetition,
     
     std::vector<double> vNum, mySample;
     std::vector<int> vInt, myReps, freqsExpanded;
-    CharacterVector vStr;
+    Rcpp::CharacterVector vStr;
     
     switch(TYPEOF(Rv)) {
         case INTSXP: {
@@ -72,7 +71,7 @@ SEXP SampleRcpp(SEXP Rv, SEXP Rm, SEXP Rrepetition,
     }
     
     if (!Rf_isNull(RFreqs)) {
-        myReps = as<std::vector<int> >(RFreqs);
+        myReps = Rcpp::as<std::vector<int> >(RFreqs);
 
         lenFreqs = (int) myReps.size();
         for (int i = 0; i < lenFreqs; i++)
@@ -83,41 +82,41 @@ SEXP SampleRcpp(SEXP Rv, SEXP Rm, SEXP Rrepetition,
     if (Rf_isNull(Rm)) {
         m = freqsExpanded.size();
     } else {
-        m = as<int>(Rm);
+        m = Rcpp::as<int>(Rm);
     }
     
     switch(TYPEOF(Rsample)) {
         case REALSXP: {
-            mySample = as<std::vector<double> >(Rsample);
+            mySample = Rcpp::as<std::vector<double> >(Rsample);
             break;
         }
         case INTSXP: {
-            mySample = as<std::vector<double> >(Rsample);
+            mySample = Rcpp::as<std::vector<double> >(Rsample);
             break;
         }
         default: {
-            stop("sampleVec must be of type numeric or integer");
+            Rcpp::stop("sampleVec must be of type numeric or integer");
         }
     }
 
-    IsRepetition = as<bool>(Rrepetition);
+    IsRepetition = Rcpp::as<bool>(Rrepetition);
     
     if (IsCharacter) {
-        vStr = as<CharacterVector>(Rv);
+        vStr = Rcpp::as<Rcpp::CharacterVector>(Rv);
     } else {
         if (Rf_length(Rv) == 1) {
-            seqEnd = as<double>(Rv);
-            if (NumericVector::is_na(seqEnd)) {seqEnd = 1;}
+            seqEnd = Rcpp::as<double>(Rv);
+            if (Rcpp::NumericVector::is_na(seqEnd)) {seqEnd = 1;}
             if (seqEnd > 1) {m1 = 1; m2 = seqEnd;} else {m1 = seqEnd; m2 = 1;}
-            IntegerVector vTemp = seq(m1, m2);
+            Rcpp::IntegerVector vTemp = Rcpp::seq(m1, m2);
             IsInteger = true;
-            vNum = as<std::vector<double> >(vTemp);
+            vNum = Rcpp::as<std::vector<double> >(vTemp);
         } else {
-            vNum = as<std::vector<double> >(Rv);
+            vNum = Rcpp::as<std::vector<double> >(Rv);
         }
         
         for (int i = (vNum.size() - 1); i >= 0; i--)
-            if (NumericVector::is_na(vNum[i]))
+            if (Rcpp::NumericVector::is_na(vNum[i]))
                 vNum.erase(vNum.begin() + i);
     }
     
@@ -129,21 +128,21 @@ SEXP SampleRcpp(SEXP Rv, SEXP Rm, SEXP Rrepetition,
     
     double myMax = *std::max_element(mySample.begin(), mySample.end());
     if (myMax > computedRows)
-        stop("One or more of the requested values in sampleVec "
+        Rcpp::stop("One or more of the requested values in sampleVec "
                  "exceeds the maximum number of possible results");
     
     unsigned long int sampSize = mySample.size();
     
     if (IsCharacter) {
-        return SampleResults<CharacterMatrix>(vStr, m, IsRepetition, myReps, 
+        return SampleResults<Rcpp::CharacterMatrix>(vStr, m, IsRepetition, myReps, 
                                               sampSize, IsComb, mySample);
     } else if (IsFactor) {
-        IntegerMatrix factorMat;
-        IntegerVector testFactor = as<IntegerVector>(Rv);
-        CharacterVector myClass = testFactor.attr("class");
-        CharacterVector myLevels = testFactor.attr("levels");
+        Rcpp::IntegerMatrix factorMat;
+        Rcpp::IntegerVector testFactor = Rcpp::as<Rcpp::IntegerVector>(Rv);
+        Rcpp::CharacterVector myClass = testFactor.attr("class");
+        Rcpp::CharacterVector myLevels = testFactor.attr("levels");
         
-        factorMat = SampleResults<IntegerMatrix>(vInt, m, IsRepetition, myReps, 
+        factorMat = SampleResults<Rcpp::IntegerMatrix>(vInt, m, IsRepetition, myReps, 
                                                      sampSize, IsComb, mySample);
         
         factorMat.attr("class") = myClass;
@@ -151,10 +150,10 @@ SEXP SampleRcpp(SEXP Rv, SEXP Rm, SEXP Rrepetition,
         
         return factorMat;
     } else if (IsInteger) {
-        return SampleResults<IntegerMatrix>(vInt, m, IsRepetition, myReps, 
+        return SampleResults<Rcpp::IntegerMatrix>(vInt, m, IsRepetition, myReps, 
                                             sampSize, IsComb, mySample);
     } else {
-        return SampleResults<NumericMatrix>(vNum, m, IsRepetition, myReps, 
+        return SampleResults<Rcpp::NumericMatrix>(vNum, m, IsRepetition, myReps, 
                                             sampSize, IsComb, mySample);
     }
 }
