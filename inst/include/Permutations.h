@@ -12,7 +12,7 @@ namespace Permutations {
         unsigned long int uN = n, uR = r, uRowN = numRows;
         unsigned long int chunk, numCols, segment;
         numCols = xtraCol ? (uR + 1) : uR;
-        typeMatrix permuteMatrix(uRowN, numCols);
+        typeMatrix permuteMatrix = Rcpp::no_init_matrix(uRowN, numCols);
         
         if (repetition) {
             int r1 = r - 1, n1 = n - 1;
@@ -209,7 +209,7 @@ namespace Permutations {
         if (xtraCol)
             numCols++;
         
-        typeMatrix permuteMatrix(numRows, numCols);
+        typeMatrix permuteMatrix = Rcpp::no_init_matrix(numRows, numCols);
         uint16_t *arrPerm = new uint16_t[sumReps];
         
         for (std::size_t j = 0; j < sumReps; j++)

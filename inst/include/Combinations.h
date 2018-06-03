@@ -13,7 +13,7 @@ namespace Combinations {
         int k, i, numIter;
         int numCols, maxZ, count = 0;
         numCols = xtraCol ? (r + 1) : r;
-        typeMatrix combinationMatrix(numRows, numCols);
+        typeMatrix combinationMatrix = Rcpp::no_init_matrix(numRows, numCols);
         
         if (repetition) {
             maxZ = n - 1;
@@ -86,7 +86,7 @@ namespace Combinations {
         }
         
         numCols = xtraCol ? (r + 1) : r;
-        typeMatrix combinationMatrix(numRows, numCols);
+        typeMatrix combinationMatrix = Rcpp::no_init_matrix(numRows, numCols);
         
         while (count < numRows) {
             numIter = n - z[r1];
