@@ -85,3 +85,4 @@ permuteSample <- function(v, m = NULL, repetition = FALSE, freqs = NULL,
     
     SampleRcpp(v, m, repetition, freqs, sampleVec, FALSE, isFactor, myCount)
 }
+
