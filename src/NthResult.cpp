@@ -19,28 +19,28 @@ std::vector<int> nthPermutation(int n, int r, double myIndex, bool isRep,
     
     if (isMult) {
         
-        index1++;
+        ++index1;
         std::vector<int> Counts;
         int r1 = r - 1;
         double test, index2 = index1;
         
-        for (int k = 0; k < r; k++, r1--) {
+        for (int k = 0; k < r; ++k, --r1) {
             
             j = 0;
             while (Reps[j] == 0)
-                j++;
+                ++j;
             
-            Reps[j]--;
+            --Reps[j];
             Counts = nonZeroVec(Reps);
             test = temp = MultisetPermRowNum(Counts.size(), r1, Counts);
             
             while (test < index1) {
                 index2 -= temp;
-                Reps[j]++;
-                j++;
+                ++Reps[j];
+                ++j;
                 
                 while (Reps[j] == 0)
-                    j++;
+                    ++j;
                 
                 Reps[j]--;
                 
@@ -55,7 +55,7 @@ std::vector<int> nthPermutation(int n, int r, double myIndex, bool isRep,
     } else if (isRep) {
         temp = std::pow((double) n, (double) r);
         
-        for (int k = 0; k < r; k++) {
+        for (int k = 0; k < r; ++k) {
             temp /= n;
             j = (int) std::trunc(index1 / temp);
             res[k] = j;
@@ -66,7 +66,7 @@ std::vector<int> nthPermutation(int n, int r, double myIndex, bool isRep,
         std::vector<int> indexVec(n);
         std::iota(indexVec.begin(), indexVec.end(), 0);
         
-        for (int k = 0; k < r; k++, n1--) {
+        for (int k = 0; k < r; ++k, --n1) {
             temp /= n1;
             j = (int) std::trunc(index1 / temp);
             res[k] = indexVec[j];
@@ -90,11 +90,11 @@ std::vector<int> nthCombination(int n, int r, double myIndex, bool isRep,
         
         std::vector<int> Counts = Reps;
         
-        for (int k = 0; k < r; k++, r1--) {
+        for (int k = 0; k < r; ++k, --r1) {
             
             Counts[0]--;
             if (Counts[0] == 0 && Counts.size() > 1) {
-                n1--;
+                --n1;
                 Counts.erase(Counts.begin());
             }
             
@@ -105,17 +105,17 @@ std::vector<int> nthCombination(int n, int r, double myIndex, bool isRep,
                 Reps[j] = 0;
                 
                 if ((int) Counts.size() == (n - j)) {
-                    n1--;
+                    --n1;
                     Counts.erase(Counts.begin());
                 }
                 
                 Counts[0]--;
                 if (Counts[0] == 0 && Counts.size() > 1) {
-                    n1--;
+                    --n1;
                     Counts.erase(Counts.begin());
                 }
                 
-                j++;
+                ++j;
                 temp = MultisetCombRowNum(n1, r1, Counts);
                 test += temp;
             }
@@ -125,16 +125,16 @@ std::vector<int> nthCombination(int n, int r, double myIndex, bool isRep,
             
             Reps[j]--;
             if (Reps[j] <= 0)
-                j++;
+                ++j;
         }
     } else if (isRep) {
         
-        for (std::size_t k = 0; k < uR; k++, r1--) {
+        for (std::size_t k = 0; k < uR; ++k, --r1) {
             temp = test = NumCombsWithRep(n1, r1);
             while (test <= index1) {
                 index2 -= temp;
-                n1--;
-                j++;
+                --n1;
+                ++j;
                 temp = NumCombsWithRep(n1, r1);
                 test += temp;
             }
@@ -144,14 +144,14 @@ std::vector<int> nthCombination(int n, int r, double myIndex, bool isRep,
         
     } else {
         
-        n1--;
+        --n1;
         
-        for (std::size_t k = 0; k < uR; k++, n1--, r1--, j++) {
+        for (std::size_t k = 0; k < uR; ++k, --n1, --r1, ++j) {
             temp = test = nChooseK(n1, r1);
             while (test <= index1) {
                 index2 -= temp;
-                n1--;
-                j++;
+                --n1;
+                ++j;
                 temp = nChooseK(n1, r1);
                 test += temp;
             }

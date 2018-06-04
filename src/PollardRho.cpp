@@ -3,12 +3,10 @@
 #include <algorithm>
 #include "PrimesPolRho.h"
 #include "PollardRho.h"
-using namespace Rcpp;
 
 /* Prove primality or run probabilistic tests.  */
 int FlagProvePrimality = 1;
 
-const double Significand53 = 9007199254740991.0;
 const double myMax = std::pow(2, 62);
 const double my64Max = std::pow(2, 63);
 const int64_t Sqrt64Max = (int64_t) std::sqrt((double) my64Max);
@@ -110,7 +108,7 @@ static int MillerRabin (int64_t n, int64_t nm1,
     if (y == 1 || y == nm1)
         return 1;
 
-    for (std::size_t i = 1; i < k; i++) {
+    for (std::size_t i = 1; i < k; ++i) {
         y = ExpBySquaring(y, 2, n);
         if (y == nm1)
             return 1;
@@ -141,7 +139,7 @@ int IsPrime (int64_t n) {
     k = 0;
     while ((q & 1) == 0) {
         q /= 2;
-        k++;
+        ++k;
     }
 
     a = 2;
@@ -160,11 +158,11 @@ int IsPrime (int64_t n) {
 
     /* Loop until Lucas proves our number prime, or Miller-Rabin proves our
     number composite.  */
-    for (std::size_t r = 0; r < pDiffSize; r++) {
+    for (std::size_t r = 0; r < pDiffSize; ++r) {
 
         if (FlagProvePrimality) {
             primeTestReturn = 1;
-            for (std::size_t i = 0; i < factors.size() && primeTestReturn; i++) {
+            for (std::size_t i = 0; i < factors.size() && primeTestReturn; ++i) {
                 tmp = nm1 / factors[i];
                 tmp = ExpBySquaring(a, tmp, n);
                 primeTestReturn = (tmp != 1);
@@ -185,7 +183,7 @@ int IsPrime (int64_t n) {
         }
     }
 
-    stop("Lucas prime test failure. This should not happen");
+    Rcpp::stop("Lucas prime test failure. This should not happen");
     ret1:
         if (FlagProvePrimality)
             factors.resize(0);
@@ -222,7 +220,7 @@ void PollardRho (int64_t n, int64_t a,
             z = x;
             k = l;
             l = 2 * l;
-            for (i = 0; i < k; i++) {
+            for (i = 0; i < k; ++i) {
                 x = ProdBigMod(x, x, n);
                 x += a;
             }
@@ -272,7 +270,7 @@ void getPrimefactors (int64_t& t, std::vector<typeReturn>& factors) {
 }
 
 template <typename typeReturn>
-List PrimeFacList (std::vector<double> myNums, bool namedList) {
+Rcpp::List PrimeFacList (std::vector<double> myNums, bool namedList) {
     
     int64_t mPass;
     unsigned int myLen = myNums.size();
@@ -280,7 +278,7 @@ List PrimeFacList (std::vector<double> myNums, bool namedList) {
     std::vector<std::vector<typeReturn> > 
         MyPrimeList(myLen, std::vector<typeReturn>());
     
-    for (std::size_t i = 0; i < myLen; i++) {
+    for (std::size_t i = 0; i < myLen; ++i) {
         std::vector<typeReturn> factors;
         
         mPass = (int64_t) myNums[i];
@@ -296,28 +294,29 @@ List PrimeFacList (std::vector<double> myNums, bool namedList) {
         }
     }
     
-    Rcpp::List myList = wrap(MyPrimeList);
+    Rcpp::List myList = Rcpp::wrap(MyPrimeList);
     if (namedList)
         myList.attr("names") = myNums;
+    
     return myList;
 }
 
 // [[Rcpp::export]]
 SEXP PrimeFactorsContainer (SEXP Rv, SEXP RNamed) {
     std::vector<double> myNums;
-    bool isNamed = as<bool>(RNamed);
+    bool isNamed = Rcpp::as<bool>(RNamed);
     
     switch(TYPEOF(Rv)) {
         case REALSXP: {
-            myNums = as<std::vector<double> >(Rv);
+            myNums = Rcpp::as<std::vector<double> >(Rv);
             break;
         }
         case INTSXP: {
-            myNums = as<std::vector<double> >(Rv);
+            myNums = Rcpp::as<std::vector<double> >(Rv);
             break;
         }
         default: {
-            stop("v must be of type numeric or integer");
+            Rcpp::stop("v must be of type numeric or integer");
         }
     }
     
@@ -329,7 +328,7 @@ SEXP PrimeFactorsContainer (SEXP Rv, SEXP RNamed) {
             myMax = std::abs(myMin);
         
         if (myMax > Significand53)
-            stop("the abs value of each element must be less than 2^53");
+            Rcpp::stop("the abs value of each element must be less than 2^53");
         
         if (myMax > INT_MAX)
             return PrimeFacList<double>(myNums, isNamed);
@@ -345,23 +344,25 @@ SEXP PrimeFactorsContainer (SEXP Rv, SEXP RNamed) {
         }
         
         if (mPass == 0)
-            return IntegerVector();
+            return Rcpp::IntegerVector();
         
         if (mPass > Significand53)
-            stop("the abs value of each element must be less than 2^53");
+            Rcpp::stop("the abs value of each element must be less than 2^53");
         
         if (mPass > INT_MAX) {
             std::vector<double> factors;
             if (isNegative)
                 factors.push_back(-1);
+            
             getPrimefactors(mPass, factors);
-            return wrap(factors);
+            return Rcpp::wrap(factors);
         } else {
             std::vector<int> factors;
             if (isNegative)
                 factors.push_back(-1);
+            
             getPrimefactors(mPass, factors);
-            return wrap(factors);
+            return Rcpp::wrap(factors);
         }
     }
 }
@@ -374,29 +375,29 @@ SEXP IsPrimeContainer (SEXP Rv, SEXP RNamed) {
     
     switch(TYPEOF(Rv)) {
         case REALSXP: {
-            myNums = as<std::vector<double> >(Rv);
+            myNums = Rcpp::as<std::vector<double> >(Rv);
             break;
         }
         case INTSXP: {
-            myNums = as<std::vector<double> >(Rv);
+            myNums = Rcpp::as<std::vector<double> >(Rv);
             break;
         }
         default: {
-            stop("v must be of type numeric or integer");
+            Rcpp::stop("v must be of type numeric or integer");
         }
     }
     
-    isNamed = as<bool>(RNamed);
+    isNamed = Rcpp::as<bool>(RNamed);
     unsigned int myLen = myNums.size();
     std::vector<bool> primeTest(myLen, true);
     double isWhole;
     
-    for (std::size_t j = 0; j < myLen; j++) {
+    for (std::size_t j = 0; j < myLen; ++j) {
         
         if (myNums[j] <= 0)
-            stop("each element must be positive");
+            Rcpp::stop("each element must be positive");
         if (myNums[j] > Significand53)
-            stop("each element must be less than 2^53");
+            Rcpp::stop("each element must be less than 2^53");
         if (std::modf(myNums[j], &isWhole) != 0.0)
             primeTest[j] = false;
         
@@ -426,7 +427,7 @@ SEXP IsPrimeContainer (SEXP Rv, SEXP RNamed) {
             primeTest[j] = (bool) IsPrime(testVal);
     }
     
-    LogicalVector isPrimeVec = wrap(primeTest);
+    Rcpp::LogicalVector isPrimeVec = Rcpp::wrap(primeTest);
     
     if (isNamed)
         isPrimeVec.attr("names") = myNums;

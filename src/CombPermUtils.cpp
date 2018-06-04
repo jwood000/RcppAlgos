@@ -14,13 +14,13 @@ std::vector<std::vector<int> > rleCpp(std::vector<int> x) {
     values.push_back(prev);
     lengths.push_back(1);
     
-    for(it = xBeg; it < xEnd; it++) {
+    for(it = xBeg; it < xEnd; ++it) {
         if (prev == *it) {
-            lengths[i]++;
+            ++lengths[i];
         } else {
             values.push_back(*it);
             lengths.push_back(1);
-            i++;
+            ++i;
             prev = *it;
         }
     }
@@ -41,12 +41,12 @@ double NumPermsWithRep(std::vector<int> v) {
     int numUni = myUnis[0];
     double result = 1;
     
-    for (int i = n; i > myMax; i--)
+    for (int i = n; i > myMax; --i)
         result *= i;
     
     if (numUni > 0)
-        for (int i = 1; i <= numUni; i++)
-            for (int j = 2; j <= myLens[i]; j++)
+        for (int i = 1; i <= numUni; ++i)
+            for (int j = 2; j <= myLens[i]; ++j)
                 result /= j;
     
     return result;
@@ -55,7 +55,7 @@ double NumPermsWithRep(std::vector<int> v) {
 double NumPermsNoRep(int n, int k) {
     double dblN = (double) n, result = 1;
     double i, m = dblN - (double) k;
-    for (i = n; i > m; i--) {result *= i;}
+    for (i = n; i > m; --i) {result *= i;}
     return result;
 }
 
@@ -68,7 +68,7 @@ double nChooseK(double n, double k) {
     
     double nCk;
     double temp = 1;
-    for(int i = 1; i <= k; i++)
+    for(int i = 1; i <= k; ++i)
         temp *= (n - k + i)/i;
     
     nCk = round(temp);
@@ -90,8 +90,8 @@ double NumCombsWithRep(int n, int r) {
     std::vector<double> temp(n), triangleVec(n);
     std::iota(triangleVec.begin(), triangleVec.end(), 1.0);
     
-    for (i = 1; i < r; i++) {
-        for (k = 1; k <= n; k++)
+    for (i = 1; i < r; ++i) {
+        for (k = 1; k <= n; ++k)
             temp[k-1] = std::accumulate(triangleVec.begin(), triangleVec.begin() + k, 0.0);
 
         triangleVec = temp;
@@ -118,19 +118,19 @@ double MultisetCombRowNum(int n, int r, std::vector<int> Reps) {
     if (myMax > Reps[0] + 1)
         myMax = Reps[0] + 1;
     
-    for (i = 0; i < myMax; i++)
+    for (i = 0; i < myMax; ++i)
         triangleVec[i] = 1;
     
     temp = triangleVec;
     
-    for (k = 1; k < n; k++) {
-        for (i = r; i > 0; i--) {
+    for (k = 1; k < n; ++k) {
+        for (i = r; i > 0; --i) {
             myMax = i - Reps[k];
             if (myMax < 0)
                 myMax = 0;
             
             tempSum = 0;
-            for (j = myMax; j <= i; j++)
+            for (j = myMax; j <= i; ++j)
                 tempSum += triangleVec[j];
             
             temp[i] = tempSum;
@@ -168,7 +168,7 @@ double MultisetPermRowNum(int n, int r, std::vector<int> myReps) {
                             1.0, std::multiplies<double>());
     
     int myMax = (r < maxFreq) ? r : maxFreq;
-    myMax++;
+    ++myMax;
     
     std::vector<double> cumProd(myMax), resV(r + 1, 0.0);
     
@@ -182,16 +182,16 @@ double MultisetPermRowNum(int n, int r, std::vector<int> myReps) {
     
     int myMin = std::min(r, myReps[0]);
     
-    for (int i = 0; i <= myMin; i++)
+    for (int i = 0; i <= myMin; ++i)
         resV[i] = prodR / cumProd[i];
     
     numPerms = resV[r];
     
-    for (int i = 1; i < n1; i++) {
-        for (int j = r; j > 0; j--) {
+    for (int i = 1; i < n1; ++i) {
+        for (int j = r; j > 0; --j) {
             myMin = std::min(j, myReps[i]);
             numPerms = 0;
-            for (int k = 0; k <= myMin; k++)
+            for (int k = 0; k <= myMin; ++k)
                 numPerms += resV[j - k] / cumProd[k];
             
             resV[j] = numPerms;
@@ -200,7 +200,7 @@ double MultisetPermRowNum(int n, int r, std::vector<int> myReps) {
     
     myMin = std::min(r, myReps[n1]);
     numPerms = 0;
-    for (int i = 0; i <= myMin; i++)
+    for (int i = 0; i <= myMin; ++i)
         numPerms += resV[r - i] / cumProd[i];
     
     return numPerms;
@@ -214,18 +214,18 @@ void nextFullPerm(uint16_t *myArray, unsigned long int n1) {
     uint16_t temp;
     
     while (myArray[p1] <= myArray[p1 - 1])
-        p1--;
+        --p1;
     
-    p1--;
+    --p1;
     
     while (myArray[p2] <= myArray[p1])
-        p2--;
+        --p2;
     
     temp = myArray[p1];
     myArray[p1] = myArray[p2];
     myArray[p2] = temp;
     
-    for (std::size_t k = p1 + 1, q = n1; k < q; k++, q--) {
+    for (std::size_t k = p1 + 1, q = n1; k < q; ++k, --q) {
         temp = myArray[k];
         myArray[k] = myArray[q];
         myArray[q] = temp;
@@ -253,14 +253,14 @@ void nextPartialPerm(uint16_t *myArray, unsigned long int nCols,
     unsigned long int p1 = nCols;
     
     while (p1 < n && myArray[r1] >= myArray[p1])
-        p1++;
+        ++p1;
     
     if (p1 < n) {
         temp = myArray[p1];
         myArray[p1] = myArray[r1];
         myArray[r1] = temp;
     } else {
-        for (std::size_t k = r, q = n1; k < q; k++, q--) {
+        for (std::size_t k = r, q = n1; k < q; ++k, --q) {
             temp = myArray[k];
             myArray[k] = myArray[q];
             myArray[q] = temp;
@@ -268,19 +268,19 @@ void nextPartialPerm(uint16_t *myArray, unsigned long int nCols,
         
         p1 = n1;
         while (myArray[p1] <= myArray[p1 - 1])
-            p1--;
+            --p1;
         
-        p1--;
+        --p1;
         unsigned long int p2 = n1;
         
         while (myArray[p2] <= myArray[p1])
-            p2--;
+            --p2;
         
         temp = myArray[p1];
         myArray[p1] = myArray[p2];
         myArray[p2] = temp;
         
-        for (std::size_t k = p1 + 1, q = n1; k < q; k++, q--) {
+        for (std::size_t k = p1 + 1, q = n1; k < q; ++k, --q) {
             temp = myArray[k];
             myArray[k] = myArray[q];
             myArray[q] = temp;

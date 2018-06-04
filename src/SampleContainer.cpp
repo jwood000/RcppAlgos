@@ -16,15 +16,15 @@ typeRcpp SampleResults(typeVector v, unsigned long int m,
         IsMult = true;
     
     if (IsComb) {
-        for (std::size_t i = 0; i < n; i++) {
+        for (std::size_t i = 0; i < n; ++i) {
             z = nthCombination(lenV, m, mySample[i] - 1, IsRep, IsMult, myReps);
-            for (std::size_t j = 0; j < m; j++)
+            for (std::size_t j = 0; j < m; ++j)
                 sampleMatrix(i, j) = v[z[j]];
         }
     } else {
-        for (std::size_t i = 0; i < n; i++) {
+        for (std::size_t i = 0; i < n; ++i) {
             z = nthPermutation(lenV, m, mySample[i] - 1, IsRep, IsMult, myReps);
-            for (std::size_t j = 0; j < m; j++)
+            for (std::size_t j = 0; j < m; ++j)
                 sampleMatrix(i, j) = v[z[j]];
         }
     }
@@ -74,8 +74,8 @@ SEXP SampleRcpp(SEXP Rv, SEXP Rm, SEXP Rrepetition,
         myReps = Rcpp::as<std::vector<int> >(RFreqs);
 
         lenFreqs = (int) myReps.size();
-        for (int i = 0; i < lenFreqs; i++)
-            for (int j = 0; j < myReps[i]; j++)
+        for (int i = 0; i < lenFreqs; ++i)
+            for (int j = 0; j < myReps[i]; ++j)
                 freqsExpanded.push_back(i);
     }
     

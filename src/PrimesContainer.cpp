@@ -4,7 +4,6 @@
 #include <libdivide.h>
 #include "PrimesSegSieve.h"
 #include "PhiTinyLookup.h"
-using namespace Rcpp;
 
 // [[Rcpp::plugins(cpp11)]]
 
@@ -72,15 +71,15 @@ std::vector<typeReturn> AllPrimesCpp (typePrime minNum,
     std::size_t i = 0;
 
     if (maxNum < segmentSize || minNum <= 13)
-        for (; firstPrimes[i] < minNum; i++) {}
+        for (; firstPrimes[i] < minNum; ++i) {}
 
     if (maxNum < segmentSize) {
-        for (; firstPrimes[i] <= maxNum; i++) 
+        for (; firstPrimes[i] <= maxNum; ++i) 
             myPrimes.push_back((typeReturn) firstPrimes[i]);
         
         return myPrimes;
     } else if (minNum <= 13) {
-        for (; firstPrimes[i] < 10; i++)
+        for (; firstPrimes[i] < 10; ++i)
             myPrimes.push_back((typeReturn) firstPrimes[i]);
     }
 
@@ -99,12 +98,12 @@ std::vector<typeReturn> AllPrimesCpp (typePrime minNum,
     // prime after the sqrt(n)
     if (maxNum <= 1000000000) {
         int i = 1;
-        for (; firstPrimes[i] <= sqrtBound; i++)
+        for (; firstPrimes[i] <= sqrtBound; ++i)
             smallPrimes.push_back(firstPrimes[i]);
         
         smallPrimes.push_back(firstPrimes[i]);
     } else {
-        for (std::size_t i = 1; i < (firstPriSize - 1); i++)
+        for (std::size_t i = 1; i < (firstPriSize - 1); ++i)
             smallPrimes.push_back(firstPrimes[i]);
 
         // The number, 225, comes from the observation that
@@ -118,7 +117,7 @@ std::vector<typeReturn> AllPrimesCpp (typePrime minNum,
         std::vector<char> sqrtIsPrime(myLimit + 1, 1);
         int_fast64_t step, lastP = smallPrimes[0];
 
-        for (std::size_t p = 0; lastP * lastP <= myLimit; p++) {
+        for (std::size_t p = 0; lastP * lastP <= myLimit; ++p) {
             lastP = smallPrimes[p];
             step = lastP * 2;
             for (int_fast64_t j = lastP * lastP; j <= myLimit; j += step)
@@ -147,7 +146,7 @@ std::vector<typeReturn> AllPrimesCpp (typePrime minNum,
         myNum += lowerBnd;
         int_fast64_t myStart;
 
-        for (; sqrPrime <= upperBnd; p++) {
+        for (; sqrPrime <= upperBnd; ++p) {
             if (lowerBnd > sqrPrime) {
                 int_fast64_t remTest = lowerBnd % smallPrimes[p - 1];
                 if (remTest == 0) {
@@ -165,7 +164,7 @@ std::vector<typeReturn> AllPrimesCpp (typePrime minNum,
             sqrPrime = smallPrimes[p] * smallPrimes[p];
         }
 
-        for (std::size_t i = 3; i < nextStrt.size(); i++) {
+        for (std::size_t i = 3; i < nextStrt.size(); ++i) {
             int_fast64_t j = nextStrt[i];
             for (int_fast64_t k = smallPrimes[i] * 2; j < segmentSize; j += k)
                 sieve[j] = 0;
@@ -173,8 +172,8 @@ std::vector<typeReturn> AllPrimesCpp (typePrime minNum,
         }
 
         if (upperBnd < flrMaxNum) {
-            for (std::size_t q = 0; q < numSegments; q++) {
-                for (std::size_t w = 0; w < wheelSize; w++) {
+            for (std::size_t q = 0; q < numSegments; ++q) {
+                for (std::size_t w = 0; w < wheelSize; ++w) {
                     if (myNum >= minNum)
                         if (sieve[myNum - lowerBnd])
                             myPrimes.push_back((typeReturn) myNum);
@@ -182,8 +181,8 @@ std::vector<typeReturn> AllPrimesCpp (typePrime minNum,
                 }
             }
         } else {
-            for (std::size_t q = 0; q < numSegments && myNum <= maxNum; q++) {
-                for (std::size_t w = 0; w < wheelSize && myNum <= maxNum; w++) {
+            for (std::size_t q = 0; q < numSegments && myNum <= maxNum; ++q) {
+                for (std::size_t w = 0; w < wheelSize && myNum <= maxNum; ++w) {
                     if (myNum >= minNum)
                         if (sieve[myNum - lowerBnd])
                             myPrimes.push_back((typeReturn) myNum);
@@ -201,20 +200,20 @@ std::vector<typeReturn> AllPrimesCpp (typePrime minNum,
         upperBnd = lowerBnd + segmentSize;
 
         // sieve the current segment && sieving primes <= sqrt(upperBnd)
-        for (; sqrPrime <= upperBnd; p++) {
+        for (; sqrPrime <= upperBnd; ++p) {
             nextStrt.push_back(sqrPrime - lowerBnd);
             sqrPrime = smallPrimes[p] * smallPrimes[p];
         }
 
-        for (std::size_t i = 3; i < nextStrt.size(); i++) {
+        for (std::size_t i = 3; i < nextStrt.size(); ++i) {
             int_fast64_t j = nextStrt[i];
             for (int_fast64_t k = smallPrimes[i] * 2; j < segmentSize; j += k)
                 sieve[j] = 0;
             nextStrt[i] = j - segmentSize;
         }
 
-        for (std::size_t q = 0; q < numSegments; q++) {
-            for (std::size_t w = 0; w < wheelSize; w++) {
+        for (std::size_t q = 0; q < numSegments; ++q) {
+            for (std::size_t w = 0; w < wheelSize; ++w) {
                 if (sieve[myNum - lowerBnd])
                     myPrimes.push_back((typeReturn) myNum);
                 myNum += wheel210[w];
@@ -226,20 +225,20 @@ std::vector<typeReturn> AllPrimesCpp (typePrime minNum,
 
     // Get remaining primes that are greater than flrMaxNum and less than maxNum
     if (lowerBnd < maxNum) {
-        for (; sqrPrime <= maxNum; p++) {
+        for (; sqrPrime <= maxNum; ++p) {
             nextStrt.push_back(sqrPrime - lowerBnd);
             sqrPrime = smallPrimes[p] * smallPrimes[p];
         }
 
-        for (std::size_t i = 3; i < nextStrt.size(); i++) {
+        for (std::size_t i = 3; i < nextStrt.size(); ++i) {
             int_fast64_t j = nextStrt[i];
             for (int_fast64_t k = smallPrimes[i] * 2; j < segmentSize; j += k)
                 sieve[j] = 0;
             nextStrt[i] = j - segmentSize;
         }
 
-        for (std::size_t q = 0; q < numSegments && myNum <= maxNum; q++) {
-            for (std::size_t w = 0; w < wheelSize && myNum <= maxNum; w++) {
+        for (std::size_t q = 0; q < numSegments && myNum <= maxNum; ++q) {
+            for (std::size_t w = 0; w < wheelSize && myNum <= maxNum; ++w) {
                 if (sieve[myNum - lowerBnd])
                     myPrimes.push_back((typeReturn) myNum);
                 myNum += wheel210[w];
@@ -276,7 +275,7 @@ int64_t PiPrime (int64_t maxNum) {
     int64_t flrMaxNum = segmentSize * floor((double) maxNum / segmentSize);
     
     int i = 1;
-    for (; firstPrimes[i] <= sqrtBound; i++)
+    for (; firstPrimes[i] <= sqrtBound; ++i)
         smallPrimes.push_back(firstPrimes[i]);
     
     smallPrimes.push_back(firstPrimes[i]);
@@ -290,22 +289,22 @@ int64_t PiPrime (int64_t maxNum) {
     for (; lowerBnd < flrMaxNum; lowerBnd += segmentSize) {
         upperBnd = lowerBnd + segmentSize;
         
-        for (; sqrPrime <= upperBnd; p++) {
+        for (; sqrPrime <= upperBnd; ++p) {
             nextStrt.push_back(sqrPrime - lowerBnd);
             sqrPrime = smallPrimes[p] * smallPrimes[p];
         }
         
-        for (std::size_t i = 3; i < nextStrt.size(); i++) {
+        for (std::size_t i = 3; i < nextStrt.size(); ++i) {
             int64_t j = nextStrt[i];
             for (int64_t k = smallPrimes[i] * 2; j < segmentSize; j += k)
                 sieve[j] = 0;
             nextStrt[i] = j - segmentSize;
         }
         
-        for (std::size_t q = 0; q < numSegments; q++) {
-            for (std::size_t w = 0; w < wheelSize; w++) {
+        for (std::size_t q = 0; q < numSegments; ++q) {
+            for (std::size_t w = 0; w < wheelSize; ++w) {
                 if (sieve[myNum - lowerBnd])
-                    count++;
+                    ++count;
                 myNum += wheel210[w];
             }
         }
@@ -314,22 +313,22 @@ int64_t PiPrime (int64_t maxNum) {
     }
     
     if (lowerBnd < maxNum) {
-        for (; sqrPrime <= maxNum; p++) {
+        for (; sqrPrime <= maxNum; ++p) {
             nextStrt.push_back(sqrPrime - lowerBnd);
             sqrPrime = smallPrimes[p] * smallPrimes[p];
         }
         
-        for (std::size_t i = 3; i < nextStrt.size(); i++) {
+        for (std::size_t i = 3; i < nextStrt.size(); ++i) {
             int64_t j = nextStrt[i];
             for (int64_t k = smallPrimes[i] * 2; j < segmentSize; j += k)
                 sieve[j] = 0;
             nextStrt[i] = j - segmentSize;
         }
         
-        for (std::size_t q = 0; q < numSegments && myNum <= maxNum; q++) {
-            for (std::size_t w = 0; w < wheelSize && myNum <= maxNum; w++) {
+        for (std::size_t q = 0; q < numSegments && myNum <= maxNum; ++q) {
+            for (std::size_t w = 0; w < wheelSize && myNum <= maxNum; ++w) {
                 if (sieve[myNum - lowerBnd])
-                    count++;
+                    ++count;
                 myNum += wheel210[w];
             }
         }
@@ -416,7 +415,7 @@ int64_t phiWorker (int64_t x, int64_t a) {
     mySum += (piSqrtx - a) * SIGN;
     mySum += phiTinyCalc(x, strt) * SIGN;
     
-    for (int64_t i = strt; i < piSqrtx; i++) {
+    for (int64_t i = strt; i < piSqrtx; ++i) {
         int64_t x2 = x / phiPrimes[i + 1];
         
         if (isPix(x2, i))
@@ -436,7 +435,7 @@ int64_t phiMaster (int64_t x, int64_t a) {
     int64_t strt = getStrt(sqrtx);
     int64_t mySum = phiTinyCalc(x, strt) + piSqrtx - a;
     
-    for (int64_t i = strt; i < piSqrtx; i++)
+    for (int64_t i = strt; i < piSqrtx; ++i)
         mySum += phiWorker<-1>(x / phiPrimes[i + 1], i);
     
     return mySum;
@@ -456,29 +455,29 @@ SEXP MasterPrimeCount (SEXP Rn) {
     
     switch(TYPEOF(Rn)) {
         case REALSXP: {
-            bound1 = as<double>(Rn);
+            bound1 = Rcpp::as<double>(Rn);
             break;
         }
         case INTSXP: {
-            bound1 = as<double>(Rn);
+            bound1 = Rcpp::as<double>(Rn);
             break;
         }
         default: {
-            stop("bound1 must be of type numeric or integer");
+            Rcpp::stop("bound1 must be of type numeric or integer");
         }
     }
 
     if (bound1 < 1 || bound1 > Significand53)
-        stop("n must be a positive number less than 2^53");
+        Rcpp::stop("n must be a positive number less than 2^53");
 
     int64_t n = (int64_t) bound1;
     if (n < 100000) {
         if (n < 10) {
-            if (n == 1) return wrap(0);
+            if (n == 1) return Rcpp::wrap(0);
             std::vector<int> smallPs = AllPrimesCpp<int>((int) 1, (int) n, false);
-            return (wrap(smallPs.size()));
+            return (Rcpp::wrap(smallPs.size()));
         }
-        return wrap((int) PiPrime(n));
+        return Rcpp::wrap((int) PiPrime(n));
     }
     
     // populate phiTiny... phiTiny[0] should not be accessed
@@ -499,8 +498,8 @@ SEXP MasterPrimeCount (SEXP Rn) {
     phi30030.reserve(30031);
     phi30030.push_back(0);
     
-    for (std::size_t i = 1; i <= 5760; i++)
-        for (int16_t j = 0; j < arr30030freq[i]; j++)
+    for (std::size_t i = 1; i <= 5760; ++i)
+        for (int16_t j = 0; j < arr30030freq[i]; ++j)
             phi30030.push_back(i);
     phiTiny[6] = phi30030;
     
@@ -511,13 +510,13 @@ SEXP MasterPrimeCount (SEXP Rn) {
     int64_t count = 0;
     int64_t maxPrime = phiPrimes[phiPrimes.size() - 1];
     
-    for (int64_t i = 1; i <= maxPrime; i++) {
+    for (int64_t i = 1; i <= maxPrime; ++i) {
         if (i >= phiPrimes[count + 1])
-            count++;
+            ++count;
         phiPi[i] = count;
     }
     
-    for (int64_t i = (maxPrime + 1); i <= sqrtBound; i++)
+    for (int64_t i = (maxPrime + 1); i <= sqrtBound; ++i)
         phiPi[i] = count;
     
     int64_t piSqrt = PiPrime(sqrtBound);
@@ -526,11 +525,11 @@ SEXP MasterPrimeCount (SEXP Rn) {
     
     if (int64result > INT_MAX) {
         double dblResult = (double) int64result;
-        return wrap(dblResult);
+        return Rcpp::wrap(dblResult);
     }
     
     int intResult = (int) int64result;
-    return wrap(intResult);
+    return Rcpp::wrap(intResult);
 }
 
 template <typename typeInt>
@@ -551,7 +550,7 @@ inline typeInt getStartingIndex (typeInt lowerB,
 }
 
 template <typename typeInt, typename typeReturn>
-List PrimeFactorizationSieve (typeInt m, typeReturn retN, bool keepNames) {
+Rcpp::List PrimeFactorizationSieve (typeInt m, typeReturn retN, bool keepNames) {
     
     typeInt n = (typeInt) retN;
     typeInt myRange = n;
@@ -572,7 +571,7 @@ List PrimeFactorizationSieve (typeInt m, typeReturn retN, bool keepNames) {
     if (keepNames) {
         myNames.resize(myRange);
         typeReturn retM = (typeReturn) m;
-        for (std::size_t k = 0; retM <= retN; retM++, k++)
+        for (std::size_t k = 0; retM <= retN; ++retM, ++k)
             myNames[k] = retM;
     }
     
@@ -583,26 +582,26 @@ List PrimeFactorizationSieve (typeInt m, typeReturn retN, bool keepNames) {
         std::vector<int>::iterator myMalloc;
         primesEnd = primes.end();
         
-        for (p = primes.begin(); p < primesEnd; p++) {
+        for (p = primes.begin(); p < primesEnd; ++p) {
             limit = (unsigned long int) trunc(myLogN/log((double)*p));
             if (m < 2) {
-                for (std::size_t i = 1; i <= limit; i++) {
+                for (std::size_t i = 1; i <= limit; ++i) {
                     myStep = (typeInt) pow((double) *p, (double) i);
                     for (j = (myStep - 1); j < n; j += myStep)
-                        myMemory[j]++;
+                        ++myMemory[j];
                 }
             } else {
-                for (std::size_t i = 1; i <= limit; i++) {
+                for (std::size_t i = 1; i <= limit; ++i) {
                     myStep = (typeInt) pow((double) *p, (double) i);
                     myStart = getStartingIndex(m, myStep, *p);
                     for (j = myStart; j < myRange; j += myStep)
-                        myMemory[j]++;
+                        ++myMemory[j];
                 }
             }
         }
             
         if (myNum < 2){
-            myNum++;
+            ++myNum;
             it2d = MyPrimeList.begin() + 1;
             myMalloc = myMemory.begin() + 1;
         } else {
@@ -610,17 +609,17 @@ List PrimeFactorizationSieve (typeInt m, typeReturn retN, bool keepNames) {
             myMalloc = myMemory.begin();
         }
         
-        for (; it2d < itEnd; it2d++, myNum++, myMalloc++) {
+        for (; it2d < itEnd; ++it2d, ++myNum, ++myMalloc) {
             it2d -> reserve(*myMalloc);
             it2d -> push_back((typeReturn) myNum);
         }
     
         if (m < 2) {
-            for (p = primes.begin(); p < primesEnd; p++) {
+            for (p = primes.begin(); p < primesEnd; ++p) {
                 limit = (unsigned long int) trunc(myLogN/log((double)*p));
                 libdivide::divider<typeInt> fastDiv(*p);
                 
-                for (std::size_t i = 1; i <= limit; i++) {
+                for (std::size_t i = 1; i <= limit; ++i) {
                     myStep = (typeInt) pow((double) *p, (double) i);
                     
                     for (j = (myStep - 1); j < n; j += myStep) {
@@ -635,11 +634,11 @@ List PrimeFactorizationSieve (typeInt m, typeReturn retN, bool keepNames) {
                 }
             }
         } else {
-            for (p = primes.begin(); p < primesEnd; p++) {
+            for (p = primes.begin(); p < primesEnd; ++p) {
                 limit = (unsigned long int) trunc(myLogN/log((double)*p));
                 libdivide::divider<typeInt> fastDiv(*p);
                 
-                for (std::size_t i = 1; i <= limit; i++) {
+                for (std::size_t i = 1; i <= limit; ++i) {
                     myStep = (typeInt) pow((double)*p, (double) i);
                     myStart = getStartingIndex(m, myStep, *p);
     
@@ -659,14 +658,14 @@ List PrimeFactorizationSieve (typeInt m, typeReturn retN, bool keepNames) {
         int strt = 0;
         myNum = m;
         if (m == 1) {
-            strt++;
-            myNum++;
+            ++strt;
+            ++myNum;
         }
-        for (int i = strt; i < myRange; i++, myNum++)
+        for (int i = strt; i < myRange; ++i, ++myNum)
             MyPrimeList[i].push_back(myNum);
     }
     
-    Rcpp::List myList = wrap(MyPrimeList);
+    Rcpp::List myList = Rcpp::wrap(MyPrimeList);
     if (keepNames)
         myList.attr("names") = myNames;
     
@@ -690,12 +689,12 @@ typeRcpp EulerPhiSieveCpp (typeInt m, typeReturn retN, bool keepNames) {
     if (keepNames) {
         myNames.resize(myRange);
         typeReturn retM = (typeReturn) m;
-        for (std::size_t k = 0; retM <= retN; retM++, k++)
+        for (std::size_t k = 0; retM <= retN; ++retM, ++k)
             myNames[k] = retM;
     }
     
     typeReturn retM = (typeReturn) m;
-    for (std::size_t i = 0; retM <= retN; retM++, i++) {
+    for (std::size_t i = 0; retM <= retN; ++retM, ++i) {
         EulerPhis[i] = retM;
         numSeq[i] = (typeInt) retM;
     }
@@ -706,7 +705,7 @@ typeRcpp EulerPhiSieveCpp (typeInt m, typeReturn retN, bool keepNames) {
     if (m < 2) {
         primes  = AllPrimesCpp<typeInt>((typeInt) 1, n);
         
-        for (p = primes.begin(); p < primes.end(); p++) {
+        for (p = primes.begin(); p < primes.end(); ++p) {
             libdivide::divider<typeInt> fastDiv(*p);
             for (j = (*p - 1); j < n; j += *p) {
                 myNum = (typeInt) EulerPhis[j];
@@ -719,7 +718,7 @@ typeRcpp EulerPhiSieveCpp (typeInt m, typeReturn retN, bool keepNames) {
         primes = AllPrimesCpp<typeInt>((typeInt) 1, sqrtBound);
         typeInt myStart, myStep;
     
-        for (p = primes.begin(); p < primes.end(); p++) {
+        for (p = primes.begin(); p < primes.end(); ++p) {
             limit = (unsigned long int) trunc(myLogN / log((double) *p));
             priTypeInt = *p;
             myStart = getStartingIndex(m, *p, priTypeInt);
@@ -732,7 +731,7 @@ typeRcpp EulerPhiSieveCpp (typeInt m, typeReturn retN, bool keepNames) {
                 EulerPhis[j] -= (typeReturn) myNum;
             }
     
-            for (std::size_t i = 2; i <= limit; i++) {
+            for (std::size_t i = 2; i <= limit; ++i) {
                 myStep = (typeInt) pow((double)*p, i);
                 myStart = getStartingIndex(m, myStep, priTypeInt);
                 
@@ -741,7 +740,7 @@ typeRcpp EulerPhiSieveCpp (typeInt m, typeReturn retN, bool keepNames) {
             }
         }
 
-        for (typeInt i = 0; i < myRange; i++) {
+        for (typeInt i = 0; i < myRange; ++i) {
             if (numSeq[i] > 1) {
                 myNum = (typeInt) EulerPhis[i];
                 myNum /= numSeq[i];
@@ -749,11 +748,11 @@ typeRcpp EulerPhiSieveCpp (typeInt m, typeReturn retN, bool keepNames) {
             }
         }
     } else { // edge case where m,n = 2 or 3
-        for (int i = 0; i < myRange; i++)
-            EulerPhis[i]--;
+        for (int i = 0; i < myRange; ++i)
+            --EulerPhis[i];
     }
     
-    typeRcpp myVector = wrap(EulerPhis);
+    typeRcpp myVector = Rcpp::wrap(EulerPhis);
     if (keepNames)
         myVector.attr("names") = myNames;
         
@@ -768,24 +767,24 @@ SEXP EratosthenesRcpp (SEXP Rb1, SEXP Rb2,
 
     switch(TYPEOF(Rb1)) {
         case REALSXP: {
-            bound1 = as<double>(Rb1);
+            bound1 = Rcpp::as<double>(Rb1);
             break;
         }
         case INTSXP: {
-            bound1 = as<double>(Rb1);
+            bound1 = Rcpp::as<double>(Rb1);
             break;
         }
         default: {
-            stop("bound1 must be of type numeric or integer");
+            Rcpp::stop("bound1 must be of type numeric or integer");
         }
     }
     
-    isList = as<bool>(RIsList);
-    isEuler = as<bool>(RIsEuler);
-    isNamed = as<bool>(RNamed);
+    isList = Rcpp::as<bool>(RIsList);
+    isEuler = Rcpp::as<bool>(RIsEuler);
+    isNamed = Rcpp::as<bool>(RNamed);
     
     if (bound1 <= 0 || bound1 > Significand53)
-        stop("bound1 must be a positive number less than 2^53");
+        Rcpp::stop("bound1 must be a positive number less than 2^53");
 
     if (Rf_isNull(Rb2)) {
         myMax = floor(bound1);
@@ -793,7 +792,7 @@ SEXP EratosthenesRcpp (SEXP Rb1, SEXP Rb2,
         if (isList) {
             if (myMax < 2){
                 std::vector<std::vector<int> > trivialRet(1, std::vector<int>(1, 1));
-                Rcpp::List z = wrap(trivialRet);
+                Rcpp::List z = Rcpp::wrap(trivialRet);
                 if (isNamed)
                     z.attr("names") = 1;
                 return z;
@@ -805,44 +804,44 @@ SEXP EratosthenesRcpp (SEXP Rb1, SEXP Rb2,
             return PrimeFactorizationSieve((int32_t) 1, (int32_t) myMax, isNamed);
         } else if (isEuler) {
             if (myMax <= 1) {
-                IntegerVector z(1, 1);
+                Rcpp::IntegerVector z(1, 1);
                 if (isNamed)
                     z.attr("names") = 1;
                 return z;
             }
             
             if (myMax > (INT_MAX - 1))
-                return EulerPhiSieveCpp<NumericVector>((int64_t) 1, (double) myMax, isNamed);
+                return EulerPhiSieveCpp<Rcpp::NumericVector>((int64_t) 1, (double) myMax, isNamed);
             
-            return EulerPhiSieveCpp<IntegerVector>((int32_t) 1, (int32_t) myMax, isNamed);
+            return EulerPhiSieveCpp<Rcpp::IntegerVector>((int32_t) 1, (int32_t) myMax, isNamed);
         } else {
             if (myMax < 2)
-                return IntegerVector();
+                return Rcpp::IntegerVector();
 
             if (myMax > (INT_MAX - 1)) {
-                return wrap(AllPrimesCpp<double>((int_fast64_t) 1,
+                return Rcpp::wrap(AllPrimesCpp<double>((int_fast64_t) 1,
                                                    (int_fast64_t) myMax));
             }
-            return wrap(AllPrimesCpp<int_fast32_t>((int_fast32_t) 1,
+            return Rcpp::wrap(AllPrimesCpp<int_fast32_t>((int_fast32_t) 1,
                                                (int_fast32_t) myMax));
         }
     } else {
         switch(TYPEOF(Rb2)) {
             case REALSXP: {
-                bound2 = as<double>(Rb2);
+                bound2 = Rcpp::as<double>(Rb2);
                 break;
             }
             case INTSXP: {
-                bound2 = as<double>(Rb2);
+                bound2 = Rcpp::as<double>(Rb2);
                 break;
             }
             default: {
-                stop("bound2 must be of type numeric or integer");
+                Rcpp::stop("bound2 must be of type numeric or integer");
             }
         }
         
         if (bound2 <= 0 || bound2 > Significand53)
-            stop("bound2 must be a positive number less than 2^53");
+            Rcpp::stop("bound2 must be a positive number less than 2^53");
 
         if (bound1 > bound2) {
             myMax = bound1;
@@ -858,7 +857,7 @@ SEXP EratosthenesRcpp (SEXP Rb1, SEXP Rb2,
         if (isList) {
             if (myMax < 2) {
                 std::vector<std::vector<int> > trivialRet(1, std::vector<int>(1, 1));
-                Rcpp::List z = wrap(trivialRet);
+                Rcpp::List z = Rcpp::wrap(trivialRet);
                 if (isNamed)
                     z.attr("names") = 1;
                 return z;
@@ -870,28 +869,28 @@ SEXP EratosthenesRcpp (SEXP Rb1, SEXP Rb2,
             return PrimeFactorizationSieve((int32_t) myMin, (int32_t) myMax, isNamed);
         } else if (isEuler) {
             if (myMax <= 1) {
-                IntegerVector z(1, 1);
+                Rcpp::IntegerVector z(1, 1);
                 if (isNamed)
                     z.attr("names") = 1;
                 return z;
             }
             
             if (myMax > (INT_MAX - 1))
-                return EulerPhiSieveCpp<NumericVector>((int64_t) myMin, (double) myMax, isNamed);
+                return EulerPhiSieveCpp<Rcpp::NumericVector>((int64_t) myMin, (double) myMax, isNamed);
             
-            return EulerPhiSieveCpp<IntegerVector>((int32_t) myMin, (int32_t) myMax, isNamed);
+            return EulerPhiSieveCpp<Rcpp::IntegerVector>((int32_t) myMin, (int32_t) myMax, isNamed);
         } else {
             if (myMax <= 1)
-                return IntegerVector();
+                return Rcpp::IntegerVector();
             
             if (myMin <= 2) myMin = 1;
-            if (myMin == myMax) {myMax++;}
+            if (myMin == myMax) {++myMax;}
             
             if (myMax > (INT_MAX - 1)) {
-                    return wrap(AllPrimesCpp<double>((int_fast64_t) myMin,
+                    return Rcpp::wrap(AllPrimesCpp<double>((int_fast64_t) myMin,
                                                        (int_fast64_t) myMax));
             }
-            return wrap(AllPrimesCpp<int_fast32_t>((int_fast32_t) myMin, 
+            return Rcpp::wrap(AllPrimesCpp<int_fast32_t>((int_fast32_t) myMin, 
                                                (int_fast32_t) myMax));
         }
     }

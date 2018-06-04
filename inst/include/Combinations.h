@@ -23,14 +23,14 @@ namespace Combinations {
                 if (numIter + count > numRows)
                     numIter = numRows - count;
                 
-                for (i = 0; i < numIter; i++, count++, z[r1]++)
-                    for (k = 0; k < r; k++)
+                for (i = 0; i < numIter; ++i, ++count, ++z[r1])
+                    for (k = 0; k < r; ++k)
                         combinationMatrix(count, k) = v[z[k]];
                 
                 for (i = r2; i >= 0; i--) {
                     if (z[i] != maxZ) {
-                        z[i]++;
-                        for (k = (i + 1); k < r; k++)
+                        ++z[i];
+                        for (k = (i + 1); k < r; ++k)
                             z[k] = z[k - 1];
                         
                         break;
@@ -43,14 +43,14 @@ namespace Combinations {
                 if ((numIter + count) > numRows)
                     numIter = numRows - count;
                 
-                for (i = 0; i < numIter; i++, count++, z[r1]++)
-                    for (k = 0; k < r; k++)
+                for (i = 0; i < numIter; ++i, ++count, ++z[r1])
+                    for (k = 0; k < r; ++k)
                         combinationMatrix(count, k) = v[z[k]];
                 
                 for (i = r2; i >= 0; i--) {
                     if (z[i] != (n - r + i)) {
-                        z[i]++;
-                        for (k = (i + 1); k < r; k++) 
+                        ++z[i];
+                        for (k = (i + 1); k < r; ++k) 
                             z[k] = z[k - 1] + 1;
                         
                         break;
@@ -74,14 +74,14 @@ namespace Combinations {
         std::vector<int> zExpand, zIndex, zGroup(r);
         int r1 = r - 1, r2 = r - 2, k = 0;
         
-        for (i = 0; i < n; i++)
+        for (i = 0; i < n; ++i)
             zExpSize += Reps[i];
         
         zIndex.reserve(n);
         zExpand.reserve(zExpSize);
-        for (i = 0; i < n; i++) {
+        for (i = 0; i < n; ++i) {
             zIndex.push_back(k);
-            for (j = 0; j < Reps[i]; j++, k++)
+            for (j = 0; j < Reps[i]; ++j, ++k)
                 zExpand.push_back(i);
         }
         
@@ -94,15 +94,15 @@ namespace Combinations {
             if (numIter + count > numRows)
                 numIter = numRows - count;
             
-            for (i = 0; i < numIter; i++, count++, z[r1]++)
-                for (k = 0; k < r; k++)
+            for (i = 0; i < numIter; ++i, ++count, ++z[r1])
+                for (k = 0; k < r; ++k)
                     combinationMatrix(count, k) = v[zExpand[zIndex[z[k]]]];
             
             for (i = r2; i >= 0; i--) {
                 if (zExpand[zIndex[z[i]]] != zExpand[zExpSize - r + i]) {
-                    z[i]++;
+                    ++z[i];
                     zGroup[i] = zIndex[z[i]];
-                    for (k = (i + 1); k < r; k++) {
+                    for (k = (i + 1); k < r; ++k) {
                         zGroup[k] = zGroup[k - 1] + 1;
                         z[k] = zExpand[zGroup[k]];
                     }

@@ -12,31 +12,29 @@ typedef bool (*compPtr)(double &x, std::vector<double> &y);
 double prodCpp(std::vector<double>& v) {
     std::vector<double>::iterator it, vEnd = v.end();
     double myProduct = 1.0;
-    for (it = v.begin(); it < vEnd; it++) {myProduct *= *it;}
+    for (it = v.begin(); it < vEnd; ++it) {myProduct *= *it;}
     return(myProduct);
 }
 
 double sumCpp(std::vector<double>& v) {
     std::vector<double>::iterator it, vEnd = v.end();
     double mySum = 0.0;
-    for (it = v.begin(); it < vEnd; it++) {mySum += *it;}
+    for (it = v.begin(); it < vEnd; ++it) {mySum += *it;}
     return(mySum);
 }
 
-double meanCpp(std::vector<double>& v){
+double meanCpp(std::vector<double>& v) {
     double s = v.size();
     double mySum = sumCpp(v);
     return (mySum/s);
 }
 
 double maxCpp(std::vector<double>& v) {
-    std::vector<double>::iterator y = std::max_element(v.begin(), v.end());
-    return v[std::distance(v.begin(), y)];
+    return (*std::max_element(v.begin(), v.end()));
 }
 
 double minCpp(std::vector<double>& v) {
-    std::vector<double>::iterator y = std::min_element(v.begin(), v.end());
-    return v[std::distance(v.begin(), y)];
+    return (*std::min_element(v.begin(), v.end()));
 }
 
 // Standard comparison functions
