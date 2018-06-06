@@ -66,6 +66,12 @@ namespace Permutations {
             
         } else {
             
+            if (r == 1) {
+                for (std::size_t i = 0; i < n; i++)
+                    permuteMatrix(i, 0) = v[i];
+                return permuteMatrix;
+            }
+            
             unsigned long int phaseOne, maxN = NumPermsNoRep(n, r);
             chunk = segment = maxN / uN;
             phaseOne = (uRowN < segment) ? uRowN : segment;
@@ -73,13 +79,6 @@ namespace Permutations {
             unsigned long int start, last, colInd = 0;
             
             if (r < n) {
-                
-                if (n < 3) {
-                    permuteMatrix(0, 0) = v[0];
-                    permuteMatrix(1, 0) = v[1];
-                    return permuteMatrix;
-                }
-                
                 std::vector<uint16_t> indexVec(uN), origSeqeunce(uN);
                 std::iota(origSeqeunce.begin(), origSeqeunce.end(), 0);
                 indexVec = origSeqeunce;
@@ -136,11 +135,6 @@ namespace Permutations {
     
             } else {
                 
-                if (n == 1) {
-                    permuteMatrix(0, 0) = v[0];
-                    return permuteMatrix;
-                }
-                
                 uint16_t *arrPerm = new uint16_t[uN];
                 
                 for (std::size_t i = 0; i < uN; ++i)
@@ -173,14 +167,13 @@ namespace Permutations {
     
                 if (last > uRowN)
                     last = uRowN;
-    
+
                 for (std::size_t i = start, k = 0; i < last; ++i)
                     for (std::size_t j = 0; j < uR; ++j, ++k)
                         permuteMatrix(i, j) = v[indexMat[k]];
             }
     
             delete[] indexMat;
-            
         }
         
         return permuteMatrix;
