@@ -532,8 +532,12 @@ SEXP MasterPrimeCount (SEXP Rn) {
     return Rcpp::wrap(intResult);
 }
 
+// This function is slightly different than the getStartingIndex
+// in the DivisorsContainer.cpp file. The step passed in this
+// function is a power of prime and requires an additional check
+// (i.e. else if (myPrime < lowerB)).
 template <typename typeInt>
-inline typeInt getStartingIndex (typeInt lowerB,
+inline typeInt getStartIndexPowP (typeInt lowerB,
                                  typeInt step, typeInt myPrime) {
     
     typeInt retStrt, remTest = lowerB % step;
@@ -593,7 +597,7 @@ Rcpp::List PrimeFactorizationSieve (typeInt m, typeReturn retN, bool keepNames) 
             } else {
                 for (std::size_t i = 1; i <= limit; ++i) {
                     myStep = (typeInt) pow((double) *p, (double) i);
-                    myStart = getStartingIndex(m, myStep, *p);
+                    myStart = getStartIndexPowP(m, myStep, *p);
                     for (j = myStart; j < myRange; j += myStep)
                         ++myMemory[j];
                 }
@@ -640,7 +644,7 @@ Rcpp::List PrimeFactorizationSieve (typeInt m, typeReturn retN, bool keepNames) 
                 
                 for (std::size_t i = 1; i <= limit; ++i) {
                     myStep = (typeInt) pow((double)*p, (double) i);
-                    myStart = getStartingIndex(m, myStep, *p);
+                    myStart = getStartIndexPowP(m, myStep, *p);
     
                     for (j = myStart; j < myRange; j += myStep) {
                         mySize = MyPrimeList[j].size() - 1;
@@ -721,7 +725,7 @@ typeRcpp EulerPhiSieveCpp (typeInt m, typeReturn retN, bool keepNames) {
         for (p = primes.begin(); p < primes.end(); ++p) {
             limit = (unsigned long int) trunc(myLogN / log((double) *p));
             priTypeInt = *p;
-            myStart = getStartingIndex(m, *p, priTypeInt);
+            myStart = getStartIndexPowP(m, *p, priTypeInt);
             libdivide::divider<typeInt> fastDiv(priTypeInt);
     
             for (j = myStart; j < myRange; j += *p) {
@@ -733,7 +737,7 @@ typeRcpp EulerPhiSieveCpp (typeInt m, typeReturn retN, bool keepNames) {
     
             for (std::size_t i = 2; i <= limit; ++i) {
                 myStep = (typeInt) pow((double)*p, i);
-                myStart = getStartingIndex(m, myStep, priTypeInt);
+                myStart = getStartIndexPowP(m, myStep, priTypeInt);
                 
                 for (j = myStart; j < myRange; j += myStep)
                     numSeq[j] /= fastDiv;
@@ -791,7 +795,7 @@ SEXP EratosthenesRcpp (SEXP Rb1, SEXP Rb2,
         
         if (isList) {
             if (myMax < 2){
-                std::vector<std::vector<int> > trivialRet(1, std::vector<int>(1, 1));
+                std::vector<std::vector<int> > trivialRet(1, std::vector<int>());
                 Rcpp::List z = Rcpp::wrap(trivialRet);
                 if (isNamed)
                     z.attr("names") = 1;
