@@ -157,7 +157,7 @@ typeRcpp CombinatoricsConstraints(int n, int r, std::vector<double> v, bool repe
                 
                 if (keepGoing) {
                     zCheck = z;
-                    for (i = r2; i >= 0; i--) {
+                    for (i = r2; i >= 0; --i) {
                         if (zExpand[zIndex[z[i]]] != zExpand[zExpSize - r + i]) {
                             ++z[i];
                             testVec[i] = v[zExpand[zIndex[z[i]]]];
@@ -237,7 +237,7 @@ typeRcpp CombinatoricsConstraints(int n, int r, std::vector<double> v, bool repe
                 
                 if (keepGoing) {
                     zCheck = z;
-                    for (i = r2; i >= 0; i--) {
+                    for (i = r2; i >= 0; --i) {
                         if (z[i] != maxZ) {
                             ++z[i];
                             testVec[i] = v[z[i]];
@@ -325,7 +325,7 @@ typeRcpp CombinatoricsConstraints(int n, int r, std::vector<double> v, bool repe
     
                 if (keepGoing) {
                     zCheck = z;
-                    for (i = r2; i >= 0; i--) {
+                    for (i = r2; i >= 0; --i) {
                         if (z[i] != (nMinusR + i)) {
                             ++z[i];
                             testVec[i] = v[z[i]];
@@ -476,7 +476,7 @@ SEXP CombinatoricsRcpp(SEXP Rv, SEXP Rm, SEXP Rrepetition, SEXP RFreqs,
             vNum = Rcpp::as<std::vector<double> >(Rv);
         }
         
-        for (int i = (vNum.size() - 1); i >= 0; i--)
+        for (int i = (vNum.size() - 1); i >= 0; --i)
             if (Rcpp::NumericVector::is_na(vNum[i]))
                 vNum.erase(vNum.begin() + i);
             
@@ -533,7 +533,7 @@ SEXP CombinatoricsRcpp(SEXP Rv, SEXP Rm, SEXP Rrepetition, SEXP RFreqs,
                 }
             }
             
-            lower--;
+            --lower;
             if (lower < 0)
                 Rcpp::stop("bounds must be positive");
         }
