@@ -610,8 +610,8 @@ Rcpp::List PrimeFactorizationSieve (typeInt m, typeReturn retN, bool keepNames) 
         }
         
         for (; it2d < itEnd; ++it2d, ++myNum, ++myMalloc) {
-            it2d -> reserve(*myMalloc);
-            it2d -> push_back((typeReturn) myNum);
+            it2d->reserve(*myMalloc);
+            it2d->push_back((typeReturn) myNum);
         }
     
         if (m < 2) {
