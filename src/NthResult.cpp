@@ -42,7 +42,7 @@ std::vector<int> nthPermutation(int n, int r, double myIndex, bool isRep,
                 while (Reps[j] == 0)
                     ++j;
                 
-                Reps[j]--;
+                --Reps[j];
                 
                 Counts = nonZeroVec(Reps);
                 temp = MultisetPermRowNum(Counts.size(), r1, Counts);
@@ -92,7 +92,7 @@ std::vector<int> nthCombination(int n, int r, double myIndex, bool isRep,
         
         for (int k = 0; k < r; ++k, --r1) {
             
-            Counts[0]--;
+            --Counts[0];
             if (Counts[0] == 0 && Counts.size() > 1) {
                 --n1;
                 Counts.erase(Counts.begin());
@@ -109,7 +109,7 @@ std::vector<int> nthCombination(int n, int r, double myIndex, bool isRep,
                     Counts.erase(Counts.begin());
                 }
                 
-                Counts[0]--;
+                --Counts[0];
                 if (Counts[0] == 0 && Counts.size() > 1) {
                     --n1;
                     Counts.erase(Counts.begin());
@@ -123,7 +123,7 @@ std::vector<int> nthCombination(int n, int r, double myIndex, bool isRep,
             res[k] = j;
             index1 = index2;
             
-            Reps[j]--;
+            --Reps[j];
             if (Reps[j] <= 0)
                 ++j;
         }
