@@ -6,16 +6,12 @@
 template <typename typeInt>
 inline typeInt getStartingIndex (typeInt lowerB, typeInt step) {
     
+    if (step >= lowerB)
+        return (2 * step - lowerB);
+        
     typeInt retStrt, remTest = lowerB % step;
-    
-    if (remTest == 0) {
-        retStrt = 0;
-    } else if (step < lowerB) {
-        retStrt = step - remTest;
-    } else {
-        retStrt = step - lowerB;
-    }
-    
+    retStrt = (remTest == 0) ? 0 : (step - remTest);
+
     return retStrt;
 }
 
@@ -25,7 +21,6 @@ Rcpp::IntegerVector NumDivisorsSieve (typeInt m, typeInt n, bool keepNames) {
     typeInt myRange = n;
     myRange += (1 - m);
     std::vector<int> numFacs;
-    typeInt i, j, myNum = m;
     std::vector<double> myNames;
     
     if (keepNames){
@@ -35,29 +30,24 @@ Rcpp::IntegerVector NumDivisorsSieve (typeInt m, typeInt n, bool keepNames) {
             myNames[k] = dblM;
     }
     
-    if (m < 2) {
-        numFacs = std::vector<int> (myRange, 1);
-        for (i = 2; i <= n; ++i)
-            for (j = i; j <= n; j += i)
-                ++numFacs[j - 1];
-    } else {
-        numFacs = std::vector<int> (myRange, 2);
-        int_fast32_t sqrtBound = (int_fast32_t) std::sqrt((double) n);
-        typeInt myStart, testNum;
+    numFacs = std::vector<int> (myRange, 2);
+    typeInt j, myNum, sqrtBound = (typeInt) std::sqrt((double) n);
+    
+    for (typeInt i = 2; i <= sqrtBound; ++i) {
+        myNum = (i * sqrtBound) - m;
+        j = getStartingIndex(m, i);
         
-        for (typeInt i = 2; i <= sqrtBound; ++i) {
-            myStart = getStartingIndex(m, i);
-            myNum = m + myStart;
-            libdivide::divider<typeInt> fastDiv(i);
-            
-            for (j = myStart; j < myRange; j += i, myNum += i) {
-                ++numFacs[j];
-                testNum = myNum / fastDiv;
-                if (testNum > sqrtBound)
-                    ++numFacs[j];
-            }
-        }
+        for (; j <= myNum; j += i)
+            ++numFacs[j];
+        
+        for (; j < myRange; j += i)
+            numFacs[j] += 2;
     }
+    
+    // Subtract 1 from the first entry as 1 has only itself
+    // as a divisor. N.B. myRange was initialized with 2
+    if (m < 2)
+        --numFacs[0];
     
     Rcpp::IntegerVector myVector = Rcpp::wrap(numFacs);
     if (keepNames)
@@ -99,7 +89,7 @@ Rcpp::List DivisorsSieve (typeInt m, typeReturn retN, bool keepNames) {
     
     if (m < 2) {
         for (it2d = MyDivList.begin() + 1; it2d < itEnd; ++it2d, ++myMalloc)
-            it2d -> reserve(*myMalloc);
+            it2d->reserve(*myMalloc);
         
         for (i = 2; i <= n; ++i)
             for (j = i; j <= n; j += i)
@@ -110,8 +100,8 @@ Rcpp::List DivisorsSieve (typeInt m, typeReturn retN, bool keepNames) {
         typeInt myStart, testNum;
         
         for (it2d = MyDivList.begin(); it2d < itEnd; ++it2d, ++myNum, ++myMalloc) {
-            it2d -> reserve(*myMalloc);
-            it2d -> push_back((typeReturn) myNum);
+            it2d->reserve(*myMalloc);
+            it2d->push_back((typeReturn) myNum);
         }
         
         for (i = sqrtBound; i >= 2; --i) {
