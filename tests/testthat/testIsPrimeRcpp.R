@@ -9,6 +9,8 @@ test_that("isPrimeRcpp generates correct numbers", {
     expect_equal(isPrimeRcpp(11.1), FALSE)
     expect_equal(isPrimeRcpp(c(11, 11.1, 12.9999, 13)), c(TRUE, FALSE, FALSE, TRUE))
     
+    expect_true(isPrimeRcpp(.Machine$integer.max))
+    
     ## Test Names
     expect_equal(as.integer(names(isPrimeRcpp(100, namedVector = TRUE))), 100)
     expect_equal(as.numeric(names(isPrimeRcpp((10^12):(10^12 + 100),
