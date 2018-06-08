@@ -689,8 +689,6 @@ SEXP CombinatoricsRcpp(SEXP Rv, SEXP Rm, SEXP Rrepetition, SEXP RFreqs,
         Rcpp::stop("The number of rows cannot exceed 2^31 - 1.");
     } else {
         nRows = userNumRows;
-        if (nRows > computedRows)
-            nRows = computedRows;
     }
     
     if (IsConstrained) {
@@ -756,7 +754,8 @@ SEXP CombinatoricsRcpp(SEXP Rv, SEXP Rm, SEXP Rrepetition, SEXP RFreqs,
             } else {
                 if (compFunVec[0] == "==" || compFunVec[1] == "==")
                     Rcpp::stop("If comparing against two limitConstraints, the "
-                         "equality comparisonFun (i.e. '==') cannot be used");
+                         "equality comparisonFun (i.e. '==') cannot be used. "
+                         "Instead, use '>=' or '<='.");
                 
                 if (compFunVec[0].substr(0, 1) == compFunVec[1].substr(0, 1))
                     Rcpp::stop("Cannot have two 'less than' comparisonFuns or two 'greater than' "
@@ -831,7 +830,6 @@ SEXP CombinatoricsRcpp(SEXP Rv, SEXP Rm, SEXP Rrepetition, SEXP RFreqs,
             } else {
                 if (IsMultiset) {
                     matRes = Permutations::MultisetPermutation<Rcpp::NumericMatrix>(n, m, vNum, myReps, nRows, keepRes, startZ);
-                    nRows = matRes.nrow();
                 } else {
                     matRes = Permutations::PermuteGeneral<Rcpp::NumericMatrix>(n, m, vNum, IsRepetition, nRows, 
                                                                          keepRes, startZ, permNonTrivial);
@@ -861,7 +859,7 @@ SEXP CombinatoricsRcpp(SEXP Rv, SEXP Rm, SEXP Rrepetition, SEXP RFreqs,
                 myComp2 = *xpComp2;
                 std::vector<double> myLim2 = myLim;
                 myLim2.erase(myLim2.begin());
-                
+
                 for (int i = 0; i < nRows; ++i) {
                     for (int j = 0; j < m; ++j)
                         rowVec[j] = matRes(i, j);
