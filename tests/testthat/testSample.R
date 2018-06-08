@@ -66,6 +66,10 @@ test_that("permuteSample produces correct results", {
     
     expect_equal(permuteSample(c(1,2,3,NA), 3, sampleVec = 1:6),
                  permuteGeneral(c(1,NA,2,3), 3))
+    
+    expect_equal(permuteSample(5, freqs = c(2,1,2,1,2), 
+                               sampleVec = 1:(permuteCount(5, freqs = c(2,1,2,1,2)))), 
+                 permuteGeneral(5, freqs = c(2,1,2,1,2)))
 })
 
 test_that("comboSample produces appropriate error messages", {
@@ -74,13 +78,28 @@ test_that("comboSample produces appropriate error messages", {
     expect_error(comboSample(5,3, n = 100), "n exceeds the maximum number of possible results")
     expect_error(comboSample(5,3, comboSample(5,3, sampleVec = 1:200)), "exceeds the maximum number of possible results")
     expect_error(comboSample(5,freqs = rep(1,6)), "the length of freqs must equal the")
+    
+    expect_error(comboSample(5,3, n = "5"), 
+                 "n must be a number")
+    expect_error(comboSample(5,3, n = 1:5), 
+                 "length of n must be 1")
 })
 
 test_that("permuteSample produces appropriate error messages", {
-    expect_error(permuteSample(5, 3), "n and sampleVec cannot both be NULL")
-    expect_error(permuteSample(5,3,freqs = c(1,2,3,-2,1)), "in freqs must be a positive")
-    expect_error(permuteSample(5,3, n = 100), "n exceeds the maximum number of possible results")
-    expect_error(permuteSample(5,3, permuteSample(5,3, sampleVec = 1:200)), "exceeds the maximum number of possible results")
-    expect_error(permuteSample(5,freqs = rep(1,6)), "the length of freqs must equal the")
-    expect_error(permuteSample(5, 4, sampleVec = "adfs"), "sampleVec must be of type numeric or integer")
+    expect_error(permuteSample(5, 3), 
+                 "n and sampleVec cannot both be NULL")
+    expect_error(permuteSample(5,3,freqs = c(1,2,3,-2,1)), 
+                 "in freqs must be a positive")
+    expect_error(permuteSample(5,3, n = 100), 
+                 "n exceeds the maximum number of possible results")
+    expect_error(permuteSample(5,3, n = "5"), 
+                 "n must be a number")
+    expect_error(permuteSample(5,3, n = 1:5), 
+                 "length of n must be 1")
+    expect_error(permuteSample(5,3, permuteSample(5,3, sampleVec = 1:200)), 
+                 "exceeds the maximum number of possible results")
+    expect_error(permuteSample(5,freqs = rep(1,6)), 
+                 "the length of freqs must equal the")
+    expect_error(permuteSample(5, 4, sampleVec = "adfs"), 
+                 "sampleVec must be of type numeric or integer")
 })

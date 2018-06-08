@@ -1,76 +1,309 @@
 context("testing permuteGeneral")
 
-test_that("permuteGeneral produces correct results with no constraints", {
+test_that("permuteGeneral produces correct results with no constraints and no repetition", {
     expect_equal(nrow(permuteGeneral(3, 3)), 6)
-    expect_equal(nrow(permuteGeneral(2, 2, TRUE)), 4)
     expect_equal(as.vector(permuteGeneral(1,1)), 1)
+    
+    expect_equal(permuteGeneral(10, 5)[500:600, ], permuteGeneral(10, 5,
+                                                              lower = 500,
+                                                              upper = 600))
+    
+    expect_equal(permuteGeneral(month.abb[1:7], 7)[4000:5000, ], 
+                 permuteGeneral(month.abb[1:7], 7, lower = 4000, upper = 5000))
+    
+    expect_equal(as.vector(permuteGeneral(100,1)), 1:100)
+    
+    ## Constraint should not be carried out if no comparisonFun is given
+    ## Also, if any NAs are present, they will be removed
+    expect_equal(permuteGeneral(3, 3, constraintFun = "sum",
+                                limitConstraints = 100), permuteGeneral(c(NA,1:3), 3))
+    
+    set.seed(11)
+    myNums <- rnorm(5)
+    expect_equal(permuteGeneral(myNums, 3), 
+                 permuteGeneral(myNums, 3, freqs = rep(1, 5)))
+
+    expect_equal(ncol(permuteGeneral(5, 3)), 3)
+    expect_equal(ncol(permuteGeneral(5, 3, FALSE, constraintFun = "prod", keepResults = TRUE)), 4)
+    expect_equal(nrow(permuteGeneral(5, 3, upper = 20)), 20)
+    expect_equal(nrow(permuteGeneral(5, 3, FALSE, constraintFun = "prod",
+                                     keepResults = TRUE, upper = 10L)), 10)
+})
+
+test_that("permuteGeneral produces correct results with no constraints and has repetition", {
     expect_equal(as.vector(permuteGeneral(1,1,TRUE)), 1)
+    expect_equal(as.vector(permuteGeneral(1,5,TRUE)), rep(1, 5))
+    expect_equal(permuteGeneral(letters[1:9], 5, TRUE)[59000:permuteCount(9,5,T), ], 
+                 permuteGeneral(letters[1:9], 5, TRUE, lower = 59000L))
+    expect_equal(ncol(permuteGeneral(5, 3, TRUE)), 3)
+    expect_equal(nrow(permuteGeneral(2, 2, TRUE)), 4)
+    expect_equal(nrow(permuteGeneral(5, 3, TRUE, constraintFun = "prod",
+                                     keepResults = TRUE, upper = 10)), 10)
+    
+    set.seed(111)
+    myNums <- rnorm(5)
+    expect_equal(permuteGeneral(myNums, 3, TRUE), 
+                 permuteGeneral(myNums, 3, freqs = rep(3, 5)))
+    
+    expect_true(all(permuteGeneral(3, 3, TRUE) == 
+                        as.matrix(expand.grid(1:3, 1:3, 1:3))[,3:1]))
+    
+    expect_equal(nrow(permuteGeneral(5, 3, TRUE, upper = 10)), 10)
+    expect_equal(ncol(permuteGeneral(5, 3, TRUE, constraintFun = "prod", keepResults = TRUE)), 4)
+})
+
+test_that("permuteGeneral produces correct results with no constraints for multisets", {
+    expect_equal(nrow(permuteGeneral(5, 5, freqs = 1:5, upper = 10)), 10)
+    expect_equal(ncol(permuteGeneral(5, 3, FALSE,
+                                     constraintFun = "prod", freqs = c(1,2,1,2,4),
+                                     keepResults = TRUE)), 4)
+    expect_equal(as.vector(permuteGeneral(1, 2, freqs = 2)), c(1, 1))
+    
+    expect_equal(permuteGeneral(LETTERS[1:5], 3), 
+                 permuteGeneral(LETTERS[1:5], 3, freqs = rep(1, 5)))
+    
+    expect_equal(permuteGeneral(month.name[1:5], 3, TRUE), 
+                 permuteGeneral(month.name[1:5], 3, freqs = rep(3, 5)))
+    
+    myNums2 <- 1:10 / 3
+    expect_equal(permuteGeneral(myNums2, 5, freqs = rep(2, 10))[80000:90000, ],
+                 permuteGeneral(myNums2, 5, freqs = rep(2, 10), 
+                                lower = 80000, upper = 90000))
     
     expect_equal(sum(permuteGeneral(3, 3, freqs = c(1, 1, 1))),
                  sum(permuteGeneral(3, 3)))
     
-    expect_equal(as.vector(permuteGeneral(1, 2, freqs = 2)), c(1, 1))
+    expect_equal(permuteGeneral(factor(1:5, ordered = TRUE), 5, freqs = rep(3, 5)), 
+                 permuteSample(factor(1:5, ordered = TRUE), 5, freqs = rep(3, 5), 
+                               sampleVec = 1:permuteCount(5, 5, freqs = rep(3, 5))))
     
-    expect_equal(ncol(permuteGeneral(5, 3)), 3)
-    expect_equal(ncol(permuteGeneral(5, 3, TRUE)), 3)
-    expect_equal(ncol(permuteGeneral(5, 3, FALSE, "prod", keepResults = TRUE)), 4)
-    expect_equal(ncol(permuteGeneral(5, 3, TRUE, "prod", keepResults = TRUE)), 4)
+    expect_equal(permuteGeneral(5, 5), 
+                 permuteGeneral(5, 5, freqs = rep(1, 5)))
     
-    expect_equal(ncol(permuteGeneral(5, 3, FALSE,
-                                     "prod", freqs = c(1,2,1,2,4), 
-                                     keepResults = TRUE)), 4)
-    
-    expect_equal(nrow(permuteGeneral(5, 3, TRUE, rowCap = 10)), 10)
-    expect_equal(nrow(permuteGeneral(5, 3, rowCap = 10)), 10)
-    
-    expect_equal(nrow(permuteGeneral(5, 3, FALSE, "prod", 
-                                     keepResults = TRUE, rowCap = 10)), 10)
-    
-    expect_equal(nrow(permuteGeneral(5, 5, freqs = 1:5, rowCap = 10)), 10)
-    
-    expect_equal(nrow(permuteGeneral(5, 3, TRUE, "prod", 
-                                     keepResults = TRUE, rowCap = 10)), 10)
+    expect_equal(do.call(rbind, lapply(seq(1L, 1680, 168), function(x) {
+        permuteGeneral(4, freqs = c(2,1,2,3), lower = x, upper = x+167)
+    })), permuteGeneral(4, 20, freqs = c(2,1,2,3)))
 })
 
 test_that("permuteGeneral produces correct results with constraints", {
-    
-    expect_equal(nrow(permuteGeneral(3, 3, FALSE, "sum", "==", 6)), 6)
-    
+
+    expect_equal(nrow(permuteGeneral(3, 3, FALSE, constraintFun = "sum",
+                                     comparisonFun = "==", limitConstraints = 6)), 6)
+
     expect_equal(unique(permuteGeneral(5, 5, TRUE,
-                                       "sum", "==", 9, 
+                                       constraintFun = "sum", 
+                                       comparisonFun = "==", limitConstraints = 9,
                                        keepResults = TRUE)[,6]), 9)
-    
-    expect_true(all(permuteGeneral(5, 5, TRUE,
-                                       "min", "<", 3, 
+
+    expect_true(all(permuteGeneral(5, 5L, TRUE,
+                                   constraintFun = "min", 
+                                   comparisonFun = "<", limitConstraints = 3,
                                        keepResults = TRUE)[,6] < 3))
-    
+
     expect_true(all(permuteGeneral(5, 5, TRUE,
-                                   "prod", ">", 100, 
+                                   constraintFun = "prod", 
+                                   comparisonFun = ">", limitConstraints = 100,
                                    keepResults = TRUE)[,6] > 100))
-    
+
     expect_true(all(permuteGeneral(5, 3, FALSE,
-                                "max", "=<", 4, 
+                                   constraintFun = "max", 
+                                   comparisonFun = "=<", limitConstraints = 4,
                                 keepResults = TRUE)[,4] <= 4))
-    
+
     expect_true(all(permuteGeneral(3, 5, TRUE,
-                                   "mean", ">=", 2, 
+                                   constraintFun = "mean", 
+                                   comparisonFun = ">=", limitConstraints = 2,
                                    keepResults = TRUE)[,6] >= 2))
-    
-    expect_true(all(permuteGeneral(5, 5, FALSE, "sum", ">", 18,
-                                     freqs = c(1,2,1,2,4), 
+
+    expect_true(all(permuteGeneral(5, 5, FALSE, constraintFun = "sum", 
+                                   comparisonFun = ">", limitConstraints = 18,
+                                     freqs = c(1,2,1,2,4),
                                      keepResults = TRUE)[,6] > 18))
+    
+    expect_equal(sum(permuteGeneral(4, 6, freqs = c(1,3,2,2),
+                                   constraintFun = "sum", 
+                                   keepResults = TRUE)[,7] < 16), 
+                sum(apply(permuteGeneral(c(3,1,4,2), 6, freqs = c(2,1,2,3), 
+                                         constraintFun = "sum",
+                                         comparisonFun = "<", 
+                                         limitConstraints = 16), 1, sum) < 16))
+    
+    expect_true(min(permuteGeneral(15, 5, constraintFun = "prod", 
+                                   comparisonFun = ">", 
+                                   limitConstraints = 3*10^5, 
+                                   keepResults = TRUE)[,6]) > 3*10^5)
+    
+    a <- permuteGeneral(8, 5, freqs = rep(3, 8))
+    b <- apply(a, 1, min)
+    expect_equal(permuteGeneral(8, 5, freqs = rep(3, 8), 
+                              constraintFun = "min",
+                              comparisonFun = "==",
+                              limitConstraints = 3, 
+                              lower = 17900, upper = 18500), a[(17900:18500)[b[17900:18500] == 3], ])
+    
+    a <- permuteGeneral(c(-1L,1:5), 7, T)
+    b <- apply(a, 1, prod)
+    expect_equal(nrow(permuteGeneral(c(-1L,1:5), 7, TRUE, constraintFun = "prod",
+                              comparisonFun = c(">=","<="),
+                              limitConstraints = c(2000, 5000))), 
+                 nrow(a[which(b >= 2000 & b <= 5000), ]))
+})
+
+
+test_that("permuteGeneral produces correct results with exotic constraints", {
+    
+    comp1 <- c("<", "<=")
+    comp2 <- c(">", ">=")
+    allPerms <- permuteGeneral(c(-6:(-1),1:2), 5, freqs = c(rep(1:3, 2), 2:3), 
+                              constraintFun = "prod", keepResults = TRUE)
+    
+    theSum <- allPerms[, 6]
+    allPerms <- allPerms[, 1:5]
+    q <- quantile(theSum)
+    
+    for (i in 1:2) {
+        
+        if (i == 1) {
+            a <- comp1
+            b <- comp2
+        } else {
+            a <- comp2
+            b <- comp1
+        }
+        
+        for (j in a) {
+            for (k in b) {
+                myComp <- c(j, k)
+                myTest <- permuteGeneral(c(-6:(-1),1:2), 5, freqs = c(rep(1:3, 2), 2:3),
+                                       constraintFun = "prod", comparisonFun = myComp,
+                                       limitConstraints = c(q[2], q[4]))
+                fun1 <- match.fun(j)
+                fun2 <- match.fun(k)
+                
+                if (i == 1) {
+                    temp <- allPerms[fun1(theSum, q[2]) | fun2(theSum, q[4]),]
+                } else {
+                    temp <- allPerms[fun1(theSum, q[2]) & fun2(theSum, q[4]),]
+                }
+                
+                expect_equal(temp, myTest)
+            }
+        }
+    }
+    
+    allPerms <- permuteGeneral(c(-6:(-1),1:2), 5, TRUE, 
+                              constraintFun = "prod", keepResults = TRUE)
+    
+    theSum <- allPerms[, 6]
+    allPerms <- allPerms[, 1:5]
+    q <- quantile(theSum)
+    
+    for (i in 1:2) {
+        
+        if (i == 1) {
+            a <- comp1
+            b <- comp2
+        } else {
+            a <- comp2
+            b <- comp1
+        }
+        
+        for (j in a) {
+            for (k in b) {
+                myComp <- c(j, k)
+                myTest <- permuteGeneral(c(-6:(-1),1:2), 5, TRUE,
+                                       constraintFun = "prod", comparisonFun = myComp,
+                                       limitConstraints = c(q[2], q[4]))
+                fun1 <- match.fun(j)
+                fun2 <- match.fun(k)
+                
+                if (i == 1) {
+                    temp <- allPerms[fun1(theSum, q[2]) | fun2(theSum, q[4]),]
+                } else {
+                    temp <- allPerms[fun1(theSum, q[2]) & fun2(theSum, q[4]),]
+                }
+                
+                expect_equal(temp, myTest)
+            }
+        }
+    }
+    
+    allPerms <- permuteGeneral(c(-6:(-1),1:4), 5, 
+                              constraintFun = "prod", keepResults = TRUE)
+    
+    theSum <- allPerms[, 6]
+    allPerms <- allPerms[, 1:5]
+    q <- quantile(theSum)
+    
+    for (i in 1:2) {
+        
+        if (i == 1) {
+            a <- comp1
+            b <- comp2
+        } else {
+            a <- comp2
+            b <- comp1
+        }
+        
+        for (j in a) {
+            for (k in b) {
+                myComp <- c(j, k)
+                myTest <- permuteGeneral(c(-6:(-1),1:4), 5,
+                                       constraintFun = "prod", comparisonFun = myComp,
+                                       limitConstraints = c(q[2], q[4]))
+                fun1 <- match.fun(j)
+                fun2 <- match.fun(k)
+                
+                if (i == 1) {
+                    temp <- allPerms[fun1(theSum, q[2]) | fun2(theSum, q[4]),]
+                } else {
+                    temp <- allPerms[fun1(theSum, q[2]) & fun2(theSum, q[4]),]
+                }
+                expect_equal(temp, myTest)
+            }
+        }
+    }
 })
 
 test_that("permuteGeneral produces appropriate error messages", {
-    expect_error(permuteGeneral(9,4,TRUE,"summ","<",10), "prod, sum, mean, max, or min")
-    expect_error(permuteGeneral(9,4,TRUE,"sum","=<>",10), ">, >=, <, <=, or ==")
-    expect_error(permuteGeneral(9,4,TRUE,"sum",60,10), "must be passed as a character")
-    expect_error(permuteGeneral(9,4,FALSE,sum,"<",10), "must be passed as a character")
-    expect_error(permuteGeneral(9,4,TRUE,"sum","<",10,-1), "must be positive")
-    expect_error(permuteGeneral(170,7,FALSE,"sum","<",100), "The number of rows cannot exceed")
-    expect_error(permuteGeneral(170,7,FALSE,"sum","<",100,10^10), "number of rows cannot exceed")
+    expect_error(permuteGeneral(9,4,TRUE,constraintFun = "summ",
+                                comparisonFun = "<",limitConstraints = 10), 
+                 "prod, sum, mean, max, or min")
+    expect_error(permuteGeneral(9,4,TRUE,constraintFun = "sum",
+                                comparisonFun = "=<>",limitConstraints = 10), 
+                 ">, >=, <, <=, or ==")
+    expect_error(permuteGeneral(9,4,TRUE,constraintFun = "sum",
+                                comparisonFun = 60,limitConstraints = 10), 
+                 "must be passed as a character")
+    expect_error(permuteGeneral(9,4,FALSE,constraintFun = sum,
+                                comparisonFun = "<",limitConstraints = 10), 
+                 "must be passed as a character")
+    expect_error(permuteGeneral(9,4,TRUE,constraintFun = "sum",
+                                comparisonFun = "<",limitConstraints = 10,upper = -1),
+                 "must be positive")
+    expect_error(permuteGeneral(170,7,FALSE,constraintFun = "sum",
+                                comparisonFun = "<",limitConstraints = 100), 
+                 "The number of rows cannot exceed")
+    expect_error(permuteGeneral(170,7,FALSE,constraintFun = "sum",
+                                comparisonFun = "<",
+                                limitConstraints = 100, 
+                                upper = 10^10), "number of rows cannot exceed")
     
-    expect_error(permuteGeneral(5,3,freqs = c(1,2,3,"2",1)), "freqs must be of type numeric")
+    expect_error(permuteGeneral(0i ^ (-3:3),7,FALSE,
+                                constraintFun = "sum",
+                                comparisonFun = "<",
+                                limitConstraints = 100, 
+                                upper = 10^10), "Only integers, numerical, character, and factor classes are supported for v")
+    
+    expect_error(permuteGeneral(5), "m and freqs cannot both be NULL")
+    expect_error(permuteGeneral(5, 1:5), "length of m must be 1")
+    expect_error(permuteGeneral(5, "5"), "m must be of type numeric or integer")
+    expect_error(permuteGeneral(5, -5), "m must be positive")
+    expect_error(permuteCount(5, 5, "TRUE"), "repetitions must be a logical value")
+    expect_error(permuteGeneral(5, 5, keepResults = "TRUE"), "keepResults must be a logical value")
+    
+    expect_error(permuteGeneral(5,3,freqs = c(1,2,3,"2",1)), 
+                 "freqs must be of type numeric")
     expect_error(permuteGeneral(5,3,freqs = c(1,2,3,-2,1)), "in freqs must be a positive")
     expect_error(permuteGeneral(5,15,freqs = c(5,5,5,5,5)), "number of rows cannot exceed")
     expect_error(permuteGeneral(5,freqs = c(5,5,5,5,5)), "number of rows cannot exceed")

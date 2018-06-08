@@ -39,5 +39,6 @@ test_that("divisorsRcpp produces appropriate error messages", {
     expect_error(divisorsRcpp(2^53), "each element must be less than")
     expect_error(divisorsRcpp(-2^53), "each element must be less than")
     expect_error(divisorsRcpp("10"), "must be of type numeric or integer")
+    expect_error(divisorsRcpp(c(-2^53, 1:100)), "the abs value of each element must be less than")
     expect_error(divisorsRcpp(100, namedList = "TRUE"), "Not compatible with requested type")
 })
