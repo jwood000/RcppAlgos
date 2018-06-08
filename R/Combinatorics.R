@@ -47,10 +47,10 @@ comboSample <- function(v, m = NULL, repetition = FALSE, freqs = NULL,
         } else {
             if (!is.numeric(n))
                 stop("n must be a number")
-            else if (n > myCount)
-                stop("n exceeds the maximum number of possible results")
             else if (length(n) > 1)
                 stop("length of n must be 1. For specific combinations, use sampleVec.")
+            else if (n > myCount)
+                stop("n exceeds the maximum number of possible results")
         } 
         sampleVec = sample(myCount, n)
     }
@@ -72,10 +72,10 @@ permuteSample <- function(v, m = NULL, repetition = FALSE, freqs = NULL,
         } else {
             if (!is.numeric(n))
                 stop("n must be a number")
+            else if (length(n) > 1)
+                stop("length of n must be 1. For specific permutation, use sampleVec.")
             else if (n > myCount)
                 stop("n exceeds the maximum number of possible results")
-            else if (length(n) > 1)
-                stop("length of n must be 1. For specific combinations, use sampleVec.")
         } 
         sampleVec = sample(myCount, n)
     }
