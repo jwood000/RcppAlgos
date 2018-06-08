@@ -860,7 +860,7 @@ SEXP EratosthenesRcpp (SEXP Rb1, SEXP Rb2,
         
         if (isList) {
             if (myMax < 2) {
-                std::vector<std::vector<int> > trivialRet(1, std::vector<int>(1, 1));
+                std::vector<std::vector<int> > trivialRet(1, std::vector<int>());
                 Rcpp::List z = Rcpp::wrap(trivialRet);
                 if (isNamed)
                     z.attr("names") = 1;
