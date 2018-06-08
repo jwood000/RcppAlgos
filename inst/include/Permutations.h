@@ -67,7 +67,7 @@ namespace Permutations {
         } else {
             
             if (r == 1) {
-                for (std::size_t i = 0; i < n; i++)
+                for (std::size_t i = 0; i < uN; i++)
                     permuteMatrix(i, 0) = v[i];
                 return permuteMatrix;
             }
