@@ -127,7 +127,23 @@ tail(p)
 [3960,]  354  187  199  287  149 1176
 
 
-## Maybe you are curious to see the results of applying a function
+## Get combinations such that the product is between
+## 3600 and 4000 (including 3600 but not 4000)
+comboGeneral(5, 7, TRUE, constraintFun = "prod",
+             comparisonFun = c(">=","<"),
+             limitConstraints = c(3600, 4000),
+             keepResults = TRUE)
+     [,1] [,2] [,3] [,4] [,5] [,6] [,7] [,8]
+[1,]    1    2    3    5    5    5    5 3750
+[2,]    1    3    3    4    4    5    5 3600
+[3,]    1    3    4    4    4    4    5 3840
+[4,]    2    2    3    3    4    5    5 3600
+[5,]    2    2    3    4    4    4    5 3840
+[6,]    3    3    3    3    3    3    5 3645
+[7,]    3    3    3    3    3    4    4 3888
+
+
+## Maybe you want to see the results of applying a function
 ## without any constraints. Simply pick the function you wish
 ## to be applied, and set keepResults to TRUE.
 set.seed(99)
