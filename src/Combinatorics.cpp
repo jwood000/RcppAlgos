@@ -925,8 +925,16 @@ SEXP CombinatoricsRcpp(SEXP Rv, SEXP Rm, SEXP Rrepetition, SEXP RFreqs,
             }
         }
     } else {
-        if (Rf_isNull(f1))
+        
+        if (Rf_isNull(f1)){
             keepRes = false;
+        } else if (IsInteger) {
+            // We do this, so the calculation will properly
+            // return NAs instead of -(2^31 - 1)
+            for (int i = (vNum.size() - 1); i >= 0; --i)
+                if (Rcpp::NumericVector::is_na(vNum[i]))
+                    IsInteger = false;
+        }
         
         if (IsCharacter) {
             if (IsComb) {
@@ -942,6 +950,7 @@ SEXP CombinatoricsRcpp(SEXP Rv, SEXP Rm, SEXP Rrepetition, SEXP RFreqs,
                                                                          nRows, false, startZ, permNonTrivial);
             }
         } else if (IsFactor) {
+            
             Rcpp::IntegerMatrix factorMat;
             Rcpp::IntegerVector testFactor = Rcpp::as<Rcpp::IntegerVector>(Rv);
             Rcpp::CharacterVector myClass = testFactor.attr("class");
@@ -1006,9 +1015,6 @@ SEXP CombinatoricsRcpp(SEXP Rv, SEXP Rm, SEXP Rrepetition, SEXP RFreqs,
         } else {
             
             Rcpp::NumericMatrix matResNum;
-
-            if (Rf_isNull(f1))
-                keepRes = false;
             
             if (IsComb) {
                 if (IsMultiset)
