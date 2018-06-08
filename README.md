@@ -262,7 +262,7 @@ Levels: low < med < high
 ```
 
 ### Parallel computing using _lower_ and _upper_
-In version 2.0.0, there are now arguments `lower` and `upper` that can be utilized to generate chunks of combinations/permutations without having to generate all of them followed by subsetting.  As the output is in lexicographical order, these arguments specify where to start and stop generating. For example, `comboGeneral(5, 3)` outputs 10 combinations of the vector `1:5` choosen 3 at a time. We can set `lower` to 5 in order to start generation from the 5th lexicogrphical combination. Similarly, we can set `upper` to 4 in order only generate the first 4 combinations. We can also use them together to produce only a certain chunk of combinations. For example, setting `lower` to 4 and `upper` to 6 only produces the 4th, 5th, and 6th lexicographical combinations. Observe:
+In version 2.0.0, there are now arguments `lower` and `upper` that can be utilized to generate chunks of combinations/permutations without having to generate all of them followed by subsetting.  As the output is in lexicographical order, these arguments specify where to start and stop generating. For example, `comboGeneral(5, 3)` outputs 10 combinations of the vector `1:5` chosen 3 at a time. We can set `lower` to 5 in order to start generation from the 5th lexicographical combination. Similarly, we can set `upper` to 4 in order only generate the first 4 combinations. We can also use them together to produce only a certain chunk of combinations. For example, setting `lower` to 4 and `upper` to 6 only produces the 4th, 5th, and 6th lexicographical combinations. Observe:
 
 ``` r
 comboGeneral(5, 3, lower = 4, upper = 6)
@@ -278,14 +278,14 @@ comboGeneral(5, 3)[4:6, ]
 [2,]    1    3    5
 [3,]    1    4    5
 ```
-In addtion to being useful by avoiding the unnecessary overhead of generating all combination/permutations followed by subsetting just to see a few specific results, `lower` and `upper` can be utilized to generate large number of combinations/permutations in parallel. Observe:
+In addition to being useful by avoiding the unnecessary overhead of generating all combination/permutations followed by subsetting just to see a few specific results, `lower` and `upper` can be utilized to generate large number of combinations/permutations in parallel. Observe:
 
 ``` r
 ## Over 3 billion results
 comboCount(35, 15)
 [1] 3247943160
 
-## 10086780 evenly divided 3247943160
+## 10086780 evenly divides 3247943160
 
 system.time(lapply(seq(1, 3247943160, 10086780), function(x) {
         temp <- comboGeneral(35, 15, lower = x, upper = x + 10086779)
