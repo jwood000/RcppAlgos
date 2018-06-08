@@ -25,7 +25,7 @@ permuteSample(v, m = NULL, repetition = FALSE,
 }
 }
 \details{
-These algorithms rely on efficiently generating the \emph{nth} lexicographical combination/permutation (sometimes called the \href{rank}{https://rosettacode.org/wiki/Permutations/Rank_of_a_permutation}).
+These algorithms rely on efficiently generating the \emph{nth} lexicographical combination/permutation (sometimes called the \href{https://rosettacode.org/wiki/Permutations/Rank_of_a_permutation}{rank}).
 }
 \value{
 In general, a matrix is returned with each row containing a vector of length \eqn{m}. If \code{m} isn't supplied and \code{freqs} is given, a matrix is returned with each row containing a vector of length \code{sum(freqs)}.
