@@ -1,10 +1,13 @@
-RcppAlgos 2.0.0 (Release date: TBD)
+RcppAlgos 2.0.0 (Release date: 2018-06-11)
 
 * Changed max value and explicitly casted a few values to (int64_t) in PollardRho.cpp for efficiency while still maintaining accuracy from 2^60 to 2^62 (isPrimeRcpp is roughly 10% faster now).
 * Updated core permutation algorithm for greater efficiency and generality
 * Added capability of generating specific combinations/permutations
-* Changed arguments to comboGeneral/permuteGeneral
+* Changed arguments to comboGeneral/permuteGeneral. rowCap is now upper.
 * Added comboSample, permuteSample, comboCount, and permuteCount
+* Fixed bug with numDivisorSieve and divisorSieve when the lower bound was greater than 1 and less than the sqrt of the upper bound. In the previous version, the numbers in this range would have duplicated values/counts.
+* Increased efficiency of numDivisorSieve by a factor of 2.
+* Updated unit tests for greater coverage. See the function package_coverage from the package 'covr'.
 
 
 RcppAlgos 1.0.1 (Release date: 2018-03-09)
