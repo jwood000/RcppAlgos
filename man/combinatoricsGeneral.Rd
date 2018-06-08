@@ -30,8 +30,14 @@ permuteGeneral(v, m = NULL, repetition = FALSE, freqs = NULL, lower = NULL,
   
   N.B. This argument was formerly called \code{rowCap}.}
   \item{constraintFun}{Function to be applied to the elements of \code{v} that should be passed as a string (\emph{E.g.} \code{constraintFun = "sum"}). The possible constraint functions are: \code{"sum"}, \code{"prod"}, \code{"mean"}, \code{"max"}, & \code{"min"}. The default is \code{NULL}, meaning no function is applied.}
-  \item{comparisonFun}{Comparison operator that will be used to compare \code{limitConstraints} with the result of \code{constraintFun} applied to \code{v}. It should be passed as a string (\emph{E.g.} \code{comparisonFun = "<="}). The possible comparison operators are: \code{"<"}, \code{">"}, \code{"<="}, \code{">="}, \code{"=="}. The default is \code{NULL}.}
-  \item{limitConstraints}{This is the value that will be used for comparison. The default is \code{NULL}.}
+  \item{comparisonFun}{Comparison operator that will be used to compare \code{limitConstraints} with the result of \code{constraintFun} applied to \code{v}. It should be passed as a string or a vector of two strings (\emph{E.g.} \code{comparisonFun = "<="} or  \code{comparisonFun = c(">","<")}). The possible comparison operators are: \code{"<"}, \code{">"}, \code{"<="}, \code{">="}, \code{"=="}. The default is \code{NULL}.
+  
+  When \code{comparisonFun} is a vector of two comparison strings, say \code{comparisonFun = c(comp1, comp2)} and \code{limitConstraints} is a vector of two numerical values, say \code{limitConstraints = c(x1, x2)}, the combinations/permutations will be filtered in one of the following two ways:
+  \enumerate{
+  \item{When \code{comp1} is one of the 'less than' operators (i.e. "<=" or "<"), \code{comp2} is one of the 'greater-than' operators (i.e. ">=" or ">"), and \code{x1 < x2}, the combinations/permutations that are returned will have a value (after \code{constraintFun} has been applied) between \code{x1} and \code{x2}.}
+  \item{When \code{comp1} and \code{comp2} are defined as in #1 and \code{x1 > x2}, the combinations/permutations that are returned will have a value outside the range of \code{x1} and \code{x2}. See the examples below.}
+  }}
+  \item{limitConstraints}{This is the value(s) that will be used for comparison. Can be passed as a single value or a vector of two numerical values. The default is \code{NULL}. See the definition of \code{comparisonFun} as well as the examples below for more information.}
   \item{keepResults}{A logical flag indicating if the result of \code{constraintFun} applied to \code{v} should be displayed; if \code{TRUE}, an additional column of results will be added to the resulting matrix. The default is \code{FALSE}.}
 }
 \value{
@@ -48,6 +54,7 @@ When there are any negative values in \code{v} and \code{constraintFun = "prod"}
 \item The maximum number of combinations/permutations that can be generated at one time is \eqn{2^{31} - 1}{2^31 - 1}. Utilizing \code{lower} and \code{upper} makes it possible to generate additional combinations/permutations.
 \item Factor vectors are accepted. Class and level attributes are preserved.
 \item lexicographical ordering isn't guaranteed for permutations if \code{lower} isn't supplied and the output is constrained.
+\item If \code{lower} is supplied and the output is constrained, the combinations/permutations that will be tested will be in the lexicographical range \code{lower} to \code{upper} or to the total possible number of results if \code{upper} is not given. See the second paragraph for the definition of \code{upper}. 
 }
 }
 \author{
@@ -123,6 +130,23 @@ t3 = comboGeneral(-3,6,TRUE,constraintFun = "sum",
                         comparisonFun = "==",
                         limitConstraints = -8, 
                         keepResults = TRUE)
+                        
+## Using multiple constraints:
+
+## Get combinations such that the product
+## is between 3000 and 4000 inclusive
+comboGeneral(5, 7, TRUE, constraintFun = "prod",
+             comparisonFun = c(">=","<="),
+             limitConstraints = c(3000, 4000),
+             keepResults = TRUE)
+             
+## Or, get the combinations such that the
+## product is less than or equal to 10 or
+## greater than or equal to 40000
+comboGeneral(5, 7, TRUE, constraintFun = "prod",
+             comparisonFun = c("<=",">="),
+             limitConstraints = c(10, 40000),
+             keepResults = TRUE)
 
 \dontrun{
 ## Parallel example generating more than 2^31 - 1 combinations.
