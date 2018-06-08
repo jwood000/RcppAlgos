@@ -166,7 +166,8 @@ test_that("comboGeneral produces correct results with exotic constraints", {
     ## Testing sums in a range
     a <- comboGeneral(10, 8, TRUE, lower = 23500, upper = 24000, 
                       constraintFun = "sum", keepResults = TRUE)
-    expect_equal(comboGeneral(10, 8, TRUE, constraintFun = "sum", 
+    
+    expect_equal(comboGeneral(c(NA, 1:10), 8, TRUE, constraintFun = "sum", 
                               comparisonFun = c("=>","=<"), 
                               limitConstraints = c(72, 78), 
                               lower = 23500, upper = 24000), 

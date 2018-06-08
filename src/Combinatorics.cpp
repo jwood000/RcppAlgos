@@ -476,10 +476,6 @@ SEXP CombinatoricsRcpp(SEXP Rv, SEXP Rm, SEXP Rrepetition, SEXP RFreqs,
             vNum = Rcpp::as<std::vector<double> >(Rv);
         }
         
-        for (int i = (vNum.size() - 1); i >= 0; --i)
-            if (Rcpp::NumericVector::is_na(vNum[i]))
-                vNum.erase(vNum.begin() + i);
-            
         n = vNum.size();
     }
     
@@ -492,7 +488,7 @@ SEXP CombinatoricsRcpp(SEXP Rv, SEXP Rm, SEXP Rrepetition, SEXP RFreqs,
     if (Rf_isNull(lim)) {
         IsConstrained = false;
     } else {
-        if (Rf_isNull(f1)) {
+        if (IsCharacter || Rf_isNull(f1)) {
             IsConstrained = false;
         } else {
             if (!Rf_isString(f1))
@@ -508,6 +504,14 @@ SEXP CombinatoricsRcpp(SEXP Rv, SEXP Rm, SEXP Rrepetition, SEXP RFreqs,
                     Rcpp::stop("comparisonFun must be passed as a character");
             }
         }
+    }
+    
+    if (IsConstrained) {
+        for (int i = (vNum.size() - 1); i >= 0; --i)
+            if (Rcpp::NumericVector::is_na(vNum[i]))
+                vNum.erase(vNum.begin() + i);
+            
+        n = vNum.size();
     }
     
     bool bLower = false;

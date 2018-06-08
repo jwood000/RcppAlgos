@@ -114,10 +114,6 @@ SEXP SampleRcpp(SEXP Rv, SEXP Rm, SEXP Rrepetition,
         } else {
             vNum = Rcpp::as<std::vector<double> >(Rv);
         }
-        
-        for (int i = (vNum.size() - 1); i >= 0; i--)
-            if (Rcpp::NumericVector::is_na(vNum[i]))
-                vNum.erase(vNum.begin() + i);
     }
     
     if (IsInteger)

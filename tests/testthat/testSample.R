@@ -64,8 +64,8 @@ test_that("permuteSample produces correct results", {
     expect_equal(permuteSample(LETTERS, 3, sampleVec = samp), 
                  permuteGeneral(LETTERS, 3)[samp, ])
     
-    expect_equal(permuteSample(c(1,2,3,NA), 3, sampleVec = 1:6),
-                 permuteGeneral(c(1,NA,2,3), 3))
+    expect_equal(permuteSample(c(1,2,3,NA), 3, sampleVec = 1:24),
+                 permuteGeneral(c(1,2,3,NA), 3))
     
     expect_equal(permuteSample(5, freqs = c(2,1,2,1,2), 
                                sampleVec = 1:(permuteCount(5, freqs = c(2,1,2,1,2)))), 

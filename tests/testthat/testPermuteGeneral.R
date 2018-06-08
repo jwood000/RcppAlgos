@@ -14,9 +14,8 @@ test_that("permuteGeneral produces correct results with no constraints and no re
     expect_equal(as.vector(permuteGeneral(100,1)), 1:100)
     
     ## Constraint should not be carried out if no comparisonFun is given
-    ## Also, if any NAs are present, they will be removed
     expect_equal(permuteGeneral(3, 3, constraintFun = "sum",
-                                limitConstraints = 100), permuteGeneral(c(NA,1:3), 3))
+                                limitConstraints = 100), permuteGeneral(1:3, 3))
     
     set.seed(11)
     myNums <- rnorm(5)
@@ -89,8 +88,9 @@ test_that("permuteGeneral produces correct results with constraints", {
 
     expect_equal(nrow(permuteGeneral(3, 3, FALSE, constraintFun = "sum",
                                      comparisonFun = "==", limitConstraints = 6)), 6)
-
-    expect_equal(unique(permuteGeneral(5, 5, TRUE,
+    
+    ## NA should be removed when constraint check is carried out
+    expect_equal(unique(permuteGeneral(c(NA,1:5), 5, TRUE,
                                        constraintFun = "sum", 
                                        comparisonFun = "==", limitConstraints = 9,
                                        keepResults = TRUE)[,6]), 9)
