@@ -8,7 +8,7 @@ Description: Provides optimized functions implemented in C++ with 'Rcpp'
     constraint parameters that when utilized, generate all combinations/
     permutations of a vector meeting specific criteria (e.g. finding all
     combinations such that the sum is less than a bound). These functions
-    are capable of generating specific combinations/permutaitons (e.g. 
+    are capable of generating specific combinations/permutations (e.g. 
     retrieve only the 50th lexicographical permutation of 5 elements 
     choose 3) by utilizing the bounds arguments. This sets up nicely for
     parallelization and allows for fast generation of combinations/
