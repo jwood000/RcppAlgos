@@ -27,7 +27,11 @@ The \strong{RcppAlgos} package attacks age-old problems in combinatorics and com
                         \item{\preformatted{comboGeneral(primeSieve(1000), m = 5, repetition = TRUE,
              constraintFun = "prod", comparisonFun = "<",
              limitConstraints = 500000, rowCap = 10^5)}}
-                        }
+                        \item{\preformatted{parallel::mclapply(seq(...), function(x) {
+            temp = permuteGeneral(15, 10, lower = x, upper = y)
+            ## analyze permutations
+            ## output results
+    }, mc.cores = detectCores() - 1))}}
                     }
                 }
             }
