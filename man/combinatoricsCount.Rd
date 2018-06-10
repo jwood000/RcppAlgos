@@ -5,7 +5,7 @@
 Number of combinations/permutations
 }
 \description{
-Calculate the number of combinations/permutations of a vector choosen \eqn{m} at a time with or without replacement. Additionally, these functions can calculate the number of combinations/permutations of multisets.
+Calculate the number of combinations/permutations of a vector chosen \eqn{m} at a time with or without replacement. Additionally, these functions can calculate the number of combinations/permutations of multisets.
 }
 \usage{
 comboCount(v, m = NULL, repetition = FALSE, freqs = NULL)
