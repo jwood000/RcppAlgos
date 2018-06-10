@@ -34,7 +34,7 @@ The \strong{RcppAlgos} package attacks age-old problems in combinatorics and com
     }, mc.cores = detectCores() - 1))}}
                     }
                 }
-            }
+            }}
         \item{\emph{Speed!!!...}. You will find that the functions in \code{RcppAlgos} are some of the fastest of their type available in \code{R}.}
     }
 }
