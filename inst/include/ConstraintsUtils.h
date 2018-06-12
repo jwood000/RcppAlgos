@@ -4,9 +4,6 @@
 typedef double (*funcPtr)(std::vector<double> &x);
 typedef bool (*compPtr)(double &x, std::vector<double> &y);
 
-const std::vector<std::string> compSpecial = {"==", ">,<", ">=,<", ">,<=", ">=,<="};
-const std::vector<std::string> compHelper = {"<=", "<", "<", "<=", "<="};
-
 // Constraint functions
 double prodCpp(std::vector<double> &v);
 double sumCpp(std::vector<double> &v);
