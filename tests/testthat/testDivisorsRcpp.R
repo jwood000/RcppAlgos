@@ -11,12 +11,14 @@ test_that("divisorsRcpp generates correct numbers", {
     
     expect_equal(divisorsRcpp(-10:10), 
                  lapply(-10:10, function(x) {
-                        y <- abs(x)
-                        div <- (1:y)[y %% (1:y) == 0]
-                        if (x < 0)
-                            div <- c(-1L * rev(div), div)
-                        if (x == 0)
+                        if (x == 0) {
                             div <- vector("integer")
+                        } else {
+                            y <- abs(x)
+                            div <- (1:y)[y %% (1:y) == 0]
+                            if (x < 0)
+                                div <- c(-1L * rev(div), div)
+                        }
                         div
                      }))
     
