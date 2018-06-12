@@ -1,8 +1,12 @@
+RcppAlgos 2.0.2 (Release date: TBD)
+
+* Corrected divide by zero in divisorsRcpp unit test.
+
 RcppAlgos 2.0.1 (Release date: 2018-06-10)
 
 * Corrected spelling in DESCRIPTION
 
-RcppAlgos 2.0.0 (Release date: 2018-06-10)
+RcppAlgos 2.0.0 (Release date: Never Released)
 
 * Changed max value and explicitly casted a few values to (int64_t) in PollardRho.cpp for efficiency while still maintaining accuracy from 2^60 to 2^62 (isPrimeRcpp is roughly 10% faster now).
 * Updated core permutation algorithm for greater efficiency and generality
