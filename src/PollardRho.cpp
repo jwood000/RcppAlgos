@@ -4,6 +4,8 @@
 #include "PrimesPolRho.h"
 #include "PollardRho.h"
 
+const double Significand53 = 9007199254740991.0;
+
 /* Prove primality or run probabilistic tests.  */
 int FlagProvePrimality = 1;
 

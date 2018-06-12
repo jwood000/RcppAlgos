@@ -3,6 +3,8 @@
 #include <libdivide.h>
 #include <PollardRho.h>
 
+const double Significand53 = 9007199254740991.0;
+
 template <typename typeInt>
 inline typeInt getStartingIndex (typeInt lowerB, typeInt step) {
     
