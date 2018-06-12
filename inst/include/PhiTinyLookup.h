@@ -4,8 +4,6 @@
 // next prime number (e.g. p = 2 + primesDiffPR[0] = 3, 
 // p = p + primesDiffPR[1] = 5, etc.)
  
-#include <stdint.h>
- 
 static const int16_t arr30[30] = {0,1,1,1,1,1,1,2,2,2,2,3,3,4,4,
                                   4,4,5,5,6,6,6,6,7,7,7,7,7,7,8};
 
