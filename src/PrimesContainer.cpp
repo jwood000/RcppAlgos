@@ -5,8 +5,6 @@
 #include "PrimesSegSieve.h"
 #include "PhiTinyLookup.h"
 
-// [[Rcpp::plugins(cpp11)]]
-
 // "AllPrimesCpp" implements a simple segmented version of the
 // Sieve of Eratosthenes (original implementation authored by 
 // Kim Walisch). An overview of this method can be found here: 
