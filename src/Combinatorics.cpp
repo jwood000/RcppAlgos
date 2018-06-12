@@ -3,6 +3,9 @@
 #include <ConstraintsUtils.h>
 #include <NthResult.h>
 
+const std::vector<std::string> compSpecial = {"==", ">,<", ">=,<", ">,<=", ">=,<="};
+const std::vector<std::string> compHelper = {"<=", "<", "<", "<=", "<="};
+
 template <typename typeRcpp>
 typeRcpp SubMat(typeRcpp m, int n) {
     int k = m.ncol();
