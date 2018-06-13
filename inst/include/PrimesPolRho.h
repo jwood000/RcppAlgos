@@ -1,8 +1,14 @@
  // The first 550 prime numbers (i.e. the first prime numbers 
  // less than 4000). Starting with the first prime number 2,
  // add each successive element in primesDiffPR to obtain the 
- // next prime number (e.g. p = 2 + primesDiffPR[0] = 3, 
- // p = p + primesDiffPR[1] = 5, etc.)
+#ifndef PRIMES_POL_RHO_H
+#define PRIMES_POL_RHO_H
+ 
+#undef FirstOmittedPrime
+#define FirstOmittedPrime 4001
+ 
+// next prime number (e.g. p = 2 + primesDiffPR[0] = 3, 
+// p = p + primesDiffPR[1] = 5, etc.)
 
 static const int primesDiffPR[549] = {
     1,2,2,4,2,4,2,4,6,2,6,4,2,4,6,6,2,6,4,2,6,4,6,8,4,2,4,
@@ -30,5 +36,4 @@ static const int primesDiffPR[549] = {
     8,6,6,22,6,2,10,14,4,6,18,2,10,14,4,2,10,14,4,8,18,4,6,
     2,4,6,2,12,4,20,22};
 
-#undef FirstOmittedPrime
-#define FirstOmittedPrime 4001
+#endif

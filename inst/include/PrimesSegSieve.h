@@ -1,6 +1,9 @@
- // The first 3402 prime numbers with the max prime = 31627.
- // This is the first prime greater than the sqrt(10^9). These
- // primes are used to quickly generate a base for sieving.
+#ifndef PRIMES_SEG_SIEVE_H
+#define PRIMES_SEG_SIEVE_H
+
+// The first 3402 prime numbers with the max prime = 31627.
+// This is the first prime greater than the sqrt(10^9). These
+// primes are used to quickly generate a base for sieving.
 
 static const int_fast64_t firstPrimes[3402] = {
     2,3,5,7,11,13,17,19,23,29,31,37,41,43,47,53,59,61,67,71,73,79,83,89,
@@ -269,3 +272,5 @@ static const int_fast64_t firstPrimes[3402] = {
     31253,31259,31267,31271,31277,31307,31319,31321,31327,31333,31337,31357,
     31379,31387,31391,31393,31397,31469,31477,31481,31489,31511,31513,31517,
     31531,31541,31543,31547,31567,31573,31583,31601,31607,31627};
+
+#endif
