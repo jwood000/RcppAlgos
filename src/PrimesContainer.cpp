@@ -2,8 +2,9 @@
 #include <cmath>
 #include <array>
 #include <libdivide.h>
-#include "PrimesSegSieve.h"
-#include "PhiTinyLookup.h"
+#include <PrimesSegSieve.h>
+#include <PhiTinyLookup.h>
+#include <GetFacsUtils.h>
 
 // "AllPrimesCpp" implements a simple segmented version of the
 // Sieve of Eratosthenes (original implementation authored by 
@@ -16,8 +17,6 @@
 // the numbers of primes less than n using Legendre's formula.
 // Kim Walisch's official github repo for "pi_legendre" is:
 //                      https://github.com/kimwalisch/primecount
-
-const double Significand53 = 9007199254740991.0;
 
 // This is the largest multiple of 2*3*5*7 = 210
 // that is less than 2^15 = 32768 = 32KB. This

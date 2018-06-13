@@ -1,9 +1,7 @@
 #include <Rcpp.h>
 #include <cmath>
 #include <libdivide.h>
-#include <PollardRho.h>
-
-const double Significand53 = 9007199254740991.0;
+#include <GetFacsUtils.h>
 
 template <typename typeInt>
 inline typeInt getStartingIndex (typeInt lowerB, typeInt step) {

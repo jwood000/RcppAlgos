@@ -1,10 +1,8 @@
 #include <Rcpp.h>
 #include <cmath>
 #include <algorithm>
-#include "PrimesPolRho.h"
-#include "PollardRho.h"
-
-const double Significand53 = 9007199254740991.0;
+#include <PrimesPolRho.h>
+#include <GetFacsUtils.h>
 
 /* Prove primality or run probabilistic tests.  */
 int FlagProvePrimality = 1;
