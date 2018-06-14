@@ -46,14 +46,14 @@ comboGeneral(4, 3)
 permuteGeneral(4, 3)
       [,1] [,2] [,3]
  [1,]    1    2    3
- [2,]    2    1    3
- [3,]    3    1    2
- [4,]    1    3    2
+ [2,]    1    2    4
+ [3,]    1    3    2
+ [4,]    1    3    4
   .      .    .    .
   .      .    .    .
-[21,]    4    2    3
-[22,]    2    4    3
-[23,]    3    4    2
+[21,]    4    2    1
+[22,]    4    2    3
+[23,]    4    3    1
 [24,]    4    3    2
 
 ## For combinations/permutations with repetition, simply
@@ -69,7 +69,7 @@ comboGeneral(4, 3, repetition = TRUE)
 ## They are very efficient
 system.time(comboGeneral(25,13))
    user  system elapsed 
-  0.136   0.062   0.198 
+  0.124   0.058   0.182 
 
 nrow(comboGeneral(25,13))
 [1] 5200300
@@ -111,20 +111,20 @@ p <- permuteGeneral(v = s,
 head(p)
      [,1] [,2] [,3] [,4] [,5] [,6]
 [1,]   19   22  327  354  454 1176
-[2,]   22   19  327  354  454 1176
-[3,]  327   19   22  354  454 1176
-[4,]   19  327   22  354  454 1176
-[5,]   22  327   19  354  454 1176
-[6,]  327   22   19  354  454 1176
+[2,]   19   22  327  454  354 1176
+[3,]   19   22  354  327  454 1176
+[4,]   19   22  354  454  327 1176
+[5,]   19   22  454  327  354 1176
+[6,]   19   22  454  354  327 1176
   
 tail(p)
         [,1] [,2] [,3] [,4] [,5] [,6]
-[3955,]  199  187  354  287  149 1176
-[3956,]  187  199  354  287  149 1176
-[3957,]  354  199  187  287  149 1176
-[3958,]  199  354  187  287  149 1176
-[3959,]  187  354  199  287  149 1176
-[3960,]  354  187  199  287  149 1176
+[3955,]  354  287  149  187  199 1176
+[3956,]  354  287  149  199  187 1176
+[3957,]  354  287  187  149  199 1176
+[3958,]  354  287  187  199  149 1176
+[3959,]  354  287  199  149  187 1176
+[3960,]  354  287  199  187  149 1176
 
 
 ## Get combinations such that the product is between
@@ -147,9 +147,9 @@ comboGeneral(5, 7, TRUE, constraintFun = "prod",
 ## without any constraints. Simply pick the function you wish
 ## to be applied, and set keepResults to TRUE.
 set.seed(99)
-mySamp <- rnorm(5, 100, 5)
+mySamp <- sort(rnorm(5, 100, 5))
 mySamp
-[1] 101.06981 102.39829 100.43914 102.21929  98.18581
+[1] 98.18581 100.43914 101.06981 102.21929 102.39829
 comboGeneral(mySamp, m = 4,
              repetition = TRUE,
              constraintFun = "sum",
@@ -182,7 +182,7 @@ getPermsWithSpecificRepetition <- function(z, n) {
     b[!myDupes, ]
 }
 
-system.time(getPermsWithSpecificRepetition(a, 6))
+system.time(test <- getPermsWithSpecificRepetition(a, 6))
    user  system elapsed 
   4.300   0.028   4.331
 ```
@@ -197,8 +197,7 @@ system.time(test2 <- permuteGeneral(unique(a), 6, freqs = rle(a)$lengths))
    user  system elapsed 
       0       0       0
       
-identical(test[do.call(order,as.data.frame(test)),],
-           test2[do.call(order,as.data.frame(test2)),])
+identical(test, test2)
 [1] TRUE
 ```
  
@@ -226,11 +225,11 @@ permuteGeneral(3, freqs = c(1,2,2))
 permuteGeneral(3, 2, freqs = c(1,2,2))
      [,1] [,2]
 [1,]    1    2
-[2,]    2    1
-[3,]    1    3
-[4,]    3    1
-[5,]    2    2
-[6,]    2    3
+[2,]    1    3
+[3,]    2    1
+[4,]    2    2
+[5,]    2    3
+[6,]    3    1
 [7,]    3    2
 [8,]    3    3
 
@@ -412,8 +411,8 @@ primeFactorize(123456789)
 
 ## or for an entire vector
 set.seed(100)
-> myVec <- sample(-100000000:100000000, 5)
-> divisorsRcpp(myVec, namedList = TRUE)
+myVec <- sample(-100000000:100000000, 5)
+divisorsRcpp(myVec, namedList = TRUE)
 $`-38446778`
 [1] -38446778 -19223389        -2        -1         1
 [6]         2  19223389  38446778
@@ -480,13 +479,13 @@ object.size(myPs)
 ## primes under a billion!!!
 system.time(primeSieve(10^9))
    user  system elapsed 
-  1.378   0.109   1.489
+  1.289   0.091   1.382
   
   
 ## Enumerate the number of primes below trillion
 system.time(underOneTrillion <- primeCount(10^12))
    user  system elapsed 
-  0.490   0.001   0.491
+  0.484   0.000   0.485
   
 underOneTrillion
 [1] 37607912018
