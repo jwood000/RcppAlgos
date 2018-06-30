@@ -1,4 +1,8 @@
-RcppAlgos 2.0.2 (Release date: TBD)
+RcppAlgos 2.0.3 (Release date: 2018-07-02)
+
+* Corrected clang UBSAN error identified by two different unit tests. In both situations, the problem was occurring as a result of populating a vector of integers with values from a vector of doubles that contained a nan (Not-a-Number). Most information was obtained from Brian J. Knaus's blog titled : "Reproducing a clang-UBSAN issue" (https://knausb.github.io/2017/06/reproducing-a-clang-ubsan-issue/)
+
+RcppAlgos 2.0.2 (Release date: 2018-06-15)
 
 * Corrected divide by zero in divisorsRcpp unit test.
 
