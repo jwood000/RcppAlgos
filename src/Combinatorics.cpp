@@ -482,8 +482,15 @@ SEXP CombinatoricsRcpp(SEXP Rv, SEXP Rm, SEXP Rrepetition, SEXP RFreqs,
         n = vNum.size();
     }
     
-    if (IsInteger)
-        vInt.assign(vNum.begin(), vNum.end());
+    if (IsInteger) {
+        for (int i = 0; i < n && IsInteger; ++i)
+            if (Rcpp::NumericVector::is_na(vNum[i]))
+                IsInteger = false;
+        
+        if (IsInteger)
+            vInt.assign(vNum.begin(), vNum.end());
+    }
+        
     
     if (IsFactor)
         IsCharacter = IsInteger = false;
@@ -929,15 +936,8 @@ SEXP CombinatoricsRcpp(SEXP Rv, SEXP Rm, SEXP Rrepetition, SEXP RFreqs,
         }
     } else {
         
-        if (Rf_isNull(f1)){
+        if (Rf_isNull(f1))
             keepRes = false;
-        } else if (IsInteger) {
-            // We do this, so the calculation will properly
-            // return NAs instead of -(2^31 - 1)
-            for (int i = (vNum.size() - 1); i >= 0; --i)
-                if (Rcpp::NumericVector::is_na(vNum[i]))
-                    IsInteger = false;
-        }
         
         if (IsCharacter) {
             if (IsComb) {
