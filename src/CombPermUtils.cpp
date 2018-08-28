@@ -66,44 +66,29 @@ double nChooseK(double n, double k) {
     if (k == n || k == 0)
         return 1;
     
-    double nCk;
-    double temp = 1;
-    for(int i = 1; i <= k; ++i)
-        temp *= (n - k + i)/i;
+    double nCk = 1;
     
-    nCk = round(temp);
-    return nCk;
-}
-
-// For combinations where repetition is allowed, this
-// function returns the number of combinations for
-// a given n and r. The resulting vector, "triangleVec"
-// resembles triangle numbers. In fact, this vector
-// is obtained in a very similar method as generating
-// triangle numbers, albeit in a repeating fashion.
-double NumCombsWithRep(int n, int r) {
-
-    if (r == 0)
-        return 1;
-    
-    int i, k;
-    std::vector<double> temp(n), triangleVec(n);
-    std::iota(triangleVec.begin(), triangleVec.end(), 1.0);
-    
-    for (i = 1; i < r; ++i) {
-        for (k = 1; k <= n; ++k)
-            temp[k-1] = std::accumulate(triangleVec.begin(), triangleVec.begin() + k, 0.0);
-
-        triangleVec = temp;
+    for (double i = (n - k + 1), d = 1; d <= k; ++i, ++d) {
+        nCk *= i;
+        nCk /= d;
     }
     
-    return triangleVec[n-1];
+    return round(nCk);
 }
 
-// Slightly different than CombsWithRep above as we can't
-// guarantee 1) the repetition of each element is
-// greater than or equal to n, and 2) that the
-// repetition of the each element isn't the same
+double NumCombsWithRep(int n, int r) {
+    return nChooseK(n + r - 1, r);
+}
+
+// The resulting vector, "triangleVec" resembles triangle
+// numbers. In fact, this vector is obtained in a very
+// similar method as generating triangle numbers, albeit
+// in a repeating fashion. Two things to keep in mind is
+// that we can't guarantee the following:
+//      1) the repetition of each element is greater
+//         than or equal to n
+//      2) that the repetition of the each element 
+//         isn't the same
 double MultisetCombRowNum(int n, int r, std::vector<int> Reps) {
     
     if (r < 1 || n <= 1)
@@ -166,7 +151,7 @@ double MultisetPermRowNum(int n, int r, std::vector<int> myReps) {
     double prodR, numPerms = 0.0;
     prodR = std::accumulate(seqR.begin(), seqR.end(), 
                             1.0, std::multiplies<double>());
-    
+
     int myMax = (r < maxFreq) ? r : maxFreq;
     ++myMax;
     
@@ -179,14 +164,12 @@ double MultisetPermRowNum(int n, int r, std::vector<int> myReps) {
     
     std::partial_sum(cumProd.begin(), cumProd.end(), 
                      cumProd.begin(), std::multiplies<double>());
-    
+
     int myMin = std::min(r, myReps[0]);
     
     for (int i = 0; i <= myMin; ++i)
         resV[i] = prodR / cumProd[i];
-    
-    numPerms = resV[r];
-    
+
     for (int i = 1; i < n1; ++i) {
         for (int j = r; j > 0; --j) {
             myMin = std::min(j, myReps[i]);
@@ -208,7 +191,7 @@ double MultisetPermRowNum(int n, int r, std::vector<int> myReps) {
 
 // This algorithm is nearly identical to the
 // one found in the standard algorithm library
-void nextFullPerm(uint16_t *myArray, unsigned long int n1) {
+void nextFullPerm(uint16_t *myArray, unsigned long int &n1) {
     
     unsigned long int p1 = n1, p2 = n1;
     uint16_t temp;
@@ -245,9 +228,9 @@ void nextFullPerm(uint16_t *myArray, unsigned long int n1) {
 // and swap them. We can then proceed to the next perm.
 // We can do this because the standard algo would end
 // up performing two unnecessary reversings.
-void nextPartialPerm(uint16_t *myArray, unsigned long int nCols, 
-                     unsigned long int r1, unsigned long int r,
-                     unsigned long int n1, unsigned long int n) {
+void nextPartialPerm(uint16_t *myArray, unsigned long int &nCols, 
+                     unsigned long int &r1, unsigned long int &r,
+                     unsigned long int &n1, unsigned long int &n) {
     
     uint16_t temp;
     unsigned long int p1 = nCols;
@@ -265,14 +248,14 @@ void nextPartialPerm(uint16_t *myArray, unsigned long int nCols,
             myArray[k] = myArray[q];
             myArray[q] = temp;
         }
-        
-        p1 = n1;
-        while (myArray[p1] <= myArray[p1 - 1])
+
+        p1 = n1 - 1;
+        while (myArray[p1 + 1] <= myArray[p1])
             --p1;
-        
+
         --p1;
         unsigned long int p2 = n1;
-        
+
         while (myArray[p2] <= myArray[p1])
             --p2;
         

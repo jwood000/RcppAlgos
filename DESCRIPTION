@@ -1,5 +1,5 @@
 Package: RcppAlgos
-Version: 2.0.3
+Version: 2.1.0
 Title: Tools for Combinatorics and Computational Mathematics
 Description: Provides optimized functions implemented in C++ with 'Rcpp'
     for solving problems in combinatorics and computational mathematics.
@@ -35,11 +35,12 @@ URL: https://github.com/jwood000/RcppAlgos, https://gmplib.org/,
         http://primesieve.org/, https://github.com/kimwalisch/primesieve,
         https://github.com/kimwalisch/primecount, http://libdivide.com/
 BugReports: https://github.com/jwood000/RcppAlgos/issues
-Imports: Rcpp (>= 0.12.8)
+Imports: gmp, Rcpp (>= 0.12.8)
 LinkingTo: Rcpp
-Suggests: testthat, gmp (>= 0.5-1), numbers (>= 0.6-6), bigIntegerAlgos
+Suggests: testthat, numbers (>= 0.6-6), bigIntegerAlgos
 License: GPL (>=2)
 LazyData: TRUE
+SystemRequirements: gmp (>= 4.2.3)
 NeedsCompilation: yes
 Author: Joseph Wood
 Maintainer: Joseph Wood <jwood000@gmail.com>
