@@ -253,7 +253,6 @@ void nextPartialPerm(uint16_t *myArray, unsigned long int &nCols,
         while (myArray[p1 + 1] <= myArray[p1])
             --p1;
 
-        --p1;
         unsigned long int p2 = n1;
 
         while (myArray[p2] <= myArray[p1])
