@@ -3,34 +3,25 @@ Version: 2.1.0
 Title: Tools for Combinatorics and Computational Mathematics
 Description: Provides optimized functions implemented in C++ with 'Rcpp'
     for solving problems in combinatorics and computational mathematics.
-    There are combination/permutations function that are both flexible as
-    well as efficient with respect to speed and memory. There are optional
-    constraint parameters that when utilized, generate all combinations/
-    permutations of a vector meeting specific criteria (e.g. finding all
-    combinations such that the sum is less than a bound). These functions
-    are capable of generating specific combinations/permutations (e.g. 
-    retrieve only the 50th lexicographical permutation of 5 elements 
-    choose 3) by utilizing the bounds arguments. This sets up nicely for
-    parallelization and allows for fast generation of combinations/
-    permutations beyond 2^31 - 1 results as chunks are generated 
-    independently. All combinatorial functions are capable of handling
-    multisets as well. Additionally, there are several highly efficient
-    number theoretic functions that are useful for problems common in 
-    computational mathematics. These include various sieving functions
-    that can quickly generate the following: prime numbers, number of 
-    coprime elements, number of divisors, prime factorizations, and 
-    complete factorizations. Some of these functions make use of the fast
-    integer division library 'libdivide' by <http://ridiculousfish.com>.
-    The primeSieve function is based on the segmented sieve of Eratosthenes
-    implementation by Kim Walisch. It is capable of generating all primes
-    less than a billion in just over 1 second. It can also quickly generate
-    prime numbers over a range (e.g. primeSieve(10^13, 10^13+10^9)). There
-    are stand-alone vectorized functions for general factoring (e.g. all
-    divisors of number), primality testing, as well as prime factoring via
-    Pollard's rho algorithm. Finally, there is a prime counting function
-    that implements a simple variation of Legendre's formula based on the 
-    algorithm by Kim Walisch. It is capable of returning the number of
-    primes below a trillion in under 0.5 seconds.
+    There are combination/permutation functions that are both flexible as
+    well as efficient with respect to speed and memory. Constraint 
+    parameters allow for generation of all combinations/permutations of a
+    vector meeting specific criteria (e.g. finding all combinations such
+    that the sum is less than a bound). Capable of generating specific
+    combinations/permutations (e.g. retrieve only the nth lexicographical
+    result) which sets up nicely for parallelization as well as random
+    sampling. Gmp support permits exploration where the total number of
+    results is large (e.g. comboSample(10000, 500, n = 4)). Additionally,
+    there are several highly efficient number theoretic functions that
+    are useful for problems common in computational mathematics. Some of
+    these functions make use of the fast integer division library
+    'libdivide' by <http://ridiculousfish.com>. The primeSieve function
+    is based on the segmented sieve of Eratosthenes implementation by
+    Kim Walisch. It is capable of generating all primes less than a
+    billion in just over 1 second. It can also quickly generate prime
+    numbers over a range (e.g. primeSieve(10^13, 10^13+10^9)). Finally,
+    there is a prime counting function that implements a simple variations
+    of Legendre's formula based on the algorithm by Kim Walisch.
 URL: https://github.com/jwood000/RcppAlgos, https://gmplib.org/,
         http://primesieve.org/, https://github.com/kimwalisch/primesieve,
         https://github.com/kimwalisch/primecount, http://libdivide.com/
