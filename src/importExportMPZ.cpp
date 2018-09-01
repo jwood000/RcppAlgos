@@ -72,7 +72,6 @@ void createMPZArray (SEXP v, mpz_t myVec[], unsigned long int sizevec) {
             break;
         }
         default:
-            // no longer: can be fatal later! return bigvec();
             Rcpp::stop("only logical, numeric or character (atomic) vectors can be coerced to 'bigz'");
     }
 }
