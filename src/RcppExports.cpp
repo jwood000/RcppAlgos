@@ -6,8 +6,8 @@
 using namespace Rcpp;
 
 // CombinatoricsRcpp
-SEXP CombinatoricsRcpp(SEXP Rv, SEXP Rm, SEXP Rrepetition, SEXP RFreqs, SEXP Rlow, SEXP Rhigh, SEXP f1, SEXP f2, SEXP lim, bool IsComb, SEXP RKeepRes, bool IsFactor, bool IsCount);
-RcppExport SEXP _RcppAlgos_CombinatoricsRcpp(SEXP RvSEXP, SEXP RmSEXP, SEXP RrepetitionSEXP, SEXP RFreqsSEXP, SEXP RlowSEXP, SEXP RhighSEXP, SEXP f1SEXP, SEXP f2SEXP, SEXP limSEXP, SEXP IsCombSEXP, SEXP RKeepResSEXP, SEXP IsFactorSEXP, SEXP IsCountSEXP) {
+SEXP CombinatoricsRcpp(SEXP Rv, SEXP Rm, SEXP Rrepetition, SEXP RFreqs, SEXP Rlow, SEXP Rhigh, SEXP f1, SEXP f2, SEXP lim, bool IsComb, SEXP RKeepRes, bool IsFactor, bool IsCount, SEXP stdFun, SEXP myEnv);
+RcppExport SEXP _RcppAlgos_CombinatoricsRcpp(SEXP RvSEXP, SEXP RmSEXP, SEXP RrepetitionSEXP, SEXP RFreqsSEXP, SEXP RlowSEXP, SEXP RhighSEXP, SEXP f1SEXP, SEXP f2SEXP, SEXP limSEXP, SEXP IsCombSEXP, SEXP RKeepResSEXP, SEXP IsFactorSEXP, SEXP IsCountSEXP, SEXP stdFunSEXP, SEXP myEnvSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -24,7 +24,9 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< SEXP >::type RKeepRes(RKeepResSEXP);
     Rcpp::traits::input_parameter< bool >::type IsFactor(IsFactorSEXP);
     Rcpp::traits::input_parameter< bool >::type IsCount(IsCountSEXP);
-    rcpp_result_gen = Rcpp::wrap(CombinatoricsRcpp(Rv, Rm, Rrepetition, RFreqs, Rlow, Rhigh, f1, f2, lim, IsComb, RKeepRes, IsFactor, IsCount));
+    Rcpp::traits::input_parameter< SEXP >::type stdFun(stdFunSEXP);
+    Rcpp::traits::input_parameter< SEXP >::type myEnv(myEnvSEXP);
+    rcpp_result_gen = Rcpp::wrap(CombinatoricsRcpp(Rv, Rm, Rrepetition, RFreqs, Rlow, Rhigh, f1, f2, lim, IsComb, RKeepRes, IsFactor, IsCount, stdFun, myEnv));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -105,8 +107,8 @@ BEGIN_RCPP
 END_RCPP
 }
 // SampleRcpp
-SEXP SampleRcpp(SEXP Rv, SEXP Rm, SEXP Rrepetition, SEXP RFreqs, SEXP Rsample, bool IsComb, bool IsFactor, double computedRows);
-RcppExport SEXP _RcppAlgos_SampleRcpp(SEXP RvSEXP, SEXP RmSEXP, SEXP RrepetitionSEXP, SEXP RFreqsSEXP, SEXP RsampleSEXP, SEXP IsCombSEXP, SEXP IsFactorSEXP, SEXP computedRowsSEXP) {
+SEXP SampleRcpp(SEXP Rv, SEXP Rm, SEXP Rrepetition, SEXP RFreqs, SEXP RindexVec, bool IsComb, bool IsFactor, SEXP RmySeed, SEXP RNumSamp, Rcpp::Function baseSample, SEXP stdFun, SEXP myEnv);
+RcppExport SEXP _RcppAlgos_SampleRcpp(SEXP RvSEXP, SEXP RmSEXP, SEXP RrepetitionSEXP, SEXP RFreqsSEXP, SEXP RindexVecSEXP, SEXP IsCombSEXP, SEXP IsFactorSEXP, SEXP RmySeedSEXP, SEXP RNumSampSEXP, SEXP baseSampleSEXP, SEXP stdFunSEXP, SEXP myEnvSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -114,24 +116,28 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< SEXP >::type Rm(RmSEXP);
     Rcpp::traits::input_parameter< SEXP >::type Rrepetition(RrepetitionSEXP);
     Rcpp::traits::input_parameter< SEXP >::type RFreqs(RFreqsSEXP);
-    Rcpp::traits::input_parameter< SEXP >::type Rsample(RsampleSEXP);
+    Rcpp::traits::input_parameter< SEXP >::type RindexVec(RindexVecSEXP);
     Rcpp::traits::input_parameter< bool >::type IsComb(IsCombSEXP);
     Rcpp::traits::input_parameter< bool >::type IsFactor(IsFactorSEXP);
-    Rcpp::traits::input_parameter< double >::type computedRows(computedRowsSEXP);
-    rcpp_result_gen = Rcpp::wrap(SampleRcpp(Rv, Rm, Rrepetition, RFreqs, Rsample, IsComb, IsFactor, computedRows));
+    Rcpp::traits::input_parameter< SEXP >::type RmySeed(RmySeedSEXP);
+    Rcpp::traits::input_parameter< SEXP >::type RNumSamp(RNumSampSEXP);
+    Rcpp::traits::input_parameter< Rcpp::Function >::type baseSample(baseSampleSEXP);
+    Rcpp::traits::input_parameter< SEXP >::type stdFun(stdFunSEXP);
+    Rcpp::traits::input_parameter< SEXP >::type myEnv(myEnvSEXP);
+    rcpp_result_gen = Rcpp::wrap(SampleRcpp(Rv, Rm, Rrepetition, RFreqs, RindexVec, IsComb, IsFactor, RmySeed, RNumSamp, baseSample, stdFun, myEnv));
     return rcpp_result_gen;
 END_RCPP
 }
 
 static const R_CallMethodDef CallEntries[] = {
-    {"_RcppAlgos_CombinatoricsRcpp", (DL_FUNC) &_RcppAlgos_CombinatoricsRcpp, 13},
+    {"_RcppAlgos_CombinatoricsRcpp", (DL_FUNC) &_RcppAlgos_CombinatoricsRcpp, 15},
     {"_RcppAlgos_DivisorsGeneral", (DL_FUNC) &_RcppAlgos_DivisorsGeneral, 4},
     {"_RcppAlgos_getAllDivisorsRcpp", (DL_FUNC) &_RcppAlgos_getAllDivisorsRcpp, 2},
     {"_RcppAlgos_PrimeFactorsContainer", (DL_FUNC) &_RcppAlgos_PrimeFactorsContainer, 2},
     {"_RcppAlgos_IsPrimeContainer", (DL_FUNC) &_RcppAlgos_IsPrimeContainer, 2},
     {"_RcppAlgos_MasterPrimeCount", (DL_FUNC) &_RcppAlgos_MasterPrimeCount, 1},
     {"_RcppAlgos_EratosthenesRcpp", (DL_FUNC) &_RcppAlgos_EratosthenesRcpp, 5},
-    {"_RcppAlgos_SampleRcpp", (DL_FUNC) &_RcppAlgos_SampleRcpp, 8},
+    {"_RcppAlgos_SampleRcpp", (DL_FUNC) &_RcppAlgos_SampleRcpp, 12},
     {NULL, NULL, 0}
 };
 
