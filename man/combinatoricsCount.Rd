@@ -22,7 +22,7 @@ permuteCount(v, m = NULL, repetition = FALSE, freqs = NULL)
 A numerical value.
 }
 \note{
-Accurate up to \eqn{2^{53} - 1}{2^53 - 1}.
+When the number of results exceeds \eqn{2^{53} - 1}{2^53 - 1}, a number of class \code{bigz} is returned.
 }
 \seealso{
 \code{\link{comboGeneral}}, \code{\link{permuteGeneral}}
@@ -36,4 +36,7 @@ comboCount(25, 12)
 permuteCount(15, 7, TRUE)
 
 comboCount(25, 12, freqs = rep(2, 25))
+
+## Return object of class 'bigz'
+comboCount(250, 120, freqs = rep(2, 250))
 }
