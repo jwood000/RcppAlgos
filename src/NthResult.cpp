@@ -1,7 +1,7 @@
 #include <CombPermUtils.h>
 #include <CountGmp.h>
 
-std::vector<int> nonZeroVec(std::vector<int> &v) {
+std::vector<int> nonZeroVec(std::vector<int> v) {
     std::vector<int> nonZero;
     
     for (std::size_t i = 0; i < v.size(); i++)
