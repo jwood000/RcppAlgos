@@ -16,9 +16,9 @@ static int seed_init = 0;
 const double sampleLimit = 4500000000000000.0;
 
 template <typename typeRcpp, typename typeVector>
-typeRcpp SampleResults(typeVector v, unsigned long int m, bool IsRep,
+typeRcpp SampleResults(typeVector &v, unsigned long int m, bool IsRep,
                        std::vector<int> myReps, unsigned long int n, bool IsGmp,
-                       bool IsComb, std::vector<double> mySample, mpz_t myBigSamp[]) {
+                       bool IsComb, std::vector<double> &mySample, mpz_t myBigSamp[]) {
     
     typeRcpp sampleMatrix = Rcpp::no_init_matrix(n, m);
     int lenV = v.size();
@@ -62,9 +62,9 @@ typeRcpp SampleResults(typeVector v, unsigned long int m, bool IsRep,
 }
 
 template <typename typeVector>
-SEXP SampleApplyFun(typeVector v, unsigned long int m, bool IsRep, bool IsGmp,
+SEXP SampleApplyFun(typeVector &v, unsigned long int m, bool IsRep, bool IsGmp,
                     std::vector<int> myReps, unsigned long int n, bool IsComb,
-                    std::vector<double> mySample, mpz_t myBigSamp[], SEXP func, SEXP rho) {
+                    std::vector<double> &mySample, mpz_t myBigSamp[], SEXP func, SEXP rho) {
 
     int lenV = v.size();
     std::vector<int> z(m);
@@ -125,12 +125,13 @@ SEXP SampleApplyFun(typeVector v, unsigned long int m, bool IsRep, bool IsGmp,
 // [[Rcpp::export]]
 SEXP SampleRcpp(SEXP Rv, SEXP Rm, SEXP Rrepetition, SEXP RFreqs, SEXP RindexVec,
                 bool IsComb, bool IsFactor, SEXP RmySeed, SEXP RNumSamp, 
-                Rcpp::Function baseSample, SEXP stdFunc, SEXP myEnv) {
+                Rcpp::Function baseSample, SEXP stdFun, SEXP myEnv) {
     
     int n, m = 0, m1, m2;
     int lenFreqs = 0;
     bool IsRepetition, IsLogical;
     bool IsMultiset, IsInteger, IsCharacter;
+    IsCharacter = IsInteger = IsLogical = false;
     
     std::vector<double> vNum;
     std::vector<int> vInt, myReps, freqsExpanded;
@@ -337,13 +338,16 @@ SEXP SampleRcpp(SEXP Rv, SEXP Rm, SEXP Rrepetition, SEXP RFreqs, SEXP RindexVec,
                 Rcpp::stop("sampleVec must be convertible to a real number");
     }
     
+    // Initialize myVec to quite compiler
     mpz_t *myVec;
+    myVec = (mpz_t *) malloc(sizeof(mpz_t));
+    mpz_init(myVec[0]);
     
     if (IsGmp) {
         mpz_t maxGmp;
         mpz_init(maxGmp);
         
-        if (LENGTH(RindexVec) > 0) {
+        if (!Rf_isNull(RindexVec)) {
             switch (TYPEOF(RindexVec)) {
                 case RAWSXP: {
                     const char* raw = (char*)RAW(RindexVec);
@@ -354,6 +358,7 @@ SEXP SampleRcpp(SEXP Rv, SEXP Rm, SEXP Rrepetition, SEXP RFreqs, SEXP RindexVec,
                     sampSize = LENGTH(RindexVec);
             }
             
+            mpz_clear(myVec[0]);
             myVec = (mpz_t *) malloc(sizeof(mpz_t) * sampSize);
             for (std::size_t i = 0; i < sampSize; ++i)
                 mpz_init(myVec[i]);
@@ -365,10 +370,11 @@ SEXP SampleRcpp(SEXP Rv, SEXP Rm, SEXP Rrepetition, SEXP RFreqs, SEXP RindexVec,
                 mpz_sub_ui(myVec[i], myVec[i], 1);
             
         } else {
-            if (seed_init == 0) {
+            // The following code is very similar to the source
+            // code of gmp::urand.bigz. The main difference is
+            // the use of mpz_urandomm instead of mpz_urandomb
+            if (seed_init == 0)
                 gmp_randinit_default(seed_state);
-                Rprintf("Seed default initialisation\n");
-            }
             
             seed_init = 1;
             
@@ -377,7 +383,6 @@ SEXP SampleRcpp(SEXP Rv, SEXP Rm, SEXP Rrepetition, SEXP RFreqs, SEXP RindexVec,
                 mpz_init(mpzSeed[0]);
                 createMPZArray(RmySeed, mpzSeed, 1);
                 gmp_randseed(seed_state, mpzSeed[0]);
-                Rprintf("Seed initialisation\n");
                 mpz_clear(mpzSeed[0]);
             }
             
@@ -421,24 +426,24 @@ SEXP SampleRcpp(SEXP Rv, SEXP Rm, SEXP Rrepetition, SEXP RFreqs, SEXP RindexVec,
                            "exceeds the maximum number of possible results");
     }
     
-    bool applyFun = !Rf_isNull(stdFunc) && !IsFactor;
+    bool applyFun = !Rf_isNull(stdFun) && !IsFactor;
     
     if (applyFun) {
-        if (!Rf_isFunction(stdFunc))
-            Rcpp::stop("stdFun must be a function!");
+        if (!Rf_isFunction(stdFun))
+            Rcpp::stop("FUN must be a function!");
         
         if (IsCharacter) {
             Rcpp::CharacterVector rcppVChar(vStr.begin(), vStr.end());
             return SampleApplyFun(rcppVChar, m, IsRepetition, IsGmp, myReps, 
-                                  sampSize, IsComb, mySample, myVec, stdFunc, myEnv);
+                                  sampSize, IsComb, mySample, myVec, stdFun, myEnv);
         } else if (IsLogical || IsInteger) {
             Rcpp::IntegerVector rcppVInt(vInt.begin(), vInt.end());
             return SampleApplyFun(rcppVInt, m, IsRepetition, IsGmp, myReps, 
-                                  sampSize, IsComb, mySample, myVec, stdFunc, myEnv);
+                                  sampSize, IsComb, mySample, myVec, stdFun, myEnv);
         } else {
             Rcpp::NumericVector rcppVNum(vNum.begin(), vNum.end());
             return SampleApplyFun(rcppVNum, m, IsRepetition, IsGmp, myReps, 
-                                  sampSize, IsComb, mySample, myVec, stdFunc, myEnv);
+                                  sampSize, IsComb, mySample, myVec, stdFun, myEnv);
         }
     }
     
