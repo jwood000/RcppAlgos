@@ -4,7 +4,7 @@
 // from Hadley Wickham's article titled 
 // "High Performance functions with Rcpp"
 // found: http://adv-r.had.co.nz/Rcpp.html
-std::vector<std::vector<int> > rleCpp(std::vector<int> x) {
+std::vector<std::vector<int> > rleCpp(std::vector<int> &x) {
     std::vector<int> lengths, numUni, values;
     std::vector<int>::iterator it, xBeg, xEnd;
     xBeg = x.begin() + 1; xEnd = x.end();
@@ -31,7 +31,7 @@ std::vector<std::vector<int> > rleCpp(std::vector<int> x) {
     return myList;
 }
 
-double NumPermsWithRep(std::vector<int> v) {
+double NumPermsWithRep(std::vector<int> &v) {
     std::vector<std::vector<int> > myRle = rleCpp(v);
     int n = v.size(), myMax;
     std::vector<int> myLens = myRle[0], myUnis = myRle[2];
@@ -89,7 +89,7 @@ double NumCombsWithRep(int n, int r) {
 //         than or equal to n
 //      2) that the repetition of the each element 
 //         isn't the same
-double MultisetCombRowNum(int n, int r, std::vector<int> Reps) {
+double MultisetCombRowNum(int n, int r, std::vector<int> &Reps) {
     
     if (r < 1 || n <= 1)
         return 1;
@@ -132,7 +132,7 @@ double MultisetCombRowNum(int n, int r, std::vector<int> Reps) {
 // we create all combinations of the multiset, then
 // subsequently count the number of permutations
 // of each of those combinations.
-double MultisetPermRowNum(int n, int r, std::vector<int> myReps) {
+double MultisetPermRowNum(int n, int r, std::vector<int> &myReps) {
     
     if (n < 2 || r < 1)
         return 1.0;
