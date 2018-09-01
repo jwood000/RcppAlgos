@@ -32,6 +32,7 @@ The \strong{RcppAlgos} package attacks age-old problems in combinatorics and com
             ## analyze permutations
             ## output results
     }, mc.cores = detectCores() - 1))}}
+                        \item{\code{permuteSample(rnorm(100), 10, freqs = rep(1:4, 25), n = 15, seed = 123)}}
                     }
                 }
             }}
