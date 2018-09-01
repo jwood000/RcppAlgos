@@ -7,7 +7,7 @@
  * utilize the gmp library and deal mostly with mpz_t types
  */
 
-void NumPermsWithRepGmp(mpz_t result, std::vector<int> v) {
+void NumPermsWithRepGmp(mpz_t result, std::vector<int> &v) {
     mpz_set_ui(result, 1);
     std::vector<std::vector<int> > myRle = rleCpp(v);
     int n = v.size(), myMax;
@@ -47,7 +47,7 @@ void NumCombsWithRepGmp(mpz_t result, int n, int r) {
     nChooseKGmp(result, n + r - 1, r);
 }
 
-void MultisetCombRowNumGmp(mpz_t result, int n, int r, std::vector<int> Reps) {
+void MultisetCombRowNumGmp(mpz_t result, int n, int r, std::vector<int> &Reps) {
     
     if (r >= 1 && n > 1) {
         int i, k, j, myMax, r1 = r + 1;
@@ -105,7 +105,7 @@ void MultisetCombRowNumGmp(mpz_t result, int n, int r, std::vector<int> Reps) {
     }
 }
 
-void MultisetPermRowNumGmp(mpz_t result, int n, int r, std::vector<int> myReps) {
+void MultisetPermRowNumGmp(mpz_t result, int n, int r, std::vector<int> &myReps) {
     
     int sumFreqs = std::accumulate(myReps.begin(), myReps.end(), 0);
     
