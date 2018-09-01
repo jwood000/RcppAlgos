@@ -6,23 +6,25 @@
 namespace Permutations {
     
     template <typename typeMatrix, typename typeVector>
-    typeMatrix PermuteGeneral(int n, int r, typeVector v, bool repetition,
-                              int numRows, bool xtraCol, std::vector<int> z, bool nonTrivial) {
+    typeMatrix PermuteGeneral(int n, int r, typeVector &v, bool repetition,
+                              int numRows, bool xtraCol, std::vector<int> &z, bool nonTrivial) {
         
         unsigned long int uN = n, uR = r, uRowN = numRows;
-        unsigned long int chunk, numCols, segment;
+        unsigned long int numCols, lastElem = n - 1;
+        unsigned long int lastCol = r - 1;
+        
         numCols = xtraCol ? (uR + 1) : uR;
         typeMatrix permuteMatrix = Rcpp::no_init_matrix(uRowN, numCols);
         
         if (repetition) {
-            int r1 = r - 1, n1 = n - 1;
+            int lastElemInt = lastElem;
             
             for (std::size_t i = 0; i < uRowN; ++i) {
                 for (std::size_t j = 0; j < uR; ++j)
                     permuteMatrix(i, j) = v[z[j]];
                 
-                for (int k = r1; k >= 0; --k) {
-                    if (z[k] != n1) {
+                for (int k = lastCol; k >= 0; --k) {
+                    if (z[k] != lastElemInt) {
                         ++z[k];
                         break;
                     } else {
@@ -33,27 +35,25 @@ namespace Permutations {
             
         } else if (nonTrivial) {
             
+            unsigned long int numR1 = numRows - 1;
             uint16_t *arrPerm = new uint16_t[uN];
 
             for (std::size_t i = 0; i < uN; ++i)
                 arrPerm[i] = (uint16_t) z[i];
-            
-            unsigned long int numR1 = numRows - 1;
-            unsigned long int r1 = uR - 1, n1 = uN - 1;
             
             if (r == n) {
                 for (std::size_t i = 0; i < numR1; ++i) {
                     for (std::size_t j = 0; j < uR; ++j)
                         permuteMatrix(i, j) = v[arrPerm[j]];
                     
-                    nextFullPerm(arrPerm, n1);
+                    nextFullPerm(arrPerm, lastElem);
                 }
             } else {
                 for (std::size_t i = 0; i < numR1; ++i) {
                     for (std::size_t j = 0; j < uR; ++j)
                         permuteMatrix(i, j) = v[arrPerm[j]];
                     
-                    nextPartialPerm(arrPerm, uR, r1, uR, n1, uN);
+                    nextPartialPerm(arrPerm, uR, lastCol, uR, lastElem, uN);
                 }
             }
             
@@ -62,139 +62,80 @@ namespace Permutations {
                 permuteMatrix(numR1, j) = v[arrPerm[j]];
             
             delete[] arrPerm;
-            return permuteMatrix;
-            
         } else {
             
-            if (r == 1) {
-                for (std::size_t i = 0; i < uN; i++)
-                    permuteMatrix(i, 0) = v[i];
-                return permuteMatrix;
-            }
-            
-            unsigned long int phaseOne, maxN = NumPermsNoRep(n, r);
-            chunk = segment = maxN / uN;
-            phaseOne = (uRowN < segment) ? uRowN : segment;
-            uint16_t *indexMat = new uint16_t[phaseOne * uR];
-            unsigned long int start, last, colInd = 0;
-            
-            if (r < n) {
-                std::vector<uint16_t> indexVec(uN), origSeqeunce(uN);
-                std::iota(origSeqeunce.begin(), origSeqeunce.end(), 0);
-                indexVec = origSeqeunce;
-                
-                std::vector<char> whichPerm(uN, 1);
-                int resetInd = 0, resetSize = uN;
-                unsigned long int colLim = 1;
-                
-                for (std::size_t i = 0; i < uR; ++i) {
-                    colInd = i;
-                    start = last = resetInd = 0;
-                    
-                    while (last < phaseOne) {
-                        ++resetInd;
-                        
-                        for (std::size_t j = 0; (j < colLim) && (start < uRowN); ++j, start += chunk) {
-                            last += chunk;
-                            if (last > uRowN)
-                                last = uRowN;
-                            
-                            for (std::size_t k = start; k < last; ++k, colInd += uR) {
-                                permuteMatrix(k, i) = v[indexVec[j]];
-                                indexMat[colInd] = indexVec[j];
-                            }
-                        }
-                        
-                        if (start < phaseOne) {
-                            if (i == 2) {
-                                --indexVec[resetInd - 1];
-                            } else if (i > 2) {
-                                if (resetInd <= resetSize) {
-                                    indexVec[resetInd - 1] = indexMat[(i - 1) + (start - 1) * uR];
-                                } else {
-                                    resetInd = 0;
-                                    std::fill(whichPerm.begin() + 1, whichPerm.end(), 1);
-                                    for (std::size_t j = 1, k = 1 + (start * uR); j < i; ++j, ++k)
-                                        whichPerm[indexMat[k]] = 0;
-                                    
-                                    for (std::size_t j = 1, k = 0; j < uN; ++j)
-                                        if (whichPerm[j])
-                                            indexVec[k++] = j;
-                                }
-                            }
-                        }
-                    }
-                    
-                    --resetSize;
-                    colLim = resetSize;
-                    chunk /= resetSize;
-                    
-                    origSeqeunce.erase(origSeqeunce.begin());
-                    indexVec = origSeqeunce;
-                }
+            if (n > 1) {
+                unsigned long int phaseOne, maxN = NumPermsNoRep(n, r);
+                unsigned long int segment = maxN / uN, colInd = 0;;
+                phaseOne = (uRowN < segment) ? uRowN : segment;
     
-            } else {
-                
+                uint16_t *indexMat = new uint16_t[phaseOne * uR];
                 uint16_t *arrPerm = new uint16_t[uN];
                 
                 for (std::size_t i = 0; i < uN; ++i)
                     arrPerm[i] = (uint16_t) i;
-                
-                unsigned long int n1 = n - 1;
-                
-                for (std::size_t i = 0; i < phaseOne; ++i) {
-                    for (std::size_t j = 0; j < uN; ++j, ++colInd) {
-                        permuteMatrix(i, j) = v[arrPerm[j]];
-                        indexMat[colInd] = arrPerm[j];
+    
+                if (r == n) {
+                    for (std::size_t i = 0; i < phaseOne; ++i) {
+                        for (std::size_t j = 0; j < uN; ++j, ++colInd) {
+                            permuteMatrix(i, j) = v[arrPerm[j]];
+                            indexMat[colInd] = arrPerm[j];
+                        }
+                        
+                        nextFullPerm(arrPerm, lastElem);
                     }
-                    
-                    nextFullPerm(arrPerm, n1);
+                } else {
+                    for (std::size_t i = 0; i < phaseOne; ++i) {
+                        for (std::size_t j = 0; j < uR; ++j, ++colInd) {
+                            permuteMatrix(i, j) = v[arrPerm[j]];
+                            indexMat[colInd] = arrPerm[j];
+                        }
+                        
+                        nextPartialPerm(arrPerm, uR, lastCol, uR, lastElem, uN);
+                    }
                 }
                 
+                unsigned long int start = segment, last = 2 * segment;
+                unsigned long int ind = 1;
+                typeVector vTemp(1);
+                
+                for (; start < uRowN; start += segment, last += segment, ++ind) {
+                    vTemp[0] = v[0];
+                    v[0] = v[ind];
+                    v[ind] = vTemp[0];
+        
+                    if (last > uRowN)
+                        last = uRowN;
+    
+                    for (std::size_t i = start, k = 0; i < last; ++i)
+                        for (std::size_t j = 0; j < uR; ++j, ++k)
+                            permuteMatrix(i, j) = v[indexMat[k]];
+                }
+        
+                delete[] indexMat;
                 delete[] arrPerm;
+            } else {
+                permuteMatrix(0, 0) = v[0];
             }
-            
-            start = last = segment;
-            last += segment;
-            unsigned long int ind = 0;
-            typeVector vTemp(1);
-            
-            for (; start < uRowN; start += segment, last += segment) {
-                ++ind;
-                vTemp[0] = v[0];
-                v[0] = v[ind];
-                v[ind] = vTemp[0];
-    
-                if (last > uRowN)
-                    last = uRowN;
-
-                for (std::size_t i = start, k = 0; i < last; ++i)
-                    for (std::size_t j = 0; j < uR; ++j, ++k)
-                        permuteMatrix(i, j) = v[indexMat[k]];
-            }
-    
-            delete[] indexMat;
         }
         
         return permuteMatrix;
     }
     
     template <typename typeMatrix, typename typeVector>
-    typeMatrix MultisetPermutation(int n, int r, typeVector v,
-                                   std::vector<int> Reps,
-                                   int numRows, bool xtraCol,
-                                   std::vector<int> z) {
+    typeMatrix MultisetPermutation(int n, int r, typeVector &v, int numRows,
+                                   bool xtraCol, std::vector<int> &z) {
         
-        unsigned long int numCols, sumReps;
-        sumReps = std::accumulate(Reps.begin(), Reps.end(), 0);
+        unsigned long int numCols;
+        unsigned long int lenFreqs = z.size();
         
         bool retAllPerms = true;
         
-        if (r < (int) sumReps) {
+        if (r < (int) lenFreqs) {
             numCols = r;
             retAllPerms = false;
         } else {
-            numCols = sumReps;
+            numCols = lenFreqs;
         }
         
         unsigned long int arrLength = numCols;
@@ -203,29 +144,28 @@ namespace Permutations {
             ++numCols;
         
         typeMatrix permuteMatrix = Rcpp::no_init_matrix(numRows, numCols);
-        uint16_t *arrPerm = new uint16_t[sumReps];
+        uint16_t *arrPerm = new uint16_t[lenFreqs];
         
-        for (std::size_t j = 0; j < sumReps; ++j)
+        for (std::size_t j = 0; j < lenFreqs; ++j)
             arrPerm[j] = (uint16_t) z[j];
         
-        unsigned long int numR1 = numRows - 1;
-        unsigned long int r1 = r - 1;
-        unsigned long int n1 = sumReps - 1;
+        unsigned long int uN = n, numR1 = numRows - 1;
+        unsigned long int uR = r, uR1 = r - 1;
+        unsigned long int lastElem = lenFreqs - 1;
         
         if (retAllPerms) {
             for (std::size_t i = 0; i < numR1; ++i) {
                 for (std::size_t j = 0; j < arrLength; ++j)
                     permuteMatrix(i, j) = v[arrPerm[j]];
                 
-                nextFullPerm(arrPerm, n1);
+                nextFullPerm(arrPerm, lastElem);
             }
-            
         } else {
             for (std::size_t i = 0; i < numR1; ++i) {
                 for (std::size_t j = 0; j < arrLength; ++j)
                     permuteMatrix(i, j) = v[arrPerm[j]];
                 
-                nextPartialPerm(arrPerm, arrLength, r1, r, n1, n);
+                nextPartialPerm(arrPerm, arrLength, uR1, uR, lastElem, uN);
             }
         }
         
@@ -235,6 +175,90 @@ namespace Permutations {
         
         delete[] arrPerm;
         return permuteMatrix;
+    }
+    
+    template <typename typeVector>
+    SEXP PermutationApplyFun(int n, int r, typeVector &v, bool repetition,
+                              int numRows, bool Multi, std::vector<int> &z,
+                              SEXP func, SEXP rho) {
+        
+        unsigned long int lenFreqs = 0, uR = r, uN = n;
+        bool retAllPerms = true;
+        
+        if (Multi) {
+            lenFreqs = z.size();
+            if (r < (int) lenFreqs)
+                retAllPerms = false;
+        } else {
+            if (!repetition && n != r)
+                retAllPerms = false;
+        }
+        
+        SEXP ans = PROTECT(Rf_allocVector(VECSXP, numRows));
+        SEXP R_fcall = PROTECT(Rf_lang2(func, R_NilValue));
+        typeVector vectorPass(r);
+        
+        unsigned long int numR1 = numRows - 1;
+        unsigned long int uRowN = numRows, uR1 = uR - 1;
+        unsigned long int lastElem = (Multi) ? (lenFreqs - 1) : (n - 1);
+        
+        if (!Multi && repetition) {
+            int lastElemInt = lastElem;
+            
+            for (std::size_t i = 0; i < uRowN; ++i) {
+                for (std::size_t j = 0; j < uR; ++j)
+                    vectorPass[j] = v[z[j]];
+
+                SETCADR(R_fcall, vectorPass);
+                SET_VECTOR_ELT(ans, i, Rf_eval(R_fcall, rho));
+
+                for (int k = uR1; k >= 0; --k) {
+                    if (z[k] != lastElemInt) {
+                        ++z[k];
+                        break;
+                    } else {
+                        z[k] = 0;
+                    }
+                }
+            }
+        } else {
+            unsigned long int arrLength = lastElem + 1;
+            uint16_t *arrPerm = new uint16_t[arrLength];
+            
+            for (std::size_t i = 0; i < arrLength; ++i)
+                arrPerm[i] = (uint16_t) z[i];
+            
+            if (retAllPerms) {
+                for (std::size_t i = 0; i < numR1; ++i) {
+                    for (std::size_t j = 0; j < uR; ++j)
+                        vectorPass[j] = v[arrPerm[j]];
+                    
+                    SETCADR(R_fcall, vectorPass);
+                    SET_VECTOR_ELT(ans, i, Rf_eval(R_fcall, rho));
+                    nextFullPerm(arrPerm, lastElem);
+                }
+            } else {
+                for (std::size_t i = 0; i < numR1; ++i) {
+                    for (std::size_t j = 0; j < uR; ++j)
+                        vectorPass[j] = v[arrPerm[j]];
+                        
+                    SETCADR(R_fcall, vectorPass);
+                    SET_VECTOR_ELT(ans, i, Rf_eval(R_fcall, rho));
+                    nextPartialPerm(arrPerm, uR, uR1, uR, lastElem, uN);
+                }
+            }
+            
+            // Get last permutation
+            for (std::size_t j = 0; j < uR; ++j)
+                vectorPass[j] = v[arrPerm[j]];
+
+            SETCADR(R_fcall, vectorPass);
+            SET_VECTOR_ELT(ans, numR1, Rf_eval(R_fcall, rho));
+            delete[] arrPerm;
+        }
+        
+        UNPROTECT(2);
+        return ans;
     }
 }
 
