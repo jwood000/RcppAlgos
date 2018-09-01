@@ -5,16 +5,21 @@
 Generate all Combinations/Permutations of a Vector with/without Constraints
 }
 \description{
-Quickly generate all combinations or permutations of a vector, chosen \eqn{m} at a time, with or without constraints using Rcpp. The output is in lexicographical order.
+    \itemize{
+        \item Quickly generate all combinations or permutations of a vector, chosen \eqn{m} at a time, with or without constraints using Rcpp.
+        \item Arguments \code{lower} and \code{upper} make it possible to generate combinations/permutations in chunks allowing for parallelization.
+        \item GMP support allows for exploration of combinations/permutations of vectors with many elements.
+        \item The output is in lexicographical order.
+    }
 }
 \usage{
 comboGeneral(v, m = NULL, repetition = FALSE, freqs = NULL, lower = NULL,
                upper = NULL, constraintFun = NULL, comparisonFun = NULL,
-                   limitConstraints = NULL, keepResults = FALSE)
+                   limitConstraints = NULL, keepResults = FALSE, FUN = NULL)
 
 permuteGeneral(v, m = NULL, repetition = FALSE, freqs = NULL, lower = NULL,
                  upper = NULL, constraintFun = NULL, comparisonFun = NULL,
-                    limitConstraints = NULL, keepResults = FALSE)
+                    limitConstraints = NULL, keepResults = FALSE, FUN = NULL)
 }
 \arguments{
   \item{v}{Source vector. If \code{v} is an integer (including nonpositive integers), it will be converted to the sequence \code{1:v}.}
@@ -34,39 +39,42 @@ permuteGeneral(v, m = NULL, repetition = FALSE, freqs = NULL, lower = NULL,
   
   When \code{comparisonFun} is a vector of two comparison strings, say \code{comparisonFun = c(comp1, comp2)}, and \code{limitConstraints} is a vector of two numerical values, say \code{limitConstraints = c(x1, x2)}, the combinations/permutations will be filtered in one of the following two ways:
   \enumerate{
-  \item{When \code{comp1} is one of the 'less than' operators (i.e. "<=" or "<"), \code{comp2} is one of the 'greater-than' operators (i.e. ">=" or ">"), and \code{x1 < x2}, the combinations/permutations that are returned will have a value (after \code{constraintFun} has been applied) between \code{x1} and \code{x2}.}
-  \item{When \code{comp1} and \code{comp2} are defined as in #1 and \code{x1 > x2}, the combinations/permutations that are returned will have a value outside the range of \code{x1} and \code{x2}. See the examples below.}
-  }}
+      \item{When \code{comp1} is one of the 'less than' operators (i.e. "<=" or "<"), \code{comp2} is one of the 'greater-than' operators (i.e. ">=" or ">"), and \code{x1 < x2}, the combinations/permutations that are returned will have a value (after \code{constraintFun} has been applied) between \code{x1} and \code{x2}.}
+      \item{When \code{comp1} and \code{comp2} are defined as in #1 and \code{x1 > x2}, the combinations/permutations that are returned will have a value outside the range of \code{x1} and \code{x2}. See the examples below.}
+        }
+    }
   \item{limitConstraints}{This is the value(s) that will be used for comparison. Can be passed as a single value or a vector of two numerical values. The default is \code{NULL}. See the definition of \code{comparisonFun} as well as the examples below for more information.}
   \item{keepResults}{A logical flag indicating if the result of \code{constraintFun} applied to \code{v} should be displayed; if \code{TRUE}, an additional column of results will be added to the resulting matrix. The default is \code{FALSE}.}
+  \item{FUN}{Function to be applied to each combination/permutation. The default is \code{NULL}.}
 }
 \value{
 In general, a matrix is returned with each row containing a vector of length \eqn{m} or \eqn{m + 1} depending on the value of \code{keepResults}. If \code{m} isn't supplied and \code{freqs} is given, a matrix is returned with each row containing a vector of length \code{sum(freqs)}.
 }
 \details{
-Finding all combinations/permutations with constraints is optimized by organizing them in such a way that when \code{constraintFun} is applied, a monotonic sequence is produced. Combinations/permutations are added successively, until a particular combination exceeds the given constraint value for a given constraint/comparison function combo. After this point, we can safely skip several combinations knowing that they will exceed the given constraint value.
+Finding all combinations/permutations with constraints is optimized by organizing them in such a way that when \code{constraintFun} is applied, a \emph{partially} monotonic sequence is produced. Combinations/permutations are added successively, until a particular combination exceeds the given constraint value for a given constraint/comparison function combo. After this point, we can safely skip several combinations knowing that they will exceed the given constraint value.
 
 When there are any negative values in \code{v} and \code{constraintFun = "prod"}, producing a monotonic set is non-trivial for the general case. As a result, performance will suffer as all combinations/permutations must be tested against the constraint criteria. Additionally, \code{upper} will not have its normal effectiveness (\emph{i.e.} it will only limit the number of rows after producing all combinations/permutations).
 }
 \note{
-\itemize{
-\item If either \code{constraintFun}, \code{comparisonFun} or \code{limitConstraints} is \code{NULL}, the constraint check will not be carried out. This is equivalent to simply finding all combinations/permutations of \eqn{v} choose \eqn{m}.
-\item The maximum number of combinations/permutations that can be generated at one time is \eqn{2^{31} - 1}{2^31 - 1}. Utilizing \code{lower} and \code{upper} makes it possible to generate additional combinations/permutations.
-\item Factor vectors are accepted. Class and level attributes are preserved.
-\item lexicographical ordering isn't guaranteed for permutations if \code{lower} isn't supplied and the output is constrained.
-\item If \code{lower} is supplied and the output is constrained, the combinations/permutations that will be tested will be in the lexicographical range \code{lower} to \code{upper} or to the total possible number of results if \code{upper} is not given. See the second paragraph for the definition of \code{upper}. 
-}
+    \itemize{
+        \item If either \code{constraintFun}, \code{comparisonFun} or \code{limitConstraints} is \code{NULL}, the constraint check will not be carried out. This is equivalent to simply finding all combinations/permutations of \eqn{v} choose \eqn{m}.
+        \item The maximum number of combinations/permutations that can be generated at one time is \eqn{2^{31} - 1}{2^31 - 1}. Utilizing \code{lower} and \code{upper} makes it possible to generate additional combinations/permutations.
+        \item Factor vectors are accepted. Class and level attributes are preserved.
+        \item Lexicographical ordering isn't guaranteed for permutations if \code{lower} isn't supplied and the output is constrained.
+        \item If \code{lower} is supplied and the output is constrained, the combinations/permutations that will be tested will be in the lexicographical range \code{lower} to \code{upper} or to the total possible number of results if \code{upper} is not given. See the second paragraph for the definition of \code{upper}.
+        \item \code{FUN} will be ignored if the constraint check is satisfied.
+    }
 }
 \author{
 Joseph Wood
 }
 \references{
-\itemize{
-\item{\href{http://gallery.rcpp.org/articles/passing-cpp-function-pointers/}{Passing user-supplied C++ functions}}
-\item{\href{https://en.wikipedia.org/wiki/Monotonic_function}{Monotonic Sequence}}
-\item{\href{https://en.wikipedia.org/wiki/Multiset}{Multiset}}
-\item{\href{https://en.wikipedia.org/wiki/Lexicographical_order}{Lexicographical order}}
-}
+    \itemize{
+        \item{\href{http://gallery.rcpp.org/articles/passing-cpp-function-pointers/}{Passing user-supplied C++ functions}}
+        \item{\href{https://en.wikipedia.org/wiki/Monotonic_function}{Monotonic Sequence}}
+        \item{\href{https://en.wikipedia.org/wiki/Multiset}{Multiset}}
+        \item{\href{https://en.wikipedia.org/wiki/Lexicographical_order}{Lexicographical order}}
+    }
 }
 \examples{
 system.time(comboGeneral(17, 8))
@@ -90,6 +98,14 @@ comboGeneral(4, m = 2, freqs = c(4,3,2,5))
 ## Generate some random data
 set.seed(1009)
 mySamp = sort(rnorm(75, 997, 23))
+
+permuteCount(75, 10, freqs = rep(1:3, 25))
+# >Big Integer ('bigz') :
+# >[1] 4606842576291495952
+
+## See specific range of permutations
+permuteGeneral(75, 10, freqs = rep(1:3, 25), 
+               lower = 1e12, upper = 1e12 + 10)
 
 ## Researcher only needs 1000 7-tuples of mySamp
 ## such that the sum is greater than 7200.
@@ -147,6 +163,20 @@ comboGeneral(5, 7, TRUE, constraintFun = "prod",
              comparisonFun = c("<=",">="),
              limitConstraints = c(10, 40000),
              keepResults = TRUE)
+             
+## Using FUN
+comboGeneral(10000, 5, lower = 20, upper = 22, 
+             FUN = function(x) {
+                 which(cummax(x) \%\% 2 == 1)
+             })
+# [[1]]
+# [1] 1 3
+# 
+# [[2]]
+# [1] 1 3 5
+# 
+# [[3]]
+# [1] 1 3
 
 \dontrun{
 ## Parallel example generating more than 2^31 - 1 combinations.
