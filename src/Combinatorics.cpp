@@ -580,8 +580,6 @@ SEXP CombinatoricsRcpp(SEXP Rv, SEXP Rm, SEXP Rrepetition, SEXP RFreqs, SEXP Rlo
         }
     }
     
-    // Rcpp::print(Rcpp::wrap(freqsExpanded));
-    
     if (Rf_isNull(Rm)) {
         if (IsMultiset) {
             m = freqsExpanded.size();
@@ -899,6 +897,7 @@ SEXP CombinatoricsRcpp(SEXP Rv, SEXP Rm, SEXP Rrepetition, SEXP RFreqs, SEXP Rlo
             
             userNumRows = mpz_get_d(upperMpz[0]);
         } else if (bUpper) {
+            permNonTrivial = true;
             if (mpz_cmp_d(upperMpz[0], INT_MAX) > 0)
                 Rcpp::stop("The number of rows cannot exceed 2^31 - 1.");
                 
