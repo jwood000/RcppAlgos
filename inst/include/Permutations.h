@@ -53,7 +53,7 @@ namespace Permutations {
                     for (std::size_t j = 0; j < uR; ++j)
                         permuteMatrix(i, j) = v[arrPerm[j]];
                     
-                    nextPartialPerm(arrPerm, uR, lastCol, uR, lastElem, uN);
+                    nextPartialPerm(arrPerm, uR, lastCol, uN, lastElem);
                 }
             }
             
@@ -62,6 +62,7 @@ namespace Permutations {
                 permuteMatrix(numR1, j) = v[arrPerm[j]];
             
             delete[] arrPerm;
+            
         } else {
             
             if (n > 1) {
@@ -91,7 +92,7 @@ namespace Permutations {
                             indexMat[colInd] = arrPerm[j];
                         }
                         
-                        nextPartialPerm(arrPerm, uR, lastCol, uR, lastElem, uN);
+                        nextPartialPerm(arrPerm, uR, lastCol, uN, lastElem);
                     }
                 }
                 
@@ -126,19 +127,12 @@ namespace Permutations {
     typeMatrix MultisetPermutation(int n, int r, typeVector &v, int numRows,
                                    bool xtraCol, std::vector<int> &z) {
         
-        unsigned long int numCols;
+        unsigned long int numCols = r;
         unsigned long int lenFreqs = z.size();
-        
         bool retAllPerms = true;
         
-        if (r < (int) lenFreqs) {
-            numCols = r;
+        if (r < (int) lenFreqs)
             retAllPerms = false;
-        } else {
-            numCols = lenFreqs;
-        }
-        
-        unsigned long int arrLength = numCols;
         
         if (xtraCol)
             ++numCols;
@@ -150,27 +144,27 @@ namespace Permutations {
             arrPerm[j] = (uint16_t) z[j];
         
         unsigned long int uN = n, numR1 = numRows - 1;
-        unsigned long int uR = r, uR1 = r - 1;
+        unsigned long int uR = r, lastCol = r - 1;
         unsigned long int lastElem = lenFreqs - 1;
         
         if (retAllPerms) {
             for (std::size_t i = 0; i < numR1; ++i) {
-                for (std::size_t j = 0; j < arrLength; ++j)
+                for (std::size_t j = 0; j < uR; ++j)
                     permuteMatrix(i, j) = v[arrPerm[j]];
                 
                 nextFullPerm(arrPerm, lastElem);
             }
         } else {
             for (std::size_t i = 0; i < numR1; ++i) {
-                for (std::size_t j = 0; j < arrLength; ++j)
+                for (std::size_t j = 0; j < uR; ++j)
                     permuteMatrix(i, j) = v[arrPerm[j]];
                 
-                nextPartialPerm(arrPerm, arrLength, uR1, uR, lastElem, uN);
+                nextPartialPerm(arrPerm, uR, lastCol, uN, lastElem);
             }
         }
         
         // Get last permutation
-        for (std::size_t j = 0; j < arrLength; ++j)
+        for (std::size_t j = 0; j < uR; ++j)
             permuteMatrix(numR1, j) = v[arrPerm[j]];
         
         delete[] arrPerm;
@@ -199,7 +193,7 @@ namespace Permutations {
         typeVector vectorPass(r);
         
         unsigned long int numR1 = numRows - 1;
-        unsigned long int uRowN = numRows, uR1 = uR - 1;
+        unsigned long int uRowN = numRows, lastCol = uR - 1;
         unsigned long int lastElem = (Multi) ? (lenFreqs - 1) : (n - 1);
         
         if (!Multi && repetition) {
@@ -212,7 +206,7 @@ namespace Permutations {
                 SETCADR(R_fcall, vectorPass);
                 SET_VECTOR_ELT(ans, i, Rf_eval(R_fcall, rho));
 
-                for (int k = uR1; k >= 0; --k) {
+                for (int k = lastCol; k >= 0; --k) {
                     if (z[k] != lastElemInt) {
                         ++z[k];
                         break;
@@ -244,7 +238,7 @@ namespace Permutations {
                         
                     SETCADR(R_fcall, vectorPass);
                     SET_VECTOR_ELT(ans, i, Rf_eval(R_fcall, rho));
-                    nextPartialPerm(arrPerm, uR, uR1, uR, lastElem, uN);
+                    nextPartialPerm(arrPerm, uR, lastCol, uN, lastElem);
                 }
             }
             
