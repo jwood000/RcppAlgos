@@ -228,12 +228,12 @@ void nextFullPerm(uint16_t *myArray, unsigned long int &n1) {
 // and swap them. We can then proceed to the next perm.
 // We can do this because the standard algo would end
 // up performing two unnecessary reversings.
-void nextPartialPerm(uint16_t *myArray, unsigned long int &nCols, 
-                     unsigned long int &r1, unsigned long int &r,
-                     unsigned long int &n1, unsigned long int &n) {
+void nextPartialPerm(uint16_t *myArray, unsigned long int &r, 
+                     unsigned long int &r1, unsigned long int &n,
+                     unsigned long int &lastElem) {
     
     uint16_t temp;
-    unsigned long int p1 = nCols;
+    unsigned long int p1 = r1;
     
     while (p1 < n && myArray[r1] >= myArray[p1])
         ++p1;
@@ -243,17 +243,17 @@ void nextPartialPerm(uint16_t *myArray, unsigned long int &nCols,
         myArray[p1] = myArray[r1];
         myArray[r1] = temp;
     } else {
-        for (std::size_t k = r, q = n1; k < q; ++k, --q) {
+        for (std::size_t k = r, q = lastElem; k < q; ++k, --q) {
             temp = myArray[k];
             myArray[k] = myArray[q];
             myArray[q] = temp;
         }
 
-        p1 = n1 - 1;
+        p1 = lastElem - 1;
         while (myArray[p1 + 1] <= myArray[p1])
             --p1;
 
-        unsigned long int p2 = n1;
+        unsigned long int p2 = lastElem;
 
         while (myArray[p2] <= myArray[p1])
             --p2;
@@ -262,7 +262,7 @@ void nextPartialPerm(uint16_t *myArray, unsigned long int &nCols,
         myArray[p1] = myArray[p2];
         myArray[p2] = temp;
         
-        for (std::size_t k = p1 + 1, q = n1; k < q; ++k, --q) {
+        for (std::size_t k = p1 + 1, q = lastElem; k < q; ++k, --q) {
             temp = myArray[k];
             myArray[k] = myArray[q];
             myArray[q] = temp;

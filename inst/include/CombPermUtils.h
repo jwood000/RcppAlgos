@@ -13,8 +13,8 @@ double MultisetPermRowNum(int n, int r, std::vector<int> &myReps);
 
 void nextFullPerm(uint16_t *myArray, unsigned long int &n1);
 
-void nextPartialPerm(uint16_t *myArray, unsigned long int &nCols, 
-                     unsigned long int &r1, unsigned long int &r,
-                     unsigned long int &n1, unsigned long int &n);
+void nextPartialPerm(uint16_t *myArray, unsigned long int &r,
+                     unsigned long int &r1, unsigned long int &n,
+                     unsigned long int &lastElem);
 
 #endif
