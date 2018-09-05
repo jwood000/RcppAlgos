@@ -191,15 +191,14 @@ double MultisetPermRowNum(int n, int r, std::vector<int> &myReps) {
 
 // This algorithm is nearly identical to the
 // one found in the standard algorithm library
-void nextFullPerm(uint16_t *myArray, unsigned long int &n1) {
+void nextFullPerm(uint16_t *myArray, unsigned long int &n1,
+                  unsigned long int &n2) {
     
-    unsigned long int p1 = n1, p2 = n1;
+    unsigned long int p1 = n2, p2 = n1;
     uint16_t temp;
     
-    while (myArray[p1] <= myArray[p1 - 1])
+    while (myArray[p1 + 1] <= myArray[p1])
         --p1;
-    
-    --p1;
     
     while (myArray[p2] <= myArray[p1])
         --p2;
@@ -249,7 +248,7 @@ void nextPartialPerm(uint16_t *myArray, unsigned long int &r,
             myArray[q] = temp;
         }
 
-        p1 = lastElem - 1;
+        p1 = r1;
         while (myArray[p1 + 1] <= myArray[p1])
             --p1;
 
@@ -269,3 +268,4 @@ void nextPartialPerm(uint16_t *myArray, unsigned long int &r,
         }
     }
 }
+
