@@ -568,6 +568,7 @@ SEXP CombinatoricsRcpp(SEXP Rv, SEXP Rm, SEXP Rrepetition, SEXP RFreqs, SEXP Rlo
         myReps.push_back(1);
     } else {
         IsMultiset = true;
+        IsRepetition = false;
         CleanConvert::convertVector(RFreqs, myReps, "freqs must be of type numeric or integer");
         
         lenFreqs = (int) myReps.size();
