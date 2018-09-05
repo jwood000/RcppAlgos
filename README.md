@@ -247,7 +247,7 @@ system.time(mclapply(seq(1, 3247943160, 10086780), function(x) {
      x
 }, mc.cores = 6))
    user  system elapsed 
- 63.783  26.831  45.891
+125.361  85.916  35.641
 ```
 These arguments are also useful when one needs to explore combinations/permutations of really large vectors:
 ```r
@@ -264,7 +264,7 @@ system.time(b <- comboGeneral(myVec, 50, TRUE,
                               lower = 1e15 + 1,
                               upper = 1e15 + 1e5))
    user  system elapsed 
-  0.017   0.011   0.033
+  0.008   0.001   0.010
   
 b[1:5, 45:50]
           [,1]      [,2]      [,3]     [,4]      [,5]       [,6]
@@ -315,6 +315,17 @@ permuteSample(500, 10, TRUE, n = 5, seed = 123)
 [3,]  235  325   94   27  370  117  302   86  229   126
 [4,]  284  104  464  104  207  127  117    9  390   414
 [5,]  456   76  381  456  219   23  376  187   11   123
+
+permuteSample(factor(state.abb), 15, n = 3, seed = 50)
+     [,1] [,2] [,3] [,4] [,5] [,6] [,7] [,8] [,9] [,10] [,11] [,12] [,13] [,14] [,15]
+[1,] ME   FL   DE   OK   ND   CA   PA   AL   ID   MO    NM    HI    KY    MT    NJ   
+[2,] AZ   CA   AL   CT   ME   SD   ID   SC   OK   NH    HI    TN    ND    IA    MT   
+[3,] MD   MO   NC   MT   NH   AL   VA   MA   VT   WV    NJ    NE    MN    MS    MI   
+50 Levels: AK AL AR AZ CA CO CT DE FL GA HI IA ID IL IN KS KY LA MA MD ME MI MN ... WY
+
+permuteCount(factor(state.abb), 15)
+Big Integer ('bigz') :
+[1] 2943352142120754524160000
 ```
 ### User Defined Functions
 You can also pass user defined functions by utilizing the argument `FUN`. This feature's main purpose is for convenience, however it is somewhat more efficient than generating all combinations/permutations and then using a function from the `apply` family.
