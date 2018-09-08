@@ -11,8 +11,8 @@ std::vector<int> nonZeroVec(std::vector<int> v) {
     return nonZero;
 }
 
-std::vector<int> nthPermutation(int n, int r, double myIndex, bool isRep,
-                                bool isMult, std::vector<int> Reps) {
+std::vector<int> nthPermutation(int n, int r, double myIndex, bool isRep, bool isMult,
+                                std::vector<int> Reps, std::vector<int> freqs, bool isStarter = false) {
     
     int j = 0, n1 = n;
     double temp, index1 = myIndex;
@@ -53,6 +53,20 @@ std::vector<int> nthPermutation(int n, int r, double myIndex, bool isRep,
             res[k] = j;
             index1 = index2;
         }
+        
+        if (isStarter) {
+            for (std::size_t j = 0; j < res.size(); ++j) {
+                for (std::size_t i = 0; i < freqs.size(); ++i) {
+                    if (freqs[i] == res[j]) {
+                        freqs.erase(freqs.begin() + i);
+                        break;
+                    }
+                }
+            }
+            
+            for (std::size_t i = 0; i < freqs.size(); ++i)
+                res.push_back(freqs[i]);
+        }
     } else if (isRep) {
         temp = std::pow((double) n, (double) r);
         
@@ -74,6 +88,22 @@ std::vector<int> nthPermutation(int n, int r, double myIndex, bool isRep,
             index1 -= (temp * j);
             indexVec.erase(indexVec.begin() + j);
         }
+        
+        if (isStarter) {
+            if (r < n) {
+                for (int i = 0; i < n; ++i) {
+                    bool bExist = false;
+                    for (std::size_t j = 0; j < res.size(); ++j) {
+                        if (res[j] == i) {
+                            bExist = true;
+                            break;
+                        }
+                    }
+                    if (!bExist)
+                        res.push_back(i);
+                }
+            }
+        }
     }
     
     return res;
@@ -88,7 +118,6 @@ std::vector<int> nthCombination(int n, int r, double myIndex, bool isRep,
     unsigned long int uR = r;
     
     if (isMult) {
-        
         std::vector<int> Counts = Reps;
         
         for (int k = 0; k < r; ++k, --r1) {
@@ -135,8 +164,8 @@ std::vector<int> nthCombination(int n, int r, double myIndex, bool isRep,
             rTemp = n1 - 1;
             while (test <= index1) {
                 index2 -= temp;
-                temp /= (n1 + r1 - 1);
                 temp *= rTemp;
+                temp /= (n1 + r1 - 1);
                 --n1;
                 ++j;
                 --rTemp;
@@ -155,8 +184,8 @@ std::vector<int> nthCombination(int n, int r, double myIndex, bool isRep,
             rTemp = n1 - r1;
             while (test <= index1) {
                 index2 -= temp;
-                temp /= n1;
                 temp *= rTemp;
+                temp /= n1;
                 --n1;
                 ++j;
                 --rTemp;
@@ -170,9 +199,8 @@ std::vector<int> nthCombination(int n, int r, double myIndex, bool isRep,
     return res;
 }
 
-std::vector<int> nthPermutationGmp(int n, int r, mpz_t myIndex, bool isRep,
-                                   bool isMult, std::vector<int> Reps) {
-    
+std::vector<int> nthPermutationGmp(int n, int r, mpz_t myIndex, bool isRep, bool isMult,
+                                   std::vector<int> Reps, std::vector<int> freqs, bool isStarter = false) {
     int j = 0, n1 = n;
     mpz_t temp, temp2, index1;
     mpz_init(temp); mpz_init(temp2); mpz_init(index1);
@@ -220,6 +248,20 @@ std::vector<int> nthPermutationGmp(int n, int r, mpz_t myIndex, bool isRep,
         
         mpz_clear(test); mpz_clear(index2);
         
+        if (isStarter) {
+            for (std::size_t j = 0; j < res.size(); ++j) {
+                for (std::size_t i = 0; i < freqs.size(); ++i) {
+                    if (freqs[i] == res[j]) {
+                        freqs.erase(freqs.begin() + i);
+                        break;
+                    }
+                }
+            }
+            
+            for (std::size_t i = 0; i < freqs.size(); ++i)
+                res.push_back(freqs[i]);
+        }
+        
     } else if (isRep) {
         mpz_ui_pow_ui(temp, n, r);
         
@@ -243,6 +285,22 @@ std::vector<int> nthPermutationGmp(int n, int r, mpz_t myIndex, bool isRep,
             res[k] = indexVec[j];
             mpz_submul_ui(index1, temp, j);
             indexVec.erase(indexVec.begin() + j);
+        }
+        
+        if (isStarter) {
+            if (r < n) {
+                for (int i = 0; i < n; ++i) {
+                    bool bExist = false;
+                    for (std::size_t j = 0; j < res.size(); ++j) {
+                        if (res[j] == i) {
+                            bExist = true;
+                            break;
+                        }
+                    }
+                    if (!bExist)
+                        res.push_back(i);
+                }
+            }
         }
     }
     
