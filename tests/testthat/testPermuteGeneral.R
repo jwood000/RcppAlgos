@@ -318,7 +318,7 @@ test_that("permuteGeneral produces appropriate error messages", {
                  "prod, sum, mean, max, or min")
     expect_error(permuteGeneral(9,4,TRUE,constraintFun = "sum",
                                 comparisonFun = "=<>",limitConstraints = 10),
-                 ">, >=, <, <=, or ==")
+                 "'>', '>=', '<', '<=', or '=='")
     expect_error(permuteGeneral(9,4,TRUE,constraintFun = "sum",
                                 comparisonFun = 60,limitConstraints = 10),
                  "must be passed as a character")
@@ -345,7 +345,7 @@ test_that("permuteGeneral produces appropriate error messages", {
     expect_error(permuteGeneral(5), "m and freqs cannot both be NULL")
     expect_error(permuteGeneral(5, 1:5), "length of m must be 1")
     expect_error(permuteGeneral(5, -5), "m must be positive")
-    expect_error(permuteCount(5, 5, "TRUE"), "repetitions must be a logical value")
+    expect_error(permuteCount(5, 5, "TRUE"), "Not compatible with requested type")
     expect_error(permuteGeneral(5, 5, keepResults = "TRUE"), "Not compatible with requested type")
 
     expect_error(permuteGeneral(5,3,freqs = c(1,2,3,-2,1)), "in freqs must be a positive")

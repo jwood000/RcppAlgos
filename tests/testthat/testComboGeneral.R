@@ -48,7 +48,7 @@ test_that("comboGeneral produces correct results with no constraints", {
     
     expect_equal(ncol(comboGeneral(5, 3)), 3)
     expect_equal(ncol(comboGeneral(5, 3, TRUE)), 3)
-    expect_equal(ncol(comboGeneral(5, 3, FALSE, constraintFun = "prod", keepResults = TRUE)), 4)
+    expect_equal(ncol(comboGeneral(5, 3, FALSE, constraintFun = "prod")), 4)
     expect_equal(ncol(comboGeneral(5, 3, TRUE, constraintFun = "prod", keepResults = TRUE)), 4)
     
     expect_equal(ncol(comboGeneral(5, 3, FALSE,
@@ -414,7 +414,7 @@ test_that("comboGeneral produces correct results with exotic constraints", {
 
 test_that("comboGeneral produces appropriate error messages", {
     expect_error(comboGeneral(9,4,TRUE,NULL,NULL,NULL,"summ","<",10), "prod, sum, mean, max, or min")
-    expect_error(comboGeneral(9,4,TRUE,NULL,NULL,NULL,"sum","=<>",10), ">, >=, <, <=, or ==")
+    expect_error(comboGeneral(9,4,TRUE,NULL,NULL,NULL,"sum","=<>",10), "'>', '>=', '<', '<=', or '=='")
     expect_error(comboGeneral(9,4,TRUE,NULL,NULL,NULL,"sum",60,10), "must be passed as a character")
     expect_error(comboGeneral(9,4,FALSE,NULL,NULL,NULL,sum,"<",10), "must be passed as a character")
     expect_error(comboGeneral(9,4,TRUE,NULL,NULL,-1,"sum","<",10), "must be positive")
@@ -452,7 +452,7 @@ test_that("comboGeneral produces appropriate error messages", {
                               comparisonFun = "<=", limitConstraints = 10, upper = 100), 
                  "The number of rows cannot exceed")
     
-    expect_error(comboGeneral(5, 3, TRUE, constraintFun = "product", keepResults = TRUE), 
+    expect_error(comboGeneral(5, 3, TRUE, constraintFun = "product"), 
                  "contraintFun must be one of the following:")
     expect_error(comboGeneral((1:5)+.01, 3, TRUE, constraintFun = "product", keepResults = TRUE), 
                  "contraintFun must be one of the following:")
