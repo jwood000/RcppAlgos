@@ -152,7 +152,7 @@ SEXP SampleRcpp(SEXP Rv, SEXP Rm, SEXP Rrepetition, SEXP RFreqs, SEXP RindexVec,
         }
         case STRSXP: {
             IsCharacter = true;
-            IsLogical = IsInteger = false;
+            Parallel = IsLogical = IsInteger = false;
             break;
         }
     }
@@ -499,12 +499,8 @@ SEXP SampleRcpp(SEXP Rv, SEXP Rm, SEXP Rrepetition, SEXP RFreqs, SEXP RindexVec,
             factorMat.attr("levels") = myLevels;
             
             return factorMat;
-        } else if (IsInteger || IsCharacter) {
+        } else if (IsInteger) {
             Rcpp::IntegerMatrix matInt = Rcpp::no_init_matrix(sampSize, m);
-            if (IsCharacter) {
-                vInt.resize(n);
-                std::iota(vInt.begin(), vInt.end(), 0);
-            }
             
             for (std::size_t j = 0; j < (numThreads - 1); ++j) {
                 myThreads.emplace_back(SampleResults<Rcpp::IntegerMatrix, std::vector<int> >,
@@ -520,15 +516,6 @@ SEXP SampleRcpp(SEXP Rv, SEXP Rm, SEXP Rrepetition, SEXP RFreqs, SEXP RindexVec,
             
             for (auto& thr: myThreads)
                 thr.join();
-            
-            if (IsCharacter) {
-                Rcpp::CharacterMatrix matChar = Rcpp::no_init_matrix(sampSize, m);
-                for (int i = 0; i < m; ++i)
-                    for (int j = 0; j < sampSize; ++j)
-                        matChar(j, i) = rcppChar[matInt(j, i)];
-                
-                return matChar;
-            }
             
             return matInt;
         } else {
