@@ -32,10 +32,10 @@ void PermuteGeneral(int n, int r, typeVector &v, bool repetition, int numRows,
     } else if (nonTrivial) {
         
         unsigned long int numR1 = numRows - 1;
-        uint16_t *arrPerm = new uint16_t[uN];
+        int *arrPerm = new int[uN];
 
         for (std::size_t i = 0; i < uN; ++i)
-            arrPerm[i] = (uint16_t) z[i];
+            arrPerm[i] = z[i];
         
         if (r == n) {
             for (; count < numR1; ++count) {
@@ -66,11 +66,11 @@ void PermuteGeneral(int n, int r, typeVector &v, bool repetition, int numRows,
             unsigned long int segment = maxN / uN;
             phaseOne = (uRowN < segment) ? uRowN : segment;
 
-            uint16_t *indexMat = new uint16_t[phaseOne * uR];
-            uint16_t *arrPerm = new uint16_t[uN];
+            int *indexMat = new int[phaseOne * uR];
+            int *arrPerm = new int[uN];
             
             for (std::size_t i = 0; i < uN; ++i)
-                arrPerm[i] = (uint16_t) i;
+                arrPerm[i] = (int) i;
 
             if (r == n) {
                 for (std::size_t i = 0; i < phaseOne; ++i) {
@@ -129,14 +129,14 @@ void MultisetPermutation(int n, int r, typeVector &v, int numRows,
                          typeMatrix permuteMatrix) {
     
     unsigned long int lenFreqs = z.size();
-    uint16_t *arrPerm = new uint16_t[lenFreqs];
+    int *arrPerm = new int[lenFreqs];
     
     unsigned long int uN = n, numR1 = numRows - 1;
     unsigned long int uR = r, lastCol = r - 1;
     unsigned long int lastElem = lenFreqs - 1;
     
     for (std::size_t j = 0; j < lenFreqs; ++j)
-        arrPerm[j] = (uint16_t) z[j];
+        arrPerm[j] = z[j];
     
     if (uR == lenFreqs) {
         unsigned long int pentultimate = lenFreqs - 2;
@@ -197,10 +197,10 @@ void PermutationApplyFun(int n, int r, typeVector &v, bool repetition,
         }
     } else {
         unsigned long int arrLength = lastElem + 1;
-        uint16_t *arrPerm = new uint16_t[arrLength];
+        int *arrPerm = new int[arrLength];
         
         for (std::size_t i = 0; i < arrLength; ++i)
-            arrPerm[i] = (uint16_t) z[i];
+            arrPerm[i] = z[i];
         
         if (uR == uN || uR == lenFreqs) {
             unsigned long int pentultimate = lastElem - 1;

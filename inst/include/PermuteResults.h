@@ -38,10 +38,10 @@ void PermuteGenRes(int n, int r, std::vector<typeVector> &v, bool repetition,
     } else if (nonTrivial) {
         
         unsigned long int numR1 = numRows - 1;
-        uint16_t *arrPerm = new uint16_t[uN];
+        int *arrPerm = new int[uN];
 
         for (std::size_t i = 0; i < uN; ++i)
-            arrPerm[i] = (uint16_t) z[i];
+            arrPerm[i] = z[i];
         
         if (r == n) {
             for (; count < numR1; ++count) {
@@ -81,11 +81,11 @@ void PermuteGenRes(int n, int r, std::vector<typeVector> &v, bool repetition,
             unsigned long int segment = maxN / uN;
             phaseOne = (uRowN < segment) ? uRowN : segment;
 
-            uint16_t *indexMat = new uint16_t[phaseOne * uR];
-            uint16_t *arrPerm = new uint16_t[uN];
+            int *indexMat = new int[phaseOne * uR];
+            int *arrPerm = new int[uN];
             
             for (std::size_t i = 0; i < uN; ++i)
-                arrPerm[i] = (uint16_t) i;
+                arrPerm[i] = (int) i;
 
             if (r == n) {
                 for (std::size_t i = 0, k = 0; i < phaseOne; ++i) {
@@ -147,7 +147,7 @@ void MultisetPermRes(int n, int r, std::vector<typeVector> &v, int numRows,
                      typeMatrix permuteMatrix, funcPtr<typeVector> myFun) {
     
     unsigned long int lenFreqs = z.size();
-    uint16_t *arrPerm = new uint16_t[lenFreqs];
+    int *arrPerm = new int[lenFreqs];
     std::vector<typeVector> vPass(r);
     
     unsigned long int uN = n, numR1 = numRows - 1;
@@ -155,7 +155,7 @@ void MultisetPermRes(int n, int r, std::vector<typeVector> &v, int numRows,
     unsigned long int lastElem = lenFreqs - 1;
     
     for (std::size_t j = 0; j < lenFreqs; ++j)
-        arrPerm[j] = (uint16_t) z[j];
+        arrPerm[j] = z[j];
     
     if (uR == lenFreqs) {
         unsigned long int pentultimate = lenFreqs - 2;
