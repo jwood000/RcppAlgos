@@ -238,13 +238,10 @@ SEXP SampleRcpp(SEXP Rv, SEXP Rm, SEXP Rrepetition, SEXP RFreqs, SEXP RindexVec,
         if (IsComb) {
             computedRows = MultisetCombRowNum(n, m, myReps);
         } else {
-            if (Rf_isNull(Rm)) {
+            if (Rf_isNull(Rm) || m == (int) freqsExpanded.size())
                 computedRows = NumPermsWithRep(freqsExpanded);
-            } else if (m == (int) freqsExpanded.size()) {
-                computedRows = NumPermsWithRep(freqsExpanded);
-            } else {
+            else
                 computedRows = MultisetPermRowNum(n, m, myReps);
-            }
         }
     } else {
         if (IsRepetition) {
@@ -274,21 +271,17 @@ SEXP SampleRcpp(SEXP Rv, SEXP Rm, SEXP Rrepetition, SEXP RFreqs, SEXP RindexVec,
             if (IsComb) {
                 MultisetCombRowNumGmp(computedRowMpz, n, m, myReps);
             } else {
-                if (Rf_isNull(Rm)) {
+                if (Rf_isNull(Rm) || m == (int) freqsExpanded.size())
                     NumPermsWithRepGmp(computedRowMpz, freqsExpanded);
-                } else if (m == (int) freqsExpanded.size()) {
-                    NumPermsWithRepGmp(computedRowMpz, freqsExpanded);
-                } else {
+                else
                     MultisetPermRowNumGmp(computedRowMpz, n, m, myReps);
-                }
             }
         } else {
             if (IsRepetition) {
-                if (IsComb) {
+                if (IsComb)
                     NumCombsWithRepGmp(computedRowMpz, n, m);
-                } else {
+                else
                     mpz_ui_pow_ui(computedRowMpz, n, m);
-                }
             } else {
                 if (IsComb)
                     nChooseKGmp(computedRowMpz, n, m);
