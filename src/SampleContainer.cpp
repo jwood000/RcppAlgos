@@ -3,6 +3,7 @@
 #include <importExportMPZ.h>
 #include <CombPermUtils.h>
 #include <CountGmp.h>
+#include <thread>
 
 // Based off the internal limitations of sample, we
 // cannot utilize the full range of 53-bit significand
@@ -16,11 +17,10 @@ static int seed_init = 0;
 const double sampleLimit = 4500000000000000.0;
 
 template <typename typeRcpp, typename typeVector>
-typeRcpp SampleResults(typeVector &v, unsigned long int m, bool IsRep,
-                       std::vector<int> myReps, unsigned long int n, bool IsGmp,
-                       bool IsComb, std::vector<double> &mySample, mpz_t myBigSamp[]) {
-    
-    typeRcpp sampleMatrix = Rcpp::no_init_matrix(n, m);
+void SampleResults(typeVector v, unsigned long int m, bool IsRep, std::vector<int> myReps,
+                   unsigned long int s, unsigned long int n, bool IsGmp, bool IsComb,
+                   std::vector<double> mySample, mpz_t myBigSamp[], typeRcpp sampleMatrix) {
+
     int lenV = v.size();
     std::vector<int> z(m);
     bool IsMult = false;
@@ -30,35 +30,33 @@ typeRcpp SampleResults(typeVector &v, unsigned long int m, bool IsRep,
     
     if (IsGmp) {
         if (IsComb) {
-            for (std::size_t i = 0; i < n; ++i) {
+            for (std::size_t i = s; i < n; ++i) {
                 z = nthCombinationGmp(lenV, m, myBigSamp[i], IsRep, IsMult, myReps);
                 for (std::size_t j = 0; j < m; ++j)
                     sampleMatrix(i, j) = v[z[j]];
             }
         } else {
-            for (std::size_t i = 0; i < n; ++i) {
-                z = nthPermutationGmp(lenV, m, myBigSamp[i], IsRep, IsMult, myReps);
+            for (std::size_t i = s; i < n; ++i) {
+                z = nthPermutationGmp(lenV, m, myBigSamp[i], IsRep, IsMult, myReps, myReps);
                 for (std::size_t j = 0; j < m; ++j)
                     sampleMatrix(i, j) = v[z[j]];
             }
         }
     } else {
         if (IsComb) {
-            for (std::size_t i = 0; i < n; ++i) {
+            for (std::size_t i = s; i < n; ++i) {
                 z = nthCombination(lenV, m, mySample[i] - 1, IsRep, IsMult, myReps);
                 for (std::size_t j = 0; j < m; ++j)
                     sampleMatrix(i, j) = v[z[j]];
             }
         } else {
-            for (std::size_t i = 0; i < n; ++i) {
-                z = nthPermutation(lenV, m, mySample[i] - 1, IsRep, IsMult, myReps);
+            for (std::size_t i = s; i < n; ++i) {
+                z = nthPermutation(lenV, m, mySample[i] - 1, IsRep, IsMult, myReps, myReps);
                 for (std::size_t j = 0; j < m; ++j)
                     sampleMatrix(i, j) = v[z[j]];
             }
         }
     }
-    
-    return sampleMatrix;
 }
 
 template <typename typeVector>
@@ -70,7 +68,7 @@ SEXP SampleApplyFun(typeVector &v, unsigned long int m, bool IsRep, bool IsGmp,
     std::vector<int> z(m);
     bool IsMult = false;
     SEXP ans = PROTECT(Rf_allocVector(VECSXP, n));
-    SEXP R_fcall = PROTECT(Rf_lang2(func, R_NilValue));
+    SEXP sexpFun = PROTECT(Rf_lang2(func, R_NilValue));
     typeVector vectorPass(m);
     
     if ((int) myReps.size() == lenV)
@@ -83,17 +81,17 @@ SEXP SampleApplyFun(typeVector &v, unsigned long int m, bool IsRep, bool IsGmp,
                 for (std::size_t j = 0; j < m; ++j)
                     vectorPass[j] = v[z[j]];
                 
-                SETCADR(R_fcall, vectorPass);
-                SET_VECTOR_ELT(ans, i, Rf_eval(R_fcall, rho));
+                SETCADR(sexpFun, vectorPass);
+                SET_VECTOR_ELT(ans, i, Rf_eval(sexpFun, rho));
             }
         } else {
             for (std::size_t i = 0; i < n; ++i) {
-                z = nthPermutationGmp(lenV, m, myBigSamp[i], IsRep, IsMult, myReps);
+                z = nthPermutationGmp(lenV, m, myBigSamp[i], IsRep, IsMult, myReps, myReps);
                 for (std::size_t j = 0; j < m; ++j)
                     vectorPass[j] = v[z[j]];
                 
-                SETCADR(R_fcall, vectorPass);
-                SET_VECTOR_ELT(ans, i, Rf_eval(R_fcall, rho));
+                SETCADR(sexpFun, vectorPass);
+                SET_VECTOR_ELT(ans, i, Rf_eval(sexpFun, rho));
             }
         }
     } else {
@@ -103,17 +101,17 @@ SEXP SampleApplyFun(typeVector &v, unsigned long int m, bool IsRep, bool IsGmp,
                 for (std::size_t j = 0; j < m; ++j)
                     vectorPass[j] = v[z[j]];
                 
-                SETCADR(R_fcall, vectorPass);
-                SET_VECTOR_ELT(ans, i, Rf_eval(R_fcall, rho));
+                SETCADR(sexpFun, vectorPass);
+                SET_VECTOR_ELT(ans, i, Rf_eval(sexpFun, rho));
             }
         } else {
             for (std::size_t i = 0; i < n; ++i) {
-                z = nthPermutation(lenV, m, mySample[i] - 1, IsRep, IsMult, myReps);
+                z = nthPermutation(lenV, m, mySample[i] - 1, IsRep, IsMult, myReps, myReps);
                 for (std::size_t j = 0; j < m; ++j)
                     vectorPass[j] = v[z[j]];
                 
-                SETCADR(R_fcall, vectorPass);
-                SET_VECTOR_ELT(ans, i, Rf_eval(R_fcall, rho));
+                SETCADR(sexpFun, vectorPass);
+                SET_VECTOR_ELT(ans, i, Rf_eval(sexpFun, rho));
             }
         }
     }
@@ -125,17 +123,17 @@ SEXP SampleApplyFun(typeVector &v, unsigned long int m, bool IsRep, bool IsGmp,
 // [[Rcpp::export]]
 SEXP SampleRcpp(SEXP Rv, SEXP Rm, SEXP Rrepetition, SEXP RFreqs, SEXP RindexVec,
                 bool IsComb, bool IsFactor, SEXP RmySeed, SEXP RNumSamp, 
-                Rcpp::Function baseSample, SEXP stdFun, SEXP myEnv) {
+                Rcpp::Function baseSample, SEXP stdFun, SEXP myEnv, SEXP Rparallel) {
     
-    int n, m = 0, m1, m2;
-    int lenFreqs = 0;
-    bool IsRepetition, IsLogical;
+    int n, m1, m2, m = 0, lenFreqs = 0;
+    bool IsRepetition, IsLogical, Parallel;
     bool IsMultiset, IsInteger, IsCharacter;
     IsCharacter = IsInteger = IsLogical = false;
     
+    Parallel = Rcpp::as<bool>(Rparallel);
     std::vector<double> vNum;
     std::vector<int> vInt, myReps, freqsExpanded;
-    Rcpp::CharacterVector vStr;
+    Rcpp::CharacterVector rcppChar;
     
     switch(TYPEOF(Rv)) {
         case LGLSXP: {
@@ -192,15 +190,12 @@ SEXP SampleRcpp(SEXP Rv, SEXP Rm, SEXP Rrepetition, SEXP RFreqs, SEXP RindexVec,
     if (m < 1)
         Rcpp::stop("m must be positive");
     
-    if (!Rf_isLogical(Rrepetition))
-        Rcpp::stop("repetitions must be a logical value");
-    
     IsRepetition = Rcpp::as<bool>(Rrepetition);
     double seqEnd;
     
     if (IsCharacter) {
-        vStr = Rcpp::as<Rcpp::CharacterVector>(Rv);
-        n = vStr.size();
+        rcppChar = Rcpp::as<Rcpp::CharacterVector>(Rv);
+        n = rcppChar.size();
     } else if (IsLogical) {
         vInt = Rcpp::as<std::vector<int> >(Rv);
         n = vInt.size();
@@ -272,8 +267,7 @@ SEXP SampleRcpp(SEXP Rv, SEXP Rm, SEXP Rrepetition, SEXP RFreqs, SEXP RindexVec,
     mpz_init(computedRowMpz);
     bool IsGmp = false;
     
-    // sampleLimit defined as const above
-    // see comments for more details
+    // sampleLimit defined as const above... see comments for more details
     if (computedRows > sampleLimit) {
         IsGmp = true;
         if (IsMultiset) {
@@ -338,7 +332,7 @@ SEXP SampleRcpp(SEXP Rv, SEXP Rm, SEXP Rrepetition, SEXP RFreqs, SEXP RindexVec,
                 Rcpp::stop("sampleVec must be convertible to a real number");
     }
     
-    // Initialize myVec to quite compiler
+    // Initialize myVec to silence compiler
     mpz_t *myVec;
     myVec = (mpz_t *) malloc(sizeof(mpz_t));
     mpz_init(myVec[0]);
@@ -428,13 +422,18 @@ SEXP SampleRcpp(SEXP Rv, SEXP Rm, SEXP Rrepetition, SEXP RFreqs, SEXP RindexVec,
     
     bool applyFun = !Rf_isNull(stdFun) && !IsFactor;
     
+    // Determined empirically. Setting up threads can be expensive, so we
+    // set the cutoff below to ensure threads aren't spawned unnecessarily
+    // We also protect users with fewer than 3 cores
+    if ((sampSize < 2) || (std::thread::hardware_concurrency() < 3))
+        Parallel = false;
+    
     if (applyFun) {
         if (!Rf_isFunction(stdFun))
             Rcpp::stop("FUN must be a function!");
         
         if (IsCharacter) {
-            Rcpp::CharacterVector rcppVChar(vStr.begin(), vStr.end());
-            return SampleApplyFun(rcppVChar, m, IsRepetition, IsGmp, myReps, 
+            return SampleApplyFun(rcppChar, m, IsRepetition, IsGmp, myReps, 
                                   sampSize, IsComb, mySample, myVec, stdFun, myEnv);
         } else if (IsLogical || IsInteger) {
             Rcpp::IntegerVector rcppVInt(vInt.begin(), vInt.end());
@@ -447,31 +446,146 @@ SEXP SampleRcpp(SEXP Rv, SEXP Rm, SEXP Rrepetition, SEXP RFreqs, SEXP RindexVec,
         }
     }
     
+    if (Parallel) {
+        std::vector<std::thread> myThreads;
+        unsigned long int numThreads = std::thread::hardware_concurrency() - 1;
+        if (sampSize < numThreads)
+            numThreads = sampSize;
+        
+        int step = 0, stepSize = sampSize / numThreads;
+        int nextStep = stepSize;
+        
+        if (IsLogical) {
+            Rcpp::LogicalMatrix matBool = Rcpp::no_init_matrix(sampSize, m);
+
+            for (std::size_t j = 0; j < (numThreads - 1); ++j) {
+                myThreads.emplace_back(SampleResults<Rcpp::LogicalMatrix, std::vector<int> >,
+                                       vInt, m, IsRepetition, myReps, step, nextStep, 
+                                       IsGmp, IsComb, mySample, myVec, matBool);
+                step += stepSize;
+                nextStep += stepSize;
+            }
+            
+            myThreads.emplace_back(SampleResults<Rcpp::LogicalMatrix, std::vector<int> >,
+                                   vInt, m, IsRepetition, myReps, step, sampSize, 
+                                   IsGmp, IsComb, mySample, myVec, matBool);
+            
+            for (auto& thr: myThreads)
+                thr.join();
+            
+            return matBool;
+        } else if (IsFactor) {
+            Rcpp::IntegerMatrix factorMat = Rcpp::no_init_matrix(sampSize, m);
+            Rcpp::IntegerVector testFactor = Rcpp::as<Rcpp::IntegerVector>(Rv);
+            Rcpp::CharacterVector myClass = testFactor.attr("class");
+            Rcpp::CharacterVector myLevels = testFactor.attr("levels");
+            
+            for (std::size_t j = 0; j < (numThreads - 1); ++j) {
+                myThreads.emplace_back(SampleResults<Rcpp::IntegerMatrix, std::vector<int> >,
+                                       vInt, m, IsRepetition, myReps, step, nextStep, 
+                                       IsGmp, IsComb, mySample, myVec, factorMat);
+                step += stepSize;
+                nextStep += stepSize;
+            }
+            
+            myThreads.emplace_back(SampleResults<Rcpp::IntegerMatrix, std::vector<int> >,
+                                   vInt, m, IsRepetition, myReps, step, sampSize, 
+                                   IsGmp, IsComb, mySample, myVec, factorMat);
+            
+            for (auto& thr: myThreads)
+                thr.join();
+            
+            factorMat.attr("class") = myClass;
+            factorMat.attr("levels") = myLevels;
+            
+            return factorMat;
+        } else if (IsInteger || IsCharacter) {
+            Rcpp::IntegerMatrix matInt = Rcpp::no_init_matrix(sampSize, m);
+            if (IsCharacter) {
+                vInt.resize(n);
+                std::iota(vInt.begin(), vInt.end(), 0);
+            }
+            
+            for (std::size_t j = 0; j < (numThreads - 1); ++j) {
+                myThreads.emplace_back(SampleResults<Rcpp::IntegerMatrix, std::vector<int> >,
+                                       vInt, m, IsRepetition, myReps, step, nextStep, 
+                                       IsGmp, IsComb, mySample, myVec, matInt);
+                step += stepSize;
+                nextStep += stepSize;
+            }
+            
+            myThreads.emplace_back(SampleResults<Rcpp::IntegerMatrix, std::vector<int> >,
+                                   vInt, m, IsRepetition, myReps, step, sampSize, 
+                                   IsGmp, IsComb, mySample, myVec, matInt);
+            
+            for (auto& thr: myThreads)
+                thr.join();
+            
+            if (IsCharacter) {
+                Rcpp::CharacterMatrix matChar = Rcpp::no_init_matrix(sampSize, m);
+                for (int i = 0; i < m; ++i)
+                    for (int j = 0; j < sampSize; ++j)
+                        matChar(j, i) = rcppChar[matInt(j, i)];
+                
+                return matChar;
+            }
+            
+            return matInt;
+        } else {
+            Rcpp::NumericMatrix matNum = Rcpp::no_init_matrix(sampSize, m);
+            
+            for (std::size_t j = 0; j < (numThreads - 1); ++j) {
+                myThreads.emplace_back(SampleResults<Rcpp::NumericMatrix, std::vector<double> >,
+                                       vNum, m, IsRepetition, myReps, step, nextStep, 
+                                       IsGmp, IsComb, mySample, myVec, matNum);
+                step += stepSize;
+                nextStep += stepSize;
+            }
+            
+            myThreads.emplace_back(SampleResults<Rcpp::NumericMatrix, std::vector<double> >,
+                                   vNum, m, IsRepetition, myReps, step, sampSize, 
+                                   IsGmp, IsComb, mySample, myVec, matNum);
+            
+            for (auto& thr: myThreads)
+                thr.join();
+            
+            return matNum;
+        }
+    }
+    
     if (IsCharacter) {
-        return SampleResults<Rcpp::CharacterMatrix>(vStr, m, IsRepetition, myReps, 
-                                                    sampSize, IsGmp, IsComb, mySample, myVec);
+        Rcpp::CharacterMatrix matChar = Rcpp::no_init_matrix(sampSize, m);
+        SampleResults(rcppChar, m, IsRepetition, myReps, 0, sampSize,
+                      IsGmp, IsComb, mySample, myVec, matChar);
+        return matChar;
     } else if (IsLogical) {
-        return SampleResults<Rcpp::LogicalMatrix>(vInt, m, IsRepetition, myReps, 
-                                                  sampSize, IsGmp, IsComb, mySample, myVec);
+        Rcpp::LogicalMatrix matBool = Rcpp::no_init_matrix(sampSize, m);
+        SampleResults(vInt, m, IsRepetition, myReps, 0, sampSize,
+                      IsGmp, IsComb, mySample, myVec, matBool);
+        return matBool;
     } else if (IsFactor) {
-        Rcpp::IntegerMatrix factorMat;
+        Rcpp::IntegerMatrix factorMat = Rcpp::no_init_matrix(sampSize, m);
         Rcpp::IntegerVector testFactor = Rcpp::as<Rcpp::IntegerVector>(Rv);
         Rcpp::CharacterVector myClass = testFactor.attr("class");
         Rcpp::CharacterVector myLevels = testFactor.attr("levels");
-        
-        factorMat = SampleResults<Rcpp::IntegerMatrix>(vInt, m, IsRepetition, myReps, 
-                                                       sampSize, IsGmp, IsComb, mySample, myVec);
-        
+
+        SampleResults(vInt, m, IsRepetition, myReps, 0, sampSize,
+                      IsGmp, IsComb, mySample, myVec, factorMat);
+
         factorMat.attr("class") = myClass;
         factorMat.attr("levels") = myLevels;
-        
+
         return factorMat;
     } else if (IsInteger) {
-        return SampleResults<Rcpp::IntegerMatrix>(vInt, m, IsRepetition, myReps, 
-                                                  sampSize, IsGmp, IsComb, mySample, myVec);
+        Rcpp::IntegerMatrix matInt = Rcpp::no_init_matrix(sampSize, m);
+        SampleResults(vInt, m, IsRepetition, myReps, 0, sampSize,
+                      IsGmp, IsComb, mySample, myVec, matInt);
+        return matInt;
     } else {
-        return SampleResults<Rcpp::NumericMatrix>(vNum, m, IsRepetition, myReps, 
-                                                  sampSize, IsGmp, IsComb, mySample, myVec);
+        Rcpp::NumericMatrix matNum = Rcpp::no_init_matrix(sampSize, m);
+        SampleResults(vNum, m, IsRepetition, myReps, 0, sampSize,
+                      IsGmp, IsComb, mySample, myVec, matNum);
+        return matNum;
     }
 }
 
