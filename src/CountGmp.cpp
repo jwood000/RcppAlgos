@@ -99,6 +99,8 @@ void MultisetCombRowNumGmp(mpz_t result, int n, int r, std::vector<int> &Reps) {
             mpz_clear(temp[i]);
         }
         
+        free(triangleVec);
+        free(temp);
         mpz_clear(tempSum);
     } else {
         mpz_set_ui(result, 1);
@@ -189,5 +191,8 @@ void MultisetPermRowNumGmp(mpz_t result, int n, int r, std::vector<int> &myReps)
         
         for (std::size_t i = 0; i < uR1; ++i)
             mpz_clear(resV[i]);
+        
+        free(cumProd);
+        free(resV);
     }
 }
