@@ -783,9 +783,10 @@ SEXP CombinatoricsRcpp(SEXP Rv, SEXP Rm, SEXP Rrepetition, SEXP RFreqs, SEXP Rlo
     
     if (IsCount) {
         if (isGmp) {
-            unsigned long int size;
+            unsigned long int sizeNum, size = sizeof(int);
             unsigned long int numb = 8 * sizeof(int);
-            size = sizeof(int) * (2 + (mpz_sizeinbase(computedRowMpz, 2) + numb - 1) / numb);
+            sizeNum = sizeof(int) * (2 + (mpz_sizeinbase(computedRowMpz, 2) + numb - 1) / numb);
+            size += sizeNum;
             
             SEXP ansPos = PROTECT(Rf_allocVector(RAWSXP, size));
             char* rPos = (char*)(RAW(ansPos));
@@ -793,7 +794,7 @@ SEXP CombinatoricsRcpp(SEXP Rv, SEXP Rm, SEXP Rrepetition, SEXP RFreqs, SEXP Rlo
             
             // current position in rPos[] (starting after vector-size-header)
             unsigned long int posPos = sizeof(int);
-            posPos += myRaw(&rPos[posPos], computedRowMpz, size);
+            posPos += myRaw(&rPos[posPos], computedRowMpz, sizeNum);
             
             Rf_setAttrib(ansPos, R_ClassSymbol, Rf_mkString("bigz"));
             UNPROTECT(1);
