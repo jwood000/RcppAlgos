@@ -72,6 +72,7 @@ namespace CleanConvert {
                 for (int i = 0; i < total; ++i)
                     mpz_clear(temp[i]);
                 
+                free(temp);
                 break;
             }
             default:
