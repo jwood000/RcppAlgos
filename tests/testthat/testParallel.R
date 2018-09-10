@@ -224,6 +224,56 @@ test_that("permuteGeneral produces correct results with Parallel enabled and no 
                  permuteGeneral(factor(1:30), 7, freqs = rep(1:5, 6), lower = 100000, upper = 130000))
 })
 
+test_that("permuteGeneral produces correct results with Parallel enabled with logical vector", {
+    
+    ## N.B. Parallel has no effect when number of results is less than 20000
+    
+    ######********************** All Results *******************#########
+    #### With Repetition
+    ## permuteCount(2, 15, T)
+    ## [1] 32768
+    expect_equal(permuteGeneral(c(TRUE, FALSE), 15, TRUE, Parallel = TRUE), 
+                 permuteGeneral(c(TRUE, FALSE), 15, TRUE))
+    
+    #### Multisets
+    ## permuteCount(2, 15, freqs = c(9, 9))
+    ## [1] 22880
+    expect_equal(permuteGeneral(c(TRUE, FALSE), 15, freqs = c(9, 9), Parallel = TRUE), 
+                 permuteGeneral(c(TRUE, FALSE), 15, freqs = c(9, 9)))
+    
+    
+    ######********************** Upper Only *******************#########
+    #### With Repetition
+    expect_equal(permuteGeneral(c(TRUE, FALSE), 30, TRUE, Parallel = TRUE, upper = 30000), 
+                 permuteGeneral(c(TRUE, FALSE), 30, TRUE, upper = 30000))
+    
+    #### Multisets
+    expect_equal(permuteGeneral(c(TRUE, FALSE), 30, freqs = c(20, 20), Parallel = TRUE, upper = 30000), 
+                 permuteGeneral(c(TRUE, FALSE), 30, freqs = c(20, 20), upper = 30000))
+    
+    ######********************** Lower Only *******************#########
+    #### With Repetition
+    total = permuteCount(2, 30, TRUE)
+    expect_equal(permuteGeneral(c(TRUE, FALSE), 30, TRUE, Parallel = TRUE, lower = total - 30000), 
+                 permuteGeneral(c(TRUE, FALSE), 30, TRUE, lower = total - 30000))
+    
+    #### Multisets
+    total = permuteCount(2, 30, freqs = c(20, 20))
+    expect_equal(permuteGeneral(c(TRUE, FALSE), 30, freqs = c(20, 20), Parallel = TRUE, lower = total - 30000), 
+                 permuteGeneral(c(TRUE, FALSE), 30, freqs = c(20, 20), lower = total - 30000))
+    
+    ######********************** Upper & Lower *******************#########
+    #### With Repetition
+    expect_equal(permuteGeneral(c(TRUE, FALSE), 30, TRUE, Parallel = TRUE, lower = 100000, upper = 130000),
+                 permuteGeneral(c(TRUE, FALSE), 30, TRUE, lower = 100000, upper = 130000))
+    
+    #### Multisets
+    expect_equal(permuteGeneral(c(TRUE, FALSE), 30, freqs = c(20, 20),
+                                Parallel = TRUE, lower = 100000, upper = 130000), 
+                 permuteGeneral(c(TRUE, FALSE), 30, freqs = c(20, 20),
+                                lower = 100000, upper = 130000))
+})
+
 test_that("permuteGeneral produces correct results with Parallel enabled and constrainFun", {
     
     set.seed(15)
