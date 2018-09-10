@@ -1,56 +1,56 @@
 comboGeneral <- function(v, m = NULL, repetition = FALSE, freqs = NULL,
                          lower = NULL, upper = NULL, constraintFun = NULL,
                          comparisonFun = NULL, limitConstraints = NULL, 
-                         keepResults = FALSE, FUN = NULL) {
+                         keepResults = NULL, FUN = NULL, Parallel = FALSE) {
     
     isFactor <- is.factor(v)
     CombinatoricsRcpp(v, m, repetition, freqs, lower, upper, constraintFun, 
                       comparisonFun, limitConstraints, TRUE, keepResults,
-                      isFactor, FALSE, FUN, new.env())
+                      isFactor, FALSE, FUN, new.env(), Parallel)
 }
 
 permuteGeneral <- function(v, m = NULL, repetition = FALSE, freqs = NULL,
                            lower = NULL, upper = NULL, constraintFun = NULL,
                            comparisonFun = NULL, limitConstraints = NULL,
-                           keepResults = FALSE, FUN = NULL) {
+                           keepResults = NULL, FUN = NULL, Parallel = FALSE) {
     
     isFactor <- is.factor(v)
     CombinatoricsRcpp(v, m, repetition, freqs, lower, upper, constraintFun, 
                       comparisonFun, limitConstraints, FALSE, keepResults,
-                      isFactor, FALSE, FUN, new.env())
+                      isFactor, FALSE, FUN, new.env(), Parallel)
 }
 
 comboCount <-  function(v, m = NULL, repetition = FALSE, freqs = NULL) {
     
     CombinatoricsRcpp(v, m, repetition, freqs, NULL,
                       NULL, NULL, NULL, NULL, TRUE, 
-                      FALSE, FALSE, TRUE, NULL, NULL)
+                      FALSE, FALSE, TRUE, NULL, NULL, FALSE)
 }
 
 permuteCount <- function(v, m = NULL, repetition = FALSE, freqs = NULL) {
     
     CombinatoricsRcpp(v, m, repetition, freqs, NULL,
                       NULL, NULL, NULL, NULL, FALSE,
-                      FALSE, FALSE, TRUE, NULL, NULL)
+                      FALSE, FALSE, TRUE, NULL, NULL, FALSE)
 }
 
 comboSample <- function(v, m = NULL, repetition = FALSE,
                         freqs = NULL, n = NULL, sampleVec = NULL, 
-                        seed = NULL, FUN = NULL) {
+                        seed = NULL, FUN = NULL, Parallel = FALSE) {
     
     isFactor <- is.factor(v)
     if (!is.null(seed)) {set.seed(seed)}
     SampleRcpp(v, m, repetition, freqs, sampleVec, TRUE,
-               isFactor, seed, n, sample, FUN, new.env())
+               isFactor, seed, n, sample, FUN, new.env(), Parallel)
 }
 
 permuteSample <- function(v, m = NULL, repetition = FALSE, 
                           freqs = NULL, n = NULL, sampleVec = NULL, 
-                          seed = NULL, FUN = NULL) {
+                          seed = NULL, FUN = NULL, Parallel = FALSE) {
     
     isFactor <- is.factor(v)
     if (!is.null(seed)) {set.seed(seed)}
     SampleRcpp(v, m, repetition, freqs, sampleVec, FALSE,
-               isFactor, seed, n, sample, FUN, new.env())
+               isFactor, seed, n, sample, FUN, new.env(), Parallel)
 }
 
