@@ -3,6 +3,7 @@
 
 \section{Changes in RcppAlgos version 2.1.0 (Release date: 2018-08-13)}{
     \itemize{
+        \item Added argument \code{Parallel} to general and sampling functions for increased gains in efficiency.
         \item Logical class is now preserved in combinatorial functions
         \item {Added gmp support to combinatorial functions. Now, one can accurately and quickly work with combinations/permutations of large vectors \emph{E.g.}:
             \itemize{
