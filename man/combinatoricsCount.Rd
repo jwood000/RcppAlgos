@@ -15,8 +15,8 @@ permuteCount(v, m = NULL, repetition = FALSE, freqs = NULL)
 \arguments{
   \item{v}{Source vector. If \code{v} is an integer, it will be converted to the sequence \code{1:v}.}
   \item{m}{Number of elements to choose. If \code{repetition = TRUE}, \code{m} can exceed the length of \code{v}. The default is \code{NULL}.}
-  \item{repetition}{Logical value indicating whether combinations should be with or without repetition. The default is \code{FALSE}.}
-  \item{freqs}{A vector of frequencies used for producing all permutations/combinations of a multiset of \code{v}. Each element of \code{freqs} represents how many times each element of the source vector, \code{v}, is repeated. It is analogous to the \code{times} argument in \code{\link[base]{rep}}. The default value is \code{NULL}.}
+  \item{repetition}{Logical value indicating whether combinations/permutations should be with or without repetition. The default is \code{FALSE}.}
+  \item{freqs}{A vector of frequencies used for producing all combinations/permutations of a multiset of \code{v}. Each element of \code{freqs} represents how many times each element of the source vector, \code{v}, is repeated. It is analogous to the \code{times} argument in \code{\link[base]{rep}}. The default value is \code{NULL}.}
 }
 \value{
 A numerical value.
@@ -38,5 +38,5 @@ permuteCount(15, 7, TRUE)
 comboCount(25, 12, freqs = rep(2, 25))
 
 ## Return object of class 'bigz'
-comboCount(250, 120, freqs = rep(2, 250))
+comboCount(250, 15, freqs = rep(2, 250))
 }
