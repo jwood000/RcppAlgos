@@ -208,7 +208,7 @@ Levels: low < med < high
 Using the parameter `Parallel`, we can easily generate combinations/permutations with great efficiency.
 
 ```r
-## RcppAlgos uses one minus the number of cores available
+## RcppAlgos uses the number of cores available minus one
 parallel::detectCores()
 [1] 8
 
