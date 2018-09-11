@@ -5,14 +5,16 @@
 
 Overview
 ---------
-A collection of optimized functions implemented in C++ with Rcpp for solving problems in combinatorics and computational mathematics. Featured functions:
+A collection of high performance functions implemented in C++ with Rcpp for solving problems in combinatorics and computational mathematics. Featured functions:
 
-* primeSieve - Generates all primes less than a billion in just over 1 second
-* primeCount -  Counts the number of primes below a trillion in under 0.5 seconds.
-* comboGeneral/permuteGeneral - Generate all combinations/permutations of a vector (including [multisets](https://en.wikipedia.org/wiki/Multiset)) meeting specific criteria.
-    - Arguments `lower` and `upper` make it possible to generate combinations/permutations in chunks allowing for parallelization.
+* `primeSieve` - Generates all primes less than a billion in just over 1 second
+* `primeCount` -  Counts the number of primes below a trillion in under 0.5 seconds.
+* `comboGeneral`/`permuteGeneral` - Generate all combinations/permutations of a vector (including [multisets](https://en.wikipedia.org/wiki/Multiset)) meeting specific criteria.
+    - Produce results in parallel using the `Parallel` argument. You can also apply each of the five compiled functions given by the argument `constraintFun` in parallel as well. E.g. Obtaining the row sums of all combinations:
+        - `comboGeneral(20, 10, constraintFun = "sum", Parallel = TRUE)`
+    - Alternatively, the arguments `lower` and `upper` make it possible to generate combinations/permutations in chunks allowing for parallelization via the package `parallel`. This is convenient when you want to apply a custom function to the output in parallel as well (see this [stackoverflow post](https://stackoverflow.com/a/51595866/4408538) for a use case).
     - GMP support allows for exploration of combinations/permutations of vectors with many elements.
-* comboSample/permuteSample - Easily generate random samples of combinations/permutations.
+* `comboSample`/`permuteSample` - Easily generate random samples of combinations/permutations in parallel.
     - You can pass a vector of specific indices or rely on the internal sampling functions. We call `sample` when the total number of results is small and for larger cases, the sampling is done in a very similar fashion to `urand.bigz` from the `gmp` package.
 
 The `primeSieve` function and the `primeCount` function are both based off of the excellent work by [Kim Walisch](https://github.com/kimwalisch). The respective repos can be found here: [kimwalisch/primesieve](https://github.com/kimwalisch/primesieve); [kimwalisch/primecount](https://github.com/kimwalisch/primecount)
@@ -176,9 +178,7 @@ permuteGeneral(3, freqs = c(1,2,2))
 [30,]    3    3    2    2    1
 
 ## or combinations of a certain length
-comboGeneral(3, 2, freqs = c(1,2,2), 
-            constraintFun = "prod",
-            keepResults = TRUE)
+comboGeneral(3, 2, freqs = c(1,2,2), constraintFun = "prod")
      [,1] [,2] [,3]
 [1,]    1    2    2
 [2,]    1    3    3
@@ -204,7 +204,93 @@ facPerms <- permuteGeneral(factor(c("low", "med", "high"),
 Levels: low < med < high
 ```
 
-### Parallel computing using _lower_ and _upper_
+### Parallel Computing
+Using the parameter `Parallel`, we can easily generate combinations/permutations with great efficiency.
+
+```r
+## RcppAlgos uses one minus the number of cores available
+parallel::detectCores()
+[1] 8
+
+identical(comboGeneral(20, 10, freqs = rep(1:4, 5)),
+          comboGeneral(20, 10, freqs = rep(1:4, 5), Parallel = TRUE))
+[1] TRUE
+
+## Using 7 cores
+library(microbenchmark)
+microbenchmark(serial = comboGeneral(20, 10, freqs = rep(1:4, 5)),
+             parallel = comboGeneral(20, 10, freqs = rep(1:4, 5), Parallel = TRUE))
+Unit: milliseconds
+     expr       min        lq      mean    median        uq      max neval
+   serial 216.08683 235.09945 241.97200 240.59142 247.37669 299.7269   100
+ parallel  60.10095  64.24945  76.92387  77.25798  85.44578 118.6835   100
+```
+
+And applying any of the constraint functions in parallel is highly efficient as well. Consider obtaining the row sums of all combinations:
+
+```r
+## base R using combn and FUN
+combnSum <- combn(20, 10, sum)
+algosSum <- comboGeneral(20, 10, constraintFun = "sum")
+
+identical(as.integer(combnSum), algosSum[,11])
+[1] TRUE
+
+## Using parallel
+paralSum <- comboGeneral(20, 10, constraintFun = "sum", Parallel = TRUE)
+identical(paralSum, algosSum)
+[1] TRUE
+
+microbenchmark(serial = comboGeneral(20, 10, constraintFun = "sum"),
+             parallel = comboGeneral(20, 10, constraintFun = "sum", Parallel = TRUE),
+             combnSum = combn(20, 10, sum))
+Unit: milliseconds
+     expr        min         lq       mean     median         uq        max neval
+   serial   3.305383   3.943742   4.340827   3.998379   4.175258   7.638484   100
+ parallel   1.042070   1.391787   1.484434   1.433409   1.479612   3.277695   100
+ combnSum 203.691824 215.036510 220.745091 217.890390 222.273996 304.720899   100
+```
+### Faster than `rowSums` and `rowMeans`
+In fact, finding row sums or row means is even faster than simply applying the highly efficient `rowSums`/`rowMeans` after the combinations have already been generated:
+```r
+## Pre-generate combinations
+combs <- comboGeneral(25, 10)
+
+## Testing rowSums alone against generating combinations as well as summing
+microbenchmark(serial = comboGeneral(25, 10, constraintFun = "sum"),
+             parallel = comboGeneral(25, 10, constraintFun = "sum", Parallel = TRUE),
+              rowsums = rowSums(combs))
+Unit: milliseconds
+     expr       min        lq      mean    median        uq      max neval
+   serial 112.79266 117.04039 126.27396 119.29226 122.72389 200.1609   100
+ parallel  39.10258  41.95387  51.79792  46.31817  49.83576 115.4092   100
+  rowsums 103.22926 104.30309 109.73375 105.28372 111.05051 183.4639   100
+
+all.equal(rowSums(combs), 
+          comboGeneral(25, 10, 
+                       constraintFun = "sum",
+                       Parallel = TRUE)[,11])
+[1] TRUE
+
+## Testing rowMeans alone against generating combinations as well as obtain row means
+microbenchmark(serial = comboGeneral(25, 10, constraintFun = "mean"),
+             parallel = comboGeneral(25, 10, constraintFun = "mean", Parallel = TRUE),
+             rowmeans = rowMeans(combs))
+Unit: milliseconds
+     expr       min        lq      mean    median       uq      max neval
+   serial 173.58781 183.90069 211.03830 196.17403 241.7987 307.3608   100
+ parallel  53.10161  57.80737  77.03166  62.58454 103.2152 228.0634   100
+ rowmeans 108.65154 111.16465 117.70982 114.76217 123.3963 136.3974   100
+ 
+all.equal(rowMeans(combs), 
+          comboGeneral(25, 10, 
+                       constraintFun = "mean",
+                       Parallel = TRUE)[,11])
+[1] TRUE
+```
+We are doing double the work nearly twice as fast in both cases!!
+
+### Using arguments `lower` and `upper`
 There are arguments `lower` and `upper` that can be utilized to generate chunks of combinations/permutations without having to generate all of them followed by subsetting.  As the output is in lexicographical order, these arguments specify where to start and stop generating. For example, `comboGeneral(5, 3)` outputs 10 combinations of the vector `1:5` chosen 3 at a time. We can set `lower` to 5 in order to start generation from the 5<sup>th</sup> lexicographical combination. Similarly, we can set `upper` to 4 in order only generate the first 4 combinations. We can also use them together to produce only a certain chunk of combinations. For example, setting `lower` to 4 and `upper` to 6 only produces the 4<sup>th</sup>, 5<sup>th</sup>, and 6<sup>th</sup> lexicographical combinations. Observe:
 
 ``` r
@@ -306,9 +392,9 @@ comboGeneral(10, 8, TRUE)[5^(0:4), ]
 [4,]    1    1    1    1    1    3    6    9
 [5,]    1    1    1    1    5    6   10   10
 ```
-Just like the `General` counterparts (i.e. `combo/permuteGeneral`), we can easily explore combinations/permutations of large vectors where the total number of results is enormous.
+Just like the `General` counterparts (i.e. `combo/permuteGeneral`), we can easily explore combinations/permutations of large vectors where the total number of results is enormous in parallel.
 ```r
-permuteSample(500, 10, TRUE, n = 5, seed = 123)
+permuteSample(500, 10, TRUE, n = 5, seed = 123, Parallel = TRUE)
      [,1] [,2] [,3] [,4] [,5] [,6] [,7] [,8] [,9] [,10]
 [1,]   55  435  274  324  200  152    6  313  121   377
 [2,]  196  166  331  154  443  329  155  233  354   442
@@ -316,7 +402,7 @@ permuteSample(500, 10, TRUE, n = 5, seed = 123)
 [4,]  284  104  464  104  207  127  117    9  390   414
 [5,]  456   76  381  456  219   23  376  187   11   123
 
-permuteSample(factor(state.abb), 15, n = 3, seed = 50)
+permuteSample(factor(state.abb), 15, n = 3, seed = 50, Parallel = TRUE)
      [,1] [,2] [,3] [,4] [,5] [,6] [,7] [,8] [,9] [,10] [,11] [,12] [,13] [,14] [,15]
 [1,] ME   FL   DE   OK   ND   CA   PA   AL   ID   MO    NM    HI    KY    MT    NJ   
 [2,] AZ   CA   AL   CT   ME   SD   ID   SC   OK   NH    HI    TN    ND    IA    MT   
@@ -328,7 +414,7 @@ Big Integer ('bigz') :
 [1] 2943352142120754524160000
 ```
 ### User Defined Functions
-You can also pass user defined functions by utilizing the argument `FUN`. This feature's main purpose is for convenience, however it is somewhat more efficient than generating all combinations/permutations and then using a function from the `apply` family.
+You can also pass user defined functions by utilizing the argument `FUN`. This feature's main purpose is for convenience, however it is somewhat more efficient than generating all combinations/permutations and then using a function from the `apply` family (N.B. the argument `Parallel` has no effect when `FUN` is employed).
 
 ```r
 funCustomComb = function(n, r) {
