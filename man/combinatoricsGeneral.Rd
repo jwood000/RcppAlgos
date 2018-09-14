@@ -7,8 +7,7 @@ Generate all Combinations/Permutations of a Vector with/without Constraints
 \description{
     \itemize{
         \item Quickly generate all combinations or permutations of a vector, chosen \eqn{m} at a time, with or without constraints using Rcpp.
-        \item Produce results in parallel using the \code{Parallel} argument. You can also apply each of the five compiled functions given by the argument \code{constraintFun} in parallel as well.
-        \item Alternatively, the arguments \code{lower} and \code{upper} make it possible to generate combinations/permutations in chunks allowing for parallelization via the package \href{https://stat.ethz.ch/R-manual/R-devel/library/parallel/doc/parallel.pdf}{parallel}. This is convenient when you want to apply a custom function to the output in parallel.
+        \item Produce results in parallel using the arguments \code{lower} and \code{upper} along with the package \href{https://stat.ethz.ch/R-manual/R-devel/library/parallel/doc/parallel.pdf}{parallel}.
         \item GMP support allows for exploration of combinations/permutations of vectors with many elements.
         \item The output is in lexicographical order.
     }
@@ -56,7 +55,7 @@ permuteGeneral(v, m = NULL, repetition = FALSE, freqs = NULL,
         }
     }
   \item{FUN}{Function to be applied to each combination/permutation. The default is \code{NULL}.}
-  \item{Parallel}{Logical value indicating whether combinations/permutations should be generated in parallel. The default is \code{FALSE}. If \code{TRUE}, the number of cores used is equal to the number of cores available on your system minus one. If your system has fewer than 3 cores, \code{Parallel} is forced to be \code{FALSE}.}
+  \item{Parallel}{Currently has no effect. Is only here for backwards compatibility. This feature will be available in later versions}
 }
 \value{
 In general, a matrix is returned with each row containing a vector of length \eqn{m} or \eqn{m + 1} depending on the value of \code{keepResults}. If \code{m} isn't supplied and \code{freqs} is given, a matrix is returned with each row containing a vector of length \code{sum(freqs)}. If \code{FUN} is utilized, a list is returned.
@@ -74,13 +73,6 @@ When there are any negative values in \code{v} and \code{constraintFun = "prod"}
         \item Lexicographical ordering isn't guaranteed for permutations if \code{lower} isn't supplied and the output is constrained.
         \item If \code{lower} is supplied and the output is constrained, the combinations/permutations that will be tested will be in the lexicographical range \code{lower} to \code{upper} or to the total possible number of results if \code{upper} is not given. See the second paragraph for the definition of \code{upper}.
         \item \code{FUN} will be ignored if the constraint check is satisfied.
-        \item {\code{Parallel} will be ignored in the following cases (Research is on-going to enable parallelism in all cases below):
-            \itemize{
-                \item When the output is constrained as the current constraint algorithm is not parallelizable.
-                \item If the class of the vector passed is \code{character} (N.B. \code{Rcpp::CharacterMatrix} is not thread safe). Alternatively, you can generate an indexing matrix in parallel.
-                \item If \code{FUN} is utilized.
-            }
-        }
     }
 }
 \author{
@@ -227,24 +219,6 @@ system.time(myComb2 <- combn(25, 13)[,combn(25, 13, mean) < 10])
 ## Test equality with myComb above
 all.equal(myComb, t(myComb2))
 
-
-## much faster using Parallel = TRUE
-system.time(permuteGeneral(15, 8, lower = 250000000, Parallel = TRUE))
-system.time(permuteGeneral(15, 8, lower = 250000000))
-
-system.time(comboGeneral(30, 10, Parallel = TRUE))
-system.time(comboGeneral(30, 10))
-
-## Parallel also works when applying constraintFun solely
-system.time(comboGeneral(30, 10, Parallel = TRUE, constraintFun = "sum"))
-system.time(comboGeneral(30, 10, constraintFun = "sum"))
-
-## Depending on # of cores available, using Parallel with
-## constraintFun is faster than rowSums or rowMeans alone
-combs = comboGeneral(30, 10)
-system.time(rowSums(combs))
-
-
 ## Fun example... see stackoverflow:
 ## https://stackoverflow.com/q/22218640/4408538
 system.time(permuteGeneral(seq(0L,100L,10L),8,TRUE,
@@ -253,3 +227,4 @@ system.time(permuteGeneral(seq(0L,100L,10L),8,TRUE,
                                 limitConstraints = 100, upper = 10^5))
 }
 }
+

@@ -1,6 +1,3 @@
-![](http://cranlogs.r-pkg.org/badges/RcppAlgos?color=orange)
-![](http://cranlogs.r-pkg.org/badges/grand-total/RcppAlgos?color=brightgreen)
-
 # RcppAlgos
 
 Overview
@@ -10,7 +7,7 @@ A collection of high performance functions implemented in C++ with Rcpp for solv
 * `primeSieve` - Generates all primes less than a billion in just over 1 second
 * `primeCount` -  Counts the number of primes below a trillion in under 0.5 seconds.
 * `comboGeneral`/`permuteGeneral` - Generate all combinations/permutations of a vector (including [multisets](https://en.wikipedia.org/wiki/Multiset)) meeting specific criteria.
-    - Produce results in parallel using the `Parallel` argument. You can also apply each of the five compiled functions given by the argument `constraintFun` in parallel as well. E.g. Obtaining the row sums of all combinations:
+    - Produce results in parallel using the `Parallel` argument (**development version only**). You can also apply each of the five compiled functions given by the argument `constraintFun` in parallel as well. E.g. Obtaining the row sums of all combinations:
         - `comboGeneral(20, 10, constraintFun = "sum", Parallel = TRUE)`
     - Alternatively, the arguments `lower` and `upper` make it possible to generate combinations/permutations in chunks allowing for parallelization via the package `parallel`. This is convenient when you want to apply a custom function to the output in parallel as well (see this [stackoverflow post](https://stackoverflow.com/a/51595866/4408538) for a use case).
     - GMP support allows for exploration of combinations/permutations of vectors with many elements.
@@ -205,7 +202,7 @@ Levels: low < med < high
 ```
 
 ### Parallel Computing
-Using the parameter `Parallel`, we can easily generate combinations/permutations with great efficiency.
+Using the parameter `Parallel` (**development version only**), we can easily generate combinations/permutations with great efficiency.
 
 ```r
 ## RcppAlgos uses the number of cores available minus one
@@ -392,7 +389,7 @@ comboGeneral(10, 8, TRUE)[5^(0:4), ]
 [4,]    1    1    1    1    1    3    6    9
 [5,]    1    1    1    1    5    6   10   10
 ```
-Just like the `General` counterparts (i.e. `combo/permuteGeneral`), we can easily explore combinations/permutations of large vectors where the total number of results is enormous in parallel.
+Just like the `General` counterparts (i.e. `combo/permuteGeneral`), we can easily explore combinations/permutations of large vectors where the total number of results is enormous in parallel (**development version only**).
 ```r
 permuteSample(500, 10, TRUE, n = 5, seed = 123, Parallel = TRUE)
      [,1] [,2] [,3] [,4] [,5] [,6] [,7] [,8] [,9] [,10]

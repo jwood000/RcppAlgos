@@ -1,13 +1,24 @@
 \name{NEWS}
 \title{News for Package \pkg{RcppAlgos}}
 
-\section{Changes in RcppAlgos version 2.1.0 (Release date: 2018-08-13)}{
+\section{Changes in RcppAlgos version 2.2.0 (Release date: 2018-09-15)}{
+    \itemize{
+        \item Disabled \code{Parallel} argument as it was causing unpredictable errors on certain platforms. Research is ongoing to correct this for use in future versions. The development version will retain this feature.
+        \item Corrected UBSAN error that caused by filling a vector of integers with numbers larger than 2^31 - 1.
+    }
+}
+
+\section{Changes in RcppAlgos version 2.1.0 (Release date: 2018-09-11)}{
     \itemize{
         \item Added argument \code{Parallel} to general and sampling functions for increased gains in efficiency.
+            \itemize{
+                \item \code{comboGeneral(30, 10, Parallel = TRUE)}
+                \item \code{permuteGeneral(12, 7, TRUE, constraintFun = "sum", Parallel = TRUE)}
+            }
         \item Logical class is now preserved in combinatorial functions
         \item {Added gmp support to combinatorial functions. Now, one can accurately and quickly work with combinations/permutations of large vectors \emph{E.g.}:
             \itemize{
-                \item \code{comboSample(runif(10000), 100, n = 5, seed = 42)}
+                \item \code{comboSample(runif(10000), 100, n = 10, seed = 42, Parallel = TRUE)}
                 \item \code{permuteGeneral(factor(state.name), 20, 
                             lower = 1e15, upper = 1e15 + 1000)}
             }
