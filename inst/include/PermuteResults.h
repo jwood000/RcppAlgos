@@ -6,7 +6,7 @@
 
 template <typename typeMatrix, typename typeVector>
 void PermuteGenRes(int n, int r, std::vector<typeVector> &v, bool repetition,
-                   int numRows, std::vector<int> &z, unsigned long int count,
+                   int numRows, std::vector<int> z, unsigned long int count,
                    bool nonTrivial, typeMatrix permuteMatrix, funcPtr<typeVector> myFun) {
     
     unsigned long int uN = n, uR = r, uRowN = numRows;
