@@ -1,3 +1,6 @@
+![](http://cranlogs.r-pkg.org/badges/RcppAlgos?color=orange)
+![](http://cranlogs.r-pkg.org/badges/grand-total/RcppAlgos?color=brightgreen)
+
 # RcppAlgos
 
 Overview
