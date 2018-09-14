@@ -79,6 +79,62 @@ test_that("comboGeneral produces correct results with constraintFun only", {
                               lower = 100000, upper = 130000)),
                  comboGeneral(50, 7, freqs = rep(1:5, 10), lower = 100000,
                               upper = 130000, constraintFun = "mean")[,8])
+    
+    set.seed(12345)
+    myNums = rnorm(15)
+    expect_equal(comboGeneral(myNums, 8, constraintFun = "sum", keepResults = TRUE)[,9], 
+                 rowSums(comboGeneral(myNums, 8)))
+    
+    expect_equal(comboGeneral(myNums, 8, TRUE, constraintFun = "sum", keepResults = TRUE)[,9], 
+                 rowSums(comboGeneral(myNums, 8, TRUE)))
+    
+    expect_equal(comboGeneral(myNums, 8, freqs = rep(2, 15), 
+                              constraintFun = "sum", keepResults = TRUE)[,9], 
+                 rowSums(comboGeneral(myNums, 8, freqs = rep(2, 15))))
+    
+    ## test product
+    expect_equal(comboGeneral(myNums, 8, constraintFun = "prod", keepResults = TRUE)[,9], 
+                 apply(comboGeneral(myNums, 8), 1, prod))
+    
+    expect_equal(comboGeneral(myNums, 8, TRUE, constraintFun = "prod", keepResults = TRUE)[,9], 
+                 apply(comboGeneral(myNums, 8, TRUE), 1, prod))
+    
+    expect_equal(comboGeneral(myNums, 8, freqs = rep(2, 15), 
+                              constraintFun = "prod", keepResults = TRUE)[,9], 
+                 apply(comboGeneral(myNums, 8, freqs = rep(2, 15)), 1, prod))
+    
+    ## test mean
+    expect_equal(comboGeneral(myNums, 8, constraintFun = "mean", keepResults = TRUE)[,9], 
+                 rowMeans(comboGeneral(myNums, 8)))
+    
+    expect_equal(comboGeneral(myNums, 8, TRUE, constraintFun = "mean", keepResults = TRUE)[,9], 
+                 rowMeans(comboGeneral(myNums, 8, TRUE)))
+    
+    expect_equal(comboGeneral(myNums, 8, freqs = rep(2, 15), 
+                              constraintFun = "mean", keepResults = TRUE)[,9], 
+                 rowMeans(comboGeneral(myNums, 8, freqs = rep(2, 15))))
+    
+    ## test max
+    expect_equal(comboGeneral(myNums, 8, constraintFun = "max", keepResults = TRUE)[,9], 
+                 apply(comboGeneral(myNums, 8), 1, max))
+    
+    expect_equal(comboGeneral(myNums, 8, TRUE, constraintFun = "max", keepResults = TRUE)[,9], 
+                 apply(comboGeneral(myNums, 8, TRUE), 1, max))
+    
+    expect_equal(comboGeneral(myNums, 8, freqs = rep(2, 15), 
+                              constraintFun = "max", keepResults = TRUE)[,9], 
+                 apply(comboGeneral(myNums, 8, freqs = rep(2, 15)), 1, max))
+    
+    ## test min
+    expect_equal(comboGeneral(myNums, 8, constraintFun = "min", keepResults = TRUE)[,9], 
+                 apply(comboGeneral(myNums, 8), 1, min))
+    
+    expect_equal(comboGeneral(myNums, 8, TRUE, constraintFun = "min", keepResults = TRUE)[,9], 
+                 apply(comboGeneral(myNums, 8, TRUE), 1, min))
+    
+    expect_equal(comboGeneral(myNums, 8, freqs = rep(2, 15), 
+                              constraintFun = "min", keepResults = TRUE)[,9], 
+                 apply(comboGeneral(myNums, 8, freqs = rep(2, 15)), 1, min))
 })
 
 test_that("comboGeneral produces correct results with GMP and constrainFun enabled", {
