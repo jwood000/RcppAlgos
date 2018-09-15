@@ -4,7 +4,7 @@
 #include <CombPermUtils.h>
 
 template <typename typeMatrix, typename typeVector>
-void PermuteGeneral(int n, int r, typeVector &v, bool repetition, int numRows,
+void PermuteGeneral(int n, int r, typeVector v, bool repetition, int numRows,
                     std::vector<int> z, int intCount, bool nonTrivial,
                     typeMatrix permuteMatrix) {
     
@@ -124,7 +124,7 @@ void PermuteGeneral(int n, int r, typeVector &v, bool repetition, int numRows,
 }
 
 template <typename typeMatrix, typename typeVector>
-void MultisetPermutation(int n, int r, typeVector &v, int numRows, std::vector<int> &z,
+void MultisetPermutation(int n, int r, typeVector v, int numRows, std::vector<int> z,
                          int intCount, typeMatrix permuteMatrix) {
     
     unsigned long int lenFreqs = z.size();
@@ -163,7 +163,7 @@ void MultisetPermutation(int n, int r, typeVector &v, int numRows, std::vector<i
 }
 
 template <typename typeVector>
-void PermutationApplyFun(int n, int r, typeVector &v, bool repetition,
+void PermutationApplyFun(int n, int r, typeVector v, bool repetition,
                          int numRows, bool Multi, std::vector<int> z,
                          int intCount, SEXP sexpFun, SEXP rho, SEXP ans) {
     

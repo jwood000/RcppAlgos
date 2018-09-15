@@ -5,7 +5,7 @@
 #include <ConstraintsUtils.h>
 
 template <typename typeMatrix, typename typeVector>
-void ComboGenRes(int n, int r, std::vector<typeVector> &v, bool repetition,
+void ComboGenRes(int n, int r, std::vector<typeVector> v, bool repetition,
                   int nRows, int count, std::vector<int> z,
                   typeMatrix combinationMatrix, funcPtr<typeVector> myFun) {
     
@@ -73,8 +73,8 @@ void ComboGenRes(int n, int r, std::vector<typeVector> &v, bool repetition,
 }
 
 template <typename typeMatrix, typename typeVector>
-void MultisetComboResult(int n, int r, std::vector<typeVector> &v, std::vector<int> &Reps,
-                         std::vector<int> &freqs, int nRows, int count,
+void MultisetComboResult(int n, int r, std::vector<typeVector> v, std::vector<int> Reps,
+                         std::vector<int> freqs, int nRows, int count,
                          std::vector<int> z, typeMatrix combinationMatrix,
                          funcPtr<typeVector> myFun) {
     

@@ -5,7 +5,7 @@
 #include <ConstraintsUtils.h>
 
 template <typename typeMatrix, typename typeVector>
-void PermuteGenRes(int n, int r, std::vector<typeVector> &v, bool repetition,
+void PermuteGenRes(int n, int r, std::vector<typeVector> v, bool repetition,
                    int numRows, std::vector<int> z, unsigned long int count,
                    bool nonTrivial, typeMatrix permuteMatrix, funcPtr<typeVector> myFun) {
     
@@ -142,8 +142,8 @@ void PermuteGenRes(int n, int r, std::vector<typeVector> &v, bool repetition,
 }
 
 template <typename typeMatrix, typename typeVector>
-void MultisetPermRes(int n, int r, std::vector<typeVector> &v, int numRows,
-                     unsigned long int count, std::vector<int> &z,
+void MultisetPermRes(int n, int r, std::vector<typeVector> v, int numRows,
+                     unsigned long int count, std::vector<int> z,
                      typeMatrix permuteMatrix, funcPtr<typeVector> myFun) {
     
     unsigned long int lenFreqs = z.size();
