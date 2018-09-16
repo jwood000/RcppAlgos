@@ -4,8 +4,8 @@
 #include <Rcpp.h>
 
 template <typename typeMatrix, typename typeVector>
-void ComboGeneral(int n, int r, typeVector v, bool repetition, int count,
-                  int numRows, std::vector<int> z, typeMatrix combinationMatrix) {
+void ComboGeneral(int n, int r, typeVector &v, bool repetition, int count,
+                  int numRows, std::vector<int> &z, typeMatrix combinationMatrix) {
     
     int r1 = r - 1, r2 = r - 2, numIter;
     
@@ -59,9 +59,9 @@ void ComboGeneral(int n, int r, typeVector v, bool repetition, int count,
 }
 
 template <typename typeMatrix, typename typeVector>
-void MultisetCombination(int n, int r, typeVector v, std::vector<int> Reps,
-                               std::vector<int> freqs, int count, int numRows,
-                               std::vector<int> z, typeMatrix combinationMatrix) {
+void MultisetCombination(int n, int r, typeVector &v, std::vector<int> &Reps,
+                               std::vector<int> &freqs, int count, int numRows,
+                               std::vector<int> &z, typeMatrix combinationMatrix) {
     
     std::vector<int> zIndex(n), zGroup(r);
     int numIter, sizeFreqs = 0;
@@ -103,8 +103,8 @@ void MultisetCombination(int n, int r, typeVector v, std::vector<int> Reps,
 }
 
 template <typename typeVector>
-void ComboGeneralApplyFun(int n, int r, typeVector v, bool repetition, int count,
-                          int numRows, std::vector<int> z, SEXP sexpFun, SEXP rho, SEXP ans) {
+void ComboGeneralApplyFun(int n, int r, typeVector &v, bool repetition, int count,
+                          int numRows, std::vector<int> &z, SEXP sexpFun, SEXP rho, SEXP ans) {
     
     int r1 = r - 1, r2 = r - 2;
     int numIter;
@@ -168,8 +168,8 @@ void ComboGeneralApplyFun(int n, int r, typeVector v, bool repetition, int count
 }
 
 template <typename typeVector>
-void MultisetComboApplyFun(int n, int r, typeVector v, std::vector<int> Reps,
-                           std::vector<int> freqs, int numRows, std::vector<int> z,
+void MultisetComboApplyFun(int n, int r, typeVector &v, std::vector<int> &Reps,
+                           std::vector<int> &freqs, int numRows, std::vector<int> &z,
                            int count, SEXP sexpFun, SEXP rho, SEXP ans) {
 
     int sizeFreqs = 0, numIter;
