@@ -7,7 +7,7 @@ namespace CleanConvert {
 
     template <typename stdType>
     void convertPrimitive(SEXP input, stdType &result,
-                          std::string myErrorMsg) {
+                          std::string myErrorMsg, bool strPoss = true) {
         
         switch(TYPEOF(input)) {
             case REALSXP: {
@@ -20,6 +20,9 @@ namespace CleanConvert {
             }
             case RAWSXP:
             case STRSXP: {
+                if (!strPoss)
+                    Rcpp::stop(myErrorMsg);
+                
                 mpz_t temp[1];
                 mpz_init(temp[0]);
                 createMPZArray(input, temp, 1);
