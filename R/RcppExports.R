@@ -25,8 +25,12 @@ MasterPrimeCount <- function(Rn) {
     .Call(`_RcppAlgos_MasterPrimeCount`, Rn)
 }
 
-EratosthenesRcpp <- function(Rb1, Rb2, RIsList, RIsEuler, RNamed) {
-    .Call(`_RcppAlgos_EratosthenesRcpp`, Rb1, Rb2, RIsList, RIsEuler, RNamed)
+TotalNumThreads <- function() {
+    .Call(`_RcppAlgos_TotalNumThreads`)
+}
+
+EratosthenesRcpp <- function(Rb1, Rb2, RIsList, RIsEuler, RNamed, RNumThreads) {
+    .Call(`_RcppAlgos_EratosthenesRcpp`, Rb1, Rb2, RIsList, RIsEuler, RNamed, RNumThreads)
 }
 
 SampleRcpp <- function(Rv, Rm, Rrepetition, RFreqs, RindexVec, IsComb, IsFactor, RmySeed, RNumSamp, baseSample, stdFun, myEnv, Rparallel) {
