@@ -1,13 +1,13 @@
 primeFactorizeSieve <- function(bound1 = 100L, bound2 = NULL, namedList = FALSE) {
-    EratosthenesRcpp(bound1, bound2, TRUE, FALSE, namedList)
+    EratosthenesRcpp(bound1, bound2, TRUE, FALSE, namedList, NULL)
 }
 
 eulerPhiSieve <- function(bound1 = 100L, bound2 = NULL, namedVector = FALSE) {
-    EratosthenesRcpp(bound1, bound2, FALSE, TRUE, namedVector)
+    EratosthenesRcpp(bound1, bound2, FALSE, TRUE, namedVector, NULL)
 }
 
-primeSieve <- function(bound1 = 100L, bound2 = NULL) {
-    EratosthenesRcpp(bound1, bound2, FALSE, FALSE, FALSE)
+primeSieve <- function(bound1 = 100L, bound2 = NULL, nThreads = NULL) {
+    EratosthenesRcpp(bound1, bound2, FALSE, FALSE, FALSE, nThreads)
 }
 
 divisorsSieve <- function(bound1 = 100L, bound2 = NULL, namedList = FALSE) {
@@ -18,6 +18,7 @@ numDivisorSieve <- function(bound1 = 100L, bound2 = NULL, namedVector = FALSE) {
     DivisorsGeneral(bound1, bound2, FALSE, namedVector)
 }
 
+getNumThreads <- function() {TotalNumThreads()}
 primeFactorize <- function(v = 100L, namedList = FALSE) {PrimeFactorsContainer(v, namedList)}
 divisorsRcpp <- function(v = 100L, namedList = FALSE) {getAllDivisorsRcpp(v, namedList)}
 isPrimeRcpp <- function(v = 100L, namedVector = FALSE) {IsPrimeContainer(v, namedVector)}
