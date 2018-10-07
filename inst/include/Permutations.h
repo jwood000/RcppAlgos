@@ -6,7 +6,7 @@
 template <typename typeMatrix, typename typeVector>
 void PermuteGeneral(int n, int r, typeVector &v, bool repetition, int numRows,
                     std::vector<int> &z, int intCount, bool nonTrivial,
-                    typeMatrix permuteMatrix) {
+                    typeMatrix &permuteMatrix) {
     
     unsigned long int uN = n, uR = r, uRowN = numRows;
     unsigned long int lastElem = n - 1, count = intCount;
@@ -125,7 +125,7 @@ void PermuteGeneral(int n, int r, typeVector &v, bool repetition, int numRows,
 
 template <typename typeMatrix, typename typeVector>
 void MultisetPermutation(int n, int r, typeVector &v, int numRows, std::vector<int> &z,
-                         int intCount, typeMatrix permuteMatrix) {
+                         int intCount, typeMatrix &permuteMatrix) {
     
     unsigned long int lenFreqs = z.size();
     int *arrPerm = new int[lenFreqs];
@@ -165,7 +165,7 @@ void MultisetPermutation(int n, int r, typeVector &v, int numRows, std::vector<i
 template <typename typeVector>
 void PermutationApplyFun(int n, int r, typeVector &v, bool repetition,
                          int numRows, bool Multi, std::vector<int> &z,
-                         int intCount, SEXP sexpFun, SEXP rho, SEXP ans) {
+                         int intCount, SEXP sexpFun, SEXP rho, SEXP &ans) {
     
     unsigned long int uR = r, uN = n, count = intCount;
     unsigned long int lenFreqs = (Multi) ? z.size() : 0;

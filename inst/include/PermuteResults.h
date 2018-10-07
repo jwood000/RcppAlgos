@@ -7,7 +7,7 @@
 template <typename typeMatrix, typename typeVector>
 void PermuteGenRes(int n, int r, std::vector<typeVector> &v, bool repetition,
                    int numRows, std::vector<int> &z, unsigned long int count,
-                   bool nonTrivial, typeMatrix permuteMatrix, funcPtr<typeVector> myFun) {
+                   bool nonTrivial, typeMatrix &permuteMatrix, funcPtr<typeVector> myFun) {
     
     unsigned long int uN = n, uR = r, uRowN = numRows;
     unsigned long int lastElem = n - 1;
@@ -144,7 +144,7 @@ void PermuteGenRes(int n, int r, std::vector<typeVector> &v, bool repetition,
 template <typename typeMatrix, typename typeVector>
 void MultisetPermRes(int n, int r, std::vector<typeVector> &v, int numRows,
                      unsigned long int count, std::vector<int> &z,
-                     typeMatrix permuteMatrix, funcPtr<typeVector> myFun) {
+                     typeMatrix &permuteMatrix, funcPtr<typeVector> myFun) {
     
     unsigned long int lenFreqs = z.size();
     int *arrPerm = new int[lenFreqs];
