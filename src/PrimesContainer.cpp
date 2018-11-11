@@ -26,7 +26,7 @@ const int L1CacheSize = 32760;
 const unsigned long int wheelSize = 48;
 const int maxVal210 = 210;
 const int_fast64_t segmentSize = (int_fast64_t) L1CacheSize;
-const unsigned long int numSegments = L1CacheSize / maxVal210;
+constexpr unsigned long int numSegments = L1CacheSize / maxVal210;
 
 static const int_fast64_t wheel210[wheelSize] = {10, 2, 4, 2, 4, 6, 2, 6, 4, 2,
                                                   4, 6, 6, 2, 6, 4, 2, 6, 4, 6,
@@ -34,7 +34,7 @@ static const int_fast64_t wheel210[wheelSize] = {10, 2, 4, 2, 4, 6, 2, 6, 4, 2,
                                                   2, 4, 6, 2, 6, 6, 4, 2, 4, 6,
                                                   2, 6, 4, 2, 4, 2, 10, 2};
 
-const unsigned long int firstPriLastIndex = (sizeof(firstPrimes) / sizeof(firstPrimes[0])) - 1;
+const unsigned long int lastSmlPri = smallPrimeBase[(sizeof(smallPrimeBase) / sizeof(smallPrimeBase[0])) - 1];
 
 // These numbers were obtained empirically using the prime number theorem
 // along with a prime counting function. Values were computed in each
@@ -82,19 +82,19 @@ void PrimeSieve(typePrime minNum, typePrime maxNum,
     std::size_t myReserve = EstimatePrimeCount((double) minNum, (double) maxNum);
     myPrimes.reserve(myReserve);
     
-    if (maxNum <= firstPrimes[firstPriLastIndex]) {
+    if (maxNum <= lastSmlPri) {
         std::size_t ind = 0;
-        for (; firstPrimes[ind] < minNum; ++ind) {}
+        for (; smallPrimeBase[ind] < minNum; ++ind) {}
         
-        for (; firstPrimes[ind] <= maxNum; ++ind) 
-            myPrimes.push_back((typeReturn) firstPrimes[ind]);
+        for (; smallPrimeBase[ind] <= maxNum; ++ind) 
+            myPrimes.push_back((typeReturn) smallPrimeBase[ind]);
     } else {
         if (minNum < 13) {
             std::size_t ind = 0;
-            for (; firstPrimes[ind] < minNum; ++ind) {}
+            for (; smallPrimeBase[ind] < minNum; ++ind) {}
             
-            for (; firstPrimes[ind] < 10; ++ind)
-                myPrimes.push_back((typeReturn) firstPrimes[ind]);
+            for (; smallPrimeBase[ind] < 10; ++ind)
+                myPrimes.push_back((typeReturn) smallPrimeBase[ind]);
         }
         
         // Ensure segSize is greater than sqrt(n)
@@ -125,12 +125,11 @@ void PrimeSieve(typePrime minNum, typePrime maxNum,
                 if (lowerBnd > sqrPrime) {
                     int_fast64_t remTest = lowerBnd % smallPrimes[p - 1];
                     if (remTest == 0) {
-                        myStart = 0;
+                        myStart = smallPrimes[p - 1];
                     } else {
                         myStart = smallPrimes[p - 1] - remTest;
+                        if ((myStart % 2) == 0) {myStart += smallPrimes[p - 1];}
                     }
-                    if ((myStart % 2) == 0)
-                        myStart += smallPrimes[p - 1];
                 } else {
                     myStart = sqrPrime - lowerBnd;
                 }
@@ -153,8 +152,7 @@ void PrimeSieve(typePrime minNum, typePrime maxNum,
                         if (myNum >= minNum)
                             if (sieve[myNum - lowerBnd])
                                 myPrimes.push_back((typeReturn) myNum);
-                            
-                            myNum += wheel210[w];
+                        myNum += wheel210[w];
                     }
                 }
             } else {
@@ -163,8 +161,7 @@ void PrimeSieve(typePrime minNum, typePrime maxNum,
                         if (myNum >= minNum)
                             if (sieve[myNum - lowerBnd])
                                 myPrimes.push_back((typeReturn) myNum);
-                            
-                            myNum += wheel210[w];
+                        myNum += wheel210[w];
                     }
                 }
             }
@@ -214,8 +211,6 @@ void PrimeSieve(typePrime minNum, typePrime maxNum,
                 int_fast64_t j = nextStrt[i];
                 for (int_fast64_t k = smallPrimes[i] * 2; j < segSize; j += k)
                     sieve[j] = 0;
-                
-                nextStrt[i] = j - segSize;
             }
             
             for (std::size_t q = 0; q < numSegs && myNum <= maxNum; ++q) {
@@ -236,24 +231,24 @@ std::vector<typePrime> sqrtBasePrimes(int sqrtBound, bool bAddZero,
     
     std::vector<typePrime> smallPrimes;
     
-    if (sqrtBound <= firstPrimes[firstPriLastIndex]) {
+    if (sqrtBound < lastSmlPri) {
         if (bAddZero) smallPrimes.push_back(0);
         unsigned long int ind = (bAddTwo) ? 0 : 1;
         
-        for (; firstPrimes[ind] <= sqrtBound; ++ind)
-            smallPrimes.push_back((typePrime) firstPrimes[ind]);
+        for (; smallPrimeBase[ind] <= sqrtBound; ++ind)
+            smallPrimes.push_back((typePrime) smallPrimeBase[ind]);
         
         if (bAddExtraPrime)
-            smallPrimes.push_back((typePrime) firstPrimes[ind]);
+            smallPrimes.push_back((typePrime) smallPrimeBase[ind]);
     } else {
         int sqrtSqrtBound = (int) std::sqrt(sqrtBound);
         std::vector<int_fast64_t> smallSmlPrimes;
         unsigned long int ind = 1;
         
-        for (; firstPrimes[ind] <= sqrtBound; ++ind)
-            smallSmlPrimes.push_back((typePrime) firstPrimes[ind]);
+        for (; smallPrimeBase[ind] <= sqrtBound; ++ind)
+            smallSmlPrimes.push_back((typePrime) smallPrimeBase[ind]);
         
-        smallSmlPrimes.push_back((typePrime) firstPrimes[ind]);
+        smallSmlPrimes.push_back((typePrime) smallPrimeBase[ind]);
         
         // The number, 225, comes from the observation that the largest prime
         // gap less than 100 million is 219 @ 47,326,693. This is important
@@ -301,10 +296,10 @@ int64_t PiPrime (int64_t maxNum) {
     int64_t flrMaxNum = segSize * floor((double) maxNum / segSize);
     
     int i = 1;
-    for (; firstPrimes[i] <= sqrtBound; ++i)
-        smallPrimes.push_back(firstPrimes[i]);
+    for (; smallPrimeBase[i] <= sqrtBound; ++i)
+        smallPrimes.push_back(smallPrimeBase[i]);
     
-    smallPrimes.push_back(firstPrimes[i]);
+    smallPrimes.push_back(smallPrimeBase[i]);
     std::vector<char> sieve(segSize, 1);
     sieve[1] = 0;
     
