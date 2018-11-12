@@ -212,12 +212,12 @@ void PrimeSieveBig(int_fast64_t minNum, int_fast64_t maxNum,
     std::vector<int_fast64_t> nextStrtTwo(svPriTwoSize);
     
     int_fast64_t numCacheSegs = 1 + (myRange / segSize);
-    int_fast64_t remPrime, timesTwo, maxIndex = myRange;
+    int_fast64_t remPrime, timesTwo, maxIndex = myRange, maxSeg = 30000;
     bool bKeepGoing;
     
     // keeps track of which primes will be used in each interval
-    std::vector<std::vector<unsigned long int> > sieve2dPri(numCacheSegs,
-                                                            std::vector<unsigned long int>());
+    std::vector<unsigned long int> sieve2dPri(numCacheSegs * maxSeg);
+    std::vector<unsigned long int> nPriPerSeg(numCacheSegs, 0u);
     
     for (std::size_t i = 0; i < svPriTwoSize; ++i) {
         remTest = (lowerBnd % svPriTwo[i]);
@@ -243,8 +243,9 @@ void PrimeSieveBig(int_fast64_t minNum, int_fast64_t maxNum,
         if (bKeepGoing) {
             divTest = (myIndex / segSize);
             myIndex -= (divTest * segSize);
-            sieve2dPri[divTest].push_back(i);
+            sieve2dPri[(maxSeg * divTest) + nPriPerSeg[divTest]] = i;
             nextStrtTwo[i] = myIndex;
+            ++nPriPerSeg[divTest];
         }
     }
     
@@ -264,12 +265,12 @@ void PrimeSieveBig(int_fast64_t minNum, int_fast64_t maxNum,
             nextStrtOne[i] = (j - segSize);
         }
 
-        for (std::size_t i = 0; i < sieve2dPri[0].size(); ++i) {
-            myIndex = nextStrtTwo[sieve2dPri[0][i]];
+        for (std::size_t i = 0; i < nPriPerSeg[0]; ++i) {
+            myIndex = nextStrtTwo[sieve2dPri[i]];
             sieve[myIndex] = 0;
 
-            // Find the next number divisible by sieve2dPri[0][i]
-            timesTwo = (svPriTwo[sieve2dPri[0][i]] * 2);
+            // Find the next number divisible by sieve2dPri[i]
+            timesTwo = (svPriTwo[sieve2dPri[i]] * 2);
             myIndex += timesTwo;
 
             remTest = (myIndex % sz210) - 1;
@@ -284,9 +285,10 @@ void PrimeSieveBig(int_fast64_t minNum, int_fast64_t maxNum,
             
             if (bKeepGoing) {
                 divTest = (myIndex / segSize);
-                sieve2dPri[divTest].push_back(sieve2dPri[0][i]);
+                sieve2dPri[(maxSeg * divTest) + nPriPerSeg[divTest]] = sieve2dPri[i];
                 myIndex -= (divTest * segSize);
-                nextStrtTwo[sieve2dPri[0][i]] = myIndex;
+                nextStrtTwo[sieve2dPri[i]] = myIndex;
+                ++nPriPerSeg[divTest];
             }
         }
 
@@ -309,9 +311,10 @@ void PrimeSieveBig(int_fast64_t minNum, int_fast64_t maxNum,
         maxIndex -= segSize;
     }
 
-    unsigned long int z = numCacheSegs - 1;
+    unsigned long int lastCacheSeg = numCacheSegs - 1;
+    int_fast64_t divTestPlus;
 
-    for (std::size_t v = 1; v < z; ++v, lowerBnd += segSize, maxIndex -= segSize) {
+    for (std::size_t v = 1; v < lastCacheSeg; ++v, lowerBnd += segSize, maxIndex -= segSize) {
         for (std::size_t i = 3; i < svPriOneSize; ++i) {
             int_fast64_t j = nextStrtOne[i];
             for (int_fast64_t k = (svPriOne[i] * 2); j < segSize; j += k)
@@ -320,12 +323,12 @@ void PrimeSieveBig(int_fast64_t minNum, int_fast64_t maxNum,
             nextStrtOne[i] = (j - segSize);
         }
 
-        for (std::size_t i = 0; i < sieve2dPri[v].size(); ++i) {
-            myIndex = nextStrtTwo[sieve2dPri[v][i]];
+        for (std::size_t i = 0, svInd = maxSeg * v; i < nPriPerSeg[v]; ++i, ++svInd) {
+            myIndex = nextStrtTwo[sieve2dPri[svInd]];
             sieve[myIndex] = 0;
 
             // Find the next number divisible by sieve2dPri[i]
-            timesTwo = (svPriTwo[sieve2dPri[v][i]] * 2);
+            timesTwo = (svPriTwo[sieve2dPri[svInd]] * 2);
             myIndex += timesTwo;
 
             remTest = (myIndex % sz210) - 1;
@@ -340,9 +343,11 @@ void PrimeSieveBig(int_fast64_t minNum, int_fast64_t maxNum,
             
             if (bKeepGoing) {
                 divTest = (myIndex / segSize);
-                sieve2dPri[divTest + v].push_back(sieve2dPri[v][i]);
+                divTestPlus = divTest + v;
+                sieve2dPri[(maxSeg * divTestPlus) + nPriPerSeg[divTestPlus]] = sieve2dPri[svInd];
                 myIndex -= (divTest * segSize);
-                nextStrtTwo[sieve2dPri[v][i]] = myIndex;
+                nextStrtTwo[sieve2dPri[svInd]] = myIndex;
+                ++nPriPerSeg[divTestPlus];
             }
         }
 
@@ -362,8 +367,8 @@ void PrimeSieveBig(int_fast64_t minNum, int_fast64_t maxNum,
                 sieve[j] = 0;
         }
         
-        for (std::size_t i = 0; i < sieve2dPri[z].size(); ++i) {
-            myIndex = nextStrtTwo[sieve2dPri[z][i]];
+        for (std::size_t i = 0, svInd = (maxSeg * lastCacheSeg); i < nPriPerSeg[lastCacheSeg]; ++i, ++svInd) {
+            myIndex = nextStrtTwo[sieve2dPri[svInd]];
             sieve[myIndex] = 0;
         }
         
@@ -373,13 +378,13 @@ void PrimeSieveBig(int_fast64_t minNum, int_fast64_t maxNum,
                     myPrimes.push_back(myNum);
     }
     
-    unsigned long int maxSize123 = 0;
-    
-    for (std::size_t i = 0; i < numCacheSegs; ++i)
-        if (sieve2dPri[i].size() > maxSize123)
-            maxSize123 = sieve2dPri[i].size();
-    
-    Rcpp::print(Rcpp::wrap(maxSize123));
+    // unsigned long int maxSize123 = 0;
+    // 
+    // for (std::size_t i = 0; i < numCacheSegs; ++i)
+    //     if (sieve2dPri[i].size() > maxSize123)
+    //         maxSize123 = sieve2dPri[i].size();
+    // 
+    // Rcpp::print(Rcpp::wrap(maxSize123));
 }
 
 void sqrtSmallPrimes(int sqrtBound, std::vector<int_fast64_t> &sievePrimes) {
