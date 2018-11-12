@@ -1,6 +1,7 @@
 #include <Rcpp.h>
 #include <cmath>
 #include <array>
+#include <forward_list>
 #include <PrimesUtils.h>
 #include <GetFacsUtils.h>
 #include <CleanConvert.h>
@@ -208,18 +209,16 @@ void PrimeSieveBig(int_fast64_t minNum, int_fast64_t maxNum,
     }
     
     int_fast64_t myRange = maxNum - minNum + 1;
-    unsigned long int svPriTwoSize = svPriTwo.size();
-    std::vector<int_fast64_t> nextStrtTwo(svPriTwoSize);
-    
     int_fast64_t numCacheSegs = 1 + (myRange / segSize);
-    int_fast64_t remPrime, timesTwo, maxIndex = myRange, maxSeg = 30000;
+    int_fast64_t remPrime, timesTwo, maxIndex = myRange;
     bool bKeepGoing;
     
     // keeps track of which primes will be used in each interval
-    std::vector<unsigned long int> sieve2dPri(numCacheSegs * maxSeg);
-    std::vector<unsigned long int> nPriPerSeg(numCacheSegs, 0u);
+    std::vector<int_fast64_t> nextStrtTwo(svPriTwo.size());
+    std::vector<std::vector<unsigned long int> > myBuckets(numCacheSegs, 
+                                                           std::vector<unsigned long int>());
     
-    for (std::size_t i = 0; i < svPriTwoSize; ++i) {
+    for (std::size_t i = 0; i < svPriTwo.size(); ++i) {
         remTest = (lowerBnd % svPriTwo[i]);
         
         if (remTest == 0) {
@@ -243,9 +242,8 @@ void PrimeSieveBig(int_fast64_t minNum, int_fast64_t maxNum,
         if (bKeepGoing) {
             divTest = (myIndex / segSize);
             myIndex -= (divTest * segSize);
-            sieve2dPri[(maxSeg * divTest) + nPriPerSeg[divTest]] = i;
+            myBuckets[divTest].push_back(i);
             nextStrtTwo[i] = myIndex;
-            ++nPriPerSeg[divTest];
         }
     }
     
@@ -255,6 +253,7 @@ void PrimeSieveBig(int_fast64_t minNum, int_fast64_t maxNum,
     
     // vector used for sieving
     std::vector<char> sieve(segSize, 1);
+    std::vector<unsigned long int>::iterator it;
     
     if (minNum > 2) {
         for (std::size_t i = 3; i < svPriOneSize; ++i) {
@@ -265,12 +264,12 @@ void PrimeSieveBig(int_fast64_t minNum, int_fast64_t maxNum,
             nextStrtOne[i] = (j - segSize);
         }
 
-        for (std::size_t i = 0; i < nPriPerSeg[0]; ++i) {
-            myIndex = nextStrtTwo[sieve2dPri[i]];
+        for (it = myBuckets[0].begin(); it != myBuckets[0].end(); ++it) {
+            myIndex = nextStrtTwo[*it];
             sieve[myIndex] = 0;
 
             // Find the next number divisible by sieve2dPri[i]
-            timesTwo = (svPriTwo[sieve2dPri[i]] * 2);
+            timesTwo = (svPriTwo[*it] * 2);
             myIndex += timesTwo;
 
             remTest = (myIndex % sz210) - 1;
@@ -282,15 +281,17 @@ void PrimeSieveBig(int_fast64_t minNum, int_fast64_t maxNum,
                 bKeepGoing = (myIndex < maxIndex);
                 remTest = remainder210[remTest + remPrime];
             }
-            
+
             if (bKeepGoing) {
                 divTest = (myIndex / segSize);
-                sieve2dPri[(maxSeg * divTest) + nPriPerSeg[divTest]] = sieve2dPri[i];
+                myBuckets[divTest].push_back(*it);
                 myIndex -= (divTest * segSize);
-                nextStrtTwo[sieve2dPri[i]] = myIndex;
-                ++nPriPerSeg[divTest];
+                nextStrtTwo[*it] = myIndex;
             }
         }
+
+        myBuckets[0].clear();
+        std::rotate(myBuckets.begin(), myBuckets.begin() + 1, myBuckets.end());
 
         if (upperBnd < flrMaxNum) {
             for (std::size_t q = 0; q < numWheelSegs; ++q)
@@ -312,7 +313,6 @@ void PrimeSieveBig(int_fast64_t minNum, int_fast64_t maxNum,
     }
 
     unsigned long int lastCacheSeg = numCacheSegs - 1;
-    int_fast64_t divTestPlus;
 
     for (std::size_t v = 1; v < lastCacheSeg; ++v, lowerBnd += segSize, maxIndex -= segSize) {
         for (std::size_t i = 3; i < svPriOneSize; ++i) {
@@ -323,33 +323,34 @@ void PrimeSieveBig(int_fast64_t minNum, int_fast64_t maxNum,
             nextStrtOne[i] = (j - segSize);
         }
 
-        for (std::size_t i = 0, svInd = maxSeg * v; i < nPriPerSeg[v]; ++i, ++svInd) {
-            myIndex = nextStrtTwo[sieve2dPri[svInd]];
+        for (it = myBuckets[0].begin(); it != myBuckets[0].end(); ++it) {
+            myIndex = nextStrtTwo[*it];
             sieve[myIndex] = 0;
 
             // Find the next number divisible by sieve2dPri[i]
-            timesTwo = (svPriTwo[sieve2dPri[svInd]] * 2);
+            timesTwo = (svPriTwo[*it] * 2);
             myIndex += timesTwo;
 
             remTest = (myIndex % sz210) - 1;
             remPrime = timesTwo % sz210;
             bKeepGoing = (myIndex < maxIndex);
-            
+
             while (check210[remTest] && bKeepGoing) {
                 myIndex += timesTwo;
                 bKeepGoing = (myIndex < maxIndex);
                 remTest = remainder210[remTest + remPrime];
             }
-            
+
             if (bKeepGoing) {
                 divTest = (myIndex / segSize);
-                divTestPlus = divTest + v;
-                sieve2dPri[(maxSeg * divTestPlus) + nPriPerSeg[divTestPlus]] = sieve2dPri[svInd];
+                myBuckets[divTest].push_back(*it);
                 myIndex -= (divTest * segSize);
-                nextStrtTwo[sieve2dPri[svInd]] = myIndex;
-                ++nPriPerSeg[divTestPlus];
+                nextStrtTwo[*it] = myIndex;
             }
         }
+
+        myBuckets[0].clear();
+        std::rotate(myBuckets.begin(), myBuckets.begin() + 1, myBuckets.end());
 
         for (std::size_t q = 0; q < numWheelSegs; ++q)
             for (std::size_t w = 0; w < wheelSize; myNum += wheel210[w], ++w)
@@ -358,7 +359,7 @@ void PrimeSieveBig(int_fast64_t minNum, int_fast64_t maxNum,
 
         std::fill(sieve.begin(), sieve.end(), 1);
     }
-    
+
     // Get remaining primes that are greater than flrMaxNum and less than maxNum
     if (lowerBnd < maxNum) {
         for (std::size_t i = 3; i < svPriOneSize; ++i) {
@@ -366,12 +367,12 @@ void PrimeSieveBig(int_fast64_t minNum, int_fast64_t maxNum,
             for (int_fast64_t k = (svPriOne[i] * 2); j < segSize; j += k)
                 sieve[j] = 0;
         }
-        
-        for (std::size_t i = 0, svInd = (maxSeg * lastCacheSeg); i < nPriPerSeg[lastCacheSeg]; ++i, ++svInd) {
-            myIndex = nextStrtTwo[sieve2dPri[svInd]];
+
+        for (it = myBuckets[0].begin(); it != myBuckets[0].end(); ++it) {
+            myIndex = nextStrtTwo[*it];
             sieve[myIndex] = 0;
         }
-        
+
         for (std::size_t q = 0; q < numWheelSegs && myNum <= maxNum; ++q)
             for (std::size_t w = 0; w < wheelSize && myNum <= maxNum; myNum += wheel210[w], ++w)
                 if (sieve[myNum - lowerBnd])

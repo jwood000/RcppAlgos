@@ -16,25 +16,9 @@ constexpr unsigned long int sz420 = 2 * sz210;
 constexpr int_fast64_t segmentSize = (int_fast64_t) L1CacheSize;
 constexpr unsigned long int nWheelsPerSeg = (L1CacheSize / sz210);
 
-// Determined empirically... We want to ensure that the size of
-// every interval will hold all of the primes between (sqrt(1e9) / 2)
-// and the sqrt(1e12), such that each sieving interval will
-// sufficiently mark all composite numbers in a given range.
-// E.g. for the interval (1e10, 1e10 + 32760), there are only
-// 4905 prime numbers between (16380, 100000) that are factors
-// of numbers in the given interval.
-const unsigned long int max1dSze = 20000;
-const unsigned long int num2dSeg = 200;
-constexpr unsigned long int max2dSze = max1dSze * num2dSeg;
-
 static const int_fast64_t wheel210[wheelSize] = {
     10, 2, 4, 2, 4, 6, 2, 6, 4, 2, 4, 6, 6, 2, 6, 4, 2, 6, 4, 6, 8, 4, 2, 4,
     2, 4, 8, 6, 4, 6, 2, 4, 6, 2, 6, 6, 4, 2, 4, 6, 2, 6, 4, 2, 4, 2, 10, 2};
-
-static const unsigned long int value210[wheelSize] = {
-    1, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47, 53, 59, 61, 67, 71, 73, 79, 83, 89, 97,
-    101, 103, 107, 109, 113, 121, 127, 131, 137, 139, 143, 149, 151, 157, 163, 167, 169,
-    173, 179, 181, 187, 191, 193, 197, 199, 209};
 
 static const char check210[sz210] = {
     0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 0, 1, 1, 1, 0, 1, 0, 1, 1, 1, 0, 1, 1, 1, 1, 1, 0, 1,
@@ -67,6 +51,18 @@ static const unsigned long int remainder210[sz420] = {
     162, 163, 164, 165, 166, 167, 168, 169, 170, 171, 172, 173, 174, 175, 176, 177, 178, 179,
     180, 181, 182, 183, 184, 185, 186, 187, 188, 189, 190, 191, 192, 193, 194, 195, 196, 197,
     198, 199, 200, 201, 202, 203, 204, 205, 206, 207, 208, 209};
+
+const unsigned long int MaxBucketSize = 1024;
+
+struct Sieve2dData {
+    int_fast64_t svPri;
+    int_fast64_t nextStrt;
+};
+
+struct Bucket {
+    Sieve2dData sieve2dPrimes[MaxBucketSize];
+    std::size_t bucketSize = 0;
+};
 
 constexpr unsigned long int smlPriBsSize = sizeof(smallPrimeBase) / sizeof(smallPrimeBase[0]);
 
