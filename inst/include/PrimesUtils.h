@@ -2,9 +2,8 @@
 #define PRIMES_UTILS_H
 
 #include <PrimesSegSieve.h>
+#include <Rcpp.h>
 #include <cmath>
-#include <vector>
-#include <algorithm>
 
 // This is the largest multiple of 2*3*5*7 = 210
 // that is less than 2^15 = 32768 = 32KB. This
@@ -15,6 +14,8 @@ const int_fast64_t sz210 = 210;
 constexpr unsigned long int sz420 = 2 * sz210;
 constexpr int_fast64_t segmentSize = (int_fast64_t) L1CacheSize;
 constexpr unsigned long int nWheelsPerSeg = (L1CacheSize / sz210);
+
+// constexpr unsigned long int nCacheL1 = 128;
 
 static const int_fast64_t wheel210[wheelSize] = {
     10, 2, 4, 2, 4, 6, 2, 6, 4, 2, 4, 6, 6, 2, 6, 4, 2, 6, 4, 6, 8, 4, 2, 4,
@@ -51,18 +52,6 @@ static const unsigned long int remainder210[sz420] = {
     162, 163, 164, 165, 166, 167, 168, 169, 170, 171, 172, 173, 174, 175, 176, 177, 178, 179,
     180, 181, 182, 183, 184, 185, 186, 187, 188, 189, 190, 191, 192, 193, 194, 195, 196, 197,
     198, 199, 200, 201, 202, 203, 204, 205, 206, 207, 208, 209};
-
-const unsigned long int MaxBucketSize = 1024;
-
-struct Sieve2dData {
-    int_fast64_t svPri;
-    int_fast64_t nextStrt;
-};
-
-struct Bucket {
-    Sieve2dData sieve2dPrimes[MaxBucketSize];
-    std::size_t bucketSize = 0;
-};
 
 constexpr unsigned long int smlPriBsSize = sizeof(smallPrimeBase) / sizeof(smallPrimeBase[0]);
 
