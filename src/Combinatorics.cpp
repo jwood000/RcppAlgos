@@ -430,7 +430,7 @@ template <typename typeRcpp, typename typeVector, typename typeAlt>
 void GeneralReturn(int n, int m, std::vector<typeVector> v, bool IsRep, int nRows, bool IsComb,
                    std::vector<int> myReps, std::vector<int> freqs, std::vector<int> z,
                    bool permNonTriv, bool IsMultiset, funcPtr<typeVector> myFun,
-                   bool keepRes, typeRcpp matRcpp, typeAlt vAlt, int count) {
+                   bool keepRes, typeRcpp &matRcpp, typeAlt vAlt, int count) {
     if (keepRes) {
         if (IsComb) {
             if (IsMultiset)
@@ -955,12 +955,15 @@ SEXP CombinatoricsRcpp(SEXP Rv, SEXP Rm, SEXP Rrepetition, SEXP RFreqs, SEXP Rlo
     }
     
     unsigned long int uM = m;
+    int numThreads;
     
-    // Determined empirically. Setting up threads can be expensive, so we
-    // set the cutoff below to ensure threads aren't spawned unnecessarily
-    // We also protect users with fewer than 3 cores
+    // Determined empirically. Setting up threads can be expensive,
+    // so we set the cutoff below to ensure threads aren't spawned
+    // unnecessarily. We also protect users with fewer than 3 cores
     if ((nRows < 20000) || (std::thread::hardware_concurrency() < 3))
         Parallel = false;
+    else if (Parallel)
+        numThreads = std::thread::hardware_concurrency() - 1;
     
     if (IsConstrained) {
         std::vector<double> myLim;
@@ -1143,7 +1146,6 @@ SEXP CombinatoricsRcpp(SEXP Rv, SEXP Rm, SEXP Rrepetition, SEXP RFreqs, SEXP Rlo
         if (Parallel) {
             permNonTrivial = true;
             std::vector<std::thread> myThreads;
-            unsigned long int numThreads = std::thread::hardware_concurrency() - 1;
             int step = 0, stepSize = nRows / numThreads;
             int nextStep = stepSize;
             

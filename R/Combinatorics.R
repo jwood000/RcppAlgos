@@ -1,4 +1,4 @@
-comboGeneral <- function(v, m = NULL, repetition = FALSE, freqs = NULL,
+comboGeneral <- function(v, m = NULL, repetition = FALSE, freqs = NULL, 
                          lower = NULL, upper = NULL, constraintFun = NULL,
                          comparisonFun = NULL, limitConstraints = NULL, 
                          keepResults = NULL, FUN = NULL, Parallel = FALSE) {
@@ -9,7 +9,7 @@ comboGeneral <- function(v, m = NULL, repetition = FALSE, freqs = NULL,
                       isFactor, FALSE, FUN, new.env(), Parallel)
 }
 
-permuteGeneral <- function(v, m = NULL, repetition = FALSE, freqs = NULL,
+permuteGeneral <- function(v, m = NULL, repetition = FALSE, freqs = NULL, 
                            lower = NULL, upper = NULL, constraintFun = NULL,
                            comparisonFun = NULL, limitConstraints = NULL,
                            keepResults = NULL, FUN = NULL, Parallel = FALSE) {
