@@ -10,6 +10,11 @@ primeSieve <- function(bound1 = 100L, bound2 = NULL, nThreads = NULL) {
     EratosthenesRcpp(bound1, bound2, FALSE, FALSE, FALSE, nThreads)
 }
 
+primeSieve2 <- function(bound1 = 100L, bound2 = NULL, nThreads = NULL,
+                        t = 1, bigP = FALSE, medP = FALSE) {
+    EratosthenesRcpp2(bound1, bound2, nThreads, t, bigP, medP)
+}
+
 divisorsSieve <- function(bound1 = 100L, bound2 = NULL, namedList = FALSE) {
     DivisorsGeneral(bound1, bound2, TRUE, namedList)
 }

@@ -77,8 +77,8 @@ void PrimeSieve(typePrime minNum, typePrime maxNum,
                 const std::vector<int_fast64_t> &smallPrimes,
                 int sqrtBound, std::vector<typeReturn> &myPrimes) {
     
-    int_fast64_t segSize = segmentSize;
-    unsigned long int numSegs = numSegments;
+    int_fast64_t segSize = 4 * segmentSize;
+    unsigned long int numSegs = 4 * numSegments;
     std::size_t myReserve = EstimatePrimeCount((double) minNum, (double) maxNum);
     myPrimes.reserve(myReserve);
     
@@ -108,8 +108,8 @@ void PrimeSieve(typePrime minNum, typePrime maxNum,
         int_fast64_t flrMaxNum = segSize * floor((double) maxNum / segSize);
         
         // vector used for sieving
-        std::vector<char> sieve(segSize, 1);
-        sieve[1] = 0;
+        std::vector<bool> sieve(segSize, true);
+        sieve[1] = false;
         
         int_fast64_t sqrPrime = (int_fast64_t) (3 * 3);
         int_fast64_t lowerBnd = 0, upperBnd = segSize, myNum = 1;
@@ -141,7 +141,7 @@ void PrimeSieve(typePrime minNum, typePrime maxNum,
             for (std::size_t i = 3; i < nextStrt.size(); ++i) {
                 int_fast64_t j = nextStrt[i];
                 for (int_fast64_t k = smallPrimes[i] * 2; j < segSize; j += k)
-                    sieve[j] = 0;
+                    sieve[j] = false;
                 
                 nextStrt[i] = j - segSize;
             }
@@ -166,7 +166,7 @@ void PrimeSieve(typePrime minNum, typePrime maxNum,
                 }
             }
             
-            std::fill(sieve.begin(), sieve.end(), 1);
+            std::fill(sieve.begin(), sieve.end(), true);
             lowerBnd += segSize;
         }
         
@@ -183,7 +183,7 @@ void PrimeSieve(typePrime minNum, typePrime maxNum,
             for (std::size_t i = 3; i < nextStrt.size(); ++i) {
                 int_fast64_t j = nextStrt[i];
                 for (int_fast64_t k = smallPrimes[i] * 2; j < segSize; j += k)
-                    sieve[j] = 0;
+                    sieve[j] = false;
                 
                 nextStrt[i] = j - segSize;
             }
@@ -197,7 +197,7 @@ void PrimeSieve(typePrime minNum, typePrime maxNum,
                 }
             }
             
-            std::fill(sieve.begin(), sieve.end(), 1);
+            std::fill(sieve.begin(), sieve.end(), true);
         }
         
         // Get remaining primes that are greater than flrMaxNum and less than maxNum
@@ -210,7 +210,7 @@ void PrimeSieve(typePrime minNum, typePrime maxNum,
             for (std::size_t i = 3; i < nextStrt.size(); ++i) {
                 int_fast64_t j = nextStrt[i];
                 for (int_fast64_t k = smallPrimes[i] * 2; j < segSize; j += k)
-                    sieve[j] = 0;
+                    sieve[j] = false;
             }
             
             for (std::size_t q = 0; q < numSegs && myNum <= maxNum; ++q) {
