@@ -13,8 +13,8 @@ getAllDivisorsRcpp <- function(Rv, RNamed) {
     .Call(`_RcppAlgos_getAllDivisorsRcpp`, Rv, RNamed)
 }
 
-EratosthenesRcpp2 <- function(Rb1, Rb2, RNumThreads, nCacheL1, bigP, medP) {
-    .Call(`_RcppAlgos_EratosthenesRcpp2`, Rb1, Rb2, RNumThreads, nCacheL1, bigP, medP)
+EratosthenesRcpp2 <- function(Rb1, Rb2, RNumThreads) {
+    .Call(`_RcppAlgos_EratosthenesRcpp2`, Rb1, Rb2, RNumThreads)
 }
 
 PrimeFactorsContainer <- function(Rv, RNamed) {

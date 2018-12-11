@@ -22,23 +22,23 @@
 // This is the largest multiple of 2*3*5*7 = 210
 // that is less than 2^15 = 32768 = 32KB. This
 // is the typical size of most CPU's L1 cache
-const int L1CacheSize = 32760;
-const unsigned long int wheelSize = 48;
-const int maxVal210 = 210;
-const int_fast64_t segmentSize = (int_fast64_t) L1CacheSize;
-constexpr unsigned long int numSegments = L1CacheSize / maxVal210;
+const int L1CacheSizeTest = 32760;
+const unsigned long int wheelSizeTest = 48;
+const int maxVal210Test = 210;
+const int_fast64_t segmentSizeTest = (int_fast64_t) L1CacheSizeTest;
+constexpr unsigned long int numSegmentsTest = L1CacheSizeTest / maxVal210Test;
 
-static const int_fast64_t wheel210[wheelSize] = {10, 2, 4, 2, 4, 6, 2, 6, 4, 2,
+static const int_fast64_t wheel210Test[wheelSizeTest] = {10, 2, 4, 2, 4, 6, 2, 6, 4, 2,
                                                   4, 6, 6, 2, 6, 4, 2, 6, 4, 6,
                                                   8, 4, 2, 4, 2, 4, 8, 6, 4, 6,
                                                   2, 4, 6, 2, 6, 6, 4, 2, 4, 6,
                                                   2, 6, 4, 2, 4, 2, 10, 2};
 
-const unsigned long int lastSmlPri = smallPrimeBase[(sizeof(smallPrimeBase) / sizeof(smallPrimeBase[0])) - 1];
+const unsigned long int SmlPri = smallPrimeBase[(sizeof(smallPrimeBase) / sizeof(smallPrimeBase[0])) - 1];
 
 // These numbers were obtained empirically using the prime number theorem
 // along with a prime counting function. Values were computed in each
-// range below in cutPoints. For example in the range [40000, 120000),
+// range below in cutPointsTest. For example in the range [40000, 120000),
 // if we increment by 10 and calculate the following: 
 //                       pi(x) - x / log(x) = e
 // We then calculate the percentage of x / log(x) or : e / (x / log(x))
@@ -47,11 +47,11 @@ const unsigned long int lastSmlPri = smallPrimeBase[(sizeof(smallPrimeBase) / si
 //             b <- sapply(seq(40000, 120000, 10), function(x) x/log(x))
 //             myDiff <- a - b;  max(myDiff / b) ## [1] 0.1153694
 
-const std::vector<double> percInc = {0.25, 0.116, 0.103, 0.0850, 0.0712,
+const std::vector<double> percIncTest = {0.25, 0.116, 0.103, 0.0850, 0.0712,
                                      0.0614, 0.0538, 0.0480, 0.0431, 
                                      0.0392, 0.0360, 0.0332, 0.0309};
 
-const std::vector<double> cutPoints = {40000.0, 120000.0, 1000000.0, 10000000.0,
+const std::vector<double> cutPointsTest = {40000.0, 120000.0, 1000000.0, 10000000.0,
                                        100000000.0, 1000000000.0, 10000000000.0,
                                        100000000000.0, 1000000000000.0,
                                        10000000000000.0, 100000000000000.0,
@@ -59,14 +59,14 @@ const std::vector<double> cutPoints = {40000.0, 120000.0, 1000000.0, 10000000.0,
 
 // The following function is based off of the prime number theorem
 std::size_t EstimatePrimeCount(double minNum, double maxNum) {
-    std::vector<double>::const_iterator it = std::upper_bound(cutPoints.begin(),
-                                                              cutPoints.end(),
+    std::vector<double>::const_iterator it = std::upper_bound(cutPointsTest.begin(),
+                                                              cutPointsTest.end(),
                                                               maxNum);
-    std::size_t myIndex = it - cutPoints.begin();
-    double dblRes = std::ceil((maxNum / log(maxNum)) * (1 + percInc[myIndex]));
+    std::size_t myIndex = it - cutPointsTest.begin();
+    double dblRes = std::ceil((maxNum / log(maxNum)) * (1 + percIncTest[myIndex]));
     
     if (minNum > 1000)
-        dblRes -= std::floor((minNum / log(minNum)) * (1 + percInc[myIndex]));
+        dblRes -= std::floor((minNum / log(minNum)) * (1 + percIncTest[myIndex]));
     
     std::size_t result = dblRes;
     return result;
@@ -77,12 +77,12 @@ void PrimeSieve(typePrime minNum, typePrime maxNum,
                 const std::vector<int_fast64_t> &smallPrimes,
                 int sqrtBound, std::vector<typeReturn> &myPrimes) {
     
-    int_fast64_t segSize = 4 * segmentSize;
-    unsigned long int numSegs = 4 * numSegments;
+    int_fast64_t segSize = segmentSizeTest;
+    unsigned long int numSegs = numSegmentsTest;
     std::size_t myReserve = EstimatePrimeCount((double) minNum, (double) maxNum);
     myPrimes.reserve(myReserve);
     
-    if (maxNum <= lastSmlPri) {
+    if (maxNum <= SmlPri) {
         std::size_t ind = 0;
         for (; smallPrimeBase[ind] < minNum; ++ind) {}
         
@@ -98,10 +98,10 @@ void PrimeSieve(typePrime minNum, typePrime maxNum,
         }
         
         // Ensure segSize is greater than sqrt(n)
-        // as well as multiple of L1CacheSize
+        // as well as multiple of L1CacheSizeTest
         if (segSize < sqrtBound) {
-            numSegs = (unsigned long int) ceil((double) sqrtBound / maxVal210);
-            segSize = numSegs * maxVal210;
+            numSegs = (unsigned long int) ceil((double) sqrtBound / maxVal210Test);
+            segSize = numSegs * maxVal210Test;
         }
         
         std::vector<int_fast64_t> nextStrt;
@@ -148,20 +148,20 @@ void PrimeSieve(typePrime minNum, typePrime maxNum,
             
             if (upperBnd < flrMaxNum) {
                 for (std::size_t q = 0; q < numSegs; ++q) {
-                    for (std::size_t w = 0; w < wheelSize; ++w) {
+                    for (std::size_t w = 0; w < wheelSizeTest; ++w) {
                         if (myNum >= minNum)
                             if (sieve[myNum - lowerBnd])
                                 myPrimes.push_back((typeReturn) myNum);
-                        myNum += wheel210[w];
+                        myNum += wheel210Test[w];
                     }
                 }
             } else {
                 for (std::size_t q = 0; q < numSegs && myNum <= maxNum; ++q) {
-                    for (std::size_t w = 0; w < wheelSize && myNum <= maxNum; ++w) {
+                    for (std::size_t w = 0; w < wheelSizeTest && myNum <= maxNum; ++w) {
                         if (myNum >= minNum)
                             if (sieve[myNum - lowerBnd])
                                 myPrimes.push_back((typeReturn) myNum);
-                        myNum += wheel210[w];
+                        myNum += wheel210Test[w];
                     }
                 }
             }
@@ -189,11 +189,11 @@ void PrimeSieve(typePrime minNum, typePrime maxNum,
             }
             
             for (std::size_t q = 0; q < numSegs; ++q) {
-                for (std::size_t w = 0; w < wheelSize; ++w) {
+                for (std::size_t w = 0; w < wheelSizeTest; ++w) {
                     if (sieve[myNum - lowerBnd])
                         myPrimes.push_back((typeReturn) myNum);
                     
-                    myNum += wheel210[w];
+                    myNum += wheel210Test[w];
                 }
             }
             
@@ -214,11 +214,11 @@ void PrimeSieve(typePrime minNum, typePrime maxNum,
             }
             
             for (std::size_t q = 0; q < numSegs && myNum <= maxNum; ++q) {
-                for (std::size_t w = 0; w < wheelSize && myNum <= maxNum; ++w) {
+                for (std::size_t w = 0; w < wheelSizeTest && myNum <= maxNum; ++w) {
                     if (sieve[myNum - lowerBnd])
                         myPrimes.push_back((typeReturn) myNum);
                     
-                    myNum += wheel210[w];
+                    myNum += wheel210Test[w];
                 }
             }
         }
@@ -231,7 +231,7 @@ std::vector<typePrime> sqrtBasePrimes(int sqrtBound, bool bAddZero,
     
     std::vector<typePrime> smallPrimes;
     
-    if (sqrtBound < lastSmlPri) {
+    if (sqrtBound < SmlPri) {
         if (bAddZero) smallPrimes.push_back(0);
         unsigned long int ind = (bAddTwo) ? 0 : 1;
         
@@ -277,8 +277,8 @@ std::vector<typePrime> sqrtBasePrimes(int sqrtBound, bool bAddZero,
 // primes instead of generating them.
 int64_t PiPrime (int64_t maxNum) {
     
-    int_fast64_t segSize = segmentSize;
-    unsigned long int numSegs = numSegments;
+    int_fast64_t segSize = segmentSizeTest;
+    unsigned long int numSegs = numSegmentsTest;
     int sqrtBound = (int) std::sqrt((double) maxNum);
     
     // the wheel already has the first 4 primes marked as
@@ -288,8 +288,8 @@ int64_t PiPrime (int64_t maxNum) {
     int64_t count = 4;
     
     if (segSize < sqrtBound) {
-        numSegs = (unsigned long int) ceil((double) sqrtBound / maxVal210);
-        segSize = numSegs * maxVal210;
+        numSegs = (unsigned long int) ceil((double) sqrtBound / maxVal210Test);
+        segSize = numSegs * maxVal210Test;
     }
     
     std::vector<int64_t> smallPrimes, nextStrt;
@@ -323,10 +323,10 @@ int64_t PiPrime (int64_t maxNum) {
         }
         
         for (std::size_t q = 0; q < numSegs; ++q) {
-            for (std::size_t w = 0; w < wheelSize; ++w) {
+            for (std::size_t w = 0; w < wheelSizeTest; ++w) {
                 if (sieve[myNum - lowerBnd])
                     ++count;
-                myNum += wheel210[w];
+                myNum += wheel210Test[w];
             }
         }
         
@@ -347,10 +347,10 @@ int64_t PiPrime (int64_t maxNum) {
         }
         
         for (std::size_t q = 0; q < numSegs && myNum <= maxNum; ++q) {
-            for (std::size_t w = 0; w < wheelSize && myNum <= maxNum; ++w) {
+            for (std::size_t w = 0; w < wheelSizeTest && myNum <= maxNum; ++w) {
                 if (sieve[myNum - lowerBnd])
                     ++count;
-                myNum += wheel210[w];
+                myNum += wheel210Test[w];
             }
         }
     }

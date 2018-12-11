@@ -58,18 +58,15 @@ BEGIN_RCPP
 END_RCPP
 }
 // EratosthenesRcpp2
-SEXP EratosthenesRcpp2(SEXP Rb1, SEXP Rb2, SEXP RNumThreads, int nCacheL1, bool bigP, bool medP);
-RcppExport SEXP _RcppAlgos_EratosthenesRcpp2(SEXP Rb1SEXP, SEXP Rb2SEXP, SEXP RNumThreadsSEXP, SEXP nCacheL1SEXP, SEXP bigPSEXP, SEXP medPSEXP) {
+SEXP EratosthenesRcpp2(SEXP Rb1, SEXP Rb2, SEXP RNumThreads);
+RcppExport SEXP _RcppAlgos_EratosthenesRcpp2(SEXP Rb1SEXP, SEXP Rb2SEXP, SEXP RNumThreadsSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< SEXP >::type Rb1(Rb1SEXP);
     Rcpp::traits::input_parameter< SEXP >::type Rb2(Rb2SEXP);
     Rcpp::traits::input_parameter< SEXP >::type RNumThreads(RNumThreadsSEXP);
-    Rcpp::traits::input_parameter< int >::type nCacheL1(nCacheL1SEXP);
-    Rcpp::traits::input_parameter< bool >::type bigP(bigPSEXP);
-    Rcpp::traits::input_parameter< bool >::type medP(medPSEXP);
-    rcpp_result_gen = Rcpp::wrap(EratosthenesRcpp2(Rb1, Rb2, RNumThreads, nCacheL1, bigP, medP));
+    rcpp_result_gen = Rcpp::wrap(EratosthenesRcpp2(Rb1, Rb2, RNumThreads));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -162,7 +159,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_RcppAlgos_CombinatoricsRcpp", (DL_FUNC) &_RcppAlgos_CombinatoricsRcpp, 16},
     {"_RcppAlgos_DivisorsGeneral", (DL_FUNC) &_RcppAlgos_DivisorsGeneral, 4},
     {"_RcppAlgos_getAllDivisorsRcpp", (DL_FUNC) &_RcppAlgos_getAllDivisorsRcpp, 2},
-    {"_RcppAlgos_EratosthenesRcpp2", (DL_FUNC) &_RcppAlgos_EratosthenesRcpp2, 6},
+    {"_RcppAlgos_EratosthenesRcpp2", (DL_FUNC) &_RcppAlgos_EratosthenesRcpp2, 3},
     {"_RcppAlgos_PrimeFactorsContainer", (DL_FUNC) &_RcppAlgos_PrimeFactorsContainer, 2},
     {"_RcppAlgos_IsPrimeContainer", (DL_FUNC) &_RcppAlgos_IsPrimeContainer, 2},
     {"_RcppAlgos_MasterPrimeCount", (DL_FUNC) &_RcppAlgos_MasterPrimeCount, 1},
