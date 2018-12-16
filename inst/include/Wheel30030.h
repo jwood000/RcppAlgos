@@ -1,15 +1,12 @@
 #ifndef WHEEL_30030_H
 #define WHEEL_30030_H
 
-#include <stdint.h>
-
-constexpr int num30030 = 30030; //2 * 3 * 5 * 7 * 11 * 13
-const std::size_t maxNumL1Cache = 540;
+constexpr int NUM30030 = 30030; //2 * 3 * 5 * 7 * 11 * 13
 
 // The number of relatively prime to 30030 numbers less than 30030
-constexpr unsigned long int szWheel30030 = 5760;
+constexpr unsigned long int SZ_WHEEL30030 = 5760;
     
-static const int wheel30030[szWheel30030] = {
+static const int ARR_WHEEL30030[SZ_WHEEL30030] = {
     16, 2, 4, 6, 2, 6, 4, 2, 4, 6, 6, 2, 6, 4, 2, 6, 4, 6, 8, 4, 2, 4, 2, 4, 14, 4,
     6, 2, 10, 2, 6, 6, 4, 6, 6, 2, 10, 2, 4, 2, 12, 12, 4, 2, 4, 6, 2, 10, 6, 6, 6,
     2, 6, 4, 2, 6, 4, 14, 4, 2, 4, 6, 8, 6, 10, 2, 4, 6, 2, 6, 6, 6, 4, 6, 2, 6, 4,
