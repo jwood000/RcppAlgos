@@ -42,33 +42,6 @@ physicalCoreCount <- function() {
                 return(as.integer(a))
         }
     
-    NA_integer_
-}
-
-getL2Cache <- function(nCores, nThreads) {
-    
-    # Typically, there is 256KiB per core of L2 Cache. This is an estimate and
-    # more care should be taken when determining this for critical code.
-    #
-    # For a proper handling of this subject see here:
-    #         https://github.com/kimwalisch/primesieve/blob/master/src/CpuInfo.cpp
-    #
-    # Our simple treament here assumes hyperthreading with 2 threads per core, as
-    # this is common on the market. This means we must divide 256KiB by 2 to obtain
-    # the amount of memory per thread if physicalCoreCount fails.
-    #
-    # For all of these reasons, we provide an argument for total L2 Cache Size
-    # (in Kibibytes) for a more fine-tuned user approach.
-    
-    if (is.na(nCores)) {
-        if (is.na(nThreads)) {
-            L2Cache = 256
-        } else {
-            L2Cache = nThreads * 128
-        }
-    } else {
-        L2Cache = nCores * 256
-    }
-    
-    L2Cache
+    ## If we get here, we assume 1 core
+    1L
 }
