@@ -161,7 +161,7 @@ SEXP DivisorsGeneral (SEXP Rb1, SEXP Rb2,
     isList = Rcpp::as<bool>(RIsList);
     isNamed = Rcpp::as<bool>(RNamed);
     
-    if (bound1 <= 0 || bound1 > Significand53)
+    if (bound1 <= 0 || bound1 > Significand53Facs)
         Rcpp::stop("bound1 must be a positive number less than 2^53");
     
     if (Rf_isNull(Rb2)) {
@@ -208,7 +208,7 @@ SEXP DivisorsGeneral (SEXP Rb1, SEXP Rb2,
                 Rcpp::stop("bound2 must be of type numeric or integer");
             }
         }
-        if (bound2 <= 0 || bound2 > Significand53)
+        if (bound2 <= 0 || bound2 > Significand53Facs)
             Rcpp::stop("bound2 must be a positive number less than 2^53");
         
         if (bound1 > bound2) {
@@ -394,7 +394,7 @@ SEXP getAllDivisorsRcpp (SEXP Rv, SEXP RNamed) {
         if (std::abs(myMin) > myMax)
             myMax = std::abs(myMin);
         
-        if (myMax > Significand53)
+        if (myMax > Significand53Facs)
             Rcpp::stop("the abs value of each element must be less than 2^53");
         
         if (myMax > INT_MAX)
@@ -412,7 +412,7 @@ SEXP getAllDivisorsRcpp (SEXP Rv, SEXP RNamed) {
             isNegative = false;
         }
         
-        if (mPass > Significand53)
+        if (mPass > Significand53Facs)
             Rcpp::stop("the abs value of each element must be less than 2^53");
         
         if (mPass > INT_MAX) {
