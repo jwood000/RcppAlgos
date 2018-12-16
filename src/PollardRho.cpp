@@ -327,7 +327,7 @@ SEXP PrimeFactorsContainer (SEXP Rv, SEXP RNamed) {
         if (std::abs(myMin) > myMax)
             myMax = std::abs(myMin);
         
-        if (myMax > Significand53)
+        if (myMax > Significand53Facs)
             Rcpp::stop("the abs value of each element must be less than 2^53");
         
         if (myMax > INT_MAX)
@@ -346,7 +346,7 @@ SEXP PrimeFactorsContainer (SEXP Rv, SEXP RNamed) {
         if (mPass == 0)
             return Rcpp::IntegerVector();
         
-        if (mPass > Significand53)
+        if (mPass > Significand53Facs)
             Rcpp::stop("the abs value of each element must be less than 2^53");
         
         if (mPass > INT_MAX) {
@@ -396,7 +396,7 @@ SEXP IsPrimeContainer (SEXP Rv, SEXP RNamed) {
         
         if (myNums[j] <= 0)
             Rcpp::stop("each element must be positive");
-        if (myNums[j] > Significand53)
+        if (myNums[j] > Significand53Facs)
             Rcpp::stop("each element must be less than 2^53");
         if (std::modf(myNums[j], &isWhole) != 0.0)
             primeTest[j] = false;
