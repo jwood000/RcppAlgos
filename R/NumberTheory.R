@@ -1,17 +1,24 @@
+RcppAlgosPkgEnv <- new.env(parent=emptyenv())
+RcppAlgosPkgEnv$NumCores <- NULL
+RcppAlgosPkgEnv$NumThreads <- NULL
+
 primeFactorizeSieve <- function(bound1 = 100L, bound2 = NULL, namedList = FALSE) {
-    EratosthenesRcpp(bound1, bound2, TRUE, FALSE, namedList, NULL)
+    MotleyPrimes(bound1, bound2, TRUE, namedList, NULL)
 }
 
 eulerPhiSieve <- function(bound1 = 100L, bound2 = NULL, namedVector = FALSE) {
-    EratosthenesRcpp(bound1, bound2, FALSE, TRUE, namedVector, NULL)
+    MotleyPrimes(bound1, bound2, FALSE, namedVector, NULL)
 }
 
 primeSieve <- function(bound1 = 100L, bound2 = NULL, nThreads = NULL) {
-    EratosthenesRcpp(bound1, bound2, FALSE, FALSE, FALSE, nThreads)
-}
-
-primeSieve2 <- function(bound1 = 100L, bound2 = NULL, nThreads = NULL) {
-    EratosthenesRcpp2(bound1, bound2, nThreads)
+    
+    if (is.null(RcppAlgosPkgEnv$NumCores)) RcppAlgosPkgEnv$NumCores <- physicalCoreCount()
+    if (is.null(RcppAlgosPkgEnv$NumThreads)) RcppAlgosPkgEnv$NumThreads <- parallel::detectCores()
+    maxCores = RcppAlgosPkgEnv$NumCores
+    maxThreads = RcppAlgosPkgEnv$NumThreads
+    if (is.na(maxThreads)) maxThreads = 1L
+    
+    EratosthenesRcpp(bound1, bound2, nThreads, maxCores, maxThreads)
 }
 
 divisorsSieve <- function(bound1 = 100L, bound2 = NULL, namedList = FALSE) {
@@ -22,8 +29,7 @@ numDivisorSieve <- function(bound1 = 100L, bound2 = NULL, namedVector = FALSE) {
     DivisorsGeneral(bound1, bound2, FALSE, namedVector)
 }
 
-getNumThreads <- function() {TotalNumThreads()}
 primeFactorize <- function(v = 100L, namedList = FALSE) {PrimeFactorsContainer(v, namedList)}
 divisorsRcpp <- function(v = 100L, namedList = FALSE) {getAllDivisorsRcpp(v, namedList)}
 isPrimeRcpp <- function(v = 100L, namedVector = FALSE) {IsPrimeContainer(v, namedVector)}
-primeCount <- function(n = 100L) {MasterPrimeCount(n)}
+primeCount <- function(n = 100L) {PrimeCountRcpp(n)}
