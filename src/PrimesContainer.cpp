@@ -6,15 +6,28 @@
 
 namespace PrimeCounting {
     
+    // This is the largest multiple of 2*3*5*7 = 210
+    // that is less than 2^15 = 32768 = 32KB. This
+    // is the typical size of most CPU's L1 cache
+    constexpr int_fast64_t AlmostL1Cache = 32760;
+
+    constexpr unsigned long int SZ_WHEEL210 = 48;
+    constexpr unsigned long int NUM210 = 210;
+    constexpr std::size_t N_WHEELS_PER_SEG = static_cast<std::size_t>(AlmostL1Cache / NUM210);
+    
+    static const int_fast64_t ARR_WHEEL210[SZ_WHEEL210] = {
+        10, 2, 4, 2, 4, 6, 2, 6, 4, 2, 4, 6, 6, 2, 6, 4, 2, 6, 4, 6, 8, 4, 2, 4,
+        2, 4, 8, 6, 4, 6, 2, 4, 6, 2, 6, 6, 4, 2, 4, 6, 2, 6, 4, 2, 4, 2, 10, 2};
+    
     // PiPrime is very similar to the PrimeSieveSmall only we are not
     // considering a range. That is, we are only concerned with finding
     // the number of primes less than maxNum. We are also only counting
     // primes instead of generating them.
     int64_t PiPrime (int64_t maxNum) {
         
-        int_fast64_t segSize = PrimeSieve::L1_CACHE_SIZE;
-        unsigned long int numSegs = PrimeSieve::N_WHEELS_PER_SEG;
-        std::size_t szWheel210 = PrimeSieve::SZ_WHEEL210;
+        int_fast64_t segSize = AlmostL1Cache;
+        unsigned long int numSegs = N_WHEELS_PER_SEG;
+        std::size_t szWheel210 = SZ_WHEEL210;
         int sqrtBound = static_cast<int>(std::sqrt(maxNum));
         
         // the wheel already has the first 4 primes marked as
@@ -24,7 +37,7 @@ namespace PrimeCounting {
         int64_t count = 4;
         
         std::vector<int64_t> smallPrimes, nextStrt;
-        int64_t flrMaxNum = segSize * std::floor((double) maxNum / segSize);
+        int64_t flrMaxNum = segSize * std::floor(maxNum / segSize);
         
         std::size_t ind = 1;
         for (; smallPrimeBase[ind] <= sqrtBound; ++ind)
@@ -55,7 +68,7 @@ namespace PrimeCounting {
             }
             
             for (std::size_t q = 0; q < numSegs; ++q)
-                for (std::size_t w = 0; w < szWheel210; myNum += PrimeSieve::ARR_WHEEL210[w], ++w)
+                for (std::size_t w = 0; w < szWheel210; myNum += ARR_WHEEL210[w], ++w)
                     if (sieve[myNum - lowerBnd])
                         ++count;
                     
@@ -77,7 +90,7 @@ namespace PrimeCounting {
             }
             
             for (std::size_t q = 0; q < numSegs && myNum <= maxNum; ++q)
-                for (std::size_t w = 0; w < szWheel210 && myNum <= maxNum; myNum += PrimeSieve::ARR_WHEEL210[w], ++w)
+                for (std::size_t w = 0; w < szWheel210 && myNum <= maxNum; myNum += ARR_WHEEL210[w], ++w)
                     if (sieve[myNum - lowerBnd])
                         ++count;
         }
@@ -198,8 +211,9 @@ namespace PrimeCounting {
     int64_t MasterPrimeCount (int64_t n) {
         
         int64_t sqrtBound = static_cast<int64_t>(std::sqrt(n));
-        phiPrimes.clear();
-        PrimeSieve::sqrtBigPrimes(sqrtBound, true, false, true, phiPrimes);
+        std::vector<int64_t> resetPhiPrimes;
+        PrimeSieve::sqrtBigPrimes(sqrtBound, true, false, true, resetPhiPrimes);
+        phiPrimes = resetPhiPrimes;
         
         phiPi.resize(sqrtBound + 1);
         int64_t count = 0;
