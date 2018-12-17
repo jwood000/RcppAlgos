@@ -217,7 +217,6 @@ namespace PrimeSieve {
         
         // vector used for sieving
         std::vector<bool> sieve(segSize, true);
-        if (minNum < 2) sieve[1] = false;
         
         if (minNum < 15) {
             sieve[1] = false;
