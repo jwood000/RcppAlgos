@@ -13,10 +13,6 @@ getAllDivisorsRcpp <- function(Rv, RNamed) {
     .Call(`_RcppAlgos_getAllDivisorsRcpp`, Rv, RNamed)
 }
 
-EratosthenesRcpp <- function(Rb1, Rb2, RNumThreads, maxCores, maxThreads) {
-    .Call(`_RcppAlgos_EratosthenesRcpp`, Rb1, Rb2, RNumThreads, maxCores, maxThreads)
-}
-
 PrimeFactorsContainer <- function(Rv, RNamed) {
     .Call(`_RcppAlgos_PrimeFactorsContainer`, Rv, RNamed)
 }
@@ -31,6 +27,10 @@ PrimeCountRcpp <- function(Rn) {
 
 MotleyPrimes <- function(Rb1, Rb2, RIsList, RNamed, RNumThreads) {
     .Call(`_RcppAlgos_MotleyPrimes`, Rb1, Rb2, RIsList, RNamed, RNumThreads)
+}
+
+EratosthenesRcpp <- function(Rb1, Rb2, RNumThreads, maxCores, maxThreads) {
+    .Call(`_RcppAlgos_EratosthenesRcpp`, Rb1, Rb2, RNumThreads, maxCores, maxThreads)
 }
 
 SampleRcpp <- function(Rv, Rm, Rrepetition, RFreqs, RindexVec, IsComb, IsFactor, RmySeed, RNumSamp, baseSample, stdFun, myEnv, Rparallel) {

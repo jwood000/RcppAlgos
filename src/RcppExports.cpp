@@ -57,21 +57,6 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
-// EratosthenesRcpp
-SEXP EratosthenesRcpp(SEXP Rb1, SEXP Rb2, SEXP RNumThreads, int maxCores, int maxThreads);
-RcppExport SEXP _RcppAlgos_EratosthenesRcpp(SEXP Rb1SEXP, SEXP Rb2SEXP, SEXP RNumThreadsSEXP, SEXP maxCoresSEXP, SEXP maxThreadsSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< SEXP >::type Rb1(Rb1SEXP);
-    Rcpp::traits::input_parameter< SEXP >::type Rb2(Rb2SEXP);
-    Rcpp::traits::input_parameter< SEXP >::type RNumThreads(RNumThreadsSEXP);
-    Rcpp::traits::input_parameter< int >::type maxCores(maxCoresSEXP);
-    Rcpp::traits::input_parameter< int >::type maxThreads(maxThreadsSEXP);
-    rcpp_result_gen = Rcpp::wrap(EratosthenesRcpp(Rb1, Rb2, RNumThreads, maxCores, maxThreads));
-    return rcpp_result_gen;
-END_RCPP
-}
 // PrimeFactorsContainer
 SEXP PrimeFactorsContainer(SEXP Rv, SEXP RNamed);
 RcppExport SEXP _RcppAlgos_PrimeFactorsContainer(SEXP RvSEXP, SEXP RNamedSEXP) {
@@ -122,6 +107,21 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// EratosthenesRcpp
+SEXP EratosthenesRcpp(SEXP Rb1, SEXP Rb2, SEXP RNumThreads, int maxCores, int maxThreads);
+RcppExport SEXP _RcppAlgos_EratosthenesRcpp(SEXP Rb1SEXP, SEXP Rb2SEXP, SEXP RNumThreadsSEXP, SEXP maxCoresSEXP, SEXP maxThreadsSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< SEXP >::type Rb1(Rb1SEXP);
+    Rcpp::traits::input_parameter< SEXP >::type Rb2(Rb2SEXP);
+    Rcpp::traits::input_parameter< SEXP >::type RNumThreads(RNumThreadsSEXP);
+    Rcpp::traits::input_parameter< int >::type maxCores(maxCoresSEXP);
+    Rcpp::traits::input_parameter< int >::type maxThreads(maxThreadsSEXP);
+    rcpp_result_gen = Rcpp::wrap(EratosthenesRcpp(Rb1, Rb2, RNumThreads, maxCores, maxThreads));
+    return rcpp_result_gen;
+END_RCPP
+}
 // SampleRcpp
 SEXP SampleRcpp(SEXP Rv, SEXP Rm, SEXP Rrepetition, SEXP RFreqs, SEXP RindexVec, bool IsComb, bool IsFactor, SEXP RmySeed, SEXP RNumSamp, Rcpp::Function baseSample, SEXP stdFun, SEXP myEnv, SEXP Rparallel);
 RcppExport SEXP _RcppAlgos_SampleRcpp(SEXP RvSEXP, SEXP RmSEXP, SEXP RrepetitionSEXP, SEXP RFreqsSEXP, SEXP RindexVecSEXP, SEXP IsCombSEXP, SEXP IsFactorSEXP, SEXP RmySeedSEXP, SEXP RNumSampSEXP, SEXP baseSampleSEXP, SEXP stdFunSEXP, SEXP myEnvSEXP, SEXP RparallelSEXP) {
@@ -150,11 +150,11 @@ static const R_CallMethodDef CallEntries[] = {
     {"_RcppAlgos_CombinatoricsRcpp", (DL_FUNC) &_RcppAlgos_CombinatoricsRcpp, 16},
     {"_RcppAlgos_DivisorsGeneral", (DL_FUNC) &_RcppAlgos_DivisorsGeneral, 4},
     {"_RcppAlgos_getAllDivisorsRcpp", (DL_FUNC) &_RcppAlgos_getAllDivisorsRcpp, 2},
-    {"_RcppAlgos_EratosthenesRcpp", (DL_FUNC) &_RcppAlgos_EratosthenesRcpp, 5},
     {"_RcppAlgos_PrimeFactorsContainer", (DL_FUNC) &_RcppAlgos_PrimeFactorsContainer, 2},
     {"_RcppAlgos_IsPrimeContainer", (DL_FUNC) &_RcppAlgos_IsPrimeContainer, 2},
     {"_RcppAlgos_PrimeCountRcpp", (DL_FUNC) &_RcppAlgos_PrimeCountRcpp, 1},
     {"_RcppAlgos_MotleyPrimes", (DL_FUNC) &_RcppAlgos_MotleyPrimes, 5},
+    {"_RcppAlgos_EratosthenesRcpp", (DL_FUNC) &_RcppAlgos_EratosthenesRcpp, 5},
     {"_RcppAlgos_SampleRcpp", (DL_FUNC) &_RcppAlgos_SampleRcpp, 13},
     {NULL, NULL, 0}
 };
