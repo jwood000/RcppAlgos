@@ -20,6 +20,37 @@ namespace PrimeSieve {
     const double Significand53 = 9007199254740991.0;
     constexpr int L1_CACHE_SIZE = 32768;
     
+    // This is the largest multiple of 2*3*5*7*11 = 2310
+    // that is less than 2^15 = 32768 = 32KB. This
+    // is the typical size of most CPU's L1 cache
+    constexpr int_fast64_t Almost2310L1Cache = 32340;
+    
+    constexpr unsigned long int SZ_WHEEL2310 = 480;
+    constexpr unsigned long int NUM2310 = 2310;
+    constexpr std::size_t N_WHEELS2310_PER_SEG = static_cast<std::size_t>(Almost2310L1Cache / NUM2310);
+    
+    static const int_fast64_t ARR_WHEEL2310[SZ_WHEEL2310] = {
+        12, 4, 2, 4, 6, 2, 6, 4, 2, 4, 6, 6, 2, 6, 4, 2, 6, 4, 6, 8, 4, 2, 4, 2, 4,
+        14, 4, 6, 2, 10, 2, 6, 6, 4, 2, 4, 6, 2, 10, 2, 4, 2, 12, 10, 2, 4, 2, 4, 6,
+        2, 6, 4, 6, 6, 6, 2, 6, 4, 2, 6, 4, 6, 8, 4, 2, 4, 6, 8, 6, 10, 2, 4, 6, 2,
+        6, 6, 4, 2, 4, 6, 2, 6, 4, 2, 6, 10, 2, 10, 2, 4, 2, 4, 6, 8, 4, 2, 4, 12,
+        2, 6, 4, 2, 6, 4, 6, 12, 2, 4, 2, 4, 8, 6, 4, 6, 2, 4, 6, 2, 6, 10, 2, 4, 6,
+        2, 6, 4, 2, 4, 2, 10, 2, 10, 2, 4, 6, 6, 2, 6, 6, 4, 6, 6, 2, 6, 4, 2, 6, 4,
+        6, 8, 4, 2, 6, 4, 8, 6, 4, 6, 2, 4, 6, 8, 6, 4, 2, 10, 2, 6, 4, 2, 4, 2, 10,
+        2, 10, 2, 4, 2, 4, 8, 6, 4, 2, 4, 6, 6, 2, 6, 4, 8, 4, 6, 8, 4, 2, 4, 2, 4,
+        8, 6, 4, 6, 6, 6, 2, 6, 6, 4, 2, 4, 6, 2, 6, 4, 2, 4, 2, 10, 2, 10, 2, 6, 4,
+        6, 2, 6, 4, 2, 4, 6, 6, 8, 4, 2, 6, 10, 8, 4, 2, 4, 2, 4, 8, 10, 6, 2, 4, 8,
+        6, 6, 4, 2, 4, 6, 2, 6, 4, 6, 2, 10, 2, 10, 2, 4, 2, 4, 6, 2, 6, 4, 2, 4, 6,
+        6, 2, 6, 6, 6, 4, 6, 8, 4, 2, 4, 2, 4, 8, 6, 4, 8, 4, 6, 2, 6, 6, 4, 2, 4,
+        6, 8, 4, 2, 4, 2, 10, 2, 10, 2, 4, 2, 4, 6, 2, 10, 2, 4, 6, 8, 6, 4, 2, 6,
+        4, 6, 8, 4, 6, 2, 4, 8, 6, 4, 6, 2, 4, 6, 2, 6, 6, 4, 6, 6, 2, 6, 6, 4, 2,
+        10, 2, 10, 2, 4, 2, 4, 6, 2, 6, 4, 2, 10, 6, 2, 6, 4, 2, 6, 4, 6, 8, 4, 2,
+        4, 2, 12, 6, 4, 6, 2, 4, 6, 2, 12, 4, 2, 4, 8, 6, 4, 2, 4, 2, 10, 2, 10, 6,
+        2, 4, 6, 2, 6, 4, 2, 4, 6, 6, 2, 6, 4, 2, 10, 6, 8, 6, 4, 2, 4, 8, 6, 4, 6,
+        2, 4, 6, 2, 6, 6, 6, 4, 6, 2, 6, 4, 2, 4, 2, 10, 12, 2, 4, 2, 10, 2, 6, 4,
+        2, 4, 6, 6, 2, 10, 2, 6, 4, 14, 4, 2, 4, 2, 4, 8, 6, 4, 6, 2, 4, 6, 2, 6, 6,
+        4, 2, 4, 6, 2, 6, 4, 2, 4, 12, 2};
+    
     //************************ Prime Counting Esitmates ************************
     // These numbers were obtained empirically using the prime number theorem
     // along with a prime counting function. Values were computed in each
@@ -65,12 +96,8 @@ namespace PrimeSieve {
                          const std::vector<int_fast64_t> &sievePrimes,
                          std::vector<typePrime> &myPrimes) {
         
-        int sqrtBound = static_cast<int>(sqrt(maxNum));
-        std::size_t nWheels = (sqrtBound > NUM30030) ? 2 : 1;
-        
-        std::size_t szWheel30030 = SZ_WHEEL30030;
-        int_fast64_t segSize = static_cast<int_fast64_t>(NUM30030) * nWheels;
-        
+        std::size_t szWheel2310 = SZ_WHEEL2310;
+        std::size_t nWheels = N_WHEELS2310_PER_SEG;
         std::size_t myReserve = EstimatePiPrime(static_cast<double>(minNum),
                                                 static_cast<double>(maxNum));
         myPrimes.reserve(myReserve);
@@ -82,23 +109,25 @@ namespace PrimeSieve {
             for (; smallPrimeBase[ind] <= maxNum; ++ind) 
                 myPrimes.push_back(static_cast<typePrime>(smallPrimeBase[ind]));
         } else {
-            if (minNum < 15) {
-                std::size_t ind = 0;
-                for (; smallPrimeBase[ind] < minNum; ++ind) {}
-                
-                for (; smallPrimeBase[ind] < 15; ++ind)
-                    myPrimes.push_back(static_cast<typePrime>(smallPrimeBase[ind]));
-            }
             
+            int_fast64_t segSize = Almost2310L1Cache;
             int_fast64_t flrMaxNum = static_cast<int_fast64_t>(segSize * 
                 std::floor(static_cast<double>(maxNum) / segSize));
             
-            // vector used for sieving
-            std::vector<char> sieve(segSize, 1);
-            if (minNum < 2) sieve[1] = 0;
-            
             int_fast64_t lowerBnd = static_cast<int_fast64_t>(segSize * 
                 std::floor(static_cast<double>(minNum) / segSize));
+            
+            // vector used for sieving
+            std::vector<char> sieve(segSize, 1);
+            
+            if (minNum < 12) {
+                sieve[1] = 0;
+                std::size_t ind = 0;
+                for (; smallPrimeBase[ind] < minNum; ++ind) {}
+                
+                for (; smallPrimeBase[ind] < 12; ++ind)
+                    myPrimes.push_back(static_cast<typePrime>(smallPrimeBase[ind]));
+            }
             
             int_fast64_t upperBnd = std::min(lowerBnd + segSize, maxNum);
             int_fast64_t myNum = 1 + lowerBnd;
@@ -106,7 +135,7 @@ namespace PrimeSieve {
             unsigned long int p = 1;
             int_fast64_t sqrPrime = 9;
             std::vector<int_fast64_t> nextStrt;
-            
+
             if (minNum > 2) {
                 int_fast64_t myIndex;
                 
@@ -127,7 +156,7 @@ namespace PrimeSieve {
                     sqrPrime = sievePrimes[p] * sievePrimes[p];
                 }
                 
-                for (std::size_t i = 5; i < nextStrt.size(); ++i) {
+                for (std::size_t i = 4; i < nextStrt.size(); ++i) {
                     int_fast64_t j = nextStrt[i];
                     for (int_fast64_t k = sievePrimes[i] * 2; j < segSize; j += k)
                         sieve[j] = 0;
@@ -137,13 +166,13 @@ namespace PrimeSieve {
                 
                 if (upperBnd < flrMaxNum) {
                     for (std::size_t q = 0; q < nWheels; ++q)
-                        for (std::size_t w = 0; w < szWheel30030; myNum += ARR_WHEEL30030[w], ++w)
+                        for (std::size_t w = 0; w < szWheel2310; myNum += ARR_WHEEL2310[w], ++w)
                             if (myNum >= minNum)
                                 if (sieve[myNum - lowerBnd])
                                     myPrimes.push_back(static_cast<typePrime>(myNum));
                 } else {
                     for (std::size_t q = 0; q < nWheels && myNum <= maxNum; ++q)
-                        for (std::size_t w = 0; w < szWheel30030 && myNum <= maxNum; myNum += ARR_WHEEL30030[w], ++w)
+                        for (std::size_t w = 0; w < szWheel2310 && myNum <= maxNum; myNum += ARR_WHEEL2310[w], ++w)
                             if (myNum >= minNum)
                                 if (sieve[myNum - lowerBnd])
                                     myPrimes.push_back(static_cast<typePrime>(myNum));
@@ -161,19 +190,19 @@ namespace PrimeSieve {
                     sqrPrime = sievePrimes[p] * sievePrimes[p];
                 }
                 
-                for (std::size_t i = 5; i < nextStrt.size(); ++i) {
+                for (std::size_t i = 4; i < nextStrt.size(); ++i) {
                     int_fast64_t j = nextStrt[i];
                     for (int_fast64_t k = sievePrimes[i] * 2; j < segSize; j += k)
                         sieve[j] = 0;
-                    
+
                     nextStrt[i] = j - segSize;
                 }
-                
+
                 for (std::size_t q = 0; q < nWheels; ++q)
-                    for (std::size_t w = 0; w < szWheel30030; myNum += ARR_WHEEL30030[w], ++w)
+                    for (std::size_t w = 0; w < szWheel2310; myNum += ARR_WHEEL2310[w], ++w)
                         if (sieve[myNum - lowerBnd])
                             myPrimes.push_back(static_cast<typePrime>(myNum));
-                        
+
                 std::fill(sieve.begin(), sieve.end(), 1);
             }
             
@@ -183,17 +212,15 @@ namespace PrimeSieve {
                     nextStrt.push_back(sqrPrime - lowerBnd);
                     sqrPrime = sievePrimes[p] * sievePrimes[p];
                 }
-                
-                for (std::size_t i = 5; i < nextStrt.size(); ++i) {
+
+                for (std::size_t i = 4; i < nextStrt.size(); ++i) {
                     int_fast64_t j = nextStrt[i];
                     for (int_fast64_t k = sievePrimes[i] * 2; j < segSize; j += k)
                         sieve[j] = 0;
-                    
-                    nextStrt[i] = j - segSize;
                 }
-                
+
                 for (std::size_t q = 0; q < nWheels && myNum <= maxNum; ++q)
-                    for (std::size_t w = 0; w < szWheel30030 && myNum <= maxNum; myNum += ARR_WHEEL30030[w], ++w)
+                    for (std::size_t w = 0; w < szWheel2310 && myNum <= maxNum; myNum += ARR_WHEEL2310[w], ++w)
                         if (sieve[myNum - lowerBnd])
                             myPrimes.push_back(static_cast<typePrime>(myNum));
             }
@@ -208,7 +235,7 @@ namespace PrimeSieve {
         std::size_t nWheels = nSegOne;
         std::size_t szWheel30030 = SZ_WHEEL30030;
         
-        int_fast64_t segSize = static_cast<int_fast64_t>(nSegOne * NUM30030);
+        int_fast64_t segSize = static_cast<int_fast64_t>(nWheels * NUM30030);
         std::size_t myReserve = EstimatePiPrime(static_cast<double>(minNum), 
                                                 static_cast<double>(maxNum));
         myPrimes.reserve(myReserve);
@@ -316,8 +343,6 @@ namespace PrimeSieve {
                 int_fast64_t j = nextStrt[i];
                 for (int_fast64_t k = sievePrimes[i] * 2; j < segSize; j += k)
                     sieve[j] = false;
-                
-                nextStrt[i] = j - segSize;
             }
             
             for (std::size_t q = 0; q < nWheels && myNum <= maxNum; ++q)
@@ -545,6 +570,8 @@ namespace PrimeSieve {
                      int nThreads = 1, int maxThreads = 1, int maxCores = 1) {
         
         int_fast64_t myRange = myMax - myMin;
+        int_fast64_t smallCut = Almost2310L1Cache - 100;
+        smallCut *= smallCut;
         
         // Here, we estimate the maximum sieving interval. Based off of empirical
         // evidence we start seeing improved performance in PrimeSieveBig after
@@ -570,9 +597,10 @@ namespace PrimeSieve {
         std::vector<char> check30030(NUM30030, 1);
         int_fast64_t segUnitSize = NUM30030;
         
-        if (myMax > medCut) {
             // bool bAddZero, bool bAddExtraPrime, bool bAddTwo
-            sqrtBigPrimes(sqrtBound, false, true, false, svPriMain);
+        sqrtBigPrimes(sqrtBound, false, true, false, svPriMain);
+        
+        if (myMax > medCut) {
             nBigSegs = ((maxThreads * 2048 * 1024) /  L1_CACHE_SIZE) / nThreads;
             
             std::size_t ind = 0u;
@@ -590,13 +618,12 @@ namespace PrimeSieve {
             for (std::size_t i = 0, ind = 0; i < SZ_WHEEL30030; ind += ARR_WHEEL30030[i], ++i)
                 check30030[ind] = 0;
             
-        } else if (myMax > INT_MAX) {
-            sqrtBigPrimes(sqrtBound, false, true, false, svPriMain);
+        } else if (myMax > smallCut) {
             nBigSegs = static_cast<std::size_t>(std::ceil(
                 static_cast<double>(sqrtBound) / segUnitSize));
         } else {
-            sqrtSmallPrimes(sqrtBound, svPriMain);
-            nBigSegs = (sqrtBound > NUM30030) ? 2 : 1;
+            segUnitSize = NUM2310;
+            nBigSegs = N_WHEELS2310_PER_SEG;
         }
         
         int_fast64_t segSize = nBigSegs * segUnitSize;
@@ -624,7 +651,7 @@ namespace PrimeSieve {
                 if (upperBnd > medCut) {
                     myThreads.emplace_back(PrimeSieveBig<typePrime>, lowerBnd, upperBnd, std::ref(svPriOne),
                                            std::ref(svPriTwo), std::ref(primeList[ind]), nBigSegs, std::ref(check30030));
-                } else if (upperBnd > INT_MAX) {
+                } else if (upperBnd > smallCut) {
                     myThreads.emplace_back(PrimeSieveMedium<typePrime>, lowerBnd, upperBnd, 
                                            std::ref(svPriMain), std::ref(primeList[ind]), nBigSegs);
                 } else {
@@ -636,7 +663,7 @@ namespace PrimeSieve {
             if (myMax > medCut) {
                 myThreads.emplace_back(PrimeSieveBig<typePrime>, lowerBnd, myMax, std::ref(svPriOne),
                                        std::ref(svPriTwo), std::ref(primeList[ind]), nBigSegs, std::ref(check30030));
-            } else if (myMax > INT_MAX) {
+            } else if (myMax > smallCut) {
                 myThreads.emplace_back(PrimeSieveMedium<typePrime>, lowerBnd, myMax, 
                                        std::ref(svPriMain), std::ref(primeList[ind]), nBigSegs);
             } else {
@@ -650,7 +677,7 @@ namespace PrimeSieve {
         } else {
             if (myMax > medCut)
                 PrimeSieveBig(myMin, myMax, svPriOne, svPriTwo, primes, nBigSegs, check30030);
-            else if (myMax > INT_MAX)
+            else if (myMax > smallCut)
                 PrimeSieveMedium(myMin, myMax, svPriMain, primes, nBigSegs);
             else
                 PrimeSieveSmall(myMin, myMax, svPriMain, primes);
