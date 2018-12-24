@@ -1,7 +1,7 @@
 #ifndef PHI_TINY_LOOKUP_H
 #define PHI_TINY_LOOKUP_H
 
-#include "Wheel30030.h"
+#include "Wheel.h"
 #include <vector>
 #include <array>
 
