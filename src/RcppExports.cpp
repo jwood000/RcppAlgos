@@ -92,18 +92,19 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
-// MotleyPrimes
-SEXP MotleyPrimes(SEXP Rb1, SEXP Rb2, SEXP RIsList, SEXP RNamed, SEXP RNumThreads);
-RcppExport SEXP _RcppAlgos_MotleyPrimes(SEXP Rb1SEXP, SEXP Rb2SEXP, SEXP RIsListSEXP, SEXP RNamedSEXP, SEXP RNumThreadsSEXP) {
+// MotleyContainer
+SEXP MotleyContainer(SEXP Rb1, SEXP Rb2, SEXP RIsEuler, SEXP RNamed, SEXP RNumThreads, int maxThreads);
+RcppExport SEXP _RcppAlgos_MotleyContainer(SEXP Rb1SEXP, SEXP Rb2SEXP, SEXP RIsEulerSEXP, SEXP RNamedSEXP, SEXP RNumThreadsSEXP, SEXP maxThreadsSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< SEXP >::type Rb1(Rb1SEXP);
     Rcpp::traits::input_parameter< SEXP >::type Rb2(Rb2SEXP);
-    Rcpp::traits::input_parameter< SEXP >::type RIsList(RIsListSEXP);
+    Rcpp::traits::input_parameter< SEXP >::type RIsEuler(RIsEulerSEXP);
     Rcpp::traits::input_parameter< SEXP >::type RNamed(RNamedSEXP);
     Rcpp::traits::input_parameter< SEXP >::type RNumThreads(RNumThreadsSEXP);
-    rcpp_result_gen = Rcpp::wrap(MotleyPrimes(Rb1, Rb2, RIsList, RNamed, RNumThreads));
+    Rcpp::traits::input_parameter< int >::type maxThreads(maxThreadsSEXP);
+    rcpp_result_gen = Rcpp::wrap(MotleyContainer(Rb1, Rb2, RIsEuler, RNamed, RNumThreads, maxThreads));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -153,7 +154,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_RcppAlgos_PrimeFactorsContainer", (DL_FUNC) &_RcppAlgos_PrimeFactorsContainer, 2},
     {"_RcppAlgos_IsPrimeContainer", (DL_FUNC) &_RcppAlgos_IsPrimeContainer, 2},
     {"_RcppAlgos_PrimeCountRcpp", (DL_FUNC) &_RcppAlgos_PrimeCountRcpp, 1},
-    {"_RcppAlgos_MotleyPrimes", (DL_FUNC) &_RcppAlgos_MotleyPrimes, 5},
+    {"_RcppAlgos_MotleyContainer", (DL_FUNC) &_RcppAlgos_MotleyContainer, 6},
     {"_RcppAlgos_EratosthenesRcpp", (DL_FUNC) &_RcppAlgos_EratosthenesRcpp, 5},
     {"_RcppAlgos_SampleRcpp", (DL_FUNC) &_RcppAlgos_SampleRcpp, 13},
     {NULL, NULL, 0}
