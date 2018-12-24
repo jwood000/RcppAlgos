@@ -1,23 +1,11 @@
-#include "EratosthenesSieve.h"
+#include "MotleyPrimes.h"
 #include "CleanConvert.h"
 #include "PhiTinyLookup.h"
-#include <libdivide.h>
 #include <array>
 
 namespace PrimeCounting {
-    
-    // This is the largest multiple of 2*3*5*7 = 210
-    // that is less than 2^15 = 32768 = 32KB. This
-    // is the typical size of most CPU's L1 cache
-    constexpr int_fast64_t Almost210L1Cache = 32760;
 
-    constexpr unsigned long int SZ_WHEEL210 = 48;
-    constexpr unsigned long int NUM210 = 210;
-    constexpr std::size_t N_WHEELS210_PER_SEG = static_cast<std::size_t>(Almost210L1Cache / NUM210);
-    
-    static const int_fast64_t ARR_WHEEL210[SZ_WHEEL210] = {
-        10, 2, 4, 2, 4, 6, 2, 6, 4, 2, 4, 6, 6, 2, 6, 4, 2, 6, 4, 6, 8, 4, 2, 4,
-        2, 4, 8, 6, 4, 6, 2, 4, 6, 2, 6, 6, 4, 2, 4, 6, 2, 6, 4, 2, 4, 2, 10, 2};
+    const double Significand53 = 9007199254740991.0;
     
     // PiPrime is very similar to the PrimeSieveSmall only we are not
     // considering a range. That is, we are only concerned with finding
@@ -241,7 +229,7 @@ SEXP PrimeCountRcpp (SEXP Rn) {
     double dblNum;
     CleanConvert::convertPrimitive(Rn, dblNum, "n must be of type numeric or integer", false);
 
-    if (dblNum < 1 || dblNum > PrimeSieve::Significand53)
+    if (dblNum < 1 || dblNum > PrimeCounting::Significand53)
         Rcpp::stop("n must be a positive number less than 2^53");
 
     int64_t n = dblNum;
@@ -271,256 +259,59 @@ SEXP PrimeCountRcpp (SEXP Rn) {
         return Rcpp::wrap(static_cast<int>(result));
 }
 
-// This function is slightly different than the getStartingIndex
-// in the DivisorsContainer.cpp file. The step passed in this
-// function is a power of prime and requires an additional check
-// (i.e. else if (myPrime < lowerB)).
-template <typename typeInt>
-inline typeInt getStartIndexPowP(typeInt lowerB, typeInt step, 
-                                 typeInt myPrime) {
+template <typename typeInt, typename typeReturn, typename typeRcpp>
+SEXP GlueMotley(typeInt myMin, typeReturn myMax, bool isEuler,
+                typeRcpp temp, bool keepNames, int nThreads, int maxThreads) {
     
-    typeInt retStrt, remTest = lowerB % step;
+    std::size_t myRange = (myMax - myMin) + 1;
+    std::vector<typeReturn> myNames;
+    if (keepNames) {
+        myNames.resize(myRange);
+        typeReturn retM = myMin;
+        for (std::size_t k = 0; retM <= myMax; ++retM, ++k)
+            myNames[k] = retM;
+    }
     
-    if (remTest == 0) {
-        retStrt = 0;
-    } else if (myPrime < lowerB) {
-        retStrt = step - remTest;
+    if (isEuler) {
+        std::vector<std::vector<typeReturn>> tempList;
+        typeRcpp EulerPhis(myRange);
+        std::vector<typeInt> numSeq(myRange);
+        MotleyPrimes::MotleyMaster(myMin, myMax, isEuler, EulerPhis,
+                                   numSeq, tempList, nThreads, maxThreads);
+        
+        typeRcpp myVector = Rcpp::wrap(EulerPhis);
+        if (keepNames)
+            myVector.attr("names") = myNames;
+        
+        return myVector;
     } else {
-        retStrt = step - lowerB;
-    }
-    
-    return retStrt;
-}
-
-template <typename typeInt, typename typeReturn>
-Rcpp::List PrimeFactorizationSieve(typeInt m, typeReturn retN, bool keepNames) {
-    
-    typeInt n = (typeInt) retN;
-    typeInt myRange = n;
-    myRange += (1 - m);
-    
-    std::vector<std::vector<typeReturn> > 
-        MyPrimeList(myRange, std::vector<typeReturn>());
-    
-    typename std::vector<std::vector<typeReturn> >::iterator it2d, itEnd;
-    itEnd = MyPrimeList.end();
-    typeInt sqrtBound = (typeInt) floor(sqrt((double)n));
-    
-    typeInt j, myStep, myStart, myNum = m;
-    double myLogN = log((double)n);
-    unsigned long int limit;
-    
-    std::vector<typeReturn> myNames;
-    if (keepNames) {
-        myNames.resize(myRange);
-        typeReturn retM = (typeReturn) m;
-        for (std::size_t k = 0; retM <= retN; ++retM, ++k)
-            myNames[k] = retM;
-    }
-    
-    if (n > 3) {
-        std::vector<typeInt> primes;
-        PrimeSieve::sqrtBigPrimes(sqrtBound, false, false, true, primes);
-        typename std::vector<typeInt>::iterator p, primesEnd;
-        std::vector<int> myMemory(myRange, 1);
-        std::vector<int>::iterator myMalloc;
-        primesEnd = primes.end();
+        std::vector<std::vector<typeReturn>> 
+            primeList(myRange, std::vector<typeReturn>());
+        typeRcpp tempRcpp;
+        std::vector<typeInt> tempVec;
+        MotleyPrimes::MotleyMaster(myMin, myMax, isEuler, tempRcpp,
+                                   tempVec, primeList, nThreads, maxThreads);
         
-        for (p = primes.begin(); p < primesEnd; ++p) {
-            limit = static_cast<unsigned long int>(trunc(myLogN /
-                                    log(static_cast<double>(*p))));
-            if (m < 2) {
-                for (std::size_t i = 1; i <= limit; ++i) {
-                    myStep = static_cast<typeInt>(pow(*p, i));
-                    for (j = (myStep - 1); j < n; j += myStep)
-                        ++myMemory[j];
-                }
-            } else {
-                for (std::size_t i = 1; i <= limit; ++i) {
-                    myStep = static_cast<typeInt>(pow(*p, i));
-                    myStart = getStartIndexPowP(m, myStep, *p);
-                    for (j = myStart; j < myRange; j += myStep)
-                        ++myMemory[j];
-                }
-            }
-        }
-            
-        if (myNum < 2){
-            ++myNum;
-            it2d = MyPrimeList.begin() + 1;
-            myMalloc = myMemory.begin() + 1;
-        } else {
-            it2d = MyPrimeList.begin();
-            myMalloc = myMemory.begin();
-        }
+        Rcpp::List myList = Rcpp::wrap(primeList);
+        if (keepNames)
+            myList.attr("names") = myNames;
         
-        for (; it2d < itEnd; ++it2d, ++myNum, ++myMalloc) {
-            it2d->reserve(*myMalloc);
-            it2d->push_back((typeReturn) myNum);
-        }
-    
-        if (m < 2) {
-            for (p = primes.begin(); p < primesEnd; ++p) {
-                limit = static_cast<unsigned long int>(trunc(myLogN /
-                                    log(static_cast<double>(*p))));
-                libdivide::divider<typeInt> fastDiv(*p);
-                
-                for (std::size_t i = 1; i <= limit; ++i) {
-                    myStep = static_cast<typeInt>(pow(*p, i));
-                    
-                    for (j = (myStep - 1); j < n; j += myStep) {
-                        if (MyPrimeList[j].back() > *p) {
-                            myNum = (typeInt) MyPrimeList[j].back();
-                            myNum /= fastDiv;
-                            MyPrimeList[j].back() = (typeReturn) myNum;
-                            MyPrimeList[j].insert(MyPrimeList[j].end() - 1, (typeReturn) *p);
-                        }
-                    }
-                }
-            }
-        } else {
-            for (p = primes.begin(); p < primesEnd; ++p) {
-                limit = static_cast<unsigned long int>(trunc(myLogN /
-                                        log(static_cast<double>(*p))));
-                libdivide::divider<typeInt> fastDiv(*p);
-                
-                for (std::size_t i = 1; i <= limit; ++i) {
-                    myStep = static_cast<typeInt>(pow(*p, i));
-                    myStart = getStartIndexPowP(m, myStep, *p);
-    
-                    for (j = myStart; j < myRange; j += myStep) {
-                        if (MyPrimeList[j].back() > *p) {
-                            myNum = (typeInt) MyPrimeList[j].back();
-                            myNum /= fastDiv;
-                            MyPrimeList[j].back() = (typeReturn) myNum;
-                            MyPrimeList[j].insert(MyPrimeList[j].end() - 1, (typeReturn) *p);
-                        }
-                    }
-                }
-            }
-        }
-    } else { // edge case where m,n = 2 or 3
-        int strt = 0;
-        myNum = m;
-        if (m == 1) {
-            ++strt;
-            ++myNum;
-        }
-        for (int i = strt; i < myRange; ++i, ++myNum)
-            MyPrimeList[i].push_back(myNum);
+        return myList;
     }
-    
-    Rcpp::List myList = Rcpp::wrap(MyPrimeList);
-    if (keepNames)
-        myList.attr("names") = myNames;
-    
-    return myList;
-}
-
-template <typename typeRcpp, typename typeInt, typename typeReturn>
-typeRcpp EulerPhiSieveCpp (typeInt m, typeReturn retN, bool keepNames) {
-    
-    typeInt n = (typeInt) retN;
-    typeInt myRange = n;
-    myRange += (1 - m);
-    
-    typeInt j, myNum = m;
-    double myLogN = log(static_cast<double>(n));
-    unsigned long int limit;
-    std::vector<typeReturn> EulerPhis(myRange);
-    std::vector<typeInt> numSeq(myRange);
-    
-    std::vector<typeReturn> myNames;
-    if (keepNames) {
-        myNames.resize(myRange);
-        typeReturn retM = (typeReturn) m;
-        for (std::size_t k = 0; retM <= retN; ++retM, ++k)
-            myNames[k] = retM;
-    }
-    
-    typeReturn retM = (typeReturn) m;
-    for (std::size_t i = 0; retM <= retN; ++retM, ++i) {
-        EulerPhis[i] = retM;
-        numSeq[i] = (typeInt) retM;
-    }
-    
-    std::vector<typeInt> primes;
-    int sqrtBound = static_cast<int>(std::floor(sqrt(n)));
-    typename std::vector<typeInt>::iterator p;
-    
-    if (m < 2) {
-        bool Parallel = false;
-        std::vector<std::vector<typeInt>> primeList;
-        int_fast64_t one64 = 1, n64 = static_cast<int_fast64_t>(n);
-        PrimeSieve::PrimeMaster(one64, n64, primes, primeList, Parallel);
-
-        for (p = primes.begin(); p < primes.end(); ++p) {
-            libdivide::divider<typeInt> fastDiv(*p);
-            for (j = (*p - 1); j < n; j += *p) {
-                myNum = (typeInt) EulerPhis[j];
-                myNum /= fastDiv;
-                EulerPhis[j] -= (typeReturn) myNum;
-            }
-        }
-    } else if (n > 3) {
-        PrimeSieve::sqrtBigPrimes(sqrtBound, false, false, true, primes);
-        typeInt myStart, myStep;
-    
-        for (p = primes.begin(); p < primes.end(); ++p) {
-            limit = static_cast<unsigned long int>(std::trunc(myLogN /
-                                    log(static_cast<double>(*p))));
-            typeInt myP = static_cast<typeInt>(*p);
-            myStart = getStartIndexPowP(m, myP, myP);
-            libdivide::divider<typeInt> fastDiv(*p);
-    
-            for (j = myStart; j < myRange; j += myP) {
-                numSeq[j] /= fastDiv;
-                myNum = (typeInt) EulerPhis[j];
-                myNum /= fastDiv;
-                EulerPhis[j] -= (typeReturn) myNum;
-            }
-    
-            for (std::size_t i = 2; i <= limit; ++i) {
-                myStep = (typeInt) pow(*p, i);
-                myStart = getStartIndexPowP(m, myStep, myP);
-                
-                for (j = myStart; j < myRange; j += myStep)
-                    numSeq[j] /= fastDiv;
-            }
-        }
-
-        for (typeInt i = 0; i < myRange; ++i) {
-            if (numSeq[i] > 1) {
-                myNum = (typeInt) EulerPhis[i];
-                myNum /= numSeq[i];
-                EulerPhis[i] -= (typeReturn) myNum;
-            }
-        }
-    } else { // edge case where m,n = 2 or 3
-        for (int i = 0; i < myRange; ++i)
-            --EulerPhis[i];
-    }
-    
-    typeRcpp myVector = Rcpp::wrap(EulerPhis);
-    if (keepNames)
-        myVector.attr("names") = myNames;
-        
-    return myVector;
 }
 
 // [[Rcpp::export]]
-SEXP MotleyPrimes(SEXP Rb1, SEXP Rb2, SEXP RIsList, 
-                  SEXP RNamed, SEXP RNumThreads) {
+SEXP MotleyContainer(SEXP Rb1, SEXP Rb2, SEXP RIsEuler, 
+                     SEXP RNamed, SEXP RNumThreads, int maxThreads) {
     
-    double bound1, bound2;
-    int_fast64_t myMax, myMin;
-    bool isList = false, isNamed = false;
+    double bound1, bound2, myMin, myMax;
+    bool Parallel = false, isEuler = false, isNamed = false;
     CleanConvert::convertPrimitive(Rb1, bound1, "bound1 must be of type numeric or integer", false);
     
-    isList = Rcpp::as<bool>(RIsList);
+    isEuler = Rcpp::as<bool>(RIsEuler);
     isNamed = Rcpp::as<bool>(RNamed);
     
-    if (bound1 <= 0 || bound1 > PrimeSieve::Significand53)
+    if (bound1 <= 0 || bound1 > PrimeCounting::Significand53)
         Rcpp::stop("bound1 must be a positive number less than 2^53");
     
     if (Rf_isNull(Rb2)) {
@@ -529,7 +320,7 @@ SEXP MotleyPrimes(SEXP Rb1, SEXP Rb2, SEXP RIsList,
         CleanConvert::convertPrimitive(Rb2, bound2, "bound2 must be of type numeric or integer", false);
     }
     
-    if (bound2 <= 0 || bound2 > PrimeSieve::Significand53)
+    if (bound2 <= 0 || bound2 > PrimeCounting::Significand53)
         Rcpp::stop("bound2 must be a positive number less than 2^53");
     
     if (bound1 > bound2) {
@@ -542,32 +333,41 @@ SEXP MotleyPrimes(SEXP Rb1, SEXP Rb2, SEXP RIsList,
     
     myMin = ceil(myMin);
     myMax = floor(myMax);
-        
-    if (isList) {
-        if (myMax < 2) {
-            std::vector<std::vector<int> > trivialRet(1, std::vector<int>());
+    
+    if (myMax < 2) {
+        if (isEuler) {
+            Rcpp::IntegerVector z(1, 1);
+            if (isNamed)
+                z.attr("names") = 1;
+            return z;
+        } else {
+            std::vector<std::vector<int>> trivialRet(1, std::vector<int>());
             Rcpp::List z = Rcpp::wrap(trivialRet);
             if (isNamed)
                 z.attr("names") = 1;
             return z;
         }
-        
-        if (myMax >= INT_MAX)
-            return PrimeFactorizationSieve((int64_t) myMin, (double) myMax, isNamed);
-        
-        return PrimeFactorizationSieve((int32_t) myMin, (int32_t) myMax, isNamed);
+    }
+    
+    int nThreads = 1;
+    if (!Rf_isNull(RNumThreads))
+        CleanConvert::convertPrimitive(RNumThreads, nThreads, "nThreads must be of type numeric or integer");
+    
+    if (nThreads > 1) {
+        Parallel = true;
+        if (nThreads > maxThreads) {nThreads = maxThreads;}
+        if (maxThreads < 2) {Parallel = false;}
+    }
+    
+    if (myMax > std::numeric_limits<int>::max()) {
+        int64_t intMin = static_cast<int64_t>(myMin);
+        Rcpp::NumericVector temp;
+        return GlueMotley(intMin, myMax, isEuler, temp, isNamed, nThreads, maxThreads);
     } else {
-        if (myMax <= 1) {
-            Rcpp::IntegerVector z(1, 1);
-            if (isNamed)
-                z.attr("names") = 1;
-            return z;
-        }
-        
-        if (myMax >= INT_MAX)
-            return EulerPhiSieveCpp<Rcpp::NumericVector>((int64_t) myMin, (double) myMax, isNamed);
-        
-        return EulerPhiSieveCpp<Rcpp::IntegerVector>((int32_t) myMin, (int32_t) myMax, isNamed);
+        int32_t intMin = static_cast<int32_t>(myMin);
+        int32_t intMax = static_cast<int32_t>(myMax);
+        Rcpp::IntegerVector temp;
+        return GlueMotley(intMin, intMax, isEuler, temp, isNamed, nThreads, maxThreads);
     }
 }
 
@@ -578,7 +378,7 @@ SEXP EratosthenesRcpp(SEXP Rb1, SEXP Rb2, SEXP RNumThreads, int maxCores, int ma
     int_fast64_t myMax, myMin;
     CleanConvert::convertPrimitive(Rb1, bound1, "bound1 must be of type numeric or integer", false);
     
-    if (bound1 <= 0 || bound1 > PrimeSieve::Significand53)
+    if (bound1 <= 0 || bound1 > PrimeCounting::Significand53)
         Rcpp::stop("bound1 must be a positive number less than 2^53");
     
     if (Rf_isNull(Rb2)) {
@@ -587,7 +387,7 @@ SEXP EratosthenesRcpp(SEXP Rb1, SEXP Rb2, SEXP RNumThreads, int maxCores, int ma
         CleanConvert::convertPrimitive(Rb2, bound2, "bound2 must be of type numeric or integer", false);
     }
     
-    if (bound2 <= 0 || bound2 > PrimeSieve::Significand53)
+    if (bound2 <= 0 || bound2 > PrimeCounting::Significand53)
         Rcpp::stop("bound2 must be a positive number less than 2^53");
     
     if (bound1 > bound2) {
@@ -618,8 +418,8 @@ SEXP EratosthenesRcpp(SEXP Rb1, SEXP Rb2, SEXP RNumThreads, int maxCores, int ma
         std::vector<std::vector<double>> primeList(numSects, std::vector<double>());
         std::vector<double> tempPrime;
         
-        PrimeSieve::PrimeMaster(myMin, myMax, tempPrime, primeList, 
-                                Parallel, nThreads, maxThreads, maxCores);
+        PrimeSieve::PrimeSieveMaster(myMin, myMax, tempPrime, primeList, 
+                                     Parallel, nThreads, maxThreads, maxCores);
         
         if (Parallel) {
             for (int i = 0; i < numSects; ++i) {
@@ -641,8 +441,8 @@ SEXP EratosthenesRcpp(SEXP Rb1, SEXP Rb2, SEXP RNumThreads, int maxCores, int ma
         std::vector<std::vector<int_fast32_t>> primeList(numSects, std::vector<int_fast32_t>());
         std::vector<int_fast32_t> tempPrime;
         
-        PrimeSieve::PrimeMaster(myMin, myMax, tempPrime, primeList, 
-                                Parallel, nThreads, maxThreads, maxCores);
+        PrimeSieve::PrimeSieveMaster(myMin, myMax, tempPrime, primeList, 
+                                     Parallel, nThreads, maxThreads, maxCores);
         
         if (Parallel) {
             for (int i = 0; i < numSects; ++i) {
