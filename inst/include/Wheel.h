@@ -1,10 +1,57 @@
-#ifndef WHEEL_30030_H
-#define WHEEL_30030_H
+#ifndef WHEEL_H
+#define WHEEL_H
 
-constexpr int NUM30030 = 30030; //2 * 3 * 5 * 7 * 11 * 13
+#include <Rcpp.h>
 
-// The number of relatively prime to 30030 numbers less than 30030
+// This is the largest multiple of 2*3*5*7 = 210
+// that is less than 2^15 = 32768 = 32KB. This
+// is the typical size of most CPU's L1 cache
+constexpr int_fast64_t Almost210L1Cache = 32760;
+
+// This is the largest multiple of 2*3*5*7*11 = 2310
+// that is less than 2^15 = 32768 = 32KB. This
+// is the typical size of most CPU's L1 cache
+constexpr int_fast64_t Almost2310L1Cache = 32340;
+
+constexpr unsigned long int NUM210 = 210;     //2 * 3 * 5 * 7
+constexpr unsigned long int NUM2310 = 2310;   //2 * 3 * 5 * 7 * 11
+constexpr unsigned long int NUM30030 = 30030; //2 * 3 * 5 * 7 * 11 * 13
+
+// The number of relatively prime numbers to 210 less than 210
+constexpr unsigned long int SZ_WHEEL210 = 48;
+// The number of relatively prime numbers to 2310 less than 2310
+constexpr unsigned long int SZ_WHEEL2310 = 480;
+// The number of relatively prime numbers to 30030 less than 30030
 constexpr unsigned long int SZ_WHEEL30030 = 5760;
+
+constexpr std::size_t N_WHEELS210_PER_SEG = static_cast<std::size_t>(Almost210L1Cache / NUM210);
+constexpr std::size_t N_WHEELS2310_PER_SEG = static_cast<std::size_t>(Almost2310L1Cache / NUM2310);
+
+static const int_fast64_t ARR_WHEEL210[SZ_WHEEL210] = {
+    10, 2, 4, 2, 4, 6, 2, 6, 4, 2, 4, 6, 6, 2, 6, 4, 2, 6, 4, 6, 8, 4, 2, 4,
+    2, 4, 8, 6, 4, 6, 2, 4, 6, 2, 6, 6, 4, 2, 4, 6, 2, 6, 4, 2, 4, 2, 10, 2};
+
+static const int_fast64_t ARR_WHEEL2310[SZ_WHEEL2310] = {
+    12, 4, 2, 4, 6, 2, 6, 4, 2, 4, 6, 6, 2, 6, 4, 2, 6, 4, 6, 8, 4, 2, 4, 2, 4,
+    14, 4, 6, 2, 10, 2, 6, 6, 4, 2, 4, 6, 2, 10, 2, 4, 2, 12, 10, 2, 4, 2, 4, 6,
+    2, 6, 4, 6, 6, 6, 2, 6, 4, 2, 6, 4, 6, 8, 4, 2, 4, 6, 8, 6, 10, 2, 4, 6, 2,
+    6, 6, 4, 2, 4, 6, 2, 6, 4, 2, 6, 10, 2, 10, 2, 4, 2, 4, 6, 8, 4, 2, 4, 12,
+    2, 6, 4, 2, 6, 4, 6, 12, 2, 4, 2, 4, 8, 6, 4, 6, 2, 4, 6, 2, 6, 10, 2, 4, 6,
+    2, 6, 4, 2, 4, 2, 10, 2, 10, 2, 4, 6, 6, 2, 6, 6, 4, 6, 6, 2, 6, 4, 2, 6, 4,
+    6, 8, 4, 2, 6, 4, 8, 6, 4, 6, 2, 4, 6, 8, 6, 4, 2, 10, 2, 6, 4, 2, 4, 2, 10,
+    2, 10, 2, 4, 2, 4, 8, 6, 4, 2, 4, 6, 6, 2, 6, 4, 8, 4, 6, 8, 4, 2, 4, 2, 4,
+    8, 6, 4, 6, 6, 6, 2, 6, 6, 4, 2, 4, 6, 2, 6, 4, 2, 4, 2, 10, 2, 10, 2, 6, 4,
+    6, 2, 6, 4, 2, 4, 6, 6, 8, 4, 2, 6, 10, 8, 4, 2, 4, 2, 4, 8, 10, 6, 2, 4, 8,
+    6, 6, 4, 2, 4, 6, 2, 6, 4, 6, 2, 10, 2, 10, 2, 4, 2, 4, 6, 2, 6, 4, 2, 4, 6,
+    6, 2, 6, 6, 6, 4, 6, 8, 4, 2, 4, 2, 4, 8, 6, 4, 8, 4, 6, 2, 6, 6, 4, 2, 4,
+    6, 8, 4, 2, 4, 2, 10, 2, 10, 2, 4, 2, 4, 6, 2, 10, 2, 4, 6, 8, 6, 4, 2, 6,
+    4, 6, 8, 4, 6, 2, 4, 8, 6, 4, 6, 2, 4, 6, 2, 6, 6, 4, 6, 6, 2, 6, 6, 4, 2,
+    10, 2, 10, 2, 4, 2, 4, 6, 2, 6, 4, 2, 10, 6, 2, 6, 4, 2, 6, 4, 6, 8, 4, 2,
+    4, 2, 12, 6, 4, 6, 2, 4, 6, 2, 12, 4, 2, 4, 8, 6, 4, 2, 4, 2, 10, 2, 10, 6,
+    2, 4, 6, 2, 6, 4, 2, 4, 6, 6, 2, 6, 4, 2, 10, 6, 8, 6, 4, 2, 4, 8, 6, 4, 6,
+    2, 4, 6, 2, 6, 6, 6, 4, 6, 2, 6, 4, 2, 4, 2, 10, 12, 2, 4, 2, 10, 2, 6, 4,
+    2, 4, 6, 6, 2, 10, 2, 6, 4, 14, 4, 2, 4, 2, 4, 8, 6, 4, 6, 2, 4, 6, 2, 6, 6,
+    4, 2, 4, 6, 2, 6, 4, 2, 4, 12, 2};
     
 static const int ARR_WHEEL30030[SZ_WHEEL30030] = {
     16, 2, 4, 6, 2, 6, 4, 2, 4, 6, 6, 2, 6, 4, 2, 6, 4, 6, 8, 4, 2, 4, 2, 4, 14, 4,

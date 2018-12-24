@@ -2,8 +2,7 @@
 #define ERATOSTHENES_SIEVE_H
 
 #include "PrimesSegSieve.h"
-#include "Wheel30030.h"
-#include <Rcpp.h>
+#include "Wheel.h"
 #include <cmath>
 #include <deque>
 #include <thread>
@@ -16,40 +15,8 @@
 //                      https://github.com/kimwalisch/primesieve
 
 namespace PrimeSieve {
-    
-    const double Significand53 = 9007199254740991.0;
+
     constexpr int L1_CACHE_SIZE = 32768;
-    
-    // This is the largest multiple of 2*3*5*7*11 = 2310
-    // that is less than 2^15 = 32768 = 32KB. This
-    // is the typical size of most CPU's L1 cache
-    constexpr int_fast64_t Almost2310L1Cache = 32340;
-    
-    constexpr unsigned long int SZ_WHEEL2310 = 480;
-    constexpr unsigned long int NUM2310 = 2310;
-    constexpr std::size_t N_WHEELS2310_PER_SEG = static_cast<std::size_t>(Almost2310L1Cache / NUM2310);
-    
-    static const int_fast64_t ARR_WHEEL2310[SZ_WHEEL2310] = {
-        12, 4, 2, 4, 6, 2, 6, 4, 2, 4, 6, 6, 2, 6, 4, 2, 6, 4, 6, 8, 4, 2, 4, 2, 4,
-        14, 4, 6, 2, 10, 2, 6, 6, 4, 2, 4, 6, 2, 10, 2, 4, 2, 12, 10, 2, 4, 2, 4, 6,
-        2, 6, 4, 6, 6, 6, 2, 6, 4, 2, 6, 4, 6, 8, 4, 2, 4, 6, 8, 6, 10, 2, 4, 6, 2,
-        6, 6, 4, 2, 4, 6, 2, 6, 4, 2, 6, 10, 2, 10, 2, 4, 2, 4, 6, 8, 4, 2, 4, 12,
-        2, 6, 4, 2, 6, 4, 6, 12, 2, 4, 2, 4, 8, 6, 4, 6, 2, 4, 6, 2, 6, 10, 2, 4, 6,
-        2, 6, 4, 2, 4, 2, 10, 2, 10, 2, 4, 6, 6, 2, 6, 6, 4, 6, 6, 2, 6, 4, 2, 6, 4,
-        6, 8, 4, 2, 6, 4, 8, 6, 4, 6, 2, 4, 6, 8, 6, 4, 2, 10, 2, 6, 4, 2, 4, 2, 10,
-        2, 10, 2, 4, 2, 4, 8, 6, 4, 2, 4, 6, 6, 2, 6, 4, 8, 4, 6, 8, 4, 2, 4, 2, 4,
-        8, 6, 4, 6, 6, 6, 2, 6, 6, 4, 2, 4, 6, 2, 6, 4, 2, 4, 2, 10, 2, 10, 2, 6, 4,
-        6, 2, 6, 4, 2, 4, 6, 6, 8, 4, 2, 6, 10, 8, 4, 2, 4, 2, 4, 8, 10, 6, 2, 4, 8,
-        6, 6, 4, 2, 4, 6, 2, 6, 4, 6, 2, 10, 2, 10, 2, 4, 2, 4, 6, 2, 6, 4, 2, 4, 6,
-        6, 2, 6, 6, 6, 4, 6, 8, 4, 2, 4, 2, 4, 8, 6, 4, 8, 4, 6, 2, 6, 6, 4, 2, 4,
-        6, 8, 4, 2, 4, 2, 10, 2, 10, 2, 4, 2, 4, 6, 2, 10, 2, 4, 6, 8, 6, 4, 2, 6,
-        4, 6, 8, 4, 6, 2, 4, 8, 6, 4, 6, 2, 4, 6, 2, 6, 6, 4, 6, 6, 2, 6, 6, 4, 2,
-        10, 2, 10, 2, 4, 2, 4, 6, 2, 6, 4, 2, 10, 6, 2, 6, 4, 2, 6, 4, 6, 8, 4, 2,
-        4, 2, 12, 6, 4, 6, 2, 4, 6, 2, 12, 4, 2, 4, 8, 6, 4, 2, 4, 2, 10, 2, 10, 6,
-        2, 4, 6, 2, 6, 4, 2, 4, 6, 6, 2, 6, 4, 2, 10, 6, 8, 6, 4, 2, 4, 8, 6, 4, 6,
-        2, 4, 6, 2, 6, 6, 6, 4, 6, 2, 6, 4, 2, 4, 2, 10, 12, 2, 4, 2, 10, 2, 6, 4,
-        2, 4, 6, 6, 2, 10, 2, 6, 4, 14, 4, 2, 4, 2, 4, 8, 6, 4, 6, 2, 4, 6, 2, 6, 6,
-        4, 2, 4, 6, 2, 6, 4, 2, 4, 12, 2};
     
     //************************ Prime Counting Esitmates ************************
     // These numbers were obtained empirically using the prime number theorem
@@ -565,9 +532,9 @@ namespace PrimeSieve {
     }
     
     template <typename typePrime>
-    void PrimeMaster(int_fast64_t myMin, int_fast64_t myMax, std::vector<typePrime> &primes, 
-                     std::vector<std::vector<typePrime>> &primeList, bool &Parallel,
-                     int nThreads = 1, int maxThreads = 1, int maxCores = 1) {
+    void PrimeSieveMaster(int_fast64_t myMin, int_fast64_t myMax, std::vector<typePrime> &primes, 
+                          std::vector<std::vector<typePrime>> &primeList, bool &Parallel,
+                          int nThreads = 1, int maxThreads = 1, int maxCores = 1) {
         
         int_fast64_t myRange = myMax - myMin;
         int_fast64_t smallCut = Almost2310L1Cache - 100;
