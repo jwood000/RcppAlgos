@@ -4,8 +4,6 @@
 #include <array>
 
 namespace PrimeCounting {
-
-    const double Significand53 = 9007199254740991.0;
     
     // PiPrime is very similar to the PrimeSieveSmall only we are not
     // considering a range. That is, we are only concerned with finding
@@ -229,7 +227,7 @@ SEXP PrimeCountRcpp (SEXP Rn) {
     double dblNum;
     CleanConvert::convertPrimitive(Rn, dblNum, "n must be of type numeric or integer", false);
 
-    if (dblNum < 1 || dblNum > PrimeCounting::Significand53)
+    if (dblNum < 1 || dblNum > Significand53)
         Rcpp::stop("n must be a positive number less than 2^53");
 
     int64_t n = dblNum;
@@ -278,12 +276,10 @@ SEXP GlueMotley(typeInt myMin, typeReturn myMax, bool isEuler,
         std::vector<typeInt> numSeq(myRange);
         MotleyPrimes::MotleyMaster(myMin, myMax, isEuler, EulerPhis,
                                    numSeq, tempList, nThreads, maxThreads);
-        
-        typeRcpp myVector = Rcpp::wrap(EulerPhis);
         if (keepNames)
-            myVector.attr("names") = myNames;
+            EulerPhis.attr("names") = myNames;
         
-        return myVector;
+        return EulerPhis;
     } else {
         std::vector<std::vector<typeReturn>> 
             primeList(myRange, std::vector<typeReturn>());
@@ -305,13 +301,12 @@ SEXP MotleyContainer(SEXP Rb1, SEXP Rb2, SEXP RIsEuler,
                      SEXP RNamed, SEXP RNumThreads, int maxThreads) {
     
     double bound1, bound2, myMin, myMax;
-    bool Parallel = false, isEuler = false, isNamed = false;
+    bool isEuler = Rcpp::as<bool>(RIsEuler);
+    bool isNamed = Rcpp::as<bool>(RNamed);
+    
     CleanConvert::convertPrimitive(Rb1, bound1, "bound1 must be of type numeric or integer", false);
     
-    isEuler = Rcpp::as<bool>(RIsEuler);
-    isNamed = Rcpp::as<bool>(RNamed);
-    
-    if (bound1 <= 0 || bound1 > PrimeCounting::Significand53)
+    if (bound1 <= 0 || bound1 > Significand53)
         Rcpp::stop("bound1 must be a positive number less than 2^53");
     
     if (Rf_isNull(Rb2)) {
@@ -320,19 +315,16 @@ SEXP MotleyContainer(SEXP Rb1, SEXP Rb2, SEXP RIsEuler,
         CleanConvert::convertPrimitive(Rb2, bound2, "bound2 must be of type numeric or integer", false);
     }
     
-    if (bound2 <= 0 || bound2 > PrimeCounting::Significand53)
+    if (bound2 <= 0 || bound2 > Significand53)
         Rcpp::stop("bound2 must be a positive number less than 2^53");
     
     if (bound1 > bound2) {
-        myMax = bound1;
-        myMin = bound2;
+        myMax = std::floor(bound1);
+        myMin = std::ceil(bound2);
     } else {
-        myMax = bound2;
-        myMin = bound1;
+        myMax = std::floor(bound2);
+        myMin = std::ceil(bound1);
     }
-    
-    myMin = ceil(myMin);
-    myMax = floor(myMax);
     
     if (myMax < 2) {
         if (isEuler) {
@@ -353,12 +345,6 @@ SEXP MotleyContainer(SEXP Rb1, SEXP Rb2, SEXP RIsEuler,
     if (!Rf_isNull(RNumThreads))
         CleanConvert::convertPrimitive(RNumThreads, nThreads, "nThreads must be of type numeric or integer");
     
-    if (nThreads > 1) {
-        Parallel = true;
-        if (nThreads > maxThreads) {nThreads = maxThreads;}
-        if (maxThreads < 2) {Parallel = false;}
-    }
-    
     if (myMax > std::numeric_limits<int>::max()) {
         int64_t intMin = static_cast<int64_t>(myMin);
         Rcpp::NumericVector temp;
@@ -378,7 +364,7 @@ SEXP EratosthenesRcpp(SEXP Rb1, SEXP Rb2, SEXP RNumThreads, int maxCores, int ma
     int_fast64_t myMax, myMin;
     CleanConvert::convertPrimitive(Rb1, bound1, "bound1 must be of type numeric or integer", false);
     
-    if (bound1 <= 0 || bound1 > PrimeCounting::Significand53)
+    if (bound1 <= 0 || bound1 > Significand53)
         Rcpp::stop("bound1 must be a positive number less than 2^53");
     
     if (Rf_isNull(Rb2)) {
@@ -387,7 +373,7 @@ SEXP EratosthenesRcpp(SEXP Rb1, SEXP Rb2, SEXP RNumThreads, int maxCores, int ma
         CleanConvert::convertPrimitive(Rb2, bound2, "bound2 must be of type numeric or integer", false);
     }
     
-    if (bound2 <= 0 || bound2 > PrimeCounting::Significand53)
+    if (bound2 <= 0 || bound2 > Significand53)
         Rcpp::stop("bound2 must be a positive number less than 2^53");
     
     if (bound1 > bound2) {

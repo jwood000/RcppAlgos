@@ -36,8 +36,7 @@ namespace MotleyPrimes {
                                  std::vector<std::vector<typeReturn>> &primeList) {
         
         typeInt n = (typeInt) retN;
-        typeInt myRange = n;
-        myRange += (1 - m);
+        typeInt myRange = (n - m) + 1;
         
         typeInt myStep, myStart, myNum = m;
         double myLogN = std::log(n);
@@ -143,8 +142,7 @@ namespace MotleyPrimes {
                        typeRcpp &EulerPhis) {
         
         typeInt n = static_cast<typeInt>(retN);
-        typeInt myRange = n;
-        myRange += (1 - m);
+        typeInt myRange = (n - m) + 1;
         
         typeInt myNum = m;
         double myLogN = std::log(n);
@@ -226,9 +224,9 @@ namespace MotleyPrimes {
         if (nThreads > 1) {
             Parallel = true;
             if (nThreads > maxThreads) {nThreads = maxThreads;}
+            if ((maxThreads < 2) || (myRange < 10000)) {Parallel = false;}
         }
         
-        if ((maxThreads < 2) || (myRange < 10000)) {Parallel = false;}
         int sqrtBound = std::sqrt(myMax);
         std::vector<typeInt> primes;
         PrimeSieve::sqrtBigPrimes(sqrtBound, false, true, true, primes);
