@@ -31,53 +31,35 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
-// DivisorsGeneral
-SEXP DivisorsGeneral(SEXP Rb1, SEXP Rb2, SEXP RIsList, SEXP RNamed);
-RcppExport SEXP _RcppAlgos_DivisorsGeneral(SEXP Rb1SEXP, SEXP Rb2SEXP, SEXP RIsListSEXP, SEXP RNamedSEXP) {
+// DivNumSieve
+SEXP DivNumSieve(SEXP Rb1, SEXP Rb2, bool bDivSieve, SEXP RNamed, SEXP RNumThreads, int maxThreads);
+RcppExport SEXP _RcppAlgos_DivNumSieve(SEXP Rb1SEXP, SEXP Rb2SEXP, SEXP bDivSieveSEXP, SEXP RNamedSEXP, SEXP RNumThreadsSEXP, SEXP maxThreadsSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< SEXP >::type Rb1(Rb1SEXP);
     Rcpp::traits::input_parameter< SEXP >::type Rb2(Rb2SEXP);
-    Rcpp::traits::input_parameter< SEXP >::type RIsList(RIsListSEXP);
+    Rcpp::traits::input_parameter< bool >::type bDivSieve(bDivSieveSEXP);
     Rcpp::traits::input_parameter< SEXP >::type RNamed(RNamedSEXP);
-    rcpp_result_gen = Rcpp::wrap(DivisorsGeneral(Rb1, Rb2, RIsList, RNamed));
+    Rcpp::traits::input_parameter< SEXP >::type RNumThreads(RNumThreadsSEXP);
+    Rcpp::traits::input_parameter< int >::type maxThreads(maxThreadsSEXP);
+    rcpp_result_gen = Rcpp::wrap(DivNumSieve(Rb1, Rb2, bDivSieve, RNamed, RNumThreads, maxThreads));
     return rcpp_result_gen;
 END_RCPP
 }
-// getAllDivisorsRcpp
-SEXP getAllDivisorsRcpp(SEXP Rv, SEXP RNamed);
-RcppExport SEXP _RcppAlgos_getAllDivisorsRcpp(SEXP RvSEXP, SEXP RNamedSEXP) {
+// PollardRhoContainer
+SEXP PollardRhoContainer(SEXP Rv, SEXP RNamed, bool bPrimeFacs, bool bAllFacs, SEXP RNumThreads, int maxThreads);
+RcppExport SEXP _RcppAlgos_PollardRhoContainer(SEXP RvSEXP, SEXP RNamedSEXP, SEXP bPrimeFacsSEXP, SEXP bAllFacsSEXP, SEXP RNumThreadsSEXP, SEXP maxThreadsSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< SEXP >::type Rv(RvSEXP);
     Rcpp::traits::input_parameter< SEXP >::type RNamed(RNamedSEXP);
-    rcpp_result_gen = Rcpp::wrap(getAllDivisorsRcpp(Rv, RNamed));
-    return rcpp_result_gen;
-END_RCPP
-}
-// PrimeFactorsContainer
-SEXP PrimeFactorsContainer(SEXP Rv, SEXP RNamed);
-RcppExport SEXP _RcppAlgos_PrimeFactorsContainer(SEXP RvSEXP, SEXP RNamedSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< SEXP >::type Rv(RvSEXP);
-    Rcpp::traits::input_parameter< SEXP >::type RNamed(RNamedSEXP);
-    rcpp_result_gen = Rcpp::wrap(PrimeFactorsContainer(Rv, RNamed));
-    return rcpp_result_gen;
-END_RCPP
-}
-// IsPrimeContainer
-SEXP IsPrimeContainer(SEXP Rv, SEXP RNamed);
-RcppExport SEXP _RcppAlgos_IsPrimeContainer(SEXP RvSEXP, SEXP RNamedSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< SEXP >::type Rv(RvSEXP);
-    Rcpp::traits::input_parameter< SEXP >::type RNamed(RNamedSEXP);
-    rcpp_result_gen = Rcpp::wrap(IsPrimeContainer(Rv, RNamed));
+    Rcpp::traits::input_parameter< bool >::type bPrimeFacs(bPrimeFacsSEXP);
+    Rcpp::traits::input_parameter< bool >::type bAllFacs(bAllFacsSEXP);
+    Rcpp::traits::input_parameter< SEXP >::type RNumThreads(RNumThreadsSEXP);
+    Rcpp::traits::input_parameter< int >::type maxThreads(maxThreadsSEXP);
+    rcpp_result_gen = Rcpp::wrap(PollardRhoContainer(Rv, RNamed, bPrimeFacs, bAllFacs, RNumThreads, maxThreads));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -149,10 +131,8 @@ END_RCPP
 
 static const R_CallMethodDef CallEntries[] = {
     {"_RcppAlgos_CombinatoricsRcpp", (DL_FUNC) &_RcppAlgos_CombinatoricsRcpp, 16},
-    {"_RcppAlgos_DivisorsGeneral", (DL_FUNC) &_RcppAlgos_DivisorsGeneral, 4},
-    {"_RcppAlgos_getAllDivisorsRcpp", (DL_FUNC) &_RcppAlgos_getAllDivisorsRcpp, 2},
-    {"_RcppAlgos_PrimeFactorsContainer", (DL_FUNC) &_RcppAlgos_PrimeFactorsContainer, 2},
-    {"_RcppAlgos_IsPrimeContainer", (DL_FUNC) &_RcppAlgos_IsPrimeContainer, 2},
+    {"_RcppAlgos_DivNumSieve", (DL_FUNC) &_RcppAlgos_DivNumSieve, 6},
+    {"_RcppAlgos_PollardRhoContainer", (DL_FUNC) &_RcppAlgos_PollardRhoContainer, 6},
     {"_RcppAlgos_PrimeCountRcpp", (DL_FUNC) &_RcppAlgos_PrimeCountRcpp, 1},
     {"_RcppAlgos_MotleyContainer", (DL_FUNC) &_RcppAlgos_MotleyContainer, 6},
     {"_RcppAlgos_EratosthenesRcpp", (DL_FUNC) &_RcppAlgos_EratosthenesRcpp, 5},

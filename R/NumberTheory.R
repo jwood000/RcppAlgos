@@ -3,8 +3,8 @@ pkgEnv$nCores <- NULL
 pkgEnv$nThreads <- NULL
 
 setPkgVars <- function() {
-    if (is.null(pkgEnv$nCores)) pkgEnv$nCores <- physicalCoreCount()
-    if (is.null(pkgEnv$nThreads)) {
+    if (is.null(pkgEnv$nCores)) {
+        pkgEnv$nCores <- physicalCoreCount()
         tempThreads <- parallel::detectCores()
         if (is.na(tempThreads))
             pkgEnv$nThreads <- 1L
@@ -28,15 +28,29 @@ primeSieve <- function(bound1 = 100L, bound2 = NULL, nThreads = NULL) {
     EratosthenesRcpp(bound1, bound2, nThreads, pkgEnv$nCores, pkgEnv$nThreads)
 }
 
-divisorsSieve <- function(bound1 = 100L, bound2 = NULL, namedList = FALSE) {
-    DivisorsGeneral(bound1, bound2, TRUE, namedList)
+divisorsSieve <- function(bound1 = 100L, bound2 = NULL, namedList = FALSE, nThreads = NULL) {
+    setPkgVars()
+    DivNumSieve(bound1, bound2, TRUE, namedList, nThreads, pkgEnv$nThreads)
 }
 
-numDivisorSieve <- function(bound1 = 100L, bound2 = NULL, namedVector = FALSE) {
-    DivisorsGeneral(bound1, bound2, FALSE, namedVector)
+numDivisorSieve <- function(bound1 = 100L, bound2 = NULL, namedVector = FALSE, nThreads = NULL) {
+    setPkgVars()
+    DivNumSieve(bound1, bound2, FALSE, namedVector, nThreads, pkgEnv$nThreads)
 }
 
-primeFactorize <- function(v = 100L, namedList = FALSE) {PrimeFactorsContainer(v, namedList)}
-divisorsRcpp <- function(v = 100L, namedList = FALSE) {getAllDivisorsRcpp(v, namedList)}
-isPrimeRcpp <- function(v = 100L, namedVector = FALSE) {IsPrimeContainer(v, namedVector)}
-primeCount <- function(n = 100L) {PrimeCountRcpp(n)}
+primeFactorize <- function(v, namedList = FALSE, nThreads = NULL) {
+    setPkgVars()
+    PollardRhoContainer(v, namedList, TRUE, FALSE, nThreads, pkgEnv$nThreads)
+}
+
+divisorsRcpp <- function(v, namedList = FALSE, nThreads = NULL) {
+    setPkgVars()
+    PollardRhoContainer(v, namedList, FALSE, TRUE, nThreads, pkgEnv$nThreads)
+}
+
+isPrimeRcpp <- function(v, namedVector = FALSE, nThreads = NULL) {
+    setPkgVars()
+    PollardRhoContainer(v, namedVector, FALSE, FALSE, nThreads, pkgEnv$nThreads)
+}
+
+primeCount <- function(n) {PrimeCountRcpp(n)}

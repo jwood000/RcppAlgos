@@ -5,20 +5,12 @@ CombinatoricsRcpp <- function(Rv, Rm, Rrepetition, RFreqs, Rlow, Rhigh, f1, f2, 
     .Call(`_RcppAlgos_CombinatoricsRcpp`, Rv, Rm, Rrepetition, RFreqs, Rlow, Rhigh, f1, f2, Rlim, IsComb, RKeepRes, IsFactor, IsCount, stdFun, myEnv, Rparallel)
 }
 
-DivisorsGeneral <- function(Rb1, Rb2, RIsList, RNamed) {
-    .Call(`_RcppAlgos_DivisorsGeneral`, Rb1, Rb2, RIsList, RNamed)
+DivNumSieve <- function(Rb1, Rb2, bDivSieve, RNamed, RNumThreads, maxThreads) {
+    .Call(`_RcppAlgos_DivNumSieve`, Rb1, Rb2, bDivSieve, RNamed, RNumThreads, maxThreads)
 }
 
-getAllDivisorsRcpp <- function(Rv, RNamed) {
-    .Call(`_RcppAlgos_getAllDivisorsRcpp`, Rv, RNamed)
-}
-
-PrimeFactorsContainer <- function(Rv, RNamed) {
-    .Call(`_RcppAlgos_PrimeFactorsContainer`, Rv, RNamed)
-}
-
-IsPrimeContainer <- function(Rv, RNamed) {
-    .Call(`_RcppAlgos_IsPrimeContainer`, Rv, RNamed)
+PollardRhoContainer <- function(Rv, RNamed, bPrimeFacs, bAllFacs, RNumThreads, maxThreads) {
+    .Call(`_RcppAlgos_PollardRhoContainer`, Rv, RNamed, bPrimeFacs, bAllFacs, RNumThreads, maxThreads)
 }
 
 PrimeCountRcpp <- function(Rn) {
