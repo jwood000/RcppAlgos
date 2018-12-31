@@ -1,27 +1,30 @@
 #include <Rcpp.h>
 #include <cmath>
-#include <algorithm>
-#include <PrimesPolRho.h>
-#include <GetFacsUtils.h>
+#include <thread>
+#include "PrimesPolRho.h"
+#include "GetFacsUtils.h"
+#include "CleanConvert.h"
 
 /* Prove primality or run probabilistic tests.  */
 int FlagProvePrimality = 1;
 
 const double myMax = std::pow(2, 62);
 const double my64Max = std::pow(2, 63);
-const int64_t Sqrt64Max = (int64_t) std::sqrt((double) my64Max);
+const int64_t Sqrt64Max = static_cast<int64_t>(std::sqrt(my64Max));
 
-#define pDiffSize (sizeof(primesDiffPR) / sizeof(primesDiffPR[0]))
+const int64_t FirstOmittedPrime = 4001;
+const std::size_t pDiffSize = sizeof(primesDiffPR) / sizeof(primesDiffPR[0]);
 
 /* Number of Miller-Rabin tests to run when not proving primality. */
-#define MR_REPS 25
+const std::size_t MR_REPS = 25;
+
 
 template <typename typeReturn>
 void FactorTrialDivision (int64_t& t,
                           std::vector<typeReturn>& factors) {
     while ((t & 1) == 0) {
         factors.push_back(2);
-        t /= 2;
+        t >>= 1;
     }
     
     int p = 3;
@@ -32,24 +35,24 @@ void FactorTrialDivision (int64_t& t,
                 break;
         } else {
             t /= p;
-            factors.push_back((typeReturn) p);
+            factors.push_back(static_cast<typeReturn>(p));
         }
     }
 }
 
 inline int64_t PositiveMod(int64_t i, int64_t n) {
-    return (i % n + n) % n;
+    return ((i % n) + n) % n;
 }
 
-int64_t ProdBigMod (int64_t x1_i64,
-                         int64_t x2_i64, int64_t p_i64) {
+int64_t ProdBigMod(int64_t x1_i64, int64_t x2_i64, int64_t p_i64) {
+    
     x1_i64 = PositiveMod(x1_i64, p_i64);
     x2_i64 = PositiveMod(x2_i64, p_i64);
     
-    double prodX = (double) (x1_i64) * (double) (x2_i64);
+    double prodX = static_cast<double>(x1_i64) * static_cast<double>(x2_i64);
     int64_t result = 0;
     
-    if (prodX < (double) p_i64) {
+    if (prodX < static_cast<double>(p_i64)) {
         result = prodX;
     } else if (p_i64 < (int64_t) Sqrt64Max || prodX < my64Max) {
         result = (x1_i64 * x2_i64) % p_i64;
@@ -59,11 +62,11 @@ int64_t ProdBigMod (int64_t x1_i64,
         double part1 = myMax;
         
         while (part1 >= myMax) {
-            chunkSize = (int64_t) myMax / x1_i64;
+            chunkSize = static_cast<int64_t>(myMax / x1_i64);
             chunkMod = (x1_i64 * chunkSize) % p_i64;
             numChunkMods = x2_i64 / chunkSize;
-            part2 = ((x2_i64 - chunkSize * numChunkMods) * x1_i64) % p_i64;
-            part1 = (double) (numChunkMods) * (double) (chunkMod);
+            part2 = ((x2_i64 - (chunkSize * numChunkMods)) * x1_i64) % p_i64;
+            part1 = static_cast<double>(numChunkMods) * static_cast<double>(chunkMod);
             x1_i64 = chunkMod;
             x2_i64 = numChunkMods;
             result = (result + part2) % p_i64;
@@ -73,24 +76,24 @@ int64_t ProdBigMod (int64_t x1_i64,
         result = (part1_i64 + result) % p_i64;
     }
     
-    return (double) (result);
+    return static_cast<double>(result);
 }
 
 int64_t ExpBySquaring(int64_t x, int64_t n, int64_t p) {
     int64_t result;
     if (n == 1) {
         result = PositiveMod(x, p);
-    } else if (n % 2 == 0) {
-        result = ExpBySquaring(ProdBigMod(x, x, p), n/2, p);
+    } else if ((n % 2) == 0) {
+        result = ExpBySquaring(ProdBigMod(x, x, p), n / 2, p);
     } else {
         result = ProdBigMod(x, 
-            ExpBySquaring(ProdBigMod(x, x, p), (n - 1)/2, p), p);
+            ExpBySquaring(ProdBigMod(x, x, p), (n - 1) / 2, p), p);
     }
 
     return result;
 }
 
-static int64_t myGCD(int64_t u, int64_t v) {
+int64_t myGCD(int64_t u, int64_t v) {
     int64_t r;
     while (v != 0) {
         r = PositiveMod(u, v);
@@ -100,11 +103,11 @@ static int64_t myGCD(int64_t u, int64_t v) {
     return u;
 }
 
-static int MillerRabin (int64_t n, int64_t nm1,
-                        int64_t x, int64_t& y,
-                        int64_t q, uint64_t k)
-{
+int MillerRabin(int64_t n, int64_t nm1, int64_t x,
+                       int64_t& y, int64_t q, uint64_t k) {
+    
     y = ExpBySquaring(x, q, n);
+    
     if (y == 1 || y == nm1)
         return 1;
 
@@ -119,7 +122,7 @@ static int MillerRabin (int64_t n, int64_t nm1,
     return 0;
 }
 
-int IsPrime (int64_t n) {
+int IsPrime(int64_t n) {
     int k, primeTestReturn;
     int64_t nm1, q, tmp, a;
 
@@ -138,14 +141,14 @@ int IsPrime (int64_t n) {
     /* Find q and k, where q is odd and n = 1 + 2**k * q.  */
     k = 0;
     while ((q & 1) == 0) {
-        q /= 2;
+        q >>= 1;
         ++k;
     }
 
     a = 2;
 
     /* Perform a Miller-Rabin test, finds most composites quickly.  */
-    if (!MillerRabin (n, nm1, a, tmp, q, (uint64_t) k)) {
+    if (!MillerRabin(n, nm1, a, tmp, q, (uint64_t) k)) {
         primeTestReturn = 0;
         goto ret2;
     }
@@ -153,7 +156,7 @@ int IsPrime (int64_t n) {
     if (FlagProvePrimality) {
         /* Factor n-1 for Lucas.  */
         tmp = nm1;
-        getPrimefactors (tmp, factors);
+        getPrimefactors(tmp, factors);
     }
 
     /* Loop until Lucas proves our number prime, or Miller-Rabin proves our
@@ -169,7 +172,7 @@ int IsPrime (int64_t n) {
             }
         } else {
             /* After enough Miller-Rabin runs, be content. */
-            primeTestReturn = (r == (MR_REPS - 1));
+            primeTestReturn = (r == MR_REPS);
         }
 
         if (primeTestReturn)
@@ -193,8 +196,8 @@ int IsPrime (int64_t n) {
 }
 
 template <typename typeReturn>
-void PollardRho (int64_t n, int64_t a, 
-                 std::vector<typeReturn>& factors) {
+void PollardRho(int64_t n, int64_t a, 
+                std::vector<typeReturn>& factors) {
     int64_t x, z, y, P, t;
     int64_t  k, l, i;
     
@@ -235,7 +238,7 @@ void PollardRho (int64_t n, int64_t a,
                 t = myGCD(t, n);
             } while (t == 1);
         
-        n = n/t;	/* divide by t, before t is overwritten */
+        n /= t;	/* divide by t, before t is overwritten */
         
         if (!IsPrime(t)) {
             PollardRho(t, a + 1, factors);
@@ -255,7 +258,7 @@ void PollardRho (int64_t n, int64_t a,
 }
 
 template <typename typeReturn>
-void getPrimefactors (int64_t& t, std::vector<typeReturn>& factors) {
+void getPrimefactors(int64_t& t, std::vector<typeReturn>& factors) {
     FactorTrialDivision(t, factors);
     
     if (t > 1) {
@@ -270,18 +273,13 @@ void getPrimefactors (int64_t& t, std::vector<typeReturn>& factors) {
 }
 
 template <typename typeReturn>
-Rcpp::List PrimeFacList (std::vector<double> myNums, bool namedList) {
+void PrimeFacList(std::size_t m, std::size_t n, std::vector<double> myNums,
+                  std::vector<std::vector<typeReturn>> &MyPrimeList) {
     
-    int64_t mPass;
-    unsigned int myLen = myNums.size();
-    
-    std::vector<std::vector<typeReturn> > 
-        MyPrimeList(myLen, std::vector<typeReturn>());
-    
-    for (std::size_t i = 0; i < myLen; ++i) {
+    for (std::size_t i = m; i < n; ++i) {
         std::vector<typeReturn> factors;
         
-        mPass = (int64_t) myNums[i];
+        int64_t mPass = static_cast<int64_t>(myNums[i]);
         
         if (mPass < 0) {
             mPass = std::abs(mPass);
@@ -293,115 +291,129 @@ Rcpp::List PrimeFacList (std::vector<double> myNums, bool namedList) {
             MyPrimeList[i] = factors;
         }
     }
-    
-    Rcpp::List myList = Rcpp::wrap(MyPrimeList);
-    if (namedList)
-        myList.attr("names") = myNums;
-    
-    return myList;
 }
 
-// [[Rcpp::export]]
-SEXP PrimeFactorsContainer (SEXP Rv, SEXP RNamed) {
-    std::vector<double> myNums;
-    bool isNamed = Rcpp::as<bool>(RNamed);
+template <typename typeReturn>
+std::vector<typeReturn> Factorize(std::vector<typeReturn> &factors) {
     
-    switch(TYPEOF(Rv)) {
-        case REALSXP: {
-            myNums = Rcpp::as<std::vector<double> >(Rv);
-            break;
-        }
-        case INTSXP: {
-            myNums = Rcpp::as<std::vector<double> >(Rv);
-            break;
-        }
-        default: {
-            Rcpp::stop("v must be of type numeric or integer");
-        }
-    }
+    unsigned long int n = factors.size();
     
-    if (myNums.size() > 1) {
-        double myMax = *std::max_element(myNums.begin(), myNums.end());
-        double myMin = *std::min_element(myNums.begin(), myNums.end());
-        
-        if (std::abs(myMin) > myMax)
-            myMax = std::abs(myMin);
-        
-        if (myMax > Significand53Facs)
-            Rcpp::stop("the abs value of each element must be less than 2^53");
-        
-        if (myMax > INT_MAX)
-            return PrimeFacList<double>(myNums, isNamed);
-        else
-            return PrimeFacList<int>(myNums, isNamed);
+    if (n == 1) {
+        std::vector<typeReturn> primeReturn(2, 1);
+        primeReturn[1] = factors[0];
+        return primeReturn;
     } else {
-        int64_t mPass = myNums[0];
-        bool isNegative = false;
+        std::vector<unsigned long int> lengths;
+        typename std::vector<typeReturn>::iterator it, facEnd;
+        facEnd = factors.end();
+        typeReturn prev = factors[0];
+        
+        unsigned long int numUni = 0;
+        std::vector<typeReturn> uniFacs(n);
+        uniFacs[0] = factors[0];
+        lengths.reserve(n);
+        lengths.push_back(1);
+        
+        for(it = factors.begin() + 1; it < facEnd; ++it) {
+            if (prev == *it) {
+                ++lengths[numUni];
+            } else {
+                ++numUni;
+                prev = *it;
+                lengths.push_back(1);
+                uniFacs[numUni] = *it;
+            }
+        }
+        
+        unsigned long int fSz = 1, numFacs = 1;
+        for (std::size_t i = 0; i <= numUni; ++i)
+            numFacs *= (lengths[i] + 1);
+        
+        std::vector<typeReturn> myFacs(numFacs);
+        typeReturn temp;
+        
+        for (std::size_t i = 0; i <= lengths[0]; ++i)
+            myFacs[i] = static_cast<typeReturn>(std::pow(uniFacs[0], i));
+        
+        if (numUni > 0) {
+            for (std::size_t j = 1; j <= numUni; ++j) {
+                fSz *= (lengths[j - 1] + 1);
+                for (std::size_t i = 1; i <= lengths[j]; ++i) {
+                    for (std::size_t k = 0, ind = (i * fSz); k < fSz; ++k, ++ind) {
+                        temp = static_cast<typeReturn>(std::pow(uniFacs[j], i));
+                        temp *= myFacs[k];
+                        myFacs[ind] = temp;
+                    }
+                }
+            }
+        }
+        
+        std::sort(myFacs.begin(), myFacs.end());
+        return myFacs;
+    }
+}
+
+template <typename typeReturn>
+void FactorList(std::size_t m, std::size_t n, std::vector<double> &myNums,
+                std::vector<std::vector<typeReturn>> &MyDivList) {
+    
+    int64_t mPass;
+    bool isNegative = false;
+    
+    for (std::size_t j = m; j < n; ++j) {
+        std::vector<typeReturn> myDivisors;
+        mPass = static_cast<int64_t>(myNums[j]);
         
         if (mPass < 0) {
             mPass = std::abs(mPass);
             isNegative = true;
-        }
-        
-        if (mPass == 0)
-            return Rcpp::IntegerVector();
-        
-        if (mPass > Significand53Facs)
-            Rcpp::stop("the abs value of each element must be less than 2^53");
-        
-        if (mPass > INT_MAX) {
-            std::vector<double> factors;
-            if (isNegative)
-                factors.push_back(-1);
-            
-            getPrimefactors(mPass, factors);
-            return Rcpp::wrap(factors);
         } else {
-            std::vector<int> factors;
-            if (isNegative)
-                factors.push_back(-1);
-            
-            getPrimefactors(mPass, factors);
-            return Rcpp::wrap(factors);
+            isNegative = false;
         }
+        
+        if (mPass > 1) {
+            std::vector<typeReturn> factors;
+            getPrimefactors(mPass, factors);
+            myDivisors = Factorize<typeReturn>(factors);
+            
+            if (isNegative) {
+                unsigned long int facSize = myDivisors.size();
+                std::vector<typeReturn> tempInt(2 * facSize);
+                unsigned long int posInd = facSize, negInd = facSize - 1;
+                
+                for (std::size_t i = 0; i < facSize; ++i, ++posInd, --negInd) {
+                    tempInt[negInd] = -1 * myDivisors[i];
+                    tempInt[posInd] = myDivisors[i];
+                }
+                
+                myDivisors = tempInt;
+            }
+        } else {
+            if (isNegative)
+                myDivisors.push_back(-1);
+            if (mPass > 0)
+                myDivisors.push_back(1);
+        }
+        
+        MyDivList[j] = myDivisors;
     }
 }
 
-// [[Rcpp::export]]
-SEXP IsPrimeContainer (SEXP Rv, SEXP RNamed) {
-    std::vector<double> myNums;
-    int64_t testVal;
-    bool isNamed = false;
+void IsPrimeVec(std::size_t m, std::size_t n, std::vector<double> &myNums,
+                Rcpp::LogicalVector &primeTest) {
     
-    switch(TYPEOF(Rv)) {
-        case REALSXP: {
-            myNums = Rcpp::as<std::vector<double> >(Rv);
-            break;
-        }
-        case INTSXP: {
-            myNums = Rcpp::as<std::vector<double> >(Rv);
-            break;
-        }
-        default: {
-            Rcpp::stop("v must be of type numeric or integer");
-        }
-    }
-    
-    isNamed = Rcpp::as<bool>(RNamed);
-    unsigned int myLen = myNums.size();
-    std::vector<bool> primeTest(myLen, true);
     double isWhole;
     
-    for (std::size_t j = 0; j < myLen; ++j) {
+    for (std::size_t j = m; j < n; ++j) {
         
         if (myNums[j] <= 0)
             Rcpp::stop("each element must be positive");
-        if (myNums[j] > Significand53Facs)
+        if (myNums[j] > Significand53)
             Rcpp::stop("each element must be less than 2^53");
         if (std::modf(myNums[j], &isWhole) != 0.0)
             primeTest[j] = false;
         
-        testVal = (int64_t) myNums[j];
+        int64_t testVal = static_cast<int64_t>(myNums[j]);
         
         if (testVal == 1) {
             primeTest[j] = false;
@@ -423,14 +435,189 @@ SEXP IsPrimeContainer (SEXP Rv, SEXP RNamed) {
             }
         }
         
-        if (primeTest[j] == 1)
-            primeTest[j] = (bool) IsPrime(testVal);
+        if (primeTest[j])
+            primeTest[j] = IsPrime(testVal);
+    }
+}
+
+template <typename typeReturn>
+void PollardRhoMaster(std::vector<double> &myNums, typeReturn myMax, bool bPrimeFacs,
+                      bool bAllFacs, std::vector<std::vector<typeReturn>> &MyList,
+                      Rcpp::LogicalVector &primeTest, std::size_t myRange, 
+                      int nThreads = 1, int maxThreads = 1) {
+    
+    bool Parallel = false;
+    std::size_t m = 0u;
+    
+    if (nThreads > 1 && myRange > 1) {
+        Parallel = true;
+        if (nThreads > maxThreads) {nThreads = maxThreads;}
+        if ((myRange / nThreads) < 1) {nThreads = myRange;}
+        if (maxThreads < 2) {Parallel = false;}
     }
     
-    Rcpp::LogicalVector isPrimeVec = Rcpp::wrap(primeTest);
-    
-    if (isNamed)
-        isPrimeVec.attr("names") = myNums;
-    
-    return isPrimeVec;
+    if (Parallel) {
+        std::size_t ind = 0u;
+        std::vector<std::thread> myThreads;
+        std::size_t chunkSize = myRange / nThreads;
+        std::size_t n = chunkSize - 1;
+        
+        for (; ind < (nThreads - 1); m = n, n += chunkSize, ++ind) {
+            if (bPrimeFacs)
+                myThreads.emplace_back(PrimeFacList<typeReturn>, m, n, std::ref(myNums), std::ref(MyList));
+            else if (bAllFacs)
+                myThreads.emplace_back(FactorList<typeReturn>, m, n, std::ref(myNums), std::ref(MyList));
+            else
+                myThreads.emplace_back(IsPrimeVec, m, n, std::ref(myNums), std::ref(primeTest));
+        }
+        
+        if (bPrimeFacs)
+            myThreads.emplace_back(PrimeFacList<typeReturn>, m, myRange, std::ref(myNums), std::ref(MyList));
+        else if (bAllFacs)
+            myThreads.emplace_back(FactorList<typeReturn>, m, myRange, std::ref(myNums), std::ref(MyList));
+        else
+            myThreads.emplace_back(IsPrimeVec, m, myRange, std::ref(myNums), std::ref(primeTest));
+        
+        for (auto &thr: myThreads)
+            thr.join();
+        
+    } else {
+        if (bPrimeFacs)
+            PrimeFacList(m, myRange, myNums, MyList);
+        else if (bAllFacs)
+            FactorList(m, myRange, myNums, MyList);
+        else
+            IsPrimeVec(m, myRange, myNums, primeTest);
+    }
 }
+
+template <typename typeReturn>
+SEXP TheGlue(std::vector<double> &myNums, typeReturn myMax, bool bPrimeFacs,
+             bool bAllFacs, bool keepNames, int nThreads, int maxThreads) {
+    
+    std::size_t myRange = myNums.size();
+    Rcpp::LogicalVector tempVec;
+    
+    if (bPrimeFacs) {
+        if (myRange == 1) {
+            int64_t mPass = static_cast<int64_t>(myNums[0]);
+            if (mPass == 0) {return Rcpp::IntegerVector();}
+            std::vector<typeReturn> factors;
+            
+            if (mPass < 0) {
+                mPass = std::abs(mPass);
+                factors.push_back(-1);
+            }
+            
+            getPrimefactors(mPass, factors);
+            return Rcpp::wrap(factors);
+        } else {
+            std::vector<std::vector<typeReturn>> 
+                MyPrimeList(myRange, std::vector<typeReturn>());
+            
+            PollardRhoMaster(myNums, myMax, bPrimeFacs, bAllFacs,
+                             MyPrimeList, tempVec, myRange, nThreads, maxThreads);
+            
+            Rcpp::List myList = Rcpp::wrap(MyPrimeList);
+            if (keepNames)
+                myList.attr("names") = myNums;
+            
+            return myList;
+        }
+    } else if (bAllFacs) {
+        if (myRange == 1) {
+            int64_t mPass = static_cast<int64_t>(myNums[0]);
+            std::vector<typeReturn> factors;
+            std::vector<typeReturn> myDivisors;
+            bool isNegative = false;
+            
+            if (mPass < 0) {
+                mPass = std::abs(mPass);
+                isNegative = true;
+            }
+            
+            if (mPass > 1) {
+                getPrimefactors(mPass, factors);
+                myDivisors = Factorize<typeReturn>(factors);
+                
+                if (isNegative) {
+                    unsigned long int facSize = myDivisors.size();
+                    std::vector<typeReturn> negPosFacs(2 * facSize);
+                    unsigned long int posInd = facSize, negInd = facSize - 1;
+                    
+                    for (std::size_t i = 0; i < facSize; ++i, ++posInd, --negInd) {
+                        negPosFacs[negInd] = -1 * myDivisors[i];
+                        negPosFacs[posInd] = myDivisors[i];
+                    }
+                    
+                    return Rcpp::wrap(negPosFacs);
+                }
+                
+                return Rcpp::wrap(myDivisors);
+            } else  {
+                if (isNegative)
+                    myDivisors.push_back(-1);
+                if (mPass > 0)
+                    myDivisors.push_back(1);
+                
+                return Rcpp::wrap(myDivisors);
+            }
+        }
+        
+        std::vector<std::vector<typeReturn>> 
+            MyPrimeList(myRange, std::vector<typeReturn>());
+        
+        PollardRhoMaster(myNums, myMax, bPrimeFacs, bAllFacs,
+                         MyPrimeList, tempVec, myRange, nThreads, maxThreads);
+        
+        Rcpp::List myList = Rcpp::wrap(MyPrimeList);
+        if (keepNames)
+            myList.attr("names") = myNums;
+        
+        return myList;
+    } else {
+        Rcpp::LogicalVector isPrimeVec(myRange, true);
+        std::vector<std::vector<typeReturn>> tempList;
+        
+        PollardRhoMaster(myNums, myMax, bPrimeFacs, bAllFacs,
+                         tempList, isPrimeVec, myRange, nThreads, maxThreads);
+        if (keepNames)
+            isPrimeVec.attr("names") = myNums;
+        
+        return isPrimeVec;
+    }
+}
+
+// [[Rcpp::export]]
+SEXP PollardRhoContainer(SEXP Rv, SEXP RNamed, bool bPrimeFacs,
+                         bool bAllFacs, SEXP RNumThreads, int maxThreads) {
+    
+    std::vector<double> myNums;
+    bool isNamed = Rcpp::as<bool>(RNamed);
+    
+    if (TYPEOF(Rv) == STRSXP)
+        Rcpp::stop("v must be of type numeric or integer");
+    
+    CleanConvert::convertVector(Rv, myNums, "v must be of type numeric or integer");
+    
+    double myMax = *std::max_element(myNums.begin(), myNums.end());
+    double myMin = *std::min_element(myNums.begin(), myNums.end());
+    
+    if (std::abs(myMin) > myMax)
+        myMax = std::abs(myMin);
+    
+    if (myMax > Significand53)
+        Rcpp::stop("the abs value of each element must be less than 2^53");
+    
+    int nThreads = 1;
+    if (!Rf_isNull(RNumThreads))
+        CleanConvert::convertPrimitive(RNumThreads, nThreads, "nThreads must be of type numeric or integer");
+    
+    if (myMax > std::numeric_limits<int>::max()) {
+        return TheGlue(myNums, myMax, bPrimeFacs, bAllFacs, isNamed, nThreads, maxThreads);
+    } else {
+        int intMax = static_cast<int>(myMax);
+        return TheGlue(myNums, intMax, bPrimeFacs, bAllFacs, isNamed, nThreads, maxThreads);
+    }
+}
+
