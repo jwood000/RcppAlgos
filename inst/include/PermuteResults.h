@@ -1,8 +1,8 @@
 #ifndef PERMUTE_RESULTS_H
 #define PERMUTE_RESULTS_H
 
-#include <CombPermUtils.h>
-#include <ConstraintsUtils.h>
+#include "CombPermUtils.h"
+#include "ConstraintsUtils.h"
 
 template <typename typeMatrix, typename typeVector>
 void PermuteGenRes(int n, int r, std::vector<typeVector> &v, bool repetition,

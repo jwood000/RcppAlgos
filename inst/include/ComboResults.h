@@ -2,7 +2,7 @@
 #define COMBO_RESULTS_H
 
 #include <Rcpp.h>
-#include <ConstraintsUtils.h>
+#include "ConstraintsUtils.h"
 
 template <typename typeMatrix, typename typeVector>
 void ComboGenRes(int n, int r, std::vector<typeVector> &v, bool repetition,

@@ -1,7 +1,7 @@
 #ifndef PERMUTATIONS_H
 #define PERMUTATIONS_H
 
-#include <CombPermUtils.h>
+#include "CombPermUtils.h"
 
 template <typename typeMatrix, typename typeVector>
 void PermuteGeneral(int n, int r, typeVector &v, bool repetition, int numRows,

@@ -1,18 +1,16 @@
-#include <Combinations.h>
-#include <Permutations.h>
-#include <ConstraintsUtils.h>
-#include <ComboResults.h>
-#include <PermuteResults.h>
-#include <NthResult.h>
-#include <CountGmp.h>
-#include <CleanConvert.h>
+#include "Combinations.h"
+#include "Permutations.h"
+#include "ConstraintsUtils.h"
+#include "ComboResults.h"
+#include "PermuteResults.h"
+#include "NthResult.h"
+#include "CountGmp.h"
+#include "CleanConvert.h"
 #include <thread>
 
 const std::vector<std::string> compForms = {"<", ">", "<=", ">=", "==", "=<", "=>"};
 const std::vector<std::string> compSpecial = {"==", ">,<", ">=,<", ">,<=", ">=,<="};
 const std::vector<std::string> compHelper = {"<=", "<", "<", "<=", "<="};
-
-const double Significand53 = 9007199254740991.0;
 
 template <typename typeRcpp>
 typeRcpp SubMat(typeRcpp m, int n) {

@@ -1,7 +1,9 @@
 #ifndef CLEAN_CONVERT_H
 #define CLEAN_CONVERT_H
 
-#include <importExportMPZ.h>
+#include "importExportMPZ.h"
+
+const double Significand53 = 9007199254740991.0;
 
 namespace CleanConvert {
 

@@ -4,9 +4,6 @@
 #ifndef PRIMES_POL_RHO_H
 #define PRIMES_POL_RHO_H
  
-#undef FirstOmittedPrime
-#define FirstOmittedPrime 4001
- 
 // next prime number (e.g. p = 2 + primesDiffPR[0] = 3, 
 // p = p + primesDiffPR[1] = 5, etc.)
 

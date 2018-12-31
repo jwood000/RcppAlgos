@@ -1,9 +1,11 @@
-#include <NthResult.h>
-#include <CleanConvert.h>
-#include <importExportMPZ.h>
-#include <CombPermUtils.h>
-#include <CountGmp.h>
+#include "NthResult.h"
+#include "CleanConvert.h"
+#include "CombPermUtils.h"
+#include "CountGmp.h"
 #include <thread>
+
+static gmp_randstate_t seed_state;
+static int seed_init = 0;
 
 // Based off the internal limitations of sample, we
 // cannot utilize the full range of 53-bit significand
@@ -11,9 +13,6 @@
 //     if (!R_FINITE(dn) || dn < 0 || dn > 4.5e15 || (k > 0 && dn == 0))
 // Here is the source (line 1791): 
 //     https://github.com/wch/r-source/blob/trunk/src/main/unique.c
-
-static gmp_randstate_t seed_state;
-static int seed_init = 0;
 const double sampleLimit = 4500000000000000.0;
 
 template <typename typeRcpp, typename typeVector>
