@@ -113,9 +113,9 @@ namespace PrimeCounting {
     }
     
     void updateCache (uint64_t x, uint64_t a, int64_t mySum) {
-        
         if (a < phiCache.size() &&
             x <= std::numeric_limits<uint16_t>::max()) {
+            // Protect phiCache while its being updated
             std::lock_guard<std::mutex> guard(theBlocker);
             if (x >= phiCache[a].size()) phiCache[a].resize(x + 1, 0);
             phiCache[a][x] = static_cast<uint16_t>(std::abs(mySum));
