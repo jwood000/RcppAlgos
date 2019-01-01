@@ -129,7 +129,7 @@ namespace PrimeCounting {
     }
     
     inline bool isPix(int64_t x, int64_t a) {
-        return x < (int) phiPi.size() &&
+        return x < static_cast<int64_t>(phiPi.size()) &&
                x < (phiPrimes[a + 1] * phiPrimes[a + 1]);
     }
     
