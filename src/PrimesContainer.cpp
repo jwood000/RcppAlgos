@@ -4,6 +4,12 @@
 #include <mutex>
 #include <array>
 
+// "MasterPrimeCount" is a simple variation of the highly optimized
+// "pi_legendre.cpp" algorithm by Kim Walisch, which calculates
+// the numbers of primes less than n using Legendre's formula.
+// Kim Walisch's official github repo for "pi_legendre" is:
+//                      https://github.com/kimwalisch/primecount
+
 namespace PrimeCounting {
     
     // PiPrime is very similar to the PrimeSieveSmall only we are not
@@ -107,12 +113,12 @@ namespace PrimeCounting {
     const std::array<int, 7> myTotients = {{1, 1, 2, 8, 48, 480, 5760}};
     const std::array<int, 13> myTinyPi = {{0, 0, 1, 2, 2, 3, 3, 4, 4, 4, 4, 5, 5}};
     
-    inline int64_t phiTinyCalc (int64_t x, int64_t a) {
+    inline int64_t phiTinyCalc(int64_t x, int64_t a) {
         int64_t pp = primeProds[a];
         return (x / pp) * myTotients[a] + phiTiny[a][x % pp];
     }
     
-    void updateCache (uint64_t x, uint64_t a, int64_t mySum) {
+    void updateCache(uint64_t x, uint64_t a, int64_t mySum) {
         if (a < phiCache.size() &&
             x <= std::numeric_limits<uint16_t>::max()) {
             // Protect phiCache while its being updated
@@ -122,7 +128,7 @@ namespace PrimeCounting {
         }
     }
     
-    inline bool isCached (uint64_t x, uint64_t a) {
+    inline bool isCached(uint64_t x, uint64_t a) {
         return a < phiCache.size() &&
                x < phiCache[a].size() &&
                phiCache[a][x];
@@ -141,7 +147,7 @@ namespace PrimeCounting {
     }
     
     template <int SIGN>
-    int64_t phiWorker (int64_t x, int64_t a) {
+    int64_t phiWorker(int64_t x, int64_t a) {
         if (x <= phiPrimes[a]) {
             return SIGN;
         } else if (a <= phiTinySize) {
@@ -184,7 +190,7 @@ namespace PrimeCounting {
             mySum += phiWorker<-1>(x / phiPrimes[i + 1], i);
     }
     
-    int64_t phiMaster (int64_t x, int64_t a, int nThreads, bool Parallel) {
+    int64_t phiMaster(int64_t x, int64_t a, int nThreads, bool Parallel) {
         
         int64_t sqrtx = static_cast<int64_t>(std::sqrt(x));
         int64_t piSqrtx = std::min(static_cast<int64_t>(phiPi[sqrtx]), a);
@@ -231,7 +237,7 @@ namespace PrimeCounting {
     // MAX VALUE (2^53 - 1) -->> 
     //            252,252,704,148,404   -->>  ~1222 seconds
     
-    int64_t MasterPrimeCount (int64_t n, int nThreads = 1, int maxThreads = 1) {
+    int64_t MasterPrimeCount(int64_t n, int nThreads = 1, int maxThreads = 1) {
         
         int64_t sqrtBound = static_cast<int64_t>(std::sqrt(n));
         std::vector<int64_t> resetPhiPrimes;
