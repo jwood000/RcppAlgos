@@ -1,3 +1,7 @@
+pkgEnv <- new.env(parent = emptyenv())
+pkgEnv$nCores <- NULL
+pkgEnv$nThreads <- NULL
+
 physicalCoreCount <- function() {
     
     if (.Platform$OS.type == "windows")
@@ -25,8 +29,9 @@ physicalCoreCount <- function() {
     
     for (i in seq(systems)) if (grepl(paste0("^", names(systems)[i]), R.version$os))
         for (cmd in systems[i]) {
-            if (is.null(a <- tryCatch(suppressWarnings(system(cmd, TRUE)), error = function(e) NULL))) 
-                next
+            if (is.null(a <- tryCatch(suppressWarnings(
+                system(cmd, TRUE)), error = function(e) NULL))) {next}
+            
             a <- gsub("^ +", "", a[1])
             if (grepl("^[1-9]", a)) 
                 return(as.integer(a))
@@ -35,8 +40,9 @@ physicalCoreCount <- function() {
     ## if the above fails, we try all of them
     for (i in seq(systems))
         for (cmd in systems[i]) {
-            if (is.null(a <- tryCatch(suppressWarnings(system(cmd, TRUE)), error = function(e) NULL))) 
-                next
+            if (is.null(a <- tryCatch(suppressWarnings(
+                system(cmd, TRUE)), error = function(e) NULL))) {next}
+            
             a <- gsub("^ +", "", a[1])
             if (grepl("^[1-9]", a)) 
                 return(as.integer(a))
@@ -45,3 +51,20 @@ physicalCoreCount <- function() {
     ## If we get here, we assume 1 core
     1L
 }
+
+## This will set the maximum number of cores
+## and number of threads on a given machine
+## when the package is loaded
+.onLoad <- function(libname, pkgname) {
+    pkgEnv$nCores <- physicalCoreCount()
+    tempThreads <- parallel::detectCores()
+    
+    if (is.na(tempThreads)) {
+        pkgEnv$nThreads <- 1L
+    } else {
+        pkgEnv$nThreads <- tempThreads
+    }
+    
+    invisible()
+}
+
