@@ -1,6 +1,7 @@
 #include "MotleyPrimes.h"
 #include "CleanConvert.h"
 #include "PhiTinyLookup.h"
+#include <mutex>
 #include <array>
 
 namespace PrimeCounting {
@@ -84,8 +85,9 @@ namespace PrimeCounting {
         return count;
     }
 
-    const int MAX_A = 200;
+    const int MAX_A = 100;
     std::array<std::vector<uint16_t>, MAX_A> phiCache;
+    std::mutex theBlocker;
     
     // Increment MAX_A, so we can have easier access
     // to indexing.  E.g when a = 3 (i.e. the number)
@@ -111,10 +113,12 @@ namespace PrimeCounting {
     }
     
     void updateCache (uint64_t x, uint64_t a, int64_t mySum) {
+        
         if (a < phiCache.size() &&
             x <= std::numeric_limits<uint16_t>::max()) {
+            std::lock_guard<std::mutex> guard(theBlocker);
             if (x >= phiCache[a].size()) phiCache[a].resize(x + 1, 0);
-            phiCache[a][x] = (uint16_t) std::abs(mySum);
+            phiCache[a][x] = static_cast<uint16_t>(std::abs(mySum));
         }
     }
     
@@ -138,48 +142,80 @@ namespace PrimeCounting {
     
     template <int SIGN>
     int64_t phiWorker (int64_t x, int64_t a) {
-        if (x <= phiPrimes[a])
+        if (x <= phiPrimes[a]) {
             return SIGN;
-        else if (a <= phiTinySize)
+        } else if (a <= phiTinySize) {
             return phiTinyCalc(x, a) * SIGN;
-        else if (isPix(x, a))
+        } else if (isPix(x, a)) {
             return (phiPi[x] - a + 1) * SIGN;
-        else if (isCached(x, a))
+        } else if (isCached(x, a)) {
             return phiCache[a][x] * SIGN;
+        } else {
+            int64_t sqrtx = static_cast<int64_t>(std::sqrt(x));
+            int64_t piSqrtx = a;
+            int64_t strt = getStrt(sqrtx);
             
-        int64_t sqrtx = (int64_t) std::sqrt((double) x);
-        int64_t piSqrtx = a;
-        int64_t strt = getStrt(sqrtx);
-        int64_t mySum = 0;
-        
-        if (sqrtx < (int) phiPi.size())
-            piSqrtx = std::min((int64_t) phiPi[sqrtx], a);
-        
-        mySum += (piSqrtx - a) * SIGN;
-        mySum += phiTinyCalc(x, strt) * SIGN;
-        
-        for (int64_t i = strt; i < piSqrtx; ++i) {
-            int64_t x2 = x / phiPrimes[i + 1];
+            if (sqrtx < static_cast<int64_t>(phiPi.size()))
+                piSqrtx = std::min(static_cast<int64_t>(phiPi[sqrtx]), a);
             
-            if (isPix(x2, i))
-                mySum += (phiPi[x2] - i + 1) * -SIGN;
-            else
-                mySum += phiWorker<-SIGN>(x2, i);
+            int64_t mySum = 0;
+            mySum += (piSqrtx - a) * SIGN;
+            mySum += phiTinyCalc(x, strt) * SIGN;
+            
+            for (int64_t i = strt; i < piSqrtx; ++i) {
+                int64_t x2 = x / phiPrimes[i + 1];
+                
+                if (isPix(x2, i)) {
+                    mySum += (phiPi[x2] - i + 1) * -SIGN;
+                } else {
+                    mySum += phiWorker<-SIGN>(x2, i);
+                }
+            }
+            
+            updateCache(x, a, mySum);
+            return mySum;
         }
-        
-        updateCache(x, a, mySum);
-        return mySum;
     }
     
-    int64_t phiMaster (int64_t x, int64_t a) {
+    void phiSlave(int64_t lowerBound, int64_t upperBound, 
+                  int64_t x, int64_t &mySum) {
         
-        int64_t sqrtx = (int64_t) std::sqrt((double) x);
-        int64_t piSqrtx = std::min((int64_t) phiPi[sqrtx], a);
+        for (int64_t i = lowerBound; i < upperBound; ++i)
+            mySum += phiWorker<-1>(x / phiPrimes[i + 1], i);
+    }
+    
+    int64_t phiMaster (int64_t x, int64_t a, int nThreads, bool Parallel) {
+        
+        int64_t sqrtx = static_cast<int64_t>(std::sqrt(x));
+        int64_t piSqrtx = std::min(static_cast<int64_t>(phiPi[sqrtx]), a);
         int64_t strt = getStrt(sqrtx);
         int64_t mySum = phiTinyCalc(x, strt) + piSqrtx - a;
         
-        for (int64_t i = strt; i < piSqrtx; ++i)
-            mySum += phiWorker<-1>(x / phiPrimes[i + 1], i);
+        if (Parallel) {
+            std::vector<int64_t> vecSums(nThreads, 0);
+            std::vector<std::thread> myThreads;
+            
+            int64_t myRange = (piSqrtx - strt) + 1;
+            int64_t chunkSize = myRange / nThreads;
+            int64_t lowerBnd = strt;
+            int64_t upperBnd = strt + chunkSize - 1;
+            
+            std::size_t ind = 0;
+            
+            for (; ind < (nThreads - 1); lowerBnd = upperBnd, upperBnd += chunkSize, ++ind)
+                myThreads.emplace_back(phiSlave, lowerBnd, upperBnd, x, std::ref(vecSums[ind]));
+            
+            myThreads.emplace_back(phiSlave, lowerBnd, piSqrtx, x, std::ref(vecSums[ind]));
+            
+            for (auto &thr: myThreads)
+                thr.join();
+    
+            for (std::size_t i = 0; i < nThreads; ++i)
+                mySum += vecSums[i];
+        } else {
+            for (int64_t i = strt; i < piSqrtx; ++i)
+                mySum += phiWorker<-1>(x / phiPrimes[i + 1], i);
+        }
         
         return mySum;
     }
@@ -194,7 +230,7 @@ namespace PrimeCounting {
     // 10^15 -->> 29,844,570,422,669
     // MAX VALUE (2^53 - 1) -->> 252,252,704,148,404
     
-    int64_t MasterPrimeCount (int64_t n) {
+    int64_t MasterPrimeCount (int64_t n, int nThreads = 1, int maxThreads = 1) {
         
         int64_t sqrtBound = static_cast<int64_t>(std::sqrt(n));
         std::vector<int64_t> resetPhiPrimes;
@@ -214,8 +250,16 @@ namespace PrimeCounting {
         for (int64_t i = (maxPrime + 1); i <= sqrtBound; ++i)
             phiPi[i] = count;
         
+        bool Parallel = false;
+        
+        if (nThreads > 1) {
+            Parallel = true;
+            if (nThreads > maxThreads) {nThreads = maxThreads;}
+            if ((maxThreads < 2) || (n < 1e7)) {Parallel = false;}
+        }
+        
         int64_t piSqrt = PiPrime(sqrtBound);
-        int64_t phiSqrt = phiMaster(n, piSqrt);
+        int64_t phiSqrt = phiMaster(n, piSqrt, nThreads, Parallel);
         int64_t int64result = piSqrt + phiSqrt - 1;
         
         return int64result;
@@ -223,7 +267,7 @@ namespace PrimeCounting {
 }
 
 //[[Rcpp::export]]
-SEXP PrimeCountRcpp (SEXP Rn) {
+SEXP PrimeCountRcpp (SEXP Rn, SEXP RNumThreads, int maxThreads) {
     double dblNum;
     CleanConvert::convertPrimitive(Rn, dblNum, "n must be of type numeric or integer", false);
 
@@ -249,7 +293,11 @@ SEXP PrimeCountRcpp (SEXP Rn) {
         return Rcpp::wrap(static_cast<int>(PrimeCounting::PiPrime(n)));
     }
     
-    int64_t result = PrimeCounting::MasterPrimeCount(n);
+    int nThreads = 1;
+    if (!Rf_isNull(RNumThreads))
+        CleanConvert::convertPrimitive(RNumThreads, nThreads, "nThreads must be of type numeric or integer");
+    
+    int64_t result = PrimeCounting::MasterPrimeCount(n, nThreads, maxThreads);
     
     if (result > INT_MAX)
         return Rcpp::wrap(static_cast<double>(result));
