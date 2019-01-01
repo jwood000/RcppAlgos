@@ -84,7 +84,7 @@ namespace PrimeCounting {
         return count;
     }
 
-    const int MAX_A = 100;
+    const int MAX_A = 200;
     std::array<std::vector<uint16_t>, MAX_A> phiCache;
     
     // Increment MAX_A, so we can have easier access
