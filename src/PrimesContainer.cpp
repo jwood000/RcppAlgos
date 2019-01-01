@@ -220,15 +220,16 @@ namespace PrimeCounting {
         return mySum;
     }
     
-    // All values verified by Kim Walisch's primecount library
-    // 10^9  -->> 50,847,534
-    // 10^10 -->> 455,052,511
-    // 10^11 -->> 4,118,054,813
-    // 10^12 -->> 37,607,912,018
-    // 10^13 -->> 346,065,536,839
-    // 10^14 -->> 3,204,941,750,802
-    // 10^15 -->> 29,844,570,422,669
-    // MAX VALUE (2^53 - 1) -->> 252,252,704,148,404
+    // All values verified by Kim Walisch's primecount library (nThreads = 8)
+    //  10^9 -->>          50,847,534   -->>  903.7 microseconds
+    // 10^10 -->>         455,052,511   -->>  5.527 milliseconds
+    // 10^11 -->>       4,118,054,813   -->>  0.040 seconds
+    // 10^12 -->>      37,607,912,018   -->>  0.301 seconds
+    // 10^13 -->>     346,065,536,839   -->>  2.471 seconds
+    // 10^14 -->>   3,204,941,750,802   -->>    ~18 seconds
+    // 10^15 -->>  29,844,570,422,669   -->>   ~158 seconds
+    // MAX VALUE (2^53 - 1) -->> 
+    //            252,252,704,148,404   -->>  ~1222 seconds
     
     int64_t MasterPrimeCount (int64_t n, int nThreads = 1, int maxThreads = 1) {
         
