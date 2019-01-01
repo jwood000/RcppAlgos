@@ -13,8 +13,8 @@ PollardRhoContainer <- function(Rv, RNamed, bPrimeFacs, bAllFacs, RNumThreads, m
     .Call(`_RcppAlgos_PollardRhoContainer`, Rv, RNamed, bPrimeFacs, bAllFacs, RNumThreads, maxThreads)
 }
 
-PrimeCountRcpp <- function(Rn) {
-    .Call(`_RcppAlgos_PrimeCountRcpp`, Rn)
+PrimeCountRcpp <- function(Rn, RNumThreads, maxThreads) {
+    .Call(`_RcppAlgos_PrimeCountRcpp`, Rn, RNumThreads, maxThreads)
 }
 
 MotleyContainer <- function(Rb1, Rb2, RIsEuler, RNamed, RNumThreads, maxThreads) {

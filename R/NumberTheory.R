@@ -30,4 +30,6 @@ isPrimeRcpp <- function(v, namedVector = FALSE, nThreads = NULL) {
     PollardRhoContainer(v, namedVector, FALSE, FALSE, nThreads, pkgEnv$nThreads)
 }
 
-primeCount <- function(n) {PrimeCountRcpp(n)}
+primeCount <- function(n, nThreads = NULL) {
+    PrimeCountRcpp(n, nThreads, pkgEnv$nThreads)
+}

@@ -64,13 +64,15 @@ BEGIN_RCPP
 END_RCPP
 }
 // PrimeCountRcpp
-SEXP PrimeCountRcpp(SEXP Rn);
-RcppExport SEXP _RcppAlgos_PrimeCountRcpp(SEXP RnSEXP) {
+SEXP PrimeCountRcpp(SEXP Rn, SEXP RNumThreads, int maxThreads);
+RcppExport SEXP _RcppAlgos_PrimeCountRcpp(SEXP RnSEXP, SEXP RNumThreadsSEXP, SEXP maxThreadsSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< SEXP >::type Rn(RnSEXP);
-    rcpp_result_gen = Rcpp::wrap(PrimeCountRcpp(Rn));
+    Rcpp::traits::input_parameter< SEXP >::type RNumThreads(RNumThreadsSEXP);
+    Rcpp::traits::input_parameter< int >::type maxThreads(maxThreadsSEXP);
+    rcpp_result_gen = Rcpp::wrap(PrimeCountRcpp(Rn, RNumThreads, maxThreads));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -133,7 +135,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_RcppAlgos_CombinatoricsRcpp", (DL_FUNC) &_RcppAlgos_CombinatoricsRcpp, 16},
     {"_RcppAlgos_DivNumSieve", (DL_FUNC) &_RcppAlgos_DivNumSieve, 6},
     {"_RcppAlgos_PollardRhoContainer", (DL_FUNC) &_RcppAlgos_PollardRhoContainer, 6},
-    {"_RcppAlgos_PrimeCountRcpp", (DL_FUNC) &_RcppAlgos_PrimeCountRcpp, 1},
+    {"_RcppAlgos_PrimeCountRcpp", (DL_FUNC) &_RcppAlgos_PrimeCountRcpp, 3},
     {"_RcppAlgos_MotleyContainer", (DL_FUNC) &_RcppAlgos_MotleyContainer, 6},
     {"_RcppAlgos_EratosthenesRcpp", (DL_FUNC) &_RcppAlgos_EratosthenesRcpp, 5},
     {"_RcppAlgos_SampleRcpp", (DL_FUNC) &_RcppAlgos_SampleRcpp, 13},
