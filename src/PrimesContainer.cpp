@@ -200,13 +200,13 @@ namespace PrimeCounting {
         
         if (Parallel) {
             const double divLim = 10000000000.0; // 1e10
-            const double dblLog151 = std::log(1.51);
+            const double dblLog15 = std::log(1.5);
             
             // We know x, t, and we need to solve for n.
-            // x / (2^t)^n < 1e10 -->>> 1e10 * (2^t)^n = x --->>> x / 1e10 = (2^t)^n
-            // log(x / 1e10) = n * log(2^t) --->> log(x / 1e10) / log(2^t) :
-            //                 log(x / 1e10) / (t * log(2))
-            unsigned long int nLoops = 1 + std::ceil(std::log(x / divLim) / (nThreads * dblLog151));
+            // x / (1.5^t)^n < 1e10 -->>> 1e10 * (1.5^t)^n = x --->>> x / 1e10 = (1.5^t)^n
+            // log(x / 1e10) = n * log(1.5^t) --->> log(x / 1e10) / log(1.5^t) :
+            //                 log(x / 1e10) / (t * log(1.5))
+            unsigned long int nLoops = 1 + std::ceil(std::log(x / divLim) / (nThreads * dblLog15));
             if (nLoops < 1) {nLoops = 1;}
             int64_t myRange = (piSqrtx - strt) + 1;
             int64_t lower = strt;
@@ -294,10 +294,8 @@ namespace PrimeCounting {
                 for (std::size_t i = 0; i < nThreads; ++i)
                     mySum += vecSums[i];
             }
-            
         } else {
-            for (int64_t i = strt; i < piSqrtx; ++i)
-                mySum += phiWorker<-1>(x / phiPrimes[i + 1], i);
+            phiSlave(strt, piSqrtx, x, mySum);
         }
         
         return mySum;
@@ -306,9 +304,9 @@ namespace PrimeCounting {
     // All values verified by Kim Walisch's primecount library (nThreads = 8)
     //  10^9 -->>          50,847,534   -->>   879.3 microseconds
     // 10^10 -->>         455,052,511   -->>   5.362 milliseconds
-    // 10^11 -->>       4,118,054,813   -->>   25.92 milliseconds
-    // 10^12 -->>      37,607,912,018   -->>   126.5 milliseconds
-    // 10^13 -->>     346,065,536,839   -->>   902.2 milliseconds
+    // 10^11 -->>       4,118,054,813   -->>   21.45 milliseconds
+    // 10^12 -->>      37,607,912,018   -->>   120.0 milliseconds
+    // 10^13 -->>     346,065,536,839   -->>   890.0 milliseconds
     // 10^14 -->>   3,204,941,750,802   -->>   7.108 seconds
     // 10^15 -->>  29,844,570,422,669   -->>  53.703 seconds
     // MAX VALUE (2^53 - 1) -->> 
