@@ -190,7 +190,8 @@ namespace PrimeCounting {
             mySum += phiWorker<-1>(x / phiPrimes[i + 1], i);
     }
     
-    int64_t phiMaster(int64_t x, int64_t a, int nThreads, bool Parallel) {
+    int64_t phiMaster(int64_t x, int64_t a, 
+                      unsigned long int nThreads, bool Parallel) {
         
         int64_t sqrtx = static_cast<int64_t>(std::sqrt(x));
         int64_t piSqrtx = std::min(static_cast<int64_t>(phiPi[sqrtx]), a);
@@ -198,26 +199,76 @@ namespace PrimeCounting {
         int64_t mySum = phiTinyCalc(x, strt) + piSqrtx - a;
         
         if (Parallel) {
-            std::vector<int64_t> vecSums(nThreads, 0);
-            std::vector<std::thread> myThreads;
+            const double divLim = 10000000000.0; // 1e10
+            const double dblLog2 = std::log(2);
             
+            // We know x, t, and we need to solve for n.
+            // x / (2^t)^n < 1e10 -->>> 1e10 * (2^t)^n = x --->>> x / 1e10 = (2^t)^n
+            // log(x / 1e10) = n * log(2^t) --->> log(x / 1e10) / log(2^t) :
+            //                 log(x / 1e10) / (t * log(2))
+            unsigned long int nLoops = 1 + std::ceil(std::log(x / divLim) / (nThreads * dblLog2));
+            if (nLoops < 1) {nLoops = 1;}
+            std::vector<int64_t> vecSums(nLoops * nThreads, 0);
             int64_t myRange = (piSqrtx - strt) + 1;
-            int64_t chunkSize = myRange / nThreads;
-            int64_t lowerBnd = strt;
-            int64_t upperBnd = strt + chunkSize - 1;
+            int64_t lower = strt;
+            int64_t upper, chunk;
             
-            std::size_t ind = 0;
-            
-            for (; ind < (nThreads - 1); lowerBnd = upperBnd, upperBnd += chunkSize, ++ind)
-                myThreads.emplace_back(phiSlave, lowerBnd, upperBnd, x, std::ref(vecSums[ind]));
-            
-            myThreads.emplace_back(phiSlave, lowerBnd, piSqrtx, x, std::ref(vecSums[ind]));
-            
-            for (auto &thr: myThreads)
-                thr.join();
+            if (x > divLim) {
+                double mult = std::exp(std::log(myRange) / (nThreads * nLoops));
+                chunk = static_cast<int64_t>(std::ceil(mult));
+                if (chunk < 1)
+                    Rcpp::stop("This should not happen!!");
+                
+                upper = lower + chunk - 1;
+                std::size_t ind = 0;
+                std::size_t limit = nThreads;
     
-            for (std::size_t i = 0; i < nThreads; ++i)
+                for (std::size_t i = 0; i < (nLoops - 1); ++i,
+                     lower = upper - chunk, upper = lower + chunk - 1, limit += nThreads) {
+    
+                    std::vector<std::thread> myThreads;
+    
+                    for (; ind < limit; lower = upper, upper += chunk, ++ind) {
+                        myThreads.emplace_back(phiSlave, lower, upper, x, std::ref(vecSums[ind]));
+                        chunk = static_cast<int64_t>(mult * static_cast<double>(chunk));
+                    }
+    
+                    for (auto &thr: myThreads)
+                        thr.join();
+                }
+                
+                --limit;
+                std::vector<std::thread> myThreads;
+                mult = std::exp(std::log((piSqrtx - upper) / 
+                    std::ceil(mult * static_cast<double>(chunk))) / nThreads);
+    
+                for (; ind < limit && upper < piSqrtx; lower = upper, upper += chunk, ++ind) {
+                    myThreads.emplace_back(phiSlave, lower, upper, x, std::ref(vecSums[ind]));
+                    chunk = static_cast<int64_t>(mult * static_cast<double>(chunk));
+                }
+                
+                myThreads.emplace_back(phiSlave, lower, piSqrtx, x, std::ref(vecSums[ind]));
+    
+                for (auto &thr: myThreads)
+                    thr.join();
+            } else {
+                std::size_t ind = 0;
+                std::vector<std::thread> myThreads;
+                chunk = myRange / nThreads;
+                upper = lower + chunk - 1;
+                
+                for (; ind < (nThreads - 1); lower = upper, upper += chunk, ++ind)
+                    myThreads.emplace_back(phiSlave, lower, upper, x, std::ref(vecSums[ind]));
+                
+                myThreads.emplace_back(phiSlave, lower, piSqrtx, x, std::ref(vecSums[ind]));
+                
+                for (auto &thr: myThreads)
+                    thr.join();
+            }
+            
+            for (std::size_t i = 0; i < (nLoops * nThreads); ++i)
                 mySum += vecSums[i];
+            
         } else {
             for (int64_t i = strt; i < piSqrtx; ++i)
                 mySum += phiWorker<-1>(x / phiPrimes[i + 1], i);
@@ -227,17 +278,19 @@ namespace PrimeCounting {
     }
     
     // All values verified by Kim Walisch's primecount library (nThreads = 8)
-    //  10^9 -->>          50,847,534   -->>  903.7 microseconds
-    // 10^10 -->>         455,052,511   -->>  5.527 milliseconds
-    // 10^11 -->>       4,118,054,813   -->>  0.040 seconds
-    // 10^12 -->>      37,607,912,018   -->>  0.301 seconds
-    // 10^13 -->>     346,065,536,839   -->>  2.471 seconds
-    // 10^14 -->>   3,204,941,750,802   -->>    ~18 seconds
-    // 10^15 -->>  29,844,570,422,669   -->>   ~158 seconds
+    //  10^9 -->>          50,847,534   -->>   879.3 microseconds
+    // 10^10 -->>         455,052,511   -->>   5.362 milliseconds
+    // 10^11 -->>       4,118,054,813   -->>   25.92 milliseconds
+    // 10^12 -->>      37,607,912,018   -->>   136.6 milliseconds
+    // 10^13 -->>     346,065,536,839   -->>   951.6 milliseconds
+    // 10^14 -->>   3,204,941,750,802   -->>   7.555 seconds
+    // 10^15 -->>  29,844,570,422,669   -->>  55.850 seconds
     // MAX VALUE (2^53 - 1) -->> 
-    //            252,252,704,148,404   -->>  ~1222 seconds
+    //            252,252,704,148,404   -->> 393.117 seconds
     
-    int64_t MasterPrimeCount(int64_t n, int nThreads = 1, int maxThreads = 1) {
+    int64_t MasterPrimeCount(int64_t n, 
+                             unsigned long int nThreads = 1,
+                             unsigned long int maxThreads = 1) {
         
         int64_t sqrtBound = static_cast<int64_t>(std::sqrt(n));
         std::vector<int64_t> resetPhiPrimes;
@@ -300,7 +353,7 @@ SEXP PrimeCountRcpp (SEXP Rn, SEXP RNumThreads, int maxThreads) {
         return Rcpp::wrap(static_cast<int>(PrimeCounting::PiPrime(n)));
     }
     
-    int nThreads = 1;
+    unsigned long int nThreads = 1;
     if (!Rf_isNull(RNumThreads))
         CleanConvert::convertPrimitive(RNumThreads, nThreads, "nThreads must be of type numeric or integer");
     
