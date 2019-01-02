@@ -200,62 +200,86 @@ namespace PrimeCounting {
         
         if (Parallel) {
             const double divLim = 10000000000.0; // 1e10
-            const double dblLog2 = std::log(2);
+            const double dblLog151 = std::log(1.51);
             
             // We know x, t, and we need to solve for n.
             // x / (2^t)^n < 1e10 -->>> 1e10 * (2^t)^n = x --->>> x / 1e10 = (2^t)^n
             // log(x / 1e10) = n * log(2^t) --->> log(x / 1e10) / log(2^t) :
             //                 log(x / 1e10) / (t * log(2))
-            unsigned long int nLoops = 1 + std::ceil(std::log(x / divLim) / (nThreads * dblLog2));
+            unsigned long int nLoops = 1 + std::ceil(std::log(x / divLim) / (nThreads * dblLog151));
             if (nLoops < 1) {nLoops = 1;}
-            std::vector<int64_t> vecSums(nLoops * nThreads, 0);
             int64_t myRange = (piSqrtx - strt) + 1;
             int64_t lower = strt;
             int64_t upper, chunk;
             
             if (x > divLim) {
                 double mult = std::exp(std::log(myRange) / (nThreads * nLoops));
-                chunk = static_cast<int64_t>(std::ceil(mult));
-                if (chunk < 1)
-                    Rcpp::stop("This should not happen!!");
+                double power = 0;
                 
+                while (std::pow(mult, power) < 100)
+                    ++power;
+                
+                --power;
+                std::vector<int64_t> vecSums((nLoops * nThreads) + power, 0);
+                
+                int64_t firstRange = static_cast<int64_t>(std::ceil(std::pow(mult, power))) - lower;
+                chunk = firstRange / nThreads;
                 upper = lower + chunk - 1;
+
+                std::vector<std::thread> firstThreads;
                 std::size_t ind = 0;
-                std::size_t limit = nThreads;
-    
-                for (std::size_t i = 0; i < (nLoops - 1); ++i,
-                     lower = upper - chunk, upper = lower + chunk - 1, limit += nThreads) {
-    
+
+                for (std::size_t i = 0; i < nThreads; lower = upper, upper += chunk, ++ind, ++i)
+                    firstThreads.emplace_back(phiSlave, lower, upper, x, std::ref(vecSums[ind]));
+                
+                for (auto &thr: firstThreads)
+                    thr.join();
+                
+                mult = std::exp(std::log(myRange) / (nThreads * nLoops + power));
+                chunk = static_cast<int64_t>(mult);
+                ++power;
+                
+                int64_t base = lower;
+                chunk = static_cast<int64_t>(std::pow(mult, power));
+                upper = base + chunk;
+
+                for (std::size_t i = 0; i < (nLoops - 1); ++i) {
+
                     std::vector<std::thread> myThreads;
-    
-                    for (; ind < limit; lower = upper, upper += chunk, ++ind) {
+
+                    for (std::size_t j = 0; j < nThreads; lower = upper, ++ind, ++j, 
+                         ++power, chunk = static_cast<int64_t>(std::pow(mult, power)), upper = chunk + base) {
+                        
                         myThreads.emplace_back(phiSlave, lower, upper, x, std::ref(vecSums[ind]));
-                        chunk = static_cast<int64_t>(mult * static_cast<double>(chunk));
                     }
-    
+
                     for (auto &thr: myThreads)
                         thr.join();
                 }
+
+                std::vector<std::thread> lastThreads;
+                std::size_t j = 0;
                 
-                --limit;
-                std::vector<std::thread> myThreads;
-                mult = std::exp(std::log((piSqrtx - upper) / 
-                    std::ceil(mult * static_cast<double>(chunk))) / nThreads);
-    
-                for (; ind < limit && upper < piSqrtx; lower = upper, upper += chunk, ++ind) {
-                    myThreads.emplace_back(phiSlave, lower, upper, x, std::ref(vecSums[ind]));
-                    chunk = static_cast<int64_t>(mult * static_cast<double>(chunk));
+                for (; j < (nThreads - 1) && upper < piSqrtx;  lower = upper, ++ind, ++j,
+                     ++power, chunk = static_cast<int64_t>(std::pow(mult, power)), upper = chunk + base) {
+                    
+                    lastThreads.emplace_back(phiSlave, lower, upper, x, std::ref(vecSums[ind]));
                 }
                 
-                myThreads.emplace_back(phiSlave, lower, piSqrtx, x, std::ref(vecSums[ind]));
-    
-                for (auto &thr: myThreads)
+                lastThreads.emplace_back(phiSlave, lower, piSqrtx, x, std::ref(vecSums[ind]));
+                
+                for (auto &thr: lastThreads)
                     thr.join();
+                
+                for (std::size_t i = 0; i < vecSums.size(); ++i)
+                    mySum += vecSums[i];
+                
             } else {
                 std::size_t ind = 0;
                 std::vector<std::thread> myThreads;
                 chunk = myRange / nThreads;
                 upper = lower + chunk - 1;
+                std::vector<int64_t> vecSums(nThreads, 0);
                 
                 for (; ind < (nThreads - 1); lower = upper, upper += chunk, ++ind)
                     myThreads.emplace_back(phiSlave, lower, upper, x, std::ref(vecSums[ind]));
@@ -264,10 +288,10 @@ namespace PrimeCounting {
                 
                 for (auto &thr: myThreads)
                     thr.join();
+                
+                for (std::size_t i = 0; i < nThreads; ++i)
+                    mySum += vecSums[i];
             }
-            
-            for (std::size_t i = 0; i < (nLoops * nThreads); ++i)
-                mySum += vecSums[i];
             
         } else {
             for (int64_t i = strt; i < piSqrtx; ++i)
@@ -281,10 +305,10 @@ namespace PrimeCounting {
     //  10^9 -->>          50,847,534   -->>   879.3 microseconds
     // 10^10 -->>         455,052,511   -->>   5.362 milliseconds
     // 10^11 -->>       4,118,054,813   -->>   25.92 milliseconds
-    // 10^12 -->>      37,607,912,018   -->>   136.6 milliseconds
-    // 10^13 -->>     346,065,536,839   -->>   951.6 milliseconds
-    // 10^14 -->>   3,204,941,750,802   -->>   7.555 seconds
-    // 10^15 -->>  29,844,570,422,669   -->>  55.850 seconds
+    // 10^12 -->>      37,607,912,018   -->>   126.5 milliseconds
+    // 10^13 -->>     346,065,536,839   -->>   902.2 milliseconds
+    // 10^14 -->>   3,204,941,750,802   -->>   7.108 seconds
+    // 10^15 -->>  29,844,570,422,669   -->>  53.703 seconds
     // MAX VALUE (2^53 - 1) -->> 
     //            252,252,704,148,404   -->> 393.117 seconds
     
