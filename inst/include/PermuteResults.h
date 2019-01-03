@@ -9,13 +9,16 @@ void PermuteGenRes(int n, int r, std::vector<typeVector> &v, bool repetition,
                    int numRows, std::vector<int> &z, unsigned long int count,
                    bool nonTrivial, typeMatrix &permuteMatrix, funcPtr<typeVector> myFun) {
     
-    unsigned long int uN = n, uR = r, uRowN = numRows;
-    unsigned long int lastElem = n - 1;
-    unsigned long int lastCol = r - 1, pentultimate = n - 2;
+    const unsigned long int uN = n;
+    const unsigned long int uR = r;
+    const unsigned long int uRowN = numRows;
+    const unsigned long int lastElem = n - 1;
+    const unsigned long int lastCol = r - 1;
+    const unsigned long int pentultimate = n - 2;
     std::vector<typeVector> vPass(uR);
     
     if (repetition) {
-        int lastElemInt = lastElem;
+        const int lastElemInt = lastElem;
         
         for (; count < uRowN; ++count) {
             for (std::size_t j = 0; j < uR; ++j) {
@@ -37,7 +40,7 @@ void PermuteGenRes(int n, int r, std::vector<typeVector> &v, bool repetition,
         
     } else if (nonTrivial) {
         
-        unsigned long int numR1 = numRows - 1;
+        const unsigned long int numR1 = numRows - 1;
         int *arrPerm = new int[uN];
 
         for (std::size_t i = 0; i < uN; ++i)
@@ -85,7 +88,7 @@ void PermuteGenRes(int n, int r, std::vector<typeVector> &v, bool repetition,
             int *arrPerm = new int[uN];
             
             for (std::size_t i = 0; i < uN; ++i)
-                arrPerm[i] = (int) i;
+                arrPerm[i] = static_cast<int>(i);
 
             if (r == n) {
                 for (std::size_t i = 0, k = 0; i < phaseOne; ++i) {
@@ -146,19 +149,21 @@ void MultisetPermRes(int n, int r, std::vector<typeVector> &v, int numRows,
                      unsigned long int count, std::vector<int> &z,
                      typeMatrix &permuteMatrix, funcPtr<typeVector> myFun) {
     
-    unsigned long int lenFreqs = z.size();
+    const unsigned long int lenFreqs = z.size();
     int *arrPerm = new int[lenFreqs];
     std::vector<typeVector> vPass(r);
     
-    unsigned long int uN = n, numR1 = numRows - 1;
-    unsigned long int uR = r, lastCol = r - 1;
-    unsigned long int lastElem = lenFreqs - 1;
+    const unsigned long int uR = r;
+    const unsigned long int uN = n;
+    const unsigned long int lastCol = r - 1;
+    const unsigned long int numR1 = numRows - 1;
+    const unsigned long int lastElem = lenFreqs - 1;
     
     for (std::size_t j = 0; j < lenFreqs; ++j)
         arrPerm[j] = z[j];
     
     if (uR == lenFreqs) {
-        unsigned long int pentultimate = lenFreqs - 2;
+        const unsigned long int pentultimate = lenFreqs - 2;
         
         for (; count < numR1; ++count) {
             for (std::size_t j = 0; j < uR; ++j) {

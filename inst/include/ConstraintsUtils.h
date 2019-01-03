@@ -2,7 +2,7 @@
 #define CONSTRAINTS_UTILS_H
 
 template <typename stdType>
-using funcPtr = stdType (*)(const std::vector<stdType> &v, unsigned long int &mySize);
+using funcPtr = stdType (*)(const std::vector<stdType> &v, const unsigned long int &mySize);
 
 template <typename stdType>
 using compPtr = bool (*)(const stdType &x, const std::vector<stdType> &y);
@@ -14,32 +14,32 @@ using compPtr = bool (*)(const stdType &x, const std::vector<stdType> &y);
 // this Rcpp Gallery (http://gallery.rcpp.org/articles/passing-cpp-function-pointers/)
 
 template <typename stdType>
-stdType prod(const std::vector<stdType> &v, unsigned long int &mySize) {
+stdType prod(const std::vector<stdType> &v, const unsigned long int &mySize) {
     stdType myProduct = 1;
     for (std::size_t i = 0; i < mySize; ++i) {myProduct *= v[i];}
     return (myProduct);
 }
 
 template <typename stdType>
-stdType sum(const std::vector<stdType> &v, unsigned long int &mySize) {
+stdType sum(const std::vector<stdType> &v, const unsigned long int &mySize) {
     stdType mySum = 0;
     for (std::size_t i = 0; i < mySize; ++i) {mySum += v[i];}
     return (mySum);
 }
 
 template <typename stdType>
-stdType mean(const std::vector<stdType> &v, unsigned long int &mySize) {
+stdType mean(const std::vector<stdType> &v, const unsigned long int &mySize) {
     double mySum = sum(v, mySize);
     return (mySum / mySize);
 }
 
 template <typename stdType>
-stdType max(const std::vector<stdType> &v, unsigned long int &mySize) {
+stdType max(const std::vector<stdType> &v, const unsigned long int &mySize) {
     return (*std::max_element(v.begin(), v.end()));
 }
 
 template <typename stdType>
-stdType min(const std::vector<stdType> &v, unsigned long int &mySize) {
+stdType min(const std::vector<stdType> &v, const unsigned long int &mySize) {
     return (*std::min_element(v.begin(), v.end()));
 }
 
@@ -114,7 +114,7 @@ Rcpp::XPtr<compPtr<stdType> > putCompPtrInXPtr(std::string fstr) {
     
     std::vector<std::string>::const_iterator it = std::find(compVec.begin(), 
                                                             compVec.end(), fstr);
-    int myIndex = std::distance(compVec.begin(), it);
+    const int myIndex = std::distance(compVec.begin(), it);
     
     switch(myIndex) {
         case LT:

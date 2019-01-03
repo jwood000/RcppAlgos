@@ -7,10 +7,12 @@ template <typename typeMatrix, typename typeVector>
 void ComboGeneral(int n, int r, typeVector &v, bool repetition, int count,
                   int numRows, std::vector<int> &z, typeMatrix &combinationMatrix) {
     
-    int r1 = r - 1, r2 = r - 2, numIter;
+    const int r1 = r - 1;
+    const int r2 = r - 2;
+    int numIter;
     
     if (repetition) {
-        int lastElement = n - 1;
+        const int lastElement = n - 1;
         
         while (count < numRows) {
             numIter = n - z[r1];
@@ -33,7 +35,7 @@ void ComboGeneral(int n, int r, typeVector &v, bool repetition, int count,
             }
         }
     } else {
-        int nMinusR = n - r;
+        const int nMinusR = n - r;
         
         while (count < numRows) {
             numIter = n - z[r1];
@@ -65,7 +67,8 @@ void MultisetCombination(int n, int r, typeVector &v, std::vector<int> &Reps,
     
     std::vector<int> zIndex(n), zGroup(r);
     int numIter, sizeFreqs = 0;
-    int r1 = r - 1, r2 = r - 2;
+    const int r1 = r - 1;
+    const int r2 = r - 2;
     
     for (int i = 0; i < n; ++i) {
         zIndex[i] = sizeFreqs;
@@ -106,12 +109,13 @@ template <typename typeVector>
 void ComboGeneralApplyFun(int n, int r, typeVector &v, bool repetition, int count,
                           int numRows, std::vector<int> &z, SEXP sexpFun, SEXP rho, SEXP &ans) {
     
-    int r1 = r - 1, r2 = r - 2;
+    const int r1 = r - 1;
+    const int r2 = r - 2;
     int numIter;
     typeVector vectorPass(r);
     
     if (repetition) {
-        int lastElement = n - 1;
+        const int lastElement = n - 1;
         
         while (count < numRows) {
             numIter = n - z[r1];
@@ -138,7 +142,7 @@ void ComboGeneralApplyFun(int n, int r, typeVector &v, bool repetition, int coun
             }
         }
     } else {
-        int nMinusR = n - r;
+        const int nMinusR = n - r;
         
         while (count < numRows) {
             numIter = n - z[r1];
@@ -174,7 +178,8 @@ void MultisetComboApplyFun(int n, int r, typeVector &v, std::vector<int> &Reps,
 
     int sizeFreqs = 0, numIter;
     std::vector<int> zIndex(n), zGroup(r);
-    int r1 = r - 1, r2 = r - 2;
+    const int r1 = r - 1;
+    const int r2 = r - 2;
     
     for (int i = 0; i < n; ++i) {
         zIndex[i] = sizeFreqs;
@@ -183,7 +188,7 @@ void MultisetComboApplyFun(int n, int r, typeVector &v, std::vector<int> &Reps,
     
     // location in freqs that represents the maximal
     // value of the second to the last element
-    int pentExtreme = sizeFreqs - r;
+    const int pentExtreme = sizeFreqs - r;
     typeVector vectorPass(r);
 
     while (count < numRows) {

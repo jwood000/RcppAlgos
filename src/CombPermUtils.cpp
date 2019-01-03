@@ -191,8 +191,8 @@ double MultisetPermRowNum(int n, int r, std::vector<int> &myReps) {
 
 // This algorithm is nearly identical to the
 // one found in the standard algorithm library
-void nextFullPerm(int *myArray, unsigned long int &n1,
-                  unsigned long int &n2) {
+void nextFullPerm(int *myArray, const unsigned long int &n1,
+                  const unsigned long int &n2) {
     
     unsigned long int p1 = n2, p2 = n1;
     int temp;
@@ -227,9 +227,9 @@ void nextFullPerm(int *myArray, unsigned long int &n1,
 // and swap them. We can then proceed to the next perm.
 // We can do this because the standard algo would end
 // up performing two unnecessary reversings.
-void nextPartialPerm(int *myArray, unsigned long int &r, 
-                     unsigned long int &r1, unsigned long int &n,
-                     unsigned long int &lastElem) {
+void nextPartialPerm(int *myArray, const unsigned long int &r, 
+                     const unsigned long int &r1, const unsigned long int &n,
+                     const unsigned long int &lastElem) {
     
     int temp;
     unsigned long int p1 = r1;

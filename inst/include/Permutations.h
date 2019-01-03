@@ -8,12 +8,16 @@ void PermuteGeneral(int n, int r, typeVector &v, bool repetition, int numRows,
                     std::vector<int> &z, int intCount, bool nonTrivial,
                     typeMatrix &permuteMatrix) {
     
-    unsigned long int uN = n, uR = r, uRowN = numRows;
-    unsigned long int lastElem = n - 1, count = intCount;
-    unsigned long int lastCol = r - 1, pentultimate = n - 2;
+    const unsigned long int uN = n;
+    const unsigned long int uR = r;
+    const unsigned long int uRowN = numRows;
+    const unsigned long int lastElem = n - 1;
+    const unsigned long int lastCol = r - 1;
+    const unsigned long int pentultimate = n - 2;
+    unsigned long int count = intCount;
     
     if (repetition) {
-        int lastElemInt = lastElem;
+        const int lastElemInt = lastElem;
         
         for (; count < uRowN; ++count) {
             for (std::size_t j = 0; j < uR; ++j)
@@ -31,7 +35,7 @@ void PermuteGeneral(int n, int r, typeVector &v, bool repetition, int numRows,
         
     } else if (nonTrivial) {
         
-        unsigned long int numR1 = numRows - 1;
+        const unsigned long int numR1 = numRows - 1;
         int *arrPerm = new int[uN];
 
         for (std::size_t i = 0; i < uN; ++i)
@@ -127,18 +131,22 @@ template <typename typeMatrix, typename typeVector>
 void MultisetPermutation(int n, int r, typeVector &v, int numRows, std::vector<int> &z,
                          int intCount, typeMatrix &permuteMatrix) {
     
-    unsigned long int lenFreqs = z.size();
+    const unsigned long int lenFreqs = z.size();
     int *arrPerm = new int[lenFreqs];
     
-    unsigned long int uN = n, numR1 = numRows - 1, lastCol = r - 1;
-    unsigned long int uR = r, count = intCount;
-    unsigned long int lastElem = lenFreqs - 1;
+    const unsigned long int uR = r;
+    const unsigned long int uN = n;
+    const unsigned long int numR1 = numRows - 1;
+    const unsigned long int lastCol = r - 1;
+    const unsigned long int lastElem = lenFreqs - 1;
+    
+    unsigned long int count = intCount;
     
     for (std::size_t j = 0; j < lenFreqs; ++j)
         arrPerm[j] = z[j];
     
     if (uR == lenFreqs) {
-        unsigned long int pentultimate = lenFreqs - 2;
+        const unsigned long int pentultimate = lenFreqs - 2;
         
         for (; count < numR1; ++count) {
             for (std::size_t j = 0; j < uR; ++j)
@@ -167,16 +175,18 @@ void PermutationApplyFun(int n, int r, typeVector &v, bool repetition,
                          int numRows, bool Multi, std::vector<int> &z,
                          int intCount, SEXP sexpFun, SEXP rho, SEXP &ans) {
     
-    unsigned long int uR = r, uN = n, count = intCount;
-    unsigned long int lenFreqs = (Multi) ? z.size() : 0;
+    const unsigned long int uR = r;
+    const unsigned long int uN = n;
+    const unsigned long int lenFreqs = (Multi) ? z.size() : 0;
     typeVector vectorPass(r);
     
-    unsigned long int numR1 = numRows - 1;
-    unsigned long int uRowN = numRows, lastCol = uR - 1;
-    unsigned long int lastElem = (Multi) ? (lenFreqs - 1) : (n - 1);
+    const unsigned long int numR1 = numRows - 1;
+    const unsigned long int uRowN = numRows, lastCol = uR - 1;
+    const unsigned long int lastElem = (Multi) ? (lenFreqs - 1) : (n - 1);
+    unsigned long int count = intCount;
     
     if (repetition) {
-        int lastElemInt = lastElem;
+        const int lastElemInt = lastElem;
         
         for (; count < uRowN; ++count) {
             for (std::size_t j = 0; j < uR; ++j)
@@ -195,14 +205,14 @@ void PermutationApplyFun(int n, int r, typeVector &v, bool repetition,
             }
         }
     } else {
-        unsigned long int arrLength = lastElem + 1;
+        const unsigned long int arrLength = lastElem + 1;
         int *arrPerm = new int[arrLength];
         
         for (std::size_t i = 0; i < arrLength; ++i)
             arrPerm[i] = z[i];
         
         if (uR == uN || uR == lenFreqs) {
-            unsigned long int pentultimate = lastElem - 1;
+            const unsigned long int pentultimate = lastElem - 1;
             
             for (; count < numR1; ++count) {
                 for (std::size_t j = 0; j < uR; ++j)
