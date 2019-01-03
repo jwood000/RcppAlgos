@@ -40,12 +40,12 @@ typeRcpp CombinatoricsConstraints(int n, int r, std::vector<typeVector> &v, bool
     //                             "<", "<=", ">", ">=", "==", ">,<", ">=,<", ">,<=", ">=,<=";
     
     typeVector testVal;
-    int i, j, count = 0, vSize = v.size(), numCols;
-    numCols = xtraCol ? (r + 1) : r;
+    int count = 0;
+    const int numCols = xtraCol ? (r + 1) : r;
     unsigned long int uR = r;
     typeRcpp combinatoricsMatrix = Rcpp::no_init_matrix(numRows, numCols);
     
-    Rcpp::XPtr<funcPtr<typeVector> > xpFun = putFunPtrInXPtr<typeVector>(myFun);
+    Rcpp::XPtr<funcPtr<typeVector>> xpFun = putFunPtrInXPtr<typeVector>(myFun);
     funcPtr<typeVector> constraintFun = *xpFun;
     
     // We first check if we are getting double precision.
@@ -97,8 +97,8 @@ typeRcpp CombinatoricsConstraints(int n, int r, std::vector<typeVector> &v, bool
     
         if (comparison[nC] == ">" || comparison[nC] == ">=") {
             if (isMult) {
-                for (i = 0; i < (n - 1); ++i) {
-                    for (j = (i + 1); j < n; ++j) {
+                for (int i = 0; i < (n - 1); ++i) {
+                    for (int j = (i + 1); j < n; ++j) {
                         if (v[i] < v[j]) {
                             std::swap(v[i], v[j]);
                             std::swap(Reps[i], Reps[j]);
@@ -111,8 +111,8 @@ typeRcpp CombinatoricsConstraints(int n, int r, std::vector<typeVector> &v, bool
             comparisonFunTwo = *xpCompOne;
         } else {
             if (isMult) {
-                for (i = 0; i < (n-1); ++i) {
-                    for (j = (i+1); j < n; ++j) {
+                for (int i = 0; i < (n-1); ++i) {
+                    for (int j = (i+1); j < n; ++j) {
                         if (v[i] > v[j]) {
                             std::swap(v[i], v[j]);
                             std::swap(Reps[i], Reps[j]);
@@ -128,7 +128,7 @@ typeRcpp CombinatoricsConstraints(int n, int r, std::vector<typeVector> &v, bool
                                                                         comparison[nC]);
             if (itComp != compSpecial.end()) {
                 int myIndex = std::distance(compSpecial.begin(), itComp);
-                Rcpp::XPtr<compPtr<typeVector> > xpCompThree = putCompPtrInXPtr<typeVector>(compHelper[myIndex]);
+                Rcpp::XPtr<compPtr<typeVector>> xpCompThree = putCompPtrInXPtr<typeVector>(compHelper[myIndex]);
                 comparisonFunTwo = *xpCompThree;
             } else {
                 comparisonFunTwo = *xpCompOne;
@@ -139,28 +139,30 @@ typeRcpp CombinatoricsConstraints(int n, int r, std::vector<typeVector> &v, bool
         std::vector<typeVector> testVec(r);
         bool t_1, t_2, t = true, keepGoing = true;
         int numIter, myStart, maxZ = n - 1;
-        int r1 = r - 1, r2 = r - 2, k = 0;
+        const int r1 = r - 1;
+        const int r2 = r - 2;
         
         if (isMult) {
             int zExpSize = 0;
             std::vector<int> zExpand, zIndex, zGroup(r);
             
-            for (i = 0; i < n; ++i)
+            for (int i = 0; i < n; ++i)
                 zExpSize += Reps[i];
             
-            for (i = 0; i < n; ++i) {
+            for (int i = 0, k = 0; i < n; ++i) {
                 zIndex.push_back(k);
-                for (j = 0; j < Reps[i]; ++j, ++k)
+                
+                for (int j = 0; j < Reps[i]; ++j, ++k)
                     zExpand.push_back(i);
             }
             
-            for (i = 0; i < r; ++i)
+            for (int i = 0; i < r; ++i)
                 z.push_back(zExpand[i]);
             
             while (keepGoing) {
                 
                 t_2 = true;
-                for (i = 0; i < r; ++i)
+                for (int i = 0; i < r; ++i)
                     testVec[i] = v[zExpand[zIndex[z[i]]]];
                 
                 testVal = constraintFun(testVec, uR);
@@ -175,20 +177,20 @@ typeRcpp CombinatoricsConstraints(int n, int r, std::vector<typeVector> &v, bool
                         myStart = count;
                         
                         if (isComb) {
-                            for (k = 0; k < r; ++k)
+                            for (int k = 0; k < r; ++k)
                                 combinatoricsMatrix(count, k) = v[zExpand[zIndex[z[k]]]];
                             
                             ++count;
                         } else {
-                            for (k = 0; k < r; ++k)
+                            for (int k = 0; k < r; ++k)
                                 zPerm[k] = zExpand[zIndex[z[k]]];
                             
-                            numIter = (int) NumPermsWithRep(zPerm);
+                            numIter = static_cast<int>(NumPermsWithRep(zPerm));
                             if ((numIter + count) > numRows)
                                 numIter = numRows - count;
                             
-                            for (i = 0; i < numIter; ++i, ++count) {
-                                for (k = 0; k < r; ++k)
+                            for (int i = 0; i < numIter; ++i, ++count) {
+                                for (int k = 0; k < r; ++k)
                                     combinatoricsMatrix(count, k) = v[zPerm[k]];
                                 
                                 std::next_permutation(zPerm.begin(), zPerm.end());
@@ -196,7 +198,7 @@ typeRcpp CombinatoricsConstraints(int n, int r, std::vector<typeVector> &v, bool
                         }
                         
                         if (xtraCol)
-                            for (i = myStart; i < count; ++i)
+                            for (int i = myStart; i < count; ++i)
                                 combinatoricsMatrix(i, r) = testVal;
                     }
                     
@@ -213,16 +215,18 @@ typeRcpp CombinatoricsConstraints(int n, int r, std::vector<typeVector> &v, bool
                 
                 if (keepGoing) {
                     zCheck = z;
-                    for (i = r2; i >= 0; --i) {
+                    for (int i = r2; i >= 0; --i) {
                         if (zExpand[zIndex[z[i]]] != zExpand[zExpSize - r + i]) {
                             ++z[i];
                             testVec[i] = v[zExpand[zIndex[z[i]]]];
                             zGroup[i] = zIndex[z[i]];
-                            for (k = (i+1); k < r; ++k) {
+                            
+                            for (int k = (i+1); k < r; ++k) {
                                 zGroup[k] = zGroup[k-1] + 1;
                                 z[k] = zExpand[zGroup[k]];
                                 testVec[k] = v[zExpand[zIndex[z[k]]]];
                             }
+                            
                             testVal = constraintFun(testVec, uR);
                             t = comparisonFunTwo(testVal, lim);
                             if (t) {break;}
@@ -240,14 +244,13 @@ typeRcpp CombinatoricsConstraints(int n, int r, std::vector<typeVector> &v, bool
         } else if (repetition) {
             
             v.erase(std::unique(v.begin(), v.end()), v.end());
-            vSize = v.size();
             z.assign(r, 0);
-            maxZ = vSize - 1;
+            maxZ = static_cast<int>(v.size()) - 1;
             
             while (keepGoing) {
                 
                 t_2 = true;
-                for (i = 0; i < r; ++i)
+                for (int i = 0; i < r; ++i)
                     testVec[i] = v[z[i]];
                 
                 testVal = constraintFun(testVec, uR);
@@ -262,19 +265,19 @@ typeRcpp CombinatoricsConstraints(int n, int r, std::vector<typeVector> &v, bool
                         myStart = count;
                         
                         if (isComb) {
-                            for (k = 0; k < r; ++k)
+                            for (int k = 0; k < r; ++k)
                                 combinatoricsMatrix(count, k) = v[z[k]];
                             
                             ++count;
                         } else {
                             zPerm = z;
                             
-                            numIter = (int) NumPermsWithRep(zPerm);
+                            numIter = static_cast<int>(NumPermsWithRep(zPerm));
                             if ((numIter + count) > numRows)
                                 numIter = numRows - count;
                             
-                            for (i = 0; i < numIter; ++i, ++count) {
-                                for (k = 0; k < r; ++k)
+                            for (int i = 0; i < numIter; ++i, ++count) {
+                                for (int k = 0; k < r; ++k)
                                     combinatoricsMatrix(count, k) = v[zPerm[k]];
                                 
                                 std::next_permutation(zPerm.begin(), zPerm.end());
@@ -282,7 +285,7 @@ typeRcpp CombinatoricsConstraints(int n, int r, std::vector<typeVector> &v, bool
                         }
                         
                         if (xtraCol)
-                            for (i = myStart; i < count; ++i)
+                            for (int i = myStart; i < count; ++i)
                                 combinatoricsMatrix(i, r) = testVal;
                         
                         keepGoing = (count < numRows);
@@ -300,14 +303,16 @@ typeRcpp CombinatoricsConstraints(int n, int r, std::vector<typeVector> &v, bool
                 
                 if (keepGoing) {
                     zCheck = z;
-                    for (i = r2; i >= 0; --i) {
+                    for (int i = r2; i >= 0; --i) {
                         if (z[i] != maxZ) {
                             ++z[i];
                             testVec[i] = v[z[i]];
-                            for (k = (i+1); k < r; ++k) {
+                            
+                            for (int k = (i+1); k < r; ++k) {
                                 z[k] = z[k-1];
                                 testVec[k] = v[z[k]];
                             }
+                            
                             testVal = constraintFun(testVec, uR);
                             t = comparisonFunTwo(testVal, lim);
                             if (t) {break;}
@@ -324,20 +329,20 @@ typeRcpp CombinatoricsConstraints(int n, int r, std::vector<typeVector> &v, bool
             
         } else {
             
-            for (i = 0; i < r; ++i)
+            for (int i = 0; i < r; ++i)
                 z.push_back(i);
             
-            int indexRows, nMinusR = (n - r), myRow;
-            indexRows = isComb ? 0 : (int) NumPermsNoRep(r, r1);
+            const int nMinusR = (n - r);
+            int indexRows = isComb ? 0 : static_cast<int>(NumPermsNoRep(r, r1));
             int *indexMatrix = new int[indexRows * r];
             
             if (!isComb) {
-                indexRows = (int) NumPermsNoRep(r, r1);
+                indexRows = static_cast<int>(NumPermsNoRep(r, r1));
                 std::vector<int> indexVec(r);
                 std::iota(indexVec.begin(), indexVec.end(), 0);
                 
-                for (i = 0, myRow = 0; i < indexRows; ++i, myRow += r) {
-                    for (j = 0; j < r; ++j)
+                for (int i = 0, myRow = 0; i < indexRows; ++i, myRow += r) {
+                    for (int j = 0; j < r; ++j)
                         indexMatrix[myRow + j] = indexVec[j];
                     
                     std::next_permutation(indexVec.begin(), indexVec.end());
@@ -347,7 +352,7 @@ typeRcpp CombinatoricsConstraints(int n, int r, std::vector<typeVector> &v, bool
             while (keepGoing) {
     
                 t_2 = true;
-                for (i = 0; i < r; ++i)
+                for (int i = 0; i < r; ++i)
                     testVec[i] = v[z[i]];
     
                 testVal = constraintFun(testVec, uR);
@@ -362,7 +367,7 @@ typeRcpp CombinatoricsConstraints(int n, int r, std::vector<typeVector> &v, bool
                         myStart = count;
                         
                         if (isComb) {
-                            for (k=0; k < r; ++k)
+                            for (int k = 0; k < r; ++k)
                                 combinatoricsMatrix(count, k) = v[z[k]];
     
                             ++count;
@@ -370,13 +375,13 @@ typeRcpp CombinatoricsConstraints(int n, int r, std::vector<typeVector> &v, bool
                             if (indexRows + count > numRows)
                                 indexRows = numRows - count;
     
-                            for (j = 0, myRow = 0; j < indexRows; ++j, ++count, myRow += r)
-                                for (k = 0; k < r; ++k)
+                            for (int j = 0, myRow = 0; j < indexRows; ++j, ++count, myRow += r)
+                                for (int k = 0; k < r; ++k)
                                     combinatoricsMatrix(count, k) = v[z[indexMatrix[myRow + k]]];
                         }
                         
                         if (xtraCol)
-                            for (i = myStart; i < count; ++i)
+                            for (int i = myStart; i < count; ++i)
                                 combinatoricsMatrix(i, r) = testVal;
                         
                         keepGoing = (count < numRows);
@@ -394,14 +399,16 @@ typeRcpp CombinatoricsConstraints(int n, int r, std::vector<typeVector> &v, bool
     
                 if (keepGoing) {
                     zCheck = z;
-                    for (i = r2; i >= 0; --i) {
+                    for (int i = r2; i >= 0; --i) {
                         if (z[i] != (nMinusR + i)) {
                             ++z[i];
                             testVec[i] = v[z[i]];
-                            for (k = (i+1); k < r; ++k) {
-                                z[k] = z[k-1]+1;
+                            
+                            for (int k = (i+1); k < r; ++k) {
+                                z[k] = z[k - 1] + 1;
                                 testVec[k] = v[z[k]];
                             }
+                            
                             testVal = constraintFun(testVec, uR);
                             t = comparisonFunTwo(testVal, lim);
                             if (t) {break;}
@@ -469,7 +476,7 @@ typeRcpp SpecCaseRet(int n, int m, std::vector<typeVector> v, bool IsRep, int nR
         if (computedRows > INT_MAX)
             Rcpp::stop("The number of rows cannot exceed 2^31 - 1.");
         
-        nRows = (int) computedRows;
+        nRows = static_cast<int>(computedRows);
     }
     
     std::vector<typeVector> rowVec(m);
@@ -477,7 +484,7 @@ typeRcpp SpecCaseRet(int n, int m, std::vector<typeVector> v, bool IsRep, int nR
     std::vector<int> indexMatch;
     indexMatch.reserve(nRows);
     
-    Rcpp::XPtr<funcPtr<typeVector> > xpFun = putFunPtrInXPtr<typeVector>(mainFun);
+    Rcpp::XPtr<funcPtr<typeVector>> xpFun = putFunPtrInXPtr<typeVector>(mainFun);
     funcPtr<typeVector> myFun = *xpFun;
     typeRcpp matRes = Rcpp::no_init_matrix(nRows, m + 1);
     typeVector testVal;
@@ -485,10 +492,10 @@ typeRcpp SpecCaseRet(int n, int m, std::vector<typeVector> v, bool IsRep, int nR
     GeneralReturn(n, m, v, IsRep, nRows, IsComb, myReps, freqs, 
                   z, permNonTriv, IsMultiset, myFun, true, matRes, v, 0);
     
-    Rcpp::XPtr<compPtr<typeVector> > xpComp = putCompPtrInXPtr<typeVector>(compFunVec[0]);
+    Rcpp::XPtr<compPtr<typeVector>> xpComp = putCompPtrInXPtr<typeVector>(compFunVec[0]);
     compPtr<typeVector> myComp = *xpComp;
     
-    Rcpp::XPtr<compPtr<typeVector> > xpComp2 = xpComp;
+    Rcpp::XPtr<compPtr<typeVector>> xpComp2 = xpComp;
     compPtr<typeVector> myComp2;
     
     if (compFunVec.size() == 1) {
@@ -514,9 +521,8 @@ typeRcpp SpecCaseRet(int n, int m, std::vector<typeVector> v, bool IsRep, int nR
         }
     }
     
-    int numCols = m;
-    if (keepRes) {++numCols;}
-    int numMatches = indexMatch.size();
+    const int numCols = (keepRes) ? (m + 1) : m;
+    const int numMatches = indexMatch.size();
     
     if (bLower)
         nRows = numMatches;
@@ -524,7 +530,7 @@ typeRcpp SpecCaseRet(int n, int m, std::vector<typeVector> v, bool IsRep, int nR
         nRows  = (numMatches > userRows) ? userRows : numMatches;
     
     typeRcpp returnMatrix = Rcpp::no_init_matrix(nRows, numCols);
-    int lastCol = keepRes ? (m + 1) : m;
+    const int lastCol = keepRes ? (m + 1) : m;
     
     for (int i = 0; i < nRows; ++i)
         for (int j = 0; j < lastCol; ++j)
@@ -564,7 +570,7 @@ bool checkIsInteger(std::string funPass, unsigned long int uM, int n,
     
     double vecMax = *std::max_element(vAbs.begin(), vAbs.end());
     for (std::size_t i = 0; i < uM; ++i)
-        rowVec[i] = (double) vecMax;
+        rowVec[i] = static_cast<double>(vecMax);
     
     double testIfInt = myFunDbl(rowVec, uM);
     if (testIfInt >= INT_MAX)
@@ -572,7 +578,7 @@ bool checkIsInteger(std::string funPass, unsigned long int uM, int n,
     
     if (checkLim) {
         vAbs.clear();
-        for (int i = 0; i < (int) myLim.size(); ++i)
+        for (std::size_t i = 0; i < myLim.size(); ++i)
             vAbs.push_back(std::abs(myLim[i]));
         
         double vecMax = *std::max_element(vAbs.begin(), vAbs.end());
@@ -583,10 +589,30 @@ bool checkIsInteger(std::string funPass, unsigned long int uM, int n,
     return true;
 }
 
+void getStartZ(int n, int m, double &lower, int stepSize, mpz_t &myIndex, bool IsRep,
+               bool IsComb, bool IsMultiset, bool isGmp, std::vector<int> &myReps,
+               std::vector<int> &freqsExpanded, std::vector<int> &startZ) {
+    
+    if (isGmp) {
+        mpz_add_ui(myIndex, myIndex, stepSize);
+        if (IsComb)
+            startZ = nthCombinationGmp(n, m, myIndex, IsRep, IsMultiset, myReps);
+        else
+            startZ = nthPermutationGmp(n, m, myIndex, IsRep, IsMultiset, myReps, freqsExpanded, true);
+    } else {
+        lower += stepSize;
+        if (IsComb)
+            startZ = nthCombination(n, m, lower, IsRep, IsMultiset, myReps);
+        else
+            startZ = nthPermutation(n, m, lower, IsRep, IsMultiset, myReps, freqsExpanded, true);
+    }
+}
+
 // [[Rcpp::export]]
-SEXP CombinatoricsRcpp(SEXP Rv, SEXP Rm, SEXP Rrepetition, SEXP RFreqs, SEXP Rlow, SEXP Rhigh,
-                       SEXP f1, SEXP f2, SEXP Rlim, bool IsComb, SEXP RKeepRes, bool IsFactor,
-                       bool IsCount, SEXP stdFun, SEXP myEnv, SEXP Rparallel) {
+SEXP CombinatoricsRcpp(SEXP Rv, SEXP Rm, SEXP Rrepetition, SEXP RFreqs, SEXP Rlow,
+                       SEXP Rhigh, SEXP f1, SEXP f2, SEXP Rlim, bool IsComb, 
+                       SEXP RKeepRes, bool IsFactor, bool IsCount, SEXP stdFun, 
+                       SEXP myEnv, SEXP Rparallel, SEXP RNumThreads, int maxThreads) {
     
     int n, m1, m2, m = 0, lenFreqs = 0, nRows = 0;
     bool IsRepetition, IsLogical, IsCharacter;
@@ -632,7 +658,7 @@ SEXP CombinatoricsRcpp(SEXP Rv, SEXP Rm, SEXP Rrepetition, SEXP RFreqs, SEXP Rlo
         IsRepetition = false;
         CleanConvert::convertVector(RFreqs, myReps, "freqs must be of type numeric or integer");
         
-        lenFreqs = (int) myReps.size();
+        lenFreqs = static_cast<int>(myReps.size());
         for (int i = 0; i < lenFreqs; ++i) {
             if (myReps[i] < 1) 
                 Rcpp::stop("each element in freqs must be a positive number");
@@ -665,7 +691,7 @@ SEXP CombinatoricsRcpp(SEXP Rv, SEXP Rm, SEXP Rrepetition, SEXP RFreqs, SEXP Rlo
         rcppChar = Rcpp::as<Rcpp::CharacterVector>(Rv);
         n = rcppChar.size();
     } else if (IsLogical) {
-        vInt = Rcpp::as<std::vector<int> >(Rv);
+        vInt = Rcpp::as<std::vector<int>>(Rv);
         n = vInt.size();
     } else {
         if (Rf_length(Rv) == 1) {
@@ -674,9 +700,9 @@ SEXP CombinatoricsRcpp(SEXP Rv, SEXP Rm, SEXP Rrepetition, SEXP RFreqs, SEXP Rlo
             if (seqEnd > 1) {m1 = 1; m2 = seqEnd;} else {m1 = seqEnd; m2 = 1;}
             Rcpp::IntegerVector vTemp = Rcpp::seq(m1, m2);
             IsInteger = true;
-            vNum = Rcpp::as<std::vector<double> >(vTemp);
+            vNum = Rcpp::as<std::vector<double>>(vTemp);
         } else {
-            vNum = Rcpp::as<std::vector<double> >(Rv);
+            vNum = Rcpp::as<std::vector<double>>(Rv);
         }
         
         n = vNum.size();
@@ -721,13 +747,13 @@ SEXP CombinatoricsRcpp(SEXP Rv, SEXP Rm, SEXP Rrepetition, SEXP RFreqs, SEXP Rlo
         if (n != lenFreqs)
             Rcpp::stop("the length of freqs must equal the length of v");
         
-        if (m > (int) freqsExpanded.size())
+        if (m > static_cast<int>(freqsExpanded.size()))
             m = freqsExpanded.size();
         
         if (IsComb) {
             computedRows = MultisetCombRowNum(n, m, myReps);
         } else {
-            if (Rf_isNull(Rm) || m == (int) freqsExpanded.size())
+            if (Rf_isNull(Rm) || m == static_cast<int>(freqsExpanded.size()))
                 computedRows = NumPermsWithRep(freqsExpanded);
             else
                 computedRows = MultisetPermRowNum(n, m, myReps);
@@ -759,7 +785,7 @@ SEXP CombinatoricsRcpp(SEXP Rv, SEXP Rm, SEXP Rrepetition, SEXP RFreqs, SEXP Rlo
             if (IsComb) {
                 MultisetCombRowNumGmp(computedRowMpz, n, m, myReps);
             } else {
-                if (Rf_isNull(Rm) || m == (int) freqsExpanded.size())
+                if (Rf_isNull(Rm) || m == static_cast<int>(freqsExpanded.size()))
                     NumPermsWithRepGmp(computedRowMpz, freqsExpanded);
                 else
                     MultisetPermRowNumGmp(computedRowMpz, n, m, myReps);
@@ -940,7 +966,7 @@ SEXP CombinatoricsRcpp(SEXP Rv, SEXP Rm, SEXP Rrepetition, SEXP RFreqs, SEXP Rlo
                 Rcpp::stop("The number of rows cannot exceed 2^31 - 1.");
             
             userNumRows = computedRows;
-            nRows = (int) computedRows;
+            nRows = static_cast<int>(computedRows);
         }
     } else if (userNumRows < 0) {
         Rcpp::stop("The number of rows must be positive. Either the lowerBound "
@@ -949,19 +975,30 @@ SEXP CombinatoricsRcpp(SEXP Rv, SEXP Rm, SEXP Rrepetition, SEXP RFreqs, SEXP Rlo
     } else if (userNumRows > INT_MAX) {
         Rcpp::stop("The number of rows cannot exceed 2^31 - 1.");
     } else {
-        nRows = (int) userNumRows;
+        nRows = static_cast<int>(userNumRows);
     }
     
     unsigned long int uM = m;
-    int numThreads;
+    int nThreads = 1;
     
     // Determined empirically. Setting up threads can be expensive,
     // so we set the cutoff below to ensure threads aren't spawned
-    // unnecessarily. We also protect users with fewer than 3 cores
-    if ((nRows < 20000) || (std::thread::hardware_concurrency() < 3))
+    // unnecessarily. We also protect users with fewer than 2 cores
+    if ((nRows < 20000) || (maxThreads < 2)) {
         Parallel = false;
-    else if (Parallel)
-        numThreads = std::thread::hardware_concurrency() - 1;
+    } else if (!Rf_isNull(RNumThreads)) {
+        int userThreads = 1;
+        if (!Rf_isNull(RNumThreads))
+            CleanConvert::convertPrimitive(RNumThreads, userThreads, "nThreads must be of type numeric or integer");
+            
+        if (userThreads > maxThreads) {userThreads = maxThreads;}
+        if (userThreads > 1) {
+            Parallel = true;
+            nThreads = userThreads;
+        }
+    } else if (Parallel) {
+        nThreads = (maxThreads > 2) ? (maxThreads - 1) : 2;
+    }
     
     if (IsConstrained) {
         std::vector<double> myLim;
@@ -984,7 +1021,7 @@ SEXP CombinatoricsRcpp(SEXP Rv, SEXP Rm, SEXP Rrepetition, SEXP RFreqs, SEXP Rlo
         }
 
         std::vector<std::string>::const_iterator itComp;
-        std::vector<std::string> compFunVec = Rcpp::as<std::vector<std::string> >(f2);
+        std::vector<std::string> compFunVec = Rcpp::as<std::vector<std::string>>(f2);
         
         if (compFunVec.size() > 2)
             Rcpp::stop("there cannot be more than 2 comparison operators");
@@ -1058,7 +1095,7 @@ SEXP CombinatoricsRcpp(SEXP Rv, SEXP Rm, SEXP Rrepetition, SEXP RFreqs, SEXP Rlo
             }
         }
         
-        Rcpp::XPtr<funcPtr<double> > xpFunDbl = putFunPtrInXPtr<double>(mainFun);
+        Rcpp::XPtr<funcPtr<double>> xpFunDbl = putFunPtrInXPtr<double>(mainFun);
         funcPtr<double> myFunDbl = *xpFunDbl;
         IsInteger = (IsInteger) && checkIsInteger(mainFun, uM, n, rowVec, vNum, myLim, myFunDbl, true);
         
@@ -1095,15 +1132,15 @@ SEXP CombinatoricsRcpp(SEXP Rv, SEXP Rm, SEXP Rrepetition, SEXP RFreqs, SEXP Rlo
             
             if (IsCharacter) {
                 ApplyFunction(n, m, rcppChar, IsRepetition, nRows, IsComb, myReps, 
-                              ans, freqsExpanded, startZ,IsMultiset, sexpFun, myEnv, 0);
+                              ans, freqsExpanded, startZ, IsMultiset, sexpFun, myEnv, 0);
             } else if (IsLogical || IsInteger) {
                 Rcpp::IntegerVector rcppVInt(vInt.begin(), vInt.end());
                 ApplyFunction(n, m, rcppVInt, IsRepetition, nRows, IsComb, myReps, 
-                              ans, freqsExpanded, startZ,IsMultiset, sexpFun, myEnv, 0);
+                              ans, freqsExpanded, startZ, IsMultiset, sexpFun, myEnv, 0);
             } else {
                 Rcpp::NumericVector rcppVNum(vNum.begin(), vNum.end());
                 ApplyFunction(n, m, rcppVNum, IsRepetition, nRows, IsComb, myReps, 
-                              ans, freqsExpanded, startZ,IsMultiset, sexpFun, myEnv, 0);
+                              ans, freqsExpanded, startZ, IsMultiset, sexpFun, myEnv, 0);
             }
             
             UNPROTECT(2);
@@ -1132,8 +1169,8 @@ SEXP CombinatoricsRcpp(SEXP Rv, SEXP Rm, SEXP Rrepetition, SEXP RFreqs, SEXP Rlo
                 Rcpp::stop("contraintFun must be one of the following: prod, sum, mean, max, or min");
             }
             
-            Rcpp::XPtr<funcPtr<double> > xpFunDbl = putFunPtrInXPtr<double>(mainFun);
-            Rcpp::XPtr<funcPtr<int> > xpFunInt = putFunPtrInXPtr<int>(mainFun);
+            Rcpp::XPtr<funcPtr<double>> xpFunDbl = putFunPtrInXPtr<double>(mainFun);
+            Rcpp::XPtr<funcPtr<int>> xpFunInt = putFunPtrInXPtr<int>(mainFun);
             myFunDbl = *xpFunDbl;
             myFunInt = *xpFunInt;
             
@@ -1144,35 +1181,24 @@ SEXP CombinatoricsRcpp(SEXP Rv, SEXP Rm, SEXP Rrepetition, SEXP RFreqs, SEXP Rlo
         if (Parallel) {
             permNonTrivial = true;
             std::vector<std::thread> myThreads;
-            int step = 0, stepSize = nRows / numThreads;
+            int step = 0, stepSize = nRows / nThreads;
             int nextStep = stepSize;
             
             if (IsLogical) {
                 Rcpp::LogicalMatrix matBool = Rcpp::no_init_matrix(nRows, nCol);
                 
-                for (std::size_t j = 0; j < (numThreads - 1); ++j) {
-                    myThreads.emplace_back(GeneralReturn<Rcpp::LogicalMatrix, int, std::vector<int> >,
+                for (std::size_t j = 0; j < (nThreads - 1); ++j) {
+                    myThreads.emplace_back(GeneralReturn<Rcpp::LogicalMatrix, int, std::vector<int>>,
                                            n, m, vInt, IsRepetition, nextStep, IsComb, myReps, freqsExpanded,
                                            startZ, permNonTrivial, IsMultiset, myFunInt, keepRes, std::ref(matBool), vInt, step);
                     step += stepSize;
                     nextStep += stepSize;
-                    
-                    if (isGmp) {
-                        mpz_add_ui(lowerMpz[0], lowerMpz[0], stepSize);
-                        if (IsComb)
-                            startZ = nthCombinationGmp(n, m, lowerMpz[0], IsRepetition, IsMultiset, myReps);
-                        else
-                            startZ = nthPermutationGmp(n, m, lowerMpz[0], IsRepetition, IsMultiset, myReps, freqsExpanded, true);
-                    } else {
-                        lower += stepSize;
-                        if (IsComb)
-                            startZ = nthCombination(n, m, lower, IsRepetition, IsMultiset, myReps);
-                        else
-                            startZ = nthPermutation(n, m, lower, IsRepetition, IsMultiset, myReps, freqsExpanded, true);
-                    }
+
+                    getStartZ(n, m, lower, stepSize, lowerMpz[0], IsRepetition, 
+                              IsComb, IsMultiset, isGmp, myReps, freqsExpanded, startZ);
                 }
 
-                myThreads.emplace_back(GeneralReturn<Rcpp::LogicalMatrix, int, std::vector<int> >,
+                myThreads.emplace_back(GeneralReturn<Rcpp::LogicalMatrix, int, std::vector<int>>,
                                        n, m, vInt, IsRepetition, nRows, IsComb, myReps, freqsExpanded, 
                                        startZ, permNonTrivial, IsMultiset, myFunInt, keepRes, std::ref(matBool), vInt, step);
                 
@@ -1180,35 +1206,23 @@ SEXP CombinatoricsRcpp(SEXP Rv, SEXP Rm, SEXP Rrepetition, SEXP RFreqs, SEXP Rlo
                     thr.join();
                 
                 return matBool;
+                
             } else if (IsFactor) {
                 Rcpp::IntegerMatrix factorMat = Rcpp::no_init_matrix(nRows, nCol);;
                 Rcpp::IntegerVector testFactor = Rcpp::as<Rcpp::IntegerVector>(Rv);
                 Rcpp::CharacterVector myClass = testFactor.attr("class");
                 Rcpp::CharacterVector myLevels = testFactor.attr("levels");
                 
-                for (std::size_t j = 0; j < (numThreads - 1); ++j) {
-                    myThreads.emplace_back(GeneralReturn<Rcpp::IntegerMatrix, int, std::vector<int> >,
+                for (std::size_t j = 0; j < (nThreads - 1); ++j, step += stepSize, nextStep += stepSize) {
+                    myThreads.emplace_back(GeneralReturn<Rcpp::IntegerMatrix, int, std::vector<int>>,
                                            n, m, vInt, IsRepetition, nextStep, IsComb, myReps, freqsExpanded, 
                                            startZ, permNonTrivial, IsMultiset, myFunInt, keepRes, std::ref(factorMat), vInt, step);
-                    step += stepSize;
-                    nextStep += stepSize;
-                    
-                    if (isGmp) {
-                        mpz_add_ui(lowerMpz[0], lowerMpz[0], stepSize);
-                        if (IsComb)
-                            startZ = nthCombinationGmp(n, m, lowerMpz[0], IsRepetition, IsMultiset, myReps);
-                        else
-                            startZ = nthPermutationGmp(n, m, lowerMpz[0], IsRepetition, IsMultiset, myReps, freqsExpanded, true);
-                    } else {
-                        lower += stepSize;
-                        if (IsComb)
-                            startZ = nthCombination(n, m, lower, IsRepetition, IsMultiset, myReps);
-                        else
-                            startZ = nthPermutation(n, m, lower, IsRepetition, IsMultiset, myReps, freqsExpanded, true);
-                    }
-                }
 
-                myThreads.emplace_back(GeneralReturn<Rcpp::IntegerMatrix, int, std::vector<int> >,
+                    getStartZ(n, m, lower, stepSize, lowerMpz[0], IsRepetition, 
+                               IsComb, IsMultiset, isGmp, myReps, freqsExpanded, startZ);
+                }
+                
+                myThreads.emplace_back(GeneralReturn<Rcpp::IntegerMatrix, int, std::vector<int>>,
                                        n, m, vInt, IsRepetition, nRows, IsComb, myReps, freqsExpanded, 
                                        startZ, permNonTrivial, IsMultiset, myFunInt, keepRes, std::ref(factorMat), vInt, step);
                 
@@ -1217,36 +1231,25 @@ SEXP CombinatoricsRcpp(SEXP Rv, SEXP Rm, SEXP Rrepetition, SEXP RFreqs, SEXP Rlo
                 
                 factorMat.attr("class") = myClass;
                 factorMat.attr("levels") = myLevels;
+                
                 return factorMat;
+                
             } else if (IsInteger) {
                 Rcpp::IntegerMatrix matInt = Rcpp::no_init_matrix(nRows, nCol);
 
-                for (std::size_t j = 0; j < (numThreads - 1); ++j) {
-                    myThreads.emplace_back(GeneralReturn<Rcpp::IntegerMatrix, int, std::vector<int> >,
-                                           n, m, vInt, IsRepetition, nextStep, IsComb, myReps, freqsExpanded, 
+                for (std::size_t j = 0; j < (nThreads - 1); ++j, step += stepSize, nextStep += stepSize) {
+                    myThreads.emplace_back(GeneralReturn<Rcpp::IntegerMatrix, int, std::vector<int>>,
+                                           n, m, vInt, IsRepetition, nextStep, IsComb, myReps, freqsExpanded,
                                            startZ, permNonTrivial, IsMultiset, myFunInt, keepRes, std::ref(matInt), vInt, step);
-                    step += stepSize;
-                    nextStep += stepSize;
-                    
-                    if (isGmp) {
-                        mpz_add_ui(lowerMpz[0], lowerMpz[0], stepSize);
-                        if (IsComb)
-                            startZ = nthCombinationGmp(n, m, lowerMpz[0], IsRepetition, IsMultiset, myReps);
-                        else
-                            startZ = nthPermutationGmp(n, m, lowerMpz[0], IsRepetition, IsMultiset, myReps, freqsExpanded, true);
-                    } else {
-                        lower += stepSize;
-                        if (IsComb)
-                            startZ = nthCombination(n, m, lower, IsRepetition, IsMultiset, myReps);
-                        else
-                            startZ = nthPermutation(n, m, lower, IsRepetition, IsMultiset, myReps, freqsExpanded, true);
-                    }
+
+                    getStartZ(n, m, lower, stepSize, lowerMpz[0], IsRepetition, 
+                              IsComb, IsMultiset, isGmp, myReps, freqsExpanded, startZ);
                 }
-                
-                myThreads.emplace_back(GeneralReturn<Rcpp::IntegerMatrix, int, std::vector<int> >,
-                                       n, m, vInt, IsRepetition, nRows, IsComb, myReps, freqsExpanded, 
+
+                myThreads.emplace_back(GeneralReturn<Rcpp::IntegerMatrix, int, std::vector<int>>,
+                                       n, m, vInt, IsRepetition, nRows, IsComb, myReps, freqsExpanded,
                                        startZ, permNonTrivial, IsMultiset, myFunInt, keepRes, std::ref(matInt), vInt, step);
-                
+
                 for (auto& thr: myThreads)
                     thr.join();
                 
@@ -1254,29 +1257,16 @@ SEXP CombinatoricsRcpp(SEXP Rv, SEXP Rm, SEXP Rrepetition, SEXP RFreqs, SEXP Rlo
             } else {
                 Rcpp::NumericMatrix matNum = Rcpp::no_init_matrix(nRows, nCol);
                 
-                for (std::size_t j = 0; j < (numThreads - 1); ++j) {
-                    myThreads.emplace_back(GeneralReturn<Rcpp::NumericMatrix, double, std::vector<double> >,
+                for (std::size_t j = 0; j < (nThreads - 1); ++j, step += stepSize, nextStep += stepSize) {
+                    myThreads.emplace_back(GeneralReturn<Rcpp::NumericMatrix, double, std::vector<double>>,
                                            n, m, vNum, IsRepetition, nextStep, IsComb, myReps, freqsExpanded, 
                                            startZ, permNonTrivial, IsMultiset, myFunDbl, keepRes, std::ref(matNum), vNum, step);
-                    step += stepSize;
-                    nextStep += stepSize;
                     
-                    if (isGmp) {
-                        mpz_add_ui(lowerMpz[0], lowerMpz[0], stepSize);
-                        if (IsComb)
-                            startZ = nthCombinationGmp(n, m, lowerMpz[0], IsRepetition, IsMultiset, myReps);
-                        else
-                            startZ = nthPermutationGmp(n, m, lowerMpz[0], IsRepetition, IsMultiset, myReps, freqsExpanded, true);
-                    } else {
-                        lower += stepSize;
-                        if (IsComb)
-                            startZ = nthCombination(n, m, lower, IsRepetition, IsMultiset, myReps);
-                        else
-                            startZ = nthPermutation(n, m, lower, IsRepetition, IsMultiset, myReps, freqsExpanded, true);
-                    }
+                    getStartZ(n, m, lower, stepSize, lowerMpz[0], IsRepetition, 
+                              IsComb, IsMultiset, isGmp, myReps, freqsExpanded, startZ);
                 }
 
-                myThreads.emplace_back(GeneralReturn<Rcpp::NumericMatrix, double, std::vector<double> >,
+                myThreads.emplace_back(GeneralReturn<Rcpp::NumericMatrix, double, std::vector<double>>,
                                        n, m, vNum, IsRepetition, nRows, IsComb, myReps, freqsExpanded, 
                                        startZ, permNonTrivial, IsMultiset, myFunDbl, keepRes, std::ref(matNum), vNum, step);
                 
@@ -1291,11 +1281,13 @@ SEXP CombinatoricsRcpp(SEXP Rv, SEXP Rm, SEXP Rrepetition, SEXP RFreqs, SEXP Rlo
                 GeneralReturn(n, m, vNum, IsRepetition, nRows, IsComb, myReps, freqsExpanded, 
                               startZ, permNonTrivial, IsMultiset, myFunDbl, keepRes, matChar, rcppChar, 0);
                 return matChar;
+                
             } else if (IsLogical) {
                 Rcpp::LogicalMatrix matBool = Rcpp::no_init_matrix(nRows, nCol);
                 GeneralReturn(n, m, vInt, IsRepetition, nRows, IsComb, myReps, freqsExpanded, 
                               startZ, permNonTrivial, IsMultiset, myFunInt, keepRes, matBool, vInt, 0);
                 return matBool;
+                
             } else if (IsFactor) {
                 Rcpp::IntegerMatrix factorMat = Rcpp::no_init_matrix(nRows, nCol);;
                 Rcpp::IntegerVector testFactor = Rcpp::as<Rcpp::IntegerVector>(Rv);
@@ -1307,7 +1299,9 @@ SEXP CombinatoricsRcpp(SEXP Rv, SEXP Rm, SEXP Rrepetition, SEXP RFreqs, SEXP Rlo
 
                 factorMat.attr("class") = myClass;
                 factorMat.attr("levels") = myLevels;
+                
                 return factorMat;
+                
             } else if (IsInteger) {
                 Rcpp::IntegerMatrix matInt = Rcpp::no_init_matrix(nRows, nCol);
                 GeneralReturn(n, m, vInt, IsRepetition, nRows, IsComb, myReps, freqsExpanded, 
