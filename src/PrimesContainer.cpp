@@ -199,40 +199,39 @@ namespace PrimeCounting {
         int64_t mySum = phiTinyCalc(x, strt) + piSqrtx - a;
         
         if (Parallel) {
-            const double divLim = 10000000000.0; // 1e10
+            const double divLim = 10000000000.0;    //  1e10
             const double dblLog15 = std::log(1.5);
             
             // We know x, t, and we need to solve for n.
             // x / (1.5^t)^n < 1e10 -->>> 1e10 * (1.5^t)^n = x --->>> x / 1e10 = (1.5^t)^n
             // log(x / 1e10) = n * log(1.5^t) --->> log(x / 1e10) / log(1.5^t) :
             //                 log(x / 1e10) / (t * log(1.5))
-            unsigned long int nLoops = 1 + std::ceil(std::log(x / divLim) / (nThreads * dblLog15));
-            if (nLoops < 1) {nLoops = 1;}
             int64_t myRange = (piSqrtx - strt) + 1;
             int64_t lower = strt;
             int64_t upper, chunk;
+            std::size_t ind = 0;
             
             if (x > divLim) {
-                double mult = std::exp(std::log(myRange) / (nThreads * nLoops));
+                unsigned long int nLoops = 1 + std::ceil(std::log(x / divLim) / (nThreads * dblLog15));
+                const double multOne = std::exp(std::log(myRange) / (nThreads * nLoops));
                 double power = 0;
                 
                 //*********************** Begin of firstThreads *****************************
-                // Typically, the size of mult will be very small resulting in not very
+                // Typically, the size of multOne will be very small resulting in not very
                 // meaningful chunk sizes in the first few loops. Because of this, we 
                 // gurantee that each of the first threads will have at least 10 iterations
                 
-                while (std::pow(mult, power) < (nThreads * 10))
+                while (std::pow(multOne, power) < (nThreads * 10))
                     ++power;
                 
-                std::vector<int64_t> vecSums((nLoops * nThreads) + power, 0);
-                int64_t firstRange = static_cast<int64_t>(std::ceil(std::pow(mult, power))) - lower;
+                std::vector<int64_t> vecSums((nLoops * nThreads) + (power + 2), 0);
+                int64_t firstRange = static_cast<int64_t>(std::ceil(std::pow(multOne, power))) - lower;
                 chunk = firstRange / nThreads;
                 upper = lower + chunk - 1;
 
                 std::vector<std::thread> firstThreads;
-                std::size_t ind = 0;
 
-                for (std::size_t i = 0; i < nThreads; lower = upper, upper += chunk, ++ind, ++i)
+                for (std::size_t j = 0; j < nThreads; lower = upper, upper += chunk, ++ind, ++j)
                     firstThreads.emplace_back(phiSlave, lower, upper, x, std::ref(vecSums[ind]));
                 
                 for (auto &thr: firstThreads)
@@ -242,21 +241,21 @@ namespace PrimeCounting {
                 //*************************************************************************
                 //*********************** Begin of midThreads *****************************
                 
-                mult = std::exp(std::log(myRange) / (nThreads * nLoops + power));
-                chunk = static_cast<int64_t>(mult);
+                const double multTwo = std::exp(std::log(myRange) / ((nThreads * nLoops) + power));
+                chunk = static_cast<int64_t>(multTwo);
                 ++power;
                 
                 int64_t base = lower;
-                chunk = static_cast<int64_t>(std::pow(mult, power));
+                chunk = static_cast<int64_t>(std::pow(multTwo, power));
                 upper = base + chunk;
 
                 for (std::size_t i = 0; i < (nLoops - 1); ++i) {
                     std::vector<std::thread> midThreads;
 
                     for (std::size_t j = 0; j < nThreads; lower = upper, ++ind, ++j, 
-                         ++power, chunk = static_cast<int64_t>(std::pow(mult, power)), upper = chunk + base)
+                         ++power, chunk = static_cast<int64_t>(std::pow(multTwo, power)), upper = chunk + base)
                         midThreads.emplace_back(phiSlave, lower, upper, x, std::ref(vecSums[ind]));
-
+                    
                     for (auto &thr: midThreads)
                         thr.join();
                 }
@@ -265,7 +264,7 @@ namespace PrimeCounting {
                 std::size_t j = 0;
                 
                 for (; j < (nThreads - 1) && upper < piSqrtx;  lower = upper, ++ind, ++j,
-                     ++power, chunk = static_cast<int64_t>(std::pow(mult, power)), upper = chunk + base)
+                     ++power, chunk = static_cast<int64_t>(std::pow(multTwo, power)), upper = chunk + base)
                     lastThreads.emplace_back(phiSlave, lower, upper, x, std::ref(vecSums[ind]));
                 
                 lastThreads.emplace_back(phiSlave, lower, piSqrtx, x, std::ref(vecSums[ind]));
@@ -277,7 +276,6 @@ namespace PrimeCounting {
                     mySum += vecSums[i];
                 
             } else {
-                std::size_t ind = 0;
                 std::vector<std::thread> myThreads;
                 chunk = myRange / nThreads;
                 upper = lower + chunk - 1;
@@ -305,7 +303,7 @@ namespace PrimeCounting {
     //  10^9 -->>          50,847,534   -->>   879.3 microseconds
     // 10^10 -->>         455,052,511   -->>   5.362 milliseconds
     // 10^11 -->>       4,118,054,813   -->>   21.45 milliseconds
-    // 10^12 -->>      37,607,912,018   -->>   120.0 milliseconds
+    // 10^12 -->>      37,607,912,018   -->>   119.4 milliseconds
     // 10^13 -->>     346,065,536,839   -->>   890.0 milliseconds
     // 10^14 -->>   3,204,941,750,802   -->>   7.108 seconds
     // 10^15 -->>  29,844,570,422,669   -->>  53.703 seconds
