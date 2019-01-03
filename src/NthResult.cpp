@@ -11,12 +11,12 @@ std::vector<int> nonZeroVec(std::vector<int> v) {
     return nonZero;
 }
 
-std::vector<int> nthPermutation(int n, int r, double myIndex, bool isRep, bool isMult,
-                                std::vector<int> Reps, std::vector<int> freqs, bool isStarter = false) {
+std::vector<int> nthPermutation(const int n, const int r, double myIndex, bool isRep, 
+                                bool isMult, std::vector<int> Reps, std::vector<int> freqs,
+                                bool isStarter = false) {
     
-    int j = 0, n1 = n;
     double temp, index1 = myIndex;
-    std::vector<int> res(r);
+    std::vector<int> res(r); 
     
     if (isMult) {
         
@@ -27,7 +27,7 @@ std::vector<int> nthPermutation(int n, int r, double myIndex, bool isRep, bool i
         
         for (int k = 0; k < r; ++k, --r1) {
             
-            j = 0;
+            int j = 0;
             while (Reps[j] == 0)
                 ++j;
             
@@ -72,18 +72,19 @@ std::vector<int> nthPermutation(int n, int r, double myIndex, bool isRep, bool i
         
         for (int k = 0; k < r; ++k) {
             temp /= n;
-            j = (int) std::trunc(index1 / temp);
+            int j = static_cast<int>(index1 / temp);
             res[k] = j;
             index1 -= (temp * j);
         }
+        
     } else {
         temp = NumPermsNoRep(n, r);
         std::vector<int> indexVec(n);
         std::iota(indexVec.begin(), indexVec.end(), 0);
         
-        for (int k = 0; k < r; ++k, --n1) {
+        for (int k = 0, n1 = n; k < r; ++k, --n1) {
             temp /= n1;
-            j = (int) std::trunc(index1 / temp);
+            int j = static_cast<int>(index1 / temp);
             res[k] = indexVec[j];
             index1 -= (temp * j);
             indexVec.erase(indexVec.begin() + j);
@@ -109,13 +110,15 @@ std::vector<int> nthPermutation(int n, int r, double myIndex, bool isRep, bool i
     return res;
 }
 
-std::vector<int> nthCombination(int n, int r, double myIndex, bool isRep,
+std::vector<int> nthCombination(const int n, const int r, double myIndex, bool isRep, 
                                 bool isMult, std::vector<int> Reps) {
     
-    int j = 0, n1 = n, r1 = r - 1, rTemp;
+    int j = 0;
+    int n1 = n;
+    int r1 = r - 1;
     double test, temp, index1 = myIndex, index2 = myIndex;
-    std::vector<int> res(r);
     unsigned long int uR = r;
+    std::vector<int> res(uR);
     
     if (isMult) {
         std::vector<int> Counts = Reps;
@@ -134,7 +137,7 @@ std::vector<int> nthCombination(int n, int r, double myIndex, bool isRep,
                 index2 -= temp;
                 Reps[j] = 0;
                 
-                if ((int) Counts.size() == (n - j)) {
+                if (static_cast<int>(Counts.size()) == (n - j)) {
                     --n1;
                     Counts.erase(Counts.begin());
                 }
@@ -161,7 +164,8 @@ std::vector<int> nthCombination(int n, int r, double myIndex, bool isRep,
         
         for (std::size_t k = 0; k < uR; ++k, --r1) {
             temp = test = NumCombsWithRep(n1, r1);
-            rTemp = n1 - 1;
+            int rTemp = n1 - 1;
+            
             while (test <= index1) {
                 index2 -= temp;
                 temp *= rTemp;
@@ -181,7 +185,8 @@ std::vector<int> nthCombination(int n, int r, double myIndex, bool isRep,
         
         for (std::size_t k = 0; k < uR; ++k, --n1, --r1, ++j) {
             temp = test = nChooseK(n1, r1);
-            rTemp = n1 - r1;
+            int rTemp = n1 - r1;
+            
             while (test <= index1) {
                 index2 -= temp;
                 temp *= rTemp;
@@ -199,9 +204,10 @@ std::vector<int> nthCombination(int n, int r, double myIndex, bool isRep,
     return res;
 }
 
-std::vector<int> nthPermutationGmp(int n, int r, mpz_t myIndex, bool isRep, bool isMult,
-                                   std::vector<int> Reps, std::vector<int> freqs, bool isStarter = false) {
-    int j = 0, n1 = n;
+std::vector<int> nthPermutationGmp(const int n, const int r, mpz_t myIndex, bool isRep, bool isMult,
+                                   std::vector<int> Reps, std::vector<int> freqs,
+                                   bool isStarter = false) {
+    
     mpz_t temp, temp2, index1;
     mpz_init(temp); mpz_init(temp2); mpz_init(index1);
     mpz_set(index1, myIndex);
@@ -218,13 +224,13 @@ std::vector<int> nthPermutationGmp(int n, int r, mpz_t myIndex, bool isRep, bool
         
         for (int k = 0; k < r; ++k, --r1) {
             
-            j = 0;
+            int j = 0;
             while (Reps[j] == 0)
                 ++j;
             
             --Reps[j];
             Counts = nonZeroVec(Reps);
-            MultisetPermRowNumGmp(temp, (int) Counts.size(), r1, Counts);
+            MultisetPermRowNumGmp(temp, static_cast<int>(Counts.size()), r1, Counts);
             mpz_set(test, temp);
             
             while (mpz_cmp(test, index1) < 0) {
@@ -238,7 +244,7 @@ std::vector<int> nthPermutationGmp(int n, int r, mpz_t myIndex, bool isRep, bool
                 --Reps[j];
                 
                 Counts = nonZeroVec(Reps);
-                MultisetPermRowNumGmp(temp, (int) Counts.size(), r1, Counts);
+                MultisetPermRowNumGmp(temp, static_cast<int>(Counts.size()), r1, Counts);
                 mpz_add(test, test, temp);
             }
             
@@ -268,20 +274,21 @@ std::vector<int> nthPermutationGmp(int n, int r, mpz_t myIndex, bool isRep, bool
         for (int k = 0; k < r; ++k) {
             mpz_divexact_ui(temp, temp, n);
             mpz_tdiv_q(temp2, index1, temp);
-            j = mpz_get_si(temp2);
+            int j = mpz_get_si(temp2);
             res[k] = j;
             mpz_submul_ui(index1, temp, j);
         }
+        
     } else {
         mpz_set_ui(temp, 1);
         NumPermsNoRepGmp(temp, n, r);
         std::vector<int> indexVec(n);
         std::iota(indexVec.begin(), indexVec.end(), 0);
         
-        for (int k = 0; k < r; ++k, --n1) {
+        for (int k = 0, n1 = n; k < r; ++k, --n1) {
             mpz_divexact_ui(temp, temp, n1);
             mpz_tdiv_q(temp2, index1, temp);
-            j = mpz_get_si(temp2);
+            int j = mpz_get_si(temp2);
             res[k] = indexVec[j];
             mpz_submul_ui(index1, temp, j);
             indexVec.erase(indexVec.begin() + j);
@@ -308,18 +315,20 @@ std::vector<int> nthPermutationGmp(int n, int r, mpz_t myIndex, bool isRep, bool
     return res;
 }
 
-std::vector<int> nthCombinationGmp(int n, int r, mpz_t myIndex, bool isRep,
+std::vector<int> nthCombinationGmp(const int n, const int r, mpz_t myIndex, bool isRep,
                                    bool isMult, std::vector<int> Reps) {
     
-    int j = 0, n1 = n, r1 = r - 1, rTemp;
+    int r1 = r - 1;
+    int n1 = n;
+    int j = 0;
     mpz_t test, temp, index1, index2;
     mpz_init(test); mpz_init(temp);
     mpz_init(index1); mpz_init(index2);
     mpz_set(index1, myIndex);
     mpz_set(index2, myIndex);
     
-    std::vector<int> res(r);
-    unsigned long int uR = r;
+    const unsigned long int uR = r;
+    std::vector<int> res(uR);
     
     if (isMult) {
         
@@ -340,7 +349,7 @@ std::vector<int> nthCombinationGmp(int n, int r, mpz_t myIndex, bool isRep,
                 mpz_sub(index2, index2, temp);
                 Reps[j] = 0;
                 
-                if ((int) Counts.size() == (n - j)) {
+                if (static_cast<int>(Counts.size()) == (n - j)) {
                     --n1;
                     Counts.erase(Counts.begin());
                 }
@@ -369,7 +378,7 @@ std::vector<int> nthCombinationGmp(int n, int r, mpz_t myIndex, bool isRep,
         for (std::size_t k = 0; k < uR; ++k, --r1) {
             NumCombsWithRepGmp(temp, n1, r1);
             mpz_set(test, temp);
-            rTemp = n1 - 1;
+            int rTemp = n1 - 1;
             
             while (mpz_cmp(test, index1) <= 0) {
                 mpz_sub(index2, index2, temp);
@@ -391,7 +400,7 @@ std::vector<int> nthCombinationGmp(int n, int r, mpz_t myIndex, bool isRep,
         for (std::size_t k = 0; k < uR; ++k, --n1, --r1, ++j) {
             nChooseKGmp(temp, n1, r1);
             mpz_set(test, temp);
-            rTemp = n1 - r1;
+            int rTemp = n1 - r1;
             
             while (mpz_cmp(test, index1) <= 0) {
                 mpz_sub(index2, index2, temp);
@@ -410,6 +419,5 @@ std::vector<int> nthCombinationGmp(int n, int r, mpz_t myIndex, bool isRep,
     
     mpz_clear(index1); mpz_clear(index2);
     mpz_clear(temp); mpz_clear(test);
-    
     return res;
 }

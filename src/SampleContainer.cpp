@@ -16,15 +16,15 @@ static int seed_init = 0;
 const double sampleLimit = 4500000000000000.0;
 
 template <typename typeRcpp, typename typeVector>
-void SampleResults(typeVector v, unsigned long int m, bool IsRep, std::vector<int> myReps,
-                   unsigned long int s, unsigned long int n, bool IsGmp, bool IsComb,
-                   std::vector<double> mySample, mpz_t myBigSamp[], typeRcpp sampleMatrix) {
+void SampleResults(const typeVector v, const unsigned long int m, bool IsRep, const std::vector<int> myReps,
+                   const unsigned long int s, const unsigned long int n, bool IsGmp, bool IsComb,
+                   const std::vector<double> mySample, mpz_t myBigSamp[], typeRcpp sampleMatrix) {
 
-    int lenV = v.size();
+    const int lenV = v.size();
     std::vector<int> z(m);
     bool IsMult = false;
     
-    if ((int) myReps.size() == lenV)
+    if (static_cast<int>(myReps.size()) == lenV)
         IsMult = true;
     
     if (IsGmp) {
@@ -50,7 +50,7 @@ void SampleResults(typeVector v, unsigned long int m, bool IsRep, std::vector<in
             }
         } else {
             for (std::size_t i = s; i < n; ++i) {
-                z = nthPermutation(lenV, m, mySample[i] - 1, IsRep, IsMult, myReps, myReps);
+                 z = nthPermutation(lenV, m, mySample[i] - 1, IsRep, IsMult, myReps, myReps);
                 for (std::size_t j = 0; j < m; ++j)
                     sampleMatrix(i, j) = v[z[j]];
             }
@@ -59,18 +59,18 @@ void SampleResults(typeVector v, unsigned long int m, bool IsRep, std::vector<in
 }
 
 template <typename typeVector>
-SEXP SampleApplyFun(typeVector &v, unsigned long int m, bool IsRep, bool IsGmp,
-                    std::vector<int> myReps, unsigned long int n, bool IsComb,
-                    std::vector<double> &mySample, mpz_t myBigSamp[], SEXP func, SEXP rho) {
+SEXP SampleApplyFun(const typeVector &v, const unsigned long int m, bool IsRep, bool IsGmp,
+                    const std::vector<int> myReps, const unsigned long int n, bool IsComb,
+                    const std::vector<double> &mySample, mpz_t myBigSamp[], SEXP func, SEXP rho) {
 
-    int lenV = v.size();
+    const int lenV = v.size();
     std::vector<int> z(m);
     bool IsMult = false;
     SEXP ans = PROTECT(Rf_allocVector(VECSXP, n));
     SEXP sexpFun = PROTECT(Rf_lang2(func, R_NilValue));
     typeVector vectorPass(m);
     
-    if ((int) myReps.size() == lenV)
+    if (static_cast<int>(myReps.size()) == lenV)
         IsMult = true;
     
     if (IsGmp) {
@@ -122,7 +122,8 @@ SEXP SampleApplyFun(typeVector &v, unsigned long int m, bool IsRep, bool IsGmp,
 // [[Rcpp::export]]
 SEXP SampleRcpp(SEXP Rv, SEXP Rm, SEXP Rrepetition, SEXP RFreqs, SEXP RindexVec,
                 bool IsComb, bool IsFactor, SEXP RmySeed, SEXP RNumSamp, 
-                Rcpp::Function baseSample, SEXP stdFun, SEXP myEnv, SEXP Rparallel) {
+                Rcpp::Function baseSample, SEXP stdFun, SEXP myEnv, 
+                SEXP Rparallel, SEXP RNumThreads, int maxThreads) {
     
     int n, m1, m2, m = 0, lenFreqs = 0;
     bool IsRepetition, IsLogical, Parallel;
@@ -419,6 +420,28 @@ SEXP SampleRcpp(SEXP Rv, SEXP Rm, SEXP Rrepetition, SEXP RFreqs, SEXP RindexVec,
     // We also protect users with fewer than 3 cores
     if ((sampSize < 2) || (std::thread::hardware_concurrency() < 3))
         Parallel = false;
+    
+    int nThreads = 1;
+    
+    // Determined empirically. Setting up threads can be expensive,
+    // so we set the cutoff below to ensure threads aren't spawned
+    // unnecessarily. We also protect users with fewer than 2 cores
+    if ((sampSize < 2) || (maxThreads < 2)) {
+        Parallel = false;
+    } else if (!Rf_isNull(RNumThreads)) {
+        int userThreads = 1;
+        if (!Rf_isNull(RNumThreads))
+            CleanConvert::convertPrimitive(RNumThreads, userThreads, "nThreads must be of type numeric or integer");
+        
+        if (userThreads > maxThreads) {userThreads = maxThreads;}
+        if (userThreads > 1) {
+            Parallel = true;
+            nThreads = userThreads;
+            if (nThreads > sampSize) {nThreads = sampSize;}
+        }
+    } else if (Parallel) {
+        nThreads = (maxThreads > 2) ? (maxThreads - 1) : 2;
+    }
     
     if (applyFun) {
         if (!Rf_isFunction(stdFun))
