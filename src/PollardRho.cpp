@@ -2,8 +2,12 @@
 #include <cmath>
 #include <thread>
 #include "PrimesPolRho.h"
-#include "GetFacsUtils.h"
 #include "CleanConvert.h"
+
+// forward declare getPrimeFactors as isPrime needs it and
+// PollardRho (which is called by getPrimeFactors) calls isPrime
+template <typename typeReturn>
+void getPrimeFactors (int64_t &t, std::vector<typeReturn> &factors);
 
 /* Prove primality or run probabilistic tests.  */
 int FlagProvePrimality = 1;
@@ -156,7 +160,7 @@ int IsPrime(int64_t n) {
     if (FlagProvePrimality) {
         /* Factor n-1 for Lucas.  */
         tmp = nm1;
-        getPrimefactors(tmp, factors);
+        getPrimeFactors(tmp, factors);
     }
 
     /* Loop until Lucas proves our number prime, or Miller-Rabin proves our
@@ -258,7 +262,7 @@ void PollardRho(int64_t n, int64_t a,
 }
 
 template <typename typeReturn>
-void getPrimefactors(int64_t& t, std::vector<typeReturn>& factors) {
+void getPrimeFactors(int64_t& t, std::vector<typeReturn>& factors) {
     FactorTrialDivision(t, factors);
     
     if (t > 1) {
@@ -287,7 +291,7 @@ void PrimeFacList(std::size_t m, std::size_t n, std::vector<double> myNums,
         }
         
         if (mPass > 0) {
-            getPrimefactors(mPass, factors);
+            getPrimeFactors(mPass, factors);
             MyPrimeList[i] = factors;
         }
     }
@@ -373,7 +377,7 @@ void FactorList(std::size_t m, std::size_t n, std::vector<double> &myNums,
         
         if (mPass > 1) {
             std::vector<typeReturn> factors;
-            getPrimefactors(mPass, factors);
+            getPrimeFactors(mPass, factors);
             myDivisors = Factorize<typeReturn>(factors);
             
             if (isNegative) {
@@ -509,7 +513,7 @@ SEXP TheGlue(std::vector<double> &myNums, typeReturn myMax, bool bPrimeFacs,
                 factors.push_back(-1);
             }
             
-            getPrimefactors(mPass, factors);
+            getPrimeFactors(mPass, factors);
             return Rcpp::wrap(factors);
         } else {
             std::vector<std::vector<typeReturn>> 
@@ -537,7 +541,7 @@ SEXP TheGlue(std::vector<double> &myNums, typeReturn myMax, bool bPrimeFacs,
             }
             
             if (mPass > 1) {
-                getPrimefactors(mPass, factors);
+                getPrimeFactors(mPass, factors);
                 myDivisors = Factorize<typeReturn>(factors);
                 
                 if (isNegative) {
