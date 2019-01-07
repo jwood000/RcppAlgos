@@ -72,14 +72,8 @@ void DivisorsSieve(typeInt m, typeReturn retN, typeInt offsetStrt,
                 MyDivList[j - 1].push_back(static_cast<typeReturn>(i));
         
     } else {
-        typeReturn numRet = static_cast<typeReturn>(m);
-        
-        for (; it2d < itEnd; ++it2d, ++numRet, ++myMalloc) {
-            // Rcpp::print(Rcpp::wrap(*myMalloc));
-            // Rcpp::print(Rcpp::wrap(numRet));
+        for (; it2d < itEnd; ++it2d, ++myMalloc)
             it2d->reserve(*myMalloc);
-            it2d->push_back(numRet);
-        }
         
         typeInt sqrtBound = static_cast<typeInt>(std::sqrt(n));
         typeInt offsetRange = myRange + offsetStrt;
@@ -107,10 +101,13 @@ void DivisorsSieve(typeInt m, typeReturn retN, typeInt offsetStrt,
                 // testNum = 100 / 5 = 20, thus we add it to the
                 // pentultimate position to give v = 1 5 10 20 100.
                 if (testNum > sqrtBound)
-                    MyDivList[j].insert(MyDivList[j].end() - 1, 
-                                        static_cast<typeReturn>(testNum));
+                    MyDivList[j].push_back(static_cast<typeReturn>(testNum));
             }
         }
+        
+        it2d = MyDivList.begin() + offsetStrt;
+        for (typeReturn numRet = static_cast<typeReturn>(m); it2d < itEnd; ++it2d, ++numRet)
+            it2d->push_back(numRet);
     }
 }
 
