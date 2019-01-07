@@ -49,47 +49,53 @@ void DivisorsSieve(typeInt m, typeReturn retN, typeInt offsetStrt,
     typeInt myRange = (n - m) + 1;
     
     typename std::vector<std::vector<typeReturn>>::iterator it2d, itEnd;
-    itEnd = MyDivList.begin() + offsetStrt + myRange;;
+    itEnd = MyDivList.begin() + offsetStrt + myRange;
     
-    std::vector<int_fast32_t> myMemory(myRange, 2u);
+    std::vector<int_fast32_t> myMemory(myRange, 2);
     NumDivisorsSieve(m, n, zeroOffset, myMemory);
-    std::vector<int_fast32_t>::iterator myMalloc;
     
-    if (m < 2) {
+    if (m < 2)
         it2d = MyDivList.begin() + 1;
-        myMalloc = myMemory.begin() + 1;
-    } else {
+    else
         it2d = MyDivList.begin() + offsetStrt;
-        myMalloc = myMemory.begin();
-    }
     
     if (m < 2) {
-        for (; it2d < itEnd; ++it2d, ++myMalloc)
-            it2d->reserve(*myMalloc);
+        for (std::size_t i = 1; it2d < itEnd; ++it2d, ++i) {
+            it2d->reserve(myMemory[i]);
+            it2d->push_back(1);
+        }
+        
+        MyDivList[0].push_back(1);
         
         for (typeInt i = 2; i <= n; ++i)
             for (typeInt j = i; j <= n; j += i)
                 MyDivList[j - 1].push_back(static_cast<typeReturn>(i));
         
     } else {
-        for (; it2d < itEnd; ++it2d, ++myMalloc)
-            it2d->reserve(*myMalloc);
+        typeReturn numRet = static_cast<typeReturn>(m);
+        std::vector<int_fast32_t> begIndex(myRange, 0);
+        
+        for (std::size_t i = 0; it2d < itEnd; ++it2d, ++i, ++numRet) {
+            it2d->resize(myMemory[i]);
+            it2d->back() = numRet;
+            it2d->front() = 1;
+            --myMemory[i];
+        }
         
         typeInt sqrtBound = static_cast<typeInt>(std::sqrt(n));
         typeInt offsetRange = myRange + offsetStrt;
-        
-        for (typeInt i = sqrtBound; i >= 2; --i) {
-            
+
+        for (typeInt i = 2; i <= sqrtBound; ++i) {
+
             typeInt myStart = getStartingIndex(m, i);
             libdivide::divider<typeInt> fastDiv(i);
-            
-            for (typeInt j = myStart + offsetStrt,
-                 myNum = m + myStart; j < offsetRange; j += i, myNum += i) {
-                
-                // Put element in the second position. (see comment below)
-                MyDivList[j].insert(MyDivList[j].begin() + 1, static_cast<typeReturn>(i));
+
+            for (typeInt j = myStart + offsetStrt, myNum = m + myStart,
+                     memInd = myStart; j < offsetRange; j += i, myNum += i, memInd += i) {
+
+                MyDivList[j][++begIndex[memInd]] = static_cast<typeReturn>(i);
                 typeInt testNum = myNum / fastDiv;
-                
+
                 // Ensure we won't duplicate adding an element. If
                 // testNum <= sqrtBound, it will be added in later
                 // iterations. Also, we insert this element in the
@@ -101,13 +107,9 @@ void DivisorsSieve(typeInt m, typeReturn retN, typeInt offsetStrt,
                 // testNum = 100 / 5 = 20, thus we add it to the
                 // pentultimate position to give v = 1 5 10 20 100.
                 if (testNum > sqrtBound)
-                    MyDivList[j].push_back(static_cast<typeReturn>(testNum));
+                    MyDivList[j][--myMemory[memInd]] = static_cast<typeReturn>(testNum);
             }
         }
-        
-        it2d = MyDivList.begin() + offsetStrt;
-        for (typeReturn numRet = static_cast<typeReturn>(m); it2d < itEnd; ++it2d, ++numRet)
-            it2d->push_back(numRet);
     }
 }
 
@@ -180,7 +182,7 @@ SEXP TheGlue(typeInt myMin, typeReturn myMax, bool bDivSieve,
     
     if (bDivSieve) {
         std::vector<std::vector<typeReturn>> 
-            MyDivList(myRange, std::vector<typeReturn>(1, 1));
+            MyDivList(myRange, std::vector<typeReturn>());
         Rcpp::IntegerVector tempRcpp;
         DivisorMaster(myMin, myMax, bDivSieve, tempRcpp,
                       MyDivList, myRange, nThreads, maxThreads);
