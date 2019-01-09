@@ -4,7 +4,7 @@
 #include <mutex>
 #include <array>
 
-// "MasterPrimeCount" is a simple variation of the highly optimized
+// "MasterPrimeCount" based off of the highly optimized
 // "pi_legendre.cpp" algorithm by Kim Walisch, which calculates
 // the numbers of primes less than n using Legendre's formula.
 // Kim Walisch's official github repo for "pi_legendre" is:
