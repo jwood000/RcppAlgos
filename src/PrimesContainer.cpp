@@ -401,7 +401,7 @@ SEXP GlueMotley(typeInt myMin, typeReturn myMax, bool isEuler,
     }
     
     if (isEuler) {
-        std::vector<std::vector<typeReturn>> tempList;
+        std::vector<std::vector<typeInt>> tempList;
         typeRcpp EulerPhis(myRange);
         std::vector<typeInt> numSeq(myRange);
         MotleyPrimes::MotleyMaster(myMin, myMax, isEuler, EulerPhis,
@@ -411,8 +411,8 @@ SEXP GlueMotley(typeInt myMin, typeReturn myMax, bool isEuler,
         
         return EulerPhis;
     } else {
-        std::vector<std::vector<typeReturn>> 
-            primeList(myRange, std::vector<typeReturn>());
+        std::vector<std::vector<typeInt>> 
+            primeList(myRange, std::vector<typeInt>());
         typeRcpp tempRcpp;
         std::vector<typeInt> tempVec;
         MotleyPrimes::MotleyMaster(myMin, myMax, isEuler, tempRcpp,

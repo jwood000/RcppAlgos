@@ -30,10 +30,10 @@ namespace MotleyPrimes {
         return retStrt;
     }
 
-    template <typename typeInt, typename typeReturn>
-    void PrimeFactorizationSieve(typeInt m, typeReturn retN, typeInt offsetStrt,
+    template <typename typeInt>
+    void PrimeFactorizationSieve(typeInt m, typeInt retN, typeInt offsetStrt,
                                  const std::vector<typeInt> &primes,
-                                 std::vector<std::vector<typeReturn>> &primeList) {
+                                 std::vector<std::vector<typeInt>> &primeList) {
         
         typeInt n = (typeInt) retN;
         typeInt myRange = (n - m) + 1;
@@ -66,7 +66,7 @@ namespace MotleyPrimes {
             }
             
             std::vector<uint8_t>::iterator myMalloc;
-            typename std::vector<std::vector<typeReturn>>::iterator it2d, itEnd;
+            typename std::vector<std::vector<typeInt>>::iterator it2d, itEnd;
             itEnd = primeList.begin() + offsetStrt + myRange;
             
             if (myNum < 2) {
@@ -80,7 +80,7 @@ namespace MotleyPrimes {
 
             for (; it2d != itEnd; ++it2d, ++myNum, ++myMalloc) {
                 it2d->reserve(*myMalloc);
-                it2d->push_back(static_cast<typeReturn>(myNum));
+                it2d->push_back(myNum);
             }
             
             if (m < 2) {
@@ -93,10 +93,8 @@ namespace MotleyPrimes {
 
                         for (typeInt j = (myStep - 1); j < n; j += myStep) {
                             if (primeList[j].back() > *p) {
-                                myNum = static_cast<typeInt>(primeList[j].back());
-                                myNum /= fastDiv;
-                                primeList[j].back() = static_cast<typeReturn>(myNum);
-                                primeList[j].insert(primeList[j].end() - 1, static_cast<typeReturn>(*p));
+                                primeList[j].back() /= fastDiv;
+                                primeList[j].insert(primeList[j].end() - 1, *p);
                             }
                         }
                     }
@@ -114,10 +112,8 @@ namespace MotleyPrimes {
 
                         for (typeInt j = myStart; j < offsetRange; j += myStep) {
                             if (primeList[j].back() > *p) {
-                                myNum = static_cast<typeInt>(primeList[j].back());
-                                myNum /= fastDiv;
-                                primeList[j].back() = static_cast<typeReturn>(myNum);
-                                primeList[j].insert(primeList[j].end() - 1, static_cast<typeReturn>(*p));
+                                primeList[j].back() /= fastDiv;
+                                primeList[j].insert(primeList[j].end() - 1, *p);
                             }
                         }
                     }
@@ -131,7 +127,7 @@ namespace MotleyPrimes {
                 ++myNum;
             }
             for (int i = strt; i < myRange; ++i, ++myNum)
-                primeList[i].push_back(static_cast<typeReturn>(myNum));
+                primeList[i].push_back(myNum);
         }
     }
     
@@ -214,7 +210,7 @@ namespace MotleyPrimes {
     template <typename typeInt, typename typeReturn, typename typeRcpp>
     void MotleyMaster(typeInt myMin, typeReturn myMax, bool isEuler,
                       typeRcpp &EulerPhis, std::vector<typeInt> &numSeq,
-                      std::vector<std::vector<typeReturn>> &primeList,
+                      std::vector<std::vector<typeInt>> &primeList,
                       int nThreads, int maxThreads) {
         
         bool Parallel = false;
@@ -246,8 +242,8 @@ namespace MotleyPrimes {
                                            std::ref(primes), std::ref(numSeq),
                                            std::ref(EulerPhis));
                 } else {
-                    myThreads.emplace_back(PrimeFactorizationSieve<typeInt, typeReturn>,
-                                           lowerBnd, upperBnd, offsetStrt, 
+                    myThreads.emplace_back(PrimeFactorizationSieve<typeInt>,
+                                           lowerBnd, static_cast<typeInt>(upperBnd), offsetStrt, 
                                            std::ref(primes), std::ref(primeList));
                 }
             }
@@ -258,8 +254,8 @@ namespace MotleyPrimes {
                                        std::ref(primes), std::ref(numSeq),
                                        std::ref(EulerPhis));
             } else {
-                myThreads.emplace_back(PrimeFactorizationSieve<typeInt, typeReturn>,
-                                       lowerBnd, myMax, offsetStrt,
+                myThreads.emplace_back(PrimeFactorizationSieve<typeInt>,
+                                       lowerBnd, static_cast<typeInt>(myMax), offsetStrt,
                                        std::ref(primes), std::ref(primeList));
             }
 
@@ -270,7 +266,7 @@ namespace MotleyPrimes {
             if (isEuler) {
                 EulerPhiSieve(myMin, myMax, offsetStrt, primes, numSeq, EulerPhis);
             } else {
-                PrimeFactorizationSieve(myMin, myMax, offsetStrt, primes, primeList);
+                PrimeFactorizationSieve(myMin, static_cast<typeInt>(myMax), offsetStrt, primes, primeList);
             }
         }
     }
