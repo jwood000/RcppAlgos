@@ -1208,7 +1208,7 @@ SEXP CombinatoricsRcpp(SEXP Rv, SEXP Rm, SEXP Rrepetition, SEXP RFreqs, SEXP Rlo
                 return matBool;
                 
             } else if (IsFactor) {
-                Rcpp::IntegerMatrix factorMat = Rcpp::no_init_matrix(nRows, nCol);;
+                Rcpp::IntegerMatrix factorMat = Rcpp::no_init_matrix(nRows, nCol);
                 Rcpp::IntegerVector testFactor = Rcpp::as<Rcpp::IntegerVector>(Rv);
                 Rcpp::CharacterVector myClass = testFactor.attr("class");
                 Rcpp::CharacterVector myLevels = testFactor.attr("levels");
@@ -1289,7 +1289,7 @@ SEXP CombinatoricsRcpp(SEXP Rv, SEXP Rm, SEXP Rrepetition, SEXP RFreqs, SEXP Rlo
                 return matBool;
                 
             } else if (IsFactor) {
-                Rcpp::IntegerMatrix factorMat = Rcpp::no_init_matrix(nRows, nCol);;
+                Rcpp::IntegerMatrix factorMat = Rcpp::no_init_matrix(nRows, nCol);
                 Rcpp::IntegerVector testFactor = Rcpp::as<Rcpp::IntegerVector>(Rv);
                 Rcpp::CharacterVector myClass = testFactor.attr("class");
                 Rcpp::CharacterVector myLevels = testFactor.attr("levels");
