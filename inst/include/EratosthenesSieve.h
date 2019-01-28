@@ -18,7 +18,7 @@ namespace PrimeSieve {
 
     constexpr int L1_CACHE_SIZE = 32768;
     
-    //************************ Prime Counting Esitmates ************************
+    //************************ Prime Counting Estimates ************************
     // These numbers were obtained empirically using the prime number theorem
     // along with a prime counting function. Values were computed in each
     // range below in cutPoints. For example in the range [40000, 120000),
