@@ -46,11 +46,11 @@ namespace CleanConvert {
         
         switch(TYPEOF(input)) {
             case REALSXP: {
-                result = Rcpp::as<std::vector<stdType> >(input);
+                result = Rcpp::as<std::vector<stdType>>(input);
                 break;
             }
             case INTSXP: {
-                result = Rcpp::as<std::vector<stdType> >(input);
+                result = Rcpp::as<std::vector<stdType>>(input);
                 break;
             }
             case RAWSXP: {
@@ -71,7 +71,7 @@ namespace CleanConvert {
                 
                 for (int i = 0; i < total; ++i) {
                     dblTemp[i] = mpz_get_d(temp[i]);
-                    result.push_back((stdType) dblTemp[i]);
+                    result.push_back(static_cast<stdType>(dblTemp[i]));
                 }
                 
                 for (int i = 0; i < total; ++i)
