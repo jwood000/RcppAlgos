@@ -230,33 +230,31 @@ namespace MotleyPrimes {
         if (Parallel) {
             std::size_t ind = 0u;
             std::vector<std::thread> myThreads;
-            typeInt lowerBnd = myMin;
+            typeInt lower = myMin;
             typeInt chunkSize = myRange / nThreads;
-            typeReturn upperBnd = lowerBnd + chunkSize - 1;
+            typeReturn upper = lower + chunkSize - 1;
             
             for (; ind < (nThreads - 1); offsetStrt += chunkSize, 
-                 lowerBnd = (upperBnd + 1), upperBnd += chunkSize, ++ind) {
+                 lower = (upper + 1), upper += chunkSize, ++ind) {
                 if (isEuler) {
                     myThreads.emplace_back(EulerPhiSieve<typeInt, typeReturn, typeRcpp>,
-                                           lowerBnd, upperBnd, offsetStrt, 
-                                           std::ref(primes), std::ref(numSeq),
-                                           std::ref(EulerPhis));
+                                           lower, upper, offsetStrt, std::ref(primes),
+                                           std::ref(numSeq), std::ref(EulerPhis));
                 } else {
                     myThreads.emplace_back(PrimeFactorizationSieve<typeInt>,
-                                           lowerBnd, static_cast<typeInt>(upperBnd), offsetStrt, 
-                                           std::ref(primes), std::ref(primeList));
+                                           lower, static_cast<typeInt>(upper), 
+                                           offsetStrt, std::ref(primes), std::ref(primeList));
                 }
             }
             
             if (isEuler) {
                 myThreads.emplace_back(EulerPhiSieve<typeInt, typeReturn, typeRcpp>,
-                                       lowerBnd, myMax, offsetStrt,
-                                       std::ref(primes), std::ref(numSeq),
-                                       std::ref(EulerPhis));
+                                       lower, myMax, offsetStrt, std::ref(primes),
+                                       std::ref(numSeq), std::ref(EulerPhis));
             } else {
                 myThreads.emplace_back(PrimeFactorizationSieve<typeInt>,
-                                       lowerBnd, static_cast<typeInt>(myMax), offsetStrt,
-                                       std::ref(primes), std::ref(primeList));
+                                       lower, static_cast<typeInt>(myMax),
+                                       offsetStrt, std::ref(primes), std::ref(primeList));
             }
 
             for (auto &thr: myThreads)
@@ -266,7 +264,8 @@ namespace MotleyPrimes {
             if (isEuler) {
                 EulerPhiSieve(myMin, myMax, offsetStrt, primes, numSeq, EulerPhis);
             } else {
-                PrimeFactorizationSieve(myMin, static_cast<typeInt>(myMax), offsetStrt, primes, primeList);
+                PrimeFactorizationSieve(myMin, static_cast<typeInt>(myMax), 
+                                        offsetStrt, primes, primeList);
             }
         }
     }
