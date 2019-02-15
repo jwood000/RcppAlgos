@@ -183,11 +183,14 @@ namespace PrimeCounting {
         }
     }
     
-    void phiSlave(int64_t lowerBound, int64_t upperBound, 
-                  int64_t x, int64_t &mySum) {
+    int64_t phiSlave(int64_t lowerBound, int64_t upperBound, int64_t x) {
+        
+        int64_t mySum = 0;
         
         for (int64_t i = lowerBound; i < upperBound; ++i)
             mySum += phiWorker<-1>(x / phiPrimes[i + 1], i);
+        
+        return mySum;
     }
     
     int64_t phiMaster(int64_t x, int64_t a, 
@@ -209,7 +212,6 @@ namespace PrimeCounting {
             int64_t myRange = (piSqrtx - strt) + 1;
             int64_t lower = strt;
             int64_t upper, chunk;
-            std::size_t ind = 0;
             
             if (x > divLim) {
                 unsigned long int nLoops = 1 + std::ceil(std::log(x / divLim) / (nThreads * dblLog15));
@@ -224,18 +226,17 @@ namespace PrimeCounting {
                 while (std::pow(multOne, power) < (nThreads * 10))
                     ++power;
                 
-                std::vector<int64_t> vecSums((nLoops * nThreads) + (power + 2), 0);
                 int64_t firstRange = static_cast<int64_t>(std::ceil(std::pow(multOne, power))) - lower;
                 chunk = firstRange / nThreads;
                 upper = lower + chunk - 1;
 
-                std::vector<std::thread> firstThreads;
+                std::vector<std::future<int64_t>> firstFutures;
 
-                for (std::size_t j = 0; j < nThreads; lower = upper, upper += chunk, ++ind, ++j)
-                    firstThreads.emplace_back(phiSlave, lower, upper, x, std::ref(vecSums[ind]));
+                for (std::size_t j = 0; j < nThreads; lower = upper, upper += chunk, ++j)
+                    firstFutures.emplace_back(std::async(std::launch::async, phiSlave, lower, upper, x));
                 
-                for (auto &thr: firstThreads)
-                    thr.join();
+                for (auto &fut: firstFutures)
+                    mySum += fut.get();
                 
                 //*********************** End of firstThreads *****************************
                 //*************************************************************************
@@ -250,65 +251,59 @@ namespace PrimeCounting {
                 upper = base + chunk;
 
                 for (std::size_t i = 0; i < (nLoops - 1); ++i) {
-                    std::vector<std::thread> midThreads;
+                    std::vector<std::future<int64_t>> midFutures;
 
-                    for (std::size_t j = 0; j < nThreads; lower = upper, ++ind, ++j, 
+                    for (std::size_t j = 0; j < nThreads; lower = upper, ++j, 
                          ++power, chunk = static_cast<int64_t>(std::pow(multTwo, power)), upper = chunk + base)
-                        midThreads.emplace_back(phiSlave, lower, upper, x, std::ref(vecSums[ind]));
+                        midFutures.emplace_back(std::async(std::launch::async, phiSlave, lower, upper, x));
                     
-                    for (auto &thr: midThreads)
-                        thr.join();
+                    for (auto &fut: midFutures)
+                        mySum += fut.get();
                 }
 
-                std::vector<std::thread> lastThreads;
+                std::vector<std::future<int64_t>> lastFutures;
                 std::size_t j = 0;
                 
-                for (; j < (nThreads - 1) && upper < piSqrtx;  lower = upper, ++ind, ++j,
+                for (; j < (nThreads - 1) && upper < piSqrtx;  lower = upper, ++j,
                      ++power, chunk = static_cast<int64_t>(std::pow(multTwo, power)), upper = chunk + base)
-                    lastThreads.emplace_back(phiSlave, lower, upper, x, std::ref(vecSums[ind]));
+                    lastFutures.emplace_back(std::async(std::launch::async, phiSlave, lower, upper, x));
                 
-                lastThreads.emplace_back(phiSlave, lower, piSqrtx, x, std::ref(vecSums[ind]));
+                lastFutures.emplace_back(std::async(std::launch::async, phiSlave, lower, piSqrtx, x));
                 
-                for (auto &thr: lastThreads)
-                    thr.join();
-                
-                for (std::size_t i = 0; i < vecSums.size(); ++i)
-                    mySum += vecSums[i];
+                for (auto &fut: lastFutures)
+                    mySum += fut.get();
                 
             } else {
-                std::vector<std::thread> myThreads;
+                std::vector<std::future<int64_t>> myFutures;
                 chunk = myRange / nThreads;
                 upper = lower + chunk - 1;
-                std::vector<int64_t> vecSums(nThreads, 0);
+                std::size_t j = 0;
                 
-                for (; ind < (nThreads - 1); lower = upper, upper += chunk, ++ind)
-                    myThreads.emplace_back(phiSlave, lower, upper, x, std::ref(vecSums[ind]));
+                for (; j < (nThreads - 1); lower = upper, upper += chunk, ++j)
+                    myFutures.emplace_back(std::async(std::launch::async, phiSlave, lower, upper, x));
                 
-                myThreads.emplace_back(phiSlave, lower, piSqrtx, x, std::ref(vecSums[ind]));
+                myFutures.emplace_back(std::async(std::launch::async, phiSlave, lower, piSqrtx, x));
                 
-                for (auto &thr: myThreads)
-                    thr.join();
-                
-                for (std::size_t i = 0; i < nThreads; ++i)
-                    mySum += vecSums[i];
+                for (auto &fut: myFutures)
+                    mySum += fut.get();
             }
         } else {
-            phiSlave(strt, piSqrtx, x, mySum);
+            mySum += phiSlave(strt, piSqrtx, x);
         }
         
         return mySum;
     }
     
     // All values verified by Kim Walisch's primecount library (nThreads = 8)
-    //  10^9 -->>          50,847,534   -->>   879.3 microseconds
+    //  10^9 -->>          50,847,534   -->>   811.6 microseconds
     // 10^10 -->>         455,052,511   -->>   5.362 milliseconds
     // 10^11 -->>       4,118,054,813   -->>   21.45 milliseconds
     // 10^12 -->>      37,607,912,018   -->>   119.4 milliseconds
-    // 10^13 -->>     346,065,536,839   -->>   890.0 milliseconds
+    // 10^13 -->>     346,065,536,839   -->>   875.0 milliseconds
     // 10^14 -->>   3,204,941,750,802   -->>   7.108 seconds
     // 10^15 -->>  29,844,570,422,669   -->>  53.703 seconds
     // MAX VALUE (2^53 - 1) -->> 
-    //            252,252,704,148,404   -->> 393.117 seconds
+    //            252,252,704,148,404   -->> 383.605 seconds
     
     int64_t MasterPrimeCount(int64_t n, 
                              unsigned long int nThreads = 1,
@@ -538,7 +533,7 @@ SEXP EratosthenesRcpp(SEXP Rb1, SEXP Rb2, SEXP RNumThreads, int maxCores, int ma
                                      Parallel, nThreads, maxThreads, maxCores);
         
         if (Parallel) {
-            for (int i = 0; i < numSects; ++i) {
+            for (std::size_t i = 0; i < numSects; ++i) {
                 numPrimes += primeList[i].size();
                 runningCount.push_back(numPrimes);
             }
@@ -546,7 +541,7 @@ SEXP EratosthenesRcpp(SEXP Rb1, SEXP Rb2, SEXP RNumThreads, int maxCores, int ma
             Rcpp::NumericVector primes(numPrimes);
             Rcpp::NumericVector::iterator priBeg = primes.begin();
             
-            for (int i = 0; i < numSects; ++i)
+            for (std::size_t i = 0; i < numSects; ++i)
                 std::copy(primeList[i].begin(), primeList[i].end(), priBeg + runningCount[i]);
             
             return primes;
@@ -561,7 +556,7 @@ SEXP EratosthenesRcpp(SEXP Rb1, SEXP Rb2, SEXP RNumThreads, int maxCores, int ma
                                      Parallel, nThreads, maxThreads, maxCores);
         
         if (Parallel) {
-            for (int i = 0; i < numSects; ++i) {
+            for (std::size_t i = 0; i < numSects; ++i) {
                 numPrimes += primeList[i].size();
                 runningCount.push_back(numPrimes);
             }
@@ -569,7 +564,7 @@ SEXP EratosthenesRcpp(SEXP Rb1, SEXP Rb2, SEXP RNumThreads, int maxCores, int ma
             Rcpp::IntegerVector primes(numPrimes);
             Rcpp::IntegerVector::iterator priBeg = primes.begin();
             
-            for (int i = 0; i < numSects; ++i)
+            for (std::size_t i = 0; i < numSects; ++i)
                 std::copy(primeList[i].begin(), primeList[i].end(), priBeg + runningCount[i]);
             
             return primes;
