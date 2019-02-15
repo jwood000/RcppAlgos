@@ -5,7 +5,7 @@ pkgEnv$nThreads <- NULL
 physicalCoreCount <- function() {
     
     if (.Platform$OS.type == "windows")
-        return(parallel::detectCores(logical = FALSE))
+        return(stdThreadMaxThreads())
     
     ## According to R News as of # 3.4.4 
     ##    "parallel::detectCores(logical = FALSE) is ignored on Linux systems, since
