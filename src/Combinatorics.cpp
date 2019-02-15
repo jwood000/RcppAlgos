@@ -8,6 +8,11 @@
 #include "CleanConvert.h"
 #include <thread>
 
+// [[Rcpp::export]]
+unsigned long int cpp11GetNumThreads() {
+    return std::thread::hardware_concurrency();
+}
+
 const std::vector<std::string> compForms = {"<", ">", "<=", ">=", "==", "=<", "=>"};
 const std::vector<std::string> compSpecial = {"==", ">,<", ">=,<", ">,<=", ">=,<="};
 const std::vector<std::string> compHelper = {"<=", "<", "<", "<=", "<="};
@@ -123,11 +128,11 @@ typeRcpp CombinatoricsConstraints(int n, int r, std::vector<typeVector> &v, bool
                 std::sort(v.begin(), v.end());
             }
             
-            std::vector<std::string>::const_iterator itComp = std::find(compSpecial.begin(), 
-                                                                        compSpecial.end(), 
+            std::vector<std::string>::const_iterator itComp = std::find(compSpecial.cbegin(), 
+                                                                        compSpecial.cend(), 
                                                                         comparison[nC]);
             if (itComp != compSpecial.end()) {
-                int myIndex = std::distance(compSpecial.begin(), itComp);
+                int myIndex = std::distance(compSpecial.cbegin(), itComp);
                 Rcpp::XPtr<compPtr<typeVector>> xpCompThree = putCompPtrInXPtr<typeVector>(compHelper[myIndex]);
                 comparisonFunTwo = *xpCompThree;
             } else {
@@ -568,7 +573,7 @@ bool checkIsInteger(std::string funPass, unsigned long int uM, int n,
     for (int i = 0; i < n; ++i)
         vAbs.push_back(std::abs(vNum[i]));
     
-    double vecMax = *std::max_element(vAbs.begin(), vAbs.end());
+    double vecMax = *std::max_element(vAbs.cbegin(), vAbs.cend());
     for (std::size_t i = 0; i < uM; ++i)
         rowVec[i] = static_cast<double>(vecMax);
     
@@ -581,7 +586,7 @@ bool checkIsInteger(std::string funPass, unsigned long int uM, int n,
         for (std::size_t i = 0; i < myLim.size(); ++i)
             vAbs.push_back(std::abs(myLim[i]));
         
-        double vecMax = *std::max_element(vAbs.begin(), vAbs.end());
+        double vecMax = *std::max_element(vAbs.cbegin(), vAbs.cend());
         if (vecMax >= INT_MAX)
             return false;
     }
@@ -714,7 +719,7 @@ SEXP CombinatoricsRcpp(SEXP Rv, SEXP Rm, SEXP Rrepetition, SEXP RFreqs, SEXP Rlo
                 IsInteger = false;
         
         if (IsInteger)
-            vInt.assign(vNum.begin(), vNum.end());
+            vInt.assign(vNum.cbegin(), vNum.cend());
     }
         
     bool IsConstrained;
@@ -901,7 +906,7 @@ SEXP CombinatoricsRcpp(SEXP Rv, SEXP Rm, SEXP Rrepetition, SEXP RFreqs, SEXP Rlo
     } else {
         if (IsComb) {
             if (IsMultiset)
-                startZ.assign(freqsExpanded.begin(), freqsExpanded.begin() + m);
+                startZ.assign(freqsExpanded.cbegin(), freqsExpanded.cbegin() + m);
             else if (IsRepetition)
                 std::fill(startZ.begin(), startZ.end(), 0);
             else
@@ -1027,12 +1032,12 @@ SEXP CombinatoricsRcpp(SEXP Rv, SEXP Rm, SEXP Rrepetition, SEXP RFreqs, SEXP Rlo
             Rcpp::stop("there cannot be more than 2 comparison operators");
         
         for (std::size_t i = 0; i < compFunVec.size(); ++i) {
-            itComp = std::find(compForms.begin(), compForms.end(), compFunVec[i]);
+            itComp = std::find(compForms.cbegin(), compForms.cend(), compFunVec[i]);
             
             if (itComp == compForms.end())
                 Rcpp::stop("comparison operators must be one of the following: '>', '>=', '<', '<=', or '=='");
                 
-            int myIndex = std::distance(compForms.begin(), itComp);
+            int myIndex = std::distance(compForms.cbegin(), itComp);
             
             // The first 5 are "standard" whereas the 6th and 7th
             // are written with the equality first. Converting
@@ -1101,7 +1106,7 @@ SEXP CombinatoricsRcpp(SEXP Rv, SEXP Rm, SEXP Rrepetition, SEXP RFreqs, SEXP Rlo
         
         if (SpecialCase) {
             if (IsInteger) {
-                std::vector<int> limInt(myLim.begin(), myLim.end());
+                std::vector<int> limInt(myLim.cbegin(), myLim.cend());
                 return SpecCaseRet<Rcpp::IntegerMatrix>(n, m, vInt, IsRepetition, nRows, keepRes, startZ, lower,
                                                         mainFun, IsMultiset, computedRows, compFunVec, limInt, IsComb,
                                                         myReps, freqsExpanded, bLower, permNonTrivial, userNumRows);
@@ -1113,7 +1118,7 @@ SEXP CombinatoricsRcpp(SEXP Rv, SEXP Rm, SEXP Rrepetition, SEXP RFreqs, SEXP Rlo
         }
         
         if (IsInteger) {
-            std::vector<int> limInt(myLim.begin(), myLim.end());
+            std::vector<int> limInt(myLim.cbegin(), myLim.cend());
             return CombinatoricsConstraints<Rcpp::IntegerMatrix>(n, m, vInt, IsRepetition, mainFun, compFunVec,
                                                                  limInt, nRows, IsComb, keepRes, myReps, IsMultiset);
         }
@@ -1134,11 +1139,11 @@ SEXP CombinatoricsRcpp(SEXP Rv, SEXP Rm, SEXP Rrepetition, SEXP RFreqs, SEXP Rlo
                 ApplyFunction(n, m, rcppChar, IsRepetition, nRows, IsComb, myReps, 
                               ans, freqsExpanded, startZ, IsMultiset, sexpFun, myEnv, 0);
             } else if (IsLogical || IsInteger) {
-                Rcpp::IntegerVector rcppVInt(vInt.begin(), vInt.end());
+                Rcpp::IntegerVector rcppVInt(vInt.cbegin(), vInt.cend());
                 ApplyFunction(n, m, rcppVInt, IsRepetition, nRows, IsComb, myReps, 
                               ans, freqsExpanded, startZ, IsMultiset, sexpFun, myEnv, 0);
             } else {
-                Rcpp::NumericVector rcppVNum(vNum.begin(), vNum.end());
+                Rcpp::NumericVector rcppVNum(vNum.cbegin(), vNum.cend());
                 ApplyFunction(n, m, rcppVNum, IsRepetition, nRows, IsComb, myReps, 
                               ans, freqsExpanded, startZ, IsMultiset, sexpFun, myEnv, 0);
             }
