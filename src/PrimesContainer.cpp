@@ -1,6 +1,7 @@
 #include "MotleyPrimes.h"
 #include "CleanConvert.h"
 #include "PhiTinyLookup.h"
+#include <future>
 #include <mutex>
 #include <array>
 
