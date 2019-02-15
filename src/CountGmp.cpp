@@ -109,7 +109,7 @@ void MultisetCombRowNumGmp(mpz_t result, int n, int r, std::vector<int> &Reps) {
 
 void MultisetPermRowNumGmp(mpz_t result, int n, int r, std::vector<int> &myReps) {
     
-    int sumFreqs = std::accumulate(myReps.begin(), myReps.end(), 0);
+    int sumFreqs = std::accumulate(myReps.cbegin(), myReps.cend(), 0);
     
     if (n < 2 || r < 1) {
         mpz_set_ui(result, 1);
@@ -117,7 +117,7 @@ void MultisetPermRowNumGmp(mpz_t result, int n, int r, std::vector<int> &myReps)
         mpz_set_ui(result, 0);
     } else {
         int maxFreq, n1 = n - 1;
-        maxFreq = *std::max_element(myReps.begin(), myReps.end());
+        maxFreq = *std::max_element(myReps.cbegin(), myReps.cend());
         
         std::vector<int> seqR(r);
         std::iota(seqR.begin(), seqR.end(), 1);
