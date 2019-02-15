@@ -197,7 +197,7 @@ SEXP SampleRcpp(SEXP Rv, SEXP Rm, SEXP Rrepetition, SEXP RFreqs, SEXP RindexVec,
         rcppChar = Rcpp::as<Rcpp::CharacterVector>(Rv);
         n = rcppChar.size();
     } else if (IsLogical) {
-        vInt = Rcpp::as<std::vector<int> >(Rv);
+        vInt = Rcpp::as<std::vector<int>>(Rv);
         n = vInt.size();
     } else {
         if (Rf_length(Rv) == 1) {
@@ -206,9 +206,9 @@ SEXP SampleRcpp(SEXP Rv, SEXP Rm, SEXP Rrepetition, SEXP RFreqs, SEXP RindexVec,
             if (seqEnd > 1) {m1 = 1; m2 = seqEnd;} else {m1 = seqEnd; m2 = 1;}
             Rcpp::IntegerVector vTemp = Rcpp::seq(m1, m2);
             IsInteger = true;
-            vNum = Rcpp::as<std::vector<double> >(vTemp);
+            vNum = Rcpp::as<std::vector<double>>(vTemp);
         } else {
-            vNum = Rcpp::as<std::vector<double> >(Rv);
+            vNum = Rcpp::as<std::vector<double>>(Rv);
         }
         
         n = vNum.size();
@@ -315,7 +315,7 @@ SEXP SampleRcpp(SEXP Rv, SEXP Rm, SEXP Rrepetition, SEXP RFreqs, SEXP RindexVec,
                 Rcpp::stop("The number of rows cannot exceed 2^31 - 1");
             
             Rcpp::NumericVector tempSamp = baseSample(computedRows, nPass);
-            mySample = Rcpp::as<std::vector<double> >(tempSamp);
+            mySample = Rcpp::as<std::vector<double>>(tempSamp);
         }
     } else if (!IsGmp) {
         CleanConvert::convertVector(RindexVec, mySample, 
@@ -414,13 +414,6 @@ SEXP SampleRcpp(SEXP Rv, SEXP Rm, SEXP Rrepetition, SEXP RFreqs, SEXP RindexVec,
     }
     
     bool applyFun = !Rf_isNull(stdFun) && !IsFactor;
-    
-    // Determined empirically. Setting up threads can be expensive, so we
-    // set the cutoff below to ensure threads aren't spawned unnecessarily
-    // We also protect users with fewer than 3 cores
-    if ((sampSize < 2) || (std::thread::hardware_concurrency() < 3))
-        Parallel = false;
-    
     int nThreads = 1;
     
     // Determined empirically. Setting up threads can be expensive,
@@ -463,25 +456,21 @@ SEXP SampleRcpp(SEXP Rv, SEXP Rm, SEXP Rrepetition, SEXP RFreqs, SEXP RindexVec,
     
     if (Parallel) {
         std::vector<std::thread> myThreads;
-        unsigned long int numThreads = std::thread::hardware_concurrency() - 1;
-        if (sampSize < numThreads)
-            numThreads = sampSize;
-        
-        int step = 0, stepSize = sampSize / numThreads;
+        int step = 0, stepSize = sampSize / nThreads;
         int nextStep = stepSize;
         
         if (IsLogical) {
             Rcpp::LogicalMatrix matBool = Rcpp::no_init_matrix(sampSize, m);
 
-            for (std::size_t j = 0; j < (numThreads - 1); ++j) {
-                myThreads.emplace_back(SampleResults<Rcpp::LogicalMatrix, std::vector<int> >,
+            for (int j = 0; j < (nThreads - 1); ++j) {
+                myThreads.emplace_back(SampleResults<Rcpp::LogicalMatrix, std::vector<int>>,
                                        vInt, m, IsRepetition, myReps, step, nextStep, 
                                        IsGmp, IsComb, mySample, myVec, matBool);
                 step += stepSize;
                 nextStep += stepSize;
             }
             
-            myThreads.emplace_back(SampleResults<Rcpp::LogicalMatrix, std::vector<int> >,
+            myThreads.emplace_back(SampleResults<Rcpp::LogicalMatrix, std::vector<int>>,
                                    vInt, m, IsRepetition, myReps, step, sampSize, 
                                    IsGmp, IsComb, mySample, myVec, matBool);
             
@@ -495,15 +484,15 @@ SEXP SampleRcpp(SEXP Rv, SEXP Rm, SEXP Rrepetition, SEXP RFreqs, SEXP RindexVec,
             Rcpp::CharacterVector myClass = testFactor.attr("class");
             Rcpp::CharacterVector myLevels = testFactor.attr("levels");
             
-            for (std::size_t j = 0; j < (numThreads - 1); ++j) {
-                myThreads.emplace_back(SampleResults<Rcpp::IntegerMatrix, std::vector<int> >,
+            for (int j = 0; j < (nThreads - 1); ++j) {
+                myThreads.emplace_back(SampleResults<Rcpp::IntegerMatrix, std::vector<int>>,
                                        vInt, m, IsRepetition, myReps, step, nextStep, 
                                        IsGmp, IsComb, mySample, myVec, factorMat);
                 step += stepSize;
                 nextStep += stepSize;
             }
             
-            myThreads.emplace_back(SampleResults<Rcpp::IntegerMatrix, std::vector<int> >,
+            myThreads.emplace_back(SampleResults<Rcpp::IntegerMatrix, std::vector<int>>,
                                    vInt, m, IsRepetition, myReps, step, sampSize, 
                                    IsGmp, IsComb, mySample, myVec, factorMat);
             
@@ -517,15 +506,15 @@ SEXP SampleRcpp(SEXP Rv, SEXP Rm, SEXP Rrepetition, SEXP RFreqs, SEXP RindexVec,
         } else if (IsInteger) {
             Rcpp::IntegerMatrix matInt = Rcpp::no_init_matrix(sampSize, m);
             
-            for (std::size_t j = 0; j < (numThreads - 1); ++j) {
-                myThreads.emplace_back(SampleResults<Rcpp::IntegerMatrix, std::vector<int> >,
+            for (int j = 0; j < (nThreads - 1); ++j) {
+                myThreads.emplace_back(SampleResults<Rcpp::IntegerMatrix, std::vector<int>>,
                                        vInt, m, IsRepetition, myReps, step, nextStep, 
                                        IsGmp, IsComb, mySample, myVec, matInt);
                 step += stepSize;
                 nextStep += stepSize;
             }
             
-            myThreads.emplace_back(SampleResults<Rcpp::IntegerMatrix, std::vector<int> >,
+            myThreads.emplace_back(SampleResults<Rcpp::IntegerMatrix, std::vector<int>>,
                                    vInt, m, IsRepetition, myReps, step, sampSize, 
                                    IsGmp, IsComb, mySample, myVec, matInt);
             
@@ -536,15 +525,15 @@ SEXP SampleRcpp(SEXP Rv, SEXP Rm, SEXP Rrepetition, SEXP RFreqs, SEXP RindexVec,
         } else {
             Rcpp::NumericMatrix matNum = Rcpp::no_init_matrix(sampSize, m);
             
-            for (std::size_t j = 0; j < (numThreads - 1); ++j) {
-                myThreads.emplace_back(SampleResults<Rcpp::NumericMatrix, std::vector<double> >,
+            for (int j = 0; j < (nThreads - 1); ++j) {
+                myThreads.emplace_back(SampleResults<Rcpp::NumericMatrix, std::vector<double>>,
                                        vNum, m, IsRepetition, myReps, step, nextStep, 
                                        IsGmp, IsComb, mySample, myVec, matNum);
                 step += stepSize;
                 nextStep += stepSize;
             }
             
-            myThreads.emplace_back(SampleResults<Rcpp::NumericMatrix, std::vector<double> >,
+            myThreads.emplace_back(SampleResults<Rcpp::NumericMatrix, std::vector<double>>,
                                    vNum, m, IsRepetition, myReps, step, sampSize, 
                                    IsGmp, IsComb, mySample, myVec, matNum);
             
