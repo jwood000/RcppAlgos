@@ -33,3 +33,9 @@ isPrimeRcpp <- function(v, namedVector = FALSE, nThreads = NULL) {
 primeCount <- function(n, nThreads = NULL) {
     PrimeCountRcpp(n, nThreads, pkgEnv$nThreads)
 }
+
+stdThreadMax <- function() {
+    nThreads <- cpp11GetNumThreads()
+    if (nThreads < 1L || is.na(nThreads) || is.null(nThreads)) nThreads = 1L
+    nThreads
+}
