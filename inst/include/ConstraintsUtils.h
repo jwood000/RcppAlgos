@@ -22,9 +22,7 @@ stdType prod(const std::vector<stdType> &v, const unsigned long int &mySize) {
 
 template <typename stdType>
 stdType sum(const std::vector<stdType> &v, const unsigned long int &mySize) {
-    stdType mySum = 0;
-    for (std::size_t i = 0; i < mySize; ++i) {mySum += v[i];}
-    return (mySum);
+    return (std::accumulate(v.cbegin(), v.cend(), static_cast<stdType>(0)));
 }
 
 template <typename stdType>
@@ -35,12 +33,12 @@ stdType mean(const std::vector<stdType> &v, const unsigned long int &mySize) {
 
 template <typename stdType>
 stdType max(const std::vector<stdType> &v, const unsigned long int &mySize) {
-    return (*std::max_element(v.begin(), v.end()));
+    return (*std::max_element(v.cbegin(), v.cend()));
 }
 
 template <typename stdType>
 stdType min(const std::vector<stdType> &v, const unsigned long int &mySize) {
-    return (*std::min_element(v.begin(), v.end()));
+    return (*std::min_element(v.cbegin(), v.cend()));
 }
 
 // Standard comparison functions

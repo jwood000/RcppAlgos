@@ -137,19 +137,19 @@ double MultisetPermRowNum(int n, int r, std::vector<int> &myReps) {
     if (n < 2 || r < 1)
         return 1.0;
     
-    int sumFreqs = std::accumulate(myReps.begin(), myReps.end(), 0);
+    const int sumFreqs = std::accumulate(myReps.cbegin(), myReps.cend(), 0);
     
     if (r > sumFreqs)
         return 0.0;
     
     int maxFreq, n1 = n - 1;
-    maxFreq = *std::max_element(myReps.begin(), myReps.end());
+    maxFreq = *std::max_element(myReps.cbegin(), myReps.cend());
     
     std::vector<int> seqR(r);
     std::iota(seqR.begin(), seqR.end(), 1);
     
     double prodR, numPerms = 0.0;
-    prodR = std::accumulate(seqR.begin(), seqR.end(), 
+    prodR = std::accumulate(seqR.cbegin(), seqR.cend(), 
                             1.0, std::multiplies<double>());
 
     int myMax = (r < maxFreq) ? r : maxFreq;
