@@ -26,12 +26,12 @@ URL: https://github.com/jwood000/RcppAlgos, https://gmplib.org/,
         http://primesieve.org/, https://github.com/kimwalisch/primesieve,
         https://github.com/kimwalisch/primecount, http://libdivide.com/
 BugReports: https://github.com/jwood000/RcppAlgos/issues
-Imports: gmp, Rcpp (>= 0.12.8)
-LinkingTo: Rcpp
-Suggests: testthat, numbers (>= 0.6-6), bigIntegerAlgos, microbenchmark
+Imports: gmp, Rcpp (>= 0.12.8), RcppParallel
+LinkingTo: Rcpp, RcppParallel
+Suggests: testthat, numbers (>= 0.6-6), bigIntegerAlgos, microbenchmark, bench
 License: GPL (>=2)
 LazyData: TRUE
-SystemRequirements: gmp (>= 4.2.3), C++11
+SystemRequirements: gmp (>= 4.2.3), C++11, GNU make
 NeedsCompilation: yes
 Author: Joseph Wood
 Maintainer: Joseph Wood <jwood000@gmail.com>
