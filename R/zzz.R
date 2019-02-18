@@ -4,8 +4,8 @@ pkgEnv$nThreads <- NULL
 
 physicalCoreCount <- function() {
     
-    if (.Platform$OS.type == "windows")
-        return(stdThreadMaxThreads())
+    if (grepl("darwin|solaris", R.version$os) || .Platform$OS.type == "windows")
+        return(parallel::detectCores(logical = FALSE))
     
     ## According to R News as of # 3.4.4 
     ##    "parallel::detectCores(logical = FALSE) is ignored on Linux systems, since
@@ -57,7 +57,7 @@ physicalCoreCount <- function() {
 ## when the package is loaded
 .onLoad <- function(libname, pkgname) {
     pkgEnv$nCores <- physicalCoreCount()
-    tempThreads <- parallel::detectCores()
+    tempThreads <- stdThreadMax()
     
     if (is.na(tempThreads)) {
         pkgEnv$nThreads <- 1L
