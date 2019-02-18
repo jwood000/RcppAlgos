@@ -130,14 +130,13 @@ void DivisorMaster(typeInt myMin, typeReturn myMax,
     }
     
     if (Parallel) {
-        std::size_t ind = 0u;
         std::vector<std::thread> myThreads;
         typeInt lowerBnd = myMin;
         typeInt chunkSize = myRange / nThreads;
         typeReturn upperBnd = lowerBnd + chunkSize - 1;
         
-        for (; ind < (nThreads - 1); offsetStrt += chunkSize, 
-             lowerBnd = (upperBnd + 1), upperBnd += chunkSize, ++ind) {
+        for (int ind = 0; ind < (nThreads - 1); offsetStrt += chunkSize, 
+                    lowerBnd = (upperBnd + 1), upperBnd += chunkSize, ++ind) {
             if (bDivSieve) {
                 myThreads.emplace_back(DivisorsSieve<typeInt, typeReturn>, lowerBnd, 
                                        upperBnd, offsetStrt, std::ref(MyDivList));
