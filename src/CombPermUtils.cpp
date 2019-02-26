@@ -4,67 +4,57 @@
 // from Hadley Wickham's article titled 
 // "High Performance functions with Rcpp"
 // found: http://adv-r.had.co.nz/Rcpp.html
-std::vector<std::vector<int> > rleCpp(std::vector<int> &x) {
-    std::vector<int> lengths, numUni, values;
-    std::vector<int>::iterator it, xBeg, xEnd;
-    xBeg = x.begin() + 1; xEnd = x.end();
+std::vector<int> rleCpp(const std::vector<int> &x) {
+    std::vector<int> lengths;
     int prev = x[0];
     unsigned long int i = 0;
-    
-    values.push_back(prev);
     lengths.push_back(1);
     
-    for(it = xBeg; it < xEnd; ++it) {
+    for(auto it = x.cbegin() + 1; it < x.cend(); ++it) {
         if (prev == *it) {
             ++lengths[i];
         } else {
-            values.push_back(*it);
             lengths.push_back(1);
-            ++i;
             prev = *it;
+            ++i;
         }
     }
     
-    numUni.push_back((int) i);
-    std::vector<std::vector<int> > myList {lengths, values, numUni};
-    
-    return myList;
+    return lengths;
 }
 
-double NumPermsWithRep(std::vector<int> &v) {
-    std::vector<std::vector<int> > myRle = rleCpp(v);
-    int n = v.size(), myMax;
-    std::vector<int> myLens = myRle[0], myUnis = myRle[2];
+double NumPermsWithRep(const std::vector<int> &v) {
+    std::vector<int> myLens = rleCpp(v);
     std::sort(myLens.begin(), myLens.end(), std::greater<int>());
     
-    myMax = myLens[0];
-    int numUni = myUnis[0];
+    const int myMax = myLens[0];
+    const int numUni = myLens.size();
     double result = 1;
     
-    for (int i = n; i > myMax; --i)
+    for (int i = v.size(); i > myMax; --i)
         result *= i;
     
-    if (numUni > 0)
-        for (int i = 1; i <= numUni; ++i)
+    if (numUni > 1)
+        for (int i = 1; i < numUni; ++i)
             for (int j = 2; j <= myLens[i]; ++j)
                 result /= j;
     
     return result;
 }
 
-double NumPermsNoRep(int n, int k) {
-    double dblN = (double) n, result = 1;
-    double i, m = dblN - (double) k;
-    for (i = n; i > m; --i) {result *= i;}
+double NumPermsNoRep(const int n, const int k) {
+    double dblN = static_cast<double>(n), result = 1;
+    double m = dblN - static_cast<double>(k);
+    for (double i = n; i > m; --i) {result *= i;}
     return result;
 }
 
 // Returns number of k-combinations from n elements.
 // Mathematically speaking, we have: n!/(k!*(n-k)!)
-double nChooseK(double n, double k) {
+double nChooseK(const int n, const int k) {
     
     if (k == n || k == 0)
-        return 1;
+        return 1.0;
     
     double nCk = 1;
     
@@ -76,7 +66,7 @@ double nChooseK(double n, double k) {
     return round(nCk);
 }
 
-double NumCombsWithRep(int n, int r) {
+double NumCombsWithRep(const int n, const int r) {
     return nChooseK(n + r - 1, r);
 }
 
@@ -89,7 +79,153 @@ double NumCombsWithRep(int n, int r) {
 //         than or equal to n
 //      2) that the repetition of the each element 
 //         isn't the same
-double MultisetCombRowNum(int n, int r, std::vector<int> &Reps) {
+double MultisetCombRowNumFast(const int n, const int r, 
+                              const std::vector<int> &Reps) {
+    
+    if (r < 1 || n <= 1)
+        return 1.0;
+    
+    if (r == n)
+        if (std::accumulate(Reps.begin(), Reps.end(), 0) == n)
+            return 1.0;
+        
+    const int r1 = r + 1;
+    std::vector<double> triangleVec(r1);
+    std::vector<double> temp(r1);
+    
+    int myMax = r1;
+    if (myMax > Reps[0] + 1)
+        myMax = Reps[0] + 1;
+    
+    for (int i = 0; i < myMax; ++i)
+        triangleVec[i] = temp[i] = 1;
+    
+    --myMax;
+    int ind = 1;
+    
+    for (; myMax < r; ++ind) {
+        int myMin = std::min(Reps[ind], r);
+        
+        for (int i = 1; i <= myMin; ++i)
+            triangleVec[i] += triangleVec[i - 1];
+        
+        myMin = std::min(Reps[ind] + myMax, r);
+        int j = 0;
+        
+        for (int i = (Reps[ind] + 1); i <= myMin; ++i, ++j) {
+            triangleVec[i] += triangleVec[i - 1];
+            triangleVec[i] -= temp[j];
+            temp[j] = triangleVec[j];
+        }
+        
+        for (; j <= myMin; ++j)
+            temp[j] = triangleVec[j];
+        
+        myMax = myMin;
+    }
+    
+    const int n1 = n - 1;
+    
+    for (; ind < n1; ++ind) {
+        double t = triangleVec[r];
+        const int s = std::min(Reps[ind], r);
+        
+        for (int i = 1; i <= s; ++i)
+            triangleVec[r] += triangleVec[r - i];
+        
+        double mySum = triangleVec[r];
+        
+        for (int i = r - 1; i >= s; --i) {
+            mySum -= t;
+            t = triangleVec[i];
+            mySum += triangleVec[i - s];
+            triangleVec[i] = mySum;
+        }
+        
+        for (int i = s - 1; i > 0; --i) {
+            mySum -= t;
+            t = triangleVec[i];
+            triangleVec[i] = mySum;
+        }
+    }
+    
+    if (ind < n) {
+        const int myMin2 = std::min(Reps[n1], r);
+        
+        for (int i = 1; i <= myMin2; ++i)
+            triangleVec[r] += triangleVec[r - i];
+    }
+    
+    return triangleVec[r];
+}
+
+// The algorithm below is credited to Randy Lai,
+// author of arrangements and iterpc. It is much
+// faster than the original naive approach whereby
+// we create all combinations of the multiset, then
+// subsequently count the number of permutations
+// of each of those combinations.
+double MultisetPermRowNum(const int n, const int r, 
+                          const std::vector<int> &myReps) {
+    
+    if (n < 2 || r < 1)
+        return 1.0;
+    
+    int sumFreqs = std::accumulate(myReps.begin(), myReps.end(), 0);
+    
+    if (r > sumFreqs)
+        return 0.0;
+    
+     const int n1 = n - 1;
+     const int maxFreq = *std::max_element(myReps.begin(), myReps.end());
+    
+    std::vector<int> seqR(r);
+    std::iota(seqR.begin(), seqR.end(), 1);
+    const double prodR = std::accumulate(seqR.cbegin(), seqR.cend(), 
+                                         1.0, std::multiplies<double>());
+    
+    const int myMax = (r < maxFreq) ? (r + 1) : (maxFreq + 1);
+    std::vector<double> cumProd(myMax), resV(r + 1, 0.0);
+    
+    // Create seqeunce from 1 to myMax, then add another
+    // 1 at the front... equivalent to c(1, 1:myMax)
+    std::iota(cumProd.begin(), cumProd.end(), 1);
+    cumProd.insert(cumProd.begin(), 1);
+    
+    std::partial_sum(cumProd.begin(), cumProd.end(), 
+                     cumProd.begin(), std::multiplies<double>());
+    
+    double numPerms = 0.0;
+    int myMin = std::min(r, myReps[0]);
+    
+    for (int i = 0; i <= myMin; ++i)
+        resV[i] = prodR / cumProd[i];
+    
+    for (int i = 1; i < n1; ++i) {
+        for (int j = r; j > 0; --j) {
+            myMin = std::min(j, myReps[i]);
+            numPerms = 0;
+            for (int k = 0; k <= myMin; ++k)
+                numPerms += resV[j - k] / cumProd[k];
+            
+            resV[j] = numPerms;
+        }
+    }
+    
+    myMin = std::min(r, myReps[n1]);
+    numPerms = 0;
+    for (int i = 0; i <= myMin; ++i)
+        numPerms += resV[r - i] / cumProd[i];
+    
+    return numPerms;
+}
+
+// This function will be used in the main function to
+// determine whether gmp analogs are needed as the fast
+// algorithm above could potentionally produce negative
+// results because of issues with double precision
+double MultisetCombRowNum(const int n, const int r, 
+                          const std::vector<int> &Reps) {
     
     if (r < 1 || n <= 1)
         return 1;
@@ -124,69 +260,6 @@ double MultisetCombRowNum(int n, int r, std::vector<int> &Reps) {
     }
     
     return triangleVec[r];
-}
-
-// The algorithm below is credited to Randy Lai,
-// author of arrangements and iterpc. It is much
-// faster than the original naive approach whereby
-// we create all combinations of the multiset, then
-// subsequently count the number of permutations
-// of each of those combinations.
-double MultisetPermRowNum(int n, int r, std::vector<int> &myReps) {
-    
-    if (n < 2 || r < 1)
-        return 1.0;
-    
-    const int sumFreqs = std::accumulate(myReps.cbegin(), myReps.cend(), 0);
-    
-    if (r > sumFreqs)
-        return 0.0;
-    
-    int maxFreq, n1 = n - 1;
-    maxFreq = *std::max_element(myReps.cbegin(), myReps.cend());
-    
-    std::vector<int> seqR(r);
-    std::iota(seqR.begin(), seqR.end(), 1);
-    
-    double prodR, numPerms = 0.0;
-    prodR = std::accumulate(seqR.cbegin(), seqR.cend(), 
-                            1.0, std::multiplies<double>());
-
-    int myMax = (r < maxFreq) ? r : maxFreq;
-    ++myMax;
-    
-    std::vector<double> cumProd(myMax), resV(r + 1, 0.0);
-    
-    // Create seqeunce from 1 to myMax, then add another
-    // 1 at the front... equivalent to c(1, 1:myMax)
-    std::iota(cumProd.begin(), cumProd.end(), 1);
-    cumProd.insert(cumProd.begin(), 1);
-    
-    std::partial_sum(cumProd.begin(), cumProd.end(), 
-                     cumProd.begin(), std::multiplies<double>());
-
-    int myMin = std::min(r, myReps[0]);
-    
-    for (int i = 0; i <= myMin; ++i)
-        resV[i] = prodR / cumProd[i];
-
-    for (int i = 1; i < n1; ++i) {
-        for (int j = r; j > 0; --j) {
-            myMin = std::min(j, myReps[i]);
-            numPerms = 0;
-            for (int k = 0; k <= myMin; ++k)
-                numPerms += resV[j - k] / cumProd[k];
-            
-            resV[j] = numPerms;
-        }
-    }
-    
-    myMin = std::min(r, myReps[n1]);
-    numPerms = 0;
-    for (int i = 0; i <= myMin; ++i)
-        numPerms += resV[r - i] / cumProd[i];
-    
-    return numPerms;
 }
 
 // This algorithm is nearly identical to the
@@ -247,13 +320,13 @@ void nextPartialPerm(int *myArray, const unsigned long int &r,
             myArray[k] = myArray[q];
             myArray[q] = temp;
         }
-
+        
         p1 = r1;
         while (myArray[p1 + 1] <= myArray[p1])
             --p1;
-
+        
         unsigned long int p2 = lastElem;
-
+        
         while (myArray[p2] <= myArray[p1])
             --p2;
         
@@ -268,4 +341,3 @@ void nextPartialPerm(int *myArray, const unsigned long int &r,
         }
     }
 }
-

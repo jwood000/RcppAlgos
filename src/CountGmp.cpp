@@ -7,33 +7,30 @@
  * utilize the gmp library and deal mostly with mpz_t types
  */
 
-void NumPermsWithRepGmp(mpz_t result, std::vector<int> &v) {
+void NumPermsWithRepGmp(mpz_t result, const std::vector<int> &v) {
     mpz_set_ui(result, 1);
-    std::vector<std::vector<int> > myRle = rleCpp(v);
-    int n = v.size(), myMax;
-    std::vector<int> myLens = myRle[0], myUnis = myRle[2];
+    std::vector<int> myLens = rleCpp(v);
     std::sort(myLens.begin(), myLens.end(), std::greater<int>());
     
-    myMax = myLens[0];
-    int numUni = myUnis[0];
+    const int myMax = myLens[0];
+    const int numUni = myLens.size();
     
-    for (int i = n; i > myMax; --i)
+    for (int i = v.size(); i > myMax; --i)
         mpz_mul_ui(result, result, i);
     
-    if (numUni > 0)
-        for (int i = 1; i <= numUni; ++i)
+    if (numUni > 1)
+        for (int i = 1; i < numUni; ++i)
             for (int j = 2; j <= myLens[i]; ++j)
                 mpz_divexact_ui(result, result, j);
 }
 
-void NumPermsNoRepGmp(mpz_t result, int n, int k) {
+void NumPermsNoRepGmp(mpz_t result, const int n, const int k) {
     mpz_set_ui(result, 1);
-    int i, m = n - k;
-    for (i = n; i > m; --i)
+    for (int i = n, m = n - k; i > m; --i)
         mpz_mul_ui(result, result, i);
 }
 
-void nChooseKGmp(mpz_t result, int n, int k) {
+void nChooseKGmp(mpz_t result, const int n, const int k) {
     mpz_set_ui(result, 1);
     if (k != n && k != 0) {
         for (int i = (n - k + 1), d = 1; d <= k; ++i, ++d) {
@@ -43,73 +40,123 @@ void nChooseKGmp(mpz_t result, int n, int k) {
     }
 }
 
-void NumCombsWithRepGmp(mpz_t result, int n, int r) {
+void NumCombsWithRepGmp(mpz_t result, const int n, const int r) {
     nChooseKGmp(result, n + r - 1, r);
 }
 
-void MultisetCombRowNumGmp(mpz_t result, int n, int r, std::vector<int> &Reps) {
+bool onlyOneCombo(const int n, const int r, const std::vector<int> &Reps) {
+    if (r < 1 || n <= 1)
+        return true;
     
-    if (r >= 1 && n > 1) {
-        int i, k, j, myMax, r1 = r + 1;
+    if (r == n)
+        if (std::accumulate(Reps.begin(), Reps.end(), 0) == n)
+            return true;
+    
+    return false;
+}
+
+void MultisetCombRowNumGmp(mpz_t result, const int n, const int r,
+                           const std::vector<int> &Reps) {
+        
+    if (!onlyOneCombo(n, r, Reps)) {
+        const int r1 = r + 1;
+        int myMax = r1;
+        if (myMax > Reps[0] + 1)
+            myMax = Reps[0] + 1;
+
         mpz_t* triangleVec;
         mpz_t* temp;
         
         triangleVec = (mpz_t *) malloc(r1 * sizeof(mpz_t));
         temp = (mpz_t *) malloc(r1 * sizeof(mpz_t));
         
-        for (i = 0; i < r1; ++i) {
+        for (int i = 0; i < r1; ++i) {
             mpz_init(triangleVec[i]);
             mpz_init(temp[i]);
         }
-    
-        mpz_t tempSum;
-        mpz_init(tempSum);
         
-        myMax = r1;
-        if (myMax > Reps[0] + 1)
-            myMax = Reps[0] + 1;
-        
-        for (i = 0; i < myMax; ++i) {
+        for (int i = 0; i < myMax; ++i) {
             mpz_set_ui(triangleVec[i], 1);
             mpz_set_ui(temp[i], 1);
         }
         
-        for (k = 1; k < n; ++k) {
-            for (i = r; i > 0; --i) {
-                myMax = i - Reps[k];
-                if (myMax < 0)
-                    myMax = 0;
-                
-                mpz_set_ui(tempSum, 0);
-                
-                for (j = myMax; j <= i; ++j)
-                    mpz_add(tempSum, tempSum, triangleVec[j]);
-                
-                mpz_set(temp[i], tempSum);
+        --myMax;
+        int ind = 1;
+        
+        for (; myMax < r; ++ind) {
+            int myMin = std::min(Reps[ind], r);
+            
+            for (int i = 1; i <= myMin; ++i)
+                mpz_add(triangleVec[i], triangleVec[i], triangleVec[i - 1]);
+            
+            myMin = std::min(Reps[ind] + myMax, r);
+            int j = 0;
+            
+            for (int i = (Reps[ind] + 1); i <= myMin; ++i, ++j) {
+                mpz_add(triangleVec[i], triangleVec[i], triangleVec[i - 1]);
+                mpz_sub(triangleVec[i], triangleVec[i], temp[j]);
+                mpz_set(temp[j], triangleVec[j]);
             }
             
-            for (int i = 0; i < r1; ++i)
-                mpz_set(triangleVec[i], temp[i]);
+            for (; j <= myMin; ++j)
+                mpz_set(temp[j], triangleVec[j]);
+            
+            myMax = myMin;
+        }
+        
+        const int n1 = n - 1;
+        mpz_t mySum, t;
+        mpz_init(mySum);
+        mpz_init(t);
+        
+        for (; ind < n1; ++ind) {
+            mpz_set(t, triangleVec[r]);
+            const int s = std::min(Reps[ind], r);
+            
+            for (int i = 1; i <= s; ++i)
+                mpz_add(triangleVec[r], triangleVec[r], triangleVec[r - i]);
+            
+            mpz_set(mySum, triangleVec[r]);
+            
+            for (int i = r - 1; i >= s; --i) {
+                mpz_sub(mySum, mySum, t);
+                mpz_set(t, triangleVec[i]);
+                mpz_add(mySum, mySum, triangleVec[i - s]);
+                mpz_set(triangleVec[i], mySum);
+            }
+            
+            for (int i = s - 1; i > 0; --i) {
+                mpz_sub(mySum, mySum, t);
+                mpz_set(t, triangleVec[i]);
+                mpz_set(triangleVec[i], mySum);
+            }
+        }
+        
+        if (ind < n) {
+            const int myMin2 = std::min(Reps[n1], r);
+            
+            for (int i = 1; i <= myMin2; ++i)
+                mpz_add(triangleVec[r], triangleVec[r], triangleVec[r - i]);
         }
         
         mpz_set(result, triangleVec[r]);
         
-        for (i = 0; i < r1; ++i) {
+        for (int i = 0; i < r1; ++i) {
             mpz_clear(triangleVec[i]);
             mpz_clear(temp[i]);
         }
         
-        free(triangleVec);
-        free(temp);
-        mpz_clear(tempSum);
+        free(triangleVec); free(temp);
+        mpz_clear(mySum); mpz_clear(t);
     } else {
         mpz_set_ui(result, 1);
     }
 }
 
-void MultisetPermRowNumGmp(mpz_t result, int n, int r, std::vector<int> &myReps) {
+void MultisetPermRowNumGmp(mpz_t result, const int n, const int r,
+                           const std::vector<int> &myReps) {
     
-    int sumFreqs = std::accumulate(myReps.cbegin(), myReps.cend(), 0);
+    const int sumFreqs = std::accumulate(myReps.cbegin(), myReps.cend(), 0);
     
     if (n < 2 || r < 1) {
         mpz_set_ui(result, 1);
@@ -125,14 +172,12 @@ void MultisetPermRowNumGmp(mpz_t result, int n, int r, std::vector<int> &myReps)
         mpz_t prodR;
         mpz_init(prodR);
         mpz_set_ui(prodR, 1);
-        unsigned long int uR = r;
         
-        for (std::size_t i = 0; i < uR; ++i)
+        for (int i = 0; i < r; ++i)
             mpz_mul_ui(prodR, prodR, seqR[i]);
         
-        unsigned long int uR1 = uR + 1;
-        int myMax = (r < maxFreq) ? r : maxFreq;
-        myMax += 2;
+        const std::size_t uR1 = r + 1;
+        const int myMax = (r < maxFreq) ? (r + 2) : (maxFreq + 2);
         
         mpz_t *cumProd, *resV;
         cumProd = (mpz_t *) malloc(sizeof(mpz_t) * myMax);
