@@ -1,7 +1,7 @@
 #include "Combinatorics.h"
 #include "CleanConvert.h"
 #include <RcppParallel.h>
-#include <thread>
+#include <RcppThread.h>
 
 // [[Rcpp::export]]
 unsigned long int cpp11GetNumThreads() {
@@ -493,7 +493,6 @@ SEXP CombinatoricsRcpp(SEXP Rv, SEXP Rm, SEXP Rrepetition, SEXP RFreqs, SEXP Rlo
         Rcpp::stop("m must be positive");
     
     std::vector<double> rowVec(m);
-    double seqEnd;
     
     if (IsCharacter) {
         rcppChar = Rcpp::as<Rcpp::CharacterVector>(Rv);
@@ -503,7 +502,7 @@ SEXP CombinatoricsRcpp(SEXP Rv, SEXP Rm, SEXP Rrepetition, SEXP RFreqs, SEXP Rlo
         n = vInt.size();
     } else {
         if (Rf_length(Rv) == 1) {
-            seqEnd = Rcpp::as<double>(Rv);
+            double seqEnd = Rcpp::as<double>(Rv);
             if (Rcpp::NumericVector::is_na(seqEnd)) {seqEnd = 1;}
             if (seqEnd > 1) {m1 = 1; m2 = seqEnd;} else {m1 = seqEnd; m2 = 1;}
             Rcpp::IntegerVector vTemp = Rcpp::seq(m1, m2);
@@ -548,8 +547,8 @@ SEXP CombinatoricsRcpp(SEXP Rv, SEXP Rm, SEXP Rrepetition, SEXP RFreqs, SEXP Rlo
             
         n = vNum.size();
     }
-    
-    double computedRows;
+
+    double computedRows = 0;
     
     if (IsMultiset) {
         if (n != lenFreqs)
@@ -583,12 +582,11 @@ SEXP CombinatoricsRcpp(SEXP Rv, SEXP Rm, SEXP Rrepetition, SEXP RFreqs, SEXP Rlo
         }
     }
     
+    bool IsGmp = (computedRows > Significand53);
     mpz_t computedRowMpz;
     mpz_init(computedRowMpz);
-    bool isGmp = false;
     
-    if (computedRows > Significand53) {
-        isGmp = true;
+    if (IsGmp) {
         if (IsMultiset) {
             if (IsComb) {
                 MultisetCombRowNumGmp(computedRowMpz, n, m, myReps);
@@ -612,7 +610,7 @@ SEXP CombinatoricsRcpp(SEXP Rv, SEXP Rm, SEXP Rrepetition, SEXP RFreqs, SEXP Rlo
             }
         }
     }
-    
+
     double lower = 0, upper = 0;
     bool bLower = false, bUpper = false;
     mpz_t lowerMpz[1], upperMpz[1];
@@ -620,7 +618,7 @@ SEXP CombinatoricsRcpp(SEXP Rv, SEXP Rm, SEXP Rrepetition, SEXP RFreqs, SEXP Rlo
     mpz_set_ui(lowerMpz[0], 0); mpz_set_ui(upperMpz[0], 0);
     
     if (!IsCount) {
-        if (isGmp) {
+        if (IsGmp) {
             if (!Rf_isNull(Rlow)) {
                 bLower = true;
                 createMPZArray(Rlow, lowerMpz, 1);
@@ -657,7 +655,7 @@ SEXP CombinatoricsRcpp(SEXP Rv, SEXP Rm, SEXP Rrepetition, SEXP RFreqs, SEXP Rlo
         }
     }
     
-    if (isGmp) {
+    if (IsGmp) {
         if (mpz_cmp(lowerMpz[0], computedRowMpz) >= 0 || mpz_cmp(upperMpz[0], computedRowMpz) > 0)
             Rcpp::stop("bounds cannot exceed the maximum number of possible results");
     } else {
@@ -666,7 +664,7 @@ SEXP CombinatoricsRcpp(SEXP Rv, SEXP Rm, SEXP Rrepetition, SEXP RFreqs, SEXP Rlo
     }
     
     if (IsCount) {
-        if (isGmp) {
+        if (IsGmp) {
             unsigned long int sizeNum, size = sizeof(int);
             unsigned long int numb = 8 * sizeof(int);
             sizeNum = sizeof(int) * (2 + (mpz_sizeinbase(computedRowMpz, 2) + numb - 1) / numb);
@@ -684,24 +682,27 @@ SEXP CombinatoricsRcpp(SEXP Rv, SEXP Rm, SEXP Rrepetition, SEXP RFreqs, SEXP Rlo
             UNPROTECT(1);
             return(ansPos);
         } else {
-            return Rcpp::wrap(computedRows);
+            if (computedRows > std::numeric_limits<int>::max())
+                return Rcpp::wrap(computedRows);
+            else
+                return Rcpp::wrap(static_cast<int>(computedRows));
         }
     }
     
     std::vector<int> startZ(m);
     bool permNonTriv = false;
-    if (!isGmp)
-        mpz_set_d(lowerMpz[0], lower);
+    double dblLower = lower;
+    if (!IsGmp) mpz_set_d(lowerMpz[0], dblLower);
     
     if (bLower && mpz_cmp_ui(lowerMpz[0], 0) > 0) {
         if (IsComb) {
-            if (isGmp)
+            if (IsGmp)
                 startZ = nthCombinationGmp(n, m, lowerMpz[0], IsRepetition, IsMultiset, myReps);
             else
                 startZ = nthCombination(n, m, lower, IsRepetition, IsMultiset, myReps);
         } else {
             permNonTriv = true;
-            if (isGmp)
+            if (IsGmp)
                 startZ = nthPermutationGmp(n, m, lowerMpz[0], IsRepetition, IsMultiset, myReps, freqsExpanded, true);
             else
                 startZ = nthPermutation(n, m, lower, IsRepetition, IsMultiset, myReps, freqsExpanded, true);
@@ -728,25 +729,25 @@ SEXP CombinatoricsRcpp(SEXP Rv, SEXP Rm, SEXP Rrepetition, SEXP RFreqs, SEXP Rlo
     
     double userNumRows = 0;
     
-    if (isGmp) {
+    if (IsGmp) {
         mpz_t testBound; mpz_init(testBound);
         if (bLower && bUpper) {
             mpz_sub(testBound, upperMpz[0], lowerMpz[0]);
             mpz_abs(testBound, testBound);
-            if (mpz_cmp_ui(testBound, INT_MAX) > 0)
+            if (mpz_cmp_ui(testBound, std::numeric_limits<int>::max()) > 0)
                 Rcpp::stop("The number of rows cannot exceed 2^31 - 1.");
             
             userNumRows = mpz_get_d(testBound);
         } else if (bUpper) {
             permNonTriv = true;
-            if (mpz_cmp_d(upperMpz[0], INT_MAX) > 0)
+            if (mpz_cmp_d(upperMpz[0], std::numeric_limits<int>::max()) > 0)
                 Rcpp::stop("The number of rows cannot exceed 2^31 - 1.");
                 
             userNumRows = mpz_get_d(upperMpz[0]);
         } else if (bLower) {
             mpz_sub(testBound, computedRowMpz, lowerMpz[0]);
             mpz_abs(testBound, testBound);
-            if (mpz_cmp_d(testBound, INT_MAX) > 0)
+            if (mpz_cmp_d(testBound, std::numeric_limits<int>::max()) > 0)
                 Rcpp::stop("The number of rows cannot exceed 2^31 - 1.");
             
             userNumRows = mpz_get_d(testBound);
@@ -770,7 +771,7 @@ SEXP CombinatoricsRcpp(SEXP Rv, SEXP Rm, SEXP Rrepetition, SEXP RFreqs, SEXP Rlo
                            "exceeds the maximum number of possible results or the "
                            "lowerBound is greater than the upperBound.");
         } else {
-            if (computedRows > INT_MAX)
+            if (computedRows > std::numeric_limits<int>::max())
                 Rcpp::stop("The number of rows cannot exceed 2^31 - 1.");
             
             userNumRows = computedRows;
@@ -780,7 +781,7 @@ SEXP CombinatoricsRcpp(SEXP Rv, SEXP Rm, SEXP Rrepetition, SEXP RFreqs, SEXP Rlo
         Rcpp::stop("The number of rows must be positive. Either the lowerBound "
                   "exceeds the maximum number of possible results or the "
                   "lowerBound is greater than the upperBound.");
-    } else if (userNumRows > INT_MAX) {
+    } else if (userNumRows > std::numeric_limits<int>::max()) {
         Rcpp::stop("The number of rows cannot exceed 2^31 - 1.");
     } else {
         nRows = static_cast<int>(userNumRows);
@@ -988,7 +989,7 @@ SEXP CombinatoricsRcpp(SEXP Rv, SEXP Rm, SEXP Rrepetition, SEXP RFreqs, SEXP Rlo
         
         if (Parallel) {
             permNonTriv = true;
-            std::vector<std::thread> myThreads;
+            RcppThread::ThreadPool pool(nThreads);
             int step = 0, stepSize = nRows / nThreads;
             int nextStep = stepSize;
             
@@ -996,24 +997,20 @@ SEXP CombinatoricsRcpp(SEXP Rv, SEXP Rm, SEXP Rrepetition, SEXP RFreqs, SEXP Rlo
                 Rcpp::LogicalMatrix matBool = Rcpp::no_init_matrix(nRows, nCol);
                 RcppParallel::RMatrix<int> parBool(matBool);
 
-                for (int j = 0; j < (nThreads - 1); ++j) {
-                    myThreads.emplace_back(GeneralReturn<RcppParallel::RMatrix<int>, int>, n, m, vInt,
-                                           IsRepetition, nextStep, IsComb, myReps, freqsExpanded, startZ,
-                                           permNonTriv, IsMultiset, myFunInt, keepRes, std::ref(parBool), step);
-                    step += stepSize;
-                    nextStep += stepSize;
-
+                for (int j = 0; j < (nThreads - 1); ++j, step += stepSize, nextStep += stepSize) {
+                    pool.push(std::cref(GeneralReturn<RcppParallel::RMatrix<int>, int>), 
+                              n, m, vInt, IsRepetition, nextStep, IsComb, myReps, freqsExpanded, 
+                              startZ, permNonTriv, IsMultiset, myFunInt, keepRes, std::ref(parBool), step);
+                    
                     getStartZ(n, m, lower, stepSize, lowerMpz[0], IsRepetition,
-                              IsComb, IsMultiset, isGmp, myReps, freqsExpanded, startZ);
+                              IsComb, IsMultiset, IsGmp, myReps, freqsExpanded, startZ);
                 }
 
-                myThreads.emplace_back(GeneralReturn<RcppParallel::RMatrix<int>, int>, n, m, vInt,
-                                       IsRepetition, nRows, IsComb, myReps, freqsExpanded, startZ,
-                                       permNonTriv, IsMultiset, myFunInt, keepRes, std::ref(parBool), step);
+                pool.push(std::cref(GeneralReturn<RcppParallel::RMatrix<int>, int>), 
+                          n, m, vInt, IsRepetition, nRows, IsComb, myReps, freqsExpanded, 
+                          startZ, permNonTriv, IsMultiset, myFunInt, keepRes, std::ref(parBool), step);
 
-                for (auto& thr: myThreads)
-                    thr.join();
-                
+                pool.join();
                 return matBool;
                 
             } else if (IsFactor || IsInteger) {
@@ -1021,20 +1018,19 @@ SEXP CombinatoricsRcpp(SEXP Rv, SEXP Rm, SEXP Rrepetition, SEXP RFreqs, SEXP Rlo
                 RcppParallel::RMatrix<int> parInt(matInt);
                 
                 for (int j = 0; j < (nThreads - 1); ++j, step += stepSize, nextStep += stepSize) {
-                    myThreads.emplace_back(GeneralReturn<RcppParallel::RMatrix<int>, int>, n, m, vInt,
-                                           IsRepetition, nextStep, IsComb, myReps, freqsExpanded, startZ,
-                                           permNonTriv, IsMultiset, myFunInt, keepRes, std::ref(parInt), step);
+                    pool.push(std::cref(GeneralReturn<RcppParallel::RMatrix<int>, int>), 
+                              n, m, vInt, IsRepetition, nextStep, IsComb, myReps, freqsExpanded, 
+                              startZ, permNonTriv, IsMultiset, myFunInt, keepRes, std::ref(parInt), step);
 
                     getStartZ(n, m, lower, stepSize, lowerMpz[0], IsRepetition, 
-                               IsComb, IsMultiset, isGmp, myReps, freqsExpanded, startZ);
+                               IsComb, IsMultiset, IsGmp, myReps, freqsExpanded, startZ);
                 }
                 
-                myThreads.emplace_back(GeneralReturn<RcppParallel::RMatrix<int>, int>, n, m, vInt,
-                                       IsRepetition, nRows, IsComb, myReps, freqsExpanded, startZ,
-                                       permNonTriv, IsMultiset, myFunInt, keepRes, std::ref(parInt), step);
+                pool.push(std::cref(GeneralReturn<RcppParallel::RMatrix<int>, int>),
+                          n, m, vInt, IsRepetition, nRows, IsComb, myReps, freqsExpanded, 
+                          startZ, permNonTriv, IsMultiset, myFunInt, keepRes, std::ref(parInt), step);
                 
-                for (auto& thr: myThreads)
-                    thr.join();
+                pool.join();
                 
                 if (IsFactor) {
                     Rcpp::IntegerVector testFactor = Rcpp::as<Rcpp::IntegerVector>(Rv);
@@ -1051,21 +1047,19 @@ SEXP CombinatoricsRcpp(SEXP Rv, SEXP Rm, SEXP Rrepetition, SEXP RFreqs, SEXP Rlo
                 RcppParallel::RMatrix<double> parNum(matNum);
                 
                 for (int j = 0; j < (nThreads - 1); ++j, step += stepSize, nextStep += stepSize) {
-                    myThreads.emplace_back(GeneralReturn<RcppParallel::RMatrix<double>, double>, n, m, vNum,
-                                           IsRepetition, nextStep, IsComb, myReps, freqsExpanded, startZ,
-                                           permNonTriv, IsMultiset, myFunDbl, keepRes, std::ref(parNum), step);
+                    pool.push(std::cref(GeneralReturn<RcppParallel::RMatrix<double>, double>), 
+                              n, m, vNum, IsRepetition, nextStep, IsComb, myReps, freqsExpanded, 
+                              startZ, permNonTriv, IsMultiset, myFunDbl, keepRes, std::ref(parNum), step);
                     
                     getStartZ(n, m, lower, stepSize, lowerMpz[0], IsRepetition, 
-                              IsComb, IsMultiset, isGmp, myReps, freqsExpanded, startZ);
+                              IsComb, IsMultiset, IsGmp, myReps, freqsExpanded, startZ);
                 }
 
-                myThreads.emplace_back(GeneralReturn<RcppParallel::RMatrix<double>, double>, n, m, vNum,
-                                       IsRepetition, nRows, IsComb, myReps, freqsExpanded, startZ,
-                                       permNonTriv, IsMultiset, myFunDbl, keepRes, std::ref(parNum), step);
+                pool.push(std::cref(GeneralReturn<RcppParallel::RMatrix<double>, double>),
+                          n, m, vNum, IsRepetition, nRows, IsComb, myReps, freqsExpanded, startZ,
+                          permNonTriv, IsMultiset, myFunDbl, keepRes, std::ref(parNum), step);
                 
-                for (auto& thr: myThreads)
-                    thr.join();
-                
+                pool.join();
                 return matNum;
             }
         } else {

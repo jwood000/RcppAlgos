@@ -5,7 +5,7 @@
 #include "Wheel.h"
 #include <cmath>
 #include <deque>
-#include <thread>
+#include <RcppThread.h>
 
 // "PrimeSieve" implements a simple segmented version of the Sieve of 
 // Eratosthenes (original implementation authored by Kim Walisch). An
@@ -609,37 +609,36 @@ namespace PrimeSieve {
         
         if (Parallel) {
             std::size_t ind = 0u;
-            std::vector<std::thread> myThreads;
+            RcppThread::ThreadPool pool(nThreads);
             int_fast64_t upperBnd, lowerBnd = myMin;
             int_fast64_t chunkSize = segSize * std::floor(static_cast<double>(myRange / nThreads) / segSize);
             upperBnd = segSize * std::floor(myMin / segSize) + chunkSize;
             
             for (; ind < (nThreads - 1); lowerBnd = upperBnd, upperBnd += chunkSize, ++ind) {
                 if (upperBnd > medCut) {
-                    myThreads.emplace_back(PrimeSieveBig<typePrime>, lowerBnd, upperBnd, std::ref(svPriOne),
-                                           std::ref(svPriTwo), std::ref(primeList[ind]), nBigSegs, std::ref(check30030));
+                    pool.push(std::cref(PrimeSieveBig<typePrime>), lowerBnd, upperBnd, std::ref(svPriOne),
+                              std::ref(svPriTwo), std::ref(primeList[ind]), nBigSegs, std::ref(check30030));
                 } else if (upperBnd > smallCut) {
-                    myThreads.emplace_back(PrimeSieveMedium<typePrime>, lowerBnd, upperBnd, 
-                                           std::ref(svPriMain), std::ref(primeList[ind]), nBigSegs);
+                    pool.push(std::cref(PrimeSieveMedium<typePrime>), lowerBnd, upperBnd, 
+                              std::ref(svPriMain), std::ref(primeList[ind]), nBigSegs);
                 } else {
-                    myThreads.emplace_back(PrimeSieveSmall<typePrime>, lowerBnd, upperBnd,
-                                           std::ref(svPriMain), std::ref(primeList[ind]));
+                    pool.push(std::cref(PrimeSieveSmall<typePrime>), lowerBnd, 
+                              upperBnd, std::ref(svPriMain), std::ref(primeList[ind]));
                 }
             }
             
             if (myMax > medCut) {
-                myThreads.emplace_back(PrimeSieveBig<typePrime>, lowerBnd, myMax, std::ref(svPriOne),
-                                       std::ref(svPriTwo), std::ref(primeList[ind]), nBigSegs, std::ref(check30030));
+                pool.push(std::cref(PrimeSieveBig<typePrime>), lowerBnd, myMax, std::ref(svPriOne),
+                          std::ref(svPriTwo), std::ref(primeList[ind]), nBigSegs, std::ref(check30030));
             } else if (myMax > smallCut) {
-                myThreads.emplace_back(PrimeSieveMedium<typePrime>, lowerBnd, myMax, 
-                                       std::ref(svPriMain), std::ref(primeList[ind]), nBigSegs);
+                pool.push(std::cref(PrimeSieveMedium<typePrime>), lowerBnd, 
+                          myMax, std::ref(svPriMain), std::ref(primeList[ind]), nBigSegs);
             } else {
-                myThreads.emplace_back(PrimeSieveSmall<typePrime>, lowerBnd, myMax,
-                                       std::ref(svPriMain), std::ref(primeList[ind]));
+                pool.push(std::cref(PrimeSieveSmall<typePrime>), lowerBnd, 
+                          myMax, std::ref(svPriMain), std::ref(primeList[ind]));
             }
             
-            for (auto &thr: myThreads)
-                thr.join();
+            pool.join();
             
         } else {
             if (myMax > medCut)

@@ -1,7 +1,7 @@
 #include "MotleyPrimes.h"
 #include "CleanConvert.h"
 #include "PhiTinyLookup.h"
-#include <future>
+#include <RcppThread.h>
 #include <mutex>
 #include <array>
 
@@ -12,6 +12,8 @@
 //                      https://github.com/kimwalisch/primecount
 
 namespace PrimeCounting {
+    
+    const std::size_t maxFutures = 100;
     
     // PiPrime is very similar to the PrimeSieveSmall only we are not
     // considering a range. That is, we are only concerned with finding
@@ -213,6 +215,9 @@ namespace PrimeCounting {
             int64_t myRange = (piSqrtx - strt) + 1;
             int64_t lower = strt;
             int64_t upper, chunk;
+            RcppThread::ThreadPool pool(nThreads);
+            std::vector<std::future<int64_t>> myFutures(maxFutures);
+            std::size_t futInd = 0;
             
             if (x > divLim) {
                 unsigned long int nLoops = 1 + std::ceil(std::log(x / divLim) / (nThreads * dblLog15));
@@ -231,13 +236,10 @@ namespace PrimeCounting {
                 chunk = firstRange / nThreads;
                 upper = lower + chunk - 1;
 
-                std::vector<std::future<int64_t>> firstFutures;
-
-                for (std::size_t j = 0; j < nThreads; lower = upper, upper += chunk, ++j)
-                    firstFutures.emplace_back(std::async(std::launch::async, phiSlave, lower, upper, x));
+                for (std::size_t j = 0; j < nThreads; lower = upper, upper += chunk, ++j, ++futInd)
+                    myFutures[futInd] = pool.pushReturn(phiSlave, lower, upper, x);
                 
-                for (auto &fut: firstFutures)
-                    mySum += fut.get();
+                pool.wait();
                 
                 //*********************** End of firstThreads *****************************
                 //*************************************************************************
@@ -252,41 +254,38 @@ namespace PrimeCounting {
                 upper = base + chunk;
 
                 for (std::size_t i = 0; i < (nLoops - 1); ++i) {
-                    std::vector<std::future<int64_t>> midFutures;
-
-                    for (std::size_t j = 0; j < nThreads; lower = upper, ++j, 
+                    for (std::size_t j = 0; j < nThreads; lower = upper, ++j, ++futInd,
                          ++power, chunk = static_cast<int64_t>(std::pow(multTwo, power)), upper = chunk + base)
-                        midFutures.emplace_back(std::async(std::launch::async, phiSlave, lower, upper, x));
+                        myFutures[futInd] = pool.pushReturn(phiSlave, lower, upper, x);
                     
-                    for (auto &fut: midFutures)
-                        mySum += fut.get();
+                    pool.wait();
                 }
-
-                std::vector<std::future<int64_t>> lastFutures;
-                std::size_t j = 0;
                 
-                for (; j < (nThreads - 1) && upper < piSqrtx;  lower = upper, ++j,
-                     ++power, chunk = static_cast<int64_t>(std::pow(multTwo, power)), upper = chunk + base)
-                    lastFutures.emplace_back(std::async(std::launch::async, phiSlave, lower, upper, x));
+                for (std::size_t j = 0; j < (nThreads - 1) && upper < piSqrtx; lower = upper, ++j, ++power,
+                        ++futInd, chunk = static_cast<int64_t>(std::pow(multTwo, power)), upper = chunk + base)
+                    myFutures[futInd] = pool.pushReturn(phiSlave, lower, upper, x);
                 
-                lastFutures.emplace_back(std::async(std::launch::async, phiSlave, lower, piSqrtx, x));
+                myFutures[futInd++] = pool.pushReturn(phiSlave, lower, piSqrtx, x);
                 
-                for (auto &fut: lastFutures)
-                    mySum += fut.get();
+                for (std::size_t j = 0; j < futInd; ++j)
+                    mySum += myFutures[j].get();
+                
+                pool.join();
+                Rcpp::print(Rcpp::wrap(futInd));
                 
             } else {
-                std::vector<std::future<int64_t>> myFutures;
                 chunk = myRange / nThreads;
                 upper = lower + chunk - 1;
-                std::size_t j = 0;
                 
-                for (; j < (nThreads - 1); lower = upper, upper += chunk, ++j)
-                    myFutures.emplace_back(std::async(std::launch::async, phiSlave, lower, upper, x));
+                for (; futInd < (nThreads - 1); lower = upper, upper += chunk, ++futInd)
+                    myFutures[futInd] = pool.pushReturn(phiSlave, lower, upper, x);
                 
-                myFutures.emplace_back(std::async(std::launch::async, phiSlave, lower, piSqrtx, x));
+                myFutures[futInd++] = pool.pushReturn(phiSlave, lower, piSqrtx, x);
                 
-                for (auto &fut: myFutures)
-                    mySum += fut.get();
+                for (std::size_t j = 0; j < futInd; ++j)
+                    mySum += myFutures[j].get();
+                
+                pool.join();
             }
         } else {
             mySum += phiSlave(strt, piSqrtx, x);
@@ -377,7 +376,7 @@ SEXP PrimeCountRcpp (SEXP Rn, SEXP RNumThreads, int maxThreads) {
     
     int64_t result = PrimeCounting::MasterPrimeCount(n, nThreads, maxThreads);
     
-    if (result > INT_MAX)
+    if (result > std::numeric_limits<int>::max())
         return Rcpp::wrap(static_cast<double>(result));
     else
         return Rcpp::wrap(static_cast<int>(result));
@@ -526,7 +525,7 @@ SEXP EratosthenesRcpp(SEXP Rb1, SEXP Rb2, SEXP RNumThreads, int maxCores, int ma
     unsigned long int numSects = nThreads;
     bool Parallel = false;
     
-    if (myMax > INT_MAX) {
+    if (myMax > std::numeric_limits<int>::max()) {
         std::vector<std::vector<double>> primeList(numSects, std::vector<double>());
         std::vector<double> tempPrime;
         

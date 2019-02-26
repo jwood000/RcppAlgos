@@ -1,6 +1,6 @@
 #include <Rcpp.h>
 #include <cmath>
-#include <thread>
+#include <RcppThread.h>
 #include "PrimesPolRho.h"
 #include "CleanConvert.h"
 
@@ -12,7 +12,7 @@ void getPrimeFactors (int64_t &t, std::vector<typeReturn> &factors);
 /* Prove primality or run probabilistic tests.  */
 int FlagProvePrimality = 1;
 
-const double myMax = std::pow(2, 62);
+const double my2Pow62 = std::pow(2, 62);
 const double my64Max = std::pow(2, 63);
 const int64_t Sqrt64Max = static_cast<int64_t>(std::sqrt(my64Max));
 
@@ -63,10 +63,10 @@ int64_t ProdBigMod(int64_t x1_i64, int64_t x2_i64, int64_t p_i64) {
     } else {
         int64_t part2, numChunkMods = 1;
         int64_t chunkSize, chunkMod;
-        double part1 = myMax;
+        double part1 = my2Pow62;
         
-        while (part1 >= myMax) {
-            chunkSize = static_cast<int64_t>(myMax / x1_i64);
+        while (part1 >= my2Pow62) {
+            chunkSize = static_cast<int64_t>(my2Pow62 / x1_i64);
             chunkMod = (x1_i64 * chunkSize) % p_i64;
             numChunkMods = x2_i64 / chunkSize;
             part2 = ((x2_i64 - (chunkSize * numChunkMods)) * x1_i64) % p_i64;
@@ -308,8 +308,6 @@ std::vector<typeReturn> Factorize(std::vector<typeReturn> &factors) {
         return primeReturn;
     } else {
         std::vector<unsigned long int> lengths;
-        typename std::vector<typeReturn>::iterator it, facEnd;
-        facEnd = factors.end();
         typeReturn prev = factors[0];
         
         unsigned long int numUni = 0;
@@ -318,14 +316,14 @@ std::vector<typeReturn> Factorize(std::vector<typeReturn> &factors) {
         lengths.reserve(n);
         lengths.push_back(1);
         
-        for(it = factors.begin() + 1; it < facEnd; ++it) {
-            if (prev == *it) {
+        for(const auto fac: factors) {
+            if (prev == fac) {
                 ++lengths[numUni];
             } else {
                 ++numUni;
-                prev = *it;
+                prev = fac;
                 lengths.push_back(1);
-                uniFacs[numUni] = *it;
+                uniFacs[numUni] = fac;
             }
         }
         
@@ -461,29 +459,27 @@ void PollardRhoMaster(std::vector<double> &myNums, typeReturn myMax, bool bPrime
     }
     
     if (Parallel) {
-        std::size_t ind = 0u;
-        std::vector<std::thread> myThreads;
+        RcppThread::ThreadPool pool(nThreads);
         std::size_t chunkSize = myRange / nThreads;
         std::size_t n = chunkSize - 1;
         
-        for (; ind < (nThreads - 1); m = n, n += chunkSize, ++ind) {
+        for (int ind = 0; ind < (nThreads - 1); m = n, n += chunkSize, ++ind) {
             if (bPrimeFacs)
-                myThreads.emplace_back(PrimeFacList<typeReturn>, m, n, std::ref(myNums), std::ref(MyList));
+                pool.push(std::cref(PrimeFacList<typeReturn>), m, n, std::ref(myNums), std::ref(MyList));
             else if (bAllFacs)
-                myThreads.emplace_back(FactorList<typeReturn>, m, n, std::ref(myNums), std::ref(MyList));
+                pool.push(std::cref(FactorList<typeReturn>), m, n, std::ref(myNums), std::ref(MyList));
             else
-                myThreads.emplace_back(IsPrimeVec, m, n, std::ref(myNums), std::ref(primeTest));
+                pool.push(std::cref(IsPrimeVec), m, n, std::ref(myNums), std::ref(primeTest));
         }
         
         if (bPrimeFacs)
-            myThreads.emplace_back(PrimeFacList<typeReturn>, m, myRange, std::ref(myNums), std::ref(MyList));
+            pool.push(std::cref(PrimeFacList<typeReturn>), m, myRange, std::ref(myNums), std::ref(MyList));
         else if (bAllFacs)
-            myThreads.emplace_back(FactorList<typeReturn>, m, myRange, std::ref(myNums), std::ref(MyList));
+            pool.push(std::cref(FactorList<typeReturn>), m, myRange, std::ref(myNums), std::ref(MyList));
         else
-            myThreads.emplace_back(IsPrimeVec, m, myRange, std::ref(myNums), std::ref(primeTest));
+            pool.push(std::cref(IsPrimeVec), m, myRange, std::ref(myNums), std::ref(primeTest));
         
-        for (auto &thr: myThreads)
-            thr.join();
+        pool.join();
         
     } else {
         if (bPrimeFacs)
@@ -604,8 +600,8 @@ SEXP PollardRhoContainer(SEXP Rv, SEXP RNamed, bool bPrimeFacs,
     
     CleanConvert::convertVector(Rv, myNums, "v must be of type numeric or integer");
     
-    double myMax = *std::max_element(myNums.begin(), myNums.end());
-    double myMin = *std::min_element(myNums.begin(), myNums.end());
+    double myMax = *std::max_element(myNums.cbegin(), myNums.cend());
+    double myMin = *std::min_element(myNums.cbegin(), myNums.cend());
     
     if (std::abs(myMin) > myMax)
         myMax = std::abs(myMin);

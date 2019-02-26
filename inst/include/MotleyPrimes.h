@@ -228,37 +228,33 @@ namespace MotleyPrimes {
         PrimeSieve::sqrtBigPrimes(sqrtBound, false, true, true, primes);
 
         if (Parallel) {
-            std::size_t ind = 0u;
-            std::vector<std::thread> myThreads;
+            RcppThread::ThreadPool pool(nThreads);
             typeInt lower = myMin;
             typeInt chunkSize = myRange / nThreads;
             typeReturn upper = lower + chunkSize - 1;
             
-            for (; ind < (nThreads - 1); offsetStrt += chunkSize, 
-                 lower = (upper + 1), upper += chunkSize, ++ind) {
+            for (int ind = 0; ind < (nThreads - 1); offsetStrt += chunkSize, 
+                                lower = (upper + 1), upper += chunkSize, ++ind) {
                 if (isEuler) {
-                    myThreads.emplace_back(EulerPhiSieve<typeInt, typeReturn, typeRcpp>,
-                                           lower, upper, offsetStrt, std::ref(primes),
-                                           std::ref(numSeq), std::ref(EulerPhis));
+                    pool.push(std::cref(EulerPhiSieve<typeInt, typeReturn, typeRcpp>), lower,
+                              upper, offsetStrt, std::ref(primes), std::ref(numSeq), std::ref(EulerPhis));
                 } else {
-                    myThreads.emplace_back(PrimeFactorizationSieve<typeInt>,
-                                           lower, static_cast<typeInt>(upper), 
-                                           offsetStrt, std::ref(primes), std::ref(primeList));
+                    pool.push(std::cref(PrimeFactorizationSieve<typeInt>), 
+                              lower, static_cast<typeInt>(upper), offsetStrt,
+                              std::ref(primes), std::ref(primeList));
                 }
             }
             
             if (isEuler) {
-                myThreads.emplace_back(EulerPhiSieve<typeInt, typeReturn, typeRcpp>,
-                                       lower, myMax, offsetStrt, std::ref(primes),
-                                       std::ref(numSeq), std::ref(EulerPhis));
+                pool.push(std::cref(EulerPhiSieve<typeInt, typeReturn, typeRcpp>), lower,
+                          myMax, offsetStrt, std::ref(primes), std::ref(numSeq), std::ref(EulerPhis));
             } else {
-                myThreads.emplace_back(PrimeFactorizationSieve<typeInt>,
-                                       lower, static_cast<typeInt>(myMax),
-                                       offsetStrt, std::ref(primes), std::ref(primeList));
+                pool.push(std::cref(PrimeFactorizationSieve<typeInt>), 
+                          lower, static_cast<typeInt>(myMax), offsetStrt,
+                          std::ref(primes), std::ref(primeList));
             }
 
-            for (auto &thr: myThreads)
-                thr.join();
+            pool.join();
             
         } else {
             if (isEuler) {

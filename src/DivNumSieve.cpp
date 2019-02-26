@@ -1,5 +1,5 @@
 #include <Rcpp.h>
-#include <thread>
+#include <RcppThread.h>
 #include <cmath>
 #include <libdivide.h>
 #include "CleanConvert.h"
@@ -130,7 +130,7 @@ void DivisorMaster(typeInt myMin, typeReturn myMax,
     }
     
     if (Parallel) {
-        std::vector<std::thread> myThreads;
+        RcppThread::ThreadPool pool(nThreads);
         typeInt lowerBnd = myMin;
         typeInt chunkSize = myRange / nThreads;
         typeReturn upperBnd = lowerBnd + chunkSize - 1;
@@ -138,24 +138,23 @@ void DivisorMaster(typeInt myMin, typeReturn myMax,
         for (int ind = 0; ind < (nThreads - 1); offsetStrt += chunkSize, 
                     lowerBnd = (upperBnd + 1), upperBnd += chunkSize, ++ind) {
             if (bDivSieve) {
-                myThreads.emplace_back(DivisorsSieve<typeInt, typeReturn>, lowerBnd, 
-                                       upperBnd, offsetStrt, std::ref(MyDivList));
+                pool.push(std::cref(DivisorsSieve<typeInt, typeReturn>), 
+                          lowerBnd, upperBnd, offsetStrt, std::ref(MyDivList));
             } else {
-                myThreads.emplace_back(NumDivisorsSieve<typeInt, typeDivCount>, lowerBnd,
-                                       static_cast<typeInt>(upperBnd), offsetStrt, std::ref(DivCountV));
+                pool.push(std::cref(NumDivisorsSieve<typeInt, typeDivCount>), lowerBnd,
+                          static_cast<typeInt>(upperBnd), offsetStrt, std::ref(DivCountV));
             }
         }
 
         if (bDivSieve) {
-            myThreads.emplace_back(DivisorsSieve<typeInt, typeReturn>, lowerBnd,
-                                   myMax, offsetStrt, std::ref(MyDivList));
+            pool.push(std::cref(DivisorsSieve<typeInt, typeReturn>),
+                      lowerBnd, myMax, offsetStrt, std::ref(MyDivList));
         } else {
-            myThreads.emplace_back(NumDivisorsSieve<typeInt, typeDivCount>, lowerBnd,
-                                   intMax, offsetStrt, std::ref(DivCountV));
+            pool.push(std::cref(NumDivisorsSieve<typeInt, typeDivCount>),
+                      lowerBnd, intMax, offsetStrt, std::ref(DivCountV));
         }
 
-        for (auto &thr: myThreads)
-            thr.join();
+        pool.join();
         
     } else {
         if (bDivSieve) {
