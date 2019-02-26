@@ -313,17 +313,16 @@ std::vector<typeReturn> Factorize(std::vector<typeReturn> &factors) {
         unsigned long int numUni = 0;
         std::vector<typeReturn> uniFacs(n);
         uniFacs[0] = factors[0];
-        lengths.reserve(n);
         lengths.push_back(1);
         
-        for(const auto fac: factors) {
-            if (prev == fac) {
+        for(auto it = factors.cbegin() + 1; it < factors.cend(); ++it) {
+            if (prev == *it) {
                 ++lengths[numUni];
             } else {
                 ++numUni;
-                prev = fac;
+                prev = *it;
                 lengths.push_back(1);
-                uniFacs[numUni] = fac;
+                uniFacs[numUni] = *it;
             }
         }
         
@@ -333,10 +332,10 @@ std::vector<typeReturn> Factorize(std::vector<typeReturn> &factors) {
         
         std::vector<typeReturn> myFacs(numFacs);
         typeReturn temp;
-        
+
         for (std::size_t i = 0; i <= lengths[0]; ++i)
             myFacs[i] = static_cast<typeReturn>(std::pow(uniFacs[0], i));
-        
+
         if (numUni > 0) {
             for (std::size_t j = 1; j <= numUni; ++j) {
                 fSz *= (lengths[j - 1] + 1);
