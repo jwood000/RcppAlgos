@@ -83,7 +83,7 @@ typeRcpp SpecCaseRet(int n, int m, std::vector<typeVector> v, bool IsRep, int nR
                      std::vector<int> freqs, bool bLower, bool permNonTriv, double userRows) {
     
     if (!bLower) {
-        if (computedRows > INT_MAX)
+        if (computedRows > std::numeric_limits<int>::max())
             Rcpp::stop("The number of rows cannot exceed 2^31 - 1.");
         
         nRows = static_cast<int>(computedRows);
@@ -164,7 +164,7 @@ void ApplyFunction(int n, int m, typeVector sexpVec, bool IsRep, int nRows, bool
 }
 
 // Check if our function operating on the rows of our matrix can possibly produce elements
-// greater than INT_MAX. We need a NumericMatrix in this case. We also need to check
+// greater than std::numeric_limits<int>::max(). We need a NumericMatrix in this case. We also need to check
 // if our function is the mean as this can produce non integral values.
 bool checkIsInteger(std::string funPass, unsigned long int uM, int n,
                     std::vector<double> rowVec, std::vector<double> vNum,
@@ -183,7 +183,7 @@ bool checkIsInteger(std::string funPass, unsigned long int uM, int n,
         rowVec[i] = static_cast<double>(vecMax);
     
     double testIfInt = myFunDbl(rowVec, uM);
-    if (testIfInt >= INT_MAX)
+    if (testIfInt > std::numeric_limits<int>::max())
         return false;
     
     if (checkLim) {
@@ -192,7 +192,7 @@ bool checkIsInteger(std::string funPass, unsigned long int uM, int n,
             vAbs.push_back(std::abs(myLim[i]));
         
         double vecMax = *std::max_element(vAbs.cbegin(), vAbs.cend());
-        if (vecMax >= INT_MAX)
+        if (vecMax > std::numeric_limits<int>::max())
             return false;
     }
     
