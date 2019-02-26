@@ -13,8 +13,6 @@
 
 namespace PrimeCounting {
     
-    const std::size_t maxFutures = 100;
-    
     // PiPrime is very similar to the PrimeSieveSmall only we are not
     // considering a range. That is, we are only concerned with finding
     // the number of primes less than maxNum. We are also only counting
@@ -116,7 +114,7 @@ namespace PrimeCounting {
     const std::array<int, 7> myTotients = {{1, 1, 2, 8, 48, 480, 5760}};
     const std::array<int, 13> myTinyPi = {{0, 0, 1, 2, 2, 3, 3, 4, 4, 4, 4, 5, 5}};
     
-    inline int64_t phiTinyCalc(int64_t x, int64_t a) {
+    int64_t phiTinyCalc(int64_t x, int64_t a) {
         int64_t pp = primeProds[a];
         return (x / pp) * myTotients[a] + phiTiny[a][x % pp];
     }
@@ -131,18 +129,18 @@ namespace PrimeCounting {
         }
     }
     
-    inline bool isCached(uint64_t x, uint64_t a) {
+    bool isCached(uint64_t x, uint64_t a) {
         return a < phiCache.size() &&
                x < phiCache[a].size() &&
                phiCache[a][x];
     }
     
-    inline bool isPix(int64_t x, int64_t a) {
+    bool isPix(int64_t x, int64_t a) {
         return x < static_cast<int64_t>(phiPi.size()) &&
                x < (phiPrimes[a + 1] * phiPrimes[a + 1]);
     }
     
-    inline int64_t getStrt(int64_t y) {
+    int64_t getStrt(int64_t y) {
         if (y >= myTinyPrimes.back())
             return phiTinySize;
         else
@@ -216,8 +214,7 @@ namespace PrimeCounting {
             int64_t lower = strt;
             int64_t upper, chunk;
             RcppThread::ThreadPool pool(nThreads);
-            std::vector<std::future<int64_t>> myFutures(maxFutures);
-            std::size_t futInd = 0;
+            std::vector<std::future<int64_t>> myFutures;
             
             if (x > divLim) {
                 unsigned long int nLoops = 1 + std::ceil(std::log(x / divLim) / (nThreads * dblLog15));
@@ -236,10 +233,16 @@ namespace PrimeCounting {
                 chunk = firstRange / nThreads;
                 upper = lower + chunk - 1;
 
-                for (std::size_t j = 0; j < nThreads; lower = upper, upper += chunk, ++j, ++futInd)
-                    myFutures[futInd] = pool.pushReturn(phiSlave, lower, upper, x);
-                
-                pool.wait();
+                for (int j = 0; j < nThreads; lower = upper, upper += chunk, ++j) {
+                    Rcpp::print(Rcpp::wrap(lower));
+                    Rcpp::print(Rcpp::wrap(upper));
+                    Rcpp::print(Rcpp::wrap(j));
+                    Rcpp::print(Rcpp::wrap(" "));
+                }
+                    
+                //     myFutures.push_back(pool.pushReturn(phiSlave, lower, upper, x));
+                // 
+                // pool.wait();
                 
                 //*********************** End of firstThreads *****************************
                 //*************************************************************************
@@ -254,35 +257,49 @@ namespace PrimeCounting {
                 upper = base + chunk;
 
                 for (std::size_t i = 0; i < (nLoops - 1); ++i) {
-                    for (std::size_t j = 0; j < nThreads; lower = upper, ++j, ++futInd,
-                         ++power, chunk = static_cast<int64_t>(std::pow(multTwo, power)), upper = chunk + base)
-                        myFutures[futInd] = pool.pushReturn(phiSlave, lower, upper, x);
-                    
-                    pool.wait();
+                    for (int j = 0; j < nThreads; lower = upper, ++j, ++power,
+                           chunk = static_cast<int64_t>(std::pow(multTwo, power)), upper = chunk + base) {
+                        Rcpp::print(Rcpp::wrap(lower));
+                        Rcpp::print(Rcpp::wrap(upper));
+                        Rcpp::print(Rcpp::wrap(((i + 1) * nThreads) + j));
+                        Rcpp::print(Rcpp::wrap(" "));
+                    }
+                    //     myFutures.push_back(pool.pushReturn(phiSlave, lower, upper, x));
+                    // 
+                    // pool.wait();
                 }
                 
-                for (std::size_t j = 0; j < (nThreads - 1) && upper < piSqrtx; lower = upper, ++j, ++power,
-                        ++futInd, chunk = static_cast<int64_t>(std::pow(multTwo, power)), upper = chunk + base)
-                    myFutures[futInd] = pool.pushReturn(phiSlave, lower, upper, x);
+                for (int j = 0; j < (nThreads - 1) && upper < piSqrtx; lower = upper, ++j, ++power,
+                      chunk = static_cast<int64_t>(std::pow(multTwo, power)), upper = chunk + base) {
+                    Rcpp::print(Rcpp::wrap(lower));
+                    Rcpp::print(Rcpp::wrap(upper));
+                    Rcpp::print(Rcpp::wrap((nLoops * nThreads) + j));
+                    Rcpp::print(Rcpp::wrap(" "));
+                }
+                    // myFutures.push_back(pool.pushReturn(phiSlave, lower, upper, x));
                 
-                myFutures[futInd++] = pool.pushReturn(phiSlave, lower, piSqrtx, x);
+                Rcpp::print(Rcpp::wrap(lower));
+                Rcpp::print(Rcpp::wrap(piSqrtx));
+                Rcpp::print(Rcpp::wrap((nLoops * nThreads) + nThreads - 1));
+                Rcpp::print(Rcpp::wrap(" "));
                 
-                for (std::size_t j = 0; j < futInd; ++j)
-                    mySum += myFutures[j].get();
-                
-                pool.join();
-                Rcpp::print(Rcpp::wrap(futInd));
+                // myFutures.push_back(pool.pushReturn(phiSlave, lower, piSqrtx, x));
+                // 
+                // for (std::size_t j = 0; j < myFutures.size(); ++j)
+                //     mySum += myFutures[j].get();
+                // 
+                // pool.join();
                 
             } else {
                 chunk = myRange / nThreads;
                 upper = lower + chunk - 1;
                 
-                for (; futInd < (nThreads - 1); lower = upper, upper += chunk, ++futInd)
-                    myFutures[futInd] = pool.pushReturn(phiSlave, lower, upper, x);
+                for (int j = 0; j < (nThreads - 1); lower = upper, upper += chunk, ++j)
+                    myFutures.push_back(pool.pushReturn(phiSlave, lower, upper, x));
                 
-                myFutures[futInd++] = pool.pushReturn(phiSlave, lower, piSqrtx, x);
+                myFutures.push_back(pool.pushReturn(phiSlave, lower, piSqrtx, x));
                 
-                for (std::size_t j = 0; j < futInd; ++j)
+                for (std::size_t j = 0; j < myFutures.size(); ++j)
                     mySum += myFutures[j].get();
                 
                 pool.join();
@@ -303,7 +320,7 @@ namespace PrimeCounting {
     // 10^14 -->>   3,204,941,750,802   -->>   7.108 seconds
     // 10^15 -->>  29,844,570,422,669   -->>  53.703 seconds
     // MAX VALUE (2^53 - 1) -->> 
-    //            252,252,704,148,404   -->> 383.605 seconds
+    //            252,252,704,148,404   -->> 381.155 seconds
     
     int64_t MasterPrimeCount(int64_t n, 
                              unsigned long int nThreads = 1,
