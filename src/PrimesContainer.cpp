@@ -194,6 +194,15 @@ namespace PrimeCounting {
         return mySum;
     }
     
+    const double getChunkFactor(int64_t x) {
+        const std::vector<double> nums = {1e10, 1e12, 2e13, 5e13, 8e13, 1e14, 5e14, 1e15, 1e16};
+        const std::vector<double> factor = {1.3, 1.2, 1.1, 1.07, 1.05, 1.01, 1.007, 1.006, 1.005};
+        std::vector<double>::const_iterator it = std::upper_bound(nums.cbegin(),
+                                                                  nums.cend(),
+                                                                  static_cast<double>(x));
+        return std::log(factor[it - nums.cbegin()]);
+    }
+    
     int64_t phiMaster(int64_t x, int64_t a, 
                       unsigned long int nThreads, bool Parallel) {
         
@@ -204,7 +213,6 @@ namespace PrimeCounting {
         
         if (Parallel) {
             const double divLim = 10000000000.0;    //  1e10
-            const double dblLog15 = std::log(1.5);
             
             // We know x, t, and we need to solve for n.
             // x / (1.5^t)^n < 1e10 -->>> 1e10 * (1.5^t)^n = x --->>> x / 1e10 = (1.5^t)^n
@@ -217,78 +225,68 @@ namespace PrimeCounting {
             std::vector<std::future<int64_t>> myFutures;
             
             if (x > divLim) {
-                unsigned long int nLoops = 1 + std::ceil(std::log(x / divLim) / (nThreads * dblLog15));
+                const double chunkFactor = getChunkFactor(x);
+                const int nLoops = 1 + std::ceil(std::log(x / divLim) / (nThreads * chunkFactor));
                 const double multOne = std::exp(std::log(myRange) / (nThreads * nLoops));
-                double power = 0;
+                const int firstStep = std::ceil(std::log10(Significand53 / x)) + 1;
+                int64_t base = lower;
                 
                 //*********************** Begin of firstThreads *****************************
                 // Typically, the size of multOne will be very small resulting in not very
                 // meaningful chunk sizes in the first few loops. Because of this, we 
-                // gurantee that each of the first threads will have at least 10 iterations
+                // gurantee that each of the first threads will have at least firstStep 
+                // iterations and that the threads following will have at least firstStep + 1
                 
-                while (std::pow(multOne, power) < (nThreads * 10))
-                    ++power;
                 
-                int64_t firstRange = static_cast<int64_t>(std::ceil(std::pow(multOne, power))) - lower;
-                chunk = firstRange / nThreads;
-                upper = lower + chunk - 1;
-
-                for (int j = 0; j < nThreads; lower = upper, upper += chunk, ++j) {
-                    Rcpp::print(Rcpp::wrap(lower));
-                    Rcpp::print(Rcpp::wrap(upper));
-                    Rcpp::print(Rcpp::wrap(j));
-                    Rcpp::print(Rcpp::wrap(" "));
-                }
+                // Here we have m = multOne, p = power, and s = firstStep:
+                // m^(p +  1) - m^p = m^p * (m - 1) > (s + 1)  -->>  m^p > (s + 1) / (m - 1)  -->>
+                // p * log(m) > log((s + 1) / (m - 1))  -->>  p > log((s + 1) / (m - 1)) / log(m)
+                double power = std::ceil(std::log((firstStep + 1) / (multOne - 1)) / std::log(multOne)) + 1;
+                
+                
+                // Same as above: lower + (upper - lower) / s   and given:   m^p + lower = upper
+                //   -->>  (lower + m^p / s)  -->>  firstLoops = ceil(((m^p + lower) / s) / nThreads)
+                const int firstLoops = std::ceil(((std::pow(multOne, power) + 
+                                                 base) / firstStep) / nThreads);
+                upper = lower + firstStep;
+                
+                for (int i = 0; i < firstLoops; ++i) {
+                    for (int j = 0; j < nThreads; lower = upper, upper += firstStep, ++j)
+                        myFutures.push_back(pool.pushReturn(phiSlave, lower, upper, x));
                     
-                //     myFutures.push_back(pool.pushReturn(phiSlave, lower, upper, x));
-                // 
-                // pool.wait();
+                    pool.wait();
+                }
                 
                 //*********************** End of firstThreads *****************************
                 //*************************************************************************
                 //*********************** Begin of midThreads *****************************
                 
-                const double multTwo = std::exp(std::log(myRange) / ((nThreads * nLoops) + power));
-                chunk = static_cast<int64_t>(multTwo);
-                ++power;
+                while (std::pow(multOne, power) < (upper - base))
+                    ++power;
                 
-                int64_t base = lower;
-                chunk = static_cast<int64_t>(std::pow(multTwo, power));
-                upper = base + chunk;
+                double dblChunk = std::pow(multOne, power);
+                upper = static_cast<int64_t>(dblChunk) + base;
 
-                for (std::size_t i = 0; i < (nLoops - 1); ++i) {
-                    for (int j = 0; j < nThreads; lower = upper, ++j, ++power,
-                           chunk = static_cast<int64_t>(std::pow(multTwo, power)), upper = chunk + base) {
-                        Rcpp::print(Rcpp::wrap(lower));
-                        Rcpp::print(Rcpp::wrap(upper));
-                        Rcpp::print(Rcpp::wrap(((i + 1) * nThreads) + j));
-                        Rcpp::print(Rcpp::wrap(" "));
+                while ((dblChunk * std::pow(multOne, nThreads - 1) + base) < piSqrtx) {
+                    for (int j = 0; j < nThreads; lower = upper, ++j, 
+                            dblChunk *= multOne, upper = static_cast<int64_t>(dblChunk) + base) {
+                        myFutures.push_back(pool.pushReturn(phiSlave, lower, upper, x));
                     }
-                    //     myFutures.push_back(pool.pushReturn(phiSlave, lower, upper, x));
-                    // 
-                    // pool.wait();
+
+                    pool.wait();
                 }
-                
-                for (int j = 0; j < (nThreads - 1) && upper < piSqrtx; lower = upper, ++j, ++power,
-                      chunk = static_cast<int64_t>(std::pow(multTwo, power)), upper = chunk + base) {
-                    Rcpp::print(Rcpp::wrap(lower));
-                    Rcpp::print(Rcpp::wrap(upper));
-                    Rcpp::print(Rcpp::wrap((nLoops * nThreads) + j));
-                    Rcpp::print(Rcpp::wrap(" "));
+
+                for (int j = 0; j < (nThreads - 1) && upper < piSqrtx; lower = upper, ++j, 
+                        dblChunk *= multOne, upper = static_cast<int64_t>(dblChunk) + base) {
+                    myFutures.push_back(pool.pushReturn(phiSlave, lower, upper, x));
                 }
-                    // myFutures.push_back(pool.pushReturn(phiSlave, lower, upper, x));
-                
-                Rcpp::print(Rcpp::wrap(lower));
-                Rcpp::print(Rcpp::wrap(piSqrtx));
-                Rcpp::print(Rcpp::wrap((nLoops * nThreads) + nThreads - 1));
-                Rcpp::print(Rcpp::wrap(" "));
-                
-                // myFutures.push_back(pool.pushReturn(phiSlave, lower, piSqrtx, x));
-                // 
-                // for (std::size_t j = 0; j < myFutures.size(); ++j)
-                //     mySum += myFutures[j].get();
-                // 
-                // pool.join();
+
+                myFutures.push_back(pool.pushReturn(phiSlave, lower, piSqrtx, x));
+
+                for (std::size_t j = 0; j < myFutures.size(); ++j)
+                    mySum += myFutures[j].get();
+
+                pool.join();
                 
             } else {
                 chunk = myRange / nThreads;
@@ -316,13 +314,13 @@ namespace PrimeCounting {
     // 10^10 -->>         455,052,511   -->>   5.362 milliseconds
     // 10^11 -->>       4,118,054,813   -->>   21.45 milliseconds
     // 10^12 -->>      37,607,912,018   -->>   119.4 milliseconds
-    // 10^13 -->>     346,065,536,839   -->>   875.0 milliseconds
-    // 10^14 -->>   3,204,941,750,802   -->>   7.108 seconds
-    // 10^15 -->>  29,844,570,422,669   -->>  53.703 seconds
+    // 10^13 -->>     346,065,536,839   -->>   868.4 milliseconds
+    // 10^14 -->>   3,204,941,750,802   -->>   6.777 seconds
+    // 10^15 -->>  29,844,570,422,669   -->>  49.554 seconds
     // MAX VALUE (2^53 - 1) -->> 
-    //            252,252,704,148,404   -->> 381.155 seconds
+    //            252,252,704,148,404   -->> 352.862 seconds
     
-    int64_t MasterPrimeCount(int64_t n, 
+    int64_t MasterPrimeCount(int64_t n,
                              unsigned long int nThreads = 1,
                              unsigned long int maxThreads = 1) {
         
