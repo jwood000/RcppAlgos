@@ -36,9 +36,9 @@ permuteCount <- function(v, m = NULL, repetition = FALSE, freqs = NULL) {
                       TRUE, NULL, NULL, FALSE, NULL, 0)
 }
 
-comboSample <- function(v, m = NULL, repetition = FALSE,
-                        freqs = NULL, n = NULL, sampleVec = NULL, 
-                        seed = NULL, FUN = NULL, Parallel = FALSE, nThreads = NULL) {
+comboSample <- function(v, m = NULL, repetition = FALSE, freqs = NULL,
+                        n = NULL, sampleVec = NULL, seed = NULL, FUN = NULL,
+                        Parallel = FALSE, nThreads = NULL) {
     
     isFactor <- is.factor(v)
     if (!is.null(seed)) {set.seed(seed)}
@@ -46,9 +46,9 @@ comboSample <- function(v, m = NULL, repetition = FALSE,
                seed, n, sample, FUN, new.env(), Parallel, nThreads, pkgEnv$nThreads)
 }
 
-permuteSample <- function(v, m = NULL, repetition = FALSE, 
-                          freqs = NULL, n = NULL, sampleVec = NULL, 
-                          seed = NULL, FUN = NULL, Parallel = FALSE, nThreads = NULL) {
+permuteSample <- function(v, m = NULL, repetition = FALSE, freqs = NULL,
+                          n = NULL, sampleVec = NULL, seed = NULL, FUN = NULL,
+                          Parallel = FALSE, nThreads = NULL) {
     
     isFactor <- is.factor(v)
     if (!is.null(seed)) {set.seed(seed)}
