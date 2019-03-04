@@ -553,7 +553,7 @@ namespace PrimeSieve {
         int sqrtBound = std::sqrt(myMax);
         std::size_t nBigSegs = 1u;
         
-        if (nThreads > 1) {
+        if (nThreads > 1 && maxThreads > 1) {
             Parallel = true;
             if (nThreads > maxThreads) {nThreads = maxThreads;}
             sqrtMedCut /= nThreads;
@@ -608,7 +608,7 @@ namespace PrimeSieve {
         }
         
         if (Parallel) {
-            std::size_t ind = 0u;
+            int ind = 0;
             RcppThread::ThreadPool pool(nThreads);
             int_fast64_t upperBnd, lowerBnd = myMin;
             int_fast64_t chunkSize = segSize * std::floor(static_cast<double>(myRange / nThreads) / segSize);
