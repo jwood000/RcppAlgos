@@ -22,7 +22,6 @@ const std::size_t pDiffSize = sizeof(primesDiffPR) / sizeof(primesDiffPR[0]);
 /* Number of Miller-Rabin tests to run when not proving primality. */
 const std::size_t MR_REPS = 25;
 
-
 template <typename typeReturn>
 void FactorTrialDivision (int64_t& t,
                           std::vector<typeReturn>& factors) {
@@ -326,17 +325,20 @@ std::vector<typeReturn> Factorize(std::vector<typeReturn> &factors) {
             }
         }
         
-        unsigned long int fSz = 1, numFacs = 1;
+        unsigned long int numFacs = 1;
+        
         for (std::size_t i = 0; i <= numUni; ++i)
             numFacs *= (lengths[i] + 1);
         
         std::vector<typeReturn> myFacs(numFacs);
-        typeReturn temp;
 
         for (std::size_t i = 0; i <= lengths[0]; ++i)
             myFacs[i] = static_cast<typeReturn>(std::pow(uniFacs[0], i));
-
+        
         if (numUni > 0) {
+            unsigned long int fSz = 1;
+            typeReturn temp;
+            
             for (std::size_t j = 1; j <= numUni; ++j) {
                 fSz *= (lengths[j - 1] + 1);
                 for (std::size_t i = 1; i <= lengths[j]; ++i) {
@@ -450,11 +452,10 @@ void PollardRhoMaster(std::vector<double> &myNums, typeReturn myMax, bool bPrime
     bool Parallel = false;
     std::size_t m = 0u;
     
-    if (nThreads > 1 && myRange > 1) {
+    if (nThreads > 1 && myRange > 1 && maxThreads > 1) {
         Parallel = true;
         if (nThreads > maxThreads) {nThreads = maxThreads;}
         if ((myRange / nThreads) < 1) {nThreads = myRange;}
-        if (maxThreads < 2) {Parallel = false;}
     }
     
     if (Parallel) {
@@ -462,7 +463,7 @@ void PollardRhoMaster(std::vector<double> &myNums, typeReturn myMax, bool bPrime
         std::size_t chunkSize = myRange / nThreads;
         std::size_t n = chunkSize - 1;
         
-        for (int ind = 0; ind < (nThreads - 1); m = n, n += chunkSize, ++ind) {
+        for (int j = 0; j < (nThreads - 1); m = n, n += chunkSize, ++j) {
             if (bPrimeFacs)
                 pool.push(std::cref(PrimeFacList<typeReturn>), m, n, std::ref(myNums), std::ref(MyList));
             else if (bAllFacs)
@@ -593,11 +594,7 @@ SEXP PollardRhoContainer(SEXP Rv, SEXP RNamed, bool bPrimeFacs,
     
     std::vector<double> myNums;
     bool isNamed = Rcpp::as<bool>(RNamed);
-    
-    if (TYPEOF(Rv) == STRSXP)
-        Rcpp::stop("v must be of type numeric or integer");
-    
-    CleanConvert::convertVector(Rv, myNums, "v must be of type numeric or integer");
+    CleanConvert::convertVector(Rv, myNums, "v");
     
     double myMax = *std::max_element(myNums.cbegin(), myNums.cend());
     double myMin = *std::min_element(myNums.cbegin(), myNums.cend());
@@ -610,7 +607,7 @@ SEXP PollardRhoContainer(SEXP Rv, SEXP RNamed, bool bPrimeFacs,
     
     int nThreads = 1;
     if (!Rf_isNull(RNumThreads))
-        CleanConvert::convertPrimitive(RNumThreads, nThreads, "nThreads must be of type numeric or integer");
+        CleanConvert::convertPrimitive(RNumThreads, nThreads, "nThreads");
     
     if (myMax > std::numeric_limits<int>::max()) {
         return TheGlue(myNums, myMax, bPrimeFacs, bAllFacs, isNamed, nThreads, maxThreads);

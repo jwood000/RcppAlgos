@@ -464,12 +464,12 @@ SEXP CombinatoricsRcpp(SEXP Rv, SEXP Rm, SEXP Rrepetition, SEXP RFreqs, SEXP Rlo
     } else {
         IsMultiset = true;
         IsRepetition = false;
-        CleanConvert::convertVector(RFreqs, myReps, "freqs must be of type numeric or integer");
+        CleanConvert::convertVector(RFreqs, myReps, "freqs");
         
         lenFreqs = static_cast<int>(myReps.size());
         for (int i = 0; i < lenFreqs; ++i) {
             if (myReps[i] < 1) 
-                Rcpp::stop("each element in freqs must be a positive number");
+                Rcpp::stop("Each element in freqs must be a positive whole number");
             
             for (int j = 0; j < myReps[i]; ++j)
                 freqsExpanded.push_back(i);
@@ -486,7 +486,7 @@ SEXP CombinatoricsRcpp(SEXP Rv, SEXP Rm, SEXP Rrepetition, SEXP RFreqs, SEXP Rlo
         if (Rf_length(Rm) > 1)
             Rcpp::stop("length of m must be 1");
         
-        CleanConvert::convertPrimitive(Rm, m, "m must be of type numeric or integer");
+        CleanConvert::convertPrimitive(Rm, m, "m");
     }
     
     if (m < 1)
@@ -502,8 +502,8 @@ SEXP CombinatoricsRcpp(SEXP Rv, SEXP Rm, SEXP Rrepetition, SEXP RFreqs, SEXP Rlo
         n = vInt.size();
     } else {
         if (Rf_length(Rv) == 1) {
-            double seqEnd = Rcpp::as<double>(Rv);
-            if (Rcpp::NumericVector::is_na(seqEnd)) {seqEnd = 1;}
+            int seqEnd;
+            CleanConvert::convertPrimitive(Rv, seqEnd, "If v is not a character and of length 1, it");
             if (seqEnd > 1) {m1 = 1; m2 = seqEnd;} else {m1 = seqEnd; m2 = 1;}
             Rcpp::IntegerVector vTemp = Rcpp::seq(m1, m2);
             IsInteger = true;
@@ -638,7 +638,7 @@ SEXP CombinatoricsRcpp(SEXP Rv, SEXP Rm, SEXP Rrepetition, SEXP RFreqs, SEXP Rlo
         } else { 
             if (!Rf_isNull(Rlow)) {
                 bLower = true;
-                CleanConvert::convertPrimitive(Rlow, lower, "bounds must be of type numeric or integer");
+                CleanConvert::convertPrimitive(Rlow, lower, "lower", true);
                 --lower;
                 
                 if (lower < 0)
@@ -647,7 +647,7 @@ SEXP CombinatoricsRcpp(SEXP Rv, SEXP Rm, SEXP Rrepetition, SEXP RFreqs, SEXP Rlo
             
             if (!Rf_isNull(Rhigh)) {
                 bUpper = true;
-                CleanConvert::convertPrimitive(Rhigh, upper, "bounds must be of type numeric or integer");
+                CleanConvert::convertPrimitive(Rhigh, upper, "upper", true);
                 
                 if (upper < 0)
                     Rcpp::stop("bounds must be positive");
@@ -798,10 +798,10 @@ SEXP CombinatoricsRcpp(SEXP Rv, SEXP Rm, SEXP Rrepetition, SEXP RFreqs, SEXP Rlo
     } else if (!Rf_isNull(RNumThreads)) {
         int userThreads = 1;
         if (!Rf_isNull(RNumThreads))
-            CleanConvert::convertPrimitive(RNumThreads, userThreads, "nThreads must be of type numeric or integer");
+            CleanConvert::convertPrimitive(RNumThreads, userThreads, "nThreads");
             
         if (userThreads > maxThreads) {userThreads = maxThreads;}
-        if (userThreads > 1) {
+        if (userThreads > 1 && !IsCharacter) {
             Parallel = true;
             nThreads = userThreads;
         }
@@ -811,7 +811,7 @@ SEXP CombinatoricsRcpp(SEXP Rv, SEXP Rm, SEXP Rrepetition, SEXP RFreqs, SEXP Rlo
     
     if (IsConstrained) {
         std::vector<double> myLim;
-        CleanConvert::convertVector(Rlim, myLim, "limitConstraints must be of type numeric or integer");
+        CleanConvert::convertVector(Rlim, myLim, "limitConstraints", false);
         
         if (myLim.size() > 2)
             Rcpp::stop("there cannot be more than 2 limitConstraints");

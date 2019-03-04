@@ -12,7 +12,7 @@ static int seed_init = 0;
 // cannot utilize the full range of 53-bit significand
 // precision. Here is the condition from `do_dample2`:
 //     if (!R_FINITE(dn) || dn < 0 || dn > 4.5e15 || (k > 0 && dn == 0))
-// Here is the source (line 1791): 
+// Here is the source (line ~1800): 
 //     https://github.com/wch/r-source/blob/trunk/src/main/unique.c
 const double sampleLimit = 4500000000000000.0;
 
@@ -157,12 +157,12 @@ SEXP SampleRcpp(SEXP Rv, SEXP Rm, SEXP Rrepetition, SEXP RFreqs, SEXP RindexVec,
         myReps.push_back(1);
     } else {
         IsMultiset = true;
-        CleanConvert::convertVector(RFreqs, myReps, "freqs must be of type numeric or integer");
+        CleanConvert::convertVector(RFreqs, myReps, "freqs");
         
         lenFreqs = (int) myReps.size();
         for (int i = 0; i < lenFreqs; ++i) {
             if (myReps[i] < 1) 
-                Rcpp::stop("each element in freqs must be a positive number");
+                Rcpp::stop("Each element in freqs must be a positive whole number");
             
             for (int j = 0; j < myReps[i]; ++j)
                 freqsExpanded.push_back(i);
@@ -179,7 +179,7 @@ SEXP SampleRcpp(SEXP Rv, SEXP Rm, SEXP Rrepetition, SEXP RFreqs, SEXP RindexVec,
         if (Rf_length(Rm) > 1)
             Rcpp::stop("length of m must be 1");
         
-        CleanConvert::convertPrimitive(Rm, m, "m must be of type numeric or integer");
+        CleanConvert::convertPrimitive(Rm, m, "m");
     }
     
     if (m < 1)
@@ -299,7 +299,7 @@ SEXP SampleRcpp(SEXP Rv, SEXP Rm, SEXP Rrepetition, SEXP RFreqs, SEXP RindexVec,
                 Rcpp::stop("length of n must be 1. For specific combinations, use sampleVec.");
             
             double nPass;
-            CleanConvert::convertPrimitive(RNumSamp, nPass, "n must be a number");
+            CleanConvert::convertPrimitive(RNumSamp, nPass, "n");
             
             if (nPass > computedRows)
                 Rcpp::stop("n exceeds the maximum number of possible results");
@@ -311,14 +311,12 @@ SEXP SampleRcpp(SEXP Rv, SEXP Rm, SEXP Rrepetition, SEXP RFreqs, SEXP RindexVec,
             mySample = Rcpp::as<std::vector<double>>(tempSamp);
         }
     } else if (!IsGmp) {
-        CleanConvert::convertVector(RindexVec, mySample, 
-                                    "sampleVec must be convertible to a real number");
+        CleanConvert::convertVector(RindexVec, mySample, "sampleVec", true, false);
         if (mySample.size() == 1)
-            if (mySample[0] == 0)
-                Rcpp::stop("sampleVec must be convertible to a real number");
+            if (mySample[0] <= 0)
+                Rcpp::stop("Each element in sampleVec must be a positive whole number");
     }
     
-    // Initialize myVec to silence compiler
     mpz_t *myVec;
     myVec = (mpz_t *) malloc(sizeof(mpz_t));
     mpz_init(myVec[0]);
@@ -367,7 +365,7 @@ SEXP SampleRcpp(SEXP Rv, SEXP Rm, SEXP Rrepetition, SEXP RFreqs, SEXP RindexVec,
             }
             
             double dblVSize;
-            CleanConvert::convertPrimitive(RNumSamp, dblVSize, "n must be convertible to a number");
+            CleanConvert::convertPrimitive(RNumSamp, dblVSize, "n");
             
             if (dblVSize > std::numeric_limits<int>::max())
                 Rcpp::stop("The number of rows cannot exceed 2^31 - 1");
@@ -387,40 +385,51 @@ SEXP SampleRcpp(SEXP Rv, SEXP Rm, SEXP Rrepetition, SEXP RFreqs, SEXP RindexVec,
         }
         
         mpz_set(maxGmp, myVec[0]);
+        if (mpz_cmp_si(myVec[0], 0) <= 0)
+            Rcpp::stop("Each element in sampleVec must be a postive whole number");
         
-        for (std::size_t i = 0; i < sampSize; ++i)
+        for (std::size_t i = 1; i < sampSize; ++i) {
             if (mpz_cmp(myVec[i], maxGmp) > 0)
                 mpz_set(maxGmp, myVec[i]);
+            
+            if (mpz_cmp_si(myVec[i], 0) <= 0)
+                Rcpp::stop("Each element in sampleVec must be a postive whole number");
+        }
         
-        if (mpz_cmp(maxGmp, computedRowMpz) >= 0)
+        if (mpz_cmp(maxGmp, computedRowMpz) >= 0) {
             Rcpp::stop("One or more of the requested values in sampleVec "
                            "exceeds the maximum number of possible results");
+        }
     } else {
         sampSize = mySample.size();
         if (sampSize > std::numeric_limits<int>::max())
             Rcpp::stop("The number of rows cannot exceed 2^31 - 1");
         
-        double myMax = *std::max_element(mySample.begin(), mySample.end());
-        if (myMax > computedRows)
+        double myMax = *std::max_element(mySample.cbegin(), mySample.cend());
+        double myMin = *std::min_element(mySample.cbegin(), mySample.cend());
+        
+        if (myMax > computedRows) {
             Rcpp::stop("One or more of the requested values in sampleVec "
                            "exceeds the maximum number of possible results");
+        }
+        
+        if (myMin < 1)
+            Rcpp::stop("Each element in sampleVec must be a postive whole number");
     }
     
     bool applyFun = !Rf_isNull(stdFun) && !IsFactor;
     int nThreads = 1;
     
-    // Determined empirically. Setting up threads can be expensive,
-    // so we set the cutoff below to ensure threads aren't spawned
-    // unnecessarily. We also protect users with fewer than 2 cores
+    // We protect users with fewer than 2 cores
     if ((sampSize < 2) || (maxThreads < 2)) {
         Parallel = false;
     } else if (!Rf_isNull(RNumThreads)) {
         int userThreads = 1;
         if (!Rf_isNull(RNumThreads))
-            CleanConvert::convertPrimitive(RNumThreads, userThreads, "nThreads must be of type numeric or integer");
+            CleanConvert::convertPrimitive(RNumThreads, userThreads, "nThreads");
         
         if (userThreads > maxThreads) {userThreads = maxThreads;}
-        if (userThreads > 1) {
+        if (userThreads > 1 && !IsCharacter) {
             Parallel = true;
             nThreads = userThreads;
             if (nThreads > sampSize) {nThreads = sampSize;}

@@ -8,22 +8,24 @@ const double Significand53 = 9007199254740991.0;
 namespace CleanConvert {
 
     template <typename stdType>
-    void convertPrimitive(SEXP input, stdType &result,
-                          std::string myErrorMsg, bool strPoss = true) {
+    void convertPrimitive(SEXP input, stdType &result, std::string nameOfObject,
+                          bool strPoss = false, bool checkWhole = true) {
         
         switch(TYPEOF(input)) {
-            case REALSXP: {
-                result = Rcpp::as<stdType>(input);
-                break;
-            }
+            case REALSXP:
             case INTSXP: {
+                double dblInp = Rcpp::as<double>(input);
+                int intTest = static_cast<int>(dblInp);
+                if (checkWhole && intTest != dblInp)
+                    Rcpp::stop(nameOfObject + " must be a whole number");
+                
                 result = Rcpp::as<stdType>(input);
                 break;
             }
             case RAWSXP:
             case STRSXP: {
                 if (!strPoss)
-                    Rcpp::stop(myErrorMsg);
+                    Rcpp::stop(nameOfObject + " must be of type numeric or integer");
                 
                 mpz_t temp[1];
                 mpz_init(temp[0]);
@@ -34,32 +36,48 @@ namespace CleanConvert {
                 break;
             }
             default:
-                Rcpp::stop(myErrorMsg);
+                Rcpp::stop(nameOfObject + " must be convertible to a real number");
         }
     }
     
     template <typename stdType>
-    void convertVector(SEXP input, std::vector<stdType> &result,
-                       std::string myErrorMsg) {
+    void convertVector(SEXP input, std::vector<stdType> &result, std::string nameOfObject,
+                       bool checkWhole = true, bool numOnly = true) {
         
         int total = Rf_length(input);
         
         switch(TYPEOF(input)) {
-            case REALSXP: {
-                result = Rcpp::as<std::vector<stdType>>(input);
-                break;
-            }
+            case REALSXP:
             case INTSXP: {
-                result = Rcpp::as<std::vector<stdType>>(input);
+                if (checkWhole) {
+                    std::vector<double> vecCheck = Rcpp::as<std::vector<double>>(input);
+                    result.resize(vecCheck.size());
+                    
+                    for (std::size_t i = 0; i < vecCheck.size(); ++i) {
+                        if (static_cast<int>(vecCheck[i]) != vecCheck[i])
+                            Rcpp::stop("Each element in " + nameOfObject + " must be a whole number");
+                        
+                        result[i] = static_cast<stdType>(vecCheck[i]);
+                    }
+                } else {
+                    result = Rcpp::as<std::vector<stdType>>(input);
+                }
+                
                 break;
             }
             case RAWSXP: {
+                if (numOnly)
+                    Rcpp::stop(nameOfObject + " must be of type numeric or integer");
+                
                 const char* raw = (char*)RAW(input);
                 total = ((int*)raw)[0];
                 // do not put a break here. Fall to
                 // the next case for complete conversion
             }
             case STRSXP: {
+                if (numOnly)
+                    Rcpp::stop(nameOfObject + " must be of type numeric or integer");
+                
                 mpz_t *temp;
                 temp = (mpz_t *) malloc(sizeof(mpz_t) * total);
                 
@@ -81,7 +99,7 @@ namespace CleanConvert {
                 break;
             }
             default:
-                Rcpp::stop(myErrorMsg);
+                Rcpp::stop(nameOfObject + " must be convertible to real numbers");
         }
     }
 }

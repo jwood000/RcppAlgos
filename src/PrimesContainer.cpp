@@ -203,8 +203,7 @@ namespace PrimeCounting {
         return std::log(factor[it - nums.cbegin()]);
     }
     
-    int64_t phiMaster(int64_t x, int64_t a, 
-                      unsigned long int nThreads, bool Parallel) {
+    int64_t phiMaster(int64_t x, int64_t a, int nThreads, bool Parallel) {
         
         int64_t sqrtx = static_cast<int64_t>(std::sqrt(x));
         int64_t piSqrtx = std::min(static_cast<int64_t>(phiPi[sqrtx]), a);
@@ -320,9 +319,7 @@ namespace PrimeCounting {
     // MAX VALUE (2^53 - 1) -->> 
     //            252,252,704,148,404   -->> 352.862 seconds
     
-    int64_t MasterPrimeCount(int64_t n,
-                             unsigned long int nThreads = 1,
-                             unsigned long int maxThreads = 1) {
+    int64_t MasterPrimeCount(int64_t n, int nThreads = 1, int maxThreads = 1) {
         
         int64_t sqrtBound = static_cast<int64_t>(std::sqrt(n));
         std::vector<int64_t> resetPhiPrimes;
@@ -344,7 +341,7 @@ namespace PrimeCounting {
         
         bool Parallel = false;
         
-        if (nThreads > 1) {
+        if (nThreads > 1 && maxThreads > 1) {
             Parallel = true;
             if (nThreads > maxThreads) {nThreads = maxThreads;}
             if ((maxThreads < 2) || (n < 1e7)) {Parallel = false;}
@@ -361,7 +358,7 @@ namespace PrimeCounting {
 //[[Rcpp::export]]
 SEXP PrimeCountRcpp (SEXP Rn, SEXP RNumThreads, int maxThreads) {
     double dblNum;
-    CleanConvert::convertPrimitive(Rn, dblNum, "n must be of type numeric or integer", false);
+    CleanConvert::convertPrimitive(Rn, dblNum, "n");
 
     if (dblNum < 1 || dblNum > Significand53)
         Rcpp::stop("n must be a positive number less than 2^53");
@@ -385,9 +382,9 @@ SEXP PrimeCountRcpp (SEXP Rn, SEXP RNumThreads, int maxThreads) {
         return Rcpp::wrap(static_cast<int>(PrimeCounting::PiPrime(n)));
     }
     
-    unsigned long int nThreads = 1;
+    int nThreads = 1;
     if (!Rf_isNull(RNumThreads))
-        CleanConvert::convertPrimitive(RNumThreads, nThreads, "nThreads must be of type numeric or integer");
+        CleanConvert::convertPrimitive(RNumThreads, nThreads, "nThreads");
     
     int64_t result = PrimeCounting::MasterPrimeCount(n, nThreads, maxThreads);
     
@@ -444,7 +441,7 @@ SEXP MotleyContainer(SEXP Rb1, SEXP Rb2, SEXP RIsEuler,
     bool isEuler = Rcpp::as<bool>(RIsEuler);
     bool isNamed = Rcpp::as<bool>(RNamed);
     
-    CleanConvert::convertPrimitive(Rb1, bound1, "bound1 must be of type numeric or integer", false);
+    CleanConvert::convertPrimitive(Rb1, bound1, "bound1");
     
     if (bound1 <= 0 || bound1 > Significand53)
         Rcpp::stop("bound1 must be a positive number less than 2^53");
@@ -452,7 +449,7 @@ SEXP MotleyContainer(SEXP Rb1, SEXP Rb2, SEXP RIsEuler,
     if (Rf_isNull(Rb2)) {
         bound2 = 1;
     } else {
-        CleanConvert::convertPrimitive(Rb2, bound2, "bound2 must be of type numeric or integer", false);
+        CleanConvert::convertPrimitive(Rb2, bound2, "bound2");
     }
     
     if (bound2 <= 0 || bound2 > Significand53)
@@ -483,7 +480,7 @@ SEXP MotleyContainer(SEXP Rb1, SEXP Rb2, SEXP RIsEuler,
     
     int nThreads = 1;
     if (!Rf_isNull(RNumThreads))
-        CleanConvert::convertPrimitive(RNumThreads, nThreads, "nThreads must be of type numeric or integer");
+        CleanConvert::convertPrimitive(RNumThreads, nThreads, "nThreads");
     
     if (myMax > std::numeric_limits<int>::max()) {
         int64_t intMin = static_cast<int64_t>(myMin);
@@ -502,7 +499,7 @@ SEXP EratosthenesRcpp(SEXP Rb1, SEXP Rb2, SEXP RNumThreads, int maxCores, int ma
     
     double bound1, bound2;
     int_fast64_t myMax, myMin;
-    CleanConvert::convertPrimitive(Rb1, bound1, "bound1 must be of type numeric or integer", false);
+    CleanConvert::convertPrimitive(Rb1, bound1, "bound1", false, false);
     
     if (bound1 <= 0 || bound1 > Significand53)
         Rcpp::stop("bound1 must be a positive number less than 2^53");
@@ -510,7 +507,7 @@ SEXP EratosthenesRcpp(SEXP Rb1, SEXP Rb2, SEXP RNumThreads, int maxCores, int ma
     if (Rf_isNull(Rb2)) {
         bound2 = 1;
     } else {
-        CleanConvert::convertPrimitive(Rb2, bound2, "bound2 must be of type numeric or integer", false);
+        CleanConvert::convertPrimitive(Rb2, bound2, "bound2", false, false);
     }
     
     if (bound2 <= 0 || bound2 > Significand53)
@@ -532,7 +529,7 @@ SEXP EratosthenesRcpp(SEXP Rb1, SEXP Rb2, SEXP RNumThreads, int maxCores, int ma
     
     int nThreads = 1;
     if (!Rf_isNull(RNumThreads))
-        CleanConvert::convertPrimitive(RNumThreads, nThreads, "nThreads must be of type numeric or integer");
+        CleanConvert::convertPrimitive(RNumThreads, nThreads, "nThreads");
     
     std::size_t numPrimes = 0u;
     std::vector<unsigned long int> runningCount;
@@ -557,7 +554,7 @@ SEXP EratosthenesRcpp(SEXP Rb1, SEXP Rb2, SEXP RNumThreads, int maxCores, int ma
             Rcpp::NumericVector::iterator priBeg = primes.begin();
             
             for (std::size_t i = 0; i < numSects; ++i)
-                std::copy(primeList[i].cbegin(), primeList[i].cend(), priBeg + runningCount[i]);
+                std::move(primeList[i].cbegin(), primeList[i].cend(), priBeg + runningCount[i]);
             
             return primes;
         } else {
@@ -580,7 +577,7 @@ SEXP EratosthenesRcpp(SEXP Rb1, SEXP Rb2, SEXP RNumThreads, int maxCores, int ma
             Rcpp::IntegerVector::iterator priBeg = primes.begin();
             
             for (std::size_t i = 0; i < numSects; ++i)
-                std::copy(primeList[i].cbegin(), primeList[i].cend(), priBeg + runningCount[i]);
+                std::move(primeList[i].cbegin(), primeList[i].cend(), priBeg + runningCount[i]);
             
             return primes;
         } else {

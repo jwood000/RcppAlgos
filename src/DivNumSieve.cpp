@@ -123,7 +123,7 @@ void DivisorMaster(typeInt myMin, typeReturn myMax,
     typeInt offsetStrt = 0;
     typeInt intMax = static_cast<typeInt>(myMax);
     
-    if (nThreads > 1) {
+    if (nThreads > 1 && maxThreads > 1) {
         Parallel = true;
         if (nThreads > maxThreads) {nThreads = maxThreads;}
         if (maxThreads < 2 || myRange < 10000) {Parallel = false;}
@@ -171,6 +171,7 @@ SEXP TheGlue(typeInt myMin, typeReturn myMax, bool bDivSieve,
     
     std::size_t myRange = (myMax - myMin) + 1;
     std::vector<typeReturn> myNames;
+    
     if (keepNames) {
         myNames.resize(myRange);
         typeReturn retM = myMin;
@@ -210,7 +211,7 @@ SEXP DivNumSieve(SEXP Rb1, SEXP Rb2, bool bDivSieve,
     double bound1, bound2, myMax, myMin;
     bool keepNames = Rcpp::as<bool>(RNamed);
     
-    CleanConvert::convertPrimitive(Rb1, bound1, "bound1 must be of type numeric or integer", false);
+    CleanConvert::convertPrimitive(Rb1, bound1, "bound1");
     
     if (bound1 <= 0 || bound1 > Significand53)
         Rcpp::stop("bound1 must be a positive number less than 2^53");
@@ -218,7 +219,7 @@ SEXP DivNumSieve(SEXP Rb1, SEXP Rb2, bool bDivSieve,
     if (Rf_isNull(Rb2)) {
         bound2 = 1;
     } else {
-        CleanConvert::convertPrimitive(Rb2, bound2, "bound2 must be of type numeric or integer", false);
+        CleanConvert::convertPrimitive(Rb2, bound2, "bound2");
     }
     
     if (bound2 <= 0 || bound2 > Significand53)
@@ -251,7 +252,7 @@ SEXP DivNumSieve(SEXP Rb1, SEXP Rb2, bool bDivSieve,
     
     int nThreads = 1;
     if (!Rf_isNull(RNumThreads))
-        CleanConvert::convertPrimitive(RNumThreads, nThreads, "nThreads must be of type numeric or integer");
+        CleanConvert::convertPrimitive(RNumThreads, nThreads, "nThreads");
     
     if (myMax > std::numeric_limits<int>::max()) {
         int_fast64_t intMin = static_cast<int_fast64_t>(myMin);
