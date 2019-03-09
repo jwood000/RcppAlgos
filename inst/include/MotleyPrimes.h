@@ -14,10 +14,11 @@ namespace MotleyPrimes {
     // function is a power of prime and requires an additional check
     // (i.e. else if (myPrime < lowerB)).
     template <typename typeInt>
-    inline typeInt getStartIndexPowP(typeInt lowerB, typeInt step, 
-                                     typeInt myPrime) {
+    inline typeInt getStartIndexPowP(const typeInt lowerB, const typeInt step, 
+                                     const typeInt myPrime) {
         
-        typeInt retStrt, remTest = lowerB % step;
+        typeInt retStrt;
+        const typeInt remTest = lowerB % step;
         
         if (remTest == 0) {
             retStrt = 0;
@@ -31,24 +32,23 @@ namespace MotleyPrimes {
     }
 
     template <typename typeInt>
-    void PrimeFactorizationSieve(typeInt m, typeInt retN, typeInt offsetStrt,
+    void PrimeFactorizationSieve(const typeInt m, const typeInt retN, const typeInt offsetStrt,
                                  const std::vector<typeInt> &primes,
                                  std::vector<std::vector<typeInt>> &primeList) {
         
-        typeInt n = (typeInt) retN;
-        typeInt myRange = (n - m) + 1;
+        const typeInt n = (typeInt) retN;
+        const typeInt myRange = (n - m) + 1;
         
         typeInt myStep, myStart, myNum = m;
-        double myLogN = std::log(n);
-        unsigned long int limit;
+        const double myLogN = std::log(n);
         
         if (n > 3) {
             typename std::vector<typeInt>::const_iterator p;
             std::vector<uint8_t> myMemory(myRange, 1u);
-            typeInt sqrtBound = static_cast<typeInt>(sqrt(retN));
+            const typeInt sqrtBound = static_cast<typeInt>(sqrt(retN));
             
-            for (p = primes.begin(); (*p) <= sqrtBound; ++p) {
-                limit = static_cast<unsigned long int>(trunc(myLogN / std::log(*p)));
+            for (p = primes.cbegin(); (*p) <= sqrtBound; ++p) {
+                const unsigned long int limit = static_cast<unsigned long int>(trunc(myLogN / std::log(*p)));
                 if (m < 2) {
                     for (std::size_t i = 1; i <= limit; ++i) {
                         myStep = static_cast<typeInt>(std::pow(*p, i));
@@ -66,8 +66,8 @@ namespace MotleyPrimes {
             }
             
             std::vector<uint8_t>::iterator myMalloc;
-            typename std::vector<std::vector<typeInt>>::iterator it2d, itEnd;
-            itEnd = primeList.begin() + offsetStrt + myRange;
+            typename std::vector<std::vector<typeInt>>::iterator it2d;
+            const typename std::vector<std::vector<typeInt>>::iterator itEnd = primeList.begin() + offsetStrt + myRange;
             
             if (myNum < 2) {
                 ++myNum;
@@ -84,9 +84,9 @@ namespace MotleyPrimes {
             }
             
             if (m < 2) {
-                for (p = primes.begin(); (*p) <= sqrtBound; ++p) {
-                    limit = static_cast<unsigned long int>(trunc(myLogN / std::log(*p)));
-                    libdivide::divider<typeInt> fastDiv(*p);
+                for (p = primes.cbegin(); (*p) <= sqrtBound; ++p) {
+                    const unsigned long int limit = static_cast<unsigned long int>(trunc(myLogN / std::log(*p)));
+                    const libdivide::divider<typeInt> fastDiv(*p);
 
                     for (std::size_t i = 1; i <= limit; ++i) {
                         myStep = static_cast<typeInt>(std::pow(*p, i));
@@ -100,11 +100,11 @@ namespace MotleyPrimes {
                     }
                 }
             } else {
-                typeInt offsetRange = myRange + offsetStrt;
+                const typeInt offsetRange = myRange + offsetStrt;
                 
-                for (p = primes.begin(); (*p) <= sqrtBound; ++p) {
-                    limit = static_cast<unsigned long int>(trunc(myLogN / std::log(*p)));
-                    libdivide::divider<typeInt> fastDiv(*p);
+                for (p = primes.cbegin(); (*p) <= sqrtBound; ++p) {
+                    const unsigned long int limit = static_cast<unsigned long int>(trunc(myLogN / std::log(*p)));
+                    const libdivide::divider<typeInt> fastDiv(*p);
 
                     for (std::size_t i = 1; i <= limit; ++i) {
                         myStep = static_cast<typeInt>(std::pow(*p, i));
@@ -132,17 +132,16 @@ namespace MotleyPrimes {
     }
     
     template <typename typeInt, typename typeReturn, typename typeRcpp>
-    void EulerPhiSieve(typeInt m, typeReturn retN, typeInt offsetStrt,
+    void EulerPhiSieve(const typeInt m, const typeReturn retN, const typeInt offsetStrt,
                        const std::vector<typeInt> &primes,
                        std::vector<typeInt> &numSeq,
                        typeRcpp &EulerPhis) {
         
-        typeInt n = static_cast<typeInt>(retN);
-        typeInt myRange = (n - m) + 1;
+        const typeInt n = static_cast<typeInt>(retN);
+        const typeInt myRange = (n - m) + 1;
         
         typeInt myNum = m;
-        double myLogN = std::log(n);
-        unsigned long int limit;
+        const double myLogN = std::log(n);
         typeReturn retNum = static_cast<typeReturn>(m);
         
         for (std::size_t i = offsetStrt; retNum <= retN; ++retNum, ++i) {
@@ -153,14 +152,14 @@ namespace MotleyPrimes {
         if (m < 2) {
             bool tempPar = false;
             std::vector<typeInt> fullPrimes;
-            int_fast64_t intMin = static_cast<int_fast64_t>(m);
-            int_fast64_t intMax = static_cast<int_fast64_t>(retN);
+            const int_fast64_t intMin = static_cast<int_fast64_t>(m);
+            const int_fast64_t intMax = static_cast<int_fast64_t>(retN);
             std::vector<std::vector<typeInt>> tempList;
             PrimeSieve::PrimeSieveMaster(intMin, intMax, fullPrimes, tempList, tempPar);
             typename std::vector<typeInt>::iterator p;
             
             for (p = fullPrimes.begin(); p < fullPrimes.end(); ++p) {
-                libdivide::divider<typeInt> fastDiv(*p);
+                const libdivide::divider<typeInt> fastDiv(*p);
                 for (typeInt j = (*p - 1); j < n; j += *p) {
                     myNum = static_cast<typeInt>(EulerPhis[j]);
                     myNum /= fastDiv;
@@ -169,13 +168,13 @@ namespace MotleyPrimes {
             }
         } else if (n > 3) {
             typename std::vector<typeInt>::const_iterator p;
-            typeInt sqrtBound = static_cast<typeInt>(sqrt(retN));
-            typeInt myStart, myStep, offsetRange = myRange + offsetStrt;
+            const typeInt sqrtBound = static_cast<typeInt>(sqrt(retN));
+            const typeInt offsetRange = myRange + offsetStrt;
             
-            for (p = primes.begin(); (*p) <= sqrtBound; ++p) {
-                limit = static_cast<unsigned long int>(myLogN / std::log(*p));
-                myStart = offsetStrt + getStartIndexPowP(m, *p, *p);
-                libdivide::divider<typeInt> fastDiv(*p);
+            for (p = primes.cbegin(); (*p) <= sqrtBound; ++p) {
+                const unsigned long int limit = static_cast<unsigned long int>(myLogN / std::log(*p));
+                const typeInt myStart = offsetStrt + getStartIndexPowP(m, *p, *p);
+                const libdivide::divider<typeInt> fastDiv(*p);
                 
                 for (typeInt j = myStart; j < offsetRange; j += *p) {
                     numSeq[j] /= fastDiv;
@@ -185,8 +184,8 @@ namespace MotleyPrimes {
                 }
                 
                 for (std::size_t i = 2; i <= limit; ++i) {
-                    myStep = static_cast<typeInt>(std::pow(*p, i));
-                    myStart = offsetStrt + getStartIndexPowP(m, myStep, *p);
+                    const typeInt myStep = static_cast<typeInt>(std::pow(*p, i));
+                    const typeInt myStart = offsetStrt + getStartIndexPowP(m, myStep, *p);
                     
                     for (typeInt j = myStart; j < offsetRange; j += myStep)
                         numSeq[j] /= fastDiv;
@@ -217,10 +216,15 @@ namespace MotleyPrimes {
         int_fast64_t myRange = (myMax - myMin) + 1;
         typeInt offsetStrt = 0;
         
-        if (nThreads > 1) {
+        if (nThreads > 1 && maxThreads > 1 && myRange >= 20000) {
             Parallel = true;
-            if (nThreads > maxThreads) {nThreads = maxThreads;}
-            if ((maxThreads < 2) || (myRange < 10000)) {Parallel = false;}
+            
+            if (nThreads > maxThreads)
+                nThreads = maxThreads;
+            
+            // Ensure that each thread has at least 10000
+            if ((myRange / nThreads) < 10000)
+                nThreads = myRange / 10000;
         }
         
         int sqrtBound = std::sqrt(myMax);
@@ -257,12 +261,10 @@ namespace MotleyPrimes {
             pool.join();
             
         } else {
-            if (isEuler) {
+            if (isEuler)
                 EulerPhiSieve(myMin, myMax, offsetStrt, primes, numSeq, EulerPhis);
-            } else {
-                PrimeFactorizationSieve(myMin, static_cast<typeInt>(myMax), 
-                                        offsetStrt, primes, primeList);
-            }
+            else
+                PrimeFactorizationSieve(myMin, static_cast<typeInt>(myMax), offsetStrt, primes, primeList);
         }
     }
 }
