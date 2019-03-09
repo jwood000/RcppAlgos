@@ -265,7 +265,13 @@ test_that("permuteGeneral produces correct results with exotic constraints", {
 })
 
 test_that("permuteGeneral produces correct results with use of FUN", {
-
+    
+    test <- permuteGeneral(6, 6, constraintFun = "mean")[, 7]
+    expect_equal(as.vector(test), unlist(permuteGeneral(6, 6, FUN = mean)))
+    
+    test <- permuteGeneral(6, 6, lower = 100, constraintFun = "prod")[, 7]
+    expect_equal(as.vector(test), unlist(permuteGeneral(6, 6, lower = 100, FUN = prod)))
+    
     test <- permuteGeneral(10, 5, constraintFun = "sum", keepResults = TRUE)
     expect_equal(as.vector(test[,6]), unlist(permuteGeneral(10, 5, FUN = sum)))
 
@@ -276,7 +282,20 @@ test_that("permuteGeneral produces correct results with use of FUN", {
     test <- permuteGeneral(8, 4, freqs = rep(1:4, 2))
     testFun <- lapply(1:nrow(test), function(x) cumsum(test[x, ]))
     expect_equal(testFun, permuteGeneral(8, 4, freqs = rep(1:4, 2), FUN = cumsum))
-
+    
+    test <- apply(permuteGeneral(4, 8, freqs = c(1,3,1,3)), 1, {
+        function(x) paste0(cumprod(x), collapse = "")
+    })
+    
+    testFun <- unlist(permuteGeneral(4, 8, freqs = c(1,3,1,3), FUN = function(x) {
+        paste0(cumprod(x), collapse = "")
+    }))
+    
+    expect_equal(test, testFun)
+    
+    expect_equal(permuteGeneral(4, 8, freqs = c(1,3,1,3), 
+                                constraintFun = "sum", nThreads = 2)[, 9], 
+                 rowSums(permuteGeneral(4, 8, freqs = c(1,3,1,3), nThreads = 2)))
 })
 
 test_that("permuteGeneral produces correct results with very large results", {
@@ -345,8 +364,9 @@ test_that("permuteGeneral produces appropriate error messages", {
     expect_error(permuteGeneral(5), "m and freqs cannot both be NULL")
     expect_error(permuteGeneral(5, 1:5), "length of m must be 1")
     expect_error(permuteGeneral(5, -5), "m must be positive")
-    expect_error(permuteCount(5, 5, "TRUE"), "Not compatible with requested type")
-    expect_error(permuteGeneral(5, 5, keepResults = "TRUE"), "Not compatible with requested type")
+    expect_error(permuteCount(5, 5, "TRUE"), "Only logical values are supported for repetition")
+    expect_error(permuteGeneral(5, 5, keepResults = "TRUE"), 
+                 "Only logical values are supported for keepResults")
 
     expect_error(permuteGeneral(5,3,freqs = c(1,2,3,-2,1)), "in freqs must be a positive")
     expect_error(permuteGeneral(5,15,freqs = c(5,5,5,5,5)), "number of rows cannot exceed")

@@ -6,8 +6,8 @@ test_that("isPrimeRcpp generates correct numbers", {
     expect_equal(isPrimeRcpp(c(999983, 10^6)), c(TRUE, FALSE))
     expect_equal(isPrimeRcpp(1), FALSE)
     expect_equal(all(isPrimeRcpp(c(2,3,5,7,11))), TRUE)
-    expect_equal(isPrimeRcpp(11.1), FALSE)
-    expect_equal(isPrimeRcpp(c(11, 11.1, 12.9999, 13)), c(TRUE, FALSE, FALSE, TRUE))
+    expect_equal(1e10 + which(isPrimeRcpp((1e10 + 1):(1e10 + 1e4))), primeSieve(1e10, 1e10 + 1e4))
+    expect_equal(isPrimeRcpp(11:13), c(TRUE, FALSE, TRUE))
     
     expect_true(isPrimeRcpp(.Machine$integer.max))
     

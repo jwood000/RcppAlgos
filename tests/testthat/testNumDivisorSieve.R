@@ -1,7 +1,7 @@
 context("testing numDivisorSieve")
 
 test_that("numDivisorSieve generates correct numbers", {
-    options(scipen = 999)
+    options(scipen = 50)
     expect_equal(numDivisorSieve(10)[10], 4)
     expect_equal(length(numDivisorSieve(1000)), 1000)
     expect_equal(numDivisorSieve(2), 1:2)
@@ -26,6 +26,10 @@ test_that("numDivisorSieve generates correct numbers", {
     expect_equal(as.integer(names(numDivisorSieve(100, namedVector = TRUE))), 1:100)
     expect_equal(as.numeric(names(numDivisorSieve(10^12, 10^12 + 100,
                                                   namedVector = TRUE))), (10^12):(10^12 + 100))
+    
+    expect_equal(numDivisorSieve(1e6), numDivisorSieve(1e6, nThreads = 2))
+    expect_equal(numDivisorSieve(1e12, 1e12 + 1e5), 
+                 numDivisorSieve(1e12, 1e12 + 1e5, nThreads = 2))
 })
 
 test_that("numDivisorSieve produces appropriate error messages", {
@@ -36,5 +40,5 @@ test_that("numDivisorSieve produces appropriate error messages", {
     expect_error(numDivisorSieve(1, 2^53), "must be a positive number less")
     expect_error(numDivisorSieve("10"), "must be of type numeric or integer")
     expect_error(numDivisorSieve(2, "10"), "must be of type numeric or integer")
-    expect_error(numDivisorSieve(100, namedVector = "TRUE"), "Not compatible with requested type")
+    expect_error(numDivisorSieve(100, namedVector = "TRUE"), "Only logical values are supported for namedVector")
 })
