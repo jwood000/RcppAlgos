@@ -1,5 +1,7 @@
 ![](http://cranlogs.r-pkg.org/badges/RcppAlgos?color=orange)
 ![](http://cranlogs.r-pkg.org/badges/grand-total/RcppAlgos?color=brightgreen)
+[![Coverage
+status](https://codecov.io/gh/jwood000/RcppAlgos/branch/master/graph/badge.svg)](https://codecov.io/github/jwood000/RcppAlgos?branch=master)
 
 # RcppAlgos
 
