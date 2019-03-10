@@ -73,8 +73,8 @@ void PermuteGeneral(int n, int r, typeVector &v, bool repetition, int numRows,
             int *indexMat = new int[phaseOne * uR];
             int *arrPerm = new int[uN];
             
-            for (std::size_t i = 0; i < uN; ++i)
-                arrPerm[i] = (int) i;
+            for (int i = 0; i < n; ++i)
+                arrPerm[i] = i;
 
             if (r == n) {
                 for (std::size_t i = 0; i < phaseOne; ++i) {

@@ -158,7 +158,7 @@ SEXP SampleRcpp(SEXP Rv, SEXP Rm, SEXP Rrepetition, SEXP RFreqs, SEXP RindexVec,
         IsMultiset = true;
         CleanConvert::convertVector(RFreqs, myReps, "freqs");
         
-        lenFreqs = (int) myReps.size();
+        lenFreqs = static_cast<int>(myReps.size());
         for (int i = 0; i < lenFreqs; ++i) {
             if (myReps[i] < 1) 
                 Rcpp::stop("Each element in freqs must be a positive whole number");
@@ -225,7 +225,7 @@ SEXP SampleRcpp(SEXP Rv, SEXP Rm, SEXP Rrepetition, SEXP RFreqs, SEXP RindexVec,
         if (n != lenFreqs)
             Rcpp::stop("the length of freqs must equal the length of v");
         
-        if (m > (int) freqsExpanded.size())
+        if (m > static_cast<int>(freqsExpanded.size()))
             m = freqsExpanded.size();
         
         if (IsComb) {
