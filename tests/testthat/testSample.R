@@ -45,23 +45,22 @@ test_that("comboSample produces correct results", {
     
     expect_equal(sum(comboGeneral(c(T,F), 10, TRUE)), sum(1:10))
     
-    expect_equal(comboSample(500, 200, n = 100, seed = 42),
-                 comboSample(500, 200, n = 100, seed = 42))
+    expect_equal(comboSample(500, 200, n = 10, seed = 42),
+                 comboSample(500, 200, n = 10, seed = 42, nThreads = 2))
     
-    expect_equal(comboSample(500, 200, TRUE, n = 100, seed = 42),
-                 comboSample(500, 200, TRUE, n = 100, seed = 42))
+    expect_equal(comboSample(500, 200, TRUE, n = 10, seed = 42),
+                 comboSample(500, 200, TRUE, n = 10, seed = 42, nThreads = 2))
     
     ## **** MULTISETS ******
     lastRow = comboCount(100, 20, freqs = rep(1:4, 25))
-    myChars = as.character(1:100)
     
     expect_equal(comboSample(as.character(1:100), 20, freqs = rep(1:4, 25), 
                         sampleVec = c(gmp::as.bigz(1), lastRow)), 
                  rbind(rep(as.character(1:8), times = c(1:4,1:4)),
                        rep(as.character(93:100), times = c(1:4,1:4))))
     
-    expect_equal(comboSample(100, 20, freqs = rep(1:4, 25), n = 50, seed = 42),
-                 comboSample(100, 20, freqs = rep(1:4, 25), n = 50, seed = 42))
+    expect_equal(comboSample(100, 20, freqs = rep(1:4, 25), n = 10, seed = 42),
+                 comboSample(100, 20, freqs = rep(1:4, 25), n = 10, seed = 42, nThreads = 2))
 })
 
 test_that("permuteSample produces correct results", {
@@ -113,17 +112,17 @@ test_that("permuteSample produces correct results", {
     expect_equal(permuteSample(factor(state.name), 20, sampleVec = 1e12),
                  permuteGeneral(factor(state.name), 20, lower = 1e12, upper = 1e12))
 
-    expect_equal(permuteSample(500, 100, n = 100, seed = 42),
-                 permuteSample(500, 100, n = 100, seed = 42))
+    expect_equal(permuteSample(500, 100, n = 10, seed = 42),
+                 permuteSample(500, 100, n = 10, seed = 42, nThreads = 2))
 
-    expect_equal(permuteSample(100, 20, n = 100, seed = 42),
-                 permuteSample(100, 20, n = 100, seed = 42))
+    expect_equal(permuteSample(100, 20, n = 10, seed = 42),
+                 permuteSample(100, 20, n = 10, seed = 42, nThreads = 2))
 
-    expect_equal(permuteSample(100, 20, TRUE, n = 100, seed = 42),
-                 permuteSample(100, 20, TRUE, n = 100, seed = 42))
+    expect_equal(permuteSample(100, 20, TRUE, n = 10, seed = 42),
+                 permuteSample(100, 20, TRUE, n = 10, seed = 42, nThreads = 2))
 
-    expect_equal(permuteSample(75, 10, freqs = rep(1:3, 25), n = 20, seed = 42),
-                 permuteSample(75, 10, freqs = rep(1:3, 25), n = 20, seed = 42))
+    expect_equal(permuteSample(75, 10, freqs = rep(1:3, 25), n = 10, seed = 42),
+                 permuteSample(75, 10, freqs = rep(1:3, 25), n = 10, seed = 42, nThreads = 2))
 })
 
 test_that("comboSample produces correct results when FUN is applied", {
@@ -133,15 +132,43 @@ test_that("comboSample produces correct results when FUN is applied", {
     expect_equal(comboSample(80, 40, FUN = sd, sampleVec = vec),
                  comboGeneral(80, 40, lower = num, FUN = sd))
     
-    num <- comboCount(80, 40) - 10
-    vec <- do.call(c, lapply(0:10, function(x)  gmp::add.bigz(x, num)))
-    expect_equal(comboSample(80, 40, FUN = sd, sampleVec = vec),
-                 comboGeneral(80, 40, lower = num, FUN = sd))
+    set.seed(20)
+    vec <- runif(10, -1e4, 1e4)
+    num <- comboCount(10, 7, TRUE)
+    samp <- sample(num, 100)
+    expect_equal(comboSample(vec, 7, TRUE, sampleVec = samp, FUN = function(x) {
+        mean(dcauchy(x))
+    }), comboGeneral(vec, 7, TRUE, FUN = function(x) mean(dcauchy(x)))[samp])
+
+    set.seed(19)
+    vec <- runif(8, -1e4, 1e4)
+    num <- comboCount(8, 8, freqs = rep(1:4, 2))
+    samp <- sample(num, 100)
+    expect_equal(comboSample(vec, 8, freqs = rep(1:4, 2), FUN = cospi, sampleVec = samp),
+                 comboGeneral(vec, 8, freqs = rep(1:4, 2), FUN = cospi)[samp])
+})
+
+test_that("permuteSample produces correct results when FUN is applied", {
     
-    num <- comboCount(80, 40) - 10
+    num <- permuteCount(80, 40) - 10
     vec <- do.call(c, lapply(0:10, function(x)  gmp::add.bigz(x, num)))
-    expect_equal(comboSample(80, 40, FUN = sd, sampleVec = vec),
-                 comboGeneral(80, 40, lower = num, FUN = sd))
+    expect_equal(permuteSample(80, 40, FUN = sd, sampleVec = vec),
+                 permuteGeneral(80, 40, lower = num, FUN = sd))
+    
+    set.seed(18)
+    vec <- runif(6, -1e4, 1e4)
+    num <- permuteCount(6, 5, TRUE)
+    samp <- sample(num, 100)
+    expect_equal(permuteSample(vec, 7, TRUE, sampleVec = samp, FUN = function(x) {
+        mean(dcauchy(x))
+    }), permuteGeneral(vec, 7, TRUE, FUN = function(x) mean(dcauchy(x)))[samp])
+    
+    set.seed(17)
+    vec <- runif(8, -1e4, 1e4)
+    num <- permuteCount(8, 5, freqs = rep(1:4, 2))
+    samp <- sample(num, 100)
+    expect_equal(permuteSample(vec, 5, freqs = rep(1:4, 2), FUN = cospi, sampleVec = samp),
+                 permuteGeneral(vec, 5, freqs = rep(1:4, 2), FUN = cospi)[samp])
 })
 
 test_that("comboSample produces appropriate error messages", {
@@ -151,33 +178,46 @@ test_that("comboSample produces appropriate error messages", {
     expect_error(comboSample(5,3, comboSample(5,3, sampleVec = 1:200)), "exceeds the maximum number of possible results")
     expect_error(comboSample(5,freqs = rep(1,6)), "the length of freqs must equal the")
     
-    expect_error(comboSample(5,3, n = "5"), 
-                 "n must be a number")
-    expect_error(comboSample(5,3, n = 1:5), 
-                 "length of n must be 1")
+    expect_error(comboSample(5,3, n = "5"), "n must be a number")
+    expect_error(comboSample(5,3, n = 1:5), "length of n must be 1")
 })
 
 test_that("permuteSample produces appropriate error messages", {
-    expect_error(permuteSample(5, 3), 
-                 "n and sampleVec cannot both be NULL")
-    expect_error(permuteSample(5,3,freqs = c(1,2,3,-2,1)), 
-                 "in freqs must be a positive")
+    expect_error(permuteSample(5, repetition = TRUE), "m and freqs cannot both be NULL")
+    expect_error(permuteSample(5, 1:5), "length of m must be 1")
+    expect_error(permuteSample(5, -4), "m must be positive")
+    expect_error(permuteSample(5, 3), "n and sampleVec cannot both be NULL")
+    expect_error(permuteSample(5,3,freqs = c(1,2,3,-2,1)), "in freqs must be a positive")
     expect_error(permuteSample(5,3, n = 100), 
                  "n exceeds the maximum number of possible results")
-    expect_error(permuteSample(5,3, n = "5"), 
-                 "n must be a number")
-    expect_error(permuteSample(5,3, n = 1:5), 
-                 "length of n must be 1")
+    expect_error(permuteSample(5,3, n = "5"), "n must be a number")
+    expect_error(permuteSample(5,3, n = 1:5), "length of n must be 1")
     expect_error(permuteSample(5,3, permuteSample(5,3, sampleVec = 1:200)), 
                  "exceeds the maximum number of possible results")
-    expect_error(permuteSample(5,freqs = rep(1,6)), 
-                 "the length of freqs must equal the")
+    expect_error(permuteSample(5,freqs = rep(1,6)), "the length of freqs must equal the")
     expect_error(permuteSample(5, 4, sampleVec = "adfs"), 
-                 "sampleVec must be convertible to a real number")
-    expect_error(permuteSample(100, 10, n = 2^50),
-                 "The number of rows cannot exceed")
-    expect_error(permuteSample(100, 10, n = -200),
-                 "n must be a positive number")
+                 "Each element in sampleVec must be a positive whole number")
+    expect_error(permuteSample(5, 4, sampleVec = 1.1), 
+                 "Each element in sampleVec must be a whole number")
+    expect_error(permuteSample(100, 10, n = 2^50), "The number of rows cannot exceed")
+    expect_error(permuteSample(100, 10, n = -200), "n must be a positive number")
     expect_error(permuteSample(100, 10, sampleVec = c("62815650955529472001")),
                  "One or more of the requested values in sampleVec")
+    expect_error(permuteSample(3.3, 2, n = 1), 
+                 "If v is not a character and of length 1, it must be a whole number")
+    expect_error(permuteSample(3, 2.2, n = 1), "m must be a whole number")
+    expect_error(permuteSample(3, 2, n = 1.1), "n must be a whole number")
+    expect_error(permuteSample(3, 2, sampleVec = as.complex(1)), 
+                 "This type is not supported! No conversion possible for sampleVec")
+    expect_error(permuteSample(3, 2, Parallel = "TRUE"), 
+                 "Only logical values are supported for Parallel")
+    expect_error(permuteSample(5, 3, n = 5, nThreads = "5"), 
+                 "nThreads must be of type numeric or integer")
+    expect_error(permuteSample(5, 3, n = 5, nThreads = 3.2), "nThreads must be a whole number")
+    expect_error(permuteSample(5000, 10, n = 5.5), "n must be a whole number")
+    expect_error(permuteSample(5000, 10, n = NA_integer_), "n must be a whole number")
+    expect_error(permuteSample(5000, 10, n = NA), 
+                 "This type is not supported! No conversion possible for n")
+    expect_error(permuteSample(NA_integer_, 3, n = 5), 
+                 "If v is not a character and of length 1, it must be a whole number")
 })
