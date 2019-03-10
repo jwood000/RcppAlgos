@@ -45,16 +45,10 @@ void createMPZArray(SEXP v, mpz_t myVec[], unsigned long int sizevec) {
                 
                 if (static_cast<int64_t>(dj) != dj) {
                     Rcpp::stop("Must be a whole number. If number is too large for "
-                                   "double precision, consider using gmp::as.bigz or "
-                                   "passing sampleVec as a character vector.");
-                } else if (R_FINITE(dj) || ISNAN(dj)) {
-                    mpz_set_d(myVec[j], dj);
+                               "double precision, consider using gmp::as.bigz or "
+                               "passing sampleVec as a character vector.");
                 } else {
-                    // dj is +- Inf : use LARGE ( = +- 2 ^ 80000 -- arbitrarily )
-                    // FIXME: Keep 'LARGE' a static const; initialized only once
-                    mpz_ui_pow_ui(myVec[j], 2u, 8000u);
-                    if (dj == R_NegInf)
-                        mpz_neg(myVec[j], myVec[j]);
+                    mpz_set_d(myVec[j], dj);
                 }
             }
             
