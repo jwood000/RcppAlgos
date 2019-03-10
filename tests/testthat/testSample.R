@@ -59,6 +59,9 @@ test_that("comboSample produces correct results", {
                  rbind(rep(as.character(1:8), times = c(1:4,1:4)),
                        rep(as.character(93:100), times = c(1:4,1:4))))
     
+    expect_equal(comboSample(100, 20, freqs = rep(1:4, 25), sampleVec = seq(1L, 100L, 10L)),
+                 comboGeneral(100, 20, freqs = rep(1:4, 25), upper = 100)[seq(1L, 100L, 10L), ])
+    
     set.seed(123)
     v <- rnorm(100)
     expect_equal(comboSample(v, 20, freqs = rep(1:4, 25), n = 10, seed = 42),
@@ -233,4 +236,6 @@ test_that("permuteSample produces appropriate error messages", {
                  "Each element in sampleVec must be a postive whole number")
     expect_error(permuteSample(NA_integer_, 3, n = 5), 
                  "If v is not a character and of length 1, it must be a whole number")
+    expect_error(permuteSample(1000, 20, sampleVec = c(NA, "1234567890")),
+                 "Each element in sampleVec must be a postive whole number")
 })
