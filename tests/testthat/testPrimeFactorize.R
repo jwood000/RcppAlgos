@@ -1,7 +1,7 @@
 context("testing primeFactorize")
 
 test_that("primeFactorize generates correct numbers", {
-    options(scipen = 999)
+    options(scipen = 50)
     expect_equal(primeFactorize(100), c(2, 2, 5, 5))
     expect_equal(length(primeFactorize(1:100)), 100)
     expect_equal(primeFactorize(2), 2)
@@ -30,5 +30,5 @@ test_that("primeFactorize produces appropriate error messages", {
     expect_error(primeFactorize(-2^53), "each element must be less than")
     expect_error(primeFactorize(c(-2^53, 1:100)), "the abs value of each element must be less than")
     expect_error(primeFactorize("10"), "must be of type numeric or integer")
-    expect_error(primeFactorize(100, namedList = "TRUE"), "Not compatible with requested type")
+    expect_error(primeFactorize(100, namedList = "TRUE"), "Only logical values are supported for namedList")
 })
