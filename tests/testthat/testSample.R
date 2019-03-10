@@ -59,8 +59,10 @@ test_that("comboSample produces correct results", {
                  rbind(rep(as.character(1:8), times = c(1:4,1:4)),
                        rep(as.character(93:100), times = c(1:4,1:4))))
     
-    expect_equal(comboSample(100, 20, freqs = rep(1:4, 25), n = 10, seed = 42),
-                 comboSample(100, 20, freqs = rep(1:4, 25), n = 10, seed = 42, nThreads = 2))
+    set.seed(123)
+    v <- rnorm(100)
+    expect_equal(comboSample(v, 20, freqs = rep(1:4, 25), n = 10, seed = 42),
+                 comboSample(v, 20, freqs = rep(1:4, 25), n = 10, seed = 42, nThreads = 2))
 })
 
 test_that("permuteSample produces correct results", {
@@ -123,6 +125,9 @@ test_that("permuteSample produces correct results", {
 
     expect_equal(permuteSample(75, 10, freqs = rep(1:3, 25), n = 10, seed = 42),
                  permuteSample(75, 10, freqs = rep(1:3, 25), n = 10, seed = 42, nThreads = 2))
+    
+    expect_equal(permuteSample(c(TRUE, FALSE), 20, freqs = c(10, 15), seed = 97, n = 20), 
+                 permuteSample(c(TRUE, FALSE), 20, freqs = c(10, 15), seed = 97, n = 20, nThreads = 2))
 })
 
 test_that("comboSample produces correct results when FUN is applied", {
@@ -131,6 +136,10 @@ test_that("comboSample produces correct results when FUN is applied", {
     vec <- do.call(c, lapply(0:10, function(x)  gmp::add.bigz(x, num)))
     expect_equal(comboSample(80, 40, FUN = sd, sampleVec = vec),
                  comboGeneral(80, 40, lower = num, FUN = sd))
+    
+    expect_equal(apply(comboGeneral(letters[1:8], 5), 1, paste0, collapse = "")[30:40],
+                 unlist(comboSample(letters[1:8], 5, sampleVec = 30:40,
+                             FUN = function(x) paste0(x, collapse = ""))))
     
     set.seed(20)
     vec <- runif(10, -1e4, 1e4)
@@ -218,6 +227,10 @@ test_that("permuteSample produces appropriate error messages", {
     expect_error(permuteSample(5000, 10, n = NA_integer_), "n must be a whole number")
     expect_error(permuteSample(5000, 10, n = NA), 
                  "This type is not supported! No conversion possible for n")
+    expect_error(permuteSample(5000, 10, sampleVec = -1), 
+                 "Each element in sampleVec must be a postive whole number")
+    expect_error(permuteSample(5000, 10, sampleVec = c(1e9, -1)), 
+                 "Each element in sampleVec must be a postive whole number")
     expect_error(permuteSample(NA_integer_, 3, n = 5), 
                  "If v is not a character and of length 1, it must be a whole number")
 })
