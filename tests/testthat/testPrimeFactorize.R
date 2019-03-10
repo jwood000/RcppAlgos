@@ -19,10 +19,17 @@ test_that("primeFactorize generates correct numbers", {
     expect_equal(rle(primeFactorize(-1e10))$lengths, c(1, 10, 10))
     expect_equal(rle(primeFactorize(1e15))$lengths, c(15, 15))
     
+    expect_equal(primeFactorize((1e6):(1e6 + 1e4)), primeFactorizeSieve(1e6, 1e6 + 1e4))
+    expect_equal(primeFactorize((1e12):(1e12 + 1e2)), primeFactorizeSieve(1e12, 1e12 + 1e2))
+    
     ## Test Names
     expect_equal(as.integer(names(primeFactorize(100, namedList = TRUE))), integer(0))
     expect_equal(as.numeric(names(primeFactorize((10^12):(10^12 + 100),
                                                       namedList = TRUE))), (10^12):(10^12 + 100))
+    ## Test Parallel
+    set.seed(567)
+    samp <- sample(1e12, 100)
+    expect_equal(primeFactorize(samp), primeFactorize(samp, nThreads = 2))
 })
 
 test_that("primeFactorize produces appropriate error messages", {

@@ -66,6 +66,10 @@ test_that("comboSample produces correct results", {
     v <- rnorm(100)
     expect_equal(comboSample(v, 20, freqs = rep(1:4, 25), n = 10, seed = 42),
                  comboSample(v, 20, freqs = rep(1:4, 25), n = 10, seed = 42, nThreads = 2))
+    
+    ## only used 2 threads
+    expect_equal(comboSample(as.factor(LETTERS), 12, TRUE, n = 2, seed = 17),
+                 comboSample(as.factor(LETTERS), 12, TRUE, n = 2, seed = 17, Parallel = TRUE))
 })
 
 test_that("permuteSample produces correct results", {
@@ -144,6 +148,9 @@ test_that("comboSample produces correct results when FUN is applied", {
                  unlist(comboSample(letters[1:8], 5, sampleVec = 30:40,
                              FUN = function(x) paste0(x, collapse = ""))))
     
+    expect_equal(comboSample(c(NA, 1, 2, 5, 10), 3, FUN = sum, sampleVec = 1:10),
+                 comboGeneral(c(NA, 1, 2, 5, 10), 3, FUN = sum))
+    
     set.seed(20)
     vec <- runif(10, -1e4, 1e4)
     num <- comboCount(10, 7, TRUE)
@@ -189,9 +196,17 @@ test_that("comboSample produces appropriate error messages", {
     expect_error(comboSample(5,3, n = 100), "n exceeds the maximum number of possible results")
     expect_error(comboSample(5,3, comboSample(5,3, sampleVec = 1:200)), "exceeds the maximum number of possible results")
     expect_error(comboSample(5,freqs = rep(1,6)), "the length of freqs must equal the")
-    
+    expect_error(comboSample(5,3, n = 5, FUN = "sum"), "FUN must be a function!")
     expect_error(comboSample(5,3, n = "5"), "n must be a number")
     expect_error(comboSample(5,3, n = 1:5), "length of n must be 1")
+    expect_error(comboSample(100000, 10, sampleVec = -1L),
+                 "Each element in sampleVec must be a postive whole number")
+    expect_error(comboSample(100000, 10, sampleVec = NaN),
+                 "Must be a whole number. If number is too large for double precision, consider using gmp::as.bigz or passing sampleVec as a character vector.")
+    expect_error(comboSample(100000, 10, sampleVec = 2^1000),
+                 "Must be a whole number. If number is too large for double precision, consider using gmp::as.bigz or passing sampleVec as a character vector.")
+    testthat::expect_error(comboSample(100000, 10, sampleVec = as.complex(1)),
+                 "only logical, numeric or character")
 })
 
 test_that("permuteSample produces appropriate error messages", {
