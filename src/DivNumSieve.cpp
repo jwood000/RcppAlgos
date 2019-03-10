@@ -123,10 +123,15 @@ void DivisorMaster(typeInt myMin, typeReturn myMax,
     typeInt offsetStrt = 0;
     typeInt intMax = static_cast<typeInt>(myMax);
     
-    if (nThreads > 1 && maxThreads > 1) {
+    if (nThreads > 1 && maxThreads > 1  && myRange >= 20000) {
         Parallel = true;
-        if (nThreads > maxThreads) {nThreads = maxThreads;}
-        if (maxThreads < 2 || myRange < 10000) {Parallel = false;}
+        
+        if (nThreads > maxThreads)
+            nThreads = maxThreads;
+        
+        // Ensure that each thread has at least 10000
+        if ((myRange / nThreads) < 10000)
+            nThreads = myRange / 10000;
     }
     
     if (Parallel) {
@@ -209,8 +214,8 @@ SEXP DivNumSieve(SEXP Rb1, SEXP Rb2, bool bDivSieve,
                  SEXP RNamed, SEXP RNumThreads, int maxThreads) {
     
     double bound1, bound2, myMax, myMin;
-    bool keepNames = Rcpp::as<bool>(RNamed);
-    
+    const std::string namedObject = (bDivSieve) ? "namedList" : "namedVector";
+    bool keepNames = CleanConvert::convertLogical(RNamed, namedObject);
     CleanConvert::convertPrimitive(Rb1, bound1, "bound1");
     
     if (bound1 <= 0 || bound1 > Significand53)

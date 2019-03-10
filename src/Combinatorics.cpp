@@ -423,15 +423,15 @@ SEXP CombinatoricsRcpp(SEXP Rv, SEXP Rm, SEXP Rrepetition, SEXP RFreqs, SEXP Rlo
                        SEXP myEnv, SEXP Rparallel, SEXP RNumThreads, int maxThreads) {
     
     int n, m1, m2, m = 0, lenFreqs = 0, nRows = 0;
-    bool IsRepetition, IsLogical, IsCharacter;
-    bool IsMultiset, IsInteger, Parallel, keepRes;
+    bool IsLogical, IsCharacter, IsMultiset, IsInteger;
     
     std::vector<double> vNum;
     std::vector<int> vInt, myReps, freqsExpanded;
     Rcpp::CharacterVector rcppChar;
-    keepRes = (Rf_isNull(RKeepRes)) ? false : Rcpp::as<bool>(RKeepRes);
-    Parallel = Rcpp::as<bool>(Rparallel);
-    IsRepetition = Rcpp::as<bool>(Rrepetition);
+    
+    bool keepRes = CleanConvert::convertLogical(RKeepRes, "keepResults");
+    bool Parallel = CleanConvert::convertLogical(Rparallel, "Parallel");
+    bool IsRepetition = CleanConvert::convertLogical(Rrepetition, "repetition");
     
     switch(TYPEOF(Rv)) {
         case LGLSXP: {

@@ -121,11 +121,10 @@ SEXP SampleRcpp(SEXP Rv, SEXP Rm, SEXP Rrepetition, SEXP RFreqs, SEXP RindexVec,
                 SEXP Rparallel, SEXP RNumThreads, int maxThreads) {
     
     int n, m1, m2, m = 0, lenFreqs = 0;
-    bool IsRepetition, IsLogical, Parallel;
-    bool IsMultiset, IsInteger, IsCharacter;
+    bool IsMultiset, IsInteger, IsCharacter, IsLogical;
     IsCharacter = IsInteger = IsLogical = false;
     
-    Parallel = Rcpp::as<bool>(Rparallel);
+    bool Parallel = CleanConvert::convertLogical(Rparallel, "Parallel");
     std::vector<double> vNum;
     std::vector<int> vInt, myReps, freqsExpanded;
     Rcpp::CharacterVector rcppChar;
@@ -185,7 +184,7 @@ SEXP SampleRcpp(SEXP Rv, SEXP Rm, SEXP Rrepetition, SEXP RFreqs, SEXP RindexVec,
     if (m < 1)
         Rcpp::stop("m must be positive");
     
-    IsRepetition = Rcpp::as<bool>(Rrepetition);
+    bool IsRepetition = CleanConvert::convertLogical(Rrepetition, "repetition");
     
     if (IsCharacter) {
         rcppChar = Rcpp::as<Rcpp::CharacterVector>(Rv);
@@ -195,8 +194,8 @@ SEXP SampleRcpp(SEXP Rv, SEXP Rm, SEXP Rrepetition, SEXP RFreqs, SEXP RindexVec,
         n = vInt.size();
     } else {
         if (Rf_length(Rv) == 1) {
-            double seqEnd = Rcpp::as<double>(Rv);
-            if (Rcpp::NumericVector::is_na(seqEnd)) {seqEnd = 1;}
+            int seqEnd;
+            CleanConvert::convertPrimitive(Rv, seqEnd, "If v is not a character and of length 1, it");
             if (seqEnd > 1) {m1 = 1; m2 = seqEnd;} else {m1 = seqEnd; m2 = 1;}
             Rcpp::IntegerVector vTemp = Rcpp::seq(m1, m2);
             IsInteger = true;
@@ -313,7 +312,7 @@ SEXP SampleRcpp(SEXP Rv, SEXP Rm, SEXP Rrepetition, SEXP RFreqs, SEXP RindexVec,
     } else if (!IsGmp) {
         CleanConvert::convertVector(RindexVec, mySample, "sampleVec", true, false);
         if (mySample.size() == 1)
-            if (mySample[0] <= 0)
+            if (mySample[0] < 1)
                 Rcpp::stop("Each element in sampleVec must be a positive whole number");
     }
     
@@ -385,14 +384,14 @@ SEXP SampleRcpp(SEXP Rv, SEXP Rm, SEXP Rrepetition, SEXP RFreqs, SEXP RindexVec,
         }
         
         mpz_set(maxGmp, myVec[0]);
-        if (mpz_cmp_si(myVec[0], 0) <= 0)
+        if (mpz_cmp_si(myVec[0], 0) < 0)
             Rcpp::stop("Each element in sampleVec must be a postive whole number");
         
         for (std::size_t i = 1; i < sampSize; ++i) {
             if (mpz_cmp(myVec[i], maxGmp) > 0)
                 mpz_set(maxGmp, myVec[i]);
             
-            if (mpz_cmp_si(myVec[i], 0) <= 0)
+            if (mpz_cmp_si(myVec[i], 0) < 0)
                 Rcpp::stop("Each element in sampleVec must be a postive whole number");
         }
         

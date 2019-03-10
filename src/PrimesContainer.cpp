@@ -19,10 +19,10 @@ namespace PrimeCounting {
     // primes instead of generating them.
     int64_t PiPrime (int64_t maxNum) {
         
-        int_fast64_t segSize = Almost210L1Cache;
-        std::size_t nWheels = N_WHEELS210_PER_SEG;
-        std::size_t szWheel210 = SZ_WHEEL210;
-        int sqrtBound = static_cast<int>(std::sqrt(maxNum));
+        const int_fast64_t segSize = Almost210L1Cache;
+        const std::size_t nWheels = N_WHEELS210_PER_SEG;
+        const std::size_t szWheel210 = SZ_WHEEL210;
+        const int sqrtBound = static_cast<int>(std::sqrt(maxNum));
         
         // the wheel already has the first 4 primes marked as
         // false, so we need to account for them here. N.B.
@@ -31,7 +31,7 @@ namespace PrimeCounting {
         int64_t count = 4;
         
         std::vector<int64_t> smallPrimes, nextStrt;
-        int64_t flrMaxNum = segSize * std::floor(maxNum / segSize);
+        const int64_t flrMaxNum = segSize * std::floor(maxNum / segSize);
         
         std::size_t ind = 1;
         for (; smallPrimeBase[ind] <= sqrtBound; ++ind)
@@ -92,7 +92,7 @@ namespace PrimeCounting {
         return count;
     }
 
-    const int MAX_A = 100;
+    constexpr int MAX_A = 100;
     std::array<std::vector<uint16_t>, MAX_A> phiCache;
     std::mutex theBlocker;
     
@@ -109,10 +109,10 @@ namespace PrimeCounting {
     // The arrays below are utilized by phiTiny
     // primeProds[n] = \prod_{i=1}^{n} primes[i]
     // myTotients[n] = \prod_{i=1}^{n} (primes[i] - 1)
-    const std::array<int, 7> myTinyPrimes = {{0, 2, 3, 5, 7, 11, 13}};
-    const std::array<int, 7> primeProds = {{1, 2, 6, 30, 210, 2310, 30030}};
-    const std::array<int, 7> myTotients = {{1, 1, 2, 8, 48, 480, 5760}};
-    const std::array<int, 13> myTinyPi = {{0, 0, 1, 2, 2, 3, 3, 4, 4, 4, 4, 5, 5}};
+    constexpr std::array<int, 7> myTinyPrimes = {{0, 2, 3, 5, 7, 11, 13}};
+    constexpr std::array<int, 7> primeProds = {{1, 2, 6, 30, 210, 2310, 30030}};
+    constexpr std::array<int, 7> myTotients = {{1, 1, 2, 8, 48, 480, 5760}};
+    constexpr std::array<int, 13> myTinyPi = {{0, 0, 1, 2, 2, 3, 3, 4, 4, 4, 4, 5, 5}};
     
     int64_t phiTinyCalc(int64_t x, int64_t a) {
         int64_t pp = primeProds[a];
@@ -205,9 +205,9 @@ namespace PrimeCounting {
     
     int64_t phiMaster(int64_t x, int64_t a, int nThreads, bool Parallel) {
         
-        int64_t sqrtx = static_cast<int64_t>(std::sqrt(x));
-        int64_t piSqrtx = std::min(static_cast<int64_t>(phiPi[sqrtx]), a);
-        int64_t strt = getStrt(sqrtx);
+        const int64_t sqrtx = static_cast<int64_t>(std::sqrt(x));
+        const int64_t piSqrtx = std::min(static_cast<int64_t>(phiPi[sqrtx]), a);
+        const int64_t strt = getStrt(sqrtx);
         int64_t mySum = phiTinyCalc(x, strt) + piSqrtx - a;
         
         if (Parallel) {
@@ -314,21 +314,21 @@ namespace PrimeCounting {
     // 10^11 -->>       4,118,054,813   -->>   21.45 milliseconds
     // 10^12 -->>      37,607,912,018   -->>   119.4 milliseconds
     // 10^13 -->>     346,065,536,839   -->>   868.4 milliseconds
-    // 10^14 -->>   3,204,941,750,802   -->>   6.777 seconds
+    // 10^14 -->>   3,204,941,750,802   -->>   6.724 seconds
     // 10^15 -->>  29,844,570,422,669   -->>  49.554 seconds
     // MAX VALUE (2^53 - 1) -->> 
     //            252,252,704,148,404   -->> 352.862 seconds
     
     int64_t MasterPrimeCount(int64_t n, int nThreads = 1, int maxThreads = 1) {
         
-        int64_t sqrtBound = static_cast<int64_t>(std::sqrt(n));
+        const int64_t sqrtBound = static_cast<int64_t>(std::sqrt(n));
         std::vector<int64_t> resetPhiPrimes;
         PrimeSieve::sqrtBigPrimes(sqrtBound, true, false, true, resetPhiPrimes);
         phiPrimes = resetPhiPrimes;
         
         phiPi.resize(sqrtBound + 1);
         int64_t count = 0;
-        int64_t maxPrime = phiPrimes.back();
+        const int64_t maxPrime = phiPrimes.back();
         
         for (int64_t i = 1; i <= maxPrime; ++i) {
             if (i >= phiPrimes[count + 1])
@@ -347,23 +347,23 @@ namespace PrimeCounting {
             if ((maxThreads < 2) || (n < 1e7)) {Parallel = false;}
         }
         
-        int64_t piSqrt = PiPrime(sqrtBound);
-        int64_t phiSqrt = phiMaster(n, piSqrt, nThreads, Parallel);
-        int64_t int64result = piSqrt + phiSqrt - 1;
+        const int64_t piSqrt = PiPrime(sqrtBound);
+        const int64_t phiSqrt = phiMaster(n, piSqrt, nThreads, Parallel);
+        const int64_t int64result = piSqrt + phiSqrt - 1;
         
         return int64result;
     }
 }
 
 //[[Rcpp::export]]
-SEXP PrimeCountRcpp (SEXP Rn, SEXP RNumThreads, int maxThreads) {
+SEXP PrimeCountRcpp(SEXP Rn, SEXP RNumThreads, int maxThreads) {
     double dblNum;
     CleanConvert::convertPrimitive(Rn, dblNum, "n");
 
     if (dblNum < 1 || dblNum > Significand53)
         Rcpp::stop("n must be a positive number less than 2^53");
 
-    int64_t n = dblNum;
+    const int64_t n = dblNum;
     
     if (n < 100000) {
         if (n < 10) {
@@ -434,13 +434,12 @@ SEXP GlueMotley(typeInt myMin, typeReturn myMax, bool isEuler,
 }
 
 // [[Rcpp::export]]
-SEXP MotleyContainer(SEXP Rb1, SEXP Rb2, SEXP RIsEuler, 
+SEXP MotleyContainer(SEXP Rb1, SEXP Rb2, bool isEuler, 
                      SEXP RNamed, SEXP RNumThreads, int maxThreads) {
     
     double bound1, bound2, myMin, myMax;
-    bool isEuler = Rcpp::as<bool>(RIsEuler);
-    bool isNamed = Rcpp::as<bool>(RNamed);
-    
+    const std::string namedObject = (isEuler) ? "namedVector" : "namedList";
+    bool isNamed = CleanConvert::convertLogical(RNamed, namedObject);
     CleanConvert::convertPrimitive(Rb1, bound1, "bound1");
     
     if (bound1 <= 0 || bound1 > Significand53)
@@ -541,7 +540,7 @@ SEXP EratosthenesRcpp(SEXP Rb1, SEXP Rb2, SEXP RNumThreads, int maxCores, int ma
         std::vector<std::vector<double>> primeList(numSects, std::vector<double>());
         std::vector<double> tempPrime;
         
-        PrimeSieve::PrimeSieveMaster(myMin, myMax, tempPrime, primeList, 
+        PrimeSieve::PrimeSieveMaster(myMin, myMax, tempPrime, primeList,
                                      Parallel, nThreads, maxThreads, maxCores);
         
         if (Parallel) {
@@ -564,7 +563,7 @@ SEXP EratosthenesRcpp(SEXP Rb1, SEXP Rb2, SEXP RNumThreads, int maxCores, int ma
         std::vector<std::vector<int_fast32_t>> primeList(numSects, std::vector<int_fast32_t>());
         std::vector<int_fast32_t> tempPrime;
         
-        PrimeSieve::PrimeSieveMaster(myMin, myMax, tempPrime, primeList, 
+        PrimeSieve::PrimeSieveMaster(myMin, myMax, tempPrime, primeList,
                                      Parallel, nThreads, maxThreads, maxCores);
         
         if (Parallel) {

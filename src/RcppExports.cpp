@@ -89,18 +89,18 @@ BEGIN_RCPP
 END_RCPP
 }
 // MotleyContainer
-SEXP MotleyContainer(SEXP Rb1, SEXP Rb2, SEXP RIsEuler, SEXP RNamed, SEXP RNumThreads, int maxThreads);
-RcppExport SEXP _RcppAlgos_MotleyContainer(SEXP Rb1SEXP, SEXP Rb2SEXP, SEXP RIsEulerSEXP, SEXP RNamedSEXP, SEXP RNumThreadsSEXP, SEXP maxThreadsSEXP) {
+SEXP MotleyContainer(SEXP Rb1, SEXP Rb2, bool isEuler, SEXP RNamed, SEXP RNumThreads, int maxThreads);
+RcppExport SEXP _RcppAlgos_MotleyContainer(SEXP Rb1SEXP, SEXP Rb2SEXP, SEXP isEulerSEXP, SEXP RNamedSEXP, SEXP RNumThreadsSEXP, SEXP maxThreadsSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< SEXP >::type Rb1(Rb1SEXP);
     Rcpp::traits::input_parameter< SEXP >::type Rb2(Rb2SEXP);
-    Rcpp::traits::input_parameter< SEXP >::type RIsEuler(RIsEulerSEXP);
+    Rcpp::traits::input_parameter< bool >::type isEuler(isEulerSEXP);
     Rcpp::traits::input_parameter< SEXP >::type RNamed(RNamedSEXP);
     Rcpp::traits::input_parameter< SEXP >::type RNumThreads(RNumThreadsSEXP);
     Rcpp::traits::input_parameter< int >::type maxThreads(maxThreadsSEXP);
-    rcpp_result_gen = Rcpp::wrap(MotleyContainer(Rb1, Rb2, RIsEuler, RNamed, RNumThreads, maxThreads));
+    rcpp_result_gen = Rcpp::wrap(MotleyContainer(Rb1, Rb2, isEuler, RNamed, RNumThreads, maxThreads));
     return rcpp_result_gen;
 END_RCPP
 }

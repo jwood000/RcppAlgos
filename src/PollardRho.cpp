@@ -9,7 +9,7 @@
 template <typename typeReturn>
 void getPrimeFactors (int64_t &t, std::vector<typeReturn> &factors);
 
-/* Prove primality or run probabilistic tests.  */
+// Prove primality or run probabilistic tests
 int FlagProvePrimality = 1;
 
 const double my2Pow62 = std::pow(2, 62);
@@ -405,17 +405,7 @@ void FactorList(std::size_t m, std::size_t n, std::vector<double> &myNums,
 void IsPrimeVec(std::size_t m, std::size_t n, std::vector<double> &myNums,
                 Rcpp::LogicalVector &primeTest) {
     
-    double isWhole;
-    
     for (std::size_t j = m; j < n; ++j) {
-        
-        if (myNums[j] <= 0)
-            Rcpp::stop("each element must be positive");
-        if (myNums[j] > Significand53)
-            Rcpp::stop("each element must be less than 2^53");
-        if (std::modf(myNums[j], &isWhole) != 0.0)
-            primeTest[j] = false;
-        
         int64_t testVal = static_cast<int64_t>(myNums[j]);
         
         if (testVal == 1) {
@@ -593,7 +583,7 @@ SEXP PollardRhoContainer(SEXP Rv, SEXP RNamed, bool bPrimeFacs,
                          bool bAllFacs, SEXP RNumThreads, int maxThreads) {
     
     std::vector<double> myNums;
-    bool isNamed = Rcpp::as<bool>(RNamed);
+    bool isNamed = CleanConvert::convertLogical(RNamed, "namedList");
     CleanConvert::convertVector(Rv, myNums, "v");
     
     double myMax = *std::max_element(myNums.cbegin(), myNums.cend());
@@ -604,6 +594,9 @@ SEXP PollardRhoContainer(SEXP Rv, SEXP RNamed, bool bPrimeFacs,
     
     if (myMax > Significand53)
         Rcpp::stop("the abs value of each element must be less than 2^53");
+
+    if (!bPrimeFacs && !bAllFacs && myMin < 1)
+        Rcpp::stop("each element must be positive");
     
     int nThreads = 1;
     if (!Rf_isNull(RNumThreads))
