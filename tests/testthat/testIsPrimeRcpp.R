@@ -23,6 +23,9 @@ test_that("isPrimeRcpp generates correct numbers", {
     set.seed(150)
     samp <- sample(1e12, 10000)
     expect_equal(isPrimeRcpp(samp), isPrimeRcpp(samp, nThreads = 2))
+    
+    ## Ensure stdThreadMax returns positive number
+    expect_true(stdThreadMax() > 0)
 })
 
 test_that("isPrimeRcpp produces appropriate error messages", {
