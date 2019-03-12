@@ -41,7 +41,7 @@ void PermuteGenRes(int n, int r, std::vector<typeVector> &v, bool repetition,
     } else if (nonTrivial) {
         
         const unsigned long int numR1 = numRows - 1;
-        int *arrPerm = new int[uN];
+        auto arrPerm = std::make_unique<int[]>(uN);
 
         for (std::size_t i = 0; i < uN; ++i)
             arrPerm[i] = z[i];
@@ -75,7 +75,6 @@ void PermuteGenRes(int n, int r, std::vector<typeVector> &v, bool repetition,
         }
         
         permuteMatrix(numR1, uR) = myFun(vPass, uR);
-        delete[] arrPerm;
         
     } else {
         
@@ -84,8 +83,8 @@ void PermuteGenRes(int n, int r, std::vector<typeVector> &v, bool repetition,
             unsigned long int segment = maxN / uN;
             phaseOne = (uRowN < segment) ? uRowN : segment;
 
-            int *indexMat = new int[phaseOne * uR];
-            int *arrPerm = new int[uN];
+            auto indexMat = std::make_unique<int[]>(phaseOne * uR);
+            auto arrPerm = std::make_unique<int[]>(uN);
             
             for (std::size_t i = 0; i < uN; ++i)
                 arrPerm[i] = static_cast<int>(i);
@@ -135,9 +134,6 @@ void PermuteGenRes(int n, int r, std::vector<typeVector> &v, bool repetition,
                     permuteMatrix(i, uR) = myFun(vPass, uR);
                 }
             }
-    
-            delete[] indexMat;
-            delete[] arrPerm;
         } else {
             permuteMatrix(0, 0) = v[0];
         }
@@ -150,7 +146,7 @@ void MultisetPermRes(int n, int r, std::vector<typeVector> &v, int numRows,
                      typeMatrix &permuteMatrix, funcPtr<typeVector> myFun) {
     
     const unsigned long int lenFreqs = z.size();
-    int *arrPerm = new int[lenFreqs];
+    auto arrPerm = std::make_unique<int[]>(lenFreqs);
     std::vector<typeVector> vPass(r);
     
     const unsigned long int uR = r;
@@ -193,7 +189,6 @@ void MultisetPermRes(int n, int r, std::vector<typeVector> &v, int numRows,
     }
     
     permuteMatrix(numR1, uR) = myFun(vPass, uR);
-    delete[] arrPerm;
 }
 
 #endif

@@ -64,11 +64,8 @@ void MultisetCombRowNumGmp(mpz_t result, const int n, const int r,
         if (myMax > Reps[0] + 1)
             myMax = Reps[0] + 1;
 
-        mpz_t* triangleVec;
-        mpz_t* temp;
-        
-        triangleVec = (mpz_t *) malloc(r1 * sizeof(mpz_t));
-        temp = (mpz_t *) malloc(r1 * sizeof(mpz_t));
+        auto triangleVec = std::make_unique<mpz_t[]>(r1);
+        auto temp = std::make_unique<mpz_t[]>(r1);
         
         for (int i = 0; i < r1; ++i) {
             mpz_init(triangleVec[i]);
@@ -145,8 +142,7 @@ void MultisetCombRowNumGmp(mpz_t result, const int n, const int r,
             mpz_clear(triangleVec[i]);
             mpz_clear(temp[i]);
         }
-        
-        free(triangleVec); free(temp);
+
         mpz_clear(mySum); mpz_clear(t);
     } else {
         mpz_set_ui(result, 1);
@@ -178,10 +174,8 @@ void MultisetPermRowNumGmp(mpz_t result, const int n, const int r,
         
         const std::size_t uR1 = r + 1;
         const int myMax = (r < maxFreq) ? (r + 2) : (maxFreq + 2);
-        
-        mpz_t *cumProd, *resV;
-        cumProd = (mpz_t *) malloc(sizeof(mpz_t) * myMax);
-        resV = (mpz_t *) malloc(sizeof(mpz_t) * uR1);
+        auto cumProd = std::make_unique<mpz_t[]>(myMax);
+        auto resV = std::make_unique<mpz_t[]>(uR1);
         
         for (int i = 0; i < myMax; ++i)
             mpz_init(cumProd[i]);
@@ -236,8 +230,5 @@ void MultisetPermRowNumGmp(mpz_t result, const int n, const int r,
         
         for (std::size_t i = 0; i < uR1; ++i)
             mpz_clear(resV[i]);
-        
-        free(cumProd);
-        free(resV);
     }
 }

@@ -36,7 +36,7 @@ void PermuteGeneral(int n, int r, typeVector &v, bool repetition, int numRows,
     } else if (nonTrivial) {
         
         const unsigned long int numR1 = numRows - 1;
-        int *arrPerm = new int[uN];
+        auto arrPerm = std::make_unique<int[]>(uN);
 
         for (std::size_t i = 0; i < uN; ++i)
             arrPerm[i] = z[i];
@@ -61,17 +61,15 @@ void PermuteGeneral(int n, int r, typeVector &v, bool repetition, int numRows,
         for (std::size_t j = 0; j < uR; ++j)
             permuteMatrix(numR1, j) = v[arrPerm[j]];
         
-        delete[] arrPerm;
-        
     } else {
         
         if (n > 1) {
             unsigned long int phaseOne, maxN = NumPermsNoRep(n, r);
             unsigned long int segment = maxN / uN;
             phaseOne = (uRowN < segment) ? uRowN : segment;
-
-            int *indexMat = new int[phaseOne * uR];
-            int *arrPerm = new int[uN];
+            
+            auto indexMat = std::make_unique<int[]>(phaseOne * uR);
+            auto arrPerm = std::make_unique<int[]>(uN);
             
             for (int i = 0; i < n; ++i)
                 arrPerm[i] = i;
@@ -118,9 +116,6 @@ void PermuteGeneral(int n, int r, typeVector &v, bool repetition, int numRows,
                             permuteMatrix(i, j) = v[indexMat[k]];
                 }
             }
-    
-            delete[] indexMat;
-            delete[] arrPerm;
         } else {
             permuteMatrix(0, 0) = v[0];
         }
@@ -132,7 +127,7 @@ void MultisetPermutation(int n, int r, typeVector &v, int numRows, std::vector<i
                          int intCount, typeMatrix &permuteMatrix) {
     
     const unsigned long int lenFreqs = z.size();
-    int *arrPerm = new int[lenFreqs];
+    auto arrPerm = std::make_unique<int[]>(lenFreqs);
     
     const unsigned long int uR = r;
     const unsigned long int uN = n;
@@ -166,8 +161,6 @@ void MultisetPermutation(int n, int r, typeVector &v, int numRows, std::vector<i
     // Get last permutation
     for (std::size_t j = 0; j < uR; ++j)
         permuteMatrix(numR1, j) = v[arrPerm[j]];
-    
-    delete[] arrPerm;
 }
 
 template <typename typeVector>
@@ -206,7 +199,7 @@ void PermutationApplyFun(int n, int r, typeVector &v, bool repetition,
         }
     } else {
         const unsigned long int arrLength = lastElem + 1;
-        int *arrPerm = new int[arrLength];
+        auto arrPerm = std::make_unique<int[]>(arrLength);
         
         for (std::size_t i = 0; i < arrLength; ++i)
             arrPerm[i] = z[i];
@@ -239,7 +232,6 @@ void PermutationApplyFun(int n, int r, typeVector &v, bool repetition,
 
         SETCADR(sexpFun, vectorPass);
         SET_VECTOR_ELT(ans, numR1, Rf_eval(sexpFun, rho));
-        delete[] arrPerm;
     }
 }
 

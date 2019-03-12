@@ -319,7 +319,7 @@ typeRcpp CombinatoricsConstraints(int n, int r, std::vector<typeVector> &v, bool
             
             const int nMinusR = (n - r);
             int indexRows = isComb ? 0 : static_cast<int>(NumPermsNoRep(r, r1));
-            int *indexMatrix = new int[indexRows * r];
+            auto indexMatrix = std::make_unique<int[]>(indexRows * r);
             
             if (!isComb) {
                 indexRows = static_cast<int>(NumPermsNoRep(r, r1));
@@ -406,14 +406,41 @@ typeRcpp CombinatoricsConstraints(int n, int r, std::vector<typeVector> &v, bool
                     }
                 }
             }
-            
-            delete[] indexMatrix;
         }
         
         lim.erase(lim.begin());
     }
        
     return SubMat(combinatoricsMatrix, count);
+}
+
+template <typename typeVector>
+std::vector<int> findExtreme(int n, int m, std::vector<typeVector> v, bool IsRep, int nRows, 
+                             bool keepRes, std::vector<int> z, double lower, std::string mainFun,
+                             bool IsMultiset, double computedRows, std::vector<std::string> compFunVec,
+                             typeVector myLim, std::vector<int> myReps, std::vector<int> freqs) {
+    
+    std::vector<typeVector> testVec(v);
+    unsigned long int uM = m, uN = n;
+    
+    if (IsMultiset) {
+        testVec.resize(freqs.size());
+        std::size_t ind = 0;
+        
+        for (std::size_t i = 0; i < uN; ++i)
+            for (std::size_t j = 0; j < myReps[i]; ++j, ++ind)
+                testVec[ind] = v[i];
+
+    } else if (IsRep) {
+        testVec.resize(v.size() * m);
+        std::size_t ind = 0;
+        
+        for (std::size_t i = 0; i < uN; ++i)
+            for (std::size_t j = 0; j < uM; ++j, ++ind)
+                testVec[ind] = v[i];
+    }
+    
+    return testVec;
 }
 
 // [[Rcpp::export]]
