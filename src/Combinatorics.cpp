@@ -414,35 +414,6 @@ typeRcpp CombinatoricsConstraints(int n, int r, std::vector<typeVector> &v, bool
     return SubMat(combinatoricsMatrix, count);
 }
 
-template <typename typeVector>
-std::vector<int> findExtreme(int n, int m, std::vector<typeVector> v, bool IsRep, int nRows, 
-                             bool keepRes, std::vector<int> z, double lower, std::string mainFun,
-                             bool IsMultiset, double computedRows, std::vector<std::string> compFunVec,
-                             typeVector myLim, std::vector<int> myReps, std::vector<int> freqs) {
-    
-    std::vector<typeVector> testVec(v);
-    unsigned long int uM = m, uN = n;
-    
-    if (IsMultiset) {
-        testVec.resize(freqs.size());
-        std::size_t ind = 0;
-        
-        for (std::size_t i = 0; i < uN; ++i)
-            for (std::size_t j = 0; j < myReps[i]; ++j, ++ind)
-                testVec[ind] = v[i];
-
-    } else if (IsRep) {
-        testVec.resize(v.size() * m);
-        std::size_t ind = 0;
-        
-        for (std::size_t i = 0; i < uN; ++i)
-            for (std::size_t j = 0; j < uM; ++j, ++ind)
-                testVec[ind] = v[i];
-    }
-    
-    return testVec;
-}
-
 // [[Rcpp::export]]
 SEXP CombinatoricsRcpp(SEXP Rv, SEXP Rm, SEXP Rrepetition, SEXP RFreqs, SEXP Rlow,
                        SEXP Rhigh, SEXP f1, SEXP f2, SEXP Rlim, bool IsComb, 
@@ -826,14 +797,24 @@ SEXP CombinatoricsRcpp(SEXP Rv, SEXP Rm, SEXP Rrepetition, SEXP RFreqs, SEXP Rlo
         int userThreads = 1;
         if (!Rf_isNull(RNumThreads))
             CleanConvert::convertPrimitive(RNumThreads, userThreads, "nThreads");
-            
-        if (userThreads > maxThreads) {userThreads = maxThreads;}
+        
+        if (userThreads > maxThreads)
+            userThreads = maxThreads;
+        
+        // Ensure that each thread has at least 10000
+        if ((nRows / userThreads) < 10000)
+            userThreads = nRows / 10000;
+
         if (userThreads > 1 && !IsCharacter) {
             Parallel = true;
             nThreads = userThreads;
         }
     } else if (Parallel) {
         nThreads = (maxThreads > 2) ? (maxThreads - 1) : 2;
+        
+        // Ensure that each thread has at least 10000
+        if ((nRows / nThreads) < 10000)
+            nThreads = nRows / 10000;
     }
     
     if (IsConstrained) {
