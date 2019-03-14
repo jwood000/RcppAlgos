@@ -4,17 +4,17 @@
 Generate Prime Integers
 }
 \description{
-Rcpp implementation of the segmented sieve of Eratosthenes with wheel factorization. Generates all prime numbers between \code{bound1} and \code{bound2} (if supplied) or all primes up to \code{bound1}. This algorithm is capable of generating primes up to ten billion (i.e. \eqn{10^{10}}{10^10}) in just over 15 seconds.
+Implementation of the segmented sieve of Eratosthenes with wheel factorization. Generates all prime numbers between \code{bound1} and \code{bound2} (if supplied) or all primes up to \code{bound1}.
 
 The fundamental concepts of this algorithm are based off of the implementation by Kim Walisch found here: \href{https://github.com/kimwalisch/primesieve}{kimwalisch/primesieve}.
 }
 \usage{
-primeSieve(bound1 = 100L, bound2 = NULL)
+primeSieve(bound1, bound2 = NULL, nThreads = NULL)
 }
 \arguments{
-\item{bound1}{Positive integer or numeric value.}
-
-\item{bound2}{Positive integer or numeric value.}
+    \item{bound1}{Positive integer or numeric value.}
+    \item{bound2}{Positive integer or numeric value.}
+    \item{nThreads}{Specific number of threads to be used. The default is \code{NULL}.}
 }
 \note{
 \itemize{
@@ -25,7 +25,7 @@ primeSieve(bound1 = 100L, bound2 = NULL)
 \details{
 At the heart of this algorithm is the traditional sieve of Eratosthenes (i.e. given a \href{https://en.wikipedia.org/wiki/Prime_number}{prime} \eqn{p}, mark all multiples of \eqn{p} as \href{https://en.wikipedia.org/wiki/Composite_number}{composite}), however instead of sieving the entire interval, we only consider small sub-intervals. The benefits of this method are two fold:
 \enumerate{
-\item Reduction of the \href{https://en.wikipedia.org/wiki/DSPACE}{space complexity} from \eqn{O(n)}, for the traditional sieve, to \eqn{O(\sqrt n))}
+\item Reduction of the \href{https://en.wikipedia.org/wiki/DSPACE}{space complexity} from \eqn{O(n)}, for the traditional sieve, to \eqn{O(\sqrt n)}
 \item Reduction of \href{https://en.wikipedia.org/wiki/CPU_cache#Cache_miss}{cache misses}
 }
 The latter is of particular importance as cache memory is much more efficient and closer in proximity to the CPU than \href{https://en.wikipedia.org/wiki/Computer_data_storage#Primary_storage}{main memory}. Reducing the size of the sieving interval allows for more effective utilization of the cache, which greatly impacts the overall efficiency.
@@ -62,9 +62,12 @@ primeSieve(1729, 42)
 ## Primes up to one hundred million in no time
 system.time(primeSieve(10^8))
 
-options(scipen = 50)
-## Quickly generate large primes over interval
+## options(scipen = 50)
+## Generate large primes over interval
 system.time(myPs <- primeSieve(10^13+10^6, 10^13))
 ## Object created is small
 object.size(myPs)
+
+## Using nThreads
+system.time(primeSieve(1e7, nThreads = 2))
 }

@@ -4,14 +4,15 @@
 Vectorized Primality Test
 }
 \description{
-Vectorized Rcpp implementation of the \href{https://en.wikipedia.org/wiki/Miller-Rabin_primality_test}{Miller-Rabin primality test}. Based on the "mp_prime_p" function from the "factorize.c" source file found in the gmp library: \url{http://gmplib.org}.
+Implementation of the \href{https://en.wikipedia.org/wiki/Miller-Rabin_primality_test}{Miller-Rabin primality test}. Based on the "mp_prime_p" function from the "factorize.c" source file found in the gmp library: \url{http://gmplib.org}.
 }
 \usage{
-isPrimeRcpp(v = 100L, namedVector = FALSE)
+isPrimeRcpp(v, namedVector = FALSE, nThreads = NULL)
 }
 \arguments{
-\item{v}{Vector of integers or numeric values.}
-\item{namedVector}{Logical flag. If \code{TRUE}, a named vector is returned. The default is \code{FALSE}.}
+    \item{v}{Vector of integers or numeric values.}
+    \item{namedVector}{Logical flag. If \code{TRUE}, a named vector is returned. The default is \code{FALSE}.}
+    \item{nThreads}{Specific number of threads to be used. The default is \code{NULL}.}
 }
 \note{
 The maximum value for each element in \eqn{v} is \eqn{2^{53} - 1}{2^53 - 1}.
@@ -56,4 +57,7 @@ mySamp <- sample(10^13, 100)
 
 ## return named vector for easy identification
 isPrimeRcpp(mySamp, namedVector = TRUE)
+
+## Using nThreads
+system.time(isPrimeRcpp(mySamp, nThreads = 2))
 }

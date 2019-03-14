@@ -4,15 +4,16 @@
 Generate Prime Factorization for Numbers in a Range
 }
 \description{
-Efficiently generates the prime factorization of all numbers between \code{bound1} and \code{bound2} (if supplied) or all numbers up to \code{bound1} using Rcpp.
+Generates the prime factorization of all numbers between \code{bound1} and \code{bound2} (if supplied) or all numbers up to \code{bound1}.
 }
 \usage{
-primeFactorizeSieve(bound1 = 100L, bound2 = NULL, namedList = FALSE)
+primeFactorizeSieve(bound1, bound2 = NULL, namedList = FALSE, nThreads = NULL)
 }
 \arguments{
-\item{bound1}{Positive integer or numeric value.}
-\item{bound2}{Positive integer or numeric value.}
-\item{namedList}{Logical flag. If \code{TRUE}, a named list is returned. The default is \code{FALSE}.}
+    \item{bound1}{Positive integer or numeric value.}
+    \item{bound2}{Positive integer or numeric value.}
+    \item{namedList}{Logical flag. If \code{TRUE}, a named list is returned. The default is \code{FALSE}.}
+    \item{nThreads}{Specific number of threads to be used. The default is \code{NULL}.}
 }
 \details{
 This function is useful when many prime factorizations are needed. Instead of generating the prime factorization on the fly, one can reference the indices/names of the generated list.
@@ -45,7 +46,7 @@ Joseph Wood
 set.seed(28)
 mySamp <- sample(10^5, 5*10^4)
 
-## Quickly generate prime factorizations up 
+## Generate prime factorizations up 
 ## to 10^5 (max element from mySamp)
 system.time(allPFacs <- primeFactorizeSieve(10^5))
 
@@ -62,4 +63,7 @@ system.time(primeFactorizeSieve(10^12, 10^12 + 10^5))
 
 ## Set 'namedList' to TRUE to return a named list
 primeFactorizeSieve(27, 30, namedList = TRUE)
+
+## Using nThreads
+system.time(primeFactorizeSieve(1e4, 5e4, nThreads = 2))
 }

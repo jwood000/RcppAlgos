@@ -7,16 +7,18 @@ Sample combinations/permutations
 \description{
     \itemize{
         \item Generate a specific (lexicographically) or random sample of combinations/permutations.
-        \item Produce results in parallel using the \code{Parallel} argument.
+        \item Produce results in parallel using the \code{Parallel} or \code{nThreads} arguments.
         \item GMP support allows for exploration of combinations/permutations of vectors with many elements.
     }
 }
 \usage{
-comboSample(v, m = NULL, repetition = FALSE, freqs = NULL, n = NULL,
-             sampleVec = NULL, seed = NULL, FUN = NULL, Parallel = FALSE)
+comboSample(v, m = NULL, repetition = FALSE, freqs = NULL, 
+             n = NULL, sampleVec = NULL, seed = NULL, FUN = NULL,
+              Parallel = FALSE, nThreads = NULL)
 
-permuteSample(v, m = NULL, repetition = FALSE, freqs = NULL, n = NULL,
-               sampleVec = NULL, seed = NULL, FUN = NULL, Parallel = FALSE)
+permuteSample(v, m = NULL, repetition = FALSE, freqs = NULL,
+               n = NULL, sampleVec = NULL, seed = NULL, FUN = NULL,
+                Parallel = FALSE, nThreads = NULL)
 }
 \arguments{
 \item{v}{Source vector. If \code{v} is an integer, it will be converted to the sequence \code{1:v}.}
@@ -27,8 +29,9 @@ permuteSample(v, m = NULL, repetition = FALSE, freqs = NULL, n = NULL,
   \item{sampleVec}{A vector of numbers representing the lexicographical combination/permutations to return. Accepts vectors of class \code{bigz} as well as vectors of characters}
   \item{seed}{Random seed initialization. The default is \code{NULL}.}
   \item{FUN}{Function to be applied to each combination/permutation. The default is \code{NULL}.}
-  \item{Parallel}{Logical value indicating whether combinations/permutations should be generated in parallel. The default is \code{FALSE}. If \code{TRUE}, the number of cores used is equal to the minimum of the number of cores available on your system minus one and the number of results requested (\emph{E.g.} if user has 16 cores and only needs 5 results, 5 cores will be used). If your system has fewer than 3 cores, \code{Parallel} is forced to be \code{FALSE}.}
-}
+  \item{Parallel}{Logical value indicating whether combinations/permutations should be generated in parallel. The default is \code{FALSE}. If \code{TRUE} and \code{nThreads = NULL}, the number of threads used is equal to the minimum of one minus the number of threads available on your system and the number of results requested (\emph{e.g.} if user has 16 threads and only needs 5 results, 5 threads will be used (\emph{i.e.} \code{min(16 - 1, 5) = 5})). If \code{nThreads} is not \code{NULL}, it will be given preference (\emph{e.g.} if user has 8 threads with \code{Parallel = TRUE} and \code{nThreads = 4}, only 4 threads will be spawned). If your system is single-threaded, the arguments \code{Parallel} and \code{nThreads} are ignored.}
+  \item{nThreads}{Specific number of threads to be used. The default is \code{NULL}. See \code{Parallel}.}
+ }
 \details{
 These algorithms rely on efficiently generating the \eqn{n^{th}}{nth} lexicographical combination/permutation (sometimes called the \href{https://rosettacode.org/wiki/Permutations/Rank_of_a_permutation}{rank}).
 }
@@ -43,23 +46,23 @@ Joseph Wood
 }
 \note{
     \itemize{
-        \item \code{n} and \code{sampleVec} cannot both be \code{NULL}.
-        \item Factor vectors are accepted. Class and level attributes are preserved.
-        \item {\code{Parallel} will be ignored in the following cases (Research is on-going to enable parallelism in all cases below):
+        \item {\code{Parallel} and \code{nThreads} will be ignored in the following cases:
             \itemize{
                 \item If the class of the vector passed is \code{character} (N.B. \code{Rcpp::CharacterMatrix} is not thread safe). Alternatively, you can generate an indexing matrix in parallel.
                 \item If \code{FUN} is utilized.
             }
         }
+        \item \code{n} and \code{sampleVec} cannot both be \code{NULL}.
+        \item Factor vectors are accepted. Class and level attributes are preserved.
     }
 }
 
 \examples{
-set.seed(11)
-comboSample(30, 15, TRUE, n = 10)
+## generate 10 random combinations
+comboSample(30, 15, TRUE, n = 10, seed = 10)
 
-set.seed(2)
-permuteSample(15, 10, freqs = sample(1:2, 15, TRUE), 
+## using sampleVec to generate specific permutations
+permuteSample(15, 10, freqs = c(1,2,2,1,2,2,1,2,1,2,2,1,2,1,1), 
               sampleVec = c(1, 10^2, 10^5, 10^8, 10^11))
               
 all.equal(comboSample(10, 5, 
@@ -88,6 +91,14 @@ pGeneral = permuteGeneral(10000, 20,
 identical(pSamp, pGeneral)
 ## [1] TRUE
 
-## Using FUN and Parallel
-permuteSample(10000, 50, n = 8, seed = 10, Parallel = TRUE)
+## Using nThreads
+permuteSample(10000, 50, n = 8, seed = 10, nThreads = 2)
+
+## Using FUN
+permuteSample(10000, 50, n = 8, seed = 10, FUN = sd)
+
+\dontrun{
+## Using Parallel
+permuteSample(10000, 50, n = 80, seed = 10, Parallel = TRUE)
+}
 }

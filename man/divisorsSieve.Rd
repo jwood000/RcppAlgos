@@ -4,15 +4,16 @@
 Generate Complete Factorization for Numbers in a Range
 }
 \description{
-Rcpp sieve implementation that quickly generates the complete factorization of all numbers between \code{bound1} and \code{bound2} (if supplied) or all numbers up to \code{bound1}.
+Sieve that generates the complete factorization of all numbers between \code{bound1} and \code{bound2} (if supplied) or all numbers up to \code{bound1}.
 }
 \usage{
-divisorsSieve(bound1 = 100L, bound2 = NULL, namedList = FALSE)
+divisorsSieve(bound1, bound2 = NULL, namedList = FALSE, nThreads = NULL)
 }
 \arguments{
-\item{bound1}{Positive integer or numeric value.}
-\item{bound2}{Positive integer or numeric value.}
-\item{namedList}{Logical flag. If \code{TRUE}, a named list is returned. The default is \code{FALSE}.}
+    \item{bound1}{Positive integer or numeric value.}
+    \item{bound2}{Positive integer or numeric value.}
+    \item{namedList}{Logical flag. If \code{TRUE}, a named list is returned. The default is \code{FALSE}.}
+    \item{nThreads}{Specific number of threads to be used. The default is \code{NULL}.}
 }
 \details{
 This function is useful when many complete factorizations are needed. Instead of generating the complete factorization on the fly, one can reference the indices/names of the generated list.
@@ -45,7 +46,7 @@ The maximum value for either of the bounds is \eqn{2^{53} - 1}{2^53 - 1}.
 set.seed(33550336)
 mySamp <- sample(10^5, 5*10^4)
 
-## Quickly generate complete factorizations up 
+## Generate complete factorizations up 
 ## to 10^5 (max element from mySamp)
 system.time(allFacs <- divisorsSieve(10^5))
 
@@ -60,6 +61,12 @@ for (s in mySamp) {
 ## a range is efficient as well
 system.time(divisorsSieve(10^12, 10^12 + 10^5))
 
+## Use nThreads for improved efficiency
+system.time(divisorsSieve(10^12, 10^12 + 10^5, nThreads = 2))
+
 ## Set 'namedList' to TRUE to return a named list
 divisorsSieve(27, 30, namedList = TRUE)
+
+## Using nThreads
+system.time(divisorsSieve(1e5, 2e5, nThreads = 2))
 }

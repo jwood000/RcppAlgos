@@ -4,13 +4,14 @@
 Prime Counting Function \eqn{\pi(x)}{\pi(x)}
 }
 \description{
-Rcpp implementation of Legendre's formula for counting prime numbers. It is based on the the algorithm developed by Kim Walisch found here: \href{https://github.com/kimwalisch/primecount}{kimwalisch/primecount}.
+\href{https://en.wikipedia.org/wiki/Prime-counting_function}{Prime counting function} for counting the prime numbers less than an integer, \eqn{n}, using Legendre's formula. It is based on the the algorithm developed by Kim Walisch found here: \href{https://github.com/kimwalisch/primecount}{kimwalisch/primecount}.
 }
 \usage{
-primeCount(n = 100L)
+primeCount(n, nThreads = NULL)
 }
 \arguments{
-  \item{n}{Positive number}
+    \item{n}{Positive number}
+    \item{nThreads}{Specific number of threads to be used. The default is \code{NULL}.}
 }
 \details{
 \href{http://mathworld.wolfram.com/LegendresFormula.html}{Legendre's Formula} for counting the number of primes less than \eqn{n} makes use of the \href{https://en.wikipedia.org/wiki/Inclusion-exclusion_principle}{inclusion-exclusion principle} to avoid explicitly counting every prime up to \eqn{n}. It is given by:
@@ -52,4 +53,7 @@ Joseph Wood
 \examples{
 ## Get the number of primes less than a billion
 primeCount(10^9)
+
+## Using nThreads
+system.time(primeCount(10^10, nThreads = 2))
 }

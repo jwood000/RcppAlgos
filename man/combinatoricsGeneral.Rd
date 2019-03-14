@@ -6,43 +6,43 @@ Generate all Combinations/Permutations of a Vector with/without Constraints
 }
 \description{
     \itemize{
-        \item Quickly generate all combinations or permutations of a vector, chosen \eqn{m} at a time, with or without constraints using Rcpp.
-        \item Produce results in parallel using the \code{Parallel} argument. You can also apply each of the five compiled functions given by the argument \code{constraintFun} in parallel as well.
+        \item Generate all combinations or permutations of a vector, chosen \eqn{m} at a time, with or without constraints.
+        \item Produce results in parallel using the \code{Parallel} or \code{nThreads} arguments. You can also apply each of the five compiled functions given by the argument \code{constraintFun} in parallel.
         \item Alternatively, the arguments \code{lower} and \code{upper} make it possible to generate combinations/permutations in chunks allowing for parallelization via the package \href{https://stat.ethz.ch/R-manual/R-devel/library/parallel/doc/parallel.pdf}{parallel}. This is convenient when you want to apply a custom function to the output in parallel.
         \item GMP support allows for exploration of combinations/permutations of vectors with many elements.
         \item The output is in lexicographical order.
     }
 }
 \usage{
-comboGeneral(v, m = NULL, repetition = FALSE, freqs = NULL,
-              lower = NULL, upper = NULL, constraintFun = NULL,
-               comparisonFun = NULL, limitConstraints = NULL,
-                keepResults = NULL, FUN = NULL, Parallel = FALSE)
+comboGeneral(v, m = NULL, repetition = FALSE, freqs = NULL, lower = NULL, 
+              upper = NULL, constraintFun = NULL, comparisonFun = NULL,
+               limitConstraints = NULL, keepResults = NULL, FUN = NULL,
+                Parallel = FALSE, nThreads = NULL)
 
-permuteGeneral(v, m = NULL, repetition = FALSE, freqs = NULL, 
-                lower = NULL, upper = NULL, constraintFun = NULL,
-                  comparisonFun = NULL, limitConstraints = NULL, 
-                    keepResults = NULL, FUN = NULL, Parallel = FALSE)
+permuteGeneral(v, m = NULL, repetition = FALSE, freqs = NULL, lower = NULL, 
+                upper = NULL, constraintFun = NULL, comparisonFun = NULL,
+                 limitConstraints = NULL, keepResults = NULL, FUN = NULL,
+                  Parallel = FALSE, nThreads = NULL)
 }
 \arguments{
   \item{v}{Source vector. If \code{v} is an integer (including nonpositive integers), it will be converted to the sequence \code{1:v}.}
   \item{m}{Number of elements to choose. If \code{repetition = TRUE}, \code{m} can exceed the length of \code{v}. The default is \code{NULL}.}
   \item{repetition}{Logical value indicating whether combinations/permutations should be with or without repetition. The default is \code{FALSE}.}
   \item{freqs}{A vector of frequencies used for producing all combinations/permutations of a multiset of \code{v}. Each element of \code{freqs} represents how many times each element of the source vector, \code{v}, is repeated. It is analogous to the \code{times} argument in \code{\link[base]{rep}}. The default value is \code{NULL}.}
-  \item{lower}{The lower bound. Combinations/permutations are generated lexicographically, thus utilizing this argument will determine which specific combination/permutation to start generating from (e.g. \code{comboGeneral(5, 3, lower = 6)} is equivalent to \code{comboGeneral(5, 3)[6:choose(5, 3), ]}). This argument along with \code{upper} is very useful for quickly generating combinations/permutations in chunks allowing for easy parallelization.}
-  \item{upper}{The upper bound. Similar to \code{lower}, however this parameter allows the user to \emph{stop} generation at a specific combination/permutation (e.g. \code{comboGeneral(5, 3, upper = 5)} is equivalent to \code{comboGeneral(5, 3)[1:5, ]})
+  \item{lower}{The lower bound. Combinations/permutations are generated lexicographically, thus utilizing this argument will determine which specific combination/permutation to start generating from (\emph{e.g.} \code{comboGeneral(5, 3, lower = 6)} is equivalent to \code{comboGeneral(5, 3)[6:choose(5, 3), ]}). This argument along with \code{upper} is very useful for generating combinations/permutations in chunks allowing for easy parallelization.}
+  \item{upper}{The upper bound. Similar to \code{lower}, however this parameter allows the user to \emph{stop} generation at a specific combination/permutation (\emph{e.g.} \code{comboGeneral(5, 3, upper = 5)} is equivalent to \code{comboGeneral(5, 3)[1:5, ]})
   
-  If the output is constrained and \code{lower} isn't supplied, \code{upper} serves as a cap for how many results will be returned that meet the criteria (e.g. setting \code{upper = 100} alone will return the first 100 results that meet the criteria, while setting \code{lower = 1} and \code{upper = 100} will test the first 100 results against the criteria).
+  If the output is constrained and \code{lower} isn't supplied, \code{upper} serves as a cap for how many results will be returned that meet the criteria (\emph{e.g.} setting \code{upper = 100} alone will return the first 100 results that meet the criteria, while setting \code{lower = 1} and \code{upper = 100} will test the first 100 results against the criteria).
   
   In addition to the benefits listed for \code{lower}, this parameter is useful when the total number of combinations/permutations without constraint is large and you expect/need a small number of combinations/permutations that meet a certain criteria. Using \code{upper} can drastically improve run time and avoid unnecessary crashes due to lack of memory. See examples below.
   
   N.B. This argument was formerly called \code{rowCap}.}
-  \item{constraintFun}{Function to be applied to the elements of \code{v} that should be passed as a string (\emph{E.g.} \code{constraintFun = "sum"}). The possible constraint functions are: \code{"sum"}, \code{"prod"}, \code{"mean"}, \code{"max"}, & \code{"min"}. The default is \code{NULL}, meaning no function is applied.}
-  \item{comparisonFun}{Comparison operator that will be used to compare \code{limitConstraints} with the result of \code{constraintFun} applied to \code{v}. It should be passed as a string or a vector of two strings (\emph{E.g.} \code{comparisonFun = "<="} or  \code{comparisonFun = c(">","<")}). The possible comparison operators are: \code{"<"}, \code{">"}, \code{"<="}, \code{">="}, \code{"=="}. The default is \code{NULL}.
+  \item{constraintFun}{Function to be applied to the elements of \code{v} that should be passed as a string (\emph{e.g.} \code{constraintFun = "sum"}). The possible constraint functions are: \code{"sum"}, \code{"prod"}, \code{"mean"}, \code{"max"}, & \code{"min"}. The default is \code{NULL}, meaning no function is applied.}
+  \item{comparisonFun}{Comparison operator that will be used to compare \code{limitConstraints} with the result of \code{constraintFun} applied to \code{v}. It should be passed as a string or a vector of two strings (\emph{e.g.} \code{comparisonFun = "<="} or  \code{comparisonFun = c(">","<")}). The possible comparison operators are: \code{"<"}, \code{">"}, \code{"<="}, \code{">="}, \code{"=="}. The default is \code{NULL}.
   
-  When \code{comparisonFun} is a vector of two comparison strings, say \code{comparisonFun = c(comp1, comp2)}, and \code{limitConstraints} is a vector of two numerical values, say \code{limitConstraints = c(x1, x2)}, the combinations/permutations will be filtered in one of the following two ways:
+  When \code{comparisonFun} is a vector of two comparison strings, \emph{e.g} \code{comparisonFun = c(comp1, comp2)}, and \code{limitConstraints} is a vector of two numerical values, \emph{e.g} \code{limitConstraints = c(x1, x2)}, the combinations/permutations will be filtered in one of the following two ways:
   \enumerate{
-      \item{When \code{comp1} is one of the 'less than' operators (i.e. "<=" or "<"), \code{comp2} is one of the 'greater-than' operators (i.e. ">=" or ">"), and \code{x1 < x2}, the combinations/permutations that are returned will have a value (after \code{constraintFun} has been applied) between \code{x1} and \code{x2}.}
+      \item{When \code{comp1} is one of the 'greater-than' operators (\emph{i.e.} ">=" or ">"), \code{comp2} is one of the 'less-than' operators (\emph{i.e.} "<=" or "<"), and \code{x1 < x2}, the combinations/permutations that are returned will have a value (after \code{constraintFun} has been applied) between \code{x1} and \code{x2}.}
       \item{When \code{comp1} and \code{comp2} are defined as in #1 and \code{x1 > x2}, the combinations/permutations that are returned will have a value outside the range of \code{x1} and \code{x2}. See the examples below.}
         }
     }
@@ -56,7 +56,8 @@ permuteGeneral(v, m = NULL, repetition = FALSE, freqs = NULL,
         }
     }
   \item{FUN}{Function to be applied to each combination/permutation. The default is \code{NULL}.}
-  \item{Parallel}{Logical value indicating whether combinations/permutations should be generated in parallel. The default is \code{FALSE}. If \code{TRUE}, the number of cores used is equal to the number of cores available on your system minus one. If your system has fewer than 3 cores, \code{Parallel} is forced to be \code{FALSE}.}
+  \item{Parallel}{Logical value indicating whether combinations/permutations should be generated in parallel. The default is \code{FALSE}. If \code{TRUE} and \code{nThreads = NULL}, the number of threads used is equal to the minimum of one minus the number of threads available on your system and the number of results requested (\emph{e.g.} if user has 16 threads and only needs 5 results, 5 threads will be used (\emph{i.e.} \code{min(16 - 1, 5) = 5})). If \code{nThreads} is not \code{NULL}, it will be given preference (\emph{e.g.} if user has 8 threads with \code{Parallel = TRUE} and \code{nThreads = 4}, only 4 threads will be spawned). If your system is single-threaded, the arguments \code{Parallel} and \code{nThreads} are ignored.}
+  \item{nThreads}{Specific number of threads to be used. The default is \code{NULL}. See \code{Parallel}.}
 }
 \value{
 In general, a matrix is returned with each row containing a vector of length \eqn{m} or \eqn{m + 1} depending on the value of \code{keepResults}. If \code{m} isn't supplied and \code{freqs} is given, a matrix is returned with each row containing a vector of length \code{sum(freqs)}. If \code{FUN} is utilized, a list is returned.
@@ -68,19 +69,19 @@ When there are any negative values in \code{v} and \code{constraintFun = "prod"}
 }
 \note{
     \itemize{
+        \item {\code{Parallel} and \code{nThreads} will be ignored in the following cases:
+            \itemize{
+                \item When the output is constrained.
+                \item If the class of the vector passed is \code{character} (N.B. \code{Rcpp::CharacterMatrix} is not thread safe). Alternatively, you can generate an indexing matrix in parallel.
+                \item If \code{FUN} is utilized.
+            }
+        }
         \item If either \code{constraintFun}, \code{comparisonFun} or \code{limitConstraints} is \code{NULL}, the constraint check will not be carried out. This is equivalent to simply finding all combinations/permutations of \eqn{v} choose \eqn{m}.
         \item The maximum number of combinations/permutations that can be generated at one time is \eqn{2^{31} - 1}{2^31 - 1}. Utilizing \code{lower} and \code{upper} makes it possible to generate additional combinations/permutations.
         \item Factor vectors are accepted. Class and level attributes are preserved.
         \item Lexicographical ordering isn't guaranteed for permutations if \code{lower} isn't supplied and the output is constrained.
         \item If \code{lower} is supplied and the output is constrained, the combinations/permutations that will be tested will be in the lexicographical range \code{lower} to \code{upper} or to the total possible number of results if \code{upper} is not given. See the second paragraph for the definition of \code{upper}.
         \item \code{FUN} will be ignored if the constraint check is satisfied.
-        \item {\code{Parallel} will be ignored in the following cases (Research is on-going to enable parallelism in all cases below):
-            \itemize{
-                \item When the output is constrained as the current constraint algorithm is not parallelizable.
-                \item If the class of the vector passed is \code{character} (N.B. \code{Rcpp::CharacterMatrix} is not thread safe). Alternatively, you can generate an indexing matrix in parallel.
-                \item If \code{FUN} is utilized.
-            }
-        }
     }
 }
 \author{
@@ -94,6 +95,7 @@ Joseph Wood
         \item{\href{https://en.wikipedia.org/wiki/Lexicographical_order}{Lexicographical order}}
     }
 }
+
 \examples{
 system.time(comboGeneral(17, 8))
 system.time(permuteGeneral(13, 6))
@@ -238,6 +240,11 @@ system.time(comboGeneral(30, 10))
 ## Parallel also works when applying constraintFun solely
 system.time(comboGeneral(30, 10, Parallel = TRUE, constraintFun = "sum"))
 system.time(comboGeneral(30, 10, constraintFun = "sum"))
+
+## Using Parallel argument only uses 1 minus the maximal # of threads.
+## The below should run a bit faster as we are utilizing all threads.
+maxThreads = RcppAlgos::stdThreadMax()
+system.time(comboGeneral(30, 10, nThreads = maxThreads, constraintFun = "sum"))
 
 ## Depending on # of cores available, using Parallel with
 ## constraintFun is faster than rowSums or rowMeans alone

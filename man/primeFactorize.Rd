@@ -4,14 +4,15 @@
 Vectorized Prime Factorization
 }
 \description{
-Rcpp implementation of Pollard's rho algorithm that quickly generates the prime factorization for many numbers. The algorithm is based on the "factorize.c" source file from the gmp library found here \url{http://gmplib.org}.
+Implementation of Pollard's rho algorithm for generating the prime factorization. The algorithm is based on the "factorize.c" source file from the gmp library found here \url{http://gmplib.org}.
 }
 \usage{
-primeFactorize(v = 100L, namedList = FALSE)
+primeFactorize(v, namedList = FALSE, nThreads = NULL)
 }
 \arguments{
-\item{v}{Vector of integers or numeric values. Non-integral values will be cured to whole numbers.}
-\item{namedList}{Logical flag. If \code{TRUE} and the \code{length(v) > 1}, a named list is returned. The default is \code{FALSE}.}
+    \item{v}{Vector of integers or numeric values. Non-integral values will be cured to whole numbers.}
+    \item{namedList}{Logical flag. If \code{TRUE} and the \code{length(v) > 1}, a named list is returned. The default is \code{FALSE}.}
+    \item{nThreads}{Specific number of threads to be used. The default is \code{NULL}.}
 }
 \details{
 As noted in the Description section above, this algorithm is based on the "factorize.c" source code from the gmp library. Much of the code in RcppAlgos::primeFactorize is a straightforward translation from multiple precision C data types to standard C++ data types. A crucial part of the algorithm's efficiency is based on quickly determining \href{https://en.wikipedia.org/wiki/Primality_test}{primality}, which is easily computed with gmp. However, with standard C++, this is quite challenging. Much of the research for RcppAlgos::primeFactorize was focused on developing an algorithm that could accurately and efficiently compute primality.
@@ -52,4 +53,7 @@ system.time(pFacs <- primeFactorize(myVec))
 
 ## Return named list
 pFacsWithNames <- primeFactorize(myVec, namedList = TRUE)
+
+## Using nThreads
+system.time(primeFactorize(myVec, nThreads = 2))
 }
