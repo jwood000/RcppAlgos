@@ -22,3 +22,4 @@ An integer representing the number of concurrent threads supported by the user i
 }
 \examples{
 stdThreadMax()
+}
