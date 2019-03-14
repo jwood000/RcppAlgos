@@ -2,7 +2,7 @@
 #include "CleanConvert.h"
 #include "CombPermUtils.h"
 #include "CountGmp.h"
-#include <RcppParallel.h>
+#include "RMatrix.h"
 #include <RcppThread.h>
 
 static gmp_randstate_t seed_state;

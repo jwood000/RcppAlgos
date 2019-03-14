@@ -1,4 +1,5 @@
 #include "CombPermUtils.h"
+#include <memory>
 #include <gmp.h>
 
 /*

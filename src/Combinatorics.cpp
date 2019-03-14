@@ -1,6 +1,6 @@
 #include "Combinatorics.h"
 #include "CleanConvert.h"
-#include <RcppParallel.h>
+#include "RMatrix.h"
 #include <RcppThread.h>
 
 // [[Rcpp::export]]

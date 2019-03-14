@@ -3,6 +3,7 @@
 
 #include "CombPermUtils.h"
 #include "ConstraintsUtils.h"
+#include <memory>
 
 template <typename typeMatrix, typename typeVector>
 void PermuteGenRes(int n, int r, std::vector<typeVector> &v, bool repetition,
@@ -54,7 +55,7 @@ void PermuteGenRes(int n, int r, std::vector<typeVector> &v, bool repetition,
                 }
                 
                 permuteMatrix(count, uR) = myFun(vPass, uR);
-                nextFullPerm(arrPerm, lastElem, pentultimate);
+                nextFullPerm(arrPerm.get(), lastElem, pentultimate);
             }
         } else {
             for (; count < numR1; ++count) {
@@ -64,7 +65,7 @@ void PermuteGenRes(int n, int r, std::vector<typeVector> &v, bool repetition,
                 }
                 
                 permuteMatrix(count, uR) = myFun(vPass, uR);
-                nextPartialPerm(arrPerm, uR, lastCol, uN, lastElem);
+                nextPartialPerm(arrPerm.get(), uR, lastCol, uN, lastElem);
             }
         }
         
@@ -98,7 +99,7 @@ void PermuteGenRes(int n, int r, std::vector<typeVector> &v, bool repetition,
                     }
 
                     permuteMatrix(i, uR) = myFun(vPass, uR);
-                    nextFullPerm(arrPerm, lastElem, pentultimate);
+                    nextFullPerm(arrPerm.get(), lastElem, pentultimate);
                 }
             } else {
                 for (std::size_t i = 0, k = 0; i < phaseOne; ++i) {
@@ -109,7 +110,7 @@ void PermuteGenRes(int n, int r, std::vector<typeVector> &v, bool repetition,
                     }
                     
                     permuteMatrix(i, uR) = myFun(vPass, uR);
-                    nextPartialPerm(arrPerm, uR, lastCol, uN, lastElem);
+                    nextPartialPerm(arrPerm.get(), uR, lastCol, uN, lastElem);
                 }
             }
             
@@ -168,7 +169,7 @@ void MultisetPermRes(int n, int r, std::vector<typeVector> &v, int numRows,
             }
             
             permuteMatrix(count, uR) = myFun(vPass, uR);
-            nextFullPerm(arrPerm, lastElem, pentultimate);
+            nextFullPerm(arrPerm.get(), lastElem, pentultimate);
         }
     } else {
         for (; count < numR1; ++count) {
@@ -178,7 +179,7 @@ void MultisetPermRes(int n, int r, std::vector<typeVector> &v, int numRows,
             }
             
             permuteMatrix(count, uR) = myFun(vPass, uR);
-            nextPartialPerm(arrPerm, uR, lastCol, uN, lastElem);
+            nextPartialPerm(arrPerm.get(), uR, lastCol, uN, lastElem);
         }
     }
     
