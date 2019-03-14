@@ -1,6 +1,5 @@
 useDynLib("RcppAlgos", .registration = TRUE)
 
-importFrom(RcppParallel, RcppParallelLibs)
 importFrom("Rcpp", evalCpp)
 import(gmp)
 
