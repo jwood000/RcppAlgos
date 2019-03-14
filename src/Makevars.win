@@ -1,5 +1,6 @@
 CXX_STD = CXX14
+CXX14="$(BINPREF)g++ $(M_ARCH)"
+CXX14FLAGS="-O2 -Wall" 
+CXX14STD=-std=gnu1y
 PKG_CPPFLAGS = -I../inst/include/
 PKG_LIBS = -lgmp
-PKG_LIBS += $(shell "${R_HOME}/bin${R_ARCH_BIN}/Rscript.exe" \
-              -e "RcppParallel::RcppParallelLibs()")
