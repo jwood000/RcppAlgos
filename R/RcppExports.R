@@ -21,8 +21,8 @@ PrimeCountRcpp <- function(Rn, RNumThreads, maxThreads) {
     .Call(`_RcppAlgos_PrimeCountRcpp`, Rn, RNumThreads, maxThreads)
 }
 
-MotleyContainer <- function(Rb1, Rb2, RIsEuler, RNamed, RNumThreads, maxThreads) {
-    .Call(`_RcppAlgos_MotleyContainer`, Rb1, Rb2, RIsEuler, RNamed, RNumThreads, maxThreads)
+MotleyContainer <- function(Rb1, Rb2, isEuler, RNamed, RNumThreads, maxThreads) {
+    .Call(`_RcppAlgos_MotleyContainer`, Rb1, Rb2, isEuler, RNamed, RNumThreads, maxThreads)
 }
 
 EratosthenesRcpp <- function(Rb1, Rb2, RNumThreads, maxCores, maxThreads) {
