@@ -16,11 +16,11 @@ double MultisetPermRowNum(const int n, const int r, const std::vector<int> &myRe
 // gmp analogs are necessary
 double MultisetCombRowNum(const int n, const int r, const std::vector<int> &Reps);
     
-void nextFullPerm(std::unique_ptr<int[]> &myArray, const unsigned long int &n1,
-                  const unsigned long int &n2);
+void nextFullPerm(int *myArray, const unsigned long int n1,
+                  const unsigned long int n2);
 
-void nextPartialPerm(std::unique_ptr<int[]> &myArray, const unsigned long int &r,
-                     const unsigned long int &r1, const unsigned long int &n,
-                     const unsigned long int &lastElem);
+void nextPartialPerm(int *myArray, const unsigned long int r,
+                     const unsigned long int r1, const unsigned long int n,
+                     const unsigned long int lastElem);
     
 #endif
