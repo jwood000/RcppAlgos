@@ -9,10 +9,6 @@ Rcpp wrapper of \href{https://en.cppreference.com/w/cpp/thread/thread/hardware_c
 \usage{
 stdThreadMax()
 }
-%- maybe also 'usage' for other objects documented here.
-\details{
-%%  ~~ If necessary, more details than the description above ~~
-}
 \value{
 An integer representing the number of concurrent threads supported by the user implementation. If the value cannot be determined, \code{1L} is returned.
 }
