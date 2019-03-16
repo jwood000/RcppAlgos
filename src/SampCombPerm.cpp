@@ -23,7 +23,7 @@ void SampleResults(const typeVector v, const unsigned long int m, bool IsRep, co
 
     const int lenV = v.size();
     std::vector<int> z(m);
-    const bool IsMult = (myReps.size() == v.size()) ? true : false;
+    const bool IsMult = (static_cast<int>(myReps.size()) == lenV) ? true : false;
     
     if (IsGmp) {
         if (IsComb) {
@@ -62,7 +62,7 @@ SEXP SampleApplyFun(const typeVector &v, const unsigned long int m, bool IsRep, 
                     const std::vector<double> &mySample, mpz_t myBigSamp[], SEXP func, SEXP rho) {
 
     const int lenV = v.size();
-    const bool IsMult = (myReps.size() == v.size()) ? true : false;
+    const bool IsMult = (static_cast<int>(myReps.size()) == lenV) ? true : false;
     std::vector<int> z(m);
     SEXP ans = PROTECT(Rf_allocVector(VECSXP, n));
     SEXP sexpFun = PROTECT(Rf_lang2(func, R_NilValue));
@@ -431,11 +431,11 @@ SEXP SampleRcpp(SEXP Rv, SEXP Rm, SEXP Rrepetition, SEXP RFreqs, SEXP RindexVec,
         if (userThreads > 1 && !IsCharacter) {
             Parallel = true;
             nThreads = userThreads;
-            if (nThreads > sampSize) {nThreads = sampSize;}
+            if (nThreads > static_cast<int>(sampSize)) {nThreads = sampSize;}
         }
     } else if (Parallel) {
         nThreads = (maxThreads > 2) ? (maxThreads - 1) : 2;
-        if (nThreads > sampSize) nThreads = sampSize;
+        if (nThreads > static_cast<int>(sampSize)) nThreads = sampSize;
     }
     
     if (applyFun) {

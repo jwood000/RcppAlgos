@@ -1,7 +1,7 @@
 #ifndef MOTLEY_PRIMES_H
 #define MOTLEY_PRIMES_H
 
-#include "EratosthenesSieve.h"
+#include "Eratosthenes.h"
 #include <libdivide.h>
 
 // This file contains functions for generating the prime factorization

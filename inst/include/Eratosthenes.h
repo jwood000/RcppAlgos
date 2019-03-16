@@ -570,7 +570,7 @@ namespace PrimeSieve {
             nBigSegs = ((maxThreads * 2048 * 1024) /  L1_CACHE_SIZE) / nThreads;
             
             std::size_t ind = 0u;
-            const std::size_t limitOne = static_cast<std::size_t>(nBigSegs * segUnitSize);
+            const int limitOne = static_cast<int>(nBigSegs * segUnitSize);
             
             // Get the primes that are guaranteed to mark an
             // index in the the every segment interval

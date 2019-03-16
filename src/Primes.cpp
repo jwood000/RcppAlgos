@@ -236,12 +236,10 @@ namespace PrimeCounting {
                 // gurantee that each of the first threads will have at least firstStep 
                 // iterations and that the threads following will have at least firstStep + 1
                 
-                
                 // Here we have m = multOne, p = power, and s = firstStep:
                 // m^(p +  1) - m^p = m^p * (m - 1) > (s + 1)  -->>  m^p > (s + 1) / (m - 1)  -->>
                 // p * log(m) > log((s + 1) / (m - 1))  -->>  p > log((s + 1) / (m - 1)) / log(m)
                 double power = std::ceil(std::log((firstStep + 1) / (multOne - 1)) / std::log(multOne)) + 1;
-                
                 
                 // Same as above: lower + (upper - lower) / s   and given:   m^p + lower = upper
                 //   -->>  (lower + m^p / s)  -->>  firstLoops = ceil(((m^p + lower) / s) / nThreads)
