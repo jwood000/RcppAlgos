@@ -16,11 +16,11 @@ const double my2Pow62 = std::pow(2, 62);
 const double my64Max = std::pow(2, 63);
 const int64_t Sqrt64Max = static_cast<int64_t>(std::sqrt(my64Max));
 
-const int64_t FirstOmittedPrime = 4001;
-const std::size_t pDiffSize = sizeof(primesDiffPR) / sizeof(primesDiffPR[0]);
+constexpr int64_t FirstOmittedPrime = 4001;
+constexpr std::size_t pDiffSize = sizeof(primesDiffPR) / sizeof(primesDiffPR[0]);
 
 /* Number of Miller-Rabin tests to run when not proving primality. */
-const std::size_t MR_REPS = 25;
+constexpr std::size_t MR_REPS = 25;
 
 template <typename typeReturn>
 void FactorTrialDivision (int64_t& t,
@@ -380,7 +380,7 @@ void FactorList(std::size_t m, std::size_t n, std::vector<double> &myNums,
             myDivisors = Factorize<typeReturn>(factors);
             
             if (isNegative) {
-                unsigned long int facSize = myDivisors.size();
+                const unsigned long int facSize = myDivisors.size();
                 std::vector<typeReturn> tempInt(2 * facSize);
                 unsigned long int posInd = facSize, negInd = facSize - 1;
                 
@@ -450,7 +450,7 @@ void PollardRhoMaster(std::vector<double> &myNums, typeReturn myMax, bool bPrime
     
     if (Parallel) {
         RcppThread::ThreadPool pool(nThreads);
-        std::size_t chunkSize = myRange / nThreads;
+        const std::size_t chunkSize = myRange / nThreads;
         std::size_t n = chunkSize - 1;
         
         for (int j = 0; j < (nThreads - 1); m = n, n += chunkSize, ++j) {
@@ -531,7 +531,7 @@ SEXP TheGlue(std::vector<double> &myNums, typeReturn myMax, bool bPrimeFacs,
                 myDivisors = Factorize<typeReturn>(factors);
                 
                 if (isNegative) {
-                    unsigned long int facSize = myDivisors.size();
+                    const unsigned long int facSize = myDivisors.size();
                     std::vector<typeReturn> negPosFacs(2 * facSize);
                     unsigned long int posInd = facSize, negInd = facSize - 1;
                     

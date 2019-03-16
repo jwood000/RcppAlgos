@@ -15,9 +15,9 @@ unsigned long int cpp11GetNumThreads() {
 // several combinations knowing that they will exceed the given constraint value.
 
 template <typename typeRcpp, typename typeVector>
-typeRcpp CombinatoricsConstraints(int n, int r, std::vector<typeVector> &v, bool repetition,
-                                  std::string myFun, std::vector<std::string> comparison, 
-                                  std::vector<typeVector> lim, int numRows, bool isComb,
+typeRcpp CombinatoricsConstraints(const int n, const int r, std::vector<typeVector> &v, bool repetition,
+                                  const std::string myFun, std::vector<std::string> comparison, 
+                                  std::vector<typeVector> lim, const int numRows, bool isComb,
                                   bool xtraCol, std::vector<int> &Reps, bool isMult) {
     
     // myFun is one of the following general functions: "prod", "sum", "mean", "min", or "max";
