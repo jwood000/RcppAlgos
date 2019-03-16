@@ -7,12 +7,22 @@ status](https://codecov.io/gh/jwood000/RcppAlgos/branch/master/graph/badge.svg)]
 
 Overview
 ---------
-A collection of high performance functions implemented in C++ with Rcpp for solving problems in combinatorics and computational mathematics. Featured functions:
+A collection of high performance functions implemented in C++ with Rcpp for solving problems in combinatorics and computational mathematics. Utilizes the library [RcppThread](https://github.com/tnagler/RcppThread) where multithreading is needed. We also make use of the [RMatrix.h](https://github.com/RcppCore/RcppParallel/blob/master/inst/include/RcppParallel/RMatrix.h) header file from [RcppParallel](https://github.com/RcppCore/RcppParallel) for thread safe accessors for Rcpp matrices. Featured functions:
 
-* `primeSieve` - Generates all primes less than a billion in just over 1 second
-* `primeCount` -  Counts the number of primes below a trillion in under 0.5 seconds.
+* `primeSieve` - Generates all primes less than a **billion in under 0.5 seconds.**
+``` r
+system.time(b <- primeSieve(10^9, nThreads = 8))
+ user  system elapsed 
+2.339   0.047   0.418
+```
+* `primeCount` -  Counts the number of primes below a **1e12 in ~130 milliseconds** and **1e15 in under 50 seconds.**
+```r
+system.time(primeCount(1e12, nThreads = 8))
+   user  system elapsed 
+  0.804   0.005   0.127
+```
 * `comboGeneral`/`permuteGeneral` - Generate all combinations/permutations of a vector (including [multisets](https://en.wikipedia.org/wiki/Multiset)) meeting specific criteria.
-    - Produce results in parallel using the `Parallel` argument (**development version only**). You can also apply each of the five compiled functions given by the argument `constraintFun` in parallel as well. E.g. Obtaining the row sums of all combinations:
+    - Produce results in parallel using the `Parallel` argument. You can also apply each of the five compiled functions given by the argument `constraintFun` in parallel as well. E.g. Obtaining the row sums of all combinations:
         - `comboGeneral(20, 10, constraintFun = "sum", Parallel = TRUE)`
     - Alternatively, the arguments `lower` and `upper` make it possible to generate combinations/permutations in chunks allowing for parallelization via the package `parallel`. This is convenient when you want to apply a custom function to the output in parallel as well (see this [stackoverflow post](https://stackoverflow.com/a/51595866/4408538) for a use case).
     - GMP support allows for exploration of combinations/permutations of vectors with many elements.
@@ -75,9 +85,13 @@ comboGeneral(4, 3, repetition = TRUE)
   .      .    .    .
   
 ## They are very efficient
-system.time(comboGeneral(25,13))
+system.time(comboGeneral(25, 13))
    user  system elapsed 
-  0.124   0.058   0.182 
+  0.116   0.062   0.178
+
+system.time(comboGeneral(25, 13, nThreads = 8))
+   user  system elapsed 
+  0.192   0.228   0.058
 
 nrow(comboGeneral(25,13))
 [1] 5200300
@@ -140,9 +154,11 @@ getPermsWithSpecificRepetition <- function(z, n) {
     b[!myDupes, ]
 }
 
+a <- c(1,1,1,1,2,2,2,7,7,7,7,7)
+
 system.time(test <- getPermsWithSpecificRepetition(a, 6))
    user  system elapsed 
-  4.300   0.028   4.331
+  4.168   0.046   4.230
 ```
 
 
@@ -207,11 +223,11 @@ Levels: low < med < high
 ```
 
 ### Parallel Computing
-Using the parameter `Parallel` (**development version only**), we can easily generate combinations/permutations with great efficiency.
+Using the parameter `Parallel`, we can easily generate combinations/permutations with great efficiency.
 
 ```r
 ## RcppAlgos uses the number of cores available minus one
-parallel::detectCores()
+RcppAlgos::stdThreadMax()
 [1] 8
 
 identical(comboGeneral(20, 10, freqs = rep(1:4, 5)),
@@ -224,8 +240,8 @@ microbenchmark(serial = comboGeneral(20, 10, freqs = rep(1:4, 5)),
              parallel = comboGeneral(20, 10, freqs = rep(1:4, 5), Parallel = TRUE))
 Unit: milliseconds
      expr       min        lq      mean    median        uq      max neval
-   serial 216.08683 235.09945 241.97200 240.59142 247.37669 299.7269   100
- parallel  60.10095  64.24945  76.92387  77.25798  85.44578 118.6835   100
+   serial 237.80421 244.06242 253.76806 249.45499 263.65091 284.7350   100
+ parallel  82.11218  85.88929  88.78034  87.72153  90.01558 126.3167   100
 ```
 
 And applying any of the constraint functions in parallel is highly efficient as well. Consider obtaining the row sums of all combinations:
@@ -248,9 +264,9 @@ microbenchmark(serial = comboGeneral(20, 10, constraintFun = "sum"),
              combnSum = combn(20, 10, sum))
 Unit: milliseconds
      expr        min         lq       mean     median         uq        max neval
-   serial   3.305383   3.943742   4.340827   3.998379   4.175258   7.638484   100
- parallel   1.042070   1.391787   1.484434   1.433409   1.479612   3.277695   100
- combnSum 203.691824 215.036510 220.745091 217.890390 222.273996 304.720899   100
+   serial   3.426027   3.736279   4.285025   3.908142   4.312603  10.247652   100
+ parallel   1.233491   1.371532   1.742455   1.450557   1.970033   6.102456   100
+ combnSum 206.819174 222.254082 227.762687 224.331548 227.135461 293.065110   100
 ```
 ### Faster than `rowSums` and `rowMeans`
 In fact, finding row sums or row means is even faster than simply applying the highly efficient `rowSums`/`rowMeans` after the combinations have already been generated:
@@ -263,10 +279,10 @@ microbenchmark(serial = comboGeneral(25, 10, constraintFun = "sum"),
              parallel = comboGeneral(25, 10, constraintFun = "sum", Parallel = TRUE),
               rowsums = rowSums(combs))
 Unit: milliseconds
-     expr       min        lq      mean    median        uq      max neval
-   serial 112.79266 117.04039 126.27396 119.29226 122.72389 200.1609   100
- parallel  39.10258  41.95387  51.79792  46.31817  49.83576 115.4092   100
-  rowsums 103.22926 104.30309 109.73375 105.28372 111.05051 183.4639   100
+     expr       min        lq      mean    median        uq       max neval
+   serial 113.74535 124.91470 127.85210 127.15044 130.47335 172.37043   100
+ parallel  41.23766  49.78379  51.46558  51.07019  52.58048  88.31258   100
+  rowsums  95.92139  98.21449 104.66987 101.32041 105.46913 152.69522   100
 
 all.equal(rowSums(combs), 
           comboGeneral(25, 10, 
@@ -279,10 +295,10 @@ microbenchmark(serial = comboGeneral(25, 10, constraintFun = "mean"),
              parallel = comboGeneral(25, 10, constraintFun = "mean", Parallel = TRUE),
              rowmeans = rowMeans(combs))
 Unit: milliseconds
-     expr       min        lq      mean    median       uq      max neval
-   serial 173.58781 183.90069 211.03830 196.17403 241.7987 307.3608   100
- parallel  53.10161  57.80737  77.03166  62.58454 103.2152 228.0634   100
- rowmeans 108.65154 111.16465 117.70982 114.76217 123.3963 136.3974   100
+     expr       min        lq      mean    median        uq      max neval
+   serial 173.55130 183.94174 203.09916 202.17554 217.77389 274.7437   100
+ parallel  58.11018  61.17694  79.59311  79.21929  97.96688 127.3256   100
+ rowmeans 102.56019 103.72126 113.12717 106.89584 117.95641 165.1638   100
  
 all.equal(rowMeans(combs), 
           comboGeneral(25, 10, 
@@ -290,7 +306,7 @@ all.equal(rowMeans(combs),
                        Parallel = TRUE)[,11])
 [1] TRUE
 ```
-We are doing double the work nearly twice as fast in both cases!!
+In both cases above, `RcppAlgos` is doing double the work nearly twice as fast!!!
 
 ### Using arguments `lower` and `upper`
 There are arguments `lower` and `upper` that can be utilized to generate chunks of combinations/permutations without having to generate all of them followed by subsetting.  As the output is in lexicographical order, these arguments specify where to start and stop generating. For example, `comboGeneral(5, 3)` outputs 10 combinations of the vector `1:5` chosen 3 at a time. We can set `lower` to 5 in order to start generation from the 5<sup>th</sup> lexicographical combination. Similarly, we can set `upper` to 4 in order only generate the first 4 combinations. We can also use them together to produce only a certain chunk of combinations. For example, setting `lower` to 4 and `upper` to 6 only produces the 4<sup>th</sup>, 5<sup>th</sup>, and 6<sup>th</sup> lexicographical combinations. Observe:
@@ -394,8 +410,9 @@ comboGeneral(10, 8, TRUE)[5^(0:4), ]
 [4,]    1    1    1    1    1    3    6    9
 [5,]    1    1    1    1    5    6   10   10
 ```
-Just like the `General` counterparts (i.e. `combo/permuteGeneral`), we can easily explore combinations/permutations of large vectors where the total number of results is enormous in parallel (**development version only**).
+Just like the `General` counterparts (i.e. `combo/permuteGeneral`), we can easily explore combinations/permutations of large vectors where the total number of results is enormous in parallel (using `Parallel` or `nThreads`).
 ```r
+## Uses stdThreadMax() - 1 = 7 thread (in this case)
 permuteSample(500, 10, TRUE, n = 5, seed = 123, Parallel = TRUE)
      [,1] [,2] [,3] [,4] [,5] [,6] [,7] [,8] [,9] [,10]
 [1,]   55  435  274  324  200  152    6  313  121   377
@@ -404,7 +421,7 @@ permuteSample(500, 10, TRUE, n = 5, seed = 123, Parallel = TRUE)
 [4,]  284  104  464  104  207  127  117    9  390   414
 [5,]  456   76  381  456  219   23  376  187   11   123
 
-permuteSample(factor(state.abb), 15, n = 3, seed = 50, Parallel = TRUE)
+permuteSample(factor(state.abb), 15, n = 3, seed = 50, nThreads = 4)
      [,1] [,2] [,3] [,4] [,5] [,6] [,7] [,8] [,9] [,10] [,11] [,12] [,13] [,14] [,15]
 [1,] ME   FL   DE   OK   ND   CA   PA   AL   ID   MO    NM    HI    KY    MT    NJ   
 [2,] AZ   CA   AL   CT   ME   SD   ID   SC   OK   NH    HI    TN    ND    IA    MT   
@@ -460,7 +477,7 @@ permuteSample(5000, 1000, n = 3, seed = 101, FUN = sd)
 Mathematical Computation
 -----
 `RcppAlgos` comes equipped with several functions for quickly generating essential components
-for problems common in computational mathematics.
+for problems common in computational mathematics. All functions below can be executed in parallel by using the argument `nThreads`.
 
 The following sieving functions (`primeFactorizeSieve`, `divisorsSieve`, `numDivisorSieve`, & `eulerPhiSieve`) are very useful and flexible. Generate components up to a number or between two bounds.
 
@@ -472,7 +489,7 @@ numDivisorSieve(20)
 ## If you want the complete factorization from 1 to n, use divisorsList
 system.time(allFacs <- divisorsSieve(10^5, namedList = TRUE))
    user  system elapsed 
-  0.073   0.004   0.077
+  0.045   0.004   0.049
 
 allFacs[c(4339, 15613, 22080)]
 $`4339`
@@ -515,6 +532,19 @@ primeFactorizeSieve(10^12, 10^12 + 5)
 eulerPhiSieve(20, namedVector = TRUE)
  1  2  3  4  5  6  7  8  9 10 11 12 13 14 15 16 17 18 19 20 
  1  1  2  2  4  2  6  4  6  4 10  4 12  6  8  8 16  6 18  8
+ 
+ 
+system.time(a <- eulerPhiSieve(1e12, 1e12 + 1e7))
+   user  system elapsed 
+  1.092   0.044   1.143
+
+## Using nThreads for greater efficiency
+system.time(b <- eulerPhiSieve(1e12, 1e12 + 1e7, nThreads = 8))
+   user  system elapsed 
+  3.784   0.014   0.518
+  
+identical(a, b)
+[1] TRUE
 ```
 
 ### Vectorized Functions
@@ -565,11 +595,23 @@ isPrimeRcpp(995:1000, namedVector = TRUE)
   995   996   997   998   999  1000 
 FALSE FALSE  TRUE FALSE FALSE FALSE
 
+
+system.time(a <- primeFactorize(1e12:(1e12 + 3e4)))
+   user  system elapsed 
+  1.202   0.002   1.207
+
+## Using nThreads for greater efficiency  
+system.time(b <- primeFactorize(1e12:(1e12 + 3e4), nThreads = 8))
+   user  system elapsed 
+  1.674   0.003   0.220
+  
+identical(a, b)
+[1] TRUE
 ```
 
 
 ### primeSieve & primeCount
-Both of these functions are based on the excellent algorithms developed by [Kim Walisch](https://github.com/kimwalisch).
+Both of these functions are based on the excellent algorithms developed by [Kim Walisch](https://github.com/kimwalisch). First `primeSieve`:
 
 ``` r
 ## Quickly generate large primes over small interval
@@ -594,15 +636,53 @@ object.size(myPs)
 312 bytes
 
 ## primes under a billion!!!
-system.time(primeSieve(10^9))
+system.time(a <- primeSieve(10^9))
    user  system elapsed 
-  1.289   0.091   1.382
+  1.263   0.095   1.368
+
+## Using nThreads  
+system.time(b <- primeSieve(10^9, nThreads = 8))
+   user  system elapsed 
+  2.339   0.047   0.418
+```
+### Larger primes
+Since version `2.3.0`, we are implementing the cache-friendly improvements for larger primes originally developed by [Tomás Oliveira](http://sweet.ua.pt/tos/software/prime_sieve.html).
+
+``` r
+## Version <= 2.2.0.. i.e. older versions
+system.time(old <- RcppAlgos2.2::primeSieve(1e15, 1e15 + 1e9))
+   user  system elapsed 
+  7.615   0.140   7.792
+
+## v2.3.0 is over 3x faster!  
+system.time(a <- primeSieve(1e15, 1e15 + 1e9))
+   user  system elapsed 
+  2.530   0.197   2.744 
   
+## And using nThreads we are ~8x faster
+system.time(b <- primeSieve(1e15, 1e15 + 1e9, nThreads = 8))
+   user  system elapsed 
+  5.087   0.778   0.997 
   
+identical(a, b)
+[1] TRUE
+
+identical(a, old)
+[1] TRUE
+```
+### primeCount
+The library by Kim Walisch relies on [OpenMP](https://en.wikipedia.org/wiki/OpenMP) for parallel computation with [Legendre's Formula](http://mathworld.wolfram.com/LegendresFormula.html). Currently, the default compiler on `macOS` is `clang`, which does not support `OpenMP`. James Balamuta (a.k.a. TheCoatlessProfessor... well at least [we think so](https://thecoatlessprofessor.com/about/)) has written a great article on this topic, which you can find here: https://thecoatlessprofessor.com/programming/openmp-in-r-on-os-x/. One of the goals of `RcppAlgos` is to be accessible by all users. With this in mind, we set out to count primes in parallel without `OpenMP`.
+
+At first glance, this seems trivial as we have a function in `Primes.cpp` called `phiWorker` that counts the primes up to `x`. If you look in [phi.cpp](https://github.com/kimwalisch/primecount/blob/master/src/phi.cpp) in the `primecount` library by Kim Walisch, we see that `OpenMP` does its magic on a for loop that makes repeated calls to `phi` (which is what `phiWorker` is based on). All we need to do is break this loop into _n_ intervals where _n_ is the number of threads. Simple, right?
+
+We can certainly do this, but what you will find is that _n - 1_ threads will complete very quickly and the _n<sup>th</sup>_ thread will be left with a heavy compuatation. In order to alleviate this unbalanced load, we take advantage of thread pooling provided by `RcppThread` which allows us to reuse threads efficiently as well as breaking up the loop mentioned above into smaller intervals. The idea is to completely calcualte `phi` up to a limit `m` using all _n_ threads and then gradually increase _m_. The advantage here is that we are benefiting greatly from the caching done by the work of the previous _n_ threads.
+
+With this is mind, here are some results:
+``` r  
 ## Enumerate the number of primes below trillion
 system.time(underOneTrillion <- primeCount(10^12))
    user  system elapsed 
-  0.484   0.000   0.485
+  0.481   0.000   0.483
   
 underOneTrillion
 [1] 37607912018
@@ -612,12 +692,24 @@ underOneTrillion
 library(microbenchmark)
 microbenchmark(primeCount(10^9))
 Unit: milliseconds
-             expr      min      lq    mean  median       uq      max neval
- primeCount(10^9) 1.998919 2.00191 2.08563 2.00397 2.082288 3.043241   100
+             expr       min      lq    mean   median       uq      max neval
+ primeCount(10^9) 1.958806 1.960901 2.05824 1.994066 2.099495 3.610174   100
  
  
 primeCount(10^9)
 [1] 50847534
+
+system.time(underOneHundredTrillion <- primeCount(1e14, nThreads = 8))
+   user  system elapsed 
+ 49.894   0.102   6.774
+ 
+underOneHundredTrillion
+[1] 3204941750802
+ 
+## From Kim Walisch's primecount library:
+## Josephs-MBP:primecount-4 josephwood$ ./primecount 1e14 --legendre --time
+## 3204941750802
+## Seconds: 4.441
 ```
 
 Contact
