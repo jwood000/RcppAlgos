@@ -1,6 +1,15 @@
 \name{NEWS}
 \title{News for Package \pkg{RcppAlgos}}
 
+\section{Changes in RcppAlgos version 2.3.0 (Release date: 2019-03-17)}{
+    \itemize{
+        \item All functions now have parallel capabilites via RcppThread.
+        \item Utilizes RMatrix.h from RcppParallel for thread safe matrix class.
+        \item Major overhaul of primeSieve for large primes.
+        \item Added stdThreadMax for obtaining the number of threads available on a machine
+    }
+}
+
 \section{Changes in RcppAlgos version 2.2.0 (Release date: 2018-09-15)}{
     \itemize{
         \item Disabled \code{Parallel} argument as it was causing unpredictable errors on certain platforms. Research is ongoing to correct this for use in future versions. The development version will retain this feature.
