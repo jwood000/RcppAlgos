@@ -35,9 +35,10 @@ namespace CleanConvert {
             case REALSXP:
             case INTSXP: {
                 double dblInp = Rcpp::as<double>(input);
-                int64_t intTest = static_cast<int64_t>(dblInp);
-                if (checkWhole && intTest != dblInp)
-                    Rcpp::stop(nameOfObject + " must be a whole number");
+                
+                if (checkWhole)
+                    if (std::isnan(dblInp) || static_cast<int64_t>(dblInp) != dblInp)
+                        Rcpp::stop(nameOfObject + " must be a whole number");
                 
                 result = Rcpp::as<stdType>(input);
                 break;

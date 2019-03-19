@@ -43,7 +43,7 @@ void createMPZArray(SEXP v, mpz_t myVec[], unsigned long int sizevec) {
                 /// New : numeric '+- Inf' give +- "Large" instead of NA
                 double dj = myDbl[j];
                 
-                if (static_cast<int64_t>(dj) != dj) {
+                if (std::isnan(dj) || static_cast<int64_t>(dj) != dj) {
                     Rcpp::stop("Must be a whole number. If number is too large for "
                                "double precision, consider using gmp::as.bigz or "
                                "passing sampleVec as a character vector.");
