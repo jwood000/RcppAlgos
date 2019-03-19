@@ -45,7 +45,7 @@ namespace MotleyPrimes {
         if (n > 3) {
             typename std::vector<typeInt>::const_iterator p;
             std::vector<uint8_t> myMemory(myRange, 1u);
-            const typeInt sqrtBound = static_cast<typeInt>(sqrt(retN));
+            const typeInt sqrtBound = static_cast<typeInt>(std::sqrt(static_cast<double>(retN)));
             
             for (p = primes.cbegin(); (*p) <= sqrtBound; ++p) {
                 const unsigned long int limit = static_cast<unsigned long int>(trunc(myLogN / std::log(*p)));
@@ -168,7 +168,7 @@ namespace MotleyPrimes {
             }
         } else if (n > 3) {
             typename std::vector<typeInt>::const_iterator p;
-            const typeInt sqrtBound = static_cast<typeInt>(sqrt(retN));
+            const typeInt sqrtBound = static_cast<typeInt>(std::sqrt(static_cast<double>(retN)));
             const typeInt offsetRange = myRange + offsetStrt;
             
             for (p = primes.cbegin(); (*p) <= sqrtBound; ++p) {
@@ -227,7 +227,7 @@ namespace MotleyPrimes {
                 nThreads = myRange / 10000;
         }
         
-        int sqrtBound = std::sqrt(myMax);
+        int sqrtBound = std::sqrt(static_cast<double>(myMax));
         std::vector<typeInt> primes;
         PrimeSieve::sqrtBigPrimes(sqrtBound, false, true, true, primes);
 

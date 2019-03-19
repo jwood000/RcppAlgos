@@ -509,7 +509,7 @@ namespace PrimeSieve {
             if (bAddExtraPrime)
                 sievePrimes.push_back(smallPrimeBase[ind]);
         } else {
-            int sqrtSqrtBound = static_cast<int>(std::sqrt(sqrtBound));
+            int sqrtSqrtBound = static_cast<int>(std::sqrt(static_cast<double>(sqrtBound)));
             std::vector<int_fast64_t> sqrtSievePrimes;
             sqrtSmallPrimes(sqrtSqrtBound, sqrtSievePrimes);
             
@@ -549,7 +549,7 @@ namespace PrimeSieve {
         // gives us room to store other important objects for sieving.
         int_fast64_t sqrtMedCut = maxCores * (1024 * 1024) * 6;
         
-        const int sqrtBound = std::sqrt(myMax);
+        const int sqrtBound = std::sqrt(static_cast<double>(myMax));
         std::size_t nBigSegs = 1u;
         
         if (nThreads > 1 && maxThreads > 1) {

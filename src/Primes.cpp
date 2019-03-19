@@ -22,7 +22,7 @@ namespace PrimeCounting {
         const int_fast64_t segSize = Almost210L1Cache;
         const std::size_t nWheels = N_WHEELS210_PER_SEG;
         const std::size_t szWheel210 = SZ_WHEEL210;
-        const int sqrtBound = static_cast<int>(std::sqrt(maxNum));
+        const int sqrtBound = static_cast<int>(std::sqrt(static_cast<double>(maxNum)));
         
         // the wheel already has the first 4 primes marked as
         // false, so we need to account for them here. N.B.
@@ -158,7 +158,7 @@ namespace PrimeCounting {
         } else if (isCached(x, a)) {
             return phiCache[a][x] * SIGN;
         } else {
-            int64_t sqrtx = static_cast<int64_t>(std::sqrt(x));
+            int64_t sqrtx = static_cast<int64_t>(std::sqrt(static_cast<double>(x)));
             int64_t piSqrtx = a;
             int64_t strt = getStrt(sqrtx);
             
@@ -205,7 +205,7 @@ namespace PrimeCounting {
     
     int64_t phiMaster(int64_t x, int64_t a, int nThreads, bool Parallel) {
         
-        const int64_t sqrtx = static_cast<int64_t>(std::sqrt(x));
+        const int64_t sqrtx = static_cast<int64_t>(std::sqrt(static_cast<double>(x)));
         const int64_t piSqrtx = std::min(static_cast<int64_t>(phiPi[sqrtx]), a);
         const int64_t strt = getStrt(sqrtx);
         int64_t mySum = phiTinyCalc(x, strt) + piSqrtx - a;
@@ -319,7 +319,7 @@ namespace PrimeCounting {
     
     int64_t MasterPrimeCount(int64_t n, int nThreads = 1, int maxThreads = 1) {
         
-        const int64_t sqrtBound = static_cast<int64_t>(std::sqrt(n));
+        const int64_t sqrtBound = static_cast<int64_t>(std::sqrt(static_cast<double>(n)));
         std::vector<int64_t> resetPhiPrimes;
         PrimeSieve::sqrtBigPrimes(sqrtBound, true, false, true, resetPhiPrimes);
         phiPrimes = resetPhiPrimes;
