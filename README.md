@@ -15,6 +15,12 @@ system.time(b <- primeSieve(10^9, nThreads = 8))
  user  system elapsed 
 2.339   0.047   0.418
 ```
+* It is also efficient for large numbers by using the cache friendly improvements originally developed by [Tomás Oliveira](http://sweet.ua.pt/tos/software/prime_sieve.html).
+``` r
+system.time(b <- primeSieve(1e15, 1e15 + 1e9, nThreads = 8))
+ user  system elapsed 
+5.087   0.778   0.997
+```
 * `primeCount` -  Counts the number of primes below a **1e12 in ~130 milliseconds** and **1e15 in under 50 seconds.**
 ```r
 system.time(primeCount(1e12, nThreads = 8))
