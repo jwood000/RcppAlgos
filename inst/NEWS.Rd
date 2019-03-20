@@ -1,6 +1,13 @@
 \name{NEWS}
 \title{News for Package \pkg{RcppAlgos}}
 
+\section{Changes in RcppAlgos version 2.3.1 (Release date: 2019-03-20)}{
+    \itemize{
+        \item Explicitly casted to double for sqrt to silence Solaris
+        \item Corrected handling of NaNs
+    }
+}
+
 \section{Changes in RcppAlgos version 2.3.0 (Release date: 2019-03-17)}{
     \itemize{
         \item All functions now have parallel capabilites via RcppThread.
