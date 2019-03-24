@@ -38,7 +38,7 @@ void createMPZArray(SEXP input, mpz_t *myVec, const unsigned long int sizevec,
                             Rcpp::stop(suffix + " must be a positive number");
                     }
                 } else {
-                    mpz_set_si(myVec[i], 0);
+                    Rcpp::stop(suffix + " cannot be NA or NaN");
                 }
                 
                 pos += intSize * (2 + (mpz_sizeinbase(myVec[i], 2) + numb - 1) / numb);

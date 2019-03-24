@@ -209,6 +209,14 @@ test_that("comboSample produces appropriate error messages", {
                  "Number is too large for double precision. Consider using gmp::as.bigz or as.character for sampleVec")
     expect_error(comboSample(100000, 10, sampleVec = as.complex(1)),
                  "This type is not supported! No conversion possible for sampleVec")
+    
+    expect_error(comboSample(1000, 100, sampleVec = gmp::as.bigz(c(1, -1))),
+                 "Each element in sampleVec must be a positive number")
+    expect_error(comboSample(1000, 100, sampleVec = NA_character_), "sampleVec cannot be NA or NaN")
+    expect_error(comboSample(1000, 100, sampleVec = 2^53), 
+                 "Number is too large for double precision. Consider using gmp::as.bigz or as.character for sampleVec")
+    expect_error(comboSample(1000, 15, sampleVec = gmp::as.bigz(c(NA, 1))),
+                 "Each element in sampleVec cannot be NA or NaN")
 })
 
 test_that("permuteSample produces appropriate error messages", {
