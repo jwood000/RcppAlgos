@@ -212,7 +212,7 @@ test_that("comboSample produces appropriate error messages", {
 })
 
 test_that("permuteSample produces appropriate error messages", {
-    expect_equal(permuteSample(5, 6, n = 3), "m must be less than or equal to the length of v")
+    expect_error(permuteSample(5, 6, n = 3), "m must be less than or equal to the length of v")
     expect_error(permuteSample(5, repetition = TRUE), "m and freqs cannot both be NULL")
     expect_error(permuteSample(5, 1:5), "length of m must be 1")
     expect_error(permuteSample(5, -4), "m must be a positive number")

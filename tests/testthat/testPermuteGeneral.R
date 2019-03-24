@@ -348,11 +348,11 @@ test_that("permuteGeneral produces correct results with very large results", {
 
 test_that("permuteGeneral produces appropriate error messages", {
     expect_error(permuteGeneral(100, 15, upper = 2^32), 
-                 "The number of rows cannot exceed 2^31 - 1")
+                 "The number of rows cannot exceed")
     expect_error(permuteGeneral(100, 15, lower = 100, upper = 2^32), 
-                 "The number of rows cannot exceed 2^31 - 1")
+                 "The number of rows cannot exceed")
     expect_error(permuteGeneral(100, 15, lower = 2^32), 
-                 "The number of rows cannot exceed 2^31 - 1")
+                 "The number of rows cannot exceed")
     expect_error(permuteGeneral(9,4,TRUE,constraintFun = "summ",
                                 comparisonFun = "<",limitConstraints = 10),
                  "prod, sum, mean, max, or min")
