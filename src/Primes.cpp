@@ -357,11 +357,7 @@ namespace PrimeCounting {
 SEXP PrimeCountRcpp(SEXP Rn, SEXP RNumThreads, int maxThreads) {
     double dblNum;
     CleanConvert::convertPrimitive(Rn, dblNum, "n");
-
-    if (dblNum < 1 || dblNum > Significand53)
-        Rcpp::stop("n must be a positive number less than 2^53");
-
-    const int64_t n = dblNum;
+    const int64_t n = static_cast<int64_t>(dblNum);
     
     if (n < 100000) {
         if (n < 10) {
