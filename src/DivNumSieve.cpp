@@ -213,22 +213,13 @@ SEXP TheGlue(const typeInt myMin, const typeReturn myMax, bool bDivSieve,
 SEXP DivNumSieve(SEXP Rb1, SEXP Rb2, bool bDivSieve, 
                  SEXP RNamed, SEXP RNumThreads, int maxThreads) {
     
-    double bound1, bound2, myMax, myMin;
+    double bound1, myMax, myMin;
     const std::string namedObject = (bDivSieve) ? "namedList" : "namedVector";
     bool keepNames = CleanConvert::convertLogical(RNamed, namedObject);
     CleanConvert::convertPrimitive(Rb1, bound1, "bound1");
     
-    if (bound1 <= 0 || bound1 > Significand53)
-        Rcpp::stop("bound1 must be a positive number less than 2^53");
-    
-    if (Rf_isNull(Rb2)) {
-        bound2 = 1;
-    } else {
-        CleanConvert::convertPrimitive(Rb2, bound2, "bound2");
-    }
-    
-    if (bound2 <= 0 || bound2 > Significand53)
-        Rcpp::stop("bound2 must be a positive number less than 2^53");
+    double bound2 = 1;
+    if (!Rf_isNull(Rb2)) CleanConvert::convertPrimitive(Rb2, bound2, "bound2");
     
     if (bound1 > bound2) {
         myMax = std::floor(bound1);

@@ -2,8 +2,9 @@
 #define CLEAN_CONVERT_H
 
 #include "importExportMPZ.h"
+#include <memory>
 
-const double Significand53 = 9007199254740991.0;
+constexpr double Significand53 = 9007199254740991.0;
 
 namespace CleanConvert {
     
@@ -13,10 +14,12 @@ namespace CleanConvert {
         if (!Rf_isNull(boolInput)) {
             if (TYPEOF(boolInput) == LGLSXP) {
                 double dblInp = Rcpp::as<double>(boolInput);
-                int intTest = static_cast<int>(dblInp);
                 
-                if (dblInp != intTest)
-                    Rcpp::stop("NA values are not allowed for " + nameOfBool);
+                if (Rcpp::NumericVector::is_na(dblInp) || std::isnan(dblInp))
+                    Rcpp::stop(nameOfBool + " cannot be NA or NaN");
+                
+                if (std::abs(dblInp) > Significand53)
+                    Rcpp::stop("Only logical values are allowed for " + nameOfBool);
                 
                 result = Rcpp::as<bool>(boolInput);
             } else {
@@ -29,15 +32,34 @@ namespace CleanConvert {
 
     template <typename stdType>
     inline void convertPrimitive(SEXP input, stdType &result, std::string nameOfObject,
-                          bool strPoss = false, bool checkWhole = true) {
+                                 bool numOnly = true, bool checkWhole = true, bool negPoss = false) {
+        
+        const stdType maxType = std::numeric_limits<stdType>::max();
         
         switch(TYPEOF(input)) {
             case REALSXP:
             case INTSXP: {
-                double dblInp = Rcpp::as<double>(input);
+                const double dblInp = Rcpp::as<double>(input);
                 
+                if (Rcpp::NumericVector::is_na(dblInp) || std::isnan(dblInp))
+                    Rcpp::stop(nameOfObject + " cannot be NA or NaN");
+                
+                if (negPoss) {
+                    if (std::abs(dblInp) > Significand53)
+                        Rcpp::stop("The abs value of " + nameOfObject + " must be less than 2^53");
+                } else {
+                    if (dblInp < 1)
+                        Rcpp::stop(nameOfObject + " must be a positive number");
+                    
+                    if (dblInp > maxType)
+                        Rcpp::stop(nameOfObject + " must be less than " + std::to_string(maxType));
+                    
+                    if (dblInp > Significand53)
+                        Rcpp::stop(nameOfObject + " must be less than 2^53");
+                }
+
                 if (checkWhole)
-                    if (std::isnan(dblInp) || static_cast<int64_t>(dblInp) != dblInp)
+                    if (static_cast<int64_t>(dblInp) != dblInp)
                         Rcpp::stop(nameOfObject + " must be a whole number");
                 
                 result = Rcpp::as<stdType>(input);
@@ -45,13 +67,35 @@ namespace CleanConvert {
             }
             case RAWSXP:
             case STRSXP: {
-                if (!strPoss)
+                if (numOnly)
                     Rcpp::stop(nameOfObject + " must be of type numeric or integer");
                 
                 mpz_t temp[1];
                 mpz_init(temp[0]);
                 createMPZArray(input, temp, 1);
                 double dblTemp = mpz_get_d(temp[0]);
+                
+                if (Rcpp::NumericVector::is_na(dblTemp) || std::isnan(dblTemp))
+                    Rcpp::stop(nameOfObject + " cannot be NA or NaN");
+                
+                if (negPoss) {
+                    if (std::abs(dblTemp) > Significand53)
+                        Rcpp::stop("The abs value of " + nameOfObject + " must be less than 2^53");
+                } else {
+                    if (dblTemp < 1)
+                        Rcpp::stop(nameOfObject + " must be a positive number");
+                    
+                    if (dblTemp > maxType)
+                        Rcpp::stop(nameOfObject + " must be less than " + std::to_string(maxType));
+                    
+                    if (dblTemp > Significand53)
+                        Rcpp::stop(nameOfObject + " must be less than 2^53");
+                }
+                
+                if (checkWhole)
+                    if (static_cast<int64_t>(dblTemp) != dblTemp)
+                        Rcpp::stop(nameOfObject + " must be a whole number");
+                
                 result = dblTemp;
                 mpz_clear(temp[0]);
                 break;
@@ -63,25 +107,40 @@ namespace CleanConvert {
     
     template <typename stdType>
     inline void convertVector(SEXP input, std::vector<stdType> &result, std::string nameOfObject,
-                       bool checkWhole = true, bool numOnly = true) {
+                              bool numOnly = true, bool checkWhole = true, bool negPoss = false) {
         
         int total = Rf_length(input);
+        const stdType maxType = std::numeric_limits<stdType>::max();
         
         switch(TYPEOF(input)) {
             case REALSXP:
             case INTSXP: {
-                if (checkWhole) {
-                    std::vector<double> vecCheck = Rcpp::as<std::vector<double>>(input);
-                    result.resize(vecCheck.size());
+                std::vector<double> vecCheck = Rcpp::as<std::vector<double>>(input);
+                result.resize(vecCheck.size());
+                
+                for (std::size_t i = 0; i < vecCheck.size(); ++i) {
+                    if (Rcpp::NumericVector::is_na(vecCheck[i]) || std::isnan(vecCheck[i]))
+                        Rcpp::stop(nameOfObject + " cannot be NA or NaN");
                     
-                    for (std::size_t i = 0; i < vecCheck.size(); ++i) {
+                    if (negPoss) {
+                        if (std::abs(vecCheck[i]) > Significand53)
+                            Rcpp::stop("The abs value of each element in " + nameOfObject + " must be less than 2^53");
+                    } else {
+                        if (vecCheck[i] < 1)
+                            Rcpp::stop("Each element in " + nameOfObject + " must be a positive number");
+                        
+                        if (vecCheck[i] > maxType)
+                            Rcpp::stop("Each element in " + nameOfObject + " must be less than " + std::to_string(maxType));
+                        
+                        if (vecCheck[i] > Significand53)
+                            Rcpp::stop("Each element in " + nameOfObject + " must be less than 2^53");
+                    }
+                    
+                    if (checkWhole)
                         if (static_cast<int64_t>(vecCheck[i]) != vecCheck[i])
                             Rcpp::stop("Each element in " + nameOfObject + " must be a whole number");
-                        
-                        result[i] = static_cast<stdType>(vecCheck[i]);
-                    }
-                } else {
-                    result = Rcpp::as<std::vector<stdType>>(input);
+                    
+                    result[i] = static_cast<stdType>(vecCheck[i]);
                 }
                 
                 break;
@@ -99,24 +158,45 @@ namespace CleanConvert {
                 if (numOnly)
                     Rcpp::stop(nameOfObject + " must be of type numeric or integer");
                 
-                mpz_t *temp;
-                temp = (mpz_t *) malloc(sizeof(mpz_t) * total);
+                auto temp = std::make_unique<mpz_t[]>(total);
                 
                 for (int i = 0; i < total; ++i)
                     mpz_init(temp[i]);
                 
-                createMPZArray(input, temp, total);
+                createMPZArray(input, temp.get(), total);
                 std::vector<double> dblTemp(total);
+                result.resize(total);
                 
                 for (int i = 0; i < total; ++i) {
                     dblTemp[i] = mpz_get_d(temp[i]);
-                    result.push_back(static_cast<stdType>(dblTemp[i]));
+                    
+                    if (Rcpp::NumericVector::is_na(dblTemp[i]) || std::isnan(dblTemp[i]))
+                        Rcpp::stop(nameOfObject + " cannot be NA or NaN");
+                    
+                    if (negPoss) {
+                        if (std::abs(dblTemp[i]) > Significand53)
+                            Rcpp::stop("The abs value of each element in " + nameOfObject + " must be less than 2^53");
+                    } else {
+                        if (dblTemp[i] < 1)
+                            Rcpp::stop("Each element in " + nameOfObject + " must be a positive number");
+                        
+                        if (dblTemp[i] > maxType)
+                            Rcpp::stop("Each element in " + nameOfObject + " must be less than " + std::to_string(maxType));
+                        
+                        if (dblTemp[i] > Significand53)
+                            Rcpp::stop("Each element in " + nameOfObject + " must be less than 2^53");
+                    }
+                    
+                    if (checkWhole)
+                        if (static_cast<int64_t>(dblTemp[i]) != dblTemp[i])
+                            Rcpp::stop("Each element in " + nameOfObject + " must be a whole number");
+                    
+                    result[i] = static_cast<stdType>(dblTemp[i]);
                 }
                 
                 for (int i = 0; i < total; ++i)
                     mpz_clear(temp[i]);
                 
-                free(temp);
                 break;
             }
             default:

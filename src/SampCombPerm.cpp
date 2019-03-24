@@ -19,7 +19,7 @@ const double sampleLimit = 4500000000000000.0;
 template <typename typeRcpp, typename typeVector>
 void SampleResults(const typeVector v, const unsigned long int m, bool IsRep, const std::vector<int> myReps,
                    const unsigned long int s, const unsigned long int n, bool IsGmp, bool IsComb,
-                   const std::vector<double> mySample, mpz_t myBigSamp[], typeRcpp &sampleMatrix) {
+                   const std::vector<double> mySample, mpz_t *myBigSamp, typeRcpp &sampleMatrix) {
 
     const int lenV = v.size();
     std::vector<int> z(m);
@@ -59,7 +59,7 @@ void SampleResults(const typeVector v, const unsigned long int m, bool IsRep, co
 template <typename typeVector>
 SEXP SampleApplyFun(const typeVector &v, const unsigned long int m, bool IsRep, bool IsGmp,
                     const std::vector<int> myReps, const unsigned long int n, bool IsComb,
-                    const std::vector<double> &mySample, mpz_t myBigSamp[], SEXP func, SEXP rho) {
+                    const std::vector<double> &mySample, mpz_t *myBigSamp, SEXP func, SEXP rho) {
 
     const int lenV = v.size();
     const bool IsMult = (static_cast<int>(myReps.size()) == lenV) ? true : false;
@@ -290,7 +290,15 @@ SEXP SampleRcpp(SEXP Rv, SEXP Rm, SEXP Rrepetition, SEXP RFreqs, SEXP RindexVec,
         if (Rf_isNull(RNumSamp))
             Rcpp::stop("n and sampleVec cannot both be NULL");
     
-        if (!IsGmp) {
+        if (IsGmp) {
+            double dblVSize;
+            CleanConvert::convertPrimitive(RNumSamp, dblVSize, "n");
+            
+            if (dblVSize > std::numeric_limits<int>::max())
+                Rcpp::stop("The number of rows cannot exceed 2^31 - 1");
+            
+            sampSize = static_cast<unsigned long int>(dblVSize);
+        } else {
             if (!Rf_isNumber(RNumSamp))
                 Rcpp::stop("n must be a number");
             
@@ -309,22 +317,8 @@ SEXP SampleRcpp(SEXP Rv, SEXP Rm, SEXP Rrepetition, SEXP RFreqs, SEXP RindexVec,
             Rcpp::NumericVector tempSamp = baseSample(computedRows, nPass);
             mySample = Rcpp::as<std::vector<double>>(tempSamp);
         }
-    } else if (!IsGmp) {
-        CleanConvert::convertVector(RindexVec, mySample, "sampleVec", true, false);
-        if (mySample.size() == 1)
-            if (mySample[0] < 1)
-                Rcpp::stop("Each element in sampleVec must be a positive whole number");
-    }
-    
-    mpz_t *myVec;
-    myVec = (mpz_t *) malloc(sizeof(mpz_t));
-    mpz_init(myVec[0]);
-    
-    if (IsGmp) {
-        mpz_t maxGmp;
-        mpz_init(maxGmp);
-        
-        if (!Rf_isNull(RindexVec)) {
+    } else {
+        if (IsGmp) {
             switch (TYPEOF(RindexVec)) {
                 case RAWSXP: {
                     const char* raw = (char*)RAW(RindexVec);
@@ -334,13 +328,26 @@ SEXP SampleRcpp(SEXP Rv, SEXP Rm, SEXP Rrepetition, SEXP RFreqs, SEXP RindexVec,
                 default:
                     sampSize = LENGTH(RindexVec);
             }
-            
-            mpz_clear(myVec[0]);
-            myVec = (mpz_t *) malloc(sizeof(mpz_t) * sampSize);
+        } else {                                             // numOnly = false
+            CleanConvert::convertVector(RindexVec, mySample, "sampleVec", false);
+            if (mySample.size() == 1)
+                if (mySample[0] < 1)
+                    Rcpp::stop("Each element in sampleVec must be a positive whole number");
+        }
+    }
+    
+    std::size_t gmpSize = (IsGmp) ? sampSize : 1;
+    auto myVec = std::make_unique<mpz_t[]>(gmpSize);
+    
+    if (IsGmp) {
+        mpz_t maxGmp;
+        mpz_init(maxGmp);
+        
+        if (!Rf_isNull(RindexVec)) {
             for (std::size_t i = 0; i < sampSize; ++i)
                 mpz_init(myVec[i]);
             
-            createMPZArray(RindexVec, myVec, sampSize);
+            createMPZArray(RindexVec, myVec.get(), sampSize);
 
             // get zero base
             for (std::size_t i = 0; i < sampSize; ++i)
@@ -362,18 +369,6 @@ SEXP SampleRcpp(SEXP Rv, SEXP Rm, SEXP Rrepetition, SEXP RFreqs, SEXP RindexVec,
                 gmp_randseed(seed_state, mpzSeed[0]);
                 mpz_clear(mpzSeed[0]);
             }
-            
-            double dblVSize;
-            CleanConvert::convertPrimitive(RNumSamp, dblVSize, "n");
-            
-            if (dblVSize > std::numeric_limits<int>::max())
-                Rcpp::stop("The number of rows cannot exceed 2^31 - 1");
-            
-            if (dblVSize < 1)
-                Rcpp::stop("n must be a positive number");
-            
-            sampSize = static_cast<unsigned long int>(dblVSize);
-            myVec = (mpz_t *) malloc(sizeof(mpz_t) * sampSize);
             
             // random number is between 0 and gmpRows[0] - 1
             // so we need to add 1 to each element
@@ -444,15 +439,15 @@ SEXP SampleRcpp(SEXP Rv, SEXP Rm, SEXP Rrepetition, SEXP RFreqs, SEXP RindexVec,
         
         if (IsCharacter) {
             return SampleApplyFun(rcppChar, m, IsRepetition, IsGmp, myReps, 
-                                  sampSize, IsComb, mySample, myVec, stdFun, myEnv);
+                                  sampSize, IsComb, mySample, myVec.get(), stdFun, myEnv);
         } else if (IsLogical || IsInteger) {
             Rcpp::IntegerVector rcppVInt(vInt.begin(), vInt.end());
             return SampleApplyFun(rcppVInt, m, IsRepetition, IsGmp, myReps, 
-                                  sampSize, IsComb, mySample, myVec, stdFun, myEnv);
+                                  sampSize, IsComb, mySample, myVec.get(), stdFun, myEnv);
         } else {
             Rcpp::NumericVector rcppVNum(vNum.begin(), vNum.end());
             return SampleApplyFun(rcppVNum, m, IsRepetition, IsGmp, myReps, 
-                                  sampSize, IsComb, mySample, myVec, stdFun, myEnv);
+                                  sampSize, IsComb, mySample, myVec.get(), stdFun, myEnv);
         }
     }
     
@@ -467,11 +462,11 @@ SEXP SampleRcpp(SEXP Rv, SEXP Rm, SEXP Rrepetition, SEXP RFreqs, SEXP RindexVec,
 
             for (int j = 0; j < (nThreads - 1); ++j, step += stepSize, nextStep += stepSize) {
                 pool.push(std::cref(SampleResults<RcppParallel::RMatrix<int>, std::vector<int>>), vInt, m,
-                          IsRepetition, myReps, step, nextStep, IsGmp, IsComb, mySample, myVec, std::ref(parBool));
+                          IsRepetition, myReps, step, nextStep, IsGmp, IsComb, mySample, myVec.get(), std::ref(parBool));
             }
             
             pool.push(std::cref(SampleResults<RcppParallel::RMatrix<int>, std::vector<int>>), vInt, m,
-                      IsRepetition, myReps, step, sampSize, IsGmp, IsComb, mySample, myVec, std::ref(parBool));
+                      IsRepetition, myReps, step, sampSize, IsGmp, IsComb, mySample, myVec.get(), std::ref(parBool));
             
             pool.join();
             return matBool;
@@ -482,11 +477,11 @@ SEXP SampleRcpp(SEXP Rv, SEXP Rm, SEXP Rrepetition, SEXP RFreqs, SEXP RindexVec,
             
             for (int j = 0; j < (nThreads - 1); ++j, step += stepSize, nextStep += stepSize) {
                 pool.push(std::cref(SampleResults<RcppParallel::RMatrix<int>, std::vector<int>>), vInt, m,
-                          IsRepetition, myReps, step, nextStep, IsGmp, IsComb, mySample, myVec, std::ref(parInt));
+                          IsRepetition, myReps, step, nextStep, IsGmp, IsComb, mySample, myVec.get(), std::ref(parInt));
             }
             
             pool.push(std::cref(SampleResults<RcppParallel::RMatrix<int>, std::vector<int>>), vInt, m,
-                      IsRepetition, myReps, step, sampSize, IsGmp, IsComb, mySample, myVec, std::ref(parInt));
+                      IsRepetition, myReps, step, sampSize, IsGmp, IsComb, mySample, myVec.get(), std::ref(parInt));
             
             pool.join();
             
@@ -506,11 +501,11 @@ SEXP SampleRcpp(SEXP Rv, SEXP Rm, SEXP Rrepetition, SEXP RFreqs, SEXP RindexVec,
             
             for (int j = 0; j < (nThreads - 1); ++j, step += stepSize, nextStep += stepSize) {
                 pool.push(std::cref(SampleResults<RcppParallel::RMatrix<double>, std::vector<double>>), vNum, m,
-                          IsRepetition, myReps, step, nextStep, IsGmp, IsComb, mySample, myVec, std::ref(parNum));
+                          IsRepetition, myReps, step, nextStep, IsGmp, IsComb, mySample, myVec.get(), std::ref(parNum));
             }
             
             pool.push(std::cref(SampleResults<RcppParallel::RMatrix<double>, std::vector<double>>), vNum, m,
-                      IsRepetition, myReps, step, sampSize, IsGmp, IsComb, mySample, myVec, std::ref(parNum));
+                      IsRepetition, myReps, step, sampSize, IsGmp, IsComb, mySample, myVec.get(), std::ref(parNum));
             
             pool.join();
             return matNum;
@@ -520,17 +515,17 @@ SEXP SampleRcpp(SEXP Rv, SEXP Rm, SEXP Rrepetition, SEXP RFreqs, SEXP RindexVec,
     if (IsCharacter) {
         Rcpp::CharacterMatrix matChar = Rcpp::no_init_matrix(sampSize, m);
         SampleResults(rcppChar, m, IsRepetition, myReps, 0, sampSize,
-                      IsGmp, IsComb, mySample, myVec, matChar);
+                      IsGmp, IsComb, mySample, myVec.get(), matChar);
         return matChar;
     } else if (IsLogical) {
         Rcpp::LogicalMatrix matBool = Rcpp::no_init_matrix(sampSize, m);
         SampleResults(vInt, m, IsRepetition, myReps, 0, sampSize,
-                      IsGmp, IsComb, mySample, myVec, matBool);
+                      IsGmp, IsComb, mySample, myVec.get(), matBool);
         return matBool;
     } else if (IsFactor || IsInteger) {
         Rcpp::IntegerMatrix matInt = Rcpp::no_init_matrix(sampSize, m);
         SampleResults(vInt, m, IsRepetition, myReps, 0, sampSize,
-                      IsGmp, IsComb, mySample, myVec, matInt);
+                      IsGmp, IsComb, mySample, myVec.get(), matInt);
 
         if (IsFactor) {
             Rcpp::IntegerVector testFactor = Rcpp::as<Rcpp::IntegerVector>(Rv);
@@ -544,7 +539,7 @@ SEXP SampleRcpp(SEXP Rv, SEXP Rm, SEXP Rrepetition, SEXP RFreqs, SEXP RindexVec,
     } else {
         Rcpp::NumericMatrix matNum = Rcpp::no_init_matrix(sampSize, m);
         SampleResults(vNum, m, IsRepetition, myReps, 0, sampSize,
-                      IsGmp, IsComb, mySample, myVec, matNum);
+                      IsGmp, IsComb, mySample, myVec.get(), matNum);
         return matNum;
     }
 }

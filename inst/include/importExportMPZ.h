@@ -8,7 +8,7 @@
  * Functions for importing/exporting and converting SEXPs to mpz_t
  * 
  */
-void createMPZArray (SEXP v, mpz_t myVec[], unsigned long int sizevec);
+void createMPZArray (SEXP v, mpz_t *myVec, unsigned long int sizevec);
 int myRaw (char* raw, mpz_t value, unsigned long int totals);
 
 #endif

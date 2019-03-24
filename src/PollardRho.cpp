@@ -584,19 +584,17 @@ SEXP PollardRhoContainer(SEXP Rv, SEXP RNamed, bool bPrimeFacs,
     
     std::vector<double> myNums;
     bool isNamed = CleanConvert::convertLogical(RNamed, "namedList");
-    CleanConvert::convertVector(Rv, myNums, "v");
-    
+
+    if (bPrimeFacs || bAllFacs)  // numOnly = true, checkWhole = true, negPoss = true
+        CleanConvert::convertVector(Rv, myNums, "v", true, true, true);
+    else
+        CleanConvert::convertVector(Rv, myNums, "v");
+
     double myMax = *std::max_element(myNums.cbegin(), myNums.cend());
     double myMin = *std::min_element(myNums.cbegin(), myNums.cend());
     
     if (std::abs(myMin) > myMax)
         myMax = std::abs(myMin);
-    
-    if (myMax > Significand53)
-        Rcpp::stop("the abs value of each element must be less than 2^53");
-
-    if (!bPrimeFacs && !bAllFacs && myMin < 1)
-        Rcpp::stop("each element must be positive");
     
     int nThreads = 1;
     if (!Rf_isNull(RNumThreads))

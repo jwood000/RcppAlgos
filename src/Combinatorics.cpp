@@ -463,15 +463,11 @@ SEXP CombinatoricsRcpp(SEXP Rv, SEXP Rm, SEXP Rrepetition, SEXP RFreqs, SEXP Rlo
         IsMultiset = true;
         IsRepetition = false;
         CleanConvert::convertVector(RFreqs, myReps, "freqs");
-        
         lenFreqs = static_cast<int>(myReps.size());
-        for (int i = 0; i < lenFreqs; ++i) {
-            if (myReps[i] < 1) 
-                Rcpp::stop("Each element in freqs must be a positive whole number");
-            
+        
+        for (int i = 0; i < lenFreqs; ++i)
             for (int j = 0; j < myReps[i]; ++j)
                 freqsExpanded.push_back(i);
-        }
     }
     
     if (Rf_isNull(Rm)) {
@@ -487,9 +483,6 @@ SEXP CombinatoricsRcpp(SEXP Rv, SEXP Rm, SEXP Rrepetition, SEXP RFreqs, SEXP Rlo
         CleanConvert::convertPrimitive(Rm, m, "m");
     }
     
-    if (m < 1)
-        Rcpp::stop("m must be positive");
-    
     std::vector<double> rowVec(m);
     
     if (IsCharacter) {
@@ -500,8 +493,8 @@ SEXP CombinatoricsRcpp(SEXP Rv, SEXP Rm, SEXP Rrepetition, SEXP RFreqs, SEXP Rlo
         n = vInt.size();
     } else {
         if (Rf_length(Rv) == 1) {
-            int seqEnd;
-            CleanConvert::convertPrimitive(Rv, seqEnd, "If v is not a character and of length 1, it");
+            int seqEnd;             // numOnly = true, checkWhole = true, negPoss = true
+            CleanConvert::convertPrimitive(Rv, seqEnd, "If v is not a character and of length 1, it", true, true, true);
             if (seqEnd > 1) {m1 = 1; m2 = seqEnd;} else {m1 = seqEnd; m2 = 1;}
             Rcpp::IntegerVector vTemp = Rcpp::seq(m1, m2);
             IsInteger = true;
@@ -635,20 +628,14 @@ SEXP CombinatoricsRcpp(SEXP Rv, SEXP Rm, SEXP Rrepetition, SEXP RFreqs, SEXP Rlo
             }
         } else { 
             if (!Rf_isNull(Rlow)) {
-                bLower = true;
-                CleanConvert::convertPrimitive(Rlow, lower, "lower", true);
+                bLower = true;                        // numOnly = false
+                CleanConvert::convertPrimitive(Rlow, lower, "lower", false);
                 --lower;
-                
-                if (lower < 0)
-                    Rcpp::stop("bounds must be positive");
             }
             
             if (!Rf_isNull(Rhigh)) {
-                bUpper = true;
-                CleanConvert::convertPrimitive(Rhigh, upper, "upper", true);
-                
-                if (upper < 0)
-                    Rcpp::stop("bounds must be positive");
+                bUpper = true;                           // numOnly = false
+                CleanConvert::convertPrimitive(Rhigh, upper, "upper", false);
             }
         }
     }
@@ -818,18 +805,13 @@ SEXP CombinatoricsRcpp(SEXP Rv, SEXP Rm, SEXP Rrepetition, SEXP RFreqs, SEXP Rlo
     }
     
     if (IsConstrained) {
-        std::vector<double> myLim;
-        CleanConvert::convertVector(Rlim, myLim, "limitConstraints", false);
+        std::vector<double> myLim;       // numOnly = true, checkWhole = false, negPoss = true
+        CleanConvert::convertVector(Rlim, myLim, "limitConstraints", true, false, true);
         
         if (myLim.size() > 2)
             Rcpp::stop("there cannot be more than 2 limitConstraints");
-        else if (myLim.size() == 2)
-            if (myLim[0] == myLim[1])
-                Rcpp::stop("The limitConstraints must be different");
-        
-        for (std::size_t i = 0; i < myLim.size(); ++i)
-            if (Rcpp::NumericVector::is_na(myLim[i]))
-                Rcpp::stop("limitConstraints cannot be NA");
+        else if (myLim.size() == 2 && myLim[0] == myLim[1])
+            Rcpp::stop("The limitConstraints must be different");
         
         std::string mainFun = Rcpp::as<std::string>(f1);
         if (mainFun != "prod" && mainFun != "sum" && mainFun != "mean"
@@ -866,8 +848,8 @@ SEXP CombinatoricsRcpp(SEXP Rv, SEXP Rm, SEXP Rrepetition, SEXP RFreqs, SEXP Rlo
             } else {
                 if (compFunVec[0] == "==" || compFunVec[1] == "==")
                     Rcpp::stop("If comparing against two limitConstraints, the "
-                         "equality comparisonFun (i.e. '==') cannot be used. "
-                         "Instead, use '>=' or '<='.");
+                                "equality comparisonFun (i.e. '==') cannot be used. "
+                                "Instead, use '>=' or '<='.");
                 
                 if (compFunVec[0].substr(0, 1) == compFunVec[1].substr(0, 1))
                     Rcpp::stop("Cannot have two 'less than' comparisonFuns or two 'greater than' "

@@ -12,7 +12,7 @@
 #include <gmp.h>
 #include <Rcpp.h>
 
-void createMPZArray(SEXP v, mpz_t myVec[], unsigned long int sizevec) {
+void createMPZArray(SEXP v, mpz_t *myVec, unsigned long int sizevec) {
     switch (TYPEOF(v)) {
         case RAWSXP: {
             // deserialise the vector. first int is the size.
@@ -38,18 +38,23 @@ void createMPZArray(SEXP v, mpz_t myVec[], unsigned long int sizevec) {
         }
         case REALSXP: {
             double* myDbl = REAL(v);
+            constexpr double Sig53 = 9007199254740991.0;
             
             for (std::size_t j = 0; j < sizevec; ++j) {
                 /// New : numeric '+- Inf' give +- "Large" instead of NA
                 double dj = myDbl[j];
                 
-                if (std::isnan(dj) || static_cast<int64_t>(dj) != dj) {
-                    Rcpp::stop("Must be a whole number. If number is too large for "
-                               "double precision, consider using gmp::as.bigz or "
-                               "passing sampleVec as a character vector.");
-                } else {
-                    mpz_set_d(myVec[j], dj);
-                }
+                if (Rcpp::NumericVector::is_na(dj) || std::isnan(dj))
+                    Rcpp::stop("Each element in sampleVec cannot be NA or NaN");
+                
+                if (std::abs(dj) > Sig53)
+                    Rcpp::stop("Number is too large for double precision. Consider "
+                               "using gmp::as.bigz or passing sampleVec as a character vector.");
+                        
+                if (static_cast<int64_t>(dj) != dj)
+                    Rcpp::stop("Must be a positive whole number.");
+                
+                mpz_set_d(myVec[j], dj);
             }
             
             break;
