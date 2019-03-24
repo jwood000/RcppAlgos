@@ -171,6 +171,7 @@ typeRcpp CombinatoricsConstraints(const int n, const int r, std::vector<typeVect
                                 zPerm[k] = zExpand[zIndex[z[k]]];
                             
                             numIter = static_cast<int>(NumPermsWithRep(zPerm));
+                            
                             if ((numIter + count) > numRows)
                                 numIter = numRows - count;
                             
@@ -258,6 +259,7 @@ typeRcpp CombinatoricsConstraints(const int n, const int r, std::vector<typeVect
                             zPerm = z;
                             
                             numIter = static_cast<int>(NumPermsWithRep(zPerm));
+                            
                             if ((numIter + count) > numRows)
                                 numIter = numRows - count;
                             
@@ -359,7 +361,7 @@ typeRcpp CombinatoricsConstraints(const int n, const int r, std::vector<typeVect
                         } else {
                             if (indexRows + count > numRows)
                                 indexRows = numRows - count;
-    
+                            
                             for (int j = 0, myRow = 0; j < indexRows; ++j, ++count, myRow += r)
                                 for (int k = 0; k < r; ++k)
                                     combinatoricsMatrix(count, k) = v[z[indexMatrix[myRow + k]]];
