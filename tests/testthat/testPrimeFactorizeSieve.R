@@ -32,9 +32,9 @@ test_that("primeFactorizeSieve generates correct numbers", {
 
 test_that("primeFactorizeSieve produces appropriate error messages", {
     expect_error(primeFactorizeSieve(-1), "must be a positive number")
-    expect_error(primeFactorizeSieve(2^53), "must be a positive number less")
-    expect_error(primeFactorizeSieve(2^53, 1), "must be a positive number less")
-    expect_error(primeFactorizeSieve(1, 2^53), "must be a positive number less")
+    expect_error(primeFactorizeSieve(2^53), "must be less than")
+    expect_error(primeFactorizeSieve(2^53, 1), "must be less than")
+    expect_error(primeFactorizeSieve(1, 2^53), "must be less than")
     expect_error(primeFactorizeSieve("10"), "must be of type numeric or integer")
     expect_error(primeFactorizeSieve(2, "10"), "must be of type numeric or integer")
     expect_error(primeFactorizeSieve(100, namedList = "TRUE"), "Only logical values are supported for namedList")

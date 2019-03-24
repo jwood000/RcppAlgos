@@ -45,10 +45,10 @@ test_that("divisorsRcpp generates correct numbers", {
 })
 
 test_that("divisorsRcpp produces appropriate error messages", {
-    expect_error(divisorsRcpp(2^53), "each element must be less than")
-    expect_error(divisorsRcpp(-2^53), "each element must be less than")
+    expect_error(divisorsRcpp(2^53), "The abs value of each element in v must be less than")
+    expect_error(divisorsRcpp(-2^53), "The abs value of each element in v must be less than")
     expect_error(divisorsRcpp("10"), "must be of type numeric or integer")
-    expect_error(divisorsRcpp(c(-2^53, 1:100)), "the abs value of each element must be less than")
+    expect_error(divisorsRcpp(c(-2^53, 1:100)), "The abs value of each element in v must be less than")
     expect_error(divisorsRcpp(100, namedList = "TRUE"), 
                  "Only logical values are supported for namedList")
     expect_error(divisorsRcpp(100:200, nThreads = "9"), "must be of type numeric or integer")

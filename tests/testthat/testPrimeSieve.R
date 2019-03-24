@@ -53,10 +53,10 @@ test_that("primeSieve generates correct numbers", {
 
 test_that("primeSieve produces appropriate error messages", {
     expect_error(primeSieve(-1), "must be a positive")
-    expect_error(primeSieve(1,-1), "must be a positive number less")
-    expect_error(primeSieve(1,2^53), "must be a positive number less")
-    expect_error(primeSieve(2^53), "must be a positive number less")
-    expect_error(primeSieve(2^53, 1), "must be a positive number less")
+    expect_error(primeSieve(1,-1), "must be a positive number")
+    expect_error(primeSieve(1,2^53), "must be less than")
+    expect_error(primeSieve(2^53), "must be less than")
+    expect_error(primeSieve(2^53, 1), "must be less than")
     expect_error(primeSieve(2^4, "1"), "must be of type numeric or integer")
     expect_error(primeSieve("500"), "must be of type numeric or integer")
 })

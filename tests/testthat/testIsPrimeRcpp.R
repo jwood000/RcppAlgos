@@ -29,8 +29,8 @@ test_that("isPrimeRcpp generates correct numbers", {
 })
 
 test_that("isPrimeRcpp produces appropriate error messages", {
-    expect_error(isPrimeRcpp(0), "each element must be positive")
-    expect_error(isPrimeRcpp(-1), "each element must be positive")
-    expect_error(isPrimeRcpp(2^53), "each element must be less than")
+    expect_error(isPrimeRcpp(0), "Each element in v must be a positive number")
+    expect_error(isPrimeRcpp(-1), "Each element in v must be a positive number")
+    expect_error(isPrimeRcpp(2^53), "Each element in v must be less than")
     expect_error(isPrimeRcpp("100000"), "must be of type numeric or integer")
 })

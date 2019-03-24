@@ -202,9 +202,9 @@ test_that("comboSample produces appropriate error messages", {
     expect_error(comboSample(100000, 10, sampleVec = -1L),
                  "Each element in sampleVec must be a postive whole number")
     expect_error(comboSample(100000, 10, sampleVec = NaN),
-                 "Must be a whole number. If number is too large for double precision, consider using gmp::as.bigz or passing sampleVec as a character vector.")
+                 "Each element in sampleVec cannot be NA or NaN")
     expect_error(comboSample(100000, 10, sampleVec = 2^1000),
-                 "Must be a whole number. If number is too large for double precision, consider using gmp::as.bigz or passing sampleVec as a character vector.")
+                 "Number is too large for double precision. Consider using gmp::as.bigz or passing sampleVec as a character vector.")
     testthat::expect_error(comboSample(100000, 10, sampleVec = as.complex(1)),
                  "only logical, numeric or character")
 })
@@ -212,7 +212,7 @@ test_that("comboSample produces appropriate error messages", {
 test_that("permuteSample produces appropriate error messages", {
     expect_error(permuteSample(5, repetition = TRUE), "m and freqs cannot both be NULL")
     expect_error(permuteSample(5, 1:5), "length of m must be 1")
-    expect_error(permuteSample(5, -4), "m must be positive")
+    expect_error(permuteSample(5, -4), "m must be a positive number")
     expect_error(permuteSample(5, 3), "n and sampleVec cannot both be NULL")
     expect_error(permuteSample(5,3,freqs = c(1,2,3,-2,1)), "in freqs must be a positive")
     expect_error(permuteSample(5,3, n = 100), 
@@ -223,7 +223,7 @@ test_that("permuteSample produces appropriate error messages", {
                  "exceeds the maximum number of possible results")
     expect_error(permuteSample(5,freqs = rep(1,6)), "the length of freqs must equal the")
     expect_error(permuteSample(5, 4, sampleVec = "adfs"), 
-                 "Each element in sampleVec must be a positive whole number")
+                 "Each element in sampleVec must be a positive number")
     expect_error(permuteSample(5, 4, sampleVec = 1.1), 
                  "Each element in sampleVec must be a whole number")
     expect_error(permuteSample(100, 10, n = 2^50), "The number of rows cannot exceed")
@@ -242,7 +242,7 @@ test_that("permuteSample produces appropriate error messages", {
                  "nThreads must be of type numeric or integer")
     expect_error(permuteSample(5, 3, n = 5, nThreads = 3.2), "nThreads must be a whole number")
     expect_error(permuteSample(5000, 10, n = 5.5), "n must be a whole number")
-    expect_error(permuteSample(5000, 10, n = NA_integer_), "n must be a whole number")
+    expect_error(permuteSample(5000, 10, n = NA_integer_), "n cannot be NA or NaN")
     expect_error(permuteSample(5000, 10, n = NA), 
                  "This type is not supported! No conversion possible for n")
     expect_error(permuteSample(5000, 10, sampleVec = -1), 
@@ -250,7 +250,7 @@ test_that("permuteSample produces appropriate error messages", {
     expect_error(permuteSample(5000, 10, sampleVec = c(1e9, -1)), 
                  "Each element in sampleVec must be a postive whole number")
     expect_error(permuteSample(NA_integer_, 3, n = 5), 
-                 "If v is not a character and of length 1, it must be a whole number")
+                 "If v is not a character and of length 1, it cannot be NA or NaN")
     expect_error(permuteSample(1000, 20, sampleVec = c(NA, "1234567890")),
                  "Each element in sampleVec must be a postive whole number")
 })

@@ -346,7 +346,7 @@ test_that("permuteGeneral produces appropriate error messages", {
                  "must be passed as a character")
     expect_error(permuteGeneral(9,4,TRUE,constraintFun = "sum",
                                 comparisonFun = "<",limitConstraints = 10,upper = -1),
-                 "must be positive")
+                 "upper must be a positive number")
     expect_error(permuteGeneral(170,7,FALSE,constraintFun = "sum",
                                 comparisonFun = "<",limitConstraints = 100),
                  "The number of rows cannot exceed")
@@ -363,7 +363,7 @@ test_that("permuteGeneral produces appropriate error messages", {
 
     expect_error(permuteGeneral(5), "m and freqs cannot both be NULL")
     expect_error(permuteGeneral(5, 1:5), "length of m must be 1")
-    expect_error(permuteGeneral(5, -5), "m must be positive")
+    expect_error(permuteGeneral(5, -5), "m must be a positive number")
     expect_error(permuteCount(5, 5, "TRUE"), "Only logical values are supported for repetition")
     expect_error(permuteGeneral(5, 5, keepResults = "TRUE"), 
                  "Only logical values are supported for keepResults")
