@@ -612,19 +612,13 @@ SEXP CombinatoricsRcpp(SEXP Rv, SEXP Rm, SEXP Rrepetition, SEXP RFreqs, SEXP Rlo
         if (IsGmp) {
             if (!Rf_isNull(Rlow)) {
                 bLower = true;
-                createMPZArray(Rlow, lowerMpz, 1);
+                createMPZArray(Rlow, lowerMpz, 1, "lower");
                 mpz_sub_ui(lowerMpz[0], lowerMpz[0], 1);
-                
-                if (mpz_cmp_ui(lowerMpz[0], 0) < 0)
-                    Rcpp::stop("bounds must be positive");
             }
             
             if (!Rf_isNull(Rhigh)) {
                 bUpper = true;
-                createMPZArray(Rhigh, upperMpz, 1);
-                
-                if (mpz_cmp_ui(upperMpz[0], 0) < 0)
-                    Rcpp::stop("bounds must be positive");
+                createMPZArray(Rhigh, upperMpz, 1, "upper");
             }
         } else { 
             if (!Rf_isNull(Rlow)) {
