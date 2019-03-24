@@ -52,7 +52,7 @@ namespace CleanConvert {
                         Rcpp::stop(nameOfObject + " must be a positive number");
                     
                     if (dblInp > maxType)
-                        Rcpp::stop(nameOfObject + " must be less than " + std::to_string(maxType));
+                        Rcpp::stop(nameOfObject + " must be less than or equal to " + std::to_string(maxType));
                     
                     if (dblInp > Significand53)
                         Rcpp::stop(nameOfObject + " must be less than 2^53");
@@ -72,7 +72,7 @@ namespace CleanConvert {
                 
                 mpz_t temp[1];
                 mpz_init(temp[0]);
-                createMPZArray(input, temp, 1);
+                createMPZArray(input, temp, 1, nameOfObject, negPoss);
                 double dblTemp = mpz_get_d(temp[0]);
                 
                 if (Rcpp::NumericVector::is_na(dblTemp) || std::isnan(dblTemp))
@@ -86,7 +86,7 @@ namespace CleanConvert {
                         Rcpp::stop(nameOfObject + " must be a positive number");
                     
                     if (dblTemp > maxType)
-                        Rcpp::stop(nameOfObject + " must be less than " + std::to_string(maxType));
+                        Rcpp::stop(nameOfObject + " must be less than or equal to " + std::to_string(maxType));
                     
                     if (dblTemp > Significand53)
                         Rcpp::stop(nameOfObject + " must be less than 2^53");
@@ -130,7 +130,7 @@ namespace CleanConvert {
                             Rcpp::stop("Each element in " + nameOfObject + " must be a positive number");
                         
                         if (vecCheck[i] > maxType)
-                            Rcpp::stop("Each element in " + nameOfObject + " must be less than " + std::to_string(maxType));
+                            Rcpp::stop("Each element in " + nameOfObject + " must be less than or equal to " + std::to_string(maxType));
                         
                         if (vecCheck[i] > Significand53)
                             Rcpp::stop("Each element in " + nameOfObject + " must be less than 2^53");
@@ -163,7 +163,7 @@ namespace CleanConvert {
                 for (int i = 0; i < total; ++i)
                     mpz_init(temp[i]);
                 
-                createMPZArray(input, temp.get(), total);
+                createMPZArray(input, temp.get(), total, nameOfObject, negPoss);
                 std::vector<double> dblTemp(total);
                 result.resize(total);
                 
@@ -181,7 +181,7 @@ namespace CleanConvert {
                             Rcpp::stop("Each element in " + nameOfObject + " must be a positive number");
                         
                         if (dblTemp[i] > maxType)
-                            Rcpp::stop("Each element in " + nameOfObject + " must be less than " + std::to_string(maxType));
+                            Rcpp::stop("Each element in " + nameOfObject + " must be less than or equal to " + std::to_string(maxType));
                         
                         if (dblTemp[i] > Significand53)
                             Rcpp::stop("Each element in " + nameOfObject + " must be less than 2^53");

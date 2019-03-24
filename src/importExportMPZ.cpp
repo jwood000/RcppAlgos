@@ -12,11 +12,15 @@
 #include <gmp.h>
 #include <Rcpp.h>
 
-void createMPZArray(SEXP v, mpz_t *myVec, unsigned long int sizevec) {
-    switch (TYPEOF(v)) {
+void createMPZArray(SEXP input, mpz_t *myVec, const unsigned long int sizevec, 
+                    std::string nameOfObject, bool negPoss) {
+    
+    const std::string suffix = (sizevec > 1) ? "Each element in " + nameOfObject : nameOfObject;
+    
+    switch (TYPEOF(input)) {
         case RAWSXP: {
             // deserialise the vector. first int is the size.
-            const char* raw = (char*)RAW(v);
+            const char* raw = (char*)RAW(input);
             const unsigned long int intSize = sizeof(int);
             const unsigned long int numb = 8 * intSize;
             int pos = intSize; // position in raw[]. Starting after header.
@@ -26,7 +30,13 @@ void createMPZArray(SEXP v, mpz_t *myVec, unsigned long int sizevec) {
                 
                 if (r[0] > 0) {
                     mpz_import(myVec[i], r[0], 1, intSize, 0, 0, (void*)&(r[2]));
-                    if(r[1] == -1) mpz_neg(myVec[i], myVec[i]);
+                    
+                    if(r[1] == -1) {
+                        if (negPoss)
+                            mpz_neg(myVec[i], myVec[i]);
+                        else
+                            Rcpp::stop(suffix + " must be a positive number");
+                    }
                 } else {
                     mpz_set_si(myVec[i], 0);
                 }
@@ -37,48 +47,71 @@ void createMPZArray(SEXP v, mpz_t *myVec, unsigned long int sizevec) {
             break;
         }
         case REALSXP: {
-            double* myDbl = REAL(v);
+            std::vector<double> dblVec = Rcpp::as<std::vector<double>>(input);
             constexpr double Sig53 = 9007199254740991.0;
             
             for (std::size_t j = 0; j < sizevec; ++j) {
-                /// New : numeric '+- Inf' give +- "Large" instead of NA
-                double dj = myDbl[j];
+                if (Rcpp::NumericVector::is_na(dblVec[j]) || std::isnan(dblVec[j]))
+                    Rcpp::stop(suffix + " cannot be NA or NaN");
                 
-                if (Rcpp::NumericVector::is_na(dj) || std::isnan(dj))
-                    Rcpp::stop("Each element in sampleVec cannot be NA or NaN");
-                
-                if (std::abs(dj) > Sig53)
-                    Rcpp::stop("Number is too large for double precision. Consider "
-                               "using gmp::as.bigz or passing sampleVec as a character vector.");
+                if (negPoss) {
+                    if (std::abs(dblVec[j]) > Sig53) {
+                        Rcpp::stop("Number is too large for double precision. Consider "
+                                       "using gmp::as.bigz or as.character for " + nameOfObject);
+                    }
+                } else {
+                    if (dblVec[j] < 1)
+                        Rcpp::stop(suffix + " must be a positive number");
+                    
+                    if (dblVec[j] > Sig53) {
+                        Rcpp::stop("Number is too large for double precision. Consider "
+                                       "using gmp::as.bigz or as.character for " + nameOfObject);
+                    }
+                }
                         
-                if (static_cast<int64_t>(dj) != dj)
-                    Rcpp::stop("Must be a positive whole number.");
+                if (static_cast<int64_t>(dblVec[j]) != dblVec[j])
+                    Rcpp::stop(suffix + " must be a whole number.");
                 
-                mpz_set_d(myVec[j], dj);
+                mpz_set_d(myVec[j], dblVec[j]);
             }
             
             break;
         }
         case INTSXP:
         case LGLSXP: {
-            int* myInt = INTEGER(v);
-            for (std::size_t j = 0; j < sizevec; ++j)
-                mpz_set_si(myVec[j], myInt[j]);
+            std::vector<int> intVec = Rcpp::as<std::vector<int>>(input);
+            std::vector<double> dblVec = Rcpp::as<std::vector<double>>(input);
+            
+            for (std::size_t j = 0; j < sizevec; ++j) {
+                if (Rcpp::NumericVector::is_na(dblVec[j]) || std::isnan(dblVec[j]))
+                    Rcpp::stop(suffix + " cannot be NA or NaN");
+                
+                if (!negPoss)
+                    if (intVec[j] < 1)
+                        Rcpp::stop(suffix + " must be a positive number");
+                
+                mpz_set_si(myVec[j], intVec[j]);
+            }
             
             break;
         }
         case STRSXP: {
             for (std::size_t i = 0; i < sizevec; ++i) {
-                if (STRING_ELT(v, i) == NA_STRING)
-                    mpz_set_si(myVec[i], 0);
-                else
-                    mpz_set_str(myVec[i], CHAR(STRING_ELT(v, i)), 10);
+                if (STRING_ELT(input, i) == NA_STRING) {
+                    Rcpp::stop(suffix + " cannot be NA or NaN");
+                } else {
+                    mpz_set_str(myVec[i], CHAR(STRING_ELT(input, i)), 10);
+                    
+                    if (!negPoss)
+                        if (mpz_sgn(myVec[i]) < 1)
+                            Rcpp::stop(suffix + " must be a positive whole number");
+                }
             }
             
             break;
         }
         default:
-            Rcpp::stop("only logical, numeric or character (atomic) vectors can be coerced to 'bigz'");
+            Rcpp::stop("This type is not supported! No conversion possible for " + nameOfObject);
     }
 }
 
