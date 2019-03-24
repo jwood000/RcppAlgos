@@ -5,6 +5,7 @@ test_that("comboSample produces correct results", {
     expect_equal(comboSample(5, 3, sampleVec = 1:10), comboGeneral(5, 3))
     expect_equal(nrow(comboSample(5, 3, n = 5, seed = 2)), 5)
     expect_equal(as.vector(comboSample(1, 1, n = 1)), 1)
+    expect_equal(class(comboSample(c(1:5, NA), 5, n = 3)[1, ]), "numeric")
     
     totalCombs = comboCount(5, 8, freqs = rep(3, 5))
     expect_equal(comboSample(5, 8, freqs = rep(3, 5), sampleVec = 1:totalCombs), 
@@ -77,6 +78,7 @@ test_that("permuteSample produces correct results", {
     set.seed(2)
     expect_equal(nrow(permuteSample(5, 3, n = 5)), 5)
     expect_equal(as.vector(permuteSample(1, 1, n = 1)), 1)
+    expect_equal(ncol(permuteSample(5, 20, freqs = 1:5, n = 3)), sum(1:5))
 
     expect_equal(permuteSample(5, 6, freqs = rep(2, 5),
                              sampleVec = 1:(permuteCount(5, 6, freqs = rep(2, 5)))),
@@ -197,19 +199,20 @@ test_that("comboSample produces appropriate error messages", {
     expect_error(comboSample(5,3, comboSample(5,3, sampleVec = 1:200)), "exceeds the maximum number of possible results")
     expect_error(comboSample(5,freqs = rep(1,6)), "the length of freqs must equal the")
     expect_error(comboSample(5,3, n = 5, FUN = "sum"), "FUN must be a function!")
-    expect_error(comboSample(5,3, n = "5"), "n must be a number")
+    expect_error(comboSample(5,3, n = "5"), "n must be of type numeric or integer")
     expect_error(comboSample(5,3, n = 1:5), "length of n must be 1")
     expect_error(comboSample(100000, 10, sampleVec = -1L),
-                 "Each element in sampleVec must be a postive whole number")
+                 "sampleVec must be a positive number")
     expect_error(comboSample(100000, 10, sampleVec = NaN),
-                 "Each element in sampleVec cannot be NA or NaN")
+                 "sampleVec cannot be NA or NaN")
     expect_error(comboSample(100000, 10, sampleVec = 2^1000),
-                 "Number is too large for double precision. Consider using gmp::as.bigz or passing sampleVec as a character vector.")
-    testthat::expect_error(comboSample(100000, 10, sampleVec = as.complex(1)),
-                 "only logical, numeric or character")
+                 "Number is too large for double precision. Consider using gmp::as.bigz or as.character for sampleVec")
+    expect_error(comboSample(100000, 10, sampleVec = as.complex(1)),
+                 "This type is not supported! No conversion possible for sampleVec")
 })
 
 test_that("permuteSample produces appropriate error messages", {
+    expect_equal(permuteSample(5, 6, n = 3), "m must be less than or equal to the length of v")
     expect_error(permuteSample(5, repetition = TRUE), "m and freqs cannot both be NULL")
     expect_error(permuteSample(5, 1:5), "length of m must be 1")
     expect_error(permuteSample(5, -4), "m must be a positive number")
@@ -217,16 +220,18 @@ test_that("permuteSample produces appropriate error messages", {
     expect_error(permuteSample(5,3,freqs = c(1,2,3,-2,1)), "in freqs must be a positive")
     expect_error(permuteSample(5,3, n = 100), 
                  "n exceeds the maximum number of possible results")
-    expect_error(permuteSample(5,3, n = "5"), "n must be a number")
+    expect_error(permuteSample(5,3, n = "5"), "n must be of type numeric or integer")
     expect_error(permuteSample(5,3, n = 1:5), "length of n must be 1")
     expect_error(permuteSample(5,3, permuteSample(5,3, sampleVec = 1:200)), 
                  "exceeds the maximum number of possible results")
     expect_error(permuteSample(5,freqs = rep(1,6)), "the length of freqs must equal the")
     expect_error(permuteSample(5, 4, sampleVec = "adfs"), 
-                 "Each element in sampleVec must be a positive number")
+                 "sampleVec must be a positive whole number")
     expect_error(permuteSample(5, 4, sampleVec = 1.1), 
                  "Each element in sampleVec must be a whole number")
-    expect_error(permuteSample(100, 10, n = 2^50), "The number of rows cannot exceed")
+    expect_error(permuteSample(5000, 40, sampleVec = 1.1),
+                 "sampleVec must be a whole number")
+    expect_error(permuteSample(100, 10, n = 2^50), "n must be less than or equal to 2147483647")
     expect_error(permuteSample(100, 10, n = -200), "n must be a positive number")
     expect_error(permuteSample(100, 10, sampleVec = c("62815650955529472001")),
                  "One or more of the requested values in sampleVec")
@@ -246,11 +251,11 @@ test_that("permuteSample produces appropriate error messages", {
     expect_error(permuteSample(5000, 10, n = NA), 
                  "This type is not supported! No conversion possible for n")
     expect_error(permuteSample(5000, 10, sampleVec = -1), 
-                 "Each element in sampleVec must be a postive whole number")
+                 "sampleVec must be a positive number")
     expect_error(permuteSample(5000, 10, sampleVec = c(1e9, -1)), 
-                 "Each element in sampleVec must be a postive whole number")
+                 "Each element in sampleVec must be a positive number")
     expect_error(permuteSample(NA_integer_, 3, n = 5), 
                  "If v is not a character and of length 1, it cannot be NA or NaN")
     expect_error(permuteSample(1000, 20, sampleVec = c(NA, "1234567890")),
-                 "Each element in sampleVec must be a postive whole number")
+                 "Each element in sampleVec cannot be NA or NaN")
 })
