@@ -78,19 +78,19 @@ bool greaterEqlLessEql(const stdType &x, const std::vector<stdType> &y) {return 
 
 
 template <typename stdType>
-Rcpp::XPtr<funcPtr<stdType> > putFunPtrInXPtr(std::string fstr) {
+Rcpp::XPtr<funcPtr<stdType>> putFunPtrInXPtr(std::string fstr) {
     if (fstr == "prod")
-        return(Rcpp::XPtr<funcPtr<stdType> >(new funcPtr<stdType>(&prod)));
+        return(Rcpp::XPtr<funcPtr<stdType>>(new funcPtr<stdType>(&prod)));
     else if (fstr == "sum")
-        return(Rcpp::XPtr<funcPtr<stdType> >(new funcPtr<stdType>(&sum)));
+        return(Rcpp::XPtr<funcPtr<stdType>>(new funcPtr<stdType>(&sum)));
     else if (fstr == "mean")
-        return(Rcpp::XPtr<funcPtr<stdType> >(new funcPtr<stdType>(&mean)));
+        return(Rcpp::XPtr<funcPtr<stdType>>(new funcPtr<stdType>(&mean)));
     else if (fstr == "max")
-        return(Rcpp::XPtr<funcPtr<stdType> >(new funcPtr<stdType>(&max)));
+        return(Rcpp::XPtr<funcPtr<stdType>>(new funcPtr<stdType>(&max)));
     else if (fstr == "min")
-        return(Rcpp::XPtr<funcPtr<stdType> >(new funcPtr<stdType>(&min)));
+        return(Rcpp::XPtr<funcPtr<stdType>>(new funcPtr<stdType>(&min)));
     else
-        return Rcpp::XPtr<funcPtr<stdType> >(R_NilValue); // runtime error as NULL no XPtr
+        return Rcpp::XPtr<funcPtr<stdType>>(R_NilValue); // runtime error as NULL no XPtr
 }
 
 const std::vector<std::string> compVec = {"<", ">", "<=", ">=", "==",
@@ -108,7 +108,7 @@ enum myComps {
 };
 
 template <typename stdType>
-Rcpp::XPtr<compPtr<stdType> > putCompPtrInXPtr(std::string fstr) {
+Rcpp::XPtr<compPtr<stdType>> putCompPtrInXPtr(std::string fstr) {
     
     std::vector<std::string>::const_iterator it = std::find(compVec.begin(), 
                                                             compVec.end(), fstr);
@@ -116,28 +116,28 @@ Rcpp::XPtr<compPtr<stdType> > putCompPtrInXPtr(std::string fstr) {
     
     switch(myIndex) {
         case LT:
-            return(Rcpp::XPtr<compPtr<stdType> >(new compPtr<stdType>(&less)));
+            return(Rcpp::XPtr<compPtr<stdType>>(new compPtr<stdType>(&less)));
         case GT:
-            return(Rcpp::XPtr<compPtr<stdType> >(new compPtr<stdType>(&greater)));
+            return(Rcpp::XPtr<compPtr<stdType>>(new compPtr<stdType>(&greater)));
         case LE:
-            return(Rcpp::XPtr<compPtr<stdType> >(new compPtr<stdType>(&lessEqual)));
+            return(Rcpp::XPtr<compPtr<stdType>>(new compPtr<stdType>(&lessEqual)));
         case GE:
-            return(Rcpp::XPtr<compPtr<stdType> >(new compPtr<stdType>(&greaterEqual)));
+            return(Rcpp::XPtr<compPtr<stdType>>(new compPtr<stdType>(&greaterEqual)));
         case EQ:
             if (std::is_integral<stdType>::value)
-                return(Rcpp::XPtr<compPtr<stdType> >(new compPtr<stdType>(&equalInt)));
+                return(Rcpp::XPtr<compPtr<stdType>>(new compPtr<stdType>(&equalInt)));
             else
-                return(Rcpp::XPtr<compPtr<stdType> >(new compPtr<stdType>(&equalDbl)));
+                return(Rcpp::XPtr<compPtr<stdType>>(new compPtr<stdType>(&equalDbl)));
         case GTLT:
-            return(Rcpp::XPtr<compPtr<stdType> >(new compPtr<stdType>(&greaterLess)));
+            return(Rcpp::XPtr<compPtr<stdType>>(new compPtr<stdType>(&greaterLess)));
         case GELT:
-            return(Rcpp::XPtr<compPtr<stdType> >(new compPtr<stdType>(&greaterEqlLess)));    
+            return(Rcpp::XPtr<compPtr<stdType>>(new compPtr<stdType>(&greaterEqlLess)));    
         case GTLE:
-            return(Rcpp::XPtr<compPtr<stdType> >(new compPtr<stdType>(&greaterLessEql)));
+            return(Rcpp::XPtr<compPtr<stdType>>(new compPtr<stdType>(&greaterLessEql)));
         case GELE:
-            return(Rcpp::XPtr<compPtr<stdType> >(new compPtr<stdType>(&greaterEqlLessEql)));
+            return(Rcpp::XPtr<compPtr<stdType>>(new compPtr<stdType>(&greaterEqlLessEql)));
         default:
-            return Rcpp::XPtr<compPtr<stdType> >(R_NilValue); // runtime error as NULL no XPtr
+            return Rcpp::XPtr<compPtr<stdType>>(R_NilValue); // runtime error as NULL no XPtr
     }
 }
 
