@@ -59,7 +59,7 @@ namespace PrimeSieve {
     }
     
     template <typename typePrime>
-    void PrimeSieveSmall(const int_fast64_t minNum, const int_fast64_t maxNum,
+    void PrimeSieveSmall(int_fast64_t minNum, int_fast64_t maxNum,
                          const std::vector<int_fast64_t> &sievePrimes,
                          std::vector<typePrime> &myPrimes) {
         
@@ -195,7 +195,7 @@ namespace PrimeSieve {
     }
     
     template <typename typePrime>
-    void PrimeSieveMedium(const int_fast64_t minNum, const int_fast64_t maxNum, 
+    void PrimeSieveMedium(int_fast64_t minNum, int_fast64_t maxNum, 
                           const std::vector<int_fast64_t> &sievePrimes,
                           std::vector<typePrime> &myPrimes, std::size_t nSegOne) {
         
@@ -320,10 +320,10 @@ namespace PrimeSieve {
     }
     
     template <typename typePrime>
-    void PrimeSieveBig(const int_fast64_t minNum, const int_fast64_t maxNum, 
+    void PrimeSieveBig(int_fast64_t minNum, int_fast64_t maxNum, 
                        const std::vector<int_fast64_t> &svPriOne,
                        const std::vector<int_fast64_t> &svPriTwo, 
-                       std::vector<typePrime> &myPrimes, const int nBigSegs,
+                       std::vector<typePrime> &myPrimes, int nBigSegs,
                        const std::vector<char> &check30030) {
         
         const int_fast64_t segSize = static_cast<int_fast64_t>(nBigSegs * NUM30030);
@@ -571,16 +571,17 @@ namespace PrimeSieve {
             
             std::size_t ind = 0u;
             const int limitOne = static_cast<int>(nBigSegs * segUnitSize);
-            
-            // Get the primes that are guaranteed to mark an
-            // index in the the every segment interval
-            for (; (2 * svPriMain[ind]) < limitOne; ++ind)
+            const std::size_t svMainSize = svPriMain.size();
+
+            // Get the primes that are guaranteed to
+            // mark an index in every segment interval
+            for (; (2 * svPriMain[ind]) < limitOne && ind < svMainSize; ++ind)
                 svPriOne.push_back(svPriMain[ind]);
-            
+
             // Get the rest
-            for (; ind < svPriMain.size(); ++ind)
+            for (; ind < svMainSize; ++ind)
                 svPriTwo.push_back(svPriMain[ind]);
-            
+
             for (std::size_t i = 0, ind = 0; i < SZ_WHEEL30030; ind += ARR_WHEEL30030[i], ++i)
                 check30030[ind] = 0;
             
@@ -639,12 +640,28 @@ namespace PrimeSieve {
             pool.join();
             
         } else {
-            if (myMax > medCut)
-                PrimeSieveBig(myMin, myMax, svPriOne, svPriTwo, primes, nBigSegs, check30030);
-            else if (myMax > smallCut)
-                PrimeSieveMedium(myMin, myMax, svPriMain, primes, nBigSegs);
-            else
+            if (myMax > medCut) {
+                // PrimeSieveBig is not meant for small values, so we first get them with
+                // PrimeSieveMed. N.B. Cases that meet this criteria will take an extremely
+                // long time and also require a huge amount of memory. We also don't care
+                // to use the more efficient PrimeSieveSmall if the user chooses a minimum
+                // value less than smallCut, as efficiency at this point is not a concern.
+                if (myMin < medCut) {
+                    PrimeSieveMedium(myMin, medCut, svPriMain, primes, nBigSegs);
+                    PrimeSieveBig(medCut, myMax, svPriOne, svPriTwo, primes, nBigSegs, check30030);
+                } else {
+                    PrimeSieveBig(myMin, myMax, svPriOne, svPriTwo, primes, nBigSegs, check30030);
+                }
+            } else if (myMax > smallCut) {
+                if (myMin < smallCut) {
+                    PrimeSieveSmall(myMin, smallCut, svPriMain, primes);
+                    PrimeSieveMedium(smallCut, myMax, svPriMain, primes, nBigSegs);
+                } else {
+                    PrimeSieveMedium(myMin, myMax, svPriMain, primes, nBigSegs);
+                }
+            } else {
                 PrimeSieveSmall(myMin, myMax, svPriMain, primes);
+            }
         }
     }
 }
