@@ -14,9 +14,8 @@ const std::vector<std::string> compSpecial = {"==", ">,<", ">=,<", ">,<=", ">=,<
 const std::vector<std::string> compHelper = {"<=", "<", "<", "<=", "<="};
 
 template <typename typeRcpp>
-typeRcpp SubMat(typeRcpp m, int n) {
-    int k = m.ncol();
-    typeRcpp subMatrix = Rcpp::no_init_matrix(n, k);
+typeRcpp SubMat(const typeRcpp &m, int n) {
+    typeRcpp subMatrix = Rcpp::no_init_matrix(n, m.ncol());
     
     for (int i = 0; i < n; ++i)
         subMatrix(i, Rcpp::_) = m(i, Rcpp::_);

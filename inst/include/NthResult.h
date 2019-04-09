@@ -4,17 +4,17 @@
 #include <vector>
 #include <gmp.h>
 
-std::vector<int> nthCombination(const int n, const int r, double myIndex, bool isRep,
+std::vector<int> nthCombination(int n, int r, double myIndex, bool isRep,
                                 bool isMult, std::vector<int> Reps);
 
-std::vector<int> nthPermutation(const int n, const int r, double myIndex, bool isRep,
+std::vector<int> nthPermutation(int n, int r, double myIndex, bool isRep,
                                 bool isMult, std::vector<int> Reps, std::vector<int> freqs,
                                 bool isStarter = false);
 
-std::vector<int> nthCombinationGmp(const int n, const int r, mpz_t myIndex, bool isRep,
+std::vector<int> nthCombinationGmp(int n, int r, mpz_t myIndex, bool isRep,
                                    bool isMult, std::vector<int> Reps);
 
-std::vector<int> nthPermutationGmp(const int n, const int r, mpz_t myIndex, bool isRep,
+std::vector<int> nthPermutationGmp(int n, int r, mpz_t myIndex, bool isRep,
                                    bool isMult, std::vector<int> Reps, std::vector<int> freqs,
                                    bool isStarter = false);
 

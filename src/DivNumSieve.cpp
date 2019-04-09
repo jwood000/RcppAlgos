@@ -5,7 +5,7 @@
 #include "CleanConvert.h"
 
 template <typename typeInt>
-inline typeInt getStartingIndex (const typeInt lowerB, const typeInt step) {
+inline typeInt getStartingIndex (typeInt lowerB, typeInt step) {
     
     if (step >= lowerB)
         return (2 * step - lowerB);
@@ -17,8 +17,7 @@ inline typeInt getStartingIndex (const typeInt lowerB, const typeInt step) {
 }
 
 template <typename typeInt, typename typeReturn>
-void NumDivisorsSieve(const typeInt m, const typeInt n, 
-                      const typeInt offsetStrt, typeReturn &numFacs) {
+void NumDivisorsSieve(typeInt m, typeInt n, typeInt offsetStrt, typeReturn &numFacs) {
     
     const typeInt myRange = offsetStrt + (n - m) + 1;
     const typeInt sqrtBound = static_cast<typeInt>(std::sqrt(n));
@@ -41,7 +40,7 @@ void NumDivisorsSieve(const typeInt m, const typeInt n,
 }
 
 template <typename typeInt, typename typeReturn>
-void DivisorsSieve(const typeInt m, const typeReturn retN, const typeInt offsetStrt,
+void DivisorsSieve(typeInt m, typeReturn retN, typeInt offsetStrt,
                    std::vector<std::vector<typeReturn>> &MyDivList) {
     
     const typeInt n = static_cast<typeInt>(retN);
@@ -114,10 +113,9 @@ void DivisorsSieve(const typeInt m, const typeReturn retN, const typeInt offsetS
 }
 
 template <typename typeInt, typename typeReturn, typename typeDivCount>
-void DivisorMaster(const typeInt myMin, const typeReturn myMax,
-                   bool bDivSieve, typeDivCount &DivCountV,
-                   std::vector<std::vector<typeReturn>> &MyDivList,
-                   const std::size_t myRange, int nThreads = 1, int maxThreads = 1) {
+void DivisorMaster(typeInt myMin, typeReturn myMax, bool bDivSieve,
+                   typeDivCount &DivCountV, std::vector<std::vector<typeReturn>> &MyDivList,
+                   std::size_t myRange, int nThreads = 1, int maxThreads = 1) {
     
     bool Parallel = false;
     typeInt offsetStrt = 0;
@@ -171,7 +169,7 @@ void DivisorMaster(const typeInt myMin, const typeReturn myMax,
 }
 
 template <typename typeInt, typename typeReturn>
-SEXP TheGlue(const typeInt myMin, const typeReturn myMax, bool bDivSieve,
+SEXP TheGlue(typeInt myMin, typeReturn myMax, bool bDivSieve,
              bool keepNames, int nThreads, int maxThreads) {
     
     const std::size_t myRange = (myMax - myMin) + 1;

@@ -14,11 +14,10 @@ namespace MotleyPrimes {
     // function is a power of prime and requires an additional check
     // (i.e. else if (myPrime < lowerB)).
     template <typename typeInt>
-    inline typeInt getStartIndexPowP(const typeInt lowerB, const typeInt step, 
-                                     const typeInt myPrime) {
+    inline typeInt getStartIndexPowP(typeInt lowerB, typeInt step, typeInt myPrime) {
         
         typeInt retStrt;
-        const typeInt remTest = lowerB % step;
+        typeInt remTest = lowerB % step;
         
         if (remTest == 0) {
             retStrt = 0;
@@ -32,7 +31,7 @@ namespace MotleyPrimes {
     }
 
     template <typename typeInt>
-    void PrimeFactorizationSieve(const typeInt m, const typeInt retN, const typeInt offsetStrt,
+    void PrimeFactorizationSieve(typeInt m, typeInt retN, typeInt offsetStrt,
                                  const std::vector<typeInt> &primes,
                                  std::vector<std::vector<typeInt>> &primeList) {
         
@@ -132,7 +131,7 @@ namespace MotleyPrimes {
     }
     
     template <typename typeInt, typename typeReturn, typename typeRcpp>
-    void EulerPhiSieve(const typeInt m, const typeReturn retN, const typeInt offsetStrt,
+    void EulerPhiSieve(typeInt m, typeReturn retN, typeInt offsetStrt,
                        const std::vector<typeInt> &primes,
                        std::vector<typeInt> &numSeq,
                        typeRcpp &EulerPhis) {

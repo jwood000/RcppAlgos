@@ -12,7 +12,7 @@
 #include <gmp.h>
 #include <Rcpp.h>
 
-void createMPZArray(SEXP input, mpz_t *myVec, const unsigned long int sizevec, 
+void createMPZArray(SEXP input, mpz_t *myVec, unsigned long int sizevec, 
                     std::string nameOfObject, bool negPoss) {
     
     const std::string suffix = (sizevec > 1) ? "Each element in " + nameOfObject : nameOfObject;

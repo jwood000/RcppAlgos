@@ -2,10 +2,10 @@
 #define CONSTRAINTS_UTILS_H
 
 template <typename stdType>
-using funcPtr = stdType (*)(const std::vector<stdType> &v, const unsigned long int &mySize);
+using funcPtr = stdType (*)(const std::vector<stdType> &v, unsigned long int mySize);
 
 template <typename stdType>
-using compPtr = bool (*)(const stdType &x, const std::vector<stdType> &y);
+using compPtr = bool (*)(stdType x, const std::vector<stdType> &y);
 
 // Below, we define five functions that will be utilized
 // as constraint functions. We also define five comparison
@@ -14,67 +14,67 @@ using compPtr = bool (*)(const stdType &x, const std::vector<stdType> &y);
 // this Rcpp Gallery (http://gallery.rcpp.org/articles/passing-cpp-function-pointers/)
 
 template <typename stdType>
-stdType prod(const std::vector<stdType> &v, const unsigned long int &mySize) {
+stdType prod(const std::vector<stdType> &v, unsigned long int mySize) {
     stdType myProduct = 1;
     for (std::size_t i = 0; i < mySize; ++i) {myProduct *= v[i];}
     return (myProduct);
 }
 
 template <typename stdType>
-stdType sum(const std::vector<stdType> &v, const unsigned long int &mySize) {
+stdType sum(const std::vector<stdType> &v, unsigned long int mySize) {
     return (std::accumulate(v.cbegin(), v.cend(), static_cast<stdType>(0)));
 }
 
 template <typename stdType>
-stdType mean(const std::vector<stdType> &v, const unsigned long int &mySize) {
+stdType mean(const std::vector<stdType> &v, unsigned long int mySize) {
     double mySum = sum(v, mySize);
     return (mySum / mySize);
 }
 
 template <typename stdType>
-stdType max(const std::vector<stdType> &v, const unsigned long int &mySize) {
+stdType max(const std::vector<stdType> &v, unsigned long int mySize) {
     return (*std::max_element(v.cbegin(), v.cend()));
 }
 
 template <typename stdType>
-stdType min(const std::vector<stdType> &v, const unsigned long int &mySize) {
+stdType min(const std::vector<stdType> &v, unsigned long int mySize) {
     return (*std::min_element(v.cbegin(), v.cend()));
 }
 
 // Standard comparison functions
 template <typename stdType>
-bool less(const stdType &x, const std::vector<stdType> &y) {return x < y[0];}
+bool less(stdType x, const std::vector<stdType> &y) {return x < y[0];}
 
 template <typename stdType>
-bool greater(const stdType &x, const std::vector<stdType> &y) {return x > y[0];}
+bool greater(stdType x, const std::vector<stdType> &y) {return x > y[0];}
 
 template <typename stdType>
-bool lessEqual(const stdType &x, const std::vector<stdType> &y) {return x <= y[0];}
+bool lessEqual(stdType x, const std::vector<stdType> &y) {return x <= y[0];}
 
 template <typename stdType>
-bool greaterEqual(const stdType &x, const std::vector<stdType> &y) {return x >= y[0];}
+bool greaterEqual(stdType x, const std::vector<stdType> &y) {return x >= y[0];}
 
 template <typename stdType>
-bool equalDbl(const stdType &x, const std::vector<stdType> &y) {
+bool equalDbl(stdType x, const std::vector<stdType> &y) {
     return std::abs(x - y[0]) <= std::numeric_limits<double>::epsilon();
 }
 
 template <typename stdType>
-bool equalInt(const stdType &x, const std::vector<stdType> &y) {return x == y[0];}
+bool equalInt(stdType x, const std::vector<stdType> &y) {return x == y[0];}
 
 
 // Compound comparison functions for finding values between a given range
 template <typename stdType>
-bool greaterLess(const stdType &x, const std::vector<stdType> &y) {return (x < y[0]) && (x > y[1]);}
+bool greaterLess(stdType x, const std::vector<stdType> &y) {return (x < y[0]) && (x > y[1]);}
 
 template <typename stdType>
-bool greaterEqlLess(const stdType &x, const std::vector<stdType> &y) {return (x < y[0]) && (x >= y[1]);}
+bool greaterEqlLess(stdType x, const std::vector<stdType> &y) {return (x < y[0]) && (x >= y[1]);}
 
 template <typename stdType>
-bool greaterLessEql(const stdType &x, const std::vector<stdType> &y) {return x <= y[0] && x > y[1];}
+bool greaterLessEql(stdType x, const std::vector<stdType> &y) {return x <= y[0] && x > y[1];}
 
 template <typename stdType>
-bool greaterEqlLessEql(const stdType &x, const std::vector<stdType> &y) {return x <= y[0] && x >= y[1];}
+bool greaterEqlLessEql(stdType x, const std::vector<stdType> &y) {return x <= y[0] && x >= y[1];}
 
 
 template <typename stdType>
@@ -110,9 +110,9 @@ enum myComps {
 template <typename stdType>
 Rcpp::XPtr<compPtr<stdType>> putCompPtrInXPtr(std::string fstr) {
     
-    std::vector<std::string>::const_iterator it = std::find(compVec.begin(), 
-                                                            compVec.end(), fstr);
-    const int myIndex = std::distance(compVec.begin(), it);
+    std::vector<std::string>::const_iterator it = std::find(compVec.cbegin(), 
+                                                            compVec.cend(), fstr);
+    const int myIndex = std::distance(compVec.cbegin(), it);
     
     switch(myIndex) {
         case LT:

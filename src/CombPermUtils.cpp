@@ -42,7 +42,7 @@ double NumPermsWithRep(const std::vector<int> &v) {
     return result;
 }
 
-double NumPermsNoRep(const int n, const int k) {
+double NumPermsNoRep(int n, int k) {
     double dblN = static_cast<double>(n), result = 1;
     double m = dblN - static_cast<double>(k);
     for (double i = n; i > m; --i) {result *= i;}
@@ -51,7 +51,7 @@ double NumPermsNoRep(const int n, const int k) {
 
 // Returns number of k-combinations from n elements.
 // Mathematically speaking, we have: n!/(k!*(n-k)!)
-double nChooseK(const int n, const int k) {
+double nChooseK(int n, int k) {
     
     if (k == n || k == 0)
         return 1.0;
@@ -66,7 +66,7 @@ double nChooseK(const int n, const int k) {
     return round(nCk);
 }
 
-double NumCombsWithRep(const int n, const int r) {
+double NumCombsWithRep(int n, int r) {
     return nChooseK(n + r - 1, r);
 }
 
@@ -79,8 +79,7 @@ double NumCombsWithRep(const int n, const int r) {
 //         than or equal to n
 //      2) that the repetition of the each element 
 //         isn't the same
-double MultisetCombRowNumFast(const int n, const int r, 
-                              const std::vector<int> &Reps) {
+double MultisetCombRowNumFast(int n, int r, const std::vector<int> &Reps) {
     
     if (r < 1 || n <= 1)
         return 1.0;
@@ -165,8 +164,7 @@ double MultisetCombRowNumFast(const int n, const int r,
 // we create all combinations of the multiset, then
 // subsequently count the number of permutations
 // of each of those combinations.
-double MultisetPermRowNum(const int n, const int r, 
-                          const std::vector<int> &myReps) {
+double MultisetPermRowNum(int n, int r, const std::vector<int> &myReps) {
     
     if (n < 2 || r < 1)
         return 1.0;
@@ -224,8 +222,7 @@ double MultisetPermRowNum(const int n, const int r,
 // determine whether gmp analogs are needed as the fast
 // algorithm above could potentionally produce negative
 // results because of issues with double precision
-double MultisetCombRowNum(const int n, const int r, 
-                          const std::vector<int> &Reps) {
+double MultisetCombRowNum(int n, int r, const std::vector<int> &Reps) {
     
     if (r < 1 || n <= 1)
         return 1;
@@ -264,8 +261,7 @@ double MultisetCombRowNum(const int n, const int r,
 
 // This algorithm is nearly identical to the
 // one found in the standard algorithm library
-void nextFullPerm(int *myArray, const unsigned long int n1,
-                  const unsigned long int n2) {
+void nextFullPerm(int *myArray, unsigned long int n1, unsigned long int n2) {
     
     unsigned long int p1 = n2, p2 = n1;
     int temp;
@@ -300,9 +296,9 @@ void nextFullPerm(int *myArray, const unsigned long int n1,
 // and swap them. We can then proceed to the next perm.
 // We can do this because the standard algo would end
 // up performing two unnecessary reversings.
-void nextPartialPerm(int *myArray, const unsigned long int r, 
-                     const unsigned long int r1, const unsigned long int n,
-                     const unsigned long int lastElem) {
+void nextPartialPerm(int *myArray, unsigned long int r, 
+                     unsigned long int r1, unsigned long int n,
+                     unsigned long int lastElem) {
     
     int temp;
     unsigned long int p1 = r1;

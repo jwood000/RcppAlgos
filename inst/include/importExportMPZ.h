@@ -8,7 +8,7 @@
  * Functions for importing/exporting and converting SEXPs to mpz_t
  * 
  */
-void createMPZArray (SEXP input, mpz_t *myVec, const unsigned long int sizevec, 
+void createMPZArray (SEXP input, mpz_t *myVec, unsigned long int sizevec, 
                      std::string nameOfObject, bool negPoss = false);
 
 int myRaw (char* raw, mpz_t value, unsigned long int totals);

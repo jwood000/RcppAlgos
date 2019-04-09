@@ -25,13 +25,13 @@ void NumPermsWithRepGmp(mpz_t result, const std::vector<int> &v) {
                 mpz_divexact_ui(result, result, j);
 }
 
-void NumPermsNoRepGmp(mpz_t result, const int n, const int k) {
+void NumPermsNoRepGmp(mpz_t result, int n, int k) {
     mpz_set_ui(result, 1);
     for (int i = n, m = n - k; i > m; --i)
         mpz_mul_ui(result, result, i);
 }
 
-void nChooseKGmp(mpz_t result, const int n, const int k) {
+void nChooseKGmp(mpz_t result, int n, int k) {
     mpz_set_ui(result, 1);
     if (k != n && k != 0) {
         for (int i = (n - k + 1), d = 1; d <= k; ++i, ++d) {
@@ -41,11 +41,11 @@ void nChooseKGmp(mpz_t result, const int n, const int k) {
     }
 }
 
-void NumCombsWithRepGmp(mpz_t result, const int n, const int r) {
+void NumCombsWithRepGmp(mpz_t result, int n, int r) {
     nChooseKGmp(result, n + r - 1, r);
 }
 
-bool onlyOneCombo(const int n, const int r, const std::vector<int> &Reps) {
+bool onlyOneCombo(int n, int r, const std::vector<int> &Reps) {
     if (r < 1 || n <= 1)
         return true;
     
@@ -56,7 +56,7 @@ bool onlyOneCombo(const int n, const int r, const std::vector<int> &Reps) {
     return false;
 }
 
-void MultisetCombRowNumGmp(mpz_t result, const int n, const int r,
+void MultisetCombRowNumGmp(mpz_t result, int n, int r,
                            const std::vector<int> &Reps) {
         
     if (!onlyOneCombo(n, r, Reps)) {
@@ -150,7 +150,7 @@ void MultisetCombRowNumGmp(mpz_t result, const int n, const int r,
     }
 }
 
-void MultisetPermRowNumGmp(mpz_t result, const int n, const int r,
+void MultisetPermRowNumGmp(mpz_t result, int n, int r,
                            const std::vector<int> &myReps) {
     
     const int sumFreqs = std::accumulate(myReps.cbegin(), myReps.cend(), 0);

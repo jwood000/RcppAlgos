@@ -17,8 +17,8 @@ static int seed_init = 0;
 const double sampleLimit = 4500000000000000.0;
 
 template <typename typeRcpp, typename typeVector>
-void SampleResults(const typeVector v, const unsigned long int m, bool IsRep, const std::vector<int> myReps,
-                   const unsigned long int s, const unsigned long int n, bool IsGmp, bool IsComb,
+void SampleResults(const typeVector v, unsigned long int m, bool IsRep, const std::vector<int> &myReps,
+                   unsigned long int s, unsigned long int n, bool IsGmp, bool IsComb,
                    const std::vector<double> mySample, mpz_t *myBigSamp, typeRcpp &sampleMatrix) {
 
     const int lenV = v.size();
@@ -57,8 +57,8 @@ void SampleResults(const typeVector v, const unsigned long int m, bool IsRep, co
 }
 
 template <typename typeVector>
-SEXP SampleApplyFun(const typeVector &v, const unsigned long int m, bool IsRep, bool IsGmp,
-                    const std::vector<int> myReps, const unsigned long int n, bool IsComb,
+SEXP SampleApplyFun(const typeVector &v, unsigned long int m, bool IsRep, bool IsGmp,
+                    const std::vector<int> &myReps, unsigned long int n, bool IsComb,
                     const std::vector<double> &mySample, mpz_t *myBigSamp, SEXP func, SEXP rho) {
 
     const int lenV = v.size();
