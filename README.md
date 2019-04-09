@@ -19,7 +19,7 @@ system.time(b <- primeSieve(10^9, nThreads = 8))
 ``` r
 system.time(b <- primeSieve(1e15, 1e15 + 1e9, nThreads = 8))
  user  system elapsed 
-5.087   0.778   0.997
+5.054   0.754   0.977
 ```
 * `primeCount` -  Counts the number of primes below a **1e12 in ~130 milliseconds** and **1e15 in under 50 seconds.**
 ```r
@@ -246,8 +246,8 @@ microbenchmark(serial = comboGeneral(20, 10, freqs = rep(1:4, 5)),
              parallel = comboGeneral(20, 10, freqs = rep(1:4, 5), Parallel = TRUE))
 Unit: milliseconds
      expr       min        lq      mean    median        uq      max neval
-   serial 237.80421 244.06242 253.76806 249.45499 263.65091 284.7350   100
- parallel  82.11218  85.88929  88.78034  87.72153  90.01558 126.3167   100
+   serial 224.77650 239.09760 243.50147 241.41096 244.00927 292.3136   100
+ parallel  80.21005  82.16222  84.74438  84.42145  85.58884 123.5970   100
 ```
 
 And applying any of the constraint functions in parallel is highly efficient as well. Consider obtaining the row sums of all combinations:
@@ -270,9 +270,9 @@ microbenchmark(serial = comboGeneral(20, 10, constraintFun = "sum"),
              combnSum = combn(20, 10, sum))
 Unit: milliseconds
      expr        min         lq       mean     median         uq        max neval
-   serial   3.426027   3.736279   4.285025   3.908142   4.312603  10.247652   100
- parallel   1.233491   1.371532   1.742455   1.450557   1.970033   6.102456   100
- combnSum 206.819174 222.254082 227.762687 224.331548 227.135461 293.065110   100
+   serial   3.108999   3.470917   4.394282   3.798261   4.345005   8.038390   100
+ parallel   1.186217   1.377346   1.786400   1.454697   1.588850   3.564296   100
+ combnSum 197.533911 213.208303 220.711443 217.775698 226.261102 266.828690   100
 ```
 ### Faster than `rowSums` and `rowMeans`
 In fact, finding row sums or row means is even faster than simply applying the highly efficient `rowSums`/`rowMeans` after the combinations have already been generated:
@@ -286,9 +286,9 @@ microbenchmark(serial = comboGeneral(25, 10, constraintFun = "sum"),
               rowsums = rowSums(combs))
 Unit: milliseconds
      expr       min        lq      mean    median        uq       max neval
-   serial 113.74535 124.91470 127.85210 127.15044 130.47335 172.37043   100
- parallel  41.23766  49.78379  51.46558  51.07019  52.58048  88.31258   100
-  rowsums  95.92139  98.21449 104.66987 101.32041 105.46913 152.69522   100
+   serial 113.05467 117.46261 127.46829 124.99978 135.67496 176.68228   100
+ parallel  39.97370  42.79960  49.36836  44.65376  56.82488  67.95255   100
+  rowsums  97.18933  98.62043 107.64972 104.80272 113.32359 144.27974   100
 
 all.equal(rowSums(combs), 
           comboGeneral(25, 10, 
@@ -302,9 +302,9 @@ microbenchmark(serial = comboGeneral(25, 10, constraintFun = "mean"),
              rowmeans = rowMeans(combs))
 Unit: milliseconds
      expr       min        lq      mean    median        uq      max neval
-   serial 173.55130 183.94174 203.09916 202.17554 217.77389 274.7437   100
- parallel  58.11018  61.17694  79.59311  79.21929  97.96688 127.3256   100
- rowmeans 102.56019 103.72126 113.12717 106.89584 117.95641 165.1638   100
+   serial 171.22701 182.2575 198.14229 198.29388 213.14787 240.1016   100
+ parallel  54.41817  59.2010  73.12819  74.61183  77.93679 119.8481   100
+ rowmeans 102.34084 103.2962 115.09863 107.12878 120.19177 174.8596   100
  
 all.equal(rowMeans(combs), 
           comboGeneral(25, 10, 
@@ -418,7 +418,7 @@ comboGeneral(10, 8, TRUE)[5^(0:4), ]
 ```
 Just like the `General` counterparts (i.e. `combo/permuteGeneral`), we can easily explore combinations/permutations of large vectors where the total number of results is enormous in parallel (using `Parallel` or `nThreads`).
 ```r
-## Uses stdThreadMax() - 1 = 7 thread (in this case)
+## Uses min(stdThreadMax() - 1, 5) thread (in this case)
 permuteSample(500, 10, TRUE, n = 5, seed = 123, Parallel = TRUE)
      [,1] [,2] [,3] [,4] [,5] [,6] [,7] [,8] [,9] [,10]
 [1,]   55  435  274  324  200  152    6  313  121   377
@@ -427,7 +427,7 @@ permuteSample(500, 10, TRUE, n = 5, seed = 123, Parallel = TRUE)
 [4,]  284  104  464  104  207  127  117    9  390   414
 [5,]  456   76  381  456  219   23  376  187   11   123
 
-permuteSample(factor(state.abb), 15, n = 3, seed = 50, nThreads = 4)
+permuteSample(factor(state.abb), 15, n = 3, seed = 50, nThreads = 3)
      [,1] [,2] [,3] [,4] [,5] [,6] [,7] [,8] [,9] [,10] [,11] [,12] [,13] [,14] [,15]
 [1,] ME   FL   DE   OK   ND   CA   PA   AL   ID   MO    NM    HI    KY    MT    NJ   
 [2,] AZ   CA   AL   CT   ME   SD   ID   SC   OK   NH    HI    TN    ND    IA    MT   
@@ -495,7 +495,7 @@ numDivisorSieve(20)
 ## If you want the complete factorization from 1 to n, use divisorsList
 system.time(allFacs <- divisorsSieve(10^5, namedList = TRUE))
    user  system elapsed 
-  0.045   0.004   0.049
+  0.040   0.003   0.043
 
 allFacs[c(4339, 15613, 22080)]
 $`4339`
@@ -542,12 +542,12 @@ eulerPhiSieve(20, namedVector = TRUE)
  
 system.time(a <- eulerPhiSieve(1e12, 1e12 + 1e7))
    user  system elapsed 
-  1.092   0.044   1.143
+  1.049   0.041   1.108
 
 ## Using nThreads for greater efficiency
 system.time(b <- eulerPhiSieve(1e12, 1e12 + 1e7, nThreads = 8))
    user  system elapsed 
-  3.784   0.014   0.518
+  3.731   0.013   0.502
   
 identical(a, b)
 [1] TRUE
@@ -609,7 +609,7 @@ system.time(a <- primeFactorize(1e12:(1e12 + 3e4)))
 ## Using nThreads for greater efficiency  
 system.time(b <- primeFactorize(1e12:(1e12 + 3e4), nThreads = 8))
    user  system elapsed 
-  1.674   0.003   0.220
+  1.633   0.001   0.217
   
 identical(a, b)
 [1] TRUE
@@ -624,7 +624,7 @@ Both of these functions are based on the excellent algorithms developed by [Kim 
 options(scipen = 50)
 system.time(myPs <- primeSieve(10^13+10^3, 10^13))
    user  system elapsed 
-  0.035   0.002   0.036
+  0.017   0.006   0.023
   
 myPs
  [1] 10000000000037 10000000000051 10000000000099 10000000000129
@@ -639,7 +639,7 @@ myPs
 
 ## Object created is small
 object.size(myPs)
-312 bytes
+320 bytes
 
 ## primes under a billion!!!
 system.time(a <- primeSieve(10^9))
@@ -663,12 +663,12 @@ system.time(old <- RcppAlgos2.2::primeSieve(1e15, 1e15 + 1e9))
 ## v2.3.0 is over 3x faster!  
 system.time(a <- primeSieve(1e15, 1e15 + 1e9))
    user  system elapsed 
-  2.530   0.197   2.744 
+  2.452   0.208   2.676
   
 ## And using nThreads we are ~8x faster
 system.time(b <- primeSieve(1e15, 1e15 + 1e9, nThreads = 8))
    user  system elapsed 
-  5.087   0.778   0.997 
+  5.054   0.754   0.977
   
 identical(a, b)
 [1] TRUE
@@ -688,7 +688,7 @@ With this is mind, here are some results:
 ## Enumerate the number of primes below trillion
 system.time(underOneTrillion <- primeCount(10^12))
    user  system elapsed 
-  0.481   0.000   0.483
+  0.478   0.000   0.480
   
 underOneTrillion
 [1] 37607912018
@@ -699,7 +699,7 @@ library(microbenchmark)
 microbenchmark(primeCount(10^9))
 Unit: milliseconds
              expr       min      lq    mean   median       uq      max neval
- primeCount(10^9) 1.958806 1.960901 2.05824 1.994066 2.099495 3.610174   100
+ primeCount(10^9) 1.93462 1.938516 2.044785 1.957809 2.090828 3.584245   100
  
  
 primeCount(10^9)
