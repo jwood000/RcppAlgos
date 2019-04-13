@@ -506,7 +506,17 @@ SEXP EratosthenesRcpp(SEXP Rb1, SEXP Rb2, SEXP RNumThreads, int maxCores, int ma
         return Rcpp::IntegerVector();
     
     if (myMin <= 2) myMin = 1;
-    if (myMin == myMax) {++myMax;}
+    
+    if (myMin == myMax) {
+        if (myMax % 2) {
+            ++myMax;
+        } else {
+            if (myMax > std::numeric_limits<int>::max())
+                return Rcpp::NumericVector();
+            else
+                return Rcpp::IntegerVector();
+        }
+    }
     
     int nThreads = 1;
     if (!Rf_isNull(RNumThreads))
