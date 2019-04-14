@@ -3,7 +3,7 @@
 
 \section{Changes in RcppAlgos version 2.3.2 (Release date: 2019-04-10)}{
     \itemize{
-        \item Fixed clang-UBSAN issue in 2.3.1. It was cause by casting extremely large values to int64_t.
+        \item Fixed clang-UBSAN issue in 2.3.1. It was caused by casting extremely large values to int64_t.
         \item Corrected handling of small values in PrimeSieveBig.
     }
 }
