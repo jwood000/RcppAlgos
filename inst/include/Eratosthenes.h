@@ -197,12 +197,15 @@ namespace PrimeSieve {
     template <typename typePrime>
     void PrimeSieveMedium(int_fast64_t minNum, int_fast64_t maxNum, 
                           const std::vector<int_fast64_t> &sievePrimes,
-                          std::vector<typePrime> &myPrimes, std::size_t nSegOne) {
+                          std::vector<typePrime> &myPrimes) {
         
-        const std::size_t nWheels = nSegOne;
+        const int_fast64_t sz30030 = NUM30030;
+        const std::size_t nWheels = static_cast<std::size_t>(std::ceil(
+            std::sqrt(static_cast<double>(maxNum)) / sz30030));
+        
         const std::size_t szWheel30030 = SZ_WHEEL30030;
         
-        const int_fast64_t segSize = static_cast<int_fast64_t>(nWheels * NUM30030);
+        const int_fast64_t segSize = static_cast<int_fast64_t>(nWheels * sz30030);
         const std::size_t myReserve = EstimatePiPrime(static_cast<double>(minNum), 
                                                       static_cast<double>(maxNum));
         myPrimes.reserve(myReserve);
@@ -323,11 +326,11 @@ namespace PrimeSieve {
     void PrimeSieveBig(int_fast64_t minNum, int_fast64_t maxNum, 
                        const std::vector<int_fast64_t> &svPriOne,
                        const std::vector<int_fast64_t> &svPriTwo, 
-                       std::vector<typePrime> &myPrimes, int nBigSegs,
+                       std::vector<typePrime> &myPrimes, std::size_t nBigSegs,
                        const std::vector<char> &check30030) {
         
-        const int_fast64_t segSize = static_cast<int_fast64_t>(nBigSegs * NUM30030);
         const int_fast64_t sz30030 = NUM30030;
+        const int_fast64_t segSize = static_cast<int_fast64_t>(nBigSegs * sz30030);
         const std::size_t numWheelSegs = nBigSegs, szWheel30030 = SZ_WHEEL30030;
         const std::size_t myReserve = EstimatePiPrime(static_cast<double>(minNum),
                                                       static_cast<double>(maxNum));
@@ -531,11 +534,11 @@ namespace PrimeSieve {
     }
     
     template <typename typePrime>
-    void PrimeSieveMaster(int_fast64_t myMin, int_fast64_t myMax, std::vector<typePrime> &primes, 
+    void PrimeSieveMaster(int_fast64_t minNum, int_fast64_t maxNum, std::vector<typePrime> &primes, 
                           std::vector<std::vector<typePrime>> &primeList, bool &Parallel,
                           int nThreads = 1, int maxThreads = 1, int maxCores = 1) {
         
-        const int_fast64_t myRange = myMax - myMin;
+        const int_fast64_t myRange = maxNum - minNum;
         int_fast64_t smallCut = Almost2310L1Cache - 100;
         smallCut *= smallCut;
         
@@ -549,7 +552,7 @@ namespace PrimeSieve {
         // gives us room to store other important objects for sieving.
         int_fast64_t sqrtMedCut = maxCores * (1024 * 1024) * 6;
         
-        const int sqrtBound = std::sqrt(static_cast<double>(myMax));
+        const int sqrtBound = std::sqrt(static_cast<double>(maxNum));
         std::size_t nBigSegs = 1u;
         
         if (nThreads > 1 && maxThreads > 1) {
@@ -566,8 +569,15 @@ namespace PrimeSieve {
             // bool bAddZero, bool bAddExtraPrime, bool bAddTwo
         sqrtBigPrimes(sqrtBound, false, true, false, svPriMain);
         
-        if (myMax > medCut) {
-            nBigSegs = ((maxThreads * 2048 * 1024) /  L1_CACHE_SIZE) / nThreads;
+        if (maxNum > medCut) {
+            
+            // Similar to sqrtMedCut above (see comment). This formulation
+            // was determined empirically. The idea is that as the number
+            // of threads increases, we want to ensure that we don't pollute
+            // the cache memory. Each thread will need enough space for all
+            // of the data structures necessary to produce primes, thus
+            // we reduce the segment size as nThreads increases.
+            nBigSegs = ((maxThreads / nThreads) * 2 * 1024 * 1024) /  L1_CACHE_SIZE;
             
             std::size_t ind = 0u;
             const int limitOne = static_cast<int>(nBigSegs * segUnitSize);
@@ -585,7 +595,7 @@ namespace PrimeSieve {
             for (std::size_t i = 0, ind = 0; i < SZ_WHEEL30030; ind += ARR_WHEEL30030[i], ++i)
                 check30030[ind] = 0;
             
-        } else if (myMax > smallCut) {
+        } else if (maxNum > smallCut) {
             nBigSegs = static_cast<std::size_t>(std::ceil(
                 static_cast<double>(sqrtBound) / segUnitSize));
         } else {
@@ -594,6 +604,13 @@ namespace PrimeSieve {
         }
         
         const int_fast64_t segSize = nBigSegs * segUnitSize;
+        
+        // There is some overhead for setting up the data structures
+        // for each thread, so we ensure each thread has enough work
+        // to outweigh adding another thread. Determined empirically.
+        // The tests that were performed showed that one thread was
+        // just as efficient as two threads when myRange was equal
+        // to 4 * segSize. This is especially true for PrimeSieveBig.
         const int_fast64_t testNumThreads = myRange / (segSize * 4);
         
         if (maxThreads < 2) {Parallel = false;}
@@ -609,9 +626,9 @@ namespace PrimeSieve {
         if (Parallel) {
             int ind = 0;
             RcppThread::ThreadPool pool(nThreads);
-            int_fast64_t upperBnd, lowerBnd = myMin;
+            int_fast64_t upperBnd, lowerBnd = minNum;
             const int_fast64_t chunkSize = segSize * std::floor(static_cast<double>(myRange / nThreads) / segSize);
-            upperBnd = segSize * std::floor(myMin / segSize) + chunkSize;
+            upperBnd = segSize * std::floor(minNum / segSize) + chunkSize;
             
             for (; ind < (nThreads - 1); lowerBnd = upperBnd, upperBnd += chunkSize, ++ind) {
                 if (upperBnd > medCut) {
@@ -619,48 +636,48 @@ namespace PrimeSieve {
                               std::ref(svPriTwo), std::ref(primeList[ind]), nBigSegs, std::ref(check30030));
                 } else if (upperBnd > smallCut) {
                     pool.push(std::cref(PrimeSieveMedium<typePrime>), lowerBnd, upperBnd,
-                              std::ref(svPriMain), std::ref(primeList[ind]), nBigSegs);
+                              std::ref(svPriMain), std::ref(primeList[ind]));
                 } else {
                     pool.push(std::cref(PrimeSieveSmall<typePrime>), lowerBnd, 
                               upperBnd, std::ref(svPriMain), std::ref(primeList[ind]));
                 }
             }
             
-            if (myMax > medCut) {
-                pool.push(std::cref(PrimeSieveBig<typePrime>), lowerBnd, myMax, std::ref(svPriOne),
+            if (maxNum > medCut) {
+                pool.push(std::cref(PrimeSieveBig<typePrime>), lowerBnd, maxNum, std::ref(svPriOne),
                           std::ref(svPriTwo), std::ref(primeList[ind]), nBigSegs, std::ref(check30030));
-            } else if (myMax > smallCut) {
+            } else if (maxNum > smallCut) {
                 pool.push(std::cref(PrimeSieveMedium<typePrime>), lowerBnd,
-                          myMax, std::ref(svPriMain), std::ref(primeList[ind]), nBigSegs);
+                          maxNum, std::ref(svPriMain), std::ref(primeList[ind]));
             } else {
                 pool.push(std::cref(PrimeSieveSmall<typePrime>), lowerBnd, 
-                          myMax, std::ref(svPriMain), std::ref(primeList[ind]));
+                          maxNum, std::ref(svPriMain), std::ref(primeList[ind]));
             }
             
             pool.join();
             
         } else {
-            if (myMax > medCut) {
+            if (maxNum > medCut) {
                 // PrimeSieveBig is not meant for small values, so we first get them with
                 // PrimeSieveMed. N.B. Cases that meet this criteria will take an extremely
                 // long time and also require a huge amount of memory. We also don't care
                 // to use the more efficient PrimeSieveSmall if the user chooses a minimum
                 // value less than smallCut, as efficiency at this point is not a concern.
-                if (myMin < medCut) {
-                    PrimeSieveMedium(myMin, medCut, svPriMain, primes, nBigSegs);
-                    PrimeSieveBig(medCut, myMax, svPriOne, svPriTwo, primes, nBigSegs, check30030);
+                if (minNum < medCut) {
+                    PrimeSieveMedium(minNum, medCut, svPriMain, primes);
+                    PrimeSieveBig(medCut, maxNum, svPriOne, svPriTwo, primes, nBigSegs, check30030);
                 } else {
-                    PrimeSieveBig(myMin, myMax, svPriOne, svPriTwo, primes, nBigSegs, check30030);
+                    PrimeSieveBig(minNum, maxNum, svPriOne, svPriTwo, primes, nBigSegs, check30030);
                 }
-            } else if (myMax > smallCut) {
-                if (myMin < smallCut) {
-                    PrimeSieveSmall(myMin, smallCut, svPriMain, primes);
-                    PrimeSieveMedium(smallCut, myMax, svPriMain, primes, nBigSegs);
+            } else if (maxNum > smallCut) {
+                if (minNum < smallCut) {
+                    PrimeSieveSmall(minNum, smallCut, svPriMain, primes);
+                    PrimeSieveMedium(smallCut, maxNum, svPriMain, primes);
                 } else {
-                    PrimeSieveMedium(myMin, myMax, svPriMain, primes, nBigSegs);
+                    PrimeSieveMedium(minNum, maxNum, svPriMain, primes);
                 }
             } else {
-                PrimeSieveSmall(myMin, myMax, svPriMain, primes);
+                PrimeSieveSmall(minNum, maxNum, svPriMain, primes);
             }
         }
     }
