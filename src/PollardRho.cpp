@@ -4,23 +4,13 @@
 #include "PrimesPolRho.h"
 #include "CleanConvert.h"
 
-// forward declare getPrimeFactors as isPrime needs it and
-// PollardRho (which is called by getPrimeFactors) calls isPrime
-template <typename typeReturn>
-void getPrimeFactors (int64_t &t, std::vector<typeReturn> &factors);
-
-// Prove primality or run probabilistic tests
-int FlagProvePrimality = 1;
-
 const double my2Pow62 = std::pow(2, 62);
 const double my64Max = std::pow(2, 63);
 const int64_t Sqrt64Max = static_cast<int64_t>(std::sqrt(my64Max));
-
-constexpr int64_t FirstOmittedPrime = 4001;
 constexpr std::size_t pDiffSize = sizeof(primesDiffPR) / sizeof(primesDiffPR[0]);
 
 /* Number of Miller-Rabin tests to run when not proving primality. */
-constexpr std::size_t MR_REPS = 25;
+constexpr int MR_REPS = 25;
 
 template <typename typeReturn>
 void FactorTrialDivision (int64_t& t,
@@ -82,19 +72,6 @@ int64_t ProdBigMod(int64_t x1_i64, int64_t x2_i64, int64_t p_i64) {
     return static_cast<double>(result);
 }
 
-int64_t ExpBySquaring(int64_t x, int64_t n, int64_t p) {
-    int64_t result;
-    if (n == 1) {
-        result = PositiveMod(x, p);
-    } else if ((n % 2) == 0) {
-        result = ExpBySquaring(ProdBigMod(x, x, p), n / 2, p);
-    } else {
-        result = ProdBigMod(x, 
-            ExpBySquaring(ProdBigMod(x, x, p), (n - 1) / 2, p), p);
-    }
-
-    return result;
-}
 
 int64_t myGCD(int64_t u, int64_t v) {
     int64_t r;
@@ -106,106 +83,18 @@ int64_t myGCD(int64_t u, int64_t v) {
     return u;
 }
 
-int MillerRabin(int64_t n, int64_t nm1, int64_t x,
-                       int64_t& y, int64_t q, uint64_t k) {
-    
-    y = ExpBySquaring(x, q, n);
-    
-    if (y == 1 || y == nm1)
-        return 1;
-
-    for (std::size_t i = 1; i < k; ++i) {
-        y = ExpBySquaring(y, 2, n);
-        if (y == nm1)
-            return 1;
-        if (y == 1)
-            return 0;
-    }
-    
-    return 0;
-}
-
-int IsPrime(int64_t n) {
-    int k, primeTestReturn;
-    int64_t nm1, q, tmp, a;
-
-    std::vector<int64_t> factors;
-
-    if (n < 2)
-        return 0;
-
-    /* We have already casted out small primes. */
-    if (n < FirstOmittedPrime * FirstOmittedPrime)
-        return 1;
-
-    /* Precomputation for Miller-Rabin.  */
-    q = nm1 = n - 1;
-
-    /* Find q and k, where q is odd and n = 1 + 2**k * q.  */
-    k = 0;
-    while ((q & 1) == 0) {
-        q >>= 1;
-        ++k;
-    }
-
-    a = 2;
-
-    /* Perform a Miller-Rabin test, finds most composites quickly.  */
-    if (!MillerRabin(n, nm1, a, tmp, q, (uint64_t) k)) {
-        primeTestReturn = 0;
-        goto ret2;
-    }
-
-    if (FlagProvePrimality) {
-        /* Factor n-1 for Lucas.  */
-        tmp = nm1;
-        getPrimeFactors(tmp, factors);
-    }
-
-    /* Loop until Lucas proves our number prime, or Miller-Rabin proves our
-    number composite.  */
-    for (std::size_t r = 0; r < pDiffSize; ++r) {
-
-        if (FlagProvePrimality) {
-            primeTestReturn = 1;
-            for (std::size_t i = 0; i < factors.size() && primeTestReturn; ++i) {
-                tmp = nm1 / factors[i];
-                tmp = ExpBySquaring(a, tmp, n);
-                primeTestReturn = (tmp != 1);
-            }
-        } else {
-            /* After enough Miller-Rabin runs, be content. */
-            primeTestReturn = (r == MR_REPS);
-        }
-
-        if (primeTestReturn)
-            goto ret1;
-
-        a += primesDiffPR[r];	/* Establish new base.  */
-
-        if (!MillerRabin(n, nm1, a, tmp, q, (uint64_t) k)) {
-            primeTestReturn = 0;
-            goto ret1;
-        }
-    }
-
-    Rcpp::stop("Lucas prime test failure. This should not happen");
-    ret1:
-        if (FlagProvePrimality)
-            factors.resize(0);
-
-    ret2:
-        return primeTestReturn;
-}
-
 template <typename typeReturn>
 void PollardRho(int64_t n, int64_t a, 
                 std::vector<typeReturn>& factors) {
-    int64_t x, z, y, P, t;
-    int64_t  k, l, i;
+    int64_t x, z, y, P;
+    int64_t k, l, i, t;
     
     y = x = z = 2;
     P = k = l = 1;
+    
+    mpz_t bigT, bigN;
+    mpz_init(bigT);
+    mpz_init(bigN);
     
     while (n != 1) {
         for (;;) {
@@ -242,14 +131,17 @@ void PollardRho(int64_t n, int64_t a,
             } while (t == 1);
         
         n /= t;	/* divide by t, before t is overwritten */
+        mpz_set_d(bigT, static_cast<double>(t));
         
-        if (!IsPrime(t)) {
+        if (mpz_probab_prime_p(bigT, MR_REPS) == 0) {
             PollardRho(t, a + 1, factors);
         } else {
             factors.push_back((typeReturn) t);
         }
         
-        if (IsPrime(n)) {
+        mpz_set_d(bigN, static_cast<double>(n));
+        
+        if (mpz_probab_prime_p(bigN, MR_REPS)) {
             factors.push_back((typeReturn) n);
             break;
         }
@@ -258,14 +150,21 @@ void PollardRho(int64_t n, int64_t a,
         z = PositiveMod(z, n);
         y = PositiveMod(y, n);
     }
+    
+    mpz_clear(bigT);
+    mpz_clear(bigN);
 }
 
 template <typename typeReturn>
 void getPrimeFactors(int64_t& t, std::vector<typeReturn>& factors) {
     FactorTrialDivision(t, factors);
     
+    mpz_t bigT;
+    mpz_init(bigT);
+    
     if (t > 1) {
-        if (IsPrime(t)) {
+        mpz_set_d(bigT, static_cast<double>(t));
+        if (mpz_probab_prime_p(bigT, MR_REPS)) {
             factors.push_back(t);
         } else {
             PollardRho(t, 1, factors);
@@ -273,6 +172,7 @@ void getPrimeFactors(int64_t& t, std::vector<typeReturn>& factors) {
     }
     
     std::sort(factors.begin(), factors.end());
+    mpz_clear(bigT);
 }
 
 template <typename typeReturn>
@@ -405,6 +305,9 @@ void FactorList(std::size_t m, std::size_t n, std::vector<double> &myNums,
 void IsPrimeVec(std::size_t m, std::size_t n, std::vector<double> &myNums,
                 Rcpp::LogicalVector &primeTest) {
     
+    mpz_t testMpzt;
+    mpz_init(testMpzt);
+    
     for (std::size_t j = m; j < n; ++j) {
         int64_t testVal = static_cast<int64_t>(myNums[j]);
         
@@ -428,9 +331,13 @@ void IsPrimeVec(std::size_t m, std::size_t n, std::vector<double> &myNums,
             }
         }
         
-        if (primeTest[j])
-            primeTest[j] = IsPrime(testVal);
+        if (primeTest[j]) {
+            mpz_set_d(testMpzt, myNums[j]);
+            primeTest[j] = mpz_probab_prime_p(testMpzt, MR_REPS);
+        }
     }
+    
+    mpz_clear(testMpzt);
 }
 
 template <typename typeReturn>
