@@ -47,7 +47,7 @@ int64_t ProdBigMod(int64_t x1_i64, int64_t x2_i64, int64_t p_i64) {
     
     if (prodX < static_cast<double>(p_i64)) {
         result = prodX;
-    } else if (p_i64 < (int64_t) Sqrt64Max || prodX < my64Max) {
+    } else if (p_i64 < static_cast<int64_t>(Sqrt64Max) || prodX < my64Max) {
         result = (x1_i64 * x2_i64) % p_i64;
     } else {
         int64_t part2, numChunkMods = 1;
@@ -69,7 +69,7 @@ int64_t ProdBigMod(int64_t x1_i64, int64_t x2_i64, int64_t p_i64) {
         result = (part1_i64 + result) % p_i64;
     }
     
-    return static_cast<double>(result);
+    return result;
 }
 
 
@@ -136,13 +136,13 @@ void PollardRho(int64_t n, int64_t a,
         if (mpz_probab_prime_p(bigT, MR_REPS) == 0) {
             PollardRho(t, a + 1, factors);
         } else {
-            factors.push_back((typeReturn) t);
+            factors.push_back(static_cast<typeReturn>(t));
         }
         
         mpz_set_d(bigN, static_cast<double>(n));
         
         if (mpz_probab_prime_p(bigN, MR_REPS)) {
-            factors.push_back((typeReturn) n);
+            factors.push_back(static_cast<typeReturn>(n));
             break;
         }
         
