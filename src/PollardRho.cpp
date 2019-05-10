@@ -4,23 +4,28 @@
 #include "PrimesPolRho.h"
 #include "CleanConvert.h"
 
-const double my2Pow62 = std::pow(2, 62);
-const double my64Max = std::pow(2, 63);
-const int64_t Sqrt64Max = static_cast<int64_t>(std::sqrt(my64Max));
-constexpr std::size_t pDiffSize = sizeof(primesDiffPR) / sizeof(primesDiffPR[0]);
+template <typename typeReturn>
+void getPrimeFactors(int64_t &t, std::vector<typeReturn> &factors);
+
+const double my63Max = std::pow(2, 63);
+const int64_t Sqrt63Max = static_cast<int64_t>(std::sqrt(static_cast<double>(my63Max)));
 
 /* Number of Miller-Rabin tests to run when not proving primality. */
 constexpr int MR_REPS = 25;
 
+constexpr int64_t FirstOmittedPrime = 3989;
+constexpr std::size_t pDiffSize = sizeof(primesDiffPR) / sizeof(primesDiffPR[0]);
+
 template <typename typeReturn>
-void FactorTrialDivision (int64_t& t,
-                          std::vector<typeReturn>& factors) {
+void FactorTrialDivision(int64_t &t, std::vector<typeReturn> &factors) {
+    
+    int p = 3;
+    
     while ((t & 1) == 0) {
         factors.push_back(2);
         t >>= 1;
     }
     
-    int p = 3;
     for (std::size_t i = 1; i < pDiffSize;) {
         if ((t % p) != 0) {
             p += primesDiffPR[i++];
@@ -33,76 +38,261 @@ void FactorTrialDivision (int64_t& t,
     }
 }
 
-inline int64_t PositiveMod(int64_t i, int64_t n) {
+int64_t PositiveMod(int64_t i, int64_t n) {
     return ((i % n) + n) % n;
 }
 
-int64_t ProdBigMod(int64_t x1_i64, int64_t x2_i64, int64_t p_i64) {
+int64_t myGCD(int64_t u, int64_t v) {
     
-    x1_i64 = PositiveMod(x1_i64, p_i64);
-    x2_i64 = PositiveMod(x2_i64, p_i64);
+    u = PositiveMod(u, v);
+    
+    while (v != 0) {
+        int64_t r = u % v;
+        u = v;
+        v = r;
+    }
+    
+    return u;
+}
+
+int64_t ProdBigMod(int64_t x1_i64, int64_t x2_i64, int64_t p_i64) {
     
     double prodX = static_cast<double>(x1_i64) * static_cast<double>(x2_i64);
     int64_t result = 0;
     
     if (prodX < static_cast<double>(p_i64)) {
         result = prodX;
-    } else if (p_i64 < static_cast<int64_t>(Sqrt64Max) || prodX < my64Max) {
+    } else if (p_i64 < Sqrt63Max || prodX < my63Max) {
         result = (x1_i64 * x2_i64) % p_i64;
     } else {
-        int64_t part2, numChunkMods = 1;
-        int64_t chunkSize, chunkMod;
-        double part1 = my2Pow62;
+        int64_t part2, nChunks = 1;
+        int64_t cSize, chunk;
+        double part1 = my63Max;
         
-        while (part1 >= my2Pow62) {
-            chunkSize = static_cast<int64_t>(my2Pow62 / x1_i64);
-            chunkMod = (x1_i64 * chunkSize) % p_i64;
-            numChunkMods = x2_i64 / chunkSize;
-            part2 = ((x2_i64 - (chunkSize * numChunkMods)) * x1_i64) % p_i64;
-            part1 = static_cast<double>(numChunkMods) * static_cast<double>(chunkMod);
-            x1_i64 = chunkMod;
-            x2_i64 = numChunkMods;
+        while (part1 >= my63Max) {
+            cSize = static_cast<int64_t>(my63Max / x1_i64);
+            chunk = (x1_i64 * cSize) % p_i64;
+            nChunks = x2_i64 / cSize;
+            part2 = ((x2_i64 - cSize * nChunks) * x1_i64) % p_i64;
+            part1 = static_cast<double>(nChunks) * static_cast<double>(chunk);
+            x1_i64 = chunk;
+            x2_i64 = nChunks;
             result = (result + part2) % p_i64;
         }
         
-        int64_t part1_i64 = (numChunkMods * chunkMod) % p_i64;
+        int64_t part1_i64 = (nChunks * chunk) % p_i64;
         result = (part1_i64 + result) % p_i64;
     }
     
     return result;
 }
 
-
-int64_t myGCD(int64_t u, int64_t v) {
-    int64_t r;
-    while (v != 0) {
-        r = PositiveMod(u, v);
-        u = v;
-        v = r;
+int64_t ExpBySquaring(int64_t x, int64_t n, int64_t p) {
+    
+    int64_t result;
+    
+    if (n == 1) {
+        result = PositiveMod(x, p);
+    } else if (n % 2 == 0) {
+        result = ExpBySquaring(ProdBigMod(x, x, p), n / 2, p);
+    } else {
+        result = ProdBigMod(x, ExpBySquaring(ProdBigMod(x, x, p), (n - 1) / 2, p), p);
     }
-    return u;
+    
+    return result;
 }
 
-template <typename typeReturn>
-void PollardRho(int64_t n, int64_t a, 
-                std::vector<typeReturn>& factors) {
-    int64_t x, z, y, P;
-    int64_t k, l, i, t;
+int MillerRabin(int64_t n, int64_t nm1, int64_t x,
+                int64_t& y, int64_t q, uint64_t k) {
+    
+    y = ExpBySquaring(x, q, n);
+    if (y == 1 || y == nm1)
+        return 1;
+    
+    for (std::size_t i = 1; i < k; ++i) {
+        y = ExpBySquaring(y, 2, n);
+        if (y == nm1)
+            return 1;
+        if (y == 1)
+            return 0;
+    }
+    
+    return 0;
+}
+
+int IsPrime(int64_t n) {
+    int k, primeTestReturn;
+    int64_t nm1, q, tmp, a;
+    
+    std::vector<int64_t> factors;
+    
+    if (n < 2)
+        return 0;
+    
+    /* We have already casted out small primes. */
+    if (n < FirstOmittedPrime * FirstOmittedPrime)
+        return 1;
+    
+    /* Precomputation for Miller-Rabin.  */
+    q = nm1 = n - 1;
+    
+    /* Find q and k, where q is odd and n = 1 + 2**k * q.  */
+    k = 0;
+    while ((q & 1) == 0) {
+        q /= 2;
+        ++k;
+    }
+    
+    a = 2;
+    
+    /* Perform a Miller-Rabin test, finds most composites quickly.  */
+    if (!MillerRabin (n, nm1, a, tmp, q, (uint64_t) k)) {
+        primeTestReturn = 0;
+        goto ret2;
+    }
+    
+    /* Factor n-1 for Lucas.  */
+    tmp = nm1;
+    getPrimeFactors(tmp, factors);
+    
+    /* Loop until Lucas proves our number prime, or Miller-Rabin proves our
+    number composite.  */
+    for (std::size_t r = 0; r < pDiffSize; ++r) {
+        
+        primeTestReturn = 1;
+        
+        for (std::size_t i = 0; i < factors.size() && primeTestReturn; ++i) {
+            tmp = nm1 / factors[i];
+            tmp = ExpBySquaring(a, tmp, n);
+            primeTestReturn = (tmp != 1);
+        }
+        
+        if (primeTestReturn)
+            goto ret1;
+        
+        a += primesDiffPR[r];	/* Establish new base.  */
+            
+        if (!MillerRabin(n, nm1, a, tmp, q, (uint64_t) k)) {
+            primeTestReturn = 0;
+            goto ret1;
+        }
+    }
+    
+    Rcpp::stop("Lucas prime test failure. This should not happen");
+    ret1:
+        factors.resize(0);
+        
+    ret2:
+        return primeTestReturn;
+}
+
+void PollardRhoMpzT(mpz_t n, unsigned long int a, std::vector<double> &factors) {
+    
+    mpz_t x, z, y, P, t;
+    std::size_t k, q;
+    
+    mpz_init(t);
+    mpz_init_set_si(y, 2);
+    mpz_init_set_si(x, 2);
+    mpz_init_set_si(z, 2);
+    mpz_init_set_ui(P, 1);
+    k = q = 1;
+    
+    while(mpz_cmp_ui(n, 1) != 0) {
+        for (;;) {
+            do {
+                mpz_mul(t, x, x);
+                mpz_mod(x, t, n);
+                mpz_add_ui(x, x, a);
+                
+                mpz_sub(t, z, x);
+                mpz_mul(t, P, t);
+                mpz_mod(P, t, n);
+                
+                if (k % 32 == 1) {
+                    mpz_gcd(t, P, n);
+                    if (mpz_cmp_ui(t, 1) != 0)
+                        goto factor_found;
+                    mpz_set(y, x);
+                }
+                
+            } while (--k != 0);
+            
+            mpz_set(z, x);
+            k = q;
+            q <<= 1;
+            
+            for (std::size_t i = 0; i < k; ++i) {
+                mpz_mul(t, x, x);
+                mpz_mod(x, t, n);
+                mpz_add_ui(x, x, a);
+            }
+            
+            mpz_set(y, x);
+        }
+        
+        factor_found:
+            do {
+                mpz_mul(t, y, y);
+                mpz_mod(y, t, n);
+                mpz_add_ui(y, y, a);
+                
+                mpz_sub(t, z, y);
+                mpz_gcd(t, t, n);
+                
+            } while (mpz_cmp_ui(t, 1) == 0);
+        
+        mpz_divexact(n, n, t);	/* divide by t, before t is overwritten */
+
+        if (mpz_probab_prime_p(t, MR_REPS) == 0) {
+            PollardRhoMpzT(t, a + 1, factors);
+        } else {
+            double dblT = mpz_get_d(t);
+            factors.push_back(dblT);
+            
+            while (mpz_divisible_p(n, t)) {
+                mpz_divexact(n, n, t);
+                factors.push_back(dblT);
+            }
+        }
+        
+        if (mpz_probab_prime_p(n, MR_REPS) != 0) {
+            factors.push_back(mpz_get_d(n));
+            break;
+        }
+        
+        mpz_mod(x, x, n);
+        mpz_mod(z, z, n);
+        mpz_mod(y, y, n);
+    }
+    
+    mpz_clear(P);
+    mpz_clear(t);
+    mpz_clear(z);
+    mpz_clear(x);
+    mpz_clear(y);
+}
+
+void PollardRho(int64_t n, int64_t a, std::vector<int>& factors) {
+    
+    int64_t x, z, y, P, t;
+    std::size_t k = 1u;
+    std::size_t q = 1u;
     
     y = x = z = 2;
-    P = k = l = 1;
-    
-    mpz_t bigT, bigN;
-    mpz_init(bigT);
-    mpz_init(bigN);
+    P = 1;
     
     while (n != 1) {
         for (;;) {
             do {
-                x = ProdBigMod(x, x, n);
+                x *= x;
+                x %= n;
                 x += a;
+                
                 t = z - x;
-                P = ProdBigMod(P, t, n);
+                t = PositiveMod(t, n);
+                P *= t;
+                P %= n;
                 
                 if (k % 32 == 1) {
                     t = myGCD(P, n);
@@ -110,69 +300,88 @@ void PollardRho(int64_t n, int64_t a,
                         goto factor_found;
                     y = x;
                 }
+                
             } while (--k != 0);
             
             z = x;
-            k = l;
-            l = 2 * l;
-            for (i = 0; i < k; ++i) {
-                x = ProdBigMod(x, x, n);
+            k = q;
+            q <<= 1;
+            
+            for (std::size_t i = 0; i < k; ++i) {
+                x *= x;
+                x %= n;
                 x += a;
             }
+            
             y = x;
         }
         
         factor_found:
             do {
-                y = ProdBigMod(y, y, n);
+                y *= y;
+                y %= n;
                 y += a;
-                t = z - y;
-                t = myGCD(t, n);
+                t = myGCD(z - y, n);
+                
             } while (t == 1);
         
         n /= t;	/* divide by t, before t is overwritten */
-        mpz_set_d(bigT, static_cast<double>(t));
         
-        if (mpz_probab_prime_p(bigT, MR_REPS) == 0) {
+        if (!IsPrime(t)) {
             PollardRho(t, a + 1, factors);
         } else {
-            factors.push_back(static_cast<typeReturn>(t));
+            factors.push_back(static_cast<int>(t));
+            
+            while ((n % t) == 0) {
+                n /= t;
+                factors.push_back(static_cast<int>(t));
+            }
         }
         
-        mpz_set_d(bigN, static_cast<double>(n));
-        
-        if (mpz_probab_prime_p(bigN, MR_REPS)) {
-            factors.push_back(static_cast<typeReturn>(n));
+        if (IsPrime(n)) {
+            factors.push_back(static_cast<int>(n));
             break;
         }
         
-        x = PositiveMod(x, n);
-        z = PositiveMod(z, n);
-        y = PositiveMod(y, n);
+        x %= n;
+        z %= n;
+        y %= n;
     }
-    
-    mpz_clear(bigT);
-    mpz_clear(bigN);
 }
 
 template <typename typeReturn>
 void getPrimeFactors(int64_t& t, std::vector<typeReturn>& factors) {
     FactorTrialDivision(t, factors);
     
-    mpz_t bigT;
-    mpz_init(bigT);
-    
     if (t > 1) {
-        mpz_set_d(bigT, static_cast<double>(t));
-        if (mpz_probab_prime_p(bigT, MR_REPS)) {
-            factors.push_back(t);
+        if (t < std::numeric_limits<int>::max()) {
+            if (IsPrime(t)) {
+                factors.push_back(t);
+            } else {
+                std::vector<int> intFactors;
+                PollardRho(t, 1, intFactors);
+                factors.insert(factors.end(), intFactors.cbegin(), intFactors.cend());
+            }
         } else {
-            PollardRho(t, 1, factors);
+            mpz_t bigT;
+            mpz_init(bigT);
+            mpz_set_d(bigT, static_cast<double>(t));
+            
+            if (mpz_probab_prime_p(bigT, MR_REPS)) {
+                factors.push_back(t);
+            } else {
+                std::vector<double> dblFactors;
+                PollardRhoMpzT(bigT, 1, dblFactors);
+                factors.insert(factors.end(),
+                               std::make_move_iterator(dblFactors.cbegin()),
+                               std::make_move_iterator(dblFactors.cend()));
+            }
+            
+            mpz_clear(bigT);
         }
     }
     
     std::sort(factors.begin(), factors.end());
-    mpz_clear(bigT);
 }
 
 template <typename typeReturn>
