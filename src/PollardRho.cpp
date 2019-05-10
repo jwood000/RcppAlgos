@@ -541,8 +541,17 @@ void IsPrimeVec(std::size_t m, std::size_t n, std::vector<double> &myNums,
         }
         
         if (primeTest[j]) {
-            mpz_set_d(testMpzt, myNums[j]);
-            primeTest[j] = mpz_probab_prime_p(testMpzt, MR_REPS);
+            // 1e9 was determined empirically. Creating an mpz_t and calling
+            // mpz_probab_prime_p isn't as efficient as calling a similar
+            // function that only deals with primitive types.
+            if (myNums[j] < 1000000000) {
+                primeTest[j] = IsPrime(testVal);
+            } else {
+                mpz_set_d(testMpzt, myNums[j]);
+                
+                if (mpz_probab_prime_p(testMpzt, MR_REPS))
+                    primeTest[j] = true;
+            }
         }
     }
     
