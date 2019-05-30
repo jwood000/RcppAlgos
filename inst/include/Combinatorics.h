@@ -76,10 +76,11 @@ void GeneralReturn(int n, int m, std::vector<typeVector> v, bool IsRep, int nRow
 // and we must generate and test every possible combination/permutation
 template <typename typeRcpp, typename typeVector>
 typeRcpp SpecCaseRet(int n, int m, std::vector<typeVector> v, bool IsRep, int nRows, 
-                     bool keepRes, std::vector<int> z, double lower, std::string mainFun,
-                     bool IsMultiset, double computedRows, std::vector<std::string> compFunVec,
+                     bool keepRes, std::vector<int> z, double lower, std::string mainFun, 
+                     bool IsMult, double computedRows, std::vector<std::string> compFunVec,
                      std::vector<typeVector> myLim, bool IsComb, std::vector<int> myReps,
-                     std::vector<int> freqs, bool bLower, bool permNonTriv, double userRows) {
+                     std::vector<int> freqs, bool bLower, bool permNonTriv, double userRows,
+                     double tol) {
     
     if (!bLower) {
         if (computedRows > std::numeric_limits<int>::max())
@@ -99,13 +100,29 @@ typeRcpp SpecCaseRet(int n, int m, std::vector<typeVector> v, bool IsRep, int nR
     typeVector testVal;
     
     GeneralReturn(n, m, v, IsRep, nRows, IsComb, myReps, freqs, 
-                  z, permNonTriv, IsMultiset, myFun, true, matRes, 0);
+                  z, permNonTriv, IsMult, myFun, true, matRes, 0);
     
     Rcpp::XPtr<compPtr<typeVector>> xpComp = putCompPtrInXPtr<typeVector>(compFunVec[0]);
     compPtr<typeVector> myComp = *xpComp;
     
     Rcpp::XPtr<compPtr<typeVector>> xpComp2 = xpComp;
     compPtr<typeVector> myComp2;
+    
+    if (!std::is_integral<typeVector>::value) {
+        if (compFunVec[0] == "<=") {
+            myLim[0] = myLim[0] + tol;
+        } else if (compFunVec[0] == ">=") {
+            myLim[0] = myLim[0] - tol;
+        }
+        
+        if (compFunVec.size() > 1) {
+            if (compFunVec[1] == "<=") {
+                myLim[1] = myLim[1] + tol;
+            } else if (compFunVec[1] == ">=") {
+                myLim[1] = myLim[1] - tol;
+            }
+        }
+    }
     
     if (compFunVec.size() == 1) {
         for (int i = 0; i < nRows; ++i) {
