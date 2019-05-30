@@ -1,14 +1,16 @@
-![](http://cranlogs.r-pkg.org/badges/RcppAlgos?color=orange)
-![](http://cranlogs.r-pkg.org/badges/grand-total/RcppAlgos?color=brightgreen)
-[![Coverage
-status](https://codecov.io/gh/jwood000/RcppAlgos/branch/master/graph/badge.svg)](https://codecov.io/github/jwood000/RcppAlgos?branch=master)
-
 # RcppAlgos
 
 Overview
 ---------
 A collection of high performance functions implemented in C++ with Rcpp for solving problems in combinatorics and computational mathematics. Utilizes the library [RcppThread](https://github.com/tnagler/RcppThread) where multithreading is needed. We also make use of the [RMatrix.h](https://github.com/RcppCore/RcppParallel/blob/master/inst/include/RcppParallel/RMatrix.h) header file from [RcppParallel](https://github.com/RcppCore/RcppParallel) for thread safe accessors for Rcpp matrices. Featured functions:
 
+* `comboGeneral`/`permuteGeneral` - Generate all combinations/permutations of a vector (including [multisets](https://en.wikipedia.org/wiki/Multiset)) meeting specific criteria.
+    - Produce results in parallel using the `Parallel` argument. You can also apply each of the five compiled functions given by the argument `constraintFun` in parallel as well. E.g. Obtaining the row sums of all combinations:
+        - `comboGeneral(20, 10, constraintFun = "sum", Parallel = TRUE)`
+    - Alternatively, the arguments `lower` and `upper` make it possible to generate combinations/permutations in chunks allowing for parallelization via the package `parallel`. This is convenient when you want to apply a custom function to the output in parallel as well (see this [stackoverflow post](https://stackoverflow.com/a/51595866/4408538) for a use case).
+    - GMP support allows for exploration of combinations/permutations of vectors with many elements.
+* `comboSample`/`permuteSample` - Easily generate random samples of combinations/permutations in parallel.
+    - You can pass a vector of specific indices or rely on the internal sampling functions. We call `sample` when the total number of results is small and for larger cases, the sampling is done in a very similar fashion to `urand.bigz` from the `gmp` package.
 * `primeSieve` - Generates all primes less than a **billion in under 0.5 seconds.**
 ``` r
 system.time(b <- primeSieve(10^9, nThreads = 8))
@@ -27,13 +29,6 @@ system.time(primeCount(1e12, nThreads = 8))
    user  system elapsed 
   0.804   0.005   0.127
 ```
-* `comboGeneral`/`permuteGeneral` - Generate all combinations/permutations of a vector (including [multisets](https://en.wikipedia.org/wiki/Multiset)) meeting specific criteria.
-    - Produce results in parallel using the `Parallel` argument. You can also apply each of the five compiled functions given by the argument `constraintFun` in parallel as well. E.g. Obtaining the row sums of all combinations:
-        - `comboGeneral(20, 10, constraintFun = "sum", Parallel = TRUE)`
-    - Alternatively, the arguments `lower` and `upper` make it possible to generate combinations/permutations in chunks allowing for parallelization via the package `parallel`. This is convenient when you want to apply a custom function to the output in parallel as well (see this [stackoverflow post](https://stackoverflow.com/a/51595866/4408538) for a use case).
-    - GMP support allows for exploration of combinations/permutations of vectors with many elements.
-* `comboSample`/`permuteSample` - Easily generate random samples of combinations/permutations in parallel.
-    - You can pass a vector of specific indices or rely on the internal sampling functions. We call `sample` when the total number of results is small and for larger cases, the sampling is done in a very similar fashion to `urand.bigz` from the `gmp` package.
 
 The `primeSieve` function and the `primeCount` function are both based off of the excellent work by [Kim Walisch](https://github.com/kimwalisch). The respective repos can be found here: [kimwalisch/primesieve](https://github.com/kimwalisch/primesieve); [kimwalisch/primecount](https://github.com/kimwalisch/primecount)
 
@@ -301,7 +296,7 @@ microbenchmark(serial = comboGeneral(25, 10, constraintFun = "mean"),
              parallel = comboGeneral(25, 10, constraintFun = "mean", Parallel = TRUE),
              rowmeans = rowMeans(combs))
 Unit: milliseconds
-     expr       min        lq      mean    median        uq      max neval
+     expr       min       lq      mean    median        uq      max neval
    serial 171.22701 182.2575 198.14229 198.29388 213.14787 240.1016   100
  parallel  54.41817  59.2010  73.12819  74.61183  77.93679 119.8481   100
  rowmeans 102.34084 103.2962 115.09863 107.12878 120.19177 174.8596   100
@@ -601,15 +596,14 @@ isPrimeRcpp(995:1000, namedVector = TRUE)
   995   996   997   998   999  1000 
 FALSE FALSE  TRUE FALSE FALSE FALSE
 
-
-system.time(a <- primeFactorize(1e12:(1e12 + 3e4)))
+system.time(a <- primeFactorize(1e12:(1e12 + 1e5)))
    user  system elapsed 
-  1.202   0.002   1.207
+  1.791   0.005   1.806
 
 ## Using nThreads for greater efficiency  
-system.time(b <- primeFactorize(1e12:(1e12 + 3e4), nThreads = 8))
+system.time(b <- primeFactorize(1e12:(1e12 + 1e5), nThreads = 8))
    user  system elapsed 
-  1.633   0.001   0.217
+  3.197   0.004   0.418
   
 identical(a, b)
 [1] TRUE
