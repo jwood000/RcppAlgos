@@ -32,7 +32,8 @@ namespace CleanConvert {
 
     template <typename stdType>
     inline void convertPrimitive(SEXP input, stdType &result, std::string nameOfObject,
-                                 bool numOnly = true, bool checkWhole = true, bool negPoss = false) {
+                                 bool numOnly = true, bool checkWhole = true, 
+                                 bool negPoss = false, bool decimalFraction = false) {
         
         const stdType maxType = std::numeric_limits<stdType>::max();
         
@@ -48,8 +49,11 @@ namespace CleanConvert {
                     if (std::abs(dblInp) > Significand53)
                         Rcpp::stop("The abs value of " + nameOfObject + " must be less than 2^53");
                 } else {
-                    if (dblInp < 1)
-                        Rcpp::stop(nameOfObject + " must be a positive number");
+                    if (decimalFraction) {
+                        if (dblInp < 0) Rcpp::stop(nameOfObject + " must be a positive number");
+                    } else if (dblInp < 1) {
+                        Rcpp::stop(nameOfObject + " must be a positive whole number");
+                    }
                     
                     if (dblInp > maxType)
                         Rcpp::stop(nameOfObject + " must be less than or equal to " + std::to_string(maxType));
