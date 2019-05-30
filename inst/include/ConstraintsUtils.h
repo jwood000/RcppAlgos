@@ -55,11 +55,6 @@ template <typename stdType>
 bool greaterEqual(stdType x, const std::vector<stdType> &y) {return x >= y[0];}
 
 template <typename stdType>
-bool equalDbl(stdType x, const std::vector<stdType> &y) {
-    return std::abs(x - y[0]) <= std::numeric_limits<double>::epsilon();
-}
-
-template <typename stdType>
 bool equalInt(stdType x, const std::vector<stdType> &y) {return x == y[0];}
 
 
@@ -107,6 +102,8 @@ enum myComps {
     GELE = 8
 };
 
+// N.B. With equality check for double data type we must call greaterEqlLessEql
+// function with y being altered in the calling function to give a range (y - e, y + e)
 template <typename stdType>
 Rcpp::XPtr<compPtr<stdType>> putCompPtrInXPtr(std::string fstr) {
     
@@ -127,7 +124,7 @@ Rcpp::XPtr<compPtr<stdType>> putCompPtrInXPtr(std::string fstr) {
             if (std::is_integral<stdType>::value)
                 return(Rcpp::XPtr<compPtr<stdType>>(new compPtr<stdType>(&equalInt)));
             else
-                return(Rcpp::XPtr<compPtr<stdType>>(new compPtr<stdType>(&equalDbl)));
+                return(Rcpp::XPtr<compPtr<stdType>>(new compPtr<stdType>(&greaterEqlLessEql)));
         case GTLT:
             return(Rcpp::XPtr<compPtr<stdType>>(new compPtr<stdType>(&greaterLess)));
         case GELT:
