@@ -549,8 +549,8 @@ void IsPrimeVec(std::size_t m, std::size_t n, std::vector<double> &myNums,
             } else {
                 mpz_set_d(testMpzt, myNums[j]);
                 
-                if (mpz_probab_prime_p(testMpzt, MR_REPS))
-                    primeTest[j] = true;
+                if (mpz_probab_prime_p(testMpzt, MR_REPS) == 0)
+                    primeTest[j] = false;
             }
         }
     }
