@@ -17,12 +17,12 @@ Generate all Combinations/Permutations of a Vector with/without Constraints
 comboGeneral(v, m = NULL, repetition = FALSE, freqs = NULL, lower = NULL, 
               upper = NULL, constraintFun = NULL, comparisonFun = NULL,
                limitConstraints = NULL, keepResults = NULL, FUN = NULL,
-                Parallel = FALSE, nThreads = NULL)
+                Parallel = FALSE, nThreads = NULL, tolerance = sqrt(.Machine$double.eps))
 
 permuteGeneral(v, m = NULL, repetition = FALSE, freqs = NULL, lower = NULL, 
                 upper = NULL, constraintFun = NULL, comparisonFun = NULL,
                  limitConstraints = NULL, keepResults = NULL, FUN = NULL,
-                  Parallel = FALSE, nThreads = NULL)
+                  Parallel = FALSE, nThreads = NULL, tolerance = sqrt(.Machine$double.eps))
 }
 \arguments{
   \item{v}{Source vector. If \code{v} is an integer (including nonpositive integers), it will be converted to the sequence \code{1:v}.}
@@ -58,6 +58,7 @@ permuteGeneral(v, m = NULL, repetition = FALSE, freqs = NULL, lower = NULL,
   \item{FUN}{Function to be applied to each combination/permutation. The default is \code{NULL}.}
   \item{Parallel}{Logical value indicating whether combinations/permutations should be generated in parallel. The default is \code{FALSE}. If \code{nThreads} is not \code{NULL}, it will be given preference (\emph{e.g.} if user has 8 threads with \code{Parallel = TRUE} and \code{nThreads = 4}, only 4 threads will be spawned). If your system is single-threaded, the arguments \code{Parallel} and \code{nThreads} are ignored.}
   \item{nThreads}{Specific number of threads to be used. The default is \code{NULL}. See \code{Parallel}.}
+  \item{tolerance}{A numeric value greater than or equal to zero. This parameter is utilized when a constraint is applied on a numeric vector. The default is \eqn{2^{-26}}{2^(-26)} which is approximately \eqn{1.5e-8}. N.B. If the input vector is of type integer, this parameter will be ignored and strict equality will be enforced.}
 }
 \value{
 In general, a matrix is returned with each row containing a vector of length \eqn{m} or \eqn{m + 1} depending on the value of \code{keepResults}. If \code{m} isn't supplied and \code{freqs} is given, a matrix is returned with each row containing a vector of length \code{sum(freqs)}. If \code{FUN} is utilized, a list is returned.
