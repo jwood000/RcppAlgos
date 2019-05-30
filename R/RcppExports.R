@@ -5,8 +5,8 @@ cpp11GetNumThreads <- function() {
     .Call(`_RcppAlgos_cpp11GetNumThreads`)
 }
 
-CombinatoricsRcpp <- function(Rv, Rm, Rrepetition, RFreqs, Rlow, Rhigh, f1, f2, Rlim, IsComb, RKeepRes, IsFactor, IsCount, stdFun, myEnv, Rparallel, RNumThreads, maxThreads) {
-    .Call(`_RcppAlgos_CombinatoricsRcpp`, Rv, Rm, Rrepetition, RFreqs, Rlow, Rhigh, f1, f2, Rlim, IsComb, RKeepRes, IsFactor, IsCount, stdFun, myEnv, Rparallel, RNumThreads, maxThreads)
+CombinatoricsRcpp <- function(Rv, Rm, RisRep, RFreqs, Rlow, Rhigh, f1, f2, Rlim, IsComb, RKeepRes, IsFactor, IsCount, stdFun, myEnv, Rparallel, RNumThreads, maxThreads, Rtolerance) {
+    .Call(`_RcppAlgos_CombinatoricsRcpp`, Rv, Rm, RisRep, RFreqs, Rlow, Rhigh, f1, f2, Rlim, IsComb, RKeepRes, IsFactor, IsCount, stdFun, myEnv, Rparallel, RNumThreads, maxThreads, Rtolerance)
 }
 
 DivNumSieve <- function(Rb1, Rb2, bDivSieve, RNamed, RNumThreads, maxThreads) {

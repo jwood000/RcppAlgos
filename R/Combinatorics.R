@@ -1,39 +1,39 @@
 comboGeneral <- function(v, m = NULL, repetition = FALSE, freqs = NULL, 
                          lower = NULL, upper = NULL, constraintFun = NULL,
                          comparisonFun = NULL, limitConstraints = NULL, 
-                         keepResults = NULL, FUN = NULL, 
-                         Parallel = FALSE, nThreads = NULL) {
+                         keepResults = NULL, FUN = NULL, Parallel = FALSE,
+                         nThreads = NULL, tolerance = sqrt(.Machine$double.eps)) {
     
     isFactor <- is.factor(v)
     CombinatoricsRcpp(v, m, repetition, freqs, lower, upper, constraintFun, 
                       comparisonFun, limitConstraints, TRUE, keepResults, isFactor,
-                      FALSE, FUN, new.env(), Parallel, nThreads, pkgEnv$nThreads)
+                      FALSE, FUN, new.env(), Parallel, nThreads, pkgEnv$nThreads, tolerance)
 }
 
 permuteGeneral <- function(v, m = NULL, repetition = FALSE, freqs = NULL, 
                            lower = NULL, upper = NULL, constraintFun = NULL,
                            comparisonFun = NULL, limitConstraints = NULL,
-                           keepResults = NULL, FUN = NULL, 
-                           Parallel = FALSE, nThreads = NULL) {
+                           keepResults = NULL, FUN = NULL, Parallel = FALSE,
+                           nThreads = NULL, tolerance = sqrt(.Machine$double.eps)) {
     
     isFactor <- is.factor(v)
     CombinatoricsRcpp(v, m, repetition, freqs, lower, upper, constraintFun, 
                       comparisonFun, limitConstraints, FALSE, keepResults, isFactor,
-                      FALSE, FUN, new.env(), Parallel, nThreads, pkgEnv$nThreads)
+                      FALSE, FUN, new.env(), Parallel, nThreads, pkgEnv$nThreads, tolerance)
 }
 
 comboCount <-  function(v, m = NULL, repetition = FALSE, freqs = NULL) {
     
     CombinatoricsRcpp(v, m, repetition, freqs, NULL, NULL,
                       NULL, NULL, NULL, TRUE, FALSE, FALSE,
-                      TRUE, NULL, NULL, FALSE, NULL, 0)
+                      TRUE, NULL, NULL, FALSE, NULL, 0, NULL)
 }
 
 permuteCount <- function(v, m = NULL, repetition = FALSE, freqs = NULL) {
     
     CombinatoricsRcpp(v, m, repetition, freqs, NULL, NULL,
                       NULL, NULL, NULL, FALSE, FALSE, FALSE,
-                      TRUE, NULL, NULL, FALSE, NULL, 0)
+                      TRUE, NULL, NULL, FALSE, NULL, 0, NULL)
 }
 
 comboSample <- function(v, m = NULL, repetition = FALSE, freqs = NULL,
