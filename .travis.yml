@@ -18,6 +18,3 @@ addons:
     packages:
       - g++-6
       - libgmp3-dev
-      
-after_success:
-    - Rscript -e "covr::codecov()"
