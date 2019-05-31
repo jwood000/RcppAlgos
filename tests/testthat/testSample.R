@@ -223,7 +223,7 @@ test_that("permuteSample produces appropriate error messages", {
     expect_error(permuteSample(5, 6, n = 3), "m must be less than or equal to the length of v")
     expect_error(permuteSample(5, repetition = TRUE), "m and freqs cannot both be NULL")
     expect_error(permuteSample(5, 1:5), "length of m must be 1")
-    expect_error(permuteSample(5, -4), "m must be a positive number")
+    expect_error(permuteSample(5, -4), "m must be a positive whole number")
     expect_error(permuteSample(5, 3), "n and sampleVec cannot both be NULL")
     expect_error(permuteSample(5,3,freqs = c(1,2,3,-2,1)), "in freqs must be a positive")
     expect_error(permuteSample(5,3, n = 100), 
@@ -240,7 +240,7 @@ test_that("permuteSample produces appropriate error messages", {
     expect_error(permuteSample(5000, 40, sampleVec = 1.1),
                  "sampleVec must be a whole number")
     expect_error(permuteSample(100, 10, n = 2^50), "n must be less than or equal to 2147483647")
-    expect_error(permuteSample(100, 10, n = -200), "n must be a positive number")
+    expect_error(permuteSample(100, 10, n = -200), "n must be a positive whole number")
     expect_error(permuteSample(100, 10, sampleVec = c("62815650955529472001")),
                  "One or more of the requested values in sampleVec")
     expect_error(permuteSample(3.3, 2, n = 1), 

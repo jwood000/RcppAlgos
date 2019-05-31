@@ -31,7 +31,7 @@ test_that("primeFactorizeSieve generates correct numbers", {
 })
 
 test_that("primeFactorizeSieve produces appropriate error messages", {
-    expect_error(primeFactorizeSieve(-1), "must be a positive number")
+    expect_error(primeFactorizeSieve(-1), "must be a positive whole number")
     expect_error(primeFactorizeSieve(2^53), "must be less than")
     expect_error(primeFactorizeSieve(2^53, 1), "must be less than")
     expect_error(primeFactorizeSieve(1, 2^53), "must be less than")

@@ -39,8 +39,8 @@ test_that("eulerPhiSieve generates correct numbers", {
 })
 
 test_that("eulerPhiSieve produces appropriate error messages", {
-    expect_error(eulerPhiSieve(-1), "bound1 must be a positive number")
-    expect_error(eulerPhiSieve(0), "bound1 must be a positive number")
+    expect_error(eulerPhiSieve(-1), "bound1 must be a positive whole number")
+    expect_error(eulerPhiSieve(0), "bound1 must be a positive whole number")
     expect_error(eulerPhiSieve(2^53), "bound1 must be less than")
     expect_error(eulerPhiSieve(2^53, 1), "must be less than")
     expect_error(eulerPhiSieve(1, 2^53), "must be less than")

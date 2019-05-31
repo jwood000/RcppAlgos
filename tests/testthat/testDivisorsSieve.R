@@ -39,8 +39,8 @@ test_that("divisorsSieve generates correct numbers", {
 })
 
 test_that("divisorsSieve produces appropriate error messages", {
-    expect_error(divisorsSieve(-1), "bound1 must be a positive number")
-    expect_error(divisorsSieve(0), "bound1 must be a positive number")
+    expect_error(divisorsSieve(-1), "bound1 must be a positive whole number")
+    expect_error(divisorsSieve(0), "bound1 must be a positive whole number")
     expect_error(divisorsSieve(2^53), "bound1 must be less than")
     expect_error(divisorsSieve(2^53, 1), "bound1 must be less than")
     expect_error(divisorsSieve(1, 2^53), "must be less than")
