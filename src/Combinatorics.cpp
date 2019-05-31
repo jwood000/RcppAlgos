@@ -199,11 +199,9 @@ std::vector<int> findStart(int n, int m, std::vector<typeVector> v,
 
 template <typename typeRcpp, typename typeVector>
 typeRcpp GeneralPartitions(int n, int r, std::vector<typeVector> &v, bool isRep, typeVector lim,
-                           const int numRows, bool isComb, bool xtraCol, bool bUserRows, double tol) {
+                           const int numRows, bool isComb, bool xtraCol, double tol) {
     
     int count = 0;
-    std::vector<typeVector> partitionsVec;
-    
     std::sort(v.begin(), v.end());
     std::vector<int> z = findStart(n, r, v, isRep, lim, tol);
     
@@ -219,9 +217,8 @@ typeRcpp GeneralPartitions(int n, int r, std::vector<typeVector> &v, bool isRep,
     std::vector<int> zCheck;
     int numIter, maxZ = n - 1;
     const int r1 = r - 1;
-    
-    if (bUserRows)
-        partitionsVec.reserve(numRows * r);
+    const unsigned long int nCols = (xtraCol) ? r + 1 : r;
+    typeRcpp partitionsMatrix = Rcpp::no_init_matrix(numRows, nCols);
     
     if (isRep) {
         // smallest index such that z[maxIndex] == currMax
@@ -246,7 +243,7 @@ typeRcpp GeneralPartitions(int n, int r, std::vector<typeVector> &v, bool isRep,
         while (edge >= 0 && (z[maxIndex] - z[edge]) >= 2) {
             if (isComb) {
                 for (int k = 0; k < r; ++k)
-                    partitionsVec.push_back(v[z[k]]);
+                    partitionsMatrix(count, k) = v[z[k]];
                 
                 ++count;
             } else {
@@ -255,14 +252,12 @@ typeRcpp GeneralPartitions(int n, int r, std::vector<typeVector> &v, bool isRep,
                 if ((numIter + count) > numRows)
                     numIter = numRows - count;
                 
-                for (int i = 0; i < numIter; ++i) {
+                for (int i = 0; i < numIter; ++i, ++count) {
                     for (int k = 0; k < r; ++k)
-                        partitionsVec.push_back(v[z[k]]);
+                        partitionsMatrix(count, k) = v[z[k]];
                     
                     std::next_permutation(z.begin(), z.end());
                 }
-                
-                count += numIter;
             }
             
             if (count >= numRows)
@@ -343,7 +338,7 @@ typeRcpp GeneralPartitions(int n, int r, std::vector<typeVector> &v, bool isRep,
         if (count < numRows) {
             if (isComb) {
                 for (int k = 0; k < r; ++k)
-                    partitionsVec.push_back(v[z[k]]);
+                    partitionsMatrix(count, k) = v[z[k]];
 
                 ++count;
             } else {
@@ -352,14 +347,12 @@ typeRcpp GeneralPartitions(int n, int r, std::vector<typeVector> &v, bool isRep,
                 if ((numIter + count) > numRows)
                     numIter = numRows - count;
 
-                for (int i = 0; i < numIter; ++i) {
+                for (int i = 0; i < numIter; ++i, ++count) {
                     for (int k = 0; k < r; ++k)
-                        partitionsVec.push_back(v[z[k]]);
+                        partitionsMatrix(count, k) = v[z[k]];
 
                     std::next_permutation(z.begin(), z.end());
                 }
-
-                count += numIter;
             }
         }
         
@@ -406,18 +399,16 @@ typeRcpp GeneralPartitions(int n, int r, std::vector<typeVector> &v, bool isRep,
         while (edge >= 0 && (z[outside] - z[edge]) >= tarDiff) {
             if (isComb) {
                 for (int k = 0; k < r; ++k)
-                    partitionsVec.push_back(v[z[k]]);
+                    partitionsMatrix(count, k) = v[z[k]];
                 
                 ++count;
             } else {
                 if (indexRows + count > numRows)
                     indexRows = numRows - count;
                 
-                for (int j = 0, myRow = 0; j < indexRows; ++j, myRow += r)
+                for (int j = 0, myRow = 0; j < indexRows; ++j, ++count, myRow += r)
                     for (int k = 0; k < r; ++k)
-                        partitionsVec.push_back(v[z[indexMatrix[myRow + k]]]);
-                
-                count += indexRows;
+                        partitionsMatrix(count, k) = v[z[indexMatrix[myRow + k]]];
             }
             
             if (count >= numRows)
@@ -484,34 +475,25 @@ typeRcpp GeneralPartitions(int n, int r, std::vector<typeVector> &v, bool isRep,
         if (count < numRows) {
             if (isComb) {
                 for (int k = 0; k < r; ++k)
-                    partitionsVec.push_back(v[z[k]]);
+                    partitionsMatrix(count, k) = v[z[k]];
                 
                 ++count;
             } else {
                 if (indexRows + count > numRows)
                     indexRows = numRows - count;
                 
-                for (int j = 0, myRow = 0; j < indexRows; ++j, myRow += r)
+                for (int j = 0, myRow = 0; j < indexRows; ++j, ++count, myRow += r)
                     for (int k = 0; k < r; ++k)
-                        partitionsVec.push_back(v[z[indexMatrix[myRow + k]]]);
-                
-                count += indexRows;
+                        partitionsMatrix(count, k) = v[z[indexMatrix[myRow + k]]];
             }
         }
     }
-    
-    unsigned long int nCols = (xtraCol) ? r + 1 : r;
-    typeRcpp partitionsMatrix = Rcpp::no_init_matrix(count, nCols);
-
-    for (int i = 0, k = 0; i < count; ++i)
-        for (int j = 0; j < r; ++j, ++k)
-            partitionsMatrix(i, j) = partitionsVec[k];
 
     if (xtraCol)
         for (int i = 0; i < count; ++i)
             partitionsMatrix(i, r) = lim;
     
-    return partitionsMatrix;
+    return SubMat(partitionsMatrix, count);
 }
 
 // This function applys a constraint function to a vector v with respect
@@ -648,8 +630,7 @@ typeRcpp CombinatoricsConstraints(int n, int r, std::vector<typeVector> &v, bool
                     zExpand.push_back(i);
             }
             
-            for (int i = 0; i < r; ++i)
-                z.push_back(zExpand[i]);
+            z.assign(zExpand.cbegin(), zExpand.cbegin() + r);
             
             while (keepGoing) {
                 
@@ -682,14 +663,12 @@ typeRcpp CombinatoricsConstraints(int n, int r, std::vector<typeVector> &v, bool
                             if ((numIter + count) > numRows)
                                 numIter = numRows - count;
                             
-                            for (int i = 0; i < numIter; ++i) {
+                            for (int i = 0; i < numIter; ++i, ++count) {
                                 for (int k = 0; k < r; ++k)
                                     combinatoricsMatrix(count, k) = v[zPerm[k]];
                                 
                                 std::next_permutation(zPerm.begin(), zPerm.end());
                             }
-                            
-                            count += numIter;
                         }
                         
                         if (xtraCol)
@@ -766,14 +745,12 @@ typeRcpp CombinatoricsConstraints(int n, int r, std::vector<typeVector> &v, bool
                             if ((numIter + count) > numRows)
                                 numIter = numRows - count;
                             
-                            for (int i = 0; i < numIter; ++i) {
+                            for (int i = 0; i < numIter; ++i, ++count) {
                                 for (int k = 0; k < r; ++k)
                                     combinatoricsMatrix(count, k) = v[z[k]];
                                 
                                 std::next_permutation(z.begin(), z.end());
                             }
-                            
-                            count += numIter;
                         }
                         
                         if (xtraCol)
@@ -863,11 +840,9 @@ typeRcpp CombinatoricsConstraints(int n, int r, std::vector<typeVector> &v, bool
                             if (indexRows + count > numRows)
                                 indexRows = numRows - count;
                             
-                            for (int j = 0, myRow = 0; j < indexRows; ++j, myRow += r)
+                            for (int j = 0, myRow = 0; j < indexRows; ++j, ++count, myRow += r)
                                 for (int k = 0; k < r; ++k)
                                     combinatoricsMatrix(count, k) = v[z[indexMatrix[myRow + k]]];
-                            
-                            count += indexRows;
                         }
                         
                         if (xtraCol)
@@ -1437,19 +1412,17 @@ SEXP CombinatoricsRcpp(SEXP Rv, SEXP Rm, SEXP RisRep, SEXP RFreqs, SEXP Rlow,
                 }
                 
                 if (PartitionCase) {
-                    bool bUserRows = bLower || bUpper;
-                    
                     if (IsInteger) {
                         return GeneralPartitions<Rcpp::IntegerMatrix>(n, m, vInt, IsRepetition, limInt[0],
-                                                                      nRows, IsComb, keepRes, bUserRows, tolerance);
+                                                                      nRows, IsComb, keepRes, tolerance);
                     } else {
                         return GeneralPartitions<Rcpp::NumericMatrix>(n, m, vNum, IsRepetition, myLim[0],
-                                                                      nRows, IsComb, keepRes, bUserRows, tolerance);
+                                                                      nRows, IsComb, keepRes, tolerance);
                     }
                 }
             }
         }
-
+        
         if (IsInteger) {
             return CombinatoricsConstraints<Rcpp::IntegerMatrix>(n, m, vInt, IsRepetition, mainFun, compFunVec,
                                                                  limInt, nRows, IsComb, keepRes, myReps, IsMultiset, tolerance);
