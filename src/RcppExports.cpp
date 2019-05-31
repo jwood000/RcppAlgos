@@ -16,8 +16,8 @@ BEGIN_RCPP
 END_RCPP
 }
 // CombinatoricsRcpp
-SEXP CombinatoricsRcpp(SEXP Rv, SEXP Rm, SEXP RisRep, SEXP RFreqs, SEXP Rlow, SEXP Rhigh, SEXP f1, SEXP f2, SEXP Rlim, bool IsComb, SEXP RKeepRes, bool IsFactor, bool IsCount, SEXP stdFun, SEXP myEnv, SEXP Rparallel, SEXP RNumThreads, int maxThreads, SEXP Rtolerance);
-RcppExport SEXP _RcppAlgos_CombinatoricsRcpp(SEXP RvSEXP, SEXP RmSEXP, SEXP RisRepSEXP, SEXP RFreqsSEXP, SEXP RlowSEXP, SEXP RhighSEXP, SEXP f1SEXP, SEXP f2SEXP, SEXP RlimSEXP, SEXP IsCombSEXP, SEXP RKeepResSEXP, SEXP IsFactorSEXP, SEXP IsCountSEXP, SEXP stdFunSEXP, SEXP myEnvSEXP, SEXP RparallelSEXP, SEXP RNumThreadsSEXP, SEXP maxThreadsSEXP, SEXP RtoleranceSEXP) {
+SEXP CombinatoricsRcpp(SEXP Rv, SEXP Rm, SEXP RisRep, SEXP RFreqs, SEXP Rlow, SEXP Rhigh, SEXP f1, SEXP f2, SEXP Rtarget, bool IsComb, SEXP RKeepRes, bool IsFactor, bool IsCount, SEXP stdFun, SEXP myEnv, SEXP Rparallel, SEXP RNumThreads, int maxThreads, SEXP Rtolerance);
+RcppExport SEXP _RcppAlgos_CombinatoricsRcpp(SEXP RvSEXP, SEXP RmSEXP, SEXP RisRepSEXP, SEXP RFreqsSEXP, SEXP RlowSEXP, SEXP RhighSEXP, SEXP f1SEXP, SEXP f2SEXP, SEXP RtargetSEXP, SEXP IsCombSEXP, SEXP RKeepResSEXP, SEXP IsFactorSEXP, SEXP IsCountSEXP, SEXP stdFunSEXP, SEXP myEnvSEXP, SEXP RparallelSEXP, SEXP RNumThreadsSEXP, SEXP maxThreadsSEXP, SEXP RtoleranceSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -29,7 +29,7 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< SEXP >::type Rhigh(RhighSEXP);
     Rcpp::traits::input_parameter< SEXP >::type f1(f1SEXP);
     Rcpp::traits::input_parameter< SEXP >::type f2(f2SEXP);
-    Rcpp::traits::input_parameter< SEXP >::type Rlim(RlimSEXP);
+    Rcpp::traits::input_parameter< SEXP >::type Rtarget(RtargetSEXP);
     Rcpp::traits::input_parameter< bool >::type IsComb(IsCombSEXP);
     Rcpp::traits::input_parameter< SEXP >::type RKeepRes(RKeepResSEXP);
     Rcpp::traits::input_parameter< bool >::type IsFactor(IsFactorSEXP);
@@ -40,7 +40,7 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< SEXP >::type RNumThreads(RNumThreadsSEXP);
     Rcpp::traits::input_parameter< int >::type maxThreads(maxThreadsSEXP);
     Rcpp::traits::input_parameter< SEXP >::type Rtolerance(RtoleranceSEXP);
-    rcpp_result_gen = Rcpp::wrap(CombinatoricsRcpp(Rv, Rm, RisRep, RFreqs, Rlow, Rhigh, f1, f2, Rlim, IsComb, RKeepRes, IsFactor, IsCount, stdFun, myEnv, Rparallel, RNumThreads, maxThreads, Rtolerance));
+    rcpp_result_gen = Rcpp::wrap(CombinatoricsRcpp(Rv, Rm, RisRep, RFreqs, Rlow, Rhigh, f1, f2, Rtarget, IsComb, RKeepRes, IsFactor, IsCount, stdFun, myEnv, Rparallel, RNumThreads, maxThreads, Rtolerance));
     return rcpp_result_gen;
 END_RCPP
 }
