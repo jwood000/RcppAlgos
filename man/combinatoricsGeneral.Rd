@@ -17,12 +17,14 @@ Generate all Combinations/Permutations of a Vector with/without Constraints
 comboGeneral(v, m = NULL, repetition = FALSE, freqs = NULL, lower = NULL, 
               upper = NULL, constraintFun = NULL, comparisonFun = NULL,
                limitConstraints = NULL, keepResults = NULL, FUN = NULL,
-                Parallel = FALSE, nThreads = NULL, tolerance = sqrt(.Machine$double.eps))
+                Parallel = FALSE, nThreads = NULL, 
+                tolerance = sqrt(.Machine$double.eps))
 
 permuteGeneral(v, m = NULL, repetition = FALSE, freqs = NULL, lower = NULL, 
                 upper = NULL, constraintFun = NULL, comparisonFun = NULL,
                  limitConstraints = NULL, keepResults = NULL, FUN = NULL,
-                  Parallel = FALSE, nThreads = NULL, tolerance = sqrt(.Machine$double.eps))
+                  Parallel = FALSE, nThreads = NULL, 
+                  tolerance = sqrt(.Machine$double.eps))
 }
 \arguments{
   \item{v}{Source vector. If \code{v} is an integer (including nonpositive integers), it will be converted to the sequence \code{1:v}.}
