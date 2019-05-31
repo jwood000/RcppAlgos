@@ -88,7 +88,6 @@ test_that("permuteGeneral produces correct results with no constraints for multi
 })
 
 test_that("permuteGeneral produces correct results with constraints", {
-    
     expect_equal(nrow(permuteGeneral(15, 7,
                                      comparisonFun = "==", constraintFun = "sum",
                                      limitConstraints = 80, upper = 100)), 100)
@@ -280,7 +279,6 @@ test_that("permuteGeneral produces correct results with exotic constraints", {
 })
 
 test_that("permuteGeneral produces correct results with use of FUN", {
-    
     test <- permuteGeneral(6, 6, constraintFun = "mean")[, 7]
     expect_equal(as.vector(test), unlist(permuteGeneral(6, 6, FUN = mean)))
     
@@ -368,9 +366,9 @@ test_that("permuteGeneral produces appropriate error messages", {
     expect_error(permuteGeneral(9,4,TRUE,constraintFun = "sum",
                                 comparisonFun = "<",limitConstraints = 10,upper = -1),
                  "upper must be a positive whole number")
-    expect_error(permuteGeneral(170,7,FALSE,constraintFun = "sum",
-                                comparisonFun = "<",limitConstraints = 100),
-                 "The number of rows cannot exceed")
+    expect_warning(permuteGeneral(170,7,FALSE,constraintFun = "sum",
+                                comparisonFun = "<",limitConstraints = 40),
+                 "Note that the total number of possible combinations")
     expect_error(permuteGeneral(170,7,FALSE,constraintFun = "sum",
                                 comparisonFun = "<",
                                 limitConstraints = 100,

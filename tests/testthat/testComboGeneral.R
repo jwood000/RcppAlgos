@@ -390,7 +390,7 @@ test_that("comboGeneral produces appropriate error messages", {
     expect_error(comboGeneral(9,4,TRUE,NULL,NULL,NULL,"sum",60,10), "must be passed as a character")
     expect_error(comboGeneral(9,4,FALSE,NULL,NULL,NULL,sum,"<",10), "must be passed as a character")
     expect_error(comboGeneral(9,4,TRUE,NULL,NULL,-1,"sum","<",10), "upper must be a positive whole number")
-    expect_error(comboGeneral(170,7,FALSE,NULL,NULL,NULL,"sum","<",100), "The number of rows cannot exceed")
+    expect_warning(comboGeneral(170,7,FALSE,NULL,NULL,NULL,"sum","<",50), "Note that the total number of possible combinations")
     expect_error(comboGeneral(170,7,FALSE,NULL,NULL,10^10,"sum","<",100), "number of rows cannot exceed")
     
     expect_error(comboGeneral(50, 5, lower = -100), "lower must be a positive whole number")
