@@ -1,5 +1,5 @@
 [![Travis build
-status](https://travis-ci.org/jwood000/RcppAlgos.svg?branch=master)](https://travis-ci.org/jwood000/RcppAlgos)
+status](https://travis-ci.com/jwood000/RcppAlgos.svg?branch=master)](https://travis-ci.com/jwood000/RcppAlgos)
 ![](http://cranlogs.r-pkg.org/badges/RcppAlgos?color=orange)
 ![](http://cranlogs.r-pkg.org/badges/grand-total/RcppAlgos?color=brightgreen)
 [![Coverage
