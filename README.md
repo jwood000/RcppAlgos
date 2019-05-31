@@ -1,3 +1,10 @@
+[![Travis build
+status](https://travis-ci.org/jwood000/RcppAlgos.svg?branch=master)](https://travis-ci.org/jwood000/RcppAlgos)
+![](http://cranlogs.r-pkg.org/badges/RcppAlgos?color=orange)
+![](http://cranlogs.r-pkg.org/badges/grand-total/RcppAlgos?color=brightgreen)
+[![Coverage
+status](https://codecov.io/gh/jwood000/RcppAlgos/branch/master/graph/badge.svg)](https://codecov.io/github/jwood000/RcppAlgos?branch=master)
+
 # RcppAlgos
 
 Overview
