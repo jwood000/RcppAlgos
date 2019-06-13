@@ -517,14 +517,8 @@ SEXP CombinatoricsRcpp(SEXP Rv, SEXP Rm, SEXP RisRep, SEXP RFreqs, SEXP Rlow,
         
         bool bUserRows = bLower || bUpper;
         
-        if (userNumRows > std::numeric_limits<int>::max()) {
-            Rcpp::warning("Note that the total number of possible combinations/permutations is "
-                              "greater than 2^31 - 1. Consider using the parameter 'upper'. For "
-                              " more information see the documention for comboGeneral.");
-        }
-        
         if (mainFun == "sum" && compFunVec[0] == "==" 
-                && !IsMultiset && userNumRows > 100 && n > 1) {
+                && !IsMultiset && computedRows > 100 && n > 1) {
             
             bool PartitionCase = true;
             std::vector<double> pTest(vNum.cbegin(), vNum.cend());
@@ -544,11 +538,11 @@ SEXP CombinatoricsRcpp(SEXP Rv, SEXP Rm, SEXP RisRep, SEXP RFreqs, SEXP Rlow,
                 
                 if (PartitionCase) {
                     if (IsInteger) {
-                        return GeneralPartitions<Rcpp::IntegerMatrix>(n, m, vInt, IsRepetition, targetIntVals[0],
-                                                                      userNumRows, IsComb, keepRes, bUserRows, tolerance);
+                        return Partitions::GeneralPartitions<Rcpp::IntegerMatrix>(n, m, vInt, targetIntVals[0], IsRepetition,
+                                                                                  userNumRows, IsComb, keepRes, bUserRows, tolerance);
                     } else {
-                        return GeneralPartitions<Rcpp::NumericMatrix>(n, m, vNum, IsRepetition, targetVals[0],
-                                                                      userNumRows, IsComb, keepRes, bUserRows, tolerance);
+                        return Partitions::GeneralPartitions<Rcpp::NumericMatrix>(n, m, vNum, targetVals[0], IsRepetition,
+                                                                                  userNumRows, IsComb, keepRes, bUserRows, tolerance);
                     }
                 }
             }
