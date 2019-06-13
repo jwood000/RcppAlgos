@@ -366,9 +366,6 @@ test_that("permuteGeneral produces appropriate error messages", {
     expect_error(permuteGeneral(9,4,TRUE,constraintFun = "sum",
                                 comparisonFun = "<",limitConstraints = 10,upper = -1),
                  "upper must be a positive whole number")
-    expect_warning(permuteGeneral(170,7,FALSE,constraintFun = "sum",
-                                comparisonFun = "<",limitConstraints = 40),
-                 "Note that the total number of possible combinations")
     expect_error(permuteGeneral(170,7,FALSE,constraintFun = "sum",
                                 comparisonFun = "<",
                                 limitConstraints = 100,
