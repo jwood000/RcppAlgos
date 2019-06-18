@@ -193,8 +193,12 @@ bool checkIsInteger(std::string funPass, unsigned long int uM, int n,
     
     if (checkLim) {
         vAbs.clear();
-        for (std::size_t i = 0; i < targetVals.size(); ++i)
-            vAbs.push_back(std::abs(targetVals[i]));
+        for (std::size_t i = 0; i < targetVals.size(); ++i) {
+            if (static_cast<int64_t>(targetVals[i]) != targetVals[i])
+                return false;
+            else
+                vAbs.push_back(std::abs(targetVals[i]));
+        }
         
         double vecMax = *std::max_element(vAbs.cbegin(), vAbs.cend());
         if (vecMax > std::numeric_limits<int>::max())
