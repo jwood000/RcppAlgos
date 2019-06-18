@@ -9,7 +9,7 @@ namespace Partitions {
     constexpr int noSoln = 0;
     
     template <typename typeVector>
-    int PartitionsRep(int n, int r, std::vector<typeVector> &v, typeVector target,
+    int PartitionsRep(int n, int r, const std::vector<typeVector> &v, typeVector target,
                       double maxRows, bool isComb, double tol, std::vector<typeVector> &partitionsVec) {
     
         std::size_t count = 0;
@@ -63,12 +63,10 @@ namespace Partitions {
             lowBnd = ind;
             uppBnd = lastElem;
             mid = (uppBnd - lowBnd) / 2;
-            ind = lowBnd + mid;
             
-            if (i < lastElem) {
-                partial -= v[lastElem];
-                dist = target - (partial + v[ind]);
-            }
+            ind = lowBnd + mid;
+            partial -= v[lastElem];
+            dist = target - (partial + v[ind]);
         }
         
         std::vector<typeVector> check(r);
@@ -230,7 +228,7 @@ namespace Partitions {
     }
     
     template <typename typeVector>
-    int PartitionsDistinct(int n, int r, std::vector<typeVector> &v, typeVector target,
+    int PartitionsDistinct(int n, int r, const std::vector<typeVector> &v, typeVector target,
                            double maxRows, bool isComb, double tol, std::vector<typeVector> &partitionsVec) {
         
         std::size_t count = 0;
@@ -238,14 +236,14 @@ namespace Partitions {
         const int lastElem = n - 1;
         const int lastCol = r - 1;
         
-        typeVector testMax = std::accumulate(v.cend() - r, v.cend(), 0);
+        typeVector testMax = std::accumulate(v.cend() - r, v.cend(), static_cast<typeVector>(0));
         if (testMax < target)  {return noSoln;}
         
         int currPos = n - r;
         typeVector partial = testMax;
         partial -= v[currPos];
         
-        typeVector testMin = std::accumulate(v.cbegin(), v.cbegin() + r, 0);
+        typeVector testMin = std::accumulate(v.cbegin(), v.cbegin() + r, static_cast<typeVector>(0));
         if (testMin > target)  {return noSoln;}
         
         int mid = currPos / 2;
@@ -255,7 +253,7 @@ namespace Partitions {
         int uppBnd = (dist > 0) ? currPos : mid;
         int ind = mid;
         
-        for (std::size_t i = 0; i <= lastCol; ++i) {
+        for (int i = 0; i < r; ++i) {
             while ((uppBnd - lowBnd) > 1 && dist != 0) {
                 mid = (uppBnd - lowBnd) / 2;
                 ind = lowBnd + mid;
@@ -287,12 +285,10 @@ namespace Partitions {
             lowBnd = ind;
             uppBnd = currPos;
             mid = (uppBnd - lowBnd) / 2;
-            ind = lowBnd + mid;
             
-            if (i < lastElem) {
-                partial -= v[currPos];
-                dist = target - (partial + v[ind]);
-            }
+            ind = lowBnd + mid;
+            partial -= v[currPos];
+            dist = target - (partial + v[ind]);
         }
         
         std::vector<typeVector> check(r);
@@ -363,7 +359,7 @@ namespace Partitions {
                 
                 for (int j = 0, myRow = 0; j < indexRows; ++j, myRow += r)
                     for (int k = 0; k < r; ++k)
-                        partitionsVec.push_back(v[z[k]]);
+                        partitionsVec.push_back(v[z[indexMatrix[myRow + k]]]);
                 
                 count += indexRows;
             }
@@ -439,7 +435,7 @@ namespace Partitions {
                 
                 for (int j = 0, myRow = 0; j < indexRows; ++j, myRow += r)
                     for (int k = 0; k < r; ++k)
-                        partitionsVec.push_back(v[z[k]]);
+                        partitionsVec.push_back(v[z[indexMatrix[myRow + k]]]);
             }
         }
         
@@ -451,14 +447,16 @@ namespace Partitions {
                                double numRows, bool isComb, bool xtraCol, bool bUserRows, double tol) {
         
         std::vector<typeVector> partitionsVec;
-        const std::size_t maxRows = std::min(static_cast<double>(partitionsVec.max_size()), numRows);
-        
-        std::sort(v.begin(), v.end());
+        const std::size_t calcRows = partitionsVec.max_size() / r;
+        const std::size_t upperBound = std::min(calcRows, static_cast<std::size_t>(std::numeric_limits<int>::max()));
+        const std::size_t maxRows = std::min(upperBound, static_cast<std::size_t>(numRows));
         
         if (bUserRows)
             partitionsVec.reserve(maxRows * r);
         
+        std::sort(v.begin(), v.end());
         int result = noSoln;
+        std::size_t nCols = (xtraCol) ? r + 1 : r;
         
         if (isRep)
             result = PartitionsRep(n, r, v, target, maxRows, isComb, tol, partitionsVec);
@@ -466,9 +464,12 @@ namespace Partitions {
             result = PartitionsDistinct(n, r, v, target, maxRows, isComb, tol, partitionsVec);
         
         if (result) {
-            unsigned long int nCols = (xtraCol) ? r + 1 : r;
-            unsigned long int partitionLen = partitionsVec.size();
-            unsigned long int numResult = partitionLen / r;
+            std::size_t partitionLen = partitionsVec.size();
+            
+            if ((partitionLen % r) != 0)
+                Rcpp::stop("Unexpected number of results");
+            
+            std::size_t numResult = partitionLen / r;
             typeRcpp partitionsMatrix = Rcpp::no_init_matrix(numResult, nCols);
             
             for (std::size_t i = 0, k = 0; i < numResult; ++i)
@@ -479,14 +480,15 @@ namespace Partitions {
                 for (std::size_t i = 0; i < numResult; ++i)
                     partitionsMatrix(i, r) = target;
             
-            if (partitionLen == partitionsVec.max_size()) {
+            if (partitionLen >= upperBound) {
                 Rcpp::warning("The algorithm terminated early as the number of results "
-                              "meeting the criteria exceeds the container's maximum capacity");
+                              "meeting the criteria exceeds the container's maximum "
+                              "capacity or 2^31 - 1");
             }
             
             return partitionsMatrix;
         } else {
-            typeRcpp trivialRet;
+            typeRcpp trivialRet(0, r);
             return trivialRet;
         }
     }

@@ -517,9 +517,7 @@ SEXP CombinatoricsRcpp(SEXP Rv, SEXP Rm, SEXP RisRep, SEXP RFreqs, SEXP Rlow,
         
         bool bUserRows = bLower || bUpper;
         
-        if (mainFun == "sum" && compFunVec[0] == "==" 
-                && !IsMultiset && computedRows > 100 && n > 1) {
-            
+        if (mainFun == "sum" && compFunVec[0] == "==" && !IsMultiset && n > 1 && m > 1) {
             bool PartitionCase = true;
             std::vector<double> pTest(vNum.cbegin(), vNum.cend());
             std::sort(pTest.begin(), pTest.end());

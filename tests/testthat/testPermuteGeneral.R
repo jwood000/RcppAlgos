@@ -370,7 +370,6 @@ test_that("permuteGeneral produces appropriate error messages", {
                                 comparisonFun = "<",
                                 limitConstraints = 100,
                                 upper = 10^10), "number of rows cannot exceed")
-
     expect_error(permuteGeneral(0i ^ (-3:3),7,FALSE,
                                 constraintFun = "sum",
                                 comparisonFun = "<",
