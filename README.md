@@ -4,6 +4,7 @@ status](https://travis-ci.com/jwood000/RcppAlgos.svg?branch=master)](https://tra
 ![](http://cranlogs.r-pkg.org/badges/grand-total/RcppAlgos?color=brightgreen)
 [![Coverage
 status](https://codecov.io/gh/jwood000/RcppAlgos/branch/master/graph/badge.svg)](https://codecov.io/github/jwood000/RcppAlgos?branch=master)
+[![Dependencies](https://tinyverse.netlify.com/badge/RcppAlgos)](https://cran.r-project.org/package=RcppAlgos)
 
 # RcppAlgos
 
