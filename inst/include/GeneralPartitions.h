@@ -133,14 +133,7 @@ namespace Partitions {
             if (count >= maxRows)
                 break;
             
-            int vertex = edge + 1;
-            
-            if (z[maxIndex] - z[edge] == 2) {
-                vertex = maxIndex;
-            } else {
-                while (vertex < lastCol && (z[vertex] - z[edge]) < 2)
-                    ++vertex;
-            }
+            int vertex = (z[maxIndex] - z[edge] == 2) ? maxIndex : edge + 1;
             
             ++z[edge];
             --z[vertex];
@@ -157,42 +150,36 @@ namespace Partitions {
                 pivot = (z[maxIndex] == lastElem) ? maxIndex - 1 : lastCol;
             }
             
-            if (vertex < maxIndex || z[maxIndex] < lastElem) {
+            if (z[vertex] == z[edge])
+                ++vertex;
+            
+            while (vertex < pivot) {
+                int diVert = z[vertex] - z[edge];
+                int diPiv = lastElem - z[pivot];
                 
-                if (z[vertex] == z[edge])
-                    ++vertex;
-                
-                while (vertex < pivot) {
-                    int diVert = z[vertex] - z[edge];
-                    int diPiv = lastElem - z[pivot];
+                if (diVert == diPiv) {
+                    z[vertex] -= diVert;
+                    z[pivot] += diVert;
                     
-                    if (diVert == diPiv) {
-                        z[vertex] -= diVert;
-                        z[pivot] += diVert;
-                        
-                        ++vertex;
-                        --pivot;
-                    } else if (diVert < diPiv) {
-                        z[vertex] -= diVert;
-                        z[pivot] += diVert;
-                        
-                        ++vertex;
-                    } else {
-                        z[vertex] -= diPiv;
-                        z[pivot] += diPiv;
-                        
-                        --pivot;
-                    }
-                }
-                
-                maxIndex = pivot;
-                
-                if (z[pivot] == lastElem) {
+                    ++vertex;
                     --pivot;
-                } else if (pivot < lastCol && z[pivot] < z[pivot + 1]) {
-                    ++maxIndex;
+                } else if (diVert < diPiv) {
+                    z[vertex] -= diVert;
+                    z[pivot] += diVert;
+                    
+                    ++vertex;
+                } else {
+                    z[vertex] -= diPiv;
+                    z[pivot] += diPiv;
+                    
+                    --pivot;
                 }
             }
+                
+            maxIndex = pivot;
+            
+            if (pivot < lastCol && z[pivot] < z[pivot + 1])
+                ++maxIndex;
             
             currMax = z[maxIndex];
             
@@ -346,7 +333,7 @@ namespace Partitions {
             --edge;
             ++tarDiff;
         }
-        
+
         while (edge >= 0 && (z[outside] - z[edge]) >= tarDiff) {
             if (isComb) {
                 for (int k = 0; k < r; ++k)
@@ -388,8 +375,7 @@ namespace Partitions {
                 pivot = (z[lastCol] < lastElem) ? lastCol : outside - 1;
             }
             
-            if (vertex < outside || z[pivot] == outside - 1) {
-                
+            if (vertex < outside) {
                 if (z[vertex] - z[vertex - 1] == 1)
                     ++vertex;
                 
@@ -406,15 +392,9 @@ namespace Partitions {
                 
                 outside = pivot;
                 
-                if (z[pivot] == lastElem) {
-                    --pivot;
-                } else if (pivot < lastCol && z[pivot + 1] - z[pivot] > 1) {
+                if (pivot < lastCol && z[pivot + 1] - z[pivot] > 1)
                     ++outside;
-                }
             }
-            
-            while (outside > 0 && (z[outside] - z[outside - 1]) < 2)
-                --outside;
             
             edge = outside - 1;
             tarDiff = 3;
@@ -447,9 +427,9 @@ namespace Partitions {
                                double numRows, bool isComb, bool xtraCol, bool bUserRows, double tol) {
         
         std::vector<typeVector> partitionsVec;
-        const std::size_t calcRows = partitionsVec.max_size() / r;
-        const std::size_t upperBound = std::min(calcRows, static_cast<std::size_t>(std::numeric_limits<int>::max()));
-        const std::size_t maxRows = std::min(upperBound, static_cast<std::size_t>(numRows));
+        const double calcRows = partitionsVec.max_size() / r;
+        const double upperBound = std::min(calcRows, static_cast<double>(std::numeric_limits<int>::max()));
+        const double maxRows = std::min(static_cast<double>(upperBound), numRows);
         
         if (bUserRows)
             partitionsVec.reserve(maxRows * r);
