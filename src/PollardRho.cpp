@@ -65,15 +65,15 @@ int64_t ProdBigMod(int64_t x1_i64, int64_t x2_i64, int64_t p_i64) {
     } else if (p_i64 < Sqrt63Max || prodX < my63Max) {
         result = (x1_i64 * x2_i64) % p_i64;
     } else {
-        int64_t part2, nChunks = 1;
-        int64_t cSize, chunk;
+        int64_t nChunks = 1;
+        int64_t chunk;
         double part1 = my63Max;
         
         while (part1 >= my63Max) {
-            cSize = static_cast<int64_t>(my63Max / x1_i64);
+            int64_t cSize = static_cast<int64_t>(my63Max / x1_i64);
             chunk = (x1_i64 * cSize) % p_i64;
             nChunks = x2_i64 / cSize;
-            part2 = ((x2_i64 - cSize * nChunks) * x1_i64) % p_i64;
+            int64_t part2 = ((x2_i64 - cSize * nChunks) * x1_i64) % p_i64;
             part1 = static_cast<double>(nChunks) * static_cast<double>(chunk);
             x1_i64 = chunk;
             x2_i64 = nChunks;

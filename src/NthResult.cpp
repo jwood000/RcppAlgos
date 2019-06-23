@@ -22,7 +22,7 @@ std::vector<int> nthPermutation(int n, int r, double myIndex, bool isRep,
         
         ++index1;
         std::vector<int> Counts;
-        double test, index2 = index1;
+        double index2 = index1;
         
         for (int k = 0, r1 = r - 1; k < r; ++k, --r1) {
             int j = 0;
@@ -31,7 +31,8 @@ std::vector<int> nthPermutation(int n, int r, double myIndex, bool isRep,
             
             --Reps[j];
             Counts = nonZeroVec(Reps);
-            test = temp = MultisetPermRowNum(Counts.size(), r1, Counts);
+            double test = MultisetPermRowNum(Counts.size(), r1, Counts);
+            temp = test;
             
             for (; test < index1; test += temp) {
                 index2 -= temp;

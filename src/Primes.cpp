@@ -219,7 +219,7 @@ namespace PrimeCounting {
             //                 log(x / 1e10) / (t * log(1.5))
             int64_t myRange = (piSqrtx - strt) + 1;
             int64_t lower = strt;
-            int64_t upper, chunk;
+            int64_t upper;
             RcppThread::ThreadPool pool(nThreads);
             std::vector<std::future<int64_t>> myFutures;
             
@@ -286,7 +286,7 @@ namespace PrimeCounting {
                 pool.join();
                 
             } else {
-                chunk = myRange / nThreads;
+                int64_t chunk = myRange / nThreads;
                 upper = lower + chunk - 1;
                 
                 for (int j = 0; j < (nThreads - 1); lower = upper, upper += chunk, ++j)

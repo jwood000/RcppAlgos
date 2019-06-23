@@ -518,12 +518,13 @@ SEXP CombinatoricsRcpp(SEXP Rv, SEXP Rm, SEXP RisRep, SEXP RFreqs, SEXP Rlow,
         bool bUserRows = bLower || bUpper;
         
         if (mainFun == "sum" && compFunVec[0] == "==" && !IsMultiset && n > 1 && m > 1) {
-            bool PartitionCase = true;
             std::vector<double> pTest(vNum.cbegin(), vNum.cend());
             std::sort(pTest.begin(), pTest.end());
             const double tarDiff = pTest[1] - pTest[0];
             
             if (static_cast<int64_t>(pTest[0]) == pTest[0]) {
+                bool PartitionCase = true;
+                
                 for (int i = 1; i < n; ++i) {
                     const double testDiff = pTest[i] - pTest[i - 1];
                     
