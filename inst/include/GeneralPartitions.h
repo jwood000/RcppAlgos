@@ -8,13 +8,174 @@ namespace Partitions {
     constexpr int solnExists = 1;
     constexpr int noSoln = 0;
     
+    // Credit to user @m69 on stackoverflow:
+    //       https://stackoverflow.com/a/32918426/4408538
+    // *********************************************************************** //
+    Rcpp::NumericMatrix memoize;
+    
+    double p(int n, int r) {
+        if (n <= r + 1) return 1;
+        if (memoize(n - r, r - 2)) return memoize(n - r, r - 2);
+        int myLim = n / r;
+        if (r == 2) return myLim;
+        double count = 0;
+        for (; myLim--; n -= r) count += (memoize(n - r, r - 3) = p(n - 1, r - 1));
+        return count;
+    }
+    
+    double partitionCount(int n, int r, bool includeZero) {
+        double count = 0;
+        
+        if (includeZero) {
+            // Remember, if zero is included, the vector has length
+            // n + 1, therefore we must subtract 1 to count properly
+            const int n1 = n - 1;
+            Rcpp::NumericMatrix bigRefill(n1, r);
+            memoize = bigRefill;
+            
+            for (int i = r; i > 1; --i) {
+                for (int j = 0; j < n1 - i + 1; ++j)
+                    for (int k = 0; k < i; ++k)
+                        memoize(j, k) = 0;
+
+                count += p(n1, i);
+            }
+            
+            ++count;  // Add 1 for the case p(n, 1)
+        } else {
+            Rcpp::NumericMatrix refill(n - r + 1, r); // Initialize matrix to zero
+            memoize = refill;
+            count = p(n, r);
+        }
+        
+        return count;
+    }
+    // *********************************************************************** //
+    
+    template <typename typeRcpp>
+    void PartitionsStandard(int n, int r, int numRows, bool isComb, 
+                            bool includeZero, typeRcpp &partitionsMatrix) {
+        
+        const int lastElem = n - 1;
+        const int lastCol = r - 1;
+        
+        std::vector<int> z(r, 0);
+        z[lastCol] = lastElem;
+        
+        if (!includeZero) {
+            std::fill(z.begin(), z.end(), 1);
+            z[lastCol] = n - r + 1;
+        }
+        
+        int numIter = 0;
+        int count = 0;
+        int limitRows = numRows - 1;
+        int maxIndex = lastCol;
+        int pivot = (includeZero) ? lastCol - 1 : lastCol;
+        int edge = maxIndex - 1;
+        
+        for (; count < limitRows;) {
+            if (isComb) {
+                for (int k = 0; k < r; ++k)
+                    partitionsMatrix(count, k) = z[k];
+                
+                ++count;
+            } else {
+                numIter = static_cast<int>(NumPermsWithRep(z));
+                
+                if ((numIter + count) > numRows)
+                    numIter = numRows - count;
+                
+                for (int i = 0; i < numIter; ++i, ++count) {
+                    for (int k = 0; k < r; ++k)
+                        partitionsMatrix(count, k) = z[k];
+
+                    std::next_permutation(z.begin(), z.end());
+                }
+            }
+            
+            int vertex = (z[maxIndex] - z[edge] == 2) ? maxIndex : edge + 1;
+            
+            ++z[edge];
+            --z[vertex];
+            
+            if (vertex == maxIndex) {
+                if (maxIndex < lastCol)
+                    ++maxIndex;
+                
+                int currMax = z[maxIndex];
+                
+                while (z[maxIndex - 1] == currMax)
+                    --maxIndex;
+                
+                pivot = (z[maxIndex] == lastElem) ? maxIndex - 1 : lastCol;
+            }
+            
+            if (z[vertex] == z[edge])
+                ++vertex;
+            
+            while (vertex < pivot) {
+                int distVert = z[vertex] - z[edge];
+                int distPivot = lastElem - z[pivot];
+                
+                if (distVert == distPivot) {
+                    z[vertex] -= distVert;
+                    z[pivot] += distVert;
+                    
+                    ++vertex;
+                    --pivot;
+                } else if (distVert < distPivot) {
+                    z[vertex] -= distVert;
+                    z[pivot] += distVert;
+                    
+                    ++vertex;
+                } else {
+                    z[vertex] -= distPivot;
+                    z[pivot] += distPivot;
+                    
+                    --pivot;
+                }
+            }
+            
+            maxIndex = pivot;
+            
+            if (pivot < lastCol && z[pivot] < z[pivot + 1])
+                ++maxIndex;
+            
+            int currMax = z[maxIndex];
+            
+            while (z[maxIndex - 1] == currMax)
+                --maxIndex;
+            
+            edge = maxIndex - 1;
+            
+            while (z[maxIndex] - z[edge] < 2)
+                --edge;
+        }
+        
+        if (isComb) {
+            for (int k = 0; k < r; ++k)
+                partitionsMatrix(limitRows, k) = z[k];
+        } else {
+            numIter = static_cast<int>(NumPermsWithRep(z));
+            
+            if ((numIter + count) > numRows)
+                numIter = numRows - count;
+            
+            for (int i = 0; i < numIter; ++i, ++count) {
+                for (int k = 0; k < r; ++k)
+                    partitionsMatrix(count, k) = z[k];
+
+                std::next_permutation(z.begin(), z.end());
+            }
+        }
+    }
+    
     template <typename typeVector>
     int PartitionsRep(int n, int r, const std::vector<typeVector> &v, typeVector target,
                       double maxRows, bool isComb, double tol, std::vector<typeVector> &partitionsVec) {
     
-        std::size_t count = 0;
         std::vector<int> z(r);
-        
         const int lastElem = n - 1;
         const int lastCol = r - 1;
         
@@ -87,7 +248,8 @@ namespace Partitions {
             return noSoln;
         }
     
-        int numIter;
+        int numIter = 0;
+        std::size_t count = 0;
         
         // smallest index such that z[maxIndex] == currMax
         int maxIndex = lastCol;
@@ -154,23 +316,23 @@ namespace Partitions {
                 ++vertex;
             
             while (vertex < pivot) {
-                int diVert = z[vertex] - z[edge];
-                int diPiv = lastElem - z[pivot];
+                int distVert = z[vertex] - z[edge];
+                int distPivot = lastElem - z[pivot];
                 
-                if (diVert == diPiv) {
-                    z[vertex] -= diVert;
-                    z[pivot] += diVert;
+                if (distVert == distPivot) {
+                    z[vertex] -= distVert;
+                    z[pivot] += distVert;
                     
                     ++vertex;
                     --pivot;
-                } else if (diVert < diPiv) {
-                    z[vertex] -= diVert;
-                    z[pivot] += diVert;
+                } else if (distVert < distPivot) {
+                    z[vertex] -= distVert;
+                    z[pivot] += distVert;
                     
                     ++vertex;
                 } else {
-                    z[vertex] -= diPiv;
-                    z[pivot] += diPiv;
+                    z[vertex] -= distPivot;
+                    z[pivot] += distPivot;
                     
                     --pivot;
                 }
@@ -426,6 +588,28 @@ namespace Partitions {
     typeRcpp GeneralPartitions(int n, int r, std::vector<typeVector> &v, typeVector target, bool isRep,
                                double numRows, bool isComb, bool xtraCol, bool bUserRows, double tol) {
         
+        std::sort(v.begin(), v.end());
+        typeVector myMax = v.back();
+        std::size_t nCols = (xtraCol) ? r + 1 : r;
+        
+        if (myMax == target && (v.size() == target || v.size() == (target + 1)) && isRep && r == target) {
+            const bool includeZero = (v.front() == 1) ? false : true;
+            const double countTest = partitionCount(n, r, includeZero);
+            
+            if (countTest > std::numeric_limits<int>::max())
+                Rcpp::stop("The number of rows cannot exceed 2^31 - 1.");
+            
+            const std::size_t numParts = (bUserRows && numRows < countTest) ? numRows : countTest;
+            typeRcpp partitionsMatrix = Rcpp::no_init_matrix(numParts, nCols);
+            PartitionsStandard(n, r, numParts, isComb, includeZero, partitionsMatrix);
+            
+            if (xtraCol)
+                for (std::size_t i = 0; i < numParts; ++i)
+                    partitionsMatrix(i, r) = target;
+            
+            return partitionsMatrix;
+        }
+        
         std::vector<typeVector> partitionsVec;
         const double calcRows = partitionsVec.max_size() / r;
         const double upperBound = std::min(calcRows, static_cast<double>(std::numeric_limits<int>::max()));
@@ -434,9 +618,7 @@ namespace Partitions {
         if (bUserRows)
             partitionsVec.reserve(maxRows * r);
         
-        std::sort(v.begin(), v.end());
         int result = noSoln;
-        std::size_t nCols = (xtraCol) ? r + 1 : r;
         
         if (isRep)
             result = PartitionsRep(n, r, v, target, maxRows, isComb, tol, partitionsVec);
