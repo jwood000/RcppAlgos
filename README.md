@@ -9,42 +9,41 @@ status](https://codecov.io/gh/jwood000/RcppAlgos/branch/master/graph/badge.svg)]
 
 # RcppAlgos
 
-Overview
----------
-A collection of high performance functions implemented in C++ with Rcpp for solving problems in combinatorics and computational mathematics. Utilizes the library [RcppThread](https://github.com/tnagler/RcppThread) where multithreading is needed. We also make use of the [RMatrix.h](https://github.com/RcppCore/RcppParallel/blob/master/inst/include/RcppParallel/RMatrix.h) header file from [RcppParallel](https://github.com/RcppCore/RcppParallel) for thread safe accessors for Rcpp matrices. Featured functions:
+## Overview
 
-  * `comboGeneral`/`permuteGeneral` - Generate all combinations/permutations of a vector (including [multisets](https://en.wikipedia.org/wiki/Multiset)) meeting specific criteria.
-    - Produce results in parallel using the `Parallel` argument. You can also apply each of the five compiled functions given by the argument `constraintFun` in parallel as well. E.g. Obtaining the row sums of all combinations:
-        - `comboGeneral(20, 10, constraintFun = "sum", Parallel = TRUE)`
-    - Alternatively, the arguments `lower` and `upper` make it possible to generate combinations/permutations in chunks allowing for parallelization via the package `parallel`. This is convenient when you want to apply a custom function to the output in parallel as well (see this [stackoverflow post](https://stackoverflow.com/a/51595866/4408538) for a use case).
-    - GMP support allows for exploration of combinations/permutations of vectors with many elements.
-  * `comboSample`/`permuteSample` - Easily generate random samples of combinations/permutations in parallel.
-    - You can pass a vector of specific indices or rely on the internal sampling functions. We call `sample` when the total number of results is small and for larger cases, the sampling is done in a very similar fashion to `urand.bigz` from the `gmp` package.
-  * `primeSieve` - Generates all primes less than a **billion in under 0.5 seconds.**
+A collection of high performance functions implemented in C++ with Rcpp for solving problems in combinatorics and computational mathematics. Utilizes the library [RcppThread](<https://github.com/tnagler/RcppThread>) where multithreading is needed. We also make use of the [RMatrix.h](<https://github.com/RcppCore/RcppParallel/blob/master/inst/include/RcppParallel/RMatrix.h>) header file from [RcppParallel](<https://github.com/RcppCore/RcppParallel>) for thread safe accessors for Rcpp matrices. Featured functions:
+
+* `comboGeneral`/`permuteGeneral` - Generate all combinations/permutations of a vector (including [multisets](<https://en.wikipedia.org/wiki/Multiset>)) meeting specific criteria.
+    * Produce results in parallel using the `Parallel` argument. You can also apply each of the five compiled functions given by the argument `constraintFun` in parallel as well. E.g. Obtaining the row sums of all combinations:
+        * `comboGeneral(20, 10, constraintFun = "sum", Parallel = TRUE)`
+    * Alternatively, the arguments `lower` and `upper` make it possible to generate combinations/permutations in chunks allowing for parallelization via the package `parallel`. This is convenient when you want to apply a custom function to the output in parallel as well (see this [stackoverflow post](<https://stackoverflow.com/a/51595866/4408538>) for a use case).
+    * GMP support allows for exploration of combinations/permutations of vectors with many elements.
+* `comboSample`/`permuteSample` - Easily generate random samples of combinations/permutations in parallel.
+    * You can pass a vector of specific indices or rely on the internal sampling functions. We call `sample` when the total number of results is small and for larger cases, the sampling is done in a very similar fashion to `urand.bigz` from the `gmp` package.
+* `primeSieve` - Generates all primes less than a **billion in under 0.5 seconds.**
 ``` r
 system.time(b <- primeSieve(10^9, nThreads = 8))
  user  system elapsed 
 2.339   0.047   0.418
 ```
-  * It is also efficient for large numbers by using the cache friendly improvements originally developed by [Tomás Oliveira](http://sweet.ua.pt/tos/software/prime_sieve.html).
+* It is also efficient for large numbers by using the cache friendly improvements originally developed by [Tomás Oliveira](<http://sweet.ua.pt/tos/software/prime_sieve.html>).
 ``` r
 system.time(b <- primeSieve(1e15, 1e15 + 1e9, nThreads = 8))
  user  system elapsed 
 5.054   0.754   0.977
 ```
-  * `primeCount` -  Counts the number of primes below a **1e12 in ~130 milliseconds** and **1e15 in under 50 seconds.**
+* `primeCount` -  Counts the number of primes below a **1e12 in ~130 milliseconds** and **1e15 in under 50 seconds.**
 ```r
 system.time(primeCount(1e12, nThreads = 8))
    user  system elapsed 
   0.804   0.005   0.127
 ```
 
-The `primeSieve` function and the `primeCount` function are both based off of the excellent work by [Kim Walisch](https://github.com/kimwalisch). The respective repos can be found here: [kimwalisch/primesieve](https://github.com/kimwalisch/primesieve); [kimwalisch/primecount](https://github.com/kimwalisch/primecount)
+The `primeSieve` function and the `primeCount` function are both based off of the excellent work by [Kim Walisch](<https://github.com/kimwalisch>). The respective repos can be found here: [kimwalisch/primesieve](<https://github.com/kimwalisch/primesieve>); [kimwalisch/primecount](<https://github.com/kimwalisch/primecount>)
 
-Additionally, many of the sieving functions make use of the fast integer division library [libdivide](https://github.com/ridiculousfish/libdivide) by [ridiculousfish](https://github.com/ridiculousfish).
+Additionally, many of the sieving functions make use of the fast integer division library [libdivide](<https://github.com/ridiculousfish/libdivide>) by [ridiculousfish](<https://github.com/ridiculousfish>).
 
-Installation
-------------
+## Installation
 
 ``` r
 install.packages("RcppAlgos")
@@ -53,11 +52,11 @@ install.packages("RcppAlgos")
 devtools::install_github("jwood000/RcppAlgos")
 ```
 
-Usage
------
+## Usage
 
 ### Common Combinatorial Functions
-Easily executed with a very simple interface. Output is in [lexicographical order](https://en.wikipedia.org/wiki/Lexicographical_order).
+
+Easily executed with a very simple interface. Output is in [lexicographical order](<https://en.wikipedia.org/wiki/Lexicographical_order>).
 ``` r
 ## Find all 3-tuples combinations without 
 ## repetition of the numbers c(1, 2, 3, 4).
@@ -108,6 +107,7 @@ nrow(comboGeneral(25,13))
 ```
 
 ### Using Constraints
+
 Oftentimes, one needs to find combinations/permutations that meet certain requirements.
 
 ``` r
@@ -150,6 +150,7 @@ comboGeneral(5, 7, TRUE, constraintFun = "prod",
 ```
 
 ### Working with Multisets
+
 Sometimes, the standard combination/permutation functions don't quite get us to our desired goals. For
 example, one may need all permutations of a vector with some of the elements repeated a specific
 amount of times (i.e. a multiset). Consider the following vector `a <- c(1,1,1,1,2,2,2,7,7,7,7,7)` and one
@@ -173,6 +174,7 @@ system.time(test <- getPermsWithSpecificRepetition(a, 6))
 
 
 #### Enter _freqs_
+
 Situations like this call for the use of the `freqs` argument. Simply, enter the number
 of times each unique element is repeated and Voila!
 
@@ -233,6 +235,7 @@ Levels: low < med < high
 ```
 
 ### Parallel Computing
+
 Using the parameter `Parallel`, we can easily generate combinations/permutations with great efficiency.
 
 ```r
@@ -278,7 +281,9 @@ Unit: milliseconds
  parallel   1.186217   1.377346   1.786400   1.454697   1.588850   3.564296   100
  combnSum 197.533911 213.208303 220.711443 217.775698 226.261102 266.828690   100
 ```
+
 ### Faster than `rowSums` and `rowMeans`
+
 In fact, finding row sums or row means is even faster than simply applying the highly efficient `rowSums`/`rowMeans` after the combinations have already been generated:
 ```r
 ## Pre-generate combinations
@@ -319,6 +324,7 @@ all.equal(rowMeans(combs),
 In both cases above, `RcppAlgos` is doing double the work nearly twice as fast!!!
 
 ### Using arguments `lower` and `upper`
+
 There are arguments `lower` and `upper` that can be utilized to generate chunks of combinations/permutations without having to generate all of them followed by subsetting.  As the output is in lexicographical order, these arguments specify where to start and stop generating. For example, `comboGeneral(5, 3)` outputs 10 combinations of the vector `1:5` chosen 3 at a time. We can set `lower` to 5 in order to start generation from the 5<sup>th</sup> lexicographical combination. Similarly, we can set `upper` to 4 in order only generate the first 4 combinations. We can also use them together to produce only a certain chunk of combinations. For example, setting `lower` to 4 and `upper` to 6 only produces the 4<sup>th</sup>, 5<sup>th</sup>, and 6<sup>th</sup> lexicographical combinations. Observe:
 
 ``` r
@@ -388,7 +394,9 @@ b[1:5, 45:50]
 [4,] 0.5454861 0.4787456 0.7797122 2.004614 -1.257629  1.5511027
 [5,] 0.5454861 0.4787456 0.7797122 2.004614 -1.257629  1.0792094
 ```
+
 ### Sampling
+
 We can also produce random samples of combinations/permutations with `comboSample` and `permuteSample`. This is really useful when we need a reproducible set of random combinations/permutations. Many of the traditional ways of doing this involved relying on heavy use of `sample` and hoping that we don't generate duplicate results. Both functions have a similar interface to their respective `General` functions. Observe:
 
 ``` r
@@ -442,7 +450,9 @@ permuteCount(factor(state.abb), 15)
 Big Integer ('bigz') :
 [1] 2943352142120754524160000
 ```
+
 ### User Defined Functions
+
 You can also pass user defined functions by utilizing the argument `FUN`. This feature's main purpose is for convenience, however it is somewhat more efficient than generating all combinations/permutations and then using a function from the `apply` family (N.B. the argument `Parallel` has no effect when `FUN` is employed).
 
 ```r
@@ -484,8 +494,8 @@ permuteSample(5000, 1000, n = 3, seed = 101, FUN = sd)
 [1] 1449.272
 ```
 
-Mathematical Computation
------
+## Mathematical Computation
+
 `RcppAlgos` comes equipped with several functions for quickly generating essential components
 for problems common in computational mathematics. All functions below can be executed in parallel by using the argument `nThreads`.
 
@@ -558,6 +568,7 @@ identical(a, b)
 ```
 
 ### Vectorized Functions
+
 There are three very fast vectorized functions for general factoring (e.g. all divisors of number), primality testing, as well as prime factoring (`divisorsRcpp`, `isPrimeRcpp`, `primeFactorize`)
 
 ``` r
@@ -617,8 +628,10 @@ system.time(b <- primeFactorize(1e12:(1e12 + 1e5), nThreads = 8))
 identical(a, b)
 [1] TRUE
 ```
+
 ### primeSieve & primeCount
-Both of these functions are based on the excellent algorithms developed by [Kim Walisch](https://github.com/kimwalisch). First `primeSieve`:
+
+Both of these functions are based on the excellent algorithms developed by [Kim Walisch](<https://github.com/kimwalisch>). First `primeSieve`:
 
 ``` r
 ## Quickly generate large primes over small interval
@@ -652,8 +665,10 @@ system.time(b <- primeSieve(10^9, nThreads = 8))
    user  system elapsed 
   2.339   0.047   0.418
 ```
+
 ### Larger primes
-Since version `2.3.0`, we are implementing the cache-friendly improvements for larger primes originally developed by [Tomás Oliveira](http://sweet.ua.pt/tos/software/prime_sieve.html).
+
+Since version `2.3.0`, we are implementing the cache-friendly improvements for larger primes originally developed by [Tomás Oliveira](<http://sweet.ua.pt/tos/software/prime_sieve.html>).
 
 ``` r
 ## Version <= 2.2.0.. i.e. older versions
@@ -677,10 +692,12 @@ identical(a, b)
 identical(a, old)
 [1] TRUE
 ```
-### primeCount
-The library by Kim Walisch relies on [OpenMP](https://en.wikipedia.org/wiki/OpenMP) for parallel computation with [Legendre's Formula](http://mathworld.wolfram.com/LegendresFormula.html). Currently, the default compiler on `macOS` is `clang`, which does not support `OpenMP`. James Balamuta (a.k.a. TheCoatlessProfessor... well at least [we think so](https://thecoatlessprofessor.com/about/)) has written a great article on this topic, which you can find here: https://thecoatlessprofessor.com/programming/openmp-in-r-on-os-x/. One of the goals of `RcppAlgos` is to be accessible by all users. With this in mind, we set out to count primes in parallel without `OpenMP`.
 
-At first glance, this seems trivial as we have a function in `Primes.cpp` called `phiWorker` that counts the primes up to `x`. If you look in [phi.cpp](https://github.com/kimwalisch/primecount/blob/master/src/phi.cpp) in the `primecount` library by Kim Walisch, we see that `OpenMP` does its magic on a for loop that makes repeated calls to `phi` (which is what `phiWorker` is based on). All we need to do is break this loop into _n_ intervals where _n_ is the number of threads. Simple, right?
+### primeCount
+
+The library by Kim Walisch relies on [OpenMP](<https://en.wikipedia.org/wiki/OpenMP>) for parallel computation with [Legendre's Formula](<http://mathworld.wolfram.com/LegendresFormula.html>). Currently, the default compiler on `macOS` is `clang`, which does not support `OpenMP`. James Balamuta (a.k.a. TheCoatlessProfessor... well at least [we think so](<https://thecoatlessprofessor.com/about/>)) has written a great article on this topic, which you can find here: https://thecoatlessprofessor.com/programming/openmp-in-r-on-os-x/. One of the goals of `RcppAlgos` is to be accessible by all users. With this in mind, we set out to count primes in parallel without `OpenMP`.
+
+At first glance, this seems trivial as we have a function in `Primes.cpp` called `phiWorker` that counts the primes up to `x`. If you look in [phi.cpp](<https://github.com/kimwalisch/primecount/blob/master/src/phi.cpp>) in the `primecount` library by Kim Walisch, we see that `OpenMP` does its magic on a for loop that makes repeated calls to `phi` (which is what `phiWorker` is based on). All we need to do is break this loop into _n_ intervals where _n_ is the number of threads. Simple, right?
 
 We can certainly do this, but what you will find is that _n - 1_ threads will complete very quickly and the _n<sup>th</sup>_ thread will be left with a heavy computation. In order to alleviate this unbalanced load, we take advantage of thread pooling provided by `RcppThread` which allows us to reuse threads efficiently as well as breaking up the loop mentioned above into smaller intervals. The idea is to completely calculate `phi` up to a limit `m` using all _n_ threads and then gradually increase _m_. The advantage here is that we are benefiting greatly from the caching done by the work of the previous _n_ threads.
 
@@ -719,6 +736,6 @@ underOneHundredTrillion
 ## Seconds: 4.441
 ```
 
-Contact
-----
+## Contact
+
 I welcome any and all feedback. If you would like to report a bug, have a question, or have suggestions for possible improvements, please contact me here: jwood000@gmail.com
