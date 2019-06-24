@@ -13,14 +13,17 @@ status](https://codecov.io/gh/jwood000/RcppAlgos/branch/master/graph/badge.svg)]
 
 A collection of high performance functions implemented in C++ with Rcpp for solving problems in combinatorics and computational mathematics. Utilizes the library [RcppThread](<https://github.com/tnagler/RcppThread>) where multithreading is needed. We also make use of the [RMatrix.h](<https://github.com/RcppCore/RcppParallel/blob/master/inst/include/RcppParallel/RMatrix.h>) header file from [RcppParallel](<https://github.com/RcppCore/RcppParallel>) for thread safe accessors for Rcpp matrices. Featured functions:
 
-  * `comboGeneral`/`permuteGeneral` - Generate all combinations/permutations of a vector (including [multisets](<https://en.wikipedia.org/wiki/Multiset>)) meeting specific criteria.
-    * Produce results in parallel using the `Parallel` argument. You can also apply each of the five compiled functions given by the argument `constraintFun` in parallel as well. E.g. Obtaining the row sums of all combinations:
-      * `comboGeneral(20, 10, constraintFun = "sum", Parallel = TRUE)`
-    * Alternatively, the arguments `lower` and `upper` make it possible to generate combinations/permutations in chunks allowing for parallelization via the package `parallel`. This is convenient when you want to apply a custom function to the output in parallel as well (see this [stackoverflow post](<https://stackoverflow.com/a/51595866/4408538>) for a use case).
-    * GMP support allows for exploration of combinations/permutations of vectors with many elements.
-  * `comboSample`/`permuteSample` - Easily generate random samples of combinations/permutations in parallel.
-    * You can pass a vector of specific indices or rely on the internal sampling functions. We call `sample` when the total number of results is small and for larger cases, the sampling is done in a very similar fashion to `urand.bigz` from the `gmp` package.
-  * `primeSieve` - Generates all primes less than a **billion in under 0.5 seconds.**
+* `comboGeneral`/`permuteGeneral` - Generate all combinations/permutations of a vector (including [multisets](<https://en.wikipedia.org/wiki/Multiset>)) meeting specific criteria.
+  * Produce results in parallel using the `Parallel` argument. You can also apply each of the five compiled functions given by the argument `constraintFun` in parallel as well. E.g. Obtaining the row sums of all combinations:
+    * `comboGeneral(20, 10, constraintFun = "sum", Parallel = TRUE)`
+      
+  * Alternatively, the arguments `lower` and `upper` make it possible to generate combinations/permutations in chunks allowing for parallelization via the package `parallel`. This is convenient when you want to apply a custom function to the output in parallel as well (see this [stackoverflow post](<https://stackoverflow.com/a/51595866/4408538>) for a use case).
+  * GMP support allows for exploration of combinations/permutations of vectors with many elements.
+    
+* `comboSample`/`permuteSample` - Easily generate random samples of combinations/permutations in parallel.
+  * You can pass a vector of specific indices or rely on the internal sampling functions. We call `sample` when the total number of results is small and for larger cases, the sampling is done in a very similar fashion to `urand.bigz` from the `gmp` package.
+    
+* `primeSieve` - Generates all primes less than a **billion in under 0.5 seconds.**
 ``` r
 system.time(b <- primeSieve(10^9, nThreads = 8))
  user  system elapsed 
@@ -694,7 +697,7 @@ identical(a, old)
 
 ### primeCount
 
-The library by Kim Walisch relies on [OpenMP](<https://en.wikipedia.org/wiki/OpenMP>) for parallel computation with [Legendre's Formula](<http://mathworld.wolfram.com/LegendresFormula.html>). Currently, the default compiler on `macOS` is `clang`, which does not support `OpenMP`. James Balamuta (a.k.a. TheCoatlessProfessor... well at least [we think so](<https://thecoatlessprofessor.com/about/>)) has written a great article on this topic, which you can find here: https://thecoatlessprofessor.com/programming/openmp-in-r-on-os-x/. One of the goals of `RcppAlgos` is to be accessible by all users. With this in mind, we set out to count primes in parallel without `OpenMP`.
+The library by Kim Walisch relies on [OpenMP](<https://en.wikipedia.org/wiki/OpenMP>) for parallel computation with [Legendre's Formula](<http://mathworld.wolfram.com/LegendresFormula.html>). Currently, the default compiler on `macOS` is `clang`, which does not support `OpenMP`. James Balamuta (a.k.a. TheCoatlessProfessor... well at least [we think so](<https://thecoatlessprofessor.com/about/>)) has written a great article on this topic, which you can find here: <https://thecoatlessprofessor.com/programming/openmp-in-r-on-os-x/>. One of the goals of `RcppAlgos` is to be accessible by all users. With this in mind, we set out to count primes in parallel without `OpenMP`.
 
 At first glance, this seems trivial as we have a function in `Primes.cpp` called `phiWorker` that counts the primes up to `x`. If you look in [phi.cpp](<https://github.com/kimwalisch/primecount/blob/master/src/phi.cpp>) in the `primecount` library by Kim Walisch, we see that `OpenMP` does its magic on a for loop that makes repeated calls to `phi` (which is what `phiWorker` is based on). All we need to do is break this loop into _n_ intervals where _n_ is the number of threads. Simple, right?
 
