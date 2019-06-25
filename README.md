@@ -13,43 +13,43 @@ status](https://codecov.io/gh/jwood000/RcppAlgos/branch/master/graph/badge.svg)]
 
 A collection of high performance functions implemented in C++ with Rcpp for solving problems in combinatorics and computational mathematics. Utilizes the library [RcppThread](<https://github.com/tnagler/RcppThread>) where multithreading is needed. We also make use of the [RMatrix.h](<https://github.com/RcppCore/RcppParallel/blob/master/inst/include/RcppParallel/RMatrix.h>) header file from [RcppParallel](<https://github.com/RcppCore/RcppParallel>) for thread safe accessors for Rcpp matrices. Featured functions:
 
-#### comboGeneral/permuteGeneral: 
+### comboGeneral/permuteGeneral
 
-* Generate all combinations/permutations of a vector (including [multisets](<https://en.wikipedia.org/wiki/Multiset>)) meeting specific criteria.
-* Produce results in parallel using the `Parallel` argument. You can also apply each of the five compiled functions given by the argument `constraintFun` in parallel as well. E.g. Obtaining the row sums of all combinations.
+  * Generate all combinations/permutations of a vector (including [multisets](<https://en.wikipedia.org/wiki/Multiset>)) meeting specific criteria.
+  * Produce results in parallel using the `Parallel` argument. You can also apply each of the five compiled functions given by the argument `constraintFun` in parallel as well. E.g. Obtaining the row sums of all combinations.
 ``` r
 system.time(parCombsSum <- comboGeneral(30, 10, constraintFun = "sum", Parallel = TRUE))
    user  system elapsed 
   1.103   0.576   0.268    ## over 30 million combinations and row sums
 ```
 
-* Alternatively, the arguments `lower` and `upper` make it possible to generate combinations/permutations in chunks allowing for parallelization via the package `parallel`. This is convenient when you want to apply a custom function to the output in parallel as well (see this [stackoverflow post](<https://stackoverflow.com/a/51595866/4408538>) for a use case).
-* GMP support allows for exploration of combinations/permutations of vectors with many elements.
+  * Alternatively, the arguments `lower` and `upper` make it possible to generate combinations/permutations in chunks allowing for parallelization via the package `parallel`. This is convenient when you want to apply a custom function to the output in parallel as well (see this [stackoverflow post](<https://stackoverflow.com/a/51595866/4408538>) for a use case).
+  * GMP support allows for exploration of combinations/permutations of vectors with many elements.
     
-#### comboSample/permuteSample:
+### comboSample/permuteSample
 
-* Easily generate random samples of combinations/permutations in parallel.
-* You can pass a vector of specific indices or rely on the internal sampling functions. We call `sample` when the total number of results is small and for larger cases, the sampling is done in a very similar fashion to `urand.bigz` from the `gmp` package.
+  * Easily generate random samples of combinations/permutations in parallel.
+  * You can pass a vector of specific indices or rely on the internal sampling functions. We call `sample` when the total number of results is small and for larger cases, the sampling is done in a very similar fashion to `urand.bigz` from the `gmp` package.
     
-#### primeSieve
+### primeSieve
 
-* Generates all primes less than a **billion in under 0.5 seconds.**
+  * Generates all primes less than a **billion in under 0.5 seconds.**
 ``` r
 system.time(b <- primeSieve(10^9, nThreads = 8))
  user  system elapsed 
 2.339   0.047   0.418
 ```
 
-* It is also efficient for large numbers by using the cache friendly improvements originally developed by [Tomás Oliveira](<http://sweet.ua.pt/tos/software/prime_sieve.html>).
+  * It is also efficient for large numbers by using the cache friendly improvements originally developed by [Tomás Oliveira](<http://sweet.ua.pt/tos/software/prime_sieve.html>).
 ``` r
 system.time(b <- primeSieve(1e15, 1e15 + 1e9, nThreads = 8))
  user  system elapsed 
 5.054   0.754   0.977
 ```
 
-#### primeCount
+### primeCount
 
-* Counts the number of primes below a **1e12 in ~130 milliseconds** and **1e15 in under 50 seconds.**
+  * Counts the number of primes below a **1e12 in ~130 milliseconds** and **1e15 in under 50 seconds.**
 ```r
 system.time(primeCount(1e12, nThreads = 8))
    user  system elapsed 
@@ -709,7 +709,7 @@ identical(a, old)
 [1] TRUE
 ```
 
-### primeCount
+### primeCount Under the Hood
 
 The library by Kim Walisch relies on [OpenMP](<https://en.wikipedia.org/wiki/OpenMP>) for parallel computation with [Legendre's Formula](<http://mathworld.wolfram.com/LegendresFormula.html>). Currently, the default compiler on `macOS` is `clang`, which does not support `OpenMP`. James Balamuta (a.k.a. TheCoatlessProfessor... well at least [we think so](<https://thecoatlessprofessor.com/about/>)) has written a great article on this topic, which you can find here: <https://thecoatlessprofessor.com/programming/openmp-in-r-on-os-x/>. One of the goals of `RcppAlgos` is to be accessible by all users. With this in mind, we set out to count primes in parallel without `OpenMP`.
 
