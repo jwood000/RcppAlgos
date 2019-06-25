@@ -16,6 +16,15 @@ A collection of high performance functions implemented in C++ with Rcpp for solv
 ### comboGeneral/permuteGeneral
 
 * Generate all combinations/permutations of a vector (including [multisets](<https://en.wikipedia.org/wiki/Multiset>)) meeting specific criteria.
+* A special generalized partition function is employed when `constraintFun = "sum"`, `comparisonFun = "=="`, and the vector passed has the quality that if you were to sort them, the difference of each element with it's neighbor is constant (E.g. `c(100, 105, 110, 115, ..., 130)`).
+```r
+system.time(genParts <- comboGeneral(seq(121, 221, 5), 13, TRUE,
+                                     constraintFun = "sum", 
+                                     comparisonFun = "==", 
+                                     limitConstraints = 2223))
+   user  system elapsed     
+  0.945   0.619   1.577    ### very fast... finds all 8300708 results under 2 seconds
+```
 * Produce results in parallel using the `Parallel` argument. You can also apply each of the five compiled functions given by the argument `constraintFun` in parallel as well. E.g. Obtaining the row sums of all combinations.
 ``` r
 system.time(parCombsSum <- comboGeneral(30, 10, constraintFun = "sum", Parallel = TRUE))
