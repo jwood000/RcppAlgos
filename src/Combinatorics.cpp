@@ -536,12 +536,15 @@ SEXP CombinatoricsRcpp(SEXP Rv, SEXP Rm, SEXP RisRep, SEXP RFreqs, SEXP Rlow,
                 }
                 
                 if (PartitionCase) {
+                    int64_t target = static_cast<int64_t>(targetVals[0]);
+                    std::vector<int64_t> v64(vNum.cbegin(), vNum.cend());
+                    
                     if (IsInteger) {
-                        return Partitions::GeneralPartitions<Rcpp::IntegerMatrix>(n, m, vInt, targetIntVals[0], IsRepetition,
-                                                                                  userNumRows, IsComb, keepRes, bUserRows, tolerance);
+                        return Partitions::GeneralPartitions<Rcpp::IntegerMatrix>(n, m, v64, target, IsRepetition,
+                                                                                  userNumRows, IsComb, keepRes, bUserRows);
                     } else {
-                        return Partitions::GeneralPartitions<Rcpp::NumericMatrix>(n, m, vNum, targetVals[0], IsRepetition,
-                                                                                  userNumRows, IsComb, keepRes, bUserRows, tolerance);
+                        return Partitions::GeneralPartitions<Rcpp::NumericMatrix>(n, m, v64, target, IsRepetition,
+                                                                                  userNumRows, IsComb, keepRes, bUserRows);
                     }
                 }
             }
