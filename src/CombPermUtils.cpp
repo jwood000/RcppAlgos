@@ -220,7 +220,7 @@ double MultisetPermRowNum(int n, int r, const std::vector<int> &myReps) {
 
 // This function will be used in the main function to
 // determine whether gmp analogs are needed as the fast
-// algorithm above could potentionally produce negative
+// algorithm above could potentially produce negative
 // results because of issues with double precision
 double MultisetCombRowNum(int n, int r, const std::vector<int> &Reps) {
     
@@ -290,7 +290,7 @@ void nextFullPerm(int *myArray, unsigned long int n1, unsigned long int n2) {
 // If it is, we have to reverse all of the elements
 // to the right of the rth position before finding
 // the next permutation. This is so because if we
-// didn't, all of the next perms. of the entire vector
+// didn't, all of the next perms of the entire vector
 // would produce many duplicate r-length perms. If it
 // isn't the largest, we find the element to the right
 // and swap them. We can then proceed to the next perm.

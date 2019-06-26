@@ -16,16 +16,19 @@ A collection of high performance functions implemented in C++ with Rcpp for solv
 ### comboGeneral/permuteGeneral
 
 * Generate all combinations/permutations of a vector (including [multisets](<https://en.wikipedia.org/wiki/Multiset>)) meeting specific criteria.
-* A special generalized partition function is employed when `constraintFun = "sum"`, `comparisonFun = "=="`, and the vector passed has the quality that if you were to sort them, the difference of each element with it's neighbor is constant (E.g. `c(100, 105, 110, 115, ..., 130)`).
+* A generalized partition function is employed when `constraintFun = "sum"`, `comparisonFun = "=="`, and the vector passed has the quality that if you were to sort them, the difference of each element with it's neighbor is constant (E.g. `c(121, 126, 131, 136, ..., 221)`).
+
 ```r
 system.time(genParts <- comboGeneral(seq(121, 221, 5), 13, TRUE,
                                      constraintFun = "sum", 
                                      comparisonFun = "==", 
                                      limitConstraints = 2223))
    user  system elapsed     
-  0.945   0.619   1.577    ### very fast... finds all 8300708 results under 2 seconds
+  0.945   0.619   1.577    ## over 8 million results out of a possible 573 million
 ```
+
 * Produce results in parallel using the `Parallel` argument. You can also apply each of the five compiled functions given by the argument `constraintFun` in parallel as well. E.g. Obtaining the row sums of all combinations.
+
 ``` r
 system.time(parCombsSum <- comboGeneral(30, 10, constraintFun = "sum", Parallel = TRUE))
    user  system elapsed 
@@ -43,6 +46,7 @@ system.time(parCombsSum <- comboGeneral(30, 10, constraintFun = "sum", Parallel 
 ### primeSieve
 
 * Generates all primes less than a **billion in under 0.5 seconds.**
+
 ``` r
 system.time(b <- primeSieve(10^9, nThreads = 8))
  user  system elapsed 
@@ -50,6 +54,7 @@ system.time(b <- primeSieve(10^9, nThreads = 8))
 ```
 
 * It is also efficient for large numbers by using the cache friendly improvements originally developed by [Tomás Oliveira](<http://sweet.ua.pt/tos/software/prime_sieve.html>).
+
 ``` r
 system.time(b <- primeSieve(1e15, 1e15 + 1e9, nThreads = 8))
  user  system elapsed 
@@ -59,6 +64,7 @@ system.time(b <- primeSieve(1e15, 1e15 + 1e9, nThreads = 8))
 ### primeCount
 
 * Counts the number of primes below a **1e12 in ~130 milliseconds** and **1e15 in under 50 seconds.**
+
 ```r
 system.time(primeCount(1e12, nThreads = 8))
    user  system elapsed 
@@ -83,6 +89,7 @@ devtools::install_github("jwood000/RcppAlgos")
 ### Common Combinatorial Functions
 
 Easily executed with a very simple interface. Output is in [lexicographical order](<https://en.wikipedia.org/wiki/Lexicographical_order>).
+
 ``` r
 ## Find all 3-tuples combinations without 
 ## repetition of the numbers c(1, 2, 3, 4).
@@ -177,7 +184,7 @@ comboGeneral(5, 7, TRUE, constraintFun = "prod",
 
 ### Working with Multisets
 
-Sometimes, the standard combination/permutation functions don't quite get us to our desired goals. For
+Sometimes, the standard combination/permutation functions don't quite get us to our desired goal. For
 example, one may need all permutations of a vector with some of the elements repeated a specific
 amount of times (i.e. a multiset). Consider the following vector `a <- c(1,1,1,1,2,2,2,7,7,7,7,7)` and one
 would like to find permutations of `a` of length 6. Using traditional methods, we would need to generate all
@@ -212,7 +219,7 @@ identical(test, test2)
 [1] TRUE
 ```
  
- Here are some more general examples with multisets:
+Here are some more general examples with multisets:
  
 ``` r
 ## Generate all permutations of a vector with specific
@@ -310,6 +317,7 @@ Unit: milliseconds
 ### Faster than `rowSums` and `rowMeans`
 
 In fact, finding row sums or row means is even faster than simply applying the highly efficient `rowSums`/`rowMeans` after the combinations have already been generated:
+
 ```r
 ## Pre-generate combinations
 combs <- comboGeneral(25, 10)
@@ -346,11 +354,12 @@ all.equal(rowMeans(combs),
                        Parallel = TRUE)[,11])
 [1] TRUE
 ```
+
 In both cases above, `RcppAlgos` is doing double the work nearly twice as fast!!!
 
 ### Using arguments `lower` and `upper`
 
-There are arguments `lower` and `upper` that can be utilized to generate chunks of combinations/permutations without having to generate all of them followed by subsetting.  As the output is in lexicographical order, these arguments specify where to start and stop generating. For example, `comboGeneral(5, 3)` outputs 10 combinations of the vector `1:5` chosen 3 at a time. We can set `lower` to 5 in order to start generation from the 5<sup>th</sup> lexicographical combination. Similarly, we can set `upper` to 4 in order only generate the first 4 combinations. We can also use them together to produce only a certain chunk of combinations. For example, setting `lower` to 4 and `upper` to 6 only produces the 4<sup>th</sup>, 5<sup>th</sup>, and 6<sup>th</sup> lexicographical combinations. Observe:
+There are arguments `lower` and `upper` that can be utilized to generate chunks of combinations/permutations without having to generate all of them followed by subsetting.  As the output is in lexicographical order, these arguments specify where to start and stop generating. For example, `comboGeneral(5, 3)` outputs 10 combinations of the vector `1:5` chosen 3 at a time. We can set `lower` to 5 in order to start generation from the 5<sup>th</sup> lexicographical combination. Similarly, we can set `upper` to 4 in order to only generate the first 4 combinations. We can also use them together to produce only a certain chunk of combinations. For example, setting `lower` to 4 and `upper` to 6 only produces the 4<sup>th</sup>, 5<sup>th</sup>, and 6<sup>th</sup> lexicographical combinations. Observe:
 
 ``` r
 comboGeneral(5, 3, lower = 4, upper = 6)
@@ -366,6 +375,7 @@ comboGeneral(5, 3)[4:6, ]
 [2,]    1    3    5
 [3,]    1    4    5
 ```
+
 In addition to being useful by avoiding the unnecessary overhead of generating all combination/permutations followed by subsetting just to see a few specific results, `lower` and `upper` can be utilized to generate large number of combinations/permutations in parallel. Observe:
 
 ``` r
@@ -394,7 +404,9 @@ system.time(mclapply(seq(1, 3247943160, 10086780), function(x) {
    user  system elapsed 
 125.361  85.916  35.641
 ```
+
 These arguments are also useful when one needs to explore combinations/permutations of really large vectors:
+
 ```r
 set.seed(222)
 myVec <- rnorm(1000)
@@ -422,7 +434,7 @@ b[1:5, 45:50]
 
 ### Sampling
 
-We can also produce random samples of combinations/permutations with `comboSample` and `permuteSample`. This is really useful when we need a reproducible set of random combinations/permutations. Many of the traditional ways of doing this involved relying on heavy use of `sample` and hoping that we don't generate duplicate results. Both functions have a similar interface to their respective `General` functions. Observe:
+We can also produce random samples of combinations/permutations with `comboSample` and `permuteSample`. This is really useful when we need a reproducible set of random combinations/permutations. Many of the traditional ways of doing this involved relying on heavy use of `sample` and hoping that we don't generate duplicate results. Both functions have a similar interface to their respective `General` functions (i.e. `combo/permuteGeneral`). Observe:
 
 ``` r
 comboSample(10, 8, TRUE, n = 5, seed = 84)
@@ -453,7 +465,9 @@ comboGeneral(10, 8, TRUE)[5^(0:4), ]
 [4,]    1    1    1    1    1    3    6    9
 [5,]    1    1    1    1    5    6   10   10
 ```
-Just like the `General` counterparts (i.e. `combo/permuteGeneral`), we can easily explore combinations/permutations of large vectors where the total number of results is enormous in parallel (using `Parallel` or `nThreads`).
+
+Just like the `General` counterparts, we can easily explore combinations/permutations of large vectors where the total number of results is enormous in parallel (using `Parallel` or `nThreads`).
+
 ```r
 ## Uses min(stdThreadMax() - 1, 5) thread (in this case)
 permuteSample(500, 10, TRUE, n = 5, seed = 123, Parallel = TRUE)
@@ -724,9 +738,10 @@ The library by Kim Walisch relies on [OpenMP](<https://en.wikipedia.org/wiki/Ope
 
 At first glance, this seems trivial as we have a function in `Primes.cpp` called `phiWorker` that counts the primes up to `x`. If you look in [phi.cpp](<https://github.com/kimwalisch/primecount/blob/master/src/phi.cpp>) in the `primecount` library by Kim Walisch, we see that `OpenMP` does its magic on a for loop that makes repeated calls to `phi` (which is what `phiWorker` is based on). All we need to do is break this loop into _n_ intervals where _n_ is the number of threads. Simple, right?
 
-We can certainly do this, but what you will find is that _n - 1_ threads will complete very quickly and the _n<sup>th</sup>_ thread will be left with a heavy computation. In order to alleviate this unbalanced load, we take advantage of thread pooling provided by `RcppThread` which allows us to reuse threads efficiently as well as breaking up the loop mentioned above into smaller intervals. The idea is to completely calculate `phi` up to a limit `m` using all _n_ threads and then gradually increase _m_. The advantage here is that we are benefiting greatly from the caching done by the work of the previous _n_ threads.
+We can certainly do this, but what you will find is that _n - 1_ threads will complete very quickly and the _n<sup>th</sup>_ thread will be left with a heavy computation. In order to alleviate this unbalanced load, we take advantage of thread pooling provided by `RcppThread` which allows us to reuse threads efficiently as well as breaking up the loop mentioned above into smaller intervals. The idea is to completely calculate `phi` up to a limit _m_ using all _n_ threads and then gradually increase _m_. The advantage here is that we are benefiting greatly from the caching done by the work of the previous _n_ threads.
 
 With this is mind, here are some results:
+
 ``` r  
 ## Enumerate the number of primes below trillion
 system.time(underOneTrillion <- primeCount(10^12))
