@@ -72,11 +72,42 @@ test_that("comboGeneral produces correct results for special subset sum", {
     expect_true(testFun(seq(1e10, 1e10 + 500, 100), 10, myRep = TRUE))
     expect_true(testFun(seq(-1e10 - 500, -1e10, 100), 10, myRep = TRUE))
     
+    ## Standard partitions into k parts
+    tempCombs <- comboGeneral(15, 6, TRUE, constraintFun = "sum")
+    expect_equal(tempCombs[tempCombs[,ncol(tempCombs)] == 15, 1:6],
+                 comboGeneral(15, 6, TRUE, 
+                              constraintFun = "sum",
+                              comparisonFun = "==",
+                              limitConstraints = 15))
+    
+    ## Standard partitions
+    tempCombs <- comboGeneral(0:10, 10, TRUE, constraintFun = "sum")
+    expect_equal(tempCombs[tempCombs[,ncol(tempCombs)] == 10, 1:10],
+                 comboGeneral(0:10, 10, TRUE, 
+                              constraintFun = "sum",
+                              comparisonFun = "==",
+                              limitConstraints = 10))
+    
     ## Testing cases where no results should be returned
-    expect_equal(nrow(comboGeneral(10, 6, constraintFun = "sum", comparisonFun = "==", limitConstraints = 20)), 0)
-    expect_equal(nrow(comboGeneral(10, 6, constraintFun = "sum", comparisonFun = "==", limitConstraints = 46)), 0)
-    expect_equal(nrow(comboGeneral(6, 10, TRUE, constraintFun = "sum", comparisonFun = "==", limitConstraints = 5)), 0)
-    expect_equal(nrow(comboGeneral(6, 10, TRUE, constraintFun = "sum", comparisonFun = "==", limitConstraints = 61)), 0)
+    expect_equal(nrow(comboGeneral(10, 6, 
+                                   constraintFun = "sum",
+                                   comparisonFun = "==", 
+                                   limitConstraints = 20)), 0)
+    
+    expect_equal(nrow(comboGeneral(10, 6, 
+                                   constraintFun = "sum", 
+                                   comparisonFun = "==", 
+                                   limitConstraints = 46)), 0)
+    
+    expect_equal(nrow(comboGeneral(6, 10, TRUE, 
+                                   constraintFun = "sum", 
+                                   comparisonFun = "==", 
+                                   limitConstraints = 5)), 0)
+    
+    expect_equal(nrow(comboGeneral(6, 10, TRUE, 
+                                   constraintFun = "sum", 
+                                   comparisonFun = "==", 
+                                   limitConstraints = 61)), 0)
 })
 
 test_that("permuteGeneral produces correct results for special subset sum", {
@@ -143,9 +174,40 @@ test_that("permuteGeneral produces correct results for special subset sum", {
     expect_true(testFun(seq(1e10, 1e10 + 300, 100), 7, myRep = TRUE))
     expect_true(testFun(seq(-1e10 - 300, -1e10, 100), 7, myRep = TRUE))
     
+    ## Standard compositions into k parts
+    tempPerms <- permuteGeneral(10, 5, TRUE, constraintFun = "sum")
+    expect_equal(nrow(tempPerms[tempPerms[,ncol(tempPerms)] == 10, 1:5]),
+                 nrow(permuteGeneral(10, 5, TRUE, 
+                                     constraintFun = "sum",
+                                     comparisonFun = "==",
+                                     limitConstraints = 10)))
+    
+    ## Standard compositions
+    tempPerms <- permuteGeneral(0:6, 6, TRUE, constraintFun = "sum")
+    expect_equal(nrow(tempPerms[tempPerms[,ncol(tempPerms)] == 6, 1:6]),
+                 nrow(permuteGeneral(0:6, 6, TRUE, 
+                                     constraintFun = "sum",
+                                     comparisonFun = "==",
+                                     limitConstraints = 6)))
+    
     ## Testing cases where no results should be returned
-    expect_equal(nrow(permuteGeneral(10, 6, constraintFun = "sum", comparisonFun = "==", limitConstraints = 20)), 0)
-    expect_equal(nrow(permuteGeneral(10, 6, constraintFun = "sum", comparisonFun = "==", limitConstraints = 46)), 0)
-    expect_equal(nrow(permuteGeneral(6, 10, TRUE, constraintFun = "sum", comparisonFun = "==", limitConstraints = 5)), 0)
-    expect_equal(nrow(permuteGeneral(6, 10, TRUE, constraintFun = "sum", comparisonFun = "==", limitConstraints = 61)), 0)
+    expect_equal(nrow(permuteGeneral(10, 6, 
+                                     constraintFun = "sum", 
+                                     comparisonFun = "==", 
+                                     limitConstraints = 20)), 0)
+    
+    expect_equal(nrow(permuteGeneral(10, 6, 
+                                     constraintFun = "sum", 
+                                     comparisonFun = "==", 
+                                     limitConstraints = 46)), 0)
+    
+    expect_equal(nrow(permuteGeneral(6, 10, TRUE, 
+                                     constraintFun = "sum", 
+                                     comparisonFun = "==", 
+                                     limitConstraints = 5)), 0)
+    
+    expect_equal(nrow(permuteGeneral(6, 10, TRUE, 
+                                     constraintFun = "sum", 
+                                     comparisonFun = "==", 
+                                     limitConstraints = 61)), 0)
 })
