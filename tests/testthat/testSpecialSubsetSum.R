@@ -88,6 +88,12 @@ test_that("comboGeneral produces correct results for special subset sum", {
                               comparisonFun = "==",
                               limitConstraints = 10))
     
+    expect_true(all(rowSums(comboGeneral(0:20, 20, TRUE,
+                                         constraintFun = "sum",
+                                         comparisonFun = "==",
+                                         limitConstraints = 20,
+                                         keepResults = TRUE)) == 40))
+    
     ## Testing cases where no results should be returned
     expect_equal(nrow(comboGeneral(10, 6, 
                                    constraintFun = "sum",
@@ -108,6 +114,17 @@ test_that("comboGeneral produces correct results for special subset sum", {
                                    constraintFun = "sum", 
                                    comparisonFun = "==", 
                                    limitConstraints = 61)), 0)
+    
+    expect_equal(nrow(comboGeneral(seq(10, 100, 5), 8,
+                                   constraintFun = "sum",
+                                   comparisonFun = "==",
+                                   limitConstraints = 402)), 0)
+    
+    expect_equal(nrow(comboGeneral(seq(10, 100, 5), 8, TRUE,
+                                   constraintFun = "sum",
+                                   comparisonFun = "==",
+                                   limitConstraints = 402)), 0)
+    
     
     ## nrow(comboGeneral(4, 5, TRUE, 
     ##                   constraintFun = "sum", 
@@ -262,7 +279,6 @@ test_that("permuteGeneral produces correct results for special subset sum", {
                                      limitConstraints = 8,
                                      upper = 34)), 34)
     
-    
     ## nrow(permuteGeneral(0:10, 7, TRUE, 
     ##                    constraintFun = "sum", 
     ##                     comparisonFun = "==", 
@@ -273,4 +289,16 @@ test_that("permuteGeneral produces correct results for special subset sum", {
                                      comparisonFun = "==", 
                                      limitConstraints = 10,
                                      upper = 10)), 10)
+})
+
+test_that("combo/permuteGeneral produces appropriate error messages for subset sum", {
+    expect_error(comboGeneral(0:130, 130, TRUE,
+                              constraintFun = "sum",
+                              comparisonFun = "==",
+                              limitConstraints = 130), "The number of rows cannot exceed")
+    
+    expect_error(permuteGeneral(35, 18, TRUE,
+                                constraintFun = "sum",
+                                comparisonFun = "==",
+                                limitConstraints = 35), "The number of rows cannot exceed")
 })
