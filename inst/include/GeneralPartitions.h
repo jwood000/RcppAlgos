@@ -179,7 +179,7 @@ namespace Partitions {
     
         if (finalCheck != target)
             return noSoln;
-    
+        
         int numIter = 0;
         std::size_t count = 0;
         
@@ -601,10 +601,6 @@ namespace Partitions {
         
         if (result) {
             std::size_t partitionLen = partitionsVec.size();
-            
-            if ((partitionLen % r) != 0)
-                Rcpp::stop("Unexpected number of results");
-            
             std::size_t numResult = partitionLen / r;
             typeRcpp partitionsMatrix = Rcpp::no_init_matrix(numResult, nCols);
             
