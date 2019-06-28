@@ -108,6 +108,17 @@ test_that("comboGeneral produces correct results for special subset sum", {
                                    constraintFun = "sum", 
                                    comparisonFun = "==", 
                                    limitConstraints = 61)), 0)
+    
+    tempRows <- nrow(comboGeneral(4, 5, TRUE, 
+                                  constraintFun = "sum", 
+                                  comparisonFun = "==", 
+                                  limitConstraints = 10))
+    
+    expect_equal(nrow(comboGeneral(4, 5, TRUE, 
+                                   constraintFun = "sum", 
+                                   comparisonFun = "==", 
+                                   limitConstraints = 10,
+                                   upper = floor(tempRows / 2))), floor(tempRows / 2))
 })
 
 test_that("permuteGeneral produces correct results for special subset sum", {
@@ -210,4 +221,26 @@ test_that("permuteGeneral produces correct results for special subset sum", {
                                      constraintFun = "sum", 
                                      comparisonFun = "==", 
                                      limitConstraints = 61)), 0)
+    
+    tempRows <- nrow(permuteGeneral(10, 6, 
+                                    constraintFun = "sum", 
+                                    comparisonFun = "==", 
+                                    limitConstraints = 30))
+    
+    expect_equal(nrow(permuteGeneral(10, 6, 
+                                     constraintFun = "sum", 
+                                     comparisonFun = "==", 
+                                     limitConstraints = 30,
+                                     upper = floor(tempRows / 2))), floor(tempRows / 2))
+    
+    tempRows <- nrow(permuteGeneral(4, 5, TRUE, 
+                                    constraintFun = "sum", 
+                                    comparisonFun = "==", 
+                                    limitConstraints = 10))
+    
+    expect_equal(nrow(permuteGeneral(4, 5, TRUE, 
+                                     constraintFun = "sum", 
+                                     comparisonFun = "==", 
+                                     limitConstraints = 10,
+                                     upper = floor(tempRows / 2))), floor(tempRows / 2))
 })
