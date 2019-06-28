@@ -26,40 +26,19 @@ namespace Partitions {
             while (z[maxIndex - 1] == currMax)
                 --maxIndex;
             
-            pivot = (z[maxIndex] == lastElem) ? maxIndex - 1 : lastCol;
+            pivot = lastCol;
         }
         
         if (z[vertex] == z[edge])
             ++vertex;
         
         while (vertex < pivot) {
-            const int distVert = z[vertex] - z[edge];
-            const int distPivot = lastElem - z[pivot];
-            
-            if (distVert == distPivot) {
-                z[vertex] -= distVert;
-                z[pivot] += distVert;
-                
-                ++vertex;
-                --pivot;
-            } else if (distVert < distPivot) {
-                z[vertex] -= distVert;
-                z[pivot] += distVert;
-                
-                ++vertex;
-            } else {
-                z[vertex] -= distPivot;
-                z[pivot] += distPivot;
-                
-                --pivot;
-            }
+            z[pivot] += z[vertex] - z[edge];
+            z[vertex] = z[edge];
+            ++vertex;
         }
         
         maxIndex = pivot;
-        
-        if (pivot < lastCol && z[pivot] < z[pivot + 1])
-            ++maxIndex;
-        
         const int currMax = z[maxIndex];
         
         while (z[maxIndex - 1] == currMax)
