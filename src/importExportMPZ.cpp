@@ -12,7 +12,7 @@
 #include <gmp.h>
 #include <Rcpp.h>
 
-void createMPZArray(SEXP input, mpz_t *myVec, unsigned long int sizevec, 
+void createMPZArray(SEXP input, mpz_t *myVec, std::size_t sizevec, 
                     std::string nameOfObject, bool negPoss) {
     
     const std::string suffix = (sizevec > 1) ? "Each element in " + nameOfObject : nameOfObject;
@@ -21,8 +21,8 @@ void createMPZArray(SEXP input, mpz_t *myVec, unsigned long int sizevec,
         case RAWSXP: {
             // deserialise the vector. first int is the size.
             const char* raw = (char*)RAW(input);
-            const unsigned long int intSize = sizeof(int);
-            const unsigned long int numb = 8 * intSize;
+            const std::size_t intSize = sizeof(int);
+            const std::size_t numb = 8 * intSize;
             int pos = intSize; // position in raw[]. Starting after header.
             
             for (std::size_t i = 0; i < sizevec; ++i) {
@@ -115,10 +115,10 @@ void createMPZArray(SEXP input, mpz_t *myVec, unsigned long int sizevec,
     }
 }
 
-int myRaw(char* raw, mpz_t value, unsigned long int totals) {
+int myRaw(char* raw, mpz_t value, std::size_t totals) {
     memset(raw, 0, totals);
     
-    const unsigned long int intSize = sizeof(int);
+    const std::size_t intSize = sizeof(int);
     int* r = (int*)raw;
     r[0] = totals / intSize - 2;
     

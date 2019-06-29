@@ -13,7 +13,7 @@ void ComboGenRes(int n, int r, std::vector<typeVector> &v, bool repetition,
     const int r2 = r - 2;
     int numIter;
     std::vector<typeVector> vPass(r);
-    unsigned long int uR = r;
+    std::size_t uR = r;
     
     if (repetition) {
         const int lastElement = n - 1;
@@ -83,8 +83,9 @@ void MultisetComboResult(int n, int r, std::vector<typeVector> &v, std::vector<i
     std::vector<int> zIndex(n), zGroup(r);
     std::vector<typeVector> vPass(r);
     int numIter, sizeFreqs = 0;
-    int r1 = r - 1, r2 = r - 2;
-    unsigned long int uR = r;
+    const int r1 = r - 1;
+    const int r2 = r - 2;
+    const std::size_t uR = r;
     
     for (int i = 0; i < n; ++i) {
         zIndex[i] = sizeFreqs;

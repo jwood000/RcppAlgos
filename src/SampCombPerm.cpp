@@ -17,8 +17,8 @@ static int seed_init = 0;
 const double sampleLimit = 4500000000000000.0;
 
 template <typename typeRcpp, typename typeVector>
-void SampleResults(const typeVector &v, unsigned long int m, bool IsRep, const std::vector<int> &myReps,
-                   unsigned long int s, unsigned long int n, bool IsGmp, bool IsComb,
+void SampleResults(const typeVector &v, std::size_t m, bool IsRep, const std::vector<int> &myReps,
+                   std::size_t s, std::size_t n, bool IsGmp, bool IsComb,
                    const std::vector<double> &mySample, mpz_t *myBigSamp, typeRcpp &sampleMatrix) {
 
     const int lenV = v.size();
@@ -57,8 +57,8 @@ void SampleResults(const typeVector &v, unsigned long int m, bool IsRep, const s
 }
 
 template <typename typeVector>
-SEXP SampleApplyFun(const typeVector &v, unsigned long int m, bool IsRep, bool IsGmp,
-                    const std::vector<int> &myReps, unsigned long int n, bool IsComb,
+SEXP SampleApplyFun(const typeVector &v, std::size_t m, bool IsRep, bool IsGmp,
+                    const std::vector<int> &myReps, std::size_t n, bool IsComb,
                     const std::vector<double> &mySample, mpz_t *myBigSamp, SEXP func, SEXP rho) {
 
     const int lenV = v.size();
@@ -276,7 +276,7 @@ SEXP SampleRcpp(SEXP Rv, SEXP Rm, SEXP Rrepetition, SEXP RFreqs, SEXP RindexVec,
         }
     }
     
-    unsigned long int sampSize;
+    std::size_t sampSize;
     std::vector<double> mySample;
     
     // We must treat gmp case special. We first have to get the size of
@@ -294,7 +294,7 @@ SEXP SampleRcpp(SEXP Rv, SEXP Rm, SEXP Rrepetition, SEXP RFreqs, SEXP RindexVec,
         
         int nPass;
         CleanConvert::convertPrimitive(RNumSamp, nPass, "n");
-        sampSize = static_cast<unsigned long int>(nPass);
+        sampSize = static_cast<std::size_t>(nPass);
         
         if (!IsGmp) {
             if (nPass > computedRows)

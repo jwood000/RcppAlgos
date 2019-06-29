@@ -5,7 +5,7 @@
 #include <RcppThread.h>
 
 // [[Rcpp::export]]
-unsigned long int cpp11GetNumThreads() {
+int cpp11GetNumThreads() {
     return std::thread::hardware_concurrency();
 }
 
@@ -240,8 +240,8 @@ SEXP CombinatoricsRcpp(SEXP Rv, SEXP Rm, SEXP RisRep, SEXP RFreqs, SEXP Rlow,
     
     if (IsCount) {
         if (IsGmp) {
-            unsigned long int sizeNum, size = sizeof(int);
-            unsigned long int numb = 8 * sizeof(int);
+            std::size_t sizeNum, size = sizeof(int);
+            std::size_t numb = 8 * sizeof(int);
             sizeNum = sizeof(int) * (2 + (mpz_sizeinbase(computedRowMpz, 2) + numb - 1) / numb);
             size += sizeNum;
             
@@ -250,7 +250,7 @@ SEXP CombinatoricsRcpp(SEXP Rv, SEXP Rm, SEXP RisRep, SEXP RFreqs, SEXP Rlow,
             ((int*)(rPos))[0] = 1; // first int is vector-size-header
             
             // current position in rPos[] (starting after vector-size-header)
-            unsigned long int posPos = sizeof(int);
+            std::size_t posPos = sizeof(int);
             posPos += myRaw(&rPos[posPos], computedRowMpz, sizeNum);
             
             Rf_setAttrib(ansPos, R_ClassSymbol, Rf_mkString("bigz"));
@@ -364,7 +364,7 @@ SEXP CombinatoricsRcpp(SEXP Rv, SEXP Rm, SEXP RisRep, SEXP RFreqs, SEXP Rlow,
         nRows = static_cast<int>(userNumRows);
     }
     
-    unsigned long int uM = m;
+    const std::size_t uM = m;
     int nThreads = 1;
     
     // Determined empirically. Setting up threads can be expensive,

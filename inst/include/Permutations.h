@@ -9,13 +9,13 @@ void PermuteGeneral(int n, int r, typeVector &v, bool repetition, int numRows,
                     std::vector<int> &z, int intCount, bool nonTrivial,
                     typeMatrix &permuteMatrix) {
     
-    const unsigned long int uN = n;
-    const unsigned long int uR = r;
-    const unsigned long int uRowN = numRows;
-    const unsigned long int lastElem = n - 1;
-    const unsigned long int lastCol = r - 1;
-    const unsigned long int pentultimate = n - 2;
-    unsigned long int count = intCount;
+    const std::size_t uN = n;
+    const std::size_t uR = r;
+    const std::size_t uRowN = numRows;
+    const std::size_t lastElem = n - 1;
+    const std::size_t lastCol = r - 1;
+    const std::size_t pentultimate = n - 2;
+    std::size_t count = intCount;
     
     if (repetition) {
         const int lastElemInt = lastElem;
@@ -36,7 +36,7 @@ void PermuteGeneral(int n, int r, typeVector &v, bool repetition, int numRows,
         
     } else if (nonTrivial) {
         
-        const unsigned long int numR1 = numRows - 1;
+        const std::size_t numR1 = numRows - 1;
         auto arrPerm = std::make_unique<int[]>(uN);
 
         for (std::size_t i = 0; i < uN; ++i)
@@ -65,8 +65,8 @@ void PermuteGeneral(int n, int r, typeVector &v, bool repetition, int numRows,
     } else {
         
         if (n > 1) {
-            unsigned long int phaseOne, maxN = NumPermsNoRep(n, r);
-            unsigned long int segment = maxN / uN;
+            std::size_t phaseOne, maxN = NumPermsNoRep(n, r);
+            std::size_t segment = maxN / uN;
             phaseOne = (uRowN < segment) ? uRowN : segment;
             
             auto indexMat = std::make_unique<int[]>(phaseOne * uR);
@@ -95,8 +95,8 @@ void PermuteGeneral(int n, int r, typeVector &v, bool repetition, int numRows,
                 }
             }
             
-            unsigned long int start = segment, last = 2 * segment;
-            unsigned long int ind = 1;
+            std::size_t start = segment, last = 2 * segment;
+            std::size_t ind = 1;
             typeVector vTemp(1);
             
             for (; start < uRowN; start += segment, last += segment, ++ind) {
@@ -105,7 +105,7 @@ void PermuteGeneral(int n, int r, typeVector &v, bool repetition, int numRows,
                 v[ind] = vTemp[0];
     
                 if (last > uRowN) {
-                    unsigned long int skip = last - uRowN;
+                    std::size_t skip = last - uRowN;
                     last = uRowN;
                     
                     for (std::size_t j = 0, k = 0; j < uR; ++j, k += skip)
@@ -127,22 +127,22 @@ template <typename typeMatrix, typename typeVector>
 void MultisetPermutation(int n, int r, typeVector &v, int numRows, std::vector<int> &z,
                          int intCount, typeMatrix &permuteMatrix) {
     
-    const unsigned long int lenFreqs = z.size();
+    const std::size_t lenFreqs = z.size();
     auto arrPerm = std::make_unique<int[]>(lenFreqs);
     
-    const unsigned long int uR = r;
-    const unsigned long int uN = n;
-    const unsigned long int numR1 = numRows - 1;
-    const unsigned long int lastCol = r - 1;
-    const unsigned long int lastElem = lenFreqs - 1;
+    const std::size_t uR = r;
+    const std::size_t uN = n;
+    const std::size_t numR1 = numRows - 1;
+    const std::size_t lastCol = r - 1;
+    const std::size_t lastElem = lenFreqs - 1;
     
-    unsigned long int count = intCount;
+    std::size_t count = intCount;
     
     for (std::size_t j = 0; j < lenFreqs; ++j)
         arrPerm[j] = z[j];
     
     if (uR == lenFreqs) {
-        const unsigned long int pentultimate = lenFreqs - 2;
+        const std::size_t pentultimate = lenFreqs - 2;
         
         for (; count < numR1; ++count) {
             for (std::size_t j = 0; j < uR; ++j)
@@ -169,15 +169,15 @@ void PermutationApplyFun(int n, int r, typeVector &v, bool repetition,
                          int numRows, bool Multi, std::vector<int> &z,
                          int intCount, SEXP sexpFun, SEXP rho, SEXP &ans) {
     
-    const unsigned long int uR = r;
-    const unsigned long int uN = n;
-    const unsigned long int lenFreqs = (Multi) ? z.size() : 0;
+    const std::size_t uR = r;
+    const std::size_t uN = n;
+    const std::size_t lenFreqs = (Multi) ? z.size() : 0;
     typeVector vectorPass(r);
     
-    const unsigned long int numR1 = numRows - 1;
-    const unsigned long int uRowN = numRows, lastCol = uR - 1;
-    const unsigned long int lastElem = (Multi) ? (lenFreqs - 1) : (n - 1);
-    unsigned long int count = intCount;
+    const std::size_t numR1 = numRows - 1;
+    const std::size_t uRowN = numRows, lastCol = uR - 1;
+    const std::size_t lastElem = (Multi) ? (lenFreqs - 1) : (n - 1);
+    std::size_t count = intCount;
     
     if (repetition) {
         const int lastElemInt = lastElem;
@@ -199,14 +199,14 @@ void PermutationApplyFun(int n, int r, typeVector &v, bool repetition,
             }
         }
     } else {
-        const unsigned long int arrLength = lastElem + 1;
+        const std::size_t arrLength = lastElem + 1;
         auto arrPerm = std::make_unique<int[]>(arrLength);
         
         for (std::size_t i = 0; i < arrLength; ++i)
             arrPerm[i] = z[i];
         
         if (uR == uN || uR == lenFreqs) {
-            const unsigned long int pentultimate = lastElem - 1;
+            const std::size_t pentultimate = lastElem - 1;
             
             for (; count < numR1; ++count) {
                 for (std::size_t j = 0; j < uR; ++j)

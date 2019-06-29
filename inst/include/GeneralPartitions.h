@@ -530,6 +530,7 @@ namespace Partitions {
         
         return count;
     }
+    
     // *********************************************************************** //
     
     template <typename typeRcpp>

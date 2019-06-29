@@ -99,7 +99,7 @@ namespace PrimeSieve {
             int_fast64_t upperBnd = std::min(lowerBnd + segSize, maxNum);
             int_fast64_t myNum = 1 + lowerBnd;
             
-            unsigned long int p = 1;
+            std::size_t p = 1;
             int_fast64_t sqrPrime = 9;
             std::vector<int_fast64_t> nextStrt;
 
@@ -228,7 +228,7 @@ namespace PrimeSieve {
         int_fast64_t upperBnd = std::min(lowerBnd + segSize, maxNum);
         int_fast64_t myNum = 1 + lowerBnd;
         
-        unsigned long int p = 1;
+        std::size_t p = 1;
         int_fast64_t sqrPrime = 9;
         std::vector<int_fast64_t> nextStrt;
         
@@ -504,7 +504,7 @@ namespace PrimeSieve {
         
         if (sqrtBound < smallPrimeBase[lastSmlPri]) {
             if (bAddZero) sievePrimes.push_back(0);
-            unsigned long int ind = (bAddTwo) ? 0 : 1;
+            std::size_t ind = (bAddTwo) ? 0 : 1;
             
             for (; smallPrimeBase[ind] <= sqrtBound; ++ind)
                 sievePrimes.push_back(smallPrimeBase[ind]);

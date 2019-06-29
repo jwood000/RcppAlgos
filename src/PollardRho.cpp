@@ -186,7 +186,7 @@ int IsPrime(int64_t n) {
         return primeTestReturn;
 }
 
-void PollardRhoMpzT(mpz_t n, unsigned long int a, std::vector<double> &factors) {
+void PollardRhoMpzT(mpz_t n, std::size_t a, std::vector<double> &factors) {
     
     mpz_t x, z, y, P, t;
     std::size_t k, q;
@@ -408,17 +408,17 @@ void PrimeFacList(std::size_t m, std::size_t n, std::vector<double> myNums,
 template <typename typeReturn>
 std::vector<typeReturn> Factorize(std::vector<typeReturn> &factors) {
     
-    unsigned long int n = factors.size();
+    std::size_t n = factors.size();
     
     if (n == 1) {
         std::vector<typeReturn> primeReturn(2, 1);
         primeReturn[1] = factors[0];
         return primeReturn;
     } else {
-        std::vector<unsigned long int> lengths;
+        std::vector<std::size_t> lengths;
         typeReturn prev = factors[0];
         
-        unsigned long int numUni = 0;
+        std::size_t numUni = 0;
         std::vector<typeReturn> uniFacs(n);
         uniFacs[0] = factors[0];
         lengths.push_back(1);
@@ -434,7 +434,7 @@ std::vector<typeReturn> Factorize(std::vector<typeReturn> &factors) {
             }
         }
         
-        unsigned long int numFacs = 1;
+        std::size_t numFacs = 1;
         
         for (std::size_t i = 0; i <= numUni; ++i)
             numFacs *= (lengths[i] + 1);
@@ -445,7 +445,7 @@ std::vector<typeReturn> Factorize(std::vector<typeReturn> &factors) {
             myFacs[i] = static_cast<typeReturn>(std::pow(uniFacs[0], i));
         
         if (numUni > 0) {
-            unsigned long int fSz = 1;
+            std::size_t fSz = 1;
             typeReturn temp;
             
             for (std::size_t j = 1; j <= numUni; ++j) {
@@ -488,9 +488,9 @@ void FactorList(std::size_t m, std::size_t n, std::vector<double> &myNums,
             myDivisors = Factorize<typeReturn>(factors);
             
             if (isNegative) {
-                const unsigned long int facSize = myDivisors.size();
+                const std::size_t facSize = myDivisors.size();
                 std::vector<typeReturn> tempInt(2 * facSize);
-                unsigned long int posInd = facSize, negInd = facSize - 1;
+                std::size_t posInd = facSize, negInd = facSize - 1;
                 
                 for (std::size_t i = 0; i < facSize; ++i, ++posInd, --negInd) {
                     tempInt[negInd] = -1 * myDivisors[i];
@@ -655,9 +655,9 @@ SEXP TheGlue(std::vector<double> &myNums, typeReturn myMax, bool bPrimeFacs,
                 myDivisors = Factorize<typeReturn>(factors);
                 
                 if (isNegative) {
-                    const unsigned long int facSize = myDivisors.size();
+                    const std::size_t facSize = myDivisors.size();
                     std::vector<typeReturn> negPosFacs(2 * facSize);
-                    unsigned long int posInd = facSize, negInd = facSize - 1;
+                    std::size_t posInd = facSize, negInd = facSize - 1;
                     
                     for (std::size_t i = 0; i < facSize; ++i, ++posInd, --negInd) {
                         negPosFacs[negInd] = -1 * myDivisors[i];

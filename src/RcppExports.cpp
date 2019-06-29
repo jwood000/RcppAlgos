@@ -6,7 +6,7 @@
 using namespace Rcpp;
 
 // cpp11GetNumThreads
-unsigned long int cpp11GetNumThreads();
+int cpp11GetNumThreads();
 RcppExport SEXP _RcppAlgos_cpp11GetNumThreads() {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;

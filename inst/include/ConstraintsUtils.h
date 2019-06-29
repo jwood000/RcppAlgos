@@ -2,7 +2,7 @@
 #define CONSTRAINTS_UTILS_H
 
 template <typename stdType>
-using funcPtr = stdType (*)(const std::vector<stdType> &v, unsigned long int mySize);
+using funcPtr = stdType (*)(const std::vector<stdType> &v, std::size_t mySize);
 
 template <typename stdType>
 using compPtr = bool (*)(stdType x, const std::vector<stdType> &y);
@@ -14,30 +14,30 @@ using compPtr = bool (*)(stdType x, const std::vector<stdType> &y);
 // this Rcpp Gallery (http://gallery.rcpp.org/articles/passing-cpp-function-pointers/)
 
 template <typename stdType>
-stdType prod(const std::vector<stdType> &v, unsigned long int mySize) {
+stdType prod(const std::vector<stdType> &v, std::size_t mySize) {
     stdType myProduct = 1;
     for (std::size_t i = 0; i < mySize; ++i) {myProduct *= v[i];}
     return (myProduct);
 }
 
 template <typename stdType>
-stdType sum(const std::vector<stdType> &v, unsigned long int mySize) {
+stdType sum(const std::vector<stdType> &v, std::size_t mySize) {
     return (std::accumulate(v.cbegin(), v.cend(), static_cast<stdType>(0)));
 }
 
 template <typename stdType>
-stdType mean(const std::vector<stdType> &v, unsigned long int mySize) {
+stdType mean(const std::vector<stdType> &v, std::size_t mySize) {
     double mySum = sum(v, mySize);
     return (mySum / mySize);
 }
 
 template <typename stdType>
-stdType max(const std::vector<stdType> &v, unsigned long int mySize) {
+stdType max(const std::vector<stdType> &v, std::size_t mySize) {
     return (*std::max_element(v.cbegin(), v.cend()));
 }
 
 template <typename stdType>
-stdType min(const std::vector<stdType> &v, unsigned long int mySize) {
+stdType min(const std::vector<stdType> &v, std::size_t mySize) {
     return (*std::min_element(v.cbegin(), v.cend()));
 }
 

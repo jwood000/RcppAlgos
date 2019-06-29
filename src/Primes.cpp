@@ -43,7 +43,7 @@ namespace PrimeCounting {
         
         int64_t sqrPrime = 9;
         int64_t lowerBnd = 0, upperBnd = segSize, myNum = 1;
-        unsigned long int p = 1;
+        std::size_t p = 1;
         
         for (; lowerBnd < flrMaxNum; lowerBnd += segSize) {
             upperBnd = lowerBnd + segSize;
@@ -523,9 +523,9 @@ SEXP EratosthenesRcpp(SEXP Rb1, SEXP Rb2, SEXP RNumThreads, int maxCores, int ma
         CleanConvert::convertPrimitive(RNumThreads, nThreads, "nThreads");
     
     std::size_t numPrimes = 0u;
-    std::vector<unsigned long int> runningCount;
+    std::vector<std::size_t> runningCount;
     runningCount.push_back(0u);
-    unsigned long int numSects = nThreads;
+    std::size_t numSects = nThreads;
     bool Parallel = false;
     
     if (myMax > std::numeric_limits<int>::max()) {

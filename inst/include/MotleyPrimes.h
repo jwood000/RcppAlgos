@@ -47,7 +47,7 @@ namespace MotleyPrimes {
             const typeInt sqrtBound = static_cast<typeInt>(std::sqrt(static_cast<double>(retN)));
             
             for (p = primes.cbegin(); (*p) <= sqrtBound; ++p) {
-                const unsigned long int limit = static_cast<unsigned long int>(trunc(myLogN / std::log(*p)));
+                const std::size_t limit = static_cast<std::size_t>(trunc(myLogN / std::log(*p)));
                 if (m < 2) {
                     for (std::size_t i = 1; i <= limit; ++i) {
                         myStep = static_cast<typeInt>(std::pow(*p, i));
@@ -84,7 +84,7 @@ namespace MotleyPrimes {
             
             if (m < 2) {
                 for (p = primes.cbegin(); (*p) <= sqrtBound; ++p) {
-                    const unsigned long int limit = static_cast<unsigned long int>(trunc(myLogN / std::log(*p)));
+                    const std::size_t limit = static_cast<std::size_t>(trunc(myLogN / std::log(*p)));
                     const libdivide::divider<typeInt> fastDiv(*p);
 
                     for (std::size_t i = 1; i <= limit; ++i) {
@@ -102,7 +102,7 @@ namespace MotleyPrimes {
                 const typeInt offsetRange = myRange + offsetStrt;
                 
                 for (p = primes.cbegin(); (*p) <= sqrtBound; ++p) {
-                    const unsigned long int limit = static_cast<unsigned long int>(trunc(myLogN / std::log(*p)));
+                    const std::size_t limit = static_cast<std::size_t>(trunc(myLogN / std::log(*p)));
                     const libdivide::divider<typeInt> fastDiv(*p);
 
                     for (std::size_t i = 1; i <= limit; ++i) {
@@ -171,7 +171,7 @@ namespace MotleyPrimes {
             const typeInt offsetRange = myRange + offsetStrt;
             
             for (p = primes.cbegin(); (*p) <= sqrtBound; ++p) {
-                const unsigned long int limit = static_cast<unsigned long int>(myLogN / std::log(*p));
+                const std::size_t limit = static_cast<std::size_t>(myLogN / std::log(*p));
                 const typeInt myStart = offsetStrt + getStartIndexPowP(m, *p, *p);
                 const libdivide::divider<typeInt> fastDiv(*p);
                 

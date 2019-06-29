@@ -7,15 +7,15 @@
 
 template <typename typeMatrix, typename typeVector>
 void PermuteGenRes(int n, int r, std::vector<typeVector> &v, bool repetition,
-                   int numRows, std::vector<int> &z, unsigned long int count,
+                   int numRows, std::vector<int> &z, std::size_t count,
                    bool nonTrivial, typeMatrix &permuteMatrix, funcPtr<typeVector> myFun) {
     
-    const unsigned long int uN = n;
-    const unsigned long int uR = r;
-    const unsigned long int uRowN = numRows;
-    const unsigned long int lastElem = n - 1;
-    const unsigned long int lastCol = r - 1;
-    const unsigned long int pentultimate = n - 2;
+    const std::size_t uN = n;
+    const std::size_t uR = r;
+    const std::size_t uRowN = numRows;
+    const std::size_t lastElem = n - 1;
+    const std::size_t lastCol = r - 1;
+    const std::size_t pentultimate = n - 2;
     std::vector<typeVector> vPass(uR);
     
     if (repetition) {
@@ -41,7 +41,7 @@ void PermuteGenRes(int n, int r, std::vector<typeVector> &v, bool repetition,
         
     } else if (nonTrivial) {
         
-        const unsigned long int numR1 = numRows - 1;
+        const std::size_t numR1 = numRows - 1;
         auto arrPerm = std::make_unique<int[]>(uN);
 
         for (std::size_t i = 0; i < uN; ++i)
@@ -80,8 +80,8 @@ void PermuteGenRes(int n, int r, std::vector<typeVector> &v, bool repetition,
     } else {
         
         if (n > 1) {
-            unsigned long int phaseOne, maxN = NumPermsNoRep(n, r);
-            unsigned long int segment = maxN / uN;
+            std::size_t phaseOne, maxN = NumPermsNoRep(n, r);
+            std::size_t segment = maxN / uN;
             phaseOne = (uRowN < segment) ? uRowN : segment;
 
             auto indexMat = std::make_unique<int[]>(phaseOne * uR);
@@ -114,8 +114,8 @@ void PermuteGenRes(int n, int r, std::vector<typeVector> &v, bool repetition,
                 }
             }
             
-            unsigned long int start = segment, last = 2 * segment;
-            unsigned long int ind = 1;
+            std::size_t start = segment, last = 2 * segment;
+            std::size_t ind = 1;
             std::vector<typeVector> vTemp(1);
             
             for (; start < uRowN; start += segment, last += segment, ++ind) {
@@ -143,24 +143,24 @@ void PermuteGenRes(int n, int r, std::vector<typeVector> &v, bool repetition,
 
 template <typename typeMatrix, typename typeVector>
 void MultisetPermRes(int n, int r, std::vector<typeVector> &v, int numRows,
-                     unsigned long int count, std::vector<int> &z,
+                     std::size_t count, std::vector<int> &z,
                      typeMatrix &permuteMatrix, funcPtr<typeVector> myFun) {
     
-    const unsigned long int lenFreqs = z.size();
+    const std::size_t lenFreqs = z.size();
     auto arrPerm = std::make_unique<int[]>(lenFreqs);
     std::vector<typeVector> vPass(r);
     
-    const unsigned long int uR = r;
-    const unsigned long int uN = n;
-    const unsigned long int lastCol = r - 1;
-    const unsigned long int numR1 = numRows - 1;
-    const unsigned long int lastElem = lenFreqs - 1;
+    const std::size_t uR = r;
+    const std::size_t uN = n;
+    const std::size_t lastCol = r - 1;
+    const std::size_t numR1 = numRows - 1;
+    const std::size_t lastElem = lenFreqs - 1;
     
     for (std::size_t j = 0; j < lenFreqs; ++j)
         arrPerm[j] = z[j];
     
     if (uR == lenFreqs) {
-        const unsigned long int pentultimate = lenFreqs - 2;
+        const std::size_t pentultimate = lenFreqs - 2;
         
         for (; count < numR1; ++count) {
             for (std::size_t j = 0; j < uR; ++j) {
