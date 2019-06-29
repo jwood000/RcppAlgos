@@ -181,7 +181,7 @@ namespace Partitions {
             return noSoln;
         
         int numIter = 0;
-        std::size_t count = 0;
+        int count = 0;
         
         // smallest index such that z[maxIndex] == currMax
         int maxIndex = lastCol;
@@ -308,11 +308,9 @@ namespace Partitions {
     }
     
     int PartitionsDistinct(int n, int r, const std::vector<int64_t> &v, int64_t target, int lastElem,
-                           int lastCol, double maxRows, bool isComb, std::vector<int64_t> &partitionsVec) {
-        
-        std::size_t count = 0;
+                           int lastCol, int maxRows, bool isComb, std::vector<int64_t> &partitionsVec) {
+      
         std::vector<int> z(r);
-        
         int64_t testMax = std::accumulate(v.cend() - r, v.cend(), zero64);
         if (testMax < target)  {return noSoln;}
         
@@ -399,6 +397,8 @@ namespace Partitions {
             --edge;
             ++tarDiff;
         }
+        
+        int count = 0;
 
         while (edge >= 0 && (z[outside] - z[edge]) >= tarDiff) {
             if (isComb) {
