@@ -5,6 +5,7 @@
     \itemize{
         \item Fixed clang-UBSAN issue in 2.3.2. It was caused by populating a vector of ints with values larger than 2^31 - 1.
         \item Added optimized algorithm to combo/permuteGeneral when constraintFun = "sum", comparisonFun = "==", and the vector passed has a special form. This problem is a special case of the subset sum problem.
+        \item Using std::vector and push_back member function instead of pre-allocating matrix when constraint is applied in combo/permuteGeneral. This alleviates the need to guess the upper limit and subsequently subset as only elements that meet the constraints are added.
     }
 }
 
