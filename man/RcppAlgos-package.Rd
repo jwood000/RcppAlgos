@@ -24,14 +24,15 @@ The \strong{RcppAlgos} package attacks age-old problems in combinatorics and com
                     }
                 \item{Easily explore combinations/permutations that would otherwise be inaccessible due to time of execution/memory constraints:
                     \itemize{
-                        \item{\preformatted{comboGeneral(primeSieve(1000), m = 5, repetition = TRUE,
-             constraintFun = "prod", comparisonFun = "<",
-             limitConstraints = 500000, upper = 10^5)}}
+                        \item{\code{comboGeneral(150, 5, constraintFun = "sum", Parallel = TRUE)}}
                         \item{\preformatted{parallel::mclapply(seq(...), function(x) {
             temp = permuteGeneral(15, 10, lower = x, upper = y)
             ## analyze permutations
             ## output results
     }, mc.cores = detectCores() - 1))}}
+                        \item{\preformatted{comboGeneral(0:80, m = 80, repetition = TRUE,
+            constraintFun = "sum", comparisonFun = "==",
+            limitConstraints = 80)}}
                         \item{\code{permuteSample(rnorm(100), 10, freqs = rep(1:4, 25), n = 15, seed = 123)}}
                     }
                 }
