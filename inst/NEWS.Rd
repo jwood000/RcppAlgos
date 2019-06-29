@@ -1,6 +1,13 @@
 \name{NEWS}
 \title{News for Package \pkg{RcppAlgos}}
 
+\section{Changes in RcppAlgos version 2.3.3 (Release date: 2019-06-30)}{
+    \itemize{
+        \item Fixed clang-UBSAN issue in 2.3.2. It was caused by populating a vector of ints with values larger than 2^31 - 1.
+        \item Added optimized algorithm to combo/permuteGeneral when constraintFun = "sum", comparisonFun = "==", and the vector passed has a special form. This problem is a special case of the subset sum problem.
+    }
+}
+
 \section{Changes in RcppAlgos version 2.3.2 (Release date: 2019-04-10)}{
     \itemize{
         \item Fixed clang-UBSAN issue in 2.3.1. It was caused by casting extremely large values to int64_t.
