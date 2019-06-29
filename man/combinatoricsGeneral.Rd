@@ -36,7 +36,7 @@ permuteGeneral(v, m = NULL, repetition = FALSE, freqs = NULL, lower = NULL,
   
   If the output is constrained and \code{lower} isn't supplied, \code{upper} serves as a cap for how many results will be returned that meet the criteria (\emph{e.g.} setting \code{upper = 100} alone will return the first 100 results that meet the criteria, while setting \code{lower = 1} and \code{upper = 100} will test the first 100 results against the criteria).
   
-  In addition to the benefits listed for \code{lower}, this parameter is useful when the total number of combinations/permutations without constraint is large and you expect/need a small number of combinations/permutations that meet a certain criteria. Using \code{upper} can drastically improve run time and avoid unnecessary crashes due to lack of memory. See examples below.
+  In addition to the benefits listed for \code{lower}, this parameter is useful when the total number of combinations/permutations without constraint is large and you expect/need a small number of combinations/permutations that meet a certain criteria. Using \code{upper} can improve run time if used judiciously as we call the member function \href{https://en.cppreference.com/w/cpp/container/vector/reserve}{reserve} of \href{https://en.cppreference.com/w/cpp/container/vector}{std::vector}. See examples below.
   
   N.B. This argument was formerly called \code{rowCap}.}
   \item{constraintFun}{Function to be applied to the elements of \code{v} that should be passed as a string (\emph{e.g.} \code{constraintFun = "sum"}). The possible constraint functions are: \code{"sum"}, \code{"prod"}, \code{"mean"}, \code{"max"}, & \code{"min"}. The default is \code{NULL}, meaning no function is applied.}
@@ -134,16 +134,6 @@ permuteGeneral(75, 10, freqs = rep(1:3, 25),
 ## such that the sum is greater than 7200.
 system.time(comboGeneral(mySamp, 7, FALSE, constraintFun = "sum",
              comparisonFun = ">", limitConstraints = 7200, upper = 1000))
-
-## If you leave "upper" NULL in examples like the above,
-## it can take much longer when the total number of
-## possible combinations is large (still fast enough
-## most of the time). In some cases, it can crash your
-## computer as the underlying code allocates enough
-## space to account for every combination (e.g. In our
-## example, there are choose(75, 7) = 1984829850 rows,
-## 7 columns, with each cell occupying 8 bytes. This
-## gives a total over 100 GB (i.e. choose(75,7)*7*8/(2^30))
 
 ## Similarly, you can use "lower" to obtain the last rows.
 ## Generate the last 10 rows
