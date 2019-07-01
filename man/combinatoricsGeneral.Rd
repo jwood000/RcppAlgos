@@ -250,6 +250,6 @@ system.time(rowSums(combs))
 system.time(permuteGeneral(seq(0L,100L,10L),8,TRUE,
                                 constraintFun = "sum", 
                                 comparisonFun = "==",
-                                limitConstraints = 100, upper = 10^5))
+                                limitConstraints = 100))
 }
 }
