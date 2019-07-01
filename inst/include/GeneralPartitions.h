@@ -7,7 +7,6 @@ namespace Partitions {
 
     constexpr int solnExists = 1;
     constexpr int noSoln = 0;
-    constexpr int64_t zero64 = 0;
     
     inline void GetNextPartition(std::vector<int> &z, int &maxIndex, 
                                  int &edge, int &pivot, int lastElem, int lastCol) {
@@ -23,7 +22,7 @@ namespace Partitions {
             
             const int currMax = z[maxIndex];
             
-            while (z[maxIndex - 1] == currMax)
+            while (maxIndex > 0 && z[maxIndex - 1] == currMax)
                 --maxIndex;
             
             pivot = lastCol;
@@ -41,12 +40,12 @@ namespace Partitions {
         maxIndex = pivot;
         const int currMax = z[maxIndex];
         
-        while (z[maxIndex - 1] == currMax)
+        while (maxIndex > 0 && z[maxIndex - 1] == currMax)
             --maxIndex;
         
         edge = maxIndex - 1;
         
-        while (z[maxIndex] - z[edge] < 2)
+        while (edge > 0 && z[maxIndex] - z[edge] < 2)
             --edge;
     }
     
@@ -54,15 +53,15 @@ namespace Partitions {
     void PartitionsStandard(int r, int numRows, typeRcpp &partitionsMatrix, std::vector<int> &z, 
                             bool isComb, int maxIndex, int edge, int pivot, int limitRows, int lastCol, int lastElem) {
         if (isComb) {
-        	for (int count = 0; count < limitRows; ++count) {
-    			for (int k = 0; k < r; ++k)
-    				partitionsMatrix(count, k) = z[k];
-        	    
-        	    GetNextPartition(z, maxIndex, edge, pivot, lastElem, lastCol);
-        	}
-        	
-    		for (int k = 0; k < r; ++k)
-    			partitionsMatrix(limitRows, k) = z[k];
+            for (int count = 0; count < limitRows; ++count) {
+                for (int k = 0; k < r; ++k)
+                    partitionsMatrix(count, k) = z[k];
+          	    
+                GetNextPartition(z, maxIndex, edge, pivot, lastElem, lastCol);
+            }
+        	  
+            for (int k = 0; k < r; ++k)
+                partitionsMatrix(limitRows, k) = z[k];
         } else {
             for (int count = 0;;) {
                 int numIter = static_cast<int>(NumPermsWithRep(z));
@@ -131,7 +130,7 @@ namespace Partitions {
             ++ind;
     }
 
-    int PartitionsRep(int n, int r, const std::vector<int64_t> &v, int64_t target, int lastElem,
+    int PartitionsRep(int r, const std::vector<int64_t> &v, int64_t target, int lastElem,
                       int lastCol, int maxRows, bool isComb, std::vector<int64_t> &partitionsVec) {
     
         std::vector<int> z(r);
@@ -151,9 +150,8 @@ namespace Partitions {
         int uppBnd = (dist > 0) ? lastElem : mid;
         int ind = mid;
         
-        for (int i = 0; i < r; ++i) {
-            BinaryNextElem(uppBnd, lowBnd, ind, dist, 
-                           lastElem, target, partial, v);
+        for (int i = 0; i < lastCol; ++i) {
+            BinaryNextElem(uppBnd, lowBnd, ind, dist, lastElem, target, partial, v);
             z[i] = ind;
             partial += v[ind];
             
@@ -166,17 +164,18 @@ namespace Partitions {
             dist = target - (partial + v[ind]);
         }
         
-        std::vector<int64_t> check(r);
-        
-        for (int i = 0; i < r; ++i)
-            check[i] = v[z[i]];
+        BinaryNextElem(uppBnd, lowBnd, ind, dist, lastElem, target, partial, v);
+        z[lastCol] = ind;
         
         // The algorithm above finds the first possible sum that equals
         // target. If there is no combination of elements from v that sum
         // to target, the algo returns the combination such that its sum
         // is closest to target and greater than target
-        int64_t finalCheck = std::accumulate(check.cbegin(), check.cend(), zero64);
-    
+        int64_t finalCheck = 0;
+        
+        for (int i = 0; i < r; ++i)
+            finalCheck += v[z[i]];
+        
         if (finalCheck != target)
             return noSoln;
         
@@ -307,14 +306,15 @@ namespace Partitions {
         return solnExists;
     }
     
-    int PartitionsDistinct(int n, int r, const std::vector<int64_t> &v, int64_t target, int lastElem,
+    int PartitionsDistinct(int r, const std::vector<int64_t> &v, int64_t target, int lastElem,
                            int lastCol, int maxRows, bool isComb, std::vector<int64_t> &partitionsVec) {
       
         std::vector<int> z(r);
+        constexpr int64_t zero64 = 0;
         int64_t testMax = std::accumulate(v.cend() - r, v.cend(), zero64);
         if (testMax < target)  {return noSoln;}
         
-        int currPos = n - r;
+        int currPos = v.size() - r;
         int64_t partial = testMax;
         partial -= v[currPos];
         
@@ -328,9 +328,8 @@ namespace Partitions {
         int uppBnd = (dist > 0) ? currPos : mid;
         int ind = mid;
         
-        for (int i = 0; i < r; ++i) {
-            BinaryNextElem(uppBnd, lowBnd, ind, dist, 
-                           lastElem, target, partial, v);
+        for (int i = 0; i < lastCol; ++i) {
+            BinaryNextElem(uppBnd, lowBnd, ind, dist, lastElem, target, partial, v);
             z[i] = ind;
             partial += v[ind];
             
@@ -346,16 +345,14 @@ namespace Partitions {
             dist = target - (partial + v[ind]);
         }
         
-        std::vector<int64_t> check(r);
+        BinaryNextElem(uppBnd, lowBnd, ind, dist, lastElem, target, partial, v);
+        z[lastCol] = ind;
+        
+        // See commemt in PartitionRep
+        int64_t finalCheck = 0;
         
         for (int i = 0; i < r; ++i)
-            check[i] = v[z[i]];
-        
-        // The algorithm above finds the first possible sum that equals
-        // target. If there is no combination of elements from v that sum
-        // to target, the algo returns the combination such that its sum
-        // is closest to target and greater than target
-        int64_t finalCheck = std::accumulate(check.cbegin(), check.cend(), zero64);
+            finalCheck += v[z[i]];
         
         if (finalCheck != target)
             return noSoln;
@@ -595,9 +592,9 @@ namespace Partitions {
         int result = noSoln;
         
         if (isRep) {
-            result = PartitionsRep(n, r, v, target, lastElem, lastCol, maxRows, isComb, partitionsVec);
+            result = PartitionsRep(r, v, target, lastElem, lastCol, maxRows, isComb, partitionsVec);
         } else {
-            result = PartitionsDistinct(n, r, v, target, lastElem, lastCol, maxRows, isComb, partitionsVec);
+            result = PartitionsDistinct(r, v, target, lastElem, lastCol, maxRows, isComb, partitionsVec);
         }
         
         if (result) {
