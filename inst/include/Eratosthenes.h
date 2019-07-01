@@ -611,7 +611,7 @@ namespace PrimeSieve {
         // The tests that were performed showed that one thread was
         // just as efficient as two threads when myRange was equal
         // to 4 * segSize. This is especially true for PrimeSieveBig.
-        const int_fast64_t testNumThreads = myRange / (segSize * 4);
+        const int_fast64_t testNumThreads = (segSize > 0) ? myRange / (segSize * 4) : 0;
         
         if (maxThreads < 2) {Parallel = false;}
         
