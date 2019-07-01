@@ -314,4 +314,3 @@ test_that("permuteGeneral produces correct results with GMP and constrainFun", {
                                 upper = "7260161756223012003000",
                                 constraintFun = "sum")[,16])
 })
-
