@@ -172,14 +172,15 @@ void ApplyFunction(int n, int m, typeVector sexpVec, bool IsRep, int nRows, bool
 // greater than std::numeric_limits<int>::max(). We need a NumericMatrix in this case. We also need to check
 // if our function is the mean as this can produce non integral values.
 bool checkIsInteger(std::string funPass, std::size_t uM, int n,
-                    std::vector<double> rowVec, std::vector<double> vNum,
-                    std::vector<double> targetVals, funcPtr<double> myFunDbl,
-                    bool checkLim = false) {
+                    std::vector<double> vNum, std::vector<double> targetVals,
+                    funcPtr<double> myFunDbl, bool checkLim = false) {
     
     if (funPass == "mean")
         return false;
     
+    std::vector<double> rowVec(uM);
     std::vector<double> vAbs;
+    
     for (int i = 0; i < n; ++i)
         vAbs.push_back(std::abs(vNum[i]));
     
@@ -236,8 +237,7 @@ void getStartZ(int n, int m, double &lower, int stepSize, mpz_t &myIndex, bool I
 template <typename typeRcpp, typename typeVector>
 typeRcpp CombinatoricsConstraints(int n, int r, std::vector<typeVector> &v, bool isRep, std::string myFun,
                                   std::vector<std::string> comparison, std::vector<typeVector> targetVals, double numRows,
-                                  bool isComb, bool xtraCol, std::vector<int> &Reps, bool isMult, double tol, 
-                                  bool bUserRows) {
+                                  bool isComb, bool xtraCol, std::vector<int> &Reps, bool isMult, double tol, bool bUserRows) {
     
     // myFun is one of the following general functions: "prod", "sum", "mean", "min", or "max";
     // The comparison vector is a comparison operator: 
@@ -245,8 +245,7 @@ typeRcpp CombinatoricsConstraints(int n, int r, std::vector<typeVector> &v, bool
     
     typeVector testVal;
     std::size_t count = 0;
-    const std::size_t maxRows = std::min(static_cast<double>(
-        std::numeric_limits<int>::max()), numRows);
+    const std::size_t maxRows = std::min(static_cast<double>(std::numeric_limits<int>::max()), numRows);
     
     const std::size_t uR = r;
     std::vector<typeVector> combinatoricsVec;
