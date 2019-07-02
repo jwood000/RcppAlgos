@@ -1,7 +1,7 @@
 \name{NEWS}
 \title{News for Package \pkg{RcppAlgos}}
 
-\section{Changes in RcppAlgos version 2.3.4 (Release date: 2019-07-01)}{
+\section{Changes in RcppAlgos version 2.3.4 (Release date: 2019-07-02)}{
     \itemize{
         \item Fixed clang/gcc-ASAN and valgrind issues in 2.3.3. These issues were arising from finding the first vector to meet the criteria in PartitionRep/Distinct. We also found further issues in the standard functions when the length of the partition was 2. The algorithm would eventually try and access an element of a vector at index -1. These fixes were confirmed by successful Rdevel CMD check under 'r-devel-ubsan-clang' via docker using the advice found here: https://knausb.github.io/2017/06/reproducing-a-clang-ubsan-issue/ and http://dirk.eddelbuettel.com/code/sanitizers.html.
     }
