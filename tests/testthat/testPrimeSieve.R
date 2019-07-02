@@ -36,11 +36,7 @@ test_that("primeSieve generates correct numbers", {
     funTestPar <- function(b1, b2, nT = 2) {
         par <- primeSieve(b1, b2)
         ser <- primeSieve(b1, b2, nThreads = nT)
-        temp <- all.equal(par, ser)
-        if (isFALSE(temp))
-            return(FALSE)
-        else
-            return(TRUE)
+        identical(par, ser)
     }
     
     expect_true(funTestPar(1, 1e7))
@@ -55,12 +51,12 @@ test_that("primeSieve generates correct numbers", {
     ## system.time(a <- primeSieve(6, 1.1e9, nThreads = 1))
 })
 
-test_that("primeSieve produces appropriate error messages", {
-    expect_error(primeSieve(-1), "must be a positive")
-    expect_error(primeSieve(1,-1), "must be a positive whole number")
-    expect_error(primeSieve(1,2^53), "must be less than")
-    expect_error(primeSieve(2^53), "must be less than")
-    expect_error(primeSieve(2^53, 1), "must be less than")
-    expect_error(primeSieve(2^4, "1"), "must be of type numeric or integer")
-    expect_error(primeSieve("500"), "must be of type numeric or integer")
-})
+# test_that("primeSieve produces appropriate error messages", {
+#     expect_error(primeSieve(-1), "must be a positive")
+#     expect_error(primeSieve(1,-1), "must be a positive whole number")
+#     expect_error(primeSieve(1,2^53), "must be less than")
+#     expect_error(primeSieve(2^53), "must be less than")
+#     expect_error(primeSieve(2^53, 1), "must be less than")
+#     expect_error(primeSieve(2^4, "1"), "must be of type numeric or integer")
+#     expect_error(primeSieve("500"), "must be of type numeric or integer")
+# })
