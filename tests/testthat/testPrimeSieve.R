@@ -33,30 +33,15 @@ test_that("primeSieve generates correct numbers", {
                                     c(1693182318746371, 1693182318747503))
     
     ## Test Parallel
-    funTestPar <- function(b1, b2, nT = 2) {
+    funTestPar <- function(b1, b2) {
         ser <- primeSieve(b1, b2)
-        print(length(ser))
-        print(class(ser))
-        print(head(ser))
-        print(tail(ser))
-        par <- primeSieve(b1, b2, nThreads = nT)
-        print(length(par))
-        print(class(par))
-        print(head(par))
-        print(tail(par))
-        identical(par, ser)
+        par <- primeSieve(b1, b2, nThreads = 2)
+        all.equal(par, ser)
     }
-    
+
     expect_true(funTestPar(1, 1e7))
     expect_true(funTestPar(1e12, 1e12 + 1e7))
-    expect_true(funTestPar(1e15, 1e15 + 1e8, nT = 3))
-    
-    ## The number 2916073, was obtained from Kim Walish's primesieve library
-    len <- length(primeSieve(769166929090560, 769167029090560, nThreads = 2))
-    expect_equal(len, 2916073)
-    
-    ## This test is for full code coverage... It takes about 1.5 seconds
-    ## system.time(a <- primeSieve(6, 1.1e9, nThreads = 1))
+    expect_true(funTestPar(1e15, 1e15 + 1e7))
 })
 
 test_that("primeSieve produces appropriate error messages", {
