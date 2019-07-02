@@ -107,8 +107,7 @@ enum myComps {
 template <typename stdType>
 Rcpp::XPtr<compPtr<stdType>> putCompPtrInXPtr(std::string fstr) {
     
-    std::vector<std::string>::const_iterator it = std::find(compVec.cbegin(), 
-                                                            compVec.cend(), fstr);
+    auto it = std::find(compVec.cbegin(), compVec.cend(), fstr);
     const int myIndex = std::distance(compVec.cbegin(), it);
     
     switch(myIndex) {

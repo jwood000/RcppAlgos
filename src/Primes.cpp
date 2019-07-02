@@ -197,9 +197,7 @@ namespace PrimeCounting {
     const double getChunkFactor(int64_t x) {
         const std::vector<double> nums = {1e10, 1e12, 2e13, 5e13, 8e13, 1e14, 5e14, 1e15, 1e16};
         const std::vector<double> factor = {1.3, 1.2, 1.1, 1.07, 1.05, 1.01, 1.007, 1.006, 1.005};
-        std::vector<double>::const_iterator it = std::upper_bound(nums.cbegin(),
-                                                                  nums.cend(),
-                                                                  static_cast<double>(x));
+        auto it = std::upper_bound(nums.cbegin(), nums.cend(), static_cast<double>(x));
         return std::log(factor[it - nums.cbegin()]);
     }
     

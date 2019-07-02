@@ -66,7 +66,7 @@ namespace MotleyPrimes {
             
             std::vector<uint8_t>::iterator myMalloc;
             typename std::vector<std::vector<typeInt>>::iterator it2d;
-            const typename std::vector<std::vector<typeInt>>::iterator itEnd = primeList.begin() + offsetStrt + myRange;
+            const auto itEnd = primeList.begin() + offsetStrt + myRange;
             
             if (myNum < 2) {
                 ++myNum;

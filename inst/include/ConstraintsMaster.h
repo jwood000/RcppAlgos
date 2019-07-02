@@ -339,9 +339,8 @@ typeRcpp CombinatoricsConstraints(int n, int r, std::vector<typeVector> &v, bool
                 std::sort(v.begin(), v.end());
             }
             
-            std::vector<std::string>::const_iterator itComp = std::find(compSpecial.cbegin(), 
-                                                                        compSpecial.cend(), 
-                                                                        comparison[nC]);
+            auto itComp = std::find(compSpecial.cbegin(), compSpecial.cend(), comparison[nC]);
+            
             if (itComp != compSpecial.end()) {
                 int myIndex = std::distance(compSpecial.cbegin(), itComp);
                 Rcpp::XPtr<compPtr<typeVector>> xpCompThree = putCompPtrInXPtr<typeVector>(compHelper[myIndex]);
