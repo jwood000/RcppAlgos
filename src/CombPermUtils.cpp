@@ -70,22 +70,20 @@ double NumCombsWithRep(int n, int r) {
     return nChooseK(n + r - 1, r);
 }
 
-// The resulting vector, "triangleVec" resembles triangle
-// numbers. In fact, this vector is obtained in a very
-// similar method as generating triangle numbers, albeit
-// in a repeating fashion. Two things to keep in mind is
-// that we can't guarantee the following:
-//      1) the repetition of each element is greater
-//         than or equal to n
-//      2) that the repetition of the each element 
-//         isn't the same
+// The resulting vector, "triangleVec" resembles triangle numbers. In
+// fact, this vector is obtained in a very similar method as generating
+// triangle numbers, albeit in a repeating fashion. Two things to keep
+// in mind is that we can't guarantee the following:
+//      1) the repetition of each element is greater than or equal to n
+//      2) that the repetition of each element isn't the same
+
 double MultisetCombRowNumFast(int n, int r, const std::vector<int> &Reps) {
     
     if (r < 1 || n <= 1)
         return 1.0;
     
     if (r == n)
-        if (std::accumulate(Reps.begin(), Reps.end(), 0) == n)
+        if (std::accumulate(Reps.cbegin(), Reps.cend(), 0) == n)
             return 1.0;
         
     const int r1 = r + 1;
@@ -169,13 +167,13 @@ double MultisetPermRowNum(int n, int r, const std::vector<int> &myReps) {
     if (n < 2 || r < 1)
         return 1.0;
     
-    int sumFreqs = std::accumulate(myReps.begin(), myReps.end(), 0);
+    int sumFreqs = std::accumulate(myReps.cbegin(), myReps.cend(), 0);
     
     if (r > sumFreqs)
         return 0.0;
     
      const int n1 = n - 1;
-     const int maxFreq = *std::max_element(myReps.begin(), myReps.end());
+     const int maxFreq = *std::max_element(myReps.cbegin(), myReps.cend());
     
     std::vector<int> seqR(r);
     std::iota(seqR.begin(), seqR.end(), 1);
