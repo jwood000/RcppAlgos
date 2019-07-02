@@ -4,10 +4,8 @@
 #include <gmp.h>
 #include <Rcpp.h>
 
-/**
- * Functions for importing/exporting and converting SEXPs to mpz_t
- * 
- */
+// Functions for importing/exporting and converting SEXPs to mpz_t
+
 void createMPZArray (SEXP input, mpz_t *myVec, std::size_t sizevec, 
                      std::string nameOfObject, bool negPoss = false);
 
