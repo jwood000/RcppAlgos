@@ -11,9 +11,8 @@ std::vector<int> nonZeroVec(std::vector<int> v) {
     return nonZero;
 }
 
-std::vector<int> nthPermutation(int n, int r, double myIndex, bool isRep, 
-                                bool isMult, std::vector<int> Reps, std::vector<int> freqs,
-                                bool isStarter = false) {
+std::vector<int> nthPermutation(int n, int r, double myIndex, bool isRep, bool isMult,
+                                std::vector<int> Reps, std::vector<int> freqs, bool isStarter = false) {
     
     double temp, index1 = myIndex;
     std::vector<int> res(r); 
@@ -110,7 +109,6 @@ std::vector<int> nthPermutation(int n, int r, double myIndex, bool isRep,
 std::vector<int> nthCombination(int n, int r, double myIndex, bool isRep, 
                                 bool isMult, std::vector<int> Reps) {
     
-    double test, temp;
     double index1 = myIndex, index2 = myIndex;
     std::vector<int> res(r);
     
@@ -125,7 +123,8 @@ std::vector<int> nthCombination(int n, int r, double myIndex, bool isRep,
                 Counts.erase(Counts.begin());
             }
             
-            test = temp = MultisetCombRowNumFast(n1, r1, Counts);
+            double test = MultisetCombRowNumFast(n1, r1, Counts);
+            double temp = test;
             
             for (; test <= index1; ++j, test += temp) {
                 index2 -= temp;
@@ -153,10 +152,10 @@ std::vector<int> nthCombination(int n, int r, double myIndex, bool isRep,
         }
     } else if (isRep) {
         
-        temp = NumCombsWithRep(n, r - 1);
+        double temp = NumCombsWithRep(n, r - 1);
         
         for (int k = 0, j = 0, n1 = n, r1 = r - 1; k < r; ++k, --r1) {
-            test = temp;
+            double test = temp;
             
             for (; test <= index1; --n1, ++j, test += temp) {
                 index2 -= temp;
@@ -172,11 +171,11 @@ std::vector<int> nthCombination(int n, int r, double myIndex, bool isRep,
         
     } else {
         
-        temp = nChooseK(n - 1, r - 1);
+        double temp = nChooseK(n - 1, r - 1);
         
         for (int k = 0, j = 0, n1 = n - 1, r1 = r - 1; 
                                 k < r; ++k, --n1, --r1, ++j) {
-            test = temp;
+            double test = temp;
             
             for (int rTemp = n1 - r1; test <= index1; 
                         --n1, ++j, --rTemp, test += temp) {

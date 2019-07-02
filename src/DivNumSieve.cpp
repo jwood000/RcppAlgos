@@ -119,7 +119,7 @@ void DivisorMaster(typeInt myMin, typeReturn myMax, bool bDivSieve,
     
     bool Parallel = false;
     typeInt offsetStrt = 0;
-    typeInt intMax = static_cast<typeInt>(myMax);
+    const typeInt intMax = static_cast<typeInt>(myMax);
     
     if (nThreads > 1 && maxThreads > 1  && myRange >= 20000) {
         Parallel = true;

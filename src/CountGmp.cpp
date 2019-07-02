@@ -2,11 +2,9 @@
 #include <memory>
 #include <gmp.h>
 
-/*
- * All functions below are exactly the same as the functions
- * in CombPermUtils.cpp. The only difference is that they
- * utilize the gmp library and deal mostly with mpz_t types
- */
+// All functions below are exactly the same as the functions
+// in CombPermUtils.cpp. The only difference is that they
+// utilize the gmp library and deal mostly with mpz_t types
 
 void NumPermsWithRepGmp(mpz_t result, const std::vector<int> &v) {
     mpz_set_ui(result, 1);
@@ -50,15 +48,14 @@ bool onlyOneCombo(int n, int r, const std::vector<int> &Reps) {
         return true;
     
     if (r == n)
-        if (std::accumulate(Reps.begin(), Reps.end(), 0) == n)
+        if (std::accumulate(Reps.cbegin(), Reps.cend(), 0) == n)
             return true;
     
     return false;
 }
 
-void MultisetCombRowNumGmp(mpz_t result, int n, int r,
-                           const std::vector<int> &Reps) {
-        
+void MultisetCombRowNumGmp(mpz_t result, int n, int r, const std::vector<int> &Reps) {
+    
     if (!onlyOneCombo(n, r, Reps)) {
         const int r1 = r + 1;
         int myMax = r1;
@@ -150,8 +147,7 @@ void MultisetCombRowNumGmp(mpz_t result, int n, int r,
     }
 }
 
-void MultisetPermRowNumGmp(mpz_t result, int n, int r,
-                           const std::vector<int> &myReps) {
+void MultisetPermRowNumGmp(mpz_t result, int n, int r, const std::vector<int> &myReps) {
     
     const int sumFreqs = std::accumulate(myReps.cbegin(), myReps.cend(), 0);
     

@@ -564,7 +564,6 @@ void PollardRhoMaster(std::vector<double> &myNums, typeReturn myMax, bool bPrime
                       int nThreads = 1, int maxThreads = 1) {
     
     bool Parallel = false;
-    std::size_t m = 0u;
     
     if (nThreads > 1 && myRange > 1 && maxThreads > 1) {
         Parallel = true;
@@ -576,6 +575,7 @@ void PollardRhoMaster(std::vector<double> &myNums, typeReturn myMax, bool bPrime
         RcppThread::ThreadPool pool(nThreads);
         const std::size_t chunkSize = myRange / nThreads;
         std::size_t n = chunkSize - 1;
+        std::size_t m = 0;
         
         for (int j = 0; j < (nThreads - 1); m = n, n += chunkSize, ++j) {
             if (bPrimeFacs)
@@ -597,11 +597,11 @@ void PollardRhoMaster(std::vector<double> &myNums, typeReturn myMax, bool bPrime
         
     } else {
         if (bPrimeFacs)
-            PrimeFacList(m, myRange, myNums, MyList);
+            PrimeFacList(0u, myRange, myNums, MyList);
         else if (bAllFacs)
-            FactorList(m, myRange, myNums, MyList);
+            FactorList(0u, myRange, myNums, MyList);
         else
-            IsPrimeVec(m, myRange, myNums, primeTest);
+            IsPrimeVec(0u, myRange, myNums, primeTest);
     }
 }
 
