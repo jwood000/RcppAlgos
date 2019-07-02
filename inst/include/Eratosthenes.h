@@ -199,17 +199,14 @@ namespace PrimeSieve {
                           const std::vector<int_fast64_t> &sievePrimes,
                           std::vector<typePrime> &myPrimes) {
         
-        const int_fast64_t sz30030 = NUM30030;
-        const std::size_t nWheels = static_cast<std::size_t>(std::ceil(
-            std::sqrt(static_cast<double>(maxNum)) / sz30030));
-        
         const std::size_t szWheel30030 = SZ_WHEEL30030;
+        const int_fast64_t sz30030 = NUM30030;
+        const std::size_t nWheels = static_cast<std::size_t>(std::max(1.0, std::ceil(std::sqrt(static_cast<double>(maxNum)) / sz30030)));
         
         const int_fast64_t segSize = static_cast<int_fast64_t>(nWheels * sz30030);
         const std::size_t myReserve = EstimatePiPrime(static_cast<double>(minNum), 
                                                       static_cast<double>(maxNum));
         myPrimes.reserve(myReserve);
-        
         const int_fast64_t flrMaxNum = segSize * std::floor(maxNum / segSize);
         
         // vector used for sieving
@@ -583,8 +580,7 @@ namespace PrimeSieve {
             const int limitOne = static_cast<int>(nBigSegs * segUnitSize);
             const std::size_t svMainSize = svPriMain.size();
 
-            // Get the primes that are guaranteed to
-            // mark an index in every segment interval
+            // Get the primes that are guaranteed to mark an index in every segment interval
             for (; (2 * svPriMain[ind]) < limitOne && ind < svMainSize; ++ind)
                 svPriOne.push_back(svPriMain[ind]);
 
