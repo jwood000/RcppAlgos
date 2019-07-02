@@ -79,8 +79,6 @@ SEXP CombinatoricsRcpp(SEXP Rv, SEXP Rm, SEXP RisRep, SEXP RFreqs, SEXP Rlow,
         CleanConvert::convertPrimitive(Rm, m, "m");
     }
     
-    std::vector<double> rowVec(m);
-    
     if (IsCharacter) {
         rcppChar = Rcpp::as<Rcpp::CharacterVector>(Rv);
         n = rcppChar.size();
@@ -111,7 +109,8 @@ SEXP CombinatoricsRcpp(SEXP Rv, SEXP Rm, SEXP RisRep, SEXP RFreqs, SEXP Rlow,
             vInt.assign(vNum.cbegin(), vNum.cend());
     }
         
-    bool IsConstrained;
+    bool IsConstrained = false;
+    
     if (IsFactor)
         keepRes = IsConstrained = IsCharacter = IsInteger = false;
     
@@ -157,7 +156,7 @@ SEXP CombinatoricsRcpp(SEXP Rv, SEXP Rm, SEXP RisRep, SEXP RFreqs, SEXP Rlow,
             if (IsComb)
                 computedRows = NumCombsWithRep(n, m);
             else
-                computedRows = std::pow((double) n, (double) m);
+                computedRows = std::pow(static_cast<double>(n), static_cast<double>(m));
         } else {
             if (m > n)
                 Rcpp::stop("m must be less than or equal to the length of v");
@@ -205,31 +204,30 @@ SEXP CombinatoricsRcpp(SEXP Rv, SEXP Rm, SEXP RisRep, SEXP RFreqs, SEXP Rlow,
     mpz_set_ui(lowerMpz[0], 0); mpz_set_ui(upperMpz[0], 0);
     
     if (!IsCount) {
-        if (IsGmp) {
-            if (!Rf_isNull(Rlow)) {
-                bLower = true;
+        if (!Rf_isNull(Rlow)) {
+            bLower = true;
+            
+            if (IsGmp) {
                 createMPZArray(Rlow, lowerMpz, 1, "lower");
                 mpz_sub_ui(lowerMpz[0], lowerMpz[0], 1);
-            }
-            
-            if (!Rf_isNull(Rhigh)) {
-                bUpper = true;
-                createMPZArray(Rhigh, upperMpz, 1, "upper");
-            }
-        } else { 
-            if (!Rf_isNull(Rlow)) {
-                bLower = true;                        // numOnly = false
+            } else {                                    // numOnly = false
                 CleanConvert::convertPrimitive(Rlow, lower, "lower", false);
                 --lower;
             }
+        }
+        
+        if (!Rf_isNull(Rhigh)) {
+            bUpper = true;
             
-            if (!Rf_isNull(Rhigh)) {
-                bUpper = true;                           // numOnly = false
+            if (IsGmp) {
+                createMPZArray(Rhigh, upperMpz, 1, "upper");
+            } else {                                     // numOnly = false
                 CleanConvert::convertPrimitive(Rhigh, upper, "upper", false);
             }
         }
     }
     
+    // N.B. for the lower analogs we are using >= as we have subtracted one
     if (IsGmp) {
         if (mpz_cmp(lowerMpz[0], computedRowMpz) >= 0 || mpz_cmp(upperMpz[0], computedRowMpz) > 0)
             Rcpp::stop("bounds cannot exceed the maximum number of possible results");
@@ -305,16 +303,23 @@ SEXP CombinatoricsRcpp(SEXP Rv, SEXP Rm, SEXP RisRep, SEXP RFreqs, SEXP Rlow,
     double userNumRows = 0;
     
     if (IsGmp) {
-        mpz_t testBound; mpz_init(testBound);
+        mpz_t testBound;
+        mpz_init(testBound);
+        
         if (bLower && bUpper) {
             mpz_sub(testBound, upperMpz[0], lowerMpz[0]);
-            mpz_abs(testBound, testBound);
-            if (mpz_cmp_ui(testBound, std::numeric_limits<int>::max()) > 0)
+            mpz_t absTestBound;
+            mpz_init(absTestBound);
+            mpz_abs(absTestBound, testBound);
+            
+            if (mpz_cmp_ui(absTestBound, std::numeric_limits<int>::max()) > 0)
                 Rcpp::stop("The number of rows cannot exceed 2^31 - 1.");
             
             userNumRows = mpz_get_d(testBound);
+            mpz_clear(absTestBound);
         } else if (bUpper) {
             permNonTriv = true;
+            
             if (mpz_cmp_d(upperMpz[0], std::numeric_limits<int>::max()) > 0)
                 Rcpp::stop("The number of rows cannot exceed 2^31 - 1.");
                 
@@ -322,6 +327,7 @@ SEXP CombinatoricsRcpp(SEXP Rv, SEXP Rm, SEXP RisRep, SEXP RFreqs, SEXP Rlow,
         } else if (bLower) {
             mpz_sub(testBound, computedRowMpz, lowerMpz[0]);
             mpz_abs(testBound, testBound);
+            
             if (mpz_cmp_d(testBound, std::numeric_limits<int>::max()) > 0)
                 Rcpp::stop("The number of rows cannot exceed 2^31 - 1.");
             
@@ -374,6 +380,7 @@ SEXP CombinatoricsRcpp(SEXP Rv, SEXP Rm, SEXP RisRep, SEXP RFreqs, SEXP Rlow,
         Parallel = false;
     } else if (!Rf_isNull(RNumThreads)) {
         int userThreads = 1;
+        
         if (!Rf_isNull(RNumThreads))
             CleanConvert::convertPrimitive(RNumThreads, userThreads, "nThreads");
         
@@ -387,6 +394,8 @@ SEXP CombinatoricsRcpp(SEXP Rv, SEXP Rm, SEXP RisRep, SEXP RFreqs, SEXP Rlow,
         if (userThreads > 1 && !IsCharacter) {
             Parallel = true;
             nThreads = userThreads;
+        } else {
+            Parallel = false;
         }
     } else if (Parallel) {
         nThreads = (maxThreads > 2) ? (maxThreads - 1) : 2;
@@ -397,7 +406,7 @@ SEXP CombinatoricsRcpp(SEXP Rv, SEXP Rm, SEXP RisRep, SEXP RFreqs, SEXP Rlow,
     }
     
     if (IsConstrained) {
-        std::vector<double> targetVals;       // numOnly = true, checkWhole = false, negPoss = true
+        std::vector<double> targetVals;      // numOnly = true, checkWhole = false, negPoss = true
         CleanConvert::convertVector(Rtarget, targetVals, "limitConstraints", true, false, true);
         
         if (targetVals.size() > 2)
@@ -492,7 +501,7 @@ SEXP CombinatoricsRcpp(SEXP Rv, SEXP Rm, SEXP RisRep, SEXP RFreqs, SEXP Rlow,
         Rcpp::XPtr<funcPtr<double>> xpFunDbl = putFunPtrInXPtr<double>(mainFun);
         funcPtr<double> myFunDbl = *xpFunDbl;
         
-        IsInteger = (IsInteger) && checkIsInteger(mainFun, uM, n, rowVec, vNum, targetVals, myFunDbl, true);
+        IsInteger = (IsInteger) && checkIsInteger(mainFun, uM, n, vNum, targetVals, myFunDbl, true);
         // Must be defined inside IsInteger check as targetVals could be outside integer data type range
         std::vector<int> targetIntVals;
         double tolerance = 0;
@@ -613,7 +622,7 @@ SEXP CombinatoricsRcpp(SEXP Rv, SEXP Rm, SEXP RisRep, SEXP RFreqs, SEXP Rlow,
             myFunDbl = *xpFunDbl;
             myFunInt = *xpFunInt;
             
-            IsInteger = (IsInteger) && checkIsInteger(mainFun, uM, n, rowVec, vNum, vNum, myFunDbl);
+            IsInteger = (IsInteger) && checkIsInteger(mainFun, uM, n, vNum, vNum, myFunDbl);
             ++nCol;
         }
         
