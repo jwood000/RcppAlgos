@@ -603,6 +603,7 @@ namespace PrimeSieve {
             nBigSegs = N_WHEELS2310_PER_SEG;
         }
         
+        nBigSegs = (nBigSegs < 1) ? 1u : nBigSegs;
         const int_fast64_t segSize = nBigSegs * segUnitSize;
         
         // There is some overhead for setting up the data structures
@@ -611,7 +612,7 @@ namespace PrimeSieve {
         // The tests that were performed showed that one thread was
         // just as efficient as two threads when myRange was equal
         // to 4 * segSize. This is especially true for PrimeSieveBig.
-        const int_fast64_t testNumThreads = (segSize > 0) ? myRange / (segSize * 4) : 0;
+        const int_fast64_t testNumThreads = myRange / (segSize * 4);
         
         if (maxThreads < 2) {Parallel = false;}
         
