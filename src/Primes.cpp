@@ -545,7 +545,7 @@ SEXP EratosthenesRcpp(SEXP Rb1, SEXP Rb2, SEXP RNumThreads, int maxCores, int ma
             Rcpp::NumericVector::iterator priBeg = primes.begin();
             
             for (std::size_t i = 0; i < numSects; ++i)
-                std::move(primeList[i].cbegin(), primeList[i].cend(), priBeg + runningCount[i]);
+                std::copy(primeList[i].cbegin(), primeList[i].cend(), priBeg + runningCount[i]);
             
             return primes;
         } else {
@@ -568,7 +568,7 @@ SEXP EratosthenesRcpp(SEXP Rb1, SEXP Rb2, SEXP RNumThreads, int maxCores, int ma
             Rcpp::IntegerVector::iterator priBeg = primes.begin();
             
             for (std::size_t i = 0; i < numSects; ++i)
-                std::move(primeList[i].cbegin(), primeList[i].cend(), priBeg + runningCount[i]);
+                std::copy(primeList[i].cbegin(), primeList[i].cend(), priBeg + runningCount[i]);
             
             return primes;
         } else {
