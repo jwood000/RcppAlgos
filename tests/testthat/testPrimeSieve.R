@@ -33,15 +33,19 @@ test_that("primeSieve generates correct numbers", {
                                     c(1693182318746371, 1693182318747503))
     
     ## Test Parallel
-    expect_equal(primeSieve(1e7), primeSieve(1e7, nThreads = 2))
-    expect_equal(primeSieve(1e12, 1e12 + 1e5), primeSieve(1e12, 1e12 + 1e5, nThreads = 2))
-    expect_equal(primeSieve(1e15, 1e15 + 1e5), primeSieve(1e15, 1e15 + 1e5, nThreads = 2))
+    funTestPar <- function(b1, b2, nT = 2) {
+        par <- primeSieve(b1, b2)
+        ser <- primeSieve(b1, b2, nThreads = nT)
+        identical(par, ser)
+    }
     
-    expect_equal(primeSieve(1e12, 1e12 + 1e7), primeSieve(1e12, 1e12 + 1e7, nThreads = 3))
-    expect_equal(primeSieve(1e15, 1e15 + 1e8), primeSieve(1e15, 1e15 + 1e8, nThreads = 3))
+    expect_true(funTestPar(1, 1e7))
+    expect_true(funTestPar(1e12, 1e12 + 1e7))
+    expect_true(funTestPar(1e15, 1e15 + 1e8, nT = 3))
     
     ## The number 2916073, was obtained from Kim Walish's primesieve library
-    expect_equal(length(primeSieve(769166929090560, 769167029090560, nThreads = 2)), 2916073)
+    len <- length(primeSieve(769166929090560, 769167029090560, nThreads = 2))
+    expect_equal(len, 2916073)
     
     ## This test is for full code coverage... It takes about 1.5 seconds
     ## system.time(a <- primeSieve(6, 1.1e9, nThreads = 1))
