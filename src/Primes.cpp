@@ -530,9 +530,9 @@ SEXP EratosthenesRcpp(SEXP Rb1, SEXP Rb2, SEXP RNumThreads, int maxCores, int ma
     
     if (myMax > std::numeric_limits<int>::max()) {
         std::vector<std::vector<double>> primeList(numSects, std::vector<double>());
-        std::vector<double> tempPrime;
+        std::vector<double> tempPrimes;
         
-        PrimeSieve::PrimeSieveMaster(myMin, myMax, tempPrime, primeList,
+        PrimeSieve::PrimeSieveMaster(myMin, myMax, tempPrimes, primeList,
                                      Parallel, nThreads, maxThreads, maxCores);
         
         if (Parallel) {
@@ -549,13 +549,14 @@ SEXP EratosthenesRcpp(SEXP Rb1, SEXP Rb2, SEXP RNumThreads, int maxCores, int ma
             
             return primes;
         } else {
-            return Rcpp::wrap(tempPrime);
+            Rcpp::NumericVector primes(tempPrimes.cbegin(), tempPrimes.cend());
+            return primes;
         }
     } else {
         std::vector<std::vector<int_fast32_t>> primeList(numSects, std::vector<int_fast32_t>());
-        std::vector<int_fast32_t> tempPrime;
+        std::vector<int_fast32_t> tempPrimes;
         
-        PrimeSieve::PrimeSieveMaster(myMin, myMax, tempPrime, primeList,
+        PrimeSieve::PrimeSieveMaster(myMin, myMax, tempPrimes, primeList,
                                      Parallel, nThreads, maxThreads, maxCores);
         
         if (Parallel) {
@@ -572,7 +573,8 @@ SEXP EratosthenesRcpp(SEXP Rb1, SEXP Rb2, SEXP RNumThreads, int maxCores, int ma
             
             return primes;
         } else {
-            return Rcpp::wrap(tempPrime);
+            Rcpp::IntegerVector primes(tempPrimes.cbegin(), tempPrimes.cend());
+            return primes;
         }
     }
 }
