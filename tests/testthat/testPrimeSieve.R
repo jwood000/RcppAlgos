@@ -34,8 +34,16 @@ test_that("primeSieve generates correct numbers", {
     
     ## Test Parallel
     funTestPar <- function(b1, b2, nT = 2) {
-        par <- primeSieve(b1, b2)
-        ser <- primeSieve(b1, b2, nThreads = nT)
+        ser <- primeSieve(b1, b2)
+        print(length(ser))
+        print(class(ser))
+        print(head(ser))
+        print(tail(ser))
+        par <- primeSieve(b1, b2, nThreads = nT)
+        print(length(par))
+        print(class(par))
+        print(head(par))
+        print(tail(par))
         identical(par, ser)
     }
     
