@@ -36,7 +36,11 @@ test_that("primeSieve generates correct numbers", {
     funTestPar <- function(b1, b2, nT = 2) {
         par <- primeSieve(b1, b2)
         ser <- primeSieve(b1, b2, nThreads = nT)
-        identical(par, ser)
+        temp <- all.equal(par, ser)
+        if (isFALSE(temp))
+            return(FALSE)
+        else
+            return(TRUE)
     }
     
     expect_true(funTestPar(1, 1e7))
