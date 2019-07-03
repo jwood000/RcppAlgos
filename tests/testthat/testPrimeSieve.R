@@ -41,7 +41,7 @@ test_that("primeSieve generates correct numbers", {
 
     expect_true(funTestPar(1, 1e7))
     expect_true(funTestPar(1e12, 1e12 + 1e7))
-    expect_true(funTestPar(1e15, 1e15 + 5e8, nT = 4))
+    expect_true(funTestPar(1e15, 1e15 + 1e7))
     
     # The following test can be used for fuller coverage but are commented
     # because they take a bit of time. All results were confirmed with
