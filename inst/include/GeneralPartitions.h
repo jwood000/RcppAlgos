@@ -7,7 +7,7 @@ namespace Partitions {
 
     constexpr int solnExists = 1;
     constexpr int noSoln = 0;
-    
+
     inline void GetNextPartition(std::vector<int> &z, int &maxIndex, 
                                  int &edge, int &pivot, int lastElem, int lastCol) {
         
@@ -17,19 +17,10 @@ namespace Partitions {
         --z[vertex];
         
         if (vertex == maxIndex) {
-            if (maxIndex < lastCol)
-                ++maxIndex;
-            
-            const int currMax = z[maxIndex];
-            
-            while (maxIndex > 0 && z[maxIndex - 1] == currMax)
-                --maxIndex;
-            
             pivot = lastCol;
-        }
-        
-        if (z[vertex] == z[edge])
+        } else if (z[vertex] == z[edge]) {
             ++vertex;
+        }
         
         while (vertex < pivot) {
             z[pivot] += z[vertex] - z[edge];
@@ -40,8 +31,8 @@ namespace Partitions {
         maxIndex = pivot;
         const int currMax = z[maxIndex];
         
-        while (maxIndex > 0 && z[maxIndex - 1] == currMax)
-            --maxIndex;
+        while (maxIndex > 1 && z[maxIndex - 1] == currMax)
+          --maxIndex;
         
         edge = maxIndex - 1;
         
@@ -240,10 +231,9 @@ namespace Partitions {
                     --maxIndex;
                 
                 pivot = (z[maxIndex] == lastElem) ? maxIndex - 1 : lastCol;
-            }
-            
-            if (z[vertex] == z[edge])
+            } else if (z[vertex] == z[edge]) {
                 ++vertex;
+            }
             
             while (vertex < pivot) {
                 const int distVert = z[vertex] - z[edge];
