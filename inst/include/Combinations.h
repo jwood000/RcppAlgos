@@ -61,9 +61,8 @@ void ComboGeneral(int n, int r, typeVector &v, bool repetition, int count,
 }
 
 template <typename typeMatrix, typename typeVector>
-void MultisetCombination(int n, int r, typeVector &v, std::vector<int> &Reps,
-                               std::vector<int> &freqs, int count, int numRows,
-                               std::vector<int> &z, typeMatrix &combinationMatrix) {
+void MultisetCombination(int n, int r, typeVector &v, std::vector<int> &Reps, std::vector<int> &freqs,
+                         int count, int numRows, std::vector<int> &z, typeMatrix &combinationMatrix) {
     
     std::vector<int> zIndex(n), zGroup(r);
     int numIter, sizeFreqs = 0;
