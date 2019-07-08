@@ -371,8 +371,3 @@ test_that("permuteGeneral produces correct results with Parallel, GMP, and const
                                 upper = "437893890380030000", 
                                 constraintFun = "min", keepResults = TRUE))
 })
-
-test_that("combo/permuteGeneral produces correct error messages with Parallel", {
-    expect_error(permuteGeneral(10, 5, Parallel = "TRUE"), 
-                 "Only logical values are supported for Parallel")
-})

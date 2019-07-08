@@ -31,14 +31,3 @@ test_that("numDivisorSieve generates correct numbers", {
     expect_equal(numDivisorSieve(1e12, 1e12 + 1e5), 
                  numDivisorSieve(1e12, 1e12 + 1e5, nThreads = 2))
 })
-
-test_that("numDivisorSieve produces appropriate error messages", {
-    expect_error(numDivisorSieve(-1), "bound1 must be a positive whole number")
-    expect_error(numDivisorSieve(0), "bound1 must be a positive whole number")
-    expect_error(numDivisorSieve(2^53), "bound1 must be less than")
-    expect_error(numDivisorSieve(2^53, 1), "must be less than")
-    expect_error(numDivisorSieve(1, 2^53), "must be less than")
-    expect_error(numDivisorSieve("10"), "must be of type numeric or integer")
-    expect_error(numDivisorSieve(2, "10"), "must be of type numeric or integer")
-    expect_error(numDivisorSieve(100, namedVector = "TRUE"), "Only logical values are supported for namedVector")
-})

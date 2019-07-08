@@ -290,15 +290,3 @@ test_that("permuteGeneral produces correct results for special subset sum", {
                                      limitConstraints = 10,
                                      upper = 10)), 10)
 })
-
-test_that("combo/permuteGeneral produces appropriate error messages for subset sum", {
-    expect_error(comboGeneral(0:130, 130, TRUE,
-                              constraintFun = "sum",
-                              comparisonFun = "==",
-                              limitConstraints = 130), "The number of rows cannot exceed")
-    
-    expect_error(permuteGeneral(35, 18, TRUE,
-                                constraintFun = "sum",
-                                comparisonFun = "==",
-                                limitConstraints = 35), "The number of rows cannot exceed")
-})

@@ -37,16 +37,3 @@ test_that("divisorsSieve generates correct numbers", {
                  divisorsSieve(1e9, 1e9 + 25000, nThreads = 3))
     expect_equal(divisorsSieve(3e4), divisorsSieve(3e4, nThreads = 2))
 })
-
-test_that("divisorsSieve produces appropriate error messages", {
-    expect_error(divisorsSieve(-1), "bound1 must be a positive whole number")
-    expect_error(divisorsSieve(0), "bound1 must be a positive whole number")
-    expect_error(divisorsSieve(2^53), "bound1 must be less than")
-    expect_error(divisorsSieve(2^53, 1), "bound1 must be less than")
-    expect_error(divisorsSieve(1, 2^53), "must be less than")
-    expect_error(divisorsSieve("10"), "must be of type numeric or integer")
-    expect_error(divisorsSieve(2, "10"), "must be of type numeric or integer")
-    expect_error(divisorsSieve(100, namedList = "TRUE"), 
-                 "Only logical values are supported for namedList")
-    expect_error(divisorsSieve(100000, nThreads = "9"), "must be of type numeric or integer")
-})

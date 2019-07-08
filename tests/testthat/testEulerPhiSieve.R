@@ -37,15 +37,3 @@ test_that("eulerPhiSieve generates correct numbers", {
                                     eulerPhiSieve(1e12, 1e12 + 1e6))
     
 })
-
-test_that("eulerPhiSieve produces appropriate error messages", {
-    expect_error(eulerPhiSieve(-1), "bound1 must be a positive whole number")
-    expect_error(eulerPhiSieve(0), "bound1 must be a positive whole number")
-    expect_error(eulerPhiSieve(2^53), "bound1 must be less than")
-    expect_error(eulerPhiSieve(2^53, 1), "must be less than")
-    expect_error(eulerPhiSieve(1, 2^53), "must be less than")
-    expect_error(eulerPhiSieve("10"), "must be of type numeric or integer")
-    expect_error(eulerPhiSieve(2, "10"), "must be of type numeric or integer")
-    expect_error(eulerPhiSieve(100, namedVector = "TRUE"), 
-                 "Only logical values are supported for namedVector")
-})

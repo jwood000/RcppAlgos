@@ -53,13 +53,3 @@ test_that("primeSieve generates correct numbers", {
     # gc()
     # expect_equal(length(primeSieve(39582118599936, 39582718599936, nThreads = 4)), 19161558)
 })
-
-test_that("primeSieve produces appropriate error messages", {
-    expect_error(primeSieve(-1), "must be a positive")
-    expect_error(primeSieve(1,-1), "must be a positive whole number")
-    expect_error(primeSieve(1,2^53), "must be less than")
-    expect_error(primeSieve(2^53), "must be less than")
-    expect_error(primeSieve(2^53, 1), "must be less than")
-    expect_error(primeSieve(2^4, "1"), "must be of type numeric or integer")
-    expect_error(primeSieve("500"), "must be of type numeric or integer")
-})

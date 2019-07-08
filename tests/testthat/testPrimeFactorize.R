@@ -31,11 +31,3 @@ test_that("primeFactorize generates correct numbers", {
     samp <- sample(1e12, 100)
     expect_equal(primeFactorize(samp), primeFactorize(samp, nThreads = 2))
 })
-
-test_that("primeFactorize produces appropriate error messages", {
-    expect_error(primeFactorize(2^53), "The abs value of each element in v must be less than")
-    expect_error(primeFactorize(-2^53), "The abs value of each element in v must be less than")
-    expect_error(primeFactorize(c(-2^53, 1:100)), "The abs value of each element in v must be less than")
-    expect_error(primeFactorize("10"), "must be of type numeric or integer")
-    expect_error(primeFactorize(100, namedList = "TRUE"), "Only logical values are supported for namedList")
-})
