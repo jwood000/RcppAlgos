@@ -129,11 +129,11 @@ comboGeneral(4, 3, repetition = TRUE)
 ## They are very efficient
 system.time(comboGeneral(25, 13))
    user  system elapsed 
-  0.116   0.062   0.178
+  0.104   0.054   0.158
 
 system.time(comboGeneral(25, 13, nThreads = 8))
    user  system elapsed 
-  0.192   0.228   0.058
+  0.166   0.220   0.055
 
 nrow(comboGeneral(25,13))
 [1] 5200300
@@ -421,7 +421,7 @@ system.time(b <- comboGeneral(myVec, 50, TRUE,
                               lower = 1e15 + 1,
                               upper = 1e15 + 1e5))
    user  system elapsed 
-  0.008   0.001   0.010
+  0.008   0.000   0.008
   
 b[1:5, 45:50]
           [,1]      [,2]      [,3]     [,4]      [,5]       [,6]
@@ -508,7 +508,7 @@ microbenchmark(f1 = funCustomComb(15, 8),
                 f2 = comboGeneral(15, 8, FUN = cumprod), unit = "relative")
 unit: relative
  expr      min       lq     mean   median       uq      max neval
-   f1 6.946481 6.891553 6.334866 6.821221 6.934111 2.686777   100
+   f1 6.948574 6.955633 6.960554 6.961681 6.515623 9.688503   100
    f2 1.000000 1.000000 1.000000 1.000000 1.000000 1.000000   100
    
 comboGeneral(15, 8, FUN = cumprod, upper = 3)
@@ -595,7 +595,7 @@ eulerPhiSieve(20, namedVector = TRUE)
  
 system.time(a <- eulerPhiSieve(1e12, 1e12 + 1e7))
    user  system elapsed 
-  1.049   0.041   1.108
+  1.049   0.041   1.086
 
 ## Using nThreads for greater efficiency
 system.time(b <- eulerPhiSieve(1e12, 1e12 + 1e7, nThreads = 8))
@@ -657,7 +657,7 @@ FALSE FALSE  TRUE FALSE FALSE FALSE
 
 system.time(a <- primeFactorize(1e12:(1e12 + 1e5)))
    user  system elapsed 
-  1.791   0.005   1.806
+  1.721   0.004   1.725
 
 ## Using nThreads for greater efficiency  
 system.time(b <- primeFactorize(1e12:(1e12 + 1e5), nThreads = 8))
@@ -677,7 +677,7 @@ Both of these functions are based on the excellent algorithms developed by [Kim 
 options(scipen = 50)
 system.time(myPs <- primeSieve(10^13+10^3, 10^13))
    user  system elapsed 
-  0.017   0.006   0.023
+  0.016   0.005   0.021
   
 myPs
  [1] 10000000000037 10000000000051 10000000000099 10000000000129
@@ -697,7 +697,7 @@ object.size(myPs)
 ## primes under a billion!!!
 system.time(a <- primeSieve(10^9))
    user  system elapsed 
-  1.263   0.095   1.368
+  1.227   0.095   1.323 
 
 ## Using nThreads  
 system.time(b <- primeSieve(10^9, nThreads = 8))
@@ -718,7 +718,7 @@ system.time(old <- RcppAlgos2.2::primeSieve(1e15, 1e15 + 1e9))
 ## v2.3.0 is over 3x faster!  
 system.time(a <- primeSieve(1e15, 1e15 + 1e9))
    user  system elapsed 
-  2.452   0.208   2.676
+  2.360   0.189   2.549
   
 ## And using nThreads we are ~8x faster
 system.time(b <- primeSieve(1e15, 1e15 + 1e9, nThreads = 8))
