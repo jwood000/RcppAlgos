@@ -7,7 +7,7 @@
 
 template <typename typeMatrix, typename typeVector>
 void PermuteGenRes(int n, int r, std::vector<typeVector> &v, bool repetition,
-                   int numRows, std::vector<int> &z, std::size_t count,
+                   int numRows, std::vector<int> &z, int intCount,
                    bool nonTrivial, typeMatrix &permuteMatrix, funcPtr<typeVector> myFun) {
     
     const std::size_t uN = n;
@@ -21,7 +21,7 @@ void PermuteGenRes(int n, int r, std::vector<typeVector> &v, bool repetition,
     if (repetition) {
         const int lastElemInt = lastElem;
         
-        for (; count < uRowN; ++count) {
+        for (std::size_t count = intCount; count < uRowN; ++count) {
             for (std::size_t j = 0; j < uR; ++j) {
                 vPass[j] = v[z[j]];
                 permuteMatrix(count, j) = vPass[j];
@@ -48,7 +48,7 @@ void PermuteGenRes(int n, int r, std::vector<typeVector> &v, bool repetition,
             arrPerm[i] = z[i];
         
         if (r == n) {
-            for (; count < numR1; ++count) {
+            for (std::size_t count = intCount; count < numR1; ++count) {
                 for (std::size_t j = 0; j < uR; ++j) {
                     vPass[j] = v[arrPerm[j]];
                     permuteMatrix(count, j) = vPass[j];
@@ -58,7 +58,7 @@ void PermuteGenRes(int n, int r, std::vector<typeVector> &v, bool repetition,
                 nextFullPerm(arrPerm.get(), lastElem, pentultimate);
             }
         } else {
-            for (; count < numR1; ++count) {
+            for (std::size_t count = intCount; count < numR1; ++count) {
                 for (std::size_t j = 0; j < uR; ++j) {
                     vPass[j] = v[arrPerm[j]];
                     permuteMatrix(count, j) = vPass[j];
@@ -80,9 +80,9 @@ void PermuteGenRes(int n, int r, std::vector<typeVector> &v, bool repetition,
     } else {
         
         if (n > 1) {
-            std::size_t phaseOne, maxN = NumPermsNoRep(n, r);
-            std::size_t segment = maxN / uN;
-            phaseOne = (uRowN < segment) ? uRowN : segment;
+            const std::size_t maxN = NumPermsNoRep(n, r);
+            const std::size_t segment = maxN / uN;
+            const std::size_t phaseOne = (uRowN < segment) ? uRowN : segment;
 
             auto indexMat = std::make_unique<int[]>(phaseOne * uR);
             auto arrPerm = std::make_unique<int[]>(uN);
@@ -114,7 +114,8 @@ void PermuteGenRes(int n, int r, std::vector<typeVector> &v, bool repetition,
                 }
             }
             
-            std::size_t start = segment, last = 2 * segment;
+            std::size_t start = segment;
+            std::size_t last = 2 * segment;
             std::size_t ind = 1;
             std::vector<typeVector> vTemp(1);
             
@@ -142,8 +143,8 @@ void PermuteGenRes(int n, int r, std::vector<typeVector> &v, bool repetition,
 }
 
 template <typename typeMatrix, typename typeVector>
-void MultisetPermRes(int n, int r, std::vector<typeVector> &v, int numRows,
-                     std::size_t count, std::vector<int> &z,
+void MultisetPermRes(int n, int r, const std::vector<typeVector> &v, int numRows,
+                     int intCount, std::vector<int> &z,
                      typeMatrix &permuteMatrix, funcPtr<typeVector> myFun) {
     
     const std::size_t lenFreqs = z.size();
@@ -162,7 +163,7 @@ void MultisetPermRes(int n, int r, std::vector<typeVector> &v, int numRows,
     if (uR == lenFreqs) {
         const std::size_t pentultimate = lenFreqs - 2;
         
-        for (; count < numR1; ++count) {
+        for (std::size_t count = intCount; count < numR1; ++count) {
             for (std::size_t j = 0; j < uR; ++j) {
                 vPass[j] = v[arrPerm[j]];
                 permuteMatrix(count, j) = vPass[j];
@@ -172,7 +173,7 @@ void MultisetPermRes(int n, int r, std::vector<typeVector> &v, int numRows,
             nextFullPerm(arrPerm.get(), lastElem, pentultimate);
         }
     } else {
-        for (; count < numR1; ++count) {
+        for (std::size_t count = intCount; count < numR1; ++count) {
             for (std::size_t j = 0; j < uR; ++j) {
                 vPass[j] = v[arrPerm[j]];
                 permuteMatrix(count, j) = vPass[j];

@@ -5,21 +5,20 @@
 #include "ConstraintsUtils.h"
 
 template <typename typeMatrix, typename typeVector>
-void ComboGenRes(int n, int r, std::vector<typeVector> &v, bool repetition,
+void ComboGenRes(int n, int r, const std::vector<typeVector> &v, bool repetition,
                   int nRows, int count, std::vector<int> &z,
                   typeMatrix &combinationMatrix, funcPtr<typeVector> myFun) {
     
     const int r1 = r - 1;
     const int r2 = r - 2;
-    int numIter;
     std::vector<typeVector> vPass(r);
-    std::size_t uR = r;
+    const std::size_t uR = r;
     
     if (repetition) {
         const int lastElement = n - 1;
         
         while (count < nRows) {
-            numIter = n - z[r1];
+            int numIter = n - z[r1];
             
             if (numIter + count > nRows)
                 numIter = nRows - count;
@@ -47,7 +46,7 @@ void ComboGenRes(int n, int r, std::vector<typeVector> &v, bool repetition,
         const int nMinusR = n - r;
         
         while (count < nRows) {
-            numIter = n - z[r1];
+            int numIter = n - z[r1];
 
             if (numIter + count > nRows)
                 numIter = nRows - count;
@@ -75,14 +74,13 @@ void ComboGenRes(int n, int r, std::vector<typeVector> &v, bool repetition,
 }
 
 template <typename typeMatrix, typename typeVector>
-void MultisetComboResult(int n, int r, std::vector<typeVector> &v, std::vector<int> &Reps,
-                         std::vector<int> &freqs, int nRows, int count,
-                         std::vector<int> &z, typeMatrix &combinationMatrix,
-                         funcPtr<typeVector> myFun) {
+void MultisetComboResult(int n, int r, const std::vector<typeVector> &v, const std::vector<int> &Reps,
+                         const std::vector<int> &freqs, int nRows, int count, std::vector<int> &z,
+                         typeMatrix &combinationMatrix, funcPtr<typeVector> myFun) {
     
     std::vector<int> zIndex(n), zGroup(r);
     std::vector<typeVector> vPass(r);
-    int numIter, sizeFreqs = 0;
+    int sizeFreqs = 0;
     const int r1 = r - 1;
     const int r2 = r - 2;
     const std::size_t uR = r;
@@ -97,7 +95,7 @@ void MultisetComboResult(int n, int r, std::vector<typeVector> &v, std::vector<i
     int pentExtreme = sizeFreqs - r;
     
     while (count < nRows) {
-        numIter = n - z[r1];
+        int numIter = n - z[r1];
         
         if (numIter + count > nRows)
             numIter = nRows - count;

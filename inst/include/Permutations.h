@@ -15,12 +15,11 @@ void PermuteGeneral(int n, int r, typeVector &v, bool repetition, int numRows,
     const std::size_t lastElem = n - 1;
     const std::size_t lastCol = r - 1;
     const std::size_t pentultimate = n - 2;
-    std::size_t count = intCount;
     
     if (repetition) {
         const int lastElemInt = lastElem;
         
-        for (; count < uRowN; ++count) {
+        for (std::size_t count = intCount; count < uRowN; ++count) {
             for (std::size_t j = 0; j < uR; ++j)
                 permuteMatrix(count, j) = v[z[j]];
             
@@ -43,14 +42,14 @@ void PermuteGeneral(int n, int r, typeVector &v, bool repetition, int numRows,
             arrPerm[i] = z[i];
         
         if (r == n) {
-            for (; count < numR1; ++count) {
+            for (std::size_t count = intCount; count < numR1; ++count) {
                 for (std::size_t j = 0; j < uR; ++j)
                     permuteMatrix(count, j) = v[arrPerm[j]];
                 
                 nextFullPerm(arrPerm.get(), lastElem, pentultimate);
             }
         } else {
-            for (; count < numR1; ++count) {
+            for (std::size_t count = intCount; count < numR1; ++count) {
                 for (std::size_t j = 0; j < uR; ++j)
                     permuteMatrix(count, j) = v[arrPerm[j]];
                 
@@ -65,14 +64,14 @@ void PermuteGeneral(int n, int r, typeVector &v, bool repetition, int numRows,
     } else {
         
         if (n > 1) {
-            std::size_t phaseOne, maxN = NumPermsNoRep(n, r);
-            std::size_t segment = maxN / uN;
-            phaseOne = (uRowN < segment) ? uRowN : segment;
+            const std::size_t maxN = NumPermsNoRep(n, r);
+            const std::size_t segment = maxN / uN;
+            const std::size_t phaseOne = (uRowN < segment) ? uRowN : segment;
             
             auto indexMat = std::make_unique<int[]>(phaseOne * uR);
             auto arrPerm = std::make_unique<int[]>(uN);
             
-            for (int i = 0; i < n; ++i)
+            for (std::size_t i = 0; i < uN; ++i)
                 arrPerm[i] = i;
 
             if (r == n) {
@@ -95,7 +94,8 @@ void PermuteGeneral(int n, int r, typeVector &v, bool repetition, int numRows,
                 }
             }
             
-            std::size_t start = segment, last = 2 * segment;
+            std::size_t start = segment;
+            std::size_t last = 2 * segment;
             std::size_t ind = 1;
             typeVector vTemp(1);
             
@@ -124,7 +124,7 @@ void PermuteGeneral(int n, int r, typeVector &v, bool repetition, int numRows,
 }
 
 template <typename typeMatrix, typename typeVector>
-void MultisetPermutation(int n, int r, typeVector &v, int numRows, std::vector<int> &z,
+void MultisetPermutation(int n, int r, const typeVector &v, int numRows, std::vector<int> &z,
                          int intCount, typeMatrix &permuteMatrix) {
     
     const std::size_t lenFreqs = z.size();
@@ -136,22 +136,20 @@ void MultisetPermutation(int n, int r, typeVector &v, int numRows, std::vector<i
     const std::size_t lastCol = r - 1;
     const std::size_t lastElem = lenFreqs - 1;
     
-    std::size_t count = intCount;
-    
     for (std::size_t j = 0; j < lenFreqs; ++j)
         arrPerm[j] = z[j];
     
     if (uR == lenFreqs) {
         const std::size_t pentultimate = lenFreqs - 2;
         
-        for (; count < numR1; ++count) {
+        for (std::size_t count = intCount; count < numR1; ++count) {
             for (std::size_t j = 0; j < uR; ++j)
                 permuteMatrix(count, j) = v[arrPerm[j]];
             
             nextFullPerm(arrPerm.get(), lastElem, pentultimate);
         }
     } else {
-        for (; count < numR1; ++count) {
+        for (std::size_t count = intCount; count < numR1; ++count) {
             for (std::size_t j = 0; j < uR; ++j)
                 permuteMatrix(count, j) = v[arrPerm[j]];
             
@@ -165,7 +163,7 @@ void MultisetPermutation(int n, int r, typeVector &v, int numRows, std::vector<i
 }
 
 template <typename typeVector>
-void PermutationApplyFun(int n, int r, typeVector &v, bool repetition,
+void PermutationApplyFun(int n, int r, const typeVector &v, bool repetition,
                          int numRows, bool Multi, std::vector<int> &z,
                          int intCount, SEXP sexpFun, SEXP rho, SEXP &ans) {
     
@@ -175,14 +173,14 @@ void PermutationApplyFun(int n, int r, typeVector &v, bool repetition,
     typeVector vectorPass(r);
     
     const std::size_t numR1 = numRows - 1;
-    const std::size_t uRowN = numRows, lastCol = uR - 1;
+    const std::size_t uRowN = numRows;
+    const std::size_t lastCol = uR - 1;
     const std::size_t lastElem = (Multi) ? (lenFreqs - 1) : (n - 1);
-    std::size_t count = intCount;
     
     if (repetition) {
         const int lastElemInt = lastElem;
         
-        for (; count < uRowN; ++count) {
+        for (std::size_t count = intCount; count < uRowN; ++count) {
             for (std::size_t j = 0; j < uR; ++j)
                 vectorPass[j] = v[z[j]];
 
@@ -208,7 +206,7 @@ void PermutationApplyFun(int n, int r, typeVector &v, bool repetition,
         if (uR == uN || uR == lenFreqs) {
             const std::size_t pentultimate = lastElem - 1;
             
-            for (; count < numR1; ++count) {
+            for (std::size_t count = intCount; count < numR1; ++count) {
                 for (std::size_t j = 0; j < uR; ++j)
                     vectorPass[j] = v[arrPerm[j]];
                 
@@ -217,7 +215,7 @@ void PermutationApplyFun(int n, int r, typeVector &v, bool repetition,
                 nextFullPerm(arrPerm.get(), lastElem, pentultimate);
             }
         } else {
-            for (; count < numR1; ++count) {
+            for (std::size_t count = intCount; count < numR1; ++count) {
                 for (std::size_t j = 0; j < uR; ++j)
                     vectorPass[j] = v[arrPerm[j]];
                     
