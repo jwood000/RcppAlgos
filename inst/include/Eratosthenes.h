@@ -102,9 +102,7 @@ namespace PrimeSieve {
             std::vector<int_fast64_t> nextStrt;
 
             if (minNum > 2) {
-                int_fast64_t myIndex;
-                
-                for (; sqrPrime <= upperBnd; ++p) {
+                for (int_fast64_t myIndex = 0; sqrPrime <= upperBnd; ++p) {
                     if (lowerBnd > sqrPrime) {
                         const int_fast64_t remTest = lowerBnd % sievePrimes[p - 1];
                         if (remTest == 0) {
@@ -206,18 +204,7 @@ namespace PrimeSieve {
                                                       static_cast<double>(maxNum));
         myPrimes.reserve(myReserve);
         const int_fast64_t flrMaxNum = segSize * std::floor(maxNum / segSize);
-        
-        // vector used for sieving
         std::vector<bool> sieve(segSize, true);
-        
-        if (minNum < 15) {
-            sieve[1] = false;
-            std::size_t ind = 0;
-            for (; smallPrimeBase[ind] < minNum; ++ind) {}
-            
-            for (; smallPrimeBase[ind] < 15; ++ind)
-                myPrimes.push_back(static_cast<typePrime>(smallPrimeBase[ind]));
-        }
         
         int_fast64_t lowerBnd = segSize * std::floor(static_cast<double>(minNum) / segSize);
         int_fast64_t upperBnd = std::min(lowerBnd + segSize, maxNum);
@@ -227,51 +214,47 @@ namespace PrimeSieve {
         int_fast64_t sqrPrime = 9;
         std::vector<int_fast64_t> nextStrt;
         
-        if (minNum > 2) {
-            int_fast64_t myIndex;
-            
-            for (; sqrPrime <= upperBnd; ++p) {
-                if (lowerBnd > sqrPrime) {
-                    int_fast64_t remTest = lowerBnd % sievePrimes[p - 1];
-                    if (remTest == 0) {
-                        myIndex = sievePrimes[p - 1];
-                    } else {
-                        myIndex = sievePrimes[p - 1] - remTest;
-                        if ((myIndex % 2) == 0) {myIndex += sievePrimes[p - 1];}
-                    }
+        for (int_fast64_t myIndex = 0; sqrPrime <= upperBnd; ++p) {
+            if (lowerBnd > sqrPrime) {
+                int_fast64_t remTest = lowerBnd % sievePrimes[p - 1];
+                if (remTest == 0) {
+                    myIndex = sievePrimes[p - 1];
                 } else {
-                    myIndex = sqrPrime - lowerBnd;
+                    myIndex = sievePrimes[p - 1] - remTest;
+                    if ((myIndex % 2) == 0) {myIndex += sievePrimes[p - 1];}
                 }
-                
-                nextStrt.push_back(myIndex);
-                sqrPrime = sievePrimes[p] * sievePrimes[p];
-            }
-            
-            for (std::size_t i = 5; i < nextStrt.size(); ++i) {
-                int_fast64_t j = nextStrt[i];
-                for (int_fast64_t k = sievePrimes[i] * 2; j < segSize; j += k)
-                    sieve[j] = false;
-                
-                nextStrt[i] = j - segSize;
-            }
-            
-            if (upperBnd < flrMaxNum) {
-                for (std::size_t q = 0; q < nWheels; ++q)
-                    for (std::size_t w = 0; w < szWheel30030; myNum += ARR_WHEEL30030[w], ++w)
-                        if (myNum >= minNum)
-                            if (sieve[myNum - lowerBnd])
-                                myPrimes.push_back(static_cast<typePrime>(myNum));
             } else {
-                for (std::size_t q = 0; q < nWheels && myNum <= maxNum; ++q)
-                    for (std::size_t w = 0; w < szWheel30030 && myNum <= maxNum; myNum += ARR_WHEEL30030[w], ++w)
-                        if (myNum >= minNum)
-                            if (sieve[myNum - lowerBnd])
-                                myPrimes.push_back(static_cast<typePrime>(myNum));
+                myIndex = sqrPrime - lowerBnd;
             }
             
-            std::fill(sieve.begin(), sieve.end(), true);
-            lowerBnd += segSize;
+            nextStrt.push_back(myIndex);
+            sqrPrime = sievePrimes[p] * sievePrimes[p];
         }
+        
+        for (std::size_t i = 5; i < nextStrt.size(); ++i) {
+            int_fast64_t j = nextStrt[i];
+            for (int_fast64_t k = sievePrimes[i] * 2; j < segSize; j += k)
+                sieve[j] = false;
+            
+            nextStrt[i] = j - segSize;
+        }
+        
+        if (upperBnd < flrMaxNum) {
+            for (std::size_t q = 0; q < nWheels; ++q)
+                for (std::size_t w = 0; w < szWheel30030; myNum += ARR_WHEEL30030[w], ++w)
+                    if (myNum >= minNum)
+                        if (sieve[myNum - lowerBnd])
+                            myPrimes.push_back(static_cast<typePrime>(myNum));
+        } else {
+            for (std::size_t q = 0; q < nWheels && myNum <= maxNum; ++q)
+                for (std::size_t w = 0; w < szWheel30030 && myNum <= maxNum; myNum += ARR_WHEEL30030[w], ++w)
+                    if (myNum >= minNum)
+                        if (sieve[myNum - lowerBnd])
+                            myPrimes.push_back(static_cast<typePrime>(myNum));
+        }
+        
+        std::fill(sieve.begin(), sieve.end(), true);
+        lowerBnd += segSize;
         
         for (; lowerBnd < flrMaxNum; lowerBnd += segSize) {
             upperBnd = lowerBnd + segSize;
@@ -529,6 +512,37 @@ namespace PrimeSieve {
     }
     
     template <typename typePrime>
+    void PrimeSlave(int_fast64_t minNum, int_fast64_t maxNum, const std::vector<int_fast64_t> &svPriMain,
+                    const std::vector<int_fast64_t> &svPriOne, const std::vector<int_fast64_t> &svPriTwo, 
+                    std::vector<typePrime> &primes, int_fast64_t smallCut, int_fast64_t medCut, 
+                    std::size_t nBigSegs, const std::vector<char> &check30030) {
+        
+        if (maxNum > medCut) {
+            // PrimeSieveBig is not meant for small values, so we
+            // first get them with PrimeSieveMed/Small
+            if (minNum < smallCut) {
+                PrimeSieveSmall(minNum, smallCut, svPriMain, primes);
+                PrimeSieveMedium(smallCut, medCut, svPriMain, primes);
+                PrimeSieveBig(medCut, maxNum, svPriOne, svPriTwo, primes, nBigSegs, check30030);
+            } else if (minNum < medCut) {
+                PrimeSieveMedium(minNum, medCut, svPriMain, primes);
+                PrimeSieveBig(medCut, maxNum, svPriOne, svPriTwo, primes, nBigSegs, check30030);
+            } else {
+                PrimeSieveBig(minNum, maxNum, svPriOne, svPriTwo, primes, nBigSegs, check30030);
+            }
+        } else if (maxNum > smallCut) {
+            if (minNum < smallCut) {
+                PrimeSieveSmall(minNum, smallCut, svPriMain, primes);
+                PrimeSieveMedium(smallCut, maxNum, svPriMain, primes);
+            } else {
+                PrimeSieveMedium(minNum, maxNum, svPriMain, primes);
+            }
+        } else {
+            PrimeSieveSmall(minNum, maxNum, svPriMain, primes);
+        }
+    }
+    
+    template <typename typePrime>
     void PrimeSieveMaster(int_fast64_t minNum, int_fast64_t maxNum, std::vector<typePrime> &primes, 
                           std::vector<std::vector<typePrime>> &primeList, bool &Parallel,
                           int nThreads = 1, int maxThreads = 1, int maxCores = 1) {
@@ -626,54 +640,16 @@ namespace PrimeSieve {
             upperBnd = segSize * std::floor(minNum / segSize) + chunkSize;
             
             for (; ind < (nThreads - 1); lowerBnd = upperBnd, upperBnd += chunkSize, ++ind) {
-                if (upperBnd > medCut) {
-                    pool.push(std::cref(PrimeSieveBig<typePrime>), lowerBnd, upperBnd, std::ref(svPriOne),
-                              std::ref(svPriTwo), std::ref(primeList[ind]), nBigSegs, std::ref(check30030));
-                } else if (upperBnd > smallCut) {
-                    pool.push(std::cref(PrimeSieveMedium<typePrime>), lowerBnd, upperBnd,
-                              std::ref(svPriMain), std::ref(primeList[ind]));
-                } else {
-                    pool.push(std::cref(PrimeSieveSmall<typePrime>), lowerBnd, 
-                              upperBnd, std::ref(svPriMain), std::ref(primeList[ind]));
-                }
+                pool.push(std::cref(PrimeSlave<typePrime>), lowerBnd, upperBnd, std::ref(svPriMain), std::ref(svPriOne),
+                          std::ref(svPriTwo), std::ref(primeList[ind]), smallCut, medCut, nBigSegs, std::ref(check30030));
             }
             
-            if (maxNum > medCut) {
-                pool.push(std::cref(PrimeSieveBig<typePrime>), lowerBnd, maxNum, std::ref(svPriOne),
-                          std::ref(svPriTwo), std::ref(primeList[ind]), nBigSegs, std::ref(check30030));
-            } else if (maxNum > smallCut) {
-                pool.push(std::cref(PrimeSieveMedium<typePrime>), lowerBnd,
-                          maxNum, std::ref(svPriMain), std::ref(primeList[ind]));
-            } else {
-                pool.push(std::cref(PrimeSieveSmall<typePrime>), lowerBnd, 
-                          maxNum, std::ref(svPriMain), std::ref(primeList[ind]));
-            }
+            pool.push(std::cref(PrimeSlave<typePrime>), lowerBnd, maxNum, std::ref(svPriMain), std::ref(svPriOne),
+                      std::ref(svPriTwo), std::ref(primeList[ind]), smallCut, medCut, nBigSegs, std::ref(check30030));
             
             pool.join();
-            
         } else {
-            if (maxNum > medCut) {
-                // PrimeSieveBig is not meant for small values, so we first get them with
-                // PrimeSieveMed. N.B. Cases that meet this criteria will take an extremely
-                // long time and also require a huge amount of memory. We also don't care
-                // to use the more efficient PrimeSieveSmall if the user chooses a minimum
-                // value less than smallCut, as efficiency at this point is not a concern.
-                if (minNum < medCut) {
-                    PrimeSieveMedium(minNum, medCut, svPriMain, primes);
-                    PrimeSieveBig(medCut, maxNum, svPriOne, svPriTwo, primes, nBigSegs, check30030);
-                } else {
-                    PrimeSieveBig(minNum, maxNum, svPriOne, svPriTwo, primes, nBigSegs, check30030);
-                }
-            } else if (maxNum > smallCut) {
-                if (minNum < smallCut) {
-                    PrimeSieveSmall(minNum, smallCut, svPriMain, primes);
-                    PrimeSieveMedium(smallCut, maxNum, svPriMain, primes);
-                } else {
-                    PrimeSieveMedium(minNum, maxNum, svPriMain, primes);
-                }
-            } else {
-                PrimeSieveSmall(minNum, maxNum, svPriMain, primes);
-            }
+            PrimeSlave(minNum, maxNum, svPriMain, svPriOne, svPriTwo, primes, smallCut, medCut, nBigSegs, check30030);
         }
     }
 }
