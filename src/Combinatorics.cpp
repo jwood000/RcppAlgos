@@ -1,12 +1,105 @@
 #include "ConstraintsMaster.h"
 #include "GeneralPartitions.h"
 #include "CleanConvert.h"
+#include "NthResult.h"
+#include "CountGmp.h"
 #include "RMatrix.h"
 #include <RcppThread.h>
 
 // [[Rcpp::export]]
 int cpp11GetNumThreads() {
     return std::thread::hardware_concurrency();
+}
+
+void CharacterReturn(int n, int m, Rcpp::CharacterVector v, bool IsRep, int nRows,
+                     bool IsComb, std::vector<int> myReps, std::vector<int> freqs,
+                     std::vector<int> z, bool permNonTriv, bool IsMultiset,
+                     bool keepRes, Rcpp::CharacterMatrix &matRcpp, int count) {
+    if (IsComb) {
+        if (IsMultiset)
+            MultisetCombination(n, m, v, myReps, freqs, count, nRows, z, matRcpp);
+        else
+            ComboGeneral(n, m, v, IsRep, count, nRows, z, matRcpp);
+    } else {
+        if (IsMultiset)
+            MultisetPermutation(n, m, v, nRows, z, count, matRcpp);
+        else
+            PermuteGeneral(n, m, v, IsRep, nRows, z, count, permNonTriv, matRcpp);
+    }
+}
+
+template <typename typeVector>
+void ApplyFunction(int n, int m, typeVector sexpVec, bool IsRep, int nRows, bool IsComb,
+                   std::vector<int> myReps, SEXP ans, std::vector<int> freqs,
+                   std::vector<int> z, bool IsMultiset, SEXP sexpFun, SEXP rho, int count) {
+    if (IsComb) {
+        if (IsMultiset)
+            MultisetComboApplyFun(n, m, sexpVec, myReps, freqs, nRows, z, count, sexpFun, rho, ans);
+        else
+            ComboGeneralApplyFun(n , m, sexpVec, IsRep, count, nRows, z, sexpFun, rho, ans);
+    } else {
+        PermutationApplyFun(n, m, sexpVec, IsRep,nRows, IsMultiset, z, count, sexpFun, rho, ans);
+    }
+}
+
+// Check if our function operating on the rows of our matrix can possibly produce elements
+// greater than std::numeric_limits<int>::max(). We need a NumericMatrix in this case. We also need to check
+// if our function is the mean as this can produce non integral values.
+bool checkIsInteger(std::string funPass, std::size_t uM, int n,
+                    std::vector<double> vNum, std::vector<double> targetVals,
+                    funcPtr<double> myFunDbl, bool checkLim = false) {
+    
+    if (funPass == "mean")
+        return false;
+    
+    std::vector<double> rowVec(uM);
+    std::vector<double> vAbs;
+    
+    for (int i = 0; i < n; ++i)
+        vAbs.push_back(std::abs(vNum[i]));
+    
+    double vecMax = *std::max_element(vAbs.cbegin(), vAbs.cend());
+    for (std::size_t i = 0; i < uM; ++i)
+        rowVec[i] = static_cast<double>(vecMax);
+    
+    double testIfInt = myFunDbl(rowVec, uM);
+    if (testIfInt > std::numeric_limits<int>::max())
+        return false;
+    
+    if (checkLim) {
+        vAbs.clear();
+        for (std::size_t i = 0; i < targetVals.size(); ++i) {
+            if (static_cast<int64_t>(targetVals[i]) != targetVals[i])
+                return false;
+            else
+                vAbs.push_back(std::abs(targetVals[i]));
+        }
+        
+        double vecMax = *std::max_element(vAbs.cbegin(), vAbs.cend());
+        if (vecMax > std::numeric_limits<int>::max())
+            return false;
+    }
+    
+    return true;
+}
+
+void getStartZ(int n, int m, double &lower, int stepSize, mpz_t &myIndex, bool IsRep,
+               bool IsComb, bool IsMultiset, bool isGmp, std::vector<int> &myReps,
+               std::vector<int> &freqsExpanded, std::vector<int> &startZ) {
+    
+    if (isGmp) {
+        mpz_add_ui(myIndex, myIndex, stepSize);
+        if (IsComb)
+            startZ = nthCombinationGmp(n, m, myIndex, IsRep, IsMultiset, myReps);
+        else
+            startZ = nthPermutationGmp(n, m, myIndex, IsRep, IsMultiset, myReps, freqsExpanded, true);
+    } else {
+        lower += stepSize;
+        if (IsComb)
+            startZ = nthCombination(n, m, lower, IsRep, IsMultiset, myReps);
+        else
+            startZ = nthPermutation(n, m, lower, IsRep, IsMultiset, myReps, freqsExpanded, true);
+    }
 }
 
 // [[Rcpp::export]]
@@ -460,6 +553,19 @@ SEXP CombinatoricsRcpp(SEXP Rv, SEXP Rm, SEXP RisRep, SEXP RFreqs, SEXP Rlow,
                 
                 bool sortNeeded = false;
                 
+                // The two cases below are for when we are looking for all combs/perms such that when
+                // myFun is applied, the result is between 2 values. These comparisons are defined in 
+                // compSpecial in ConstraintsMaster.h. If we look at the definitions of these comparison
+                // functions in ConstraintsUtils.h, we see the following trend for all 4 cases:
+                //
+                // bool greaterLess(stdType x, const std::vector<stdType> &y) {return (x < y[0]) && (x > y[1]);}
+                //
+                // That is, we need the maixmum value in targetVals to be the first value and the second
+                // value needs to be the minimum. At this point, the constraint algorithm will be
+                // identical to when comparisonFun = "==" (i.e. we allow the algorithm to continue
+                // while the results are less than (or equal to in cases where strict ineuqlities are 
+                // enforced) the target value and stop once the results exceed that value).
+                
                 if (compFunVec[0].substr(0, 1) == ">" && std::min(targetVals[0], targetVals[1]) == targetVals[0]) {
                     compFunVec[0] = compFunVec[0] + "," + compFunVec[1];
                     sortNeeded = true;
@@ -509,7 +615,64 @@ SEXP CombinatoricsRcpp(SEXP Rv, SEXP Rm, SEXP RisRep, SEXP RFreqs, SEXP Rlow,
         if (IsInteger) {
             targetIntVals.assign(targetVals.cbegin(), targetVals.cend());
         } else {
+            // We first check if we are getting double precision.
+            // If so, for the non-strict inequalities, we must
+            // alter the limit by some epsilon:
+            //
+            //           x <= y   --->>>   x <= y + e
+            //           x >= y   --->>>   x >= y - e
+            //
+            // Equality is a bit tricky as we need to check
+            // whether the absolute value of the difference is
+            // less than epsilon. As a result, we can't alter
+            // the limit with one alteration. Observe:
+            //
+            //   x == y  --->>>  |x - y| <= e , which gives:
+            //
+            //              -e <= x - y <= e
+            //
+            //            1.     x >= y - e
+            //            2.     x <= y + e
+            //
+            // As a result, we must define a specialized equality
+            // check for double precision. It is 'equalDbl' and
+            // can be found in ConstraintsUtils.h
+            
             CleanConvert::convertPrimitive(Rtolerance, tolerance, "tolerance", true, false, false, true);
+            bool IsWhole = true;
+            
+            for (int i = 0; i < n && IsWhole; ++i)
+                if (static_cast<int64_t>(vNum[i]) != vNum[i])
+                    IsWhole = false;
+            
+            for (std::size_t i = 0; i < targetVals.size() && IsWhole; ++i)
+                if (static_cast<int64_t>(targetVals[i]) != targetVals[i])
+                    IsWhole = false;
+            
+            if (!IsWhole) {
+                auto itComp = std::find(compSpecial.cbegin(), 
+                                        compSpecial.cend(), compFunVec[0]);
+                
+                if (compFunVec[0] == "==") {
+                    targetVals.push_back(targetVals[0] - tolerance);
+                    targetVals[0] += tolerance;
+                } else if (itComp != compSpecial.end()) {
+                    targetVals[0] += tolerance;
+                    targetVals[1] -= tolerance;
+                } else if (compFunVec[0] == "<=") {
+                    targetVals[0] += tolerance;
+                } else if (compFunVec[0] == ">=") {
+                    targetVals[0] -= tolerance;
+                }
+                
+                if (compFunVec.size() > 1) {
+                    if (compFunVec[1] == "<=") {
+                        targetVals[1] += tolerance;
+                    } else if (compFunVec[1] == ">=") {
+                        targetVals[1] -= tolerance;
+                    }
+                }
+            }
         }
         
         if (SpecialCase) {

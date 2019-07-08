@@ -3,32 +3,12 @@
 
 #include "Combinations.h"
 #include "Permutations.h"
-#include "ConstraintsUtils.h"
 #include "ComboResults.h"
 #include "PermuteResults.h"
-#include "NthResult.h"
-#include "CountGmp.h"
 
 const std::vector<std::string> compForms = {"<", ">", "<=", ">=", "==", "=<", "=>"};
 const std::vector<std::string> compSpecial = {"==", ">,<", ">=,<", ">,<=", ">=,<="};
 const std::vector<std::string> compHelper = {"<=", "<", "<", "<=", "<="};
-
-void CharacterReturn(int n, int m, Rcpp::CharacterVector v, bool IsRep, int nRows,
-                     bool IsComb, std::vector<int> myReps, std::vector<int> freqs,
-                     std::vector<int> z, bool permNonTriv, bool IsMultiset,
-                     bool keepRes, Rcpp::CharacterMatrix &matRcpp, int count) {
-    if (IsComb) {
-        if (IsMultiset)
-            MultisetCombination(n, m, v, myReps, freqs, count, nRows, z, matRcpp);
-        else
-            ComboGeneral(n, m, v, IsRep, count, nRows, z, matRcpp);
-    } else {
-        if (IsMultiset)
-            MultisetPermutation(n, m, v, nRows, z, count, matRcpp);
-        else
-            PermuteGeneral(n, m, v, IsRep, nRows, z, count, permNonTriv, matRcpp);
-    }
-}
 
 template <typename typeRcpp, typename typeVector>
 void GeneralReturn(int n, int m, std::vector<typeVector> v, bool IsRep, int nRows, bool IsComb,
@@ -79,7 +59,6 @@ typeRcpp SpecCaseRet(int n, int m, std::vector<typeVector> v, bool IsRep, int nR
     }
     
     std::vector<typeVector> rowVec(m);
-    bool Success = false;
     std::vector<int> indexMatch;
     indexMatch.reserve(nRows);
     
@@ -88,8 +67,8 @@ typeRcpp SpecCaseRet(int n, int m, std::vector<typeVector> v, bool IsRep, int nR
     typeRcpp matRes = Rcpp::no_init_matrix(nRows, m + 1);
     typeVector testVal;
     
-    GeneralReturn(n, m, v, IsRep, nRows, IsComb, myReps, freqs, 
-                  z, permNT, IsMult, myFun, true, matRes, 0);
+    GeneralReturn(n, m, v, IsRep, nRows, IsComb, myReps, 
+                  freqs, z, permNT, IsMult, myFun, true, matRes, 0);
     
     Rcpp::XPtr<compPtr<typeVector>> xpComp = putCompPtrInXPtr<typeVector>(compFunVec[0]);
     compPtr<typeVector> myComp = *xpComp;
@@ -97,28 +76,11 @@ typeRcpp SpecCaseRet(int n, int m, std::vector<typeVector> v, bool IsRep, int nR
     Rcpp::XPtr<compPtr<typeVector>> xpComp2 = xpComp;
     compPtr<typeVector> myComp2;
     
-    if (!std::is_integral<typeVector>::value) {
-        if (compFunVec[0] == "<=") {
-            targetVals[0] = targetVals[0] + tol;
-        } else if (compFunVec[0] == ">=") {
-            targetVals[0] = targetVals[0] - tol;
-        }
-        
-        if (compFunVec.size() > 1) {
-            if (compFunVec[1] == "<=") {
-                targetVals[1] = targetVals[1] + tol;
-            } else if (compFunVec[1] == ">=") {
-                targetVals[1] = targetVals[1] - tol;
-            }
-        }
-    }
-    
     if (compFunVec.size() == 1) {
         for (int i = 0; i < nRows; ++i) {
             testVal = matRes(i, m);
-            Success = myComp(testVal, targetVals);
             
-            if (Success)
+            if (myComp(testVal, targetVals))
                 indexMatch.push_back(i);
         }
     } else {
@@ -129,7 +91,7 @@ typeRcpp SpecCaseRet(int n, int m, std::vector<typeVector> v, bool IsRep, int nR
         
         for (int i = 0; i < nRows; ++i) {
             testVal = matRes(i, m);
-            Success = myComp(testVal, targetVals) || myComp2(testVal, targetVals2);
+            bool Success = myComp(testVal, targetVals) || myComp2(testVal, targetVals2);
             
             if (Success)
                 indexMatch.push_back(i);
@@ -152,80 +114,6 @@ typeRcpp SpecCaseRet(int n, int m, std::vector<typeVector> v, bool IsRep, int nR
             returnMatrix(i, j) = matRes(indexMatch[i], j);
     
     return returnMatrix;
-}
-
-template <typename typeVector>
-void ApplyFunction(int n, int m, typeVector sexpVec, bool IsRep, int nRows, bool IsComb,
-                   std::vector<int> myReps, SEXP ans, std::vector<int> freqs,
-                   std::vector<int> z, bool IsMultiset, SEXP sexpFun, SEXP rho, int count) {
-    if (IsComb) {
-        if (IsMultiset)
-            MultisetComboApplyFun(n, m, sexpVec, myReps, freqs, nRows, z, count, sexpFun, rho, ans);
-        else
-            ComboGeneralApplyFun(n , m, sexpVec, IsRep, count, nRows, z, sexpFun, rho, ans);
-    } else {
-        PermutationApplyFun(n, m, sexpVec, IsRep,nRows, IsMultiset, z, count, sexpFun, rho, ans);
-    }
-}
-
-// Check if our function operating on the rows of our matrix can possibly produce elements
-// greater than std::numeric_limits<int>::max(). We need a NumericMatrix in this case. We also need to check
-// if our function is the mean as this can produce non integral values.
-bool checkIsInteger(std::string funPass, std::size_t uM, int n,
-                    std::vector<double> vNum, std::vector<double> targetVals,
-                    funcPtr<double> myFunDbl, bool checkLim = false) {
-    
-    if (funPass == "mean")
-        return false;
-    
-    std::vector<double> rowVec(uM);
-    std::vector<double> vAbs;
-    
-    for (int i = 0; i < n; ++i)
-        vAbs.push_back(std::abs(vNum[i]));
-    
-    double vecMax = *std::max_element(vAbs.cbegin(), vAbs.cend());
-    for (std::size_t i = 0; i < uM; ++i)
-        rowVec[i] = static_cast<double>(vecMax);
-    
-    double testIfInt = myFunDbl(rowVec, uM);
-    if (testIfInt > std::numeric_limits<int>::max())
-        return false;
-    
-    if (checkLim) {
-        vAbs.clear();
-        for (std::size_t i = 0; i < targetVals.size(); ++i) {
-            if (static_cast<int64_t>(targetVals[i]) != targetVals[i])
-                return false;
-            else
-                vAbs.push_back(std::abs(targetVals[i]));
-        }
-        
-        double vecMax = *std::max_element(vAbs.cbegin(), vAbs.cend());
-        if (vecMax > std::numeric_limits<int>::max())
-            return false;
-    }
-    
-    return true;
-}
-
-void getStartZ(int n, int m, double &lower, int stepSize, mpz_t &myIndex, bool IsRep,
-               bool IsComb, bool IsMultiset, bool isGmp, std::vector<int> &myReps,
-               std::vector<int> &freqsExpanded, std::vector<int> &startZ) {
-    
-    if (isGmp) {
-        mpz_add_ui(myIndex, myIndex, stepSize);
-        if (IsComb)
-            startZ = nthCombinationGmp(n, m, myIndex, IsRep, IsMultiset, myReps);
-        else
-            startZ = nthPermutationGmp(n, m, myIndex, IsRep, IsMultiset, myReps, freqsExpanded, true);
-    } else {
-        lower += stepSize;
-        if (IsComb)
-            startZ = nthCombination(n, m, lower, IsRep, IsMultiset, myReps);
-        else
-            startZ = nthPermutation(n, m, lower, IsRep, IsMultiset, myReps, freqsExpanded, true);
-    }
 }
 
 // This function applys a constraint function to a vector v with respect
@@ -258,50 +146,6 @@ typeRcpp CombinatoricsConstraints(int n, int r, std::vector<typeVector> &v, bool
     
     Rcpp::XPtr<funcPtr<typeVector>> xpFun = putFunPtrInXPtr<typeVector>(myFun);
     funcPtr<typeVector> constraintFun = *xpFun;
-    
-    // We first check if we are getting double precision.
-    // If so, for the non-strict inequalities, we have
-    // to alter the limit by epsilon:
-    //
-    //           x <= y   --->>>   x <= y + e
-    //           x >= y   --->>>   x >= y - e
-    //
-    // Equality is a bit tricky as we need to check
-    // whether the absolute value of the difference is
-    // less than epsilon. As a result, we can't alter
-    // the limit with one alteration. Observe:
-    //
-    //   x == y  --->>>  |x - y| <= e , which gives:
-    //
-    //             - e <= x - y <= e
-    //
-    //         1.     x >= y - e
-    //         2.     x <= y + e
-    //
-    // As a result, we must define a specialized equality
-    // check for double precision. It is 'equalDbl' and
-    // can be found in ConstraintsUtils.h
-    
-    if (!std::is_integral<typeVector>::value) {
-        if (comparison[0] == "==") {
-            targetVals.push_back(targetVals[0] - tol);
-            targetVals[0] += tol;
-        }
-        
-        if (comparison[0] == "<=") {
-            targetVals[0] += tol;
-        } else if (comparison[0] == ">=") {
-            targetVals[0] -= tol;
-        }
-        
-        if (comparison.size() > 1) {
-            if (comparison[1] == "<=") {
-                targetVals[1] += tol;
-            } else if (comparison[1] == ">=") {
-                targetVals[1] -= tol;
-            }
-        }
-    }
     
     for (std::size_t nC = 0; nC < comparison.size(); ++nC) {
         
