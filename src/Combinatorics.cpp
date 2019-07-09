@@ -45,7 +45,7 @@ void ApplyFunction(int n, int m, typeVector sexpVec, bool IsRep, int nRows, bool
 // Check if our function operating on the rows of our matrix can possibly produce elements
 // greater than std::numeric_limits<int>::max(). We need a NumericMatrix in this case. We also need to check
 // if our function is the mean as this can produce non integral values.
-bool checkIsInteger(std::string funPass, std::size_t uM, int n,
+bool checkIsInteger(const std::string &funPass, std::size_t uM, int n,
                     std::vector<double> vNum, std::vector<double> targetVals,
                     funcPtr<double> myFunDbl, bool checkLim = false) {
     
@@ -507,7 +507,7 @@ SEXP CombinatoricsRcpp(SEXP Rv, SEXP Rm, SEXP RisRep, SEXP RFreqs, SEXP Rlow,
         else if (targetVals.size() == 2 && targetVals[0] == targetVals[1])
             Rcpp::stop("The limitConstraints must be different");
         
-        std::string mainFun = Rcpp::as<std::string>(f1);
+        const std::string mainFun = Rcpp::as<std::string>(f1);
         if (mainFun != "prod" && mainFun != "sum" && mainFun != "mean"
                 && mainFun != "max" && mainFun != "min") {
             Rcpp::stop("contraintFun must be one of the following: prod, sum, mean, max, or min");
@@ -768,13 +768,12 @@ SEXP CombinatoricsRcpp(SEXP Rv, SEXP Rm, SEXP RisRep, SEXP RFreqs, SEXP Rlow,
             keepRes = keepRes && !Rf_isNull(f1);
         }
         
-        std::string mainFun;
         funcPtr<double> myFunDbl;
         funcPtr<int> myFunInt;
         int nCol = m;
         
         if (keepRes) {
-            mainFun = Rcpp::as<std::string>(f1);
+            const std::string mainFun = Rcpp::as<std::string>(f1);
             if (mainFun != "prod" && mainFun != "sum" && mainFun != "mean"
                     && mainFun != "max" && mainFun != "min") {
                 Rcpp::stop("contraintFun must be one of the following: prod, sum, mean, max, or min");

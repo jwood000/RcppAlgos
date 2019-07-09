@@ -8,7 +8,7 @@ constexpr double Significand53 = 9007199254740991.0;
 
 namespace CleanConvert {
     
-    inline bool convertLogical(SEXP boolInput, std::string nameOfBool) {
+    inline bool convertLogical(SEXP boolInput, const std::string &nameOfBool) {
         bool result = false;
         
         if (!Rf_isNull(boolInput)) {
@@ -31,7 +31,7 @@ namespace CleanConvert {
     }
 
     template <typename stdType>
-    inline void convertPrimitive(SEXP input, stdType &result, std::string nameOfObject,
+    inline void convertPrimitive(SEXP input, stdType &result, const std::string &nameOfObject,
                                  bool numOnly = true, bool checkWhole = true, 
                                  bool negPoss = false, bool decimalFraction = false) {
         
@@ -109,7 +109,7 @@ namespace CleanConvert {
     }
     
     template <typename stdType>
-    inline void convertVector(SEXP input, std::vector<stdType> &result, std::string nameOfObject,
+    inline void convertVector(SEXP input, std::vector<stdType> &result, const std::string &nameOfObject,
                               bool numOnly = true, bool checkWhole = true, bool negPoss = false) {
         
         int total = Rf_length(input);

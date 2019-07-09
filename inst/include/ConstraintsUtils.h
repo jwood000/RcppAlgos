@@ -73,7 +73,7 @@ bool greaterEqlLessEql(stdType x, const std::vector<stdType> &y) {return x <= y[
 
 
 template <typename stdType>
-Rcpp::XPtr<funcPtr<stdType>> putFunPtrInXPtr(std::string fstr) {
+Rcpp::XPtr<funcPtr<stdType>> putFunPtrInXPtr(const std::string &fstr) {
     if (fstr == "prod")
         return(Rcpp::XPtr<funcPtr<stdType>>(new funcPtr<stdType>(&prod)));
     else if (fstr == "sum")
