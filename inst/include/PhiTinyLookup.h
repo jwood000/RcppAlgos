@@ -190,7 +190,7 @@ namespace PhiTinyLookup {
     }
 }
 
-const int phiTinySize = 6;
+constexpr int phiTinySize = 6;
 static const std::array<std::vector<int16_t>, phiTinySize + 1> phiTiny = PhiTinyLookup::createPhiTiny();
 
 #endif
