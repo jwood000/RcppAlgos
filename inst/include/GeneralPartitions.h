@@ -75,8 +75,10 @@ namespace Partitions {
         }
     }
     
-    inline void BinaryNextElem(int &uppBnd, int &lowBnd, int &ind, int64_t &dist, int lastElem,
+    inline void BinaryNextElem(int &uppBnd, int &lowBnd, int &ind, int lastElem,
                                int64_t target, int64_t partial, const std::vector<int64_t> &v) {
+        
+        int64_t dist = target - (partial + v[ind]);
         
         while ((uppBnd - lowBnd) > 1 && dist != 0) {
             const int mid = (uppBnd - lowBnd) / 2;
@@ -142,7 +144,7 @@ namespace Partitions {
         int ind = mid;
         
         for (int i = 0; i < lastCol; ++i) {
-            BinaryNextElem(uppBnd, lowBnd, ind, dist, lastElem, target, partial, v);
+            BinaryNextElem(uppBnd, lowBnd, ind, lastElem, target, partial, v);
             z[i] = ind;
             partial += v[ind];
             
@@ -152,10 +154,9 @@ namespace Partitions {
             
             ind = lowBnd + mid;
             partial -= v[lastElem];
-            dist = target - (partial + v[ind]);
         }
         
-        BinaryNextElem(uppBnd, lowBnd, ind, dist, lastElem, target, partial, v);
+        BinaryNextElem(uppBnd, lowBnd, ind, lastElem, target, partial, v);
         z[lastCol] = ind;
         
         // The algorithm above finds the first possible sum that equals
@@ -319,7 +320,7 @@ namespace Partitions {
         int ind = mid;
         
         for (int i = 0; i < lastCol; ++i) {
-            BinaryNextElem(uppBnd, lowBnd, ind, dist, lastElem, target, partial, v);
+            BinaryNextElem(uppBnd, lowBnd, ind, lastElem, target, partial, v);
             z[i] = ind;
             partial += v[ind];
             
@@ -332,10 +333,9 @@ namespace Partitions {
             
             ind = lowBnd + mid;
             partial -= v[currPos];
-            dist = target - (partial + v[ind]);
         }
         
-        BinaryNextElem(uppBnd, lowBnd, ind, dist, lastElem, target, partial, v);
+        BinaryNextElem(uppBnd, lowBnd, ind, lastElem, target, partial, v);
         z[lastCol] = ind;
         
         // See commemt in PartitionRep
@@ -364,6 +364,8 @@ namespace Partitions {
         }
         
         // Largest index such that z[outside] - z[outside - 1] > 1
+        // This is the index that will be decremented at the same
+        // time edge is incremented. See below.
         int outside = lastCol;
         
         while (outside > 0 && (z[outside] - z[outside - 1]) < 2)
@@ -536,7 +538,6 @@ namespace Partitions {
             int maxIndex = lastCol;
             int pivot = (includeZero) ? lastCol - 1 : lastCol;
             int edge = maxIndex - 1;
-            int numParts = 0;
 
             std::vector<int> z(r, 0);
             z[lastCol] = lastElem;
@@ -549,15 +550,17 @@ namespace Partitions {
             double partCountTest = 0;
             
             if (isComb) {
-	            partCountTest = partitionCount(n, r, includeZero);
+	              partCountTest = partitionCount(n, r, includeZero);
             } else {
                 partCountTest = (includeZero) ? nChooseK(target + r - 1, r - 1) : nChooseK(target - 1, r - 1);
             }
             
+            partCountTest = (bUserRows && numRows < partCountTest) ? numRows : partCountTest;
+            
             if (partCountTest > std::numeric_limits<int>::max())
                 Rcpp::stop("The number of rows cannot exceed 2^31 - 1.");
             
-            numParts = (bUserRows && numRows < partCountTest) ? numRows : partCountTest;
+            const int numParts = partCountTest;
             const int limitRows = numParts - 1;
             
             typeRcpp partitionsMatrix = Rcpp::no_init_matrix(numParts, nCols);
