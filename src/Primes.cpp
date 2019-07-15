@@ -96,13 +96,11 @@ namespace PrimeCounting {
     std::array<std::vector<uint16_t>, MAX_A> phiCache;
     std::mutex theBlocker;
     
-    // Increment MAX_A, so we can have easier access
-    // to indexing.  E.g when a = 3 (i.e. the number)
-    // of primes is 3), instead of accessing the third
-    // entry in phiTiny like phiTiny[a - 1], we simply
-    // use "a" as our index (i.e. phiTiny[a]). The
-    // first entry in phiTiny will be empty. The same
-    // goes for phiPrimes and phiPi.
+    // Increment MAX_A, so we can have easier access to indexing. E.g.
+    // when a = 3 (i.e. the number of primes is 3), instead of accessing
+    // the third entry in phiTiny like phiTiny[a - 1], we simply use "a"
+    // as our index (i.e. phiTiny[a]). The first entry in phiTiny will
+    // be empty. The same goes for phiPrimes and phiPi.
     std::vector<int64_t> phiPrimes;
     std::vector<int64_t> phiPi;
     
@@ -329,6 +327,7 @@ namespace PrimeCounting {
         for (int64_t i = 1; i <= maxPrime; ++i) {
             if (i >= phiPrimes[count + 1])
                 ++count;
+            
             phiPi[i] = count;
         }
         
