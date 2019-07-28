@@ -13,16 +13,19 @@ constexpr int_fast64_t Almost210L1Cache = 32760;
 // is the typical size of most CPU's L1 cache
 constexpr int_fast64_t Almost2310L1Cache = 32340;
 
-constexpr std::size_t NUM210 = 210;     //2 * 3 * 5 * 7
-constexpr std::size_t NUM2310 = 2310;   //2 * 3 * 5 * 7 * 11
-constexpr std::size_t NUM30030 = 30030; //2 * 3 * 5 * 7 * 11 * 13
+// This is 1 plus the maximum prime used in the wheel (i.e. 11)
+constexpr std::size_t wheel2310PrimeLim = 12u;
+
+constexpr std::size_t NUM210 = 210u;     //2 * 3 * 5 * 7
+constexpr std::size_t NUM2310 = 2310u;   //2 * 3 * 5 * 7 * 11
+constexpr std::size_t NUM30030 = 30030u; //2 * 3 * 5 * 7 * 11 * 13
 
 // The number of relatively prime numbers to 210 less than 210
-constexpr std::size_t SZ_WHEEL210 = 48;
+constexpr std::size_t SZ_WHEEL210 = 48u;
 // The number of relatively prime numbers to 2310 less than 2310
-constexpr std::size_t SZ_WHEEL2310 = 480;
+constexpr std::size_t SZ_WHEEL2310 = 480u;
 // The number of relatively prime numbers to 30030 less than 30030
-constexpr std::size_t SZ_WHEEL30030 = 5760;
+constexpr std::size_t SZ_WHEEL30030 = 5760u;
 
 constexpr std::size_t N_WHEELS210_PER_SEG = static_cast<std::size_t>(Almost210L1Cache / NUM210);
 constexpr std::size_t N_WHEELS2310_PER_SEG = static_cast<std::size_t>(Almost2310L1Cache / NUM2310);
