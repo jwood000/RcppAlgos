@@ -5,12 +5,6 @@
 #include <vector>
 #include <array>
 
-// The first 550 prime numbers (i.e. the first prime numbers 
-// less than 4000). Starting with the first prime number 2,
-// add each successive element in primesDiffPR to obtain the 
-// next prime number (e.g. p = 2 + primesDiffPR[0] = 3, 
-// p = p + primesDiffPR[1] = 5, etc.)
-
 namespace PhiTinyLookup {
 
     const std::vector<int16_t> phi6 = {0,1,1,1,1,2};
