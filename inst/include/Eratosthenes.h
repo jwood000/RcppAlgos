@@ -47,10 +47,10 @@ namespace PrimeSieve {
     inline std::size_t EstimatePiPrime(double minNum, double maxNum) {
         auto it = std::upper_bound(CUTPOINTS.cbegin(), CUTPOINTS.cend(), maxNum);
         const std::size_t myIndex = it - CUTPOINTS.cbegin();
-        double dblRes = std::ceil((maxNum / log(maxNum)) * (1 + PERCINC[myIndex]));
+        double dblRes = std::ceil((maxNum / std::log(maxNum)) * (1 + PERCINC[myIndex]));
         
         if (minNum > 1000)
-            dblRes -= std::floor((minNum / log(minNum)) * (1 + PERCINC[myIndex]));
+            dblRes -= std::floor((minNum / std::log(minNum)) * (1 + PERCINC[myIndex]));
         
         std::size_t result = dblRes;
         return result;
@@ -235,10 +235,11 @@ namespace PrimeSieve {
         const std::size_t szWheel30030 = SZ_WHEEL30030;
         const int_fast64_t sz30030 = NUM30030;
         const std::size_t nWheels = static_cast<std::size_t>(std::max(1.0, std::ceil(std::sqrt(static_cast<double>(maxNum)) / sz30030)));
-        
         const int_fast64_t segSize = static_cast<int_fast64_t>(nWheels * sz30030);
-        const std::size_t myReserve = EstimatePiPrime(static_cast<double>(minNum), 
-                                                      static_cast<double>(maxNum));
+        
+        // We have to add myPrimes.size() because we could have started in PrimeSieveSmall
+        const std::size_t myReserve = EstimatePiPrime(static_cast<double>(minNum),
+                                                      static_cast<double>(maxNum)) + myPrimes.size();
         myPrimes.reserve(myReserve);
         const int_fast64_t flrMaxNum = segSize * std::floor(maxNum / segSize);
         std::vector<bool> sieve(segSize, true);
@@ -385,8 +386,10 @@ namespace PrimeSieve {
         const int_fast64_t sz30030 = NUM30030;
         const int_fast64_t segSize = static_cast<int_fast64_t>(nBigSegs * sz30030);
         const std::size_t numWheelSegs = nBigSegs, szWheel30030 = SZ_WHEEL30030;
+        
+        // We have to add myPrimes.size() because we could have started in PrimeSieveMedium
         const std::size_t myReserve = EstimatePiPrime(static_cast<double>(minNum),
-                                                      static_cast<double>(maxNum));
+                                                      static_cast<double>(maxNum)) + myPrimes.size();;
         myPrimes.reserve(myReserve);
         int_fast64_t remTest, divTest, myIndex, lowerBnd;
         lowerBnd = static_cast<int_fast64_t>(segSize * (minNum / segSize));
