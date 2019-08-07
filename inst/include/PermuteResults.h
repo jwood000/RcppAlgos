@@ -6,31 +6,27 @@
 #include <memory>
 
 template <typename typeMatrix, typename typeVector>
-void PermuteGenRes(int n, int r, std::vector<typeVector> &v, bool repetition,
-                   int numRows, std::vector<int> &z, int intCount,
-                   bool nonTrivial, typeMatrix &permuteMatrix, funcPtr<typeVector> myFun) {
+void PermuteGenRes(std::size_t n, std::size_t r, const std::vector<typeVector> &v, 
+                   bool repetition, std::size_t uRowN, std::vector<int> &z, int intCount,
+                   typeMatrix &permuteMatrix, funcPtr<typeVector> myFun) {
     
-    const std::size_t uN = n;
-    const std::size_t uR = r;
-    const std::size_t uRowN = numRows;
-    const std::size_t lastElem = n - 1;
-    const std::size_t lastCol = r - 1;
-    const std::size_t pentultimate = n - 2;
-    std::vector<typeVector> vPass(uR);
+    const std::size_t maxInd = n - 1u;
+    const std::size_t lastCol = r - 1u;
+    std::vector<typeVector> vPass(r);
     
     if (repetition) {
-        const int lastElemInt = lastElem;
+        const int maxIndInt = maxInd;
         
         for (std::size_t count = intCount; count < uRowN; ++count) {
-            for (std::size_t j = 0; j < uR; ++j) {
+            for (std::size_t j = 0u; j < r; ++j) {
                 vPass[j] = v[z[j]];
                 permuteMatrix(count, j) = vPass[j];
             }
             
-            permuteMatrix(count, uR) = myFun(vPass, uR);
+            permuteMatrix(count, r) = myFun(vPass, r);
             
             for (int k = lastCol; k >= 0; --k) {
-                if (z[k] != lastElemInt) {
+                if (z[k] != maxIndInt) {
                     ++z[k];
                     break;
                 } else {
@@ -39,158 +35,113 @@ void PermuteGenRes(int n, int r, std::vector<typeVector> &v, bool repetition,
             }
         }
         
-    } else if (nonTrivial) {
+    } else {
         
-        const std::size_t numR1 = numRows - 1;
-        auto arrPerm = std::make_unique<int[]>(uN);
+        const std::size_t numR1 = uRowN - 1u;
+        auto arrPerm = std::make_unique<int[]>(n);
 
-        for (std::size_t i = 0; i < uN; ++i)
+        for (std::size_t i = 0u; i < n; ++i)
             arrPerm[i] = z[i];
         
         if (r == n) {
-            for (std::size_t count = intCount; count < numR1; ++count) {
-                for (std::size_t j = 0; j < uR; ++j) {
-                    vPass[j] = v[arrPerm[j]];
-                    permuteMatrix(count, j) = vPass[j];
-                }
+            // Since we are getting all permutations of v, we know that
+            // the result of myFun on v will remain the same for the 5
+            // functions defined in ConstraintsUtils.h (i.e. order does
+            // not matter for min, max, prod, mean, & sum).
+            for (std::size_t j = 0u; j < r; ++j) {
+                vPass[j] = v[arrPerm[j]];
+                permuteMatrix(intCount, j) = vPass[j];
+            }
+            
+            const auto myRes = myFun(vPass, r);
+            permuteMatrix(intCount, r) = myRes;
+            nextFullPerm(arrPerm.get(), maxInd);
+            
+            for (std::size_t count = intCount + 1; count < numR1; ++count) {
+                for (std::size_t j = 0u; j < r; ++j)
+                    permuteMatrix(count, j) = v[arrPerm[j]];
                 
-                permuteMatrix(count, uR) = myFun(vPass, uR);
-                nextFullPerm(arrPerm.get(), lastElem, pentultimate);
+                permuteMatrix(count, r) = myRes;
+                nextFullPerm(arrPerm.get(), maxInd);
             }
         } else {
             for (std::size_t count = intCount; count < numR1; ++count) {
-                for (std::size_t j = 0; j < uR; ++j) {
+                for (std::size_t j = 0u; j < r; ++j) {
                     vPass[j] = v[arrPerm[j]];
                     permuteMatrix(count, j) = vPass[j];
                 }
                 
-                permuteMatrix(count, uR) = myFun(vPass, uR);
-                nextPartialPerm(arrPerm.get(), uR, lastCol, uN, lastElem);
+                permuteMatrix(count, r) = myFun(vPass, r);
+                nextPartialPerm(arrPerm.get(), lastCol, maxInd);
             }
         }
         
         // Get last permutation
-        for (std::size_t j = 0; j < uR; ++j) {
+        for (std::size_t j = 0u; j < r; ++j) {
             vPass[j] = v[arrPerm[j]];
             permuteMatrix(numR1, j) = vPass[j];
         }
         
-        permuteMatrix(numR1, uR) = myFun(vPass, uR);
-        
-    } else {
-        
-        if (n > 1) {
-            const std::size_t maxN = NumPermsNoRep(n, r);
-            const std::size_t segment = maxN / uN;
-            const std::size_t phaseOne = (uRowN < segment) ? uRowN : segment;
-
-            auto indexMat = std::make_unique<int[]>(phaseOne * uR);
-            auto arrPerm = std::make_unique<int[]>(uN);
-            
-            for (std::size_t i = 0; i < uN; ++i)
-                arrPerm[i] = static_cast<int>(i);
-
-            if (r == n) {
-                for (std::size_t i = 0, k = 0; i < phaseOne; ++i) {
-                    for (std::size_t j = 0; j < uR; ++j, ++k) {
-                        vPass[j] = v[arrPerm[j]];
-                        permuteMatrix(i, j) = vPass[j];
-                        indexMat[k] = arrPerm[j];
-                    }
-
-                    permuteMatrix(i, uR) = myFun(vPass, uR);
-                    nextFullPerm(arrPerm.get(), lastElem, pentultimate);
-                }
-            } else {
-                for (std::size_t i = 0, k = 0; i < phaseOne; ++i) {
-                    for (std::size_t j = 0; j < uR; ++j, ++k) {
-                        vPass[j] = v[arrPerm[j]];
-                        permuteMatrix(i, j) = vPass[j];
-                        indexMat[k] = arrPerm[j];
-                    }
-                    
-                    permuteMatrix(i, uR) = myFun(vPass, uR);
-                    nextPartialPerm(arrPerm.get(), uR, lastCol, uN, lastElem);
-                }
-            }
-            
-            std::size_t start = segment;
-            std::size_t last = 2 * segment;
-            std::size_t ind = 1;
-            std::vector<typeVector> vTemp(1);
-            
-            for (; start < uRowN; start += segment, last += segment, ++ind) {
-                vTemp[0] = v[0];
-                v[0] = v[ind];
-                v[ind] = vTemp[0];
-    
-                if (last > uRowN)
-                    last = uRowN;
-                
-                for (std::size_t i = start, k = 0; i < last; ++i) {
-                    for (std::size_t j = 0; j < uR; ++j, ++k) {
-                        vPass[j] = v[indexMat[k]];
-                        permuteMatrix(i, j) = vPass[j];
-                    }
-                    
-                    permuteMatrix(i, uR) = myFun(vPass, uR);
-                }
-            }
-        } else {
-            permuteMatrix(0, 0) = v[0];
-        }
+        permuteMatrix(numR1, r) = myFun(vPass, r);
     }
 }
 
 template <typename typeMatrix, typename typeVector>
-void MultisetPermRes(int n, int r, const std::vector<typeVector> &v, int numRows,
-                     int intCount, std::vector<int> &z,
+void MultisetPermRes(std::size_t n, std::size_t r, const std::vector<typeVector> &v, 
+                     std::size_t numRows, int intCount, std::vector<int> &z,
                      typeMatrix &permuteMatrix, funcPtr<typeVector> myFun) {
     
     const std::size_t lenFreqs = z.size();
+    const std::size_t lastCol = r - 1u;
     auto arrPerm = std::make_unique<int[]>(lenFreqs);
     std::vector<typeVector> vPass(r);
     
-    const std::size_t uR = r;
-    const std::size_t uN = n;
-    const std::size_t lastCol = r - 1;
-    const std::size_t numR1 = numRows - 1;
-    const std::size_t lastElem = lenFreqs - 1;
+    const std::size_t numR1 = numRows - 1u;
+    const std::size_t maxInd = lenFreqs - 1u;
     
-    for (std::size_t j = 0; j < lenFreqs; ++j)
+    for (std::size_t j = 0u; j < lenFreqs; ++j)
         arrPerm[j] = z[j];
     
-    if (uR == lenFreqs) {
-        const std::size_t pentultimate = lenFreqs - 2;
+    if (r == lenFreqs) {
+        // Since we are getting all permutations of v, we know that
+        // the result of myFun on v will remain the same for the 5
+        // functions defined in ConstraintsUtils.h (i.e. order does
+        // not matter for min, max, prod, mean, & sum).
+        for (std::size_t j = 0u; j < r; ++j) {
+            vPass[j] = v[arrPerm[j]];
+            permuteMatrix(intCount, j) = vPass[j];
+        }
         
-        for (std::size_t count = intCount; count < numR1; ++count) {
-            for (std::size_t j = 0; j < uR; ++j) {
-                vPass[j] = v[arrPerm[j]];
-                permuteMatrix(count, j) = vPass[j];
-            }
+        const auto myRes = myFun(vPass, r);
+        permuteMatrix(intCount, r) = myRes;
+        nextFullPerm(arrPerm.get(), maxInd);
+        
+        for (std::size_t count = intCount + 1; count < numR1; ++count) {
+            for (std::size_t j = 0u; j < r; ++j)
+                permuteMatrix(count, j) = v[arrPerm[j]];
             
-            permuteMatrix(count, uR) = myFun(vPass, uR);
-            nextFullPerm(arrPerm.get(), lastElem, pentultimate);
+            permuteMatrix(count, r) = myRes;
+            nextFullPerm(arrPerm.get(), maxInd);
         }
     } else {
         for (std::size_t count = intCount; count < numR1; ++count) {
-            for (std::size_t j = 0; j < uR; ++j) {
+            for (std::size_t j = 0u; j < r; ++j) {
                 vPass[j] = v[arrPerm[j]];
                 permuteMatrix(count, j) = vPass[j];
             }
             
-            permuteMatrix(count, uR) = myFun(vPass, uR);
-            nextPartialPerm(arrPerm.get(), uR, lastCol, uN, lastElem);
+            permuteMatrix(count, r) = myFun(vPass, r);
+            nextPartialPerm(arrPerm.get(), lastCol, maxInd);
         }
     }
     
     // Get last permutation
-    for (std::size_t j = 0; j < uR; ++j) {
+    for (std::size_t j = 0u; j < r; ++j) {
         vPass[j] = v[arrPerm[j]];
         permuteMatrix(numR1, j) = vPass[j];
     }
     
-    permuteMatrix(numR1, uR) = myFun(vPass, uR);
+    permuteMatrix(numR1, r) = myFun(vPass, r);
 }
 
 #endif
