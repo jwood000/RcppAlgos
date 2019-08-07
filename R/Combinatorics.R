@@ -2,7 +2,7 @@ comboGeneral <- function(v, m = NULL, repetition = FALSE, freqs = NULL,
                          lower = NULL, upper = NULL, constraintFun = NULL,
                          comparisonFun = NULL, limitConstraints = NULL, 
                          keepResults = NULL, FUN = NULL, Parallel = FALSE,
-                         nThreads = NULL, tolerance = sqrt(.Machine$double.eps)) {
+                         nThreads = NULL, tolerance = NULL) {
     
     isFactor <- is.factor(v)
     CombinatoricsRcpp(v, m, repetition, freqs, lower, upper, constraintFun, 
@@ -14,7 +14,7 @@ permuteGeneral <- function(v, m = NULL, repetition = FALSE, freqs = NULL,
                            lower = NULL, upper = NULL, constraintFun = NULL,
                            comparisonFun = NULL, limitConstraints = NULL,
                            keepResults = NULL, FUN = NULL, Parallel = FALSE,
-                           nThreads = NULL, tolerance = sqrt(.Machine$double.eps)) {
+                           nThreads = NULL, tolerance = NULL) {
     
     isFactor <- is.factor(v)
     CombinatoricsRcpp(v, m, repetition, freqs, lower, upper, constraintFun, 
