@@ -63,7 +63,7 @@ double nChooseK(int n, int k) {
         nCk /= d;
     }
     
-    return round(nCk);
+    return std::round(nCk);
 }
 
 double NumCombsWithRep(int n, int r) {
@@ -259,10 +259,10 @@ double MultisetCombRowNum(int n, int r, const std::vector<int> &Reps) {
 
 // This algorithm is nearly identical to the
 // one found in the standard algorithm library
-void nextFullPerm(int *myArray, std::size_t n1, std::size_t n2) {
+void nextFullPerm(int *myArray, std::size_t maxInd) {
     
-    std::size_t p1 = n2, p2 = n1;
-    int temp;
+    std::size_t p1 = maxInd - 1;
+    std::size_t p2 = maxInd;
     
     while (myArray[p1 + 1] <= myArray[p1])
         --p1;
@@ -270,12 +270,12 @@ void nextFullPerm(int *myArray, std::size_t n1, std::size_t n2) {
     while (myArray[p2] <= myArray[p1])
         --p2;
     
-    temp = myArray[p1];
+    int temp = myArray[p1];
     myArray[p1] = myArray[p2];
     myArray[p2] = temp;
     
-    for (std::size_t k = p1 + 1, q = n1; k < q; ++k, --q) {
-        temp = myArray[k];
+    for (std::size_t k = p1 + 1, q = maxInd; k < q; ++k, --q) {
+        int temp = myArray[k];
         myArray[k] = myArray[q];
         myArray[q] = temp;
     }
@@ -294,21 +294,20 @@ void nextFullPerm(int *myArray, std::size_t n1, std::size_t n2) {
 // and swap them. We can then proceed to the next perm.
 // We can do this because the standard algo would end
 // up performing two unnecessary reversings.
-void nextPartialPerm(int *myArray, std::size_t r, std::size_t r1,
-                     std::size_t n, std::size_t lastElem) {
-    int temp;
+void nextPartialPerm(int *myArray, std::size_t r1, std::size_t maxInd) {
+    
     std::size_t p1 = r1;
     
-    while (p1 < n && myArray[r1] >= myArray[p1])
+    while (p1 <= maxInd && myArray[r1] >= myArray[p1])
         ++p1;
     
-    if (p1 < n) {
-        temp = myArray[p1];
+    if (p1 <= maxInd) {
+        int temp = myArray[p1];
         myArray[p1] = myArray[r1];
         myArray[r1] = temp;
     } else {
-        for (std::size_t k = r, q = lastElem; k < q; ++k, --q) {
-            temp = myArray[k];
+        for (std::size_t k = r1 + 1, q = maxInd; k < q; ++k, --q) {
+            int temp = myArray[k];
             myArray[k] = myArray[q];
             myArray[q] = temp;
         }
@@ -317,17 +316,17 @@ void nextPartialPerm(int *myArray, std::size_t r, std::size_t r1,
         while (myArray[p1 + 1] <= myArray[p1])
             --p1;
         
-        std::size_t p2 = lastElem;
+        std::size_t p2 = maxInd;
         
         while (myArray[p2] <= myArray[p1])
             --p2;
         
-        temp = myArray[p1];
+        int temp = myArray[p1];
         myArray[p1] = myArray[p2];
         myArray[p2] = temp;
         
-        for (std::size_t k = p1 + 1, q = lastElem; k < q; ++k, --q) {
-            temp = myArray[k];
+        for (std::size_t k = p1 + 1, q = maxInd; k < q; ++k, --q) {
+            int temp = myArray[k];
             myArray[k] = myArray[q];
             myArray[q] = temp;
         }
