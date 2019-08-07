@@ -10,34 +10,38 @@ const std::vector<std::string> compForms = {"<", ">", "<=", ">=", "==", "=<", "=
 const std::vector<std::string> compSpecial = {"==", ">,<", ">=,<", ">,<=", ">=,<="};
 const std::vector<std::string> compHelper = {"<=", "<", "<", "<=", "<="};
 
+// N.B. Passing signed int to function expecting std::size_t is well defined
 template <typename typeRcpp, typename typeVector>
-void GeneralReturn(int n, int m, std::vector<typeVector> v, bool IsRep, int nRows, bool IsComb,
+void GeneralReturn(int n, int r, std::vector<typeVector> v, bool IsRep, int nRows, bool IsComb,
                    std::vector<int> myReps, std::vector<int> freqs, std::vector<int> z,
-                   bool permNonTriv, bool IsMultiset, funcPtr<typeVector> myFun,
-                   bool keepRes, typeRcpp &matRcpp, int count) {
+                   bool generalReturn, bool IsMultiset, funcPtr<typeVector> myFun,
+                   bool keepRes, typeRcpp &matRcpp, int count, std::size_t phaseOne) {
+    
     if (keepRes) {
         if (IsComb) {
             if (IsMultiset)
-                MultisetComboResult(n, m, v, myReps, freqs, nRows, count, z, matRcpp, myFun);
+                MultisetComboResult(n, r, v, myReps, freqs, nRows, count, z, matRcpp, myFun);
             else
-                ComboGenRes(n, m, v, IsRep, nRows, count, z, matRcpp, myFun);
+                ComboGenRes(n, r, v, IsRep, nRows, count, z, matRcpp, myFun);
         } else {
             if (IsMultiset)
-                MultisetPermRes(n, m, v, nRows, count, z, matRcpp, myFun);
+                MultisetPermRes(n, r, v, nRows, count, z, matRcpp, myFun);
             else
-                PermuteGenRes(n, m, v, IsRep, nRows, z, count, permNonTriv, matRcpp, myFun);
+                PermuteGenRes(n, r, v, IsRep, nRows, z, count, matRcpp, myFun);
         }
     } else {
         if (IsComb) {
             if (IsMultiset)
-                MultisetCombination(n, m, v, myReps, freqs, count, nRows, z, matRcpp);
+                MultisetCombination(n, r, v, myReps, freqs, count, nRows, z, matRcpp);
             else
-                ComboGeneral(n, m, v, IsRep, count, nRows, z, matRcpp);
+                ComboGeneral(n, r, v, IsRep, count, nRows, z, matRcpp);
         } else {
             if (IsMultiset)
-                MultisetPermutation(n, m, v, nRows, z, count, matRcpp);
+                MultisetPermutation(n, r, v, nRows, z, count, matRcpp);
+            else if (generalReturn)
+                PermuteGeneral(n, r, v, IsRep, nRows, z, count, matRcpp);
             else
-                PermuteGeneral(n, m, v, IsRep, nRows, z, count, permNonTriv, matRcpp);
+                PermuteSerialDriver(n, r, v, IsRep, nRows, phaseOne, z, matRcpp);
         }
     }
 }
@@ -49,7 +53,7 @@ typeRcpp SpecCaseRet(int n, int m, std::vector<typeVector> v, bool IsRep, int nR
                      bool keepRes, std::vector<int> z, double lower, std::string mainFun, 
                      bool IsMult, double computedRows, std::vector<std::string> compFunVec,
                      std::vector<typeVector> targetVals, bool IsComb, std::vector<int> myReps,
-                     std::vector<int> freqs, bool bLower, bool permNT, double userRows, double tol) {
+                     std::vector<int> freqs, bool bLower, double userRows, double tol) {
     
     if (!bLower) {
         if (computedRows > std::numeric_limits<int>::max())
@@ -67,8 +71,12 @@ typeRcpp SpecCaseRet(int n, int m, std::vector<typeVector> v, bool IsRep, int nR
     typeRcpp matRes = Rcpp::no_init_matrix(nRows, m + 1);
     typeVector testVal;
     
+    // We pass keepRes = true (second true) as we need the results to determine which
+    // results are within the constraint. The actual value of keepRes is utilized
+    // below for the return matrix. The variable permNonTrivial, has no affect when
+    // keepRes = true, so we pass it arbitrarily as true.
     GeneralReturn(n, m, v, IsRep, nRows, IsComb, myReps, 
-                  freqs, z, permNT, IsMult, myFun, true, matRes, 0);
+                  freqs, z, true, IsMult, myFun, true, matRes, 0, 0);
     
     Rcpp::XPtr<compPtr<typeVector>> xpComp = putCompPtrInXPtr<typeVector>(compFunVec[0]);
     compPtr<typeVector> myComp = *xpComp;
