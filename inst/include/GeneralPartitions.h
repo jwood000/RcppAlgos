@@ -8,15 +8,15 @@ namespace Partitions {
     constexpr int solnExists = 1;
     constexpr int noSoln = 0;
 
-    inline void GetNextPartition(std::vector<int> &z, int &maxIndex, 
+    inline void GetNextPartition(std::vector<int> &z, int &boundary, 
                                  int &edge, int &pivot, int lastElem, int lastCol) {
         
-        int vertex = (z[maxIndex] - z[edge] == 2) ? maxIndex : edge + 1;
+        int vertex = (z[boundary] - z[edge] == 2) ? boundary : edge + 1;
         
         ++z[edge];
         --z[vertex];
         
-        if (vertex == maxIndex) {
+        if (vertex == boundary) {
             pivot = lastCol;
         } else if (z[vertex] == z[edge]) {
             ++vertex;
@@ -28,27 +28,27 @@ namespace Partitions {
             ++vertex;
         }
         
-        maxIndex = pivot;
-        const int currMax = z[maxIndex];
+        boundary = pivot;
+        const int currMax = z[boundary];
         
-        while (maxIndex > 1 && z[maxIndex - 1] == currMax)
-          --maxIndex;
+        while (boundary > 1 && z[boundary - 1] == currMax)
+          --boundary;
         
-        edge = maxIndex - 1;
+        edge = boundary - 1;
         
-        while (edge > 0 && z[maxIndex] - z[edge] < 2)
+        while (edge > 0 && z[boundary] - z[edge] < 2)
             --edge;
     }
     
     template <typename typeRcpp>
     void PartitionsStandard(int r, int numRows, typeRcpp &partitionsMatrix, std::vector<int> &z, 
-                            bool isComb, int maxIndex, int edge, int pivot, int limitRows, int lastCol, int lastElem) {
+                            bool isComb, int boundary, int edge, int pivot, int limitRows, int lastCol, int lastElem) {
         if (isComb) {
             for (int count = 0; count < limitRows; ++count) {
                 for (int k = 0; k < r; ++k)
                     partitionsMatrix(count, k) = z[k];
           	    
-                GetNextPartition(z, maxIndex, edge, pivot, lastElem, lastCol);
+                GetNextPartition(z, boundary, edge, pivot, lastElem, lastCol);
             }
         	  
             for (int k = 0; k < r; ++k)
@@ -70,7 +70,7 @@ namespace Partitions {
                 if (count >= numRows)
                     break;
                 
-                GetNextPartition(z, maxIndex, edge, pivot, lastElem, lastCol);
+                GetNextPartition(z, boundary, edge, pivot, lastElem, lastCol);
             }
         }
     }
@@ -127,13 +127,13 @@ namespace Partitions {
                       int lastCol, int maxRows, bool isComb, std::vector<int64_t> &partitionsVec) {
     
         std::vector<int> z(r);
-        int64_t testMax = v[lastElem] * r;
+        const int64_t testMax = v[lastElem] * r;
         if (testMax < target)  {return noSoln;}
         
         int64_t partial = testMax;
         partial -= v[lastElem];
         
-        int64_t testMin = v[0] * r;
+        const int64_t testMin = v[0] * r;
         if (testMin > target)  {return noSoln;}
         
         int mid = lastElem / 2;
@@ -174,25 +174,26 @@ namespace Partitions {
         int numIter = 0;
         int count = 0;
         
-        // smallest index such that z[maxIndex] == currMax
-        int maxIndex = lastCol;
+        // smallest index such that z[boundary] == currMax
+        int boundary = lastCol;
         
-        while (maxIndex > 0 && z[maxIndex - 1] == z[lastCol])
-            --maxIndex;
+        while (boundary > 0 && z[boundary - 1] == z[lastCol])
+            --boundary;
         
-        // pivot is the greatest index such that z[pivot] < lastElem
-        // We know that if z[maxIndex] < lastElem ==>> pivot = lastCol
-        int pivot = (z[maxIndex] == lastElem) ? maxIndex - 1 : lastCol;
+        // pivot is the greatest index that can be incremented.
+        // We know that if z[boundary] < lastElem ==>> pivot = lastCol
+        int pivot = (z[boundary] < lastElem) ? lastCol : boundary - 1;
         
-        // edge is the greatest index such that z[maxIndex] - z[edge] >= 2
+        // edge is the greatest index such that z[boundary] - z[edge] >= 2
         // This is the index that will be be used as a starting point
         // to determine the next combination that meets the criteria
-        int edge = maxIndex - 1;
+        int edge = boundary - 1;
+        int edgeDiff = z[boundary] - 2;
         
-        while (edge > 0 && (z[maxIndex] - z[edge]) < 2)
+        while (edge > 0 && edgeDiff < z[edge])
             --edge;
         
-        while ((edge >= 0) && (z[maxIndex] - z[edge] >= 2)) {
+        while ((edge >= 0) && (z[boundary] - z[edge] >= 2)) {
             if (isComb) {
                 for (int k = 0; k < r; ++k)
                     partitionsVec.push_back(v[z[k]]);
@@ -217,21 +218,22 @@ namespace Partitions {
             if (count >= maxRows)
                 break;
             
-            int vertex = (z[maxIndex] - z[edge] == 2) ? maxIndex : edge + 1;
+            int vertex = (z[boundary] - z[edge] == 2) ? boundary : edge + 1;
             
             ++z[edge];
             --z[vertex];
             
-            if (vertex == maxIndex) {
-                if (maxIndex < lastCol)
-                    ++maxIndex;
+            if (vertex == boundary) {
+                if (boundary < lastCol)
+                    ++boundary;
                 
-                int currMax = z[maxIndex];
+                const int currMax = z[boundary];
                 
-                while (maxIndex > 0 && z[maxIndex - 1] == currMax)
-                    --maxIndex;
+                while (boundary > 0 && z[boundary - 1] == currMax)
+                    --boundary;
                 
-                pivot = (z[maxIndex] == lastElem) ? maxIndex - 1 : lastCol;
+                pivot = (z[boundary] < lastElem) ? lastCol : boundary - 1;
+                
             } else if (z[vertex] == z[edge]) {
                 ++vertex;
             }
@@ -259,19 +261,20 @@ namespace Partitions {
                 }
             }
             
-            maxIndex = pivot;
+            boundary = pivot;
             
             if (pivot < lastCol && z[pivot] < z[pivot + 1])
-                ++maxIndex;
+                ++boundary;
             
-            const int currMax = z[maxIndex];
+            const int currMax = z[boundary];
             
-            while (maxIndex > 0 && z[maxIndex - 1] == currMax)
-                --maxIndex;
+            while (boundary > 0 && z[boundary - 1] == currMax)
+                --boundary;
             
-            edge = maxIndex - 1;
+            edge = boundary - 1;
+            edgeDiff = z[boundary] - 2;
             
-            while (edge > 0 && (z[maxIndex] - z[edge]) < 2)
+            while (edge > 0 && edgeDiff < z[edge])
                 --edge;
         }
         
@@ -302,14 +305,14 @@ namespace Partitions {
       
         std::vector<int> z(r);
         constexpr int64_t zero64 = 0;
-        int64_t testMax = std::accumulate(v.cend() - r, v.cend(), zero64);
+        const int64_t testMax = std::accumulate(v.cend() - r, v.cend(), zero64);
         if (testMax < target)  {return noSoln;}
         
         int currPos = v.size() - r;
         int64_t partial = testMax;
         partial -= v[currPos];
         
-        int64_t testMin = std::accumulate(v.cbegin(), v.cbegin() + r, zero64);
+        const int64_t testMin = std::accumulate(v.cbegin(), v.cbegin() + r, zero64);
         if (testMin > target)  {return noSoln;}
         
         int mid = currPos / 2;
@@ -363,33 +366,33 @@ namespace Partitions {
             }
         }
         
-        // Largest index such that z[outside] - z[outside - 1] > 1
+        // Largest index such that z[boundary] - z[boundary - 1] > 1
         // This is the index that will be decremented at the same
         // time edge is incremented. See below.
-        int outside = lastCol;
+        int boundary = lastCol;
         
-        while (outside > 0 && (z[outside] - z[outside - 1]) < 2)
-            --outside;
+        while (boundary > 0 && (z[boundary] - z[boundary - 1]) < 2)
+            --boundary;
         
         // pivot is the greatest index that can be incremented...
         // Either z[pivot + 1] - z[pivot] > 1 or if z[lastCol] < lastElem
         // pivot = lastCol since incrementing z[lastCol] is possible
-        int pivot = (z[lastCol] < lastElem) ? lastCol : outside - 1;
+        int pivot = (z[lastCol] < lastElem) ? lastCol : boundary - 1;
         
         // edge is the greatest index such that when incremented
         // the result will be at least one less than its neighbor
         // even if its neighbor is decremented
-        int edge = outside - 1;
+        int edge = boundary - 1;
         int tarDiff = 3;
         
-        while (edge > 0 && (z[outside] - z[edge]) < tarDiff) {
+        while (edge > 0 && (z[boundary] - z[edge]) < tarDiff) {
             --edge;
             ++tarDiff;
         }
         
         int count = 0;
 
-        while (edge >= 0 && (z[outside] - z[edge]) >= tarDiff) {
+        while (edge >= 0 && (z[boundary] - z[edge]) >= tarDiff) {
             if (isComb) {
                 for (int k = 0; k < r; ++k)
                     partitionsVec.push_back(v[z[k]]);
@@ -420,17 +423,17 @@ namespace Partitions {
             ++z[edge];
             --z[vertex];
             
-            if (vertex == outside) {
-                if (outside < lastCol)
-                    ++outside;
+            if (vertex == boundary) {
+                if (boundary < lastCol)
+                    ++boundary;
                 
-                while (outside > 0 && (z[outside] - z[outside - 1]) < 2)
-                    --outside;
+                while (boundary > 0 && (z[boundary] - z[boundary - 1]) < 2)
+                    --boundary;
                 
-                pivot = (z[lastCol] < lastElem) ? lastCol : outside - 1;
+                pivot = (z[lastCol] < lastElem) ? lastCol : boundary - 1;
             }
             
-            if (vertex < outside) {
+            if (vertex < boundary) {
                 if (z[vertex] - z[vertex - 1] == 1)
                     ++vertex;
                 
@@ -445,16 +448,16 @@ namespace Partitions {
                         --pivot;
                 }
                 
-                outside = pivot;
+                boundary = pivot;
                 
                 if (pivot < lastCol && z[pivot + 1] - z[pivot] > 1)
-                    ++outside;
+                    ++boundary;
             }
             
-            edge = outside - 1;
+            edge = boundary - 1;
             tarDiff = 3;
             
-            while (edge > 0 && (z[outside] - z[edge]) < tarDiff) {
+            while (edge > 0 && (z[boundary] - z[edge]) < tarDiff) {
                 --edge;
                 ++tarDiff;
             }
@@ -535,9 +538,9 @@ namespace Partitions {
         
         if (myMax == target && (n == target || n == (target + 1)) && isRep) {
             const bool includeZero = (v.front() == 1) ? false : true;
-            int maxIndex = lastCol;
+            int boundary = lastCol;
             int pivot = (includeZero) ? lastCol - 1 : lastCol;
-            int edge = maxIndex - 1;
+            int edge = boundary - 1;
 
             std::vector<int> z(r, 0);
             z[lastCol] = lastElem;
@@ -565,7 +568,7 @@ namespace Partitions {
             
             typeRcpp partitionsMatrix = Rcpp::no_init_matrix(numParts, nCols);
             PartitionsStandard(r, numParts, partitionsMatrix, z, isComb,
-                               maxIndex, edge, pivot, limitRows, lastCol, lastElem);
+                               boundary, edge, pivot, limitRows, lastCol, lastElem);
             
             if (xtraCol)
                 for (int i = 0; i < numParts; ++i)
