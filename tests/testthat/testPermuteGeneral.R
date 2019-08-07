@@ -16,6 +16,8 @@ test_that("permuteGeneral produces correct results with no constraints and no re
     ## Constraint should not be carried out if no comparisonFun is given
     expect_equal(permuteGeneral(3, 3, constraintFun = "sum",
                                 limitConstraints = 100), permuteGeneral(1:3, 3))
+    
+    expect_equal(nrow(permuteGeneral(8, 8)), factorial(8))
 
     set.seed(11)
     myNums <- rnorm(5)
