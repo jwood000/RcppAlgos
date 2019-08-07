@@ -6,25 +6,35 @@
 #include "RMatrix.h"
 #include <RcppThread.h>
 
+// in R console: print(sqrt(.Machine$double.eps), digits = 16)
+// [1] 0.00000001490116119384766
+// Which is also 2^(-26)
+constexpr double defaultTolerance = 0.00000001490116119384766;
+
 // [[Rcpp::export]]
 int cpp11GetNumThreads() {
     return std::thread::hardware_concurrency();
 }
 
-void CharacterReturn(int n, int m, Rcpp::CharacterVector v, bool IsRep, int nRows,
+// N.B. Passing signed int to function expecting std::size_t is well defined
+void CharacterReturn(int n, int r, Rcpp::CharacterVector v, bool IsRep, int nRows,
                      bool IsComb, std::vector<int> myReps, std::vector<int> freqs,
                      std::vector<int> z, bool permNonTriv, bool IsMultiset,
-                     bool keepRes, Rcpp::CharacterMatrix &matRcpp, int count) {
+                     bool keepRes, Rcpp::CharacterMatrix &matRcpp, int count,
+                     std::size_t phaseOne) {
+    
     if (IsComb) {
         if (IsMultiset)
-            MultisetCombination(n, m, v, myReps, freqs, count, nRows, z, matRcpp);
+            MultisetCombination(n, r, v, myReps, freqs, count, nRows, z, matRcpp);
         else
-            ComboGeneral(n, m, v, IsRep, count, nRows, z, matRcpp);
+            ComboGeneral(n, r, v, IsRep, count, nRows, z, matRcpp);
     } else {
-        if (IsMultiset)
-            MultisetPermutation(n, m, v, nRows, z, count, matRcpp);
+        if (IsMultiset) 
+            MultisetPermutation(n, r, v, nRows, z, count, matRcpp);
+        else if (permNonTriv)
+            PermuteGeneral(n, r, v, IsRep, nRows, z, count, matRcpp);
         else
-            PermuteGeneral(n, m, v, IsRep, nRows, z, count, permNonTriv, matRcpp);
+            PermuteSerialDriver(n, r, v, IsRep, nRows, phaseOne, z, matRcpp);
     }
 }
 
@@ -83,22 +93,67 @@ bool checkIsInteger(const std::string &funPass, std::size_t uM, int n,
     return true;
 }
 
-void getStartZ(int n, int m, double &lower, int stepSize, mpz_t &myIndex, bool IsRep,
+void getStartZ(int n, int m, double &lower, int stepSize, mpz_t &lowerMpz, bool IsRep,
                bool IsComb, bool IsMultiset, bool isGmp, std::vector<int> &myReps,
                std::vector<int> &freqsExpanded, std::vector<int> &startZ) {
     
     if (isGmp) {
-        mpz_add_ui(myIndex, myIndex, stepSize);
+        mpz_add_ui(lowerMpz, lowerMpz, stepSize);
         if (IsComb)
-            startZ = nthCombinationGmp(n, m, myIndex, IsRep, IsMultiset, myReps);
+            startZ = nthCombinationGmp(n, m, lowerMpz, IsRep, IsMultiset, myReps);
         else
-            startZ = nthPermutationGmp(n, m, myIndex, IsRep, IsMultiset, myReps, freqsExpanded, true);
+            startZ = nthPermutationGmp(n, m, lowerMpz, IsRep, IsMultiset, myReps, freqsExpanded, true);
     } else {
         lower += stepSize;
         if (IsComb)
             startZ = nthCombination(n, m, lower, IsRep, IsMultiset, myReps);
         else
             startZ = nthPermutation(n, m, lower, IsRep, IsMultiset, myReps, freqsExpanded, true);
+    }
+}
+
+template <typename typeRcpp, typename typeElem>
+void MasterReturn(int n, int r, std::vector<typeElem> v, bool IsRep, bool IsComb, 
+                  std::vector<int> myReps, std::vector<int> freqsExpanded, bool IsMult,
+                  std::vector<int> startZ, bool permNonTriv, funcPtr<typeElem> myFun,
+                  bool keepRes, bool IsGmp, double lower, mpz_t &lowerMpz, int nRows,
+                  typeRcpp &matRcpp, int nThreads, bool Parallel, std::size_t phaseOne) {
+    
+    bool generalReturn = IsComb || IsMult || permNonTriv || keepRes || n == 1;
+    const std::size_t uRowN = nRows;
+    
+    if (!generalReturn && phaseOne > uRowN)
+        generalReturn = true;
+    
+    if (Parallel) {
+        RcppParallel::RMatrix<typeElem> parMat(matRcpp);
+        
+        if (generalReturn) {
+            RcppThread::ThreadPool pool(nThreads);
+            const int stepSize = nRows / nThreads;
+            int nextStep = stepSize;
+            int step = 0;
+            
+            for (int j = 0; j < (nThreads - 1); ++j, step += stepSize, nextStep += stepSize) {
+                pool.push(std::cref(GeneralReturn<RcppParallel::RMatrix<typeElem>, typeElem>), 
+                          n, r, v, IsRep, nextStep, IsComb, myReps, freqsExpanded, startZ,
+                          generalReturn, IsMult, myFun, keepRes, std::ref(parMat), step, phaseOne);
+                
+                getStartZ(n, r, lower, stepSize, lowerMpz, IsRep, 
+                          IsComb, IsMult, IsGmp, myReps, freqsExpanded, startZ);
+            }
+            
+            pool.push(std::cref(GeneralReturn<RcppParallel::RMatrix<typeElem>, typeElem>),
+                      n, r, v, IsRep, nRows, IsComb, myReps, freqsExpanded, startZ,
+                      generalReturn, IsMult, myFun, keepRes, std::ref(parMat), step, phaseOne);
+            
+            pool.join();
+        } else {
+            PermuteParallel(n, r, v, IsRep, uRowN, phaseOne, startZ, parMat, nThreads);
+        }
+    } else {
+        GeneralReturn(n, r, v, IsRep, nRows, IsComb, myReps, freqsExpanded, 
+                      startZ, generalReturn, IsMult, myFun, keepRes, matRcpp, 0, phaseOne);
     }
 }
 
@@ -638,7 +693,6 @@ SEXP CombinatoricsRcpp(SEXP Rv, SEXP Rm, SEXP RisRep, SEXP RFreqs, SEXP Rlow,
             // check for double precision. It is 'equalDbl' and
             // can be found in ConstraintsUtils.h
             
-            CleanConvert::convertPrimitive(Rtolerance, tolerance, "tolerance", true, false, false, true);
             bool IsWhole = true;
             
             for (int i = 0; i < n && IsWhole; ++i)
@@ -649,7 +703,13 @@ SEXP CombinatoricsRcpp(SEXP Rv, SEXP Rm, SEXP RisRep, SEXP RFreqs, SEXP Rlow,
                 if (static_cast<int64_t>(targetVals[i]) != targetVals[i])
                     IsWhole = false;
             
-            if (!IsWhole) {
+            if (!IsInteger) {
+                if (Rf_isNull(Rtolerance)) {
+                    tolerance = (IsWhole) ? 0 : defaultTolerance;
+                } else {
+                    CleanConvert::convertPrimitive(Rtolerance, tolerance, "tolerance", true, false, false, true);
+                }
+                
                 auto itComp = std::find(compSpecial.cbegin(), 
                                         compSpecial.cend(), compFunVec[0]);
                 
@@ -679,11 +739,11 @@ SEXP CombinatoricsRcpp(SEXP Rv, SEXP Rm, SEXP RisRep, SEXP RFreqs, SEXP Rlow,
             if (IsInteger) {
                 return SpecCaseRet<Rcpp::IntegerMatrix>(n, m, vInt, IsRepetition, nRows, keepRes, startZ, lower,
                                                         mainFun, IsMultiset, computedRows, compFunVec, targetIntVals, IsComb,
-                                                        myReps, freqsExpanded, bLower, permNonTriv, userNumRows, tolerance);
+                                                        myReps, freqsExpanded, bLower, userNumRows, tolerance);
             } else {
                 return SpecCaseRet<Rcpp::NumericMatrix>(n, m, vNum, IsRepetition, nRows, keepRes, startZ, lower,
                                                         mainFun, IsMultiset, computedRows, compFunVec, targetVals, IsComb,
-                                                        myReps, freqsExpanded, bLower, permNonTriv, userNumRows, tolerance);
+                                                        myReps, freqsExpanded, bLower, userNumRows, tolerance);
             }
         }
         
@@ -768,8 +828,8 @@ SEXP CombinatoricsRcpp(SEXP Rv, SEXP Rm, SEXP RisRep, SEXP RFreqs, SEXP Rlow,
             keepRes = keepRes && !Rf_isNull(f1);
         }
         
-        funcPtr<double> myFunDbl;
-        funcPtr<int> myFunInt;
+        funcPtr<double> myFunDbl = *putFunPtrInXPtr<double>("sum");
+        funcPtr<int> myFunInt = *putFunPtrInXPtr<int>("sum");
         int nCol = m;
         
         if (keepRes) {
@@ -788,115 +848,44 @@ SEXP CombinatoricsRcpp(SEXP Rv, SEXP Rm, SEXP RisRep, SEXP RFreqs, SEXP Rlow,
             ++nCol;
         }
         
-        if (Parallel) {
-            permNonTriv = true;
-            RcppThread::ThreadPool pool(nThreads);
-            int step = 0, stepSize = nRows / nThreads;
-            int nextStep = stepSize;
+        const std::size_t phaseOne = (!permNonTriv && !IsComb)
+                                     ? ((IsRepetition) ? std::pow(static_cast<double>(n),
+                                                                  static_cast<double>(m - 1))
+                                                       : NumPermsNoRep(n - 1, m - 1)) : 0u;
+        
+        if (IsCharacter) {
+            Rcpp::CharacterMatrix matChar = Rcpp::no_init_matrix(nRows, nCol);
+            CharacterReturn(n, m, rcppChar, IsRepetition, nRows, IsComb, myReps,
+                            freqsExpanded, startZ, permNonTriv, IsMultiset, keepRes,
+                            matChar, 0, phaseOne);
+            return matChar;
+        } else if (IsLogical) {
+            Rcpp::LogicalMatrix matBool = Rcpp::no_init_matrix(nRows, nCol);
+            MasterReturn(n, m, vInt, IsRepetition, IsComb, myReps, freqsExpanded, 
+                         IsMultiset, startZ, permNonTriv, myFunInt, keepRes, IsGmp,
+                         lower, lowerMpz[0], nRows, matBool, nThreads, Parallel, phaseOne);
+            return matBool;
+        } else if (IsFactor || IsInteger) {
+            Rcpp::IntegerMatrix matInt = Rcpp::no_init_matrix(nRows, nCol);
+            MasterReturn(n, m, vInt, IsRepetition, IsComb, myReps, freqsExpanded, 
+                         IsMultiset, startZ, permNonTriv, myFunInt, keepRes, IsGmp,
+                         lower, lowerMpz[0], nRows, matInt, nThreads, Parallel, phaseOne);
             
-            if (IsLogical) {
-                Rcpp::LogicalMatrix matBool = Rcpp::no_init_matrix(nRows, nCol);
-                RcppParallel::RMatrix<int> parBool(matBool);
-
-                for (int j = 0; j < (nThreads - 1); ++j, step += stepSize, nextStep += stepSize) {
-                    pool.push(std::cref(GeneralReturn<RcppParallel::RMatrix<int>, int>), 
-                              n, m, vInt, IsRepetition, nextStep, IsComb, myReps, freqsExpanded, 
-                              startZ, permNonTriv, IsMultiset, myFunInt, keepRes, std::ref(parBool), step);
-                    
-                    getStartZ(n, m, lower, stepSize, lowerMpz[0], IsRepetition,
-                              IsComb, IsMultiset, IsGmp, myReps, freqsExpanded, startZ);
-                }
-
-                pool.push(std::cref(GeneralReturn<RcppParallel::RMatrix<int>, int>), 
-                          n, m, vInt, IsRepetition, nRows, IsComb, myReps, freqsExpanded, 
-                          startZ, permNonTriv, IsMultiset, myFunInt, keepRes, std::ref(parBool), step);
-
-                pool.join();
-                return matBool;
-                
-            } else if (IsFactor || IsInteger) {
-                Rcpp::IntegerMatrix matInt = Rcpp::no_init_matrix(nRows, nCol);
-                RcppParallel::RMatrix<int> parInt(matInt);
-                
-                for (int j = 0; j < (nThreads - 1); ++j, step += stepSize, nextStep += stepSize) {
-                    pool.push(std::cref(GeneralReturn<RcppParallel::RMatrix<int>, int>), 
-                              n, m, vInt, IsRepetition, nextStep, IsComb, myReps, freqsExpanded, 
-                              startZ, permNonTriv, IsMultiset, myFunInt, keepRes, std::ref(parInt), step);
-
-                    getStartZ(n, m, lower, stepSize, lowerMpz[0], IsRepetition, 
-                               IsComb, IsMultiset, IsGmp, myReps, freqsExpanded, startZ);
-                }
-                
-                pool.push(std::cref(GeneralReturn<RcppParallel::RMatrix<int>, int>),
-                          n, m, vInt, IsRepetition, nRows, IsComb, myReps, freqsExpanded, 
-                          startZ, permNonTriv, IsMultiset, myFunInt, keepRes, std::ref(parInt), step);
-                
-                pool.join();
-                
-                if (IsFactor) {
-                    Rcpp::IntegerVector testFactor = Rcpp::as<Rcpp::IntegerVector>(Rv);
-                    Rcpp::CharacterVector myClass = testFactor.attr("class");
-                    Rcpp::CharacterVector myLevels = testFactor.attr("levels");
-                    matInt.attr("class") = myClass;
-                    matInt.attr("levels") = myLevels;
-                }
-                
-                return matInt;
-                
-            } else {
-                Rcpp::NumericMatrix matNum = Rcpp::no_init_matrix(nRows, nCol);
-                RcppParallel::RMatrix<double> parNum(matNum);
-                
-                for (int j = 0; j < (nThreads - 1); ++j, step += stepSize, nextStep += stepSize) {
-                    pool.push(std::cref(GeneralReturn<RcppParallel::RMatrix<double>, double>), 
-                              n, m, vNum, IsRepetition, nextStep, IsComb, myReps, freqsExpanded, 
-                              startZ, permNonTriv, IsMultiset, myFunDbl, keepRes, std::ref(parNum), step);
-                    
-                    getStartZ(n, m, lower, stepSize, lowerMpz[0], IsRepetition, 
-                              IsComb, IsMultiset, IsGmp, myReps, freqsExpanded, startZ);
-                }
-
-                pool.push(std::cref(GeneralReturn<RcppParallel::RMatrix<double>, double>),
-                          n, m, vNum, IsRepetition, nRows, IsComb, myReps, freqsExpanded, startZ,
-                          permNonTriv, IsMultiset, myFunDbl, keepRes, std::ref(parNum), step);
-                
-                pool.join();
-                return matNum;
+            if (IsFactor) {
+                Rcpp::IntegerVector testFactor = Rcpp::as<Rcpp::IntegerVector>(Rv);
+                Rcpp::CharacterVector myClass = testFactor.attr("class");
+                Rcpp::CharacterVector myLevels = testFactor.attr("levels");
+                matInt.attr("class") = myClass;
+                matInt.attr("levels") = myLevels;
             }
+            
+            return matInt;
         } else {
-            if (IsCharacter) {
-                Rcpp::CharacterMatrix matChar = Rcpp::no_init_matrix(nRows, nCol);
-                CharacterReturn(n, m, rcppChar, IsRepetition, nRows, IsComb, myReps,
-                                freqsExpanded, startZ, permNonTriv, IsMultiset, keepRes, matChar, 0);
-                return matChar;
-                
-            } else if (IsLogical) {
-                Rcpp::LogicalMatrix matBool = Rcpp::no_init_matrix(nRows, nCol);
-                GeneralReturn(n, m, vInt, IsRepetition, nRows, IsComb, myReps, freqsExpanded, 
-                              startZ, permNonTriv, IsMultiset, myFunInt, keepRes, matBool, 0);
-                return matBool;
-                
-            } else if (IsFactor || IsInteger) {
-                Rcpp::IntegerMatrix matInt = Rcpp::no_init_matrix(nRows, nCol);
-                GeneralReturn(n, m, vInt, IsRepetition, nRows, IsComb, myReps, freqsExpanded, 
-                              startZ, permNonTriv, IsMultiset, myFunInt, keepRes, matInt, 0);
-                
-                if (IsFactor) {
-                    Rcpp::IntegerVector testFactor = Rcpp::as<Rcpp::IntegerVector>(Rv);
-                    Rcpp::CharacterVector myClass = testFactor.attr("class");
-                    Rcpp::CharacterVector myLevels = testFactor.attr("levels");
-                    matInt.attr("class") = myClass;
-                    matInt.attr("levels") = myLevels;
-                }
-                
-                return matInt;
-                
-            } else {
-                Rcpp::NumericMatrix matNum = Rcpp::no_init_matrix(nRows, nCol);
-                GeneralReturn(n, m, vNum, IsRepetition, nRows, IsComb, myReps, freqsExpanded, 
-                              startZ, permNonTriv, IsMultiset, myFunDbl, keepRes, matNum, 0);
-                return matNum;
-            }
+            Rcpp::NumericMatrix matNum = Rcpp::no_init_matrix(nRows, nCol);
+            MasterReturn(n, m, vNum, IsRepetition, IsComb, myReps, freqsExpanded, 
+                         IsMultiset, startZ, permNonTriv, myFunDbl, keepRes, IsGmp,
+                         lower, lowerMpz[0], nRows, matNum, nThreads, Parallel, phaseOne);
+            return matNum;
         }
     }
 }
