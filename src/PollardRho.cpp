@@ -7,14 +7,14 @@
 template <typename typeReturn>
 void getPrimeFactors(int64_t &t, std::vector<typeReturn> &factors);
 
-const double my63Max = std::pow(2, 63);
-const int64_t Sqrt63Max = static_cast<int64_t>(std::sqrt(static_cast<double>(my63Max)));
+// 2^63 -->> 922337203685477580
+constexpr double my63Max = 922337203685477580.0;
+
+// std::sqrt(std::pow(2, 63)) -->> 3037000499.97605
+constexpr int64_t Sqrt63Max = static_cast<int64_t>(3037000499.97);
 
 /* Number of Miller-Rabin tests to run when not proving primality. */
 constexpr int MR_REPS = 25;
-
-constexpr int64_t FirstOmittedPrime = 3989;
-constexpr std::size_t pDiffSize = sizeof(primesDiffPR) / sizeof(primesDiffPR[0]);
 
 template <typename typeReturn>
 void FactorTrialDivision(int64_t &t, std::vector<typeReturn> &factors) {
@@ -26,7 +26,7 @@ void FactorTrialDivision(int64_t &t, std::vector<typeReturn> &factors) {
         t >>= 1;
     }
     
-    for (std::size_t i = 1; i < pDiffSize;) {
+    for (std::size_t i = 1; i < primesDiffPR.size();) {
         if ((t % p) != 0) {
             p += primesDiffPR[i++];
             if (t < (p * p))
@@ -35,6 +35,11 @@ void FactorTrialDivision(int64_t &t, std::vector<typeReturn> &factors) {
             t /= p;
             factors.push_back(static_cast<typeReturn>(p));
         }
+    }
+    
+    if ((t % p) == 0) {
+        t /= p;
+        factors.push_back(static_cast<typeReturn>(p));
     }
 }
 
@@ -157,7 +162,7 @@ int IsPrime(int64_t n) {
     
     /* Loop until Lucas proves our number prime, or Miller-Rabin proves our
     number composite.  */
-    for (std::size_t r = 0; r < pDiffSize; ++r) {
+    for (std::size_t r = 0; r < primesDiffPR.size(); ++r) {
         
         primeTestReturn = 1;
         
@@ -526,7 +531,7 @@ void IsPrimeVec(std::size_t m, std::size_t n, std::vector<double> &myNums,
                 primeTest[j] = false;
         } else {
             int p = 3;
-            for (std::size_t i = 1; i < pDiffSize;) {
+            for (std::size_t i = 1; i < primesDiffPR.size();) {
                 if ((testVal % p) != 0) {
                     p += primesDiffPR[i++];
                     if (testVal < (p * p))
