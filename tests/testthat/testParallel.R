@@ -130,6 +130,13 @@ test_that("permuteGeneral produces correct results with Parallel enabled and no 
     expect_equal(permuteGeneral(30, 10, nThreads = 2, upper = 30000), 
                  permuteGeneral(30, 10, upper = 30000))
     
+    expect_equal(permuteGeneral(10, 6, nThreads = 2, upper = 30000), 
+                 permuteGeneral(10, 6, upper = 30000))
+    
+    #### With Repetition
+    expect_equal(permuteGeneral(10, 5, T, upper = 39999, nThreads = 2),
+                 permuteGeneral(10, 5, T, upper = 39999))
+    
     ######********************** Lower Only *******************#########
     #### With Repetition
     numVec <- rnorm(12)

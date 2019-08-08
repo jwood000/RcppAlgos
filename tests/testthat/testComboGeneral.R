@@ -150,6 +150,11 @@ test_that("comboGeneral produces correct results with constraints", {
                                    keepResults = TRUE)[,6] >= 2))
     
     expect_true(all(comboGeneral(3, 5, TRUE,
+                                 constraintFun = "mean", comparisonFun = "==",
+                                 limitConstraints = 2, 
+                                 keepResults = TRUE)[,6] == 2))
+    
+    expect_true(all(comboGeneral(3, 5, TRUE,
                                  constraintFun = "mean", comparisonFun = ">=",
                                  limitConstraints = c(2L, 1e10), 
                                  keepResults = TRUE)[,6] >= 2))

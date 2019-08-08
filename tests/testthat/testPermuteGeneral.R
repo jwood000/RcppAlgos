@@ -38,8 +38,7 @@ test_that("permuteGeneral produces correct results with no constraints and has r
                  permuteGeneral(letters[1:9], 5, TRUE, lower = 59000L))
     expect_equal(ncol(permuteGeneral(5, 3, TRUE)), 3)
     expect_equal(nrow(permuteGeneral(2, 2, TRUE)), 4)
-    expect_equal(nrow(permuteGeneral(5, 3, TRUE, constraintFun = "prod",
-                                     keepResults = TRUE, upper = 10)), 10)
+    expect_equal(nrow(permuteGeneral(5, 3, TRUE, constraintFun = "prod", upper = 10)), 10)
 
     set.seed(111)
     myNums <- rnorm(5)
