@@ -39,16 +39,16 @@ void CharacterReturn(int n, int r, Rcpp::CharacterVector v, bool IsRep, int nRow
 }
 
 template <typename typeVector>
-void ApplyFunction(int n, int m, typeVector sexpVec, bool IsRep, int nRows, bool IsComb,
+void ApplyFunction(int n, int r, typeVector sexpVec, bool IsRep, int nRows, bool IsComb,
                    std::vector<int> myReps, SEXP ans, std::vector<int> freqs,
                    std::vector<int> z, bool IsMultiset, SEXP sexpFun, SEXP rho, int count) {
     if (IsComb) {
         if (IsMultiset)
-            MultisetComboApplyFun(n, m, sexpVec, myReps, freqs, nRows, z, count, sexpFun, rho, ans);
+            MultisetComboApplyFun(n, r, sexpVec, myReps, freqs, nRows, z, count, sexpFun, rho, ans);
         else
-            ComboGeneralApplyFun(n , m, sexpVec, IsRep, count, nRows, z, sexpFun, rho, ans);
+            ComboGeneralApplyFun(n, r, sexpVec, IsRep, count, nRows, z, sexpFun, rho, ans);
     } else {
-        PermutationApplyFun(n, m, sexpVec, IsRep,nRows, IsMultiset, z, count, sexpFun, rho, ans);
+        PermutationApplyFun(n, r, sexpVec, IsRep,nRows, IsMultiset, z, count, sexpFun, rho, ans);
     }
 }
 
@@ -93,22 +93,22 @@ bool checkIsInteger(const std::string &funPass, std::size_t uM, int n,
     return true;
 }
 
-void getStartZ(int n, int m, double &lower, int stepSize, mpz_t &lowerMpz, bool IsRep,
+void getStartZ(int n, int r, double &lower, int stepSize, mpz_t &lowerMpz, bool IsRep,
                bool IsComb, bool IsMultiset, bool isGmp, std::vector<int> &myReps,
                std::vector<int> &freqsExpanded, std::vector<int> &startZ) {
     
     if (isGmp) {
         mpz_add_ui(lowerMpz, lowerMpz, stepSize);
         if (IsComb)
-            startZ = nthCombinationGmp(n, m, lowerMpz, IsRep, IsMultiset, myReps);
+            startZ = nthCombinationGmp(n, r, lowerMpz, IsRep, IsMultiset, myReps);
         else
-            startZ = nthPermutationGmp(n, m, lowerMpz, IsRep, IsMultiset, myReps, freqsExpanded, true);
+            startZ = nthPermutationGmp(n, r, lowerMpz, IsRep, IsMultiset, myReps, freqsExpanded, true);
     } else {
         lower += stepSize;
         if (IsComb)
-            startZ = nthCombination(n, m, lower, IsRep, IsMultiset, myReps);
+            startZ = nthCombination(n, r, lower, IsRep, IsMultiset, myReps);
         else
-            startZ = nthPermutation(n, m, lower, IsRep, IsMultiset, myReps, freqsExpanded, true);
+            startZ = nthPermutation(n, r, lower, IsRep, IsMultiset, myReps, freqsExpanded, true);
     }
 }
 
@@ -693,19 +693,19 @@ SEXP CombinatoricsRcpp(SEXP Rv, SEXP Rm, SEXP RisRep, SEXP RFreqs, SEXP Rlow,
             // check for double precision. It is 'equalDbl' and
             // can be found in ConstraintsUtils.h
             
-            bool IsWhole = true;
-            
-            for (int i = 0; i < n && IsWhole; ++i)
-                if (static_cast<int64_t>(vNum[i]) != vNum[i])
-                    IsWhole = false;
-            
-            for (std::size_t i = 0; i < targetVals.size() && IsWhole; ++i)
-                if (static_cast<int64_t>(targetVals[i]) != targetVals[i])
-                    IsWhole = false;
-            
             if (!IsInteger) {
                 if (Rf_isNull(Rtolerance)) {
-                    tolerance = (IsWhole) ? 0 : defaultTolerance;
+                    bool IsWhole = true;
+                    
+                    for (int i = 0; i < n && IsWhole; ++i)
+                        if (static_cast<int64_t>(vNum[i]) != vNum[i])
+                            IsWhole = false;
+                        
+                    for (std::size_t i = 0; i < targetVals.size() && IsWhole; ++i)
+                        if (static_cast<int64_t>(targetVals[i]) != targetVals[i])
+                            IsWhole = false;
+                    
+                    tolerance = (IsWhole && mainFun != "mean") ? 0 : defaultTolerance;
                 } else {
                     CleanConvert::convertPrimitive(Rtolerance, tolerance, "tolerance", true, false, false, true);
                 }
