@@ -118,15 +118,13 @@ void PermuteLoadIndex(std::size_t n, std::size_t r, const typeVector &v,
 }
 
 template <typename typeMatrix, typename typeVector>
-void PermuteParallel(int n, int r, typeVector v, bool IsRep, std::size_t uRowN,
-                     std::size_t segment, std::vector<int> &z,
+void PermuteParallel(std::size_t n, std::size_t r, typeVector v, bool IsRep, 
+                     std::size_t uRowN, std::size_t segment, std::vector<int> &z,
                      typeMatrix &permuteMatrix, int nThreads) {
 
-    const std::size_t uN = n;
-    const std::size_t uR = r;
     const std::size_t first = (IsRep) ? 1u : 0u;
-    auto indexMat = std::make_unique<int[]>(segment * (uR - first));
-    PermuteLoadIndex(uN, uR, v, IsRep, segment, z, permuteMatrix, indexMat.get());
+    auto indexMat = std::make_unique<int[]>(segment * (r - first));
+    PermuteLoadIndex(n, r, v, IsRep, segment, z, permuteMatrix, indexMat.get());
     
     std::size_t unrollRem = segment % unrollSize;
     std::size_t ind = 1u;
@@ -145,7 +143,7 @@ void PermuteParallel(int n, int r, typeVector v, bool IsRep, std::size_t uRowN,
 
     pool.join();
 
-    if (ind < uN) {
+    if (ind < n && start < uRowN) {
         const std::size_t skip = last - uRowN;
         unrollRem = uRowN % unrollSize;
         const std::size_t lastUnroll = uRowN - unrollRem;
@@ -156,7 +154,7 @@ void PermuteParallel(int n, int r, typeVector v, bool IsRep, std::size_t uRowN,
             std::swap(v[0u], v[ind]);
         }
 
-        for (std::size_t j = 0, k = 0; j < r; ++j, k += skip)
+        for (std::size_t j = first, k = 0; j < r; ++j, k += skip)
             for (std::size_t i = start; i < uRowN; ++i, ++k)
                 permuteMatrix(i, j) = v[indexMat[k]];
     }
@@ -186,11 +184,11 @@ void PermuteSerialDriver(std::size_t n, std::size_t r, typeVector v, bool IsRep,
         PermuteWorker(r, IsRep, v, indexMat.get(), permuteMatrix, start, last, ind, first, unrollRem);
     }
     
-    if (ind < v.size()) {
+    if (ind < v.size() && start < uRowN) {
         const std::size_t skip = last - uRowN;
         unrollRem = uRowN % unrollSize;
         const std::size_t lastUnroll = uRowN - unrollRem;
-        
+
         if (IsRep) {
             RepUnroller(r, v, indexMat.get(), permuteMatrix, start, lastUnroll, uRowN, ind);
         } else {
@@ -199,8 +197,8 @@ void PermuteSerialDriver(std::size_t n, std::size_t r, typeVector v, bool IsRep,
             v[0u] = v[ind];
             v[ind] = vTemp[0u];
         }
-        
-        for (std::size_t j = 0, k = 0; j < r; ++j, k += skip)
+
+        for (std::size_t j = first, k = 0; j < r; ++j, k += skip)
             for (std::size_t i = start; i < uRowN; ++i, ++k)
                 permuteMatrix(i, j) = v[indexMat[k]];
     }
@@ -296,14 +294,13 @@ void MultisetPermutation(std::size_t n, std::size_t r, const typeVector &v, std:
 
 template <typename typeVector>
 void PermutationApplyFun(std::size_t n, std::size_t r, const typeVector &v, bool IsRep,
-                         int numRows, bool Multi, std::vector<int> &z,
+                         std::size_t uRowN, bool Multi, std::vector<int> &z,
                          int intCount, SEXP sexpFun, SEXP rho, SEXP &ans) {
     
     const std::size_t lenFreqs = (Multi) ? z.size() : 0;
     typeVector vectorPass(r);
     
-    const std::size_t numR1 = numRows - 1;
-    const std::size_t uRowN = numRows;
+    const std::size_t numR1 = uRowN - 1;
     const std::size_t lastCol = r - 1;
     const std::size_t maxInd = (Multi) ? (lenFreqs - 1) : (n - 1);
     
