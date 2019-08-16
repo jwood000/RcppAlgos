@@ -5,9 +5,12 @@ template <typename stdType>
 using funcPtr = stdType (*)(const std::vector<stdType> &v, std::size_t mySize);
 
 template <typename stdType>
+using partialPtr = stdType (*)(stdType partial, stdType w, std::size_t mySize);
+
+template <typename stdType>
 using compPtr = bool (*)(stdType x, const std::vector<stdType> &y);
 
-// Below, we define five functions that will be utilized
+// Below, we define five main functions that will be utilized
 // as constraint functions. We also define five comparison
 // operations (<, <=, >, >=, ==). The framework is based on
 // the information posted by Dirk Eddelbuettel from
@@ -22,7 +25,7 @@ stdType prod(const std::vector<stdType> &v, std::size_t mySize) {
 
 template <typename stdType>
 stdType sum(const std::vector<stdType> &v, std::size_t mySize) {
-    return (std::accumulate(v.cbegin(), v.cend(), static_cast<stdType>(0)));
+    return (std::accumulate(v.cbegin(), v.cbegin() + mySize, static_cast<stdType>(0)));
 }
 
 template <typename stdType>
@@ -33,12 +36,41 @@ stdType mean(const std::vector<stdType> &v, std::size_t mySize) {
 
 template <typename stdType>
 stdType max(const std::vector<stdType> &v, std::size_t mySize) {
-    return (*std::max_element(v.cbegin(), v.cend()));
+    return (*std::max_element(v.cbegin(), v.cbegin() + mySize));
 }
 
 template <typename stdType>
 stdType min(const std::vector<stdType> &v, std::size_t mySize) {
-    return (*std::min_element(v.cbegin(), v.cend()));
+    return (*std::min_element(v.cbegin(), v.cbegin() + mySize));
+}
+
+// Helper functions to the above. They achieve the same result when
+// itermediates are known. They are simpler and more efficienct as
+// they are only performing a couple of operations as opposed to
+// traversing the entire vector.
+template <typename stdType>
+stdType prodPartial(stdType partial, stdType w, std::size_t mySize) {
+    return (partial * w);
+}
+
+template <typename stdType>
+stdType sumPartial(stdType partial, stdType w, std::size_t mySize) {
+    return (partial + w);
+}
+
+template <typename stdType>
+stdType meanPartial(stdType partial, stdType w, std::size_t mySize) {
+    return (partial + (w - partial) / mySize);
+}
+
+template <typename stdType>
+stdType maxPartial(stdType partial, stdType w, std::size_t mySize) {
+    return std::max(partial, w);
+}
+
+template <typename stdType>
+stdType minPartial(stdType partial, stdType w, std::size_t mySize) {
+    return std::min(partial, w);
 }
 
 // Standard comparison functions
@@ -86,6 +118,22 @@ Rcpp::XPtr<funcPtr<stdType>> putFunPtrInXPtr(const std::string &fstr) {
         return(Rcpp::XPtr<funcPtr<stdType>>(new funcPtr<stdType>(&min)));
     else
         return Rcpp::XPtr<funcPtr<stdType>>(R_NilValue); // runtime error as NULL no XPtr
+}
+
+template <typename stdType>
+Rcpp::XPtr<partialPtr<stdType>> putPartialPtrInXPtr(const std::string &fstr) {
+    if (fstr == "prod")
+        return(Rcpp::XPtr<partialPtr<stdType>>(new partialPtr<stdType>(&prodPartial)));
+    else if (fstr == "sum")
+        return(Rcpp::XPtr<partialPtr<stdType>>(new partialPtr<stdType>(&sumPartial)));
+    else if (fstr == "mean")
+        return(Rcpp::XPtr<partialPtr<stdType>>(new partialPtr<stdType>(&meanPartial)));
+    else if (fstr == "max")
+        return(Rcpp::XPtr<partialPtr<stdType>>(new partialPtr<stdType>(&maxPartial)));
+    else if (fstr == "min")
+        return(Rcpp::XPtr<partialPtr<stdType>>(new partialPtr<stdType>(&minPartial)));
+    else
+        return Rcpp::XPtr<partialPtr<stdType>>(R_NilValue); // runtime error as NULL no XPtr
 }
 
 const std::vector<std::string> compVec = {"<", ">", "<=", ">=", "==",
