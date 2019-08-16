@@ -16,7 +16,7 @@ double MultisetPermRowNum(int n, int r, const std::vector<int> &myReps);
 // gmp analogs are necessary
 double MultisetCombRowNum(int n, int r, const std::vector<int> &Reps);
 
-void nextFullPerm(int *myArray, std::size_t maxInd);
-void nextPartialPerm(int *myArray, std::size_t lastCol, std::size_t maxInd);
+void nextFullPerm(int *const myArray, std::size_t maxInd);
+void nextPartialPerm(int *const myArray, std::size_t lastCol, std::size_t maxInd);
     
 #endif

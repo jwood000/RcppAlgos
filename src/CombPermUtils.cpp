@@ -259,7 +259,7 @@ double MultisetCombRowNum(int n, int r, const std::vector<int> &Reps) {
 
 // This algorithm is nearly identical to the
 // one found in the standard algorithm library
-void nextFullPerm(int *myArray, std::size_t maxInd) {
+void nextFullPerm(int *const myArray, std::size_t maxInd) {
     
     std::size_t p1 = maxInd - 1;
     std::size_t p2 = maxInd;
@@ -281,7 +281,6 @@ void nextFullPerm(int *myArray, std::size_t maxInd) {
     }
 }
 
-
 // This algorithm is the same as above except that
 // since we are not using the entire vector, we have
 // to first check that the rth element is the largest.
@@ -294,7 +293,7 @@ void nextFullPerm(int *myArray, std::size_t maxInd) {
 // and swap them. We can then proceed to the next perm.
 // We can do this because the standard algo would end
 // up performing two unnecessary reversings.
-void nextPartialPerm(int *myArray, std::size_t r1, std::size_t maxInd) {
+void nextPartialPerm(int *const myArray, std::size_t r1, std::size_t maxInd) {
     
     std::size_t p1 = r1;
     
