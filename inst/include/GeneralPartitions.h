@@ -55,17 +55,12 @@ namespace Partitions {
                 partitionsMatrix(limitRows, k) = z[k];
         } else {
             for (int count = 0;;) {
-                int numIter = static_cast<int>(NumPermsWithRep(z));
-                
-                if ((numIter + count) > numRows)
-                    numIter = numRows - count;
-                
-                for (int i = 0; i < numIter; ++i, ++count) {
+                do {
                     for (int k = 0; k < r; ++k)
                         partitionsMatrix(count, k) = z[k];
                     
-                    std::next_permutation(z.begin(), z.end());
-                }
+                    ++count;
+                } while (std::next_permutation(z.begin(), z.end()) && count < numRows);
                 
                 if (count >= numRows)
                     break;
@@ -171,7 +166,6 @@ namespace Partitions {
         if (finalCheck != target)
             return noSoln;
         
-        int numIter = 0;
         int count = 0;
         
         // smallest index such that z[boundary] == currMax
@@ -200,19 +194,12 @@ namespace Partitions {
                 
                 ++count;
             } else {
-                numIter = static_cast<int>(NumPermsWithRep(z));
-                
-                if ((numIter + count) > maxRows)
-                    numIter = maxRows - count;
-                
-                for (int i = 0; i < numIter; ++i) {
+                do {
                     for (int k = 0; k < r; ++k)
                         partitionsVec.push_back(v[z[k]]);
                     
-                    std::next_permutation(z.begin(), z.end());
-                }
-                
-                count += numIter;
+                    ++count;
+                } while (std::next_permutation(z.begin(), z.end()) && count < maxRows);
             }
             
             if (count >= maxRows)
@@ -283,17 +270,12 @@ namespace Partitions {
                 for (int k = 0; k < r; ++k)
                     partitionsVec.push_back(v[z[k]]);
             } else {
-                numIter = static_cast<int>(NumPermsWithRep(z));
-                
-                if ((numIter + count) > maxRows)
-                    numIter = maxRows - count;
-                
-                for (int i = 0; i < numIter; ++i) {
+                do {
                     for (int k = 0; k < r; ++k)
                         partitionsVec.push_back(v[z[k]]);
                     
-                    std::next_permutation(z.begin(), z.end());
-                }
+                    ++count;
+                } while (std::next_permutation(z.begin(), z.end()) && count < maxRows);
             }
         }
         
