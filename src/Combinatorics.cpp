@@ -1,5 +1,4 @@
 #include "ConstraintsMaster.h"
-#include "GeneralPartitions.h"
 #include "CleanConvert.h"
 #include "NthResult.h"
 #include "CountGmp.h"
@@ -164,7 +163,7 @@ SEXP CombinatoricsRcpp(SEXP Rv, SEXP Rm, SEXP RisRep, SEXP RFreqs, SEXP Rlow,
                        SEXP myEnv, SEXP Rparallel, SEXP RNumThreads, int maxThreads,
                        SEXP Rtolerance) {
     
-    int n, m1, m2, m = 0, lenFreqs = 0, nRows = 0;
+    int n, m = 0, lenFreqs = 0, nRows = 0;
     bool IsLogical, IsCharacter, IsMultiset, IsInteger;
     
     std::vector<double> vNum;
@@ -204,18 +203,25 @@ SEXP CombinatoricsRcpp(SEXP Rv, SEXP Rm, SEXP RisRep, SEXP RFreqs, SEXP Rlow,
         IsMultiset = false;
         myReps.push_back(1);
     } else {
-        IsMultiset = true;
         IsRepetition = false;
         CleanConvert::convertVector(RFreqs, myReps, "freqs");
+        int testTrivial = std::accumulate(myReps.cbegin(), myReps.cend(), 0);
         lenFreqs = static_cast<int>(myReps.size());
         
-        for (int i = 0; i < lenFreqs; ++i)
-            for (int j = 0; j < myReps[i]; ++j)
-                freqsExpanded.push_back(i);
+        if (testTrivial > lenFreqs) {
+            IsMultiset = true;
+            
+            for (int i = 0; i < lenFreqs; ++i)
+                for (int j = 0; j < myReps[i]; ++j)
+                    freqsExpanded.push_back(i);
+        } else {
+            IsMultiset = false;
+            freqsExpanded = myReps;
+        }
     }
     
     if (Rf_isNull(Rm)) {
-        if (IsMultiset) {
+        if (!freqsExpanded.empty()) {
             m = freqsExpanded.size();
         } else {
             Rcpp::stop("m and freqs cannot both be NULL");
@@ -235,7 +241,7 @@ SEXP CombinatoricsRcpp(SEXP Rv, SEXP Rm, SEXP RisRep, SEXP RFreqs, SEXP Rlow,
         n = vInt.size();
     } else {
         if (Rf_length(Rv) == 1) {
-            int seqEnd;             // numOnly = true, checkWhole = true, negPoss = true
+            int seqEnd, m1, m2;         // numOnly = true, checkWhole = true, negPoss = true
             CleanConvert::convertPrimitive(Rv, seqEnd, "If v is not a character and of length 1, it", true, true, true);
             if (seqEnd > 1) {m1 = 1; m2 = seqEnd;} else {m1 = seqEnd; m2 = 1;}
             Rcpp::IntegerVector vTemp = Rcpp::seq(m1, m2);
@@ -618,8 +624,8 @@ SEXP CombinatoricsRcpp(SEXP Rv, SEXP Rm, SEXP RisRep, SEXP RFreqs, SEXP Rlow,
                 // That is, we need the maixmum value in targetVals to be the first value and the second
                 // value needs to be the minimum. At this point, the constraint algorithm will be
                 // identical to when comparisonFun = "==" (i.e. we allow the algorithm to continue
-                // while the results are less than (or equal to in cases where strict ineuqlities are 
-                // enforced) the target value and stop once the results exceed that value).
+                // while the results are less than (or equal to in cases where strict inequalities are 
+                // enforced) the target value and stop once the result exceeds that value).
                 
                 if (compFunVec[0].substr(0, 1) == ">" && std::min(targetVals[0], targetVals[1]) == targetVals[0]) {
                     compFunVec[0] = compFunVec[0] + "," + compFunVec[1];
@@ -644,21 +650,6 @@ SEXP CombinatoricsRcpp(SEXP Rv, SEXP Rm, SEXP RisRep, SEXP RFreqs, SEXP Rlow,
                 targetVals.pop_back();
         }
         
-        bool SpecialCase = false;
-        
-        // If bLower, the user is looking to test a particular range. Otherwise, the constraint algo
-        // will simply return (upper - lower) # of combinations/permutations that meet the criteria
-        if (bLower) {
-            SpecialCase = true;
-        } else if (mainFun == "prod") {
-            for (int i = 0; i < n; ++i) {
-                if (vNum[i] < 0) {
-                    SpecialCase = true;
-                    break;
-                }
-            }
-        }
-        
         Rcpp::XPtr<funcPtr<double>> xpFunDbl = putFunPtrInXPtr<double>(mainFun);
         funcPtr<double> myFunDbl = *xpFunDbl;
         
@@ -670,28 +661,25 @@ SEXP CombinatoricsRcpp(SEXP Rv, SEXP Rm, SEXP RisRep, SEXP RFreqs, SEXP Rlow,
         if (IsInteger) {
             targetIntVals.assign(targetVals.cbegin(), targetVals.cend());
         } else {
-            // We first check if we are getting double precision.
-            // If so, for the non-strict inequalities, we must
-            // alter the limit by some epsilon:
+            // We first check if we are getting double precision. If so, for the
+            // non-strict inequalities, we must alter the limit by some epsilon:
             //
-            //           x <= y   --->>>   x <= y + e
-            //           x >= y   --->>>   x >= y - e
+            //                 x <= y   --->>>   x <= y + e
+            //                 x >= y   --->>>   x >= y - e
             //
-            // Equality is a bit tricky as we need to check
-            // whether the absolute value of the difference is
-            // less than epsilon. As a result, we can't alter
-            // the limit with one alteration. Observe:
+            // Equality is a bit tricky as we need to check whether the absolute
+            // value of the difference is less than epsilon. As a result, we
+            // can't alter the limit with one alteration. Observe:
             //
-            //   x == y  --->>>  |x - y| <= e , which gives:
+            //          x == y  --->>>  |x - y| <= e , which gives:
             //
-            //              -e <= x - y <= e
+            //                      -e <= x - y <= e
             //
-            //            1.     x >= y - e
-            //            2.     x <= y + e
+            //                    1.     x >= y - e
+            //                    2.     x <= y + e
             //
-            // As a result, we must define a specialized equality
-            // check for double precision. It is 'equalDbl' and
-            // can be found in ConstraintsUtils.h
+            // As a result, we must define a specialized equality check for double
+            // precision. It is 'equalDbl' and can be found in ConstraintsUtils.h
             
             if (!IsInteger) {
                 if (Rf_isNull(Rtolerance)) {
@@ -735,21 +723,36 @@ SEXP CombinatoricsRcpp(SEXP Rv, SEXP Rm, SEXP RisRep, SEXP RFreqs, SEXP Rlow,
             }
         }
         
+        bool SpecialCase = false;
+        
+        // If bLower, the user is looking to test a particular range. Otherwise, the constraint algo
+        // will simply return (upper - lower) # of combinations/permutations that meet the criteria
+        if (bLower) {
+            SpecialCase = true;
+        } else if (mainFun == "prod") {
+            for (int i = 0; i < n; ++i) {
+                if (vNum[i] < 0) {
+                    SpecialCase = true;
+                    break;
+                }
+            }
+        }
+        
         if (SpecialCase) {
             if (IsInteger) {
                 return SpecCaseRet<Rcpp::IntegerMatrix>(n, m, vInt, IsRepetition, nRows, keepRes, startZ, lower,
                                                         mainFun, IsMultiset, computedRows, compFunVec, targetIntVals, IsComb,
-                                                        myReps, freqsExpanded, bLower, userNumRows, tolerance);
+                                                        myReps, freqsExpanded, bLower, userNumRows);
             } else {
                 return SpecCaseRet<Rcpp::NumericMatrix>(n, m, vNum, IsRepetition, nRows, keepRes, startZ, lower,
                                                         mainFun, IsMultiset, computedRows, compFunVec, targetVals, IsComb,
-                                                        myReps, freqsExpanded, bLower, userNumRows, tolerance);
+                                                        myReps, freqsExpanded, bLower, userNumRows);
             }
         }
         
-        bool bUserRows = bLower || bUpper;
+        bool bUserRows = bUpper;
         
-        if (mainFun == "sum" && compFunVec[0] == "==" && !IsMultiset && n > 1 && m > 1) {
+        if (compFunVec[0] == "==" && mainFun == "sum" && !IsMultiset && n > 1 && m > 1) {
             std::vector<double> pTest(vNum.cbegin(), vNum.cend());
             std::sort(pTest.begin(), pTest.end());
             const double tarDiff = pTest[1] - pTest[0];
@@ -786,11 +789,11 @@ SEXP CombinatoricsRcpp(SEXP Rv, SEXP Rm, SEXP RisRep, SEXP RFreqs, SEXP Rlow,
         
         if (IsInteger) {
             return CombinatoricsConstraints<Rcpp::IntegerMatrix>(n, m, vInt, IsRepetition, mainFun, compFunVec, targetIntVals,
-                                                                 userNumRows, IsComb, keepRes, myReps, IsMultiset, tolerance, bUserRows);
+                                                                 userNumRows, IsComb, keepRes, myReps, IsMultiset, bUserRows);
         }
         
         return CombinatoricsConstraints<Rcpp::NumericMatrix>(n, m, vNum, IsRepetition, mainFun, compFunVec, targetVals,
-                                                             userNumRows, IsComb, keepRes, myReps, IsMultiset, tolerance, bUserRows);
+                                                             userNumRows, IsComb, keepRes, myReps, IsMultiset, bUserRows);
     } else {
         bool applyFun = !Rf_isNull(stdFun) && !IsFactor;
 
