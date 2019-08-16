@@ -5,6 +5,7 @@
 #include "Permutations.h"
 #include "ComboResults.h"
 #include "PermuteResults.h"
+#include "GeneralPartitions.h"
 
 const std::vector<std::string> compForms = {"<", ">", "<=", ">=", "==", "=<", "=>"};
 const std::vector<std::string> compSpecial = {"==", ">,<", ">=,<", ">,<=", ">=,<="};
@@ -53,7 +54,7 @@ typeRcpp SpecCaseRet(int n, int m, std::vector<typeVector> v, bool IsRep, int nR
                      bool keepRes, std::vector<int> z, double lower, std::string mainFun, 
                      bool IsMult, double computedRows, std::vector<std::string> compFunVec,
                      std::vector<typeVector> targetVals, bool IsComb, std::vector<int> myReps,
-                     std::vector<int> freqs, bool bLower, double userRows, double tol) {
+                     std::vector<int> freqs, bool bLower, double userRows) {
     
     if (!bLower) {
         if (computedRows > std::numeric_limits<int>::max())
@@ -69,7 +70,6 @@ typeRcpp SpecCaseRet(int n, int m, std::vector<typeVector> v, bool IsRep, int nR
     Rcpp::XPtr<funcPtr<typeVector>> xpFun = putFunPtrInXPtr<typeVector>(mainFun);
     funcPtr<typeVector> myFun = *xpFun;
     typeRcpp matRes = Rcpp::no_init_matrix(nRows, m + 1);
-    typeVector testVal;
     
     // We pass keepRes = true (second true) as we need the results to determine which
     // results are within the constraint. The actual value of keepRes is utilized
@@ -86,7 +86,7 @@ typeRcpp SpecCaseRet(int n, int m, std::vector<typeVector> v, bool IsRep, int nR
     
     if (compFunVec.size() == 1) {
         for (int i = 0; i < nRows; ++i) {
-            testVal = matRes(i, m);
+            const typeVector testVal = matRes(i, m);
             
             if (myComp(testVal, targetVals))
                 indexMatch.push_back(i);
@@ -98,10 +98,9 @@ typeRcpp SpecCaseRet(int n, int m, std::vector<typeVector> v, bool IsRep, int nR
         targetVals2.erase(targetVals2.begin());
         
         for (int i = 0; i < nRows; ++i) {
-            testVal = matRes(i, m);
-            bool Success = myComp(testVal, targetVals) || myComp2(testVal, targetVals2);
+            const typeVector testVal = matRes(i, m);
             
-            if (Success)
+            if (myComp(testVal, targetVals) || myComp2(testVal, targetVals2))
                 indexMatch.push_back(i);
         }
     }
@@ -124,6 +123,116 @@ typeRcpp SpecCaseRet(int n, int m, std::vector<typeVector> v, bool IsRep, int nR
     return returnMatrix;
 }
 
+template <typename typeVector>
+inline void BruteNextElem(int &ind, int lowBnd, typeVector targetMin, typeVector targetMax,
+                          typeVector partial, std::size_t uR, const std::vector<typeVector> &v,
+                          partialPtr<typeVector> partialFun) {
+    
+    typeVector dist = targetMax - partialFun(partial, v[ind], uR);
+    int origInd = ind;
+    
+    while (ind > lowBnd && dist < 0) {
+        --ind;
+        dist = targetMax - partialFun(partial, v[ind], uR);
+    }
+    
+    if ((targetMin - partialFun(partial, v[ind], uR)) > 0 && origInd != ind) {++ind;}
+}
+
+template <typename typeVector>
+typeVector PartialReduce(std::size_t uR, typeVector partial, 
+                         typeVector w, std::string myFun) {
+    
+    if (myFun == "prod") {
+        partial /= w;
+    } else if (myFun == "sum") {
+        partial -= w;
+    } else if (myFun == "mean") {
+        partial = (partial * static_cast<double>(uR) - w) / static_cast<double>(uR - 1);
+    }
+    
+    return partial;
+}
+
+template <typename typeVector>
+int GetLowerBound(int n, int r, std::vector<typeVector> &v, bool isRep, bool isMult,
+                  std::vector<int> &z, std::vector<int> &freqs, std::vector<typeVector> targetVals,
+                  const std::vector<int> &Reps, funcPtr<typeVector> constraintFun,
+                  partialPtr<typeVector> partialFun, std::string myFun) {
+    
+    const int lastElem = n - 1;
+    const int lastCol = r - 1;
+    const std::size_t uR = r;
+    
+    std::vector<typeVector> vPass(r);
+    const typeVector targetMin = *std::min_element(targetVals.cbegin(), targetVals.cend());
+    const typeVector targetMax = *std::max_element(targetVals.cbegin(), targetVals.cend());
+    
+    if (isRep) {
+        std::fill(vPass.begin(), vPass.end(), v.back());
+    } else if (isMult) {
+        const int lenMinusR = freqs.size() - r;
+        
+        for (int i = freqs.size() - 1, j = 0; i >= lenMinusR; --i, ++j)
+            vPass[j] = v[freqs[i]];
+    } else {
+        vPass.assign(v.crbegin(), v.crbegin() + r);
+    }
+    
+    typeVector partial = constraintFun(vPass, uR - 1);
+    const typeVector testMax = partialFun(partial, vPass.back(), uR);
+    if (testMax < targetMin)  {return Partitions::noSoln;}
+
+    if (isRep) {
+        std::fill(vPass.begin(), vPass.end(), v[0]);
+    } else if (isMult) {
+        for (int i = 0; i < r; ++i)
+            vPass[i] = v[freqs[i]];
+    } else {
+        vPass.assign(v.cbegin(), v.cbegin() + r);
+    }
+
+    const typeVector testMin = constraintFun(vPass, uR);
+    if (testMin > targetMax)  {return Partitions::noSoln;}
+
+    int zExpCurrPos = (isMult) ? freqs.size() - r : 0;
+    int currPos = (isMult) ? freqs[zExpCurrPos] : ((isRep) ? lastElem : (n - r));
+    int ind = currPos;
+
+    int lowBnd = 0;
+    std::vector<int> repsCounter;
+    
+    if (isMult)
+        repsCounter.assign(Reps.cbegin(), Reps.cend());
+    
+    for (int i = 0; i < lastCol; ++i) {
+        BruteNextElem(ind, lowBnd, targetMin, targetMax, partial, uR, v, partialFun);
+        z[i] = ind;
+        partial = partialFun(partial, v[ind], uR);
+        
+        if (isMult) {
+            --repsCounter[ind];
+            
+            if (repsCounter[ind] == 0)
+                ++ind;
+            
+            ++zExpCurrPos;
+            currPos = freqs[zExpCurrPos];
+        } else if (!isRep) {
+            ++ind;
+            ++currPos;
+        }
+        
+        lowBnd = ind;
+        ind = currPos;
+        partial = PartialReduce(r, partial, v[currPos], myFun);
+    }
+
+    BruteNextElem(ind, lowBnd, targetMin, targetMax, partial, uR, v, partialFun);
+    z[lastCol] = ind;
+    return Partitions::solnExists;
+}
+
 // This function applys a constraint function to a vector v with respect
 // to a constraint value "target". The main idea is that combinations are added
 // successively, until a particular combination exceeds the given constraint
@@ -131,9 +240,10 @@ typeRcpp SpecCaseRet(int n, int m, std::vector<typeVector> v, bool IsRep, int nR
 // several combinations knowing that they will exceed the given constraint value.
 
 template <typename typeRcpp, typename typeVector>
-typeRcpp CombinatoricsConstraints(int n, int r, std::vector<typeVector> &v, bool isRep, std::string myFun,
-                                  std::vector<std::string> comparison, std::vector<typeVector> targetVals, double numRows,
-                                  bool isComb, bool xtraCol, std::vector<int> &Reps, bool isMult, double tol, bool bUserRows) {
+typeRcpp CombinatoricsConstraints(int n, int r, std::vector<typeVector> &v, bool isRep, 
+                                  std::string myFun, std::vector<std::string> comparison,
+                                  std::vector<typeVector> targetVals, double numRows, bool isComb,
+                                  bool xtraCol, std::vector<int> &Reps, bool isMult, bool bUserRows) {
     
     // myFun is one of the following general functions: "prod", "sum", "mean", "min", or "max";
     // The comparison vector is a comparison operator: 
@@ -141,9 +251,11 @@ typeRcpp CombinatoricsConstraints(int n, int r, std::vector<typeVector> &v, bool
     
     typeVector testVal;
     std::size_t count = 0;
+    const bool partitionEsque = (comparison[0] == "==" && n > 1 && r > 1 && myFun != "max" && myFun != "min");
     const std::size_t maxRows = std::min(static_cast<double>(std::numeric_limits<int>::max()), numRows);
     
     const std::size_t uR = r;
+    const std::size_t uR1 = r - 1;
     std::vector<typeVector> combinatoricsVec;
     std::vector<typeVector> resultsVec;
     
@@ -154,6 +266,9 @@ typeRcpp CombinatoricsConstraints(int n, int r, std::vector<typeVector> &v, bool
     
     Rcpp::XPtr<funcPtr<typeVector>> xpFun = putFunPtrInXPtr<typeVector>(myFun);
     funcPtr<typeVector> constraintFun = *xpFun;
+    
+    Rcpp::XPtr<partialPtr<typeVector>> xpPartial = putPartialPtrInXPtr<typeVector>(myFun);
+    partialPtr<typeVector> partialFun = *xpPartial;
     
     for (std::size_t nC = 0; nC < comparison.size(); ++nC) {
         
@@ -202,288 +317,312 @@ typeRcpp CombinatoricsConstraints(int n, int r, std::vector<typeVector> &v, bool
             }
         }
         
-        std::vector<int> z, zCheck;
+        std::vector<int> z(r);
         std::vector<typeVector> testVec(r);
-        bool t_1, t_2, t = true, keepGoing = true;
-        int numIter, myStart, maxZ = n - 1;
+        bool t_0 = true;
+        bool t_1 = true;
+        int myStart, maxZ = n - 1;
         const int r1 = r - 1;
         const int r2 = r - 2;
         
-        if (isMult) {
-            int zExpSize = std::accumulate(Reps.cbegin(), Reps.cend(), 0);
-            std::vector<int> zExpand, zIndex, zGroup(r), zPerm(r);
+        if (r == 1) {
+            int ind = 0;
+            testVal = v[ind];
+            t_0 = comparisonFunTwo(testVal, targetVals);
             
-            for (int i = 0, k = 0; i < n; ++i) {
-                zIndex.push_back(k);
+            while (t_0 && t_1) {
+                if (comparisonFunOne(testVal, targetVals)) {
+                    for (int k = 0; k < r; ++k)
+                        combinatoricsVec.push_back(v[ind]);
+                    
+                    ++count;
+                    
+                    if (xtraCol)
+                        resultsVec.push_back(testVal);
+                    
+                    t_1 =  (count < maxRows);
+                }
                 
-                for (int j = 0; j < Reps[i]; ++j, ++k)
-                    zExpand.push_back(i);
+                t_0 = ind != maxZ;
+                
+                if (t_0) {
+                    ++ind;
+                    testVal = v[ind];
+                    t_0 = comparisonFunTwo(testVal, targetVals);
+                }
             }
-            
-            z.assign(zExpand.cbegin(), zExpand.cbegin() + r);
-            
-            while (keepGoing) {
+        } else {
+        
+            if (isMult) {
+                int zExpSize = std::accumulate(Reps.cbegin(), Reps.cend(), 0);
+                std::vector<int> zExpand, zIndex, zGroup(r), zPerm(r);
                 
-                t_2 = true;
-                for (int i = 0; i < r; ++i)
-                    testVec[i] = v[zExpand[zIndex[z[i]]]];
-                
-                testVal = constraintFun(testVec, uR);
-                t = comparisonFunTwo(testVal, targetVals);
-                
-                while (t && t_2 && keepGoing) {
+                for (int i = 0, k = 0; i < n; ++i) {
+                    zIndex.push_back(k);
                     
-                    testVal = constraintFun(testVec, uR);
-                    t_1 = comparisonFunOne(testVal, targetVals);
+                    for (int j = 0; j < Reps[i]; ++j, ++k)
+                        zExpand.push_back(i);
+                }
+                
+                if (partitionEsque) {
+                    t_1 = GetLowerBound<typeVector>(n, r, v, isRep, isMult, z, zExpand, 
+                                                    targetVals, Reps, constraintFun, partialFun, myFun);
+                } else {
+                    z.assign(zExpand.cbegin(), zExpand.cbegin() + r);
+                }
+                
+                while (t_1) {
+                    for (int i = 0; i < r; ++i)
+                        testVec[i] = v[zExpand[zIndex[z[i]]]];
                     
-                    if (t_1) {
-                        myStart = count;
-                        
-                        if (isComb) {
-                            for (int k = 0; k < r; ++k)
-                                combinatoricsVec.push_back(v[zExpand[zIndex[z[k]]]]);
+                    const typeVector partialVal = constraintFun(testVec, uR1);
+                    testVal = partialFun(partialVal, testVec.back(), uR);
+                    t_0 = comparisonFunTwo(testVal, targetVals);
+                    
+                    while (t_0 && t_1) {
+                        if (comparisonFunOne(testVal, targetVals)) {
+                            myStart = count;
                             
-                            ++count;
-                        } else {
-                            for (int k = 0; k < r; ++k)
-                                zPerm[k] = zExpand[zIndex[z[k]]];
-                            
-                            numIter = static_cast<int>(NumPermsWithRep(zPerm));
-                            
-                            if ((numIter + count) > maxRows)
-                                numIter = maxRows - count;
-                            
-                            for (int i = 0; i < numIter; ++i) {
+                            if (isComb) {
                                 for (int k = 0; k < r; ++k)
-                                    combinatoricsVec.push_back(v[zPerm[k]]);
+                                    combinatoricsVec.push_back(v[zExpand[zIndex[z[k]]]]);
                                 
-                                std::next_permutation(zPerm.begin(), zPerm.end());
+                                ++count;
+                            } else {
+                                for (int k = 0; k < r; ++k)
+                                    zPerm[k] = zExpand[zIndex[z[k]]];
+                                
+                                do {
+                                    for (int k = 0; k < r; ++k)
+                                        combinatoricsVec.push_back(v[zPerm[k]]);
+                                    
+                                    ++count;
+                                } while (std::next_permutation(zPerm.begin(), zPerm.end()) && count < maxRows);
                             }
                             
-                            count += numIter;
+                            if (xtraCol)
+                                for (std::size_t i = myStart; i < count; ++i)
+                                    resultsVec.push_back(testVal);
+                            
+                            t_1 = count < maxRows;
                         }
                         
-                        if (xtraCol)
-                            for (std::size_t i = myStart; i < count; ++i)
-                                resultsVec.push_back(testVal);
-                    }
-                    
-                    keepGoing = (count < maxRows);
-                    t_2 = (z[r1] != maxZ);
-                    
-                    if (t_2) {
-                        ++z[r1];
-                        testVec[r1] = v[zExpand[zIndex[z[r1]]]];
-                        testVal = constraintFun(testVec, uR);
-                        t = comparisonFunTwo(testVal, targetVals);
-                    }
-                }
-                
-                if (keepGoing) {
-                    zCheck = z;
-                    for (int i = r2; i >= 0; --i) {
-                        if (zExpand[zIndex[z[i]]] != zExpand[zExpSize - r + i]) {
-                            ++z[i];
-                            testVec[i] = v[zExpand[zIndex[z[i]]]];
-                            zGroup[i] = zIndex[z[i]];
-                            
-                            for (int k = (i+1); k < r; ++k) {
-                                zGroup[k] = zGroup[k-1] + 1;
-                                z[k] = zExpand[zGroup[k]];
-                                testVec[k] = v[zExpand[zIndex[z[k]]]];
-                            }
-                            
-                            testVal = constraintFun(testVec, uR);
-                            t = comparisonFunTwo(testVal, targetVals);
-                            if (t) {break;}
+                        t_0 = z[r1] != maxZ;
+                        
+                        if (t_0) {
+                            ++z[r1];
+                            testVec[r1] = v[zExpand[zIndex[z[r1]]]];
+                            testVal = partialFun(partialVal, testVec.back(), uR);
+                            t_0 = comparisonFunTwo(testVal, targetVals);
                         }
                     }
-                    
-                    if (!t || zCheck == z) {keepGoing = false;}
-                }
-            }
-            
-        } else if (isRep) {
-            
-            v.erase(std::unique(v.begin(), v.end()), v.end());
-            z.assign(r, 0);
-            maxZ = static_cast<int>(v.size()) - 1;
-            
-            while (keepGoing) {
-                
-                t_2 = true;
-                for (int i = 0; i < r; ++i)
-                    testVec[i] = v[z[i]];
-                
-                testVal = constraintFun(testVec, uR);
-                t = comparisonFunTwo(testVal, targetVals);
-                
-                while (t && t_2 && keepGoing) {
-                    
-                    testVal = constraintFun(testVec, uR);
-                    t_1 = comparisonFunOne(testVal, targetVals);
                     
                     if (t_1) {
-                        myStart = count;
+                        bool noChange = true;
                         
-                        if (isComb) {
-                            for (int k = 0; k < r; ++k)
-                                combinatoricsVec.push_back(v[z[k]]);
+                        for (int i = r2; i >= 0; --i) {
+                            if (zExpand[zIndex[z[i]]] != zExpand[zExpSize - r + i]) {
+                                ++z[i];
+                                testVec[i] = v[zExpand[zIndex[z[i]]]];
+                                zGroup[i] = zIndex[z[i]];
+                                
+                                for (int k = (i+1); k < r; ++k) {
+                                    zGroup[k] = zGroup[k-1] + 1;
+                                    z[k] = zExpand[zGroup[k]];
+                                    testVec[k] = v[zExpand[zIndex[z[k]]]];
+                                }
+                                
+                                testVal = constraintFun(testVec, uR);
+                                t_0 = comparisonFunTwo(testVal, targetVals);
+                                noChange = false;
+                                if (t_0) {break;}
+                            }
+                        }
+                        
+                        t_1 = (!noChange && t_0);
+                    }
+                }
+                
+            } else if (isRep) {
+                
+                v.erase(std::unique(v.begin(), v.end()), v.end());
+                maxZ = static_cast<int>(v.size()) - 1;
+                
+                if (partitionEsque) {
+                    std::vector<int> trivialFreqs;
+                    t_1 = GetLowerBound<typeVector>(n, r, v, isRep, isMult, z, trivialFreqs, 
+                                                    targetVals, Reps, constraintFun, partialFun, myFun);
+                } else {
+                    z.assign(r, 0);
+                }
+                
+                while (t_1) {
+                    for (int i = 0; i < r; ++i)
+                        testVec[i] = v[z[i]];
+                    
+                    const typeVector partialVal = constraintFun(testVec, uR1);
+                    testVal = partialFun(partialVal, testVec.back(), uR);
+                    t_0 =comparisonFunTwo(testVal, targetVals);
+                    
+                    while (t_0 && t_1) {
+                        if (comparisonFunOne(testVal, targetVals)) {
+                            myStart = count;
                             
-                            ++count;
-                        } else {
-                            numIter = static_cast<int>(NumPermsWithRep(z));
-                            
-                            if ((numIter + count) > maxRows)
-                                numIter = maxRows - count;
-                            
-                            for (int i = 0; i < numIter; ++i) {
+                            if (isComb) {
                                 for (int k = 0; k < r; ++k)
                                     combinatoricsVec.push_back(v[z[k]]);
                                 
-                                std::next_permutation(z.begin(), z.end());
+                                ++count;
+                            } else {
+                                do {
+                                    for (int k = 0; k < r; ++k)
+                                        combinatoricsVec.push_back(v[z[k]]);
+                                    
+                                    ++count;
+                                } while (std::next_permutation(z.begin(), z.end()) && count < maxRows);
                             }
                             
-                            count += numIter;
+                            if (xtraCol)
+                                for (std::size_t i = myStart; i < count; ++i)
+                                    resultsVec.push_back(testVal);
+                            
+                            t_1 = count < maxRows;
                         }
                         
-                        if (xtraCol)
-                            for (std::size_t i = myStart; i < count; ++i)
-                                resultsVec.push_back(testVal);
+                        t_0 = z[r1] != maxZ;
                         
-                        keepGoing = (count < maxRows);
-                    }
-                    
-                    t_2 = (z[r1] != maxZ);
-                    
-                    if (t_2) {
-                        ++z[r1];
-                        testVec[r1] = v[z[r1]];
-                        testVal = constraintFun(testVec, uR);
-                        t = comparisonFunTwo(testVal, targetVals);
-                    }
-                }
-                
-                if (keepGoing) {
-                    zCheck = z;
-                    for (int i = r2; i >= 0; --i) {
-                        if (z[i] != maxZ) {
-                            ++z[i];
-                            testVec[i] = v[z[i]];
-                            
-                            for (int k = (i+1); k < r; ++k) {
-                                z[k] = z[k-1];
-                                testVec[k] = v[z[k]];
-                            }
-                            
-                            testVal = constraintFun(testVec, uR);
-                            t = comparisonFunTwo(testVal, targetVals);
-                            if (t) {break;}
+                        if (t_0) {
+                            ++z[r1];
+                            testVec[r1] = v[z[r1]];
+                            testVal = partialFun(partialVal, testVec.back(), uR);
+                            t_0 = comparisonFunTwo(testVal, targetVals);
                         }
                     }
-                    
-                    if (!t || zCheck == z) {keepGoing = false;}
-                }
-            }
-            
-        } else {
-            
-            for (int i = 0; i < r; ++i)
-                z.push_back(i);
-            
-            const int nMinusR = (n - r);
-            int indexRows = isComb ? 0 : static_cast<int>(NumPermsNoRep(r, r1));
-            auto indexMatrix = std::make_unique<int[]>(indexRows * r);
-            
-            if (!isComb) {
-                indexRows = static_cast<int>(NumPermsNoRep(r, r1));
-                std::vector<int> indexVec(r);
-                std::iota(indexVec.begin(), indexVec.end(), 0);
-                
-                for (int i = 0, myRow = 0; i < indexRows; ++i, myRow += r) {
-                    for (int j = 0; j < r; ++j)
-                        indexMatrix[myRow + j] = indexVec[j];
-                    
-                    std::next_permutation(indexVec.begin(), indexVec.end());
-                }
-            }
-            
-            while (keepGoing) {
-                
-                t_2 = true;
-                for (int i = 0; i < r; ++i)
-                    testVec[i] = v[z[i]];
-                
-                testVal = constraintFun(testVec, uR);
-                t = comparisonFunTwo(testVal, targetVals);
-                
-                while (t && t_2 && keepGoing) {
-                    
-                    testVal = constraintFun(testVec, uR);
-                    t_1 = comparisonFunOne(testVal, targetVals);
                     
                     if (t_1) {
-                        myStart = count;
+                        bool noChange = true;
                         
-                        if (isComb) {
-                            for (int k = 0; k < r; ++k)
-                                combinatoricsVec.push_back(v[z[k]]);
-                            
-                            ++count;
-                        } else {
-                            if (indexRows + count > maxRows)
-                                indexRows = maxRows - count;
+                        for (int i = r2; i >= 0; --i) {
+                            if (z[i] != maxZ) {
+                                ++z[i];
+                                testVec[i] = v[z[i]];
                                 
-                            for (int j = 0, myRow = 0; j < indexRows; ++j, myRow += r)
-                                for (int k = 0; k < r; ++k)
-                                    combinatoricsVec.push_back(v[z[indexMatrix[myRow + k]]]);
-                            
-                            count += indexRows;
+                                for (int k = (i+1); k < r; ++k) {
+                                    z[k] = z[k-1];
+                                    testVec[k] = v[z[k]];
+                                }
+                                
+                                testVal = constraintFun(testVec, uR);
+                                t_0 = comparisonFunTwo(testVal, targetVals);
+                                noChange = false;
+                                if (t_0) {break;}
+                            }
                         }
                         
-                        if (xtraCol)
-                            for (std::size_t i = myStart; i < count; ++i)
-                                resultsVec.push_back(testVal);
-                        
-                        keepGoing = (count < maxRows);
-                    }
-                    
-                    t_2 = (z[r1] != maxZ);
-                    
-                    if (t_2) {
-                        ++z[r1];
-                        testVec[r1] = v[z[r1]];
-                        testVal = constraintFun(testVec, uR);
-                        t = comparisonFunTwo(testVal, targetVals);
+                        t_1 = (!noChange && t_0);
                     }
                 }
                 
-                if (keepGoing) {
-                    zCheck = z;
-                    for (int i = r2; i >= 0; --i) {
-                        if (z[i] != (nMinusR + i)) {
-                            ++z[i];
-                            testVec[i] = v[z[i]];
+            } else {
+                
+                const int nMinusR = (n - r);
+                int indexRows = isComb ? 0 : static_cast<int>(NumPermsNoRep(r, r1));
+                auto indexMatrix = std::make_unique<int[]>(indexRows * r);
+                
+                if (!isComb) {
+                    indexRows = static_cast<int>(NumPermsNoRep(r, r1));
+                    std::vector<int> indexVec(r);
+                    std::iota(indexVec.begin(), indexVec.end(), 0);
+                    
+                    for (int i = 0, myRow = 0; i < indexRows; ++i, myRow += r) {
+                        for (int j = 0; j < r; ++j)
+                            indexMatrix[myRow + j] = indexVec[j];
+                        
+                        std::next_permutation(indexVec.begin(), indexVec.end());
+                    }
+                }
+                
+                if (partitionEsque) {
+                    std::vector<int> trivialFreqs;
+                    t_1 = GetLowerBound<typeVector>(n, r, v, isRep, isMult, z, trivialFreqs, 
+                                                    targetVals, Reps, constraintFun, partialFun, myFun);
+                } else {
+                    std::iota(z.begin(), z.end(), 0);
+                }
+                
+                while (t_1) {
+                    for (int i = 0; i < r; ++i)
+                        testVec[i] = v[z[i]];
+                    
+                    const typeVector partialVal = constraintFun(testVec, uR1);
+                    testVal = partialFun(partialVal, testVec.back(), uR);
+                    t_0 = comparisonFunTwo(testVal, targetVals);
+                    
+                    while (t_0 && t_1) {
+                        if (comparisonFunOne(testVal, targetVals)) {
+                            myStart = count;
                             
-                            for (int k = (i+1); k < r; ++k) {
-                                z[k] = z[k - 1] + 1;
-                                testVec[k] = v[z[k]];
+                            if (isComb) {
+                                for (int k = 0; k < r; ++k)
+                                    combinatoricsVec.push_back(v[z[k]]);
+                                
+                                ++count;
+                            } else {
+                                if (indexRows + count > maxRows)
+                                    indexRows = maxRows - count;
+                                    
+                                for (int j = 0, myRow = 0; j < indexRows; ++j, myRow += r)
+                                    for (int k = 0; k < r; ++k)
+                                        combinatoricsVec.push_back(v[z[indexMatrix[myRow + k]]]);
+                                
+                                count += indexRows;
                             }
                             
-                            testVal = constraintFun(testVec, uR);
-                            t = comparisonFunTwo(testVal, targetVals);
-                            if (t) {break;}
+                            if (xtraCol)
+                                for (std::size_t i = myStart; i < count; ++i)
+                                    resultsVec.push_back(testVal);
+                            
+                            t_1 = count < maxRows;
+                        }
+                        
+                        t_0 = z[r1] != maxZ;
+                        
+                        if (t_0) {
+                            ++z[r1];
+                            testVec[r1] = v[z[r1]];
+                            testVal = partialFun(partialVal, testVec.back(), uR);
+                            t_0 = comparisonFunTwo(testVal, targetVals);
                         }
                     }
                     
-                    if (!t || zCheck == z) {keepGoing = false;}
+                    if (t_1) {
+                        bool noChange = true;
+                        
+                        for (int i = r2; i >= 0; --i) {
+                            if (z[i] != (nMinusR + i)) {
+                                ++z[i];
+                                testVec[i] = v[z[i]];
+                                
+                                for (int k = (i + 1); k < r; ++k) {
+                                    z[k] = z[k - 1] + 1;
+                                    testVec[k] = v[z[k]];
+                                }
+                                
+                                testVal = constraintFun(testVec, uR);
+                                t_0 = comparisonFunTwo(testVal, targetVals);
+                                noChange = false;
+                                if (t_0) {break;}
+                            }
+                        }
+                        
+                        t_1 = (!noChange && t_0);
+                    }
                 }
             }
+            
+            targetVals.erase(targetVals.begin());
         }
-        
-        targetVals.erase(targetVals.begin());
     }
-    
     const int numCols = xtraCol ? (r + 1) : r;
     typeRcpp combinatoricsMatrix = Rcpp::no_init_matrix(count, numCols);
     
