@@ -51,7 +51,7 @@ test_that("comboGeneral produces appropriate error messages", {
     
     expect_error(comboGeneral(5,3,freqs = c(1,2,3,-2,1)), "in freqs must be a positive")
     expect_error(comboGeneral(5,1000,freqs = rep(5000, 5)), "number of rows cannot exceed")
-    expect_error(comboGeneral(5,freqs = rep(1,6)), "the length of freqs must equal the")
+    expect_error(comboGeneral(5,freqs = rep(1,6)), "m must be less than or equal to the length of v")
     
     numR = comboCount(1000, 10, TRUE)
     nextNum = gmp::add.bigz(numR, 1)
@@ -173,7 +173,7 @@ test_that("permuteGeneral produces appropriate error messages", {
     expect_error(permuteGeneral(5,3,freqs = c(1,2,3,-2,1)), "in freqs must be a positive")
     expect_error(permuteGeneral(5,15,freqs = c(5,5,5,5,5)), "number of rows cannot exceed")
     expect_error(permuteGeneral(5,freqs = c(5,5,5,5,5)), "number of rows cannot exceed")
-    expect_error(permuteGeneral(5,freqs = rep(1,6)), "the length of freqs must equal the")
+    expect_error(permuteGeneral(5,freqs = rep(1,6)), "m must be less than or equal to the length of v")
     
     numR <- permuteCount(1000, 10, TRUE)
     nextNum <- gmp::add.bigz(numR, 1)
@@ -233,7 +233,7 @@ test_that("comboSample produces appropriate error messages", {
     expect_error(comboSample(5,3,freqs = c(1,2,3,-2,1)), "in freqs must be a positive")
     expect_error(comboSample(5,3, n = 100), "n exceeds the maximum number of possible results")
     expect_error(comboSample(5,3, comboSample(5,3, sampleVec = 1:200)), "exceeds the maximum number of possible results")
-    expect_error(comboSample(5,freqs = rep(1,6)), "the length of freqs must equal the")
+    expect_error(comboSample(5,freqs = rep(1,6)), "m must be less than or equal to the length of v")
     expect_error(comboSample(5,3, n = 5, FUN = "sum"), "FUN must be a function!")
     expect_error(comboSample(5,3, n = "5"), "n must be of type numeric or integer")
     expect_error(comboSample(5,3, n = 1:5), "length of n must be 1")
@@ -268,7 +268,7 @@ test_that("permuteSample produces appropriate error messages", {
     expect_error(permuteSample(5,3, n = 1:5), "length of n must be 1")
     expect_error(permuteSample(5,3, permuteSample(5,3, sampleVec = 1:200)), 
                  "exceeds the maximum number of possible results")
-    expect_error(permuteSample(5,freqs = rep(1,6)), "the length of freqs must equal the")
+    expect_error(permuteSample(5,freqs = rep(1,6)), "m must be less than or equal to the length of v")
     expect_error(permuteSample(5, 4, sampleVec = "adfs"), 
                  "sampleVec must be a positive whole number")
     expect_error(permuteSample(5, 4, sampleVec = 1.1), 
