@@ -9,7 +9,8 @@ test_that("primeSieve generates correct numbers", {
     expect_equal(primeSieve(2), 2L)
     
     expect_equal(primeSieve(6,8), 7)
-    expect_equal(primeSieve(999982,10^6), 999983)
+    expect_equal(primeSieve(999982, 10^6), 999983)
+    expect_equal(primeSieve(1e10, 1e10 + 20), 10000000019)
     expect_equal(primeSieve(2, 7), c(2, 3, 5, 7))
     
     expect_equal(primeSieve(10.1), primeSieve(10))
