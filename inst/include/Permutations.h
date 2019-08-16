@@ -184,7 +184,7 @@ void PermuteSerialDriver(std::size_t n, std::size_t r, typeVector v, bool IsRep,
         PermuteWorker(r, IsRep, v, indexMat.get(), permuteMatrix, start, last, ind, first, unrollRem);
     }
     
-    if (ind < v.size() && start < uRowN) {
+    if (ind < static_cast<std::size_t>(v.size()) && start < uRowN) {
         const std::size_t skip = last - uRowN;
         unrollRem = uRowN % unrollSize;
         const std::size_t lastUnroll = uRowN - unrollRem;

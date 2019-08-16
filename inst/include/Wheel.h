@@ -14,7 +14,7 @@ constexpr int_fast64_t Almost210L1Cache = 32760;
 constexpr int_fast64_t Almost2310L1Cache = 32340;
 
 // This is 1 plus the maximum prime used in the wheel (i.e. 11)
-constexpr std::size_t wheel2310PrimeLim = 12u;
+constexpr int_fast64_t wheel2310PrimeLim = 12;
 
 constexpr std::size_t NUM210 = 210u;     //2 * 3 * 5 * 7
 constexpr std::size_t NUM2310 = 2310u;   //2 * 3 * 5 * 7 * 11
