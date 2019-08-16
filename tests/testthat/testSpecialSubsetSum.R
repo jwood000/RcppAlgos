@@ -5,11 +5,11 @@ test_that("comboGeneral produces correct results for special subset sum", {
     # comparisonFun = '==', and with v having the property that if you were to
     # sort v, the difference of each element with it's neighbor is constant.
     
-    testFun <- function(v, m, myRep = FALSE, verbose = FALSE) {
+    testFun <- function(v, m, myRep = FALSE, verbose = FALSE, f = "sum", isExact = TRUE) {
         v <- sort(v)
-        allSums <- comboGeneral(v, m, myRep, constraintFun = "sum")
+        allSums <- comboGeneral(v, m, myRep, constraintFun = f)
         n <- length(v)
-        tbl <- table(allSums[,(m+1)])
+        tbl <- table(allSums[, m + 1])
         possVals <- as.numeric(names(tbl))
         
         if (verbose) {
@@ -17,12 +17,20 @@ test_that("comboGeneral produces correct results for special subset sum", {
             print(tbl)
         }
         
+        ## Credit to Johan Larsson: https://stackoverflow.com/a/39175037/4408538
+        is_equal_tol <- function(x, y, tol = sqrt(.Machine$double.eps)) {
+            abs(x - y) < tol
+        }
+        
         t <- sapply(possVals, function(x) {
             t <- comboGeneral(v, m, myRep,
-                              constraintFun = "sum", 
+                              constraintFun = f, 
                               comparisonFun = "==",
                               limitConstraints = x)
-            u <- allSums[allSums[, m + 1] == x, 1:m]
+            if (isExact)
+                u <- allSums[allSums[, m + 1] == x, 1:m]
+            else
+                u <- allSums[which(is_equal_tol(allSums[, m + 1], x)), 1:m]
             
             if (nrow(t) > 1) {
                 identical(t, u)
@@ -71,6 +79,51 @@ test_that("comboGeneral produces correct results for special subset sum", {
     expect_true(testFun(seq(-100L, 300L, 100L), 10, myRep = TRUE))
     expect_true(testFun(seq(1e10, 1e10 + 500, 100), 10, myRep = TRUE))
     expect_true(testFun(seq(-1e10 - 500, -1e10, 100), 10, myRep = TRUE))
+    
+    ## Irregular vector input... i.e. the distance between neighbors varies
+    ## This will test the BruteNextElem and main constraint functions
+    p <- as.integer(c(2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41))
+    expect_true(testFun(p, 1))
+    expect_true(testFun(p, 2))
+    expect_true(testFun(p, 7))
+    expect_true(testFun(p, 13))
+    
+    pN <- as.numeric(p)
+    expect_true(testFun(pN, 1))
+    expect_true(testFun(pN, 2))
+    expect_true(testFun(pN, 7))
+    expect_true(testFun(pN, 13))
+    
+    expect_true(testFun(p, 1, f = "prod"))
+    expect_true(testFun(p, 2, f = "prod"))
+    expect_true(testFun(p, 6, f = "prod"))
+    
+    expect_true(testFun(p, 1, f = "mean", isExact = F))
+    expect_true(testFun(p, 2, f = "mean", isExact = F))
+    expect_true(testFun(p, 7, f = "mean", isExact = F))
+    expect_true(testFun(p, 13, f = "mean", isExact = F))
+    
+    pS <- p[1:6]
+    expect_true(testFun(pS, 1, T))
+    expect_true(testFun(pS, 2, T))
+    expect_true(testFun(pS, 6, T))
+    expect_true(testFun(pS, 8, T))
+    
+    pNS <- as.numeric(pS)
+    expect_true(testFun(pNS, 1, T))
+    expect_true(testFun(pNS, 2, T))
+    expect_true(testFun(pNS, 6, T))
+    expect_true(testFun(pNS, 8, T))
+    
+    expect_true(testFun(pS, 1, T, f = "prod"))
+    expect_true(testFun(pS, 2, T, f = "prod"))
+    expect_true(testFun(pS, 6, T, f = "prod"))
+    expect_true(testFun(pS, 7, T, f = "prod"))
+    
+    expect_true(testFun(pS, 1, T, f = "mean", isExact = F))
+    expect_true(testFun(pS, 2, T, f = "mean", isExact = F))
+    expect_true(testFun(pS, 6, T, f = "mean", isExact = F))
+    expect_true(testFun(pS, 8, T, f = "mean", isExact = F))
     
     ## Standard partitions into k parts
     tempCombs <- comboGeneral(15, 6, TRUE, constraintFun = "sum")
@@ -137,6 +190,72 @@ test_that("comboGeneral produces correct results for special subset sum", {
                                    comparisonFun = "==", 
                                    limitConstraints = 10,
                                    upper = 3)), 3)
+    
+    testMultiset <- function(v, m, frqs, verbose = FALSE, f = "sum", isExact = TRUE) {
+        v <- sort(v)
+        allSums <- comboGeneral(v, m, freqs = frqs, constraintFun = f)
+        n <- length(v)
+        tbl <- table(allSums[, m + 1])
+        possVals <- as.numeric(names(tbl))
+        
+        if (verbose) {
+            print(possVals)
+            print(tbl)
+        }
+        
+        ## Credit to Johan Larsson: https://stackoverflow.com/a/39175037/4408538
+        is_equal_tol <- function(x, y, tol = sqrt(.Machine$double.eps)) {
+            abs(x - y) < tol
+        }
+        
+        t <- sapply(possVals, function(x) {
+            t <- comboGeneral(v, m, freqs = frqs,
+                              constraintFun = f, 
+                              comparisonFun = "==",
+                              limitConstraints = x)
+            if (isExact)
+                u <- allSums[allSums[, m + 1] == x, 1:m]
+            else
+                u <- allSums[which(is_equal_tol(allSums[, m + 1], x)), 1:m]
+            
+            if (nrow(t) > 1) {
+                identical(t, u)
+            } else {
+                identical(as.vector(t), u)
+            }
+        })
+        
+        if (verbose)
+            print(t)
+        
+        all(t)
+    }
+    
+    pS <- as.integer(c(2, 3, 5, 7, 11, 13))
+    expect_true(testMultiset(pS, 1, frqs = 1:6))
+    expect_true(testMultiset(pS, 2, frqs = 1:6))
+    expect_true(testMultiset(pS, 6, frqs = 1:6))
+    expect_true(testMultiset(pS, 8, frqs = 1:6))
+    
+    ## This is equivalent to combinations without rep
+    expect_true(testMultiset(pS, 1, frqs = rep(1, 6)))
+    expect_true(testMultiset(pS, 2, frqs = rep(1, 6)))
+    expect_true(testMultiset(pS, 6, frqs = rep(1, 6)))
+    
+    pNS <- as.numeric(pS)
+    expect_true(testMultiset(pNS, 1, frqs = 1:6))
+    expect_true(testMultiset(pNS, 2, frqs = 1:6))
+    expect_true(testMultiset(pNS, 6, frqs = 1:6))
+    expect_true(testMultiset(pNS, 8, frqs = 1:6))
+    
+    expect_true(testMultiset(pS, 1, frqs = 1:6, f = "prod"))
+    expect_true(testMultiset(pS, 2, frqs = 1:6, f = "prod"))
+    expect_true(testMultiset(pS, 7, frqs = 1:6, f = "prod"))
+    
+    expect_true(testMultiset(pS, 1, frqs = 1:6, f = "mean", isExact = F))
+    expect_true(testMultiset(pS, 2, frqs = 1:6, f = "mean", isExact = F))
+    expect_true(testMultiset(pS, 6, frqs = 1:6, f = "mean", isExact = F))
+    expect_true(testMultiset(pS, 8, frqs = 1:6, f = "mean", isExact = F))
 })
 
 test_that("permuteGeneral produces correct results for special subset sum", {
@@ -144,7 +263,7 @@ test_that("permuteGeneral produces correct results for special subset sum", {
         v <- sort(v)
         allSums <- permuteGeneral(v, m, myRep, constraintFun = "sum")
         n <- length(v)
-        tbl <- table(allSums[,(m+1)])
+        tbl <- table(allSums[, m + 1])
         possVals <- as.numeric(names(tbl))
         
         if (verbose) {
