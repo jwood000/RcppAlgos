@@ -120,14 +120,16 @@ SEXP SampleRcpp(SEXP Rv, SEXP Rm, SEXP Rrepetition, SEXP RFreqs, SEXP RindexVec,
                 Rcpp::Function baseSample, SEXP stdFun, SEXP myEnv, 
                 SEXP Rparallel, SEXP RNumThreads, int maxThreads) {
     
-    int n, m1, m2, m = 0, lenFreqs = 0;
+    int n, m = 0, lenFreqs = 0;
     bool IsMultiset, IsInteger, IsCharacter, IsLogical;
     IsCharacter = IsInteger = IsLogical = false;
     
-    bool Parallel = CleanConvert::convertLogical(Rparallel, "Parallel");
     std::vector<double> vNum;
     std::vector<int> vInt, myReps, freqsExpanded;
     Rcpp::CharacterVector rcppChar;
+    
+    bool IsRepetition = CleanConvert::convertLogical(Rrepetition, "repetition");
+    bool Parallel = CleanConvert::convertLogical(Rparallel, "Parallel");
     
     switch(TYPEOF(Rv)) {
         case LGLSXP: {
@@ -155,17 +157,25 @@ SEXP SampleRcpp(SEXP Rv, SEXP Rm, SEXP Rrepetition, SEXP RFreqs, SEXP RindexVec,
         IsMultiset = false;
         myReps.push_back(1);
     } else {
-        IsMultiset = true;
+        IsRepetition = false;
         CleanConvert::convertVector(RFreqs, myReps, "freqs");
+        int testTrivial = std::accumulate(myReps.cbegin(), myReps.cend(), 0);
         lenFreqs = static_cast<int>(myReps.size());
         
-        for (int i = 0; i < lenFreqs; ++i)
-            for (int j = 0; j < myReps[i]; ++j)
-                freqsExpanded.push_back(i);
+        if (testTrivial > lenFreqs) {
+            IsMultiset = true;
+            
+            for (int i = 0; i < lenFreqs; ++i)
+                for (int j = 0; j < myReps[i]; ++j)
+                    freqsExpanded.push_back(i);
+        } else {
+            IsMultiset = false;
+            freqsExpanded = myReps;
+        }
     }
     
     if (Rf_isNull(Rm)) {
-        if (IsMultiset) {
+        if (!freqsExpanded.empty()) {
             m = freqsExpanded.size();
         } else {
             Rcpp::stop("m and freqs cannot both be NULL");
@@ -177,8 +187,6 @@ SEXP SampleRcpp(SEXP Rv, SEXP Rm, SEXP Rrepetition, SEXP RFreqs, SEXP RindexVec,
         CleanConvert::convertPrimitive(Rm, m, "m");
     }
     
-    bool IsRepetition = CleanConvert::convertLogical(Rrepetition, "repetition");
-    
     if (IsCharacter) {
         rcppChar = Rcpp::as<Rcpp::CharacterVector>(Rv);
         n = rcppChar.size();
@@ -187,7 +195,7 @@ SEXP SampleRcpp(SEXP Rv, SEXP Rm, SEXP Rrepetition, SEXP RFreqs, SEXP RindexVec,
         n = vInt.size();
     } else {
         if (Rf_length(Rv) == 1) {
-            int seqEnd;             // numOnly = true, checkWhole = true, negPoss = true
+            int seqEnd, m1, m2;             // numOnly = true, checkWhole = true, negPoss = true
             CleanConvert::convertPrimitive(Rv, seqEnd, "If v is not a character and of length 1, it", true, true, true);
             if (seqEnd > 1) {m1 = 1; m2 = seqEnd;} else {m1 = seqEnd; m2 = 1;}
             Rcpp::IntegerVector vTemp = Rcpp::seq(m1, m2);
