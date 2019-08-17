@@ -48,17 +48,17 @@ system.time(parCombsSum <- comboGeneral(30, 10, constraintFun = "sum", Parallel 
 * Generates all primes less than a **billion in under 0.5 seconds.**
 
 ``` r
-system.time(b <- primeSieve(10^9, nThreads = 8))
+system.time(primeSieve(10^9, nThreads = 8))
  user  system elapsed 
-2.339   0.047   0.418
+2.033   0.045   0.374
 ```
 
 * It is also efficient for large numbers by using the cache friendly improvements originally developed by [Tomás Oliveira](<http://sweet.ua.pt/tos/software/prime_sieve.html>).
 
 ``` r
-system.time(b <- primeSieve(1e15, 1e15 + 1e9, nThreads = 8))
+system.time(primeSieve(1e15, 1e15 + 1e9, nThreads = 8))
  user  system elapsed 
-5.054   0.754   0.977
+4.854   0.819   0.944
 ```
 
 ### primeCount
@@ -285,8 +285,8 @@ microbenchmark(serial = comboGeneral(20, 10, freqs = rep(1:4, 5)),
              parallel = comboGeneral(20, 10, freqs = rep(1:4, 5), Parallel = TRUE))
 Unit: milliseconds
      expr       min        lq      mean    median        uq      max neval
-   serial 224.77650 239.09760 243.50147 241.41096 244.00927 292.3136   100
- parallel  80.21005  82.16222  84.74438  84.42145  85.58884 123.5970   100
+   serial 219.45815 224.61997 228.70832 227.90486 231.14991 251.6998   100
+ parallel  72.38096  75.11496  77.01569  75.94321  77.24758 124.9735   100
 ```
 
 And applying any of the constraint functions in parallel is highly efficient as well. Consider obtaining the row sums of all combinations:
@@ -309,9 +309,9 @@ microbenchmark(serial = comboGeneral(20, 10, constraintFun = "sum"),
              combnSum = combn(20, 10, sum))
 Unit: milliseconds
      expr        min         lq       mean     median         uq        max neval
-   serial   3.108999   3.470917   4.394282   3.798261   4.345005   8.038390   100
- parallel   1.186217   1.377346   1.786400   1.454697   1.588850   3.564296   100
- combnSum 197.533911 213.208303 220.711443 217.775698 226.261102 266.828690   100
+   serial   3.244201   3.829026   4.263844   3.977368   4.083782   8.391110   100
+ parallel   1.108852   1.261750   1.501602   1.316356   1.362703   3.678798   100
+ combnSum 227.889743 233.444273 239.778906 236.130796 239.313303 297.253419   100
 ```
 
 ### Faster than `rowSums` and `rowMeans`
@@ -328,9 +328,9 @@ microbenchmark(serial = comboGeneral(25, 10, constraintFun = "sum"),
               rowsums = rowSums(combs))
 Unit: milliseconds
      expr       min        lq      mean    median        uq       max neval
-   serial 113.05467 117.46261 127.46829 124.99978 135.67496 176.68228   100
- parallel  39.97370  42.79960  49.36836  44.65376  56.82488  67.95255   100
-  rowsums  97.18933  98.62043 107.64972 104.80272 113.32359 144.27974   100
+   serial 104.54241 116.17949 120.57489 119.61571 123.86698 174.2058   100
+ parallel  37.70034  46.51309  48.82646  48.39089  51.16243 112.6135   100
+  rowsums  98.50969 100.68145 105.76113 102.10867 107.19118 135.9790   100
 
 all.equal(rowSums(combs), 
           comboGeneral(25, 10, 
@@ -595,12 +595,12 @@ eulerPhiSieve(20, namedVector = TRUE)
  
 system.time(a <- eulerPhiSieve(1e12, 1e12 + 1e7))
    user  system elapsed 
-  1.049   0.041   1.086
+  0.998   0.042   1.041
 
 ## Using nThreads for greater efficiency
 system.time(b <- eulerPhiSieve(1e12, 1e12 + 1e7, nThreads = 8))
    user  system elapsed 
-  3.731   0.013   0.502
+  3.576   0.014   0.485
   
 identical(a, b)
 [1] TRUE
@@ -662,7 +662,7 @@ system.time(a <- primeFactorize(1e12:(1e12 + 1e5)))
 ## Using nThreads for greater efficiency  
 system.time(b <- primeFactorize(1e12:(1e12 + 1e5), nThreads = 8))
    user  system elapsed 
-  3.197   0.004   0.418
+  3.155   0.002   0.410
   
 identical(a, b)
 [1] TRUE
@@ -697,12 +697,12 @@ object.size(myPs)
 ## primes under a billion!!!
 system.time(a <- primeSieve(10^9))
    user  system elapsed 
-  1.227   0.095   1.323 
+  1.161   0.091   1.253 
 
 ## Using nThreads  
 system.time(b <- primeSieve(10^9, nThreads = 8))
    user  system elapsed 
-  2.339   0.047   0.418
+  2.049   0.051   0.383
 ```
 
 ### Larger primes
@@ -718,12 +718,12 @@ system.time(old <- RcppAlgos2.2::primeSieve(1e15, 1e15 + 1e9))
 ## v2.3.0 is over 3x faster!  
 system.time(a <- primeSieve(1e15, 1e15 + 1e9))
    user  system elapsed 
-  2.360   0.189   2.549
+  2.344   0.179   2.525
   
 ## And using nThreads we are ~8x faster
 system.time(b <- primeSieve(1e15, 1e15 + 1e9, nThreads = 8))
    user  system elapsed 
-  5.054   0.754   0.977
+  4.898   0.889   0.953
   
 identical(a, b)
 [1] TRUE
