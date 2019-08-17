@@ -22,9 +22,9 @@ A collection of high performance functions implemented in C++ with Rcpp for solv
 system.time(genParts <- comboGeneral(seq(121, 221, 5), 13, TRUE,
                                      constraintFun = "sum", 
                                      comparisonFun = "==", 
-                                     limitConstraints = 2223))
+                                     limitConstraints = 2613))
    user  system elapsed     
-  0.945   0.619   1.577    ## over 8 million results out of a possible 573 million
+  0.012   0.002   0.014    ## over 100 thousand results out of a possible 573 million instantly!!
 ```
 
 * Produce results in parallel using the `Parallel` argument. You can also apply each of the five compiled functions given by the argument `constraintFun` in parallel as well. E.g. Obtaining the row sums of all combinations.
