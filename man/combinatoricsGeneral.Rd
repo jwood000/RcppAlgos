@@ -9,6 +9,7 @@ Generate all Combinations/Permutations of a Vector with/without Constraints
         \item Generate all combinations or permutations of a vector, chosen \eqn{m} at a time, with or without constraints.
         \item Produce results in parallel using the \code{Parallel} or \code{nThreads} arguments. You can also apply each of the five compiled functions given by the argument \code{constraintFun} in parallel.
         \item Alternatively, the arguments \code{lower} and \code{upper} make it possible to generate combinations/permutations in chunks allowing for parallelization via the package \href{https://stat.ethz.ch/R-manual/R-devel/library/parallel/doc/parallel.pdf}{parallel}. This is convenient when you want to apply a custom function to the output in parallel.
+        \item Attack general integer partition problems. A highly optimized algorithm is utilized when \code{comparisonFun} is \code{"=="} and \code{constraintFun} is \code{"prod", "mean",} or  \code{"sum"}. \emph{E.g.} \code{comboGeneral(0:50, 15, TRUE, constraintFun = "sum", comparisonFun = "==", limitConstraints = 50)}
         \item GMP support allows for exploration of combinations/permutations of vectors with many elements.
         \item The output is in lexicographical order.
     }
@@ -93,7 +94,9 @@ Joseph Wood
         \item{\href{http://gallery.rcpp.org/articles/passing-cpp-function-pointers/}{Passing user-supplied C++ functions}}
         \item{\href{https://en.wikipedia.org/wiki/Monotonic_function}{Monotonic Sequence}}
         \item{\href{https://en.wikipedia.org/wiki/Multiset}{Multiset}}
-        \item{\href{https://en.wikipedia.org/wiki/Lexicographical_order}{Lexicographical order}}
+        \item{\href{https://en.wikipedia.org/wiki/Lexicographical_order}{Lexicographical Order}}
+        \item{\href{https://en.wikipedia.org/wiki/Subset_sum_problem}{Subset Sum Problem}}
+        \item{\href{https://en.wikipedia.org/wiki/Partition_(number_theory)}{Partition (Number Theory)}}
     }
 }
 
