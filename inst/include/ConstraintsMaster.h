@@ -155,8 +155,8 @@ typeVector PartialReduce(std::size_t uR, typeVector partial,
 }
 
 template <typename typeVector>
-int GetLowerBound(int n, int r, std::vector<typeVector> &v, bool isRep, bool isMult,
-                  std::vector<int> &z, std::vector<int> &freqs, std::vector<typeVector> targetVals,
+int GetLowerBound(int n, int r, const std::vector<typeVector> &v, bool isRep, bool isMult,
+                  std::vector<int> &z, const std::vector<int> &freqs, std::vector<typeVector> targetVals,
                   const std::vector<int> &Reps, funcPtr<typeVector> constraintFun,
                   partialPtr<typeVector> partialFun, std::string myFun) {
     
