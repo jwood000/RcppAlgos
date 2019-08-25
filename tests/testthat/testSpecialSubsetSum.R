@@ -231,6 +231,25 @@ test_that("comboGeneral produces correct results for special subset sum", {
         all(t)
     }
     
+    expect_true(testMultiset(1:10, 7, rep(1:5, 2)))
+    expect_true(testMultiset(0:9, 7, rep(1:5, 2)))
+    expect_true(testMultiset(-4:5, 7, rep(1:5, 2)))
+    expect_true(testMultiset((1e10 + 1):(1e10 + 10), 7, rep(1:5, 2)))
+    expect_true(testMultiset((-1e10 - 1):(-1e10 - 10), 7, rep(1:5, 2)))
+    expect_true(testMultiset(-49:50, 2, rep(1:2, 50)))
+    expect_true(testMultiset(1:100, 2, rep(1:2, 50)))
+    expect_true(testMultiset((-1e12 - 50):(-1e12 - 1), 3, rep(1:2, 25)))
+    expect_true(testMultiset(1:5, 10, 1:5))
+    expect_true(testMultiset(-1:1, 100, c(20, 30, 50)))
+    
+    expect_true(testMultiset(seq(100, 210, 10), 7, rep(1:4, 3)))
+    expect_true(testMultiset(seq(-140L, -100L, 10L), 10, c(1, 2, 3, 4, 3)))
+    expect_true(testMultiset(seq(-100L, 300L, 100L), 9, c(5, 1, 1, 1, 1)))
+    expect_true(testMultiset(seq(1e10, 1e10 + 500, 100), 10, c(1, 1, 5, 1, 1, 1)))
+    expect_true(testMultiset(seq(-1e10 - 500, -1e10, 100), 10, c(1, 1, 1, 1, 1, 5)))
+    
+    ## Irregular vector input... i.e. the distance between neighbors varies
+    ## This will test the BruteNextElem and main constraint functions
     pS <- as.integer(c(2, 3, 5, 7, 11, 13))
     expect_true(testMultiset(pS, 1, frqs = 1:6))
     expect_true(testMultiset(pS, 2, frqs = 1:6))
