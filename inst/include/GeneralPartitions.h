@@ -4,10 +4,10 @@
 #include "CombPermUtils.h"
 
 namespace Partitions {
-
+    
     constexpr int solnExists = 1;
     constexpr int noSoln = 0;
-
+    
     inline void GetNextPartition(std::vector<int> &z, int &boundary, 
                                  int &edge, int &pivot, int lastElem, int lastCol) {
         
@@ -32,7 +32,7 @@ namespace Partitions {
         const int currMax = z[boundary];
         
         while (boundary > 1 && z[boundary - 1] == currMax)
-          --boundary;
+            --boundary;
         
         edge = boundary - 1;
         
@@ -47,10 +47,10 @@ namespace Partitions {
             for (int count = 0; count < limitRows; ++count) {
                 for (int k = 0; k < r; ++k)
                     partitionsMatrix(count, k) = z[k];
-          	    
+                
                 GetNextPartition(z, boundary, edge, pivot, lastElem, lastCol);
             }
-        	  
+            
             for (int k = 0; k < r; ++k)
                 partitionsMatrix(limitRows, k) = z[k];
         } else {
@@ -117,38 +117,79 @@ namespace Partitions {
         if (dist > 0 && ind < lastElem)
             ++ind;
     }
-
-    int PartitionsRep(int r, const std::vector<int64_t> &v, int64_t target, int lastElem,
-                      int lastCol, int maxRows, bool isComb, std::vector<int64_t> &partitionsVec) {
     
-        std::vector<int> z(r);
-        const int64_t testMax = v[lastElem] * r;
+    int GetFirstCombo(int r, const std::vector<int64_t> &v, bool isRep, bool isMult,
+                      std::vector<int> &z, const std::vector<int> &freqs, int64_t target,
+                      const std::vector<int> &Reps, int lastCol, int lastElem) {
+        
+        int64_t testMax = 0;
+        constexpr int64_t zero64 = 0;
+        
+        if (isRep) {
+            testMax = v[lastElem] * r;
+        } else if (isMult) {
+            const int lenMinusR = freqs.size() - r;
+            
+            for (int i = freqs.size() - 1, j = 0; i >= lenMinusR; --i, ++j)
+                testMax += v[freqs[i]];
+        } else {
+            testMax = std::accumulate(v.cend() - r, v.cend(), zero64);
+        }
+        
         if (testMax < target)  {return noSoln;}
+        int zExpCurrPos = (isMult) ? freqs.size() - r : 0;
+        int currPos = (isMult) ? freqs[zExpCurrPos] : ((isRep) ? lastElem : (v.size() - r));
         
         int64_t partial = testMax;
-        partial -= v[lastElem];
+        partial -= v[currPos];
+        int64_t testMin = 0;
         
-        const int64_t testMin = v[0] * r;
+        if (isRep) {
+            testMin = v[0] * r;
+        } else if (isMult) {
+            for (int i = 0; i < r; ++i)
+                testMin += v[freqs[i]];
+        } else {
+            testMin = std::accumulate(v.cbegin(), v.cbegin() + r, zero64);
+        }
+        
         if (testMin > target)  {return noSoln;}
-        
-        int mid = lastElem / 2;
+        int mid = currPos / 2;
         int64_t dist = target - (partial + v[mid]);
         
         int lowBnd = (dist > 0) ? mid : 0;
-        int uppBnd = (dist > 0) ? lastElem : mid;
+        int uppBnd = (dist > 0) ? currPos : mid;
         int ind = mid;
+        
+        std::vector<int> repsCounter;
+        
+        if (isMult)
+            repsCounter.assign(Reps.cbegin(), Reps.cend());
         
         for (int i = 0; i < lastCol; ++i) {
             BinaryNextElem(uppBnd, lowBnd, ind, lastElem, target, partial, v);
             z[i] = ind;
             partial += v[ind];
             
+            if (isMult) {
+                --repsCounter[ind];
+                
+                if (repsCounter[ind] == 0)
+                    ++ind;
+                
+                ++zExpCurrPos;
+                currPos = freqs[zExpCurrPos];
+            } else if (!isRep) {
+                ++ind;
+                ++currPos;
+            }
+            
             lowBnd = ind;
-            uppBnd = lastElem;
+            uppBnd = currPos;
             mid = (uppBnd - lowBnd) / 2;
             
             ind = lowBnd + mid;
-            partial -= v[lastElem];
+            partial -= v[currPos];
         }
         
         BinaryNextElem(uppBnd, lowBnd, ind, lastElem, target, partial, v);
@@ -166,7 +207,236 @@ namespace Partitions {
         if (finalCheck != target)
             return noSoln;
         
+        return solnExists;
+    }
+    
+    inline void PopulateVec(int r, const std::vector<int64_t> &v, std::vector<int> &z,
+                            int &count, int maxRows, bool isComb, std::vector<int64_t> &partitionsVec) {
+        
+        if (count < maxRows) {
+            if (isComb) {
+                for (int k = 0; k < r; ++k)
+                    partitionsVec.push_back(v[z[k]]);
+                
+                ++count;
+            } else {
+                do {
+                    for (int k = 0; k < r; ++k)
+                        partitionsVec.push_back(v[z[k]]);
+                    
+                    ++count;
+                } while (std::next_permutation(z.begin(), z.end()) && count < maxRows);
+            }
+        }
+    }
+    
+    inline bool BndDecrementPossible(const std::vector<int> &rpsCnt,
+                                     const std::vector<int> &z, int boundary) {
+        if (boundary > 0) {
+            if ((z[boundary] - z[boundary - 1]) < 2) {
+                return ((z[boundary] != z[boundary - 1]) ? !rpsCnt[z[boundary] - 1] : true);
+            } else {
+                return false;
+            }
+        } else {
+            return false;
+        }
+    }
+    
+    inline bool VtxDecrementPossible(const std::vector<int> &rpsCnt, int lastCol,
+                                     const std::vector<int> &z, int vertex, int edge) {
+        if (vertex < lastCol) {
+            const int myDiff = z[vertex] - z[edge];
+            
+            if (myDiff < 2) {
+                return true;
+            } else  {
+                return ((myDiff != 2 || rpsCnt[z[edge] + 1] <= 1) &&
+                        (myDiff <= 2 || !rpsCnt[z[edge] + 1] || !rpsCnt[z[vertex] - 1]));
+            }
+        } else {
+            return false;
+        }
+    }
+    
+    inline bool EdgeIncrementPossible(const std::vector<int> &rpsCnt,
+                                      const std::vector<int> &z, int edge, int boundary) {
+        if (edge > 0) {
+            const int myDiff = z[boundary] - z[edge];
+            
+            if (myDiff < 2) {
+                return true;
+            } else {
+                return (myDiff != 2 || rpsCnt[z[edge] + 1] < 2) && (myDiff <= 2 || !rpsCnt[z[edge] + 1]);
+            }
+        } else {
+            return false;
+        }
+    }
+    
+    inline int GetPivotExtr(const std::vector<int> &rpsCnt,
+                            const std::vector<int> &z, int lastCol, int lastElem) {
+        int res = lastCol - 1;
+        
+        while (res > 0 && z[res] == lastElem)
+            --res;
+        
+        while (res > 0 && !rpsCnt[z[res] + 1])
+            --res;
+        
+        return res;
+    }
+    
+    inline bool PivotDecrementPossible(const std::vector<int> &rpsCnt, int lastElem,
+                                       const std::vector<int> &z, int pivot, int vertex) {
+        if (pivot > vertex) {
+            if (z[pivot] == lastElem) {
+                return true;
+            } else {
+                return !rpsCnt[z[pivot] + 1];
+            }
+        } else {
+            return false;
+        }
+    }
+
+    inline bool keepGoing(const std::vector<int> &rpsCnt, int lastElem,
+                          const std::vector<int> &z, int edge, int boundary) {
+        if (edge >= 0) {
+            if (z[edge] < lastElem) {
+                const int myDiff = z[boundary] - z[edge];
+                
+                if (myDiff < 2) {
+                    return false;
+                } else if (myDiff == 2) {
+                    return (rpsCnt[z[edge] + 1] > 1);
+                } else {
+                    return (rpsCnt[z[edge] + 1] && rpsCnt[z[boundary] - 1]);
+                }
+            } else {
+                return false;
+            }
+        } else {
+            return false;
+        }
+    }
+    
+    int PartitionsMultiSet(int r, const std::vector<int64_t> &v, int64_t target, 
+                           int lastElem, int lastCol, int maxRows, bool isComb,
+                           const std::vector<int> &Reps, std::vector<int64_t> &partitionsVec) {
+        
+        std::vector<int> z(r);
+        std::vector<int> zExpanded;
+        
+        for (std::size_t i = 0; i < v.size(); ++i)
+            for (int j = 0; j < Reps[i]; ++j)
+                zExpanded.push_back(i);
+        
+        if (!GetFirstCombo(r, v, false, true, z, zExpanded, target, Reps, lastCol, lastElem))
+            return noSoln;
+        
+        std::vector<int> rpsCnt(Reps.cbegin(), Reps.cend());
+
+        for (const auto ind: z)
+            --rpsCnt[ind];
+
+        // boundary is the greatest index that can be decremented
+        int b = lastCol;
+
+        while (BndDecrementPossible(rpsCnt, z, b))
+            --b;
+
+        // pivot is the greatest index that can be incremented
+        int p = (z[lastCol] < lastElem) ? lastCol : GetPivotExtr(rpsCnt, z, lastCol, lastElem);
+
+        // edge is the greatest index smaller than boundary that can be incremented
+        int e = b - 1;
+
+        while (EdgeIncrementPossible(rpsCnt, z, e, b))
+            --e;
+
         int count = 0;
+
+        while (keepGoing(rpsCnt, lastElem, z, e, b)) {
+            
+            PopulateVec(r, v, z, count, maxRows, isComb, partitionsVec);
+
+            if (count >= maxRows)
+                break;
+
+            // vertex is the smallest index greater than edge that can be decremented
+            int v = e + 1;
+
+            while (VtxDecrementPossible(rpsCnt, lastCol, z, v, e))
+                ++v;
+
+            ++rpsCnt[z[e]];
+            ++z[e];
+            --rpsCnt[z[e]];
+
+            ++rpsCnt[z[v]];
+            --z[v];
+            --rpsCnt[z[v]];
+
+            if (v == b) {
+                if (b < lastCol)
+                    ++b;
+
+                while (BndDecrementPossible(rpsCnt, z, b))
+                    --b;
+
+                p = (z[lastCol] < lastElem) ? lastCol : GetPivotExtr(rpsCnt, z, lastCol, lastElem);
+            }
+
+            while ((v < lastCol) && (z[v] == z[v - 1] || 
+                   z[v] == z[e] || (z[v] - z[v - 1] == 1 && !rpsCnt[z[v - 1]]))) {
+                ++v;
+            }
+            
+            while (v < p && rpsCnt[z[v] - 1] && rpsCnt[z[p] + 1]) {
+                ++rpsCnt[z[v]];
+                --z[v];
+                --rpsCnt[z[v]];
+
+                ++rpsCnt[z[p]];
+                ++z[p];
+                --rpsCnt[z[p]];
+
+                while (z[v] == z[v - 1] || (z[v] - z[v - 1] == 1 && rpsCnt[z[v - 1]] == 0))
+                    ++v;
+
+                while (PivotDecrementPossible(rpsCnt, lastElem, z, p, v))
+                    --p;
+            }
+
+            b = p;
+
+            while ((b < lastCol) && ((z[b] == z[b + 1]) ||
+                   (z[b + 1] > z[b] && (rpsCnt[z[b + 1] - 1] || rpsCnt[z[b + 1]])))) {
+                ++b;
+            }
+
+            while (BndDecrementPossible(rpsCnt, z, b))
+                --b;
+
+            e = b - 1;
+
+            while (EdgeIncrementPossible(rpsCnt, z, e, b))
+                --e;
+        }
+
+        PopulateVec(r, v, z, count, maxRows, isComb, partitionsVec);
+        return solnExists;
+    }
+    
+    int PartitionsRep(int r, const std::vector<int64_t> &v, int64_t target, int lastElem,
+                      int lastCol, int maxRows, bool isComb, std::vector<int64_t> &partitionsVec) {
+        
+        std::vector<int> z(r);
+        std::vector<int> trivVec;
+        
+        if (!GetFirstCombo(r, v, true, false, z, trivVec, target, trivVec, lastCol, lastElem))
+            return noSoln;
         
         // smallest index such that z[boundary] == currMax
         int boundary = lastCol;
@@ -187,20 +457,11 @@ namespace Partitions {
         while (edge > 0 && edgeDiff < z[edge])
             --edge;
         
+        int count = 0;
+        
         while ((edge >= 0) && (z[boundary] - z[edge] >= 2)) {
-            if (isComb) {
-                for (int k = 0; k < r; ++k)
-                    partitionsVec.push_back(v[z[k]]);
-                
-                ++count;
-            } else {
-                do {
-                    for (int k = 0; k < r; ++k)
-                        partitionsVec.push_back(v[z[k]]);
-                    
-                    ++count;
-                } while (std::next_permutation(z.begin(), z.end()) && count < maxRows);
-            }
+            
+            PopulateVec(r, v, z, count, maxRows, isComb, partitionsVec);
             
             if (count >= maxRows)
                 break;
@@ -265,71 +526,17 @@ namespace Partitions {
                 --edge;
         }
         
-        if (count < maxRows) {
-            if (isComb) {
-                for (int k = 0; k < r; ++k)
-                    partitionsVec.push_back(v[z[k]]);
-            } else {
-                do {
-                    for (int k = 0; k < r; ++k)
-                        partitionsVec.push_back(v[z[k]]);
-                    
-                    ++count;
-                } while (std::next_permutation(z.begin(), z.end()) && count < maxRows);
-            }
-        }
-        
+        PopulateVec(r, v, z, count, maxRows, isComb, partitionsVec);
         return solnExists;
     }
     
     int PartitionsDistinct(int r, const std::vector<int64_t> &v, int64_t target, int lastElem,
                            int lastCol, int maxRows, bool isComb, std::vector<int64_t> &partitionsVec) {
-      
+        
         std::vector<int> z(r);
-        constexpr int64_t zero64 = 0;
-        const int64_t testMax = std::accumulate(v.cend() - r, v.cend(), zero64);
-        if (testMax < target)  {return noSoln;}
+        std::vector<int> trivVec;
         
-        int currPos = v.size() - r;
-        int64_t partial = testMax;
-        partial -= v[currPos];
-        
-        const int64_t testMin = std::accumulate(v.cbegin(), v.cbegin() + r, zero64);
-        if (testMin > target)  {return noSoln;}
-        
-        int mid = currPos / 2;
-        int64_t dist = target - (partial + v[mid]);
-        
-        int lowBnd = (dist > 0) ? mid : 0;
-        int uppBnd = (dist > 0) ? currPos : mid;
-        int ind = mid;
-        
-        for (int i = 0; i < lastCol; ++i) {
-            BinaryNextElem(uppBnd, lowBnd, ind, lastElem, target, partial, v);
-            z[i] = ind;
-            partial += v[ind];
-            
-            ++ind;
-            ++currPos;
-            
-            lowBnd = ind;
-            uppBnd = currPos;
-            mid = (uppBnd - lowBnd) / 2;
-            
-            ind = lowBnd + mid;
-            partial -= v[currPos];
-        }
-        
-        BinaryNextElem(uppBnd, lowBnd, ind, lastElem, target, partial, v);
-        z[lastCol] = ind;
-        
-        // See commemt in PartitionRep
-        int64_t finalCheck = 0;
-        
-        for (int i = 0; i < r; ++i)
-            finalCheck += v[z[i]];
-        
-        if (finalCheck != target)
+        if (!GetFirstCombo(r, v, false, false, z, trivVec, target, trivVec, lastCol, lastElem))
             return noSoln;
         
         int indexRows = isComb ? 0 : static_cast<int>(NumPermsNoRep(r, lastCol));
@@ -373,7 +580,7 @@ namespace Partitions {
         }
         
         int count = 0;
-
+        
         while (edge >= 0 && (z[boundary] - z[edge]) >= tarDiff) {
             if (isComb) {
                 for (int k = 0; k < r; ++k)
@@ -445,25 +652,12 @@ namespace Partitions {
             }
         }
         
-        if (count < maxRows) {
-            if (isComb) {
-                for (int k = 0; k < r; ++k)
-                    partitionsVec.push_back(v[z[k]]);
-            } else {
-                if (indexRows + count > maxRows)
-                    indexRows = maxRows - count;
-                
-                for (int j = 0, myRow = 0; j < indexRows; ++j, myRow += r)
-                    for (int k = 0; k < r; ++k)
-                        partitionsVec.push_back(v[z[indexMatrix[myRow + k]]]);
-            }
-        }
-        
+        PopulateVec(r, v, z, count, maxRows, isComb, partitionsVec);
         return solnExists;
     }
     
     // Credit to user @m69 on stackoverflow:
-    //       https://stackoverflow.com/a/32918426/4408538
+        //       https://stackoverflow.com/a/32918426/4408538
     // *********************************************************************** //
     Rcpp::NumericMatrix memoize;
     
@@ -491,8 +685,8 @@ namespace Partitions {
                 for (int j = 0; j < n1 - i + 1; ++j)
                     for (int k = 0; k < i; ++k)
                         memoize(j, k) = 0;
-                
-                count += p(n1, i);
+                    
+                    count += p(n1, i);
             }
             
             ++count;  // Add 1 for the case p(n, 1)
@@ -506,10 +700,11 @@ namespace Partitions {
     }
     
     // *********************************************************************** //
-    
+        
     template <typename typeRcpp>
     typeRcpp GeneralPartitions(int n, int r, std::vector<int64_t> &v, int64_t target,
-                               bool isRep, double numRows, bool isComb, bool xtraCol, bool bUserRows) {
+                               bool isRep, bool isMult, const std::vector<int> &Reps ,
+                               double numRows, bool isComb, bool xtraCol, bool bUserRows) {
         
         std::sort(v.begin(), v.end());
         int64_t myMax = v.back();
@@ -523,7 +718,7 @@ namespace Partitions {
             int boundary = lastCol;
             int pivot = (includeZero) ? lastCol - 1 : lastCol;
             int edge = boundary - 1;
-
+            
             std::vector<int> z(r, 0);
             z[lastCol] = lastElem;
             
@@ -535,7 +730,7 @@ namespace Partitions {
             double partCountTest = 0;
             
             if (isComb) {
-	              partCountTest = partitionCount(n, r, includeZero);
+                partCountTest = partitionCount(n, r, includeZero);
             } else {
                 partCountTest = (includeZero) ? nChooseK(target + r - 1, r - 1) : nChooseK(target - 1, r - 1);
             }
@@ -571,6 +766,8 @@ namespace Partitions {
         
         if (isRep) {
             result = PartitionsRep(r, v, target, lastElem, lastCol, maxRows, isComb, partitionsVec);
+        } else if (isMult) {
+            result = PartitionsMultiSet(r, v, target, lastElem, lastCol, maxRows, isComb, Reps, partitionsVec);
         } else {
             result = PartitionsDistinct(r, v, target, lastElem, lastCol, maxRows, isComb, partitionsVec);
         }
@@ -583,18 +780,18 @@ namespace Partitions {
             for (std::size_t i = 0, k = 0; i < numResult; ++i)
                 for (int j = 0; j < r; ++j, ++k)
                     partitionsMatrix(i, j) = partitionsVec[k];
-            
-            if (xtraCol)
-                for (std::size_t i = 0; i < numResult; ++i)
-                    partitionsMatrix(i, r) = target;
-            
-            if (partitionLen >= upperBound) {
-                Rcpp::warning("The algorithm terminated early as the number of results "
-                              "meeting the criteria exceeds the container's maximum "
-                              "capacity or 2^31 - 1");
-            }
-            
-            return partitionsMatrix;
+                
+                if (xtraCol)
+                    for (std::size_t i = 0; i < numResult; ++i)
+                        partitionsMatrix(i, r) = target;
+                    
+                    if (partitionLen >= upperBound) {
+                        Rcpp::warning("The algorithm terminated early as the number of results "
+                                      "meeting the criteria exceeds the container's maximum "
+                                      "capacity or 2^31 - 1");
+                    }
+                    
+                    return partitionsMatrix;
         } else {
             typeRcpp trivialRet(0, r);
             return trivialRet;
