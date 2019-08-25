@@ -303,18 +303,14 @@ namespace Partitions {
     inline bool keepGoing(const std::vector<int> &rpsCnt, int lastElem,
                           const std::vector<int> &z, int edge, int boundary) {
         if (edge >= 0) {
-            if (z[edge] < lastElem) {
-                const int myDiff = z[boundary] - z[edge];
-                
-                if (myDiff < 2) {
-                    return false;
-                } else if (myDiff == 2) {
-                    return (rpsCnt[z[edge] + 1] > 1);
-                } else {
-                    return (rpsCnt[z[edge] + 1] && rpsCnt[z[boundary] - 1]);
-                }
-            } else {
+            const int myDiff = z[boundary] - z[edge];
+            
+            if (myDiff < 2) {
                 return false;
+            } else if (myDiff == 2) {
+                return (rpsCnt[z[edge] + 1] > 1);
+            } else {
+                return (rpsCnt[z[edge] + 1] && rpsCnt[z[boundary] - 1]);
             }
         } else {
             return false;
