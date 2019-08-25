@@ -61,17 +61,15 @@ bool checkIsInteger(const std::string &funPass, std::size_t uM, int n,
     if (funPass == "mean")
         return false;
     
-    std::vector<double> rowVec(uM);
     std::vector<double> vAbs;
     
     for (int i = 0; i < n; ++i)
         vAbs.push_back(std::abs(vNum[i]));
     
     double vecMax = *std::max_element(vAbs.cbegin(), vAbs.cend());
-    for (std::size_t i = 0; i < uM; ++i)
-        rowVec[i] = static_cast<double>(vecMax);
-    
+    const std::vector<double> rowVec(uM, vecMax);
     double testIfInt = myFunDbl(rowVec, uM);
+    
     if (testIfInt > std::numeric_limits<int>::max())
         return false;
     
@@ -752,7 +750,7 @@ SEXP CombinatoricsRcpp(SEXP Rv, SEXP Rm, SEXP RisRep, SEXP RFreqs, SEXP Rlow,
         
         bool bUserRows = bUpper;
         
-        if (compFunVec[0] == "==" && mainFun == "sum" && !IsMultiset && n > 1 && m > 1) {
+        if (compFunVec[0] == "==" && mainFun == "sum" && n > 1 && m > 1) {
             std::vector<double> pTest(vNum.cbegin(), vNum.cend());
             std::sort(pTest.begin(), pTest.end());
             const double tarDiff = pTest[1] - pTest[0];
@@ -776,11 +774,11 @@ SEXP CombinatoricsRcpp(SEXP Rv, SEXP Rm, SEXP RisRep, SEXP RFreqs, SEXP Rlow,
                     
                     if (target64 == targetVals[0]) {
                         if (IsInteger) {
-                            return Partitions::GeneralPartitions<Rcpp::IntegerMatrix>(n, m, v64, target64, IsRepetition,
-                                                                                      userNumRows, IsComb, keepRes, bUserRows);
+                            return Partitions::GeneralPartitions<Rcpp::IntegerMatrix>(n, m, v64, target64, IsRepetition, IsMultiset,
+                                                                                      myReps, userNumRows, IsComb, keepRes, bUserRows);
                         } else {
-                            return Partitions::GeneralPartitions<Rcpp::NumericMatrix>(n, m, v64, target64, IsRepetition,
-                                                                                      userNumRows, IsComb, keepRes, bUserRows);
+                            return Partitions::GeneralPartitions<Rcpp::NumericMatrix>(n, m, v64, target64, IsRepetition, IsMultiset,
+                                                                                      myReps, userNumRows, IsComb, keepRes, bUserRows);
                         }
                     }
                 }
