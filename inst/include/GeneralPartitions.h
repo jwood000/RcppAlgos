@@ -8,64 +8,58 @@ namespace Partitions {
     constexpr int solnExists = 1;
     constexpr int noSoln = 0;
     
-    inline void GetNextPartition(std::vector<int> &z, int &boundary, 
-                                 int &edge, int &pivot, int lastElem, int lastCol) {
+    inline void NextPartition(std::vector<int> &z, int &boundary, int &edge, int lastCol) {
         
-        int vertex = (z[boundary] - z[edge] == 2) ? boundary : edge + 1;
+        if (z[boundary] - z[edge] != 2)
+            boundary = edge + 1;
         
         ++z[edge];
-        --z[vertex];
+        --z[boundary];
+        const int myEdge = z[edge];
         
-        if (vertex == boundary) {
-            pivot = lastCol;
-        } else if (z[vertex] == z[edge]) {
-            ++vertex;
+        for (; boundary < lastCol; ++boundary) {
+            z[lastCol] += (z[boundary] - myEdge);
+            z[boundary] = myEdge;
         }
         
-        while (vertex < pivot) {
-            z[pivot] += z[vertex] - z[edge];
-            z[vertex] = z[edge];
-            ++vertex;
-        }
-        
-        boundary = pivot;
         const int currMax = z[boundary];
         
         while (boundary > 1 && z[boundary - 1] == currMax)
             --boundary;
         
         edge = boundary - 1;
+        const int edgeTest = z[boundary] - 2;
         
-        while (edge > 0 && z[boundary] - z[edge] < 2)
+        while (edge && edgeTest < z[edge])
             --edge;
     }
     
     template <typename typeRcpp>
-    void PartitionsStandard(int r, int numRows, typeRcpp &partitionsMatrix, std::vector<int> &z, 
-                            bool isComb, int boundary, int edge, int pivot, int limitRows, int lastCol, int lastElem) {
+    void PartitionsStandard(std::size_t r, std::size_t numRows, typeRcpp &partitionsMatrix,
+                            std::vector<int> &z, bool isComb, int boundary, int edge, int lastCol, bool includeZero) {
         if (isComb) {
-            for (int count = 0; count < limitRows; ++count) {
-                for (int k = 0; k < r; ++k)
-                    partitionsMatrix(count, k) = z[k];
-                
-                GetNextPartition(z, boundary, edge, pivot, lastElem, lastCol);
+            if (includeZero) {
+                for (std::size_t j = 0, lim = numRows - 1; j < lim; ++j, NextPartition(z, boundary, edge, lastCol))
+                    for (int k = lastCol; k >= 0 && z[k]; --k)
+                        partitionsMatrix(j, k) = z[k];
+            } else {
+                for (std::size_t j = 0, lim = numRows - 1; j < lim; ++j, NextPartition(z, boundary, edge, lastCol))
+                    for (std::size_t k = 0; k < r; ++k)
+                        partitionsMatrix(j, k) = z[k];
             }
             
-            for (int k = 0; k < r; ++k)
-                partitionsMatrix(limitRows, k) = z[k];
+            for (std::size_t k = 0; k < r; ++k)
+                partitionsMatrix(numRows - 1, k) = z[k];
         } else {
-            for (int count = 0;;) {
+            for (std::size_t count = 0;; NextPartition(z, boundary, edge, lastCol)) {
                 do {
-                    for (int k = 0; k < r; ++k)
+                    for (std::size_t k = 0; k < r; ++k)
                         partitionsMatrix(count, k) = z[k];
                     
                     ++count;
                 } while (std::next_permutation(z.begin(), z.end()) && count < numRows);
                 
-                if (count >= numRows)
-                    break;
-                
-                GetNextPartition(z, boundary, edge, pivot, lastElem, lastCol);
+                if (count >= numRows) {break;}
             }
         }
     }
@@ -212,7 +206,6 @@ namespace Partitions {
     
     inline void PopulateVec(int r, const std::vector<int64_t> &v, std::vector<int> &z,
                             int &count, int maxRows, bool isComb, std::vector<int64_t> &partitionsVec) {
-        
         if (count < maxRows) {
             if (isComb) {
                 for (int k = 0; k < r; ++k)
@@ -232,7 +225,7 @@ namespace Partitions {
     
     inline bool BndDecrementPossible(const std::vector<int> &rpsCnt,
                                      const std::vector<int> &z, int boundary) {
-        if (boundary > 0) {
+        if (boundary > 1) {
             if ((z[boundary] - z[boundary - 1]) < 2) {
                 return ((z[boundary] != z[boundary - 1]) ? !rpsCnt[z[boundary] - 1] : true);
             } else {
@@ -261,7 +254,7 @@ namespace Partitions {
     
     inline bool EdgeIncrementPossible(const std::vector<int> &rpsCnt,
                                       const std::vector<int> &z, int edge, int boundary) {
-        if (edge > 0) {
+        if (edge) {
             const int myDiff = z[boundary] - z[edge];
             
             if (myDiff < 2) {
@@ -398,7 +391,7 @@ namespace Partitions {
                 ++z[p];
                 --rpsCnt[z[p]];
 
-                while (z[v] == z[v - 1] || (z[v] - z[v - 1] == 1 && rpsCnt[z[v - 1]] == 0))
+                while (z[v] == z[v - 1] || (z[v] - z[v - 1] == 1 && !rpsCnt[z[v - 1]]))
                     ++v;
 
                 while (PivotDecrementPossible(rpsCnt, lastElem, z, p, v))
@@ -437,7 +430,7 @@ namespace Partitions {
         // smallest index such that z[boundary] == currMax
         int boundary = lastCol;
         
-        while (boundary > 0 && z[boundary - 1] == z[lastCol])
+        while (boundary > 1 && z[boundary - 1] == z[lastCol])
             --boundary;
         
         // pivot is the greatest index that can be incremented.
@@ -448,9 +441,9 @@ namespace Partitions {
         // This is the index that will be be used as a starting point
         // to determine the next combination that meets the criteria
         int edge = boundary - 1;
-        int edgeDiff = z[boundary] - 2;
+        int edgeTest = z[boundary] - 2;
         
-        while (edge > 0 && edgeDiff < z[edge])
+        while (edge && edgeTest < z[edge])
             --edge;
         
         int count = 0;
@@ -473,7 +466,7 @@ namespace Partitions {
                 
                 const int currMax = z[boundary];
                 
-                while (boundary > 0 && z[boundary - 1] == currMax)
+                while (boundary > 1 && z[boundary - 1] == currMax)
                     --boundary;
                 
                 pivot = (z[boundary] < lastElem) ? lastCol : boundary - 1;
@@ -507,18 +500,18 @@ namespace Partitions {
             
             boundary = pivot;
             
-            if (pivot < lastCol && z[pivot] < z[pivot + 1])
+            if (boundary < lastCol && z[boundary] < z[boundary + 1])
                 ++boundary;
             
             const int currMax = z[boundary];
             
-            while (boundary > 0 && z[boundary - 1] == currMax)
+            while (boundary > 1 && z[boundary - 1] == currMax)
                 --boundary;
             
             edge = boundary - 1;
-            edgeDiff = z[boundary] - 2;
+            edgeTest = z[boundary] - 2;
             
-            while (edge > 0 && edgeDiff < z[edge])
+            while (edge && edgeTest < z[edge])
                 --edge;
         }
         
@@ -556,7 +549,7 @@ namespace Partitions {
         // time edge is incremented. See below.
         int boundary = lastCol;
         
-        while (boundary > 0 && (z[boundary] - z[boundary - 1]) < 2)
+        while (boundary > 1 && (z[boundary] - z[boundary - 1]) < 2)
             --boundary;
         
         // pivot is the greatest index that can be incremented...
@@ -570,7 +563,7 @@ namespace Partitions {
         int edge = boundary - 1;
         int tarDiff = 3;
         
-        while (edge > 0 && (z[boundary] - z[edge]) < tarDiff) {
+        while (edge && (z[boundary] - z[edge]) < tarDiff) {
             --edge;
             ++tarDiff;
         }
@@ -612,7 +605,7 @@ namespace Partitions {
                 if (boundary < lastCol)
                     ++boundary;
                 
-                while (boundary > 0 && (z[boundary] - z[boundary - 1]) < 2)
+                while (boundary > 1 && (z[boundary] - z[boundary - 1]) < 2)
                     --boundary;
                 
                 pivot = (z[lastCol] < lastElem) ? lastCol : boundary - 1;
@@ -629,20 +622,20 @@ namespace Partitions {
                     if (z[vertex] - z[vertex - 1] == 1)
                         ++vertex;
                     
-                    if ((pivot < lastCol && z[pivot + 1] - z[pivot] == 1) || z[pivot] == lastElem)
+                    if (z[pivot] == lastElem || (pivot < lastCol && z[pivot + 1] - z[pivot] == 1))
                         --pivot;
                 }
                 
                 boundary = pivot;
                 
-                if (pivot < lastCol && z[pivot + 1] - z[pivot] > 1)
+                if (boundary < lastCol && z[boundary + 1] - z[boundary] > 1)
                     ++boundary;
             }
             
             edge = boundary - 1;
             tarDiff = 3;
             
-            while (edge > 0 && (z[boundary] - z[edge]) < tarDiff) {
+            while (edge && (z[boundary] - z[edge]) < tarDiff) {
                 --edge;
                 ++tarDiff;
             }
@@ -678,11 +671,13 @@ namespace Partitions {
             memoize = bigRefill;
             
             for (int i = r; i > 1; --i) {
-                for (int j = 0; j < n1 - i + 1; ++j)
-                    for (int k = 0; k < i; ++k)
+                for (int j = 0; j < n1 - i + 1; ++j) {
+                    for (int k = 0; k < i; ++k) {
                         memoize(j, k) = 0;
-                    
-                    count += p(n1, i);
+                    }
+                }
+                
+                count += p(n1, i);
             }
             
             ++count;  // Add 1 for the case p(n, 1)
@@ -699,10 +694,22 @@ namespace Partitions {
         
     template <typename typeRcpp>
     typeRcpp GeneralPartitions(int n, int r, std::vector<int64_t> &v, int64_t target,
-                               bool isRep, bool isMult, const std::vector<int> &Reps ,
+                               bool isRep, bool isMult, std::vector<int> &Reps ,
                                double numRows, bool isComb, bool xtraCol, bool bUserRows) {
         
-        std::sort(v.begin(), v.end());
+        if (isMult) {
+            for (int i = 0; i < (n-1); ++i) {
+                for (int j = (i+1); j < n; ++j) {
+                    if (v[i] > v[j]) {
+                        std::swap(v[i], v[j]);
+                        std::swap(Reps[i], Reps[j]);
+                    }
+                }
+            }
+        } else {
+            std::sort(v.begin(), v.end());
+        }
+        
         int64_t myMax = v.back();
         std::size_t nCols = (xtraCol) ? r + 1 : r;
         
@@ -712,7 +719,6 @@ namespace Partitions {
         if (myMax == target && (n == target || n == (target + 1)) && isRep) {
             const bool includeZero = (v.front() == 1) ? false : true;
             int boundary = lastCol;
-            int pivot = (includeZero) ? lastCol - 1 : lastCol;
             int edge = boundary - 1;
             
             std::vector<int> z(r, 0);
@@ -736,15 +742,13 @@ namespace Partitions {
             if (partCountTest > std::numeric_limits<int>::max())
                 Rcpp::stop("The number of rows cannot exceed 2^31 - 1.");
             
-            const int numParts = partCountTest;
-            const int limitRows = numParts - 1;
+            const std::size_t numParts = partCountTest;
             
-            typeRcpp partitionsMatrix = Rcpp::no_init_matrix(numParts, nCols);
-            PartitionsStandard(r, numParts, partitionsMatrix, z, isComb,
-                               boundary, edge, pivot, limitRows, lastCol, lastElem);
+            typeRcpp partitionsMatrix = (includeZero && isComb) ? typeRcpp(numParts, nCols) : Rcpp::no_init_matrix(numParts, nCols);
+            PartitionsStandard(r, numParts, partitionsMatrix, z, isComb, boundary, edge, lastCol, includeZero);
             
             if (xtraCol)
-                for (int i = 0; i < numParts; ++i)
+                for (std::size_t i = 0; i < numParts; ++i)
                     partitionsMatrix(i, r) = target;
             
             return partitionsMatrix;
@@ -777,17 +781,17 @@ namespace Partitions {
                 for (int j = 0; j < r; ++j, ++k)
                     partitionsMatrix(i, j) = partitionsVec[k];
                 
-                if (xtraCol)
-                    for (std::size_t i = 0; i < numResult; ++i)
-                        partitionsMatrix(i, r) = target;
+            if (xtraCol)
+                for (std::size_t i = 0; i < numResult; ++i)
+                    partitionsMatrix(i, r) = target;
                     
-                    if (partitionLen >= upperBound) {
-                        Rcpp::warning("The algorithm terminated early as the number of results "
-                                      "meeting the criteria exceeds the container's maximum "
-                                      "capacity or 2^31 - 1");
-                    }
-                    
-                    return partitionsMatrix;
+            if (partitionLen >= upperBound) {
+                Rcpp::warning("The algorithm terminated early as the number of results "
+                              "meeting the criteria exceeds the container's maximum "
+                              "capacity or 2^31 - 1");
+            }
+            
+            return partitionsMatrix;
         } else {
             typeRcpp trivialRet(0, r);
             return trivialRet;
