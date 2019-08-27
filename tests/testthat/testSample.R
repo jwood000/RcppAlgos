@@ -123,20 +123,20 @@ test_that("permuteSample produces correct results", {
     expect_equal(permuteSample(factor(state.name), 20, sampleVec = 1e12),
                  permuteGeneral(factor(state.name), 20, lower = 1e12, upper = 1e12))
 
-    expect_equal(permuteSample(500, 100, n = 10, seed = 42),
-                 permuteSample(500, 100, n = 10, seed = 42, nThreads = 2))
+    expect_equal(permuteSample(500, 100, n = 5, seed = 42),
+                 permuteSample(500, 100, n = 5, seed = 42, nThreads = 2))
 
-    expect_equal(permuteSample(100, 20, n = 10, seed = 42),
-                 permuteSample(100, 20, n = 10, seed = 42, nThreads = 2))
+    expect_equal(permuteSample(100, 20, n = 5, seed = 42),
+                 permuteSample(100, 20, n = 5, seed = 42, nThreads = 2))
 
-    expect_equal(permuteSample(100, 20, TRUE, n = 10, seed = 42),
-                 permuteSample(100, 20, TRUE, n = 10, seed = 42, nThreads = 2))
+    expect_equal(permuteSample(100, 20, TRUE, n = 5, seed = 42),
+                 permuteSample(100, 20, TRUE, n = 5, seed = 42, nThreads = 2))
 
-    expect_equal(permuteSample(75, 10, freqs = rep(1:3, 25), n = 10, seed = 42),
-                 permuteSample(75, 10, freqs = rep(1:3, 25), n = 10, seed = 42, nThreads = 2))
+    expect_equal(permuteSample(75, 10, freqs = rep(1:3, 25), n = 5, seed = 42),
+                 permuteSample(75, 10, freqs = rep(1:3, 25), n = 5, seed = 42, nThreads = 2))
     
-    expect_equal(permuteSample(c(TRUE, FALSE), 20, freqs = c(10, 15), seed = 97, n = 20), 
-                 permuteSample(c(TRUE, FALSE), 20, freqs = c(10, 15), seed = 97, n = 20, nThreads = 2))
+    expect_equal(permuteSample(c(TRUE, FALSE), 20, freqs = c(10, 15), seed = 97, n = 5), 
+                 permuteSample(c(TRUE, FALSE), 20, freqs = c(10, 15), seed = 97, n = 5, nThreads = 2))
 })
 
 test_that("comboSample produces correct results when FUN is applied", {
@@ -180,9 +180,9 @@ test_that("permuteSample produces correct results when FUN is applied", {
     vec <- runif(6, -1e4, 1e4)
     num <- permuteCount(6, 5, TRUE)
     samp <- sample(num, 100)
-    expect_equal(permuteSample(vec, 7, TRUE, sampleVec = samp, FUN = function(x) {
+    expect_equal(permuteSample(vec, 5, TRUE, sampleVec = samp, FUN = function(x) {
         mean(dcauchy(x))
-    }), permuteGeneral(vec, 7, TRUE, FUN = function(x) mean(dcauchy(x)))[samp])
+    }), permuteGeneral(vec, 5, TRUE, FUN = function(x) mean(dcauchy(x)))[samp])
     
     set.seed(17)
     vec <- runif(8, -1e4, 1e4)
