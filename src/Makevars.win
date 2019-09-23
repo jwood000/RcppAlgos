@@ -1,6 +1,0 @@
-CXX_STD = CXX14
-CXX14="$(BINPREF)g++ $(M_ARCH)"
-CXX14FLAGS="-O2 -Wall" 
-CXX14STD=-std=gnu1y
-PKG_CPPFLAGS = -I../inst/include/
-PKG_LIBS = -lgmp
