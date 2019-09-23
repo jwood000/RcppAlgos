@@ -2,7 +2,7 @@
 #define CLEAN_CONVERT_H
 
 #include "importExportMPZ.h"
-#include <memory>
+#include "Cpp14MakeUnique.h"
 
 constexpr double Significand53 = 9007199254740991.0;
 
@@ -159,7 +159,7 @@ namespace CleanConvert {
                 if (numOnly)
                     Rcpp::stop(nameOfObject + " must be of type numeric or integer");
                 
-                auto temp = std::make_unique<mpz_t[]>(total);
+                auto temp = FromCpp14::make_unique<mpz_t[]>(total);
                 
                 for (int i = 0; i < total; ++i)
                     mpz_init(temp[i]);
