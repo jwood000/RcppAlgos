@@ -5,18 +5,9 @@ sudo: required
 warnings_are_errors: false
 cache: packages
 
-before_install:
-  - sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-6 60 --slave /usr/bin/g++ g++ /usr/bin/g++-6
-  - Rscript -e 'update.packages(ask = FALSE)'
-  - mkdir -p ~/.R
-  - echo "CXX14FLAGS=-O3 -mtune=native -march=native -Wno-unused-variable -Wno-unused-function  -Wno-macro-redefined" >> ~/.R/Makevars
-  - echo "CXX14=g++ -std=c++1y -fPIC" >> ~/.R/Makevars
 addons:
   apt:
-    sources:
-      - ubuntu-toolchain-r-test
     packages:
-      - g++-6
       - libgmp3-dev
       
 after_success:
