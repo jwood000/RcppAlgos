@@ -275,6 +275,41 @@ test_that("comboGeneral produces correct results for special subset sum", {
     expect_true(testMultiset(pS, 2, frqs = 1:6, f = "mean", isExact = F))
     expect_true(testMultiset(pS, 6, frqs = 1:6, f = "mean", isExact = F))
     expect_true(testMultiset(pS, 8, frqs = 1:6, f = "mean", isExact = F))
+    
+    
+    ## ******************* Testing Distinct Partitions ******************* ##
+    expect_equal(nrow(comboGeneral(0:100, 4, freqs = c(20, rep(1, 100)),
+                                     constraintFun = "sum", 
+                                     comparisonFun = "==", 
+                                     limitConstraints = 100)), 6786)
+    
+    expect_equal(nrow(comboGeneral(0:100, freqs = c(12, rep(1, 100)), 
+                                   constraintFun = "sum", 
+                                   comparisonFun = "==", limitConstraints = 100)), 444793)
+    
+    expect_equal(nrow(comboGeneral(0:100, 5, freqs = c(12, rep(1, 100)), 
+                                   constraintFun = "sum", 
+                                   comparisonFun = "==", limitConstraints = 100)), 32123)
+    
+    expect_equal(nrow(comboGeneral(0:10, 3, 
+                                   constraintFun = "sum", 
+                                   comparisonFun = "==", 
+                                   limitConstraints = 10)), 8)
+    
+    expect_equal(nrow(permuteGeneral(0:10, constraintFun = "sum",
+                                     comparisonFun = "==", limitConstraints = 10)), 48)
+    
+    expect_equal(nrow(permuteGeneral(0:10, 4, constraintFun = "sum",
+                                     comparisonFun = "==", limitConstraints = 10)), 120)
+    
+    expect_equal(nrow(permuteGeneral(10, 3, constraintFun = "sum",
+                                     comparisonFun = "==", limitConstraints = 10)), 24)
+    
+    expect_equal(nrow(permuteGeneral(0:10, repetition = TRUE, constraintFun = "sum",
+                                     comparisonFun = "==", limitConstraints = 10)), 512)
+    
+    expect_equal(nrow(permuteGeneral(0:10, 10, repetition = TRUE, constraintFun = "sum",
+                                     comparisonFun = "==", limitConstraints = 10)), 92378)
 })
 
 test_that("permuteGeneral produces correct results for special subset sum", {
