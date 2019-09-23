@@ -1,5 +1,5 @@
 #include "CombPermUtils.h"
-#include <memory>
+#include "Cpp14MakeUnique.h"
 #include <gmp.h>
 
 // All functions below are exactly the same as the functions
@@ -62,8 +62,8 @@ void MultisetCombRowNumGmp(mpz_t result, int n, int r, const std::vector<int> &R
         if (myMax > Reps[0] + 1)
             myMax = Reps[0] + 1;
 
-        auto triangleVec = std::make_unique<mpz_t[]>(r1);
-        auto temp = std::make_unique<mpz_t[]>(r1);
+        auto triangleVec = FromCpp14::make_unique<mpz_t[]>(r1);
+        auto temp = FromCpp14::make_unique<mpz_t[]>(r1);
         
         for (int i = 0; i < r1; ++i) {
             mpz_init(triangleVec[i]);
@@ -171,8 +171,8 @@ void MultisetPermRowNumGmp(mpz_t result, int n, int r, const std::vector<int> &m
         
         const std::size_t uR1 = r + 1;
         const int myMax = (r < maxFreq) ? (r + 2) : (maxFreq + 2);
-        auto cumProd = std::make_unique<mpz_t[]>(myMax);
-        auto resV = std::make_unique<mpz_t[]>(uR1);
+        auto cumProd = FromCpp14::make_unique<mpz_t[]>(myMax);
+        auto resV = FromCpp14::make_unique<mpz_t[]>(uR1);
         
         for (int i = 0; i < myMax; ++i)
             mpz_init(cumProd[i]);

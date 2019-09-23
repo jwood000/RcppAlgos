@@ -2,8 +2,8 @@
 #define PERMUTATIONS_H
 
 #include "CombPermUtils.h"
+#include "Cpp14MakeUnique.h"
 #include <RcppThread.h>
-#include <memory>
 
 constexpr std::size_t unrollSize = 8u;
 
@@ -90,7 +90,7 @@ void PermuteLoadIndex(std::size_t n, std::size_t r, const typeVector &v,
             }
         }
     } else {
-        auto arrPerm = std::make_unique<int[]>(n);
+        auto arrPerm = FromCpp14::make_unique<int[]>(n);
         
         for (std::size_t i = 0u; i < n; ++i)
             arrPerm[i] = z[i];
@@ -123,7 +123,7 @@ void PermuteParallel(std::size_t n, std::size_t r, typeVector v, bool IsRep,
                      typeMatrix &permuteMatrix, int nThreads) {
 
     const std::size_t first = (IsRep) ? 1u : 0u;
-    auto indexMat = std::make_unique<int[]>(segment * (r - first));
+    auto indexMat = FromCpp14::make_unique<int[]>(segment * (r - first));
     PermuteLoadIndex(n, r, v, IsRep, segment, z, permuteMatrix, indexMat.get());
     
     std::size_t unrollRem = segment % unrollSize;
@@ -165,7 +165,7 @@ void PermuteSerialDriver(std::size_t n, std::size_t r, typeVector v, bool IsRep,
                          std::size_t segment, std::vector<int> &z, typeMatrix &permuteMatrix) {
     
     const std::size_t first = (IsRep) ? 1u : 0u;
-    auto indexMat = std::make_unique<int[]>(segment * (r - first));
+    auto indexMat = FromCpp14::make_unique<int[]>(segment * (r - first));
     PermuteLoadIndex(n, r, v, IsRep, segment, z, permuteMatrix, indexMat.get());
     
     std::size_t unrollRem = segment % unrollSize;
@@ -230,7 +230,7 @@ void PermuteGeneral(std::size_t n, std::size_t r, const typeVector &v,
         }
     } else {
         const std::size_t numR1 = uRowN - 1u;
-        auto arrPerm = std::make_unique<int[]>(n);
+        auto arrPerm = FromCpp14::make_unique<int[]>(n);
         
         for (std::size_t i = 0u; i < n; ++i)
             arrPerm[i] = z[i];
@@ -262,7 +262,7 @@ void MultisetPermutation(std::size_t n, std::size_t r, const typeVector &v, std:
                          std::vector<int> &z, int intCount, typeMatrix &permuteMatrix) {
     
     const std::size_t lenFreqs = z.size();
-    auto arrPerm = std::make_unique<int[]>(lenFreqs);
+    auto arrPerm = FromCpp14::make_unique<int[]>(lenFreqs);
     
     const std::size_t numR1 = uRowN - 1;
     const std::size_t lastCol = r - 1;
@@ -325,7 +325,7 @@ void PermutationApplyFun(std::size_t n, std::size_t r, const typeVector &v, bool
         }
     } else {
         const std::size_t arrLength = maxInd + 1;
-        auto arrPerm = std::make_unique<int[]>(arrLength);
+        auto arrPerm = FromCpp14::make_unique<int[]>(arrLength);
         
         for (std::size_t i = 0; i < arrLength; ++i)
             arrPerm[i] = z[i];

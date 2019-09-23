@@ -339,7 +339,7 @@ SEXP SampleRcpp(SEXP Rv, SEXP Rm, SEXP Rrepetition, SEXP RFreqs, SEXP RindexVec,
     }
     
     std::size_t gmpSize = (IsGmp) ? sampSize : 1;
-    auto myVec = std::make_unique<mpz_t[]>(gmpSize);
+    auto myVec = FromCpp14::make_unique<mpz_t[]>(gmpSize);
     
     if (IsGmp) {
         if (!Rf_isNull(RindexVec)) {

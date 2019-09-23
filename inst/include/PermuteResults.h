@@ -3,7 +3,7 @@
 
 #include "CombPermUtils.h"
 #include "ConstraintsUtils.h"
-#include <memory>
+#include "Cpp14MakeUnique.h"
 
 template <typename typeMatrix, typename typeVector>
 void PermuteGenRes(std::size_t n, std::size_t r, const std::vector<typeVector> &v, 
@@ -38,7 +38,7 @@ void PermuteGenRes(std::size_t n, std::size_t r, const std::vector<typeVector> &
     } else {
         
         const std::size_t numR1 = uRowN - 1u;
-        auto arrPerm = std::make_unique<int[]>(n);
+        auto arrPerm = FromCpp14::make_unique<int[]>(n);
 
         for (std::size_t i = 0u; i < n; ++i)
             arrPerm[i] = z[i];
@@ -93,7 +93,7 @@ void MultisetPermRes(std::size_t n, std::size_t r, const std::vector<typeVector>
     
     const std::size_t lenFreqs = z.size();
     const std::size_t lastCol = r - 1u;
-    auto arrPerm = std::make_unique<int[]>(lenFreqs);
+    auto arrPerm = FromCpp14::make_unique<int[]>(lenFreqs);
     std::vector<typeVector> vPass(r);
     
     const std::size_t numR1 = numRows - 1u;
