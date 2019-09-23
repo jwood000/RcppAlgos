@@ -5,7 +5,7 @@
 #include "Permutations.h"
 #include "ComboResults.h"
 #include "PermuteResults.h"
-#include "GeneralPartitions.h"
+#include "PartitionsMaster.h"
 
 const std::vector<std::string> compForms = {"<", ">", "<=", ">=", "==", "=<", "=>"};
 const std::vector<std::string> compSpecial = {"==", ">,<", ">=,<", ">,<=", ">=,<="};
@@ -47,8 +47,10 @@ void GeneralReturn(int n, int r, std::vector<typeVector> v, bool IsRep, int nRow
     }
 }
 
-// This is called when we can't easily produce a monotonic sequence overall,
-// and we must generate and test every possible combination/permutation
+// This is called when we can't easily produce a (loose) monotonic sequence overall,
+// and we must generate and test every possible combination/permutation. This occurs
+// when we are using "prod" and we have negative numbers involved. We also call this
+// when lower is invoked implying that we are testing a specific range.
 template <typename typeRcpp, typename typeVector>
 typeRcpp SpecCaseRet(int n, int m, std::vector<typeVector> v, bool IsRep, int nRows, 
                      bool keepRes, std::vector<int> z, double lower, std::string mainFun, 
@@ -124,19 +126,19 @@ typeRcpp SpecCaseRet(int n, int m, std::vector<typeVector> v, bool IsRep, int nR
 }
 
 template <typename typeVector>
-inline void BruteNextElem(int &ind, int lowBnd, typeVector targetMin, typeVector targetMax,
-                          typeVector partial, std::size_t uR, const std::vector<typeVector> &v,
+inline void BruteNextElem(int &ind, int lowBnd, typeVector targetMin, typeVector partial,
+                          std::size_t uR, const std::vector<typeVector> &v,
                           partialPtr<typeVector> partialFun) {
     
-    typeVector dist = targetMax - partialFun(partial, v[ind], uR);
+    typeVector dist = targetMin - partialFun(partial, v[ind], uR);
     int origInd = ind;
     
     while (ind > lowBnd && dist < 0) {
         --ind;
-        dist = targetMax - partialFun(partial, v[ind], uR);
+        dist = targetMin - partialFun(partial, v[ind], uR);
     }
     
-    if ((targetMin - partialFun(partial, v[ind], uR)) > 0 && origInd != ind) {++ind;}
+    if (dist > 0 && origInd != ind) {++ind;}
 }
 
 template <typename typeVector>
@@ -181,7 +183,7 @@ int GetLowerBound(int n, int r, const std::vector<typeVector> &v, bool isRep, bo
     
     typeVector partial = constraintFun(vPass, uR - 1);
     const typeVector testMax = partialFun(partial, vPass.back(), uR);
-    if (testMax < targetMin)  {return Partitions::noSoln;}
+    if (testMax < targetMin)  {return 0;}
 
     if (isRep) {
         std::fill(vPass.begin(), vPass.end(), v[0]);
@@ -193,7 +195,7 @@ int GetLowerBound(int n, int r, const std::vector<typeVector> &v, bool isRep, bo
     }
 
     const typeVector testMin = constraintFun(vPass, uR);
-    if (testMin > targetMax)  {return Partitions::noSoln;}
+    if (testMin > targetMax)  {return 0;}
 
     int zExpCurrPos = (isMult) ? freqs.size() - r : 0;
     int currPos = (isMult) ? freqs[zExpCurrPos] : ((isRep) ? lastElem : (n - r));
@@ -206,7 +208,7 @@ int GetLowerBound(int n, int r, const std::vector<typeVector> &v, bool isRep, bo
         repsCounter.assign(Reps.cbegin(), Reps.cend());
     
     for (int i = 0; i < lastCol; ++i) {
-        BruteNextElem(ind, lowBnd, targetMin, targetMax, partial, uR, v, partialFun);
+        BruteNextElem(ind, lowBnd, targetMin, partial, uR, v, partialFun);
         z[i] = ind;
         partial = partialFun(partial, v[ind], uR);
         
@@ -228,9 +230,9 @@ int GetLowerBound(int n, int r, const std::vector<typeVector> &v, bool isRep, bo
         partial = PartialReduce(r, partial, v[currPos], myFun);
     }
 
-    BruteNextElem(ind, lowBnd, targetMin, targetMax, partial, uR, v, partialFun);
+    BruteNextElem(ind, lowBnd, targetMin, partial, uR, v, partialFun);
     z[lastCol] = ind;
-    return Partitions::solnExists;
+    return 1;
 }
 
 // This function applys a constraint function to a vector v with respect
@@ -238,12 +240,12 @@ int GetLowerBound(int n, int r, const std::vector<typeVector> &v, bool isRep, bo
 // successively, until a particular combination exceeds the given constraint
 // value for a given constraint function. After this point, we can safely skip
 // several combinations knowing that they will exceed the given constraint value.
-
 template <typename typeRcpp, typename typeVector>
 typeRcpp CombinatoricsConstraints(int n, int r, std::vector<typeVector> &v, bool isRep, 
                                   std::string myFun, std::vector<std::string> comparison,
-                                  std::vector<typeVector> targetVals, double numRows, bool isComb,
-                                  bool xtraCol, std::vector<int> &Reps, bool isMult, bool bUserRows) {
+                                  std::vector<typeVector> targetVals, double numRows, 
+                                  bool isComb, bool xtraCol, std::vector<int> &Reps, 
+                                  bool isMult, bool bUserRows, bool between) {
     
     // myFun is one of the following general functions: "prod", "sum", "mean", "min", or "max";
     // The comparison vector is a comparison operator: 
@@ -251,7 +253,7 @@ typeRcpp CombinatoricsConstraints(int n, int r, std::vector<typeVector> &v, bool
     
     typeVector testVal;
     std::size_t count = 0;
-    const bool partitionEsque = (comparison[0] == "==" && n > 1 && r > 1 && myFun != "max" && myFun != "min");
+    const bool partitionEsque = ((comparison[0] == "==" || between) && n > 1 && myFun != "max" && myFun != "min");
     const std::size_t maxRows = std::min(static_cast<double>(std::numeric_limits<int>::max()), numRows);
     
     const std::size_t uR = r;
@@ -527,7 +529,7 @@ typeRcpp CombinatoricsConstraints(int n, int r, std::vector<typeVector> &v, bool
                 
                 const int nMinusR = (n - r);
                 int indexRows = isComb ? 0 : static_cast<int>(NumPermsNoRep(r, r1));
-                auto indexMatrix = std::make_unique<int[]>(indexRows * r);
+                auto indexMatrix = FromCpp14::make_unique<int[]>(indexRows * r);
                 
                 if (!isComb) {
                     indexRows = static_cast<int>(NumPermsNoRep(r, r1));
