@@ -21,7 +21,6 @@ void CharacterReturn(int n, int r, Rcpp::CharacterVector v, bool IsRep, int nRow
                      std::vector<int> z, bool permNonTriv, bool IsMultiset,
                      bool keepRes, Rcpp::CharacterMatrix &matRcpp, int count,
                      std::size_t phaseOne) {
-    
     if (IsComb) {
         if (IsMultiset)
             MultisetCombination(n, r, v, myReps, freqs, count, nRows, z, matRcpp);
@@ -54,7 +53,7 @@ void ApplyFunction(int n, int r, typeVector sexpVec, bool IsRep, int nRows, bool
 // Check if our function operating on the rows of our matrix can possibly produce elements
 // greater than std::numeric_limits<int>::max(). We need a NumericMatrix in this case. We also need to check
 // if our function is the mean as this can produce non integral values.
-bool checkIsInteger(const std::string &funPass, std::size_t uM, int n,
+bool CheckIsInteger(const std::string &funPass, std::size_t uM, int n,
                     std::vector<double> vNum, std::vector<double> targetVals,
                     funcPtr<double> myFunDbl, bool checkLim = false) {
     
@@ -90,7 +89,7 @@ bool checkIsInteger(const std::string &funPass, std::size_t uM, int n,
     return true;
 }
 
-void getStartZ(int n, int r, double &lower, int stepSize, mpz_t &lowerMpz, bool IsRep,
+void GetStartZ(int n, int r, double &lower, int stepSize, mpz_t &lowerMpz, bool IsRep,
                bool IsComb, bool IsMultiset, bool isGmp, std::vector<int> &myReps,
                std::vector<int> &freqsExpanded, std::vector<int> &startZ) {
     
@@ -136,7 +135,7 @@ void MasterReturn(int n, int r, std::vector<typeElem> v, bool IsRep, bool IsComb
                           n, r, v, IsRep, nextStep, IsComb, myReps, freqsExpanded, startZ,
                           generalReturn, IsMult, myFun, keepRes, std::ref(parMat), step, phaseOne);
                 
-                getStartZ(n, r, lower, stepSize, lowerMpz, IsRep, 
+                GetStartZ(n, r, lower, stepSize, lowerMpz, IsRep, 
                           IsComb, IsMult, IsGmp, myReps, freqsExpanded, startZ);
             }
             
@@ -151,6 +150,17 @@ void MasterReturn(int n, int r, std::vector<typeElem> v, bool IsRep, bool IsComb
     } else {
         GeneralReturn(n, r, v, IsRep, nRows, IsComb, myReps, freqsExpanded, 
                       startZ, generalReturn, IsMult, myFun, keepRes, matRcpp, 0, phaseOne);
+    }
+}
+
+void CheckBounds(bool IsGmp, double lower, double upper, double computedRows,
+                 mpz_t lowerMpz, mpz_t upperMpz, mpz_t computedRowMpz) {
+    if (IsGmp) {
+        if (mpz_cmp(lowerMpz, computedRowMpz) >= 0 || mpz_cmp(upperMpz, computedRowMpz) > 0)
+            Rcpp::stop("bounds cannot exceed the maximum number of possible results");
+    } else {
+        if (lower >= computedRows || upper > computedRows)
+            Rcpp::stop("bounds cannot exceed the maximum number of possible results");
     }
 }
 
@@ -203,27 +213,26 @@ SEXP CombinatoricsRcpp(SEXP Rv, SEXP Rm, SEXP RisRep, SEXP RFreqs, SEXP Rlow,
     } else {
         IsRepetition = false;
         CleanConvert::convertVector(RFreqs, myReps, "freqs");
-        int testTrivial = std::accumulate(myReps.cbegin(), myReps.cend(), 0);
         lenFreqs = static_cast<int>(myReps.size());
-        
-        if (testTrivial > lenFreqs) {
+        bool allOne = std::all_of(myReps.cbegin(), myReps.cend(), 
+                                    [](int v_i) {return v_i == 1;});
+        if (allOne) {
+            IsMultiset = false;
+            freqsExpanded = myReps;
+        } else {
             IsMultiset = true;
             
             for (int i = 0; i < lenFreqs; ++i)
                 for (int j = 0; j < myReps[i]; ++j)
                     freqsExpanded.push_back(i);
-        } else {
-            IsMultiset = false;
-            freqsExpanded = myReps;
         }
     }
     
-    if (Rf_isNull(Rm)) {
-        if (!freqsExpanded.empty()) {
+    const bool mIsNull = Rf_isNull(Rm);
+    
+    if (mIsNull) {
+        if (!freqsExpanded.empty())
             m = freqsExpanded.size();
-        } else {
-            Rcpp::stop("m and freqs cannot both be NULL");
-        }
     } else {
         if (Rf_length(Rm) > 1)
             Rcpp::stop("length of m must be 1");
@@ -285,7 +294,8 @@ SEXP CombinatoricsRcpp(SEXP Rv, SEXP Rm, SEXP RisRep, SEXP RFreqs, SEXP Rlow,
             
         n = vNum.size();
     }
-
+    
+    if (!IsMultiset && mIsNull && freqsExpanded.empty()) {m = n;}
     double computedRows = 0;
     
     if (IsMultiset) {
@@ -380,13 +390,11 @@ SEXP CombinatoricsRcpp(SEXP Rv, SEXP Rm, SEXP RisRep, SEXP RFreqs, SEXP Rlow,
     }
     
     // N.B. for the lower analogs we are using >= as we have subtracted one
-    if (IsGmp) {
-        if (mpz_cmp(lowerMpz[0], computedRowMpz) >= 0 || mpz_cmp(upperMpz[0], computedRowMpz) > 0)
-            Rcpp::stop("bounds cannot exceed the maximum number of possible results");
-    } else {
-        if (lower >= computedRows || upper > computedRows)
-            Rcpp::stop("bounds cannot exceed the maximum number of possible results");
-    }
+    // Also, we are postponing this lower is not given and IsConstrained is true
+    // as there is a possibility that are computed number of results is not
+    // correct. This can happen in cases where we are finding partitions.
+    if (!(IsConstrained && !bLower))
+        CheckBounds(IsGmp, lower, upper, computedRows, lowerMpz[0], upperMpz[0], computedRowMpz);
     
     if (IsCount) {
         if (IsGmp) {
@@ -485,6 +493,7 @@ SEXP CombinatoricsRcpp(SEXP Rv, SEXP Rm, SEXP RisRep, SEXP RFreqs, SEXP Rlow,
             
             userNumRows = mpz_get_d(testBound);
         }
+        
         mpz_clear(testBound);
     } else {
         if (bLower && bUpper)
@@ -497,8 +506,8 @@ SEXP CombinatoricsRcpp(SEXP Rv, SEXP Rm, SEXP RisRep, SEXP RFreqs, SEXP Rlow,
     
     if (userNumRows == 0) {
         if (bLower && bUpper) {
-            // Since lower is decremented and upper isn't, this implies that
-            // upper - lower = 0 means that lower is one larger than upper as put in by the user
+            // Since lower is decremented and upper isn't, this implies that upper - lower = 0
+            // which means that lower is one larger than upper as put in by the user
             
             Rcpp::stop("The number of rows must be positive. Either the lowerBound "
                            "exceeds the maximum number of possible results or the "
@@ -550,7 +559,9 @@ SEXP CombinatoricsRcpp(SEXP Rv, SEXP Rm, SEXP RisRep, SEXP RFreqs, SEXP Rlow,
             Parallel = false;
         }
     } else if (Parallel) {
-        nThreads = (maxThreads > 2) ? (maxThreads - 1) : 2;
+        // We have already ruled out cases when the user has fewer than 2 
+        // threads. So if user has exactly 2 threads, we enable them both.
+        nThreads = (maxThreads > 2) ? (maxThreads - 1) : maxThreads;
         
         // Ensure that each thread has at least 10000
         if ((nRows / nThreads) < 10000)
@@ -581,19 +592,21 @@ SEXP CombinatoricsRcpp(SEXP Rv, SEXP Rm, SEXP RisRep, SEXP RFreqs, SEXP Rlow,
         for (std::size_t i = 0; i < compFunVec.size(); ++i) {
             itComp = std::find(compForms.cbegin(), compForms.cend(), compFunVec[i]);
             
-            if (itComp == compForms.end())
-                Rcpp::stop("comparison operators must be one of the following: '>', '>=', '<', '<=', or '=='");
-                
+            if (itComp == compForms.end()) {
+                Rcpp::stop("comparison operators must be one of the following: "
+                               "'>', '>=', '<', '<=', or '=='");
+            }
+            
             int myIndex = std::distance(compForms.cbegin(), itComp);
             
             // The first 5 are "standard" whereas the 6th and 7th
             // are written with the equality first. Converting
             // them here makes it easier to deal with later.
-            if (myIndex > 4)
-                myIndex -= 3;
-            
+            if (myIndex > 4) {myIndex -= 3;}
             compFunVec[i] = compForms[myIndex];
         }
+        
+        bool between = false;
         
         if (compFunVec.size() == 2) {
             if (targetVals.size() == 1) {
@@ -610,8 +623,6 @@ SEXP CombinatoricsRcpp(SEXP Rv, SEXP Rm, SEXP RisRep, SEXP RFreqs, SEXP Rlow,
                           "comparisonFuns (E.g. c('<', '<=') is not allowed).");
                 }
                 
-                bool sortNeeded = false;
-                
                 // The two cases below are for when we are looking for all combs/perms such that when
                 // myFun is applied, the result is between 2 values. These comparisons are defined in 
                 // compSpecial in ConstraintsMaster.h. If we look at the definitions of these comparison
@@ -627,20 +638,17 @@ SEXP CombinatoricsRcpp(SEXP Rv, SEXP Rm, SEXP RisRep, SEXP RFreqs, SEXP Rlow,
                 
                 if (compFunVec[0].substr(0, 1) == ">" && std::min(targetVals[0], targetVals[1]) == targetVals[0]) {
                     compFunVec[0] = compFunVec[0] + "," + compFunVec[1];
-                    sortNeeded = true;
+                    between = true;
                 } else if (compFunVec[0].substr(0, 1) == "<" && std::max(targetVals[0], targetVals[1]) == targetVals[0]) {
                     compFunVec[0] = compFunVec[1] + "," + compFunVec[0];
-                    sortNeeded = true;
+                    between = true;
                 }
                 
-                if (sortNeeded) {
-                    if (std::max(targetVals[0], targetVals[1]) == targetVals[1]) {
-                        double temp = targetVals[0];
-                        targetVals[0] = targetVals[1];
-                        targetVals[1] = temp;
-                    }
-                    
+                if (between) {
                     compFunVec.pop_back();
+                    
+                    if (std::max(targetVals[0], targetVals[1]) == targetVals[1])
+                        std::swap(targetVals[0], targetVals[1]);
                 }
             }
         } else {
@@ -651,7 +659,7 @@ SEXP CombinatoricsRcpp(SEXP Rv, SEXP Rm, SEXP RisRep, SEXP RFreqs, SEXP Rlow,
         Rcpp::XPtr<funcPtr<double>> xpFunDbl = putFunPtrInXPtr<double>(mainFun);
         funcPtr<double> myFunDbl = *xpFunDbl;
         
-        IsInteger = (IsInteger) && checkIsInteger(mainFun, uM, n, vNum, targetVals, myFunDbl, true);
+        IsInteger = (IsInteger) && CheckIsInteger(mainFun, uM, n, vNum, targetVals, myFunDbl, true);
         // Must be defined inside IsInteger check as targetVals could be outside integer data type range
         std::vector<int> targetIntVals;
         double tolerance = 0;
@@ -737,6 +745,8 @@ SEXP CombinatoricsRcpp(SEXP Rv, SEXP Rm, SEXP RisRep, SEXP RFreqs, SEXP Rlow,
         }
         
         if (SpecialCase) {
+            CheckBounds(IsGmp, lower, upper, computedRows, lowerMpz[0], upperMpz[0], computedRowMpz);
+            
             if (IsInteger) {
                 return SpecCaseRet<Rcpp::IntegerMatrix>(n, m, vInt, IsRepetition, nRows, keepRes, startZ, lower,
                                                         mainFun, IsMultiset, computedRows, compFunVec, targetIntVals, IsComb,
@@ -775,23 +785,25 @@ SEXP CombinatoricsRcpp(SEXP Rv, SEXP Rm, SEXP RisRep, SEXP RFreqs, SEXP Rlow,
                     if (target64 == targetVals[0]) {
                         if (IsInteger) {
                             return Partitions::GeneralPartitions<Rcpp::IntegerMatrix>(n, m, v64, target64, IsRepetition, IsMultiset,
-                                                                                      myReps, userNumRows, IsComb, keepRes, bUserRows);
+                                                                                      myReps, userNumRows, IsComb, keepRes, bUserRows, mIsNull);
                         } else {
                             return Partitions::GeneralPartitions<Rcpp::NumericMatrix>(n, m, v64, target64, IsRepetition, IsMultiset,
-                                                                                      myReps, userNumRows, IsComb, keepRes, bUserRows);
+                                                                                      myReps, userNumRows, IsComb, keepRes, bUserRows, mIsNull);
                         }
                     }
                 }
             }
         }
         
+        CheckBounds(IsGmp, lower, upper, computedRows, lowerMpz[0], upperMpz[0], computedRowMpz);
+        
         if (IsInteger) {
             return CombinatoricsConstraints<Rcpp::IntegerMatrix>(n, m, vInt, IsRepetition, mainFun, compFunVec, targetIntVals,
-                                                                 userNumRows, IsComb, keepRes, myReps, IsMultiset, bUserRows);
+                                                                 userNumRows, IsComb, keepRes, myReps, IsMultiset, bUserRows, between);
         }
         
         return CombinatoricsConstraints<Rcpp::NumericMatrix>(n, m, vNum, IsRepetition, mainFun, compFunVec, targetVals,
-                                                             userNumRows, IsComb, keepRes, myReps, IsMultiset, bUserRows);
+                                                             userNumRows, IsComb, keepRes, myReps, IsMultiset, bUserRows, between);
     } else {
         bool applyFun = !Rf_isNull(stdFun) && !IsFactor;
 
@@ -845,7 +857,7 @@ SEXP CombinatoricsRcpp(SEXP Rv, SEXP Rm, SEXP RisRep, SEXP RFreqs, SEXP Rlow,
             myFunDbl = *xpFunDbl;
             myFunInt = *xpFunInt;
             
-            IsInteger = (IsInteger) && checkIsInteger(mainFun, uM, n, vNum, vNum, myFunDbl);
+            IsInteger = (IsInteger) && CheckIsInteger(mainFun, uM, n, vNum, vNum, myFunDbl);
             ++nCol;
         }
         
