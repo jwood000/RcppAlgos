@@ -1,4 +1,5 @@
-#include <Rcpp.h>
+#include "CountGmp.h"
+#include "CleanConvert.h"
 
 // Most of the code for rleCpp was obtained
 // from Hadley Wickham's article titled 
@@ -43,9 +44,13 @@ double NumPermsWithRep(const std::vector<int> &v) {
 }
 
 double NumPermsNoRep(int n, int k) {
-    double dblN = static_cast<double>(n), result = 1;
-    double m = dblN - static_cast<double>(k);
-    for (double i = n; i > m; --i) {result *= i;}
+    const double dblN = static_cast<double>(n);
+    const double nMinusK = dblN - static_cast<double>(k);
+    double result = 1.0;
+    
+    for (double i = n; i > nMinusK; --i)
+        result *= i;
+    
     return result;
 }
 
@@ -172,22 +177,35 @@ double MultisetPermRowNum(int n, int r, const std::vector<int> &myReps) {
     if (r > sumFreqs)
         return 0.0;
     
-     const int n1 = n - 1;
-     const int maxFreq = *std::max_element(myReps.cbegin(), myReps.cend());
+    const int n1 = n - 1;
+    const int maxFreq = *std::max_element(myReps.cbegin(), myReps.cend());
+    const int myMax = (r < maxFreq) ? (r + 1) : (maxFreq + 1);
+    
+    // factorial(171)
+    // [1] Inf 
+    // factorial(170)
+    // [1] 7.257416e+306
+    if (myMax > 170 || r > 170) {
+        mpz_t result;
+        mpz_init(result);
+        MultisetPermRowNumGmp(result, n, r, myReps);
+        
+        if (mpz_cmp_d(result, Significand53) > 0)
+            return std::numeric_limits<double>::infinity();
+        else
+            return mpz_get_d(result);
+    }
     
     std::vector<int> seqR(r);
     std::iota(seqR.begin(), seqR.end(), 1);
     const double prodR = std::accumulate(seqR.cbegin(), seqR.cend(), 
                                          1.0, std::multiplies<double>());
     
-    const int myMax = (r < maxFreq) ? (r + 1) : (maxFreq + 1);
-    std::vector<double> cumProd(myMax), resV(r + 1, 0.0);
-    
     // Create seqeunce from 1 to myMax, then add another
     // 1 at the front... equivalent to c(1, 1:myMax)
+    std::vector<double> cumProd(myMax), resV(r + 1, 0.0);
     std::iota(cumProd.begin(), cumProd.end(), 1);
     cumProd.insert(cumProd.begin(), 1);
-    
     std::partial_sum(cumProd.begin(), cumProd.end(), 
                      cumProd.begin(), std::multiplies<double>());
     
