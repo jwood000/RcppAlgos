@@ -1,9 +1,28 @@
 # R for travis: see documentation at https://docs.travis-ci.com/user/languages/r
 language: R
-dist: trusty
-sudo: required
 warnings_are_errors: false
 cache: packages
+
+    
+matrix:
+  include:
+    - os: linux
+      dist: trusty
+      sudo: required
+      r: release
+    - os: linux
+      dist: trusty
+      sudo: required
+      r: devel
+    - os: osx
+      sudo: required
+      r: release
+
+before_install:
+  - if [ $TRAVIS_OS_NAME == linux ]; then sudo add-apt-repository ppa:ubuntu-toolchain-r/test -y; fi
+  - if [ $TRAVIS_OS_NAME == linux ]; then sudo apt-get update -q; fi
+  - if [ $TRAVIS_OS_NAME == linux ]; then sudo apt-get install g++-4.9 -y; fi
+  - if [ $TRAVIS_OS_NAME == linux ]; then sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-4.9 100; fi
 
 addons:
   apt:
@@ -12,3 +31,6 @@ addons:
       
 after_success:
     - Rscript -e "covr::codecov()"
+    
+repos:
+  CRAN: http://cran.rstudio.com
