@@ -5,14 +5,6 @@ cache: packages
 
 matrix:
    include:
-     - os: linux
-       dist: trusty
-       sudo: required
-       r: release
-     - os: linux
-       dist: trusty
-       sudo: required
-       r: devel
      - os: osx
        sudo: required
        r: release
