@@ -3,7 +3,6 @@ language: R
 warnings_are_errors: false
 cache: packages
 
-    
 matrix:
   include:
     - os: linux
@@ -26,6 +25,8 @@ before_install:
 
 addons:
   apt:
+    sources:
+      - ubuntu-toolchain-r-test
     packages:
       - libgmp3-dev
       
