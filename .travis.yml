@@ -1,10 +1,22 @@
 # R for travis: see documentation at https://docs.travis-ci.com/user/languages/r
 language: R
-dist: trusty
-sudo: required
 warnings_are_errors: false
 cache: packages
 
+matrix:
+   include:
+     - os: linux
+       dist: trusty
+       sudo: required
+       r: release
+     - os: linux
+       dist: trusty
+       sudo: required
+       r: devel
+     - os: osx
+       sudo: required
+       r: release
+       
 before_install:
   - if [ $TRAVIS_OS_NAME == linux ]; then sudo add-apt-repository ppa:ubuntu-toolchain-r/test -y; fi
   - if [ $TRAVIS_OS_NAME == linux ]; then sudo apt-get update -q; fi
@@ -17,6 +29,16 @@ addons:
       - ubuntu-toolchain-r-test
     packages:
       - libgmp3-dev
+      
+r_packages:
+  - Rcpp
+  - gmp
+  - numbers
+  - bigIntegerAlgos
+  - RcppThread
+  - devtools
+  - testthat
+  - microbenchmark
       
 after_success:
     - Rscript -e "covr::codecov()"
