@@ -50,6 +50,10 @@ test_that("permuteGeneral produces correct results with no constraints and has r
 
     expect_equal(nrow(permuteGeneral(5, 3, TRUE, upper = 10)), 10)
     expect_equal(ncol(permuteGeneral(5, 3, TRUE, constraintFun = "prod", keepResults = TRUE)), 4)
+    
+    ## In older versions the test below would fail b/c it would produce NaNs during prep
+    expect_equal(nrow(permuteGeneral(2, 180, freqs = c(180, 2))), 
+                 permuteCount(2, 180, freqs = c(180, 2)))
 })
 
 test_that("permuteGeneral produces correct results with no constraints for multisets", {
