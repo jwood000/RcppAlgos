@@ -1,12 +1,8 @@
 #include "NthResult.h"
 #include "CleanConvert.h"
-#include "CombPermUtils.h"
 #include "CountGmp.h"
 #include "RMatrix.h"
 #include <RcppThread.h>
-
-static gmp_randstate_t seed_state;
-static int seed_init = 0;
 
 // Based off the internal limitations of sample, we
 // cannot utilize the full range of 53-bit significand
@@ -187,231 +183,36 @@ SEXP SampleRcpp(SEXP Rv, SEXP Rm, SEXP Rrepetition, SEXP RFreqs, SEXP RindexVec,
         CleanConvert::convertPrimitive(Rm, m, "m");
     }
     
-    if (IsCharacter) {
-        rcppChar = Rcpp::as<Rcpp::CharacterVector>(Rv);
-        n = rcppChar.size();
-    } else if (IsLogical) {
-        vInt = Rcpp::as<std::vector<int>>(Rv);
-        n = vInt.size();
-    } else {
-        if (Rf_length(Rv) == 1) {
-            int seqEnd, m1, m2;             // numOnly = true, checkWhole = true, negPoss = true
-            CleanConvert::convertPrimitive(Rv, seqEnd, "If v is not a character and of length 1, it", true, true, true);
-            if (seqEnd > 1) {m1 = 1; m2 = seqEnd;} else {m1 = seqEnd; m2 = 1;}
-            Rcpp::IntegerVector vTemp = Rcpp::seq(m1, m2);
-            IsInteger = true;
-            vNum = Rcpp::as<std::vector<double>>(vTemp);
-        } else {
-            vNum = Rcpp::as<std::vector<double>>(Rv);
-        }
-        
-        n = vNum.size();
-    }
-    
-    if (IsInteger) {
-        for (int i = 0; i < n && IsInteger; ++i)
-            if (Rcpp::NumericVector::is_na(vNum[i]))
-                IsInteger = false;
-            
-        if (IsInteger)
-            vInt.assign(vNum.begin(), vNum.end());
-    }
+    SetValues(IsCharacter, IsLogical, IsInteger, rcppChar, vInt, vNum, n, Rv);
     
     if (IsFactor)
         IsLogical = IsCharacter = IsInteger = false;
     
-    double computedRows = 0;
+    const double computedRows = GetComputedRows(IsMultiset, IsComb, IsRepetition, n,
+                                                m, Rm, lenFreqs, freqsExpanded, myReps);
     
-    if (IsMultiset) {
-        if (n != lenFreqs)
-            Rcpp::stop("the length of freqs must equal the length of v");
-        
-        if (m > static_cast<int>(freqsExpanded.size()))
-            m = freqsExpanded.size();
-        
-        if (IsComb) {
-            computedRows = MultisetCombRowNum(n, m, myReps);
-        } else {
-            if (Rf_isNull(Rm) || m == static_cast<int>(freqsExpanded.size()))
-                computedRows = NumPermsWithRep(freqsExpanded);
-            else
-                computedRows = MultisetPermRowNum(n, m, myReps);
-        }
-    } else {
-        if (IsRepetition) {
-            if (IsComb)
-                computedRows = NumCombsWithRep(n, m);
-            else
-                computedRows = std::pow(static_cast<double>(n), static_cast<double>(m));
-        } else {
-            if (m > n)
-                Rcpp::stop("m must be less than or equal to the length of v");
-            
-            if (IsComb)
-                computedRows = nChooseK(n, m);
-            else
-                computedRows = NumPermsNoRep(n, m);
-        }
-    }
-    
+    // sampleLimit defined as const above... see comments for more details
     bool IsGmp = computedRows > sampleLimit;
     mpz_t computedRowMpz;
     mpz_init(computedRowMpz);
     
-    // sampleLimit defined as const above... see comments for more details
     if (IsGmp) {
-        if (IsMultiset) {
-            if (IsComb) {
-                MultisetCombRowNumGmp(computedRowMpz, n, m, myReps);
-            } else {
-                if (Rf_isNull(Rm) || m == static_cast<int>(freqsExpanded.size()))
-                    NumPermsWithRepGmp(computedRowMpz, freqsExpanded);
-                else
-                    MultisetPermRowNumGmp(computedRowMpz, n, m, myReps);
-            }
-        } else {
-            if (IsRepetition) {
-                if (IsComb)
-                    NumCombsWithRepGmp(computedRowMpz, n, m);
-                else
-                    mpz_ui_pow_ui(computedRowMpz, n, m);
-            } else {
-                if (IsComb)
-                    nChooseKGmp(computedRowMpz, n, m);
-                else
-                    NumPermsNoRepGmp(computedRowMpz, n, m);
-            }
-        }
+        GetComputedRowMpz(computedRowMpz, IsMultiset, IsComb, 
+                          IsRepetition, n, m, Rm, freqsExpanded, myReps);
     }
     
     std::size_t sampSize;
     std::vector<double> mySample;
-    
-    // We must treat gmp case special. We first have to get the size of
-    // our sample vector, as we have to declare a mpz_t array with
-    // known size (line 334). You will note that in the base case below,
-    // we simply populate mySample, otherwise we just get the size.
-    // This size var will be used in the next block... If (IsGmp)
-    
-    if (Rf_isNull(RindexVec)) {
-        if (Rf_isNull(RNumSamp))
-            Rcpp::stop("n and sampleVec cannot both be NULL");
-        
-        if (Rf_length(RNumSamp) > 1)
-            Rcpp::stop("length of n must be 1. For specific combinations, use sampleVec.");
-        
-        int nPass;
-        CleanConvert::convertPrimitive(RNumSamp, nPass, "n");
-        sampSize = static_cast<std::size_t>(nPass);
-        
-        if (!IsGmp) {
-            if (nPass > computedRows)
-                Rcpp::stop("n exceeds the maximum number of possible results");
-            
-            Rcpp::NumericVector tempSamp = baseSample(computedRows, nPass);
-            mySample = Rcpp::as<std::vector<double>>(tempSamp);
-        }
-    } else {
-        if (IsGmp) {
-            switch (TYPEOF(RindexVec)) {
-                case RAWSXP: {
-                    const char* raw = (char*)RAW(RindexVec);
-                    sampSize = ((int*)raw)[0];
-                    break;
-                }
-                default:
-                    sampSize = LENGTH(RindexVec);
-            }
-        } else {                                             // numOnly = false
-            CleanConvert::convertVector(RindexVec, mySample, "sampleVec", false);
-            sampSize = mySample.size();
-            
-            double myMax = *std::max_element(mySample.cbegin(), mySample.cend());
-            
-            if (myMax > computedRows) {
-                Rcpp::stop("One or more of the requested values in sampleVec "
-                               "exceeds the maximum number of possible results");
-            }
-        }
-        
-        if (sampSize > std::numeric_limits<int>::max())
-            Rcpp::stop("The number of rows cannot exceed 2^31 - 1");
-    }
+    SetRandomSample(RindexVec, RNumSamp, sampSize, IsGmp, computedRows, mySample, baseSample);
     
     std::size_t gmpSize = (IsGmp) ? sampSize : 1;
     auto myVec = FromCpp14::make_unique<mpz_t[]>(gmpSize);
-    
-    if (IsGmp) {
-        if (!Rf_isNull(RindexVec)) {
-            for (std::size_t i = 0; i < sampSize; ++i)
-                mpz_init(myVec[i]);
-            
-            createMPZArray(RindexVec, myVec.get(), sampSize, "sampleVec");
-
-            // get zero base
-            for (std::size_t i = 0; i < sampSize; ++i)
-                mpz_sub_ui(myVec[i], myVec[i], 1);
-            
-        } else {
-            // The following code is very similar to the source
-            // code of gmp::urand.bigz. The main difference is
-            // the use of mpz_urandomm instead of mpz_urandomb
-            if (seed_init == 0)
-                gmp_randinit_default(seed_state);
-            
-            seed_init = 1;
-            
-            if (!Rf_isNull(RmySeed)) {
-                mpz_t mpzSeed[1];
-                mpz_init(mpzSeed[0]);
-                createMPZArray(RmySeed, mpzSeed, 1, "seed");
-                gmp_randseed(seed_state, mpzSeed[0]);
-                mpz_clear(mpzSeed[0]);
-            }
-            
-            // random number is between 0 and gmpRows[0] - 1
-            // so we need to add 1 to each element
-            for (std::size_t i = 0; i < sampSize; ++i) {
-                mpz_init(myVec[i]);
-                mpz_urandomm(myVec[i], seed_state, computedRowMpz);
-            }
-        }
-        
-        mpz_t maxGmp;
-        mpz_init(maxGmp);
-        mpz_set(maxGmp, myVec[0]);
-        
-        for (std::size_t i = 1; i < sampSize; ++i)
-            if (mpz_cmp(myVec[i], maxGmp) > 0)
-                mpz_set(maxGmp, myVec[i]);
-        
-        if (mpz_cmp(maxGmp, computedRowMpz) >= 0) {
-            Rcpp::stop("One or more of the requested values in sampleVec "
-                           "exceeds the maximum number of possible results");
-        }
-    }
+    SetRandomSampleMpz(RindexVec, RmySeed, sampSize, IsGmp, computedRowMpz, myVec.get());
     
     bool applyFun = !Rf_isNull(stdFun) && !IsFactor;
     int nThreads = 1;
-    
-    // We protect users with fewer than 2 cores
-    if ((sampSize < 2) || (maxThreads < 2)) {
-        Parallel = false;
-    } else if (!Rf_isNull(RNumThreads)) {
-        int userThreads = 1;
-        if (!Rf_isNull(RNumThreads))
-            CleanConvert::convertPrimitive(RNumThreads, userThreads, "nThreads");
-        
-        if (userThreads > maxThreads) {userThreads = maxThreads;}
-        if (userThreads > 1 && !IsCharacter) {
-            Parallel = true;
-            nThreads = userThreads;
-            if (nThreads > static_cast<int>(sampSize)) {nThreads = sampSize;}
-        }
-    } else if (Parallel) {
-        nThreads = (maxThreads > 2) ? (maxThreads - 1) : 2;
-        if (nThreads > static_cast<int>(sampSize)) nThreads = sampSize;
-    }
+    const int limit = 2;
+    SetThread(Parallel, maxThreads, sampSize, IsCharacter, nThreads, RNumThreads, limit);
     
     if (applyFun) {
         if (!Rf_isFunction(stdFun))
@@ -494,18 +295,15 @@ SEXP SampleRcpp(SEXP Rv, SEXP Rm, SEXP Rrepetition, SEXP RFreqs, SEXP RindexVec,
     
     if (IsCharacter) {
         Rcpp::CharacterMatrix matChar = Rcpp::no_init_matrix(sampSize, m);
-        SampleResults(rcppChar, m, IsRepetition, myReps, 0, sampSize,
-                      IsGmp, IsComb, mySample, myVec.get(), matChar);
+        SampleResults(rcppChar, m, IsRepetition, myReps, 0, sampSize, IsGmp, IsComb, mySample, myVec.get(), matChar);
         return matChar;
     } else if (IsLogical) {
         Rcpp::LogicalMatrix matBool = Rcpp::no_init_matrix(sampSize, m);
-        SampleResults(vInt, m, IsRepetition, myReps, 0, sampSize,
-                      IsGmp, IsComb, mySample, myVec.get(), matBool);
+        SampleResults(vInt, m, IsRepetition, myReps, 0, sampSize, IsGmp, IsComb, mySample, myVec.get(), matBool);
         return matBool;
     } else if (IsFactor || IsInteger) {
         Rcpp::IntegerMatrix matInt = Rcpp::no_init_matrix(sampSize, m);
-        SampleResults(vInt, m, IsRepetition, myReps, 0, sampSize,
-                      IsGmp, IsComb, mySample, myVec.get(), matInt);
+        SampleResults(vInt, m, IsRepetition, myReps, 0, sampSize, IsGmp, IsComb, mySample, myVec.get(), matInt);
 
         if (IsFactor) {
             Rcpp::IntegerVector testFactor = Rcpp::as<Rcpp::IntegerVector>(Rv);
@@ -518,8 +316,7 @@ SEXP SampleRcpp(SEXP Rv, SEXP Rm, SEXP Rrepetition, SEXP RFreqs, SEXP RindexVec,
         return matInt;
     } else {
         Rcpp::NumericMatrix matNum = Rcpp::no_init_matrix(sampSize, m);
-        SampleResults(vNum, m, IsRepetition, myReps, 0, sampSize,
-                      IsGmp, IsComb, mySample, myVec.get(), matNum);
+        SampleResults(vNum, m, IsRepetition, myReps, 0, sampSize, IsGmp, IsComb, mySample, myVec.get(), matNum);
         return matNum;
     }
 }

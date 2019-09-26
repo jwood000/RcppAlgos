@@ -153,17 +153,6 @@ void MasterReturn(int n, int r, std::vector<typeElem> v, bool IsRep, bool IsComb
     }
 }
 
-void CheckBounds(bool IsGmp, double lower, double upper, double computedRows,
-                 mpz_t lowerMpz, mpz_t upperMpz, mpz_t computedRowMpz) {
-    if (IsGmp) {
-        if (mpz_cmp(lowerMpz, computedRowMpz) >= 0 || mpz_cmp(upperMpz, computedRowMpz) > 0)
-            Rcpp::stop("bounds cannot exceed the maximum number of possible results");
-    } else {
-        if (lower >= computedRows || upper > computedRows)
-            Rcpp::stop("bounds cannot exceed the maximum number of possible results");
-    }
-}
-
 // [[Rcpp::export]]
 SEXP CombinatoricsRcpp(SEXP Rv, SEXP Rm, SEXP RisRep, SEXP RFreqs, SEXP Rlow,
                        SEXP Rhigh, SEXP f1, SEXP f2, SEXP Rtarget, bool IsComb, 
@@ -240,36 +229,7 @@ SEXP CombinatoricsRcpp(SEXP Rv, SEXP Rm, SEXP RisRep, SEXP RFreqs, SEXP Rlow,
         CleanConvert::convertPrimitive(Rm, m, "m");
     }
     
-    if (IsCharacter) {
-        rcppChar = Rcpp::as<Rcpp::CharacterVector>(Rv);
-        n = rcppChar.size();
-    } else if (IsLogical) {
-        vInt = Rcpp::as<std::vector<int>>(Rv);
-        n = vInt.size();
-    } else {
-        if (Rf_length(Rv) == 1) {
-            int seqEnd, m1, m2;         // numOnly = true, checkWhole = true, negPoss = true
-            CleanConvert::convertPrimitive(Rv, seqEnd, "If v is not a character and of length 1, it", true, true, true);
-            if (seqEnd > 1) {m1 = 1; m2 = seqEnd;} else {m1 = seqEnd; m2 = 1;}
-            Rcpp::IntegerVector vTemp = Rcpp::seq(m1, m2);
-            IsInteger = true;
-            vNum = Rcpp::as<std::vector<double>>(vTemp);
-        } else {
-            vNum = Rcpp::as<std::vector<double>>(Rv);
-        }
-        
-        n = vNum.size();
-    }
-    
-    if (IsInteger) {
-        for (int i = 0; i < n && IsInteger; ++i)
-            if (Rcpp::NumericVector::is_na(vNum[i]))
-                IsInteger = false;
-        
-        if (IsInteger)
-            vInt.assign(vNum.cbegin(), vNum.cend());
-    }
-        
+    SetValues(IsCharacter, IsLogical, IsInteger, rcppChar, vInt, vNum, n, Rv);
     bool IsConstrained = false;
     
     if (IsFactor)
@@ -296,69 +256,18 @@ SEXP CombinatoricsRcpp(SEXP Rv, SEXP Rm, SEXP RisRep, SEXP RFreqs, SEXP Rlow,
     }
     
     if (!IsMultiset && mIsNull && freqsExpanded.empty()) {m = n;}
-    double computedRows = 0;
+    const double computedRows = GetComputedRows(IsMultiset, IsComb, IsRepetition, n,
+                                                m, Rm, lenFreqs, freqsExpanded, myReps);
     
-    if (IsMultiset) {
-        if (n != lenFreqs)
-            Rcpp::stop("the length of freqs must equal the length of v");
-        
-        if (m > static_cast<int>(freqsExpanded.size()))
-            m = freqsExpanded.size();
-        
-        if (IsComb) {
-            computedRows = MultisetCombRowNum(n, m, myReps);
-        } else {
-            if (Rf_isNull(Rm) || m == static_cast<int>(freqsExpanded.size()))
-                computedRows = NumPermsWithRep(freqsExpanded);
-            else
-                computedRows = MultisetPermRowNum(n, m, myReps);
-        }
-    } else {
-        if (IsRepetition) {
-            if (IsComb)
-                computedRows = NumCombsWithRep(n, m);
-            else
-                computedRows = std::pow(static_cast<double>(n), static_cast<double>(m));
-        } else {
-            if (m > n)
-                Rcpp::stop("m must be less than or equal to the length of v");
-            
-            if (IsComb)
-                computedRows = nChooseK(n, m);
-            else
-                computedRows = NumPermsNoRep(n, m);
-        }
-    }
-    
-    bool IsGmp = (computedRows > Significand53);
+    const bool IsGmp = (computedRows > Significand53);
     mpz_t computedRowMpz;
     mpz_init(computedRowMpz);
     
     if (IsGmp) {
-        if (IsMultiset) {
-            if (IsComb) {
-                MultisetCombRowNumGmp(computedRowMpz, n, m, myReps);
-            } else {
-                if (Rf_isNull(Rm) || m == static_cast<int>(freqsExpanded.size()))
-                    NumPermsWithRepGmp(computedRowMpz, freqsExpanded);
-                else
-                    MultisetPermRowNumGmp(computedRowMpz, n, m, myReps);
-            }
-        } else {
-            if (IsRepetition) {
-                if (IsComb)
-                    NumCombsWithRepGmp(computedRowMpz, n, m);
-                else
-                    mpz_ui_pow_ui(computedRowMpz, n, m);
-            } else {
-                if (IsComb)
-                    nChooseKGmp(computedRowMpz, n, m);
-                else
-                    NumPermsNoRepGmp(computedRowMpz, n, m);
-            }
-        }
+        GetComputedRowMpz(computedRowMpz, IsMultiset, IsComb, 
+                          IsRepetition, n, m, Rm, freqsExpanded, myReps);
     }
-
+    
     double lower = 0, upper = 0;
     bool bLower = false, bUpper = false;
     mpz_t lowerMpz[1], upperMpz[1];
@@ -396,31 +305,8 @@ SEXP CombinatoricsRcpp(SEXP Rv, SEXP Rm, SEXP RisRep, SEXP RFreqs, SEXP Rlow,
     if (!(IsConstrained && !bLower))
         CheckBounds(IsGmp, lower, upper, computedRows, lowerMpz[0], upperMpz[0], computedRowMpz);
     
-    if (IsCount) {
-        if (IsGmp) {
-            std::size_t sizeNum, size = sizeof(int);
-            std::size_t numb = 8 * sizeof(int);
-            sizeNum = sizeof(int) * (2 + (mpz_sizeinbase(computedRowMpz, 2) + numb - 1) / numb);
-            size += sizeNum;
-            
-            SEXP ansPos = PROTECT(Rf_allocVector(RAWSXP, size));
-            char* rPos = (char*)(RAW(ansPos));
-            ((int*)(rPos))[0] = 1; // first int is vector-size-header
-            
-            // current position in rPos[] (starting after vector-size-header)
-            std::size_t posPos = sizeof(int);
-            posPos += myRaw(&rPos[posPos], computedRowMpz, sizeNum);
-            
-            Rf_setAttrib(ansPos, R_ClassSymbol, Rf_mkString("bigz"));
-            UNPROTECT(1);
-            return(ansPos);
-        } else {
-            if (computedRows > std::numeric_limits<int>::max())
-                return Rcpp::wrap(computedRows);
-            else
-                return Rcpp::wrap(static_cast<int>(computedRows));
-        }
-    }
+    if (IsCount)
+        return CleanConvert::GetCount(IsGmp, computedRowMpz, computedRows);
     
     std::vector<int> startZ(m);
     bool permNonTriv = false;
@@ -461,112 +347,13 @@ SEXP CombinatoricsRcpp(SEXP Rv, SEXP Rm, SEXP RisRep, SEXP RFreqs, SEXP Rlow,
     }
     
     double userNumRows = 0;
-    
-    if (IsGmp) {
-        mpz_t testBound;
-        mpz_init(testBound);
-        
-        if (bLower && bUpper) {
-            mpz_sub(testBound, upperMpz[0], lowerMpz[0]);
-            mpz_t absTestBound;
-            mpz_init(absTestBound);
-            mpz_abs(absTestBound, testBound);
-            
-            if (mpz_cmp_ui(absTestBound, std::numeric_limits<int>::max()) > 0)
-                Rcpp::stop("The number of rows cannot exceed 2^31 - 1.");
-            
-            userNumRows = mpz_get_d(testBound);
-            mpz_clear(absTestBound);
-        } else if (bUpper) {
-            permNonTriv = true;
-            
-            if (mpz_cmp_d(upperMpz[0], std::numeric_limits<int>::max()) > 0)
-                Rcpp::stop("The number of rows cannot exceed 2^31 - 1.");
-                
-            userNumRows = mpz_get_d(upperMpz[0]);
-        } else if (bLower) {
-            mpz_sub(testBound, computedRowMpz, lowerMpz[0]);
-            mpz_abs(testBound, testBound);
-            
-            if (mpz_cmp_d(testBound, std::numeric_limits<int>::max()) > 0)
-                Rcpp::stop("The number of rows cannot exceed 2^31 - 1.");
-            
-            userNumRows = mpz_get_d(testBound);
-        }
-        
-        mpz_clear(testBound);
-    } else {
-        if (bLower && bUpper)
-            userNumRows = upper - lower;
-        else if (bUpper)
-            userNumRows = upper;
-        else if (bLower)
-            userNumRows = computedRows - lower;
-    }
-    
-    if (userNumRows == 0) {
-        if (bLower && bUpper) {
-            // Since lower is decremented and upper isn't, this implies that upper - lower = 0
-            // which means that lower is one larger than upper as put in by the user
-            
-            Rcpp::stop("The number of rows must be positive. Either the lowerBound "
-                           "exceeds the maximum number of possible results or the "
-                           "lowerBound is greater than the upperBound.");
-        } else {
-            if (computedRows > std::numeric_limits<int>::max() && !IsConstrained)
-                Rcpp::stop("The number of rows cannot exceed 2^31 - 1.");
-            
-            userNumRows = computedRows;
-            
-            if (!IsConstrained)
-                nRows = static_cast<int>(computedRows);
-        }
-    } else if (userNumRows < 0) {
-        Rcpp::stop("The number of rows must be positive. Either the lowerBound "
-                  "exceeds the maximum number of possible results or the "
-                  "lowerBound is greater than the upperBound.");
-    } else if (userNumRows > std::numeric_limits<int>::max()) {
-        Rcpp::stop("The number of rows cannot exceed 2^31 - 1.");
-    } else {
-        nRows = static_cast<int>(userNumRows);
-    }
+    SetNumResults(IsGmp, bLower, bUpper, IsConstrained, permNonTriv, upperMpz,
+                  lowerMpz, lower, upper, computedRows, computedRowMpz, nRows, userNumRows);
     
     const std::size_t uM = m;
     int nThreads = 1;
-    
-    // Determined empirically. Setting up threads can be expensive,
-    // so we set the cutoff below to ensure threads aren't spawned
-    // unnecessarily. We also protect users with fewer than 2 threads
-    if ((nRows < 20000) || (maxThreads < 2)) {
-        Parallel = false;
-    } else if (!Rf_isNull(RNumThreads)) {
-        int userThreads = 1;
-        
-        if (!Rf_isNull(RNumThreads))
-            CleanConvert::convertPrimitive(RNumThreads, userThreads, "nThreads");
-        
-        if (userThreads > maxThreads)
-            userThreads = maxThreads;
-        
-        // Ensure that each thread has at least 10000
-        if ((nRows / userThreads) < 10000)
-            userThreads = nRows / 10000;
-
-        if (userThreads > 1 && !IsCharacter) {
-            Parallel = true;
-            nThreads = userThreads;
-        } else {
-            Parallel = false;
-        }
-    } else if (Parallel) {
-        // We have already ruled out cases when the user has fewer than 2 
-        // threads. So if user has exactly 2 threads, we enable them both.
-        nThreads = (maxThreads > 2) ? (maxThreads - 1) : maxThreads;
-        
-        // Ensure that each thread has at least 10000
-        if ((nRows / nThreads) < 10000)
-            nThreads = nRows / 10000;
-    }
+    const int limit = 20000;
+    SetThread(Parallel, maxThreads, nRows, IsCharacter, nThreads, RNumThreads, limit);
     
     if (IsConstrained) {
         std::vector<double> targetVals;      // numOnly = true, checkWhole = false, negPoss = true
