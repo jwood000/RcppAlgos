@@ -28,8 +28,8 @@ void SampleResults(const typeVector &v, std::size_t m, const std::vector<int> &m
 
 template <typename typeVector>
 SEXP SampleApplyFun(const typeVector &v, std::size_t m, const std::vector<int> &myReps,
-                    std::size_t sampSize, const std::vector<double> &mySample, mpz_t *myBigSamp, 
-                    SEXP func, SEXP rho, nthResutlPtr nthResFun) {
+                    std::size_t sampSize, const std::vector<double> &mySample, 
+                    mpz_t *const myBigSamp, SEXP func, SEXP rho, nthResutlPtr nthResFun) {
 
     const int lenV = v.size();
     std::vector<int> z(m);
@@ -188,80 +188,18 @@ SEXP SampleRcpp(SEXP Rv, SEXP Rm, SEXP Rrepetition, SEXP RFreqs, SEXP RindexVec,
             Rcpp::stop("FUN must be a function!");
 
         if (IsCharacter) {
-            return SampleApplyFun(rcppChar, m, myReps, sampSize, mySample, myVec.get(), stdFun, myEnv, nthResFun);
+            return SampleApplyFun(rcppChar, m, myReps, sampSize, 
+                                  mySample, myVec.get(), stdFun, myEnv, nthResFun);
         } else if (IsLogical || IsInteger) {
             Rcpp::IntegerVector rcppVInt(vInt.begin(), vInt.end());
-            return SampleApplyFun(rcppVInt, m, myReps, sampSize, mySample, myVec.get(), stdFun, myEnv, nthResFun);
+            return SampleApplyFun(rcppVInt, m, myReps, sampSize, 
+                                  mySample, myVec.get(), stdFun, myEnv, nthResFun);
         } else {
             Rcpp::NumericVector rcppVNum(vNum.begin(), vNum.end());
-            return SampleApplyFun(rcppVNum, m, myReps, sampSize, mySample, myVec.get(), stdFun, myEnv, nthResFun);
+            return SampleApplyFun(rcppVNum, m, myReps, sampSize, 
+                                  mySample, myVec.get(), stdFun, myEnv, nthResFun);
         }
     }
-    // 
-    // if (Parallel) {
-    //     RcppThread::ThreadPool pool(nThreads);
-    //     int step = 0, stepSize = sampSize / nThreads;
-    //     int nextStep = stepSize;
-    // 
-    //     if (IsLogical) {
-    //         Rcpp::LogicalMatrix matBool = Rcpp::no_init_matrix(sampSize, m);
-    //         RcppParallel::RMatrix<int> parBool(matBool);
-    // 
-    //         for (int j = 0; j < (nThreads - 1); ++j, step += stepSize, nextStep += stepSize) {
-    //             pool.push(std::cref(SampleResults<RcppParallel::RMatrix<int>, std::vector<int>>), vInt, m,
-    //                       myReps, step, nextStep, nthResFun, mySample, myVec.get(), std::ref(parBool));
-    //         }
-    // 
-    //         pool.push(std::cref(SampleResults<RcppParallel::RMatrix<int>, std::vector<int>>), vInt, m,
-    //                   myReps, step, sampSize, nthResFun, mySample, myVec.get(), std::ref(parBool));
-    // 
-    //         pool.join();
-    //         return matBool;
-    // 
-    //     } else if (IsFactor || IsInteger) {
-    //         Rcpp::IntegerMatrix matInt = Rcpp::no_init_matrix(sampSize, m);
-    //         RcppParallel::RMatrix<int> parInt(matInt);
-    // 
-    //         for (int j = 0; j < (nThreads - 1); ++j, step += stepSize, nextStep += stepSize) {
-    //             pool.push(std::cref(SampleResults<RcppParallel::RMatrix<int>, std::vector<int>>), vInt, m,
-    //                       myReps, step, nextStep, nthResFun, mySample, myVec.get(), std::ref(parInt));
-    //         }
-    // 
-    //         pool.push(std::cref(SampleResults<RcppParallel::RMatrix<int>, std::vector<int>>), vInt, m,
-    //                   myReps, step, sampSize, nthResFun, mySample, myVec.get(), std::ref(parInt));
-    // 
-    //         pool.join();
-    // 
-    //         if (IsFactor) {
-    //             Rcpp::IntegerVector testFactor = Rcpp::as<Rcpp::IntegerVector>(Rv);
-    //             Rcpp::CharacterVector myClass = testFactor.attr("class");
-    //             Rcpp::CharacterVector myLevels = testFactor.attr("levels");
-    //             matInt.attr("class") = myClass;
-    //             matInt.attr("levels") = myLevels;
-    //         }
-    // 
-    //         return matInt;
-    // 
-    //     } else {
-    //         Rcpp::NumericMatrix matNum = Rcpp::no_init_matrix(sampSize, m);
-    //         RcppParallel::RMatrix<double> parNum(matNum);
-    // 
-    //         for (int j = 0; j < (nThreads - 1); ++j, step += stepSize, nextStep += stepSize) {
-    //             pool.push(std::cref(SampleResults<RcppParallel::RMatrix<double>, std::vector<double>>), vNum, m,
-    //                       myReps, step, nextStep, nthResFun, mySample, myVec.get(), std::ref(parNum));
-    //         }
-    // 
-    //         pool.push(std::cref(SampleResults<RcppParallel::RMatrix<double>, std::vector<double>>), vNum, m,
-    //                   myReps, step, sampSize, nthResFun, mySample, myVec.get(), std::ref(parNum));
-    // 
-    //         pool.join();
-    //         return matNum;
-    //     }
-    // }
-    
-    // void MasterSample(std::size_t m, std::vector<typeElem> v, const std::vector<int> &myReps,
-    //                   std::size_t sampSize, nthResutlPtr nthResFun, const std::vector<double> &mySample,
-    //                   mpz_t *const myBigSamp, typeRcpp &matRcpp, int nThreads, bool Parallel)
     
     if (IsCharacter) {
         Rcpp::CharacterMatrix matChar = Rcpp::no_init_matrix(sampSize, m);
@@ -269,11 +207,13 @@ SEXP SampleRcpp(SEXP Rv, SEXP Rm, SEXP Rrepetition, SEXP RFreqs, SEXP RindexVec,
         return matChar;
     } else if (IsLogical) {
         Rcpp::LogicalMatrix matBool = Rcpp::no_init_matrix(sampSize, m);
-        MasterSample(vInt, m, myReps, sampSize, nthResFun, mySample, myVec.get(), matBool, nThreads, Parallel);
+        MasterSample(vInt, m, myReps, sampSize, nthResFun, 
+                     mySample, myVec.get(), matBool, nThreads, Parallel);
         return matBool;
     } else if (IsFactor || IsInteger) {
         Rcpp::IntegerMatrix matInt = Rcpp::no_init_matrix(sampSize, m);
-        MasterSample(vInt, m, myReps, sampSize, nthResFun, mySample, myVec.get(), matInt, nThreads, Parallel);
+        MasterSample(vInt, m, myReps, sampSize, nthResFun, 
+                     mySample, myVec.get(), matInt, nThreads, Parallel);
 
         if (IsFactor) {
             Rcpp::IntegerVector testFactor = Rcpp::as<Rcpp::IntegerVector>(Rv);
@@ -286,7 +226,8 @@ SEXP SampleRcpp(SEXP Rv, SEXP Rm, SEXP Rrepetition, SEXP RFreqs, SEXP RindexVec,
         return matInt;
     } else {
         Rcpp::NumericMatrix matNum = Rcpp::no_init_matrix(sampSize, m);
-        MasterSample(vNum, m, myReps, sampSize, nthResFun, mySample, myVec.get(), matNum, nThreads, Parallel);
+        MasterSample(vNum, m, myReps, sampSize, nthResFun, 
+                     mySample, myVec.get(), matNum, nThreads, Parallel);
         return matNum;
     }
 }
