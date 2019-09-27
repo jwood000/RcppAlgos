@@ -17,6 +17,9 @@ SEXP GetCount(bool IsGmp, mpz_t computedRowMpz, double computedRows);
 void CheckBounds(bool IsGmp, double lower, double upper, double computedRows,
                  mpz_t lowerMpz, mpz_t upperMpz, mpz_t computedRowMpz);
 
+void SetBounds(bool IsCount, SEXP Rlow, SEXP Rhigh,bool IsGmp, bool &bLower, 
+               bool &bUpper, double &lower, double &upper, mpz_t *lowerMpz, mpz_t *upperMpz);
+
 void SetNumResults(bool IsGmp, bool bLower, bool bUpper, bool IsConstrained, bool &permNonTriv,
                    mpz_t *upperMpz, mpz_t *lowerMpz, double lower, double upper, double computedRows,
                    mpz_t &computedRowMpz, int &nRows, double &userNumRows);

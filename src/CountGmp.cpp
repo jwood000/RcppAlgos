@@ -32,6 +32,33 @@ SEXP GetCount(bool IsGmp, mpz_t computedRowMpz, double computedRows) {
     }
 }
 
+void SetBounds(bool IsCount, SEXP Rlow, SEXP Rhigh,bool IsGmp, bool &bLower, 
+               bool &bUpper, double &lower, double &upper, mpz_t *lowerMpz, mpz_t *upperMpz) {
+    if (!IsCount) {
+        if (!Rf_isNull(Rlow)) {
+            bLower = true;
+            
+            if (IsGmp) {
+                createMPZArray(Rlow, lowerMpz, 1, "lower");
+                mpz_sub_ui(lowerMpz[0], lowerMpz[0], 1);
+            } else {                                    // numOnly = false
+                CleanConvert::convertPrimitive(Rlow, lower, "lower", false);
+                --lower;
+            }
+        }
+        
+        if (!Rf_isNull(Rhigh)) {
+            bUpper = true;
+            
+            if (IsGmp) {
+                createMPZArray(Rhigh, upperMpz, 1, "upper");
+            } else {                                     // numOnly = false
+                CleanConvert::convertPrimitive(Rhigh, upper, "upper", false);
+            }
+        }
+    }
+}
+
 void CheckBounds(bool IsGmp, double lower, double upper, double computedRows,
                  mpz_t lowerMpz, mpz_t upperMpz, mpz_t computedRowMpz) {
     if (IsGmp) {
