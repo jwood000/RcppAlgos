@@ -1,13 +1,12 @@
-/* This file contains utility functions that
- * are used for converting to and from type mpz_t,
- * as well as sorting an array of type mpz_t.
- * 
- * createMPZArray and myRaw are slightly modified versions
- * of "bigvec create_vector(const SEXP & param)" and 
- * "int biginteger::as_raw(char* raw) const", respectively,
- * from the source files bigintegerR.cc/ biginteger.cc from
- * the R gmp package.
- */
+// This file contains utility functions that
+// are used for converting to and from type mpz_t,
+// as well as sorting an array of type mpz_t.
+// 
+// createMPZArray and myRaw are slightly modified versions
+// of "bigvec create_vector(const SEXP & param)" and 
+// "int biginteger::as_raw(char* raw) const", respectively,
+// from the source files bigintegerR.cc/ biginteger.cc from
+// the R gmp package.
 
 #include <gmp.h>
 #include <Rcpp.h>

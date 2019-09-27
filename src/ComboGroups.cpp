@@ -385,34 +385,12 @@ SEXP ComboGroupsRcpp(SEXP Rv, SEXP RNumGroups, SEXP RRetType, SEXP Rlow,
     
     double lower = 0, upper = 0;
     bool bLower = false, bUpper = false;
-    mpz_t lowerMpz[1], upperMpz[1];
+    auto lowerMpz = FromCpp14::make_unique<mpz_t[]>(1);
+    auto upperMpz = FromCpp14::make_unique<mpz_t[]>(1);
+    
     mpz_init(lowerMpz[0]); mpz_init(upperMpz[0]);
-    mpz_set_ui(lowerMpz[0], 0); mpz_set_ui(upperMpz[0], 0);
-    
-    if (!IsCount) {
-        if (!Rf_isNull(Rlow)) {
-            bLower = true;
-            
-            if (IsGmp) {
-                createMPZArray(Rlow, lowerMpz, 1, "lower");
-                mpz_sub_ui(lowerMpz[0], lowerMpz[0], 1);
-            } else {                                    // numOnly = false
-                CleanConvert::convertPrimitive(Rlow, lower, "lower", false);
-                --lower;
-            }
-        }
-        
-        if (!Rf_isNull(Rhigh)) {
-            bUpper = true;
-            
-            if (IsGmp) {
-                createMPZArray(Rhigh, upperMpz, 1, "upper");
-            } else {                                     // numOnly = false
-                CleanConvert::convertPrimitive(Rhigh, upper, "upper", false);
-            }
-        }
-    }
-    
+    SetBounds(IsCount, Rlow, Rhigh, IsGmp, bLower, bUpper, 
+              lower, upper, lowerMpz.get(), upperMpz.get());
     CheckBounds(IsGmp, lower, upper, computedRows, lowerMpz[0], upperMpz[0], computedRowMpz);
     
     if (IsCount)
@@ -435,8 +413,8 @@ SEXP ComboGroupsRcpp(SEXP Rv, SEXP RNumGroups, SEXP RRetType, SEXP Rlow,
     double userNumRows = 0;
     int nRows = 0;
     bool permHolder = false;
-    SetNumResults(IsGmp, bLower, bUpper, false, permHolder, upperMpz, lowerMpz,
-                  lower, upper, computedRows, computedRowMpz, nRows, userNumRows);
+    SetNumResults(IsGmp, bLower, bUpper, false, permHolder, upperMpz.get(), 
+                  lowerMpz.get(), lower, upper, computedRows, computedRowMpz, nRows, userNumRows);
 
     const std::string retType = Rcpp::as<std::string>(RRetType);
     bool isArray = false;
