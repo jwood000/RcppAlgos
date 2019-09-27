@@ -20,14 +20,14 @@ std::vector<int> nthComb(int n, int r, double dblIdx,
     std::vector<int> res(r);
     double temp = nChooseK(n - 1, r - 1);
     
-    for (int k = 0, j = 0, n1 = n - 1, r1 = r - 1; 
-         k < r; ++k, --n1, --r1, ++j) {
+    for (int k = 0, j = 0, n1 = n - 1, 
+         r1 = r - 1; k < r; ++k, --n1, --r1, ++j) {
         double test = temp;
         
-        for (int rTemp = n1 - r1; test <= index1; 
-        --n1, ++j, --rTemp, test += temp) {
+        for (int s = n1 - r1; test <= index1; 
+                    --n1, ++j, --s, test += temp) {
             index2 -= temp;
-            temp *= rTemp;
+            temp *= s;
             temp /= n1;
         }
         
@@ -65,8 +65,8 @@ std::vector<int> nthCombRep(int n, int r, double dblIdx,
     return res;
 }
 
-std::vector<int> nthCombMult(int n, int r, double dblIdx, mpz_t mpzIdx, 
-                             std::vector<int> Reps) {
+std::vector<int> nthCombMult(int n, int r, double dblIdx, 
+                             mpz_t mpzIdx, std::vector<int> Reps) {
     
     double index1 = dblIdx, index2 = dblIdx;
     std::vector<int> res(r);
@@ -111,8 +111,8 @@ std::vector<int> nthCombMult(int n, int r, double dblIdx, mpz_t mpzIdx,
     return res;
 }
 
-std::vector<int> nthCombGmp(int n, int r, double dblIdx, mpz_t mpzIdx, 
-                            std::vector<int> Reps) {
+std::vector<int> nthCombGmp(int n, int r, double dblIdx, 
+                            mpz_t mpzIdx, std::vector<int> Reps) {
     
     mpz_t test, temp, index1, index2;
     mpz_init(test); mpz_init(temp);
@@ -127,11 +127,9 @@ std::vector<int> nthCombGmp(int n, int r, double dblIdx, mpz_t mpzIdx,
          k < r; ++k, --n1, --r1, ++j) {
         mpz_set(test, temp);
         
-        for (int rTemp = n1 - r1; 
-             mpz_cmp(test, index1) <= 0; --rTemp, ++j, --n1) {
-            
+        for (int s = n1 - r1; mpz_cmp(test, index1) <= 0; --s, ++j, --n1) {
             mpz_sub(index2, index2, temp);
-            mpz_mul_ui(temp, temp, rTemp);
+            mpz_mul_ui(temp, temp, s);
             mpz_divexact_ui(temp, temp, n1);
             mpz_add(test, test, temp);
         }
@@ -147,8 +145,8 @@ std::vector<int> nthCombGmp(int n, int r, double dblIdx, mpz_t mpzIdx,
     return res;
 }
 
-std::vector<int> nthCombRepGmp(int n, int r, double dblIdx, mpz_t mpzIdx, 
-                               std::vector<int> Reps) {
+std::vector<int> nthCombRepGmp(int n, int r, double dblIdx, 
+                               mpz_t mpzIdx, std::vector<int> Reps) {
     
     mpz_t test, temp, index1, index2;
     mpz_init(test); mpz_init(temp);
