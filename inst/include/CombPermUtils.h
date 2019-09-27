@@ -3,6 +3,17 @@
 
 #include <Rcpp.h>
 
+void SetValues(bool IsCharacter, bool IsLogical, bool &IsInteger, 
+               Rcpp::CharacterVector &rcppChar, std::vector<int> &vInt,
+               std::vector<double> &vNum, int &n, SEXP Rv);
+
+void SetThreads(bool &Parallel, int maxThreads, int nRows,
+                bool IsCharacter, int &nThreads, SEXP RNumThreads, int limit);
+
+void SetRandomSample(SEXP RindexVec, SEXP RNumSamp, std::size_t &sampSize,
+                     bool IsGmp, double computedRows, std::vector<double> &mySample,
+                     Rcpp::Function baseSample);
+
 std::vector<int> rleCpp(const std::vector<int> &x);
 double NumPermsWithRep(const std::vector<int> &v);
 double NumPermsNoRep(int n, int k);
@@ -18,5 +29,8 @@ double MultisetCombRowNum(int n, int r, const std::vector<int> &Reps);
 
 void nextFullPerm(int *const myArray, std::size_t maxInd);
 void nextPartialPerm(int *const myArray, std::size_t lastCol, std::size_t maxInd);
+
+double GetComputedRows(bool IsMultiset, bool IsComb, bool IsRep, int n, int &m, SEXP Rm,
+                       int lenFreqs, std::vector<int> &freqs, std::vector<int> &myReps);
     
 #endif

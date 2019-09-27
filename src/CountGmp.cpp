@@ -1,6 +1,170 @@
 #include "CombPermUtils.h"
+#include "CleanConvert.h"
 #include "Cpp14MakeUnique.h"
 #include <gmp.h>
+
+static gmp_randstate_t seed_state;
+static int seed_init = 0;
+
+SEXP GetCount(bool IsGmp, mpz_t computedRowMpz, double computedRows) {
+    if (IsGmp) {
+        std::size_t sizeNum, size = sizeof(int);
+        std::size_t numb = 8 * sizeof(int);
+        sizeNum = sizeof(int) * (2 + (mpz_sizeinbase(computedRowMpz, 2) + numb - 1) / numb);
+        size += sizeNum;
+        
+        SEXP ansPos = PROTECT(Rf_allocVector(RAWSXP, size));
+        char* rPos = (char*)(RAW(ansPos));
+        ((int*)(rPos))[0] = 1; // first int is vector-size-header
+        
+        // current position in rPos[] (starting after vector-size-header)
+        std::size_t posPos = sizeof(int);
+        posPos += myRaw(&rPos[posPos], computedRowMpz, sizeNum);
+        
+        Rf_setAttrib(ansPos, R_ClassSymbol, Rf_mkString("bigz"));
+        UNPROTECT(1);
+        return(ansPos);
+    } else {
+        if (computedRows > std::numeric_limits<int>::max())
+            return Rcpp::wrap(computedRows);
+        else
+            return Rcpp::wrap(static_cast<int>(computedRows));
+    }
+}
+
+void CheckBounds(bool IsGmp, double lower, double upper, double computedRows,
+                 mpz_t lowerMpz, mpz_t upperMpz, mpz_t computedRowMpz) {
+    if (IsGmp) {
+        if (mpz_cmp(lowerMpz, computedRowMpz) >= 0 || mpz_cmp(upperMpz, computedRowMpz) > 0)
+            Rcpp::stop("bounds cannot exceed the maximum number of possible results");
+    } else {
+        if (lower >= computedRows || upper > computedRows)
+            Rcpp::stop("bounds cannot exceed the maximum number of possible results");
+    }
+}
+
+void SetNumResults(bool IsGmp, bool bLower, bool bUpper, bool IsConstrained, bool &permNonTriv,
+                   mpz_t *upperMpz, mpz_t *lowerMpz, double lower, double upper, double computedRows,
+                   mpz_t &computedRowMpz, int &nRows, double &userNumRows) {
+    if (IsGmp) {
+        mpz_t testBound;
+        mpz_init(testBound);
+        
+        if (bLower && bUpper) {
+            mpz_sub(testBound, upperMpz[0], lowerMpz[0]);
+            mpz_t absTestBound;
+            mpz_init(absTestBound);
+            mpz_abs(absTestBound, testBound);
+            
+            if (mpz_cmp_ui(absTestBound, std::numeric_limits<int>::max()) > 0)
+                Rcpp::stop("The number of rows cannot exceed 2^31 - 1.");
+            
+            userNumRows = mpz_get_d(testBound);
+            mpz_clear(absTestBound);
+        } else if (bUpper) {
+            permNonTriv = true;
+            
+            if (mpz_cmp_d(upperMpz[0], std::numeric_limits<int>::max()) > 0)
+                Rcpp::stop("The number of rows cannot exceed 2^31 - 1.");
+            
+            userNumRows = mpz_get_d(upperMpz[0]);
+        } else if (bLower) {
+            mpz_sub(testBound, computedRowMpz, lowerMpz[0]);
+            mpz_abs(testBound, testBound);
+            
+            if (mpz_cmp_d(testBound, std::numeric_limits<int>::max()) > 0)
+                Rcpp::stop("The number of rows cannot exceed 2^31 - 1.");
+            
+            userNumRows = mpz_get_d(testBound);
+        }
+        
+        mpz_clear(testBound);
+    } else {
+        if (bLower && bUpper)
+            userNumRows = upper - lower;
+        else if (bUpper)
+            userNumRows = upper;
+        else if (bLower)
+            userNumRows = computedRows - lower;
+    }
+    
+    if (userNumRows == 0) {
+        if (bLower && bUpper) {
+            // Since lower is decremented and upper isn't, this implies that upper - lower = 0
+            // which means that lower is one larger than upper as put in by the user
+            
+            Rcpp::stop("The number of rows must be positive. Either the lowerBound "
+                           "exceeds the maximum number of possible results or the "
+                           "lowerBound is greater than the upperBound.");
+        } else {
+            if (computedRows > std::numeric_limits<int>::max() && !IsConstrained)
+                Rcpp::stop("The number of rows cannot exceed 2^31 - 1.");
+            
+            userNumRows = computedRows;
+            
+            if (!IsConstrained)
+                nRows = static_cast<int>(computedRows);
+        }
+    } else if (userNumRows < 0) {
+        Rcpp::stop("The number of rows must be positive. Either the lowerBound "
+                       "exceeds the maximum number of possible results or the "
+                       "lowerBound is greater than the upperBound.");
+    } else if (userNumRows > std::numeric_limits<int>::max()) {
+        Rcpp::stop("The number of rows cannot exceed 2^31 - 1.");
+    } else {
+        nRows = static_cast<int>(userNumRows);
+    }
+}
+
+void SetRandomSampleMpz(SEXP RindexVec, SEXP RmySeed, std::size_t sampSize,
+                        bool IsGmp, mpz_t &computedRowMpz, mpz_t *const myVec) {
+    if (IsGmp) {
+        if (!Rf_isNull(RindexVec)) {
+            createMPZArray(RindexVec, myVec, sampSize, "sampleVec");
+            
+            // get zero base
+            for (std::size_t i = 0; i < sampSize; ++i)
+                mpz_sub_ui(myVec[i], myVec[i], 1);
+            
+        } else {
+            // The following code is very similar to the source
+            // code of gmp::urand.bigz. The main difference is
+            // the use of mpz_urandomm instead of mpz_urandomb
+            if (seed_init == 0)
+                gmp_randinit_default(seed_state);
+            
+            seed_init = 1;
+            
+            if (!Rf_isNull(RmySeed)) {
+                mpz_t mpzSeed[1];
+                mpz_init(mpzSeed[0]);
+                createMPZArray(RmySeed, mpzSeed, 1, "seed");
+                gmp_randseed(seed_state, mpzSeed[0]);
+                mpz_clear(mpzSeed[0]);
+            }
+            
+            // random number is between 0 and gmpRows[0] - 1
+            // so we need to add 1 to each element
+            for (std::size_t i = 0; i < sampSize; ++i) {
+                mpz_init(myVec[i]);
+                mpz_urandomm(myVec[i], seed_state, computedRowMpz);
+            }
+        }
+        
+        mpz_t maxGmp;
+        mpz_init(maxGmp);
+        mpz_set(maxGmp, myVec[0]);
+        
+        for (std::size_t i = 1; i < sampSize; ++i)
+            if (mpz_cmp(myVec[i], maxGmp) > 0)
+                mpz_set(maxGmp, myVec[i]);
+            
+        if (mpz_cmp(maxGmp, computedRowMpz) >= 0) {
+            Rcpp::stop("One or more of the requested values in sampleVec "
+                           "exceeds the maximum number of possible results");
+        }
+    }
+}
 
 // All functions below are exactly the same as the functions
 // in CombPermUtils.cpp. The only difference is that they
@@ -227,5 +391,31 @@ void MultisetPermRowNumGmp(mpz_t result, int n, int r, const std::vector<int> &m
         
         for (std::size_t i = 0; i < uR1; ++i)
             mpz_clear(resV[i]);
+    }
+}
+
+void GetComputedRowMpz(mpz_t computedRowMpz, bool IsMultiset, bool IsComb, bool IsRep,
+                       int n, int m, SEXP Rm, std::vector<int> &freqs, std::vector<int> &myReps) {
+    if (IsMultiset) {
+        if (IsComb) {
+            MultisetCombRowNumGmp(computedRowMpz, n, m, myReps);
+        } else {
+            if (Rf_isNull(Rm) || m == static_cast<int>(freqs.size()))
+                NumPermsWithRepGmp(computedRowMpz, freqs);
+            else
+                MultisetPermRowNumGmp(computedRowMpz, n, m, myReps);
+        }
+    } else {
+        if (IsRep) {
+            if (IsComb)
+                NumCombsWithRepGmp(computedRowMpz, n, m);
+            else
+                mpz_ui_pow_ui(computedRowMpz, n, m);
+        } else {
+            if (IsComb)
+                nChooseKGmp(computedRowMpz, n, m);
+            else
+                NumPermsNoRepGmp(computedRowMpz, n, m);
+        }
     }
 }
