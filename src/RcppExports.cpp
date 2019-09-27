@@ -44,6 +44,26 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// ComboGroupsRcpp
+SEXP ComboGroupsRcpp(SEXP Rv, SEXP RNumGroups, SEXP RRetType, SEXP Rlow, SEXP Rhigh, bool IsFactor, bool IsCount, SEXP Rparallel, SEXP RNumThreads, int maxThreads);
+RcppExport SEXP _RcppAlgos_ComboGroupsRcpp(SEXP RvSEXP, SEXP RNumGroupsSEXP, SEXP RRetTypeSEXP, SEXP RlowSEXP, SEXP RhighSEXP, SEXP IsFactorSEXP, SEXP IsCountSEXP, SEXP RparallelSEXP, SEXP RNumThreadsSEXP, SEXP maxThreadsSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< SEXP >::type Rv(RvSEXP);
+    Rcpp::traits::input_parameter< SEXP >::type RNumGroups(RNumGroupsSEXP);
+    Rcpp::traits::input_parameter< SEXP >::type RRetType(RRetTypeSEXP);
+    Rcpp::traits::input_parameter< SEXP >::type Rlow(RlowSEXP);
+    Rcpp::traits::input_parameter< SEXP >::type Rhigh(RhighSEXP);
+    Rcpp::traits::input_parameter< bool >::type IsFactor(IsFactorSEXP);
+    Rcpp::traits::input_parameter< bool >::type IsCount(IsCountSEXP);
+    Rcpp::traits::input_parameter< SEXP >::type Rparallel(RparallelSEXP);
+    Rcpp::traits::input_parameter< SEXP >::type RNumThreads(RNumThreadsSEXP);
+    Rcpp::traits::input_parameter< int >::type maxThreads(maxThreadsSEXP);
+    rcpp_result_gen = Rcpp::wrap(ComboGroupsRcpp(Rv, RNumGroups, RRetType, Rlow, Rhigh, IsFactor, IsCount, Rparallel, RNumThreads, maxThreads));
+    return rcpp_result_gen;
+END_RCPP
+}
 // DivNumSieve
 SEXP DivNumSieve(SEXP Rb1, SEXP Rb2, bool bDivSieve, SEXP RNamed, SEXP RNumThreads, int maxThreads);
 RcppExport SEXP _RcppAlgos_DivNumSieve(SEXP Rb1SEXP, SEXP Rb2SEXP, SEXP bDivSieveSEXP, SEXP RNamedSEXP, SEXP RNumThreadsSEXP, SEXP maxThreadsSEXP) {
@@ -149,6 +169,7 @@ END_RCPP
 static const R_CallMethodDef CallEntries[] = {
     {"_RcppAlgos_cpp11GetNumThreads", (DL_FUNC) &_RcppAlgos_cpp11GetNumThreads, 0},
     {"_RcppAlgos_CombinatoricsRcpp", (DL_FUNC) &_RcppAlgos_CombinatoricsRcpp, 19},
+    {"_RcppAlgos_ComboGroupsRcpp", (DL_FUNC) &_RcppAlgos_ComboGroupsRcpp, 10},
     {"_RcppAlgos_DivNumSieve", (DL_FUNC) &_RcppAlgos_DivNumSieve, 6},
     {"_RcppAlgos_PollardRhoContainer", (DL_FUNC) &_RcppAlgos_PollardRhoContainer, 6},
     {"_RcppAlgos_PrimeCountRcpp", (DL_FUNC) &_RcppAlgos_PrimeCountRcpp, 3},

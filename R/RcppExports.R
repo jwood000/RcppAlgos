@@ -9,6 +9,10 @@ CombinatoricsRcpp <- function(Rv, Rm, RisRep, RFreqs, Rlow, Rhigh, f1, f2, Rtarg
     .Call(`_RcppAlgos_CombinatoricsRcpp`, Rv, Rm, RisRep, RFreqs, Rlow, Rhigh, f1, f2, Rtarget, IsComb, RKeepRes, IsFactor, IsCount, stdFun, myEnv, Rparallel, RNumThreads, maxThreads, Rtolerance)
 }
 
+ComboGroupsRcpp <- function(Rv, RNumGroups, RRetType, Rlow, Rhigh, IsFactor, IsCount, Rparallel, RNumThreads, maxThreads) {
+    .Call(`_RcppAlgos_ComboGroupsRcpp`, Rv, RNumGroups, RRetType, Rlow, Rhigh, IsFactor, IsCount, Rparallel, RNumThreads, maxThreads)
+}
+
 DivNumSieve <- function(Rb1, Rb2, bDivSieve, RNamed, RNumThreads, maxThreads) {
     .Call(`_RcppAlgos_DivNumSieve`, Rb1, Rb2, bDivSieve, RNamed, RNumThreads, maxThreads)
 }

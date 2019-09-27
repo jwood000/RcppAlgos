@@ -56,3 +56,14 @@ permuteSample <- function(v, m = NULL, repetition = FALSE, freqs = NULL,
                seed, n, sample, FUN, new.env(), Parallel, nThreads, pkgEnv$nThreads)
 }
 
+comboGroups <- function(v, numGroups, retType = "3Darray", lower = NULL,
+                       upper = NULL, Parallel = FALSE, nThreads = NULL) {
+    isFactor <- is.factor(v)
+    ComboGroupsRcpp(v, numGroups, retType, lower, upper, isFactor,
+                   FALSE, Parallel, nThreads, pkgEnv$nThreads)
+}
+
+comboGroupsCount <- function(v, numGroups) {
+    ComboGroupsRcpp(v, numGroups, NULL, NULL, NULL, FALSE, TRUE, FALSE, FALSE, 0)
+}
+
