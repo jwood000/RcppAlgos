@@ -5,13 +5,6 @@
 #include <RcppThread.h>
 
 template <typename typeRcpp, typename typeVector>
-void ParallelGlue(std::vector<typeVector> v, std::size_t m, const std::vector<int> &myReps, 
-                  std::size_t strtIdx, std::size_t endIdx, nthResutlPtr nthResFun, 
-                  const std::vector<double> &mySample, mpz_t *const myBigSamp, typeRcpp &sampleMatrix) {
-    SampleResults(v, m, myReps, strtIdx, endIdx, nthResFun, mySample, myBigSamp, sampleMatrix);
-}
-
-template <typename typeRcpp, typename typeVector>
 void SampleResults(const typeVector &v, std::size_t m, const std::vector<int> &myReps, 
                    std::size_t strtIdx, std::size_t endIdx, nthResutlPtr nthResFun, 
                    const std::vector<double> &mySample, mpz_t *const myBigSamp, typeRcpp &sampleMatrix) {
@@ -24,6 +17,13 @@ void SampleResults(const typeVector &v, std::size_t m, const std::vector<int> &m
         for (std::size_t j = 0; j < m; ++j)
             sampleMatrix(i, j) = v[z[j]];
     }
+}
+
+template <typename typeRcpp, typename typeVector>
+void ParallelGlue(std::vector<typeVector> v, std::size_t m, const std::vector<int> &myReps, 
+                  std::size_t strtIdx, std::size_t endIdx, nthResutlPtr nthResFun, 
+                  const std::vector<double> &mySample, mpz_t *const myBigSamp, typeRcpp &sampleMatrix) {
+    SampleResults(v, m, myReps, strtIdx, endIdx, nthResFun, mySample, myBigSamp, sampleMatrix);
 }
 
 template <typename typeVector>
