@@ -234,98 +234,99 @@ std::vector<int> nthComboGroupGmp(int n, int gSize, int r,
 }
 
 template <typename typeRcpp, typename typeVector>
-void GroupMaster(std::size_t n, typeVector v, typeRcpp GroupMat, Rcpp::List myList,
-                 std::vector<int> z, std::size_t nRows, int r, int grpSize, bool isArray,
-                 bool isList, SEXP Rv, bool IsFactor) {
+void GroupWorker(std::size_t n, typeVector v, typeRcpp &GroupsMat, std::vector<int> z,
+                 int r, int grpSize, std::size_t strtIdx, std::size_t endIdx) {
     
     const int idx1 = (r - 1) * grpSize - 1;
     const int last1 = (r - 2) * grpSize + 1;
-    const int lastRow = nRows - 1;
+    const std::size_t lastRow = endIdx - 1;
+    
+    for (std::size_t i = strtIdx; i < lastRow; ++i, nextComboGroup(z, r, grpSize, idx1, last1))
+        for (std::size_t j = 0; j < n; ++j)
+            GroupsMat(i, j) = v[z[j]];
+        
+    // Get last combo group
+    for (std::size_t j = 0; j < n; ++j)
+        GroupsMat(lastRow, j) = v[z[j]];
+}
+
+template <typename typeRcpp, typename typeElem>
+void ParallelGlue(std::size_t n, std::vector<typeElem> v, typeRcpp &GroupsMat,
+                  std::vector<int> z, int r, int grpSize, std::size_t strtIdx, std::size_t endIdx) {
+    GroupWorker(n, v, GroupsMat, z, r, grpSize, strtIdx, endIdx);
+}
+
+template <typename typeRcpp>
+void FinalTouch(typeRcpp &GroupMat, bool IsArray,
+                int grpSize, int r, int n, int nRows) {
+    
     std::vector<std::string> myColNames(r, "Grp");
     
     for (int j = 0; j < r; ++j)
         myColNames[j] += std::to_string(j + 1);
     
-    Rcpp::CharacterVector rcppCols(myColNames.size());
-    rcppCols = myColNames;
-    
-    if (isList) {
-        if (IsFactor) {
-            Rcpp::IntegerVector testFactor = Rcpp::as<Rcpp::IntegerVector>(Rv);
-            Rcpp::CharacterVector myClass = testFactor.attr("class");
-            Rcpp::CharacterVector myLevels = testFactor.attr("levels");
-            
-            for (std::size_t i = 0; i < lastRow; ++i, nextComboGroup(z, r, grpSize, idx1, last1)) {
-                typeRcpp tempMat(grpSize, r);
-                for (int j = 0, ind = 0; j < r; ++j)
-                    for (std::size_t k = 0; k < grpSize; ++k, ++ind)
-                        tempMat(k, j) = v[z[ind]];
-                
-                tempMat.attr("class") = myClass;
-                tempMat.attr("levels") = myLevels;
-                Rcpp::colnames(tempMat) = rcppCols;
-                myList[i] = tempMat;
-            }
-            
-            // Get last combo group
-            for (int j = 0, ind = 0; j < r; ++j)
-                for (std::size_t k = 0; k < grpSize; ++k, ++ind)
-                    GroupMat(k, j) = v[z[ind]];
-            
-            GroupMat.attr("class") = myClass;
-            GroupMat.attr("levels") = myLevels;
-            Rcpp::colnames(GroupMat) = rcppCols;
-            myList[lastRow] = GroupMat;
-        } else {
-            for (std::size_t i = 0; i < lastRow; ++i, nextComboGroup(z, r, grpSize, idx1, last1)) {
-                typeRcpp tempMat(grpSize, r);
-                
-                for (int j = 0, ind = 0; j < r; ++j)
-                    for (std::size_t k = 0; k < grpSize; ++k, ++ind)
-                        tempMat(k, j) = v[z[ind]];
-                
-                Rcpp::colnames(tempMat) = rcppCols;
-                myList[i] = tempMat;
-            }
-            
-            // Get last combo group
-            for (int j = 0, ind = 0; j < r; ++j)
-                for (std::size_t k = 0; k < grpSize; ++k, ++ind)
-                    GroupMat(k, j) = v[z[ind]];
-            
-            Rcpp::colnames(GroupMat) = rcppCols;
-            myList[lastRow] = GroupMat;
-        }
+    if (IsArray) {
+        Rcpp::CharacterVector rcppCols(r);
+        rcppCols = myColNames;
+        GroupMat.attr("dim") = Rcpp::IntegerVector::create(nRows, grpSize, r);
+        GroupMat.attr("dimnames") = Rcpp::List::create(R_NilValue, R_NilValue, rcppCols);
     } else {
-        for (std::size_t i = 0; i < lastRow; ++i, nextComboGroup(z, r, grpSize, idx1, last1))
-            for (std::size_t j = 0; j < n; ++j)
-                GroupMat(i, j) = v[z[j]];
-            
-        // Get last combo group
-        for (std::size_t j = 0; j < n; ++j)
-            GroupMat(lastRow, j) = v[z[j]];
+        std::vector<std::string> extendedName;
         
-        if (isArray) {
-            GroupMat.attr("dim") = Rcpp::IntegerVector::create(nRows, grpSize, r);
-            GroupMat.attr("dimnames") = Rcpp::List::create(R_NilValue, R_NilValue, rcppCols);
-        } else {
-            std::vector<std::string> extendedName;
-            
-            for (int i = 0; i < r; ++i)
-                for (int j = 0; j < grpSize; ++j)
-                    extendedName.push_back(myColNames[i]);
-            
-            Rcpp::CharacterVector rcppExtended(n);
-            rcppExtended = extendedName;
-            Rcpp::colnames(GroupMat) = rcppExtended;
+        for (int i = 0; i < r; ++i)
+            for (int j = 0; j < grpSize; ++j)
+                extendedName.push_back(myColNames[i]);
+        
+        Rcpp::CharacterVector rcppExtended(n);
+        rcppExtended = extendedName;
+        Rcpp::colnames(GroupMat) = rcppExtended; 
+    }
+}
+
+void GetStartGrp(bool IsGmp, std::vector<int> &z, int n, int grpSize, 
+                 int r, double &lower, double computedRows, mpz_t lowerMpz,
+                 mpz_t computedRowMpz, std::size_t stepSize) {
+    if (IsGmp) {
+        mpz_add_ui(lowerMpz, lowerMpz, stepSize);
+        z = nthComboGroupGmp(n, grpSize, r, lowerMpz, computedRowMpz);
+    } else {
+        lower += stepSize;
+        z = nthComboGroup(n, grpSize, r, lower, computedRows);
+    }
+}
+
+template <typename typeRcpp, typename typeElem>
+void GroupsMaster(std::size_t n, std::vector<typeElem> v, typeRcpp &GroupsMat, std::vector<int> z,
+                  int r, int grpSize, std::size_t nRows, bool Parallel, int nThreads, bool IsGmp,
+                  double lower, mpz_t &lowerMpz, double computedRows, mpz_t &computedRowMpz) {
+    
+    if (Parallel) {
+        RcppParallel::RMatrix<typeElem> parMat(GroupsMat);
+        RcppThread::ThreadPool pool(nThreads);
+        std::size_t step = 0, stepSize = nRows / nThreads;
+        std::size_t nextStep = stepSize;
+
+        for (int j = 0; j < (nThreads - 1); ++j, step += stepSize, nextStep += stepSize) {
+            pool.push(std::cref(ParallelGlue<RcppParallel::RMatrix<typeElem>, typeElem>), n,
+                      v, std::ref(parMat), z, r, grpSize, step, nextStep);
+             
+             GetStartGrp(IsGmp, z, n, grpSize, r, lower, 
+                         computedRows, lowerMpz, computedRowMpz, stepSize);
         }
+
+        pool.push(std::cref(ParallelGlue<RcppParallel::RMatrix<typeElem>, typeElem>), n,
+                  v, std::ref(parMat), z, r, grpSize, step, nRows);
+
+        pool.join();
+    } else {
+        GroupWorker(n, v, GroupsMat, z, r, grpSize, 0, nRows);
     }
 }
 
 // [[Rcpp::export]]
 SEXP ComboGroupsRcpp(SEXP Rv, SEXP RNumGroups, SEXP RRetType, SEXP Rlow, 
-                    SEXP Rhigh, bool IsFactor, bool IsCount, SEXP Rparallel,
-                    SEXP RNumThreads, int maxThreads) {
+                     SEXP Rhigh, bool IsFactor, bool IsCount, SEXP Rparallel,
+                     SEXP RNumThreads, int maxThreads) {
     
     int n, numGroups;
     CleanConvert::convertPrimitive(RNumGroups, numGroups, "numGroups");
@@ -418,14 +419,11 @@ SEXP ComboGroupsRcpp(SEXP Rv, SEXP RNumGroups, SEXP RRetType, SEXP Rlow,
 
     const std::string retType = Rcpp::as<std::string>(RRetType);
     bool isArray = false;
-    bool isList = false;
 
-    if (retType != "3Darray" && retType != "list" && retType != "matrix") {
-        Rcpp::stop("retType must be '3Darray', 'list' or matrix'");
+    if (retType != "3Darray" && retType != "matrix") {
+        Rcpp::stop("retType must be '3Darray' or 'matrix'");
     } else {
-        if (retType == "list")
-            isList = true;
-        else if (retType == "3Darray")
+        if (retType == "3Darray")
             isArray = true;
     }
 
@@ -433,49 +431,37 @@ SEXP ComboGroupsRcpp(SEXP Rv, SEXP RNumGroups, SEXP RRetType, SEXP Rlow,
     const int limit = 20000;
     SetThreads(Parallel, maxThreads, nRows, IsCharacter, nThreads, RNumThreads, limit);
 
-    if (isList) {
-        Rcpp::List myList(nRows);
-        if (IsCharacter) {
-            Rcpp::CharacterMatrix charGrpMat(grpSize, numGroups);
-            GroupMaster(n, rcppChar, charGrpMat, myList, startZ, nRows,
-                        numGroups, grpSize, isArray, isList, Rv, IsFactor);
-        } else if (IsInteger || IsFactor) {
-            Rcpp::IntegerMatrix intGrpMat(grpSize, numGroups);
-            GroupMaster(n, vInt, intGrpMat, myList, startZ, nRows,
-                        numGroups, grpSize, isArray, isList, Rv, IsFactor);
-        } else {
-            Rcpp::NumericMatrix numGrpMat(grpSize, numGroups);
-            GroupMaster(n, vNum, numGrpMat, myList, startZ, nRows,
-                        numGroups, grpSize, isArray, isList, Rv, IsFactor);
+    if (IsCharacter) {
+        Rcpp::CharacterMatrix charGroupsMat = Rcpp::no_init_matrix(nRows, n);
+        GroupWorker(n, rcppChar, charGroupsMat, startZ, numGroups, grpSize, 0u, nRows);
+        FinalTouch(charGroupsMat, isArray, grpSize, numGroups, n, nRows);
+        return charGroupsMat;
+    } else if (IsLogical) {
+        Rcpp::LogicalMatrix boolGroupsMat(nRows, n);
+        GroupsMaster(n, vInt, boolGroupsMat, startZ, numGroups, grpSize, nRows, Parallel, 
+                     nThreads, IsGmp, lower, lowerMpz[0], computedRows, computedRowMpz);
+        FinalTouch(boolGroupsMat, isArray, grpSize, numGroups, n, nRows);
+        return boolGroupsMat;
+    } else if (IsInteger || IsFactor) {
+        Rcpp::IntegerMatrix intGroupsMat = Rcpp::no_init_matrix(nRows, n);
+        GroupsMaster(n, vInt, intGroupsMat, startZ, numGroups, grpSize, nRows, Parallel, 
+                     nThreads, IsGmp, lower, lowerMpz[0], computedRows, computedRowMpz);
+        FinalTouch(intGroupsMat, isArray, grpSize, numGroups, n, nRows);
+
+        if (IsFactor) {
+            Rcpp::IntegerVector testFactor = Rcpp::as<Rcpp::IntegerVector>(Rv);
+            Rcpp::CharacterVector myClass = testFactor.attr("class");
+            Rcpp::CharacterVector myLevels = testFactor.attr("levels");
+            intGroupsMat.attr("class") = myClass;
+            intGroupsMat.attr("levels") = myLevels;
         }
 
-        return myList;
+        return intGroupsMat;
     } else {
-        Rcpp::List TrivialList;
-        if (IsCharacter) {
-            Rcpp::CharacterMatrix charGroupMat = Rcpp::no_init_matrix(nRows, n);
-            GroupMaster(n, rcppChar, charGroupMat, TrivialList, startZ,
-                        nRows, numGroups, grpSize, isArray, isList, Rv, IsFactor);
-            return charGroupMat;
-        } else if (IsInteger || IsFactor) {
-            Rcpp::IntegerMatrix intGroupMat = Rcpp::no_init_matrix(nRows, n);
-            GroupMaster(n, vInt, intGroupMat, TrivialList, startZ,
-                        nRows, numGroups, grpSize, isArray, isList, Rv, IsFactor);
-
-            if (IsFactor) {
-                Rcpp::IntegerVector testFactor = Rcpp::as<Rcpp::IntegerVector>(Rv);
-                Rcpp::CharacterVector myClass = testFactor.attr("class");
-                Rcpp::CharacterVector myLevels = testFactor.attr("levels");
-                intGroupMat.attr("class") = myClass;
-                intGroupMat.attr("levels") = myLevels;
-            }
-
-            return intGroupMat;
-        } else {
-            Rcpp::NumericMatrix numGroupMat = Rcpp::no_init_matrix(nRows, n);
-            GroupMaster(n, vNum, numGroupMat, TrivialList, startZ,
-                        nRows, numGroups, grpSize, isArray, isList, Rv, IsFactor);
-            return numGroupMat;
-        }
+        Rcpp::NumericMatrix numGroupsMat = Rcpp::no_init_matrix(nRows, n);
+        GroupsMaster(n, vNum, numGroupsMat, startZ, numGroups, grpSize, nRows, Parallel, 
+                     nThreads, IsGmp, lower, lowerMpz[0], computedRows, computedRowMpz);
+        FinalTouch(numGroupsMat, isArray, grpSize, numGroups, n, nRows);
+        return numGroupsMat;
     }
 }
