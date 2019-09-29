@@ -9,8 +9,8 @@ CombinatoricsRcpp <- function(Rv, Rm, RisRep, RFreqs, Rlow, Rhigh, f1, f2, Rtarg
     .Call(`_RcppAlgos_CombinatoricsRcpp`, Rv, Rm, RisRep, RFreqs, Rlow, Rhigh, f1, f2, Rtarget, IsComb, RKeepRes, IsFactor, IsCount, stdFun, myEnv, Rparallel, RNumThreads, maxThreads, Rtolerance)
 }
 
-ComboGroupsRcpp <- function(Rv, RNumGroups, RRetType, Rlow, Rhigh, IsFactor, IsCount, Rparallel, RNumThreads, maxThreads) {
-    .Call(`_RcppAlgos_ComboGroupsRcpp`, Rv, RNumGroups, RRetType, Rlow, Rhigh, IsFactor, IsCount, Rparallel, RNumThreads, maxThreads)
+ComboGroupsRcpp <- function(Rv, RNumGroups, RRetType, Rlow, Rhigh, IsFactor, IsCount, Rparallel, RNumThreads, maxThreads, IsSample, RindexVec, RmySeed, RNumSamp, baseSample, RNamed) {
+    .Call(`_RcppAlgos_ComboGroupsRcpp`, Rv, RNumGroups, RRetType, Rlow, Rhigh, IsFactor, IsCount, Rparallel, RNumThreads, maxThreads, IsSample, RindexVec, RmySeed, RNumSamp, baseSample, RNamed)
 }
 
 DivNumSieve <- function(Rb1, Rb2, bDivSieve, RNamed, RNumThreads, maxThreads) {
@@ -33,7 +33,7 @@ EratosthenesRcpp <- function(Rb1, Rb2, RNumThreads, maxCores, maxThreads) {
     .Call(`_RcppAlgos_EratosthenesRcpp`, Rb1, Rb2, RNumThreads, maxCores, maxThreads)
 }
 
-SampleRcpp <- function(Rv, Rm, Rrepetition, RFreqs, RindexVec, IsComb, IsFactor, RmySeed, RNumSamp, baseSample, stdFun, myEnv, Rparallel, RNumThreads, maxThreads) {
-    .Call(`_RcppAlgos_SampleRcpp`, Rv, Rm, Rrepetition, RFreqs, RindexVec, IsComb, IsFactor, RmySeed, RNumSamp, baseSample, stdFun, myEnv, Rparallel, RNumThreads, maxThreads)
+SampleRcpp <- function(Rv, Rm, Rrepetition, RFreqs, RindexVec, IsComb, IsFactor, RmySeed, RNumSamp, baseSample, stdFun, myEnv, Rparallel, RNumThreads, maxThreads, RNamed) {
+    .Call(`_RcppAlgos_SampleRcpp`, Rv, Rm, Rrepetition, RFreqs, RindexVec, IsComb, IsFactor, RmySeed, RNumSamp, baseSample, stdFun, myEnv, Rparallel, RNumThreads, maxThreads, RNamed)
 }
 

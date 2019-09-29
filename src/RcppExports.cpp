@@ -45,8 +45,8 @@ BEGIN_RCPP
 END_RCPP
 }
 // ComboGroupsRcpp
-SEXP ComboGroupsRcpp(SEXP Rv, SEXP RNumGroups, SEXP RRetType, SEXP Rlow, SEXP Rhigh, bool IsFactor, bool IsCount, SEXP Rparallel, SEXP RNumThreads, int maxThreads);
-RcppExport SEXP _RcppAlgos_ComboGroupsRcpp(SEXP RvSEXP, SEXP RNumGroupsSEXP, SEXP RRetTypeSEXP, SEXP RlowSEXP, SEXP RhighSEXP, SEXP IsFactorSEXP, SEXP IsCountSEXP, SEXP RparallelSEXP, SEXP RNumThreadsSEXP, SEXP maxThreadsSEXP) {
+SEXP ComboGroupsRcpp(SEXP Rv, SEXP RNumGroups, SEXP RRetType, SEXP Rlow, SEXP Rhigh, bool IsFactor, bool IsCount, SEXP Rparallel, SEXP RNumThreads, int maxThreads, bool IsSample, SEXP RindexVec, SEXP RmySeed, SEXP RNumSamp, Rcpp::Function baseSample, SEXP RNamed);
+RcppExport SEXP _RcppAlgos_ComboGroupsRcpp(SEXP RvSEXP, SEXP RNumGroupsSEXP, SEXP RRetTypeSEXP, SEXP RlowSEXP, SEXP RhighSEXP, SEXP IsFactorSEXP, SEXP IsCountSEXP, SEXP RparallelSEXP, SEXP RNumThreadsSEXP, SEXP maxThreadsSEXP, SEXP IsSampleSEXP, SEXP RindexVecSEXP, SEXP RmySeedSEXP, SEXP RNumSampSEXP, SEXP baseSampleSEXP, SEXP RNamedSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -60,7 +60,13 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< SEXP >::type Rparallel(RparallelSEXP);
     Rcpp::traits::input_parameter< SEXP >::type RNumThreads(RNumThreadsSEXP);
     Rcpp::traits::input_parameter< int >::type maxThreads(maxThreadsSEXP);
-    rcpp_result_gen = Rcpp::wrap(ComboGroupsRcpp(Rv, RNumGroups, RRetType, Rlow, Rhigh, IsFactor, IsCount, Rparallel, RNumThreads, maxThreads));
+    Rcpp::traits::input_parameter< bool >::type IsSample(IsSampleSEXP);
+    Rcpp::traits::input_parameter< SEXP >::type RindexVec(RindexVecSEXP);
+    Rcpp::traits::input_parameter< SEXP >::type RmySeed(RmySeedSEXP);
+    Rcpp::traits::input_parameter< SEXP >::type RNumSamp(RNumSampSEXP);
+    Rcpp::traits::input_parameter< Rcpp::Function >::type baseSample(baseSampleSEXP);
+    Rcpp::traits::input_parameter< SEXP >::type RNamed(RNamedSEXP);
+    rcpp_result_gen = Rcpp::wrap(ComboGroupsRcpp(Rv, RNumGroups, RRetType, Rlow, Rhigh, IsFactor, IsCount, Rparallel, RNumThreads, maxThreads, IsSample, RindexVec, RmySeed, RNumSamp, baseSample, RNamed));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -141,8 +147,8 @@ BEGIN_RCPP
 END_RCPP
 }
 // SampleRcpp
-SEXP SampleRcpp(SEXP Rv, SEXP Rm, SEXP Rrepetition, SEXP RFreqs, SEXP RindexVec, bool IsComb, bool IsFactor, SEXP RmySeed, SEXP RNumSamp, Rcpp::Function baseSample, SEXP stdFun, SEXP myEnv, SEXP Rparallel, SEXP RNumThreads, int maxThreads);
-RcppExport SEXP _RcppAlgos_SampleRcpp(SEXP RvSEXP, SEXP RmSEXP, SEXP RrepetitionSEXP, SEXP RFreqsSEXP, SEXP RindexVecSEXP, SEXP IsCombSEXP, SEXP IsFactorSEXP, SEXP RmySeedSEXP, SEXP RNumSampSEXP, SEXP baseSampleSEXP, SEXP stdFunSEXP, SEXP myEnvSEXP, SEXP RparallelSEXP, SEXP RNumThreadsSEXP, SEXP maxThreadsSEXP) {
+SEXP SampleRcpp(SEXP Rv, SEXP Rm, SEXP Rrepetition, SEXP RFreqs, SEXP RindexVec, bool IsComb, bool IsFactor, SEXP RmySeed, SEXP RNumSamp, Rcpp::Function baseSample, SEXP stdFun, SEXP myEnv, SEXP Rparallel, SEXP RNumThreads, int maxThreads, SEXP RNamed);
+RcppExport SEXP _RcppAlgos_SampleRcpp(SEXP RvSEXP, SEXP RmSEXP, SEXP RrepetitionSEXP, SEXP RFreqsSEXP, SEXP RindexVecSEXP, SEXP IsCombSEXP, SEXP IsFactorSEXP, SEXP RmySeedSEXP, SEXP RNumSampSEXP, SEXP baseSampleSEXP, SEXP stdFunSEXP, SEXP myEnvSEXP, SEXP RparallelSEXP, SEXP RNumThreadsSEXP, SEXP maxThreadsSEXP, SEXP RNamedSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -161,7 +167,8 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< SEXP >::type Rparallel(RparallelSEXP);
     Rcpp::traits::input_parameter< SEXP >::type RNumThreads(RNumThreadsSEXP);
     Rcpp::traits::input_parameter< int >::type maxThreads(maxThreadsSEXP);
-    rcpp_result_gen = Rcpp::wrap(SampleRcpp(Rv, Rm, Rrepetition, RFreqs, RindexVec, IsComb, IsFactor, RmySeed, RNumSamp, baseSample, stdFun, myEnv, Rparallel, RNumThreads, maxThreads));
+    Rcpp::traits::input_parameter< SEXP >::type RNamed(RNamedSEXP);
+    rcpp_result_gen = Rcpp::wrap(SampleRcpp(Rv, Rm, Rrepetition, RFreqs, RindexVec, IsComb, IsFactor, RmySeed, RNumSamp, baseSample, stdFun, myEnv, Rparallel, RNumThreads, maxThreads, RNamed));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -169,13 +176,13 @@ END_RCPP
 static const R_CallMethodDef CallEntries[] = {
     {"_RcppAlgos_cpp11GetNumThreads", (DL_FUNC) &_RcppAlgos_cpp11GetNumThreads, 0},
     {"_RcppAlgos_CombinatoricsRcpp", (DL_FUNC) &_RcppAlgos_CombinatoricsRcpp, 19},
-    {"_RcppAlgos_ComboGroupsRcpp", (DL_FUNC) &_RcppAlgos_ComboGroupsRcpp, 10},
+    {"_RcppAlgos_ComboGroupsRcpp", (DL_FUNC) &_RcppAlgos_ComboGroupsRcpp, 16},
     {"_RcppAlgos_DivNumSieve", (DL_FUNC) &_RcppAlgos_DivNumSieve, 6},
     {"_RcppAlgos_PollardRhoContainer", (DL_FUNC) &_RcppAlgos_PollardRhoContainer, 6},
     {"_RcppAlgos_PrimeCountRcpp", (DL_FUNC) &_RcppAlgos_PrimeCountRcpp, 3},
     {"_RcppAlgos_MotleyContainer", (DL_FUNC) &_RcppAlgos_MotleyContainer, 6},
     {"_RcppAlgos_EratosthenesRcpp", (DL_FUNC) &_RcppAlgos_EratosthenesRcpp, 5},
-    {"_RcppAlgos_SampleRcpp", (DL_FUNC) &_RcppAlgos_SampleRcpp, 15},
+    {"_RcppAlgos_SampleRcpp", (DL_FUNC) &_RcppAlgos_SampleRcpp, 16},
     {NULL, NULL, 0}
 };
 

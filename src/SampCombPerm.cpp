@@ -20,7 +20,7 @@ void SampleResults(const typeVector &v, std::size_t m, const std::vector<int> &m
 }
 
 template <typename typeRcpp, typename typeVector>
-void ParallelGlue(std::vector<typeVector> v, std::size_t m, const std::vector<int> &myReps, 
+void ParallelGlue(const std::vector<typeVector> &v, std::size_t m, const std::vector<int> &myReps, 
                   std::size_t strtIdx, std::size_t endIdx, nthResutlPtr nthResFun, 
                   const std::vector<double> &mySample, mpz_t *const myBigSamp, typeRcpp &sampleMatrix) {
     SampleResults(v, m, myReps, strtIdx, endIdx, nthResFun, mySample, myBigSamp, sampleMatrix);
@@ -63,12 +63,12 @@ void MasterSample(std::vector<typeElem> v, std::size_t m, const std::vector<int>
         int nextStep = stepSize;
 
         for (int j = 0; j < (nThreads - 1); ++j, step += stepSize, nextStep += stepSize) {
-            pool.push(std::cref(ParallelGlue<RcppParallel::RMatrix<typeElem>, typeElem>), v,
-                      m, myReps, step, nextStep, nthResFun, mySample, myBigSamp, std::ref(parMat));
+            pool.push(std::cref(ParallelGlue<RcppParallel::RMatrix<typeElem>, typeElem>), std::cref(v),
+                      m, std::cref(myReps), step, nextStep, nthResFun, std::cref(mySample), myBigSamp, std::ref(parMat));
         }
         
-        pool.push(std::cref(ParallelGlue<RcppParallel::RMatrix<typeElem>, typeElem>), v,
-                  m, myReps, step, sampSize, nthResFun, mySample, myBigSamp, std::ref(parMat));
+        pool.push(std::cref(ParallelGlue<RcppParallel::RMatrix<typeElem>, typeElem>), std::cref(v),
+                  m, std::cref(myReps), step, sampSize, nthResFun, std::cref(mySample), myBigSamp, std::ref(parMat));
             
         pool.join();
     } else {
@@ -76,14 +76,39 @@ void MasterSample(std::vector<typeElem> v, std::size_t m, const std::vector<int>
     }
 }
 
+template <typename typeRcpp>
+void GetRowNames(bool IsGmp, std::size_t sampSize, typeRcpp &matRcpp,
+                 const std::vector<double> &mySample, mpz_t *const myBigSamp) {
+    
+    Rcpp::CharacterVector myRowNames(sampSize);
+    
+    if (IsGmp) {
+        constexpr int base10 = 10;
+        
+        for (int i = 0; i < sampSize; ++i) {
+            mpz_add_ui(myBigSamp[i], myBigSamp[i], 1);
+            auto buffer = FromCpp14::make_unique<char[]>(mpz_sizeinbase(myBigSamp[i], base10) + 2);
+            mpz_get_str(buffer.get(), base10, myBigSamp[i]);
+            const std::string tempRowName = buffer.get();
+            myRowNames[i] = tempRowName;
+        }
+    } else {
+        for (int i = 0; i < sampSize; ++i)
+            myRowNames[i] = std::to_string(static_cast<int64_t>(mySample[i] + 1));
+    }
+    
+    Rcpp::rownames(matRcpp) = myRowNames;
+}
+
 // [[Rcpp::export]]
 SEXP SampleRcpp(SEXP Rv, SEXP Rm, SEXP Rrepetition, SEXP RFreqs, SEXP RindexVec, bool IsComb,
                 bool IsFactor, SEXP RmySeed, SEXP RNumSamp, Rcpp::Function baseSample, SEXP stdFun,
-                SEXP myEnv, SEXP Rparallel, SEXP RNumThreads, int maxThreads) {
+                SEXP myEnv, SEXP Rparallel, SEXP RNumThreads, int maxThreads, SEXP RNamed) {
     
     int n, m = 0, lenFreqs = 0;
     bool IsMultiset, IsInteger, IsCharacter, IsLogical;
     IsCharacter = IsInteger = IsLogical = false;
+    bool IsNamed = CleanConvert::convertLogical(RNamed, "namedMatrix");
     
     std::vector<double> vNum;
     std::vector<int> vInt, myReps, freqsExpanded;
@@ -203,18 +228,21 @@ SEXP SampleRcpp(SEXP Rv, SEXP Rm, SEXP Rrepetition, SEXP RFreqs, SEXP RindexVec,
     
     if (IsCharacter) {
         Rcpp::CharacterMatrix matChar = Rcpp::no_init_matrix(sampSize, m);
-        SampleResults(rcppChar, m, myReps, 0, sampSize, nthResFun, mySample, myVec.get(), matChar);
+        SampleResults(rcppChar, m, myReps, 0, sampSize, 
+                      nthResFun, mySample, myVec.get(), matChar);
+        if (IsNamed) GetRowNames(IsGmp, sampSize, matChar, mySample, myVec.get());
         return matChar;
     } else if (IsLogical) {
         Rcpp::LogicalMatrix matBool = Rcpp::no_init_matrix(sampSize, m);
         MasterSample(vInt, m, myReps, sampSize, nthResFun, 
                      mySample, myVec.get(), matBool, nThreads, Parallel);
+        if (IsNamed) GetRowNames(IsGmp, sampSize, matBool, mySample, myVec.get());
         return matBool;
     } else if (IsFactor || IsInteger) {
         Rcpp::IntegerMatrix matInt = Rcpp::no_init_matrix(sampSize, m);
         MasterSample(vInt, m, myReps, sampSize, nthResFun, 
                      mySample, myVec.get(), matInt, nThreads, Parallel);
-
+        
         if (IsFactor) {
             Rcpp::IntegerVector testFactor = Rcpp::as<Rcpp::IntegerVector>(Rv);
             Rcpp::CharacterVector myClass = testFactor.attr("class");
@@ -222,12 +250,14 @@ SEXP SampleRcpp(SEXP Rv, SEXP Rm, SEXP Rrepetition, SEXP RFreqs, SEXP RindexVec,
             matInt.attr("class") = myClass;
             matInt.attr("levels") = myLevels;
         }
-
+        
+        if (IsNamed) GetRowNames(IsGmp, sampSize, matInt, mySample, myVec.get());
         return matInt;
     } else {
         Rcpp::NumericMatrix matNum = Rcpp::no_init_matrix(sampSize, m);
         MasterSample(vNum, m, myReps, sampSize, nthResFun, 
                      mySample, myVec.get(), matNum, nThreads, Parallel);
+        if (IsNamed) GetRowNames(IsGmp, sampSize, matNum, mySample, myVec.get());
         return matNum;
     }
 }

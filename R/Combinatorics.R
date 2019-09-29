@@ -38,32 +38,46 @@ permuteCount <- function(v, m = NULL, repetition = FALSE, freqs = NULL) {
 
 comboSample <- function(v, m = NULL, repetition = FALSE, freqs = NULL,
                         n = NULL, sampleVec = NULL, seed = NULL, FUN = NULL,
-                        Parallel = FALSE, nThreads = NULL) {
+                        Parallel = FALSE, nThreads = NULL, namedSample = FALSE) {
     
     isFactor <- is.factor(v)
     if (!is.null(seed)) {set.seed(seed)}
     SampleRcpp(v, m, repetition, freqs, sampleVec, TRUE, isFactor,
-               seed, n, sample, FUN, new.env(), Parallel, nThreads, pkgEnv$nThreads)
+               seed, n, sample, FUN, new.env(), Parallel, nThreads,
+               pkgEnv$nThreads, namedSample)
 }
 
 permuteSample <- function(v, m = NULL, repetition = FALSE, freqs = NULL,
                           n = NULL, sampleVec = NULL, seed = NULL, FUN = NULL,
-                          Parallel = FALSE, nThreads = NULL) {
+                          Parallel = FALSE, nThreads = NULL, namedSample = FALSE) {
     
     isFactor <- is.factor(v)
     if (!is.null(seed)) {set.seed(seed)}
     SampleRcpp(v, m, repetition, freqs, sampleVec, FALSE, isFactor,
-               seed, n, sample, FUN, new.env(), Parallel, nThreads, pkgEnv$nThreads)
+               seed, n, sample, FUN, new.env(), Parallel, nThreads,
+               pkgEnv$nThreads, namedSample)
 }
 
 comboGroups <- function(v, numGroups, retType = "3Darray", lower = NULL,
                        upper = NULL, Parallel = FALSE, nThreads = NULL) {
     isFactor <- is.factor(v)
-    ComboGroupsRcpp(v, numGroups, retType, lower, upper, isFactor,
-                   FALSE, Parallel, nThreads, pkgEnv$nThreads)
+    ComboGroupsRcpp(v, numGroups, retType, lower, upper, 
+                    isFactor, FALSE, Parallel, nThreads, pkgEnv$nThreads,
+                    FALSE, NULL, NULL, NULL, sample, FALSE)
+}
+
+comboGroupsSample <- function(v, numGroups, retType = "3Darray", n = NULL,
+                              sampleVec = NULL, seed = NULL, Parallel = FALSE, 
+                              nThreads = NULL, namedSample = FALSE) {
+    isFactor <- is.factor(v)
+    if (!is.null(seed)) {set.seed(seed)}
+    ComboGroupsRcpp(v, numGroups, retType, NULL, NULL, 
+                    isFactor, FALSE, Parallel, nThreads, pkgEnv$nThreads,
+                    TRUE, sampleVec, seed, n, sample, namedSample)
 }
 
 comboGroupsCount <- function(v, numGroups) {
-    ComboGroupsRcpp(v, numGroups, NULL, NULL, NULL, FALSE, TRUE, FALSE, FALSE, 0)
+    ComboGroupsRcpp(v, numGroups, NULL, NULL, NULL, FALSE, TRUE, 
+                    FALSE, FALSE, 0, FALSE, NULL, NULL, NULL, sample, FALSE)
 }
 
