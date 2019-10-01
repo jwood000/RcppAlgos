@@ -73,6 +73,17 @@ test_that("comboGeneral produces appropriate error messages", {
     expect_error(comboGeneral(5, 3.3), "must be a whole number")
 })
 
+test_that("comboGroups related functions produces appropriate error messages", {
+    expect_error(comboGroups(10, 4), 
+                 "The length of v \\(if v is a vector\\) or v \\(if v is a scalar\\) must be divisible by numGroups")
+    expect_error(comboGroups(100, 4), "The number of rows cannot exceed 2\\^31 - 1.")
+    expect_error(comboGroups(10, 2, retType = "crazyObj"), "retType must be '3Darray' or 'matrix'")
+    expect_error(comboGroupsSample(10, 5, n = 3, namedSample = "TRUE"), 
+                 "Only logical values are supported for namedSample")
+    expect_error(comboGroupsSample(10, 5), 
+                 "n and sampleVec cannot both be NULL")
+})
+
 test_that("divisorsRcpp produces appropriate error messages", {
     expect_error(divisorsRcpp(2^53), "The abs value of each element in v must be less than")
     expect_error(divisorsRcpp(-2^53), "The abs value of each element in v must be less than")
