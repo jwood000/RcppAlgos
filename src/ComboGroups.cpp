@@ -279,7 +279,7 @@ void GroupWorker(std::size_t n, typeVector v, typeRcpp &GroupsMat, std::vector<i
 
 template <typename typeRcpp, typename typeElem>
 void ParallelGlue(std::size_t n, const std::vector<typeElem> &v, typeRcpp &GroupsMat, bool IsGmp,
-                  std::vector<int> z, int r, int grpSize, std::size_t strtIdx, std::size_t endIdx,
+                  const std::vector<int> &z, int r, int grpSize, std::size_t strtIdx, std::size_t endIdx,
                   bool IsSample, const std::vector<double> &mySample, mpz_t *const myBigSamp,
                   double computedRows, mpz_t &computedRowMpz) {
     if (IsSample) {
@@ -397,7 +397,7 @@ SEXP ComboGroupsRcpp(SEXP Rv, SEXP RNumGroups, SEXP RRetType, SEXP Rlow,
     CleanConvert::convertPrimitive(RNumGroups, numGroups, "numGroups");
     bool IsLogical, IsCharacter, IsInteger;
     bool Parallel = CleanConvert::convertLogical(Rparallel, "Parallel");
-    bool IsNamed = CleanConvert::convertLogical(RNamed, "namedObj");
+    bool IsNamed = CleanConvert::convertLogical(RNamed, "namedSample");
     
     std::vector<double> vNum;
     std::vector<int> vInt;
@@ -480,10 +480,10 @@ SEXP ComboGroupsRcpp(SEXP Rv, SEXP RNumGroups, SEXP RRetType, SEXP Rlow,
         std::iota(startZ.begin(), startZ.end(), 0);
     }
     
-    double userNumRows = 0;
     int nRows = 0;
     
     if (!IsSample) {
+        double userNumRows = 0;
         bool permHolder = false;
         SetNumResults(IsGmp, bLower, bUpper, false, permHolder, upperMpz.get(), 
                       lowerMpz.get(), lower, upper, computedRows, computedRowMpz, nRows, userNumRows);

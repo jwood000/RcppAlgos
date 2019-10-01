@@ -108,7 +108,7 @@ SEXP SampleRcpp(SEXP Rv, SEXP Rm, SEXP Rrepetition, SEXP RFreqs, SEXP RindexVec,
     int n, m = 0, lenFreqs = 0;
     bool IsMultiset, IsInteger, IsCharacter, IsLogical;
     IsCharacter = IsInteger = IsLogical = false;
-    bool IsNamed = CleanConvert::convertLogical(RNamed, "namedMatrix");
+    bool IsNamed = CleanConvert::convertLogical(RNamed, "namedSample");
     
     std::vector<double> vNum;
     std::vector<int> vInt, myReps, freqsExpanded;
