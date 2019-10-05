@@ -106,8 +106,9 @@ void MultisetCombination(int n, int r, const typeVector &v, const std::vector<in
 }
 
 template <typename typeVector>
-void ComboGeneralApplyFun(int n, int r, const typeVector &v, bool repetition, int count,
-                          int numRows, std::vector<int> &z, SEXP sexpFun, SEXP rho, SEXP &ans) {
+void ComboGeneralApplyFun(int n, int r, const typeVector &v, bool repetition,
+                          int count, int numRows, std::vector<int> &z, SEXP sexpFun,
+                          SEXP rho, Rcpp::List &myList) {
     
     const int r1 = r - 1;
     const int r2 = r - 2;
@@ -127,7 +128,7 @@ void ComboGeneralApplyFun(int n, int r, const typeVector &v, bool repetition, in
                     vectorPass[k] = v[z[k]];
                 
                 SETCADR(sexpFun, vectorPass);
-                SET_VECTOR_ELT(ans, count, Rf_eval(sexpFun, rho));
+                myList[count] = Rf_eval(sexpFun, rho);
             }
             
             for (int i = r2; i >= 0; i--) {
@@ -154,7 +155,7 @@ void ComboGeneralApplyFun(int n, int r, const typeVector &v, bool repetition, in
                     vectorPass[k] = v[z[k]];
             
                 SETCADR(sexpFun, vectorPass);
-                SET_VECTOR_ELT(ans, count, Rf_eval(sexpFun, rho));
+                myList[count] = Rf_eval(sexpFun, rho);
             }
             
             for (int i = r2; i >= 0; i--) {
@@ -173,7 +174,7 @@ void ComboGeneralApplyFun(int n, int r, const typeVector &v, bool repetition, in
 template <typename typeVector>
 void MultisetComboApplyFun(int n, int r, const typeVector &v, const std::vector<int> &Reps,
                            std::vector<int> &freqs, int numRows, std::vector<int> &z,
-                           int count, SEXP sexpFun, SEXP rho, SEXP &ans) {
+                           int count, SEXP sexpFun, SEXP rho, Rcpp::List &myList) {
 
     int sizeFreqs = 0;
     std::vector<int> zIndex(n), zGroup(r);
@@ -201,7 +202,7 @@ void MultisetComboApplyFun(int n, int r, const typeVector &v, const std::vector<
                 vectorPass[k] = v[freqs[zIndex[z[k]]]];
         
             SETCADR(sexpFun, vectorPass);
-            SET_VECTOR_ELT(ans, count, Rf_eval(sexpFun, rho));
+            myList[count] = Rf_eval(sexpFun, rho);
         }
 
         for (int i = r2; i >= 0; i--) {

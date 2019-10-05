@@ -295,7 +295,7 @@ void MultisetPermutation(std::size_t n, std::size_t r, const typeVector &v, std:
 template <typename typeVector>
 void PermutationApplyFun(std::size_t n, std::size_t r, const typeVector &v, bool IsRep,
                          std::size_t uRowN, bool Multi, std::vector<int> &z,
-                         int intCount, SEXP sexpFun, SEXP rho, SEXP &ans) {
+                         int intCount, SEXP sexpFun, SEXP rho, Rcpp::List &myList) {
     
     const std::size_t lenFreqs = (Multi) ? z.size() : 0;
     typeVector vectorPass(r);
@@ -312,7 +312,7 @@ void PermutationApplyFun(std::size_t n, std::size_t r, const typeVector &v, bool
                 vectorPass[j] = v[z[j]];
 
             SETCADR(sexpFun, vectorPass);
-            SET_VECTOR_ELT(ans, count, Rf_eval(sexpFun, rho));
+            myList[count] = Rf_eval(sexpFun, rho);
 
             for (int k = lastCol; k >= 0; --k) {
                 if (z[k] != maxIndInt) {
@@ -336,7 +336,7 @@ void PermutationApplyFun(std::size_t n, std::size_t r, const typeVector &v, bool
                     vectorPass[j] = v[arrPerm[j]];
                 
                 SETCADR(sexpFun, vectorPass);
-                SET_VECTOR_ELT(ans, count, Rf_eval(sexpFun, rho));
+                myList[count] = Rf_eval(sexpFun, rho);
                 nextFullPerm(arrPerm.get(), maxInd);
             }
         } else {
@@ -345,7 +345,7 @@ void PermutationApplyFun(std::size_t n, std::size_t r, const typeVector &v, bool
                     vectorPass[j] = v[arrPerm[j]];
                     
                 SETCADR(sexpFun, vectorPass);
-                SET_VECTOR_ELT(ans, count, Rf_eval(sexpFun, rho));
+                myList[count] = Rf_eval(sexpFun, rho);
                 nextPartialPerm(arrPerm.get(), lastCol, maxInd);
             }
         }
@@ -355,7 +355,7 @@ void PermutationApplyFun(std::size_t n, std::size_t r, const typeVector &v, bool
             vectorPass[j] = v[arrPerm[j]];
 
         SETCADR(sexpFun, vectorPass);
-        SET_VECTOR_ELT(ans, numR1, Rf_eval(sexpFun, rho));
+        myList[numR1] = Rf_eval(sexpFun, rho);
     }
 }
 
