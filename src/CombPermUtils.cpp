@@ -1,9 +1,58 @@
 #include "CountGmp.h"
 #include "CleanConvert.h"
 
-void SetValues(bool IsCharacter, bool IsLogical, bool &IsInteger, 
-               Rcpp::CharacterVector &rcppChar, std::vector<int> &vInt,
-               std::vector<double> &vNum, int &n, SEXP Rv) {
+void SetClass(bool &IsCharacter, bool &IsLogical, 
+              bool &IsInteger, bool &IsComplex, bool &IsRaw, SEXP Rv) {
+    switch(TYPEOF(Rv)) {
+        case LGLSXP: {
+            IsLogical = true;
+            IsRaw = IsInteger = IsComplex = IsCharacter = false;
+            break;
+        }
+        case INTSXP: {
+            IsInteger = true;
+            IsRaw = IsLogical = IsComplex = IsCharacter = false;
+            break;
+        }
+        case REALSXP: {
+            IsRaw = IsComplex = IsLogical = IsInteger = IsCharacter = false;
+            break;
+        }
+        case STRSXP: {
+            IsCharacter = true;
+            IsRaw = IsComplex = IsLogical = IsInteger = false;
+            break;
+        }
+        case CPLXSXP: {
+            IsComplex = true;
+            IsRaw = IsLogical = IsInteger = IsCharacter = false;
+            break;
+        }
+        case RAWSXP: {
+            // Vectors of class bigZ and mpfr cause a lot of headaches, and for this
+            // we simply exclude all raw vectors that have any attributes. If you
+            // think there is a clean solution for including these cases, please
+            // contact me @ jwood000@gmail.com. N.B., see commit 655 which includes
+            // a function for returning a matrix of class bigz. I observed terrible
+            // performance compared to simply converting to a character vector.
+            Rcpp::RawVector tempRaw(Rv);
+            
+            if (tempRaw.attributeNames().size() == 0) {
+                IsRaw = true;
+                IsComplex = IsLogical = IsInteger = IsCharacter = false;
+                break;
+            }
+        }
+        default: {
+            Rcpp::stop("Only atomic types are supported for v");   
+        }
+    }
+}
+
+void SetValues(bool IsCharacter, bool IsLogical, bool &IsInteger, bool IsComplex, 
+               bool IsRaw, Rcpp::CharacterVector &rcppChar, std::vector<int> &vInt,
+               std::vector<double> &vNum, Rcpp::ComplexVector &rcppCplx,
+               Rcpp::RawVector &rcppRaw, int &n, SEXP Rv) {
     
     if (IsCharacter) {
         rcppChar = Rcpp::as<Rcpp::CharacterVector>(Rv);
@@ -11,6 +60,12 @@ void SetValues(bool IsCharacter, bool IsLogical, bool &IsInteger,
     } else if (IsLogical) {
         vInt = Rcpp::as<std::vector<int>>(Rv);
         n = vInt.size();
+    } else if (IsComplex) {
+        rcppCplx = Rcpp::as<Rcpp::ComplexVector>(Rv);
+        n = rcppCplx.size();
+    } else if (IsRaw) {
+        rcppRaw = Rcpp::as<Rcpp::RawVector>(Rv);
+        n = rcppRaw.size();
     } else {
         if (Rf_length(Rv) == 1) {
             int seqEnd, m1, m2;         // numOnly = true, checkWhole = true, negPoss = true
@@ -109,13 +164,13 @@ void SetRandomSample(SEXP RindexVec, SEXP RNumSamp, std::size_t &sampSize,
     } else {
         if (IsGmp) {
             switch (TYPEOF(RindexVec)) {
-            case RAWSXP: {
-                const char* raw = (char*)RAW(RindexVec);
-                sampSize = ((int*)raw)[0];
-                break;
-            }
-            default:
-                sampSize = LENGTH(RindexVec);
+                case RAWSXP: {
+                    Rcpp::RawVector raw(RindexVec);
+                    sampSize = static_cast<int>(raw[0]);
+                    break;
+                }
+                default:
+                    sampSize = LENGTH(RindexVec);
             }
             
             mySample.resize(sampSize);
