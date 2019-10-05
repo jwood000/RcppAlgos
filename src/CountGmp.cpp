@@ -13,16 +13,15 @@ SEXP GetCount(bool IsGmp, mpz_t computedRowMpz, double computedRows) {
         sizeNum = sizeof(int) * (2 + (mpz_sizeinbase(computedRowMpz, 2) + numb - 1) / numb);
         size += sizeNum;
         
-        SEXP ansPos = PROTECT(Rf_allocVector(RAWSXP, size));
+        Rcpp::RawVector ansPos = Rcpp::no_init_vector(size);
         char* rPos = (char*)(RAW(ansPos));
         ((int*)(rPos))[0] = 1; // first int is vector-size-header
-        
+
         // current position in rPos[] (starting after vector-size-header)
         std::size_t posPos = sizeof(int);
         posPos += myRaw(&rPos[posPos], computedRowMpz, sizeNum);
         
-        Rf_setAttrib(ansPos, R_ClassSymbol, Rf_mkString("bigz"));
-        UNPROTECT(1);
+        ansPos.attr("class") = Rcpp::CharacterVector::create("bigz");
         return(ansPos);
     } else {
         if (computedRows > std::numeric_limits<int>::max())
