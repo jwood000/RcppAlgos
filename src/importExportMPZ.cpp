@@ -10,20 +10,25 @@
 
 #include <gmp.h>
 #include <Rcpp.h>
+#include "Cpp14MakeUnique.h"
 
-void createMPZArray(SEXP input, mpz_t *myVec, std::size_t sizevec, const std::string &nameOfObject, bool negPoss) {
+constexpr std::size_t intSize = sizeof(int);
+constexpr std::size_t numb = 8u * intSize;
+
+void createMPZArray(SEXP input, mpz_t *myVec, std::size_t vecSize, 
+                    const std::string &nameOfObject, bool negPoss) {
     
-    const std::string suffix = (sizevec > 1) ? "Each element in " + nameOfObject : nameOfObject;
+    const std::string suffix = (vecSize > 1) ? 
+                               "Each element in " + nameOfObject : nameOfObject;
     
     switch (TYPEOF(input)) {
         case RAWSXP: {
             // deserialise the vector. first int is the size.
             const char* raw = (char*)RAW(input);
-            const std::size_t intSize = sizeof(int);
             const std::size_t numb = 8 * intSize;
             int pos = intSize; // position in raw[]. Starting after header.
             
-            for (std::size_t i = 0; i < sizevec; ++i) {
+            for (std::size_t i = 0; i < vecSize; ++i) {
                 const int* r = (int*)(&raw[pos]);
                 
                 if (r[0] > 0) {
@@ -48,7 +53,7 @@ void createMPZArray(SEXP input, mpz_t *myVec, std::size_t sizevec, const std::st
             std::vector<double> dblVec = Rcpp::as<std::vector<double>>(input);
             constexpr double Sig53 = 9007199254740991.0;
             
-            for (std::size_t j = 0; j < sizevec; ++j) {
+            for (std::size_t j = 0; j < vecSize; ++j) {
                 if (Rcpp::NumericVector::is_na(dblVec[j]) || std::isnan(dblVec[j]))
                     Rcpp::stop(suffix + " cannot be NA or NaN");
                 
@@ -80,7 +85,7 @@ void createMPZArray(SEXP input, mpz_t *myVec, std::size_t sizevec, const std::st
             std::vector<int> intVec = Rcpp::as<std::vector<int>>(input);
             std::vector<double> dblVec = Rcpp::as<std::vector<double>>(input);
             
-            for (std::size_t j = 0; j < sizevec; ++j) {
+            for (std::size_t j = 0; j < vecSize; ++j) {
                 if (Rcpp::NumericVector::is_na(dblVec[j]) || std::isnan(dblVec[j]))
                     Rcpp::stop(suffix + " cannot be NA or NaN");
                 
@@ -94,7 +99,7 @@ void createMPZArray(SEXP input, mpz_t *myVec, std::size_t sizevec, const std::st
             break;
         }
         case STRSXP: {
-            for (std::size_t i = 0; i < sizevec; ++i) {
+            for (std::size_t i = 0; i < vecSize; ++i) {
                 if (STRING_ELT(input, i) == NA_STRING) {
                     Rcpp::stop(suffix + " cannot be NA or NaN");
                 } else {
@@ -116,7 +121,6 @@ void createMPZArray(SEXP input, mpz_t *myVec, std::size_t sizevec, const std::st
 int myRaw(char* raw, mpz_t value, std::size_t totals) {
     memset(raw, 0, totals);
     
-    const std::size_t intSize = sizeof(int);
     int* r = (int*)raw;
     r[0] = totals / intSize - 2;
     
@@ -124,4 +128,44 @@ int myRaw(char* raw, mpz_t value, std::size_t totals) {
     mpz_export(&r[2], 0, 1, intSize, 0, 0, value);
     
     return totals;
+}
+
+SEXP BigMatrix(Rcpp::IntegerMatrix &indexMat, int nRows, int nCol, SEXP Rv) {
+    
+    Rcpp::RawVector raw(Rv);
+    const int myVecSize = static_cast<int>(raw[0]);
+    auto myVec = FromCpp14::make_unique<mpz_t[]>(myVecSize);
+    createMPZArray(Rv, myVec.get(), myVecSize, "v", true);
+    
+    std::vector<std::size_t> mySizes(myVecSize);
+    std::vector<std::size_t> vecIndFreq(myVecSize, 0u);
+    
+    for (std::size_t j = 0; j < myVecSize; j++) // adding each bigint's needed size
+        mySizes[j] = intSize * (2 + (mpz_sizeinbase(myVec[j], 2) + numb - 1) / numb);
+    
+    for (int j = 0; j < nCol; ++j)
+        for (int i = 0; i < nRows; ++i)
+            ++vecIndFreq[indexMat(i, j)];
+    
+    // Add the size for vector size header
+    std::size_t bigMatCount = intSize;
+    
+    for (std::size_t j = 0; j < myVecSize; ++j)
+        bigMatCount += (mySizes[j] * vecIndFreq[j]);
+    
+    Rcpp::RawVector bigMat = Rcpp::no_init_vector(bigMatCount);
+    char* rPos = (char*)(RAW(bigMat));
+    ((int*)(rPos))[0] = nRows * nCol; // first int is vector-size-header
+    
+    // current position in rPos[] (starting after vector-
+    // size-header) N.B. Only need for the first row.
+    std::size_t posPos = intSize;
+    
+    for (std::size_t j = 0; j < nCol; ++j)
+        for (std::size_t i = 0; i < nRows; ++i)
+            posPos += myRaw(&rPos[posPos], myVec[indexMat(i, j)], mySizes[indexMat(i, j)]);
+    
+    bigMat.attr("class") = Rcpp::CharacterVector::create("bigz");
+    bigMat.attr("nrow") = nRows;
+    return(bigMat);
 }
