@@ -168,11 +168,6 @@ test_that("permuteGeneral produces appropriate error messages", {
                                 comparisonFun = "<",
                                 limitConstraints = 100,
                                 upper = 10^10), "number of rows cannot exceed")
-    expect_error(permuteGeneral(0i ^ (-3:3),7,FALSE,
-                                constraintFun = "sum",
-                                comparisonFun = "<",
-                                limitConstraints = 100,
-                                upper = 10^10), "Only integers, numerical, character, and factor classes are supported for v")
     expect_error(permuteGeneral(5, 1:5), "length of m must be 1")
     expect_error(permuteGeneral(5, -5), "m must be a positive whole number")
     expect_error(permuteCount(5, 5, "TRUE"), "Only logical values are supported for repetition")
