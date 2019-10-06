@@ -55,7 +55,12 @@ void PermuteWorker(std::size_t r, bool IsRep, const typeVector &v, const int *co
                    std::size_t ind, std::size_t first, std::size_t unrollRem) {
     
     const std::size_t lastUnroll = last - unrollRem;
-    if (IsRep) {RepUnroller(r, v, indexMat, permuteMatrix, start, lastUnroll, last, ind);}
+    
+    // For IsRep case, we are not setting the first column because we know that it
+    // simply increments. This is taken into account in the indexMat preparation.
+    if (IsRep)
+        RepUnroller(r, v, indexMat, permuteMatrix, start, lastUnroll, last, ind);
+    
     StandardUnroller(r, v, indexMat, permuteMatrix, start, lastUnroll, last, ind, first);
 }
 

@@ -126,14 +126,13 @@ std::vector<int> nthComboGroup(int n, int gSize, int r,
     
     double ind1 = myIndex, ind2 = myIndex;
     int s = n - 1;
-    int g = gSize - 1;
+    const int g = gSize - 1;
     int temp = static_cast<int>(nChooseK(s, g));
     int secLen = total / temp;
     
     std::vector<int> res(n, 0);
     std::vector<int> v(s);
     std::iota(v.begin(), v.end(), 1);
-    std::vector<int>::iterator it;
     
     int myMin = 0;
     mpz_t mpzDefault;
@@ -142,7 +141,7 @@ std::vector<int> nthComboGroup(int n, int gSize, int r,
     for (int j = 0; j < (r - 1); ++j) {
         ind2 = std::floor(ind2 / secLen);
         res[j * gSize] = myMin;
-        std::vector<int> comb = nthComb(s, g, ind2, mpzDefault, v);
+        const std::vector<int> comb = nthComb(s, g, ind2, mpzDefault, v);
         
         for (int k = j * gSize + 1, i = 0; k < ((j + 1) * gSize); ++k, ++i)
             res[k] = v[comb[i]];
@@ -150,7 +149,7 @@ std::vector<int> nthComboGroup(int n, int gSize, int r,
         v.clear();
         
         for (int i = 1; i <= n; ++i) {
-            it = std::find(res.begin(), res.end(), i);
+            const auto it = std::find(res.begin(), res.end(), i);
             
             if (it == res.end())
                 v.push_back(i);
@@ -160,6 +159,7 @@ std::vector<int> nthComboGroup(int n, int gSize, int r,
         v.erase(v.begin());
         ind1 -= ind2 * secLen;
         ind2 = ind1;
+        
         s -= gSize;
         temp = static_cast<int>(nChooseK(s, g));
         secLen /= temp;
@@ -180,7 +180,7 @@ std::vector<int> nthComboGroupGmp(int n, int gSize, int r,
     mpz_set(ind1, lowerMpz); mpz_set(ind2, lowerMpz);
     
     int s = n - 1;
-    int g = gSize - 1;
+    const int g = gSize - 1;
     
     mpz_t temp, secLen;
     mpz_init(temp); mpz_init(secLen);
@@ -191,15 +191,14 @@ std::vector<int> nthComboGroupGmp(int n, int gSize, int r,
     std::vector<int> res(n, 0);
     std::vector<int> v(s);
     std::iota(v.begin(), v.end(), 1);
-    std::vector<int>::iterator it;
     
     int myMin = 0;
-    const double dblDefault = 0;
+    constexpr double dblDefault = 0;
     
     for (int j = 0; j < (r - 1); ++j) {
         mpz_tdiv_q(ind2, ind2, secLen);
         res[j * gSize] = myMin;
-        std::vector<int> comb = nthCombGmp(s, g, dblDefault, ind2, v);
+        const std::vector<int> comb = nthCombGmp(s, g, dblDefault, ind2, v);
 
         for (int k = j * gSize + 1, i = 0; k < ((j + 1) * gSize); ++k, ++i)
             res[k] = v[comb[i]];
@@ -207,7 +206,7 @@ std::vector<int> nthComboGroupGmp(int n, int gSize, int r,
         v.clear();
     
         for (int i = 1; i <= n; ++i) {
-            it = std::find(res.begin(), res.end(), i);
+            const auto it = std::find(res.begin(), res.end(), i);
     
             if (it == res.end())
                 v.push_back(i);
@@ -269,17 +268,17 @@ void SampleWorker(std::size_t n, const typeVector &v, typeRcpp &GroupsMat,
                   bool IsGmp, const std::vector<double> &mySample, mpz_t *const myBigSamp,
                   double computedRows, mpz_t &computedRowMpz) {
     
-    std::vector<int> z(n);
-    
     if (IsGmp) {
         for (std::size_t i = strtIdx; i < endIdx; ++i) {
-            z = nthComboGroupGmp(n, grpSize, r, myBigSamp[i], computedRowMpz);
+            const std::vector<int> z = nthComboGroupGmp(n, grpSize, r, myBigSamp[i], computedRowMpz);
+            
             for (std::size_t j = 0; j < n; ++j)
                 GroupsMat(i, j) = v[z[j]];
         }
     } else {
         for (std::size_t i = strtIdx; i < endIdx; ++i) {
-            z = nthComboGroup(n, grpSize, r, mySample[i], computedRows);
+            const std::vector<int> z = nthComboGroup(n, grpSize, r, mySample[i], computedRows);
+            
             for (std::size_t j = 0; j < n; ++j)
                 GroupsMat(i, j) = v[z[j]];
         }
@@ -309,6 +308,7 @@ void SerialGlue(std::size_t n, const typeVector &v, typeRcpp &GroupsMat, bool Is
                 const std::vector<int> &z, int r, int grpSize, std::size_t nRows,
                 bool IsSample, const std::vector<double> &mySample, mpz_t *const myBigSamp,
                 double computedRows, mpz_t &computedRowMpz, bool IsArray, bool IsNamed) {
+    
     if (IsSample) {
         SampleWorker(n, v, GroupsMat, r, grpSize, 0, nRows,
                      IsGmp, mySample, myBigSamp, computedRows, computedRowMpz);
@@ -325,6 +325,7 @@ void ParallelGlue(std::size_t n, const std::vector<typeElem> &v, typeRcpp &Group
                   const std::vector<int> &z, int r, int grpSize, std::size_t strtIdx, std::size_t endIdx,
                   bool IsSample, const std::vector<double> &mySample, mpz_t *const myBigSamp,
                   double computedRows, mpz_t &computedRowMpz) {
+    
     if (IsSample) {
         SampleWorker(n, v, GroupsMat, r, grpSize, strtIdx, endIdx,
                      IsGmp, mySample, myBigSamp, computedRows, computedRowMpz);
@@ -336,6 +337,7 @@ void ParallelGlue(std::size_t n, const std::vector<typeElem> &v, typeRcpp &Group
 void GetStartGrp(bool IsGmp, std::vector<int> &z, int n, int grpSize, 
                  int r, double &lower, double computedRows, mpz_t lowerMpz,
                  mpz_t computedRowMpz, std::size_t stepSize) {
+    
     if (IsGmp) {
         mpz_add_ui(lowerMpz, lowerMpz, stepSize);
         z = nthComboGroupGmp(n, grpSize, r, lowerMpz, computedRowMpz);
@@ -398,6 +400,7 @@ SEXP ComboGroupsRcpp(SEXP Rv, SEXP RNumGroups, SEXP RRetType, SEXP Rlow,
     Rcpp::CharacterVector rcppChar;
     Rcpp::ComplexVector rcppCplx;
     Rcpp::RawVector rcppRaw;
+    
     SetClass(IsCharacter, IsLogical, IsInteger, IsComplex, IsRaw, Rv);
     
     SetValues(IsCharacter, IsLogical, IsInteger, IsComplex,

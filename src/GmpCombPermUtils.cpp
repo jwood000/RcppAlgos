@@ -7,11 +7,12 @@ static gmp_randstate_t seed_state;
 static int seed_init = 0;
 
 SEXP GetCount(bool IsGmp, mpz_t computedRowMpz, double computedRows) {
+    
     if (IsGmp) {
-        std::size_t sizeNum, size = sizeof(int);
-        std::size_t numb = 8 * sizeof(int);
-        sizeNum = sizeof(int) * (2 + (mpz_sizeinbase(computedRowMpz, 2) + numb - 1) / numb);
-        size += sizeNum;
+        constexpr std::size_t numb = 8 * sizeof(int);
+        const std::size_t sizeNum = sizeof(int) * 
+                (2 + (mpz_sizeinbase(computedRowMpz, 2) + numb - 1) / numb);
+        const std::size_t size = sizeof(int) + sizeNum;
         
         Rcpp::RawVector ansPos = Rcpp::no_init_vector(size);
         char* rPos = (char*)(RAW(ansPos));
@@ -33,6 +34,7 @@ SEXP GetCount(bool IsGmp, mpz_t computedRowMpz, double computedRows) {
 
 void SetBounds(bool IsCount, SEXP Rlow, SEXP Rhigh,bool IsGmp, bool &bLower, 
                bool &bUpper, double &lower, double &upper, mpz_t *lowerMpz, mpz_t *upperMpz) {
+    
     if (!IsCount) {
         if (!Rf_isNull(Rlow)) {
             bLower = true;
@@ -60,6 +62,7 @@ void SetBounds(bool IsCount, SEXP Rlow, SEXP Rhigh,bool IsGmp, bool &bLower,
 
 void CheckBounds(bool IsGmp, double lower, double upper, double computedRows,
                  mpz_t lowerMpz, mpz_t upperMpz, mpz_t computedRowMpz) {
+    
     if (IsGmp) {
         if (mpz_cmp(lowerMpz, computedRowMpz) >= 0 || mpz_cmp(upperMpz, computedRowMpz) > 0)
             Rcpp::stop("bounds cannot exceed the maximum number of possible results");
@@ -72,6 +75,7 @@ void CheckBounds(bool IsGmp, double lower, double upper, double computedRows,
 void SetNumResults(bool IsGmp, bool bLower, bool bUpper, bool IsConstrained, bool &permNonTriv,
                    mpz_t *upperMpz, mpz_t *lowerMpz, double lower, double upper, double computedRows,
                    mpz_t &computedRowMpz, int &nRows, double &userNumRows) {
+    
     if (IsGmp) {
         mpz_t testBound;
         mpz_init(testBound);
@@ -144,6 +148,7 @@ void SetNumResults(bool IsGmp, bool bLower, bool bUpper, bool IsConstrained, boo
 
 void SetRandomSampleMpz(SEXP RindexVec, SEXP RmySeed, std::size_t sampSize,
                         bool IsGmp, mpz_t &computedRowMpz, mpz_t *const myVec) {
+    
     if (IsGmp) {
         if (!Rf_isNull(RindexVec)) {
             createMPZArray(RindexVec, myVec, sampSize, "sampleVec");
@@ -197,6 +202,7 @@ void SetRandomSampleMpz(SEXP RindexVec, SEXP RmySeed, std::size_t sampSize,
 // utilize the gmp library and deal mostly with mpz_t types
 
 void NumPermsWithRepGmp(mpz_t result, const std::vector<int> &v) {
+    
     mpz_set_ui(result, 1);
     std::vector<int> myLens = rleCpp(v);
     std::sort(myLens.begin(), myLens.end(), std::greater<int>());
@@ -214,13 +220,17 @@ void NumPermsWithRepGmp(mpz_t result, const std::vector<int> &v) {
 }
 
 void NumPermsNoRepGmp(mpz_t result, int n, int k) {
+    
     mpz_set_ui(result, 1);
+    
     for (int i = n, m = n - k; i > m; --i)
         mpz_mul_ui(result, result, i);
 }
 
 void nChooseKGmp(mpz_t result, int n, int k) {
+    
     mpz_set_ui(result, 1);
+    
     if (k != n && k != 0) {
         for (int i = (n - k + 1), d = 1; d <= k; ++i, ++d) {
             mpz_mul_ui(result, result, i);
@@ -244,11 +254,13 @@ bool onlyOneCombo(int n, int r, const std::vector<int> &Reps) {
     return false;
 }
 
-void MultisetCombRowNumGmp(mpz_t result, int n, int r, const std::vector<int> &Reps) {
+void MultisetCombRowNumGmp(mpz_t result, int n, int r, 
+                           const std::vector<int> &Reps) {
     
     if (!onlyOneCombo(n, r, Reps)) {
         const int r1 = r + 1;
         int myMax = r1;
+        
         if (myMax > Reps[0] + 1)
             myMax = Reps[0] + 1;
 
@@ -346,8 +358,8 @@ void MultisetPermRowNumGmp(mpz_t result, int n, int r, const std::vector<int> &m
     } else if (r > sumFreqs) {
         mpz_set_ui(result, 0);
     } else {
-        int maxFreq, n1 = n - 1;
-        maxFreq = *std::max_element(myReps.cbegin(), myReps.cend());
+        const int n1 = n - 1;
+        int maxFreq = *std::max_element(myReps.cbegin(), myReps.cend());
         
         std::vector<int> seqR(r);
         std::iota(seqR.begin(), seqR.end(), 1);
@@ -422,6 +434,7 @@ void MultisetPermRowNumGmp(mpz_t result, int n, int r, const std::vector<int> &m
 
 void GetComputedRowMpz(mpz_t computedRowMpz, bool IsMultiset, bool IsComb, bool IsRep,
                        int n, int m, SEXP Rm, std::vector<int> &freqs, std::vector<int> &myReps) {
+    
     if (IsMultiset) {
         if (IsComb) {
             MultisetCombRowNumGmp(computedRowMpz, n, m, myReps);

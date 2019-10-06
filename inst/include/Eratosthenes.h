@@ -45,7 +45,7 @@ namespace PrimeSieve {
     
     // The following function is based off of the prime number theorem
     inline std::size_t EstimatePiPrime(double minNum, double maxNum) {
-        auto it = std::upper_bound(CUTPOINTS.cbegin(), CUTPOINTS.cend(), maxNum);
+        const auto it = std::upper_bound(CUTPOINTS.cbegin(), CUTPOINTS.cend(), maxNum);
         const std::size_t myIndex = it - CUTPOINTS.cbegin();
         double dblRes = std::ceil((maxNum / std::log(maxNum)) * (1 + PERCINC[myIndex]));
         
@@ -492,13 +492,10 @@ namespace PrimeSieve {
                 strtChunk = (minNum - myNum) / NUM30030;
                 myNum += strtChunk * NUM30030;
                 
-                for (std::size_t w = 0u; w < szWheel30030 && myNum <= maxNum; myNum += ARR_WHEEL30030[w], ++w) {
-                    if (myNum >= minNum) {
-                        if (sieve[myNum - lowerBnd]) {
+                for (std::size_t w = 0u; w < szWheel30030 && myNum <= maxNum; myNum += ARR_WHEEL30030[w], ++w)
+                    if (myNum >= minNum)
+                        if (sieve[myNum - lowerBnd])
                             myPrimes.push_back(static_cast<typePrime>(myNum));
-                        }
-                    }
-                }
                 
                 ++strtChunk;
             }

@@ -1,7 +1,6 @@
 #ifndef COMBO_RESULTS_H
 #define COMBO_RESULTS_H
 
-#include <Rcpp.h>
 #include "ConstraintsUtils.h"
 
 template <typename typeMatrix, typename typeVector>
@@ -35,6 +34,7 @@ void ComboGenRes(int n, int r, const std::vector<typeVector> &v, bool repetition
             for (int i = r2; i >= 0; i--) {
                 if (z[i] != lastElement) {
                     ++z[i];
+                    
                     for (int k = i; k < r1; ++k)
                         z[k + 1] = z[k];
                     
@@ -63,6 +63,7 @@ void ComboGenRes(int n, int r, const std::vector<typeVector> &v, bool repetition
             for (int i = r2; i >= 0; i--) {
                 if (z[i] != (nMinusR + i)) {
                     ++z[i];
+                    
                     for (int k = i; k < r1; ++k)
                         z[k + 1] = z[k] + 1;
 

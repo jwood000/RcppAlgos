@@ -279,6 +279,7 @@ std::vector<int> nthPermMult(int n, int r, double dblIdx,
     std::vector<int> Counts;
     
     for (int k = 0, r1 = r - 1; k < r; ++k, --r1) {
+        
         int j = 0;
         while (Reps[j] == 0)
             ++j;
@@ -405,6 +406,7 @@ std::vector<int> nthPermMultGmp(int n, int r, double dblIdx,
 
 Rcpp::XPtr<nthResutlPtr> putNthResPtrInXPtr(bool IsMultiset, bool IsRep,
                                             bool IsGmp, bool IsComb) {
+    
     if (IsGmp) {
         if (IsComb) {
             if (IsMultiset) {

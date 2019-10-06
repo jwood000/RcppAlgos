@@ -26,6 +26,7 @@ void ComboGeneral(int n, int r, const typeVector &v, bool repetition, int count,
             for (int i = r2; i >= 0; i--) {
                 if (z[i] != lastElement) {
                     ++z[i];
+                    
                     for (int k = i; k < r1; ++k)
                         z[k + 1] = z[k];
                     
@@ -134,6 +135,7 @@ void ComboGeneralApplyFun(int n, int r, const typeVector &v, bool repetition,
             for (int i = r2; i >= 0; i--) {
                 if (z[i] != lastElement) {
                     ++z[i];
+                    
                     for (int k = i; k < r1; ++k)
                         z[k + 1] = z[k];
                     
@@ -161,6 +163,7 @@ void ComboGeneralApplyFun(int n, int r, const typeVector &v, bool repetition,
             for (int i = r2; i >= 0; i--) {
                 if (z[i] != (nMinusR + i)) {
                     ++z[i];
+                    
                     for (int k = i; k < r1; ++k) 
                         z[k + 1] = z[k] + 1;
                     

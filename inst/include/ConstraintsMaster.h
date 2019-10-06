@@ -131,7 +131,7 @@ inline void BruteNextElem(int &ind, int lowBnd, typeVector targetMin, typeVector
                           partialPtr<typeVector> partialFun) {
     
     typeVector dist = targetMin - partialFun(partial, v[ind], uR);
-    int origInd = ind;
+    const int origInd = ind;
     
     while (ind > lowBnd && dist < 0) {
         --ind;

@@ -10,10 +10,10 @@ void SampleResults(const typeVector &v, std::size_t m, const std::vector<int> &m
                    const std::vector<double> &mySample, mpz_t *const myBigSamp, typeRcpp &sampleMatrix) {
 
     const int lenV = v.size();
-    std::vector<int> z(m);
     
     for (std::size_t i = strtIdx; i < endIdx; ++i) {
-        z = nthResFun(lenV, m, mySample[i], myBigSamp[i], myReps);
+        const std::vector<int> z = nthResFun(lenV, m, mySample[i], myBigSamp[i], myReps);
+        
         for (std::size_t j = 0; j < m; ++j)
             sampleMatrix(i, j) = v[z[j]];
     }
@@ -23,6 +23,7 @@ template <typename typeRcpp, typename typeVector>
 void ParallelGlue(const std::vector<typeVector> &v, std::size_t m, const std::vector<int> &myReps, 
                   std::size_t strtIdx, std::size_t endIdx, nthResutlPtr nthResFun, 
                   const std::vector<double> &mySample, mpz_t *const myBigSamp, typeRcpp &sampleMatrix) {
+    
     SampleResults(v, m, myReps, strtIdx, endIdx, nthResFun, mySample, myBigSamp, sampleMatrix);
 }
 
@@ -32,14 +33,14 @@ SEXP SampleApplyFun(const typeVector &v, std::size_t m, const std::vector<int> &
                     SEXP func, SEXP rho, nthResutlPtr nthResFun, bool IsNamed, bool IsGmp) {
 
     const int lenV = v.size();
-    std::vector<int> z(m);
     typeVector vectorPass(m);
     
     Rcpp::List myList(sampSize);
     SEXP sexpFun = PROTECT(Rf_lang2(func, R_NilValue));
     
     for (std::size_t i = 0; i < sampSize; ++i) {
-        z = nthResFun(lenV, m, mySample[i], myBigSamp[i], myReps);
+        const std::vector<int> z = nthResFun(lenV, m, mySample[i], myBigSamp[i], myReps);
+        
         for (std::size_t j = 0; j < m; ++j)
             vectorPass[j] = v[z[j]];
         
@@ -49,6 +50,7 @@ SEXP SampleApplyFun(const typeVector &v, std::size_t m, const std::vector<int> &
     
     UNPROTECT(1);
     if (IsNamed) SetSampleNames(IsGmp, sampSize, myList, mySample, myBigSamp, false);
+    
     return myList;
 }
 
@@ -155,6 +157,7 @@ SEXP SampleRcpp(SEXP Rv, SEXP Rm, SEXP Rrepetition, SEXP RFreqs, SEXP RindexVec,
     
     std::size_t sampSize;
     std::vector<double> mySample;
+    
     SetRandomSample(RindexVec, RNumSamp, sampSize, IsGmp, computedRows, mySample, baseSample);
     auto myVec = FromCpp14::make_unique<mpz_t[]>(sampSize);
     
@@ -163,6 +166,7 @@ SEXP SampleRcpp(SEXP Rv, SEXP Rm, SEXP Rrepetition, SEXP RFreqs, SEXP RindexVec,
     
     SetRandomSampleMpz(RindexVec, RmySeed, sampSize, IsGmp, computedRowMpz, myVec.get());
     bool applyFun = !Rf_isNull(stdFun) && !IsFactor;
+    
     int nThreads = 1;
     const int limit = 2;
     

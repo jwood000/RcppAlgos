@@ -1,7 +1,6 @@
 #include "CombPermUtils.h"
 #include "Cpp14MakeUnique.h"
 
-
 void BinaryNextElem(int &uppBnd, int &lowBnd, int &ind, int lastElem,
                            int64_t target, int64_t partial, const std::vector<int64_t> &v) {
     
@@ -144,6 +143,7 @@ int GetFirstCombo(int r, const std::vector<int64_t> &v, bool isRep, bool isMult,
 
 inline void PopulateVec(int r, const std::vector<int64_t> &v, std::vector<int> &z,
                         int &count, int maxRows, bool isComb, std::vector<int64_t> &partitionsVec) {
+    
     if (count < maxRows) {
         if (isComb) {
             for (int k = 0; k < r; ++k)
@@ -161,8 +161,12 @@ inline void PopulateVec(int r, const std::vector<int64_t> &v, std::vector<int> &
     }
 }
 
+// BndDecrementPossible, VtxDecrementPossible, EdgeIncrementPossible, GetPivotExtr
+// PivotDecrementPossible, and keepGoing are all helper functions for PartitionsMultiSet
+// ************************** Start Helper Functions ***************************
 inline bool BndDecrementPossible(const std::vector<int> &rpsCnt,
                                  const std::vector<int> &z, int boundary) {
+    
     if (boundary > 1) {
         if ((z[boundary] - z[boundary - 1]) < 2) {
             return ((z[boundary] != z[boundary - 1]) ? !rpsCnt[z[boundary] - 1] : true);
@@ -176,6 +180,7 @@ inline bool BndDecrementPossible(const std::vector<int> &rpsCnt,
 
 inline bool VtxDecrementPossible(const std::vector<int> &rpsCnt, int lastCol,
                                  const std::vector<int> &z, int vertex, int edge) {
+    
     if (vertex < lastCol) {
         const int myDiff = z[vertex] - z[edge];
         
@@ -192,6 +197,7 @@ inline bool VtxDecrementPossible(const std::vector<int> &rpsCnt, int lastCol,
 
 inline bool EdgeIncrementPossible(const std::vector<int> &rpsCnt,
                                   const std::vector<int> &z, int edge, int boundary) {
+    
     if (edge) {
         const int myDiff = z[boundary] - z[edge];
         
@@ -207,6 +213,7 @@ inline bool EdgeIncrementPossible(const std::vector<int> &rpsCnt,
 
 inline int GetPivotExtr(const std::vector<int> &rpsCnt,
                         const std::vector<int> &z, int lastCol, int lastElem) {
+    
     int res = lastCol - 1;
     
     while (res > 0 && z[res] == lastElem)
@@ -220,6 +227,7 @@ inline int GetPivotExtr(const std::vector<int> &rpsCnt,
 
 inline bool PivotDecrementPossible(const std::vector<int> &rpsCnt, int lastElem,
                                    const std::vector<int> &z, int pivot, int vertex) {
+    
     if (pivot > vertex) {
         if (z[pivot] == lastElem) {
             return true;
@@ -233,6 +241,7 @@ inline bool PivotDecrementPossible(const std::vector<int> &rpsCnt, int lastElem,
 
 inline bool keepGoing(const std::vector<int> &rpsCnt, int lastElem,
                       const std::vector<int> &z, int edge, int boundary) {
+    
     if (edge >= 0) {
         const int myDiff = z[boundary] - z[edge];
         
@@ -247,6 +256,7 @@ inline bool keepGoing(const std::vector<int> &rpsCnt, int lastElem,
         return false;
     }
 }
+// **************************** End  Helper Functions ***************************
 
 int PartitionsMultiSet(int r, const std::vector<int64_t> &v, int64_t target, 
                        int lastElem, int lastCol, int maxRows, bool isComb,

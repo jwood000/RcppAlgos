@@ -1,6 +1,8 @@
 #ifndef CONSTRAINTS_UTILS_H
 #define CONSTRAINTS_UTILS_H
 
+#include <Rcpp.h>
+
 template <typename stdType>
 using funcPtr = stdType (*)(const std::vector<stdType> &v, std::size_t mySize);
 

@@ -126,6 +126,7 @@ int MillerRabin(int64_t n, int64_t nm1, int64_t x,
 }
 
 int IsPrime(int64_t n) {
+    
     int k, primeTestReturn;
     int64_t nm1, q, tmp, a;
     

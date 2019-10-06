@@ -21,6 +21,7 @@ void SerialReturn(int n, int r, typeVector v, bool IsRep, int nRows, bool IsComb
                   const std::vector<int> &myReps, const std::vector<int> &freqs, 
                   std::vector<int> z, bool permNonTriv, bool IsMultiset, bool keepRes,
                   typeRcpp &matRcpp, int count, std::size_t phaseOne) {
+    
     if (IsComb) {
         if (IsMultiset)
             MultisetCombination(n, r, v, myReps, freqs, count, nRows, z, matRcpp);
@@ -40,6 +41,7 @@ template <typename typeVector>
 void ApplyFunction(int n, int r, typeVector sexpVec, bool IsRep, int nRows, bool IsComb,
                    std::vector<int> myReps, Rcpp::List &myList, std::vector<int> freqs,
                    std::vector<int> z, bool IsMultiset, SEXP sexpFun, SEXP rho, int count) {
+    
     if (IsComb) {
         if (IsMultiset)
             MultisetComboApplyFun(n, r, sexpVec, myReps, freqs, nRows, z, count, sexpFun, rho, myList);
@@ -65,9 +67,9 @@ bool CheckIsInteger(const std::string &funPass, std::size_t uM, int n,
     for (int i = 0; i < n; ++i)
         vAbs.push_back(std::abs(vNum[i]));
     
-    double vecMax = *std::max_element(vAbs.cbegin(), vAbs.cend());
+    const double vecMax = *std::max_element(vAbs.cbegin(), vAbs.cend());
     const std::vector<double> rowVec(uM, vecMax);
-    double testIfInt = myFunDbl(rowVec, uM);
+    const double testIfInt = myFunDbl(rowVec, uM);
     
     if (testIfInt > std::numeric_limits<int>::max())
         return false;
@@ -82,9 +84,9 @@ bool CheckIsInteger(const std::string &funPass, std::size_t uM, int n,
                 vAbs.push_back(std::abs(targetVals[i]));
         }
         
-        double vecMax = *std::max_element(vAbs.cbegin(), vAbs.cend());
+        const double limMax = *std::max_element(vAbs.cbegin(), vAbs.cend());
         
-        if (vecMax > std::numeric_limits<int>::max())
+        if (limMax > std::numeric_limits<int>::max())
             return false;
     }
     
@@ -116,6 +118,7 @@ void GetStartZ(int n, int r, double &lower, int stepSize, mpz_t &lowerMpz, bool 
             
             for (std::size_t i = 0; i < freqsExpanded.size(); ++i)
                 startZ.push_back(freqsExpanded[i]);
+            
         } else if (!IsRep) {
             if (r < n) {
                 for (int i = 0; i < n; ++i) {
@@ -242,6 +245,7 @@ SEXP CombinatoricsRcpp(SEXP Rv, SEXP Rm, SEXP RisRep, SEXP RFreqs, SEXP Rlow,
 
     if (!(IsLogical || IsCharacter || IsComplex || IsRaw
               || Rf_isNull(f1) || Rf_isNull(f2) || Rf_isNull(Rtarget))) {
+        
         if (!Rf_isString(f1))
             Rcpp::stop("constraintFun must be passed as a character");
 
@@ -281,9 +285,9 @@ SEXP CombinatoricsRcpp(SEXP Rv, SEXP Rm, SEXP RisRep, SEXP RFreqs, SEXP Rlow,
     SetBounds(IsCount, Rlow, Rhigh, IsGmp, bLower, bUpper,
               lower, upper, lowerMpz.get(), upperMpz.get());
 
-    // N.B. for the lower analogs we are using >= as we have subtracted one
-    // Also, we are postponing this lower is not given and IsConstrained is true
-    // as there is a possibility that are computed number of results is not
+    // N.B. for the lower analogs we are using >= as we have subtracted one.
+    // Also, we are postponing this check if lower is not given and IsConstrained
+    // is true as there is a possibility that our computed number of results is not
     // correct. This can happen in cases where we are finding partitions.
     if (!(IsConstrained && !bLower))
         CheckBounds(IsGmp, lower, upper, computedRows, lowerMpz[0], upperMpz[0], computedRowMpz);
@@ -400,10 +404,14 @@ SEXP CombinatoricsRcpp(SEXP Rv, SEXP Rm, SEXP RisRep, SEXP RFreqs, SEXP Rlow,
                 // while the results are less than (or equal to in cases where strict inequalities are
                 // enforced) the target value and stop once the result exceeds that value).
 
-                if (compFunVec[0].substr(0, 1) == ">" && std::min(targetVals[0], targetVals[1]) == targetVals[0]) {
+                if (compFunVec[0].substr(0, 1) == ">" && 
+                        std::min(targetVals[0], targetVals[1]) == targetVals[0]) {
+                    
                     compFunVec[0] = compFunVec[0] + "," + compFunVec[1];
                     between = true;
-                } else if (compFunVec[0].substr(0, 1) == "<" && std::max(targetVals[0], targetVals[1]) == targetVals[0]) {
+                } else if (compFunVec[0].substr(0, 1) == "<" && 
+                            std::max(targetVals[0], targetVals[1]) == targetVals[0]) {
+                    
                     compFunVec[0] = compFunVec[1] + "," + compFunVec[0];
                     between = true;
                 }
@@ -468,8 +476,8 @@ SEXP CombinatoricsRcpp(SEXP Rv, SEXP Rm, SEXP RisRep, SEXP RFreqs, SEXP Rlow,
                     CleanConvert::convertPrimitive(Rtolerance, tolerance, "tolerance", true, false, false, true);
                 }
 
-                auto itComp = std::find(compSpecial.cbegin(),
-                                        compSpecial.cend(), compFunVec[0]);
+                const auto itComp = std::find(compSpecial.cbegin(),
+                                              compSpecial.cend(), compFunVec[0]);
 
                 if (compFunVec[0] == "==") {
                     targetVals.push_back(targetVals[0] - tolerance);
@@ -569,7 +577,7 @@ SEXP CombinatoricsRcpp(SEXP Rv, SEXP Rm, SEXP RisRep, SEXP RFreqs, SEXP Rlow,
         return CombinatoricsConstraints<Rcpp::NumericMatrix>(n, m, vNum, IsRepetition, mainFun, compFunVec, targetVals,
                                                              userNumRows, IsComb, keepRes, myReps, IsMultiset, bUserRows, between);
     } else {
-        bool applyFun = !Rf_isNull(stdFun) && !IsFactor;
+        const bool applyFun = !Rf_isNull(stdFun) && !IsFactor;
 
         if (applyFun) {
             if (!Rf_isFunction(stdFun))

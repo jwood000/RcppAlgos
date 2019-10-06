@@ -195,7 +195,7 @@ namespace PrimeCounting {
     const double getChunkFactor(int64_t x) {
         const std::vector<double> nums = {1e10, 1e12, 2e13, 5e13, 8e13, 1e14, 5e14, 1e15, 1e16};
         const std::vector<double> factor = {1.3, 1.2, 1.1, 1.07, 1.05, 1.01, 1.007, 1.006, 1.005};
-        auto it = std::upper_bound(nums.cbegin(), nums.cend(), static_cast<double>(x));
+        const auto it = std::upper_bound(nums.cbegin(), nums.cend(), static_cast<double>(x));
         return std::log(factor[it - nums.cbegin()]);
     }
     
@@ -391,6 +391,7 @@ SEXP GlueMotley(typeInt myMin, typeReturn myMax, bool isEuler,
     
     std::size_t myRange = (myMax - myMin) + 1;
     std::vector<typeReturn> myNames;
+    
     if (keepNames) {
         myNames.resize(myRange);
         typeReturn retM = myMin;
@@ -575,4 +576,3 @@ SEXP EratosthenesRcpp(SEXP Rb1, SEXP Rb2, SEXP RNumThreads, int maxCores, int ma
         }
     }
 }
-

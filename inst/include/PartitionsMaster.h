@@ -52,8 +52,8 @@ namespace Partitions {
                 for (; edge >= 0 && (z[boundary] - z[edge]) >= tarDiff; 
                             NextDistinct(z, boundary, edge, tarDiff, lastCol)) {
                     
-                    auto it = std::find_if(z.cbegin(), z.cend(),
-                                           [](int z_i) {return z_i;});
+                    const auto it = std::find_if(z.cbegin(), z.cend(),
+                                                 [](int z_i) {return z_i;});
                     const int firstNonZero = std::distance(z.cbegin(), it);
                     
                     do {
@@ -124,7 +124,7 @@ namespace Partitions {
                         partitionsMatrix(i, j) = partitionsVec[k];
             } else {
                 const std::size_t partSize = partitionsVec.size() / r;
-                std::size_t indexRows = static_cast<std::size_t>(NumPermsNoRep(r, r));
+                const std::size_t indexRows = static_cast<std::size_t>(NumPermsNoRep(r, r));
                 auto indexMat = FromCpp14::make_unique<int[]>(indexRows * r);
                 
                 std::vector<int> indexVec(r);
@@ -192,8 +192,8 @@ namespace Partitions {
             if (mIsNull && includeZero) {
                 for (std::size_t count = 0;; NextPartition(z, boundary, edge, lastCol)) {
                     
-                    auto it = std::find_if(z.cbegin(), z.cend(), 
-                                           [](int z_i) {return z_i;});
+                    const auto it = std::find_if(z.cbegin(), z.cend(), 
+                                                 [](int z_i) {return z_i;});
                     const int firstNonZero = std::distance(z.cbegin(), it);
                     
                     do {

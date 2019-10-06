@@ -122,7 +122,7 @@ int myRaw(char* raw, mpz_t value, std::size_t totals) {
     int* r = (int*)raw;
     r[0] = totals / intSize - 2;
     
-    r[1] = (int) mpz_sgn(value);
+    r[1] = static_cast<int>(mpz_sgn(value));
     mpz_export(&r[2], 0, 1, intSize, 0, 0, value);
     
     return totals;
