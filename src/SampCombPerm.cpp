@@ -1,35 +1,8 @@
 #include "NthResult.h"
 #include "CleanConvert.h"
-#include "CountGmp.h"
+#include "GmpCombPermUtils.h"
 #include "RMatrix.h"
 #include <RcppThread.h>
-
-template <typename typeRcpp>
-void GetRowNames(bool IsGmp, std::size_t sampSize, typeRcpp &objRcpp,
-                 const std::vector<double> &mySample, mpz_t *const myBigSamp) {
-    
-    Rcpp::CharacterVector myRowNames(sampSize);
-    
-    if (IsGmp) {
-        constexpr int base10 = 10;
-        
-        for (int i = 0; i < sampSize; ++i) {
-            mpz_add_ui(myBigSamp[i], myBigSamp[i], 1);
-            auto buffer = FromCpp14::make_unique<char[]>(mpz_sizeinbase(myBigSamp[i], base10) + 2);
-            mpz_get_str(buffer.get(), base10, myBigSamp[i]);
-            const std::string tempRowName = buffer.get();
-            myRowNames[i] = tempRowName;
-        }
-    } else {
-        for (int i = 0; i < sampSize; ++i)
-            myRowNames[i] = std::to_string(static_cast<int64_t>(mySample[i] + 1));
-    }
-    
-    if (Rf_isMatrix(objRcpp))
-        Rcpp::rownames(objRcpp) = myRowNames;
-    else
-        objRcpp.attr("names") = myRowNames;
-}
 
 template <typename typeRcpp, typename typeVector>
 void SampleResults(const typeVector &v, std::size_t m, const std::vector<int> &myReps, 
@@ -73,9 +46,9 @@ SEXP SampleApplyFun(const typeVector &v, std::size_t m, const std::vector<int> &
         SETCADR(sexpFun, vectorPass);
         myList[i] = Rf_eval(sexpFun, rho);
     }
-
+    
     UNPROTECT(1);
-    if (IsNamed) GetRowNames(IsGmp, sampSize, myList, mySample, myBigSamp);
+    if (IsNamed) SetSampleNames(IsGmp, sampSize, myList, mySample, myBigSamp, false);
     return myList;
 }
 
@@ -104,7 +77,7 @@ void MasterSample(std::vector<typeElem> v, std::size_t m, const std::vector<int>
         SampleResults(v, m, myReps, 0, sampSize, nthResFun, mySample, myBigSamp, matRcpp);
     }
     
-    if (IsNamed) GetRowNames(IsGmp, sampSize, matRcpp, mySample, myBigSamp);
+    if (IsNamed) SetSampleNames(IsGmp, sampSize, matRcpp, mySample, myBigSamp);
 }
 
 // [[Rcpp::export]]
@@ -170,7 +143,7 @@ SEXP SampleRcpp(SEXP Rv, SEXP Rm, SEXP Rrepetition, SEXP RFreqs, SEXP RindexVec,
     const double computedRows = GetComputedRows(IsMultiset, IsComb, IsRepetition, n,
                                                 m, Rm, lenFreqs, freqsExpanded, myReps);
     
-    // sampleLimit defined in CountGmp.h.. see comments in CountGmp.h for more details
+    // sampleLimit defined in GmpCombPermUtils.h.. see comments in GmpCombPermUtils.h
     bool IsGmp = computedRows > sampleLimit;
     mpz_t computedRowMpz;
     mpz_init(computedRowMpz);
@@ -225,19 +198,19 @@ SEXP SampleRcpp(SEXP Rv, SEXP Rm, SEXP Rrepetition, SEXP RFreqs, SEXP RindexVec,
         Rcpp::CharacterMatrix matChar = Rcpp::no_init_matrix(sampSize, m);
         SampleResults(rcppChar, m, myReps, 0, sampSize, 
                       nthResFun, mySample, myVec.get(), matChar);
-        if (IsNamed) GetRowNames(IsGmp, sampSize, matChar, mySample, myVec.get());
+        if (IsNamed) SetSampleNames(IsGmp, sampSize, matChar, mySample, myVec.get());
         return matChar;
     } else if (IsComplex) {
         Rcpp::ComplexMatrix matCplx = Rcpp::no_init_matrix(sampSize, m);
         SampleResults(rcppCplx, m, myReps, 0, sampSize, 
                       nthResFun, mySample, myVec.get(), matCplx);
-        if (IsNamed) GetRowNames(IsGmp, sampSize, matCplx, mySample, myVec.get());
+        if (IsNamed) SetSampleNames(IsGmp, sampSize, matCplx, mySample, myVec.get());
         return matCplx;
     } else if (IsRaw) {
         Rcpp::RawMatrix matRaw = Rcpp::no_init_matrix(sampSize, m);
         SampleResults(rcppRaw, m, myReps, 0, sampSize, 
                       nthResFun, mySample, myVec.get(), matRaw);
-        if (IsNamed) GetRowNames(IsGmp, sampSize, matRaw, mySample, myVec.get());
+        if (IsNamed) SetSampleNames(IsGmp, sampSize, matRaw, mySample, myVec.get());
         return matRaw;
     } else if (IsLogical) {
         Rcpp::LogicalMatrix matBool = Rcpp::no_init_matrix(sampSize, m);

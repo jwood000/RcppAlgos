@@ -1,6 +1,6 @@
 #include "CleanConvert.h"
 #include "NthResult.h"
-#include "CountGmp.h"
+#include "GmpCombPermUtils.h"
 #include "RMatrix.h"
 #include <RcppThread.h>
 
@@ -260,26 +260,7 @@ void FinalTouch(typeRcpp &GroupsMat, bool IsArray, int grpSize, int r, int n,
         Rcpp::colnames(GroupsMat) = rcppExtended; 
     }
     
-    if (IsNamed) {
-        Rcpp::CharacterVector myRowNames(nRows);
-        
-        if (IsGmp) {
-            constexpr int base10 = 10;
-            
-            for (int i = 0; i < nRows; ++i) {
-                mpz_add_ui(myBigSamp[i], myBigSamp[i], 1);
-                auto buffer = FromCpp14::make_unique<char[]>(mpz_sizeinbase(myBigSamp[i], base10) + 2);
-                mpz_get_str(buffer.get(), base10, myBigSamp[i]);
-                const std::string tempRowName = buffer.get();
-                myRowNames[i] = tempRowName;
-            }
-        } else {
-            for (int i = 0; i < nRows; ++i)
-                myRowNames[i] = std::to_string(static_cast<int64_t>(mySample[i] + 1));
-        }
-        
-        Rcpp::rownames(GroupsMat) = myRowNames;
-    }
+    if (IsNamed) SetSampleNames(IsGmp, nRows, GroupsMat, mySample, myBigSamp);
 }
 
 template <typename typeRcpp, typename typeVector>
@@ -494,7 +475,7 @@ SEXP ComboGroupsRcpp(SEXP Rv, SEXP RNumGroups, SEXP RRetType, SEXP Rlow,
     std::vector<double> mySample;
     
     if (IsSample) {
-        // sampleLimit defined in CountGmp.cpp.. see comments in CountGmp.cpp for more details
+        // sampleLimit defined in GmpCombPermUtils.cpp.. see comments in GmpCombPermUtils.cpp
         IsGmp = computedRows > sampleLimit;
         SetRandomSample(RindexVec, RNumSamp, sampSize, IsGmp, computedRows, mySample, baseSample);
     }
