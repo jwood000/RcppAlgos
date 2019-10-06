@@ -46,7 +46,7 @@ bool nextComboGroup(std::vector<int> &z, int nGrps,
     while (idx2 > idx1 && z[idx2] > z[idx1])
         --idx2;
     
-    if ((idx2 + 1) < z.size()) {
+    if ((idx2 + 1) < static_cast<int>(z.size())) {
         if (z[idx2 + 1] > z[idx1])
             std::swap(z[idx1], z[idx2 + 1]);
         
