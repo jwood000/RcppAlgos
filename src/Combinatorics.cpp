@@ -1,7 +1,7 @@
 #include "ConstraintsMaster.h"
 #include "CleanConvert.h"
 #include "NthResult.h"
-#include "CountGmp.h"
+#include "GmpCombPermUtils.h"
 #include "RMatrix.h"
 #include <RcppThread.h>
 
@@ -74,6 +74,7 @@ bool CheckIsInteger(const std::string &funPass, std::size_t uM, int n,
     
     if (checkLim) {
         vAbs.clear();
+        
         for (std::size_t i = 0; i < targetVals.size(); ++i) {
             if (static_cast<int64_t>(targetVals[i]) != targetVals[i])
                 return false;
@@ -82,6 +83,7 @@ bool CheckIsInteger(const std::string &funPass, std::size_t uM, int n,
         }
         
         double vecMax = *std::max_element(vAbs.cbegin(), vAbs.cend());
+        
         if (vecMax > std::numeric_limits<int>::max())
             return false;
     }

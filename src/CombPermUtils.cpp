@@ -1,4 +1,4 @@
-#include "CountGmp.h"
+#include "GmpCombPermUtils.h"
 #include "CleanConvert.h"
 
 void SetClass(bool &IsCharacter, bool &IsLogical, 
