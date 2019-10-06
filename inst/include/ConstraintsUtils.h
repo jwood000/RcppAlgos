@@ -30,7 +30,7 @@ stdType sum(const std::vector<stdType> &v, std::size_t mySize) {
 
 template <typename stdType>
 stdType mean(const std::vector<stdType> &v, std::size_t mySize) {
-    stdType mySum = sum(v, mySize);
+    const stdType mySum = sum(v, mySize);
     return (mySum / static_cast<double>(mySize));
 }
 
@@ -134,28 +134,6 @@ Rcpp::XPtr<partialPtr<stdType>> putPartialPtrInXPtr(const std::string &fstr) {
         return(Rcpp::XPtr<partialPtr<stdType>>(new partialPtr<stdType>(&minPartial)));
     else
         return Rcpp::XPtr<partialPtr<stdType>>(R_NilValue); // runtime error as NULL no XPtr
-}
-
-Rcpp::XPtr<funcPtr<std::complex<double>>> putCplxPtrInXPtr(const std::string &fstr) {
-    if (fstr == "prod")
-        return(Rcpp::XPtr<funcPtr<std::complex<double>>>(new funcPtr<std::complex<double>>(&prod)));
-    else if (fstr == "sum")
-        return(Rcpp::XPtr<funcPtr<std::complex<double>>>(new funcPtr<std::complex<double>>(&sum)));
-    else if (fstr == "mean")
-        return(Rcpp::XPtr<funcPtr<std::complex<double>>>(new funcPtr<std::complex<double>>(&mean)));
-    else
-        return Rcpp::XPtr<funcPtr<std::complex<double>>>(R_NilValue); // runtime error as NULL no XPtr
-}
-
-Rcpp::XPtr<partialPtr<std::complex<double>>> putPartCplxPtrInXPtr(const std::string &fstr) {
-    if (fstr == "prod")
-        return(Rcpp::XPtr<partialPtr<std::complex<double>>>(new partialPtr<std::complex<double>>(&prodPartial)));
-    else if (fstr == "sum")
-        return(Rcpp::XPtr<partialPtr<std::complex<double>>>(new partialPtr<std::complex<double>>(&sumPartial)));
-    else if (fstr == "mean")
-        return(Rcpp::XPtr<partialPtr<std::complex<double>>>(new partialPtr<std::complex<double>>(&meanPartial)));
-    else
-        return Rcpp::XPtr<partialPtr<std::complex<double>>>(R_NilValue); // runtime error as NULL no XPtr
 }
 
 const std::vector<std::string> compVec = {"<", ">", "<=", ">=", "==",
