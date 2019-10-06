@@ -4,6 +4,11 @@ test_that("comboGeneral produces correct results with Parallel enabled and no co
     
     set.seed(12)
     ## N.B. Parallel has no effect when number of results is less than 20000
+    expect_equal(comboGeneral(18, 9, nThreads = 2, upper = 5000), 
+                 comboGeneral(18, 9, upper = 5000))
+    
+    expect_equal(comboGeneral(18, 9, nThreads = 3, upper = 25000), 
+                 comboGeneral(18, 9, Parallel = TRUE, upper = 25000))
     
     ######********************** All Results *******************#########
     #### NO Repetition

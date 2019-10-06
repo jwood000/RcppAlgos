@@ -71,6 +71,7 @@ test_that("comboGeneral produces appropriate error messages", {
     expect_error(comboGeneral(5, 3, FUN = 2), "FUN must be a function")
     
     expect_error(comboGeneral(5, 3.3), "must be a whole number")
+    expect_error(comboGeneral(gmp::as.bigz(1:5), 3), "Only atomic types are supported for v")
 })
 
 test_that("comboGroups related functions produces appropriate error messages", {

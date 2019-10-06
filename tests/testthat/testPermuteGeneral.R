@@ -287,6 +287,9 @@ test_that("permuteGeneral produces correct results with use of FUN", {
     test <- permuteGeneral(6, 6, constraintFun = "mean")[, 7]
     expect_equal(as.vector(test), unlist(permuteGeneral(6, 6, FUN = mean)))
     
+    expect_equal(sum(unlist(permuteGeneral(as.complex(c(1, -1, -1i, 1i)), 3,
+                                           FUN = function(x) sum(Re(x))))), 0)
+    
     test <- permuteGeneral(6, 6, lower = 100, constraintFun = "prod")[, 7]
     expect_equal(as.vector(test), unlist(permuteGeneral(6, 6, lower = 100, FUN = prod)))
     

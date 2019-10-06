@@ -91,6 +91,11 @@ test_that("permuteSample produces correct results", {
     expect_equal(permuteSample(5, 3, TRUE,
                                sampleVec = 1:(permuteCount(5, 3, T))),
                  permuteGeneral(5, 3, TRUE))
+    
+    expect_equal(rownames(permuteSample(as.raw(1:4), 8, T, 
+                                        sampleVec = c(31788, 59688, 3780), namedSample = T)),
+                 rownames(permuteSample(as.complex(c(1, 1, 1i, -1i)), 
+                                        8, T, sampleVec = c(31788, 59688, 3780), namedSample = T)))
 
     ## Count Test
     expect_equal(gmp::as.bigz(permuteCount(100, 25)),
@@ -175,6 +180,19 @@ test_that("permuteSample produces correct results when FUN is applied", {
     vec <- do.call(c, lapply(0:10, function(x)  gmp::add.bigz(x, num)))
     expect_equal(permuteSample(80, 40, FUN = sd, sampleVec = vec),
                  permuteGeneral(80, 40, lower = num, FUN = sd))
+    
+    rawTest <- permuteSample(as.raw(1:5), 4, freqs = 1:5, 
+                  sampleVec = c(100, 200), FUN = function(x) {
+                      sum(as.integer(x))
+                  })
+    
+    expect_equal(rawTest, permuteSample(5, 4, freqs = 1:5,
+                                        sampleVec = c(100, 200), FUN = sum))
+    
+    expect_equal(permuteSample(as.complex(c(1, 1, 1i, -1i)), 
+                               8, T, n = 5, seed = 43, FUN = sqrt),
+                 permuteSample(as.complex(c(1, 1, 1i, -1i)), 
+                               8, T, n = 5, seed = 43, FUN = sqrt))
     
     set.seed(18)
     vec <- runif(6, -1e4, 1e4)

@@ -6,6 +6,8 @@ test_that("comboGeneral produces correct results with no constraints", {
     expect_equal(comboGeneral(factor(1:5, ordered = TRUE), 3), 
                  t(combn(factor(1:5, ordered = TRUE), 3)))
     
+    expect_equal(comboGeneral(as.raw(1:5), 3), t(combn(as.raw(1:5), 3)))
+    
     expect_equal(comboGeneral(factor(1:5, ordered = TRUE), 5, freqs = rep(3, 5)),
                  comboSample(factor(1:5, ordered = TRUE), 5, freqs = rep(3, 5),
                              sampleVec = 1:comboCount(5, 5, freqs = rep(3, 5))))
@@ -17,9 +19,17 @@ test_that("comboGeneral produces correct results with no constraints", {
     expect_equal(comboGeneral(15, 8)[500:600, ], comboGeneral(15, 8,
                                                               lower = 500,
                                                               upper = 600))
+    expect_equal(dim(comboGeneral(as.complex(1:5), 5, T)), 
+                 dim(comboGeneral(as.raw(1:5), 5, T)))
     
     expect_equal(comboGeneral(5, 5), 
                  comboGeneral(5, 5, freqs = rep(1, 5)))
+    
+    expect_equal(comboGeneral(as.complex(1:5), 3), 
+                 t(combn(as.complex(1:5), 3)))
+    
+    expect_equal(comboGeneral(as.raw(1:5), 3), 
+                 t(combn(as.raw(1:5), 3)))
     
     set.seed(103)
     myNums = rnorm(5)
@@ -98,6 +108,19 @@ test_that("comboGeneral produces correct results with no constraints", {
 
 test_that("comboGeneral produces correct results with constraints", {
     
+    tinyTol = nrow(comboGeneral(1:5 + 0.00000000001, 3, 
+                      constraintFun = "mean", 
+                      comparisonFun = "==", 
+                      limitConstraints = 3, 
+                      tolerance = .Machine$double.eps))
+    
+    ## The default tolerance is sqrt(.Machine$double.eps)
+    defatultTol = nrow(comboGeneral(1:5 + 0.00000000001, 3, 
+                                     constraintFun = "mean", 
+                                     comparisonFun = "==", limitConstraints = 3))
+    
+    expect_false(tinyTol == defatultTol)
+    
     ## check that classes behave properly N.B. limitContraint > INT_MAX
     expect_equal(class(comboGeneral(10, 5, constraintFun = "prod",
                                     comparisonFun = "<",
@@ -108,9 +131,13 @@ test_that("comboGeneral produces correct results with constraints", {
                                     comparisonFun = "<",
                                     limitConstraints = 5)[,1]), "numeric")
     
+    expect_equal(class(comboGeneral(5, 5, TRUE, constraintFun = "prod",
+                                    comparisonFun = "<",
+                                    limitConstraints = 5.5)[,1]), "numeric")
+    
     expect_equal(nrow(comboGeneral(-5:5, 4, FALSE, constraintFun = "sum", 
                                    comparisonFun = "==", limitConstraints = 6)), 
-                 length(which(apply(combn(-5:5, 4), 2, sum)==6)))
+                 length(which(apply(combn(-5:5, 4), 2, sum) == 6)))
     
     expect_equal(unique(comboGeneral(5, 5, TRUE,
                                        constraintFun = "sum", comparisonFun = "==", 
@@ -187,6 +214,9 @@ test_that("comboGeneral produces correct results with use of FUN", {
                  comboGeneral(8, 4, freqs = rep(1:4, 2), lower = 101, FUN = cumsum))
     expect_equal(testFun[121:123], 
                  comboGeneral(8, 4, freqs = rep(1:4, 2), lower = 121, upper = 123, FUN = cumsum))
+    
+    expect_equal(comboGeneral(as.raw(1:5), 3, FUN = rawToChar),
+                 combn(as.raw(1:5), 3, rawToChar, simplify = FALSE))
     
     expect_equal(unlist(comboGeneral(letters[1:5], 3, FUN = function(x) {
         paste0(x, collapse = "")
