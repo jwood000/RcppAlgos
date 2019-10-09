@@ -58,7 +58,7 @@ permuteSample <- function(v, m = NULL, repetition = FALSE, freqs = NULL,
                pkgEnv$nThreads, namedSample)
 }
 
-comboGroups <- function(v, numGroups, retType = "3Darray", lower = NULL,
+comboGroups <- function(v, numGroups, retType = "matrix", lower = NULL,
                        upper = NULL, Parallel = FALSE, nThreads = NULL) {
     isFactor <- is.factor(v)
     ComboGroupsRcpp(v, numGroups, retType, lower, upper, 
@@ -66,7 +66,7 @@ comboGroups <- function(v, numGroups, retType = "3Darray", lower = NULL,
                     FALSE, NULL, NULL, NULL, sample, FALSE)
 }
 
-comboGroupsSample <- function(v, numGroups, retType = "3Darray", n = NULL,
+comboGroupsSample <- function(v, numGroups, retType = "matrix", n = NULL,
                               sampleVec = NULL, seed = NULL, Parallel = FALSE, 
                               nThreads = NULL, namedSample = FALSE) {
     isFactor <- is.factor(v)
