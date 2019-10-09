@@ -100,48 +100,18 @@ SEXP SampleRcpp(SEXP Rv, SEXP Rm, SEXP Rrepetition, SEXP RFreqs, SEXP RindexVec,
     
     bool IsRepetition = CleanConvert::convertLogical(Rrepetition, "repetition");
     bool Parallel = CleanConvert::convertLogical(Rparallel, "Parallel");
+    const bool mIsNull = Rf_isNull(Rm);
+    
     SetClass(IsCharacter, IsLogical, IsInteger, IsComplex, IsRaw, Rv);
-    
-    if (Rf_isNull(RFreqs)) {
-        IsMultiset = false;
-        myReps.push_back(1);
-    } else {
-        IsRepetition = false;
-        CleanConvert::convertVector(RFreqs, myReps, "freqs");
-        int testTrivial = std::accumulate(myReps.cbegin(), myReps.cend(), 0);
-        lenFreqs = static_cast<int>(myReps.size());
-        
-        if (testTrivial > lenFreqs) {
-            IsMultiset = true;
-            
-            for (int i = 0; i < lenFreqs; ++i)
-                for (int j = 0; j < myReps[i]; ++j)
-                    freqsExpanded.push_back(i);
-        } else {
-            IsMultiset = false;
-            freqsExpanded = myReps;
-        }
-    }
-    
-    if (Rf_isNull(Rm)) {
-        if (!freqsExpanded.empty()) {
-            m = freqsExpanded.size();
-        } else {
-            Rcpp::stop("m and freqs cannot both be NULL");
-        }
-    } else {
-        if (Rf_length(Rm) > 1)
-            Rcpp::stop("length of m must be 1");
-        
-        CleanConvert::convertPrimitive(Rm, m, "m");
-    }
-    
+    SetFreqsAndM(RFreqs, IsMultiset, myReps, 
+                 IsRepetition, lenFreqs, freqsExpanded, Rm, m, mIsNull);
     SetValues(IsCharacter, IsLogical, IsInteger, IsComplex,
               IsRaw, rcppChar, vInt, vNum, rcppCplx, rcppRaw, n, Rv);
     
     if (IsFactor)
         IsLogical = IsCharacter = IsInteger = false;
     
+    if (!IsMultiset && mIsNull && freqsExpanded.empty()) {m = n;}
     const double computedRows = GetComputedRows(IsMultiset, IsComb, IsRepetition, n,
                                                 m, Rm, lenFreqs, freqsExpanded, myReps);
     

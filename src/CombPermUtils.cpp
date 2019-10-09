@@ -3,6 +3,7 @@
 
 void SetClass(bool &IsCharacter, bool &IsLogical, 
               bool &IsInteger, bool &IsComplex, bool &IsRaw, SEXP Rv) {
+    
     switch(TYPEOF(Rv)) {
         case LGLSXP: {
             IsLogical = true;
@@ -46,6 +47,41 @@ void SetClass(bool &IsCharacter, bool &IsLogical,
         default: {
             Rcpp::stop("Only atomic types are supported for v");   
         }
+    }
+}
+
+void SetFreqsAndM(SEXP RFreqs, bool &IsMultiset, std::vector<int> &myReps, bool &IsRepetition,
+                  int &lenFreqs, std::vector<int> &freqsExpanded, SEXP Rm, int &m, bool mIsNull) {
+    
+    if (Rf_isNull(RFreqs)) {
+        IsMultiset = false;
+        myReps.push_back(1);
+    } else {
+        IsRepetition = false;
+        CleanConvert::convertVector(RFreqs, myReps, "freqs");
+        lenFreqs = static_cast<int>(myReps.size());
+        bool allOne = std::all_of(myReps.cbegin(), myReps.cend(), 
+                                  [](int v_i) {return v_i == 1;});
+        if (allOne) {
+            IsMultiset = false;
+            freqsExpanded = myReps;
+        } else {
+            IsMultiset = true;
+            
+            for (int i = 0; i < lenFreqs; ++i)
+                for (int j = 0; j < myReps[i]; ++j)
+                    freqsExpanded.push_back(i);
+        }
+    }
+    
+    if (mIsNull) {
+        if (!freqsExpanded.empty())
+            m = freqsExpanded.size();
+    } else {
+        if (Rf_length(Rm) > 1)
+            Rcpp::stop("length of m must be 1");
+        
+        CleanConvert::convertPrimitive(Rm, m, "m");
     }
 }
 

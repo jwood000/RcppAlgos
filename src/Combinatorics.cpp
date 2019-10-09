@@ -200,41 +200,11 @@ SEXP CombinatoricsRcpp(SEXP Rv, SEXP Rm, SEXP RisRep, SEXP RFreqs, SEXP Rlow,
     bool keepRes = CleanConvert::convertLogical(RKeepRes, "keepResults");
     bool Parallel = CleanConvert::convertLogical(Rparallel, "Parallel");
     bool IsRepetition = CleanConvert::convertLogical(RisRep, "repetition");
-    SetClass(IsCharacter, IsLogical, IsInteger, IsComplex, IsRaw, Rv);
-    
-    if (Rf_isNull(RFreqs)) {
-        IsMultiset = false;
-        myReps.push_back(1);
-    } else {
-        IsRepetition = false;
-        CleanConvert::convertVector(RFreqs, myReps, "freqs");
-        lenFreqs = static_cast<int>(myReps.size());
-        bool allOne = std::all_of(myReps.cbegin(), myReps.cend(), 
-                                    [](int v_i) {return v_i == 1;});
-        if (allOne) {
-            IsMultiset = false;
-            freqsExpanded = myReps;
-        } else {
-            IsMultiset = true;
-            
-            for (int i = 0; i < lenFreqs; ++i)
-                for (int j = 0; j < myReps[i]; ++j)
-                    freqsExpanded.push_back(i);
-        }
-    }
-    
     const bool mIsNull = Rf_isNull(Rm);
     
-    if (mIsNull) {
-        if (!freqsExpanded.empty())
-            m = freqsExpanded.size();
-    } else {
-        if (Rf_length(Rm) > 1)
-            Rcpp::stop("length of m must be 1");
-        
-        CleanConvert::convertPrimitive(Rm, m, "m");
-    }
-    
+    SetClass(IsCharacter, IsLogical, IsInteger, IsComplex, IsRaw, Rv);
+    SetFreqsAndM(RFreqs, IsMultiset, myReps, 
+                 IsRepetition, lenFreqs, freqsExpanded, Rm, m, mIsNull);
     SetValues(IsCharacter, IsLogical, IsInteger, IsComplex, 
               IsRaw, rcppChar, vInt, vNum, rcppCplx, rcppRaw, n, Rv);
     

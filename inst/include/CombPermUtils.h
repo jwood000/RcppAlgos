@@ -6,6 +6,9 @@
 void SetClass(bool &IsCharacter, bool &IsLogical, 
               bool &IsInteger, bool &IsComplex, bool &IsRaw, SEXP Rv);
 
+void SetFreqsAndM(SEXP RFreqs, bool &IsMultiset, std::vector<int> &myReps, bool &IsRepetition,
+                  int &lenFreqs, std::vector<int> &freqsExpanded, SEXP Rm, int &m, bool mIsNull);
+
 void SetValues(bool IsCharacter, bool IsLogical, bool &IsInteger, bool IsComplex,
                bool IsRaw, Rcpp::CharacterVector &rcppChar, std::vector<int> &vInt,
                std::vector<double> &vNum, Rcpp::ComplexVector &rcppCplx, 
