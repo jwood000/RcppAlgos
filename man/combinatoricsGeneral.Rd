@@ -2,11 +2,11 @@
 \alias{comboGeneral}
 \alias{permuteGeneral}
 \title{
-Generate all Combinations/Permutations of a Vector with/without Constraints
+Generate Combinations/Permutations of a Vector with/without Constraints
 }
 \description{
     \itemize{
-        \item Generate all combinations or permutations of a vector, chosen \eqn{m} at a time, with or without constraints.
+        \item Generate combinations or permutations of a vector, chosen \eqn{m} at a time, with or without constraints.
         \item Produce results in parallel using the \code{Parallel} or \code{nThreads} arguments. You can also apply each of the five compiled functions given by the argument \code{constraintFun} in parallel.
         \item Alternatively, the arguments \code{lower} and \code{upper} make it possible to generate combinations/permutations in chunks allowing for parallelization via the package \href{https://stat.ethz.ch/R-manual/R-devel/library/parallel/doc/parallel.pdf}{parallel}. This is convenient when you want to apply a custom function to the output in parallel.
         \item Attack general integer partition problems. A highly optimized algorithm is utilized when \code{comparisonFun} is \code{"=="} and \code{constraintFun} is \code{"prod", "mean",} or  \code{"sum"}. \emph{E.g.} \code{comboGeneral(0:50, 15, TRUE, constraintFun = "sum", comparisonFun = "==", limitConstraints = 50)}
@@ -26,7 +26,7 @@ permuteGeneral(v, m = NULL, repetition = FALSE, freqs = NULL, lower = NULL,
                   Parallel = FALSE, nThreads = NULL, tolerance = NULL)
 }
 \arguments{
-  \item{v}{Source vector. If \code{v} is an integer (including nonpositive integers), it will be converted to the sequence \code{1:v}.}
+  \item{v}{Source vector. If \code{v} is an integer (including nonpositive integers), it will be converted to the sequence \code{1:v}. All atomic types are supported (See \code{?is.atomic}).}
   \item{m}{Number of elements to choose. If \code{repetition = TRUE}, \code{m} can exceed the length of \code{v}. The default is \code{NULL}.}
   \item{repetition}{Logical value indicating whether combinations/permutations should be with or without repetition. The default is \code{FALSE}.}
   \item{freqs}{A vector of frequencies used for producing all combinations/permutations of a multiset of \code{v}. Each element of \code{freqs} represents how many times each element of the source vector, \code{v}, is repeated. It is analogous to the \code{times} argument in \code{\link[base]{rep}}. The default value is \code{NULL}.}
@@ -74,15 +74,15 @@ When there are any negative values in \code{v} and \code{constraintFun = "prod"}
         \item {\code{Parallel} and \code{nThreads} will be ignored in the following cases:
             \itemize{
                 \item When the output is constrained.
-                \item If the class of the vector passed is \code{character} (N.B. \code{Rcpp::CharacterMatrix} is not thread safe). Alternatively, you can generate an indexing matrix in parallel.
+                \item If the class of the vector passed is \code{character}, \code{raw}, and \code{complex} (N.B. \code{Rcpp::CharacterMatrix} is not thread safe). Alternatively, you can generate an indexing matrix in parallel.
                 \item If \code{FUN} is utilized.
             }
         }
-        \item If either \code{constraintFun}, \code{comparisonFun} or \code{limitConstraints} is \code{NULL}, the constraint check will not be carried out. This is equivalent to simply finding all combinations/permutations of \eqn{v} choose \eqn{m}.
+        \item If either \code{constraintFun}, \code{comparisonFun} or \code{limitConstraints} is \code{NULL} --or-- if the class of the vector passed is is \code{character}, \code{raw}, and \code{complex}, the constraint check will not be carried out. This is equivalent to simply finding all combinations/permutations of \eqn{v} choose \eqn{m}.
         \item The maximum number of combinations/permutations that can be generated at one time is \eqn{2^{31} - 1}{2^31 - 1}. Utilizing \code{lower} and \code{upper} makes it possible to generate additional combinations/permutations.
         \item Factor vectors are accepted. Class and level attributes are preserved.
         \item Lexicographical ordering isn't guaranteed for permutations if \code{lower} isn't supplied and the output is constrained.
-        \item If \code{lower} is supplied and the output is constrained, the combinations/permutations that will be tested will be in the lexicographical range \code{lower} to \code{upper} or to the total possible number of results if \code{upper} is not given. See the second paragraph for the definition of \code{upper}.
+        \item If \code{lower} is supplied and the output is constrained, the combinations/permutations that will be tested will be in the lexicographical range \code{lower} to \code{upper} or up to the total possible number of results if \code{upper} is not given. See the second paragraph for the definition of \code{upper}.
         \item \code{FUN} will be ignored if the constraint check is satisfied.
     }
 }

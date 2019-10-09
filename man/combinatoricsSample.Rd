@@ -2,7 +2,7 @@
 \alias{comboSample}
 \alias{permuteSample}
 \title{
-Sample combinations/permutations
+Sample Combinations/Permutations
 }
 \description{
     \itemize{
@@ -21,7 +21,7 @@ permuteSample(v, m = NULL, repetition = FALSE, freqs = NULL,
                 Parallel = FALSE, nThreads = NULL, namedSample = FALSE)
 }
 \arguments{
-\item{v}{Source vector. If \code{v} is an integer, it will be converted to the sequence \code{1:v}.}
+  \item{v}{Source vector. If \code{v} is an integer (including nonpositive integers), it will be converted to the sequence \code{1:v}. All atomic types are supported (See \code{?is.atomic}).}
   \item{m}{Number of elements to choose. If \code{repetition = TRUE}, \code{m} can exceed the length of \code{v}. The default is \code{NULL}.}
   \item{repetition}{Logical value indicating whether combinations/permutations should be with or without repetition. The default is \code{FALSE}.}
   \item{freqs}{A vector of frequencies used for producing all combinations/permutations of a multiset of \code{v}. Each element of \code{freqs} represents how many times each element of the source vector, \code{v}, is repeated. It is analogous to the \code{times} argument in \code{\link[base]{rep}}. The default value is \code{NULL}.}

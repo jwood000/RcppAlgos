@@ -19,7 +19,7 @@ permuteCount(v, m = NULL, repetition = FALSE, freqs = NULL)
   \item{freqs}{A vector of frequencies used for producing all combinations/permutations of a multiset of \code{v}. Each element of \code{freqs} represents how many times each element of the source vector, \code{v}, is repeated. It is analogous to the \code{times} argument in \code{\link[base]{rep}}. The default value is \code{NULL}.}
 }
 \value{
-A numerical value.
+A numerical value representing the total number of combinations/permutations.
 }
 \note{
 When the number of results exceeds \eqn{2^{53} - 1}{2^53 - 1}, a number of class \code{bigz} is returned.
