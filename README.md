@@ -1,6 +1,18 @@
-# RcppAlgos <img src="inst/figures/RcppAlgos-logo.png" width="240px" align="right" />
 
-A collection of high performance functions implemented in C++ with Rcpp for solving problems in combinatorics and computational mathematics. Utilizes the library [RcppThread](<https://github.com/tnagler/RcppThread>) where multithreading is needed. We also make use of the [RMatrix.h](<https://github.com/RcppCore/RcppParallel/blob/master/inst/include/RcppParallel/RMatrix.h>) header file from [RcppParallel](<https://github.com/RcppCore/RcppParallel>) for thread safe accessors for Rcpp matrices.
+# RcppAlgos <img src="inst/figures/RcppAlgos-logo.png" width="181px" align="right" />
+
+<!-- badges: start -->
+[![Travis build
+status](https://travis-ci.com/jwood000/RcppAlgos.svg?branch=master)](https://travis-ci.com/jwood000/RcppAlgos)
+![](http://cranlogs.r-pkg.org/badges/RcppAlgos?color=orange)
+![](http://cranlogs.r-pkg.org/badges/grand-total/RcppAlgos?color=brightgreen)
+[![Coverage
+status](https://codecov.io/gh/jwood000/RcppAlgos/branch/master/graph/badge.svg)](https://codecov.io/github/jwood000/RcppAlgos?branch=master)
+[![Codacy Badge](https://api.codacy.com/project/badge/Grade/47c85553b9bd4479a722857c1f2fdcf3)](https://app.codacy.com/app/jwood000/RcppAlgos?utm_source=github.com&utm_medium=referral&utm_content=jwood000/RcppAlgos&utm_campaign=Badge_Grade_Settings)
+[![Dependencies](https://tinyverse.netlify.com/badge/RcppAlgos)](https://cran.r-project.org/package=RcppAlgos)
+<!-- badges: end -->
+
+A collection of high performance functions implemented in C++ with Rcpp for solving problems in combinatorics and computational mathematics. Utilizes the [RcppThread](<https://github.com/tnagler/RcppThread>) library for easy access to thread safe multithreading. We also make use of the [RMatrix.h](<https://github.com/RcppCore/RcppParallel/blob/master/inst/include/RcppParallel/RMatrix.h>) header file from [RcppParallel](<https://github.com/RcppCore/RcppParallel>) for thread safe accessors for Rcpp matrices.
 
 ## Features
 
@@ -33,6 +45,7 @@ devtools::install_github("jwood000/RcppAlgos")
 system.time(b <- primeSieve(1e15, 1e15 + 1e9, nThreads = 8))
    user  system elapsed 
   4.898   0.889   0.953
+
   
 ## Count primes quickly
 system.time(print(primeCount(1e14, nThreads = 8)))
@@ -41,7 +54,7 @@ system.time(print(primeCount(1e14, nThreads = 8)))
  53.371   0.117   7.221
 
 
-## Factor a vector of numbers 
+## Completely factor a vector of numbers 
 set.seed(42)
 myNums <- sample(1e12, 3)
 allDivs <- divisorsRcpp(myNums, namedList = TRUE)
