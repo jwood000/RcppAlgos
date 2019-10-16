@@ -1,5 +1,5 @@
 
-# RcppAlgos <img src="./inst/figures/RcppAlgos-logo.png" width="181px" align="right" />
+# RcppAlgos
 
 <!-- badges: start -->
 [![Travis build status](https://travis-ci.com/jwood000/RcppAlgos.svg?branch=master)](https://travis-ci.com/jwood000/RcppAlgos)
