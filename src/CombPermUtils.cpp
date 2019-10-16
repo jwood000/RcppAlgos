@@ -36,7 +36,7 @@ void SetClass(bool &IsCharacter, bool &IsLogical,
             // contact me @ jwood000@gmail.com. N.B., see commit 655 which includes
             // a function for returning a matrix of class bigz. I observed terrible
             // performance compared to simply converting to a character vector.
-            Rcpp::RawVector tempRaw(Rv);
+            Rcpp::RawVector tempRaw(Rcpp::clone(Rv));
             
             if (tempRaw.attributeNames().size() == 0) {
                 IsRaw = true;
@@ -47,6 +47,47 @@ void SetClass(bool &IsCharacter, bool &IsLogical,
         default: {
             Rcpp::stop("Only atomic types are supported for v");   
         }
+    }
+}
+
+void SetValues(bool IsCharacter, bool IsLogical, bool &IsInteger, bool IsComplex, bool IsRaw,
+               Rcpp::CharacterVector &rcppChar, std::vector<int> &vInt, std::vector<double> &vNum,
+               Rcpp::ComplexVector &rcppCplx, Rcpp::RawVector &rcppRaw, int &n, SEXP Rv) {
+    
+    if (IsCharacter) {
+        rcppChar = Rcpp::clone(Rv);
+        n = rcppChar.size();
+    } else if (IsLogical) {
+        vInt = Rcpp::as<std::vector<int>>(Rv);
+        n = vInt.size();
+    } else if (IsComplex) {
+        rcppCplx = Rcpp::clone(Rv);
+        n = rcppCplx.size();
+    } else if (IsRaw) {
+        rcppRaw = Rcpp::clone(Rv);
+        n = rcppRaw.size();
+    } else {
+        if (Rf_length(Rv) == 1) {
+            int seqEnd, m1, m2;         // numOnly = true, checkWhole = true, negPoss = true
+            CleanConvert::convertPrimitive(Rv, seqEnd, "If v is not a character and of length 1, it", true, true, true);
+            if (seqEnd > 1) {m1 = 1; m2 = seqEnd;} else {m1 = seqEnd; m2 = 1;}
+            Rcpp::IntegerVector vTemp = Rcpp::seq(m1, m2);
+            IsInteger = true;
+            vNum = Rcpp::as<std::vector<double>>(vTemp);
+        } else {
+            vNum = Rcpp::as<std::vector<double>>(Rv);
+        }
+        
+        n = vNum.size();
+    }
+    
+    if (IsInteger) {
+        for (int i = 0; i < n && IsInteger; ++i)
+            if (Rcpp::NumericVector::is_na(vNum[i]))
+                IsInteger = false;
+            
+        if (IsInteger)
+            vInt.assign(vNum.cbegin(), vNum.cend());
     }
 }
 
@@ -82,48 +123,6 @@ void SetFreqsAndM(SEXP RFreqs, bool &IsMultiset, std::vector<int> &myReps, bool 
             Rcpp::stop("length of m must be 1");
         
         CleanConvert::convertPrimitive(Rm, m, "m");
-    }
-}
-
-void SetValues(bool IsCharacter, bool IsLogical, bool &IsInteger, bool IsComplex, 
-               bool IsRaw, Rcpp::CharacterVector &rcppChar, std::vector<int> &vInt,
-               std::vector<double> &vNum, Rcpp::ComplexVector &rcppCplx,
-               Rcpp::RawVector &rcppRaw, int &n, SEXP Rv) {
-    
-    if (IsCharacter) {
-        rcppChar = Rcpp::as<Rcpp::CharacterVector>(Rv);
-        n = rcppChar.size();
-    } else if (IsLogical) {
-        vInt = Rcpp::as<std::vector<int>>(Rv);
-        n = vInt.size();
-    } else if (IsComplex) {
-        rcppCplx = Rcpp::as<Rcpp::ComplexVector>(Rv);
-        n = rcppCplx.size();
-    } else if (IsRaw) {
-        rcppRaw = Rcpp::as<Rcpp::RawVector>(Rv);
-        n = rcppRaw.size();
-    } else {
-        if (Rf_length(Rv) == 1) {
-            int seqEnd, m1, m2;         // numOnly = true, checkWhole = true, negPoss = true
-            CleanConvert::convertPrimitive(Rv, seqEnd, "If v is not a character and of length 1, it", true, true, true);
-            if (seqEnd > 1) {m1 = 1; m2 = seqEnd;} else {m1 = seqEnd; m2 = 1;}
-            Rcpp::IntegerVector vTemp = Rcpp::seq(m1, m2);
-            IsInteger = true;
-            vNum = Rcpp::as<std::vector<double>>(vTemp);
-        } else {
-            vNum = Rcpp::as<std::vector<double>>(Rv);
-        }
-        
-        n = vNum.size();
-    }
-    
-    if (IsInteger) {
-        for (int i = 0; i < n && IsInteger; ++i)
-            if (Rcpp::NumericVector::is_na(vNum[i]))
-                IsInteger = false;
-            
-        if (IsInteger)
-            vInt.assign(vNum.cbegin(), vNum.cend());
     }
 }
 
@@ -201,15 +200,15 @@ void SetRandomSample(SEXP RindexVec, SEXP RNumSamp, std::size_t &sampSize,
         if (IsGmp) {
             switch (TYPEOF(RindexVec)) {
                 case RAWSXP: {
-                    Rcpp::RawVector raw(RindexVec);
-                    sampSize = static_cast<int>(raw[0]);
+                    const char* raw = (char*) RAW(RindexVec);
+                    sampSize = ((int*) raw)[0];
                     break;
                 }
                 default:
                     sampSize = LENGTH(RindexVec);
             }
             
-            mySample.resize(sampSize);
+            mySample.assign(sampSize, 1.0);
         } else {                                             // numOnly = false
             CleanConvert::convertVector(RindexVec, mySample, "sampleVec", false);
             sampSize = mySample.size();
@@ -241,7 +240,7 @@ std::vector<int> rleCpp(const std::vector<int> &x) {
     std::size_t i = 0;
     lengths.push_back(1);
     
-    for(auto it = x.cbegin() + 1; it < x.cend(); ++it) {
+    for(auto it = x.cbegin() + 1; it != x.cend(); ++it) {
         if (prev == *it) {
             ++lengths[i];
         } else {

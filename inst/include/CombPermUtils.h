@@ -6,13 +6,12 @@
 void SetClass(bool &IsCharacter, bool &IsLogical, 
               bool &IsInteger, bool &IsComplex, bool &IsRaw, SEXP Rv);
 
+void SetValues(bool IsCharacter, bool IsLogical, bool &IsInteger, bool IsComplex, bool IsRaw,
+               Rcpp::CharacterVector &rcppChar, std::vector<int> &vInt, std::vector<double> &vNum,
+               Rcpp::ComplexVector &rcppCplx, Rcpp::RawVector &rcppRaw, int &n, SEXP Rv);
+
 void SetFreqsAndM(SEXP RFreqs, bool &IsMultiset, std::vector<int> &myReps, bool &IsRepetition,
                   int &lenFreqs, std::vector<int> &freqsExpanded, SEXP Rm, int &m, bool mIsNull);
-
-void SetValues(bool IsCharacter, bool IsLogical, bool &IsInteger, bool IsComplex,
-               bool IsRaw, Rcpp::CharacterVector &rcppChar, std::vector<int> &vInt,
-               std::vector<double> &vNum, Rcpp::ComplexVector &rcppCplx, 
-               Rcpp::RawVector &rcppRaw, int &n, SEXP Rv);
 
 void SetThreads(bool &Parallel, int maxThreads, int nRows,
                 bool IsCharacter, int &nThreads, SEXP RNumThreads, int limit);
