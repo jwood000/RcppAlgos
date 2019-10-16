@@ -1,5 +1,5 @@
 
-# RcppAlgos
+# RcppAlgos <img src='/inst/figures/RcppAlgos-logo.png' width="181px" align="right" />
 
 <!-- badges: start -->
 [![Travis build status](https://travis-ci.com/jwood000/RcppAlgos.svg?branch=master)](https://travis-ci.com/jwood000/RcppAlgos)
@@ -112,10 +112,10 @@ comboSample(10, 8, TRUE, n = 5, seed = 84)
 
 ## Getting Started
 
-* [Combinatorial Sampling]
-* [Computational Mathematics Overview]
-* [Combinations and Permutations under Constraints]
-* [Combination and Permutation Basics]
+* Combinatorial Sampling
+* Computational Mathematics Overview
+* Combinations and Permutations under Constraints
+* Combination and Permutation Basics
 
 ## Contact
 
