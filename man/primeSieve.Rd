@@ -4,7 +4,8 @@
 Generate Prime Integers
 }
 \description{
-Implementation of the segmented sieve of Eratosthenes with wheel factorization. Generates all prime numbers between \code{bound1} and \code{bound2} (if supplied) or all primes up to \code{bound1}.
+Implementation of the segmented sieve of Eratosthenes with wheel factorization. Generates all prime numbers between \code{bound1} and \code{bound2} (if supplied) or all primes up to \code{bound1}. See this stackoverflow post for an analysis on prime number generation efficiency in R: \href{https://stackoverflow.com/a/48313378/4408538}{Generate a list of primes up to a certain number
+}
 
 The fundamental concepts of this algorithm are based off of the implementation by Kim Walisch found here: \href{https://github.com/kimwalisch/primesieve}{kimwalisch/primesieve}.
 }
