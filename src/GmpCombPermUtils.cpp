@@ -6,22 +6,22 @@
 static gmp_randstate_t seed_state;
 static int seed_init = 0;
 
+constexpr std::size_t intSize = sizeof(int);
+
 SEXP GetCount(bool IsGmp, mpz_t computedRowMpz, double computedRows) {
     
     if (IsGmp) {
-        constexpr std::size_t numb = 8 * sizeof(int);
-        const std::size_t sizeNum = sizeof(int) * 
+        constexpr std::size_t numb = 8 * intSize;
+        const std::size_t sizeNum = intSize * 
                 (2 + (mpz_sizeinbase(computedRowMpz, 2) + numb - 1) / numb);
-        const std::size_t size = sizeof(int) + sizeNum;
+        const std::size_t size = intSize + sizeNum;
         
         Rcpp::RawVector ansPos = Rcpp::no_init_vector(size);
-        char* rPos = (char*)(RAW(ansPos));
-        ((int*)(rPos))[0] = 1; // first int is vector-size-header
+        char* rPos = (char*) RAW(ansPos);
+        ((int*) rPos)[0] = 1; // first int is vector-size-header
 
         // current position in rPos[] (starting after vector-size-header)
-        std::size_t posPos = sizeof(int);
-        posPos += myRaw(&rPos[posPos], computedRowMpz, sizeNum);
-        
+        myRaw(&rPos[intSize], computedRowMpz, sizeNum);
         ansPos.attr("class") = Rcpp::CharacterVector::create("bigz");
         return(ansPos);
     } else {
