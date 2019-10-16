@@ -197,21 +197,21 @@ SEXP CombinatoricsRcpp(SEXP Rv, SEXP Rm, SEXP RisRep, SEXP RFreqs, SEXP Rlow,
     Rcpp::ComplexVector rcppCplx;
     Rcpp::RawVector rcppRaw;
     
-    bool keepRes = CleanConvert::convertLogical(RKeepRes, "keepResults");
+    bool KeepRes = CleanConvert::convertLogical(RKeepRes, "keepResults");
     bool Parallel = CleanConvert::convertLogical(Rparallel, "Parallel");
     bool IsRepetition = CleanConvert::convertLogical(RisRep, "repetition");
     const bool mIsNull = Rf_isNull(Rm);
     
     SetClass(IsCharacter, IsLogical, IsInteger, IsComplex, IsRaw, Rv);
+    SetValues(IsCharacter, IsLogical, IsInteger, IsComplex, IsRaw,
+              rcppChar, vInt, vNum, rcppCplx, rcppRaw, n, Rv);
     SetFreqsAndM(RFreqs, IsMultiset, myReps, 
                  IsRepetition, lenFreqs, freqsExpanded, Rm, m, mIsNull);
-    SetValues(IsCharacter, IsLogical, IsInteger, IsComplex, 
-              IsRaw, rcppChar, vInt, vNum, rcppCplx, rcppRaw, n, Rv);
     
     bool IsConstrained = false; 
 
     if (IsFactor)
-        keepRes = IsComplex = IsCharacter = IsInteger = false;
+        KeepRes = IsComplex = IsCharacter = IsInteger = false;
 
     if (!(IsLogical || IsCharacter || IsComplex || IsRaw
               || Rf_isNull(f1) || Rf_isNull(f2) || Rf_isNull(Rtarget))) {
@@ -490,11 +490,11 @@ SEXP CombinatoricsRcpp(SEXP Rv, SEXP Rm, SEXP RisRep, SEXP RFreqs, SEXP Rlow,
             CheckBounds(IsGmp, lower, upper, computedRows, lowerMpz[0], upperMpz[0], computedRowMpz);
 
             if (IsInteger) {
-                return SpecCaseRet<Rcpp::IntegerMatrix>(n, m, vInt, IsRepetition, nRows, keepRes, startZ, lower,
+                return SpecCaseRet<Rcpp::IntegerMatrix>(n, m, vInt, IsRepetition, nRows, KeepRes, startZ, lower,
                                                         mainFun, IsMultiset, computedRows, compFunVec, targetIntVals, IsComb,
                                                         myReps, freqsExpanded, bLower, userNumRows);
             } else {
-                return SpecCaseRet<Rcpp::NumericMatrix>(n, m, vNum, IsRepetition, nRows, keepRes, startZ, lower,
+                return SpecCaseRet<Rcpp::NumericMatrix>(n, m, vNum, IsRepetition, nRows, KeepRes, startZ, lower,
                                                         mainFun, IsMultiset, computedRows, compFunVec, targetVals, IsComb,
                                                         myReps, freqsExpanded, bLower, userNumRows);
             }
@@ -527,10 +527,10 @@ SEXP CombinatoricsRcpp(SEXP Rv, SEXP Rm, SEXP RisRep, SEXP RFreqs, SEXP Rlow,
                     if (target64 == targetVals[0]) {
                         if (IsInteger) {
                             return Partitions::GeneralPartitions<Rcpp::IntegerMatrix>(n, m, v64, target64, IsRepetition, IsMultiset,
-                                                                                      myReps, userNumRows, IsComb, keepRes, bUserRows, mIsNull);
+                                                                                      myReps, userNumRows, IsComb, KeepRes, bUserRows, mIsNull);
                         } else {
                             return Partitions::GeneralPartitions<Rcpp::NumericMatrix>(n, m, v64, target64, IsRepetition, IsMultiset,
-                                                                                      myReps, userNumRows, IsComb, keepRes, bUserRows, mIsNull);
+                                                                                      myReps, userNumRows, IsComb, KeepRes, bUserRows, mIsNull);
                         }
                     }
                 }
@@ -541,11 +541,11 @@ SEXP CombinatoricsRcpp(SEXP Rv, SEXP Rm, SEXP RisRep, SEXP RFreqs, SEXP Rlow,
 
         if (IsInteger) {
             return CombinatoricsConstraints<Rcpp::IntegerMatrix>(n, m, vInt, IsRepetition, mainFun, compFunVec, targetIntVals,
-                                                                 userNumRows, IsComb, keepRes, myReps, IsMultiset, bUserRows, between);
+                                                                 userNumRows, IsComb, KeepRes, myReps, IsMultiset, bUserRows, between);
         }
 
         return CombinatoricsConstraints<Rcpp::NumericMatrix>(n, m, vNum, IsRepetition, mainFun, compFunVec, targetVals,
-                                                             userNumRows, IsComb, keepRes, myReps, IsMultiset, bUserRows, between);
+                                                             userNumRows, IsComb, KeepRes, myReps, IsMultiset, bUserRows, between);
     } else {
         const bool applyFun = !Rf_isNull(stdFun) && !IsFactor;
 
@@ -580,20 +580,20 @@ SEXP CombinatoricsRcpp(SEXP Rv, SEXP Rm, SEXP RisRep, SEXP RFreqs, SEXP Rlow,
         }
 
         // It is assumed that if user has constraintFun with no comparison
-        // or limitConstraints and they have not explicitly set keepRes to
+        // or limitConstraints and they have not explicitly set KeepRes to
         // FALSE, then they simply want the constraintFun applied
         if (Rf_isNull(RKeepRes)) {
             if (Rf_isNull(f2) && Rf_isNull(Rtarget) && !Rf_isNull(f1))
-                keepRes = !IsLogical && !IsCharacter && !IsFactor;
+                KeepRes = !IsLogical && !IsCharacter && !IsFactor;
         } else {
-            keepRes = keepRes && !Rf_isNull(f1);
+            KeepRes = KeepRes && !Rf_isNull(f1);
         }
         
         funcPtr<double> myFunDbl = *putFunPtrInXPtr<double>("sum");
         funcPtr<int> myFunInt = *putFunPtrInXPtr<int>("sum");
         int nCol = m;
 
-        if (keepRes) {
+        if (KeepRes) {
             const std::string mainFun = Rcpp::as<std::string>(f1);
             if (mainFun != "prod" && mainFun != "sum" && mainFun != "mean"
                     && mainFun != "max" && mainFun != "min") {
@@ -616,31 +616,31 @@ SEXP CombinatoricsRcpp(SEXP Rv, SEXP Rm, SEXP RisRep, SEXP RFreqs, SEXP Rlow,
         if (IsCharacter) {
             Rcpp::CharacterMatrix matChar = Rcpp::no_init_matrix(nRows, nCol);
             SerialReturn(n, m, rcppChar, IsRepetition, nRows, IsComb, myReps,
-                         freqsExpanded, startZ, permNonTriv, IsMultiset, keepRes,
+                         freqsExpanded, startZ, permNonTriv, IsMultiset, KeepRes,
                          matChar, 0, phaseOne);
             return matChar;
         } else if (IsComplex) {
             Rcpp::ComplexMatrix matCplx(nRows, nCol);
             SerialReturn(n, m, rcppCplx, IsRepetition, nRows, IsComb, myReps,
-                         freqsExpanded, startZ, permNonTriv, IsMultiset, keepRes,
+                         freqsExpanded, startZ, permNonTriv, IsMultiset, KeepRes,
                          matCplx, 0, phaseOne);
             return matCplx;
         } else if (IsRaw) {
             Rcpp::RawMatrix matRaw(nRows, nCol);
             SerialReturn(n, m, rcppRaw, IsRepetition, nRows, IsComb, myReps,
-                         freqsExpanded, startZ, permNonTriv, IsMultiset, keepRes,
+                         freqsExpanded, startZ, permNonTriv, IsMultiset, KeepRes,
                          matRaw, 0, phaseOne);
             return matRaw;
         } else if (IsLogical) {
             Rcpp::LogicalMatrix matBool = Rcpp::no_init_matrix(nRows, nCol);
             MasterReturn(n, m, vInt, IsRepetition, IsComb, myReps, freqsExpanded,
-                         IsMultiset, startZ, permNonTriv, myFunInt, keepRes, IsGmp, lower,
+                         IsMultiset, startZ, permNonTriv, myFunInt, KeepRes, IsGmp, lower,
                          lowerMpz[0], nRows, matBool, nThreads, Parallel, phaseOne, nthResFun);
             return matBool;
         } else if (IsFactor || IsInteger) {
             Rcpp::IntegerMatrix matInt = Rcpp::no_init_matrix(nRows, nCol);
             MasterReturn(n, m, vInt, IsRepetition, IsComb, myReps, freqsExpanded,
-                         IsMultiset, startZ, permNonTriv, myFunInt, keepRes, IsGmp, lower,
+                         IsMultiset, startZ, permNonTriv, myFunInt, KeepRes, IsGmp, lower,
                          lowerMpz[0], nRows, matInt, nThreads, Parallel, phaseOne, nthResFun);
             
             if (IsFactor) {
@@ -655,7 +655,7 @@ SEXP CombinatoricsRcpp(SEXP Rv, SEXP Rm, SEXP RisRep, SEXP RFreqs, SEXP Rlow,
         } else {
             Rcpp::NumericMatrix matNum = Rcpp::no_init_matrix(nRows, nCol);
             MasterReturn(n, m, vNum, IsRepetition, IsComb, myReps, freqsExpanded,
-                         IsMultiset, startZ, permNonTriv, myFunDbl, keepRes, IsGmp, lower,
+                         IsMultiset, startZ, permNonTriv, myFunDbl, KeepRes, IsGmp, lower,
                          lowerMpz[0], nRows, matNum, nThreads, Parallel, phaseOne, nthResFun);
             return matNum;
         }

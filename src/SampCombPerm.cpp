@@ -83,9 +83,10 @@ void MasterSample(std::vector<typeElem> v, std::size_t m, const std::vector<int>
 }
 
 // [[Rcpp::export]]
-SEXP SampleRcpp(SEXP Rv, SEXP Rm, SEXP Rrepetition, SEXP RFreqs, SEXP RindexVec, bool IsComb,
-                bool IsFactor, SEXP RmySeed, SEXP RNumSamp, Rcpp::Function baseSample, SEXP stdFun,
-                SEXP myEnv, SEXP Rparallel, SEXP RNumThreads, int maxThreads, SEXP RNamed) {
+SEXP SampleRcpp(SEXP Rv, SEXP Rm, SEXP Rrepetition, SEXP RFreqs, SEXP RindexVec, 
+                bool IsComb, bool IsFactor, SEXP RmySeed, SEXP RNumSamp, 
+                Rcpp::Function baseSample, SEXP stdFun, SEXP myEnv, SEXP Rparallel,
+                SEXP RNumThreads, int maxThreads, SEXP RNamed) {
     
     int n, m = 0, lenFreqs = 0;
     bool IsMultiset, IsInteger, IsCharacter, IsLogical, IsComplex, IsRaw;
@@ -103,10 +104,10 @@ SEXP SampleRcpp(SEXP Rv, SEXP Rm, SEXP Rrepetition, SEXP RFreqs, SEXP RindexVec,
     const bool mIsNull = Rf_isNull(Rm);
     
     SetClass(IsCharacter, IsLogical, IsInteger, IsComplex, IsRaw, Rv);
+    SetValues(IsCharacter, IsLogical, IsInteger, IsComplex, IsRaw,
+              rcppChar, vInt, vNum, rcppCplx, rcppRaw, n, Rv);
     SetFreqsAndM(RFreqs, IsMultiset, myReps, 
                  IsRepetition, lenFreqs, freqsExpanded, Rm, m, mIsNull);
-    SetValues(IsCharacter, IsLogical, IsInteger, IsComplex,
-              IsRaw, rcppChar, vInt, vNum, rcppCplx, rcppRaw, n, Rv);
     
     if (IsFactor)
         IsLogical = IsCharacter = IsInteger = false;

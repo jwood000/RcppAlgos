@@ -402,9 +402,8 @@ SEXP ComboGroupsRcpp(SEXP Rv, SEXP RNumGroups, SEXP RRetType, SEXP Rlow,
     Rcpp::RawVector rcppRaw;
     
     SetClass(IsCharacter, IsLogical, IsInteger, IsComplex, IsRaw, Rv);
-    
-    SetValues(IsCharacter, IsLogical, IsInteger, IsComplex,
-              IsRaw, rcppChar, vInt, vNum, rcppCplx, rcppRaw, n, Rv);
+    SetValues(IsCharacter, IsLogical, IsInteger, IsComplex, IsRaw,
+              rcppChar, vInt, vNum, rcppCplx, rcppRaw, n, Rv);
     
     if (IsFactor)
         IsCharacter = IsInteger = false;
