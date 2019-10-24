@@ -294,9 +294,12 @@ void GroupWorker(std::size_t n, const typeVector &v, typeRcpp &GroupsMat, std::v
     const int last1 = (r - 2) * grpSize + 1;
     const std::size_t lastRow = endIdx - 1;
     
-    for (std::size_t i = strtIdx; i < lastRow; ++i, nextComboGroup(z, r, grpSize, idx1, idx2, last1))
+    for (std::size_t i = strtIdx; i < lastRow; ++i) {
         for (std::size_t j = 0; j < n; ++j)
             GroupsMat(i, j) = v[z[j]];
+        
+        nextComboGroup(z, r, grpSize, idx1, idx2, last1);
+    }
     
     // Get last combo group
     for (std::size_t j = 0; j < n; ++j)
@@ -384,29 +387,22 @@ void GroupsMaster(std::size_t n, const std::vector<typeElem> &v, typeRcpp &Group
 }
 
 // [[Rcpp::export]]
-SEXP ComboGroupsRcpp(SEXP Rv, SEXP RNumGroups, SEXP RRetType, SEXP Rlow, 
-                     SEXP Rhigh, bool IsFactor, bool IsCount, SEXP Rparallel,
-                     SEXP RNumThreads, int maxThreads, bool IsSample, SEXP RindexVec,
-                     SEXP RmySeed, SEXP RNumSamp, Rcpp::Function baseSample, SEXP RNamed) {
+SEXP ComboGroupsRcpp(SEXP Rv, SEXP RNumGroups, SEXP RRetType, SEXP Rlow, SEXP Rhigh,
+                     bool IsFactor, bool IsCount, SEXP Rparallel, SEXP RNumThreads,
+                     int maxThreads, bool IsSample, SEXP RindexVec, SEXP RmySeed,
+                     SEXP RNumSamp, Rcpp::Function baseSample, SEXP RNamed) {
     
     int n, numGroups;
+    VecType myType = VecType::Integer;
     CleanConvert::convertPrimitive(RNumGroups, numGroups, "numGroups");
-    bool IsLogical, IsCharacter, IsInteger, IsComplex, IsRaw;
     bool Parallel = CleanConvert::convertLogical(Rparallel, "Parallel");
     bool IsNamed = (IsSample) ? CleanConvert::convertLogical(RNamed, "namedSample") : false;
     
     std::vector<double> vNum;
     std::vector<int> vInt;
-    Rcpp::CharacterVector rcppChar;
-    Rcpp::ComplexVector rcppCplx;
-    Rcpp::RawVector rcppRaw;
     
-    SetClass(IsCharacter, IsLogical, IsInteger, IsComplex, IsRaw, Rv);
-    SetValues(IsCharacter, IsLogical, IsInteger, IsComplex, IsRaw,
-              rcppChar, vInt, vNum, rcppCplx, rcppRaw, n, Rv);
-    
-    if (IsFactor)
-        IsCharacter = IsInteger = false;
+    SetClass(myType, Rv);
+    SetValues(myType, vInt, vNum, n, Rv);
     
     if (n % numGroups != 0) {
         Rcpp::stop("The length of v (if v is a vector) or v (if v is a"
@@ -432,9 +428,10 @@ SEXP ComboGroupsRcpp(SEXP Rv, SEXP RNumGroups, SEXP RRetType, SEXP Rlow,
     mpz_init(lowerMpz[0]); mpz_init(upperMpz[0]);
     
     if (!IsSample) {
-        SetBounds(IsCount, Rlow, Rhigh, IsGmp, bLower, bUpper, 
+        SetBounds(Rlow, Rhigh, IsGmp, bLower, bUpper, 
                   lower, upper, lowerMpz.get(), upperMpz.get());
-        CheckBounds(IsGmp, lower, upper, computedRows, lowerMpz[0], upperMpz[0], computedRowMpz);
+        CheckBounds(IsGmp, lower, upper, computedRows, 
+                    lowerMpz[0], upperMpz[0], computedRowMpz);
     }
     
     if (IsCount)
@@ -485,9 +482,9 @@ SEXP ComboGroupsRcpp(SEXP Rv, SEXP RNumGroups, SEXP RRetType, SEXP Rlow,
     int nThreads = 1;
     const int limit = (IsSample) ? 2 : 20000;
     const int numResults = (IsSample) ? sampSize : nRows;
-    SetThreads(Parallel, maxThreads, numResults, IsCharacter, nThreads, RNumThreads, limit);
+    SetThreads(Parallel, maxThreads, numResults, myType, nThreads, RNumThreads, limit);
     
-    const std::size_t bigSampSize = (IsSample) ? sampSize : 1;
+    const std::size_t bigSampSize = (IsSample && IsGmp) ? sampSize : 1;
     auto myVec = FromCpp14::make_unique<mpz_t[]>(bigSampSize);
     
     for (std::size_t i = 0; i < bigSampSize; ++i)
@@ -498,50 +495,60 @@ SEXP ComboGroupsRcpp(SEXP Rv, SEXP RNumGroups, SEXP RRetType, SEXP Rlow,
         SetRandomSampleMpz(RindexVec, RmySeed, sampSize, IsGmp, computedRowMpz, myVec.get());
     }
     
-    if (IsCharacter) {
-        Rcpp::CharacterMatrix charGroupsMat = Rcpp::no_init_matrix(nRows, n);
-        SerialGlue(n, rcppChar, charGroupsMat, IsGmp, startZ, 
-                   numGroups, grpSize, nRows, IsSample, mySample, 
-                   myVec.get(), computedRows, computedRowMpz, IsArray, IsNamed);
-        return charGroupsMat;
-    } else if (IsComplex) {
-        Rcpp::ComplexMatrix cplxGroupsMat = Rcpp::no_init_matrix(nRows, n);
-        SerialGlue(n, rcppCplx, cplxGroupsMat, IsGmp, startZ, 
-                   numGroups, grpSize, nRows, IsSample, mySample, 
-                   myVec.get(), computedRows, computedRowMpz, IsArray, IsNamed);
-        return cplxGroupsMat;
-    } else if (IsRaw) {
-        Rcpp::RawMatrix rawGroupsMat = Rcpp::no_init_matrix(nRows, n);
-        SerialGlue(n, rcppRaw, rawGroupsMat, IsGmp, startZ, 
-                   numGroups, grpSize, nRows, IsSample, mySample, 
-                   myVec.get(), computedRows, computedRowMpz, IsArray, IsNamed);
-        return rawGroupsMat;
-    } else if (IsLogical) {
-        Rcpp::LogicalMatrix boolGroupsMat(nRows, n);
-        GroupsMaster(n, vInt, boolGroupsMat, startZ, numGroups, grpSize, nRows, Parallel,
-                     nThreads, IsGmp, lower, lowerMpz[0], computedRows, computedRowMpz,
-                     IsSample, mySample, myVec.get(), IsArray, IsNamed);
-        return boolGroupsMat;
-    } else if (IsInteger || IsFactor) {
-        Rcpp::IntegerMatrix intGroupsMat = Rcpp::no_init_matrix(nRows, n);
-        GroupsMaster(n, vInt, intGroupsMat, startZ, numGroups, grpSize, nRows, Parallel,
-                     nThreads, IsGmp, lower, lowerMpz[0], computedRows, computedRowMpz,
-                     IsSample, mySample, myVec.get(), IsArray, IsNamed);
-
-        if (IsFactor) {
-            Rcpp::IntegerVector testFactor = Rcpp::as<Rcpp::IntegerVector>(Rv);
-            Rcpp::CharacterVector myClass = testFactor.attr("class");
-            Rcpp::CharacterVector myLevels = testFactor.attr("levels");
-            intGroupsMat.attr("class") = myClass;
-            intGroupsMat.attr("levels") = myLevels;
+    switch(myType) {
+        case VecType::Character: {
+            Rcpp::CharacterVector vecChar(Rcpp::clone(Rv));
+            Rcpp::CharacterMatrix charGroupsMat = Rcpp::no_init_matrix(nRows, n);
+            SerialGlue(n, vecChar, charGroupsMat, IsGmp, startZ, 
+                       numGroups, grpSize, nRows, IsSample, mySample, 
+                       myVec.get(), computedRows, computedRowMpz, IsArray, IsNamed);
+            return charGroupsMat;
         }
-
-        return intGroupsMat;
-    } else {
-        Rcpp::NumericMatrix numGroupsMat = Rcpp::no_init_matrix(nRows, n);
-        GroupsMaster(n, vNum, numGroupsMat, startZ, numGroups, grpSize, nRows, Parallel,
-                     nThreads, IsGmp, lower, lowerMpz[0], computedRows, computedRowMpz,
-                     IsSample, mySample, myVec.get(), IsArray, IsNamed);
-        return numGroupsMat;
+        case VecType::Complex: {
+            Rcpp::ComplexVector vecCplx(Rcpp::clone(Rv));
+            Rcpp::ComplexMatrix cplxGroupsMat = Rcpp::no_init_matrix(nRows, n);
+            SerialGlue(n, vecCplx, cplxGroupsMat, IsGmp, startZ, 
+                       numGroups, grpSize, nRows, IsSample, mySample, 
+                       myVec.get(), computedRows, computedRowMpz, IsArray, IsNamed);
+            return cplxGroupsMat;
+        }
+        case VecType::Raw: {
+            Rcpp::RawVector vecRaw(Rcpp::clone(Rv));
+            Rcpp::RawMatrix rawGroupsMat = Rcpp::no_init_matrix(nRows, n);
+            SerialGlue(n, vecRaw, rawGroupsMat, IsGmp, startZ, 
+                       numGroups, grpSize, nRows, IsSample, mySample, 
+                       myVec.get(), computedRows, computedRowMpz, IsArray, IsNamed);
+            return rawGroupsMat;
+        }
+        case VecType::Logical: {
+            Rcpp::LogicalMatrix boolGroupsMat(nRows, n);
+            GroupsMaster(n, vInt, boolGroupsMat, startZ, numGroups, grpSize, nRows, Parallel,
+                         nThreads, IsGmp, lower, lowerMpz[0], computedRows, computedRowMpz,
+                         IsSample, mySample, myVec.get(), IsArray, IsNamed);
+            return boolGroupsMat;
+        }
+        case VecType::Integer: {
+            Rcpp::IntegerMatrix intGroupsMat = Rcpp::no_init_matrix(nRows, n);
+            GroupsMaster(n, vInt, intGroupsMat, startZ, numGroups, grpSize, nRows, Parallel,
+                         nThreads, IsGmp, lower, lowerMpz[0], computedRows, computedRowMpz,
+                         IsSample, mySample, myVec.get(), IsArray, IsNamed);
+    
+            if (IsFactor) {
+                Rcpp::IntegerVector testFactor = Rcpp::as<Rcpp::IntegerVector>(Rv);
+                Rcpp::CharacterVector myClass = testFactor.attr("class");
+                Rcpp::CharacterVector myLevels = testFactor.attr("levels");
+                intGroupsMat.attr("class") = myClass;
+                intGroupsMat.attr("levels") = myLevels;
+            }
+    
+            return intGroupsMat;
+        } 
+        default: {
+            Rcpp::NumericMatrix numGroupsMat = Rcpp::no_init_matrix(nRows, n);
+            GroupsMaster(n, vNum, numGroupsMat, startZ, numGroups, grpSize, nRows, Parallel,
+                         nThreads, IsGmp, lower, lowerMpz[0], computedRows, computedRowMpz,
+                         IsSample, mySample, myVec.get(), IsArray, IsNamed);
+            return numGroupsMat;
+        }
     }
 }
