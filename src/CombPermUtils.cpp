@@ -1,32 +1,27 @@
 #include "GmpCombPermUtils.h"
 #include "CleanConvert.h"
 
-void SetClass(bool &IsCharacter, bool &IsLogical, 
-              bool &IsInteger, bool &IsComplex, bool &IsRaw, SEXP Rv) {
+void SetClass(VecType &myType, const SEXP &Rv) {
     
     switch(TYPEOF(Rv)) {
         case LGLSXP: {
-            IsLogical = true;
-            IsRaw = IsInteger = IsComplex = IsCharacter = false;
+            myType = VecType::Logical;
             break;
         }
         case INTSXP: {
-            IsInteger = true;
-            IsRaw = IsLogical = IsComplex = IsCharacter = false;
+            myType = VecType::Integer;
             break;
         }
         case REALSXP: {
-            IsRaw = IsComplex = IsLogical = IsInteger = IsCharacter = false;
+            myType = VecType::Numeric;
             break;
         }
         case STRSXP: {
-            IsCharacter = true;
-            IsRaw = IsComplex = IsLogical = IsInteger = false;
+            myType = VecType::Character;
             break;
         }
         case CPLXSXP: {
-            IsComplex = true;
-            IsRaw = IsLogical = IsInteger = IsCharacter = false;
+            myType = VecType::Complex;
             break;
         }
         case RAWSXP: {
@@ -39,8 +34,7 @@ void SetClass(bool &IsCharacter, bool &IsLogical,
             Rcpp::RawVector tempRaw(Rcpp::clone(Rv));
             
             if (tempRaw.attributeNames().size() == 0) {
-                IsRaw = true;
-                IsComplex = IsLogical = IsInteger = IsCharacter = false;
+                myType = VecType::Raw;
                 break;
             }
         }
@@ -50,30 +44,22 @@ void SetClass(bool &IsCharacter, bool &IsLogical,
     }
 }
 
-void SetValues(bool IsCharacter, bool IsLogical, bool &IsInteger, bool IsComplex, bool IsRaw,
-               Rcpp::CharacterVector &rcppChar, std::vector<int> &vInt, std::vector<double> &vNum,
-               Rcpp::ComplexVector &rcppCplx, Rcpp::RawVector &rcppRaw, int &n, SEXP Rv) {
+void SetValues(VecType &myType, std::vector<int> &vInt,
+               std::vector<double> &vNum, int &n, const SEXP &Rv) {
     
-    if (IsCharacter) {
-        rcppChar = Rcpp::clone(Rv);
-        n = rcppChar.size();
-    } else if (IsLogical) {
+    if (myType > VecType::Logical) {
+        n = Rf_length(Rv);
+    } else if (myType == VecType::Logical) {
         vInt = Rcpp::as<std::vector<int>>(Rv);
         n = vInt.size();
-    } else if (IsComplex) {
-        rcppCplx = Rcpp::clone(Rv);
-        n = rcppCplx.size();
-    } else if (IsRaw) {
-        rcppRaw = Rcpp::clone(Rv);
-        n = rcppRaw.size();
     } else {
         if (Rf_length(Rv) == 1) {
             int seqEnd, m1, m2;         // numOnly = true, checkWhole = true, negPoss = true
             CleanConvert::convertPrimitive(Rv, seqEnd, "If v is not a character and of length 1, it", true, true, true);
             if (seqEnd > 1) {m1 = 1; m2 = seqEnd;} else {m1 = seqEnd; m2 = 1;}
             Rcpp::IntegerVector vTemp = Rcpp::seq(m1, m2);
-            IsInteger = true;
             vNum = Rcpp::as<std::vector<double>>(vTemp);
+            myType = VecType::Integer;
         } else {
             vNum = Rcpp::as<std::vector<double>>(Rv);
         }
@@ -81,18 +67,37 @@ void SetValues(bool IsCharacter, bool IsLogical, bool &IsInteger, bool IsComplex
         n = vNum.size();
     }
     
-    if (IsInteger) {
-        for (int i = 0; i < n && IsInteger; ++i)
-            if (Rcpp::NumericVector::is_na(vNum[i]))
+    if (myType == VecType::Integer) {
+        bool IsInteger = true;
+        
+        for (int i = 0; i < n && IsInteger; ++i) {
+            if (Rcpp::NumericVector::is_na(vNum[i])) {
                 IsInteger = false;
-            
+                myType = VecType::Numeric;
+            }
+        }
+        
         if (IsInteger)
             vInt.assign(vNum.cbegin(), vNum.cend());
     }
 }
 
+SEXP copyRv(const SEXP &Rv, const std::vector<int> &vInt,
+            const std::vector<double> &vNum, VecType &myType) {
+    
+    if (myType > VecType::Numeric) {
+        return Rcpp::clone(Rv);
+    } else if (myType == VecType::Integer) {
+        Rcpp::IntegerVector rcppInt(vInt.cbegin(), vInt.cend());
+        return rcppInt;
+    } else {
+        Rcpp::NumericVector rcppNum(vNum.cbegin(), vNum.cend());
+        return rcppNum;
+    }
+}
+
 void SetFreqsAndM(SEXP RFreqs, bool &IsMultiset, std::vector<int> &myReps, bool &IsRepetition,
-                  int &lenFreqs, std::vector<int> &freqsExpanded, SEXP Rm, int &m, bool mIsNull) {
+                  int &lenFreqs, std::vector<int> &freqsExpanded, const SEXP &Rm, int &m) {
     
     if (Rf_isNull(RFreqs)) {
         IsMultiset = false;
@@ -115,7 +120,7 @@ void SetFreqsAndM(SEXP RFreqs, bool &IsMultiset, std::vector<int> &myReps, bool 
         }
     }
     
-    if (mIsNull) {
+    if (Rf_isNull(Rm)) {
         if (!freqsExpanded.empty())
             m = freqsExpanded.size();
     } else {
@@ -127,14 +132,14 @@ void SetFreqsAndM(SEXP RFreqs, bool &IsMultiset, std::vector<int> &myReps, bool 
 }
 
 void SetThreads(bool &Parallel, int maxThreads, int nRows,
-                bool IsCharacter, int &nThreads, SEXP RNumThreads, int limit) {
+                VecType myType, int &nThreads, SEXP RNumThreads, int limit) {
     
     const int halfLimit = limit / 2;
     
     // Determined empirically. Setting up threads can be expensive,
     // so we set the cutoff below to ensure threads aren't spawned
     // unnecessarily. We also protect users with fewer than 2 threads
-    if ((nRows < limit) || (maxThreads < 2)) {
+    if ((nRows < limit) || (maxThreads < 2) || myType > VecType::Logical) {
         Parallel = false;
     } else if (!Rf_isNull(RNumThreads)) {
         int userThreads = 1;
@@ -149,7 +154,7 @@ void SetThreads(bool &Parallel, int maxThreads, int nRows,
         if ((nRows / userThreads) < halfLimit)
             userThreads = nRows / halfLimit;
         
-        if (userThreads > 1 && !IsCharacter) {
+        if (userThreads > 1) {
             Parallel = true;
             nThreads = userThreads;
         } else {
@@ -193,8 +198,6 @@ void SetRandomSample(SEXP RindexVec, SEXP RNumSamp, std::size_t &sampSize,
             
             Rcpp::NumericVector tempSamp = baseSample(computedRows, nPass);
             mySample = Rcpp::as<std::vector<double>>(tempSamp);
-        } else {
-            mySample.resize(sampSize);
         }
     } else {
         if (IsGmp) {
@@ -204,11 +207,10 @@ void SetRandomSample(SEXP RindexVec, SEXP RNumSamp, std::size_t &sampSize,
                     sampSize = ((int*) raw)[0];
                     break;
                 }
-                default:
+                default: {
                     sampSize = LENGTH(RindexVec);
+                }
             }
-            
-            mySample.assign(sampSize, 1.0);
         } else {                                             // numOnly = false
             CleanConvert::convertVector(RindexVec, mySample, "sampleVec", false);
             sampSize = mySample.size();

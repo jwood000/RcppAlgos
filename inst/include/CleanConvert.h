@@ -6,6 +6,15 @@
 
 constexpr double Significand53 = 9007199254740991.0;
 
+enum VecType {
+    Integer,
+    Numeric,
+    Logical, 
+    Character,
+    Complex,
+    Raw
+};
+
 namespace CleanConvert {
     
     inline bool convertLogical(SEXP boolInput, const std::string &nameOfBool) {
@@ -150,8 +159,8 @@ namespace CleanConvert {
                 if (numOnly)
                     Rcpp::stop(nameOfObject + " must be of type numeric or integer");
                 
-                const char* raw = (char*)RAW(input);
-                total = ((int*)raw)[0];
+                const char* raw = (char*) RAW(input);
+                total = ((int*) raw)[0];
                 // do not put a break here. Fall to
                 // the next case for complete conversion
             }

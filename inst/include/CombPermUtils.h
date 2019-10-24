@@ -1,20 +1,21 @@
 #ifndef COMB_PERM_UTILS_H
 #define COMB_PERM_UTILS_H
 
-#include <Rcpp.h>
+#include "CleanConvert.h"
 
-void SetClass(bool &IsCharacter, bool &IsLogical, 
-              bool &IsInteger, bool &IsComplex, bool &IsRaw, SEXP Rv);
+void SetClass(VecType &myType, const SEXP &Rv);
 
-void SetValues(bool IsCharacter, bool IsLogical, bool &IsInteger, bool IsComplex, bool IsRaw,
-               Rcpp::CharacterVector &rcppChar, std::vector<int> &vInt, std::vector<double> &vNum,
-               Rcpp::ComplexVector &rcppCplx, Rcpp::RawVector &rcppRaw, int &n, SEXP Rv);
+void SetValues(VecType &myType, std::vector<int> &vInt,
+               std::vector<double> &vNum, int &n, const SEXP &Rv);
+
+SEXP copyRv(const SEXP &Rv, const std::vector<int> &vInt,
+            const std::vector<double> &vNum, VecType &myType);
 
 void SetFreqsAndM(SEXP RFreqs, bool &IsMultiset, std::vector<int> &myReps, bool &IsRepetition,
-                  int &lenFreqs, std::vector<int> &freqsExpanded, SEXP Rm, int &m, bool mIsNull);
+                  int &lenFreqs, std::vector<int> &freqsExpanded, const SEXP &Rm, int &m);
 
 void SetThreads(bool &Parallel, int maxThreads, int nRows,
-                bool IsCharacter, int &nThreads, SEXP RNumThreads, int limit);
+                VecType myType, int &nThreads, SEXP RNumThreads, int limit);
 
 void SetRandomSample(SEXP RindexVec, SEXP RNumSamp, std::size_t &sampSize,
                      bool IsGmp, double computedRows, std::vector<double> &mySample,
