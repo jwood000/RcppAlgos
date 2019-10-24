@@ -300,7 +300,7 @@ void MultisetPermutation(std::size_t n, std::size_t r, const typeVector &v, std:
 template <typename typeVector>
 void PermutationApplyFun(std::size_t n, std::size_t r, const typeVector &v, bool IsRep,
                          std::size_t uRowN, bool Multi, std::vector<int> &z,
-                         int intCount, SEXP sexpFun, SEXP rho, Rcpp::List &myList) {
+                         SEXP sexpFun, SEXP rho, Rcpp::List &myList) {
     
     const std::size_t lenFreqs = (Multi) ? z.size() : 0;
     typeVector vectorPass(r);
@@ -312,7 +312,7 @@ void PermutationApplyFun(std::size_t n, std::size_t r, const typeVector &v, bool
     if (IsRep) {
         const int maxIndInt = maxInd;
         
-        for (std::size_t count = intCount; count < uRowN; ++count) {
+        for (std::size_t count = 0; count < uRowN; ++count) {
             for (std::size_t j = 0; j < r; ++j)
                 vectorPass[j] = v[z[j]];
 
@@ -336,7 +336,7 @@ void PermutationApplyFun(std::size_t n, std::size_t r, const typeVector &v, bool
             arrPerm[i] = z[i];
         
         if (r == n || r == lenFreqs) {
-            for (std::size_t count = intCount; count < numR1; ++count) {
+            for (std::size_t count = 0; count < numR1; ++count) {
                 for (std::size_t j = 0; j < r; ++j)
                     vectorPass[j] = v[arrPerm[j]];
                 
@@ -345,7 +345,7 @@ void PermutationApplyFun(std::size_t n, std::size_t r, const typeVector &v, bool
                 nextFullPerm(arrPerm.get(), maxInd);
             }
         } else {
-            for (std::size_t count = intCount; count < numR1; ++count) {
+            for (std::size_t count = 0; count < numR1; ++count) {
                 for (std::size_t j = 0; j < r; ++j)
                     vectorPass[j] = v[arrPerm[j]];
                     
