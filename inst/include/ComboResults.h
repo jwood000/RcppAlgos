@@ -4,9 +4,8 @@
 #include "ConstraintsUtils.h"
 
 template <typename typeMatrix, typename typeVector>
-void ComboGenRes(int n, int r, const std::vector<typeVector> &v, bool repetition,
-                  int nRows, int count, std::vector<int> &z,
-                  typeMatrix &combinationMatrix, funcPtr<typeVector> myFun) {
+void ComboGenRes(int n, int r, const std::vector<typeVector> &v, bool repetition, int nRows,
+                 int count, std::vector<int> &z, typeMatrix &comboMat, funcPtr<typeVector> myFun) {
     
     const int r1 = r - 1;
     const int r2 = r - 2;
@@ -25,10 +24,10 @@ void ComboGenRes(int n, int r, const std::vector<typeVector> &v, bool repetition
             for (int i = 0; i < numIter; ++i, ++count, ++z[r1]) {
                 for (int k = 0; k < r; ++k) {
                     vPass[k] = v[z[k]];
-                    combinationMatrix(count, k) = vPass[k];
+                    comboMat(count, k) = vPass[k];
                 }
                 
-                combinationMatrix(count, r) = myFun(vPass, uR);
+                comboMat(count, r) = myFun(vPass, uR);
             }
             
             for (int i = r2; i >= 0; i--) {
@@ -54,10 +53,10 @@ void ComboGenRes(int n, int r, const std::vector<typeVector> &v, bool repetition
             for (int i = 0; i < numIter; ++i, ++count, ++z[r1]) {
                 for (int k = 0; k < r; ++k) {
                     vPass[k] = v[z[k]];
-                    combinationMatrix(count, k) = vPass[k];
+                    comboMat(count, k) = vPass[k];
                 }
                 
-                combinationMatrix(count, r) = myFun(vPass, uR);
+                comboMat(count, r) = myFun(vPass, uR);
             }
 
             for (int i = r2; i >= 0; i--) {
@@ -77,7 +76,7 @@ void ComboGenRes(int n, int r, const std::vector<typeVector> &v, bool repetition
 template <typename typeMatrix, typename typeVector>
 void MultisetComboResult(int n, int r, const std::vector<typeVector> &v, const std::vector<int> &Reps,
                          const std::vector<int> &freqs, int nRows, int count, std::vector<int> &z,
-                         typeMatrix &combinationMatrix, funcPtr<typeVector> myFun) {
+                         typeMatrix &comboMat, funcPtr<typeVector> myFun) {
     
     std::vector<int> zIndex(n), zGroup(r);
     std::vector<typeVector> vPass(r);
@@ -104,10 +103,10 @@ void MultisetComboResult(int n, int r, const std::vector<typeVector> &v, const s
         for (int i = 0; i < numIter; ++i, ++count, ++z[r1]) {
             for (int k = 0; k < r; ++k) {
                 vPass[k] = v[freqs[zIndex[z[k]]]];
-                combinationMatrix(count, k) = vPass[k];
+                comboMat(count, k) = vPass[k];
             }
             
-            combinationMatrix(count, r) = myFun(vPass, uR);
+            comboMat(count, r) = myFun(vPass, uR);
         }
         
         for (int i = r2; i >= 0; --i) {

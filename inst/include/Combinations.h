@@ -4,58 +4,62 @@
 #include <Rcpp.h>
 
 template <typename typeMatrix, typename typeVector>
-void ComboGeneral(int n, int r, const typeVector &v, bool repetition, int count,
-                  int numRows, std::vector<int> &z, typeMatrix &combinationMatrix) {
+void Combinations(int n, int r, const typeVector &v, int count,
+                  int numRows, std::vector<int> &z, typeMatrix &comboMat) {
     
     const int r1 = r - 1;
     const int r2 = r - 2;
+    const int nMinusR = n - r;
     
-    if (repetition) {
-        const int lastElement = n - 1;
+    while (count < numRows) {
+        int numIter = n - z[r1];
         
-        while (count < numRows) {
-            int numIter = n - z[r1];
-            
-            if (numIter + count > numRows)
-                numIter = numRows - count;
-            
-            for (int i = 0; i < numIter; ++i, ++count, ++z[r1])
-                for (int k = 0; k < r; ++k)
-                    combinationMatrix(count, k) = v[z[k]];
-            
-            for (int i = r2; i >= 0; i--) {
-                if (z[i] != lastElement) {
-                    ++z[i];
-                    
-                    for (int k = i; k < r1; ++k)
-                        z[k + 1] = z[k];
-                    
-                    break;
-                }
+        if (numIter + count > numRows)
+            numIter = numRows - count;
+        
+        for (int i = 0; i < numIter; ++i, ++count, ++z[r1])
+            for (int k = 0; k < r; ++k)
+                comboMat(count, k) = v[z[k]];
+        
+        for (int i = r2; i >= 0; --i) {
+            if (z[i] != (nMinusR + i)) {
+                ++z[i];
+                
+                for (int k = i; k < r1; ++k) 
+                    z[k + 1] = z[k] + 1;
+                
+                break;
             }
         }
-    } else {
-        const int nMinusR = n - r;
+    }
+}
+
+template <typename typeMatrix, typename typeVector>
+void CombinationsRep(int n, int r, const typeVector &v, int count,
+                     int numRows, std::vector<int> &z, typeMatrix &comboMat) {
+    
+    const int r1 = r - 1;
+    const int r2 = r - 2;
+    const int lastElement = n - 1;
+    
+    while (count < numRows) {
+        int numIter = n - z[r1];
         
-        while (count < numRows) {
-            int numIter = n - z[r1];
-            
-            if (numIter + count > numRows)
-                numIter = numRows - count;
-            
-            for (int i = 0; i < numIter; ++i, ++count, ++z[r1])
-                for (int k = 0; k < r; ++k)
-                    combinationMatrix(count, k) = v[z[k]];
-            
-            for (int i = r2; i >= 0; i--) {
-                if (z[i] != (nMinusR + i)) {
-                    ++z[i];
-                    
-                    for (int k = i; k < r1; ++k) 
-                        z[k + 1] = z[k] + 1;
-                    
-                    break;
-                }
+        if (numIter + count > numRows)
+            numIter = numRows - count;
+        
+        for (int i = 0; i < numIter; ++i, ++count, ++z[r1])
+            for (int k = 0; k < r; ++k)
+                comboMat(count, k) = v[z[k]];
+        
+        for (int i = r2; i >= 0; --i) {
+            if (z[i] != lastElement) {
+                ++z[i];
+                
+                for (int k = i; k < r1; ++k)
+                    z[k + 1] = z[k];
+                
+                break;
             }
         }
     }
@@ -64,7 +68,7 @@ void ComboGeneral(int n, int r, const typeVector &v, bool repetition, int count,
 template <typename typeMatrix, typename typeVector>
 void MultisetCombination(int n, int r, const typeVector &v, const std::vector<int> &Reps,
                          const std::vector<int> &freqs, int count, int numRows,
-                         std::vector<int> &z, typeMatrix &combinationMatrix) {
+                         std::vector<int> &z, typeMatrix &comboMat) {
     
     std::vector<int> zIndex(n), zGroup(r);
     int sizeFreqs = 0;
@@ -88,7 +92,7 @@ void MultisetCombination(int n, int r, const typeVector &v, const std::vector<in
         
         for (int i = 0; i < numIter; ++i, ++count, ++z[r1])
             for (int k = 0; k < r; ++k)
-                combinationMatrix(count, k) = v[freqs[zIndex[z[k]]]];
+                comboMat(count, k) = v[freqs[zIndex[z[k]]]];
         
         for (int i = r2; i >= 0; --i) {
             if (freqs[zIndex[z[i]]] != freqs[pentExtreme + i]) {
@@ -108,7 +112,7 @@ void MultisetCombination(int n, int r, const typeVector &v, const std::vector<in
 
 template <typename typeVector>
 void ComboGeneralApplyFun(int n, int r, const typeVector &v, bool repetition,
-                          int count, int numRows, std::vector<int> &z, SEXP sexpFun,
+                          int numRows, std::vector<int> &z, SEXP sexpFun,
                           SEXP rho, Rcpp::List &myList) {
     
     const int r1 = r - 1;
@@ -118,7 +122,7 @@ void ComboGeneralApplyFun(int n, int r, const typeVector &v, bool repetition,
     if (repetition) {
         const int lastElement = n - 1;
         
-        while (count < numRows) {
+        for (int count = 0; count < numRows; ) {
             int numIter = n - z[r1];
             
             if (numIter + count > numRows)
@@ -146,7 +150,7 @@ void ComboGeneralApplyFun(int n, int r, const typeVector &v, bool repetition,
     } else {
         const int nMinusR = n - r;
         
-        while (count < numRows) {
+        for (int count = 0; count < numRows;) {
             int numIter = n - z[r1];
             
             if ((numIter + count) > numRows)
@@ -176,8 +180,8 @@ void ComboGeneralApplyFun(int n, int r, const typeVector &v, bool repetition,
 
 template <typename typeVector>
 void MultisetComboApplyFun(int n, int r, const typeVector &v, const std::vector<int> &Reps,
-                           std::vector<int> &freqs, int numRows, std::vector<int> &z,
-                           int count, SEXP sexpFun, SEXP rho, Rcpp::List &myList) {
+                           const std::vector<int> &freqs, int numRows, std::vector<int> &z,
+                           SEXP sexpFun, SEXP rho, Rcpp::List &myList) {
 
     int sizeFreqs = 0;
     std::vector<int> zIndex(n), zGroup(r);
@@ -194,7 +198,7 @@ void MultisetComboApplyFun(int n, int r, const typeVector &v, const std::vector<
     const int pentExtreme = sizeFreqs - r;
     typeVector vectorPass(r);
 
-    while (count < numRows) {
+    for (int count = 0; count < numRows;) {
         int numIter = n - z[r1];
 
         if (numIter + count > numRows)
