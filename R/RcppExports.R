@@ -5,12 +5,28 @@ cpp11GetNumThreads <- function() {
     .Call(`_RcppAlgos_cpp11GetNumThreads`)
 }
 
-CombinatoricsRcpp <- function(Rv, Rm, RisRep, RFreqs, Rlow, Rhigh, f1, f2, Rtarget, IsComb, RKeepRes, IsFactor, IsCount, stdFun, myEnv, Rparallel, RNumThreads, maxThreads, Rtolerance) {
-    .Call(`_RcppAlgos_CombinatoricsRcpp`, Rv, Rm, RisRep, RFreqs, Rlow, Rhigh, f1, f2, Rtarget, IsComb, RKeepRes, IsFactor, IsCount, stdFun, myEnv, Rparallel, RNumThreads, maxThreads, Rtolerance)
+CheckStdRet <- function(Rv, f1, f2, Rtarget, IsFactor, RKeepRes) {
+    .Call(`_RcppAlgos_CheckStdRet`, Rv, f1, f2, Rtarget, IsFactor, RKeepRes)
 }
 
-ComboGroupsRcpp <- function(Rv, RNumGroups, RRetType, Rlow, Rhigh, IsFactor, IsCount, Rparallel, RNumThreads, maxThreads, IsSample, RindexVec, RmySeed, RNumSamp, baseSample, RNamed) {
-    .Call(`_RcppAlgos_ComboGroupsRcpp`, Rv, RNumGroups, RRetType, Rlow, Rhigh, IsFactor, IsCount, Rparallel, RNumThreads, maxThreads, IsSample, RindexVec, RmySeed, RNumSamp, baseSample, RNamed)
+CombinatoricsCnstrt <- function(Rv, Rm, RisRep, RFreqs, Rlow, Rhigh, f1, f2, Rtarget, IsComb, RKeepRes, Rparallel, RnThreads, maxThreads, Rtolerance) {
+    .Call(`_RcppAlgos_CombinatoricsCnstrt`, Rv, Rm, RisRep, RFreqs, Rlow, Rhigh, f1, f2, Rtarget, IsComb, RKeepRes, Rparallel, RnThreads, maxThreads, Rtolerance)
+}
+
+CombinatoricsCount <- function(Rv, Rm, RisRep, RFreqs, IsComb) {
+    .Call(`_RcppAlgos_CombinatoricsCount`, Rv, Rm, RisRep, RFreqs, IsComb)
+}
+
+CombinatoricsStndrd <- function(Rv, Rm, RisRep, RFreqs, Rlow, Rhigh, IsComb, IsFactor, stdFun, myEnv, Rparallel, RNumThreads, maxThreads) {
+    .Call(`_RcppAlgos_CombinatoricsStndrd`, Rv, Rm, RisRep, RFreqs, Rlow, Rhigh, IsComb, IsFactor, stdFun, myEnv, Rparallel, RNumThreads, maxThreads)
+}
+
+ComboGroupsCountCpp <- function(Rv, RNumGroups) {
+    .Call(`_RcppAlgos_ComboGroupsCountCpp`, Rv, RNumGroups)
+}
+
+ComboGroupsRcpp <- function(Rv, RNumGroups, RRetType, Rlow, Rhigh, IsFactor, Rparallel, RNumThreads, maxThreads, IsSample, RindexVec, RmySeed, RNumSamp, baseSample, RNamed) {
+    .Call(`_RcppAlgos_ComboGroupsRcpp`, Rv, RNumGroups, RRetType, Rlow, Rhigh, IsFactor, Rparallel, RNumThreads, maxThreads, IsSample, RindexVec, RmySeed, RNumSamp, baseSample, RNamed)
 }
 
 DivNumSieve <- function(Rb1, Rb2, bDivSieve, RNamed, RNumThreads, maxThreads) {
