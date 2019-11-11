@@ -7,12 +7,24 @@
 constexpr double Significand53 = 9007199254740991.0;
 
 enum VecType {
-    Integer,
-    Numeric,
-    Logical, 
-    Character,
-    Complex,
-    Raw
+    Integer = 1,
+    Numeric = 2,
+    Logical = 3, 
+    Character = 4,
+    Complex = 5,
+    Raw = 6
+};
+
+enum PartitionType {
+    NotPartition = 1,
+    PartGeneral = 2, // Occurs with non-standard input. E.g. v = seq(200, 300, 5), tar = 1200, m = 4, rep = TRUE
+    PartTraditional = 3, // Get all partitions. E.g. tar = 20 startZ = c(0, 0, 0, 0, 20)
+    PartTradNoZero = 4, // E.g. tar = 20 startZ = c(1, 1, 1, 1, 15)
+    PartDstctStdAll = 5, // Get all distinct partitions (0 can repeat) E.g. tar = 20 startZ = c(0, 0, 0, 0, 20)
+    PartDstctShort = 6, // Case where startZ doesn't maximize width. E.g. tar = 20 startZ = c(0, 0, 20)
+    PartDstctSpecial = 7, // Case where startZ doesn't maximize 0's. E.g. tar = 20 startZ = c(0, 0, 1, 2, 17)
+    PartDstctOneZero = 8, // Similar to above but can occur when IsMult = FALSE. E.g. tar = 20 startZ = c(0, 1, 2, 3, 14)
+    PartDstctNoZero = 9, // E.g. tar = 20 startZ = c(1, 2, 3, 4, 10)
 };
 
 namespace CleanConvert {
