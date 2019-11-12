@@ -44,6 +44,14 @@ void SetClass(VecType &myType, const SEXP &Rv) {
     }
 }
 
+void SetFactorClass(Rcpp::IntegerMatrix &matInt, const SEXP &Rv) {
+    Rcpp::IntegerVector testFactor = Rcpp::as<Rcpp::IntegerVector>(Rv);
+    Rcpp::CharacterVector myClass = testFactor.attr("class");
+    Rcpp::CharacterVector myLevels = testFactor.attr("levels");
+    matInt.attr("class") = myClass;
+    matInt.attr("levels") = myLevels;
+}
+
 void SetValues(VecType &myType, std::vector<int> &vInt,
                std::vector<double> &vNum, int &n, const SEXP &Rv) {
     
@@ -82,52 +90,53 @@ void SetValues(VecType &myType, std::vector<int> &vInt,
     }
 }
 
-SEXP copyRv(const SEXP &Rv, const std::vector<int> &vInt,
-            const std::vector<double> &vNum, VecType &myType) {
-    
-    if (myType > VecType::Numeric) {
-        return Rcpp::clone(Rv);
-    } else if (myType == VecType::Integer) {
-        Rcpp::IntegerVector rcppInt(vInt.cbegin(), vInt.cend());
-        return rcppInt;
-    } else {
-        Rcpp::NumericVector rcppNum(vNum.cbegin(), vNum.cend());
-        return rcppNum;
-    }
-}
-
-void SetFreqsAndM(SEXP RFreqs, bool &IsMultiset, std::vector<int> &myReps, bool &IsRepetition,
-                  int &lenFreqs, std::vector<int> &freqsExpanded, const SEXP &Rm, int &m) {
+void SetFreqsAndM(SEXP RFreqs, bool &IsMultiset, std::vector<int> &Reps, bool &IsRepetition,
+                  int &lenFreqs, std::vector<int> &freqsExpanded, const SEXP &Rm, int n, int &m) {
     
     if (Rf_isNull(RFreqs)) {
         IsMultiset = false;
-        myReps.push_back(1);
+        Reps.push_back(1);
     } else {
         IsRepetition = false;
-        CleanConvert::convertVector(RFreqs, myReps, "freqs");
-        lenFreqs = static_cast<int>(myReps.size());
-        bool allOne = std::all_of(myReps.cbegin(), myReps.cend(), 
+        CleanConvert::convertVector(RFreqs, Reps, "freqs");
+        lenFreqs = static_cast<int>(Reps.size());
+        bool allOne = std::all_of(Reps.cbegin(), Reps.cend(), 
                                   [](int v_i) {return v_i == 1;});
         if (allOne) {
             IsMultiset = false;
-            freqsExpanded = myReps;
+            freqsExpanded = Reps;
         } else {
             IsMultiset = true;
             
             for (int i = 0; i < lenFreqs; ++i)
-                for (int j = 0; j < myReps[i]; ++j)
+                for (int j = 0; j < Reps[i]; ++j)
                     freqsExpanded.push_back(i);
         }
     }
     
     if (Rf_isNull(Rm)) {
-        if (!freqsExpanded.empty())
+        if (freqsExpanded.empty()) {
+            m = n;
+        } else {
             m = freqsExpanded.size();
+        }
     } else {
         if (Rf_length(Rm) > 1)
             Rcpp::stop("length of m must be 1");
         
         CleanConvert::convertPrimitive(Rm, m, "m");
+    }
+}
+
+SEXP CopyRv(const SEXP &Rv, const std::vector<int> &vInt,
+            const std::vector<double> &vNum, VecType myType) {
+    
+    if (myType > VecType::Numeric) {
+        return Rcpp::clone(Rv);
+    } else if (myType == VecType::Integer) {
+        return Rcpp::wrap(vInt);
+    } else {
+        return Rcpp::wrap(vNum);
     }
 }
 
@@ -327,6 +336,7 @@ double MultisetCombRowNumFast(int n, int r, const std::vector<int> &Reps) {
     std::vector<double> temp(r1);
     
     int myMax = r1;
+    
     if (myMax > Reps[0] + 1)
         myMax = Reps[0] + 1;
     
@@ -398,18 +408,18 @@ double MultisetCombRowNumFast(int n, int r, const std::vector<int> &Reps) {
 // we create all combinations of the multiset, then
 // subsequently count the number of permutations
 // of each of those combinations.
-double MultisetPermRowNum(int n, int r, const std::vector<int> &myReps) {
+double MultisetPermRowNum(int n, int r, const std::vector<int> &Reps) {
     
     if (n < 2 || r < 1)
         return 1.0;
     
-    int sumFreqs = std::accumulate(myReps.cbegin(), myReps.cend(), 0);
+    int sumFreqs = std::accumulate(Reps.cbegin(), Reps.cend(), 0);
     
     if (r > sumFreqs)
         return 0.0;
     
     const int n1 = n - 1;
-    const int maxFreq = *std::max_element(myReps.cbegin(), myReps.cend());
+    const int maxFreq = *std::max_element(Reps.cbegin(), Reps.cend());
     const int myMax = (r < maxFreq) ? (r + 1) : (maxFreq + 1);
     
     // factorial(171)
@@ -419,7 +429,7 @@ double MultisetPermRowNum(int n, int r, const std::vector<int> &myReps) {
     if (myMax > 170 || r > 170) {
         mpz_t result;
         mpz_init(result);
-        MultisetPermRowNumGmp(result, n, r, myReps);
+        MultisetPermRowNumGmp(result, n, r, Reps);
         
         if (mpz_cmp_d(result, Significand53) > 0)
             return std::numeric_limits<double>::infinity();
@@ -436,20 +446,22 @@ double MultisetPermRowNum(int n, int r, const std::vector<int> &myReps) {
     // 1 at the front... equivalent to c(1, 1:myMax)
     std::vector<double> cumProd(myMax), resV(r + 1, 0.0);
     std::iota(cumProd.begin(), cumProd.end(), 1);
+    
     cumProd.insert(cumProd.begin(), 1);
     std::partial_sum(cumProd.begin(), cumProd.end(), 
                      cumProd.begin(), std::multiplies<double>());
     
     double numPerms = 0.0;
-    int myMin = std::min(r, myReps[0]);
+    int myMin = std::min(r, Reps[0]);
     
     for (int i = 0; i <= myMin; ++i)
         resV[i] = prodR / cumProd[i];
     
     for (int i = 1; i < n1; ++i) {
         for (int j = r; j > 0; --j) {
-            myMin = std::min(j, myReps[i]);
+            myMin = std::min(j, Reps[i]);
             numPerms = 0;
+            
             for (int k = 0; k <= myMin; ++k)
                 numPerms += resV[j - k] / cumProd[k];
             
@@ -457,8 +469,9 @@ double MultisetPermRowNum(int n, int r, const std::vector<int> &myReps) {
         }
     }
     
-    myMin = std::min(r, myReps[n1]);
+    myMin = std::min(r, Reps[n1]);
     numPerms = 0;
+    
     for (int i = 0; i <= myMin; ++i)
         numPerms += resV[r - i] / cumProd[i];
     
@@ -477,9 +490,9 @@ double MultisetCombRowNum(int n, int r, const std::vector<int> &Reps) {
     int i, k, j, myMax, r1 = r + 1;
     std::vector<double> triangleVec(r1);
     std::vector<double> temp(r1);
-    double tempSum;
     
     myMax = r1;
+    
     if (myMax > Reps[0] + 1)
         myMax = Reps[0] + 1;
     
@@ -491,15 +504,17 @@ double MultisetCombRowNum(int n, int r, const std::vector<int> &Reps) {
     for (k = 1; k < n; ++k) {
         for (i = r; i > 0; --i) {
             myMax = i - Reps[k];
-            if (myMax < 0)
-                myMax = 0;
             
-            tempSum = 0;
+            if (myMax < 0) {myMax = 0;}
+            
+            double tempSum = 0;
+            
             for (j = myMax; j <= i; ++j)
                 tempSum += triangleVec[j];
             
             temp[i] = tempSum;
         }
+        
         triangleVec = temp;
     }
     
@@ -508,10 +523,10 @@ double MultisetCombRowNum(int n, int r, const std::vector<int> &Reps) {
 
 // This algorithm is nearly identical to the
 // one found in the standard algorithm library
-void nextFullPerm(int *const myArray, std::size_t maxInd) {
+void nextFullPerm(int *const myArray, int maxInd) {
     
-    std::size_t p1 = maxInd - 1;
-    std::size_t p2 = maxInd;
+    int p1 = maxInd - 1;
+    int p2 = maxInd;
     
     while (myArray[p1 + 1] <= myArray[p1])
         --p1;
@@ -523,7 +538,7 @@ void nextFullPerm(int *const myArray, std::size_t maxInd) {
     myArray[p1] = myArray[p2];
     myArray[p2] = temp;
     
-    for (std::size_t k = p1 + 1, q = maxInd; k < q; ++k, --q) {
+    for (int k = p1 + 1, q = maxInd; k < q; ++k, --q) {
         int temp = myArray[k];
         myArray[k] = myArray[q];
         myArray[q] = temp;
@@ -542,9 +557,9 @@ void nextFullPerm(int *const myArray, std::size_t maxInd) {
 // and swap them. We can then proceed to the next perm.
 // We can do this because the standard algo would end
 // up performing two unnecessary reversings.
-void nextPartialPerm(int *const myArray, std::size_t r1, std::size_t maxInd) {
+void nextPartialPerm(int *const myArray, int r1, int maxInd) {
     
-    std::size_t p1 = r1;
+    int p1 = r1;
     
     while (p1 <= maxInd && myArray[r1] >= myArray[p1])
         ++p1;
@@ -554,7 +569,7 @@ void nextPartialPerm(int *const myArray, std::size_t r1, std::size_t maxInd) {
         myArray[p1] = myArray[r1];
         myArray[r1] = temp;
     } else {
-        for (std::size_t k = r1 + 1, q = maxInd; k < q; ++k, --q) {
+        for (int k = r1 + 1, q = maxInd; k < q; ++k, --q) {
             int temp = myArray[k];
             myArray[k] = myArray[q];
             myArray[q] = temp;
@@ -564,7 +579,7 @@ void nextPartialPerm(int *const myArray, std::size_t r1, std::size_t maxInd) {
         while (myArray[p1 + 1] <= myArray[p1])
             --p1;
         
-        std::size_t p2 = maxInd;
+        int p2 = maxInd;
         
         while (myArray[p2] <= myArray[p1])
             --p2;
@@ -573,7 +588,7 @@ void nextPartialPerm(int *const myArray, std::size_t r1, std::size_t maxInd) {
         myArray[p1] = myArray[p2];
         myArray[p2] = temp;
         
-        for (std::size_t k = p1 + 1, q = maxInd; k < q; ++k, --q) {
+        for (int k = p1 + 1, q = maxInd; k < q; ++k, --q) {
             int temp = myArray[k];
             myArray[k] = myArray[q];
             myArray[q] = temp;
@@ -582,7 +597,7 @@ void nextPartialPerm(int *const myArray, std::size_t r1, std::size_t maxInd) {
 }
 
 double GetComputedRows(bool IsMultiset, bool IsComb, bool IsRep, int n, int &m, SEXP Rm,
-                       int lenFreqs, std::vector<int> &freqs, std::vector<int> &myReps) {
+                       int lenFreqs, std::vector<int> &freqs, std::vector<int> &Reps) {
     
     double computedRows = 0;
     
@@ -594,12 +609,12 @@ double GetComputedRows(bool IsMultiset, bool IsComb, bool IsRep, int n, int &m, 
             m = freqs.size();
         
         if (IsComb) {
-            computedRows = MultisetCombRowNum(n, m, myReps);
+            computedRows = MultisetCombRowNum(n, m, Reps);
         } else {
             if (Rf_isNull(Rm) || m == static_cast<int>(freqs.size()))
                 computedRows = NumPermsWithRep(freqs);
             else
-                computedRows = MultisetPermRowNum(n, m, myReps);
+                computedRows = MultisetPermRowNum(n, m, Reps);
         }
     } else {
         if (IsRep) {

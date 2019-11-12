@@ -4,18 +4,19 @@
 #include "CleanConvert.h"
 
 void SetClass(VecType &myType, const SEXP &Rv);
+void SetFactorClass(Rcpp::IntegerMatrix &matInt, const SEXP &Rv);
 
 void SetValues(VecType &myType, std::vector<int> &vInt,
                std::vector<double> &vNum, int &n, const SEXP &Rv);
 
-SEXP copyRv(const SEXP &Rv, const std::vector<int> &vInt,
-            const std::vector<double> &vNum, VecType &myType);
-
-void SetFreqsAndM(SEXP RFreqs, bool &IsMultiset, std::vector<int> &myReps, bool &IsRepetition,
-                  int &lenFreqs, std::vector<int> &freqsExpanded, const SEXP &Rm, int &m);
+void SetFreqsAndM(SEXP RFreqs, bool &IsMultiset, std::vector<int> &Reps, bool &IsRepetition,
+                  int &lenFreqs, std::vector<int> &freqsExpanded, const SEXP &Rm, int n, int &m);
 
 void SetThreads(bool &Parallel, int maxThreads, int nRows,
                 VecType myType, int &nThreads, SEXP RNumThreads, int limit);
+
+SEXP CopyRv(const SEXP &Rv, const std::vector<int> &vInt,
+            const std::vector<double> &vNum, VecType myType);
 
 void SetRandomSample(SEXP RindexVec, SEXP RNumSamp, std::size_t &sampSize,
                      bool IsGmp, double computedRows, std::vector<double> &mySample,
@@ -27,17 +28,17 @@ double NumPermsNoRep(int n, int k);
 double nChooseK(int n, int k);
 double NumCombsWithRep(int n, int r);
 double MultisetCombRowNumFast(int n,int r, const std::vector<int> &Reps);
-double MultisetPermRowNum(int n, int r, const std::vector<int> &myReps);
+double MultisetPermRowNum(int n, int r, const std::vector<int> &Reps);
 
 // This one isn't as efficient as MultisetCombRowNumFast, however it will
 // not produce negative results and is thus used in determining whether
 // gmp analogs are necessary
 double MultisetCombRowNum(int n, int r, const std::vector<int> &Reps);
 
-void nextFullPerm(int *const myArray, std::size_t maxInd);
-void nextPartialPerm(int *const myArray, std::size_t lastCol, std::size_t maxInd);
+void nextFullPerm(int *const myArray, int maxInd);
+void nextPartialPerm(int *const myArray, int lastCol, int maxInd);
 
 double GetComputedRows(bool IsMultiset, bool IsComb, bool IsRep, int n, int &m, SEXP Rm,
-                       int lenFreqs, std::vector<int> &freqs, std::vector<int> &myReps);
+                       int lenFreqs, std::vector<int> &freqs, std::vector<int> &Reps);
     
 #endif
