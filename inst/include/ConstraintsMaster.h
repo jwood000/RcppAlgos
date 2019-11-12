@@ -6,56 +6,40 @@
 #include "ComboResults.h"
 #include "PermuteResults.h"
 #include "PartitionsMaster.h"
+#include "ConstraintsUtils.h"
 
-const std::vector<std::string> compForms = {"<", ">", "<=", ">=", "==", "=<", "=>"};
-const std::vector<std::string> compSpecial = {"==", ">,<", ">=,<", ">,<=", ">=,<="};
-const std::vector<std::string> compHelper = {"<=", "<", "<", "<=", "<="};
+template <typename T, typename U>
+using combPermResPtr = void (*const)(T &matRcpp, const std::vector<U> &v, std::vector<int> z,
+                             int n, int k, int strt, int nRows, const std::vector<int> &freqs, funcPtr<U> myFun);
 
-// N.B. Passing signed int to function expecting std::size_t is well defined
-template <typename typeRcpp, typename typeVector>
-void GeneralReturn(int n, int r, std::vector<typeVector> v, bool IsRep, int nRows, bool IsComb,
-                   std::vector<int> myReps, std::vector<int> freqs, std::vector<int> z,
-                   bool generalReturn, bool IsMultiset, funcPtr<typeVector> myFun,
-                   bool keepRes, typeRcpp &matRcpp, int count, std::size_t phaseOne) {
-    
-    if (keepRes) {
-        if (IsComb) {
-            if (IsMultiset)
-                MultisetComboResult(n, r, v, myReps, freqs, nRows, count, z, matRcpp, myFun);
-            else
-                ComboGenRes(n, r, v, IsRep, nRows, count, z, matRcpp, myFun);
-        } else {
-            if (IsMultiset)
-                MultisetPermRes(n, r, v, nRows, count, z, matRcpp, myFun);
-            else
-                PermuteGenRes(n, r, v, IsRep, nRows, z, count, matRcpp, myFun);
-        }
+template <typename T, typename U>
+Rcpp::XPtr<combPermResPtr<T, U>> putCombResPtrInXPtr(bool IsComb, bool IsMult, bool IsRep) {
+    if (IsComb) {
+        if (IsMult)
+            return(Rcpp::XPtr<combPermResPtr<T, U>>(new combPermResPtr<T, U>(&MultisetComboResult)));
+        else if (IsRep)
+            return(Rcpp::XPtr<combPermResPtr<T, U>>(new combPermResPtr<T, U>(&ComboGenResRep)));
+        else
+            return(Rcpp::XPtr<combPermResPtr<T, U>>(new combPermResPtr<T, U>(&ComboGenResNoRep)));
     } else {
-        if (IsComb) {
-            if (IsMultiset)
-                MultisetCombination(n, r, v, myReps, freqs, count, nRows, z, matRcpp);
-            else
-                ComboGeneral(n, r, v, IsRep, count, nRows, z, matRcpp);
-        } else {
-            if (IsMultiset)
-                MultisetPermutation(n, r, v, nRows, z, count, matRcpp);
-            else if (generalReturn)
-                PermuteGeneral(n, r, v, IsRep, nRows, z, count, matRcpp);
-            else
-                PermuteSerialDriver(n, r, v, IsRep, nRows, phaseOne, z, matRcpp);
-        }
+        if (IsMult)
+            return(Rcpp::XPtr<combPermResPtr<T, U>>(new combPermResPtr<T, U>(&MultisetPermRes)));
+        else if (IsRep)
+            return(Rcpp::XPtr<combPermResPtr<T, U>>(new combPermResPtr<T, U>(&PermuteGenResRep)));
+        else
+            return(Rcpp::XPtr<combPermResPtr<T, U>>(new combPermResPtr<T, U>(&PermuteGenResNoRep)));
     }
-}
+};
 
 // This is called when we can't easily produce a (loose) monotonic sequence overall,
 // and we must generate and test every possible combination/permutation. This occurs
 // when we are using "prod" and we have negative numbers involved. We also call this
 // when lower is invoked implying that we are testing a specific range.
-template <typename typeRcpp, typename typeVector>
-typeRcpp SpecCaseRet(int n, int m, std::vector<typeVector> v, bool IsRep, int nRows, 
+template <typename typeRcpp, typename T>
+typeRcpp SpecCaseRet(int n, int m, std::vector<T> v, bool IsRep, int nRows, 
                      bool keepRes, std::vector<int> z, double lower, std::string mainFun, 
                      bool IsMult, double computedRows, std::vector<std::string> compFunVec,
-                     std::vector<typeVector> targetVals, bool IsComb, std::vector<int> myReps,
+                     std::vector<T> targetVals, bool IsComb, std::vector<int> myReps,
                      std::vector<int> freqs, bool bLower, double userRows) {
     
     if (!bLower) {
@@ -65,42 +49,44 @@ typeRcpp SpecCaseRet(int n, int m, std::vector<typeVector> v, bool IsRep, int nR
         nRows = static_cast<int>(computedRows);
     }
     
-    std::vector<typeVector> rowVec(m);
+    std::vector<T> rowVec(m);
     std::vector<int> indexMatch;
     indexMatch.reserve(nRows);
     
-    Rcpp::XPtr<funcPtr<typeVector>> xpFun = putFunPtrInXPtr<typeVector>(mainFun);
-    funcPtr<typeVector> myFun = *xpFun;
+    Rcpp::XPtr<funcPtr<T>> xpFun = putFunPtrInXPtr<T>(mainFun);
+    funcPtr<T> myFun = *xpFun;
     typeRcpp matRes = Rcpp::no_init_matrix(nRows, m + 1);
     
     // We pass keepRes = true (second true) as we need the results to determine which
     // results are within the constraint. The actual value of keepRes is utilized
     // below for the return matrix. The variable permNonTrivial, has no affect when
     // keepRes = true, so we pass it arbitrarily as true.
-    GeneralReturn(n, m, v, IsRep, nRows, IsComb, myReps, 
-                  freqs, z, true, IsMult, myFun, true, matRes, 0, 0);
+    Rcpp::XPtr<combPermResPtr<typeRcpp, T>> xpFunCoPeResPtr = 
+        putCombResPtrInXPtr<typeRcpp, T>(IsComb, IsMult, IsRep);
+    const combPermResPtr<typeRcpp, T> myFunCombPerm = *xpFunCoPeResPtr;
+    myFunCombPerm(matRes, v, z, n, m, 0, nRows, freqs, myFun);
     
-    Rcpp::XPtr<compPtr<typeVector>> xpComp = putCompPtrInXPtr<typeVector>(compFunVec[0]);
-    compPtr<typeVector> myComp = *xpComp;
+    Rcpp::XPtr<compPtr<T>> xpComp = putCompPtrInXPtr<T>(compFunVec[0]);
+    compPtr<T> myComp = *xpComp;
     
-    Rcpp::XPtr<compPtr<typeVector>> xpComp2 = xpComp;
-    compPtr<typeVector> myComp2;
+    Rcpp::XPtr<compPtr<T>> xpComp2 = xpComp;
+    compPtr<T> myComp2;
     
     if (compFunVec.size() == 1) {
         for (int i = 0; i < nRows; ++i) {
-            const typeVector testVal = matRes(i, m);
+            const T testVal = matRes(i, m);
             
             if (myComp(testVal, targetVals))
                 indexMatch.push_back(i);
         }
     } else {
-        xpComp2 = putCompPtrInXPtr<typeVector>(compFunVec[1]);
+        xpComp2 = putCompPtrInXPtr<T>(compFunVec[1]);
         myComp2 = *xpComp2;
-        std::vector<typeVector> targetVals2 = targetVals;
+        std::vector<T> targetVals2 = targetVals;
         targetVals2.erase(targetVals2.begin());
         
         for (int i = 0; i < nRows; ++i) {
-            const typeVector testVal = matRes(i, m);
+            const T testVal = matRes(i, m);
             
             if (myComp(testVal, targetVals) || myComp2(testVal, targetVals2))
                 indexMatch.push_back(i);
@@ -123,116 +109,6 @@ typeRcpp SpecCaseRet(int n, int m, std::vector<typeVector> v, bool IsRep, int nR
             returnMatrix(i, j) = matRes(indexMatch[i], j);
     
     return returnMatrix;
-}
-
-template <typename typeVector>
-inline void BruteNextElem(int &ind, int lowBnd, typeVector targetMin, typeVector partial,
-                          std::size_t uR, const std::vector<typeVector> &v,
-                          partialPtr<typeVector> partialFun) {
-    
-    typeVector dist = targetMin - partialFun(partial, v[ind], uR);
-    const int origInd = ind;
-    
-    while (ind > lowBnd && dist < 0) {
-        --ind;
-        dist = targetMin - partialFun(partial, v[ind], uR);
-    }
-    
-    if (dist > 0 && origInd != ind) {++ind;}
-}
-
-template <typename typeVector>
-typeVector PartialReduce(std::size_t uR, typeVector partial, 
-                         typeVector w, std::string myFun) {
-    
-    if (myFun == "prod") {
-        partial /= w;
-    } else if (myFun == "sum") {
-        partial -= w;
-    } else if (myFun == "mean") {
-        partial = (partial * static_cast<double>(uR) - w) / static_cast<double>(uR - 1);
-    }
-    
-    return partial;
-}
-
-template <typename typeVector>
-int GetLowerBound(int n, int r, const std::vector<typeVector> &v, bool isRep, bool isMult,
-                  std::vector<int> &z, const std::vector<int> &freqs, std::vector<typeVector> targetVals,
-                  const std::vector<int> &Reps, funcPtr<typeVector> constraintFun,
-                  partialPtr<typeVector> partialFun, std::string myFun) {
-    
-    const int lastElem = n - 1;
-    const int lastCol = r - 1;
-    const std::size_t uR = r;
-    
-    std::vector<typeVector> vPass(r);
-    const typeVector targetMin = *std::min_element(targetVals.cbegin(), targetVals.cend());
-    const typeVector targetMax = *std::max_element(targetVals.cbegin(), targetVals.cend());
-    
-    if (isRep) {
-        std::fill(vPass.begin(), vPass.end(), v.back());
-    } else if (isMult) {
-        const int lenMinusR = freqs.size() - r;
-        
-        for (int i = freqs.size() - 1, j = 0; i >= lenMinusR; --i, ++j)
-            vPass[j] = v[freqs[i]];
-    } else {
-        vPass.assign(v.crbegin(), v.crbegin() + r);
-    }
-    
-    typeVector partial = constraintFun(vPass, uR - 1);
-    const typeVector testMax = partialFun(partial, vPass.back(), uR);
-    if (testMax < targetMin)  {return 0;}
-
-    if (isRep) {
-        std::fill(vPass.begin(), vPass.end(), v[0]);
-    } else if (isMult) {
-        for (int i = 0; i < r; ++i)
-            vPass[i] = v[freqs[i]];
-    } else {
-        vPass.assign(v.cbegin(), v.cbegin() + r);
-    }
-
-    const typeVector testMin = constraintFun(vPass, uR);
-    if (testMin > targetMax)  {return 0;}
-
-    int zExpCurrPos = (isMult) ? freqs.size() - r : 0;
-    int currPos = (isMult) ? freqs[zExpCurrPos] : ((isRep) ? lastElem : (n - r));
-    int ind = currPos;
-
-    int lowBnd = 0;
-    std::vector<int> repsCounter;
-    
-    if (isMult)
-        repsCounter.assign(Reps.cbegin(), Reps.cend());
-    
-    for (int i = 0; i < lastCol; ++i) {
-        BruteNextElem(ind, lowBnd, targetMin, partial, uR, v, partialFun);
-        z[i] = ind;
-        partial = partialFun(partial, v[ind], uR);
-        
-        if (isMult) {
-            --repsCounter[ind];
-            
-            if (repsCounter[ind] == 0)
-                ++ind;
-            
-            ++zExpCurrPos;
-            currPos = freqs[zExpCurrPos];
-        } else if (!isRep) {
-            ++ind;
-            ++currPos;
-        }
-        
-        lowBnd = ind;
-        ind = currPos;
-        partial = PartialReduce(r, partial, v[currPos], myFun);
-    }
-
-    BruteNextElem(ind, lowBnd, targetMin, partial, uR, v, partialFun);
-    z[lastCol] = ind;
-    return 1;
 }
 
 // This function applys a constraint function to a vector v with respect
@@ -642,6 +518,38 @@ typeRcpp CombinatoricsConstraints(int n, int r, std::vector<typeVector> &v, bool
     }
     
     return combinatoricsMatrix;
+}
+
+template <typename typeRcpp, typename typeVector>
+typeRcpp ConstraintReturn(int n, int m, const std::string &mainFun, const std::vector<std::string> &compFunVec,
+                          const std::vector<typeVector> &targetVals, double tolerance, std::vector<typeVector> &v,
+                          bool bLower, double lower, bool IsGmp, bool bUpper, double upper, double computedRows,
+                          mpz_t lowerMpz, mpz_t upperMpz, mpz_t computedRowsMpz, bool IsRep, int nRows, 
+                          bool KeepRes, std::vector<int> &z, bool IsMult, bool IsComb, const SEXP &Rm, 
+                          double userNumRows, std::vector<int> &myReps, const std::vector<int> &freqs, 
+                          bool IsBetweenComp, PartitionType PartType, bool distGetAll) {
+    
+    const bool SpecialCase = CheckSpecialCase(n, bLower, mainFun, v);
+    
+    if (SpecialCase) {
+        return SpecCaseRet<typeRcpp>(n, m, v, IsRep, nRows, KeepRes, z, lower, mainFun, 
+                                     IsMult, computedRows, compFunVec, targetVals, IsComb,
+                                     myReps, freqs, bLower, userNumRows);
+    }
+    
+    bool bUserRows = bUpper;
+    
+    if (PartType > PartitionType::NotPartition) {
+        std::vector<int64_t> v64(v.cbegin(), v.cend());
+        int64_t target64 = static_cast<int64_t>(targetVals[0]);
+        
+        return Partitions::GeneralPartitions<typeRcpp>(v64, z, myReps, PartType, target64, n, m, IsRep,
+                                                       IsMult, userNumRows, IsComb, KeepRes, bUserRows,
+                                                       Rf_isNull(Rm), distGetAll);
+    }
+
+    return CombinatoricsConstraints<typeRcpp>(n, m, v, IsRep, mainFun, compFunVec, targetVals, userNumRows,
+                                              IsComb, KeepRes, myReps, IsMult, bUserRows, IsBetweenComp);
 }
 
 #endif
