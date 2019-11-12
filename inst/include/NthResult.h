@@ -4,16 +4,16 @@
 #include <Rcpp.h>
 #include <gmp.h>
 
-using nthResultPtr = std::vector<int> (*)(int n, int r, double dblIdx,
-                                       mpz_t mpzIdx, std::vector<int> Reps);
+using nthResultPtr = std::vector<int> (*const)(int n, int r, double dblIdx,
+                                       mpz_t mpzIdx, const std::vector<int> &Reps);
 
-Rcpp::XPtr<nthResultPtr> putNthResPtrInXPtr(bool IsMultiset, bool IsRep,
-                                            bool IsGmp, bool IsComb);
+Rcpp::XPtr<nthResultPtr> putNthResPtrInXPtr(bool IsComb, bool IsMultiset,
+                                            bool IsRep, bool IsGmp);
 
 std::vector<int> nthComb(int n, int r, double dblIdx, 
-                         mpz_t mpzIdx, std::vector<int> Reps);
+                         mpz_t mpzIdx, const std::vector<int> &Reps);
 
 std::vector<int> nthCombGmp(int n, int r, double dblIdx, 
-                            mpz_t mpzIdx, std::vector<int> Reps);
+                            mpz_t mpzIdx, const std::vector<int> &Reps);
 
 #endif

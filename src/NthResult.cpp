@@ -1,7 +1,7 @@
 #include "GmpCombPermUtils.h"
 
-using nthResutlPtr = std::vector<int> (*)(int n, int r, double dblIdx,
-                                      mpz_t mpzIdx, std::vector<int> Reps);
+using nthResultPtr = std::vector<int> (*const)(int n, int r, double dblIdx,
+                                      mpz_t mpzIdx, const std::vector<int> &Reps);
 
 std::vector<int> nonZeroVec(std::vector<int> v) {
     std::vector<int> nonZero;
@@ -14,7 +14,7 @@ std::vector<int> nonZeroVec(std::vector<int> v) {
 }
 
 std::vector<int> nthComb(int n, int r, double dblIdx, 
-                         mpz_t mpzIdx, std::vector<int> Reps) {
+                         mpz_t mpzIdx, const std::vector<int> &Reps) {
     
     double index1 = dblIdx, index2 = dblIdx;
     std::vector<int> res(r);
@@ -41,7 +41,7 @@ std::vector<int> nthComb(int n, int r, double dblIdx,
 }
 
 std::vector<int> nthCombRep(int n, int r, double dblIdx, 
-                            mpz_t mpzIdx, std::vector<int> Reps) {
+                            mpz_t mpzIdx, const std::vector<int> &Reps) {
     
     double index1 = dblIdx, index2 = dblIdx;
     std::vector<int> res(r);
@@ -66,11 +66,12 @@ std::vector<int> nthCombRep(int n, int r, double dblIdx,
 }
 
 std::vector<int> nthCombMult(int n, int r, double dblIdx, 
-                             mpz_t mpzIdx, std::vector<int> Reps) {
+                             mpz_t mpzIdx, const std::vector<int> &Reps) {
     
     double index1 = dblIdx, index2 = dblIdx;
     std::vector<int> res(r);
     std::vector<int> Counts = Reps;
+    std::vector<int> TempReps = Reps;
     
     for (int k = 0, j = 0, n1 = n, r1 = r - 1; k < r; ++k, --r1) {
         
@@ -85,7 +86,7 @@ std::vector<int> nthCombMult(int n, int r, double dblIdx,
         
         for (; test <= index1; ++j, test += temp) {
             index2 -= temp;
-            Reps[j] = 0;
+            TempReps[j] = 0;
             
             if (static_cast<int>(Counts.size()) == (n - j)) {
                 --n1;
@@ -104,15 +105,15 @@ std::vector<int> nthCombMult(int n, int r, double dblIdx,
         res[k] = j;
         index1 = index2;
         
-        --Reps[j];
-        if (Reps[j] <= 0) ++j;
+        --TempReps[j];
+        if (TempReps[j] <= 0) ++j;
     }
     
     return res;
 }
 
 std::vector<int> nthCombGmp(int n, int r, double dblIdx, 
-                            mpz_t mpzIdx, std::vector<int> Reps) {
+                            mpz_t mpzIdx, const std::vector<int> &Reps) {
     
     mpz_t test, temp, index1, index2;
     mpz_init(test); mpz_init(temp);
@@ -146,7 +147,7 @@ std::vector<int> nthCombGmp(int n, int r, double dblIdx,
 }
 
 std::vector<int> nthCombRepGmp(int n, int r, double dblIdx, 
-                               mpz_t mpzIdx, std::vector<int> Reps) {
+                               mpz_t mpzIdx, const std::vector<int> &Reps) {
     
     mpz_t test, temp, index1, index2;
     mpz_init(test); mpz_init(temp);
@@ -179,7 +180,7 @@ std::vector<int> nthCombRepGmp(int n, int r, double dblIdx,
 }
 
 std::vector<int> nthCombMultGmp(int n, int r, double dblIdx, 
-                                mpz_t mpzIdx, std::vector<int> Reps) {
+                                mpz_t mpzIdx, const std::vector<int> &Reps) {
     
     mpz_t test, temp, index1, index2;
     mpz_init(test); mpz_init(temp);
@@ -189,6 +190,7 @@ std::vector<int> nthCombMultGmp(int n, int r, double dblIdx,
     
     std::vector<int> res(r);
     std::vector<int> Counts = Reps;
+    std::vector<int> TempReps = Reps;
     
     for (int k = 0, n1 = n, j = 0, r1 = r - 1; k < r; ++k, --r1) {
         
@@ -203,7 +205,7 @@ std::vector<int> nthCombMultGmp(int n, int r, double dblIdx,
         
         for (; mpz_cmp(test, index1) <= 0; ++j) {
             mpz_sub(index2, index2, temp);
-            Reps[j] = 0;
+            TempReps[j] = 0;
             
             if (static_cast<int>(Counts.size()) == (n - j)) {
                 --n1;
@@ -223,8 +225,8 @@ std::vector<int> nthCombMultGmp(int n, int r, double dblIdx,
         res[k] = j;
         mpz_set(index1, index2);
         
-        --Reps[j];
-        if (Reps[j] <= 0) ++j;
+        --TempReps[j];
+        if (TempReps[j] <= 0) ++j;
     }
     
     mpz_clear(index1); mpz_clear(index2);
@@ -233,7 +235,7 @@ std::vector<int> nthCombMultGmp(int n, int r, double dblIdx,
 }
 
 std::vector<int> nthPerm(int n, int r, double dblIdx, 
-                         mpz_t mpzIdx, std::vector<int> Reps) {
+                         mpz_t mpzIdx, const std::vector<int> &Reps) {
     
     double index1 = dblIdx;
     std::vector<int> res(r); 
@@ -253,7 +255,7 @@ std::vector<int> nthPerm(int n, int r, double dblIdx,
 }
 
 std::vector<int> nthPermRep(int n, int r, double dblIdx, 
-                            mpz_t mpzIdx, std::vector<int> Reps) {
+                            mpz_t mpzIdx, const std::vector<int> &Reps) {
     
     double index1 = dblIdx;
     std::vector<int> res(r); 
@@ -270,35 +272,36 @@ std::vector<int> nthPermRep(int n, int r, double dblIdx,
 }
 
 std::vector<int> nthPermMult(int n, int r, double dblIdx, 
-                             mpz_t mpzIdx, std::vector<int> Reps) {
+                             mpz_t mpzIdx, const std::vector<int> &Reps) {
     
     double index1 = dblIdx + 1;
     double index2 = index1;
     
     std::vector<int> res(r);
     std::vector<int> Counts;
+    std::vector<int> TempReps = Reps;
     
     for (int k = 0, r1 = r - 1; k < r; ++k, --r1) {
         
         int j = 0;
-        while (Reps[j] == 0)
+        while (TempReps[j] == 0)
             ++j;
         
-        --Reps[j];
-        Counts = nonZeroVec(Reps);
+        --TempReps[j];
+        Counts = nonZeroVec(TempReps);
         double test = MultisetPermRowNum(Counts.size(), r1, Counts);
         double temp = test;
         
         for (; test < index1; test += temp) {
             index2 -= temp;
-            ++Reps[j];
+            ++TempReps[j];
             ++j;
             
-            while (Reps[j] == 0)
+            while (TempReps[j] == 0)
                 ++j;
             
-            --Reps[j];
-            Counts = nonZeroVec(Reps);
+            --TempReps[j];
+            Counts = nonZeroVec(TempReps);
             temp = MultisetPermRowNum(Counts.size(), r1, Counts);
         }
         
@@ -310,7 +313,7 @@ std::vector<int> nthPermMult(int n, int r, double dblIdx,
 }
 
 std::vector<int> nthPermGmp(int n, int r, double dblIdx, 
-                            mpz_t mpzIdx, std::vector<int> Reps) {
+                            mpz_t mpzIdx, const std::vector<int> &Reps) {
     
     mpz_t temp, temp2, index1;
     mpz_init(temp); mpz_init(temp2); mpz_init(index1);
@@ -335,7 +338,7 @@ std::vector<int> nthPermGmp(int n, int r, double dblIdx,
 }
 
 std::vector<int> nthPermRepGmp(int n, int r, double dblIdx, 
-                               mpz_t mpzIdx, std::vector<int> Reps) {
+                               mpz_t mpzIdx, const std::vector<int> &Reps) {
     
     mpz_t temp, temp2, index1;
     mpz_init(temp); mpz_init(temp2); mpz_init(index1);
@@ -356,7 +359,7 @@ std::vector<int> nthPermRepGmp(int n, int r, double dblIdx,
 }
 
 std::vector<int> nthPermMultGmp(int n, int r, double dblIdx, 
-                                mpz_t mpzIdx, std::vector<int> Reps) {
+                                mpz_t mpzIdx, const std::vector<int> &Reps) {
     
     mpz_t temp, index1;
     mpz_init(temp); mpz_init(index1);
@@ -365,6 +368,7 @@ std::vector<int> nthPermMultGmp(int n, int r, double dblIdx,
     
     mpz_add_ui(index1, index1, 1);
     std::vector<int> Counts;
+    std::vector<int> TempReps = Reps;
     
     mpz_t test, index2;
     mpz_init(test); mpz_init(index2);
@@ -373,24 +377,24 @@ std::vector<int> nthPermMultGmp(int n, int r, double dblIdx,
     for (int k = 0, r1 = r - 1; k < r; ++k, --r1) {
         
         int j = 0;
-        while (Reps[j] == 0)
+        while (TempReps[j] == 0)
             ++j;
         
-        --Reps[j];
-        Counts = nonZeroVec(Reps);
+        --TempReps[j];
+        Counts = nonZeroVec(TempReps);
         MultisetPermRowNumGmp(temp, static_cast<int>(Counts.size()), r1, Counts);
         mpz_set(test, temp);
         
         while (mpz_cmp(test, index1) < 0) {
             mpz_sub(index2, index2, temp);
-            ++Reps[j];
+            ++TempReps[j];
             ++j;
             
-            while (Reps[j] == 0)
+            while (TempReps[j] == 0)
                 ++j;
             
-            --Reps[j];
-            Counts = nonZeroVec(Reps);
+            --TempReps[j];
+            Counts = nonZeroVec(TempReps);
             MultisetPermRowNumGmp(temp, static_cast<int>(Counts.size()), r1, Counts);
             mpz_add(test, test, temp);
         }
@@ -404,43 +408,43 @@ std::vector<int> nthPermMultGmp(int n, int r, double dblIdx,
     return res;
 }
 
-Rcpp::XPtr<nthResutlPtr> putNthResPtrInXPtr(bool IsMultiset, bool IsRep,
-                                            bool IsGmp, bool IsComb) {
+Rcpp::XPtr<nthResultPtr> putNthResPtrInXPtr(bool IsComb, bool IsMultiset,
+                                            bool IsRep, bool IsGmp) {
     
     if (IsGmp) {
         if (IsComb) {
             if (IsMultiset) {
-                return(Rcpp::XPtr<nthResutlPtr>(new nthResutlPtr(&nthCombMultGmp)));
+                return(Rcpp::XPtr<nthResultPtr>(new nthResultPtr(&nthCombMultGmp)));
             } else if (IsRep) {
-                return(Rcpp::XPtr<nthResutlPtr>(new nthResutlPtr(&nthCombRepGmp)));
+                return(Rcpp::XPtr<nthResultPtr>(new nthResultPtr(&nthCombRepGmp)));
             } else {
-                return(Rcpp::XPtr<nthResutlPtr>(new nthResutlPtr(&nthCombGmp)));
+                return(Rcpp::XPtr<nthResultPtr>(new nthResultPtr(&nthCombGmp)));
             }
         } else {
             if (IsMultiset) {
-                return(Rcpp::XPtr<nthResutlPtr>(new nthResutlPtr(&nthPermMultGmp)));
+                return(Rcpp::XPtr<nthResultPtr>(new nthResultPtr(&nthPermMultGmp)));
             } else if (IsRep) {
-                return(Rcpp::XPtr<nthResutlPtr>(new nthResutlPtr(&nthPermRepGmp)));
+                return(Rcpp::XPtr<nthResultPtr>(new nthResultPtr(&nthPermRepGmp)));
             } else {
-                return(Rcpp::XPtr<nthResutlPtr>(new nthResutlPtr(&nthPermGmp)));
+                return(Rcpp::XPtr<nthResultPtr>(new nthResultPtr(&nthPermGmp)));
             }
         }
     } else {
         if (IsComb) {
             if (IsMultiset) {
-                return(Rcpp::XPtr<nthResutlPtr>(new nthResutlPtr(&nthCombMult)));
+                return(Rcpp::XPtr<nthResultPtr>(new nthResultPtr(&nthCombMult)));
             } else if (IsRep) {
-                return(Rcpp::XPtr<nthResutlPtr>(new nthResutlPtr(&nthCombRep)));
+                return(Rcpp::XPtr<nthResultPtr>(new nthResultPtr(&nthCombRep)));
             } else {
-                return(Rcpp::XPtr<nthResutlPtr>(new nthResutlPtr(&nthComb)));
+                return(Rcpp::XPtr<nthResultPtr>(new nthResultPtr(&nthComb)));
             }
         } else {
             if (IsMultiset) {
-                return(Rcpp::XPtr<nthResutlPtr>(new nthResutlPtr(&nthPermMult)));
+                return(Rcpp::XPtr<nthResultPtr>(new nthResultPtr(&nthPermMult)));
             } else if (IsRep) {
-                return(Rcpp::XPtr<nthResutlPtr>(new nthResutlPtr(&nthPermRep)));
+                return(Rcpp::XPtr<nthResultPtr>(new nthResultPtr(&nthPermRep)));
             } else {
-                return(Rcpp::XPtr<nthResutlPtr>(new nthResutlPtr(&nthPerm)));
+                return(Rcpp::XPtr<nthResultPtr>(new nthResultPtr(&nthPerm)));
             }
         }
     }
