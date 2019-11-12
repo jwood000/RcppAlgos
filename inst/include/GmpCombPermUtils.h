@@ -3,6 +3,7 @@
 
 #include "CombPermUtils.h"
 #include "Cpp14MakeUnique.h"
+#include "NthResult.h"
 #include <gmp.h>
 
 // Based off the internal limitations of sample, we
@@ -15,23 +16,26 @@ constexpr double sampleLimit = 4500000000000000.0;
 
 SEXP GetCount(bool IsGmp, mpz_t computedRowMpz, double computedRows);
 
-void CheckBounds(bool IsGmp, double lower, double upper, double computedRows,
-                 mpz_t lowerMpz, mpz_t upperMpz, mpz_t computedRowMpz);
+void SetBounds(const SEXP &Rlow, const SEXP &Rhigh,bool IsGmp, bool &bLower, bool &bUpper,
+               double &lower, double &upper, mpz_t *const lowerMpz,
+               mpz_t *const upperMpz, mpz_t computedRowMpz, double computedRows);
 
-void SetBounds(bool IsCount, SEXP Rlow, SEXP Rhigh,bool IsGmp, bool &bLower, 
-               bool &bUpper, double &lower, double &upper, mpz_t *lowerMpz, mpz_t *upperMpz);
-
-void SetNumResults(bool IsGmp, bool bLower, bool bUpper, bool IsConstrained, bool &permNonTriv,
-                   mpz_t *upperMpz, mpz_t *lowerMpz, double lower, double upper, double computedRows,
+void SetNumResults(bool IsGmp, bool bLower, bool bUpper, bool IsGenCnstrd, mpz_t *const upperMpz,
+                   mpz_t *const lowerMpz, double lower, double upper, double computedRows,
                    mpz_t &computedRowMpz, int &nRows, double &userNumRows);
 
-void SetRandomSampleMpz(SEXP RindexVec, SEXP RmySeed, std::size_t sampSize,
+void SetRandomSampleMpz(const SEXP &RindexVec, const SEXP &RmySeed, std::size_t sampSize,
                         bool IsGmp, mpz_t &computedRowMpz, mpz_t *myVec);
 
+void SetStartZ(int n, int r, double &lower, int stepSize, mpz_t &lowerMpz, bool IsRep,
+               bool IsComb, bool IsMultiset, bool IsGmp, const std::vector<int> &myReps,
+               const std::vector<int> &freqs, std::vector<int> &z, 
+               const nthResultPtr nthResFun);
+
 template <typename typeRcpp>
-void SetSampleNames(bool IsGmp, std::size_t sampSize, typeRcpp &objRcpp,
-                    const std::vector<double> &mySample, 
-                    mpz_t *const myBigSamp, bool IsMatrix = true) {
+inline void SetSampleNames(bool IsGmp, std::size_t sampSize, typeRcpp &objRcpp,
+                           const std::vector<double> &mySample, 
+                           mpz_t *const myBigSamp, bool IsMatrix = true) {
     
     Rcpp::CharacterVector myRowNames(sampSize);
     
@@ -64,6 +68,7 @@ void MultisetCombRowNumGmp(mpz_t result, int n, int r, const std::vector<int> &R
 void MultisetPermRowNumGmp(mpz_t result, int n, int r, const std::vector<int> &myReps);
 
 void GetComputedRowMpz(mpz_t computedRowMpz, bool IsMultiset, bool IsComb, bool IsRep,
-                       int n, int m, SEXP Rm, std::vector<int> &freqs, std::vector<int> &myReps);
+                       int n, int m, const SEXP &Rm, const std::vector<int> &freqs, 
+                       const std::vector<int> &myReps);
 
 #endif
