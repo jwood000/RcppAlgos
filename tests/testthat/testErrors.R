@@ -172,8 +172,6 @@ test_that("permuteGeneral produces appropriate error messages", {
     expect_error(permuteGeneral(5, 1:5), "length of m must be 1")
     expect_error(permuteGeneral(5, -5), "m must be a positive whole number")
     expect_error(permuteCount(5, 5, "TRUE"), "Only logical values are supported for repetition")
-    expect_error(permuteGeneral(5, 5, keepResults = "TRUE"), 
-                 "Only logical values are supported for keepResults")
     
     expect_error(permuteGeneral(5,3,freqs = c(1,2,3,-2,1)), "in freqs must be a positive")
     expect_error(permuteGeneral(5,15,freqs = c(5,5,5,5,5)), "number of rows cannot exceed")
