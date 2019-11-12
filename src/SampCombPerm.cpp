@@ -1,64 +1,107 @@
-#include "NthResult.h"
-#include "CleanConvert.h"
 #include "GmpCombPermUtils.h"
 #include "RMatrix.h"
 #include <RcppThread.h>
 
+constexpr double dblDefault = 0;
+
 template <typename typeRcpp, typename typeVector>
 void SampleResults(const typeVector &v, std::size_t m, const std::vector<int> &myReps, 
-                   std::size_t strtIdx, std::size_t endIdx, nthResutlPtr nthResFun, 
-                   const std::vector<double> &mySample, mpz_t *const myBigSamp, typeRcpp &sampleMatrix) {
-
-    const int lenV = v.size();
+                   std::size_t strtIdx, std::size_t endIdx, nthResultPtr nthResFun, 
+                   const std::vector<double> &mySample, mpz_t *const myBigSamp, 
+                   typeRcpp &sampleMatrix, int lenV, bool IsGmp) {
     
-    for (std::size_t i = strtIdx; i < endIdx; ++i) {
-        const std::vector<int> z = nthResFun(lenV, m, mySample[i], myBigSamp[i], myReps);
+    if (IsGmp) {
+        for (std::size_t i = strtIdx; i < endIdx; ++i) {
+            const std::vector<int> z = nthResFun(lenV, m, dblDefault, myBigSamp[i], myReps);
+            
+            for (std::size_t j = 0; j < m; ++j)
+                sampleMatrix(i, j) = v[z[j]];
+        }
+    } else {
+        mpz_t mpzDefault;
+        mpz_init(mpzDefault);
         
-        for (std::size_t j = 0; j < m; ++j)
-            sampleMatrix(i, j) = v[z[j]];
+        for (std::size_t i = strtIdx; i < endIdx; ++i) {
+            const std::vector<int> z = nthResFun(lenV, m, mySample[i], mpzDefault, myReps);
+            
+            for (std::size_t j = 0; j < m; ++j)
+                sampleMatrix(i, j) = v[z[j]];
+        }
+        
+        mpz_clear(mpzDefault);
     }
+}
+
+template <int RTYPE>
+Rcpp::Matrix<RTYPE> SampNoThrdSfe(const Rcpp::Vector<RTYPE> &v, const std::vector<int> &myReps,
+                                  const std::vector<double> &mySample, mpz_t *const myBigSamp, 
+                                  std::size_t m, std::size_t sampSize, nthResultPtr nthResFun,
+                                  int lenV, bool IsGmp, bool IsNamed) {
+    
+    Rcpp::Matrix<RTYPE> matRcpp = Rcpp::no_init_matrix(sampSize, m);
+    SampleResults(v, m, myReps, 0, sampSize, nthResFun,
+                  mySample, myBigSamp, matRcpp, lenV, IsGmp);
+    if (IsNamed) SetSampleNames(IsGmp, sampSize, matRcpp, mySample, myBigSamp);
+    return matRcpp;
 }
 
 template <typename typeRcpp, typename typeVector>
 void ParallelGlue(const std::vector<typeVector> &v, std::size_t m, const std::vector<int> &myReps, 
-                  std::size_t strtIdx, std::size_t endIdx, nthResutlPtr nthResFun, 
-                  const std::vector<double> &mySample, mpz_t *const myBigSamp, typeRcpp &sampleMatrix) {
+                  std::size_t strtIdx, std::size_t endIdx, nthResultPtr nthResFun, 
+                  const std::vector<double> &mySample, mpz_t *const myBigSamp, 
+                  typeRcpp &sampleMatrix, int lenV, bool IsGmp) {
     
-    SampleResults(v, m, myReps, strtIdx, endIdx, nthResFun, mySample, myBigSamp, sampleMatrix);
+    SampleResults(v, m, myReps, strtIdx, endIdx, nthResFun,
+                  mySample, myBigSamp, sampleMatrix, lenV, IsGmp);
 }
 
-template <typename typeVector>
-SEXP SampleApplyFun(const typeVector &v, std::size_t m, const std::vector<int> &myReps,
-                    std::size_t sampSize, const std::vector<double> &mySample, mpz_t *const myBigSamp,
-                    SEXP func, SEXP rho, nthResutlPtr nthResFun, bool IsNamed, bool IsGmp) {
+template <int RTYPE>
+Rcpp::List SampleApplyFun(const Rcpp::Vector<RTYPE> &v, std::size_t m, const std::vector<int> &myReps,
+                          std::size_t sampSize, const std::vector<double> &mySample, 
+                          mpz_t *const myBigSamp, SEXP func, SEXP rho, nthResultPtr nthResFun,
+                          bool IsNamed, bool IsGmp, int lenV) {
 
-    const int lenV = v.size();
-    typeVector vectorPass(m);
-    
+    Rcpp::Vector<RTYPE> vectorPass(m);
     Rcpp::List myList(sampSize);
     SEXP sexpFun = PROTECT(Rf_lang2(func, R_NilValue));
     
-    for (std::size_t i = 0; i < sampSize; ++i) {
-        const std::vector<int> z = nthResFun(lenV, m, mySample[i], myBigSamp[i], myReps);
+    if (IsGmp) {
+        for (std::size_t i = 0; i < sampSize; ++i) {
+            const std::vector<int> z = nthResFun(lenV, m, dblDefault, myBigSamp[i], myReps);
+            
+            for (std::size_t j = 0; j < m; ++j)
+                vectorPass[j] = v[z[j]];
+            
+            SETCADR(sexpFun, vectorPass);
+            myList[i] = Rf_eval(sexpFun, rho);
+        }
+    } else {
+        mpz_t mpzDefault;
+        mpz_init(mpzDefault);
         
-        for (std::size_t j = 0; j < m; ++j)
-            vectorPass[j] = v[z[j]];
+        for (std::size_t i = 0; i < sampSize; ++i) {
+            const std::vector<int> z = nthResFun(lenV, m, mySample[i], mpzDefault, myReps);
+            
+            for (std::size_t j = 0; j < m; ++j)
+                vectorPass[j] = v[z[j]];
+            
+            SETCADR(sexpFun, vectorPass);
+            myList[i] = Rf_eval(sexpFun, rho);
+        }
         
-        SETCADR(sexpFun, vectorPass);
-        myList[i] = Rf_eval(sexpFun, rho);
+        mpz_clear(mpzDefault);
     }
     
     UNPROTECT(1);
-    if (IsNamed) SetSampleNames(IsGmp, sampSize, myList, mySample, myBigSamp, false);
-    
+    if (IsNamed) {SetSampleNames(IsGmp, sampSize, myList, mySample, myBigSamp, false);}
     return myList;
 }
 
 template <typename typeRcpp, typename typeElem>
 void MasterSample(std::vector<typeElem> v, std::size_t m, const std::vector<int> &myReps,
-                  std::size_t sampSize, nthResutlPtr nthResFun, const std::vector<double> &mySample,
+                  std::size_t sampSize, nthResultPtr nthResFun, const std::vector<double> &mySample,
                   mpz_t *const myBigSamp, typeRcpp &matRcpp, int nThreads, bool Parallel,
-                  bool IsNamed, bool IsGmp) {
+                  bool IsNamed, bool IsGmp, int lenV) {
     
     if (Parallel) {
         RcppParallel::RMatrix<typeElem> parMat(matRcpp);
@@ -67,16 +110,19 @@ void MasterSample(std::vector<typeElem> v, std::size_t m, const std::vector<int>
         int nextStep = stepSize;
 
         for (int j = 0; j < (nThreads - 1); ++j, step += stepSize, nextStep += stepSize) {
-            pool.push(std::cref(ParallelGlue<RcppParallel::RMatrix<typeElem>, typeElem>), std::cref(v),
-                      m, std::cref(myReps), step, nextStep, nthResFun, std::cref(mySample), myBigSamp, std::ref(parMat));
+            pool.push(std::cref(ParallelGlue<RcppParallel::RMatrix<typeElem>, typeElem>), 
+                      std::cref(v), m, std::cref(myReps), step, nextStep, nthResFun, 
+                      std::cref(mySample), myBigSamp, std::ref(parMat), lenV, IsGmp);
         }
         
-        pool.push(std::cref(ParallelGlue<RcppParallel::RMatrix<typeElem>, typeElem>), std::cref(v),
-                  m, std::cref(myReps), step, sampSize, nthResFun, std::cref(mySample), myBigSamp, std::ref(parMat));
+        pool.push(std::cref(ParallelGlue<RcppParallel::RMatrix<typeElem>, typeElem>), 
+                  std::cref(v), m, std::cref(myReps), step, sampSize, nthResFun, 
+                  std::cref(mySample), myBigSamp, std::ref(parMat), lenV, IsGmp);
             
         pool.join();
     } else {
-        SampleResults(v, m, myReps, 0, sampSize, nthResFun, mySample, myBigSamp, matRcpp);
+        SampleResults(v, m, myReps, 0, sampSize, nthResFun,
+                      mySample, myBigSamp, matRcpp, lenV, IsGmp);
     }
     
     if (IsNamed) SetSampleNames(IsGmp, sampSize, matRcpp, mySample, myBigSamp);
@@ -89,32 +135,22 @@ SEXP SampleRcpp(SEXP Rv, SEXP Rm, SEXP Rrepetition, SEXP RFreqs, SEXP RindexVec,
                 SEXP RNumThreads, int maxThreads, SEXP RNamed) {
     
     int n, m = 0, lenFreqs = 0;
-    bool IsMultiset, IsInteger, IsCharacter, IsLogical, IsComplex, IsRaw;
-    IsCharacter = IsInteger = IsLogical = false;
+    bool IsMultiset = false;
+    VecType myType = VecType::Integer;
     bool IsNamed = CleanConvert::convertLogical(RNamed, "namedSample");
     
     std::vector<double> vNum;
-    std::vector<int> vInt, myReps, freqsExpanded;
-    Rcpp::CharacterVector rcppChar;
-    Rcpp::ComplexVector rcppCplx;
-    Rcpp::RawVector rcppRaw;
+    std::vector<int> vInt, myReps, freqs;
     
-    bool IsRepetition = CleanConvert::convertLogical(Rrepetition, "repetition");
+    bool IsRep = CleanConvert::convertLogical(Rrepetition, "repetition");
     bool Parallel = CleanConvert::convertLogical(Rparallel, "Parallel");
-    const bool mIsNull = Rf_isNull(Rm);
     
-    SetClass(IsCharacter, IsLogical, IsInteger, IsComplex, IsRaw, Rv);
-    SetValues(IsCharacter, IsLogical, IsInteger, IsComplex, IsRaw,
-              rcppChar, vInt, vNum, rcppCplx, rcppRaw, n, Rv);
-    SetFreqsAndM(RFreqs, IsMultiset, myReps, 
-                 IsRepetition, lenFreqs, freqsExpanded, Rm, m, mIsNull);
+    SetClass(myType, Rv);
+    SetValues(myType, vInt, vNum, n, Rv);
+    SetFreqsAndM(RFreqs, IsMultiset, myReps, IsRep, lenFreqs, freqs, Rm, n, m);
     
-    if (IsFactor)
-        IsLogical = IsCharacter = IsInteger = false;
-    
-    if (!IsMultiset && mIsNull && freqsExpanded.empty()) {m = n;}
-    const double computedRows = GetComputedRows(IsMultiset, IsComb, IsRepetition, n,
-                                                m, Rm, lenFreqs, freqsExpanded, myReps);
+    const double computedRows = GetComputedRows(IsMultiset, IsComb, IsRep, n,
+                                                m, Rm, lenFreqs, freqs, myReps);
     
     // sampleLimit defined in GmpCombPermUtils.h.. see comments in GmpCombPermUtils.h
     bool IsGmp = computedRows > sampleLimit;
@@ -122,94 +158,59 @@ SEXP SampleRcpp(SEXP Rv, SEXP Rm, SEXP Rrepetition, SEXP RFreqs, SEXP RindexVec,
     mpz_init(computedRowMpz);
     
     if (IsGmp) {
-        GetComputedRowMpz(computedRowMpz, IsMultiset, IsComb, 
-                          IsRepetition, n, m, Rm, freqsExpanded, myReps);
+        GetComputedRowMpz(computedRowMpz, IsMultiset,
+                          IsComb, IsRep, n, m, Rm, freqs, myReps);
     }
     
     std::size_t sampSize;
     std::vector<double> mySample;
+    SetRandomSample(RindexVec, RNumSamp, sampSize,
+                    IsGmp, computedRows, mySample, baseSample);
     
-    SetRandomSample(RindexVec, RNumSamp, sampSize, IsGmp, computedRows, mySample, baseSample);
-    auto myVec = FromCpp14::make_unique<mpz_t[]>(sampSize);
+    const std::size_t bigSampSize = (IsGmp) ? sampSize : 1;
+    auto myVec = FromCpp14::make_unique<mpz_t[]>(bigSampSize);
     
-    for (std::size_t i = 0; i < sampSize; ++i)
+    for (std::size_t i = 0; i < bigSampSize; ++i)
         mpz_init(myVec[i]);
     
     SetRandomSampleMpz(RindexVec, RmySeed, sampSize, IsGmp, computedRowMpz, myVec.get());
-    bool applyFun = !Rf_isNull(stdFun) && !IsFactor;
+    const bool applyFun = !Rf_isNull(stdFun) && !IsFactor;
     
     int nThreads = 1;
     const int limit = 2;
+    SetThreads(Parallel, maxThreads, sampSize, myType, nThreads, RNumThreads, limit);
     
-    SetThreads(Parallel, maxThreads, sampSize, IsCharacter, nThreads, RNumThreads, limit);
-    Rcpp::XPtr<nthResutlPtr> xpNth = putNthResPtrInXPtr(IsMultiset, IsRepetition, IsGmp, IsComb);
-    nthResutlPtr nthResFun = *xpNth;
+    Rcpp::XPtr<nthResultPtr> xpNth = putNthResPtrInXPtr(IsComb, IsMultiset, IsRep, IsGmp);
+    const nthResultPtr nthResFun = *xpNth;
     
     if (applyFun) {
         if (!Rf_isFunction(stdFun))
             Rcpp::stop("FUN must be a function!");
-
-        if (IsCharacter) {
-            return SampleApplyFun(rcppChar, m, myReps, sampSize, mySample,
-                                  myVec.get(), stdFun, myEnv, nthResFun, IsNamed, IsGmp);
-        } else if (IsComplex) {
-            return SampleApplyFun(rcppCplx, m, myReps, sampSize, mySample,
-                                  myVec.get(), stdFun, myEnv, nthResFun, IsNamed, IsGmp);
-        } else if (IsRaw) {
-            return SampleApplyFun(rcppRaw, m, myReps, sampSize, mySample,
-                                  myVec.get(), stdFun, myEnv, nthResFun, IsNamed, IsGmp);
-        } else if (IsLogical || IsInteger) {
-            Rcpp::IntegerVector rcppVInt(vInt.begin(), vInt.end());
-            return SampleApplyFun(rcppVInt, m, myReps, sampSize, mySample,
-                                  myVec.get(), stdFun, myEnv, nthResFun, IsNamed, IsGmp);
-        } else {
-            Rcpp::NumericVector rcppVNum(vNum.begin(), vNum.end());
-            return SampleApplyFun(rcppVNum, m, myReps, sampSize, mySample,
-                                  myVec.get(), stdFun, myEnv, nthResFun, IsNamed, IsGmp);
-        }
+        
+        const SEXP sexpCopy = CopyRv(Rv, vInt, vNum, myType);
+        RCPP_RETURN_VECTOR(SampleApplyFun, sexpCopy, m, myReps, sampSize, mySample,
+                           myVec.get(), stdFun, myEnv, nthResFun, IsNamed, IsGmp, n);
     }
     
-    if (IsCharacter) {
-        Rcpp::CharacterMatrix matChar = Rcpp::no_init_matrix(sampSize, m);
-        SampleResults(rcppChar, m, myReps, 0, sampSize, 
-                      nthResFun, mySample, myVec.get(), matChar);
-        if (IsNamed) SetSampleNames(IsGmp, sampSize, matChar, mySample, myVec.get());
-        return matChar;
-    } else if (IsComplex) {
-        Rcpp::ComplexMatrix matCplx = Rcpp::no_init_matrix(sampSize, m);
-        SampleResults(rcppCplx, m, myReps, 0, sampSize, 
-                      nthResFun, mySample, myVec.get(), matCplx);
-        if (IsNamed) SetSampleNames(IsGmp, sampSize, matCplx, mySample, myVec.get());
-        return matCplx;
-    } else if (IsRaw) {
-        Rcpp::RawMatrix matRaw = Rcpp::no_init_matrix(sampSize, m);
-        SampleResults(rcppRaw, m, myReps, 0, sampSize, 
-                      nthResFun, mySample, myVec.get(), matRaw);
-        if (IsNamed) SetSampleNames(IsGmp, sampSize, matRaw, mySample, myVec.get());
-        return matRaw;
-    } else if (IsLogical) {
+    if (myType > VecType::Logical) {
+        const SEXP sexpCopy(Rcpp::clone(Rv));
+        RCPP_RETURN_VECTOR(SampNoThrdSfe, sexpCopy, myReps, mySample, 
+                           myVec.get(), m, sampSize, nthResFun, n, IsGmp, IsNamed);
+    } else if (myType == VecType::Logical) {
         Rcpp::LogicalMatrix matBool = Rcpp::no_init_matrix(sampSize, m);
         MasterSample(vInt, m, myReps, sampSize, nthResFun, mySample,
-                     myVec.get(), matBool, nThreads, Parallel, IsNamed, IsGmp);
+                     myVec.get(), matBool, nThreads, Parallel, IsNamed, IsGmp, n);
         return matBool;
-    } else if (IsFactor || IsInteger) {
+    } else if (myType == VecType::Integer) {
         Rcpp::IntegerMatrix matInt = Rcpp::no_init_matrix(sampSize, m);
         MasterSample(vInt, m, myReps, sampSize, nthResFun, mySample, 
-                     myVec.get(), matInt, nThreads, Parallel, IsNamed, IsGmp);
-        
-        if (IsFactor) {
-            Rcpp::IntegerVector testFactor = Rcpp::as<Rcpp::IntegerVector>(Rv);
-            Rcpp::CharacterVector myClass = testFactor.attr("class");
-            Rcpp::CharacterVector myLevels = testFactor.attr("levels");
-            matInt.attr("class") = myClass;
-            matInt.attr("levels") = myLevels;
-        }
-        
+                     myVec.get(), matInt, nThreads, Parallel, IsNamed, IsGmp, n);
+        if (IsFactor) {SetFactorClass(matInt, Rv);}
         return matInt;
     } else {
         Rcpp::NumericMatrix matNum = Rcpp::no_init_matrix(sampSize, m);
         MasterSample(vNum, m, myReps, sampSize, nthResFun, mySample,
-                     myVec.get(), matNum, nThreads, Parallel, IsNamed, IsGmp);
+                     myVec.get(), matNum, nThreads, Parallel, IsNamed, IsGmp, n);
         return matNum;
     }
 }
