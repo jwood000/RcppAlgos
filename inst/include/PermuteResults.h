@@ -2,146 +2,151 @@
 #define PERMUTE_RESULTS_H
 
 #include "CombPermUtils.h"
-#include "ConstraintsUtils.h"
-#include "Cpp14MakeUnique.h"
+#include "UserConstraintFuns.h"
 
 template <typename typeMatrix, typename typeVector>
-void PermuteGenRes(std::size_t n, std::size_t r, const std::vector<typeVector> &v, 
-                   bool repetition, std::size_t uRowN, std::vector<int> &z, int intCount,
-                   typeMatrix &permuteMatrix, funcPtr<typeVector> myFun) {
+void PermuteGenResNoRep(typeMatrix &matRcpp, const std::vector<typeVector> &v, std::vector<int> z,
+                        int n, int m, int strt, int nRows, const std::vector<int> &freqs,
+                        funcPtr<typeVector> myFun) {
     
-    const std::size_t maxInd = n - 1u;
-    const std::size_t lastCol = r - 1u;
-    std::vector<typeVector> vPass(r);
+    const int maxInd = n - 1;
+    const int numR1 = nRows - 1;
     
-    if (repetition) {
-        const int maxIndInt = maxInd;
-        
-        for (std::size_t count = intCount; count < uRowN; ++count) {
-            for (std::size_t j = 0u; j < r; ++j) {
-                vPass[j] = v[z[j]];
-                permuteMatrix(count, j) = vPass[j];
-            }
-            
-            permuteMatrix(count, r) = myFun(vPass, r);
-            
-            for (int k = lastCol; k >= 0; --k) {
-                if (z[k] != maxIndInt) {
-                    ++z[k];
-                    break;
-                } else {
-                    z[k] = 0;
-                }
-            }
-        }
-        
-    } else {
-        
-        const std::size_t numR1 = uRowN - 1u;
-        auto arrPerm = FromCpp14::make_unique<int[]>(n);
+    std::vector<typeVector> vPass(m);
+    auto arrPerm = FromCpp14::make_unique<int[]>(n);
 
-        for (std::size_t i = 0u; i < n; ++i)
-            arrPerm[i] = z[i];
-        
-        if (r == n) {
-            // Since we are getting all permutations of v, we know that
-            // the result of myFun on v will remain the same for the 5
-            // functions defined in ConstraintsUtils.h (i.e. order does
-            // not matter for min, max, prod, mean, & sum).
-            for (std::size_t j = 0u; j < r; ++j) {
-                vPass[j] = v[arrPerm[j]];
-                permuteMatrix(intCount, j) = vPass[j];
-            }
-            
-            const auto myRes = myFun(vPass, r);
-            permuteMatrix(intCount, r) = myRes;
-            nextFullPerm(arrPerm.get(), maxInd);
-            
-            for (std::size_t count = intCount + 1; count < numR1; ++count) {
-                for (std::size_t j = 0u; j < r; ++j)
-                    permuteMatrix(count, j) = v[arrPerm[j]];
-                
-                permuteMatrix(count, r) = myRes;
-                nextFullPerm(arrPerm.get(), maxInd);
-            }
-        } else {
-            for (std::size_t count = intCount; count < numR1; ++count) {
-                for (std::size_t j = 0u; j < r; ++j) {
-                    vPass[j] = v[arrPerm[j]];
-                    permuteMatrix(count, j) = vPass[j];
-                }
-                
-                permuteMatrix(count, r) = myFun(vPass, r);
-                nextPartialPerm(arrPerm.get(), lastCol, maxInd);
-            }
-        }
-        
-        // Get last permutation
-        for (std::size_t j = 0u; j < r; ++j) {
-            vPass[j] = v[arrPerm[j]];
-            permuteMatrix(numR1, j) = vPass[j];
-        }
-        
-        permuteMatrix(numR1, r) = myFun(vPass, r);
-    }
-}
-
-template <typename typeMatrix, typename typeVector>
-void MultisetPermRes(std::size_t n, std::size_t r, const std::vector<typeVector> &v, 
-                     std::size_t numRows, int intCount, std::vector<int> &z,
-                     typeMatrix &permuteMatrix, funcPtr<typeVector> myFun) {
+    for (int i = 0; i < n; ++i)
+        arrPerm[i] = z[i];
     
-    const std::size_t lenFreqs = z.size();
-    const std::size_t lastCol = r - 1u;
-    auto arrPerm = FromCpp14::make_unique<int[]>(lenFreqs);
-    std::vector<typeVector> vPass(r);
-    
-    const std::size_t numR1 = numRows - 1u;
-    const std::size_t maxInd = lenFreqs - 1u;
-    
-    for (std::size_t j = 0u; j < lenFreqs; ++j)
-        arrPerm[j] = z[j];
-    
-    if (r == lenFreqs) {
+    if (m == n) {
         // Since we are getting all permutations of v, we know that
         // the result of myFun on v will remain the same for the 5
         // functions defined in ConstraintsUtils.h (i.e. order does
         // not matter for min, max, prod, mean, & sum).
-        for (std::size_t j = 0u; j < r; ++j) {
+        for (int j = 0; j < m; ++j) {
             vPass[j] = v[arrPerm[j]];
-            permuteMatrix(intCount, j) = vPass[j];
+            matRcpp(strt, j) = vPass[j];
         }
         
-        const auto myRes = myFun(vPass, r);
-        permuteMatrix(intCount, r) = myRes;
+        const auto myRes = myFun(vPass, m);
+        matRcpp(strt, m) = myRes;
         nextFullPerm(arrPerm.get(), maxInd);
         
-        for (std::size_t count = intCount + 1; count < numR1; ++count) {
-            for (std::size_t j = 0u; j < r; ++j)
-                permuteMatrix(count, j) = v[arrPerm[j]];
+        for (int count = strt + 1; count < numR1; ++count) {
+            for (int j = 0; j < m; ++j)
+                matRcpp(count, j) = v[arrPerm[j]];
             
-            permuteMatrix(count, r) = myRes;
+            matRcpp(count, m) = myRes;
             nextFullPerm(arrPerm.get(), maxInd);
         }
     } else {
-        for (std::size_t count = intCount; count < numR1; ++count) {
-            for (std::size_t j = 0u; j < r; ++j) {
+        const int lastCol = m - 1;
+        
+        for (int count = strt; count < numR1; ++count) {
+            for (int j = 0; j < m; ++j) {
                 vPass[j] = v[arrPerm[j]];
-                permuteMatrix(count, j) = vPass[j];
+                matRcpp(count, j) = vPass[j];
             }
             
-            permuteMatrix(count, r) = myFun(vPass, r);
+            matRcpp(count, m) = myFun(vPass, m);
             nextPartialPerm(arrPerm.get(), lastCol, maxInd);
         }
     }
     
     // Get last permutation
-    for (std::size_t j = 0u; j < r; ++j) {
+    for (int j = 0; j < m; ++j) {
         vPass[j] = v[arrPerm[j]];
-        permuteMatrix(numR1, j) = vPass[j];
+        matRcpp(numR1, j) = vPass[j];
     }
     
-    permuteMatrix(numR1, r) = myFun(vPass, r);
+    matRcpp(numR1, m) = myFun(vPass, m);
+}
+
+template <typename typeMatrix, typename typeVector>
+void PermuteGenResRep(typeMatrix &matRcpp, const std::vector<typeVector> &v, std::vector<int> z,
+                      int n, int m, int strt, int nRows, const std::vector<int> &freqs,
+                      funcPtr<typeVector> myFun) {
+    
+    const int maxInd = n - 1;
+    const int lastCol = m - 1;
+    std::vector<typeVector> vPass(m);
+    
+    for (int count = strt; count < nRows; ++count) {
+        for (int j = 0; j < m; ++j) {
+            vPass[j] = v[z[j]];
+            matRcpp(count, j) = vPass[j];
+        }
+        
+        matRcpp(count, m) = myFun(vPass, m);
+        
+        for (int i = lastCol; i >= 0; --i) {
+            if (z[i] != maxInd) {
+                ++z[i];
+                break;
+            } else {
+                z[i] = 0;
+            }
+        }
+    }
+}
+
+template <typename typeMatrix, typename typeVector>
+void MultisetPermRes(typeMatrix &matRcpp, const std::vector<typeVector> &v, std::vector<int> z,
+                     int n, int m, int strt, int nRows, const std::vector<int> &freqs,
+                     funcPtr<typeVector> myFun) {
+    
+    const int lenFreqs = freqs.size();
+    auto arrPerm = FromCpp14::make_unique<int[]>(lenFreqs);
+    std::vector<typeVector> vPass(m);
+    
+    const int numR1 = nRows - 1;
+    const int maxInd = lenFreqs - 1;
+    
+    for (int j = 0; j < lenFreqs; ++j)
+        arrPerm[j] = z[j];
+    
+    if (m == lenFreqs) {
+        // Since we are getting all permutations of v, we know that
+        // the result of myFun on v will remain the same for the 5
+        // functions defined in ConstraintsUtils.h (i.e. order does
+        // not matter for min, max, prod, mean, & sum).
+        for (int j = 0; j < m; ++j) {
+            vPass[j] = v[arrPerm[j]];
+            matRcpp(strt, j) = vPass[j];
+        }
+        
+        const auto myRes = myFun(vPass, m);
+        matRcpp(strt, m) = myRes;
+        nextFullPerm(arrPerm.get(), maxInd);
+        
+        for (int count = strt + 1; count < numR1; ++count) {
+            for (int j = 0; j < m; ++j)
+                matRcpp(count, j) = v[arrPerm[j]];
+            
+            matRcpp(count, m) = myRes;
+            nextFullPerm(arrPerm.get(), maxInd);
+        }
+    } else {
+        const int lastCol = m - 1;
+        
+        for (int count = strt; count < numR1; ++count) {
+            for (int j = 0; j < m; ++j) {
+                vPass[j] = v[arrPerm[j]];
+                matRcpp(count, j) = vPass[j];
+            }
+            
+            matRcpp(count, m) = myFun(vPass, m);
+            nextPartialPerm(arrPerm.get(), lastCol, maxInd);
+        }
+    }
+    
+    // Get last permutation
+    for (int j = 0; j < m; ++j) {
+        vPass[j] = v[arrPerm[j]];
+        matRcpp(numR1, j) = vPass[j];
+    }
+    
+    matRcpp(numR1, m) = myFun(vPass, m);
 }
 
 #endif

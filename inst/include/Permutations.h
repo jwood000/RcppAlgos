@@ -2,117 +2,107 @@
 #define PERMUTATIONS_H
 
 #include "CombPermUtils.h"
-#include "Cpp14MakeUnique.h"
 #include <RcppThread.h>
 
-constexpr std::size_t unrollSize = 8u;
+constexpr int unrollSize = 8;
 
 template <typename typeMatrix, typename typeVector>
-void RepUnroller(std::size_t r, const typeVector &v, const int *const indexMat,
-                 typeMatrix &permuteMatrix, std::size_t start, std::size_t lastUnroll,
-                 std::size_t last, std::size_t ind) {
+void RepUnroller(typeMatrix &matRcpp, const typeVector &v, 
+                 int strt, int last, int ind, int lastUnroll) {
     
-    for (std::size_t i = start; i < lastUnroll; i += unrollSize) {
-        permuteMatrix(i, 0u) = v[ind];
-        permuteMatrix(i + 1u, 0u) = v[ind];
-        permuteMatrix(i + 2u, 0u) = v[ind];
-        permuteMatrix(i + 3u, 0u) = v[ind];
-        permuteMatrix(i + 4u, 0u) = v[ind];
-        permuteMatrix(i + 5u, 0u) = v[ind];
-        permuteMatrix(i + 6u, 0u) = v[ind];
-        permuteMatrix(i + 7u, 0u) = v[ind];
+    for (int i = strt; i < lastUnroll; i += unrollSize) {
+        matRcpp(i, 0) = v[ind];
+        matRcpp(i + 1, 0) = v[ind];
+        matRcpp(i + 2, 0) = v[ind];
+        matRcpp(i + 3, 0) = v[ind];
+        matRcpp(i + 4, 0) = v[ind];
+        matRcpp(i + 5, 0) = v[ind];
+        matRcpp(i + 6, 0) = v[ind];
+        matRcpp(i + 7, 0) = v[ind];
     }
     
-    for (std::size_t i = lastUnroll; i < last; ++i)
-        permuteMatrix(i, 0u) = v[ind];
+    for (int i = lastUnroll; i < last; ++i)
+        matRcpp(i, 0) = v[ind];
 }
 
 template <typename typeMatrix, typename typeVector>
-void StandardUnroller(std::size_t r, const typeVector &v, const int *const indexMat,
-                      typeMatrix &permuteMatrix, std::size_t start, std::size_t lastUnroll,
-                      std::size_t last, std::size_t ind, std::size_t first) {
+void StandardUnroller(typeMatrix &matRcpp, const int *const indexMat, const typeVector &v,
+                      int m, int strt, int last, int first, int lastUnroll) {
     
-    for (std::size_t j = first, k = 0u; j < r; ++j) {
-        for (std::size_t i = start; i < lastUnroll; i += unrollSize, k += unrollSize) {
-            permuteMatrix(i, j) = v[indexMat[k]];
-            permuteMatrix(i + 1u, j) = v[indexMat[k + 1u]];
-            permuteMatrix(i + 2u, j) = v[indexMat[k + 2u]];
-            permuteMatrix(i + 3u, j) = v[indexMat[k + 3u]];
-            permuteMatrix(i + 4u, j) = v[indexMat[k + 4u]];
-            permuteMatrix(i + 5u, j) = v[indexMat[k + 5u]];
-            permuteMatrix(i + 6u, j) = v[indexMat[k + 6u]];
-            permuteMatrix(i + 7u, j) = v[indexMat[k + 7u]];
+    for (int j = first, k = 0; j < m; ++j) {
+        for (int i = strt; i < lastUnroll; i += unrollSize, k += unrollSize) {
+            matRcpp(i, j) = v[indexMat[k]];
+            matRcpp(i + 1, j) = v[indexMat[k + 1]];
+            matRcpp(i + 2, j) = v[indexMat[k + 2]];
+            matRcpp(i + 3, j) = v[indexMat[k + 3]];
+            matRcpp(i + 4, j) = v[indexMat[k + 4]];
+            matRcpp(i + 5, j) = v[indexMat[k + 5]];
+            matRcpp(i + 6, j) = v[indexMat[k + 6]];
+            matRcpp(i + 7, j) = v[indexMat[k + 7]];
         }
         
-        for (std::size_t i = lastUnroll; i < last; ++i, ++k)
-            permuteMatrix(i, j) = v[indexMat[k]];
+        for (int i = lastUnroll; i < last; ++i, ++k)
+            matRcpp(i, j) = v[indexMat[k]];
     }
 }
 
 template <typename typeMatrix, typename typeVector>
-void PermuteWorker(std::size_t r, bool IsRep, const typeVector &v, const int *const indexMat,
-                   typeMatrix &permuteMatrix, std::size_t start, std::size_t last, 
-                   std::size_t ind, std::size_t first, std::size_t unrollRem) {
+void PermuteWorker(typeMatrix &matRcpp, const int *const indexMat, typeVector v,
+                   int m, int strt, int last, int ind, int first, int unrollRem, bool IsRep) {
     
-    const std::size_t lastUnroll = last - unrollRem;
-    
+    const int lastUnroll = last - unrollRem;
     // For IsRep case, we are not setting the first column because we know that it
     // simply increments. This is taken into account in the indexMat preparation.
-    if (IsRep)
-        RepUnroller(r, v, indexMat, permuteMatrix, start, lastUnroll, last, ind);
-    
-    StandardUnroller(r, v, indexMat, permuteMatrix, start, lastUnroll, last, ind, first);
+    if (IsRep) {RepUnroller(matRcpp, v, strt, last, ind, lastUnroll);}
+    StandardUnroller(matRcpp, indexMat, v, m, strt, last, first, lastUnroll);
 }
 
 template <typename typeMatrix, typename typeVector>
-void PermuteLoadIndex(std::size_t n, std::size_t r, const typeVector &v, 
-                      bool IsRep, std::size_t segment, std::vector<int> &z,
-                      typeMatrix &permuteMatrix, int *const indexMat) {
+void PermuteLoadIndex(typeMatrix &matRcpp, int *const indexMat, const typeVector &v,
+                      std::vector<int> &z, int n, int m, int segment, bool IsRep) {
     
-    const std::size_t maxInd = n - 1u;
-    const std::size_t lastCol = r - 1u;
+    const int maxInd = n - 1;
+    const int lastCol = m - 1;
     
     if (IsRep) {
-        const int maxIndInt = maxInd;
-        
-        for (std::size_t count = 0u; count < segment; ++count) {
-            // N.B. In PermuteGeneral we start j at 0u
-            for (std::size_t j = 1u, k = count; j < r; ++j, k += segment) {
-                permuteMatrix(count, j) = v[z[j]];
+        for (int count = 0; count < segment; ++count) {
+            // N.B. In PermuteGeneral we start j at 0
+            for (int j = 1, k = count; j < m; ++j, k += segment) {
+                matRcpp(count, j) = v[z[j]];
                 indexMat[k] = z[j];
             }
             
-            permuteMatrix(count, 0u) = v[z[0u]];
+            matRcpp(count, 0) = v[z.front()];
             
-            // N.B. In PermuteGeneral we decrement k until k == 0
-            for (int k = lastCol; k > 0; --k) {
-                if (z[k] != maxIndInt) {
-                    ++z[k];
+            // N.B. In PermuteGeneral we decrement i until i == 0
+            for (int i = lastCol; i > 0; --i) {
+                if (z[i] != maxInd) {
+                    ++z[i];
                     break;
                 } else {
-                    z[k] = 0;
+                    z[i] = 0;
                 }
             }
         }
     } else {
         auto arrPerm = FromCpp14::make_unique<int[]>(n);
         
-        for (std::size_t i = 0u; i < n; ++i)
+        for (int i = 0; i < n; ++i)
             arrPerm[i] = z[i];
         
-        if (r == n) {
-            for (std::size_t count = 0u; count < segment; ++count) {
-                for (std::size_t j = 0u, k = count; j < r; ++j, k += segment) {
-                    permuteMatrix(count, j) = v[arrPerm[j]];
+        if (m == n) {
+            for (int count = 0; count < segment; ++count) {
+                for (int j = 0, k = count; j < m; ++j, k += segment) {
+                    matRcpp(count, j) = v[arrPerm[j]];
                     indexMat[k] = arrPerm[j];
                 }
                 
                 nextFullPerm(arrPerm.get(), maxInd);
             }
         } else {
-            for (std::size_t count = 0u; count < segment; ++count) {
-                for (std::size_t j = 0u, k = count; j < r; ++j, k += segment) {
-                    permuteMatrix(count, j) = v[arrPerm[j]];
+            for (int count = 0; count < segment; ++count) {
+                for (int j = 0, k = count; j < m; ++j, k += segment) {
+                    matRcpp(count, j) = v[arrPerm[j]];
                     indexMat[k] = arrPerm[j];
                 }
                 
@@ -123,221 +113,252 @@ void PermuteLoadIndex(std::size_t n, std::size_t r, const typeVector &v,
 }
 
 template <typename typeMatrix, typename typeVector>
-void PermuteParallel(std::size_t n, std::size_t r, typeVector v, bool IsRep, 
-                     std::size_t uRowN, std::size_t segment, std::vector<int> &z,
-                     typeMatrix &permuteMatrix, int nThreads) {
+void PermuteParallel(typeMatrix &matRcpp, typeVector v, std::vector<int> z, 
+                     int n, int m, int nRows, int segment, int nThreads, bool IsRep) {
 
-    const std::size_t first = (IsRep) ? 1u : 0u;
-    auto indexMat = FromCpp14::make_unique<int[]>(segment * (r - first));
-    PermuteLoadIndex(n, r, v, IsRep, segment, z, permuteMatrix, indexMat.get());
+    const int first = (IsRep) ? 1 : 0;
+    auto indexMat = FromCpp14::make_unique<int[]>(segment * (m - first));
+    PermuteLoadIndex(matRcpp, indexMat.get(), v, z, n, m, segment, IsRep);
     
-    std::size_t unrollRem = segment % unrollSize;
-    std::size_t ind = 1u;
-    std::size_t start = segment;
-    std::size_t last = start + segment;
+    int ind = 1;
+    int strt = segment;
+    int last = strt + segment;
+    int unrollRem = segment % unrollSize;
     RcppThread::ThreadPool pool(nThreads);
 
-    for (; last <= uRowN;) {
-        for (int j = 0; j < nThreads && last <= uRowN; ++j, start += segment, last += segment, ++ind) {
-            if (!IsRep) {std::swap(v[0u], v[ind]);}
-            pool.push(std::cref(PermuteWorker<typeMatrix, typeVector>), r, IsRep, v,
-                      indexMat.get(), std::ref(permuteMatrix), start, last, ind, first, unrollRem);
+    for (; last <= nRows;) {
+        for (int j = 0; j < nThreads && last <= nRows; ++j, strt += segment, last += segment, ++ind) {
+            if (!IsRep) {std::swap(v[0], v[ind]);}
+            pool.push(std::cref(PermuteWorker<typeMatrix, typeVector>), std::ref(matRcpp),
+                      indexMat.get(), v, m, strt, last, ind, first, unrollRem, IsRep);
         }
-        if (last <= uRowN) {pool.wait();}
+        
+        if (last <= nRows) {pool.wait();}
     }
 
     pool.join();
 
-    if (ind < n && start < uRowN) {
-        const std::size_t skip = last - uRowN;
-        unrollRem = uRowN % unrollSize;
-        const std::size_t lastUnroll = uRowN - unrollRem;
+    if (ind < n && strt < nRows) {
+        const int skip = last - nRows;
+        unrollRem = nRows % unrollSize;
+        const int lastUnroll = nRows - unrollRem;
 
         if (IsRep) {
-            RepUnroller(r, v, indexMat.get(), permuteMatrix, start, lastUnroll, uRowN, ind);
+            RepUnroller(matRcpp, v, strt, nRows, ind, lastUnroll);
         } else {
-            std::swap(v[0u], v[ind]);
+            std::swap(v[0], v[ind]);
         }
 
-        for (std::size_t j = first, k = 0; j < r; ++j, k += skip)
-            for (std::size_t i = start; i < uRowN; ++i, ++k)
-                permuteMatrix(i, j) = v[indexMat[k]];
+        for (int j = first, k = 0; j < m; ++j, k += skip)
+            for (int i = strt; i < nRows; ++i, ++k)
+                matRcpp(i, j) = v[indexMat[k]];
     }
 }
 
 template <typename typeMatrix, typename typeVector>
-void PermuteSerialDriver(std::size_t n, std::size_t r, typeVector v, bool IsRep, std::size_t uRowN,
-                         std::size_t segment, std::vector<int> &z, typeMatrix &permuteMatrix) {
+void PermuteSerialNoRep(typeMatrix &matRcpp, const typeVector &v, std::vector<int> z,
+                        int n, int m, int strt, int nRows, const std::vector<int> &freqs) {
     
-    const std::size_t first = (IsRep) ? 1u : 0u;
-    auto indexMat = FromCpp14::make_unique<int[]>(segment * (r - first));
-    PermuteLoadIndex(n, r, v, IsRep, segment, z, permuteMatrix, indexMat.get());
+    constexpr int first = 0;
+    const int segment = NumPermsNoRep(n - 1, m - 1);
+    auto indexMat = FromCpp14::make_unique<int[]>(segment * (m - first));
+    PermuteLoadIndex(matRcpp, indexMat.get(), v, z, n, m, segment, false);
     
-    std::size_t unrollRem = segment % unrollSize;
-    std::size_t ind = 1u;
-    std::size_t start = segment;
-    std::size_t last = start + segment;
+    int ind = 1;
+    strt = segment;
+    int last = strt + segment;
+    int unrollRem = segment % unrollSize;
+    typeVector vCopy(v);
     
-    for (; last <= uRowN; start += segment, last += segment, ++ind) {
-        if (!IsRep) {
-            typeVector vTemp(1u);
-            vTemp[0u] = v[0u];
-            v[0u] = v[ind];
-            v[ind] = vTemp[0u];
-        }
-        
-        PermuteWorker(r, IsRep, v, indexMat.get(), permuteMatrix, start, last, ind, first, unrollRem);
+    for (; last <= nRows; strt += segment, last += segment, ++ind) {
+        typeVector vTemp(1);
+        vTemp[0] = vCopy[0];
+        vCopy[0] = vCopy[ind];
+        vCopy[ind] = vTemp[0];
+
+        PermuteWorker(matRcpp, indexMat.get(), vCopy, m, 
+                      strt, last, ind, first, unrollRem, false);
     }
     
-    if (ind < static_cast<std::size_t>(v.size()) && start < uRowN) {
-        const std::size_t skip = last - uRowN;
-        unrollRem = uRowN % unrollSize;
-        const std::size_t lastUnroll = uRowN - unrollRem;
+    if (ind < static_cast<int>(v.size()) && strt < nRows) {
+        const int skip = last - nRows;
+        unrollRem = nRows % unrollSize;
 
-        if (IsRep) {
-            RepUnroller(r, v, indexMat.get(), permuteMatrix, start, lastUnroll, uRowN, ind);
-        } else {
-            typeVector vTemp(1u);
-            vTemp[0u] = v[0u];
-            v[0u] = v[ind];
-            v[ind] = vTemp[0u];
-        }
+        typeVector vTemp(1);
+        vTemp[0] = vCopy[0];
+        vCopy[0] = vCopy[ind];
+        vCopy[ind] = vTemp[0];
 
-        for (std::size_t j = first, k = 0; j < r; ++j, k += skip)
-            for (std::size_t i = start; i < uRowN; ++i, ++k)
-                permuteMatrix(i, j) = v[indexMat[k]];
+        for (int j = first, k = 0; j < m; ++j, k += skip)
+            for (int i = strt; i < nRows; ++i, ++k)
+                matRcpp(i, j) = vCopy[indexMat[k]];
     }
 }
 
 template <typename typeMatrix, typename typeVector>
-void PermuteGeneral(std::size_t n, std::size_t r, const typeVector &v, 
-                    bool IsRep, std::size_t uRowN, std::vector<int> &z,
-                    int intCount, typeMatrix &permuteMatrix) {
+void PermuteSerialRep(typeMatrix &matRcpp, const typeVector &v, std::vector<int> z,
+                      int n, int m, int strt, int nRows, const std::vector<int> &freqs) {
     
-    const std::size_t maxInd = n - 1u;
-    const std::size_t lastCol = r - 1u;
+    constexpr int first = 1;
+    const int segment = std::pow(static_cast<double>(n),
+                                 static_cast<double>(m - 1));
+    auto indexMat = FromCpp14::make_unique<int[]>(segment * (m - first));
+    PermuteLoadIndex(matRcpp, indexMat.get(), v, z, n, m, segment, true);
     
-    if (IsRep) {
-        const int maxIndInt = maxInd;
+    int ind = 1;
+    strt = segment;
+    int last = strt + segment;
+    int unrollRem = segment % unrollSize;
+    
+    for (; last <= nRows; strt += segment, last += segment, ++ind) {
+        PermuteWorker(matRcpp, indexMat.get(), v, m, 
+                      strt, last, ind, first, unrollRem, true);
+    }
+    
+    if (ind < static_cast<int>(v.size()) && strt < nRows) {
+        const int skip = last - nRows;
+        unrollRem = nRows % unrollSize;
+        const int lastUnroll = nRows - unrollRem;
+        RepUnroller(matRcpp, v, strt, nRows, ind, lastUnroll);
         
-        for (std::size_t count = intCount; count < uRowN; ++count) {
-            for (std::size_t j = 0u; j < r; ++j)
-                permuteMatrix(count, j) = v[z[j]];
-            
-            for (int k = lastCol; k >= 0; --k) {
-                if (z[k] != maxIndInt) {
-                    ++z[k];
-                    break;
-                } else {
-                    z[k] = 0;
-                }
-            }
+        for (int j = first, k = 0; j < m; ++j, k += skip)
+            for (int i = strt; i < nRows; ++i, ++k)
+                matRcpp(i, j) = v[indexMat[k]];
+    }
+}
+
+template <typename typeMatrix, typename typeVector>
+void PermuteGeneralNoRep(typeMatrix &matRcpp, const typeVector &v, std::vector<int> z,
+                         int n, int m, int strt, int nRows, const std::vector<int> &freqs) {
+    
+    const int maxInd = n - 1;
+    const int numR1 = nRows - 1;
+    auto arrPerm = FromCpp14::make_unique<int[]>(n);
+    
+    for (int i = 0; i < n; ++i)
+        arrPerm[i] = z[i];
+    
+    if (m == n) {
+        for (int count = strt; count < numR1; ++count) {
+            for (int j = 0; j < m; ++j)
+                matRcpp(count, j) = v[arrPerm[j]];
+
+            nextFullPerm(arrPerm.get(), maxInd);
         }
     } else {
-        const std::size_t numR1 = uRowN - 1u;
-        auto arrPerm = FromCpp14::make_unique<int[]>(n);
+        const int lastCol = m - 1;
         
-        for (std::size_t i = 0u; i < n; ++i)
-            arrPerm[i] = z[i];
+        for (int count = strt; count < numR1; ++count) {
+            for (int j = 0; j < m; ++j)
+                matRcpp(count, j) = v[arrPerm[j]];
+
+            nextPartialPerm(arrPerm.get(), lastCol, maxInd);
+        }
+    }
+
+    // Get last permutation
+    for (int j = 0; j < m; ++j)
+        matRcpp(numR1, j) = v[arrPerm[j]];
+}
+
+template <typename typeMatrix, typename typeVector>
+void PermuteGeneralRep(typeMatrix &matRcpp, const typeVector &v, std::vector<int> z,
+                       int n, int m, int strt, int nRows, const std::vector<int> &freqs) {
+    
+    const int maxInd = n - 1;
+    const int lastCol = m - 1;
+    
+    for (int count = strt; count < nRows; ++count) {
+        for (int j = 0; j < m; ++j)
+            matRcpp(count, j) = v[z[j]];
         
-        if (r == n) {
-            for (std::size_t count = intCount; count < numR1; ++count) {
-                for (std::size_t j = 0u; j < r; ++j)
-                    permuteMatrix(count, j) = v[arrPerm[j]];
-                
-                nextFullPerm(arrPerm.get(), maxInd);
-            }
-        } else {
-            for (std::size_t count = intCount; count < numR1; ++count) {
-                for (std::size_t j = 0u; j < r; ++j)
-                    permuteMatrix(count, j) = v[arrPerm[j]];
-                
-                nextPartialPerm(arrPerm.get(), lastCol, maxInd);
+        for (int i = lastCol; i >= 0; --i) {
+            if (z[i] != maxInd) {
+                ++z[i];
+                break;
+            } else {
+                z[i] = 0;
             }
         }
-        
-        // Get last permutation
-        for (std::size_t j = 0u; j < r; ++j)
-            permuteMatrix(numR1, j) = v[arrPerm[j]];
     }
 }
 
 template <typename typeMatrix, typename typeVector>
-void MultisetPermutation(std::size_t n, std::size_t r, const typeVector &v, std::size_t uRowN,
-                         std::vector<int> &z, int intCount, typeMatrix &permuteMatrix) {
+void MultisetPermutation(typeMatrix &matRcpp, const typeVector &v, std::vector<int> z,
+                         int n, int m, int strt, int nRows, const std::vector<int> &freqs) {
     
-    const std::size_t lenFreqs = z.size();
+    const int lenFreqs = z.size();
     auto arrPerm = FromCpp14::make_unique<int[]>(lenFreqs);
     
-    const std::size_t numR1 = uRowN - 1;
-    const std::size_t lastCol = r - 1;
-    const std::size_t maxInd = lenFreqs - 1;
+    const int numR1 = nRows - 1;
+    const int maxInd = lenFreqs - 1;
     
-    for (std::size_t j = 0; j < lenFreqs; ++j)
+    for (int j = 0; j < lenFreqs; ++j)
         arrPerm[j] = z[j];
     
-    if (r == lenFreqs) {
-        for (std::size_t count = intCount; count < numR1; ++count) {
-            for (std::size_t j = 0; j < r; ++j)
-                permuteMatrix(count, j) = v[arrPerm[j]];
+    if (m == lenFreqs) {
+        for (int count = strt; count < numR1; ++count) {
+            for (int j = 0; j < m; ++j)
+                matRcpp(count, j) = v[arrPerm[j]];
             
             nextFullPerm(arrPerm.get(), maxInd);
         }
     } else {
-        for (std::size_t count = intCount; count < numR1; ++count) {
-            for (std::size_t j = 0; j < r; ++j)
-                permuteMatrix(count, j) = v[arrPerm[j]];
+        const int lastCol = m - 1;
+        
+        for (int count = strt; count < numR1; ++count) {
+            for (int j = 0; j < m; ++j)
+                matRcpp(count, j) = v[arrPerm[j]];
             
             nextPartialPerm(arrPerm.get(), lastCol, maxInd);
         }
     }
     
     // Get last permutation
-    for (std::size_t j = 0; j < r; ++j)
-        permuteMatrix(numR1, j) = v[arrPerm[j]];
+    for (int j = 0; j < m; ++j)
+        matRcpp(numR1, j) = v[arrPerm[j]];
 }
 
 template <typename typeVector>
-void PermutationApplyFun(std::size_t n, std::size_t r, const typeVector &v, bool IsRep,
-                         std::size_t uRowN, bool Multi, std::vector<int> &z,
-                         SEXP sexpFun, SEXP rho, Rcpp::List &myList) {
+void PermutationApplyFun(Rcpp::List &myList, const typeVector &v, std::vector<int> &z, int n,
+                         int m, bool IsRep, bool IsMult, int nRows, SEXP sexpFun, SEXP rho) {
     
-    const std::size_t lenFreqs = (Multi) ? z.size() : 0;
-    typeVector vectorPass(r);
+    const int lenFreqs = (IsMult) ? z.size() : 0;
+    typeVector vectorPass(m);
     
-    const std::size_t numR1 = uRowN - 1;
-    const std::size_t lastCol = r - 1;
-    const std::size_t maxInd = (Multi) ? (lenFreqs - 1) : (n - 1);
+    const int numR1 = nRows - 1;
+    const int lastCol = m - 1;
+    const int maxInd = (IsMult) ? (lenFreqs - 1) : (n - 1);
     
     if (IsRep) {
         const int maxIndInt = maxInd;
         
-        for (std::size_t count = 0; count < uRowN; ++count) {
-            for (std::size_t j = 0; j < r; ++j)
+        for (int count = 0; count < nRows; ++count) {
+            for (int j = 0; j < m; ++j)
                 vectorPass[j] = v[z[j]];
 
             SETCADR(sexpFun, vectorPass);
             myList[count] = Rf_eval(sexpFun, rho);
 
-            for (int k = lastCol; k >= 0; --k) {
-                if (z[k] != maxIndInt) {
-                    ++z[k];
+            for (int i = lastCol; i >= 0; --i) {
+                if (z[i] != maxIndInt) {
+                    ++z[i];
                     break;
                 } else {
-                    z[k] = 0;
+                    z[i] = 0;
                 }
             }
         }
     } else {
-        const std::size_t arrLength = maxInd + 1;
+        const int arrLength = maxInd + 1;
         auto arrPerm = FromCpp14::make_unique<int[]>(arrLength);
         
-        for (std::size_t i = 0; i < arrLength; ++i)
+        for (int i = 0; i < arrLength; ++i)
             arrPerm[i] = z[i];
         
-        if (r == n || r == lenFreqs) {
-            for (std::size_t count = 0; count < numR1; ++count) {
-                for (std::size_t j = 0; j < r; ++j)
+        if (m == n || m == lenFreqs) {
+            for (int count = 0; count < numR1; ++count) {
+                for (int j = 0; j < m; ++j)
                     vectorPass[j] = v[arrPerm[j]];
                 
                 SETCADR(sexpFun, vectorPass);
@@ -345,8 +366,8 @@ void PermutationApplyFun(std::size_t n, std::size_t r, const typeVector &v, bool
                 nextFullPerm(arrPerm.get(), maxInd);
             }
         } else {
-            for (std::size_t count = 0; count < numR1; ++count) {
-                for (std::size_t j = 0; j < r; ++j)
+            for (int count = 0; count < numR1; ++count) {
+                for (int j = 0; j < m; ++j)
                     vectorPass[j] = v[arrPerm[j]];
                     
                 SETCADR(sexpFun, vectorPass);
@@ -356,7 +377,7 @@ void PermutationApplyFun(std::size_t n, std::size_t r, const typeVector &v, bool
         }
         
         // Get last permutation
-        for (std::size_t j = 0; j < r; ++j)
+        for (int j = 0; j < m; ++j)
             vectorPass[j] = v[arrPerm[j]];
 
         SETCADR(sexpFun, vectorPass);
