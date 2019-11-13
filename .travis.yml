@@ -14,7 +14,6 @@ before_install:
   - if [ $TRAVIS_OS_NAME == linux ]; then sudo apt-get update -q; fi
   - if [ $TRAVIS_OS_NAME == linux ]; then sudo apt-get install g++-4.9 -y; fi
   - if [ $TRAVIS_OS_NAME == linux ]; then sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-4.9 100; fi
-  - sudo tlmgr install inconsolata
 
 addons:
   apt:
