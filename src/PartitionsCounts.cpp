@@ -30,24 +30,35 @@ double c_numbdiffparts(int n) {
 // *********************************************************************** //
 static Rcpp::NumericMatrix memoize;
 
-double p(int n, int r) {
-    if (n <= r + 1) return 1;
-    if (memoize(n - r, r - 2)) return memoize(n - r, r - 2);
-    int myLim = n / r;
-    if (r == 2) return myLim;
+double p(int n, int m) {
+    
+    if (n <= m + 1)
+        return 1;
+    
+    if (memoize(n - m, m - 2))
+        return memoize(n - m, m - 2);
+    
+    int myLim = n / m;
+    
+    if (m == 2)
+        return myLim;
+    
     double count = 0;
-    for (; myLim--; n -= r) count += (memoize(n - r, r - 3) = p(n - 1, r - 1));
+    
+    for (; myLim--; n -= m)
+        count += (memoize(n - m, m - 3) = p(n - 1, m - 1));
+    
     return count;
 }
 
-double partitionCount(int n, int r, bool IncludeZero) {
+double partitionCount(int n, int m, bool IncludeZero) {
     double count = 0;
     
     if (IncludeZero) {
-        Rcpp::NumericMatrix bigRefill(n, r);
+        Rcpp::NumericMatrix bigRefill(n, m);
         memoize = bigRefill;
         
-        for (int i = r; i > 1; --i) {
+        for (int i = m; i > 1; --i) {
             for (int j = 0; j < n - i + 1; ++j) {
                 for (int k = 0; k < i; ++k) {
                     memoize(j, k) = 0;
@@ -59,9 +70,9 @@ double partitionCount(int n, int r, bool IncludeZero) {
         
         ++count;  // Add 1 for the case p(n, 1)
     } else {
-        Rcpp::NumericMatrix refill(n - r + 1, r); // Initialize matrix to zero
+        Rcpp::NumericMatrix refill(n - m + 1, m); // Initialize matrix to zero
         memoize = refill;
-        count = p(n, r);
+        count = p(n, m);
     }
     
     memoize = Rcpp::no_init_matrix(0, 0);
@@ -91,63 +102,36 @@ double SumSection(int high, int low) {
     return std::floor((1 + sumOne - sumTwo + numIter / 2) / 2);
 }
 
+double pDist(int n, int m) {
+    
+    if (memoize(n, m)) 
+        return memoize(n, m);
+    
+    if (m == 3)
+        return SumSection(n - 3, 2);
+    
+    int myLim = n / m;
+    double count = 0;
+    
+    for (; --myLim; n -= m)
+        count += (memoize(n - m, m - 1) = pDist(n - m, m - 1));
+    
+    return count;
+}
+
 double CountDistinctPartLen(int n, int m) {
     
     if (m < 2)
         return 1;
     
-    const int m1 = m - 1;
-    const int m2 = m - 2;
-    
-    std::vector<int> z(m);
-    std::iota(z.begin(), z.end(), 1);
-    z[m1] = n - (m * m1) / 2;
-    
     if (m == 2)
-        return std::floor((z.back() - z.front()) / 2);
+        return std::floor((n - 1) / 2);
     
-    if (m == 3)
-        return SumSection(z[m1], z[m2]);
+    Rcpp::NumericMatrix refill(n + 1, m + 1); // Initialize matrix to zero
+    memoize = refill;
+    double count = pDist(n, m);
+    memoize = Rcpp::no_init_matrix(0, 0);
     
-    double count = 0;
-    
-    if (m == 4) {
-        for (; z[m1] > z[m2];) {
-            count += SumSection(z[m1], z[m2]);
-            z[m1] -= 3;
-            ++z[m2];
-        }
-        
-        return count;
-    }
-    
-    const int highLowSize = m - 4;
-    std::vector<std::pair<int, int>> highLow(highLowSize);
-    
-    for (int i = 0; i < highLowSize; ++i)
-        highLow[i] = std::make_pair(z[m1], z[m2]);
-    
-    for (int i = 0; z[m1] - z[0] > m; i = 0) {
-        count += SumSection(z[m1], z[m2]);
-        z[m1] -= 3;
-        ++z[m2];
-        
-        for (int diff = 4; z[m1] <= z[m2] && i < highLowSize; ++i, ++diff) {
-            highLow[i].first -= diff;
-            ++highLow[i].second;
-            z[m1] = highLow[i].first;
-            z[m2] = highLow[i].second;
-        }
-        
-        if (i > 0) {
-            for (int j = i - 1; j > 0; --j)
-                highLow[j - 1] = highLow[j];
-            
-            if (i == highLowSize) {++z[0];}
-        }
-    }
-    
-    count += (z[m1] - z[m2] + 1) / 2;
     return count;
 }
 
