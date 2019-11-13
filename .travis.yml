@@ -34,7 +34,7 @@ r_packages:
   - microbenchmark
       
 after_success:
-    - Rscript -e "covr::codecov(line_exclusions = c('libdivide.h', 'CleanConvert.h', 'zzz.R'))"
+    - Rscript -e "covr::codecov(line_exclusions = c('inst/include/libdivide.h', 'inst/include/CleanConvert.h', 'R/zzz.R'))"
     
 repos:
   CRAN: http://cran.rstudio.com
