@@ -2,7 +2,7 @@
 #include "Cpp14MakeUnique.h"
 
 void BinaryNextElem(int &uppBnd, int &lowBnd, int &ind, int lastElem,
-                           int64_t target, int64_t partial, const std::vector<int64_t> &v) {
+                    int64_t target, int64_t partial, const std::vector<int64_t> &v) {
     
     int64_t dist = target - (partial + v[ind]);
     
@@ -49,39 +49,39 @@ void BinaryNextElem(int &uppBnd, int &lowBnd, int &ind, int lastElem,
         ++ind;
 }
 
-int GetFirstCombo(int r, const std::vector<int64_t> &v, bool isRep, bool isMult,
+int GetFirstCombo(int m, const std::vector<int64_t> &v, bool IsRep, bool IsMult,
                   std::vector<int> &z, const std::vector<int> &freqs, int64_t target,
                   const std::vector<int> &Reps, int lastCol, int lastElem) {
     
     int64_t testMax = 0;
     constexpr int64_t zero64 = 0;
     
-    if (isRep) {
-        testMax = v[lastElem] * r;
-    } else if (isMult) {
-        const int lenMinusR = freqs.size() - r;
+    if (IsRep) {
+        testMax = v[lastElem] * m;
+    } else if (IsMult) {
+        const int lenMinusM = freqs.size() - m;
         
-        for (int i = freqs.size() - 1, j = 0; i >= lenMinusR; --i, ++j)
+        for (int i = freqs.size() - 1, j = 0; i >= lenMinusM; --i, ++j)
             testMax += v[freqs[i]];
     } else {
-        testMax = std::accumulate(v.cend() - r, v.cend(), zero64);
+        testMax = std::accumulate(v.cend() - m, v.cend(), zero64);
     }
     
     if (testMax < target)  {return 0;}
-    int zExpCurrPos = (isMult) ? freqs.size() - r : 0;
-    int currPos = (isMult) ? freqs[zExpCurrPos] : ((isRep) ? lastElem : (v.size() - r));
+    int zExpCurrPos = IsMult ? freqs.size() - m : 0;
+    int currPos = IsMult ? freqs[zExpCurrPos] : (IsRep ? lastElem : (v.size() - m));
     
     int64_t partial = testMax;
     partial -= v[currPos];
     int64_t testMin = 0;
     
-    if (isRep) {
-        testMin = v[0] * r;
-    } else if (isMult) {
-        for (int i = 0; i < r; ++i)
+    if (IsRep) {
+        testMin = v[0] * m;
+    } else if (IsMult) {
+        for (int i = 0; i < m; ++i)
             testMin += v[freqs[i]];
     } else {
-        testMin = std::accumulate(v.cbegin(), v.cbegin() + r, zero64);
+        testMin = std::accumulate(v.cbegin(), v.cbegin() + m, zero64);
     }
     
     if (testMin > target)  {return 0;}
@@ -94,7 +94,7 @@ int GetFirstCombo(int r, const std::vector<int64_t> &v, bool isRep, bool isMult,
     
     std::vector<int> repsCounter;
     
-    if (isMult)
+    if (IsMult)
         repsCounter.assign(Reps.cbegin(), Reps.cend());
     
     for (int i = 0; i < lastCol; ++i) {
@@ -102,7 +102,7 @@ int GetFirstCombo(int r, const std::vector<int64_t> &v, bool isRep, bool isMult,
         z[i] = ind;
         partial += v[ind];
         
-        if (isMult) {
+        if (IsMult) {
             --repsCounter[ind];
             
             if (repsCounter[ind] == 0)
@@ -110,7 +110,7 @@ int GetFirstCombo(int r, const std::vector<int64_t> &v, bool isRep, bool isMult,
             
             ++zExpCurrPos;
             currPos = freqs[zExpCurrPos];
-        } else if (!isRep) {
+        } else if (!IsRep) {
             ++ind;
             ++currPos;
         }
@@ -132,7 +132,7 @@ int GetFirstCombo(int r, const std::vector<int64_t> &v, bool isRep, bool isMult,
     // is closest to target and greater than target
     int64_t finalCheck = 0;
     
-    for (int i = 0; i < r; ++i)
+    for (int i = 0; i < m; ++i)
         finalCheck += v[z[i]];
     
     if (finalCheck != target)
@@ -141,18 +141,18 @@ int GetFirstCombo(int r, const std::vector<int64_t> &v, bool isRep, bool isMult,
     return 1;
 }
 
-inline void PopulateVec(int r, const std::vector<int64_t> &v, std::vector<int> &z,
+inline void PopulateVec(int m, const std::vector<int64_t> &v, std::vector<int> &z,
                         int &count, int maxRows, bool isComb, std::vector<int64_t> &partitionsVec) {
     
     if (count < maxRows) {
         if (isComb) {
-            for (int k = 0; k < r; ++k)
+            for (int k = 0; k < m; ++k)
                 partitionsVec.push_back(v[z[k]]);
             
             ++count;
         } else {
             do {
-                for (int k = 0; k < r; ++k)
+                for (int k = 0; k < m; ++k)
                     partitionsVec.push_back(v[z[k]]);
                 
                 ++count;
@@ -258,18 +258,18 @@ inline bool keepGoing(const std::vector<int> &rpsCnt, int lastElem,
 }
 // **************************** End  Helper Functions ***************************
 
-int PartitionsMultiSet(int r, const std::vector<int64_t> &v, int64_t target, 
+int PartitionsMultiSet(int m, const std::vector<int64_t> &v, int64_t target, 
                        int lastElem, int lastCol, int maxRows, bool isComb,
                        const std::vector<int> &Reps, std::vector<int64_t> &partitionsVec) {
     
-    std::vector<int> z(r);
+    std::vector<int> z(m);
     std::vector<int> zExpanded;
     
     for (std::size_t i = 0; i < v.size(); ++i)
         for (int j = 0; j < Reps[i]; ++j)
             zExpanded.push_back(i);
     
-    if (!GetFirstCombo(r, v, false, true, z, zExpanded, target, Reps, lastCol, lastElem))
+    if (!GetFirstCombo(m, v, false, true, z, zExpanded, target, Reps, lastCol, lastElem))
         return 0;
     
     std::vector<int> rpsCnt(Reps.cbegin(), Reps.cend());
@@ -296,7 +296,7 @@ int PartitionsMultiSet(int r, const std::vector<int64_t> &v, int64_t target,
     
     while (keepGoing(rpsCnt, lastElem, z, e, b)) {
         
-        PopulateVec(r, v, z, count, maxRows, isComb, partitionsVec);
+        PopulateVec(m, v, z, count, maxRows, isComb, partitionsVec);
         
         if (count >= maxRows)
             break;
@@ -362,17 +362,17 @@ int PartitionsMultiSet(int r, const std::vector<int64_t> &v, int64_t target,
             --e;
     }
     
-    PopulateVec(r, v, z, count, maxRows, isComb, partitionsVec);
+    PopulateVec(m, v, z, count, maxRows, isComb, partitionsVec);
     return 1;
 }
 
-int PartitionsRep(int r, const std::vector<int64_t> &v, int64_t target, int lastElem,
+int PartitionsRep(int m, const std::vector<int64_t> &v, int64_t target, int lastElem,
                   int lastCol, int maxRows, bool isComb, std::vector<int64_t> &partitionsVec) {
     
-    std::vector<int> z(r);
+    std::vector<int> z(m);
     std::vector<int> trivVec;
     
-    if (!GetFirstCombo(r, v, true, false, z, trivVec, target, trivVec, lastCol, lastElem))
+    if (!GetFirstCombo(m, v, true, false, z, trivVec, target, trivVec, lastCol, lastElem))
         return 0;
     
     // smallest index such that z[boundary] == currMax
@@ -398,7 +398,7 @@ int PartitionsRep(int r, const std::vector<int64_t> &v, int64_t target, int last
     
     while ((edge >= 0) && (z[boundary] - z[edge] >= 2)) {
         
-        PopulateVec(r, v, z, count, maxRows, isComb, partitionsVec);
+        PopulateVec(m, v, z, count, maxRows, isComb, partitionsVec);
         
         if (count >= maxRows)
             break;
@@ -463,29 +463,29 @@ int PartitionsRep(int r, const std::vector<int64_t> &v, int64_t target, int last
             --edge;
     }
     
-    PopulateVec(r, v, z, count, maxRows, isComb, partitionsVec);
+    PopulateVec(m, v, z, count, maxRows, isComb, partitionsVec);
     return 1;
 }
 
-int PartitionsDistinct(int r, const std::vector<int64_t> &v, int64_t target, int lastElem,
+int PartitionsDistinct(int m, const std::vector<int64_t> &v, int64_t target, int lastElem,
                        int lastCol, int maxRows, bool isComb, std::vector<int64_t> &partitionsVec) {
     
-    std::vector<int> z(r);
+    std::vector<int> z(m);
     std::vector<int> trivVec;
     
-    if (!GetFirstCombo(r, v, false, false, z, trivVec, target, trivVec, lastCol, lastElem))
+    if (!GetFirstCombo(m, v, false, false, z, trivVec, target, trivVec, lastCol, lastElem))
         return 0;
     
-    int indexRows = isComb ? 0 : static_cast<int>(NumPermsNoRep(r, lastCol));
-    auto indexMatrix = FromCpp14::make_unique<int[]>(indexRows * r);
+    int indexRows = isComb ? 0 : static_cast<int>(NumPermsNoRep(m, lastCol));
+    auto indexMatrix = FromCpp14::make_unique<int[]>(indexRows * m);
     
     if (!isComb) {
-        indexRows = static_cast<int>(NumPermsNoRep(r, lastCol));
-        std::vector<int> indexVec(r);
+        indexRows = static_cast<int>(NumPermsNoRep(m, lastCol));
+        std::vector<int> indexVec(m);
         std::iota(indexVec.begin(), indexVec.end(), 0);
         
-        for (int i = 0, myRow = 0; i < indexRows; ++i, myRow += r) {
-            for (int j = 0; j < r; ++j)
+        for (int i = 0, myRow = 0; i < indexRows; ++i, myRow += m) {
+            for (int j = 0; j < m; ++j)
                 indexMatrix[myRow + j] = indexVec[j];
             
             std::next_permutation(indexVec.begin(), indexVec.end());
@@ -520,7 +520,7 @@ int PartitionsDistinct(int r, const std::vector<int64_t> &v, int64_t target, int
     
     while (edge >= 0 && (z[boundary] - z[edge]) >= tarDiff) {
         if (isComb) {
-            for (int k = 0; k < r; ++k)
+            for (int k = 0; k < m; ++k)
                 partitionsVec.push_back(v[z[k]]);
             
             ++count;
@@ -528,8 +528,8 @@ int PartitionsDistinct(int r, const std::vector<int64_t> &v, int64_t target, int
             if (indexRows + count > maxRows)
                 indexRows = maxRows - count;
             
-            for (int j = 0, myRow = 0; j < indexRows; ++j, myRow += r)
-                for (int k = 0; k < r; ++k)
+            for (int j = 0, myRow = 0; j < indexRows; ++j, myRow += m)
+                for (int k = 0; k < m; ++k)
                     partitionsVec.push_back(v[z[indexMatrix[myRow + k]]]);
             
             count += indexRows;
@@ -589,6 +589,6 @@ int PartitionsDistinct(int r, const std::vector<int64_t> &v, int64_t target, int
         }
     }
     
-    PopulateVec(r, v, z, count, maxRows, isComb, partitionsVec);
+    PopulateVec(m, v, z, count, maxRows, isComb, partitionsVec);
     return 1;
 }

@@ -9,8 +9,9 @@
 #include "ConstraintsUtils.h"
 
 template <typename T, typename U>
-using combPermResPtr = void (*const)(T &matRcpp, const std::vector<U> &v, std::vector<int> z,
-                             int n, int k, int strt, int nRows, const std::vector<int> &freqs, funcPtr<U> myFun);
+using combPermResPtr = void (*const)(T &matRcpp, const std::vector<U> &v,
+                             std::vector<int> z, int n, int m, int strt, int nRows,
+                             const std::vector<int> &freqs, funcPtr<U> myFun);
 
 template <typename T, typename U>
 Rcpp::XPtr<combPermResPtr<T, U>> putCombResPtrInXPtr(bool IsComb, bool IsMult, bool IsRep) {
@@ -117,7 +118,7 @@ typeRcpp SpecCaseRet(int n, int m, std::vector<T> v, bool IsRep, int nRows,
 // value for a given constraint function. After this point, we can safely skip
 // several combinations knowing that they will exceed the given constraint value.
 template <typename typeRcpp, typename typeVector>
-typeRcpp CombinatoricsConstraints(int n, int r, std::vector<typeVector> &v, bool isRep, 
+typeRcpp CombinatoricsConstraints(int n, int m, std::vector<typeVector> &v, bool isRep, 
                                   std::string myFun, std::vector<std::string> comparison,
                                   std::vector<typeVector> targetVals, double numRows, 
                                   bool isComb, bool xtraCol, std::vector<int> &Reps, 
@@ -132,13 +133,11 @@ typeRcpp CombinatoricsConstraints(int n, int r, std::vector<typeVector> &v, bool
     const bool partitionEsque = ((comparison[0] == "==" || between) && n > 1 && myFun != "max" && myFun != "min");
     const std::size_t maxRows = std::min(static_cast<double>(std::numeric_limits<int>::max()), numRows);
     
-    const std::size_t uR = r;
-    const std::size_t uR1 = r - 1;
     std::vector<typeVector> combinatoricsVec;
     std::vector<typeVector> resultsVec;
     
     if (bUserRows) {
-        combinatoricsVec.reserve(uR * maxRows);
+        combinatoricsVec.reserve(m * maxRows);
         resultsVec.reserve(maxRows);
     }
     
@@ -195,22 +194,24 @@ typeRcpp CombinatoricsConstraints(int n, int r, std::vector<typeVector> &v, bool
             }
         }
         
-        std::vector<int> z(r);
-        std::vector<typeVector> testVec(r);
+        std::vector<int> z(m);
+        std::vector<typeVector> testVec(m);
+        
         bool t_0 = true;
         bool t_1 = true;
         int myStart, maxZ = n - 1;
-        const int r1 = r - 1;
-        const int r2 = r - 2;
         
-        if (r == 1) {
+        const int m1 = m - 1;
+        const int m2 = m - 2;
+        
+        if (m == 1) {
             int ind = 0;
             testVal = v[ind];
             t_0 = comparisonFunTwo(testVal, targetVals);
             
             while (t_0 && t_1) {
                 if (comparisonFunOne(testVal, targetVals)) {
-                    for (int k = 0; k < r; ++k)
+                    for (int k = 0; k < m; ++k)
                         combinatoricsVec.push_back(v[ind]);
                     
                     ++count;
@@ -233,7 +234,7 @@ typeRcpp CombinatoricsConstraints(int n, int r, std::vector<typeVector> &v, bool
         
             if (isMult) {
                 int zExpSize = std::accumulate(Reps.cbegin(), Reps.cend(), 0);
-                std::vector<int> zExpand, zIndex, zGroup(r), zPerm(r);
+                std::vector<int> zExpand, zIndex, zGroup(m), zPerm(m);
                 
                 for (int i = 0, k = 0; i < n; ++i) {
                     zIndex.push_back(k);
@@ -243,18 +244,18 @@ typeRcpp CombinatoricsConstraints(int n, int r, std::vector<typeVector> &v, bool
                 }
                 
                 if (partitionEsque) {
-                    t_1 = GetLowerBound<typeVector>(n, r, v, isRep, isMult, z, zExpand, 
+                    t_1 = GetLowerBound<typeVector>(n, m, v, isRep, isMult, z, zExpand, 
                                                     targetVals, Reps, constraintFun, partialFun, myFun);
                 } else {
-                    z.assign(zExpand.cbegin(), zExpand.cbegin() + r);
+                    z.assign(zExpand.cbegin(), zExpand.cbegin() + m);
                 }
                 
                 while (t_1) {
-                    for (int i = 0; i < r; ++i)
+                    for (int i = 0; i < m; ++i)
                         testVec[i] = v[zExpand[zIndex[z[i]]]];
                     
-                    const typeVector partialVal = constraintFun(testVec, uR1);
-                    testVal = partialFun(partialVal, testVec.back(), uR);
+                    const typeVector partialVal = constraintFun(testVec, m1);
+                    testVal = partialFun(partialVal, testVec.back(), m);
                     t_0 = comparisonFunTwo(testVal, targetVals);
                     
                     while (t_0 && t_1) {
@@ -262,16 +263,16 @@ typeRcpp CombinatoricsConstraints(int n, int r, std::vector<typeVector> &v, bool
                             myStart = count;
                             
                             if (isComb) {
-                                for (int k = 0; k < r; ++k)
+                                for (int k = 0; k < m; ++k)
                                     combinatoricsVec.push_back(v[zExpand[zIndex[z[k]]]]);
                                 
                                 ++count;
                             } else {
-                                for (int k = 0; k < r; ++k)
+                                for (int k = 0; k < m; ++k)
                                     zPerm[k] = zExpand[zIndex[z[k]]];
                                 
                                 do {
-                                    for (int k = 0; k < r; ++k)
+                                    for (int k = 0; k < m; ++k)
                                         combinatoricsVec.push_back(v[zPerm[k]]);
                                     
                                     ++count;
@@ -285,12 +286,12 @@ typeRcpp CombinatoricsConstraints(int n, int r, std::vector<typeVector> &v, bool
                             t_1 = count < maxRows;
                         }
                         
-                        t_0 = z[r1] != maxZ;
+                        t_0 = z[m1] != maxZ;
                         
                         if (t_0) {
-                            ++z[r1];
-                            testVec[r1] = v[zExpand[zIndex[z[r1]]]];
-                            testVal = partialFun(partialVal, testVec.back(), uR);
+                            ++z[m1];
+                            testVec[m1] = v[zExpand[zIndex[z[m1]]]];
+                            testVal = partialFun(partialVal, testVec.back(), m);
                             t_0 = comparisonFunTwo(testVal, targetVals);
                         }
                     }
@@ -298,19 +299,19 @@ typeRcpp CombinatoricsConstraints(int n, int r, std::vector<typeVector> &v, bool
                     if (t_1) {
                         bool noChange = true;
                         
-                        for (int i = r2; i >= 0; --i) {
-                            if (zExpand[zIndex[z[i]]] != zExpand[zExpSize - r + i]) {
+                        for (int i = m2; i >= 0; --i) {
+                            if (zExpand[zIndex[z[i]]] != zExpand[zExpSize - m + i]) {
                                 ++z[i];
                                 testVec[i] = v[zExpand[zIndex[z[i]]]];
                                 zGroup[i] = zIndex[z[i]];
                                 
-                                for (int k = (i+1); k < r; ++k) {
+                                for (int k = (i+1); k < m; ++k) {
                                     zGroup[k] = zGroup[k-1] + 1;
                                     z[k] = zExpand[zGroup[k]];
                                     testVec[k] = v[zExpand[zIndex[z[k]]]];
                                 }
                                 
-                                testVal = constraintFun(testVec, uR);
+                                testVal = constraintFun(testVec, m);
                                 t_0 = comparisonFunTwo(testVal, targetVals);
                                 noChange = false;
                                 if (t_0) {break;}
@@ -328,18 +329,18 @@ typeRcpp CombinatoricsConstraints(int n, int r, std::vector<typeVector> &v, bool
                 
                 if (partitionEsque) {
                     std::vector<int> trivialFreqs;
-                    t_1 = GetLowerBound<typeVector>(n, r, v, isRep, isMult, z, trivialFreqs, 
+                    t_1 = GetLowerBound<typeVector>(n, m, v, isRep, isMult, z, trivialFreqs, 
                                                     targetVals, Reps, constraintFun, partialFun, myFun);
                 } else {
-                    z.assign(r, 0);
+                    z.assign(m, 0);
                 }
                 
                 while (t_1) {
-                    for (int i = 0; i < r; ++i)
+                    for (int i = 0; i < m; ++i)
                         testVec[i] = v[z[i]];
                     
-                    const typeVector partialVal = constraintFun(testVec, uR1);
-                    testVal = partialFun(partialVal, testVec.back(), uR);
+                    const typeVector partialVal = constraintFun(testVec, m1);
+                    testVal = partialFun(partialVal, testVec.back(), m);
                     t_0 =comparisonFunTwo(testVal, targetVals);
                     
                     while (t_0 && t_1) {
@@ -347,13 +348,13 @@ typeRcpp CombinatoricsConstraints(int n, int r, std::vector<typeVector> &v, bool
                             myStart = count;
                             
                             if (isComb) {
-                                for (int k = 0; k < r; ++k)
+                                for (int k = 0; k < m; ++k)
                                     combinatoricsVec.push_back(v[z[k]]);
                                 
                                 ++count;
                             } else {
                                 do {
-                                    for (int k = 0; k < r; ++k)
+                                    for (int k = 0; k < m; ++k)
                                         combinatoricsVec.push_back(v[z[k]]);
                                     
                                     ++count;
@@ -367,12 +368,12 @@ typeRcpp CombinatoricsConstraints(int n, int r, std::vector<typeVector> &v, bool
                             t_1 = count < maxRows;
                         }
                         
-                        t_0 = z[r1] != maxZ;
+                        t_0 = z[m1] != maxZ;
                         
                         if (t_0) {
-                            ++z[r1];
-                            testVec[r1] = v[z[r1]];
-                            testVal = partialFun(partialVal, testVec.back(), uR);
+                            ++z[m1];
+                            testVec[m1] = v[z[m1]];
+                            testVal = partialFun(partialVal, testVec.back(), m);
                             t_0 = comparisonFunTwo(testVal, targetVals);
                         }
                     }
@@ -380,17 +381,17 @@ typeRcpp CombinatoricsConstraints(int n, int r, std::vector<typeVector> &v, bool
                     if (t_1) {
                         bool noChange = true;
                         
-                        for (int i = r2; i >= 0; --i) {
+                        for (int i = m2; i >= 0; --i) {
                             if (z[i] != maxZ) {
                                 ++z[i];
                                 testVec[i] = v[z[i]];
                                 
-                                for (int k = (i+1); k < r; ++k) {
+                                for (int k = (i+1); k < m; ++k) {
                                     z[k] = z[k-1];
                                     testVec[k] = v[z[k]];
                                 }
                                 
-                                testVal = constraintFun(testVec, uR);
+                                testVal = constraintFun(testVec, m);
                                 t_0 = comparisonFunTwo(testVal, targetVals);
                                 noChange = false;
                                 if (t_0) {break;}
@@ -403,17 +404,17 @@ typeRcpp CombinatoricsConstraints(int n, int r, std::vector<typeVector> &v, bool
                 
             } else {
                 
-                const int nMinusR = (n - r);
-                int indexRows = isComb ? 0 : static_cast<int>(NumPermsNoRep(r, r1));
-                auto indexMatrix = FromCpp14::make_unique<int[]>(indexRows * r);
+                const int nMinusM = (n - m);
+                int indexRows = isComb ? 0 : static_cast<int>(NumPermsNoRep(m, m1));
+                auto indexMatrix = FromCpp14::make_unique<int[]>(indexRows * m);
                 
                 if (!isComb) {
-                    indexRows = static_cast<int>(NumPermsNoRep(r, r1));
-                    std::vector<int> indexVec(r);
+                    indexRows = static_cast<int>(NumPermsNoRep(m, m1));
+                    std::vector<int> indexVec(m);
                     std::iota(indexVec.begin(), indexVec.end(), 0);
                     
-                    for (int i = 0, myRow = 0; i < indexRows; ++i, myRow += r) {
-                        for (int j = 0; j < r; ++j)
+                    for (int i = 0, myRow = 0; i < indexRows; ++i, myRow += m) {
+                        for (int j = 0; j < m; ++j)
                             indexMatrix[myRow + j] = indexVec[j];
                         
                         std::next_permutation(indexVec.begin(), indexVec.end());
@@ -422,18 +423,18 @@ typeRcpp CombinatoricsConstraints(int n, int r, std::vector<typeVector> &v, bool
                 
                 if (partitionEsque) {
                     std::vector<int> trivialFreqs;
-                    t_1 = GetLowerBound<typeVector>(n, r, v, isRep, isMult, z, trivialFreqs, 
+                    t_1 = GetLowerBound<typeVector>(n, m, v, isRep, isMult, z, trivialFreqs, 
                                                     targetVals, Reps, constraintFun, partialFun, myFun);
                 } else {
                     std::iota(z.begin(), z.end(), 0);
                 }
                 
                 while (t_1) {
-                    for (int i = 0; i < r; ++i)
+                    for (int i = 0; i < m; ++i)
                         testVec[i] = v[z[i]];
                     
-                    const typeVector partialVal = constraintFun(testVec, uR1);
-                    testVal = partialFun(partialVal, testVec.back(), uR);
+                    const typeVector partialVal = constraintFun(testVec, m1);
+                    testVal = partialFun(partialVal, testVec.back(), m);
                     t_0 = comparisonFunTwo(testVal, targetVals);
                     
                     while (t_0 && t_1) {
@@ -441,7 +442,7 @@ typeRcpp CombinatoricsConstraints(int n, int r, std::vector<typeVector> &v, bool
                             myStart = count;
                             
                             if (isComb) {
-                                for (int k = 0; k < r; ++k)
+                                for (int k = 0; k < m; ++k)
                                     combinatoricsVec.push_back(v[z[k]]);
                                 
                                 ++count;
@@ -449,8 +450,8 @@ typeRcpp CombinatoricsConstraints(int n, int r, std::vector<typeVector> &v, bool
                                 if (indexRows + count > maxRows)
                                     indexRows = maxRows - count;
                                     
-                                for (int j = 0, myRow = 0; j < indexRows; ++j, myRow += r)
-                                    for (int k = 0; k < r; ++k)
+                                for (int j = 0, myRow = 0; j < indexRows; ++j, myRow += m)
+                                    for (int k = 0; k < m; ++k)
                                         combinatoricsVec.push_back(v[z[indexMatrix[myRow + k]]]);
                                 
                                 count += indexRows;
@@ -463,12 +464,12 @@ typeRcpp CombinatoricsConstraints(int n, int r, std::vector<typeVector> &v, bool
                             t_1 = count < maxRows;
                         }
                         
-                        t_0 = z[r1] != maxZ;
+                        t_0 = z[m1] != maxZ;
                         
                         if (t_0) {
-                            ++z[r1];
-                            testVec[r1] = v[z[r1]];
-                            testVal = partialFun(partialVal, testVec.back(), uR);
+                            ++z[m1];
+                            testVec[m1] = v[z[m1]];
+                            testVal = partialFun(partialVal, testVec.back(), m);
                             t_0 = comparisonFunTwo(testVal, targetVals);
                         }
                     }
@@ -476,17 +477,17 @@ typeRcpp CombinatoricsConstraints(int n, int r, std::vector<typeVector> &v, bool
                     if (t_1) {
                         bool noChange = true;
                         
-                        for (int i = r2; i >= 0; --i) {
-                            if (z[i] != (nMinusR + i)) {
+                        for (int i = m2; i >= 0; --i) {
+                            if (z[i] != (nMinusM + i)) {
                                 ++z[i];
                                 testVec[i] = v[z[i]];
                                 
-                                for (int k = (i + 1); k < r; ++k) {
+                                for (int k = (i + 1); k < m; ++k) {
                                     z[k] = z[k - 1] + 1;
                                     testVec[k] = v[z[k]];
                                 }
                                 
-                                testVal = constraintFun(testVec, uR);
+                                testVal = constraintFun(testVec, m);
                                 t_0 = comparisonFunTwo(testVal, targetVals);
                                 noChange = false;
                                 if (t_0) {break;}
@@ -501,16 +502,16 @@ typeRcpp CombinatoricsConstraints(int n, int r, std::vector<typeVector> &v, bool
             targetVals.erase(targetVals.begin());
         }
     }
-    const int numCols = xtraCol ? (r + 1) : r;
+    const int numCols = xtraCol ? (m + 1) : m;
     typeRcpp combinatoricsMatrix = Rcpp::no_init_matrix(count, numCols);
     
     for (std::size_t i = 0, k = 0; i < count; ++i)
-        for (int j = 0; j < r; ++j, ++k)
+        for (int j = 0; j < m; ++j, ++k)
             combinatoricsMatrix(i, j) = combinatoricsVec[k];
     
     if (xtraCol)
         for (std::size_t i = 0; i < count; ++i)
-            combinatoricsMatrix(i, r) = resultsVec[i];
+            combinatoricsMatrix(i, m) = resultsVec[i];
     
     if (count > std::numeric_limits<int>::max()) {
         Rcpp::warning("The algorithm terminated early as the number of "

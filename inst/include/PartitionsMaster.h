@@ -170,7 +170,7 @@ namespace Partitions {
     template <typename typeRcpp>
     typeRcpp GeneralPartitions(const std::vector<int64_t> &v, std::vector<int> &z, const std::vector<int> &Reps,
                                PartitionType PartType, int64_t target, int lenV, int m, bool IsRep, bool IsMult,
-                               int numParts, bool IsComb, bool xtraCol, bool bUserRows, bool mIsNull, bool getAll) {
+                               double numParts, bool IsComb, bool xtraCol, bool bUserRows, bool mIsNull, bool getAll) {
 
         const bool IncludeZero = (v.front() == 0);
         
@@ -188,22 +188,27 @@ namespace Partitions {
             const bool IsDistinct = (PartType > PartitionType::PartTradNoZero);
             int boundary = lastCol;
             int edge = boundary - 1;
+            
+            // If we have determined that the Partitions are of standard
+            // form, we have already checked that the number of results
+            // is within integer range in the calling code.
+            const int nRows = static_cast<int>(numParts);
             nCols = (xtraCol) ? m + 1 : m;
             
             typeRcpp partitionsMatrix = (IncludeZero && (IsComb || mIsNull)) ? 
-                                            typeRcpp(numParts, nCols) : 
-                                                Rcpp::no_init_matrix(numParts, nCols);
+                                            typeRcpp(nRows, nCols) : 
+                                                Rcpp::no_init_matrix(nRows, nCols);
             
             if (IsDistinct) {
-                PartsStdDistinct(partitionsMatrix, z, m, numParts, getAll,
+                PartsStdDistinct(partitionsMatrix, z, m, nRows, getAll,
                                  boundary, lastCol, edge, IsComb, IncludeZero, mIsNull);
             } else {
-                PartitionsStandard(partitionsMatrix, z, m, numParts, IsComb,
+                PartitionsStandard(partitionsMatrix, z, m, nRows, IsComb,
                                    boundary, edge, lastCol, IncludeZero, mIsNull);
             }
             
             if (xtraCol)
-                for (std::size_t i = 0; i < numParts; ++i)
+                for (int i = 0; i < nRows; ++i)
                     partitionsMatrix(i, m) = target;
             
             return partitionsMatrix;

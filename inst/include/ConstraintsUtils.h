@@ -128,23 +128,23 @@ bool CheckIsInteger(const std::string &funPass, int n, int m,
 }
 
 template <typename typeVector>
-inline void BruteNextElem(int &ind, int lowBnd, typeVector targetMin, typeVector partial,
-                          std::size_t uR, const std::vector<typeVector> &v,
+inline void BruteNextElem(int &ind, int lowBnd, typeVector targetMin,
+                          typeVector partial, int m, const std::vector<typeVector> &v,
                           partialPtr<typeVector> partialFun) {
     
-    typeVector dist = targetMin - partialFun(partial, v[ind], uR);
+    typeVector dist = targetMin - partialFun(partial, v[ind], m);
     const int origInd = ind;
     
     while (ind > lowBnd && dist < 0) {
         --ind;
-        dist = targetMin - partialFun(partial, v[ind], uR);
+        dist = targetMin - partialFun(partial, v[ind], m);
     }
     
     if (dist > 0 && origInd != ind) {++ind;}
 }
 
 template <typename typeVector>
-typeVector PartialReduce(std::size_t uR, typeVector partial, 
+typeVector PartialReduce(int m, typeVector partial, 
                          typeVector w, std::string myFun) {
     
     if (myFun == "prod") {
@@ -152,70 +152,69 @@ typeVector PartialReduce(std::size_t uR, typeVector partial,
     } else if (myFun == "sum") {
         partial -= w;
     } else if (myFun == "mean") {
-        partial = (partial * static_cast<double>(uR) - w) / static_cast<double>(uR - 1);
+        partial = (partial * static_cast<double>(m) - w) / static_cast<double>(m - 1);
     }
     
     return partial;
 }
 
 template <typename typeVector>
-int GetLowerBound(int n, int r, const std::vector<typeVector> &v, bool isRep,
-                  bool isMult, std::vector<int> &z, const std::vector<int> &freqs, 
+int GetLowerBound(int n, int m, const std::vector<typeVector> &v, bool IsRep,
+                  bool IsMult, std::vector<int> &z, const std::vector<int> &freqs, 
                   const std::vector<typeVector> &targetVals, const std::vector<int> &Reps,
                   funcPtr<typeVector> constraintFun, partialPtr<typeVector> partialFun,
                   const std::string &myFun) {
     
     const int lastElem = n - 1;
-    const int lastCol = r - 1;
-    const std::size_t uR = r;
+    const int lastCol = m - 1;
     
-    std::vector<typeVector> vPass(r);
+    std::vector<typeVector> vPass(m);
     const typeVector targetMin = *std::min_element(targetVals.cbegin(), targetVals.cend());
     const typeVector targetMax = *std::max_element(targetVals.cbegin(), targetVals.cend());
     
-    if (isRep) {
+    if (IsRep) {
         std::fill(vPass.begin(), vPass.end(), v.back());
-    } else if (isMult) {
-        const int lenMinusR = freqs.size() - r;
+    } else if (IsMult) {
+        const int lenMinusM = freqs.size() - m;
         
-        for (int i = freqs.size() - 1, j = 0; i >= lenMinusR; --i, ++j)
+        for (int i = freqs.size() - 1, j = 0; i >= lenMinusM; --i, ++j)
             vPass[j] = v[freqs[i]];
     } else {
-        vPass.assign(v.crbegin(), v.crbegin() + r);
+        vPass.assign(v.crbegin(), v.crbegin() + m);
     }
     
-    typeVector partial = constraintFun(vPass, uR - 1);
-    const typeVector testMax = partialFun(partial, vPass.back(), uR);
+    typeVector partial = constraintFun(vPass, m - 1);
+    const typeVector testMax = partialFun(partial, vPass.back(), m);
     if (testMax < targetMin)  {return 0;}
     
-    if (isRep) {
+    if (IsRep) {
         std::fill(vPass.begin(), vPass.end(), v[0]);
-    } else if (isMult) {
-        for (int i = 0; i < r; ++i)
+    } else if (IsMult) {
+        for (int i = 0; i < m; ++i)
             vPass[i] = v[freqs[i]];
     } else {
-        vPass.assign(v.cbegin(), v.cbegin() + r);
+        vPass.assign(v.cbegin(), v.cbegin() + m);
     }
     
-    const typeVector testMin = constraintFun(vPass, uR);
+    const typeVector testMin = constraintFun(vPass, m);
     if (testMin > targetMax)  {return 0;}
     
-    int zExpCurrPos = (isMult) ? freqs.size() - r : 0;
-    int currPos = (isMult) ? freqs[zExpCurrPos] : ((isRep) ? lastElem : (n - r));
-    int ind = currPos;
+    int zExpCurrPos = IsMult ? freqs.size() - m : 0;
+    int currPos = IsMult ? freqs[zExpCurrPos] : (IsRep ? lastElem: (n - m));
     
+    int ind = currPos;
     int lowBnd = 0;
     std::vector<int> repsCounter;
     
-    if (isMult)
+    if (IsMult)
         repsCounter.assign(Reps.cbegin(), Reps.cend());
     
     for (int i = 0; i < lastCol; ++i) {
-        BruteNextElem(ind, lowBnd, targetMin, partial, uR, v, partialFun);
+        BruteNextElem(ind, lowBnd, targetMin, partial, m, v, partialFun);
         z[i] = ind;
-        partial = partialFun(partial, v[ind], uR);
+        partial = partialFun(partial, v[ind], m);
         
-        if (isMult) {
+        if (IsMult) {
             --repsCounter[ind];
             
             if (repsCounter[ind] == 0)
@@ -223,23 +222,24 @@ int GetLowerBound(int n, int r, const std::vector<typeVector> &v, bool isRep,
             
             ++zExpCurrPos;
             currPos = freqs[zExpCurrPos];
-        } else if (!isRep) {
+        } else if (!IsRep) {
             ++ind;
             ++currPos;
         }
         
         lowBnd = ind;
         ind = currPos;
-        partial = PartialReduce(r, partial, v[currPos], myFun);
+        partial = PartialReduce(m, partial, v[currPos], myFun);
     }
     
-    BruteNextElem(ind, lowBnd, targetMin, partial, uR, v, partialFun);
+    BruteNextElem(ind, lowBnd, targetMin, partial, m, v, partialFun);
     z[lastCol] = ind;
     return 1;
 }
 
-void GetPartitionCase(const std::vector<std::string> &compFunVec, std::vector<double> &v,
-                      const std::string &mainFun, double target, PartitionType &PartType,
+template <typename typeVector>
+void GetPartitionCase(const std::vector<std::string> &compFunVec, std::vector<typeVector> &v,
+                      const std::string &mainFun, typeVector target, PartitionType &PartType,
                       distinctType &distinctTest, const SEXP &Rlow, std::vector<int> &Reps,
                       int lenV, int &m, double tolerance, bool IsMult, bool IsRep) {
     
@@ -287,15 +287,15 @@ void GetPartitionCase(const std::vector<std::string> &compFunVec, std::vector<do
         // v = 1:10, m = 7, rep = TRUE, & limit = 10
 
         if (compFunVec[0] == "==" && mainFun == "sum" && lenV > 1 && m > 1) {
-            std::vector<double> pTest(v.cbegin(), v.cend());
+            std::vector<typeVector> pTest(v.cbegin(), v.cend());
             std::sort(pTest.begin(), pTest.end());
-            const double tarDiff = pTest[1] - pTest[0];
+            const typeVector tarDiff = pTest[1] - pTest[0];
 
             if (static_cast<int64_t>(pTest[0]) == pTest[0]) {
                 PartitionCase = true;
 
                 for (int i = 1; i < lenV; ++i) {
-                    const double testDiff = pTest[i] - pTest[i - 1];
+                    const typeVector testDiff = pTest[i] - pTest[i - 1];
 
                     if (std::abs(testDiff - tarDiff) > tolerance
                             || static_cast<int64_t>(pTest[i]) != pTest[i]) {
@@ -312,18 +312,18 @@ void GetPartitionCase(const std::vector<std::string> &compFunVec, std::vector<do
         }
         
         if (PartitionCase) {
-            const double myMax = v.back();
-            const bool includeZero = (v.front() == 0);
+            const typeVector myMax = v.back();
+            const bool IncludeZero = (v.front() == 0);
             PartType = PartitionType::PartGeneral;
             
             if (myMax == tarTest && (lenV == tarTest || lenV == (tarTest + 1)) && v.front() >= 0) {
-                distinctTest = DistinctAttr(lenV, m, IsRep, IsMult, tarTest, Reps, includeZero);
+                distinctTest = DistinctAttr(lenV, m, IsRep, IsMult, tarTest, Reps, IncludeZero);
                 
                 if (distinctTest.limit > 0) {
                     
                     m = distinctTest.limit;
                     
-                    if (includeZero) {
+                    if (IncludeZero) {
                         if (IsMult) {
                             if (distinctTest.getAll) {
                                 PartType = PartitionType::PartDstctStdAll;
@@ -339,7 +339,11 @@ void GetPartitionCase(const std::vector<std::string> &compFunVec, std::vector<do
                         PartType = PartitionType::PartDstctNoZero;
                     }
                 } else if (IsRep) {
-                    if (includeZero) {
+                    if (m >= lenV) { 
+                        m = (IncludeZero) ? lenV - 1 : lenV;
+                    }
+                    
+                    if (IncludeZero) {
                         PartType = PartitionType::PartTraditional;
                     } else {
                         PartType = PartitionType::PartTradNoZero;

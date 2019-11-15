@@ -217,7 +217,7 @@ SEXP CombinatoricsCnstrt(SEXP Rv, SEXP Rm, SEXP RisRep, SEXP RFreqs, SEXP Rlow,
         SetStartZ(n, m, lower, 0, lowerMpz[0], IsRep, IsComb,
                   IsMult, IsGmp, myReps, freqs, startZ, nthResFun);
     }
-
+    
     double userNumRows = 0;
     const bool IsGenCnstrd = (IsConstrained && PartType <= PartitionType::PartGeneral);
     SetNumResults(IsGmp, bLower, bUpper, IsGenCnstrd, upperMpz.get(), lowerMpz.get(),
