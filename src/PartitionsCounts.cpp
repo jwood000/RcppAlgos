@@ -25,96 +25,114 @@ double c_numbdiffparts(int n) {
     return qq.back();
 }
 
-// Credit to user @m69 on stackoverflow:
-//       https://stackoverflow.com/a/32918426/4408538
-// *********************************************************************** //
-static Rcpp::NumericMatrix memoize;
+// Consider finding partitions of 50 of length 5 with no zeros.
+// The first few results are:
+//                  1 1 1 1 46
+//                  1 1 1 2 45
+//                  1 1 1 3 44
+//
+// If we cont. until the num in the 3rd col changes, we have:
+//              [22,] 1 1 1 22 25
+//              [23,] 1 1 1 23 24
+//              [24,] 1 1 2  2 44
+//
+// That's 23 results, which is expected as we are decrementing
+// the right most number and incrementing the number in the
+// 4th column. Thus we have:
+//                   (46 - n) > (1 + n)
+//              ==>        45 > 2n
+//              ==>      22.5 > n
+//              ==>         n = 22
+//
+// Including the first result (i.e. 1 46), we have n + 1 = 23.
+// In general, in can be shown that when we are presented with
+// a situaiton of the form: 1 1 ... 1 m, then the number of
+// results for the "1st" group (i.e. while the 2nd to the last
+// column stays the same), is given by floor((1 + m) / 2).
+//
+// Continuing on with the next group, we have:
+//                   1 1 2 2 44
+//
+// We need to find the number of result of (2 44). This is
+// equivalent to (1 43). The next few groups are (3 42), (4, 40),
+// (5, 38), and (6, 36). These all get converted to (1, 40),
+// (1, 37), (1, 34), and (1, 31). The number of results for
+// each are given by (assume integer division and don't 
+// forget to add 1):
+//          44 / 2, 41 / 2, 38 / 2, 35 / 2, 32 / 2
+//
+// The total number of result for all groups is given by:
+//          47/ 2 + 44 / 2 + ... + 5 / 2 + 2/ 2
+//
+// This can be converted to:
+//  (47 - 0) / 2 + (47 - 3) / 2 + ... + (47 - 42) / 2 + (47 - 45)/ 2
+//
+//   ==>>  (47 * 16 - 3 * (0 + 1 + 2 + .... + 14 + 15) - 8) / 2
+//   ==>>    (47 * 16 - 3 * (16 * 15 / 2) - 8) / 2
 
-double p(int n, int m) {
+double SumSection(int n) {
+    const int numIter = n / 3;
+    const double sumOne = numIter * (n - 2);
+    const double sumTwo = 3 * (numIter * (numIter - 1)) / 2;
+    return std::floor((sumOne - sumTwo - numIter / 2) / 2);
+}
+
+// The algos below are modified versions of that found in:
+// (Credit to user @m69) https://stackoverflow.com/a/32918426/4408538
+//
+// These are faster as they skip many iterations as a result of
+// returning a result when m == 3 as opposed to m == 2. There are
+// more opportunities for improvements such as deriving a constant
+// time calculation when m == 4 (Currently under development).
+// *********************************************************************** //
+static std::vector<double> memoize;
+
+double pStd(int n, int m, int w) {
     
-    if (n <= m + 1)
-        return 1;
+    if (memoize[(n - m) * w + m - 2])
+        return memoize[(n - m) * w + m - 2];
     
-    if (memoize(n - m, m - 2))
-        return memoize(n - m, m - 2);
+    if (m == 3)
+        return SumSection(n + 1);
     
     int myLim = n / m;
-    
-    if (m == 2)
-        return myLim;
-    
     double count = 0;
     
     for (; myLim--; n -= m)
-        count += (memoize(n - m, m - 3) = p(n - 1, m - 1));
+        count += (memoize[(n - m) * w + m - 3] = pStd(n - 1, m - 1, w));
     
     return count;
 }
 
-double partitionCount(int n, int m, bool IncludeZero) {
-    double count = 0;
+double CountStdPartLen(int n, int m) {
     
-    if (IncludeZero) {
-        Rcpp::NumericMatrix bigRefill(n, m);
-        memoize = bigRefill;
-        
-        for (int i = m; i > 1; --i) {
-            for (int j = 0; j < n - i + 1; ++j) {
-                for (int k = 0; k < i; ++k) {
-                    memoize(j, k) = 0;
-                }
-            }
-            
-            count += p(n, i);
-        }
-        
-        ++count;  // Add 1 for the case p(n, 1)
-    } else {
-        Rcpp::NumericMatrix refill(n - m + 1, m); // Initialize matrix to zero
-        memoize = refill;
-        count = p(n, m);
-    }
+    if (m < 2)
+        return 1;
     
-    memoize = Rcpp::no_init_matrix(0, 0);
+    if (m == 2)
+        return std::floor(n / 2);
+    
+    memoize.assign((n - m + 1) * m, 0.0);
+    double count = pStd(n, m, m);
+    
     return count;
 }
 
 // *********************************************************************** //
 
-double SumSection(int high, int low) {
+double pDist(int n, int m, int w) {
     
-    const int numIter = (high - low + 2) / 3;
-    const bool oddFlag = (high % 2);
-    int n1 = oddFlag ? high - 1 : high;
-    
-    n1 >>= 1;
-    double sumOne = (n1 * (n1 + 1)) / 2;
-    const int n2 = n1 - numIter;
-    
-    sumOne -= (n2 * (n2 + 1)) / 2;
-    sumOne *= 2;
-    if (oddFlag) sumOne += numIter;
-    
-    const int n3 = low - 1;
-    const int n4 = n3 + numIter;
-    const double sumTwo = (n4 * (n4 + 1) - n3 * (n3 + 1)) / 2;
-    
-    return std::floor((1 + sumOne - sumTwo + numIter / 2) / 2);
-}
-
-double pDist(int n, int m) {
-    
-    if (memoize(n, m)) 
-        return memoize(n, m);
+    if (memoize[n * w + m]) 
+        return memoize[n * w + m];
     
     if (m == 3)
-        return SumSection(n - 3, 2);
+        return SumSection(n - 2);
     
     int myLim = n / m;
     double count = 0;
     
     for (; --myLim; n -= m)
-        count += (memoize(n - m, m - 1) = pDist(n - m, m - 1));
+        count += (memoize[(n - m) * w + m - 1] = pDist(n - m, m - 1, w));
     
     return count;
 }
@@ -127,10 +145,8 @@ double CountDistinctPartLen(int n, int m) {
     if (m == 2)
         return std::floor((n - 1) / 2);
     
-    Rcpp::NumericMatrix refill(n + 1, m + 1); // Initialize matrix to zero
-    memoize = refill;
-    double count = pDist(n, m);
-    memoize = Rcpp::no_init_matrix(0, 0);
+    memoize.assign((n + 1) * (m + 1), 0.0);
+    double count = pDist(n, m, m + 1);
     
     return count;
 }
@@ -140,10 +156,10 @@ double GetComputedPartsComps(const std::vector<int> &z, PartitionType PartType,
     
     double partCountTest = 0;
     const bool IsDistinct = PartType > PartitionType::PartTradNoZero;
+    const int startLen = std::count_if(z.cbegin(), z.cend(), 
+                                       [](int i){return i > 0;});
     
     if (IsDistinct) {
-        const int startLen = std::count_if(z.cbegin(), z.cend(), 
-                                           [](int i){return i > 0;});
         if (IsComb) {
             if (PartType == PartitionType::PartDstctStdAll) {
                 partCountTest = c_numbdiffparts(target);
@@ -190,7 +206,9 @@ double GetComputedPartsComps(const std::vector<int> &z, PartitionType PartType,
         }
     } else {
         if (IsComb) {
-            partCountTest = partitionCount(target, m, IncludeZero);
+            for (int i = startLen; i <= m; ++i)
+                partCountTest += CountStdPartLen(target, i);
+            
         } else if (mIsNull && IncludeZero) {
             partCountTest = std::pow(2.0, static_cast<double>(target - 1));
         } else {
