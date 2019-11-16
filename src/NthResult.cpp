@@ -408,12 +408,12 @@ std::vector<int> nthPermMultGmp(int n, int r, double dblIdx,
     return res;
 }
 
-Rcpp::XPtr<nthResultPtr> putNthResPtrInXPtr(bool IsComb, bool IsMultiset,
+Rcpp::XPtr<nthResultPtr> putNthResPtrInXPtr(bool IsComb, bool IsMult,
                                             bool IsRep, bool IsGmp) {
     
     if (IsGmp) {
         if (IsComb) {
-            if (IsMultiset) {
+            if (IsMult) {
                 return(Rcpp::XPtr<nthResultPtr>(new nthResultPtr(&nthCombMultGmp)));
             } else if (IsRep) {
                 return(Rcpp::XPtr<nthResultPtr>(new nthResultPtr(&nthCombRepGmp)));
@@ -421,7 +421,7 @@ Rcpp::XPtr<nthResultPtr> putNthResPtrInXPtr(bool IsComb, bool IsMultiset,
                 return(Rcpp::XPtr<nthResultPtr>(new nthResultPtr(&nthCombGmp)));
             }
         } else {
-            if (IsMultiset) {
+            if (IsMult) {
                 return(Rcpp::XPtr<nthResultPtr>(new nthResultPtr(&nthPermMultGmp)));
             } else if (IsRep) {
                 return(Rcpp::XPtr<nthResultPtr>(new nthResultPtr(&nthPermRepGmp)));
@@ -431,7 +431,7 @@ Rcpp::XPtr<nthResultPtr> putNthResPtrInXPtr(bool IsComb, bool IsMultiset,
         }
     } else {
         if (IsComb) {
-            if (IsMultiset) {
+            if (IsMult) {
                 return(Rcpp::XPtr<nthResultPtr>(new nthResultPtr(&nthCombMult)));
             } else if (IsRep) {
                 return(Rcpp::XPtr<nthResultPtr>(new nthResultPtr(&nthCombRep)));
@@ -439,7 +439,7 @@ Rcpp::XPtr<nthResultPtr> putNthResPtrInXPtr(bool IsComb, bool IsMultiset,
                 return(Rcpp::XPtr<nthResultPtr>(new nthResultPtr(&nthComb)));
             }
         } else {
-            if (IsMultiset) {
+            if (IsMult) {
                 return(Rcpp::XPtr<nthResultPtr>(new nthResultPtr(&nthPermMult)));
             } else if (IsRep) {
                 return(Rcpp::XPtr<nthResultPtr>(new nthResultPtr(&nthPermRep)));
