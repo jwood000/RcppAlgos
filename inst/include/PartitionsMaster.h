@@ -179,8 +179,7 @@ namespace Partitions {
         if (mIsNull && IncludeZero && m == lenV)
             m = lenV - 1;
         
-        std::size_t nCols = (xtraCol) ? m + 1 : m;
-        
+        const int nCols = (xtraCol) ? m + 1 : m;
         const int lastElem = lenV - 1;
         int lastCol = m - 1;
         
@@ -193,7 +192,6 @@ namespace Partitions {
             // form, we have already checked that the number of results
             // is within integer range in the calling code.
             const int nRows = static_cast<int>(numParts);
-            nCols = (xtraCol) ? m + 1 : m;
             
             typeRcpp partitionsMatrix = (IncludeZero && (IsComb || mIsNull)) ? 
                                             typeRcpp(nRows, nCols) : 
