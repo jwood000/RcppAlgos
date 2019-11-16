@@ -30,7 +30,8 @@ void FinalTouch(typeRcpp &GroupsMat, bool IsArray, int grpSize, int r, int n,
         Rcpp::colnames(GroupsMat) = rcppExtended; 
     }
     
-    if (IsNamed) SetSampleNames(IsGmp, nRows, GroupsMat, mySample, myBigSamp);
+    if (IsNamed)
+        SetSampleNames(IsGmp, nRows, GroupsMat, mySample, myBigSamp);
 }
 
 template <typename typeRcpp, typename typeVector>
