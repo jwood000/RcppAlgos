@@ -4,40 +4,6 @@
 
 constexpr double dblDefault = 0;
 
-
-template <typename typeRcpp, typename typeVector>
-void SampleGmp(const typeVector &v, std::size_t m, const std::vector<int> &myReps, 
-               std::size_t strtIdx, std::size_t endIdx, nthResultPtr nthResFun, 
-               mpz_t *const myBigSamp, typeRcpp &sampleMatrix, int lenV) {
-    
-    for (std::size_t i = strtIdx; i < endIdx; ++i) {
-        const std::vector<int> z = nthResFun(lenV, m, dblDefault, myBigSamp[i], myReps);
-        
-        for (std::size_t j = 0; j < m; ++j)
-            sampleMatrix(i, j) = v[z[j]];
-    }
-    
-}
-
-template <typename typeRcpp, typename typeVector>
-void SampleStd(const typeVector &v, std::size_t m, const std::vector<int> &myReps, 
-               std::size_t strtIdx, std::size_t endIdx, nthResultPtr nthResFun, 
-               const std::vector<double> &mySample, typeRcpp &sampleMatrix, int lenV) {
-    
-    mpz_t mpzDefault;
-    mpz_init(mpzDefault);
-    
-    for (std::size_t i = strtIdx; i < endIdx; ++i) {
-        const std::vector<int> z = nthResFun(lenV, m, mySample[i], mpzDefault, myReps);
-        
-        for (std::size_t j = 0; j < m; ++j)
-            sampleMatrix(i, j) = v[z[j]];
-    }
-    
-    mpz_clear(mpzDefault);
-    
-}
-
 template <typename typeRcpp, typename typeVector>
 void SampleResults(const typeVector &v, std::size_t m, const std::vector<int> &myReps, 
                    std::size_t strtIdx, std::size_t endIdx, nthResultPtr nthResFun, 
@@ -45,11 +11,24 @@ void SampleResults(const typeVector &v, std::size_t m, const std::vector<int> &m
                    typeRcpp &sampleMatrix, int lenV, bool IsGmp) {
     
     if (IsGmp) {
-        SampleGmp(v, m, myReps, strtIdx, endIdx,
-                  nthResFun, myBigSamp, sampleMatrix, lenV);
+        for (std::size_t i = strtIdx; i < endIdx; ++i) {
+            const std::vector<int> z = nthResFun(lenV, m, dblDefault, myBigSamp[i], myReps);
+            
+            for (std::size_t j = 0; j < m; ++j)
+                sampleMatrix(i, j) = v[z[j]];
+        }
     } else {
-        SampleStd(v, m, myReps, strtIdx, endIdx,
-                  nthResFun, mySample, sampleMatrix, lenV);
+        mpz_t mpzDefault;
+        mpz_init(mpzDefault);
+        
+        for (std::size_t i = strtIdx; i < endIdx; ++i) {
+            const std::vector<int> z = nthResFun(lenV, m, mySample[i], mpzDefault, myReps);
+            
+            for (std::size_t j = 0; j < m; ++j)
+                sampleMatrix(i, j) = v[z[j]];
+        }
+        
+        mpz_clear(mpzDefault);
     }
 }
 
@@ -62,7 +41,10 @@ Rcpp::Matrix<RTYPE> SampNoThrdSfe(const Rcpp::Vector<RTYPE> &v, const std::vecto
     Rcpp::Matrix<RTYPE> matRcpp = Rcpp::no_init_matrix(sampSize, m);
     SampleResults(v, m, myReps, 0, sampSize, nthResFun,
                   mySample, myBigSamp, matRcpp, lenV, IsGmp);
-    if (IsNamed) SetSampleNames(IsGmp, sampSize, matRcpp, mySample, myBigSamp);
+    
+    if (IsNamed)
+        SetSampleNames(IsGmp, sampSize, matRcpp, mySample, myBigSamp);
+    
     return matRcpp;
 }
 
@@ -114,7 +96,10 @@ Rcpp::List SampleApplyFun(const Rcpp::Vector<RTYPE> &v, std::size_t m, const std
     }
     
     UNPROTECT(1);
-    if (IsNamed) {SetSampleNames(IsGmp, sampSize, myList, mySample, myBigSamp, false);}
+    
+    if (IsNamed)
+        SetSampleNames(IsGmp, sampSize, myList, mySample, myBigSamp, false);
+    
     return myList;
 }
 
@@ -146,7 +131,8 @@ void MasterSample(std::vector<typeElem> v, std::size_t m, const std::vector<int>
                       mySample, myBigSamp, matRcpp, lenV, IsGmp);
     }
     
-    if (IsNamed) SetSampleNames(IsGmp, sampSize, matRcpp, mySample, myBigSamp);
+    if (IsNamed)
+        SetSampleNames(IsGmp, sampSize, matRcpp, mySample, myBigSamp);
 }
 
 // [[Rcpp::export]]
