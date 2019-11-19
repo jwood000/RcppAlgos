@@ -15,13 +15,12 @@ A collection of high performance functions implemented in C++ with Rcpp for solv
 ## Features
 
 * Generate all combinations/permutations of a vector (including [multisets](<https://en.wikipedia.org/wiki/Multiset>)) meeting specific criteria with **combo/permuteGeneral**.
-* A highly efficient generalized partition function is employed when `constraintFun = "sum"` and `comparisonFun = "=="`.
-* Produce results in parallel using the `Parallel` argument. You can also apply each of the five compiled functions given by the argument `constraintFun` in parallel as well. E.g. Obtaining the row sums of all combinations
+  * E.g. Finding all combinations of a vector such that the mean is between two values.
+* A highly efficient generalized partition function is employed when `constraintFun = "sum"` and `comparisonFun = "=="` (see examples below).
+* Easily generate random samples of combinations/permutations with **combo/permuteSample**.
+* Produce results in parallel using the `Parallel`  or `nThreads` arguments. You can also apply each of the five compiled functions given by the argument `constraintFun` in parallel as well.
 * GMP support allows for exploration of combinations/permutations of vectors with many elements.
-* Easily generate random samples of combinations/permutations in parallel with **combo/permuteSample**
-* Offers a variety high performance number theoretic functions that are useful for problems common in computational mathematics
-* Generates all primes less than a **billion in under 0.4 seconds** with **primeSieve**
-* Count the primes less than **1e15 in under 50 seconds** with **primeCount**
+* Offers a variety of high performance number theoretic functions that are useful for problems common in computational mathematics (E.g. **primeSieve**, **primeFactorize**, and **divisorsRcpp** to name a few).
 
 The `primeSieve` function and the `primeCount` function are both based off of the excellent work by [Kim Walisch](<https://github.com/kimwalisch>). The respective repos can be found here: [kimwalisch/primesieve](<https://github.com/kimwalisch/primesieve>); [kimwalisch/primecount](<https://github.com/kimwalisch/primecount>)
 
@@ -40,16 +39,16 @@ devtools::install_github("jwood000/RcppAlgos")
 
 ``` r
 ## Generate primes in a range quickly
-system.time(b <- primeSieve(1e15, 1e15 + 1e9, nThreads = 8))
+system.time(primeSieve(1e15, 1e15 + 1e9, nThreads = 8))
    user  system elapsed 
-  4.898   0.889   0.953
+  4.872   0.807   0.917
 
   
 ## Count primes quickly
 system.time(print(primeCount(1e14, nThreads = 8)))
 [1] 3204941750802
    user  system elapsed 
- 53.371   0.117   7.221
+ 50.121   0.054   6.688
 
 
 ## Completely factor a vector of numbers 
@@ -108,6 +107,48 @@ comboSample(10, 8, TRUE, n = 5, seed = 84)
 [3,]    3    7    7    7    9   10   10   10
 [4,]    3    3    3    9   10   10   10   10
 [5,]    1    2    2    3    3    4    4    7
+
+
+## Get combinations such that the product is between
+## 3600 and 4000 (including 3600 but not 4000)
+comboGeneral(5, 7, TRUE, constraintFun = "prod",
+             comparisonFun = c(">=","<"),
+             limitConstraints = c(3600, 4000),
+             keepResults = TRUE)
+     [,1] [,2] [,3] [,4] [,5] [,6] [,7] [,8]
+[1,]    1    2    3    5    5    5    5 3750
+[2,]    1    3    3    4    4    5    5 3600
+[3,]    1    3    4    4    4    4    5 3840
+[4,]    2    2    3    3    4    5    5 3600
+[5,]    2    2    3    4    4    4    5 3840
+[6,]    3    3    3    3    3    3    5 3645
+[7,]    3    3    3    3    3    4    4 3888
+
+
+## Find all combinations of the vector c(121, 126, ..., 216, 221)
+## of length 13 such that the sum is equal 2613
+system.time(parts <- comboGeneral(seq(121L, 221L, 5L), 13, TRUE,
+                                  constraintFun = "sum", 
+                                  comparisonFun = "==", 
+                                  limitConstraints = 2613))
+   user  system elapsed 
+  0.008   0.001   0.009
+  
+head(parts)
+     [,1] [,2] [,3] [,4] [,5] [,6] [,7] [,8] [,9] [,10] [,11] [,12] [,13]
+[1,]  121  121  161  221  221  221  221  221  221   221   221   221   221
+[2,]  121  121  166  216  221  221  221  221  221   221   221   221   221
+[3,]  121  121  171  211  221  221  221  221  221   221   221   221   221
+[4,]  121  121  171  216  216  221  221  221  221   221   221   221   221
+[5,]  121  121  176  206  221  221  221  221  221   221   221   221   221
+[6,]  121  121  176  211  216  221  221  221  221   221   221   221   221
+
+dim(parts)
+[1] 119546     13
+
+## Over 500 million possible results
+prettyNum(comboCount(seq(121L, 221L, 5L), 13, TRUE), big.mark = ",")
+[1] "573,166,440"
 ```
 
 ## Getting Started
@@ -119,4 +160,4 @@ comboSample(10, 8, TRUE, n = 5, seed = 84)
 
 ## Contact
 
-I welcome any and all feedback. If you would like to report a bug, have a question, or have suggestions for possible improvements, please contact me here: jwood000@gmail.com
+I welcome any and all feedback. If you would like to report a bug, have a question, or have suggestions for possible improvements, please file an [issue](<https://github.com/jwood000/RcppAlgos/issues>).
