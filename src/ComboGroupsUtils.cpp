@@ -1,4 +1,3 @@
-#include "NthResult.h"
 #include "GmpCombPermUtils.h"
 
 // ******* Overview of the Crucial Part of the Algorithm *******

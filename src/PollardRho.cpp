@@ -1,4 +1,3 @@
-#include <Rcpp.h>
 #include <cmath>
 #include <RcppThread.h>
 #include "PrimesPolRho.h"

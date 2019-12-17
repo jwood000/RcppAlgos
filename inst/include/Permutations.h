@@ -1,6 +1,7 @@
 #ifndef PERMUTATIONS_H
 #define PERMUTATIONS_H
 
+#include "NextCombinatorics.h"
 #include "CombPermUtils.h"
 #include <RcppThread.h>
 

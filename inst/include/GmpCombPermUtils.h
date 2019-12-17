@@ -2,7 +2,6 @@
 #define GMP_COMB_PERM_UTILS_H
 
 #include "CombPermUtils.h"
-#include "Cpp14MakeUnique.h"
 #include "NthResult.h"
 #include <gmp.h>
 

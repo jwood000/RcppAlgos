@@ -1,4 +1,3 @@
-#include "CleanConvert.h"
 #include "ComboGroupsUtils.h"
 #include "RMatrix.h"
 #include <RcppThread.h>

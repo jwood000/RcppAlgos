@@ -1,6 +1,5 @@
-#include <Rcpp.h>
-#include <RcppThread.h>
 #include <cmath>
+#include <RcppThread.h>
 #include <libdivide.h>
 #include "CleanConvert.h"
 

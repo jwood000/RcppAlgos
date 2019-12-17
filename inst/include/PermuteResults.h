@@ -1,7 +1,8 @@
 #ifndef PERMUTE_RESULTS_H
 #define PERMUTE_RESULTS_H
 
-#include "CombPermUtils.h"
+#include "NextCombinatorics.h"
+#include "Cpp14MakeUnique.h"
 #include "UserConstraintFuns.h"
 
 template <typename typeMatrix, typename typeVector>
