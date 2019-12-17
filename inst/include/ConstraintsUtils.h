@@ -140,7 +140,34 @@ inline void BruteNextElem(int &ind, int lowBnd, typeVector targetMin,
         dist = targetMin - partialFun(partial, v[ind], m);
     }
     
-    if (dist > 0 && origInd != ind) {++ind;}
+    // The main idea of this algorithm is to ensure we are finding
+    // the largest lexicographical combination that gets us as
+    // close as possible to the target value without exceeding
+    // that value. As we are only implementing this in a semi-monotic
+    // manner, we are relying on the iteratively increasing algos of
+    // the main combinatoric constraint subroutine to find our actual
+    // soln's. This means that if we ever have a situation where
+    // dist > 0, we must increase ind in order to make dist < 0.
+    //
+    // The only exceptions are if ind == lowBnd or if ind is
+    // unchanged (i.e. origInd == ind).
+    //
+    // The latter case is easier to explain. Basically, origInd can
+    // be viewed as an upperbound and thus should the while loop
+    // never execute, we don't want to increment ind to an 
+    // impossible value.
+    //
+    // For the first case, if the while loop above executed until
+    // ind == lowBnd, this would mean that dist < 0 for lowBnd + 1 
+    // and dist >= 0 for lowBnd + 1. If we were to increment ind
+    // to lowBnd + 1, the upperbound for the next iteration will
+    // equal the lowerbound and the dist will forever be less than
+    // zero moving forward. This will make finding a solution
+    // impossible. We have effectively generated a combination
+    // that is greater than the combination that would result in 
+    // the minimum.
+    
+    if (dist > 0 && lowBnd != ind && origInd != ind) {++ind;}
 }
 
 template <typename typeVector>
@@ -203,7 +230,7 @@ int GetLowerBound(int n, int m, const std::vector<typeVector> &v, bool IsRep,
     int currPos = IsMult ? freqs[zExpCurrPos] : (IsRep ? lastElem: (n - m));
     
     int ind = currPos;
-    int lowBnd = 0;
+    int lowBnd = 1;
     std::vector<int> repsCounter;
     
     if (IsMult)
@@ -227,7 +254,7 @@ int GetLowerBound(int n, int m, const std::vector<typeVector> &v, bool IsRep,
             ++currPos;
         }
         
-        lowBnd = ind;
+        lowBnd = ind + 1;
         ind = currPos;
         partial = PartialReduce(m, partial, v[currPos], myFun);
     }
