@@ -1,9 +1,12 @@
 #include "Combinations.h"
 #include "Permutations.h"
 #include "GmpCombPermUtils.h"
-#include "NthResult.h"
 #include "RMatrix.h"
-#include <RcppThread.h>
+
+// [[Rcpp::export]]
+int cpp11GetNumThreads() {
+    return std::thread::hardware_concurrency();
+}
 
 template <typename T, typename U>
 using combPermPtr = void (*const)(T &matRcpp, const U &v, std::vector<int> z,
@@ -207,7 +210,9 @@ SEXP CombinatoricsStndrd(SEXP Rv, SEXP Rm, SEXP RisRep, SEXP RFreqs, SEXP Rlow,
     const bool applyFun = !Rf_isNull(stdFun) && !IsFactor;
     
     if (applyFun) {
-        if (!Rf_isFunction(stdFun)) {Rcpp::stop("FUN must be a function!");}
+        if (!Rf_isFunction(stdFun))
+            Rcpp::stop("FUN must be a function!");
+        
         const SEXP sexpCopy = CopyRv(Rv, vInt, vNum, myType);
         RCPP_RETURN_VECTOR(ApplyFunction, sexpCopy, n, m, IsRep, nRows,
                            IsComb, freqs, startZ, IsMult, stdFun, myEnv);
