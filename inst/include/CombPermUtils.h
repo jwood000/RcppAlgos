@@ -35,9 +35,6 @@ double MultisetPermRowNum(int n, int r, const std::vector<int> &Reps);
 // gmp analogs are necessary
 double MultisetCombRowNum(int n, int r, const std::vector<int> &Reps);
 
-void nextFullPerm(int *const myArray, int maxInd);
-void nextPartialPerm(int *const myArray, int lastCol, int maxInd);
-
 double GetComputedRows(bool IsMultiset, bool IsComb, bool IsRep, int n, int &m, SEXP Rm,
                        int lenFreqs, std::vector<int> &freqs, std::vector<int> &Reps);
     
