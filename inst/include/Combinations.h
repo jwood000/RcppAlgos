@@ -1,16 +1,14 @@
 #ifndef COMBINATIONS_H
 #define COMBINATIONS_H
 
-#include <Rcpp.h>
+#include "NextCombinatorics.h"
 
 template <typename typeMatrix, typename typeVector>
 void CombinationsNoRep(typeMatrix &matRcpp, const typeVector &v, std::vector<int> z,
                        int n, int m, int strt, int nRows, const std::vector<int> &freqs) {
     
-    for (int count = strt, m2 = m - 2,
-         m1 = m - 1, nMinusM = n - m; count < nRows;) {
-        
-        int numIter = n - z[m1];
+    for (int count = strt, m1 = m - 1, nMinusM = n - m,
+         numIter = n - z[m1]; count < nRows; numIter = n - z[m1]) {
         
         if (numIter + count > nRows)
             numIter = nRows - count;
@@ -19,16 +17,7 @@ void CombinationsNoRep(typeMatrix &matRcpp, const typeVector &v, std::vector<int
             for (int j = 0; j < m; ++j)
                 matRcpp(count, j) = v[z[j]];
         
-        for (int i = m2; i >= 0; --i) {
-            if (z[i] != (nMinusM + i)) {
-                ++z[i];
-                
-                for (int j = i; j < m1; ++j) 
-                    z[j + 1] = z[j] + 1;
-                
-                break;
-            }
-        }
+        nextComb(z, m1, nMinusM);
     }
 }
 
@@ -36,8 +25,7 @@ template <typename typeMatrix, typename typeVector>
 void CombinationsRep(typeMatrix &matRcpp, const typeVector &v, std::vector<int> z,
                      int n, int m, int strt, int nRows, const std::vector<int> &freqs) {
     
-    for (int count = strt, m2 = m - 2,
-         m1 = m - 1, lastElement = n - 1; count < nRows;) {
+    for (int count = strt, m1 = m - 1, n1 = n - 1; count < nRows;) {
         
         int numIter = n - z[m1];
         
@@ -48,16 +36,7 @@ void CombinationsRep(typeMatrix &matRcpp, const typeVector &v, std::vector<int> 
             for (int j = 0; j < m; ++j)
                 matRcpp(count, j) = v[z[j]];
         
-        for (int i = m2; i >= 0; --i) {
-            if (z[i] != lastElement) {
-                ++z[i];
-                
-                for (int j = i; j < m1; ++j)
-                    z[j + 1] = z[j];
-                
-                break;
-            }
-        }
+        nextCombRep(z, m1, n1);
     }
 }
 
@@ -74,7 +53,7 @@ void MultisetCombination(typeMatrix &matRcpp, const typeVector &v, std::vector<i
     // value of the second to the last element
     int pentExtreme = freqs.size() - m;
     
-    for (int count = strt, m1 = m - 1, m2 = m - 2; count < nRows;) {
+    for (int count = strt, m1 = m - 1; count < nRows;) {
         
         int numIter = n - z[m1];
         
@@ -85,19 +64,7 @@ void MultisetCombination(typeMatrix &matRcpp, const typeVector &v, std::vector<i
             for (int j = 0; j < m; ++j)
                 matRcpp(count, j) = v[freqs[zIndex[z[j]]]];
         
-        for (int i = m2; i >= 0; --i) {
-            if (freqs[zIndex[z[i]]] != freqs[pentExtreme + i]) {
-                ++z[i];
-                zGroup[i] = zIndex[z[i]];
-                
-                for (int j = (i + 1); j < m; ++j) {
-                    zGroup[j] = zGroup[j - 1] + 1;
-                    z[j] = freqs[zGroup[j]];
-                }
-                
-                break;
-            }
-        }
+        nextCombMulti(freqs, zIndex, zGroup, z, m, pentExtreme);
     }
 }
 
@@ -108,8 +75,7 @@ void ComboGeneralApplyFun(Rcpp::List &myList, const typeVector &v, std::vector<i
     typeVector vectorPass(m);
     
     if (IsRep) {
-        for (int count = 0, m1 = m - 1, 
-             m2 = m - 2, lastElement = n - 1; count < nRows; ) {
+        for (int count = 0, m1 = m - 1, n1 = n - 1; count < nRows; ) {
             
             int numIter = n - z[m1];
             
@@ -124,20 +90,10 @@ void ComboGeneralApplyFun(Rcpp::List &myList, const typeVector &v, std::vector<i
                 myList[count] = Rf_eval(sexpFun, rho);
             }
             
-            for (int i = m2; i >= 0; i--) {
-                if (z[i] != lastElement) {
-                    ++z[i];
-                    
-                    for (int j = i; j < m1; ++j)
-                        z[j + 1] = z[j];
-                    
-                    break;
-                }
-            }
+            nextCombRep(z, m1, n1);
         }
     } else {
-        for (int count = 0, m1 = m - 1, 
-             m2 = m - 2, nMinusM = n - m; count < nRows;) {
+        for (int count = 0, m1 = m - 1, nMinusM = n - m; count < nRows;) {
             
             int numIter = n - z[m1];
             
@@ -152,16 +108,7 @@ void ComboGeneralApplyFun(Rcpp::List &myList, const typeVector &v, std::vector<i
                 myList[count] = Rf_eval(sexpFun, rho);
             }
             
-            for (int i = m2; i >= 0; i--) {
-                if (z[i] != (nMinusM + i)) {
-                    ++z[i];
-                    
-                    for (int j = i; j < m1; ++j) 
-                        z[j + 1] = z[j] + 1;
-                    
-                    break;
-                }
-            }
+            nextComb(z, m1, nMinusM);
         }
     }
 }
@@ -181,7 +128,7 @@ void MultisetComboApplyFun(Rcpp::List &myList, const typeVector &v, std::vector<
     const int pentExtreme = freqs.size() - m;
     typeVector vectorPass(m);
 
-    for (int count = 0, m1 = m - 1, m2 = m - 2; count < nRows;) {
+    for (int count = 0, m1 = m - 1; count < nRows;) {
         
         int numIter = n - z[m1];
 
@@ -196,19 +143,7 @@ void MultisetComboApplyFun(Rcpp::List &myList, const typeVector &v, std::vector<
             myList[count] = Rf_eval(sexpFun, rho);
         }
 
-        for (int i = m2; i >= 0; i--) {
-            if (freqs[zIndex[z[i]]] != freqs[pentExtreme + i]) {
-                ++z[i];
-                zGroup[i] = zIndex[z[i]];
-                
-                for (int j = (i + 1); j < m; ++j) {
-                    zGroup[j] = zGroup[j - 1] + 1;
-                    z[j] = freqs[zGroup[j]];
-                }
-                
-                break;
-            }
-        }
+        nextCombMulti(freqs, zIndex, zGroup, z, m, pentExtreme);
     }
 }
 
