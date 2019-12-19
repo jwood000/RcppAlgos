@@ -4,11 +4,6 @@
 #include "RMatrix.h"
 #include <RcppThread.h>
 
-// [[Rcpp::export]]
-int cpp11GetNumThreads() {
-    return std::thread::hardware_concurrency();
-}
-
 template <typename typeRcpp, typename T>
 void MasterResRet(typeRcpp &matRcpp, const std::vector<T> &v, funcPtr<T> myFun, int n, int m,
                   bool IsRep, bool IsComb, bool IsMult, bool IsGmp, const std::vector<int> &freqs,

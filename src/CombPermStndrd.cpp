@@ -3,11 +3,6 @@
 #include "GmpCombPermUtils.h"
 #include "RMatrix.h"
 
-// [[Rcpp::export]]
-int cpp11GetNumThreads() {
-    return std::thread::hardware_concurrency();
-}
-
 template <typename T, typename U>
 using combPermPtr = void (*const)(T &matRcpp, const U &v, std::vector<int> z,
                           int n, int m, int strt, int nRows, const std::vector<int> &freqs);

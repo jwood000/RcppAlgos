@@ -5,16 +5,6 @@
 
 using namespace Rcpp;
 
-// cpp11GetNumThreads
-int cpp11GetNumThreads();
-RcppExport SEXP _RcppAlgos_cpp11GetNumThreads() {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    rcpp_result_gen = Rcpp::wrap(cpp11GetNumThreads());
-    return rcpp_result_gen;
-END_RCPP
-}
 // CheckStdRet
 bool CheckStdRet(SEXP Rv, SEXP f1, SEXP f2, SEXP Rtarget, bool IsFactor, SEXP RKeepRes);
 RcppExport SEXP _RcppAlgos_CheckStdRet(SEXP RvSEXP, SEXP f1SEXP, SEXP f2SEXP, SEXP RtargetSEXP, SEXP IsFactorSEXP, SEXP RKeepResSEXP) {
@@ -147,6 +137,16 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// cpp11GetNumThreads
+int cpp11GetNumThreads();
+RcppExport SEXP _RcppAlgos_cpp11GetNumThreads() {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    rcpp_result_gen = Rcpp::wrap(cpp11GetNumThreads());
+    return rcpp_result_gen;
+END_RCPP
+}
 // PollardRhoContainer
 SEXP PollardRhoContainer(SEXP Rv, SEXP RNamed, bool bPrimeFacs, bool bAllFacs, SEXP RNumThreads, int maxThreads);
 RcppExport SEXP _RcppAlgos_PollardRhoContainer(SEXP RvSEXP, SEXP RNamedSEXP, SEXP bPrimeFacsSEXP, SEXP bAllFacsSEXP, SEXP RNumThreadsSEXP, SEXP maxThreadsSEXP) {
@@ -235,7 +235,6 @@ END_RCPP
 }
 
 static const R_CallMethodDef CallEntries[] = {
-    {"_RcppAlgos_cpp11GetNumThreads", (DL_FUNC) &_RcppAlgos_cpp11GetNumThreads, 0},
     {"_RcppAlgos_CheckStdRet", (DL_FUNC) &_RcppAlgos_CheckStdRet, 6},
     {"_RcppAlgos_CombinatoricsCnstrt", (DL_FUNC) &_RcppAlgos_CombinatoricsCnstrt, 15},
     {"_RcppAlgos_CombinatoricsCount", (DL_FUNC) &_RcppAlgos_CombinatoricsCount, 5},
@@ -243,6 +242,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_RcppAlgos_ComboGroupsCountCpp", (DL_FUNC) &_RcppAlgos_ComboGroupsCountCpp, 2},
     {"_RcppAlgos_ComboGroupsRcpp", (DL_FUNC) &_RcppAlgos_ComboGroupsRcpp, 15},
     {"_RcppAlgos_DivNumSieve", (DL_FUNC) &_RcppAlgos_DivNumSieve, 6},
+    {"_RcppAlgos_cpp11GetNumThreads", (DL_FUNC) &_RcppAlgos_cpp11GetNumThreads, 0},
     {"_RcppAlgos_PollardRhoContainer", (DL_FUNC) &_RcppAlgos_PollardRhoContainer, 6},
     {"_RcppAlgos_PrimeCountRcpp", (DL_FUNC) &_RcppAlgos_PrimeCountRcpp, 3},
     {"_RcppAlgos_MotleyContainer", (DL_FUNC) &_RcppAlgos_MotleyContainer, 6},
