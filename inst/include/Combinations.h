@@ -7,8 +7,9 @@ template <typename typeMatrix, typename typeVector>
 void CombinationsNoRep(typeMatrix &matRcpp, const typeVector &v, std::vector<int> z,
                        int n, int m, int strt, int nRows, const std::vector<int> &freqs) {
     
-    for (int count = strt, m1 = m - 1, nMinusM = n - m,
-         numIter = n - z[m1]; count < nRows; numIter = n - z[m1]) {
+    for (int count = strt, m1 = m - 1, nMinusM = n - m; count < nRows;) {
+        
+        int numIter = n - z[m1];
         
         if (numIter + count > nRows)
             numIter = nRows - count;
@@ -49,11 +50,11 @@ void MultisetCombination(typeMatrix &matRcpp, const typeVector &v, std::vector<i
     for (int i = 0; i < n; ++i)
         zIndex[i] = std::find(freqs.cbegin(), freqs.cend(), i) - freqs.cbegin();
     
-    // location in freqs that represents the maximal
-    // value of the second to the last element
-    int pentExtreme = freqs.size() - m;
+    // pentExtreme is the location in freqs that represents
+    // the maximal value of the second to the last element
     
-    for (int count = strt, m1 = m - 1; count < nRows;) {
+    for (int count = strt, m1 = m - 1, 
+         pentExtreme = freqs.size() - m; count < nRows;) {
         
         int numIter = n - z[m1];
         
@@ -123,12 +124,10 @@ void MultisetComboApplyFun(Rcpp::List &myList, const typeVector &v, std::vector<
     for (int i = 0; i < n; ++i)
         zIndex[i] = std::find(freqs.cbegin(), freqs.cend(), i) - freqs.cbegin();
     
-    // location in freqs that represents the maximal
-    // value of the second to the last element
-    const int pentExtreme = freqs.size() - m;
     typeVector vectorPass(m);
 
-    for (int count = 0, m1 = m - 1; count < nRows;) {
+    for (int count = 0, m1 = m - 1, 
+         pentExtreme = freqs.size() - m; count < nRows;) {
         
         int numIter = n - z[m1];
 
