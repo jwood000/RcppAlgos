@@ -2,6 +2,7 @@
 #define COMBO_RESULTS_H
 
 #include "UserConstraintFuns.h"
+#include "NextCombinatorics.h"
 
 template <typename typeMatrix, typename typeVector>
 void ComboGenResNoRep(typeMatrix &matRcpp, const std::vector<typeVector> &v,
@@ -10,8 +11,8 @@ void ComboGenResNoRep(typeMatrix &matRcpp, const std::vector<typeVector> &v,
     
     std::vector<typeVector> vPass(m);
     
-    for (int count = strt, m2 = m - 2,
-         m1 = m - 1, nMinusM = n - m; count < nRows; ) {
+    for (int count = strt, m1 = m - 1, nMinusM = n - m; count < nRows; ) {
+        
         int numIter = n - z[m1];
 
         if (numIter + count > nRows)
@@ -26,16 +27,7 @@ void ComboGenResNoRep(typeMatrix &matRcpp, const std::vector<typeVector> &v,
             matRcpp(count, m) = myFun(vPass, m);
         }
 
-        for (int i = m2; i >= 0; i--) {
-            if (z[i] != (nMinusM + i)) {
-                ++z[i];
-                
-                for (int j = i; j < m1; ++j)
-                    z[j + 1] = z[j] + 1;
-
-                break;
-            }
-        }
+        nextComb(z, m1, nMinusM);
     }
 }
 
@@ -46,8 +38,8 @@ void ComboGenResRep(typeMatrix &matRcpp, const std::vector<typeVector> &v,
     
     std::vector<typeVector> vPass(m);
     
-    for (int count = strt, m2 = m - 2,
-         m1 = m - 1, lastElement = n - 1; count < nRows; ) {
+    for (int count = strt, m1 = m - 1, n1 = n - 1; count < nRows; ) {
+        
         int numIter = n - z[m1];
         
         if (numIter + count > nRows)
@@ -62,16 +54,7 @@ void ComboGenResRep(typeMatrix &matRcpp, const std::vector<typeVector> &v,
             matRcpp(count, m) = myFun(vPass, m);
         }
         
-        for (int i = m2; i >= 0; i--) {
-            if (z[i] != lastElement) {
-                ++z[i];
-                
-                for (int j = i; j < m1; ++j)
-                    z[j + 1] = z[j];
-                
-                break;
-            }
-        }
+        nextCombRep(z, m1, n1);
     }
 }
 
@@ -86,11 +69,12 @@ void MultisetComboResult(typeMatrix &matRcpp, const std::vector<typeVector> &v,
     for (int i = 0; i < n; ++i)
         zIndex[i] = std::find(freqs.cbegin(), freqs.cend(), i) - freqs.cbegin();
     
-    // location in freqs that represents the maximal
-    // value of the second to the last element
-    int pentExtreme = freqs.size() - m;
-    
-    for (int count = strt, m1 = m - 1, m2 = m - 2; count < nRows;) {
+    // pentExtreme is the location in freqs that represents
+    // the maximal value of the second to the last element
+
+    for (int count = strt, m1 = m - 1, 
+         pentExtreme = freqs.size() - m; count < nRows;) {
+        
         int numIter = n - z[m1];
         
         if (numIter + count > nRows)
@@ -105,19 +89,7 @@ void MultisetComboResult(typeMatrix &matRcpp, const std::vector<typeVector> &v,
             matRcpp(count, m) = myFun(vPass, m);
         }
         
-        for (int i = m2; i >= 0; --i) {
-            if (freqs[zIndex[z[i]]] != freqs[pentExtreme + i]) {
-                ++z[i];
-                zGroup[i] = zIndex[z[i]];
-                
-                for (int j = (i + 1); j < m; ++j) {
-                    zGroup[j] = zGroup[j - 1] + 1;
-                    z[j] = freqs[zGroup[j]];
-                }
-                
-                break;
-            }
-        }
+        nextCombMulti(freqs, zIndex, zGroup, z, m, pentExtreme);
     }
 }
 
