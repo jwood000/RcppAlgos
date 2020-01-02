@@ -33,10 +33,10 @@ void SampleResults(const typeVector &v, std::size_t m, const std::vector<int> &m
 }
 
 template <int RTYPE>
-Rcpp::Matrix<RTYPE> SampNoThrdSfe(const Rcpp::Vector<RTYPE> &v, const std::vector<int> &myReps,
-                                  const std::vector<double> &mySample, mpz_t *const myBigSamp, 
-                                  std::size_t m, std::size_t sampSize, nthResultPtr nthResFun,
-                                  int lenV, bool IsGmp, bool IsNamed) {
+Rcpp::Matrix<RTYPE> SampNoThrdSafe(const Rcpp::Vector<RTYPE> &v, const std::vector<int> &myReps,
+                                   const std::vector<double> &mySample, mpz_t *const myBigSamp, 
+                                   std::size_t m, std::size_t sampSize, nthResultPtr nthResFun,
+                                   int lenV, bool IsGmp, bool IsNamed) {
     
     Rcpp::Matrix<RTYPE> matRcpp = Rcpp::no_init_matrix(sampSize, m);
     SampleResults(v, m, myReps, 0, sampSize, nthResFun,
@@ -152,7 +152,7 @@ SEXP SampleRcpp(SEXP Rv, SEXP Rm, SEXP Rrepetition, SEXP RFreqs, SEXP RindexVec,
     bool IsRep = CleanConvert::convertLogical(Rrepetition, "repetition");
     bool Parallel = CleanConvert::convertLogical(Rparallel, "Parallel");
     
-    SetClass(myType, Rv);
+    SetType(myType, Rv);
     SetValues(myType, vInt, vNum, n, Rv);
     SetFreqsAndM(RFreqs, IsMultiset, myReps, IsRep, lenFreqs, freqs, Rm, n, m);
     
@@ -201,7 +201,7 @@ SEXP SampleRcpp(SEXP Rv, SEXP Rm, SEXP Rrepetition, SEXP RFreqs, SEXP RindexVec,
     
     if (myType > VecType::Logical) {
         const SEXP sexpCopy(Rcpp::clone(Rv));
-        RCPP_RETURN_VECTOR(SampNoThrdSfe, sexpCopy, myReps, mySample, 
+        RCPP_RETURN_VECTOR(SampNoThrdSafe, sexpCopy, myReps, mySample, 
                            myVec.get(), m, sampSize, nthResFun, n, IsGmp, IsNamed);
     } else if (myType == VecType::Logical) {
         Rcpp::LogicalMatrix matBool = Rcpp::no_init_matrix(sampSize, m);
