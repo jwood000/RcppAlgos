@@ -7,32 +7,32 @@ Description: Provides optimized functions implemented in C++ with 'Rcpp'
     Also makes use of the RMatrix class from the 'RcppParallel' library.
     There are combination/permutation functions with constraint parameters
     that allow for generation of all combinations/permutations of a vector
-    meeting specific criteria (e.g. finding all combinations such
-    that the sum is between two bounds). Capable of generating specific
-    combinations/permutations (e.g. retrieve only the nth lexicographical
-    result) which sets up nicely for parallelization as well as random
-    sampling. Gmp support permits exploration where the total number of
-    results is large (e.g. comboSample(10000, 500, n = 4)). Additionally,
-    there are several high performance number theoretic functions that
-    are useful for problems common in computational mathematics. Some of
-    these functions make use of the fast integer division library
-    'libdivide' by <http://ridiculousfish.com>. The primeSieve function
-    is based on the segmented sieve of Eratosthenes implementation by
-    Kim Walisch. It is also efficient for large numbers by using the
-    cache friendly improvements originally developed by Tomás Oliveira.
-    Finally, there is a prime counting function that implements Legendre's
-    formula based on the algorithm by Kim Walisch.
+    meeting specific criteria (e.g. generating integer partitions/compositions
+    or finding all combinations such that the sum is between two bounds).
+    Capable of generating specific combinations/permutations (e.g. retrieve
+    only the nth lexicographical result) which sets up nicely for
+    parallelization as well as random sampling. Gmp support permits exploration
+    where the total number of results is large (e.g. comboSample(10000, 500,
+    n = 4)). Additionally, there are several high performance number theoretic
+    functions that are useful for problems common in computational mathematics.
+    Some of these functions make use of the fast integer division library
+    'libdivide'. The primeSieve function is based on the segmented sieve of
+    Eratosthenes implementation by Kim Walisch. It is also efficient for large
+    numbers by using the cache friendly improvements originally developed by
+    Tomás Oliveira. Finally, there is a prime counting function that implements
+    Legendre's formula based on the work of Kim Walisch.
 URL: https://github.com/jwood000/RcppAlgos, https://gmplib.org/,
-        http://primesieve.org/, https://github.com/kimwalisch/primesieve,
-        https://github.com/kimwalisch/primecount, http://libdivide.com/,
+        https://github.com/kimwalisch/primesieve, http://libdivide.com,
+        https://github.com/kimwalisch/primecount, http://ridiculousfish.com/,
         http://sweet.ua.pt/tos/software/prime_sieve.html
 BugReports: https://github.com/jwood000/RcppAlgos/issues
-Imports: gmp, Rcpp (>= 1.0.1)
+Imports: gmp, Rcpp
 LinkingTo: Rcpp, RcppThread
-Suggests: testthat, numbers (>= 0.6-6), bigIntegerAlgos, microbenchmark
+Suggests: testthat, numbers (>= 0.6-6), bigIntegerAlgos, microbenchmark, knitr
 License: GPL (>=2)
 LazyData: TRUE
 SystemRequirements: C++11, gmp (>= 4.2.3)
+VignetteBuilder: knitr
 NeedsCompilation: yes
 Author: Joseph Wood
 Maintainer: Joseph Wood <jwood000@gmail.com>

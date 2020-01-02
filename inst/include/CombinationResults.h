@@ -1,8 +1,8 @@
-#ifndef COMBO_RESULTS_H
-#define COMBO_RESULTS_H
+#ifndef COMBINATION_RESULTS_H
+#define COMBINATION_RESULTS_H
 
 #include "UserConstraintFuns.h"
-#include "NextCombinatorics.h"
+#include "NextStandard.h"
 
 template <typename typeMatrix, typename typeVector>
 void ComboGenResNoRep(typeMatrix &matRcpp, const std::vector<typeVector> &v,
@@ -27,7 +27,7 @@ void ComboGenResNoRep(typeMatrix &matRcpp, const std::vector<typeVector> &v,
             matRcpp(count, m) = myFun(vPass, m);
         }
 
-        nextComb(z, m1, nMinusM);
+        nextCombSec(z, m1, nMinusM);
     }
 }
 
@@ -54,7 +54,7 @@ void ComboGenResRep(typeMatrix &matRcpp, const std::vector<typeVector> &v,
             matRcpp(count, m) = myFun(vPass, m);
         }
         
-        nextCombRep(z, m1, n1);
+        nextCombSecRep(z, m1, n1);
     }
 }
 
@@ -63,7 +63,7 @@ void MultisetComboResult(typeMatrix &matRcpp, const std::vector<typeVector> &v,
                          std::vector<int> z, int n, int m, int strt, int nRows,
                          const std::vector<int> &freqs, funcPtr<typeVector> myFun) {
     
-    std::vector<int> zIndex(n), zGroup(m);
+    std::vector<int> zIndex(n); //, zGroup(m);
     std::vector<typeVector> vPass(m);
     
     for (int i = 0; i < n; ++i)
@@ -89,7 +89,7 @@ void MultisetComboResult(typeMatrix &matRcpp, const std::vector<typeVector> &v,
             matRcpp(count, m) = myFun(vPass, m);
         }
         
-        nextCombMulti(freqs, zIndex, zGroup, z, m, pentExtreme);
+        nextCombSecMulti(freqs, zIndex, z, m1, pentExtreme);
     }
 }
 

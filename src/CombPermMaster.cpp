@@ -1,38 +1,6 @@
-#include "Combinations.h"
-#include "Permutations.h"
 #include "GmpCombPermUtils.h"
+#include "CombPermPtr.h"
 #include "RMatrix.h"
-
-template <typename T, typename U>
-using combPermPtr = void (*const)(T &matRcpp, const U &v, std::vector<int> z,
-                          int n, int m, int strt, int nRows, const std::vector<int> &freqs);
-
-template <typename T, typename U>
-Rcpp::XPtr<combPermPtr<T, U>> putCombPtrInXPtr(bool IsComb, bool IsMult, bool IsRep, bool IsGen) {
-    
-    if (IsComb) {
-        if (IsMult)
-            return(Rcpp::XPtr<combPermPtr<T, U>>(new combPermPtr<T, U>(&MultisetCombination)));
-        else if (IsRep)
-            return(Rcpp::XPtr<combPermPtr<T, U>>(new combPermPtr<T, U>(&CombinationsRep)));
-        else
-            return(Rcpp::XPtr<combPermPtr<T, U>>(new combPermPtr<T, U>(&CombinationsNoRep)));
-    } else {
-        if (IsMult) {
-            return(Rcpp::XPtr<combPermPtr<T, U>>(new combPermPtr<T, U>(&MultisetPermutation)));
-        } else if (IsGen) {
-            if (IsRep)
-                return(Rcpp::XPtr<combPermPtr<T, U>>(new combPermPtr<T, U>(&PermuteGeneralRep)));
-            else
-                return(Rcpp::XPtr<combPermPtr<T, U>>(new combPermPtr<T, U>(&PermuteGeneralNoRep)));
-        } else {
-            if (IsRep)
-                return(Rcpp::XPtr<combPermPtr<T, U>>(new combPermPtr<T, U>(&PermuteSerialRep)));
-            else
-                return(Rcpp::XPtr<combPermPtr<T, U>>(new combPermPtr<T, U>(&PermuteSerialNoRep)));
-        }
-    }
-}
 
 template <int RTYPE>
 Rcpp::List ApplyFunction(const Rcpp::Vector<RTYPE> &v, int n, int m, bool IsRep, int nRows,
@@ -64,7 +32,7 @@ Rcpp::Matrix<T> SerialReturn(const Rcpp::Vector<T> &v, std::vector<int> &z, int 
     Rcpp::XPtr<combPermPtr<Rcpp::Matrix<T>, Rcpp::Vector<T>>> xpFunCoPePtr = 
         putCombPtrInXPtr<Rcpp::Matrix<T>, Rcpp::Vector<T>>(IsComb, IsMult, IsRep, generalRet);
 
-    const combPermPtr<Rcpp::Matrix<T>, Rcpp::Vector<T>> myFunCombPerm = *xpFunCoPePtr; 
+    const combPermPtr<Rcpp::Matrix<T>, Rcpp::Vector<T>> myFunCombPerm = *xpFunCoPePtr;
     myFunCombPerm(matRcpp, v, z, n, m, 0, nRows, freqs);
     return matRcpp;
 }
@@ -129,7 +97,7 @@ SEXP CombinatoricsCount(SEXP Rv, SEXP Rm, SEXP RisRep, SEXP RFreqs, bool IsComb)
     std::vector<int> vInt, myReps, freqs;
     
     bool IsRep = CleanConvert::convertLogical(RisRep, "repetition");
-    SetClass(myType, Rv);
+    SetType(myType, Rv);
     SetValues(myType, vInt, vNum, n, Rv);
     SetFreqsAndM(RFreqs, IsMult, myReps, IsRep, lenFreqs, freqs, Rm, n, m);
     
@@ -163,7 +131,7 @@ SEXP CombinatoricsStndrd(SEXP Rv, SEXP Rm, SEXP RisRep, SEXP RFreqs, SEXP Rlow,
     bool Parallel = CleanConvert::convertLogical(Rparallel, "Parallel");
     bool IsRep = CleanConvert::convertLogical(RisRep, "repetition");
 
-    SetClass(myType, Rv);
+    SetType(myType, Rv);
     SetValues(myType, vInt, vNum, n, Rv);
     SetFreqsAndM(RFreqs, IsMult, myReps, IsRep, lenFreqs, freqs, Rm, n, m);
 

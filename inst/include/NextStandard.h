@@ -1,9 +1,9 @@
-#ifndef NEXT_COMBINATORICS_H
-#define NEXT_COMBINATORICS_H
+#ifndef NEXT_STANDARD_H
+#define NEXT_STANDARD_H
 
 #include <Rcpp.h>
 
-inline void nextComb(std::vector<int> &z, int m1, int nMinusM) {
+inline void nextCombSec(std::vector<int> &z, int m1, int nMinusM) {
     
     for (int i = m1 - 1; i >= 0; --i) {
         if (z[i] != (nMinusM + i)) {
@@ -17,7 +17,7 @@ inline void nextComb(std::vector<int> &z, int m1, int nMinusM) {
     }
 }
 
-inline void nextCombRep(std::vector<int> &z, int m1, int n1) {
+inline void nextCombSecRep(std::vector<int> &z, int m1, int n1) {
     
     for (int i = m1 - 1; i >= 0; --i) {
         if (z[i] != n1) {
@@ -31,26 +31,25 @@ inline void nextCombRep(std::vector<int> &z, int m1, int n1) {
     }
 }
 
-inline void nextCombMulti(const std::vector<int> &freqs, const std::vector<int> &zIndex,
-                          std::vector<int> &zGroup, std::vector<int> &z, int m, int pentExtreme) {
+inline void nextCombSecMulti(const std::vector<int> &freqs, const std::vector<int> &zIndex,
+                             std::vector<int> &z, int m1, int pentExtreme) {
     
-    for (int i = m - 2; i >= 0; --i) {
-        if (freqs[zIndex[z[i]]] != freqs[pentExtreme + i]) {
+    for (int i = m1 - 1; i >= 0; --i) {
+        if (z[i] != freqs[pentExtreme + i]) {
             ++z[i];
-            zGroup[i] = zIndex[z[i]];
             
-            for (int j = (i + 1); j < m; ++j) {
-                zGroup[j] = zGroup[j - 1] + 1;
-                z[j] = freqs[zGroup[j]];
-            }
+            for (int j = (i + 1), k = zIndex[z[i]] + 1; j <= m1; ++j, ++k)
+                z[j] = freqs[k];
             
             break;
         }
     }
 }
 
-// This algorithm is nearly identical to the
-// one found in the standard algorithm library
+// This algorithm is nearly identical to the one found in the
+// standard algorithm library. Also, this and the following
+// algo are used in functions found in Permutations.h as well
+// as PermuteResults.h
 inline void nextFullPerm(int *const myArray, int maxInd) {
     
     int p1 = maxInd - 1;
@@ -73,37 +72,35 @@ inline void nextFullPerm(int *const myArray, int maxInd) {
     }
 }
 
-// This algorithm is the same as above except that
-// since we are not using the entire vector, we have
-// to first check that the rth element is the largest.
-// If it is, we have to reverse all of the elements
-// to the right of the rth position before finding
-// the next permutation. This is so because if we
-// didn't, all of the next perms of the entire vector
-// would produce many duplicate r-length perms. If it
-// isn't the largest, we find the element to the right
-// and swap them. We can then proceed to the next perm.
-// We can do this because the standard algo would end
-// up performing two unnecessary reversings.
-inline void nextPartialPerm(int *const myArray, int r1, int maxInd) {
+// This algorithm is the same as above except that since we are
+// not using the entire vector, we have to first check that the
+// mth element is the largest. If it is, we have to reverse all
+// of the elements to the right of the rth position before
+// finding the next permutation. This is so because if we did
+// not, all of the next perms of the entire vector would produce
+// many duplicate m-length perms. If it isn't the largest, we
+// find the element to the right and swap them. We can then
+// proceed to the next perm. We can do this because the standard
+// algo would end up performing two unnecessary reversings.
+inline void nextPartialPerm(int *const myArray, int m1, int maxInd) {
     
-    int p1 = r1;
+    int p1 = m1 + 1;
     
-    while (p1 <= maxInd && myArray[r1] >= myArray[p1])
+    while (p1 <= maxInd && myArray[m1] >= myArray[p1])
         ++p1;
     
     if (p1 <= maxInd) {
         int temp = myArray[p1];
-        myArray[p1] = myArray[r1];
-        myArray[r1] = temp;
+        myArray[p1] = myArray[m1];
+        myArray[m1] = temp;
     } else {
-        for (int k = r1 + 1, q = maxInd; k < q; ++k, --q) {
+        for (int k = m1 + 1, q = maxInd; k < q; ++k, --q) {
             int temp = myArray[k];
             myArray[k] = myArray[q];
             myArray[q] = temp;
         }
         
-        p1 = r1;
+        p1 = m1;
         while (myArray[p1 + 1] <= myArray[p1])
             --p1;
         
@@ -123,6 +120,5 @@ inline void nextPartialPerm(int *const myArray, int r1, int maxInd) {
         }
     }
 }
-
 
 #endif

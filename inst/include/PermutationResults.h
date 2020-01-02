@@ -1,7 +1,7 @@
-#ifndef PERMUTE_RESULTS_H
-#define PERMUTE_RESULTS_H
+#ifndef PERMUTATION_RESULTS_H
+#define PERMUTATION_RESULTS_H
 
-#include "NextCombinatorics.h"
+#include "NextStandard.h"
 #include "Cpp14MakeUnique.h"
 #include "UserConstraintFuns.h"
 
