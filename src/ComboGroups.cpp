@@ -188,7 +188,7 @@ SEXP ComboGroupsCountCpp(SEXP Rv, SEXP RNumGroups) {
     std::vector<double> vNum;
     std::vector<int> vInt;
     
-    SetClass(myType, Rv);
+    SetType(myType, Rv);
     SetValues(myType, vInt, vNum, n, Rv);
     
     if (n % numGroups != 0) {
@@ -226,7 +226,7 @@ SEXP ComboGroupsRcpp(SEXP Rv, SEXP RNumGroups, SEXP RRetType, SEXP Rlow, SEXP Rh
     std::vector<double> vNum;
     std::vector<int> vInt;
     
-    SetClass(myType, Rv);
+    SetType(myType, Rv);
     SetValues(myType, vInt, vNum, n, Rv);
     
     if (n % numGroups != 0) {
