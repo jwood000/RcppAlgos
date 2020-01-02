@@ -2,37 +2,10 @@
 #define PARTITIONS_MASTER_H
 
 #include "GeneralPartitions.h"
+#include "NextPartitions.h"
 #include "Cpp14MakeUnique.h"
 
 namespace Partitions {
-    
-    void NextDistinct(std::vector<int> &z, int &boundary,
-                      int &edge, int &tarDiff, int lastCol) {
-        
-        if (z[boundary] - z[edge] != tarDiff)
-            boundary = edge + 1;
-        
-        ++z[edge];
-        --z[boundary];
-        int myEdgePlus = z[edge] + boundary - edge;
-        
-        for (; boundary < lastCol; ++boundary, ++myEdgePlus) {
-            z[lastCol] += (z[boundary] - myEdgePlus);
-            z[boundary] = myEdgePlus;
-        }
-        
-        while (boundary > 1 && (z[boundary] - z[boundary - 1]) < 2) {
-            --boundary;
-        }
-        
-        edge = boundary - 1;
-        tarDiff = 3;
-        
-        while (edge && (z[boundary] - z[edge]) < tarDiff) {
-            --edge;
-            ++tarDiff;
-        }
-    }
     
     template <typename typeRcpp>
     void PartsStdDistinct(typeRcpp &partitionsMatrix, std::vector<int> &z, std::size_t m,
@@ -90,32 +63,6 @@ namespace Partitions {
                 }
             }
         }
-    }
-
-    void NextPartition(std::vector<int> &z, int &boundary, int &edge, int lastCol) {
-        
-        if (z[boundary] - z[edge] != 2)
-            boundary = edge + 1;
-        
-        ++z[edge];
-        --z[boundary];
-        const int myEdge = z[edge];
-        
-        for (; boundary < lastCol; ++boundary) {
-            z[lastCol] += (z[boundary] - myEdge);
-            z[boundary] = myEdge;
-        }
-        
-        const int currMax = z[boundary];
-        
-        while (boundary > 1 && z[boundary - 1] == currMax)
-            --boundary;
-        
-        edge = boundary - 1;
-        const int edgeTest = z[boundary] - 2;
-        
-        while (edge && edgeTest < z[edge])
-            --edge;
     }
     
     template <typename typeRcpp>
