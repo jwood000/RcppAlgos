@@ -1,7 +1,7 @@
 #ifndef PERMUTATIONS_H
 #define PERMUTATIONS_H
 
-#include "NextCombinatorics.h"
+#include "NextStandard.h"
 #include "CombPermUtils.h"
 #include <RcppThread.h>
 
@@ -321,7 +321,7 @@ void MultisetPermutation(typeMatrix &matRcpp, const typeVector &v, std::vector<i
 }
 
 template <typename typeVector>
-void PermutationApplyFun(Rcpp::List &myList, const typeVector &v, std::vector<int> &z, int n,
+void PermutationApplyFun(Rcpp::List &myList, const typeVector &v, std::vector<int> z, int n,
                          int m, bool IsRep, bool IsMult, int nRows, SEXP sexpFun, SEXP rho) {
     
     const int lenFreqs = (IsMult) ? z.size() : 0;
@@ -332,8 +332,6 @@ void PermutationApplyFun(Rcpp::List &myList, const typeVector &v, std::vector<in
     const int maxInd = (IsMult) ? (lenFreqs - 1) : (n - 1);
     
     if (IsRep) {
-        const int maxIndInt = maxInd;
-        
         for (int count = 0; count < nRows; ++count) {
             for (int j = 0; j < m; ++j)
                 vectorPass[j] = v[z[j]];
@@ -342,7 +340,7 @@ void PermutationApplyFun(Rcpp::List &myList, const typeVector &v, std::vector<in
             myList[count] = Rf_eval(sexpFun, rho);
 
             for (int i = lastCol; i >= 0; --i) {
-                if (z[i] != maxIndInt) {
+                if (z[i] != maxInd) {
                     ++z[i];
                     break;
                 } else {
