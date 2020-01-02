@@ -5,47 +5,6 @@
 
 using namespace Rcpp;
 
-// CheckStdRet
-bool CheckStdRet(SEXP Rv, SEXP f1, SEXP f2, SEXP Rtarget, bool IsFactor, SEXP RKeepRes);
-RcppExport SEXP _RcppAlgos_CheckStdRet(SEXP RvSEXP, SEXP f1SEXP, SEXP f2SEXP, SEXP RtargetSEXP, SEXP IsFactorSEXP, SEXP RKeepResSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< SEXP >::type Rv(RvSEXP);
-    Rcpp::traits::input_parameter< SEXP >::type f1(f1SEXP);
-    Rcpp::traits::input_parameter< SEXP >::type f2(f2SEXP);
-    Rcpp::traits::input_parameter< SEXP >::type Rtarget(RtargetSEXP);
-    Rcpp::traits::input_parameter< bool >::type IsFactor(IsFactorSEXP);
-    Rcpp::traits::input_parameter< SEXP >::type RKeepRes(RKeepResSEXP);
-    rcpp_result_gen = Rcpp::wrap(CheckStdRet(Rv, f1, f2, Rtarget, IsFactor, RKeepRes));
-    return rcpp_result_gen;
-END_RCPP
-}
-// CombinatoricsCnstrt
-SEXP CombinatoricsCnstrt(SEXP Rv, SEXP Rm, SEXP RisRep, SEXP RFreqs, SEXP Rlow, SEXP Rhigh, SEXP f1, SEXP f2, SEXP Rtarget, bool IsComb, SEXP RKeepRes, SEXP Rparallel, SEXP RnThreads, int maxThreads, SEXP Rtolerance);
-RcppExport SEXP _RcppAlgos_CombinatoricsCnstrt(SEXP RvSEXP, SEXP RmSEXP, SEXP RisRepSEXP, SEXP RFreqsSEXP, SEXP RlowSEXP, SEXP RhighSEXP, SEXP f1SEXP, SEXP f2SEXP, SEXP RtargetSEXP, SEXP IsCombSEXP, SEXP RKeepResSEXP, SEXP RparallelSEXP, SEXP RnThreadsSEXP, SEXP maxThreadsSEXP, SEXP RtoleranceSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< SEXP >::type Rv(RvSEXP);
-    Rcpp::traits::input_parameter< SEXP >::type Rm(RmSEXP);
-    Rcpp::traits::input_parameter< SEXP >::type RisRep(RisRepSEXP);
-    Rcpp::traits::input_parameter< SEXP >::type RFreqs(RFreqsSEXP);
-    Rcpp::traits::input_parameter< SEXP >::type Rlow(RlowSEXP);
-    Rcpp::traits::input_parameter< SEXP >::type Rhigh(RhighSEXP);
-    Rcpp::traits::input_parameter< SEXP >::type f1(f1SEXP);
-    Rcpp::traits::input_parameter< SEXP >::type f2(f2SEXP);
-    Rcpp::traits::input_parameter< SEXP >::type Rtarget(RtargetSEXP);
-    Rcpp::traits::input_parameter< bool >::type IsComb(IsCombSEXP);
-    Rcpp::traits::input_parameter< SEXP >::type RKeepRes(RKeepResSEXP);
-    Rcpp::traits::input_parameter< SEXP >::type Rparallel(RparallelSEXP);
-    Rcpp::traits::input_parameter< SEXP >::type RnThreads(RnThreadsSEXP);
-    Rcpp::traits::input_parameter< int >::type maxThreads(maxThreadsSEXP);
-    Rcpp::traits::input_parameter< SEXP >::type Rtolerance(RtoleranceSEXP);
-    rcpp_result_gen = Rcpp::wrap(CombinatoricsCnstrt(Rv, Rm, RisRep, RFreqs, Rlow, Rhigh, f1, f2, Rtarget, IsComb, RKeepRes, Rparallel, RnThreads, maxThreads, Rtolerance));
-    return rcpp_result_gen;
-END_RCPP
-}
 // CombinatoricsCount
 SEXP CombinatoricsCount(SEXP Rv, SEXP Rm, SEXP RisRep, SEXP RFreqs, bool IsComb);
 RcppExport SEXP _RcppAlgos_CombinatoricsCount(SEXP RvSEXP, SEXP RmSEXP, SEXP RisRepSEXP, SEXP RFreqsSEXP, SEXP IsCombSEXP) {
@@ -121,6 +80,47 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// CheckStdRet
+bool CheckStdRet(SEXP Rv, SEXP f1, SEXP f2, SEXP Rtarget, bool IsFactor, SEXP RKeepRes);
+RcppExport SEXP _RcppAlgos_CheckStdRet(SEXP RvSEXP, SEXP f1SEXP, SEXP f2SEXP, SEXP RtargetSEXP, SEXP IsFactorSEXP, SEXP RKeepResSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< SEXP >::type Rv(RvSEXP);
+    Rcpp::traits::input_parameter< SEXP >::type f1(f1SEXP);
+    Rcpp::traits::input_parameter< SEXP >::type f2(f2SEXP);
+    Rcpp::traits::input_parameter< SEXP >::type Rtarget(RtargetSEXP);
+    Rcpp::traits::input_parameter< bool >::type IsFactor(IsFactorSEXP);
+    Rcpp::traits::input_parameter< SEXP >::type RKeepRes(RKeepResSEXP);
+    rcpp_result_gen = Rcpp::wrap(CheckStdRet(Rv, f1, f2, Rtarget, IsFactor, RKeepRes));
+    return rcpp_result_gen;
+END_RCPP
+}
+// CombinatoricsCnstrt
+SEXP CombinatoricsCnstrt(SEXP Rv, SEXP Rm, SEXP RisRep, SEXP RFreqs, SEXP Rlow, SEXP Rhigh, SEXP f1, SEXP f2, SEXP Rtarget, bool IsComb, SEXP RKeepRes, SEXP Rparallel, SEXP RnThreads, int maxThreads, SEXP Rtolerance);
+RcppExport SEXP _RcppAlgos_CombinatoricsCnstrt(SEXP RvSEXP, SEXP RmSEXP, SEXP RisRepSEXP, SEXP RFreqsSEXP, SEXP RlowSEXP, SEXP RhighSEXP, SEXP f1SEXP, SEXP f2SEXP, SEXP RtargetSEXP, SEXP IsCombSEXP, SEXP RKeepResSEXP, SEXP RparallelSEXP, SEXP RnThreadsSEXP, SEXP maxThreadsSEXP, SEXP RtoleranceSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< SEXP >::type Rv(RvSEXP);
+    Rcpp::traits::input_parameter< SEXP >::type Rm(RmSEXP);
+    Rcpp::traits::input_parameter< SEXP >::type RisRep(RisRepSEXP);
+    Rcpp::traits::input_parameter< SEXP >::type RFreqs(RFreqsSEXP);
+    Rcpp::traits::input_parameter< SEXP >::type Rlow(RlowSEXP);
+    Rcpp::traits::input_parameter< SEXP >::type Rhigh(RhighSEXP);
+    Rcpp::traits::input_parameter< SEXP >::type f1(f1SEXP);
+    Rcpp::traits::input_parameter< SEXP >::type f2(f2SEXP);
+    Rcpp::traits::input_parameter< SEXP >::type Rtarget(RtargetSEXP);
+    Rcpp::traits::input_parameter< bool >::type IsComb(IsCombSEXP);
+    Rcpp::traits::input_parameter< SEXP >::type RKeepRes(RKeepResSEXP);
+    Rcpp::traits::input_parameter< SEXP >::type Rparallel(RparallelSEXP);
+    Rcpp::traits::input_parameter< SEXP >::type RnThreads(RnThreadsSEXP);
+    Rcpp::traits::input_parameter< int >::type maxThreads(maxThreadsSEXP);
+    Rcpp::traits::input_parameter< SEXP >::type Rtolerance(RtoleranceSEXP);
+    rcpp_result_gen = Rcpp::wrap(CombinatoricsCnstrt(Rv, Rm, RisRep, RFreqs, Rlow, Rhigh, f1, f2, Rtarget, IsComb, RKeepRes, Rparallel, RnThreads, maxThreads, Rtolerance));
+    return rcpp_result_gen;
+END_RCPP
+}
 // DivNumSieve
 SEXP DivNumSieve(SEXP Rb1, SEXP Rb2, bool bDivSieve, SEXP RNamed, SEXP RNumThreads, int maxThreads);
 RcppExport SEXP _RcppAlgos_DivNumSieve(SEXP Rb1SEXP, SEXP Rb2SEXP, SEXP bDivSieveSEXP, SEXP RNamedSEXP, SEXP RNumThreadsSEXP, SEXP maxThreadsSEXP) {
@@ -134,6 +134,24 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< SEXP >::type RNumThreads(RNumThreadsSEXP);
     Rcpp::traits::input_parameter< int >::type maxThreads(maxThreadsSEXP);
     rcpp_result_gen = Rcpp::wrap(DivNumSieve(Rb1, Rb2, bDivSieve, RNamed, RNumThreads, maxThreads));
+    return rcpp_result_gen;
+END_RCPP
+}
+// GetClassVals
+Rcpp::List GetClassVals(bool IsStdRet, SEXP Rv, SEXP Rm, SEXP RisRep, SEXP RFreqs, bool IsComb, bool IsFactor, SEXP stdFun);
+RcppExport SEXP _RcppAlgos_GetClassVals(SEXP IsStdRetSEXP, SEXP RvSEXP, SEXP RmSEXP, SEXP RisRepSEXP, SEXP RFreqsSEXP, SEXP IsCombSEXP, SEXP IsFactorSEXP, SEXP stdFunSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< bool >::type IsStdRet(IsStdRetSEXP);
+    Rcpp::traits::input_parameter< SEXP >::type Rv(RvSEXP);
+    Rcpp::traits::input_parameter< SEXP >::type Rm(RmSEXP);
+    Rcpp::traits::input_parameter< SEXP >::type RisRep(RisRepSEXP);
+    Rcpp::traits::input_parameter< SEXP >::type RFreqs(RFreqsSEXP);
+    Rcpp::traits::input_parameter< bool >::type IsComb(IsCombSEXP);
+    Rcpp::traits::input_parameter< bool >::type IsFactor(IsFactorSEXP);
+    Rcpp::traits::input_parameter< SEXP >::type stdFun(stdFunSEXP);
+    rcpp_result_gen = Rcpp::wrap(GetClassVals(IsStdRet, Rv, Rm, RisRep, RFreqs, IsComb, IsFactor, stdFun));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -235,13 +253,14 @@ END_RCPP
 }
 
 static const R_CallMethodDef CallEntries[] = {
-    {"_RcppAlgos_CheckStdRet", (DL_FUNC) &_RcppAlgos_CheckStdRet, 6},
-    {"_RcppAlgos_CombinatoricsCnstrt", (DL_FUNC) &_RcppAlgos_CombinatoricsCnstrt, 15},
     {"_RcppAlgos_CombinatoricsCount", (DL_FUNC) &_RcppAlgos_CombinatoricsCount, 5},
     {"_RcppAlgos_CombinatoricsStndrd", (DL_FUNC) &_RcppAlgos_CombinatoricsStndrd, 13},
     {"_RcppAlgos_ComboGroupsCountCpp", (DL_FUNC) &_RcppAlgos_ComboGroupsCountCpp, 2},
     {"_RcppAlgos_ComboGroupsRcpp", (DL_FUNC) &_RcppAlgos_ComboGroupsRcpp, 15},
+    {"_RcppAlgos_CheckStdRet", (DL_FUNC) &_RcppAlgos_CheckStdRet, 6},
+    {"_RcppAlgos_CombinatoricsCnstrt", (DL_FUNC) &_RcppAlgos_CombinatoricsCnstrt, 15},
     {"_RcppAlgos_DivNumSieve", (DL_FUNC) &_RcppAlgos_DivNumSieve, 6},
+    {"_RcppAlgos_GetClassVals", (DL_FUNC) &_RcppAlgos_GetClassVals, 8},
     {"_RcppAlgos_cpp11GetNumThreads", (DL_FUNC) &_RcppAlgos_cpp11GetNumThreads, 0},
     {"_RcppAlgos_PollardRhoContainer", (DL_FUNC) &_RcppAlgos_PollardRhoContainer, 6},
     {"_RcppAlgos_PrimeCountRcpp", (DL_FUNC) &_RcppAlgos_PrimeCountRcpp, 3},
