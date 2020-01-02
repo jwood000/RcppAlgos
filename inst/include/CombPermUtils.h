@@ -3,7 +3,9 @@
 
 #include "CleanConvert.h"
 
-void SetClass(VecType &myType, const SEXP &Rv);
+void SetType(VecType &myType, const SEXP &Rv);
+std::vector<int> zUpdateIndex(SEXP x, SEXP y, int m);
+
 void SetFactorClass(Rcpp::IntegerMatrix &matInt, const SEXP &Rv);
 
 void SetValues(VecType &myType, std::vector<int> &vInt,
@@ -16,7 +18,7 @@ void SetThreads(bool &Parallel, int maxThreads, int nRows,
                 VecType myType, int &nThreads, SEXP RNumThreads, int limit);
 
 SEXP CopyRv(const SEXP &Rv, const std::vector<int> &vInt,
-            const std::vector<double> &vNum, VecType myType);
+            const std::vector<double> &vNum, VecType myType, bool IsFactor = false);
 
 void SetRandomSample(SEXP RindexVec, SEXP RNumSamp, std::size_t &sampSize,
                      bool IsGmp, double computedRows, std::vector<double> &mySample,

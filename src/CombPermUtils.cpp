@@ -1,6 +1,6 @@
 #include "GmpCombPermUtils.h"
 
-void SetClass(VecType &myType, const SEXP &Rv) {
+void SetType(VecType &myType, const SEXP &Rv) {
     
     switch(TYPEOF(Rv)) {
         case LGLSXP: {
@@ -38,9 +38,106 @@ void SetClass(VecType &myType, const SEXP &Rv) {
             }
         }
         default: {
-            Rcpp::stop("Only atomic types are supported for v");   
+            Rcpp::stop("Only atomic types are supported for v");
         }
     }
+}
+
+std::vector<int> zUpdateIndex(SEXP x, SEXP y, int m) {
+    
+    Rcpp::IntegerVector nonZeroBased(m);
+    constexpr double myTolerance = 8 * std::numeric_limits<double>::epsilon();
+    const int n1 = Rf_length(x) - 1;
+    
+    switch (TYPEOF(x)) {
+        case LGLSXP: {
+            Rcpp::LogicalVector xBool(Rcpp::clone(x));
+            Rcpp::LogicalVector yBool(Rcpp::clone(y));
+            
+            for (int j = 0; j < m; ++j) {
+                int ind = 0;
+                
+                while (ind < n1 && xBool[ind] != yBool[j])
+                    ++ind;
+                
+                nonZeroBased[j] = ind + 1;
+            }
+            
+            break;
+        }
+        case INTSXP: {
+            Rcpp::IntegerVector xInt(Rcpp::clone(x));
+            Rcpp::IntegerVector yInt(Rcpp::clone(y));
+            nonZeroBased = Rcpp::match(yInt, xInt);
+            break;
+        }
+        case REALSXP: {
+            Rcpp::NumericVector xNum(Rcpp::clone(x));
+            Rcpp::NumericVector yNum(Rcpp::clone(y));
+            
+            for (int j = 0; j < m; ++j) {
+                int ind = 0;
+                
+                while (ind < n1 && std::abs(xNum[ind] - yNum[j]) > myTolerance)
+                    ++ind;
+                
+                nonZeroBased[j] = ind + 1;
+            }
+
+            break;
+        }
+        case STRSXP: {
+            Rcpp::CharacterVector xBool(Rcpp::clone(x));
+            Rcpp::CharacterVector yBool(Rcpp::clone(y));
+            nonZeroBased = Rcpp::match(yBool, xBool);
+            break;
+        }
+        case CPLXSXP: {
+            Rcpp::ComplexVector xCmplx(Rcpp::clone(x));
+            Rcpp::ComplexVector yCmplx(Rcpp::clone(y));
+            
+            for (int j = 0; j < m; ++j) {
+                int ind = 0;
+                bool bTestImg = std::abs(xCmplx[ind].i - yCmplx[j].i) > myTolerance;
+                bool bTestReal = std::abs(xCmplx[ind].r - yCmplx[j].r) > myTolerance;
+                
+                while (ind < n1 && (bTestImg || bTestReal)) {
+                    ++ind;
+                    bTestImg = std::abs(xCmplx[ind].i - yCmplx[j].i) > myTolerance;
+                    bTestReal = std::abs(xCmplx[ind].r - yCmplx[j].r) > myTolerance;
+                }
+
+                nonZeroBased[j] = ind + 1;
+            }
+            
+            break;
+        }
+        case RAWSXP: {
+            Rcpp::RawVector xRaw(Rcpp::clone(x));
+            Rcpp::RawVector yRaw(Rcpp::clone(y));
+            
+            for (int j = 0; j < m; ++j) {
+                int ind = 0;
+                
+                while (ind < n1 && xRaw[ind] != yRaw[j])
+                    ++ind;
+                
+                nonZeroBased[j] = ind + 1;
+            }
+            
+            break;
+        }
+        default:{
+            Rcpp::stop("Only atomic types are supported for v");
+        }
+    }
+    
+    std::vector<int> res(m, 0);
+    
+    for (int i = 0; i < m; ++i)
+        res[i] = nonZeroBased[i] - 1;
+    
+    return res;
 }
 
 void SetFactorClass(Rcpp::IntegerMatrix &matInt, const SEXP &Rv) {
@@ -128,9 +225,9 @@ void SetFreqsAndM(SEXP RFreqs, bool &IsMultiset, std::vector<int> &Reps, bool &I
 }
 
 SEXP CopyRv(const SEXP &Rv, const std::vector<int> &vInt,
-            const std::vector<double> &vNum, VecType myType) {
+            const std::vector<double> &vNum, VecType myType, bool IsFactor) {
     
-    if (myType > VecType::Numeric) {
+    if (myType > VecType::Numeric || IsFactor) {
         return Rcpp::clone(Rv);
     } else if (myType == VecType::Integer) {
         return Rcpp::wrap(vInt);
@@ -183,12 +280,10 @@ void SetRandomSample(SEXP RindexVec, SEXP RNumSamp, std::size_t &sampSize,
                      bool IsGmp, double computedRows, std::vector<double> &mySample,
                      Rcpp::Function baseSample) {
     
-    // We must treat gmp case special. We first have to get the size of
-    // our sample vector, as we have to declare a mpz_t array with
-    // known size. You will note that in the base case below,
-    // we simply populate mySample, otherwise we just get the size.
-    // This size var will be used in the next block... If (IsGmp)
-    
+    // We must treat gmp case special. We first have to get the size of our sample
+    // vector, as we have to declare a mpz_t array with known size. You will note
+    // that in the base case below, we simply populate mySample, otherwise we just
+    // get the size. This size var will be used in the next block (If (IsGmp)...)
     if (Rf_isNull(RindexVec)) {
         if (Rf_isNull(RNumSamp))
             Rcpp::stop("n and sampleVec cannot both be NULL");
@@ -240,10 +335,9 @@ void SetRandomSample(SEXP RindexVec, SEXP RNumSamp, std::size_t &sampSize,
         --s;
 }
 
-// Most of the code for rleCpp was obtained
-// from Hadley Wickham's article titled 
-// "High Performance functions with Rcpp"
-// found: http://adv-r.had.co.nz/Rcpp.html
+// Most of the code for rleCpp was obtained from Hadley Wickham's
+// article titled "High Performance functions with Rcpp" found:
+//             http://adv-r.had.co.nz/Rcpp.html
 std::vector<int> rleCpp(const std::vector<int> &x) {
     std::vector<int> lengths;
     int prev = x[0];
@@ -320,7 +414,6 @@ double NumCombsWithRep(int n, int r) {
 // in mind is that we can't guarantee the following:
 //      1) the repetition of each element is greater than or equal to n
 //      2) that the repetition of each element isn't the same
-
 double MultisetCombRowNumFast(int n, int r, const std::vector<int> &Reps) {
     
     if (r < 1 || n <= 1)
@@ -401,12 +494,10 @@ double MultisetCombRowNumFast(int n, int r, const std::vector<int> &Reps) {
     return triangleVec[r];
 }
 
-// The algorithm below is credited to Randy Lai,
-// author of arrangements and iterpc. It is much
-// faster than the original naive approach whereby
-// we create all combinations of the multiset, then
-// subsequently count the number of permutations
-// of each of those combinations.
+// The algorithm below is credited to Randy Lai, author of arrangements
+// and iterpc. It is much faster than the original naive approach whereby
+// we create all combinations of the multiset, thensubsequently count the
+// number of permutations of each of those combinations.
 double MultisetPermRowNum(int n, int r, const std::vector<int> &Reps) {
     
     if (n < 2 || r < 1)
@@ -477,10 +568,9 @@ double MultisetPermRowNum(int n, int r, const std::vector<int> &Reps) {
     return numPerms;
 }
 
-// This function will be used in the main function to
-// determine whether gmp analogs are needed as the fast
-// algorithm above could potentially produce negative
-// results because of issues with double precision
+// This function will be used in the main function to determine whether
+// gmp analogs are needed as the fast algorithm above could potentially
+// produce negative results because of issues with double precision
 double MultisetCombRowNum(int n, int r, const std::vector<int> &Reps) {
     
     if (r < 1 || n <= 1)
