@@ -26,7 +26,7 @@ void SetNumResults(bool IsGmp, bool bLower, bool bUpper, bool IsGenCnstrd, mpz_t
 void SetRandomSampleMpz(const SEXP &RindexVec, const SEXP &RmySeed, std::size_t sampSize,
                         bool IsGmp, mpz_t &computedRowMpz, mpz_t *myVec);
 
-void SetStartZ(int n, int r, double &lower, int stepSize, mpz_t &lowerMpz, bool IsRep,
+void SetStartZ(int n, int m, double &lower, int stepSize, mpz_t &lowerMpz, bool IsRep,
                bool IsComb, bool IsMultiset, bool IsGmp, const std::vector<int> &myReps,
                const std::vector<int> &freqs, std::vector<int> &z, 
                const nthResultPtr nthResFun);
