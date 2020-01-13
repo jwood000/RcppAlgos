@@ -4,11 +4,15 @@ comboGeneral <- function(v, m = NULL, repetition = FALSE, freqs = NULL, lower = 
                          Parallel = FALSE, nThreads = NULL, tolerance = NULL) {
     
     IsFactor <- is.factor(v)
-    IsStdRet <- CheckStdRet(v, constraintFun, comparisonFun,
-                            limitConstraints, IsFactor, keepResults)
-    if (IsStdRet) {
-        CombinatoricsStndrd(v, m, repetition, freqs, lower, upper, TRUE, IsFactor,
-                            FUN, new.env(), Parallel, nThreads, pkgEnv$nThreads)
+    RetValue <- CheckReturn(v, constraintFun, comparisonFun,
+                            limitConstraints, IsFactor, keepResults, FUN)
+
+    if (RetValue == 1) {
+        CombinatoricsStndrd(v, m, repetition, freqs, lower, upper, TRUE,
+                            IsFactor, Parallel, nThreads, pkgEnv$nThreads)
+    } else if (RetValue == 2) {
+        CombinatoricsApply(v, m, repetition, freqs, 
+                           lower, upper, TRUE, FUN, new.env())
     } else {
         CombinatoricsCnstrt(v, m, repetition, freqs, lower, upper, constraintFun,
                             comparisonFun, limitConstraints, TRUE, keepResults,
@@ -22,12 +26,15 @@ permuteGeneral <- function(v, m = NULL, repetition = FALSE, freqs = NULL, lower 
                            Parallel = FALSE, nThreads = NULL, tolerance = NULL) {
 
     IsFactor <- is.factor(v)
-    IsStdRet <- CheckStdRet(v, constraintFun, comparisonFun,
-                            limitConstraints, IsFactor, keepResults)
+    RetValue <- CheckReturn(v, constraintFun, comparisonFun,
+                            limitConstraints, IsFactor, keepResults, FUN)
     
-    if (IsStdRet) {
-        CombinatoricsStndrd(v, m, repetition, freqs, lower, upper, FALSE, IsFactor,
-                            FUN, new.env(), Parallel, nThreads, pkgEnv$nThreads)
+    if (RetValue == 1) {
+        CombinatoricsStndrd(v, m, repetition, freqs, lower, upper, FALSE,
+                            IsFactor, Parallel, nThreads, pkgEnv$nThreads)
+    } else if (RetValue == 2) {
+        CombinatoricsApply(v, m, repetition, freqs, 
+                           lower, upper, FALSE, FUN, new.env())
     } else {
         CombinatoricsCnstrt(v, m, repetition, freqs, lower, upper, constraintFun,
                             comparisonFun, limitConstraints, FALSE, keepResults,
