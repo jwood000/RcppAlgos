@@ -38,7 +38,7 @@ inline void nextCombSecMulti(const std::vector<int> &freqs, const std::vector<in
         if (z[i] != freqs[pentExtreme + i]) {
             ++z[i];
             
-            for (int j = (i + 1), k = zIndex[z[i]] + 1; j <= m1; ++j, ++k)
+            for (int j = i + 1, k = zIndex[z[i]] + 1; j <= m1; ++j, ++k)
                 z[j] = freqs[k];
             
             break;
