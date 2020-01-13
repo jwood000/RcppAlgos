@@ -1,4 +1,65 @@
 #include "ConstraintsUtils.h"
+#include <cmath>
+
+template <typename typeVector>
+inline void PopulateVec(int m, const std::vector<typeVector> &v,
+                        std::vector<int> &z, int &count, int maxRows,
+                        bool IsComb, std::vector<typeVector> &combinatoricsVec) {
+    
+    if (IsComb) {
+        for (int k = 0; k < m; ++k)
+            combinatoricsVec.push_back(v[z[k]]);
+        
+        ++count;
+    } else {
+        do {
+            for (int k = 0; k < m; ++k)
+                combinatoricsVec.push_back(v[z[k]]);
+            
+            ++count;
+        } while (std::next_permutation(z.begin(), z.end()) && count < maxRows);
+    }
+}
+
+template <typename typeVector>
+void SectionOne(const std::vector<typeVector> &v, std::vector<typeVector> &testVec,
+                std::vector<int> &z, const std::vector<typeVector> &targetVals,
+                std::vector<typeVector> &combinatoricsVec, std::vector<typeVector> &resultsVec,
+                bool &t_0, bool &t_1, int &count, partialPtr<typeVector> partialFun,
+                funcPtr<typeVector> constraintFun, compPtr<typeVector> compFunOne,
+                compPtr<typeVector> compFunTwo, int m, int m1, int maxRows,
+                int maxZ, bool IsComb, bool xtraCol) {
+    
+    for (int i = 0; i < m; ++i)
+        testVec[i] = v[z[i]];
+    
+    const typeVector partialVal = constraintFun(testVec, m1);
+    typeVector testVal = partialFun(partialVal, testVec.back(), m);
+    t_0 = compFunTwo(testVal, targetVals);
+    
+    while (t_0 && t_1) {
+        if (compFunOne(testVal, targetVals)) {
+            int myStart = count;
+            PopulateVec(m, v, z, count, maxRows, IsComb, combinatoricsVec);
+            
+            if (xtraCol)
+                for (int i = myStart; i < count; ++i)
+                    resultsVec.push_back(testVal);
+            
+            t_1 = count < maxRows;
+        }
+        
+        t_0 = z[m1] != maxZ;
+        
+        if (t_0) {
+            ++z[m1];
+            testVec[m1] = v[z[m1]];
+            testVal = partialFun(partialVal, testVec.back(), m);
+            t_0 = compFunTwo(testVal, targetVals);
+        }
+    }
+}
+
 
 distinctType DistinctAttr(int lenV, int m, bool IsRep, bool IsMult, int64_t target,
                           const std::vector<int> &Reps, bool IncludeZero) {
@@ -117,41 +178,41 @@ void SetStartPartitionZ(PartitionType PartType, distinctType distinctTest,
     z.assign(lastCol + 1 ,0);
     
     switch (PartType) {
-    case PartTraditional: {
-        z[lastCol] = target;
-        break;
-    }
-    case PartTradNoZero: {
-        std::fill(z.begin(), z.end(), 1);
-        z[lastCol] = target - partWidth + 1;
-        break;
-    }
-    case PartDstctStdAll: {
-        z[lastCol] = target;
-        break;
-    }
-    case PartDstctShort: {
-        z[lastCol] = target;
-        break;
-    }
-    case PartDstctSpecial: {
-        std::iota(z.begin() + Reps[0] - 1, z.end(), 0);
-        z[lastCol] = target - (partWidth - Reps[0]) * (partWidth - Reps[0] - 1) / 2;
-        break;
-    }
-    case PartDstctOneZero: {
-        std::iota(z.begin(), z.end(), 0);
-        z[lastCol] = target - (partWidth - 1) * (partWidth - 2) / 2;
-        break;
-    }
-    case PartDstctNoZero: {
-        std::iota(z.begin(), z.end(), 1);
-        z[lastCol] = target - partWidth * (partWidth - 1) / 2;
-        break;
-    }
-    default: {
-        z[lastCol] = target;
-    }
+        case PartitionType::PartTraditional: {
+                z[lastCol] = target;
+                break;
+            }
+        case PartitionType::PartTradNoZero: {
+                std::fill(z.begin(), z.end(), 1);
+                z[lastCol] = target - partWidth + 1;
+                break;
+            }
+        case PartitionType::PartDstctStdAll: {
+                z[lastCol] = target;
+                break;
+            }
+        case PartitionType::PartDstctShort: {
+                z[lastCol] = target;
+                break;
+            }
+        case PartitionType::PartDstctSpecial: {
+                std::iota(z.begin() + Reps[0] - 1, z.end(), 0);
+                z[lastCol] = target - (partWidth - Reps[0]) * (partWidth - Reps[0] - 1) / 2;
+                break;
+            }
+        case PartitionType::PartDstctOneZero: {
+                std::iota(z.begin(), z.end(), 0);
+                z[lastCol] = target - (partWidth - 1) * (partWidth - 2) / 2;
+                break;
+            }
+        case PartitionType::PartDstctNoZero: {
+            std::iota(z.begin(), z.end(), 1);
+            z[lastCol] = target - partWidth * (partWidth - 1) / 2;
+            break;
+        }
+        default: {
+            z[lastCol] = target;
+        }
     }
 }
 
@@ -274,11 +335,11 @@ void AdjustTargetVals(int n, VecType myType, std::vector<double> &targetVals,
                 if (static_cast<int64_t>(vNum[i]) != vNum[i])
                     IsWhole = false;
                 
-                for (std::size_t i = 0; i < targetVals.size() && IsWhole; ++i)
-                    if (static_cast<int64_t>(targetVals[i]) != targetVals[i])
-                        IsWhole = false;
+            for (std::size_t i = 0; i < targetVals.size() && IsWhole; ++i)
+                if (static_cast<int64_t>(targetVals[i]) != targetVals[i])
+                    IsWhole = false;
                     
-                    tolerance = (IsWhole && mainFun != "mean") ? 0 : defaultTolerance;
+            tolerance = (IsWhole && mainFun != "mean") ? 0 : defaultTolerance;
         } else {
             CleanConvert::convertPrimitive(Rtolerance, tolerance, 
                                            "tolerance", true, false, false, true);
@@ -308,3 +369,168 @@ void AdjustTargetVals(int n, VecType myType, std::vector<double> &targetVals,
         }
     }
 }
+
+template <typename typeVector>
+void GetPartitionCase(const std::vector<std::string> &compFunVec, std::vector<typeVector> &v,
+                      const std::string &mainFun, typeVector target, PartitionType &PartType,
+                      distinctType &distinctTest, const SEXP &Rlow, std::vector<int> &Reps,
+                      int lenV, int &m, double tolerance, bool IsMult, bool IsRep, bool IsBet) {
+    
+    bool PartitionCase = false;
+    PartType = PartitionType::NotPartition;
+    bool bLower = false;
+    
+    if (!Rf_isNull(Rlow)) {
+        auto tempLower = FromCpp14::make_unique<mpz_t[]>(1);
+        mpz_init(tempLower[0]);
+        
+        createMPZArray(Rlow, tempLower.get(), 1, "lower");
+        bLower = mpz_cmp_si(tempLower[0], 1) > 0;
+    }
+    
+    if (!compFunVec.empty() && !bLower) {
+        if (IsMult) {
+            for (int i = 0; i < (lenV - 1); ++i) {
+                for (int j = (i + 1); j < lenV; ++j) {
+                    if (v[i] > v[j]) {
+                        std::swap(v[i], v[j]);
+                        std::swap(Reps[i], Reps[j]);
+                    }
+                }
+            }
+        } else {
+            std::sort(v.begin(), v.end());
+        }
+        
+        int64_t tarTest = 0;
+        
+        // We don't need to check the edge case when lenV == target and there is a
+        // zero. Remember, lenV is the length of the vector v, so we could have a
+        // situation where v = c(0, 2, 3, 4, 5) -->> length(v) = 5. This would
+        // cause a problem if we were to allow this through, however, in the
+        // calling code (i.e. Combinatorics.cpp), we ensure that the distance
+        // between each element is the same. This means for the example we gave,
+        // we would have length(unique(diff(v))) > 1, which means PartitionCase
+        // (see Combinatorics.cpp) would be false, and thus the general
+        // algorithm would be executed.
+        //
+        // We do have to ensure that the smallest element is non-negative, othe-
+        // rwise, cases like v = seq(-8, 10, 2), m = 7, rep = TRUE, & limit = 10
+        // would pass as v = 0:9, m = 7, rep = TRUE, & limit = 9, --or--
+        // v = 1:10, m = 7, rep = TRUE, & limit = 10
+        
+        if (compFunVec[0] == "==" && mainFun == "sum" && lenV > 1 && m > 1) {
+            std::vector<typeVector> pTest(v.cbegin(), v.cend());
+            std::sort(pTest.begin(), pTest.end());
+            const typeVector tarDiff = pTest[1] - pTest[0];
+            
+            if (static_cast<int64_t>(pTest[0]) == pTest[0]) {
+                PartitionCase = true;
+                
+                for (int i = 1; i < lenV; ++i) {
+                    const typeVector testDiff = pTest[i] - pTest[i - 1];
+                    
+                    if (std::abs(testDiff - tarDiff) > tolerance
+                            || static_cast<int64_t>(pTest[i]) != pTest[i]) {
+                        PartitionCase = false;
+                        break;
+                    }
+                }
+            }
+            
+            tarTest = static_cast<int64_t>(target);
+            
+            if (PartitionCase)
+                PartitionCase = (tarTest == target);
+        }
+        
+        if (PartitionCase) {
+            const typeVector myMax = v.back();
+            const bool IncludeZero = (v.front() == 0);
+            PartType = PartitionType::PartGeneral;
+            
+            if (myMax == tarTest && (lenV == tarTest || lenV == (tarTest + 1)) && v.front() >= 0) {
+                distinctTest = DistinctAttr(lenV, m, IsRep, IsMult, tarTest, Reps, IncludeZero);
+                
+                if (distinctTest.limit > 0) {
+                    
+                    m = distinctTest.limit;
+                    
+                    if (IncludeZero) {
+                        if (IsMult) {
+                            if (distinctTest.getAll) {
+                                PartType = PartitionType::PartDstctStdAll;
+                            } else if (Reps[0] >= (m - 1)) {
+                                PartType = PartitionType::PartDstctShort;
+                            } else {
+                                PartType = PartitionType::PartDstctSpecial;
+                            }
+                        } else {
+                            PartType = PartitionType::PartDstctOneZero;
+                        }
+                    } else {
+                        PartType = PartitionType::PartDstctNoZero;
+                    }
+                } else if (IsRep) {
+                    if (m >= lenV) { 
+                        m = (IncludeZero) ? lenV - 1 : lenV;
+                    }
+                    
+                    if (IncludeZero) {
+                        PartType = PartitionType::PartTraditional;
+                    } else {
+                        PartType = PartitionType::PartTradNoZero;
+                    }
+                }
+            }
+        } else if ((compFunVec[0] == "==" || IsBet) && lenV > 1
+                && m > 1 && mainFun != "max" && mainFun != "min") {
+            PartType = PartitionType::PartitonEsque;
+        }
+    }
+}
+
+template <typename typeVector>
+bool CheckSpecialCase(int n, bool bLower, const std::string &mainFun,
+                      const std::vector<typeVector> &vNum) {
+    
+    bool result = false;
+    
+    // If bLower, the user is looking to test a particular range. Otherwise, the constraint algo
+    // will simply return (upper - lower) # of combinations/permutations that meet the criteria
+    if (bLower) {
+        result = true;
+    } else if (mainFun == "prod") {
+        for (int i = 0; i < n; ++i) {
+            if (vNum[i] < 0) {
+                result = true;
+                break;
+            }
+        }
+    }
+    
+    return result;
+}
+
+template void SectionOne(const std::vector<int>&, std::vector<int> &testVec,
+                         std::vector<int>&, const std::vector<int>&,
+                         std::vector<int>&, std::vector<int>&,
+                         bool&, bool&, int&, partialPtr<int>, funcPtr<int>,
+                         compPtr<int>, compPtr<int>, int, int, int, int, bool, bool);
+template void SectionOne(const std::vector<double>&, std::vector<double> &testVec,
+                         std::vector<int>&, const std::vector<double>&,
+                         std::vector<double>&, std::vector<double>&,
+                         bool&, bool&, int&, partialPtr<double>, funcPtr<double>,
+                         compPtr<double>, compPtr<double>, int, int, int, int, bool, bool);
+
+template void GetPartitionCase(const std::vector<std::string>&, std::vector<int>&,
+                               const std::string&, int, PartitionType&, distinctType&,
+                               const SEXP&, std::vector<int>&, int, int&, double,
+                               bool, bool, bool);
+template void GetPartitionCase(const std::vector<std::string>&, std::vector<double>&,
+                               const std::string&, double, PartitionType&, distinctType&,
+                               const SEXP&, std::vector<int>&, int, int&, double,
+                               bool, bool, bool);
+
+template bool CheckSpecialCase(int, bool, const std::string&, const std::vector<int>&);
+template bool CheckSpecialCase(int, bool, const std::string&, const std::vector<double>&);
