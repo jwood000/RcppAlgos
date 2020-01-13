@@ -1,7 +1,7 @@
 #ifndef NEXT_PARTITIONS_H
 #define NEXT_PARTITIONS_H
 
-#include <Rcpp.h>
+#include <vector>
 
 void PrepareMultiSetPart(const std::vector<int> &rpsCnt, const std::vector<int> &z,
                          int &b, int &p, int &e, int lastCol, int lastElem);

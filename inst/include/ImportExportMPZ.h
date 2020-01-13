@@ -1,5 +1,5 @@
-#ifndef IMPORT_EXPORT_MPZ_GMP_H
-#define IMPORT_EXPORT_MPZ_GMP_H
+#ifndef IMPORT_EXPORT_MPZ_H
+#define IMPORT_EXPORT_MPZ_H
 
 #include <gmp.h>
 #include <Rcpp.h>

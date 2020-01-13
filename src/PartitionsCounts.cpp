@@ -1,4 +1,5 @@
-#include "CombPermUtils.h"
+#include "StandardCount.h"
+#include "CleanConvert.h"
 
 // Credit to Robin K. S. Hankin, author of the excellent partitions package.
 // From the partitions.c, here are Hankin's comments for c_numbdiffparts:

@@ -1,4 +1,4 @@
-#include "GmpCombPermUtils.h"
+#include "GmpDependUtils.h"
 
 // ******* Overview of the Crucial Part of the Algorithm *******
 // -------------------------------------------------------------

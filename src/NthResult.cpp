@@ -1,4 +1,4 @@
-#include "GmpCombPermUtils.h"
+#include "GmpDependUtils.h"
 
 using nthResultPtr = std::vector<int> (*const)(int n, int r, double dblIdx,
                                       mpz_t mpzIdx, const std::vector<int> &Reps);

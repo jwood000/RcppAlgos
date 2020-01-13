@@ -1,7 +1,7 @@
 #ifndef COMBO_GROUPS_UTILS_H
 #define COMBO_GROUPS_UTILS_H
 
-#include "GmpCombPermUtils.h"
+#include "GmpDependUtils.h" // Needed in ComboGroups.cpp.
 
 bool nextComboGroup(std::vector<int> &z, int nGrps, 
                     int grpSize, int idx1, int idx2, int last1);

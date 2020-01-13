@@ -1,7 +1,7 @@
-#include <cmath>
 #include <RcppThread.h>
 #include <libdivide.h>
 #include "CleanConvert.h"
+#include <cmath>
 
 template <typename typeInt>
 inline typeInt getStartingIndex (typeInt lowerB, typeInt step) {
@@ -49,7 +49,7 @@ void DivisorsSieve(typeInt m, typeReturn retN, typeInt offsetStrt,
     typename std::vector<std::vector<typeReturn>>::iterator it2d, itEnd;
     itEnd = MyDivList.begin() + offsetStrt + myRange;
     
-    std::vector<int_fast32_t> myMemory(myRange, 2);
+    std::vector<int> myMemory(myRange, 2);
     NumDivisorsSieve(m, n, zeroOffset, myMemory);
     
     if (m < 2)
@@ -71,7 +71,7 @@ void DivisorsSieve(typeInt m, typeReturn retN, typeInt offsetStrt,
         
     } else {
         typeReturn numRet = static_cast<typeReturn>(m);
-        std::vector<int_fast32_t> begIndex(myRange, 0);
+        std::vector<int> begIndex(myRange, 0);
         
         for (std::size_t i = 0; it2d < itEnd; ++it2d, ++i, ++numRet) {
             it2d->resize(myMemory[i]);
@@ -248,11 +248,11 @@ SEXP DivNumSieve(SEXP Rb1, SEXP Rb2, bool bDivSieve,
         CleanConvert::convertPrimitive(RNumThreads, nThreads, "nThreads");
     
     if (myMax > std::numeric_limits<int>::max()) {
-        int_fast64_t intMin = static_cast<int_fast64_t>(myMin);
+        std::int_fast64_t intMin = static_cast<std::int_fast64_t>(myMin);
         return TheGlue(intMin, myMax, bDivSieve, keepNames, nThreads, maxThreads);
     } else {
-        int_fast32_t intMin = static_cast<int_fast32_t>(myMin);
-        int_fast32_t intMax = static_cast<int_fast32_t>(myMax);
+        std::int_fast32_t intMin = static_cast<std::int_fast32_t>(myMin);
+        std::int_fast32_t intMax = static_cast<std::int_fast32_t>(myMax);
         return TheGlue(intMin, intMax, bDivSieve, keepNames, nThreads, maxThreads);
     }
 }

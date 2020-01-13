@@ -1,4 +1,4 @@
-#include "GmpCombPermUtils.h"
+#include "GmpDependUtils.h"
 #include "RMatrix.h"
 #include <RcppThread.h>
 
@@ -159,7 +159,7 @@ SEXP SampleRcpp(SEXP Rv, SEXP Rm, SEXP Rrepetition, SEXP RFreqs, SEXP RindexVec,
     const double computedRows = GetComputedRows(IsMultiset, IsComb, IsRep, n,
                                                 m, Rm, lenFreqs, freqs, myReps);
     
-    // sampleLimit defined in GmpCombPermUtils.h.. see comments in GmpCombPermUtils.h
+    // sampleLimit defined in GmpDependUtils.h.. see comments in GmpCDependUtils.h
     bool IsGmp = computedRows > sampleLimit;
     mpz_t computedRowMpz;
     mpz_init(computedRowMpz);

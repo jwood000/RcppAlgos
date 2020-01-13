@@ -1,4 +1,4 @@
-#include <Rcpp.h>
+#include <vector>
 
 void NextDistinct(std::vector<int> &z, int &boundary,
                   int &edge, int &tarDiff, int lastCol) {
