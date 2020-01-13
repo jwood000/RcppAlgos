@@ -1,9 +1,11 @@
-#ifndef GMP_COMB_PERM_UTILS_H
-#define GMP_COMB_PERM_UTILS_H
+#ifndef GMP_DEPEND_UTILS_H
+#define GMP_DEPEND_UTILS_H
 
-#include "CombPermUtils.h"
+#include "StandardUtils.h"
+#include "StandardCount.h"
+#include "BigNumCount.h"
 #include "NthResult.h"
-#include <gmp.h>
+#include <cmath>
 
 // Based off the internal limitations of sample, we
 // cannot utilize the full range of 53-bit significand
@@ -58,16 +60,5 @@ inline void SetSampleNames(bool IsGmp, std::size_t sampSize, typeRcpp &objRcpp,
     else
         objRcpp.attr("names") = myRowNames;
 }
-
-void NumPermsWithRepGmp(mpz_t result, const std::vector<int> &v);
-void NumPermsNoRepGmp(mpz_t result, int n, int k);
-void nChooseKGmp(mpz_t result, int n, int k);
-void NumCombsWithRepGmp(mpz_t result, int n, int r);
-void MultisetCombRowNumGmp(mpz_t result, int n, int r, const std::vector<int> &Reps);
-void MultisetPermRowNumGmp(mpz_t result, int n, int r, const std::vector<int> &myReps);
-
-void GetComputedRowMpz(mpz_t computedRowMpz, bool IsMultiset, bool IsComb, bool IsRep,
-                       int n, int m, const SEXP &Rm, const std::vector<int> &freqs, 
-                       const std::vector<int> &myReps);
 
 #endif
