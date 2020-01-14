@@ -1,20 +1,21 @@
 #ifndef WHEEL_H
 #define WHEEL_H
 
-#include <Rcpp.h>
+#include <cstddef>
+#include <cstdint>
 
 // This is the largest multiple of 2*3*5*7 = 210
 // that is less than 2^15 = 32768 = 32KB. This
 // is the typical size of most CPU's L1 cache
-constexpr int_fast64_t Almost210L1Cache = 32760;
+constexpr std::int_fast64_t Almost210L1Cache = 32760;
 
 // This is the largest multiple of 2*3*5*7*11 = 2310
 // that is less than 2^15 = 32768 = 32KB. This
 // is the typical size of most CPU's L1 cache
-constexpr int_fast64_t Almost2310L1Cache = 32340;
+constexpr std::int_fast64_t Almost2310L1Cache = 32340;
 
 // This is 1 plus the maximum prime used in the wheel (i.e. 11)
-constexpr int_fast64_t wheel2310PrimeLim = 12;
+constexpr std::int_fast64_t wheel2310PrimeLim = 12;
 
 constexpr std::size_t NUM210 = 210u;     //2 * 3 * 5 * 7
 constexpr std::size_t NUM2310 = 2310u;   //2 * 3 * 5 * 7 * 11
@@ -30,11 +31,11 @@ constexpr std::size_t SZ_WHEEL30030 = 5760u;
 constexpr std::size_t N_WHEELS210_PER_SEG = static_cast<std::size_t>(Almost210L1Cache / NUM210);
 constexpr std::size_t N_WHEELS2310_PER_SEG = static_cast<std::size_t>(Almost2310L1Cache / NUM2310);
 
-static const int_fast64_t ARR_WHEEL210[SZ_WHEEL210] = {
+static const std::int_fast64_t ARR_WHEEL210[SZ_WHEEL210] = {
     10, 2, 4, 2, 4, 6, 2, 6, 4, 2, 4, 6, 6, 2, 6, 4, 2, 6, 4, 6, 8, 4, 2, 4,
     2, 4, 8, 6, 4, 6, 2, 4, 6, 2, 6, 6, 4, 2, 4, 6, 2, 6, 4, 2, 4, 2, 10, 2};
 
-static const int_fast64_t ARR_WHEEL2310[SZ_WHEEL2310] = {
+static const std::int_fast64_t ARR_WHEEL2310[SZ_WHEEL2310] = {
     12, 4, 2, 4, 6, 2, 6, 4, 2, 4, 6, 6, 2, 6, 4, 2, 6, 4, 6, 8, 4, 2, 4, 2, 4,
     14, 4, 6, 2, 10, 2, 6, 6, 4, 2, 4, 6, 2, 10, 2, 4, 2, 12, 10, 2, 4, 2, 4, 6,
     2, 6, 4, 6, 6, 6, 2, 6, 4, 2, 6, 4, 6, 8, 4, 2, 4, 6, 8, 6, 10, 2, 4, 6, 2,
