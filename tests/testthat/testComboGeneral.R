@@ -55,7 +55,6 @@ test_that("comboGeneral produces correct results with no constraints", {
                  sum(comboGeneral(3, 3)))
     
     expect_equal(as.vector(comboGeneral(1, 2, freqs = 2)), c(1, 1))
-    
     expect_equal(ncol(comboGeneral(5, 3)), 3)
     expect_equal(ncol(comboGeneral(5, 3, TRUE)), 3)
     expect_equal(ncol(comboGeneral(5, 3, FALSE, constraintFun = "prod")), 4)
@@ -107,7 +106,6 @@ test_that("comboGeneral produces correct results with no constraints", {
 })
 
 test_that("comboGeneral produces correct results with constraints", {
-    
     tinyTol = nrow(comboGeneral(1:5 + 0.00000000001, 3, 
                       constraintFun = "mean", 
                       comparisonFun = "==", 
@@ -248,7 +246,6 @@ test_that("comboGeneral produces correct results with exotic constraints", {
     temp2 = temp2[which(b <= 20.05669 | b >= 60.93901), ]
     
     expect_equal(sort(temp1[,8]), sort(temp2[,8]))
-    
     a = comboGeneral(10, 7, freqs = rep(3, 10))
     b = rowSums(a)
     expect_equal(comboGeneral(10, 7, freqs = rep(3, 10), constraintFun = "sum",
