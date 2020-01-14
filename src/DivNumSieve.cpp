@@ -251,8 +251,8 @@ SEXP DivNumSieve(SEXP Rb1, SEXP Rb2, bool bDivSieve,
         std::int_fast64_t intMin = static_cast<std::int_fast64_t>(myMin);
         return TheGlue(intMin, myMax, bDivSieve, keepNames, nThreads, maxThreads);
     } else {
-        std::int_fast32_t intMin = static_cast<std::int_fast32_t>(myMin);
-        std::int_fast32_t intMax = static_cast<std::int_fast32_t>(myMax);
+        int intMin = static_cast<int>(myMin);
+        int intMax = static_cast<int>(myMax);
         return TheGlue(intMin, intMax, bDivSieve, keepNames, nThreads, maxThreads);
     }
 }

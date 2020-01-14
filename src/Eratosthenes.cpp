@@ -768,9 +768,9 @@ template void PrimeSieve::PrimeSieveMaster<double>(std::int_fast64_t, std::int_f
 template void PrimeSieve::PrimeSieveMaster<std::int64_t>(std::int_fast64_t, std::int_fast64_t, std::vector<std::int64_t>&, 
                                                     std::vector<std::vector<std::int64_t>>&, bool&, int, int, int);
 
-template void PrimeSieve::PrimeSieveMaster<std::int_fast32_t>(std::int_fast64_t, std::int_fast64_t, std::vector<std::int_fast32_t>&, 
-                                                         std::vector<std::vector<std::int_fast32_t>>&, bool&, int, int, int);
+template void PrimeSieve::PrimeSieveMaster<int>(std::int_fast64_t, std::int_fast64_t, std::vector<int>&, 
+                                                std::vector<std::vector<int>>&, bool&, int, int, int);
 
 template void PrimeSieve::sqrtBigPrimes<double>(int, bool, bool, bool, std::vector<double>&);
 template void PrimeSieve::sqrtBigPrimes<std::int64_t>(int, bool, bool, bool, std::vector<std::int64_t>&);
-template void PrimeSieve::sqrtBigPrimes<std::int_fast32_t>(int, bool, bool, bool, std::vector<std::int_fast32_t>&);
+template void PrimeSieve::sqrtBigPrimes<int>(int, bool, bool, bool, std::vector<int>&);

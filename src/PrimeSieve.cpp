@@ -73,8 +73,8 @@ SEXP EratosthenesRcpp(SEXP Rb1, SEXP Rb2, SEXP RNumThreads, int maxCores, int ma
             return primes;
         }
     } else {
-        std::vector<std::vector<std::int_fast32_t>> primeList(numSects, std::vector<std::int_fast32_t>());
-        std::vector<std::int_fast32_t> tempPrimes;
+        std::vector<std::vector<int>> primeList(numSects, std::vector<int>());
+        std::vector<int> tempPrimes;
         
         PrimeSieve::PrimeSieveMaster(myMin, myMax, tempPrimes, primeList,
                                      Parallel, nThreads, maxThreads, maxCores);

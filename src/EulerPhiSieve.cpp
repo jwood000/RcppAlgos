@@ -80,9 +80,9 @@ namespace MotleyPrimes {
     }
 }
 
-template void MotleyPrimes::EulerPhiSieve(std::int_fast32_t, std::int_fast32_t, std::int_fast32_t,
-                                          const std::vector<std::int_fast32_t>&,
-                                          std::vector<std::int_fast32_t>&,
+template void MotleyPrimes::EulerPhiSieve(int, int, int,
+                                          const std::vector<int>&,
+                                          std::vector<int>&,
                                           Rcpp::IntegerVector&);
 
 template void MotleyPrimes::EulerPhiSieve(std::int64_t, double, std::int64_t,

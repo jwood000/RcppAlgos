@@ -110,6 +110,6 @@ template void MotleyPrimes::PrimeFactorizationSieve(std::int64_t, std::int64_t, 
                                                     const std::vector<std::int64_t>&,
                                                     std::vector<std::vector<std::int64_t>>&);
 
-template void MotleyPrimes::PrimeFactorizationSieve(std::int_fast32_t, std::int_fast32_t, std::int_fast32_t,
-                                                    const std::vector<std::int_fast32_t>&,
-                                                    std::vector<std::vector<std::int_fast32_t>>&);
+template void MotleyPrimes::PrimeFactorizationSieve(int, int, int,
+                                                    const std::vector<int>&,
+                                                    std::vector<std::vector<int>>&);
