@@ -8,7 +8,6 @@ test_that("comboGeneral produces correct results for special subset sum", {
     testFun <- function(v, m, myRep = FALSE, verbose = FALSE, f = "sum", isExact = TRUE) {
         v <- sort(v)
         allSums <- comboGeneral(v, m, myRep, constraintFun = f)
-        n <- length(v)
         tbl <- table(allSums[, m + 1])
         possVals <- as.numeric(names(tbl))
         
@@ -194,7 +193,6 @@ test_that("comboGeneral produces correct results for special subset sum", {
     testMultiset <- function(v, m, frqs, verbose = FALSE, f = "sum", isExact = TRUE) {
         v <- sort(v)
         allSums <- comboGeneral(v, m, freqs = frqs, constraintFun = f)
-        n <- length(v)
         tbl <- table(allSums[, m + 1])
         possVals <- as.numeric(names(tbl))
         
@@ -316,7 +314,6 @@ test_that("permuteGeneral produces correct results for special subset sum", {
     testFun <- function(v, m, myRep = FALSE, verbose = FALSE) {
         v <- sort(v)
         allSums <- permuteGeneral(v, m, myRep, constraintFun = "sum")
-        n <- length(v)
         tbl <- table(allSums[, m + 1])
         possVals <- as.numeric(names(tbl))
         
