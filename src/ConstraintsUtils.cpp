@@ -372,9 +372,10 @@ void AdjustTargetVals(int n, VecType myType, std::vector<double> &targetVals,
 
 template <typename typeVector>
 void GetPartitionCase(const std::vector<std::string> &compFunVec, std::vector<typeVector> &v,
-                      const std::string &mainFun, typeVector target, PartitionType &PartType,
-                      distinctType &distinctTest, const SEXP &Rlow, std::vector<int> &Reps,
-                      int lenV, int &m, double tolerance, bool IsMult, bool IsRep, bool IsBet) {
+                      const std::string &mainFun, const std::vector<typeVector> &target,
+                      PartitionType &PartType, distinctType &distinctTest, const SEXP &Rlow,
+                      std::vector<int> &Reps, int lenV, int &m, double tolerance, bool IsMult,
+                      bool IsRep, bool IsBet) {
     
     bool PartitionCase = false;
     PartType = PartitionType::NotPartition;
@@ -438,10 +439,14 @@ void GetPartitionCase(const std::vector<std::string> &compFunVec, std::vector<ty
                 }
             }
             
-            tarTest = static_cast<int64_t>(target);
-            
-            if (PartitionCase)
-                PartitionCase = (tarTest == target);
+            if (target.size() == 1) {
+                tarTest = static_cast<int64_t>(target.front());
+                
+                if (PartitionCase)
+                    PartitionCase = (tarTest == target.front());
+            } else {
+                PartitionCase = false;
+            }
         }
         
         if (PartitionCase) {
@@ -524,13 +529,13 @@ template void SectionOne(const std::vector<double>&, std::vector<double> &testVe
                          compPtr<double>, compPtr<double>, int, int, int, int, bool, bool);
 
 template void GetPartitionCase(const std::vector<std::string>&, std::vector<int>&,
-                               const std::string&, int, PartitionType&, distinctType&,
-                               const SEXP&, std::vector<int>&, int, int&, double,
-                               bool, bool, bool);
+                               const std::string&, const std::vector<int>&, PartitionType&,
+                               distinctType&, const SEXP&, std::vector<int>&, int, int&,
+                               double, bool, bool, bool);
 template void GetPartitionCase(const std::vector<std::string>&, std::vector<double>&,
-                               const std::string&, double, PartitionType&, distinctType&,
-                               const SEXP&, std::vector<int>&, int, int&, double,
-                               bool, bool, bool);
+                               const std::string&, const std::vector<double>&, PartitionType&,
+                               distinctType&, const SEXP&, std::vector<int>&, int, int&,
+                               double, bool, bool, bool);
 
 template bool CheckSpecialCase(int, bool, const std::string&, const std::vector<int>&);
 template bool CheckSpecialCase(int, bool, const std::string&, const std::vector<double>&);

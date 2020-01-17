@@ -38,8 +38,6 @@ typeRcpp ConstraintReturn(int n, int m, const std::string &mainFun, const std::v
     } else if (PartType == PartitionType::PartitonEsque) {
         return PartitionEsqueAlgo<typeRcpp>(n, m, v, IsRep, mainFun, compFunVec.front(), targetVals,
                                             userNumRows, IsComb, KeepRes, myReps, IsMult, bUserRows);
-        // return CombinatoricsConstraints<typeRcpp>(n, m, v, IsRep, mainFun, compFunVec, targetVals,
-        //                                           userNumRows, IsComb, KeepRes, myReps, IsMult, bUserRows);
     } else {
         return CombinatoricsConstraints<typeRcpp>(n, m, v, IsRep, mainFun, compFunVec, targetVals,
                                                   userNumRows, IsComb, KeepRes, myReps, IsMult, bUserRows);
@@ -144,7 +142,7 @@ SEXP CombinatoricsCnstrt(SEXP Rv, SEXP Rm, SEXP RisRep, SEXP RFreqs, SEXP Rlow,
         CleanConvert::convertVector(Rtarget, targetVals, "limitConstraints", true, false, true);
         compFunVec = Rcpp::as<std::vector<std::string>>(f2);
         ConstraintSetup(compFunVec, targetVals, IsBetweenComp);
-
+        
         if (myType == VecType::Integer)
             if (!CheckIsInteger(mainFun, n, m, vNum, targetVals, funDbl, true))
                 myType = VecType::Numeric;
@@ -152,7 +150,7 @@ SEXP CombinatoricsCnstrt(SEXP Rv, SEXP Rm, SEXP RisRep, SEXP RFreqs, SEXP Rlow,
         AdjustTargetVals(n, myType, targetVals, targetIntVals,
                          Rtolerance, compFunVec, tolerance, mainFun, vNum);
         
-        GetPartitionCase(compFunVec, vNum, mainFun, targetVals[0], PartType, distinctTest,
+        GetPartitionCase(compFunVec, vNum, mainFun, targetVals, PartType, distinctTest,
                          Rlow, myReps, n, m, tolerance, IsMult, IsRep, IsBetweenComp);
     }
     
