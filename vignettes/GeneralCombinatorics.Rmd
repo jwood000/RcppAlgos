@@ -1,0 +1,629 @@
+---
+title: "Combination and Permutation Basics"
+author: "Joseph Wood"
+date: "10/9/2019"
+output:
+  rmarkdown::html_vignette:
+    toc: true
+    number_sections: false
+vignette: >
+  %\VignetteIndexEntry{Combination and Permutation Basics}
+  %\VignetteEngine{knitr::rmarkdown}
+  \usepackage[utf8]{inputenc}
+---
+
+This document serves as an overview for attacking _common_ combinatorial problems in `R`. One of the goals of `RcppAlgos` is to provide a comprehensive and accessible suite of functionality so that users can easily get to the heart of their problem. As a bonus, the functions in `RcppAlgos` are extremely efficient and are developed with the concept of *High Performance* as something that is constantly pursued but never attained. In other words, `RcppAlgos` is fast now, but we know it can be faster.
+
+It should be noted that this document only covers common problems. For more information on other combinatorial problems addressed by `RcppAlgos`, see the following vignettes:
+
+* [Combinatorial Sampling](CombinatorialSampling.html)
+* [Combinations and Permutations under Constraints](CombPermConstraints.html)
+* [Integer Partitions/Compositions](PartitionsCompositions.html)
+
+For much of the output below, we will be using the following function obtained here [combining head and tail methods in R
+](https://stackoverflow.com/a/11601162/4408538) (credit to user @flodel)
+
+```r
+ht <- function(d, m = 5, n = m) {
+  ## print the head and tail together
+  cat("head -->\n")
+  print(head(d, m))
+  cat("--------\n")
+  cat("tail -->\n")
+  print(tail(d, n))
+}
+```
+
+***
+
+## Introducing `comboGeneral` and `permuteGeneral`
+
+Easily executed with a very simple interface. The output is in [lexicographical order](<https://en.wikipedia.org/wiki/Lexicographical_order>).
+
+We first look at getting results without repetition. You can pass an integer *n* and it will be converted to the sequence `1:n`, or you can pass any vector with an atomic type (i.e. `logical`, `integer`, `numeric`, `complex`, `character`, and `raw`).
+
+```r
+library(RcppAlgos)
+
+## combn output for reference
+combn(4, 3)
+     [,1] [,2] [,3] [,4]
+[1,]    1    1    1    2
+[2,]    2    2    3    3
+[3,]    3    4    4    4
+
+## This is the same as combn expect the output is transposed
+comboGeneral(4, 3)
+     [,1] [,2] [,3]
+[1,]    1    2    3
+[2,]    1    2    4
+[3,]    1    3    4
+[4,]    2    3    4
+
+## Find all 3-tuple permutations without
+## repetition of the numbers c(1, 2, 3, 4).
+head(permuteGeneral(4, 3))
+     [,1] [,2] [,3]
+[1,]    1    2    3
+[2,]    1    2    4
+[3,]    1    3    2
+[4,]    1    3    4
+[5,]    1    4    2
+[6,]    1    4    3
+
+## If you don't specify m, the length of v (if v is a vector) or v (if v is a 
+## scalar (see the examples above)) will be used
+v <- c(2, 3, 5, 7, 11, 13)
+comboGeneral(v)
+     [,1] [,2] [,3] [,4] [,5] [,6]
+[1,]    2    3    5    7   11   13
+
+head(permuteGeneral(v))
+     [,1] [,2] [,3] [,4] [,5] [,6]
+[1,]    2    3    5    7   11   13
+[2,]    2    3    5    7   13   11
+[3,]    2    3    5   11    7   13
+[4,]    2    3    5   11   13    7
+[5,]    2    3    5   13    7   11
+[6,]    2    3    5   13   11    7
+
+
+## They are very efficient...
+system.time(comboGeneral(25, 12))
+ user  system elapsed 
+0.101   0.048   0.151
+ 
+comboCount(25, 12)
+[1] 5200300
+
+ht(comboGeneral(25, 12))
+head -->
+     [,1] [,2] [,3] [,4] [,5] [,6] [,7] [,8] [,9] [,10] [,11] [,12]
+[1,]    1    2    3    4    5    6    7    8    9    10    11    12
+[2,]    1    2    3    4    5    6    7    8    9    10    11    13
+[3,]    1    2    3    4    5    6    7    8    9    10    11    14
+[4,]    1    2    3    4    5    6    7    8    9    10    11    15
+[5,]    1    2    3    4    5    6    7    8    9    10    11    16
+--------
+tail -->
+           [,1] [,2] [,3] [,4] [,5] [,6] [,7] [,8] [,9] [,10] [,11] [,12]
+[5200296,]   13   14   15   16   18   19   20   21   22    23    24    25
+[5200297,]   13   14   15   17   18   19   20   21   22    23    24    25
+[5200298,]   13   14   16   17   18   19   20   21   22    23    24    25
+[5200299,]   13   15   16   17   18   19   20   21   22    23    24    25
+[5200300,]   14   15   16   17   18   19   20   21   22    23    24    25
+
+
+## And for permutations... over 8 million instantly
+system.time(permuteCount(13, 7))
+user  system elapsed 
+   0       0       0
+    
+permuteCount(13, 7)
+[1] 8648640
+
+ht(permuteGeneral(13, 7))
+head -->
+     [,1] [,2] [,3] [,4] [,5] [,6] [,7]
+[1,]    1    2    3    4    5    6    7
+[2,]    1    2    3    4    5    6    8
+[3,]    1    2    3    4    5    6    9
+[4,]    1    2    3    4    5    6   10
+[5,]    1    2    3    4    5    6   11
+--------
+tail -->
+           [,1] [,2] [,3] [,4] [,5] [,6] [,7]
+[8648636,]   13   12   11   10    9    8    3
+[8648637,]   13   12   11   10    9    8    4
+[8648638,]   13   12   11   10    9    8    5
+[8648639,]   13   12   11   10    9    8    6
+[8648640,]   13   12   11   10    9    8    7
+
+
+## Factors are preserved
+permuteGeneral(factor(c("low", "med", "high"),
+               levels = c("low", "med", "high"),
+               ordered = TRUE))
+     [,1] [,2] [,3]
+[1,] low  med  high
+[2,] low  high med 
+[3,] med  low  high
+[4,] med  high low 
+[5,] high low  med 
+[6,] high med  low 
+Levels: low < med < high
+```
+
+## Combinations/Permutations with Repetition
+
+There are many problems in combinatorics which require finding combinations/permutations with repetition. This is easily achieved by setting `repetition` to `TRUE`.
+
+```r
+fourDays <- weekdays(as.Date("2019-10-09") + 0:3, TRUE)
+ht(comboGeneral(fourDays, repetition = TRUE))
+head -->
+     [,1]  [,2]  [,3]  [,4] 
+[1,] "Wed" "Wed" "Wed" "Wed"
+[2,] "Wed" "Wed" "Wed" "Thu"
+[3,] "Wed" "Wed" "Wed" "Fri"
+[4,] "Wed" "Wed" "Wed" "Sat"
+[5,] "Wed" "Wed" "Thu" "Thu"
+--------
+tail -->
+      [,1]  [,2]  [,3]  [,4] 
+[31,] "Fri" "Fri" "Fri" "Fri"
+[32,] "Fri" "Fri" "Fri" "Sat"
+[33,] "Fri" "Fri" "Sat" "Sat"
+[34,] "Fri" "Sat" "Sat" "Sat"
+[35,] "Sat" "Sat" "Sat" "Sat"
+
+## When repetition = TRUE, m can exceed length(v)
+ht(comboGeneral(fourDays, 8, TRUE))
+head -->
+     [,1]  [,2]  [,3]  [,4]  [,5]  [,6]  [,7]  [,8] 
+[1,] "Wed" "Wed" "Wed" "Wed" "Wed" "Wed" "Wed" "Wed"
+[2,] "Wed" "Wed" "Wed" "Wed" "Wed" "Wed" "Wed" "Thu"
+[3,] "Wed" "Wed" "Wed" "Wed" "Wed" "Wed" "Wed" "Fri"
+[4,] "Wed" "Wed" "Wed" "Wed" "Wed" "Wed" "Wed" "Sat"
+[5,] "Wed" "Wed" "Wed" "Wed" "Wed" "Wed" "Thu" "Thu"
+--------
+tail -->
+       [,1]  [,2]  [,3]  [,4]  [,5]  [,6]  [,7]  [,8] 
+[161,] "Fri" "Fri" "Fri" "Fri" "Sat" "Sat" "Sat" "Sat"
+[162,] "Fri" "Fri" "Fri" "Sat" "Sat" "Sat" "Sat" "Sat"
+[163,] "Fri" "Fri" "Sat" "Sat" "Sat" "Sat" "Sat" "Sat"
+[164,] "Fri" "Sat" "Sat" "Sat" "Sat" "Sat" "Sat" "Sat"
+[165,] "Sat" "Sat" "Sat" "Sat" "Sat" "Sat" "Sat" "Sat"
+
+
+fibonacci <- c(1L, 2L, 3L, 5L, 8L, 13L, 21L, 34L)
+permsFib <- permuteGeneral(fibonacci, 5, TRUE)
+
+ht(permsFib)
+head -->
+     [,1] [,2] [,3] [,4] [,5]
+[1,]    1    1    1    1    1
+[2,]    1    1    1    1    2
+[3,]    1    1    1    1    3
+[4,]    1    1    1    1    5
+[5,]    1    1    1    1    8
+--------
+tail -->
+         [,1] [,2] [,3] [,4] [,5]
+[32764,]   34   34   34   34    5
+[32765,]   34   34   34   34    8
+[32766,]   34   34   34   34   13
+[32767,]   34   34   34   34   21
+[32768,]   34   34   34   34   34
+
+
+## N.B. class is preserved
+class(fibonacci)
+[1] "integer"
+
+class(permsFib[1, ])
+[1] "integer"
+
+## Binary representation of all numbers from 0 to 1023
+ht(permuteGeneral(0:1, 10, T))
+head -->
+     [,1] [,2] [,3] [,4] [,5] [,6] [,7] [,8] [,9] [,10]
+[1,]    0    0    0    0    0    0    0    0    0     0
+[2,]    0    0    0    0    0    0    0    0    0     1
+[3,]    0    0    0    0    0    0    0    0    1     0
+[4,]    0    0    0    0    0    0    0    0    1     1
+[5,]    0    0    0    0    0    0    0    1    0     0
+--------
+tail -->
+        [,1] [,2] [,3] [,4] [,5] [,6] [,7] [,8] [,9] [,10]
+[1020,]    1    1    1    1    1    1    1    0    1     1
+[1021,]    1    1    1    1    1    1    1    1    0     0
+[1022,]    1    1    1    1    1    1    1    1    0     1
+[1023,]    1    1    1    1    1    1    1    1    1     0
+[1024,]    1    1    1    1    1    1    1    1    1     1
+```
+
+## Working with Multisets
+
+Sometimes, the standard combination/permutation functions don't quite get us to our desired goal. For
+example, one may need all permutations of a vector with some of the elements repeated a specific
+number of times (i.e. a multiset). Consider the following vector `a <- c(1,1,1,1,2,2,2,7,7,7,7,7)` and one
+would like to find permutations of `a` of length 6. Using traditional methods, we would need to generate all
+permutations, then eliminate duplicate values. Even considering that `permuteGeneral` is very efficient,
+this approach is clunky and not as fast as it could be. Observe:
+
+``` r
+getPermsWithSpecificRepetition <- function(z, n) {
+    b <- permuteGeneral(z, n)
+    myDupes <- duplicated(b)
+    b[!myDupes, ]
+}
+
+a <- c(1,1,1,1,2,2,2,7,7,7,7,7)
+
+system.time(test <- getPermsWithSpecificRepetition(a, 6))
+  user  system elapsed 
+ 2.317   0.059   2.385
+```
+
+### Enter `freqs`
+
+Situations like this call for the use of the `freqs` argument. Simply, enter the number
+of times each unique element is repeated and Voila!
+
+``` r
+system.time(test2 <- permuteGeneral(unique(a), 6, freqs = rle(a)$lengths))
+ user  system elapsed 
+    0       0       0
+      
+identical(test, test2)
+[1] TRUE
+```
+ 
+Here are some more general examples with multisets:
+ 
+```r
+## Generate all permutations of a vector with specific
+## length of repetition for each element (i.e. multiset)
+ht(permuteGeneral(3, freqs = c(1,2,2)))
+head -->
+     [,1] [,2] [,3] [,4] [,5]
+[1,]    1    2    2    3    3
+[2,]    1    2    3    2    3
+[3,]    1    2    3    3    2
+[4,]    1    3    2    2    3
+[5,]    1    3    2    3    2
+--------
+tail -->
+      [,1] [,2] [,3] [,4] [,5]
+[26,]    3    2    3    1    2
+[27,]    3    2    3    2    1
+[28,]    3    3    1    2    2
+[29,]    3    3    2    1    2
+[30,]    3    3    2    2    1
+
+## or combinations of a certain length
+comboGeneral(3, 2, freqs = c(1,2,2))
+     [,1] [,2]
+[1,]    1    2
+[2,]    1    3
+[3,]    2    2
+[4,]    2    3
+[5,]    3    3
+```
+
+## Parallel Computing
+
+Using the parameter `Parallel` or `nThreads`, we can generate combinations/permutations with greater efficiency.
+
+```r
+library(microbenchmark)
+
+## RcppAlgos uses the "number of threads available minus one" when Parallel is TRUE
+RcppAlgos::stdThreadMax()
+[1] 8
+
+## Compared to combn using 4 threads
+microbenchmark(combn = combn(25, 10),
+               serAlgos = comboGeneral(25, 10),
+               parAlgos = comboGeneral(25, 10, nThreads = 4),
+               times = 10, 
+               unit = "relative")
+Unit: relative
+     expr        min         lq      mean     median         uq       max neval
+    combn 140.873986 143.411149 66.043305 128.898187 120.543678 18.503645    10
+ serAlgos   2.295844   2.302306  2.062132   2.117214   7.153547  1.080612    10
+ parAlgos   1.000000   1.000000  1.000000   1.000000   1.000000  1.000000    10
+
+
+## Using 7 cores w/ Parallel = TRUE
+microbenchmark(serial = comboGeneral(20, 10, freqs = rep(1:4, 5)),
+             parallel = comboGeneral(20, 10, freqs = rep(1:4, 5), Parallel = TRUE))
+Unit: milliseconds
+     expr       min         lq      mean     median         uq       max neval
+   serial  3.031987   2.990349  2.969633   3.000991   2.992326  2.014025   100
+ parallel  1.000000   1.000000  1.000000   1.000000   1.000000  1.000000   100
+ 
+
+set.seed(2187)
+bigVec <- sort(sample(10^7, 600))
+
+## Use it with any of the combinatorial functions
+system.time(permuteGeneral(bigVec, 3, Parallel = T))
+  user  system elapsed
+ 1.067   3.645   0.902
+ 
+prettyNum(permuteCount(bigVec, 3), big.mark = ",")
+[1] "214,921,200"
+```
+
+### Using arguments `lower` and `upper`
+
+There are arguments `lower` and `upper` that can be utilized to generate chunks of combinations/permutations without having to generate all of them followed by subsetting.  As the output is in lexicographical order, these arguments specify where to start and stop generating. For example, `comboGeneral(5, 3)` outputs 10 combinations of the vector `1:5` chosen 3 at a time. We can set `lower` to 5 in order to start generation from the _5<sup>th</sup>_ lexicographical combination. Similarly, we can set `upper` to 4 in order to only generate the first 4 combinations. We can also use them together to produce only a certain chunk of combinations. For example, setting `lower` to 4 and `upper` to 6 only produces the _4<sup>th</sup>_, _5<sup>th</sup>_, and _6<sup>th</sup>_ lexicographical combinations. Observe:
+
+``` r
+comboGeneral(5, 3, lower = 4, upper = 6)
+     [,1] [,2] [,3]
+[1,]    1    3    4
+[2,]    1    3    5
+[3,]    1    4    5
+
+## is equivalent to the following:
+comboGeneral(5, 3)[4:6, ]
+     [,1] [,2] [,3]
+[1,]    1    3    4
+[2,]    1    3    5
+[3,]    1    4    5
+```
+
+### Generating Results Beyond `.Machine$integer.max`
+
+In addition to being useful by avoiding the unnecessary overhead of generating all combination/permutations followed by subsetting just to see a few specific results, `lower` and `upper` can be utilized to generate large number of combinations/permutations in parallel (see this [stackoverflow post](<https://stackoverflow.com/a/51595866/4408538>) for a real use case). Observe:
+
+``` r
+## Over 3 billion results
+comboCount(35, 15)
+[1] 3247943160
+
+## 10086780 evenly divides 3247943160, otherwise you need to ensure that
+## upper does not exceed the total number of results (E.g. see below, we
+## would have "if ((x + foo) > 3247943160) {myUpper = 3247943160}" where
+## foo is the size of the increment you choose to use in seq()).
+
+system.time(lapply(seq(1, 3247943160, 10086780), function(x) {
+     temp <- comboGeneral(35, 15, lower = x, upper = x + 10086779)
+     ## do something
+     x
+}))
+   user  system elapsed 
+ 99.495  49.993 149.467
+
+
+## Enter parallel
+library(parallel)
+system.time(mclapply(seq(1, 3247943160, 10086780), function(x) {
+     temp <- comboGeneral(35, 15, lower = x, upper = x + 10086779)
+     ## do something
+     x
+}, mc.cores = 6))
+   user  system elapsed 
+125.361  85.916  35.641
+```
+
+## GMP Support
+
+The arguments `lower` and `upper` are also useful when one needs to explore combinations/permutations where the number of results is large:
+
+```r
+set.seed(222)
+myVec <- rnorm(1000)
+
+## HUGE number of combinations
+comboCount(myVec, 50, repetition = TRUE)
+Big Integer ('bigz') :
+[1] 109740941767310814894854141592555528130828577427079559745647393417766593803205094888320
+
+## Let's look at one hundred thousand combinations in the range (1e15 + 1, 1e15 + 1e5)
+system.time(b <- comboGeneral(myVec, 50, TRUE, 
+                              lower = 1e15 + 1,
+                              upper = 1e15 + 1e5))
+   user  system elapsed 
+  0.008   0.000   0.008
+  
+b[1:5, 45:50]
+          [,1]      [,2]      [,3]     [,4]      [,5]       [,6]
+[1,] 0.5454861 0.4787456 0.7797122 2.004614 -1.257629 -0.7740501
+[2,] 0.5454861 0.4787456 0.7797122 2.004614 -1.257629  0.1224679
+[3,] 0.5454861 0.4787456 0.7797122 2.004614 -1.257629 -0.2033493
+[4,] 0.5454861 0.4787456 0.7797122 2.004614 -1.257629  1.5511027
+[5,] 0.5454861 0.4787456 0.7797122 2.004614 -1.257629  1.0792094
+```
+
+## User Defined Functions
+
+You can also pass user defined functions by utilizing the argument `FUN`. This feature's main purpose is for convenience, however it is somewhat more efficient than generating all combinations/permutations and then using a function from the `apply` family (N.B. the argument `Parallel` has no effect when `FUN` is employed).
+
+```r
+funCustomComb = function(n, r) {
+    combs = comboGeneral(n, r)
+    lapply(1:nrow(combs), function(x) cumprod(combs[x,]))
+}
+
+identical(funCustomComb(15, 8), comboGeneral(15, 8, FUN = cumprod))
+[1] TRUE
+
+microbenchmark(f1 = funCustomComb(15, 8),
+               f2 = comboGeneral(15, 8, FUN = cumprod), unit = "relative")
+unit: relative
+ expr      min       lq     mean   median       uq      max neval
+   f1 6.948574 6.955633 6.960554 6.961681 6.515623 9.688503   100
+   f2 1.000000 1.000000 1.000000 1.000000 1.000000 1.000000   100
+   
+comboGeneral(15, 8, FUN = cumprod, upper = 3)
+[[1]]
+[1]     1     2     6    24   120   720  5040 40320
+
+[[2]]
+[1]     1     2     6    24   120   720  5040 45360
+
+[[3]]
+[1]     1     2     6    24   120   720  5040 50400
+
+
+## An example involving the powerset
+unlist(comboGeneral(c("", letters[1:3]), 3, 
+                    freqs = c(2, rep(1, 3)),
+                    FUN = function(x) paste0(x, collapse = "")))
+[1] "a"   "b"   "c"   "ab"  "ac"  "bc"  "abc"
+```
+
+***
+
+## Partitions of Groups of Equal Size with `comboGroups`
+
+Given a vector of length _n_ and _k_ groups, where _k_ divides _n_, each group is comprised of a combination of the vector chosen _g = n / k_ at a time. As is stated in the documentation (see `?comboGroups`), these can be constructed by first generating all permutations of the vector and subsequently removing entries with permuted groups. Let us consider the following example. Given `v = 1:12`, generate all partitions `v` into 3 groups each of size 4.
+
+```r
+funBruteGrp <- function(myLow = 1, myUp) {
+    mat <- do.call(rbind, permuteGeneral(12, lower = myLow, upper = myUp,
+        FUN = function(x) {
+        sapply(seq(0, 8, 4), function(y) {
+            paste0(c("(", x[(y + 1):(y + 4)], ")"), collapse = " ")
+        })
+    }))
+    colnames(mat) <- paste0("Grp", 1:3)
+    rownames(mat) <- myLow:myUp
+    mat
+}
+
+## All of these are the same as only the 3rd group is being permuted
+funBruteGrp(myUp = 6)
+  Grp1          Grp2          Grp3            
+1 "( 1 2 3 4 )" "( 5 6 7 8 )" "( 9 10 11 12 )"
+2 "( 1 2 3 4 )" "( 5 6 7 8 )" "( 9 10 12 11 )"
+3 "( 1 2 3 4 )" "( 5 6 7 8 )" "( 9 11 10 12 )"
+4 "( 1 2 3 4 )" "( 5 6 7 8 )" "( 9 11 12 10 )"
+5 "( 1 2 3 4 )" "( 5 6 7 8 )" "( 9 12 10 11 )"
+6 "( 1 2 3 4 )" "( 5 6 7 8 )" "( 9 12 11 10 )"
+
+## We found our second distinct partition
+funBruteGrp(myLow = 23, myUp = 26)
+   Grp1          Grp2          Grp3            
+23 "( 1 2 3 4 )" "( 5 6 7 8 )" "( 12 11 9 10 )"
+24 "( 1 2 3 4 )" "( 5 6 7 8 )" "( 12 11 10 9 )"
+25 "( 1 2 3 4 )" "( 5 6 7 9 )" "( 8 10 11 12 )"  ## <<-- 2nd distinct partition of groups
+26 "( 1 2 3 4 )" "( 5 6 7 9 )" "( 8 10 12 11 )"
+
+funBruteGrp(myLow = 48, myUp = 50)
+   Grp1          Grp2           Grp3            
+48 "( 1 2 3 4 )" "( 5 6 7 9 )"  "( 12 11 10 8 )"
+49 "( 1 2 3 4 )" "( 5 6 7 10 )" "( 8 9 11 12 )"  ## <<-- 3rd distinct partition of groups
+50 "( 1 2 3 4 )" "( 5 6 7 10 )" "( 8 9 12 11 )" 
+```
+
+We are starting to see a pattern. Each new partition is exactly 24 spots away. This makes sense as there are `factorial(4) = 24` permutations of size 4. Now, this is an oversimplification as if we simply generate every _24<sup>th</sup>_ permutation, we will still get duplication as they start to carry over to the other groups. Observe:
+
+```r
+do.call(rbind, lapply(seq(1, 145, 24), function(x) {
+    funBruteGrp(myLow = x, myUp = x)
+}))
+Grp1          Grp2           Grp3            
+1   "( 1 2 3 4 )" "( 5 6 7 8 )"  "( 9 10 11 12 )"
+25  "( 1 2 3 4 )" "( 5 6 7 9 )"  "( 8 10 11 12 )"
+49  "( 1 2 3 4 )" "( 5 6 7 10 )" "( 8 9 11 12 )" 
+73  "( 1 2 3 4 )" "( 5 6 7 11 )" "( 8 9 10 12 )" 
+97  "( 1 2 3 4 )" "( 5 6 7 12 )" "( 8 9 10 11 )" 
+121 "( 1 2 3 4 )" "( 5 6 8 7 )"  "( 9 10 11 12 )"  ## <<-- This is the same as the 1st
+145 "( 1 2 3 4 )" "( 5 6 8 9 )"  "( 7 10 11 12 )"  ## partition. The only difference is
+169 "( 1 2 3 4 )" "( 5 6 8 10 )" "( 7 9 11 12 )"   ## that the 2nd Grp has been permuted
+```
+
+This only gets more muddled as the number of groups increases. It is also very inefficient, however this exercise hopefully serves to better illustrate these structures. 
+
+The algorithm in `comboGroups` avoids all of this duplication by implementing a novel algorithm akin to [std::next_permutation](https://en.cppreference.com/w/cpp/algorithm/next_permutation) from the algorithm library in `C++`.
+
+```
+system.time(comboGroups(12, numGroups = 3))
+   user  system elapsed 
+      0       0       0
+      
+ht(comboGroups(12, numGroups = 3))
+head -->
+     Grp1 Grp1 Grp1 Grp1 Grp2 Grp2 Grp2 Grp2 Grp3 Grp3 Grp3 Grp3
+[1,]    1    2    3    4    5    6    7    8    9   10   11   12
+[2,]    1    2    3    4    5    6    7    9    8   10   11   12
+[3,]    1    2    3    4    5    6    7   10    8    9   11   12
+[4,]    1    2    3    4    5    6    7   11    8    9   10   12
+[5,]    1    2    3    4    5    6    7   12    8    9   10   11
+--------
+tail -->
+        Grp1 Grp1 Grp1 Grp1 Grp2 Grp2 Grp2 Grp2 Grp3 Grp3 Grp3 Grp3
+[5771,]    1   10   11   12    2    5    8    9    3    4    6    7
+[5772,]    1   10   11   12    2    6    7    8    3    4    5    9
+[5773,]    1   10   11   12    2    6    7    9    3    4    5    8
+[5774,]    1   10   11   12    2    6    8    9    3    4    5    7
+[5775,]    1   10   11   12    2    7    8    9    3    4    5    6
+```
+
+Just as in `combo/permuteGeneral`, we can utilize the arguments `lower`, `upper`, `Parallel`, and `nThreads`.
+
+```r
+comboGroupsCount(30, 6)
+Big Integer ('bigz') :
+[1] 123378675083039376
+
+system.time(a1 <- comboGroups(30, numGroups = 6, 
+                              lower = "123378675000000000",
+                              upper = "123378675005000000"))
+   user  system elapsed 
+  0.299   0.113   0.412
+
+## Use specific number of threads
+system.time(a2 <- comboGroups(30, numGroups = 6, 
+                              lower = "123378675000000000",
+                              upper = "123378675005000000", nThreads = 4))
+   user  system elapsed 
+  0.358   0.197   0.146
+
+## Use n - 1 number of threads (int this case, there are 7)
+system.time(a3 <- comboGroups(30, numGroups = 6, 
+                              lower = "123378675000000000",
+                              upper = "123378675005000000", Parallel = TRUE))
+   user  system elapsed 
+  0.466   0.307   0.118
+  
+identical(a1, a2)
+[1] TRUE
+
+identical(a1, a3)
+[1] TRUE
+```
+
+There is one additional argument (i.e. `retType`) not present in the other two general functions that allows the user to specify the type of object returned. The user can select between `"matrix"` (the default) and `"3Darray"`. This structure has a natural connection to 3D space. We have a particular result (_1<sup>st</sup>_ dimension) broken down into groups (_2<sup>nd</sup>_ dimension) of a certain size (_3<sup>rd</sup>_ dimension).
+
+```r
+my3D <- comboGroups(factor(month.abb), 4, retType = "3Darray")
+my3D[1, , ]
+     Grp1 Grp2 Grp3 Grp4
+[1,] Jan  Apr  Jul  Oct 
+[2,] Feb  May  Aug  Nov 
+[3,] Mar  Jun  Sep  Dec 
+Levels: Apr Aug Dec Feb Jan Jul Jun Mar May Nov Oct Sep
+
+comboGroupsCount(12, 4)
+[1] 15400
+
+my3D[15400, , ]
+     Grp1 Grp2 Grp3 Grp4
+[1,] Jan  Feb  Mar  Apr 
+[2,] Nov  Sep  Jul  May 
+[3,] Dec  Oct  Aug  Jun 
+Levels: Apr Aug Dec Feb Jan Jul Jun Mar May Nov Oct Sep
+```
+
+### Relevant Posts on Stackoverflow as well as OEIS.
+
+* [Iterating through combinations of groups of 4 within a group of 16](https://stackoverflow.com/a/51754958/4408538)
+* [Create Combinations in R by Groups](https://stackoverflow.com/q/57732672/4408538)
+* [Algorithm that can create all combinations and all groups of those combinations](https://stackoverflow.com/q/39126712/4408538)
+* https://oeis.org/A025035 (See also sequences A025036-A025042)
