@@ -12,7 +12,7 @@ vignette: >
   \usepackage[utf8]{inputenc}
 ---
 
-This document covers topics in generating random samples of combinations/permutations. It is encouraged to read [General Combinatorics](General-Combinatorics.html) first.
+This document covers topics in generating random samples of combinations/permutations. It is encouraged to read [General Combinatorics](<https://jwood000.github.io/RcppAlgos/articles/GeneralCombinatorics.html>) first.
 
 ***
 

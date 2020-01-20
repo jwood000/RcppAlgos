@@ -12,13 +12,13 @@ vignette: >
   \usepackage[utf8]{inputenc}
 ---
 
-This document serves as an overview for attacking _common_ combinatorial problems in `R`. One of the goals of `RcppAlgos` is to provide a comprehensive and accessible suite of functionality so that users can easily get to the heart of their problem. As a bonus, the functions in `RcppAlgos` are extremely efficient and are developed with the concept of *High Performance* as something that is constantly pursued but never attained. In other words, `RcppAlgos` is fast now, but we know it can be faster.
+This document serves as an overview for attacking _common_ combinatorial problems in `R`. One of the goals of `RcppAlgos` is to provide a comprehensive and accessible suite of functionality so that users can easily get to the heart of their problem. As a bonus, the functions in `RcppAlgos` are extremely efficient and are constantly being improved with every release. 
 
 It should be noted that this document only covers common problems. For more information on other combinatorial problems addressed by `RcppAlgos`, see the following vignettes:
 
-* [Combinatorial Sampling](CombinatorialSampling.html)
-* [Combinations and Permutations under Constraints](CombPermConstraints.html)
-* [Integer Partitions/Compositions](PartitionsCompositions.html)
+* [Combinatorial Sampling](<https://jwood000.github.io/RcppAlgos/articles/CombinatorialSampling.html>)
+* [Constraints, Integer Partitions, and Compositions](<https://jwood000.github.io/RcppAlgos/articles/CombPermConstraints.html>)
+* [Attacking The Subset Sum Problem with RcppAlgos](<https://jwood000.github.io/RcppAlgos/articles/SubsetSum.html>)
 
 For much of the output below, we will be using the following function obtained here [combining head and tail methods in R
 ](https://stackoverflow.com/a/11601162/4408538) (credit to user @flodel)
@@ -585,7 +585,7 @@ system.time(a2 <- comboGroups(30, numGroups = 6,
    user  system elapsed 
   0.358   0.197   0.146
 
-## Use n - 1 number of threads (int this case, there are 7)
+## Use n - 1 number of threads (in this case, there are 7)
 system.time(a3 <- comboGroups(30, numGroups = 6, 
                               lower = "123378675000000000",
                               upper = "123378675005000000", Parallel = TRUE))
