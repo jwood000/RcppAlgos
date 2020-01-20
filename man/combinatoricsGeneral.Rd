@@ -9,7 +9,7 @@ Generate Combinations/Permutations of a Vector with/without Constraints
         \item Generate combinations or permutations of a vector, chosen \eqn{m} at a time, with or without constraints.
         \item Produce results in parallel using the \code{Parallel} or \code{nThreads} arguments. You can also apply each of the five compiled functions given by the argument \code{constraintFun} in parallel.
         \item Alternatively, the arguments \code{lower} and \code{upper} make it possible to generate combinations/permutations in chunks allowing for parallelization via the parallel package. This is convenient when you want to apply a custom function to the output in parallel.
-        \item Attack general integer partition problems. A highly optimized algorithm is utilized when \code{comparisonFun} is \code{"=="} and \code{constraintFun} is \code{"prod", "mean",} or  \code{"sum"}. \emph{E.g.} \code{comboGeneral(0:50, 15, TRUE, constraintFun = "sum", comparisonFun = "==", limitConstraints = 50)}
+        \item Attack integer partition and general subset sum problems.
         \item GMP support allows for exploration of combinations/permutations of vectors with many elements.
         \item The output is in lexicographical order.
     }
@@ -35,9 +35,7 @@ permuteGeneral(v, m = NULL, repetition = FALSE, freqs = NULL, lower = NULL,
   
   If the output is constrained and \code{lower} isn't supplied, \code{upper} serves as a cap for how many results will be returned that meet the criteria (\emph{e.g.} setting \code{upper = 100} alone will return the first 100 results that meet the criteria, while setting \code{lower = 1} and \code{upper = 100} will test the first 100 results against the criteria).
   
-  In addition to the benefits listed for \code{lower}, this parameter is useful when the total number of combinations/permutations without constraint is large and you expect/need a small number of combinations/permutations that meet a certain criteria. Using \code{upper} can improve run time if used judiciously as we call the member function \href{https://en.cppreference.com/w/cpp/container/vector/reserve}{reserve} of \href{https://en.cppreference.com/w/cpp/container/vector}{std::vector}. See examples below.
-  
-  N.B. This argument was formerly called \code{rowCap}.}
+  In addition to the benefits listed for \code{lower}, this parameter is useful when the total number of combinations/permutations without constraint is large and you expect/need a small number of combinations/permutations that meet a certain criteria. Using \code{upper} can improve run time if used judiciously as we call the member function \href{https://en.cppreference.com/w/cpp/container/vector/reserve}{reserve} of \href{https://en.cppreference.com/w/cpp/container/vector}{std::vector}. See examples below.}
   \item{constraintFun}{Function to be applied to the elements of \code{v} that should be passed as a string (\emph{e.g.} \code{constraintFun = "sum"}). The possible constraint functions are: \code{"sum"}, \code{"prod"}, \code{"mean"}, \code{"max"}, & \code{"min"}. The default is \code{NULL}, meaning no function is applied.}
   \item{comparisonFun}{Comparison operator that will be used to compare \code{limitConstraints} with the result of \code{constraintFun} applied to \code{v}. It should be passed as a string or a vector of two strings (\emph{e.g.} \code{comparisonFun = "<="} or  \code{comparisonFun = c(">","<")}). The possible comparison operators are: \code{"<"}, \code{">"}, \code{"<="}, \code{">="}, \code{"=="}. The default is \code{NULL}.
   
@@ -46,7 +44,7 @@ permuteGeneral(v, m = NULL, repetition = FALSE, freqs = NULL, lower = NULL,
       \item{When \code{comp1} is one of the 'greater-than' operators (\emph{i.e.} ">=" or ">"), \code{comp2} is one of the 'less-than' operators (\emph{i.e.} "<=" or "<"), and \code{x1 < x2}, the combinations/permutations that are returned will have a value (after \code{constraintFun} has been applied) between \code{x1} and \code{x2}.}
       \item{When \code{comp1} and \code{comp2} are defined as in #1 and \code{x1 > x2}, the combinations/permutations that are returned will have a value outside the range of \code{x1} and \code{x2}. See the examples below.}
         }
-    }
+  In other words, the first comparison operator is applied to the first limit and the second operator is applied to the second limit.}
   \item{limitConstraints}{This is the value(s) that will be used for comparison. Can be passed as a single value or a vector of two numerical values. The default is \code{NULL}. See the definition of \code{comparisonFun} as well as the examples below for more information.}
   \item{keepResults}{A logical flag indicating if the result of \code{constraintFun} applied to \code{v} should be displayed; if \code{TRUE}, an additional column of results will be added to the resulting matrix. The default is \code{FALSE}. If user is only applying \code{constraintFun}, \code{keepResults} will default to \code{TRUE}.
   
@@ -178,19 +176,23 @@ comboGeneral(5, 7, TRUE, constraintFun = "prod",
              limitConstraints = c(10, 40000),
              keepResults = TRUE)
              
+#### General subset sum problem
+set.seed(516781810)
+comboGeneral(runif(100, 0, 42), 5, constraintFun = "mean",
+             comparisonFun = "==", limitConstraints = 30,
+             tolerance = 0.0000002)
+
+             
+#### Integer Partitions
+comboGeneral(0:5, 5, TRUE, constraintFun = "sum",
+             comparisonFun = "==", limitConstraints = 5)
+             
+             
 ## Using FUN
 comboGeneral(10000, 5, lower = 20, upper = 22, 
              FUN = function(x) {
                  which(cummax(x) \%\% 2 == 1)
              })
-# [[1]]
-# [1] 1 3
-# 
-# [[2]]
-# [1] 1 3 5
-# 
-# [[3]]
-# [1] 1 3
 
 \dontrun{
 ## Parallel example generating more than 2^31 - 1 combinations.

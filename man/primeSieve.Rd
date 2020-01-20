@@ -1,7 +1,7 @@
 \name{primeSieve}
 \alias{primeSieve}
 \title{
-Generate Prime Integers
+Generate Prime Numbers
 }
 \description{
 Implementation of the segmented sieve of Eratosthenes with wheel factorization. Generates all prime numbers between \code{bound1} and \code{bound2} (if supplied) or all primes up to \code{bound1}. See this stackoverflow post for an analysis on prime number generation efficiency in R: \href{https://stackoverflow.com/a/48313378/4408538}{Generate a list of primes up to a certain number
@@ -52,13 +52,13 @@ Joseph Wood
 }
 \examples{
 ## Primes up to a thousand
-primeSieve(1000)
+primeSieve(100)
 
-## Primes between 42 and 1729
-primeSieve(42, 1729)
+## Primes between 42 and 17
+primeSieve(42, 17)
 
 ## Equivalent to 
-primeSieve(1729, 42)
+primeSieve(17, 42)
 
 ## Primes up to one hundred million in no time
 system.time(primeSieve(10^8))

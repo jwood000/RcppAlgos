@@ -53,7 +53,7 @@ isPrimeRcpp(100)
 isPrimeRcpp(1:100)
 
 set.seed(42)
-mySamp <- sample(10^13, 100)
+mySamp <- sample(10^13, 10)
 
 ## return named vector for easy identification
 isPrimeRcpp(mySamp, namedVector = TRUE)

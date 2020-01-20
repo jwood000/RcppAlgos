@@ -60,7 +60,7 @@ Joseph Wood
 
 \examples{
 ## generate 10 random combinations
-comboSample(30, 15, TRUE, n = 10, seed = 10)
+comboSample(30, 8, TRUE, n = 5, seed = 10)
 
 ## using sampleVec to generate specific permutations
 permuteSample(15, 10, freqs = c(1,2,2,1,2,2,1,2,1,2,2,1,2,1,1), 
@@ -93,10 +93,10 @@ identical(pSamp, pGeneral)
 ## [1] TRUE
 
 ## Using nThreads
-permuteSample(10000, 50, n = 8, seed = 10, nThreads = 2)
+permPar = permuteSample(10000, 50, n = 8, seed = 10, nThreads = 2)
 
 ## Using FUN
-permuteSample(10000, 50, n = 8, seed = 10, FUN = sd)
+permuteSample(10000, 50, n = 4, seed = 10, FUN = sd)
 
 \dontrun{
 ## Using Parallel
