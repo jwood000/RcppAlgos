@@ -46,7 +46,7 @@ double c_numbdiffparts(int n) {
 //              ==>         n = 22
 //
 // Including the first result (i.e. 1 46), we have n + 1 = 23.
-// In general, in can be shown that when we are presented with
+// In general, in can be show that when we are presented with
 // a situaiton of the form: 1 1 ... 1 m, then the number of
 // results for the "1st" group (i.e. while the 2nd to the last
 // column stays the same), is given by floor((1 + m) / 2).
@@ -63,11 +63,13 @@ double c_numbdiffparts(int n) {
 //          44 / 2, 41 / 2, 38 / 2, 35 / 2, 32 / 2
 //
 // The total number of result for all groups is given by:
-//          47/ 2 + 44 / 2 + ... + 5 / 2 + 2/ 2
+//          47 / 2 + 44 / 2 + ... + 5 / 2 + 2 / 2
 //
 // This can be converted to:
-//  (47 - 0) / 2 + (47 - 3) / 2 + ... + (47 - 42) / 2 + (47 - 45)/ 2
+// {(47 - 0) + (47 - 3) + ... + (47 - 42) + (47 - 45)} / 2
 //
+// The 8 below comes from adding 1 to every other term
+// that needs to be removed (leave as a proof to the reader)
 //   ==>>  (47 * 16 - 3 * (0 + 1 + 2 + .... + 14 + 15) - 8) / 2
 //   ==>>    (47 * 16 - 3 * (16 * 15 / 2) - 8) / 2
 

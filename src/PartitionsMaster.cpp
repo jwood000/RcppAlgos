@@ -139,8 +139,8 @@ namespace Partitions {
             const int nRows = static_cast<int>(numParts);
             
             typeRcpp partitionsMatrix = (IncludeZero && (IsComb || mIsNull)) ? 
-            typeRcpp(nRows, nCols) : 
-                Rcpp::no_init_matrix(nRows, nCols);
+                                            typeRcpp(nRows, nCols) : 
+                                                Rcpp::no_init_matrix(nRows, nCols);
             
             if (IsDistinct) {
                 PartsStdDistinct(partitionsMatrix, z, m, nRows, getAll,

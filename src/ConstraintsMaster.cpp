@@ -150,8 +150,9 @@ SEXP CombinatoricsCnstrt(SEXP Rv, SEXP Rm, SEXP RisRep, SEXP RFreqs, SEXP Rlow,
         AdjustTargetVals(n, myType, targetVals, targetIntVals,
                          Rtolerance, compFunVec, tolerance, mainFun, vNum);
         
-        GetPartitionCase(compFunVec, vNum, mainFun, targetVals, PartType, distinctTest,
-                         Rlow, myReps, n, m, tolerance, IsMult, IsRep, IsBetweenComp);
+        GetPartitionCase(compFunVec, vNum, mainFun, targetVals,
+                         PartType, distinctTest, Rlow, myReps, n, m,
+                         tolerance, IsMult, IsRep, IsBetweenComp, Rf_isNull(Rm));
     }
     
     std::vector<int> startZ(m);
@@ -164,6 +165,7 @@ SEXP CombinatoricsCnstrt(SEXP Rv, SEXP Rm, SEXP RisRep, SEXP RFreqs, SEXP Rlow,
 
         SetStartPartitionZ(PartType, distinctTest, startZ,
                            myReps, targetInt, n, m, IncludeZero);
+        
         computedRows = GetComputedPartsComps(startZ, PartType, targetInt, m,
                                              IsComb, IncludeZero, Rf_isNull(Rm));
     } else {

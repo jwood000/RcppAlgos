@@ -138,20 +138,18 @@ int GetFirstCombo(int m, const std::vector<int64_t> &v, bool IsRep, bool IsMult,
 inline void PopulateVec(int m, const std::vector<int64_t> &v, std::vector<int> &z,
                         int &count, int maxRows, bool isComb, std::vector<int64_t> &partitionsVec) {
     
-    if (count < maxRows) {
-        if (isComb) {
+    if (isComb) {
+        for (int k = 0; k < m; ++k)
+            partitionsVec.push_back(v[z[k]]);
+        
+        ++count;
+    } else {
+        do {
             for (int k = 0; k < m; ++k)
                 partitionsVec.push_back(v[z[k]]);
             
             ++count;
-        } else {
-            do {
-                for (int k = 0; k < m; ++k)
-                    partitionsVec.push_back(v[z[k]]);
-                
-                ++count;
-            } while (std::next_permutation(z.begin(), z.end()) && count < maxRows);
-        }
+        } while (std::next_permutation(z.begin(), z.end()) && count < maxRows);
     }
 }
 
@@ -199,7 +197,6 @@ int PartitionsMultiSet(int m, const std::vector<int64_t> &v, int64_t target,
     PrepareMultiSetPart(rpsCnt, z, b, p, e, lastCol, lastElem);
     
     while (keepGoing(rpsCnt, lastElem, z, e, b)) {
-        
         PopulateVec(m, v, z, count, maxRows, isComb, partitionsVec);
         
         if (count >= maxRows)
@@ -208,7 +205,10 @@ int PartitionsMultiSet(int m, const std::vector<int64_t> &v, int64_t target,
         NextMultiSetGenPart(rpsCnt, z, e, b,  p, lastCol, lastElem);
     }
     
-    PopulateVec(m, v, z, count, maxRows, isComb, partitionsVec);
+    
+    if (count < maxRows)
+        PopulateVec(m, v, z, count, maxRows, isComb, partitionsVec);
+    
     return 1;
 }
 
@@ -243,7 +243,6 @@ int PartitionsRep(int m, const std::vector<int64_t> &v, int64_t target, int last
     int count = 0;
     
     while ((edge >= 0) && (z[boundary] - z[edge] >= 2)) {
-        
         PopulateVec(m, v, z, count, maxRows, isComb, partitionsVec);
         
         if (count >= maxRows)
@@ -252,7 +251,9 @@ int PartitionsRep(int m, const std::vector<int64_t> &v, int64_t target, int last
         NextRepGenPart(z, boundary, edge, pivot, lastCol, lastElem);
     }
     
-    PopulateVec(m, v, z, count, maxRows, isComb, partitionsVec);
+    if (count < maxRows)
+        PopulateVec(m, v, z, count, maxRows, isComb, partitionsVec);
+    
     return 1;
 }
 
@@ -264,22 +265,6 @@ int PartitionsDistinct(int m, const std::vector<int64_t> &v, int64_t target, int
     
     if (!GetFirstCombo(m, v, false, false, z, trivVec, target, trivVec, lastCol, lastElem))
         return 0;
-    
-    int indexRows = isComb ? 0 : static_cast<int>(NumPermsNoRep(m, lastCol));
-    auto indexMatrix = FromCpp14::make_unique<int[]>(indexRows * m);
-    
-    if (!isComb) {
-        indexRows = static_cast<int>(NumPermsNoRep(m, lastCol));
-        std::vector<int> indexVec(m);
-        std::iota(indexVec.begin(), indexVec.end(), 0);
-        
-        for (int i = 0, myRow = 0; i < indexRows; ++i, myRow += m) {
-            for (int j = 0; j < m; ++j)
-                indexMatrix[myRow + j] = indexVec[j];
-            
-            std::next_permutation(indexVec.begin(), indexVec.end());
-        }
-    }
     
     // Largest index such that z[boundary] - z[boundary - 1] > 1
     // This is the index that will be decremented at the same
@@ -308,21 +293,7 @@ int PartitionsDistinct(int m, const std::vector<int64_t> &v, int64_t target, int
     int count = 0;
     
     while (edge >= 0 && (z[boundary] - z[edge]) >= tarDiff) {
-        if (isComb) {
-            for (int k = 0; k < m; ++k)
-                partitionsVec.push_back(v[z[k]]);
-            
-            ++count;
-        } else {
-            if (indexRows + count > maxRows)
-                indexRows = maxRows - count;
-            
-            for (int j = 0, myRow = 0; j < indexRows; ++j, myRow += m)
-                for (int k = 0; k < m; ++k)
-                    partitionsVec.push_back(v[z[indexMatrix[myRow + k]]]);
-            
-            count += indexRows;
-        }
+        PopulateVec(m, v, z, count, maxRows, isComb, partitionsVec);
         
         if (count >= maxRows)
             break;
@@ -330,6 +301,8 @@ int PartitionsDistinct(int m, const std::vector<int64_t> &v, int64_t target, int
         NextDistinctGenPart(z, boundary, edge, pivot, tarDiff, lastCol, lastElem);
     }
     
-    PopulateVec(m, v, z, count, maxRows, isComb, partitionsVec);
+    if (count < maxRows)
+        PopulateVec(m, v, z, count, maxRows, isComb, partitionsVec);
+    
     return 1;
 }
