@@ -62,7 +62,7 @@ void SectionOne(const std::vector<typeVector> &v, std::vector<typeVector> &testV
 
 
 distinctType DistinctAttr(int lenV, int m, bool IsRep, bool IsMult, int64_t target,
-                          const std::vector<int> &Reps, bool IncludeZero) {
+                          const std::vector<int> &Reps, bool IncludeZero, bool mIsNull) {
     int limit = 0;
     bool getAll = false;
     
@@ -112,7 +112,11 @@ distinctType DistinctAttr(int lenV, int m, bool IsRep, bool IsMult, int64_t targ
                 limit = 0;
             }
         } else if (!IsRep) {
-            limit = std::min(m, limit);
+            if (m < limit) {
+                limit = m;
+            } else if (!mIsNull) {
+                limit = 0;
+            }
         }
     }
     
@@ -179,32 +183,32 @@ void SetStartPartitionZ(PartitionType PartType, distinctType distinctTest,
     
     switch (PartType) {
         case PartitionType::PartTraditional: {
-                z[lastCol] = target;
-                break;
-            }
+            z[lastCol] = target;
+            break;
+        }
         case PartitionType::PartTradNoZero: {
-                std::fill(z.begin(), z.end(), 1);
-                z[lastCol] = target - partWidth + 1;
-                break;
-            }
+            std::fill(z.begin(), z.end(), 1);
+            z[lastCol] = target - partWidth + 1;
+            break;
+        }
         case PartitionType::PartDstctStdAll: {
-                z[lastCol] = target;
-                break;
-            }
+            z[lastCol] = target;
+            break;
+        }
         case PartitionType::PartDstctShort: {
-                z[lastCol] = target;
-                break;
-            }
+            z[lastCol] = target;
+            break;
+        }
         case PartitionType::PartDstctSpecial: {
-                std::iota(z.begin() + Reps[0] - 1, z.end(), 0);
-                z[lastCol] = target - (partWidth - Reps[0]) * (partWidth - Reps[0] - 1) / 2;
-                break;
-            }
+            std::iota(z.begin() + Reps[0] - 1, z.end(), 0);
+            z[lastCol] = target - (partWidth - Reps[0]) * (partWidth - Reps[0] - 1) / 2;
+            break;
+        }
         case PartitionType::PartDstctOneZero: {
-                std::iota(z.begin(), z.end(), 0);
-                z[lastCol] = target - (partWidth - 1) * (partWidth - 2) / 2;
-                break;
-            }
+            std::iota(z.begin(), z.end(), 0);
+            z[lastCol] = target - (partWidth - 1) * (partWidth - 2) / 2;
+            break;
+        }
         case PartitionType::PartDstctNoZero: {
             std::iota(z.begin(), z.end(), 1);
             z[lastCol] = target - partWidth * (partWidth - 1) / 2;
@@ -375,7 +379,7 @@ void GetPartitionCase(const std::vector<std::string> &compFunVec, std::vector<ty
                       const std::string &mainFun, const std::vector<typeVector> &target,
                       PartitionType &PartType, distinctType &distinctTest, const SEXP &Rlow,
                       std::vector<int> &Reps, int lenV, int &m, double tolerance, bool IsMult,
-                      bool IsRep, bool IsBet) {
+                      bool IsRep, bool IsBet, bool mIsNull) {
     
     bool PartitionCase = false;
     PartType = PartitionType::NotPartition;
@@ -455,10 +459,10 @@ void GetPartitionCase(const std::vector<std::string> &compFunVec, std::vector<ty
             PartType = PartitionType::PartGeneral;
             
             if (myMax == tarTest && (lenV == tarTest || lenV == (tarTest + 1)) && v.front() >= 0) {
-                distinctTest = DistinctAttr(lenV, m, IsRep, IsMult, tarTest, Reps, IncludeZero);
+                distinctTest = DistinctAttr(lenV, m, IsRep, IsMult,
+                                            tarTest, Reps, IncludeZero, mIsNull);
                 
                 if (distinctTest.limit > 0) {
-                    
                     m = distinctTest.limit;
                     
                     if (IncludeZero) {
@@ -477,14 +481,18 @@ void GetPartitionCase(const std::vector<std::string> &compFunVec, std::vector<ty
                         PartType = PartitionType::PartDstctNoZero;
                     }
                 } else if (IsRep) {
-                    if (m >= lenV) { 
-                        m = (IncludeZero) ? lenV - 1 : lenV;
-                    }
-                    
                     if (IncludeZero) {
                         PartType = PartitionType::PartTraditional;
                     } else {
                         PartType = PartitionType::PartTradNoZero;
+                    }
+                    
+                    if (m >= lenV) { 
+                        if (IncludeZero) {
+                            m = lenV - 1;
+                        } else {
+                            PartType = PartitionType::NotPartition;
+                        }
                     }
                 }
             }
@@ -531,11 +539,11 @@ template void SectionOne(const std::vector<double>&, std::vector<double> &testVe
 template void GetPartitionCase(const std::vector<std::string>&, std::vector<int>&,
                                const std::string&, const std::vector<int>&, PartitionType&,
                                distinctType&, const SEXP&, std::vector<int>&, int, int&,
-                               double, bool, bool, bool);
+                               double, bool, bool, bool, bool);
 template void GetPartitionCase(const std::vector<std::string>&, std::vector<double>&,
                                const std::string&, const std::vector<double>&, PartitionType&,
                                distinctType&, const SEXP&, std::vector<int>&, int, int&,
-                               double, bool, bool, bool);
+                               double, bool, bool, bool, bool);
 
 template bool CheckSpecialCase(int, bool, const std::string&, const std::vector<int>&);
 template bool CheckSpecialCase(int, bool, const std::string&, const std::vector<double>&);

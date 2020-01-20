@@ -72,7 +72,7 @@ void GetPartitionCase(const std::vector<std::string> &compFunVec, std::vector<ty
                       const std::string &mainFun, const std::vector<typeVector> &target,
                       PartitionType &PartType, distinctType &distinctTest, const SEXP &Rlow,
                       std::vector<int> &Reps, int lenV, int &m, double tolerance, bool IsMult,
-                      bool IsRep, bool IsBet);
+                      bool IsRep, bool IsBet, bool mIsNull);
 
 template <typename typeVector>
 bool CheckSpecialCase(int n, bool bLower, const std::string &mainFun,
