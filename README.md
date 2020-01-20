@@ -2,6 +2,7 @@
 # RcppAlgos <img src='inst/figures/RcppAlgos-logo.png' width="150px" align="right" />
 
 <!-- badges: start -->
+[![CRAN status](https://www.r-pkg.org/badges/version/RcppAlgos)](https://cran.r-project.org/package=RcppAlgos)
 [![Travis build status](https://travis-ci.com/jwood000/RcppAlgos.svg?branch=master)](https://travis-ci.com/jwood000/RcppAlgos)
 ![](http://cranlogs.r-pkg.org/badges/RcppAlgos?color=orange)
 ![](http://cranlogs.r-pkg.org/badges/grand-total/RcppAlgos?color=brightgreen)
@@ -12,15 +13,12 @@
 
 A collection of high performance functions implemented in C++ with Rcpp for solving problems in combinatorics and computational mathematics. Utilizes the [RcppThread](<https://github.com/tnagler/RcppThread>) library for easy access to thread safe multithreading. We also make use of the [RMatrix.h](<https://github.com/RcppCore/RcppParallel/blob/master/inst/include/RcppParallel/RMatrix.h>) header file from [RcppParallel](<https://github.com/RcppCore/RcppParallel>) for thread safe accessors for Rcpp matrices.
 
-## Features
+## Featured Functions
 
-* Generate all combinations/permutations of a vector (including [multisets](<https://en.wikipedia.org/wiki/Multiset>)) meeting specific criteria with **combo/permuteGeneral**.
-  * E.g. Finding all combinations of a vector such that the mean is between two values.
-* A highly efficient generalized partition function is employed when `constraintFun = "sum"` and `comparisonFun = "=="` (see examples below).
-* Easily generate random samples of combinations/permutations with **combo/permuteSample**.
-* Produce results in parallel using the `Parallel`  or `nThreads` arguments. You can also apply each of the five compiled functions given by the argument `constraintFun` in parallel as well.
-* GMP support allows for exploration of combinations/permutations of vectors with many elements.
-* Offers a variety of high performance number theoretic functions that are useful for problems common in computational mathematics (E.g. **primeSieve**, **primeFactorize**, and **divisorsRcpp** to name a few).
+  - **`comboGeneral/permuteGeneral`**: Generate all combinations/permutations of a vector (including [multisets](<https://en.wikipedia.org/wiki/Multiset>)) meeting specific criteria.
+  - **`comboSample/permuteSample`**: Generate reproducible random samples of combinations/permutations
+  - **`primeSieve`**: Fast prime number generator
+  - **`primeCount`**: Prime counting function using [Legendre's formula](<http://mathworld.wolfram.com/LegendresFormula.html>)
 
 The `primeSieve` function and the `primeCount` function are both based off of the excellent work by [Kim Walisch](<https://github.com/kimwalisch>). The respective repos can be found here: [kimwalisch/primesieve](<https://github.com/kimwalisch/primesieve>); [kimwalisch/primecount](<https://github.com/kimwalisch/primecount>)
 
@@ -35,30 +33,20 @@ install.packages("RcppAlgos")
 devtools::install_github("jwood000/RcppAlgos")
 ```
 
-## Usage
+## Basic Usage
 
 ``` r
-## Generate primes in a range quickly
-system.time(primeSieve(1e15, 1e15 + 1e9, nThreads = 8))
-   user  system elapsed 
-  4.872   0.807   0.917
-
-  
-## Count primes quickly
-system.time(print(primeCount(1e14, nThreads = 8)))
-[1] 3204941750802
-   user  system elapsed 
- 50.121   0.054   6.688
+## Generate prime numbers
+primeSieve(50, 100)
+[1] 53 59 61 67 71 73 79 83 89 97
 
 
-## Completely factor a vector of numbers 
-set.seed(42)
-myNums <- sample(1e12, 3)
-allDivs <- divisorsRcpp(myNums, namedList = TRUE)
+## Count prime numbers less than n
+primeCount(1e10)
+[1] 455052511
 
 
-## Find all 3-tuples combinations without 
-## repetition of the numbers c(1, 2, 3, 4).
+## Find all 3-tuples combinations of 1:4 
 comboGeneral(4, 3)
      [,1] [,2] [,3]
 [1,]   1    2    3
@@ -67,39 +55,16 @@ comboGeneral(4, 3)
 [4,]   2    3    4
 
 
-## Find the first four 3-tuples permutations without
-## repetition of the numbers c(1, 2, 3, 4).
-permuteGeneral(4, 3, upper = 4)
-      [,1] [,2] [,3]
- [1,]    1    2    3
- [2,]    1    2    4
- [3,]    1    3    2
- [4,]    1    3    4
+## Pass any atomic type vector
+permuteGeneral(letters, 3, upper = 4)
+     [,1] [,2] [,3]
+[1,] "a"  "b"  "c" 
+[2,] "a"  "b"  "d" 
+[3,] "a"  "b"  "e" 
+[4,] "a"  "b"  "f" 
 
 
-## Use lower to specify which lexicographical combination
-## to start generating from (if upper not specified, we 
-## go to the last result i.e. comboCount(4, 3, T) = 20)
-comboGeneral(4, 3, TRUE, lower = 17)
-      [,1] [,2] [,3]
-[1,]    3    3    3
-[2,]    3    3    4
-[3,]    3    4    4
-[4,]    4    4    4
-  
-
-## They are very efficient
-system.time(comboGeneral(25, 13))
-   user  system elapsed 
-  0.104   0.054   0.158
-
-## Even faster in parallel
-system.time(comboGeneral(25, 13, nThreads = 8))
-   user  system elapsed 
-  0.166   0.220   0.055
-
-
-## Generate a reproducible sample of combinations
+## Generate a reproducible sample
 comboSample(10, 8, TRUE, n = 5, seed = 84)
      [,1] [,2] [,3] [,4] [,5] [,6] [,7] [,8]
 [1,]    3    3    3    6    6   10   10   10
@@ -123,40 +88,15 @@ comboGeneral(5, 7, TRUE, constraintFun = "prod",
 [5,]    2    2    3    4    4    4    5 3840
 [6,]    3    3    3    3    3    3    5 3645
 [7,]    3    3    3    3    3    4    4 3888
-
-
-## Find all combinations of the vector c(121, 126, ..., 216, 221)
-## of length 13 such that the sum is equal 2613
-system.time(parts <- comboGeneral(seq(121L, 221L, 5L), 13, TRUE,
-                                  constraintFun = "sum", 
-                                  comparisonFun = "==", 
-                                  limitConstraints = 2613))
-   user  system elapsed 
-  0.008   0.001   0.009
-  
-head(parts)
-     [,1] [,2] [,3] [,4] [,5] [,6] [,7] [,8] [,9] [,10] [,11] [,12] [,13]
-[1,]  121  121  161  221  221  221  221  221  221   221   221   221   221
-[2,]  121  121  166  216  221  221  221  221  221   221   221   221   221
-[3,]  121  121  171  211  221  221  221  221  221   221   221   221   221
-[4,]  121  121  171  216  216  221  221  221  221   221   221   221   221
-[5,]  121  121  176  206  221  221  221  221  221   221   221   221   221
-[6,]  121  121  176  211  216  221  221  221  221   221   221   221   221
-
-dim(parts)
-[1] 119546     13
-
-## Over 500 million possible results
-prettyNum(comboCount(seq(121L, 221L, 5L), 13, TRUE), big.mark = ",")
-[1] "573,166,440"
 ```
 
-## Getting Started
+## Further Reading
 
-* Combinatorial Sampling
-* Computational Mathematics Overview
-* Combinations and Permutations under Constraints
-* Combination and Permutation Basics
+* [Documentation](<https://jwood000.github.io/RcppAlgos/reference/index.html>)
+* [Combinatorial Sampling](<https://jwood000.github.io/RcppAlgos/articles/GeneralCombinatorics.html>)
+* [Computational Mathematics Overview](<https://jwood000.github.io/RcppAlgos/articles/ComputationalMathematics.html>)
+* [Constraints, Integer Partitions, and Compositions](<https://jwood000.github.io/RcppAlgos/articles/CombPermConstraints.html>)
+* [Combination and Permutation Basics](<https://jwood000.github.io/RcppAlgos/articles/GeneralCombinatorics.html>)
 
 ## Contact
 
