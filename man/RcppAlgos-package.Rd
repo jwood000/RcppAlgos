@@ -19,7 +19,7 @@ The \strong{RcppAlgos} package attacks age-old problems in combinatorics and com
                 \item{Investigating the structure of large numbers over wide ranges:
                     \itemize{
                         \item{\code{primeFactorizeSieve(10^13 - 10^7, 10^13 + 10^7)}}
-                        \item{\code{primeSieve(2^53 - 10^10, 2^53 - 1, nThreads = 8)}}
+                        \item{\code{primeSieve(2^53 - 10^10, 2^53 - 1, nThreads = 32)}}
                         }
                     }
                 \item{Easily explore combinations/permutations that would otherwise be inaccessible due to time of execution/memory constraints:
@@ -34,6 +34,11 @@ The \strong{RcppAlgos} package attacks age-old problems in combinatorics and com
             constraintFun = "sum", comparisonFun = "==",
             limitConstraints = 80)}}
                         \item{\code{permuteSample(rnorm(100), 10, freqs = rep(1:4, 25), n = 15, seed = 123)}}
+                        \item{\preformatted{set.seed(123)
+comboGeneral(runif(42, 0, 50), 10,
+             constraintFun = "mean",
+             comparisonFun = c(">","<"),
+             limitConstraints = c(39.876, 42.123))}}
                     }
                 }
             }}
