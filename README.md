@@ -29,7 +29,7 @@ Additionally, many of the sieving functions make use of the fast integer divisio
 ``` r
 install.packages("RcppAlgos")
 
-## Or install the development version
+## install the development version
 devtools::install_github("jwood000/RcppAlgos")
 ```
 
