@@ -93,7 +93,8 @@ comboGeneral(5, 7, TRUE, constraintFun = "prod",
 ## Further Reading
 
 * [Documentation](<https://jwood000.github.io/RcppAlgos/reference/index.html>)
-* [Combinatorial Sampling](<https://jwood000.github.io/RcppAlgos/articles/GeneralCombinatorics.html>)
+* [Combinatorial Sampling](<https://jwood000.github.io/RcppAlgos/articles/CombinatorialSampling.html>)
+* [Attacking The Subset Sum Problem with RcppAlgos](<https://jwood000.github.io/RcppAlgos/articles/SubsetSum.html>)
 * [Computational Mathematics Overview](<https://jwood000.github.io/RcppAlgos/articles/ComputationalMathematics.html>)
 * [Constraints, Integer Partitions, and Compositions](<https://jwood000.github.io/RcppAlgos/articles/CombPermConstraints.html>)
 * [Combination and Permutation Basics](<https://jwood000.github.io/RcppAlgos/articles/GeneralCombinatorics.html>)
