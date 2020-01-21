@@ -1,7 +1,6 @@
-# News for Package `RcppAlgos`
+# RcppAlgos 2.3.5
 
-## Changes in RcppAlgos version 2.3.5 (Release date: TBA)
-### New Features:
+## New Features:
 
 * Added `comboGroups`, `comboGroupsCount`, and `comboGroupsSample`. These functions deal with partitioning a vector/set into groups of equal size. See [Combinations in R by Groups](<https://stackoverflow.com/q/57732672/4408538Create>). See the related integer sequences A025035-A025042 at https://oeis.orgOEIS (E.g. https://oeis.org/A025036A025036 for Number of partitions of `(1, 2, ..., 4n)` into sets of size 4.)
 
@@ -9,7 +8,7 @@
 
 * Added website via the excellent package `pkgdown`
 
-### Enhancements:
+## Enhancements:
 
 * Extended general partitions algorithm to multisets. E.g. `comboGeneral(10, 8, freqs = rep(1:5, 2), constraintFun = "sum", comparisonFun = "==", limitConstraints = 55)`
 
@@ -21,15 +20,15 @@
 
 * Added loop unrolling to prime sieve algorithm for improved efficiency.
 
-### Bug Fixes:
+## Bug Fixes:
 
 * Corrected checks for total number of partitions and assignment of number of rows when `upper` is applied in `combo/permuteGeneral`. See [Issue #9](https://github.com/jwood000/RcppAlgos/issues/9#issue-467908452Issue%20#9) for more information.
 
-## Changes in RcppAlgos version 2.3.4 (Release date: 2019-07-02)
+# RcppAlgos 2.3.4
 
 * Fixed clang/gcc-ASAN and valgrind issues in `2.3.3`. These issues were arising from finding the first vector to meet the criteria in PartitionRep/Distinct. We also found further issues in the standard functions when the length of the partition was 2. The algorithm would eventually try and access an element of a vector at index -1. These fixes were confirmed by successful Rdevel CMD check under 'r-devel-ubsan-clang' via docker using the advice found here: https://knausb.github.io/2017/06/reproducing-a-clang-ubsan-issue/ and http://dirk.eddelbuettel.com/code/sanitizers.html.
 
-## Changes in RcppAlgos version 2.3.3 (Release date: 2019-06-30)
+# RcppAlgos 2.3.3
 
 * Fixed clang-UBSAN issue in `2.3.2`. It was caused by populating a vector of ints with values larger than `2^31 - 1`.
 
@@ -39,19 +38,19 @@
 
 * Fixed error in `PollardRho.cpp` when number passed had factors close to the limit in the predefined lookup table (i.e. `constexpr int64_t FirstOmittedPrime = 3989`)
 
-## Changes in RcppAlgos version 2.3.2 (Release date: 2019-04-10)
+# RcppAlgos 2.3.2
 
 * Fixed clang-UBSAN issue in `2.3.1`. It was caused by casting extremely large values to `int64_t`.
 
 * Corrected handling of small values in `PrimeSieveBig`.
 
-## Changes in RcppAlgos version 2.3.1 (Release date: 2019-03-20)
+# RcppAlgos 2.3.1
 
 * Explicitly casted to double for sqrt to silence Solaris
 
 * Corrected handling of `NaNs`
 
-## Changes in RcppAlgos version 2.3.0 (Release date: 2019-03-17)
+# RcppAlgos 2.3.0
 
 * All functions now have parallel capabilites via `RcppThread`.
 
@@ -61,13 +60,13 @@
 
 * Added `stdThreadMax` for obtaining the number of threads available on a machine
 
-## Changes in RcppAlgos version 2.2.0 (Release date: 2018-09-15)
+# RcppAlgos 2.2.0
 
 * Disabled `Parallel` argument as it was causing unpredictable errors on certain platforms. Research is ongoing to correct this for use in future versions. The development version will retain this feature.
 
 * Corrected `UBSAN` error that caused by filling a vector of integers with numbers larger than `2^31 - 1`.
 
-## Changes in RcppAlgos version 2.1.0 (Release date: 2018-09-11)
+# RcppAlgos 2.1.0
 
 * Added argument `Parallel` to general and sampling functions for increased gains in efficiency.
 
@@ -85,19 +84,19 @@
     
 * Added `FUN` argument to all combinatorial functions. Allows user to pass custom functions to be applied to combinations/permutations.
 
-## Changes in RcppAlgos version 2.0.3 (Release date: 2018-06-30)
+# RcppAlgos 2.0.3
 
 * Corrected clang `UBSAN` error identified by two different unit tests. In both situations, the problem was occurring as a result of populating a vector of integers with values from a vector of doubles that contained a nan (Not-a-Number). Most information was obtained from Brian J. Knaus's blog titled : "Reproducing a clang-UBSAN issue" (https://knausb.github.io/2017/06/reproducing-a-clang-ubsan-issue/)
 
-## Changes in RcppAlgos version 2.0.2 (Release date: 2018-06-15)
+# RcppAlgos 2.0.2
 
 * Corrected divide by zero in `divisorsRcpp` unit test.
 
-## Changes in RcppAlgos version 2.0.1 (Release date: 2018-06-10)
+# RcppAlgos 2.0.1
 
 * Corrected spelling in `DESCRIPTION`
 
-## Changes in RcppAlgos version 2.0.0 (Release date: Never Released)
+# RcppAlgos 2.0.0
 
 * Changed max value and explicitly casted a few values to `int64_t` in PollardRho.cpp for efficiency while still maintaining accuracy from `2^60` to `2^62` (`isPrimeRcpp` is roughly 10% faster now).
 
@@ -115,7 +114,7 @@
 
 * Updated unit tests for greater coverage. See the function `package_coverage` from the package `covr`.
 
-## Changes in RcppAlgos version 1.0.1 (Release date: 2018-03-09)
+# RcppAlgos 1.0.1
 
 * Corrected precision limits in documentation from `2^64` to `2^63`.
 
@@ -125,7 +124,7 @@
 
 * Added `RcppAlgos-package` man file.
 
-## Changes in RcppAlgos version 1.0.0 (Release date: 2018-03-07)
+# RcppAlgos 1.0.0
 
 * Added the following functions: `primeFactorize` (vectorized pollard rho factorization), `divisorsRcpp` (vectorized factoring (complete)), `isPrimeRcpp` (vectorized primality testing using Miller-Rabin algorithm), & `primeCount` (based on the primecount algorithm by Kim Walisch)
 
@@ -139,7 +138,7 @@
 
 * All number theoretic functions have been made more efficient. Some make use of the fast integer division library `libdivide` by ridiculousfish.
 
-## Changes in RcppAlgos version 0.2.5 (Release date: 2018-01-04)
+# RcppAlgos 0.2.5
 
 * Added unit tests.
 
@@ -151,17 +150,17 @@
 
 * Fixed bug when non-unique elements are present with factors.
 
-## Changes in RcppAlgos version 0.2.4 (Release date: 2017-12-18)
+# RcppAlgos 0.2.4
 
 * Fixed bug that occurs when non-unique elements are present for combinations with replacement.
     
-## Changes in RcppAlgos version 0.2.3 (Release date: 2017-12-18)
+# RcppAlgos 0.2.3
 
 * Fixed segmentation fault error highlighted by valgrind check in version `0.2.2`.
 
 * Updated `DESCRIPTION` file.
 
-## Changes in RcppAlgos version 0.2.2 (Release date: 2017-12-15)
+# RcppAlgos 0.2.2
 
 * Fixed bug in constraint functions that occurred when `m = 1` and the constraint limit was equal to the last element in `v`. It was returning a 2x1 matrix with the same value twice.  It is now correctly returning a 1x1 matrix with the correct value 1 time.
 
@@ -173,13 +172,13 @@
 
 * Both `comboGeneral` and `permuteGeneral` can utilize the argument `m` when dealing with multisets. Before, `permuteGeneral` would simply return all permutations of a multiset. Now you can specify the lengths of the output.
 
-## Changes in RcppAlgos version 0.2.1 (Release date: 2017-11-29)
+# RcppAlgos 0.2.1
 
 * Fixed bug that would occur in two edge cases involving the constraint functions.
 
 * Slightly modified formatting for `primeSieve.Rd`
 
-## Changes in RcppAlgos version 0.2.0 (Release date: 2017-11-28)
+# RcppAlgos 0.2.0
 
 * Updated combination algorithms. They are now more than twice as fast.
 
@@ -191,13 +190,13 @@
 
 * All combinatoric functions now support factor types.
 
-## Changes in RcppAlgos version 0.1.2 (Release date: 2017-11-03)
+# RcppAlgos 0.1.2
 
 * Corrected minor typo in `README` file.
 
 * Fixed minor error regarding explicitly comparing variables to large numbers that are typed out. Simply adding a decimal along with a zero remedies the situation.
 
-## Changes in RcppAlgos version 0.1.1 (Release date: 2017-11-03)
+# RcppAlgos 0.1.1
 
 * Improved `ComboConstraint` function by removing unnecessary subsetting.
 
@@ -205,6 +204,6 @@
 
 * Corrected the errors with respect to the math functions in `C++`. Explicitly overloaded the parameters of these functions by casting them to the `double` type.
 
-## RcppAlgos version 0.1.0 (Release date: 2017-10-26)
+# RcppAlgos 0.1.0
 
 * Initial Release
