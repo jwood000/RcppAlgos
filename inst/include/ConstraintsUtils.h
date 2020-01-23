@@ -35,7 +35,8 @@ void ConstraintSetup(std::vector<std::string> &compFunVec,
 void AdjustTargetVals(int n, VecType myType, std::vector<double> &targetVals,
                       std::vector<int> &targetIntVals, const SEXP &Rtolerance,
                       std::vector<std::string> &compFunVec, double &tolerance,
-                      const std::string &mainFun, const std::vector<double> &vNum);
+                      const std::string &mainFun, const std::vector<double> &vNum,
+                      bool &IsWhole);
 
 template <typename typeVector>
 using partialReducePtr = void (*const)(int m, typeVector &partial, typeVector w);
@@ -72,7 +73,7 @@ void GetPartitionCase(const std::vector<std::string> &compFunVec, std::vector<ty
                       const std::string &mainFun, const std::vector<typeVector> &target,
                       PartitionType &PartType, distinctType &distinctTest, const SEXP &Rlow,
                       std::vector<int> &Reps, int lenV, int &m, double tolerance, bool IsMult,
-                      bool IsRep, bool IsBet, bool mIsNull);
+                      bool IsRep, bool IsBet, bool mIsNull, bool IsWhole);
 
 template <typename typeVector>
 bool CheckSpecialCase(int n, bool bLower, const std::string &mainFun,

@@ -70,7 +70,7 @@ typeRcpp CombinatoricsConstraints(int n, int m, std::vector<typeVector> &v, bool
                 std::sort(v.begin(), v.end());
             }
             
-            auto itComp = std::find(compSpecial.cbegin(), compSpecial.cend(), comparison[nC]);
+            const auto itComp = std::find(compSpecial.cbegin(), compSpecial.cend(), comparison[nC]);
             
             if (itComp != compSpecial.end()) {
                 int myIndex = std::distance(compSpecial.cbegin(), itComp);
@@ -92,6 +92,7 @@ typeRcpp CombinatoricsConstraints(int n, int m, std::vector<typeVector> &v, bool
         const int m2 = m - 2;
         
         if (m == 1) {
+            
             int ind = 0;
             testVal = v[ind];
             t_0 = compFunTwo(testVal, targetVals);

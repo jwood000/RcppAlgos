@@ -11,12 +11,13 @@
 
 template <typename typeRcpp, typename typeVector>
 typeRcpp ConstraintReturn(int n, int m, const std::string &mainFun, const std::vector<std::string> &compFunVec,
-                          const std::vector<typeVector> &targetVals, double tolerance, std::vector<typeVector> &v,
-                          bool bLower, double lower, bool IsGmp, bool bUpper, double upper, double computedRows,
-                          mpz_t lowerMpz, mpz_t upperMpz, mpz_t computedRowsMpz, bool IsRep, int nRows, 
-                          bool KeepRes, std::vector<int> &z, bool IsMult, bool IsComb, const SEXP &Rm, 
-                          double userNumRows, std::vector<int> &myReps, const std::vector<int> &freqs, 
-                          PartitionType PartType, bool distGetAll) {
+                          const std::vector<typeVector> &targetVals, std::vector<typeVector> &v, bool bLower,
+                          double lower, bool bUpper, double computedRows, bool IsRep, int nRows, bool KeepRes,
+                          std::vector<int> &z, bool IsMult, bool IsComb, bool mIsNull, double userNumRows,
+                          std::vector<int> &myReps, const std::vector<int> &freqs, PartitionType PartType,
+                          bool distGetAll) {
+    
+    
     
     const bool SpecialCase = CheckSpecialCase(n, bLower, mainFun, v);
     
@@ -26,15 +27,15 @@ typeRcpp ConstraintReturn(int n, int m, const std::string &mainFun, const std::v
                                             myReps, freqs, bLower, userNumRows);
     }
     
-    bool bUserRows = bUpper;
+    const bool bUserRows = bUpper;
     
     if (PartType > PartitionType::PartitonEsque) {
-        std::vector<int64_t> v64(v.cbegin(), v.cend());
-        int64_t target64 = static_cast<int64_t>(targetVals[0]);
+        const std::vector<int64_t> v64(v.cbegin(), v.cend());
+        const int64_t target64 = static_cast<int64_t>(targetVals[0]);
         
         return Partitions::PartitionsMaster<typeRcpp>(v64, z, myReps, PartType, target64, n, m, IsRep,
                                                       IsMult, userNumRows, IsComb, KeepRes, bUserRows,
-                                                      Rf_isNull(Rm), distGetAll);
+                                                      mIsNull, distGetAll);
     } else if (PartType == PartitionType::PartitonEsque) {
         return PartitionEsqueAlgo<typeRcpp>(n, m, v, IsRep, mainFun, compFunVec.front(), targetVals,
                                             userNumRows, IsComb, KeepRes, myReps, IsMult, bUserRows);
@@ -146,13 +147,14 @@ SEXP CombinatoricsCnstrt(SEXP Rv, SEXP Rm, SEXP RisRep, SEXP RFreqs, SEXP Rlow,
         if (myType == VecType::Integer)
             if (!CheckIsInteger(mainFun, n, m, vNum, targetVals, funDbl, true))
                 myType = VecType::Numeric;
-
-        AdjustTargetVals(n, myType, targetVals, targetIntVals,
-                         Rtolerance, compFunVec, tolerance, mainFun, vNum);
+        
+        bool IsWhole = false;
+        AdjustTargetVals(n, myType, targetVals, targetIntVals, Rtolerance,
+                         compFunVec, tolerance, mainFun, vNum, IsWhole);
         
         GetPartitionCase(compFunVec, vNum, mainFun, targetVals,
-                         PartType, distinctTest, Rlow, myReps, n, m,
-                         tolerance, IsMult, IsRep, IsBetweenComp, Rf_isNull(Rm));
+                         PartType, distinctTest, Rlow, myReps, n, m, tolerance, 
+                         IsMult, IsRep, IsBetweenComp, Rf_isNull(Rm), IsWhole);
     }
     
     std::vector<int> startZ(m);
@@ -204,25 +206,23 @@ SEXP CombinatoricsCnstrt(SEXP Rv, SEXP Rm, SEXP RisRep, SEXP RFreqs, SEXP Rlow,
     SetNumResults(IsGmp, bLower, bUpper, IsGenCnstrd, upperMpz.get(), lowerMpz.get(),
                   lower, upper, computedRows, computedRowsMpz, nRows, userNumRows);
 
-    int nThreads = 1;
-    const int limit = 20000;
-    SetThreads(Parallel, maxThreads, nRows, myType, nThreads, RnThreads, limit);
-
     if (IsConstrained) {
         if (myType == VecType::Integer) {
-            return ConstraintReturn<Rcpp::IntegerMatrix>(n, m, mainFun, compFunVec, targetIntVals, tolerance,
-                                                         vInt, bLower, lower, IsGmp, bUpper, upper, computedRows,
-                                                         lowerMpz[0], upperMpz[0], computedRowsMpz, IsRep, nRows,
-                                                         KeepRes, startZ, IsMult, IsComb, Rm, userNumRows, myReps,
-                                                         freqs, PartType, distinctTest.getAll);
+            return ConstraintReturn<Rcpp::IntegerMatrix>(n, m, mainFun, compFunVec, targetIntVals, vInt, bLower,
+                                                         lower, bUpper, computedRows, IsRep, nRows, KeepRes, startZ,
+                                                         IsMult, IsComb, Rf_isNull(Rm), userNumRows, myReps, freqs,
+                                                         PartType, distinctTest.getAll);
         } else {
-            return ConstraintReturn<Rcpp::NumericMatrix>(n, m, mainFun, compFunVec, targetVals, tolerance,
-                                                         vNum, bLower, lower, IsGmp, bUpper, upper, computedRows,
-                                                         lowerMpz[0], upperMpz[0], computedRowsMpz, IsRep, nRows,
-                                                         KeepRes, startZ, IsMult, IsComb, Rm, userNumRows, myReps,
-                                                         freqs, PartType, distinctTest.getAll);
+            return ConstraintReturn<Rcpp::NumericMatrix>(n, m, mainFun, compFunVec, targetVals, vNum, bLower,
+                                                         lower, bUpper, computedRows, IsRep, nRows, KeepRes, startZ,
+                                                         IsMult, IsComb, Rf_isNull(Rm), userNumRows, myReps, freqs,
+                                                         PartType, distinctTest.getAll);
         }
     } else {
+        int nThreads = 1;
+        const int limit = 20000;
+        SetThreads(Parallel, maxThreads, nRows, myType, nThreads, RnThreads, limit);
+        
         int nCols = m + 1;
 
         if (myType == VecType::Integer)

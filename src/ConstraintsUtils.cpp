@@ -307,7 +307,8 @@ void ConstraintSetup(std::vector<std::string> &compFunVec,
 void AdjustTargetVals(int n, VecType myType, std::vector<double> &targetVals,
                       std::vector<int> &targetIntVals, const SEXP &Rtolerance,
                       std::vector<std::string> &compFunVec, double &tolerance,
-                      const std::string &mainFun, const std::vector<double> &vNum) {
+                      const std::string &mainFun, const std::vector<double> &vNum,
+                      bool &IsWhole) {
     
     if (myType == VecType::Integer) {
         targetIntVals.assign(targetVals.cbegin(), targetVals.cend());
@@ -333,7 +334,7 @@ void AdjustTargetVals(int n, VecType myType, std::vector<double> &targetVals,
         // precision. It is 'equalDbl' and can be found in ConstraintsUtils.h
         
         if (Rf_isNull(Rtolerance)) {
-            bool IsWhole = true;
+            IsWhole = true;
             
             for (int i = 0; i < n && IsWhole; ++i)
                 if (static_cast<int64_t>(vNum[i]) != vNum[i])
@@ -348,6 +349,7 @@ void AdjustTargetVals(int n, VecType myType, std::vector<double> &targetVals,
             CleanConvert::convertPrimitive(Rtolerance, tolerance, 
                                            "tolerance", true, false, false, true);
         }
+        
         
         const auto itComp = std::find(compSpecial.cbegin(),
                                       compSpecial.cend(), compFunVec[0]);
@@ -379,7 +381,7 @@ void GetPartitionCase(const std::vector<std::string> &compFunVec, std::vector<ty
                       const std::string &mainFun, const std::vector<typeVector> &target,
                       PartitionType &PartType, distinctType &distinctTest, const SEXP &Rlow,
                       std::vector<int> &Reps, int lenV, int &m, double tolerance, bool IsMult,
-                      bool IsRep, bool IsBet, bool mIsNull) {
+                      bool IsRep, bool IsBet, bool mIsNull, bool IsWhole) {
     
     bool PartitionCase = false;
     PartType = PartitionType::NotPartition;
@@ -443,7 +445,7 @@ void GetPartitionCase(const std::vector<std::string> &compFunVec, std::vector<ty
                 }
             }
             
-            if (target.size() == 1) {
+            if (target.size() == 1 || IsWhole) {
                 tarTest = static_cast<int64_t>(target.front());
                 
                 if (PartitionCase)
@@ -539,11 +541,11 @@ template void SectionOne(const std::vector<double>&, std::vector<double> &testVe
 template void GetPartitionCase(const std::vector<std::string>&, std::vector<int>&,
                                const std::string&, const std::vector<int>&, PartitionType&,
                                distinctType&, const SEXP&, std::vector<int>&, int, int&,
-                               double, bool, bool, bool, bool);
+                               double, bool, bool, bool, bool, bool);
 template void GetPartitionCase(const std::vector<std::string>&, std::vector<double>&,
                                const std::string&, const std::vector<double>&, PartitionType&,
                                distinctType&, const SEXP&, std::vector<int>&, int, int&,
-                               double, bool, bool, bool, bool);
+                               double, bool, bool, bool, bool, bool);
 
 template bool CheckSpecialCase(int, bool, const std::string&, const std::vector<int>&);
 template bool CheckSpecialCase(int, bool, const std::string&, const std::vector<double>&);
