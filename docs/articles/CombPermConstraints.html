@@ -65,6 +65,9 @@
     <li>
       <a href="../articles/GeneralCombinatorics.html">Combination and Permutation Basics</a>
     </li>
+    <li>
+      <a href="../articles/SubsetSum.html">Attacking Problems Related to the Subset Sum Problem</a>
+    </li>
   </ul>
 </li>
 <li>
@@ -356,7 +359,7 @@
 <h3 class="hasAnchor">
 <a href="#output-order-with-permutegeneral" class="anchor"></a>Output Order with <code>permuteGeneral</code>
 </h3>
-<p>Typically, when we call <code>permuteGeneral</code>, the output is in <a href="(%3Chttps://en.wikipedia.org/wiki/Lexicographical_order%3E)">lexicographical order</a>, however when we apply a constraint, the underlying algorithm checks against combinations only, as this is more efficient. If a particular combination meets a constraint, then all permutations of that vector also meet that contraint, so there is no need to check them. For this reason, the output isn’t in order. Observe:</p>
+<p>Typically, when we call <code>permuteGeneral</code>, the output is in <a href="(%3Chttps://en.wikipedia.org/wiki/Lexicographical_order%3E)">lexicographical order</a>, however when we apply a constraint, the underlying algorithm checks against combinations only, as this is more efficient. If a particular combination meets a constraint, then all permutations of that vector also meet that constraint, so there is no need to check them. For this reason, the output isn’t in order. Observe:</p>
 <div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1"></a><span class="kw"><a href="../reference/combinatoricsGeneral.html">permuteGeneral</a></span>(<span class="kw"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="dv">2</span>, <span class="dv">3</span>, <span class="dv">5</span>, <span class="dv">7</span>), <span class="dv">3</span>, <span class="dt">freqs =</span> <span class="kw"><a href="https://rdrr.io/r/base/rep.html">rep</a></span>(<span class="dv">2</span>, <span class="dv">4</span>),</span>
 <span id="cb9-2"><a href="#cb9-2"></a>               <span class="dt">constraintFun =</span> <span class="st">"mean"</span>, <span class="dt">comparisonFun =</span> <span class="kw"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">"&gt;"</span>, <span class="st">"&lt;"</span>),</span>
 <span id="cb9-3"><a href="#cb9-3"></a>               <span class="dt">limitConstraints =</span> <span class="kw"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="dv">4</span>, <span class="dv">5</span>), <span class="dt">keepResults =</span> <span class="ot">TRUE</span>, <span class="dt">tolerance =</span> <span class="dv">0</span>)</span>
@@ -373,7 +376,7 @@
 <span id="cb9-14"><a href="#cb9-14"></a>[<span class="dv">10</span>,]    <span class="dv">3</span>    <span class="dv">5</span>    <span class="dv">5</span> <span class="fl">4.333333</span>   &lt;-<span class="op">-</span><span class="st"> </span>Third combination that meets the criteria</span>
 <span id="cb9-15"><a href="#cb9-15"></a>[<span class="dv">11</span>,]    <span class="dv">5</span>    <span class="dv">3</span>    <span class="dv">5</span> <span class="fl">4.333333</span></span>
 <span id="cb9-16"><a href="#cb9-16"></a>[<span class="dv">12</span>,]    <span class="dv">5</span>    <span class="dv">5</span>    <span class="dv">3</span> <span class="fl">4.333333</span></span></code></pre></div>
-<p>As you can see, the <em>2<sup>nd</sup></em> through the <em>6<sup>th</sup></em> entries are simply permutations of the <em>1<sup>st</sup></em> entry. Similary, entries <em>8</em> and <em>9</em> are permutations of the <em>7<sup>th</sup></em> and entries <em>11</em> and <em>12</em> are permutations of the <em>10<sup>th</sup></em>.</p>
+<p>As you can see, the <em>2<sup>nd</sup></em> through the <em>6<sup>th</sup></em> entries are simply permutations of the <em>1<sup>st</sup></em> entry. Similarly, entries <em>8</em> and <em>9</em> are permutations of the <em>7<sup>th</sup></em> and entries <em>11</em> and <em>12</em> are permutations of the <em>10<sup>th</sup></em>.</p>
 </div>
 </div>
 <div id="integer-partitions" class="section level2">

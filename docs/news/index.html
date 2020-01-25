@@ -101,6 +101,9 @@
     <li>
       <a href="../articles/GeneralCombinatorics.html">Combination and Permutation Basics</a>
     </li>
+    <li>
+      <a href="../articles/SubsetSum.html">Attacking Problems Related to the Subset Sum Problem</a>
+    </li>
   </ul>
 </li>
 <li>
@@ -149,7 +152,7 @@
 <a href="#enhancements" class="anchor"></a>Enhancements:</h2>
 <ul>
 <li><p>Extended general partitions algorithm to multisets. E.g. <code><a href="../reference/combinatoricsGeneral.html">comboGeneral(10, 8, freqs = rep(1:5, 2), constraintFun = "sum", comparisonFun = "==", limitConstraints = 55)</a></code></p></li>
-<li><p>Improved constraint algorithm for the general case. An average of 2.5x speed up when comparisonFun is equality or any of the “between” comparisons (e.g. <code>comparisonFun = c("&gt;", "&lt;")</code>, <code>limitConstraints = c(90, 100)</code>).</p></li>
+<li><p>Improved constraint algorithm for the general case.</p></li>
 <li><p>Added support for complex and raw types for all combinatorial functions.</p></li>
 <li><p>Improved permutation algorithm for all cases (I.e. no rep, with rep, and with multisets).</p></li>
 <li><p>Added loop unrolling to prime sieve algorithm for improved efficiency.</p></li>
