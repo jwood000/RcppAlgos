@@ -12,12 +12,10 @@
 template <typename typeRcpp, typename typeVector>
 typeRcpp ConstraintReturn(int n, int m, const std::string &mainFun, const std::vector<std::string> &compFunVec,
                           const std::vector<typeVector> &targetVals, std::vector<typeVector> &v, bool bLower,
-                          double lower, bool bUpper, double computedRows, bool IsRep, int nRows, bool KeepRes,
+                          double lower, bool bUserRows, double computedRows, bool IsRep, int nRows, bool KeepRes,
                           std::vector<int> &z, bool IsMult, bool IsComb, bool mIsNull, double userNumRows,
                           std::vector<int> &myReps, const std::vector<int> &freqs, PartitionType PartType,
                           bool distGetAll) {
-    
-    
     
     const bool SpecialCase = CheckSpecialCase(n, bLower, mainFun, v);
     
@@ -27,7 +25,7 @@ typeRcpp ConstraintReturn(int n, int m, const std::string &mainFun, const std::v
                                             myReps, freqs, bLower, userNumRows);
     }
     
-    const bool bUserRows = bUpper;
+    // For bool bUserRows, we pass bUpper as we know bLower must be false (See CheckSpecialCase)
     
     if (PartType > PartitionType::PartitonEsque) {
         const std::vector<int64_t> v64(v.cbegin(), v.cend());
@@ -123,18 +121,15 @@ SEXP CombinatoricsCnstrt(SEXP Rv, SEXP Rm, SEXP RisRep, SEXP RFreqs, SEXP Rlow,
         Rcpp::stop("contraintFun must be one of the following: prod, sum, mean, max, or min");
     }
     
-    bool IsBetweenComp = false;
     std::vector<std::string> compFunVec;
     std::vector<double> targetVals;
-
-    bool IncludeZero = false;
+    
     PartitionType PartType = PartitionType::NotPartition;
     distinctType distinctTest;
 
     // Must be defined inside IsInteger check as targetVals could be
     // outside integer data type range which cause undefined behavior
     std::vector<int> targetIntVals;
-    double tolerance = 0;
 
     Rcpp::XPtr<funcPtr<double>> xpFunDbl = putFunPtrInXPtr<double>(mainFun);
     const funcPtr<double> funDbl = *xpFunDbl;
@@ -142,19 +137,21 @@ SEXP CombinatoricsCnstrt(SEXP Rv, SEXP Rm, SEXP RisRep, SEXP RFreqs, SEXP Rlow,
     if (IsConstrained) {                // numOnly = true, checkWhole = false, negPoss = true
         CleanConvert::convertVector(Rtarget, targetVals, "limitConstraints", true, false, true);
         compFunVec = Rcpp::as<std::vector<std::string>>(f2);
+        
+        bool IsBetweenComp = false;
         ConstraintSetup(compFunVec, targetVals, IsBetweenComp);
         
         if (myType == VecType::Integer)
             if (!CheckIsInteger(mainFun, n, m, vNum, targetVals, funDbl, true))
                 myType = VecType::Numeric;
         
-        bool IsWhole = false;
-        AdjustTargetVals(n, myType, targetVals, targetIntVals, Rtolerance,
-                         compFunVec, tolerance, mainFun, vNum, IsWhole);
+        double tolerance = 0;
+        AdjustTargetVals(n, myType, targetVals, targetIntVals,
+                         Rtolerance, compFunVec, tolerance, mainFun, vNum);
         
         GetPartitionCase(compFunVec, vNum, mainFun, targetVals,
-                         PartType, distinctTest, Rlow, myReps, n, m, tolerance, 
-                         IsMult, IsRep, IsBetweenComp, Rf_isNull(Rm), IsWhole);
+                         PartType, distinctTest, Rlow, myReps, n, m,
+                         tolerance, IsMult, IsRep, IsBetweenComp, Rf_isNull(Rm));
     }
     
     std::vector<int> startZ(m);
@@ -162,7 +159,7 @@ SEXP CombinatoricsCnstrt(SEXP Rv, SEXP Rm, SEXP RisRep, SEXP RFreqs, SEXP Rlow,
 
     if (PartType > PartitionType::PartGeneral) {
         // vNum and myReps were sorted in GetPartitionCase
-        IncludeZero = (vNum.front() == 0);
+        bool IncludeZero = (vNum.front() == 0);
         int targetInt = static_cast<int>(targetVals[0]);
 
         SetStartPartitionZ(PartType, distinctTest, startZ,

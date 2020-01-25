@@ -59,7 +59,7 @@ typeRcpp PartitionEsqueAlgo(int n, int m, std::vector<typeVector> &v, bool isRep
         std::sort(v.begin(), v.end());
     }
     
-    auto itComp = std::find(compSpecial.cbegin(), compSpecial.cend(), comparison);
+    const auto itComp = std::find(compSpecial.cbegin(), compSpecial.cend(), comparison);
     
     if (itComp == compSpecial.cend()) {
         // This should not happen. As we have determined that the PartType is PartitionEsque, the
