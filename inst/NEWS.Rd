@@ -1,6 +1,29 @@
 \name{NEWS}
 \title{News for Package \pkg{RcppAlgos}}
 
+\section{Changes in RcppAlgos version 2.3.5 (Release date: TBA)}{
+    \itemize{
+        \item New Features:
+        \itemize{
+            \item Added \code{comboGroups}, \code{comboGroupsCount}, and \code{comboGroupsSample}. These functions deal with partitioning a vector/set into groups of equal size. See \href{https://stackoverflow.com/q/57732672/4408538}{Create Combinations in R by Groups}. See the related integer sequences A025035-A025042 at \href{https://oeis.org}{OEIS} (E.g. \href{https://oeis.org/A025036}{A025036} for Number of partitions of { 1, 2, ..., 4n } into sets of size 4.)
+            \item Added vignettes (First version with vignettes)
+            \item Added website via the excellent package pkgdown
+        }
+        \item Enhancements:
+        \itemize{
+            \item Extended general partitions algorithm to multisets. E.g. \code{comboGeneral(10, 8, freqs = rep(1:5, 2), constraintFun = "sum", comparisonFun = "==", limitConstraints = 55)}
+            \item Improved constraint algorithm for the general case.
+            \item Added support for complex and raw types for all combinatorial functions.
+            \item Improved permutation algorithm for all cases (I.e. no rep, with rep, and with multisets).
+            \item Added loop unrolling to prime sieve algorithm for improved efficiency.
+        }
+        \item Bug Fixes:
+        \itemize{
+            \item Corrected checks for total number of partitions and assignment of number of rows when \code{upper} is applied in \code{combo/permuteGeneral}. See \href{https://github.com/jwood000/RcppAlgos/issues/9#issue-467908452}{Issue #9} for more information.
+        }
+    }
+}
+
 \section{Changes in RcppAlgos version 2.3.4 (Release date: 2019-07-02)}{
     \itemize{
         \item Fixed clang/gcc-ASAN and valgrind issues in 2.3.3. These issues were arising from finding the first vector to meet the criteria in PartitionRep/Distinct. We also found further issues in the standard functions when the length of the partition was 2. The algorithm would eventually try and access an element of a vector at index -1. These fixes were confirmed by successful Rdevel CMD check under 'r-devel-ubsan-clang' via docker using the advice found here: https://knausb.github.io/2017/06/reproducing-a-clang-ubsan-issue/ and http://dirk.eddelbuettel.com/code/sanitizers.html.

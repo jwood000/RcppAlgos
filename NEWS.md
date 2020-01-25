@@ -12,7 +12,7 @@
 
 * Extended general partitions algorithm to multisets. E.g. `comboGeneral(10, 8, freqs = rep(1:5, 2), constraintFun = "sum", comparisonFun = "==", limitConstraints = 55)`
 
-* Improved constraint algorithm for the general case. An average of 2.5x speed up when comparisonFun is equality or any of the "between" comparisons (e.g. `comparisonFun = c(">", "<")`, `limitConstraints = c(90, 100)`).
+* Improved constraint algorithm for the general case.
 
 * Added support for complex and raw types for all combinatorial functions.
 
