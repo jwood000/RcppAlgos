@@ -26,6 +26,6 @@ Rcpp::XPtr<combPermResPtr<T, U>> putCombResPtrInXPtr(bool IsComb, bool IsMult, b
         else
             return(Rcpp::XPtr<combPermResPtr<T, U>>(new combPermResPtr<T, U>(&PermuteGenResNoRep)));
     }
-};
+}
 
 #endif

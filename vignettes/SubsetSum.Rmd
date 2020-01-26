@@ -20,7 +20,7 @@ This document covers the topic of solving problems related to the [subset sum pr
 
 The [integer partition problem](https://en.wikipedia.org/wiki/Partition_(number_theory)) presents the question _"how can we write n as a sum of positive integers?"_ There are well-known algorithms for enumerating _all_ partitions of an integer _n_. We even have algorithms for generating partitions of a specific length or with distinct parts only. But how do we enumerate partitions of _n_ with a specific set of numbers? What about enumerating partitions of a specific length _m_ of _n_ given a specific set of numbers?
 
-For example, using only the numbers `3:18`, find all partitions of length `5` of the `50`.
+For example, using only the numbers `3:18`, find all partitions of `50` of length `5`.
 
 With `RcppAlgos`, this is easily achieved. We simply use the same template as we did in [Constraints, Integer Partitions, and Compositions](<https://jwood000.github.io/RcppAlgos/articles/CombPermConstraints.html#integer-partitions>). Observe (We continue to use the `ht` function defined in the [Combination and Permutation Basics](<https://jwood000.github.io/RcppAlgos/articles/GeneralCombinatorics.html>) vignette) :
 
@@ -112,7 +112,6 @@ tail -->
 
 prettyNum(comboCount(seq(121, 221, 5), 13, TRUE), big.mark = ",")
 [1] "573,166,440"
-
 
 system.time(genMultiParts <- comboGeneral(seq(121, 221, 5), 13,
                                           freqs = rep(1:7, 3),
