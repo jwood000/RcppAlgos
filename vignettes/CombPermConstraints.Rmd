@@ -289,7 +289,7 @@ comboGeneral(c(2, 3, 5, 7), 3, T,
 
 ### Output Order with `permuteGeneral`
 
-Typically, when we call `permuteGeneral`, the output is in [lexicographical order]((<https://en.wikipedia.org/wiki/Lexicographical_order>)), however when we apply a constraint, the underlying algorithm checks against combinations only, as this is more efficient. If a particular combination meets a constraint, then all permutations of that vector also meet that constraint, so there is no need to check them. For this reason, the output isn't in order. Observe:
+Typically, when we call `permuteGeneral`, the output is in lexicographical order, however when we apply a constraint, the underlying algorithm checks against combinations only, as this is more efficient. If a particular combination meets a constraint, then all permutations of that vector also meet that constraint, so there is no need to check them. For this reason, the output isn't in order. Observe:
 
 ```r
 permuteGeneral(c(2, 3, 5, 7), 3, freqs = rep(2, 4),
