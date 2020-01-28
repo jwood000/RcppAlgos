@@ -56,7 +56,7 @@ We could also try calling `sample(100, 20)` a bunch of times and hope we don't g
 * You can pass a vector of specific indices or rely on the internal sampling functions. We call `sample` when the total number of results is small and for larger cases, the sampling is done in a very similar fashion to `urand.bigz` from the `gmp` package.
 * Consistent interface to their respective general functions (i.e. `combo/permuteGeneral` and `comboGroups`)
 * Useful when we need a reproducible set of random combinations/permutations or partitions of groups.
-* If the gmp library is needed, the `seed` parameter must be set in order to have reproducible results (_E.g._ `set.seed()`}` has no effect in these cases).
+* If the gmp library is needed, the `seed` parameter must be set in order to have reproducible results (_E.g._ `set.seed()`) has no effect in these cases).
 
 ## `comboSample` and `permuteSample`
 
