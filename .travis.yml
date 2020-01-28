@@ -1,13 +1,20 @@
 # R for travis: see documentation at https://docs.travis-ci.com/user/languages/r
 language: R
 warnings_are_errors: false
-cache: packages
 
 matrix:
-   include:
-     - os: osx
-       sudo: required
-       r: release
+  include:
+    - os: linux
+      dist: trusty
+      sudo: required
+      r: release
+    - os: linux
+      dist: trusty
+      sudo: required
+      r: devel
+    - os: osx
+      sudo: required
+      r: release
        
 before_install:
   - if [ $TRAVIS_OS_NAME == linux ]; then sudo add-apt-repository ppa:ubuntu-toolchain-r/test -y; fi
@@ -17,8 +24,6 @@ before_install:
 
 addons:
   apt:
-    sources:
-      - ubuntu-toolchain-r-test
     packages:
       - libgmp3-dev
       
@@ -26,7 +31,6 @@ r_packages:
   - Rcpp
   - gmp
   - numbers
-  - bigIntegerAlgos
   - RcppThread
   - devtools
   - testthat
