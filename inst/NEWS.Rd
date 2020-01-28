@@ -1,13 +1,20 @@
 \name{NEWS}
 \title{News for Package \pkg{RcppAlgos}}
 
-\section{Changes in RcppAlgos version 2.3.5 (Release date: TBA)}{
+\section{Changes in RcppAlgos version 2.3.6 (Release date: 2019-01-29)}{
+    \itemize{
+        \item Fixed bug associated with integer vectors, multisets, and constraints. See \href{https://github.com/jwood000/RcppAlgos/issues/9#issue-467908452}{Issue #9} for more information.
+    }
+}
+
+\section{Changes in RcppAlgos version 2.3.5 (Release date: 2020-01-27)}{
     \itemize{
         \item New Features:
         \itemize{
             \item Added \code{comboGroups}, \code{comboGroupsCount}, and \code{comboGroupsSample}. These functions deal with partitioning a vector/set into groups of equal size. See \href{https://stackoverflow.com/q/57732672/4408538}{Create Combinations in R by Groups}. See the related integer sequences A025035-A025042 at \href{https://oeis.org}{OEIS} (E.g. \href{https://oeis.org/A025036}{A025036} for Number of partitions of { 1, 2, ..., 4n } into sets of size 4.)
             \item Added vignettes (First version with vignettes)
             \item Added website via the excellent package pkgdown
+            \item Now using C++11 instead of C++14. See \href{https://github.com/jwood000/RcppAlgos/issues/10}{Issue #10} for more information.
         }
         \item Enhancements:
         \itemize{
@@ -20,6 +27,7 @@
         \item Bug Fixes:
         \itemize{
             \item Corrected checks for total number of partitions and assignment of number of rows when \code{upper} is applied in \code{combo/permuteGeneral}. See \href{https://github.com/jwood000/RcppAlgos/issues/9#issue-467908452}{Issue #9} for more information.
+            \item \code{permuteGeneral} no longer alters source vector. See \href{https://github.com/jwood000/RcppAlgos/issues/11}{Issue #11} for more information.
         }
     }
 }

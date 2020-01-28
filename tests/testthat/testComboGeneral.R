@@ -293,43 +293,59 @@ test_that("comboGeneral produces correct results with exotic constraints", {
     
     comp1 = c("<", "<=")
     comp2 = c(">", ">=")
-    allCombs1 = comboGeneral(10, 8, freqs = c(rep(1:3, 3), 3), 
-                             constraintFun = "sum", keepResults = TRUE)
-    allCombs2 = comboGeneral(10:1, 8, freqs = rev(c(rep(1:3, 3), 3)), 
-                              constraintFun = "sum", keepResults = TRUE)
-    theSums1 = allCombs1[, 9]
-    theSums2 = allCombs2[, 9]
-    allCombs1 = allCombs1[, 1:8]
-    allCombs2 = allCombs2[, 1:8]
     
-    for (i in 1:2) {
-        
-        if (i == 1) {
-            a = comp1
-            b = comp2
-        } else {
-            a = comp2
-            b = comp1
-        }
-        
-        for (j in a) {
-            for (k in b) {
-                myComp = c(j, k)
-                myTest = comboGeneral(10, 8, freqs = c(rep(1:3, 3), 3),
-                                       constraintFun = "sum", comparisonFun = myComp,
-                                       limitConstraints = c(42, 53))
-                fun1 = match.fun(j)
-                fun2 = match.fun(k)
-                
-                if (i == 1) {
-                    temp1 = allCombs1[fun1(theSums1, 42), ]
-                    temp2 = allCombs2[fun2(theSums2, 53), ]
-                    temp = rbind(temp1, temp2)
-                } else {
-                    temp = allCombs1[fun1(theSums1, 42) & fun2(theSums1, 53),]
+    ## Test that unsorted vector is being handled properly 
+    ## for both numeric and integer type vectors
+    # identical(sort(scrambled), 1:10)
+    # [1] TRUE
+    scrambled = as.integer(c(8, 2, 5, 1, 6, 3, 10, 9, 4, 7))
+    scramFreqs = rep(1:5, 2)[scrambled]
+    
+    allCombs1 = comboGeneral(10, 7, freqs = rep(1:5, 2), constraintFun = "sum")
+    allCombs2 = comboGeneral(10:1, 7, freqs = rev(rep(1:5, 2)), constraintFun = "sum")
+    theSums1 = allCombs1[, 8]
+    theSums2 = allCombs2[, 8]
+    allCombs1 = allCombs1[, 1:7]
+    allCombs2 = allCombs2[, 1:7]
+    
+    for (myType in c("integer", "numeric")) {
+        for (i in 1:2) {
+            
+            if (i == 1) {
+                a = comp1
+                b = comp2
+            } else {
+                a = comp2
+                b = comp1
+            }
+            
+            for (j in a) {
+                for (k in b) {
+                    myComp = c(j, k)
+                    
+                    if (myType == "integer") {
+                        myTest = comboGeneral(scrambled, 7, freqs = scramFreqs,
+                                              constraintFun = "sum", comparisonFun = myComp,
+                                              limitConstraints = c(42, 53))
+                    } else {
+                        myTest = comboGeneral(as.numeric(scrambled), 7, freqs = scramFreqs,
+                                              constraintFun = "sum", comparisonFun = myComp,
+                                              limitConstraints = c(42, 53))
+                    }
+                    
+                    fun1 = match.fun(j)
+                    fun2 = match.fun(k)
+                    
+                    if (i == 1) {
+                        temp1 = allCombs1[fun1(theSums1, 42), ]
+                        temp2 = allCombs2[fun2(theSums2, 53), ]
+                        temp = rbind(temp1, temp2)
+                    } else {
+                        temp = allCombs1[fun1(theSums1, 42) & fun2(theSums1, 53),]
+                    }
+
+                    expect_equal(temp, myTest)
                 }
-               
-                expect_equal(temp, myTest)
             }
         }
     }
