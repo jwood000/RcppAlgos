@@ -18,27 +18,8 @@ matrix:
 
 addons:
   apt:
-    sources:
-      - ubuntu-toolchain-r-test
     packages:
       - libgmp3-dev
-      - gcc-4.9
-      - g++-4.9
-      
-before_install: |
-  mkdir ~/.R
-  cat <<EOF > ~/.R/Makevars
-  CXX1X=g++-4.9
-  CXX1XSTD=-std=c++11
-      
-r_packages:
-  - Rcpp
-  - gmp
-  - numbers
-  - RcppThread
-  - devtools
-  - testthat
-  - microbenchmark
       
 after_success:
     - Rscript -e "covr::codecov(line_exclusions = c('inst/include/libdivide.h', 'inst/include/CleanConvert.h', 'R/zzz.R'))"
