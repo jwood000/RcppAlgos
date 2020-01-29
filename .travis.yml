@@ -15,27 +15,12 @@ matrix:
     - os: osx
       sudo: required
       r: release
-      
-env:
-  global:
-    - DOCKER_OPTS="--rm -ti -v $(pwd):/mnt -w /mnt"
-      DOCKER_CNTR="rcpp/ci"
-      R_BLD_OPTS="--no-build-vignettes --no-manual"
-      R_CHK_OPTS="--no-vignettes --no-manual"
        
 before_install:
   - if [ $TRAVIS_OS_NAME == linux ]; then sudo add-apt-repository ppa:ubuntu-toolchain-r/test -y; fi
   - if [ $TRAVIS_OS_NAME == linux ]; then sudo apt-get update -q; fi
   - if [ $TRAVIS_OS_NAME == linux ]; then sudo apt-get install g++-4.9 -y; fi
   - if [ $TRAVIS_OS_NAME == linux ]; then sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-4.9 100; fi
-  - docker pull ${DOCKER_CNTR}
-  - docker run ${DOCKER_OPTS} ${DOCKER_CNTR} r -p -e 'sessionInfo()'
-  
-install:
-  - docker run ${DOCKER_OPTS} ${DOCKER_CNTR} R CMD build ${R_BLD_OPTS} .
-
-script:
-  - docker run ${DOCKER_OPTS} ${DOCKER_CNTR} R CMD check ${R_CHK_OPTS} Rcpp_*.tar.gz
 
 addons:
   apt:
