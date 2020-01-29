@@ -6,10 +6,7 @@ matrix:
   include:
     - os: osx
       sudo: required
-      r:
-        - oldrel
-        - release
-        - devel
+      r: release
 
 addons:
   apt:
