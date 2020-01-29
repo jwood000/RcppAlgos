@@ -4,22 +4,15 @@ warnings_are_errors: false
 
 matrix:
   include:
-    - os: linux
-      dist: trusty
-      sudo: required
-      r: release
-    - os: linux
-      dist: trusty
-      sudo: required
-      r: devel
     - os: osx
       sudo: required
-      r: release
+      r:
+        - oldrel
+        - release
+        - devel
 
 addons:
   apt:
-    sources:
-      - ubuntu-toolchain-r-test
     packages:
       - libgmp3-dev
       
