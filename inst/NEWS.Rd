@@ -3,7 +3,10 @@
 
 \section{Changes in RcppAlgos version 2.3.6 (Release date: 2019-01-29)}{
     \itemize{
-        \item Fixed bug associated with integer vectors, multisets, and constraints. See \href{https://github.com/jwood000/RcppAlgos/issues/9#issue-467908452}{Issue #9} for more information.
+        \item Bug Fixes:
+        \itemize{
+            \item Fixed bug associated with integer vectors, multisets, and constraints. See \href{https://github.com/jwood000/RcppAlgos/issues/9#issue-467908452}{Issue #9} for more information.
+        }
     }
 }
 

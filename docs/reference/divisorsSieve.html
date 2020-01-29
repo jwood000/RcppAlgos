@@ -69,7 +69,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">RcppAlgos</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">2.3.5</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">2.3.6</span>
       </span>
     </div>
 
@@ -199,7 +199,7 @@
 <span class='co'>## Generate complete factorizations up </span>
 <span class='co'>## to 10^5 (max element from mySamp)</span>
 <span class='fu'><a href='https://rdrr.io/r/base/system.time.html'>system.time</a></span>(<span class='no'>allFacs</span> <span class='kw'>&lt;-</span> <span class='fu'>divisorsSieve</span>(<span class='fl'>10</span>^<span class='fl'>5</span>))</div><div class='output co'>#&gt;    user  system elapsed 
-#&gt;   0.068   0.003   0.073 </div><div class='input'>
+#&gt;   0.049   0.005   0.054 </div><div class='input'>
 <span class='co'>## Use generated complete factorization for further</span>
 <span class='co'>## analysis by accessing the index of allFacs</span>
 <span class='kw'>for</span> (<span class='no'>s</span> <span class='kw'>in</span> <span class='no'>mySamp</span>) {
@@ -210,10 +210,10 @@
 <span class='co'>## Generating complete factorizations over</span>
 <span class='co'>## a range is efficient as well</span>
 <span class='fu'><a href='https://rdrr.io/r/base/system.time.html'>system.time</a></span>(<span class='fu'>divisorsSieve</span>(<span class='fl'>10</span>^<span class='fl'>12</span>, <span class='fl'>10</span>^<span class='fl'>12</span> + <span class='fl'>10</span>^<span class='fl'>5</span>))</div><div class='output co'>#&gt;    user  system elapsed 
-#&gt;   0.160   0.008   0.169 </div><div class='input'>
+#&gt;   0.203   0.015   0.220 </div><div class='input'>
 <span class='co'>## Use nThreads for improved efficiency</span>
 <span class='fu'><a href='https://rdrr.io/r/base/system.time.html'>system.time</a></span>(<span class='fu'>divisorsSieve</span>(<span class='fl'>10</span>^<span class='fl'>12</span>, <span class='fl'>10</span>^<span class='fl'>12</span> + <span class='fl'>10</span>^<span class='fl'>5</span>, <span class='kw'>nThreads</span> <span class='kw'>=</span> <span class='fl'>2</span>))</div><div class='output co'>#&gt;    user  system elapsed 
-#&gt;   0.267   0.020   0.167 </div><div class='input'>
+#&gt;   0.319   0.026   0.203 </div><div class='input'>
 <span class='co'>## Set 'namedList' to TRUE to return a named list</span>
 <span class='fu'>divisorsSieve</span>(<span class='fl'>27</span>, <span class='fl'>30</span>, <span class='kw'>namedList</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>)</div><div class='output co'>#&gt; $`27`
 #&gt; [1]  1  3  9 27
@@ -229,7 +229,7 @@
 #&gt; </div><div class='input'>
 <span class='co'>## Using nThreads</span>
 <span class='fu'><a href='https://rdrr.io/r/base/system.time.html'>system.time</a></span>(<span class='fu'>divisorsSieve</span>(<span class='fl'>1e5</span>, <span class='fl'>2e5</span>, <span class='kw'>nThreads</span> <span class='kw'>=</span> <span class='fl'>2</span>))</div><div class='output co'>#&gt;    user  system elapsed 
-#&gt;   0.082   0.004   0.055 </div></pre>
+#&gt;   0.039   0.001   0.030 </div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
     <h2>Contents</h2>

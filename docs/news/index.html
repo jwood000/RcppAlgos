@@ -67,7 +67,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">RcppAlgos</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">2.3.5</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">2.3.6</span>
       </span>
     </div>
 
@@ -134,9 +134,21 @@
       <small>Source: <a href='https://github.com/jwood000/RcppAlgos/blob/master/NEWS.md'><code>NEWS.md</code></a></small>
     </div>
 
+    <div id="rcppalgos-236" class="section level1">
+<h1 class="page-header">
+<a href="#rcppalgos-236" class="anchor"></a>RcppAlgos 2.3.6<small> Unreleased </small>
+</h1>
+<div id="bug-fixes" class="section level2">
+<h2 class="hasAnchor">
+<a href="#bug-fixes" class="anchor"></a>Bug Fixes:</h2>
+<ul>
+<li>Fixed bug associated with integer vectors, multisets, and constraints. See <a href="https://github.com/jwood000/RcppAlgos/issues/9#issue-467908452">Issue <a href='https://github.com/jwood000/RcppAlgos/issues/9'>#9</a></a> for more information.</li>
+</ul>
+</div>
+</div>
     <div id="rcppalgos-235" class="section level1">
 <h1 class="page-header">
-<a href="#rcppalgos-235" class="anchor"></a>RcppAlgos 2.3.5<small> Unreleased </small>
+<a href="#rcppalgos-235" class="anchor"></a>RcppAlgos 2.3.5<small> 2020-01-26 </small>
 </h1>
 <div id="new-features" class="section level2">
 <h2 class="hasAnchor">
@@ -145,6 +157,7 @@
 <li><p>Added <code>comboGroups</code>, <code>comboGroupsCount</code>, and <code>comboGroupsSample</code>. These functions deal with partitioning a vector/set into groups of equal size. See <a href="https://stackoverflow.com/q/57732672/4408538Create">Combinations in R by Groups</a>. See the related integer sequences A025035-A025042 at <a href="https://oeis.orgOEIS" class="uri">https://oeis.orgOEIS</a> (E.g. <a href="https://oeis.org/A025036A025036" class="uri">https://oeis.org/A025036A025036</a> for Number of partitions of <code>(1, 2, ..., 4n)</code> into sets of size 4.)</p></li>
 <li><p>Added vignettes (First version with vignettes)</p></li>
 <li><p>Added website via the excellent package <code>pkgdown</code></p></li>
+<li><p>Now using C++11 instead of C++14. See <a href="https://github.com/jwood000/RcppAlgos/issues/10">Issue <a href='https://github.com/jwood000/RcppAlgos/issues/10'>#10</a></a> for more information.</p></li>
 </ul>
 </div>
 <div id="enhancements" class="section level2">
@@ -158,11 +171,12 @@
 <li><p>Added loop unrolling to prime sieve algorithm for improved efficiency.</p></li>
 </ul>
 </div>
-<div id="bug-fixes" class="section level2">
+<div id="bug-fixes-1" class="section level2">
 <h2 class="hasAnchor">
-<a href="#bug-fixes" class="anchor"></a>Bug Fixes:</h2>
+<a href="#bug-fixes-1" class="anchor"></a>Bug Fixes:</h2>
 <ul>
-<li>Corrected checks for total number of partitions and assignment of number of rows when <code>upper</code> is applied in <code>combo/permuteGeneral</code>. See <a href="https://github.com/jwood000/RcppAlgos/issues/9#issue-467908452Issue%20<a href='https://github.com/jwood000/RcppAlgos/issues/9'>#9</a>">Issue <a href='https://github.com/jwood000/RcppAlgos/issues/9'>#9</a></a> for more information.</li>
+<li><p>Corrected checks for total number of partitions and assignment of number of rows when <code>upper</code> is applied in <code>combo/permuteGeneral</code>. See <a href="https://github.com/jwood000/RcppAlgos/issues/9#issue-467908452Issue%20<a href='https://github.com/jwood000/RcppAlgos/issues/9'>#9</a>">Issue <a href='https://github.com/jwood000/RcppAlgos/issues/9'>#9</a></a> for more information.</p></li>
+<li><p><code>permuteGeneral</code> no longer alters source vector. See <a href="https://github.com/jwood000/RcppAlgos/issues/11">Issue <a href='https://github.com/jwood000/RcppAlgos/issues/11'>#11</a></a> for more information.</p></li>
 </ul>
 </div>
 </div>
@@ -405,6 +419,7 @@
     <div id="tocnav">
       <h2>Contents</h2>
       <ul class="nav nav-pills nav-stacked">
+        <li><a href="#rcppalgos-236">2.3.6</a></li>
         <li><a href="#rcppalgos-235">2.3.5</a></li>
         <li><a href="#rcppalgos-234">2.3.4</a></li>
         <li><a href="#rcppalgos-233">2.3.3</a></li>

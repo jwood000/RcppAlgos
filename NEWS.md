@@ -1,3 +1,9 @@
+# RcppAlgos 2.3.6
+
+## Bug Fixes:
+
+* Fixed bug associated with integer vectors, multisets, and constraints. See [Issue #9](<https://github.com/jwood000/RcppAlgos/issues/9#issue-467908452>) for more information.
+
 # RcppAlgos 2.3.5
 
 ## New Features:
@@ -7,6 +13,8 @@
 * Added vignettes (First version with vignettes)
 
 * Added website via the excellent package `pkgdown`
+
+* Now using C++11 instead of C++14. See [Issue #10](<https://github.com/jwood000/RcppAlgos/issues/10>) for more information.
 
 ## Enhancements:
 
@@ -22,7 +30,9 @@
 
 ## Bug Fixes:
 
-* Corrected checks for total number of partitions and assignment of number of rows when `upper` is applied in `combo/permuteGeneral`. See [Issue #9](https://github.com/jwood000/RcppAlgos/issues/9#issue-467908452Issue%20#9) for more information.
+* Corrected checks for total number of partitions and assignment of number of rows when `upper` is applied in `combo/permuteGeneral`. See [Issue #9](<https://github.com/jwood000/RcppAlgos/issues/9#issue-467908452Issue%20#9>) for more information.
+
+* `permuteGeneral` no longer alters source vector. See [Issue #11](<https://github.com/jwood000/RcppAlgos/issues/11>) for more information.
 
 # RcppAlgos 2.3.4
 
