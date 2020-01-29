@@ -18,6 +18,8 @@ matrix:
 
 addons:
   apt:
+    sources:
+      - ubuntu-toolchain-r-test
     packages:
       - libgmp3-dev
       
