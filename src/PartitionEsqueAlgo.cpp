@@ -101,6 +101,8 @@ typeRcpp PartitionEsqueAlgo(int n, int m, std::vector<typeVector> &v, bool isRep
                                              targetMax, Reps, constraintFun,
                                              partialReduce, currPartial, partialFun);
         
+        auto check_point_1 = std::chrono::steady_clock::now();
+        
         while (t_1) {
             SectionOne(v, testVec, z, targetVals, combinatoricsVec,
                        resultsVec, t_0, t_1, count, partialFun, constraintFun,
@@ -131,6 +133,13 @@ typeRcpp PartitionEsqueAlgo(int n, int m, std::vector<typeVector> &v, bool isRep
                 
                 t_1 = (!noChange && t_0);
             }
+            
+            const auto check_point_2 = std::chrono::steady_clock::now();
+            
+            if (check_point_2 - check_point_1 > timeout) {
+                Rcpp::checkUserInterrupt();
+                check_point_1 = std::chrono::steady_clock::now();
+            }
         }
         
     } else if (isRep) {
@@ -141,6 +150,8 @@ typeRcpp PartitionEsqueAlgo(int n, int m, std::vector<typeVector> &v, bool isRep
         t_1 = GetLowerBoundRep<typeVector>(n, m, v, z, targetMin, targetMax,
                                            constraintFun, partialReduce,
                                            currPartial, partialFun);
+        
+        auto check_point_1 = std::chrono::steady_clock::now();
         
         while (t_1) {
             SectionOne(v, testVec, z, targetVals, combinatoricsVec,
@@ -171,6 +182,13 @@ typeRcpp PartitionEsqueAlgo(int n, int m, std::vector<typeVector> &v, bool isRep
                 
                 t_1 = (!noChange && t_0);
             }
+            
+            const auto check_point_2 = std::chrono::steady_clock::now();
+            
+            if (check_point_2 - check_point_1 > timeout) {
+                Rcpp::checkUserInterrupt();
+                check_point_1 = std::chrono::steady_clock::now();
+            }
         }
         
     } else {
@@ -179,6 +197,8 @@ typeRcpp PartitionEsqueAlgo(int n, int m, std::vector<typeVector> &v, bool isRep
         t_1 = GetLowerBoundNoRep<typeVector>(n, m, v, z, targetMin, targetMax,
                                              constraintFun, partialReduce,
                                              currPartial, partialFun);
+        
+        auto check_point_1 = std::chrono::steady_clock::now();
         
         while (t_1) {
             SectionOne(v, testVec, z, targetVals, combinatoricsVec,
@@ -208,6 +228,13 @@ typeRcpp PartitionEsqueAlgo(int n, int m, std::vector<typeVector> &v, bool isRep
                 }
                 
                 t_1 = (!noChange && t_0);
+            }
+            
+            const auto check_point_2 = std::chrono::steady_clock::now();
+            
+            if (check_point_2 - check_point_1 > timeout) {
+                Rcpp::checkUserInterrupt();
+                check_point_1 = std::chrono::steady_clock::now();
             }
         }
     }

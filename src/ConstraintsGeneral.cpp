@@ -133,6 +133,7 @@ typeRcpp CombinatoricsConstraints(int n, int m, std::vector<typeVector> &v, bool
                 }
                 
                 z.assign(freqs.cbegin(), freqs.cbegin() + m);
+                auto check_point_1 = std::chrono::steady_clock::now();
                 
                 while (t_1) {
                     SectionOne(v, testVec, z, targetVals, combinatoricsVec,
@@ -161,6 +162,13 @@ typeRcpp CombinatoricsConstraints(int n, int m, std::vector<typeVector> &v, bool
                         
                         t_1 = (!noChange && t_0);
                     }
+                    
+                    const auto check_point_2 = std::chrono::steady_clock::now();
+                    
+                    if (check_point_2 - check_point_1 > timeout) {
+                        Rcpp::checkUserInterrupt();
+                        check_point_1 = std::chrono::steady_clock::now();
+                    }
                 }
                 
             } else if (isRep) {
@@ -168,6 +176,8 @@ typeRcpp CombinatoricsConstraints(int n, int m, std::vector<typeVector> &v, bool
                 v.erase(std::unique(v.begin(), v.end()), v.end());
                 maxZ = static_cast<int>(v.size()) - 1;
                 z.assign(m, 0);
+                
+                auto check_point_1 = std::chrono::steady_clock::now();
                 
                 while (t_1) {
                     SectionOne(v, testVec, z, targetVals, combinatoricsVec,
@@ -196,12 +206,20 @@ typeRcpp CombinatoricsConstraints(int n, int m, std::vector<typeVector> &v, bool
                         
                         t_1 = (!noChange && t_0);
                     }
+                    
+                    const auto check_point_2 = std::chrono::steady_clock::now();
+                    
+                    if (check_point_2 - check_point_1 > timeout) {
+                        Rcpp::checkUserInterrupt();
+                        check_point_1 = std::chrono::steady_clock::now();
+                    }
                 }
                 
             } else {
                 
                 const int nMinusM = (n - m);
                 std::iota(z.begin(), z.end(), 0);
+                auto check_point_1 = std::chrono::steady_clock::now();
                 
                 while (t_1) {
                     SectionOne(v, testVec, z, targetVals, combinatoricsVec,
@@ -229,6 +247,13 @@ typeRcpp CombinatoricsConstraints(int n, int m, std::vector<typeVector> &v, bool
                         }
                         
                         t_1 = (!noChange && t_0);
+                    }
+                    
+                    const auto check_point_2 = std::chrono::steady_clock::now();
+                    
+                    if (check_point_2 - check_point_1 > timeout) {
+                        Rcpp::checkUserInterrupt();
+                        check_point_1 = std::chrono::steady_clock::now();
                     }
                 }
             }

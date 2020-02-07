@@ -1,8 +1,14 @@
+# RcppAlgos 2.4.0
+
+## New Features:
+
+* Now able to interrupt general constraint problems.
+
 # RcppAlgos 2.3.6
 
 ## Bug Fixes:
 
-* Fixed bug associated with integer vectors, multisets, and constraints. See [Issue #9](<https://github.com/jwood000/RcppAlgos/issues/9#issue-467908452>) for more information.
+* Fixed bug associated with integer vectors, multisets, and constraints. See [Issue #12](<https://github.com/jwood000/RcppAlgos/issues/12#issue-467908452>) for more information.
 
 # RcppAlgos 2.3.5
 

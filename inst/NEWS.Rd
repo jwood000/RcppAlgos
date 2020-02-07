@@ -1,11 +1,20 @@
 \name{NEWS}
 \title{News for Package \pkg{RcppAlgos}}
 
+\section{Changes in RcppAlgos version 2.4.0 (Release date: TBA)}{
+    \itemize{
+        \item New Features:
+        \itemize{
+            \item Now able to interrupt general constraint problems.
+        }
+    }
+}
+
 \section{Changes in RcppAlgos version 2.3.6 (Release date: 2019-01-29)}{
     \itemize{
         \item Bug Fixes:
         \itemize{
-            \item Fixed bug associated with integer vectors, multisets, and constraints. See \href{https://github.com/jwood000/RcppAlgos/issues/9#issue-467908452}{Issue #9} for more information.
+            \item Fixed bug associated with integer vectors, multisets, and constraints. See \href{https://github.com/jwood000/RcppAlgos/issues/12}{Issue #12} for more information.
         }
     }
 }

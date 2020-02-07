@@ -312,6 +312,61 @@ permuteGeneral(c(2, 3, 5, 7), 3, freqs = rep(2, 4),
 
 As you can see, the _2<sup>nd</sup>_ through the _6<sup>th</sup>_ entries are simply permutations of the _1<sup>st</sup>_ entry. Similarly, entries _8_ and _9_ are permutations of the _7<sup>th</sup>_ and entries _11_ and _12_ are permutations of the _10<sup>th</sup>_.
 
+## Safely Interrupt Execution with `Rcpp::checkUserInterrupt`
+
+Some of these operations can take some time, especially when you are in the exploratory phase and you don't have that much information about what type of solution you will obtain. For this reason, we have added the ability to interrupt execution as of version `2.4.0`. Under the hood, we call `Rcpp::checkUserInterrupt()` once every second to check if the user has requested for the process to be interrupted.
+
+In prior versions, the example below would have executed indefinitely and the only way to stop it would have been to force quit `R`. This is not a very good solution.
+
+With version `2.4.0`, if we initiate a process that will take a long time or exhaust all of the available memory (e.g. we forget to put an upper limit on the number of results, relax the tolerance, etc.), we can simply hit `Ctrl + c`, or `esc` if using `RStudio`, to stop execution.
+
+```r
+set.seed(123)
+s <- rnorm(1000)
+
+## Oops!! We forgot to limit the output/put a loose tolerance
+## There are as.numeric(comboCount(s, 20, T)) ~= 4.964324e+41
+## This will either take a long long time, or all of your
+## memory will be consumed!!!
+##
+## No problem... simply hit Ctrl + c or if in RStudio, hit esc
+## or hit the "Stop" button
+system.time(testInterrupt <- comboGeneral(s, 20, TRUE,
+                                          constraintFun = "sum",
+                                          comparisonFun = "==",
+                                          limitConstraints = 0))
+
+
+Timing stopped at: 2.982 0.011 3.002
+
+## Whew, that was close! Let's try again.
+system.time(takeTwo <- comboGeneral(s, 20, TRUE,
+                                    constraintFun = "sum",
+                                    comparisonFun = "==",
+                                    limitConstraints = 0,
+                                    upper = 10, tolerance = 0.00001))
+ user  system elapsed 
+0.056   0.000   0.058
+
+dim(takeTwo)
+[1] 10 20
+
+
+## Tighten the tolerance
+system.time(takeThree <- comboGeneral(s, 20, TRUE,
+                                      constraintFun = "sum",
+                                      comparisonFun = "==",
+                                      limitConstraints = 0,
+                                      upper = 10, tolerance = 0.0000001))
+ user  system elapsed 
+9.194   0.011   9.212
+
+dim(takeThree)
+[1] 10 20
+
+## We are getting closer... tighten the tolerance and repeat
+```
+
 ## Integer Partitions
 
 Specialized algorithms are employed when it can be determined that we are looking for [integer partitions](<https://en.wikipedia.org/wiki/Partition_(number_theory)>).

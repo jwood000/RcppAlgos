@@ -106,17 +106,10 @@ system.time(comboGeneral(13,10,repetition = TRUE))
 system.time(permuteGeneral(factor(letters[1:9]),6,TRUE))
 
 ## permutations of the multiset (with or w/o setting m) :
-## c(1,1,1,1,2,2,2,3,3,4,4,4,4,4)
-system.time(permuteGeneral(4, freqs = c(4,3,2,5)))
-
-permuteGeneral(4, m = 2, freqs = c(4,3,2,5))
-
-## or combinations
-comboGeneral(4, m = 2, freqs = c(4,3,2,5))
-
+## c(1,1,1,1,2,2,2,3,3,4)
+system.time(permuteGeneral(4, freqs = c(4,3,2,1)))
 
 #### Examples using "upper" and "lower":
-
 ## Generate some random data
 set.seed(1009)
 mySamp = sort(rnorm(75, 997, 23))

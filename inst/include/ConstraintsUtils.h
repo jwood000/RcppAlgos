@@ -13,6 +13,9 @@ const std::vector<std::string> compHelper = {"<=", "<", "<", "<=", "<="};
 // Which is also 2^(-26)
 constexpr double defaultTolerance = 0.00000001490116119384766;
 
+// Used for checking whether user has interrupted computation
+constexpr auto timeout = std::chrono::milliseconds(1000);
+
 struct distinctType {
     int limit = 0;
     bool getAll = false;

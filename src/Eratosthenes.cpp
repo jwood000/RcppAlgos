@@ -620,10 +620,10 @@ namespace PrimeSieve {
     }
     
     template <typename typePrime>
-    void PrimeSlave(std::int_fast64_t minNum, std::int_fast64_t maxNum, const std::vector<std::int_fast64_t> &svPriMain,
-                    const std::vector<std::int_fast64_t> &svPriOne, const std::vector<std::int_fast64_t> &svPriTwo, 
-                    std::vector<typePrime> &primes, std::int_fast64_t smallCut, std::int_fast64_t medCut, 
-                    std::size_t nBigSegs, const std::vector<char> &check30030) {
+    void PrimeWorker(std::int_fast64_t minNum, std::int_fast64_t maxNum, const std::vector<std::int_fast64_t> &svPriMain,
+                     const std::vector<std::int_fast64_t> &svPriOne, const std::vector<std::int_fast64_t> &svPriTwo, 
+                     std::vector<typePrime> &primes, std::int_fast64_t smallCut, std::int_fast64_t medCut, 
+                     std::size_t nBigSegs, const std::vector<char> &check30030) {
         
         if (maxNum > medCut) {
             // PrimeSieveBig is not meant for small values, so we
@@ -748,16 +748,16 @@ namespace PrimeSieve {
             upperBnd = segSize * std::floor(minNum / segSize) + chunkSize;
             
             for (; ind < (nThreads - 1); lowerBnd = upperBnd, upperBnd += chunkSize, ++ind) {
-                pool.push(std::cref(PrimeSlave<typePrime>), lowerBnd, upperBnd, std::ref(svPriMain), std::ref(svPriOne),
+                pool.push(std::cref(PrimeWorker<typePrime>), lowerBnd, upperBnd, std::ref(svPriMain), std::ref(svPriOne),
                           std::ref(svPriTwo), std::ref(primeList[ind]), smallCut, medCut, nBigSegs, std::ref(check30030));
             }
             
-            pool.push(std::cref(PrimeSlave<typePrime>), lowerBnd, maxNum, std::ref(svPriMain), std::ref(svPriOne),
+            pool.push(std::cref(PrimeWorker<typePrime>), lowerBnd, maxNum, std::ref(svPriMain), std::ref(svPriOne),
                       std::ref(svPriTwo), std::ref(primeList[ind]), smallCut, medCut, nBigSegs, std::ref(check30030));
             
             pool.join();
         } else {
-            PrimeSlave(minNum, maxNum, svPriMain, svPriOne, svPriTwo, primes, smallCut, medCut, nBigSegs, check30030);
+            PrimeWorker(minNum, maxNum, svPriMain, svPriOne, svPriTwo, primes, smallCut, medCut, nBigSegs, check30030);
         }
     }
 }
