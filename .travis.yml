@@ -15,3 +15,6 @@ addons:
       
 after_success:
     - Rscript -e "covr::codecov(line_exclusions = c('inst/include/libdivide.h', 'inst/include/CleanConvert.h', 'R/zzz.R'))"
+    
+repos:
+  CRAN: http://cran.rstudio.com
