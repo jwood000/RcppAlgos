@@ -250,7 +250,7 @@ The function `permuteGeneral` benefits from these optimized algorithms as well. 
 
 ## Taming Floating Point Numbers
 
-Oftentimes when working with numerical vectors, it can be hard to find combinations that sum to a particular number because of floating point errors (See [Using `tolerance`](<https://jwood000.github.io/RcppAlgos/articles/CombPermConstraints.html#using-tolerance>)... It is also encouraged to read [Interrupt Execution with `Rcpp::checkUserInterrupt`](<https://jwood000.github.io/RcppAlgos/articles/CombPermConstraints.html#interrupt-execution-with-rcpp::checkuserinterrupt>)).
+Oftentimes when working with numerical vectors, it can be hard to find combinations that sum to a particular number because of floating point errors (See [Using `tolerance`](<https://jwood000.github.io/RcppAlgos/articles/CombPermConstraints.html#using-tolerance>)... It is also encouraged to read [Interrupt Execution with `Rcpp::checkUserInterrupt`](<https://jwood000.github.io/RcppAlgos/articles/CombPermConstraints.html#interrupt-execution-with-rcppcheckuserinterrupt>)).
 
 In practice, we may not need an exact match and a close approximation will suffice. For example, let's say we have a football team of 100 players (including practice squad) and we are interested in a trade involving 6 players and a total salary of 20 million dollars. We may not be able to find 6 players whose sum of salaries is exactly 20 million, but we can find many 6 player combinations whose sum of salaries is within a tolerance of 20 million.
 

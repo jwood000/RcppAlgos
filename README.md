@@ -24,6 +24,10 @@ The `primeSieve` function and the `primeCount` function are both based off of th
 
 Additionally, many of the sieving functions make use of the fast integer division library [libdivide](<https://github.com/ridiculousfish/libdivide>) by [ridiculousfish](<https://github.com/ridiculousfish>).
 
+## Benchmarks
+
+* [High Performance Benchmarks](<https://jwood000.github.io/RcppAlgos/articles/HighPerformanceBenchmarks.html>)
+
 ## Installation
 
 ``` r

@@ -3,20 +3,21 @@ title: "High Performance Benchmarks"
 author: "Joseph Wood"
 date: "2/8/2020"
 output:
-  html_document:
-    md_extensions: -ascii_identifiers
   rmarkdown::html_vignette:
     toc: true
-    number_sections: true
+    number_sections: false
 vignette: >
   %\VignetteIndexEntry{High Performance Benchmarks}
   %\VignetteEngine{knitr::rmarkdown}
   \usepackage[utf8]{inputenc}
 ---
 
-This document serves as an overview for measuring the performance of `RcppAlgos` against other tools that were determined to be efficient for generating combinations, permutations, and partitions from the benchmarks found here: [benchmarks](<https://randy3k.github.io/arrangements/articles/benchmark.html>). You will note that all of the timings are in the range of microseconds. This could be due to any number of things such as function call overhead. The benchmarks below will focus on larger examples where performance really matters.
+This document serves as an overview for measuring the performance of `RcppAlgos` against other tools that were determined to be efficient for generating combinations, permutations, and partitions from the benchmarks found here: [Permutations and combinations with/without replacement and for distinct/non-distinct items/multiset
+](<https://stackoverflow.com/a/47983855/4408538>). You will note that the examples in that post were relatively small. The benchmarks below will focus on larger examples where performance really matters and for this reason we only consider the packages [arrangements](<https://cran.r-project.org/package=arrangements>), [partitions](<https://cran.r-project.org/package=partitions>), and [RcppAlgos](<https://cran.r-project.org/package=RcppAlgos>).
 
-### Setup Information
+## Setup Information
+
+For the benchmarks below, we used a `Macbook Pro i7 16Gb` machine. We also tested on a Windows and Linux machine with similar specs and obtained similar results.
 
 ```r
 library(RcppAlgos)
@@ -26,26 +27,21 @@ library(microbenchmark)
 pertinent_output <- capture.output(sessionInfo())
 
 cat(paste(pertinent_output[1:3], collapse = "\n"))
-R version 3.6.2 (2019-12-12)
-Platform: x86_64-apple-darwin15.6.0 (64-bit)
-Running under: macOS Mojave 10.14.6
+#> R version 3.6.2 (2019-12-12)
+#> Platform: x86_64-apple-darwin15.6.0 (64-bit)
+#> Running under: macOS Mojave 10.14.6
 
 cat(pertinent_output[which(pertinent_output == "other attached packages:") + 1L])
-[1] microbenchmark_1.4-7 partitions_1.9-22    arrangements_1.1.8   RcppAlgos_2.3.6
+#> [1] microbenchmark_1.4-7 partitions_1.9-22    arrangements_1.1.8   RcppAlgos_2.3.6
 
 numThreads <- as.integer(RcppAlgos::stdThreadMax() / 2)
 print(numThreads)
-[1] 4
+#> [1] 4
 ```
 
-### Combinations
+## Combinations
 
-For benchmarking combination generation, we will compare the following tools:
-
-* [arrangements](<https://cran.r-project.org/package=arrangements>)
-* [RcppAlgos](<https://cran.r-project.org/package=RcppAlgos>)
-
-#### Distinct
+### Distinct
 
 ```r
 set.seed(13)
@@ -64,8 +60,8 @@ gc()
 #> Vcells 1185545  9.1  291244632 2222.1      16384 301677618 2301.7
 microbenchmark(cbRcppAlgosPar = comboGeneral(v1, m, nThreads = numThreads),
                cbRcppAlgosSer = comboGeneral(v1, m),
-        		   cbArrangements = combinations(v1, m),
-        		   times = 15, unit = "relative")
+        	   cbArrangements = combinations(v1, m),
+        	   times = 15, unit = "relative")
 #> Unit: relative
 #>            expr   min    lq  mean median    uq   max neval
 #>  cbRcppAlgosPar 1.000 1.000 1.000  1.000 1.000 1.000    15
@@ -73,7 +69,7 @@ microbenchmark(cbRcppAlgosPar = comboGeneral(v1, m, nThreads = numThreads),
 #>  cbArrangements 2.095 2.365 2.343  2.380 2.365 2.237    15
 ```
 
-#### Repetition
+### Repetition
 
 ```r
 v2 <- v1[1:10]
@@ -100,13 +96,13 @@ microbenchmark(cbRcppAlgosPar = comboGeneral(v2, m, TRUE, nThreads = numThreads)
 #>  cbArrangements 2.095 2.365 2.343  2.380 2.365 2.237    15
 ```
 
-#### Multisets
+### Multisets
 
 ```r
 myFreqs <- c(2, 4, 4, 5, 3, 2, 2, 2, 3, 4, 1, 4, 2, 5)
 v3 <- as.integer(c(1, 2, 3, 5, 8, 13, 21, 34, 55, 89, 144, 233, 377, 610))
 t1 <- comboGeneral(v3, 20, freqs = myFreqs, nThreads = numThreads)
-t2 <- combinations(freq = myFreqs, k = 20, x = v4)
+t2 <- combinations(freq = myFreqs, k = 20, x = v3)
 identical(t1, t2)
 #> [1] TRUE
 dim(t1)
@@ -117,9 +113,9 @@ gc()
 #> Ncells  625747 33.5    1249934   66.8         NA   1249934   66.8
 #> Vcells 1234286  9.5  283065957 2159.7      16384 400442858 3055.2
 microbenchmark(cbRcppAlgosPar = comboGeneral(v3, 20, freqs = myFreqs, nThreads = numThreads),
-           cbRcppAlgosSer = comboGeneral(v3, 20, freqs = myFreqs),
-           cbArrangements = combinations(freq = myFreqs, k = 20, x = v3),
-           times = 10, unit = "relative")
+               cbRcppAlgosSer = comboGeneral(v3, 20, freqs = myFreqs),
+               cbArrangements = combinations(freq = myFreqs, k = 20, x = v3),
+               times = 10, unit = "relative")
 #> Unit: relative
 #>            expr   min    lq  mean median    uq   max neval
 #>  cbRcppAlgosPar 1.000 1.000 1.000  1.000 1.000 1.000    10
@@ -127,14 +123,9 @@ microbenchmark(cbRcppAlgosPar = comboGeneral(v3, 20, freqs = myFreqs, nThreads =
 #>  cbArrangements 4.386 4.584 4.460  4.578 4.406 4.057    10
 ```
 
-### Permutations
+## Permutations
 
-For benchmarking permutation generation, we will compare the following tools:
-
-* [arrangements](<https://cran.r-project.org/package=arrangements>)
-* [RcppAlgos](<https://cran.r-project.org/package=RcppAlgos>)
-
-#### Distinct
+### Distinct
 
 ```r
 v4 <- as.integer(c(2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47, 53, 59))
@@ -160,7 +151,7 @@ microbenchmark(cbRcppAlgosPar = permuteGeneral(v4, 6, nThreads = numThreads),
 #>  cbArrangements 2.239 2.211 2.115  2.194 2.076 1.888    15
 ```
 
-#### Repetition
+### Repetition
 
 ```r
 v5 <- v3[1:5]
@@ -176,9 +167,9 @@ gc()
 #> Ncells  625685 33.5    1249934   66.8         NA   1249934   66.8
 #> Vcells 1234173  9.5  205126501 1565.0      16384 400442858 3055.2
 microbenchmark(cbRcppAlgosPar = permuteGeneral(v5, 10, TRUE, nThreads = numThreads),
-           cbRcppAlgosSer = permuteGeneral(v5, 10, TRUE),
-           cbArrangements = permutations(x = v5, k = 10, replace = TRUE),
-           times = 10, unit = "relative")
+               cbRcppAlgosSer = permuteGeneral(v5, 10, TRUE),
+               cbArrangements = permutations(x = v5, k = 10, replace = TRUE),
+               times = 10, unit = "relative")
 #> Unit: relative
 #>            expr   min    lq  mean median    uq   max neval
 #>  cbRcppAlgosPar 1.000 1.000 1.000  1.000 1.000 1.000    10
@@ -186,7 +177,7 @@ microbenchmark(cbRcppAlgosPar = permuteGeneral(v5, 10, TRUE, nThreads = numThrea
 #>  cbArrangements 1.530 1.492 1.303  1.477 1.033 1.258    10
 ```
 
-#### Multisets
+### Multisets
 
 ```r
 v6 <- sort(runif(12))
@@ -202,9 +193,9 @@ gc()
 #> Ncells  625840 33.5    1249934   66.8         NA   1249934   66.8
 #> Vcells 1234474  9.5  265218717 2023.5      16384 400442858 3055.2
 microbenchmark(cbRcppAlgosPar = permuteGeneral(v6, 7, freqs = rep(1:3, 4), nThreads = numThreads),
-           cbRcppAlgosSer = permuteGeneral(v6, 7, freqs = rep(1:3, 4)),
-           cbArrangements = permutations(freq = rep(1:3, 4), k = 7, x = v6),
-           times = 10, unit = "relative")
+               cbRcppAlgosSer = permuteGeneral(v6, 7, freqs = rep(1:3, 4)),
+               cbArrangements = permutations(freq = rep(1:3, 4), k = 7, x = v6),
+               times = 10, unit = "relative")
 #> Unit: relative
 #>            expr   min    lq  mean median    uq   max neval
 #>  cbRcppAlgosPar 1.000 1.000 1.000  1.000 1.000 1.000    10
@@ -212,27 +203,21 @@ microbenchmark(cbRcppAlgosPar = permuteGeneral(v6, 7, freqs = rep(1:3, 4), nThre
 #>  cbArrangements 3.455 2.482 2.544  2.477 2.465 2.459    10
 ```
 
-### Partitions
+## Partitions
 
-For benchmarking combination generation, we will compare the following tools:
+### Distinct
 
-* [arrangements](<https://cran.r-project.org/package=arrangements>)
-* [RcppAlgos](<https://cran.r-project.org/package=RcppAlgos>)
-* [partitions](<https://cran.r-project.org/package=partitions>)
-
-#### Distinct
-
-##### All Partitions
+#### All Partitions
 
 ```r
 t1 <- comboGeneral(0:140, freqs=c(140, rep(1, 140)),
-    				   constraintFun = "sum", comparisonFun = "==",
-    				   limitConstraints = 140)
+				   constraintFun = "sum", comparisonFun = "==",
+				   limitConstraints = 140)
 t2 <- partitions(140, distinct = TRUE)
 t3 <- diffparts(140)
 
-## Each package has different output formats... we only dimensions
-## and that each result is a partition of 65
+# Each package has different output formats... we only dimensions
+# and that each result is a partition of 65
 identical(dim(t1), dim(t2))
 #> [1] TRUE
 identical(dim(t1), dim(t(t3)))
@@ -265,7 +250,7 @@ microbenchmark(cbRcppAlgosSer = comboGeneral(0:140, freqs=c(140, rep(1, 140)),
 #>    cbPartitions 5.913744 6.043652 5.754121 5.860363 5.684144 5.432942    10
 ```
 
-##### Restricted Partitions
+#### Restricted Partitions
 
 ```r
 t1 <- comboGeneral(160, 10,
@@ -293,18 +278,18 @@ microbenchmark(cbRcppAlgosSer = comboGeneral(160, 10,
 #>  cbArrangements 0.9862847 0.9833492 1.060233 1.003381 1.339914 0.9860554    10
 ```
 
-#### Repetition
+### Repetition
 
-##### All Partitions
+#### All Partitions
 
 ```r
 t1 <- comboGeneral(0:65, repetition = TRUE, constraintFun = "sum",
- 		       comparisonFun = "==", limitConstraints = 65)
+ 		           comparisonFun = "==", limitConstraints = 65)
 t2 <- partitions(65)
 t3 <- parts(65)
 
-## Each package has different output formats... we only dimensions
-## and that each result is a partition of 65
+# Each package has different output formats... we only dimensions
+# and that each result is a partition of 65
 identical(dim(t1), dim(t2))
 #> [1] TRUE
 identical(dim(t1), dim(t(t3)))
@@ -319,9 +304,9 @@ dim(t1)
 #> [1] 2012558      65
 rm(t1, t2, t3)
 gc()
-           used  (Mb) gc trigger   (Mb) limit (Mb)  max used   (Mb)
-Ncells   407087  21.8     835341   44.7         NA    642037   34.3
-Vcells 66195592 505.1  304381320 2322.3      16384 336884750 2570.3
+#>            used  (Mb) gc trigger   (Mb) limit (Mb)  max used   (Mb)
+#> Ncells   407087  21.8     835341   44.7         NA    642037   34.3
+#> Vcells 66195592 505.1  304381320 2322.3      16384 336884750 2570.3
 microbenchmark(cbRcppAlgosSer = comboGeneral(0:65, repetition = TRUE,
  								             constraintFun = "sum",
  								             comparisonFun = "==",
@@ -330,17 +315,17 @@ microbenchmark(cbRcppAlgosSer = comboGeneral(0:65, repetition = TRUE,
  			   cbPartitions = parts(65),
  			   times = 20, unit = "relative")
 #> Unit: relative
-#>            expr       min        lq     mean   median       uq      max neval
-#>  cbRcppAlgosSer 0.9699327 0.9840084 1.031683 1.080547 1.053702 1.039515    20
-#>  cbArrangements 1.0000000 1.0000000 1.000000 1.000000 1.000000 1.000000    20
-#>    cbPartitions 1.6473546 1.6385972 1.644571 1.732382 1.613684 1.544325    20
+#>            expr      min       lq     mean   median       uq      max neval
+#>  cbRcppAlgosSer 1.000000 1.000000 1.000000 1.000000 1.000000 1.000000    20
+#>  cbArrangements 1.035647 1.078886 1.144351 1.193378 1.140819 1.289736    20
+#>    cbPartitions 1.744549 1.730283 1.746423 1.801610 1.664767 1.935539    20
 ```
 
-##### Restricted Partitions
+#### Restricted Partitions
 
 ```r
 t1 <- comboGeneral(100, 15, TRUE, constraintFun = "sum",
-       comparisonFun = "==", limitConstraints = 100)
+                   comparisonFun = "==", limitConstraints = 100)
 t2 <- partitions(100, 15)
 identical(t1, t2)
 #> [1] TRUE
@@ -348,12 +333,12 @@ dim(t1)
 #> [1] 9921212      15
 rm(t1, t2)
 
-## This takes a really long time... not because of restrictedparts,
-## but because apply is not that fast. This transformation is
-## needed for proper comparisons. As a result, we will compare
-## a smaller example
-## t3 <- t(as.matrix(restrictedparts(100, 15, include.zero=FALSE)))
-t3 <- t(as.matrix(restrictedparts(50, 15, include.zero=FALSE)))
+# This takes a really long time... not because of restrictedparts,
+# but because apply is not that fast. This transformation is
+# needed for proper comparisons. As a result, we will compare
+# a smaller example
+# t3 <- t(apply(as.matrix(restrictedparts(100, 15, include.zero = F)), 2, sort))
+t3 <- t(apply(as.matrix(restrictedparts(50, 15, include.zero = F)), 2, sort))
 identical(partitions(50, 15), t3)
 #> [1] TRUE
 rm(t3)
@@ -362,9 +347,9 @@ gc()
 #> Ncells 404661 21.7     834627   44.6         NA    642037   34.3
 #> Vcells 781502  6.0  145289764 1108.5      16384 149602272 1141.4
 microbenchmark(cbRcppAlgosSer = comboGeneral(100, 15, TRUE,
-                            								 constraintFun = "sum",
-                            								 comparisonFun = "==",
-                            								 limitConstraints = 100),
+            								 constraintFun = "sum",
+            								 comparisonFun = "==",
+            								 limitConstraints = 100),
 				       cbArrangements = partitions(100, 15),
 				       cbPartitions = restrictedparts(100, 15, include.zero=FALSE),
 				       times = 10, unit = "relative")
@@ -375,9 +360,9 @@ microbenchmark(cbRcppAlgosSer = comboGeneral(100, 15, TRUE,
 #>    cbPartitions 3.101130 3.133236 2.973980 3.275767 3.1003234 2.2439869    10
 ```
 
-#### Multisets
+### Multisets
 
-Currenlty, `RcppAlgos` is the only package capable of efficiently generating of multisets. There we will only time `RcppAlgos` and use this as a reference for future improvements.
+Currenlty, `RcppAlgos` is the only package capable of efficiently generating partitions of multisets. There we will only time `RcppAlgos` and use this as a reference for future improvements.
 
 ```r
 t1 <- comboGeneral(120, 10, freqs=rep(1:8, 15),
@@ -387,12 +372,9 @@ dim(t1)
 #> [1] 7340225      10
 all(rowSums(t1) == 120)
 #> [1] TRUE
-microbenchmark(cbRcppAlgos = comboGeneral(120, 10,
-										 freqs=rep(1:8, 15),
-									     constraintFun = "sum",
-									     comparisonFun = "==",
-							   			 limitConstraints = 120),
-				times = 10)
+microbenchmark(cbRcppAlgos = comboGeneral(120, 10, freqs=rep(1:8, 15),
+									      constraintFun = "sum", comparisonFun = "==",
+							   			  limitConstraints = 120), times = 10)
 #> Unit: seconds
 #>         expr      min      lq     mean   median       uq      max neval
 #>  cbRcppAlgos 1.253979 1.26447 1.283988 1.267787 1.286043 1.357373    10

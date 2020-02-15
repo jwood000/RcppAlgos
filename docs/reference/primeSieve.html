@@ -106,6 +106,9 @@ The fundamental concepts of this algorithm are based off of the implementation b
       <a href="../articles/GeneralCombinatorics.html">Combination and Permutation Basics</a>
     </li>
     <li>
+      <a href="../articles/HighPerformanceBenchmarks.html">High Performance Benchmarks</a>
+    </li>
+    <li>
       <a href="../articles/SubsetSum.html">Attacking Problems Related to the Subset Sum Problem</a>
     </li>
   </ul>
@@ -205,15 +208,15 @@ The fundamental concepts of this algorithm are based off of the implementation b
 <span class='fu'>primeSieve</span>(<span class='fl'>17</span>, <span class='fl'>42</span>)</div><div class='output co'>#&gt; [1] 17 19 23 29 31 37 41</div><div class='input'>
 <span class='co'>## Primes up to one hundred million in no time</span>
 <span class='fu'><a href='https://rdrr.io/r/base/system.time.html'>system.time</a></span>(<span class='fu'>primeSieve</span>(<span class='fl'>10</span>^<span class='fl'>8</span>))</div><div class='output co'>#&gt;    user  system elapsed 
-#&gt;   0.126   0.013   0.141 </div><div class='input'>
+#&gt;   0.127   0.014   0.141 </div><div class='input'>
 <span class='co'>## options(scipen = 50)</span>
 <span class='co'>## Generate large primes over interval</span>
 <span class='fu'><a href='https://rdrr.io/r/base/system.time.html'>system.time</a></span>(<span class='no'>myPs</span> <span class='kw'>&lt;-</span> <span class='fu'>primeSieve</span>(<span class='fl'>10</span>^<span class='fl'>13</span>+<span class='fl'>10</span>^<span class='fl'>6</span>, <span class='fl'>10</span>^<span class='fl'>13</span>))</div><div class='output co'>#&gt;    user  system elapsed 
-#&gt;   0.020   0.001   0.021 </div><div class='input'><span class='co'>## Object created is small</span>
+#&gt;   0.019   0.001   0.021 </div><div class='input'><span class='co'>## Object created is small</span>
 <span class='fu'><a href='https://rdrr.io/r/utils/object.size.html'>object.size</a></span>(<span class='no'>myPs</span>)</div><div class='output co'>#&gt; 267696 bytes</div><div class='input'>
 <span class='co'>## Using nThreads</span>
 <span class='fu'><a href='https://rdrr.io/r/base/system.time.html'>system.time</a></span>(<span class='fu'>primeSieve</span>(<span class='fl'>1e7</span>, <span class='kw'>nThreads</span> <span class='kw'>=</span> <span class='fl'>2</span>))</div><div class='output co'>#&gt;    user  system elapsed 
-#&gt;   0.017   0.001   0.011 </div></pre>
+#&gt;   0.015   0.001   0.009 </div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
     <h2>Contents</h2>

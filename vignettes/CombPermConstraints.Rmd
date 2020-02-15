@@ -314,7 +314,7 @@ As you can see, the _2<sup>nd</sup>_ through the _6<sup>th</sup>_ entries are si
 
 ## Safely Interrupt Execution with `Rcpp::checkUserInterrupt`
 
-Some of these operations can take some time, especially when you are in the exploratory phase and you don't have that much information about what type of solution you will obtain. For this reason, we have added the ability to interrupt execution as of version `2.4.0`. Under the hood, we call `Rcpp::checkUserInterrupt()` once every second to check if the user has requested for the process to be interrupted.
+Some of these operations can take some time, especially when you are in the exploratory phase and you don't have that much information about what type of solution you will obtain. For this reason, we have added the ability to interrupt execution as of version `2.4.0`. Under the hood, we call `Rcpp::checkUserInterrupt()` once every second to check if the user has requested for the process to be interrupted. Note that we only check for user interruptions when we cannot determine the number of results up front.
 
 In prior versions, the example below would have executed indefinitely and the only way to stop it would have been to force quit `R`. This is not a very good solution.
 

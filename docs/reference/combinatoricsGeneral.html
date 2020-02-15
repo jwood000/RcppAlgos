@@ -112,6 +112,9 @@ The output is in lexicographical order.
       <a href="../articles/GeneralCombinatorics.html">Combination and Permutation Basics</a>
     </li>
     <li>
+      <a href="../articles/HighPerformanceBenchmarks.html">High Performance Benchmarks</a>
+    </li>
+    <li>
       <a href="../articles/SubsetSum.html">Attacking Problems Related to the Subset Sum Problem</a>
     </li>
   </ul>
@@ -276,15 +279,15 @@ The output is in lexicographical order.
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
     <pre class="examples"><div class='input'><span class='fu'><a href='https://rdrr.io/r/base/system.time.html'>system.time</a></span>(<span class='fu'>comboGeneral</span>(<span class='fl'>17</span>, <span class='fl'>8</span>))</div><div class='output co'>#&gt;    user  system elapsed 
-#&gt;   0.001   0.000   0.002 </div><div class='input'><span class='fu'><a href='https://rdrr.io/r/base/system.time.html'>system.time</a></span>(<span class='fu'>permuteGeneral</span>(<span class='fl'>13</span>, <span class='fl'>6</span>))</div><div class='output co'>#&gt;    user  system elapsed 
-#&gt;   0.017   0.008   0.025 </div><div class='input'>
+#&gt;   0.001   0.000   0.001 </div><div class='input'><span class='fu'><a href='https://rdrr.io/r/base/system.time.html'>system.time</a></span>(<span class='fu'>permuteGeneral</span>(<span class='fl'>13</span>, <span class='fl'>6</span>))</div><div class='output co'>#&gt;    user  system elapsed 
+#&gt;   0.016   0.009   0.025 </div><div class='input'>
 <span class='fu'><a href='https://rdrr.io/r/base/system.time.html'>system.time</a></span>(<span class='fu'>comboGeneral</span>(<span class='fl'>13</span>,<span class='fl'>10</span>,<span class='kw'>repetition</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>))</div><div class='output co'>#&gt;    user  system elapsed 
 #&gt;    0.01    0.00    0.01 </div><div class='input'><span class='fu'><a href='https://rdrr.io/r/base/system.time.html'>system.time</a></span>(<span class='fu'>permuteGeneral</span>(<span class='fu'><a href='https://rdrr.io/r/base/factor.html'>factor</a></span>(<span class='no'>letters</span>[<span class='fl'>1</span>:<span class='fl'>9</span>]),<span class='fl'>6</span>,<span class='fl'>TRUE</span>))</div><div class='output co'>#&gt;    user  system elapsed 
-#&gt;   0.006   0.003   0.008 </div><div class='input'>
+#&gt;   0.006   0.003   0.009 </div><div class='input'>
 <span class='co'>## permutations of the multiset (with or w/o setting m) :</span>
 <span class='co'>## c(1,1,1,1,2,2,2,3,3,4)</span>
 <span class='fu'><a href='https://rdrr.io/r/base/system.time.html'>system.time</a></span>(<span class='fu'>permuteGeneral</span>(<span class='fl'>4</span>, <span class='kw'>freqs</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='fl'>4</span>,<span class='fl'>3</span>,<span class='fl'>2</span>,<span class='fl'>1</span>)))</div><div class='output co'>#&gt;    user  system elapsed 
-#&gt;   0.000   0.000   0.001 </div><div class='input'>
+#&gt;       0       0       0 </div><div class='input'>
 <span class='co'>#### Examples using "upper" and "lower":</span>
 <span class='co'>## Generate some random data</span>
 <span class='fu'><a href='https://rdrr.io/r/base/Random.html'>set.seed</a></span>(<span class='fl'>1009</span>)
@@ -312,7 +315,7 @@ The output is in lexicographical order.
 <span class='co'>## such that the sum is greater than 7200.</span>
 <span class='fu'><a href='https://rdrr.io/r/base/system.time.html'>system.time</a></span>(<span class='fu'>comboGeneral</span>(<span class='no'>mySamp</span>, <span class='fl'>7</span>, <span class='fl'>FALSE</span>, <span class='kw'>constraintFun</span> <span class='kw'>=</span> <span class='st'>"sum"</span>,
              <span class='kw'>comparisonFun</span> <span class='kw'>=</span> <span class='st'>"&gt;"</span>, <span class='kw'>limitConstraints</span> <span class='kw'>=</span> <span class='fl'>7200</span>, <span class='kw'>upper</span> <span class='kw'>=</span> <span class='fl'>1000</span>))</div><div class='output co'>#&gt;    user  system elapsed 
-#&gt;   0.000   0.001   0.000 </div><div class='input'>
+#&gt;       0       0       0 </div><div class='input'>
 <span class='co'>## Similarly, you can use "lower" to obtain the last rows.</span>
 <span class='co'>## Generate the last 10 rows</span>
 <span class='fu'><a href='https://rdrr.io/r/base/system.time.html'>system.time</a></span>(<span class='fu'>comboGeneral</span>(<span class='no'>mySamp</span>, <span class='fl'>7</span>, <span class='kw'>lower</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/Special.html'>choose</a></span>(<span class='fl'>75</span>, <span class='fl'>7</span>) - <span class='fl'>9</span>))</div><div class='output co'>#&gt;    user  system elapsed 

@@ -66,6 +66,9 @@
       <a href="../articles/GeneralCombinatorics.html">Combination and Permutation Basics</a>
     </li>
     <li>
+      <a href="../articles/HighPerformanceBenchmarks.html">High Performance Benchmarks</a>
+    </li>
+    <li>
       <a href="../articles/SubsetSum.html">Attacking Problems Related to the Subset Sum Problem</a>
     </li>
   </ul>
@@ -325,7 +328,7 @@
 <div id="taming-floating-point-numbers" class="section level2">
 <h2 class="hasAnchor">
 <a href="#taming-floating-point-numbers" class="anchor"></a>Taming Floating Point Numbers</h2>
-<p>Oftentimes when working with numerical vectors, it can be hard to find combinations that sum to a particular number because of floating point errors (See <a href="https://jwood000.github.io/RcppAlgos/articles/CombPermConstraints.html#using-tolerance">Using <code>tolerance</code></a>… It is also encouraged to read <a href="https://jwood000.github.io/RcppAlgos/articles/CombPermConstraints.html#interrupt-execution-with-rcpp::checkuserinterrupt">Interrupt Execution with <code>Rcpp::checkUserInterrupt</code></a>).</p>
+<p>Oftentimes when working with numerical vectors, it can be hard to find combinations that sum to a particular number because of floating point errors (See <a href="https://jwood000.github.io/RcppAlgos/articles/CombPermConstraints.html#using-tolerance">Using <code>tolerance</code></a>… It is also encouraged to read <a href="https://jwood000.github.io/RcppAlgos/articles/CombPermConstraints.html#interrupt-execution-with-rcppcheckuserinterrupt">Interrupt Execution with <code>Rcpp::checkUserInterrupt</code></a>).</p>
 <p>In practice, we may not need an exact match and a close approximation will suffice. For example, let’s say we have a football team of 100 players (including practice squad) and we are interested in a trade involving 6 players and a total salary of 20 million dollars. We may not be able to find 6 players whose sum of salaries is exactly 20 million, but we can find many 6 player combinations whose sum of salaries is within a tolerance of 20 million.</p>
 <div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1"></a><span class="kw"><a href="https://rdrr.io/r/base/Random.html">set.seed</a></span>(<span class="dv">22213</span>)</span>
 <span id="cb6-2"><a href="#cb6-2"></a>football_player_salaries &lt;-<span class="st"> </span><span class="fl">2e7</span> <span class="op">*</span><span class="st"> </span><span class="kw"><a href="https://rdrr.io/r/stats/Beta.html">rbeta</a></span>(<span class="dv">100</span>, <span class="dv">2</span>, <span class="dv">25</span>)</span>

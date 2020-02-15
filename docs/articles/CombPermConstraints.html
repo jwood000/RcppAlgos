@@ -66,6 +66,9 @@
       <a href="../articles/GeneralCombinatorics.html">Combination and Permutation Basics</a>
     </li>
     <li>
+      <a href="../articles/HighPerformanceBenchmarks.html">High Performance Benchmarks</a>
+    </li>
+    <li>
       <a href="../articles/SubsetSum.html">Attacking Problems Related to the Subset Sum Problem</a>
     </li>
   </ul>
@@ -383,7 +386,7 @@
 <h2 class="hasAnchor">
 <a href="#safely-interrupt-execution-with-rcppcheckuserinterrupt" class="anchor"></a>Safely Interrupt Execution with <code>Rcpp::checkUserInterrupt</code>
 </h2>
-<p>Some of these operations can take some time, especially when you are in the exploratory phase and you don’t have that much information about what type of solution you will obtain. For this reason, we have added the ability to interrupt execution as of version <code>2.4.0</code>. Under the hood, we call <code>Rcpp::checkUserInterrupt()</code> once every second to check if the user has requested for the process to be interrupted.</p>
+<p>Some of these operations can take some time, especially when you are in the exploratory phase and you don’t have that much information about what type of solution you will obtain. For this reason, we have added the ability to interrupt execution as of version <code>2.4.0</code>. Under the hood, we call <code>Rcpp::checkUserInterrupt()</code> once every second to check if the user has requested for the process to be interrupted. Note that we only check for user interruptions when we can’t determine the number of results up front.</p>
 <p>In prior versions, the example below would have executed indefinitely and the only way to stop it would have been to force quit <code>R</code>. This is not a very good solution.</p>
 <p>With version <code>2.4.0</code>, if we initiate a process that will take a long time or exhaust all of the available memory (e.g. we forget to put an upper limit on the number of results, relax the tolerance, etc.), we can simply hit <code>Ctrl + c</code>, or <code>esc</code> if using <code>RStudio</code>, to stop execution.</p>
 <div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1"></a><span class="kw"><a href="https://rdrr.io/r/base/Random.html">set.seed</a></span>(<span class="dv">123</span>)</span>

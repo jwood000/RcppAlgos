@@ -6,5 +6,6 @@ articles:
   CombinatorialSampling: CombinatorialSampling.html
   ComputationalMathematics: ComputationalMathematics.html
   GeneralCombinatorics: GeneralCombinatorics.html
+  HighPerformanceBenchmarks: HighPerformanceBenchmarks.html
   SubsetSum: SubsetSum.html
 
