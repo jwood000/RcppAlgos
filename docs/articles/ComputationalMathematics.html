@@ -116,42 +116,44 @@
 <a href="#primesieve" class="anchor"></a><code>primeSieve</code>
 </h2>
 <p>The primeSieve function is based on the <a href="https://en.wikipedia.org/wiki/Sieve_of_Eratosthenes#Segmented_sieve">Segmented Sieve of Eratosthenes</a>. As stated in the linked article, the sieve itself is already very efficient. The problem from an efficiency standpoint, is due to the memory requirements. The segmented version overcomes this by only sieving small sections at a time, which greatly facilitates use of the cache.</p>
-<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1"></a><span class="kw">microbenchmark</span>(<span class="kw"><a href="../reference/primeSieve.html">primeSieve</a></span>(<span class="fl">1e6</span>))</span>
-<span id="cb1-2"><a href="#cb1-2"></a>Unit<span class="op">:</span><span class="st"> </span>milliseconds</span>
-<span id="cb1-3"><a href="#cb1-3"></a>              expr      min       lq    mean   median       uq      max neval</span>
-<span id="cb1-4"><a href="#cb1-4"></a> <span class="kw"><a href="../reference/primeSieve.html">primeSieve</a></span>(<span class="fl">1e+06</span>) <span class="fl">1.151969</span> <span class="fl">1.175597</span> <span class="fl">1.28727</span> <span class="fl">1.264687</span> <span class="fl">1.316879</span> <span class="fl">1.687415</span>   <span class="dv">100</span></span>
-<span id="cb1-5"><a href="#cb1-5"></a> </span>
-<span id="cb1-6"><a href="#cb1-6"></a><span class="co">## Single threaded primes under a billion!!!</span></span>
-<span id="cb1-7"><a href="#cb1-7"></a><span class="kw"><a href="https://rdrr.io/r/base/system.time.html">system.time</a></span>(a &lt;-<span class="st"> </span><span class="kw"><a href="../reference/primeSieve.html">primeSieve</a></span>(<span class="dv">10</span><span class="op">^</span><span class="dv">9</span>))</span>
-<span id="cb1-8"><a href="#cb1-8"></a>   user  system elapsed </span>
-<span id="cb1-9"><a href="#cb1-9"></a>  <span class="fl">1.161</span>   <span class="fl">0.091</span>   <span class="fl">1.253</span></span>
-<span id="cb1-10"><a href="#cb1-10"></a></span>
-<span id="cb1-11"><a href="#cb1-11"></a><span class="co">## Using 8 threads we can get under 0.5 seconds!!!</span></span>
-<span id="cb1-12"><a href="#cb1-12"></a><span class="kw"><a href="https://rdrr.io/r/base/system.time.html">system.time</a></span>(<span class="kw"><a href="../reference/primeSieve.html">primeSieve</a></span>(<span class="dv">10</span><span class="op">^</span><span class="dv">9</span>, <span class="dt">nThreads =</span> <span class="dv">8</span>))</span>
-<span id="cb1-13"><a href="#cb1-13"></a> user  system elapsed </span>
-<span id="cb1-14"><a href="#cb1-14"></a><span class="fl">2.033</span>   <span class="fl">0.045</span>   <span class="fl">0.374</span></span>
-<span id="cb1-15"><a href="#cb1-15"></a></span>
-<span id="cb1-16"><a href="#cb1-16"></a><span class="co">## Quickly generate large primes over small interval. N.B. The</span></span>
-<span id="cb1-17"><a href="#cb1-17"></a><span class="co">## order for the bounds does not matter.</span></span>
-<span id="cb1-18"><a href="#cb1-18"></a><span class="kw"><a href="https://rdrr.io/r/base/options.html">options</a></span>(<span class="dt">scipen =</span> <span class="dv">50</span>)</span>
-<span id="cb1-19"><a href="#cb1-19"></a><span class="kw"><a href="https://rdrr.io/r/base/system.time.html">system.time</a></span>(myPs &lt;-<span class="st"> </span><span class="kw"><a href="../reference/primeSieve.html">primeSieve</a></span>(<span class="dv">10</span><span class="op">^</span><span class="dv">13</span> <span class="op">+</span><span class="st"> </span><span class="dv">10</span><span class="op">^</span><span class="dv">3</span>, <span class="dv">10</span><span class="op">^</span><span class="dv">13</span>))</span>
-<span id="cb1-20"><a href="#cb1-20"></a>   user  system elapsed </span>
-<span id="cb1-21"><a href="#cb1-21"></a>  <span class="fl">0.016</span>   <span class="fl">0.005</span>   <span class="fl">0.021</span></span>
-<span id="cb1-22"><a href="#cb1-22"></a>  </span>
-<span id="cb1-23"><a href="#cb1-23"></a>myPs</span>
-<span id="cb1-24"><a href="#cb1-24"></a> [<span class="dv">1</span>] <span class="dv">10000000000037</span> <span class="dv">10000000000051</span> <span class="dv">10000000000099</span> <span class="dv">10000000000129</span></span>
-<span id="cb1-25"><a href="#cb1-25"></a> [<span class="dv">5</span>] <span class="dv">10000000000183</span> <span class="dv">10000000000259</span> <span class="dv">10000000000267</span> <span class="dv">10000000000273</span></span>
-<span id="cb1-26"><a href="#cb1-26"></a> [<span class="dv">9</span>] <span class="dv">10000000000279</span> <span class="dv">10000000000283</span> <span class="dv">10000000000313</span> <span class="dv">10000000000343</span></span>
-<span id="cb1-27"><a href="#cb1-27"></a>[<span class="dv">13</span>] <span class="dv">10000000000391</span> <span class="dv">10000000000411</span> <span class="dv">10000000000433</span> <span class="dv">10000000000453</span></span>
-<span id="cb1-28"><a href="#cb1-28"></a>[<span class="dv">17</span>] <span class="dv">10000000000591</span> <span class="dv">10000000000609</span> <span class="dv">10000000000643</span> <span class="dv">10000000000649</span></span>
-<span id="cb1-29"><a href="#cb1-29"></a>[<span class="dv">21</span>] <span class="dv">10000000000657</span> <span class="dv">10000000000687</span> <span class="dv">10000000000691</span> <span class="dv">10000000000717</span></span>
-<span id="cb1-30"><a href="#cb1-30"></a>[<span class="dv">25</span>] <span class="dv">10000000000729</span> <span class="dv">10000000000751</span> <span class="dv">10000000000759</span> <span class="dv">10000000000777</span></span>
-<span id="cb1-31"><a href="#cb1-31"></a>[<span class="dv">29</span>] <span class="dv">10000000000853</span> <span class="dv">10000000000883</span> <span class="dv">10000000000943</span> <span class="dv">10000000000957</span></span>
-<span id="cb1-32"><a href="#cb1-32"></a>[<span class="dv">33</span>] <span class="dv">10000000000987</span> <span class="dv">10000000000993</span></span>
-<span id="cb1-33"><a href="#cb1-33"></a></span>
-<span id="cb1-34"><a href="#cb1-34"></a><span class="co">## Object created is small</span></span>
-<span id="cb1-35"><a href="#cb1-35"></a><span class="kw"><a href="https://rdrr.io/r/utils/object.size.html">object.size</a></span>(myPs)</span>
-<span id="cb1-36"><a href="#cb1-36"></a><span class="dv">320</span> bytes</span></code></pre></div>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1"></a><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span>(RcppAlgos)</span>
+<span id="cb1-2"><a href="#cb1-2"></a><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span>(microbenchmark)</span>
+<span id="cb1-3"><a href="#cb1-3"></a><span class="kw">microbenchmark</span>(<span class="kw"><a href="../reference/primeSieve.html">primeSieve</a></span>(<span class="fl">1e6</span>))</span>
+<span id="cb1-4"><a href="#cb1-4"></a>Unit<span class="op">:</span><span class="st"> </span>milliseconds</span>
+<span id="cb1-5"><a href="#cb1-5"></a>              expr      min       lq    mean   median       uq      max neval</span>
+<span id="cb1-6"><a href="#cb1-6"></a> <span class="kw"><a href="../reference/primeSieve.html">primeSieve</a></span>(<span class="fl">1e+06</span>) <span class="fl">1.151969</span> <span class="fl">1.175597</span> <span class="fl">1.28727</span> <span class="fl">1.264687</span> <span class="fl">1.316879</span> <span class="fl">1.687415</span>   <span class="dv">100</span></span>
+<span id="cb1-7"><a href="#cb1-7"></a> </span>
+<span id="cb1-8"><a href="#cb1-8"></a><span class="co">## Single threaded primes under a billion!!!</span></span>
+<span id="cb1-9"><a href="#cb1-9"></a><span class="kw"><a href="https://rdrr.io/r/base/system.time.html">system.time</a></span>(a &lt;-<span class="st"> </span><span class="kw"><a href="../reference/primeSieve.html">primeSieve</a></span>(<span class="dv">10</span><span class="op">^</span><span class="dv">9</span>))</span>
+<span id="cb1-10"><a href="#cb1-10"></a>   user  system elapsed </span>
+<span id="cb1-11"><a href="#cb1-11"></a>  <span class="fl">1.161</span>   <span class="fl">0.091</span>   <span class="fl">1.253</span></span>
+<span id="cb1-12"><a href="#cb1-12"></a></span>
+<span id="cb1-13"><a href="#cb1-13"></a><span class="co">## Using 8 threads we can get under 0.5 seconds!!!</span></span>
+<span id="cb1-14"><a href="#cb1-14"></a><span class="kw"><a href="https://rdrr.io/r/base/system.time.html">system.time</a></span>(<span class="kw"><a href="../reference/primeSieve.html">primeSieve</a></span>(<span class="dv">10</span><span class="op">^</span><span class="dv">9</span>, <span class="dt">nThreads =</span> <span class="dv">8</span>))</span>
+<span id="cb1-15"><a href="#cb1-15"></a> user  system elapsed </span>
+<span id="cb1-16"><a href="#cb1-16"></a><span class="fl">2.033</span>   <span class="fl">0.045</span>   <span class="fl">0.374</span></span>
+<span id="cb1-17"><a href="#cb1-17"></a></span>
+<span id="cb1-18"><a href="#cb1-18"></a><span class="co">## Quickly generate large primes over small interval. N.B. The</span></span>
+<span id="cb1-19"><a href="#cb1-19"></a><span class="co">## order for the bounds does not matter.</span></span>
+<span id="cb1-20"><a href="#cb1-20"></a><span class="kw"><a href="https://rdrr.io/r/base/options.html">options</a></span>(<span class="dt">scipen =</span> <span class="dv">50</span>)</span>
+<span id="cb1-21"><a href="#cb1-21"></a><span class="kw"><a href="https://rdrr.io/r/base/system.time.html">system.time</a></span>(myPs &lt;-<span class="st"> </span><span class="kw"><a href="../reference/primeSieve.html">primeSieve</a></span>(<span class="dv">10</span><span class="op">^</span><span class="dv">13</span> <span class="op">+</span><span class="st"> </span><span class="dv">10</span><span class="op">^</span><span class="dv">3</span>, <span class="dv">10</span><span class="op">^</span><span class="dv">13</span>))</span>
+<span id="cb1-22"><a href="#cb1-22"></a>   user  system elapsed </span>
+<span id="cb1-23"><a href="#cb1-23"></a>  <span class="fl">0.016</span>   <span class="fl">0.005</span>   <span class="fl">0.021</span></span>
+<span id="cb1-24"><a href="#cb1-24"></a>  </span>
+<span id="cb1-25"><a href="#cb1-25"></a>myPs</span>
+<span id="cb1-26"><a href="#cb1-26"></a> [<span class="dv">1</span>] <span class="dv">10000000000037</span> <span class="dv">10000000000051</span> <span class="dv">10000000000099</span> <span class="dv">10000000000129</span></span>
+<span id="cb1-27"><a href="#cb1-27"></a> [<span class="dv">5</span>] <span class="dv">10000000000183</span> <span class="dv">10000000000259</span> <span class="dv">10000000000267</span> <span class="dv">10000000000273</span></span>
+<span id="cb1-28"><a href="#cb1-28"></a> [<span class="dv">9</span>] <span class="dv">10000000000279</span> <span class="dv">10000000000283</span> <span class="dv">10000000000313</span> <span class="dv">10000000000343</span></span>
+<span id="cb1-29"><a href="#cb1-29"></a>[<span class="dv">13</span>] <span class="dv">10000000000391</span> <span class="dv">10000000000411</span> <span class="dv">10000000000433</span> <span class="dv">10000000000453</span></span>
+<span id="cb1-30"><a href="#cb1-30"></a>[<span class="dv">17</span>] <span class="dv">10000000000591</span> <span class="dv">10000000000609</span> <span class="dv">10000000000643</span> <span class="dv">10000000000649</span></span>
+<span id="cb1-31"><a href="#cb1-31"></a>[<span class="dv">21</span>] <span class="dv">10000000000657</span> <span class="dv">10000000000687</span> <span class="dv">10000000000691</span> <span class="dv">10000000000717</span></span>
+<span id="cb1-32"><a href="#cb1-32"></a>[<span class="dv">25</span>] <span class="dv">10000000000729</span> <span class="dv">10000000000751</span> <span class="dv">10000000000759</span> <span class="dv">10000000000777</span></span>
+<span id="cb1-33"><a href="#cb1-33"></a>[<span class="dv">29</span>] <span class="dv">10000000000853</span> <span class="dv">10000000000883</span> <span class="dv">10000000000943</span> <span class="dv">10000000000957</span></span>
+<span id="cb1-34"><a href="#cb1-34"></a>[<span class="dv">33</span>] <span class="dv">10000000000987</span> <span class="dv">10000000000993</span></span>
+<span id="cb1-35"><a href="#cb1-35"></a></span>
+<span id="cb1-36"><a href="#cb1-36"></a><span class="co">## Object created is small</span></span>
+<span id="cb1-37"><a href="#cb1-37"></a><span class="kw"><a href="https://rdrr.io/r/utils/object.size.html">object.size</a></span>(myPs)</span>
+<span id="cb1-38"><a href="#cb1-38"></a><span class="dv">320</span> bytes</span></code></pre></div>
 <div id="larger-primes" class="section level3">
 <h3 class="hasAnchor">
 <a href="#larger-primes" class="anchor"></a>Larger primes</h3>
