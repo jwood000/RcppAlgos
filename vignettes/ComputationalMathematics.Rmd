@@ -20,7 +20,9 @@ This document serves as an overview for solving problems common in [Computationa
 
 The primeSieve function is based on the [Segmented Sieve of Eratosthenes](https://en.wikipedia.org/wiki/Sieve_of_Eratosthenes#Segmented_sieve). As stated in the linked article, the sieve itself is already very efficient. The problem from an efficiency standpoint, is due to the memory requirements. The segmented version overcomes this by only sieving small sections at a time, which greatly facilitates use of the cache.
 
-``` r
+```r
+library(RcppAlgos)
+library(microbenchmark)
 microbenchmark(primeSieve(1e6))
 Unit: milliseconds
               expr      min       lq    mean   median       uq      max neval
@@ -63,7 +65,7 @@ object.size(myPs)
 
 Since version `2.3.0`, we are implementing the cache-friendly improvements for larger primes originally developed by [Tomás Oliveira](<http://sweet.ua.pt/tos/software/prime_sieve.html>).
 
-``` r
+```r
 ## Version <= 2.2.0.. i.e. older versions
 system.time(old <- RcppAlgos2.2::primeSieve(1e15, 1e15 + 1e9))
    user  system elapsed 
@@ -96,7 +98,7 @@ We can certainly do this, but what you will find is that _n - 1_ threads will co
 
 With this is mind, here are some results:
 
-``` r  
+```r  
 ## Enumerate the number of primes below trillion
 system.time(underOneTrillion <- primeCount(10^12))
    user  system elapsed 
@@ -134,7 +136,7 @@ for problems common in computational mathematics. All functions below can be exe
 
 The following sieving functions (`primeFactorizeSieve`, `divisorsSieve`, `numDivisorSieve`, & `eulerPhiSieve`) are very useful and flexible. Generate components up to a number or between two bounds.
 
-``` r
+```r
 ## get the number of divisors for every number from 1 to n
 numDivisorSieve(20)
  [1] 1 2 2 3 2 4 2 4 3 4 2 6 2 4 4 5 2 6 2 6
@@ -204,7 +206,7 @@ identical(a, b)
 
 There are three very fast vectorized functions for general factoring (e.g. all divisors of number), primality testing, as well as prime factoring (`divisorsRcpp`, `isPrimeRcpp`, `primeFactorize`).
 
-``` r
+```r
 ## get result for individual numbers
 primeFactorize(123456789)
 [1]    3    3 3607 3803

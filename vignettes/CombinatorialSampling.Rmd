@@ -63,6 +63,7 @@ We could also try calling `sample(100, 20)` a bunch of times and hope we don't g
 Let's first look at the first problem above (i.e. getting 5 random combinations of the vector `1:20` of length 10):
 
 ```r
+library(RcppAlgos)
 set.seed(42)
 comboSample(20, 10, n = 5)
      [,1] [,2] [,3] [,4] [,5] [,6] [,7] [,8] [,9] [,10]

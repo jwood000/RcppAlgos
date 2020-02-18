@@ -29,6 +29,7 @@ There are 5 compiled constraint functions that can be utilized efficiently to te
 They are passed as strings to the `constraintFun` parameter. When these are employed without any other parameters being set, an additional column is added that represents the result of applying the given function to that combination/permutation. You can also set `keepResults = TRUE` (more on this later).
 
 ```r
+library(RcppAlgos)
 ## base R using combn and FUN
 combnSum <- combn(20, 10, sum)
 algosSum <- comboGeneral(20, 10, constraintFun = "sum")
@@ -113,10 +114,10 @@ The standard 5 comparison operators (i.e. `"<"`, `">"`, `"<="`, `">="`, & `"=="`
 
 First we will look at cases with only one comparison and one value for the `limitConstraint`.
 
-``` r
+```r
 ## Generate some random data. N.B. Using R >= 3.6.0
-## set.seed(101)
-## myNums <- sample(500, 20)
+set.seed(101)
+myNums <- sample(500, 20)
 
 myNums
 [1] 187  22 354 327 124 149 289 165 307 269 432 346 358 454 222 287 398 109 199  19
