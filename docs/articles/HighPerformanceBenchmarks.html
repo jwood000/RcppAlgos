@@ -120,17 +120,18 @@
 <span id="cb1-4"><a href="#cb1-4"></a><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span>(microbenchmark)</span>
 <span id="cb1-5"><a href="#cb1-5"></a>pertinent_output &lt;-<span class="st"> </span><span class="kw"><a href="https://rdrr.io/r/utils/capture.output.html">capture.output</a></span>(<span class="kw"><a href="https://rdrr.io/r/utils/sessionInfo.html">sessionInfo</a></span>())</span>
 <span id="cb1-6"><a href="#cb1-6"></a></span>
-<span id="cb1-7"><a href="#cb1-7"></a><span class="kw"><a href="https://rdrr.io/r/base/cat.html">cat</a></span>(<span class="kw"><a href="https://rdrr.io/r/base/paste.html">paste</a></span>(pertinent_output[<span class="dv">1</span><span class="op">:</span><span class="dv">3</span>], <span class="dt">collapse =</span> <span class="st">"</span><span class="ch">\n</span><span class="st">"</span>))</span>
-<span id="cb1-8"><a href="#cb1-8"></a><span class="co">#&gt; R version 3.6.2 (2019-12-12)</span></span>
-<span id="cb1-9"><a href="#cb1-9"></a><span class="co">#&gt; Platform: x86_64-apple-darwin15.6.0 (64-bit)</span></span>
-<span id="cb1-10"><a href="#cb1-10"></a><span class="co">#&gt; Running under: macOS Mojave 10.14.6</span></span>
-<span id="cb1-11"><a href="#cb1-11"></a></span>
-<span id="cb1-12"><a href="#cb1-12"></a><span class="kw"><a href="https://rdrr.io/r/base/cat.html">cat</a></span>(pertinent_output[<span class="kw"><a href="https://rdrr.io/r/base/which.html">which</a></span>(pertinent_output <span class="op">==</span><span class="st"> "other attached packages:"</span>) <span class="op">+</span><span class="st"> </span>1L])</span>
-<span id="cb1-13"><a href="#cb1-13"></a><span class="co">#&gt; [1] microbenchmark_1.4-7 partitions_1.9-22    arrangements_1.1.8   RcppAlgos_2.3.6</span></span>
-<span id="cb1-14"><a href="#cb1-14"></a></span>
-<span id="cb1-15"><a href="#cb1-15"></a>numThreads &lt;-<span class="st"> </span><span class="kw"><a href="https://rdrr.io/r/base/integer.html">as.integer</a></span>(RcppAlgos<span class="op">::</span><span class="kw"><a href="https://rdrr.io/pkg/RcppAlgos/man/stdThreadMax.html">stdThreadMax</a></span>() <span class="op">/</span><span class="st"> </span><span class="dv">2</span>)</span>
-<span id="cb1-16"><a href="#cb1-16"></a><span class="kw"><a href="https://rdrr.io/pkg/partitions/man/print.partition.html">print</a></span>(numThreads)</span>
-<span id="cb1-17"><a href="#cb1-17"></a><span class="co">#&gt; [1] 4</span></span></code></pre></div>
+<span id="cb1-7"><a href="#cb1-7"></a><span class="kw"><a href="https://rdrr.io/r/base/options.html">options</a></span>(<span class="dt">digits =</span> <span class="dv">4</span>)</span>
+<span id="cb1-8"><a href="#cb1-8"></a><span class="kw"><a href="https://rdrr.io/r/base/cat.html">cat</a></span>(<span class="kw"><a href="https://rdrr.io/r/base/paste.html">paste</a></span>(pertinent_output[<span class="dv">1</span><span class="op">:</span><span class="dv">3</span>], <span class="dt">collapse =</span> <span class="st">"</span><span class="ch">\n</span><span class="st">"</span>))</span>
+<span id="cb1-9"><a href="#cb1-9"></a><span class="co">#&gt; R version 3.6.2 (2019-12-12)</span></span>
+<span id="cb1-10"><a href="#cb1-10"></a><span class="co">#&gt; Platform: x86_64-apple-darwin15.6.0 (64-bit)</span></span>
+<span id="cb1-11"><a href="#cb1-11"></a><span class="co">#&gt; Running under: macOS Mojave 10.14.6</span></span>
+<span id="cb1-12"><a href="#cb1-12"></a></span>
+<span id="cb1-13"><a href="#cb1-13"></a><span class="kw"><a href="https://rdrr.io/r/base/cat.html">cat</a></span>(pertinent_output[<span class="kw"><a href="https://rdrr.io/r/base/which.html">which</a></span>(pertinent_output <span class="op">==</span><span class="st"> "other attached packages:"</span>) <span class="op">+</span><span class="st"> </span>1L])</span>
+<span id="cb1-14"><a href="#cb1-14"></a><span class="co">#&gt; [1] microbenchmark_1.4-7 partitions_1.9-22    arrangements_1.1.8   RcppAlgos_2.3.6</span></span>
+<span id="cb1-15"><a href="#cb1-15"></a></span>
+<span id="cb1-16"><a href="#cb1-16"></a>numThreads &lt;-<span class="st"> </span><span class="kw"><a href="https://rdrr.io/r/base/integer.html">as.integer</a></span>(RcppAlgos<span class="op">::</span><span class="kw"><a href="https://rdrr.io/pkg/RcppAlgos/man/stdThreadMax.html">stdThreadMax</a></span>() <span class="op">/</span><span class="st"> </span><span class="dv">2</span>)</span>
+<span id="cb1-17"><a href="#cb1-17"></a><span class="kw"><a href="https://rdrr.io/pkg/partitions/man/print.partition.html">print</a></span>(numThreads)</span>
+<span id="cb1-18"><a href="#cb1-18"></a><span class="co">#&gt; [1] 4</span></span></code></pre></div>
 </div>
 <div id="combinations" class="section level2">
 <h2 class="hasAnchor">
@@ -179,8 +180,8 @@
 <span id="cb3-15"><a href="#cb3-15"></a><span class="co">#&gt; Unit: relative</span></span>
 <span id="cb3-16"><a href="#cb3-16"></a><span class="co">#&gt;            expr   min    lq  mean median    uq   max neval</span></span>
 <span id="cb3-17"><a href="#cb3-17"></a><span class="co">#&gt;  cbRcppAlgosPar 1.000 1.000 1.000  1.000 1.000 1.000    15</span></span>
-<span id="cb3-18"><a href="#cb3-18"></a><span class="co">#&gt;  cbRcppAlgosSer 2.403 2.382 2.373  2.389 2.374 2.243    15</span></span>
-<span id="cb3-19"><a href="#cb3-19"></a><span class="co">#&gt;  cbArrangements 2.095 2.365 2.343  2.380 2.365 2.237    15</span></span></code></pre></div>
+<span id="cb3-18"><a href="#cb3-18"></a><span class="co">#&gt;  cbRcppAlgosSer 2.567 2.566 2.562  2.560 2.556 2.560    15</span></span>
+<span id="cb3-19"><a href="#cb3-19"></a><span class="co">#&gt;  cbArrangements 2.262 2.562 2.542  2.565 2.552 2.592    15</span></span></code></pre></div>
 </div>
 <div id="combinations---multisets" class="section level3">
 <h3 class="hasAnchor">
@@ -202,8 +203,8 @@
 <span id="cb4-15"><a href="#cb4-15"></a><span class="co">#&gt; Unit: relative</span></span>
 <span id="cb4-16"><a href="#cb4-16"></a><span class="co">#&gt;            expr   min    lq  mean median    uq   max neval</span></span>
 <span id="cb4-17"><a href="#cb4-17"></a><span class="co">#&gt;  cbRcppAlgosPar 1.000 1.000 1.000  1.000 1.000 1.000    10</span></span>
-<span id="cb4-18"><a href="#cb4-18"></a><span class="co">#&gt;  cbRcppAlgosSer 2.534 2.546 2.483  2.535 2.442 2.251    10</span></span>
-<span id="cb4-19"><a href="#cb4-19"></a><span class="co">#&gt;  cbArrangements 4.386 4.584 4.460  4.578 4.406 4.057    10</span></span></code></pre></div>
+<span id="cb4-18"><a href="#cb4-18"></a><span class="co">#&gt;  cbRcppAlgosSer 3.640 2.737 2.792  2.719 2.719 2.720    10</span></span>
+<span id="cb4-19"><a href="#cb4-19"></a><span class="co">#&gt;  cbArrangements 6.461 4.862 4.936  4.817 4.803 4.734    10</span></span></code></pre></div>
 </div>
 </div>
 <div id="permutations" class="section level2">
@@ -320,7 +321,7 @@
 <span id="cb8-5"><a href="#cb8-5"></a>t3 &lt;-<span class="st"> </span><span class="kw"><a href="https://rdrr.io/pkg/partitions/man/parts.html">diffparts</a></span>(<span class="dv">140</span>)</span>
 <span id="cb8-6"><a href="#cb8-6"></a></span>
 <span id="cb8-7"><a href="#cb8-7"></a><span class="co"># Each package has different output formats... we only examine dimensions</span></span>
-<span id="cb8-8"><a href="#cb8-8"></a><span class="co"># and that each result is a partition of 65</span></span>
+<span id="cb8-8"><a href="#cb8-8"></a><span class="co"># and that each result is a partition of 140</span></span>
 <span id="cb8-9"><a href="#cb8-9"></a><span class="kw"><a href="https://rdrr.io/r/base/identical.html">identical</a></span>(<span class="kw"><a href="https://rdrr.io/r/base/dim.html">dim</a></span>(t1), <span class="kw"><a href="https://rdrr.io/r/base/dim.html">dim</a></span>(t2))</span>
 <span id="cb8-10"><a href="#cb8-10"></a><span class="co">#&gt; [1] TRUE</span></span>
 <span id="cb8-11"><a href="#cb8-11"></a><span class="kw"><a href="https://rdrr.io/r/base/identical.html">identical</a></span>(<span class="kw"><a href="https://rdrr.io/r/base/dim.html">dim</a></span>(t1), <span class="kw"><a href="https://rdrr.io/r/base/dim.html">dim</a></span>(<span class="kw"><a href="https://rdrr.io/r/base/t.html">t</a></span>(t3)))</span>
@@ -344,10 +345,10 @@
 <span id="cb8-29"><a href="#cb8-29"></a>               <span class="dt">cbPartitions =</span> <span class="kw"><a href="https://rdrr.io/pkg/partitions/man/parts.html">diffparts</a></span>(<span class="dv">140</span>),</span>
 <span id="cb8-30"><a href="#cb8-30"></a>               <span class="dt">times =</span> <span class="dv">10</span>, <span class="dt">unit =</span> <span class="st">"relative"</span>)</span>
 <span id="cb8-31"><a href="#cb8-31"></a><span class="co">#&gt; Unit: relative</span></span>
-<span id="cb8-32"><a href="#cb8-32"></a><span class="co">#&gt;            expr      min       lq     mean   median       uq      max neval</span></span>
-<span id="cb8-33"><a href="#cb8-33"></a><span class="co">#&gt;  cbRcppAlgosSer 1.344425 1.354170 1.382300 1.358673 1.459288 1.423486    10</span></span>
-<span id="cb8-34"><a href="#cb8-34"></a><span class="co">#&gt;  cbArrangements 1.000000 1.000000 1.000000 1.000000 1.000000 1.000000    10</span></span>
-<span id="cb8-35"><a href="#cb8-35"></a><span class="co">#&gt;    cbPartitions 5.913744 6.043652 5.754121 5.860363 5.684144 5.432942    10</span></span></code></pre></div>
+<span id="cb8-32"><a href="#cb8-32"></a><span class="co">#&gt;            expr   min    lq  mean median    uq   max neval</span></span>
+<span id="cb8-33"><a href="#cb8-33"></a><span class="co">#&gt;  cbRcppAlgosSer 1.241 1.237 1.224  1.203 1.178 1.378    10</span></span>
+<span id="cb8-34"><a href="#cb8-34"></a><span class="co">#&gt;  cbArrangements 1.000 1.000 1.000  1.000 1.000 1.000    10</span></span>
+<span id="cb8-35"><a href="#cb8-35"></a><span class="co">#&gt;    cbPartitions 5.807 5.795 5.658  5.771 5.670 5.205    10</span></span></code></pre></div>
 </div>
 <div id="restricted-distinct-partitions" class="section level4">
 <h4 class="hasAnchor">
@@ -369,9 +370,9 @@
 <span id="cb9-15"><a href="#cb9-15"></a>               <span class="dt">cbArrangements =</span> <span class="kw"><a href="https://rdrr.io/pkg/partitions/man/partitions.package.html">partitions</a></span>(<span class="dv">160</span>, <span class="dv">10</span>, <span class="dt">distinct =</span> <span class="ot">TRUE</span>),</span>
 <span id="cb9-16"><a href="#cb9-16"></a>               <span class="dt">times =</span> <span class="dv">10</span>, <span class="dt">unit =</span> <span class="st">"relative"</span>)</span>
 <span id="cb9-17"><a href="#cb9-17"></a><span class="co">#&gt; Unit: relative</span></span>
-<span id="cb9-18"><a href="#cb9-18"></a><span class="co">#&gt;            expr       min        lq     mean   median       uq       max neval</span></span>
-<span id="cb9-19"><a href="#cb9-19"></a><span class="co">#&gt;  cbRcppAlgosSer 1.0000000 1.0000000 1.000000 1.000000 1.000000 1.0000000    10</span></span>
-<span id="cb9-20"><a href="#cb9-20"></a><span class="co">#&gt;  cbArrangements 0.9862847 0.9833492 1.060233 1.003381 1.339914 0.9860554    10</span></span></code></pre></div>
+<span id="cb9-18"><a href="#cb9-18"></a><span class="co">#&gt;            expr   min    lq  mean median    uq   max neval</span></span>
+<span id="cb9-19"><a href="#cb9-19"></a><span class="co">#&gt;  cbRcppAlgosSer 1.000 1.000 1.000  1.000 1.000 1.000    10</span></span>
+<span id="cb9-20"><a href="#cb9-20"></a><span class="co">#&gt;  cbArrangements 1.084 1.081 1.208  1.087 1.467 1.486    10</span></span></code></pre></div>
 </div>
 </div>
 <div id="partitions---repetition" class="section level3">
@@ -409,10 +410,10 @@
 <span id="cb10-27"><a href="#cb10-27"></a>               <span class="dt">cbPartitions =</span> <span class="kw"><a href="https://rdrr.io/pkg/partitions/man/parts.html">parts</a></span>(<span class="dv">65</span>),</span>
 <span id="cb10-28"><a href="#cb10-28"></a>               <span class="dt">times =</span> <span class="dv">20</span>, <span class="dt">unit =</span> <span class="st">"relative"</span>)</span>
 <span id="cb10-29"><a href="#cb10-29"></a><span class="co">#&gt; Unit: relative</span></span>
-<span id="cb10-30"><a href="#cb10-30"></a><span class="co">#&gt;            expr      min       lq     mean   median       uq      max neval</span></span>
-<span id="cb10-31"><a href="#cb10-31"></a><span class="co">#&gt;  cbRcppAlgosSer 1.000000 1.000000 1.000000 1.000000 1.000000 1.000000    20</span></span>
-<span id="cb10-32"><a href="#cb10-32"></a><span class="co">#&gt;  cbArrangements 1.035647 1.078886 1.144351 1.193378 1.140819 1.289736    20</span></span>
-<span id="cb10-33"><a href="#cb10-33"></a><span class="co">#&gt;    cbPartitions 1.744549 1.730283 1.746423 1.801610 1.664767 1.935539    20</span></span></code></pre></div>
+<span id="cb10-30"><a href="#cb10-30"></a><span class="co">#&gt;            expr   min    lq  mean median    uq    max neval</span></span>
+<span id="cb10-31"><a href="#cb10-31"></a><span class="co">#&gt;  cbRcppAlgosSer 1.000 1.000 1.000  1.000 1.000 1.0000    20</span></span>
+<span id="cb10-32"><a href="#cb10-32"></a><span class="co">#&gt;  cbArrangements 1.042 1.049 1.015  1.041 1.014 0.8623    20</span></span>
+<span id="cb10-33"><a href="#cb10-33"></a><span class="co">#&gt;    cbPartitions 1.723 1.710 1.618  1.695 1.596 1.3554    20</span></span></code></pre></div>
 </div>
 <div id="restricted-partitions" class="section level4">
 <h4 class="hasAnchor">
@@ -444,10 +445,10 @@
 <span id="cb11-25"><a href="#cb11-25"></a>                       <span class="dt">cbPartitions =</span> <span class="kw"><a href="https://rdrr.io/pkg/partitions/man/parts.html">restrictedparts</a></span>(<span class="dv">100</span>, <span class="dv">15</span>, <span class="dt">include.zero=</span><span class="ot">FALSE</span>),</span>
 <span id="cb11-26"><a href="#cb11-26"></a>                       <span class="dt">times =</span> <span class="dv">10</span>, <span class="dt">unit =</span> <span class="st">"relative"</span>)</span>
 <span id="cb11-27"><a href="#cb11-27"></a><span class="co">#&gt; Unit: relative</span></span>
-<span id="cb11-28"><a href="#cb11-28"></a><span class="co">#&gt;            expr      min       lq     mean   median        uq       max neval</span></span>
-<span id="cb11-29"><a href="#cb11-29"></a><span class="co">#&gt;  cbRcppAlgosSer 1.099108 1.101961 1.010174 1.090032 0.9766435 0.8815616    10</span></span>
-<span id="cb11-30"><a href="#cb11-30"></a><span class="co">#&gt;  cbArrangements 1.000000 1.000000 1.000000 1.000000 1.0000000 1.0000000    10</span></span>
-<span id="cb11-31"><a href="#cb11-31"></a><span class="co">#&gt;    cbPartitions 3.101130 3.133236 2.973980 3.275767 3.1003234 2.2439869    10</span></span></code></pre></div>
+<span id="cb11-28"><a href="#cb11-28"></a><span class="co">#&gt;            expr   min    lq  mean median     uq   max neval</span></span>
+<span id="cb11-29"><a href="#cb11-29"></a><span class="co">#&gt;  cbRcppAlgosSer 1.092 1.087 1.048  1.009 0.9924 1.075    10</span></span>
+<span id="cb11-30"><a href="#cb11-30"></a><span class="co">#&gt;  cbArrangements 1.000 1.000 1.000  1.000 1.0000 1.000    10</span></span>
+<span id="cb11-31"><a href="#cb11-31"></a><span class="co">#&gt;    cbPartitions 3.256 3.240 2.910  2.853 2.6818 2.646    10</span></span></code></pre></div>
 </div>
 </div>
 <div id="partitions---multisets" class="section level3">
@@ -465,8 +466,8 @@
 <span id="cb12-9"><a href="#cb12-9"></a>                                          <span class="dt">constraintFun =</span> <span class="st">"sum"</span>, <span class="dt">comparisonFun =</span> <span class="st">"=="</span>,</span>
 <span id="cb12-10"><a href="#cb12-10"></a>                                          <span class="dt">limitConstraints =</span> <span class="dv">120</span>), <span class="dt">times =</span> <span class="dv">10</span>)</span>
 <span id="cb12-11"><a href="#cb12-11"></a><span class="co">#&gt; Unit: seconds</span></span>
-<span id="cb12-12"><a href="#cb12-12"></a><span class="co">#&gt;         expr      min      lq     mean   median       uq      max neval</span></span>
-<span id="cb12-13"><a href="#cb12-13"></a><span class="co">#&gt;  cbRcppAlgos 1.253979 1.26447 1.283988 1.267787 1.286043 1.357373    10</span></span></code></pre></div>
+<span id="cb12-12"><a href="#cb12-12"></a><span class="co">#&gt;         expr   min  lq  mean median    uq   max neval</span></span>
+<span id="cb12-13"><a href="#cb12-13"></a><span class="co">#&gt;  cbRcppAlgos 1.196 1.2 1.215  1.214 1.231 1.236    10</span></span></code></pre></div>
 </div>
 </div>
 <div id="extreme-test" class="section level2">
