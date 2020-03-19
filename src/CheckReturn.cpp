@@ -1,5 +1,11 @@
 #include "StandardUtils.h"
 
+enum returnType : int {
+    constrained = 0,
+    standard = 1,
+    applyFun = 2
+};
+
 bool CheckConstrnd(SEXP f1, SEXP f2, SEXP Rtarget) {
     // No need to check myType, as we have already done 
     // so in CheckStdRet. Same goes for IsFactor. 
@@ -20,38 +26,38 @@ bool CheckConstrnd(SEXP f1, SEXP f2, SEXP Rtarget) {
 int CheckReturn(SEXP Rv, SEXP f1, SEXP f2, SEXP Rtarget,
                 bool IsFactor, SEXP RKeepRes, SEXP stdFun) {
     
-    int res = 0;
+    int res = returnType::constrained;
     
     if (Rf_isNull(f1)) {
-        res = 1;
+        res = returnType::standard;
     } else {
         if (IsFactor) {
-            res = 1;
+            res = returnType::standard;
         } else {
             VecType myType = VecType::Integer;
             SetType(myType, Rv);
             
-            if (myType > VecType::Logical) {
-                res = 1;
+            if (myType > VecType::Numeric) {
+                res = returnType::standard;
             } else {
                 if (!Rf_isNull(f2) && !Rf_isNull(Rtarget)) {
-                    res = 0;  // This is a constrained output
+                    res = returnType::constrained;  // This is a constrained output
                 } else if (Rf_isNull(f2) && Rf_isNull(Rtarget)) {
                     // This is applying a constrained func only
                     if (Rf_isNull(RKeepRes)) {
-                        res = 0;
+                        res = returnType::constrained;
                     } else {
                         bool keepRes = CleanConvert::convertLogical(RKeepRes, "keepResults");
                         
                         if (keepRes) {
-                            res = 0;
+                            res = returnType::constrained;
                         } else {
-                            res = 1;
+                            res = returnType::standard;
                         }
                     }
                 } else {
                     // This means the input is non-sensible... std res = only
-                    res = 1;
+                    res = returnType::standard;
                 }
             }
         }
@@ -64,7 +70,7 @@ int CheckReturn(SEXP Rv, SEXP f1, SEXP f2, SEXP Rtarget,
             if (!Rf_isFunction(stdFun))
                 Rcpp::stop("FUN must be a function!");
             
-            res = 2;
+            res = returnType::applyFun;
         }
     }
     
