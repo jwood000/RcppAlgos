@@ -130,8 +130,22 @@ SEXP CombinatoricsStndrd(SEXP Rv, SEXP Rm, SEXP RisRep, SEXP RFreqs, SEXP Rlow,
     
     bool generalRet = IsComb || IsMult || permNonTriv || 
                       n == 1 || phaseOneDbl > std::numeric_limits<int>::max();
+
+    if (!generalRet) {
+        if ((phaseOneDbl * 2.0) > nRows) {
+            generalRet = true;
+        } else {
+            // Here, we estimate the maximum size of an array of ints
+            // by taking advantage of the max_size method of vectors
+            std::vector<int> sizeTestVec;
+            const double first = (IsRep) ? 1 : 0;
+            
+            if (phaseOneDbl * (static_cast<double>(m) - first) > sizeTestVec.max_size()) {
+                generalRet = true;
+            }
+        }
+    }
     
-    if (!generalRet && phaseOneDbl > nRows) {generalRet = true;}
     const int phaseOne = (generalRet) ? 0 : static_cast<int>(phaseOneDbl);
 
     if (myType > VecType::Logical) {
