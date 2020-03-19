@@ -160,7 +160,7 @@ namespace Partitions {
         std::vector<int64_t> partitionsVec;
         const double vecMax = partitionsVec.max_size() / m;
         const double upperBound = std::min(vecMax, static_cast<double>(std::numeric_limits<int>::max()));
-        const int maxRows = std::min(upperBound, static_cast<double>(numParts));
+        const int maxRows = std::min(upperBound, numParts);
         
         if (bUserRows)
             partitionsVec.reserve(maxRows * m);
