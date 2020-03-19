@@ -3,6 +3,7 @@
 
 #include "UserConstraintFuns.h"
 #include "GmpDependUtils.h"
+#include <chrono>
 
 const std::vector<std::string> compForms = {"<", ">", "<=", ">=", "==", "=<", "=>"};
 const std::vector<std::string> compSpecial = {"==", ">,<", ">=,<", ">,<=", ">=,<="};

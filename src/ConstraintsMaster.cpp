@@ -7,7 +7,7 @@
 #include "PartitionsCounts.h"
 #include "CheckStdRet.h"
 #include "RMatrix.h"
-#include <RcppThread.h>
+#include <RcppThread/ThreadPool.hpp>
 
 template <typename typeRcpp, typename typeVector>
 typeRcpp ConstraintReturn(int n, int m, const std::string &mainFun, const std::vector<std::string> &compFunVec,
@@ -102,7 +102,6 @@ SEXP CombinatoricsCnstrt(SEXP Rv, SEXP Rm, SEXP RisRep, SEXP RFreqs, SEXP Rlow,
     
     SetType(myType, Rv);
     SetValues(myType, vInt, vNum, n, Rv);
-    
     const bool IsConstrained = CheckConstrnd(f1, f2, Rtarget);
 
     if (IsConstrained) {
@@ -223,10 +222,10 @@ SEXP CombinatoricsCnstrt(SEXP Rv, SEXP Rm, SEXP RisRep, SEXP RFreqs, SEXP Rlow,
         }
     } else {
         int nThreads = 1;
+        int nCols = m + 1;
+        
         const int limit = 20000;
         SetThreads(Parallel, maxThreads, nRows, myType, nThreads, RnThreads, limit);
-        
-        int nCols = m + 1;
 
         if (myType == VecType::Integer)
             if (!CheckIsInteger(mainFun, n, m, vNum, vNum, funDbl))

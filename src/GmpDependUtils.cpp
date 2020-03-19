@@ -1,4 +1,7 @@
 #include "GmpDependUtils.h"
+#include "ConstraintsUtils.h"
+#include "PartitionsCounts.h"
+#include "CheckStdRet.h"
 
 static gmp_randstate_t seed_state;
 static int seed_init = 0;
@@ -255,56 +258,55 @@ void SetStartZ(int n, int m, double &lower, int stepSize, mpz_t &lowerMpz, bool 
 Rcpp::List GetClassVals(bool IsStdRet, SEXP Rv, SEXP Rm, SEXP RisRep,
                         SEXP RFreqs, bool IsComb, bool IsFactor, SEXP stdFun) {
     
-    if (IsStdRet) {
-        int n, m = 0, lenFreqs = 0;
-        VecType myType = VecType::Integer;
-        bool IsMult = false;
-        
-        std::vector<double> vNum;
-        std::vector<int> vInt, myReps, freqs;
-        bool IsRep = CleanConvert::convertLogical(RisRep, "repetition");
-        
-        SetType(myType, Rv);
-        SetValues(myType, vInt, vNum, n, Rv);
-        SetFreqsAndM(RFreqs, IsMult, myReps, IsRep, lenFreqs, freqs, Rm, n, m);
-        
-        const SEXP sexpVec = CopyRv(Rv, vInt, vNum, myType, IsFactor);
-        const double computedRows = GetComputedRows(IsMult, IsComb, IsRep, n,
-                                                    m, Rm, lenFreqs, freqs, myReps);
-        
-        const bool IsGmp = (computedRows > sampleLimit);
-        
-        mpz_t computedRowsMpz;
-        mpz_init(computedRowsMpz);
-        
-        if (IsGmp) {
-            GetComputedRowMpz(computedRowsMpz, IsMult, 
-                              IsComb, IsRep, n, m, Rm, freqs, myReps);
-        }
-        
-        const SEXP sexpNumRows = GetCount(IsGmp, computedRowsMpz, computedRows);
-        const bool IsFull = IsComb || IsRep ? false : (m == n || m == static_cast<int>(freqs.size()));
-        
-        Rcpp::LogicalVector bVec = Rcpp::LogicalVector::create(IsFactor, IsComb,
-                                                               IsMult, IsRep, IsGmp, IsFull);
-        
-        Rcpp::List freqInfo = Rcpp::List::create(Rcpp::wrap(freqs),
-                                                 Rcpp::wrap(myReps));
-        
-        const bool applyFun = !Rf_isNull(stdFun) && !IsFactor;
-        
-        if (applyFun) {
-            if (!Rf_isFunction(stdFun))
-                Rcpp::stop("FUN must be a function!");
-        }
-        
-        return Rcpp::List::create(Rcpp::Named("Rv") = sexpVec,
-                                  Rcpp::Named("Rm") = m,
-                                  Rcpp::Named("nRows") = sexpNumRows,
-                                  Rcpp::Named("bVec") = bVec,
-                                  Rcpp::Named("freqInfo") = freqInfo,
-                                  Rcpp::Named("applyFun") = applyFun);
+    int n, m = 0, lenFreqs = 0;
+    VecType myType = VecType::Integer;
+    bool IsMult = false;
+    
+    std::vector<double> vNum;
+    std::vector<int> vInt, myReps, freqs;
+    bool IsRep = CleanConvert::convertLogical(RisRep, "repetition");
+    
+    SetType(myType, Rv);
+    SetValues(myType, vInt, vNum, n, Rv);
+    SetFreqsAndM(RFreqs, IsMult, myReps, IsRep, lenFreqs, freqs, Rm, n, m);
+    
+    const SEXP sexpVec = CopyRv(Rv, vInt, vNum, myType, IsFactor);
+    const double computedRows = GetComputedRows(IsMult, IsComb, IsRep, n,
+                                                m, Rm, lenFreqs, freqs, myReps);
+    
+    const bool IsGmp = (computedRows > sampleLimit);
+    
+    mpz_t computedRowsMpz;
+    mpz_init(computedRowsMpz);
+    
+    if (IsGmp) {
+        GetComputedRowMpz(computedRowsMpz, IsMult, 
+                          IsComb, IsRep, n, m, Rm, freqs, myReps);
     }
     
-    return Rcpp::List::create(1);
+    Rcpp::List freqInfo = Rcpp::List::create(Rcpp::wrap(freqs),
+                                             Rcpp::wrap(myReps));
+    
+    const SEXP sexpNumRows = GetCount(IsGmp, computedRowsMpz, computedRows);
+    
+    // Needed to determine if nextFullPerm or nextPerm will be called
+    const bool IsFullPerm = (IsComb || IsRep) ? false :
+                            (m == n || m == static_cast<int>(freqs.size()));
+    
+    Rcpp::LogicalVector bVec = Rcpp::LogicalVector::create(IsFactor, IsComb, IsMult,
+                                                           IsRep, IsGmp, IsFullPerm);
+    
+    const bool applyFun = !Rf_isNull(stdFun) && !IsFactor;
+    
+    if (applyFun) {
+        if (!Rf_isFunction(stdFun))
+            Rcpp::stop("FUN must be a function!");
+    }
+    
+    return Rcpp::List::create(Rcpp::Named("Rv") = sexpVec,
+                              Rcpp::Named("Rm") = m,
+                              Rcpp::Named("nRows") = sexpNumRows,
+                              Rcpp::Named("bVec") = bVec,
+                              Rcpp::Named("freqInfo") = freqInfo,
+                              Rcpp::Named("applyFun") = applyFun);
 }

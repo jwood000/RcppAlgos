@@ -270,6 +270,9 @@ BEGIN_RCPP
 END_RCPP
 }
 
+RcppExport SEXP _rcpp_module_boot_Combo();
+RcppExport SEXP _rcpp_module_boot_ComboFUN();
+
 static const R_CallMethodDef CallEntries[] = {
     {"_RcppAlgos_CheckReturn", (DL_FUNC) &_RcppAlgos_CheckReturn, 7},
     {"_RcppAlgos_CombinatoricsStndrd", (DL_FUNC) &_RcppAlgos_CombinatoricsStndrd, 11},
@@ -286,6 +289,8 @@ static const R_CallMethodDef CallEntries[] = {
     {"_RcppAlgos_PrimeCountRcpp", (DL_FUNC) &_RcppAlgos_PrimeCountRcpp, 3},
     {"_RcppAlgos_EratosthenesRcpp", (DL_FUNC) &_RcppAlgos_EratosthenesRcpp, 5},
     {"_RcppAlgos_SampleRcpp", (DL_FUNC) &_RcppAlgos_SampleRcpp, 16},
+    {"_rcpp_module_boot_Combo", (DL_FUNC) &_rcpp_module_boot_Combo, 0},
+    {"_rcpp_module_boot_ComboFUN", (DL_FUNC) &_rcpp_module_boot_ComboFUN, 0},
     {NULL, NULL, 0}
 };
 

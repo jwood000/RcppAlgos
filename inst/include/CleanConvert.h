@@ -9,7 +9,7 @@ constexpr double Significand53 = 9007199254740991.0;
 enum class VecType {
     Integer = 1,
     Numeric = 2,
-    Logical = 3, 
+    Logical = 3,
     Character = 4,
     Complex = 5,
     Raw = 6

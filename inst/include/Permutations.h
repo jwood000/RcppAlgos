@@ -4,7 +4,7 @@
 #include "NextStandard.h"
 #include "StandardCount.h"
 #include "Cpp14MakeUnique.h"
-#include <RcppThread.h>
+#include <RcppThread/ThreadPool.hpp>
 #include <cmath>
 
 constexpr int unrollSize = 8;
@@ -120,7 +120,10 @@ void PermuteParallel(typeMatrix &matRcpp, typeVector v, std::vector<int> z,
                      int n, int m, int nRows, int segment, int nThreads, bool IsRep) {
 
     const int first = (IsRep) ? 1 : 0;
-    auto indexMat = FromCpp14::make_unique<int[]>(segment * (m - first));
+    const std::size_t indexMatSize = static_cast<std::size_t>(segment)
+                                     * static_cast<std::size_t>(m - first);
+    
+    auto indexMat = FromCpp14::make_unique<int[]>(indexMatSize);
     PermuteLoadIndex(matRcpp, indexMat.get(), v, z, n, m, segment, IsRep);
     
     int ind = 1;
@@ -164,25 +167,28 @@ void PermuteSerialNoRep(typeMatrix &matRcpp, const typeVector &v, std::vector<in
     
     constexpr int first = 0;
     const int segment = NumPermsNoRep(n - 1, m - 1);
-    auto indexMat = FromCpp14::make_unique<int[]>(segment * (m - first));
-    PermuteLoadIndex(matRcpp, indexMat.get(), v, z, n, m, segment, false);
+    const std::size_t indexMatSize = static_cast<std::size_t>(segment)
+                                     * static_cast<std::size_t>(m - first);
     
+    auto indexMat = FromCpp14::make_unique<int[]>(indexMatSize);
+    PermuteLoadIndex(matRcpp, indexMat.get(), v, z, n, m, segment, false);
+
     int ind = 1;
     strt = segment;
     int last = strt + segment;
     int unrollRem = segment % unrollSize;
     typeVector vCopy(v);
-    
+
     for (; last <= nRows; strt += segment, last += segment, ++ind) {
         typeVector vTemp(1);
         vTemp[0] = vCopy[0];
         vCopy[0] = vCopy[ind];
         vCopy[ind] = vTemp[0];
 
-        PermuteWorker(matRcpp, indexMat.get(), vCopy, m, 
+        PermuteWorker(matRcpp, indexMat.get(), vCopy, m,
                       strt, last, ind, first, unrollRem, false);
     }
-    
+
     if (ind < static_cast<int>(v.size()) && strt < nRows) {
         const int skip = last - nRows;
         unrollRem = nRows % unrollSize;
@@ -205,7 +211,10 @@ void PermuteSerialRep(typeMatrix &matRcpp, const typeVector &v, std::vector<int>
     constexpr int first = 1;
     const int segment = std::pow(static_cast<double>(n),
                                  static_cast<double>(m - 1));
-    auto indexMat = FromCpp14::make_unique<int[]>(segment * (m - first));
+    const std::size_t indexMatSize = static_cast<std::size_t>(segment)
+                                     * static_cast<std::size_t>(m - first);
+    
+    auto indexMat = FromCpp14::make_unique<int[]>(indexMatSize);
     PermuteLoadIndex(matRcpp, indexMat.get(), v, z, n, m, segment, true);
     
     int ind = 1;

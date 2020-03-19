@@ -1,6 +1,6 @@
 #include "ComboGroupsUtils.h"
 #include "RMatrix.h"
-#include <RcppThread.h>
+#include <RcppThread/ThreadPool.hpp>
 
 template <typename typeRcpp>
 void FinalTouch(typeRcpp &GroupsMat, bool IsArray, int grpSize, int r, int n, 
