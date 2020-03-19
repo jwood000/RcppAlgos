@@ -26,12 +26,12 @@ URL: https://github.com/jwood000/RcppAlgos, https://gmplib.org/,
         https://github.com/kimwalisch/primecount, http://ridiculousfish.com/,
         http://sweet.ua.pt/tos/software/prime_sieve.html
 BugReports: https://github.com/jwood000/RcppAlgos/issues
-Imports: gmp, Rcpp
+Imports: gmp, Rcpp, methods
 LinkingTo: Rcpp, RcppThread
 Suggests: testthat, numbers, microbenchmark, knitr
 License: GPL (>=2)
 LazyData: TRUE
-SystemRequirements: C++11, gmp (>= 4.2.3)
+SystemRequirements: C++11, gmp (>= 4.2.3), A modern compiler (e.g. gcc (>= 4.9))
 VignetteBuilder: knitr
 NeedsCompilation: yes
 Author: Joseph Wood
