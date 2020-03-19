@@ -1,7 +1,5 @@
 useDynLib("RcppAlgos", .registration = TRUE)
-
-importFrom("Rcpp", evalCpp)
-import(gmp)
+import(gmp, Rcpp, methods)
 
 export(comboGeneral,
        permuteGeneral,
@@ -12,6 +10,8 @@ export(comboGeneral,
        comboGroups,
        comboGroupsCount,
        comboGroupsSample,
+       comboIter,
+       permuteIter,
        primeSieve,
        eulerPhiSieve,
        primeFactorizeSieve,
