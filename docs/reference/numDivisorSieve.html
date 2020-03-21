@@ -98,6 +98,9 @@
       <a href="../articles/CombinatorialSampling.html">Combinatorial Sampling</a>
     </li>
     <li>
+      <a href="../articles/CombinatoricsIterators.html">Combinatorial Iterators in RcppAlgos</a>
+    </li>
+    <li>
       <a href="../articles/ComputationalMathematics.html">Computational Mathematics Overview</a>
     </li>
     <li>
@@ -199,7 +202,7 @@
 <span class='co'>## Generate number of divisors for</span>
 <span class='co'>## every number less than a million</span>
 <span class='fu'><a href='https://rdrr.io/r/base/system.time.html'>system.time</a></span>(<span class='no'>mySigmas</span> <span class='kw'>&lt;-</span> <span class='fu'>numDivisorSieve</span>(<span class='fl'>10</span>^<span class='fl'>6</span>))</div><div class='output co'>#&gt;    user  system elapsed 
-#&gt;   0.016   0.000   0.015 </div><div class='input'>
+#&gt;   0.014   0.000   0.014 </div><div class='input'>
 <span class='co'>## Now use result in algorithm</span>
 <span class='kw'>for</span> (<span class='no'>s</span> <span class='kw'>in</span> <span class='no'>mySamp</span>) {
     <span class='no'>sSig</span> <span class='kw'>&lt;-</span> <span class='no'>mySigmas</span>[<span class='no'>s</span>]
@@ -209,14 +212,14 @@
 <span class='co'>## Generating number of divisors for every</span>
 <span class='co'>## number in a range is no problem</span>
 <span class='fu'><a href='https://rdrr.io/r/base/system.time.html'>system.time</a></span>(<span class='no'>sigmaRange</span> <span class='kw'>&lt;-</span> <span class='fu'>numDivisorSieve</span>(<span class='fl'>10</span>^<span class='fl'>13</span>, <span class='fl'>10</span>^<span class='fl'>13</span> + <span class='fl'>10</span>^<span class='fl'>6</span>))</div><div class='output co'>#&gt;    user  system elapsed 
-#&gt;   0.087   0.001   0.088 </div><div class='input'>
+#&gt;   0.095   0.001   0.096 </div><div class='input'>
 <span class='co'>## Returning a named vector</span>
 <span class='fu'>numDivisorSieve</span>(<span class='fl'>10</span>, <span class='fl'>20</span>, <span class='kw'>namedVector</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>)</div><div class='output co'>#&gt; 10 11 12 13 14 15 16 17 18 19 20 
 #&gt;  4  2  6  2  4  4  5  2  6  2  6 </div><div class='input'><span class='fu'>numDivisorSieve</span>(<span class='fl'>10</span>, <span class='kw'>namedVector</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>)</div><div class='output co'>#&gt;  1  2  3  4  5  6  7  8  9 10 
 #&gt;  1  2  2  3  2  4  2  4  3  4 </div><div class='input'>
 <span class='co'>## Using nThreads</span>
 <span class='fu'><a href='https://rdrr.io/r/base/system.time.html'>system.time</a></span>(<span class='fu'>numDivisorSieve</span>(<span class='fl'>1e5</span>, <span class='fl'>2e5</span>, <span class='kw'>nThreads</span> <span class='kw'>=</span> <span class='fl'>2</span>))</div><div class='output co'>#&gt;    user  system elapsed 
-#&gt;   0.001   0.000   0.000 </div></pre>
+#&gt;   0.001   0.000   0.001 </div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
     <h2>Contents</h2>

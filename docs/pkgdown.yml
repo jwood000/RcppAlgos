@@ -4,6 +4,7 @@ pkgdown_sha: ~
 articles:
   CombPermConstraints: CombPermConstraints.html
   CombinatorialSampling: CombinatorialSampling.html
+  CombinatoricsIterators: CombinatoricsIterators.html
   ComputationalMathematics: ComputationalMathematics.html
   GeneralCombinatorics: GeneralCombinatorics.html
   HighPerformanceBenchmarks: HighPerformanceBenchmarks.html

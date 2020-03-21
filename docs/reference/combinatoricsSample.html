@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Sample Combinations/Permutations — comboSample • RcppAlgos</title>
+<title>Sample Combinations and Permutations — comboSample • RcppAlgos</title>
 
 
 <!-- jquery -->
@@ -35,7 +35,7 @@
 
 
 
-<meta property="og:title" content="Sample Combinations/Permutations — comboSample" />
+<meta property="og:title" content="Sample Combinations and Permutations — comboSample" />
 <meta property="og:description" content="
 Generate a specific (lexicographically) or random sample of combinations/permutations.
 Produce results in parallel using the Parallel or nThreads arguments.
@@ -103,6 +103,9 @@ GMP support allows for exploration of combinations/permutations of vectors with 
       <a href="../articles/CombinatorialSampling.html">Combinatorial Sampling</a>
     </li>
     <li>
+      <a href="../articles/CombinatoricsIterators.html">Combinatorial Iterators in RcppAlgos</a>
+    </li>
+    <li>
       <a href="../articles/ComputationalMathematics.html">Computational Mathematics Overview</a>
     </li>
     <li>
@@ -140,7 +143,7 @@ GMP support allows for exploration of combinations/permutations of vectors with 
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Sample Combinations/Permutations</h1>
+    <h1>Sample Combinations and Permutations</h1>
     
     <div class="hidden name"><code>combinatoricsSample.Rd</code></div>
     </div>
@@ -171,7 +174,7 @@ GMP support allows for exploration of combinations/permutations of vectors with 
     </tr>
     <tr>
       <th>m</th>
-      <td><p>Number of elements to choose. If <code>repetition = TRUE</code>, <code>m</code> can exceed the length of <code>v</code>. The default is <code>NULL</code>.</p></td>
+      <td><p>Number of elements to choose.  If <code>repetition = TRUE</code> or <code>freqs</code> is utilized, <code>m</code> can exceed the length of <code>v</code>. If <code>m = NULL</code>, the length will default to <code><a href='https://rdrr.io/r/base/length.html'>length(v)</a></code> or <code><a href='https://rdrr.io/r/base/sum.html'>sum(freqs)</a></code>.</p></td>
     </tr>
     <tr>
       <th>repetition</th>
@@ -216,7 +219,7 @@ GMP support allows for exploration of combinations/permutations of vectors with 
     <p>These algorithms rely on efficiently generating the \(n^{th}\) lexicographical combination/permutation (sometimes called the <a href='https://rosettacode.org/wiki/Permutations/Rank_of_a_permutation'>rank</a>).</p>
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
-    <p>In general, a matrix is returned with each row containing a vector of length \(m\). If <code>m</code> isn't supplied and <code>freqs</code> is given, a matrix is returned with each row containing a vector of length <code><a href='https://rdrr.io/r/base/sum.html'>sum(freqs)</a></code>. If <code>FUN</code> is utilized, a list is returned.</p>
+    <p>In general, a matrix is returned with each row containing a vector of length \(m\). If <code>FUN</code> is utilized, a list is returned.</p>
     <h2 class="hasAnchor" id="references"><a class="anchor" href="#references"></a>References</h2>
 
     <p><a href='https://en.wikipedia.org/wiki/Lexicographical_order'>Lexicographical order</a></p>

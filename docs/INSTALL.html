@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Number of Partitions of a Vector into Groups of Equal Size — comboGroupsCount • RcppAlgos</title>
+<title>NA • RcppAlgos</title>
 
 
 <!-- jquery -->
@@ -29,15 +29,13 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.9.4/jQuery.headroom.min.js" integrity="sha256-ZX/yNShbjqsohH1k95liqY9Gd8uOiE1S4vZc+9KQ1K4=" crossorigin="anonymous"></script>
 
 <!-- pkgdown -->
-<link href="../pkgdown.css" rel="stylesheet">
-<script src="../pkgdown.js"></script>
+<link href="pkgdown.css" rel="stylesheet">
+<script src="pkgdown.js"></script>
 
 
 
 
-<meta property="og:title" content="Number of Partitions of a Vector into Groups of Equal Size — comboGroupsCount" />
-<meta property="og:description" content="Calculate the number of partitions of a vector into groups of equal size. See the related integer sequences A025035-A025042 at OEIS (E.g. A025036 for Number of partitions of  1, 2, ..., 4n  into sets of size 4.)" />
-<meta name="twitter:card" content="summary" />
+<meta property="og:title" content="NA" />
 
 
 
@@ -56,7 +54,7 @@
   </head>
 
   <body>
-    <div class="container template-reference-topic">
+    <div class="container template-title-body">
       <header>
       <div class="navbar navbar-default navbar-fixed-top" role="navigation">
   <div class="container">
@@ -68,7 +66,7 @@
         <span class="icon-bar"></span>
       </button>
       <span class="navbar-brand">
-        <a class="navbar-link" href="../index.html">RcppAlgos</a>
+        <a class="navbar-link" href="index.html">RcppAlgos</a>
         <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">2.4.0</span>
       </span>
     </div>
@@ -76,13 +74,13 @@
     <div id="navbar" class="navbar-collapse collapse">
       <ul class="nav navbar-nav">
         <li>
-  <a href="../index.html">
+  <a href="index.html">
     <span class="fas fa fas fa-home fa-lg"></span>
      
   </a>
 </li>
 <li>
-  <a href="../reference/index.html">Reference</a>
+  <a href="reference/index.html">Reference</a>
 </li>
 <li class="dropdown">
   <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
@@ -92,30 +90,30 @@
   </a>
   <ul class="dropdown-menu" role="menu">
     <li>
-      <a href="../articles/CombPermConstraints.html">Constraints, Integer Partitions, and Compositions</a>
+      <a href="articles/CombPermConstraints.html">Constraints, Integer Partitions, and Compositions</a>
     </li>
     <li>
-      <a href="../articles/CombinatorialSampling.html">Combinatorial Sampling</a>
+      <a href="articles/CombinatorialSampling.html">Combinatorial Sampling</a>
     </li>
     <li>
-      <a href="../articles/CombinatoricsIterators.html">Combinatorial Iterators in RcppAlgos</a>
+      <a href="articles/CombinatoricsIterators.html">Combinatorial Iterators in RcppAlgos</a>
     </li>
     <li>
-      <a href="../articles/ComputationalMathematics.html">Computational Mathematics Overview</a>
+      <a href="articles/ComputationalMathematics.html">Computational Mathematics Overview</a>
     </li>
     <li>
-      <a href="../articles/GeneralCombinatorics.html">Combination and Permutation Basics</a>
+      <a href="articles/GeneralCombinatorics.html">Combination and Permutation Basics</a>
     </li>
     <li>
-      <a href="../articles/HighPerformanceBenchmarks.html">High Performance Benchmarks</a>
+      <a href="articles/HighPerformanceBenchmarks.html">High Performance Benchmarks</a>
     </li>
     <li>
-      <a href="../articles/SubsetSum.html">Attacking Problems Related to the Subset Sum Problem</a>
+      <a href="articles/SubsetSum.html">Attacking Problems Related to the Subset Sum Problem</a>
     </li>
   </ul>
 </li>
 <li>
-  <a href="../news/index.html">Changelog</a>
+  <a href="news/index.html">Changelog</a>
 </li>
       </ul>
       <ul class="nav navbar-nav navbar-right">
@@ -136,59 +134,24 @@
       </header>
 
 <div class="row">
-  <div class="col-md-9 contents">
+  <div class="contents col-md-9">
     <div class="page-header">
-    <h1>Number of Partitions of a Vector into Groups of Equal Size</h1>
-    
-    <div class="hidden name"><code>comboGroupsCount.Rd</code></div>
+      <h1>NA</h1>
     </div>
 
-    <div class="ref-description">
-    <p>Calculate the number of partitions of a vector into groups of equal size. See the related integer sequences A025035-A025042 at <a href='https://oeis.org'>OEIS</a> (E.g. <a href='https://oeis.org/A025036'>A025036</a> for Number of partitions of  1, 2, ..., 4n  into sets of size 4.)</p>
-    </div>
-
-    <pre class="usage"><span class='fu'>comboGroupsCount</span>(<span class='no'>v</span>, <span class='no'>numGroups</span>)</pre>
-
-    <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
-    <table class="ref-arguments">
-    <colgroup><col class="name" /><col class="desc" /></colgroup>
-    <tr>
-      <th>v</th>
-      <td><p>Source vector. If <code>v</code> is an integer (including nonpositive integers), it will be converted to the sequence <code>1:v</code>. All atomic types are supported (See <code><a href='https://rdrr.io/r/base/is.recursive.html'>?is.atomic</a></code>).</p></td>
-    </tr>
-    <tr>
-      <th>numGroups</th>
-      <td><p>An Integer. The number of groups that the vector will be partitioned into. Must divide the length of v (if v is a vector) or v (if v is a scalar).</p></td>
-    </tr>
-    </table>
-
-    <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
-
-    <p>A numerical value representing the total number of partitions of groups of equal size.</p>
-    <h2 class="hasAnchor" id="references"><a class="anchor" href="#references"></a>References</h2>
-
-    <p><a href='https://oeis.org/A025036'>OEIS Integer Sequence A025036</a></p>
-    <h2 class="hasAnchor" id="note"><a class="anchor" href="#note"></a>Note</h2>
-
-    <p>When the number of results exceeds \(2^{53} - 1\), a number of class <code>bigz</code> is returned.</p>
-
-    <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='fu'>comboGroupsCount</span>(<span class='fl'>16</span>, <span class='fl'>4</span>)</div><div class='output co'>#&gt; [1] 2627625</div></pre>
-  </div>
-  <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
-    <h2>Contents</h2>
-    <ul class="nav nav-pills nav-stacked">
-      <li><a href="#arguments">Arguments</a></li>
-      <li><a href="#value">Value</a></li>
-      <li><a href="#references">References</a></li>
-      <li><a href="#note">Note</a></li>
-      <li><a href="#examples">Examples</a></li>
-    </ul>
-
-    <h2>Author</h2>
-    <p>Joseph Wood</p>
-  </div>
+<div id="installation-information" class="section level2">
+<h2 class="hasAnchor">
+<a href="#installation-information" class="anchor"></a>Installation Information</h2>
+<ul>
+<li><p>A modern compiler is required. Credit to Henrik Bengtsson for reporting this as well as testing and confirming. He found that compilation failed with gcc 4.8.5 whereas compilation was successful for gcc 5.3.1.</p></li>
+<li><p>For more information, see: <a href="https://github.com/jwood000/RcppAlgos/issues/13" class="uri">https://github.com/jwood000/RcppAlgos/issues/13</a>; <a href="https://stackoverflow.com/a/36970437/4408538" class="uri">https://stackoverflow.com/a/36970437/4408538</a>; <a href="https://stat.ethz.ch/pipermail/r-package-devel/2020q1/005066.html" class="uri">https://stat.ethz.ch/pipermail/r-package-devel/2020q1/005066.html</a></p></li>
+</ul>
 </div>
+
+  </div>
+
+</div>
+
 
 
       <footer>
