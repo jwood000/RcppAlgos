@@ -19,6 +19,7 @@ It should be noted that this document only covers common problems. For more info
 * [Combinatorial Sampling](<https://jwood000.github.io/RcppAlgos/articles/CombinatorialSampling.html>)
 * [Constraints, Integer Partitions, and Compositions](<https://jwood000.github.io/RcppAlgos/articles/CombPermConstraints.html>)
 * [Attacking Problems Related to the Subset Sum Problem](<https://jwood000.github.io/RcppAlgos/articles/SubsetSum.html>)
+* [Combinatorial Iterators in RcppAlgos](<https://jwood000.github.io/RcppAlgos/articles/CombinatoricsIterators.html>)
 
 For much of the output below, we will be using the following function obtained here [combining head and tail methods in R
 ](https://stackoverflow.com/a/11601162/4408538) (credit to user @flodel)
