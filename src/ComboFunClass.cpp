@@ -445,19 +445,19 @@ RCPP_MODULE(ComboFUN) {
 
         .constructor<SEXP, int, SEXP, Rcpp::LogicalVector,
                      std::vector<std::vector<int>>, Rcpp::List>("constructor")
-
-        .method("nextIter", &ComboFUN::nextComb)
-        .method("nextIterNum", &ComboFUN::nextNumCombs)
-        .method("nextRemaining", &ComboFUN::nextGather)
-        .method("currIter", &ComboFUN::currComb)
-        .method("prevIter", &ComboFUN::prevComb)
-        .method("prevIterNum", &ComboFUN::prevNumCombs)
-        .method("prevRemaining", &ComboFUN::prevGather)
-        .method("startOver", &ComboFUN::startOver)
-        .method("sourceVector", &ComboFUN::sourceVector)
-        .method("summary", &ComboFUN::summary)
-        .method("front", &ComboFUN::front)
-        .method("back", &ComboFUN::back)
-        .method("[[", &ComboFUN::combIndex)
+        
+        .method("nextIter", &ComboFUN::nextComb, "Get the result of FUN applied to the next combination/permutation")
+        .method("nextNIter", &ComboFUN::nextNumCombs, "Get the result of FUN applied to the next n combinations/permutations")
+        .method("nextRemaining", &ComboFUN::nextGather, "Get the result of FUN applied to all of the remaining combinations/permutations")
+        .method("currIter", &ComboFUN::currComb, "Get the result of FUN applied to the current combination/permutation")
+        .method("prevIter", &ComboFUN::prevComb, "Get the result of FUN applied to the previous combination/permutation")
+        .method("prevNIter", &ComboFUN::prevNumCombs, "Get the result of FUN applied to the previous n combinations/permutations")
+        .method("prevRemaining", &ComboFUN::prevGather, "Get the result of FUN applied to all of the previous combinations/permutations")
+        .method("startOver", &ComboFUN::startOver, "Resets the iterator")
+        .method("sourceVector", &ComboFUN::sourceVector, "View the source vector")
+        .method("summary", &ComboFUN::summary, "See a list of summary information about the iterator")
+        .method("front", &ComboFUN::front, "Get the result of FUN applied to the first lexicographical combination/permutation")
+        .method("back", &ComboFUN::back, "Get the result of FUN applied to the last lexicographical combination/permutation")
+        .method("[[", &ComboFUN::combIndex, "Random access method. Pass a single index or vector of indices")
         ;
 }
