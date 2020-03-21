@@ -31,7 +31,7 @@ LinkingTo: Rcpp, RcppThread
 Suggests: testthat, numbers, microbenchmark, knitr
 License: GPL (>=2)
 LazyData: TRUE
-SystemRequirements: C++11, gmp (>= 4.2.3), A modern compiler (e.g. gcc (>= 4.9))
+SystemRequirements: C++11, gmp (>= 4.2.3)
 VignetteBuilder: knitr
 NeedsCompilation: yes
 Author: Joseph Wood
