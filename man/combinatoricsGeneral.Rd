@@ -6,7 +6,7 @@ Generate Combinations and Permutations of a Vector with/without Constraints
 }
 \description{
     \itemize{
-        \item Generate combinations or permutations of a vector, chosen \eqn{m} at a time, with or without constraints.
+        \item Generate combinations or permutations of a vector with or without constraints.
         \item Produce results in parallel using the \code{Parallel} or \code{nThreads} arguments. You can also apply each of the five compiled functions given by the argument \code{constraintFun} in parallel.
         \item Alternatively, the arguments \code{lower} and \code{upper} make it possible to generate combinations/permutations in chunks allowing for parallelization via the parallel package. This is convenient when you want to apply a custom function to the output in parallel.
         \item Attack integer partition and general subset sum problems.

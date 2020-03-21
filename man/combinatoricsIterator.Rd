@@ -6,7 +6,7 @@ Combination and Permutation Iterator
 }
 \description{
     \itemize{
-        \item Returns an iterator for iterating over combinations or permutations of a vector, chosen \eqn{m} at a time.
+        \item Returns an iterator for iterating over combinations or permutations of a vector.
         \item Supports random access via the \code{[[} method.
         \item GMP support allows for exploration of combinations/permutations of vectors with many elements.
         \item The output is in lexicographical order for the \code{next} methods and reverse lexicographical order for the \code{prev} methods.
@@ -40,11 +40,11 @@ A vector of length \emph{m} is returned if \code{nextIter} or \code{prevIter} is
 Once you initialize a new iterator, the following methods are available:
   \describe{
     \item{\code{nextIter}}{Retrieve the \bold{next} lexicographical result}
-    \item{\code{nextIterNum}}{Pass an integer \emph{n} to retrieve the \bold{next} \emph{n} lexicographical results}
+    \item{\code{nextNIter}}{Pass an integer \emph{n} to retrieve the \bold{next} \emph{n} lexicographical results}
     \item{\code{nextRemaining}}{Retrieve all remaining lexicographical results}
     \item{\code{currIter}}{Returns the current iteration}
     \item{\code{prevIter}}{Retrieve the \bold{previous} lexicographical result (the \bold{next} \emph{reverse} lexicographical result)}
-    \item{\code{prevIterNum}}{Pass an integer \emph{n} to retrieve the \bold{previous} \emph{n} lexicographical results (the \bold{next} \emph{n} \emph{reverse} lexicographical results)}
+    \item{\code{prevNIter}}{Pass an integer \emph{n} to retrieve the \bold{previous} \emph{n} lexicographical results (the \bold{next} \emph{n} \emph{reverse} lexicographical results)}
     \item{\code{prevRemaining}}{Retrieve all remaining \emph{reverse} lexicographical results}
     \item{\code{startOver}}{Resets the iterator}
     \item{\code{sourceVector}}{View the source vector}
@@ -76,11 +76,11 @@ Joseph Wood
 \examples{
 a = permuteIter(unique(state.region))
 a$nextIter()
-a$nextIterNum(3)
+a$nextNIter(3)
 a$front()
 a$nextRemaining()
 a$prevIter()
-a$prevIterNum(15)
+a$prevNIter(15)
 a$summary()
 a$back()
 a$prevRemaining()
