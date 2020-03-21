@@ -24,6 +24,10 @@ The \strong{RcppAlgos} package attacks age-old problems in combinatorics and com
                     }
                 \item{Easily explore combinations/permutations that would otherwise be inaccessible due to time of execution/memory constraints:
                     \itemize{
+                        \item{\preformatted{iter = comboIter(10000, 100)
+bigSamp = gmp::urand.bigz(3, gmp::log2.bigz(comboCount(10000, 100)))
+iter[[bigSamp]]
+                        }}
                         \item{\code{comboGeneral(150, 5, constraintFun = "sum", Parallel = TRUE)}}
                         \item{\preformatted{parallel::mclapply(seq(...), function(x) {
             temp = permuteGeneral(15, 10, lower = x, upper = y)

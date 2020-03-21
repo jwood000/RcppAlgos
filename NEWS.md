@@ -2,7 +2,18 @@
 
 ## New Features:
 
-* Now able to interrupt general constraint problems.
+* Added `comboIter` and `permuteIter`. These functions return iterators for iterating over combinations and permutations. They have a similar interface to `comboGeneral` and `permuteGeneral` and currently only work with standard combinations and permutations. They do not yet work with constraints (This will be the focus of the next release).
+
+* Added "High Performance Benchmarks" and "Combinatorial Iterators in RcppAlgos" vignettes
+
+## Enhancements:
+
+* Now able to interrupt general constraint problems (See [Interrupt Execution with Rcpp::checkUserInterrupt](<https://jwood000.github.io/RcppAlgos/articles/CombPermConstraints.html#safely-interrupt-execution-with-rcppcheckuserinterrupt>))
+
+## Bug Fixes:
+* In 2.3.5 and 2.3.6, we mistakingly allowed a `constraintFun` to be applied to a logical vector which was crashing R. We have corrected this in 2.4.0.
+
+* Changed the data type for sizing the index matrix in `permuteGeneral`. Originally, we were using `int` and when the output was large enough, it was causing an integer overflow thus causing the index matrix to be unproperly sized. We have sinced changed the data type to the recommended `std::size_t` (See [Is there a max array length limit in C++?](<https://stackoverflow.com/q/216259/4408538>))
 
 # RcppAlgos 2.3.6
 
