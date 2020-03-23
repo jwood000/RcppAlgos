@@ -13,8 +13,11 @@ addons:
     packages:
       - libgmp3-dev
       
+r_packages:
+  - covr
+      
 after_success:
-    - Rscript -e "covr::codecov(line_exclusions = c('inst/include/libdivide.h', 'inst/include/CleanConvert.h', 'R/zzz.R'))"
+  - Rscript -e "covr::codecov(line_exclusions = c('inst/include/libdivide.h', 'inst/include/CleanConvert.h', 'R/zzz.R'))"
     
 repos:
   CRAN: http://cran.rstudio.com
