@@ -1,3 +1,8 @@
+# RcppAlgos 2.4.1
+
+## Bug Fixes:
+* Removed broken URL in NEWS.Rd
+
 # RcppAlgos 2.4.0
 
 ## New Features:

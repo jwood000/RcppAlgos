@@ -1,7 +1,16 @@
 \name{NEWS}
 \title{News for Package \pkg{RcppAlgos}}
 
-\section{Changes in RcppAlgos version 2.4.0 (Release date: 2020-03-22)}{
+\section{Changes in RcppAlgos version 2.4.1 (Release date: 2020-03-23)}{
+    \itemize{
+        \item Bug Fixes:
+        \itemize{
+            \item Removed broken URL in NEWS.Rd
+        }
+    }
+}
+
+\section{Changes in RcppAlgos version 2.4.0 (Release date: Never Released)}{
     \itemize{
         \item New Features:
         \itemize{
@@ -14,8 +23,8 @@
         }
         \item Bug Fixes:
         \itemize{
-            \item In 2.3.5 and 2.3.6, we mistakingly allowed a \code{constraintFun} to be applied to a logical vector which was crashing R. We have corrected this in 2.4.0.
-            \item Changed the data type for sizing the index matrix in \code{permuteGeneral}. Originally, we were using \code{int} and when the output was large enough, it was causing an integer overflow thus causing the index matrix to be unproperly sized. We have sinced changed the data type to the recommended \code{std::size_t} (See \href{Is there a max array length limit in C++?}{https://stackoverflow.com/q/216259/4408538})
+            \item In 2.3.5 and 2.3.6, we mistakingly allowed a \code{constraintFun} to be applied to a logical vector which was crashing R. We have corrected this in 2.4.0+.
+            \item Changed the data type for sizing the index matrix in \code{permuteGeneral}. Originally, we were using \code{int} and when the output was large enough, it was causing an integer overflow thus causing the index matrix to be unproperly sized. We have sinced changed the data type to the recommended \code{std::size_t}.
         }
     }
 }

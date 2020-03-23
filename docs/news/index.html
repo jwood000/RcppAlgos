@@ -67,7 +67,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">RcppAlgos</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">2.4.0</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">2.4.1</span>
       </span>
     </div>
 
@@ -140,6 +140,18 @@
       <small>Source: <a href='https://github.com/jwood000/RcppAlgos/blob/master/NEWS.md'><code>NEWS.md</code></a></small>
     </div>
 
+    <div id="rcppalgos-241" class="section level1">
+<h1 class="page-header">
+<a href="#rcppalgos-241" class="anchor"></a>RcppAlgos 2.4.1<small> Unreleased </small>
+</h1>
+<div id="bug-fixes" class="section level2">
+<h2 class="hasAnchor">
+<a href="#bug-fixes" class="anchor"></a>Bug Fixes:</h2>
+<ul>
+<li>Removed broken URL in NEWS.Rd</li>
+</ul>
+</div>
+</div>
     <div id="rcppalgos-240" class="section level1">
 <h1 class="page-header">
 <a href="#rcppalgos-240" class="anchor"></a>RcppAlgos 2.4.0<small> Unreleased </small>
@@ -159,9 +171,9 @@
 <li>Now able to interrupt general constraint problems (See <a href="https://jwood000.github.io/RcppAlgos/articles/CombPermConstraints.html#safely-interrupt-execution-with-rcppcheckuserinterrupt">Interrupt Execution with Rcpp::checkUserInterrupt</a>)</li>
 </ul>
 </div>
-<div id="bug-fixes" class="section level2">
+<div id="bug-fixes-1" class="section level2">
 <h2 class="hasAnchor">
-<a href="#bug-fixes" class="anchor"></a>Bug Fixes:</h2>
+<a href="#bug-fixes-1" class="anchor"></a>Bug Fixes:</h2>
 <ul>
 <li><p>In 2.3.5 and 2.3.6, we mistakingly allowed a <code>constraintFun</code> to be applied to a logical vector which was crashing R. We have corrected this in 2.4.0.</p></li>
 <li><p>Changed the data type for sizing the index matrix in <code>permuteGeneral</code>. Originally, we were using <code>int</code> and when the output was large enough, it was causing an integer overflow thus causing the index matrix to be unproperly sized. We have sinced changed the data type to the recommended <code>std::size_t</code> (See <a href="https://stackoverflow.com/q/216259/4408538">Is there a max array length limit in C++?</a>)</p></li>
@@ -172,9 +184,9 @@
 <h1 class="page-header">
 <a href="#rcppalgos-236" class="anchor"></a>RcppAlgos 2.3.6<small> 2020-01-29 </small>
 </h1>
-<div id="bug-fixes-1" class="section level2">
+<div id="bug-fixes-2" class="section level2">
 <h2 class="hasAnchor">
-<a href="#bug-fixes-1" class="anchor"></a>Bug Fixes:</h2>
+<a href="#bug-fixes-2" class="anchor"></a>Bug Fixes:</h2>
 <ul>
 <li>Fixed bug associated with integer vectors, multisets, and constraints. See <a href="https://github.com/jwood000/RcppAlgos/issues/12#issue-467908452">Issue <a href='https://github.com/jwood000/RcppAlgos/issues/12'>#12</a></a> for more information.</li>
 </ul>
@@ -205,9 +217,9 @@
 <li><p>Added loop unrolling to prime sieve algorithm for improved efficiency.</p></li>
 </ul>
 </div>
-<div id="bug-fixes-2" class="section level2">
+<div id="bug-fixes-3" class="section level2">
 <h2 class="hasAnchor">
-<a href="#bug-fixes-2" class="anchor"></a>Bug Fixes:</h2>
+<a href="#bug-fixes-3" class="anchor"></a>Bug Fixes:</h2>
 <ul>
 <li><p>Corrected checks for total number of partitions and assignment of number of rows when <code>upper</code> is applied in <code>combo/permuteGeneral</code>. See <a href="https://github.com/jwood000/RcppAlgos/issues/9#issue-467908452Issue%20<a href='https://github.com/jwood000/RcppAlgos/issues/9'>#9</a>">Issue <a href='https://github.com/jwood000/RcppAlgos/issues/9'>#9</a></a> for more information.</p></li>
 <li><p><code>permuteGeneral</code> no longer alters source vector. See <a href="https://github.com/jwood000/RcppAlgos/issues/11">Issue <a href='https://github.com/jwood000/RcppAlgos/issues/11'>#11</a></a> for more information.</p></li>
@@ -453,6 +465,7 @@
     <div id="tocnav">
       <h2>Contents</h2>
       <ul class="nav nav-pills nav-stacked">
+        <li><a href="#rcppalgos-241">2.4.1</a></li>
         <li><a href="#rcppalgos-240">2.4.0</a></li>
         <li><a href="#rcppalgos-236">2.3.6</a></li>
         <li><a href="#rcppalgos-235">2.3.5</a></li>
