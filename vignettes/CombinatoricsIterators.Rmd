@@ -1,0 +1,479 @@
+---
+title: "Combinatorial Iterators in RcppAlgos"
+author: "Joseph Wood"
+date: "3/19/2019"
+output:
+  rmarkdown::html_vignette:
+    toc: true
+    number_sections: false
+vignette: >
+  %\VignetteIndexEntry{Combinatorial Iterators in RcppAlgos}
+  %\VignetteEngine{knitr::rmarkdown}
+  \usepackage[utf8]{inputenc}
+---
+
+This document covers working with combinatorial iterators in `RcppAlgos`. Combinatorial iterators in `RcppAlgos` are memory efficient like traditional iterator objects. They allow traversal of combinations/permutations one by one without the necessity for storing all results in memory.
+
+Unlike traditional combinatorial iterators, the iterators in `RcppAlgos` offers random access via the `[[` operator. This means, we can access the _n<sup>th</sup>_ [lexicographical order](<https://en.wikipedia.org/wiki/Lexicographical_order>) result on demand without having to first iterate over the previous _n - 1_ results.
+
+***
+
+## Iterating over Combinations and Permutations
+
+In order to iterate, we must initialize an iterator via `comboIter` or `permuteIter`. The interface is very similar to `comboGeneral` and `permuteGeneral`.
+
+```r
+library(RcppAlgos)
+
+## Initialize the iterator
+a = comboIter(5, 3)
+
+## Get the first combination
+a$nextIter()
+[1] 1 2 3
+
+## And the next
+a$nextIter()
+[1] 1 2 4
+
+## Set the current iterator to a variable
+iter = a$currIter()
+i = 1
+
+## Iterate until there are no more
+while (!isFALSE(iter)) {
+    cat(i, " ", iter, "\n")
+    iter = a$nextIter()
+    i = i + 1
+}
+1   1 2 4 
+2   1 2 5 
+3   1 3 4 
+4   1 3 5 
+5   1 4 5 
+6   2 3 4 
+7   2 3 5 
+8   2 4 5 
+9   3 4 5 
+No more results. To see the last result, use the prevIter method(s)
+
+## See the output of comboGeneral for comparison
+comboGeneral(5, 3, lower = 2)
+      [,1] [,2] [,3]
+ [1,]    1    2    4
+ [2,]    1    2    5
+ [3,]    1    3    4
+ [4,]    1    3    5
+ [5,]    1    4    5
+ [6,]    2    3    4
+ [7,]    2    3    5
+ [8,]    2    4    5
+ [9,]    3    4    5
+
+## Call the summary method to see information about our iterator
+a$summary()
+$description
+[1] "Combinations of 5 choose 3"
+
+$currentIndex
+[1] 11
+
+$totalResults
+[1] 10
+
+$totalRemaining
+[1] -1
+```
+
+## Bidirectional Iterators
+
+The standard combinatorial iterators in `RcppAlgos` are bidirectional iterators. This means that not only can we iterate in a forward manner (i.e. lexicographically), but we can also iterate backwards (i.e. [Reverse Lexicographical Order](<https://oeis.org/wiki/Orderings#Reverse_lexicographic_order>)) via the `prevIter` method(s).
+
+```r
+## Using the same iterable from the previous section
+a$currIter()
+No more results. To see the last result, use the prevIter method(s)
+
+[1] FALSE
+
+## As the comment says, we call the prevIter method to see the last result
+a$prevIter()
+[1] 3 4 5
+
+## Get the previous result
+a$prevIter()
+[1] 2 4 5
+
+## As in the previous example, we set the current iterator to a variable
+iter = a$currIter()
+
+## Defined above
+print(i)
+[1] 10
+
+## Iterate until we are at the very beginning. Note that the
+## output is exactly the same as above, but in reverse order
+while (!isFALSE(iter)) {
+    i = i - 1
+    cat(i, " ", iter, "\n")
+    iter = a$prevIter()
+}
+9   2 4 5 
+8   2 3 5 
+7   2 3 4 
+6   1 4 5 
+5   1 3 5 
+4   1 3 4 
+3   1 2 5 
+2   1 2 4 
+1   1 2 3 
+Iterator Initialized. To see the first result, use the nextIter method(s)
+
+## Call the summary method to see information about our iterator
+a$summary()
+$description
+[1] "Combinations of 5 choose 3"
+
+$currentIndex
+[1] 0
+
+$totalResults
+[1] 10
+
+$totalRemaining
+[1] 10
+```
+
+## Retrieving More than One Result at a Time
+
+There are four methods which allow for obtaining more than one result at a time: `nextNIter`, `prevNIter`, `nextRemaining`, and `prevRemaining`.
+
+```r
+## Reset the iterator
+a$startOver
+
+## Get the next 4 combinations
+a$nextNIter(4)
+     [,1] [,2] [,3]
+[1,]    1    2    3
+[2,]    1    2    4
+[3,]    1    2    5
+[4,]    1    3    4
+
+## Get the summary. Note that the index has been updated
+a$summary()
+$description
+[1] "Combinations of 5 choose 3"
+
+$currentIndex
+[1] 4
+
+$totalResults
+[1] 10
+
+$totalRemaining
+[1] 6
+
+## View the current combination
+a$currIter()
+[1] 1 3 4
+
+## Get the remaining combinations with nextRemaining
+a$nextRemaining()
+     [,1] [,2] [,3]
+[1,]    1    3    5
+[2,]    1    4    5
+[3,]    2    3    4
+[4,]    2    3    5
+[5,]    2    4    5
+[6,]    3    4    5
+
+
+a$summary()
+$description
+[1] "Combinations of 5 choose 3"
+
+$currentIndex
+[1] 11
+
+$totalResults
+[1] 10
+
+$totalRemaining
+[1] -1
+```
+
+Now, we look at the opposite direction.
+
+```r
+## Get the previous 4 combinations
+a$prevNIter(4)
+     [,1] [,2] [,3]
+[1,]    3    4    5
+[2,]    2    4    5
+[3,]    2    3    5
+[4,]    2    3    4
+
+## Get the summary. Note that the index has been updated
+a$summary()
+$description
+[1] "Combinations of 5 choose 3"
+
+$currentIndex
+[1] 7
+
+$totalResults
+[1] 10
+
+$totalRemaining
+[1] 3
+
+## View the current combination
+a$currIter()
+[1] 2 3 4
+
+## Get the remaining previous combinations with prevRemaining
+a$prevRemaining()
+     [,1] [,2] [,3]
+[1,]    1    4    5
+[2,]    1    3    5
+[3,]    1    3    4
+[4,]    1    2    5
+[5,]    1    2    4
+[6,]    1    2    3
+
+
+a$summary()
+$description
+[1] "Combinations of 5 choose 3"
+
+$currentIndex
+[1] 0
+
+$totalResults
+[1] 10
+
+$totalRemaining
+[1] 10
+```
+
+## Random Access Iterator
+
+For standard combinatorial iterators in `RcppAlgos`, we can jump to the _n<sup>th</sup>_ combination/permutation without the need for iterating over the first _n - 1_ results.
+
+```r
+## Reset the iterator
+a$startOver()
+
+## How many total combinations do we have?
+a$summary()$totalResults
+[1] 10
+
+## Let's get the 3rd combination
+a[[3]]
+[1] 1 2 5
+
+## See the summary. Note that the index has been updated
+a$summary()
+$description
+[1] "Combinations of 5 choose 3"
+
+$currentIndex
+[1] 3
+
+$totalResults
+[1] 10
+
+$totalRemaining
+[1] 7
+
+## Let's see the 9th combination
+a[[9]]
+[1] 2 4 5
+
+## What about the first and last combination?
+a$front()
+[1] 1 2 3
+
+a$back()
+[1] 3 4 5
+
+## Again the index has been updated
+a$summary()
+$description
+[1] "Combinations of 5 choose 3"
+
+$currentIndex
+[1] 10
+
+$totalResults
+[1] 10
+
+$totalRemaining
+[1] 0
+
+a$currIter()
+[1] 3 4 5
+```
+
+We can also easily return a random sample of combinations with the `[[` operator by passing a vector of indices. In these cases, it should be noted that the current index will not be updated.
+
+```r
+## Set the current index to the second combination
+a[[2]]
+[1] 1 2 4
+
+
+a$summary()
+$description
+[1] "Combinations of 5 choose 3"
+
+$currentIndex
+[1] 2
+
+$totalResults
+[1] 10
+
+$totalRemaining
+[1] 8
+
+
+set.seed(121)
+samp = sample(a$summary()$totalResults, 4)
+
+samp
+[1]  4  7 10  1
+
+a[[samp]]
+     [,1] [,2] [,3]
+[1,]    1    3    4
+[2,]    2    3    4
+[3,]    3    4    5
+[4,]    1    2    3
+
+
+## Note that the current index remains unchanged
+a$summary()
+$description
+[1] "Combinations of 5 choose 3"
+
+$currentIndex
+[1] 2
+
+$totalResults
+[1] 10
+
+$totalRemaining
+[1] 8
+```
+
+## User Defined Functions
+
+Just as with `comboGeneral` and `permuteGeneral`, we can pass a user defined function to `comboIter` and `permuteIter`.
+
+```r
+## Initialize the iterator
+b = permuteIter(LETTERS[1:4], 3, FUN = function(p) paste(p, collapse = ""))
+
+
+b$nextIter()
+[1] "ABC"
+
+
+b$nextNIter(5)
+[[1]]
+[1] "ABD"
+
+[[2]]
+[1] "ACB"
+
+[[3]]
+[1] "ACD"
+
+[[4]]
+[1] "ADB"
+
+[[5]]
+[1] "ADC"
+
+
+b$back()
+[1] "DCB"
+
+
+b$summary()
+$description
+[1] "Permutations of 4 choose 3"
+
+$currentIndex
+[1] 24
+
+$totalResults
+[1] 24
+
+$totalRemaining
+[1] 0
+
+
+b$prevIter()
+[1] "DCA"
+
+
+b$prevNIter(5)
+[[1]]
+[1] "DBC"
+
+[[2]]
+[1] "DBA"
+
+[[3]]
+[1] "DAC"
+
+[[4]]
+[1] "DAB"
+
+[[5]]
+[1] "CDB"
+
+
+b$nextRemaining()
+[[1]]
+[1] "DAB"
+
+[[2]]
+[1] "DAC"
+
+[[3]]
+[1] "DBA"
+
+[[4]]
+[1] "DBC"
+
+[[5]]
+[1] "DCA"
+
+[[6]]
+[1] "DCB"
+
+## Random access
+a[[5]]
+[1] "ADB"
+
+ 
+b$prevRemaining()
+[[1]]
+[1] "ACD"
+
+[[2]]
+[1] "ACB"
+
+[[3]]
+[1] "ABD"
+
+[[4]]
+[1] "ABC"
+
+## View the source vector
+b$sourceVector()
+[1] "A" "B" "C" "D"
+```
