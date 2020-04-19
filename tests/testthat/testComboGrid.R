@@ -1,7 +1,9 @@
 context("testing comboGrid")
 
 test_that("divisorsSieve generates correct numbers", {
-    brute <- function(myList, rep = TRUE, testOut) {
+    bruteCheck <- function(myList, rep = TRUE) {
+        testOut <- comboGrid(myList, repetition = rep)
+        
         t <- expand.grid(myList)
         t <- t[do.call(order, t), ]
         t1 <- apply(t, 1, function(x) paste0(sort(x), collapse = ""))
@@ -18,21 +20,35 @@ test_that("divisorsSieve generates correct numbers", {
             attributes(t2) <- attributes(testOut)
         }
         
-        return(t2)
+        all.equal(t2, testOut)
     }
     
-    myL1 <- list(1:5, 2:6, 3:7)
-    myL2 <- list(1:5, 2:6, letters[1:4], letters[2:4])
+    expect_equal(comboGrid(), expand.grid())
     
-    myOut1 <- comboGrid(myL1)
-    myOut2 <- comboGrid(myL2)
+    myList <- list(1:5, 2:6, 3:7)
+    expect_true(bruteCheck(myList, rep = TRUE))
+    expect_true(bruteCheck(myList, rep = FALSE))
     
-    expect_equal(brute(myL1, rep = TRUE, myOut1), myOut1)
-    expect_equal(brute(myL2, rep = TRUE, myOut2), myOut2)
+    myList <- list(1:5, 2:6, letters[1:4], letters[2:4])
+    expect_true(bruteCheck(myList, rep = TRUE))
+    expect_true(bruteCheck(myList, rep = FALSE))
     
-    myOut3 <- comboGrid(myL1, repetition = FALSE)
-    myOut4 <- comboGrid(myL2, repetition = FALSE)
+    myList <- list("name1" = 1:5, 2:6)
+    expect_true(bruteCheck(myList, rep = TRUE))
     
-    expect_equal(brute(myL1, rep = FALSE, myOut3), myOut3)
-    expect_equal(brute(myL2, rep = FALSE, myOut4), myOut4)
+    myList <- list(1:5, factor(2:6))
+    expect_true(bruteCheck(myList, rep = TRUE))
+    
+    myList <- list(1:5 + 0.1, 2:6 + 0.1)
+    expect_true(bruteCheck(myList, rep = TRUE))
+    
+    myList <- list(1:5 + 0.1, factor(2:6 + 0.1))
+    expect_true(bruteCheck(myList, rep = TRUE))
+    
+    myList <- list(letters[1:5], letters[2:6], letters[3:7])
+    expect_true(bruteCheck(myList, rep = TRUE))
+    expect_true(bruteCheck(myList, rep = FALSE))
+    
+    myList <- rep(list(c(T, F)), 10)
+    expect_true(bruteCheck(myList, rep = TRUE))
 })
