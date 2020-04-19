@@ -22,7 +22,7 @@ typeRcpp ConstraintReturn(int n, int m, const std::string &mainFun, const std::v
     if (SpecialCase) {
         return ConstraintsSpecial<typeRcpp>(n, m, v, IsRep, nRows, KeepRes, z, lower, mainFun, 
                                             IsMult, computedRows, compFunVec, targetVals, IsComb,
-                                            myReps, freqs, bLower, userNumRows);
+                                            freqs, bLower, userNumRows);
     }
     
     // For bool bUserRows, we pass bUpper as we know bLower must be false (See CheckSpecialCase)

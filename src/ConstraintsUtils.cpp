@@ -381,7 +381,6 @@ void GetPartitionCase(const std::vector<std::string> &compFunVec, std::vector<ty
                       std::vector<int> &Reps, int lenV, int &m, double tolerance, bool IsMult,
                       bool IsRep, bool IsBet, bool mIsNull) {
     
-    bool PartitionCase = false;
     PartType = PartitionType::NotPartition;
     bool bLower = false;
     
@@ -394,6 +393,8 @@ void GetPartitionCase(const std::vector<std::string> &compFunVec, std::vector<ty
     }
     
     if (!compFunVec.empty() && !bLower) {
+        bool PartitionCase = false;
+        
         if (IsMult) {
             for (int i = 0; i < (lenV - 1); ++i) {
                 for (int j = (i + 1); j < lenV; ++j) {

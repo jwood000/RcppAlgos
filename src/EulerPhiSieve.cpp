@@ -13,7 +13,6 @@ namespace MotleyPrimes {
         const typeInt n = static_cast<typeInt>(retN);
         const typeInt myRange = (n - m) + 1;
         
-        typeInt myNum = m;
         const double myLogN = std::log(n);
         typeReturn retNum = static_cast<typeReturn>(m);
         
@@ -34,7 +33,7 @@ namespace MotleyPrimes {
             for (p = fullPrimes.begin(); p < fullPrimes.end(); ++p) {
                 const libdivide::divider<typeInt> fastDiv(*p);
                 for (typeInt j = (*p - 1); j < n; j += *p) {
-                    myNum = static_cast<typeInt>(EulerPhis[j]);
+                    typeInt myNum = static_cast<typeInt>(EulerPhis[j]);
                     myNum /= fastDiv;
                     EulerPhis[j] -= static_cast<typeReturn>(myNum);
                 }
@@ -51,7 +50,7 @@ namespace MotleyPrimes {
                 
                 for (typeInt j = myStart; j < offsetRange; j += *p) {
                     numSeq[j] /= fastDiv;
-                    myNum = static_cast<typeInt>(EulerPhis[j]);
+                    typeInt myNum = static_cast<typeInt>(EulerPhis[j]);
                     myNum /= fastDiv;
                     EulerPhis[j] -= static_cast<typeReturn>(myNum);
                 }
@@ -67,7 +66,7 @@ namespace MotleyPrimes {
             
             for (typeInt i = offsetStrt; i < offsetRange; ++i) {
                 if (numSeq[i] > 1) {
-                    myNum = static_cast<typeInt>(EulerPhis[i]);
+                    typeInt myNum = static_cast<typeInt>(EulerPhis[i]);
                     myNum /= numSeq[i];
                     EulerPhis[i] -= static_cast<typeReturn>(myNum);
                 }

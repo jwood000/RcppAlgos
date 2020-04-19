@@ -417,7 +417,6 @@ namespace PrimeSieve {
         
         std::int_fast64_t remPrime, timesTwo;
         std::int_fast64_t tempInd, maxIndex = myRange + 1;
-        bool bKeepGoing;
         
         // Keeps track of which primes will be used in each interval
         std::deque<std::vector<std::size_t>> myBuckets(numCacheSegs,
@@ -436,7 +435,7 @@ namespace PrimeSieve {
             remTest = (myIndex % sz30030) - 1;
             timesTwo = (2 * svPriTwo[i]);
             remPrime = (timesTwo % sz30030);
-            bKeepGoing = (myIndex <= maxIndex);
+            bool bKeepGoing = (myIndex <= maxIndex);
             
             // Populate rest of the buckets
             while (bKeepGoing) {
@@ -701,7 +700,7 @@ namespace PrimeSieve {
             const std::size_t svMainSize = svPriMain.size();
             
             // Get the primes that are guaranteed to mark an index in every segment interval
-            for (; (2 * svPriMain[ind]) < limitOne && ind < svMainSize; ++ind)
+            for (; ind < svMainSize && (2 * svPriMain[ind]) < limitOne; ++ind)
                 svPriOne.push_back(svPriMain[ind]);
             
             // Get the rest

@@ -43,11 +43,12 @@ namespace PrimeCounting {
         sieve[1] = 0;
         
         std::int64_t sqrPrime = 9;
-        std::int64_t lowerBnd = 0, upperBnd = segSize, myNum = 1;
+        std::int64_t lowerBnd = 0;
+        std::int64_t myNum = 1;
         std::size_t p = 1;
         
         for (; lowerBnd < flrMaxNum; lowerBnd += segSize) {
-            upperBnd = lowerBnd + segSize;
+            std::int64_t upperBnd = lowerBnd + segSize;
             
             for (; sqrPrime <= upperBnd; ++p) {
                 nextStrt.push_back(sqrPrime - lowerBnd);
