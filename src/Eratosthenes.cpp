@@ -41,7 +41,7 @@ namespace PrimeSieve {
                                                    10000000000000000.0}};
     
     // The following function is based off of the prime number theorem
-    inline std::size_t EstimatePiPrime(double minNum, double maxNum) {
+    std::size_t EstimatePiPrime(double minNum, double maxNum) {
         const auto it = std::upper_bound(CUTPOINTS.cbegin(), CUTPOINTS.cend(), maxNum);
         const std::size_t myIndex = it - CUTPOINTS.cbegin();
         double dblRes = std::ceil((maxNum / std::log(maxNum)) * (1 + PERCINC[myIndex]));

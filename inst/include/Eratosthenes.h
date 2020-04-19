@@ -6,6 +6,8 @@
 #include <cstdint>
 
 namespace PrimeSieve{
+    std::size_t EstimatePiPrime(double minNum, double maxNum);
+    
     template <typename typePrime>
     void PrimeSieveMaster(std::int_fast64_t minNum, std::int_fast64_t maxNum, std::vector<typePrime> &primes, 
                           std::vector<std::vector<typePrime>> &primeList, bool &Parallel,
