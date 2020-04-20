@@ -31,7 +31,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">RcppAlgos</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">2.4.1</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">2.4.2</span>
       </span>
     </div>
 
@@ -547,59 +547,189 @@
 <span id="cb11-31"><a href="#cb11-31"></a>[<span class="dv">1</span>] <span class="st">"a"</span>   <span class="st">"b"</span>   <span class="st">"c"</span>   <span class="st">"ab"</span>  <span class="st">"ac"</span>  <span class="st">"bc"</span>  <span class="st">"abc"</span></span></code></pre></div>
 <hr>
 </div>
+<div id="cartesian-product-where-order-does-not-matter" class="section level2">
+<h2 class="hasAnchor">
+<a href="#cartesian-product-where-order-does-not-matter" class="anchor"></a>Cartesian Product where Order does not Matter</h2>
+<p>Given a list of vectors, <em>v<sub>1</sub></em>, <em>v<sub>2</sub></em>, … , <em>v<sub>n</sub></em>, where the intersection of two or more vectors in non-empty, find all unique combinations (order does not matter) of elements of the cartesian product of all of the vectors.</p>
+<p>For example, lets say we have: <code>v1 = 1:4</code> and <code>v2 = 2:5</code>. The cartestion product is given by <code><a href="https://rdrr.io/r/base/expand.grid.html">expand.grid(v1, v2)</a></code>:</p>
+<div class="sourceCode" id="cb12"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1"></a><span class="kw"><a href="https://rdrr.io/r/base/expand.grid.html">expand.grid</a></span>(<span class="dv">1</span><span class="op">:</span><span class="dv">4</span>, <span class="dv">2</span><span class="op">:</span><span class="dv">5</span>)</span>
+<span id="cb12-2"><a href="#cb12-2"></a>   Var1 Var2</span>
+<span id="cb12-3"><a href="#cb12-3"></a><span class="dv">1</span>     <span class="dv">1</span>    <span class="dv">2</span></span>
+<span id="cb12-4"><a href="#cb12-4"></a><span class="dv">2</span>     <span class="dv">2</span>    <span class="dv">2</span></span>
+<span id="cb12-5"><a href="#cb12-5"></a><span class="dv">3</span>     <span class="dv">3</span>    <span class="dv">2</span>  &lt;-<span class="op">-</span><span class="st"> </span>Same as row <span class="dv">6</span></span>
+<span id="cb12-6"><a href="#cb12-6"></a><span class="dv">4</span>     <span class="dv">4</span>    <span class="dv">2</span>  &lt;-<span class="op">-</span><span class="st"> </span>Same as row <span class="dv">10</span></span>
+<span id="cb12-7"><a href="#cb12-7"></a><span class="dv">5</span>     <span class="dv">1</span>    <span class="dv">3</span></span>
+<span id="cb12-8"><a href="#cb12-8"></a><span class="dv">6</span>     <span class="dv">2</span>    <span class="dv">3</span>  &lt;-<span class="op">-</span><span class="st"> </span>Same as row <span class="dv">3</span></span>
+<span id="cb12-9"><a href="#cb12-9"></a><span class="dv">7</span>     <span class="dv">3</span>    <span class="dv">3</span></span>
+<span id="cb12-10"><a href="#cb12-10"></a><span class="dv">8</span>     <span class="dv">4</span>    <span class="dv">3</span>  &lt;-<span class="op">-</span><span class="st"> </span>Same as row <span class="dv">11</span></span>
+<span id="cb12-11"><a href="#cb12-11"></a><span class="dv">9</span>     <span class="dv">1</span>    <span class="dv">4</span></span>
+<span id="cb12-12"><a href="#cb12-12"></a><span class="dv">10</span>    <span class="dv">2</span>    <span class="dv">4</span>  &lt;-<span class="op">-</span><span class="st"> </span>Same as row <span class="dv">4</span></span>
+<span id="cb12-13"><a href="#cb12-13"></a><span class="dv">11</span>    <span class="dv">3</span>    <span class="dv">4</span>  &lt;-<span class="op">-</span><span class="st"> </span>Same as row <span class="dv">8</span></span>
+<span id="cb12-14"><a href="#cb12-14"></a><span class="dv">12</span>    <span class="dv">4</span>    <span class="dv">4</span></span>
+<span id="cb12-15"><a href="#cb12-15"></a><span class="dv">13</span>    <span class="dv">1</span>    <span class="dv">5</span></span>
+<span id="cb12-16"><a href="#cb12-16"></a><span class="dv">14</span>    <span class="dv">2</span>    <span class="dv">5</span></span>
+<span id="cb12-17"><a href="#cb12-17"></a><span class="dv">15</span>    <span class="dv">3</span>    <span class="dv">5</span></span>
+<span id="cb12-18"><a href="#cb12-18"></a><span class="dv">16</span>    <span class="dv">4</span>    <span class="dv">5</span></span></code></pre></div>
+<p>If we don’t care about order, the following row pairs are considered equal and can therefore be pruned to obtain our desired results:</p>
+<ul>
+<li>(r3, r6)</li>
+<li>(r4, r10)</li>
+<li>(r8, r11)</li>
+</ul>
+<p>With <code>comboGrid</code> no duplicates are generated:</p>
+<div class="sourceCode" id="cb13"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1"></a><span class="kw"><a href="../reference/comboGrid.html">comboGrid</a></span>(<span class="dv">1</span><span class="op">:</span><span class="dv">4</span>, <span class="dv">2</span><span class="op">:</span><span class="dv">5</span>)</span>
+<span id="cb13-2"><a href="#cb13-2"></a>      Var1 Var2</span>
+<span id="cb13-3"><a href="#cb13-3"></a> [<span class="dv">1</span>,]    <span class="dv">1</span>    <span class="dv">2</span></span>
+<span id="cb13-4"><a href="#cb13-4"></a> [<span class="dv">2</span>,]    <span class="dv">1</span>    <span class="dv">3</span></span>
+<span id="cb13-5"><a href="#cb13-5"></a> [<span class="dv">3</span>,]    <span class="dv">1</span>    <span class="dv">4</span></span>
+<span id="cb13-6"><a href="#cb13-6"></a> [<span class="dv">4</span>,]    <span class="dv">1</span>    <span class="dv">5</span></span>
+<span id="cb13-7"><a href="#cb13-7"></a> [<span class="dv">5</span>,]    <span class="dv">2</span>    <span class="dv">2</span></span>
+<span id="cb13-8"><a href="#cb13-8"></a> [<span class="dv">6</span>,]    <span class="dv">2</span>    <span class="dv">3</span></span>
+<span id="cb13-9"><a href="#cb13-9"></a> [<span class="dv">7</span>,]    <span class="dv">2</span>    <span class="dv">4</span></span>
+<span id="cb13-10"><a href="#cb13-10"></a> [<span class="dv">8</span>,]    <span class="dv">2</span>    <span class="dv">5</span></span>
+<span id="cb13-11"><a href="#cb13-11"></a> [<span class="dv">9</span>,]    <span class="dv">3</span>    <span class="dv">3</span></span>
+<span id="cb13-12"><a href="#cb13-12"></a>[<span class="dv">10</span>,]    <span class="dv">3</span>    <span class="dv">4</span></span>
+<span id="cb13-13"><a href="#cb13-13"></a>[<span class="dv">11</span>,]    <span class="dv">3</span>    <span class="dv">5</span></span>
+<span id="cb13-14"><a href="#cb13-14"></a>[<span class="dv">12</span>,]    <span class="dv">4</span>    <span class="dv">4</span></span>
+<span id="cb13-15"><a href="#cb13-15"></a>[<span class="dv">13</span>,]    <span class="dv">4</span>    <span class="dv">5</span></span></code></pre></div>
+<p>Note that the order of <code>expand.grid</code> and <code>comboGrid</code> differ. The order of <code>comboGrid</code> is lexicographical meaning that the last column will vary the fastest whereas with <code>expand.grid</code>, the first column will vary the fastest.</p>
+<p>You will also note that the output of <code>expand.grid</code> is a <code>data.frame</code> whereas with <code>comboGrid</code>, we get a <code>matrix</code>. With <code>comboGrid</code>, we only get a <code>data.frame</code> when the classes of each vector are different as generally speaking, working with matrices is preferrable.</p>
+<p>With the small example above, we only had to filter out 3 out of 16 total results (less than 20%). That isn’t that bad. If this was the general case, we might as well just stick with <code>expand.grid</code> as it is very efficient. Unfortunately, this is not the general case and as the number of vectors with overlap increases, filtering will become impractical.</p>
+<p>Consider the following example:</p>
+<div class="sourceCode" id="cb14"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1"></a>pools =<span class="st"> </span><span class="kw"><a href="https://rdrr.io/r/base/list.html">list</a></span>(<span class="kw"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="dv">1</span>, <span class="dv">10</span>, <span class="dv">14</span>, <span class="dv">6</span>),</span>
+<span id="cb14-2"><a href="#cb14-2"></a>             <span class="kw"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="dv">7</span>, <span class="dv">2</span>, <span class="dv">4</span>, <span class="dv">8</span>, <span class="dv">3</span>, <span class="dv">11</span>, <span class="dv">12</span>),</span>
+<span id="cb14-3"><a href="#cb14-3"></a>             <span class="kw"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="dv">11</span>, <span class="dv">3</span>, <span class="dv">13</span>, <span class="dv">4</span>, <span class="dv">15</span>, <span class="dv">8</span>, <span class="dv">6</span>, <span class="dv">5</span>),</span>
+<span id="cb14-4"><a href="#cb14-4"></a>             <span class="kw"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="dv">10</span>, <span class="dv">1</span>, <span class="dv">3</span>, <span class="dv">2</span>, <span class="dv">9</span>, <span class="dv">5</span>,  <span class="dv">7</span>),</span>
+<span id="cb14-5"><a href="#cb14-5"></a>             <span class="kw"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="dv">1</span>, <span class="dv">5</span>, <span class="dv">10</span>, <span class="dv">3</span>, <span class="dv">8</span>, <span class="dv">14</span>),</span>
+<span id="cb14-6"><a href="#cb14-6"></a>             <span class="kw"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="dv">15</span>, <span class="dv">3</span>, <span class="dv">7</span>, <span class="dv">10</span>, <span class="dv">4</span>, <span class="dv">5</span>, <span class="dv">8</span>, <span class="dv">6</span>),</span>
+<span id="cb14-7"><a href="#cb14-7"></a>             <span class="kw"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="dv">14</span>, <span class="dv">9</span>, <span class="dv">11</span>, <span class="dv">15</span>),</span>
+<span id="cb14-8"><a href="#cb14-8"></a>             <span class="kw"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="dv">7</span>, <span class="dv">6</span>, <span class="dv">13</span>, <span class="dv">14</span>, <span class="dv">10</span>, <span class="dv">11</span>, <span class="dv">9</span>, <span class="dv">4</span>),</span>
+<span id="cb14-9"><a href="#cb14-9"></a>             <span class="kw"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="dv">6</span>,  <span class="dv">3</span>,  <span class="dv">2</span>, <span class="dv">14</span>,  <span class="dv">7</span>, <span class="dv">12</span>,  <span class="dv">9</span>),</span>
+<span id="cb14-10"><a href="#cb14-10"></a>             <span class="kw"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="dv">6</span>, <span class="dv">11</span>,  <span class="dv">2</span>,  <span class="dv">5</span>, <span class="dv">15</span>,  <span class="dv">7</span>))</span>
+<span id="cb14-11"><a href="#cb14-11"></a>  </span>
+<span id="cb14-12"><a href="#cb14-12"></a><span class="co">## If we used expand.grid, we would have to filter</span></span>
+<span id="cb14-13"><a href="#cb14-13"></a><span class="co">## more than 100 million results</span></span>
+<span id="cb14-14"><a href="#cb14-14"></a><span class="kw"><a href="https://rdrr.io/r/base/prod.html">prod</a></span>(<span class="kw"><a href="https://rdrr.io/r/base/lengths.html">lengths</a></span>(pools))</span>
+<span id="cb14-15"><a href="#cb14-15"></a>[<span class="dv">1</span>] <span class="dv">101154816</span></span>
+<span id="cb14-16"><a href="#cb14-16"></a></span>
+<span id="cb14-17"><a href="#cb14-17"></a><span class="co">## With comboGrid, this is no problem</span></span>
+<span id="cb14-18"><a href="#cb14-18"></a><span class="kw"><a href="https://rdrr.io/r/base/system.time.html">system.time</a></span>(myCombs &lt;-<span class="st"> </span><span class="kw"><a href="../reference/comboGrid.html">comboGrid</a></span>(pools))</span>
+<span id="cb14-19"><a href="#cb14-19"></a>   user  system elapsed </span>
+<span id="cb14-20"><a href="#cb14-20"></a>  <span class="fl">0.958</span>   <span class="fl">0.069</span>   <span class="fl">1.027</span></span>
+<span id="cb14-21"><a href="#cb14-21"></a></span>
+<span id="cb14-22"><a href="#cb14-22"></a><span class="kw"><a href="https://rdrr.io/r/base/print.html">print</a></span>(<span class="kw"><a href="https://rdrr.io/r/utils/object.size.html">object.size</a></span>(myCombs), <span class="dt">unit =</span> <span class="st">"Mb"</span>)</span>
+<span id="cb14-23"><a href="#cb14-23"></a><span class="dv">92</span> Mb</span>
+<span id="cb14-24"><a href="#cb14-24"></a></span>
+<span id="cb14-25"><a href="#cb14-25"></a><span class="kw">ht</span>(myCombs)</span>
+<span id="cb14-26"><a href="#cb14-26"></a>head <span class="op">-</span>-&gt;</span>
+<span id="cb14-27"><a href="#cb14-27"></a><span class="st">     </span>Var1 Var2 Var3 Var4 Var5 Var6 Var7 Var8 Var9 Var10</span>
+<span id="cb14-28"><a href="#cb14-28"></a>[<span class="dv">1</span>,]    <span class="dv">1</span>    <span class="dv">2</span>    <span class="dv">3</span>    <span class="dv">1</span>    <span class="dv">1</span>    <span class="dv">3</span>    <span class="dv">9</span>    <span class="dv">4</span>    <span class="dv">2</span>     <span class="dv">2</span></span>
+<span id="cb14-29"><a href="#cb14-29"></a>[<span class="dv">2</span>,]    <span class="dv">1</span>    <span class="dv">2</span>    <span class="dv">3</span>    <span class="dv">1</span>    <span class="dv">1</span>    <span class="dv">3</span>    <span class="dv">9</span>    <span class="dv">4</span>    <span class="dv">2</span>     <span class="dv">5</span></span>
+<span id="cb14-30"><a href="#cb14-30"></a>[<span class="dv">3</span>,]    <span class="dv">1</span>    <span class="dv">2</span>    <span class="dv">3</span>    <span class="dv">1</span>    <span class="dv">1</span>    <span class="dv">3</span>    <span class="dv">9</span>    <span class="dv">4</span>    <span class="dv">2</span>     <span class="dv">6</span></span>
+<span id="cb14-31"><a href="#cb14-31"></a>[<span class="dv">4</span>,]    <span class="dv">1</span>    <span class="dv">2</span>    <span class="dv">3</span>    <span class="dv">1</span>    <span class="dv">1</span>    <span class="dv">3</span>    <span class="dv">9</span>    <span class="dv">4</span>    <span class="dv">2</span>     <span class="dv">7</span></span>
+<span id="cb14-32"><a href="#cb14-32"></a>[<span class="dv">5</span>,]    <span class="dv">1</span>    <span class="dv">2</span>    <span class="dv">3</span>    <span class="dv">1</span>    <span class="dv">1</span>    <span class="dv">3</span>    <span class="dv">9</span>    <span class="dv">4</span>    <span class="dv">2</span>    <span class="dv">11</span></span>
+<span id="cb14-33"><a href="#cb14-33"></a><span class="op">--------</span></span>
+<span id="cb14-34"><a href="#cb14-34"></a>tail <span class="op">-</span>-&gt;</span>
+<span id="cb14-35"><a href="#cb14-35"></a><span class="st">           </span>Var1 Var2 Var3 Var4 Var5 Var6 Var7 Var8 Var9 Var10</span>
+<span id="cb14-36"><a href="#cb14-36"></a>[<span class="dv">1205736</span>,]   <span class="dv">14</span>   <span class="dv">12</span>   <span class="dv">15</span>   <span class="dv">10</span>   <span class="dv">14</span>   <span class="dv">15</span>   <span class="dv">15</span>   <span class="dv">11</span>   <span class="dv">12</span>    <span class="dv">15</span></span>
+<span id="cb14-37"><a href="#cb14-37"></a>[<span class="dv">1205737</span>,]   <span class="dv">14</span>   <span class="dv">12</span>   <span class="dv">15</span>   <span class="dv">10</span>   <span class="dv">14</span>   <span class="dv">15</span>   <span class="dv">15</span>   <span class="dv">13</span>   <span class="dv">12</span>    <span class="dv">15</span></span>
+<span id="cb14-38"><a href="#cb14-38"></a>[<span class="dv">1205738</span>,]   <span class="dv">14</span>   <span class="dv">12</span>   <span class="dv">15</span>   <span class="dv">10</span>   <span class="dv">14</span>   <span class="dv">15</span>   <span class="dv">15</span>   <span class="dv">13</span>   <span class="dv">14</span>    <span class="dv">15</span></span>
+<span id="cb14-39"><a href="#cb14-39"></a>[<span class="dv">1205739</span>,]   <span class="dv">14</span>   <span class="dv">12</span>   <span class="dv">15</span>   <span class="dv">10</span>   <span class="dv">14</span>   <span class="dv">15</span>   <span class="dv">15</span>   <span class="dv">14</span>   <span class="dv">12</span>    <span class="dv">15</span></span>
+<span id="cb14-40"><a href="#cb14-40"></a>[<span class="dv">1205740</span>,]   <span class="dv">14</span>   <span class="dv">12</span>   <span class="dv">15</span>   <span class="dv">10</span>   <span class="dv">14</span>   <span class="dv">15</span>   <span class="dv">15</span>   <span class="dv">14</span>   <span class="dv">14</span>    <span class="dv">15</span></span>
+<span id="cb14-41"><a href="#cb14-41"></a></span>
+<span id="cb14-42"><a href="#cb14-42"></a></span>
+<span id="cb14-43"><a href="#cb14-43"></a><span class="co">## This is just the time to create the cartesian product</span></span>
+<span id="cb14-44"><a href="#cb14-44"></a><span class="co">## Generating keys, then filtering will take much more time</span></span>
+<span id="cb14-45"><a href="#cb14-45"></a><span class="kw"><a href="https://rdrr.io/r/base/system.time.html">system.time</a></span>(cartProd &lt;-<span class="st"> </span><span class="kw"><a href="https://rdrr.io/r/base/expand.grid.html">expand.grid</a></span>(pools))</span>
+<span id="cb14-46"><a href="#cb14-46"></a>   user  system elapsed </span>
+<span id="cb14-47"><a href="#cb14-47"></a>  <span class="fl">7.531</span>   <span class="fl">2.899</span>  <span class="fl">10.431</span></span>
+<span id="cb14-48"><a href="#cb14-48"></a></span>
+<span id="cb14-49"><a href="#cb14-49"></a><span class="co">## Creates huge object</span></span>
+<span id="cb14-50"><a href="#cb14-50"></a><span class="kw"><a href="https://rdrr.io/r/base/print.html">print</a></span>(<span class="kw"><a href="https://rdrr.io/r/utils/object.size.html">object.size</a></span>(cartProd), <span class="dt">unit =</span> <span class="st">"Mb"</span>)</span>
+<span id="cb14-51"><a href="#cb14-51"></a><span class="fl">7717.5</span> Mb</span>
+<span id="cb14-52"><a href="#cb14-52"></a></span>
+<span id="cb14-53"><a href="#cb14-53"></a><span class="co">## What if we want results with unique values... </span></span>
+<span id="cb14-54"><a href="#cb14-54"></a><span class="co">## Simply set repetition = FALSE</span></span>
+<span id="cb14-55"><a href="#cb14-55"></a><span class="kw"><a href="https://rdrr.io/r/base/system.time.html">system.time</a></span>(myCombs &lt;-<span class="st"> </span><span class="kw"><a href="../reference/comboGrid.html">comboGrid</a></span>(pools, <span class="dt">repetition =</span> <span class="ot">FALSE</span>))</span>
+<span id="cb14-56"><a href="#cb14-56"></a>   user  system elapsed </span>
+<span id="cb14-57"><a href="#cb14-57"></a>  <span class="fl">0.029</span>   <span class="fl">0.007</span>   <span class="fl">0.035</span></span>
+<span id="cb14-58"><a href="#cb14-58"></a></span>
+<span id="cb14-59"><a href="#cb14-59"></a><span class="kw">ht</span>(myCombsNoRep)</span>
+<span id="cb14-60"><a href="#cb14-60"></a>head <span class="op">-</span>-&gt;</span>
+<span id="cb14-61"><a href="#cb14-61"></a><span class="st">     </span>Var1 Var2 Var3 Var4 Var5 Var6 Var7 Var8 Var9 Var10</span>
+<span id="cb14-62"><a href="#cb14-62"></a>[<span class="dv">1</span>,]    <span class="dv">1</span>    <span class="dv">2</span>    <span class="dv">3</span>    <span class="dv">5</span>    <span class="dv">8</span>    <span class="dv">4</span>    <span class="dv">9</span>    <span class="dv">6</span>    <span class="dv">7</span>    <span class="dv">11</span></span>
+<span id="cb14-63"><a href="#cb14-63"></a>[<span class="dv">2</span>,]    <span class="dv">1</span>    <span class="dv">2</span>    <span class="dv">3</span>    <span class="dv">5</span>    <span class="dv">8</span>    <span class="dv">4</span>    <span class="dv">9</span>    <span class="dv">6</span>    <span class="dv">7</span>    <span class="dv">15</span></span>
+<span id="cb14-64"><a href="#cb14-64"></a>[<span class="dv">3</span>,]    <span class="dv">1</span>    <span class="dv">2</span>    <span class="dv">3</span>    <span class="dv">5</span>    <span class="dv">8</span>    <span class="dv">4</span>    <span class="dv">9</span>    <span class="dv">6</span>   <span class="dv">12</span>     <span class="dv">7</span></span>
+<span id="cb14-65"><a href="#cb14-65"></a>[<span class="dv">4</span>,]    <span class="dv">1</span>    <span class="dv">2</span>    <span class="dv">3</span>    <span class="dv">5</span>    <span class="dv">8</span>    <span class="dv">4</span>    <span class="dv">9</span>    <span class="dv">6</span>   <span class="dv">12</span>    <span class="dv">11</span></span>
+<span id="cb14-66"><a href="#cb14-66"></a>[<span class="dv">5</span>,]    <span class="dv">1</span>    <span class="dv">2</span>    <span class="dv">3</span>    <span class="dv">5</span>    <span class="dv">8</span>    <span class="dv">4</span>    <span class="dv">9</span>    <span class="dv">6</span>   <span class="dv">12</span>    <span class="dv">15</span></span>
+<span id="cb14-67"><a href="#cb14-67"></a><span class="op">--------</span></span>
+<span id="cb14-68"><a href="#cb14-68"></a>tail <span class="op">-</span>-&gt;</span>
+<span id="cb14-69"><a href="#cb14-69"></a><span class="st">        </span>Var1 Var2 Var3 Var4 Var5 Var6 Var7 Var8 Var9 Var10</span>
+<span id="cb14-70"><a href="#cb14-70"></a>[<span class="dv">2977</span>,]   <span class="dv">14</span>    <span class="dv">3</span>    <span class="dv">4</span>    <span class="dv">5</span>    <span class="dv">8</span>   <span class="dv">15</span>    <span class="dv">9</span>   <span class="dv">13</span>   <span class="dv">12</span>    <span class="dv">11</span></span>
+<span id="cb14-71"><a href="#cb14-71"></a>[<span class="dv">2978</span>,]   <span class="dv">14</span>    <span class="dv">3</span>    <span class="dv">4</span>    <span class="dv">7</span>    <span class="dv">5</span>   <span class="dv">15</span>    <span class="dv">9</span>   <span class="dv">13</span>   <span class="dv">12</span>    <span class="dv">11</span></span>
+<span id="cb14-72"><a href="#cb14-72"></a>[<span class="dv">2979</span>,]   <span class="dv">14</span>    <span class="dv">3</span>    <span class="dv">4</span>    <span class="dv">7</span>    <span class="dv">8</span>   <span class="dv">15</span>    <span class="dv">9</span>   <span class="dv">13</span>   <span class="dv">12</span>    <span class="dv">11</span></span>
+<span id="cb14-73"><a href="#cb14-73"></a>[<span class="dv">2980</span>,]   <span class="dv">14</span>    <span class="dv">3</span>    <span class="dv">5</span>    <span class="dv">7</span>    <span class="dv">8</span>   <span class="dv">15</span>    <span class="dv">9</span>   <span class="dv">13</span>   <span class="dv">12</span>    <span class="dv">11</span></span>
+<span id="cb14-74"><a href="#cb14-74"></a>[<span class="dv">2981</span>,]   <span class="dv">14</span>    <span class="dv">4</span>    <span class="dv">5</span>    <span class="dv">7</span>    <span class="dv">8</span>   <span class="dv">15</span>    <span class="dv">9</span>   <span class="dv">13</span>   <span class="dv">12</span>    <span class="dv">11</span></span></code></pre></div>
+<p>The function <code>comboGrid</code> was highly inspired by the following question on stackoverflow:</p>
+<ul>
+<li><a href="https://stackoverflow.com/q/51834467/4408538">Picking unordered combinations from pools with overlap</a></li>
+</ul>
+<p>Currenlty, the underlying algorithm is not the gold standard. By that, we mean that results are not generated one by one. Efforts are underway to achieve this, but up until this point it has proven quite difficult (See the comprehensive answer by Tim Peters (yes, that <a href="https://stackoverflow.com/users/2705542/tim-peters">Tim Peters</a>)).</p>
+<p>The algorithm in <code>comboGrid</code> leverages <a href="https://en.wikipedia.org/wiki/Fundamental_theorem_of_arithmetic">The Fundamental Theorem of Arithmetic</a> to efficiently generate keys that will be used in a hash function to determine if a particular combination of elements have been encountered. For greater efficiency, we make use of deduplication as <a href="https://stackoverflow.com/a/51886857/4408538">user2357112</a> suggests.</p>
+</div>
 <div id="partitions-of-groups-of-equal-size-with-combogroups" class="section level2">
 <h2 class="hasAnchor">
 <a href="#partitions-of-groups-of-equal-size-with-combogroups" class="anchor"></a>Partitions of Groups of Equal Size with <code>comboGroups</code>
 </h2>
 <p>Given a vector of length <em>n</em> and <em>k</em> groups, where <em>k</em> divides <em>n</em>, each group is comprised of a combination of the vector chosen <em>g = n / k</em> at a time. As is stated in the documentation (see <code><a href="../reference/comboGroups.html">?comboGroups</a></code>), these can be constructed by first generating all permutations of the vector and subsequently removing entries with permuted groups. Let us consider the following example. Given <code>v = 1:12</code>, generate all partitions <code>v</code> into 3 groups each of size 4.</p>
-<div class="sourceCode" id="cb12"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1"></a>funBruteGrp &lt;-<span class="st"> </span><span class="cf">function</span>(<span class="dt">myLow =</span> <span class="dv">1</span>, myUp) {</span>
-<span id="cb12-2"><a href="#cb12-2"></a>    mat &lt;-<span class="st"> </span><span class="kw"><a href="https://rdrr.io/r/base/do.call.html">do.call</a></span>(rbind, <span class="kw"><a href="../reference/combinatoricsGeneral.html">permuteGeneral</a></span>(<span class="dv">12</span>, <span class="dt">lower =</span> myLow, <span class="dt">upper =</span> myUp,</span>
-<span id="cb12-3"><a href="#cb12-3"></a>        <span class="dt">FUN =</span> <span class="cf">function</span>(x) {</span>
-<span id="cb12-4"><a href="#cb12-4"></a>        <span class="kw"><a href="https://rdrr.io/r/base/lapply.html">sapply</a></span>(<span class="kw"><a href="https://rdrr.io/r/base/seq.html">seq</a></span>(<span class="dv">0</span>, <span class="dv">8</span>, <span class="dv">4</span>), <span class="cf">function</span>(y) {</span>
-<span id="cb12-5"><a href="#cb12-5"></a>            <span class="kw"><a href="https://rdrr.io/r/base/paste.html">paste0</a></span>(<span class="kw"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">"("</span>, x[(y <span class="op">+</span><span class="st"> </span><span class="dv">1</span>)<span class="op">:</span>(y <span class="op">+</span><span class="st"> </span><span class="dv">4</span>)], <span class="st">")"</span>), <span class="dt">collapse =</span> <span class="st">" "</span>)</span>
-<span id="cb12-6"><a href="#cb12-6"></a>        })</span>
-<span id="cb12-7"><a href="#cb12-7"></a>    }))</span>
-<span id="cb12-8"><a href="#cb12-8"></a>    <span class="kw"><a href="https://rdrr.io/r/base/colnames.html">colnames</a></span>(mat) &lt;-<span class="st"> </span><span class="kw"><a href="https://rdrr.io/r/base/paste.html">paste0</a></span>(<span class="st">"Grp"</span>, <span class="dv">1</span><span class="op">:</span><span class="dv">3</span>)</span>
-<span id="cb12-9"><a href="#cb12-9"></a>    <span class="kw"><a href="https://rdrr.io/r/base/colnames.html">rownames</a></span>(mat) &lt;-<span class="st"> </span>myLow<span class="op">:</span>myUp</span>
-<span id="cb12-10"><a href="#cb12-10"></a>    mat</span>
-<span id="cb12-11"><a href="#cb12-11"></a>}</span>
-<span id="cb12-12"><a href="#cb12-12"></a></span>
-<span id="cb12-13"><a href="#cb12-13"></a><span class="co">## All of these are the same as only the 3rd group is being permuted</span></span>
-<span id="cb12-14"><a href="#cb12-14"></a><span class="kw">funBruteGrp</span>(<span class="dt">myUp =</span> <span class="dv">6</span>)</span>
-<span id="cb12-15"><a href="#cb12-15"></a>  Grp1          Grp2          Grp3            </span>
-<span id="cb12-16"><a href="#cb12-16"></a><span class="dv">1</span> <span class="st">"( 1 2 3 4 )"</span> <span class="st">"( 5 6 7 8 )"</span> <span class="st">"( 9 10 11 12 )"</span></span>
-<span id="cb12-17"><a href="#cb12-17"></a><span class="dv">2</span> <span class="st">"( 1 2 3 4 )"</span> <span class="st">"( 5 6 7 8 )"</span> <span class="st">"( 9 10 12 11 )"</span></span>
-<span id="cb12-18"><a href="#cb12-18"></a><span class="dv">3</span> <span class="st">"( 1 2 3 4 )"</span> <span class="st">"( 5 6 7 8 )"</span> <span class="st">"( 9 11 10 12 )"</span></span>
-<span id="cb12-19"><a href="#cb12-19"></a><span class="dv">4</span> <span class="st">"( 1 2 3 4 )"</span> <span class="st">"( 5 6 7 8 )"</span> <span class="st">"( 9 11 12 10 )"</span></span>
-<span id="cb12-20"><a href="#cb12-20"></a><span class="dv">5</span> <span class="st">"( 1 2 3 4 )"</span> <span class="st">"( 5 6 7 8 )"</span> <span class="st">"( 9 12 10 11 )"</span></span>
-<span id="cb12-21"><a href="#cb12-21"></a><span class="dv">6</span> <span class="st">"( 1 2 3 4 )"</span> <span class="st">"( 5 6 7 8 )"</span> <span class="st">"( 9 12 11 10 )"</span></span>
-<span id="cb12-22"><a href="#cb12-22"></a></span>
-<span id="cb12-23"><a href="#cb12-23"></a><span class="co">## We found our second distinct partition</span></span>
-<span id="cb12-24"><a href="#cb12-24"></a><span class="kw">funBruteGrp</span>(<span class="dt">myLow =</span> <span class="dv">23</span>, <span class="dt">myUp =</span> <span class="dv">26</span>)</span>
-<span id="cb12-25"><a href="#cb12-25"></a>   Grp1          Grp2          Grp3            </span>
-<span id="cb12-26"><a href="#cb12-26"></a><span class="dv">23</span> <span class="st">"( 1 2 3 4 )"</span> <span class="st">"( 5 6 7 8 )"</span> <span class="st">"( 12 11 9 10 )"</span></span>
-<span id="cb12-27"><a href="#cb12-27"></a><span class="dv">24</span> <span class="st">"( 1 2 3 4 )"</span> <span class="st">"( 5 6 7 8 )"</span> <span class="st">"( 12 11 10 9 )"</span></span>
-<span id="cb12-28"><a href="#cb12-28"></a><span class="dv">25</span> <span class="st">"( 1 2 3 4 )"</span> <span class="st">"( 5 6 7 9 )"</span> <span class="st">"( 8 10 11 12 )"</span>  <span class="co">## &lt;&lt;-- 2nd distinct partition of groups</span></span>
-<span id="cb12-29"><a href="#cb12-29"></a><span class="dv">26</span> <span class="st">"( 1 2 3 4 )"</span> <span class="st">"( 5 6 7 9 )"</span> <span class="st">"( 8 10 12 11 )"</span></span>
-<span id="cb12-30"><a href="#cb12-30"></a></span>
-<span id="cb12-31"><a href="#cb12-31"></a><span class="kw">funBruteGrp</span>(<span class="dt">myLow =</span> <span class="dv">48</span>, <span class="dt">myUp =</span> <span class="dv">50</span>)</span>
-<span id="cb12-32"><a href="#cb12-32"></a>   Grp1          Grp2           Grp3            </span>
-<span id="cb12-33"><a href="#cb12-33"></a><span class="dv">48</span> <span class="st">"( 1 2 3 4 )"</span> <span class="st">"( 5 6 7 9 )"</span>  <span class="st">"( 12 11 10 8 )"</span></span>
-<span id="cb12-34"><a href="#cb12-34"></a><span class="dv">49</span> <span class="st">"( 1 2 3 4 )"</span> <span class="st">"( 5 6 7 10 )"</span> <span class="st">"( 8 9 11 12 )"</span>  <span class="co">## &lt;&lt;-- 3rd distinct partition of groups</span></span>
-<span id="cb12-35"><a href="#cb12-35"></a><span class="dv">50</span> <span class="st">"( 1 2 3 4 )"</span> <span class="st">"( 5 6 7 10 )"</span> <span class="st">"( 8 9 12 11 )"</span> </span></code></pre></div>
+<div class="sourceCode" id="cb15"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1"></a>funBruteGrp &lt;-<span class="st"> </span><span class="cf">function</span>(<span class="dt">myLow =</span> <span class="dv">1</span>, myUp) {</span>
+<span id="cb15-2"><a href="#cb15-2"></a>    mat &lt;-<span class="st"> </span><span class="kw"><a href="https://rdrr.io/r/base/do.call.html">do.call</a></span>(rbind, <span class="kw"><a href="../reference/combinatoricsGeneral.html">permuteGeneral</a></span>(<span class="dv">12</span>, <span class="dt">lower =</span> myLow, <span class="dt">upper =</span> myUp,</span>
+<span id="cb15-3"><a href="#cb15-3"></a>        <span class="dt">FUN =</span> <span class="cf">function</span>(x) {</span>
+<span id="cb15-4"><a href="#cb15-4"></a>        <span class="kw"><a href="https://rdrr.io/r/base/lapply.html">sapply</a></span>(<span class="kw"><a href="https://rdrr.io/r/base/seq.html">seq</a></span>(<span class="dv">0</span>, <span class="dv">8</span>, <span class="dv">4</span>), <span class="cf">function</span>(y) {</span>
+<span id="cb15-5"><a href="#cb15-5"></a>            <span class="kw"><a href="https://rdrr.io/r/base/paste.html">paste0</a></span>(<span class="kw"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">"("</span>, x[(y <span class="op">+</span><span class="st"> </span><span class="dv">1</span>)<span class="op">:</span>(y <span class="op">+</span><span class="st"> </span><span class="dv">4</span>)], <span class="st">")"</span>), <span class="dt">collapse =</span> <span class="st">" "</span>)</span>
+<span id="cb15-6"><a href="#cb15-6"></a>        })</span>
+<span id="cb15-7"><a href="#cb15-7"></a>    }))</span>
+<span id="cb15-8"><a href="#cb15-8"></a>    <span class="kw"><a href="https://rdrr.io/r/base/colnames.html">colnames</a></span>(mat) &lt;-<span class="st"> </span><span class="kw"><a href="https://rdrr.io/r/base/paste.html">paste0</a></span>(<span class="st">"Grp"</span>, <span class="dv">1</span><span class="op">:</span><span class="dv">3</span>)</span>
+<span id="cb15-9"><a href="#cb15-9"></a>    <span class="kw"><a href="https://rdrr.io/r/base/colnames.html">rownames</a></span>(mat) &lt;-<span class="st"> </span>myLow<span class="op">:</span>myUp</span>
+<span id="cb15-10"><a href="#cb15-10"></a>    mat</span>
+<span id="cb15-11"><a href="#cb15-11"></a>}</span>
+<span id="cb15-12"><a href="#cb15-12"></a></span>
+<span id="cb15-13"><a href="#cb15-13"></a><span class="co">## All of these are the same as only the 3rd group is being permuted</span></span>
+<span id="cb15-14"><a href="#cb15-14"></a><span class="kw">funBruteGrp</span>(<span class="dt">myUp =</span> <span class="dv">6</span>)</span>
+<span id="cb15-15"><a href="#cb15-15"></a>  Grp1          Grp2          Grp3            </span>
+<span id="cb15-16"><a href="#cb15-16"></a><span class="dv">1</span> <span class="st">"( 1 2 3 4 )"</span> <span class="st">"( 5 6 7 8 )"</span> <span class="st">"( 9 10 11 12 )"</span></span>
+<span id="cb15-17"><a href="#cb15-17"></a><span class="dv">2</span> <span class="st">"( 1 2 3 4 )"</span> <span class="st">"( 5 6 7 8 )"</span> <span class="st">"( 9 10 12 11 )"</span></span>
+<span id="cb15-18"><a href="#cb15-18"></a><span class="dv">3</span> <span class="st">"( 1 2 3 4 )"</span> <span class="st">"( 5 6 7 8 )"</span> <span class="st">"( 9 11 10 12 )"</span></span>
+<span id="cb15-19"><a href="#cb15-19"></a><span class="dv">4</span> <span class="st">"( 1 2 3 4 )"</span> <span class="st">"( 5 6 7 8 )"</span> <span class="st">"( 9 11 12 10 )"</span></span>
+<span id="cb15-20"><a href="#cb15-20"></a><span class="dv">5</span> <span class="st">"( 1 2 3 4 )"</span> <span class="st">"( 5 6 7 8 )"</span> <span class="st">"( 9 12 10 11 )"</span></span>
+<span id="cb15-21"><a href="#cb15-21"></a><span class="dv">6</span> <span class="st">"( 1 2 3 4 )"</span> <span class="st">"( 5 6 7 8 )"</span> <span class="st">"( 9 12 11 10 )"</span></span>
+<span id="cb15-22"><a href="#cb15-22"></a></span>
+<span id="cb15-23"><a href="#cb15-23"></a><span class="co">## We found our second distinct partition</span></span>
+<span id="cb15-24"><a href="#cb15-24"></a><span class="kw">funBruteGrp</span>(<span class="dt">myLow =</span> <span class="dv">23</span>, <span class="dt">myUp =</span> <span class="dv">26</span>)</span>
+<span id="cb15-25"><a href="#cb15-25"></a>   Grp1          Grp2          Grp3            </span>
+<span id="cb15-26"><a href="#cb15-26"></a><span class="dv">23</span> <span class="st">"( 1 2 3 4 )"</span> <span class="st">"( 5 6 7 8 )"</span> <span class="st">"( 12 11 9 10 )"</span></span>
+<span id="cb15-27"><a href="#cb15-27"></a><span class="dv">24</span> <span class="st">"( 1 2 3 4 )"</span> <span class="st">"( 5 6 7 8 )"</span> <span class="st">"( 12 11 10 9 )"</span></span>
+<span id="cb15-28"><a href="#cb15-28"></a><span class="dv">25</span> <span class="st">"( 1 2 3 4 )"</span> <span class="st">"( 5 6 7 9 )"</span> <span class="st">"( 8 10 11 12 )"</span>  <span class="co">## &lt;&lt;-- 2nd distinct partition of groups</span></span>
+<span id="cb15-29"><a href="#cb15-29"></a><span class="dv">26</span> <span class="st">"( 1 2 3 4 )"</span> <span class="st">"( 5 6 7 9 )"</span> <span class="st">"( 8 10 12 11 )"</span></span>
+<span id="cb15-30"><a href="#cb15-30"></a></span>
+<span id="cb15-31"><a href="#cb15-31"></a><span class="kw">funBruteGrp</span>(<span class="dt">myLow =</span> <span class="dv">48</span>, <span class="dt">myUp =</span> <span class="dv">50</span>)</span>
+<span id="cb15-32"><a href="#cb15-32"></a>   Grp1          Grp2           Grp3            </span>
+<span id="cb15-33"><a href="#cb15-33"></a><span class="dv">48</span> <span class="st">"( 1 2 3 4 )"</span> <span class="st">"( 5 6 7 9 )"</span>  <span class="st">"( 12 11 10 8 )"</span></span>
+<span id="cb15-34"><a href="#cb15-34"></a><span class="dv">49</span> <span class="st">"( 1 2 3 4 )"</span> <span class="st">"( 5 6 7 10 )"</span> <span class="st">"( 8 9 11 12 )"</span>  <span class="co">## &lt;&lt;-- 3rd distinct partition of groups</span></span>
+<span id="cb15-35"><a href="#cb15-35"></a><span class="dv">50</span> <span class="st">"( 1 2 3 4 )"</span> <span class="st">"( 5 6 7 10 )"</span> <span class="st">"( 8 9 12 11 )"</span> </span></code></pre></div>
 <p>We are starting to see a pattern. Each new partition is exactly 24 spots away. This makes sense as there are <code>factorial(4) = 24</code> permutations of size 4. Now, this is an oversimplification as if we simply generate every <em>24<sup>th</sup></em> permutation, we will still get duplication as they start to carry over to the other groups. Observe:</p>
-<div class="sourceCode" id="cb13"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1"></a><span class="kw"><a href="https://rdrr.io/r/base/do.call.html">do.call</a></span>(rbind, <span class="kw"><a href="https://rdrr.io/r/base/lapply.html">lapply</a></span>(<span class="kw"><a href="https://rdrr.io/r/base/seq.html">seq</a></span>(<span class="dv">1</span>, <span class="dv">145</span>, <span class="dv">24</span>), <span class="cf">function</span>(x) {</span>
-<span id="cb13-2"><a href="#cb13-2"></a>    <span class="kw">funBruteGrp</span>(<span class="dt">myLow =</span> x, <span class="dt">myUp =</span> x)</span>
-<span id="cb13-3"><a href="#cb13-3"></a>}))</span>
-<span id="cb13-4"><a href="#cb13-4"></a>Grp1          Grp2           Grp3            </span>
-<span id="cb13-5"><a href="#cb13-5"></a><span class="dv">1</span>   <span class="st">"( 1 2 3 4 )"</span> <span class="st">"( 5 6 7 8 )"</span>  <span class="st">"( 9 10 11 12 )"</span></span>
-<span id="cb13-6"><a href="#cb13-6"></a><span class="dv">25</span>  <span class="st">"( 1 2 3 4 )"</span> <span class="st">"( 5 6 7 9 )"</span>  <span class="st">"( 8 10 11 12 )"</span></span>
-<span id="cb13-7"><a href="#cb13-7"></a><span class="dv">49</span>  <span class="st">"( 1 2 3 4 )"</span> <span class="st">"( 5 6 7 10 )"</span> <span class="st">"( 8 9 11 12 )"</span> </span>
-<span id="cb13-8"><a href="#cb13-8"></a><span class="dv">73</span>  <span class="st">"( 1 2 3 4 )"</span> <span class="st">"( 5 6 7 11 )"</span> <span class="st">"( 8 9 10 12 )"</span> </span>
-<span id="cb13-9"><a href="#cb13-9"></a><span class="dv">97</span>  <span class="st">"( 1 2 3 4 )"</span> <span class="st">"( 5 6 7 12 )"</span> <span class="st">"( 8 9 10 11 )"</span> </span>
-<span id="cb13-10"><a href="#cb13-10"></a><span class="dv">121</span> <span class="st">"( 1 2 3 4 )"</span> <span class="st">"( 5 6 8 7 )"</span>  <span class="st">"( 9 10 11 12 )"</span>  <span class="co">## &lt;&lt;-- This is the same as the 1st</span></span>
-<span id="cb13-11"><a href="#cb13-11"></a><span class="dv">145</span> <span class="st">"( 1 2 3 4 )"</span> <span class="st">"( 5 6 8 9 )"</span>  <span class="st">"( 7 10 11 12 )"</span>  <span class="co">## partition. The only difference is</span></span>
-<span id="cb13-12"><a href="#cb13-12"></a><span class="dv">169</span> <span class="st">"( 1 2 3 4 )"</span> <span class="st">"( 5 6 8 10 )"</span> <span class="st">"( 7 9 11 12 )"</span>   <span class="co">## that the 2nd Grp has been permuted</span></span></code></pre></div>
+<div class="sourceCode" id="cb16"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1"></a><span class="kw"><a href="https://rdrr.io/r/base/do.call.html">do.call</a></span>(rbind, <span class="kw"><a href="https://rdrr.io/r/base/lapply.html">lapply</a></span>(<span class="kw"><a href="https://rdrr.io/r/base/seq.html">seq</a></span>(<span class="dv">1</span>, <span class="dv">145</span>, <span class="dv">24</span>), <span class="cf">function</span>(x) {</span>
+<span id="cb16-2"><a href="#cb16-2"></a>    <span class="kw">funBruteGrp</span>(<span class="dt">myLow =</span> x, <span class="dt">myUp =</span> x)</span>
+<span id="cb16-3"><a href="#cb16-3"></a>}))</span>
+<span id="cb16-4"><a href="#cb16-4"></a>Grp1          Grp2           Grp3            </span>
+<span id="cb16-5"><a href="#cb16-5"></a><span class="dv">1</span>   <span class="st">"( 1 2 3 4 )"</span> <span class="st">"( 5 6 7 8 )"</span>  <span class="st">"( 9 10 11 12 )"</span></span>
+<span id="cb16-6"><a href="#cb16-6"></a><span class="dv">25</span>  <span class="st">"( 1 2 3 4 )"</span> <span class="st">"( 5 6 7 9 )"</span>  <span class="st">"( 8 10 11 12 )"</span></span>
+<span id="cb16-7"><a href="#cb16-7"></a><span class="dv">49</span>  <span class="st">"( 1 2 3 4 )"</span> <span class="st">"( 5 6 7 10 )"</span> <span class="st">"( 8 9 11 12 )"</span> </span>
+<span id="cb16-8"><a href="#cb16-8"></a><span class="dv">73</span>  <span class="st">"( 1 2 3 4 )"</span> <span class="st">"( 5 6 7 11 )"</span> <span class="st">"( 8 9 10 12 )"</span> </span>
+<span id="cb16-9"><a href="#cb16-9"></a><span class="dv">97</span>  <span class="st">"( 1 2 3 4 )"</span> <span class="st">"( 5 6 7 12 )"</span> <span class="st">"( 8 9 10 11 )"</span> </span>
+<span id="cb16-10"><a href="#cb16-10"></a><span class="dv">121</span> <span class="st">"( 1 2 3 4 )"</span> <span class="st">"( 5 6 8 7 )"</span>  <span class="st">"( 9 10 11 12 )"</span>  <span class="co">## &lt;&lt;-- This is the same as the 1st</span></span>
+<span id="cb16-11"><a href="#cb16-11"></a><span class="dv">145</span> <span class="st">"( 1 2 3 4 )"</span> <span class="st">"( 5 6 8 9 )"</span>  <span class="st">"( 7 10 11 12 )"</span>  <span class="co">## partition. The only difference is</span></span>
+<span id="cb16-12"><a href="#cb16-12"></a><span class="dv">169</span> <span class="st">"( 1 2 3 4 )"</span> <span class="st">"( 5 6 8 10 )"</span> <span class="st">"( 7 9 11 12 )"</span>   <span class="co">## that the 2nd Grp has been permuted</span></span></code></pre></div>
 <p>This only gets more muddled as the number of groups increases. It is also very inefficient, however this exercise hopefully serves to better illustrate these structures.</p>
 <p>The algorithm in <code>comboGroups</code> avoids all of this duplication by implementing a novel algorithm akin to <a href="https://en.cppreference.com/w/cpp/algorithm/next_permutation">std::next_permutation</a> from the algorithm library in <code>C++</code>.</p>
 <pre><code>system.time(comboGroups(12, numGroups = 3))
@@ -623,53 +753,53 @@ tail --&gt;
 [5774,]    1   10   11   12    2    6    8    9    3    4    5    7
 [5775,]    1   10   11   12    2    7    8    9    3    4    5    6</code></pre>
 <p>Just as in <code>combo/permuteGeneral</code>, we can utilize the arguments <code>lower</code>, <code>upper</code>, <code>Parallel</code>, and <code>nThreads</code>.</p>
-<div class="sourceCode" id="cb15"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1"></a><span class="kw"><a href="../reference/comboGroupsCount.html">comboGroupsCount</a></span>(<span class="dv">30</span>, <span class="dv">6</span>)</span>
-<span id="cb15-2"><a href="#cb15-2"></a>Big <span class="kw">Integer</span> (<span class="st">'bigz'</span>) <span class="op">:</span></span>
-<span id="cb15-3"><a href="#cb15-3"></a>[<span class="dv">1</span>] <span class="dv">123378675083039376</span></span>
-<span id="cb15-4"><a href="#cb15-4"></a></span>
-<span id="cb15-5"><a href="#cb15-5"></a><span class="kw"><a href="https://rdrr.io/r/base/system.time.html">system.time</a></span>(a1 &lt;-<span class="st"> </span><span class="kw"><a href="../reference/comboGroups.html">comboGroups</a></span>(<span class="dv">30</span>, <span class="dt">numGroups =</span> <span class="dv">6</span>, </span>
-<span id="cb15-6"><a href="#cb15-6"></a>                              <span class="dt">lower =</span> <span class="st">"123378675000000000"</span>,</span>
-<span id="cb15-7"><a href="#cb15-7"></a>                              <span class="dt">upper =</span> <span class="st">"123378675005000000"</span>))</span>
-<span id="cb15-8"><a href="#cb15-8"></a>   user  system elapsed </span>
-<span id="cb15-9"><a href="#cb15-9"></a>  <span class="fl">0.299</span>   <span class="fl">0.113</span>   <span class="fl">0.412</span></span>
-<span id="cb15-10"><a href="#cb15-10"></a></span>
-<span id="cb15-11"><a href="#cb15-11"></a><span class="co">## Use specific number of threads</span></span>
-<span id="cb15-12"><a href="#cb15-12"></a><span class="kw"><a href="https://rdrr.io/r/base/system.time.html">system.time</a></span>(a2 &lt;-<span class="st"> </span><span class="kw"><a href="../reference/comboGroups.html">comboGroups</a></span>(<span class="dv">30</span>, <span class="dt">numGroups =</span> <span class="dv">6</span>, </span>
-<span id="cb15-13"><a href="#cb15-13"></a>                              <span class="dt">lower =</span> <span class="st">"123378675000000000"</span>,</span>
-<span id="cb15-14"><a href="#cb15-14"></a>                              <span class="dt">upper =</span> <span class="st">"123378675005000000"</span>, <span class="dt">nThreads =</span> <span class="dv">4</span>))</span>
-<span id="cb15-15"><a href="#cb15-15"></a>   user  system elapsed </span>
-<span id="cb15-16"><a href="#cb15-16"></a>  <span class="fl">0.358</span>   <span class="fl">0.197</span>   <span class="fl">0.146</span></span>
-<span id="cb15-17"><a href="#cb15-17"></a></span>
-<span id="cb15-18"><a href="#cb15-18"></a><span class="co">## Use n - 1 number of threads (in this case, there are 7)</span></span>
-<span id="cb15-19"><a href="#cb15-19"></a><span class="kw"><a href="https://rdrr.io/r/base/system.time.html">system.time</a></span>(a3 &lt;-<span class="st"> </span><span class="kw"><a href="../reference/comboGroups.html">comboGroups</a></span>(<span class="dv">30</span>, <span class="dt">numGroups =</span> <span class="dv">6</span>, </span>
-<span id="cb15-20"><a href="#cb15-20"></a>                              <span class="dt">lower =</span> <span class="st">"123378675000000000"</span>,</span>
-<span id="cb15-21"><a href="#cb15-21"></a>                              <span class="dt">upper =</span> <span class="st">"123378675005000000"</span>, <span class="dt">Parallel =</span> <span class="ot">TRUE</span>))</span>
-<span id="cb15-22"><a href="#cb15-22"></a>   user  system elapsed </span>
-<span id="cb15-23"><a href="#cb15-23"></a>  <span class="fl">0.466</span>   <span class="fl">0.307</span>   <span class="fl">0.118</span></span>
-<span id="cb15-24"><a href="#cb15-24"></a>  </span>
-<span id="cb15-25"><a href="#cb15-25"></a><span class="kw"><a href="https://rdrr.io/r/base/identical.html">identical</a></span>(a1, a2)</span>
-<span id="cb15-26"><a href="#cb15-26"></a>[<span class="dv">1</span>] <span class="ot">TRUE</span></span>
-<span id="cb15-27"><a href="#cb15-27"></a></span>
-<span id="cb15-28"><a href="#cb15-28"></a><span class="kw"><a href="https://rdrr.io/r/base/identical.html">identical</a></span>(a1, a3)</span>
-<span id="cb15-29"><a href="#cb15-29"></a>[<span class="dv">1</span>] <span class="ot">TRUE</span></span></code></pre></div>
+<div class="sourceCode" id="cb18"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1"></a><span class="kw"><a href="../reference/comboGroupsCount.html">comboGroupsCount</a></span>(<span class="dv">30</span>, <span class="dv">6</span>)</span>
+<span id="cb18-2"><a href="#cb18-2"></a>Big <span class="kw">Integer</span> (<span class="st">'bigz'</span>) <span class="op">:</span></span>
+<span id="cb18-3"><a href="#cb18-3"></a>[<span class="dv">1</span>] <span class="dv">123378675083039376</span></span>
+<span id="cb18-4"><a href="#cb18-4"></a></span>
+<span id="cb18-5"><a href="#cb18-5"></a><span class="kw"><a href="https://rdrr.io/r/base/system.time.html">system.time</a></span>(a1 &lt;-<span class="st"> </span><span class="kw"><a href="../reference/comboGroups.html">comboGroups</a></span>(<span class="dv">30</span>, <span class="dt">numGroups =</span> <span class="dv">6</span>, </span>
+<span id="cb18-6"><a href="#cb18-6"></a>                              <span class="dt">lower =</span> <span class="st">"123378675000000000"</span>,</span>
+<span id="cb18-7"><a href="#cb18-7"></a>                              <span class="dt">upper =</span> <span class="st">"123378675005000000"</span>))</span>
+<span id="cb18-8"><a href="#cb18-8"></a>   user  system elapsed </span>
+<span id="cb18-9"><a href="#cb18-9"></a>  <span class="fl">0.299</span>   <span class="fl">0.113</span>   <span class="fl">0.412</span></span>
+<span id="cb18-10"><a href="#cb18-10"></a></span>
+<span id="cb18-11"><a href="#cb18-11"></a><span class="co">## Use specific number of threads</span></span>
+<span id="cb18-12"><a href="#cb18-12"></a><span class="kw"><a href="https://rdrr.io/r/base/system.time.html">system.time</a></span>(a2 &lt;-<span class="st"> </span><span class="kw"><a href="../reference/comboGroups.html">comboGroups</a></span>(<span class="dv">30</span>, <span class="dt">numGroups =</span> <span class="dv">6</span>, </span>
+<span id="cb18-13"><a href="#cb18-13"></a>                              <span class="dt">lower =</span> <span class="st">"123378675000000000"</span>,</span>
+<span id="cb18-14"><a href="#cb18-14"></a>                              <span class="dt">upper =</span> <span class="st">"123378675005000000"</span>, <span class="dt">nThreads =</span> <span class="dv">4</span>))</span>
+<span id="cb18-15"><a href="#cb18-15"></a>   user  system elapsed </span>
+<span id="cb18-16"><a href="#cb18-16"></a>  <span class="fl">0.358</span>   <span class="fl">0.197</span>   <span class="fl">0.146</span></span>
+<span id="cb18-17"><a href="#cb18-17"></a></span>
+<span id="cb18-18"><a href="#cb18-18"></a><span class="co">## Use n - 1 number of threads (in this case, there are 7)</span></span>
+<span id="cb18-19"><a href="#cb18-19"></a><span class="kw"><a href="https://rdrr.io/r/base/system.time.html">system.time</a></span>(a3 &lt;-<span class="st"> </span><span class="kw"><a href="../reference/comboGroups.html">comboGroups</a></span>(<span class="dv">30</span>, <span class="dt">numGroups =</span> <span class="dv">6</span>, </span>
+<span id="cb18-20"><a href="#cb18-20"></a>                              <span class="dt">lower =</span> <span class="st">"123378675000000000"</span>,</span>
+<span id="cb18-21"><a href="#cb18-21"></a>                              <span class="dt">upper =</span> <span class="st">"123378675005000000"</span>, <span class="dt">Parallel =</span> <span class="ot">TRUE</span>))</span>
+<span id="cb18-22"><a href="#cb18-22"></a>   user  system elapsed </span>
+<span id="cb18-23"><a href="#cb18-23"></a>  <span class="fl">0.466</span>   <span class="fl">0.307</span>   <span class="fl">0.118</span></span>
+<span id="cb18-24"><a href="#cb18-24"></a>  </span>
+<span id="cb18-25"><a href="#cb18-25"></a><span class="kw"><a href="https://rdrr.io/r/base/identical.html">identical</a></span>(a1, a2)</span>
+<span id="cb18-26"><a href="#cb18-26"></a>[<span class="dv">1</span>] <span class="ot">TRUE</span></span>
+<span id="cb18-27"><a href="#cb18-27"></a></span>
+<span id="cb18-28"><a href="#cb18-28"></a><span class="kw"><a href="https://rdrr.io/r/base/identical.html">identical</a></span>(a1, a3)</span>
+<span id="cb18-29"><a href="#cb18-29"></a>[<span class="dv">1</span>] <span class="ot">TRUE</span></span></code></pre></div>
 <p>There is one additional argument (i.e. <code>retType</code>) not present in the other two general functions that allows the user to specify the type of object returned. The user can select between <code>"matrix"</code> (the default) and <code>"3Darray"</code>. This structure has a natural connection to 3D space. We have a particular result (<em>1<sup>st</sup></em> dimension) broken down into groups (<em>2<sup>nd</sup></em> dimension) of a certain size (<em>3<sup>rd</sup></em> dimension).</p>
-<div class="sourceCode" id="cb16"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1"></a>my3D &lt;-<span class="st"> </span><span class="kw"><a href="../reference/comboGroups.html">comboGroups</a></span>(<span class="kw"><a href="https://rdrr.io/r/base/factor.html">factor</a></span>(month.abb), <span class="dv">4</span>, <span class="dt">retType =</span> <span class="st">"3Darray"</span>)</span>
-<span id="cb16-2"><a href="#cb16-2"></a>my3D[<span class="dv">1</span>, , ]</span>
-<span id="cb16-3"><a href="#cb16-3"></a>     Grp1 Grp2 Grp3 Grp4</span>
-<span id="cb16-4"><a href="#cb16-4"></a>[<span class="dv">1</span>,] Jan  Apr  Jul  Oct </span>
-<span id="cb16-5"><a href="#cb16-5"></a>[<span class="dv">2</span>,] Feb  May  Aug  Nov </span>
-<span id="cb16-6"><a href="#cb16-6"></a>[<span class="dv">3</span>,] Mar  Jun  Sep  Dec </span>
-<span id="cb16-7"><a href="#cb16-7"></a>Levels<span class="op">:</span><span class="st"> </span>Apr Aug Dec Feb Jan Jul Jun Mar May Nov Oct Sep</span>
-<span id="cb16-8"><a href="#cb16-8"></a></span>
-<span id="cb16-9"><a href="#cb16-9"></a><span class="kw"><a href="../reference/comboGroupsCount.html">comboGroupsCount</a></span>(<span class="dv">12</span>, <span class="dv">4</span>)</span>
-<span id="cb16-10"><a href="#cb16-10"></a>[<span class="dv">1</span>] <span class="dv">15400</span></span>
-<span id="cb16-11"><a href="#cb16-11"></a></span>
-<span id="cb16-12"><a href="#cb16-12"></a>my3D[<span class="dv">15400</span>, , ]</span>
-<span id="cb16-13"><a href="#cb16-13"></a>     Grp1 Grp2 Grp3 Grp4</span>
-<span id="cb16-14"><a href="#cb16-14"></a>[<span class="dv">1</span>,] Jan  Feb  Mar  Apr </span>
-<span id="cb16-15"><a href="#cb16-15"></a>[<span class="dv">2</span>,] Nov  Sep  Jul  May </span>
-<span id="cb16-16"><a href="#cb16-16"></a>[<span class="dv">3</span>,] Dec  Oct  Aug  Jun </span>
-<span id="cb16-17"><a href="#cb16-17"></a>Levels<span class="op">:</span><span class="st"> </span>Apr Aug Dec Feb Jan Jul Jun Mar May Nov Oct Sep</span></code></pre></div>
+<div class="sourceCode" id="cb19"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1"></a>my3D &lt;-<span class="st"> </span><span class="kw"><a href="../reference/comboGroups.html">comboGroups</a></span>(<span class="kw"><a href="https://rdrr.io/r/base/factor.html">factor</a></span>(month.abb), <span class="dv">4</span>, <span class="dt">retType =</span> <span class="st">"3Darray"</span>)</span>
+<span id="cb19-2"><a href="#cb19-2"></a>my3D[<span class="dv">1</span>, , ]</span>
+<span id="cb19-3"><a href="#cb19-3"></a>     Grp1 Grp2 Grp3 Grp4</span>
+<span id="cb19-4"><a href="#cb19-4"></a>[<span class="dv">1</span>,] Jan  Apr  Jul  Oct </span>
+<span id="cb19-5"><a href="#cb19-5"></a>[<span class="dv">2</span>,] Feb  May  Aug  Nov </span>
+<span id="cb19-6"><a href="#cb19-6"></a>[<span class="dv">3</span>,] Mar  Jun  Sep  Dec </span>
+<span id="cb19-7"><a href="#cb19-7"></a>Levels<span class="op">:</span><span class="st"> </span>Apr Aug Dec Feb Jan Jul Jun Mar May Nov Oct Sep</span>
+<span id="cb19-8"><a href="#cb19-8"></a></span>
+<span id="cb19-9"><a href="#cb19-9"></a><span class="kw"><a href="../reference/comboGroupsCount.html">comboGroupsCount</a></span>(<span class="dv">12</span>, <span class="dv">4</span>)</span>
+<span id="cb19-10"><a href="#cb19-10"></a>[<span class="dv">1</span>] <span class="dv">15400</span></span>
+<span id="cb19-11"><a href="#cb19-11"></a></span>
+<span id="cb19-12"><a href="#cb19-12"></a>my3D[<span class="dv">15400</span>, , ]</span>
+<span id="cb19-13"><a href="#cb19-13"></a>     Grp1 Grp2 Grp3 Grp4</span>
+<span id="cb19-14"><a href="#cb19-14"></a>[<span class="dv">1</span>,] Jan  Feb  Mar  Apr </span>
+<span id="cb19-15"><a href="#cb19-15"></a>[<span class="dv">2</span>,] Nov  Sep  Jul  May </span>
+<span id="cb19-16"><a href="#cb19-16"></a>[<span class="dv">3</span>,] Dec  Oct  Aug  Jun </span>
+<span id="cb19-17"><a href="#cb19-17"></a>Levels<span class="op">:</span><span class="st"> </span>Apr Aug Dec Feb Jan Jul Jun Mar May Nov Oct Sep</span></code></pre></div>
 <div id="relevant-posts-on-stackoverflow-as-well-as-oeis-" class="section level3">
 <h3 class="hasAnchor">
 <a href="#relevant-posts-on-stackoverflow-as-well-as-oeis-" class="anchor"></a>Relevant Posts on Stackoverflow as well as OEIS.</h3>
@@ -696,6 +826,7 @@ tail --&gt;
       <li><a href="#parallel-computing">Parallel Computing</a></li>
       <li><a href="#gmp-support">GMP Support</a></li>
       <li><a href="#user-defined-functions">User Defined Functions</a></li>
+      <li><a href="#cartesian-product-where-order-does-not-matter">Cartesian Product where Order does not Matter</a></li>
       <li><a href="#partitions-of-groups-of-equal-size-with-combogroups">Partitions of Groups of Equal Size with <code>comboGroups</code></a></li>
       </ul>
 </div>
