@@ -51,4 +51,19 @@ test_that("divisorsSieve generates correct numbers", {
     
     myList <- rep(list(c(T, F)), 10)
     expect_true(bruteCheck(myList, rep = TRUE))
+    
+    ## Huge test... This will trigger mpz_t keys in ComboCartesian.cpp
+    pools <- list(c(1, 10, 14, 6),
+                  c(7, 2, 4, 8, 3, 11, 12),
+                  c(11, 3, 13, 4, 15, 8, 6, 5),
+                  c(10, 1, 3, 2, 9, 5,  7),
+                  c(1, 5, 10, 3, 8, 14),
+                  c(15, 3, 7, 10, 4, 5, 8, 6),
+                  c(14, 9, 11, 15),
+                  c(7, 6, 13, 14, 10, 11, 9, 4),
+                  c(6,  3,  2, 14,  7, 12,  9),
+                  c(6, 11,  2,  5, 15,  7), 16:19, 20:23, 24:28)
+    
+    hugeTest = comboGrid(pools, repetition = FALSE)
+    expect_equal(nrow(hugeTest), 238480)
 })
