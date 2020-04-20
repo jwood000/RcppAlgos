@@ -103,7 +103,6 @@ void comboGrid(std::vector<int> &cartCombs, bool IsRep,
     }
     
     if (NeedsMpz) {
-        Rcpp::Rcout << maxKey << "\n";
         std::vector<std::string> strKeyKeeper(uintKeyKeeper.size());
         
         for (std::size_t j = 0; j < uintKeyKeeper.size(); ++j)
