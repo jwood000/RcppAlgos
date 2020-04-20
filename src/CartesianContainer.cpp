@@ -121,12 +121,13 @@ SEXP GlueComboCart(const std::vector<int> &cartCombs,
             switch (TYPEOF(RList[i])) {
                 case INTSXP: {
                     Rcpp::IntegerVector rcppVec = Rcpp::no_init_vector(nRows);
-                    Rcpp::IntegerVector facVec(facList[facInd].cbegin(), facList[facInd].cend());
 
                     if (IsFactor[i]) {
+                        Rcpp::IntegerVector facVec(facList[facInd].cbegin(), facList[facInd].cend());
+                        
                         for (std::size_t j = 0, row = i; j < nRows; ++j, row += nCols)
                             rcppVec[j] = facVec[cartCombs[row]];
-                        
+
                         Rcpp::IntegerVector testFactor = Rcpp::as<Rcpp::IntegerVector>(RList[i]);
                         Rcpp::CharacterVector myClass = testFactor.attr("class");
                         Rcpp::CharacterVector myLevels = testFactor.attr("levels");
