@@ -1,18 +1,94 @@
 #include "ComboClass.h"
 
+SEXP Combo::VecReturn(const SEXP &v) {
+    
+    switch (TYPEOF(v)) {
+        case LGLSXP: {
+            Rcpp::LogicalVector boolVec(Rcpp::clone(v));
+            return VecPopulate(boolVec);
+        } case INTSXP: {
+            Rcpp::IntegerVector intVec(Rcpp::clone(v));
+            return VecPopulate(intVec);
+        } case STRSXP: {
+            Rcpp::CharacterVector charVec(Rcpp::clone(v));
+            return VecPopulate(charVec);
+        } case CPLXSXP: {
+            Rcpp::ComplexVector cmplxVec(Rcpp::clone(v));
+            return VecPopulate(cmplxVec);
+        } case RAWSXP: {
+            Rcpp::RawVector rawVec(Rcpp::clone(v));
+            return VecPopulate(rawVec);
+        } default: {
+            Rcpp::NumericVector numVec(Rcpp::clone(v));
+            return VecPopulate(numVec);
+        }
+    }
+}
+
+SEXP Combo::MatReturn(const SEXP &v, int nr, bool IsReverse) {
+    
+    switch (TYPEOF(v)) {
+        case LGLSXP: {
+            Rcpp::LogicalVector bv(Rcpp::clone(v));
+            return (IsReverse) ? MatComboReverse(bv, nr) : MatCombo(bv, nr);
+        } case INTSXP: {
+            Rcpp::IntegerVector iv(Rcpp::clone(v));
+            return (IsReverse) ? MatComboReverse(iv, nr) : MatCombo(iv, nr);
+        } case STRSXP: {
+            Rcpp::CharacterVector cv(Rcpp::clone(v));
+            return (IsReverse) ? MatComboReverse(cv, nr) : MatCombo(cv, nr);
+        } case CPLXSXP: {
+            Rcpp::ComplexVector xv(Rcpp::clone(v));
+            return (IsReverse) ? MatComboReverse(xv, nr) : MatCombo(xv, nr);
+        } case RAWSXP: {
+            Rcpp::RawVector rv(Rcpp::clone(v));
+            return (IsReverse) ? MatComboReverse(rv, nr) : MatCombo(rv, nr);
+        } default: {
+            Rcpp::NumericVector nv(Rcpp::clone(v));
+            return (IsReverse) ? MatComboReverse(nv, nr) : MatCombo(nv, nr);
+        }
+    }
+}
+
+SEXP Combo::SampReturn(const SEXP &v, const std::vector<double> &mySample,
+                       mpz_t *const myBigSamp, std::size_t sampSize) {
+    
+    switch (TYPEOF(v)) {
+        case LGLSXP: {
+            Rcpp::LogicalVector boolVec(Rcpp::clone(v));
+            return SampMatrix(boolVec, mySample, myBigSamp, sampSize);
+        } case INTSXP: {
+            Rcpp::IntegerVector intVec(Rcpp::clone(v));
+            return SampMatrix(intVec, mySample, myBigSamp, sampSize);
+        } case STRSXP: {
+            Rcpp::CharacterVector charVec(Rcpp::clone(v));
+            return SampMatrix(charVec, mySample, myBigSamp, sampSize);
+        } case CPLXSXP: {
+            Rcpp::ComplexVector cmplxVec(Rcpp::clone(v));
+            return SampMatrix(cmplxVec, mySample, myBigSamp, sampSize);
+        } case RAWSXP: {
+            Rcpp::RawVector rawVec(Rcpp::clone(v));
+            return SampMatrix(rawVec, mySample, myBigSamp, sampSize);
+        } default: {
+            Rcpp::NumericVector numVec(Rcpp::clone(v));
+            return SampMatrix(numVec, mySample, myBigSamp, sampSize);
+        }
+    }
+}
+
 template <int RTYPE>
-Rcpp::Vector<RTYPE> Combo::VecRes(const Rcpp::Vector<RTYPE> &v) {
+Rcpp::Vector<RTYPE> Combo::VecPopulate(const Rcpp::Vector<RTYPE> &v) {
     
     Rcpp::Vector<RTYPE> vOut(m);
-
+    
     for (int j = 0; j < m; ++j)
         vOut[j] = v[z[j]];
-
+    
     if (IsFactor) {
         Rf_setAttrib(vOut, R_ClassSymbol, myClass);
         Rf_setAttrib(vOut, R_LevelsSymbol, myLevels);
     }
-
+    
     return vOut;
 }
 
@@ -152,11 +228,11 @@ SEXP Combo::nextComb() {
     
     if (CheckEqSi(IsGmp, mpzIndex[0], dblIndex, 0)) {
         increment(IsGmp, mpzIndex[0], dblIndex);
-        RCPP_RETURN_VECTOR(VecRes, sexpVec);
+        return VecReturn(sexpVec);
     } else if (CheckIndLT(IsGmp, mpzIndex[0], dblIndex, computedRowsMpz[0], computedRows)) {
         increment(IsGmp, mpzIndex[0], dblIndex);
         nextIter(freqs, z, n1, m1);
-        RCPP_RETURN_VECTOR(VecRes, sexpVec);
+        return VecReturn(sexpVec);
     } else if (CheckEqInd(IsGmp, mpzIndex[0], dblIndex, computedRowsMpz[0], computedRows)) {
         Rcpp::Rcout << "No more results. To see the last result,"
                        " use the prevIter method(s)\n" << std::endl;
@@ -171,11 +247,11 @@ SEXP Combo::prevComb() {
     
     if (CheckIndGrT(IsGmp, mpzIndex[0], dblIndex, computedRowsMpz[0], computedRows)) {
         decrement(IsGmp, mpzIndex[0], dblIndex);
-        RCPP_RETURN_VECTOR(VecRes, sexpVec);
+        return VecReturn(sexpVec);
     } else if (CheckGrTSi(IsGmp, mpzIndex[0], dblIndex, 1)) {
         decrement(IsGmp, mpzIndex[0], dblIndex);
         prevIter(freqs, z, n1, m1);
-        RCPP_RETURN_VECTOR(VecRes, sexpVec);
+        return VecReturn(sexpVec);
     } else if (CheckEqSi(IsGmp, mpzIndex[0], dblIndex, 1)) {
         Rcpp::Rcout << "Iterator Initialized. To see the first result,"
                        " use the nextIter method(s)\n" << std::endl;
@@ -209,7 +285,7 @@ SEXP Combo::nextNumCombs(SEXP RNum) {
             nextIter(freqs, z, n1, m1);
         
         increment(IsGmp, mpzIndex[0], dblIndex, numIncrement);
-        RCPP_RETURN_VECTOR(MatCombo, sexpVec, nRows);
+        return MatReturn(sexpVec, nRows, false);
     } else if (CheckEqInd(IsGmp, mpzIndex[0], dblIndex, computedRowsMpz[0], computedRows)) {
         Rcpp::Rcout << "No more results. To see the last result,"
                        " use the prevIter method(s)\n" << std::endl;
@@ -243,7 +319,7 @@ SEXP Combo::prevNumCombs(SEXP RNum) {
             prevIter(freqs, z, n1, m1);
         
         decrement(IsGmp, mpzIndex[0], dblIndex, numDecrement);
-        RCPP_RETURN_VECTOR(MatComboReverse, sexpVec, nRows);
+        return MatReturn(sexpVec, nRows, true);
     } else if (CheckEqSi(IsGmp, mpzIndex[0], dblIndex, 2)) {
         Rcpp::Rcout << "No more results. To see the last result,"
                        " use the prevIter method(s)\n" << std::endl;
@@ -284,7 +360,7 @@ SEXP Combo::nextGather() {
             dblIndex = computedRows + 1;
         }
         
-        RCPP_RETURN_VECTOR(MatCombo, sexpVec, nRows);
+        return MatReturn(sexpVec, nRows, false);
     } else {
         return Rcpp::wrap(false);
     }
@@ -320,7 +396,7 @@ SEXP Combo::prevGather() {
             dblIndex = 0;
         }
         
-        RCPP_RETURN_VECTOR(MatComboReverse, sexpVec, nRows);
+        return MatReturn(sexpVec, nRows, true);
     } else {
         return Rcpp::wrap(false);
     }
@@ -333,7 +409,7 @@ SEXP Combo::currComb() {
                         " use the prevIter method(s)\n" << std::endl;
         return Rcpp::wrap(false);
     } else if (CheckGrTSi(IsGmp, mpzIndex[0], dblIndex, 0)) {
-        RCPP_RETURN_VECTOR(VecRes, sexpVec);
+        return VecReturn(sexpVec);
     } else {
         Rcpp::Rcout << "Iterator Initialized. To see the first result,"
                        " use the nextIter method(s)\n" << std::endl;
@@ -357,7 +433,7 @@ SEXP Combo::combIndex(SEXP RindexVec) {
         SetIndexVecMpz(RindexVec, mpzVec.get(), sampSize, computedRowsMpz[0]);
 
     if (sampSize > 1) {
-        RCPP_RETURN_VECTOR(SampMatrix, sexpVec, mySample, mpzVec.get(), sampSize);
+        return SampReturn(sexpVec, mySample, mpzVec.get(), sampSize);
     } else {
         if (IsGmp) {
             mpz_add_ui(mpzIndex[0], mpzVec[0], 1u);
@@ -369,7 +445,7 @@ SEXP Combo::combIndex(SEXP RindexVec) {
         
         z = nthResFun(n, m, dblTemp, mpzTemp, myReps);
         TopOffPartialPerm(z, myReps, n, m, IsComb, IsRep, IsMult);
-        RCPP_RETURN_VECTOR(VecRes, sexpVec);
+        return VecReturn(sexpVec);
     }
 }
 
@@ -385,7 +461,7 @@ SEXP Combo::front() {
     
     z = nthResFun(n, m, dblTemp, mpzTemp, myReps);
     TopOffPartialPerm(z, myReps, n, m, IsComb, IsRep, IsMult);
-    RCPP_RETURN_VECTOR(VecRes, sexpVec);
+    return VecReturn(sexpVec);
 }
 
 SEXP Combo::back() {
@@ -400,7 +476,7 @@ SEXP Combo::back() {
     
     z = nthResFun(n, m, dblTemp, mpzTemp, myReps);
     TopOffPartialPerm(z, myReps, n, m, IsComb, IsRep, IsMult);
-    RCPP_RETURN_VECTOR(VecRes, sexpVec);
+    return VecReturn(sexpVec);
 }
 
 SEXP Combo::sourceVector() const {
