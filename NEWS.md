@@ -1,6 +1,17 @@
+# RcppAlgos 2.4.2
+
+## New Features:
+
+* Added function `comboGrid` for efficiently generating the cartesian product where order does not matter.
+
+## Enhancements:
+
+* Refactored code base to reduce binary size
+
 # RcppAlgos 2.4.1
 
 ## Bug Fixes:
+
 * Removed broken URL in NEWS.Rd
 
 # RcppAlgos 2.4.0

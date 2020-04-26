@@ -1,7 +1,20 @@
 \name{NEWS}
 \title{News for Package \pkg{RcppAlgos}}
 
-\section{Changes in RcppAlgos version 2.4.1 (Release date: 2020-03-23)}{
+\section{Changes in RcppAlgos version 2.4.2 (Release date: 2020-04-27)}{
+    \itemize{
+        \item New Features:
+        \itemize{
+            \item Added function \code{comboGrid} for efficiently generating the cartesian product where order does not matter.
+        }
+        \item Enhancements:
+        \itemize{
+            \item Refactored code base to reduce binary size
+        }
+    }
+}
+
+\section{Changes in RcppAlgos version 2.4.1 (Release date: 2020-03-24)}{
     \itemize{
         \item Bug Fixes:
         \itemize{
