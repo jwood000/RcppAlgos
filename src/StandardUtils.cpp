@@ -6,24 +6,19 @@ void SetType(VecType &myType, const SEXP &Rv) {
         case LGLSXP: {
             myType = VecType::Logical;
             break;
-        }
-        case INTSXP: {
+        } case INTSXP: {
             myType = VecType::Integer;
             break;
-        }
-        case REALSXP: {
+        } case REALSXP: {
             myType = VecType::Numeric;
             break;
-        }
-        case STRSXP: {
+        } case STRSXP: {
             myType = VecType::Character;
             break;
-        }
-        case CPLXSXP: {
+        } case CPLXSXP: {
             myType = VecType::Complex;
             break;
-        }
-        case RAWSXP: {
+        } case RAWSXP: {
             // Vectors of class bigZ and mpfr cause a lot of headaches, and for this
             // we simply exclude all raw vectors that have any attributes. If you
             // think there is a clean solution for including these cases, please
@@ -36,8 +31,7 @@ void SetType(VecType &myType, const SEXP &Rv) {
                 myType = VecType::Raw;
                 break;
             }
-        }
-        default: {
+        } default: {
             Rcpp::stop("Only atomic types are supported for v");
         }
     }
