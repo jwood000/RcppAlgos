@@ -131,11 +131,11 @@ void GetStartGrp(bool IsGmp, std::vector<int> &z, int n, int grpSize,
 }
 
 template <typename typeRcpp, typename typeElem>
-void GroupsMaster(std::size_t n, const std::vector<typeElem> &v, typeRcpp &GroupsMat, std::vector<int> z,
-                  int r, int grpSize, std::size_t nRows, bool Parallel, int nThreads, bool IsGmp,
-                  double lower, mpz_t &lowerMpz, double computedRows, mpz_t &computedRowMpz, 
-                  bool IsSample, const std::vector<double> &mySample, mpz_t *const myBigSamp,
-                  bool IsArray, bool IsNamed) {
+void GroupsMain(std::size_t n, const std::vector<typeElem> &v, typeRcpp &GroupsMat, std::vector<int> z,
+                int r, int grpSize, std::size_t nRows, bool Parallel, int nThreads, bool IsGmp,
+                double lower, mpz_t &lowerMpz, double computedRows, mpz_t &computedRowMpz, 
+                bool IsSample, const std::vector<double> &mySample, mpz_t *const myBigSamp,
+                bool IsArray, bool IsNamed) {
     
     if (Parallel) {
         RcppParallel::RMatrix<typeElem> parMat(GroupsMat);
@@ -333,17 +333,17 @@ SEXP ComboGroupsRcpp(SEXP Rv, SEXP RNumGroups, SEXP RRetType, SEXP Rlow, SEXP Rh
             return boolGroupsMat;
         } case VecType::Integer : {
             Rcpp::IntegerMatrix intGroupsMat = Rcpp::no_init_matrix(nRows, n);
-            GroupsMaster(n, vInt, intGroupsMat, startZ, numGroups, grpSize, nRows, Parallel,
-                         nThreads, IsGmp, lower, lowerMpz[0], computedRows, computedRowMpz,
-                         IsSample, mySample, myVec.get(), IsArray, IsNamed);
+            GroupsMain(n, vInt, intGroupsMat, startZ, numGroups, grpSize, nRows, Parallel,
+                       nThreads, IsGmp, lower, lowerMpz[0], computedRows, computedRowMpz,
+                       IsSample, mySample, myVec.get(), IsArray, IsNamed);
     
             if (IsFactor) {SetFactorClass(intGroupsMat, Rv);}
             return intGroupsMat;
         } default : {
             Rcpp::NumericMatrix numGroupsMat = Rcpp::no_init_matrix(nRows, n);
-            GroupsMaster(n, vNum, numGroupsMat, startZ, numGroups, grpSize, nRows, Parallel,
-                         nThreads, IsGmp, lower, lowerMpz[0], computedRows, computedRowMpz,
-                         IsSample, mySample, myVec.get(), IsArray, IsNamed);
+            GroupsMain(n, vNum, numGroupsMat, startZ, numGroups, grpSize, nRows, Parallel,
+                       nThreads, IsGmp, lower, lowerMpz[0], computedRows, computedRowMpz,
+                       IsSample, mySample, myVec.get(), IsArray, IsNamed);
             return numGroupsMat;
         }
     }

@@ -221,7 +221,7 @@ void getAtLeastNPrimes(std::vector<int> &primes, std::size_t sumLength) {
     int_fast64_t intMax = static_cast<int_fast64_t>(limit);
     std::vector<std::vector<int>> tempList;
     
-    PrimeSieve::PrimeSieveMaster(intMin, intMax, primes, tempList, tempPar);
+    PrimeSieve::PrimeSieveMain(intMin, intMax, primes, tempList, tempPar);
 }
 
 // [[Rcpp::export]]

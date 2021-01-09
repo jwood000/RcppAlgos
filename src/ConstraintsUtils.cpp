@@ -1,6 +1,140 @@
 #include "ConstraintsUtils.h"
 #include <cmath>
 
+void BinaryNextElem(int &uppBnd, int &lowBnd, int &ind, int lastElem,
+                    std::int64_t target, std::int64_t partial,
+                    const std::vector<std::int64_t> &v) {
+    
+    std::int64_t dist = target - (partial + v[ind]);
+    
+    while ((uppBnd - lowBnd) > 1 && dist != 0) {
+        const int mid = (uppBnd - lowBnd) / 2;
+        ind = lowBnd + mid;
+        dist = target - (partial + v[ind]);
+        
+        if (dist > 0)
+            lowBnd = ind;
+        else
+            uppBnd = ind;
+    }
+    
+    // Check last index. N.B. There are some cases when ind == lowBnd and dist < 0.
+    // This will not matter as we simply reassign ind and recompute dist 
+    if (dist < 0) {
+        ind = lowBnd;
+        dist = target - (partial + v[ind]);
+    }
+    
+    // We must have dist <= 0. Below is an informal proof.
+    // The sub-sequences are defined as below:
+    //                  A_max = a_(i + 1), a_(i + 2), ..., a_m
+    //                  A_set = a_1, a_2, ..., a_(i - 1)
+    // A_set are those elements that have already been determined by the algorithm.
+    // A_max is maximal (i.e. constructed of the the (m - i) largest elements). We
+    // seek to determine the i_th element given the following contraints:
+    //                      A_sum = A_set + a_i + A_max
+    //                       dist = target - A_sum
+    // With the goal of finding the minimum lexicographic combination such that the
+    // dist = 0 (i.e. target = A_sum). If we have dist > 0 for any i, then it will
+    // be impossible to obtain dist = 0. dist > 0 implies that the target > A_sum,
+    // and since A_max is already maximal, we are not able to increase A_sum in
+    // later iterations, thus we must have dist <= 0 for all i.
+    if (dist > 0 && ind < lastElem)
+        ++ind;
+}
+
+int GetFirstCombo(int m, const std::vector<std::int64_t> &v, bool IsRep, bool IsMult,
+                  std::vector<int> &z, const std::vector<int> &freqs, std::int64_t target,
+                  std::vector<int> repsCounter, int lastCol, int lastElem) {
+    
+    std::int64_t testMax = 0;
+    constexpr std::int64_t zero64 = 0;
+    
+    if (IsRep) {
+        testMax = v[lastElem] * m;
+    } else if (IsMult) {
+        const int lenMinusM = freqs.size() - m;
+        
+        for (int i = freqs.size() - 1, j = 0; i >= lenMinusM; --i, ++j){
+            testMax += v[freqs[i]];
+        }
+        
+    } else {
+        testMax = std::accumulate(v.cend() - m, v.cend(), zero64);
+    }
+    
+    if (testMax < target)  {return 0;}
+    int zExpCurrPos = IsMult ? freqs.size() - m : 0;
+    int currPos = IsMult ? freqs[zExpCurrPos] : (IsRep ? lastElem : (v.size() - m));
+    
+    std::int64_t partial = testMax;
+    partial -= v[currPos];
+    std::int64_t testMin = 0;
+    
+    if (IsRep) {
+        testMin = v[0] * m;
+    } else if (IsMult) {
+        
+        for (int i = 0; i < m; ++i) {
+            testMin += v[freqs[i]];
+        }
+        
+    } else {
+        testMin = std::accumulate(v.cbegin(), v.cbegin() + m, zero64);
+    }
+    
+    if (testMin > target) {return 0;}
+    int mid = currPos / 2;
+    std::int64_t dist = target - (partial + v[mid]);
+    
+    int lowBnd = (dist > 0) ? mid : 0;
+    int uppBnd = (dist > 0) ? currPos : mid;
+    int ind = mid;
+    
+    for (int i = 0; i < lastCol; ++i) {
+        BinaryNextElem(uppBnd, lowBnd, ind, lastElem, target, partial, v);
+        z[i] = ind;
+        partial += v[ind];
+        
+        if (IsMult) {
+            --repsCounter[ind];
+            
+            if (repsCounter[ind] == 0)
+                ++ind;
+            
+            ++zExpCurrPos;
+            currPos = freqs[zExpCurrPos];
+        } else if (!IsRep) {
+            ++ind;
+            ++currPos;
+        }
+        
+        lowBnd = ind;
+        uppBnd = currPos;
+        mid = (uppBnd - lowBnd) / 2;
+        
+        ind = lowBnd + mid;
+        partial -= v[currPos];
+    }
+    
+    BinaryNextElem(uppBnd, lowBnd, ind, lastElem, target, partial, v);
+    z[lastCol] = ind;
+    
+    // The algorithm above finds the first possible sum that equals
+    // target. If there is no combination of elements from v that sum
+    // to target, the algo returns the combination such that its sum
+    // is closest to target and greater than target
+    std::int64_t finalCheck = 0;
+    
+    for (int i = 0; i < m; ++i)
+        finalCheck += v[z[i]];
+    
+    if (finalCheck != target)
+        return 0;
+    
+    return 1;
+}
+
 template <typename typeVector>
 inline void PopulateVec(int m, const std::vector<typeVector> &v,
                         std::vector<int> &z, int &count, int maxRows,
@@ -60,7 +194,88 @@ void SectionOne(const std::vector<typeVector> &v, std::vector<typeVector> &testV
     }
 }
 
-distinctType DistinctAttr(int lenV, int m, bool IsRep, bool IsMult, int64_t target,
+// This one is similar to DistinctAttr, however since v is non-standard,
+// more work is required to obtain the optimal width. We cannot use the
+// constant time formula and thus must resort to an O(n) algo.
+distinctType DistinctAttrMapped(const std::vector<std::int64_t> &v, int m, bool IsRep, bool IsMult,
+                                std::int64_t target, const std::vector<int> &Reps,
+                                bool IncludeZero, bool mIsNull) {
+    int limit = 0;
+    bool getAll = false;
+    
+    if (IsMult || !IsRep) {
+        // No fancy tricks here... just sum until we breach. We do have
+        // to take care when we have negative values. If they are all
+        // non-positive (i.e. less than or equal to zero), it will
+        // behave just as if they were all positive, except in reverse.
+        // Observe:
+        // 
+        // with v = -5:0 and tar = -5
+        //      [,1] [,2] [,3] [,4] [,5]
+        // [1,]   -5    0    0    0    0
+        // [2,]   -4   -1    0    0    0
+        // [3,]   -3   -2    0    0    0
+        // [4,]   -3   -1   -1    0    0
+        // [5,]   -2   -2   -1    0    0
+        // [6,]   -2   -1   -1   -1    0
+        // [7,]   -1   -1   -1   -1   -1
+        //
+        // with v = 5:0 and tar = 5
+        //      [,1] [,2] [,3] [,4] [,5]
+        // [1,]    0    0    0    0    5
+        // [2,]    0    0    0    1    4
+        // [3,]    0    0    0    2    3
+        // [4,]    0    0    1    1    3
+        // [5,]    0    0    1    2    2
+        // [6,]    0    1    1    1    2
+        // [7,]    1    1    1    1    1
+        
+        std::int64_t testTar = 0;
+        
+        while (testTar)
+        
+        limit = (-1 + std::sqrt(1.0 + 8.0 * target)) / 2;
+        
+        if (IsMult) {
+            // Ensure all elements except the first element are 1. The first
+            // element should be zero and thus have a higher frequency in
+            // order to test for partitions of different length.
+            
+            const bool allOne = std::all_of(Reps.cbegin() + 1, Reps.cend(), 
+                                            [](int v_i) {return v_i == 1;});
+            
+            // if (IncludeZero && lenV == target + 1 && allOne) {
+            //     if (m >= limit) {
+            //         getAll = (Reps.front() >= (limit - 1)) ? true : false;
+            //     } else {
+            //         limit = m;
+            //     }
+            // } else {
+            //     // N.B. In the calling function we have ensured that if the 
+            //     // freqs arg is invoked with all ones, we set IsMult to false.
+            //     limit = 0;
+            // }
+        } else if (!IsRep) {
+            if (m < limit) {
+                limit = m;
+            } else if (!mIsNull) {
+                limit = 0;
+            }
+        }
+    }
+    
+    // N.B. if limit = 0, this means we either have IsRep = true,
+    // or we are not going to use the optimized algorithm. In this
+    // case, we revert to the general algorithm.
+    
+    distinctType res;
+    res.limit = limit;
+    res.getAll = getAll;
+    
+    return res;
+}
+
+distinctType DistinctAttr(int lenV, int m, bool IsRep, bool IsMult, std::int64_t target,
                           const std::vector<int> &Reps, bool IncludeZero, bool mIsNull) {
     int limit = 0;
     bool getAll = false;
@@ -87,9 +302,10 @@ distinctType DistinctAttr(int lenV, int m, bool IsRep, bool IsMult, int64_t targ
         //
         // After solving for x, if sum(1:x) > target, we know
         // that the solution with the fewest number of elements
-        // will contain x - 1 elements, hence std::floor.
+        // will contain x - 1 elements, hence std::floor (or 
+        // just integer division).
         
-        limit = static_cast<int>(std::floor((-1 + std::sqrt(1.0 + 8.0 * target)) / 2));
+        limit = (-1 + std::sqrt(1.0 + 8.0 * target)) / 2;
         
         if (IsMult) {
             // Ensure all elements except the first element are 1. The first
@@ -156,7 +372,7 @@ bool CheckIsInteger(const std::string &funPass, int n, int m,
         vAbs.clear();
         
         for (std::size_t i = 0; i < targetVals.size(); ++i) {
-            if (static_cast<int64_t>(targetVals[i]) != targetVals[i])
+            if (static_cast<std::int64_t>(targetVals[i]) != targetVals[i])
                 return false;
             else
                 vAbs.push_back(std::abs(targetVals[i]));
@@ -172,49 +388,46 @@ bool CheckIsInteger(const std::string &funPass, int n, int m,
 }
 
 void SetStartPartitionZ(PartitionType PartType, distinctType distinctTest,
-                        std::vector<int> &z, const std::vector<int> &Reps,
-                        int target, int lenV, int m, bool IncludeZero) {
+                        const std::vector<std::int64_t> &v, std::vector<int> &z,
+                        const std::vector<int> &Reps, int target, int lenV,
+                        int m, bool IncludeZero, bool IsRep, bool IsMult) {
     
-    const bool IsDistinct = (PartType > PartitionType::PartTradNoZero);
-    const int lastCol =  (IsDistinct) ? distinctTest.limit - 1 : m - 1;
+    const bool IsDistinct = (PartType >= PartitionType::DstctStdAll);
+    const int lastCol = (IsDistinct) ? distinctTest.limit - 1 : m - 1;
     const std::size_t partWidth = lastCol + 1;
-    z.assign(lastCol + 1 ,0);
+    
+    // Resize z appropriately
+    z.assign(partWidth, 0);
     
     switch (PartType) {
-        case PartitionType::PartTraditional: {
+        case PartitionType::Traditional: {
             z[lastCol] = target;
             break;
-        }
-        case PartitionType::PartTradNoZero: {
+        } case PartitionType::TradNoZero: {
             std::fill(z.begin(), z.end(), 1);
-            z[lastCol] = target - partWidth + 1;
+            z[lastCol] = target - lastCol;
             break;
-        }
-        case PartitionType::PartDstctStdAll: {
+        } case PartitionType::DstctStdAll: {
             z[lastCol] = target;
             break;
-        }
-        case PartitionType::PartDstctShort: {
+        } case PartitionType::DstctShort: {
             z[lastCol] = target;
             break;
-        }
-        case PartitionType::PartDstctSpecial: {
+        } case PartitionType::DstctSpecial: {
             std::iota(z.begin() + Reps[0] - 1, z.end(), 0);
             z[lastCol] = target - (partWidth - Reps[0]) * (partWidth - Reps[0] - 1) / 2;
             break;
-        }
-        case PartitionType::PartDstctOneZero: {
+        } case PartitionType::DstctOneZero: {
             std::iota(z.begin(), z.end(), 0);
             z[lastCol] = target - (partWidth - 1) * (partWidth - 2) / 2;
             break;
-        }
-        case PartitionType::PartDstctNoZero: {
+        } case PartitionType::DstctNoZero: {
             std::iota(z.begin(), z.end(), 1);
             z[lastCol] = target - partWidth * (partWidth - 1) / 2;
             break;
-        }
-        default: {
-            z[lastCol] = target;
+        } default: {
+            // Do something TBD
+            break;
         }
     }
 }
@@ -228,26 +441,21 @@ void ConstraintSetup(std::vector<std::string> &compFunVec,
         Rcpp::stop("The limitConstraints must be different");
     }
     
-    std::vector<std::string>::const_iterator itComp;
-    
     if (compFunVec.size() > 2)
         Rcpp::stop("there cannot be more than 2 comparison operators");
     
+    // The first 5 are "standard" whereas the 6th and 7th
+    // are written with the equality first. Converting
+    // them here makes it easier to deal with later.
     for (std::size_t i = 0; i < compFunVec.size(); ++i) {
-        itComp = std::find(compForms.cbegin(), compForms.cend(), compFunVec[i]);
+        auto itComp = compForms.find(compFunVec[i]);
         
         if (itComp == compForms.end()) {
             Rcpp::stop("comparison operators must be one of the following: "
                            "'>', '>=', '<', '<=', or '=='");
+        } else {
+            compFunVec[i] = itComp->second;
         }
-        
-        int myIndex = std::distance(compForms.cbegin(), itComp);
-        
-        // The first 5 are "standard" whereas the 6th and 7th
-        // are written with the equality first. Converting
-        // them here makes it easier to deal with later.
-        if (myIndex > 4) {myIndex -= 3;}
-        compFunVec[i] = compForms[myIndex];
     }
     
     if (compFunVec.size() == 2) {
@@ -267,7 +475,7 @@ void ConstraintSetup(std::vector<std::string> &compFunVec,
             
             // The two cases below are for when we are looking for all combs/perms such that when
             // myFun is applied, the result is between 2 values. These comparisons are defined in
-            // compSpecial in ConstraintsMaster.h. If we look at the definitions of these comparison
+            // compSpecial in ConstraintsMain.h. If we look at the definitions of these comparison
             // functions in ConstraintsUtils.h, we see the following trend for all 4 cases:
             //
             // bool greaterLess(stdType x, const std::vector<stdType> &y) {return (x < y[0]) && (x > y[1]);}
@@ -335,19 +543,19 @@ void AdjustTargetVals(int n, VecType myType, std::vector<double> &targetVals,
             bool IsWhole = true;
             
             for (int i = 0; i < n && IsWhole; ++i)
-                if (static_cast<int64_t>(vNum[i]) != vNum[i])
+                if (static_cast<std::int64_t>(vNum[i]) != vNum[i])
                     IsWhole = false;
                 
             for (std::size_t i = 0; i < targetVals.size() && IsWhole; ++i)
-                if (static_cast<int64_t>(targetVals[i]) != targetVals[i])
+                if (static_cast<std::int64_t>(targetVals[i]) != targetVals[i])
                     IsWhole = false;
                     
             tolerance = (IsWhole && mainFun != "mean") ? 0 : defaultTolerance;
         } else {
+            // numOnly = true, checkWhole = false, negPoss = false, decimalFraction = true
             CleanConvert::convertPrimitive(Rtolerance, tolerance, 
                                            "tolerance", true, false, false, true);
         }
-        
         
         const auto itComp = std::find(compSpecial.cbegin(),
                                       compSpecial.cend(), compFunVec[0]);
@@ -375,13 +583,51 @@ void AdjustTargetVals(int n, VecType myType, std::vector<double> &targetVals,
 }
 
 template <typename typeVector>
+int GetMappedTarget(const std::vector<typeVector> &v,
+                    std::int64_t target, const std::vector<int> &Reps,
+                    int m, int lenV, bool IsMult, bool IsRep) {
+    
+    std::vector<int> z(m, 0);
+    std::vector<int> zExpanded;
+    int myTarget = 0;
+    
+    std::vector<std::int64_t> v64(v.cbegin(), v.cend());
+    const int lastCol = m - 1;
+    
+    for (std::size_t i = 0; i < Reps.size(); ++i)
+        for (int j = 0; j < Reps[i]; ++j)
+            zExpanded.push_back(i);
+    
+    Rcpp::Rcout << "\n";
+    Rcpp::print(Rcpp::wrap(target));
+    Rcpp::print(Rcpp::wrap(lastCol));
+    Rcpp::print(Rcpp::wrap(lenV - 1));
+    Rcpp::print(Rcpp::wrap(m));
+    Rcpp::print(Rcpp::wrap(v64));
+    
+    if (GetFirstCombo(m, v64, IsRep, IsMult, z, zExpanded,
+                      target, Reps, lastCol, lenV - 1)) {
+        
+        Rcpp::Rcout << "\n";
+        Rcpp::print(Rcpp::wrap("First combo index"));
+        Rcpp::print(Rcpp::wrap(z));
+        
+        myTarget = std::accumulate(z.begin(), z.end(), 0) + m;
+    }
+    
+    return myTarget;
+}
+
+// IsBet is short for IsBetween
+template <typename typeVector>
 void GetPartitionCase(const std::vector<std::string> &compFunVec, std::vector<typeVector> &v,
                       const std::string &mainFun, const std::vector<typeVector> &target,
-                      PartitionType &PartType, distinctType &distinctTest, const SEXP &Rlow,
-                      std::vector<int> &Reps, int lenV, int &m, double tolerance, bool IsMult,
+                      PartitionType &PartType, ConstraintType &ConstType,
+                      distinctType &distinctTest, const SEXP &Rlow, std::vector<int> &Reps,
+                      int lenV, int &m, double tolerance, bool IsMult,
                       bool IsRep, bool IsBet, bool mIsNull) {
     
-    PartType = PartitionType::NotPartition;
+    ConstType = ConstraintType::General;
     bool bLower = false;
     
     if (!Rf_isNull(Rlow)) {
@@ -408,60 +654,138 @@ void GetPartitionCase(const std::vector<std::string> &compFunVec, std::vector<ty
             std::sort(v.begin(), v.end());
         }
         
-        int64_t tarTest = 0;
+        std::int64_t tarTest = 0;
         
-        // We don't need to check the edge case when lenV == target and there is a
-        // zero. Remember, lenV is the length of the vector v, so we could have a
-        // situation where v = c(0, 2, 3, 4, 5) -->> length(v) = 5. This would
-        // cause a problem if we were to allow this through, however, in the
-        // calling code (i.e. Combinatorics.cpp), we ensure that the distance
-        // between each element is the same. This means for the example we gave,
-        // we would have length(unique(diff(v))) > 1, which means PartitionCase
-        // (see Combinatorics.cpp) would be false, and thus the general
-        // algorithm would be executed.
-        //
-        // We do have to ensure that the smallest element is non-negative, othe-
-        // rwise, cases like v = seq(-8, 10, 2), m = 7, rep = TRUE, & limit = 10
-        // would pass as v = 0:9, m = 7, rep = TRUE, & limit = 9, --or--
-        // v = 1:10, m = 7, rep = TRUE, & limit = 10
-        
-        if (compFunVec[0] == "==" && mainFun == "sum" && lenV > 1 && m > 1) {
-            std::vector<typeVector> pTest(v.cbegin(), v.cend());
+        if (  compFunVec[0] == "=="
+            &&      mainFun == "sum"
+            &&         lenV >  1
+            &&            m >  1
+           )
+        {
+            // We need to make sure not to include zero in the check below.
+            // This is so because the zero can be used to obtain partitions
+            // of differing lengths. Under normal circumcstances, this is
+            // no problem because we simply have 0, 1, 2,..., however with
+            // the capped cases (i.e. they don't start at 0 or 1, e.g. 3:14)
+            // this case would be excluded because (3 - 0) != (4 - 3). Note,
+            // We can only do this if all values are positive. When we have
+            // negative numbers, indexing breaks down. E.g. Let v be:
+            // -15, -9, -3, 0, 3, 9,..., 99 and a target of 93. For m = 3,
+            // the first partition is -15, 9, 99 which maps to 1, 5, 20
+            // giving a new target of 26. Now let m = 5. The first partition
+            // is -15, -15, -15, 39, 99 which maps to 1, 1, 1, 10, 20 for
+            // a mapped target of 33 (which is not 26!).
+            
+            std::vector<typeVector> pTest;
+            
+            if (v.front() >= 0) {
+                for (auto val: v)
+                    if (val != 0)
+                        pTest.push_back(val);
+            } else {
+                pTest = v;
+            }
+            
             std::sort(pTest.begin(), pTest.end());
             const typeVector tarDiff = pTest[1] - pTest[0];
             
-            if (static_cast<int64_t>(pTest[0]) == pTest[0]) {
+            if (static_cast<std::int64_t>(pTest[0]) == pTest[0]) {
                 PartitionCase = true;
                 
-                for (int i = 1; i < lenV; ++i) {
+                for (std::size_t i = 1; i < pTest.size(); ++i) {
                     const typeVector testDiff = pTest[i] - pTest[i - 1];
                     
-                    if (std::abs(testDiff - tarDiff) > tolerance
-                            || static_cast<int64_t>(pTest[i]) != pTest[i]) {
+                    if (       std::abs(testDiff - tarDiff)  > tolerance ||
+                        static_cast<std::int64_t>(pTest[i]) != pTest[i]) {
+                        
                         PartitionCase = false;
                         break;
                     }
                 }
             }
             
-            if (target.size() == 1 || target.front() == target.back()) {
-                tarTest = static_cast<int64_t>(target.front());
+            if (    target.size() == 1
+                || target.front() == target.back()
+               )
+            {
+                tarTest = static_cast<std::int64_t>(target.front());
                 
-                if (PartitionCase)
-                    PartitionCase = (tarTest == target.front());
+                if (PartitionCase) {PartitionCase = (tarTest == target.front());}
             } else {
                 PartitionCase = false;
             }
         }
         
         if (PartitionCase) {
-            const typeVector myMax = v.back();
-            const bool IncludeZero = (v.front() == 0);
-            PartType = PartitionType::PartGeneral;
+            // Now that we know we have partitions, we need to determine
+            // if the final result needs to be mapped. There are a couple
+            // of ways this can happen.
+            // 
+            // 1. If the first element isn't zero or one.
+            // 2. If the distance between element is greater than 1.
+            //
+            // The vector vBase will take on the underlying base partition.
+            //
+            // Note, we have already ensured above that if we have
+            // negative values and the differenece between every value
+            // isn't the same, then we don't meet the partition scenario.
             
-            if (myMax == tarTest && (lenV == tarTest || lenV == (tarTest + 1)) && v.front() >= 0) {
-                distinctTest = DistinctAttr(lenV, m, IsRep, IsMult,
-                                            tarTest, Reps, IncludeZero, mIsNull);
+            std::vector<int> vBase(v.size());
+            int mappedTarget = 0;
+            const typeVector testDiff = v[1] - v[0];
+            
+            if (   (v.front() != 1 && v.front() != 0)
+                || testDiff != 1
+               )
+            {
+                // Set our constraint type to indicate mapping
+                // will be needed. See PartitionMain.cpp
+                ConstType = ConstraintType::PartMapping;
+                
+                std::iota(vBase.begin(), vBase.end(), 1);
+                
+                mappedTarget = GetMappedTarget(v, tarTest, Reps,
+                                               m, lenV, IsMult, IsRep);
+            } else {
+                ConstType = ConstraintType::PartStandard;
+                mappedTarget = tarTest;
+                
+                for (int i = 0; i < lenV; ++i)
+                    vBase[i] = v[i];
+            }
+            
+            Rcpp::Rcout << "\n";
+            Rcpp::print(Rcpp::wrap("mappedVector"));
+            Rcpp::print(Rcpp::wrap(vBase));
+            Rcpp::Rcout << "\n";
+            Rcpp::print(Rcpp::wrap("mappedTarget"));
+            Rcpp::print(Rcpp::wrap(mappedTarget));
+            Rcpp::stop("digg");
+            
+            // We sorted v above to ensure that the last element is the maximum
+            const int myMax = vBase.back();
+            const int IncludeZero = (vBase.front() == 0);
+            
+            // Remember, lenV is the length of the vector v, so we could have a
+            // situation where v = c(0, 2, 3, 4, 5) -->> length(v) = 5. This would
+            // cause a problem if we were to allow this. We have already ensured 
+            // that the distance between each element is the same. This means for
+            // the example we gave, we would have length(unique(diff(v))) > 1,
+            // which means PartitionCase would be false, and thus the general
+            // algorithm would be executed.
+            //
+            // We do have to ensure that the smallest element is non-negative, othe-
+            // rwise, cases like v = seq(-8, 10, 2), m = 7, rep = TRUE, & limit = 10
+            // would pass as v = 0:9, m = 7, rep = TRUE, & limit = 9, --or--
+            // v = 1:10, m = 7, rep = TRUE, & limit = 10 (Hence v.front() >= 0)
+            
+            if (                myMax == mappedTarget
+                && lenV + IncludeZero == mappedTarget
+                &&      vBase.front() >= 0
+               )
+            {
+                distinctTest = DistinctAttr(lenV, m, IsRep, IsMult, mappedTarget,
+                                            Reps, static_cast<bool>(IncludeZero), mIsNull);
                 
                 if (distinctTest.limit > 0) {
                     m = distinctTest.limit;
@@ -469,37 +793,47 @@ void GetPartitionCase(const std::vector<std::string> &compFunVec, std::vector<ty
                     if (IncludeZero) {
                         if (IsMult) {
                             if (distinctTest.getAll) {
-                                PartType = PartitionType::PartDstctStdAll;
+                                PartType = PartitionType::DstctStdAll;
                             } else if (Reps[0] >= (m - 1)) {
-                                PartType = PartitionType::PartDstctShort;
+                                PartType = PartitionType::DstctShort;
                             } else {
-                                PartType = PartitionType::PartDstctSpecial;
+                                PartType = PartitionType::DstctSpecial;
                             }
                         } else {
-                            PartType = PartitionType::PartDstctOneZero;
+                            PartType = PartitionType::DstctOneZero;
                         }
                     } else {
-                        PartType = PartitionType::PartDstctNoZero;
+                        PartType = PartitionType::DstctNoZero;
                     }
                 } else if (IsRep) {
                     if (IncludeZero) {
-                        PartType = PartitionType::PartTraditional;
+                        PartType = PartitionType::Traditional;
                     } else {
-                        PartType = PartitionType::PartTradNoZero;
+                        PartType = PartitionType::TradNoZero;
                     }
                     
                     if (m >= lenV) { 
                         if (IncludeZero) {
                             m = lenV - 1;
                         } else {
-                            PartType = PartitionType::NotPartition;
+                            ConstType = ConstraintType::General;
                         }
                     }
                 }
+            }  else {
+                if (IsRep) {
+                    PartType = PartitionType::TradCapped;
+                } else if (!IsMult) {
+                    PartType = PartitionType::DistCapped;
+                }
             }
-        } else if ((compFunVec[0] == "==" || IsBet) && lenV > 1
-                && m > 1 && mainFun != "max" && mainFun != "min") {
-            PartType = PartitionType::PartitonEsque;
+        } else if ((compFunVec[0] == "==" || IsBet)
+                       && lenV > 1
+                       && m > 1
+                       && mainFun != "max"
+                       && mainFun != "min") {
+                       
+            ConstType = ConstraintType::PartitionEsque;
         }
     }
 }
@@ -539,12 +873,12 @@ template void SectionOne(const std::vector<double>&, std::vector<double> &testVe
 
 template void GetPartitionCase(const std::vector<std::string>&, std::vector<int>&,
                                const std::string&, const std::vector<int>&, PartitionType&,
-                               distinctType&, const SEXP&, std::vector<int>&, int, int&,
-                               double, bool, bool, bool, bool);
+                               ConstraintType&, distinctType&, const SEXP&, std::vector<int>&,
+                               int, int&, double, bool, bool, bool, bool);
 template void GetPartitionCase(const std::vector<std::string>&, std::vector<double>&,
                                const std::string&, const std::vector<double>&, PartitionType&,
-                               distinctType&, const SEXP&, std::vector<int>&, int, int&,
-                               double, bool, bool, bool, bool);
+                               ConstraintType&, distinctType&, const SEXP&, std::vector<int>&,
+                               int, int&, double, bool, bool, bool, bool);
 
 template bool CheckSpecialCase(int, bool, const std::string&, const std::vector<int>&);
 template bool CheckSpecialCase(int, bool, const std::string&, const std::vector<double>&);

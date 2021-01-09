@@ -27,7 +27,7 @@ namespace MotleyPrimes {
             const std::int_fast64_t intMin = static_cast<std::int_fast64_t>(m);
             const std::int_fast64_t intMax = static_cast<std::int_fast64_t>(retN);
             std::vector<std::vector<typeInt>> tempList;
-            PrimeSieve::PrimeSieveMaster(intMin, intMax, fullPrimes, tempList, tempPar);
+            PrimeSieve::PrimeSieveMain(intMin, intMax, fullPrimes, tempList, tempPar);
             typename std::vector<typeInt>::iterator p;
             
             for (p = fullPrimes.begin(); p < fullPrimes.end(); ++p) {

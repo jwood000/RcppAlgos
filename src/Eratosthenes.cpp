@@ -650,9 +650,9 @@ namespace PrimeSieve {
     }
     
     template <typename typePrime>
-    void PrimeSieveMaster(std::int_fast64_t minNum, std::int_fast64_t maxNum, std::vector<typePrime> &primes, 
-                          std::vector<std::vector<typePrime>> &primeList, bool &Parallel,
-                          int nThreads = 1, int maxThreads = 1, int maxCores = 1) {
+    void PrimeSieveMain(std::int_fast64_t minNum, std::int_fast64_t maxNum, std::vector<typePrime> &primes, 
+                        std::vector<std::vector<typePrime>> &primeList, bool &Parallel,
+                        int nThreads = 1, int maxThreads = 1, int maxCores = 1) {
         
         const std::int_fast64_t myRange = maxNum - minNum;
         std::int_fast64_t smallCut = Almost2310L1Cache - 100;
@@ -761,14 +761,14 @@ namespace PrimeSieve {
     }
 }
 
-template void PrimeSieve::PrimeSieveMaster<double>(std::int_fast64_t, std::int_fast64_t, std::vector<double>&, 
-                                                   std::vector<std::vector<double>>&, bool&, int, int, int);
+template void PrimeSieve::PrimeSieveMain<double>(std::int_fast64_t, std::int_fast64_t, std::vector<double>&, 
+                                                 std::vector<std::vector<double>>&, bool&, int, int, int);
 
-template void PrimeSieve::PrimeSieveMaster<std::int64_t>(std::int_fast64_t, std::int_fast64_t, std::vector<std::int64_t>&, 
-                                                    std::vector<std::vector<std::int64_t>>&, bool&, int, int, int);
+template void PrimeSieve::PrimeSieveMain<std::int64_t>(std::int_fast64_t, std::int_fast64_t, std::vector<std::int64_t>&, 
+                                                       std::vector<std::vector<std::int64_t>>&, bool&, int, int, int);
 
-template void PrimeSieve::PrimeSieveMaster<int>(std::int_fast64_t, std::int_fast64_t, std::vector<int>&, 
-                                                std::vector<std::vector<int>>&, bool&, int, int, int);
+template void PrimeSieve::PrimeSieveMain<int>(std::int_fast64_t, std::int_fast64_t, std::vector<int>&, 
+                                              std::vector<std::vector<int>>&, bool&, int, int, int);
 
 template void PrimeSieve::sqrtBigPrimes<double>(int, bool, bool, bool, std::vector<double>&);
 template void PrimeSieve::sqrtBigPrimes<std::int64_t>(int, bool, bool, bool, std::vector<std::int64_t>&);
