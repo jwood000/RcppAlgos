@@ -95,13 +95,21 @@
 
 # RcppAlgos 2.3.0
 
+## New Features:
+
+* Added `stdThreadMax` for obtaining the number of threads available on a machine
+
+## Enhancements:
+
 * All functions now have parallel capabilites via `RcppThread`.
 
 * Utilizes `RMatrix.h` from `RcppParallel` for thread safe matrix class.
 
 * Major overhaul of primeSieve for large primes.
 
-* Added `stdThreadMax` for obtaining the number of threads available on a machine
+## Bug Fixes:
+
+* Corrected `primeCount` for values around `1e9`. See [Issue #14](<https://github.com/jwood000/RcppAlgos/issues/14>)
 
 # RcppAlgos 2.2.0
 

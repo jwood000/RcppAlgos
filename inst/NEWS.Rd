@@ -107,10 +107,20 @@
 
 \section{Changes in RcppAlgos version 2.3.0 (Release date: 2019-03-17)}{
     \itemize{
-        \item All functions now have parallel capabilites via RcppThread.
-        \item Utilizes RMatrix.h from RcppParallel for thread safe matrix class.
-        \item Major overhaul of primeSieve for large primes.
-        \item Added stdThreadMax for obtaining the number of threads available on a machine
+        \item New Features:
+        \itemize{
+            \item Added stdThreadMax for obtaining the number of threads available on a machine
+        }
+        \item Enhancements:
+        \itemize{
+            \item All functions now have parallel capabilites via RcppThread.
+            \item Utilizes RMatrix.h from RcppParallel for thread safe matrix class.
+            \item Major overhaul of primeSieve for large primes.
+        }
+        \item Bug Fixes:
+        \itemize{
+            \item Corrected \code{primeCount} for values around \code{1e9}. See \href{https://github.com/jwood000/RcppAlgos/issues/14}{Issue #14}
+        }
     }
 }
 
