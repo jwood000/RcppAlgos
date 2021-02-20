@@ -1,17 +1,69 @@
-#include "NextStandard.h"
-#include "Cpp14MakeUnique.h"
-#include "UserConstraintFuns.h"
-#include "RMatrix.h"
+#include "Permutations/PermutationResults.h"
 
-template <typename typeMatrix, typename typeVector>
-void PermuteGenResNoRep(typeMatrix &matRcpp, const std::vector<typeVector> &v, std::vector<int> z,
-                        int n, int m, int strt, int nRows, const std::vector<int> &freqs,
-                        funcPtr<typeVector> myFun) {
+template <typename T>
+void PermuteGenResDistinct(T* mat, const std::vector<T> &v,
+                           std::vector<int> &z, int n, int m,
+                           int strt, int nRows, const funcPtr<T> myFun) {
     
-    const int maxInd = n - 1;
-    const int numR1 = nRows - 1;
+    std::vector<T> vPass(m);
+    auto arrPerm = FromCpp14::make_unique<int[]>(n);
+
+    for (int i = 0; i < n; ++i)
+        arrPerm[i] = z[i];
+
+    if (m == n) {
+        // Since we are getting all permutations of v, we know that
+        // the result of myFun on v will remain the same for the 5
+        // functions defined in ConstraintsUtils.h (i.e. order does
+        // not matter for min, max, prod, mean, & sum).
+        for (int j = 0; j < m; ++j) {
+            vPass[j] = v[arrPerm[j]];
+            mat[strt +  nRows * j] = vPass[j];
+        }
+
+        const auto myRes = myFun(vPass, m);
+        mat[strt +  nRows * m] = myRes;
+        nextFullPerm(arrPerm.get(), n - 1);
+
+        for (int count = strt + 1, numR1 = nRows - 1,
+             maxInd = n - 1; count < numR1; ++count) {
+            
+            for (int j = 0; j < m; ++j)
+                mat[count +  nRows * j] = v[arrPerm[j]];
+
+            mat[count +  nRows * m] = myRes;
+            nextFullPerm(arrPerm.get(), maxInd);
+        }
+    } else {
+        for (int count = strt, numR1 = nRows - 1, lastCol = m - 1,
+             maxInd = n - 1; count < numR1; ++count) {
+            
+            for (int j = 0; j < m; ++j) {
+                vPass[j] = v[arrPerm[j]];
+                mat[count +  nRows * j] = vPass[j];
+            }
+
+            mat[count +  nRows * m] = myFun(vPass, m);
+            nextPartialPerm(arrPerm.get(), lastCol, maxInd);
+        }
+    }
+
+    // Get last permutation
+    for (int j = 0; j < m; ++j) {
+        vPass[j] = v[arrPerm[j]];
+        mat[nRows - 1L +  nRows * j] = vPass[j];
+    }
+
+    mat[nRows - 1L +  nRows * m] = myFun(vPass, m);
+}
+
+template <typename T>
+void PermuteGenResDistinct(RcppParallel::RMatrix<T> &mat,
+                           const std::vector<T> &v, std::vector<int> &z,
+                           int n, int m, int strt, int nRows,
+                           const funcPtr<T> myFun) {
     
-    std::vector<typeVector> vPass(m);
+    std::vector<T> vPass(m);
     auto arrPerm = FromCpp14::make_unique<int[]>(n);
     
     for (int i = 0; i < n; ++i)
@@ -24,30 +76,32 @@ void PermuteGenResNoRep(typeMatrix &matRcpp, const std::vector<typeVector> &v, s
         // not matter for min, max, prod, mean, & sum).
         for (int j = 0; j < m; ++j) {
             vPass[j] = v[arrPerm[j]];
-            matRcpp(strt, j) = vPass[j];
+            mat(strt, j) = vPass[j];
         }
         
         const auto myRes = myFun(vPass, m);
-        matRcpp(strt, m) = myRes;
-        nextFullPerm(arrPerm.get(), maxInd);
+        mat(strt, m) = myRes;
+        nextFullPerm(arrPerm.get(), n - 1);
         
-        for (int count = strt + 1; count < numR1; ++count) {
-            for (int j = 0; j < m; ++j)
-                matRcpp(count, j) = v[arrPerm[j]];
+        for (int count = strt + 1, numR1 = nRows - 1,
+             maxInd = n - 1; count < numR1; ++count) {
             
-            matRcpp(count, m) = myRes;
+            for (int j = 0; j < m; ++j)
+                mat(count, j) = v[arrPerm[j]];
+            
+            mat(count, m) = myRes;
             nextFullPerm(arrPerm.get(), maxInd);
         }
     } else {
-        const int lastCol = m - 1;
-        
-        for (int count = strt; count < numR1; ++count) {
+        for (int count = strt, numR1 = nRows - 1, lastCol = m - 1,
+             maxInd = n - 1; count < numR1; ++count) {
+            
             for (int j = 0; j < m; ++j) {
                 vPass[j] = v[arrPerm[j]];
-                matRcpp(count, j) = vPass[j];
+                mat(count, j) = vPass[j];
             }
             
-            matRcpp(count, m) = myFun(vPass, m);
+            mat(count, m) = myFun(vPass, m);
             nextPartialPerm(arrPerm.get(), lastCol, maxInd);
         }
     }
@@ -55,28 +109,57 @@ void PermuteGenResNoRep(typeMatrix &matRcpp, const std::vector<typeVector> &v, s
     // Get last permutation
     for (int j = 0; j < m; ++j) {
         vPass[j] = v[arrPerm[j]];
-        matRcpp(numR1, j) = vPass[j];
+        mat(nRows - 1L, j) = vPass[j];
     }
     
-    matRcpp(numR1, m) = myFun(vPass, m);
+    mat(nRows - 1L, m) = myFun(vPass, m);
 }
 
-template <typename typeMatrix, typename typeVector>
-void PermuteGenResRep(typeMatrix &matRcpp, const std::vector<typeVector> &v, std::vector<int> z,
-                      int n, int m, int strt, int nRows, const std::vector<int> &freqs,
-                      funcPtr<typeVector> myFun) {
-    
-    const int maxInd = n - 1;
-    const int lastCol = m - 1;
-    std::vector<typeVector> vPass(m);
-    
-    for (int count = strt; count < nRows; ++count) {
+template <typename T>
+void PermuteGenResRep(T* mat, const std::vector<T> &v,
+                      std::vector<int> &z, int n, int m,
+                      int strt, int nRows, const funcPtr<T> myFun) {
+
+    std::vector<T> vPass(m);
+
+    for (int count = strt, maxInd = n - 1,
+         lastCol = m - 1; count < nRows; ++count) {
+        
         for (int j = 0; j < m; ++j) {
             vPass[j] = v[z[j]];
-            matRcpp(count, j) = vPass[j];
+            mat[count + nRows * j] = vPass[j];
+        }
+
+        mat[count + nRows * m] = myFun(vPass, m);
+
+        for (int i = lastCol; i >= 0; --i) {
+            if (z[i] != maxInd) {
+                ++z[i];
+                break;
+            } else {
+                z[i] = 0;
+            }
+        }
+    }
+}
+
+template <typename T>
+void PermuteGenResRep(RcppParallel::RMatrix<T> &mat,
+                      const std::vector<T> &v,
+                      std::vector<int> &z, int n, int m,
+                      int strt, int nRows, const funcPtr<T> myFun) {
+    
+    std::vector<T> vPass(m);
+    
+    for (int count = strt, maxInd = n - 1,
+         lastCol = m - 1; count < nRows; ++count) {
+        
+        for (int j = 0; j < m; ++j) {
+            vPass[j] = v[z[j]];
+            mat(count, j) = vPass[j];
         }
         
-        matRcpp(count, m) = myFun(vPass, m);
+        mat(count, m) = myFun(vPass, m);
         
         for (int i = lastCol; i >= 0; --i) {
             if (z[i] != maxInd) {
@@ -89,17 +172,14 @@ void PermuteGenResRep(typeMatrix &matRcpp, const std::vector<typeVector> &v, std
     }
 }
 
-template <typename typeMatrix, typename typeVector>
-void MultisetPermRes(typeMatrix &matRcpp, const std::vector<typeVector> &v, std::vector<int> z,
-                     int n, int m, int strt, int nRows, const std::vector<int> &freqs,
-                     funcPtr<typeVector> myFun) {
+template <typename T>
+void MultisetPermRes(T* mat, const std::vector<T> &v,
+                     std::vector<int> &z, int n, int m, int strt, int nRows,
+                     const std::vector<int> &freqs, const funcPtr<T> myFun) {
     
     const int lenFreqs = freqs.size();
     auto arrPerm = FromCpp14::make_unique<int[]>(lenFreqs);
-    std::vector<typeVector> vPass(m);
-    
-    const int numR1 = nRows - 1;
-    const int maxInd = lenFreqs - 1;
+    std::vector<T> vPass(m);
     
     for (int j = 0; j < lenFreqs; ++j)
         arrPerm[j] = z[j];
@@ -111,30 +191,31 @@ void MultisetPermRes(typeMatrix &matRcpp, const std::vector<typeVector> &v, std:
         // not matter for min, max, prod, mean, & sum).
         for (int j = 0; j < m; ++j) {
             vPass[j] = v[arrPerm[j]];
-            matRcpp(strt, j) = vPass[j];
+            mat[strt + j * nRows] = vPass[j];
         }
         
         const auto myRes = myFun(vPass, m);
-        matRcpp(strt, m) = myRes;
-        nextFullPerm(arrPerm.get(), maxInd);
+        mat[strt + m * nRows] = myRes;
+        nextFullPerm(arrPerm.get(), lenFreqs - 1);
         
-        for (int count = strt + 1; count < numR1; ++count) {
+        for (int count = strt + 1, numR1 = nRows - 1,
+             maxInd = lenFreqs - 1; count < numR1; ++count) {
             for (int j = 0; j < m; ++j)
-                matRcpp(count, j) = v[arrPerm[j]];
+                mat[count + j * nRows] = v[arrPerm[j]];
             
-            matRcpp(count, m) = myRes;
+            mat[count + m * nRows] = myRes;
             nextFullPerm(arrPerm.get(), maxInd);
         }
     } else {
-        const int lastCol = m - 1;
-        
-        for (int count = strt; count < numR1; ++count) {
+        for (int count = strt, numR1 = nRows - 1, lastCol = m - 1,
+             maxInd = lenFreqs - 1; count < numR1; ++count) {
+            
             for (int j = 0; j < m; ++j) {
                 vPass[j] = v[arrPerm[j]];
-                matRcpp(count, j) = vPass[j];
+                mat[count + j * nRows] = vPass[j];
             }
             
-            matRcpp(count, m) = myFun(vPass, m);
+            mat[count + m * nRows] = myFun(vPass, m);
             nextPartialPerm(arrPerm.get(), lastCol, maxInd);
         }
     }
@@ -142,36 +223,96 @@ void MultisetPermRes(typeMatrix &matRcpp, const std::vector<typeVector> &v, std:
     // Get last permutation
     for (int j = 0; j < m; ++j) {
         vPass[j] = v[arrPerm[j]];
-        matRcpp(numR1, j) = vPass[j];
+        mat[nRows - 1 + j * nRows] = vPass[j];
     }
     
-    matRcpp(numR1, m) = myFun(vPass, m);
+    mat[nRows - 1 + m * nRows] = myFun(vPass, m);
 }
 
-template void PermuteGenResNoRep(Rcpp::IntegerMatrix&, const std::vector<int>&, std::vector<int>,
-                                 int, int, int, int, const std::vector<int>&, funcPtr<int>);
-template void PermuteGenResNoRep(Rcpp::NumericMatrix&, const std::vector<double>&, std::vector<int>,
-                                 int, int, int, int, const std::vector<int>&, funcPtr<double>);
-template void PermuteGenResNoRep(RcppParallel::RMatrix<int>&, const std::vector<int>&, std::vector<int>,
-                                 int, int, int, int, const std::vector<int>&, funcPtr<int>);
-template void PermuteGenResNoRep(RcppParallel::RMatrix<double>&, const std::vector<double>&, std::vector<int>,
-                                 int, int, int, int, const std::vector<int>&, funcPtr<double>);
+template <typename T>
+void MultisetPermRes(RcppParallel::RMatrix<T> &mat, const std::vector<T> &v,
+                     std::vector<int> &z, int n, int m, int strt, int nRows,
+                     const std::vector<int> &freqs, const funcPtr<T> myFun) {
 
-template void PermuteGenResRep(Rcpp::IntegerMatrix&, const std::vector<int>&, std::vector<int>,
-                             int, int, int, int, const std::vector<int>&, funcPtr<int>);
-template void PermuteGenResRep(Rcpp::NumericMatrix&, const std::vector<double>&, std::vector<int>,
-                             int, int, int, int, const std::vector<int>&, funcPtr<double>);
-template void PermuteGenResRep(RcppParallel::RMatrix<int>&, const std::vector<int>&, std::vector<int>,
-                             int, int, int, int, const std::vector<int>&, funcPtr<int>);
-template void PermuteGenResRep(RcppParallel::RMatrix<double>&, const std::vector<double>&, std::vector<int>,
-                             int, int, int, int, const std::vector<int>&, funcPtr<double>);
+    const int lenFreqs = freqs.size();
+    auto arrPerm = FromCpp14::make_unique<int[]>(lenFreqs);
+    std::vector<T> vPass(m);
+    
+    for (int j = 0; j < lenFreqs; ++j)
+        arrPerm[j] = z[j];
 
-template void MultisetPermRes(Rcpp::IntegerMatrix&, const std::vector<int>&, std::vector<int>,
-                                  int, int, int, int, const std::vector<int>&, funcPtr<int>);
-template void MultisetPermRes(Rcpp::NumericMatrix&, const std::vector<double>&, std::vector<int>,
-                                  int, int, int, int, const std::vector<int>&, funcPtr<double>);
-template void MultisetPermRes(RcppParallel::RMatrix<int>&, const std::vector<int>&, std::vector<int>,
-                                  int, int, int, int, const std::vector<int>&, funcPtr<int>);
-template void MultisetPermRes(RcppParallel::RMatrix<double>&, const std::vector<double>&, std::vector<int>,
-                                  int, int, int, int, const std::vector<int>&, funcPtr<double>);
+    if (m == lenFreqs) {
+        // Since we are getting all permutations of v, we know that
+        // the result of myFun on v will remain the same for the 5
+        // functions defined in ConstraintsUtils.h (i.e. order does
+        // not matter for min, max, prod, mean, & sum).
+        for (int j = 0; j < m; ++j) {
+            vPass[j] = v[arrPerm[j]];
+            mat(strt, j) = vPass[j];
+        }
+
+        const auto myRes = myFun(vPass, m);
+        mat(strt, m) = myRes;
+        nextFullPerm(arrPerm.get(), lenFreqs - 1);
+
+        for (int count = strt + 1, numR1 = nRows - 1,
+             maxInd = lenFreqs - 1; count < numR1; ++count) {
+            
+            for (int j = 0; j < m; ++j)
+                mat(count, j) = v[arrPerm[j]];
+
+            mat(count, m) = myRes;
+            nextFullPerm(arrPerm.get(), maxInd);
+        }
+    } else {
+        for (int count = strt, numR1 = nRows - 1, lastCol = m - 1,
+             maxInd = lenFreqs - 1; count < numR1; ++count) {
+            
+            for (int j = 0; j < m; ++j) {
+                vPass[j] = v[arrPerm[j]];
+                mat(count, j) = vPass[j];
+            }
+
+            mat(count, m) = myFun(vPass, m);
+            nextPartialPerm(arrPerm.get(), lastCol, maxInd);
+        }
+    }
+
+    // Get last permutation
+    for (int j = 0; j < m; ++j) {
+        vPass[j] = v[arrPerm[j]];
+        mat(nRows - 1, j) = vPass[j];
+    }
+
+    mat(nRows - 1, m) = myFun(vPass, m);
+}
+
+template void PermuteGenResDistinct(int*, const std::vector<int>&, std::vector<int>&, 
+                                    int, int, int, int, const funcPtr<int>);
+template void PermuteGenResDistinct(double*, const std::vector<double>&, std::vector<int>&,
+                                    int, int, int, int, const funcPtr<double>);
+template void PermuteGenResDistinct(RcppParallel::RMatrix<int>&, const std::vector<int>&,
+                                    std::vector<int>&, int, int, int, int, const funcPtr<int>);
+template void PermuteGenResDistinct(RcppParallel::RMatrix<double>&, const std::vector<double>&,
+                                    std::vector<int>&, int, int, int, int, const funcPtr<double>);
+
+template void PermuteGenResRep(int*, const std::vector<int>&, std::vector<int>&,
+                               int, int, int, int, const funcPtr<int>);
+template void PermuteGenResRep(double*, const std::vector<double>&, std::vector<int>&,
+                               int, int, int, int, const funcPtr<double>);
+template void PermuteGenResRep(RcppParallel::RMatrix<int>&, const std::vector<int>&,
+                               std::vector<int>&, int, int, int, int, const funcPtr<int>);
+template void PermuteGenResRep(RcppParallel::RMatrix<double>&, const std::vector<double>&,
+                               std::vector<int>&, int, int, int, int, const funcPtr<double>);
+
+template void MultisetPermRes(int*, const std::vector<int>&, std::vector<int>&,
+                              int, int, int, int, const std::vector<int>&, const funcPtr<int>);
+template void MultisetPermRes(double*, const std::vector<double>&, std::vector<int>&,
+                              int, int, int, int, const std::vector<int>&, const funcPtr<double>);
+template void MultisetPermRes(RcppParallel::RMatrix<int>&, const std::vector<int>&,
+                              std::vector<int>&, int, int, int, int,
+                              const std::vector<int>&, const funcPtr<int>);
+template void MultisetPermRes(RcppParallel::RMatrix<double>&, const std::vector<double>&,
+                              std::vector<int>&, int, int, int, int,
+                              const std::vector<int>&, const funcPtr<double>);
 

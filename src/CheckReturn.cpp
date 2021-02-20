@@ -1,4 +1,5 @@
-#include "StandardUtils.h"
+#include "SetUpUtils.h"
+#include "CheckReturn.h"
 
 enum returnType : int {
     constraintFun = 0,
@@ -13,17 +14,17 @@ bool CheckConstrnd(SEXP f1, SEXP f2, SEXP Rtarget) {
     
     if (result) {
         if (!Rf_isString(f1))
-            Rcpp::stop("constraintFun must be passed as a character");
+            Rf_error("constraintFun must be passed as a character");
         
         if (!Rf_isString(f2))
-            Rcpp::stop("comparisonFun must be passed as a character");
+            Rf_error("comparisonFun must be passed as a character");
     }
     
     return result;
 }
 
 // CheckReturn(v, constraintFun, comparisonFun,
-//             limitConstraints, IsFactor, keepResults, FUN)
+//             limitConstraints, keepResults, FUN)
 //
 //                v: the source vector
 //    constraintFun: "sum", "mean", "prod", "min", "max"
@@ -37,20 +38,19 @@ bool CheckConstrnd(SEXP f1, SEXP f2, SEXP Rtarget) {
 // **** Outside: c("<",  ">"), c("<=", ">=")
 //
 // limitConstraints: The value(s) that will be used for comparison.
-//         IsFactor: Are we dealing with factors?
 //      keepResults: Are we keeping the results of constraintFun?
 //              FUN: This is an anonymous function 
 
-// [[Rcpp::export]]
-int CheckReturn(SEXP Rv, SEXP f1, SEXP f2, SEXP Rtarget,
-                bool IsFactor, SEXP RKeepRes, SEXP stdFun) {
+SEXP CheckReturn(SEXP Rv, SEXP f1,
+                 SEXP f2, SEXP Rtarget,
+                 SEXP RKeepRes, SEXP stdFun) {
     
     int res = returnType::constraintFun;
     
     if (Rf_isNull(f1)) {
         res = returnType::standard;
     } else {
-        if (IsFactor) {
+        if (Rf_isFactor(Rv)) {
             res = returnType::standard;
         } else {
             VecType myType = VecType::Integer;
@@ -84,15 +84,16 @@ int CheckReturn(SEXP Rv, SEXP f1, SEXP f2, SEXP Rtarget,
     
     // if res isn't constrained (i.e. returnType::constraintFun)
     if (res) {
-        const bool applyFun = !Rf_isNull(stdFun) && !IsFactor;
+        const bool applyFun = !Rf_isNull(stdFun) && !Rf_isFactor(Rv);
         
         if (applyFun) {
             if (!Rf_isFunction(stdFun))
-                Rcpp::stop("FUN must be a function!");
+                Rf_error("FUN must be a function!");
             
             res = returnType::anonymousFun;
         }
     }
     
-    return res;
+    SEXP sexpRes = Rf_ScalarInteger(res);
+    return sexpRes;
 }

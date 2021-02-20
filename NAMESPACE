@@ -1,25 +1,6 @@
-useDynLib("RcppAlgos", .registration = TRUE)
-import(gmp, Rcpp, methods)
+useDynLib(RcppAlgos, .registration = TRUE)
+import(gmp)
 
 export(comboGeneral,
        permuteGeneral,
-       comboCount,
-       permuteCount,
-       comboSample,
-       permuteSample,
-       comboGrid,
-       comboGroups,
-       comboGroupsCount,
-       comboGroupsSample,
-       comboIter,
-       permuteIter,
-       primeSieve,
-       eulerPhiSieve,
-       primeFactorizeSieve,
-       stdThreadMax,
-       numDivisorSieve,
-       divisorsSieve,
-       primeFactorize,
-       divisorsRcpp,
-       isPrimeRcpp,
-       primeCount)
+       stdThreadMax)

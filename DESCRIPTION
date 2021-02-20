@@ -1,8 +1,8 @@
 Package: RcppAlgos
-Version: 2.4.2
+Version: 2.5.0
 Title: High Performance Tools for Combinatorics and Computational Mathematics
 Description: Provides optimized functions and flexible combinatorial iterators
-    implemented in C++ with 'Rcpp' for solving problems in combinatorics and
+    implemented in C++ for solving problems in combinatorics and
     computational mathematics. Utilizes parallel programming via 'RcppThread'
     for maximal performance. Also makes use of the RMatrix class from the
     'RcppParallel' library. There are combination/permutation functions with
@@ -26,8 +26,8 @@ URL: https://github.com/jwood000/RcppAlgos, https://gmplib.org/,
         https://github.com/kimwalisch/primecount, http://ridiculousfish.com/,
         http://sweet.ua.pt/tos/software/prime_sieve.html
 BugReports: https://github.com/jwood000/RcppAlgos/issues
-Imports: gmp, Rcpp, methods
-LinkingTo: Rcpp, RcppThread
+Imports: gmp
+LinkingTo: RcppThread
 Suggests: testthat, numbers, microbenchmark, knitr, RcppBigIntAlgos
 License: GPL (>=2)
 LazyData: TRUE
