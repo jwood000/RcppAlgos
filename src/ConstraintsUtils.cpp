@@ -197,65 +197,133 @@ void SectionOne(const std::vector<typeVector> &v, std::vector<typeVector> &testV
 // This one is similar to DistinctAttr, however since v is non-standard,
 // more work is required to obtain the optimal width. We cannot use the
 // constant time formula and thus must resort to an O(n) algo.
-distinctType DistinctAttrMapped(const std::vector<std::int64_t> &v, int m, bool IsRep, bool IsMult,
-                                std::int64_t target, const std::vector<int> &Reps,
+distinctType DistinctAttrMapped(const std::vector<std::int64_t> &v, int m,
+                                bool IsRep, bool IsMult, std::int64_t target, 
+                                const std::vector<int> &Reps, Sign mySign,
                                 bool IncludeZero, bool mIsNull) {
     int limit = 0;
     bool getAll = false;
     
     if (IsMult || !IsRep) {
-        // No fancy tricks here... just sum until we breach. We do have
-        // to take care when we have negative values. If they are all
-        // non-positive (i.e. less than or equal to zero), it will
-        // behave just as if they were all positive, except in reverse.
-        // Observe:
-        // 
-        // with v = -5:0 and tar = -5
-        //      [,1] [,2] [,3] [,4] [,5]
-        // [1,]   -5    0    0    0    0
-        // [2,]   -4   -1    0    0    0
-        // [3,]   -3   -2    0    0    0
-        // [4,]   -3   -1   -1    0    0
-        // [5,]   -2   -2   -1    0    0
-        // [6,]   -2   -1   -1   -1    0
-        // [7,]   -1   -1   -1   -1   -1
-        //
-        // with v = 5:0 and tar = 5
-        //      [,1] [,2] [,3] [,4] [,5]
-        // [1,]    0    0    0    0    5
-        // [2,]    0    0    0    1    4
-        // [3,]    0    0    0    2    3
-        // [4,]    0    0    1    1    3
-        // [5,]    0    0    1    2    2
-        // [6,]    0    1    1    1    2
-        // [7,]    1    1    1    1    1
-        
+        // No fancy tricks here... just sum until we breach
         std::int64_t testTar = 0;
         
-        while (testTar)
+        if (mySign == Sign::Positive) {
+            for (std::size_t i = IncludeZero; i < v.size() && testTar <= target; ++i) {
+                testTar += v[i];
+                ++limit;
+            }
+        } else if (mySign == Sign::Negitive) {
+            const int strt = (IncludeZero) ? v.size() - 2 : v.size() - 1;
+            
+            for (int i = strt; i >= 0 && testTar >= target; --i) {
+                testTar += v[i];
+                ++limit;
+            }
+        } else {
+            if (target < 0) {
+                for (int i = v.size() - 1; i >= 0 && testTar >= target; --i) {
+                    // We don't count the length added by a value of zero
+                    if (v[i]) {
+                        testTar += v[i];
+                        ++limit;
+                    }
+                }
+            } else {
+                for (std::size_t i = 0; i < v.size() && testTar <= target; ++i) {
+                    // We don't count the length added by a value of zero
+                    if (v[i]) {
+                        testTar += v[i];
+                        ++limit;
+                    }
+                }
+            }
+        }
         
-        limit = (-1 + std::sqrt(1.0 + 8.0 * target)) / 2;
+        if (testTar > target)
+            --limit;
         
         if (IsMult) {
-            // Ensure all elements except the first element are 1. The first
-            // element should be zero and thus have a higher frequency in
-            // order to test for partitions of different length.
+            // Ensure all elements except the element representing zero
+            // (if zero exists) have a frequency of 1.
             
-            const bool allOne = std::all_of(Reps.cbegin() + 1, Reps.cend(), 
-                                            [](int v_i) {return v_i == 1;});
+            bool allOne = true;
             
-            // if (IncludeZero && lenV == target + 1 && allOne) {
-            //     if (m >= limit) {
-            //         getAll = (Reps.front() >= (limit - 1)) ? true : false;
-            //     } else {
-            //         limit = m;
-            //     }
-            // } else {
-            //     // N.B. In the calling function we have ensured that if the 
-            //     // freqs arg is invoked with all ones, we set IsMult to false.
-            //     limit = 0;
-            // }
-        } else if (!IsRep) {
+            for (std::size_t i = 0; i < v.size(); ++i) {
+                if (v[i]) {
+                    if (Reps[i] != 1) {
+                        allOne = false;
+                    }
+                }
+            }
+            
+            // The only way that getAll can be true in the non-traditional
+            // way, is for our case to be a positive multiple of a the
+            // traditional "getAll" scenario. E.g.
+            // Tradtional "getAll":
+            //     comboGeneral(0:10, freqs = c(10, rep(1, 10)),
+            //                  constraintFun = "sum",
+            //                  comparisonFun = "==",
+            //                  limitConstraints = 10)
+            //
+            // Above example multiplied by 10:
+            //     comboGeneral(seq(0L, 100L, 10L), m = 4,
+            //                  freqs = c(10, rep(1, 10)),
+            //                  constraintFun = "sum",
+            //                  comparisonFun = "==",
+            //                  limitConstraints = 100)
+            //
+            // If we included negative multiples, the result would not be
+            // in lexicographical order.
+            //
+            // The result below is correct and clearly does not map to
+            // the traditional case:
+            //     comboGeneral(seq(0L, -100L, -10L), 4,
+            //                  freqs = c(10, rep(1, 10)),
+            //                  constraintFun = "sum",
+            //                  comparisonFun = "==",
+            //                  limitConstraints = -100)
+            //          [,1] [,2] [,3] [,4]
+            //     [1,] -100    0    0    0
+            //     [2,]  -90  -10    0    0
+            //     [3,]  -80  -20    0    0
+            //     [4,]  -70  -30    0    0
+            //     [5,]  -70  -20  -10    0
+            //     [6,]  -60  -40    0    0
+            //     [7,]  -60  -30  -10    0
+            //     [8,]  -50  -40  -10    0
+            //     [9,]  -50  -30  -20    0
+            //    [10,]  -40  -30  -20  -10
+            //
+            // If we have all non-negative elements, IncludeZero = true,
+            // and allOne = true, we need to find a fourth condition
+            // analogous to (lenV == target + 1) in the traditional test.
+            // We discovered above that this only gets mapped properly
+            // if we have the traditional case times a positive number.
+            // Thus, the first positive element will have to be that
+            // multiple. That is, 1 will be mapped to M and M will be
+            // our multiple. To obtain the mapped target, we simply
+            // divide our target by M.
+            
+            if (
+                   IncludeZero
+                && mySign == Sign::Positive
+                && lenV == (target / v[1]) + 1
+                && allOne
+              )
+            {
+                if (m >= limit) {
+                    getAll = (Reps.front() >= (limit - 1)) ? true : false;
+                } else {
+                    limit = m;
+                }
+            } else {
+                // N.B. In the calling function we have ensured that if the
+                // freqs arg is invoked with all ones, we set IsMult to false.
+                // This means that this should not happen
+                limit = 0;
+            }
+        } else if (!IsRep) { // I.e. all elements have frequency = 1
             if (m < limit) {
                 limit = m;
             } else if (!mIsNull) {
@@ -297,6 +365,7 @@ distinctType DistinctAttr(int lenV, int m, bool IsRep, bool IsMult, std::int64_t
         //    x * (x + 1) / 2 >= n  -->>  x^2 + x - 2n >= 0
         //
         // Finally, using the quadratic formula, we obtain:
+        // (a = 1, b = 1, c = -2)
         //
         //      x = (-1 + sqrt(1 + 4 * 1 * 2n)) / 2 * 1
         //
@@ -315,15 +384,26 @@ distinctType DistinctAttr(int lenV, int m, bool IsRep, bool IsMult, std::int64_t
             const bool allOne = std::all_of(Reps.cbegin() + 1, Reps.cend(), 
                                             [](int v_i) {return v_i == 1;});
             
-            if (IncludeZero && lenV == target + 1 && allOne) {
+            // We need lenV == target + 1 because we could have a case where
+            // we have zero and allOne, but we are missing at least one
+            // element in order to guarantee we generate all possible
+            // partitions: E.g. v = 0, 1, 2, 3, 4; Reps = c(4, rep(1, 4));
+            // and target = 6
+            if (   
+                   IncludeZero
+                && lenV == target + 1
+                && allOne
+               )
+            {
                 if (m >= limit) {
-                    getAll = (Reps.front() >= (limit - 1)) ? true : false;
+                    getAll = (Reps.front() >= (limit - 1));
                 } else {
                     limit = m;
                 }
             } else {
                 // N.B. In the calling function we have ensured that if the 
                 // freqs arg is invoked with all ones, we set IsMult to false.
+                // This means that this should not happen
                 limit = 0;
             }
         } else if (!IsRep) {
@@ -622,7 +702,7 @@ int GetMappedTarget(const std::vector<typeVector> &v,
 template <typename typeVector>
 void GetPartitionCase(const std::vector<std::string> &compFunVec, std::vector<typeVector> &v,
                       const std::string &mainFun, const std::vector<typeVector> &target,
-                      PartitionType &PartType, ConstraintType &ConstType,
+                      Sign mySign, PartitionType &PartType, ConstraintType &ConstType, Sign mySign,
                       distinctType &distinctTest, const SEXP &Rlow, std::vector<int> &Reps,
                       int lenV, int &m, double tolerance, bool IsMult,
                       bool IsRep, bool IsBet, bool mIsNull) {
@@ -630,6 +710,9 @@ void GetPartitionCase(const std::vector<std::string> &compFunVec, std::vector<ty
     ConstType = ConstraintType::General;
     bool bLower = false;
     
+    // Currently, we are not able to generate the nth
+    // lexicographical partition. Thus, if lower is
+    // non-trivial, we must use most general algo.
     if (!Rf_isNull(Rlow)) {
         auto tempLower = FromCpp14::make_unique<mpz_t[]>(1);
         mpz_init(tempLower[0]);
@@ -638,7 +721,11 @@ void GetPartitionCase(const std::vector<std::string> &compFunVec, std::vector<ty
         bLower = mpz_cmp_si(tempLower[0], 1) > 0;
     }
     
+    // compFunVec should be non-empty if we made it this far.
+    // Doesn't hurt to check
     if (!compFunVec.empty() && !bLower) {
+        
+        /// We start by assuming we don't have a nice partition case
         bool PartitionCase = false;
         
         if (IsMult) {
@@ -656,10 +743,10 @@ void GetPartitionCase(const std::vector<std::string> &compFunVec, std::vector<ty
         
         std::int64_t tarTest = 0;
         
-        if (  compFunVec[0] == "=="
-            &&      mainFun == "sum"
-            &&         lenV >  1
-            &&            m >  1
+        if (   compFunVec[0] == "=="
+            &&       mainFun == "sum"
+            &&          lenV >  1
+            &&             m >  1
            )
         {
             // We need to make sure not to include zero in the check below.
@@ -668,17 +755,22 @@ void GetPartitionCase(const std::vector<std::string> &compFunVec, std::vector<ty
             // no problem because we simply have 0, 1, 2,..., however with
             // the capped cases (i.e. they don't start at 0 or 1, e.g. 3:14)
             // this case would be excluded because (3 - 0) != (4 - 3). Note,
-            // We can only do this if all values are positive. When we have
-            // negative numbers, indexing breaks down. E.g. Let v be:
-            // -15, -9, -3, 0, 3, 9,..., 99 and a target of 93. For m = 3,
-            // the first partition is -15, 9, 99 which maps to 1, 5, 20
-            // giving a new target of 26. Now let m = 5. The first partition
-            // is -15, -15, -15, 39, 99 which maps to 1, 1, 1, 10, 20 for
-            // a mapped target of 33 (which is not 26!).
+            // We can only do this if all values have the same sign. When we
+            // have mixed signs numbers, indexing breaks down. We are making
+            // the case that we can't get all partititions of every length
+            // when this occurs. First off, we have mapping issues. E.g. Let
+            // v: -15, -9, -3, 0, 3, 9,..., 99 and a target of 93. For m = 3,
+            // the first partition is 0, 0, -15, 9, 99 which maps to 
+            // 4, 4, 1, 6, 21 giving a new target of 37. Now let m = 5
+            // The first partition is -15, -15, -15, 39, 99 which maps to 
+            // 1, 1, 1, 11, 21 for a mapped target of 35 (which is not 37!).
+            //
+            // Secondly, even if we could map properly for differing lengths
+            // we would have issues with ordering (lexicographically).
             
             std::vector<typeVector> pTest;
             
-            if (v.front() >= 0) {
+            if (mySign != Sign::MixedBag) {
                 for (auto val: v)
                     if (val != 0)
                         pTest.push_back(val);
@@ -704,13 +796,11 @@ void GetPartitionCase(const std::vector<std::string> &compFunVec, std::vector<ty
                 }
             }
             
-            if (    target.size() == 1
-                || target.front() == target.back()
-               )
-            {
+            if (target.size() == 1 || target.front() == target.back()) {
                 tarTest = static_cast<std::int64_t>(target.front());
                 
-                if (PartitionCase) {PartitionCase = (tarTest == target.front());}
+                if (PartitionCase)
+                    PartitionCase = (tarTest == target.front());
             } else {
                 PartitionCase = false;
             }
@@ -722,7 +812,7 @@ void GetPartitionCase(const std::vector<std::string> &compFunVec, std::vector<ty
             // of ways this can happen.
             // 
             // 1. If the first element isn't zero or one.
-            // 2. If the distance between element is greater than 1.
+            // 2. If the distance between elements is greater than 1.
             //
             // The vector vBase will take on the underlying base partition.
             //
@@ -734,16 +824,13 @@ void GetPartitionCase(const std::vector<std::string> &compFunVec, std::vector<ty
             int mappedTarget = 0;
             const typeVector testDiff = v[1] - v[0];
             
-            if (   (v.front() != 1 && v.front() != 0)
-                || testDiff != 1
-               )
-            {
+            const bool condition_1 = (v.front() != 1 && v.front() != 0) || testDiff != 1;
+            
+            if (condition_1 && !Sign::MixedBag) {
                 // Set our constraint type to indicate mapping
                 // will be needed. See PartitionMain.cpp
                 ConstType = ConstraintType::PartMapping;
-                
-                std::iota(vBase.begin(), vBase.end(), 1);
-                
+                std::iota(vBase.begin(), vBase.end(), 0);
                 mappedTarget = GetMappedTarget(v, tarTest, Reps,
                                                m, lenV, IsMult, IsRep);
             } else {
@@ -779,9 +866,10 @@ void GetPartitionCase(const std::vector<std::string> &compFunVec, std::vector<ty
             // would pass as v = 0:9, m = 7, rep = TRUE, & limit = 9, --or--
             // v = 1:10, m = 7, rep = TRUE, & limit = 10 (Hence v.front() >= 0)
             
-            if (                myMax == mappedTarget
+            if (                
+                   myMax == mappedTarget
                 && lenV + IncludeZero == mappedTarget
-                &&      vBase.front() >= 0
+                && vBase.front() >= 0
                )
             {
                 distinctTest = DistinctAttr(lenV, m, IsRep, IsMult, mappedTarget,
@@ -827,12 +915,17 @@ void GetPartitionCase(const std::vector<std::string> &compFunVec, std::vector<ty
                     PartType = PartitionType::DistCapped;
                 }
             }
-        } else if ((compFunVec[0] == "==" || IsBet)
-                       && lenV > 1
-                       && m > 1
-                       && mainFun != "max"
-                       && mainFun != "min") {
+        } else if (
+                        (compFunVec[0] == "==" || IsBet)
+                     && lenV > 1
+                     && m > 1
+                     && mainFun != "max"
+                     && mainFun != "min"
+                  )
+        {
                        
+            // N.B. When we arrive here, the user must provide the width.
+            // That is, m cannot be NULL
             ConstType = ConstraintType::PartitionEsque;
         }
     }
