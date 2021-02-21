@@ -68,7 +68,17 @@ double MultisetPermRowNum(int n, int r, const std::vector<int> &Reps) {
     if (n < 2 || r < 1)
         return 1.0;
     
-    int sumFreqs = std::accumulate(Reps.cbegin(), Reps.cend(), 0);
+    const int sumFreqs = std::accumulate(Reps.cbegin(), Reps.cend(), 0);
+    
+    if (r == sumFreqs) {
+        std::vector<int> freqs(sumFreqs);
+        
+        for (int i = 0, k = 0; i < static_cast<int>(Reps.size()); ++i)
+            for (int j = 0; j < Reps[i]; ++j, ++k)
+                freqs[k] = i;
+        
+        return NumPermsWithRep(freqs);
+    }
     
     if (r > sumFreqs)
         return 0.0;

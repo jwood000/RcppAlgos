@@ -40,7 +40,8 @@ void NumPermsNoRepGmp(mpz_t result, int n, int k) {
         mpz_mul_ui(result, result, i);
 }
 
-void MultisetPermRowNumGmp(mpz_t result, int n, int r, const std::vector<int> &myReps) {
+void MultisetPermRowNumGmp(mpz_t result, int n, int r,
+                           const std::vector<int> &myReps) {
     
     const int sumFreqs = std::accumulate(myReps.cbegin(), myReps.cend(), 0);
     
@@ -48,6 +49,14 @@ void MultisetPermRowNumGmp(mpz_t result, int n, int r, const std::vector<int> &m
         mpz_set_ui(result, 1);
     } else if (r > sumFreqs) {
         mpz_set_ui(result, 0);
+    } else if (r == sumFreqs) {
+        std::vector<int> freqs(sumFreqs);
+        
+        for (int i = 0, k = 0; i < static_cast<int>(myReps.size()); ++i)
+            for (int j = 0; j < myReps[i]; ++j, ++k)
+                freqs[k] = i;
+        
+        NumPermsWithRepGmp(result, freqs);
     } else {
         const int n1 = n - 1;
         int maxFreq = *std::max_element(myReps.cbegin(), myReps.cend());
