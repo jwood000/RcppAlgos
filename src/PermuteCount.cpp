@@ -37,20 +37,23 @@ double NumPermsWithRep(const std::vector<int> &v) {
     for (int i = v.size(); i > myMax; --i)
         result *= i;
     
-    if (numUni > 1)
+    if (numUni > 1) {
+        double div = 1.0;
+        
         for (int i = 1; i < numUni; ++i)
             for (int j = 2; j <= myLens[i]; ++j)
-                result /= j;
+                div *= j;
+        
+        result /= div;
+    }
     
     return result;
 }
 
 double NumPermsNoRep(int n, int k) {
-    const double dblN = static_cast<double>(n);
-    const double nMinusK = dblN - static_cast<double>(k);
     double result = 1.0;
     
-    for (double i = n; i > nMinusK; --i)
+    for (double i = n, m = n - k; i > m; --i)
         result *= i;
     
     return result;

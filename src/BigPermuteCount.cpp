@@ -9,7 +9,7 @@
 
 void NumPermsWithRepGmp(mpz_t result, const std::vector<int> &v) {
     
-    mpz_set_ui(result, 1);
+    mpz_set_ui(result, 1u);
     std::vector<int> myLens = rleCpp(v);
     std::sort(myLens.begin(), myLens.end(), std::greater<int>());
     
@@ -19,15 +19,22 @@ void NumPermsWithRepGmp(mpz_t result, const std::vector<int> &v) {
     for (int i = v.size(); i > myMax; --i)
         mpz_mul_ui(result, result, i);
     
-    if (numUni > 1)
+    if (numUni > 1) {
+        mpz_t div;
+        mpz_init_set_ui(div, 1u);
+        
         for (int i = 1; i < numUni; ++i)
             for (int j = 2; j <= myLens[i]; ++j)
-                mpz_divexact_ui(result, result, j);
+                mpz_mul_ui(div, div, j);
+        
+        mpz_divexact(result, result, div);
+        mpz_clear(div);
+    }
 }
 
 void NumPermsNoRepGmp(mpz_t result, int n, int k) {
     
-    mpz_set_ui(result, 1);
+    mpz_set_ui(result, 1u);
     
     for (int i = n, m = n - k; i > m; --i)
         mpz_mul_ui(result, result, i);
@@ -107,7 +114,8 @@ void MultisetPermRowNumGmp(mpz_t result, int n, int r, const std::vector<int> &m
             mpz_add(result, result, temp);
         }
         
-        mpz_clear(temp); mpz_clear(prodR);
+        mpz_clear(temp);
+        mpz_clear(prodR);
         
         for (int i = 0; i < myMax; ++i)
             mpz_clear(cumProd[i]);
