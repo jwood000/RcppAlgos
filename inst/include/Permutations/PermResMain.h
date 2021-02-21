@@ -1,11 +1,11 @@
 #ifndef MAIN_PERMUTATIONS_RESULT_H
 #define MAIN_PERMUTATIONS_RESULT_H
 
-#include "UserConstraintFuns.h"
+#include "Constraints/UserConstraintFuns.h"
 #include <gmp.h>
 
 template <typename T>
-void MainPermRes(T* mat, const std::vector<T> &v, const funcPtr<T> myFun,
+void PermResMain(T* mat, const std::vector<T> &v, const funcPtr<T> myFun,
                  int n, int m, bool Parallel, bool IsRep, bool IsMult,
                  bool IsGmp, const std::vector<int> &freqs, std::vector<int> &z,
                  const std::vector<int> &myReps, double lower, mpz_t lowerMpz,

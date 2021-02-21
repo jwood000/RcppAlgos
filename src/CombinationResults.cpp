@@ -2,8 +2,8 @@
 
 template <typename T>
 void ComboGenResDistinct(T* mat, const std::vector<T> &v,
-                         std::vector<int> &z, int n, int m, int strt, int nRows,
-                         const std::vector<int> &freqs, funcPtr<T> myFun) {
+                         std::vector<int> &z, int n, int m, int strt,
+                         int nRows, const funcPtr<T> myFun) {
     
     std::vector<T> vPass(m);
     
@@ -29,8 +29,8 @@ void ComboGenResDistinct(T* mat, const std::vector<T> &v,
 
 template <typename T>
 void ComboGenResDistinct(RcppParallel::RMatrix<T> &mat, const std::vector<T> &v,
-                         std::vector<int> &z, int n, int m, int strt, int nRows,
-                         const std::vector<int> &freqs, funcPtr<T> myFun) {
+                         std::vector<int> &z, int n, int m, int strt,
+                         int nRows, const funcPtr<T> myFun) {
     
     std::vector<T> vPass(m);
     
@@ -56,8 +56,8 @@ void ComboGenResDistinct(RcppParallel::RMatrix<T> &mat, const std::vector<T> &v,
 
 template <typename T>
 void ComboGenResRep(T* mat, const std::vector<T> &v, 
-                    std::vector<int> &z, int n, int m, int strt, int nRows,
-                    const std::vector<int> &freqs, funcPtr<T> myFun) {
+                    std::vector<int> &z, int n, int m, int strt,
+                    int nRows, const funcPtr<T> myFun) {
     
     std::vector<T> vPass(m);
     
@@ -83,8 +83,8 @@ void ComboGenResRep(T* mat, const std::vector<T> &v,
 
 template <typename T>
 void ComboGenResRep(RcppParallel::RMatrix<T> &mat, const std::vector<T> &v, 
-                    std::vector<int> &z, int n, int m, int strt, int nRows,
-                    const std::vector<int> &freqs, funcPtr<T> myFun) {
+                    std::vector<int> &z, int n, int m, int strt,
+                    int nRows, const funcPtr<T> myFun) {
     
     std::vector<T> vPass(m);
     
@@ -111,7 +111,7 @@ void ComboGenResRep(RcppParallel::RMatrix<T> &mat, const std::vector<T> &v,
 template <typename T>
 void MultisetComboResult(T* mat, const std::vector<T> &v,
                          std::vector<int> &z, int n, int m, int strt, int nRows,
-                         const std::vector<int> &freqs, funcPtr<T> myFun) {
+                         const std::vector<int> &freqs, const funcPtr<T> myFun) {
     
     std::vector<int> zIndex(n);
     std::vector<T> vPass(m);
@@ -146,7 +146,7 @@ void MultisetComboResult(T* mat, const std::vector<T> &v,
 template <typename T>
 void MultisetComboResult(RcppParallel::RMatrix<T> &mat, const std::vector<T> &v,
                          std::vector<int> &z, int n, int m, int strt, int nRows,
-                         const std::vector<int> &freqs, funcPtr<T> myFun) {
+                         const std::vector<int> &freqs, const funcPtr<T> myFun) {
     
     std::vector<int> zIndex(n);
     std::vector<T> vPass(m);
@@ -179,28 +179,28 @@ void MultisetComboResult(RcppParallel::RMatrix<T> &mat, const std::vector<T> &v,
 }
 
 template void ComboGenResDistinct(int*, const std::vector<int>&, std::vector<int>&,
-                                  int, int, int, int, const std::vector<int>&, funcPtr<int>);
+                                  int, int, int, int, const funcPtr<int>);
 template void ComboGenResDistinct(double*, const std::vector<double>&, std::vector<int>&,
-                                  int, int, int, int, const std::vector<int>&, funcPtr<double>);
-template void ComboGenResDistinct(RcppParallel::RMatrix<int>&, const std::vector<int>&, std::vector<int>&,
-                                  int, int, int, int, const std::vector<int>&, funcPtr<int>);
-template void ComboGenResDistinct(RcppParallel::RMatrix<double>&, const std::vector<double>&, std::vector<int>&,
-                                  int, int, int, int, const std::vector<int>&, funcPtr<double>);
+                                  int, int, int, int, const funcPtr<double>);
+template void ComboGenResDistinct(RcppParallel::RMatrix<int>&, const std::vector<int>&,
+                                  std::vector<int>&, int, int, int, int, const funcPtr<int>);
+template void ComboGenResDistinct(RcppParallel::RMatrix<double>&, const std::vector<double>&,
+                                  std::vector<int>&, int, int, int, int, const funcPtr<double>);
 
 template void ComboGenResRep(int*, const std::vector<int>&, std::vector<int>&,
-                             int, int, int, int, const std::vector<int>&, funcPtr<int>);
+                             int, int, int, int, const funcPtr<int>);
 template void ComboGenResRep(double*, const std::vector<double>&, std::vector<int>&,
-                             int, int, int, int, const std::vector<int>&, funcPtr<double>);
-template void ComboGenResRep(RcppParallel::RMatrix<int>&, const std::vector<int>&, std::vector<int>&,
-                             int, int, int, int, const std::vector<int>&, funcPtr<int>);
-template void ComboGenResRep(RcppParallel::RMatrix<double>&, const std::vector<double>&, std::vector<int>&,
-                             int, int, int, int, const std::vector<int>&, funcPtr<double>);
+                             int, int, int, int, const funcPtr<double>);
+template void ComboGenResRep(RcppParallel::RMatrix<int>&, const std::vector<int>&,
+                             std::vector<int>&, int, int, int, int, const funcPtr<int>);
+template void ComboGenResRep(RcppParallel::RMatrix<double>&, const std::vector<double>&,
+                             std::vector<int>&, int, int, int, int, const funcPtr<double>);
 
 template void MultisetComboResult(int*, const std::vector<int>&, std::vector<int>&,
-                                  int, int, int, int, const std::vector<int>&, funcPtr<int>);
+                                  int, int, int, int, const std::vector<int>&, const funcPtr<int>);
 template void MultisetComboResult(double*, const std::vector<double>&, std::vector<int>&,
-                                  int, int, int, int, const std::vector<int>&, funcPtr<double>);
+                                  int, int, int, int, const std::vector<int>&, const funcPtr<double>);
 template void MultisetComboResult(RcppParallel::RMatrix<int>&, const std::vector<int>&, std::vector<int>&,
-                                  int, int, int, int, const std::vector<int>&, funcPtr<int>);
+                                  int, int, int, int, const std::vector<int>&, const funcPtr<int>);
 template void MultisetComboResult(RcppParallel::RMatrix<double>&, const std::vector<double>&, std::vector<int>&,
-                                  int, int, int, int, const std::vector<int>&, funcPtr<double>);
+                                  int, int, int, int, const std::vector<int>&, const funcPtr<double>);

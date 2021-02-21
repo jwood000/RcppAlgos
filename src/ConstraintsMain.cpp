@@ -1,5 +1,6 @@
+#include "Constraints/ConstraintsUtils.h"
 #include "Partitions/PartitionEnums.h"
-#include "Permutations/MainPermRes.h"
+#include "CombinatoricsResGlue.h"
 #include "CombinatoricsCnstrt.h"
 #include "Cpp14MakeUnique.h"
 #include "ComputedCount.h"
@@ -256,29 +257,33 @@ SEXP CombinatoricsCnstrt(SEXP Rv, SEXP Rm, SEXP RisRep, SEXP RFreqs, SEXP Rlow,
         
         int nCols = m + 1;
         const int limit = 20000;
-        
         SetThreads(Parallel, maxThreads, nRows, myType, nThreads, RnThreads, limit);
 
-        // if (myType == VecType::Integer)
-        //     if (!CheckIsInteger(mainFun, n, m, vNum, vNum, funDbl))
-        //         myType = VecType::Numeric;
+        if (myType == VecType::Integer)
+            if (!CheckIsInteger(mainFun, n, m, vNum, vNum, funDbl))
+                myType = VecType::Numeric;
 
         if (myType == VecType::Integer) {
             const funcPtr<int> funInt = GetFuncPtr<int>(mainFun);
             SEXP res = PROTECT(Rf_allocMatrix(INTSXP, nRows, nCols));
             int* matInt = INTEGER(res);
             
-            MainPermRes(matInt, vInt, funInt, n, m, Parallel, IsRep,
-                        IsMult, IsGmp, freqs, startZ, myReps, lower,
-                        lowerMpz[0], nRows, nThreads);
+            ResultsMain(matInt, vInt, funInt, n, m, IsComb, Parallel,
+                        IsRep, IsMult, IsGmp, freqs, startZ, myReps,
+                        lower, lowerMpz[0], nRows, nThreads);
             
             UNPROTECT(1);
             return res;
         } else {
-            // Rcpp::NumericMatrix matNum = Rcpp::no_init_matrix(nRows, nCols);
-            // MainResRet(matNum, vNum, funDbl, n, m, IsRep, IsComb, IsMult, IsGmp, freqs,
-            //            startZ, myReps, lower, lowerMpz[0], nRows, nThreads, Parallel);
-            // return matNum;
+            SEXP res = PROTECT(Rf_allocMatrix(REALSXP, nRows, nCols));
+            double* matNum = REAL(res);
+            
+            ResultsMain(matNum, vNum, funDbl, n, m, IsComb, Parallel,
+                        IsRep, IsMult, IsGmp, freqs, startZ, myReps,
+                        lower, lowerMpz[0], nRows, nThreads);
+            
+            UNPROTECT(1);
+            return res;
         }
     // }
 }

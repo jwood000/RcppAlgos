@@ -1,7 +1,7 @@
 #ifndef PERMUTE_RES_GLUE_H
 #define PERMUTE_RES_GLUE_H
 
-#include "UserConstraintFuns.h"
+#include "Constraints/UserConstraintFuns.h"
 #include "RMatrix.h"
 #include <vector>
 

@@ -39,12 +39,13 @@ comboGeneral <- function(v, m = NULL, repetition = FALSE, freqs = NULL, lower = 
                          FUN, new.env(), FUN.VALUE, TRUE,
                          FALSE, PACKAGE = "RcppAlgos"))
         }
+    } else {
+        return(.Call(CombinatoricsCnstrt, v, m, repetition,
+                     freqs, lower, upper, constraintFun, comparisonFun,
+                     limitConstraints, TRUE, keepResults, Parallel,
+                     nThreads, pkgEnv$nThreads, tolerance,
+                     PACKAGE = "RcppAlgos"))
     }
-    # } else {
-    #     CombinatoricsCnstrt(v, m, repetition, freqs, lower, upper, constraintFun,
-    #                         comparisonFun, limitConstraints, TRUE, keepResults,
-    #                         Parallel, nThreads, pkgEnv$nThreads, tolerance)
-    # }
 }
 
 # comboSample <- function(v, m = NULL, repetition = FALSE, freqs = NULL, n = NULL, 

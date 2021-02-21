@@ -22,11 +22,11 @@ void PermuteResPar(RcppParallel::RMatrix<T> &mat, const std::vector<T> &v,
                    bool IsMult, bool IsRep) {
 
     if (IsMult)
-        MultisetPermRes(mat, v, z, n, m, 0, nRows, freqs, myFun);
+        MultisetPermRes(mat, v, z, n, m, strt, nRows, freqs, myFun);
     else if (IsRep)
-        PermuteGenResRep(mat, v, z, n, m, 0, nRows, myFun);
+        PermuteGenResRep(mat, v, z, n, m, strt, nRows, myFun);
     else
-        PermuteGenResDistinct(mat, v, z, n, m, 0, nRows, myFun);
+        PermuteGenResDistinct(mat, v, z, n, m, strt, nRows, myFun);
 }
 
 template void PermuteResPar(RcppParallel::RMatrix<int>&, const std::vector<int>&,

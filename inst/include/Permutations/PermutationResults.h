@@ -1,9 +1,9 @@
 #ifndef PERMUTATION_RESULTS_H
 #define PERMUTATION_RESULTS_H
 
+#include "Constraints/UserConstraintFuns.h"
 #include "Permutations/NextPermutation.h"
 #include "Permutations/NextPermRep.h"
-#include "UserConstraintFuns.h"
 #include "Cpp14MakeUnique.h"
 #include "RMatrix.h"
 
