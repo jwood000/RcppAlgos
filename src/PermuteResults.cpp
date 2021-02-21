@@ -1,9 +1,9 @@
 #include "Permutations/PermutationResults.h"
 
 template <typename T>
-void PermuteGenResDistinct(T* mat, const std::vector<T> &v,
-                           std::vector<int> &z, int n, int m,
-                           int strt, int nRows, const funcPtr<T> myFun) {
+void PermuteResDistinct(T* mat, const std::vector<T> &v,
+                        std::vector<int> &z, int n, int m,
+                        int strt, int nRows, const funcPtr<T> myFun) {
     
     std::vector<T> vPass(m);
     auto arrPerm = FromCpp14::make_unique<int[]>(n);
@@ -58,10 +58,10 @@ void PermuteGenResDistinct(T* mat, const std::vector<T> &v,
 }
 
 template <typename T>
-void PermuteGenResDistinct(RcppParallel::RMatrix<T> &mat,
-                           const std::vector<T> &v, std::vector<int> &z,
-                           int n, int m, int strt, int nRows,
-                           const funcPtr<T> myFun) {
+void PermuteResDistinct(RcppParallel::RMatrix<T> &mat,
+                        const std::vector<T> &v, std::vector<int> &z,
+                        int n, int m, int strt, int nRows,
+                        const funcPtr<T> myFun) {
     
     std::vector<T> vPass(m);
     auto arrPerm = FromCpp14::make_unique<int[]>(n);
@@ -116,9 +116,9 @@ void PermuteGenResDistinct(RcppParallel::RMatrix<T> &mat,
 }
 
 template <typename T>
-void PermuteGenResRep(T* mat, const std::vector<T> &v,
-                      std::vector<int> &z, int n, int m,
-                      int strt, int nRows, const funcPtr<T> myFun) {
+void PermuteResRep(T* mat, const std::vector<T> &v,
+                   std::vector<int> &z, int n, int m,
+                   int strt, int nRows, const funcPtr<T> myFun) {
 
     std::vector<T> vPass(m);
 
@@ -144,10 +144,10 @@ void PermuteGenResRep(T* mat, const std::vector<T> &v,
 }
 
 template <typename T>
-void PermuteGenResRep(RcppParallel::RMatrix<T> &mat,
-                      const std::vector<T> &v,
-                      std::vector<int> &z, int n, int m,
-                      int strt, int nRows, const funcPtr<T> myFun) {
+void PermuteResRep(RcppParallel::RMatrix<T> &mat,
+                   const std::vector<T> &v,
+                   std::vector<int> &z, int n, int m,
+                   int strt, int nRows, const funcPtr<T> myFun) {
     
     std::vector<T> vPass(m);
     
@@ -287,23 +287,23 @@ void MultisetPermRes(RcppParallel::RMatrix<T> &mat, const std::vector<T> &v,
     mat(nRows - 1, m) = myFun(vPass, m);
 }
 
-template void PermuteGenResDistinct(int*, const std::vector<int>&, std::vector<int>&, 
-                                    int, int, int, int, const funcPtr<int>);
-template void PermuteGenResDistinct(double*, const std::vector<double>&, std::vector<int>&,
-                                    int, int, int, int, const funcPtr<double>);
-template void PermuteGenResDistinct(RcppParallel::RMatrix<int>&, const std::vector<int>&,
-                                    std::vector<int>&, int, int, int, int, const funcPtr<int>);
-template void PermuteGenResDistinct(RcppParallel::RMatrix<double>&, const std::vector<double>&,
-                                    std::vector<int>&, int, int, int, int, const funcPtr<double>);
+template void PermuteResDistinct(int*, const std::vector<int>&, std::vector<int>&, 
+                                 int, int, int, int, const funcPtr<int>);
+template void PermuteResDistinct(double*, const std::vector<double>&, std::vector<int>&,
+                                 int, int, int, int, const funcPtr<double>);
+template void PermuteResDistinct(RcppParallel::RMatrix<int>&, const std::vector<int>&,
+                                 std::vector<int>&, int, int, int, int, const funcPtr<int>);
+template void PermuteResDistinct(RcppParallel::RMatrix<double>&, const std::vector<double>&,
+                                 std::vector<int>&, int, int, int, int, const funcPtr<double>);
 
-template void PermuteGenResRep(int*, const std::vector<int>&, std::vector<int>&,
-                               int, int, int, int, const funcPtr<int>);
-template void PermuteGenResRep(double*, const std::vector<double>&, std::vector<int>&,
-                               int, int, int, int, const funcPtr<double>);
-template void PermuteGenResRep(RcppParallel::RMatrix<int>&, const std::vector<int>&,
-                               std::vector<int>&, int, int, int, int, const funcPtr<int>);
-template void PermuteGenResRep(RcppParallel::RMatrix<double>&, const std::vector<double>&,
-                               std::vector<int>&, int, int, int, int, const funcPtr<double>);
+template void PermuteResRep(int*, const std::vector<int>&, std::vector<int>&,
+                            int, int, int, int, const funcPtr<int>);
+template void PermuteResRep(double*, const std::vector<double>&, std::vector<int>&,
+                            int, int, int, int, const funcPtr<double>);
+template void PermuteResRep(RcppParallel::RMatrix<int>&, const std::vector<int>&,
+                            std::vector<int>&, int, int, int, int, const funcPtr<int>);
+template void PermuteResRep(RcppParallel::RMatrix<double>&, const std::vector<double>&,
+                            std::vector<int>&, int, int, int, int, const funcPtr<double>);
 
 template void MultisetPermRes(int*, const std::vector<int>&, std::vector<int>&,
                               int, int, int, int, const std::vector<int>&, const funcPtr<int>);

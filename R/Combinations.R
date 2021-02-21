@@ -56,10 +56,11 @@ comboGeneral <- function(v, m = NULL, repetition = FALSE, freqs = NULL, lower = 
 #     SampleRcpp(v, m, repetition, freqs, sampleVec, TRUE, is.factor(v), seed, n,
 #                sample, FUN, new.env(), Parallel, nThreads, pkgEnv$nThreads, namedSample)
 # }
-# 
-# comboCount <-  function(v, m = NULL, repetition = FALSE, freqs = NULL) {
-#     CombinatoricsCount(v, m, repetition, freqs, TRUE);
-# }
+
+comboCount <-  function(v, m = NULL, repetition = FALSE, freqs = NULL) {
+    .Call(CombinatoricsCount, v, m,
+          repetition, freqs, TRUE, PACKAGE = "RcppAlgos");
+}
 
 stdThreadMax <- function() {
     nThreads <- .Call(cpp11GetNumThreads)

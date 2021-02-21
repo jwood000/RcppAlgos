@@ -57,7 +57,8 @@ permuteGeneral <- function(v, m = NULL, repetition = FALSE, freqs = NULL, lower 
 #     SampleRcpp(v, m, repetition, freqs, sampleVec, FALSE, is.factor(v), seed, n,
 #                sample, FUN, new.env(), Parallel, nThreads, pkgEnv$nThreads, namedSample)
 # }
-# 
-# permuteCount <- function(v, m = NULL, repetition = FALSE, freqs = NULL) {
-#     CombinatoricsCount(v, m, repetition, freqs, FALSE);
-# }
+
+permuteCount <- function(v, m = NULL, repetition = FALSE, freqs = NULL) {
+    .Call(CombinatoricsCount, v, m,
+          repetition, freqs, FALSE, PACKAGE = "RcppAlgos");
+}

@@ -10,9 +10,9 @@ void ComboResStd(T* mat, const std::vector<T> &v,
     if (IsMult)
         MultisetComboResult(mat, v, z, n, m, 0, nRows, freqs, myFun);
     else if (IsRep)
-        ComboGenResRep(mat, v, z, n, m, 0, nRows, myFun);
+        ComboResRep(mat, v, z, n, m, 0, nRows, myFun);
     else
-        ComboGenResDistinct(mat, v, z, n, m, 0, nRows, myFun);
+        ComboResDistinct(mat, v, z, n, m, 0, nRows, myFun);
 }
 
 template <typename T>
@@ -24,9 +24,9 @@ void ComboResPar(RcppParallel::RMatrix<T> &mat, const std::vector<T> &v,
     if (IsMult)
         MultisetComboResult(mat, v, z, n, m, strt, nRows, freqs, myFun);
     else if (IsRep)
-        ComboGenResRep(mat, v, z, n, m, strt, nRows, myFun);
+        ComboResRep(mat, v, z, n, m, strt, nRows, myFun);
     else
-        ComboGenResDistinct(mat, v, z, n, m, strt, nRows, myFun);
+        ComboResDistinct(mat, v, z, n, m, strt, nRows, myFun);
 }
 
 template void ComboResPar(RcppParallel::RMatrix<int>&, const std::vector<int>&,

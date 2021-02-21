@@ -1,8 +1,8 @@
 #ifndef PERMUTATIONS_REP_H
 #define PERMUTATIONS_REP_H
 
+#include "NextPermSectionRep.h"
 #include "PermuteHelper.h"
-#include "NextPermRep.h"
 #include "RMatrix.h"
 
 template <typename T>
@@ -16,7 +16,7 @@ void PermuteRep(T* mat, const std::vector<T> &v,
         for (int j = 0; j < m; ++j)
             mat[count + j * nRows] = v[z[j]];
         
-        NextRepSec(z, maxInd, lastCol);
+        NextSecRep(z, maxInd, lastCol);
     }
 }
 
@@ -30,7 +30,7 @@ void PermuteRep(RcppParallel::RMatrix<T> &mat, const std::vector<T> &v,
         for (int j = 0; j < m; ++j)
             mat(count, j) = v[z[j]];
         
-        NextRepSec(z, maxInd, lastCol);
+        NextSecRep(z, maxInd, lastCol);
     }
 }
 
@@ -44,7 +44,7 @@ void PermuteRep(SEXP mat, SEXP v,
         for (int j = 0; j < m; ++j)
             SET_STRING_ELT(mat, count + j * nRows, STRING_ELT(v, z[j]));
         
-        NextRepSec(z, maxInd, lastCol);
+        NextSecRep(z, maxInd, lastCol);
     }
 }
 

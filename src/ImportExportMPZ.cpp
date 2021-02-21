@@ -8,14 +8,7 @@
 // from the source files bigintegerR.cc/ biginteger.cc from
 // the R gmp package.
 
-#define R_NO_REMAP
-#include <Rinternals.h>
-#include <R.h>
-#include <string>
-#include <gmp.h>
-#include <vector>
-
-constexpr std::size_t intSize = sizeof(int);
+#include "ImportExportMPZ.h"
 
 void createMPZArray(SEXP input, mpz_t *myVec, std::size_t vecSize, 
                     const std::string &nameOfObject, bool negPoss) {

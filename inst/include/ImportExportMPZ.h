@@ -4,7 +4,12 @@
 #define R_NO_REMAP
 #include <Rinternals.h>
 #include <R.h>
+
+#include <string>
 #include <gmp.h>
+#include <vector>
+
+constexpr std::size_t intSize = sizeof(int);
 
 // Functions for importing/exporting and converting SEXPs to mpz_t
 

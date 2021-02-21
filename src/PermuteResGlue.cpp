@@ -10,9 +10,9 @@ void PermuteResStd(T* mat, const std::vector<T> &v,
     if (IsMult)
         MultisetPermRes(mat, v, z, n, m, 0, nRows, freqs, myFun);
     else if (IsRep)
-        PermuteGenResRep(mat, v, z, n, m, 0, nRows, myFun);
+        PermuteResRep(mat, v, z, n, m, 0, nRows, myFun);
     else
-        PermuteGenResDistinct(mat, v, z, n, m, 0, nRows, myFun);
+        PermuteResDistinct(mat, v, z, n, m, 0, nRows, myFun);
 }
 
 template <typename T>
@@ -24,9 +24,9 @@ void PermuteResPar(RcppParallel::RMatrix<T> &mat, const std::vector<T> &v,
     if (IsMult)
         MultisetPermRes(mat, v, z, n, m, strt, nRows, freqs, myFun);
     else if (IsRep)
-        PermuteGenResRep(mat, v, z, n, m, strt, nRows, myFun);
+        PermuteResRep(mat, v, z, n, m, strt, nRows, myFun);
     else
-        PermuteGenResDistinct(mat, v, z, n, m, strt, nRows, myFun);
+        PermuteResDistinct(mat, v, z, n, m, strt, nRows, myFun);
 }
 
 template void PermuteResPar(RcppParallel::RMatrix<int>&, const std::vector<int>&,

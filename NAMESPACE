@@ -3,4 +3,6 @@ import(gmp)
 
 export(comboGeneral,
        permuteGeneral,
+       comboCount,
+       permuteCount,
        stdThreadMax)

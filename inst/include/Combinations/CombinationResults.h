@@ -6,21 +6,21 @@
 #include "RMatrix.h"
 
 template <typename T>
-void ComboGenResDistinct(T* mat, const std::vector<T> &v,
-                         std::vector<int> &z, int n, int m, int strt,
-                         int nRows, const funcPtr<T> myFun);
+void ComboResDistinct(T* mat, const std::vector<T> &v,
+                      std::vector<int> &z, int n, int m, int strt,
+                      int nRows, const funcPtr<T> myFun);
 template <typename T>
-void ComboGenResDistinct(RcppParallel::RMatrix<T> &mat, const std::vector<T> &v,
-                         std::vector<int> &z, int n, int m, int strt,
-                         int nRows, const funcPtr<T> myFun);
+void ComboResDistinct(RcppParallel::RMatrix<T> &mat, const std::vector<T> &v,
+                      std::vector<int> &z, int n, int m, int strt,
+                      int nRows, const funcPtr<T> myFun);
 template <typename T>
-void ComboGenResRep(T* mat, const std::vector<T> &v, 
-                    std::vector<int> &z, int n, int m, int strt,
-                    int nRows, const funcPtr<T> myFun);
+void ComboResRep(T* mat, const std::vector<T> &v, 
+                 std::vector<int> &z, int n, int m, int strt,
+                 int nRows, const funcPtr<T> myFun);
 template <typename T>
-void ComboGenResRep(RcppParallel::RMatrix<T> &mat, const std::vector<T> &v, 
-                    std::vector<int> &z, int n, int m, int strt,
-                    int nRows, const funcPtr<T> myFun);
+void ComboResRep(RcppParallel::RMatrix<T> &mat, const std::vector<T> &v, 
+                 std::vector<int> &z, int n, int m, int strt,
+                 int nRows, const funcPtr<T> myFun);
 template <typename T>
 void MultisetComboResult(T* mat, const std::vector<T> &v,
                          std::vector<int> &z, int n, int m, int strt, int nRows,

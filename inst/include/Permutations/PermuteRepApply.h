@@ -1,8 +1,8 @@
 #ifndef PERMUTE_REP_APPLY_H
 #define PERMUTE_REP_APPLY_H
 
+#include "NextPermSectionRep.h"
 #include "PermuteHelper.h"
-#include "NextPermRep.h"
 #include "FunAssign.h"
 
 template <typename T>
@@ -21,7 +21,7 @@ void PermuteRepApplyFun(SEXP res, const std::vector<T> &v,
         
         FunAssign(res, vectorPass, sexpFun, rho,
                   commonType, commonLen, count, nRows, retType);
-        NextRepSec(z, maxInd, lastCol);
+        NextSecRep(z, maxInd, lastCol);
     }
 }
 
@@ -40,7 +40,7 @@ void PermuteRepApplyFun(SEXP res, SEXP v, SEXP vectorPass,
         
         FunAssign(res, vectorPass, sexpFun, rho,
                   commonType, commonLen, count, nRows, retType);
-        NextRepSec(z, maxInd, lastCol);
+        NextSecRep(z, maxInd, lastCol);
     }
 }
 
