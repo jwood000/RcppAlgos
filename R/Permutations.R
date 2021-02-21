@@ -1,8 +1,8 @@
-permuteGeneral <- function(v, m = NULL, repetition = FALSE, freqs = NULL, lower = NULL,
-                           upper = NULL, constraintFun = NULL, comparisonFun = NULL,
-                           limitConstraints = NULL, keepResults = NULL, FUN = NULL,
-                           Parallel = FALSE, nThreads = NULL, tolerance = NULL,
-                           FUN.VALUE = NULL, simplify = FALSE) {
+permuteGeneral <- function(v, m = NULL, repetition = FALSE, freqs = NULL,
+                           lower = NULL, upper = NULL, constraintFun = NULL,
+                           comparisonFun = NULL, limitConstraints = NULL,
+                           keepResults = NULL, FUN = NULL, Parallel = FALSE,
+                           nThreads = NULL, tolerance = NULL, FUN.VALUE = NULL) {
 
     RetValue <- .Call(CheckReturn, v, constraintFun,
                       comparisonFun, limitConstraints,
@@ -13,32 +13,10 @@ permuteGeneral <- function(v, m = NULL, repetition = FALSE, freqs = NULL, lower 
                      freqs, lower, upper, Parallel, nThreads,
                      pkgEnv$nThreads, FALSE, PACKAGE = "RcppAlgos"))
     } else if (RetValue == 2) {
-        if (simplify && is.null(FUN.VALUE)) {
-            res <- .Call(CombinatoricsApply, v, m,
-                         repetition, freqs, lower, upper,
-                         FUN, new.env(), FUN.VALUE, FALSE,
-                         FALSE, PACKAGE = "RcppAlgos")
-            lens <- lengths(res)
-            
-            if (max(lens) == min(lens)) {
-                mat <- matrix(unlist(res, use.names = FALSE),
-                              nrow = lens[1L], ncol = length(res))
-                dim(mat) <- c(dim(res[[1]]), length(res))
-                return(mat)
-            } else {
-                return(res)
-            }
-        } else if (!is.null(FUN.VALUE)) {
-            return(.Call(CombinatoricsApply, v, m,
-                         repetition, freqs, lower, upper,
-                         FUN, new.env(), FUN.VALUE, FALSE,
-                         TRUE, PACKAGE = "RcppAlgos"))
-        } else {
-            return(.Call(CombinatoricsApply, v, m,
-                         repetition, freqs, lower, upper,
-                         FUN, new.env(), FUN.VALUE, FALSE,
-                         FALSE, PACKAGE = "RcppAlgos"))
-        }
+        return(.Call(CombinatoricsApply, v, m,
+                     repetition, freqs, lower, upper,
+                     FUN, new.env(), FUN.VALUE, FALSE,
+                     PACKAGE = "RcppAlgos"))
     } else {
         return(.Call(CombinatoricsCnstrt, v, m, repetition,
                      freqs, lower, upper, constraintFun, comparisonFun,

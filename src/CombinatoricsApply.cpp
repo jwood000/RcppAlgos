@@ -109,9 +109,9 @@ void VecApply(SEXP res, SEXP v, SEXP vectorPass,
 SEXP ApplyFunction(SEXP v, SEXP vectorPass, int n, int m, bool IsComb,
                    bool IsRep, int nRows, const std::vector<int> &freqs,
                    std::vector<int> &z, bool IsMult, SEXP stdFun,
-                   SEXP rho, bool Simplify, SEXP RFunVal) {
+                   SEXP rho, SEXP RFunVal) {
     
-    if (Simplify) {
+    if (!Rf_isNull(RFunVal)) {
         if (!Rf_isVector(RFunVal)) Rf_error("'FUN.VALUE' must be a vector");
         const int commonLen = Rf_length(RFunVal);
         
@@ -222,13 +222,13 @@ SEXP ApplyFunction(SEXP v, SEXP vectorPass, int n, int m, bool IsComb,
 }
 
 template <typename T>
-SEXP ApplyFunction(const std::vector<T> &v, SEXP vectorPass, T* ptr_vec,
-                   int n, int m, bool IsComb, bool IsRep, int nRows, 
-                   const std::vector<int> &freqs, std::vector<int> &z,
-                   bool IsMult, SEXP stdFun, SEXP rho,
-                   bool Simplify, SEXP RFunVal) {
+SEXP ApplyFunction(const std::vector<T> &v, SEXP vectorPass,
+                   T* ptr_vec, int n, int m, bool IsComb, bool IsRep, 
+                   int nRows, const std::vector<int> &freqs,
+                   std::vector<int> &z, bool IsMult, SEXP stdFun,
+                   SEXP rho, SEXP RFunVal) {
     
-    if (Simplify) {
+    if (!Rf_isNull(RFunVal)) {
         if (!Rf_isVector(RFunVal)) Rf_error("'FUN.VALUE' must be a vector");
         const int commonLen = Rf_length(RFunVal);
         
@@ -338,9 +338,10 @@ SEXP ApplyFunction(const std::vector<T> &v, SEXP vectorPass, T* ptr_vec,
     }
 }
 
-SEXP CombinatoricsApply(SEXP Rv, SEXP Rm, SEXP RisRep, SEXP RFreqs,
-                        SEXP Rlow, SEXP Rhigh, SEXP stdFun, SEXP myEnv,
-                        SEXP RFunVal, SEXP RIsComb, SEXP RSimplify) {
+SEXP CombinatoricsApply(SEXP Rv, SEXP Rm, SEXP RisRep,
+                        SEXP RFreqs, SEXP Rlow, SEXP Rhigh,
+                        SEXP stdFun, SEXP myEnv,
+                        SEXP RFunVal, SEXP RIsComb) {
     int n = 0;
     int m = 0;
     int nRows = 0;
@@ -355,7 +356,6 @@ SEXP CombinatoricsApply(SEXP Rv, SEXP Rm, SEXP RisRep, SEXP RFreqs,
     
     bool IsRep = CleanConvert::convertLogical(RisRep, "repetition");
     const bool IsComb = CleanConvert::convertLogical(RIsComb, "IsComb");
-    const bool Simplify = CleanConvert::convertLogical(RSimplify, "simplify");
     
     SetType(myType, Rv);
     SetValues(myType, vInt, vNum, n, Rv);
@@ -398,7 +398,7 @@ SEXP CombinatoricsApply(SEXP Rv, SEXP Rm, SEXP RisRep, SEXP RFreqs,
             SEXP vectorPass = PROTECT(Rf_allocVector(STRSXP, m));
             SEXP res = ApplyFunction(Rv, vectorPass, n, m, IsComb, IsRep,
                                      nRows, freqs, startZ, IsMult, stdFun,
-                                     myEnv, Simplify, RFunVal);
+                                     myEnv, RFunVal);
             UNPROTECT(1);
             return res;
         } case VecType::Complex : {
@@ -409,7 +409,7 @@ SEXP CombinatoricsApply(SEXP Rv, SEXP Rm, SEXP RisRep, SEXP RFreqs,
             std::vector<Rcomplex> vCmplx(cmplxVec, cmplxVec + n);
             SEXP res = ApplyFunction(vCmplx, vectorPass, ptr_vec, n, m,
                                      IsComb, IsRep, nRows, freqs, startZ,
-                                     IsMult, stdFun, myEnv, Simplify, RFunVal);
+                                     IsMult, stdFun, myEnv, RFunVal);
             UNPROTECT(1);
             return res;
         } case VecType::Raw : {
@@ -420,7 +420,7 @@ SEXP CombinatoricsApply(SEXP Rv, SEXP Rm, SEXP RisRep, SEXP RFreqs,
             std::vector<Rbyte> vByte(rawVec, rawVec + n);
             SEXP res = ApplyFunction(vByte, vectorPass, ptr_vec, n, m,
                                      IsComb, IsRep, nRows, freqs, startZ,
-                                     IsMult, stdFun, myEnv, Simplify, RFunVal);
+                                     IsMult, stdFun, myEnv, RFunVal);
             UNPROTECT(1);
             return res;
         } case VecType::Logical : {
@@ -428,7 +428,7 @@ SEXP CombinatoricsApply(SEXP Rv, SEXP Rm, SEXP RisRep, SEXP RFreqs,
             int* ptr_vec = LOGICAL(vectorPass);
             SEXP res = ApplyFunction(vInt, vectorPass, ptr_vec, n, m,
                                      IsComb, IsRep, nRows, freqs, startZ,
-                                     IsMult, stdFun, myEnv, Simplify, RFunVal);
+                                     IsMult, stdFun, myEnv, RFunVal);
             UNPROTECT(1);
             return res;
         } case VecType::Integer : {
@@ -436,7 +436,7 @@ SEXP CombinatoricsApply(SEXP Rv, SEXP Rm, SEXP RisRep, SEXP RFreqs,
             int* ptr_vec = INTEGER(vectorPass);
             SEXP res = ApplyFunction(vInt, vectorPass, ptr_vec, n, m,
                                      IsComb, IsRep, nRows, freqs, startZ,
-                                     IsMult, stdFun, myEnv, Simplify, RFunVal);
+                                     IsMult, stdFun, myEnv, RFunVal);
             UNPROTECT(1);
             return res;
         } default : {
@@ -444,7 +444,7 @@ SEXP CombinatoricsApply(SEXP Rv, SEXP Rm, SEXP RisRep, SEXP RFreqs,
             double* ptr_vec = REAL(vectorPass);
             SEXP res = ApplyFunction(vNum, vectorPass, ptr_vec, n, m,
                                      IsComb, IsRep, nRows, freqs, startZ,
-                                     IsMult, stdFun, myEnv, Simplify, RFunVal);
+                                     IsMult, stdFun, myEnv, RFunVal);
             UNPROTECT(1);
             return res;
         }

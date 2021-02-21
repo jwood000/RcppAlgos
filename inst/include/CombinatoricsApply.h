@@ -6,9 +6,10 @@
 #include <R.h>
 
 extern "C" {
-    SEXP CombinatoricsApply(SEXP Rv, SEXP Rm, SEXP RisRep, SEXP RFreqs,
-                            SEXP Rlow, SEXP Rhigh, SEXP stdFun, SEXP myEnv,
-                            SEXP RFunVal, SEXP RIsComb, SEXP RSimplify);
+    SEXP CombinatoricsApply(SEXP Rv, SEXP Rm, SEXP RisRep,
+                            SEXP RFreqs, SEXP Rlow, SEXP Rhigh,
+                            SEXP stdFun, SEXP myEnv, 
+                            SEXP RFunVal, SEXP RIsComb);
 }
 
 #endif
