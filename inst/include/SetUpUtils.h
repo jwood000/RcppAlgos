@@ -6,13 +6,14 @@
 #include "CleanConvert.h"
 #include <gmp.h>
 
-void SetType(VecType &myType, const SEXP &Rv);
-void SetFactorClass(SEXP res, const SEXP &Rv);
-void SetValues(VecType &myType, std::vector<int> &vInt,
-               std::vector<double> &vNum, int &n, const SEXP &Rv);
+void SetType(VecType &myType, SEXP Rv);
+void SetFactorClass(SEXP res, SEXP Rv);
 
-void SetFreqsAndM(SEXP RFreqs, bool &IsMult, std::vector<int> &Reps, bool &IsRep,
-                  std::vector<int> &freqs, const SEXP &Rm, int n, int &m);
+void SetValues(VecType &myType, std::vector<int> &Reps,
+               std::vector<int> &freqs, std::vector<int> &vInt,
+               std::vector<double> &vNum, SEXP Rv, SEXP RFreqs,
+               SEXP Rm, int &n, int &m, bool &IsMult,
+               bool &IsRep, bool IsConstrained = false);
 
 void SetThreads(bool &Parallel, int maxThreads, int nRows,
                 VecType myType, int &nThreads, SEXP RNumThreads, int limit);
@@ -22,7 +23,7 @@ void SetNumResults(bool IsGmp, bool bLower, bool bUpper, bool IsGenCnstrd,
                    double upper, double computedRows, mpz_t &computedRowsMpz,
                    int &nRows, double &userNumRows);
 
-void SetBounds(const SEXP &Rlow, const SEXP &Rhigh, bool IsGmp, bool &bLower,
+void SetBounds(SEXP Rlow, SEXP Rhigh, bool IsGmp, bool &bLower,
                bool &bUpper, double &lower, double &upper, mpz_t *const lowerMpz,
                mpz_t *const upperMpz, mpz_t computedRowMpz, double computedRows);
 
