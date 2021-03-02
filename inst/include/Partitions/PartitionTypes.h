@@ -1,5 +1,5 @@
-#ifndef PARTITION_ENUMS_H
-#define PARTITION_ENUMS_H
+#ifndef PARTITION_TYPES_H
+#define PARTITION_TYPES_H
 
 // PartitionEsque = 2: Can't be reduced to an integer partition but still has similarities 
 // to the more general subset sum problem. E.g. v = rnorm(20, mean = 10.5), m = 4,
@@ -53,6 +53,11 @@ enum class Sign {
     Positive = 1,
     Negitive = 2,
     MixedBag = 3,
+};
+
+struct distinctType {
+    int limit = 0;
+    bool getAll = false;
 };
 
 #endif
