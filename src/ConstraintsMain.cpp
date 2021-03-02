@@ -1,5 +1,5 @@
 #include "Constraints/ConstraintsUtils.h"
-#include "Partitions/PartitionEnums.h"
+#include "Partitions/PartitionTypes.h"
 #include "CombinatoricsResGlue.h"
 #include "CombinatoricsCnstrt.h"
 #include "Cpp14MakeUnique.h"
@@ -49,9 +49,9 @@
 // }
 
 SEXP CombinatoricsCnstrt(SEXP Rv, SEXP Rm, SEXP RisRep, SEXP RFreqs, SEXP Rlow,
-                         SEXP Rhigh, SEXP f1, SEXP f2, SEXP Rtarget, SEXP RIsComb,
-                         SEXP RKeepRes, SEXP Rparallel, SEXP RnThreads,
-                         SEXP RmaxThreads, SEXP Rtolerance) {
+                         SEXP Rhigh, SEXP RmainFun, SEXP RcompFun, SEXP Rtarget,
+                         SEXP RIsComb, SEXP RKeepRes, SEXP Rparallel,
+                         SEXP RnThreads, SEXP RmaxThreads, SEXP Rtolerance) {
 
     int n = 0;
     int m = 0;
@@ -68,37 +68,26 @@ SEXP CombinatoricsCnstrt(SEXP Rv, SEXP Rm, SEXP RisRep, SEXP RFreqs, SEXP Rlow,
     bool KeepRes = CleanConvert::convertLogical(RKeepRes, "keepResults");
     bool Parallel = CleanConvert::convertLogical(Rparallel, "Parallel");
     bool IsRep = CleanConvert::convertLogical(RisRep, "repetition");
-    const bool IsComb = CleanConvert::convertLogical(RIsComb, "IsComb");
-
-    SetType(myType, Rv);
-    SetValues(myType, vInt, vNum, n, Rv);
-    const bool IsConstrained = CheckConstrnd(f1, f2, Rtarget);
-
-    if (IsConstrained) {
-        for (int i = (vNum.size() - 1); i >= 0; --i)
-            if (ISNAN(vNum[i]))
-                vNum.erase(vNum.begin() + i);
-
-        n = vNum.size();
-    }
-
-    SetFreqsAndM(RFreqs, IsMult, myReps, IsRep, freqs, Rm, n, m);
-    const char* f1_chars;
-    f1_chars = CHAR(STRING_ELT(f1, 0));
     
-    const std::string mainFun(f1_chars);
+    const bool IsComb = CleanConvert::convertLogical(RIsComb, "IsComb");
+    const bool IsConstrained = CheckConstrnd(RmainFun, RcompFun, Rtarget);
+    
+    SetType(myType, Rv);
+    SetValues(myType, myReps, freqs, vInt, vNum, Rv,
+              RFreqs, Rm, n, m, IsMult, IsRep, IsConstrained);
+    
+    if (!Rf_isString(RmainFun) || Rf_length(RmainFun) != 1) {
+        Rf_error("contraintFun must be one of the following:"
+                 " 'prod', 'sum', 'mean', 'max', or 'min'");
+    }
+    
+    const std::string mainFun(CHAR(STRING_ELT(RmainFun, 0)));
     const auto funIt = std::find(mainFunSet.begin(), mainFunSet.end(), mainFun);
 
     if (funIt == mainFunSet.end()) {
-        Rf_error("contraintFun must be one of the following: prod, sum, mean, max, or min");
+        Rf_error("contraintFun must be one of the following:"
+                 " 'prod', 'sum', 'mean', 'max', or 'min'");
     }
-
-    std::vector<std::string> compFunVec;
-    std::vector<double> targetVals;
-
-    ConstraintType ConstType = ConstraintType::General;
-    PartitionType PartType = PartitionType::Traditional;
-    // distinctType distinctTest;
 
     const bool allNeg = std::all_of(vNum.cbegin(), vNum.cend(),
                                     [](double v_i) {return v_i <= 0;});
@@ -111,32 +100,13 @@ SEXP CombinatoricsCnstrt(SEXP Rv, SEXP Rm, SEXP RisRep, SEXP RFreqs, SEXP Rlow,
     // outside integer data type range which causes undefined behavior
     std::vector<int> targetIntVals;
     const funcPtr<double> funDbl = GetFuncPtr<double>(mainFun);
-
-    // if (IsConstrained) {                // numOnly = true, checkWhole = false, negPoss = true
-    //     CleanConvert::convertVector(Rtarget, targetVals, "limitConstraints", true, false, true);
-    //     compFunVec = Rcpp::as<std::vector<std::string>>(f2);
-    // 
-    //     bool IsBetweenComp = false;
-    //     ConstraintSetup(compFunVec, targetVals, IsBetweenComp);
-    // 
-    //     if (myType == VecType::Integer && !CheckIsInteger(mainFun, n, m, vNum, targetVals, funDbl, true)) {
-    //         myType = VecType::Numeric;
-    //     }
-    // 
-    //     double tolerance = 0;
-    //     AdjustTargetVals(n, myType, targetVals, targetIntVals,
-    //                      Rtolerance, compFunVec, tolerance, mainFun, vNum);
-    // 
-    //     if (myType == VecType::Integer) {
-    //         GetPartitionCase(compFunVec, vInt, mainFun, targetIntVals, mySign,
-    //                          PartType, ConstType, distinctTest, Rlow, myReps, n, m,
-    //                          tolerance, IsMult, IsRep, IsBetweenComp, Rf_isNull(Rm));
-    //     } else {
-    //         GetPartitionCase(compFunVec, vNum, mainFun, targetVals, mySign,
-    //                          PartType, ConstType, distinctTest, Rlow, myReps, n, m,
-    //                          tolerance, IsMult, IsRep, IsBetweenComp, Rf_isNull(Rm));
-    //     }
-    // }
+    
+    std::vector<std::string> compFunVec;
+    std::vector<double> targetVals;
+    
+    ConstraintType ConstType = ConstraintType::General;
+    PartitionType PartType = PartitionType::Traditional;
+    distinctType distinctTest;
 
     std::vector<int> startZ(m);
     double computedRows = 0;
@@ -253,7 +223,8 @@ SEXP CombinatoricsCnstrt(SEXP Rv, SEXP Rm, SEXP RisRep, SEXP RFreqs, SEXP Rlow,
     // } else {
         int nThreads = 1;
         int maxThreads = 1;
-        CleanConvert::convertPrimitive(RmaxThreads, maxThreads, "maxThreads");
+        CleanConvert::convertPrimitive(RmaxThreads, maxThreads,
+                                       VecType::Integer, "maxThreads");
         
         int nCols = m + 1;
         const int limit = 20000;

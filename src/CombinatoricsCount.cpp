@@ -46,8 +46,8 @@ SEXP CombinatoricsCount(SEXP Rv, SEXP Rm, SEXP RisRep, SEXP RFreqs, SEXP RIsComb
     bool IsComb = CleanConvert::convertLogical(RIsComb, "IsComb");
     
     SetType(myType, Rv);
-    SetValues(myType, vInt, vNum, n, Rv);
-    SetFreqsAndM(RFreqs, IsMult, myReps, IsRep, freqs, Rm, n, m);
+    SetValues(myType, myReps, freqs, vInt, vNum,
+              Rv, RFreqs, Rm, n, m, IsMult, IsRep);
     
     const double computedRows = GetComputedRows(IsMult, IsComb, IsRep,
                                                 n, m, Rm, freqs, myReps);

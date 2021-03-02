@@ -13,8 +13,9 @@ SEXP CombinatoricsStndrd(SEXP Rv, SEXP Rm, SEXP RisRep, SEXP RFreqs,
     int nThreads = 1;
     int maxThreads = 1;
     
-    CleanConvert::convertPrimitive(RmaxThreads, maxThreads, "maxThreads");
     VecType myType = VecType::Integer;
+    CleanConvert::convertPrimitive(RmaxThreads, maxThreads,
+                                   VecType::Integer, "maxThreads");
     
     std::vector<int> vInt;
     std::vector<int> myReps;
@@ -27,8 +28,8 @@ SEXP CombinatoricsStndrd(SEXP Rv, SEXP Rm, SEXP RisRep, SEXP RFreqs,
     bool IsMult = false;
     
     SetType(myType, Rv);
-    SetValues(myType, vInt, vNum, n, Rv);
-    SetFreqsAndM(RFreqs, IsMult, myReps, IsRep, freqs, Rm, n, m);
+    SetValues(myType, myReps, freqs, vInt, vNum,
+              Rv, RFreqs, Rm, n, m, IsMult, IsRep);
     
     const double computedRows = GetComputedRows(IsMult, IsComb, IsRep,
                                                 n, m, Rm, freqs, myReps);
