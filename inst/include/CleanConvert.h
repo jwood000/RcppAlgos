@@ -20,20 +20,22 @@ enum class VecType {
 
 namespace CleanConvert {
 
+    bool CheckNA(double val, VecType myType);
+
     template <typename T>
     std::vector<T> GetNumVec(SEXP Rv);
     
     bool convertLogical(SEXP boolInput, const std::string &nameOfBool);
 
-    template <typename stdType>
-    void convertPrimitive(SEXP input, stdType &result,
+    template <typename T>
+    void convertPrimitive(SEXP input, T &result, VecType myType,
                           const std::string &nameOfObject,
-                          bool numOnly = true, bool checkWhole = true, 
+                          bool numOnly = true, bool checkWhole = true,
                           bool negPoss = false, bool decimalFraction = false);
     
-    template <typename stdType>
-    void convertVector(SEXP input, std::vector<stdType> &result,
-                       const std::string &nameOfObject,
+    template <typename T>
+    void convertVector(SEXP input, std::vector<T> &result,
+                       VecType myType, const std::string &nameOfObject,
                        bool numOnly = true, bool checkWhole = true,
                        bool negPoss = false);
 }
