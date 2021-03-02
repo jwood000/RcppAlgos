@@ -6,7 +6,7 @@
 #include <algorithm>
 #include <numeric>
 
-void SetType(VecType &myType, const SEXP &Rv) {
+void SetType(VecType &myType, SEXP Rv) {
     
     switch(TYPEOF(Rv)) {
         case LGLSXP: {
@@ -41,61 +41,31 @@ void SetType(VecType &myType, const SEXP &Rv) {
     }
 }
 
-void SetFactorClass(SEXP res, const SEXP &Rv) {
+void SetFactorClass(SEXP res, SEXP Rv) {
     SEXP myLevels = Rf_getAttrib(Rv, R_LevelsSymbol);
     SEXP myClass = Rf_getAttrib(Rv, R_ClassSymbol);
     Rf_setAttrib(res, R_ClassSymbol, myClass);
     Rf_setAttrib(res, R_LevelsSymbol, myLevels);
 }
 
-void SetValues(VecType &myType, std::vector<int> &vInt,
-               std::vector<double> &vNum, int &n, const SEXP &Rv) {
+bool IsDecimal(SEXP Rv) {
     
-    if (myType > VecType::Logical) {
-        n = Rf_length(Rv);
-    } else if (myType == VecType::Logical) {
-        int* intVec = INTEGER(Rv);
-        n = Rf_length(Rv);
-        vInt.assign(intVec, intVec + n);
-    } else {
-        if (Rf_length(Rv) == 1) {
-            int seqEnd;
-            
-            // numOnly = true, checkWhole = true, negPoss = true
-            CleanConvert::convertPrimitive(Rv, seqEnd,
-                                           "If v is not a character and of length 1, it",
-                                           true, true, true);
-            
-            std::pair<int, int> mnmx = std::minmax(1, seqEnd);
-            n = mnmx.second - mnmx.first + 1;
-            vNum.resize(n);
-            
-            std::iota(vNum.begin(), vNum.end(), mnmx.first);
-            myType = VecType::Integer;
+    if (TYPEOF(Rv) == REALSXP && Rf_length(Rv) == 1) {
+        double res = REAL(Rv)[0];
+        
+        if (static_cast<std::int64_t>(res) == res) {
+            return false;
         } else {
-            vNum = CleanConvert::GetNumVec<double>(Rv);
-            n = vNum.size();
+            return true;
         }
-    }
-    
-    if (myType == VecType::Integer) {
-        bool IsInteger = true;
-        
-        for (int i = 0; i < n && IsInteger; ++i) {
-            if (ISNAN(vNum[i])) {
-                IsInteger = false;
-                myType = VecType::Numeric;
-            }
-        }
-        
-        if (IsInteger) {
-            vInt.assign(vNum.cbegin(), vNum.cend());
-        }
+    } else {
+        return false;
     }
 }
 
-void SetFreqsAndM(SEXP RFreqs, bool &IsMult, std::vector<int> &Reps, bool &IsRep,
-                  std::vector<int> &freqs, const SEXP &Rm, int n, int &m) {
+void SetFreqsAndM(std::vector<int> &Reps,
+                  std::vector<int> &freqs, SEXP RFreqs, SEXP Rm,
+                  int &n, int &m, bool &IsMult, bool &IsRep) {
     
     if (Rf_isNull(RFreqs)) {
         IsMult = false;
@@ -104,7 +74,7 @@ void SetFreqsAndM(SEXP RFreqs, bool &IsMult, std::vector<int> &Reps, bool &IsRep
         // preference to freqs as user may assume that since multisets includes
         // replication of certain elements, then repetition must be set to TRUE.
         IsRep = false;
-        CleanConvert::convertVector(RFreqs, Reps, "freqs");
+        CleanConvert::convertVector(RFreqs, Reps, VecType::Integer, "freqs");
         const bool allOne = std::all_of(Reps.cbegin(), Reps.cend(), 
                                         [](int v_i) {return v_i == 1;});
         if (allOne) {
@@ -126,13 +96,70 @@ void SetFreqsAndM(SEXP RFreqs, bool &IsMult, std::vector<int> &Reps, bool &IsRep
         if (Rf_length(Rm) > 1)
             Rf_error("length of m must be 1");
         
-        CleanConvert::convertPrimitive(Rm, m, "m");
+        CleanConvert::convertPrimitive(Rm, m, VecType::Integer, "m");
+    }
+}
+
+// This function is mainly for handling missing data. When a
+// constraint is applied, we must throw out these values. Also
+// note that the constraint algos are expecting sorted data
+void SetFinalValues(VecType &myType, std::vector<int> &Reps,
+                    std::vector<int> &freqs, std::vector<int> &vInt,
+                    std::vector<double> &vNum, int &n, int &m,
+                    bool IsMult, bool IsRep, bool IsConstrained) {
+    
+    if (IsConstrained) {
+        for (int i = (vNum.size() - 1); i >= 0; --i) {
+            if (CleanConvert::CheckNA(vNum[i], myType)) {
+                vNum.erase(vNum.begin() + i);
+                if (IsMult) Reps.erase(Reps.begin() + i);
+            }
+        }
+        
+        n = vNum.size();
+        
+        if (IsMult) {
+            for (int i = 0; i < (n - 1); ++i) {
+                for (int j = (i + 1); j < n; ++j) {
+                    if (vNum[i] > vNum[j]) {
+                        std::swap(vNum[i], vNum[j]);
+                        std::swap(Reps[i], Reps[j]);
+                    }
+                }
+            }
+        } else {
+            std::sort(vNum.begin(), vNum.end());
+        }
+        
+        freqs.clear();
+        
+        for (int i = 0; i < static_cast<int>(Reps.size()); ++i)
+            for (int j = 0; j < Reps[i]; ++j)
+                freqs.push_back(i);
+    } else {
+        VecType OldType = myType;
+        
+        for (int i = 0; i < n; ++i) {
+            if (CleanConvert::CheckNA(vNum[i], OldType)) {
+                myType = VecType::Numeric;
+                
+                if (OldType == VecType::Integer) {
+                    vNum[i] = NA_REAL;
+                }
+            }
+        }
+    }
+    
+    if (myType == VecType::Integer) {
+        vInt.assign(vNum.cbegin(), vNum.cend());
     }
     
     if (IsMult) {
         // The 'freqs' in the error message below refers to the user
         // supplied parameter named 'freqs'. When we use freqs as a
-        // C++ variable, we are referring to the expanded form.
+        // C++ variable, we are referring to the expansion of this
+        // variable. myReps and Reps in C++ are converted directly
+        // from the user supplied 'freqs' parameter.
         if (n != Reps.size())
             Rf_error("the length of freqs must equal the length of v");
         
@@ -142,6 +169,55 @@ void SetFreqsAndM(SEXP RFreqs, bool &IsMult, std::vector<int> &Reps, bool &IsRep
     } else if (!IsRep && m > n) {
         Rf_error("m must be less than or equal to the length of v");
     }
+}
+
+void SetValues(VecType &myType, std::vector<int> &Reps,
+               std::vector<int> &freqs, std::vector<int> &vInt,
+               std::vector<double> &vNum, SEXP Rv, SEXP RFreqs,
+               SEXP Rm, int &n, int &m, bool &IsMult,
+               bool &IsRep, bool IsConstrained) {
+    
+    if (myType > VecType::Logical) {
+        n = Rf_length(Rv);
+    } else if (IsDecimal(Rv)) {
+        vNum.resize(1);
+        vNum[0] = REAL(Rv)[0];
+        n = 1;
+    } else if (myType == VecType::Logical) {
+        int* intVec = INTEGER(Rv);
+        n = Rf_length(Rv);
+        vInt.assign(intVec, intVec + n);
+    } else if (Rf_length(Rv) == 1) {
+        int seqEnd = 0;
+        myType = VecType::Integer;
+        
+        // numOnly = true, checkWhole = true, negPoss = true
+        CleanConvert::convertPrimitive(Rv, seqEnd, myType,
+                                       "If v is not a character"
+                                       " and of length 1, it",
+                                       true, true, true);
+        
+        std::pair<int, int> mnmx = std::minmax(1, seqEnd);
+        n = mnmx.second - mnmx.first + 1;
+        constexpr int maxVecSize = std::numeric_limits<int>::max() / 2;
+        
+        if (n < maxVecSize) {
+            vNum.resize(n);
+        } else {
+            Rf_error("Not enough memory! The vector you have"
+                         " requested is larger than %s",
+                         std::to_string(maxVecSize).c_str());
+        }
+        
+        std::iota(vNum.begin(), vNum.end(), mnmx.first);
+    } else {
+        vNum = CleanConvert::GetNumVec<double>(Rv);
+        n = vNum.size();
+    }
+    
+    SetFreqsAndM(Reps, freqs, RFreqs, Rm, n, m, IsMult, IsRep);
+    SetFinalValues(myType, Reps, freqs, vInt, vNum,
+                   n, m, IsMult, IsRep, IsConstrained);
 }
 
 void SetThreads(bool &Parallel, int maxThreads, int nRows,
@@ -158,7 +234,8 @@ void SetThreads(bool &Parallel, int maxThreads, int nRows,
         int userThreads = 1;
         
         if (!Rf_isNull(RNumThreads))
-            CleanConvert::convertPrimitive(RNumThreads, userThreads, "nThreads");
+            CleanConvert::convertPrimitive(RNumThreads, userThreads,
+                                           VecType::Integer, "nThreads");
         
         if (userThreads > maxThreads)
             userThreads = maxThreads;
@@ -257,7 +334,7 @@ void SetNumResults(bool IsGmp, bool bLower, bool bUpper, bool IsGenCnstrd,
     }
 }
 
-void SetBounds(const SEXP &Rlow, const SEXP &Rhigh, bool IsGmp, bool &bLower, bool &bUpper,
+void SetBounds(SEXP Rlow, SEXP Rhigh, bool IsGmp, bool &bLower, bool &bUpper,
                double &lower, double &upper, mpz_t *const lowerMpz, 
                mpz_t *const upperMpz, mpz_t computedRowsMpz, double computedRows) {
     
@@ -272,7 +349,8 @@ void SetBounds(const SEXP &Rlow, const SEXP &Rhigh, bool IsGmp, bool &bLower, bo
             
             mpz_sub_ui(lowerMpz[0], lowerMpz[0], 1);
         } else {                                    // numOnly = false
-            CleanConvert::convertPrimitive(Rlow, lower, "lower", false);
+            CleanConvert::convertPrimitive(Rlow, lower,
+                                           VecType::Numeric, "lower", false);
             bLower = lower > 1;
             
             if (lower > computedRows)
@@ -292,7 +370,8 @@ void SetBounds(const SEXP &Rlow, const SEXP &Rhigh, bool IsGmp, bool &bLower, bo
                 Rf_error("bounds cannot exceed the maximum number of possible results");
             
         } else {                                     // numOnly = false
-            CleanConvert::convertPrimitive(Rhigh, upper, "upper", false);
+            CleanConvert::convertPrimitive(Rhigh, upper,
+                                           VecType::Numeric, "upper", false);
             
             if (upper > computedRows)
                 Rf_error("bounds cannot exceed the maximum number of possible results");
