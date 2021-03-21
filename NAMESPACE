@@ -1,7 +1,6 @@
 useDynLib(RcppAlgos, .registration = TRUE)
 import(gmp)
 
-
 export(comboGeneral,
        permuteGeneral,
        partitionGeneral,
