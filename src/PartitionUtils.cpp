@@ -75,6 +75,7 @@ int GetFirstPartition(const std::vector<std::int64_t> &v,
     // The length is too small
     if (testMax < target) {
         return -2;
+        
     }
     
     int zExpCurrPos = IsMult ? freqs.size() - m : 0;
