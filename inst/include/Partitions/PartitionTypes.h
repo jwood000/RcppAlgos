@@ -1,6 +1,8 @@
 #ifndef PARTITION_TYPES_H
 #define PARTITION_TYPES_H
 
+#include <cstdint>
+
 // PartitionEsque = 2: Can't be reduced to an integer partition but still has similarities 
 // to the more general subset sum problem. E.g. v = rnorm(20, mean = 10.5), m = 4,
 // rep = TRUE, tar = c(11.005, 11.15), comparisonFun = c(">", "<"), constraintFun = "mean"
@@ -51,13 +53,24 @@ enum class PartitionType {
 
 enum class Sign {
     Positive = 1,
-    Negitive = 2,
+    Negative = 2,
     MixedBag = 3,
 };
 
-struct distinctType {
-    int limit = 0;
+struct PartDesignType {
+    int width = 0;
     bool getAll = false;
+    bool isRep = false;
+    bool isMult = false;
+    bool reflection = false;
+    bool includeZero = false;
+    int mappedTar = 0;
+    std::int64_t shift = 0;
+    std::int64_t slope = 0;
+    std::int64_t tar = 0;
+    ConstraintType ctype;
+    PartitionType part;
+    Sign sign;
 };
 
 #endif

@@ -84,7 +84,7 @@ void SetFreqsAndM(std::vector<int> &Reps,
         } else {
             IsMult = true;
             
-            for (int i = 0; i < static_cast<int>(Reps.size()); ++i)
+            for (std::size_t i = 0; i < Reps.size(); ++i)
                 for (int j = 0; j < Reps[i]; ++j)
                     freqs.push_back(i);
         }

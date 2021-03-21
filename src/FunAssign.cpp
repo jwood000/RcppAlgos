@@ -113,5 +113,4 @@ void FunAssign(SEXP res, SEXP vectorPass, SEXP sexpFun,
         VapplyAssign(res, vectorPass, sexpFun, rho,
                      commonType, commonLen, count, nRows);
     }
-    
 }

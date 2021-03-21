@@ -93,8 +93,6 @@ SEXP CombinatoricsCnstrt(SEXP Rv, SEXP Rm, SEXP RisRep, SEXP RFreqs, SEXP Rlow,
                                     [](double v_i) {return v_i <= 0;});
     const bool allPos = std::all_of(vNum.cbegin(), vNum.cend(),
                                     [](double v_i) {return v_i >= 0;});
-    const Sign mySign = allPos ? Sign::Positive :
-                       (allNeg ? Sign::Negitive : Sign::MixedBag);
 
     // Must be defined inside IsInteger check as targetVals could be
     // outside integer data type range which causes undefined behavior
@@ -104,12 +102,15 @@ SEXP CombinatoricsCnstrt(SEXP Rv, SEXP Rm, SEXP RisRep, SEXP RFreqs, SEXP Rlow,
     std::vector<std::string> compFunVec;
     std::vector<double> targetVals;
     
-    ConstraintType ConstType = ConstraintType::General;
-    PartitionType PartType = PartitionType::Traditional;
-    distinctType distinctTest;
+    PartDesignType partDesign;
+    partDesign.IsRep = IsRep;
+    partDesign.IsMult = IsMult;
+    partDesign.sign = allPos ? Sign::Positive :
+        (allNeg ? Sign::Negative : Sign::MixedBag);
 
     std::vector<int> startZ(m);
     double computedRows = 0;
+    // const bool IsPartition = CheckPartition();
 
     // Rcpp::Rcout << static_cast<std::underlying_type<PartitionType>::type>(PartType) << std::endl;
     // Rcpp::Rcout << static_cast<std::underlying_type<ConstraintType>::type>(ConstType) << std::endl;

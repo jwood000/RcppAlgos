@@ -1,20 +1,13 @@
-#ifndef CONSTRAINTS_UTILS_H
-#define CONSTRAINTS_UTILS_H
+#ifndef PARTITION_UTILS_H
+#define PARTITION_UTILS_H
 
-#include "Constraints/UserConstraintFuns.h"
+#include "Partitions/PartitionTypes.h"
+#include "ImportExportMPZ.h"
+#include "Cpp14MakeUnique.h"
 #include <string>
+#include <numeric>
 #include <limits>
 #include <vector>
 #include <cstdint>
-
-#define R_NO_REMAP
-#include <Rinternals.h>
-#include <R.h>
-
-bool CheckIsInteger(const std::string &funPass, int n,
-                    int m, const std::vector<double> &vNum,
-                    const std::vector<double> &targetVals,
-                    const funcPtr<double> myFunDbl,
-                    bool checkLim = false);
 
 #endif

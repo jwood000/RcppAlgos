@@ -50,7 +50,7 @@ void createMPZArray(SEXP input, mpz_t *myVec, std::size_t vecSize,
             constexpr double Sig53 = 9007199254740991.0;
             
             for (std::size_t j = 0; j < vecSize; ++j) {
-                if (ISNAN(dblVec[j]) || std::isnan(dblVec[j]))
+                if (ISNAN(dblVec[j]))
                     Rf_error("%s cannot be NA or NaN", suffix.c_str());
                 
                 if (negPoss) {
@@ -83,7 +83,7 @@ void createMPZArray(SEXP input, mpz_t *myVec, std::size_t vecSize,
             std::vector<int> intVec(dblInput, dblInput + vecSize);
             
             for (std::size_t j = 0; j < vecSize; ++j) {
-                if (ISNAN(dblVec[j]) || std::isnan(dblVec[j]))
+                if (ISNAN(dblVec[j]))
                     Rf_error("%s cannot be NA or NaN", suffix.c_str());
                 
                 if (!negPoss && intVec[j] < 1)
