@@ -6,4 +6,6 @@ export(comboGeneral,
        partitionGeneral,
        comboCount,
        permuteCount,
+       partitionCount,
+       partitionDesign,
        stdThreadMax)
