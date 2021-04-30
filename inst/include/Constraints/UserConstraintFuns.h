@@ -10,11 +10,11 @@
 #include <array>
 
 enum myComps {
-    LT = 0,
-    GT = 1,
-    LE = 2,
-    GE = 3,
-    EQ = 4,
+    LT   = 0,
+    GT   = 1,
+    LE   = 2,
+    GE   = 3,
+    EQ   = 4,
     GTLT = 5,
     GELT = 6,
     GTLE = 7,
@@ -26,10 +26,10 @@ static const std::array<std::string, 5> mainFunSet = {{
 }};
 
 static const std::array<std::string, 9> compVec = {{
-    "<", ">",
-    "<=", ">=",
-    "==",
-    ">,<", ">=,<",
+       "<", ">",
+      "<=", ">=",
+      "==",
+     ">,<", ">=,<",
     ">,<=", ">=,<="
 }};
 

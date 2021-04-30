@@ -6,7 +6,11 @@
 #include <R.h>
 
 extern "C" {
-    SEXP CombinatoricsCount(SEXP Rv, SEXP Rm, SEXP RisRep, SEXP RFreqs, SEXP RIsComb);
+    SEXP CombinatoricsCount(SEXP Rv, SEXP Rm, SEXP RisRep,
+                            SEXP RFreqs, SEXP RIsComb);
+    SEXP PartitionsCount(SEXP Rtarget, SEXP Rv, SEXP Rm, SEXP RisRep,
+                         SEXP RFreqs, SEXP RcompFun, SEXP Rlow,
+                         SEXP Rtolerance, SEXP Rshow);
 }
 
 #endif
