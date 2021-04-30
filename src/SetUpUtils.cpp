@@ -91,7 +91,7 @@ void SetFreqsAndM(std::vector<int> &Reps,
     }
     
     if (Rf_isNull(Rm)) {
-        m = (freqs.empty()) ? n : freqs.size();
+        m = freqs.empty() ? n : freqs.size();
     } else {
         if (Rf_length(Rm) > 1)
             Rf_error("length of m must be 1");

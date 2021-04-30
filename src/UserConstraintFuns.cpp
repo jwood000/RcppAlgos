@@ -19,7 +19,7 @@ template <typename T>
 T prod(const std::vector<T> &v, int mySize) {
     T myProduct = 1;
     for (int i = 0; i < mySize; ++i) {myProduct *= v[i];}
-    return (myProduct);
+    return myProduct;
 }
 
 template <typename T>

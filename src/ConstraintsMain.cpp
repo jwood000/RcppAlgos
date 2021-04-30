@@ -1,57 +1,16 @@
 #include "Constraints/ConstraintsUtils.h"
-#include "Partitions/PartitionTypes.h"
+#include "Partitions/PartitionsUtils.h"
 #include "CombinatoricsResGlue.h"
 #include "CombinatoricsCnstrt.h"
 #include "Cpp14MakeUnique.h"
 #include "ComputedCount.h"
 #include "CheckReturn.h"
-#include "SetUpUtils.h"
 
-// #include "CombPermResultPtr.h"
-// #include "ConstraintsGeneral.h"
-// #include "ConstraintsUtils.h"
-// #include "PartitionsMain.h"
-// #include "PartitionEsqueAlgo.h"
-// #include "ConstraintsSpecial.h"
-// #include "PartitionsCounts.h"
-// #include "CheckStdRet.h"
-// #include "RMatrix.h"
-// #include <RcppThread/ThreadPool.hpp>
-// 
-// template <typename typeRcpp, typename typeVector>
-// typeRcpp ConstraintReturn(int n, int m, const std::string &mainFun, const std::vector<std::string> &compFunVec,
-//                           const std::vector<typeVector> &targetVals, std::vector<typeVector> &v, bool bLower,
-//                           double lower, bool bUserRows, double computedRows, bool IsRep, int nRows, bool KeepRes,
-//                           std::vector<int> &z, bool IsMult, bool IsComb, bool mIsNull, double userNumRows,
-//                           std::vector<int> &myReps, const std::vector<int> &freqs, PartitionType PartType,
-//                           ConstraintType ConstType, bool distGetAll) {
-//     
-//     const bool SpecialCase = CheckSpecialCase(n, bLower, mainFun, v);
-//     
-//     if (SpecialCase) {
-//         return ConstraintsSpecial<typeRcpp>(n, m, v, IsRep, nRows, KeepRes, z, lower, mainFun, 
-//                                             IsMult, computedRows, compFunVec, targetVals, IsComb,
-//                                             freqs, bLower, userNumRows);
-//     }
-//     
-//     // For bool bUserRows, we pass bUpper as we know bLower must be false (See CheckSpecialCase)
-//     if (ConstType > ConstraintType::PartitionEsque) {
-//         return Partitions::PartitionsMain<typeRcpp>(v, z, myReps, PartType, targetVals[0], n, m, IsRep,
-//                                                     IsMult, userNumRows, IsComb, KeepRes, bUserRows,
-//                                                     mIsNull, distGetAll);
-//     } else if (ConstType == ConstraintType::PartitionEsque) {
-//         return PartitionEsqueAlgo<typeRcpp>(n, m, v, IsRep, mainFun, compFunVec.front(), targetVals,
-//                                             userNumRows, IsComb, KeepRes, myReps, IsMult, bUserRows);
-//     } else {
-//         return CombinatoricsConstraints<typeRcpp>(n, m, v, IsRep, mainFun, compFunVec, targetVals,
-//                                                   userNumRows, IsComb, KeepRes, myReps, IsMult, bUserRows);
-//     }
-// }
-
-SEXP CombinatoricsCnstrt(SEXP Rv, SEXP Rm, SEXP RisRep, SEXP RFreqs, SEXP Rlow,
-                         SEXP Rhigh, SEXP RmainFun, SEXP RcompFun, SEXP Rtarget,
-                         SEXP RIsComb, SEXP RKeepRes, SEXP Rparallel,
-                         SEXP RnThreads, SEXP RmaxThreads, SEXP Rtolerance) {
+SEXP CombinatoricsCnstrt(SEXP Rv, SEXP Rm, SEXP RisRep, SEXP RFreqs,
+                         SEXP Rlow, SEXP Rhigh, SEXP RmainFun, 
+                         SEXP RcompFun, SEXP Rtarget, SEXP RIsComb,
+                         SEXP RKeepRes, SEXP Rparallel, SEXP RnThreads,
+                         SEXP RmaxThreads, SEXP Rtolerance) {
 
     int n = 0;
     int m = 0;
@@ -65,9 +24,9 @@ SEXP CombinatoricsCnstrt(SEXP Rv, SEXP Rm, SEXP RisRep, SEXP RFreqs, SEXP Rlow,
     std::vector<int> myReps;
     std::vector<int> freqs;
 
-    bool KeepRes = CleanConvert::convertLogical(RKeepRes, "keepResults");
+    bool KeepRes  = CleanConvert::convertLogical(RKeepRes, "keepResults");
     bool Parallel = CleanConvert::convertLogical(Rparallel, "Parallel");
-    bool IsRep = CleanConvert::convertLogical(RisRep, "repetition");
+    bool IsRep    = CleanConvert::convertLogical(RisRep, "repetition");
     
     const bool IsComb = CleanConvert::convertLogical(RIsComb, "IsComb");
     const bool IsConstrained = CheckConstrnd(RmainFun, RcompFun, Rtarget);
@@ -89,11 +48,6 @@ SEXP CombinatoricsCnstrt(SEXP Rv, SEXP Rm, SEXP RisRep, SEXP RFreqs, SEXP Rlow,
                  " 'prod', 'sum', 'mean', 'max', or 'min'");
     }
 
-    const bool allNeg = std::all_of(vNum.cbegin(), vNum.cend(),
-                                    [](double v_i) {return v_i <= 0;});
-    const bool allPos = std::all_of(vNum.cbegin(), vNum.cend(),
-                                    [](double v_i) {return v_i >= 0;});
-
     // Must be defined inside IsInteger check as targetVals could be
     // outside integer data type range which causes undefined behavior
     std::vector<int> targetIntVals;
@@ -102,49 +56,19 @@ SEXP CombinatoricsCnstrt(SEXP Rv, SEXP Rm, SEXP RisRep, SEXP RFreqs, SEXP Rlow,
     std::vector<std::string> compFunVec;
     std::vector<double> targetVals;
     
-    PartDesignType partDesign;
-    partDesign.IsRep = IsRep;
-    partDesign.IsMult = IsMult;
-    partDesign.sign = allPos ? Sign::Positive :
-        (allNeg ? Sign::Negative : Sign::MixedBag);
-
+    PartDesign part;
+    part.isRep = IsRep;
+    part.isMult = IsMult;
+    part.mIsNull = Rf_isNull(Rm);
+    
     std::vector<int> startZ(m);
     double computedRows = 0;
-    // const bool IsPartition = CheckPartition();
-
-    // Rcpp::Rcout << static_cast<std::underlying_type<PartitionType>::type>(PartType) << std::endl;
-    // Rcpp::Rcout << static_cast<std::underlying_type<ConstraintType>::type>(ConstType) << std::endl;
-    // 
-    // switch (PartType) {
-    //     case PartitionType::Traditional : {
-    //         Rcpp::print(Rcpp::wrap("Traditional"));
-    //         break;
-    //     } case PartitionType::TradNoZero : {
-    //         Rcpp::print(Rcpp::wrap("TradNoZero"));
-    //         break;
-    //     } case PartitionType::TradCapped : {
-    //         Rcpp::print(Rcpp::wrap("TradCapped"));
-    //         break;
-    //     } case PartitionType::DstctStdAll : {
-    //         Rcpp::print(Rcpp::wrap("DstctStdAll"));
-    //         break;
-    //     } case PartitionType::DstctShort : {
-    //         Rcpp::print(Rcpp::wrap("DstctShort"));
-    //         break;
-    //     } case PartitionType::DstctSpecial : {
-    //         Rcpp::print(Rcpp::wrap("DstctSpecial"));
-    //         break;
-    //     } case PartitionType::DstctOneZero : {
-    //         Rcpp::print(Rcpp::wrap("DstctOneZero"));
-    //         break;
-    //     } case PartitionType::DstctNoZero : {
-    //         Rcpp::print(Rcpp::wrap("DstctNoZero"));
-    //         break;
-    //     } case PartitionType::DistCapped : {
-    //         Rcpp::print(Rcpp::wrap("DistCapped"));
-    //         break;
-    //     }
-    // }
+    
+    ConstraintSetup(vNum, myReps, targetVals, targetIntVals, funDbl, part,
+                    n, m, compFunVec, mainFun, myType, Rtarget, RcompFun,
+                    Rtolerance, Rlow, IsConstrained, false);
+    
+    Rf_error("digg");
     // 
     // if (ConstType > ConstraintType::General) {
     //     // vNum and myReps were sorted in GetPartitionCase
