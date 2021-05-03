@@ -37,6 +37,7 @@ double pStdCap(int n, int m, int myMax) {
 
 double CountPartRepLenCap(int n, int m, int myMax) {
     
+    if (myMax > n) myMax = n;
     if (myMax * m < n || n < m) return 0;
     if (myMax * m == n || n <= m + 1) return 1;
     if (m < 2) return m;

@@ -48,6 +48,7 @@ double pDistCap(int n, int m, int myMax) {
 
 double CountPartDistinctLenCap(int n, int m, int myMax) {
     
+    if (myMax > n) myMax = n;
     if (m > n || myMax < m) return 0;
     
     if (m == n) {
@@ -94,34 +95,73 @@ double CountPartDistinctLenCap(int n, int m, int myMax) {
     return pDistCap(n, m, myMax);
 }
 
-double pDist(int n, int m) {
-    
-    if (mem_dist[n * width_dist + m]) 
-        return mem_dist[n * width_dist + m];
-    
-    if (m == 3)
-        return SumSection(n - 3);
-    
-    int myLim = n / m;
-    double count = 0;
-    
-    for (; --myLim; n -= m)
-        count += (mem_dist[(n - m) * width_dist + m - 1] = pDist(n - m, m - 1));
-    
-    return count;
+int GetMaxWidth(double target) {
+    const double discriminant = 1.0 + 8.0 * target;
+    int max_width = (-1 + std::sqrt(discriminant)) / 2;
+    return max_width;
 }
 
 double CountPartDistinctLen(int n, int m) {
     
+    if (m == 0)
+        return (n == 0) ? 1.0 : 0.0;
+    
+    const int max_width = GetMaxWidth(n);
+    
+    if (m > max_width)
+        return 0.0;
+    
     if (m < 2)
-        return 1;
+        return 1.0;
     
     if (m == 2)
         return std::floor((n - 1) / 2);
     
-    width_dist = m + 1;
-    mem_dist.assign((n + 1) * (m + 1), 0.0);
-    return pDist(n, m);
+    if (m == 3) {
+        const double res = SumSection(n - 3);
+        return(res);
+    } else {
+        const int limit = (m == GetMaxWidth(n + 1)) ? m - 1 : m;
+        std::vector<double> p1(n + 1);
+        std::vector<double> p2(n + 1);
+        
+        for (int i = 6; i <= n; ++i) {
+            p1[i] = SumSection(i - 3);
+        }
+        
+        for (int i = 4; i <= limit; ++i) {
+            const int m1 = ((i + 1) * i) / 2;
+            const int m2 = m1 + i;
+            
+            if (i % 2) {
+                for (int j = m1; j < m2; ++j) {
+                    p1[j] = p2[j - i];
+                }
+                
+                for (int j = m2; j <= n; ++j) {
+                    p1[j] = p2[j - i] + p1[j - i];
+                }
+            } else {
+                for (int j = m1; j < m2; ++j) {
+                    p2[j] = p1[j - i];
+                }
+                
+                for (int j = m2; j <= n; ++j) {
+                    p2[j] = p2[j - i] + p1[j - i];
+                }
+            }
+        }
+        
+        if (m > limit && m % 2) {
+            return p2[n - m];
+        } else if (m > limit) {
+            return p1[n - m];
+        } else if (m % 2) {
+            return p1.back();
+        } else {
+            return p2.back();
+        }
+    }
 }
 
 // Credit to Robin K. S. Hankin, author of the excellent partitions package.
