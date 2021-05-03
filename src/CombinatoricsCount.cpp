@@ -70,11 +70,10 @@ SEXP CombinatoricsCount(SEXP Rv, SEXP Rm, SEXP RisRep,
 
 SEXP PartitionsCount(SEXP Rtarget, SEXP Rv, SEXP Rm,
                      SEXP RisRep, SEXP RFreqs, SEXP RcompFun,
-                     SEXP Rlow, SEXP Rtolerance, SEXP Rshow) {
-    
+                     SEXP Rlow, SEXP Rtolerance,
+                     SEXP RPartDesign, SEXP Rshow) {
     int n = 0;
     int m = 0;
-    int nRows = 0;
     
     bool IsMult = false;
     VecType myType = VecType::Integer;
@@ -87,7 +86,8 @@ SEXP PartitionsCount(SEXP Rtarget, SEXP Rv, SEXP Rm,
     const bool IsConstrained = true;
     const std::string mainFun = "sum";
     bool IsRep = CleanConvert::convertLogical(RisRep, "repetition");
-    bool bDesign = CleanConvert::convertLogical(Rshow, "PartitionsDesign");
+    const bool bDesign = CleanConvert::convertLogical(RPartDesign,
+                                                      "PartitionsDesign");
     
     SetType(myType, Rv);
     SetValues(myType, myReps, freqs, vInt, vNum, Rv,
@@ -112,13 +112,12 @@ SEXP PartitionsCount(SEXP Rtarget, SEXP Rv, SEXP Rm,
     
     if (part.ptype != PartitionType::NotPartition) {
         if (bDesign) {
-            return GetDesign(part, n);
+            bool Verbose = CleanConvert::convertLogical(Rshow, "showDetail");
+            return GetDesign(part, n, Verbose);
         } else {
-            if (part.count > std::numeric_limits<int>::max()) {
-                return Rf_ScalarReal(part.count);
-            } else {
-                return Rf_ScalarInteger(static_cast<int>(part.count));
-            }
+            mpz_t mpzFiller;
+            mpz_init(mpzFiller);
+            GetCount(false, mpzFiller, part.count);
         }
     } else {
         if (m == 1) {

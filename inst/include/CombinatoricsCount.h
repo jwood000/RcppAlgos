@@ -8,9 +8,10 @@
 extern "C" {
     SEXP CombinatoricsCount(SEXP Rv, SEXP Rm, SEXP RisRep,
                             SEXP RFreqs, SEXP RIsComb);
-    SEXP PartitionsCount(SEXP Rtarget, SEXP Rv, SEXP Rm, SEXP RisRep,
-                         SEXP RFreqs, SEXP RcompFun, SEXP Rlow,
-                         SEXP Rtolerance, SEXP Rshow);
+    SEXP PartitionsCount(SEXP Rtarget, SEXP Rv, SEXP Rm,
+                         SEXP RisRep, SEXP RFreqs, SEXP RcompFun,
+                         SEXP Rlow, SEXP Rtolerance,
+                         SEXP RPartDesign, SEXP Rshow);
 }
 
 #endif

@@ -78,7 +78,7 @@ struct PartDesign {
     bool isMult = false;
     bool mIsNull = false;
     bool solnExist = false;
-    bool includeZero = false;
+    bool mapZeroFirst = false;
     std::vector<int> startZ;
     std::int64_t shift = 0;
     std::int64_t slope = 0;

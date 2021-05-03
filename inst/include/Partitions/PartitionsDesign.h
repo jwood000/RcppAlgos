@@ -7,6 +7,6 @@
 
 #include "Partitions/PartitionsTypes.h"
 
-SEXP GetDesign(const PartDesign &part, int lenV);
+SEXP GetDesign(const PartDesign &part, int lenV, bool verbose);
 
 #endif
