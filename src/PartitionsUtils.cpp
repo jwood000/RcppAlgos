@@ -220,7 +220,7 @@ void SetStartPartitionZ(const std::vector<double> &v,
                                             (part.width - 2)) / 2;
             break;
         } case PartitionType::DstctShort: {
-            if (Reps.front() > (part.width - 2)){
+            if (Reps.front() > (part.width - 2)) {
                 part.startZ.back() = part.target;
             } else {
                 std::iota(part.startZ.begin() + Reps.front(),
@@ -242,6 +242,86 @@ void SetStartPartitionZ(const std::vector<double> &v,
             part.startZ.back() = part.target;
         }
     }
+}
+
+int DiscoverPType(const std::vector<int> &Reps,
+                  PartDesign &part) {
+    
+    if (part.ptype == PartitionType::RepCapped) {
+        for (auto ptype: RepPTypeArr) {
+            std::vector<int> isoz(part.width, 0);
+            
+            switch (ptype) {
+                case PartitionType::RepStdAll: {
+                    isoz.back() = part.mapTar;
+                    break;
+                } case PartitionType::RepNoZero: {
+                    isoz.back() = part.mapTar - part.width;
+                    break;
+                } case PartitionType::RepShort: {
+                    isoz.back() = part.mapTar;
+                    break;
+                } default: {
+                    // Do nothing
+                }
+            }
+            
+            if (isoz == part.startZ) {
+                part.ptype = ptype;
+                return 1;
+            }
+        }
+    } else {
+        for (auto ptype: DistPTypeArr) {
+            std::vector<int> isoz(part.width, 0);
+            
+            switch (ptype) {
+                case PartitionType::DstctStdAll: {
+                    isoz.back() = part.mapTar;
+                    break;
+                } case PartitionType::DstctNoZero: {
+                    std::iota(isoz.begin(), isoz.end(), 0);
+                    isoz.back() = part.mapTar - 1 - (part.width *
+                        (part.width - 1)) / 2;
+                    break;
+                } case PartitionType::DstctOneZero: {
+                    std::iota(isoz.begin(), isoz.end(), 0);
+                    isoz.back() = part.mapTar - ((part.width - 1) *
+                        (part.width - 2)) / 2;
+                    break;
+                } case PartitionType::DstctShort: {
+                    if (!Reps.empty() && Reps.front() > (part.width - 2)) {
+                        isoz.back() = part.mapTar;
+                    } else if (!Reps.empty()) {
+                        std::iota(isoz.begin() + Reps.front(),
+                                  isoz.end(), 1);
+                        isoz.back() = part.mapTar - (part.width -
+                            Reps.front()) * (part.width - (Reps.front() + 1)) / 2;
+                    }
+                
+                    break;
+                } case PartitionType::DstctSpecial: {
+                    if (!Reps.empty()) {
+                        std::iota(isoz.begin() + Reps.front(),
+                                  isoz.end(), 1);
+                        isoz.back() = part.mapTar - (part.width - Reps.front()) *
+                            (part.width - (Reps.front() + 1)) / 2;
+                    }
+                    
+                    break;
+                } default: {
+                    // Do nothing
+                }
+            }
+            
+            if (isoz == part.startZ) {
+                part.ptype = ptype;
+                return 1;
+            }
+        }
+    }
+    
+    return 0;
 }
 
 // ****************************************************************
@@ -532,14 +612,12 @@ void GetPartitionDesign(const std::vector<int> &Reps,
     // distance between each element.
     // *****
     //
-    // The vector vBase will take on the underlying base partition.
-    //
     // Note, we have already ensured above that if we have
     // negative values and the differenece between every value
     // isn't the same, then we don't meet the partition scenario.
 
     part.slope = v[1] - v[0];
-    std::vector<int> vBase(lenV);
+    std::vector<int> vmap(lenV);
     
     const bool zero_or_one   = v.front() == 0 || v.front() == 1;
     const bool standard_dist = part.slope == 1;
@@ -559,34 +637,30 @@ void GetPartitionDesign(const std::vector<int> &Reps,
         // Set our constraint type to indicate mapping will be
         // needed to determine # of partitions. See PartitionMain.cpp
         part.ctype = ConstraintType::PartMapping;
-        std::iota(vBase.begin(), vBase.end(), 1);
         GetTarget(v, Reps, part, m, lenV);
+        DiscoverPType(Reps, part);
     } else {
+        part.mapZeroFirst = v.front() == 0;
         part.ctype = ConstraintType::PartStandard;
-        vBase.assign(v.cbegin(), v.cend());
         part.mapTar = part.target;
-    }
-    
-    // We sorted v above to ensure that the last element is the maximum
-    const int myMax = vBase.back();
-    part.mapZeroFirst = vBase.front() == 0;
-
-    // Remember, lenV is the length of the vector v, so we could have a
-    // situation where v = c(0, 2, 3, 4, 5) -->> length(v) = 5. This would
-    // cause a problem if we were to allow this. We have already ensured
-    // that the distance between each element is the same. This means for
-    // the example we gave, we would have length(unique(diff(v))) > 1,
-    // which means PartitionCase would be false, and thus the general
-    // algorithm would be executed.
-    //
-    // We do have to ensure that the smallest element is non-negative, othe-
-    // rwise, cases like v = seq(-8, 10, 2), m = 7, rep = TRUE, & width = 10
-    // would pass as v = 0:9, m = 7, rep = TRUE, & width = 9, --or--
-    // v = 1:10, m = 7, rep = TRUE, & width = 10 (Hence v.front() >= 0)
-
-    if (myMax == part.mapTar && lenV - part.mapZeroFirst == part.mapTar) {
-        StandardDesign(Reps, part, m, lenV);
-        if (part.startZ.empty()) SetStartPartitionZ(v, Reps, part);
+        
+        // Remember, lenV is the length of the vector v, so we could have a
+        // situation where v = c(0, 2, 3, 4, 5) -->> length(v) = 5. This would
+        // cause a problem if we were to allow this. We have already ensured
+        // that the distance between each element is the same. This means for
+        // the example we gave, we would have length(unique(diff(v))) > 1,
+        // which means PartitionCase would be false, and thus the general
+        // algorithm would be executed.
+        //
+        // We do have to ensure that the smallest element is non-negative, othe-
+        // rwise, cases like v = seq(-8, 10, 2), m = 7, rep = TRUE, & width = 10
+        // would pass as v = 0:9, m = 7, rep = TRUE, & width = 9, --or--
+        // v = 1:10, m = 7, rep = TRUE, & width = 10 (Hence v.front() >= 0)
+        
+        if ((v.back() == part.mapTar) && (lenV - part.mapZeroFirst == part.mapTar)) {
+            StandardDesign(Reps, part, m, lenV);
+            if (part.startZ.empty()) SetStartPartitionZ(v, Reps, part);
+        }
     }
     
     part.count = PartitionsCount(Reps, part, lenV, bCalcMultiset);

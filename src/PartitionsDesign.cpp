@@ -78,6 +78,7 @@ SEXP GetDesign(const PartDesign &part, int lenV, bool verbose) {
     std::vector<int> vMap(lenV);
     const int strt = part.mapZeroFirst ? 0 : 1;
     std::iota(vMap.begin(), vMap.end(), strt);
+    const std::string ptype = GetPartitionType(part);
     
     if (verbose) {
         RcppThread::Rcout << "          Partition Design Overview\n";
@@ -95,7 +96,8 @@ SEXP GetDesign(const PartDesign &part, int lenV, bool verbose) {
         }
     
         RcppThread::Rcout << "Constraint Type: " <<  GetConstraintType(part) << "\n";
-        RcppThread::Rcout << "Partition Type:  " <<  GetPartitionType(part) << "\n\n";
+        
+        RcppThread::Rcout << "Partition Type:  " << ptype << "\n\n";
     
         std::string strBool = (part.mIsNull) ? "TRUE" : "FALSE";
         RcppThread::Rcout << "Is m NULL?: " << strBool << "\n";
@@ -143,7 +145,7 @@ SEXP GetDesign(const PartDesign &part, int lenV, bool verbose) {
     
     const char *names[] = {"num_partitions", "mapped_vector",
                            "mapped_target", "first_index_vector",
-                           "eqn_check", ""};
+                           "eqn_check", "partition_type", ""};
     
     SEXP res = PROTECT(Rf_mkNamed(VECSXP, names));
     
@@ -152,6 +154,7 @@ SEXP GetDesign(const PartDesign &part, int lenV, bool verbose) {
     SET_VECTOR_ELT(res, 2, Rf_ScalarInteger(part.mapTar));
     SET_VECTOR_ELT(res, 3, sexp_index);
     SET_VECTOR_ELT(res, 4, Rf_ScalarLogical(eqn_check_val));
+    SET_VECTOR_ELT(res, 5, Rf_mkString(ptype.c_str()));
     
     UNPROTECT(3);
     return res;
