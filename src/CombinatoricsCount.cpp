@@ -117,7 +117,7 @@ SEXP PartitionsCount(SEXP Rtarget, SEXP Rv, SEXP Rm,
         } else {
             mpz_t mpzFiller;
             mpz_init(mpzFiller);
-            GetCount(false, mpzFiller, part.count);
+            return GetCount(false, mpzFiller, part.count);
         }
     } else {
         if (m == 1) {

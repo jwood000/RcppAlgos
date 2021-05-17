@@ -193,7 +193,7 @@ test_that("comboGeneral produces correct results with constraints", {
 
 test_that("comboGeneral produces correct results with use of FUN", {
     
-    test <- comboGeneral(10, 5, constraintFun = "sum", keepResults = TRUE)
+    test <- comboGeneral(10, 5, constraintFun = "sum")
     expect_equal(as.vector(test[,6]), unlist(comboGeneral(10, 5, FUN = sum)))
     
     test <- comboGeneral(10, 4, TRUE)
