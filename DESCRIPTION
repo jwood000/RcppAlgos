@@ -28,9 +28,8 @@ URL: https://github.com/jwood000/RcppAlgos, https://gmplib.org/,
 BugReports: https://github.com/jwood000/RcppAlgos/issues
 Imports: gmp
 LinkingTo: RcppThread
-Suggests: testthat, numbers, microbenchmark, knitr, RcppBigIntAlgos
+Suggests: testthat, numbers, microbenchmark, knitr, RcppBigIntAlgos, rmarkdown
 License: GPL (>=2)
-LazyData: TRUE
 SystemRequirements: C++11, gmp (>= 4.2.3)
 VignetteBuilder: knitr
 NeedsCompilation: yes
