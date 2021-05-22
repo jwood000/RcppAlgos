@@ -122,20 +122,15 @@ SEXP CombinatoricsCnstrt(SEXP Rv, SEXP Rm, SEXP RisRep, SEXP RFreqs, SEXP Rlow,
     ConstraintType ConstType = ConstraintType::General;
     PartitionType PartType = PartitionType::Traditional;
     distinctType distinctTest;
-    
-    const bool allNeg = std::all_of(vNum.cbegin(), vNum.cend(),
-                                    [](double v_i) {return v_i <= 0;});
-    const bool allPos = std::all_of(vNum.cbegin(), vNum.cend(),
-                                    [](double v_i) {return v_i >= 0;});
-    const Sign mySign = allPos ? Sign::Positive : 
-                       (allNeg ? Sign::Negitive : Sign::MixedBag);
-    
+
     // Must be defined inside IsInteger check as targetVals could be
     // outside integer data type range which causes undefined behavior
     std::vector<int> targetIntVals;
 
     Rcpp::XPtr<funcPtr<double>> xpFunDbl = putFunPtrInXPtr<double>(mainFun);
     const funcPtr<double> funDbl = *xpFunDbl;
+    
+    Rcpp::print(Rcpp::wrap(IsConstrained));
     
     if (IsConstrained) {                // numOnly = true, checkWhole = false, negPoss = true
         CleanConvert::convertVector(Rtarget, targetVals, "limitConstraints", true, false, true);
@@ -153,11 +148,11 @@ SEXP CombinatoricsCnstrt(SEXP Rv, SEXP Rm, SEXP RisRep, SEXP RFreqs, SEXP Rlow,
                          Rtolerance, compFunVec, tolerance, mainFun, vNum);
         
         if (myType == VecType::Integer) {
-            GetPartitionCase(compFunVec, vInt, mainFun, targetIntVals, mySign,
+            GetPartitionCase(compFunVec, vInt, mainFun, targetIntVals,
                              PartType, ConstType, distinctTest, Rlow, myReps, n, m,
                              tolerance, IsMult, IsRep, IsBetweenComp, Rf_isNull(Rm));
         } else {
-            GetPartitionCase(compFunVec, vNum, mainFun, targetVals, mySign,
+            GetPartitionCase(compFunVec, vNum, mainFun, targetVals,
                              PartType, ConstType, distinctTest, Rlow, myReps, n, m,
                              tolerance, IsMult, IsRep, IsBetweenComp, Rf_isNull(Rm));
         }

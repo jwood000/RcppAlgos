@@ -44,86 +44,86 @@ std::vector<int> zUpdateIndex(SEXP x, SEXP y, int m) {
     const int n1 = Rf_length(x) - 1;
     
     switch (TYPEOF(x)) {
-        case LGLSXP: {
-            Rcpp::LogicalVector xBool(Rcpp::clone(x));
-            Rcpp::LogicalVector yBool(Rcpp::clone(y));
+    case LGLSXP: {
+        Rcpp::LogicalVector xBool(Rcpp::clone(x));
+        Rcpp::LogicalVector yBool(Rcpp::clone(y));
+        
+        for (int j = 0; j < m; ++j) {
+            int ind = 0;
             
-            for (int j = 0; j < m; ++j) {
-                int ind = 0;
-                
-                while (ind < n1 && xBool[ind] != yBool[j])
-                    ++ind;
-                
-                nonZeroBased[j] = ind + 1;
+            while (ind < n1 && xBool[ind] != yBool[j])
+                ++ind;
+            
+            nonZeroBased[j] = ind + 1;
+        }
+        
+        break;
+    }
+    case INTSXP: {
+        Rcpp::IntegerVector xInt(Rcpp::clone(x));
+        Rcpp::IntegerVector yInt(Rcpp::clone(y));
+        nonZeroBased = Rcpp::match(yInt, xInt);
+        break;
+    }
+    case REALSXP: {
+        Rcpp::NumericVector xNum(Rcpp::clone(x));
+        Rcpp::NumericVector yNum(Rcpp::clone(y));
+        
+        for (int j = 0; j < m; ++j) {
+            int ind = 0;
+            
+            while (ind < n1 && std::abs(xNum[ind] - yNum[j]) > myTolerance)
+                ++ind;
+            
+            nonZeroBased[j] = ind + 1;
+        }
+        
+        break;
+    }
+    case STRSXP: {
+        Rcpp::CharacterVector xBool(Rcpp::clone(x));
+        Rcpp::CharacterVector yBool(Rcpp::clone(y));
+        nonZeroBased = Rcpp::match(yBool, xBool);
+        break;
+    }
+    case CPLXSXP: {
+        Rcpp::ComplexVector xCmplx(Rcpp::clone(x));
+        Rcpp::ComplexVector yCmplx(Rcpp::clone(y));
+        
+        for (int j = 0; j < m; ++j) {
+            int ind = 0;
+            bool bTestImg = std::abs(xCmplx[ind].i - yCmplx[j].i) > myTolerance;
+            bool bTestReal = std::abs(xCmplx[ind].r - yCmplx[j].r) > myTolerance;
+            
+            while (ind < n1 && (bTestImg || bTestReal)) {
+                ++ind;
+                bTestImg = std::abs(xCmplx[ind].i - yCmplx[j].i) > myTolerance;
+                bTestReal = std::abs(xCmplx[ind].r - yCmplx[j].r) > myTolerance;
             }
             
-            break;
+            nonZeroBased[j] = ind + 1;
         }
-        case INTSXP: {
-            Rcpp::IntegerVector xInt(Rcpp::clone(x));
-            Rcpp::IntegerVector yInt(Rcpp::clone(y));
-            nonZeroBased = Rcpp::match(yInt, xInt);
-            break;
-        }
-        case REALSXP: {
-            Rcpp::NumericVector xNum(Rcpp::clone(x));
-            Rcpp::NumericVector yNum(Rcpp::clone(y));
+        
+        break;
+    }
+    case RAWSXP: {
+        Rcpp::RawVector xRaw(Rcpp::clone(x));
+        Rcpp::RawVector yRaw(Rcpp::clone(y));
+        
+        for (int j = 0; j < m; ++j) {
+            int ind = 0;
             
-            for (int j = 0; j < m; ++j) {
-                int ind = 0;
-                
-                while (ind < n1 && std::abs(xNum[ind] - yNum[j]) > myTolerance)
-                    ++ind;
-                
-                nonZeroBased[j] = ind + 1;
-            }
+            while (ind < n1 && xRaw[ind] != yRaw[j])
+                ++ind;
             
-            break;
+            nonZeroBased[j] = ind + 1;
         }
-        case STRSXP: {
-            Rcpp::CharacterVector xBool(Rcpp::clone(x));
-            Rcpp::CharacterVector yBool(Rcpp::clone(y));
-            nonZeroBased = Rcpp::match(yBool, xBool);
-            break;
-        }
-        case CPLXSXP: {
-            Rcpp::ComplexVector xCmplx(Rcpp::clone(x));
-            Rcpp::ComplexVector yCmplx(Rcpp::clone(y));
-            
-            for (int j = 0; j < m; ++j) {
-                int ind = 0;
-                bool bTestImg = std::abs(xCmplx[ind].i - yCmplx[j].i) > myTolerance;
-                bool bTestReal = std::abs(xCmplx[ind].r - yCmplx[j].r) > myTolerance;
-                
-                while (ind < n1 && (bTestImg || bTestReal)) {
-                    ++ind;
-                    bTestImg = std::abs(xCmplx[ind].i - yCmplx[j].i) > myTolerance;
-                    bTestReal = std::abs(xCmplx[ind].r - yCmplx[j].r) > myTolerance;
-                }
-                
-                nonZeroBased[j] = ind + 1;
-            }
-            
-            break;
-        }
-        case RAWSXP: {
-            Rcpp::RawVector xRaw(Rcpp::clone(x));
-            Rcpp::RawVector yRaw(Rcpp::clone(y));
-            
-            for (int j = 0; j < m; ++j) {
-                int ind = 0;
-                
-                while (ind < n1 && xRaw[ind] != yRaw[j])
-                    ++ind;
-                
-                nonZeroBased[j] = ind + 1;
-            }
-            
-            break;
-        }
-        default:{
-            Rcpp::stop("Only atomic types are supported for v");
-        }
+        
+        break;
+    }
+    default:{
+        Rcpp::stop("Only atomic types are supported for v");
+    }
     }
     
     std::vector<int> res(m, 0);
@@ -180,23 +180,18 @@ void SetValues(VecType &myType, std::vector<int> &vInt,
     }
 }
 
-void SetFreqsAndM(SEXP RFreqs, bool &IsMultiset,
-                  std::vector<int> &Reps, bool &IsRepetition,
-                  int &lenFreqs, std::vector<int> &freqsExpanded,
-                  const SEXP &Rm, int n, int &m) {
+void SetFreqsAndM(SEXP RFreqs, bool &IsMultiset, std::vector<int> &Reps, bool &IsRepetition,
+                  int &lenFreqs, std::vector<int> &freqsExpanded, const SEXP &Rm, int n, int &m) {
     
     if (Rf_isNull(RFreqs)) {
         IsMultiset = false;
         Reps.push_back(1);
     } else {
-        // If user passes repetition = TRUE as well as non-trivial freqs, we give
-        // preference to freqs as user may assume that since multisets includes
-        // replication of certain elements, then repetition must be set to TRUE.
         IsRepetition = false;
         CleanConvert::convertVector(RFreqs, Reps, "freqs");
         lenFreqs = static_cast<int>(Reps.size());
-        const bool allOne = std::all_of(Reps.cbegin(), Reps.cend(), 
-                                        [](int v_i) {return v_i == 1;});
+        bool allOne = std::all_of(Reps.cbegin(), Reps.cend(), 
+                                  [](int v_i) {return v_i == 1;});
         if (allOne) {
             IsMultiset = false;
             freqsExpanded = Reps;
@@ -210,7 +205,11 @@ void SetFreqsAndM(SEXP RFreqs, bool &IsMultiset,
     }
     
     if (Rf_isNull(Rm)) {
-        m = (freqsExpanded.empty()) ? n : freqsExpanded.size();
+        if (freqsExpanded.empty()) {
+            m = n;
+        } else {
+            m = freqsExpanded.size();
+        }
     } else {
         if (Rf_length(Rm) > 1)
             Rcpp::stop("length of m must be 1");

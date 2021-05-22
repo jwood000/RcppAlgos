@@ -84,7 +84,7 @@ Rcpp::XPtr<partialReducePtr<T>> putPartialReduceInXPtr(const std::string &myFun)
 template <typename typeVector>
 void GetPartitionCase(const std::vector<std::string> &compFunVec, std::vector<typeVector> &v,
                       const std::string &mainFun, const std::vector<typeVector> &target,
-                      Sign mySign, PartitionType &PartType, ConstraintType &ConstType,
+                      PartitionType &PartType, ConstraintType &ConstType,
                       distinctType &distinctTest, const SEXP &Rlow, std::vector<int> &Reps,
                       int lenV, int &m, double tolerance, bool IsMult,
                       bool IsRep, bool IsBet, bool mIsNull);
