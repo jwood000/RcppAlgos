@@ -5,7 +5,7 @@
 #include <vector>
 #include <cstdint>
 
-// PartitionEsque = 2: Can't be reduced to an integer partition but still has similarities 
+// PartitionEsque = 2: Can't be reduced to an integer partition but still has similarities
 // to the more general subset sum problem. E.g. v = rnorm(20, mean = 10.5), m = 4,
 // rep = TRUE, tar = c(11.005, 11.15), comparisonFun = c(">", "<"), constraintFun = "mean"
 
@@ -16,7 +16,7 @@
 // and PartStandard are the same, however PartMapping requires additional mappings. E.g.
 // For the example given above, the analog for this case would be:
 // v = 0:20, m = 4, tar = 60, rep = TRUE.
-// 
+//
 // The 3 examples below are isomorphically equivalent:
 //
 // ## PartStandard = 4
@@ -43,18 +43,18 @@ enum class ConstraintType {
 
 // Here are the corresponding functions that one would use for each example below:
 //
-// NotPartition : 
+// NotPartition :
 // RepStdAll    :  CountPartRep(20)
 // RepNoZero    :  CountPartRepLen(20, 5)
 // RepShort     :  CountPartRepLen(23, 3)
 // RepCapped    :  CountPartRepLenCap(14, 3, 10) N.B. Get first part: (3, 5, 12); Map to match(c(3, 5, 12), 3:12)
 // DstctStdAll  :  CountPartDistinct(20)
-// DstctShort   :  GetSpecialCount(c(0, 0, 20), 20, 3) N.B. We can't use the "add 1 trick" as zero is repeated. 
+// DstctShort   :  GetSpecialCount(c(0, 0, 20), 20, 3) N.B. We can't use the "add 1 trick" as zero is repeated.
 // DstctSpecial :  GetSpecialCount(c(0, 0, 1, 2, 17), 20, 5) ... This would give c(1, 1, 21) which isn't distinct
 // DstctOneZero :  CountPartDistinctLen(25, 5) N.B. Add 1 to each element to obtain new target = 25
 // DstctNoZero  :  CountPartDistinctLen(20, 5)
-// DistCapped   : CountPartDistinctLenCap(20, 4, 9)
-// Multiset     : CountPartMultiset(rep(1:3, 6), c(1, 2, 2, 15), 4, 20 - 1, 4 - 1)
+// DistCapped   :  CountPartDistinctLenCap(20, 4, 9)
+// Multiset     :  CountPartMultiset(rep(1:3, 6), c(1, 2, 2, 15), 4, 20 - 1, 4 - 1)
 
 enum class PartitionType {
     RepStdAll,    // Get all partitions. E.g. tar = 20 startZ = c(0, 0, 0, 0, 20): CountPartRep(20)
@@ -87,6 +87,7 @@ struct PartDesign {
     double count = 0;
     bool isRep = false;
     bool isMult = false;
+    bool allOne = false;
     bool mIsNull = false;
     bool solnExist = false;
     bool mapZeroFirst = false;

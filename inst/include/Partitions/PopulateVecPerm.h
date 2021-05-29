@@ -12,7 +12,7 @@ inline void PopulateVecPerm(const std::vector<T> &v,
     do {
         for (int k = 0; k < m; ++k)
             partitionsVec.push_back(v[z[k]]);
-        
+
         ++count;
     } while (std::next_permutation(z.begin(), z.end()) && count < maxRows);
 }

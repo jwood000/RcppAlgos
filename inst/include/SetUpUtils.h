@@ -36,5 +36,5 @@ void SetStartZ(const std::vector<int> &myReps,
 void PermuteSpecific(int &phaseOne, bool &generalRet, int n, int m,
                      int nRows, bool IsMult, bool IsCharacter,
                      bool IsComb, bool bLower, bool IsRep);
-    
+
 #endif

@@ -9,7 +9,7 @@
 void CharacterGlue(SEXP mat, SEXP v, bool IsComb,
                    std::vector<int> &z, int n, int m, int nRows,
                    const std::vector<int> &freqs, bool IsMult, bool IsRep) {
-    
+
     if (IsComb) {
         ComboCharacter(mat, v, z, n, m, nRows, freqs, IsMult, IsRep);
     } else {
@@ -22,7 +22,7 @@ void ManagerGlue(T* mat, const std::vector<T> &v, std::vector<int> &z,
                  int n, int m, int nRows, bool IsComb, int phaseOne,
                  bool generalRet, const std::vector<int> &freqs,
                  bool IsMult, bool IsRep) {
-    
+
     if (IsComb) {
         ComboManager(mat, v, z, n, m, nRows, freqs, IsMult, IsRep);
     } else {
@@ -37,7 +37,7 @@ void ParallelGlue(T* mat, const std::vector<T> &v, int n, int m, int phaseOne,
                   bool IsMult, bool IsGmp, const std::vector<int> &freqs,
                   std::vector<int> &z, const std::vector<int> &myReps,
                   double lower, mpz_t lowerMpz, int nRows, int nThreads) {
-    
+
     if (IsComb) {
         ThreadSafeCombinations(mat, v, n, m, Parallel, IsRep,
                                IsMult, IsGmp, freqs, z, myReps,

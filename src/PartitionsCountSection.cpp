@@ -32,7 +32,7 @@
 // equivalent to (1 43). The next few groups are (3 42), (4, 40),
 // (5, 38), and (6, 36). These all get converted to (1, 40),
 // (1, 37), (1, 34), and (1, 31). The number of results for
-// each are given by (assume integer division and don't 
+// each are given by (assume integer division and don't
 // forget to add 1):
 //          44 / 2, 41 / 2, 38 / 2, 35 / 2, 32 / 2
 //

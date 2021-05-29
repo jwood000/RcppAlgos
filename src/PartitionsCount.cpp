@@ -18,7 +18,7 @@ double GetSpecialCount(const std::vector<int> &z, int target, int m) {
 
 double PartitionsCount(const std::vector<int> &Reps, const PartDesign &part,
                        int lenV, bool bCalcMultiset) {
-    
+
     switch (part.ptype) {
         case PartitionType::RepStdAll: {
             return CountPartRep(part.mapTar);

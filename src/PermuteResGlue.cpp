@@ -6,7 +6,7 @@ void PermuteResStd(T* mat, const std::vector<T> &v,
                    int nRows, bool IsMult, bool IsRep,
                    const std::vector<int> &freqs,
                    const funcPtr<T> myFun) {
-    
+
     if (IsMult)
         MultisetPermRes(mat, v, z, n, m, 0, nRows, freqs, myFun);
     else if (IsRep)

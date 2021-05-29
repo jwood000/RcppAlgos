@@ -10,7 +10,7 @@ void ThreadSafePermutations(T* mat, const std::vector<T> &v, int n, int m,
                             const std::vector<int> &freqs, std::vector<int> &z,
                             const std::vector<int> &myReps, double lower,
                             mpz_t lowerMpz, int nRows, int nThreads) {
-    
+
     if (Parallel) {
         RcppParallel::RMatrix<T> parMat(mat, nRows, m);
         RcppThread::ThreadPool pool(nThreads);

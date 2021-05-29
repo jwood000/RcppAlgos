@@ -14,11 +14,11 @@ void ComboResDistinct(RcppParallel::RMatrix<T> &mat, const std::vector<T> &v,
                       std::vector<int> &z, int n, int m, int strt,
                       int nRows, const funcPtr<T> myFun);
 template <typename T>
-void ComboResRep(T* mat, const std::vector<T> &v, 
+void ComboResRep(T* mat, const std::vector<T> &v,
                  std::vector<int> &z, int n, int m, int strt,
                  int nRows, const funcPtr<T> myFun);
 template <typename T>
-void ComboResRep(RcppParallel::RMatrix<T> &mat, const std::vector<T> &v, 
+void ComboResRep(RcppParallel::RMatrix<T> &mat, const std::vector<T> &v,
                  std::vector<int> &z, int n, int m, int strt,
                  int nRows, const funcPtr<T> myFun);
 template <typename T>

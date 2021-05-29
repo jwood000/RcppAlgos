@@ -7,7 +7,7 @@ template <typename T>
 void ComboManager(T* mat, const std::vector<T> &v,
                   std::vector<int> &z, int n, int m, int nRows,
                   const std::vector<int> &freqs, bool IsMult, bool IsRep) {
-    
+
     if (IsMult)
         MultisetCombination(mat, v, z, n, m, 0, nRows, freqs);
     else if (IsRep)
@@ -20,7 +20,7 @@ template <typename T>
 void ComboParallel(RcppParallel::RMatrix<T> &mat, const std::vector<T> &v,
                    std::vector<int> &z, int n, int m, int strt, int nRows,
                    const std::vector<int> &freqs, bool IsMult, bool IsRep) {
-    
+
     if (IsMult)
         MultisetCombination(mat, v, z, n, m, strt, nRows, freqs);
     else if (IsRep)
@@ -32,7 +32,7 @@ void ComboParallel(RcppParallel::RMatrix<T> &mat, const std::vector<T> &v,
 void ComboCharacter(SEXP mat, SEXP v, std::vector<int> &z, int n,
                     int m, int nRows, const std::vector<int> &freqs,
                     bool IsMult, bool IsRep) {
-    
+
     if (IsMult)
         MultisetCombination(mat, v, z, n, m, nRows, freqs);
     else if (IsRep)

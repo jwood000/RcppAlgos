@@ -59,11 +59,11 @@ template <typename T>
 void PermuteLoadIndex(T* mat, int *const indexMat,
                       const std::vector<T> &v, std::vector<int> &z,
                       int n, int m, int segment, bool IsRep, int nRows) {
-    
+
     if (IsRep) {
         for (int count = 0, maxInd = n - 1,
              lastCol = m - 1; count < segment; ++count) {
-            
+
             // N.B. In PermuteGeneral we start j at 0
             for (int j = 1, k = count; j < m; ++j, k += segment) {
                 mat[count + j * nRows] = v[z[j]];
@@ -100,7 +100,7 @@ void PermuteLoadIndex(T* mat, int *const indexMat,
         } else {
             for (int count = 0, maxInd = n - 1,
                  lastCol = m - 1; count < segment; ++count) {
-                
+
                 for (int j = 0, k = count; j < m; ++j, k += segment) {
                     mat[count + j * nRows] = v[arrPerm[j]];
                     indexMat[k] = arrPerm[j];
@@ -115,24 +115,24 @@ void PermuteLoadIndex(T* mat, int *const indexMat,
 template <typename T>
 void PermuteOptimized(T* mat, const std::vector<T> &v, std::vector<int> &z,
                       int n, int m, int nRows, bool IsRep) {
-    
+
     const int first = (IsRep) ? 1 : 0;
     const int segment = (IsRep) ? std::pow(static_cast<double>(n),
                                            static_cast<double>(m - 1)) :
                         NumPermsNoRep(n - 1, m - 1);
-    
-    const std::size_t indexMatSize = static_cast<std::size_t>(segment) * 
+
+    const std::size_t indexMatSize = static_cast<std::size_t>(segment) *
                                      static_cast<std::size_t>(m - first);
-    
+
     auto indexMat = FromCpp14::make_unique<int[]>(indexMatSize);
     PermuteLoadIndex(mat, indexMat.get(), v, z, n, m, segment, IsRep, nRows);
-    
+
     int ind = 1;
     int strt = segment;
     int last = strt + segment;
     int unrollRem = segment % unrollSize;
     std::vector<T> vCopy(v.cbegin(), v.cend());
-    
+
     for (; last <= nRows; strt += segment, last += segment, ++ind) {
         if (!IsRep) std::swap(vCopy.front(), vCopy[ind]);
         PermuteWorker(mat, indexMat.get(), vCopy, m, strt,

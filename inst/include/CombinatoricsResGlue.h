@@ -10,7 +10,7 @@ void ResultsMain(T* mat, const std::vector<T> &v, const funcPtr<T> myFun,
                  bool IsMult, bool IsGmp, const std::vector<int> &freqs,
                  std::vector<int> &z, const std::vector<int> &myReps,
                  double lower, mpz_t lowerMpz, int nRows, int nThreads) {
-    
+
     if (IsComb) {
         ComboResMain(mat, v, myFun, n, m, Parallel, IsRep,
                      IsMult, IsGmp, freqs, z, myReps, lower,

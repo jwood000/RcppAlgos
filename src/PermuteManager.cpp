@@ -8,7 +8,7 @@ void PermuteManager(T* mat, const std::vector<T> &v,
                     std::vector<int> &z, int n, int m, int nRows,
                     int phaseOne, bool generalRet, bool IsMult,
                     bool IsRep, const std::vector<int> &freqs) {
-    
+
     if (generalRet) {
         if (IsMult)
             PermuteMultiset(mat, v, z, n, m, 0, nRows, freqs);

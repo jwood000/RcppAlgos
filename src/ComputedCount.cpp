@@ -9,9 +9,9 @@ double GetComputedRows(bool IsMult, bool IsComb, bool IsRep,
                        int n, int m, const SEXP &Rm,
                        const std::vector<int> &freqs,
                        const std::vector<int> &Reps) {
-    
+
     double computedRows = 0;
-    
+
     if (IsMult) {
         if (IsComb) {
             computedRows = MultisetCombRowNum(n, m, Reps);
@@ -36,15 +36,15 @@ double GetComputedRows(bool IsMult, bool IsComb, bool IsRep,
                 computedRows = NumPermsNoRep(n, m);
         }
     }
-    
+
     return computedRows;
 }
 
 void GetComputedRowMpz(mpz_t computedRowsMpz, bool IsMult, bool IsComb,
                        bool IsRep, int n, int m, const SEXP &Rm,
-                       const std::vector<int> &freqs, 
+                       const std::vector<int> &freqs,
                        const std::vector<int> &myReps) {
-    
+
     if (IsMult) {
         if (IsComb) {
             MultisetCombRowNumGmp(computedRowsMpz, n, m, myReps);

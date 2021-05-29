@@ -25,7 +25,7 @@ namespace CleanConvert {
 
     template <typename T>
     std::vector<T> GetNumVec(SEXP Rv);
-    
+
     bool convertLogical(SEXP boolInput, const std::string &nameOfBool);
 
     template <typename T>
@@ -33,7 +33,7 @@ namespace CleanConvert {
                           const std::string &nameOfObject,
                           bool numOnly = true, bool checkWhole = true,
                           bool negPoss = false, bool decimalFraction = false);
-    
+
     template <typename T>
     void convertVector(SEXP input, std::vector<T> &result,
                        VecType myType, const std::string &nameOfObject,

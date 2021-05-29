@@ -11,7 +11,7 @@ double GetComputedRows(bool IsMult, bool IsComb, bool IsRep,
 
 void GetComputedRowMpz(mpz_t computedRowMpz, bool IsMult, bool IsComb,
                        bool IsRep, int n, int m, const SEXP &Rm,
-                       const std::vector<int> &freqs, 
+                       const std::vector<int> &freqs,
                        const std::vector<int> &myReps);
 
 #endif

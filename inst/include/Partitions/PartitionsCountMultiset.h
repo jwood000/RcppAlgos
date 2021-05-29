@@ -3,7 +3,7 @@
 
 #include <vector>
 
-int CountPartMultiset(const std::vector<int> &Reps, 
+int CountPartMultiset(const std::vector<int> &Reps,
                       const std::vector<int> &z);
 
 #endif

@@ -9,7 +9,7 @@ void ComboResMain(T* mat, const std::vector<T> &v, const funcPtr<T> myFun,
                   bool IsGmp, const std::vector<int> &freqs, std::vector<int> &z,
                   const std::vector<int> &myReps, double lower, mpz_t lowerMpz,
                   int nRows, int nThreads) {
-    
+
     if (Parallel) {
         RcppParallel::RMatrix<T> parMat(mat, nRows, m);
         RcppThread::ThreadPool pool(nThreads);
@@ -31,7 +31,7 @@ void ComboResMain(T* mat, const std::vector<T> &v, const funcPtr<T> myFun,
             } else {
                 lower += stepSize;
             }
-            
+
             zs[j + 1] = nthCombFun(n, m, lower, lowerMpz, myReps);
         }
 

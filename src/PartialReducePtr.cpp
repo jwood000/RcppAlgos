@@ -20,7 +20,7 @@ void PartialReduceMean(int m, T& partial, T w) {
 
 template <typename T>
 partialReducePtr<T> GetPartialReducePtr(const std::string &myFun) {
-    
+
     if (myFun == "prod") {
         return(partialReducePtr<T>(PartialReduceProd));
     } else if (myFun == "sum") {

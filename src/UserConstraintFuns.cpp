@@ -133,10 +133,10 @@ partialPtr<T> GetPartialPtr(const std::string &fstr) {
 // function with y being altered in the calling function to give a range (y - e, y + e)
 template <typename T>
 compPtr<T> GetCompPtr(const std::string &fstr) {
-    
+
     const auto it = std::find(compVec.cbegin(), compVec.cend(), fstr);
     const int myIndex = std::distance(compVec.cbegin(), it);
-    
+
     switch(myIndex) {
         case LT:
             return(compPtr<T>(less));
@@ -154,7 +154,7 @@ compPtr<T> GetCompPtr(const std::string &fstr) {
         case GTLT:
             return(compPtr<T>(greaterLess));
         case GELT:
-            return(compPtr<T>(greaterEqlLess));    
+            return(compPtr<T>(greaterEqlLess));
         case GTLE:
             return(compPtr<T>(greaterLessEql));
         default:

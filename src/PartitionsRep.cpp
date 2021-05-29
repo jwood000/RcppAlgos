@@ -4,17 +4,17 @@
 template <typename T>
 void PartsGenRep(T* mat, const std::vector<T> &v, std::vector<int> &z,
                  int m, int lastElem, int lastCol, int strt, int nRows) {
-    
+
     int edge = 0;
     int pivot = 0;
     int boundary = 0;
-    
+
     PrepareRepPart(z, boundary, pivot, edge, lastElem, lastCol);
-    
+
     for (int count = strt; count < nRows; ++count) {
         for (int k = 0; k < m; ++k)
             mat[count + nRows * k] = v[z[k]];
-        
+
         NextRepGenPart(z, boundary, edge, pivot, lastCol, lastElem);
     }
 }
@@ -23,32 +23,32 @@ template <typename T>
 void PartsGenPermRep(std::vector<T> &partitionsVec,
                      const std::vector<T> &v, std::vector<int> &z,
                      int m, int lastElem, int lastCol, int maxRows) {
-    
+
     int edge = 0;
     int pivot = 0;
     int count = 0;
     int boundary = 0;
     PrepareRepPart(z, boundary, pivot, edge, lastElem, lastCol);
-    
+
     while ((edge >= 0) && (z[boundary] - z[edge] >= 2)) {
         PopulateVecPerm(v, partitionsVec, z, count, m, maxRows);
-        
+
         if (count >= maxRows)
             break;
-        
+
         NextRepGenPart(z, boundary, edge, pivot, lastCol, lastElem);
     }
-    
+
     if (count < maxRows)
         PopulateVecPerm(v, partitionsVec, z, count, m, maxRows);
 }
 
 void PartitionsRep(int* mat, std::vector<int> &z, int boundary,
                    int edge, int lastCol, int strt, int nRows) {
-    
+
     for (int count = strt; count < nRows; ++count,
          NextRepPart(z, boundary, edge, lastCol)) {
-        
+
         for (int k = lastCol; k >= 0 && z[k]; --k)
             mat[count + nRows * k] = z[k];
     }
@@ -56,34 +56,34 @@ void PartitionsRep(int* mat, std::vector<int> &z, int boundary,
 
 void PartsPermRep(int* mat, std::vector<int> &z, int m,
                   int boundary, int edge, int lastCol, int nRows) {
-    
+
     for (int count = 0; ;
          NextRepPart(z, boundary, edge, lastCol)) {
-        
+
         // index of first non-zero element
         const auto it = std::find_if(z.cbegin(), z.cend(),
                                      [](int z_i) {return z_i;});
-        
+
         const int nz = std::distance(z.cbegin(), it);
-        
+
         do {
             for (int k = lastCol; k >= 0 && z[k]; --k)
                 mat[count + nRows * k] = z[k];
-            
+
             ++count;
         } while (std::next_permutation(z.begin() + nz, z.end()) &&
                  count < nRows);
-        
+
         if (count >= nRows) {break;}
     }
 }
 
 void PartsNoZeroRep(int* mat, std::vector<int> &z, int m, int boundary,
                     int edge, int lastCol, int strt, int nRows) {
-    
+
     for (int count = strt; count < nRows; ++count,
          NextRepPart(z, boundary, edge, lastCol)) {
-        
+
         for (std::size_t k = 0; k < m; ++k)
             mat[count + nRows * k] = z[k];
     }
@@ -91,17 +91,17 @@ void PartsNoZeroRep(int* mat, std::vector<int> &z, int m, int boundary,
 
 void PartsNoZeroPermRep(int* mat, std::vector<int> &z, int m,
                         int boundary, int edge, int lastCol, int nRows) {
-    
+
     for (int count = 0; ;
          NextRepPart(z, boundary, edge, lastCol)) {
-        
+
         do {
             for (int k = 0; k < m; ++k)
                 mat[count + nRows * k] = z[k];
-            
+
             ++count;
         } while (std::next_permutation(z.begin(), z.end()) && count < nRows);
-        
+
         if (count >= nRows) {break;}
     }
 }

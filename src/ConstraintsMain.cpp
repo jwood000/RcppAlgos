@@ -7,7 +7,7 @@
 #include "CheckReturn.h"
 
 SEXP CombinatoricsCnstrt(SEXP Rv, SEXP Rm, SEXP RisRep, SEXP RFreqs,
-                         SEXP Rlow, SEXP Rhigh, SEXP RmainFun, 
+                         SEXP Rlow, SEXP Rhigh, SEXP RmainFun,
                          SEXP RcompFun, SEXP Rtarget, SEXP RIsComb,
                          SEXP RKeepRes, SEXP Rparallel, SEXP RnThreads,
                          SEXP RmaxThreads, SEXP Rtolerance) {
@@ -27,19 +27,19 @@ SEXP CombinatoricsCnstrt(SEXP Rv, SEXP Rm, SEXP RisRep, SEXP RFreqs,
     bool KeepRes  = CleanConvert::convertLogical(RKeepRes, "keepResults");
     bool Parallel = CleanConvert::convertLogical(Rparallel, "Parallel");
     bool IsRep    = CleanConvert::convertLogical(RisRep, "repetition");
-    
+
     const bool IsComb = CleanConvert::convertLogical(RIsComb, "IsComb");
     const bool IsConstrained = CheckConstrnd(RmainFun, RcompFun, Rtarget);
-    
+
     SetType(myType, Rv);
     SetValues(myType, myReps, freqs, vInt, vNum, Rv,
               RFreqs, Rm, n, m, IsMult, IsRep, IsConstrained);
-    
+
     if (!Rf_isString(RmainFun) || Rf_length(RmainFun) != 1) {
         Rf_error("contraintFun must be one of the following:"
                  " 'prod', 'sum', 'mean', 'max', or 'min'");
     }
-    
+
     const std::string mainFun(CHAR(STRING_ELT(RmainFun, 0)));
     const auto funIt = std::find(mainFunSet.begin(), mainFunSet.end(), mainFun);
 
@@ -52,30 +52,30 @@ SEXP CombinatoricsCnstrt(SEXP Rv, SEXP Rm, SEXP RisRep, SEXP RFreqs,
     // outside integer data type range which causes undefined behavior
     std::vector<int> targetIntVals;
     const funcPtr<double> funDbl = GetFuncPtr<double>(mainFun);
-    
+
     std::vector<std::string> compFunVec;
     std::vector<double> targetVals;
-    
+
     PartDesign part;
     part.isRep = IsRep;
     part.isMult = IsMult;
     part.mIsNull = Rf_isNull(Rm);
-    
+
     std::vector<int> startZ(m);
     double computedRows = 0;
-    
-    ConstraintSetup(vNum, myReps, targetVals, targetIntVals, funDbl, part,
-                    n, m, compFunVec, mainFun, myType, Rtarget, RcompFun,
-                    Rtolerance, Rlow, IsConstrained, false);
-    
+
+    ConstraintSetup(vNum, myReps, targetVals, targetIntVals, funDbl,
+                    part, n, m, compFunVec, mainFun, myType, Rtarget,
+                    RcompFun, Rtolerance, Rlow, IsConstrained, false);
+
     Rf_error("digg");
-    // 
+    //
     // if (ConstType > ConstraintType::General) {
     //     // vNum and myReps were sorted in GetPartitionCase
     //     bool IncludeZero = (vNum.front() == 0);
     //     int targetInt = static_cast<int>(targetVals[0]);
     //     const std::vector<std::int64_t> v64(vNum.cbegin(), vNum.cend());
-    // 
+    //
     //     SetStartPartitionZ(PartType, distinctTest, v64, startZ, myReps,
     //                        targetInt, n, m, IncludeZero, IsRep, IsMult);
     //     return Rcpp::wrap(startZ);
@@ -88,14 +88,14 @@ SEXP CombinatoricsCnstrt(SEXP Rv, SEXP Rm, SEXP RisRep, SEXP RFreqs,
     //             return trivialNumRet;
     //         }
     //     }
-    // 
+    //
     //     computedRows = GetComputedPartsComps(startZ, PartType, targetInt, m,
     //                                          IsComb, IncludeZero, Rf_isNull(Rm));
     // } else {
         computedRows = GetComputedRows(IsMult, IsComb, IsRep,
                                        n, m, Rm, freqs, myReps);
     // }
-    // 
+    //
     // return Rcpp::wrap(ConstType > ConstraintType::General);
 
     const bool IsGmp = (computedRows > Significand53);
@@ -109,16 +109,16 @@ SEXP CombinatoricsCnstrt(SEXP Rv, SEXP Rm, SEXP RisRep, SEXP RFreqs,
 
     double lower = 0;
     double upper = 0;
-    
+
     bool bLower = false;
     bool bUpper = false;
-    
+
     auto lowerMpz = FromCpp14::make_unique<mpz_t[]>(1);
     auto upperMpz = FromCpp14::make_unique<mpz_t[]>(1);
 
     mpz_init(lowerMpz[0]);
     mpz_init(upperMpz[0]);
-    
+
     SetBounds(Rlow, Rhigh, IsGmp, bLower, bUpper, lower, upper,
               lowerMpz.get(), upperMpz.get(), computedRowsMpz, computedRows);
 
@@ -129,7 +129,7 @@ SEXP CombinatoricsCnstrt(SEXP Rv, SEXP Rm, SEXP RisRep, SEXP RFreqs,
 
     double userNumRows = 0;
     const bool IsGenCnstrd = false; //(IsConstrained && ConstType == ConstraintType::General);
-    
+
     SetNumResults(IsGmp, bLower, bUpper, IsGenCnstrd, upperMpz.get(), lowerMpz.get(),
                   lower, upper, computedRows, computedRowsMpz, nRows, userNumRows);
 
@@ -150,7 +150,7 @@ SEXP CombinatoricsCnstrt(SEXP Rv, SEXP Rm, SEXP RisRep, SEXP RFreqs,
         int maxThreads = 1;
         CleanConvert::convertPrimitive(RmaxThreads, maxThreads,
                                        VecType::Integer, "maxThreads");
-        
+
         int nCols = m + 1;
         const int limit = 20000;
         SetThreads(Parallel, maxThreads, nRows, myType, nThreads, RnThreads, limit);
@@ -163,21 +163,21 @@ SEXP CombinatoricsCnstrt(SEXP Rv, SEXP Rm, SEXP RisRep, SEXP RFreqs,
             const funcPtr<int> funInt = GetFuncPtr<int>(mainFun);
             SEXP res = PROTECT(Rf_allocMatrix(INTSXP, nRows, nCols));
             int* matInt = INTEGER(res);
-            
+
             ResultsMain(matInt, vInt, funInt, n, m, IsComb, Parallel,
                         IsRep, IsMult, IsGmp, freqs, startZ, myReps,
                         lower, lowerMpz[0], nRows, nThreads);
-            
+
             UNPROTECT(1);
             return res;
         } else {
             SEXP res = PROTECT(Rf_allocMatrix(REALSXP, nRows, nCols));
             double* matNum = REAL(res);
-            
+
             ResultsMain(matNum, vNum, funDbl, n, m, IsComb, Parallel,
                         IsRep, IsMult, IsGmp, freqs, startZ, myReps,
                         lower, lowerMpz[0], nRows, nThreads);
-            
+
             UNPROTECT(1);
             return res;
         }
