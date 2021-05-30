@@ -1,6 +1,29 @@
 #include "Constraints/ConstraintsUtils.h"
 #include "CleanConvert.h"
 
+std::string GetConstraintType(const ConstraintType &ctype) {
+    
+    std::string res;
+    
+    switch (ctype) {
+        case ConstraintType::General: {
+            res = "General";
+            break;
+        } case ConstraintType::PartitionEsque: {
+            res = "PartitionEsque";
+            break;
+        } case ConstraintType::PartMapping : {
+            res = "PartitionMapping";
+            break;
+        } default: {
+            res = "PartStandard";
+            break;
+        }
+    }
+    
+    return res;
+}
+
 void ConstraintStructure(std::vector<std::string> &compFunVec,
                          std::vector<double> &targetVals,
                          bool &IsBetweenComp) {
@@ -205,7 +228,8 @@ void ConstraintSetup(const std::vector<double> &vNum,
                      std::vector<double> &targetVals,
                      std::vector<int> &targetIntVals,
                      const funcPtr<double> funDbl, PartDesign &part,
-                     int lenV, int m, std::vector<std::string> &compFunVec,
+                     ConstraintType &ctype, int lenV, int m,
+                     std::vector<std::string> &compFunVec,
                      const std::string &mainFun, VecType &myType,
                      SEXP Rtarget, SEXP RcompFun, SEXP Rtolerance,
                      SEXP Rlow, bool IsConstrained, bool bCalcMultiset) {
@@ -237,12 +261,14 @@ void ConstraintSetup(const std::vector<double> &vNum,
         AdjustTargetVals(lenV, myType, targetVals, targetIntVals,
                          Rtolerance, compFunVec, tolerance, mainFun, vNum);
 
-        const bool IsPartition = CheckPartition(compFunVec, vNum, mainFun,
-                                                targetVals, part, Rlow, lenV,
-                                                m, tolerance, IsBetweenComp);
+        const bool IsPartition = CheckPartition(
+            compFunVec, vNum, mainFun, targetVals, part,
+            ctype, Rlow, lenV, m, tolerance, IsBetweenComp
+        );
 
         if (IsPartition) {
-            GetPartitionDesign(Reps, vNum, part, lenV, m, bCalcMultiset);
+            GetPartitionDesign(Reps, vNum, part, ctype,
+                               lenV, m, bCalcMultiset);
         }
     }
 }

@@ -55,8 +55,10 @@ SEXP CombinatoricsCnstrt(SEXP Rv, SEXP Rm, SEXP RisRep, SEXP RFreqs,
 
     std::vector<std::string> compFunVec;
     std::vector<double> targetVals;
-
+    
+    ConstraintType ctype;
     PartDesign part;
+    
     part.isRep = IsRep;
     part.isMult = IsMult;
     part.mIsNull = Rf_isNull(Rm);
@@ -64,74 +66,50 @@ SEXP CombinatoricsCnstrt(SEXP Rv, SEXP Rm, SEXP RisRep, SEXP RFreqs,
     std::vector<int> startZ(m);
     double computedRows = 0;
 
-    ConstraintSetup(vNum, myReps, targetVals, targetIntVals, funDbl,
-                    part, n, m, compFunVec, mainFun, myType, Rtarget,
-                    RcompFun, Rtolerance, Rlow, IsConstrained, false);
+    ConstraintSetup(vNum, myReps, targetVals, targetIntVals,
+                    funDbl, part, ctype, n, m, compFunVec,
+                    mainFun, myType, Rtarget, RcompFun, Rtolerance,
+                    Rlow, IsConstrained, false);
 
-    Rf_error("digg");
-    //
-    // if (ConstType > ConstraintType::General) {
-    //     // vNum and myReps were sorted in GetPartitionCase
-    //     bool IncludeZero = (vNum.front() == 0);
-    //     int targetInt = static_cast<int>(targetVals[0]);
-    //     const std::vector<std::int64_t> v64(vNum.cbegin(), vNum.cend());
-    //
-    //     SetStartPartitionZ(PartType, distinctTest, v64, startZ, myReps,
-    //                        targetInt, n, m, IncludeZero, IsRep, IsMult);
-    //     return Rcpp::wrap(startZ);
-    //     if (startZ.empty()) {
-    //         if (myType == VecType::Integer) {
-    //             Rcpp::IntegerMatrix trivialIntRet(0, m);
-    //             return trivialIntRet;
-    //         } else {
-    //             Rcpp::NumericMatrix trivialNumRet(0, m);
-    //             return trivialNumRet;
-    //         }
-    //     }
-    //
-    //     computedRows = GetComputedPartsComps(startZ, PartType, targetInt, m,
-    //                                          IsComb, IncludeZero, Rf_isNull(Rm));
-    // } else {
+    if (ctype > ConstraintType::General) {
         computedRows = GetComputedRows(IsMult, IsComb, IsRep,
                                        n, m, Rm, freqs, myReps);
-    // }
-    //
-    // return Rcpp::wrap(ConstType > ConstraintType::General);
+    }
 
     const bool IsGmp = (computedRows > Significand53);
     mpz_t computedRowsMpz;
     mpz_init(computedRowsMpz);
-
-    if (IsGmp) {
-        GetComputedRowMpz(computedRowsMpz, IsMult,
-                          IsComb, IsRep, n, m, Rm, freqs, myReps);
-    }
-
-    double lower = 0;
-    double upper = 0;
-
-    bool bLower = false;
-    bool bUpper = false;
-
-    auto lowerMpz = FromCpp14::make_unique<mpz_t[]>(1);
-    auto upperMpz = FromCpp14::make_unique<mpz_t[]>(1);
-
-    mpz_init(lowerMpz[0]);
-    mpz_init(upperMpz[0]);
-
-    SetBounds(Rlow, Rhigh, IsGmp, bLower, bUpper, lower, upper,
-              lowerMpz.get(), upperMpz.get(), computedRowsMpz, computedRows);
-
-    // if (ConstType == ConstraintType::General) {
-        SetStartZ(myReps, freqs, startZ, IsComb, n, m,
-                  lower, lowerMpz[0], IsRep, IsMult, IsGmp);
+    // 
+    // if (IsGmp) {
+    //     GetComputedRowMpz(computedRowsMpz, IsMult,
+    //                       IsComb, IsRep, n, m, Rm, freqs, myReps);
     // }
-
-    double userNumRows = 0;
-    const bool IsGenCnstrd = false; //(IsConstrained && ConstType == ConstraintType::General);
-
-    SetNumResults(IsGmp, bLower, bUpper, IsGenCnstrd, upperMpz.get(), lowerMpz.get(),
-                  lower, upper, computedRows, computedRowsMpz, nRows, userNumRows);
+    // 
+    // double lower = 0;
+    // double upper = 0;
+    // 
+    // bool bLower = false;
+    // bool bUpper = false;
+    // 
+    // auto lowerMpz = FromCpp14::make_unique<mpz_t[]>(1);
+    // auto upperMpz = FromCpp14::make_unique<mpz_t[]>(1);
+    // 
+    // mpz_init(lowerMpz[0]);
+    // mpz_init(upperMpz[0]);
+    // 
+    // SetBounds(Rlow, Rhigh, IsGmp, bLower, bUpper, lower, upper,
+    //           lowerMpz.get(), upperMpz.get(), computedRowsMpz, computedRows);
+    // 
+    // // if (ConstType == ConstraintType::General) {
+    //     SetStartZ(myReps, freqs, startZ, IsComb, n, m,
+    //               lower, lowerMpz[0], IsRep, IsMult, IsGmp);
+    // // }
+    // 
+    // double userNumRows = 0;
+    // const bool IsGenCnstrd = false; //(IsConstrained && ConstType == ConstraintType::General);
+    // 
+    // SetNumResults(IsGmp, bLower, bUpper, IsGenCnstrd, upperMpz.get(), lowerMpz.get(),
+    //               lower, upper, computedRows, computedRowsMpz, nRows, userNumRows);
 
     // if (IsConstrained) {
     //     if (myType == VecType::Integer) {
@@ -146,40 +124,40 @@ SEXP CombinatoricsCnstrt(SEXP Rv, SEXP Rm, SEXP RisRep, SEXP RFreqs,
     //                                                      PartType, ConstType, distinctTest.getAll);
     //     }
     // } else {
-        int nThreads = 1;
-        int maxThreads = 1;
-        CleanConvert::convertPrimitive(RmaxThreads, maxThreads,
-                                       VecType::Integer, "maxThreads");
-
-        int nCols = m + 1;
-        const int limit = 20000;
-        SetThreads(Parallel, maxThreads, nRows, myType, nThreads, RnThreads, limit);
-
-        if (myType == VecType::Integer)
-            if (!CheckIsInteger(mainFun, n, m, vNum, vNum, funDbl))
-                myType = VecType::Numeric;
-
-        if (myType == VecType::Integer) {
-            const funcPtr<int> funInt = GetFuncPtr<int>(mainFun);
-            SEXP res = PROTECT(Rf_allocMatrix(INTSXP, nRows, nCols));
-            int* matInt = INTEGER(res);
-
-            ResultsMain(matInt, vInt, funInt, n, m, IsComb, Parallel,
-                        IsRep, IsMult, IsGmp, freqs, startZ, myReps,
-                        lower, lowerMpz[0], nRows, nThreads);
-
-            UNPROTECT(1);
-            return res;
-        } else {
-            SEXP res = PROTECT(Rf_allocMatrix(REALSXP, nRows, nCols));
-            double* matNum = REAL(res);
-
-            ResultsMain(matNum, vNum, funDbl, n, m, IsComb, Parallel,
-                        IsRep, IsMult, IsGmp, freqs, startZ, myReps,
-                        lower, lowerMpz[0], nRows, nThreads);
-
-            UNPROTECT(1);
-            return res;
-        }
+        // int nThreads = 1;
+        // int maxThreads = 1;
+        // CleanConvert::convertPrimitive(RmaxThreads, maxThreads,
+        //                                VecType::Integer, "maxThreads");
+        // 
+        // int nCols = m + 1;
+        // const int limit = 20000;
+        // SetThreads(Parallel, maxThreads, nRows, myType, nThreads, RnThreads, limit);
+        // 
+        // if (myType == VecType::Integer)
+        //     if (!CheckIsInteger(mainFun, n, m, vNum, vNum, funDbl))
+        //         myType = VecType::Numeric;
+        // 
+        // if (myType == VecType::Integer) {
+        //     const funcPtr<int> funInt = GetFuncPtr<int>(mainFun);
+        //     SEXP res = PROTECT(Rf_allocMatrix(INTSXP, nRows, nCols));
+        //     int* matInt = INTEGER(res);
+        // 
+        //     ResultsMain(matInt, vInt, funInt, n, m, IsComb, Parallel,
+        //                 IsRep, IsMult, IsGmp, freqs, startZ, myReps,
+        //                 lower, lowerMpz[0], nRows, nThreads);
+        // 
+        //     UNPROTECT(1);
+        //     return res;
+        // } else {
+        //     SEXP res = PROTECT(Rf_allocMatrix(REALSXP, nRows, nCols));
+        //     double* matNum = REAL(res);
+        // 
+        //     ResultsMain(matNum, vNum, funDbl, n, m, IsComb, Parallel,
+        //                 IsRep, IsMult, IsGmp, freqs, startZ, myReps,
+        //                 lower, lowerMpz[0], nRows, nThreads);
+        // 
+        //     UNPROTECT(1);
+        //     return res;
+        // }
     // }
 }

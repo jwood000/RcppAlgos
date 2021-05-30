@@ -101,14 +101,17 @@ SEXP PartitionsCount(SEXP Rtarget, SEXP Rv, SEXP Rm,
     std::vector<std::string> compFunVec;
     std::vector<double> targetVals;
 
+    ConstraintType ctype;
     PartDesign part;
+
     part.isRep = IsRep;
     part.isMult = IsMult;
     part.mIsNull = Rf_isNull(Rm);
 
-    ConstraintSetup(vNum, myReps, targetVals, targetIntVals, funDbl,
-                    part, n, m, compFunVec, mainFun, myType, Rtarget,
-                    RcompFun, Rtolerance, Rlow, IsConstrained, true);
+    ConstraintSetup(vNum, myReps, targetVals, targetIntVals,
+                    funDbl, part, ctype, n, m, compFunVec,
+                    mainFun, myType, Rtarget, RcompFun, Rtolerance,
+                    Rlow, IsConstrained, true);
 
     if (part.ptype != PartitionType::NotPartition) {
         if (bDesign) {

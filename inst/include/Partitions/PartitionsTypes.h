@@ -95,7 +95,6 @@ struct PartDesign {
     std::int64_t shift = 0;
     std::int64_t slope = 0;
     std::int64_t target = 0;
-    ConstraintType ctype = ConstraintType::General;
     PartitionType ptype = PartitionType::NotPartition;
 };
 

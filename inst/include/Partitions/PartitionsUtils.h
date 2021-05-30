@@ -10,11 +10,12 @@
 bool CheckPartition(const std::vector<std::string> &compFunVec,
                     const std::vector<double> &v, const std::string &mainFun,
                     const std::vector<double> &target, PartDesign &part,
-                    SEXP Rlow, int lenV, int m, double tolerance,
-                    bool IsBetween);
+                    ConstraintType &ctype, SEXP Rlow, int lenV, int m,
+                    double tolerance, bool IsBetween);
 
 void GetPartitionDesign(const std::vector<int> &Reps,
                         const std::vector<double> &v, PartDesign &part,
-                        int lenV, int &m, bool bCalcMultiset);
+                        ConstraintType &ctype, int lenV, int &m,
+                        bool bCalcMultiset);
 
 #endif

@@ -3,29 +3,6 @@
 #include <numeric>
 #include <string>
 
-std::string GetConstraintType(const PartDesign &part) {
-
-    std::string res;
-
-    switch (part.ctype) {
-        case ConstraintType::General: {
-            res = "General";
-            break;
-        } case ConstraintType::PartitionEsque: {
-            res = "PartitionEsque";
-            break;
-        } case ConstraintType::PartMapping : {
-            res = "PartitionMapping";
-            break;
-        } default: {
-            res = "PartStandard";
-            break;
-        }
-    }
-
-    return res;
-}
-
 std::string GetPartitionType(const PartDesign &part) {
 
     std::string res;
@@ -94,8 +71,6 @@ SEXP GetDesign(const PartDesign &part, int lenV, bool verbose) {
             RcppThread::Rcout << "Distinct Partitions of width: " <<
                 part.width << "\n\n";
         }
-
-        RcppThread::Rcout << "Constraint Type: " <<  GetConstraintType(part) << "\n";
 
         RcppThread::Rcout << "Partition Type:  " << ptype << "\n\n";
 

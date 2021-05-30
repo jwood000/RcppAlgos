@@ -485,12 +485,12 @@ void StandardDesign(const std::vector<int> &Reps,
 bool CheckPartition(const std::vector<std::string> &compFunVec,
                     const std::vector<double> &v, const std::string &mainFun,
                     const std::vector<double> &target, PartDesign &part,
-                    SEXP Rlow, int lenV, int m, double tolerance,
-                    bool IsBetween) {
+                    ConstraintType &ctype, SEXP Rlow, int lenV, int m,
+                    double tolerance, bool IsBetween) {
 
     /// We start by assuming we don't have a nice partition case
     part.ptype = PartitionType::NotPartition;
-    part.ctype = ConstraintType::General;
+    ctype      = ConstraintType::General;
 
     bool IsPartition = false;
     bool bLower = false;
@@ -545,7 +545,7 @@ bool CheckPartition(const std::vector<std::string> &compFunVec,
 
             // N.B. When we arrive here, the user must provide the width.
             // That is, m cannot be NULL
-            part.ctype = ConstraintType::PartitionEsque;
+            ctype = ConstraintType::PartitionEsque;
         }
     }
 
@@ -554,7 +554,8 @@ bool CheckPartition(const std::vector<std::string> &compFunVec,
 
 void GetPartitionDesign(const std::vector<int> &Reps,
                         const std::vector<double> &v, PartDesign &part,
-                        int lenV, int &m, bool bCalcMultiset) {
+                        ConstraintType &ctype, int lenV, int &m,
+                        bool bCalcMultiset) {
 
     // Now that we know we have partitions, we need to determine
     // if we are in a mapping case. There are a few of ways
@@ -615,7 +616,7 @@ void GetPartitionDesign(const std::vector<int> &Reps,
         // v = 1:10, m = 7, rep = TRUE, & width = 10 (Hence v.front() >= 0)
 
         part.mapZeroFirst = (v.front() == 0);
-        part.ctype = ConstraintType::PartStandard;
+        ctype = ConstraintType::PartStandard;
         part.mapTar = part.target;
         StandardDesign(Reps, part, m, lenV);
         SetStartPartitionZ(v, Reps, part);
@@ -632,7 +633,7 @@ void GetPartitionDesign(const std::vector<int> &Reps,
 
         // Set our constraint type to indicate if mapping will be
         // needed to determine # of partitions. See PartitionMain.cpp
-        part.ctype = ConstraintType::PartMapping;
+        ctype = ConstraintType::PartMapping;
         GetTarget(v, Reps, part, m, lenV);
         DiscoverPType(Reps, part);
     }
