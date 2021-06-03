@@ -6,6 +6,34 @@
 #include "ComputedCount.h"
 #include "CheckReturn.h"
 
+// template <typename typeRcpp, typename typeVector>
+// typeRcpp ConstraintReturn(int n, int m, const std::string &mainFun, const std::vector<std::string> &compFunVec,
+//                           const std::vector<typeVector> &targetVals, std::vector<typeVector> &v, bool bLower,
+//                           double lower, bool bUserRows, double computedRows, bool IsRep, int nRows, bool KeepRes,
+//                           std::vector<int> &z, bool IsMult, bool IsComb, bool mIsNull, double userNumRows,
+//                           std::vector<int> &myReps, const std::vector<int> &freqs, PartitionType PartType,
+//                           ConstraintType ConstType, bool distGetAll) {
+//     
+//     if (SpecialCase) {
+//         return ConstraintsSpecial<typeRcpp>(n, m, v, IsRep, nRows, KeepRes, z, lower, mainFun, 
+//                                             IsMult, computedRows, compFunVec, targetVals, IsComb,
+//                                             freqs, bLower, userNumRows);
+//     }
+//     
+//     // For bool bUserRows, we pass bUpper as we know bLower must be false (See CheckSpecialCase)
+//     if (ConstType > ConstraintType::PartitionEsque) {
+//         return Partitions::PartitionsMain<typeRcpp>(v, z, myReps, PartType, targetVals[0], n, m, IsRep,
+//                                                     IsMult, userNumRows, IsComb, KeepRes, bUserRows,
+//                                                     mIsNull, distGetAll);
+//     } else if (ConstType == ConstraintType::PartitionEsque) {
+//         return PartitionEsqueAlgo<typeRcpp>(n, m, v, IsRep, mainFun, compFunVec.front(), targetVals,
+//                                             userNumRows, IsComb, KeepRes, myReps, IsMult, bUserRows);
+//     } else {
+//         return CombinatoricsConstraints<typeRcpp>(n, m, v, IsRep, mainFun, compFunVec, targetVals,
+//                                                   userNumRows, IsComb, KeepRes, myReps, IsMult, bUserRows);
+//     }
+// }
+
 SEXP CombinatoricsCnstrt(SEXP Rv, SEXP Rm, SEXP RisRep, SEXP RFreqs,
                          SEXP Rlow, SEXP Rhigh, SEXP RmainFun,
                          SEXP RcompFun, SEXP Rtarget, SEXP RIsComb,
@@ -58,58 +86,83 @@ SEXP CombinatoricsCnstrt(SEXP Rv, SEXP Rm, SEXP RisRep, SEXP RFreqs,
     
     ConstraintType ctype;
     PartDesign part;
-    
+
     part.isRep = IsRep;
     part.isMult = IsMult;
     part.mIsNull = Rf_isNull(Rm);
-
-    std::vector<int> startZ(m);
-    double computedRows = 0;
-
+    
     ConstraintSetup(vNum, myReps, targetVals, targetIntVals,
                     funDbl, part, ctype, n, m, compFunVec,
                     mainFun, myType, Rtarget, RcompFun, Rtolerance,
                     Rlow, IsConstrained, false);
-
-    if (ctype > ConstraintType::General) {
-        computedRows = GetComputedRows(IsMult, IsComb, IsRep,
-                                       n, m, Rm, freqs, myReps);
+    
+    
+    // const bool IsPartition = CheckPartition(compFunVec, vNum, mainFun,
+    //                                         targetVals, part, Rlow, lenV,
+    //                                         m, tolerance, IsBetweenComp);
+    // 
+    // if (IsPartition) {
+    //     GetPartitionDesign(Reps, vNum, part, ctype, lenV, m, bCalcMulti);
+    // }
+    
+    if (ctype >= ConstraintType::PartMapping) {
+        
+    } else {
+        
     }
+    
+    const double computedRows = GetComputedRows(IsMult, IsComb, IsRep,
+                                                n, m, Rm, freqs, myReps);
 
     const bool IsGmp = (computedRows > Significand53);
     mpz_t computedRowsMpz;
     mpz_init(computedRowsMpz);
-    // 
-    // if (IsGmp) {
-    //     GetComputedRowMpz(computedRowsMpz, IsMult,
-    //                       IsComb, IsRep, n, m, Rm, freqs, myReps);
-    // }
-    // 
-    // double lower = 0;
-    // double upper = 0;
-    // 
-    // bool bLower = false;
-    // bool bUpper = false;
-    // 
-    // auto lowerMpz = FromCpp14::make_unique<mpz_t[]>(1);
-    // auto upperMpz = FromCpp14::make_unique<mpz_t[]>(1);
-    // 
-    // mpz_init(lowerMpz[0]);
-    // mpz_init(upperMpz[0]);
-    // 
-    // SetBounds(Rlow, Rhigh, IsGmp, bLower, bUpper, lower, upper,
-    //           lowerMpz.get(), upperMpz.get(), computedRowsMpz, computedRows);
-    // 
-    // // if (ConstType == ConstraintType::General) {
-    //     SetStartZ(myReps, freqs, startZ, IsComb, n, m,
-    //               lower, lowerMpz[0], IsRep, IsMult, IsGmp);
-    // // }
-    // 
-    // double userNumRows = 0;
-    // const bool IsGenCnstrd = false; //(IsConstrained && ConstType == ConstraintType::General);
-    // 
-    // SetNumResults(IsGmp, bLower, bUpper, IsGenCnstrd, upperMpz.get(), lowerMpz.get(),
-    //               lower, upper, computedRows, computedRowsMpz, nRows, userNumRows);
+
+    if (IsGmp) {
+        GetComputedRowMpz(computedRowsMpz, IsMult,
+                          IsComb, IsRep, n, m, Rm, freqs, myReps);
+    }
+
+    double lower = 0;
+    double upper = 0;
+
+    bool bLower = false;
+    bool bUpper = false;
+
+    auto lowerMpz = FromCpp14::make_unique<mpz_t[]>(1);
+    auto upperMpz = FromCpp14::make_unique<mpz_t[]>(1);
+
+    mpz_init(lowerMpz[0]);
+    mpz_init(upperMpz[0]);
+
+    SetBounds(Rlow, Rhigh, IsGmp, bLower, bUpper, lower, upper,
+              lowerMpz.get(), upperMpz.get(), computedRowsMpz, computedRows);
+    
+    std::vector<int> startZ(m);
+    
+    if (ctype == ConstraintType::General) {
+        SetStartZ(myReps, freqs, startZ, IsComb, n, m,
+                  lower, lowerMpz[0], IsRep, IsMult, IsGmp);
+    }
+    
+    // This is used when we are unable to calculate the number of results
+    // upfront (E.g. comboGeneral(rnorm(10), 5, constraintFun = "sum,
+    //                            comparisonFun = "<=", limitConstraints = 1))
+    double userNumRows = 0;
+    
+    // This variable is used in determining the number of results. If the
+    // output is constrained and the ConstraintType is "General" or
+    // "PartitionEsque", it means we really don't know how many results
+    // we have. The computedRows above is a strict upper bound but not
+    // necessarily the least upper bound. In these cases, we don't want
+    // to unnecessarily throw an error when computedRows exceeds 2^31 - 1.
+    const bool IsGenCnstrd = IsConstrained &&
+                             (ctype == ConstraintType::General ||
+                              ctype == ConstraintType::PartitionEsque);
+    
+    SetNumResults(IsGmp, bLower, bUpper, IsGenCnstrd, upperMpz.get(),
+                  lowerMpz.get(), lower, upper, computedRows,
+                  computedRowsMpz, nRows, userNumRows);
 
     // if (IsConstrained) {
     //     if (myType == VecType::Integer) {
@@ -124,40 +177,40 @@ SEXP CombinatoricsCnstrt(SEXP Rv, SEXP Rm, SEXP RisRep, SEXP RFreqs,
     //                                                      PartType, ConstType, distinctTest.getAll);
     //     }
     // } else {
-        // int nThreads = 1;
-        // int maxThreads = 1;
-        // CleanConvert::convertPrimitive(RmaxThreads, maxThreads,
-        //                                VecType::Integer, "maxThreads");
-        // 
-        // int nCols = m + 1;
-        // const int limit = 20000;
-        // SetThreads(Parallel, maxThreads, nRows, myType, nThreads, RnThreads, limit);
-        // 
-        // if (myType == VecType::Integer)
-        //     if (!CheckIsInteger(mainFun, n, m, vNum, vNum, funDbl))
-        //         myType = VecType::Numeric;
-        // 
-        // if (myType == VecType::Integer) {
-        //     const funcPtr<int> funInt = GetFuncPtr<int>(mainFun);
-        //     SEXP res = PROTECT(Rf_allocMatrix(INTSXP, nRows, nCols));
-        //     int* matInt = INTEGER(res);
-        // 
-        //     ResultsMain(matInt, vInt, funInt, n, m, IsComb, Parallel,
-        //                 IsRep, IsMult, IsGmp, freqs, startZ, myReps,
-        //                 lower, lowerMpz[0], nRows, nThreads);
-        // 
-        //     UNPROTECT(1);
-        //     return res;
-        // } else {
-        //     SEXP res = PROTECT(Rf_allocMatrix(REALSXP, nRows, nCols));
-        //     double* matNum = REAL(res);
-        // 
-        //     ResultsMain(matNum, vNum, funDbl, n, m, IsComb, Parallel,
-        //                 IsRep, IsMult, IsGmp, freqs, startZ, myReps,
-        //                 lower, lowerMpz[0], nRows, nThreads);
-        // 
-        //     UNPROTECT(1);
-        //     return res;
-        // }
+        int nThreads = 1;
+        int maxThreads = 1;
+        CleanConvert::convertPrimitive(RmaxThreads, maxThreads,
+                                       VecType::Integer, "maxThreads");
+
+        int nCols = m + 1;
+        const int limit = 20000;
+        SetThreads(Parallel, maxThreads, nRows, myType, nThreads, RnThreads, limit);
+
+        if (myType == VecType::Integer)
+            if (!CheckIsInteger(mainFun, n, m, vNum, vNum, funDbl))
+                myType = VecType::Numeric;
+
+        if (myType == VecType::Integer) {
+            const funcPtr<int> funInt = GetFuncPtr<int>(mainFun);
+            SEXP res = PROTECT(Rf_allocMatrix(INTSXP, nRows, nCols));
+            int* matInt = INTEGER(res);
+
+            ResultsMain(matInt, vInt, funInt, n, m, IsComb, Parallel,
+                        IsRep, IsMult, IsGmp, freqs, startZ, myReps,
+                        lower, lowerMpz[0], nRows, nThreads);
+
+            UNPROTECT(1);
+            return res;
+        } else {
+            SEXP res = PROTECT(Rf_allocMatrix(REALSXP, nRows, nCols));
+            double* matNum = REAL(res);
+
+            ResultsMain(matNum, vNum, funDbl, n, m, IsComb, Parallel,
+                        IsRep, IsMult, IsGmp, freqs, startZ, myReps,
+                        lower, lowerMpz[0], nRows, nThreads);
+
+            UNPROTECT(1);
+            return res;
+        }
     // }
 }

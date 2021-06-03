@@ -1,8 +1,4 @@
-#include "Partitions/PartitionsCount.h"
-#include "Cpp14MakeUnique.h"
-#include "ImportExportMPZ.h"
-#include <numeric>
-#include <cmath>
+#include "Partitions/PartitionsUtils.h"
 
 void BinaryNextElem(int &uppBnd, int &lowBnd, int &ind, int lastElem,
                     std::int64_t target, std::int64_t partial,
@@ -174,6 +170,7 @@ void GetTarget(const std::vector<double> &v,
     const int res = GetFirstPartition(v64, zExpanded, z, Reps,
                                       part.target, m, lastCol, lenV - 1,
                                       part.isRep, part.isMult);
+    
     if (res == 1) {
         part.mapZeroFirst = part.allOne;
         part.startZ    = z;
@@ -485,13 +482,11 @@ void StandardDesign(const std::vector<int> &Reps,
 bool CheckPartition(const std::vector<std::string> &compFunVec,
                     const std::vector<double> &v, const std::string &mainFun,
                     const std::vector<double> &target, PartDesign &part,
-                    ConstraintType &ctype, SEXP Rlow, int lenV, int m,
-                    double tolerance, bool IsBetween) {
+                    SEXP Rlow, int lenV, int m, double tolerance,
+                    bool IsBetween) {
 
     /// We start by assuming we don't have a nice partition case
     part.ptype = PartitionType::NotPartition;
-    ctype      = ConstraintType::General;
-
     bool IsPartition = false;
     bool bLower = false;
 
@@ -545,7 +540,7 @@ bool CheckPartition(const std::vector<std::string> &compFunVec,
 
             // N.B. When we arrive here, the user must provide the width.
             // That is, m cannot be NULL
-            ctype = ConstraintType::PartitionEsque;
+            part.ptype = PartitionType::CoarseGrained;
         }
     }
 

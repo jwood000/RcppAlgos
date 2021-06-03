@@ -1,6 +1,7 @@
 #ifndef CONSTRAINTS_UTILS_H
 #define CONSTRAINTS_UTILS_H
 
+#include "Constraints/ConstraintsTypes.h"
 #include "Constraints/UserConstraintFuns.h"
 #include "Partitions/PartitionsUtils.h"
 #include "SetUpUtils.h"
@@ -31,6 +32,18 @@ static const std::array<std::string, 5> compHelper = {
 // [1] 0.00000001490116119384766
 // Which is also 2^(-26)
 constexpr double defaultTolerance = std::numeric_limits<float>::epsilon() / 8.0;
+
+bool CheckSpecialCase(bool bLower, const std::string &mainFun,
+                      const std::vector<double> &vNum);
+
+void GetTolerance(const std::vector<double> &vNum,
+                  const std::vector<double> &targetVals,
+                  const std::string &mainFun,
+                  SEXP Rtolerance, double &tolerance);
+
+void ConstraintStructure(std::vector<std::string> &compFunVec,
+                         std::vector<double> &targetVals,
+                         bool &IsBetweenComp);
 
 bool CheckIsInteger(const std::string &funPass, int n,
                     int m, const std::vector<double> &vNum,

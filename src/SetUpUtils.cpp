@@ -276,34 +276,38 @@ void SetNumResults(bool IsGmp, bool bLower, bool bUpper, bool IsGenCnstrd,
             mpz_init(absTestBound);
             mpz_abs(absTestBound, testBound);
 
-            if (mpz_cmp_ui(absTestBound, std::numeric_limits<int>::max()) > 0)
+            if (mpz_cmp_ui(absTestBound, std::numeric_limits<int>::max()) > 0) {
                 Rf_error("The number of rows cannot exceed 2^31 - 1.");
-
+            }
+            
             userNumRows = mpz_get_d(testBound);
             mpz_clear(absTestBound);
         } else if (bUpper) {
-            if (mpz_cmp_d(upperMpz[0], std::numeric_limits<int>::max()) > 0)
+            if (mpz_cmp_d(upperMpz[0], std::numeric_limits<int>::max()) > 0) {
                 Rf_error("The number of rows cannot exceed 2^31 - 1.");
-
+            }
+            
             userNumRows = mpz_get_d(upperMpz[0]);
         } else if (bLower) {
             mpz_sub(testBound, computedRowsMpz, lowerMpz[0]);
             mpz_abs(testBound, testBound);
 
-            if (mpz_cmp_d(testBound, std::numeric_limits<int>::max()) > 0)
+            if (mpz_cmp_d(testBound, std::numeric_limits<int>::max()) > 0) {
                 Rf_error("The number of rows cannot exceed 2^31 - 1.");
-
+            }
+            
             userNumRows = mpz_get_d(testBound);
         }
 
         mpz_clear(testBound);
     } else {
-        if (bLower && bUpper)
+        if (bLower && bUpper) {
             userNumRows = upper - lower;
-        else if (bUpper)
+        } else if (bUpper) {
             userNumRows = upper;
-        else if (bLower)
+        } else if (bLower) {
             userNumRows = computedRows - lower;
+        }
     }
 
     if (userNumRows == 0) {
@@ -315,13 +319,19 @@ void SetNumResults(bool IsGmp, bool bLower, bool bUpper, bool IsGenCnstrd,
                            "exceeds the maximum number of possible results or the "
                            "lowerBound is greater than the upperBound.");
         } else {
-            if (computedRows > std::numeric_limits<int>::max() && !IsGenCnstrd)
+            // See comment in ConstraintsMain.cpp. Basically, we don't want to
+            // throw and error when we don't really know how many constrained
+            // results we have as computedRows is a strict upper bound and not
+            // the least upper bound.
+            if (computedRows > std::numeric_limits<int>::max() && !IsGenCnstrd) {
                 Rf_error("The number of rows cannot exceed 2^31 - 1.");
-
+            }
+            
             userNumRows = computedRows;
 
-            if (!IsGenCnstrd)
+            if (!IsGenCnstrd) {
                 nRows = static_cast<int>(computedRows);
+            }
         }
     } else if (userNumRows < 0) {
         Rf_error("The number of rows must be positive. Either the lowerBound "
@@ -344,18 +354,20 @@ void SetBounds(SEXP Rlow, SEXP Rhigh, bool IsGmp, bool &bLower, bool &bUpper,
             bLower = mpz_cmp_si(lowerMpz[0], 1) > 0;
             lower = (bLower) ? 1 : 0;
 
-            if (mpz_cmp(lowerMpz[0], computedRowsMpz) > 0)
+            if (mpz_cmp(lowerMpz[0], computedRowsMpz) > 0) {
                 Rf_error("bounds cannot exceed the maximum number of possible results");
-
+            }
+            
             mpz_sub_ui(lowerMpz[0], lowerMpz[0], 1);
         } else {                                    // numOnly = false
             CleanConvert::convertPrimitive(Rlow, lower,
                                            VecType::Numeric, "lower", false);
             bLower = lower > 1;
 
-            if (lower > computedRows)
+            if (lower > computedRows) {
                 Rf_error("bounds cannot exceed the maximum number of possible results");
-
+            }
+            
             --lower;
         }
     }
@@ -366,15 +378,16 @@ void SetBounds(SEXP Rlow, SEXP Rhigh, bool IsGmp, bool &bLower, bool &bUpper,
         if (IsGmp) {
             createMPZArray(Rhigh, upperMpz, 1, "upper");
 
-            if (mpz_cmp(upperMpz[0], computedRowsMpz) > 0)
+            if (mpz_cmp(upperMpz[0], computedRowsMpz) > 0) {
                 Rf_error("bounds cannot exceed the maximum number of possible results");
-
+            }
         } else {                                     // numOnly = false
             CleanConvert::convertPrimitive(Rhigh, upper,
                                            VecType::Numeric, "upper", false);
 
-            if (upper > computedRows)
+            if (upper > computedRows) {
                 Rf_error("bounds cannot exceed the maximum number of possible results");
+            }
         }
     }
 }

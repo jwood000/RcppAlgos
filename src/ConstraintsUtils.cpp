@@ -1,27 +1,40 @@
 #include "Constraints/ConstraintsUtils.h"
 #include "CleanConvert.h"
 
-std::string GetConstraintType(const ConstraintType &ctype) {
+bool CheckSpecialCase(bool bLower, const std::string &mainFun,
+                      const std::vector<double> &vNum) {
     
-    std::string res;
+    bool result = false;
     
-    switch (ctype) {
-        case ConstraintType::General: {
-            res = "General";
-            break;
-        } case ConstraintType::PartitionEsque: {
-            res = "PartitionEsque";
-            break;
-        } case ConstraintType::PartMapping : {
-            res = "PartitionMapping";
-            break;
-        } default: {
-            res = "PartStandard";
-            break;
+    // If bLower, the user is looking to test a particular range. Otherwise, the constraint algo
+    // will simply return (upper - lower) # of combinations/permutations that meet the criteria
+    if (bLower) {
+        result = true;
+    } else if (mainFun == "prod") {
+        for (auto v_i : vNum) {
+            if (v_i < 0) {
+                result = true;
+                break;
+            }
         }
     }
     
-    return res;
+    return result;
+}
+
+void SetConstraintType(const std::vector<double> &vNum,
+                       const std::string &mainFun, ConstraintType &ctype,
+                       bool IsConstrained, bool bLower) {
+
+    if (IsConstrained) {
+        if (CheckSpecialCase(bLower, mainFun, vNum)) {
+            ctype = ConstraintType::SpecialCnstrnt;
+        } else {
+            ctype = ConstraintType::General;
+        }
+    } else {
+        ctype = ConstraintType::NoConstraint;
+    }
 }
 
 void ConstraintStructure(std::vector<std::string> &compFunVec,
@@ -95,17 +108,47 @@ void ConstraintStructure(std::vector<std::string> &compFunVec,
             if (IsBetweenComp) {
                 compFunVec.pop_back();
 
-                if (std::max(targetVals[0], targetVals[1]) == targetVals[1])
+                if (std::max(targetVals[0], targetVals[1]) == targetVals[1]) {
                     std::swap(targetVals[0], targetVals[1]);
+                }
             }
         }
     } else {
-        if (targetVals.size() == 2)
+        if (targetVals.size() == 2) {
             targetVals.pop_back();
+        }
     }
 }
 
-void AdjustTargetVals(int n, VecType myType, std::vector<double> &targetVals,
+void GetTolerance(const std::vector<double> &vNum,
+                  const std::vector<double> &targetVals,
+                  const std::string &mainFun,
+                  SEXP Rtolerance, double &tolerance) {
+    
+    if (Rf_isNull(Rtolerance)) {
+        bool IsWhole = true;
+        
+        for (std::size_t i = 0; i < vNum.size() && IsWhole; ++i) {
+            if (static_cast<std::int64_t>(vNum[i]) != vNum[i]) {
+                IsWhole = false;
+            }
+        }
+        
+        for (std::size_t i = 0; i < targetVals.size() && IsWhole; ++i) {
+            if (static_cast<std::int64_t>(targetVals[i]) != targetVals[i]) {
+                IsWhole = false;
+            }
+        }
+        
+        tolerance = (IsWhole && mainFun != "mean") ? 0 : defaultTolerance;
+    } else {
+        // numOnly = true, checkWhole = false, negPoss = false, decimalFraction = true
+        CleanConvert::convertPrimitive(Rtolerance, tolerance, VecType::Numeric,
+                                       "tolerance", true, false, false, true);
+    }
+}
+
+void AdjustTargetVals(VecType myType, std::vector<double> &targetVals,
                       std::vector<int> &targetIntVals, SEXP Rtolerance,
                       std::vector<std::string> &compFunVec, double &tolerance,
                       const std::string &mainFun, const std::vector<double> &vNum) {
@@ -132,25 +175,8 @@ void AdjustTargetVals(int n, VecType myType, std::vector<double> &targetVals,
         //
         // As a result, we must define a specialized equality check for double
         // precision. It is 'equalDbl' and can be found in ConstraintsUtils.h
-
-        if (Rf_isNull(Rtolerance)) {
-            bool IsWhole = true;
-
-            for (int i = 0; i < n && IsWhole; ++i)
-                if (static_cast<std::int64_t>(vNum[i]) != vNum[i])
-                    IsWhole = false;
-
-            for (std::size_t i = 0; i < targetVals.size() && IsWhole; ++i)
-                if (static_cast<std::int64_t>(targetVals[i]) != targetVals[i])
-                    IsWhole = false;
-
-            tolerance = (IsWhole && mainFun != "mean") ? 0 : defaultTolerance;
-        } else {
-            // numOnly = true, checkWhole = false, negPoss = false, decimalFraction = true
-            CleanConvert::convertPrimitive(Rtolerance, tolerance, VecType::Numeric,
-                                           "tolerance", true, false, false, true);
-        }
-
+        
+        GetTolerance(vNum, targetVals, mainFun, Rtolerance, tolerance);
         const auto itComp = std::find(compSpecial.cbegin(),
                                       compSpecial.cend(), compFunVec[0]);
 
@@ -232,7 +258,7 @@ void ConstraintSetup(const std::vector<double> &vNum,
                      std::vector<std::string> &compFunVec,
                      const std::string &mainFun, VecType &myType,
                      SEXP Rtarget, SEXP RcompFun, SEXP Rtolerance,
-                     SEXP Rlow, bool IsConstrained, bool bCalcMultiset) {
+                     SEXP Rlow, bool IsConstrained, bool bCalcMulti) {
 
     if (IsConstrained) {
         // numOnly = true, checkWhole = false, negPoss = true
@@ -258,17 +284,7 @@ void ConstraintSetup(const std::vector<double> &vNum,
         }
 
         double tolerance = 0;
-        AdjustTargetVals(lenV, myType, targetVals, targetIntVals,
+        AdjustTargetVals(myType, targetVals, targetIntVals,
                          Rtolerance, compFunVec, tolerance, mainFun, vNum);
-
-        const bool IsPartition = CheckPartition(
-            compFunVec, vNum, mainFun, targetVals, part,
-            ctype, Rlow, lenV, m, tolerance, IsBetweenComp
-        );
-
-        if (IsPartition) {
-            GetPartitionDesign(Reps, vNum, part, ctype,
-                               lenV, m, bCalcMultiset);
-        }
     }
 }
