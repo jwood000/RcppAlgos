@@ -1,6 +1,7 @@
 Package: RcppAlgos
-Version: 2.4.2
-Title: High Performance Tools for Combinatorics and Computational Mathematics
+Version: 2.4.3
+Title: High Performance Tools for Combinatorics and Computational
+        Mathematics
 Description: Provides optimized functions and flexible combinatorial iterators
     implemented in C++ with 'Rcpp' for solving problems in combinatorics and
     computational mathematics. Utilizes parallel programming via 'RcppThread'
@@ -23,7 +24,8 @@ Description: Provides optimized functions and flexible combinatorial iterators
     Legendre's formula based on the work of Kim Walisch.
 URL: https://github.com/jwood000/RcppAlgos, https://gmplib.org/,
         https://github.com/kimwalisch/primesieve, http://libdivide.com,
-        https://github.com/kimwalisch/primecount, http://ridiculousfish.com/,
+        https://github.com/kimwalisch/primecount,
+        http://ridiculousfish.com/,
         http://sweet.ua.pt/tos/software/prime_sieve.html
 BugReports: https://github.com/jwood000/RcppAlgos/issues
 Imports: gmp, Rcpp, methods
@@ -36,4 +38,4 @@ NeedsCompilation: yes
 Author: Joseph Wood
 Maintainer: Joseph Wood <jwood000@gmail.com>
 Encoding: UTF-8
-RoxygenNote: 6.1.1
+RoxygenNote: 7.1.0

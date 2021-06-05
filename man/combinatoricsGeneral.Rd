@@ -89,7 +89,7 @@ Joseph Wood
 }
 \references{
     \itemize{
-        \item{\href{http://gallery.rcpp.org/articles/passing-cpp-function-pointers/}{Passing user-supplied C++ functions}}
+        \item{\href{https://gallery.rcpp.org/articles/passing-cpp-function-pointers/}{Passing user-supplied C++ functions}}
         \item{\href{https://en.wikipedia.org/wiki/Monotonic_function}{Monotonic Sequence}}
         \item{\href{https://en.wikipedia.org/wiki/Multiset}{Multiset}}
         \item{\href{https://en.wikipedia.org/wiki/Lexicographical_order}{Lexicographical Order}}

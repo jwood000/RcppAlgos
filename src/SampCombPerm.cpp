@@ -99,10 +99,10 @@ void SampleApplyFun(const Rcpp::Vector<RTYPE> &v, Rcpp::List &myList, std::size_
 }
 
 template <typename typeRcpp, typename typeElem>
-void MainSample(std::vector<typeElem> v, std::size_t m, const std::vector<int> &myReps,
-                std::size_t sampSize, nthResultPtr nthResFun, const std::vector<double> &mySample,
-                mpz_t *const myBigSamp, typeRcpp &matRcpp, int nThreads, bool Parallel,
-                bool IsNamed, bool IsGmp, int lenV) {
+void MasterSample(std::vector<typeElem> v, std::size_t m, const std::vector<int> &myReps,
+                  std::size_t sampSize, nthResultPtr nthResFun, const std::vector<double> &mySample,
+                  mpz_t *const myBigSamp, typeRcpp &matRcpp, int nThreads, bool Parallel,
+                  bool IsNamed, bool IsGmp, int lenV) {
     
     if (Parallel) {
         RcppParallel::RMatrix<typeElem> parMat(matRcpp);
@@ -255,14 +255,14 @@ SEXP SampleRcpp(SEXP Rv, SEXP Rm, SEXP Rrepetition, SEXP RFreqs, SEXP RindexVec,
             return matBool;
         } case VecType::Integer : {
             Rcpp::IntegerMatrix matInt = Rcpp::no_init_matrix(sampSize, m);
-            MainSample(vInt, m, myReps, sampSize, nthResFun, mySample, 
-                       myVec.get(), matInt, nThreads, Parallel, IsNamed, IsGmp, n);
+            MasterSample(vInt, m, myReps, sampSize, nthResFun, mySample, 
+                         myVec.get(), matInt, nThreads, Parallel, IsNamed, IsGmp, n);
             if (IsFactor) {SetFactorClass(matInt, Rv);}
             return matInt;
         } default : {
             Rcpp::NumericMatrix matNum = Rcpp::no_init_matrix(sampSize, m);
-            MainSample(vNum, m, myReps, sampSize, nthResFun, mySample,
-                       myVec.get(), matNum, nThreads, Parallel, IsNamed, IsGmp, n);
+            MasterSample(vNum, m, myReps, sampSize, nthResFun, mySample,
+                         myVec.get(), matNum, nThreads, Parallel, IsNamed, IsGmp, n);
             return matNum;
         }
     }

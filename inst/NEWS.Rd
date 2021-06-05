@@ -1,7 +1,16 @@
 \name{NEWS}
 \title{News for Package \pkg{RcppAlgos}}
 
-\section{Changes in RcppAlgos version 2.4.2 (Release date: 2020-04-27)}{
+\section{Changes in RcppAlgos version 2.4.3 (Release date: 2021-06-01)}{
+    \itemize{
+        \item Other:
+        \itemize{
+            \item Fixed old urls
+        }
+    }
+}
+
+\section{Changes in RcppAlgos version 2.4.2 (Release date: Never Released)}{
     \itemize{
         \item New Features:
         \itemize{
@@ -10,6 +19,10 @@
         \item Enhancements:
         \itemize{
             \item Refactored code base to reduce binary size
+        }
+        \item Other:
+        \itemize{
+            \item Removed LazyData from DESCRIPTION. Also added \code{rmarkdown} to Suggests.
         }
     }
 }
@@ -107,20 +120,10 @@
 
 \section{Changes in RcppAlgos version 2.3.0 (Release date: 2019-03-17)}{
     \itemize{
-        \item New Features:
-        \itemize{
-            \item Added stdThreadMax for obtaining the number of threads available on a machine
-        }
-        \item Enhancements:
-        \itemize{
-            \item All functions now have parallel capabilites via RcppThread.
-            \item Utilizes RMatrix.h from RcppParallel for thread safe matrix class.
-            \item Major overhaul of primeSieve for large primes.
-        }
-        \item Bug Fixes:
-        \itemize{
-            \item Corrected \code{primeCount} for values around \code{1e9}. See \href{https://github.com/jwood000/RcppAlgos/issues/14}{Issue #14}
-        }
+        \item All functions now have parallel capabilites via RcppThread.
+        \item Utilizes RMatrix.h from RcppParallel for thread safe matrix class.
+        \item Major overhaul of primeSieve for large primes.
+        \item Added stdThreadMax for obtaining the number of threads available on a machine
     }
 }
 

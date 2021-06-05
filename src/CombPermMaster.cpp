@@ -17,10 +17,10 @@ void SerialReturn(const Rcpp::Vector<T> &v, Rcpp::Matrix<T> &matRcpp,
 }
 
 template <typename typeRcpp, typename T>
-void MainReturn(typeRcpp &matRcpp, std::vector<T> v, int n, int m, bool IsRep, 
-                bool IsComb, bool IsMult, bool IsGmp, bool generalRet, const std::vector<int> &freqs,
-                std::vector<int> z, const std::vector<int> &myReps, double lower, mpz_t &lowerMpz,
-                int nRows, int nThreads, bool Parallel, int phaseOne) {
+void MasterReturn(typeRcpp &matRcpp, std::vector<T> v, int n, int m, bool IsRep, 
+                  bool IsComb, bool IsMult, bool IsGmp, bool generalRet, const std::vector<int> &freqs,
+                  std::vector<int> z, const std::vector<int> &myReps, double lower, mpz_t &lowerMpz,
+                  int nRows, int nThreads, bool Parallel, int phaseOne) {
 
     if (Parallel) {
         RcppParallel::RMatrix<T> parMat(matRcpp);
@@ -175,17 +175,18 @@ SEXP CombinatoricsStndrd(SEXP Rv, SEXP Rm, SEXP RisRep, SEXP RFreqs, SEXP Rlow,
             return matBool;
         } case VecType::Integer : {
             Rcpp::IntegerMatrix matInt = Rcpp::no_init_matrix(nRows, m);
-            MainReturn(matInt, vInt, n, m, IsRep, IsComb, IsMult,
-                       IsGmp, generalRet, freqs, startZ, myReps, lower,
-                       lowerMpz[0], nRows, nThreads, Parallel, phaseOne);
+            MasterReturn(matInt, vInt, n, m, IsRep, IsComb, IsMult,
+                         IsGmp, generalRet, freqs, startZ, myReps, lower,
+                         lowerMpz[0], nRows, nThreads, Parallel, phaseOne);
             if (IsFactor) {SetFactorClass(matInt, Rv);}
             return matInt;
         } default : {
             Rcpp::NumericMatrix matNum = Rcpp::no_init_matrix(nRows, m);
-            MainReturn(matNum, vNum, n, m, IsRep, IsComb, IsMult,
-                       IsGmp, generalRet, freqs, startZ, myReps, lower,
-                       lowerMpz[0], nRows, nThreads, Parallel, phaseOne);
+            MasterReturn(matNum, vNum, n, m, IsRep, IsComb, IsMult,
+                         IsGmp, generalRet, freqs, startZ, myReps, lower,
+                         lowerMpz[0], nRows, nThreads, Parallel, phaseOne);
             return matNum;
         }
     }
 }
+

@@ -4,7 +4,7 @@
 Vectorized Primality Test
 }
 \description{
-Implementation of the \href{https://en.wikipedia.org/wiki/Miller-Rabin_primality_test}{Miller-Rabin primality test}. Based on the "mp_prime_p" function from the "factorize.c" source file found in the gmp library: \url{http://gmplib.org}.
+Implementation of the \href{https://en.wikipedia.org/wiki/Miller-Rabin_primality_test}{Miller-Rabin primality test}. Based on the "mp_prime_p" function from the "factorize.c" source file found in the gmp library: \url{https://gmplib.org/}.
 }
 \usage{
 isPrimeRcpp(v, namedVector = FALSE, nThreads = NULL)
@@ -39,7 +39,7 @@ Returns a named/unnamed logical vector. If an index is \code{TRUE}, the number a
 }
 \references{
 \itemize{
-\item{\href{http://www.math.uconn.edu/~kconrad/blurbs/ugradnumthy/millerrabin.pdf}{THE MILLER-RABIN TEST}\itemize{\item{Conrad, Keith. "THE MILLER-RABIN TEST." http://www.math.uconn.edu/~kconrad/blurbs/ugradnumthy/millerrabin.pdf.}}}
+\item{\href{https://www.math.uconn.edu/~kconrad/blurbs/ugradnumthy/millerrabin.pdf}{THE MILLER-RABIN TEST}\itemize{\item{Conrad, Keith. "THE MILLER-RABIN TEST." http://www.math.uconn.edu/~kconrad/blurbs/ugradnumthy/millerrabin.pdf.}}}
 \item{\href{https://en.wikipedia.org/wiki/Double-precision_floating-point_format}{53-bit significand precision}}}
 }
 \seealso{

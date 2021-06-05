@@ -1,3 +1,9 @@
+# RcppAlgos 2.4.3
+
+## Other:
+
+* Fixed old urls
+
 # RcppAlgos 2.4.2
 
 ## New Features:
@@ -7,6 +13,10 @@
 ## Enhancements:
 
 * Refactored code base to reduce binary size
+
+## Other:
+
+* Removed LazyData from DESCRIPTION. Also added `rmarkdown` to Suggests.
 
 # RcppAlgos 2.4.1
 
@@ -95,21 +105,13 @@
 
 # RcppAlgos 2.3.0
 
-## New Features:
-
-* Added `stdThreadMax` for obtaining the number of threads available on a machine
-
-## Enhancements:
-
 * All functions now have parallel capabilites via `RcppThread`.
 
 * Utilizes `RMatrix.h` from `RcppParallel` for thread safe matrix class.
 
 * Major overhaul of primeSieve for large primes.
 
-## Bug Fixes:
-
-* Corrected `primeCount` for values around `1e9`. See [Issue #14](<https://github.com/jwood000/RcppAlgos/issues/14>)
+* Added `stdThreadMax` for obtaining the number of threads available on a machine
 
 # RcppAlgos 2.2.0
 
