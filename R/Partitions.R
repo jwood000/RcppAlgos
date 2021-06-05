@@ -15,15 +15,15 @@ partitionGeneral <- function(v, m = NULL, repetition = FALSE,
                  PACKAGE = "RcppAlgos"))
 }
 
-partitionCount <-  function(v, m = NULL, repetition = FALSE,
-                            freqs = NULL, target = NULL) {
+partitionCount <- function(v, m = NULL, repetition = FALSE,
+                           freqs = NULL, target = NULL) {
     .Call(PartitionsCount, GetTarget(v, target), v, m, repetition,
           freqs, "==", NULL, NULL, FALSE, FALSE, PACKAGE = "RcppAlgos");
 }
 
-partitionDesign <-  function(v, m = NULL, repetition = FALSE,
-                             freqs = NULL, target = NULL,
-                             showDesign = FALSE) {
+partitionDesign <- function(v, m = NULL, repetition = FALSE,
+                            freqs = NULL, target = NULL,
+                            showDesign = FALSE) {
     
     .Call(PartitionsCount, GetTarget(v, target),
           v, m, repetition, freqs, "==", NULL, NULL,
