@@ -8,11 +8,8 @@
 extern "C" {
     SEXP CheckReturn(SEXP Rv, SEXP RCnstrntFun, SEXP RCompFun,
                      SEXP Rtarget, SEXP RKeepRes, SEXP stdFun);
-    
-    SEXP CheckPartition(SEXP Rv, SEXP Rm, SEXP RmainFun, SEXP RcompFun,
-                        SEXP Rlow, SEXP Rtarget, SEXP Rtolerance);
 }
 
-bool CheckConstrnd(SEXP f1, SEXP f2, SEXP Rtarget);
+bool CheckConstrnd(SEXP RCnstrntFun, SEXP RCompFun, SEXP Rtarget);
 
 #endif

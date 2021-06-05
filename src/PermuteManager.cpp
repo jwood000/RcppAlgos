@@ -10,12 +10,13 @@ void PermuteManager(T* mat, const std::vector<T> &v,
                     bool IsRep, const std::vector<int> &freqs) {
 
     if (generalRet) {
-        if (IsMult)
+        if (IsMult) {
             PermuteMultiset(mat, v, z, n, m, 0, nRows, freqs);
-        else if (IsRep)
+        } else if (IsRep) {
             PermuteRep(mat, v, z, n, m, 0, nRows);
-        else
+        } else {
             PermuteDistinct(mat, v, z, n, m, 0, nRows);
+        }
     } else {
         PermuteOptimized(mat, v, z, n, m, nRows, IsRep);
     }
@@ -26,24 +27,26 @@ void PermuteParallel(RcppParallel::RMatrix<T> &mat, const std::vector<T> &v,
                      std::vector<int> &z, int n, int m, int strt, int nRows,
                      const std::vector<int> &freqs, bool IsMult, bool IsRep) {
 
-    if (IsMult)
+    if (IsMult) {
         PermuteMultiset(mat, v, z, n, m, strt, nRows, freqs);
-    else if (IsRep)
+    } else if (IsRep) {
         PermuteRep(mat, v, z, n, m, strt, nRows);
-    else
+    } else {
         PermuteDistinct(mat, v, z, n, m, strt, nRows);
+    }
 }
 
 void PermuteCharacter(SEXP mat, SEXP v, std::vector<int> &z, int n,
                       int m, int nRows, const std::vector<int> &freqs,
                       bool IsMult, bool IsRep) {
 
-    if (IsMult)
+    if (IsMult) {
         PermuteMultiset(mat, v, z, n, m, nRows, freqs);
-    else if (IsRep)
+    } else if (IsRep) {
         PermuteRep(mat, v, z, n, m, nRows);
-    else
+    } else {
         PermuteDistinct(mat, v, z, n, m, nRows);
+    }
 }
 
 template void PermuteParallel(RcppParallel::RMatrix<int>&, const std::vector<int>&,

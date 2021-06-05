@@ -23,14 +23,19 @@ bool CheckSpecialCase(bool bLower, const std::string &mainFun,
 }
 
 void SetConstraintType(const std::vector<double> &vNum,
-                       const std::string &mainFun, ConstraintType &ctype,
-                       bool IsConstrained, bool bLower) {
+                       const PartDesign &part, const std::string &mainFun,
+                       ConstraintType &ctype, bool IsConstrained, bool bLower) {
 
     if (IsConstrained) {
         if (CheckSpecialCase(bLower, mainFun, vNum)) {
             ctype = ConstraintType::SpecialCnstrnt;
-        } else {
+        } else if (part.ptype == PartitionType::CoarseGrained) {
+            ctype = ConstraintType::PartitionEsque;
+        } else if (ctype < ConstraintType::PartMapping) {
             ctype = ConstraintType::General;
+        } else {
+            // If we get here, ctype has already been set to
+            // PartMapping or PartStandard in SetPartitionDesign
         }
     } else {
         ctype = ConstraintType::NoConstraint;
@@ -120,7 +125,7 @@ void ConstraintStructure(std::vector<std::string> &compFunVec,
     }
 }
 
-void GetTolerance(const std::vector<double> &vNum,
+void SetTolerance(const std::vector<double> &vNum,
                   const std::vector<double> &targetVals,
                   const std::string &mainFun,
                   SEXP Rtolerance, double &tolerance) {
@@ -176,7 +181,7 @@ void AdjustTargetVals(VecType myType, std::vector<double> &targetVals,
         // As a result, we must define a specialized equality check for double
         // precision. It is 'equalDbl' and can be found in ConstraintsUtils.h
         
-        GetTolerance(vNum, targetVals, mainFun, Rtolerance, tolerance);
+        SetTolerance(vNum, targetVals, mainFun, Rtolerance, tolerance);
         const auto itComp = std::find(compSpecial.cbegin(),
                                       compSpecial.cend(), compFunVec[0]);
 
@@ -286,5 +291,13 @@ void ConstraintSetup(const std::vector<double> &vNum,
         double tolerance = 0;
         AdjustTargetVals(myType, targetVals, targetIntVals,
                          Rtolerance, compFunVec, tolerance, mainFun, vNum);
+        
+        const bool IsPartition = CheckPartition(compFunVec, vNum, mainFun,
+                                                targetVals, part, Rlow, lenV,
+                                                m, tolerance, IsBetweenComp);
+
+        if (IsPartition) {
+            SetPartitionDesign(Reps, vNum, part, ctype, lenV, m, bCalcMulti);
+        }
     }
 }

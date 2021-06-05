@@ -9,7 +9,6 @@
 
 static const R_CallMethodDef CallEntries[] = {
     CALLDEF(CheckReturn, 6),
-    CALLDEF(CheckPartition, 7),
     CALLDEF(CombinatoricsCount, 5),
     CALLDEF(PartitionsCount, 10),
     CALLDEF(CombinatoricsApply, 10),

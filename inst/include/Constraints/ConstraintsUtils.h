@@ -36,15 +36,6 @@ constexpr double defaultTolerance = std::numeric_limits<float>::epsilon() / 8.0;
 bool CheckSpecialCase(bool bLower, const std::string &mainFun,
                       const std::vector<double> &vNum);
 
-void GetTolerance(const std::vector<double> &vNum,
-                  const std::vector<double> &targetVals,
-                  const std::string &mainFun,
-                  SEXP Rtolerance, double &tolerance);
-
-void ConstraintStructure(std::vector<std::string> &compFunVec,
-                         std::vector<double> &targetVals,
-                         bool &IsBetweenComp);
-
 bool CheckIsInteger(const std::string &funPass, int n,
                     int m, const std::vector<double> &vNum,
                     const std::vector<double> &targetVals,

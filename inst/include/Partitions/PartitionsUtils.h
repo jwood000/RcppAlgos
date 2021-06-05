@@ -18,7 +18,7 @@ bool CheckPartition(const std::vector<std::string> &compFunVec,
                     SEXP Rlow, int lenV, int m, double tolerance,
                     bool IsBetween);
 
-void GetPartitionDesign(const std::vector<int> &Reps,
+void SetPartitionDesign(const std::vector<int> &Reps,
                         const std::vector<double> &v, PartDesign &part,
                         ConstraintType &ctype, int lenV, int &m,
                         bool bCalcMultiset);

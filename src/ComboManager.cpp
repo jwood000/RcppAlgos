@@ -8,12 +8,13 @@ void ComboManager(T* mat, const std::vector<T> &v,
                   std::vector<int> &z, int n, int m, int nRows,
                   const std::vector<int> &freqs, bool IsMult, bool IsRep) {
 
-    if (IsMult)
+    if (IsMult) {
         MultisetCombination(mat, v, z, n, m, 0, nRows, freqs);
-    else if (IsRep)
+    } else if (IsRep) {
         CombinationsRep(mat, v, z, n, m, 0, nRows);
-    else
+    } else {
         CombinationsDistinct(mat, v, z, n, m, 0, nRows);
+    }
 }
 
 template <typename T>
@@ -21,24 +22,26 @@ void ComboParallel(RcppParallel::RMatrix<T> &mat, const std::vector<T> &v,
                    std::vector<int> &z, int n, int m, int strt, int nRows,
                    const std::vector<int> &freqs, bool IsMult, bool IsRep) {
 
-    if (IsMult)
+    if (IsMult) {
         MultisetCombination(mat, v, z, n, m, strt, nRows, freqs);
-    else if (IsRep)
+    } else if (IsRep) {
         CombinationsRep(mat, v, z, n, m, strt, nRows);
-    else
+    } else {
         CombinationsDistinct(mat, v, z, n, m, strt, nRows);
+    }
 }
 
 void ComboCharacter(SEXP mat, SEXP v, std::vector<int> &z, int n,
                     int m, int nRows, const std::vector<int> &freqs,
                     bool IsMult, bool IsRep) {
 
-    if (IsMult)
+    if (IsMult) {
         MultisetCombination(mat, v, z, n, m, nRows, freqs);
-    else if (IsRep)
+    } else if (IsRep) {
         CombinationsRep(mat, v, z, n, m, nRows);
-    else
+    } else {
         CombinationsDistinct(mat, v, z, n, m, nRows);
+    }
 }
 
 template void ComboManager(int*, const std::vector<int>&,

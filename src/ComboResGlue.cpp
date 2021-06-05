@@ -7,12 +7,13 @@ void ComboResStd(T* mat, const std::vector<T> &v,
                  const std::vector<int> &freqs,
                  const funcPtr<T> myFun) {
 
-    if (IsMult)
+    if (IsMult) {
         MultisetComboResult(mat, v, z, n, m, 0, nRows, freqs, myFun);
-    else if (IsRep)
+    } else if (IsRep) {
         ComboResRep(mat, v, z, n, m, 0, nRows, myFun);
-    else
+    } else {
         ComboResDistinct(mat, v, z, n, m, 0, nRows, myFun);
+    }
 }
 
 template <typename T>
@@ -21,12 +22,13 @@ void ComboResPar(RcppParallel::RMatrix<T> &mat, const std::vector<T> &v,
                  const std::vector<int> &freqs, const funcPtr<T> myFun,
                  bool IsMult, bool IsRep) {
 
-    if (IsMult)
+    if (IsMult) {
         MultisetComboResult(mat, v, z, n, m, strt, nRows, freqs, myFun);
-    else if (IsRep)
+    } else if (IsRep) {
         ComboResRep(mat, v, z, n, m, strt, nRows, myFun);
-    else
+    } else {
         ComboResDistinct(mat, v, z, n, m, strt, nRows, myFun);
+    }
 }
 
 template void ComboResPar(RcppParallel::RMatrix<int>&, const std::vector<int>&,

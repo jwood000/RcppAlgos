@@ -13,14 +13,16 @@ void PartsGenDistinct(T* mat, const std::vector<T> &v,
     int pivot = 0;
     int tarDiff = 0;
     int boundary = 0;
+    
     PrepareDistinctPart(z, boundary, pivot, edge, tarDiff, lastElem, lastCol);
 
     for (int count = strt; count < nRows; ++count,
          NextDistinctGenPart(z, boundary, edge, pivot,
                              tarDiff, lastCol, lastElem)) {
 
-        for (int k = 0; k < m; ++k)
+        for (int k = 0; k < m; ++k) {
             mat[count + nRows * k] = v[z[k]];
+        }
     }
 }
 
@@ -34,6 +36,7 @@ void PartsGenPermDistinct(std::vector<T> &partitionsVec,
     int count = 0;
     int tarDiff = 0;
     int boundary = 0;
+    
     PrepareDistinctPart(z, boundary, pivot, edge, tarDiff, lastElem, lastCol);
 
     while (edge >= 0 && (z[boundary] - z[edge]) >= tarDiff) {
@@ -46,31 +49,30 @@ void PartsGenPermDistinct(std::vector<T> &partitionsVec,
                             tarDiff, lastCol, lastElem);
     }
 
-    if (count < maxRows)
+    if (count < maxRows) {
         PopulateVecPerm(v, partitionsVec, z, count, m, maxRows);
+    }
 }
 
 void PartsDistinct(int* mat, std::vector<int> &z,
-                   int m, int boundary, int lastCol,
-                   int edge, int strt, int nRows) {
+                   int width, int boundary, int lastCol,
+                   int edge, int nRows, int strt) {
 
-    int tarDiff = 3;
-
-    for (int count = strt; count < nRows; ++count) {
-        for (int k = lastCol; k >= 0 && z[k]; --k)
+    for (int count = strt, tarDiff = 3; count < nRows; ++count) {
+        for (int k = 0; k < width; ++k) {
             mat[count + nRows * k] = z[k];
-
+        }
+        
         NextDistinctPart(z, boundary, edge, tarDiff, lastCol);
     }
 }
 
 // mIsNull && IncludeZero
 void PartsPermDistinct(int* mat, std::vector<int> &z,
-                       int m, int boundary, int lastCol,
+                       int width, int boundary, int lastCol,
                        int edge, int nRows) {
-    int tarDiff = 3;
 
-    for (int count = 0; ;
+    for (int count = 0, tarDiff = 3; ;
          NextDistinctPart(z, boundary, edge, tarDiff, lastCol)) {
 
         // index of first non-zero element
@@ -80,9 +82,10 @@ void PartsPermDistinct(int* mat, std::vector<int> &z,
         const int nz = std::distance(z.cbegin(), it);
 
         do {
-            for (int k = lastCol; k >= 0 && z[k]; --k)
+            for (int k = 0; k < width; ++k) {
                 mat[count + nRows * k] = z[k];
-
+            }
+            
             ++count;
         } while (std::next_permutation(z.begin() + nz, z.end()) &&
                  count < nRows);
@@ -95,8 +98,7 @@ void PartsPermDistinct(int* mat, std::vector<int> &z,
 void PartsLenPermDistinct(int* mat, std::vector<int> &z,
                           int m, int boundary, int lastCol,
                           int edge, int nRows) {
-    int tarDiff = 3;
-
+    
     const int indexRows = NumPermsNoRep(m, m);
     auto indexMat = FromCpp14::make_unique<int[]>(indexRows * m);
 
@@ -104,19 +106,22 @@ void PartsLenPermDistinct(int* mat, std::vector<int> &z,
     std::iota(indexVec.begin(), indexVec.end(), 0);
 
     for (int i = 0, myRow = 0; i < indexRows; ++i, myRow += m) {
-        for (int j = 0; j < m; ++j)
+        for (int j = 0; j < m; ++j) {
             indexMat[myRow + j] = indexVec[j];
-
+        }
+        
         std::next_permutation(indexVec.begin(), indexVec.end());
     }
 
-    for (int count = 0; ;
+    for (int count = 0, tarDiff = 3; ;
          NextDistinctPart(z, boundary, edge, tarDiff, lastCol)) {
 
-        for (int j = 0, myRow = 0; j < indexRows; ++count, ++j)
-            for (int k = 0; k < m; ++k, ++myRow)
+        for (int j = 0, myRow = 0; j < indexRows; ++count, ++j) {
+            for (int k = 0; k < m; ++k, ++myRow) {
                 mat[count + nRows * k] = z[indexMat[myRow]];
-
+            }
+        }
+        
         if (count >= nRows) {break;}
     }
 }

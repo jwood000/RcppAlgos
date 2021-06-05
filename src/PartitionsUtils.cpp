@@ -547,7 +547,11 @@ bool CheckPartition(const std::vector<std::string> &compFunVec,
     return IsPartition;
 }
 
-void GetPartitionDesign(const std::vector<int> &Reps,
+// Right now, we have no fast method for calculating the number of partitions
+// of multisets, so the variable bCalcMultiset, is used only when we call
+// partitionCount from R. If we are actually generating results, this will
+// be set to false.
+void SetPartitionDesign(const std::vector<int> &Reps,
                         const std::vector<double> &v, PartDesign &part,
                         ConstraintType &ctype, int lenV, int &m,
                         bool bCalcMultiset) {

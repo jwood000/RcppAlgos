@@ -14,12 +14,12 @@ void PartsGenPermDistinct(std::vector<T> &partitionsVec,
                           int m, int lastElem, int lastCol, int maxRows);
 
 void PartsDistinct(int* mat, std::vector<int> &z,
-                   int m, int boundary, int lastCol,
-                   int edge, int strt, int nRows);
+                   int width, int boundary, int lastCol,
+                   int edge, int nRows, int strt);
 
 // mIsNull && IncludeZero
 void PartsPermDistinct(int* mat, std::vector<int> &z,
-                       int m, int boundary, int lastCol,
+                       int width, int boundary, int lastCol,
                        int edge, int nRows);
 
 // !mIsNull || !IncludeZero
