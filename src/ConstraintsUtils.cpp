@@ -263,41 +263,39 @@ void ConstraintSetup(const std::vector<double> &vNum,
                      std::vector<std::string> &compFunVec,
                      const std::string &mainFun, VecType &myType,
                      SEXP Rtarget, SEXP RcompFun, SEXP Rtolerance,
-                     SEXP Rlow, bool IsConstrained, bool bCalcMulti) {
+                     SEXP Rlow, bool IsComb, bool bCalcMulti) {
 
-    if (IsConstrained) {
-        // numOnly = true, checkWhole = false, negPoss = true
-        CleanConvert::convertVector(Rtarget, targetVals,
-                                    VecType::Numeric,
-                                    "limitConstraints",
-                                    true, false, true);
+    // numOnly = true, checkWhole = false, negPoss = true
+    CleanConvert::convertVector(Rtarget, targetVals,
+                                VecType::Numeric,
+                                "limitConstraints",
+                                true, false, true);
 
-        int len_comp = Rf_length(RcompFun);
+    int len_comp = Rf_length(RcompFun);
 
-        for (int i = 0; i < len_comp; ++i) {
-            const std::string temp(CHAR(STRING_ELT(RcompFun, i)));
-            compFunVec.push_back(temp);
-        }
+    for (int i = 0; i < len_comp; ++i) {
+        const std::string temp(CHAR(STRING_ELT(RcompFun, i)));
+        compFunVec.push_back(temp);
+    }
 
-        bool IsBetweenComp = false;
-        ConstraintStructure(compFunVec, targetVals, IsBetweenComp);
+    bool IsBetweenComp = false;
+    ConstraintStructure(compFunVec, targetVals, IsBetweenComp);
 
-        if (myType == VecType::Integer &&
-            !CheckIsInteger(mainFun, lenV, m, vNum, targetVals, funDbl, true)) {
+    if (myType == VecType::Integer &&
+        !CheckIsInteger(mainFun, lenV, m, vNum, targetVals, funDbl, true)) {
 
-            myType = VecType::Numeric;
-        }
+        myType = VecType::Numeric;
+    }
 
-        double tolerance = 0;
-        AdjustTargetVals(myType, targetVals, targetIntVals,
-                         Rtolerance, compFunVec, tolerance, mainFun, vNum);
-        
-        const bool IsPartition = CheckPartition(compFunVec, vNum, mainFun,
-                                                targetVals, part, Rlow, lenV,
-                                                m, tolerance, IsBetweenComp);
+    double tolerance = 0;
+    AdjustTargetVals(myType, targetVals, targetIntVals,
+                     Rtolerance, compFunVec, tolerance, mainFun, vNum);
+    
+    const bool IsPartition = CheckPartition(compFunVec, vNum, mainFun,
+                                            targetVals, part, Rlow, lenV,
+                                            m, tolerance, IsBetweenComp);
 
-        if (IsPartition) {
-            SetPartitionDesign(Reps, vNum, part, ctype, lenV, m, bCalcMulti);
-        }
+    if (IsPartition) {
+        SetPartitionDesign(Reps, vNum, part, ctype, lenV, m, bCalcMulti, true);
     }
 }

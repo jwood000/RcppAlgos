@@ -1,15 +1,12 @@
-#include "Partitions/PartitionsDistinct.h"
 #include "Constraints/ConstraintsUtils.h"
+#include "Partitions/PartitionsManager.h"
 #include "Partitions/PartitionsUtils.h"
 #include "CombinatoricsResGlue.h"
 #include "CombinatoricsCnstrt.h"
 #include "Cpp14MakeUnique.h"
 #include "ComputedCount.h"
 #include "CheckReturn.h"
-
-template <typename T>
-void fun() {
-}
+#include <cstring>
 
 SEXP CombinatoricsCnstrt(SEXP Rv, SEXP Rm, SEXP RisRep, SEXP RFreqs,
                          SEXP Rlow, SEXP Rhigh, SEXP RmainFun,
@@ -68,11 +65,12 @@ SEXP CombinatoricsCnstrt(SEXP Rv, SEXP Rm, SEXP RisRep, SEXP RFreqs,
     part.isMult = IsMult;
     part.mIsNull = Rf_isNull(Rm);
     
-    ConstraintSetup(vNum, myReps, targetVals, targetIntVals,
-                    funDbl, part, ctype, n, m, compFunVec,
-                    mainFun, myType, Rtarget, RcompFun, Rtolerance,
-                    Rlow, IsConstrained, false);
-
+    if (IsConstrained) {
+        ConstraintSetup(vNum, myReps, targetVals, targetIntVals, funDbl,
+                        part, ctype, n, m, compFunVec, mainFun, myType,
+                        Rtarget, RcompFun, Rtolerance, Rlow, IsComb, false);
+    }
+    
     const double computedRows = (part.count > 0) ? part.count :
         GetComputedRows(IsMult, IsComb, IsRep, n, m, Rm, freqs, myReps);
 
@@ -137,26 +135,23 @@ SEXP CombinatoricsCnstrt(SEXP Rv, SEXP Rm, SEXP RisRep, SEXP RFreqs,
             int lastCol = part.width - 1;
             int boundary = lastCol;
             int edge = boundary - 1;
-            
-            PartsDistinct(matInt, startZ, part.width, boundary, lastCol, edge, nRows, strt);
-            
-            // ResultsMain(matInt, vInt, funInt, n, m, IsComb, Parallel,
-            //             IsRep, IsMult, IsGmp, freqs, startZ, myReps,
-            //             lower, lowerMpz[0], nRows, 1);
+
+            PartsStdManager(matInt, startZ, part.width, lastCol, boundary,
+                            edge, strt, nRows, IsComb, IsRep);
             
             UNPROTECT(1);
             return res;
         } else {
             Rf_error("digg");
-            SEXP res = PROTECT(Rf_allocMatrix(REALSXP, nRows, m));
-            double* matNum = REAL(res);
-            
-            ResultsMain(matNum, vNum, funDbl, n, m, IsComb, Parallel,
-                        IsRep, IsMult, IsGmp, freqs, startZ, myReps,
-                        lower, lowerMpz[0], nRows, 1);
-            
-            UNPROTECT(1);
-            return res;
+            // SEXP res = PROTECT(Rf_allocMatrix(REALSXP, nRows, m));
+            // double* matNum = REAL(res);
+            // 
+            // ResultsMain(matNum, vNum, funDbl, n, m, IsComb, Parallel,
+            //             IsRep, IsMult, IsGmp, freqs, startZ, myReps,
+            //             lower, lowerMpz[0], nRows, 1);
+            // 
+            // UNPROTECT(1);
+            // return res;
         }
     } else {
         int nThreads = 1;
