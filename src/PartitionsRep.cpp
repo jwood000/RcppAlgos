@@ -3,7 +3,7 @@
 
 template <typename T>
 void PartsGenRep(T* mat, const std::vector<T> &v, std::vector<int> &z,
-                 int m, int lastElem, int lastCol, int strt, int nRows) {
+                 int width, int lastElem, int lastCol, int strt, int nRows) {
 
     int edge = 0;
     int pivot = 0;
@@ -12,7 +12,7 @@ void PartsGenRep(T* mat, const std::vector<T> &v, std::vector<int> &z,
     PrepareRepPart(z, boundary, pivot, edge, lastElem, lastCol);
 
     for (int count = strt; count < nRows; ++count) {
-        for (int k = 0; k < m; ++k) {
+        for (int k = 0; k < width; ++k) {
             mat[count + nRows * k] = v[z[k]];
         }
         
@@ -21,9 +21,35 @@ void PartsGenRep(T* mat, const std::vector<T> &v, std::vector<int> &z,
 }
 
 template <typename T>
+void PartsGenPermRep(T* mat, const std::vector<T> &v, std::vector<int> &z,
+                     int width, int lastElem, int lastCol, int maxRows) {
+    
+    int edge = 0;
+    int pivot = 0;
+    int count = 0;
+    int boundary = 0;
+    PrepareRepPart(z, boundary, pivot, edge, lastElem, lastCol);
+    
+    for (int count = 0; ;
+         NextRepPart(z, boundary, edge, lastCol)) {
+        
+        do {
+            for (int k = 0; k < width; ++k) {
+                mat[count + maxRows * k] = v[z[k]];
+            }
+            
+            ++count;
+        } while (std::next_permutation(z.begin(), z.end()) &&
+                 count < maxRows);
+        
+        if (count >= maxRows) {break;}
+    }
+}
+
+template <typename T>
 void PartsGenPermRep(std::vector<T> &partitionsVec,
                      const std::vector<T> &v, std::vector<int> &z,
-                     int m, int lastElem, int lastCol, int maxRows) {
+                     int width, int lastElem, int lastCol, int maxRows) {
 
     int edge = 0;
     int pivot = 0;
@@ -32,38 +58,37 @@ void PartsGenPermRep(std::vector<T> &partitionsVec,
     PrepareRepPart(z, boundary, pivot, edge, lastElem, lastCol);
 
     while ((edge >= 0) && (z[boundary] - z[edge] >= 2)) {
-        PopulateVecPerm(v, partitionsVec, z, count, m, maxRows);
+        PopulateVecPerm(v, partitionsVec, z, count, width, maxRows);
 
-        if (count >= maxRows)
-            break;
-
+        if (count >= maxRows) {break;}
         NextRepGenPart(z, boundary, edge, pivot, lastCol, lastElem);
     }
 
-    if (count < maxRows)
-        PopulateVecPerm(v, partitionsVec, z, count, m, maxRows);
+    if (count < maxRows) {
+        PopulateVecPerm(v, partitionsVec, z, count, width, maxRows);
+    }
 }
 
-void PartsRep(int* mat, std::vector<int> &z, int m, int boundary,
+void PartsRep(int* mat, std::vector<int> &z, int width, int boundary,
               int edge, int lastCol, int strt, int nRows) {
 
     for (int count = strt; count < nRows; ++count,
          NextRepPart(z, boundary, edge, lastCol)) {
-
-        for (std::size_t k = 0; k < m; ++k) {
+        
+        for (int k = 0; k < width; ++k) {
             mat[count + nRows * k] = z[k];
         }
     }
 }
 
-void PartsPermRep(int* mat, std::vector<int> &z, int m,
+void PartsPermRep(int* mat, std::vector<int> &z, int width,
                   int boundary, int edge, int lastCol, int nRows) {
 
     for (int count = 0; ;
          NextRepPart(z, boundary, edge, lastCol)) {
 
         do {
-            for (int k = 0; k < m; ++k) {
+            for (int k = 0; k < width; ++k) {
                 mat[count + nRows * k] = z[k];
             }
             
@@ -79,6 +104,12 @@ template void PartsGenRep(int*, const std::vector<int>&,
 
 template void PartsGenRep(double*, const std::vector<double>&,
                           std::vector<int>&, int, int, int, int, int);
+
+template void PartsGenPermRep(int*, const std::vector<int>&,
+                              std::vector<int>&, int, int, int, int);
+
+template void PartsGenPermRep(double*, const std::vector<double>&,
+                              std::vector<int>&, int, int, int, int);
 
 template void PartsGenPermRep(std::vector<int>&, const std::vector<int>&,
                               std::vector<int>&, int, int, int, int);
