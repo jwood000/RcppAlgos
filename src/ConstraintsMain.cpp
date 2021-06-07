@@ -6,7 +6,6 @@
 #include "Cpp14MakeUnique.h"
 #include "ComputedCount.h"
 #include "CheckReturn.h"
-#include <cstring>
 
 SEXP CombinatoricsCnstrt(SEXP Rv, SEXP Rm, SEXP RisRep, SEXP RFreqs,
                          SEXP Rlow, SEXP Rhigh, SEXP RmainFun,
