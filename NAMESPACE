@@ -3,9 +3,9 @@ import(gmp)
 
 export(comboGeneral,
        permuteGeneral,
-       partitionGeneral,
+       partitionsGeneral,
        comboCount,
        permuteCount,
-       partitionCount,
-       partitionDesign,
+       partitionsCount,
+       partitionsDesign,
        stdThreadMax)
