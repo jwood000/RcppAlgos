@@ -7,7 +7,7 @@ using namespace Rcpp;
 
 // comboGridRcpp
 SEXP comboGridRcpp(Rcpp::List RList, std::vector<int> IsFactor, bool IsRep, std::size_t sumLength);
-RcppExport SEXP _RcppAlgos_comboGridRcpp(SEXP RListSEXP, SEXP IsFactorSEXP, SEXP IsRepSEXP, SEXP sumLengthSEXP) {
+RcppExport SEXP _RcppAlgos243_comboGridRcpp(SEXP RListSEXP, SEXP IsFactorSEXP, SEXP IsRepSEXP, SEXP sumLengthSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -21,7 +21,7 @@ END_RCPP
 }
 // CheckReturn
 int CheckReturn(SEXP Rv, SEXP f1, SEXP f2, SEXP Rtarget, bool IsFactor, SEXP RKeepRes, SEXP stdFun);
-RcppExport SEXP _RcppAlgos_CheckReturn(SEXP RvSEXP, SEXP f1SEXP, SEXP f2SEXP, SEXP RtargetSEXP, SEXP IsFactorSEXP, SEXP RKeepResSEXP, SEXP stdFunSEXP) {
+RcppExport SEXP _RcppAlgos243_CheckReturn(SEXP RvSEXP, SEXP f1SEXP, SEXP f2SEXP, SEXP RtargetSEXP, SEXP IsFactorSEXP, SEXP RKeepResSEXP, SEXP stdFunSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -38,7 +38,7 @@ END_RCPP
 }
 // CombinatoricsStndrd
 SEXP CombinatoricsStndrd(SEXP Rv, SEXP Rm, SEXP RisRep, SEXP RFreqs, SEXP Rlow, SEXP Rhigh, bool IsComb, bool IsFactor, SEXP Rparallel, SEXP RNumThreads, int maxThreads);
-RcppExport SEXP _RcppAlgos_CombinatoricsStndrd(SEXP RvSEXP, SEXP RmSEXP, SEXP RisRepSEXP, SEXP RFreqsSEXP, SEXP RlowSEXP, SEXP RhighSEXP, SEXP IsCombSEXP, SEXP IsFactorSEXP, SEXP RparallelSEXP, SEXP RNumThreadsSEXP, SEXP maxThreadsSEXP) {
+RcppExport SEXP _RcppAlgos243_CombinatoricsStndrd(SEXP RvSEXP, SEXP RmSEXP, SEXP RisRepSEXP, SEXP RFreqsSEXP, SEXP RlowSEXP, SEXP RhighSEXP, SEXP IsCombSEXP, SEXP IsFactorSEXP, SEXP RparallelSEXP, SEXP RNumThreadsSEXP, SEXP maxThreadsSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -59,7 +59,7 @@ END_RCPP
 }
 // CombinatoricsApply
 SEXP CombinatoricsApply(SEXP Rv, SEXP Rm, SEXP RisRep, SEXP RFreqs, SEXP Rlow, SEXP Rhigh, bool IsComb, SEXP stdFun, SEXP myEnv);
-RcppExport SEXP _RcppAlgos_CombinatoricsApply(SEXP RvSEXP, SEXP RmSEXP, SEXP RisRepSEXP, SEXP RFreqsSEXP, SEXP RlowSEXP, SEXP RhighSEXP, SEXP IsCombSEXP, SEXP stdFunSEXP, SEXP myEnvSEXP) {
+RcppExport SEXP _RcppAlgos243_CombinatoricsApply(SEXP RvSEXP, SEXP RmSEXP, SEXP RisRepSEXP, SEXP RFreqsSEXP, SEXP RlowSEXP, SEXP RhighSEXP, SEXP IsCombSEXP, SEXP stdFunSEXP, SEXP myEnvSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -78,7 +78,7 @@ END_RCPP
 }
 // CombinatoricsCount
 SEXP CombinatoricsCount(SEXP Rv, SEXP Rm, SEXP RisRep, SEXP RFreqs, bool IsComb);
-RcppExport SEXP _RcppAlgos_CombinatoricsCount(SEXP RvSEXP, SEXP RmSEXP, SEXP RisRepSEXP, SEXP RFreqsSEXP, SEXP IsCombSEXP) {
+RcppExport SEXP _RcppAlgos243_CombinatoricsCount(SEXP RvSEXP, SEXP RmSEXP, SEXP RisRepSEXP, SEXP RFreqsSEXP, SEXP IsCombSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -93,7 +93,7 @@ END_RCPP
 }
 // ComboGroupsCountCpp
 SEXP ComboGroupsCountCpp(SEXP Rv, SEXP RNumGroups);
-RcppExport SEXP _RcppAlgos_ComboGroupsCountCpp(SEXP RvSEXP, SEXP RNumGroupsSEXP) {
+RcppExport SEXP _RcppAlgos243_ComboGroupsCountCpp(SEXP RvSEXP, SEXP RNumGroupsSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -105,7 +105,7 @@ END_RCPP
 }
 // ComboGroupsRcpp
 SEXP ComboGroupsRcpp(SEXP Rv, SEXP RNumGroups, SEXP RRetType, SEXP Rlow, SEXP Rhigh, bool IsFactor, SEXP Rparallel, SEXP RNumThreads, int maxThreads, bool IsSample, SEXP RindexVec, SEXP RmySeed, SEXP RNumSamp, Rcpp::Function baseSample, SEXP RNamed);
-RcppExport SEXP _RcppAlgos_ComboGroupsRcpp(SEXP RvSEXP, SEXP RNumGroupsSEXP, SEXP RRetTypeSEXP, SEXP RlowSEXP, SEXP RhighSEXP, SEXP IsFactorSEXP, SEXP RparallelSEXP, SEXP RNumThreadsSEXP, SEXP maxThreadsSEXP, SEXP IsSampleSEXP, SEXP RindexVecSEXP, SEXP RmySeedSEXP, SEXP RNumSampSEXP, SEXP baseSampleSEXP, SEXP RNamedSEXP) {
+RcppExport SEXP _RcppAlgos243_ComboGroupsRcpp(SEXP RvSEXP, SEXP RNumGroupsSEXP, SEXP RRetTypeSEXP, SEXP RlowSEXP, SEXP RhighSEXP, SEXP IsFactorSEXP, SEXP RparallelSEXP, SEXP RNumThreadsSEXP, SEXP maxThreadsSEXP, SEXP IsSampleSEXP, SEXP RindexVecSEXP, SEXP RmySeedSEXP, SEXP RNumSampSEXP, SEXP baseSampleSEXP, SEXP RNamedSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -130,7 +130,7 @@ END_RCPP
 }
 // CombinatoricsCnstrt
 SEXP CombinatoricsCnstrt(SEXP Rv, SEXP Rm, SEXP RisRep, SEXP RFreqs, SEXP Rlow, SEXP Rhigh, SEXP f1, SEXP f2, SEXP Rtarget, bool IsComb, SEXP RKeepRes, SEXP Rparallel, SEXP RnThreads, int maxThreads, SEXP Rtolerance);
-RcppExport SEXP _RcppAlgos_CombinatoricsCnstrt(SEXP RvSEXP, SEXP RmSEXP, SEXP RisRepSEXP, SEXP RFreqsSEXP, SEXP RlowSEXP, SEXP RhighSEXP, SEXP f1SEXP, SEXP f2SEXP, SEXP RtargetSEXP, SEXP IsCombSEXP, SEXP RKeepResSEXP, SEXP RparallelSEXP, SEXP RnThreadsSEXP, SEXP maxThreadsSEXP, SEXP RtoleranceSEXP) {
+RcppExport SEXP _RcppAlgos243_CombinatoricsCnstrt(SEXP RvSEXP, SEXP RmSEXP, SEXP RisRepSEXP, SEXP RFreqsSEXP, SEXP RlowSEXP, SEXP RhighSEXP, SEXP f1SEXP, SEXP f2SEXP, SEXP RtargetSEXP, SEXP IsCombSEXP, SEXP RKeepResSEXP, SEXP RparallelSEXP, SEXP RnThreadsSEXP, SEXP maxThreadsSEXP, SEXP RtoleranceSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -155,7 +155,7 @@ END_RCPP
 }
 // DivNumSieve
 SEXP DivNumSieve(SEXP Rb1, SEXP Rb2, bool bDivSieve, SEXP RNamed, SEXP RNumThreads, int maxThreads);
-RcppExport SEXP _RcppAlgos_DivNumSieve(SEXP Rb1SEXP, SEXP Rb2SEXP, SEXP bDivSieveSEXP, SEXP RNamedSEXP, SEXP RNumThreadsSEXP, SEXP maxThreadsSEXP) {
+RcppExport SEXP _RcppAlgos243_DivNumSieve(SEXP Rb1SEXP, SEXP Rb2SEXP, SEXP bDivSieveSEXP, SEXP RNamedSEXP, SEXP RNumThreadsSEXP, SEXP maxThreadsSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -171,7 +171,7 @@ END_RCPP
 }
 // GetClassVals
 Rcpp::List GetClassVals(bool IsStdRet, SEXP Rv, SEXP Rm, SEXP RisRep, SEXP RFreqs, bool IsComb, bool IsFactor, SEXP stdFun);
-RcppExport SEXP _RcppAlgos_GetClassVals(SEXP IsStdRetSEXP, SEXP RvSEXP, SEXP RmSEXP, SEXP RisRepSEXP, SEXP RFreqsSEXP, SEXP IsCombSEXP, SEXP IsFactorSEXP, SEXP stdFunSEXP) {
+RcppExport SEXP _RcppAlgos243_GetClassVals(SEXP IsStdRetSEXP, SEXP RvSEXP, SEXP RmSEXP, SEXP RisRepSEXP, SEXP RFreqsSEXP, SEXP IsCombSEXP, SEXP IsFactorSEXP, SEXP stdFunSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -189,7 +189,7 @@ END_RCPP
 }
 // MotleyContainer
 SEXP MotleyContainer(SEXP Rb1, SEXP Rb2, bool isEuler, SEXP RNamed, SEXP RNumThreads, int maxThreads);
-RcppExport SEXP _RcppAlgos_MotleyContainer(SEXP Rb1SEXP, SEXP Rb2SEXP, SEXP isEulerSEXP, SEXP RNamedSEXP, SEXP RNumThreadsSEXP, SEXP maxThreadsSEXP) {
+RcppExport SEXP _RcppAlgos243_MotleyContainer(SEXP Rb1SEXP, SEXP Rb2SEXP, SEXP isEulerSEXP, SEXP RNamedSEXP, SEXP RNumThreadsSEXP, SEXP maxThreadsSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -205,7 +205,7 @@ END_RCPP
 }
 // cpp11GetNumThreads
 int cpp11GetNumThreads();
-RcppExport SEXP _RcppAlgos_cpp11GetNumThreads() {
+RcppExport SEXP _RcppAlgos243_cpp11GetNumThreads() {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -215,7 +215,7 @@ END_RCPP
 }
 // PollardRhoContainer
 SEXP PollardRhoContainer(SEXP Rv, SEXP RNamed, bool bPrimeFacs, bool bAllFacs, SEXP RNumThreads, int maxThreads);
-RcppExport SEXP _RcppAlgos_PollardRhoContainer(SEXP RvSEXP, SEXP RNamedSEXP, SEXP bPrimeFacsSEXP, SEXP bAllFacsSEXP, SEXP RNumThreadsSEXP, SEXP maxThreadsSEXP) {
+RcppExport SEXP _RcppAlgos243_PollardRhoContainer(SEXP RvSEXP, SEXP RNamedSEXP, SEXP bPrimeFacsSEXP, SEXP bAllFacsSEXP, SEXP RNumThreadsSEXP, SEXP maxThreadsSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -231,7 +231,7 @@ END_RCPP
 }
 // PrimeCountRcpp
 SEXP PrimeCountRcpp(SEXP Rn, SEXP RNumThreads, int maxThreads);
-RcppExport SEXP _RcppAlgos_PrimeCountRcpp(SEXP RnSEXP, SEXP RNumThreadsSEXP, SEXP maxThreadsSEXP) {
+RcppExport SEXP _RcppAlgos243_PrimeCountRcpp(SEXP RnSEXP, SEXP RNumThreadsSEXP, SEXP maxThreadsSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -244,7 +244,7 @@ END_RCPP
 }
 // EratosthenesRcpp
 SEXP EratosthenesRcpp(SEXP Rb1, SEXP Rb2, SEXP RNumThreads, int maxCores, int maxThreads);
-RcppExport SEXP _RcppAlgos_EratosthenesRcpp(SEXP Rb1SEXP, SEXP Rb2SEXP, SEXP RNumThreadsSEXP, SEXP maxCoresSEXP, SEXP maxThreadsSEXP) {
+RcppExport SEXP _RcppAlgos243_EratosthenesRcpp(SEXP Rb1SEXP, SEXP Rb2SEXP, SEXP RNumThreadsSEXP, SEXP maxCoresSEXP, SEXP maxThreadsSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -259,7 +259,7 @@ END_RCPP
 }
 // SampleRcpp
 SEXP SampleRcpp(SEXP Rv, SEXP Rm, SEXP Rrepetition, SEXP RFreqs, SEXP RindexVec, bool IsComb, bool IsFactor, SEXP RmySeed, SEXP RNumSamp, Rcpp::Function baseSample, SEXP stdFun, SEXP myEnv, SEXP Rparallel, SEXP RNumThreads, int maxThreads, SEXP RNamed);
-RcppExport SEXP _RcppAlgos_SampleRcpp(SEXP RvSEXP, SEXP RmSEXP, SEXP RrepetitionSEXP, SEXP RFreqsSEXP, SEXP RindexVecSEXP, SEXP IsCombSEXP, SEXP IsFactorSEXP, SEXP RmySeedSEXP, SEXP RNumSampSEXP, SEXP baseSampleSEXP, SEXP stdFunSEXP, SEXP myEnvSEXP, SEXP RparallelSEXP, SEXP RNumThreadsSEXP, SEXP maxThreadsSEXP, SEXP RNamedSEXP) {
+RcppExport SEXP _RcppAlgos243_SampleRcpp(SEXP RvSEXP, SEXP RmSEXP, SEXP RrepetitionSEXP, SEXP RFreqsSEXP, SEXP RindexVecSEXP, SEXP IsCombSEXP, SEXP IsFactorSEXP, SEXP RmySeedSEXP, SEXP RNumSampSEXP, SEXP baseSampleSEXP, SEXP stdFunSEXP, SEXP myEnvSEXP, SEXP RparallelSEXP, SEXP RNumThreadsSEXP, SEXP maxThreadsSEXP, SEXP RNamedSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -288,28 +288,28 @@ RcppExport SEXP _rcpp_module_boot_Combo();
 RcppExport SEXP _rcpp_module_boot_ComboFUN();
 
 static const R_CallMethodDef CallEntries[] = {
-    {"_RcppAlgos_comboGridRcpp", (DL_FUNC) &_RcppAlgos_comboGridRcpp, 4},
-    {"_RcppAlgos_CheckReturn", (DL_FUNC) &_RcppAlgos_CheckReturn, 7},
-    {"_RcppAlgos_CombinatoricsStndrd", (DL_FUNC) &_RcppAlgos_CombinatoricsStndrd, 11},
-    {"_RcppAlgos_CombinatoricsApply", (DL_FUNC) &_RcppAlgos_CombinatoricsApply, 9},
-    {"_RcppAlgos_CombinatoricsCount", (DL_FUNC) &_RcppAlgos_CombinatoricsCount, 5},
-    {"_RcppAlgos_ComboGroupsCountCpp", (DL_FUNC) &_RcppAlgos_ComboGroupsCountCpp, 2},
-    {"_RcppAlgos_ComboGroupsRcpp", (DL_FUNC) &_RcppAlgos_ComboGroupsRcpp, 15},
-    {"_RcppAlgos_CombinatoricsCnstrt", (DL_FUNC) &_RcppAlgos_CombinatoricsCnstrt, 15},
-    {"_RcppAlgos_DivNumSieve", (DL_FUNC) &_RcppAlgos_DivNumSieve, 6},
-    {"_RcppAlgos_GetClassVals", (DL_FUNC) &_RcppAlgos_GetClassVals, 8},
-    {"_RcppAlgos_MotleyContainer", (DL_FUNC) &_RcppAlgos_MotleyContainer, 6},
-    {"_RcppAlgos_cpp11GetNumThreads", (DL_FUNC) &_RcppAlgos_cpp11GetNumThreads, 0},
-    {"_RcppAlgos_PollardRhoContainer", (DL_FUNC) &_RcppAlgos_PollardRhoContainer, 6},
-    {"_RcppAlgos_PrimeCountRcpp", (DL_FUNC) &_RcppAlgos_PrimeCountRcpp, 3},
-    {"_RcppAlgos_EratosthenesRcpp", (DL_FUNC) &_RcppAlgos_EratosthenesRcpp, 5},
-    {"_RcppAlgos_SampleRcpp", (DL_FUNC) &_RcppAlgos_SampleRcpp, 16},
+    {"_RcppAlgos243_comboGridRcpp", (DL_FUNC) &_RcppAlgos243_comboGridRcpp, 4},
+    {"_RcppAlgos243_CheckReturn", (DL_FUNC) &_RcppAlgos243_CheckReturn, 7},
+    {"_RcppAlgos243_CombinatoricsStndrd", (DL_FUNC) &_RcppAlgos243_CombinatoricsStndrd, 11},
+    {"_RcppAlgos243_CombinatoricsApply", (DL_FUNC) &_RcppAlgos243_CombinatoricsApply, 9},
+    {"_RcppAlgos243_CombinatoricsCount", (DL_FUNC) &_RcppAlgos243_CombinatoricsCount, 5},
+    {"_RcppAlgos243_ComboGroupsCountCpp", (DL_FUNC) &_RcppAlgos243_ComboGroupsCountCpp, 2},
+    {"_RcppAlgos243_ComboGroupsRcpp", (DL_FUNC) &_RcppAlgos243_ComboGroupsRcpp, 15},
+    {"_RcppAlgos243_CombinatoricsCnstrt", (DL_FUNC) &_RcppAlgos243_CombinatoricsCnstrt, 15},
+    {"_RcppAlgos243_DivNumSieve", (DL_FUNC) &_RcppAlgos243_DivNumSieve, 6},
+    {"_RcppAlgos243_GetClassVals", (DL_FUNC) &_RcppAlgos243_GetClassVals, 8},
+    {"_RcppAlgos243_MotleyContainer", (DL_FUNC) &_RcppAlgos243_MotleyContainer, 6},
+    {"_RcppAlgos243_cpp11GetNumThreads", (DL_FUNC) &_RcppAlgos243_cpp11GetNumThreads, 0},
+    {"_RcppAlgos243_PollardRhoContainer", (DL_FUNC) &_RcppAlgos243_PollardRhoContainer, 6},
+    {"_RcppAlgos243_PrimeCountRcpp", (DL_FUNC) &_RcppAlgos243_PrimeCountRcpp, 3},
+    {"_RcppAlgos243_EratosthenesRcpp", (DL_FUNC) &_RcppAlgos243_EratosthenesRcpp, 5},
+    {"_RcppAlgos243_SampleRcpp", (DL_FUNC) &_RcppAlgos243_SampleRcpp, 16},
     {"_rcpp_module_boot_Combo", (DL_FUNC) &_rcpp_module_boot_Combo, 0},
     {"_rcpp_module_boot_ComboFUN", (DL_FUNC) &_rcpp_module_boot_ComboFUN, 0},
     {NULL, NULL, 0}
 };
 
-RcppExport void R_init_RcppAlgos(DllInfo *dll) {
+RcppExport void R_init_RcppAlgos243(DllInfo *dll) {
     R_registerRoutines(dll, NULL, CallEntries, NULL, NULL);
     R_useDynamicSymbols(dll, FALSE);
 }
