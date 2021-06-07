@@ -8,9 +8,9 @@ template <typename T>
 inline void PopulateVecPerm(const std::vector<T> &v,
                             std::vector<T> &partitionsVec,
                             std::vector<int> &z, int &count,
-                            int m, int maxRows) {
+                            int width, int maxRows) {
     do {
-        for (int k = 0; k < m; ++k)
+        for (int k = 0; k < width; ++k)
             partitionsVec.push_back(v[z[k]]);
 
         ++count;

@@ -30,7 +30,7 @@ enum class PartitionType {
     DstctSpecial,  // Case where startZ doesn't maximize 0's. E.g. tar = 20 startZ = c(0, 0, 1, 2, 17)
     DstctOneZero,  // Similar to above but can occur when IsMult = FALSE. E.g. tar = 20 startZ = c(0, 1, 2, 3, 14)
     DstctNoZero,   // E.g. tar = 20 startZ = c(1, 2, 3, 4, 10)
-    DistCapped,    // E.g. tar = 20, m = 4, from 1:9 gives startZ = c(1, 2, 8, 9)
+    DstctCapped,   // E.g. tar = 20, m = 4, from 1:9 gives startZ = c(1, 2, 8, 9)
     Multiset,      // Partitions of non-trivial multisets
     CoarseGrained, // This is equivalent to ConstraintType::PartitionEsque
     NotPartition
@@ -55,7 +55,7 @@ struct PartDesign {
     bool allOne = false;
     bool mIsNull = false;
     bool solnExist = false;
-    bool mapZeroFirst = false;
+    bool includeZero = false;
     std::vector<int> startZ;
     std::int64_t shift = 0;
     std::int64_t slope = 0;

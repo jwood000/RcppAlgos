@@ -11,7 +11,7 @@ std::string GetPartitionType(const PartDesign &part) {
         case PartitionType::NotPartition: {
             res = "NotPartition";
             break;
-        } case PartitionType::DistCapped: {
+        } case PartitionType::DstctCapped: {
             res = "DistCapped";
             break;
         } case PartitionType::DstctNoZero : {
@@ -53,7 +53,7 @@ std::string GetPartitionType(const PartDesign &part) {
 SEXP GetDesign(const PartDesign &part, int lenV, bool verbose) {
 
     std::vector<int> vMap(lenV);
-    const int strt = part.mapZeroFirst ? 0 : 1;
+    const int strt = part.includeZero ? 0 : 1;
     std::iota(vMap.begin(), vMap.end(), strt);
     const std::string ptype = GetPartitionType(part);
 
@@ -112,12 +112,16 @@ SEXP GetDesign(const PartDesign &part, int lenV, bool verbose) {
     SEXP sexp_vec = PROTECT(Rf_allocVector(INTSXP, lenV));
     SEXP sexp_index = PROTECT(Rf_allocVector(INTSXP, part.startZ.size()));
 
-    for (int i = 0; i < lenV; ++i)
+    for (int i = 0; i < lenV; ++i) {
         INTEGER(sexp_vec)[i] = vMap[i];
-
-    for (int i = 0; i < part.startZ.size(); ++i)
-        INTEGER(sexp_index)[i] = part.startZ[i] + 1;
-
+    }
+    
+    for (int i = 0; i < part.startZ.size(); ++i) {
+        INTEGER(sexp_index)[i] = part.startZ[i] + 
+            (part.ptype != PartitionType::RepNoZero &&
+             part.ptype != PartitionType::DstctNoZero);
+    }
+    
     const char *names[] = {"num_partitions", "mapped_vector",
                            "mapped_target", "first_index_vector",
                            "eqn_check", "partition_type", ""};

@@ -22,7 +22,7 @@ bool keepGoing(const std::vector<int> &rpsCnt, int lastElem,
 template <typename T>
 void PartsGenMultiset(std::vector<T> &partitionsVec, const std::vector<T> &v,
                       const std::vector<int> &Reps, std::vector<int> &z,
-                      int m, int lastElem, int lastCol, int maxRows) {
+                      int width, int lastElem, int lastCol, int maxRows) {
 
     int b = 0;
     int p = 0;
@@ -33,27 +33,30 @@ void PartsGenMultiset(std::vector<T> &partitionsVec, const std::vector<T> &v,
 
     for (int count = 0; keepGoing(rpsCnt, lastElem, z, e, b);
          NextMultisetGenPart(rpsCnt, z, e, b,  p, lastCol, lastElem)) {
-        for (int k = 0; k < m; ++k)
+        
+        for (int k = 0; k < width; ++k) {
             partitionsVec.push_back(v[z[k]]);
+        }
 
         ++count;
 
-        if (count >= maxRows)
-            break;
+        if (count >= maxRows) {break;}
     }
 
-    const int numResult = partitionsVec.size() / m;
+    const int numResult = partitionsVec.size() / width;
 
-    if (numResult < maxRows)
-        for (int k = 0; k < m; ++k)
+    if (numResult < maxRows) {
+        for (int k = 0; k < width; ++k) {
             partitionsVec.push_back(v[z[k]]);
+        }
+    }
 }
 
 template <typename T>
 void PartsGenPermMultiset(std::vector<T> &partitionsVec,
                           const std::vector<T> &v,
                           const std::vector<int> &Reps, std::vector<int> &z,
-                          int m, int lastElem, int lastCol, int maxRows) {
+                          int width, int lastElem, int lastCol, int maxRows) {
 
     int b = 0;
     int p = 0;
@@ -64,29 +67,15 @@ void PartsGenPermMultiset(std::vector<T> &partitionsVec,
 
     for (int count = 0; keepGoing(rpsCnt, lastElem, z, e, b);
          NextMultisetGenPart(rpsCnt, z, e, b,  p, lastCol, lastElem)) {
-
-        do {
-            for (int k = 0; k < m; ++k)
-                partitionsVec.push_back(v[z[k]]);
-
-            ++count;
-        } while (std::next_permutation(z.begin(), z.end()) &&
-                 count < maxRows);
-
-        if (count >= maxRows)
-            break;
+        
+        PopulateVecPerm(v, partitionsVec, z, count, width, maxRows);
+        if (count >= maxRows) {break;}
     }
 
-    int numResult = partitionsVec.size() / m;
+    int count = partitionsVec.size() / width;
 
-    if (numResult < maxRows) {
-        do {
-            for (int k = 0; k < m; ++k)
-                partitionsVec.push_back(v[z[k]]);
-
-            ++numResult;
-        } while (std::next_permutation(z.begin(), z.end()) &&
-                 numResult < maxRows);
+    if (count < maxRows) {
+        PopulateVecPerm(v, partitionsVec, z, count, width, maxRows);
     }
 }
 
