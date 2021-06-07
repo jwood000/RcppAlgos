@@ -5,40 +5,56 @@
 #include "RMatrix.h"
 
 template <typename T>
-void PartsManager(T* mat, const std::vector<T> &v,
-                  const std::vector<int> &freqs, std::vector<int> &z,
-                  const PartDesign &part, int n, int m, int nRows) {
+void PartsGenManager(T* mat, const std::vector<T> &v,
+                     std::vector<T> &partVec,
+                     const std::vector<int> &Reps, std::vector<int> &z,
+                     int width, int lastCol, int lastElem, int boundary,
+                     int edge, int strt, int nRows, bool IsComb,
+                     bool IsRep, bool IsMult) {
     
-    int lastCol = part.width - 1;
-    int boundary = lastCol;
-    int edge = boundary - 1;
-
-    switch (part.ptype) {
-        case PartitionType::RepStdAll: {
-            return PartsRep(mat, z, part.width, boundary, edge, lastCol, 0, nRows);
-        } case PartitionType::RepNoZero: {
-            return PartsRep(mat, z, part.width, boundary, edge, lastCol, 0, nRows);
-        } case PartitionType::RepShort: {
-            return PartsRep(mat, z, part.width, boundary, edge, lastCol, 0, nRows);
-        } case PartitionType::RepCapped: {
-            // return CountPartRepLenCap(part.mapTar, part.width, lenV);
-        } case PartitionType::DstctStdAll: {
-            // return CountPartDistinct(part.mapTar);
-        } case PartitionType::DstctShort: {
-            // return GetSpecialCount(part.startZ, part.mapTar, part.width);
-        } case PartitionType::DstctSpecial: {
-            // return GetSpecialCount(part.startZ, part.mapTar, part.width);
-        } case PartitionType::DstctOneZero: {
-            // return CountPartDistinctLen(part.mapTar, part.width);
-        } case PartitionType::DstctNoZero: {
-            // return CountPartDistinctLen(part.mapTar, part.width);
-        } case PartitionType::DistCapped: {
-            // return CountPartDistinctLenCap(part.mapTar, part.width, lenV);
-        } case PartitionType::Multiset: {
-            // return CountPartMultiset(Reps, part.startZ);
-        } default: {
-            // Do nothing
+    if (IsComb) {
+        if (IsMult) {
+            PartsGenMultiset(partVec, v, Reps, z, width,
+                             lastElem, lastCol, nRows);
+        } else if (IsRep) {
+            PartsGenRep(mat, v, z, width,
+                        lastElem, lastCol, strt, nRows);
+        } else {
+            PartsGenDistinct(mat, v, z, width,
+                             lastElem, lastCol, strt, nRows);
         }
+    } else {
+        // if (part.ptype <= PartitionType::RepShort) {
+        //     PartsRep(mat, z, part.width, boundary,
+        //              edge, lastCol, strt, nRows);
+        // } else if (part.ptype == PartitionType::RepCapped) {
+        //     PartsGenRep(mat, v, z, part.width,
+        //                 lastElem, lastCol, strt, nRows);
+        // } else if (part.ptype <= PartitionType::DstctNoZero) {
+        //     PartsDistinct(mat, z, part.width, boundary,
+        //                   lastCol, edge, strt, nRows);
+        // } else if (part.ptype == PartitionType::DistCapped) {
+        //     PartsGenDistinct(mat, v, z, part.width,
+        //                      lastElem, lastCol, strt, nRows);
+        // } else {
+        //     PartsGenMultiset(partVec, v, Reps, z, part.width,
+        //                      lastElem, lastCol, nRows);
+        // }
+    }
+}
+
+void PartsStdManager(int* mat, std::vector<int> &z, int width,
+                     int lastCol, int boundary, int edge,
+                     int strt, int nRows, bool IsComb, bool IsRep) {
+    
+    if (IsRep && IsComb) {
+        PartsRep(mat, z, width, boundary, edge, lastCol, strt, nRows);
+    } else if (IsRep) {
+        PartsPermRep(mat, z, width, boundary, edge, lastCol, nRows);
+    } else if (IsComb) {
+        PartsDistinct(mat, z, width, boundary, lastCol, edge, strt, nRows);
+    } else {
+        PartsPermDistinct(mat, z, width, boundary, lastCol, edge, nRows);
     }
 }
 
@@ -56,14 +72,21 @@ void PartsManager(T* mat, const std::vector<T> &v,
 //     }
 // }
 // 
-// template void ComboManager(int*, const std::vector<int>&,
-//                            std::vector<int>&, int, int, int,
-//                            const std::vector<int>&, bool, bool);
-// 
-// template void ComboManager(double*, const std::vector<double>&,
-//                            std::vector<int>&, int, int, int,
-//                            const std::vector<int>&, bool, bool);
-// 
+
+// (T* mat, const std::vector<T> &v, std::vector<T> &partVec,
+//  const std::vector<int> &Reps, std::vector<int> &z,
+//  const PartDesign &part, int lastCol, int lastElem,
+//  int boundary, int edge, int strt, int nRows, bool IsComb)
+template void PartsGenManager(int*, const std::vector<int>&,
+                              std::vector<int>&, const std::vector<int>&,
+                              std::vector<int>&, int, int, int, int, int,
+                              int, int, bool, bool, bool);
+
+template void PartsGenManager(double*, const std::vector<double>&,
+                              std::vector<double>&, const std::vector<int>&,
+                              std::vector<int>&, int, int, int, int, int,
+                              int, int, bool, bool, bool);
+
 // template void ComboManager(Rbyte*, const std::vector<Rbyte>&,
 //                            std::vector<int>&, int, int, int,
 //                            const std::vector<int>&, bool, bool);
