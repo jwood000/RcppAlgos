@@ -1,4 +1,5 @@
 #include "Partitions/PartitionsCountSection.h"
+#include "Combinations/ComboCount.h"
 #include <vector>
 #include <cmath>
 
@@ -6,21 +7,21 @@ int width;
 int blockSize;
 static std::vector<double> memoize;
 
-double pStdCap(int n, int m, int myMax) {
+double pStdCap(int n, int m, int cap) {
 
-    if (myMax * m < n || n < m) return 0;
-    if (myMax * m == n || n <= m + 1) return 1;
+    if (cap * m < n || n < m) return 0;
+    if (cap * m == n || n <= m + 1) return 1;
     if (m < 2) return m;
 
-    const int block = myMax * blockSize + (n - m) * width + m - 2;
+    const int block = cap * blockSize + (n - m) * width + m - 2;
     if (memoize[block]) return memoize[block];
 
     int niter = n / m;
 
     if (m == 2) {
-        if (myMax * 2 >= n) {
-            myMax = std::min(myMax, n - 1);
-            return niter - (n - 1 - myMax);
+        if (cap * 2 >= n) {
+            cap = std::min(cap, n - 1);
+            return niter - (n - 1 - cap);
         } else {
             return 0;
         }
@@ -28,24 +29,25 @@ double pStdCap(int n, int m, int myMax) {
 
     double count = 0;
 
-    for (; niter--; n -= m, --myMax) {
-        count += (memoize[myMax * blockSize + (n - m) * width + m - 3] = pStdCap(n - 1, m - 1, myMax));
+    for (; niter--; n -= m, --cap) {
+        count += (memoize[cap * blockSize + (n - m) * width + m - 3] =
+                  pStdCap(n - 1, m - 1, cap));
     }
 
     return count;
 }
 
-double CountPartRepLenCap(int n, int m, int myMax) {
+double CountPartRepLenCap(int n, int m, int cap) {
 
-    if (myMax > n) myMax = n;
-    if (myMax * m < n || n < m) return 0;
-    if (myMax * m == n || n <= m + 1) return 1;
+    if (cap > n) cap = n;
+    if (cap * m < n || n < m) return 0;
+    if (cap * m == n || n <= m + 1) return 1;
     if (m < 2) return m;
 
     if (m == 2) {
-        if (myMax * 2 >= n) {
-            myMax = std::min(myMax, n - 1);
-            return n / m - (n - 1 - myMax);
+        if (cap * 2 >= n) {
+            cap = std::min(cap, n - 1);
+            return n / m - (n - 1 - cap);
         } else {
             return 0;
         }
@@ -53,8 +55,8 @@ double CountPartRepLenCap(int n, int m, int myMax) {
 
     width = m;
     blockSize = m * (n - m + 1);
-    memoize = std::vector<double>((myMax + 1) * blockSize, 0.0);
-    return pStdCap(n, m, myMax);
+    memoize = std::vector<double>((cap + 1) * blockSize, 0.0);
+    return pStdCap(n, m, cap);
 }
 
 // This algorithm can be derived as follows:
@@ -154,4 +156,9 @@ double CountPartRep(int n) {
     }
 
     return qq.back();
+}
+
+double CountPartPermRep(int target, int m, bool includeZero) {
+    return (includeZero) ? nChooseK(target + m - 1, m - 1) :
+                           nChooseK(target - 1, m - 1);
 }

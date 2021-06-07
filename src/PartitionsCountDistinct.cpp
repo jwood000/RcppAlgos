@@ -1,4 +1,6 @@
 #include "Partitions/PartitionsCountSection.h"
+#include "Permutations/PermuteCount.h"
+#include <numeric>
 #include <vector>
 #include <cmath>
 
@@ -6,12 +8,12 @@ int width_dist;
 int bSize_dist;
 static std::vector<double> mem_dist;
 
-double pDistCap(int n, int m, int myMax) {
+double pDistCap(int n, int m, int cap) {
 
-    if (m > n || myMax < m) return 0;
+    if (m > n || cap < m) return 0;
 
     if (m == n) {
-        if (n == 1 && myMax >= 1) {
+        if (n == 1 && cap >= 1) {
             return 1;
         } else {
             return 0;
@@ -19,14 +21,14 @@ double pDistCap(int n, int m, int myMax) {
     }
 
     if (m == 1) {
-        if (myMax >= n) {
+        if (cap >= n) {
             return 1;
         } else {
             return 0;
         }
     }
 
-    const int block = myMax * bSize_dist + (n - m) * width_dist + m - 2;
+    const int block = cap * bSize_dist + (n - m) * width_dist + m - 2;
 
     if (mem_dist[block])
         return mem_dist[block];
@@ -36,23 +38,24 @@ double pDistCap(int n, int m, int myMax) {
     if (test > n) return 0;
     if (test == n) return 1;
 
-    const int low = myMax - m;
-    test = (myMax * (myMax + 1) - low * (low + 1)) / 2;
+    const int low = cap - m;
+    test = (cap * (cap + 1) - low * (low + 1)) / 2;
 
     if (test < n) return 0;
     if (test == n) return 1;
 
-    double count = (mem_dist[block] = pDistCap(n - m, m - 1, myMax - 1) + pDistCap(n - m, m, myMax - 1));
+    double count = (mem_dist[block] = pDistCap(n - m, m - 1, cap - 1) +
+                                      pDistCap(n - m, m, cap - 1));
     return count;
 }
 
-double CountPartDistinctLenCap(int n, int m, int myMax) {
+double CountPartDistinctLenCap(int n, int m, int cap) {
 
-    if (myMax > n) myMax = n;
-    if (m > n || myMax < m) return 0;
+    if (cap > n) cap = n;
+    if (m > n || cap < m) return 0;
 
     if (m == n) {
-        if (n == 1 && myMax >= 1) {
+        if (n == 1 && cap >= 1) {
             return 1;
         } else {
             return 0;
@@ -60,7 +63,7 @@ double CountPartDistinctLenCap(int n, int m, int myMax) {
     }
 
     if (m == 1) {
-        if (myMax >= n) {
+        if (cap >= n) {
             return 1;
         } else {
             return 0;
@@ -79,7 +82,7 @@ double CountPartDistinctLenCap(int n, int m, int myMax) {
     //
     // (max * m) - ((m - 1) * m) / 2
 
-    const int limit = (myMax * m) - ((m - 1) * m) / 2;
+    const int limit = (cap * m) - ((m - 1) * m) / 2;
 
     if (limit <= n) {
         if (limit == n) {
@@ -91,8 +94,8 @@ double CountPartDistinctLenCap(int n, int m, int myMax) {
 
     width_dist = m;
     bSize_dist = m * (n - m + 1);
-    mem_dist = std::vector<double>((myMax + 1) * bSize_dist, 0.0);
-    return pDistCap(n, m, myMax);
+    mem_dist = std::vector<double>((cap + 1) * bSize_dist, 0.0);
+    return pDistCap(n, m, cap);
 }
 
 int GetMaxWidth(double target) {
@@ -187,4 +190,52 @@ double CountPartDistinct(int n) {
     }
 
     return qq.back();
+}
+
+double CountPartPermDistinct(const std::vector<int> &z,
+                             int tar, int width, bool includeZero) {
+    
+    double res = 0;
+    
+    if (includeZero) {
+        const int startLen = std::count_if(z.cbegin(), z.cend(), 
+                                           [](int i){return i > 0;});
+        
+        std::vector<int> count(width);
+        std::iota(count.begin(), count.begin() + startLen, 1);
+        
+        for (int i = startLen; i <= width; ++i) {
+            count[i - 1] = i;
+            res += (CountPartDistinctLen(tar, i) * NumPermsWithRep(count));
+        }
+    } else {
+        res = CountPartDistinctLen(tar, width) * NumPermsNoRep(width, width);
+    }
+    
+    return res;
+}
+
+double CountPartPermDistinctCap(const std::vector<int> &z, int cap,
+                                int tar, int width, bool includeZero) {
+    
+    double res = 0;
+    
+    if (includeZero) {
+        const int startLen = std::count_if(z.cbegin(), z.cend(), 
+                                           [](int i){return i > 0;});
+        
+        std::vector<int> count(width);
+        std::iota(count.begin(), count.begin() + startLen, 1);
+        
+        for (int i = startLen; i <= width; ++i) {
+            count[i - 1] = i;
+            res += (CountPartDistinctLenCap(tar, i, cap) *
+                    NumPermsWithRep(count));
+        }
+    } else {
+        res = CountPartDistinctLenCap(tar, width, cap) *
+              NumPermsNoRep(width, width);
+    }
+    
+    return res;
 }

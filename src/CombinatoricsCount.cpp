@@ -108,11 +108,12 @@ SEXP PartitionsCount(SEXP Rtarget, SEXP Rv, SEXP Rm,
     part.isMult = IsMult;
     part.mIsNull = Rf_isNull(Rm);
 
-    ConstraintSetup(vNum, myReps, targetVals, targetIntVals,
-                    funDbl, part, ctype, n, m, compFunVec,
-                    mainFun, myType, Rtarget, RcompFun, Rtolerance,
-                    Rlow, IsConstrained, true);
-
+    if (IsConstrained) {
+        ConstraintSetup(vNum, myReps, targetVals, targetIntVals, funDbl,
+                        part, ctype, n, m, compFunVec, mainFun, myType,
+                        Rtarget, RcompFun, Rtolerance, Rlow, true, true);
+    }
+    
     if (part.ptype != PartitionType::NotPartition) {
         if (bDesign) {
             bool Verbose = CleanConvert::convertLogical(Rshow, "showDetail");
