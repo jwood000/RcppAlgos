@@ -30,6 +30,32 @@ namespace CleanConvert {
         return v;
     }
 
+    SEXP GetCount(bool IsGmp, const mpz_t computedRowsMpz, double computedRows) {
+
+        if (IsGmp) {
+            constexpr std::size_t numb = 8 * intSize;
+            const std::size_t sizeNum = intSize *
+                (2 + (mpz_sizeinbase(computedRowsMpz, 2) + numb - 1) / numb);
+            const std::size_t size = intSize + sizeNum;
+
+            SEXP ans = PROTECT(Rf_allocVector(RAWSXP, size));
+            char* rPos = (char*) RAW(ans);
+            ((int*) rPos)[0] = 1; // first int is vector-size-header
+
+            // current position in rPos[] (starting after vector-size-header)
+            myRaw(&rPos[intSize], computedRowsMpz, sizeNum);
+            Rf_setAttrib(ans, R_ClassSymbol, Rf_mkString("bigz"));
+            UNPROTECT(1);
+            return(ans);
+        } else {
+            if (computedRows > std::numeric_limits<int>::max()) {
+                return Rf_ScalarReal(computedRows);
+            } else {
+                return Rf_ScalarInteger(static_cast<int>(computedRows));
+            }
+        }
+    }
+
     bool convertLogical(SEXP boolInput, const std::string &nameOfBool) {
         bool result = false;
         std::string msg;

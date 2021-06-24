@@ -7,6 +7,7 @@
 
 #include <vector>
 #include <string>
+#include <gmp.h>
 
 constexpr double Significand53 = 9007199254740991.0;
 
@@ -25,6 +26,9 @@ namespace CleanConvert {
 
     template <typename T>
     std::vector<T> GetNumVec(SEXP Rv);
+
+    SEXP GetCount(bool IsGmp, const mpz_t computedRowsMpz,
+                  double computedRows);
 
     bool convertLogical(SEXP boolInput, const std::string &nameOfBool);
 
