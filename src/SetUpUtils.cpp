@@ -112,7 +112,10 @@ void SetFinalValues(VecType &myType, std::vector<int> &Reps,
         for (int i = (vNum.size() - 1); i >= 0; --i) {
             if (CleanConvert::CheckNA(vNum[i], myType)) {
                 vNum.erase(vNum.begin() + i);
-                if (IsMult) Reps.erase(Reps.begin() + i);
+                
+                if (IsMult) {
+                    Reps.erase(Reps.begin() + i);
+                }
             }
         }
 
@@ -136,18 +139,6 @@ void SetFinalValues(VecType &myType, std::vector<int> &Reps,
         for (int i = 0; i < static_cast<int>(Reps.size()); ++i) {
             for (int j = 0; j < Reps[i]; ++j) {
                 freqs.push_back(i);
-            }
-        }
-    } else if (myType == VecType::Integer) {
-        VecType OldType = myType;
-
-        for (int i = 0; i < n; ++i) {
-            if (CleanConvert::CheckNA(vNum[i], OldType)) {
-                myType = VecType::Numeric;
-
-                if (OldType == VecType::Integer) {
-                    vNum[i] = NA_REAL;
-                }
             }
         }
     }
