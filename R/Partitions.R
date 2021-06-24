@@ -30,6 +30,12 @@ partitionsDesign <- function(v, m = NULL, repetition = FALSE,
           TRUE, showDesign, PACKAGE = "RcppAlgos");
 }
 
-partLen <- function(tar, m, v, rep = FALSE, fr = NULL) {
-    RcppAlgos241::comboGeneral(v, m, rep, fr, constraintFun = "sum", comparisonFun = "==", limitConstraints = tar)
+partLen <- function(tar, m, v, rep = FALSE, fr = NULL, comb = TRUE) {
+    if (comb) {
+        RcppAlgos243::comboGeneral(v, m, rep, fr, constraintFun = "sum",
+                                   comparisonFun = "==", limitConstraints = tar)
+    } else {
+        RcppAlgos243::permuteGeneral(v, m, rep, fr, constraintFun = "sum",
+                                     comparisonFun = "==", limitConstraints = tar)
+    }
 }
