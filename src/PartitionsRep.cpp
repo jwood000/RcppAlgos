@@ -15,57 +15,59 @@ void PartsGenRep(T* mat, const std::vector<T> &v, std::vector<int> &z,
         for (int k = 0; k < width; ++k) {
             mat[count + nRows * k] = v[z[k]];
         }
-        
+
         NextRepGenPart(z, boundary, edge, pivot, lastCol, lastElem);
     }
 }
 
 template <typename T>
 void PartsGenPermRep(T* mat, const std::vector<T> &v, std::vector<int> &z,
-                     int width, int lastElem, int lastCol, int maxRows) {
-    
+                     int width, int lastElem, int lastCol, int nRows) {
+
     int edge = 0;
     int pivot = 0;
-    int count = 0;
     int boundary = 0;
+
     PrepareRepPart(z, boundary, pivot, edge, lastElem, lastCol);
-    
+
     for (int count = 0; ;
          NextRepPart(z, boundary, edge, lastCol)) {
-        
+
         do {
             for (int k = 0; k < width; ++k) {
-                mat[count + maxRows * k] = v[z[k]];
+                mat[count + nRows * k] = v[z[k]];
             }
-            
+
             ++count;
-        } while (std::next_permutation(z.begin(), z.end()) &&
-                 count < maxRows);
-        
-        if (count >= maxRows) {break;}
+        } while (std::next_permutation(z.begin(), z.end()) && count < nRows);
+
+        if (count >= nRows) {break;}
     }
 }
 
 template <typename T>
-void PartsGenPermRep(std::vector<T> &partitionsVec,
-                     const std::vector<T> &v, std::vector<int> &z,
-                     int width, int lastElem, int lastCol, int maxRows) {
+void PartsGenPermRep(std::vector<T> &partsVec, const std::vector<T> &v,
+                     std::vector<int> &z, int width, int nRows) {
 
     int edge = 0;
     int pivot = 0;
     int count = 0;
     int boundary = 0;
+
+    const int lastCol = width - 1;
+    const int lastElem = v.size() - 1;
+
     PrepareRepPart(z, boundary, pivot, edge, lastElem, lastCol);
 
     while ((edge >= 0) && (z[boundary] - z[edge] >= 2)) {
-        PopulateVecPerm(v, partitionsVec, z, count, width, maxRows);
+        PopulateVecPerm(v, partsVec, z, count, width, nRows);
 
-        if (count >= maxRows) {break;}
+        if (count >= nRows) {break;}
         NextRepGenPart(z, boundary, edge, pivot, lastCol, lastElem);
     }
 
-    if (count < maxRows) {
-        PopulateVecPerm(v, partitionsVec, z, count, width, maxRows);
+    if (count < nRows) {
+        PopulateVecPerm(v, partsVec, z, count, width, nRows);
     }
 }
 
@@ -74,7 +76,7 @@ void PartsRep(int* mat, std::vector<int> &z, int width, int boundary,
 
     for (int count = strt; count < nRows; ++count,
          NextRepPart(z, boundary, edge, lastCol)) {
-        
+
         for (int k = 0; k < width; ++k) {
             mat[count + nRows * k] = z[k];
         }
@@ -91,7 +93,7 @@ void PartsPermRep(int* mat, std::vector<int> &z, int width,
             for (int k = 0; k < width; ++k) {
                 mat[count + nRows * k] = z[k];
             }
-            
+
             ++count;
         } while (std::next_permutation(z.begin(), z.end()) && count < nRows);
 
@@ -112,7 +114,7 @@ template void PartsGenPermRep(double*, const std::vector<double>&,
                               std::vector<int>&, int, int, int, int);
 
 template void PartsGenPermRep(std::vector<int>&, const std::vector<int>&,
-                              std::vector<int>&, int, int, int, int);
+                              std::vector<int>&, int, int);
 
 template void PartsGenPermRep(std::vector<double>&, const std::vector<double>&,
-                              std::vector<int>&, int, int, int, int);
+                              std::vector<int>&, int, int);

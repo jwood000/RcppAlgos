@@ -9,12 +9,11 @@ void PartsGenRep(T* mat, const std::vector<T> &v, std::vector<int> &z,
 
 template <typename T>
 void PartsGenPermRep(T*, const std::vector<T> &v, std::vector<int> &z,
-                     int width, int lastElem, int lastCol, int maxRows);
+                     int width, int lastElem, int lastCol, int nRows);
 
 template <typename T>
-void PartsGenPermRep(std::vector<T> &partitionsVec,
-                     const std::vector<T> &v, std::vector<int> &z,
-                     int width, int lastElem, int lastCol, int maxRows);
+void PartsGenPermRep(std::vector<T> &partsVec, const std::vector<T> &v,
+                     std::vector<int> &z, int width, int nRows);
 
 void PartsRep(int* mat, std::vector<int> &z, int width, int boundary,
               int edge, int lastCol, int strt, int nRows);
