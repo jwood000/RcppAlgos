@@ -1,5 +1,7 @@
 #include "Partitions/PartitionsCountSection.h"
 #include "Combinations/ComboCount.h"
+#include "Cpp14MakeUnique.h"
+#include "CleanConvert.h"
 #include <vector>
 #include <cmath>
 
@@ -59,7 +61,6 @@ double CountPartRepLenCap(int n, int m, int cap) {
     return pStdCap(n, m, cap);
 }
 
-// This algorithm can be derived as follows:
 double CountPartRepLen(int n, int m) {
 
     if (m == 0)
@@ -133,19 +134,98 @@ double CountPartRepLen(int n, int m) {
     }
 }
 
+void CountPartRepLen(mpz_t res, int n, int m) {
+
+    if (m == 3) {
+        mpz_t mpzN;
+        mpz_init(mpzN);
+        mpz_set_si(mpzN, n);
+        SumSection(mpzN, res);
+        mpz_clear(mpzN);
+    } else {
+        const int limit = std::min(n - m, m);
+        n = (n < 2 * m) ? 2 * limit : n;
+
+        auto p1 = FromCpp14::make_unique<mpz_t[]>(n + 1);
+        auto p2 = FromCpp14::make_unique<mpz_t[]>(n + 1);
+
+        for (int i = 0; i <= n; ++i) {
+            mpz_init(p1[i]);
+            mpz_init(p2[i]);
+        }
+
+        if (n <= typeSwitchBnd) {
+            for (int i = 3; i <= n; ++i) {
+                double temp = SumSection(i);
+                mpz_set_d(p1[i], temp);
+            }
+        } else {
+            for (int i = 3; i < typeSwitchBnd; ++i) {
+                double temp = SumSection(i);
+                mpz_set_d(p1[i], temp);
+            }
+
+            mpz_t tempN;
+            mpz_init(tempN);
+
+            for (int i = typeSwitchBnd; i <= n; ++i) {
+                mpz_set_si(tempN, i);
+                SumSection(tempN, p1[i]);
+            }
+        }
+
+        for (int i = 4; i <= limit; ++i) {
+            const int m2 = i * 2;
+
+            if (i % 2) {
+                mpz_set_ui(p1[i], 1u);
+
+                for (int j = i + 1; j < m2; ++j) {
+                    mpz_set(p1[j], p2[j - 1]);
+                }
+
+                for (int j = m2; j <= n; ++j) {
+                    mpz_add(p1[j], p2[j - 1], p1[j - i]);
+                }
+            } else {
+                mpz_set_ui(p2[i], 1u);
+
+                for (int j = i + 1; j < m2; ++j) {
+                    mpz_set(p2[j], p1[j - 1]);
+                }
+
+                for (int j = m2; j <= n; ++j) {
+                    mpz_add(p2[j], p1[j - 1], p2[j - i]);
+                }
+            }
+        }
+
+        if (limit % 2) {
+            mpz_set(res, p1[n]);
+        } else {
+            mpz_set(res, p2[n]);
+        }
+
+        for (int i = 0; i <= n; ++i) {
+            mpz_clear(p1[i]);
+            mpz_clear(p2[i]);
+        }
+    }
+}
+
 // Similar to CountPartDistinct
 double CountPartRep(int n) {
 
-    if (n < 2)
+    if (n < 2) {
         return 1.0;
+    }
 
-    const int n1 = n + 1;
-    std::vector<double> qq(n1, 1);
-    qq[0] = qq[1] = 1;
+    std::vector<double> qq(n + 1);
+
+    qq[0] = 1;
+    qq[1] = 1;
 
     for(int i = 2; i <= n; ++i) {
-        qq[i] = 0;
-
         for (int s = 1, f = 1, r = 1; i >= r; f += 3, r += f, s *= -1) {
             qq[i] += s * qq[i - r];
         }
@@ -156,6 +236,44 @@ double CountPartRep(int n) {
     }
 
     return qq.back();
+}
+
+void CountPartRep(mpz_t res, int n) {
+
+    auto qq = FromCpp14::make_unique<mpz_t[]>(n + 1);
+
+    for (int i = 0; i <= n; ++i) {
+        mpz_init(qq[i]);
+    }
+
+    mpz_set_ui(qq[0], 1u);
+    mpz_set_ui(qq[1], 1u);
+
+    for(int i = 2; i <= n; ++i) {
+        mpz_set_ui(qq[i], 0u);
+
+        for (int s = 1, f = 1, r = 1; i >= r; f += 3, r += f, s *= -1) {
+            if (s > 0) {
+                mpz_add(qq[i], qq[i], qq[i - r]);
+            } else {
+                mpz_sub(qq[i], qq[i], qq[i - r]);
+            }
+        }
+
+        for (int s = 1, f = 2, r = 2; i >= r; f += 3, r += f, s *= -1) {
+            if (s > 0) {
+                mpz_add(qq[i], qq[i], qq[i - r]);
+            } else {
+                mpz_sub(qq[i], qq[i], qq[i - r]);
+            }
+        }
+    }
+
+    mpz_set(res, qq[n]);
+
+    for (int i = 0; i <= n; ++i) {
+        mpz_clear(qq[i]);
+    }
 }
 
 double CountPartPermRep(int target, int m, bool includeZero) {

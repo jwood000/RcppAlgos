@@ -2,6 +2,7 @@
 #include "Partitions/PartitionsCountDistinct.h"
 #include "Partitions/PartitionsCountRep.h"
 #include "Partitions/PartitionsTypes.h"
+#include "CleanConvert.h"
 #include <cmath>
 
 double GetSpecialCount(const std::vector<int> &z, int target, int m) {
@@ -10,59 +11,156 @@ double GetSpecialCount(const std::vector<int> &z, int target, int m) {
     const int startLen = std::count_if(z.cbegin(), z.cend(),
                                        [](int i){return i > 0;});
 
-    for (int i = startLen; i <= m; ++i)
+    for (int i = startLen; i <= m; ++i) {
         count += CountPartDistinctLen(target, i);
+    }
 
     return count;
 }
 
-double PartitionsCount(const std::vector<int> &Reps, const PartDesign &part,
-                       int lenV, bool bCalcMultiset, bool IsComb) {
+void GetSpecialCount(mpz_t res, const std::vector<int> &z,
+                     int target, int m) {
+
+    const int startLen = std::count_if(z.cbegin(), z.cend(),
+                                       [](int i){return i > 0;});
+    mpz_t temp;
+    mpz_init(temp);
+
+    for (int i = startLen; i <= m; ++i) {
+        CountPartDistinctLen(temp, target, i);
+        mpz_add(res, res, temp);
+    }
+}
+
+void PartitionsCount(const std::vector<int> &Reps, PartDesign &part,
+                     int lenV, bool bCalcMultiset, bool IsComb) {
+
+    mpz_init(part.bigCount);
 
     if (IsComb) {
         switch (part.ptype) {
             case PartitionType::RepStdAll: {
-                return CountPartRep(part.mapTar);
+                part.count = CountPartRep(part.mapTar);
+
+                if (part.count > Significand53) {
+                    part.isGmp = true;
+                    CountPartRep(part.bigCount, part.mapTar);
+                }
+
+                break;
             } case PartitionType::RepNoZero: {
-                return CountPartRepLen(part.mapTar, part.width);
+                part.count = CountPartRepLen(part.mapTar, part.width);
+
+                if (part.count > Significand53) {
+                    part.isGmp = true;
+                    CountPartRepLen(part.bigCount, part.mapTar, part.width);
+                }
+
+                break;
             } case PartitionType::RepShort: {
-                return CountPartRepLen(part.mapTar, part.width);
+                part.count = CountPartRepLen(part.mapTar, part.width);
+
+                if (part.count > Significand53) {
+                    part.isGmp = true;
+                    CountPartRepLen(part.bigCount, part.mapTar, part.width);
+                }
+
+                break;
             } case PartitionType::RepCapped: {
-                return CountPartRepLenCap(part.mapTar, part.width, lenV);
+                part.count = CountPartRepLenCap(part.mapTar,
+                                                part.width, lenV);
+
+                if (part.count > Significand53) {
+                    part.isGmp = true;
+                }
+
+                break;
             } case PartitionType::DstctStdAll: {
-                return CountPartDistinct(part.mapTar);
+                part.count = CountPartDistinct(part.mapTar);
+
+                if (part.count > Significand53) {
+                    part.isGmp = true;
+                    CountPartDistinct(part.bigCount, part.mapTar);
+                }
+
+                break;
             } case PartitionType::DstctShort: {
-                return GetSpecialCount(part.startZ, part.mapTar, part.width);
+                part.count = GetSpecialCount(part.startZ,
+                                             part.mapTar, part.width);
+
+                if (part.count > Significand53) {
+                    part.isGmp = true;
+                    GetSpecialCount(part.bigCount, part.startZ,
+                                    part.mapTar, part.width);
+                }
+
+                break;
             } case PartitionType::DstctSpecial: {
-                return GetSpecialCount(part.startZ, part.mapTar, part.width);
+                part.count = GetSpecialCount(part.startZ,
+                                             part.mapTar, part.width);
+
+                if (part.count > Significand53) {
+                    part.isGmp = true;
+                    GetSpecialCount(part.bigCount, part.startZ,
+                                    part.mapTar, part.width);
+                }
+
+                break;
             } case PartitionType::DstctOneZero: {
-                return CountPartDistinctLen(part.mapTar, part.width);
+                part.count = CountPartDistinctLen(part.mapTar, part.width);
+
+                if (part.count > Significand53) {
+                    part.isGmp = true;
+                    CountPartDistinctLen(part.bigCount,
+                                         part.mapTar, part.width);
+                }
+
+                break;
             } case PartitionType::DstctNoZero: {
-                return CountPartDistinctLen(part.mapTar, part.width);
+                part.count = CountPartDistinctLen(part.mapTar, part.width);
+
+                if (part.count > Significand53) {
+                    part.isGmp = true;
+                    CountPartDistinctLen(part.bigCount,
+                                         part.mapTar, part.width);
+                }
+
+                break;
             } case PartitionType::DstctCapped: {
-                return CountPartDistinctLenCap(part.mapTar,
+                part.count = CountPartDistinctLenCap(part.mapTar,
                                                part.width, lenV);
+
+                if (part.count > Significand53) {
+                    part.isGmp = true;
+                }
+
+                break;
             } case PartitionType::Multiset: {
                 if (bCalcMultiset && part.solnExist) {
-                    return CountPartMultiset(Reps, part.startZ);
+                    part.count = CountPartMultiset(Reps, part.startZ);
                 }
+
+                break;
             } default: {
-                return 0.0;
+                part.count = 0.0;
+                break;
             }
         }
     } else {
+        const auto it = std::find(DistPTypeArr.cbegin(),
+                                  DistPTypeArr.cend(), part.ptype);
         if (part.isRep) {
             if (part.ptype != PartitionType::RepCapped) {
-                return CountPartPermRep(part.mapTar, part.width,
+                part.count = CountPartPermRep(part.mapTar, part.width,
                                         part.includeZero);
             } else {
-                return 0.0;
+                part.count = 0.0;
             }
-        } else if (!part.isMult) {
-            return CountPartPermDistinct(part.startZ, part.mapTar,
+        } else if (it != DistPTypeArr.cend()) {
+            part.count = CountPartPermDistinct(part.startZ, part.mapTar,
                                          part.width, part.includeZero);
         } else {
-            return 0.0;
+            part.count = 0.0;
         }
     }
 }

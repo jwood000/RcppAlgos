@@ -1,6 +1,7 @@
 #ifndef PARTITION_TYPES_H
 #define PARTITION_TYPES_H
 
+#include <gmp.h>
 #include <array>
 #include <vector>
 #include <cstdint>
@@ -50,6 +51,8 @@ struct PartDesign {
     int width = 0;
     int mapTar = 0; // mapped target value
     double count = 0;
+    mpz_t bigCount;
+    bool isGmp = false;
     bool isRep = false;
     bool isMult = false;
     bool allOne = false;

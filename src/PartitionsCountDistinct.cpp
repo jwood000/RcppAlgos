@@ -1,5 +1,6 @@
 #include "Partitions/PartitionsCountSection.h"
 #include "Permutations/PermuteCount.h"
+#include "Cpp14MakeUnique.h"
 #include <numeric>
 #include <vector>
 #include <cmath>
@@ -167,17 +168,95 @@ double CountPartDistinctLen(int n, int m) {
     }
 }
 
+void CountPartDistinctLen(mpz_t res, int n, int m) {
+
+    if (m == 3) {
+        mpz_t mpzN;
+        mpz_init(mpzN);
+        mpz_set_si(mpzN, n - 3);
+        SumSection(mpzN, res);
+        mpz_clear(mpzN);
+    } else {
+        const int limit = (m == GetMaxWidth(n + 1)) ? m - 1 : m;
+
+        auto p1 = FromCpp14::make_unique<mpz_t[]>(n + 1);
+        auto p2 = FromCpp14::make_unique<mpz_t[]>(n + 1);
+
+        for (int i = 0; i <= n; ++i) {
+            mpz_init(p1[i]);
+            mpz_init(p2[i]);
+        }
+
+        if (n <= typeSwitchBnd) {
+            for (int i = 6; i <= n; ++i) {
+                double temp = SumSection(i - 3);
+                mpz_set_d(p1[i], temp);
+            }
+        } else {
+            for (int i = 6; i < typeSwitchBnd; ++i) {
+                double temp = SumSection(i - 3);
+                mpz_set_d(p1[i], temp);
+            }
+
+            mpz_t tempN;
+            mpz_init(tempN);
+
+            for (int i = typeSwitchBnd; i <= n; ++i) {
+                mpz_set_si(tempN, i - 3);
+                SumSection(tempN, p1[i]);
+            }
+        }
+
+        for (int i = 4; i <= limit; ++i) {
+            const int m1 = ((i + 1) * i) / 2;
+            const int m2 = m1 + i;
+
+            if (i % 2) {
+                for (int j = m1; j < m2; ++j) {
+                    mpz_set(p1[j], p2[j - i]);
+                }
+
+                for (int j = m2; j <= n; ++j) {
+                    mpz_add(p1[j], p2[j - i], p1[j - i]);
+                }
+            } else {
+                for (int j = m1; j < m2; ++j) {
+                    mpz_set(p2[j], p1[j - i]);
+                }
+
+                for (int j = m2; j <= n; ++j) {
+                    mpz_add(p2[j], p2[j - i], p1[j - i]);
+                }
+            }
+        }
+
+        if (m > limit && m % 2) {
+            mpz_set(res, p2[n - m]);
+        } else if (m > limit) {
+            mpz_set(res, p1[n - m]);
+        } else if (m % 2) {
+            mpz_set(res, p1[n]);
+        } else {
+            mpz_set(res, p2[n]);
+        }
+
+        for (int i = 0; i <= n; ++i) {
+            mpz_clear(p1[i]);
+            mpz_clear(p2[i]);
+        }
+    }
+}
+
 // Credit to Robin K. S. Hankin, author of the excellent partitions package.
 // From the partitions.c, here are Hankin's comments for c_numbdiffparts:
 //      "the recursion on p826 of Abramowitz and Stegun"
 double CountPartDistinct(int n) {
 
-    const int n1 = n + 1;
-    std::vector<double> qq(n1, 1);
+    std::vector<double> qq(n + 1);
+    qq[0] = 1;
+    qq[1] = 1;
 
-    for(int i = 2 ; i < n1; ++i) {
-        qq[i] = 0;
-
+    for(int i = 2 ; i <= n; ++i) {
         for (int s = 1, f = 5, r = 2; i >= r; r += f, f += 3, s *= -1) {
             qq[i] += s * qq[i - r];
             if(i == r * 2) {qq[i] -= s;}
@@ -192,18 +271,71 @@ double CountPartDistinct(int n) {
     return qq.back();
 }
 
+void CountPartDistinct(mpz_t res, int n) {
+
+    auto qq = FromCpp14::make_unique<mpz_t[]>(n + 1);
+
+    mpz_init(qq[0]);
+    mpz_init(qq[1]);
+
+    mpz_set_ui(qq[0], 1u);
+    mpz_set_ui(qq[1], 1u);
+
+    for(int i = 2 ; i <= n; ++i) {
+        mpz_init(qq[i]);
+
+        for (int s = 1, f = 5, r = 2; i >= r; r += f, f += 3, s *= -1) {
+            if (s > 0) {
+                mpz_add(qq[i], qq[i], qq[i - r]);
+
+                if (i == r * 2) {
+                    mpz_sub_ui(qq[i], qq[i], 1u);
+                }
+            } else {
+                mpz_sub(qq[i], qq[i], qq[i - r]);
+
+                if (i == r * 2) {
+                    mpz_add_ui(qq[i], qq[i], 1u);
+                }
+            }
+        }
+
+        for (int s = 1, f = 4, r = 1; i >= r; r += f, f += 3, s *= -1) {
+            if (s > 0) {
+                mpz_add(qq[i], qq[i], qq[i - r]);
+
+                if (i == r * 2) {
+                    mpz_sub_ui(qq[i], qq[i], 1u);
+                }
+            } else {
+                mpz_sub(qq[i], qq[i], qq[i - r]);
+
+                if (i == r * 2) {
+                    mpz_add_ui(qq[i], qq[i], 1u);
+                }
+            }
+        }
+    }
+
+    mpz_set(res, qq[n]);
+
+    for (int i = 0; i <= n; ++i) {
+        mpz_clear(qq[i]);
+    }
+}
+
 double CountPartPermDistinct(const std::vector<int> &z,
                              int tar, int width, bool includeZero) {
-    
+
     double res = 0;
-    
+
     if (includeZero) {
-        const int startLen = std::count_if(z.cbegin(), z.cend(), 
+        const int startLen = std::count_if(z.cbegin(), z.cend(),
                                            [](int i){return i > 0;});
-        
+
         std::vector<int> count(width);
         std::iota(count.begin(), count.begin() + startLen, 1);
-        
+
         for (int i = startLen; i <= width; ++i) {
             count[i - 1] = i;
             res += (CountPartDistinctLen(tar, i) * NumPermsWithRep(count));
@@ -211,22 +343,22 @@ double CountPartPermDistinct(const std::vector<int> &z,
     } else {
         res = CountPartDistinctLen(tar, width) * NumPermsNoRep(width, width);
     }
-    
+
     return res;
 }
 
 double CountPartPermDistinctCap(const std::vector<int> &z, int cap,
                                 int tar, int width, bool includeZero) {
-    
+
     double res = 0;
-    
+
     if (includeZero) {
-        const int startLen = std::count_if(z.cbegin(), z.cend(), 
+        const int startLen = std::count_if(z.cbegin(), z.cend(),
                                            [](int i){return i > 0;});
-        
+
         std::vector<int> count(width);
         std::iota(count.begin(), count.begin() + startLen, 1);
-        
+
         for (int i = startLen; i <= width; ++i) {
             count[i - 1] = i;
             res += (CountPartDistinctLenCap(tar, i, cap) *
@@ -236,6 +368,6 @@ double CountPartPermDistinctCap(const std::vector<int> &z, int cap,
         res = CountPartDistinctLenCap(tar, width, cap) *
               NumPermsNoRep(width, width);
     }
-    
+
     return res;
 }
