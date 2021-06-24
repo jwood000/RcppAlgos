@@ -2,7 +2,7 @@
 #define CONSTRAINT_TYPES_H
 
 // SpecialCnstrnt = 1: For this case, we have either lower = true,
-// which means the user is looking for combinations/permutations in a 
+// which means the user is looking for combinations/permutations in a
 // particular range or if we have constraintFun = "prod" and negative values
 // are present. When the latter occurs, it is non-trivial to produce a loose
 // monotonic sequence of results.
@@ -11,7 +11,7 @@
 // The most general algorithm is used in this case.
 
 // PartitionEsque = 3: Can't be reduced to an integer partition but still
-// has similarities to the more general subset sum problem. E.g. 
+// has similarities to the more general subset sum problem. E.g.
 // v = rnorm(20, mean = 10.5), m = 4, rep = TRUE, tar = c(11.005, 11.15),
 //  comparisonFun = c(">", "<"), constraintFun = "mean"
 
