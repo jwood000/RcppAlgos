@@ -40,9 +40,11 @@ double NumPermsWithRep(const std::vector<int> &v) {
     if (numUni > 1) {
         double div = 1.0;
 
-        for (int i = 1; i < numUni; ++i)
-            for (int j = 2; j <= myLens[i]; ++j)
+        for (int i = 1; i < numUni; ++i) {
+            for (int j = 2; j <= myLens[i]; ++j) {
                 div *= j;
+            }
+        }
 
         result /= div;
     }

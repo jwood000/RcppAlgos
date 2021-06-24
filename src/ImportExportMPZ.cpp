@@ -113,7 +113,7 @@ void createMPZArray(SEXP input, mpz_t *myVec, std::size_t vecSize,
     }
 }
 
-int myRaw(char* raw, mpz_t value, std::size_t totals) {
+int myRaw(char* raw, const mpz_t value, std::size_t totals) {
     memset(raw, 0, totals);
 
     int* r = (int*)raw;

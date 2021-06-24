@@ -2,7 +2,6 @@
 #define COMPUTED_COUNT_H
 
 #include "CleanConvert.h"
-#include <gmp.h>
 
 double GetComputedRows(bool IsMult, bool IsComb, bool IsRep,
                        int n, int m, const SEXP &Rm,

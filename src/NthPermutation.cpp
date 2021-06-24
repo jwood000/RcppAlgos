@@ -21,6 +21,7 @@ std::vector<int> nthPerm(int n, int r, double dblIdx,
 
     double index1 = dblIdx;
     std::vector<int> res(r);
+
     double temp = NumPermsNoRep(n, r);
     std::vector<int> indexVec(n);
     std::iota(indexVec.begin(), indexVec.end(), 0);
@@ -41,6 +42,7 @@ std::vector<int> nthPermRep(int n, int r, double dblIdx,
 
     double index1 = dblIdx;
     std::vector<int> res(r);
+
     double temp = std::pow(static_cast<double>(n),
                            static_cast<double>(r));
 

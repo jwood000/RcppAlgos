@@ -4,7 +4,6 @@
 #include "Combinations/NthCombination.h"
 #include "Permutations/NthPermutation.h"
 #include "CleanConvert.h"
-#include <gmp.h>
 
 void SetType(VecType &myType, SEXP Rv);
 void SetFactorClass(SEXP res, SEXP Rv);

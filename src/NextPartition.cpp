@@ -3,8 +3,9 @@
 void NextDistinctPart(std::vector<int> &z, int &boundary,
                       int &edge, int &tarDiff, int lastCol) {
 
-    if (z[boundary] - z[edge] != tarDiff)
+    if (z[boundary] - z[edge] != tarDiff) {
         boundary = edge + 1;
+    }
 
     ++z[edge];
     --z[boundary];
@@ -32,8 +33,9 @@ void NextDistinctPart(std::vector<int> &z, int &boundary,
 void NextRepPart(std::vector<int> &z, int &boundary,
                  int &edge, int lastCol) {
 
-    if (z[boundary] - z[edge] != 2)
+    if (z[boundary] - z[edge] != 2) {
         boundary = edge + 1;
+    }
 
     ++z[edge];
     --z[boundary];
@@ -45,14 +47,16 @@ void NextRepPart(std::vector<int> &z, int &boundary,
 
     const int currMax = z[boundary];
 
-    while (boundary > 1 && z[boundary - 1] == currMax)
+    while (boundary > 1 && z[boundary - 1] == currMax) {
         --boundary;
+    }
 
     edge = boundary - 1;
     const int edgeTest = z[boundary] - 2;
 
-    while (edge && edgeTest < z[edge])
+    while (edge && edgeTest < z[edge]) {
         --edge;
+    }
 }
 
 // BndDecrementPossible, VtxDecrementPossible, EdgeIncrementPossible, GetPivotExtr
@@ -121,11 +125,13 @@ inline int GetPivotExtr(const std::vector<int> &rpsCnt,
 
     int res = lastCol - 1;
 
-    while (res > 0 && z[res] == lastElem)
+    while (res > 0 && z[res] == lastElem) {
         --res;
+    }
 
-    while (res > 0 && !rpsCnt[z[res] + 1])
+    while (res > 0 && !rpsCnt[z[res] + 1]) {
         --res;
+    }
 
     return res;
 }
@@ -147,24 +153,32 @@ inline bool PivotDecrementPossible(const std::vector<int> &rpsCnt,
 // ********** End PartitionsMultiset Helper Functions *****************
 
 void GetLastPart(int* mat, std::vector<int> &z, int m, int nRows) {
-    for (int k = 0; k < m; ++k)
+    for (int k = 0; k < m; ++k) {
         mat[nRows - 1 + nRows * k] = z[k];
+    }
 }
 
-void PrepareMultisetPart(const std::vector<int> &rpsCnt,
+void PrepareMultisetPart(std::vector<int> &rpsCnt,
                          const std::vector<int> &z, int &b,
                          int &p, int &e, int lastCol, int lastElem) {
 
-    while (BndDecrementPossible(rpsCnt, z, b))
+    b = lastCol;
+
+    for (const auto ind: z)
+        --rpsCnt[ind];
+
+    while (BndDecrementPossible(rpsCnt, z, b)) {
         --b;
+    }
 
     p = (z[lastCol] < lastElem) ? lastCol :
         GetPivotExtr(rpsCnt, z, lastCol, lastElem);
 
     e = b - 1;
 
-    while (EdgeIncrementPossible(rpsCnt, z, e, b))
+    while (EdgeIncrementPossible(rpsCnt, z, e, b)) {
         --e;
+    }
 }
 
 void PrepareRepPart(const std::vector<int> &z, int &boundary,
@@ -173,8 +187,9 @@ void PrepareRepPart(const std::vector<int> &z, int &boundary,
     // smallest index such that z[boundary] == currMax
     boundary = lastCol;
 
-    while (boundary > 1 && z[boundary - 1] == z[lastCol])
+    while (boundary > 1 && z[boundary - 1] == z[lastCol]) {
         --boundary;
+    }
 
     // pivot is the greatest index that can be incremented.
     // We know that if z[boundary] < lastElem ==>> pivot = lastCol
@@ -186,8 +201,9 @@ void PrepareRepPart(const std::vector<int> &z, int &boundary,
     edge = boundary - 1;
     int edgeTest = z[boundary] - 2;
 
-    while (edge && edgeTest < z[edge])
+    while (edge && edgeTest < z[edge]) {
         --edge;
+    }
 }
 
 void PrepareDistinctPart(const std::vector<int> &z, int &boundary,
@@ -199,8 +215,9 @@ void PrepareDistinctPart(const std::vector<int> &z, int &boundary,
     // time edge is incremented. See below.
     boundary = lastCol;
 
-    while (boundary > 1 && (z[boundary] - z[boundary - 1]) < 2)
+    while (boundary > 1 && (z[boundary] - z[boundary - 1]) < 2) {
         --boundary;
+    }
 
     // pivot is the greatest index that can be incremented...
     // Either z[pivot + 1] - z[pivot] > 1 or if z[lastCol] < lastElem
@@ -226,8 +243,9 @@ void NextMultisetGenPart(std::vector<int> &rpsCnt,
     // vertex is the smallest index greater than edge that can be decremented
     int v = e + 1;
 
-    while (VtxDecrementPossible(rpsCnt, z, lastCol, v, e))
+    while (VtxDecrementPossible(rpsCnt, z, lastCol, v, e)) {
         ++v;
+    }
 
     ++rpsCnt[z[e]];
     ++z[e];
@@ -238,11 +256,13 @@ void NextMultisetGenPart(std::vector<int> &rpsCnt,
     --rpsCnt[z[v]];
 
     if (v == b) {
-        if (b < lastCol)
+        if (b < lastCol) {
             ++b;
+        }
 
-        while (BndDecrementPossible(rpsCnt, z, b))
+        while (BndDecrementPossible(rpsCnt, z, b)) {
             --b;
+        }
 
         p = (z[lastCol] < lastElem) ? lastCol :
             GetPivotExtr(rpsCnt, z, lastCol, lastElem);
@@ -276,8 +296,9 @@ void NextMultisetGenPart(std::vector<int> &rpsCnt,
             ++v;
         }
 
-        while (PivotDecrementPossible(rpsCnt, z, lastElem, p, v))
+        while (PivotDecrementPossible(rpsCnt, z, lastElem, p, v)) {
             --p;
+        }
     }
 
     b = p;
@@ -298,13 +319,15 @@ void NextMultisetGenPart(std::vector<int> &rpsCnt,
         ++b;
     }
 
-    while (BndDecrementPossible(rpsCnt, z, b))
+    while (BndDecrementPossible(rpsCnt, z, b)) {
         --b;
+    }
 
     e = b - 1;
 
-    while (EdgeIncrementPossible(rpsCnt, z, e, b))
+    while (EdgeIncrementPossible(rpsCnt, z, e, b)) {
         --e;
+    }
 }
 
 void NextRepGenPart(std::vector<int> &z, int &boundary, int &edge,
@@ -316,13 +339,15 @@ void NextRepGenPart(std::vector<int> &z, int &boundary, int &edge,
     --z[vertex];
 
     if (vertex == boundary) {
-        if (boundary < lastCol)
+        if (boundary < lastCol) {
             ++boundary;
+        }
 
         const int currMax = z[boundary];
 
-        while (boundary > 1 && z[boundary - 1] == currMax)
+        while (boundary > 1 && z[boundary - 1] == currMax) {
             --boundary;
+        }
 
         pivot = (z[boundary] < lastElem) ? lastCol : boundary - 1;
 
@@ -369,8 +394,9 @@ void NextRepGenPart(std::vector<int> &z, int &boundary, int &edge,
     edge = boundary - 1;
     int edgeTest = z[boundary] - 2;
 
-    while (edge && edgeTest < z[edge])
+    while (edge && edgeTest < z[edge]) {
         --edge;
+    }
 }
 
 void NextDistinctGenPart(std::vector<int> &z, int &boundary,
@@ -380,8 +406,7 @@ void NextDistinctGenPart(std::vector<int> &z, int &boundary,
     int vertex = edge + 1;
     tarDiff = 3;
 
-    while (vertex < lastCol &&
-           (z[vertex] - z[edge]) < tarDiff) {
+    while (vertex < lastCol && (z[vertex] - z[edge]) < tarDiff) {
 
         ++vertex;
         ++tarDiff;
@@ -391,11 +416,13 @@ void NextDistinctGenPart(std::vector<int> &z, int &boundary,
     --z[vertex];
 
     if (vertex == boundary) {
-        if (boundary < lastCol)
+        if (boundary < lastCol) {
             ++boundary;
+        }
 
-        while (boundary > 1 && (z[boundary] - z[boundary - 1]) < 2)
+        while (boundary > 1 && (z[boundary] - z[boundary - 1]) < 2) {
             --boundary;
+        }
 
         pivot = (z[lastCol] < lastElem) ? lastCol : boundary - 1;
     }
@@ -420,8 +447,9 @@ void NextDistinctGenPart(std::vector<int> &z, int &boundary,
 
         boundary = pivot;
 
-        if (boundary < lastCol && z[boundary + 1] - z[boundary] > 1)
+        if (boundary < lastCol && z[boundary + 1] - z[boundary] > 1) {
             ++boundary;
+        }
     }
 
     edge = boundary - 1;

@@ -16,6 +16,6 @@ constexpr std::size_t intSize = sizeof(int);
 void createMPZArray(SEXP input, mpz_t *myVec, std::size_t vecSize,
                     const std::string &nameOfObject, bool negPoss = false);
 
-int myRaw(char* raw, mpz_t value, std::size_t totals);
+int myRaw(char* raw, const mpz_t value, std::size_t totals);
 
 #endif

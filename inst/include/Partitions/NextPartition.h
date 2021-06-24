@@ -5,7 +5,7 @@
 
 void GetLastPart(int* mat, std::vector<int> &z, int m, int nRows);
 
-void PrepareMultisetPart(const std::vector<int> &rpsCnt,
+void PrepareMultisetPart(std::vector<int> &rpsCnt,
                          const std::vector<int> &z, int &b,
                          int &p, int &e, int lastCol, int lastElem);
 

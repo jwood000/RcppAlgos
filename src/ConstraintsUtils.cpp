@@ -3,9 +3,9 @@
 
 bool CheckSpecialCase(bool bLower, const std::string &mainFun,
                       const std::vector<double> &vNum) {
-    
+
     bool result = false;
-    
+
     // If bLower, the user is looking to test a particular range. Otherwise, the constraint algo
     // will simply return (upper - lower) # of combinations/permutations that meet the criteria
     if (bLower) {
@@ -18,7 +18,7 @@ bool CheckSpecialCase(bool bLower, const std::string &mainFun,
             }
         }
     }
-    
+
     return result;
 }
 
@@ -129,22 +129,22 @@ void SetTolerance(const std::vector<double> &vNum,
                   const std::vector<double> &targetVals,
                   const std::string &mainFun,
                   SEXP Rtolerance, double &tolerance) {
-    
+
     if (Rf_isNull(Rtolerance)) {
         bool IsWhole = true;
-        
+
         for (std::size_t i = 0; i < vNum.size() && IsWhole; ++i) {
             if (static_cast<std::int64_t>(vNum[i]) != vNum[i]) {
                 IsWhole = false;
             }
         }
-        
+
         for (std::size_t i = 0; i < targetVals.size() && IsWhole; ++i) {
             if (static_cast<std::int64_t>(targetVals[i]) != targetVals[i]) {
                 IsWhole = false;
             }
         }
-        
+
         tolerance = (IsWhole && mainFun != "mean") ? 0 : defaultTolerance;
     } else {
         // numOnly = true, checkWhole = false, negPoss = false, decimalFraction = true
@@ -180,7 +180,7 @@ void AdjustTargetVals(VecType myType, std::vector<double> &targetVals,
         //
         // As a result, we must define a specialized equality check for double
         // precision. It is 'equalDbl' and can be found in ConstraintsUtils.h
-        
+
         SetTolerance(vNum, targetVals, mainFun, Rtolerance, tolerance);
         const auto itComp = std::find(compSpecial.cbegin(),
                                       compSpecial.cend(), compFunVec[0]);
@@ -290,12 +290,12 @@ void ConstraintSetup(const std::vector<double> &vNum,
     double tolerance = 0;
     AdjustTargetVals(myType, targetVals, targetIntVals,
                      Rtolerance, compFunVec, tolerance, mainFun, vNum);
-    
+
     const bool IsPartition = CheckPartition(compFunVec, vNum, mainFun,
                                             targetVals, part, Rlow, lenV,
                                             m, tolerance, IsBetweenComp);
 
     if (IsPartition) {
-        SetPartitionDesign(Reps, vNum, part, ctype, lenV, m, bCalcMulti, true);
+        SetPartitionDesign(Reps, vNum, part, ctype, lenV, m, bCalcMulti, IsComb);
     }
 }
