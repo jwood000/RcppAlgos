@@ -8,15 +8,12 @@ int CountPartMultiset(const std::vector<int> &Reps,
     std::vector<int> z(pz.cbegin(), pz.cend());
     std::vector<int> rpsCnt(Reps.cbegin(), Reps.cend());
 
-    for (const auto ind: z)
-        --rpsCnt[ind];
-
     const int lastCol = pz.size() - 1;
     const int lastElem = Reps.size() - 1;
 
     int p = 0;
     int e = 0;
-    int b = lastCol;
+    int b = 0;
 
     // If we have made it here, we know a solution exists
     // (i.e. part.solnExists = true). The way keepGoing works
@@ -27,7 +24,7 @@ int CountPartMultiset(const std::vector<int> &Reps,
     PrepareMultisetPart(rpsCnt, z, b, p, e, lastCol, lastElem);
 
     for (; keepGoing(rpsCnt, lastElem, z, e, b);
-         NextMultisetGenPart(rpsCnt, z, e, b,  p, lastCol, lastElem)) {
+         NextMultisetGenPart(rpsCnt, z, e, b, p, lastCol, lastElem)) {
         ++count;
     }
 

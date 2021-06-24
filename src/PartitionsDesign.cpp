@@ -1,7 +1,7 @@
 #include "Partitions/PartitionsTypes.h"
+#include "CleanConvert.h"
 #include <RcppThread.h>
 #include <numeric>
-#include <string>
 
 std::string GetPartitionType(const PartDesign &part) {
 
@@ -115,20 +115,19 @@ SEXP GetDesign(const PartDesign &part, int lenV, bool verbose) {
     for (int i = 0; i < lenV; ++i) {
         INTEGER(sexp_vec)[i] = vMap[i];
     }
-    
+
     for (int i = 0; i < part.startZ.size(); ++i) {
-        INTEGER(sexp_index)[i] = part.startZ[i] + 
+        INTEGER(sexp_index)[i] = part.startZ[i] +
             (part.ptype != PartitionType::RepNoZero &&
              part.ptype != PartitionType::DstctNoZero);
     }
-    
+
     const char *names[] = {"num_partitions", "mapped_vector",
                            "mapped_target", "first_index_vector",
                            "eqn_check", "partition_type", ""};
 
     SEXP res = PROTECT(Rf_mkNamed(VECSXP, names));
-
-    SET_VECTOR_ELT(res, 0, Rf_ScalarReal(part.count));
+    SET_VECTOR_ELT(res, 0, CleanConvert::GetCount(part.isGmp, part.bigCount, part.count));
     SET_VECTOR_ELT(res, 1, sexp_vec);
     SET_VECTOR_ELT(res, 2, Rf_ScalarInteger(part.mapTar));
     SET_VECTOR_ELT(res, 3, sexp_index);

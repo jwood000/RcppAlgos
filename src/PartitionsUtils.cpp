@@ -170,7 +170,7 @@ void GetTarget(const std::vector<double> &v,
     const int res = GetFirstPartition(v64, zExpanded, z, Reps,
                                       part.target, m, lastCol, lenV - 1,
                                       part.isRep, part.isMult);
-    
+
     if (res == 1) {
         part.includeZero = part.allOne;
         part.startZ    = z;
@@ -638,5 +638,5 @@ void SetPartitionDesign(const std::vector<int> &Reps,
         DiscoverPType(Reps, part);
     }
 
-    part.count = PartitionsCount(Reps, part, lenV, bCalcMultiset, IsComb);
+    PartitionsCount(Reps, part, lenV, bCalcMultiset, IsComb);
 }
