@@ -35,11 +35,11 @@ void PartsGenManager(T* mat, const PartDesign &part, const std::vector<T> &v,
 
     if (IsComb) {
         if (IsRep) {
-            PartsGenRep(mat, v, z, width,
-                        lastElem, lastCol, strt, nRows);
+            PartsGenRep(mat, v, z, width, lastElem,
+                        lastCol, strt, nRows);
         } else {
-            PartsGenDistinct(mat, v, z, width,
-                             lastElem, lastCol, strt, nRows);
+            PartsGenDistinct(mat, v, z, width, lastElem,
+                             lastCol, strt, nRows);
         }
     } else {
         if (part.ptype <= PartitionType::RepShort) {
