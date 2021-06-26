@@ -2,55 +2,9 @@
 #include "Permutations/PermuteCount.h"
 #include "Cpp14MakeUnique.h"
 #include <numeric>
-#include <vector>
 #include <cmath>
 
-int width_dist;
-int bSize_dist;
-static std::vector<double> mem_dist;
-
-double pDistCap(int n, int m, int cap) {
-
-    if (m > n || cap < m) return 0;
-
-    if (m == n) {
-        if (n == 1 && cap >= 1) {
-            return 1;
-        } else {
-            return 0;
-        }
-    }
-
-    if (m == 1) {
-        if (cap >= n) {
-            return 1;
-        } else {
-            return 0;
-        }
-    }
-
-    const int block = cap * bSize_dist + (n - m) * width_dist + m - 2;
-
-    if (mem_dist[block])
-        return mem_dist[block];
-
-    int test = (m * (m + 1)) / 2;
-
-    if (test > n) return 0;
-    if (test == n) return 1;
-
-    const int low = cap - m;
-    test = (cap * (cap + 1) - low * (low + 1)) / 2;
-
-    if (test < n) return 0;
-    if (test == n) return 1;
-
-    double count = (mem_dist[block] = pDistCap(n - m, m - 1, cap - 1) +
-                                      pDistCap(n - m, m, cap - 1));
-    return count;
-}
-
-double CountPartDistinctLenCap(int n, int m, int cap) {
+double CountPartsDistinctLenCap(int n, int m, int cap) {
 
     if (cap > n) cap = n;
     if (m > n || cap < m) return 0;
@@ -93,35 +47,54 @@ double CountPartDistinctLenCap(int n, int m, int cap) {
         }
     }
 
-    width_dist = m;
-    bSize_dist = m * (n - m + 1);
-    mem_dist = std::vector<double>((cap + 1) * bSize_dist, 0.0);
-    return pDistCap(n, m, cap);
+    const int width = n + 1;
+    const int maxSize = (cap + 1) * width;
+
+    std::vector<double> p1(maxSize);
+    std::vector<double> p2(maxSize);
+
+    for (int i = 1; i < width; ++i) {
+        for (int j = i; j <= cap; ++j) {
+            p1[j * width + i] = 1;
+        }
+    }
+
+    for (int i = 2; i <= m; ++i) {
+        if (i % 2) {
+            std::fill(p1.begin(), p1.end(), 0);
+
+            for (int j = width; j < maxSize; j += width) {
+                for (int k = i, j1 = j - width; k < width; ++k) {
+                    p1[j + k] = p2[j1 + k - i] + p1[j1 + k - i];
+                }
+            }
+        } else {
+            std::fill(p2.begin(), p2.end(), 0);
+
+            for (int j = width; j < maxSize; j += width) {
+                for (int k = i, j1 = j - width; k < width; ++k) {
+                    p2[j + k] = p1[j1 + k - i] + p2[j1 + k - i];
+                }
+            }
+        }
+    }
+
+    return (m % 2) ? p1.back() : p2.back();
 }
 
-int GetMaxWidth(double target) {
-    const double discriminant = 1.0 + 8.0 * target;
-    int max_width = (-1 + std::sqrt(discriminant)) / 2;
-    return max_width;
-}
-
-double CountPartDistinctLen(int n, int m) {
-
-    if (m == 0)
-        return (n == 0) ? 1.0 : 0.0;
+double CountPartsDistinctLen(int n, int m) {
 
     const int max_width = GetMaxWidth(n);
 
-    if (m > max_width)
+    if (m == 0) {
+        return (n == 0) ? 1.0 : 0.0;
+    } else if (m > max_width) {
         return 0.0;
-
-    if (m < 2)
+    } else if (m < 2) {
         return 1.0;
-
-    if (m == 2)
+    } else if (m == 2) {
         return std::floor((n - 1) / 2);
-
-    if (m == 3) {
+    } else if (m == 3) {
         const double res = SumSection(n - 3);
         return(res);
     } else {
@@ -168,89 +141,10 @@ double CountPartDistinctLen(int n, int m) {
     }
 }
 
-void CountPartDistinctLen(mpz_t res, int n, int m) {
-
-    if (m == 3) {
-        mpz_t mpzN;
-        mpz_init(mpzN);
-        mpz_set_si(mpzN, n - 3);
-        SumSection(mpzN, res);
-        mpz_clear(mpzN);
-    } else {
-        const int limit = (m == GetMaxWidth(n + 1)) ? m - 1 : m;
-
-        auto p1 = FromCpp14::make_unique<mpz_t[]>(n + 1);
-        auto p2 = FromCpp14::make_unique<mpz_t[]>(n + 1);
-
-        for (int i = 0; i <= n; ++i) {
-            mpz_init(p1[i]);
-            mpz_init(p2[i]);
-        }
-
-        if (n <= typeSwitchBnd) {
-            for (int i = 6; i <= n; ++i) {
-                double temp = SumSection(i - 3);
-                mpz_set_d(p1[i], temp);
-            }
-        } else {
-            for (int i = 6; i < typeSwitchBnd; ++i) {
-                double temp = SumSection(i - 3);
-                mpz_set_d(p1[i], temp);
-            }
-
-            mpz_t tempN;
-            mpz_init(tempN);
-
-            for (int i = typeSwitchBnd; i <= n; ++i) {
-                mpz_set_si(tempN, i - 3);
-                SumSection(tempN, p1[i]);
-            }
-        }
-
-        for (int i = 4; i <= limit; ++i) {
-            const int m1 = ((i + 1) * i) / 2;
-            const int m2 = m1 + i;
-
-            if (i % 2) {
-                for (int j = m1; j < m2; ++j) {
-                    mpz_set(p1[j], p2[j - i]);
-                }
-
-                for (int j = m2; j <= n; ++j) {
-                    mpz_add(p1[j], p2[j - i], p1[j - i]);
-                }
-            } else {
-                for (int j = m1; j < m2; ++j) {
-                    mpz_set(p2[j], p1[j - i]);
-                }
-
-                for (int j = m2; j <= n; ++j) {
-                    mpz_add(p2[j], p2[j - i], p1[j - i]);
-                }
-            }
-        }
-
-        if (m > limit && m % 2) {
-            mpz_set(res, p2[n - m]);
-        } else if (m > limit) {
-            mpz_set(res, p1[n - m]);
-        } else if (m % 2) {
-            mpz_set(res, p1[n]);
-        } else {
-            mpz_set(res, p2[n]);
-        }
-
-        for (int i = 0; i <= n; ++i) {
-            mpz_clear(p1[i]);
-            mpz_clear(p2[i]);
-        }
-    }
-}
-
 // Credit to Robin K. S. Hankin, author of the excellent partitions package.
 // From the partitions.c, here are Hankin's comments for c_numbdiffparts:
 //      "the recursion on p826 of Abramowitz and Stegun"
-double CountPartDistinct(int n) {
+double CountPartsDistinct(int n) {
 
     std::vector<double> qq(n + 1);
     qq[0] = 1;
@@ -271,101 +165,60 @@ double CountPartDistinct(int n) {
     return qq.back();
 }
 
-void CountPartDistinct(mpz_t res, int n) {
+double CountPartsDistinctMultiZero(int target, int m, int strtLen) {
 
-    auto qq = FromCpp14::make_unique<mpz_t[]>(n + 1);
+    double count = 0;
 
-    mpz_init(qq[0]);
-    mpz_init(qq[1]);
-
-    mpz_set_ui(qq[0], 1u);
-    mpz_set_ui(qq[1], 1u);
-
-    for(int i = 2 ; i <= n; ++i) {
-        mpz_init(qq[i]);
-
-        for (int s = 1, f = 5, r = 2; i >= r; r += f, f += 3, s *= -1) {
-            if (s > 0) {
-                mpz_add(qq[i], qq[i], qq[i - r]);
-
-                if (i == r * 2) {
-                    mpz_sub_ui(qq[i], qq[i], 1u);
-                }
-            } else {
-                mpz_sub(qq[i], qq[i], qq[i - r]);
-
-                if (i == r * 2) {
-                    mpz_add_ui(qq[i], qq[i], 1u);
-                }
-            }
-        }
-
-        for (int s = 1, f = 4, r = 1; i >= r; r += f, f += 3, s *= -1) {
-            if (s > 0) {
-                mpz_add(qq[i], qq[i], qq[i - r]);
-
-                if (i == r * 2) {
-                    mpz_sub_ui(qq[i], qq[i], 1u);
-                }
-            } else {
-                mpz_sub(qq[i], qq[i], qq[i - r]);
-
-                if (i == r * 2) {
-                    mpz_add_ui(qq[i], qq[i], 1u);
-                }
-            }
-        }
+    for (int i = strtLen; i <= m; ++i) {
+        count += CountPartsDistinctLen(target, i);
     }
 
-    mpz_set(res, qq[n]);
-
-    for (int i = 0; i <= n; ++i) {
-        mpz_clear(qq[i]);
-    }
+    return count;
 }
 
-double CountPartPermDistinct(const std::vector<int> &z,
-                             int tar, int width, bool includeZero) {
+double CountPartsPermDistinct(const std::vector<int> &z,
+                              int tar, int width, bool includeZero) {
 
     double res = 0;
 
     if (includeZero) {
-        const int startLen = std::count_if(z.cbegin(), z.cend(),
+        const int strtLen = std::count_if(z.cbegin(), z.cend(),
                                            [](int i){return i > 0;});
 
         std::vector<int> count(width);
-        std::iota(count.begin(), count.begin() + startLen, 1);
+        std::iota(count.begin(), count.begin() + strtLen, 1);
 
-        for (int i = startLen; i <= width; ++i) {
+        for (int i = strtLen; i <= width; ++i) {
             count[i - 1] = i;
-            res += (CountPartDistinctLen(tar, i) * NumPermsWithRep(count));
+            res += (CountPartsDistinctLen(tar, i) * NumPermsWithRep(count));
         }
     } else {
-        res = CountPartDistinctLen(tar, width) * NumPermsNoRep(width, width);
+        res = CountPartsDistinctLen(tar, width) *
+              NumPermsNoRep(width, width);
     }
 
     return res;
 }
 
-double CountPartPermDistinctCap(const std::vector<int> &z, int cap,
+double CountPartsPermDistinctCap(const std::vector<int> &z, int cap,
                                 int tar, int width, bool includeZero) {
 
     double res = 0;
 
     if (includeZero) {
-        const int startLen = std::count_if(z.cbegin(), z.cend(),
+        const int strtLen = std::count_if(z.cbegin(), z.cend(),
                                            [](int i){return i > 0;});
 
         std::vector<int> count(width);
-        std::iota(count.begin(), count.begin() + startLen, 1);
+        std::iota(count.begin(), count.begin() + strtLen, 1);
 
-        for (int i = startLen; i <= width; ++i) {
+        for (int i = strtLen; i <= width; ++i) {
             count[i - 1] = i;
-            res += (CountPartDistinctLenCap(tar, i, cap) *
+            res += (CountPartsDistinctLenCap(tar, i, cap) *
                     NumPermsWithRep(count));
         }
     } else {
-        res = CountPartDistinctLenCap(tar, width, cap) *
+        res = CountPartsDistinctLenCap(tar, width, cap) *
               NumPermsNoRep(width, width);
     }
 

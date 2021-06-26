@@ -14,8 +14,7 @@
 // RepShort     :  CountPartRepLen(23, 3)
 // RepCapped    :  CountPartRepLenCap(14, 3, 10) N.B. Get first part: (3, 5, 12); Map to match(c(3, 5, 12), 3:12)
 // DstctStdAll  :  CountPartDistinct(20)
-// DstctShort   :  GetSpecialCount(c(0, 0, 20), 20, 3) N.B. We can't use the "add 1 trick" as zero is repeated.
-// DstctSpecial :  GetSpecialCount(c(0, 0, 1, 2, 17), 20, 5) ... This would give c(1, 1, 21) which isn't distinct
+// DstctSpecial :  GetSpecialCount(c(0, 0, 1, 2, 17), 20, 5)
 // DstctOneZero :  CountPartDistinctLen(25, 5) N.B. Add 1 to each element to obtain new target = 25
 // DstctNoZero  :  CountPartDistinctLen(20, 5)
 // DistCapped   :  CountPartDistinctLenCap(20, 4, 9)
@@ -27,7 +26,6 @@ enum class PartitionType {
     RepShort,      // Case where width isn't maximized E.g. tar = 20 startZ = c(0, 0, 20)
     RepCapped,     // E.g. tar = 20 of width = 3 from the integers 3:12: CountPartRepCap(14, 3, 10)
     DstctStdAll,   // Get all distinct partitions (0 can repeat) E.g. tar = 20 startZ = c(0, 0, 0, 0, 20)
-    DstctShort,    // Case where width isn't maximized E.g. tar = 20 startZ = c(0, 0, 20)
     DstctSpecial,  // Case where startZ doesn't maximize 0's. E.g. tar = 20 startZ = c(0, 0, 1, 2, 17)
     DstctOneZero,  // Similar to above but can occur when IsMult = FALSE. E.g. tar = 20 startZ = c(0, 1, 2, 3, 14)
     DstctNoZero,   // E.g. tar = 20 startZ = c(1, 2, 3, 4, 10)
@@ -41,10 +39,9 @@ const std::array<PartitionType, 3> RepPTypeArr{{
     PartitionType::RepStdAll, PartitionType::RepNoZero, PartitionType::RepShort
 }};
 
-const std::array<PartitionType, 5> DistPTypeArr{{
-    PartitionType::DstctStdAll,  PartitionType::DstctShort,
-    PartitionType::DstctSpecial, PartitionType::DstctOneZero,
-    PartitionType::DstctNoZero
+const std::array<PartitionType, 4> DistPTypeArr{{
+    PartitionType::DstctStdAll,  PartitionType::DstctSpecial,
+    PartitionType::DstctOneZero, PartitionType::DstctNoZero
 }};
 
 struct PartDesign {
@@ -55,6 +52,7 @@ struct PartDesign {
     bool isGmp = false;
     bool isRep = false;
     bool isMult = false;
+    bool isPart = false;
     bool allOne = false;
     bool mIsNull = false;
     bool solnExist = false;

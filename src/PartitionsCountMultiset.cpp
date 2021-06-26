@@ -2,8 +2,8 @@
 #include "Partitions/NextPartition.h"
 
 // The current approach is not ideal. We must iterate
-int CountPartMultiset(const std::vector<int> &Reps,
-                      const std::vector<int> &pz) {
+int CountPartsMultiset(const std::vector<int> &Reps,
+                       const std::vector<int> &pz) {
 
     std::vector<int> z(pz.cbegin(), pz.cend());
     std::vector<int> rpsCnt(Reps.cbegin(), Reps.cend());

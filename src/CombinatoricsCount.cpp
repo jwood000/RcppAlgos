@@ -107,6 +107,12 @@ SEXP PartitionsCount(SEXP Rtarget, SEXP Rv, SEXP Rm,
             } else {
                 return Rf_ScalarInteger(0);
             }
+        } else if (n == 1) {
+            if (m == targetVals.front()) {
+                return Rf_ScalarInteger(1);
+            } else {
+                return Rf_ScalarInteger(0);
+            }
         } else {
             return Rf_ScalarInteger(0);
         }
