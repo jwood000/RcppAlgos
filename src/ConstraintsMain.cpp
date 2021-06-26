@@ -51,19 +51,30 @@ SEXP ConstraintsReturn(const std::vector<double> &vNum,
                        bool IsMult) {
 
     const int width = part.width;
-
     const auto it = std::find(DistPTypeArr.cbegin(),
                               DistPTypeArr.cend(), part.ptype);
 
-    const bool partsUnknown = (IsMult && it == DistPTypeArr.cend()) ||
-                (part.ptype == PartitionType::RepCapped && !IsComb);
+    const bool partsUnknown = (part.isPart) && (
+        (IsMult && it == DistPTypeArr.cend()) ||
+        (part.ptype == PartitionType::RepCapped && !IsComb)
+    );
 
     const bool numUnknown = ctype == ConstraintType::PartitionEsque ||
                             ctype == ConstraintType::SpecialCnstrnt ||
                             ctype == ConstraintType::General        ||
                             partsUnknown;
 
-    if (numUnknown) {
+    if (part.isPart && !part.solnExist) {
+        if (myType == VecType::Integer) {
+            SEXP res = PROTECT(Rf_allocMatrix(INTSXP, 0, width));
+            UNPROTECT(1);
+            return res;
+        } else {
+            SEXP res = PROTECT(Rf_allocMatrix(REALSXP, 0, width));
+            UNPROTECT(1);
+            return res;
+        }
+    } else if (numUnknown) {
         constexpr double int_max = std::numeric_limits<int>::max();
         if (myType == VecType::Integer) {
             std::vector<int> cnstrntVec;
@@ -115,12 +126,12 @@ SEXP ConstraintsReturn(const std::vector<double> &vNum,
             int* matInt = INTEGER(res);
 
             if (ctype == ConstraintType::PartStandard) {
-                PartsStdManager(matInt, z, width, lastCol,
-                                boundary, edge, strt, nRows, IsComb, IsRep);
+                PartsStdManager(matInt, z, width, lastCol, boundary,
+                                edge, strt, nRows, IsComb, IsRep);
             } else {
                 PartsGenManager(matInt, part, vInt, z, width,
                                 lastCol, lastElem, boundary, edge,
-                                strt, nRows, IsRep, IsComb);
+                                strt, nRows, IsComb, IsRep);
             }
 
             UNPROTECT(1);
