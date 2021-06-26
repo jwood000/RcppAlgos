@@ -291,11 +291,10 @@ void ConstraintSetup(const std::vector<double> &vNum,
     AdjustTargetVals(myType, targetVals, targetIntVals,
                      Rtolerance, compFunVec, tolerance, mainFun, vNum);
 
-    const bool IsPartition = CheckPartition(compFunVec, vNum, mainFun,
-                                            targetVals, part, Rlow, lenV,
-                                            m, tolerance, IsBetweenComp);
+    CheckPartition(compFunVec, vNum, mainFun, targetVals, part,
+                   Rlow, lenV, m, tolerance, IsBetweenComp);
 
-    if (IsPartition) {
+    if (part.isPart) {
         SetPartitionDesign(Reps, vNum, part, ctype, lenV, m, bCalcMulti, IsComb);
     }
 }

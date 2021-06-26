@@ -20,9 +20,6 @@ std::string GetPartitionType(const PartDesign &part) {
         } case PartitionType::DstctOneZero: {
             res = "DstctOneZero";
             break;
-        } case PartitionType::DstctShort: {
-            res = "DstctShort";
-            break;
         } case PartitionType::DstctSpecial : {
             res = "DstctSpecial";
             break;

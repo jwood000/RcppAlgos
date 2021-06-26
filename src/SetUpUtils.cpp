@@ -112,7 +112,7 @@ void SetFinalValues(VecType &myType, std::vector<int> &Reps,
         for (int i = (vNum.size() - 1); i >= 0; --i) {
             if (CleanConvert::CheckNA(vNum[i], myType)) {
                 vNum.erase(vNum.begin() + i);
-                
+
                 if (IsMult) {
                     Reps.erase(Reps.begin() + i);
                 }

@@ -218,7 +218,7 @@ void SetStartPartitionZ(const std::vector<double> &v,
             part.startZ.back() = part.target - ((part.width - 1) *
                                             (part.width - 2)) / 2;
             break;
-        } case PartitionType::DstctShort: {
+        } case PartitionType::DstctSpecial: {
             if (Reps.front() > (part.width - 2)) {
                 part.startZ.back() = part.target;
             } else {
@@ -227,12 +227,6 @@ void SetStartPartitionZ(const std::vector<double> &v,
                 part.startZ.back() = part.target - (part.width -
                     Reps.front()) * (part.width - (Reps.front() + 1)) / 2;
             }
-            break;
-        } case PartitionType::DstctSpecial: {
-            std::iota(part.startZ.begin() + Reps.front(),
-                      part.startZ.end(), 1);
-            part.startZ.back() = part.target - (part.width -
-                Reps.front()) * (part.width - (Reps.front() + 1)) / 2;
             break;
         } case PartitionType::Multiset: {
             GetTarget(v, Reps, part, part.width, Reps.size());
@@ -264,19 +258,10 @@ int DiscoverPType(const std::vector<int> &Reps,
                     isoz.back() = part.mapTar - 1 - (part.width *
                         (part.width - 1)) / 2;
                     break;
-                } case PartitionType::DstctShort: {
+                } case PartitionType::DstctSpecial: {
                     if (!Reps.empty() && Reps.front() > (part.width - 2)) {
                         isoz.back() = part.mapTar;
                     } else if (!Reps.empty()) {
-                        std::iota(isoz.begin() + Reps.front(),
-                                  isoz.end(), 1);
-                        isoz.back() = part.mapTar - (part.width -
-                            Reps.front()) * (part.width - (Reps.front() + 1)) / 2;
-                    }
-
-                    break;
-                } case PartitionType::DstctSpecial: {
-                    if (!Reps.empty()) {
                         std::iota(isoz.begin() + Reps.front(),
                                   isoz.end(), 1);
                         isoz.back() = part.mapTar - (part.width -
@@ -352,12 +337,10 @@ int DiscoverPType(const std::vector<int> &Reps,
 // assumption is that we are given the ith partition.
 // ****************************************************************
 
-
 // Our philosophy is that if the user supplies the width, we
 // give that to them. If the user leaves it NULL, we figure
 // out the 'best' width possible. You will see that we
 // give preference to the longest possible width.
-
 void StandardDesign(const std::vector<int> &Reps,
                     PartDesign &part, int m, int lenV) {
 
@@ -389,9 +372,10 @@ void StandardDesign(const std::vector<int> &Reps,
     // will contain x - 1 elements, hence std::floor (or
     // just integer division).
 
-    const double discriminant = 1.0 + 8.0 * static_cast<double>(part.mapTar);
+    const double discriminant = 1.0 + 8.0 * static_cast<double>(part.target);
     const int max_width = (-1 + std::sqrt(discriminant)) / 2;
     int width = (part.mIsNull) ? max_width : m;
+    part.solnExist = true;
 
     if (part.isMult) {
         // We need lenV == target + 1 because we could have a case where
@@ -399,7 +383,7 @@ void StandardDesign(const std::vector<int> &Reps,
         // element in order to guarantee we generate all possible
         // partitions: E.g. v = 0, 1, 2, 3, 4; Reps = c(4, rep(1, 4));
         // target = 6. This is equivalent to checking v.back() == target
-        if (part.includeZero && lenV == part.mapTar + 1 && part.allOne) {
+        if (part.includeZero && lenV == part.target + 1 && part.allOne) {
             // We need at least 1 non-zero value in
             // order to set getAll = true. E.g
             //
@@ -411,14 +395,14 @@ void StandardDesign(const std::vector<int> &Reps,
             // Thus zero must have at least a
             // frequency of 3 = 4 - 1
 
-            if (part.mIsNull || width == max_width) {
+            if (width == max_width) {
                 if ((Reps.front() >= (max_width - 1))) {
                     part.ptype = PartitionType::DstctStdAll;
                 } else {
                     part.ptype = PartitionType::DstctSpecial;
                 }
-            } else if (width < max_width + Reps.front()) {
-                part.ptype = PartitionType::DstctShort;
+            } else if (width <= max_width + Reps.front()) {
+                part.ptype = PartitionType::DstctSpecial;
             } else {
                 part.solnExist = false;
             }
@@ -435,12 +419,12 @@ void StandardDesign(const std::vector<int> &Reps,
                 std::int64_t testTar = 0;
 
                 for (int i = part.includeZero, val = 1;
-                     i < lenV && testTar < part.mapTar; ++i, ++val) {
+                     i < lenV && testTar < part.target; ++i, ++val) {
 
                     testTar += Reps[i] * val;
                     width   += Reps[i];
 
-                    while (testTar > part.mapTar) {
+                    while (testTar > part.target) {
                         testTar -= val;
                         --width;
                     }
@@ -449,19 +433,19 @@ void StandardDesign(const std::vector<int> &Reps,
         }
     } else if (part.isRep) {
         if (part.mIsNull && part.includeZero) {
-            width = part.mapTar; // i.e. 1 * target = target
+            width = part.target; // i.e. 1 * target = target
             part.ptype = PartitionType::RepStdAll;
         } else if (part.mIsNull) {
-            width = part.mapTar; // i.e. 1 * target = target
+            width = part.target; // i.e. 1 * target = target
             part.ptype = PartitionType::RepNoZero;
-        } else if (part.includeZero && width < part.mapTar) {
+        } else if (part.includeZero && width < part.target) {
             part.ptype = PartitionType::RepShort;
-            part.includeZero = false; // We need to add width in mapTar in order to
-            part.mapTar += width;      // correctly count the number of partitions
+            part.includeZero = false; // We need to add width in target in order to
+            part.target += width;      // correctly count the number of partitions
         } else if (part.includeZero) {
-            width = part.mapTar;
+            width = part.target;
             part.ptype = PartitionType::RepStdAll;
-        } else if (width <= part.mapTar) {
+        } else if (width <= part.target) {
             part.ptype = PartitionType::RepNoZero;
         } else {
             part.solnExist = false;
@@ -469,18 +453,24 @@ void StandardDesign(const std::vector<int> &Reps,
     } else {
         if (part.includeZero) {
             part.ptype = PartitionType::DstctOneZero;
-            part.includeZero = false;  // We need to add m in mapTar in order to
-            part.mapTar += width;       // correctly count the number of partitions
+            part.includeZero = false;  // We need to add m in target in order to
+            part.target += width;       // correctly count the number of partitions
         } else {
             part.ptype = PartitionType::DstctNoZero;
         }
     }
 
     part.width = width;
+
+    // Since this is only called in the standard case, this calcuation
+    // is unnecessary. That is, part.mapTar = part.target and
+    // part.slope = 1 in this case, which means the numeratro is
+    // equivalent to zero ==>> part.shift = 0. We leave it here
+    // for completeness
     part.shift = (part.mapTar * part.slope - part.target) / part.width;
 }
 
-bool CheckPartition(const std::vector<std::string> &compFunVec,
+void CheckPartition(const std::vector<std::string> &compFunVec,
                     const std::vector<double> &v, const std::string &mainFun,
                     const std::vector<double> &target, PartDesign &part,
                     SEXP Rlow, int lenV, int m, double tolerance,
@@ -545,7 +535,7 @@ bool CheckPartition(const std::vector<std::string> &compFunVec,
         }
     }
 
-    return IsPartition;
+    part.isPart = IsPartition;
 }
 
 // Right now, we have no fast method for calculating the number of partitions
@@ -588,7 +578,6 @@ void SetPartitionDesign(const std::vector<int> &Reps,
     // isn't the same, then we don't meet the partition scenario.
 
     part.slope = v[1] - v[0];
-    std::vector<int> vmap(lenV);
 
     const bool zero_or_one   = v.front() == 0 || v.front() == 1;
     const bool standard_dist = part.slope == 1;

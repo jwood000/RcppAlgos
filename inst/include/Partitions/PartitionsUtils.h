@@ -12,7 +12,7 @@
 #include <Rinternals.h>
 #include <R.h>
 
-bool CheckPartition(const std::vector<std::string> &compFunVec,
+void CheckPartition(const std::vector<std::string> &compFunVec,
                     const std::vector<double> &v, const std::string &mainFun,
                     const std::vector<double> &target, PartDesign &part,
                     SEXP Rlow, int lenV, int m, double tolerance,
