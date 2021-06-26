@@ -43,6 +43,9 @@ template <typename T>
 using compPtr = bool (*)(T x, const std::vector<T> &y);
 
 template <typename T>
+using partialReducePtr = void (*const)(int m, T &partial, T w);
+
+template <typename T>
 funcPtr<T> GetFuncPtr(const std::string &fstr);
 
 template <typename T>
@@ -50,5 +53,8 @@ partialPtr<T> GetPartialPtr(const std::string &fstr);
 
 template <typename T>
 compPtr<T> GetCompPtr(const std::string &fstr);
+
+template <typename T>
+partialReducePtr<T> GetPartialReducePtr(const std::string &fstr);
 
 #endif

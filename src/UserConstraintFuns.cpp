@@ -103,30 +103,32 @@ bool greaterEqlLessEql(T x, const std::vector<T> &y) {return x <= y[0] && x >= y
 
 template <typename T>
 funcPtr<T> GetFuncPtr(const std::string &fstr) {
-    if (fstr == "prod")
+    if (fstr == "prod") {
         return(funcPtr<T>(prod));
-    else if (fstr == "sum")
+    } else if (fstr == "sum") {
         return(funcPtr<T>(sum));
-    else if (fstr == "mean")
+    } else if (fstr == "mean") {
         return(funcPtr<T>(mean));
-    else if (fstr == "max")
+    } else if (fstr == "max") {
         return(funcPtr<T>(max));
-    else
+    } else {
         return(funcPtr<T>(min));
+    }
 }
 
 template <typename T>
 partialPtr<T> GetPartialPtr(const std::string &fstr) {
-    if (fstr == "prod")
+    if (fstr == "prod") {
         return(partialPtr<T>(prodPartial));
-    else if (fstr == "sum")
+    } else if (fstr == "sum") {
         return(partialPtr<T>(sumPartial));
-    else if (fstr == "mean")
+    } else if (fstr == "mean") {
         return(partialPtr<T>(meanPartial));
-    else if (fstr == "max")
+    } else if (fstr == "max") {
         return(partialPtr<T>(maxPartial));
-    else
+    } else {
         return(partialPtr<T>(minPartial));
+    }
 }
 
 // N.B. With equality check for double data type we must call greaterEqlLessEql
@@ -138,27 +140,59 @@ compPtr<T> GetCompPtr(const std::string &fstr) {
     const int myIndex = std::distance(compVec.cbegin(), it);
 
     switch(myIndex) {
-        case LT:
+        case LT: {
             return(compPtr<T>(less));
-        case GT:
+        } case GT: {
             return(compPtr<T>(greater));
-        case LE:
+        } case LE: {
             return(compPtr<T>(lessEqual));
-        case GE:
+        } case GE: {
             return(compPtr<T>(greaterEqual));
-        case EQ:
-            if (std::is_integral<T>::value)
+        } case EQ: {
+            if (std::is_integral<T>::value) {
                 return(compPtr<T>(equalInt));
-            else
+            } else {
                 return(compPtr<T>(greaterEqlLessEql));
-        case GTLT:
+            }
+        } case GTLT: {
             return(compPtr<T>(greaterLess));
-        case GELT:
+        } case GELT: {
             return(compPtr<T>(greaterEqlLess));
-        case GTLE:
+        } case GTLE: {
             return(compPtr<T>(greaterLessEql));
-        default:
+        } default: {
             return(compPtr<T>(greaterEqlLessEql));
+        }
+    }
+}
+
+template <typename T>
+using partialReducePtr = void (*const)(int m, T &partial, T w);
+
+template <typename T>
+void PartialReduceProd(int m, T &partial, T w) {
+    partial /= w;
+}
+
+template <typename T>
+void PartialReduceSum(int m, T &partial, T w) {
+    partial -= w;
+}
+
+template <typename T>
+void PartialReduceMean(int m, T& partial, T w) {
+    partial = (partial * static_cast<double>(m) - w) / static_cast<double>(m - 1);
+}
+
+template <typename T>
+partialReducePtr<T> GetPartialReducePtr(const std::string &fstr) {
+
+    if (fstr == "prod") {
+        return(partialReducePtr<T>(PartialReduceProd));
+    } else if (fstr == "sum") {
+        return(partialReducePtr<T>(PartialReduceSum));
+    } else {
+        return(partialReducePtr<T>(PartialReduceMean));
     }
 }
 
@@ -170,3 +204,6 @@ template partialPtr<double> GetPartialPtr(const std::string&);
 
 template funcPtr<int> GetFuncPtr(const std::string&);
 template funcPtr<double> GetFuncPtr(const std::string&);
+
+template partialReducePtr<int> GetPartialReducePtr(const std::string&);
+template partialReducePtr<double> GetPartialReducePtr(const std::string&);
