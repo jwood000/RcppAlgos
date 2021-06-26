@@ -1,12 +1,12 @@
 #ifndef NTH_PARTITION_H
 #define NTH_PARTITION_H
 
-#include <vector>
+#include "Partitions/PartitionsTypes.h"
 #include <gmp.h>
 
-using nthPartsPtr = std::vector<int> (*const)(int n, int r,
-                                      double dblIdx, mpz_t mpzIdx);
+using nthPartsPtr = std::vector<int> (*const)(int n, int m, int k,
+                                              double dblIdx, mpz_t mpzIdx);
 
-nthPartsPtr GetNthPartsFunc(bool IsMult, bool IsRep, bool IsGmp);
+nthPartsPtr GetNthPartsFunc(PartitionType ptype, bool IsGmp);
 
 #endif
