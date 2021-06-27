@@ -36,4 +36,13 @@ void PermuteSpecific(int &phaseOne, bool &generalRet, int n, int m,
                      int nRows, bool IsMult, bool IsCharacter,
                      bool IsComb, bool bLower, bool IsRep);
 
+void SetRandomSample(SEXP RindexVec, SEXP RNumSamp, std::size_t &sampSize,
+                     bool IsGmp, double computedRows,
+                     std::vector<double> &mySample,
+                     SEXP baseSample, SEXP rho);
+
+void SetRandomSampleMpz(const SEXP &RindexVec, const SEXP &RmySeed,
+                        std::size_t sampSize, bool IsGmp,
+                        mpz_t &computedRowsMpz, mpz_t *const myVec);
+
 #endif
