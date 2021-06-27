@@ -20,8 +20,9 @@ void SetDims(SEXP RFunVal, SEXP res, int commonLen, int nRows) {
         INTEGER(dim)[0] = nRows;
 
         if(array_value) {
-            for(int j = 0; j < rnk_v; j++)
+            for(int j = 0; j < rnk_v; j++) {
                 INTEGER(dim)[j + 1] = INTEGER(dim_v)[j];
+            }
         } else {
             INTEGER(dim)[rnk_v] = commonLen;
         }

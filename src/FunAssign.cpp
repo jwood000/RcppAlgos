@@ -14,11 +14,13 @@ void VapplyAssign(SEXP ans, SEXP vectorPass,
     PROTECT_WITH_INDEX(val, &indx);
 
     if (Rf_length(val) != commonLen) {
-        Rf_error("values must be length %d,\n but FUN(X[[%d]]) result is length %d",
+        Rf_error("values must be length %d,\n but "
+                 "FUN(X[[%d]]) result is length %d",
                  commonLen, count + 1, Rf_length(val));
     }
 
     valType = TYPEOF(val);
+
     if (valType != commonType) {
         bool okay = false;
         switch (commonType) {
@@ -49,50 +51,59 @@ void VapplyAssign(SEXP ans, SEXP vectorPass,
                 double* ans_dbl = REAL(ans);
                 double* val_dbl = REAL(val);
 
-                for (int j = 0; j < commonLen; j++)
+                for (int j = 0; j < commonLen; j++) {
                     ans_dbl[count + j * nRows] = val_dbl[j];
+                }
 
                 break;
             } case INTSXP: {
                 int* ans_int = INTEGER(ans);
                 int* val_int = INTEGER(val);
 
-                for (int j = 0; j < commonLen; j++)
+                for (int j = 0; j < commonLen; j++) {
                     ans_int[count + j * nRows] = val_int[j];
+                }
 
                 break;
             } case LGLSXP: {
                 int* ans_bool = LOGICAL(ans);
                 int* val_bool = LOGICAL(val);
 
-                for (int j = 0; j < commonLen; j++)
+                for (int j = 0; j < commonLen; j++) {
                     ans_bool[count + j * nRows] = val_bool[j];
+                }
 
                 break;
             } case RAWSXP: {
                 Rbyte* ans_raw = RAW(ans);
                 Rbyte* val_raw = RAW(val);
 
-                for (int j = 0; j < commonLen; j++)
+                for (int j = 0; j < commonLen; j++) {
                     ans_raw[count + j * nRows] = val_raw[j];
+                }
 
                 break;
             } case CPLXSXP: {
                 Rcomplex* ans_cmplx = COMPLEX(ans);
                 Rcomplex* val_cmplx = COMPLEX(val);
 
-                for (int j = 0; j < commonLen; j++)
+                for (int j = 0; j < commonLen; j++) {
                     ans_cmplx[count + j * nRows] = val_cmplx[j];
+                }
 
                 break;
             } case STRSXP: {
-                for (int j = 0; j < commonLen; j++)
-                    SET_STRING_ELT(ans, count + j * nRows, STRING_ELT(val, j));
+                for (int j = 0; j < commonLen; j++) {
+                    SET_STRING_ELT(ans, count + j * nRows,
+                                   STRING_ELT(val, j));
+                }
 
                 break;
             } case VECSXP: {
-                for (int j = 0; j < commonLen; j++)
-                    SET_VECTOR_ELT(ans, count + j * nRows, VECTOR_ELT(val, j));
+                for (int j = 0; j < commonLen; j++) {
+                    SET_VECTOR_ELT(ans, count + j * nRows,
+                                   VECTOR_ELT(val, j));
+                }
 
                 break;
             }

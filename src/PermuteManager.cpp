@@ -49,26 +49,28 @@ void PermuteCharacter(SEXP mat, SEXP v, std::vector<int> &z, int n,
     }
 }
 
-template void PermuteParallel(RcppParallel::RMatrix<int>&, const std::vector<int>&,
+template void PermuteParallel(RcppParallel::RMatrix<int>&,
+                              const std::vector<int>&,
                               std::vector<int>&, int, int, int, int,
                               const std::vector<int>&, bool, bool);
 
-template void PermuteParallel(RcppParallel::RMatrix<double>&, const std::vector<double>&,
+template void PermuteParallel(RcppParallel::RMatrix<double>&,
+                              const std::vector<double>&,
                               std::vector<int>&, int, int, int, int,
                               const std::vector<int>&, bool, bool);
 
-template void PermuteManager(int*, const std::vector<int>&, std::vector<int>&,
-                             int, int, int, int, bool, bool, bool,
-                             const std::vector<int>&);
+template void PermuteManager(int*, const std::vector<int>&,
+                             std::vector<int>&, int, int, int, int,
+                             bool, bool, bool, const std::vector<int>&);
 
-template void PermuteManager(double*, const std::vector<double>&, std::vector<int>&,
-                             int, int, int, int, bool, bool, bool,
-                             const std::vector<int>&);
+template void PermuteManager(double*, const std::vector<double>&,
+                             std::vector<int>&, int, int, int, int,
+                             bool, bool, bool, const std::vector<int>&);
 
-template void PermuteManager(Rbyte*, const std::vector<Rbyte>&, std::vector<int>&,
-                             int, int, int, int, bool, bool, bool,
-                             const std::vector<int>&);
+template void PermuteManager(Rbyte*, const std::vector<Rbyte>&,
+                             std::vector<int>&, int, int, int, int,
+                             bool, bool, bool, const std::vector<int>&);
 
-template void PermuteManager(Rcomplex*, const std::vector<Rcomplex>&, std::vector<int>&,
-                             int, int, int, int, bool, bool, bool,
-                             const std::vector<int>&);
+template void PermuteManager(Rcomplex*, const std::vector<Rcomplex>&,
+                             std::vector<int>&, int, int, int, int,
+                             bool, bool, bool, const std::vector<int>&);

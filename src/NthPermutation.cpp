@@ -9,9 +9,11 @@ using nthPermPtr = std::vector<int> (*const)(int n, int r, double dblIdx,
 std::vector<int> nonZeroVec(std::vector<int> v) {
     std::vector<int> nonZero;
 
-    for (std::size_t i = 0; i < v.size(); i++)
-        if (v[i] > 0)
+    for (std::size_t i = 0; i < v.size(); i++) {
+        if (v[i] > 0) {
             nonZero.push_back(v[i]);
+        }
+    }
 
     return nonZero;
 }
@@ -69,8 +71,10 @@ std::vector<int> nthPermMult(int n, int r, double dblIdx,
     for (int k = 0, r1 = r - 1; k < r; ++k, --r1) {
 
         int j = 0;
-        while (TempReps[j] == 0)
+
+        while (TempReps[j] == 0) {
             ++j;
+        }
 
         --TempReps[j];
         Counts = nonZeroVec(TempReps);
@@ -82,8 +86,9 @@ std::vector<int> nthPermMult(int n, int r, double dblIdx,
             ++TempReps[j];
             ++j;
 
-            while (TempReps[j] == 0)
+            while (TempReps[j] == 0) {
                 ++j;
+            }
 
             --TempReps[j];
             Counts = nonZeroVec(TempReps);
@@ -184,8 +189,10 @@ std::vector<int> nthPermMultGmp(int n, int r, double dblIdx,
     for (int k = 0, r1 = r - 1; k < r; ++k, --r1) {
 
         int j = 0;
-        while (TempReps[j] == 0)
+
+        while (TempReps[j] == 0) {
             ++j;
+        }
 
         --TempReps[j];
         Counts = nonZeroVec(TempReps);
@@ -197,8 +204,9 @@ std::vector<int> nthPermMultGmp(int n, int r, double dblIdx,
             ++TempReps[j];
             ++j;
 
-            while (TempReps[j] == 0)
+            while (TempReps[j] == 0) {
                 ++j;
+            }
 
             --TempReps[j];
             Counts = nonZeroVec(TempReps);
@@ -249,16 +257,20 @@ void SetStartPerm(std::vector<int> &z, const nthPermPtr nthPermFun,
     if (IsMult) {
         std::vector<int> f(n, 0);
 
-        for (int i = 0; i < m; ++i)
+        for (int i = 0; i < m; ++i) {
             ++f[z[i]];
+        }
 
-        for (int i = 0; i < n; ++i)
-            for (int j = 0; j < (myReps[i] - f[i]); ++j)
+        for (int i = 0; i < n; ++i) {
+            for (int j = 0; j < (myReps[i] - f[i]); ++j) {
                 z.push_back(i);
-
+            }
+        }
     } else if (!IsRep && m < n) {
-        for (int i = 0; i < n; ++i)
-            if (std::find(z.begin(), z.end(), i) == z.end())
+        for (int i = 0; i < n; ++i) {
+            if (std::find(z.begin(), z.end(), i) == z.end()) {
                 z.push_back(i);
+            }
+        }
     }
 }

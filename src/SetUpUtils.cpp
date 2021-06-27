@@ -259,8 +259,8 @@ void SetThreads(bool &Parallel, int maxThreads, int nRows,
 }
 
 void SetNumResults(bool IsGmp, bool bLower, bool bUpper, bool IsGenCnstrd,
-                   mpz_t *const upperMpz, mpz_t *const lowerMpz, 
-                   double lower, double upper, double computedRows, 
+                   mpz_t *const upperMpz, mpz_t *const lowerMpz,
+                   double lower, double upper, double computedRows,
                    mpz_t &computedRowsMpz, int &nRows, double &userNumRows) {
 
     if (IsGmp) {
@@ -344,8 +344,8 @@ void SetNumResults(bool IsGmp, bool bLower, bool bUpper, bool IsGenCnstrd,
 }
 
 void SetBounds(SEXP Rlow, SEXP Rhigh, bool IsGmp, bool &bLower,
-               bool &bUpper, double &lower, double &upper, 
-               mpz_t *const lowerMpz, mpz_t *const upperMpz, 
+               bool &bUpper, double &lower, double &upper,
+               mpz_t *const lowerMpz, mpz_t *const upperMpz,
                mpz_t computedRowsMpz, double computedRows) {
 
     if (!Rf_isNull(Rlow)) {
@@ -491,7 +491,7 @@ void SetRandomSample(SEXP RindexVec, SEXP RNumSamp, std::size_t &sampSize,
                      bool IsGmp, double computedRows,
                      std::vector<double> &mySample,
                      SEXP baseSample, SEXP rho) {
-    
+
     // We must treat gmp case special. We first have to get the size of our sample
     // vector, as we have to declare a mpz_t array with known size. You will note
     // that in the base case below, we simply populate mySample, otherwise we just
@@ -500,30 +500,30 @@ void SetRandomSample(SEXP RindexVec, SEXP RNumSamp, std::size_t &sampSize,
         if (Rf_isNull(RNumSamp)) {
             Rf_error("n and sampleVec cannot both be NULL");
         }
-        
+
         if (Rf_length(RNumSamp) > 1) {
             Rf_error("length of n must be 1. For specific "
                      "combinations, use sampleVec.");
         }
 
         sampSize = Rf_length(RNumSamp);
-        
+
         if (!IsGmp) {
             if (sampSize > computedRows) {
                 Rf_error("n exceeds the maximum number of possible results");
             }
-            
+
             SEXP sample = PROTECT(Rf_lang3(baseSample,
                                            Rf_ScalarReal(computedRows),
                                            RNumSamp));
             SEXP val = PROTECT(Rf_eval(sample, rho));
             double* tempSamp = REAL(val);
             mySample.resize(sampSize);
-            
+
             for (int j = 0; j < sampSize; ++j) {
                 mySample[j] = tempSamp[j];
             }
-            
+
             UNPROTECT(2);
         }
     } else {
@@ -544,18 +544,18 @@ void SetRandomSample(SEXP RindexVec, SEXP RNumSamp, std::size_t &sampSize,
             sampSize = mySample.size();
             const double myMax = *std::max_element(mySample.cbegin(),
                                                    mySample.cend());
-            
+
             if (myMax > computedRows) {
                 Rf_error("One or more of the requested values in sampleVec "
                          "exceeds the maximum number of possible results");
             }
         }
-        
+
         if (sampSize > std::numeric_limits<int>::max()) {
             Rf_error("The number of rows cannot exceed 2^31 - 1");
         }
     }
-    
+
     // Get zero base index
     for (auto &s: mySample) {
         --s;
@@ -565,11 +565,11 @@ void SetRandomSample(SEXP RindexVec, SEXP RNumSamp, std::size_t &sampSize,
 void SetRandomSampleMpz(const SEXP &RindexVec, const SEXP &RmySeed,
                         std::size_t sampSize, bool IsGmp,
                         mpz_t &computedRowsMpz, mpz_t *const myVec) {
-    
+
     if (IsGmp) {
         if (!Rf_isNull(RindexVec)) {
             createMPZArray(RindexVec, myVec, sampSize, "sampleVec");
-            
+
             // get zero base
             for (std::size_t i = 0; i < sampSize; ++i) {
                 mpz_sub_ui(myVec[i], myVec[i], 1);
@@ -581,9 +581,9 @@ void SetRandomSampleMpz(const SEXP &RindexVec, const SEXP &RmySeed,
             if (seed_init == 0) {
                 gmp_randinit_default(seed_state);
             }
-            
+
             seed_init = 1;
-            
+
             if (!Rf_isNull(RmySeed)) {
                 mpz_t mpzSeed[1];
                 mpz_init(mpzSeed[0]);
@@ -591,7 +591,7 @@ void SetRandomSampleMpz(const SEXP &RindexVec, const SEXP &RmySeed,
                 gmp_randseed(seed_state, mpzSeed[0]);
                 mpz_clear(mpzSeed[0]);
             }
-            
+
             // random number is between 0 and gmpRows[0] - 1
             // so we need to add 1 to each element
             for (std::size_t i = 0; i < sampSize; ++i) {
@@ -599,17 +599,17 @@ void SetRandomSampleMpz(const SEXP &RindexVec, const SEXP &RmySeed,
                 mpz_urandomm(myVec[i], seed_state, computedRowsMpz);
             }
         }
-        
+
         mpz_t maxGmp;
         mpz_init(maxGmp);
         mpz_set(maxGmp, myVec[0]);
-        
+
         for (std::size_t i = 1; i < sampSize; ++i) {
             if (mpz_cmp(myVec[i], maxGmp) > 0) {
                 mpz_set(maxGmp, myVec[i]);
             }
         }
-        
+
         if (mpz_cmp(maxGmp, computedRowsMpz) >= 0) {
             Rf_error("One or more of the requested values in sampleVec "
                      "exceeds the maximum number of possible results");
