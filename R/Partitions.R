@@ -18,7 +18,7 @@ partitionsGeneral <- function(v, m = NULL, repetition = FALSE,
 partitionsCount <- function(v, m = NULL, repetition = FALSE,
                             freqs = NULL, target = NULL) {
     .Call(PartitionsCount, GetTarget(v, target), v, m, repetition,
-          freqs, "==", NULL, NULL, FALSE, FALSE, PACKAGE = "RcppAlgos");
+          freqs, "==", NULL, NULL, FALSE, FALSE, PACKAGE = "RcppAlgos")
 }
 
 partitionsDesign <- function(v, m = NULL, repetition = FALSE,
@@ -27,7 +27,22 @@ partitionsDesign <- function(v, m = NULL, repetition = FALSE,
     
     .Call(PartitionsCount, GetTarget(v, target),
           v, m, repetition, freqs, "==", NULL, NULL,
-          TRUE, showDesign, PACKAGE = "RcppAlgos");
+          TRUE, showDesign, PACKAGE = "RcppAlgos")
+}
+
+partitionsSample <- function(v, m = NULL, repetition = FALSE, freqs = NULL,
+                             target = NULL, n = NULL, sampleVec = NULL,
+                             seed = NULL, FUN = NULL, Parallel = FALSE,
+                             nThreads = NULL, namedSample = FALSE) {
+
+    if (!is.null(seed)) {
+        set.seed(seed)
+    }
+    
+    .Call(PartitionsSample, GetTarget(v, target), v, m, repetition,
+          freqs, "==", NULL, NULL, TRUE, sampleVec, seed, n, sample,
+          FUN, new.env(), Parallel, nThreads, pkgEnv$nThreads,
+          namedSample, PACKAGE = "RcppAlgos")
 }
 
 partLen <- function(tar, m, v, rep = FALSE, fr = NULL, comb = TRUE) {

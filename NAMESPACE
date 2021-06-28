@@ -7,5 +7,7 @@ export(comboGeneral,
        comboCount,
        permuteCount,
        partitionsCount,
+       comboSample,
+       permuteSample,
        partitionsDesign,
        stdThreadMax)
