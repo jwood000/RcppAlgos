@@ -14,8 +14,9 @@ void ComboDistinctApplyFun(SEXP res, const std::vector<T> &v,
 
     for (int count = 0, m1 = m - 1, nMinusM = n - m; count < nRows;) {
         for (; z[m1] < n && count < nRows; ++count, ++z[m1]) {
-            for (int j = 0; j < m; ++j)
+            for (int j = 0; j < m; ++j) {
                 ptr_vec[j] = v[z[j]];
+            }
 
             FunAssign(res, vectorPass, sexpFun, rho,
                       commonType, commonLen, count, nRows, retType);
@@ -34,8 +35,9 @@ void ComboDistinctApplyFun(SEXP res, SEXP v, SEXP vectorPass,
 
     for (int count = 0, m1 = m - 1, nMinusM = n - m; count < nRows;) {
         for (; z[m1] < n && count < nRows; ++count, ++z[m1]) {
-            for (int j = 0; j < m; ++j)
+            for (int j = 0; j < m; ++j) {
                 SET_STRING_ELT(vectorPass, j, STRING_ELT(v, z[j]));
+            }
 
             FunAssign(res, vectorPass, sexpFun, rho,
                       commonType, commonLen, count, nRows, retType);

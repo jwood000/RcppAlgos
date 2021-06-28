@@ -1,6 +1,7 @@
 #include "Combinations/NthCombination.h"
 #include "Permutations/NthPermutation.h"
 #include "Permutations/PermuteCount.h"
+#include "Cpp14MakeUnique.h"
 #include "ImportExportMPZ.h"
 #include "CleanConvert.h"
 #include <algorithm>
@@ -87,9 +88,11 @@ void SetFreqsAndM(std::vector<int> &Reps,
         } else {
             IsMult = true;
 
-            for (std::size_t i = 0; i < Reps.size(); ++i)
-                for (int j = 0; j < Reps[i]; ++j)
+            for (std::size_t i = 0; i < Reps.size(); ++i) {
+                for (int j = 0; j < Reps[i]; ++j) {
                     freqs.push_back(i);
+                }
+            }
         }
     }
 
@@ -487,7 +490,7 @@ void SetStartZ(const std::vector<int> &myReps,
     }
 }
 
-void SetRandomSample(SEXP RindexVec, SEXP RNumSamp, std::size_t &sampSize,
+void SetRandomSample(SEXP RindexVec, SEXP RNumSamp, int &sampSize,
                      bool IsGmp, double computedRows,
                      std::vector<double> &mySample,
                      SEXP baseSample, SEXP rho) {
@@ -563,15 +566,15 @@ void SetRandomSample(SEXP RindexVec, SEXP RNumSamp, std::size_t &sampSize,
 }
 
 void SetRandomSampleMpz(const SEXP &RindexVec, const SEXP &RmySeed,
-                        std::size_t sampSize, bool IsGmp,
-                        mpz_t &computedRowsMpz, mpz_t *const myVec) {
+                        int sampSize, bool IsGmp, mpz_t &computedRowsMpz,
+                        mpz_t *const myVec) {
 
     if (IsGmp) {
         if (!Rf_isNull(RindexVec)) {
             createMPZArray(RindexVec, myVec, sampSize, "sampleVec");
 
             // get zero base
-            for (std::size_t i = 0; i < sampSize; ++i) {
+            for (int i = 0; i < sampSize; ++i) {
                 mpz_sub_ui(myVec[i], myVec[i], 1);
             }
         } else {
@@ -594,7 +597,7 @@ void SetRandomSampleMpz(const SEXP &RindexVec, const SEXP &RmySeed,
 
             // random number is between 0 and gmpRows[0] - 1
             // so we need to add 1 to each element
-            for (std::size_t i = 0; i < sampSize; ++i) {
+            for (int i = 0; i < sampSize; ++i) {
                 mpz_init(myVec[i]);
                 mpz_urandomm(myVec[i], seed_state, computedRowsMpz);
             }
@@ -604,7 +607,7 @@ void SetRandomSampleMpz(const SEXP &RindexVec, const SEXP &RmySeed,
         mpz_init(maxGmp);
         mpz_set(maxGmp, myVec[0]);
 
-        for (std::size_t i = 1; i < sampSize; ++i) {
+        for (int i = 1; i < sampSize; ++i) {
             if (mpz_cmp(myVec[i], maxGmp) > 0) {
                 mpz_set(maxGmp, myVec[i]);
             }
@@ -614,5 +617,44 @@ void SetRandomSampleMpz(const SEXP &RindexVec, const SEXP &RmySeed,
             Rf_error("One or more of the requested values in sampleVec "
                      "exceeds the maximum number of possible results");
         }
+    }
+}
+
+void SetSampleNames(SEXP object, bool IsGmp, int sampSize,
+                    const std::vector<double> &mySample, 
+                    mpz_t *const myBigSamp) {
+    
+    SEXP myNames = PROTECT(Rf_allocVector(STRSXP, sampSize));
+    
+    if (IsGmp) {
+        constexpr int base10 = 10;
+        
+        for (int i = 0; i < sampSize; ++i) {
+            mpz_add_ui(myBigSamp[i], myBigSamp[i], 1);
+            auto buffer = FromCpp14::make_unique<char[]>(
+                mpz_sizeinbase(myBigSamp[i], base10) + 2
+            );
+            
+            mpz_get_str(buffer.get(), base10, myBigSamp[i]);
+            SET_STRING_ELT(myNames, i, Rf_mkChar(buffer.get()));
+        }
+    } else {
+        for (int i = 0; i < sampSize; ++i) {
+            const std::string name = std::to_string(
+                static_cast<int64_t>(mySample[i] + 1)
+            );
+            
+            SET_STRING_ELT(myNames, i, Rf_mkChar(name.c_str()));
+        }
+    }
+    
+    if (Rf_isMatrix(object) || Rf_isArray(object)) {
+        SEXP dimNames = PROTECT((Rf_allocVector(VECSXP, 1)));
+        SET_VECTOR_ELT(dimNames, 0, myNames);
+        Rf_setAttrib(object, R_DimNamesSymbol, dimNames);
+        UNPROTECT(2);
+    } else if (Rf_isList(object) || Rf_isVector(object)) {
+        Rf_setAttrib(object, R_NamesSymbol, myNames);
+        UNPROTECT(1);
     }
 }

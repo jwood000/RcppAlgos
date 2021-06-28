@@ -9,31 +9,6 @@
 #include "ComputedCount.h"
 #include "SetUpUtils.h"
 
-void SetDims(SEXP RFunVal, SEXP res, int commonLen, int nRows) {
-
-    SEXP dim_v = PROTECT(Rf_getAttrib(RFunVal, R_DimSymbol));
-    const bool array_value = (TYPEOF(dim_v) == INTSXP && LENGTH(dim_v) >= 1);
-
-    if (commonLen != 1) {
-        const int rnk_v = array_value ? LENGTH(dim_v) : 1;
-        SEXP dim = PROTECT(Rf_allocVector(INTSXP, rnk_v + 1));
-        INTEGER(dim)[0] = nRows;
-
-        if(array_value) {
-            for(int j = 0; j < rnk_v; j++) {
-                INTEGER(dim)[j + 1] = INTEGER(dim_v)[j];
-            }
-        } else {
-            INTEGER(dim)[rnk_v] = commonLen;
-        }
-
-        Rf_setAttrib(res, R_DimSymbol, dim);
-        UNPROTECT(1);
-    }
-
-    UNPROTECT(1);
-}
-
 template <typename T>
 void VecApply(SEXP res, const std::vector<T> &v, SEXP vectorPass,
               T* ptr_vec, int n, int m, bool IsComb, bool IsRep, int nRows,

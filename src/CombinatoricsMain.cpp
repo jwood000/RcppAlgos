@@ -137,8 +137,9 @@ SEXP CombinatoricsStndrd(SEXP Rv, SEXP Rm, SEXP RisRep, SEXP RFreqs,
             std::vector<Rcomplex> stlCmplxVec(n);
             Rcomplex* vecCmplx = COMPLEX(Rv);
 
-            for (int i = 0; i < n; ++i)
+            for (int i = 0; i < n; ++i) {
                 stlCmplxVec[i] = vecCmplx[i];
+            }
 
             SEXP res = PROTECT(Rf_allocMatrix(CPLXSXP, nRows, m));
             Rcomplex* matCmplx = COMPLEX(res);
@@ -153,8 +154,9 @@ SEXP CombinatoricsStndrd(SEXP Rv, SEXP Rm, SEXP RisRep, SEXP RFreqs,
             std::vector<Rbyte> stlRawVec(n);
             Rbyte* rawVec = RAW(Rv);
 
-            for (int i = 0; i < n; ++i)
+            for (int i = 0; i < n; ++i) {
                 stlRawVec[i] = rawVec[i];
+            }
 
             SEXP res = PROTECT(Rf_allocMatrix(RAWSXP, nRows, m));
             Rbyte* rawMat = RAW(res);
@@ -168,8 +170,9 @@ SEXP CombinatoricsStndrd(SEXP Rv, SEXP Rm, SEXP RisRep, SEXP RFreqs,
             vInt.assign(n, 0);
             int* vecBool = LOGICAL(Rv);
 
-            for (int i = 0; i < n; ++i)
+            for (int i = 0; i < n; ++i) {
                 vInt[i] = vecBool[i];
+            }
 
             SEXP res = PROTECT(Rf_allocMatrix(LGLSXP, nRows, m));
             int* matBool = LOGICAL(res);
