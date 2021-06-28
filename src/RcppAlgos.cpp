@@ -2,6 +2,7 @@
 #include "CombinatoricsCount.h"
 #include "CombinatoricsApply.h"
 #include "CombinatoricsMain.h"
+#include "SampleCombPerm.h"
 #include "CheckReturn.h"
 #include "NumThreads.h"
 
@@ -14,6 +15,7 @@ static const R_CallMethodDef CallEntries[] = {
     CALLDEF(CombinatoricsApply, 10),
     CALLDEF(CombinatoricsStndrd, 10),
     CALLDEF(CombinatoricsCnstrt, 15),
+    CALLDEF(SampleCombPerm, 16),
     CALLDEF(cpp11GetNumThreads, 0),
     {NULL, NULL, 0}
 };

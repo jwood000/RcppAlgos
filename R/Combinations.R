@@ -26,14 +26,19 @@ comboGeneral <- function(v, m = NULL, repetition = FALSE, freqs = NULL,
     }
 }
 
-# comboSample <- function(v, m = NULL, repetition = FALSE, freqs = NULL, n = NULL, 
-#                         sampleVec = NULL, seed = NULL, FUN = NULL, Parallel = FALSE,
-#                         nThreads = NULL, namedSample = FALSE) {
-#     
-#     if (!is.null(seed)) {set.seed(seed)}
-#     SampleRcpp(v, m, repetition, freqs, sampleVec, TRUE, is.factor(v), seed, n,
-#                sample, FUN, new.env(), Parallel, nThreads, pkgEnv$nThreads, namedSample)
-# }
+comboSample <- function(v, m = NULL, repetition = FALSE, freqs = NULL, n = NULL,
+                        sampleVec = NULL, seed = NULL, FUN = NULL, Parallel = FALSE,
+                        nThreads = NULL, namedSample = FALSE, FUN.VALUE = NULL) {
+
+    if (!is.null(seed)) {
+        set.seed(seed)
+    }
+    
+    return(.Call(SampleCombPerm, v, m, repetition, freqs, sampleVec, TRUE,
+                 seed, n, sample, FUN, new.env(), Parallel, nThreads,
+                 pkgEnv$nThreads, namedSample, FUN.VALUE,
+                 PACKAGE = "RcppAlgos"))
+}
 
 comboCount <-  function(v, m = NULL, repetition = FALSE, freqs = NULL) {
     .Call(CombinatoricsCount, v, m,
