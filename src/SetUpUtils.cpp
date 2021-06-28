@@ -621,20 +621,20 @@ void SetRandomSampleMpz(const SEXP &RindexVec, const SEXP &RmySeed,
 }
 
 void SetSampleNames(SEXP object, bool IsGmp, int sampSize,
-                    const std::vector<double> &mySample, 
+                    const std::vector<double> &mySample,
                     mpz_t *const myBigSamp) {
-    
+
     SEXP myNames = PROTECT(Rf_allocVector(STRSXP, sampSize));
-    
+
     if (IsGmp) {
         constexpr int base10 = 10;
-        
+
         for (int i = 0; i < sampSize; ++i) {
             mpz_add_ui(myBigSamp[i], myBigSamp[i], 1);
             auto buffer = FromCpp14::make_unique<char[]>(
                 mpz_sizeinbase(myBigSamp[i], base10) + 2
             );
-            
+
             mpz_get_str(buffer.get(), base10, myBigSamp[i]);
             SET_STRING_ELT(myNames, i, Rf_mkChar(buffer.get()));
         }
@@ -643,11 +643,11 @@ void SetSampleNames(SEXP object, bool IsGmp, int sampSize,
             const std::string name = std::to_string(
                 static_cast<int64_t>(mySample[i] + 1)
             );
-            
+
             SET_STRING_ELT(myNames, i, Rf_mkChar(name.c_str()));
         }
     }
-    
+
     if (Rf_isMatrix(object) || Rf_isArray(object)) {
         SEXP dimNames = PROTECT((Rf_allocVector(VECSXP, 1)));
         SET_VECTOR_ELT(dimNames, 0, myNames);

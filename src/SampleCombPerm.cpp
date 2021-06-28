@@ -27,14 +27,14 @@ void ParallelGlue(RcppParallel::RMatrix<T> &sampleMatrix,
                   mpz_t *const myBigSamp, const std::vector<int> &myReps,
                   nthResultPtr nthResFun, int m, int strtIdx, int endIdx,
                   int lenV, bool IsGmp) {
-    
+
     SampleResults(sampleMatrix, v, mySample, myBigSamp, myReps,
                   nthResFun, m, strtIdx, endIdx, lenV, IsGmp);
 }
 
 template <typename T>
 void ThreadSafeSample(T* mat, SEXP res, const std::vector<T> &v,
-                      const std::vector<double> &mySample, 
+                      const std::vector<double> &mySample,
                       mpz_t *const myBigSamp, const std::vector<int> &myReps,
                       nthResultPtr nthResFun, int m, int sampSize,
                       int nThreads, bool Parallel, bool IsNamed,
@@ -43,7 +43,7 @@ void ThreadSafeSample(T* mat, SEXP res, const std::vector<T> &v,
     if (Parallel) {
         RcppParallel::RMatrix<T> parMat(mat, sampSize, m);
         RcppThread::ThreadPool pool(nThreads);
-        
+
         int step = 0;
         int stepSize = sampSize / nThreads;
         int nextStep = stepSize;
@@ -139,7 +139,7 @@ SEXP SampleCombPerm(SEXP Rv, SEXP Rm, SEXP RisRep, SEXP RFreqs,
         if (!Rf_isFunction(stdFun)) {
             Rf_error("FUN must be a function!");
         }
-        
+
         switch (myType) {
             case VecType::Character : {
                 SEXP vectorPass = PROTECT(Rf_allocVector(STRSXP, m));
@@ -152,7 +152,7 @@ SEXP SampleCombPerm(SEXP Rv, SEXP Rm, SEXP RisRep, SEXP RFreqs,
             } case VecType::Complex : {
                 SEXP vectorPass = PROTECT(Rf_allocVector(CPLXSXP, m));
                 Rcomplex* ptr_vec = COMPLEX(vectorPass);
-                
+
                 Rcomplex* cmplxVec = COMPLEX(Rv);
                 std::vector<Rcomplex> vCmplx(cmplxVec, cmplxVec + n);
                 SEXP res = ApplyFunction(vCmplx, vectorPass, ptr_vec, mySample,
@@ -164,7 +164,7 @@ SEXP SampleCombPerm(SEXP Rv, SEXP Rm, SEXP RisRep, SEXP RFreqs,
             } case VecType::Raw : {
                 SEXP vectorPass = PROTECT(Rf_allocVector(RAWSXP, m));
                 Rbyte* ptr_vec = RAW(vectorPass);
-                
+
                 Rbyte* rawVec = RAW(Rv);
                 std::vector<Rbyte> vByte(rawVec, rawVec + n);
                 SEXP res = ApplyFunction(vByte, vectorPass, ptr_vec, mySample,
@@ -215,11 +215,11 @@ SEXP SampleCombPerm(SEXP Rv, SEXP Rm, SEXP RisRep, SEXP RFreqs,
         } case VecType::Complex : {
             std::vector<Rcomplex> stlCmplxVec(n);
             Rcomplex* vecCmplx = COMPLEX(Rv);
-            
+
             for (int i = 0; i < n; ++i) {
                 stlCmplxVec[i] = vecCmplx[i];
             }
-            
+
             SEXP res = PROTECT(Rf_allocMatrix(CPLXSXP, sampSize, m));
             Rcomplex* matCmplx = COMPLEX(res);
 
@@ -231,14 +231,14 @@ SEXP SampleCombPerm(SEXP Rv, SEXP Rm, SEXP RisRep, SEXP RFreqs,
         } case VecType::Raw : {
             std::vector<Rbyte> stlRawVec(n);
             Rbyte* rawVec = RAW(Rv);
-            
+
             for (int i = 0; i < n; ++i) {
                 stlRawVec[i] = rawVec[i];
             }
-            
+
             SEXP res = PROTECT(Rf_allocMatrix(RAWSXP, sampSize, m));
             Rbyte* rawMat = RAW(res);
-            
+
             SampNoThrdSafe(rawMat, res, stlRawVec, mySample,
                            myVec.get(), myReps, nthResFun, m, sampSize,
                            n, IsGmp, IsNamed);
@@ -247,14 +247,14 @@ SEXP SampleCombPerm(SEXP Rv, SEXP Rm, SEXP RisRep, SEXP RFreqs,
         } case VecType::Logical : {
             vInt.assign(n, 0);
             int* vecBool = LOGICAL(Rv);
-            
+
             for (int i = 0; i < n; ++i) {
                 vInt[i] = vecBool[i];
             }
-            
+
             SEXP res = PROTECT(Rf_allocMatrix(LGLSXP, sampSize, m));
             int* matBool = LOGICAL(res);
-            
+
             SampNoThrdSafe(matBool, res, vInt, mySample, myVec.get(), myReps,
                            nthResFun, m, sampSize, n, IsGmp, IsNamed);
             UNPROTECT(1);
@@ -262,25 +262,25 @@ SEXP SampleCombPerm(SEXP Rv, SEXP Rm, SEXP RisRep, SEXP RFreqs,
         } case VecType::Integer : {
             SEXP res = PROTECT(Rf_allocMatrix(INTSXP, sampSize, m));
             int* matInt = INTEGER(res);
-            
+
             ThreadSafeSample(matInt, res, vInt, mySample, myVec.get(),
                              myReps, nthResFun, m, sampSize, nThreads,
                              Parallel, IsNamed, IsGmp, n);
-            
+
             if (Rf_isFactor(Rv)) {
                 SetFactorClass(res, Rv);
             }
-            
+
             UNPROTECT(1);
             return res;
         } default : {
             SEXP res = PROTECT(Rf_allocMatrix(REALSXP, sampSize, m));
             double* matNum = REAL(res);
-            
+
             ThreadSafeSample(matNum, res, vNum, mySample, myVec.get(),
                              myReps, nthResFun, m, sampSize, nThreads,
                              Parallel, IsNamed, IsGmp, n);
-            
+
             UNPROTECT(1);
             return res;
         }
