@@ -9,5 +9,6 @@ export(comboGeneral,
        partitionsCount,
        comboSample,
        permuteSample,
+       partitionsSample,
        partitionsDesign,
        stdThreadMax)

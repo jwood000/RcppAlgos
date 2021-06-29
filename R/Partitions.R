@@ -32,17 +32,18 @@ partitionsDesign <- function(v, m = NULL, repetition = FALSE,
 
 partitionsSample <- function(v, m = NULL, repetition = FALSE, freqs = NULL,
                              target = NULL, n = NULL, sampleVec = NULL,
-                             seed = NULL, FUN = NULL, Parallel = FALSE,
-                             nThreads = NULL, namedSample = FALSE) {
+                             seed = NULL, Parallel = FALSE,
+                             nThreads = NULL, namedSample = FALSE,
+                             tolerance = NULL) {
 
     if (!is.null(seed)) {
         set.seed(seed)
     }
     
-    .Call(PartitionsSample, GetTarget(v, target), v, m, repetition,
-          freqs, "==", NULL, NULL, TRUE, sampleVec, seed, n, sample,
-          FUN, new.env(), Parallel, nThreads, pkgEnv$nThreads,
-          namedSample, PACKAGE = "RcppAlgos")
+    return(.Call(SamplePartitions, v, m, repetition, freqs, sampleVec, seed,
+                 n, sample, Parallel, nThreads, pkgEnv$nThreads, namedSample,
+                 "==", GetTarget(v, target), tolerance, new.env(),
+                 PACKAGE = "RcppAlgos"))
 }
 
 partLen <- function(tar, m, v, rep = FALSE, fr = NULL, comb = TRUE) {
