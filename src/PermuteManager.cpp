@@ -11,11 +11,11 @@ void PermuteManager(T* mat, const std::vector<T> &v,
 
     if (generalRet) {
         if (IsMult) {
-            PermuteMultiset(mat, v, z, n, m, 0, nRows, freqs);
+            PermuteMultiset(mat, v, z, n, m, nRows, freqs);
         } else if (IsRep) {
-            PermuteRep(mat, v, z, n, m, 0, nRows);
+            PermuteRep(mat, v, z, n, m, nRows);
         } else {
-            PermuteDistinct(mat, v, z, n, m, 0, nRows);
+            PermuteDistinct(mat, v, z, n, m, nRows);
         }
     } else {
         PermuteOptimized(mat, v, z, n, m, nRows, IsRep);

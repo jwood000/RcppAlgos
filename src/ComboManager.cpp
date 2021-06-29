@@ -9,11 +9,11 @@ void ComboManager(T* mat, const std::vector<T> &v,
                   const std::vector<int> &freqs, bool IsMult, bool IsRep) {
 
     if (IsMult) {
-        MultisetCombination(mat, v, z, n, m, 0, nRows, freqs);
+        MultisetCombination(mat, v, z, n, m, nRows, freqs);
     } else if (IsRep) {
-        CombinationsRep(mat, v, z, n, m, 0, nRows);
+        CombinationsRep(mat, v, z, n, m, nRows);
     } else {
-        CombinationsDistinct(mat, v, z, n, m, 0, nRows);
+        CombinationsDistinct(mat, v, z, n, m, nRows);
     }
 }
 

@@ -493,7 +493,7 @@ void SetStartZ(const std::vector<int> &myReps,
 void SetRandomSample(SEXP RindexVec, SEXP RNumSamp, int &sampSize,
                      bool IsGmp, double computedRows,
                      std::vector<double> &mySample,
-                     SEXP baseSample, SEXP rho) {
+                     SEXP baseSample, SEXP rho, bool bSubOne) {
 
     // We must treat gmp case special. We first have to get the size of our sample
     // vector, as we have to declare a mpz_t array with known size. You will note
@@ -509,7 +509,8 @@ void SetRandomSample(SEXP RindexVec, SEXP RNumSamp, int &sampSize,
                      "combinations, use sampleVec.");
         }
 
-        sampSize = Rf_length(RNumSamp);
+        CleanConvert::convertPrimitive(RNumSamp, sampSize,
+                                       VecType::Integer, "n");
 
         if (!IsGmp) {
             if (sampSize > computedRows) {
@@ -520,11 +521,20 @@ void SetRandomSample(SEXP RindexVec, SEXP RNumSamp, int &sampSize,
                                            Rf_ScalarReal(computedRows),
                                            RNumSamp));
             SEXP val = PROTECT(Rf_eval(sample, rho));
-            double* tempSamp = REAL(val);
             mySample.resize(sampSize);
 
-            for (int j = 0; j < sampSize; ++j) {
-                mySample[j] = tempSamp[j];
+            if (computedRows < std::numeric_limits<int>::max()) {
+                int* intSamp = INTEGER(val);
+
+                for (int j = 0; j < sampSize; ++j) {
+                    mySample[j] = intSamp[j];
+                }
+            } else {
+                double* dblSamp = REAL(val);
+
+                for (int j = 0; j < sampSize; ++j) {
+                    mySample[j] = dblSamp[j];
+                }
             }
 
             UNPROTECT(2);
@@ -560,22 +570,26 @@ void SetRandomSample(SEXP RindexVec, SEXP RNumSamp, int &sampSize,
     }
 
     // Get zero base index
-    for (auto &s: mySample) {
-        --s;
+    if (bSubOne) {
+        for (auto &s: mySample) {
+            --s;
+        }
     }
 }
 
 void SetRandomSampleMpz(const SEXP &RindexVec, const SEXP &RmySeed,
                         int sampSize, bool IsGmp, mpz_t &computedRowsMpz,
-                        mpz_t *const myVec) {
+                        mpz_t *const myVec, bool bSubOne) {
 
     if (IsGmp) {
         if (!Rf_isNull(RindexVec)) {
             createMPZArray(RindexVec, myVec, sampSize, "sampleVec");
 
             // get zero base
-            for (int i = 0; i < sampSize; ++i) {
-                mpz_sub_ui(myVec[i], myVec[i], 1);
+            if (bSubOne) {
+                for (int i = 0; i < sampSize; ++i) {
+                    mpz_sub_ui(myVec[i], myVec[i], 1);
+                }
             }
         } else {
             // The following code is very similar to the source
@@ -622,7 +636,7 @@ void SetRandomSampleMpz(const SEXP &RindexVec, const SEXP &RmySeed,
 
 void SetSampleNames(SEXP object, bool IsGmp, int sampSize,
                     const std::vector<double> &mySample,
-                    mpz_t *const myBigSamp) {
+                    mpz_t *const myBigSamp, bool bAddOne) {
 
     SEXP myNames = PROTECT(Rf_allocVector(STRSXP, sampSize));
 
@@ -630,7 +644,10 @@ void SetSampleNames(SEXP object, bool IsGmp, int sampSize,
         constexpr int base10 = 10;
 
         for (int i = 0; i < sampSize; ++i) {
-            mpz_add_ui(myBigSamp[i], myBigSamp[i], 1);
+            if (bAddOne) {
+                mpz_add_ui(myBigSamp[i], myBigSamp[i], 1);
+            }
+
             auto buffer = FromCpp14::make_unique<char[]>(
                 mpz_sizeinbase(myBigSamp[i], base10) + 2
             );
@@ -640,8 +657,9 @@ void SetSampleNames(SEXP object, bool IsGmp, int sampSize,
         }
     } else {
         for (int i = 0; i < sampSize; ++i) {
+            const double val = bAddOne ? mySample[i] + 1 : mySample[i];
             const std::string name = std::to_string(
-                static_cast<int64_t>(mySample[i] + 1)
+                static_cast<int64_t>(val)
             );
 
             SET_STRING_ELT(myNames, i, Rf_mkChar(name.c_str()));

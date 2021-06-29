@@ -7,14 +7,14 @@
 
 template <typename T>
 void PermuteRep(T* mat, const std::vector<T> &v,
-                std::vector<int> &z, int n, int m,
-                int strt, int nRows) {
+                std::vector<int> &z, int n, int m, int nRows) {
 
-    for (int count = strt, maxInd = n - 1,
+    for (int count = 0, maxInd = n - 1,
          lastCol = m - 1; count < nRows; ++count) {
 
-        for (int j = 0; j < m; ++j)
+        for (int j = 0; j < m; ++j) {
             mat[count + j * nRows] = v[z[j]];
+        }
 
         NextSecRep(z, maxInd, lastCol);
     }
@@ -27,22 +27,23 @@ void PermuteRep(RcppParallel::RMatrix<T> &mat, const std::vector<T> &v,
     for (int count = strt, maxInd = n - 1,
          lastCol = m - 1; count < nRows; ++count) {
 
-        for (int j = 0; j < m; ++j)
+        for (int j = 0; j < m; ++j) {
             mat(count, j) = v[z[j]];
+        }
 
         NextSecRep(z, maxInd, lastCol);
     }
 }
 
-void PermuteRep(SEXP mat, SEXP v,
-                std::vector<int> &z, int n,
-                int m, int nRows) {
+void PermuteRep(SEXP mat, SEXP v, std::vector<int> &z,
+                int n, int m, int nRows) {
 
     for (int count = 0, maxInd = n - 1,
          lastCol = m - 1; count < nRows; ++count) {
 
-        for (int j = 0; j < m; ++j)
+        for (int j = 0; j < m; ++j) {
             SET_STRING_ELT(mat, count + j * nRows, STRING_ELT(v, z[j]));
+        }
 
         NextSecRep(z, maxInd, lastCol);
     }

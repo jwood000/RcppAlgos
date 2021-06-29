@@ -126,16 +126,14 @@ SEXP SampleCombPerm(SEXP Rv, SEXP Rm, SEXP RisRep, SEXP RFreqs,
     SetRandomSampleMpz(RindexVec, RmySeed, sampSize,
                        IsGmp, computedRowsMpz, myVec.get());
 
-    const bool applyFun = !Rf_isNull(stdFun) && !Rf_isFactor(Rv);
     const int limit = 2;
-
     SetThreads(Parallel, maxThreads, sampSize,
                myType, nThreads, RNumThreads, limit);
 
     const nthResultPtr nthResFun = GetNthResultFunc(IsComb, IsMult,
                                                     IsRep, IsGmp);
 
-    if (applyFun) {
+    if (!Rf_isNull(stdFun) && !Rf_isFactor(Rv)) {
         if (!Rf_isFunction(stdFun)) {
             Rf_error("FUN must be a function!");
         }

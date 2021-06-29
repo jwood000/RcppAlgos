@@ -7,9 +7,8 @@
 
 template <typename T>
 void ComboResStd(T* mat, const std::vector<T> &v,
-                 std::vector<int> &z, int n, int m,
-                 int nRows, bool IsMult, bool IsRep,
-                 const std::vector<int> &freqs,
+                 std::vector<int> &z, int n, int m, int nRows, bool IsMult,
+                 bool IsRep, const std::vector<int> &freqs,
                  const funcPtr<T> myFun);
 
 template <typename T>

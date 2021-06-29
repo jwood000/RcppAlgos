@@ -17,6 +17,4 @@ nthResultPtr GetNthResultFunc(bool IsComb, bool IsMult,
     }
 }
 
-constexpr double dblDefault = 0;
-
 #endif

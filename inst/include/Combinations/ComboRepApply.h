@@ -13,9 +13,10 @@ void ComboRepApplyFun(SEXP res, const std::vector<T> &v,
     const int retType = TYPEOF(res);
 
     for (int count = 0, m1 = m - 1, n1 = n - 1; count < nRows;) {
-        for (; z[m1] < n && count < nRows; ++count, ++z[m1]){
-            for (int j = 0; j < m; ++j)
+        for (; z[m1] < n && count < nRows; ++count, ++z[m1]) {
+            for (int j = 0; j < m; ++j) {
                 ptr_vec[j] = v[z[j]];
+            }
 
             FunAssign(res, vectorPass, sexpFun, rho,
                       commonType, commonLen, count, nRows, retType);
@@ -33,9 +34,10 @@ void ComboRepApplyFun(SEXP res, SEXP v, SEXP vectorPass,
     const int retType = TYPEOF(res);
 
     for (int count = 0, m1 = m - 1, n1 = n - 1; count < nRows;) {
-        for (; z[m1] < n && count < nRows; ++count, ++z[m1]){
-            for (int j = 0; j < m; ++j)
+        for (; z[m1] < n && count < nRows; ++count, ++z[m1]) {
+            for (int j = 0; j < m; ++j) {
                 SET_STRING_ELT(vectorPass, j, STRING_ELT(v, z[j]));
+            }
 
             FunAssign(res, vectorPass, sexpFun, rho,
                       commonType, commonLen, count, nRows, retType);

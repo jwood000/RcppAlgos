@@ -20,8 +20,9 @@ void PermuteDistinctApplyFun(SEXP res, const std::vector<T> &v,
         for (int count = 0, numR1 = nRows - 1,
              maxInd = n - 1; count < numR1; ++count) {
 
-            for (int j = 0; j < m; ++j)
+            for (int j = 0; j < m; ++j) {
                 ptr_vec[j] = v[arrPerm[j]];
+            }
 
             FunAssign(res, vectorPass, sexpFun, rho,
                       commonType, commonLen, count, nRows, retType);
@@ -31,8 +32,9 @@ void PermuteDistinctApplyFun(SEXP res, const std::vector<T> &v,
         for (int count = 0, numR1 = nRows - 1, lastCol = m - 1,
              maxInd = n - 1; count < numR1; ++count) {
 
-            for (int j = 0; j < m; ++j)
+            for (int j = 0; j < m; ++j) {
                 ptr_vec[j] = v[arrPerm[j]];
+            }
 
             FunAssign(res, vectorPass, sexpFun, rho,
                       commonType, commonLen, count, nRows, retType);
@@ -41,8 +43,9 @@ void PermuteDistinctApplyFun(SEXP res, const std::vector<T> &v,
     }
 
     // Get last permutation
-    for (int j = 0; j < m; ++j)
+    for (int j = 0; j < m; ++j) {
         ptr_vec[j] = v[arrPerm[j]];
+    }
 
     FunAssign(res, vectorPass, sexpFun, rho,
               commonType, commonLen, nRows - 1, nRows, retType);
@@ -63,8 +66,9 @@ void PermuteDistinctApplyFun(SEXP res, SEXP v, SEXP vectorPass,
         for (int count = 0, numR1 = nRows - 1,
              maxInd = n - 1; count < numR1; ++count) {
 
-            for (int j = 0; j < m; ++j)
+            for (int j = 0; j < m; ++j) {
                 SET_STRING_ELT(vectorPass, j, STRING_ELT(v, arrPerm[j]));
+            }
 
             FunAssign(res, vectorPass, sexpFun, rho,
                       commonType, commonLen, count, nRows, retType);
@@ -74,8 +78,9 @@ void PermuteDistinctApplyFun(SEXP res, SEXP v, SEXP vectorPass,
         for (int count = 0, numR1 = nRows - 1, lastCol = m - 1,
              maxInd = n - 1; count < numR1; ++count) {
 
-            for (int j = 0; j < m; ++j)
+            for (int j = 0; j < m; ++j) {
                 SET_STRING_ELT(vectorPass, j, STRING_ELT(v, arrPerm[j]));
+            }
 
             FunAssign(res, vectorPass, sexpFun, rho,
                       commonType, commonLen, count, nRows, retType);
@@ -84,8 +89,9 @@ void PermuteDistinctApplyFun(SEXP res, SEXP v, SEXP vectorPass,
     }
 
     // Get last permutation
-    for (int j = 0; j < m; ++j)
+    for (int j = 0; j < m; ++j) {
         SET_STRING_ELT(vectorPass, j, STRING_ELT(v, arrPerm[j]));
+    }
 
     FunAssign(res, vectorPass, sexpFun, rho,
               commonType, commonLen, nRows - 1, nRows, retType);

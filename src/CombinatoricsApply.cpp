@@ -169,7 +169,7 @@ SEXP ApplyFunction(SEXP v, SEXP vectorPass, int n, int m, bool IsComb,
         SEXP sexpFun = PROTECT(Rf_lang2(stdFun, R_NilValue));
 
         if (IsComb) {
-            if (IsMult){
+            if (IsMult) {
                 MultisetComboApplyFun(myList, v, vectorPass, z, n,
                                       m, nRows, sexpFun, rho, freqs);
             } else if (IsRep) {
@@ -286,7 +286,7 @@ SEXP ApplyFunction(const std::vector<T> &v, SEXP vectorPass,
         SEXP sexpFun = PROTECT(Rf_lang2(stdFun, R_NilValue));
 
         if (IsComb) {
-            if (IsMult){
+            if (IsMult) {
                 MultisetComboApplyFun(myList, v, vectorPass, ptr_vec, z,
                                       n, m, nRows, sexpFun, rho, freqs);
             } else if (IsRep) {

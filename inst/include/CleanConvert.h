@@ -15,7 +15,7 @@ constexpr double Significand53 = 9007199254740991.0;
 // cannot utilize the full range of 53-bit significand
 // precision. Here is the condition from `do_dample2`:
 //     if (!R_FINITE(dn) || dn < 0 || dn > 4.5e15 || (k > 0 && dn == 0))
-// Here is the source (line ~2100): 
+// Here is the source (line ~2100):
 //     https://github.com/wch/r-source/blob/trunk/src/main/unique.c
 constexpr double SampleLimit = 4500000000000000.0;
 

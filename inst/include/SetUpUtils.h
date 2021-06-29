@@ -39,14 +39,14 @@ void PermuteSpecific(int &phaseOne, bool &generalRet, int n, int m,
 void SetRandomSample(SEXP RindexVec, SEXP RNumSamp, int &sampSize,
                      bool IsGmp, double computedRows,
                      std::vector<double> &mySample,
-                     SEXP baseSample, SEXP rho);
+                     SEXP baseSample, SEXP rho, bool bSubOne = true);
 
 void SetRandomSampleMpz(const SEXP &RindexVec, const SEXP &RmySeed,
                         int sampSize, bool IsGmp, mpz_t &computedRowsMpz,
-                        mpz_t *const myVec);
+                        mpz_t *const myVec, bool bSubOne = true);
 
 void SetSampleNames(SEXP objRcpp, bool IsGmp, int sampSize,
-                    const std::vector<double> &mySample, 
-                    mpz_t *const myBigSamp);
+                    const std::vector<double> &mySample,
+                    mpz_t *const myBigSamp, bool bAddOne = true);
 
 #endif

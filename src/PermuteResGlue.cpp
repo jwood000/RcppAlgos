@@ -8,11 +8,11 @@ void PermuteResStd(T* mat, const std::vector<T> &v,
                    const funcPtr<T> myFun) {
 
     if (IsMult) {
-        MultisetPermRes(mat, v, z, n, m, 0, nRows, freqs, myFun);
+        MultisetPermRes(mat, v, z, n, m, nRows, freqs, myFun);
     } else if (IsRep) {
-        PermuteResRep(mat, v, z, n, m, 0, nRows, myFun);
+        PermuteResRep(mat, v, z, n, m, nRows, myFun);
     } else {
-        PermuteResDistinct(mat, v, z, n, m, 0, nRows, myFun);
+        PermuteResDistinct(mat, v, z, n, m, nRows, myFun);
     }
 }
 
@@ -31,18 +31,22 @@ void PermuteResPar(RcppParallel::RMatrix<T> &mat, const std::vector<T> &v,
     }
 }
 
-template void PermuteResPar(RcppParallel::RMatrix<int>&, const std::vector<int>&,
+template void PermuteResPar(RcppParallel::RMatrix<int>&,
+                            const std::vector<int>&,
                             std::vector<int>&, int, int, int, int,
-                            const std::vector<int>&, const funcPtr<int>, bool, bool);
+                            const std::vector<int>&, const funcPtr<int>,
+                            bool, bool);
 
-template void PermuteResPar(RcppParallel::RMatrix<double>&, const std::vector<double>&,
+template void PermuteResPar(RcppParallel::RMatrix<double>&,
+                            const std::vector<double>&,
                             std::vector<int>&, int, int, int, int,
-                            const std::vector<int>&, const funcPtr<double>, bool, bool);
+                            const std::vector<int>&, const funcPtr<double>,
+                            bool, bool);
 
 template void PermuteResStd(int*, const std::vector<int>&, std::vector<int>&,
                             int, int, int, bool, bool,
                             const std::vector<int>&, const funcPtr<int>);
 
-template void PermuteResStd(double*, const std::vector<double>&, std::vector<int>&,
-                            int, int, int, bool, bool,
+template void PermuteResStd(double*, const std::vector<double>&,
+                            std::vector<int>&, int, int, int, bool, bool,
                             const std::vector<int>&, const funcPtr<double>);

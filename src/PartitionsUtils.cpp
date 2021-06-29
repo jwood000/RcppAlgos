@@ -64,7 +64,7 @@ int GetFirstPartition(const std::vector<std::int64_t> &v,
     } else if (IsMult) {
         const int lenMinusM = freqs.size() - m;
 
-        for (int i = freqs.size() - 1; i >= lenMinusM; --i){
+        for (int i = freqs.size() - 1; i >= lenMinusM; --i) {
             testMax += v[freqs[i]];
         }
 
@@ -504,7 +504,9 @@ void CheckPartition(const std::vector<std::string> &compFunVec,
                 for (std::size_t i = 1; i < v.size(); ++i) {
                     const double testDiff = v[i] - v[i - 1];
 
-                    if (std::abs(testDiff - tarDiff)  > tolerance ||
+                    // We must multiply by m (the length of our partitions) as
+                    // we will eventually be adding these values m times.
+                    if (m * std::abs(testDiff - tarDiff) > tolerance ||
                         static_cast<std::int64_t>(v[i]) != v[i]) {
 
                         IsPartition = false;

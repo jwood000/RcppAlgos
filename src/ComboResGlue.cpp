@@ -8,11 +8,11 @@ void ComboResStd(T* mat, const std::vector<T> &v,
                  const funcPtr<T> myFun) {
 
     if (IsMult) {
-        MultisetComboResult(mat, v, z, n, m, 0, nRows, freqs, myFun);
+        MultisetComboResult(mat, v, z, n, m, nRows, freqs, myFun);
     } else if (IsRep) {
-        ComboResRep(mat, v, z, n, m, 0, nRows, myFun);
+        ComboResRep(mat, v, z, n, m, nRows, myFun);
     } else {
-        ComboResDistinct(mat, v, z, n, m, 0, nRows, myFun);
+        ComboResDistinct(mat, v, z, n, m, nRows, myFun);
     }
 }
 

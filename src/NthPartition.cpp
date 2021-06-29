@@ -204,19 +204,19 @@ std::vector<int> nthPartsRepLenGmp(int n, int m, int k,
 }
 
 std::vector<int> nthPartsRepShortGmp(int n, int m, int k,
-                                  double dblIdx, mpz_t mpzIdx) {
+                                     double dblIdx, mpz_t mpzIdx) {
 
     return nthPartsRepLenGmp(n + m, m, k, dblIdx, mpzIdx);
 }
 
 std::vector<int> nthPartsRepGmp(int n, int m, int k,
-                             double dblIdx, mpz_t mpzIdx) {
+                                double dblIdx, mpz_t mpzIdx) {
 
     return nthPartsRepLenGmp(n * 2, n, k, dblIdx, mpzIdx);
 }
 
 std::vector<int> nthPartsRepLenCapGmp(int n, int m, int k,
-                                   double dblIdx, mpz_t mpzIdx) {
+                                      double dblIdx, mpz_t mpzIdx) {
 
     const int width = m;
     const int max_n = n;
