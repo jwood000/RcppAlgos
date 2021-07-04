@@ -1,3 +1,4 @@
+#include "Constraints/ConstraintsGeneral.h"
 #include "Constraints/ConstraintsUtils.h"
 #include "Partitions/PartitionsManager.h"
 #include "Partitions/PartitionsUtils.h"
@@ -8,31 +9,68 @@
 #include "CheckReturn.h"
 
 template <typename T>
-void VectorToMatrix(const std::vector<T> &partsVec, T* mat, int numResult,
-                    int width, int partitionLen, int upperBound) {
-
-    for (int count = 0, k = 0; count < numResult; ++count) {
-        for (int j = 0; j < width; ++j, ++k) {
-            mat[count + numResult * j] = partsVec[k];
-        }
-    }
-
-    if (partitionLen >= upperBound) {
-        Rf_warning("The algorithm terminated early as the number of results "
-                       "meeting the criteria exceeds the container's maximum "
-                       "capacity or 2^31 - 1");
+void AddResultToParts(T* mat, std::int64_t result,
+                      std::size_t numResult,
+                      std::size_t width) {
+    
+    const T t_result = result;
+    const std::size_t limit = static_cast<std::size_t>(numResult) *
+        static_cast<std::size_t>(width + 1);
+    
+    for (std::size_t i = numResult * width; i < limit; ++i) {
+        mat[i] = t_result;
     }
 }
 
 template <typename T>
-void ConstraintsVector(const std::vector<T> &v, const std::vector<int> &Reps,
-                       std::vector<T> &cnstrntVec, std::vector<int> &z,
-                       ConstraintType ctype, PartitionType ptype,
-                       int n, int nRows, int width, bool IsComb,
-                       bool IsRep, bool IsMult) {
+void VectorToMatrix(const std::vector<T> &combinatoricsVec,
+                    const std::vector<T> &resVec, T* mat,
+                    std::int64_t result, std::size_t numResult,
+                    std::size_t width, int upperBound,
+                    bool xtraCol, bool IsPart) {
+
+    if (numResult >= (upperBound - 1)) {
+        Rf_warning("The algorithm terminated early as the number of results"
+                   " meeting the criteria exceeds the container's maximum"
+                   " capacity or 2^31 - 1");
+    }
+
+    for (std::size_t count = 0, k = 0; count < numResult; ++count) {
+        for (std::size_t j = 0; j < width; ++j, ++k) {
+            mat[count + numResult * j] = combinatoricsVec[k];
+        }
+    }
+    
+    if (xtraCol) {
+        const std::size_t limit = static_cast<std::size_t>(numResult) *
+                                  static_cast<std::size_t>(width + 1);
+        
+        if (IsPart) {
+            AddResultToParts(mat, result, numResult, width);
+        } else {
+            for (std::size_t i = numResult * width, k = 0;
+                 i < limit; ++i, ++k) {
+                
+                mat[i] = resVec[k];
+            }
+        }
+    }
+}
+
+template <typename T>
+void ConstraintsVector(std::vector<T> &cnstrntVec, std::vector<T> &resVec,
+                       std::vector<T> &v, std::vector<T> &tarVals,
+                       const std::vector<std::string> &compVec,
+                       std::vector<int> &Reps, const std::string &mainFun,
+                       std::vector<int> &z, ConstraintType ctype,
+                       PartitionType ptype, int n, double nRows,
+                       int width, bool IsComb, bool IsRep, bool IsMult,
+                       bool bUpper, bool xtraCol) {
 
     if (ctype == ConstraintType::General) {
-
+        ConstraintsGeneral(v, Reps, compVec, cnstrntVec, resVec,
+                           tarVals, mainFun, nRows, n, width, IsRep,
+                           IsComb, IsMult, bUpper, xtraCol);
     } else if (ctype == ConstraintType::PartitionEsque) {
 
     } else if (ctype == ConstraintType::SpecialCnstrnt) {
@@ -42,15 +80,17 @@ void ConstraintsVector(const std::vector<T> &v, const std::vector<int> &Reps,
     }
 }
 
-SEXP ConstraintsReturn(const std::vector<double> &vNum,
-                       const std::vector<int> &vInt,
-                       const std::vector<int> &Reps, std::vector<int> &z,
-                       const PartDesign &part, VecType myType,
-                       ConstraintType ctype, double userNumRows, int n,
-                       int nRows, int strt, bool IsComb, bool IsRep,
-                       bool IsMult) {
+SEXP ConstraintsReturn(std::vector<double> &vNum, std::vector<int> &vInt,
+                       std::vector<int> &Reps, std::vector<double> &tarVals,
+                       std::vector<int> &tarIntVals, std::vector<int> &z,
+                       const std::vector<std::string> &compVec,
+                       const std::string &mainFun, const PartDesign &part,
+                       VecType myType, ConstraintType ctype, double userNum,
+                       int n, int m, int nRows, double strt, bool IsComb,
+                       bool IsRep, bool IsMult, bool bUpper, bool xtraCol) {
 
-    const int width = part.width;
+    const int width = (part.isPart) ? part.width : m;
+    const int nCols = (xtraCol) ? width + 1 : width;
     const auto it = std::find(DistPTypeArr.cbegin(),
                               DistPTypeArr.cend(), part.ptype);
 
@@ -76,42 +116,49 @@ SEXP ConstraintsReturn(const std::vector<double> &vNum,
         }
     } else if (numUnknown) {
         constexpr double int_max = std::numeric_limits<int>::max();
+        
         if (myType == VecType::Integer) {
             std::vector<int> cnstrntVec;
-            const double vecMax = cnstrntVec.max_size() / width;
+            std::vector<int> resVec;
+            const double vecMax = std::floor(cnstrntVec.max_size() / width);
             const double upperBound = std::min(vecMax, int_max);
-            const int maxRows = std::min(upperBound, userNumRows);
+            const int maxRows = std::min(upperBound, userNum);
 
-            ConstraintsVector(vInt, Reps, cnstrntVec, z, ctype,
-                              part.ptype, n, maxRows,
-                              width, IsComb, IsRep, IsMult);
+            ConstraintsVector(cnstrntVec, resVec, vInt, tarIntVals,
+                              compVec, Reps, mainFun, z, ctype,
+                              part.ptype, n, maxRows, width, IsComb,
+                              IsRep, IsMult, bUpper, xtraCol);
 
             const int vecLen = cnstrntVec.size();
             const int numResult = vecLen / width;
 
-            SEXP res = PROTECT(Rf_allocMatrix(INTSXP, numResult, width));
+            SEXP res = PROTECT(Rf_allocMatrix(INTSXP, numResult, nCols));
             int* matInt = INTEGER(res);
-            VectorToMatrix(cnstrntVec, matInt, numResult,
-                           width, vecLen, upperBound);
+            VectorToMatrix(cnstrntVec, resVec, matInt,
+                           part.target, numResult, width,
+                           upperBound, xtraCol, part.isPart);
             UNPROTECT(1);
             return res;
         } else {
             std::vector<double> cnstrntVec;
-            const double vecMax = cnstrntVec.max_size() / width;
+            std::vector<double> resVec;
+            const double vecMax = std::floor(cnstrntVec.max_size() / width);
             const double upperBound = std::min(vecMax, int_max);
-            const int maxRows = std::min(upperBound, userNumRows);
+            const int maxRows = std::min(upperBound, userNum);
 
-            ConstraintsVector(vNum, Reps, cnstrntVec, z, ctype,
-                              part.ptype, n, maxRows,
-                              width, IsComb, IsRep, IsMult);
-
+            ConstraintsVector(cnstrntVec, resVec, vNum, tarVals,
+                              compVec, Reps, mainFun, z, ctype,
+                              part.ptype, n, maxRows, width, IsComb,
+                              IsRep, IsMult, bUpper, xtraCol);
+            
             const int vecLen = cnstrntVec.size();
             const int numResult = vecLen / width;
-
-            SEXP res = PROTECT(Rf_allocMatrix(REALSXP, numResult, width));
+            
+            SEXP res = PROTECT(Rf_allocMatrix(REALSXP, numResult, nCols));
             double* matDbl = REAL(res);
-            VectorToMatrix(cnstrntVec, matDbl, numResult,
-                           width, vecLen, upperBound);
+            VectorToMatrix(cnstrntVec, resVec, matDbl,
+                           part.target, numResult, width,
+                           upperBound, xtraCol, part.isPart);
             UNPROTECT(1);
             return res;
         }
@@ -122,7 +169,7 @@ SEXP ConstraintsReturn(const std::vector<double> &vNum,
         int edge = boundary - 1;
 
         if (myType == VecType::Integer) {
-            SEXP res = PROTECT(Rf_allocMatrix(INTSXP, nRows, width));
+            SEXP res = PROTECT(Rf_allocMatrix(INTSXP, nRows, nCols));
             int* matInt = INTEGER(res);
 
             if (ctype == ConstraintType::PartStandard) {
@@ -133,17 +180,19 @@ SEXP ConstraintsReturn(const std::vector<double> &vNum,
                                 lastCol, lastElem, boundary, edge,
                                 strt, nRows, IsComb, IsRep);
             }
-
+            
+            if (xtraCol) AddResultToParts(matInt, part.target, nRows, width);
             UNPROTECT(1);
             return res;
         } else {
-            SEXP res = PROTECT(Rf_allocMatrix(REALSXP, nRows, width));
+            SEXP res = PROTECT(Rf_allocMatrix(REALSXP, nRows, nCols));
             double* matDbl = REAL(res);
 
             PartsGenManager(matDbl, part, vNum, z, width,
                             lastCol, lastElem, boundary, edge,
                             strt, nRows, IsRep, IsComb);
-
+            
+            if (xtraCol) AddResultToParts(matDbl, part.target, nRows, width);
             UNPROTECT(1);
             return res;
         }
@@ -192,13 +241,13 @@ SEXP CombinatoricsCnstrt(SEXP Rv, SEXP Rm, SEXP RisRep, SEXP RFreqs,
                  " 'prod', 'sum', 'mean', 'max', or 'min'");
     }
 
-    // Must be defined inside IsInteger check as targetVals could be
+    // Must be defined inside IsInteger check as tarVals could be
     // outside integer data type range which causes undefined behavior
-    std::vector<int> targetIntVals;
+    std::vector<int> tarIntVals;
     const funcPtr<double> funDbl = GetFuncPtr<double>(mainFun);
 
-    std::vector<std::string> compFunVec;
-    std::vector<double> targetVals;
+    std::vector<std::string> compVec;
+    std::vector<double> tarVals;
 
     ConstraintType ctype = ConstraintType::NoConstraint;
     PartDesign part;
@@ -208,8 +257,8 @@ SEXP CombinatoricsCnstrt(SEXP Rv, SEXP Rm, SEXP RisRep, SEXP RFreqs,
     part.mIsNull = Rf_isNull(Rm);
 
     if (IsConstrained) {
-        ConstraintSetup(vNum, myReps, targetVals, targetIntVals, funDbl,
-                        part, ctype, n, m, compFunVec, mainFun, myType,
+        ConstraintSetup(vNum, myReps, tarVals, tarIntVals, funDbl,
+                        part, ctype, n, m, compVec, mainFun, myType,
                         Rtarget, RcompFun, Rtolerance, Rlow, IsComb, false);
     }
 
@@ -252,7 +301,7 @@ SEXP CombinatoricsCnstrt(SEXP Rv, SEXP Rm, SEXP RisRep, SEXP RFreqs,
     // This is used when we are unable to calculate the number of results
     // upfront (E.g. comboGeneral(rnorm(10), 5, constraintFun = "sum,
     //                            comparisonFun = "<=", limitConstraints = 1))
-    double userNumRows = 0;
+    double userNum = 0;
 
     // This variable is used in determining the number of results. If the
     // output is constrained and the ConstraintType is "General" or
@@ -267,7 +316,7 @@ SEXP CombinatoricsCnstrt(SEXP Rv, SEXP Rm, SEXP RisRep, SEXP RFreqs,
 
     SetNumResults(IsGmp, bLower, bUpper, IsGenCnstrd, upperMpz.get(),
                   lowerMpz.get(), lower, upper, computedRows,
-                  computedRowsMpz, nRows, userNumRows);
+                  computedRowsMpz, nRows, userNum);
 
     if (ctype == ConstraintType::NoConstraint) {
         int nThreads = 1;
@@ -308,8 +357,9 @@ SEXP CombinatoricsCnstrt(SEXP Rv, SEXP Rm, SEXP RisRep, SEXP RFreqs,
             return res;
         }
     } else {
-        return ConstraintsReturn(vNum, vInt, myReps, startZ, part,
-                                 myType, ctype, userNumRows, n, nRows,
-                                 lower, IsComb, IsRep, IsMult);
+        return ConstraintsReturn(vNum, vInt, myReps, tarVals, tarIntVals,
+                                 startZ, compVec, mainFun, part, myType,
+                                 ctype, userNum, n, m, nRows, lower,
+                                 IsComb, IsRep, IsMult, bUpper, KeepRes);
     }
 }

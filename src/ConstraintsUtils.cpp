@@ -1,17 +1,89 @@
 #include "Constraints/ConstraintsUtils.h"
 #include "CleanConvert.h"
 
-bool CheckSpecialCase(bool bLower, const std::string &mainFun,
-                      const std::vector<double> &vNum) {
+template <typename T>
+void PopulateVec(int m, const std::vector<T> &v,
+                 std::vector<int> &z, int &count, int nRows,
+                 bool IsComb, std::vector<T> &combinatoricsVec) {
+    
+    if (IsComb) {
+        for (int k = 0; k < m; ++k) {
+            combinatoricsVec.push_back(v[z[k]]);
+        }
+
+        ++count;
+    } else {
+        do {
+            for (int k = 0; k < m; ++k) {
+                combinatoricsVec.push_back(v[z[k]]);
+            }
+
+            ++count;
+        } while (std::next_permutation(z.begin(), z.end()) && count < nRows);
+    }
+}
+
+template <typename T>
+void SectionOne(const std::vector<T> &v, std::vector<T> &testVec,
+                std::vector<int> &z, const std::vector<T> &targetVals,
+                std::vector<T> &combinatoricsVec, std::vector<T> &resultsVec,
+                bool &check_0, bool &check_1, int &count,
+                partialPtr<T> partialFun, funcPtr<T> constraintFun,
+                compPtr<T> compFunOne, compPtr<T> compFunTwo, int m, int m1,
+                int nRows, int maxZ, bool IsComb, bool xtraCol) {
+    
+    for (int i = 0; i < m; ++i) {
+        testVec[i] = v[z[i]];
+    }
+
+    const T partialVal = constraintFun(testVec, m1);
+    T testVal = partialFun(partialVal, testVec.back(), m);
+    check_0 = compFunTwo(testVal, targetVals);
+    
+    while (check_0 && check_1) {
+        if (compFunOne(testVal, targetVals)) {
+            int myStart = count;
+            PopulateVec(m, v, z, count, nRows, IsComb, combinatoricsVec);
+            
+            if (xtraCol) {
+                for (int i = myStart; i < count; ++i) {
+                    resultsVec.push_back(testVal);
+                }
+            }
+
+            check_1 = count < nRows;
+        }
+        
+        check_0 = z[m1] != maxZ;
+        
+        if (check_0) {
+            ++z[m1];
+            testVec[m1] = v[z[m1]];
+            testVal = partialFun(partialVal, testVec.back(), m);
+            check_0 = compFunTwo(testVal, targetVals);
+        }
+    }
+}
+
+bool CheckSpecialCase(const std::vector<double> &vNum, 
+                      const std::string &mainFun, PartitionType ptype,
+                      ConstraintType ctype, bool bLower) {
 
     bool result = false;
 
-    // If bLower, the user is looking to test a particular range. Otherwise, the constraint algo
-    // will simply return (upper - lower) # of combinations/permutations that meet the criteria
-    if (bLower) {
+    // If bLower, the user is looking to test a particular range. Otherwise,
+    // the constraint algo will simply return (upper - lower) # of 
+    // combinations/permutations that meet the criteria. This applies when
+    // we have anything other than non standard partitions
+    
+    const bool IsGenCnstrd = ctype == ConstraintType::General ||
+                             ctype == ConstraintType::PartitionEsque ||
+                             ptype == PartitionType::Multiset;
+    
+    if (bLower && IsGenCnstrd) {
         result = true;
     } else if (mainFun == "prod") {
-        for (auto v_i : vNum) {
+        for (auto v_i: vNum) {
             if (v_i < 0) {
                 result = true;
                 break;
@@ -23,22 +95,18 @@ bool CheckSpecialCase(bool bLower, const std::string &mainFun,
 }
 
 void SetConstraintType(const std::vector<double> &vNum,
-                       const PartDesign &part, const std::string &mainFun,
-                       ConstraintType &ctype, bool IsConstrained, bool bLower) {
+                       const std::string &mainFun, PartitionType ptype,
+                       ConstraintType &ctype, bool bLower) {
 
-    if (IsConstrained) {
-        if (CheckSpecialCase(bLower, mainFun, vNum)) {
-            ctype = ConstraintType::SpecialCnstrnt;
-        } else if (part.ptype == PartitionType::CoarseGrained) {
-            ctype = ConstraintType::PartitionEsque;
-        } else if (ctype < ConstraintType::PartMapping) {
-            ctype = ConstraintType::General;
-        } else {
-            // If we get here, ctype has already been set to
-            // PartMapping or PartStandard in SetPartitionDesign
-        }
+    if (CheckSpecialCase(vNum, mainFun, ptype, ctype, bLower)) {
+        ctype = ConstraintType::SpecialCnstrnt;
+    } else if (ptype == PartitionType::CoarseGrained) {
+        ctype = ConstraintType::PartitionEsque;
+    } else if (ctype < ConstraintType::PartMapping) {
+        ctype = ConstraintType::General;
     } else {
-        ctype = ConstraintType::NoConstraint;
+        // If we get here, ctype has already been set to
+        // PartMapping or PartStandard in SetPartitionDesign
     }
 }
 
@@ -291,10 +359,48 @@ void ConstraintSetup(const std::vector<double> &vNum,
     AdjustTargetVals(myType, targetVals, targetIntVals,
                      Rtolerance, compFunVec, tolerance, mainFun, vNum);
 
-    CheckPartition(compFunVec, vNum, mainFun, targetVals, part,
-                   Rlow, lenV, m, tolerance, IsBetweenComp);
-
+    CheckPartition(compFunVec, vNum, mainFun, targetVals,
+                   part, lenV, m, tolerance, IsBetweenComp);
+    
+    bool bLower = false;
+    
+    // Currently, we are not able to generate the nth
+    // lexicographical partition for some cases. Thus, if lower is
+    // non-trivial, we must use the most general algo.
+    if (!Rf_isNull(Rlow)) {
+        auto tempLower = FromCpp14::make_unique<mpz_t[]>(1);
+        mpz_init(tempLower[0]);
+        
+        createMPZArray(Rlow, tempLower.get(), 1, "lower");
+        bLower = mpz_cmp_si(tempLower[0], 1) > 0;
+    }
+    
+    SetConstraintType(vNum, mainFun, part.ptype, ctype, bLower);
+    
     if (part.isPart) {
         SetPartitionDesign(Reps, vNum, part, ctype, lenV, m, bCalcMulti, IsComb);
     }
 }
+
+
+template void PopulateVec(int, const std::vector<int>&,
+                          std::vector<int>&, int&, int,
+                          bool, std::vector<int>&);
+
+template void PopulateVec(int, const std::vector<double>&,
+                          std::vector<int>&, int&, int,
+                          bool, std::vector<double>&);
+    
+template void SectionOne(const std::vector<int>&, std::vector<int>&,
+                         std::vector<int>&, const std::vector<int>&,
+                         std::vector<int>&, std::vector<int>&,
+                         bool&, bool&, int&, partialPtr<int>, funcPtr<int>,
+                         compPtr<int>, compPtr<int>, int, int,
+                         int, int, bool, bool);
+
+template void SectionOne(const std::vector<double>&, std::vector<double>&,
+                         std::vector<int>&, const std::vector<double>&,
+                         std::vector<double>&, std::vector<double>&,
+                         bool&, bool&, int&, partialPtr<double>,
+                         funcPtr<double>, compPtr<double>, compPtr<double>,
+                         int, int, int, int, bool, bool);
