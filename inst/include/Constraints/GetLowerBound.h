@@ -4,26 +4,23 @@
 #include "ConstraintsUtils.h"
 
 template <typename T>
-int GetLowerBoundNoRep(int n, int m, const std::vector<T> &v,
-                       std::vector<int> &z, T targetMin, T targetMax,
-                       funcPtr<T> constraintFun,
-                       partialReducePtr<T> partialReduce, T,
-                       partialPtr<T> partialFun, int strt = 0);
+int GetLowerBoundNoRep(const std::vector<T> &v, std::vector<int> &z,
+                       funcPtr<T> fun, partialReducePtr<T> reduce,
+                       partialPtr<T> partial, int n, int m, T currPartial,
+                       T tarMin, T tarMax, int strt = 0);
 
 template <typename T>
-int GetLowerBoundRep(int n, int m, const std::vector<T> &v,
-                     std::vector<int> &z, T targetMin, T targetMax,
-                     funcPtr<T> constraintFun,
-                     partialReducePtr<T> partialReduce, T,
-                     partialPtr<T> partialFun, int strt = 0);
+int GetLowerBoundRep(const std::vector<T> &v, std::vector<int> &z,
+                     funcPtr<T> fun, partialReducePtr<T> reduce,
+                     partialPtr<T> partial, int n, int m, T currPartial,
+                     T tarMin, T tarMax, int strt = 0);
 
 template <typename T>
-int GetLowerBoundMulti(int n, int m, const std::vector<T> &v,
-                       std::vector<int> &z, const std::vector<int> &freqs,
-                       T targetMin, T targetMax,
+int GetLowerBoundMulti(const std::vector<int> &freqs, 
                        const std::vector<int> &Reps,
-                       funcPtr<T> constraintFun,
-                       partialReducePtr<T> partialReduce, T,
-                       partialPtr<T> partialFun, int strt = 0);
+                       const std::vector<T> &v, std::vector<int> &z,
+                       funcPtr<T> fun, partialReducePtr<T> reduce,
+                       partialPtr<T> partial, int n, int m, T currPartial,
+                       T tarMin, T tarMax, int strt = 0);
 
 #endif

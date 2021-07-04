@@ -473,28 +473,15 @@ void StandardDesign(const std::vector<int> &Reps,
 void CheckPartition(const std::vector<std::string> &compFunVec,
                     const std::vector<double> &v, const std::string &mainFun,
                     const std::vector<double> &target, PartDesign &part,
-                    SEXP Rlow, int lenV, int m, double tolerance,
-                    bool IsBetween) {
+                    int lenV, int m, double tolerance, bool IsBetween) {
 
     /// We start by assuming we don't have a nice partition case
     part.ptype = PartitionType::NotPartition;
     bool IsPartition = false;
-    bool bLower = false;
-
-    // Currently, we are not able to generate the nth
-    // lexicographical partition. Thus, if lower is
-    // non-trivial, we must use the most general algo.
-    if (!Rf_isNull(Rlow)) {
-        auto tempLower = FromCpp14::make_unique<mpz_t[]>(1);
-        mpz_init(tempLower[0]);
-
-        createMPZArray(Rlow, tempLower.get(), 1, "lower");
-        bLower = mpz_cmp_si(tempLower[0], 1) > 0;
-    }
 
     // compFunVec should be non-empty if we made it this far.
     // Doesn't hurt to check
-    if (!compFunVec.empty() && !bLower && v.size() > 1) {
+    if (!compFunVec.empty() && v.size() > 1) {
         if (compFunVec[0] == "==" && mainFun == "sum") {
             if (static_cast<std::int64_t>(v[0]) == v[0]) {
 

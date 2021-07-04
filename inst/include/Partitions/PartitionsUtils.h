@@ -15,7 +15,7 @@
 void CheckPartition(const std::vector<std::string> &compFunVec,
                     const std::vector<double> &v, const std::string &mainFun,
                     const std::vector<double> &target, PartDesign &part,
-                    SEXP Rlow, int lenV, int m, double tolerance,
+                    int lenV, int m, double tolerance,
                     bool IsBetween);
 
 void SetPartitionDesign(const std::vector<int> &Reps,
