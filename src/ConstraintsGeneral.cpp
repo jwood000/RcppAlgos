@@ -9,12 +9,12 @@
 // given constraint value.
 
 template <typename T>
-void ConstraintsGeneral(std::vector<T> v, std::vector<int> Reps,
-                        const std::vector<std::string> comparison,
-                        std::vector<T> combinatoricsVec,
-                        std::vector<T> resultsVec,
-                        std::vector<T> targetVals,
-                        const std::string myFun, double numRows,
+void ConstraintsGeneral(std::vector<T> &v, std::vector<int> &Reps,
+                        const std::vector<std::string> &comparison,
+                        std::vector<T> &cnstrntVec,
+                        std::vector<T> &resultsVec,
+                        std::vector<T> &targetVals,
+                        const std::string &myFun, double numRows,
                         int n, int m, bool IsRep, bool IsComb,
                         bool IsMult, bool bUserRows, bool xtraCol) {
     
@@ -25,22 +25,20 @@ void ConstraintsGeneral(std::vector<T> v, std::vector<int> Reps,
     
     T testVal;
     int count = 0;
-    
-    constexpr double dblIntMax = std::numeric_limits<int>::max();
     const int maxRows = std::min(dblIntMax, numRows);
 
     if (bUserRows) {
-        combinatoricsVec.reserve(m * maxRows);
+        cnstrntVec.reserve(m * maxRows);
         resultsVec.reserve(maxRows);
     }
     
-    const funcPtr<T> constraintFun = GetFuncPtr<T>(myFun);
-    const partialPtr<T> partialFun = GetPartialPtr<T>(myFun);
+    const funcPtr<T> fun = GetFuncPtr<T>(myFun);
+    const partialPtr<T> partial = GetPartialPtr<T>(myFun);
     
     for (std::size_t nC = 0; nC < comparison.size(); ++nC) {
         
-        const compPtr<T> compFunOne = GetCompPtr<T>(comparison[nC]);
-        compPtr<T> compFunTwo = compFunOne;
+        const compPtr<T> compOne = GetCompPtr<T>(comparison[nC]);
+        compPtr<T> compTwo = compOne;
         
         if (comparison[nC] == ">" || comparison[nC] == ">=") {
             if (IsMult) {
@@ -74,7 +72,7 @@ void ConstraintsGeneral(std::vector<T> v, std::vector<int> Reps,
             
             if (itComp != compSpecial.end()) {
                 int myIndex = std::distance(compSpecial.cbegin(), itComp);
-                compFunTwo = GetCompPtr<T>(compHelper[myIndex]);
+                compTwo = GetCompPtr<T>(compHelper[myIndex]);
             }
         }
         
@@ -92,12 +90,12 @@ void ConstraintsGeneral(std::vector<T> v, std::vector<int> Reps,
         if (m == 1) {
             int ind = 0;
             testVal = v[ind];
-            check_0 = compFunTwo(testVal, targetVals);
+            check_0 = compTwo(testVal, targetVals);
             
             while (check_0 && check_1) {
-                if (compFunOne(testVal, targetVals)) {
+                if (compOne(testVal, targetVals)) {
                     for (int k = 0; k < m; ++k) {
-                        combinatoricsVec.push_back(v[ind]);
+                        cnstrntVec.push_back(v[ind]);
                     }
                     
                     ++count;
@@ -114,7 +112,7 @@ void ConstraintsGeneral(std::vector<T> v, std::vector<int> Reps,
                 if (check_0) {
                     ++ind;
                     testVal = v[ind];
-                    check_0 = compFunTwo(testVal, targetVals);
+                    check_0 = compTwo(testVal, targetVals);
                 }
             }
         } else if (IsMult) {
@@ -131,68 +129,43 @@ void ConstraintsGeneral(std::vector<T> v, std::vector<int> Reps,
             }
             
             z.assign(freqs.cbegin(), freqs.cbegin() + m);
-            auto check_poincheck_1 = std::chrono::steady_clock::now();
-            
+
             while (check_1) {
-                SectionOne(v, testVec, z, targetVals, combinatoricsVec,
-                           resultsVec, check_0, check_1, count, partialFun,
-                           constraintFun, compFunOne, compFunTwo, m, m1,
+                SectionOne(v, testVec, z, targetVals, cnstrntVec,
+                           resultsVec, check_0, check_1, count, partial,
+                           fun, compOne, compTwo, m, m1,
                            maxRows, maxZ, IsComb, xtraCol);
                 
                 NextCnstrntMulti(v, targetVals, freqs, zIndex, testVec,
-                                 z, constraintFun, compFunTwo, m, m1, m2,
+                                 z, fun, compTwo, m, m1, m2,
                                  pentExtreme, check_0, check_1);
-                
-                const auto check_point_2 = std::chrono::steady_clock::now();
-                
-                if (check_point_2 - check_poincheck_1 > timeout) {
-                    // RcppThread::checkUserInterrupt();
-                    check_poincheck_1 = std::chrono::steady_clock::now();
-                }
             }
         } else if (IsRep) {
             v.erase(std::unique(v.begin(), v.end()), v.end());
             maxZ = static_cast<int>(v.size()) - 1;
             z.assign(m, 0);
             
-            auto check_poincheck_1 = std::chrono::steady_clock::now();
-            
             while (check_1) {
-                SectionOne(v, testVec, z, targetVals, combinatoricsVec,
-                           resultsVec, check_0, check_1, count, partialFun,
-                           constraintFun, compFunOne, compFunTwo, m, m1,
+                SectionOne(v, testVec, z, targetVals, cnstrntVec,
+                           resultsVec, check_0, check_1, count, partial,
+                           fun, compOne, compTwo, m, m1,
                            maxRows, maxZ, IsComb, xtraCol);
 
-                NextCnstrntRep(v, targetVals, testVec, z, constraintFun,
-                               compFunTwo, m, m2, maxZ, check_0, check_1);
-                
-                const auto check_point_2 = std::chrono::steady_clock::now();
-                
-                if (check_point_2 - check_poincheck_1 > timeout) {
-                    // RcppThread::checkUserInterrupt();
-                    check_poincheck_1 = std::chrono::steady_clock::now();
-                }
+                NextCnstrntRep(v, targetVals, testVec, z, fun,
+                               compTwo, m, m2, maxZ, check_0, check_1);
             }
         } else {
             std::iota(z.begin(), z.end(), 0);
-            auto check_poincheck_1 = std::chrono::steady_clock::now();
             
             while (check_1) {
-                SectionOne(v, testVec, z, targetVals, combinatoricsVec,
-                           resultsVec, check_0, check_1, count, partialFun,
-                           constraintFun, compFunOne, compFunTwo, m, m1,
+                SectionOne(v, testVec, z, targetVals, cnstrntVec,
+                           resultsVec, check_0, check_1, count, partial,
+                           fun, compOne, compTwo, m, m1,
                            maxRows, maxZ, IsComb, xtraCol);
 
                 NextCnstrntDistinct(v, targetVals, testVec, z,
-                                    constraintFun, compFunTwo, m,
+                                    fun, compTwo, m,
                                     m2, nMinusM, check_0, check_1);
-                
-                const auto check_point_2 = std::chrono::steady_clock::now();
-                
-                if (check_point_2 - check_poincheck_1 > timeout) {
-                    // RcppThread::checkUserInterrupt();
-                    check_poincheck_1 = std::chrono::steady_clock::now();
-                }
             }
         }
         
@@ -200,16 +173,16 @@ void ConstraintsGeneral(std::vector<T> v, std::vector<int> Reps,
     }
 }
 
-template void ConstraintsGeneral(std::vector<int>, std::vector<int>, 
-                                 const std::vector<std::string>,
-                                 std::vector<int>, std::vector<int>,
-                                 std::vector<int>, const std::string,
+template void ConstraintsGeneral(std::vector<int>&, std::vector<int>&, 
+                                 const std::vector<std::string>&,
+                                 std::vector<int>&, std::vector<int>&,
+                                 std::vector<int>&, const std::string&,
                                  double, int, int, bool, bool,
                                  bool, bool, bool);
 
-template void ConstraintsGeneral(std::vector<double>, std::vector<int>, 
-                                 const std::vector<std::string>,
-                                 std::vector<double>, std::vector<double>,
-                                 std::vector<double>, const std::string,
+template void ConstraintsGeneral(std::vector<double>&, std::vector<int>&, 
+                                 const std::vector<std::string>&,
+                                 std::vector<double>&, std::vector<double>&,
+                                 std::vector<double>&, const std::string&,
                                  double, int, int, bool, bool,
                                  bool, bool, bool);
