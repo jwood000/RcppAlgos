@@ -3,7 +3,7 @@
 #include "SampleApplyFun.h"
 #include "ComputedCount.h"
 #include "SampleResults.h"
-#include <RcppThread.h>
+#include <thread>
 
 template <typename T>
 void SampNoThrdSafe(T* sampleMatrix, SEXP res, const std::vector<T> &v,
@@ -42,23 +42,30 @@ void ThreadSafeSample(T* mat, SEXP res, const std::vector<T> &v,
 
     if (Parallel) {
         RcppParallel::RMatrix<T> parMat(mat, sampSize, m);
-        RcppThread::ThreadPool pool(nThreads);
+        std::vector<std::thread> threads;
 
         int step = 0;
         int stepSize = sampSize / nThreads;
         int nextStep = stepSize;
 
-        for (int j = 0; j < (nThreads - 1); ++j, step += stepSize, nextStep += stepSize) {
-            pool.push(std::cref(ParallelGlue<T>), std::ref(parMat), std::cref(v),
-                      std::cref(mySample), myBigSamp, std::cref(myReps), nthResFun,
-                      m, step, nextStep, lenV, IsGmp);
+        for (int j = 0; j < (nThreads - 1);
+             ++j, step += stepSize, nextStep += stepSize) {
+
+            threads.emplace_back(std::cref(ParallelGlue<T>),
+                                 std::ref(parMat), std::cref(v),
+                                 std::cref(mySample), myBigSamp,
+                                 std::cref(myReps), nthResFun,
+                                 m, step, nextStep, lenV, IsGmp);
         }
 
-        pool.push(std::cref(ParallelGlue<T>), std::ref(parMat), std::cref(v),
-                  std::cref(mySample), myBigSamp, std::cref(myReps), nthResFun,
-                  m, step, sampSize, lenV, IsGmp);
+        threads.emplace_back(std::cref(ParallelGlue<T>), std::ref(parMat),
+                             std::cref(v), std::cref(mySample), myBigSamp,
+                             std::cref(myReps), nthResFun, m, step, sampSize,
+                             lenV, IsGmp);
 
-        pool.join();
+        for (auto& thr: threads) {
+            thr.join();
+        }
     } else {
         SampleResults(mat, v, mySample, myBigSamp, myReps,
                       nthResFun, m, sampSize, lenV, IsGmp);
@@ -140,12 +147,14 @@ SEXP SampleCombPerm(SEXP Rv, SEXP Rm, SEXP RisRep, SEXP RFreqs,
 
         switch (myType) {
             case VecType::Character : {
+                SEXP charVec = PROTECT(Rf_duplicate(Rv));
                 SEXP vectorPass = PROTECT(Rf_allocVector(STRSXP, m));
-                SEXP res = ApplyFunction(Rv, vectorPass, mySample,
+
+                SEXP res = ApplyFunction(charVec, vectorPass, mySample,
                                          myVec.get(), myReps, stdFun, myEnv,
                                          RFunVal, nthResFun, m, sampSize,
                                          IsNamed, IsGmp, n);
-                UNPROTECT(1);
+                UNPROTECT(2);
                 return res;
             } case VecType::Complex : {
                 SEXP vectorPass = PROTECT(Rf_allocVector(CPLXSXP, m));
@@ -153,6 +162,7 @@ SEXP SampleCombPerm(SEXP Rv, SEXP Rm, SEXP RisRep, SEXP RFreqs,
 
                 Rcomplex* cmplxVec = COMPLEX(Rv);
                 std::vector<Rcomplex> vCmplx(cmplxVec, cmplxVec + n);
+
                 SEXP res = ApplyFunction(vCmplx, vectorPass, ptr_vec, mySample,
                                          myVec.get(), myReps, stdFun, myEnv,
                                          RFunVal, nthResFun, m, sampSize,
@@ -165,6 +175,7 @@ SEXP SampleCombPerm(SEXP Rv, SEXP Rm, SEXP RisRep, SEXP RFreqs,
 
                 Rbyte* rawVec = RAW(Rv);
                 std::vector<Rbyte> vByte(rawVec, rawVec + n);
+
                 SEXP res = ApplyFunction(vByte, vectorPass, ptr_vec, mySample,
                                          myVec.get(), myReps, stdFun, myEnv,
                                          RFunVal, nthResFun, m, sampSize,
@@ -174,6 +185,7 @@ SEXP SampleCombPerm(SEXP Rv, SEXP Rm, SEXP RisRep, SEXP RFreqs,
             } case VecType::Logical : {
                 SEXP vectorPass = PROTECT(Rf_allocVector(LGLSXP, m));
                 int* ptr_vec = LOGICAL(vectorPass);
+
                 SEXP res = ApplyFunction(vInt, vectorPass, ptr_vec, mySample,
                                          myVec.get(), myReps, stdFun, myEnv,
                                          RFunVal, nthResFun, m, sampSize,
@@ -183,6 +195,7 @@ SEXP SampleCombPerm(SEXP Rv, SEXP Rm, SEXP RisRep, SEXP RFreqs,
             } case VecType::Integer : {
                 SEXP vectorPass = PROTECT(Rf_allocVector(INTSXP, m));
                 int* ptr_vec = INTEGER(vectorPass);
+
                 SEXP res = ApplyFunction(vInt, vectorPass, ptr_vec, mySample,
                                          myVec.get(), myReps, stdFun, myEnv,
                                          RFunVal, nthResFun, m, sampSize,
@@ -204,11 +217,13 @@ SEXP SampleCombPerm(SEXP Rv, SEXP Rm, SEXP RisRep, SEXP RFreqs,
 
     switch (myType) {
         case VecType::Character : {
-            SEXP charVec = PROTECT(Rf_allocVector(STRSXP, m));
+            SEXP charVec = PROTECT(Rf_duplicate(Rv));
             SEXP res = PROTECT(Rf_allocMatrix(STRSXP, sampSize, m));
+            
             SampleResults(res, charVec, mySample, myVec.get(), myReps,
                           nthResFun, m, sampSize, n, IsGmp, IsNamed);
-            UNPROTECT(1);
+            
+            UNPROTECT(2);
             return res;
         } case VecType::Complex : {
             std::vector<Rcomplex> stlCmplxVec(n);

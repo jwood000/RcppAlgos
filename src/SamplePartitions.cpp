@@ -3,19 +3,19 @@
 #include "Partitions/NthPartition.h"
 #include "SamplePartitions.h"
 #include "Cpp14MakeUnique.h"
-#include <RcppThread.h>
 #include "RMatrix.h"
+#include <thread>
 
 template <typename T>
 void SampleResults(T* sampleMatrix, const std::vector<T> &v,
                    const std::vector<double> &mySample,
                    mpz_t *const myBigSamp, const std::vector<int> &myReps,
                    nthPartsPtr nthPartFun, int m, int sampSize,
-                   int lenV, int k, bool IsGmp) {
+                   int tar, int k, bool IsGmp) {
 
     if (IsGmp) {
         for (int i = 0; i < sampSize; ++i) {
-            const std::vector<int> z = nthPartFun(lenV, m, k, 0.0,
+            const std::vector<int> z = nthPartFun(tar, m, k, 0.0,
                                                   myBigSamp[i]);
 
             for (int j = 0; j < m; ++j) {
@@ -27,7 +27,7 @@ void SampleResults(T* sampleMatrix, const std::vector<T> &v,
         mpz_init(mpzDefault);
 
         for (int i = 0; i < sampSize; ++i) {
-            const std::vector<int> z = nthPartFun(lenV, m, k,
+            const std::vector<int> z = nthPartFun(tar, m, k,
                                                   mySample[i],
                                                   mpzDefault);
 
@@ -46,12 +46,12 @@ void SampleResults(RcppParallel::RMatrix<T> &sampleMatrix,
                    const std::vector<double> &mySample,
                    mpz_t *const myBigSamp, const std::vector<int> &myReps,
                    nthPartsPtr nthPartFun, int m, int strtIdx, int endIdx,
-                   int lenV, int k, bool IsGmp) {
+                   int tar, int k, bool IsGmp) {
 
     if (IsGmp) {
         for (int i = strtIdx; i < endIdx; ++i) {
-            const std::vector<int> z = nthPartFun(lenV, m, k, 0.0,
-                                                 myBigSamp[i]);
+            const std::vector<int> z = nthPartFun(tar, m, k, 0.0,
+                                                  myBigSamp[i]);
             for (int j = 0; j < m; ++j) {
                 sampleMatrix(i, j) = v[z[j]];
             }
@@ -61,7 +61,7 @@ void SampleResults(RcppParallel::RMatrix<T> &sampleMatrix,
         mpz_init(mpzDefault);
 
         for (int i = strtIdx; i < endIdx; ++i) {
-            const std::vector<int> z = nthPartFun(lenV, m, k,
+            const std::vector<int> z = nthPartFun(tar, m, k,
                                                   mySample[i],
                                                   mpzDefault);
             for (int j = 0; j < m; ++j) {
@@ -79,10 +79,10 @@ void ParallelGlue(RcppParallel::RMatrix<T> &sampleMatrix,
                   const std::vector<double> &mySample,
                   mpz_t *const myBigSamp, const std::vector<int> &myReps,
                   nthPartsPtr nthPartFun, int m, int strtIdx, int endIdx,
-                  int lenV, int k, bool IsGmp) {
+                  int tar, int k, bool IsGmp) {
 
     SampleResults(sampleMatrix, v, mySample, myBigSamp, myReps,
-                  nthPartFun, m, strtIdx, endIdx, lenV, k, IsGmp);
+                  nthPartFun, m, strtIdx, endIdx, tar, k, IsGmp);
 }
 
 template <typename T>
@@ -91,34 +91,41 @@ void ThreadSafeSample(T* mat, SEXP res, const std::vector<T> &v,
                       mpz_t *const myBigSamp, const std::vector<int> &myReps,
                       nthPartsPtr nthPartFun, int m, int sampSize,
                       int nThreads, bool Parallel, bool IsNamed,
-                      int lenV, int k, bool IsGmp) {
+                      int tar, int k, bool IsGmp) {
 
     if (Parallel) {
         RcppParallel::RMatrix<T> parMat(mat, sampSize, m);
-        RcppThread::ThreadPool pool(nThreads);
+        std::vector<std::thread> threads;
 
         int step = 0;
         int stepSize = sampSize / nThreads;
         int nextStep = stepSize;
 
-        for (int j = 0; j < (nThreads - 1); ++j, step += stepSize, nextStep += stepSize) {
-            pool.push(std::cref(ParallelGlue<T>), std::ref(parMat), std::cref(v),
-                      std::cref(mySample), myBigSamp, std::cref(myReps), nthPartFun,
-                      m, step, nextStep, lenV, k, IsGmp);
+        for (int j = 0; j < (nThreads - 1);
+             ++j, step += stepSize, nextStep += stepSize) {
+
+            threads.emplace_back(std::cref(ParallelGlue<T>),
+                                 std::ref(parMat), std::cref(v),
+                                 std::cref(mySample), myBigSamp,
+                                 std::cref(myReps), nthPartFun, m,
+                                 step, nextStep, tar, k, IsGmp);
         }
 
-        pool.push(std::cref(ParallelGlue<T>), std::ref(parMat), std::cref(v),
-                  std::cref(mySample), myBigSamp, std::cref(myReps), nthPartFun,
-                  m, step, sampSize, lenV, k, IsGmp);
+        threads.emplace_back(std::cref(ParallelGlue<T>), std::ref(parMat),
+                             std::cref(v), std::cref(mySample), myBigSamp,
+                             std::cref(myReps), nthPartFun, m, step,
+                             sampSize, tar, k, IsGmp);
 
-        pool.join();
+        for (auto& thr: threads) {
+            thr.join();
+        }
     } else {
         SampleResults(mat, v, mySample, myBigSamp, myReps,
-                      nthPartFun, m, sampSize, lenV, k, IsGmp);
+                      nthPartFun, m, sampSize, tar, k, IsGmp);
     }
 
     if (IsNamed) {
-        SetSampleNames(res, IsGmp, sampSize, mySample, myBigSamp, false);
+        SetSampleNames(res, IsGmp, sampSize, mySample, myBigSamp);
     }
 }
 
@@ -183,7 +190,7 @@ SEXP SamplePartitions(SEXP Rv, SEXP Rm, SEXP RisRep, SEXP RFreqs,
     int sampSize;
     std::vector<double> mySample;
     SetRandomSample(RindexVec, RNumSamp, sampSize, part.isGmp,
-                    part.count, mySample, baseSample, myEnv, false);
+                    part.count, mySample, baseSample, myEnv);
 
     const int bigSampSize = (part.isGmp) ? sampSize : 1;
     auto myVec = FromCpp14::make_unique<mpz_t[]>(bigSampSize);
@@ -192,8 +199,8 @@ SEXP SamplePartitions(SEXP Rv, SEXP Rm, SEXP RisRep, SEXP RFreqs,
         mpz_init(myVec[i]);
     }
 
-    SetRandomSampleMpz(RindexVec, RmySeed, sampSize, part.isGmp,
-                       part.bigCount, myVec.get(), false);
+    SetRandomSampleMpz(RindexVec, RmySeed, sampSize,
+                       part.isGmp, part.bigCount, myVec.get());
 
     const int limit = 2;
     SetThreads(Parallel, maxThreads, sampSize,

@@ -27,7 +27,7 @@ std::vector<int> nthPartsRepLen(int n, int m, int k,
     for (int i = 0, j = 0; i < (width - 1); ++i, --n, --m) {
         double temp = CountPartsRepLen(n, m);
 
-        for (; temp < dblIdx; ++j) {
+        for (; temp <= dblIdx; ++j) {
             n -= (m + 1);
             dblIdx -= temp;
             temp = CountPartsRepLen(n, m);
@@ -65,7 +65,7 @@ std::vector<int> nthPartsRepLenCap(int n, int m, int k,
     for (int i = 0, j = 0; i < (width - 1); ++i, --n, --m) {
         double temp = CountPartsRepLenCap(n, m, k);
 
-        for (; temp < dblIdx; ++j) {
+        for (; temp <= dblIdx; ++j) {
             n -= (m + 1);
             --k;
             dblIdx -= temp;
@@ -92,7 +92,7 @@ std::vector<int> nthPartsDistinctLen(int n, int m, int k,
     for (int i = 0, j = 0; i < (width - 1); ++i, n -= m, --m, ++j) {
         double temp = CountPartsDistinctLen(n, m);
 
-        for (; temp < dblIdx; ++j) {
+        for (; temp <= dblIdx; ++j) {
             n -= (m + 1);
             dblIdx -= temp;
             temp = CountPartsDistinctLen(n, m);
@@ -126,7 +126,7 @@ std::vector<int> nthPartsDistinctMultiZero(int n, int m, int k,
                       CountPartsDistinctLen(n, m) :
                       CountPartsDistinctMultiZero(n, m, k);
 
-        for (; temp < dblIdx; ++j) {
+        for (; temp <= dblIdx; ++j) {
             incr_j = true;
             n -= (m + 1);
             dblIdx -= temp;
@@ -159,7 +159,7 @@ std::vector<int> nthPartsDistinctLenCap(int n, int m, int k,
     for (int i = 0, j = 0; i < (width - 1); ++i, n -= m, --m, ++j, --k) {
         double temp = CountPartsDistinctLenCap(n, m, k);
 
-        for (; temp < dblIdx; ++j) {
+        for (; temp <= dblIdx; ++j) {
             n -= (m + 1);
             --k;
             dblIdx -= temp;
@@ -184,14 +184,19 @@ std::vector<int> nthPartsRepLenGmp(int n, int m, int k,
     --m;
 
     mpz_t temp;
+    mpz_t index;
+    
     mpz_init(temp);
+    mpz_init(index);
+    
+    mpz_set(index, mpzIdx);
 
     for (int i = 0, j = 0; i < (width - 1); ++i, --n, --m) {
         CountPartsRepLen(temp, n, m);
 
-        for (; mpz_cmp(temp, mpzIdx) < 0; ++j) {
+        for (; mpz_cmp(temp, index) <= 0; ++j) {
             n -= (m + 1);
-            mpz_sub(mpzIdx, mpzIdx, temp);
+            mpz_sub(index, index, temp);
             CountPartsRepLen(temp, n, m);
         }
 
@@ -199,7 +204,10 @@ std::vector<int> nthPartsRepLenGmp(int n, int m, int k,
     }
 
     res[width - 1] = max_n - std::accumulate(res.begin(), res.end(), width);
+    
     mpz_clear(temp);
+    mpz_clear(index);
+
     return res;
 }
 
@@ -226,15 +234,20 @@ std::vector<int> nthPartsRepLenCapGmp(int n, int m, int k,
     --m;
 
     mpz_t temp;
+    mpz_t index;
+    
     mpz_init(temp);
+    mpz_init(index);
+
+    mpz_set(index, mpzIdx);
 
     for (int i = 0, j = 0; i < (width - 1); ++i, --n, --m) {
         CountPartsRepLenCap(temp, n, m, k);
 
-        for (; mpz_cmp(temp, mpzIdx) < 0; ++j) {
+        for (; mpz_cmp(temp, index) <= 0; ++j) {
             n -= (m + 1);
             --k;
-            mpz_sub(mpzIdx, mpzIdx, temp);
+            mpz_sub(index, index, temp);
             CountPartsRepLenCap(temp, n, m, k);
         }
 
@@ -242,7 +255,10 @@ std::vector<int> nthPartsRepLenCapGmp(int n, int m, int k,
     }
 
     res[width - 1] = max_n - std::accumulate(res.begin(), res.end(), width);
+
     mpz_clear(temp);
+    mpz_clear(index);
+
     return res;
 }
 
@@ -257,14 +273,19 @@ std::vector<int> nthPartsDistinctLenGmp(int n, int m, int k,
     --m;
 
     mpz_t temp;
+    mpz_t index;
+    
     mpz_init(temp);
+    mpz_init(index);
+
+    mpz_set(index, mpzIdx);
 
     for (int i = 0, j = 0; i < (width - 1); ++i, n -= m, --m, ++j) {
         CountPartsDistinctLen(temp, n, m);
 
-        for (; mpz_cmp(temp, mpzIdx) < 0; ++j) {
+        for (; mpz_cmp(temp, index) <= 0; ++j) {
             n -= (m + 1);
-            mpz_sub(mpzIdx, mpzIdx, temp);
+            mpz_sub(index, index, temp);
             CountPartsDistinctLen(temp, n, m);
         }
 
@@ -272,7 +293,10 @@ std::vector<int> nthPartsDistinctLenGmp(int n, int m, int k,
     }
 
     res[width - 1] = max_n - std::accumulate(res.begin(), res.end(), width);
+    
     mpz_clear(temp);
+    mpz_clear(index);
+
     return res;
 }
 
@@ -293,7 +317,12 @@ std::vector<int> nthPartsDistinctMultiZeroGmp(int n, int m, int k,
     --m;
 
     mpz_t temp;
+    mpz_t index;
+    
     mpz_init(temp);
+    mpz_init(index);
+
+    mpz_set(index, mpzIdx);
 
     for (int i = 0, j = 0; i < (width - 1); ++i, --m) {
         if (incr_j || i >= (width - k)) {
@@ -302,10 +331,10 @@ std::vector<int> nthPartsDistinctMultiZeroGmp(int n, int m, int k,
             CountPartsDistinctMultiZero(temp, n, m, k);
         }
 
-        for (; mpz_cmp(temp, mpzIdx) < 0; ++j) {
+        for (; mpz_cmp(temp, index) <= 0; ++j) {
             incr_j = true;
             n -= (m + 1);
-            mpz_sub(mpzIdx, mpzIdx, temp);
+            mpz_sub(index, index, temp);
             CountPartsDistinctLen(temp, n, m);
         }
 
@@ -318,7 +347,10 @@ std::vector<int> nthPartsDistinctMultiZeroGmp(int n, int m, int k,
     }
 
     res[width - 1] = max_n - std::accumulate(res.begin(), res.end(), width);
+
     mpz_clear(temp);
+    mpz_clear(index);
+
     return res;
 }
 
@@ -334,15 +366,20 @@ std::vector<int> nthPartsDistinctLenCapGmp(int n, int m, int k,
     --k;
 
     mpz_t temp;
+    mpz_t index;
+    
     mpz_init(temp);
+    mpz_init(index);
+
+    mpz_set(index, mpzIdx);
 
     for (int i = 0, j = 0; i < (width - 1); ++i, n -= m, --m, ++j, --k) {
         CountPartsDistinctLenCap(temp, n, m, k);
 
-        for (; mpz_cmp(temp, mpzIdx) < 0; ++j) {
+        for (; mpz_cmp(temp, index) <= 0; ++j) {
             n -= (m + 1);
             --k;
-            mpz_sub(mpzIdx, mpzIdx, temp);
+            mpz_sub(index, index, temp);
             CountPartsDistinctLenCap(temp, n, m, k);
         }
 
@@ -350,7 +387,10 @@ std::vector<int> nthPartsDistinctLenCapGmp(int n, int m, int k,
     }
 
     res[width - 1] = max_n - std::accumulate(res.begin(), res.end(), width);
+    
     mpz_clear(temp);
+    mpz_clear(index);
+
     return res;
 }
 
