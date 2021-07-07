@@ -15,18 +15,18 @@
 // N.B. We are returning a boolean. When true is returned, this tells the
 // calling function that we currently have dist > 0. In this situation we need
 // to ensure that the remaining indices can be reduced enough to obtain a value
-// less than the targetMin
+// less than the tarMin
 template <typename T>
-inline bool BruteNextElem(int &ind, int lowBnd, T targetMin,
-                          T partial, int m, const std::vector<T> &v,
-                          partialPtr<T> partialFun, bool isLast = false) {
+inline bool BruteNextElem(int &ind, int lowBnd, T tarMin,
+                          T partVal, int m, const std::vector<T> &v,
+                          partialPtr<T> partial, bool isLast = false) {
 
-    T dist = targetMin - partialFun(partial, v[ind], m);
+    T dist = tarMin - partial(partVal, v[ind], m);
     const int origInd = ind;
 
     while (ind > lowBnd && dist < 0) {
         --ind;
-        dist = targetMin - partialFun(partial, v[ind], m);
+        dist = tarMin - partial(partVal, v[ind], m);
     }
 
     if (dist > 0 && ind != origInd && !isLast) {
@@ -38,19 +38,22 @@ inline bool BruteNextElem(int &ind, int lowBnd, T targetMin,
 }
 
 template <typename T>
-int GetLowerBoundNoRep(int n, int m, const std::vector<T> &v, std::vector<int> &z,
-                       T targetMin, T targetMax, funcPtr<T> constraintFun,
-                       partialReducePtr<T> partialReduce, T currPartial,
-                       partialPtr<T> partialFun, int strt) {
+int GetLowerBoundNoRep(const std::vector<T> &v, std::vector<int> &z,
+                       funcPtr<T> fun, partialReducePtr<T> reduce,
+                       partialPtr<T> partial, T currPartial, T tarMin,
+                       T tarMax, int n, int m, int strt) {
 
     const int lastCol = m - 1;
     std::vector<T> vPass(m);
     vPass.assign(v.crbegin(), v.crbegin() + m);
-    T partial = constraintFun(vPass, m - 1);
+    T partVal = fun(vPass, m - 1);
 
     if (strt == 0) {
-        const T testMax = partialFun(partial, vPass.back(), m);
-        if (testMax < targetMin)  {return 0;}
+        const T testMax = partial(partVal, vPass.back(), m);
+
+        if (testMax < tarMin) {
+            return 0;
+        }
     }
 
     int currPos = n - m;
@@ -58,149 +61,167 @@ int GetLowerBoundNoRep(int n, int m, const std::vector<T> &v, std::vector<int> &
     if (strt) {
         for (int i = 0; i < strt; ++i) {
             vPass[i] = v[z[i]];
-            partial = partialFun(partial, vPass[i], m);
+            partVal = partial(partVal, vPass[i], m);
             ++currPos;
-            partialReduce(m, partial, v[currPos]);
+            reduce(m, partVal, v[currPos]);
         }
 
-        currPartial = constraintFun(vPass, strt);
+        currPartial = fun(vPass, strt);
 
-        for (int i = strt, j = 1; i < m; ++i, ++j)
+        for (int i = strt, j = 1; i < m; ++i, ++j) {
             vPass[i] = v[z[strt - 1] + j];
+        }
     } else {
         vPass.assign(v.cbegin(), v.cbegin() + m);
     }
 
-    const T testMin = constraintFun(vPass, m);
-    if (testMin > targetMax)  {return 0;}
+    const T testMin = fun(vPass, m);
+
+    if (testMin > tarMax) {
+        return 0;
+    }
 
     int ind = n - m + strt;
     int lowBnd = (strt) ? z[strt - 1] + 1 : 0;
 
     for (int i = strt; i < lastCol; ++i) {
-        if (BruteNextElem(ind, lowBnd, targetMin, partial, m, v, partialFun)) {
+        if (BruteNextElem(ind, lowBnd, tarMin, partVal, m, v, partial)) {
             if (ind > lowBnd) {
                 const int numIterLeft = m - i;
 
-                for (int j = 0, k = ind; j < numIterLeft; ++j, ++k)
+                for (int j = 0, k = ind; j < numIterLeft; ++j, ++k) {
                     vPass[j] = v[k];
+                }
 
-                const T minRemaining = constraintFun(vPass, numIterLeft);
-                const T currMin = partialFun(minRemaining, currPartial, m);
+                const T minRemaining = fun(vPass, numIterLeft);
+                const T currMin = partial(minRemaining, currPartial, m);
 
-                if (currMin > targetMin) {
+                if (currMin > tarMin) {
                     --ind;
                 }
             }
         }
 
         z[i] = ind;
-        partial = partialFun(partial, v[ind], m);
-        currPartial = partialFun(currPartial, v[ind], m);
+        partVal = partial(partVal, v[ind], m);
+        currPartial = partial(currPartial, v[ind], m);
 
         ++ind;
         ++currPos;
 
         lowBnd = ind;
         ind = currPos;
-        partialReduce(m, partial, v[currPos]);
+        reduce(m, partVal, v[currPos]);
     }
 
-    BruteNextElem(ind, lowBnd, targetMin, partial, m, v, partialFun, true);
+    BruteNextElem(ind, lowBnd, tarMin, partVal, m, v, partial, true);
     z[lastCol] = ind;
     return 1;
 }
 
 template <typename T>
-int GetLowerBoundRep(int n, int m, const std::vector<T> &v, std::vector<int> &z,
-                     T targetMin, T targetMax, funcPtr<T> constraintFun,
-                     partialReducePtr<T> partialReduce, T currPartial,
-                     partialPtr<T> partialFun, int strt) {
+int GetLowerBoundRep(const std::vector<T> &v, std::vector<int> &z,
+                     funcPtr<T> fun, partialReducePtr<T> reduce,
+                     partialPtr<T> partial, T currPartial, T tarMin,
+                     T tarMax, int n, int m, int strt) {
 
     const int lastElem = n - 1;
     const int lastCol = m - 1;
 
     std::vector<T> vPass(m);
     std::fill(vPass.begin(), vPass.end(), v.back());
-    T partial = constraintFun(vPass, m - 1);
+    T partVal = fun(vPass, m - 1);
 
     if (strt == 0) {
-        const T testMax = partialFun(partial, vPass.back(), m);
-        if (testMax < targetMin)  {return 0;}
+        const T testMax = partial(partVal, vPass.back(), m);
+
+        if (testMax < tarMin) {
+            return 0;
+        }
     }
 
     if (strt) {
         for (int i = 0; i < strt; ++i) {
             vPass[i] = v[z[i]];
-            partial = partialFun(partial, vPass[i], m);
-            partialReduce(m, partial, v[lastElem]);
+            partVal = partial(partVal, vPass[i], m);
+            reduce(m, partVal, v[lastElem]);
         }
 
-        currPartial = constraintFun(vPass, strt);
+        currPartial = fun(vPass, strt);
 
-        for (int i = strt; i < m; ++i)
+        for (int i = strt; i < m; ++i) {
             vPass[i] = v[z[strt - 1]];
+        }
     } else {
         std::fill(vPass.begin(), vPass.end(), v[0]);
     }
 
-    const T testMin = constraintFun(vPass, m);
-    if (testMin > targetMax)  {return 0;}
+    const T testMin = fun(vPass, m);
+
+    if (testMin > tarMax) {
+        return 0;
+    }
 
     int ind = lastElem;
     int lowBnd = (strt) ? z[strt - 1] : 0;
 
     for (int i = strt; i < lastCol; ++i) {
-        if (BruteNextElem(ind, lowBnd, targetMin, partial, m, v, partialFun)) {
+        if (BruteNextElem(ind, lowBnd, tarMin, partVal, m, v, partial)) {
             if (ind > lowBnd) {
                 const int numIterLeft = m - i;
 
-                for (int j = 0; j < numIterLeft; ++j)
+                for (int j = 0; j < numIterLeft; ++j) {
                     vPass[j] = v[ind];
+                }
 
-                const T minRemaining = constraintFun(vPass, numIterLeft);
-                const T currMin = partialFun(minRemaining, currPartial, m);
+                const T minRemaining = fun(vPass, numIterLeft);
+                const T currMin = partial(minRemaining, currPartial, m);
 
-                if (currMin > targetMin) {
+                if (currMin > tarMin) {
                     --ind;
                 }
             }
         }
 
         z[i] = ind;
-        partial = partialFun(partial, v[ind], m);
-        currPartial = partialFun(currPartial, v[ind], m);
+        partVal = partial(partVal, v[ind], m);
+        currPartial = partial(currPartial, v[ind], m);
 
         lowBnd = ind;
         ind = lastElem;
-        partialReduce(m, partial, v[lastElem]);
+        reduce(m, partVal, v[lastElem]);
     }
 
-    BruteNextElem(ind, lowBnd, targetMin, partial, m, v, partialFun, true);
+    BruteNextElem(ind, lowBnd, tarMin, partVal, m, v, partial, true);
     z[lastCol] = ind;
     return 1;
 }
 
 template <typename T>
-int GetLowerBoundMulti(int n, int m, const std::vector<T> &v, std::vector<int> &z,
-                       const std::vector<int> &freqs, T targetMin, T targetMax,
-                       const std::vector<int> &Reps, funcPtr<T> constraintFun,
-                       partialReducePtr<T> partialReduce, T currPartial,
-                       partialPtr<T> partialFun, int strt) {
+int GetLowerBoundMulti(const std::vector<int> &freqs, 
+                       const std::vector<int> &Reps,
+                       const std::vector<T> &v, std::vector<int> &z,
+                       funcPtr<T> fun, partialReducePtr<T> reduce,
+                       partialPtr<T> partial, T currPartial, T tarMin,
+                       T tarMax, int n, int m, int strt) {
 
     const int lastCol = m - 1;
     const int lenMinusM = freqs.size() - m;
 
     std::vector<T> vPass(m);
 
-    for (int i = freqs.size() - 1, j = 0; i >= lenMinusM; --i, ++j)
+    for (int i = freqs.size() - 1, j = 0; i >= lenMinusM; --i, ++j) {
         vPass[j] = v[freqs[i]];
+    }
 
-    T partial = constraintFun(vPass, m - 1);
+    T partVal = fun(vPass, m - 1);
 
     if (strt == 0) {
-        const T testMax = partialFun(partial, vPass.back(), m);
-        if (testMax < targetMin)  {return 0;}
+        const T testMax = partial(partVal, vPass.back(), m);
+
+        if (testMax < tarMin) {
+            return 0;
+        }
     }
 
     int zExpCurrPos = freqs.size() - m;
@@ -209,13 +230,13 @@ int GetLowerBoundMulti(int n, int m, const std::vector<T> &v, std::vector<int> &
     if (strt) {
         for (int i = 0; i < strt; ++i) {
             vPass[i] = v[z[i]];
-            partial = partialFun(partial, vPass[i], m);
+            partVal = partial(partVal, vPass[i], m);
             --repsCounter[z[i]];
             ++zExpCurrPos;
-            partialReduce(m, partial, v[freqs[zExpCurrPos]]);
+            reduce(m, partVal, v[freqs[zExpCurrPos]]);
         }
 
-        currPartial = constraintFun(vPass, strt);
+        currPartial = fun(vPass, strt);
 
         if (z[strt - 1] != freqs.back()) {
             const auto it = std::find(freqs.begin(), freqs.end(), z[strt - 1] + 1);
@@ -227,19 +248,25 @@ int GetLowerBoundMulti(int n, int m, const std::vector<T> &v, std::vector<int> &
             const int myInd = std::distance(freqs.begin(), it);
             const int freqsStrt = myInd - repsCounter[z[strt - 1]];
 
-            for (int i = strt, j = freqsStrt; i < m; ++i, ++j)
+            for (int i = strt, j = freqsStrt; i < m; ++i, ++j) {
                 vPass[i] = v[freqs[j]];
+            }
         } else {
-            for (int i = strt; i < m; ++i)
+            for (int i = strt; i < m; ++i) {
                 vPass[i] = v[freqs.back()];
+            }
         }
     } else {
-        for (int i = 0; i < m; ++i)
+        for (int i = 0; i < m; ++i) {
             vPass[i] = v[freqs[i]];
+        }
     }
 
-    const T testMin = constraintFun(vPass, m);
-    if (testMin > targetMax) {return 0;}
+    const T testMin = fun(vPass, m);
+
+    if (testMin > tarMax) {
+        return 0;
+    }
 
     int ind = freqs[freqs.size() - m + strt];
     int lowBnd = 0;
@@ -249,71 +276,75 @@ int GetLowerBoundMulti(int n, int m, const std::vector<T> &v, std::vector<int> &
     }
 
     for (int i = strt; i < lastCol; ++i) {
-        if (BruteNextElem(ind, lowBnd, targetMin, partial, m, v, partialFun)) {
+        if (BruteNextElem(ind, lowBnd, tarMin, partVal, m, v, partial)) {
             if (ind > lowBnd && repsCounter[ind - 1]) {
                 const int numIterLeft = m - i;
                 const auto it = std::find(freqs.begin(), freqs.end(), ind + 1);
                 const int myInd = std::distance(freqs.begin(), it);
                 const int freqsStrt = myInd - repsCounter[ind];
 
-                for (int j = 0, k = freqsStrt; j < numIterLeft; ++j, ++k)
+                for (int j = 0, k = freqsStrt; j < numIterLeft; ++j, ++k) {
                     vPass[j] = v[freqs[k]];
+                }
 
-                const T minRemaining = constraintFun(vPass, numIterLeft);
-                const T currMin = partialFun(minRemaining, currPartial, m);
+                const T minRemaining = fun(vPass, numIterLeft);
+                const T currMin = partial(minRemaining, currPartial, m);
 
-                if (currMin > targetMin) {
+                if (currMin > tarMin) {
                     --ind;
                 }
             }
         }
 
         z[i] = ind;
-        partial = partialFun(partial, v[ind], m);
-        currPartial = partialFun(currPartial, v[ind], m);
+        partVal = partial(partVal, v[ind], m);
+        currPartial = partial(currPartial, v[ind], m);
 
         --repsCounter[ind];
 
-        if (repsCounter[ind] == 0)
+        if (repsCounter[ind] == 0) {
             ++ind;
+        }
 
         ++zExpCurrPos;
         lowBnd = ind;
         ind = freqs[zExpCurrPos];
-        partialReduce(m, partial, v[ind]);
+        reduce(m, partVal, v[ind]);
     }
 
-    BruteNextElem(ind, lowBnd, targetMin, partial, m, v, partialFun, true);
+    BruteNextElem(ind, lowBnd, tarMin, partVal, m, v, partial, true);
     z[lastCol] = ind;
     return 1;
 }
 
-
-template int GetLowerBoundNoRep(int, int, const std::vector<int>&,
-                                std::vector<int>&, int, int, funcPtr<int>,
-                                partialReducePtr<int>, int,
-                                partialPtr<int>, int);
-template int GetLowerBoundNoRep(int, int, const std::vector<double>&,
-                                std::vector<int>&, double, double,
-                                funcPtr<double>, partialReducePtr<double>,
-                                double, partialPtr<double>, int);
-
-template int GetLowerBoundRep(int, int, const std::vector<int>&,
-                              std::vector<int>&, int, int, funcPtr<int>,
-                              partialReducePtr<int>, int,
-                              partialPtr<int>, int);
-template int GetLowerBoundRep(int, int, const std::vector<double>&,
-                              std::vector<int>&, double, double,
-                              funcPtr<double>, partialReducePtr<double>,
-                              double, partialPtr<double>, int);
-
-template int GetLowerBoundMulti(int, int, const std::vector<int>&,
-                                std::vector<int>&, const std::vector<int>&,
-                                int, int, const std::vector<int>&,
+template int GetLowerBoundNoRep(const std::vector<int>&, std::vector<int>&,
                                 funcPtr<int>, partialReducePtr<int>,
-                                int, partialPtr<int>, int);
-template int GetLowerBoundMulti(int, int, const std::vector<double>&,
-                                std::vector<int>&, const std::vector<int>&,
-                                double, double, const std::vector<int>&,
-                                funcPtr<double>, partialReducePtr<double>,
-                                double, partialPtr<double>, int);
+                                partialPtr<int>, int, int,
+                                int, int, int, int);
+template int GetLowerBoundNoRep(const std::vector<double>&, 
+                                std::vector<int>&, funcPtr<double>,
+                                partialReducePtr<double>, partialPtr<double>,
+                                double, double, double, int, int, int);
+
+template int GetLowerBoundRep(const std::vector<int>&, std::vector<int>&,
+                              funcPtr<int>, partialReducePtr<int>,
+                              partialPtr<int>, int, int,
+                              int, int, int, int);
+template int GetLowerBoundRep(const std::vector<double>&, std::vector<int>&,
+                              funcPtr<double>, partialReducePtr<double>,
+                              partialPtr<double>, double, double,
+                              double, int, int, int);
+
+template int GetLowerBoundMulti(const std::vector<int>&, 
+                                const std::vector<int>&,
+                                const std::vector<int>&, std::vector<int>&,
+                                funcPtr<int>, partialReducePtr<int>,
+                                partialPtr<int>, int, int,
+                                int, int, int, int);
+template int GetLowerBoundMulti(const std::vector<int>&, 
+                                const std::vector<int>&,
+                                const std::vector<double>&, 
+                                std::vector<int>&, funcPtr<double>,
+                                partialReducePtr<double>,
+                                partialPtr<double>, double, double,
+                                double, int, int, int);

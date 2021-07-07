@@ -6,21 +6,21 @@
 template <typename T>
 int GetLowerBoundNoRep(const std::vector<T> &v, std::vector<int> &z,
                        funcPtr<T> fun, partialReducePtr<T> reduce,
-                       partialPtr<T> partial, int n, int m, T currPartial,
-                       T tarMin, T tarMax, int strt = 0);
+                       partialPtr<T> partial, T currPartial, T tarMin,
+                       T tarMax, int n, int m, int strt = 0);
 
 template <typename T>
 int GetLowerBoundRep(const std::vector<T> &v, std::vector<int> &z,
                      funcPtr<T> fun, partialReducePtr<T> reduce,
-                     partialPtr<T> partial, int n, int m, T currPartial,
-                     T tarMin, T tarMax, int strt = 0);
+                     partialPtr<T> partial, T currPartial, T tarMin,
+                     T tarMax, int n, int m, int strt = 0);
 
 template <typename T>
 int GetLowerBoundMulti(const std::vector<int> &freqs, 
                        const std::vector<int> &Reps,
                        const std::vector<T> &v, std::vector<int> &z,
                        funcPtr<T> fun, partialReducePtr<T> reduce,
-                       partialPtr<T> partial, int n, int m, T currPartial,
-                       T tarMin, T tarMax, int strt = 0);
+                       partialPtr<T> partial, T currPartial, T tarMin,
+                       T tarMax, int n, int m, int strt = 0);
 
 #endif
