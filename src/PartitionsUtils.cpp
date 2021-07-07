@@ -440,8 +440,9 @@ void StandardDesign(const std::vector<int> &Reps,
             part.ptype = PartitionType::RepNoZero;
         } else if (part.includeZero && width < part.target) {
             part.ptype = PartitionType::RepShort;
-            part.includeZero = false; // We need to add width in target in order to
-            part.target += width;      // correctly count the number of partitions
+            // We need to add width in target in order to
+            // correctly count the number of partitions
+            part.mapTar += width;
         } else if (part.includeZero) {
             width = part.target;
             part.ptype = PartitionType::RepStdAll;
@@ -453,8 +454,9 @@ void StandardDesign(const std::vector<int> &Reps,
     } else {
         if (part.includeZero) {
             part.ptype = PartitionType::DstctOneZero;
-            part.includeZero = false;  // We need to add m in target in order to
-            part.target += width;       // correctly count the number of partitions
+             // We need to add m in target in order to
+             // correctly count the number of partitions
+            part.mapTar += width;
         } else {
             part.ptype = PartitionType::DstctNoZero;
         }
