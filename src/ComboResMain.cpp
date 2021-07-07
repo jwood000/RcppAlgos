@@ -1,6 +1,6 @@
 #include "Combinations/NthCombination.h"
 #include "Combinations/ComboResGlue.h"
-#include <RcppThread/ThreadPool.hpp>
+#include <thread>
 #include <gmp.h>
 
 template <typename T>
@@ -12,7 +12,7 @@ void ComboResMain(T* mat, const std::vector<T> &v, const funcPtr<T> myFun,
 
     if (Parallel) {
         RcppParallel::RMatrix<T> parMat(mat, nRows, m);
-        RcppThread::ThreadPool pool(nThreads);
+        std::vector<std::thread> threads;
 
         const int stepSize = nRows / nThreads;
         int nextStep = stepSize;
@@ -21,10 +21,13 @@ void ComboResMain(T* mat, const std::vector<T> &v, const funcPtr<T> myFun,
         const nthCombPtr nthCombFun = GetNthCombFunc(IsMult, IsRep, IsGmp);
         std::vector<std::vector<int>> zs(nThreads, z);
 
-        for (int j = 0; j < (nThreads - 1); ++j, step += stepSize, nextStep += stepSize) {
-            pool.push(std::cref(ComboResPar<T>), std::ref(parMat), std::cref(v),
-                      std::ref(zs[j]), n, m, step, nextStep, std::cref(freqs),
-                      std::cref(myFun), IsMult, IsRep);
+        for (int j = 0; j < (nThreads - 1);
+             ++j, step += stepSize, nextStep += stepSize) {
+            
+            threads.emplace_back(std::cref(ComboResPar<T>), std::ref(parMat),
+                                 std::cref(v), std::ref(zs[j]), n, m, step,
+                                 nextStep, std::cref(freqs), std::cref(myFun),
+                                 IsMult, IsRep);
 
             if (IsGmp) {
                 mpz_add_ui(lowerMpz, lowerMpz, stepSize);
@@ -35,11 +38,14 @@ void ComboResMain(T* mat, const std::vector<T> &v, const funcPtr<T> myFun,
             zs[j + 1] = nthCombFun(n, m, lower, lowerMpz, myReps);
         }
 
-        pool.push(std::cref(ComboResPar<T>),
-                  std::ref(parMat), std::cref(v), std::ref(zs.back()), n, m,
-                  step, nRows, std::cref(freqs), std::cref(myFun), IsMult, IsRep);
+        threads.emplace_back(std::cref(ComboResPar<T>), std::ref(parMat),
+                             std::cref(v), std::ref(zs.back()), n, m, step,
+                             nRows, std::cref(freqs), std::cref(myFun),
+                             IsMult, IsRep);
 
-        pool.join();
+        for (auto& thr: threads) {
+            thr.join();
+        }
     } else {
         ComboResStd(mat, v, z, n, m, nRows, IsMult, IsRep, freqs, myFun);
     }

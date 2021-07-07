@@ -1,6 +1,6 @@
 #include "Permutations/NthPermutation.h"
 #include "Permutations/PermuteManager.h"
-#include <RcppThread/ThreadPool.hpp>
+#include <thread>
 #include <gmp.h>
 
 template <typename T>
@@ -13,7 +13,7 @@ void ThreadSafePermutations(T* mat, const std::vector<T> &v, int n, int m,
 
     if (Parallel) {
         RcppParallel::RMatrix<T> parMat(mat, nRows, m);
-        RcppThread::ThreadPool pool(nThreads);
+        std::vector<std::thread> threads;
 
         const int stepSize = nRows / nThreads;
         int nextStep = stepSize;
@@ -22,10 +22,13 @@ void ThreadSafePermutations(T* mat, const std::vector<T> &v, int n, int m,
         const nthPermPtr nthPermFun = GetNthPermFunc(IsMult, IsRep, IsGmp);
         std::vector<std::vector<int>> zs(nThreads, z);
 
-        for (int j = 0; j < (nThreads - 1); ++j, step += stepSize, nextStep += stepSize) {
-            pool.push(std::cref(PermuteParallel<T>), std::ref(parMat), std::cref(v),
-                      std::ref(zs[j]), n, m, step, nextStep, std::cref(freqs),
-                      IsMult, IsRep);
+        for (int j = 0; j < (nThreads - 1);
+             ++j, step += stepSize, nextStep += stepSize) {
+
+            threads.emplace_back(std::cref(PermuteParallel<T>),
+                                 std::ref(parMat), std::cref(v),
+                                 std::ref(zs[j]), n, m, step, nextStep,
+                                 std::cref(freqs), IsMult, IsRep);
 
             if (IsGmp) {
                 mpz_add_ui(lowerMpz, lowerMpz, stepSize);
@@ -37,14 +40,16 @@ void ThreadSafePermutations(T* mat, const std::vector<T> &v, int n, int m,
                          m, lower, lowerMpz, IsRep, IsMult);
         }
 
-        pool.push(std::cref(PermuteParallel<T>),
-                  std::ref(parMat), std::cref(v), std::ref(zs.back()),
-                  n, m, step, nRows, std::cref(freqs), IsMult, IsRep);
+        threads.emplace_back(std::cref(PermuteParallel<T>), std::ref(parMat),
+                             std::cref(v), std::ref(zs.back()), n, m, step,
+                             nRows, std::cref(freqs), IsMult, IsRep);
 
-        pool.join();
+        for (auto& thr: threads) {
+            thr.join();
+        }
     } else {
-        PermuteManager(mat, v, z, n, m, nRows,
-                       phaseOne, generalRet, IsMult, IsRep, freqs);
+        PermuteManager(mat, v, z, n, m, nRows, phaseOne,
+                       generalRet, IsMult, IsRep, freqs);
     }
 }
 
