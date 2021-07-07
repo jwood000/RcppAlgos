@@ -1,10 +1,11 @@
 #ifndef NEXT_COMBO_SECTION_H
 #define NEXT_COMBO_SECTION_H
 
+#include <vector>
+
 #define R_NO_REMAP
 #include <Rinternals.h>
 #include <R.h>
-#include <vector>
 
 inline void nextCombSec(std::vector<int> &z, int m1, int nMinusM) {
 
@@ -34,8 +35,10 @@ inline void nextCombSecRep(std::vector<int> &z, int m1, int n1) {
     }
 }
 
-inline void nextCombSecMulti(const std::vector<int> &freqs, const std::vector<int> &zIndex,
-                             std::vector<int> &z, int m1, int pentExtreme) {
+inline void nextCombSecMulti(const std::vector<int> &freqs,
+                             const std::vector<int> &zIndex,
+                             std::vector<int> &z, int m1,
+                             int pentExtreme) {
 
     for (int i = m1 - 1; i >= 0; --i) {
         if (z[i] != freqs[pentExtreme + i]) {
