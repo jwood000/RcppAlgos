@@ -16,8 +16,9 @@ void RepUnroller(T* mat, T val, int strt, int last, int lastUnroll) {
         mat[i + 7] = val;
     }
 
-    for (int i = lastUnroll; i < last; ++i)
+    for (int i = lastUnroll; i < last; ++i) {
         mat[i] = val;
+    }
 }
 
 template <typename T>
@@ -37,8 +38,9 @@ void StandardUnroller(T* mat, const int *const indexMat,
             mat[i + 7 + j] = v[indexMat[k + 7]];
         }
 
-        for (int i = lastUnroll; i < last; ++i, ++k)
+        for (int i = lastUnroll; i < last; ++i, ++k) {
             mat[i + j] = v[indexMat[k]];
+        }
     }
 }
 
@@ -49,10 +51,16 @@ void PermuteWorker(T* mat, const int *const indexMat,
                    int unrollRem, bool IsRep, int nRows) {
 
     const int lastUnroll = last - unrollRem;
-    // For IsRep case, we are not setting the first column because we know that it
-    // simply increments. This is taken into account in the indexMat preparation.
-    if (IsRep) {RepUnroller(mat, v[ind], strt, last, lastUnroll);}
-    StandardUnroller(mat, indexMat, v, m, strt, last, first, lastUnroll, nRows);
+    
+    // For IsRep case, we are not setting the first column because we
+    // know that it simply increments. This is taken into account in 
+    // the indexMat preparation.
+    if (IsRep) {
+        RepUnroller(mat, v[ind], strt, last, lastUnroll);
+    }
+    
+    StandardUnroller(mat, indexMat, v, m, strt,
+                     last, first, lastUnroll, nRows);
 }
 
 template <typename T>
@@ -85,8 +93,9 @@ void PermuteLoadIndex(T* mat, int *const indexMat,
     } else {
         auto arrPerm = FromCpp14::make_unique<int[]>(n);
 
-        for (int i = 0; i < n; ++i)
+        for (int i = 0; i < n; ++i) {
             arrPerm[i] = z[i];
+        }
 
         if (m == n) {
             for (int count = 0, maxInd = n - 1; count < segment; ++count) {
@@ -134,7 +143,10 @@ void PermuteOptimized(T* mat, const std::vector<T> &v, std::vector<int> &z,
     std::vector<T> vCopy(v.cbegin(), v.cend());
 
     for (; last <= nRows; strt += segment, last += segment, ++ind) {
-        if (!IsRep) std::swap(vCopy.front(), vCopy[ind]);
+        if (!IsRep) {
+            std::swap(vCopy.front(), vCopy[ind]);
+        }
+
         PermuteWorker(mat, indexMat.get(), vCopy, m, strt,
                       last, ind, first, unrollRem, IsRep, nRows);
     }
@@ -150,9 +162,13 @@ void PermuteOptimized(T* mat, const std::vector<T> &v, std::vector<int> &z,
             std::swap(vCopy.front(), vCopy[ind]);
         }
 
-        for (int j = first, k = 0; j < (m * nRows); j += nRows, k += skip)
-            for (int i = strt; i < nRows; ++i, ++k)
+        for (int j = first * nRows, k = 0; j < (m * nRows); j += nRows,
+             k += skip) {
+
+            for (int i = strt; i < nRows; ++i, ++k) {
                 mat[i + j] = vCopy[indexMat[k]];
+            }
+        }
     }
 }
 

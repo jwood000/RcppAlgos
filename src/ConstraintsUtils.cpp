@@ -4,18 +4,18 @@
 template <typename T>
 void PopulateVec(int m, const std::vector<T> &v,
                  std::vector<int> &z, int &count, int nRows,
-                 bool IsComb, std::vector<T> &combinatoricsVec) {
+                 bool IsComb, std::vector<T> &cnstrntVec) {
     
     if (IsComb) {
         for (int k = 0; k < m; ++k) {
-            combinatoricsVec.push_back(v[z[k]]);
+            cnstrntVec.push_back(v[z[k]]);
         }
 
         ++count;
     } else {
         do {
             for (int k = 0; k < m; ++k) {
-                combinatoricsVec.push_back(v[z[k]]);
+                cnstrntVec.push_back(v[z[k]]);
             }
 
             ++count;
@@ -26,41 +26,41 @@ void PopulateVec(int m, const std::vector<T> &v,
 template <typename T>
 void SectionOne(const std::vector<T> &v, std::vector<T> &testVec,
                 std::vector<int> &z, const std::vector<T> &targetVals,
-                std::vector<T> &combinatoricsVec, std::vector<T> &resultsVec,
+                std::vector<T> &cnstrntVec, std::vector<T> &resVec,
                 bool &check_0, bool &check_1, int &count,
-                partialPtr<T> partialFun, funcPtr<T> constraintFun,
-                compPtr<T> compFunOne, compPtr<T> compFunTwo, int m, int m1,
+                partialPtr<T> partial, funcPtr<T> fun,
+                compPtr<T> compOne, compPtr<T> compTwo, int m, int m1,
                 int nRows, int maxZ, bool IsComb, bool xtraCol) {
     
     for (int i = 0; i < m; ++i) {
         testVec[i] = v[z[i]];
     }
 
-    const T partialVal = constraintFun(testVec, m1);
-    T testVal = partialFun(partialVal, testVec.back(), m);
-    check_0 = compFunTwo(testVal, targetVals);
+    const T partialVal = fun(testVec, m1);
+    T testVal = partial(partialVal, testVec.back(), m);
+    check_0 = compTwo(testVal, targetVals);
     
     while (check_0 && check_1) {
-        if (compFunOne(testVal, targetVals)) {
+        if (compOne(testVal, targetVals)) {
             int myStart = count;
-            PopulateVec(m, v, z, count, nRows, IsComb, combinatoricsVec);
-            
+            PopulateVec(m, v, z, count, nRows, IsComb, cnstrntVec);
+
             if (xtraCol) {
                 for (int i = myStart; i < count; ++i) {
-                    resultsVec.push_back(testVal);
+                    resVec.push_back(testVal);
                 }
             }
 
             check_1 = count < nRows;
         }
-        
+
         check_0 = z[m1] != maxZ;
         
         if (check_0) {
             ++z[m1];
             testVec[m1] = v[z[m1]];
-            testVal = partialFun(partialVal, testVec.back(), m);
-            check_0 = compFunTwo(testVal, targetVals);
+            testVal = partial(partialVal, testVec.back(), m);
+            check_0 = compTwo(testVal, targetVals);
         }
     }
 }
@@ -76,11 +76,11 @@ bool CheckSpecialCase(const std::vector<double> &vNum,
     // combinations/permutations that meet the criteria. This applies when
     // we have anything other than non standard partitions
     
-    const bool IsGenCnstrd = ctype == ConstraintType::General ||
-                             ctype == ConstraintType::PartitionEsque ||
-                             ptype == PartitionType::Multiset;
-    
-    if (bLower && IsGenCnstrd) {
+    const bool NonStdPart = ptype == PartitionType::CoarseGrained ||
+                            ptype == PartitionType::NotPartition  ||
+                            ptype == PartitionType::Multiset;
+
+    if (bLower && NonStdPart) {
         result = true;
     } else if (mainFun == "prod") {
         for (auto v_i: vNum) {
@@ -275,9 +275,10 @@ void AdjustTargetVals(VecType myType, std::vector<double> &targetVals,
     }
 }
 
-// Check if our function operating on the rows of our matrix can possibly produce elements
-// greater than std::numeric_limits<int>::max(). We need a NumericMatrix in this case. We also need to check
-// if our function is the mean as this can produce non integral values.
+// Check if our function operating on the rows of our matrix can possibly
+// produce elements greater than std::numeric_limits<int>::max(). We need
+// a NumericMatrix in this case. We also need to check if our function is
+// the mean as this can produce non integral values.
 bool CheckIsInteger(const std::string &funPass, int n,
                     int m, const std::vector<double> &vNum,
                     const std::vector<double> &targetVals,
@@ -297,7 +298,7 @@ bool CheckIsInteger(const std::string &funPass, int n,
     const std::vector<double> rowVec(m, vecMax);
     const double testIfInt = myFunDbl(rowVec, static_cast<std::size_t>(m));
 
-    if (testIfInt > std::numeric_limits<int>::max()) {
+    if (testIfInt > dblIntMax) {
         return false;
     }
 
@@ -314,7 +315,7 @@ bool CheckIsInteger(const std::string &funPass, int n,
 
         const double limMax = *std::max_element(vAbs.cbegin(), vAbs.cend());
 
-        if (limMax > std::numeric_limits<int>::max()) {
+        if (limMax > dblIntMax) {
             return false;
         }
     }

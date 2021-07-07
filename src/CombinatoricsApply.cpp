@@ -371,11 +371,13 @@ SEXP CombinatoricsApply(SEXP Rv, SEXP Rm, SEXP RisRep,
 
     switch (myType) {
         case VecType::Character : {
+            SEXP charVec = PROTECT(Rf_duplicate(Rv));
             SEXP vectorPass = PROTECT(Rf_allocVector(STRSXP, m));
-            SEXP res = ApplyFunction(Rv, vectorPass, n, m, IsComb, IsRep,
-                                     nRows, freqs, startZ, IsMult, stdFun,
-                                     myEnv, RFunVal);
-            UNPROTECT(1);
+
+            SEXP res = ApplyFunction(charVec, vectorPass, n, m, IsComb,
+                                     IsRep, nRows, freqs, startZ, IsMult,
+                                     stdFun, myEnv, RFunVal);
+            UNPROTECT(2);
             return res;
         } case VecType::Complex : {
             SEXP vectorPass = PROTECT(Rf_allocVector(CPLXSXP, m));

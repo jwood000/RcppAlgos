@@ -43,7 +43,7 @@ void PartitionsCount(const std::vector<int> &Reps, PartDesign &part,
                 break;
             } case PartitionType::RepCapped: {
                 part.count = CountPartsRepLenCap(part.mapTar,
-                                                part.width, lenV);
+                                                 part.width, lenV);
 
                 if (part.count > Significand53) {
                     part.isGmp = true;
@@ -130,6 +130,10 @@ void PartitionsCount(const std::vector<int> &Reps, PartDesign &part,
             } else {
                 part.count = 0.0;
             }
+        } else if (part.ptype == PartitionType::DstctCapped) {
+            part.count = CountPartsPermDistinctCap(part.startZ, lenV,
+                                                   part.mapTar, part.width,
+                                                   part.includeZero);
         } else if (it != DistPTypeArr.cend()) {
             part.count = CountPartsPermDistinct(part.startZ, part.mapTar,
                                                 part.width,

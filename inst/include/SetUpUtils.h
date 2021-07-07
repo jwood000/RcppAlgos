@@ -18,18 +18,18 @@ void SetThreads(bool &Parallel, int maxThreads, int nRows,
                 VecType myType, int &nThreads, SEXP RNumThreads, int limit);
 
 void SetNumResults(bool IsGmp, bool bLower, bool bUpper, bool IsGenCnstrd,
-                   mpz_t *const upperMpz, mpz_t *const lowerMpz, double lower,
-                   double upper, double computedRows, mpz_t &computedRowsMpz,
-                   int &nRows, double &userNumRows);
+                   mpz_t *const upperMpz, mpz_t *const lowerMpz,
+                   double lower, double upper, double computedRows,
+                   mpz_t &computedRowsMpz, int &nRows, double &userNumRows);
 
 void SetBounds(SEXP Rlow, SEXP Rhigh, bool IsGmp, bool &bLower,
-               bool &bUpper, double &lower, double &upper, mpz_t *const lowerMpz,
-               mpz_t *const upperMpz, mpz_t computedRowMpz, double computedRows);
+               bool &bUpper, double &lower, double &upper,
+               mpz_t *const lowerMpz, mpz_t *const upperMpz,
+               mpz_t computedRowMpz, double computedRows);
 
 void SetStartZ(const std::vector<int> &myReps,
-               const std::vector<int> &freqs,
-               std::vector<int> &z, bool IsComb, int n,
-               int m, double lower, mpz_t lowerMpz,
+               const std::vector<int> &freqs, std::vector<int> &z,
+               bool IsComb, int n, int m, double lower, mpz_t lowerMpz,
                bool IsRep, bool IsMult, bool IsGmp);
 
 void PermuteSpecific(int &phaseOne, bool &generalRet, int n, int m,
@@ -39,14 +39,14 @@ void PermuteSpecific(int &phaseOne, bool &generalRet, int n, int m,
 void SetRandomSample(SEXP RindexVec, SEXP RNumSamp, int &sampSize,
                      bool IsGmp, double computedRows,
                      std::vector<double> &mySample,
-                     SEXP baseSample, SEXP rho, bool bSubOne = true);
+                     SEXP baseSample, SEXP rho);
 
-void SetRandomSampleMpz(const SEXP &RindexVec, const SEXP &RmySeed,
-                        int sampSize, bool IsGmp, mpz_t &computedRowsMpz,
-                        mpz_t *const myVec, bool bSubOne = true);
+void SetRandomSampleMpz(SEXP RindexVec, SEXP RmySeed, int sampSize,
+                        bool IsGmp, mpz_t &computedRowsMpz,
+                        mpz_t *const myVec);
 
 void SetSampleNames(SEXP objRcpp, bool IsGmp, int sampSize,
                     const std::vector<double> &mySample,
-                    mpz_t *const myBigSamp, bool bAddOne = true);
+                    mpz_t *const myBigSamp);
 
 #endif

@@ -1,6 +1,6 @@
 #include "Partitions/PartitionsTypes.h"
 #include "CleanConvert.h"
-#include <RcppThread.h>
+#include <iostream>
 #include <numeric>
 
 std::string GetPartitionType(const PartDesign &part) {
@@ -55,51 +55,51 @@ SEXP GetDesign(const PartDesign &part, int lenV, bool verbose) {
     const std::string ptype = GetPartitionType(part);
 
     if (verbose) {
-        RcppThread::Rcout << "          Partition Design Overview\n";
-        RcppThread::Rcout << "*********************************************\n\n";
+        std::cout << "          Partition Design Overview\n";
+        std::cout << "*********************************************\n\n";
 
         if (part.isMult) {
-            RcppThread::Rcout << "Partitions of Multiset of width: " <<
+            std::cout << "Partitions of Multiset of width: " <<
                 part.width << "\n\n";
         } else if (part.isRep) {
-            RcppThread::Rcout << "Partitions with Repetition of width: " <<
+            std::cout << "Partitions with Repetition of width: " <<
                 part.width << "\n\n";
         } else {
-            RcppThread::Rcout << "Distinct Partitions of width: " <<
+            std::cout << "Distinct Partitions of width: " <<
                 part.width << "\n\n";
         }
 
-        RcppThread::Rcout << "Partition Type:  " << ptype << "\n\n";
+        std::cout << "Partition Type:  " << ptype << "\n\n";
 
         std::string strBool = (part.mIsNull) ? "TRUE" : "FALSE";
-        RcppThread::Rcout << "Is m NULL?: " << strBool << "\n";
+        std::cout << "Is m NULL?: " << strBool << "\n";
         strBool = (part.solnExist) ? "TRUE" : "FALSE";
-        RcppThread::Rcout << "Does Soln Exist?: " << strBool << "\n";
+        std::cout << "Does Soln Exist?: " << strBool << "\n";
 
-        RcppThread::Rcout << "\nThe isomorphic vector:\nv: ";
+        std::cout << "\nThe isomorphic vector:\nv: ";
 
         for (int i = 0; i < (lenV - 1); ++i)
-            RcppThread::Rcout << vMap[i] << ", ";
+            std::cout << vMap[i] << ", ";
 
-        RcppThread::Rcout << vMap.back() << "\n\n";
-        RcppThread::Rcout << "The first indexing vector is given by:\nstartZ: ";
+        std::cout << vMap.back() << "\n\n";
+        std::cout << "The first indexing vector is given by:\nstartZ: ";
 
         for (int i = 0; i < (part.startZ.size() - 1); ++i)
-            RcppThread::Rcout << part.startZ[i] << ", ";
+            std::cout << part.startZ[i] << ", ";
 
-        RcppThread::Rcout << part.startZ.back() << "\n\n";
-        RcppThread::Rcout << "Number of partitions: " <<  part.count << "\n\n";
+        std::cout << part.startZ.back() << "\n\n";
+        std::cout << "Number of partitions: " <<  part.count << "\n\n";
 
-        RcppThread::Rcout << "Shift:           " <<  part.shift << "\n";
-        RcppThread::Rcout << "Slope:           " <<  part.slope << "\n\n";
-        RcppThread::Rcout << "Mapped target:   " <<  part.mapTar << "\n";
-        RcppThread::Rcout << "Original target: " <<  part.target << "\n\n";
+        std::cout << "Shift:           " <<  part.shift << "\n";
+        std::cout << "Slope:           " <<  part.slope << "\n\n";
+        std::cout << "Mapped target:   " <<  part.mapTar << "\n";
+        std::cout << "Original target: " <<  part.target << "\n\n";
 
-        RcppThread::Rcout << "Confirm MappedTar = (Target + Width * Shift) / Slope\n";
+        std::cout << "Confirm MappedTar = (Target + Width * Shift) / Slope\n";
         const std::string eqn_check_str = std::to_string(part.mapTar) + " == (" +
             std::to_string(part.target) + " + " + std::to_string(part.width) +
             " * " + std::to_string(part.shift) + ") / " + std::to_string(part.slope);
-        RcppThread::Rcout << eqn_check_str << std::endl;
+        std::cout << eqn_check_str << std::endl;
     }
 
     bool eqn_check_val = part.mapTar == (part.target +

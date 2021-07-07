@@ -126,12 +126,13 @@ SEXP CombinatoricsStndrd(SEXP Rv, SEXP Rm, SEXP RisRep, SEXP RFreqs,
 
     switch (myType) {
         case VecType::Character : {
+            SEXP charVec = PROTECT(Rf_duplicate(Rv));
             SEXP res = PROTECT(Rf_allocMatrix(STRSXP, nRows, m));
 
-            CharacterGlue(res, Rv, IsComb, startZ, n, m,
+            CharacterGlue(res, charVec, IsComb, startZ, n, m,
                           nRows, freqs, IsMult, IsRep);
 
-            UNPROTECT(1);
+            UNPROTECT(2);
             return res;
         } case VecType::Complex : {
             std::vector<Rcomplex> stlCmplxVec(n);

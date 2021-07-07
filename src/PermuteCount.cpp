@@ -98,10 +98,11 @@ double MultisetPermRowNum(int n, int r, const std::vector<int> &Reps) {
         mpz_init(result);
         MultisetPermRowNumGmp(result, n, r, Reps);
 
-        if (mpz_cmp_d(result, Significand53) > 0)
+        if (mpz_cmp_d(result, Significand53) > 0) {
             return std::numeric_limits<double>::infinity();
-        else
+        } else {
             return mpz_get_d(result);
+        }
     }
 
     std::vector<int> seqR(r);

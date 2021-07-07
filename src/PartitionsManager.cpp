@@ -5,41 +5,36 @@
 #include "RMatrix.h"
 
 void PartsStdManager(int* mat, std::vector<int> &z, int width,
-                     int lastCol, int boundary, int edge,
-                     int strt, int nRows, bool IsComb, bool IsRep) {
+                     int lastElem, int lastCol, int nRows,
+                     bool IsComb, bool IsRep) {
 
     if (IsRep && IsComb) {
-        PartsRep(mat, z, width, boundary, edge, lastCol, strt, nRows);
+        PartsRep(mat, z, width, lastElem, lastCol, nRows);
     } else if (IsRep) {
-        PartsPermRep(mat, z, width, boundary, edge, lastCol, nRows);
+        PartsPermRep(mat, z, width, lastElem, lastCol, nRows);
     } else if (IsComb) {
-        PartsDistinct(mat, z, width, boundary, lastCol, edge, strt, nRows);
+        PartsDistinct(mat, z, width, lastElem, lastCol, nRows);
     } else {
         const auto it = std::find(z.rbegin(), z.rend(), 0);
 
         if (it != z.rend()) {
-            PartsPermZeroDistinct(mat, z, width, boundary,
-                                  lastCol, edge, nRows);
+            PartsPermZeroDistinct(mat, z, width, lastElem, lastCol, nRows);
         } else {
-            PartsPermDistinct(mat, z, width, boundary,
-                              lastCol, edge, nRows);
+            PartsPermDistinct(mat, z, width, lastElem, lastCol, nRows);
         }
     }
 }
 
 template <typename T>
 void PartsGenManager(T* mat, const PartDesign &part, const std::vector<T> &v,
-                     std::vector<int> &z, int width, int lastCol,
-                     int lastElem, int boundary, int edge, int strt,
-                     int nRows, bool IsComb, bool IsRep) {
+                     std::vector<int> &z, int width, int lastElem,
+                     int lastCol, int nRows, bool IsComb, bool IsRep) {
 
     if (IsComb) {
         if (IsRep) {
-            PartsGenRep(mat, v, z, width, lastElem,
-                        lastCol, strt, nRows);
+            PartsGenRep(mat, v, z, width, lastElem, lastCol, nRows);
         } else {
-            PartsGenDistinct(mat, v, z, width, lastElem,
-                             lastCol, strt, nRows);
+            PartsGenDistinct(mat, v, z, width, lastElem, lastCol, nRows);
         }
     } else {
         if (part.ptype <= PartitionType::RepShort) {
@@ -76,28 +71,25 @@ void PartsGenManager(std::vector<T> &partsVec, const std::vector<T> &v,
     }
 }
 
-// template <typename T>
-// void ComboParallel(RcppParallel::RMatrix<T> &mat, const std::vector<T> &v,
-//                    std::vector<int> &z, int n, int m, int strt, int nRows,
-//                    const std::vector<int> &freqs, bool IsMult, bool IsRep) {
-//
-//     if (IsMult) {
-//         MultisetCombination(mat, v, z, n, m, strt, nRows, freqs);
-//     } else if (IsRep) {
-//         CombinationsRep(mat, v, z, n, m, strt, nRows);
-//     } else {
-//         CombinationsDistinct(mat, v, z, n, m, strt, nRows);
-//     }
-// }
-//
+void PartsStdParallel(RcppParallel::RMatrix<int> &mat, std::vector<int> &z,
+                      int strt, int width, int lastElem, int lastCol,
+                      int nRows, bool IsRep) {
+
+    if (IsRep) {
+        PartsRep(mat, z, strt, width, lastElem, lastCol, nRows);
+    } else {
+        PartsDistinct(mat, z, strt, width, lastElem, lastCol, nRows);
+    }
+}
+
 
 template void PartsGenManager(int*, const PartDesign&,
                               const std::vector<int>&, std::vector<int>&,
-                              int, int, int, int, int, int, int, bool, bool);
+                              int, int, int, int, bool, bool);
 
 template void PartsGenManager(double*, const PartDesign&,
                               const std::vector<double>&, std::vector<int>&,
-                              int, int, int, int, int, int, int, bool, bool);
+                              int, int, int, int, bool, bool);
 
 template void PartsGenManager(std::vector<int>&, const std::vector<int>&,
                               const std::vector<int>&, std::vector<int>&,

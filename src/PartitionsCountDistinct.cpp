@@ -201,7 +201,7 @@ double CountPartsPermDistinct(const std::vector<int> &z,
 }
 
 double CountPartsPermDistinctCap(const std::vector<int> &z, int cap,
-                                int tar, int width, bool includeZero) {
+                                 int tar, int width, bool includeZero) {
 
     double res = 0;
 
