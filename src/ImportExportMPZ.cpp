@@ -43,8 +43,7 @@ void createMPZArray(SEXP input, mpz_t *myVec, std::size_t vecSize,
             }
 
             break;
-        }
-        case REALSXP: {
+        } case REALSXP: {
             double* dblInput = REAL(input);
             std::vector<double> dblVec(dblInput, dblInput + vecSize);
             constexpr double Sig53 = 9007199254740991.0;
@@ -78,9 +77,9 @@ void createMPZArray(SEXP input, mpz_t *myVec, std::size_t vecSize,
         }
         case INTSXP:
         case LGLSXP: {
-            double* dblInput = REAL(input);
-            std::vector<double> dblVec(dblInput, dblInput + vecSize);
-            std::vector<int> intVec(dblInput, dblInput + vecSize);
+            int* intInput = INTEGER(input);
+            std::vector<double> dblVec(intInput, intInput + vecSize);
+            std::vector<int> intVec(intInput, intInput + vecSize);
 
             for (std::size_t j = 0; j < vecSize; ++j) {
                 if (ISNAN(dblVec[j]))
@@ -93,8 +92,7 @@ void createMPZArray(SEXP input, mpz_t *myVec, std::size_t vecSize,
             }
 
             break;
-        }
-        case STRSXP: {
+        } case STRSXP: {
             for (std::size_t i = 0; i < vecSize; ++i) {
                 if (STRING_ELT(input, i) == NA_STRING) {
                     Rf_error("%s cannot be NA or NaN", suffix.c_str());
