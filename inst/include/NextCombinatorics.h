@@ -3,7 +3,7 @@
 
 #include <vector>
 
-using nextIterPtr = void (*const)(const std::vector<int> &freqs,
+using nextIterPtr = bool (*const)(const std::vector<int> &freqs,
                           std::vector<int> &z,int n1, int m1);
 
 nextIterPtr GetNextIterPtr(bool IsComb, bool IsMult,
