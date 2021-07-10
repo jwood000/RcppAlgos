@@ -172,7 +172,9 @@ void GetTarget(const std::vector<double> &v,
                                       part.isRep, part.isMult);
 
     if (res == 1) {
-        part.includeZero = part.allOne;
+
+
+
         part.startZ    = z;
         part.solnExist = true;
         part.mapTar    = std::accumulate(z.cbegin(), z.cend(), 0) +
@@ -275,8 +277,13 @@ int DiscoverPType(const std::vector<int> &Reps,
             }
 
             if (isoz == part.startZ) {
-                part.ptype = ptype;
-                return 1;
+                if (part.isMult && part.allOne) {
+                    part.ptype = ptype;
+                    return 1;
+                } else if (!part.isMult && !part.isRep) {
+                    part.ptype = ptype;
+                    return 1;
+                }
             }
         }
     }
@@ -443,6 +450,7 @@ void StandardDesign(const std::vector<int> &Reps,
             // We need to add width in target in order to
             // correctly count the number of partitions
             part.mapTar += width;
+            part.mapIncZero = false;
         } else if (part.includeZero) {
             width = part.target;
             part.ptype = PartitionType::RepStdAll;
@@ -457,6 +465,7 @@ void StandardDesign(const std::vector<int> &Reps,
              // We need to add m in target in order to
              // correctly count the number of partitions
             part.mapTar += width;
+            part.mapIncZero = false;
         } else {
             part.ptype = PartitionType::DstctNoZero;
         }
@@ -483,7 +492,7 @@ void CheckPartition(const std::vector<std::string> &compFunVec,
 
     // compFunVec should be non-empty if we made it this far.
     // Doesn't hurt to check
-    if (!compFunVec.empty() && v.size() > 1) {
+    if (!compFunVec.empty() && v.size() > 1 && m > 1) {
         if (compFunVec[0] == "==" && mainFun == "sum") {
             if (static_cast<std::int64_t>(v[0]) == v[0]) {
 
@@ -536,7 +545,7 @@ void CheckPartition(const std::vector<std::string> &compFunVec,
 void SetPartitionDesign(const std::vector<int> &Reps,
                         const std::vector<double> &v, PartDesign &part,
                         ConstraintType &ctype, int lenV, int &m,
-                        bool bCalcMultiset, bool IsComb) {
+                        bool bCalcDifficult, bool IsComb) {
 
     // Now that we know we have partitions, we need to determine
     // if we are in a mapping case. There are a few of ways
@@ -596,6 +605,7 @@ void SetPartitionDesign(const std::vector<int> &Reps,
         // v = 1:10, m = 7, rep = TRUE, & width = 10 (Hence v.front() >= 0)
 
         part.includeZero = (v.front() == 0);
+        part.mapIncZero  = part.includeZero;
         ctype = ConstraintType::PartStandard;
         part.mapTar = part.target;
         StandardDesign(Reps, part, m, lenV);
@@ -606,6 +616,7 @@ void SetPartitionDesign(const std::vector<int> &Reps,
         // this only applies to non-canonical partitions.
         part.mIsNull = false;
         part.includeZero = part.allOne;
+        part.mapIncZero  = part.includeZero;
 
         part.ptype = part.isMult ? PartitionType::Multiset :
             (part.isRep ? PartitionType::RepCapped :
@@ -618,5 +629,6 @@ void SetPartitionDesign(const std::vector<int> &Reps,
         DiscoverPType(Reps, part);
     }
 
-    PartitionsCount(Reps, part, lenV, bCalcMultiset, IsComb);
+    part.numUnknown = false;
+    PartitionsCount(Reps, part, lenV, bCalcDifficult, IsComb);
 }

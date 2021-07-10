@@ -13,8 +13,8 @@ void PartsGenPermRep(T*, const std::vector<T> &v, std::vector<int> &z,
                      int width, int lastElem, int lastCol, int nRows);
 
 template <typename T>
-void PartsGenPermRep(std::vector<T> &partsVec, const std::vector<T> &v,
-                     std::vector<int> &z, int width, int nRows);
+void PartsGenRep(std::vector<T> &partsVec, const std::vector<T> &v,
+                 std::vector<int> &z, int width, int nRows, bool IsComb);
 
 void PartsRep(int* mat, std::vector<int> &z, int width,
               int lastElem, int lastCol, int nRows);

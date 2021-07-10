@@ -10,6 +10,11 @@ void PartsGenDistinct(T* mat, const std::vector<T> &v,
                       int lastElem, int lastCol, int nRows);
 
 template <typename T>
+void PartsGenDistinct(std::vector<T> &partsVec, const std::vector<T> &v,
+                      std::vector<int> &z, int width,
+                      int nRows, bool IsComb);
+
+template <typename T>
 void PartsGenPermDistinct(T* mat, const std::vector<T> &v,
                           std::vector<int> &z, int width,
                           int lastElem, int lastCol, int maxRows);

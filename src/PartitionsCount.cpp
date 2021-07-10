@@ -4,13 +4,18 @@
 #include "Partitions/PartitionsCountRep.h"
 #include "Partitions/BigPartsCountRep.h"
 #include "Partitions/PartitionsTypes.h"
+#include "Combinations/ComboCount.h"
 #include "CleanConvert.h"  // Significand53
 #include <algorithm>       // std::count_if, std::find
 
 void PartitionsCount(const std::vector<int> &Reps, PartDesign &part,
-                     int lenV, bool bCalcMultiset, bool IsComb) {
+                     int lenV, bool bCalcDifficult, bool IsComb) {
 
     mpz_init(part.bigCount);
+    constexpr double cutOff = 3.0;
+    const double capNumIters = static_cast<double>(part.mapTar + 1) *
+                               static_cast<double>(part.width - 1) *
+                               static_cast<double>(lenV + 1);
 
     if (IsComb) {
         switch (part.ptype) {
@@ -42,13 +47,19 @@ void PartitionsCount(const std::vector<int> &Reps, PartDesign &part,
 
                 break;
             } case PartitionType::RepCapped: {
-                part.count = CountPartsRepLenCap(part.mapTar,
-                                                 part.width, lenV);
+                const double theBar = NumCombsWithRep(lenV, part.width);
 
-                if (part.count > Significand53) {
-                    part.isGmp = true;
-                    CountPartsRepLenCap(part.bigCount, part.mapTar,
-                                        part.width, lenV);
+                if (bCalcDifficult || (theBar / capNumIters) > cutOff) {
+                    part.count = CountPartsRepLenCap(part.mapTar,
+                                                     part.width, lenV);
+
+                    if (part.count > Significand53) {
+                        part.isGmp = true;
+                        CountPartsRepLenCap(part.bigCount, part.mapTar,
+                                            part.width, lenV);
+                    }
+                } else {
+                    part.numUnknown = true;
                 }
 
                 break;
@@ -99,23 +110,32 @@ void PartitionsCount(const std::vector<int> &Reps, PartDesign &part,
 
                 break;
             } case PartitionType::DstctCapped: {
-                part.count = CountPartsDistinctLenCap(part.mapTar,
-                                                      part.width, lenV);
+                const double theBar = nChooseK(lenV, part.width);
 
-                if (part.count > Significand53) {
-                    part.isGmp = true;
-                    CountPartsDistinctLenCap(part.bigCount, part.mapTar,
-                                             part.width, lenV);
+                if (bCalcDifficult || (theBar / capNumIters) > cutOff) {
+                    part.count = CountPartsDistinctLenCap(part.mapTar,
+                                                          part.width, lenV);
+
+                    if (part.count > Significand53) {
+                        part.isGmp = true;
+                        CountPartsDistinctLenCap(part.bigCount, part.mapTar,
+                                                 part.width, lenV);
+                    }
+                } else {
+                    part.numUnknown = true;
                 }
 
                 break;
             } case PartitionType::Multiset: {
-                if (bCalcMultiset && part.solnExist) {
+                if (bCalcDifficult && part.solnExist) {
                     part.count = CountPartsMultiset(Reps, part.startZ);
+                } else {
+                    part.numUnknown = true;
                 }
 
                 break;
             } default: {
+                part.numUnknown = true;
                 part.count = 0.0;
                 break;
             }
@@ -126,19 +146,28 @@ void PartitionsCount(const std::vector<int> &Reps, PartDesign &part,
         if (part.isRep) {
             if (part.ptype != PartitionType::RepCapped) {
                 part.count = CountPartsPermRep(part.mapTar, part.width,
-                                               part.includeZero);
+                                               part.mapIncZero);
             } else {
+                part.numUnknown = true;
                 part.count = 0.0;
             }
         } else if (part.ptype == PartitionType::DstctCapped) {
-            part.count = CountPartsPermDistinctCap(part.startZ, lenV,
-                                                   part.mapTar, part.width,
-                                                   part.includeZero);
+            const double theBar = nChooseK(lenV, part.width);
+
+            if (bCalcDifficult || (theBar / capNumIters) > cutOff) {
+                part.count = CountPartsPermDistinctCap(part.startZ, lenV,
+                                                       part.mapTar, part.width,
+                                                       part.mapIncZero);
+            } else {
+                part.numUnknown = true;
+                part.count = 0.0;
+            }
         } else if (it != DistPTypeArr.cend()) {
             part.count = CountPartsPermDistinct(part.startZ, part.mapTar,
                                                 part.width,
-                                                part.includeZero);
+                                                part.mapIncZero);
         } else {
+            part.numUnknown = true;
             part.count = 0.0;
         }
     }

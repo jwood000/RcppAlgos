@@ -4,6 +4,6 @@
 #include "Partitions/PartitionsTypes.h"
 
 void PartitionsCount(const std::vector<int> &Reps, PartDesign &part,
-                     int lenV, bool bCalcMultiset, bool IsComb);
+                     int lenV, bool bCalcDifficult, bool IsComb);
 
 #endif

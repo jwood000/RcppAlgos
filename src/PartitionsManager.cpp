@@ -60,14 +60,12 @@ void PartsGenManager(std::vector<T> &partsVec, const std::vector<T> &v,
                      PartitionType ptype, int width, int nRows,
                      bool IsComb) {
 
-    if (IsComb) {
-        PartsGenMultiset(partsVec, v, Reps, z, width, nRows);
+    if (ptype == PartitionType::Multiset) {
+        PartsGenMultiset(partsVec, v, Reps, z, width, nRows, IsComb);
+    } else if (ptype == PartitionType::RepCapped) {
+        PartsGenRep(partsVec, v, z, width, nRows, IsComb);
     } else {
-        if (ptype == PartitionType::RepCapped) {
-            PartsGenPermRep(partsVec, v, z, width, nRows);
-        } else {
-            PartsGenPermMultiset(partsVec, v, Reps, z, width, nRows);
-        }
+        PartsGenDistinct(partsVec, v, z, width, nRows, IsComb);
     }
 }
 
