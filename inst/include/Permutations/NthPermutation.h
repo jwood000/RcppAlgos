@@ -9,9 +9,8 @@ using nthPermPtr = std::vector<int> (*const)(int n, int r, double dblIdx,
 
 nthPermPtr GetNthPermFunc(bool IsMult, bool IsRep, bool IsGmp);
 
-void SetStartPerm(std::vector<int> &z, const nthPermPtr nthPermFun,
-                  const std::vector<int> &myReps, int n,
-                  int m, double lower, mpz_t lowerMpz,
-                  bool IsRep, bool IsMult);
+void TopOffPerm(std::vector<int> &z, const std::vector<int> &myReps,
+                int n, int m, double lower, mpz_t lowerMpz,
+                bool IsRep, bool IsMult);
 
 #endif
