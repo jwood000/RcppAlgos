@@ -17,12 +17,12 @@ void ConstraintsGeneral(std::vector<T> &v, std::vector<int> &Reps,
                         const std::string &myFun, double numRows,
                         int n, int m, bool IsRep, bool IsComb,
                         bool IsMult, bool bUserRows, bool xtraCol) {
-    
+
     // myFun is one of the following general functions: "prod", "sum",
     // "mean", "min", or "max"; The comparison vector contains up to 2 of the
-    // following comparison operator: 
+    // following comparison operator:
     //           "<", "<=", ">", ">=", "==", ">,<", ">=,<", ">,<=", ">=,<="
-    
+
     T testVal;
     int count = 0;
     const int maxRows = std::min(dblIntMax, numRows);
@@ -31,15 +31,15 @@ void ConstraintsGeneral(std::vector<T> &v, std::vector<int> &Reps,
         cnstrntVec.reserve(m * maxRows);
         resultsVec.reserve(maxRows);
     }
-    
+
     const funcPtr<T> fun = GetFuncPtr<T>(myFun);
     const partialPtr<T> partial = GetPartialPtr<T>(myFun);
-    
+
     for (std::size_t nC = 0; nC < comparison.size(); ++nC) {
-        
+
         const compPtr<T> compOne = GetCompPtr<T>(comparison[nC]);
         compPtr<T> compTwo = compOne;
-        
+
         if (comparison[nC] == ">" || comparison[nC] == ">=") {
             if (IsMult) {
                 for (int i = 0; i < (n - 1); ++i) {
@@ -66,49 +66,49 @@ void ConstraintsGeneral(std::vector<T> &v, std::vector<int> &Reps,
             } else {
                 std::sort(v.begin(), v.end());
             }
-            
+
             const auto itComp = std::find(compSpecial.cbegin(),
                                           compSpecial.cend(), comparison[nC]);
-            
+
             if (itComp != compSpecial.end()) {
                 int myIndex = std::distance(compSpecial.cbegin(), itComp);
                 compTwo = GetCompPtr<T>(compHelper[myIndex]);
             }
         }
-        
+
         std::vector<int> z(m);
         std::vector<T> testVec(m);
-        
+
         bool check_0 = true;
         bool check_1 = true;
-        
+
         int maxZ = n - 1;
         const int m1 = m - 1;
         const int m2 = m - 2;
         const int nMinusM = (n - m);
-        
+
         if (m == 1) {
             int ind = 0;
             testVal = v[ind];
             check_0 = compTwo(testVal, targetVals);
-            
+
             while (check_0 && check_1) {
                 if (compOne(testVal, targetVals)) {
                     for (int k = 0; k < m; ++k) {
                         cnstrntVec.push_back(v[ind]);
                     }
-                    
+
                     ++count;
-                    
+
                     if (xtraCol) {
                         resultsVec.push_back(testVal);
                     }
 
                     check_1 =  (count < maxRows);
                 }
-                
+
                 check_0 = ind != maxZ;
-                
+
                 if (check_0) {
                     ++ind;
                     testVal = v[ind];
@@ -119,15 +119,15 @@ void ConstraintsGeneral(std::vector<T> &v, std::vector<int> &Reps,
             int freqsSize = std::accumulate(Reps.cbegin(), Reps.cend(), 0);
             std::vector<int> freqs, zIndex;
             const int pentExtreme = freqsSize - m;
-            
+
             for (int i = 0, k = 0; i < n; ++i) {
                 zIndex.push_back(k);
-                
+
                 for (int j = 0; j < Reps[i]; ++j, ++k) {
                     freqs.push_back(i);
                 }
             }
-            
+
             z.assign(freqs.cbegin(), freqs.cbegin() + m);
 
             while (check_1) {
@@ -135,7 +135,7 @@ void ConstraintsGeneral(std::vector<T> &v, std::vector<int> &Reps,
                            resultsVec, check_0, check_1, count, partial,
                            fun, compOne, compTwo, m, m1,
                            maxRows, maxZ, IsComb, xtraCol);
-                
+
                 NextCnstrntMulti(v, targetVals, freqs, zIndex, testVec,
                                  z, fun, compTwo, m, m1, m2,
                                  pentExtreme, check_0, check_1);
@@ -144,7 +144,7 @@ void ConstraintsGeneral(std::vector<T> &v, std::vector<int> &Reps,
             v.erase(std::unique(v.begin(), v.end()), v.end());
             maxZ = static_cast<int>(v.size()) - 1;
             z.assign(m, 0);
-            
+
             while (check_1) {
                 SectionOne(v, testVec, z, targetVals, cnstrntVec,
                            resultsVec, check_0, check_1, count, partial,
@@ -156,7 +156,7 @@ void ConstraintsGeneral(std::vector<T> &v, std::vector<int> &Reps,
             }
         } else {
             std::iota(z.begin(), z.end(), 0);
-            
+
             while (check_1) {
                 SectionOne(v, testVec, z, targetVals, cnstrntVec,
                            resultsVec, check_0, check_1, count, partial,
@@ -168,19 +168,19 @@ void ConstraintsGeneral(std::vector<T> &v, std::vector<int> &Reps,
                                     m2, nMinusM, check_0, check_1);
             }
         }
-        
+
         targetVals.erase(targetVals.begin());
     }
 }
 
-template void ConstraintsGeneral(std::vector<int>&, std::vector<int>&, 
+template void ConstraintsGeneral(std::vector<int>&, std::vector<int>&,
                                  const std::vector<std::string>&,
                                  std::vector<int>&, std::vector<int>&,
                                  std::vector<int>&, const std::string&,
                                  double, int, int, bool, bool,
                                  bool, bool, bool);
 
-template void ConstraintsGeneral(std::vector<double>&, std::vector<int>&, 
+template void ConstraintsGeneral(std::vector<double>&, std::vector<int>&,
                                  const std::vector<std::string>&,
                                  std::vector<double>&, std::vector<double>&,
                                  std::vector<double>&, const std::string&,
