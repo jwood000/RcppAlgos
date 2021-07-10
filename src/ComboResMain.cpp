@@ -1,12 +1,12 @@
-#include "Combinations/NthCombination.h"
 #include "Combinations/ComboResGlue.h"
+#include "NthResult.h"
 #include <thread>
 #include <gmp.h>
 
 template <typename T>
 void ComboResMain(T* mat, const std::vector<T> &v, const funcPtr<T> myFun,
                   int n, int m, bool Parallel, bool IsRep, bool IsMult,
-                  bool IsGmp, const std::vector<int> &freqs, 
+                  bool IsGmp, const std::vector<int> &freqs,
                   std::vector<int> &z, const std::vector<int> &myReps,
                   double lower, mpz_t lowerMpz, int nRows, int nThreads) {
 
@@ -18,24 +18,20 @@ void ComboResMain(T* mat, const std::vector<T> &v, const funcPtr<T> myFun,
         int nextStep = stepSize;
         int step = 0;
 
-        const nthCombPtr nthCombFun = GetNthCombFunc(IsMult, IsRep, IsGmp);
+        const nthResultPtr nthResFun = GetNthResultFunc(true, IsMult,
+                                                        IsRep, IsGmp);
         std::vector<std::vector<int>> zs(nThreads, z);
 
         for (int j = 0; j < (nThreads - 1);
              ++j, step += stepSize, nextStep += stepSize) {
-            
+
             threads.emplace_back(std::cref(ComboResPar<T>), std::ref(parMat),
                                  std::cref(v), std::ref(zs[j]), n, m, step,
                                  nextStep, std::cref(freqs), std::cref(myFun),
                                  IsMult, IsRep);
 
-            if (IsGmp) {
-                mpz_add_ui(lowerMpz, lowerMpz, stepSize);
-            } else {
-                lower += stepSize;
-            }
-
-            zs[j + 1] = nthCombFun(n, m, lower, lowerMpz, myReps);
+            SetNextIter(myReps, zs[j + 1], nthResFun, lower, lowerMpz,
+                        stepSize, n, m, IsGmp, true, IsRep, IsMult);
         }
 
         threads.emplace_back(std::cref(ComboResPar<T>), std::ref(parMat),

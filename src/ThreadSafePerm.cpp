@@ -1,5 +1,5 @@
-#include "Permutations/NthPermutation.h"
 #include "Permutations/PermuteManager.h"
+#include "NthResult.h"
 #include <thread>
 #include <gmp.h>
 
@@ -19,7 +19,8 @@ void ThreadSafePermutations(T* mat, const std::vector<T> &v, int n, int m,
         int nextStep = stepSize;
         int step = 0;
 
-        const nthPermPtr nthPermFun = GetNthPermFunc(IsMult, IsRep, IsGmp);
+        const nthResultPtr nthResFun = GetNthResultFunc(false, IsMult,
+                                                        IsRep, IsGmp);
         std::vector<std::vector<int>> zs(nThreads, z);
 
         for (int j = 0; j < (nThreads - 1);
@@ -30,14 +31,8 @@ void ThreadSafePermutations(T* mat, const std::vector<T> &v, int n, int m,
                                  std::ref(zs[j]), n, m, step, nextStep,
                                  std::cref(freqs), IsMult, IsRep);
 
-            if (IsGmp) {
-                mpz_add_ui(lowerMpz, lowerMpz, stepSize);
-            } else {
-                lower += stepSize;
-            }
-
-            SetStartPerm(zs[j + 1], nthPermFun, myReps, n,
-                         m, lower, lowerMpz, IsRep, IsMult);
+            SetNextIter(myReps, zs[j + 1], nthResFun, lower, lowerMpz,
+                        stepSize, n, m, IsGmp, false, IsRep, IsMult);
         }
 
         threads.emplace_back(std::cref(PermuteParallel<T>), std::ref(parMat),
