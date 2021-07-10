@@ -185,10 +185,10 @@ std::vector<int> nthPartsRepLenGmp(int n, int m, int k,
 
     mpz_t temp;
     mpz_t index;
-    
+
     mpz_init(temp);
     mpz_init(index);
-    
+
     mpz_set(index, mpzIdx);
 
     for (int i = 0, j = 0; i < (width - 1); ++i, --n, --m) {
@@ -204,7 +204,7 @@ std::vector<int> nthPartsRepLenGmp(int n, int m, int k,
     }
 
     res[width - 1] = max_n - std::accumulate(res.begin(), res.end(), width);
-    
+
     mpz_clear(temp);
     mpz_clear(index);
 
@@ -235,7 +235,7 @@ std::vector<int> nthPartsRepLenCapGmp(int n, int m, int k,
 
     mpz_t temp;
     mpz_t index;
-    
+
     mpz_init(temp);
     mpz_init(index);
 
@@ -274,7 +274,7 @@ std::vector<int> nthPartsDistinctLenGmp(int n, int m, int k,
 
     mpz_t temp;
     mpz_t index;
-    
+
     mpz_init(temp);
     mpz_init(index);
 
@@ -293,7 +293,7 @@ std::vector<int> nthPartsDistinctLenGmp(int n, int m, int k,
     }
 
     res[width - 1] = max_n - std::accumulate(res.begin(), res.end(), width);
-    
+
     mpz_clear(temp);
     mpz_clear(index);
 
@@ -318,7 +318,7 @@ std::vector<int> nthPartsDistinctMultiZeroGmp(int n, int m, int k,
 
     mpz_t temp;
     mpz_t index;
-    
+
     mpz_init(temp);
     mpz_init(index);
 
@@ -367,7 +367,7 @@ std::vector<int> nthPartsDistinctLenCapGmp(int n, int m, int k,
 
     mpz_t temp;
     mpz_t index;
-    
+
     mpz_init(temp);
     mpz_init(index);
 
@@ -387,7 +387,7 @@ std::vector<int> nthPartsDistinctLenCapGmp(int n, int m, int k,
     }
 
     res[width - 1] = max_n - std::accumulate(res.begin(), res.end(), width);
-    
+
     mpz_clear(temp);
     mpz_clear(index);
 

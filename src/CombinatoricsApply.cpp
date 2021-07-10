@@ -366,8 +366,9 @@ SEXP CombinatoricsApply(SEXP Rv, SEXP Rm, SEXP RisRep,
               lower, lowerMpz[0], IsRep, IsMult, IsGmp);
 
     double userNumRows = 0;   // IsGenCnstrd = false
-    SetNumResults(IsGmp, bLower, bUpper, false, upperMpz.get(), lowerMpz.get(),
-                  lower, upper, computedRows, computedRowsMpz, nRows, userNumRows);
+    SetNumResults(IsGmp, bLower, bUpper, true, upperMpz.get(),
+                  lowerMpz.get(), lower, upper, computedRows,
+                  computedRowsMpz, nRows, userNumRows);
 
     switch (myType) {
         case VecType::Character : {

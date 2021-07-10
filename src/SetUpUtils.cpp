@@ -261,7 +261,7 @@ void SetThreads(bool &Parallel, int maxThreads, int nRows,
     }
 }
 
-void SetNumResults(bool IsGmp, bool bLower, bool bUpper, bool IsGenCnstrd,
+void SetNumResults(bool IsGmp, bool bLower, bool bUpper, bool bSetNum,
                    mpz_t *const upperMpz, mpz_t *const lowerMpz,
                    double lower, double upper, double computedRows,
                    mpz_t &computedRowsMpz, int &nRows, double &userNumRows) {
@@ -324,15 +324,13 @@ void SetNumResults(bool IsGmp, bool bLower, bool bUpper, bool IsGenCnstrd,
             // throw and error when we don't really know how many constrained
             // results we have as computedRows is a strict upper bound and not
             // the least upper bound.
-            if (!IsGenCnstrd &&
-                computedRows > std::numeric_limits<int>::max()) {
-
+            if (bSetNum && computedRows > std::numeric_limits<int>::max()) {
                 Rf_error("The number of rows cannot exceed 2^31 - 1.");
             }
 
             userNumRows = computedRows;
 
-            if (!IsGenCnstrd) {
+            if (bSetNum) {
                 nRows = static_cast<int>(computedRows);
             }
         }
@@ -368,12 +366,12 @@ void SetBounds(SEXP Rlow, SEXP Rhigh, bool IsGmp, bool &bLower,
             CleanConvert::convertPrimitive(Rlow, lower,
                                            VecType::Numeric, "lower", false);
             bLower = lower > 1;
-            
+
             if (lower > computedRows) {
                 Rf_error("bounds cannot exceed the maximum "
                              "number of possible results");
             }
-            
+
             --lower;
         }
     }
@@ -466,8 +464,8 @@ void SetStartZ(const std::vector<int> &myReps,
         } else {
             const nthPermPtr nthPermFun = GetNthPermFunc(IsMult,
                                                          IsRep, IsGmp);
-            SetStartPerm(z, nthPermFun, myReps, n, m,
-                         lower, lowerMpz, IsRep, IsMult);
+            z = nthPermFun(n, m, lower, lowerMpz, myReps);
+            TopOffPerm(z, myReps, n, m, lower, lowerMpz, IsRep, IsMult);
         }
     } else {
         if (IsComb) {

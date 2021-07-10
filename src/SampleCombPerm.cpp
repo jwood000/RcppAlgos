@@ -219,10 +219,10 @@ SEXP SampleCombPerm(SEXP Rv, SEXP Rm, SEXP RisRep, SEXP RFreqs,
         case VecType::Character : {
             SEXP charVec = PROTECT(Rf_duplicate(Rv));
             SEXP res = PROTECT(Rf_allocMatrix(STRSXP, sampSize, m));
-            
+
             SampleResults(res, charVec, mySample, myVec.get(), myReps,
                           nthResFun, m, sampSize, n, IsGmp, IsNamed);
-            
+
             UNPROTECT(2);
             return res;
         } case VecType::Complex : {

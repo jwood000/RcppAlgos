@@ -109,7 +109,7 @@ SEXP CombinatoricsStndrd(SEXP Rv, SEXP Rm, SEXP RisRep, SEXP RFreqs,
               lower, lowerMpz[0], IsRep, IsMult, IsGmp);
 
     double userNumRows = 0;
-    SetNumResults(IsGmp, bLower, bUpper, false, upperMpz.get(),
+    SetNumResults(IsGmp, bLower, bUpper, true, upperMpz.get(),
                   lowerMpz.get(), lower, upper, computedRows,
                   computedRowsMpz, nRows, userNumRows);
 

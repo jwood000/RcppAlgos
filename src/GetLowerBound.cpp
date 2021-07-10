@@ -198,7 +198,7 @@ int GetLowerBoundRep(const std::vector<T> &v, std::vector<int> &z,
 }
 
 template <typename T>
-int GetLowerBoundMulti(const std::vector<int> &freqs, 
+int GetLowerBoundMulti(const std::vector<int> &freqs,
                        const std::vector<int> &Reps,
                        const std::vector<T> &v, std::vector<int> &z,
                        funcPtr<T> fun, partialReducePtr<T> reduce,
@@ -321,7 +321,7 @@ template int GetLowerBoundNoRep(const std::vector<int>&, std::vector<int>&,
                                 funcPtr<int>, partialReducePtr<int>,
                                 partialPtr<int>, int, int,
                                 int, int, int, int);
-template int GetLowerBoundNoRep(const std::vector<double>&, 
+template int GetLowerBoundNoRep(const std::vector<double>&,
                                 std::vector<int>&, funcPtr<double>,
                                 partialReducePtr<double>, partialPtr<double>,
                                 double, double, double, int, int, int);
@@ -335,15 +335,15 @@ template int GetLowerBoundRep(const std::vector<double>&, std::vector<int>&,
                               partialPtr<double>, double, double,
                               double, int, int, int);
 
-template int GetLowerBoundMulti(const std::vector<int>&, 
+template int GetLowerBoundMulti(const std::vector<int>&,
                                 const std::vector<int>&,
                                 const std::vector<int>&, std::vector<int>&,
                                 funcPtr<int>, partialReducePtr<int>,
                                 partialPtr<int>, int, int,
                                 int, int, int, int);
-template int GetLowerBoundMulti(const std::vector<int>&, 
+template int GetLowerBoundMulti(const std::vector<int>&,
                                 const std::vector<int>&,
-                                const std::vector<double>&, 
+                                const std::vector<double>&,
                                 std::vector<int>&, funcPtr<double>,
                                 partialReducePtr<double>,
                                 partialPtr<double>, double, double,

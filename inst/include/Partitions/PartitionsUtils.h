@@ -21,6 +21,6 @@ void CheckPartition(const std::vector<std::string> &compFunVec,
 void SetPartitionDesign(const std::vector<int> &Reps,
                         const std::vector<double> &v, PartDesign &part,
                         ConstraintType &ctype, int lenV, int &m,
-                        bool bCalcMultiset, bool IsComb);
+                        bool bCalcDifficult, bool IsComb);
 
 #endif

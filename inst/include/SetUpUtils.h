@@ -17,7 +17,7 @@ void SetValues(VecType &myType, std::vector<int> &Reps,
 void SetThreads(bool &Parallel, int maxThreads, int nRows,
                 VecType myType, int &nThreads, SEXP RNumThreads, int limit);
 
-void SetNumResults(bool IsGmp, bool bLower, bool bUpper, bool IsGenCnstrd,
+void SetNumResults(bool IsGmp, bool bLower, bool bUpper, bool bSetNum,
                    mpz_t *const upperMpz, mpz_t *const lowerMpz,
                    double lower, double upper, double computedRows,
                    mpz_t &computedRowsMpz, int &nRows, double &userNumRows);

@@ -119,7 +119,7 @@ std::vector<int> nthCombGmp(int n, int r, double dblIdx,
     mpz_init(temp);
     mpz_init(index1);
     mpz_init(index2);
-    
+
     mpz_set(index1, mpzIdx);
     mpz_set(index2, mpzIdx);
 
@@ -160,7 +160,7 @@ std::vector<int> nthCombRepGmp(int n, int r, double dblIdx,
     mpz_init(temp);
     mpz_init(index1);
     mpz_init(index2);
-    
+
     mpz_set(index1, mpzIdx);
     mpz_set(index2, mpzIdx);
 
@@ -200,7 +200,7 @@ std::vector<int> nthCombMultGmp(int n, int r, double dblIdx,
     mpz_init(temp);
     mpz_init(index1);
     mpz_init(index2);
-    
+
     mpz_set(index1, mpzIdx);
     mpz_set(index2, mpzIdx);
 

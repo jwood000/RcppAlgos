@@ -51,14 +51,14 @@ void PermuteWorker(T* mat, const int *const indexMat,
                    int unrollRem, bool IsRep, int nRows) {
 
     const int lastUnroll = last - unrollRem;
-    
+
     // For IsRep case, we are not setting the first column because we
-    // know that it simply increments. This is taken into account in 
+    // know that it simply increments. This is taken into account in
     // the indexMat preparation.
     if (IsRep) {
         RepUnroller(mat, v[ind], strt, last, lastUnroll);
     }
-    
+
     StandardUnroller(mat, indexMat, v, m, strt,
                      last, first, lastUnroll, nRows);
 }

@@ -157,7 +157,7 @@ void PartitionsEsqueAlgo(std::vector<T> &v,
                         testVal = fun(testVec, m);
                         check_0 = compFunTwo(testVal, targetVals);
                         noChange = false;
-                        
+
                         if (check_0) {
                             break;
                         }

@@ -16,7 +16,7 @@ int GetLowerBoundRep(const std::vector<T> &v, std::vector<int> &z,
                      T tarMax, int n, int m, int strt = 0);
 
 template <typename T>
-int GetLowerBoundMulti(const std::vector<int> &freqs, 
+int GetLowerBoundMulti(const std::vector<int> &freqs,
                        const std::vector<int> &Reps,
                        const std::vector<T> &v, std::vector<int> &z,
                        funcPtr<T> fun, partialReducePtr<T> reduce,

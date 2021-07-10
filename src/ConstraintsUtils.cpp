@@ -5,7 +5,7 @@ template <typename T>
 void PopulateVec(int m, const std::vector<T> &v,
                  std::vector<int> &z, int &count, int nRows,
                  bool IsComb, std::vector<T> &cnstrntVec) {
-    
+
     if (IsComb) {
         for (int k = 0; k < m; ++k) {
             cnstrntVec.push_back(v[z[k]]);
@@ -31,7 +31,7 @@ void SectionOne(const std::vector<T> &v, std::vector<T> &testVec,
                 partialPtr<T> partial, funcPtr<T> fun,
                 compPtr<T> compOne, compPtr<T> compTwo, int m, int m1,
                 int nRows, int maxZ, bool IsComb, bool xtraCol) {
-    
+
     for (int i = 0; i < m; ++i) {
         testVec[i] = v[z[i]];
     }
@@ -39,7 +39,7 @@ void SectionOne(const std::vector<T> &v, std::vector<T> &testVec,
     const T partialVal = fun(testVec, m1);
     T testVal = partial(partialVal, testVec.back(), m);
     check_0 = compTwo(testVal, targetVals);
-    
+
     while (check_0 && check_1) {
         if (compOne(testVal, targetVals)) {
             int myStart = count;
@@ -55,7 +55,7 @@ void SectionOne(const std::vector<T> &v, std::vector<T> &testVec,
         }
 
         check_0 = z[m1] != maxZ;
-        
+
         if (check_0) {
             ++z[m1];
             testVec[m1] = v[z[m1]];
@@ -65,17 +65,17 @@ void SectionOne(const std::vector<T> &v, std::vector<T> &testVec,
     }
 }
 
-bool CheckSpecialCase(const std::vector<double> &vNum, 
+bool CheckSpecialCase(const std::vector<double> &vNum,
                       const std::string &mainFun, PartitionType ptype,
                       ConstraintType ctype, bool bLower) {
 
     bool result = false;
 
     // If bLower, the user is looking to test a particular range. Otherwise,
-    // the constraint algo will simply return (upper - lower) # of 
+    // the constraint algo will simply return (upper - lower) # of
     // combinations/permutations that meet the criteria. This applies when
     // we have anything other than non standard partitions
-    
+
     const bool NonStdPart = ptype == PartitionType::CoarseGrained ||
                             ptype == PartitionType::NotPartition  ||
                             ptype == PartitionType::Multiset;
@@ -362,22 +362,22 @@ void ConstraintSetup(const std::vector<double> &vNum,
 
     CheckPartition(compFunVec, vNum, mainFun, targetVals,
                    part, lenV, m, tolerance, IsBetweenComp);
-    
+
     bool bLower = false;
-    
+
     // Currently, we are not able to generate the nth
     // lexicographical partition for some cases. Thus, if lower is
     // non-trivial, we must use the most general algo.
     if (!Rf_isNull(Rlow)) {
         auto tempLower = FromCpp14::make_unique<mpz_t[]>(1);
         mpz_init(tempLower[0]);
-        
+
         createMPZArray(Rlow, tempLower.get(), 1, "lower");
         bLower = mpz_cmp_si(tempLower[0], 1) > 0;
     }
-    
+
     SetConstraintType(vNum, mainFun, part.ptype, ctype, bLower);
-    
+
     if (part.isPart) {
         SetPartitionDesign(Reps, vNum, part, ctype, lenV, m, bCalcMulti, IsComb);
     }
@@ -391,7 +391,7 @@ template void PopulateVec(int, const std::vector<int>&,
 template void PopulateVec(int, const std::vector<double>&,
                           std::vector<int>&, int&, int,
                           bool, std::vector<double>&);
-    
+
 template void SectionOne(const std::vector<int>&, std::vector<int>&,
                          std::vector<int>&, const std::vector<int>&,
                          std::vector<int>&, std::vector<int>&,
