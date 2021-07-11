@@ -80,11 +80,22 @@ void PartsStdParallel(RcppParallel::RMatrix<int> &mat, std::vector<int> &z,
     }
 }
 
+template <typename T>
+void PartsGenParallel(RcppParallel::RMatrix<T> &mat,
+                      const std::vector<T> &v, std::vector<int> &z,
+                      int strt, int width, int lastElem, int lastCol,
+                      int nRows, bool IsRep) {
+    
+    if (IsRep) {
+        PartsGenRep(mat, v, z, strt, width, lastElem, lastCol, nRows);
+    } else {
+        PartsGenDistinct(mat, v, z, strt, width, lastElem, lastCol, nRows);
+    }
+}
 
 template void PartsGenManager(int*, const PartDesign&,
                               const std::vector<int>&, std::vector<int>&,
                               int, int, int, int, bool, bool);
-
 template void PartsGenManager(double*, const PartDesign&,
                               const std::vector<double>&, std::vector<int>&,
                               int, int, int, int, bool, bool);
@@ -92,23 +103,13 @@ template void PartsGenManager(double*, const PartDesign&,
 template void PartsGenManager(std::vector<int>&, const std::vector<int>&,
                               const std::vector<int>&, std::vector<int>&,
                               PartitionType, int, int, bool);
-
 template void PartsGenManager(std::vector<double>&, const std::vector<double>&,
                               const std::vector<int>&, std::vector<int>&,
                               PartitionType, int, int, bool);
 
-// template void ComboManager(Rbyte*, const std::vector<Rbyte>&,
-//                            std::vector<int>&, int, int, int,
-//                            const std::vector<int>&, bool, bool);
-//
-// template void ComboManager(Rcomplex*, const std::vector<Rcomplex>&,
-//                            std::vector<int>&, int, int, int,
-//                            const std::vector<int>&, bool, bool);
-//
-// template void ComboParallel(RcppParallel::RMatrix<int>&, const std::vector<int>&,
-//                             std::vector<int>&, int, int, int, int,
-//                             const std::vector<int>&, bool, bool);
-//
-// template void ComboParallel(RcppParallel::RMatrix<double>&, const std::vector<double>&,
-//                             std::vector<int>&, int, int, int, int,
-//                             const std::vector<int>&, bool, bool);
+template void PartsGenParallel(RcppParallel::RMatrix<int>&,
+                               const std::vector<int>&, std::vector<int>&,
+                               int, int, int, int, int, bool);
+template void PartsGenParallel(RcppParallel::RMatrix<double>&,
+                               const std::vector<double>&, std::vector<int>&,
+                               int, int, int, int, int, bool);

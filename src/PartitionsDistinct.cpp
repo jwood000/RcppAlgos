@@ -1,4 +1,4 @@
-#include "Partitions/PopulatePartVec.h"
+#include "Constraints/ConstraintsUtils.h"
 #include "Permutations/PermuteCount.h"
 #include "Partitions/NextPartition.h"
 #include "Cpp14MakeUnique.h"
@@ -24,6 +24,30 @@ void PartsGenDistinct(T* mat, const std::vector<T> &v,
 
         for (int k = 0; k < width; ++k) {
             mat[count + nRows * k] = v[z[k]];
+        }
+    }
+}
+
+template <typename T>
+void PartsGenDistinct(RcppParallel::RMatrix<T> &mat,
+                      const std::vector<T> &v, std::vector<int> &z,
+                      int strt, int width, int lastElem,
+                      int lastCol, int nRows) {
+
+    int edge = 0;
+    int pivot = 0;
+    int tarDiff = 0;
+    int boundary = 0;
+
+    PrepareDistinctPart(z, boundary, pivot, edge,
+                        tarDiff, lastElem, lastCol);
+
+    for (int count = strt; count < nRows; ++count,
+         NextDistinctGenPart(z, boundary, edge, pivot,
+                             tarDiff, lastCol, lastElem)) {
+
+        for (int k = 0; k < width; ++k) {
+            mat(count, k) = v[z[k]];
         }
     }
 }
@@ -87,15 +111,15 @@ void PartsGenDistinct(std::vector<T> &partsVec, const std::vector<T> &v,
     for (int count = 0; edge >= 0 && (z[boundary] - z[edge]) >= tarDiff;
          NextDistinctGenPart(z, boundary, edge, pivot,
                              tarDiff, lastCol, lastElem)) {
-
-        PopulatePartVec(v, partsVec, z, count, width, nRows, IsComb);
+        
+        PopulateVec(v, partsVec, z, count, width, nRows, IsComb);
         if (count >= nRows) break;
     }
 
     int count = partsVec.size() / width;
 
     if (count < nRows) {
-        PopulatePartVec(v, partsVec, z, count, width, nRows, IsComb);
+        PopulateVec(v, partsVec, z, count, width, nRows, IsComb);
     }
 }
 
@@ -139,16 +163,16 @@ void PartsDistinct(int* mat, std::vector<int> &z, int width,
     PrepareDistinctPart(z, boundary, pivot, edge,
                         initTarDiff, lastElem, lastCol);
 
-    for (int count = 0, tarDiff = initTarDiff; count < nRows; ++count) {
+    for (int count = 0, tarDiff = initTarDiff; count < nRows; ++count,
+         NextDistinctPart(z, boundary, edge, tarDiff, lastCol)) {
+
         for (int k = 0; k < width; ++k) {
             mat[count + nRows * k] = z[k];
         }
-
-        NextDistinctPart(z, boundary, edge, tarDiff, lastCol);
     }
 }
 
-void PartsDistinct(RcppParallel::RMatrix<int> mat, std::vector<int> &z,
+void PartsDistinct(RcppParallel::RMatrix<int> &mat, std::vector<int> &z,
                    int strt, int width, int lastElem,
                    int lastCol, int nRows) {
 
@@ -160,12 +184,12 @@ void PartsDistinct(RcppParallel::RMatrix<int> mat, std::vector<int> &z,
     PrepareDistinctPart(z, boundary, pivot, edge,
                         initTarDiff, lastElem, lastCol);
 
-    for (int count = strt, tarDiff = 3; count < nRows; ++count) {
+    for (int count = strt, tarDiff = 3; count < nRows; ++count,
+         NextDistinctPart(z, boundary, edge, tarDiff, lastCol)) {
+
         for (int k = 0; k < width; ++k) {
             mat(count, k) = z[k];
         }
-
-        NextDistinctPart(z, boundary, edge, tarDiff, lastCol);
     }
 }
 
@@ -266,6 +290,13 @@ template void PartsGenDistinct(int*, const std::vector<int>&,
                                std::vector<int>&, int, int, int, int);
 template void PartsGenDistinct(double*, const std::vector<double>&,
                                std::vector<int>&, int, int, int, int);
+
+template void PartsGenDistinct(RcppParallel::RMatrix<int> &mat,
+                               const std::vector<int>&, std::vector<int>&,
+                               int, int, int, int, int);
+template void PartsGenDistinct(RcppParallel::RMatrix<double> &mat,
+                               const std::vector<double>&, std::vector<int>&,
+                               int, int, int, int, int);
 
 template void PartsGenDistinct(std::vector<int>&, const std::vector<int>&,
                                std::vector<int>&, int, int, bool);

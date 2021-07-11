@@ -43,16 +43,16 @@ std::vector<int> nthPartsRepLen(int n, int m, int k,
 std::vector<int> nthPartsRepShort(int n, int m, int k,
                                   double dblIdx, mpz_t mpzIdx) {
 
-    return nthPartsRepLen(n + m, m, k, dblIdx, mpzIdx);
+    return nthPartsRepLen(n, m, k, dblIdx, mpzIdx);
 }
 
 std::vector<int> nthPartsRep(int n, int m, int k,
                              double dblIdx, mpz_t mpzIdx) {
 
-    return nthPartsRepLen(n * 2, n, k, dblIdx, mpzIdx);
+    return nthPartsRepLen(n * 2, m, k, dblIdx, mpzIdx);
 }
 
-std::vector<int> nthPartsRepLenCap(int n, int m, int k,
+std::vector<int> nthPartsRepCap(int n, int m, int k,
                                    double dblIdx, mpz_t mpzIdx) {
 
     const int width = m;
@@ -108,7 +108,7 @@ std::vector<int> nthPartsDistinctLen(int n, int m, int k,
 std::vector<int> nthPartsDistinctOneZero(int n, int m, int k,
                                          double dblIdx, mpz_t mpzIdx) {
 
-    return nthPartsDistinctLen(n + m, m, k, dblIdx, mpzIdx);
+    return nthPartsDistinctLen(n, m, k, dblIdx, mpzIdx);
 }
 
 std::vector<int> nthPartsDistinctMultiZero(int n, int m, int k,
@@ -145,8 +145,8 @@ std::vector<int> nthPartsDistinctMultiZero(int n, int m, int k,
     return res;
 }
 
-std::vector<int> nthPartsDistinctLenCap(int n, int m, int k,
-                                        double dblIdx, mpz_t mpzIdx) {
+std::vector<int> nthPartsDistinctCap(int n, int m, int k,
+                                     double dblIdx, mpz_t mpzIdx) {
 
     const int width = m;
     const int max_n = n;
@@ -214,16 +214,16 @@ std::vector<int> nthPartsRepLenGmp(int n, int m, int k,
 std::vector<int> nthPartsRepShortGmp(int n, int m, int k,
                                      double dblIdx, mpz_t mpzIdx) {
 
-    return nthPartsRepLenGmp(n + m, m, k, dblIdx, mpzIdx);
+    return nthPartsRepLenGmp(n, m, k, dblIdx, mpzIdx);
 }
 
 std::vector<int> nthPartsRepGmp(int n, int m, int k,
                                 double dblIdx, mpz_t mpzIdx) {
 
-    return nthPartsRepLenGmp(n * 2, n, k, dblIdx, mpzIdx);
+    return nthPartsRepLenGmp(n * 2, m, k, dblIdx, mpzIdx);
 }
 
-std::vector<int> nthPartsRepLenCapGmp(int n, int m, int k,
+std::vector<int> nthPartsRepCapGmp(int n, int m, int k,
                                       double dblIdx, mpz_t mpzIdx) {
 
     const int width = m;
@@ -303,7 +303,7 @@ std::vector<int> nthPartsDistinctLenGmp(int n, int m, int k,
 std::vector<int> nthPartsDistinctOneZeroGmp(int n, int m, int k,
                                             double dblIdx, mpz_t mpzIdx) {
 
-    return nthPartsDistinctLenGmp(n + m, m, k, dblIdx, mpzIdx);
+    return nthPartsDistinctLenGmp(n, m, k, dblIdx, mpzIdx);
 }
 
 std::vector<int> nthPartsDistinctMultiZeroGmp(int n, int m, int k,
@@ -354,8 +354,8 @@ std::vector<int> nthPartsDistinctMultiZeroGmp(int n, int m, int k,
     return res;
 }
 
-std::vector<int> nthPartsDistinctLenCapGmp(int n, int m, int k,
-                                           double dblIdx, mpz_t mpzIdx) {
+std::vector<int> nthPartsDistinctCapGmp(int n, int m, int k,
+                                        double dblIdx, mpz_t mpzIdx) {
 
     const int width = m;
     const int max_n = n;
@@ -399,7 +399,7 @@ nthPartsPtr GetNthPartsFunc(PartitionType ptype, bool IsGmp) {
     if (IsGmp) {
         switch (ptype) {
             case PartitionType::DstctCapped: {
-                return(nthPartsPtr(nthPartsDistinctLenCapGmp));
+                return(nthPartsPtr(nthPartsDistinctCapGmp));
             } case PartitionType::DstctNoZero : {
                 return(nthPartsPtr(nthPartsDistinctLenGmp));
             } case PartitionType::DstctOneZero: {
@@ -409,7 +409,7 @@ nthPartsPtr GetNthPartsFunc(PartitionType ptype, bool IsGmp) {
             } case PartitionType::DstctStdAll: {
                 return(nthPartsPtr(nthPartsDistinctMultiZeroGmp));
             } case PartitionType::RepCapped : {
-                return(nthPartsPtr(nthPartsRepLenCapGmp));
+                return(nthPartsPtr(nthPartsRepCapGmp));
             } case PartitionType::RepNoZero: {
                 return(nthPartsPtr(nthPartsRepLenGmp));
             } case PartitionType::RepShort : {
@@ -427,7 +427,7 @@ nthPartsPtr GetNthPartsFunc(PartitionType ptype, bool IsGmp) {
     } else {
         switch (ptype) {
             case PartitionType::DstctCapped: {
-                return(nthPartsPtr(nthPartsDistinctLenCap));
+                return(nthPartsPtr(nthPartsDistinctCap));
             } case PartitionType::DstctNoZero : {
                 return(nthPartsPtr(nthPartsDistinctLen));
             } case PartitionType::DstctOneZero: {
@@ -437,7 +437,7 @@ nthPartsPtr GetNthPartsFunc(PartitionType ptype, bool IsGmp) {
             } case PartitionType::DstctStdAll: {
                 return(nthPartsPtr(nthPartsDistinctMultiZero));
             } case PartitionType::RepCapped : {
-                return(nthPartsPtr(nthPartsRepLenCap));
+                return(nthPartsPtr(nthPartsRepCap));
             } case PartitionType::RepNoZero: {
                 return(nthPartsPtr(nthPartsRepLen));
             } case PartitionType::RepShort : {

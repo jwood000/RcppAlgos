@@ -1,4 +1,4 @@
-#include "Partitions/PopulatePartVec.h"
+#include "Constraints/ConstraintsUtils.h"
 #include "Partitions/NextPartition.h"
 
 bool keepGoing(const std::vector<int> &rpsCnt, int lastElem,
@@ -37,14 +37,14 @@ void PartsGenMultiset(std::vector<T> &partsVec, const std::vector<T> &v,
     for (int count = 0; keepGoing(rpsCnt, lastElem, z, e, b);
          NextMultisetGenPart(rpsCnt, z, e, b, p, lastCol, lastElem)) {
 
-        PopulatePartVec(v, partsVec, z, count, width, nRows, IsComb);
+        PopulateVec(v, partsVec, z, count, width, nRows, IsComb);
         if (count >= nRows) break;
     }
 
     int count = partsVec.size() / width;
 
     if (count < nRows) {
-        PopulatePartVec(v, partsVec, z, count, width, nRows, IsComb);
+        PopulateVec(v, partsVec, z, count, width, nRows, IsComb);
     }
 }
 

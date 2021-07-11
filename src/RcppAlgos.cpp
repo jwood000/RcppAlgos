@@ -1,9 +1,9 @@
+#include "Sample/SamplePartitions.h"
+#include "Sample/SampleCombPerm.h"
 #include "CombinatoricsCnstrt.h"
 #include "CombinatoricsCount.h"
 #include "CombinatoricsApply.h"
 #include "CombinatoricsMain.h"
-#include "SamplePartitions.h"
-#include "SampleCombPerm.h"
 #include "CheckReturn.h"
 #include "NumThreads.h"
 

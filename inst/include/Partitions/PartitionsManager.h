@@ -2,10 +2,21 @@
 #define PARTITIONS_MANAGER_H
 
 #include "Partitions/PartitionsTypes.h"
+#include "RMatrix.h"
 
 void PartsStdManager(int* mat, std::vector<int> &z, int width,
                      int lastElem, int lastCol, int nRows,
                      bool IsComb, bool IsRep);
+
+void PartsStdParallel(RcppParallel::RMatrix<int> &mat, std::vector<int> &z,
+                      int strt, int width, int lastElem, int lastCol,
+                      int nRows, bool IsRep);
+
+template <typename T>
+void PartsGenParallel(RcppParallel::RMatrix<T> &mat,
+                      const std::vector<T> &v, std::vector<int> &z,
+                      int strt, int width, int lastElem, int lastCol,
+                      int nRows, bool IsRep);
 
 template <typename T>
 void PartsGenManager(T* mat, const PartDesign &part, const std::vector<T> &v,

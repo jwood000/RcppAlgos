@@ -1,8 +1,8 @@
+#include "Sample/SampCombPermRes.h"
+#include "Sample/SampleCombPerm.h"
+#include "Sample/SampleApplyFun.h"
 #include "Cpp14MakeUnique.h"
-#include "SampleCombPerm.h"
-#include "SampleApplyFun.h"
 #include "ComputedCount.h"
-#include "SampleResults.h"
 #include <thread>
 
 template <typename T>

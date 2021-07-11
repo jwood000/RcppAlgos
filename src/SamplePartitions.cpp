@@ -1,7 +1,7 @@
 #include "Constraints/ConstraintsUtils.h"
 #include "Partitions/PartitionsUtils.h"
 #include "Partitions/NthPartition.h"
-#include "SamplePartitions.h"
+#include "Sample/SamplePartitions.h"
 #include "Cpp14MakeUnique.h"
 #include "RMatrix.h"
 #include <thread>
@@ -216,7 +216,7 @@ SEXP SamplePartitions(SEXP Rv, SEXP Rm, SEXP RisRep, SEXP RFreqs,
     const nthPartsPtr nthPartFun = GetNthPartsFunc(part.ptype, part.isGmp);
 
     if (myType == VecType::Integer) {
-        SEXP res = PROTECT(Rf_allocMatrix(INTSXP, sampSize, m));
+        SEXP res = PROTECT(Rf_allocMatrix(INTSXP, sampSize, part.width));
         int* matInt = INTEGER(res);
 
         ThreadSafeSample(matInt, res, vInt, mySample, myVec.get(),
@@ -226,7 +226,7 @@ SEXP SamplePartitions(SEXP Rv, SEXP Rm, SEXP RisRep, SEXP RFreqs,
         UNPROTECT(1);
         return res;
     } else {
-        SEXP res = PROTECT(Rf_allocMatrix(REALSXP, sampSize, m));
+        SEXP res = PROTECT(Rf_allocMatrix(REALSXP, sampSize, part.width));
         double* matNum = REAL(res);
 
         ThreadSafeSample(matNum, res, vNum, mySample, myVec.get(),

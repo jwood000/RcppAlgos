@@ -4,6 +4,7 @@
 #include "Constraints/ConstraintsUtils.h"
 #include "Partitions/PartitionsManager.h"
 #include "Partitions/PartitionsUtils.h"
+#include "Partitions/ThreadSafeParts.h"
 #include "Partitions/NthPartition.h"
 #include "CombinatoricsResGlue.h"
 #include "CombinatoricsCnstrt.h"
@@ -166,16 +167,27 @@ SEXP ConstraintsReturn(const std::vector<int> &freqs,
         const int lastElem = n - 1;
         const int lastCol = width - 1;
 
+        const int strtLen = std::count_if(part.startZ.cbegin(),
+                                          part.startZ.cend(),
+                                          [](int i){return i > 0;});
+
+        const int k = (part.ptype == PartitionType::DstctSpecial ||
+                       part.ptype == PartitionType::DstctStdAll) ?
+                       strtLen : n;
+
         if (myType == VecType::Integer) {
             SEXP res = PROTECT(Rf_allocMatrix(INTSXP, nRows, nCols));
             int* matInt = INTEGER(res);
 
             if (ctype == ConstraintType::PartStandard) {
-                PartsStdManager(matInt, z, width, lastElem,
-                                lastCol, nRows, IsComb, IsRep);
+                StandardPartitions(matInt, z, part.ptype, lower, lowerMpz,
+                                   nCols, width, nRows, nThreads, lastCol,
+                                   lastElem, n, k, IsRep, IsMult,
+                                   IsGmp, IsComb, part.includeZero);
             } else {
-                PartsGenManager(matInt, part, vInt, z, width, lastElem,
-                                lastCol, nRows, IsComb, IsRep);
+                GeneralPartitions(matInt, vInt, z, part, lower,
+                                  lowerMpz, nCols, nRows, nThreads,
+                                  lastCol, lastElem, k, IsComb);
             }
 
             if (xtraCol) AddResultToParts(matInt, part.target, nRows, width);
@@ -185,8 +197,9 @@ SEXP ConstraintsReturn(const std::vector<int> &freqs,
             SEXP res = PROTECT(Rf_allocMatrix(REALSXP, nRows, nCols));
             double* matDbl = REAL(res);
 
-            PartsGenManager(matDbl, part, vNum, z, width, lastElem,
-                            lastCol, nRows, IsComb, IsRep);
+            GeneralPartitions(matDbl, vNum, z, part, lower,
+                              lowerMpz, nCols, nRows, nThreads,
+                              lastCol, lastElem, k, IsComb);
 
             if (xtraCol) AddResultToParts(matDbl, part.target, nRows, width);
             UNPROTECT(1);
