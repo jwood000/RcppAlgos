@@ -1,5 +1,5 @@
-#ifndef SAMPLE_RESULTS_H
-#define SAMPLE_RESULTS_H
+#ifndef SAMP_COMB_PERM_RES_H
+#define SAMP_COMB_PERM_RES_H
 
 #include "SetUpUtils.h"
 #include "NthResult.h"
