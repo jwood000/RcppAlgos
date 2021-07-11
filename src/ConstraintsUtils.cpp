@@ -2,9 +2,10 @@
 #include "CleanConvert.h"
 
 template <typename T>
-void PopulateVec(int m, const std::vector<T> &v,
-                 std::vector<int> &z, int &count, int nRows,
-                 bool IsComb, std::vector<T> &cnstrntVec) {
+void PopulateVec(const std::vector<T> &v,
+                 std::vector<T> &cnstrntVec,
+                 std::vector<int> &z, int &count,
+                 int m, int nRows, bool IsComb) {
 
     if (IsComb) {
         for (int k = 0; k < m; ++k) {
@@ -43,7 +44,7 @@ void SectionOne(const std::vector<T> &v, std::vector<T> &testVec,
     while (check_0 && check_1) {
         if (compOne(testVal, targetVals)) {
             int myStart = count;
-            PopulateVec(m, v, z, count, nRows, IsComb, cnstrntVec);
+            PopulateVec(v, cnstrntVec, z, count, m, nRows, IsComb);
 
             if (xtraCol) {
                 for (int i = myStart; i < count; ++i) {
@@ -384,13 +385,11 @@ void ConstraintSetup(const std::vector<double> &vNum,
 }
 
 
-template void PopulateVec(int, const std::vector<int>&,
-                          std::vector<int>&, int&, int,
-                          bool, std::vector<int>&);
+template void PopulateVec(const std::vector<int>&, std::vector<int>&,
+                          std::vector<int>&, int&, int, int, bool);
 
-template void PopulateVec(int, const std::vector<double>&,
-                          std::vector<int>&, int&, int,
-                          bool, std::vector<double>&);
+template void PopulateVec(const std::vector<double>&, std::vector<double>&,
+                          std::vector<int>&, int&, int, int, bool);
 
 template void SectionOne(const std::vector<int>&, std::vector<int>&,
                          std::vector<int>&, const std::vector<int>&,

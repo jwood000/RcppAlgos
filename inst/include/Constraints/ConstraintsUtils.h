@@ -36,9 +36,10 @@ static const std::array<std::string, 5> compHelper = {
 constexpr double defaultTolerance = std::numeric_limits<float>::epsilon() / 8.0;
 
 template <typename T>
-void PopulateVec(int m, const std::vector<T> &v,
-                 std::vector<int> &z, int &count, int nRows,
-                 bool IsComb, std::vector<T> &combinatoricsVec);
+void PopulateVec(const std::vector<T> &v,
+                 std::vector<T> &cnstrntVec,
+                 std::vector<int> &z, int &count,
+                 int m, int nRows, bool IsComb);
 
 template <typename T>
 void SectionOne(const std::vector<T> &v, std::vector<T> &testVec,
