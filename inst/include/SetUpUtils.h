@@ -1,8 +1,6 @@
 #ifndef SET_UP_UTILS_H
 #define SET_UP_UTILS_H
 
-#include "Combinations/NthCombination.h"
-#include "Permutations/NthPermutation.h"
 #include "CleanConvert.h"
 
 void SetType(VecType &myType, SEXP Rv);
