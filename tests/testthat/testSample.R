@@ -5,7 +5,7 @@ test_that("comboSample produces correct results", {
     expect_equal(comboSample(5, 3, sampleVec = 1:10), comboGeneral(5, 3))
     expect_equal(nrow(comboSample(5, 3, n = 5, seed = 2)), 5)
     expect_equal(as.vector(comboSample(1, 1, n = 1)), 1)
-    expect_equal(class(comboSample(c(1:5, NA), 5, n = 3)[1, ]), "numeric")
+    expect_equal(class(comboSample(c(1:5, NA), 5, n = 3)[1, ]), "integer")
     
     totalCombs = comboCount(5, 8, freqs = rep(3, 5))
     expect_equal(comboSample(5, 8, freqs = rep(3, 5), sampleVec = 1:totalCombs), 
@@ -60,8 +60,10 @@ test_that("comboSample produces correct results", {
                  rbind(rep(as.character(1:8), times = c(1:4,1:4)),
                        rep(as.character(93:100), times = c(1:4,1:4))))
     
-    expect_equal(comboSample(100, 20, freqs = rep(1:4, 25), sampleVec = seq(1L, 100L, 10L)),
-                 comboGeneral(100, 20, freqs = rep(1:4, 25), upper = 100)[seq(1L, 100L, 10L), ])
+    expect_equal(comboSample(100, 20, freqs = rep(1:4, 25),
+                             sampleVec = seq(1L, 100L, 10L)),
+                 comboGeneral(100, 20, freqs = rep(1:4, 25),
+                              upper = 100)[seq(1L, 100L, 10L), ])
     
     set.seed(123)
     v <- rnorm(100)

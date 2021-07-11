@@ -22,24 +22,26 @@ test_that("comboGeneral produces correct results for special subset sum", {
         }
         
         t <- sapply(possVals, function(x) {
-            t <- comboGeneral(v, m, myRep,
+            a <- comboGeneral(v, m, myRep,
                               constraintFun = f, 
                               comparisonFun = "==",
                               limitConstraints = x)
-            if (isExact)
+            if (isExact) {
                 u <- allSums[allSums[, m + 1] == x, 1:m]
-            else
-                u <- allSums[which(is_equal_tol(allSums[, m + 1], x)), 1:m]
-            
-            if (nrow(t) > 1) {
-                identical(t, u)
             } else {
-                identical(as.vector(t), u)
+                u <- allSums[which(is_equal_tol(allSums[, m + 1], x)), 1:m]
+            }
+
+            if (nrow(a) > 1) {
+                identical(a, u)
+            } else {
+                identical(as.vector(a), u)
             }
         })
         
-        if (verbose)
+        if (verbose) {
             print(t)
+        }
         
         all(t)
     }
@@ -295,7 +297,7 @@ test_that("comboGeneral produces correct results for special subset sum", {
                                    limitConstraints = 10)), 8)
     
     expect_equal(nrow(permuteGeneral(0:10, constraintFun = "sum",
-                                     comparisonFun = "==", limitConstraints = 10)), 48)
+                                     comparisonFun = "==", limitConstraints = 10)), 120)
     
     expect_equal(nrow(permuteGeneral(0:10, 4, constraintFun = "sum",
                                      comparisonFun = "==", limitConstraints = 10)), 120)
@@ -304,7 +306,7 @@ test_that("comboGeneral produces correct results for special subset sum", {
                                      comparisonFun = "==", limitConstraints = 10)), 24)
     
     expect_equal(nrow(permuteGeneral(0:10, repetition = TRUE, constraintFun = "sum",
-                                     comparisonFun = "==", limitConstraints = 10)), 512)
+                                     comparisonFun = "==", limitConstraints = 10)), 92378)
     
     expect_equal(nrow(permuteGeneral(0:10, 10, repetition = TRUE, constraintFun = "sum",
                                      comparisonFun = "==", limitConstraints = 10)), 92378)

@@ -110,11 +110,11 @@ test_that("comboGeneral produces correct results with constraints", {
                       tolerance = .Machine$double.eps))
     
     ## The default tolerance is sqrt(.Machine$double.eps)
-    defatultTol = nrow(comboGeneral(1:5 + 0.00000000001, 3, 
+    defaultTol = nrow(comboGeneral(1:5 + 0.00000000001, 3, 
                                      constraintFun = "mean", 
                                      comparisonFun = "==", limitConstraints = 3))
     
-    expect_false(tinyTol == defatultTol)
+    expect_false(tinyTol == defaultTol)
     
     ## check that classes behave properly N.B. limitContraint > INT_MAX
     expect_equal(class(comboGeneral(10, 5, constraintFun = "prod",
@@ -254,60 +254,60 @@ test_that("comboGeneral produces correct results with exotic constraints", {
                  constraintFun = "max",
                  comparisonFun = c("<=", ">"),
                  limitConstraints = c(9, 7)), a[which(b > 7 & b <= 9), ])
-    
+
     b = apply(a, 1, min)
-    expect_equal(comboGeneral(10, 7, freqs = rep(3, 10), 
+    expect_equal(comboGeneral(10, 7, freqs = rep(3, 10),
                               constraintFun = "min",
                               comparisonFun = "==",
-                              limitConstraints = 3, 
+                              limitConstraints = 3,
                               lower = 7900, upper = 8500),
                  a[(7900:8500)[b[7900:8500] == 3], ])
-    
+
     a = comboGeneral(5, 7, T)
     b = apply(a, 1, prod)
     expect_equal(comboGeneral(5, 7, TRUE, constraintFun = "prod",
                  comparisonFun = c(">=","<="),
                  limitConstraints = c(2000, 5000)), a[which(b >= 2000 & b <= 5000), ])
-    
+
     a = comboGeneral(-5, 7, T)
     b = apply(a, 1, prod)
     expect_equal(nrow(comboGeneral(-5, 7, TRUE, constraintFun = "prod",
                               comparisonFun = c("<=",">="),
-                              limitConstraints = c(-2000, 5000), 
-                              keepResults = TRUE)), 
+                              limitConstraints = c(-2000, 5000),
+                              keepResults = TRUE)),
                  nrow(rbind(a[which(b <= -2000),], a[which(b >= 5000), ])))
-    
+
     ## Testing sums in a range
-    a = comboGeneral(10, 8, TRUE, lower = 23500, upper = 24000, 
+    a = comboGeneral(10, 8, TRUE, lower = 23500, upper = 24000,
                       constraintFun = "sum", keepResults = TRUE)
-    
-    expect_equal(comboGeneral(c(NA, 1:10), 8, TRUE, constraintFun = "sum", 
-                              comparisonFun = c("=>","=<"), 
-                              limitConstraints = c(72, 78), 
-                              lower = 23500, upper = 24000), 
+
+    expect_equal(comboGeneral(c(NA, 1:10), 8, TRUE, constraintFun = "sum",
+                              comparisonFun = c("=>","=<"),
+                              limitConstraints = c(72, 78),
+                              lower = 23500, upper = 24000),
                  a[a[,9] >= 72 & a[,9] <= 78, 1:8])
-    
-    
+
+
     comp1 = c("<", "<=")
     comp2 = c(">", ">=")
-    
-    ## Test that unsorted vector is being handled properly 
+
+    ## Test that unsorted vector is being handled properly
     ## for both numeric and integer type vectors
     # identical(sort(scrambled), 1:10)
     # [1] TRUE
     scrambled = as.integer(c(8, 2, 5, 1, 6, 3, 10, 9, 4, 7))
     scramFreqs = rep(1:5, 2)[scrambled]
-    
+
     allCombs1 = comboGeneral(10, 7, freqs = rep(1:5, 2), constraintFun = "sum")
     allCombs2 = comboGeneral(10:1, 7, freqs = rev(rep(1:5, 2)), constraintFun = "sum")
     theSums1 = allCombs1[, 8]
     theSums2 = allCombs2[, 8]
     allCombs1 = allCombs1[, 1:7]
     allCombs2 = allCombs2[, 1:7]
-    
+
     for (myType in c("integer", "numeric")) {
         for (i in 1:2) {
-            
+
             if (i == 1) {
                 a = comp1
                 b = comp2
@@ -315,11 +315,11 @@ test_that("comboGeneral produces correct results with exotic constraints", {
                 a = comp2
                 b = comp1
             }
-            
+
             for (j in a) {
                 for (k in b) {
                     myComp = c(j, k)
-                    
+
                     if (myType == "integer") {
                         myTest = comboGeneral(scrambled, 7, freqs = scramFreqs,
                                               constraintFun = "sum", comparisonFun = myComp,
@@ -329,10 +329,10 @@ test_that("comboGeneral produces correct results with exotic constraints", {
                                               constraintFun = "sum", comparisonFun = myComp,
                                               limitConstraints = c(42, 53))
                     }
-                    
+
                     fun1 = match.fun(j)
                     fun2 = match.fun(k)
-                    
+
                     if (i == 1) {
                         temp1 = allCombs1[fun1(theSums1, 42), ]
                         temp2 = allCombs2[fun2(theSums2, 53), ]
@@ -346,18 +346,18 @@ test_that("comboGeneral produces correct results with exotic constraints", {
             }
         }
     }
-    
-    allCombs1 = comboGeneral(10, 8, TRUE, 
+
+    allCombs1 = comboGeneral(10, 8, TRUE,
                               constraintFun = "sum", keepResults = TRUE)
-    allCombs2 = comboGeneral(10:1, 8, TRUE, 
+    allCombs2 = comboGeneral(10:1, 8, TRUE,
                               constraintFun = "sum", keepResults = TRUE)
     theSums1 = allCombs1[, 9]
     theSums2 = allCombs2[, 9]
     allCombs1 = allCombs1[, 1:8]
     allCombs2 = allCombs2[, 1:8]
-    
+
     for (i in 1:2) {
-        
+
         if (i == 1) {
             a = comp1
             b = comp2
@@ -365,7 +365,7 @@ test_that("comboGeneral produces correct results with exotic constraints", {
             a = comp2
             b = comp1
         }
-        
+
         for (j in a) {
             for (k in b) {
                 myComp = c(j, k)
@@ -374,7 +374,7 @@ test_that("comboGeneral produces correct results with exotic constraints", {
                                        limitConstraints = c(42, 53))
                 fun1 = match.fun(j)
                 fun2 = match.fun(k)
-                
+
                 if (i == 1) {
                     temp1 = allCombs1[fun1(theSums1, 42), ]
                     temp2 = allCombs2[fun2(theSums2, 53), ]
@@ -382,23 +382,23 @@ test_that("comboGeneral produces correct results with exotic constraints", {
                 } else {
                     temp = allCombs1[fun1(theSums1, 42) & fun2(theSums1, 53),]
                 }
-                
+
                 expect_equal(temp, myTest)
             }
         }
     }
-    
-    allCombs1 = comboGeneral(18, 8, 
+
+    allCombs1 = comboGeneral(18, 8,
                               constraintFun = "sum", keepResults = TRUE)
-    allCombs2 = comboGeneral(18:1, 8, 
+    allCombs2 = comboGeneral(18:1, 8,
                               constraintFun = "sum", keepResults = TRUE)
     theSums1 = allCombs1[, 9]
     theSums2 = allCombs2[, 9]
     allCombs1 = allCombs1[, 1:8]
     allCombs2 = allCombs2[, 1:8]
-    
+
     for (i in 1:2) {
-        
+
         if (i == 1) {
             a = comp1
             b = comp2
@@ -406,7 +406,7 @@ test_that("comboGeneral produces correct results with exotic constraints", {
             a = comp2
             b = comp1
         }
-        
+
         for (j in a) {
             for (k in b) {
                 myComp = c(j, k)
@@ -415,7 +415,7 @@ test_that("comboGeneral produces correct results with exotic constraints", {
                                        limitConstraints = c(68, 84))
                 fun1 = match.fun(j)
                 fun2 = match.fun(k)
-                
+
                 if (i == 1) {
                     temp1 = allCombs1[fun1(theSums1, 68), ]
                     temp2 = allCombs2[fun2(theSums2, 84), ]

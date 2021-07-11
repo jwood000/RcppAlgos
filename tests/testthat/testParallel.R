@@ -1,4 +1,4 @@
-context("testing with Parallel enabled")
+context("testing comboGeneral Parallel")
 
 test_that("comboGeneral produces correct results with Parallel enabled and no constrainFun", {
     
@@ -45,7 +45,8 @@ test_that("comboGeneral produces correct results with Parallel enabled and no co
     #### Multisets
     expect_equal(comboGeneral(factor(1:50), 7, freqs = rep(1:5, 10), nThreads = 2,
                               lower = 100000, upper = 130000), 
-                 comboGeneral(factor(1:50), 7, freqs = rep(1:5, 10), lower = 100000, upper = 130000))
+                 comboGeneral(factor(1:50), 7, freqs = rep(1:5, 10),
+                              lower = 100000, upper = 130000))
 })
 
 test_that("comboGeneral produces correct results with Parallel enabled and constrainFun", {
@@ -72,8 +73,10 @@ test_that("comboGeneral produces correct results with Parallel enabled and const
     ## comboCount(15, 7, freqs = rep(1:5, 3))
     ## [1] 73065
     numVec <- runif(15)
-    expect_equal(comboGeneral(numVec, 7, freqs = rep(1:5, 3), nThreads = 2, constraintFun = "mean"), 
-                 comboGeneral(numVec, 7, freqs = rep(1:5, 3), constraintFun = "mean", keepResults = TRUE))
+    expect_equal(comboGeneral(numVec, 7, freqs = rep(1:5, 3),
+                              nThreads = 2, constraintFun = "mean"), 
+                 comboGeneral(numVec, 7, freqs = rep(1:5, 3),
+                              constraintFun = "mean", keepResults = TRUE))
     
     
     ######********************** Upper Only *******************#########
@@ -83,8 +86,10 @@ test_that("comboGeneral produces correct results with Parallel enabled and const
     
     #### With Repetition
     numVec <- rnorm(25)
-    expect_equal(comboGeneral(numVec, 8, TRUE, nThreads = 2, upper = 30000, constraintFun = "min"),
-                 comboGeneral(numVec, 8, TRUE, upper = 30000, constraintFun = "min", keepResults = TRUE))
+    expect_equal(comboGeneral(numVec, 8, TRUE, nThreads = 2,
+                              upper = 30000, constraintFun = "min"),
+                 comboGeneral(numVec, 8, TRUE, upper = 30000,
+                              constraintFun = "min", keepResults = TRUE))
     
     #### Multisets
     numVec <- rnorm(50)
@@ -96,8 +101,10 @@ test_that("comboGeneral produces correct results with Parallel enabled and const
     ######********************** Lower Only *******************#########
     #### NO Repetition
     total = comboCount(50, 10)
-    expect_equal(comboGeneral(50, 10, nThreads = 2, lower = total - 30000, constraintFun = "prod"), 
-                 comboGeneral(50, 10, lower = total - 30000, constraintFun = "prod", keepResults = TRUE))
+    expect_equal(comboGeneral(50, 10, nThreads = 2,
+                              lower = total - 30000, constraintFun = "prod"), 
+                 comboGeneral(50, 10, lower = total - 30000,
+                              constraintFun = "prod", keepResults = TRUE))
     
     ######********************** Upper & Lower *******************#########
     #### Multisets
@@ -106,6 +113,8 @@ test_that("comboGeneral produces correct results with Parallel enabled and const
                  comboGeneral(50, 7, freqs = rep(1:5, 10), lower = 100000, 
                               upper = 130000, constraintFun = "mean", keepResults = TRUE))
 })
+
+context("testing permuteGeneral Parallel")
 
 test_that("permuteGeneral produces correct results with Parallel enabled and no constrainFun", {
     
@@ -154,7 +163,8 @@ test_that("permuteGeneral produces correct results with Parallel enabled and no 
     #### Multisets
     expect_equal(permuteGeneral(factor(1:30), 7, freqs = rep(1:5, 6), 
                                 nThreads = 2, lower = 100000, upper = 130000), 
-                 permuteGeneral(factor(1:30), 7, freqs = rep(1:5, 6), lower = 100000, upper = 130000))
+                 permuteGeneral(factor(1:30), 7, freqs = rep(1:5, 6),
+                                lower = 100000, upper = 130000))
 })
 
 test_that("permuteGeneral produces correct results with Parallel enabled with logical vector", {
@@ -240,6 +250,8 @@ test_that("permuteGeneral produces correct results with Parallel enabled and con
                               upper = 130000, constraintFun = "sum", keepResults = TRUE))
 })
 
+context("testing comboGeneral GMP Parallel")
+
 test_that("comboGeneral produces correct results with Parallel and GMP enabled", {
     
     set.seed(16)
@@ -313,6 +325,8 @@ test_that("comboGeneral produces correct results with Parallel, GMP, and constra
                               upper = "24551856075980529030000",
                               constraintFun = "min", keepResults = TRUE))
 })
+
+context("testing permuteGeneral GMP Parallel")
 
 test_that("permuteGeneral produces correct results with Parallel and GMP enabled", {
     

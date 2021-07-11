@@ -31,6 +31,8 @@ test_that("permuteGeneral produces correct results with no constraints and no re
                                      keepResults = TRUE, upper = 10L)), 10)
 })
 
+context("permuteGeneral repetition")
+
 test_that("permuteGeneral produces correct results with no constraints and has repetition", {
     expect_equal(as.vector(permuteGeneral(1,1,TRUE)), 1)
     expect_equal(as.vector(permuteGeneral(1,5,TRUE)), rep(1, 5))
@@ -55,6 +57,8 @@ test_that("permuteGeneral produces correct results with no constraints and has r
     expect_equal(nrow(permuteGeneral(2, 180, freqs = c(180, 2))), 
                  permuteCount(2, 180, freqs = c(180, 2)))
 })
+
+context("permuteGeneral multisets")
 
 test_that("permuteGeneral produces correct results with no constraints for multisets", {
     expect_equal(nrow(permuteGeneral(5, 5, freqs = 1:5, upper = 10)), 10)
@@ -91,6 +95,8 @@ test_that("permuteGeneral produces correct results with no constraints for multi
         permuteGeneral(4, freqs = c(2,1,2,3), lower = x, upper = x+167)
     })), permuteGeneral(4, 20, freqs = c(2,1,2,3)))
 })
+
+context("permuteGeneral constraints")
 
 test_that("permuteGeneral produces correct results with constraints", {
     expect_equal(nrow(permuteGeneral(15, 7,
@@ -168,6 +174,8 @@ test_that("permuteGeneral produces correct results with constraints", {
                  nrow(a[which(b >= 2000 & b <= 5000), ]))
 })
 
+context("permuteGeneral exotic constraints")
+
 test_that("permuteGeneral produces correct results with exotic constraints", {
 
     comp1 <- c("<", "<=")
@@ -192,9 +200,11 @@ test_that("permuteGeneral produces correct results with exotic constraints", {
         for (j in a) {
             for (k in b) {
                 myComp <- c(j, k)
-                myTest <- permuteGeneral(c(-6:(-1),1:2), 5, freqs = c(rep(1:3, 2), 2:3),
-                                       constraintFun = "prod", comparisonFun = myComp,
-                                       limitConstraints = c(q[2], q[4]))
+                myTest <- permuteGeneral(c(-6:(-1),1:2), 5,
+                                         freqs = c(rep(1:3, 2), 2:3),
+                                         constraintFun = "prod",
+                                         comparisonFun = myComp,
+                                         limitConstraints = c(q[2], q[4]))
                 fun1 <- match.fun(j)
                 fun2 <- match.fun(k)
 
@@ -204,7 +214,7 @@ test_that("permuteGeneral produces correct results with exotic constraints", {
                     temp <- allPerms[fun1(theSum, q[2]) & fun2(theSum, q[4]),]
                 }
 
-                expect_equal(temp, myTest)
+                expect_equal(temp, myTest, info = c(myComp, q[2], q[4]))
             }
         }
     }
