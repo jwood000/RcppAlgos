@@ -102,7 +102,7 @@ SEXP ConstraintsReturn(const std::vector<int> &freqs,
                        double lower, mpz_t lowerMpz, int n, int m, int nRows,
                        int nThreads, double strt, bool IsComb, bool IsRep,
                        bool IsMult, bool bUpper, bool xtraCol,
-                       bool numUnknown, bool IsGmp) {
+                       bool numUnknown, int strtLen, int cap, bool IsGmp) {
 
     const int width = (part.isPart) ? part.width : m;
     const int nCols = (xtraCol) ? width + 1 : width;
@@ -167,14 +167,6 @@ SEXP ConstraintsReturn(const std::vector<int> &freqs,
         const int lastElem = n - 1;
         const int lastCol = width - 1;
 
-        const int strtLen = std::count_if(part.startZ.cbegin(),
-                                          part.startZ.cend(),
-                                          [](int i){return i > 0;});
-
-        const int k = (part.ptype == PartitionType::DstctSpecial ||
-                       part.ptype == PartitionType::DstctStdAll) ?
-                       strtLen : n;
-
         if (myType == VecType::Integer) {
             SEXP res = PROTECT(Rf_allocMatrix(INTSXP, nRows, nCols));
             int* matInt = INTEGER(res);
@@ -182,12 +174,12 @@ SEXP ConstraintsReturn(const std::vector<int> &freqs,
             if (ctype == ConstraintType::PartStandard) {
                 StandardPartitions(matInt, z, part.ptype, lower, lowerMpz,
                                    nCols, width, nRows, nThreads, lastCol,
-                                   lastElem, n, k, IsRep, IsMult,
-                                   IsGmp, IsComb, part.includeZero);
+                                   lastElem, part.mapTar, strtLen, cap, IsRep,
+                                   IsMult, IsGmp, IsComb, part.includeZero);
             } else {
-                GeneralPartitions(matInt, vInt, z, part, lower,
-                                  lowerMpz, nCols, nRows, nThreads,
-                                  lastCol, lastElem, k, IsComb);
+                GeneralPartitions(matInt, vInt, z, part, lower, lowerMpz,
+                                  nCols, nRows, nThreads, lastCol, lastElem,
+                                  strtLen, cap, IsComb);
             }
 
             if (xtraCol) AddResultToParts(matInt, part.target, nRows, width);
@@ -197,9 +189,9 @@ SEXP ConstraintsReturn(const std::vector<int> &freqs,
             SEXP res = PROTECT(Rf_allocMatrix(REALSXP, nRows, nCols));
             double* matDbl = REAL(res);
 
-            GeneralPartitions(matDbl, vNum, z, part, lower,
-                              lowerMpz, nCols, nRows, nThreads,
-                              lastCol, lastElem, k, IsComb);
+            GeneralPartitions(matDbl, vNum, z, part, lower, lowerMpz,
+                              nCols, nRows, nThreads, lastCol, lastElem,
+                              strtLen, cap, IsComb);
 
             if (xtraCol) AddResultToParts(matDbl, part.target, nRows, width);
             UNPROTECT(1);
@@ -266,8 +258,8 @@ SEXP CombinatoricsCnstrt(SEXP Rv, SEXP Rm, SEXP RisRep, SEXP RFreqs,
     part.mIsNull = Rf_isNull(Rm);
 
     if (IsConstrained) {
-        ConstraintSetup(vNum, myReps, tarVals, tarIntVals, funDbl,
-                        part, ctype, n, m, compVec, mainFun, myType,
+        ConstraintSetup(vNum, myReps, tarVals, vInt, tarIntVals,
+                        funDbl, part, ctype, n, m, compVec, mainFun, myType,
                         Rtarget, RcompFun, Rtolerance, Rlow, IsComb, false);
     }
 
@@ -313,24 +305,19 @@ SEXP CombinatoricsCnstrt(SEXP Rv, SEXP Rm, SEXP RisRep, SEXP RFreqs,
               computedRows);
 
     std::vector<int> startZ(m);
+    const int cap     = n - part.includeZero;
+    const int strtLen = std::count_if(part.startZ.cbegin(),
+                                      part.startZ.cend(),
+                                      [](int i){return i > 0;});
 
     if (ctype < ConstraintType::PartMapping) {
         SetStartZ(myReps, freqs, startZ, IsComb, n, m,
                   lower, lowerMpz[0], IsRep, IsMult, IsGmp);
     } else {
         if (bLower) {
-            const int strtLen = std::count_if(part.startZ.cbegin(),
-                                              part.startZ.cend(),
-                                              [](int i){return i > 0;});
-
-            const int k = (part.ptype == PartitionType::DstctSpecial ||
-                           part.ptype == PartitionType::DstctStdAll) ?
-                           strtLen : n;
-
-            const nthPartsPtr nthPartFun = GetNthPartsFunc(part.ptype,
-                                                           IsGmp);
+            nthPartsPtr nthPartFun = GetNthPartsFunc(part.ptype, IsGmp);
             startZ = nthPartFun(part.mapTar, part.width,
-                                k, lower, lowerMpz[0]);
+                                cap, strtLen, lower, lowerMpz[0]);
 
             if (ctype == ConstraintType::PartStandard && !part.includeZero) {
                 for (auto &z_i: startZ) {
@@ -358,7 +345,11 @@ SEXP CombinatoricsCnstrt(SEXP Rv, SEXP Rm, SEXP RisRep, SEXP RFreqs,
     CleanConvert::convertPrimitive(RmaxThreads, maxThreads,
                                    VecType::Integer, "maxThreads");
 
-    const int limit = 20000;
+    const int limit = (part.isPart) ?
+    ((part.ptype == PartitionType::RepCapped   ||
+      part.ptype == PartitionType::DstctCapped ||
+      part.ptype == PartitionType::DstctCappedMZ) ? 150000 : 40000) : 20000;
+
     SetThreads(Parallel, maxThreads, nRows,
                myType, nThreads, RnThreads, limit);
 
@@ -366,7 +357,8 @@ SEXP CombinatoricsCnstrt(SEXP Rv, SEXP Rm, SEXP RisRep, SEXP RFreqs,
         const int nCols = m + 1;
 
         if (myType == VecType::Integer) {
-            if (!CheckIsInteger(mainFun, n, m, vNum, vNum, funDbl)) {
+            if (!CheckIsInteger(mainFun, n, m, vNum, vNum, funDbl,
+                                false, IsRep, IsMult, false)) {
                 myType = VecType::Numeric;
             }
         }
@@ -399,6 +391,6 @@ SEXP CombinatoricsCnstrt(SEXP Rv, SEXP Rm, SEXP RisRep, SEXP RFreqs,
                                  part, myType, ctype, userNum, lower,
                                  lowerMpz[0], n, m, nRows, nThreads, lower,
                                  IsComb, IsRep, IsMult, bUpper, KeepRes,
-                                 numUnknown, IsGmp);
+                                 numUnknown, strtLen, cap, IsGmp);
     }
 }

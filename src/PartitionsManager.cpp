@@ -16,8 +16,9 @@ void PartsStdManager(int* mat, std::vector<int> &z, int width,
         PartsDistinct(mat, z, width, lastElem, lastCol, nRows);
     } else {
         const auto it = std::find(z.rbegin(), z.rend(), 0);
+        const int dist = std::distance(it, z.rend());
 
-        if (it != z.rend()) {
+        if (dist > 1) {
             PartsPermZeroDistinct(mat, z, width, lastElem, lastCol, nRows);
         } else {
             PartsPermDistinct(mat, z, width, lastElem, lastCol, nRows);
@@ -26,9 +27,9 @@ void PartsStdManager(int* mat, std::vector<int> &z, int width,
 }
 
 template <typename T>
-void PartsGenManager(T* mat, const PartDesign &part, const std::vector<T> &v,
-                     std::vector<int> &z, int width, int lastElem,
-                     int lastCol, int nRows, bool IsComb, bool IsRep) {
+void PartsGenManager(T* mat, const std::vector<T> &v, std::vector<int> &z,
+                     int width, int lastElem, int lastCol, int nRows,
+                     bool IsComb, bool IsRep) {
 
     if (IsComb) {
         if (IsRep) {
@@ -37,13 +38,13 @@ void PartsGenManager(T* mat, const PartDesign &part, const std::vector<T> &v,
             PartsGenDistinct(mat, v, z, width, lastElem, lastCol, nRows);
         }
     } else {
-        if (part.ptype <= PartitionType::RepShort) {
+        if (IsRep) {
             PartsGenPermRep(mat, v, z, width, lastElem, lastCol, nRows);
-        } else if (part.ptype <= PartitionType::DstctCapped) {
-
+        } else {
             const auto it = std::find(z.rbegin(), z.rend(), 0);
+            const int dist = std::distance(it, z.rend());
 
-            if (it != z.rend()) {
+            if (dist > 1) {
                 PartsGenPermZeroDistinct(mat, v, z, width,
                                          lastElem, lastCol, nRows);
             } else {
@@ -85,7 +86,7 @@ void PartsGenParallel(RcppParallel::RMatrix<T> &mat,
                       const std::vector<T> &v, std::vector<int> &z,
                       int strt, int width, int lastElem, int lastCol,
                       int nRows, bool IsRep) {
-    
+
     if (IsRep) {
         PartsGenRep(mat, v, z, strt, width, lastElem, lastCol, nRows);
     } else {
@@ -93,12 +94,12 @@ void PartsGenParallel(RcppParallel::RMatrix<T> &mat,
     }
 }
 
-template void PartsGenManager(int*, const PartDesign&,
-                              const std::vector<int>&, std::vector<int>&,
-                              int, int, int, int, bool, bool);
-template void PartsGenManager(double*, const PartDesign&,
-                              const std::vector<double>&, std::vector<int>&,
-                              int, int, int, int, bool, bool);
+template void PartsGenManager(int*, const std::vector<int>&,
+                              std::vector<int>&, int, int,
+                              int, int, bool, bool);
+template void PartsGenManager(double*, const std::vector<double>&,
+                              std::vector<int>&, int, int,
+                              int, int, bool, bool);
 
 template void PartsGenManager(std::vector<int>&, const std::vector<int>&,
                               const std::vector<int>&, std::vector<int>&,

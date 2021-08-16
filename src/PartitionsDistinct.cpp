@@ -12,13 +12,13 @@ void PartsGenDistinct(T* mat, const std::vector<T> &v,
 
     int edge = 0;
     int pivot = 0;
-    int tarDiff = 0;
     int boundary = 0;
+    int initTarDf = 0;
 
     PrepareDistinctPart(z, boundary, pivot, edge,
-                        tarDiff, lastElem, lastCol);
+                        initTarDf, lastElem, lastCol);
 
-    for (int count = 0; count < nRows; ++count,
+    for (int count = 0, tarDiff = initTarDf; count < nRows; ++count,
          NextDistinctGenPart(z, boundary, edge, pivot,
                              tarDiff, lastCol, lastElem)) {
 
@@ -36,13 +36,13 @@ void PartsGenDistinct(RcppParallel::RMatrix<T> &mat,
 
     int edge = 0;
     int pivot = 0;
-    int tarDiff = 0;
     int boundary = 0;
+    int initTarDf = 0;
 
     PrepareDistinctPart(z, boundary, pivot, edge,
-                        tarDiff, lastElem, lastCol);
+                        initTarDf, lastElem, lastCol);
 
-    for (int count = strt; count < nRows; ++count,
+    for (int count = strt, tarDiff = initTarDf; count < nRows; ++count,
          NextDistinctGenPart(z, boundary, edge, pivot,
                              tarDiff, lastCol, lastElem)) {
 
@@ -56,14 +56,13 @@ template <typename T>
 void PartsGenPermDistinct(T* mat, const std::vector<T> &v,
                           std::vector<int> &z, int width,
                           int lastElem, int lastCol, int nRows) {
-
     int edge = 0;
     int pivot = 0;
-    int tarDiff = 0;
     int boundary = 0;
+    int initTarDf = 0;
 
     PrepareDistinctPart(z, boundary, pivot, edge,
-                        tarDiff, lastElem, lastCol);
+                        initTarDf, lastElem, lastCol);
 
     const int indexRows = NumPermsNoRep(width, width);
     auto indexMat = FromCpp14::make_unique<int[]>(indexRows * width);
@@ -79,7 +78,7 @@ void PartsGenPermDistinct(T* mat, const std::vector<T> &v,
         std::next_permutation(indexVec.begin(), indexVec.end());
     }
 
-    for (int count = 0;;) {
+    for (int count = 0, tarDiff= initTarDf;;) {
         for (int j = 0, myRow = 0; j < indexRows && count < nRows; ++count, ++j) {
             for (int k = 0; k < width; ++k, ++myRow) {
                 mat[count + nRows * k] = v[z[indexMat[myRow]]];
@@ -99,19 +98,20 @@ void PartsGenDistinct(std::vector<T> &partsVec, const std::vector<T> &v,
 
     int edge = 0;
     int pivot = 0;
-    int tarDiff = 0;
     int boundary = 0;
+    int initTarDf = 0;
 
     const int lastCol = width - 1;
     const int lastElem = v.size() - 1;
 
     PrepareDistinctPart(z, boundary, pivot, edge,
-                        tarDiff, lastElem, lastCol);
+                        initTarDf, lastElem, lastCol);
 
-    for (int count = 0; edge >= 0 && (z[boundary] - z[edge]) >= tarDiff;
+    for (int count = 0, tarDiff = initTarDf;
+         edge >= 0 && (z[boundary] - z[edge]) >= tarDiff;
          NextDistinctGenPart(z, boundary, edge, pivot,
                              tarDiff, lastCol, lastElem)) {
-        
+
         PopulateVec(v, partsVec, z, count, width, nRows, IsComb);
         if (count >= nRows) break;
     }
@@ -130,14 +130,15 @@ void PartsGenPermZeroDistinct(T* mat, const std::vector<T> &v,
 
     int edge = 0;
     int pivot = 0;
-    int tarDiff = 0;
     int boundary = 0;
+    int initTarDf = 0;
 
     PrepareDistinctPart(z, boundary, pivot, edge,
-                        tarDiff, lastElem, lastCol);
+                        initTarDf, lastElem, lastCol);
 
-    for (int count = 0;;) {
-
+    for (int count = 0, tarDiff = initTarDf;;
+         NextDistinctGenPart(z, boundary, edge, pivot,
+                             tarDiff, lastCol, lastElem)) {
         do {
             for (int k = 0; k < width; ++k) {
                 mat[count + nRows * k] = v[z[k]];
@@ -147,8 +148,6 @@ void PartsGenPermZeroDistinct(T* mat, const std::vector<T> &v,
         } while (std::next_permutation(z.begin(), z.end()) && count < nRows);
 
         if (count >= nRows) {break;}
-        NextDistinctGenPart(z, boundary, edge, pivot,
-                            tarDiff, lastCol, lastElem);
     }
 }
 
@@ -158,12 +157,12 @@ void PartsDistinct(int* mat, std::vector<int> &z, int width,
     int edge = 0;
     int pivot = 0;
     int boundary = 0;
-    int initTarDiff = 0;
+    int initTarDf = 0;
 
     PrepareDistinctPart(z, boundary, pivot, edge,
-                        initTarDiff, lastElem, lastCol);
+                        initTarDf, lastElem, lastCol);
 
-    for (int count = 0, tarDiff = initTarDiff; count < nRows; ++count,
+    for (int count = 0, tarDiff = initTarDf; count < nRows; ++count,
          NextDistinctPart(z, boundary, edge, tarDiff, lastCol)) {
 
         for (int k = 0; k < width; ++k) {
@@ -179,12 +178,12 @@ void PartsDistinct(RcppParallel::RMatrix<int> &mat, std::vector<int> &z,
     int edge = 0;
     int pivot = 0;
     int boundary = 0;
-    int initTarDiff = 0;
+    int initTarDf = 0;
 
     PrepareDistinctPart(z, boundary, pivot, edge,
-                        initTarDiff, lastElem, lastCol);
+                        initTarDf, lastElem, lastCol);
 
-    for (int count = strt, tarDiff = 3; count < nRows; ++count,
+    for (int count = strt, tarDiff = initTarDf; count < nRows; ++count,
          NextDistinctPart(z, boundary, edge, tarDiff, lastCol)) {
 
         for (int k = 0; k < width; ++k) {
@@ -199,10 +198,10 @@ void PartsPermDistinct(int* mat, std::vector<int> &z, int width,
     int edge = 0;
     int pivot = 0;
     int boundary = 0;
-    int initTarDiff = 0;
+    int initTarDf = 0;
 
     PrepareDistinctPart(z, boundary, pivot, edge,
-                        initTarDiff, lastElem, lastCol);
+                        initTarDf, lastElem, lastCol);
 
     const int indexRows = NumPermsNoRep(width, width);
     auto indexMat = FromCpp14::make_unique<int[]>(indexRows * width);
@@ -218,7 +217,7 @@ void PartsPermDistinct(int* mat, std::vector<int> &z, int width,
         std::next_permutation(indexVec.begin(), indexVec.end());
     }
 
-    for (int count = 0, tarDiff = 3;;
+    for (int count = 0, tarDiff = initTarDf;;
          NextDistinctPart(z, boundary, edge, tarDiff, lastCol)) {
 
         for (int j = 0, myRow = 0; j < indexRows; ++count, ++j) {
@@ -237,14 +236,12 @@ void PartsPermZeroDistinct(int* mat, std::vector<int> &z, int width,
     int edge = 0;
     int pivot = 0;
     int boundary = 0;
-    int initTarDiff = 0;
+    int initTarDf = 0;
 
     PrepareDistinctPart(z, boundary, pivot, edge,
-                        initTarDiff, lastElem, lastCol);
+                        initTarDf, lastElem, lastCol);
 
-    int totalCount = 0;
-
-    for (int count = 0, tarDiff = 3; z[1] == 0;
+    for (int count = 0, tarDiff = initTarDf;;
          NextDistinctPart(z, boundary, edge, tarDiff, lastCol)) {
 
         do {
@@ -254,33 +251,6 @@ void PartsPermZeroDistinct(int* mat, std::vector<int> &z, int width,
 
             ++count;
         } while (std::next_permutation(z.begin(), z.end()) && count < nRows);
-
-        if (count >= nRows) {break;}
-        totalCount = count;
-    }
-
-    const int indexRows = NumPermsNoRep(width, width);
-    auto indexMat = FromCpp14::make_unique<int[]>(indexRows * width);
-
-    std::vector<int> indexVec(width);
-    std::iota(indexVec.begin(), indexVec.end(), 0);
-
-    for (int i = 0, myRow = 0; i < indexRows; ++i, myRow += width) {
-        for (int j = 0; j < width; ++j) {
-            indexMat[myRow + j] = indexVec[j];
-        }
-
-        std::next_permutation(indexVec.begin(), indexVec.end());
-    }
-
-    for (int count = totalCount, tarDiff = 3; ;
-         NextDistinctPart(z, boundary, edge, tarDiff, lastCol)) {
-
-        for (int j = 0, myRow = 0; j < indexRows; ++count, ++j) {
-            for (int k = 0; k < width; ++k, ++myRow) {
-                mat[count + nRows * k] = z[indexMat[myRow]];
-            }
-        }
 
         if (count >= nRows) {break;}
     }

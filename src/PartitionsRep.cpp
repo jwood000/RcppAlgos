@@ -25,13 +25,13 @@ template <typename T>
 void PartsGenRep(RcppParallel::RMatrix<T> &mat, const std::vector<T> &v,
                  std::vector<int> &z, int strt, int width, int lastElem,
                  int lastCol, int nRows) {
-    
+
     int edge = 0;
     int pivot = 0;
     int boundary = 0;
-    
+
     PrepareRepPart(z, boundary, pivot, edge, lastElem, lastCol);
-    
+
     for (int count = strt; count < nRows; ++count,
          NextRepGenPart(z, boundary, edge, pivot, lastCol, lastElem)) {
 
