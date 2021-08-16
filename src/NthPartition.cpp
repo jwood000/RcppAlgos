@@ -4,17 +4,18 @@
 #include "Partitions/PartitionsCountRep.h"
 #include "Partitions/BigPartsCountRep.h"
 #include "Partitions/PartitionsTypes.h"
+#include "Partitions/PartitionsCount.h"
 #include <numeric>  // std::accumulate
 
 #define R_NO_REMAP
 #include <Rinternals.h>
 #include <R.h>
 
-// The variable k is either strtLen or cap
-using nthPartsPtr = std::vector<int> (*const)(int n, int m, int k,
+// The variable k is strtLen
+using nthPartsPtr = std::vector<int> (*const)(int n, int m, int cap, int k,
                                               double dblIdx, mpz_t mpzIdx);
 
-std::vector<int> nthPartsRepLen(int n, int m, int k,
+std::vector<int> nthPartsRepLen(int n, int m, int cap, int k,
                                 double dblIdx, mpz_t mpzIdx) {
 
     const int width = m;
@@ -25,12 +26,12 @@ std::vector<int> nthPartsRepLen(int n, int m, int k,
     --m;
 
     for (int i = 0, j = 0; i < (width - 1); ++i, --n, --m) {
-        double temp = CountPartsRepLen(n, m);
+        double temp = CountPartsRepLen(n, m, cap, k);
 
         for (; temp <= dblIdx; ++j) {
             n -= (m + 1);
             dblIdx -= temp;
-            temp = CountPartsRepLen(n, m);
+            temp = CountPartsRepLen(n, m, cap, k);
         }
 
         res[i] = j;
@@ -40,20 +41,20 @@ std::vector<int> nthPartsRepLen(int n, int m, int k,
     return res;
 }
 
-std::vector<int> nthPartsRepShort(int n, int m, int k,
+std::vector<int> nthPartsRepShort(int n, int m, int cap, int k,
                                   double dblIdx, mpz_t mpzIdx) {
 
-    return nthPartsRepLen(n, m, k, dblIdx, mpzIdx);
+    return nthPartsRepLen(n, m, cap, k, dblIdx, mpzIdx);
 }
 
-std::vector<int> nthPartsRep(int n, int m, int k,
+std::vector<int> nthPartsRep(int n, int m, int cap, int k,
                              double dblIdx, mpz_t mpzIdx) {
 
-    return nthPartsRepLen(n * 2, m, k, dblIdx, mpzIdx);
+    return nthPartsRepLen(n * 2, m, cap, k, dblIdx, mpzIdx);
 }
 
-std::vector<int> nthPartsRepCap(int n, int m, int k,
-                                   double dblIdx, mpz_t mpzIdx) {
+std::vector<int> nthPartsRepCap(int n, int m, int cap, int k,
+                                double dblIdx, mpz_t mpzIdx) {
 
     const int width = m;
     const int max_n = n;
@@ -63,13 +64,13 @@ std::vector<int> nthPartsRepCap(int n, int m, int k,
     --m;
 
     for (int i = 0, j = 0; i < (width - 1); ++i, --n, --m) {
-        double temp = CountPartsRepLenCap(n, m, k);
+        double temp = CountPartsRepLenCap(n, m, cap, k);
 
         for (; temp <= dblIdx; ++j) {
             n -= (m + 1);
-            --k;
+            --cap;
             dblIdx -= temp;
-            temp = CountPartsRepLenCap(n, m, k);
+            temp = CountPartsRepLenCap(n, m, cap, k);
         }
 
         res[i] = j;
@@ -79,7 +80,7 @@ std::vector<int> nthPartsRepCap(int n, int m, int k,
     return res;
 }
 
-std::vector<int> nthPartsDistinctLen(int n, int m, int k,
+std::vector<int> nthPartsDistinctLen(int n, int m, int cap, int k,
                                      double dblIdx, mpz_t mpzIdx) {
 
     const int width = m;
@@ -90,12 +91,12 @@ std::vector<int> nthPartsDistinctLen(int n, int m, int k,
     --m;
 
     for (int i = 0, j = 0; i < (width - 1); ++i, n -= m, --m, ++j) {
-        double temp = CountPartsDistinctLen(n, m);
+        double temp = CountPartsDistinctLen(n, m, cap, k);
 
         for (; temp <= dblIdx; ++j) {
             n -= (m + 1);
             dblIdx -= temp;
-            temp = CountPartsDistinctLen(n, m);
+            temp = CountPartsDistinctLen(n, m, cap, k);
         }
 
         res[i] = j;
@@ -105,13 +106,13 @@ std::vector<int> nthPartsDistinctLen(int n, int m, int k,
     return res;
 }
 
-std::vector<int> nthPartsDistinctOneZero(int n, int m, int k,
+std::vector<int> nthPartsDistinctOneZero(int n, int m, int cap, int k,
                                          double dblIdx, mpz_t mpzIdx) {
 
-    return nthPartsDistinctLen(n, m, k, dblIdx, mpzIdx);
+    return nthPartsDistinctLen(n, m, cap, k, dblIdx, mpzIdx);
 }
 
-std::vector<int> nthPartsDistinctMultiZero(int n, int m, int k,
+std::vector<int> nthPartsDistinctMultiZero(int n, int m, int cap, int k,
                                            double dblIdx, mpz_t mpzIdx) {
 
     const int width = m;
@@ -123,14 +124,14 @@ std::vector<int> nthPartsDistinctMultiZero(int n, int m, int k,
 
     for (int i = 0, j = 0; i < (width - 1); ++i, --m) {
         double temp = (incr_j || i >= (width - k)) ?
-                      CountPartsDistinctLen(n, m) :
-                      CountPartsDistinctMultiZero(n, m, k);
+                      CountPartsDistinctLen(n, m, cap, k) :
+                      CountPartsDistinctMultiZero(n, m, cap, k);
 
         for (; temp <= dblIdx; ++j) {
             incr_j = true;
             n -= (m + 1);
             dblIdx -= temp;
-            temp = CountPartsDistinctLen(n, m);
+            temp = CountPartsDistinctLen(n, m, cap, k);
         }
 
         res[i] = j;
@@ -141,11 +142,11 @@ std::vector<int> nthPartsDistinctMultiZero(int n, int m, int k,
         }
     }
 
-    res[width - 1] = max_n - std::accumulate(res.begin(), res.end(), width);
+    res[width - 1] = max_n - std::accumulate(res.begin(), res.end(), 0);
     return res;
 }
 
-std::vector<int> nthPartsDistinctCap(int n, int m, int k,
+std::vector<int> nthPartsDistinctCap(int n, int m, int cap, int k,
                                      double dblIdx, mpz_t mpzIdx) {
 
     const int width = m;
@@ -153,17 +154,17 @@ std::vector<int> nthPartsDistinctCap(int n, int m, int k,
 
     std::vector<int> res(width);
     n -= m;
+    --cap;
     --m;
-    --k;
 
-    for (int i = 0, j = 0; i < (width - 1); ++i, n -= m, --m, ++j, --k) {
-        double temp = CountPartsDistinctLenCap(n, m, k);
+    for (int i = 0, j = 0; i < (width - 1); ++i, n -= m, --m, ++j, --cap) {
+        double temp = CountPartsDistinctLenCap(n, m, cap, k);
 
         for (; temp <= dblIdx; ++j) {
             n -= (m + 1);
-            --k;
+            --cap;
             dblIdx -= temp;
-            temp = CountPartsDistinctLenCap(n, m, k);
+            temp = CountPartsDistinctLenCap(n, m, cap, k);
         }
 
         res[i] = j;
@@ -173,7 +174,43 @@ std::vector<int> nthPartsDistinctCap(int n, int m, int k,
     return res;
 }
 
-std::vector<int> nthPartsRepLenGmp(int n, int m, int k,
+std::vector<int> nthPartsDistinctCapMZ(int n, int m, int cap, int k,
+                                       double dblIdx, mpz_t mpzIdx) {
+
+    const int width = m;
+    const int max_n = n;
+
+    std::vector<int> res(width);
+    bool incr_j = false;
+    --m;
+
+    for (int i = 0, j = 0; i < (width - 1); ++i, --m) {
+        double temp = (incr_j || i >= (width - k)) ?
+                      CountPartsDistinctLenCap(n, m, cap, k) :
+                      CountPartsDistinctCapMZ(n, m, cap, k);
+
+        for (; temp <= dblIdx; ++j) {
+            incr_j = true;
+            n -= (m + 1);
+            --cap;
+            dblIdx -= temp;
+            temp = CountPartsDistinctLenCap(n, m, cap, k);
+        }
+
+        res[i] = j;
+
+        if (incr_j || (i + 1) >= (width - k)) {
+            ++j;
+            n -= m;
+            --cap;
+        }
+    }
+
+    res[width - 1] = max_n - std::accumulate(res.begin(), res.end(), 0);
+    return res;
+}
+
+std::vector<int> nthPartsRepLenGmp(int n, int m, int cap, int k,
                                    double dblIdx, mpz_t mpzIdx) {
 
     const int width = m;
@@ -190,14 +227,20 @@ std::vector<int> nthPartsRepLenGmp(int n, int m, int k,
     mpz_init(index);
 
     mpz_set(index, mpzIdx);
+    const PartitionType ptype = PartitionType::RepShort;
+
+    CountClass init;
+    std::unique_ptr<CountClass> myClass = init.MakeCount(ptype);
+    myClass->SetArrSize(ptype, n, m, cap);
+    myClass->InitializeMpz();
 
     for (int i = 0, j = 0; i < (width - 1); ++i, --n, --m) {
-        CountPartsRepLen(temp, n, m);
+        myClass->GetCount(temp, n, m, cap, k);
 
         for (; mpz_cmp(temp, index) <= 0; ++j) {
             n -= (m + 1);
             mpz_sub(index, index, temp);
-            CountPartsRepLen(temp, n, m);
+            myClass->GetCount(temp, n, m, cap, k);
         }
 
         res[i] = j;
@@ -207,24 +250,25 @@ std::vector<int> nthPartsRepLenGmp(int n, int m, int k,
 
     mpz_clear(temp);
     mpz_clear(index);
+    myClass->ClearMpz();
 
     return res;
 }
 
-std::vector<int> nthPartsRepShortGmp(int n, int m, int k,
+std::vector<int> nthPartsRepShortGmp(int n, int m, int cap, int k,
                                      double dblIdx, mpz_t mpzIdx) {
 
-    return nthPartsRepLenGmp(n, m, k, dblIdx, mpzIdx);
+    return nthPartsRepLenGmp(n, m, cap, k, dblIdx, mpzIdx);
 }
 
-std::vector<int> nthPartsRepGmp(int n, int m, int k,
+std::vector<int> nthPartsRepGmp(int n, int m, int cap, int k,
                                 double dblIdx, mpz_t mpzIdx) {
 
-    return nthPartsRepLenGmp(n * 2, m, k, dblIdx, mpzIdx);
+    return nthPartsRepLenGmp(n * 2, m, cap, k, dblIdx, mpzIdx);
 }
 
-std::vector<int> nthPartsRepCapGmp(int n, int m, int k,
-                                      double dblIdx, mpz_t mpzIdx) {
+std::vector<int> nthPartsRepCapGmp(int n, int m, int cap, int k,
+                                   double dblIdx, mpz_t mpzIdx) {
 
     const int width = m;
     const int max_n = n;
@@ -240,15 +284,21 @@ std::vector<int> nthPartsRepCapGmp(int n, int m, int k,
     mpz_init(index);
 
     mpz_set(index, mpzIdx);
+    const PartitionType ptype = PartitionType::RepCapped;
+
+    CountClass init;
+    std::unique_ptr<CountClass> myClass = init.MakeCount(ptype);
+    myClass->SetArrSize(ptype, n, m, cap);
+    myClass->InitializeMpz();
 
     for (int i = 0, j = 0; i < (width - 1); ++i, --n, --m) {
-        CountPartsRepLenCap(temp, n, m, k);
+        myClass->GetCount(temp, n, m, cap, k);
 
         for (; mpz_cmp(temp, index) <= 0; ++j) {
             n -= (m + 1);
-            --k;
+            --cap;
             mpz_sub(index, index, temp);
-            CountPartsRepLenCap(temp, n, m, k);
+            myClass->GetCount(temp, n, m, cap, k);
         }
 
         res[i] = j;
@@ -258,11 +308,12 @@ std::vector<int> nthPartsRepCapGmp(int n, int m, int k,
 
     mpz_clear(temp);
     mpz_clear(index);
+    myClass->ClearMpz();
 
     return res;
 }
 
-std::vector<int> nthPartsDistinctLenGmp(int n, int m, int k,
+std::vector<int> nthPartsDistinctLenGmp(int n, int m, int cap, int k,
                                         double dblIdx, mpz_t mpzIdx) {
 
     const int width = m;
@@ -279,14 +330,20 @@ std::vector<int> nthPartsDistinctLenGmp(int n, int m, int k,
     mpz_init(index);
 
     mpz_set(index, mpzIdx);
+    const PartitionType ptype = PartitionType::DstctNoZero;
+
+    CountClass init;
+    std::unique_ptr<CountClass> myClass = init.MakeCount(ptype);
+    myClass->SetArrSize(ptype, n, m, cap);
+    myClass->InitializeMpz();
 
     for (int i = 0, j = 0; i < (width - 1); ++i, n -= m, --m, ++j) {
-        CountPartsDistinctLen(temp, n, m);
+        myClass->GetCount(temp, n, m, cap, k);
 
         for (; mpz_cmp(temp, index) <= 0; ++j) {
             n -= (m + 1);
             mpz_sub(index, index, temp);
-            CountPartsDistinctLen(temp, n, m);
+            myClass->GetCount(temp, n, m, cap, k);
         }
 
         res[i] = j;
@@ -296,17 +353,18 @@ std::vector<int> nthPartsDistinctLenGmp(int n, int m, int k,
 
     mpz_clear(temp);
     mpz_clear(index);
+    myClass->ClearMpz();
 
     return res;
 }
 
-std::vector<int> nthPartsDistinctOneZeroGmp(int n, int m, int k,
+std::vector<int> nthPartsDistinctOneZeroGmp(int n, int m, int cap, int k,
                                             double dblIdx, mpz_t mpzIdx) {
 
-    return nthPartsDistinctLenGmp(n, m, k, dblIdx, mpzIdx);
+    return nthPartsDistinctLenGmp(n, m, cap, k, dblIdx, mpzIdx);
 }
 
-std::vector<int> nthPartsDistinctMultiZeroGmp(int n, int m, int k,
+std::vector<int> nthPartsDistinctMultiZeroGmp(int n, int m, int cap, int k,
                                               double dblIdx, mpz_t mpzIdx) {
 
     const int width = m;
@@ -321,21 +379,23 @@ std::vector<int> nthPartsDistinctMultiZeroGmp(int n, int m, int k,
 
     mpz_init(temp);
     mpz_init(index);
-
     mpz_set(index, mpzIdx);
+    const PartitionType ptype = PartitionType::DstctMultiZero;
+
+    CountClass init;
+    std::unique_ptr<CountClass> myClass = init.MakeCount(ptype);
+    myClass->SetArrSize(ptype, n, m, cap);
+    myClass->InitializeMpz();
 
     for (int i = 0, j = 0; i < (width - 1); ++i, --m) {
-        if (incr_j || i >= (width - k)) {
-            CountPartsDistinctLen(temp, n, m);
-        } else {
-            CountPartsDistinctMultiZero(temp, n, m, k);
-        }
+        const bool bLiteral = !(incr_j || i >= (width - k));
+        myClass->GetCount(temp, n, m, cap, k, bLiteral);
 
         for (; mpz_cmp(temp, index) <= 0; ++j) {
             incr_j = true;
             n -= (m + 1);
             mpz_sub(index, index, temp);
-            CountPartsDistinctLen(temp, n, m);
+            myClass->GetCount(temp, n, m, cap, k, false);
         }
 
         res[i] = j;
@@ -346,15 +406,16 @@ std::vector<int> nthPartsDistinctMultiZeroGmp(int n, int m, int k,
         }
     }
 
-    res[width - 1] = max_n - std::accumulate(res.begin(), res.end(), width);
+    res[width - 1] = max_n - std::accumulate(res.begin(), res.end(), 0);
 
     mpz_clear(temp);
     mpz_clear(index);
+    myClass->ClearMpz();
 
     return res;
 }
 
-std::vector<int> nthPartsDistinctCapGmp(int n, int m, int k,
+std::vector<int> nthPartsDistinctCapGmp(int n, int m, int cap, int k,
                                         double dblIdx, mpz_t mpzIdx) {
 
     const int width = m;
@@ -362,25 +423,30 @@ std::vector<int> nthPartsDistinctCapGmp(int n, int m, int k,
 
     std::vector<int> res(width);
     n -= m;
+    --cap;
     --m;
-    --k;
 
     mpz_t temp;
     mpz_t index;
 
     mpz_init(temp);
     mpz_init(index);
-
     mpz_set(index, mpzIdx);
+    const PartitionType ptype = PartitionType::DstctCapped;
 
-    for (int i = 0, j = 0; i < (width - 1); ++i, n -= m, --m, ++j, --k) {
-        CountPartsDistinctLenCap(temp, n, m, k);
+    CountClass init;
+    std::unique_ptr<CountClass> myClass = init.MakeCount(ptype);
+    myClass->SetArrSize(ptype, n, m, cap);
+    myClass->InitializeMpz();
+
+    for (int i = 0, j = 0; i < (width - 1); ++i, n -= m, --m, ++j, --cap) {
+        myClass->GetCount(temp, n, m, cap, k);
 
         for (; mpz_cmp(temp, index) <= 0; ++j) {
             n -= (m + 1);
-            --k;
+            --cap;
             mpz_sub(index, index, temp);
-            CountPartsDistinctLenCap(temp, n, m, k);
+            myClass->GetCount(temp, n, m, cap, k);
         }
 
         res[i] = j;
@@ -390,6 +456,60 @@ std::vector<int> nthPartsDistinctCapGmp(int n, int m, int k,
 
     mpz_clear(temp);
     mpz_clear(index);
+    myClass->ClearMpz();
+
+    return res;
+}
+
+std::vector<int> nthPartsDistinctCapMZGmp(int n, int m, int cap, int k,
+                                          double dblIdx, mpz_t mpzIdx) {
+
+    const int width = m;
+    const int max_n = n;
+
+    std::vector<int> res(width);
+    bool incr_j = false;
+    --m;
+
+    mpz_t temp;
+    mpz_t index;
+
+    mpz_init(temp);
+    mpz_init(index);
+    mpz_set(index, mpzIdx);
+    const PartitionType ptype = PartitionType::DstctCappedMZ;
+
+    CountClass init;
+    std::unique_ptr<CountClass> myClass = init.MakeCount(ptype);
+    myClass->SetArrSize(ptype, n, m, cap);
+    myClass->InitializeMpz();
+
+    for (int i = 0, j = 0; i < (width - 1); ++i, --m) {
+        const bool bLiteral = !(incr_j || i >= (width - k));
+        myClass->GetCount(temp, n, m, cap, k, bLiteral);
+
+        for (; mpz_cmp(temp, index) <= 0; ++j) {
+            incr_j = true;
+            n -= (m + 1);
+            --cap;
+            mpz_sub(index, index, temp);
+            myClass->GetCount(temp, n, m, cap, k, false);
+        }
+
+        res[i] = j;
+
+        if (incr_j || (i + 1) >= (width - k)) {
+            ++j;
+            n -= m;
+            --cap;
+        }
+    }
+
+    res[width - 1] = max_n - std::accumulate(res.begin(), res.end(), 0);
+
+    mpz_clear(temp);
+    mpz_clear(index);
+    myClass->ClearMpz();
 
     return res;
 }
@@ -400,11 +520,13 @@ nthPartsPtr GetNthPartsFunc(PartitionType ptype, bool IsGmp) {
         switch (ptype) {
             case PartitionType::DstctCapped: {
                 return(nthPartsPtr(nthPartsDistinctCapGmp));
+            } case PartitionType::DstctCappedMZ: {
+                return(nthPartsPtr(nthPartsDistinctCapMZGmp));
             } case PartitionType::DstctNoZero : {
                 return(nthPartsPtr(nthPartsDistinctLenGmp));
             } case PartitionType::DstctOneZero: {
                 return(nthPartsPtr(nthPartsDistinctOneZeroGmp));
-            } case PartitionType::DstctSpecial : {
+            } case PartitionType::DstctMultiZero : {
                 return(nthPartsPtr(nthPartsDistinctMultiZeroGmp));
             } case PartitionType::DstctStdAll: {
                 return(nthPartsPtr(nthPartsDistinctMultiZeroGmp));
@@ -428,27 +550,29 @@ nthPartsPtr GetNthPartsFunc(PartitionType ptype, bool IsGmp) {
         switch (ptype) {
             case PartitionType::DstctCapped: {
                 return(nthPartsPtr(nthPartsDistinctCap));
+            } case PartitionType::DstctCappedMZ: {
+                return(nthPartsPtr(nthPartsDistinctCapMZ));
             } case PartitionType::DstctNoZero : {
                 return(nthPartsPtr(nthPartsDistinctLen));
             } case PartitionType::DstctOneZero: {
                 return(nthPartsPtr(nthPartsDistinctOneZero));
-            } case PartitionType::DstctSpecial : {
+            } case PartitionType::DstctMultiZero : {
                 return(nthPartsPtr(nthPartsDistinctMultiZero));
             } case PartitionType::DstctStdAll: {
                 return(nthPartsPtr(nthPartsDistinctMultiZero));
-            } case PartitionType::RepCapped : {
+            } case PartitionType::RepCapped: {
                 return(nthPartsPtr(nthPartsRepCap));
             } case PartitionType::RepNoZero: {
                 return(nthPartsPtr(nthPartsRepLen));
-            } case PartitionType::RepShort : {
+            } case PartitionType::RepShort: {
                 return(nthPartsPtr(nthPartsRepShort));
-            } case PartitionType::RepStdAll : {
+            } case PartitionType::RepStdAll: {
                 return(nthPartsPtr(nthPartsRep));
-            } case PartitionType::Multiset : {
+            } case PartitionType::Multiset: {
                 Rf_error("Investigate multiset algo later");
-            } case PartitionType::CoarseGrained : {
+            } case PartitionType::CoarseGrained: {
                 Rf_error("No algo available");
-            } case PartitionType::NotPartition : {
+            } case PartitionType::NotPartition: {
                 Rf_error("Error... Not partition! This should not happen");
             }
         }

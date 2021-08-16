@@ -3,7 +3,8 @@
 #include "Cpp14MakeUnique.h"
 #include <vector>
 
-void CountPartsRepLenCap(mpz_t res, int n, int m, int cap) {
+void CountPartsRepLenCap(mpz_t res, mpz_t* p1, mpz_t* p2,
+                         int n, int m, int cap, int strtLen) {
 
     if (cap > n) cap = n;
 
@@ -25,12 +26,8 @@ void CountPartsRepLenCap(mpz_t res, int n, int m, int cap) {
         const int width = n + 1;
         const int maxSize = (cap + 1) * width;
 
-        auto p1 = FromCpp14::make_unique<mpz_t[]>(maxSize);
-        auto p2 = FromCpp14::make_unique<mpz_t[]>(maxSize);
-
         for (int i = 0; i < maxSize; ++i) {
-            mpz_init(p1[i]);
-            mpz_init(p2[i]);
+            mpz_set_ui(p1[i], 0u);
         }
 
         for (int i = 1; i < width; ++i) {
@@ -68,15 +65,11 @@ void CountPartsRepLenCap(mpz_t res, int n, int m, int cap) {
         } else {
             mpz_set(res, p2[maxSize - 1]);
         }
-
-        for (int i = 0; i < maxSize; ++i) {
-            mpz_clear(p1[i]);
-            mpz_clear(p2[i]);
-        }
     }
 }
 
-void CountPartsRepLen(mpz_t res, int n, int m) {
+void CountPartsRepLen(mpz_t res, mpz_t* p1, mpz_t* p2,
+                      int n, int m, int cap, int strtLen) {
 
     if (m == 0 && n == 0) {
         mpz_set_ui(res, 1u);
@@ -104,14 +97,6 @@ void CountPartsRepLen(mpz_t res, int n, int m) {
     } else {
         const int limit = std::min(n - m, m);
         n = (n < 2 * m) ? 2 * limit : n;
-
-        auto p1 = FromCpp14::make_unique<mpz_t[]>(n + 1);
-        auto p2 = FromCpp14::make_unique<mpz_t[]>(n + 1);
-
-        for (int i = 0; i <= n; ++i) {
-            mpz_init(p1[i]);
-            mpz_init(p2[i]);
-        }
 
         if (n <= typeSwitchBnd) {
             for (int i = 3; i <= n; ++i) {
@@ -164,15 +149,10 @@ void CountPartsRepLen(mpz_t res, int n, int m) {
         } else {
             mpz_set(res, p2[n]);
         }
-
-        for (int i = 0; i <= n; ++i) {
-            mpz_clear(p1[i]);
-            mpz_clear(p2[i]);
-        }
     }
 }
 
-void CountPartsRep(mpz_t res, int n) {
+void CountPartsRep(mpz_t res, int n, int m, int cap, int strtLen) {
 
     auto qq = FromCpp14::make_unique<mpz_t[]>(n + 1);
 

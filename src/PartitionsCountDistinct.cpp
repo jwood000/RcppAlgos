@@ -4,7 +4,7 @@
 #include <numeric>
 #include <cmath>
 
-double CountPartsDistinctLenCap(int n, int m, int cap) {
+double CountPartsDistinctLenCap(int n, int m, int cap, int strtLen) {
 
     if (cap > n) cap = n;
     if (m > n || cap < m) return 0;
@@ -82,7 +82,7 @@ double CountPartsDistinctLenCap(int n, int m, int cap) {
     return (m % 2) ? p1.back() : p2.back();
 }
 
-double CountPartsDistinctLen(int n, int m) {
+double CountPartsDistinctLen(int n, int m, int cap, int strtLen) {
 
     const int max_width = GetMaxWidth(n);
 
@@ -93,7 +93,7 @@ double CountPartsDistinctLen(int n, int m) {
     } else if (m < 2) {
         return 1.0;
     } else if (m == 2) {
-        return std::floor((n - 1) / 2);
+        return (n - 1) / 2;
     } else if (m == 3) {
         const double res = SumSection(n - 3);
         return(res);
@@ -144,7 +144,7 @@ double CountPartsDistinctLen(int n, int m) {
 // Credit to Robin K. S. Hankin, author of the excellent partitions package.
 // From the partitions.c, here are Hankin's comments for c_numbdiffparts:
 //      "the recursion on p826 of Abramowitz and Stegun"
-double CountPartsDistinct(int n) {
+double CountPartsDistinct(int n, int m, int cap, int strtLen) {
 
     std::vector<double> qq(n + 1);
     qq[0] = 1;
@@ -165,12 +165,23 @@ double CountPartsDistinct(int n) {
     return qq.back();
 }
 
-double CountPartsDistinctMultiZero(int target, int m, int strtLen) {
+double CountPartsDistinctMultiZero(int n, int m, int cap, int strtLen) {
 
     double count = 0;
 
     for (int i = strtLen; i <= m; ++i) {
-        count += CountPartsDistinctLen(target, i);
+        count += CountPartsDistinctLen(n, i, cap, strtLen);
+    }
+
+    return count;
+}
+
+double CountPartsDistinctCapMZ(int n, int m, int cap, int strtLen) {
+
+    double count = 0;
+
+    for (int i = strtLen; i <= m; ++i) {
+        count += CountPartsDistinctLenCap(n, i, cap, strtLen);
     }
 
     return count;
@@ -183,17 +194,23 @@ double CountPartsPermDistinct(const std::vector<int> &z,
 
     if (includeZero) {
         const int strtLen = std::count_if(z.cbegin(), z.cend(),
-                                           [](int i){return i > 0;});
+                                          [](int i){return i > 0;});
 
-        std::vector<int> count(width);
-        std::iota(count.begin(), count.begin() + strtLen, 1);
+        if (strtLen == 0) {
+            // This means that z contains only zeros
+            res = 1;
+        } else {
+            std::vector<int> count(width);
+            std::iota(count.begin(), count.begin() + strtLen, 1);
 
-        for (int i = strtLen; i <= width; ++i) {
-            count[i - 1] = i;
-            res += (CountPartsDistinctLen(tar, i) * NumPermsWithRep(count));
+            for (int i = strtLen; i <= width; ++i) {
+                count[i - 1] = i;
+                res += (CountPartsDistinctLen(tar, i, tar, tar) *
+                        NumPermsWithRep(count));
+            }
         }
     } else {
-        res = CountPartsDistinctLen(tar, width) *
+        res = CountPartsDistinctLen(tar, width, tar, tar) *
               NumPermsNoRep(width, width);
     }
 
@@ -208,17 +225,21 @@ double CountPartsPermDistinctCap(const std::vector<int> &z, int cap,
     if (includeZero) {
         const int strtLen = std::count_if(z.cbegin(), z.cend(),
                                            [](int i){return i > 0;});
+        if (strtLen == 0) {
+            // This means that z contains only zeros
+            res = 1;
+        } else {
+            std::vector<int> count(width);
+            std::iota(count.begin(), count.begin() + strtLen, 1);
 
-        std::vector<int> count(width);
-        std::iota(count.begin(), count.begin() + strtLen, 1);
-
-        for (int i = strtLen; i <= width; ++i) {
-            count[i - 1] = i;
-            res += (CountPartsDistinctLenCap(tar, i, cap) *
-                    NumPermsWithRep(count));
+            for (int i = strtLen; i <= width; ++i) {
+                count[i - 1] = i;
+                res += (CountPartsDistinctLenCap(tar, i, cap, tar) *
+                        NumPermsWithRep(count));
+            }
         }
     } else {
-        res = CountPartsDistinctLenCap(tar, width, cap) *
+        res = CountPartsDistinctLenCap(tar, width, cap, tar) *
               NumPermsNoRep(width, width);
     }
 

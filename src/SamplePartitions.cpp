@@ -11,13 +11,12 @@ void SampleResults(T* sampleMatrix, const std::vector<T> &v,
                    const std::vector<double> &mySample,
                    mpz_t *const myBigSamp, const std::vector<int> &myReps,
                    nthPartsPtr nthPartFun, int m, int sampSize,
-                   int tar, int k, bool IsGmp) {
+                   int tar, int strtLen, int cap, bool IsGmp) {
 
     if (IsGmp) {
         for (int i = 0; i < sampSize; ++i) {
-            const std::vector<int> z = nthPartFun(tar, m, k, 0.0,
-                                                  myBigSamp[i]);
-
+            const std::vector<int> z = nthPartFun(tar, m, cap, strtLen,
+                                                  0.0, myBigSamp[i]);
             for (int j = 0; j < m; ++j) {
                 sampleMatrix[i + sampSize * j] = v[z[j]];
             }
@@ -27,9 +26,8 @@ void SampleResults(T* sampleMatrix, const std::vector<T> &v,
         mpz_init(mpzDefault);
 
         for (int i = 0; i < sampSize; ++i) {
-            const std::vector<int> z = nthPartFun(tar, m, k,
-                                                  mySample[i],
-                                                  mpzDefault);
+            const std::vector<int> z = nthPartFun(tar, m, cap, strtLen,
+                                                  mySample[i], mpzDefault);
 
             for (int j = 0; j < m; ++j) {
                 sampleMatrix[i + sampSize * j] = v[z[j]];
@@ -46,12 +44,12 @@ void SampleResults(RcppParallel::RMatrix<T> &sampleMatrix,
                    const std::vector<double> &mySample,
                    mpz_t *const myBigSamp, const std::vector<int> &myReps,
                    nthPartsPtr nthPartFun, int m, int strtIdx, int endIdx,
-                   int tar, int k, bool IsGmp) {
+                   int tar, int strtLen, int cap, bool IsGmp) {
 
     if (IsGmp) {
         for (int i = strtIdx; i < endIdx; ++i) {
-            const std::vector<int> z = nthPartFun(tar, m, k, 0.0,
-                                                  myBigSamp[i]);
+            const std::vector<int> z = nthPartFun(tar, m, cap, strtLen,
+                                                  0.0, myBigSamp[i]);
             for (int j = 0; j < m; ++j) {
                 sampleMatrix(i, j) = v[z[j]];
             }
@@ -61,9 +59,8 @@ void SampleResults(RcppParallel::RMatrix<T> &sampleMatrix,
         mpz_init(mpzDefault);
 
         for (int i = strtIdx; i < endIdx; ++i) {
-            const std::vector<int> z = nthPartFun(tar, m, k,
-                                                  mySample[i],
-                                                  mpzDefault);
+            const std::vector<int> z = nthPartFun(tar, m, cap, strtLen,
+                                                  mySample[i], mpzDefault);
             for (int j = 0; j < m; ++j) {
                 sampleMatrix(i, j) = v[z[j]];
             }
@@ -79,10 +76,10 @@ void ParallelGlue(RcppParallel::RMatrix<T> &sampleMatrix,
                   const std::vector<double> &mySample,
                   mpz_t *const myBigSamp, const std::vector<int> &myReps,
                   nthPartsPtr nthPartFun, int m, int strtIdx, int endIdx,
-                  int tar, int k, bool IsGmp) {
+                  int tar, int strtLen, int cap, bool IsGmp) {
 
     SampleResults(sampleMatrix, v, mySample, myBigSamp, myReps,
-                  nthPartFun, m, strtIdx, endIdx, tar, k, IsGmp);
+                  nthPartFun, m, strtIdx, endIdx, tar, strtLen, cap, IsGmp);
 }
 
 template <typename T>
@@ -91,7 +88,7 @@ void ThreadSafeSample(T* mat, SEXP res, const std::vector<T> &v,
                       mpz_t *const myBigSamp, const std::vector<int> &myReps,
                       nthPartsPtr nthPartFun, int m, int sampSize,
                       int nThreads, bool Parallel, bool IsNamed,
-                      int tar, int k, bool IsGmp) {
+                      int tar, int strtLen, int cap, bool IsGmp) {
 
     if (Parallel) {
         RcppParallel::RMatrix<T> parMat(mat, sampSize, m);
@@ -108,20 +105,20 @@ void ThreadSafeSample(T* mat, SEXP res, const std::vector<T> &v,
                                  std::ref(parMat), std::cref(v),
                                  std::cref(mySample), myBigSamp,
                                  std::cref(myReps), nthPartFun, m,
-                                 step, nextStep, tar, k, IsGmp);
+                                 step, nextStep, tar, strtLen, cap, IsGmp);
         }
 
         threads.emplace_back(std::cref(ParallelGlue<T>), std::ref(parMat),
                              std::cref(v), std::cref(mySample), myBigSamp,
                              std::cref(myReps), nthPartFun, m, step,
-                             sampSize, tar, k, IsGmp);
+                             sampSize, tar, strtLen, cap, IsGmp);
 
         for (auto& thr: threads) {
             thr.join();
         }
     } else {
         SampleResults(mat, v, mySample, myBigSamp, myReps,
-                      nthPartFun, m, sampSize, tar, k, IsGmp);
+                      nthPartFun, m, sampSize, tar, strtLen, cap, IsGmp);
     }
 
     if (IsNamed) {
@@ -165,7 +162,7 @@ SEXP SamplePartitions(SEXP Rv, SEXP Rm, SEXP RisRep, SEXP RFreqs,
     std::vector<int> targetIntVals;
     const funcPtr<double> funDbl = GetFuncPtr<double>(mainFun);
 
-    std::vector<std::string> compFunVec;
+    std::vector<std::string> compVec;
     std::vector<double> targetVals;
 
     ConstraintType ctype = ConstraintType::NoConstraint;
@@ -176,8 +173,8 @@ SEXP SamplePartitions(SEXP Rv, SEXP Rm, SEXP RisRep, SEXP RFreqs,
     part.mIsNull = Rf_isNull(Rm);
     SEXP Rlow = R_NilValue;
 
-    ConstraintSetup(vNum, myReps, targetVals, targetIntVals, funDbl,
-                    part, ctype, n, m, compFunVec, mainFun, myType,
+    ConstraintSetup(vNum, myReps, targetVals, vInt, targetIntVals,
+                    funDbl, part, ctype, n, m, compVec, mainFun, myType,
                     Rtarget, RcompFun, Rtolerance, Rlow, true, false);
 
     if (part.ptype == PartitionType::Multiset ||
@@ -206,12 +203,10 @@ SEXP SamplePartitions(SEXP Rv, SEXP Rm, SEXP RisRep, SEXP RFreqs,
     SetThreads(Parallel, maxThreads, sampSize,
                myType, nThreads, RNumThreads, limit);
 
+    const int cap     = n - static_cast<int>(part.includeZero);
     const int strtLen = std::count_if(part.startZ.cbegin(),
                                       part.startZ.cend(),
                                       [](int i){return i > 0;});
-
-    const int k = (part.ptype == PartitionType::DstctSpecial ||
-                   part.ptype == PartitionType::DstctStdAll) ? strtLen : n;
 
     const nthPartsPtr nthPartFun = GetNthPartsFunc(part.ptype, part.isGmp);
 
@@ -220,8 +215,9 @@ SEXP SamplePartitions(SEXP Rv, SEXP Rm, SEXP RisRep, SEXP RFreqs,
         int* matInt = INTEGER(res);
 
         ThreadSafeSample(matInt, res, vInt, mySample, myVec.get(),
-                         myReps, nthPartFun, part.width, sampSize, nThreads,
-                         Parallel, IsNamed, part.mapTar, k, part.isGmp);
+                         myReps, nthPartFun, part.width, sampSize,
+                         nThreads, Parallel, IsNamed, part.mapTar,
+                         strtLen, cap, part.isGmp);
 
         UNPROTECT(1);
         return res;
@@ -230,8 +226,9 @@ SEXP SamplePartitions(SEXP Rv, SEXP Rm, SEXP RisRep, SEXP RFreqs,
         double* matNum = REAL(res);
 
         ThreadSafeSample(matNum, res, vNum, mySample, myVec.get(),
-                         myReps, nthPartFun, part.width, sampSize, nThreads,
-                         Parallel, IsNamed, part.mapTar, k, part.isGmp);
+                         myReps, nthPartFun, part.width, sampSize,
+                         nThreads, Parallel, IsNamed, part.mapTar,
+                         strtLen, cap, part.isGmp);
 
         UNPROTECT(1);
         return res;

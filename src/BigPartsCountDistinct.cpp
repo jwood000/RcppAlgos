@@ -3,7 +3,8 @@
 #include "Cpp14MakeUnique.h"
 #include <vector>
 
-void CountPartsDistinctLenCap(mpz_t res, int n, int m, int cap) {
+void CountPartsDistinctLenCap(mpz_t res, mpz_t* p1, mpz_t* p2,
+                              int n, int m, int cap, int strtLen) {
 
     if (cap > n) cap = n;
     const int limit = (cap * m) - ((m - 1) * m) / 2;
@@ -32,12 +33,8 @@ void CountPartsDistinctLenCap(mpz_t res, int n, int m, int cap) {
         const int width = n + 1;
         const int maxSize = (cap + 1) * width;
 
-        auto p1 = FromCpp14::make_unique<mpz_t[]>(maxSize);
-        auto p2 = FromCpp14::make_unique<mpz_t[]>(maxSize);
-
         for (int i = 0; i < maxSize; ++i) {
-            mpz_init(p1[i]);
-            mpz_init(p2[i]);
+            mpz_set_ui(p1[i], 0u);
         }
 
         for (int i = 1; i < width; ++i) {
@@ -75,15 +72,11 @@ void CountPartsDistinctLenCap(mpz_t res, int n, int m, int cap) {
         } else {
             mpz_set(res, p2[maxSize - 1]);
         }
-
-        for (int i = 0; i < maxSize; ++i) {
-            mpz_clear(p1[i]);
-            mpz_clear(p2[i]);
-        }
     }
 }
 
-void CountPartsDistinctLen(mpz_t res, int n, int m) {
+void CountPartsDistinctLen(mpz_t res, mpz_t* p1, mpz_t* p2,
+                           int n, int m, int cap, int strtLen) {
 
     const int max_width = GetMaxWidth(n);
 
@@ -106,14 +99,6 @@ void CountPartsDistinctLen(mpz_t res, int n, int m) {
         mpz_clear(mpzN);
     } else {
         const int limit = (m == GetMaxWidth(n + 1)) ? m - 1 : m;
-
-        auto p1 = FromCpp14::make_unique<mpz_t[]>(n + 1);
-        auto p2 = FromCpp14::make_unique<mpz_t[]>(n + 1);
-
-        for (int i = 0; i <= n; ++i) {
-            mpz_init(p1[i]);
-            mpz_init(p2[i]);
-        }
 
         if (n <= typeSwitchBnd) {
             for (int i = 6; i <= n; ++i) {
@@ -167,15 +152,10 @@ void CountPartsDistinctLen(mpz_t res, int n, int m) {
         } else {
             mpz_set(res, p2[n]);
         }
-
-        for (int i = 0; i <= n; ++i) {
-            mpz_clear(p1[i]);
-            mpz_clear(p2[i]);
-        }
     }
 }
 
-void CountPartsDistinct(mpz_t res, int n) {
+void CountPartsDistinct(mpz_t res, int n, int m, int cap, int strtLen) {
 
     auto qq = FromCpp14::make_unique<mpz_t[]>(n + 1);
 
@@ -228,13 +208,30 @@ void CountPartsDistinct(mpz_t res, int n) {
     }
 }
 
-void CountPartsDistinctMultiZero(mpz_t res, int target, int m, int strtLen) {
+void CountPartsDistinctMultiZero(mpz_t res, mpz_t* p1, mpz_t* p2,
+                                 int n, int m, int cap, int strtLen) {
 
     mpz_t temp;
     mpz_init(temp);
+    mpz_set_ui(res, 0);
 
     for (int i = strtLen; i <= m; ++i) {
-        CountPartsDistinctLen(temp, target, i);
+        CountPartsDistinctLen(temp, p1, p2, n, i, cap, strtLen);
+        mpz_add(res, res, temp);
+    }
+
+    mpz_clear(temp);
+}
+
+void CountPartsDistinctCapMZ(mpz_t res, mpz_t* p1, mpz_t* p2,
+                             int n, int m, int cap, int strtLen) {
+
+    mpz_t temp;
+    mpz_init(temp);
+    mpz_set_ui(res, 0);
+
+    for (int i = strtLen; i <= m; ++i) {
+        CountPartsDistinctLenCap(temp, p1, p2, n, i, cap, strtLen);
         mpz_add(res, res, temp);
     }
 

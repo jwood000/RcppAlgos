@@ -3,7 +3,7 @@
 #include "Cpp14MakeUnique.h"
 #include <cmath>
 
-double CountPartsRepLenCap(int n, int m, int cap) {
+double CountPartsRepLenCap(int n, int m, int cap, int strtLen) {
 
     if (cap > n) cap = n;
     if (cap * m < n || n < m) return 0;
@@ -54,7 +54,7 @@ double CountPartsRepLenCap(int n, int m, int cap) {
     return (m % 2) ? p1.back() : p2.back();
 }
 
-double CountPartsRepLen(int n, int m) {
+double CountPartsRepLen(int n, int m, int cap, int strtLen) {
 
     if (m == 0) {
         return (n == 0) ? 1.0 : 0.0;
@@ -125,7 +125,7 @@ double CountPartsRepLen(int n, int m) {
 }
 
 // Similar to CountPartsDistinct
-double CountPartsRep(int n) {
+double CountPartsRep(int n, int m, int cap, int strtLen) {
 
     if (n < 2) {
         return 1.0;
@@ -149,7 +149,7 @@ double CountPartsRep(int n) {
     return qq.back();
 }
 
-double CountPartsPermRep(int target, int m, bool includeZero) {
-    return (includeZero) ? nChooseK(target + m - 1, m - 1) :
-                           nChooseK(target - 1, m - 1);
+double CountPartsPermRep(int n, int m, bool includeZero) {
+    return (includeZero) ? nChooseK(n + m - 1, m - 1) :
+                           nChooseK(n - 1, m - 1);
 }
