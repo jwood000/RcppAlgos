@@ -72,7 +72,7 @@ SEXP PartitionsCount(SEXP Rtarget, SEXP Rv, SEXP Rm,
     std::vector<int> targetIntVals;
     const funcPtr<double> funDbl = GetFuncPtr<double>(mainFun);
 
-    std::vector<std::string> compFunVec;
+    std::vector<std::string> compVec;
     std::vector<double> targetVals;
 
     ConstraintType ctype;
@@ -83,8 +83,8 @@ SEXP PartitionsCount(SEXP Rtarget, SEXP Rv, SEXP Rm,
     part.mIsNull = Rf_isNull(Rm);
 
     if (IsConstrained) {
-        ConstraintSetup(vNum, myReps, targetVals, targetIntVals, funDbl,
-                        part, ctype, n, m, compFunVec, mainFun, myType,
+        ConstraintSetup(vNum, myReps, targetVals, vInt, targetIntVals,
+                        funDbl, part, ctype, n, m, compVec, mainFun, myType,
                         Rtarget, RcompFun, Rtolerance, Rlow, true, true);
     }
 
@@ -93,7 +93,7 @@ SEXP PartitionsCount(SEXP Rtarget, SEXP Rv, SEXP Rm,
 
         if (bDesign) {
             bool Verbose = CleanConvert::convertLogical(Rshow, "showDetail");
-            return GetDesign(part, n, Verbose);
+            return GetDesign(part, ctype, n, Verbose);
         } else {
             return CleanConvert::GetCount(part.isGmp, part.bigCount,
                                           part.count);

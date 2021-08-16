@@ -5,8 +5,10 @@
 #include <Rinternals.h>
 #include <R.h>
 
+#include "Constraints/ConstraintsTypes.h"
 #include "Partitions/PartitionsTypes.h"
 
-SEXP GetDesign(const PartDesign &part, int lenV, bool verbose);
+SEXP GetDesign(const PartDesign &part, ConstraintType ctype,
+               int lenV, bool verbose);
 
 #endif

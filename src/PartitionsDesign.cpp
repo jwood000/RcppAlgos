@@ -1,3 +1,4 @@
+#include "Constraints/ConstraintsTypes.h"
 #include "Partitions/PartitionsTypes.h"
 #include "CleanConvert.h"
 #include <iostream>
@@ -14,14 +15,17 @@ std::string GetPartitionType(const PartDesign &part) {
         } case PartitionType::DstctCapped: {
             res = "DistCapped";
             break;
+        } case PartitionType::DstctCappedMZ: {
+            res = "DstctCappedMZ";
+            break;
         } case PartitionType::DstctNoZero : {
             res = "DstctNoZero";
             break;
         } case PartitionType::DstctOneZero: {
             res = "DstctOneZero";
             break;
-        } case PartitionType::DstctSpecial : {
-            res = "DstctSpecial";
+        } case PartitionType::DstctMultiZero : {
+            res = "DstctMultiZero";
             break;
         } case PartitionType::DstctStdAll: {
             res = "DstctStdAll";
@@ -47,7 +51,8 @@ std::string GetPartitionType(const PartDesign &part) {
     return res;
 }
 
-SEXP GetDesign(const PartDesign &part, int lenV, bool verbose) {
+SEXP GetDesign(const PartDesign &part, ConstraintType ctype,
+               int lenV, bool verbose) {
 
     std::vector<int> vMap(lenV);
     const int strt = part.includeZero ? 0 : 1;
@@ -113,10 +118,15 @@ SEXP GetDesign(const PartDesign &part, int lenV, bool verbose) {
         INTEGER(sexp_vec)[i] = vMap[i];
     }
 
-    for (int i = 0; i < part.startZ.size(); ++i) {
-        INTEGER(sexp_index)[i] = part.startZ[i] +
-            (part.ptype != PartitionType::RepNoZero &&
-             part.ptype != PartitionType::DstctNoZero);
+    if (ctype == ConstraintType::PartStandard) {
+        for (int i = 0; i < part.startZ.size(); ++i) {
+            INTEGER(sexp_index)[i] = part.startZ[i] +
+                static_cast<int>(part.includeZero);
+        }
+    } else {
+        for (int i = 0; i < part.startZ.size(); ++i) {
+            INTEGER(sexp_index)[i] = part.startZ[i] + 1;
+        }
     }
 
     const char *names[] = {"num_partitions", "mapped_vector",

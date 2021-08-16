@@ -19,9 +19,9 @@ void PartsGenParallel(RcppParallel::RMatrix<T> &mat,
                       int nRows, bool IsRep);
 
 template <typename T>
-void PartsGenManager(T* mat, const PartDesign &part, const std::vector<T> &v,
-                     std::vector<int> &z, int width, int lastElem,
-                     int lastCol, int nRows, bool IsComb, bool IsRep);
+void PartsGenManager(T* mat, const std::vector<T> &v, std::vector<int> &z,
+                     int width, int lastElem, int lastCol, int nRows,
+                     bool IsComb, bool IsRep);
 
 template <typename T>
 void PartsGenManager(std::vector<T> &partsVec, const std::vector<T> &v,

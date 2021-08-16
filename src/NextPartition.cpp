@@ -407,7 +407,6 @@ void NextDistinctGenPart(std::vector<int> &z, int &boundary,
     tarDiff = 3;
 
     while (vertex < lastCol && (z[vertex] - z[edge]) < tarDiff) {
-
         ++vertex;
         ++tarDiff;
     }
