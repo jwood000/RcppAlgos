@@ -283,7 +283,8 @@ void AdjustTargetVals(VecType myType, std::vector<double> &targetVals,
 bool CheckIsInteger(const std::string &funPass, int n,
                     int m, const std::vector<double> &vNum,
                     const std::vector<double> &targetVals,
-                    const funcPtr<double> myFunDbl, bool checkLim) {
+                    const funcPtr<double> myFunDbl, bool checkLim,
+                    bool IsRep, bool IsMult, bool IsPart) {
 
     if (funPass == "mean") {
         return false;
@@ -296,8 +297,18 @@ bool CheckIsInteger(const std::string &funPass, int n,
     }
 
     const double vecMax = *std::max_element(vAbs.cbegin(), vAbs.cend());
-    const std::vector<double> rowVec(m, vecMax);
-    const double testIfInt = myFunDbl(rowVec, static_cast<std::size_t>(m));
+    std::vector<double> rowVec(m, vecMax);
+
+    if (!IsRep && !IsMult) {
+        std::sort(vAbs.begin(), vAbs.end());
+
+        for (int i = 0, j = n - m; i < m; ++i, ++j) {
+            rowVec[i] = vAbs[j];
+        }
+    }
+
+    const double testIfInt = IsPart ? targetVals.front() :
+        myFunDbl(rowVec, static_cast<std::size_t>(m));
 
     if (testIfInt > dblIntMax) {
         return false;
@@ -327,7 +338,7 @@ bool CheckIsInteger(const std::string &funPass, int n,
 void ConstraintSetup(const std::vector<double> &vNum,
                      const std::vector<int> &Reps,
                      std::vector<double> &targetVals,
-                     std::vector<int> &targetIntVals,
+                     std::vector<int> &vInt, std::vector<int> &targetIntVals,
                      const funcPtr<double> funDbl, PartDesign &part,
                      ConstraintType &ctype, int lenV, int m,
                      std::vector<std::string> &compFunVec,
@@ -351,8 +362,15 @@ void ConstraintSetup(const std::vector<double> &vNum,
     bool IsBetweenComp = false;
     ConstraintStructure(compFunVec, targetVals, IsBetweenComp);
 
+    const VecType origType = myType;
+
+    // Here we want to checkLim. We currently don't know whether we
+    // have partitions, so we will need to check again after
+    // CheckPartition. We must have this here as AdjustTargetVals
+    // relies on an accurate setting of VecType.
     if (myType == VecType::Integer &&
-        !CheckIsInteger(mainFun, lenV, m, vNum, targetVals, funDbl, true)) {
+        !CheckIsInteger(mainFun, lenV, m, vNum, targetVals, funDbl,
+                        true, part.isRep, part.isMult, false)) {
 
         myType = VecType::Numeric;
     }
@@ -363,6 +381,14 @@ void ConstraintSetup(const std::vector<double> &vNum,
 
     CheckPartition(compFunVec, vNum, mainFun, targetVals,
                    part, lenV, m, tolerance, IsBetweenComp);
+
+    if (myType == VecType::Numeric && origType == VecType::Integer &&
+        CheckIsInteger(mainFun, lenV, m, vNum, targetVals, funDbl,
+                       true, part.isRep, part.isMult, part.isPart)) {
+
+        vInt.assign(vNum.cbegin(), vNum.cend());
+        myType = VecType::Integer;
+    }
 
     bool bLower = false;
 

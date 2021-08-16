@@ -56,18 +56,18 @@ bool CheckSpecialCase(bool bLower, const std::string &mainFun,
 bool CheckIsInteger(const std::string &funPass, int n,
                     int m, const std::vector<double> &vNum,
                     const std::vector<double> &targetVals,
-                    const funcPtr<double> myFunDbl,
-                    bool checkLim = false);
+                    const funcPtr<double> myFunDbl, bool checkLim,
+                    bool IsRep, bool IsMult, bool IsPart);
 
 void ConstraintSetup(const std::vector<double> &vNum,
                      const std::vector<int> &Reps,
                      std::vector<double> &targetVals,
-                     std::vector<int> &targetIntVals,
+                     std::vector<int> &vInt, std::vector<int> &targetIntVals,
                      const funcPtr<double> funDbl, PartDesign &part,
-                     ConstraintType &ctype, int n, int m,
+                     ConstraintType &ctype, int lenV, int m,
                      std::vector<std::string> &compFunVec,
                      const std::string &mainFun, VecType &myType,
                      SEXP Rtarget, SEXP RcompFun, SEXP Rtolerance,
-                     SEXP Rlow, bool IsComb, bool bCalcMultiset);
+                     SEXP Rlow, bool IsComb, bool bCalcMulti = false);
 
 #endif
