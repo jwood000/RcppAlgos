@@ -30,10 +30,11 @@ void createMPZArray(SEXP input, mpz_t *myVec, std::size_t vecSize,
                     mpz_import(myVec[i], r[0], 1, intSize, 0, 0, (void*)&(r[2]));
 
                     if(r[1] == -1) {
-                        if (negPoss)
+                        if (negPoss) {
                             mpz_neg(myVec[i], myVec[i]);
-                        else
+                        } else {
                             Rf_error("%s must be a positive number", suffix.c_str());
+                        }
                     }
                 } else {
                     Rf_error("%s cannot be NA or NaN", suffix.c_str());
@@ -55,20 +56,24 @@ void createMPZArray(SEXP input, mpz_t *myVec, std::size_t vecSize,
                 if (negPoss) {
                     if (std::abs(dblVec[j]) > Sig53) {
                         Rf_error("Number is too large for double precision. Consider "
-                                       "using gmp::as.bigz or as.character for %s", nameOfObject.c_str());
+                                 "using gmp::as.bigz or as.character for %s",
+                                 nameOfObject.c_str());
                     }
                 } else {
-                    if (dblVec[j] < 1)
+                    if (dblVec[j] < 1) {
                         Rf_error("%s must be a positive number", suffix.c_str());
+                    }
 
                     if (dblVec[j] > Sig53) {
                         Rf_error("Number is too large for double precision. Consider "
-                                       "using gmp::as.bigz or as.character for %s", nameOfObject.c_str());
+                                 "using gmp::as.bigz or as.character for %s",
+                                 nameOfObject.c_str());
                     }
                 }
 
-                if (static_cast<int64_t>(dblVec[j]) != dblVec[j])
+                if (static_cast<int64_t>(dblVec[j]) != dblVec[j]) {
                     Rf_error("%s must be a whole number.", suffix.c_str());
+                }
 
                 mpz_set_d(myVec[j], dblVec[j]);
             }
@@ -82,11 +87,13 @@ void createMPZArray(SEXP input, mpz_t *myVec, std::size_t vecSize,
             std::vector<int> intVec(intInput, intInput + vecSize);
 
             for (std::size_t j = 0; j < vecSize; ++j) {
-                if (ISNAN(dblVec[j]))
+                if (ISNAN(dblVec[j])) {
                     Rf_error("%s cannot be NA or NaN", suffix.c_str());
+                }
 
-                if (!negPoss && intVec[j] < 1)
+                if (!negPoss && intVec[j] < 1) {
                     Rf_error("%s must be a positive number", suffix.c_str());
+                }
 
                 mpz_set_si(myVec[j], intVec[j]);
             }
@@ -99,15 +106,18 @@ void createMPZArray(SEXP input, mpz_t *myVec, std::size_t vecSize,
                 } else {
                     mpz_set_str(myVec[i], CHAR(STRING_ELT(input, i)), 10);
 
-                    if (!negPoss && mpz_sgn(myVec[i]) < 1)
-                        Rf_error("%s must be a positive whole number", suffix.c_str());
+                    if (!negPoss && mpz_sgn(myVec[i]) < 1) {
+                        Rf_error("%s must be a positive whole number",
+                                 suffix.c_str());
+                    }
                 }
             }
 
             break;
+        } default: {
+            Rf_error("This type is not supported! No conversion"
+                     " possible for %s", nameOfObject.c_str());
         }
-        default:
-            Rf_error("This type is not supported! No conversion possible for %s", nameOfObject.c_str());
     }
 }
 
