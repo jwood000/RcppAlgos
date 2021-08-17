@@ -12,13 +12,13 @@ Sample Combinations and Permutations
     }
 }
 \usage{
-comboSample(v, m = NULL, repetition = FALSE, freqs = NULL, 
-             n = NULL, sampleVec = NULL, seed = NULL, FUN = NULL,
-              Parallel = FALSE, nThreads = NULL, namedSample = FALSE)
+comboSample(v, m = NULL, repetition = FALSE, freqs = NULL, n = NULL,
+            sampleVec = NULL, seed = NULL, FUN = NULL, Parallel = FALSE,
+            nThreads = NULL, namedSample = FALSE, FUN.VALUE = NULL)
 
-permuteSample(v, m = NULL, repetition = FALSE, freqs = NULL,
-               n = NULL, sampleVec = NULL, seed = NULL, FUN = NULL,
-                Parallel = FALSE, nThreads = NULL, namedSample = FALSE)
+permuteSample(v, m = NULL, repetition = FALSE, freqs = NULL, n = NULL,
+              sampleVec = NULL, seed = NULL, FUN = NULL, Parallel = FALSE,
+              nThreads = NULL, namedSample = FALSE, FUN.VALUE = NULL)
 }
 \arguments{
   \item{v}{Source vector. If \code{v} is an integer (including nonpositive integers), it will be converted to the sequence \code{1:v}. All atomic types are supported (See \code{?is.atomic}).}
@@ -32,6 +32,7 @@ permuteSample(v, m = NULL, repetition = FALSE, freqs = NULL,
   \item{Parallel}{Logical value indicating whether combinations/permutations should be generated in parallel. The default is \code{FALSE}. If \code{TRUE} and \code{nThreads = NULL}, the number of threads used is equal to the minimum of one minus the number of threads available on your system and the number of results requested (\emph{e.g.} if user has 16 threads and only needs 5 results, 5 threads will be used (\emph{i.e.} \code{min(16 - 1, 5) = 5})). If \code{nThreads} is not \code{NULL}, it will be given preference (\emph{e.g.} if user has 8 threads with \code{Parallel = TRUE} and \code{nThreads = 4}, only 4 threads will be spawned). If your system is single-threaded, the arguments \code{Parallel} and \code{nThreads} are ignored.}
   \item{nThreads}{Specific number of threads to be used. The default is \code{NULL}. See \code{Parallel}.}
   \item{namedSample}{Logical flag. If \code{TRUE}, \code{rownames} corresponding to the lexicographical combination/permutation, will be added to the returned matrix. The default is \code{FALSE}.}
+  \item{FUN.VALUE}{A template for the return value from \code{FUN}. See 'Details' of \code{\link[base]{vapply}} for more information.}
  }
 \details{
 These algorithms rely on efficiently generating the \eqn{n^{th}}{nth} lexicographical combination/permutation. This is the process of \href{https://rosettacode.org/wiki/Permutations/Rank_of_a_permutation}{unranking}.
