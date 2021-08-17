@@ -12,6 +12,7 @@ extern "C" {
                          SEXP RisRep, SEXP RFreqs, SEXP RcompFun,
                          SEXP Rlow, SEXP Rtolerance,
                          SEXP RPartDesign, SEXP Rshow);
+    SEXP ComboGroupsCountCpp(SEXP Rv, SEXP RNumGroups);
 }
 
 #endif
