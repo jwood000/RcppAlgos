@@ -170,12 +170,9 @@ void SetFinalValues(VecType &myType, std::vector<int> &Reps,
     }
 }
 
-void SetValues(VecType &myType, std::vector<int> &Reps,
-               std::vector<int> &freqs, std::vector<int> &vInt,
-               std::vector<double> &vNum, SEXP Rv, SEXP RFreqs,
-               SEXP Rm, int &n, int &m, bool &IsMult,
-               bool &IsRep, bool IsConstrained) {
-
+void SetBasic(SEXP Rv, std::vector<double> &vNum,
+              std::vector<int> &vInt, int &n, VecType &myType) {
+    
     if (myType > VecType::Logical) {
         n = Rf_length(Rv);
     } else if (IsDecimal(Rv)) {
@@ -189,17 +186,17 @@ void SetValues(VecType &myType, std::vector<int> &Reps,
     } else if (Rf_length(Rv) == 1) {
         int seqEnd = 0;
         myType = VecType::Integer;
-
+        
         // numOnly = true, checkWhole = true, negPoss = true
         CleanConvert::convertPrimitive(Rv, seqEnd, myType,
                                        "If v is not a character"
                                        " and of length 1, it",
                                        true, true, true);
-
+        
         std::pair<int, int> mnmx = std::minmax(1, seqEnd);
         n = mnmx.second - mnmx.first + 1;
         constexpr int maxVecSize = std::numeric_limits<int>::max() / 2;
-
+        
         if (n < maxVecSize) {
             vNum.resize(n);
         } else {
@@ -207,17 +204,27 @@ void SetValues(VecType &myType, std::vector<int> &Reps,
                          " requested is larger than %s",
                          std::to_string(maxVecSize).c_str());
         }
-
+        
         std::iota(vNum.begin(), vNum.end(), mnmx.first);
     } else {
         vNum = CleanConvert::GetNumVec<double>(Rv);
         n = vNum.size();
     }
+}
 
+void SetValues(VecType &myType, std::vector<int> &Reps,
+               std::vector<int> &freqs, std::vector<int> &vInt,
+               std::vector<double> &vNum, SEXP Rv, SEXP RFreqs,
+               SEXP Rm, int &n, int &m, bool &IsMult,
+               bool &IsRep, bool IsConstrained) {
+
+    SetBasic(Rv, vNum, vInt, n, myType);
     SetFreqsAndM(Reps, freqs, RFreqs, Rm, n, m, IsMult, IsRep);
     SetFinalValues(myType, Reps, freqs, vInt, vNum,
                    n, m, IsMult, IsRep, IsConstrained);
 }
+
+
 
 void SetThreads(bool &Parallel, int maxThreads, int nRows,
                 VecType myType, int &nThreads, SEXP RNumThreads, int limit) {
@@ -321,7 +328,7 @@ void SetNumResults(bool IsGmp, bool bLower, bool bUpper, bool bSetNum,
                      "than the upperBound.");
         } else {
             // See comment in ConstraintsMain.cpp. Basically, we don't want to
-            // throw and error when we don't really know how many constrained
+            // throw an error when we don't really know how many constrained
             // results we have as computedRows is a strict upper bound and not
             // the least upper bound.
             if (bSetNum && computedRows > std::numeric_limits<int>::max()) {
@@ -630,20 +637,19 @@ void SetRandomSampleMpz(SEXP RindexVec, SEXP RmySeed, int sampSize,
 
 void SetSampleNames(SEXP object, bool IsGmp, int sampSize,
                     const std::vector<double> &mySample,
-                    mpz_t *const myBigSamp) {
+                    mpz_t *const myBigSamp, SEXP colNames,
+                    int xtraDims) {
 
     SEXP myNames = PROTECT(Rf_allocVector(STRSXP, sampSize));
 
     if (IsGmp) {
-        constexpr int base10 = 10;
-
         for (int i = 0; i < sampSize; ++i) {
             mpz_add_ui(myBigSamp[i], myBigSamp[i], 1);
             auto buffer = FromCpp14::make_unique<char[]>(
-                mpz_sizeinbase(myBigSamp[i], base10) + 2
+                mpz_sizeinbase(myBigSamp[i], 10) + 2
             );
 
-            mpz_get_str(buffer.get(), base10, myBigSamp[i]);
+            mpz_get_str(buffer.get(), 10, myBigSamp[i]);
             SET_STRING_ELT(myNames, i, Rf_mkChar(buffer.get()));
         }
     } else {
@@ -657,10 +663,11 @@ void SetSampleNames(SEXP object, bool IsGmp, int sampSize,
     }
 
     if (Rf_isMatrix(object) || Rf_isArray(object)) {
-        SEXP dimNames = PROTECT((Rf_allocVector(VECSXP, 1)));
+        SEXP dimNames = PROTECT(Rf_allocVector(VECSXP, 1 + xtraDims));
         SET_VECTOR_ELT(dimNames, 0, myNames);
+        if (xtraDims) SET_VECTOR_ELT(dimNames, xtraDims, colNames);
         Rf_setAttrib(object, R_DimNamesSymbol, dimNames);
-        UNPROTECT(2);
+        UNPROTECT(2 + (xtraDims > 0));
     } else if (Rf_isList(object) || Rf_isVector(object)) {
         Rf_setAttrib(object, R_NamesSymbol, myNames);
         UNPROTECT(1);
