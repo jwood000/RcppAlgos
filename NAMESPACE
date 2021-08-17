@@ -11,4 +11,7 @@ export(comboGeneral,
        permuteSample,
        partitionsSample,
        partitionsDesign,
+       comboGroups,
+       comboGroupsCount,
+       comboGroupsSample,
        stdThreadMax)
