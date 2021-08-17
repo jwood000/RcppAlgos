@@ -186,10 +186,18 @@ SEXP SamplePartitions(SEXP Rv, SEXP Rm, SEXP RisRep, SEXP RFreqs,
 
     int sampSize;
     std::vector<double> mySample;
-    SetRandomSample(RindexVec, RNumSamp, sampSize, part.isGmp,
+
+    const bool SampleGmp = (part.count > SampleLimit);
+
+    if (SampleGmp && !part.isGmp) {
+        part.isGmp = true;
+        mpz_set_d(part.bigCount, part.count);
+    }
+
+    SetRandomSample(RindexVec, RNumSamp, sampSize, SampleGmp,
                     part.count, mySample, baseSample, myEnv);
 
-    const int bigSampSize = (part.isGmp) ? sampSize : 1;
+    const int bigSampSize = (SampleGmp) ? sampSize : 1;
     auto myVec = FromCpp14::make_unique<mpz_t[]>(bigSampSize);
 
     for (int i = 0; i < bigSampSize; ++i) {
@@ -197,7 +205,7 @@ SEXP SamplePartitions(SEXP Rv, SEXP Rm, SEXP RisRep, SEXP RFreqs,
     }
 
     SetRandomSampleMpz(RindexVec, RmySeed, sampSize,
-                       part.isGmp, part.bigCount, myVec.get());
+                       SampleGmp, part.bigCount, myVec.get());
 
     const int limit = 2;
     SetThreads(Parallel, maxThreads, sampSize,
