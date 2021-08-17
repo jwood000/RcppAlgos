@@ -26,6 +26,10 @@ test_that("comboGroups produces correct results", {
     expect_equal(dim(comboGroups(200, 5, "3Darray", upper = 100)),
                  c(100, 40, 5))
     
+    expect_equal(comboGroups(30, 15, lower = 5e15, upper = 5e15 + 1e5),
+                 comboGroupsSample(30, 15, nThreads = 2,
+                                   sampleVec = (5e15):(5e15 + 1e5)))
+    
     expect_equal(comboGroups(14, 7, nThreads = 2), comboGroups(14, 7))
     expect_equal(sum(comboGroups(c(T, F), 2, "3Darray")), 1)
     
