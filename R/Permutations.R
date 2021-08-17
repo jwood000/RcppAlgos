@@ -6,7 +6,7 @@ permuteGeneral <- function(v, m = NULL, repetition = FALSE, freqs = NULL,
 
     RetValue <- .Call(CheckReturn, v, constraintFun,
                       comparisonFun, limitConstraints,
-                      keepResults, FUN, PACKAGE = "RcppAglos")
+                      keepResults, FUN, PACKAGE = "RcppAlgos")
     
     if (RetValue == 1) {
         return(.Call(CombinatoricsStndrd, v, m, repetition,
