@@ -14,4 +14,6 @@ export(comboGeneral,
        comboGroups,
        comboGroupsCount,
        comboGroupsSample,
+       comboGrid,
+       primeSieve,
        stdThreadMax)

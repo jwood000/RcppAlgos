@@ -3,7 +3,9 @@
 #include "CombinatoricsCnstrt.h"
 #include "CombinatoricsCount.h"
 #include "CombinatoricsApply.h"
+#include "CartesianContainer.h"
 #include "CombinatoricsMain.h"
+#include "PrimeSieveCpp.h"
 #include "ComboGroups.h"
 #include "CheckReturn.h"
 #include "NumThreads.h"
@@ -21,6 +23,8 @@ static const R_CallMethodDef CallEntries[] = {
     CALLDEF(SampleCombPerm, 16),
     CALLDEF(ComboGroupsCountCpp, 2),
     CALLDEF(ComboGroupsCpp, 15),
+    CALLDEF(ComboGridCpp, 2),
+    CALLDEF(PrimeSieveCpp, 5),
     CALLDEF(cpp11GetNumThreads, 0),
     {NULL, NULL, 0}
 };
