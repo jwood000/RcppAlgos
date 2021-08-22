@@ -46,10 +46,8 @@ void SetType(VecType &myType, SEXP Rv) {
 }
 
 void SetFactorClass(SEXP res, SEXP Rv) {
-    SEXP myLevels = Rf_getAttrib(Rv, R_LevelsSymbol);
-    SEXP myClass = Rf_getAttrib(Rv, R_ClassSymbol);
-    Rf_setAttrib(res, R_ClassSymbol, myClass);
-    Rf_setAttrib(res, R_LevelsSymbol, myLevels);
+    Rf_setAttrib(res, R_ClassSymbol, Rf_getAttrib(Rv, R_ClassSymbol));
+    Rf_setAttrib(res, R_LevelsSymbol, Rf_getAttrib(Rv, R_LevelsSymbol));
 }
 
 bool IsDecimal(SEXP Rv) {
