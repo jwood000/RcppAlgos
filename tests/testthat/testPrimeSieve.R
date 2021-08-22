@@ -47,10 +47,10 @@ test_that("primeSieve generates correct numbers", {
     # The following test can be used for fuller coverage but are commented
     # because they take a bit of time. All results were confirmed with
     # primesieve by Kim Walisch
-    # gc()
-    # expect_equal(length(primeSieve(633318687598976, 633318707598976)), 587185)
-    # gc()
-    # expect_equal(length(primeSieve(12e8)), 60454705)
-    # gc()
-    # expect_equal(length(primeSieve(39582118599936, 39582718599936, nThreads = 4)), 19161558)
+    gc()
+    expect_equal(length(primeSieve(633318687598976, 633318707598976)), 587185)
+    gc()
+    expect_equal(length(primeSieve(12e8)), 60454705)
+    gc()
+    expect_equal(length(primeSieve(39582118599936, 39582718599936, nThreads = 4)), 19161558)
 })
