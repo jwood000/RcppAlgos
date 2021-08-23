@@ -66,4 +66,12 @@ test_that("divisorsSieve generates correct numbers", {
     
     hugeTest = comboGrid(pools, repetition = FALSE)
     expect_equal(nrow(hugeTest), 238480)
+    
+    ## If NULL is an input, we return an empty named data.frame
+    expect_equal(dim(comboGrid(NA, NA, 1:10, NA, 1:5, NULL)),
+                 c(0, 5))
+    
+    ## If NA is an input, we tack on a column of NA's
+    df <- comboGrid(NA, 1:10)
+    expect_equal(df$Var1, rep(NA, 10))
 })
