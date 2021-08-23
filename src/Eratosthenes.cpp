@@ -797,6 +797,9 @@ namespace PrimeSieve {
     }
 }
 
+template void PrimeSieve::PrimeSieveMain(std::vector<std::vector<std::int64_t>>&,
+                                         std::vector<std::int64_t>&, std::int_fast64_t,
+                                         std::int_fast64_t, bool&, int, int, int);
 template void PrimeSieve::PrimeSieveMain(std::vector<std::vector<double>>&,
                                          std::vector<double>&, std::int_fast64_t,
                                          std::int_fast64_t, bool&, int, int, int);

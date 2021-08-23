@@ -16,4 +16,13 @@ export(comboGeneral,
        comboGroupsSample,
        comboGrid,
        primeSieve,
-       stdThreadMax)
+       eulerPhiSieve,
+       primeFactorizeSieve,
+      # numDivisorSieve,
+      # divisorsSieve,
+      # primeFactorize,
+      # divisorsRcpp,
+      # isPrimeRcpp,
+      # primeCount
+       stdThreadMax
+  )

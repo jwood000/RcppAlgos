@@ -1,9 +1,10 @@
+#include "NumbersUtils/PrimeSieveCpp.h"
+#include "NumbersUtils/MotleyPrimes.h"
 #include "Sample/SamplePartitions.h"
 #include "Sample/SampleCombPerm.h"
 #include "CombinatoricsCnstrt.h"
 #include "CombinatoricsCount.h"
 #include "CombinatoricsApply.h"
-#include "NumbersUtils/PrimeSieveCpp.h"
 #include "CartesianContainer.h"
 #include "CombinatoricsMain.h"
 #include "ComboGroups.h"
@@ -26,6 +27,7 @@ static const R_CallMethodDef CallEntries[] = {
     CALLDEF(ComboGridCpp, 2),
     CALLDEF(PrimeSieveCpp, 5),
     CALLDEF(cpp11GetNumThreads, 0),
+    CALLDEF(MotleyContainer, 6),
     {NULL, NULL, 0}
 };
 

@@ -1,7 +1,7 @@
 #ifndef MOTLEY_START_INDEX_H
 #define MOTLEY_START_INDEX_H
 
-#include <Rcpp.h>
+#include <cstdint>
 
 namespace MotleyPrimes {
     // This function is slightly different than the getStartingIndex
