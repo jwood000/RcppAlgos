@@ -322,7 +322,7 @@ SEXP ComboGridCpp(SEXP RList, SEXP RIsRep) {
     const int IsRep = CleanConvert::convertLogical(RIsRep, "IsRep");
 
     // All duplicates have been removed from RList via
-    //lapply(RList, function(x) sort(unique(x)))
+    // lapply(RList, function(x) sort(unique(x)))
     std::vector<std::vector<int>> myVec(nCols);
     std::unordered_map<std::string, int> mapIndex;
     std::vector<int> typeCheck(5, 0);
@@ -330,7 +330,7 @@ SEXP ComboGridCpp(SEXP RList, SEXP RIsRep) {
     SEXP charVec     = PROTECT(Rf_allocVector(STRSXP, sumLength));
     SEXP dblSexpVec  = PROTECT(Rf_allocVector(REALSXP, sumLength));
     SEXP intSexpVec  = PROTECT(Rf_allocVector(INTSXP, sumLength));
-    SEXP boolSexpVec = PROTECT(Rf_allocVector(INTSXP, sumLength));
+    SEXP boolSexpVec = PROTECT(Rf_allocVector(LGLSXP, sumLength));
     
     double* dblVec = REAL(dblSexpVec);
     int* intVec    = INTEGER(intSexpVec);
@@ -340,9 +340,8 @@ SEXP ComboGridCpp(SEXP RList, SEXP RIsRep) {
                                           std::vector<int>(sumLength, 0));
 
     for (std::size_t i = 0, total = 0, myIndex = 0, facInd = 0; i < nCols; ++i) {
-        std::vector<std::string> tempVec;
         rcppType myType;
-
+        std::vector<std::string> tempVec;
         convertToString(tempVec, VECTOR_ELT(RList, i), myType, IsFactor[i]);
         std::size_t j = 0;
 
