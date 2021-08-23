@@ -1,6 +1,6 @@
+#include "NumbersUtils/Eratosthenes.h"
 #include "CartesianContainer.h"
 #include "ComboCartesian.h"
-#include "Eratosthenes.h"
 #include "CleanConvert.h"
 #include "SetUpUtils.h"
 #include <unordered_map>

@@ -1,5 +1,5 @@
-#include "PrimesSegSieve.h"
-#include "Wheel.h"
+#include "NumbersUtils/PrimesSegSieve.h"
+#include "NumbersUtils/Wheel.h"
 #include <vector>
 #include <thread>
 #include <cmath>

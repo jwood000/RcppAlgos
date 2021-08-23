@@ -1,5 +1,5 @@
-#include "PrimeSieveCpp.h"
-#include "Eratosthenes.h"
+#include "NumbersUtils/PrimeSieveCpp.h"
+#include "NumbersUtils/Eratosthenes.h"
 #include "CleanConvert.h"
 
 SEXP PrimeSieveCpp(SEXP Rb1, SEXP Rb2, SEXP RNumThreads,
