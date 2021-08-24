@@ -18,11 +18,11 @@ export(comboGeneral,
        primeSieve,
        eulerPhiSieve,
        primeFactorizeSieve,
-      # numDivisorSieve,
-      # divisorsSieve,
-      # primeFactorize,
-      # divisorsRcpp,
-      # isPrimeRcpp,
-      # primeCount
+       numDivisorSieve,
+       divisorsSieve,
+       primeFactorize,
+       divisorsRcpp,
+       isPrimeRcpp,
+       primeCount,
        stdThreadMax
   )

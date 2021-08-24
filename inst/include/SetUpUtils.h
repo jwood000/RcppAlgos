@@ -56,5 +56,6 @@ SEXP GetDblVec(const std::vector<double> &v);
 SEXP GetInt64Vec(const std::vector<std::int64_t> &v);
 void SetIntNames(SEXP res, std::size_t myRange, int myMin, int myMax);
 void SetDblNames(SEXP res, std::size_t myRange, double myMin, double myMax);
+void SetDblNames(SEXP res, const std::vector<double> &myNums);
 
 #endif

@@ -1,6 +1,7 @@
 #include "NumbersUtils/PrimeSieveCount.h"
 #include "NumbersUtils/MotleyPrimes.h"
 #include "NumbersUtils/DivNumSieve.h"
+#include "NumbersUtils/PollardRho.h"
 #include "Sample/SamplePartitions.h"
 #include "Sample/SampleCombPerm.h"
 #include "CombinatoricsCnstrt.h"
@@ -30,6 +31,7 @@ static const R_CallMethodDef CallEntries[] = {
     CALLDEF(PrimeCountCpp, 3),
     CALLDEF(MotleyContainer, 6),
     CALLDEF(DivNumSieveCpp, 6),
+    CALLDEF(PollardRhoContainer, 6),
     CALLDEF(cpp11GetNumThreads, 0),
     {NULL, NULL, 0}
 };

@@ -311,7 +311,7 @@ SEXP DivNumSieveCpp(SEXP Rb1, SEXP Rb2, SEXP RbDivSieve,
     if (myMax < 2) {
         if (bDivSieve) {
             SEXP res = PROTECT(Rf_allocVector(VECSXP, 1));
-            SET_VECTOR_ELT(res, 0, Rf_allocVector(INTSXP, 0));
+            SET_VECTOR_ELT(res, 0, GetIntVec(std::vector<int>(1, 1)));
             
             if (IsNamed) {
                 Rf_setAttrib(res, R_NamesSymbol, Rf_mkString("1"));

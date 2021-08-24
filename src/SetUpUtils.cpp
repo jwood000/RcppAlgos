@@ -736,3 +736,16 @@ void SetDblNames(SEXP res, std::size_t myRange,
     
     Rf_setAttrib(res, R_NamesSymbol, myNames);
 }
+
+void SetDblNames(SEXP res, const std::vector<double> &myNums) {
+    
+    const int size = myNums.size();
+    SEXP myNames  = PROTECT(Rf_allocVector(REALSXP, size));
+    double* ptrNames = REAL(myNames);
+    
+    for (int k = 0; k < size; ++k) {
+        ptrNames[k] = myNums[k];
+    }
+    
+    Rf_setAttrib(res, R_NamesSymbol, myNames);
+}

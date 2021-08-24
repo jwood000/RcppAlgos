@@ -25,17 +25,20 @@ numDivisorSieve <- function(bound1, bound2 = NULL, namedVector = FALSE, nThreads
                  nThreads, pkgEnv$nThreads, PACKAGE = "RcppAlgos"))
 }
 
-# primeFactorize <- function(v, namedList = FALSE, nThreads = NULL) {
-#     PollardRhoContainer(v, namedList, TRUE, FALSE, nThreads, pkgEnv$nThreads)
-# }
-# 
-# divisorsRcpp <- function(v, namedList = FALSE, nThreads = NULL) {
-#     PollardRhoContainer(v, namedList, FALSE, TRUE, nThreads, pkgEnv$nThreads)
-# }
-# 
-# isPrimeRcpp <- function(v, namedVector = FALSE, nThreads = NULL) {
-#     PollardRhoContainer(v, namedVector, FALSE, FALSE, nThreads, pkgEnv$nThreads)
-# }
+primeFactorize <- function(v, namedList = FALSE, nThreads = NULL) {
+    return(.Call(PollardRhoContainer, v, namedList, TRUE,
+                 FALSE, nThreads, pkgEnv$nThreads, PACKAGE = "RcppAlgos"))
+}
+
+divisorsRcpp <- function(v, namedList = FALSE, nThreads = NULL) {
+    return(.Call(PollardRhoContainer, v, namedList, FALSE,
+                 TRUE, nThreads, pkgEnv$nThreads, PACKAGE = "RcppAlgos"))
+}
+
+isPrimeRcpp <- function(v, namedVector = FALSE, nThreads = NULL) {
+    return(.Call(PollardRhoContainer, v, namedVector, FALSE,
+                 FALSE, nThreads, pkgEnv$nThreads, PACKAGE = "RcppAlgos"))
+}
 
 primeCount <- function(n, nThreads = NULL) {
     return(.Call(PrimeCountCpp, n, nThreads, pkgEnv$nThreads))
