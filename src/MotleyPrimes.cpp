@@ -3,6 +3,7 @@
 #include "NumbersUtils/Eratosthenes.h"
 #include "NumbersUtils/MotleyPrimes.h"
 #include "CleanConvert.h"
+#include "SetUpUtils.h"
 #include <thread>
 
 template <typename T, typename U>
@@ -38,7 +39,7 @@ void MotleyMain(T myMin, U myMax, bool IsEuler,
             if (IsEuler) {
                 threads.emplace_back(std::cref(MotleyPrimes::EulerPhiSieve<T, U>),
                                      lower, upper, offsetStrt, std::ref(primes),
-                                     std::ref(numSeq), std::ref(EulerPhis));
+                                     std::ref(numSeq), EulerPhis);
             } else {
                 threads.emplace_back(std::cref(MotleyPrimes::PrimeFactorizationSieve<T>),
                                      lower, static_cast<T>(upper), offsetStrt,
@@ -49,7 +50,7 @@ void MotleyMain(T myMin, U myMax, bool IsEuler,
         if (IsEuler) {
             threads.emplace_back(std::cref(MotleyPrimes::EulerPhiSieve<T, U>),
                                  lower, myMax, offsetStrt, std::ref(primes),
-                                 std::ref(numSeq), std::ref(EulerPhis));
+                                 std::ref(numSeq), EulerPhis);
         } else {
             threads.emplace_back(std::cref(MotleyPrimes::PrimeFactorizationSieve<T>),
                                  lower, static_cast<T>(myMax), offsetStrt,
@@ -67,59 +68,6 @@ void MotleyMain(T myMin, U myMax, bool IsEuler,
                                                   offsetStrt, primes, primeList);
         }
     }
-}
-
-void SetIntNames(SEXP res, std::size_t myRange, int myMin, int myMax) {
-    
-    int retM = myMin;
-    SEXP myNames  = PROTECT(Rf_allocVector(INTSXP, myRange));
-    int* ptrNames = INTEGER(myNames);
-
-    for (int k = 0, retM = myMin; retM <= myMax; ++retM, ++k) {
-        ptrNames[k] = retM;
-    }
-    
-    Rf_setAttrib(res, R_NamesSymbol, myNames);
-}
-
-void SetDblNames(SEXP res, std::size_t myRange,
-                 double myMin, double myMax) {
-    
-    double retM = myMin;
-    SEXP myNames  = PROTECT(Rf_allocVector(REALSXP, myRange));
-    double* ptrNames = REAL(myNames);
-    
-    for (int k = 0; retM <= myMax; ++retM, ++k) {
-        ptrNames[k] = retM;
-    }
-    
-    Rf_setAttrib(res, R_NamesSymbol, myNames);
-}
-
-SEXP GetIntVec(const std::vector<int> &v) {
-    const int size = v.size();
-    SEXP res = PROTECT(Rf_allocVector(INTSXP, size));
-    int* ptrRes = INTEGER(res);
-    
-    for (int i = 0; i < size; ++i) {
-        ptrRes[i] = v[i];
-    }
-    
-    UNPROTECT(1);
-    return res;
-}
-
-SEXP GetDblVec(const std::vector<std::int64_t> &v) {
-    const int size = v.size();
-    SEXP res = PROTECT(Rf_allocVector(REALSXP, size));
-    double* ptrRes = REAL(res);
-    
-    for (int i = 0; i < size; ++i) {
-        ptrRes[i] = v[i];
-    }
-    
-    UNPROTECT(1);
-    return res;
 }
 
 SEXP GlueIntMotley(int myMin, int myMax, bool IsEuler,
@@ -148,7 +96,7 @@ SEXP GlueIntMotley(int myMin, int myMax, bool IsEuler,
         std::vector<std::vector<int>>
             primeList(myRange, std::vector<int>());
 
-        int* tempEuler;
+        int* tempEuler = nullptr;
         std::vector<int> tempVec;
         MotleyMain(myMin, myMax, IsEuler, tempEuler,
                    tempVec, primeList, nThreads, maxThreads);
@@ -196,7 +144,7 @@ SEXP GlueDblMotley(std::int64_t myMin, double myMax, bool IsEuler,
         std::vector<std::vector<std::int64_t>>
             primeList(myRange, std::vector<std::int64_t>());
         
-        double* tempEuler;
+        double* tempEuler = nullptr;
         std::vector<std::int64_t> tempVec;
         MotleyMain(myMin, myMax, IsEuler, tempEuler,
                    tempVec, primeList, nThreads, maxThreads);
@@ -204,7 +152,7 @@ SEXP GlueDblMotley(std::int64_t myMin, double myMax, bool IsEuler,
         SEXP myList = PROTECT(Rf_allocVector(VECSXP, myRange));
         
         for (std::size_t i = 0; i < myRange; ++i) {
-            SET_VECTOR_ELT(myList, i, GetDblVec(primeList[i]));
+            SET_VECTOR_ELT(myList, i, GetInt64Vec(primeList[i]));
         }
         
         if (keepNames) {
@@ -234,7 +182,7 @@ SEXP MotleyContainer(SEXP Rb1, SEXP Rb2, SEXP RIsEuler, SEXP RNamed,
                                    VecType::Integer, "maxThreads");
     const bool IsEuler = CleanConvert::convertLogical(RIsEuler, "IsEuler");
     const std::string namedObject = (IsEuler) ? "namedVector" : "namedList";
-    bool isNamed = CleanConvert::convertLogical(RNamed, namedObject);
+    bool IsNamed = CleanConvert::convertLogical(RNamed, namedObject);
     CleanConvert::convertPrimitive(Rb1, bound1, VecType::Numeric, "bound1");
     
     if (Rf_isNull(Rb2)) {
@@ -256,7 +204,7 @@ SEXP MotleyContainer(SEXP Rb1, SEXP Rb2, SEXP RIsEuler, SEXP RNamed,
             SEXP res = PROTECT(Rf_allocVector(INTSXP, 1));
             INTEGER(res)[0] = 1;
 
-            if (isNamed) {
+            if (IsNamed) {
                 Rf_setAttrib(res, R_NamesSymbol, Rf_mkString("1"));
             }
 
@@ -266,7 +214,7 @@ SEXP MotleyContainer(SEXP Rb1, SEXP Rb2, SEXP RIsEuler, SEXP RNamed,
             SEXP res = PROTECT(Rf_allocVector(VECSXP, 1));
             SET_VECTOR_ELT(res, 0, Rf_allocVector(INTSXP, 0));
             
-            if (isNamed) {
+            if (IsNamed) {
                 Rf_setAttrib(res, R_NamesSymbol, Rf_mkString("1"));
             }
             
@@ -283,11 +231,11 @@ SEXP MotleyContainer(SEXP Rb1, SEXP Rb2, SEXP RIsEuler, SEXP RNamed,
     if (myMax > std::numeric_limits<int>::max()) {
         std::int64_t intMin = static_cast<std::int64_t>(myMin);
         return GlueDblMotley(intMin, myMax, IsEuler,
-                             isNamed, nThreads, maxThreads);
+                             IsNamed, nThreads, maxThreads);
     } else {
         int intMin = static_cast<int>(myMin);
         int intMax = static_cast<int>(myMax);
-        return GlueIntMotley(intMin, myMax, IsEuler,
-                             isNamed, nThreads, maxThreads);
+        return GlueIntMotley(intMin, intMax, IsEuler,
+                             IsNamed, nThreads, maxThreads);
     }
 }

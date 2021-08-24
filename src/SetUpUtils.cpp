@@ -671,3 +671,68 @@ void SetSampleNames(SEXP object, bool IsGmp, int sampSize,
         UNPROTECT(1);
     }
 }
+
+SEXP GetIntVec(const std::vector<int> &v) {
+    const int size = v.size();
+    SEXP res = PROTECT(Rf_allocVector(INTSXP, size));
+    int* ptrRes = INTEGER(res);
+    
+    for (int i = 0; i < size; ++i) {
+        ptrRes[i] = v[i];
+    }
+    
+    UNPROTECT(1);
+    return res;
+}
+
+SEXP GetDblVec(const std::vector<double> &v) {
+    const int size = v.size();
+    SEXP res = PROTECT(Rf_allocVector(REALSXP, size));
+    double* ptrRes = REAL(res);
+    
+    for (int i = 0; i < size; ++i) {
+        ptrRes[i] = v[i];
+    }
+    
+    UNPROTECT(1);
+    return res;
+}
+
+SEXP GetInt64Vec(const std::vector<std::int64_t> &v) {
+    const int size = v.size();
+    SEXP res = PROTECT(Rf_allocVector(REALSXP, size));
+    double* ptrRes = REAL(res);
+    
+    for (int i = 0; i < size; ++i) {
+        ptrRes[i] = v[i];
+    }
+    
+    UNPROTECT(1);
+    return res;
+}
+
+void SetIntNames(SEXP res, std::size_t myRange, int myMin, int myMax) {
+    
+    SEXP myNames  = PROTECT(Rf_allocVector(INTSXP, myRange));
+    int* ptrNames = INTEGER(myNames);
+    
+    for (int k = 0, retM = myMin; retM <= myMax; ++retM, ++k) {
+        ptrNames[k] = retM;
+    }
+    
+    Rf_setAttrib(res, R_NamesSymbol, myNames);
+}
+
+void SetDblNames(SEXP res, std::size_t myRange,
+                 double myMin, double myMax) {
+    
+    double retM = myMin;
+    SEXP myNames  = PROTECT(Rf_allocVector(REALSXP, myRange));
+    double* ptrNames = REAL(myNames);
+    
+    for (int k = 0; retM <= myMax; ++retM, ++k) {
+        ptrNames[k] = retM;
+    }
+    
+    Rf_setAttrib(res, R_NamesSymbol, myNames);
+}

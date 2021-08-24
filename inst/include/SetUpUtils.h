@@ -51,4 +51,10 @@ void SetSampleNames(SEXP objRcpp, bool IsGmp, int sampSize,
                     mpz_t *const myBigSamp, SEXP colNames = R_NilValue,
                     int xtraDims = 0);
 
+SEXP GetIntVec(const std::vector<int> &v);
+SEXP GetDblVec(const std::vector<double> &v);
+SEXP GetInt64Vec(const std::vector<std::int64_t> &v);
+void SetIntNames(SEXP res, std::size_t myRange, int myMin, int myMax);
+void SetDblNames(SEXP res, std::size_t myRange, double myMin, double myMax);
+
 #endif
