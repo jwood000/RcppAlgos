@@ -1,4 +1,4 @@
-#include "NumbersUtils/PrimeSieveCpp.h"
+#include "NumbersUtils/PrimeSieveCount.h"
 #include "NumbersUtils/Eratosthenes.h"
 #include "CleanConvert.h"
 

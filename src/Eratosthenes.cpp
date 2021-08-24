@@ -70,8 +70,8 @@ namespace PrimeSieve {
                 primes.push_back(smallPrimeBase[ind]);
             }
         } else {
-            const int segSize   = Almost2310L1Cache;
-            const int flrMaxNum = segSize * (maxNum / segSize);
+            constexpr int segSize = Almost2310L1Cache;
+            const int flrMaxNum   = segSize * (maxNum / segSize);
 
             int lowerBnd = segSize * (minNum / segSize);
             std::vector<char> sieve(segSize, 1);
@@ -251,8 +251,8 @@ namespace PrimeSieve {
                           std::vector<T> &primes, std::int_fast64_t minNum,
                           std::int_fast64_t maxNum) {
         
-        const std::size_t szWheel30030  = SZ_WHEEL30030;
-        const std::int_fast64_t sz30030 = NUM30030;
+        constexpr std::size_t szWheel30030  = SZ_WHEEL30030;
+        constexpr std::int_fast64_t sz30030 = NUM30030;
         const std::size_t nWheels = static_cast<std::size_t>(std::max(
             1.0, std::ceil(std::sqrt(static_cast<double>(maxNum)) / sz30030))
         );
