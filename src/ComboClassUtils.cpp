@@ -1,26 +1,5 @@
+#include "ImportExportMPZ.h"
 #include "CleanConvert.h"
-
-void TopOffPartialPerm(std::vector<int> &z, const std::vector<int> &myReps,
-                       int n, int m, bool IsComb, bool IsRep, bool IsMult) {
-    if (!IsComb) {
-        if (IsMult) {
-            std::vector<int> f(n, 0);
-            
-            for (int i = 0; i < m; ++i)
-                ++f[z[i]];
-            
-            for (int i = 0; i < n; ++i)
-                for (int j = 0; j < (myReps[i] - f[i]); ++j)
-                    z.push_back(i); 
-            
-        } else if (!IsRep) {
-            if (m < n)
-                for (int i = 0; i < n; ++i)
-                    if (std::find(z.begin(), z.end(), i) == z.end())
-                        z.push_back(i);
-        }
-    }
-}
 
 void SetIndexVec(SEXP RindexVec, std::vector<double> &mySample,
                  std::size_t &sampSize, bool IsGmp, double computedRows) {
@@ -31,28 +10,31 @@ void SetIndexVec(SEXP RindexVec, std::vector<double> &mySample,
                 const char* raw = (char*) RAW(RindexVec);
                 sampSize = ((int*) raw)[0];
                 break;
-            }
-            default: {
+            } default: {
                 sampSize = LENGTH(RindexVec);
             }
         }
     } else {
-        CleanConvert::convertVector(RindexVec, mySample, "indexVec", false);
+        CleanConvert::convertVector(RindexVec, mySample,
+                                    VecType::Numeric,
+                                    "indexVec", false);
         sampSize = mySample.size();
         
         double myMax = *std::max_element(mySample.cbegin(), mySample.cend());
         
         if (myMax > computedRows) {
-            Rcpp::stop("One or more of the requested values "
-                           "exceeds the maximum number of possible results");
+            Rf_error("One or more of the requested values exceeds"
+                     " the maximum number of possible results");
         }
-        
-        if (sampSize > std::numeric_limits<int>::max())
-            Rcpp::stop("The number of rows cannot exceed 2^31 - 1");
-        
+
+        if (sampSize > std::numeric_limits<int>::max()) {
+            Rf_error("The number of rows cannot exceed 2^31 - 1");
+        }
+
         // Get zero base index
-        for (auto &s: mySample)
+        for (auto &s: mySample) {
             --s;
+        }
     }
 }
 
@@ -74,8 +56,8 @@ void SetIndexVecMpz(SEXP RindexVec, mpz_t *myVec,
             mpz_set(maxGmp, myVec[i]);
         
     if (mpz_cmp(maxGmp, computedRowsMpz) >= 0) {
-        Rcpp::stop("One or more of the requested values in sampleVec "
-                       "exceeds the maximum number of possible results");
+        Rf_error("One or more of the requested values in sampleVec "
+                 "exceeds the maximum number of possible results");
     }
 }
 

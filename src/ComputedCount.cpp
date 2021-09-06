@@ -16,10 +16,11 @@ double GetComputedRows(bool IsMult, bool IsComb, bool IsRep,
         if (IsComb) {
             computedRows = MultisetCombRowNum(n, m, Reps);
         } else {
-            if (Rf_isNull(Rm) || m == static_cast<int>(freqs.size()))
+            if (Rf_isNull(Rm) || m == static_cast<int>(freqs.size())) {
                 computedRows = NumPermsWithRep(freqs);
-            else
+            } else {
                 computedRows = MultisetPermRowNum(n, m, Reps);
+            }
         }
     } else {
         if (IsRep) {
@@ -30,10 +31,11 @@ double GetComputedRows(bool IsMult, bool IsComb, bool IsRep,
                                         static_cast<double>(m));
             }
         } else {
-            if (IsComb)
+            if (IsComb) {
                 computedRows = nChooseK(n, m);
-            else
+            } else {
                 computedRows = NumPermsNoRep(n, m);
+            }
         }
     }
 
@@ -47,24 +49,28 @@ void GetComputedRowMpz(mpz_t computedRowsMpz, bool IsMult, bool IsComb,
 
     if (IsMult) {
         if (IsComb) {
-            MultisetCombRowNumGmp(computedRowsMpz, n, m, myReps);
+            std::deque<int> deqRes(myReps.cbegin(), myReps.cend());
+            MultisetCombRowNumGmp(computedRowsMpz, n, m, deqRes);
         } else {
-            if (Rf_isNull(Rm) || m == static_cast<int>(freqs.size()))
+            if (Rf_isNull(Rm) || m == static_cast<int>(freqs.size())) {
                 NumPermsWithRepGmp(computedRowsMpz, freqs);
-            else
+            } else {
                 MultisetPermRowNumGmp(computedRowsMpz, n, m, myReps);
+            }
         }
     } else {
         if (IsRep) {
-            if (IsComb)
+            if (IsComb) {
                 NumCombsWithRepGmp(computedRowsMpz, n, m);
-            else
+            } else {
                 mpz_ui_pow_ui(computedRowsMpz, n, m);
+            }
         } else {
-            if (IsComb)
+            if (IsComb) {
                 nChooseKGmp(computedRowsMpz, n, m);
-            else
+            } else {
                 NumPermsNoRepGmp(computedRowsMpz, n, m);
+            }
         }
     }
 }

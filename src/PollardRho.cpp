@@ -318,13 +318,13 @@ SEXP PollardRhoContainer(SEXP Rv, SEXP RNamed,
     
     CleanConvert::convertPrimitive(RmaxThreads, maxThreads,
                                    VecType::Integer, "maxThreads");
-    const bool bPrimeFacs = CleanConvert::convertLogical(RbPrimeFacs,
+    const bool bPrimeFacs = CleanConvert::convertFlag(RbPrimeFacs,
                                                          "bPrimeFacs");
-    const bool bAllFacs = CleanConvert::convertLogical(RbAllFacs,
+    const bool bAllFacs = CleanConvert::convertFlag(RbAllFacs,
                                                        "bAllFacs");
     
     std::vector<double> myNums;
-    bool IsNamed = CleanConvert::convertLogical(RNamed, "namedList");
+    bool IsNamed = CleanConvert::convertFlag(RNamed, "namedList");
 
     if (bPrimeFacs || bAllFacs){  // numOnly = true, checkWhole = true, negPoss = true
         CleanConvert::convertVector(Rv, myNums, VecType::Numeric,

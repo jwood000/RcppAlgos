@@ -16,13 +16,13 @@ SEXP CombinatoricsCount(SEXP Rv, SEXP Rm, SEXP RisRep,
     bool IsMult = false;
     VecType myType = VecType::Integer;
 
-    std::vector<double> vNum;
     std::vector<int> vInt;
     std::vector<int> myReps;
     std::vector<int> freqs;
+    std::vector<double> vNum;
 
-    bool IsRep = CleanConvert::convertLogical(RisRep, "repetition");
-    bool IsComb = CleanConvert::convertLogical(RIsComb, "IsComb");
+    bool IsRep = CleanConvert::convertFlag(RisRep, "repetition");
+    bool IsComb = CleanConvert::convertFlag(RIsComb, "IsComb");
 
     SetType(myType, Rv);
     SetValues(myType, myReps, freqs, vInt, vNum,
@@ -60,8 +60,8 @@ SEXP PartitionsCount(SEXP Rtarget, SEXP Rv, SEXP Rm,
 
     const bool IsConstrained = true;
     const std::string mainFun = "sum";
-    bool IsRep = CleanConvert::convertLogical(RisRep, "repetition");
-    const bool bDesign = CleanConvert::convertLogical(RPartDesign,
+    bool IsRep = CleanConvert::convertFlag(RisRep, "repetition");
+    const bool bDesign = CleanConvert::convertFlag(RPartDesign,
                                                       "PartitionsDesign");
 
     SetType(myType, Rv);
@@ -93,7 +93,7 @@ SEXP PartitionsCount(SEXP Rtarget, SEXP Rv, SEXP Rm,
         part.ptype != PartitionType::NotPartition) {
 
         if (bDesign) {
-            bool Verbose = CleanConvert::convertLogical(Rshow, "showDetail");
+            bool Verbose = CleanConvert::convertFlag(Rshow, "showDetail");
             return GetDesign(part, ctype, n, Verbose);
         } else {
             return CleanConvert::GetCount(part.isGmp, part.bigCount,

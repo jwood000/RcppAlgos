@@ -31,6 +31,6 @@ void SetNextIter(const std::vector<int> &myReps, std::vector<int> &z,
     z = nthResFun(n, m, lower, lowerMpz, myReps);
 
     if (!IsComb) {
-        TopOffPerm(z, myReps, n, m, lower, lowerMpz, IsRep, IsMult);
+        TopOffPerm(z, myReps, n, m, IsRep, IsMult);
     }
 }

@@ -55,8 +55,9 @@ double NumPermsWithRep(const std::vector<int> &v) {
 double NumPermsNoRep(int n, int k) {
     double result = 1.0;
 
-    for (double i = n, m = n - k; i > m; --i)
+    for (double i = n, m = n - k; i > m; --i) {
         result *= i;
+    }
 
     return result;
 }
@@ -75,9 +76,11 @@ double MultisetPermRowNum(int n, int r, const std::vector<int> &Reps) {
     if (r == sumFreqs) {
         std::vector<int> freqs(sumFreqs);
 
-        for (int i = 0, k = 0; i < static_cast<int>(Reps.size()); ++i)
-            for (int j = 0; j < Reps[i]; ++j, ++k)
+        for (int i = 0, k = 0; i < static_cast<int>(Reps.size()); ++i) {
+            for (int j = 0; j < Reps[i]; ++j, ++k) {
                 freqs[k] = i;
+            }
+        }
 
         return NumPermsWithRep(freqs);
     }
@@ -119,7 +122,6 @@ double MultisetPermRowNum(int n, int r, const std::vector<int> &Reps) {
     std::partial_sum(cumProd.begin(), cumProd.end(),
                      cumProd.begin(), std::multiplies<double>());
 
-    double numPerms = 0.0;
     int myMin = std::min(r, Reps[0]);
 
     for (int i = 0; i <= myMin; ++i)
@@ -127,21 +129,23 @@ double MultisetPermRowNum(int n, int r, const std::vector<int> &Reps) {
 
     for (int i = 1; i < n1; ++i) {
         for (int j = r; j > 0; --j) {
-            myMin = std::min(j, Reps[i]);
-            numPerms = 0;
+            int myMin = std::min(j, Reps[i]);
+            double numPerms = 0;
 
-            for (int k = 0; k <= myMin; ++k)
+            for (int k = 0; k <= myMin; ++k) {
                 numPerms += resV[j - k] / cumProd[k];
+            }
 
             resV[j] = numPerms;
         }
     }
 
     myMin = std::min(r, Reps[n1]);
-    numPerms = 0;
+    double numPerms = 0.0;
 
-    for (int i = 0; i <= myMin; ++i)
+    for (int i = 0; i <= myMin; ++i) {
         numPerms += resV[r - i] / cumProd[i];
+    }
 
     return numPerms;
 }

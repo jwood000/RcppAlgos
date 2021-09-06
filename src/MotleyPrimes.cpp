@@ -180,9 +180,9 @@ SEXP MotleyContainer(SEXP Rb1, SEXP Rb2, SEXP RIsEuler, SEXP RNamed,
     
     CleanConvert::convertPrimitive(RmaxThreads, maxThreads,
                                    VecType::Integer, "maxThreads");
-    const bool IsEuler = CleanConvert::convertLogical(RIsEuler, "IsEuler");
+    const bool IsEuler = CleanConvert::convertFlag(RIsEuler, "IsEuler");
     const std::string namedObject = (IsEuler) ? "namedVector" : "namedList";
-    bool IsNamed = CleanConvert::convertLogical(RNamed, namedObject);
+    bool IsNamed = CleanConvert::convertFlag(RNamed, namedObject);
     CleanConvert::convertPrimitive(Rb1, bound1, VecType::Numeric, "bound1");
     
     if (Rf_isNull(Rb2)) {

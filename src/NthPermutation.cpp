@@ -248,8 +248,7 @@ nthPermPtr GetNthPermFunc(bool IsMult, bool IsRep, bool IsGmp) {
 }
 
 void TopOffPerm(std::vector<int> &z, const std::vector<int> &myReps,
-                int n, int m, double lower, mpz_t lowerMpz,
-                bool IsRep, bool IsMult) {
+                int n, int m, bool IsRep, bool IsMult) {
 
     if (IsMult) {
         std::vector<int> f(n, 0);

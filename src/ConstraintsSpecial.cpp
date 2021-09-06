@@ -1,6 +1,6 @@
 #include "Constraints/UserConstraintFuns.h"
 #include "Constraints/ConstraintsUtils.h"
-#include "NextCombinatorics.h"
+#include "ClassUtils/NextCombinatorics.h"
 #include "NthResult.h"
 #include <thread>
 

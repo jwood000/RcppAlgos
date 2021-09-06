@@ -1,80 +1,9 @@
-#include "Sample/SampCombPermRes.h"
+#include "Sample/SampCombPermStd.h"
 #include "Sample/SampleCombPerm.h"
 #include "Sample/SampleApplyFun.h"
 #include "Cpp14MakeUnique.h"
 #include "ComputedCount.h"
-#include <thread>
-
-template <typename T>
-void SampNoThrdSafe(T* sampleMatrix, SEXP res, const std::vector<T> &v,
-                    const std::vector<double> &mySample,
-                    mpz_t *const myBigSamp, const std::vector<int> &myReps,
-                    nthResultPtr nthResFun, int m, int sampSize,
-                    int lenV, bool IsGmp, bool IsNamed) {
-
-    SampleResults(sampleMatrix, v, mySample, myBigSamp, myReps,
-                  nthResFun, m, sampSize, lenV, IsGmp);
-
-    if (IsNamed) {
-        SetSampleNames(res, IsGmp, sampSize, mySample, myBigSamp);
-    }
-}
-
-template <typename T>
-void ParallelGlue(RcppParallel::RMatrix<T> &sampleMatrix,
-                  const std::vector<T> &v,
-                  const std::vector<double> &mySample,
-                  mpz_t *const myBigSamp, const std::vector<int> &myReps,
-                  nthResultPtr nthResFun, int m, int strtIdx, int endIdx,
-                  int lenV, bool IsGmp) {
-
-    SampleResults(sampleMatrix, v, mySample, myBigSamp, myReps,
-                  nthResFun, m, strtIdx, endIdx, lenV, IsGmp);
-}
-
-template <typename T>
-void ThreadSafeSample(T* mat, SEXP res, const std::vector<T> &v,
-                      const std::vector<double> &mySample,
-                      mpz_t *const myBigSamp, const std::vector<int> &myReps,
-                      nthResultPtr nthResFun, int m, int sampSize,
-                      int nThreads, bool Parallel, bool IsNamed,
-                      bool IsGmp, int lenV) {
-
-    if (Parallel) {
-        RcppParallel::RMatrix<T> parMat(mat, sampSize, m);
-        std::vector<std::thread> threads;
-
-        int step = 0;
-        int stepSize = sampSize / nThreads;
-        int nextStep = stepSize;
-
-        for (int j = 0; j < (nThreads - 1);
-             ++j, step += stepSize, nextStep += stepSize) {
-
-            threads.emplace_back(std::cref(ParallelGlue<T>),
-                                 std::ref(parMat), std::cref(v),
-                                 std::cref(mySample), myBigSamp,
-                                 std::cref(myReps), nthResFun,
-                                 m, step, nextStep, lenV, IsGmp);
-        }
-
-        threads.emplace_back(std::cref(ParallelGlue<T>), std::ref(parMat),
-                             std::cref(v), std::cref(mySample), myBigSamp,
-                             std::cref(myReps), nthResFun, m, step, sampSize,
-                             lenV, IsGmp);
-
-        for (auto& thr: threads) {
-            thr.join();
-        }
-    } else {
-        SampleResults(mat, v, mySample, myBigSamp, myReps,
-                      nthResFun, m, sampSize, lenV, IsGmp);
-    }
-
-    if (IsNamed) {
-        SetSampleNames(res, IsGmp, sampSize, mySample, myBigSamp);
-    }
-}
+#include "SetUpUtils.h"
 
 SEXP SampleCombPerm(SEXP Rv, SEXP Rm, SEXP RisRep, SEXP RFreqs,
                     SEXP RindexVec, SEXP RIsComb, SEXP RmySeed,
@@ -90,16 +19,16 @@ SEXP SampleCombPerm(SEXP Rv, SEXP Rm, SEXP RisRep, SEXP RFreqs,
     VecType myType = VecType::Integer;
     CleanConvert::convertPrimitive(RmaxThreads, maxThreads,
                                    VecType::Integer, "maxThreads");
-    bool IsNamed = CleanConvert::convertLogical(RNamed, "namedSample");
+    bool IsNamed = CleanConvert::convertFlag(RNamed, "namedSample");
 
     std::vector<int> vInt;
     std::vector<int> myReps;
     std::vector<int> freqs;
     std::vector<double> vNum;
 
-    bool Parallel = CleanConvert::convertLogical(Rparallel, "Parallel");
-    bool IsRep = CleanConvert::convertLogical(RisRep, "repetition");
-    const bool IsComb = CleanConvert::convertLogical(RIsComb, "IsComb");
+    bool Parallel = CleanConvert::convertFlag(Rparallel, "Parallel");
+    bool IsRep = CleanConvert::convertFlag(RisRep, "repetition");
+    const bool IsComb = CleanConvert::convertFlag(RIsComb, "IsComb");
     bool IsMult = false;
 
     SetType(myType, Rv);
@@ -145,157 +74,12 @@ SEXP SampleCombPerm(SEXP Rv, SEXP Rm, SEXP RisRep, SEXP RFreqs,
             Rf_error("FUN must be a function!");
         }
 
-        switch (myType) {
-            case VecType::Character : {
-                SEXP charVec = PROTECT(Rf_duplicate(Rv));
-                SEXP vectorPass = PROTECT(Rf_allocVector(STRSXP, m));
-
-                SEXP res = ApplyFunction(charVec, vectorPass, mySample,
-                                         myVec.get(), myReps, stdFun, myEnv,
-                                         RFunVal, nthResFun, m, sampSize,
-                                         IsNamed, IsGmp, n);
-                UNPROTECT(2);
-                return res;
-            } case VecType::Complex : {
-                SEXP vectorPass = PROTECT(Rf_allocVector(CPLXSXP, m));
-                Rcomplex* ptr_vec = COMPLEX(vectorPass);
-
-                Rcomplex* cmplxVec = COMPLEX(Rv);
-                std::vector<Rcomplex> vCmplx(cmplxVec, cmplxVec + n);
-
-                SEXP res = ApplyFunction(vCmplx, vectorPass, ptr_vec, mySample,
-                                         myVec.get(), myReps, stdFun, myEnv,
-                                         RFunVal, nthResFun, m, sampSize,
-                                         IsNamed, IsGmp, n);
-                UNPROTECT(1);
-                return res;
-            } case VecType::Raw : {
-                SEXP vectorPass = PROTECT(Rf_allocVector(RAWSXP, m));
-                Rbyte* ptr_vec = RAW(vectorPass);
-
-                Rbyte* rawVec = RAW(Rv);
-                std::vector<Rbyte> vByte(rawVec, rawVec + n);
-
-                SEXP res = ApplyFunction(vByte, vectorPass, ptr_vec, mySample,
-                                         myVec.get(), myReps, stdFun, myEnv,
-                                         RFunVal, nthResFun, m, sampSize,
-                                         IsNamed, IsGmp, n);
-                UNPROTECT(1);
-                return res;
-            } case VecType::Logical : {
-                SEXP vectorPass = PROTECT(Rf_allocVector(LGLSXP, m));
-                int* ptr_vec = LOGICAL(vectorPass);
-
-                SEXP res = ApplyFunction(vInt, vectorPass, ptr_vec, mySample,
-                                         myVec.get(), myReps, stdFun, myEnv,
-                                         RFunVal, nthResFun, m, sampSize,
-                                         IsNamed, IsGmp, n);
-                UNPROTECT(1);
-                return res;
-            } case VecType::Integer : {
-                SEXP vectorPass = PROTECT(Rf_allocVector(INTSXP, m));
-                int* ptr_vec = INTEGER(vectorPass);
-
-                SEXP res = ApplyFunction(vInt, vectorPass, ptr_vec, mySample,
-                                         myVec.get(), myReps, stdFun, myEnv,
-                                         RFunVal, nthResFun, m, sampSize,
-                                         IsNamed, IsGmp, n);
-                UNPROTECT(1);
-                return res;
-            } default : {
-                SEXP vectorPass = PROTECT(Rf_allocVector(REALSXP, m));
-                double* ptr_vec = REAL(vectorPass);
-                SEXP res = ApplyFunction(vNum, vectorPass, ptr_vec, mySample,
-                                         myVec.get(), myReps, stdFun, myEnv,
-                                         RFunVal, nthResFun, m, sampSize,
-                                         IsNamed, IsGmp, n);
-                UNPROTECT(1);
-                return res;
-            }
-        }
+        return SampleCombPermFUN(Rv, vInt, vNum, mySample, myVec.get(),
+                                 myReps, stdFun, myEnv, RFunVal, nthResFun,
+                                 myType, n, m, sampSize, IsNamed, IsGmp);
     }
 
-    switch (myType) {
-        case VecType::Character : {
-            SEXP charVec = PROTECT(Rf_duplicate(Rv));
-            SEXP res = PROTECT(Rf_allocMatrix(STRSXP, sampSize, m));
-
-            SampleResults(res, charVec, mySample, myVec.get(), myReps,
-                          nthResFun, m, sampSize, n, IsGmp, IsNamed);
-
-            UNPROTECT(2);
-            return res;
-        } case VecType::Complex : {
-            std::vector<Rcomplex> stlCmplxVec(n);
-            Rcomplex* vecCmplx = COMPLEX(Rv);
-
-            for (int i = 0; i < n; ++i) {
-                stlCmplxVec[i] = vecCmplx[i];
-            }
-
-            SEXP res = PROTECT(Rf_allocMatrix(CPLXSXP, sampSize, m));
-            Rcomplex* matCmplx = COMPLEX(res);
-
-            SampNoThrdSafe(matCmplx, res, stlCmplxVec, mySample,
-                           myVec.get(), myReps, nthResFun, m, sampSize,
-                           n, IsGmp, IsNamed);
-            UNPROTECT(1);
-            return res;
-        } case VecType::Raw : {
-            std::vector<Rbyte> stlRawVec(n);
-            Rbyte* rawVec = RAW(Rv);
-
-            for (int i = 0; i < n; ++i) {
-                stlRawVec[i] = rawVec[i];
-            }
-
-            SEXP res = PROTECT(Rf_allocMatrix(RAWSXP, sampSize, m));
-            Rbyte* rawMat = RAW(res);
-
-            SampNoThrdSafe(rawMat, res, stlRawVec, mySample,
-                           myVec.get(), myReps, nthResFun, m, sampSize,
-                           n, IsGmp, IsNamed);
-            UNPROTECT(1);
-            return res;
-        } case VecType::Logical : {
-            vInt.assign(n, 0);
-            int* vecBool = LOGICAL(Rv);
-
-            for (int i = 0; i < n; ++i) {
-                vInt[i] = vecBool[i];
-            }
-
-            SEXP res = PROTECT(Rf_allocMatrix(LGLSXP, sampSize, m));
-            int* matBool = LOGICAL(res);
-
-            SampNoThrdSafe(matBool, res, vInt, mySample, myVec.get(), myReps,
-                           nthResFun, m, sampSize, n, IsGmp, IsNamed);
-            UNPROTECT(1);
-            return res;
-        } case VecType::Integer : {
-            SEXP res = PROTECT(Rf_allocMatrix(INTSXP, sampSize, m));
-            int* matInt = INTEGER(res);
-
-            ThreadSafeSample(matInt, res, vInt, mySample, myVec.get(),
-                             myReps, nthResFun, m, sampSize, nThreads,
-                             Parallel, IsNamed, IsGmp, n);
-
-            if (Rf_isFactor(Rv)) {
-                SetFactorClass(res, Rv);
-            }
-
-            UNPROTECT(1);
-            return res;
-        } default : {
-            SEXP res = PROTECT(Rf_allocMatrix(REALSXP, sampSize, m));
-            double* matNum = REAL(res);
-
-            ThreadSafeSample(matNum, res, vNum, mySample, myVec.get(),
-                             myReps, nthResFun, m, sampSize, nThreads,
-                             Parallel, IsNamed, IsGmp, n);
-
-            UNPROTECT(1);
-            return res;
-        }
-    }
+    return SampCombPermMain(Rv, vInt, vNum, mySample, myVec.get(),
+                            myReps, nthResFun, myType, n, m, sampSize,
+                            nThreads, IsNamed, IsGmp, Parallel);
 }

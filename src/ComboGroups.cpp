@@ -353,9 +353,9 @@ SEXP ComboGroupsCpp(SEXP Rv, SEXP RNumGroups, SEXP RRetType, SEXP Rlow,
     CleanConvert::convertPrimitive(RNumGroups, numGroups,
                                    VecType::Integer, "numGroups");
     
-    bool IsSample = CleanConvert::convertLogical(RIsSample, "IsSample");
-    bool Parallel = CleanConvert::convertLogical(Rparallel, "Parallel");
-    bool IsNamed = (IsSample) ? CleanConvert::convertLogical(RNamed,
+    bool IsSample = CleanConvert::convertFlag(RIsSample, "IsSample");
+    bool Parallel = CleanConvert::convertFlag(Rparallel, "Parallel");
+    bool IsNamed = (IsSample) ? CleanConvert::convertFlag(RNamed,
                     "namedSample") : false;
     
     std::vector<int> vInt;

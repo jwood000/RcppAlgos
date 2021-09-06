@@ -237,16 +237,19 @@ void SetThreads(bool &Parallel, int maxThreads, int nRows,
     } else if (!Rf_isNull(RNumThreads)) {
         int userThreads = 1;
 
-        if (!Rf_isNull(RNumThreads))
+        if (!Rf_isNull(RNumThreads)) {
             CleanConvert::convertPrimitive(RNumThreads, userThreads,
                                            VecType::Integer, "nThreads");
+        }
 
-        if (userThreads > maxThreads)
+        if (userThreads > maxThreads) {
             userThreads = maxThreads;
+        }
 
         // Ensure that each thread has at least halfLimit
-        if ((nRows / userThreads) < halfLimit)
+        if ((nRows / userThreads) < halfLimit) {
             userThreads = nRows / halfLimit;
+        }
 
         if (userThreads > 1) {
             Parallel = true;
@@ -470,7 +473,7 @@ void SetStartZ(const std::vector<int> &myReps,
             const nthPermPtr nthPermFun = GetNthPermFunc(IsMult,
                                                          IsRep, IsGmp);
             z = nthPermFun(n, m, lower, lowerMpz, myReps);
-            TopOffPerm(z, myReps, n, m, lower, lowerMpz, IsRep, IsMult);
+            TopOffPerm(z, myReps, n, m, IsRep, IsMult);
         }
     } else {
         if (IsComb) {

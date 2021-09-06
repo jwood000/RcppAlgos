@@ -218,11 +218,11 @@ SEXP CombinatoricsCnstrt(SEXP Rv, SEXP Rm, SEXP RisRep, SEXP RFreqs,
     std::vector<int> myReps;
     std::vector<int> freqs;
 
-    bool KeepRes  = CleanConvert::convertLogical(RKeepRes, "keepResults");
-    bool Parallel = CleanConvert::convertLogical(Rparallel, "Parallel");
-    bool IsRep    = CleanConvert::convertLogical(RisRep, "repetition");
+    bool KeepRes  = CleanConvert::convertFlag(RKeepRes, "keepResults");
+    bool Parallel = CleanConvert::convertFlag(Rparallel, "Parallel");
+    bool IsRep    = CleanConvert::convertFlag(RisRep, "repetition");
 
-    const bool IsComb = CleanConvert::convertLogical(RIsComb, "IsComb");
+    const bool IsComb = CleanConvert::convertFlag(RIsComb, "IsComb");
     const bool IsConstrained = CheckConstrnd(RmainFun, RcompFun, Rtarget);
 
     SetType(myType, Rv);

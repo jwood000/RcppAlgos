@@ -147,9 +147,9 @@ SEXP SamplePartitions(SEXP Rv, SEXP Rm, SEXP RisRep, SEXP RFreqs,
     std::vector<int> myReps;
     std::vector<int> freqs;
 
-    bool Parallel = CleanConvert::convertLogical(Rparallel, "Parallel");
-    bool IsRep    = CleanConvert::convertLogical(RisRep, "repetition");
-    bool IsNamed  = CleanConvert::convertLogical(RNamed, "namedSample");
+    bool Parallel = CleanConvert::convertFlag(Rparallel, "Parallel");
+    bool IsRep    = CleanConvert::convertFlag(RisRep, "repetition");
+    bool IsNamed  = CleanConvert::convertFlag(RNamed, "namedSample");
 
     SetType(myType, Rv);
     SetValues(myType, myReps, freqs, vInt, vNum, Rv,

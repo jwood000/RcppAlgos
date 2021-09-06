@@ -330,8 +330,8 @@ SEXP CombinatoricsApply(SEXP Rv, SEXP Rm, SEXP RisRep,
     std::vector<int> myReps;
     std::vector<int> freqs;
 
-    bool IsRep = CleanConvert::convertLogical(RisRep, "repetition");
-    const bool IsComb = CleanConvert::convertLogical(RIsComb, "IsComb");
+    bool IsRep = CleanConvert::convertFlag(RisRep, "repetition");
+    const bool IsComb = CleanConvert::convertFlag(RIsComb, "IsComb");
 
     SetType(myType, Rv);
     SetValues(myType, myReps, freqs, vInt, vNum,

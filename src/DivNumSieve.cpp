@@ -287,11 +287,11 @@ SEXP DivNumSieveCpp(SEXP Rb1, SEXP Rb2, SEXP RbDivSieve,
     
     CleanConvert::convertPrimitive(RmaxThreads, maxThreads,
                                    VecType::Integer, "maxThreads");
-    const bool bDivSieve = CleanConvert::convertLogical(RbDivSieve,
+    const bool bDivSieve = CleanConvert::convertFlag(RbDivSieve,
                                                         "bDivSieve");
     
     const std::string namedObject = (bDivSieve) ? "namedList" : "namedVector";
-    bool IsNamed = CleanConvert::convertLogical(RisNamed, namedObject);
+    bool IsNamed = CleanConvert::convertFlag(RisNamed, namedObject);
     CleanConvert::convertPrimitive(Rb1, bound1, VecType::Numeric, "bound1");
 
     if (Rf_isNull(Rb2)) {

@@ -38,7 +38,7 @@ namespace CleanConvert {
     SEXP GetCount(bool IsGmp, const mpz_t computedRowsMpz,
                   double computedRows);
 
-    bool convertLogical(SEXP boolInput, const std::string &nameOfBool);
+    bool convertFlag(SEXP boolInput, const std::string &nameOfBool);
 
     template <typename T>
     void convertPrimitive(SEXP input, T &result, VecType myType,
