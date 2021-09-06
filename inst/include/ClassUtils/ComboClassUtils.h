@@ -3,9 +3,6 @@
 
 #include "CleanConvert.h"
 
-void TopOffPartialPerm(std::vector<int> &z, const std::vector<int> &myReps,
-                       int n, int m, bool IsComb, bool IsRep, bool IsMult);
-
 void SetIndexVec(SEXP RindexVec, std::vector<double> &mySample,
                  std::size_t &sampSize, bool IsGmp, double computedRows);
 
