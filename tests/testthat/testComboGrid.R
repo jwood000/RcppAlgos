@@ -1,6 +1,6 @@
 context("testing comboGrid")
 
-test_that("divisorsSieve generates correct numbers", {
+test_that("comboGrid generates correct output", {
     bruteCheck <- function(myList, rep = TRUE) {
         testOut <- comboGrid(myList, repetition = rep)
         
