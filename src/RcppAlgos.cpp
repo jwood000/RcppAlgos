@@ -3,12 +3,14 @@
 #include "NumbersUtils/DivNumSieve.h"
 #include "NumbersUtils/PollardRho.h"
 #include "Sample/SamplePartitions.h"
+#include "ClassUtils/ExposeCombo.h"
 #include "Sample/SampleCombPerm.h"
 #include "CombinatoricsCnstrt.h"
 #include "CombinatoricsCount.h"
 #include "CombinatoricsApply.h"
 #include "CartesianContainer.h"
 #include "CombinatoricsMain.h"
+#include "GetClassValues.h"
 #include "ComboGroups.h"
 #include "CheckReturn.h"
 #include "NumThreads.h"
@@ -33,6 +35,21 @@ static const R_CallMethodDef CallEntries[] = {
     CALLDEF(DivNumSieveCpp, 6),
     CALLDEF(PollardRhoContainer, 6),
     CALLDEF(cpp11GetNumThreads, 0),
+    CALLDEF(GetClassVals, 8),
+    CALLDEF(ComboNew, 3),
+    CALLDEF(StartOverGlue, 1),
+    CALLDEF(NextCombGlue, 1),
+    CALLDEF(NextNumCombGlue, 2),
+    CALLDEF(NextGatherGlue, 1),
+    CALLDEF(PrevCombGlue, 1),
+    CALLDEF(PrevNumCombGlue, 2),
+    CALLDEF(PrevGatherGlue, 1),
+    CALLDEF(CurrCombGlue, 1),
+    CALLDEF(SourceVectorGlue, 1),
+    CALLDEF(RandomAccessGlue, 2),
+    CALLDEF(FrontGlue, 1),
+    CALLDEF(BackGlue, 1),
+    CALLDEF(SummaryGlue, 1),
     {NULL, NULL, 0}
 };
 
