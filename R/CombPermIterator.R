@@ -1,5 +1,5 @@
 setClass(
-    "Combo",
+    "ComboS4",
     slots = c(
         ptr = "externalptr",
         startOver = "function",
@@ -18,7 +18,7 @@ setClass(
 
 setMethod(
     "initialize",
-    "Combo",
+    "ComboS4",
     function(.Object, init) {
         .Object@ptr <- .Call(ComboNew, init$RVals, init$bVec,
                              init$FreqsInfo, PACKAGE = "RcppAlgos")
@@ -60,7 +60,7 @@ setMethod(
     }
 )
 
-comboIter <- function(v, m = NULL, repetition = FALSE, freqs = NULL,
+comboIterS4 <- function(v, m = NULL, repetition = FALSE, freqs = NULL,
                       constraintFun = NULL, comparisonFun = NULL,
                       limitConstraints = NULL, FUN = NULL,
                       tolerance = NULL, nThreads = NULL) {
@@ -79,7 +79,7 @@ comboIter <- function(v, m = NULL, repetition = FALSE, freqs = NULL,
         #     #     InitVals$bVec, InitVals$freqInfo, list(FUN, new.env()))
         # } else {
             # new(Combo, InitVals$Rv, InitVals$Rm, InitVals$nRows, InitVals$bVec, InitVals$freqInfo)
-        new("Combo", InitVals)
+        new("ComboS4", InitVals)
         # }
     } else {
         stop("This feature will be available in future releases")
@@ -106,3 +106,82 @@ comboIter <- function(v, m = NULL, repetition = FALSE, freqs = NULL,
 #         stop("This feature will be available in future releases")
 #     }
 # }
+
+Combo <- setRefClass(
+    "Combo",
+    fields = list(
+        Ptr = "externalptr",
+        init_vals = "list"
+    ),
+    methods = list(
+        initialize = function(init) {
+            init_vals <<- init
+            Ptr <<- .Call(ComboNew, init_vals$RVals, init_vals$bVec,
+                          init_vals$FreqsInfo, PACKAGE = "RcppAlgos")
+        },
+        startOver = function() {
+            .Call(StartOverGlue, Ptr, PACKAGE = "RcppAlgos")
+            invisible(NULL)
+        },
+        sample = function(samp) {
+            .Call(RandomAccessGlue, Ptr, samp, PACKAGE = "RcppAlgos")
+        },
+        nextIter = function() {
+            .Call(NextCombGlue, Ptr, PACKAGE = "RcppAlgos")
+        },
+        nextNIter = function(n = 1) {
+            .Call(NextNumCombGlue, Ptr, n, PACKAGE = "RcppAlgos")
+        },
+        nextRemaining = function() {
+            .Call(NextGatherGlue, Ptr, PACKAGE = "RcppAlgos")
+        },
+        prevIter = function() {
+            .Call(PrevCombGlue, Ptr, PACKAGE = "RcppAlgos")
+        },
+        prevNIter = function(n = 1) {
+            .Call(PrevNumCombGlue, Ptr, n, PACKAGE = "RcppAlgos")
+        },
+        prevRemaining = function() {
+            .Call(PrevGatherGlue, Ptr, PACKAGE = "RcppAlgos")
+        },
+        currIter = function() {
+            .Call(CurrCombGlue, Ptr, PACKAGE = "RcppAlgos")
+        },
+        sourceVector = function() {
+            .Call(SourceVectorGlue, Ptr, PACKAGE = "RcppAlgos")
+        },
+        summary = function() {
+            .Call(SummaryGlue, Ptr, PACKAGE = "RcppAlgos")
+        }
+    )
+)
+
+"[.Combo" <- function(x, ...) {
+    x$sample(...)
+}
+
+comboIter <- function(v, m = NULL, repetition = FALSE, freqs = NULL,
+                        constraintFun = NULL, comparisonFun = NULL,
+                        limitConstraints = NULL, FUN = NULL,
+                        tolerance = NULL, nThreads = NULL) {
+    
+    RetValue <- .Call(CheckReturn, v, constraintFun,
+                      comparisonFun, limitConstraints,
+                      FALSE, FUN, PACKAGE = "RcppAlgos")
+    
+    InitVals <- .Call(GetClassVals, v, m, repetition, freqs,
+                      TRUE, FUN, nThreads, pkgEnv$nThreads,
+                      PACKAGE = "RcppAlgos")
+    
+    if (RetValue) {
+        # if (InitVals$applyFun) {
+        #     # new(ComboFUN, InitVals$Rv, InitVals$Rm, InitVals$nRows,
+        #     #     InitVals$bVec, InitVals$freqInfo, list(FUN, new.env()))
+        # } else {
+        # new(Combo, InitVals$Rv, InitVals$Rm, InitVals$nRows, InitVals$bVec, InitVals$freqInfo)
+        Combo$new(init = InitVals)
+        # }
+    } else {
+        stop("This feature will be available in future releases")
+    }
+}
