@@ -23,4 +23,6 @@ bool CheckIndGrT(bool IsGmp, mpz_t &mpzIndex, double &dblIndex,
                  mpz_t computedRowsMpz, double computedRows);
 bool CheckGrTSi(bool IsGmp, mpz_t &mpzIndex, double &dblIndex, int si);
 
+void zUpdateIndex(std::vector<int> &z, SEXP v, SEXP mat, int m, int nRows);
+
 #endif
