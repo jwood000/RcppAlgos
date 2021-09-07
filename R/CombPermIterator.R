@@ -39,10 +39,10 @@ setMethod(
             .Call(NextGatherGlue, .Object@ptr, PACKAGE = "RcppAlgos")
         }
         .Object@prevIter <- function() {
-            .Call(PrevNumCombGlue, .Object@ptr, PACKAGE = "RcppAlgos")
+            .Call(PrevCombGlue, .Object@ptr, PACKAGE = "RcppAlgos")
         }
         .Object@prevNIter <- function(n = 1) {
-            .Call(PrevCombGlue, .Object@ptr, n, PACKAGE = "RcppAlgos")
+            .Call(PrevNumCombGlue, .Object@ptr, n, PACKAGE = "RcppAlgos")
         }
         .Object@prevRemaining <- function() {
             .Call(PrevGatherGlue, .Object@ptr, PACKAGE = "RcppAlgos")
