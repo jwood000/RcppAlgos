@@ -89,11 +89,13 @@ SEXP GetClassVals(SEXP Rv, SEXP Rm, SEXP RisRep, SEXP RFreqs,
     SET_VECTOR_ELT(RVals, 5, RmaxThreads);
     SET_VECTOR_ELT(RVals, 6, RThreads);
     
-    const char *names[] = {"RVals", "bVec", "FreqsInfo", ""};
+    const char *names[] = {"RVals", "bVec", "FreqsInfo",
+                           "applyFun", ""};
     SEXP res = PROTECT(Rf_mkNamed(VECSXP, names));
     SET_VECTOR_ELT(res, 0, RVals);
     SET_VECTOR_ELT(res, 1, bVec);
     SET_VECTOR_ELT(res, 2, freqsInfo);
+    SET_VECTOR_ELT(res, 3, Rf_ScalarLogical(applyFun));
 
     UNPROTECT(6);
     return res;
