@@ -323,25 +323,27 @@ SEXP ApplyFunction(SEXP v, SEXP vectorPass,
     }
 }
 
-SEXP SampleCombPermFUN(SEXP Rv, const std::vector<int> &vInt,
-                       const std::vector<double> &vNum,
-                       const std::vector<double> &mySample,
-                       mpz_t *const myBigSamp, 
-                       const std::vector<int> &myReps, SEXP stdFun,
-                       SEXP rho, SEXP RFunVal, nthResultPtr nthResFun,
-                       VecType myType, int n, int m, int sampSize,
-                       bool IsNamed, bool IsGmp) {
+SEXP SampleCombPermApply(SEXP Rv, const std::vector<int> &vInt,
+                         const std::vector<double> &vNum,
+                         const std::vector<double> &mySample,
+                         mpz_t *const myBigSamp, 
+                         const std::vector<int> &myReps, SEXP stdFun,
+                         SEXP rho, SEXP RFunVal, nthResultPtr nthResFun,
+                         VecType myType, int n, int m, int sampSize,
+                         bool IsNamed, bool IsGmp) {
     
     switch (myType) {
         case VecType::Character : {
             SEXP charVec = PROTECT(Rf_duplicate(Rv));
             SEXP vectorPass = PROTECT(Rf_allocVector(STRSXP, m));
             
-            SEXP res = ApplyFunction(charVec, vectorPass, mySample,
-                                     myBigSamp, myReps, stdFun, rho,
-                                     RFunVal, nthResFun, m, sampSize,
-                                     IsNamed, IsGmp, n);
-            UNPROTECT(2);
+            SEXP res = PROTECT(
+                ApplyFunction(charVec, vectorPass, mySample, myBigSamp,
+                              myReps, stdFun, rho, RFunVal, nthResFun,
+                              m, sampSize, IsNamed, IsGmp, n)
+            );
+
+            UNPROTECT(3);
             return res;
         } case VecType::Complex : {
             SEXP vectorPass = PROTECT(Rf_allocVector(CPLXSXP, m));
@@ -350,11 +352,12 @@ SEXP SampleCombPermFUN(SEXP Rv, const std::vector<int> &vInt,
             Rcomplex* cmplxVec = COMPLEX(Rv);
             std::vector<Rcomplex> vCmplx(cmplxVec, cmplxVec + n);
             
-            SEXP res = ApplyFunction(vCmplx, vectorPass, ptr_vec, mySample,
-                                     myBigSamp, myReps, stdFun, rho,
-                                     RFunVal, nthResFun, m, sampSize,
-                                     IsNamed, IsGmp, n);
-            UNPROTECT(1);
+            SEXP res = PROTECT(
+                ApplyFunction(vCmplx, vectorPass, ptr_vec, mySample,
+                              myBigSamp, myReps, stdFun, rho, RFunVal,
+                              nthResFun, m, sampSize, IsNamed, IsGmp, n)
+            );
+            UNPROTECT(2);
             return res;
         } case VecType::Raw : {
             SEXP vectorPass = PROTECT(Rf_allocVector(RAWSXP, m));
@@ -363,40 +366,43 @@ SEXP SampleCombPermFUN(SEXP Rv, const std::vector<int> &vInt,
             Rbyte* rawVec = RAW(Rv);
             std::vector<Rbyte> vByte(rawVec, rawVec + n);
             
-            SEXP res = ApplyFunction(vByte, vectorPass, ptr_vec, mySample,
-                                     myBigSamp, myReps, stdFun, rho,
-                                     RFunVal, nthResFun, m, sampSize,
-                                     IsNamed, IsGmp, n);
-            UNPROTECT(1);
+            SEXP res = PROTECT(
+                ApplyFunction(vByte, vectorPass, ptr_vec, mySample,
+                              myBigSamp, myReps, stdFun, rho, RFunVal,
+                              nthResFun, m, sampSize, IsNamed, IsGmp, n)
+            );
+            UNPROTECT(2);
             return res;
         } case VecType::Logical : {
             SEXP vectorPass = PROTECT(Rf_allocVector(LGLSXP, m));
             int* ptr_vec = LOGICAL(vectorPass);
             
-            SEXP res = ApplyFunction(vInt, vectorPass, ptr_vec, mySample,
-                                     myBigSamp, myReps, stdFun, rho,
-                                     RFunVal, nthResFun, m, sampSize,
-                                     IsNamed, IsGmp, n);
-            UNPROTECT(1);
+            SEXP res = PROTECT(
+                ApplyFunction(vInt, vectorPass, ptr_vec, mySample,
+                              myBigSamp, myReps, stdFun, rho, RFunVal,
+                              nthResFun, m, sampSize, IsNamed, IsGmp, n)
+            );
+            UNPROTECT(2);
             return res;
         } case VecType::Integer : {
             SEXP vectorPass = PROTECT(Rf_allocVector(INTSXP, m));
             int* ptr_vec = INTEGER(vectorPass);
-            
-            SEXP res = ApplyFunction(vInt, vectorPass, ptr_vec, mySample,
-                                     myBigSamp, myReps, stdFun, rho,
-                                     RFunVal, nthResFun, m, sampSize,
-                                     IsNamed, IsGmp, n);
-            UNPROTECT(1);
+            SEXP res = PROTECT(
+                ApplyFunction(vInt, vectorPass, ptr_vec, mySample,
+                              myBigSamp, myReps, stdFun, rho, RFunVal,
+                              nthResFun, m, sampSize, IsNamed, IsGmp, n)
+            );
+            UNPROTECT(2);
             return res;
         } default : {
             SEXP vectorPass = PROTECT(Rf_allocVector(REALSXP, m));
             double* ptr_vec = REAL(vectorPass);
-            SEXP res = ApplyFunction(vNum, vectorPass, ptr_vec, mySample,
-                                     myBigSamp, myReps, stdFun, rho,
-                                     RFunVal, nthResFun, m, sampSize,
-                                     IsNamed, IsGmp, n);
-            UNPROTECT(1);
+            SEXP res = PROTECT(
+                ApplyFunction(vNum, vectorPass, ptr_vec, mySample,
+                              myBigSamp, myReps, stdFun, rho, RFunVal,
+                              nthResFun, m, sampSize, IsNamed, IsGmp, n)
+            );
+            UNPROTECT(2);
             return res;
         }
     }

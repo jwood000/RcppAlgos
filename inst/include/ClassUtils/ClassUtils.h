@@ -1,5 +1,5 @@
-#ifndef COMBO_CLASS_UTILS_H
-#define COMBO_CLASS_UTILS_H
+#ifndef CLASS_UTILS_H
+#define CLASS_UTILS_H
 
 #include "CleanConvert.h"
 
