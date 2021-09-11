@@ -77,11 +77,20 @@ bool nextPermPartial(const std::vector<int> &freqs,
                      std::vector<int> &z, int n1, int m1) {
 
     bool res = false;
-
-    for (int i = 0, k = freqs.size() - 1; i <= m1; ++i, --k) {
-        if (z[i] != freqs[k]) {
-            res = true;
-            break;
+    
+    if (freqs.size()) {
+        for (int i = 0, k = freqs.size() - 1; i <= m1; ++i, --k) {
+            if (z[i] != freqs[k]) {
+                res = true;
+                break;
+            }
+        }
+    } else {
+        for (int i = 0, j = n1; i <= m1; ++i, --j) {
+            if (z[i] != j) {
+                res = true;
+                break;
+            }
         }
     }
 
