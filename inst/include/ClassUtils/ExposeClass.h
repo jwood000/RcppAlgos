@@ -1,5 +1,5 @@
-#ifndef EXPOSE_COMBO_H
-#define EXPOSE_COMBO_H
+#ifndef EXPOSE_CLASS_H
+#define EXPOSE_CLASS_H
 
 #define R_NO_REMAP
 #include <Rinternals.h>
@@ -8,6 +8,8 @@
 extern "C" {
     void StartOverGlue(SEXP ext);
     SEXP ComboNew(SEXP RVals, SEXP RboolVec, SEXP freqInfo);
+    SEXP ComboApplyNew(SEXP RVals, SEXP RboolVec, SEXP freqInfo,
+                       SEXP RstdFun, SEXP Rrho, SEXP R_RFunVal);
     SEXP NextCombGlue(SEXP ext);
     SEXP NextNumCombGlue(SEXP ext, SEXP Rnum);
     SEXP NextGatherGlue(SEXP ext);
