@@ -222,7 +222,7 @@ void zUpdateIndex(std::vector<int> &z, SEXP v, SEXP mat, int m, int nRows) {
                 int ind = 0;
                 
                 while (ind < n1 &&
-                       STRING_ELT(vCopy, ind) != STRING_ELT(yChar, ind)) {
+                       STRING_ELT(vCopy, ind) != STRING_ELT(yChar, j)) {
                     ++ind;
                 }
                 
