@@ -1,6 +1,6 @@
 #include "Sample/SampCombPermStd.h"
 #include "Sample/SampleCombPerm.h"
-#include "Sample/SampleApplyFun.h"
+#include "Sample/SampleApply.h"
 #include "Cpp14MakeUnique.h"
 #include "ComputedCount.h"
 #include "SetUpUtils.h"
@@ -74,9 +74,9 @@ SEXP SampleCombPerm(SEXP Rv, SEXP Rm, SEXP RisRep, SEXP RFreqs,
             Rf_error("FUN must be a function!");
         }
 
-        return SampleCombPermFUN(Rv, vInt, vNum, mySample, myVec.get(),
-                                 myReps, stdFun, myEnv, RFunVal, nthResFun,
-                                 myType, n, m, sampSize, IsNamed, IsGmp);
+        return SampleCombPermApply(Rv, vInt, vNum, mySample, myVec.get(),
+                                   myReps, stdFun, myEnv, RFunVal, nthResFun,
+                                   myType, n, m, sampSize, IsNamed, IsGmp);
     }
 
     return SampCombPermMain(Rv, vInt, vNum, mySample, myVec.get(),

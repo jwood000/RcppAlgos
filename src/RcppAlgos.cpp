@@ -3,7 +3,7 @@
 #include "NumbersUtils/DivNumSieve.h"
 #include "NumbersUtils/PollardRho.h"
 #include "Sample/SamplePartitions.h"
-#include "ClassUtils/ExposeCombo.h"
+#include "ClassUtils/ExposeClass.h"
 #include "Sample/SampleCombPerm.h"
 #include "CombinatoricsCnstrt.h"
 #include "CombinatoricsCount.h"
@@ -37,6 +37,7 @@ static const R_CallMethodDef CallEntries[] = {
     CALLDEF(cpp11GetNumThreads, 0),
     CALLDEF(GetClassVals, 8),
     CALLDEF(ComboNew, 3),
+    CALLDEF(ComboApplyNew, 6),
     CALLDEF(StartOverGlue, 1),
     CALLDEF(NextCombGlue, 1),
     CALLDEF(NextNumCombGlue, 2),
