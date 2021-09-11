@@ -76,21 +76,21 @@ SEXP Combo::MatForward(int nRows) {
     
     SetThreads(LocalPar, maxThreads, nRows,
                myType, nThreads, SexpNThreads, limit);
-    
+
     SEXP res = PROTECT(GetCombPerms(sexpVec, vNum, vInt, n, m, 0, true,
                                     IsComb, LocalPar, IsRep, IsMult, IsGmp,
                                     freqs, z, myReps, dblIndex, mpzIndex[0],
                                     nRows, nThreads, myType));
-    
+
     zUpdateIndex(z, sexpVec, res, m, nRows);
-    if (IsComb) TopOffPerm(z, myReps, n, m, IsRep, IsMult);
+    if (!IsComb) TopOffPerm(z, myReps, n, m, IsRep, IsMult);
     UNPROTECT(1);
     return res;
 }
 
 SEXP Combo::MatReverse(int nRows) {
-    return GetPrevCombPerms(sexpVec, vNum, vInt, myReps, freqs, z, prevIter,
-                            n, m, IsComb, IsRep, IsMult, nRows, myType);
+    return GetPrevCombPerms(sexpVec, vNum, vInt, myReps, freqs, z,
+                            prevIter, n, m, IsComb, IsMult, nRows, myType);
 }
 
 // The bVec Vector represents IsFac, IsComb, IsMult, IsRep, IsGmp, & IsFull
@@ -98,21 +98,21 @@ Combo::Combo(SEXP Rv, int Rm, SEXP RcompRows, const std::vector<int> &bVec,
              const std::vector<int> &Rreps, const std::vector<int> &Rfreqs,
              const std::vector<int> &RvInt, const std::vector<double> &RvNum,
              VecType typePass, int RmaxThreads, SEXP RnumThreads)
-            : n(Rf_length(Rv)), m(Rm), m1(Rm - 1), RTYPE(TYPEOF(Rv)),
-              maxThreads(RmaxThreads), sexpVec(Rv), IsFactor(bVec[0]),
-              IsComb(bVec[1]), IsMult(bVec[2]), IsRep(bVec[3]),
-              IsGmp(bVec[4]), Parallel(maxThreads > 1),
-              computedRows(IsGmp ? 0 : Rf_asReal(RcompRows)),
-              myType(typePass), vInt(RvInt), vNum(RvNum),
-              freqs(Rfreqs), myReps(Rreps),
+            : SexpNThreads(RnumThreads), n(Rf_length(Rv)), m(Rm),
+              m1(Rm - 1), RTYPE(TYPEOF(Rv)), maxThreads(RmaxThreads),
+              sexpVec(Rv), IsFactor(bVec[0]), IsComb(bVec[1]),
+              IsMult(bVec[2]), IsRep(bVec[3]), IsGmp(bVec[4]),
+              Parallel(maxThreads > 1), computedRows(IsGmp ? 0 :
+              Rf_asReal(RcompRows)), myType(typePass), vInt(RvInt),
+              vNum(RvNum), freqs(Rfreqs), myReps(Rreps),
+              n1(IsComb ? n - 1 : (IsMult ? freqs.size() - 1 : n - 1)),
               myClass(bVec[0] ? Rf_getAttrib(Rv, R_ClassSymbol) :
                           Rf_allocVector(STRSXP, 0)),
               myLevels(bVec[0] ? Rf_getAttrib(Rv, R_LevelsSymbol) :
-                           R_NilValue), SexpNThreads(RnumThreads),
+                           R_NilValue),
               nthResFun(GetNthResultFunc(bVec[1], bVec[2], bVec[3], bVec[4])),
               nextIter(GetNextIterPtr(bVec[1], bVec[2], bVec[3], bVec[5])),
-              prevIter(GetPrevIterPtr(bVec[1], bVec[2], bVec[3], bVec[5])),
-              n1(IsComb ? n - 1 : (IsMult ? freqs.size() - 1 : n - 1)) {
+              prevIter(GetPrevIterPtr(bVec[1], bVec[2], bVec[3], bVec[5])) {
 
     z.resize(Rm);
 
@@ -387,7 +387,7 @@ SEXP Combo::randomAccess(SEXP RindexVec) {
         }
 
         z = nthResFun(n, m, dblTemp, mpzTemp, myReps);
-        if (IsComb) TopOffPerm(z, myReps, n, m, IsRep, IsMult);
+        if (!IsComb) TopOffPerm(z, myReps, n, m, IsRep, IsMult);
         return VecReturn();
     }
 }
@@ -403,7 +403,7 @@ SEXP Combo::front() {
     }
 
     z = nthResFun(n, m, dblTemp, mpzTemp, myReps);
-    if (IsComb) TopOffPerm(z, myReps, n, m, IsRep, IsMult);
+    if (!IsComb) TopOffPerm(z, myReps, n, m, IsRep, IsMult);
     return VecReturn();
 }
 
@@ -418,7 +418,7 @@ SEXP Combo::back() {
     }
 
     z = nthResFun(n, m, dblTemp, mpzTemp, myReps);
-    if (IsComb) TopOffPerm(z, myReps, n, m, IsRep, IsMult);
+    if (!IsComb) TopOffPerm(z, myReps, n, m, IsRep, IsMult);
     return VecReturn();
 }
 

@@ -3,9 +3,9 @@
 
 #include "ClassUtils/NextCombinatorics.h"
 #include "Permutations/NthPermutation.h"
-#include "ClassUtils/ComboClassUtils.h"
 #include "ClassUtils/GetPrevCombPerm.h"
 #include "Sample/SampCombPermStd.h"
+#include "ClassUtils/ClassUtils.h"
 #include "Cpp14MakeUnique.h"
 #include "ImportExportMPZ.h"
 #include "GetCombPerm.h"
@@ -14,6 +14,12 @@
 
 class Combo {
 private:
+    SEXP VecReturn();
+    SEXP MatForward(int nRows);
+    SEXP MatReverse(int nRows);
+    SEXP SexpNThreads;
+    
+protected:
     const int n;
     const int m;
     const int m1;
@@ -39,24 +45,19 @@ private:
     const std::vector<int> freqs;
     const std::vector<int> myReps;
     
+    // This has to be initialized later becuase it
+    // depends on freqs.size, IsMult, and n
+    const int n1;
+    
     double dblIndex;
     mpz_t mpzIndex[1];
 
     SEXP myClass;
     SEXP myLevels;
-    SEXP SexpNThreads;
     
     const nthResultPtr nthResFun;
     const nextIterPtr nextIter;
     const prevIterPtr prevIter;
-    
-    // This has to be initialized later becuase it
-    // depends on freqs.size, IsMult, and n
-    const int n1;
-    
-    SEXP VecReturn();
-    SEXP MatForward(int nRows);
-    SEXP MatReverse(int nRows);
 
 public:
     
@@ -64,18 +65,20 @@ public:
           const std::vector<int> &Rreps, const std::vector<int> &Rfreqs,
           const std::vector<int> &RvInt, const std::vector<double> &RvNum,
           VecType typePass, int RmaxThreads, SEXP RnumThreads);
+    
+    virtual ~Combo() = default;
 
     void startOver();
-    SEXP nextComb();
-    SEXP prevComb();
-    SEXP nextNumCombs(SEXP RNum);
-    SEXP prevNumCombs(SEXP RNum);
-    SEXP nextGather();
-    SEXP prevGather();
-    SEXP currComb();
-    SEXP randomAccess(SEXP RindexVec);
-    SEXP front();
-    SEXP back();
+    virtual SEXP nextComb();
+    virtual SEXP prevComb();
+    virtual SEXP nextNumCombs(SEXP RNum);
+    virtual SEXP prevNumCombs(SEXP RNum);
+    virtual SEXP nextGather();
+    virtual SEXP prevGather();
+    virtual SEXP currComb();
+    virtual SEXP randomAccess(SEXP RindexVec);
+    virtual SEXP front();
+    virtual SEXP back();
     SEXP sourceVector() const;
     SEXP summary();
 };
