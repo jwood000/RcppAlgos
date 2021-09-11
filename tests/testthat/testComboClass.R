@@ -31,13 +31,13 @@ test_that("comboIter & permuteIter produces correct results with no constraints"
         }
         
         # .method("summary", &Combo::summary)
-        myResults <- c(myResults, isTRUE(all.equal(a$summary()$totalResults, myRows)))
+        myResults <- c(myResults, isTRUE(all.equal(a@summary()$totalResults, myRows)))
         
         # .method("sourceVector", &Combo::sourceVector)
         if (length(v1) == 1) {
-            myResults <- c(myResults, isTRUE(all.equal(v1, length(a$sourceVector()))))
+            myResults <- c(myResults, isTRUE(all.equal(v1, length(a@sourceVector()))))
         } else {
-            myResults <- c(myResults, isTRUE(all.equal(v1, a$sourceVector())))
+            myResults <- c(myResults, isTRUE(all.equal(v1, a@sourceVector())))
         }
         
         # .method("front", &Combo::front)
@@ -45,28 +45,28 @@ test_that("comboIter & permuteIter produces correct results with no constraints"
         # .method("back", &Combo::back)
         # .method("currIter", &Combo::currComb)
         if (is.list(b)) {
-            myResults <- c(myResults, isTRUE(all.equal(a$front(), b[[1]])))
-            myResults <- c(myResults, isTRUE(all.equal(a$currIter(), b[[1]])))
-            myResults <- c(myResults, isTRUE(all.equal(a$back(), b[[myRows]])))
-            myResults <- c(myResults, isTRUE(all.equal(a$currIter(), b[[myRows]])))
+            myResults <- c(myResults, isTRUE(all.equal(a@front(), b[[1]])))
+            myResults <- c(myResults, isTRUE(all.equal(a@currIter(), b[[1]])))
+            myResults <- c(myResults, isTRUE(all.equal(a@back(), b[[myRows]])))
+            myResults <- c(myResults, isTRUE(all.equal(a@currIter(), b[[myRows]])))
         } else {
-            myResults <- c(myResults, isTRUE(all.equal(a$front(), b[1, ])))
-            myResults <- c(myResults, isTRUE(all.equal(a$currIter(), b[1, ])))
-            myResults <- c(myResults, isTRUE(all.equal(a$back(), b[myRows, ])))
-            myResults <- c(myResults, isTRUE(all.equal(a$currIter(), b[myRows, ])))
+            myResults <- c(myResults, isTRUE(all.equal(a@front(), b[1, ])))
+            myResults <- c(myResults, isTRUE(all.equal(a@currIter(), b[1, ])))
+            myResults <- c(myResults, isTRUE(all.equal(a@back(), b[myRows, ])))
+            myResults <- c(myResults, isTRUE(all.equal(a@currIter(), b[myRows, ])))
         }
         
         # .method("startOver", &Combo::startOver)
-        a$startOver()
+        a@startOver()
         a1 <- b
         
         if (is.list(b)) {
             for (i in 1:myRows) {
-                a1[[i]] <- a$nextIter()
+                a1[[i]] <- a@nextIter()
             }
         } else{
             for (i in 1:myRows) {
-                a1[i, ] <- a$nextIter()
+                a1[i, ] <- a@nextIter()
             }
         }
 
@@ -74,7 +74,7 @@ test_that("comboIter & permuteIter produces correct results with no constraints"
         myResults <- c(myResults, isTRUE(all.equal(a1, b)))
         
         # .method("startOver", &Combo::startOver)
-        a$startOver()
+        a@startOver()
         numTest <- as.integer(myRows / 3);
         
         s <- 1L
@@ -83,9 +83,9 @@ test_that("comboIter & permuteIter produces correct results with no constraints"
         # .method("nextNIter", &Combo::nextNumCombs)
         for (i in 1:3) {
             if (is.list(b)) {
-                myResults <- c(myResults, isTRUE(all.equal(a$nextNIter(numTest), b[s:e])))
+                myResults <- c(myResults, isTRUE(all.equal(a@nextNIter(numTest), b[s:e])))
             } else {
-                myResults <- c(myResults, isTRUE(all.equal(a$nextNIter(numTest), b[s:e, ])))
+                myResults <- c(myResults, isTRUE(all.equal(a@nextNIter(numTest), b[s:e, ])))
             }
             
             s <- e + 1L
@@ -93,41 +93,41 @@ test_that("comboIter & permuteIter produces correct results with no constraints"
         }
         
         # .method("nextRemaining", &Combo::nextGather)
-        a$startOver()
-        myResults <- c(myResults, isTRUE(all.equal(a$nextRemaining(), b)))
+        a@startOver()
+        myResults <- c(myResults, isTRUE(all.equal(a@nextRemaining(), b)))
         
         ## Prepare a for reverse iteration
-        temp <- a$back()
-        t <- capture.output(a$nextIter())
+        temp <- a@back()
+        t <- capture.output(a@nextIter())
         a2 <- b
         
         if (is.list(b)) {
             for (i in myRows:1) {
-                a2[[i]] <- a$prevIter()
+                a2[[i]] <- a@prevIter()
             }
         } else {
             for (i in myRows:1) {
-                a2[i, ] <- a$prevIter()
+                a2[i, ] <- a@prevIter()
             }
         }
         
         # .method("prevIter", &Combo::prevComb)
         myResults <- c(myResults, isTRUE(all.equal(a2, b)))
-        a$startOver()
+        a@startOver()
         
         s <- myRows
         e <- myRows - numTest + 1L
         
         ## Prepare a for reverse iteration
-        temp <- a$back()
-        t <- capture.output(a$nextIter())
-        
+        temp <- a@back()
+        t <- capture.output(a@nextIter())
+
         # .method("prevNIter", &Combo::prevNumCombs)
         for (i in 1:3) {
             if (is.list(b)) {
-                myResults <- c(myResults, isTRUE(all.equal(a$prevNIter(numTest), b[s:e])))
+                myResults <- c(myResults, isTRUE(all.equal(a@prevNIter(numTest), b[s:e])))
             } else {
-                myResults <- c(myResults, isTRUE(all.equal(a$prevNIter(numTest), b[s:e, ])))
+                myResults <- c(myResults, isTRUE(all.equal(a@prevNIter(numTest), b[s:e, ])))
             }
             
             s <- e - 1L
@@ -135,10 +135,10 @@ test_that("comboIter & permuteIter produces correct results with no constraints"
         }
         
         ## Prepare a for reverse iteration
-        temp <- a$back()
-        t <- capture.output(a$nextIter())
-        a3 <- a$prevRemaining()
-        
+        temp <- a@back()
+        t <- capture.output(a@nextIter())
+        a3 <- a@prevRemaining()
+
         # .method("prevRemaining", &Combo::prevGather)
         if (is.list(b)) {
             myResults <- c(myResults, all(sapply(1:myRows, function(x) {
@@ -154,40 +154,39 @@ test_that("comboIter & permuteIter produces correct results with no constraints"
         samp <- sample(myRows, numTest)
         
         if (is.list(b)) {
-            myResults <- c(myResults, isTRUE(all.equal(a[[samp]], b[samp])))
+            myResults <- c(myResults, isTRUE(all.equal(a[samp], b[samp])))
         } else {
-            myResults <- c(myResults, isTRUE(all.equal(a[[samp]], b[samp, ])))
+            myResults <- c(myResults, isTRUE(all.equal(a[samp], b[samp, ])))
         }
         rm(a, a1, a2, a3, b)
         gc()
-        
         all(myResults)
     }
     
     expect_true(comboClassTest(5, 3))
     expect_true(comboClassTest(as.raw(1:5), 3))
     expect_true(comboClassTest(factor(1:5), 3))
-    
+
     expect_true(comboClassTest(as.complex(1:5), 3, TRUE))
     expect_true(comboClassTest(c(TRUE, FALSE), 20, TRUE))
     expect_true(comboClassTest(letters[1:5], 6, freqs1 = 1:5))
-    
+
     set.seed(103)
     myNums = rnorm(5)
     expect_true(comboClassTest(myNums, 4, freqs1 = c(1, 2, 3, 2, 1)))
-    
+
     expect_true(comboClassTest(5, 3, IsComb = FALSE))
     expect_true(comboClassTest(as.raw(1:5), 3, IsComb = FALSE))
     expect_true(comboClassTest(factor(1:5), 3, IsComb = FALSE))
-    
+
     expect_true(comboClassTest(as.complex(1:5), 3, TRUE, IsComb = FALSE))
     expect_true(comboClassTest(c(TRUE, FALSE), 3, TRUE, IsComb = FALSE))
     expect_true(comboClassTest(letters[1:4], 5, freqs1 = 1:4, IsComb = FALSE))
-    
+
     set.seed(103)
     myNums = rnorm(5)
     expect_true(comboClassTest(myNums, 4, freqs1 = c(1, 2, 3, 2, 1), IsComb = FALSE))
-    
+
     ## With FUN
     expect_true(comboClassTest(5, 3, FUN1 = sum))
     expect_true(comboClassTest(as.complex(1:5), 3, TRUE, FUN1 = mean))
@@ -195,7 +194,7 @@ test_that("comboIter & permuteIter produces correct results with no constraints"
     set.seed(103)
     myNums = rnorm(5)
     expect_true(comboClassTest(myNums, 4, freqs1 = c(1, 2, 3, 2, 1), FUN1 = cumprod))
-    
+
     expect_true(comboClassTest(5, 3, IsComb = FALSE, FUN1 = sd))
     expect_true(comboClassTest(as.complex(1:5), 3, TRUE, IsComb = FALSE, FUN1 = var))
     expect_true(comboClassTest(letters[1:4], 5, freqs1 = 1:4, IsComb = FALSE, 
@@ -244,13 +243,13 @@ test_that("comboIter & permuteIter produces correct results with no constraints"
         }
         
         # .method("summary", &Combo::summary)
-        myResults <- c(myResults, isTRUE(all.equal(a$summary()$totalResults, myRows)))
+        myResults <- c(myResults, isTRUE(all.equal(a@summary()$totalResults, myRows)))
         
         # .method("sourceVector", &Combo::sourceVector)
         if (length(v1) == 1) {
-            myResults <- c(myResults, isTRUE(all.equal(v1, length(a$sourceVector()))))
+            myResults <- c(myResults, isTRUE(all.equal(v1, length(a@sourceVector()))))
         } else {
-            myResults <- c(myResults, isTRUE(all.equal(v1, a$sourceVector())))
+            myResults <- c(myResults, isTRUE(all.equal(v1, a@sourceVector())))
         }
         
         # .method("front", &Combo::front)
@@ -258,28 +257,28 @@ test_that("comboIter & permuteIter produces correct results with no constraints"
         # .method("back", &Combo::back)
         # .method("currIter", &Combo::currComb)
         if (is.list(b1)) {
-            myResults <- c(myResults, isTRUE(all.equal(a$front(), b1[[1]])))
-            myResults <- c(myResults, isTRUE(all.equal(a$currIter(), b1[[1]])))
-            myResults <- c(myResults, isTRUE(all.equal(a$back(), b2[[lenCheck]])))
-            myResults <- c(myResults, isTRUE(all.equal(a$currIter(), b2[[lenCheck]])))
+            myResults <- c(myResults, isTRUE(all.equal(a@front(), b1[[1]])))
+            myResults <- c(myResults, isTRUE(all.equal(a@currIter(), b1[[1]])))
+            myResults <- c(myResults, isTRUE(all.equal(a@back(), b2[[lenCheck]])))
+            myResults <- c(myResults, isTRUE(all.equal(a@currIter(), b2[[lenCheck]])))
         } else {
-            myResults <- c(myResults, isTRUE(all.equal(a$front(), b1[1, ])))
-            myResults <- c(myResults, isTRUE(all.equal(a$currIter(), b1[1, ])))
-            myResults <- c(myResults, isTRUE(all.equal(a$back(), b2[lenCheck, ])))
-            myResults <- c(myResults, isTRUE(all.equal(a$currIter(), b2[lenCheck, ])))
+            myResults <- c(myResults, isTRUE(all.equal(a@front(), b1[1, ])))
+            myResults <- c(myResults, isTRUE(all.equal(a@currIter(), b1[1, ])))
+            myResults <- c(myResults, isTRUE(all.equal(a@back(), b2[lenCheck, ])))
+            myResults <- c(myResults, isTRUE(all.equal(a@currIter(), b2[lenCheck, ])))
         }
         
         # .method("startOver", &Combo::startOver)
-        a$startOver()
+        a@startOver()
         a1 <- b1
         
         if (is.list(b1)) {
             for (i in 1:length(b1)) {
-                a1[[i]] <- a$nextIter()
+                a1[[i]] <- a@nextIter()
             }
         } else{
             for (i in 1:lenCheck) {
-                a1[i, ] <- a$nextIter()
+                a1[i, ] <- a@nextIter()
             }
         }
         
@@ -287,7 +286,7 @@ test_that("comboIter & permuteIter produces correct results with no constraints"
         myResults <- c(myResults, isTRUE(all.equal(a1, b1)))
         
         # .method("startOver", &Combo::startOver)
-        a$startOver()
+        a@startOver()
         numTest <- as.integer(lenCheck / 3);
         
         s <- 1L
@@ -296,9 +295,9 @@ test_that("comboIter & permuteIter produces correct results with no constraints"
         # .method("nextNIter", &Combo::nextNumCombs)
         for (i in 1:3) {
             if (is.list(b1)) {
-                myResults <- c(myResults, isTRUE(all.equal(a$nextNIter(numTest), b1[s:e])))
+                myResults <- c(myResults, isTRUE(all.equal(a@nextNIter(numTest), b1[s:e])))
             } else {
-                myResults <- c(myResults, isTRUE(all.equal(a$nextNIter(numTest), b1[s:e, ])))
+                myResults <- c(myResults, isTRUE(all.equal(a@nextNIter(numTest), b1[s:e, ])))
             }
             
             s <- e + 1L
@@ -306,43 +305,43 @@ test_that("comboIter & permuteIter produces correct results with no constraints"
         }
         
         # .method("nextRemaining", &Combo::nextGather)
-        a$startOver()
-        a[[gmp::sub.bigz(myRows, lenCheck)]]
-        myResults <- c(myResults, isTRUE(all.equal(a$nextRemaining(), b2)))
+        a@startOver()
+        a[gmp::sub.bigz(myRows, lenCheck)]
+        myResults <- c(myResults, isTRUE(all.equal(a@nextRemaining(), b2)))
         
         ## Prepare a for reverse iteration
-        temp <- a$back()
-        t <- capture.output(a$nextIter())
+        temp <- a@back()
+        t <- capture.output(a@nextIter())
         
         a2 <- b2
         
         if (is.list(b1)) {
             for (i in lenCheck:1) {
-                a2[[i]] <- a$prevIter()
+                a2[[i]] <- a@prevIter()
             }
         } else {
             for (i in lenCheck:1) {
-                a2[i, ] <- a$prevIter()
+                a2[i, ] <- a@prevIter()
             }
         }
         
         # .method("prevIter", &Combo::prevComb)
         myResults <- c(myResults, isTRUE(all.equal(a2, b2)))
-        a$startOver()
+        a@startOver()
         
         s <- lenCheck
         e <- lenCheck - numTest + 1L
         
         ## Prepare a for reverse iteration
-        temp <- a$back()
-        t <- capture.output(a$nextIter())
+        temp <- a@back()
+        t <- capture.output(a@nextIter())
         
         # .method("prevNIter", &Combo::prevNumCombs)
         for (i in 1:3) {
             if (is.list(b1)) {
-                myResults <- c(myResults, isTRUE(all.equal(a$prevNIter(numTest), b2[s:e])))
+                myResults <- c(myResults, isTRUE(all.equal(a@prevNIter(numTest), b2[s:e])))
             } else {
-                myResults <- c(myResults, isTRUE(all.equal(a$prevNIter(numTest), b2[s:e, ])))
+                myResults <- c(myResults, isTRUE(all.equal(a@prevNIter(numTest), b2[s:e, ])))
             }
             
             s <- e - 1L
@@ -350,9 +349,9 @@ test_that("comboIter & permuteIter produces correct results with no constraints"
         }
         
         ## Prepare a for reverse iteration
-        temp <- a[[lenCheck]]
-        t <- capture.output(a$nextIter())
-        a3 <- a$prevRemaining()
+        temp <- a[lenCheck]
+        t <- capture.output(a@nextIter())
+        a3 <- a@prevRemaining()
         
         # .method("prevRemaining", &Combo::prevGather)
         if (is.list(b1)) {
@@ -368,13 +367,13 @@ test_that("comboIter & permuteIter produces correct results with no constraints"
         # .method("[[", &Combo::combIndex)
         samp1 <- sample(lenCheck, 5)
         samp2 <- gmp::sub.bigz(myRows, lenCheck) + gmp::as.bigz(samp1)
-        
+
         if (is.list(b1)) {
-            myResults <- c(myResults, isTRUE(all.equal(a[[samp1]], b1[samp1])))
-            myResults <- c(myResults, isTRUE(all.equal(a[[samp2]], b2[samp1])))
+            myResults <- c(myResults, isTRUE(all.equal(a[samp1], b1[samp1])))
+            myResults <- c(myResults, isTRUE(all.equal(a[samp2], b2[samp1])))
         } else {
-            myResults <- c(myResults, isTRUE(all.equal(a[[samp1]], b1[samp1, ])))
-            myResults <- c(myResults, isTRUE(all.equal(a[[samp2]], b2[samp1, ])))
+            myResults <- c(myResults, isTRUE(all.equal(a[samp1], b1[samp1, ])))
+            myResults <- c(myResults, isTRUE(all.equal(a[samp2], b2[samp1, ])))
         }
         
         rm(a, a1, a2, a3, b1, b2)
