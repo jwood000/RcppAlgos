@@ -3,8 +3,7 @@
 
 void GetPrevious(SEXP mat, SEXP v, std::vector<int> &z,
                  prevIterPtr prevIter, int n, int m, int nRows,
-                 bool IsComb, const std::vector<int> &freqs,
-                 bool IsMult, bool IsReo) {
+                 const std::vector<int> &freqs, bool IsComb, bool IsMult) {
     
     const int loc_n1 = IsComb ? n - 1 : (IsMult ? freqs.size() - 1 : n - 1);
     const int lastRow = nRows - 1;
@@ -28,8 +27,7 @@ void GetPrevious(SEXP mat, SEXP v, std::vector<int> &z,
 template <typename T>
 void GetPrevious(T* mat, const std::vector<T> &v, std::vector<int> &z,
                  prevIterPtr prevIter, int n, int m, int nRows,
-                 bool IsComb, const std::vector<int> &freqs,
-                 bool IsMult, bool IsReo) {
+                 const std::vector<int> &freqs, bool IsComb, bool IsMult) {
     
     const int loc_n1 = IsComb ? n - 1 : (IsMult ? freqs.size() - 1 : n - 1);
     const int lastRow = nRows - 1;
@@ -55,7 +53,7 @@ SEXP GetPrevCombPerms(SEXP Rv, const std::vector<double> &vNum,
                       const std::vector<int> &myReps,
                       const std::vector<int> &freqs, std::vector<int> &z,
                       prevIterPtr prevIter, int n, int m, bool IsComb,
-                      bool IsRep, bool IsMult, int nRows, VecType myType) {
+                      bool IsMult, int nRows, VecType myType) {
 
     switch (myType) {
         case VecType::Character : {
@@ -63,7 +61,7 @@ SEXP GetPrevCombPerms(SEXP Rv, const std::vector<double> &vNum,
             SEXP res = PROTECT(Rf_allocMatrix(STRSXP, nRows, m));
 
             GetPrevious(res, charVec, z, prevIter, n, m,
-                        nRows, IsComb, freqs, IsMult, IsRep);
+                        nRows, freqs, IsComb, IsMult);
             
             UNPROTECT(2);
             return res;
@@ -78,8 +76,8 @@ SEXP GetPrevCombPerms(SEXP Rv, const std::vector<double> &vNum,
             SEXP res = PROTECT(Rf_allocMatrix(CPLXSXP, nRows, m));
             Rcomplex* matCmplx = COMPLEX(res);
             
-            GetPrevious(matCmplx, stlCmplxVec, z, prevIter, n,
-                        m, nRows, IsComb, freqs, IsMult, IsRep);
+            GetPrevious(matCmplx, stlCmplxVec, z, prevIter,
+                        n, m, nRows, freqs, IsComb, IsMult);
             
             UNPROTECT(1);
             return res;
@@ -94,8 +92,8 @@ SEXP GetPrevCombPerms(SEXP Rv, const std::vector<double> &vNum,
             SEXP res = PROTECT(Rf_allocMatrix(RAWSXP, nRows, m));
             Rbyte* rawMat = RAW(res);
             
-            GetPrevious(rawMat, stlRawVec, z, prevIter, n,
-                        m, nRows, IsComb, freqs, IsMult, IsRep);
+            GetPrevious(rawMat, stlRawVec, z, prevIter,
+                        n, m, nRows, freqs, IsComb, IsMult);
             
             UNPROTECT(1);
             return res;
@@ -110,8 +108,8 @@ SEXP GetPrevCombPerms(SEXP Rv, const std::vector<double> &vNum,
             SEXP res = PROTECT(Rf_allocMatrix(LGLSXP, nRows, m));
             int* matBool = LOGICAL(res);
             
-            GetPrevious(matBool, vBool, z, prevIter, n, m,
-                        nRows, IsComb, freqs, IsMult, IsRep);
+            GetPrevious(matBool, vBool, z, prevIter, n,
+                        m, nRows, freqs, IsComb, IsMult);
             
             UNPROTECT(1);
             return res;
@@ -119,8 +117,8 @@ SEXP GetPrevCombPerms(SEXP Rv, const std::vector<double> &vNum,
             SEXP res = PROTECT(Rf_allocMatrix(INTSXP, nRows, m));
             int* matInt = INTEGER(res);
             
-            GetPrevious(matInt, vInt, z, prevIter, n, m,
-                        nRows, IsComb, freqs, IsMult, IsRep);
+            GetPrevious(matInt, vInt, z, prevIter, n,
+                        m, nRows, freqs, IsComb, IsMult);
             
             if (Rf_isFactor(Rv)) {
                 SetFactorClass(res, Rv);
@@ -132,8 +130,8 @@ SEXP GetPrevCombPerms(SEXP Rv, const std::vector<double> &vNum,
             SEXP res = PROTECT(Rf_allocMatrix(REALSXP, nRows, m));
             double* matNum = REAL(res);
             
-            GetPrevious(matNum, vNum, z, prevIter, n, m,
-                        nRows, IsComb, freqs, IsMult, IsRep);
+            GetPrevious(matNum, vNum, z, prevIter, n,
+                        m, nRows, freqs, IsComb, IsMult);
             
             UNPROTECT(1);
             return res;
