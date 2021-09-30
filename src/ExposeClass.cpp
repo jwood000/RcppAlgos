@@ -1,5 +1,6 @@
 #include "ClassUtils/ConstraintsClass.h"
 #include "ClassUtils/ComboApplyClass.h"
+#include "ClassUtils/ComboResClass.h"
 #include "ClassUtils/ExposeClass.h"
 #include "ClassUtils/ComboClass.h"
 #include "CheckReturn.h"
@@ -18,76 +19,164 @@ static void Finalizer(SEXP ext) {
 // RVals contains: v, vNum, vInt, m, RcompRows, maxThreads, & nThreads
 // RboolVec contains: IsFac, IsComb, IsMult, IsRep, IsGmp, & IsFull
 // freqInfo contains: myReps & freqs
-SEXP ComboNew(SEXP RVals, SEXP RboolVec, SEXP freqInfo) {
+SEXP CombClassNew(SEXP RVals, SEXP RboolVec, SEXP freqInfo, SEXP Rparallel,
+                  SEXP RstdFun, SEXP Rrho, SEXP R_RFunVal, SEXP RmainFun,
+                  SEXP RcompFun, SEXP Rtarget, SEXP RKeepRes,
+                  SEXP Rtolerance, SEXP RmIsNull, SEXP RretVal) {
 
-    const std::vector<int> bVec  = CleanConvert::GetNumVec<int>(RboolVec);
-    const std::vector<int> Rreps = CleanConvert::GetNumVec<int>(
+    const int ReturnValue = Rf_asInteger(RretVal);
+    const std::vector<int> bVec   = CleanConvert::GetNumVec<int>(RboolVec);
+    const std::vector<int> myReps = CleanConvert::GetNumVec<int>(
         VECTOR_ELT(freqInfo, 0)
     );
     
-    const std::vector<int> Rfreqs = CleanConvert::GetNumVec<int>(
+    const std::vector<int> freqs = CleanConvert::GetNumVec<int>(
         VECTOR_ELT(freqInfo, 1)
     );
     
-    const int Rm = Rf_asInteger(VECTOR_ELT(RVals, 3));
+    const int m = Rf_asInteger(VECTOR_ELT(RVals, 3));
     const int maxThreads = Rf_asInteger(VECTOR_ELT(RVals, 5));
     
-    const std::vector<double> RvNum = CleanConvert::GetNumVec<double>(
+    const std::vector<double> vNum = CleanConvert::GetNumVec<double>(
         VECTOR_ELT(RVals, 1)
     );
-    const std::vector<int> RvInt = CleanConvert::GetNumVec<int>(
+    std::vector<int> vInt = CleanConvert::GetNumVec<int>(
         VECTOR_ELT(RVals, 2)
     );
     
     VecType myType;
     SetType(myType, VECTOR_ELT(RVals, 0));
-    
-    class Combo* ptr = new Combo(VECTOR_ELT(RVals, 0), Rm,
-                                 VECTOR_ELT(RVals, 4), bVec, Rreps, Rfreqs,
-                                 RvInt, RvNum, myType, maxThreads,
-                                 VECTOR_ELT(RVals, 6));
-    SEXP ext = PROTECT(R_MakeExternalPtr(ptr, R_NilValue, R_NilValue));
-    R_RegisterCFinalizerEx(ext, Finalizer, TRUE);
-    
-    UNPROTECT(1);
-    return ext;
-}
+    const bool Parallel = CleanConvert::convertFlag(Rparallel, "Parallel");
 
-SEXP ComboApplyNew(SEXP RVals, SEXP RboolVec, SEXP freqInfo,
-                   SEXP RstdFun, SEXP Rrho, SEXP R_RFunVal) {
+    if (ReturnValue == 1) {
+        class Combo* ptr = new Combo(
+            VECTOR_ELT(RVals, 0), m, VECTOR_ELT(RVals, 4), bVec, myReps,
+            freqs, vInt, vNum, myType, maxThreads, VECTOR_ELT(RVals, 6),
+            Parallel
+        );
+        
+        SEXP ext = PROTECT(R_MakeExternalPtr(ptr, R_NilValue, R_NilValue));
+        R_RegisterCFinalizerEx(ext, Finalizer, TRUE);
+        
+        UNPROTECT(1);
+        return ext;
+    } else if (ReturnValue == 2) {
+        class ComboApply* ptr = new ComboApply(
+            VECTOR_ELT(RVals, 0), m, VECTOR_ELT(RVals, 4), bVec, myReps,
+            freqs, vInt, vNum, myType, maxThreads, VECTOR_ELT(RVals, 6),
+            Parallel, RstdFun, Rrho, R_RFunVal
+        );
+
+        SEXP ext = PROTECT(R_MakeExternalPtr(ptr, R_NilValue, R_NilValue));
+        R_RegisterCFinalizerEx(ext, Finalizer, TRUE);
+        
+        UNPROTECT(1);
+        return ext;
+    } else {
+        const bool keepRes = CleanConvert::convertFlag(RKeepRes, "keepResults");
+        const bool IsConstrained = CheckConstrnd(RmainFun, RcompFun, Rtarget);
+        const int n = vNum.size();
+        
+        if (!Rf_isString(RmainFun) || Rf_length(RmainFun) != 1) {
+            Rf_error("contraintFun must be one of the following:"
+                         " 'prod', 'sum', 'mean', 'max', or 'min'");
+        }
+        
+        const std::string mainFun(CHAR(STRING_ELT(RmainFun, 0)));
+        const auto funIt = std::find(mainFunSet.begin(), mainFunSet.end(), mainFun);
+        
+        if (funIt == mainFunSet.end()) {
+            Rf_error("contraintFun must be one of the following:"
+                         " 'prod', 'sum', 'mean', 'max', or 'min'");
+        }
+        
+        funcPtr<double> funDbl = GetFuncPtr<double>(mainFun);
+        const bool IsComb   = static_cast<bool>(bVec[1]);
+        const bool IsMult   = static_cast<bool>(bVec[2]);
+        const bool IsRep    = static_cast<bool>(bVec[3]);
+        const bool IsStdGmp = static_cast<bool>(bVec[4]);
+        
+        ConstraintType ctype = ConstraintType::NoConstraint;
+        PartDesign part;
+        
+        part.isRep   = IsRep;
+        part.isMult  = IsMult;
+        part.mIsNull = static_cast<bool>(Rf_asLogical(RmIsNull));
+        
+        std::vector<std::string> compVec;
+        std::vector<double> tarVals;
+        std::vector<int> tarIntVals;
+        
+        if (IsConstrained) {
+            ConstraintSetup(vNum, myReps, tarVals, vInt, tarIntVals,
+                            funDbl, part, ctype, n, m, compVec, mainFun,
+                            myType, Rtarget, RcompFun, Rtolerance,
+                            R_NilValue, IsComb, false);
+        }
+
+        auto computedRowsMpz = FromCpp14::make_unique<mpz_t[]>(1);
+        mpz_init(computedRowsMpz[0]);
+        
+        if (IsStdGmp) {
+            createMPZArray(VECTOR_ELT(RVals, 4), computedRowsMpz.get(), 1,
+                           "computedRowsMpz");
+        }
+        
+        const double computedRows = (part.count > 0) ? part.count :
+            (IsStdGmp ? mpz_get_d(computedRowsMpz[0]) :
+                 Rf_asReal(VECTOR_ELT(RVals, 4)));
+        
+        const bool IsGmp = (computedRows > Significand53);
+        
+        if (IsGmp && part.isPart) {
+            mpz_set(computedRowsMpz[0], part.bigCount);
+        }
+        
+        // See comments in ConstraintsMain.cpp
+        const bool numUnknown = ctype == ConstraintType::PartitionEsque ||
+            ctype == ConstraintType::SpecialCnstrnt ||
+            ctype == ConstraintType::General        ||
+            part.numUnknown;
+        
+        std::vector<int> startZ(m);
+        const int cap     = n - part.includeZero;
+        const int strtLen = std::count_if(part.startZ.cbegin(),
+                                          part.startZ.cend(),
+                                          [](int i){return i > 0;});
+        
+        if (ctype < ConstraintType::PartMapping) {
+            mpz_t zero;
+            mpz_init(zero);
+            SetStartZ(myReps, freqs, startZ, IsComb, n, m,
+                      0, zero, IsRep, IsMult, IsGmp);
+            mpz_clear(zero);
+        } else {
+            startZ = part.startZ;
+        }
+        
+        if (ctype == ConstraintType::NoConstraint) {
+            if (myType == VecType::Integer) {
+                if (!CheckIsInteger(mainFun, n, m, vNum, vNum, funDbl,
+                                    false, IsRep, IsMult, false)) {
+                    myType = VecType::Numeric;
+                }
+            }
     
-    const std::vector<int> bVec  = CleanConvert::GetNumVec<int>(RboolVec);
-    const std::vector<int> Rreps = CleanConvert::GetNumVec<int>(
-        VECTOR_ELT(freqInfo, 0)
-    );
+            class ComboRes* ptr = new ComboRes(
+                VECTOR_ELT(RVals, 0), m, VECTOR_ELT(RVals, 4), bVec, myReps,
+                freqs, vInt, vNum, myType, maxThreads, VECTOR_ELT(RVals, 6),
+                Parallel, part, compVec, tarVals, tarIntVals, startZ, mainFun,
+                funDbl, ctype, strtLen, cap, keepRes, numUnknown,
+                computedRows, computedRowsMpz[0]
+            );
     
-    const std::vector<int> Rfreqs = CleanConvert::GetNumVec<int>(
-        VECTOR_ELT(freqInfo, 1)
-    );
+            SEXP ext = PROTECT(R_MakeExternalPtr(ptr, R_NilValue, R_NilValue));
+            R_RegisterCFinalizerEx(ext, Finalizer, TRUE);
     
-    const int Rm = Rf_asInteger(VECTOR_ELT(RVals, 3));
-    const int maxThreads = Rf_asInteger(VECTOR_ELT(RVals, 5));
-    
-    const std::vector<double> RvNum = CleanConvert::GetNumVec<double>(
-        VECTOR_ELT(RVals, 1)
-    );
-    const std::vector<int> RvInt = CleanConvert::GetNumVec<int>(
-        VECTOR_ELT(RVals, 2)
-    );
-    
-    VecType myType;
-    SetType(myType, VECTOR_ELT(RVals, 0));
-    
-    class ComboApply* ptr = new ComboApply(VECTOR_ELT(RVals, 0), Rm,
-                                           VECTOR_ELT(RVals, 4), bVec, Rreps,
-                                           Rfreqs, RvInt, RvNum, myType,
-                                           maxThreads, VECTOR_ELT(RVals, 6),
-                                           RstdFun, Rrho, R_RFunVal);
-    SEXP ext = PROTECT(R_MakeExternalPtr(ptr, R_NilValue, R_NilValue));
-    R_RegisterCFinalizerEx(ext, Finalizer, TRUE);
-    
-    UNPROTECT(1);
-    return ext;
+            UNPROTECT(1);
+            return ext;
+        }
+    }
 }
 
 void StartOverGlue(SEXP ext) {
@@ -155,139 +244,67 @@ SEXP SummaryGlue(SEXP ext) {
     return ptr->summary();
 }
 
-SEXP ConstraintsNew(SEXP RVals, SEXP RboolVec, SEXP freqInfo, SEXP RmainFun,
-                    SEXP RcompFun, SEXP Rlimits, SEXP RKeepRes, SEXP Rtarget,
-                    SEXP Rtolerance, SEXP RmIsNull) {
-    
-    const std::vector<int> bVec  = CleanConvert::GetNumVec<int>(RboolVec);
-    const std::vector<int> Rreps = CleanConvert::GetNumVec<int>(
-        VECTOR_ELT(freqInfo, 0)
-    );
-    
-    const std::vector<int> Rfreqs = CleanConvert::GetNumVec<int>(
-        VECTOR_ELT(freqInfo, 1)
-    );
-    
-    const int Rm = Rf_asInteger(VECTOR_ELT(RVals, 3));
-    const int maxThreads = Rf_asInteger(VECTOR_ELT(RVals, 5));
-    
-    std::vector<double> RvNum = CleanConvert::GetNumVec<double>(
-        VECTOR_ELT(RVals, 1)
-    );
-    std::vector<int> RvInt = CleanConvert::GetNumVec<int>(
-        VECTOR_ELT(RVals, 2)
-    );
-    
-    VecType myType;
-    SetType(myType, VECTOR_ELT(RVals, 0));
-    
-    const bool IsConstrained = CheckConstrnd(RmainFun, RcompFun, Rtarget);
-    const int n = RvNum.size();
-    
-    if (!Rf_isString(RmainFun) || Rf_length(RmainFun) != 1) {
-        Rf_error("contraintFun must be one of the following:"
-                     " 'prod', 'sum', 'mean', 'max', or 'min'");
-    }
-    
-    const std::string mainFun(CHAR(STRING_ELT(RmainFun, 0)));
-    const auto funIt = std::find(mainFunSet.begin(), mainFunSet.end(), mainFun);
-    
-    if (funIt == mainFunSet.end()) {
-        Rf_error("contraintFun must be one of the following:"
-                     " 'prod', 'sum', 'mean', 'max', or 'min'");
-    }
-    
-    std::vector<int> tarIntVals;
-    const funcPtr<double> funDbl = GetFuncPtr<double>(mainFun);
-    const bool IsComb = static_cast<bool>(bVec[1]);
-    const bool IsStdGmp = static_cast<bool>(bVec[4]);
-
-    std::vector<std::string> compVec;
-    std::vector<double> tarVals;
-
-    ConstraintType ctype = ConstraintType::NoConstraint;
-    PartDesign part;
-
-    part.isRep = static_cast<bool>(bVec[3]);
-    part.isMult = static_cast<bool>(bVec[2]);
-    part.mIsNull = static_cast<bool>(Rf_asLogical(RmIsNull));
-
-    if (IsConstrained) {
-        ConstraintSetup(RvNum, Rreps, tarVals, RvInt, tarIntVals,
-                        funDbl, part, ctype, n, Rm, compVec, mainFun, myType,
-                        Rtarget, RcompFun, Rtolerance, R_NilValue, IsComb, false);
-    }
-
-    const double computedRows = (part.count > 0) ? part.count :
-        (IsStdGmp ? 0 : Rf_asReal(VECTOR_ELT(RVals, 4)));
-
-    const bool IsGmp = (computedRows > Significand53);
-    mpz_t computedRowsMpz;
-    mpz_init(computedRowsMpz);
-
-    // if (IsGmp && part.isPart) {
-    //     mpz_set(computedRowsMpz, part.bigCount);
-    // } else if (IsGmp) {
-    //     GetComputedRowMpz(computedRowsMpz, IsMult,
-    //                       IsComb, IsRep, n, m, Rm, freqs, myReps);
-    // }
-
-    // This variable is used in determining the number of results. If the
-    // output is constrained and the ConstraintType is "General" or
-    // "PartitionEsque", it means we really don't know how many results
-    // we have. The computedRows above is a strict upper bound but not
-    // necessarily the least upper bound. In these cases, we don't want
-    // to unnecessarily throw an error when computedRows exceeds 2^31 - 1.
-    const bool numUnknown = ctype == ConstraintType::PartitionEsque ||
-        ctype == ConstraintType::SpecialCnstrnt ||
-        ctype == ConstraintType::General        ||
-        part.numUnknown;
-    // 
-    // std::vector<int> startZ(m);
-    // const int cap     = n - part.includeZero;
-    // const int strtLen = std::count_if(part.startZ.cbegin(),
-    //                                   part.startZ.cend(),
-    //                                   [](int i){return i > 0;});
-    // 
-    // if (ctype < ConstraintType::PartMapping) {
-    //     SetStartZ(myReps, freqs, startZ, IsComb, n, m,
-    //               lower, lowerMpz[0], IsRep, IsMult, IsGmp);
-    // } else {
-    //     if (bLower) {
-    //         nthPartsPtr nthPartFun = GetNthPartsFunc(part.ptype, IsGmp);
-    //         startZ = nthPartFun(part.mapTar, part.width,
-    //                             cap, strtLen, lower, lowerMpz[0]);
-    //         
-    //         if (ctype == ConstraintType::PartStandard && !part.includeZero) {
-    //             for (auto &z_i: startZ) {
-    //                 ++z_i;
-    //             }
-    //         }
-    //     } else {
-    //         startZ = part.startZ;
-    //     }
-    // }
-    // 
-    // // This is used when we are unable to calculate the number of results
-    // // upfront (E.g. comboGeneral(rnorm(10), 5, constraintFun = "sum,
-    // //                            comparisonFun = "<=", limitConstraints = 1))
-    // double userNum = 0;
-    // const bool bSetNum = !numUnknown ||
-    //     ctype == ConstraintType::SpecialCnstrnt;
-    // 
-    // SetNumResults(IsGmp, bLower, bUpper, bSetNum, upperMpz.get(),
-    //               lowerMpz.get(), lower, upper, computedRows,
-    //               computedRowsMpz, nRows, userNum);
-    // 
-    // 
-    // class ComboApply* ptr = new ComboApply(VECTOR_ELT(RVals, 0), Rm,
-    //                                        VECTOR_ELT(RVals, 4), bVec, Rreps,
-    //                                        Rfreqs, RvInt, RvNum, myType,
-    //                                        maxThreads, VECTOR_ELT(RVals, 6),
-    //                                        RstdFun, Rrho, R_RFunVal);
-    // SEXP ext = PROTECT(R_MakeExternalPtr(ptr, R_NilValue, R_NilValue));
-    // R_RegisterCFinalizerEx(ext, Finalizer, TRUE);
-    // 
-    // UNPROTECT(1);
-    // return ext;
-}
+// SEXP ConstraintsNew(SEXP RVals, SEXP RboolVec, SEXP freqInfo, SEXP RmainFun,
+//                     SEXP RcompFun, SEXP Rlimits, SEXP RKeepRes, SEXP Rtarget,
+//                     SEXP Rtolerance, SEXP RmIsNull, SEXP Rparallel) {
+//     
+//     const std::vector<int> bVec = CleanConvert::GetNumVec<int>(RboolVec);
+//     std::vector<int> myReps = CleanConvert::GetNumVec<int>(
+//         VECTOR_ELT(freqInfo, 0)
+//     );
+//     
+//     const std::vector<int> freqs = CleanConvert::GetNumVec<int>(
+//         VECTOR_ELT(freqInfo, 1)
+//     );
+//     
+//     const int m = Rf_asInteger(VECTOR_ELT(RVals, 3));
+//     const int maxThreads = Rf_asInteger(VECTOR_ELT(RVals, 5));
+//     
+//     std::vector<double> vNum = CleanConvert::GetNumVec<double>(
+//         VECTOR_ELT(RVals, 1)
+//     );
+//     std::vector<int> vInt = CleanConvert::GetNumVec<int>(
+//         VECTOR_ELT(RVals, 2)
+//     );
+//     
+//     VecType myType;
+//     SetType(myType, VECTOR_ELT(RVals, 0));
+//     
+//     const bool keepRes = CleanConvert::convertFlag(RKeepRes, "keepResults");
+//     const bool IsConstrained = CheckConstrnd(RmainFun, RcompFun, Rtarget);
+//     const bool Parallel = CleanConvert::convertFlag(Rparallel, "Parallel");
+//     const int n = vNum.size();
+//     
+//     if (!Rf_isString(RmainFun) || Rf_length(RmainFun) != 1) {
+//         Rf_error("contraintFun must be one of the following:"
+//                      " 'prod', 'sum', 'mean', 'max', or 'min'");
+//     }
+//     
+//     const std::string mainFun(CHAR(STRING_ELT(RmainFun, 0)));
+//     const auto funIt = std::find(mainFunSet.begin(), mainFunSet.end(), mainFun);
+//     
+//     if (funIt == mainFunSet.end()) {
+//         Rf_error("contraintFun must be one of the following:"
+//                      " 'prod', 'sum', 'mean', 'max', or 'min'");
+//     }
+// 
+//     funcPtr<double> funDbl = GetFuncPtr<double>(mainFun);
+//     const bool IsComb   = static_cast<bool>(bVec[1]);
+//     const bool IsMult   = static_cast<bool>(bVec[2]);
+//     const bool IsRep    = static_cast<bool>(bVec[3]);
+//     const bool IsStdGmp = static_cast<bool>(bVec[4]);
+// 
+//     // class Constraints* ptr = new Constraints(
+//     //     part, compVec, freqs, myReps, vNum, vInt, tarVals, tarIntVals,
+//     //     startZ, mainFun, funDbl, computedRowsMpz[0], computedRows,
+//     //     ctype, VECTOR_ELT(RVals, 6), myType, TYPEOF(VECTOR_ELT(RVals, 0)),
+//     //     maxThreads, n, strtLen, cap, m, IsComb, IsGmp, IsRep, IsMult,
+//     //     keepRes, numUnknown, Parallel
+//     // );
+// // 
+// //     SEXP ext = PROTECT(R_MakeExternalPtr(ptr, R_NilValue, R_NilValue));
+// //     R_RegisterCFinalizerEx(ext, Finalizer, TRUE);
+// // 
+// //     UNPROTECT(1);
+// //     return ext;
+// }

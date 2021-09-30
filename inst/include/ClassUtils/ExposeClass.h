@@ -7,9 +7,11 @@
 
 extern "C" {
     void StartOverGlue(SEXP ext);
-    SEXP ComboNew(SEXP RVals, SEXP RboolVec, SEXP freqInfo);
-    SEXP ComboApplyNew(SEXP RVals, SEXP RboolVec, SEXP freqInfo,
-                       SEXP RstdFun, SEXP Rrho, SEXP R_RFunVal);
+    SEXP CombClassNew(SEXP RVals, SEXP RboolVec, SEXP freqInfo,
+                      SEXP Rparallel, SEXP RstdFun, SEXP Rrho,
+                      SEXP R_RFunVal, SEXP RmainFun, SEXP RcompFun,
+                      SEXP Rtarget, SEXP RKeepRes, SEXP Rtolerance,
+                      SEXP RmIsNull, SEXP RretVal);
     SEXP NextCombGlue(SEXP ext);
     SEXP NextNumCombGlue(SEXP ext, SEXP Rnum);
     SEXP NextGatherGlue(SEXP ext);

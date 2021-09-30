@@ -19,6 +19,7 @@
 
 static const R_CallMethodDef CallEntries[] = {
     CALLDEF(CheckReturn, 6),
+    CALLDEF(CheckConstrndCpp, 3),
     CALLDEF(CombinatoricsCount, 5),
     CALLDEF(PartitionsCount, 10),
     CALLDEF(CombinatoricsApply, 10),
@@ -35,9 +36,8 @@ static const R_CallMethodDef CallEntries[] = {
     CALLDEF(DivNumSieveCpp, 6),
     CALLDEF(PollardRhoContainer, 6),
     CALLDEF(cpp11GetNumThreads, 0),
-    CALLDEF(GetClassVals, 8),
-    CALLDEF(ComboNew, 3),
-    CALLDEF(ComboApplyNew, 6),
+    CALLDEF(GetClassVals, 9),
+    CALLDEF(CombClassNew, 14),
     CALLDEF(StartOverGlue, 1),
     CALLDEF(NextCombGlue, 1),
     CALLDEF(NextNumCombGlue, 2),

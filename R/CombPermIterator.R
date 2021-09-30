@@ -21,48 +21,49 @@ setClass(
 setMethod(
     "initialize",
     "Combo",
-    function(.Object, init) {
-        .Object@ptr <- .Call(ComboNew, init$RVals, init$bVec,
-                             init$FreqsInfo, PACKAGE = "RcppAlgos")
+    function(.Object, init, Parallel) {
+        .Object@ptr <- .Call(Algos_CombClassNew, init$RVals, init$bVec,
+                             init$FreqsInfo, Parallel, NULL, NULL, NULL,
+                             NULL, NULL, NULL, NULL, NULL, NULL, 1)
         .Object@startOver <- function() {
-            .Call(StartOverGlue, .Object@ptr, PACKAGE = "RcppAlgos")
+            .Call(Algos_StartOverGlue, .Object@ptr)
             invisible(NULL)
         }
         .Object@nextIter <- function() {
-            .Call(NextCombGlue, .Object@ptr, PACKAGE = "RcppAlgos")
+            .Call(Algos_NextCombGlue, .Object@ptr)
         }
         .Object@nextNIter <- function(n = 1) {
-            .Call(NextNumCombGlue, .Object@ptr, n, PACKAGE = "RcppAlgos")
+            .Call(Algos_NextNumCombGlue, .Object@ptr, n)
         }
         .Object@nextRemaining <- function() {
-            .Call(NextGatherGlue, .Object@ptr, PACKAGE = "RcppAlgos")
+            .Call(Algos_NextGatherGlue, .Object@ptr)
         }
         .Object@prevIter <- function() {
-            .Call(PrevCombGlue, .Object@ptr, PACKAGE = "RcppAlgos")
+            .Call(Algos_PrevCombGlue, .Object@ptr)
         }
         .Object@prevNIter <- function(n = 1) {
-            .Call(PrevNumCombGlue, .Object@ptr, n, PACKAGE = "RcppAlgos")
+            .Call(Algos_PrevNumCombGlue, .Object@ptr, n)
         }
         .Object@prevRemaining <- function() {
-            .Call(PrevGatherGlue, .Object@ptr, PACKAGE = "RcppAlgos")
+            .Call(Algos_PrevGatherGlue, .Object@ptr)
         }
         .Object@currIter <- function() {
-            .Call(CurrCombGlue, .Object@ptr, PACKAGE = "RcppAlgos")
+            .Call(Algos_CurrCombGlue, .Object@ptr)
         }
         .Object@front <- function() {
-            .Call(FrontGlue, .Object@ptr, PACKAGE = "RcppAlgos")
+            .Call(Algos_FrontGlue, .Object@ptr)
         }
         .Object@back <- function() {
-            .Call(BackGlue, .Object@ptr, PACKAGE = "RcppAlgos")
+            .Call(Algos_BackGlue, .Object@ptr)
         }
         .Object@randomAccess <- function(samp) {
-            .Call(RandomAccessGlue, .Object@ptr, samp, PACKAGE = "RcppAlgos")
+            .Call(Algos_RandomAccessGlue, .Object@ptr, samp)
         }
         .Object@sourceVector <- function() {
-            .Call(SourceVectorGlue, .Object@ptr, PACKAGE = "RcppAlgos")
+            .Call(Algos_SourceVectorGlue, .Object@ptr)
         }
         .Object@summary <- function() {
-            .Call(SummaryGlue, .Object@ptr, PACKAGE = "RcppAlgos")
+            .Call(Algos_SummaryGlue, .Object@ptr)
         }
         .Object
     }
@@ -77,107 +78,255 @@ setMethod(
     "initialize",
     "ComboApply",
     function(.Object, init, stdFun, rho, RFunVal) {
-        .Object@ptr <- .Call(ComboApplyNew, init$RVals, init$bVec,
-                             init$FreqsInfo, stdFun, rho, RFunVal,
-                             PACKAGE = "RcppAlgos")
+        .Object@ptr <- .Call(Algos_CombClassNew, init$RVals, init$bVec,
+                             init$FreqsInfo, FALSE, stdFun, rho, RFunVal,
+                             NULL, NULL, NULL, NULL, NULL, NULL, 2)
         .Object@startOver <- function() {
-            .Call(StartOverGlue, .Object@ptr, PACKAGE = "RcppAlgos")
+            .Call(Algos_StartOverGlue, .Object@ptr)
             invisible(NULL)
         }
         .Object@nextIter <- function() {
-            .Call(NextCombGlue, .Object@ptr, PACKAGE = "RcppAlgos")
+            .Call(Algos_NextCombGlue, .Object@ptr)
         }
         .Object@nextNIter <- function(n = 1) {
-            .Call(NextNumCombGlue, .Object@ptr, n, PACKAGE = "RcppAlgos")
+            .Call(Algos_NextNumCombGlue, .Object@ptr, n)
         }
         .Object@nextRemaining <- function() {
-            .Call(NextGatherGlue, .Object@ptr, PACKAGE = "RcppAlgos")
+            .Call(Algos_NextGatherGlue, .Object@ptr)
         }
         .Object@prevIter <- function() {
-            .Call(PrevCombGlue, .Object@ptr, PACKAGE = "RcppAlgos")
+            .Call(Algos_PrevCombGlue, .Object@ptr)
         }
         .Object@prevNIter <- function(n = 1) {
-            .Call(PrevNumCombGlue, .Object@ptr, n, PACKAGE = "RcppAlgos")
+            .Call(Algos_PrevNumCombGlue, .Object@ptr, n)
         }
         .Object@prevRemaining <- function() {
-            .Call(PrevGatherGlue, .Object@ptr, PACKAGE = "RcppAlgos")
+            .Call(Algos_PrevGatherGlue, .Object@ptr)
         }
         .Object@currIter <- function() {
-            .Call(CurrCombGlue, .Object@ptr, PACKAGE = "RcppAlgos")
+            .Call(Algos_CurrCombGlue, .Object@ptr)
         }
         .Object@front <- function() {
-            .Call(FrontGlue, .Object@ptr, PACKAGE = "RcppAlgos")
+            .Call(Algos_FrontGlue, .Object@ptr)
         }
         .Object@back <- function() {
-            .Call(BackGlue, .Object@ptr, PACKAGE = "RcppAlgos")
+            .Call(Algos_BackGlue, .Object@ptr)
         }
         .Object@randomAccess <- function(samp) {
-            .Call(RandomAccessGlue, .Object@ptr, samp, PACKAGE = "RcppAlgos")
+            .Call(Algos_RandomAccessGlue, .Object@ptr, samp)
         }
         .Object@sourceVector <- function() {
-            .Call(SourceVectorGlue, .Object@ptr, PACKAGE = "RcppAlgos")
+            .Call(Algos_SourceVectorGlue, .Object@ptr)
         }
         .Object@summary <- function() {
-            .Call(SummaryGlue, .Object@ptr, PACKAGE = "RcppAlgos")
+            .Call(Algos_SummaryGlue, .Object@ptr)
         }
         .Object
     }
 )
 
-"[.Combo" <- function(x, ...) {
+setClass(
+    "Constraints",
+    contains = "Combo"
+)
+
+# SEXP RmainFun, SEXP RcompFun,
+# SEXP Rlimits, SEXP RKeepRes, SEXP Rtarget,
+# SEXP Rtolerance, SEXP RmIsNull
+
+setMethod(
+    "initialize",
+    "Constraints",
+    function(.Object, init, Parallel, constraintFun, comparisonFun,
+             limitConstraints, keepResults, tolerance, mIsNull) {
+        .Object@ptr <- .Call(Algos_CombClassNew, init$RVals, init$bVec,
+                             init$FreqsInfo, Parallel, NULL, NULL, NULL,
+                             constraintFun, comparisonFun, limitConstraints,
+                             keepResults, tolerance, mIsNull, 3)
+        .Object@startOver <- function() {
+            .Call(Algos_StartOverGlue, .Object@ptr)
+            invisible(NULL)
+        }
+        .Object@nextIter <- function() {
+            .Call(Algos_NextCombGlue, .Object@ptr)
+        }
+        .Object@nextNIter <- function(n = 1) {
+            .Call(Algos_NextNumCombGlue, .Object@ptr, n)
+        }
+        .Object@nextRemaining <- function() {
+            .Call(Algos_NextGatherGlue, .Object@ptr)
+        }
+        .Object@prevIter <- function() {
+            .Call(Algos_PrevCombGlue, .Object@ptr)
+        }
+        .Object@prevNIter <- function(n = 1) {
+            .Call(Algos_PrevNumCombGlue, .Object@ptr, n)
+        }
+        .Object@prevRemaining <- function() {
+            .Call(Algos_PrevGatherGlue, .Object@ptr)
+        }
+        .Object@currIter <- function() {
+            .Call(Algos_CurrCombGlue, .Object@ptr)
+        }
+        .Object@front <- function() {
+            .Call(Algos_FrontGlue, .Object@ptr)
+        }
+        .Object@back <- function() {
+            .Call(Algos_BackGlue, .Object@ptr)
+        }
+        .Object@randomAccess <- function(samp) {
+            .Call(Algos_RandomAccessGlue, .Object@ptr, samp)
+        }
+        .Object@sourceVector <- function() {
+            .Call(Algos_SourceVectorGlue, .Object@ptr)
+        }
+        .Object@summary <- function() {
+            .Call(Algos_SummaryGlue, .Object@ptr)
+        }
+        .Object
+    }
+)
+
+# setMethod(
+#     "initialize",
+#     "Constraints",
+#     function(.Object, init, constraint, compFun, limits, keepRes, tol) {
+#         .Object@ptr <- .Call(Algos_ConstraintsNew, init$RVals, init$bVec,
+#                              init$FreqsInfo, constraint, compFun, limits,
+#                              keepRes, tol)
+#         .Object@startOver <- function() {
+#             .Call(Algos_StartOverGlue, .Object@ptr)
+#             invisible(NULL)
+#         }
+#         .Object@nextIter <- function() {
+#             .Call(Algos_NextCombGlue, .Object@ptr)
+#         }
+#         .Object@nextNIter <- function(n = 1) {
+#             .Call(Algos_NextNumCombGlue, .Object@ptr, n)
+#         }
+#         .Object@nextRemaining <- function() {
+#             .Call(Algos_NextGatherGlue, .Object@ptr)
+#         }
+#         .Object@currIter <- function() {
+#             .Call(Algos_CurrCombGlue, .Object@ptr)
+#         }
+#         .Object@sourceVector <- function() {
+#             .Call(Algos_SourceVectorGlue, .Object@ptr)
+#         }
+#         .Object@summary <- function() {
+#             .Call(Algos_SummaryGlue, .Object@ptr)
+#         }
+#         .Object
+#     }
+# )
+# 
+# setClass(
+#     "Partitions",
+#     contains = "Constraints",
+#     slots = c(
+#         randomAccess  = "function",
+#         front         = "function",
+#         back          = "function"
+#     )
+# )
+# 
+# setMethod(
+#     "initialize",
+#     "Partitions",
+#     function(.Object, init, constraint, compFun, limits, keepRes, tol) {
+#         .Object@ptr <- .Call(Algos_ConstraintsNew, init$RVals, init$bVec,
+#                              init$FreqsInfo, constraint, compFun, limits,
+#                              keepRes, tol)
+#         .Object@startOver <- function() {
+#             .Call(Algos_StartOverGlue, .Object@ptr)
+#             invisible(NULL)
+#         }
+#         .Object@nextIter <- function() {
+#             .Call(Algos_NextCombGlue, .Object@ptr)
+#         }
+#         .Object@nextNIter <- function(n = 1) {
+#             .Call(Algos_NextNumCombGlue, .Object@ptr, n)
+#         }
+#         .Object@nextRemaining <- function() {
+#             .Call(Algos_NextGatherGlue, .Object@ptr)
+#         }
+#         .Object@currIter <- function() {
+#             .Call(Algos_CurrCombGlue, .Object@ptr)
+#         }
+#         .Object@sourceVector <- function() {
+#             .Call(Algos_SourceVectorGlue, .Object@ptr)
+#         }
+#         .Object@summary <- function() {
+#             .Call(Algos_SummaryGlue, .Object@ptr)
+#         }
+#         .Object
+#     }
+# )
+
+"[[.Combo" <- function(x, ...) {
     x@randomAccess(...)
 }
 
-"[.ComboApply" <- function(x, ...) {
+"[[.ComboApply" <- function(x, ...) {
     x@randomAccess(...)
 }
+
+## The '$' accessor is for backwards compatibility only. Moving forward, one
+## should prefer using the '@' accessor to avoid calling the C function
+## 'duplicate'. For more information see:
+## https://cran.r-project.org/doc/manuals/R-exts.html#Profiling-R-code-for-memory-use
+setMethod("$", "Combo", function(x, name) {
+    function(...) slot(x, name)(...)
+})
+
+setMethod("$", "ComboApply", function(x, name) {
+    function(...) slot(x, name)(...)
+})
 
 comboIter <- function(v, m = NULL, repetition = FALSE, freqs = NULL,
                       constraintFun = NULL, comparisonFun = NULL,
-                      limitConstraints = NULL, FUN = NULL,
-                      tolerance = NULL, nThreads = NULL,
-                      FUN.VALUE = NULL) {
+                      limitConstraints = NULL, keepResults = NULL,
+                      FUN = NULL, Parallel = FALSE, nThreads = NULL,
+                      tolerance = NULL, FUN.VALUE = NULL) {
 
-    RetValue <- .Call(CheckReturn, v, constraintFun,
+    RetValue <- .Call(Algos_CheckReturn, v, constraintFun,
                       comparisonFun, limitConstraints,
-                      FALSE, FUN, PACKAGE = "RcppAlgos")
-    
-    InitVals <- .Call(GetClassVals, v, m, repetition, freqs,
-                      TRUE, FUN, nThreads, pkgEnv$nThreads,
-                      PACKAGE = "RcppAlgos")
+                      keepResults, FUN)
+    IsCnstrd <- .Call(Algos_CheckConstrndCpp, constraintFun,
+                      comparisonFun, limitConstraints)
+    InitVals <- .Call(Algos_GetClassVals, v, m, repetition, freqs,
+                      TRUE, FUN, nThreads, pkgEnv$nThreads, IsCnstrd)
 
-    if (RetValue) {
-        if (InitVals$applyFun) {
-            new("ComboApply", InitVals, FUN, new.env(), FUN.VALUE)
-        } else {
-            new("Combo", InitVals)
-        }
+    if (RetValue == 1) {
+        new("Combo", InitVals, Parallel)
+    } else if (RetValue == 2) {
+        new("ComboApply", InitVals, FUN, new.env(), FUN.VALUE)
     } else {
-        stop("This feature will be available in future releases")
+        new("Constraints", InitVals, Parallel, constraintFun, comparisonFun,
+            limitConstraints, keepResults, tolerance, is.null(m))
     }
 }
 
 permuteIter <- function(v, m = NULL, repetition = FALSE, freqs = NULL,
                         constraintFun = NULL, comparisonFun = NULL,
-                        limitConstraints = NULL, FUN = NULL,
-                        tolerance = NULL, nThreads = NULL,
-                        FUN.VALUE = NULL) {
+                        limitConstraints = NULL, keepResults = NULL,
+                        FUN = NULL, Parallel = FALSE, nThreads = NULL,
+                        tolerance = NULL, FUN.VALUE = NULL) {
     
-    RetValue <- .Call(CheckReturn, v, constraintFun,
+    RetValue <- .Call(Algos_CheckReturn, v, constraintFun,
                       comparisonFun, limitConstraints,
-                      FALSE, FUN, PACKAGE = "RcppAlgos")
+                      keepResults, FUN)
+    IsCnstrd <- .Call(Algos_CheckConstrndCpp, constraintFun,
+                      comparisonFun, limitConstraints)
+    InitVals <- .Call(Algos_GetClassVals, v, m, repetition, freqs,
+                      FALSE, FUN, nThreads, pkgEnv$nThreads, IsCnstrd)
     
-    InitVals <- .Call(GetClassVals, v, m, repetition, freqs,
-                      FALSE, FUN, nThreads, pkgEnv$nThreads,
-                      PACKAGE = "RcppAlgos")
-    
-    if (RetValue) {
-        if (InitVals$applyFun) {
-            new("ComboApply", InitVals, FUN, new.env(), FUN.VALUE)
-        } else {
-            new("Combo", InitVals)
-        }
+    if (RetValue == 1) {
+        new("Combo", InitVals, Parallel)
+    } else if (RetValue == 2) {
+        new("ComboApply", InitVals, FUN, new.env(), FUN.VALUE)
     } else {
-        stop("This feature will be available in future releases")
+        new("Constraints", InitVals, Parallel, constraintFun, comparisonFun,
+            limitConstraints, keepResults, tolerance, is.null(m))
     }
 }
