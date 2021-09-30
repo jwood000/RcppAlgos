@@ -39,7 +39,7 @@ void SetIndexVec(SEXP RindexVec, std::vector<double> &mySample,
 }
 
 void SetIndexVecMpz(SEXP RindexVec, mpz_t *myVec,
-                    std::size_t sampSize, mpz_t &computedRowsMpz) {
+                    std::size_t sampSize, mpz_t computedRowsMpz) {
     
     createMPZArray(RindexVec, myVec, sampSize, "sampleVec");
     
@@ -61,7 +61,7 @@ void SetIndexVecMpz(SEXP RindexVec, mpz_t *myVec,
     }
 }
 
-void increment(bool IsGmp, mpz_t &mpzIndex, double &dblIndex) {
+void increment(bool IsGmp, mpz_t mpzIndex, double &dblIndex) {
     if (IsGmp) {
         mpz_add_ui(mpzIndex, mpzIndex, 1u);
     } else {
@@ -69,7 +69,7 @@ void increment(bool IsGmp, mpz_t &mpzIndex, double &dblIndex) {
     }
 }
 
-void increment(bool IsGmp, mpz_t &mpzIndex, double &dblIndex, int nRows) {
+void increment(bool IsGmp, mpz_t mpzIndex, double &dblIndex, int nRows) {
     if (IsGmp) {
         mpz_add_ui(mpzIndex, mpzIndex, nRows);
     } else {
@@ -77,7 +77,7 @@ void increment(bool IsGmp, mpz_t &mpzIndex, double &dblIndex, int nRows) {
     }
 }
 
-void decrement(bool IsGmp, mpz_t &mpzIndex, double &dblIndex) {
+void decrement(bool IsGmp, mpz_t mpzIndex, double &dblIndex) {
     if (IsGmp) {
         mpz_sub_ui(mpzIndex, mpzIndex, 1u);
     } else {
@@ -85,7 +85,7 @@ void decrement(bool IsGmp, mpz_t &mpzIndex, double &dblIndex) {
     }
 }
 
-void decrement(bool IsGmp, mpz_t &mpzIndex, double &dblIndex, int nRows) {
+void decrement(bool IsGmp, mpz_t mpzIndex, double &dblIndex, int nRows) {
     if (IsGmp) {
         mpz_sub_ui(mpzIndex, mpzIndex, nRows);
     } else {
@@ -93,7 +93,7 @@ void decrement(bool IsGmp, mpz_t &mpzIndex, double &dblIndex, int nRows) {
     }
 }
 
-bool CheckEqSi(bool IsGmp, mpz_t &mpzIndex, double &dblIndex, int si) {
+bool CheckEqSi(bool IsGmp, mpz_t mpzIndex, double &dblIndex, int si) {
     if (IsGmp) {
         return mpz_cmp_si(mpzIndex, si) == 0;
     } else {
@@ -101,7 +101,7 @@ bool CheckEqSi(bool IsGmp, mpz_t &mpzIndex, double &dblIndex, int si) {
     }
 }
 
-bool CheckIndLT(bool IsGmp, mpz_t &mpzIndex, double &dblIndex,
+bool CheckIndLT(bool IsGmp, mpz_t mpzIndex, double &dblIndex,
                 mpz_t computedRowsMpz, double computedRows, bool eq = false) {
     if (eq) {
         if (IsGmp) {
@@ -118,7 +118,7 @@ bool CheckIndLT(bool IsGmp, mpz_t &mpzIndex, double &dblIndex,
     }
 }
 
-bool CheckEqInd(bool IsGmp, mpz_t &mpzIndex, double &dblIndex,
+bool CheckEqInd(bool IsGmp, mpz_t mpzIndex, double &dblIndex,
                 mpz_t computedRowsMpz, double computedRows) {
     if (IsGmp) {
         return mpz_cmp(mpzIndex, computedRowsMpz) == 0;
@@ -127,7 +127,7 @@ bool CheckEqInd(bool IsGmp, mpz_t &mpzIndex, double &dblIndex,
     }
 }
 
-bool CheckIndGrT(bool IsGmp, mpz_t &mpzIndex, double &dblIndex,
+bool CheckIndGrT(bool IsGmp, mpz_t mpzIndex, double &dblIndex,
                  mpz_t computedRowsMpz, double computedRows) {
     if (IsGmp) {
         return mpz_cmp(mpzIndex, computedRowsMpz) > 0;
@@ -136,7 +136,7 @@ bool CheckIndGrT(bool IsGmp, mpz_t &mpzIndex, double &dblIndex,
     }
 }
 
-bool CheckGrTSi(bool IsGmp, mpz_t &mpzIndex, double &dblIndex, int si) {
+bool CheckGrTSi(bool IsGmp, mpz_t mpzIndex, double &dblIndex, int si) {
     if (IsGmp) {
         return mpz_cmp_si(mpzIndex, si) > 0;
     } else {
@@ -145,17 +145,18 @@ bool CheckGrTSi(bool IsGmp, mpz_t &mpzIndex, double &dblIndex, int si) {
 }
 
 template <typename T>
-void UpdateExact(T* mat, T* yPt, T* xPt, std::vector<int> &z,
-                 int lastRow, int nRows, int m, int n1) {
+void UpdateExact(T* mat, T* yPt, const std::vector<T> &v,
+                 std::vector<int> &z, int lastRow, int nRows,
+                 int m, int n1) {
     
-    for (int i = 0; i < m; ++i) {
-        yPt[i] = mat[lastRow + i * nRows];
+    for (int j = 0; j < m; ++j) {
+        yPt[j] = mat[lastRow + j * nRows];
     }
     
     for (int j = 0; j < m; ++j) {
         int ind = 0;
         
-        while (ind < n1 && xPt[ind] != yPt[j]) {
+        while (ind < n1 && v[ind] != yPt[j]) {
             ++ind;
         }
         
@@ -163,34 +164,33 @@ void UpdateExact(T* mat, T* yPt, T* xPt, std::vector<int> &z,
     }
 }
 
-void zUpdateIndex(std::vector<int> &z, SEXP v, SEXP mat, int m, int nRows) {
+void zUpdateIndex(const std::vector<double> &vNum,
+                  const std::vector<int> &vInt, std::vector<int> &z,
+                  SEXP v, SEXP mat, int m, int nRows) {
     
     constexpr double myTolerance = 8 * std::numeric_limits<double>::epsilon();
     const int n1 = Rf_length(v) - 1;
     const int lastRow = nRows - 1;
-    
-    SEXP vCopy = PROTECT(Rf_duplicate(v));
     z.assign(m, 0);
     
-    switch (TYPEOF(v)) {
+    switch (TYPEOF(mat)) {
         case LGLSXP: {
             SEXP yBool = PROTECT(Rf_allocVector(LGLSXP, m));
             int* matBool = INTEGER(mat);
-            int* xBoolPt = INTEGER(vCopy);
             int* yBoolPt = INTEGER(yBool);
-            UpdateExact(matBool, yBoolPt, xBoolPt, z, lastRow, nRows, m, n1);
+            UpdateExact(matBool, yBoolPt, vInt, z, lastRow, nRows, m, n1);
+            UNPROTECT(1);
             break;
         } case INTSXP: {
             SEXP yInt = PROTECT(Rf_allocVector(INTSXP, m));
             int* matInt = INTEGER(mat);
-            int* xIntPt = INTEGER(vCopy);
             int* yIntPt = INTEGER(yInt);
-            UpdateExact(matInt, yIntPt, xIntPt, z, lastRow, nRows, m, n1);
+            UpdateExact(matInt, yIntPt, vInt, z, lastRow, nRows, m, n1);
+            UNPROTECT(1);
             break;
         } case REALSXP: {
             SEXP yNum = PROTECT(Rf_allocVector(REALSXP, m));
             double* matNum = REAL(mat);
-            double* xNumPt = REAL(vCopy);
             double* yNumPt = REAL(yNum);
             
             for (int i = 0; i < m; ++i) {
@@ -201,7 +201,7 @@ void zUpdateIndex(std::vector<int> &z, SEXP v, SEXP mat, int m, int nRows) {
                 int ind = 0;
                 
                 while (ind < n1 &&
-                       std::abs(xNumPt[ind] - yNumPt[j]) > myTolerance) {
+                       std::abs(vNum[ind] - yNumPt[j]) > myTolerance) {
 
                     ++ind;
                 }
@@ -209,6 +209,7 @@ void zUpdateIndex(std::vector<int> &z, SEXP v, SEXP mat, int m, int nRows) {
                 z[j] = ind;
             }
             
+            UNPROTECT(1);
             break;
         } case STRSXP: {
             SEXP yChar = PROTECT(Rf_allocVector(STRSXP, m));
@@ -222,18 +223,19 @@ void zUpdateIndex(std::vector<int> &z, SEXP v, SEXP mat, int m, int nRows) {
                 int ind = 0;
                 
                 while (ind < n1 &&
-                       STRING_ELT(vCopy, ind) != STRING_ELT(yChar, j)) {
+                       STRING_ELT(v, ind) != STRING_ELT(yChar, j)) {
                     ++ind;
                 }
                 
                 z[j] = ind;
             }
 
+            UNPROTECT(1);
             break;
         } case CPLXSXP: {
             SEXP yCmplx = PROTECT(Rf_allocVector(CPLXSXP, m));
             Rcomplex* matCmplx = COMPLEX(mat);
-            Rcomplex* xCmplxPt = COMPLEX(vCopy);
+            Rcomplex* xCmplxPt = COMPLEX(v);
             Rcomplex* yCmplxPt = COMPLEX(yCmplx);
 
             for (int i = 0; i < m; ++i) {
@@ -254,18 +256,24 @@ void zUpdateIndex(std::vector<int> &z, SEXP v, SEXP mat, int m, int nRows) {
                 z[j] = ind;
             }
             
+            UNPROTECT(1);
             break;
         } case RAWSXP: {
             SEXP yRaw = PROTECT(Rf_allocVector(RAWSXP, m));
             Rbyte* matRaw = RAW(mat);
-            Rbyte* xRawPt = RAW(vCopy);
+            Rbyte* xRawPt = RAW(v);
+            std::vector<Rbyte> stlRawVec(n1 + 1);
+            
+            for (int i = 0; i <= n1; ++i) {
+                stlRawVec[i] = xRawPt[i];
+            }
+
             Rbyte* yRawPt = RAW(yRaw);
-            UpdateExact(matRaw, yRawPt, xRawPt, z, lastRow, nRows, m, n1);
+            UpdateExact(matRaw, yRawPt, stlRawVec, z, lastRow, nRows, m, n1);
+            UNPROTECT(1);
             break;
         } default:{
             Rf_error("Only atomic types are supported for v");
         }
     }
-    
-    UNPROTECT(2);
 }

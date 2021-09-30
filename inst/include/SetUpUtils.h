@@ -19,9 +19,9 @@ void SetThreads(bool &Parallel, int maxThreads, int nRows,
                 VecType myType, int &nThreads, SEXP RNumThreads, int limit);
 
 void SetNumResults(bool IsGmp, bool bLower, bool bUpper, bool bSetNum,
-                   mpz_t *const upperMpz, mpz_t *const lowerMpz,
-                   double lower, double upper, double computedRows,
-                   mpz_t &computedRowsMpz, int &nRows, double &userNumRows);
+                   mpz_t upperMpz, mpz_t lowerMpz, double lower,
+                   double upper,double computedRows, mpz_t computedRowsMpz,
+                   int &nRows, double &userNumRows);
 
 void SetBounds(SEXP Rlow, SEXP Rhigh, bool IsGmp, bool &bLower,
                bool &bUpper, double &lower, double &upper,
@@ -43,7 +43,7 @@ void SetRandomSample(SEXP RindexVec, SEXP RNumSamp, int &sampSize,
                      SEXP baseSample, SEXP rho);
 
 void SetRandomSampleMpz(SEXP RindexVec, SEXP RmySeed, int sampSize,
-                        bool IsGmp, mpz_t &computedRowsMpz,
+                        bool IsGmp, mpz_t computedRowsMpz,
                         mpz_t *const myVec);
 
 void SetSampleNames(SEXP objRcpp, bool IsGmp, int sampSize,

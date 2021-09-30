@@ -157,8 +157,9 @@ void SetFinalValues(VecType &myType, std::vector<int> &Reps,
         // C++ variable, we are referring to the expansion of this
         // variable. myReps and Reps in C++ are converted directly
         // from the user supplied 'freqs' parameter.
-        if (n != Reps.size())
+        if (n != Reps.size()) {
             Rf_error("the length of freqs must equal the length of v");
+        }
 
         if (m > static_cast<int>(freqs.size())) {
             m = freqs.size();
@@ -270,16 +271,16 @@ void SetThreads(bool &Parallel, int maxThreads, int nRows,
 }
 
 void SetNumResults(bool IsGmp, bool bLower, bool bUpper, bool bSetNum,
-                   mpz_t *const upperMpz, mpz_t *const lowerMpz,
+                   mpz_t upperMpz, mpz_t lowerMpz,
                    double lower, double upper, double computedRows,
-                   mpz_t &computedRowsMpz, int &nRows, double &userNumRows) {
+                   mpz_t computedRowsMpz, int &nRows, double &userNumRows) {
 
     if (IsGmp) {
         mpz_t testBound;
         mpz_init(testBound);
 
         if (bLower && bUpper) {
-            mpz_sub(testBound, upperMpz[0], lowerMpz[0]);
+            mpz_sub(testBound, upperMpz, lowerMpz);
             mpz_t absTestBound;
             mpz_init(absTestBound);
             mpz_abs(absTestBound, testBound);
@@ -291,13 +292,13 @@ void SetNumResults(bool IsGmp, bool bLower, bool bUpper, bool bSetNum,
             userNumRows = mpz_get_d(testBound);
             mpz_clear(absTestBound);
         } else if (bUpper) {
-            if (mpz_cmp_si(upperMpz[0], std::numeric_limits<int>::max()) > 0) {
+            if (mpz_cmp_si(upperMpz, std::numeric_limits<int>::max()) > 0) {
                 Rf_error("The number of rows cannot exceed 2^31 - 1.");
             }
 
-            userNumRows = mpz_get_d(upperMpz[0]);
+            userNumRows = mpz_get_d(upperMpz);
         } else if (bLower) {
-            mpz_sub(testBound, computedRowsMpz, lowerMpz[0]);
+            mpz_sub(testBound, computedRowsMpz, lowerMpz);
             mpz_abs(testBound, testBound);
 
             if (mpz_cmp_si(testBound, std::numeric_limits<int>::max()) > 0) {
@@ -394,8 +395,8 @@ void SetBounds(SEXP Rlow, SEXP Rhigh, bool IsGmp, bool &bLower,
                 Rf_error("bounds cannot exceed the maximum "
                              "number of possible results");
             }
-        } else {                                     // numOnly = false
-            CleanConvert::convertPrimitive(Rhigh, upper,
+        } else {
+            CleanConvert::convertPrimitive(Rhigh, upper,   // numOnly = false
                                            VecType::Numeric, "upper", false);
 
             if (upper > computedRows) {
@@ -582,7 +583,7 @@ void SetRandomSample(SEXP RindexVec, SEXP RNumSamp, int &sampSize,
 }
 
 void SetRandomSampleMpz(SEXP RindexVec, SEXP RmySeed, int sampSize,
-                        bool IsGmp, mpz_t &computedRowsMpz,
+                        bool IsGmp, mpz_t computedRowsMpz,
                         mpz_t *const myVec) {
 
     if (IsGmp) {
