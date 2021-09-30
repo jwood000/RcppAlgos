@@ -17,13 +17,15 @@ private:
     SEXP ApplyReverse(int nRows);
 
 public:
-    ComboApply(SEXP Rv, int Rm, SEXP RcompRows, const std::vector<int> &bVec,
-               const std::vector<int> &Rreps, const std::vector<int> &Rfreqs,
-               const std::vector<int> &RvInt,
-               const std::vector<double> &RvNum, VecType typePass,
-               int RmaxThreads, SEXP RnumThreads, SEXP RstdFun,
-               SEXP Rrho, SEXP R_RFunVal);
+    ComboApply(
+        SEXP Rv, int Rm, SEXP RcompRows, const std::vector<int> &bVec,
+        const std::vector<int> &Rreps, const std::vector<int> &Rfreqs,
+        const std::vector<int> &RvInt, const std::vector<double> &RvNum,
+        VecType typePass, int RmaxThreads, SEXP RnumThreads, bool Rparallel,
+        SEXP RstdFun, SEXP Rrho, SEXP R_RFunVal
+    );
 
+    void startOver();
     SEXP nextComb();
     SEXP prevComb();
     SEXP nextNumCombs(SEXP RNum);

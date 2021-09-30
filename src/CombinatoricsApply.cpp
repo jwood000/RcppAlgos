@@ -56,8 +56,8 @@ SEXP CombinatoricsApply(SEXP Rv, SEXP Rm, SEXP RisRep,
               lower, lowerMpz[0], IsRep, IsMult, IsGmp);
 
     double userNumRows = 0;   // IsGenCnstrd = false
-    SetNumResults(IsGmp, bLower, bUpper, true, upperMpz.get(),
-                  lowerMpz.get(), lower, upper, computedRows,
+    SetNumResults(IsGmp, bLower, bUpper, true, upperMpz[0],
+                  lowerMpz[0], lower, upper, computedRows,
                   computedRowsMpz, nRows, userNumRows);
 
     return GetCombPermApply(Rv, vNum, vInt, n, m, IsComb, IsRep,

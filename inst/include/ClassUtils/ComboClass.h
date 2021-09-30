@@ -17,40 +17,44 @@ private:
     SEXP VecReturn();
     SEXP MatForward(int nRows);
     SEXP MatReverse(int nRows);
-    SEXP SexpNThreads;
     
 protected:
     const int n;
     const int m;
     const int m1;
-    const int RTYPE;
+    int RTYPE;
     const int maxThreads;
+
     const SEXP sexpVec;
+    const SEXP sexpNThreads;
+
     const bool IsFactor;
     const bool IsComb;
     const bool IsMult;
     const bool IsRep;
     const bool IsGmp;
     const bool Parallel;
+
     double computedRows;
     const VecType myType;
-    mpz_t computedRowsMpz[1];
+    mpz_t computedRowsMpz;
     
     double dblTemp;
     mpz_t mpzTemp;
+
     std::vector<int> z;
-    const std::vector<int> vInt;
-    const std::vector<double> vNum;
+    std::vector<int> vInt;
+    std::vector<double> vNum;
     
     const std::vector<int> freqs;
-    const std::vector<int> myReps;
+    std::vector<int> myReps;
     
     // This has to be initialized later becuase it
     // depends on freqs.size, IsMult, and n
     const int n1;
     
     double dblIndex;
-    mpz_t mpzIndex[1];
+    mpz_t mpzIndex;
 
     SEXP myClass;
     SEXP myLevels;
@@ -61,14 +65,15 @@ protected:
 
 public:
     
-    Combo(SEXP Rv, int Rm, SEXP RcompRow, const std::vector<int> &bVec,
-          const std::vector<int> &Rreps, const std::vector<int> &Rfreqs,
-          const std::vector<int> &RvInt, const std::vector<double> &RvNum,
-          VecType typePass, int RmaxThreads, SEXP RnumThreads);
+    Combo(
+        SEXP Rv, int Rm, SEXP RcompRow, const std::vector<int> &bVec,
+        const std::vector<int> &Rreps, const std::vector<int> &Rfreqs,
+        const std::vector<int> &RvInt, const std::vector<double> &RvNum,
+        VecType typePass, int RmaxThreads, SEXP RnThreads, bool Rparallel
+    );
     
     virtual ~Combo() = default;
-
-    void startOver();
+    virtual void startOver();
     virtual SEXP nextComb();
     virtual SEXP prevComb();
     virtual SEXP nextNumCombs(SEXP RNum);

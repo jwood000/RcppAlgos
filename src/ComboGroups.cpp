@@ -421,8 +421,8 @@ SEXP ComboGroupsCpp(SEXP Rv, SEXP RNumGroups, SEXP RRetType, SEXP Rlow,
     
     if (!IsSample) {
         double userNumRows = 0;
-        SetNumResults(IsGmp, bLower, bUpper, true, upperMpz.get(),
-                      lowerMpz.get(), lower, upper, computedRows,
+        SetNumResults(IsGmp, bLower, bUpper, true, upperMpz[0],
+                      lowerMpz[0], lower, upper, computedRows,
                       computedRowMpz, nRows, userNumRows);
     }
     

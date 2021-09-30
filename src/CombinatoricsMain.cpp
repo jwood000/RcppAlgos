@@ -63,8 +63,8 @@ SEXP CombinatoricsStndrd(SEXP Rv, SEXP Rm, SEXP RisRep, SEXP RFreqs,
               lower, lowerMpz[0], IsRep, IsMult, IsGmp);
 
     double userNumRows = 0;
-    SetNumResults(IsGmp, bLower, bUpper, true, upperMpz.get(),
-                  lowerMpz.get(), lower, upper, computedRows,
+    SetNumResults(IsGmp, bLower, bUpper, true, upperMpz[0],
+                  lowerMpz[0], lower, upper, computedRows,
                   computedRowsMpz, nRows, userNumRows);
 
     const int limit = 20000;
