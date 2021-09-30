@@ -171,7 +171,7 @@ void SetFinalValues(VecType &myType, std::vector<int> &Reps,
 
 void SetBasic(SEXP Rv, std::vector<double> &vNum,
               std::vector<int> &vInt, int &n, VecType &myType) {
-    
+
     if (myType > VecType::Logical) {
         n = Rf_length(Rv);
     } else if (IsDecimal(Rv)) {
@@ -185,17 +185,17 @@ void SetBasic(SEXP Rv, std::vector<double> &vNum,
     } else if (Rf_length(Rv) == 1) {
         int seqEnd = 0;
         myType = VecType::Integer;
-        
+
         // numOnly = true, checkWhole = true, negPoss = true
         CleanConvert::convertPrimitive(Rv, seqEnd, myType,
                                        "If v is not a character"
                                        " and of length 1, it",
                                        true, true, true);
-        
+
         std::pair<int, int> mnmx = std::minmax(1, seqEnd);
         n = mnmx.second - mnmx.first + 1;
         constexpr int maxVecSize = std::numeric_limits<int>::max() / 2;
-        
+
         if (n < maxVecSize) {
             vNum.resize(n);
         } else {
@@ -203,7 +203,7 @@ void SetBasic(SEXP Rv, std::vector<double> &vNum,
                          " requested is larger than %s",
                          std::to_string(maxVecSize).c_str());
         }
-        
+
         std::iota(vNum.begin(), vNum.end(), mnmx.first);
     } else {
         vNum = CleanConvert::GetNumVec<double>(Rv);
@@ -680,11 +680,11 @@ SEXP GetIntVec(const std::vector<int> &v) {
     const int size = v.size();
     SEXP res = PROTECT(Rf_allocVector(INTSXP, size));
     int* ptrRes = INTEGER(res);
-    
+
     for (int i = 0; i < size; ++i) {
         ptrRes[i] = v[i];
     }
-    
+
     UNPROTECT(1);
     return res;
 }
@@ -693,11 +693,11 @@ SEXP GetDblVec(const std::vector<double> &v) {
     const int size = v.size();
     SEXP res = PROTECT(Rf_allocVector(REALSXP, size));
     double* ptrRes = REAL(res);
-    
+
     for (int i = 0; i < size; ++i) {
         ptrRes[i] = v[i];
     }
-    
+
     UNPROTECT(1);
     return res;
 }
@@ -706,50 +706,50 @@ SEXP GetInt64Vec(const std::vector<std::int64_t> &v) {
     const int size = v.size();
     SEXP res = PROTECT(Rf_allocVector(REALSXP, size));
     double* ptrRes = REAL(res);
-    
+
     for (int i = 0; i < size; ++i) {
         ptrRes[i] = v[i];
     }
-    
+
     UNPROTECT(1);
     return res;
 }
 
 void SetIntNames(SEXP res, std::size_t myRange, int myMin, int myMax) {
-    
+
     SEXP myNames  = PROTECT(Rf_allocVector(INTSXP, myRange));
     int* ptrNames = INTEGER(myNames);
-    
+
     for (int k = 0, retM = myMin; retM <= myMax; ++retM, ++k) {
         ptrNames[k] = retM;
     }
-    
+
     Rf_setAttrib(res, R_NamesSymbol, myNames);
 }
 
 void SetDblNames(SEXP res, std::size_t myRange,
                  double myMin, double myMax) {
-    
+
     double retM = myMin;
     SEXP myNames  = PROTECT(Rf_allocVector(REALSXP, myRange));
     double* ptrNames = REAL(myNames);
-    
+
     for (int k = 0; retM <= myMax; ++retM, ++k) {
         ptrNames[k] = retM;
     }
-    
+
     Rf_setAttrib(res, R_NamesSymbol, myNames);
 }
 
 void SetDblNames(SEXP res, const std::vector<double> &myNums) {
-    
+
     const int size = myNums.size();
     SEXP myNames  = PROTECT(Rf_allocVector(REALSXP, size));
     double* ptrNames = REAL(myNames);
-    
+
     for (int k = 0; k < size; ++k) {
         ptrNames[k] = myNums[k];
     }
-    
+
     Rf_setAttrib(res, R_NamesSymbol, myNames);
 }

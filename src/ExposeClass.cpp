@@ -29,21 +29,21 @@ SEXP CombClassNew(SEXP RVals, SEXP RboolVec, SEXP freqInfo, SEXP Rparallel,
     const std::vector<int> myReps = CleanConvert::GetNumVec<int>(
         VECTOR_ELT(freqInfo, 0)
     );
-    
+
     const std::vector<int> freqs = CleanConvert::GetNumVec<int>(
         VECTOR_ELT(freqInfo, 1)
     );
-    
+
     const int m = Rf_asInteger(VECTOR_ELT(RVals, 3));
     const int maxThreads = Rf_asInteger(VECTOR_ELT(RVals, 5));
-    
+
     const std::vector<double> vNum = CleanConvert::GetNumVec<double>(
         VECTOR_ELT(RVals, 1)
     );
     std::vector<int> vInt = CleanConvert::GetNumVec<int>(
         VECTOR_ELT(RVals, 2)
     );
-    
+
     VecType myType;
     SetType(myType, VECTOR_ELT(RVals, 0));
     const bool Parallel = CleanConvert::convertFlag(Rparallel, "Parallel");
@@ -54,10 +54,10 @@ SEXP CombClassNew(SEXP RVals, SEXP RboolVec, SEXP freqInfo, SEXP Rparallel,
             freqs, vInt, vNum, myType, maxThreads, VECTOR_ELT(RVals, 6),
             Parallel
         );
-        
+
         SEXP ext = PROTECT(R_MakeExternalPtr(ptr, R_NilValue, R_NilValue));
         R_RegisterCFinalizerEx(ext, Finalizer, TRUE);
-        
+
         UNPROTECT(1);
         return ext;
     } else if (ReturnValue == 2) {
@@ -69,44 +69,44 @@ SEXP CombClassNew(SEXP RVals, SEXP RboolVec, SEXP freqInfo, SEXP Rparallel,
 
         SEXP ext = PROTECT(R_MakeExternalPtr(ptr, R_NilValue, R_NilValue));
         R_RegisterCFinalizerEx(ext, Finalizer, TRUE);
-        
+
         UNPROTECT(1);
         return ext;
     } else {
         const bool keepRes = CleanConvert::convertFlag(RKeepRes, "keepResults");
         const bool IsConstrained = CheckConstrnd(RmainFun, RcompFun, Rtarget);
         const int n = vNum.size();
-        
+
         if (!Rf_isString(RmainFun) || Rf_length(RmainFun) != 1) {
             Rf_error("contraintFun must be one of the following:"
                          " 'prod', 'sum', 'mean', 'max', or 'min'");
         }
-        
+
         const std::string mainFun(CHAR(STRING_ELT(RmainFun, 0)));
         const auto funIt = std::find(mainFunSet.begin(), mainFunSet.end(), mainFun);
-        
+
         if (funIt == mainFunSet.end()) {
             Rf_error("contraintFun must be one of the following:"
                          " 'prod', 'sum', 'mean', 'max', or 'min'");
         }
-        
+
         funcPtr<double> funDbl = GetFuncPtr<double>(mainFun);
         const bool IsComb   = static_cast<bool>(bVec[1]);
         const bool IsMult   = static_cast<bool>(bVec[2]);
         const bool IsRep    = static_cast<bool>(bVec[3]);
         const bool IsStdGmp = static_cast<bool>(bVec[4]);
-        
+
         ConstraintType ctype = ConstraintType::NoConstraint;
         PartDesign part;
-        
+
         part.isRep   = IsRep;
         part.isMult  = IsMult;
         part.mIsNull = static_cast<bool>(Rf_asLogical(RmIsNull));
-        
+
         std::vector<std::string> compVec;
         std::vector<double> tarVals;
         std::vector<int> tarIntVals;
-        
+
         if (IsConstrained) {
             ConstraintSetup(vNum, myReps, tarVals, vInt, tarIntVals,
                             funDbl, part, ctype, n, m, compVec, mainFun,
@@ -116,34 +116,34 @@ SEXP CombClassNew(SEXP RVals, SEXP RboolVec, SEXP freqInfo, SEXP Rparallel,
 
         auto computedRowsMpz = FromCpp14::make_unique<mpz_t[]>(1);
         mpz_init(computedRowsMpz[0]);
-        
+
         if (IsStdGmp) {
             createMPZArray(VECTOR_ELT(RVals, 4), computedRowsMpz.get(), 1,
                            "computedRowsMpz");
         }
-        
+
         const double computedRows = (part.count > 0) ? part.count :
             (IsStdGmp ? mpz_get_d(computedRowsMpz[0]) :
                  Rf_asReal(VECTOR_ELT(RVals, 4)));
-        
+
         const bool IsGmp = (computedRows > Significand53);
-        
+
         if (IsGmp && part.isPart) {
             mpz_set(computedRowsMpz[0], part.bigCount);
         }
-        
+
         // See comments in ConstraintsMain.cpp
         const bool numUnknown = ctype == ConstraintType::PartitionEsque ||
             ctype == ConstraintType::SpecialCnstrnt ||
             ctype == ConstraintType::General        ||
             part.numUnknown;
-        
+
         std::vector<int> startZ(m);
         const int cap     = n - part.includeZero;
         const int strtLen = std::count_if(part.startZ.cbegin(),
                                           part.startZ.cend(),
                                           [](int i){return i > 0;});
-        
+
         if (ctype < ConstraintType::PartMapping) {
             mpz_t zero;
             mpz_init(zero);
@@ -153,7 +153,7 @@ SEXP CombClassNew(SEXP RVals, SEXP RboolVec, SEXP freqInfo, SEXP Rparallel,
         } else {
             startZ = part.startZ;
         }
-        
+
         if (ctype == ConstraintType::NoConstraint) {
             if (myType == VecType::Integer) {
                 if (!CheckIsInteger(mainFun, n, m, vNum, vNum, funDbl,
@@ -161,7 +161,7 @@ SEXP CombClassNew(SEXP RVals, SEXP RboolVec, SEXP freqInfo, SEXP Rparallel,
                     myType = VecType::Numeric;
                 }
             }
-    
+
             class ComboRes* ptr = new ComboRes(
                 VECTOR_ELT(RVals, 0), m, VECTOR_ELT(RVals, 4), bVec, myReps,
                 freqs, vInt, vNum, myType, maxThreads, VECTOR_ELT(RVals, 6),
@@ -169,10 +169,10 @@ SEXP CombClassNew(SEXP RVals, SEXP RboolVec, SEXP freqInfo, SEXP Rparallel,
                 funDbl, ctype, strtLen, cap, keepRes, numUnknown,
                 computedRows, computedRowsMpz[0]
             );
-    
+
             SEXP ext = PROTECT(R_MakeExternalPtr(ptr, R_NilValue, R_NilValue));
             R_RegisterCFinalizerEx(ext, Finalizer, TRUE);
-    
+
             UNPROTECT(1);
             return ext;
         }
@@ -247,53 +247,53 @@ SEXP SummaryGlue(SEXP ext) {
 // SEXP ConstraintsNew(SEXP RVals, SEXP RboolVec, SEXP freqInfo, SEXP RmainFun,
 //                     SEXP RcompFun, SEXP Rlimits, SEXP RKeepRes, SEXP Rtarget,
 //                     SEXP Rtolerance, SEXP RmIsNull, SEXP Rparallel) {
-//     
+//
 //     const std::vector<int> bVec = CleanConvert::GetNumVec<int>(RboolVec);
 //     std::vector<int> myReps = CleanConvert::GetNumVec<int>(
 //         VECTOR_ELT(freqInfo, 0)
 //     );
-//     
+//
 //     const std::vector<int> freqs = CleanConvert::GetNumVec<int>(
 //         VECTOR_ELT(freqInfo, 1)
 //     );
-//     
+//
 //     const int m = Rf_asInteger(VECTOR_ELT(RVals, 3));
 //     const int maxThreads = Rf_asInteger(VECTOR_ELT(RVals, 5));
-//     
+//
 //     std::vector<double> vNum = CleanConvert::GetNumVec<double>(
 //         VECTOR_ELT(RVals, 1)
 //     );
 //     std::vector<int> vInt = CleanConvert::GetNumVec<int>(
 //         VECTOR_ELT(RVals, 2)
 //     );
-//     
+//
 //     VecType myType;
 //     SetType(myType, VECTOR_ELT(RVals, 0));
-//     
+//
 //     const bool keepRes = CleanConvert::convertFlag(RKeepRes, "keepResults");
 //     const bool IsConstrained = CheckConstrnd(RmainFun, RcompFun, Rtarget);
 //     const bool Parallel = CleanConvert::convertFlag(Rparallel, "Parallel");
 //     const int n = vNum.size();
-//     
+//
 //     if (!Rf_isString(RmainFun) || Rf_length(RmainFun) != 1) {
 //         Rf_error("contraintFun must be one of the following:"
 //                      " 'prod', 'sum', 'mean', 'max', or 'min'");
 //     }
-//     
+//
 //     const std::string mainFun(CHAR(STRING_ELT(RmainFun, 0)));
 //     const auto funIt = std::find(mainFunSet.begin(), mainFunSet.end(), mainFun);
-//     
+//
 //     if (funIt == mainFunSet.end()) {
 //         Rf_error("contraintFun must be one of the following:"
 //                      " 'prod', 'sum', 'mean', 'max', or 'min'");
 //     }
-// 
+//
 //     funcPtr<double> funDbl = GetFuncPtr<double>(mainFun);
 //     const bool IsComb   = static_cast<bool>(bVec[1]);
 //     const bool IsMult   = static_cast<bool>(bVec[2]);
 //     const bool IsRep    = static_cast<bool>(bVec[3]);
 //     const bool IsStdGmp = static_cast<bool>(bVec[4]);
-// 
+//
 //     // class Constraints* ptr = new Constraints(
 //     //     part, compVec, freqs, myReps, vNum, vInt, tarVals, tarIntVals,
 //     //     startZ, mainFun, funDbl, computedRowsMpz[0], computedRows,
@@ -301,10 +301,10 @@ SEXP SummaryGlue(SEXP ext) {
 //     //     maxThreads, n, strtLen, cap, m, IsComb, IsGmp, IsRep, IsMult,
 //     //     keepRes, numUnknown, Parallel
 //     // );
-// // 
+// //
 // //     SEXP ext = PROTECT(R_MakeExternalPtr(ptr, R_NilValue, R_NilValue));
 // //     R_RegisterCFinalizerEx(ext, Finalizer, TRUE);
-// // 
+// //
 // //     UNPROTECT(1);
 // //     return ext;
 // }

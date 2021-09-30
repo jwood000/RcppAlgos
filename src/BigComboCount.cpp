@@ -81,7 +81,7 @@ void MultisetCombRowNumGmp(mpz_t result, int n, int r,
         }
 
         const int n1 = n - 1;
-        
+
         mpz_t t;
         mpz_t mySum;
 

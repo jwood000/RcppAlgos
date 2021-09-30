@@ -40,7 +40,7 @@ double MultisetCombRowNumFast(int n, int r, const std::vector<int> &Reps) {
     if (r < 1 || n <= 1) {
         return 1.0;
     }
-    
+
     if (r == n) {
         if (std::accumulate(Reps.cbegin(), Reps.cend(), 0) == n) {
             return 1.0;

@@ -14,7 +14,7 @@ std::vector<int> nthComb(int n, int r, double dblIdx,
          r1 = r - 1; k < r; ++k, --n1, --r1, ++j) {
 
         for (int s = n1 - r1; temp <= dblIdx; --n1, ++j, --s) {
-            dblIdx -= temp; 
+            dblIdx -= temp;
             temp *= s;
             temp /= n1;
         }
@@ -96,7 +96,7 @@ std::vector<int> nthCombGmp(int n, int r, double dblIdx,
 
     mpz_t idx;
     mpz_t temp;
-    
+
     mpz_init(temp);
     mpz_init_set(idx, mpzIdx);
 
@@ -127,7 +127,7 @@ std::vector<int> nthCombRepGmp(int n, int r, double dblIdx,
 
     mpz_t idx;
     mpz_t temp;
-    
+
     mpz_init(temp);
     mpz_init_set(idx, mpzIdx);
 
@@ -161,7 +161,7 @@ std::vector<int> nthCombMultGmp(int n, int r, double dblIdx,
 
     mpz_t idx;
     mpz_t temp;
-    
+
     mpz_init(temp);
     mpz_init_set(idx, mpzIdx);
 

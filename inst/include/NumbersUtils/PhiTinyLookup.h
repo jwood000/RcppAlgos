@@ -8,10 +8,10 @@
 namespace PhiTinyLookup {
 
     static const std::vector<std::int16_t> phi6 = {0,1,1,1,1,2};
-     
+
     static const std::vector<std::int16_t> phi30 = {0,1,1,1,1,1,1,2,2,2,2,3,3,4,4,
                                          4,4,5,5,6,6,6,6,7,7,7,7,7,7,8};
-    
+
     static const std::vector<std::int16_t> phi210 = {0,
         1,1,1,1,1,1,1,1,1,1,2,2,3,3,3,3,4,4,5,5,5,5,6,6,6,6,6,6,7,7,8,8,8,8,8,
         8,9,9,9,9,10,10,11,11,11,11,12,12,12,12,12,12,13,13,13,13,13,13,14,14,
@@ -22,7 +22,7 @@ namespace PhiTinyLookup {
         35,35,35,35,36,36,36,36,36,36,37,37,37,37,38,38,39,39,39,39,40,40,40,
         40,40,40,41,41,42,42,42,42,42,42,43,43,43,43,44,44,45,45,45,45,46,46,
         47,47,47,47,47,47,47,47,47,47,48};
-    
+
     static const std::vector<std::int16_t> phi2310 = {0,
         1,1,1,1,1,1,1,1,1,1,1,1,2,2,2,2,3,3,4,4,4,4,5,5,5,5,5,5,6,6,7,7,7,7,7,
         7,8,8,8,8,9,9,10,10,10,10,11,11,11,11,11,11,12,12,12,12,12,12,13,13,14,
@@ -152,24 +152,24 @@ namespace PhiTinyLookup {
         470,470,470,470,471,471,472,472,472,472,473,473,473,473,473,473,474,
         474,475,475,475,475,475,475,476,476,476,476,477,477,478,478,478,478,
         479,479,479,479,479,479,479,479,479,479,479,479,480};
-    
+
     std::vector<std::int16_t> createPhi30030() {
         std::vector<std::int16_t> res;
         res.push_back(0);
-        
+
         for (int16_t i = 1; i < 5760; ++i)
             for (int j = 0; j < ARR_WHEEL30030[i - 1]; ++j)
                 res.push_back(i);
-        
+
         res.push_back(5760);
         return res;
     }
-    
+
     static const std::vector<std::int16_t> phi30030 = createPhi30030();
-    
+
     std::array<std::vector<std::int16_t>, 7> createPhiTiny() {
         std::array<std::vector<std::int16_t>, 7> res;
-        
+
         // populate phiTiny... phiTiny[0] should not be accessed
         res[1].resize(1 + 1);
         res[1][0] = 0;
@@ -179,7 +179,7 @@ namespace PhiTinyLookup {
         res[4] = phi210;
         res[5] = phi2310;
         res[6] = phi30030;
-        
+
         return res;
     }
 }

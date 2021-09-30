@@ -24,13 +24,13 @@ void FinalTouch(SEXP res, bool IsArray, int grpSize, int r, int n,
         INTEGER(dim)[2] = r;
         Rf_setAttrib(res, R_DimSymbol, dim);
         UNPROTECT(1);
-        
+
         SEXP myNames = PROTECT(Rf_allocVector(STRSXP, r));
-        
+
         for (int i = 0; i < r; ++i) {
             SET_STRING_ELT(myNames, i, Rf_mkChar(myColNames[i].c_str()));
         }
-        
+
         if (IsNamed) {
             SetSampleNames(res, IsGmp, nRows, mySample, myBigSamp, myNames, 2);
         } else {
@@ -64,13 +64,13 @@ void SampleResults(SEXP GroupsMat, SEXP v,
                    mpz_t *const myBigSamp, mpz_t computedRowMpz,
                    double computedRows, int sampSize, int n,
                    int r, int grpSize, bool IsGmp) {
-    
+
     if (IsGmp) {
         for (int i = 0; i < sampSize; ++i) {
             const std::vector<int> z = nthComboGroupGmp(
                 n, grpSize, r, myBigSamp[i], computedRowMpz
             );
-            
+
             for (int j = 0; j < n; ++j) {
                 SET_STRING_ELT(GroupsMat, i + sampSize * j,
                                STRING_ELT(v, z[j]));
@@ -81,7 +81,7 @@ void SampleResults(SEXP GroupsMat, SEXP v,
             const std::vector<int> z = nthComboGroup(
                 n, grpSize, r, mySample[i], computedRows
             );
-            
+
             for (int j = 0; j < n; ++j) {
                 SET_STRING_ELT(GroupsMat, i + sampSize * j,
                                STRING_ELT(v, z[j]));
@@ -102,7 +102,7 @@ void SampleResults(T* GroupsMat, const std::vector<T> &v,
             const std::vector<int> z = nthComboGroupGmp(
                 n, grpSize, r, myBigSamp[i], computedRowMpz
             );
-            
+
             for (int j = 0; j < n; ++j) {
                 GroupsMat[i + sampSize * j] = v[z[j]];
             }
@@ -112,7 +112,7 @@ void SampleResults(T* GroupsMat, const std::vector<T> &v,
             const std::vector<int> z = nthComboGroup(
                 n, grpSize, r, mySample[i], computedRows
             );
-    
+
             for (int j = 0; j < n; ++j) {
                 GroupsMat[i + sampSize * j] = v[z[j]];
             }
@@ -127,13 +127,13 @@ void SampleResults(RcppParallel::RMatrix<T> GroupsMat,
                    mpz_t *const myBigSamp, mpz_t computedRowMpz,
                    double computedRows, int n, int r, int grpSize,
                    bool IsGmp, int strtIdx, int endIdx) {
-    
+
     if (IsGmp) {
         for (int i = strtIdx; i < endIdx; ++i) {
             const std::vector<int> z = nthComboGroupGmp(
                 n, grpSize, r, myBigSamp[i], computedRowMpz
             );
-            
+
             for (int j = 0; j < n; ++j) {
                 GroupsMat(i, j) = v[z[j]];
             }
@@ -143,7 +143,7 @@ void SampleResults(RcppParallel::RMatrix<T> GroupsMat,
             const std::vector<int> z = nthComboGroup(
                 n, grpSize, r, mySample[i], computedRows
             );
-            
+
             for (int j = 0; j < n; ++j) {
                 GroupsMat(i, j) = v[z[j]];
             }
@@ -153,20 +153,20 @@ void SampleResults(RcppParallel::RMatrix<T> GroupsMat,
 
 void GroupWorker(SEXP GroupsMat, SEXP v, std::vector<int> &z,
                  int nRows, int n, int r, int grpSize) {
-    
+
     const int idx1 = (r - 1) * grpSize - 1;
     const int idx2 = Rf_length(v) - 1;
     const int last1 = (r - 2) * grpSize + 1;
     const int lastRow = nRows - 1;
-    
+
     for (int i = 0; i < nRows; ++i) {
         for (int j = 0; j < n; ++j) {
             SET_STRING_ELT(GroupsMat, i + j * nRows, STRING_ELT(v, z[j]));
         }
-        
+
         nextComboGroup(z, r, grpSize, idx1, idx2, last1);
     }
-    
+
     // Get last combo group
     for (int j = 0; j < n; ++j) {
         SET_STRING_ELT(GroupsMat, lastRow + j * nRows, STRING_ELT(v, z[j]));
@@ -177,20 +177,20 @@ template <typename T>
 void GroupWorker(T* GroupsMat, const std::vector<T> &v,
                  std::vector<int> &z, int nRows, int n,
                  int r, int grpSize) {
-    
+
     const int idx1 = (r - 1) * grpSize - 1;
     const int idx2 = v.size() - 1;
     const int last1 = (r - 2) * grpSize + 1;
     const int lastRow = nRows - 1;
-    
+
     for (int i = 0; i < lastRow; ++i) {
         for (int j = 0; j < n; ++j) {
             GroupsMat[i + j * nRows] = v[z[j]];
         }
-        
+
         nextComboGroup(z, r, grpSize, idx1, idx2, last1);
     }
-    
+
     // Get last combo group
     for (int j = 0; j < n; ++j) {
         GroupsMat[lastRow + j * nRows] = v[z[j]];
@@ -201,12 +201,12 @@ template <typename T>
 void GroupWorker(RcppParallel::RMatrix<T> &GroupsMat,
                  const std::vector<T> &v, std::vector<int> &z, int n,
                  int r, int grpSize, int strtIdx, int endIdx) {
-    
+
     const int idx1 = (r - 1) * grpSize - 1;
     const int idx2 = v.size() - 1;
     const int last1 = (r - 2) * grpSize + 1;
     const int lastRow = endIdx - 1;
-    
+
     for (int i = strtIdx; i < lastRow; ++i) {
         for (int j = 0; j < n; ++j) {
             GroupsMat(i, j) = v[z[j]];
@@ -214,7 +214,7 @@ void GroupWorker(RcppParallel::RMatrix<T> &GroupsMat,
 
         nextComboGroup(z, r, grpSize, idx1, idx2, last1);
     }
-    
+
     // Get last combo group
     for (int j = 0; j < n; ++j) {
         GroupsMat(lastRow, j) = v[z[j]];
@@ -235,7 +235,7 @@ void SerialGlue(T* GroupsMat, SEXP res, const std::vector<T> &v,
     } else {
         GroupWorker(GroupsMat, v, z, nRows, n, r, grpSize);
     }
-    
+
     FinalTouch(res, IsArray, grpSize, r, n, nRows,
                IsNamed, mySamp, myBigSamp, IsGmp);
 }
@@ -265,7 +265,7 @@ void ParallelGlue(RcppParallel::RMatrix<T> &GroupsMat,
                   mpz_t computedRowMpz, double computedRows, int n,
                   int r, int grpSize, int strtIdx, int endIdx,
                   bool IsGmp, bool IsSample) {
-    
+
     if (IsSample) {
         SampleResults(GroupsMat, v, mySamp, myBigSamp, computedRowMpz,
                       computedRows, n, r, grpSize, IsGmp, strtIdx, endIdx);
@@ -277,7 +277,7 @@ void ParallelGlue(RcppParallel::RMatrix<T> &GroupsMat,
 void GetStartGrp(std::vector<int> &z, mpz_t computedRowMpz, mpz_t lowerMpz,
                  double computedRows, double &lower, int n, int grpSize,
                  int r, int stepSize, bool IsGmp) {
-    
+
     if (IsGmp) {
         mpz_add_ui(lowerMpz, lowerMpz, stepSize);
         z = nthComboGroupGmp(n, grpSize, r, lowerMpz, computedRowMpz);
@@ -299,11 +299,11 @@ void GroupsMain(T* GroupsMat, SEXP res, const std::vector<T> &v,
     if (Parallel) {
         RcppParallel::RMatrix<T> parMat(GroupsMat, nRows, n);
         std::vector<std::thread> threads;
-        
+
         int step = 0;
         int stepSize = nRows / nThreads;
         int nextStep = stepSize;
-        
+
         for (int j = 0; j < (nThreads - 1); ++j, step += stepSize,
              nextStep += stepSize) {
 
@@ -312,7 +312,7 @@ void GroupsMain(T* GroupsMat, SEXP res, const std::vector<T> &v,
                 std::cref(mySample), myBigSamp, z, computedRowMpz,
                 computedRows, n, r, grpSize, step, nextStep, IsGmp, IsSample
             );
-                     
+
             GetStartGrp(z, computedRowMpz, lowerMpz, computedRows,
                         lower, n, grpSize, r, stepSize, IsGmp);
         }
@@ -340,53 +340,53 @@ SEXP ComboGroupsCpp(SEXP Rv, SEXP RNumGroups, SEXP RRetType, SEXP Rlow,
                     SEXP RmaxThreads, SEXP RIsSample, SEXP RindexVec,
                     SEXP RmySeed, SEXP RNumSamp, SEXP baseSample,
                     SEXP RNamed, SEXP myEnv) {
-    
+
     int n;
     int numGroups;
     int nThreads = 1;
     int maxThreads = 1;
-    
+
     VecType myType = VecType::Integer;
     CleanConvert::convertPrimitive(RmaxThreads, maxThreads,
                                    VecType::Integer, "maxThreads");
-    
+
     CleanConvert::convertPrimitive(RNumGroups, numGroups,
                                    VecType::Integer, "numGroups");
-    
+
     bool IsSample = CleanConvert::convertFlag(RIsSample, "IsSample");
     bool Parallel = CleanConvert::convertFlag(Rparallel, "Parallel");
     bool IsNamed = (IsSample) ? CleanConvert::convertFlag(RNamed,
                     "namedSample") : false;
-    
+
     std::vector<int> vInt;
     std::vector<double> vNum;
-    
+
     SetType(myType, Rv);
     SetBasic(Rv, vNum, vInt, n, myType);
-    
+
     if (myType == VecType::Integer) {
         vInt.assign(vNum.cbegin(), vNum.cend());
     }
-    
+
     if (n % numGroups != 0) {
         Rf_error("The length of v (if v is a vector) or v (if v"
                  " is a scalar) must be divisible by numGroups");
     }
-    
+
     const int grpSize = n / numGroups;
     const double computedRows = numGroupCombs(n, numGroups, grpSize);
     bool IsGmp = (computedRows > SampleLimit);
-    
+
     mpz_t computedRowMpz;
     mpz_init(computedRowMpz);
-    
+
     if (IsGmp) {
         mpz_set_ui(computedRowMpz, 1);
         numGroupCombsGmp(computedRowMpz, n, numGroups, grpSize);
     } else {
         mpz_set_d(computedRowMpz, computedRows);
     }
-    
+
     double lower = 0;
     double upper = 0;
 
@@ -403,11 +403,11 @@ SEXP ComboGroupsCpp(SEXP Rv, SEXP RNumGroups, SEXP RRetType, SEXP Rlow,
         SetBounds(Rlow, Rhigh, IsGmp, bLower, bUpper, lower, upper,
                   lowerMpz.get(), upperMpz.get(), computedRowMpz, computedRows);
     }
-    
+
     std::vector<int> startZ;
     double dblLower = lower;
     if (!IsGmp) mpz_set_d(lowerMpz[0], dblLower);
-    
+
     if (bLower && mpz_cmp_ui(lowerMpz[0], 0) > 0) {
         startZ = IsGmp ? nthComboGroupGmp(n, grpSize, numGroups,
                                           lowerMpz[0], computedRowMpz) :
@@ -416,26 +416,26 @@ SEXP ComboGroupsCpp(SEXP Rv, SEXP RNumGroups, SEXP RRetType, SEXP Rlow,
         startZ.resize(n);
         std::iota(startZ.begin(), startZ.end(), 0);
     }
-    
+
     int nRows = 0;
-    
+
     if (!IsSample) {
         double userNumRows = 0;
         SetNumResults(IsGmp, bLower, bUpper, true, upperMpz[0],
                       lowerMpz[0], lower, upper, computedRows,
                       computedRowMpz, nRows, userNumRows);
     }
-    
+
     const std::string retType(CHAR(STRING_ELT(RRetType, 0)));
 
     if (retType != "3Darray" && retType != "matrix") {
         Rf_error("retType must be '3Darray' or 'matrix'");
     }
-    
+
     int sampSize;
     std::vector<double> mySample;
     const bool IsArray = (retType == "3Darray");
-    
+
     if (IsSample) {
         SetRandomSample(RindexVec, RNumSamp, sampSize, IsGmp,
                         computedRows, mySample, baseSample, myEnv);
@@ -466,7 +466,7 @@ SEXP ComboGroupsCpp(SEXP Rv, SEXP RNumGroups, SEXP RRetType, SEXP Rlow,
             CharacterGlue(res, charVec, mySample, myVec.get(), startZ,
                           computedRowMpz, computedRows, n, numGroups,
                           grpSize, nRows, IsArray, IsGmp, IsSample, IsNamed);
-            
+
             UNPROTECT(2);
             return res;
         } case VecType::Complex: {
@@ -506,11 +506,11 @@ SEXP ComboGroupsCpp(SEXP Rv, SEXP RNumGroups, SEXP RRetType, SEXP Rlow,
         } case VecType::Logical : {
             vInt.assign(n, 0);
             int* vecBool = LOGICAL(Rv);
-            
+
             for (int i = 0; i < n; ++i) {
                 vInt[i] = vecBool[i];
             }
-            
+
             SEXP res = PROTECT(Rf_allocMatrix(LGLSXP, numResults, n));
             int* matBool = LOGICAL(res);
 
@@ -528,7 +528,7 @@ SEXP ComboGroupsCpp(SEXP Rv, SEXP RNumGroups, SEXP RRetType, SEXP Rlow,
                        computedRowMpz, computedRows, lowerMpz[0], lower, n,
                        numGroups, grpSize, numResults, nThreads, IsArray,
                        IsNamed, Parallel, IsGmp, IsSample);
-    
+
             if (Rf_isFactor(Rv)) {
                 SetFactorClass(res, Rv);
             }

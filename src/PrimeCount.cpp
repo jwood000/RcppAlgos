@@ -61,10 +61,10 @@ namespace PrimeCounting {
             for (std::size_t i = 3; i < nextStrt.size(); ++i) {
                 for (int k = smallPrimes[i] * 2, j = nextStrt[i];
                      j < segSize; j += k) {
-                    
+
                     sieve[j] = 0;
                 }
-                
+
                 nextStrt[i] = (smallPrimes[i] * 2) - (
                     (segSize - nextStrt[i]) % (smallPrimes[i] * 2)
                 );
@@ -266,7 +266,7 @@ namespace PrimeCounting {
                     for (auto& thr: threads) {
                         thr.join();
                     }
-                    
+
                     mySums.insert(mySums.end(), intermediate.cbegin(),
                                   intermediate.cend());
                 }
@@ -284,7 +284,7 @@ namespace PrimeCounting {
                 while ((dblChunk * std::pow(multOne, nThreads - 1) + base) < piSqrtx) {
                     std::vector<std::int64_t> intermediate(nThreads, 0);
                     std::vector<std::thread> threads;
-                    
+
                     for (int j = 0; j < nThreads; lower = upper, ++j,
                             dblChunk *= multOne, upper = static_cast<std::int64_t>(dblChunk) + base) {
                         threads.emplace_back(phiForeman, std::ref(intermediate[j]),
@@ -294,11 +294,11 @@ namespace PrimeCounting {
                     for (auto& thr: threads) {
                         thr.join();
                     }
-                    
+
                     mySums.insert(mySums.end(), intermediate.cbegin(),
                                   intermediate.cend());
                 }
-                
+
                 std::vector<std::int64_t> intermediate(nThreads, 0);
                 std::vector<std::thread> threads;
 
@@ -310,11 +310,11 @@ namespace PrimeCounting {
 
                 threads.emplace_back(phiForeman, std::ref(intermediate.back()),
                                      lower, piSqrtx, x);
-                
+
                 for (auto& thr: threads) {
                     thr.join();
                 }
-                
+
                 mySums.insert(mySums.end(), intermediate.cbegin(),
                               intermediate.cend());
 
@@ -333,11 +333,11 @@ namespace PrimeCounting {
 
                 threads.emplace_back(phiForeman, std::ref(mySums.back()),
                                      lower, piSqrtx, x);
-                
+
                 for (auto& thr: threads) {
                     thr.join();
                 }
-                
+
                 mySum += std::accumulate(mySums.cbegin(), mySums.cend(),
                                          static_cast<std::int64_t>(0));
             }
@@ -401,7 +401,7 @@ SEXP PrimeCountCpp(SEXP Rn, SEXP RNumThreads, SEXP RmaxThreads) {
     double dblNum;
     CleanConvert::convertPrimitive(Rn, dblNum, VecType::Numeric, "n");
     const std::int64_t n = static_cast<std::int64_t>(dblNum);
-    
+
     int nThreads = 1;
     int maxThreads = 1;
     CleanConvert::convertPrimitive(RmaxThreads, maxThreads,

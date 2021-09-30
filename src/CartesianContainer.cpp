@@ -89,7 +89,7 @@ void convertToString(std::vector<std::string> &tempVec,
         } case STRSXP: {
             std::vector<std::string> strVec;
             typePass = tStr;
-            
+
             for (int i = 0; i < len; ++i) {
                 const std::string temp(CHAR(STRING_ELT(ListElement, i)));
                 strVec.push_back(temp);
@@ -125,7 +125,7 @@ void AddNames(SEXP res, SEXP RList) {
     }
 }
 
-void GetCharOutput(SEXP res, SEXP RList, 
+void GetCharOutput(SEXP res, SEXP RList,
                    const std::vector<int> &cartCombs,
                    const std::vector<int> &lastCol,
                    const std::vector<int> &lenGrps,
@@ -133,48 +133,48 @@ void GetCharOutput(SEXP res, SEXP RList,
 
     for (int i = 0, n1 = nCols - 1, row = 0, m_idx = 0,
          baseSize = lenGrps.size(); i < baseSize; ++i, m_idx = row) {
-        
+
         for (int j = 0, c_idx = i * n1, grpSize = lenGrps[i];
              j < n1; ++j, ++c_idx, m_idx += nRows) {
-            
+
             SEXP comb = PROTECT(STRING_ELT(charVec, cartCombs[c_idx]));
-            
+
             for (int k = 0; k < grpSize; ++k) {
                 SET_STRING_ELT(res, m_idx + k, comb);
             }
-            
+
             UNPROTECT(1);
         }
-        
+
         for (int k = 0; k < lenGrps[i]; ++k, ++row) {
             SET_STRING_ELT(res, m_idx + k,
                            STRING_ELT(charVec, lastCol[row]));
         }
     }
-    
+
     AddNames(res, RList);
 }
 
 template <typename T>
-void GetPureOutput(T* mat, SEXP res, SEXP RList, 
+void GetPureOutput(T* mat, SEXP res, SEXP RList,
                    const std::vector<int> &cartCombs,
                    const std::vector<int> &lastCol,
                    const std::vector<int> &lenGrps,
                    const T* standardVec, int nCols, int nRows) {
-    
+
     for (int i = 0, n1 = nCols - 1, row = 0, m_idx = 0,
          baseSize = lenGrps.size(); i < baseSize; ++i, m_idx = row) {
-        
+
         for (int j = 0, c_idx = i * n1, grpSize = lenGrps[i];
              j < n1; ++j, ++c_idx, m_idx += nRows) {
 
             auto&& comb = standardVec[cartCombs[c_idx]];
-            
+
             for (int k = 0; k < grpSize; ++k) {
                 mat[m_idx + k] = comb;
             }
         }
-        
+
         for (int k = 0; k < lenGrps[i]; ++k, ++row) {
             mat[m_idx + k] = standardVec[lastCol[row]];
         }
@@ -217,9 +217,9 @@ SEXP GlueComboCart(const std::vector<int> &cartCombs,
                             for (int j = 0, n1 = nCols - 1, row = i, idx = 0,
                                  baseSize = lenGrps.size(); idx < baseSize;
                                  ++idx, row += n1) {
-                                
+
                                 auto&& comb = intFacVec[cartCombs[row]];
-                                
+
                                 for (int k = 0; k < lenGrps[idx]; ++k, ++j) {
                                     intSexpVec[j] = comb;
                                 }
@@ -237,9 +237,9 @@ SEXP GlueComboCart(const std::vector<int> &cartCombs,
                             for (int j = 0, n1 = nCols - 1, row = i, idx = 0,
                                  baseSize = lenGrps.size(); idx < baseSize;
                                  ++idx, row += n1) {
-                                
+
                                 auto&& comb = intVec[cartCombs[row]];
-                                
+
                                 for (int k = 0; k < lenGrps[idx]; ++k, ++j) {
                                     intSexpVec[j] = comb;
                                 }
@@ -257,14 +257,14 @@ SEXP GlueComboCart(const std::vector<int> &cartCombs,
                     SEXP sexpVec = PROTECT(Rf_allocVector(LGLSXP, nRows));
                     int* boolSexpVec = INTEGER(sexpVec);
                     ++numProtects;
-                    
+
                     if (i < (nCols - 1)) {
                         for (int j = 0, n1 = nCols - 1, row = i, idx = 0,
                              baseSize = lenGrps.size(); idx < baseSize;
                              ++idx, row += n1) {
-                            
+
                             auto&& comb = boolVec[cartCombs[row]];
-                            
+
                             for (int k = 0; k < lenGrps[idx]; ++k, ++j) {
                                 boolSexpVec[j] = comb;
                             }
@@ -281,14 +281,14 @@ SEXP GlueComboCart(const std::vector<int> &cartCombs,
                     SEXP sexpVec = PROTECT(Rf_allocVector(REALSXP, nRows));
                     double* dblSexpVec = REAL(sexpVec);
                     ++numProtects;
-                    
+
                     if (i < (nCols - 1)) {
                         for (int j = 0, n1 = nCols - 1, row = i, idx = 0,
                              baseSize = lenGrps.size(); idx < baseSize;
                              ++idx, row += n1) {
-                            
+
                             auto&& comb = dblVec[cartCombs[row]];
-                            
+
                             for (int k = 0; k < lenGrps[idx]; ++k, ++j) {
                                 dblSexpVec[j] = comb;
                             }
@@ -304,18 +304,18 @@ SEXP GlueComboCart(const std::vector<int> &cartCombs,
                 } case STRSXP: {
                     SEXP sexpVec = PROTECT(Rf_allocVector(STRSXP, nRows));
                     ++numProtects;
-                    
+
                     if (i < (nCols - 1)) {
                         for (int j = 0, n1 = nCols - 1, row = i, idx = 0,
                              baseSize = lenGrps.size(); j < baseSize;
                              ++idx, row += n1) {
-                            
+
                             SEXP comb = PROTECT(STRING_ELT(charVec, cartCombs[row]));
-                            
+
                             for (int k = 0; k < lenGrps[idx]; ++k, ++j) {
                                 SET_STRING_ELT(sexpVec, j, comb);
                             }
-                            
+
                             UNPROTECT(1);
                         }
                     } else {
@@ -330,7 +330,7 @@ SEXP GlueComboCart(const std::vector<int> &cartCombs,
                 }
             }
         }
-        
+
         Rf_setAttrib(DataFrame, R_ClassSymbol, Rf_mkString("data.frame"));
         Rf_setAttrib(DataFrame, R_NamesSymbol,
                      Rf_getAttrib(RList, R_NamesSymbol));
@@ -407,20 +407,20 @@ SEXP ComboGridCpp(SEXP RList, SEXP RIsRep) {
     int sumLength = 0;
     const int nCols = Rf_length(RList);
     std::vector<int> IsFactor(nCols);
-    
+
     for (int i = 0; i < nCols; ++i) {
         if (Rf_isFactor(VECTOR_ELT(RList, i))) {
             IsFactor[i] = 1;
         } else {
             IsFactor[i] = 0;
         }
-        
+
         sumLength += Rf_length(VECTOR_ELT(RList, i));
     }
 
     std::vector<int> primes;
     getAtLeastNPrimes(primes, sumLength);
-    
+
     int numFactorVec = std::accumulate(IsFactor.cbegin(),
                                        IsFactor.cend(), 0);
     const int IsRep = CleanConvert::convertFlag(RIsRep, "IsRep");
@@ -435,7 +435,7 @@ SEXP ComboGridCpp(SEXP RList, SEXP RIsRep) {
     SEXP dblSexpVec  = PROTECT(Rf_allocVector(REALSXP, sumLength));
     SEXP intSexpVec  = PROTECT(Rf_allocVector(INTSXP, sumLength));
     SEXP boolSexpVec = PROTECT(Rf_allocVector(LGLSXP, sumLength));
-    
+
     double* dblVec = REAL(dblSexpVec);
     int* intVec    = INTEGER(intSexpVec);
     int* boolVec   = INTEGER(boolSexpVec);
@@ -501,20 +501,20 @@ SEXP ComboGridCpp(SEXP RList, SEXP RIsRep) {
     // We need to check to see if there is overlap in factor levels
     if (typeCheck[tFac] && mySum == 1) {
         std::vector<std::string> testLevels;
-        
+
         for (std::size_t i = 0; i < nCols; ++i) {
             if (IsFactor[i]) {
-                SEXP facVec = PROTECT(Rf_getAttrib(VECTOR_ELT(RList, i), 
+                SEXP facVec = PROTECT(Rf_getAttrib(VECTOR_ELT(RList, i),
                                                    R_LevelsSymbol));
                 std::vector<std::string> strVec;
-                
+
                 int len_comp = Rf_length(facVec);
-                
+
                 for (int i = 0; i < len_comp; ++i) {
                     const std::string temp(CHAR(STRING_ELT(facVec, i)));
                     strVec.push_back(temp);
                 }
-                
+
                 UNPROTECT(1);
 
                 if (testLevels.size()) {

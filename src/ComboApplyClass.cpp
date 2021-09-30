@@ -1,60 +1,60 @@
 #include "ClassUtils/ComboApplyClass.h"
 
 SEXP ComboApply::VecApplyReturn() {
-    
+
     SEXP vectorPass = PROTECT(Rf_allocVector(RTYPE, m));
     SEXP sexpFun = PROTECT(Rf_lang2(stdFun, R_NilValue));
-    
+
     switch (RTYPE) {
         case LGLSXP:
         case INTSXP: {
             int* ptrOut = INTEGER(vectorPass);
-            
+
             for (int j = 0; j < m; ++j) {
                 ptrOut[j] = vInt[z[j]];
             }
-            
+
             if (IsFactor) {
                 Rf_setAttrib(vectorPass, R_ClassSymbol, myClass);
                 Rf_setAttrib(vectorPass, R_LevelsSymbol, myLevels);
             }
-            
+
             break;
         } case STRSXP: {
             for (int j = 0; j < m; ++j) {
             SET_STRING_ELT(vectorPass, j, STRING_ELT(sexpVec, z[j]));
         }
-            
+
             break;
         } case CPLXSXP: {
             Rcomplex* ptrOut = COMPLEX(vectorPass);
             Rcomplex* ptrIn  = COMPLEX(sexpVec);
-            
+
             for (int j = 0; j < m; ++j) {
                 ptrOut[j] = ptrIn[z[j]];
             }
-            
+
             break;
         } case RAWSXP: {
             Rbyte* ptrOut = RAW(vectorPass);
             Rbyte* ptrIn  = RAW(sexpVec);
-            
+
             for (int j = 0; j < m; ++j) {
                 ptrOut[j] = ptrIn[z[j]];
             }
-            
+
             break;
         } default: {
             double* ptrOut = REAL(vectorPass);
-            
+
             for (int j = 0; j < m; ++j) {
                 ptrOut[j] = vNum[z[j]];
             }
-            
+
             break;
         }
     }
-    
+
     SETCADR(sexpFun, vectorPass);
     SEXP res = Rf_eval(sexpFun, rho);
     UNPROTECT(2);
@@ -88,7 +88,7 @@ void ComboApply::startOver() {
 }
 
 SEXP ComboApply::nextComb() {
-    
+
     if (CheckEqSi(IsGmp, mpzIndex, dblIndex, 0)) {
         increment(IsGmp, mpzIndex, dblIndex);
         return VecApplyReturn();
@@ -110,7 +110,7 @@ SEXP ComboApply::nextComb() {
 }
 
 SEXP ComboApply::prevComb() {
-    
+
     if (CheckIndGrT(IsGmp, mpzIndex, dblIndex,
                     computedRowsMpz, computedRows)) {
         decrement(IsGmp, mpzIndex, dblIndex);
@@ -131,17 +131,17 @@ SEXP ComboApply::prevComb() {
 }
 
 SEXP ComboApply::nextNumCombs(SEXP RNum) {
-    
+
     int num;
     CleanConvert::convertPrimitive(RNum, num, VecType::Integer,
                                    "The number of results");
-    
+
     if (CheckIndLT(IsGmp, mpzIndex, dblIndex,
                    computedRowsMpz, computedRows)) {
-        
+
         int nRows = 0;
         int numIncrement = 0;
-        
+
         if (IsGmp) {
             mpz_sub(mpzTemp, computedRowsMpz, mpzIndex);
             nRows = mpz_cmp_si(mpzTemp, num) < 0 ? mpz_get_si(mpzTemp) : num;
@@ -151,11 +151,11 @@ SEXP ComboApply::nextNumCombs(SEXP RNum) {
             nRows = num > dblTemp ? dblTemp : num;
             numIncrement = num > dblTemp ? (nRows + 1) : nRows;
         }
-        
+
         if (CheckGrTSi(IsGmp, mpzIndex, dblIndex, 0)) {
             nextIter(freqs, z, n1, m1);
         }
-        
+
         increment(IsGmp, mpzIndex, dblIndex, numIncrement);
         SEXP res = PROTECT(ApplyForward(nRows));
 
@@ -182,15 +182,15 @@ SEXP ComboApply::nextNumCombs(SEXP RNum) {
 }
 
 SEXP ComboApply::prevNumCombs(SEXP RNum) {
-    
+
     int num;
     CleanConvert::convertPrimitive(RNum, num, VecType::Integer,
                                    "The number of results");
-    
+
     if (CheckGrTSi(IsGmp, mpzIndex, dblIndex, 2)) {
         int nRows = 0;
         int numDecrement = 0;
-        
+
         if (IsGmp) {
             mpz_sub_ui(mpzTemp, mpzIndex, 1u);
             nRows = mpz_cmp_si(mpzTemp, num) < 0 ? mpz_get_si(mpzTemp) : num;
@@ -200,7 +200,7 @@ SEXP ComboApply::prevNumCombs(SEXP RNum) {
             nRows = num > dblTemp ? dblTemp : num;
             numDecrement = num > dblTemp ? (nRows + 1) : nRows;
         }
-        
+
         if (CheckIndLT(IsGmp, mpzIndex, dblIndex,
                        computedRowsMpz, computedRows, true)) {
             prevIter(freqs, z, n1, m1);
@@ -220,43 +220,43 @@ SEXP ComboApply::prevNumCombs(SEXP RNum) {
 }
 
 SEXP ComboApply::nextGather() {
-    
+
     if (IsGmp) {
         mpz_sub(mpzTemp, computedRowsMpz, mpzIndex);
-        
+
         if (mpz_cmp_si(mpzTemp, std::numeric_limits<int>::max()) > 0) {
             Rf_error("The number of requested rows is greater than ",
                      std::to_string(std::numeric_limits<int>::max()).c_str());
         }
     } else {
         dblTemp = computedRows - dblIndex;
-        
+
         if (dblTemp > std::numeric_limits<int>::max()) {
             Rf_error("The number of requested rows is greater than ",
                      std::to_string(std::numeric_limits<int>::max()).c_str());
         }
     }
-    
+
     const int nRows = (IsGmp) ? mpz_get_si(mpzTemp) : dblTemp;
-    
+
     if (nRows > 0) {
         if (CheckGrTSi(IsGmp, mpzIndex, dblIndex, 0))
             nextIter(freqs, z, n1, m1);
-        
+
         if (IsGmp) {
             mpz_add_ui(mpzIndex, computedRowsMpz, 1u);
         } else {
             dblIndex = computedRows + 1;
         }
-        
+
         SEXP res = PROTECT(ApplyForward(nRows));
-        
+
         if (IsGmp) {
             mpz_sub_ui(mpzTemp, computedRowsMpz, 1u);
         } else {
             dblTemp = computedRows - 1;
         }
-        
+
         z = nthResFun(n, m, dblTemp, mpzTemp, myReps);
         if (!IsComb) TopOffPerm(z, myReps, n, m, IsRep, IsMult);
         UNPROTECT(1);
@@ -267,35 +267,35 @@ SEXP ComboApply::nextGather() {
 }
 
 SEXP ComboApply::prevGather() {
-    
+
     if (IsGmp) {
         mpz_sub_ui(mpzTemp, mpzIndex, 1);
-        
+
         if (mpz_cmp_si(mpzTemp, std::numeric_limits<int>::max()) > 0) {
             Rf_error("The number of requested rows is greater than ",
                      std::to_string(std::numeric_limits<int>::max()).c_str());
         }
     } else {
         dblTemp = dblIndex - 1;
-        
+
         if (dblTemp > std::numeric_limits<int>::max()) {
             Rf_error("The number of requested rows is greater than ",
                      std::to_string(std::numeric_limits<int>::max()).c_str());
         }
     }
-    
+
     const int nRows = (IsGmp) ? mpz_get_si(mpzTemp) : dblTemp;
-    
+
     if (nRows) {
         if (CheckIndLT(IsGmp, mpzIndex, dblIndex, computedRowsMpz, computedRows, true))
             prevIter(freqs, z, n1, m1);
-        
+
         if (IsGmp) {
             mpz_set_si(mpzIndex, 0u);
         } else {
             dblIndex = 0;
         }
-        
+
         return ApplyReverse(nRows);
     } else {
         return Rf_ScalarLogical(false);
@@ -303,7 +303,7 @@ SEXP ComboApply::prevGather() {
 }
 
 SEXP ComboApply::currComb() {
-    
+
     if (CheckIndGrT(IsGmp, mpzIndex, dblIndex,
                     computedRowsMpz, computedRows)) {
         const std::string message = "No more results. To see the last "
@@ -321,22 +321,22 @@ SEXP ComboApply::currComb() {
 }
 
 SEXP ComboApply::randomAccess(SEXP RindexVec) {
-    
+
     std::size_t sampSize;
     std::vector<double> mySample;
     SetIndexVec(RindexVec, mySample, sampSize, IsGmp, computedRows);
-    
+
     const std::size_t bigSampSize = (IsGmp) ? sampSize : 1;
     auto mpzVec = FromCpp14::make_unique<mpz_t[]>(bigSampSize);
-    
+
     for (std::size_t i = 0; i < bigSampSize; ++i) {
         mpz_init(mpzVec[i]);
     }
-    
+
     if (IsGmp) {
         SetIndexVecMpz(RindexVec, mpzVec.get(), sampSize, computedRowsMpz);
     }
-    
+
     if (sampSize > 1) {
         return SampleCombPermApply(
             sexpVec, vInt, vNum, mySample, mpzVec.get(), myReps, stdFun,
@@ -350,7 +350,7 @@ SEXP ComboApply::randomAccess(SEXP RindexVec) {
             dblIndex = mySample.front() + 1;
             dblTemp = mySample.front();
         }
-        
+
         z = nthResFun(n, m, dblTemp, mpzTemp, myReps);
         if (!IsComb) TopOffPerm(z, myReps, n, m, IsRep, IsMult);
         return VecApplyReturn();
@@ -358,7 +358,7 @@ SEXP ComboApply::randomAccess(SEXP RindexVec) {
 }
 
 SEXP ComboApply::front() {
-    
+
     if (IsGmp) {
         mpz_set_ui(mpzIndex, 1u);
         mpz_set_ui(mpzTemp, 0u);
@@ -373,7 +373,7 @@ SEXP ComboApply::front() {
 }
 
 SEXP ComboApply::back() {
-    
+
     if (IsGmp) {
         mpz_set(mpzIndex, computedRowsMpz);
         mpz_sub_ui(mpzTemp, computedRowsMpz, 1u);
@@ -381,7 +381,7 @@ SEXP ComboApply::back() {
         dblIndex = computedRows;
         dblTemp = computedRows - 1;
     }
-    
+
     z = nthResFun(n, m, dblTemp, mpzTemp, myReps);
     if (!IsComb) TopOffPerm(z, myReps, n, m, IsRep, IsMult);
     return VecApplyReturn();

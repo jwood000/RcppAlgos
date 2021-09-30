@@ -18,63 +18,63 @@
 //
 //              prev sections   bound (index = 8)
 //                  /  \        |
-//            ............. 8 | 9 12 23 24 | 10 20 21 22 | 11 ... 
+//            ............. 8 | 9 12 23 24 | 10 20 21 22 | 11 ...
 //                                 |
 //                               idx1 (equal to last1, in this case)
 //
 // Sort v past idx1:
-//                      ... 8 | 9 12 10 11 | 13 14 15 16 | 17... 
+//                      ... 8 | 9 12 10 11 | 13 14 15 16 | 17...
 //
 // Determine the index, idx3, such that v[idx3] > v[idx1]
 //
-//                      ... 8 | 9 12 10 11 | 13 14 15 16 | 17 ... 
+//                      ... 8 | 9 12 10 11 | 13 14 15 16 | 17 ...
 //                                 |          |
 //                               idx1       idx3
-// 
+//
 // Swap idx1 and idx3:
-//                      ... 8 | 9 13 10 11 | 12 14 15 16 | 17... 
+//                      ... 8 | 9 13 10 11 | 12 14 15 16 | 17...
 //
 // Move enough indices after idx1 to fill that specific group:
 //
-//                      ... 8 | 9 13 __ __ | 10 11 12 14 | 15 16 ... 
+//                      ... 8 | 9 13 __ __ | 10 11 12 14 | 15 16 ...
 //
 // Identify and move indices that are successively incrementing values of
 // v past idx1:
-//                      ... 8 | 9 13 14 15 | 10 11 12 16 | 17 ... 
+//                      ... 8 | 9 13 14 15 | 10 11 12 16 | 17 ...
 //
 // The last two steps are accomplished with std::rotate.
 // This completes the algorithm.
 
-bool nextComboGroup(std::vector<int> &z, int nGrps, 
+bool nextComboGroup(std::vector<int> &z, int nGrps,
                     int grpSize, int idx1, int idx2, int last1) {
-    
+
     while (idx2 > idx1 && z[idx2] > z[idx1])
         --idx2;
-    
+
     if ((idx2 + 1) < static_cast<int>(z.size())) {
         if (z[idx2 + 1] > z[idx1])
             std::swap(z[idx1], z[idx2 + 1]);
-        
+
         return true;
     } else {
         const auto zbeg = z.begin();
-        
+
         while (idx1 > 0) {
             const int tipPnt = z[idx2];
-            
+
             while (idx1 > last1 && tipPnt < z[idx1])
                 --idx1;
-            
+
             if (tipPnt > z[idx1]) { // **Crucial Part**
                 int idx3 = idx1 + 1;
                 std::sort(zbeg + idx3, z.end());
                 const int xtr = last1 + grpSize - idx3;
-                
+
                 while (z[idx3] < z[idx1])
                     ++idx3;
-                
+
                 std::swap(z[idx3], z[idx1]);
-                std::rotate(zbeg + idx1 + 1, 
+                std::rotate(zbeg + idx1 + 1,
                             zbeg + idx3 + 1, zbeg + idx3 + xtr);
                 return true;
             } else {
@@ -84,23 +84,23 @@ bool nextComboGroup(std::vector<int> &z, int nGrps,
             }
         }
     }
-    
+
     return false;
 }
 
 double numGroupCombs(int n, int numGroups, int grpSize) {
-    
+
     double result = 1;
-    
+
     for (double i = n; i > numGroups; --i)
         result *= i;
-    
+
     if (result < std::numeric_limits<double>::max()) {
         double myDiv = 1;
-        
+
         for (double i = 2; i <= grpSize; ++i)
             myDiv *= i;
-        
+
         result /= std::pow(myDiv, numGroups);
         return std::round(result);
     } else {
@@ -108,19 +108,19 @@ double numGroupCombs(int n, int numGroups, int grpSize) {
     }
 }
 
-void numGroupCombsGmp(mpz_t result, int n, 
+void numGroupCombsGmp(mpz_t result, int n,
                       int numGroups, int grpSize) {
-    
+
     for (int i = n; i > numGroups; --i)
         mpz_mul_ui(result, result, i);
-    
+
     mpz_t myDiv;
     mpz_init(myDiv);
     mpz_set_ui(myDiv, 1);
-    
+
     for (int i = 2; i <= grpSize; ++i)
         mpz_mul_ui(myDiv, myDiv, i);
-    
+
     mpz_pow_ui(myDiv, myDiv, numGroups);
     mpz_divexact(result, result, myDiv);
     mpz_clear(myDiv);
@@ -128,24 +128,24 @@ void numGroupCombsGmp(mpz_t result, int n,
 
 std::vector<int> nthComboGroup(int n, int gSize, int r,
                                double myIndex, double total) {
-    
+
     int s = n - 1;
     const int g = gSize - 1;
     std::int64_t temp   = static_cast<std::int64_t>(nChooseK(s, g));
     std::int64_t secLen = static_cast<std::int64_t>(total) / temp;
-    
+
     std::vector<int>  res(n, 0);
     std::vector<char> idx_used(n, 0);
     std::vector<int>  v(s);
     std::iota(v.begin(), v.end(), 1);
-    
+
     int myMin = 0;
     std::int64_t ind1 = myIndex;
     std::int64_t ind2 = myIndex;
-    
+
     mpz_t mpzDefault;
     mpz_init(mpzDefault);
-    
+
     for (int j = 0; j < (r - 1); ++j) {
         ind2 = ind2 / secLen;
         res[j * gSize]  = myMin;
@@ -170,14 +170,14 @@ std::vector<int> nthComboGroup(int n, int gSize, int r,
         v.erase(v.begin());
         ind1 -= ind2 * secLen;
         ind2 = ind1;
-        
+
         s -= gSize;
         temp = nChooseK(s, g);
         secLen /= temp;
     }
-    
+
     res[(r - 1) * gSize] = myMin;
-    
+
     for (int k = (r - 1) * gSize + 1, i = 0; i < g; ++k, ++i) {
         res[k] = v[i];
     }
@@ -196,30 +196,30 @@ std::vector<int> nthComboGroupGmp(int n, int gSize, int r,
 
     int s = n - 1;
     const int g = gSize - 1;
-    
+
     mpz_t temp;
     mpz_t secLen;
 
     mpz_init(temp);
     mpz_init(secLen);
-    
+
     nChooseKGmp(temp, s, g);
     mpz_divexact(secLen, computedRowMpz, temp);
-    
+
     std::vector<int>  res(n, 0);
     std::vector<char> idx_used(n, 0);
     std::vector<int>  v(s);
     std::iota(v.begin(), v.end(), 1);
-    
+
     int myMin = 0;
     constexpr double dblDefault = 0;
-    
+
     for (int j = 0; j < (r - 1); ++j) {
         mpz_tdiv_q(ind2, ind2, secLen);
         res[j * gSize] = myMin;
         idx_used[myMin] = 1;
 
-        const std::vector<int> comb = (g == 1) ? 
+        const std::vector<int> comb = (g == 1) ?
             std::vector<int>(1, mpz_get_si(ind2)) :
             nthCombGmp(s, g, dblDefault, ind2, v);
 
@@ -229,26 +229,26 @@ std::vector<int> nthComboGroupGmp(int n, int gSize, int r,
         }
 
         v.clear();
-        
+
         for (int i = 1; i < n; ++i) {
             if (!idx_used[i]) {
                 v.push_back(i);
             }
         }
-        
+
         myMin = v.front();
         v.erase(v.begin());
         mpz_mul(temp, ind2, secLen);
         mpz_sub(ind1, ind1, temp);
         mpz_set(ind2, ind1);
-        
+
         s -= gSize;
         nChooseKGmp(temp, s, g);
         mpz_divexact(secLen, secLen, temp);
     }
-    
+
     res[(r - 1) * gSize] = myMin;
-    
+
     for (int k = (r - 1) * gSize + 1, i = 0; i < g; ++k, ++i) {
         res[k] = v[i];
     }

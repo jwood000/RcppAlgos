@@ -63,7 +63,7 @@ SEXP Combo::MatForward(int nRows) {
     int nThreads = 1;
     bool LocalPar = Parallel;
     const int limit = 20000;
-    
+
     SetThreads(LocalPar, maxThreads, nRows,
                myType, nThreads, sexpNThreads, limit);
 
@@ -96,7 +96,7 @@ Combo::Combo(
     computedRows(IsGmp ? 0 : Rf_asReal(RcompRow)), myType(typePass),
     vInt(RvInt), vNum(RvNum), freqs(Rfreqs), myReps(Rreps),
     n1(IsComb ? n - 1 : (IsMult ? freqs.size() - 1 : n - 1)),
-    myClass(bVec[0] ? Rf_getAttrib(Rv, R_ClassSymbol) : 
+    myClass(bVec[0] ? Rf_getAttrib(Rv, R_ClassSymbol) :
                 Rf_allocVector(STRSXP, 0)),
     myLevels(bVec[0] ? Rf_getAttrib(Rv, R_LevelsSymbol) : R_NilValue),
     nthResFun(GetNthResultFunc(bVec[1], bVec[2], bVec[3], bVec[4])),
@@ -108,7 +108,7 @@ Combo::Combo(
     // Initialize trivial mpz_t value for functions which require mpz_t
     mpz_init(mpzTemp);
     mpz_init(mpzIndex);
-    
+
     mpz_t temp[1];
     mpz_init(temp[0]);
     mpz_init(computedRowsMpz);
@@ -130,7 +130,7 @@ void Combo::startOver() {
     } else {
         dblIndex = 0;
     }
-    
+
     SetStartZ(myReps, freqs, z, IsComb, n, m, dblIndex,
               mpzIndex, IsRep, IsMult, IsGmp);
 }
@@ -158,7 +158,7 @@ SEXP Combo::nextComb() {
 }
 
 SEXP Combo::prevComb() {
-    
+
     if (CheckIndGrT(IsGmp, mpzIndex, dblIndex, computedRowsMpz, computedRows)) {
         decrement(IsGmp, mpzIndex, dblIndex);
         return VecReturn();
@@ -363,7 +363,7 @@ SEXP Combo::randomAccess(SEXP RindexVec) {
         int nThreads = 1;
         bool LocalPar = Parallel;
         const int limit = 2;
-        
+
         SetThreads(LocalPar, maxThreads, sampSize,
                    myType, nThreads, sexpNThreads, limit);
 

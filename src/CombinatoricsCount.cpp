@@ -121,34 +121,34 @@ SEXP PartitionsCount(SEXP Rtarget, SEXP Rv, SEXP Rm,
 }
 
 SEXP ComboGroupsCountCpp(SEXP Rv, SEXP RNumGroups) {
-    
+
     int n, numGroups;
     VecType myType = VecType::Integer;
     CleanConvert::convertPrimitive(RNumGroups, numGroups,
                                    VecType::Integer, "numGroups");
-    
+
     std::vector<int> vInt;
     std::vector<double> vNum;
-    
+
     SetType(myType, Rv);
     SetBasic(Rv, vNum, vInt, n, myType);
-    
+
     if (n % numGroups != 0) {
         Rf_error("The length of v (if v is a vector) or v (if v"
                  " is a scalar) must be divisible by numGroups");
     }
-    
+
     const int grpSize = n / numGroups;
     const double computedRows = numGroupCombs(n, numGroups, grpSize);
     bool IsGmp = (computedRows > Significand53);
-    
+
     mpz_t computedRowMpz;
     mpz_init(computedRowMpz);
-    
+
     if (IsGmp) {
         mpz_set_ui(computedRowMpz, 1);
         numGroupCombsGmp(computedRowMpz, n, numGroups, grpSize);
     }
-    
+
     return CleanConvert::GetCount(IsGmp, computedRowMpz, computedRows);
 }

@@ -50,7 +50,7 @@ void PollardRhoMaster(const std::vector<double> &myNums,
             threads.emplace_back(std::cref(IsPrimeVec), m, myRange,
                                  std::cref(myNums), std::ref(primeTest));
         }
-        
+
         for (auto& thr: threads) {
             thr.join();
         }
@@ -94,7 +94,7 @@ SEXP PolGlueInt(std::vector<double> &myNums, int myMax,
                              MyPrimeList, tempVec, myRange, nThreads, maxThreads);
 
             SEXP myList = PROTECT(Rf_allocVector(VECSXP, myRange));
-            
+
             for (std::size_t i = 0; i < myRange; ++i) {
                 SET_VECTOR_ELT(myList, i, GetIntVec(MyPrimeList[i]));
             }
@@ -155,11 +155,11 @@ SEXP PolGlueInt(std::vector<double> &myNums, int myMax,
                          MyPrimeList, tempVec, myRange, nThreads, maxThreads);
 
         SEXP myList = PROTECT(Rf_allocVector(VECSXP, myRange));
-        
+
         for (std::size_t i = 0; i < myRange; ++i) {
             SET_VECTOR_ELT(myList, i, GetIntVec(MyPrimeList[i]));
         }
-        
+
         if (keepNames) {
             ++numUnprotects;
             SetDblNames(myList, myNums);
@@ -180,7 +180,7 @@ SEXP PolGlueInt(std::vector<double> &myNums, int myMax,
             ++numUnprotects;
             SetDblNames(isPrimeVec, myNums);
         }
-        
+
         UNPROTECT(numUnprotects);
         return isPrimeVec;
     }
@@ -189,43 +189,43 @@ SEXP PolGlueInt(std::vector<double> &myNums, int myMax,
 SEXP PolGlueDbl(std::vector<double> &myNums, double myMax,
                 bool bPrimeFacs, bool bAllFacs, bool keepNames,
                 int nThreads, int maxThreads) {
-    
+
     std::size_t myRange = myNums.size();
     int numUnprotects = 1;
     int* tempVec = nullptr;
-    
+
     if (bPrimeFacs) {
         if (myRange == 1) {
             std::int64_t mPass = static_cast<std::int64_t>(myNums[0]);
             if (mPass == 0) {return Rf_allocVector(INTSXP, 0);}
             std::vector<double> factors;
-            
+
             if (mPass < 0) {
                 mPass = std::abs(mPass);
                 factors.push_back(-1);
             }
-            
+
             getPrimeFactors(mPass, factors);
             return GetDblVec(factors);
         } else {
             std::vector<std::vector<double>>
                 MyPrimeList(myRange, std::vector<double>());
-            
+
             PollardRhoMaster(myNums, myMax, bPrimeFacs,
                              false, MyPrimeList, tempVec,
                              myRange, nThreads, maxThreads);
-            
+
             SEXP myList = PROTECT(Rf_allocVector(VECSXP, myRange));
-            
+
             for (std::size_t i = 0; i < myRange; ++i) {
                 SET_VECTOR_ELT(myList, i, GetDblVec(MyPrimeList[i]));
             }
-            
+
             if (keepNames) {
                 ++numUnprotects;
                 SetDblNames(myList, myNums);
             }
-            
+
             UNPROTECT(numUnprotects);
             return myList;
         }
@@ -234,30 +234,30 @@ SEXP PolGlueDbl(std::vector<double> &myNums, double myMax,
             std::int64_t mPass = static_cast<std::int64_t>(myNums[0]);
             std::vector<double> myDivisors;
             bool isNegative = false;
-            
+
             if (mPass < 0) {
                 mPass = std::abs(mPass);
                 isNegative = true;
             }
-            
+
             if (mPass > 1) {
                 std::vector<double> factors;
                 getPrimeFactors(mPass, factors);
                 myDivisors = Factorize<double>(factors);
-                
+
                 if (isNegative) {
                     const std::size_t facSize = myDivisors.size();
                     std::vector<double> negPosFacs(2 * facSize);
                     std::size_t posInd = facSize, negInd = facSize - 1;
-                    
+
                     for (std::size_t i = 0; i < facSize; ++i, ++posInd, --negInd) {
                         negPosFacs[negInd] = -1 * myDivisors[i];
                         negPosFacs[posInd] = myDivisors[i];
                     }
-                    
+
                     return GetDblVec(negPosFacs);
                 }
-                
+
                 return GetDblVec(myDivisors);
             } else  {
                 if (isNegative) {
@@ -265,29 +265,29 @@ SEXP PolGlueDbl(std::vector<double> &myNums, double myMax,
                 } if (mPass > 0) {
                     myDivisors.push_back(1);
                 }
-                
+
                 return GetDblVec(myDivisors);
             }
         }
-        
+
         std::vector<std::vector<double>>
             MyPrimeList(myRange, std::vector<double>());
-        
+
         PollardRhoMaster(myNums, myMax, bPrimeFacs,
                          true, MyPrimeList, tempVec,
                          myRange, nThreads, maxThreads);
-        
+
         SEXP myList = PROTECT(Rf_allocVector(VECSXP, myRange));
-        
+
         for (std::size_t i = 0; i < myRange; ++i) {
             SET_VECTOR_ELT(myList, i, GetDblVec(MyPrimeList[i]));
         }
-        
+
         if (keepNames) {
             ++numUnprotects;
             SetDblNames(myList, myNums);
         }
-        
+
         UNPROTECT(numUnprotects);
         return myList;
     } else {
@@ -295,34 +295,34 @@ SEXP PolGlueDbl(std::vector<double> &myNums, double myMax,
         int* ptrPrimeVec = INTEGER(isPrimeVec);
         std::fill_n(ptrPrimeVec, myRange, 1);
         std::vector<std::vector<double>> tempList;
-        
+
         PollardRhoMaster(myNums, myMax, bPrimeFacs, bAllFacs, tempList,
                          ptrPrimeVec, myRange, nThreads, maxThreads);
-        
+
         if (keepNames) {
             ++numUnprotects;
             SetDblNames(isPrimeVec, myNums);
         }
-        
+
         UNPROTECT(numUnprotects);
         return isPrimeVec;
     }
 }
 
-SEXP PollardRhoContainer(SEXP Rv, SEXP RNamed, 
+SEXP PollardRhoContainer(SEXP Rv, SEXP RNamed,
                          SEXP RbPrimeFacs, SEXP RbAllFacs,
                          SEXP RNumThreads, SEXP RmaxThreads) {
 
     int nThreads = 1;
     int maxThreads = 1;
-    
+
     CleanConvert::convertPrimitive(RmaxThreads, maxThreads,
                                    VecType::Integer, "maxThreads");
     const bool bPrimeFacs = CleanConvert::convertFlag(RbPrimeFacs,
                                                          "bPrimeFacs");
     const bool bAllFacs = CleanConvert::convertFlag(RbAllFacs,
                                                        "bAllFacs");
-    
+
     std::vector<double> myNums;
     bool IsNamed = CleanConvert::convertFlag(RNamed, "namedList");
 

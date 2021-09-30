@@ -12,7 +12,7 @@ namespace MotleyPrimes {
     inline T getStartIndexPowP(T lowerB, T step, T myPrime) {
 
         T remTest = lowerB % step;
-        
+
         if (remTest == 0) {
             return 0;
         } else if (myPrime < lowerB) {

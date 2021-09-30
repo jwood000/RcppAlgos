@@ -14,29 +14,29 @@ protected:
 
     const int cap;
     const int strtLen;
-    
+
     bool bLower;
     bool bUpper;
 
     const bool KeepRes;
     const bool numUnknown;
-    
+
     const double cnstrtCount;
     mpz_t cnstrtCountMpz;
 
     std::vector<int> tarIntVals;
     std::vector<double> tarVals;
-    
+
     const ConstraintType ctype;
     const PartDesign part;
-    
+
     const std::string mainFun;
     const std::vector<std::string> compVec;
     const funcPtr<double> funDbl;
     const funcPtr<int> funInt;
 
 public:
-    
+
     ComboRes(
         SEXP Rv, int Rm, SEXP RcompRows, const std::vector<int> &bVec,
         const std::vector<int> &Rreps, const std::vector<int> &Rfreqs,

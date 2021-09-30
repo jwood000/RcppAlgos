@@ -30,7 +30,7 @@ void NumDivisorsSieve(T m, T n, T offsetStrt, U* numFacs) {
         for (; j <= myNum; j += i) {
             ++numFacs[j];
         }
-        
+
         for (; j < myRange; j += i) {
             numFacs[j] += 2;
         }
@@ -50,7 +50,7 @@ void DivisorsSieve(T m, U retN, T offsetStrt,
     const T myRange = (n - m) + 1;
 
     typename std::vector<std::vector<U>>::iterator it2d;
-    typename std::vector<std::vector<U>>::iterator itEnd = 
+    typename std::vector<std::vector<U>>::iterator itEnd =
         MyDivList.begin() + offsetStrt + myRange;
 
     std::vector<int> myMemory(myRange, 2);
@@ -182,28 +182,28 @@ void DivisorMain(T myMin, U myMax, bool bDivSieve,
 
 SEXP GlueInt(int myMin, int myMax, bool bDivSieve,
              bool keepNames, int nThreads, int maxThreads) {
-    
+
     int numUnprotects = 1;
     std::size_t myRange = (myMax - myMin) + 1;
-    
+
     if (bDivSieve) {
         std::vector<std::vector<int>> MyDivList(myRange, std::vector<int>());
         int* tempNumDivs = nullptr;
-        
+
         DivisorMain(myMin, myMax, bDivSieve, tempNumDivs,
                     MyDivList, myRange, nThreads, maxThreads);
-        
+
         SEXP myList = PROTECT(Rf_allocVector(VECSXP, myRange));
-        
+
         for (std::size_t i = 0; i < myRange; ++i) {
             SET_VECTOR_ELT(myList, i, GetIntVec(MyDivList[i]));
         }
-        
+
         if (keepNames) {
             ++numUnprotects;
             SetIntNames(myList, myRange, myMin, myMax);
         }
-        
+
         UNPROTECT(numUnprotects);
         return myList;
     } else {
@@ -211,7 +211,7 @@ SEXP GlueInt(int myMin, int myMax, bool bDivSieve,
         SEXP facCountV = PROTECT(Rf_allocVector(INTSXP, myRange));
         int* ptrFacCount  = INTEGER(facCountV);
         std::fill_n(ptrFacCount, myRange, 2);
-        
+
         DivisorMain(myMin, myMax, bDivSieve, ptrFacCount,
                     tempList, myRange, nThreads, maxThreads);
 
@@ -219,7 +219,7 @@ SEXP GlueInt(int myMin, int myMax, bool bDivSieve,
             ++numUnprotects;
             SetIntNames(facCountV, myRange, myMin, myMax);
         }
-        
+
         UNPROTECT(numUnprotects);
         return facCountV;
     }
@@ -228,29 +228,29 @@ SEXP GlueInt(int myMin, int myMax, bool bDivSieve,
 SEXP GlueDbl(std::int_fast64_t myMin, double myMax,
              bool bDivSieve, bool keepNames,
              int nThreads, int maxThreads) {
-    
+
     int numUnprotects = 1;
     std::size_t myRange = (myMax - myMin) + 1;
-    
+
     if (bDivSieve) {
-        std::vector<std::vector<double>> 
+        std::vector<std::vector<double>>
             MyDivList(myRange, std::vector<double>());
         double* tempNumDivs = nullptr;
-        
+
         DivisorMain(myMin, myMax, bDivSieve, tempNumDivs,
                     MyDivList, myRange, nThreads, maxThreads);
-        
+
         SEXP myList = PROTECT(Rf_allocVector(VECSXP, myRange));
-        
+
         for (std::size_t i = 0; i < myRange; ++i) {
             SET_VECTOR_ELT(myList, i, GetDblVec(MyDivList[i]));
         }
-        
+
         if (keepNames) {
             ++numUnprotects;
             SetDblNames(myList, myRange, myMin, myMax);
         }
-        
+
         UNPROTECT(numUnprotects);
         return myList;
     } else {
@@ -258,15 +258,15 @@ SEXP GlueDbl(std::int_fast64_t myMin, double myMax,
         SEXP facCountV = PROTECT(Rf_allocVector(INTSXP, myRange));
         int* ptrFacCount  = INTEGER(facCountV);
         std::fill_n(ptrFacCount, myRange, 2);
-        
+
         DivisorMain(myMin, myMax, bDivSieve, ptrFacCount,
                     tempList, myRange, nThreads, maxThreads);
-        
+
         if (keepNames) {
             ++numUnprotects;
             SetDblNames(facCountV, myRange, myMin, myMax);
         }
-        
+
         UNPROTECT(numUnprotects);
         return facCountV;
     }
@@ -278,18 +278,18 @@ SEXP DivNumSieveCpp(SEXP Rb1, SEXP Rb2, SEXP RbDivSieve,
 
     double bound1;
     double bound2;
-    
+
     double myMin;
     double myMax;
-    
+
     int nThreads = 1;
     int maxThreads = 1;
-    
+
     CleanConvert::convertPrimitive(RmaxThreads, maxThreads,
                                    VecType::Integer, "maxThreads");
     const bool bDivSieve = CleanConvert::convertFlag(RbDivSieve,
                                                         "bDivSieve");
-    
+
     const std::string namedObject = (bDivSieve) ? "namedList" : "namedVector";
     bool IsNamed = CleanConvert::convertFlag(RisNamed, namedObject);
     CleanConvert::convertPrimitive(Rb1, bound1, VecType::Numeric, "bound1");
@@ -307,26 +307,26 @@ SEXP DivNumSieveCpp(SEXP Rb1, SEXP Rb2, SEXP RbDivSieve,
         myMax = std::floor(bound2);
         myMin = std::ceil(bound1);
     }
-    
+
     if (myMax < 2) {
         if (bDivSieve) {
             SEXP res = PROTECT(Rf_allocVector(VECSXP, 1));
             SET_VECTOR_ELT(res, 0, GetIntVec(std::vector<int>(1, 1)));
-            
+
             if (IsNamed) {
                 Rf_setAttrib(res, R_NamesSymbol, Rf_mkString("1"));
             }
-            
+
             UNPROTECT(1);
             return res;
         } else {
             SEXP res = PROTECT(Rf_allocVector(INTSXP, 1));
             INTEGER(res)[0] = 1;
-            
+
             if (IsNamed) {
                 Rf_setAttrib(res, R_NamesSymbol, Rf_mkString("1"));
             }
-            
+
             UNPROTECT(1);
             return res;
         }

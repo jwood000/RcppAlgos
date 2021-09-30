@@ -1,42 +1,42 @@
 #include "ClassUtils/ComboResClass.h"
 
 SEXP ComboRes::ApplyFun(SEXP mat) {
-    
+
     if (Rf_isLogical(mat)) {
         return mat;
     }
 
     const int nRows = Rf_nrows(mat);
     SEXP res = PROTECT(Rf_allocMatrix(RTYPE, nRows, m + 1));
-    
+
     if (RTYPE == INTSXP) {
         int* ptrOut = INTEGER(res);
         int* ptrIn  = INTEGER(mat);
         std::vector<int> vPass(m);
-        
+
         for (int i = 0; i < nRows; ++i) {
             for (int j = 0; j < m; ++j) {
                 vPass[j] = ptrIn[i + nRows * j];
                 ptrOut[i + nRows * j] = vPass[j];
             }
-            
+
             ptrOut[i + nRows * m] = funInt(vPass, m);
         }
     } else {
         double* ptrOut = REAL(res);
         double* ptrIn  = REAL(mat);
         std::vector<double> vPass(m);
-        
+
         for (int i = 0; i < nRows; ++i) {
             for (int j = 0; j < m; ++j) {
                 vPass[j] = ptrIn[i + nRows * j];
                 ptrOut[i + nRows * j] = vPass[j];
             }
-            
+
             ptrOut[i + nRows * m] = funDbl(vPass, m);
         }
     }
-    
+
     UNPROTECT(1);
     return res;
 }
@@ -53,7 +53,7 @@ SEXP ComboRes::VecReturn() {
             vPass[j] = vInt[z[j]];
             ptrOut[j] = vPass[j];
         }
-        
+
         ptrOut[m] = funInt(vPass, m);
     } else {
         double* ptrOut = REAL(res);
@@ -63,7 +63,7 @@ SEXP ComboRes::VecReturn() {
             vPass[j] = vNum[z[j]];
             ptrOut[j] = vPass[j];
         }
-        
+
         ptrOut[m] = funDbl(vPass, m);
     }
 
@@ -82,7 +82,7 @@ SEXP ComboRes::MatrixReturn(int nRows) {
     } else {
         dblTemp = dblIndex + nRows;
     }
-    
+
     bLower = (IsGmp) ? mpz_cmp_si(mpzIndex, 0) > 0 : dblIndex > 0;
     bUpper = (IsGmp) ? mpz_cmp(mpzTemp, cnstrtCountMpz) < 0 :
       dblTemp < cnstrtCount;
