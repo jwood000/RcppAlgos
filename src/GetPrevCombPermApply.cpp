@@ -52,7 +52,7 @@ void VecApplyPrev(SEXP res, const std::vector<T> &v,
         for (int j = 0; j < m; ++j) {
             ptr_vec[j] = v[z[j]];
         }
-        
+
         FunAssign(res, vectorPass, sexpFun, rho,
                   commonType, commonLen, count, nRows, retType);
     }
@@ -71,6 +71,8 @@ SEXP ApplyFunPrev(SEXP v, SEXP vectorPass, const std::vector<int> &freqs,
                   prevIterPtr prevIter, int n, int m, int nRows, 
                   bool IsComb, bool IsMult) {
     
+    SEXP sexpFun = PROTECT(Rf_lang2(stdFun, R_NilValue));
+
     if (!Rf_isNull(RFunVal)) {
         if (!Rf_isVector(RFunVal)) Rf_error("'FUN.VALUE' must be a vector");
         const int commonLen = Rf_length(RFunVal);
@@ -80,81 +82,78 @@ SEXP ApplyFunPrev(SEXP v, SEXP vectorPass, const std::vector<int> &freqs,
                 SEXP res = PROTECT(Rf_allocVector(STRSXP, nRows * commonLen));
 
                 VecApplyPrev(res, v, vectorPass, z, prevIter, n, m,
-                             nRows, freqs, IsComb, IsMult, stdFun,
+                             nRows, freqs, IsComb, IsMult, sexpFun,
                              rho, commonLen, STRSXP);
                 
                 SetDims(RFunVal, res, commonLen, nRows);
-                UNPROTECT(1);
+                UNPROTECT(2);
                 return res;
             } case CPLXSXP : {
                 SEXP res = PROTECT(Rf_allocVector(CPLXSXP, nRows * commonLen));
                 
                 VecApplyPrev(res, v, vectorPass, z, prevIter, n, m,
-                             nRows, freqs, IsComb, IsMult, stdFun,
+                             nRows, freqs, IsComb, IsMult, sexpFun,
                              rho, commonLen, CPLXSXP);
                 
                 SetDims(RFunVal, res, commonLen, nRows);
-                UNPROTECT(1);
+                UNPROTECT(2);
                 return res;
             } case RAWSXP : {
                 SEXP res = PROTECT(Rf_allocVector(RAWSXP, nRows * commonLen));
                 
                 VecApplyPrev(res, v, vectorPass, z, prevIter, n, m,
-                             nRows, freqs, IsComb, IsMult, stdFun,
+                             nRows, freqs, IsComb, IsMult, sexpFun,
                              rho, commonLen, RAWSXP);
                 
                 SetDims(RFunVal, res, commonLen, nRows);
-                UNPROTECT(1);
+                UNPROTECT(2);
                 return res;
             } case LGLSXP : {
                 SEXP res = PROTECT(Rf_allocVector(LGLSXP, nRows * commonLen));
                 
                 VecApplyPrev(res, v, vectorPass, z, prevIter, n, m,
-                             nRows, freqs, IsComb, IsMult, stdFun,
+                             nRows, freqs, IsComb, IsMult, sexpFun,
                              rho, commonLen, LGLSXP);
                 
                 SetDims(RFunVal, res, commonLen, nRows);
-                UNPROTECT(1);
+                UNPROTECT(2);
                 return res;
             } case INTSXP : {
                 SEXP res = PROTECT(Rf_allocVector(INTSXP, nRows * commonLen));
                 
                 VecApplyPrev(res, v, vectorPass, z, prevIter, n, m,
-                             nRows, freqs, IsComb, IsMult, stdFun,
+                             nRows, freqs, IsComb, IsMult, sexpFun,
                              rho, commonLen, INTSXP);
                 
                 SetDims(RFunVal, res, commonLen, nRows);
-                UNPROTECT(1);
+                UNPROTECT(2);
                 return res;
             } case REALSXP : {
                 SEXP res = PROTECT(Rf_allocVector(REALSXP, nRows * commonLen));
                 
                 VecApplyPrev(res, v, vectorPass, z, prevIter, n, m,
-                             nRows, freqs, IsComb, IsMult, stdFun,
+                             nRows, freqs, IsComb, IsMult, sexpFun,
                              rho, commonLen, REALSXP);
                 
                 SetDims(RFunVal, res, commonLen, nRows);
-                UNPROTECT(1);
+                UNPROTECT(2);
                 return res;
             } default : {
                 SEXP res = PROTECT(Rf_allocVector(VECSXP, nRows * commonLen));
                 
                 VecApplyPrev(res, v, vectorPass, z, prevIter, n, m,
-                             nRows, freqs, IsComb, IsMult, stdFun,
+                             nRows, freqs, IsComb, IsMult, sexpFun,
                              rho, commonLen, VECSXP);
                 
                 SetDims(RFunVal, res, commonLen, nRows);
-                UNPROTECT(1);
+                UNPROTECT(2);
                 return res;
             }
         }
     } else {
         SEXP myList = PROTECT(Rf_allocVector(VECSXP, nRows));
-        SEXP sexpFun = PROTECT(Rf_lang2(stdFun, R_NilValue));
-
         VecApplyPrev(myList, v, vectorPass, z, prevIter, n, m,
                      nRows, freqs, IsComb, IsMult, sexpFun, rho);
-
         UNPROTECT(2);
         return myList;
     }
@@ -165,92 +164,90 @@ SEXP ApplyFunPrev(const std::vector<T> &v, SEXP vectorPass, T* ptr_vec,
                   const std::vector<int> &freqs, std::vector<int> &z,
                   SEXP stdFun, SEXP rho, SEXP RFunVal, prevIterPtr prevIter,
                   int n, int m, int nRows, bool IsComb, bool IsMult) {
-    
+
+    SEXP sexpFun = PROTECT(Rf_lang2(stdFun, R_NilValue));
+
     if (!Rf_isNull(RFunVal)) {
         if (!Rf_isVector(RFunVal)) Rf_error("'FUN.VALUE' must be a vector");
         const int commonLen = Rf_length(RFunVal);
-        
+
         switch (TYPEOF(RFunVal)) {
             case STRSXP : {
                 SEXP res = PROTECT(Rf_allocVector(STRSXP, nRows * commonLen));
 
                 VecApplyPrev(res, v, vectorPass, ptr_vec, z, prevIter,
-                             n, m, nRows, freqs, IsComb, IsMult, stdFun,
+                             n, m, nRows, freqs, IsComb, IsMult, sexpFun,
                              rho, commonLen, STRSXP);
                 
                 SetDims(RFunVal, res, commonLen, nRows);
-                UNPROTECT(1);
+                UNPROTECT(2);
                 return res;
             } case CPLXSXP : {
                 SEXP res = PROTECT(Rf_allocVector(CPLXSXP, nRows * commonLen));
 
                 VecApplyPrev(res, v, vectorPass, ptr_vec, z, prevIter,
-                             n, m, nRows, freqs, IsComb, IsMult, stdFun,
+                             n, m, nRows, freqs, IsComb, IsMult, sexpFun,
                              rho, commonLen, CPLXSXP);
                 
                 SetDims(RFunVal, res, commonLen, nRows);
-                UNPROTECT(1);
+                UNPROTECT(2);
                 return res;
             } case RAWSXP : {
                 SEXP res = PROTECT(Rf_allocVector(RAWSXP, nRows * commonLen));
 
                 VecApplyPrev(res, v, vectorPass, ptr_vec, z, prevIter,
-                             n, m, nRows, freqs, IsComb, IsMult, stdFun,
+                             n, m, nRows, freqs, IsComb, IsMult, sexpFun,
                              rho, commonLen, RAWSXP);
                 
                 SetDims(RFunVal, res, commonLen, nRows);
-                UNPROTECT(1);
+                UNPROTECT(2);
                 return res;
             } case LGLSXP : {
                 SEXP res = PROTECT(Rf_allocVector(LGLSXP, nRows * commonLen));
 
                 VecApplyPrev(res, v, vectorPass, ptr_vec, z, prevIter,
-                             n, m, nRows, freqs, IsComb, IsMult, stdFun,
+                             n, m, nRows, freqs, IsComb, IsMult, sexpFun,
                              rho, commonLen, LGLSXP);
                 
                 SetDims(RFunVal, res, commonLen, nRows);
-                UNPROTECT(1);
+                UNPROTECT(2);
                 return res;
             } case INTSXP : {
                 SEXP res = PROTECT(Rf_allocVector(INTSXP, nRows * commonLen));
 
                 VecApplyPrev(res, v, vectorPass, ptr_vec, z, prevIter,
-                             n, m, nRows, freqs, IsComb, IsMult, stdFun,
+                             n, m, nRows, freqs, IsComb, IsMult, sexpFun,
                              rho, commonLen, INTSXP);
-                
+
                 SetDims(RFunVal, res, commonLen, nRows);
-                UNPROTECT(1);
+                UNPROTECT(2);
                 return res;
             } case REALSXP : {
                 SEXP res = PROTECT(Rf_allocVector(REALSXP, nRows * commonLen));
 
                 VecApplyPrev(res, v, vectorPass, ptr_vec, z, prevIter,
-                             n, m, nRows, freqs, IsComb, IsMult, stdFun,
+                             n, m, nRows, freqs, IsComb, IsMult, sexpFun,
                              rho, commonLen, REALSXP);
                 
                 SetDims(RFunVal, res, commonLen, nRows);
-                UNPROTECT(1);
+                UNPROTECT(2);
                 return res;
             } default : {
                 SEXP res = PROTECT(Rf_allocVector(VECSXP, nRows * commonLen));
 
                 VecApplyPrev(res, v, vectorPass, ptr_vec, z, prevIter,
-                             n, m, nRows, freqs, IsComb, IsMult, stdFun,
+                             n, m, nRows, freqs, IsComb, IsMult, sexpFun,
                              rho, commonLen, VECSXP);
                 
                 SetDims(RFunVal, res, commonLen, nRows);
-                UNPROTECT(1);
+                UNPROTECT(2);
                 return res;
             }
         }
     } else {
         SEXP myList = PROTECT(Rf_allocVector(VECSXP, nRows));
-        SEXP sexpFun = PROTECT(Rf_lang2(stdFun, R_NilValue));
-        
-        
         VecApplyPrev(myList, v, vectorPass, ptr_vec, z, prevIter, n,
                      m, nRows, freqs, IsComb, IsMult, sexpFun, rho);
-
         UNPROTECT(2);
         return myList;
     }
