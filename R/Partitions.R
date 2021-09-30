@@ -8,26 +8,23 @@ partitionsGeneral <- function(v, m = NULL, repetition = FALSE,
                               upper = NULL, nThreads = NULL,
                               tolerance = NULL) {
     
-    return(.Call(CombinatoricsCnstrt, v, m, repetition,
-                 freqs, lower, upper, "sum", "==",
-                 GetTarget(v, target), TRUE, FALSE, FALSE,
-                 nThreads, pkgEnv$nThreads, tolerance,
-                 PACKAGE = "RcppAlgos"))
+    return(.Call(Algos_CombinatoricsCnstrt, v, m, repetition, freqs,
+                 lower, upper, "sum", "==", GetTarget(v, target), TRUE,
+                 FALSE, FALSE, nThreads, pkgEnv$nThreads, tolerance))
 }
 
 partitionsCount <- function(v, m = NULL, repetition = FALSE,
                             freqs = NULL, target = NULL) {
-    .Call(PartitionsCount, GetTarget(v, target), v, m, repetition,
-          freqs, "==", NULL, NULL, FALSE, FALSE, PACKAGE = "RcppAlgos")
+    return(.Call(Algos_PartitionsCount, GetTarget(v, target), v, m,
+                 repetition, freqs, "==", NULL, NULL, FALSE, FALSE))
 }
 
 partitionsDesign <- function(v, m = NULL, repetition = FALSE,
                              freqs = NULL, target = NULL,
                              showDesign = FALSE) {
     
-    .Call(PartitionsCount, GetTarget(v, target),
-          v, m, repetition, freqs, "==", NULL, NULL,
-          TRUE, showDesign, PACKAGE = "RcppAlgos")
+    return(.Call(Algos_PartitionsCount, GetTarget(v, target), v, m,
+                 repetition, freqs, "==", NULL, NULL, TRUE, showDesign))
 }
 
 partitionsSample <- function(v, m = NULL, repetition = FALSE, freqs = NULL,
@@ -40,10 +37,10 @@ partitionsSample <- function(v, m = NULL, repetition = FALSE, freqs = NULL,
         set.seed(seed)
     }
     
-    return(.Call(SamplePartitions, v, m, repetition, freqs, sampleVec, seed,
-                 n, sample, Parallel, nThreads, pkgEnv$nThreads, namedSample,
-                 "==", GetTarget(v, target), tolerance, new.env(),
-                 PACKAGE = "RcppAlgos"))
+    return(.Call(Algos_SamplePartitions, v, m, repetition, freqs,
+                 sampleVec, seed, n, sample, Parallel, nThreads,
+                 pkgEnv$nThreads, namedSample, "==", GetTarget(v, target),
+                 tolerance, new.env()))
 }
 
 partLen <- function(tar, m, v, rep = FALSE, fr = NULL, comb = TRUE) {
