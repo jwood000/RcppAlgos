@@ -1,12 +1,24 @@
 #include "Constraints/UserConstraintFuns.h"
 
 template <typename T>
+using nextCnstrtPtr = void (*const)(const std::vector<T> &v,
+                            const std::vector<T> &targetVals,
+                            const std::vector<int> &freqs,
+                            const std::vector<int> &zIndex,
+                            std::vector<T> &testVec, std::vector<int> &z,
+                            const funcPtr<T> fun, const compPtr<T> comp,
+                            int m, int m1, int m2, int nMinusM, int maxZ,
+                            int pentExtreme, bool check_0, bool &check_1);
+
+template <typename T>
 void NextCnstrntDistinct(const std::vector<T> &v,
                          const std::vector<T> &targetVals,
+                         const std::vector<int> &freqs,
+                         const std::vector<int> &zIndex,
                          std::vector<T> &testVec, std::vector<int> &z,
                          const funcPtr<T> fun, const compPtr<T> comp,
-                         int m, int m2, int nMinusM,
-                         bool check_0, bool &check_1) {
+                         int m, int m1, int m2, int nMinusM, int maxZ,
+                         int pentExtreme, bool check_0, bool &check_1) {
 
     if (check_1) {
         bool noChange = true;
@@ -42,8 +54,8 @@ void NextCnstrntMulti(const std::vector<T> &v,
                       const std::vector<int> &zIndex,
                       std::vector<T> &testVec, std::vector<int> &z,
                       const funcPtr<T> fun, const compPtr<T> comp,
-                      int m, int m1, int m2, int pentExtreme,
-                      bool check_0, bool &check_1) {
+                      int m, int m1, int m2, int nMinusM, int maxZ,
+                      int pentExtreme, bool check_0, bool &check_1) {
 
     if (check_1) {
         bool noChange = true;
@@ -75,9 +87,12 @@ void NextCnstrntMulti(const std::vector<T> &v,
 template <typename T>
 void NextCnstrntRep(const std::vector<T> &v,
                     const std::vector<T> &targetVals,
+                    const std::vector<int> &freqs,
+                    const std::vector<int> &zIndex,
                     std::vector<T> &testVec, std::vector<int> &z,
                     const funcPtr<T> fun, const compPtr<T> comp,
-                    int m, int m2, int maxZ, bool check_0, bool &check_1) {
+                    int m, int m1, int m2, int nMinusM, int maxZ,
+                    int pentExtreme, bool check_0, bool &check_1) {
 
     if (check_1) {
         bool noChange = true;
@@ -106,44 +121,16 @@ void NextCnstrntRep(const std::vector<T> &v,
     }
 }
 
-template void NextCnstrntDistinct(const std::vector<int>&,
-                                  const std::vector<int>&,
-                                  std::vector<int>&, std::vector<int>&,
-                                  const funcPtr<int>, const compPtr<int>,
-                                  int, int, int, bool, bool&);
+template <typename T>
+nextCnstrtPtr<T> GetCnstrtPtr(bool IsMult, bool IsRep) {
+    if (IsMult) {
+        return(nextCnstrtPtr<T>(NextCnstrntMulti));
+    } else if (IsRep) {
+        return(nextCnstrtPtr<T>(NextCnstrntRep));
+    } else {
+        return(nextCnstrtPtr<T>(NextCnstrntDistinct));
+    }
+}
 
-template void NextCnstrntDistinct(const std::vector<double>&,
-                                  const std::vector<double>&,
-                                  std::vector<double>&, std::vector<int>&,
-                                  const funcPtr<double>,
-                                  const compPtr<double>,
-                                  int, int, int, bool, bool&);
-
-template void NextCnstrntMulti(const std::vector<int>&,
-                               const std::vector<int>&,
-                               const std::vector<int>&,
-                               const std::vector<int>&,
-                               std::vector<int>&, std::vector<int>&,
-                               const funcPtr<int>, const compPtr<int>,
-                               int, int, int, int, bool, bool&);
-
-template void NextCnstrntMulti(const std::vector<double>&,
-                               const std::vector<double>&,
-                               const std::vector<int>&,
-                               const std::vector<int>&,
-                               std::vector<double>&, std::vector<int>&,
-                               const funcPtr<double>, const compPtr<double>,
-                               int, int, int, int, bool, bool&);
-
-template void NextCnstrntRep(const std::vector<int>&,
-                             const std::vector<int>&,
-                             std::vector<int>&, std::vector<int>&,
-                             const funcPtr<int>, const compPtr<int>,
-                             int, int, int, bool, bool&);
-
-template void NextCnstrntRep(const std::vector<double>&,
-                             const std::vector<double>&,
-                             std::vector<double>&, std::vector<int>&,
-                             const funcPtr<double>, const compPtr<double>,
-                             int, int, int, bool, bool&);
-
+template nextCnstrtPtr<int> GetCnstrtPtr(bool, bool);
+template nextCnstrtPtr<double> GetCnstrtPtr(bool, bool);

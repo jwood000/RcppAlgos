@@ -34,6 +34,7 @@ void ConstraintsGeneral(std::vector<T> &v, std::vector<int> &Reps,
 
     const funcPtr<T> fun = GetFuncPtr<T>(myFun);
     const partialPtr<T> partial = GetPartialPtr<T>(myFun);
+    const nextCnstrtPtr<T> nextIter = GetCnstrtPtr<T>(IsMult, IsRep);
 
     for (std::size_t nC = 0; nC < comparison.size(); ++nC) {
 
@@ -136,11 +137,12 @@ void ConstraintsGeneral(std::vector<T> &v, std::vector<int> &Reps,
                            fun, compOne, compTwo, m, m1,
                            maxRows, maxZ, IsComb, xtraCol);
 
-                NextCnstrntMulti(v, targetVals, freqs, zIndex, testVec,
-                                 z, fun, compTwo, m, m1, m2,
-                                 pentExtreme, check_0, check_1);
+                nextIter(v, targetVals, freqs, zIndex, testVec,
+                         z, fun, compTwo, m, m1, m2, 0, 0, pentExtreme,
+                         check_0, check_1);
             }
         } else if (IsRep) {
+            std::vector<int> emptyVec;
             v.erase(std::unique(v.begin(), v.end()), v.end());
             maxZ = static_cast<int>(v.size()) - 1;
             z.assign(m, 0);
@@ -151,10 +153,12 @@ void ConstraintsGeneral(std::vector<T> &v, std::vector<int> &Reps,
                            fun, compOne, compTwo, m, m1,
                            maxRows, maxZ, IsComb, xtraCol);
 
-                NextCnstrntRep(v, targetVals, testVec, z, fun,
-                               compTwo, m, m2, maxZ, check_0, check_1);
+                nextIter(v, targetVals, emptyVec, emptyVec, testVec,
+                         z, fun, compTwo, m, m1, m2, 0, maxZ, 0,
+                         check_0, check_1);
             }
         } else {
+            std::vector<int> emptyVec;
             std::iota(z.begin(), z.end(), 0);
 
             while (check_1) {
@@ -163,9 +167,9 @@ void ConstraintsGeneral(std::vector<T> &v, std::vector<int> &Reps,
                            fun, compOne, compTwo, m, m1,
                            maxRows, maxZ, IsComb, xtraCol);
 
-                NextCnstrntDistinct(v, targetVals, testVec, z,
-                                    fun, compTwo, m,
-                                    m2, nMinusM, check_0, check_1);
+                nextIter(v, targetVals, emptyVec, emptyVec, testVec,
+                         z, fun, compTwo, m, m1, m2, nMinusM, 0, 0,
+                         check_0, check_1);
             }
         }
 
