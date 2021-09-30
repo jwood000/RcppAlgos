@@ -8,6 +8,7 @@
 extern "C" {
     SEXP CheckReturn(SEXP Rv, SEXP RCnstrntFun, SEXP RCompFun,
                      SEXP Rtarget, SEXP RKeepRes, SEXP stdFun);
+    SEXP CheckConstrndCpp(SEXP RCnstrntFun, SEXP RCompFun, SEXP Rtarget);
 }
 
 bool CheckConstrnd(SEXP RCnstrntFun, SEXP RCompFun, SEXP Rtarget);

@@ -8,7 +8,7 @@
 extern "C" {
     SEXP GetClassVals(SEXP Rv, SEXP Rm, SEXP RisRep, SEXP RFreqs,
                       SEXP RIsComb, SEXP stdFun, SEXP RThreads,
-                      SEXP RmaxThreads);
+                      SEXP RmaxThreads, SEXP RIsCnstrd);
 }
 
 #endif

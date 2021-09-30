@@ -19,6 +19,10 @@ bool CheckConstrnd(SEXP RCnstrntFun, SEXP RCompFun, SEXP Rtarget) {
     return result;
 }
 
+SEXP CheckConstrndCpp(SEXP RCnstrntFun, SEXP RCompFun, SEXP Rtarget) {
+    return Rf_ScalarLogical(CheckConstrnd(RCnstrntFun, RCompFun, Rtarget));
+}
+
 // CheckReturn(v, constraintFun, comparisonFun,
 //             limitConstraints, keepResults, FUN)
 //

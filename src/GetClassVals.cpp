@@ -1,6 +1,7 @@
 #include "ImportExportMPZ.h"
 #include "GetClassValues.h"
 #include "ComputedCount.h"
+#include "CheckReturn.h"
 #include "SetUpUtils.h"
 
 SEXP CopyRv(SEXP Rv, const std::vector<int> &vInt,
@@ -18,7 +19,7 @@ SEXP CopyRv(SEXP Rv, const std::vector<int> &vInt,
 
 SEXP GetClassVals(SEXP Rv, SEXP Rm, SEXP RisRep, SEXP RFreqs,
                   SEXP RIsComb, SEXP stdFun, SEXP RThreads,
-                  SEXP RmaxThreads) {
+                  SEXP RmaxThreads, SEXP RIsCnstrd) {
 
     int n = 0;
     int m = 0;
@@ -33,11 +34,12 @@ SEXP GetClassVals(SEXP Rv, SEXP Rm, SEXP RisRep, SEXP RFreqs,
     
     bool IsRep = CleanConvert::convertFlag(RisRep, "repetition");
     const bool IsComb = CleanConvert::convertFlag(RIsComb, "IsComb");
+    const bool IsConstrained = Rf_asLogical(RIsCnstrd);
     const bool IsFactor = Rf_isFactor(Rv);
     
     SetType(myType, Rv);
-    SetValues(myType, myReps, freqs, vInt, vNum,
-              Rv, RFreqs, Rm, n, m, IsMult, IsRep);
+    SetValues(myType, myReps, freqs, vInt, vNum, Rv,
+              RFreqs, Rm, n, m, IsMult, IsRep, IsConstrained);
     
     const SEXP sexpVec = PROTECT(CopyRv(Rv, vInt, vNum, myType, IsFactor));
     const double computedRows = GetComputedRows(IsMult, IsComb, IsRep,
@@ -84,7 +86,7 @@ SEXP GetClassVals(SEXP Rv, SEXP Rm, SEXP RisRep, SEXP RFreqs,
     SET_VECTOR_ELT(RVals, 0, sexpVec);
     SET_VECTOR_ELT(RVals, 1, GetDblVec(vNum));
     SET_VECTOR_ELT(RVals, 2, GetIntVec(vInt));
-    SET_VECTOR_ELT(RVals, 3, Rm);
+    SET_VECTOR_ELT(RVals, 3, Rf_ScalarInteger(m));
     SET_VECTOR_ELT(RVals, 4, sexpNumRows);
     SET_VECTOR_ELT(RVals, 5, RmaxThreads);
     SET_VECTOR_ELT(RVals, 6, RThreads);
