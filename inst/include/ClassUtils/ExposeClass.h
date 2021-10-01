@@ -6,7 +6,7 @@
 #include <R.h>
 
 extern "C" {
-    void StartOverGlue(SEXP ext);
+    SEXP StartOverGlue(SEXP ext);
     SEXP CombClassNew(SEXP RVals, SEXP RboolVec, SEXP freqInfo,
                       SEXP Rparallel, SEXP RstdFun, SEXP Rrho,
                       SEXP R_RFunVal, SEXP RmainFun, SEXP RcompFun,

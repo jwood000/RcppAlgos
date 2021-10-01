@@ -179,9 +179,10 @@ SEXP CombClassNew(SEXP RVals, SEXP RboolVec, SEXP freqInfo, SEXP Rparallel,
     }
 }
 
-void StartOverGlue(SEXP ext) {
+SEXP StartOverGlue(SEXP ext) {
     class Combo* ptr = (class Combo*) R_ExternalPtrAddr(ext);
     ptr->startOver();
+    return R_NilValue;
 }
 
 SEXP NextCombGlue(SEXP ext) {
