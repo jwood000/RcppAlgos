@@ -3,6 +3,8 @@ import(gmp, methods)
 
 S3method("[[", "Combo")
 S3method("[[", "ComboApply")
+S3method("[[", "ComboRes")
+S3method("[[", "Partitions")
 
 export(
   comboGeneral,
@@ -21,6 +23,7 @@ export(
   comboGrid,
   comboIter,
   permuteIter,
+  partitionsIter,
   primeSieve,
   eulerPhiSieve,
   primeFactorizeSieve,

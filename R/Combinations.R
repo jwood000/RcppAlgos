@@ -43,3 +43,30 @@ comboCount <-  function(v, m = NULL, repetition = FALSE, freqs = NULL) {
     .Call(Algos_CombinatoricsCount, v, m,
           repetition, freqs, TRUE);
 }
+
+comboIter <- function(v, m = NULL, repetition = FALSE, freqs = NULL,
+                      constraintFun = NULL, comparisonFun = NULL,
+                      limitConstraints = NULL, keepResults = NULL,
+                      FUN = NULL, Parallel = FALSE, nThreads = NULL,
+                      tolerance = NULL, FUN.VALUE = NULL) {
+    
+    RetValue <- .Call(Algos_CheckReturn, v, constraintFun,
+                      comparisonFun, limitConstraints,
+                      keepResults, FUN)
+    IsCnstrd <- .Call(Algos_CheckConstrndCpp, constraintFun,
+                      comparisonFun, limitConstraints)
+    InitVals <- .Call(Algos_GetClassVals, v, m, repetition, freqs,
+                      TRUE, FUN, nThreads, pkgEnv$nThreads, IsCnstrd)
+    
+    if (RetValue == 1) {
+        new("Combo", InitVals, Parallel)
+    } else if (RetValue == 2) {
+        new("ComboApply", InitVals, FUN, new.env(), FUN.VALUE)
+    } else if (IsCnstrd) {
+        new("Constraints", InitVals, Parallel, constraintFun, comparisonFun,
+            limitConstraints, keepResults, tolerance, is.null(m))
+    } else {
+        new("ComboRes", InitVals, Parallel, constraintFun, comparisonFun,
+            limitConstraints, keepResults, tolerance, is.null(m))
+    }
+}

@@ -43,6 +43,18 @@ partitionsSample <- function(v, m = NULL, repetition = FALSE, freqs = NULL,
                  tolerance, new.env()))
 }
 
+partitionsIter <- function(v, m = NULL, repetition = FALSE,
+                           freqs = NULL, target = NULL, lower = NULL,
+                           upper = NULL, nThreads = NULL,
+                           tolerance = NULL) {
+
+    InitVals <- .Call(Algos_GetClassVals, v, m, repetition, freqs,
+                      TRUE, NULL, nThreads, pkgEnv$nThreads, TRUE)
+
+    new("Partitions", InitVals, FALSE, "sum", "==",
+        GetTarget(v, target), FALSE, tolerance, is.null(m))
+}
+
 partLen <- function(tar, m, v, rep = FALSE, fr = NULL, comb = TRUE) {
     if (comb) {
         RcppAlgos243::comboGeneral(v, m, rep, fr, constraintFun = "sum",
