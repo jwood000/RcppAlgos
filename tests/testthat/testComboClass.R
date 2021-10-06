@@ -1,6 +1,6 @@
 context("testing comboIter & permuteIter")
 
-test_that("comboIter & permuteIter produces correct results with no constraints", {
+test_that("comboIter & permuteIter produces correct results", {
     
     comboClassTest <- function(v1, m1 = NULL, rep1 = FALSE, freqs1 = NULL,
                                constr1 = NULL, compar1 = NULL, limit1 = NULL,
@@ -470,4 +470,28 @@ test_that("comboIter & permuteIter produces correct results with no constraints"
     set.seed(103)
     myNums = rnorm(20)
     expect_true(comboClassBigZTest(myNums, 20, T, IsComb = FALSE, lenCheck = 100, FUN1 = cumsum))
+    
+    ## With constraintFun
+    expect_true(comboClassBigZTest(myNums, 20, T, IsComb = FALSE,
+                                   lenCheck = 100, constr1 = "mean"))
+    expect_true(comboClassBigZTest(myNums, 20, T, lenCheck = 100,
+                                   constr1 = "mean"))
+    expect_true(comboClassBigZTest(50, 20, freqs1 = rep(1:10, 5), lenCheck = 100,
+                                   constr1 = "sum"))
+    expect_true(comboClassBigZTest(50, freqs1 = rep(1:10, 5), IsComb = FALSE,
+                                   lenCheck = 100, constr1 = "sum"))
+
+    set.seed(42)
+    myNums = rnorm(100)
+    expect_true(comboClassBigZTest(myNums, 20, lenCheck = 100, constr1 = "prod"))
+    expect_true(comboClassBigZTest(myNums, 20, lenCheck = 100,
+                                   constr1 = "prod", IsComb = FALSE))
+    expect_true(comboClassBigZTest(sample(100), 30, lenCheck = 100,
+                                   constr1 = "max"))
+    expect_true(comboClassBigZTest(sample(100), 30, lenCheck = 100,
+                                   constr1 = "max", IsComb = FALSE))
+    expect_true(comboClassBigZTest(myNums, 30, TRUE,
+                                   lenCheck = 100, constr1 = "min"))
+    expect_true(comboClassBigZTest(myNums, 30, TRUE,
+                                   lenCheck = 100, constr1 = "min", IsComb = FALSE))
 })
