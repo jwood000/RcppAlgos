@@ -125,7 +125,6 @@ SEXP CombClassNew(SEXP RVals, SEXP RboolVec, SEXP freqInfo, SEXP Rparallel,
         const double computedRows = (part.count > 0) ? part.count :
             (IsStdGmp ? mpz_get_d(computedRowsMpz[0]) :
                  Rf_asReal(VECTOR_ELT(RVals, 4)));
-
         const bool IsGmp = (computedRows > Significand53);
 
         if (IsGmp && part.isPart) {
