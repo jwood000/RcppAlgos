@@ -242,3 +242,13 @@ SEXP SamplePartitions(SEXP Rv, SEXP Rm, SEXP RisRep, SEXP RFreqs,
         return res;
     }
 }
+
+template void ThreadSafeSample(int*, SEXP, const std::vector<int>&,
+                               const std::vector<double>&, mpz_t *const,
+                               const std::vector<int>&, nthPartsPtr, int,
+                               int, int, bool, bool, int, int, int, bool);
+
+template void ThreadSafeSample(double*, SEXP, const std::vector<double>&,
+                               const std::vector<double>&, mpz_t *const,
+                               const std::vector<int>&, nthPartsPtr, int,
+                               int, int, bool, bool, int, int, int, bool);

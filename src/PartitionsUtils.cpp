@@ -633,11 +633,6 @@ void SetPartitionDesign(const std::vector<int> &Reps,
         // the example we gave, we would have length(unique(diff(v))) > 1,
         // which means PartitionCase would be false, and thus the general
         // algorithm would be executed.
-        //
-        // We do have to ensure that the smallest element is non-negative, othe-
-        // rwise, cases like v = seq(-8, 10, 2), m = 7, rep = TRUE, & width = 10
-        // would pass as v = 0:9, m = 7, rep = TRUE, & width = 9, --or--
-        // v = 1:10, m = 7, rep = TRUE, & width = 10 (Hence v.front() >= 0)
 
         part.includeZero = (v.front() == 0);
         part.mapIncZero  = part.includeZero;

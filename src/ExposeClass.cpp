@@ -1,4 +1,4 @@
-#include "ClassUtils/ConstraintsClass.h"
+#include "Partitions/PartitionsClass.h"
 #include "ClassUtils/ComboApplyClass.h"
 #include "ClassUtils/ComboResClass.h"
 #include "ClassUtils/ExposeClass.h"
@@ -73,7 +73,7 @@ SEXP CombClassNew(SEXP RVals, SEXP RboolVec, SEXP freqInfo, SEXP Rparallel,
         UNPROTECT(1);
         return ext;
     } else {
-        const bool keepRes = CleanConvert::convertFlag(RKeepRes, "keepResults");
+        const bool KeepRes = CleanConvert::convertFlag(RKeepRes, "keepResults");
         const bool IsConstrained = CheckConstrnd(RmainFun, RcompFun, Rtarget);
         const int n = vNum.size();
 
@@ -162,17 +162,75 @@ SEXP CombClassNew(SEXP RVals, SEXP RboolVec, SEXP freqInfo, SEXP Rparallel,
                 }
             }
 
+            // The true literal below is for KeepRes. We don't set the variable
+            // to true because it is declared as a const, which we want to keep
             class ComboRes* ptr = new ComboRes(
                 VECTOR_ELT(RVals, 0), m, VECTOR_ELT(RVals, 4), bVec, myReps,
                 freqs, vInt, vNum, myType, maxThreads, VECTOR_ELT(RVals, 6),
                 Parallel, part, compVec, tarVals, tarIntVals, startZ, mainFun,
-                funDbl, ctype, strtLen, cap, keepRes, numUnknown,
+                funDbl, ctype, strtLen, cap, true, numUnknown,
                 computedRows, computedRowsMpz[0]
             );
 
             SEXP ext = PROTECT(R_MakeExternalPtr(ptr, R_NilValue, R_NilValue));
             R_RegisterCFinalizerEx(ext, Finalizer, TRUE);
 
+            UNPROTECT(1);
+            return ext;
+        } else if (ctype == ConstraintType::General) {
+            class ComboRes* ptr = new ComboRes(
+                VECTOR_ELT(RVals, 0), m, VECTOR_ELT(RVals, 4), bVec, myReps,
+                freqs, vInt, vNum, myType, maxThreads, VECTOR_ELT(RVals, 6),
+                Parallel, part, compVec, tarVals, tarIntVals, startZ, mainFun,
+                funDbl, ctype, strtLen, cap, KeepRes, numUnknown,
+                computedRows, computedRowsMpz[0]
+            );
+            
+            SEXP ext = PROTECT(R_MakeExternalPtr(ptr, R_NilValue, R_NilValue));
+            R_RegisterCFinalizerEx(ext, Finalizer, TRUE);
+            
+            UNPROTECT(1);
+            return ext;
+        } else if (ctype == ConstraintType::PartitionEsque) {
+            class ComboRes* ptr = new ComboRes(
+                VECTOR_ELT(RVals, 0), m, VECTOR_ELT(RVals, 4), bVec, myReps,
+                freqs, vInt, vNum, myType, maxThreads, VECTOR_ELT(RVals, 6),
+                Parallel, part, compVec, tarVals, tarIntVals, startZ, mainFun,
+                funDbl, ctype, strtLen, cap, KeepRes, numUnknown,
+                computedRows, computedRowsMpz[0]
+            );
+            
+            SEXP ext = PROTECT(R_MakeExternalPtr(ptr, R_NilValue, R_NilValue));
+            R_RegisterCFinalizerEx(ext, Finalizer, TRUE);
+            
+            UNPROTECT(1);
+            return ext;
+        } else if (ctype == ConstraintType::SpecialCnstrnt) {
+            class ComboRes* ptr = new ComboRes(
+                VECTOR_ELT(RVals, 0), m, VECTOR_ELT(RVals, 4), bVec, myReps,
+                freqs, vInt, vNum, myType, maxThreads, VECTOR_ELT(RVals, 6),
+                Parallel, part, compVec, tarVals, tarIntVals, startZ, mainFun,
+                funDbl, ctype, strtLen, cap, KeepRes, numUnknown,
+                computedRows, computedRowsMpz[0]
+            );
+            
+            SEXP ext = PROTECT(R_MakeExternalPtr(ptr, R_NilValue, R_NilValue));
+            R_RegisterCFinalizerEx(ext, Finalizer, TRUE);
+            
+            UNPROTECT(1);
+            return ext;
+        } else {
+            class Partitions* ptr = new Partitions(
+                VECTOR_ELT(RVals, 0), m, VECTOR_ELT(RVals, 4), bVec, myReps,
+                freqs, vInt, vNum, myType, maxThreads, VECTOR_ELT(RVals, 6),
+                Parallel, part, compVec, tarVals, tarIntVals, startZ, mainFun,
+                funDbl, ctype, strtLen, cap, KeepRes, numUnknown,
+                computedRows, computedRowsMpz[0]
+            );
+            
+            SEXP ext = PROTECT(R_MakeExternalPtr(ptr, R_NilValue, R_NilValue));
+            R_RegisterCFinalizerEx(ext, Finalizer, TRUE);
+            
             UNPROTECT(1);
             return ext;
         }

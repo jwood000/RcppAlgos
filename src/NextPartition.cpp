@@ -459,3 +459,53 @@ void NextDistinctGenPart(std::vector<int> &z, int &boundary,
         ++tarDiff;
     }
 }
+
+using nextPartsPtr = void (*const)(std::vector<int> &rpsCnt,
+                           std::vector<int> &z, int &e, int &b, int &p,
+                           int &tarDiff, int lastCol, int lastElem);
+
+void NextDistinct(std::vector<int> &rpsCnt, std::vector<int> &z, int &e,
+                  int &b, int &p, int &tarDiff, int lastCol, int lastElem) {
+    NextDistinctPart(z, b, e, tarDiff, lastCol);
+}
+
+void NextRep(std::vector<int> &rpsCnt, std::vector<int> &z, int &e,
+             int &b, int &p, int &tarDiff, int lastCol, int lastElem) {
+    NextRepPart(z, b, e, lastCol);
+}
+
+void NextMultisetGen(std::vector<int> &rpsCnt, std::vector<int> &z,
+                     int &e, int &b, int &p, int &tarDiff, int lastCol,
+                     int lastElem) {
+    NextMultisetGenPart(rpsCnt, z, e, b, p, lastCol, lastElem);
+};
+
+void NextRepGen(std::vector<int> &rpsCnt, std::vector<int> &z, int &e,
+                int &b, int &p, int &tarDiff, int lastCol, int lastElem) {
+    NextRepGenPart(z, b, e, p, lastCol, lastElem);
+};
+
+void NextDistinctGen(std::vector<int> &rpsCnt, std::vector<int> &z,
+                     int &e, int &b, int &p, int &tarDiff, int lastCol,
+                     int lastElem) {
+    NextDistinctGenPart(z, b, e, p, tarDiff, lastCol, lastElem);
+};
+
+nextPartsPtr GetNextPartsPtr(bool IsMult, bool IsRep, bool IsGen) {
+
+    if (IsGen) {
+        if (IsMult) {
+            return(nextPartsPtr(NextMultisetGen));
+        } else if (IsRep) {
+            return(nextPartsPtr(NextRepGen));
+        } else {
+            return(nextPartsPtr(NextDistinctGen));
+        }
+    } else {
+        if (IsRep) {
+            return(nextPartsPtr(NextRep));
+        } else {
+            return(nextPartsPtr(NextDistinct));
+        }
+    }
+}
