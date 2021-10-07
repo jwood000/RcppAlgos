@@ -7,33 +7,33 @@ SEXP ComboRes::ApplyFun(SEXP mat) {
     }
 
     const int nRows = Rf_nrows(mat);
-    SEXP res = PROTECT(Rf_allocMatrix(RTYPE, nRows, m + 1));
+    SEXP res = PROTECT(Rf_allocMatrix(RTYPE, nRows, nCols));
 
     if (RTYPE == INTSXP) {
         int* ptrOut = INTEGER(res);
         int* ptrIn  = INTEGER(mat);
-        std::vector<int> vPass(m);
+        std::vector<int> vPass(width);
 
         for (int i = 0; i < nRows; ++i) {
-            for (int j = 0; j < m; ++j) {
+            for (int j = 0; j < width; ++j) {
                 vPass[j] = ptrIn[i + nRows * j];
                 ptrOut[i + nRows * j] = vPass[j];
             }
 
-            ptrOut[i + nRows * m] = funInt(vPass, m);
+            ptrOut[i + nRows * width] = funInt(vPass, width);
         }
     } else {
         double* ptrOut = REAL(res);
         double* ptrIn  = REAL(mat);
-        std::vector<double> vPass(m);
+        std::vector<double> vPass(width);
 
         for (int i = 0; i < nRows; ++i) {
-            for (int j = 0; j < m; ++j) {
+            for (int j = 0; j < width; ++j) {
                 vPass[j] = ptrIn[i + nRows * j];
                 ptrOut[i + nRows * j] = vPass[j];
             }
 
-            ptrOut[i + nRows * m] = funDbl(vPass, m);
+            ptrOut[i + nRows * width] = funDbl(vPass, width);
         }
     }
 
@@ -43,28 +43,48 @@ SEXP ComboRes::ApplyFun(SEXP mat) {
 
 SEXP ComboRes::VecReturn() {
 
-    SEXP res = PROTECT(Rf_allocVector(RTYPE, m + 1));
+    SEXP res = PROTECT(Rf_allocVector(RTYPE, nCols));
 
-    if (RTYPE == INTSXP) {
+    if (ctype == ConstraintType::PartStandard) {
         int* ptrOut = INTEGER(res);
-        std::vector<int> vPass(m);
+        
+        for (int j = 0; j < width; ++j) {
+          ptrOut[j] = z[j];
+        }
+        
+        if (KeepRes) ptrOut[width] = part.target;
+    } else if (RTYPE == INTSXP) {
+        int* ptrOut = INTEGER(res);
+        std::vector<int> vPass(width);
 
-        for (int j = 0; j < m; ++j) {
+        for (int j = 0; j < width; ++j) {
             vPass[j] = vInt[z[j]];
             ptrOut[j] = vPass[j];
         }
 
-        ptrOut[m] = funInt(vPass, m);
+        if (KeepRes) {
+            if (part.isPart) {
+                ptrOut[width] = part.target;
+            } else {
+                ptrOut[width] = funInt(vPass, width);
+            }
+        }
     } else {
         double* ptrOut = REAL(res);
-        std::vector<double> vPass(m);
+        std::vector<double> vPass(width);
 
-        for (int j = 0; j < m; ++j) {
+        for (int j = 0; j < width; ++j) {
             vPass[j] = vNum[z[j]];
             ptrOut[j] = vPass[j];
         }
 
-        ptrOut[m] = funDbl(vPass, m);
+        if (KeepRes) {
+            if (part.isPart) {
+                ptrOut[width] = part.target;
+            } else {
+                ptrOut[width] = funDbl(vPass, width);
+            }
+        }
     }
 
     UNPROTECT(1);
@@ -104,7 +124,7 @@ SEXP ComboRes::MatrixReturn(int nRows) {
     return GetConstraints(
         part, compVec, freqs, myReps, vNum, vInt, tarVals, tarIntVals, z,
         mainFun, funDbl, dblIndex, mpzIndex, userNum, ctype, myType, nThreads,
-        nRows, n, strtLen, cap, m, IsComb, LocalPar, IsGmp, IsRep, IsMult,
+        nRows, n, strtLen, cap, width, IsComb, LocalPar, IsGmp, IsRep, IsMult,
         bUpper, KeepRes, numUnknown
     );
 }
@@ -121,7 +141,9 @@ ComboRes::ComboRes(
     int Rcap, bool RKeepRes, bool RnumUnknown, double RcnstrtRows,
     mpz_t RcnstrtRowsMpz
 ) : Combo(Rv, Rm, RcompRows, bVec, Rreps, Rfreqs, RvInt, RvNum, typePass,
-          RmaxThreads, RnumThreads, Rparallel), cap(Rcap), strtLen(RstrtLen),
+          RmaxThreads, RnumThreads, Rparallel), cap(Rcap),
+          width(Rpart.isPart ? Rpart.width : m), nCols(RKeepRes ? width + 1 :
+                width), strtLen(RstrtLen),
           KeepRes(RKeepRes), numUnknown(RnumUnknown), cnstrtCount(RcnstrtRows),
           tarIntVals(RtarIntVals), tarVals(RtarVals), ctype(Rctype),
           part(Rpart), mainFun(RmainFun), compVec(RcompVec),
@@ -208,8 +230,8 @@ SEXP ComboRes::nextNumCombs(SEXP RNum) {
 
         SEXP res = PROTECT(MatrixReturn(nRows));
         increment(IsGmp, mpzIndex, dblIndex, numIncrement);
-        zUpdateIndex(vNum, vInt, z, sexpVec, res, m, nRows);
-        if (!IsComb) TopOffPerm(z, myReps, n, m, IsRep, IsMult);
+        zUpdateIndex(vNum, vInt, z, sexpVec, res, width, nRows);
+        if (!IsComb) TopOffPerm(z, myReps, n, width, IsRep, IsMult);
         UNPROTECT(1);
         return res;
     } else if (CheckEqInd(IsGmp, mpzIndex, dblIndex,
@@ -264,8 +286,8 @@ SEXP ComboRes::nextGather() {
             dblIndex = cnstrtCount + 1;
         }
 
-        zUpdateIndex(vNum, vInt, z, sexpVec, res, m, nRows);
-        if (!IsComb) TopOffPerm(z, myReps, n, m, IsRep, IsMult);
+        zUpdateIndex(vNum, vInt, z, sexpVec, res, width, nRows);
+        if (!IsComb) TopOffPerm(z, myReps, n, width, IsRep, IsMult);
         UNPROTECT(1);
         return res;
     } else {
@@ -315,8 +337,8 @@ SEXP ComboRes::front() {
         dblTemp = 0;
     }
 
-    z = nthResFun(n, m, dblTemp, mpzTemp, myReps);
-    if (!IsComb) TopOffPerm(z, myReps, n, m, IsRep, IsMult);
+    z = nthResFun(n, width, dblTemp, mpzTemp, myReps);
+    if (!IsComb) TopOffPerm(z, myReps, n, width, IsRep, IsMult);
     return VecReturn();
 }
 
@@ -330,7 +352,16 @@ SEXP ComboRes::back() {
         dblTemp = cnstrtCount - 1;
     }
 
-    z = nthResFun(n, m, dblTemp, mpzTemp, myReps);
-    if (!IsComb) TopOffPerm(z, myReps, n, m, IsRep, IsMult);
+    z = nthResFun(n, width, dblTemp, mpzTemp, myReps);
+    if (!IsComb) TopOffPerm(z, myReps, n, width, IsRep, IsMult);
     return VecReturn();
+}
+
+SEXP ComboRes::summary() {
+    SEXP res = PROTECT(Combo::summary());
+    std::string desc(R_CHAR(STRING_ELT(VECTOR_ELT(res, 0), 0)));
+    desc += " with " + mainFun + " applied to each result";
+    SET_VECTOR_ELT(res, 0, Rf_mkString(desc.c_str()));
+    UNPROTECT(1);
+    return res;
 }

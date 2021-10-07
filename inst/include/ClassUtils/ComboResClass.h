@@ -4,15 +4,15 @@
 #include "Constraints/GetContraints.h"
 #include "ClassUtils/ComboClass.h"
 
-class ComboRes : Combo {
-private:
-    SEXP ApplyFun(SEXP res);
-
+class ComboRes : public Combo {
 protected:
+    SEXP ApplyFun(SEXP res);
     virtual SEXP VecReturn();
     SEXP MatrixReturn(int nRows);
 
     const int cap;
+    const int width;
+    const int nCols;
     const int strtLen;
 
     bool bLower;
@@ -61,6 +61,7 @@ public:
     SEXP randomAccess(SEXP RindexVec);
     SEXP front();
     SEXP back();
+    SEXP summary();
 };
 
 #endif

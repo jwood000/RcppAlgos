@@ -1,6 +1,7 @@
 #ifndef CLASS_UTILS_H
 #define CLASS_UTILS_H
 
+#include "Constraints/ConstraintsTypes.h"
 #include "CleanConvert.h"
 
 void SetIndexVec(SEXP RindexVec, std::vector<double> &mySample,
@@ -25,6 +26,6 @@ bool CheckGrTSi(bool IsGmp, mpz_t mpzIndex, double &dblIndex, int si);
 
 void zUpdateIndex(const std::vector<double> &vNum,
                   const std::vector<int> &vInt, std::vector<int> &z,
-                  SEXP v, SEXP mat, int m, int nRows);
+                  SEXP v, SEXP mat, int m, int nRows, bool bAddOne = false);
 
 #endif

@@ -1,3 +1,4 @@
+#include "Constraints/ConstraintsTypes.h"
 #include "ImportExportMPZ.h"
 #include "CleanConvert.h"
 
@@ -147,7 +148,7 @@ bool CheckGrTSi(bool IsGmp, mpz_t mpzIndex, double &dblIndex, int si) {
 template <typename T>
 void UpdateExact(T* mat, T* yPt, const std::vector<T> &v,
                  std::vector<int> &z, int lastRow, int nRows,
-                 int m, int n1) {
+                 int m, int n1, int numAdd = 0) {
 
     for (int j = 0; j < m; ++j) {
         yPt[j] = mat[lastRow + j * nRows];
@@ -160,13 +161,13 @@ void UpdateExact(T* mat, T* yPt, const std::vector<T> &v,
             ++ind;
         }
 
-        z[j] = ind;
+        z[j] = ind + numAdd;
     }
 }
 
 void zUpdateIndex(const std::vector<double> &vNum,
                   const std::vector<int> &vInt, std::vector<int> &z,
-                  SEXP v, SEXP mat, int m, int nRows) {
+                  SEXP v, SEXP mat, int m, int nRows, bool bAddOne) {
 
     constexpr double myTolerance = 8 * std::numeric_limits<double>::epsilon();
     const int n1 = Rf_length(v) - 1;
@@ -182,10 +183,12 @@ void zUpdateIndex(const std::vector<double> &vNum,
             UNPROTECT(1);
             break;
         } case INTSXP: {
+            const int numAdd = static_cast<int>(bAddOne);
             SEXP yInt = PROTECT(Rf_allocVector(INTSXP, m));
             int* matInt = INTEGER(mat);
             int* yIntPt = INTEGER(yInt);
-            UpdateExact(matInt, yIntPt, vInt, z, lastRow, nRows, m, n1);
+            UpdateExact(matInt, yIntPt, vInt, z,
+                        lastRow, nRows, m, n1, numAdd);
             UNPROTECT(1);
             break;
         } case REALSXP: {

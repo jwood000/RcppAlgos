@@ -85,7 +85,7 @@ public:
     virtual SEXP front();
     virtual SEXP back();
     SEXP sourceVector() const;
-    SEXP summary();
+    virtual SEXP summary();
 };
 
 #endif
