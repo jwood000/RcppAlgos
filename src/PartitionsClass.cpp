@@ -1,10 +1,11 @@
 #include "Partitions/PartitionsClass.h"
 
 void Partitions::SetPartValues() {
-    if (IsMult) {
+    if (part.ptype == PartitionType::Multiset) {
         PrepareMultisetPart(rpsCnt, z, boundary, pivot,
                             edge, lastCol, lastElem);
-    } else if (IsRep) {
+    } else if (std::find(RepPTypeArr.cbegin(), RepPTypeArr.cend(),
+                         part.ptype) != RepPTypeArr.cend()) {
         PrepareRepPart(z, boundary, pivot, edge, lastElem, lastCol);
     } else {
         PrepareDistinctPart(z, boundary, pivot, edge,
@@ -82,7 +83,7 @@ SEXP Partitions::nextComb() {
         return Rf_ScalarLogical(false);
     }
 }
-#include <iostream>
+
 SEXP Partitions::nextNumCombs(SEXP RNum) {
 
     int num;

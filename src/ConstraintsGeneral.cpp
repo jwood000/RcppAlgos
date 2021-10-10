@@ -34,7 +34,7 @@ void ConstraintsGeneral(std::vector<T> &v, std::vector<int> &Reps,
 
     const funcPtr<T> fun = GetFuncPtr<T>(myFun);
     const partialPtr<T> partial = GetPartialPtr<T>(myFun);
-    const nextCnstrtPtr<T> nextIter = GetCnstrtPtr<T>(IsMult, IsRep);
+    const nextCnstrtPtr<T> nextCnstrnt = GetCnstrtPtr<T>(IsMult, IsRep);
 
     for (std::size_t nC = 0; nC < comparison.size(); ++nC) {
 
@@ -118,7 +118,8 @@ void ConstraintsGeneral(std::vector<T> &v, std::vector<int> &Reps,
             }
         } else if (IsMult) {
             int freqsSize = std::accumulate(Reps.cbegin(), Reps.cend(), 0);
-            std::vector<int> freqs, zIndex;
+            std::vector<int> freqs;
+            std::vector<int> zIndex;
             const int pentExtreme = freqsSize - m;
 
             for (int i = 0, k = 0; i < n; ++i) {
@@ -137,9 +138,9 @@ void ConstraintsGeneral(std::vector<T> &v, std::vector<int> &Reps,
                            fun, compOne, compTwo, m, m1,
                            maxRows, maxZ, IsComb, xtraCol);
 
-                nextIter(v, targetVals, freqs, zIndex, testVec,
-                         z, fun, compTwo, m, m1, m2, 0, 0, pentExtreme,
-                         check_0, check_1);
+                nextCnstrnt(v, targetVals, freqs, zIndex, testVec, z,
+                            fun, compTwo, m, m1, m2, 0, 0, pentExtreme,
+                            check_0, check_1);
             }
         } else if (IsRep) {
             std::vector<int> emptyVec;
@@ -153,9 +154,9 @@ void ConstraintsGeneral(std::vector<T> &v, std::vector<int> &Reps,
                            fun, compOne, compTwo, m, m1,
                            maxRows, maxZ, IsComb, xtraCol);
 
-                nextIter(v, targetVals, emptyVec, emptyVec, testVec,
-                         z, fun, compTwo, m, m1, m2, 0, maxZ, 0,
-                         check_0, check_1);
+                nextCnstrnt(v, targetVals, emptyVec, emptyVec, testVec,
+                            z, fun, compTwo, m, m1, m2, 0, maxZ, 0,
+                            check_0, check_1);
             }
         } else {
             std::vector<int> emptyVec;
@@ -167,9 +168,9 @@ void ConstraintsGeneral(std::vector<T> &v, std::vector<int> &Reps,
                            fun, compOne, compTwo, m, m1,
                            maxRows, maxZ, IsComb, xtraCol);
 
-                nextIter(v, targetVals, emptyVec, emptyVec, testVec,
-                         z, fun, compTwo, m, m1, m2, nMinusM, 0, 0,
-                         check_0, check_1);
+                nextCnstrnt(v, targetVals, emptyVec, emptyVec, testVec,
+                            z, fun, compTwo, m, m1, m2, nMinusM, 0, 0,
+                            check_0, check_1);
             }
         }
 
