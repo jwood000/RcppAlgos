@@ -111,7 +111,7 @@ SEXP CombClassNew(SEXP RVals, SEXP RboolVec, SEXP freqInfo, SEXP Rparallel,
             ConstraintSetup(vNum, myReps, tarVals, vInt, tarIntVals,
                             funDbl, part, ctype, n, m, compVec, mainFun,
                             myType, Rtarget, RcompFun, Rtolerance,
-                            R_NilValue, IsComb, false);
+                            R_NilValue, IsComb, true);
         }
 
         auto computedRowsMpz = FromCpp14::make_unique<mpz_t[]>(1);
@@ -133,9 +133,9 @@ SEXP CombClassNew(SEXP RVals, SEXP RboolVec, SEXP freqInfo, SEXP Rparallel,
 
         // See comments in ConstraintsMain.cpp
         const bool numUnknown = ctype == ConstraintType::PartitionEsque ||
-            ctype == ConstraintType::SpecialCnstrnt ||
-            ctype == ConstraintType::General        ||
-            part.numUnknown;
+                                ctype == ConstraintType::SpecialCnstrnt ||
+                                ctype == ConstraintType::General        ||
+                                part.numUnknown;
 
         std::vector<int> startZ(m);
         const int cap     = n - part.includeZero;
