@@ -1,4 +1,4 @@
-#include <vector>
+#include "Partitions/PartitionsTypes.h"
 
 void NextDistinctPart(std::vector<int> &z, int &boundary,
                       int &edge, int &tarDiff, int lastCol) {
@@ -491,18 +491,20 @@ void NextDistinctGen(std::vector<int> &rpsCnt, std::vector<int> &z,
     NextDistinctGenPart(z, b, e, p, tarDiff, lastCol, lastElem);
 };
 
-nextPartsPtr GetNextPartsPtr(bool IsMult, bool IsRep, bool IsGen) {
+nextPartsPtr GetNextPartsPtr(PartitionType ptype, bool IsGen) {
 
     if (IsGen) {
-        if (IsMult) {
+        if (ptype == PartitionType::Multiset) {
             return(nextPartsPtr(NextMultisetGen));
-        } else if (IsRep) {
+        } else if (std::find(RepPTypeArr.cbegin(), RepPTypeArr.cend(),
+                             ptype) != RepPTypeArr.cend()) {
             return(nextPartsPtr(NextRepGen));
         } else {
             return(nextPartsPtr(NextDistinctGen));
         }
     } else {
-        if (IsRep) {
+        if (std::find(RepPTypeArr.cbegin(), RepPTypeArr.cend(),
+                      ptype) != RepPTypeArr.cend()) {
             return(nextPartsPtr(NextRep));
         } else {
             return(nextPartsPtr(NextDistinct));

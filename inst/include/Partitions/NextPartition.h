@@ -1,7 +1,7 @@
 #ifndef NEXT_PARTITION_H
 #define NEXT_PARTITION_H
 
-#include <vector>
+#include "Partitions/PartitionsTypes.h"
 
 void GetLastPart(int* mat, std::vector<int> &z, int m, int nRows);
 
@@ -34,6 +34,6 @@ using nextPartsPtr = void (*const)(std::vector<int> &rpsCnt,
                            std::vector<int> &z, int &e, int &b, int &p,
                            int &tarDiff, int lastCol, int lastElem);
 
-nextPartsPtr GetNextPartsPtr(bool IsMult, bool IsRep, bool IsGen);
+nextPartsPtr GetNextPartsPtr(PartitionType ptype, bool IsGen);
 
 #endif

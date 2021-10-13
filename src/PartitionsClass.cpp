@@ -41,9 +41,10 @@ Partitions::Partitions(
              RtarIntVals, RstartZ, RmainFun, RfunDbl, Rctype, RstrtLen, Rcap,
              RKeepRes, RnumUnknown, RcnstrtRows, RcnstrtRowsMpz),
     lastCol(part.width - 1), lastElem(n - 1),
-    nextParts(GetNextPartsPtr(IsMult, IsRep,
+    nextParts(GetNextPartsPtr(part.ptype,
                               ctype != ConstraintType::PartStandard)),
-    nthParts(GetNthPartsFunc(part.ptype, part.isGmp)) {
+    nthParts(part.ptype == PartitionType::Multiset ? nullptr :
+               GetNthPartsFunc(part.ptype, part.isGmp)) {
     
     bAddOne = (ctype == ConstraintType::PartStandard) && !part.includeZero;
     rpsCnt = myReps;
@@ -56,7 +57,8 @@ void Partitions::startOver() {
     } else {
       dblIndex = 0;
     }
-    
+
+    rpsCnt = myReps;
     z = part.startZ;
     SetPartValues();
 }
@@ -191,6 +193,10 @@ SEXP Partitions::currComb() {
 }
 
 SEXP Partitions::randomAccess(SEXP RindexVec) {
+  
+    if (nthParts == nullptr) {
+        Rf_error("No random access available for this scenario");
+    }
 
     std::size_t sampSize;
     std::vector<double> mySample;
@@ -257,6 +263,10 @@ SEXP Partitions::randomAccess(SEXP RindexVec) {
 
 SEXP Partitions::front() {
 
+    if (nthParts == nullptr) {
+        Rf_error("No random access available for this scenario");
+    }
+
     if (part.isGmp) {
         mpz_set_ui(mpzIndex, 1u);
         mpz_set_ui(mpzTemp, 0u);
@@ -270,6 +280,10 @@ SEXP Partitions::front() {
 }
 
 SEXP Partitions::back() {
+  
+    if (nthParts == nullptr) {
+        Rf_error("No random access available for this scenario");
+    }
 
     if (part.isGmp) {
         mpz_set(mpzIndex, cnstrtCountMpz);
@@ -287,7 +301,7 @@ SEXP Partitions::summary() {
     const std::string RepStr = (IsRep) ? "with repetition " : "";
     const std::string MultiStr = (IsMult) ? "of a multiset " : "";
     const std::string strDesc = "Partitions " + RepStr + MultiStr + "of "
-    + std::to_string(n) + " into " + std::to_string(width) + " parts";
+          + std::to_string(n) + " into " + std::to_string(width) + " parts";
     const double dblDiff = (part.isGmp) ? 0 : cnstrtCount - dblIndex;
     
     if (part.isGmp) {
