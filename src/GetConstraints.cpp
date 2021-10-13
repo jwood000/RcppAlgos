@@ -112,7 +112,7 @@ SEXP ConstraintsReturn(
             UNPROTECT(1);
             return res;
         }
-    } else if (numUnknown) {
+    } else if (numUnknown || part.ptype == PartitionType::Multiset) {
         if (myType == VecType::Integer) {
             std::vector<int> cnstrntVec;
             std::vector<int> resVec;
