@@ -25,12 +25,12 @@ private:
 
     std::vector<T> v;
     std::vector<T> testVec;
-    
+
     const std::vector<T> targetVals;
     const nextCnstrtPtr<T> nextCnstrnt;
 
 public:
-    
+
     Constraints(
         SEXP Rv, int Rm, SEXP RcompRows, const std::vector<int> &bVec,
         const std::vector<int> &Rreps, const std::vector<int> &Rfreqs,
@@ -43,7 +43,7 @@ public:
         int Rcap, bool RKeepRes, bool RnumUnknown, double RcnstrtRows,
         mpz_t RcnstrtRowsMpz
     );
-    
+
     void startOver();
     SEXP nextComb();
     SEXP nextNumCombs(SEXP RNum);

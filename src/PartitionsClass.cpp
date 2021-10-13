@@ -15,13 +15,13 @@ void Partitions::SetPartValues() {
 
 void Partitions::MoveZToIndex() {
     z = nthParts(part.mapTar, width, cap, strtLen, dblTemp, mpzTemp);
-    
+
     if (ctype == ConstraintType::PartStandard) {
         for (auto &z_i: z) {
             z_i = vInt[z_i];
         }
     }
-    
+
     SetPartValues();
 }
 
@@ -41,7 +41,7 @@ SEXP Partitions::MultisetMatrix(int nRows) {
             nextParts(rpsCnt, z, edge, boundary, pivot,
                       tarDiff, lastCol, lastElem);
         }
-        
+
         for (int j = 0; j < nCols; ++j) {
             ptrOut[lastRow + j * nRows] = vInt[z[j]];
         }
@@ -56,7 +56,7 @@ SEXP Partitions::MultisetMatrix(int nRows) {
             nextParts(rpsCnt, z, edge, boundary, pivot,
                       tarDiff, lastCol, lastElem);
         }
-        
+
         for (int j = 0; j < nCols; ++j) {
             ptrOut[lastRow + j * nRows] = vNum[z[j]];
         }

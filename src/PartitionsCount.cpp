@@ -312,7 +312,7 @@ void PartitionsCount(const std::vector<int> &Reps, PartDesign &part,
                 part.numUnknown = true;
             }
         } else if (part.ptype == PartitionType::DstctCapped ||
-            part.ptype == PartitionType::DstctCappedMZ) {
+                   part.ptype == PartitionType::DstctCappedMZ) {
 
             if (bCalcDifficult || bWorthIt) {
                 part.count = CountPartsPermDistinctCap(part.startZ,
@@ -323,8 +323,8 @@ void PartitionsCount(const std::vector<int> &Reps, PartDesign &part,
                 part.numUnknown = true;
             }
         } else if (it != DistPTypeArr.cend()) {
-            part.count = CountPartsPermDistinct(part.startZ, part.mapTar,
-                                                part.width,
+            part.count = CountPartsPermDistinct(part.startZ,
+                                                part.mapTar, part.width,
                                                 part.mapIncZero);
         } else {
             part.numUnknown = true;

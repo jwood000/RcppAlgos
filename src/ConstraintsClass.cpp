@@ -2,7 +2,7 @@
 
 template <typename T>
 void Constraints<T>::PrepareConstraints() {
-    
+
 }
 
 template <typename T>
@@ -24,7 +24,7 @@ Constraints<T>::Constraints(
     nextCnstrnt(GetCnstrtPtr<T>(IsMult, IsRep), m2(m - 2), nMinusM(n - m),
     freqsSize(std::accumulate(Rreps.cbegin(), Rreps.cend(), 0)),
     pentExtreme(freqsSize - m), fun(GetFuncPtr<T>(RmainFun))) {
-    
+
     check_0 = true;
     check_1 = true;
 }
@@ -36,7 +36,7 @@ void Constraints<T>::startOver() {
 
 template <typename T>
 SEXP Constraints<T>::nextComb() {
-    
+
     if (CheckEqSi(IsGmp, mpzIndex, dblIndex, 0)) {
         increment(IsGmp, mpzIndex, dblIndex);
         return VecReturn();
@@ -60,17 +60,17 @@ SEXP Constraints<T>::nextComb() {
 
 template <typename T>
 SEXP Constraints<T>::nextNumCombs(SEXP RNum) {
-    
+
     int num;
     CleanConvert::convertPrimitive(RNum, num, VecType::Integer,
                                    "The number of results");
-    
+
     if (CheckIndLT(IsGmp, mpzIndex, dblIndex,
                    cnstrtCountMpz, cnstrtCount)) {
-        
+
         int nRows = 0;
         int numIncrement = 0;
-        
+
         if (IsGmp) {
             mpz_sub(mpzTemp, cnstrtCountMpz, mpzIndex);
             nRows = mpz_cmp_si(mpzTemp, num) < 0 ? mpz_get_si(mpzTemp) : num;
@@ -80,13 +80,13 @@ SEXP Constraints<T>::nextNumCombs(SEXP RNum) {
             nRows = num > dblTemp ? dblTemp : num;
             numIncrement = num > dblTemp ? (nRows + 1) : nRows;
         }
-        
+
         if (CheckGrTSi(IsGmp, mpzIndex, dblIndex, 0)) {
             nextCnstrnt(v, targetVals, freqs, zIndex, testVec,
                         z, fun, comp, m, m1, m2, nMinusM, maxZ,
                         pentExtreme, check_0, check_1);
         }
-        
+
         SEXP res = PROTECT(MatrixReturn(nRows));
         increment(IsGmp, mpzIndex, dblIndex, numIncrement);
         zUpdateIndex(vNum, vInt, z, sexpVec, res, width, nRows);
@@ -106,38 +106,38 @@ SEXP Constraints<T>::nextNumCombs(SEXP RNum) {
 
 template <typename T>
 SEXP Constraints<T>::nextGather() {
-    
+
     if (IsGmp) {
         mpz_sub(mpzTemp, cnstrtCountMpz, mpzIndex);
-        
+
         if (mpz_cmp_si(mpzTemp, std::numeric_limits<int>::max()) > 0) {
             Rf_error("The number of requested rows is greater than ",
                      std::to_string(std::numeric_limits<int>::max()).c_str());
         }
     } else {
         dblTemp = cnstrtCount - dblIndex;
-        
+
         if (dblTemp > std::numeric_limits<int>::max()) {
             Rf_error("The number of requested rows is greater than ",
                      std::to_string(std::numeric_limits<int>::max()).c_str());
         }
     }
-    
+
     const int nRows = (IsGmp) ? mpz_get_si(mpzTemp) : dblTemp;
-    
+
     if (nRows > 0) {
         if (CheckGrTSi(IsGmp, mpzIndex, dblIndex, 0)) {
             nextCnstrnt(freqs, z, n1, m1);
         }
-        
+
         SEXP res = PROTECT(MatrixReturn(nRows));
-        
+
         if (IsGmp) {
             mpz_add_ui(mpzIndex, cnstrtCountMpz, 1u);
         } else {
             dblIndex = cnstrtCount + 1;
         }
-        
+
         zUpdateIndex(vNum, vInt, z, sexpVec, res, width, nRows);
         UNPROTECT(1);
         return res;
@@ -148,7 +148,7 @@ SEXP Constraints<T>::nextGather() {
 
 template <typename T>
 SEXP Constraints<T>::currComb() {
-    
+
     if (CheckIndGrT(IsGmp, mpzIndex, dblIndex,
                     cnstrtCountMpz, cnstrtCount)) {
         const std::string message = "No more results. To see the last "

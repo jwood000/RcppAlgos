@@ -12,15 +12,15 @@ private:
     int pivot;
     int tarDiff;
     int boundary;
-    
+
     bool bAddOne;
     const int lastCol;
     const int lastElem;
-    
+
     std::vector<int> rpsCnt;
     const nextPartsPtr nextParts;
     const nthPartsPtr nthParts;
-    
+
     void SetPartValues();
     void MoveZToIndex();
     SEXP MultisetMatrix(int nRows);

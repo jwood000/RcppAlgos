@@ -184,10 +184,10 @@ SEXP CombClassNew(SEXP RVals, SEXP RboolVec, SEXP freqInfo, SEXP Rparallel,
                 funDbl, ctype, strtLen, cap, KeepRes, numUnknown,
                 computedRows, computedRowsMpz[0]
             );
-            
+
             SEXP ext = PROTECT(R_MakeExternalPtr(ptr, R_NilValue, R_NilValue));
             R_RegisterCFinalizerEx(ext, Finalizer, TRUE);
-            
+
             UNPROTECT(1);
             return ext;
         } else if (ctype == ConstraintType::PartitionEsque) {
@@ -198,10 +198,10 @@ SEXP CombClassNew(SEXP RVals, SEXP RboolVec, SEXP freqInfo, SEXP Rparallel,
                 funDbl, ctype, strtLen, cap, KeepRes, numUnknown,
                 computedRows, computedRowsMpz[0]
             );
-            
+
             SEXP ext = PROTECT(R_MakeExternalPtr(ptr, R_NilValue, R_NilValue));
             R_RegisterCFinalizerEx(ext, Finalizer, TRUE);
-            
+
             UNPROTECT(1);
             return ext;
         } else if (ctype == ConstraintType::SpecialCnstrnt) {
@@ -212,10 +212,10 @@ SEXP CombClassNew(SEXP RVals, SEXP RboolVec, SEXP freqInfo, SEXP Rparallel,
                 funDbl, ctype, strtLen, cap, KeepRes, numUnknown,
                 computedRows, computedRowsMpz[0]
             );
-            
+
             SEXP ext = PROTECT(R_MakeExternalPtr(ptr, R_NilValue, R_NilValue));
             R_RegisterCFinalizerEx(ext, Finalizer, TRUE);
-            
+
             UNPROTECT(1);
             return ext;
         } else {
@@ -226,10 +226,10 @@ SEXP CombClassNew(SEXP RVals, SEXP RboolVec, SEXP freqInfo, SEXP Rparallel,
                 funDbl, ctype, strtLen, cap, KeepRes, numUnknown,
                 computedRows, computedRowsMpz[0]
             );
-            
+
             SEXP ext = PROTECT(R_MakeExternalPtr(ptr, R_NilValue, R_NilValue));
             R_RegisterCFinalizerEx(ext, Finalizer, TRUE);
-            
+
             UNPROTECT(1);
             return ext;
         }

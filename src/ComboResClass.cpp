@@ -47,11 +47,11 @@ SEXP ComboRes::VecReturn() {
 
     if (ctype == ConstraintType::PartStandard) {
         int* ptrOut = INTEGER(res);
-        
+
         for (int j = 0; j < width; ++j) {
           ptrOut[j] = z[j];
         }
-        
+
         if (KeepRes) ptrOut[width] = part.target;
     } else if (RTYPE == INTSXP) {
         int* ptrOut = INTEGER(res);
