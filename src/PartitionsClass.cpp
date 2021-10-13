@@ -25,6 +25,47 @@ void Partitions::MoveZToIndex() {
     SetPartValues();
 }
 
+SEXP Partitions::MultisetMatrix(int nRows) {
+
+    SEXP res = PROTECT(Rf_allocMatrix(RTYPE, nRows, nCols));
+    const int lastRow = nRows - 1;
+
+    if (RTYPE == INTSXP) {
+        int* ptrOut = INTEGER(res);
+
+        for (int i = 0; i < lastRow; ++i) {
+            for (int j = 0; j < nCols; ++j) {
+                ptrOut[i + j * nRows] = vInt[z[j]];
+            }
+
+            nextParts(rpsCnt, z, edge, boundary, pivot,
+                      tarDiff, lastCol, lastElem);
+        }
+        
+        for (int j = 0; j < nCols; ++j) {
+            ptrOut[lastRow + j * nRows] = vInt[z[j]];
+        }
+    } else {
+        double* ptrOut = REAL(res);
+
+        for (int i = 0; i < lastRow; ++i) {
+            for (int j = 0; j < nCols; ++j) {
+                ptrOut[i + j * nRows] = vNum[z[j]];
+            }
+
+            nextParts(rpsCnt, z, edge, boundary, pivot,
+                      tarDiff, lastCol, lastElem);
+        }
+        
+        for (int j = 0; j < nCols; ++j) {
+            ptrOut[lastRow + j * nRows] = vNum[z[j]];
+        }
+    }
+
+    UNPROTECT(1);
+    return res;
+}
+
 Partitions::Partitions(
     SEXP Rv, int Rm, SEXP RcompRows, const std::vector<int> &bVec,
     const std::vector<int> &Rreps, const std::vector<int> &Rfreqs,
@@ -45,7 +86,7 @@ Partitions::Partitions(
                               ctype != ConstraintType::PartStandard)),
     nthParts(part.ptype == PartitionType::Multiset ? nullptr :
                GetNthPartsFunc(part.ptype, part.isGmp)) {
-    
+
     bAddOne = (ctype == ConstraintType::PartStandard) && !part.includeZero;
     rpsCnt = myReps;
     SetPartValues();
@@ -113,12 +154,17 @@ SEXP Partitions::nextNumCombs(SEXP RNum) {
                       tarDiff, lastCol, lastElem);
         }
 
-        SEXP res = PROTECT(MatrixReturn(nRows));
-        increment(part.isGmp, mpzIndex, dblIndex, numIncrement);
-        zUpdateIndex(vNum, vInt, z, sexpVec, res, width, nRows, bAddOne);
-        SetPartValues();
-        UNPROTECT(1);
-        return res;
+        if (part.ptype == PartitionType::Multiset) {
+            increment(part.isGmp, mpzIndex, dblIndex, numIncrement);
+            return MultisetMatrix(nRows);
+        } else {
+            SEXP res = PROTECT(MatrixReturn(nRows));
+            increment(part.isGmp, mpzIndex, dblIndex, numIncrement);
+            zUpdateIndex(vNum, vInt, z, sexpVec, res, width, nRows, bAddOne);
+            SetPartValues();
+            UNPROTECT(1);
+            return res;
+        }
     } else if (CheckEqInd(part.isGmp, mpzIndex, dblIndex,
                           cnstrtCountMpz, cnstrtCount)) {
         const std::string message = "No more results. To see the last result"
@@ -157,18 +203,21 @@ SEXP Partitions::nextGather() {
                       tarDiff, lastCol, lastElem);
         }
 
-        SEXP res = PROTECT(MatrixReturn(nRows));
-
         if (part.isGmp) {
             mpz_add_ui(mpzIndex, cnstrtCountMpz, 1u);
         } else {
             dblIndex = cnstrtCount + 1;
         }
 
-        zUpdateIndex(vNum, vInt, z, sexpVec, res, width, nRows, bAddOne);
-        SetPartValues();
-        UNPROTECT(1);
-        return res;
+        if (part.ptype == PartitionType::Multiset) {
+            return MultisetMatrix(nRows);
+        } else {
+            SEXP res = PROTECT(MatrixReturn(nRows));
+            zUpdateIndex(vNum, vInt, z, sexpVec, res, width, nRows, bAddOne);
+            SetPartValues();
+            UNPROTECT(1);
+            return res;
+        }
     } else {
         return Rf_ScalarLogical(false);
     }
@@ -193,7 +242,7 @@ SEXP Partitions::currComb() {
 }
 
 SEXP Partitions::randomAccess(SEXP RindexVec) {
-  
+
     if (nthParts == nullptr) {
         Rf_error("No random access available for this scenario");
     }
@@ -205,11 +254,11 @@ SEXP Partitions::randomAccess(SEXP RindexVec) {
 
     const std::size_t bigSampSize = (SampIsGmp) ? sampSize : 1;
     auto mpzVec = FromCpp14::make_unique<mpz_t[]>(bigSampSize);
-    
+
     for (std::size_t i = 0; i < bigSampSize; ++i) {
         mpz_init(mpzVec[i]);
     }
-    
+
     if (SampIsGmp) {
         SetIndexVecMpz(RindexVec, mpzVec.get(), sampSize, cnstrtCountMpz);
     }
@@ -218,7 +267,7 @@ SEXP Partitions::randomAccess(SEXP RindexVec) {
         int nThreads = 1;
         bool LocalPar = Parallel;
         const int limit = 2;
-        
+
         SetThreads(LocalPar, maxThreads, sampSize,
                    myType, nThreads, sexpNThreads, limit);
 
@@ -237,7 +286,7 @@ SEXP Partitions::randomAccess(SEXP RindexVec) {
         } else {
             SEXP res = PROTECT(Rf_allocMatrix(REALSXP, sampSize, part.width));
             double* matNum = REAL(res);
-            
+
             ThreadSafeSample(matNum, res, vNum, mySample, mpzVec.get(),
                              myReps, nthParts, part.width, sampSize,
                              nThreads, Parallel, false, part.mapTar,
@@ -255,7 +304,7 @@ SEXP Partitions::randomAccess(SEXP RindexVec) {
             dblIndex = mySample.front() + 1;
             dblTemp = mySample.front();
         }
-        
+
         MoveZToIndex();
         return VecReturn();
     }
@@ -280,7 +329,7 @@ SEXP Partitions::front() {
 }
 
 SEXP Partitions::back() {
-  
+
     if (nthParts == nullptr) {
         Rf_error("No random access available for this scenario");
     }
@@ -303,21 +352,21 @@ SEXP Partitions::summary() {
     const std::string strDesc = "Partitions " + RepStr + MultiStr + "of "
           + std::to_string(n) + " into " + std::to_string(width) + " parts";
     const double dblDiff = (part.isGmp) ? 0 : cnstrtCount - dblIndex;
-    
+
     if (part.isGmp) {
-      mpz_sub(mpzTemp, cnstrtCountMpz, mpzIndex);
+        mpz_sub(mpzTemp, cnstrtCountMpz, mpzIndex);
     }
-    
+
     const char *names[] = {"description", "currentIndex",
                            "totalResults", "totalRemaining", ""};
-    
+
     SEXP res = PROTECT(Rf_mkNamed(VECSXP, names));
-    
+
     SET_VECTOR_ELT(res, 0, Rf_mkString(strDesc.c_str()));
     SET_VECTOR_ELT(res, 1, CleanConvert::GetCount(part.isGmp, mpzIndex, dblIndex));
     SET_VECTOR_ELT(res, 2, CleanConvert::GetCount(part.isGmp, cnstrtCountMpz, cnstrtCount));
     SET_VECTOR_ELT(res, 3, CleanConvert::GetCount(part.isGmp, mpzTemp, dblDiff));
-    
+
     UNPROTECT(1);
     return res;
 }

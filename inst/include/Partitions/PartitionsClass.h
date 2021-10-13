@@ -23,6 +23,7 @@ private:
     
     void SetPartValues();
     void MoveZToIndex();
+    SEXP MultisetMatrix(int nRows);
 
 public:
 
