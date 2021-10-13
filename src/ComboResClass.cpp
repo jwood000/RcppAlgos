@@ -93,23 +93,9 @@ SEXP ComboRes::VecReturn() {
 
 SEXP ComboRes::MatrixReturn(int nRows) {
 
-    double userNum = 0;
-    bool bSetNum = !numUnknown ||
-        ctype == ConstraintType::SpecialCnstrnt;
-
-    if (IsGmp) {
-        mpz_add_ui(mpzTemp, mpzIndex, nRows);
-    } else {
-        dblTemp = dblIndex + nRows;
-    }
-
-    bLower = (IsGmp) ? mpz_cmp_si(mpzIndex, 0) > 0 : dblIndex > 0;
-    bUpper = (IsGmp) ? mpz_cmp(mpzTemp, cnstrtCountMpz) < 0 :
-      dblTemp < cnstrtCount;
-
-    SetNumResults(IsGmp, bLower, bUpper, bSetNum, mpzTemp,
-                  mpzIndex, dblIndex, dblTemp, cnstrtCount,
-                  cnstrtCountMpz, nRows, userNum);
+    dblTemp = 0;
+    double userNum = nRows;
+    mpz_set_ui(mpzTemp, 0u);
 
     int nThreads = 1;
     bool LocalPar = Parallel;
@@ -123,7 +109,7 @@ SEXP ComboRes::MatrixReturn(int nRows) {
 
     return GetConstraints(
         part, compVec, freqs, myReps, vNum, vInt, tarVals, tarIntVals, z,
-        mainFun, funDbl, dblIndex, mpzIndex, userNum, ctype, myType, nThreads,
+        mainFun, funDbl, dblTemp, mpzTemp, userNum, ctype, myType, nThreads,
         nRows, n, strtLen, cap, width, IsComb, LocalPar, IsGmp, IsRep, IsMult,
         bUpper, KeepRes, numUnknown
     );
