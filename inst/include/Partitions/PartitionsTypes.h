@@ -22,29 +22,30 @@
 // Multiset       :  CountPartMultiset(rep(1:3, 6), c(1, 2, 2, 15), 4, 20 - 1, 4 - 1)
 
 enum class PartitionType {
-    RepStdAll,       // Get all partitions. E.g. tar = 20 startZ = c(0, 0, 0, 0, 20): CountPartRep(20)
-    RepNoZero,       // E.g. tar = 20 startZ = c(1, 1, 1, 1, 15): CountPartRepLen(20, 5)
-    RepShort,        // Case where width isn't maximized E.g. tar = 20 startZ = c(0, 0, 20)
-    RepCapped,       // E.g. tar = 20 of width = 3 from the integers 3:12: CountPartRepCap(14, 3, 10)
-    DstctStdAll,     // Get all distinct partitions (0 can repeat) E.g. tar = 20 startZ = c(0, 0, 0, 0, 20)
-    DstctMultiZero,  // Case where startZ doesn't maximize 0's. E.g. tar = 20 startZ = c(0, 0, 1, 2, 17)
-    DstctOneZero,    // Similar to above but can occur when IsMult = FALSE. E.g. tar = 20 startZ = c(0, 1, 2, 3, 14)
-    DstctNoZero,     // E.g. tar = 20 startZ = c(1, 2, 3, 4, 10)
-    DstctCapped,     // E.g. tar = 20, m = 4, from 1:9 gives startZ = c(1, 2, 8, 9)
-    DstctCappedMZ,   // E.g. tar = 20, m = 4, from 0:11, freqs = c(2, rep(1, 11)) gives startZ = c(0, 0, 9, 11)
-    Multiset,        // Partitions of non-trivial multisets
-    CoarseGrained,   // This is equivalent to ConstraintType::PartitionEsque
-    NotPartition
+    RepStdAll      = 0,  // Get all partitions. E.g. tar = 20 startZ = c(0, 0, 0, 0, 20): CountPartRep(20)
+    RepNoZero      = 1,  // E.g. tar = 20 startZ = c(1, 1, 1, 1, 15): CountPartRepLen(20, 5)
+    RepShort       = 2,  // Case where width isn't maximized E.g. tar = 20 startZ = c(0, 0, 20)
+    RepCapped      = 3,  // E.g. tar = 20 of width = 3 from the integers 3:12: CountPartRepCap(14, 3, 10)
+    DstctStdAll    = 4,  // Get all distinct partitions (0 can repeat) E.g. tar = 20 startZ = c(0, 0, 0, 0, 20)
+    DstctMultiZero = 5,  // Case where startZ doesn't maximize 0's. E.g. tar = 20 startZ = c(0, 0, 1, 2, 17)
+    DstctOneZero   = 6,  // Similar to above but can occur when IsMult = FALSE. E.g. tar = 20 startZ = c(0, 1, 2, 3, 14)
+    DstctNoZero    = 7,  // E.g. tar = 20 startZ = c(1, 2, 3, 4, 10)
+    DstctCapped    = 8,  // E.g. tar = 20, m = 4, from 1:9 gives startZ = c(1, 2, 8, 9)
+    DstctCappedMZ  = 9,  // E.g. tar = 20, m = 4, from 0:11, freqs = c(2, rep(1, 11)) gives startZ = c(0, 0, 9, 11)
+    Multiset       = 10, // Partitions of non-trivial multisets
+    CoarseGrained  = 11, // This is equivalent to ConstraintType::PartitionEsque
+    NotPartition   = 12
 };
 
-const std::array<PartitionType, 3> RepPTypeArr{{
-    PartitionType::RepStdAll, PartitionType::RepNoZero, PartitionType::RepShort
+const std::array<PartitionType, 4> RepPTypeArr{{
+    PartitionType::RepStdAll, PartitionType::RepNoZero,
+    PartitionType::RepShort, PartitionType::RepCapped
 }};
 
-const std::array<PartitionType, 5> DistPTypeArr{{
+const std::array<PartitionType, 6> DistPTypeArr{{
     PartitionType::DstctStdAll,  PartitionType::DstctMultiZero,
     PartitionType::DstctOneZero, PartitionType::DstctNoZero,
-    PartitionType::DstctCappedMZ
+    PartitionType::DstctCapped, PartitionType::DstctCappedMZ
 }};
 
 struct PartDesign {

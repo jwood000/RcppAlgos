@@ -311,7 +311,7 @@ int DiscoverPType(const std::vector<int> &Reps,
                 }
             }
 
-            if (isoz == part.startZ) {
+            if (isoz == part.startZ && ptype != PartitionType::DstctCapped) {
                 if (part.isMult && part.allOne) {
                     part.ptype = ptype;
                     return 1;
@@ -572,7 +572,7 @@ void CheckPartition(const std::vector<std::string> &compFunVec,
 
     part.isPart = IsPartition;
 }
-
+#include <iostream>
 // Right now, we have no fast method for calculating the number of partitions
 // of multisets, so the variable bCalcMultiset, is used only when we call
 // partitionCount from R. If we are actually generating results, this will
@@ -614,10 +614,6 @@ void SetPartitionDesign(const std::vector<int> &Reps,
 
     part.slope = v[1] - v[0];
 
-    const bool zero_or_one   = v.front() == 0 || v.front() == 1;
-    const bool standard_dist = part.slope == 1;
-    const bool standard_tar  = v.back() == part.target;
-
     // When allOne = true with isMult = true, we can apply optimized
     // algorithms for counting distinct partitions of varying lengths.
     part.allOne = part.isMult ? std::all_of(Reps.cbegin() + 1,
@@ -625,7 +621,16 @@ void SetPartitionDesign(const std::vector<int> &Reps,
                                                 return v_i == 1;
                                             }) : false;
 
-    if (zero_or_one && standard_dist && standard_tar) {
+    // When we have with repetition or the distinct case, part.isMult will
+    // be false as well as part.allOne will be false. When part.isMult is
+    // true, the only way we are in the standard case is when part.allOne
+    // is also true. Thus the expression below.
+    const bool standard_freq = part.isMult == part.allOne;
+    const bool zero_or_one   = v.front() == 0 || v.front() == 1;
+    const bool standard_dist = part.slope == 1;
+    const bool standard_tar  = v.back() == part.target;
+
+    if (zero_or_one && standard_dist && standard_tar && standard_freq) {
         // Remember, lenV is the length of the vector v, so we could have a
         // situation where v = c(0, 2, 3, 4, 5) -->> length(v) = 5. This would
         // cause a problem if we were to allow this. We have already ensured
