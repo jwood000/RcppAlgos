@@ -357,8 +357,8 @@ test_that("partitionGeneral Distinct Parallel Lower", {
 test_that("partitionGeneral Repetition Parallel", {
     
     ## N.B. Parallel has no effect when number of results is less than 40000
-    ## partitionsCount(20)
-    ## [1] 7
+    ## partitionsCount(0:20, repetition = TRUE)
+    ## [1] 627
     expect_identical(partitionsGeneral(0:20, repetition = TRUE, nThreads = 2), 
                      partitionsGeneral(0:20, repetition = TRUE))
     
@@ -371,7 +371,7 @@ test_that("partitionGeneral Repetition Parallel", {
                                        nThreads = 8, upper = 50000))
     
     ######****************** All Results Repetition **************#########
-    #### Repetition; Length determined internally; No zero;
+    #### Repetition; Length determined internally; Multiple Zero;
     ##
     ## partitionsDesign(0:45, repetition = TRUE)[c("num_partitions",
     ##                                             "partition_type")]
@@ -386,24 +386,24 @@ test_that("partitionGeneral Repetition Parallel", {
     
     #### Mapped version
     ##
-    ## 46 * 3 + 45 * 17 = 903
+    ## 45 * 3 + 45 * 17 = 900
     ##
     ## partitionsDesign(3L + (0:45) * 17L, 46, repetition = TRUE,
-    ##                  target = 903)[c("num_partitions",
+    ##                  target = 900)[c("num_partitions",
     ##                                    "mapped_target", "partition_type")]
     ## $num_partitions
     ## [1] 89134
     ## 
     ## $mapped_target
-    ## [1] 91
+    ## [1] 90
     ## 
     ## $partition_type
     ## [1] "RepNoZero"
-    expect_identical(partitionsGeneral(3L + (0:45) * 17L, 46,
+    expect_identical(partitionsGeneral(3L + (0:45) * 17L, 45,
                                        repetition = TRUE,
-                                       target = 903L, nThreads = 2),
-                     partitionsGeneral(3L + (0:45) * 17L, 46,
-                                       repetition = TRUE, target = 903L))
+                                       target = 900L, nThreads = 2),
+                     partitionsGeneral(3L + (0:45) * 17L, 45,
+                                       repetition = TRUE, target = 900L))
     
     #### Repetition; Specific Length; No zero
     ##
