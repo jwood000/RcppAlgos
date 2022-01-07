@@ -1,4 +1,3 @@
-#include "Constraints/PartitionsEsqueAlgo.h"
 #include "Constraints/ConstraintsGeneral.h"
 #include "Constraints/ConstraintsSpecial.h"
 #include "Constraints/ConstraintsUtils.h"
@@ -68,14 +67,11 @@ void ConstraintsVector(const std::vector<int> &freqs,
                        bool IsComb, bool IsRep, bool IsMult,
                        bool bUpper, bool xtraCol, bool IsGmp) {
 
-    if (ctype == ConstraintType::General) {
+    if (ctype == ConstraintType::General ||
+        ctype == ConstraintType::PartitionEsque) {
         ConstraintsGeneral(v, Reps, compVec, cnstrntVec, resVec,
                            tarVals, mainFun, maxRows, n, width, IsRep,
-                           IsComb, IsMult, bUpper, xtraCol);
-    } else if (ctype == ConstraintType::PartitionEsque) {
-        PartitionsEsqueAlgo(v, tarVals, Reps, mainFun, compVec.front(),
-                            cnstrntVec, resVec, maxRows, n, width, IsRep,
-                            IsComb, xtraCol, IsMult, bUpper);
+                           IsComb, IsMult, bUpper, xtraCol, ctype);
     } else if (ctype == ConstraintType::SpecialCnstrnt) {
         ConstraintsSpecial(v, tarVals, compVec, Reps, freqs, cnstrntVec,
                            resVec, mainFun, z, lower, lowerMpz, n, width,

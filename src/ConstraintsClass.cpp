@@ -1,176 +1,214 @@
-#include "Constraints/ConstraintsClass.h"
+#include "Constraints/PartitionsEsqueMultiset.h"
+#include "Constraints/PartitionsEsqueDistinct.h"
+#include "Constraints/PartitionsEsqueRep.h"
+#include "Constraints/ConstraintsMultiset.h"
+#include "Constraints/ConstraintsDistinct.h"
+#include "Constraints/ConstraintsRep.h"
 
 template <typename T>
-void Constraints<T>::PrepareConstraints() {
-
+bool ConstraintsClass<T>::BruteNextElem(
+        int &idx, int lowBnd, T tarMin, T partVal, int m,
+        const std::vector<T> &v, partialPtr<T> partial, bool notLast
+    ) {
+    
+    T dist = tarMin - partial(partVal, v[idx], m);
+    const int origInd = idx;
+    
+    while (idx > lowBnd && dist < 0) {
+        --idx;
+        dist = tarMin - partial(partVal, v[idx], m);
+    }
+    
+    if (dist > 0 && idx != origInd && notLast) {
+        ++idx;
+        return true;
+    } else {
+        return false;
+    }
 }
 
 template <typename T>
-Constraints<T>::Constraints(
-    SEXP Rv, int Rm, SEXP RcompRows, const std::vector<int> &bVec,
-    const std::vector<int> &Rreps, const std::vector<int> &Rfreqs,
-    const std::vector<int> &RvInt, const std::vector<double> &RvNum,
-    VecType typePass, int RmaxThreads, SEXP RnumThreads, bool Rparallel,
-    const PartDesign &Rpart, const std::vector<std::string> &RcompVec,
-    std::vector<double> &RtarVals, std::vector<int> &RtarIntVals,
-    std::vector<int> &RstartZ, const std::string &RmainFun,
-    funcPtr<double> RfunDbl, ConstraintType Rctype, int RstrtLen,
-    int Rcap, bool RKeepRes, bool RnumUnknown, double RcnstrtRows,
-    mpz_t RcnstrtRowsMpz
-) : ComboRes(Rv, Rm, RcompRows, bVec, Rreps, Rfreqs, RvInt, RvNum, typePass,
-             RmaxThreads, RnumThreads, Rparallel, Rpart, RcompVec, RtarVals,
-             RtarIntVals, RstartZ, RmainFun, RfunDbl, Rctype, RstrtLen, Rcap,
-             RKeepRes, RnumUnknown, RcnstrtRows, RcnstrtRowsMpz),
-    nextCnstrnt(GetCnstrtPtr<T>(IsMult, IsRep), m2(m - 2), nMinusM(n - m),
-    freqsSize(std::accumulate(Rreps.cbegin(), Rreps.cend(), 0)),
-    pentExtreme(freqsSize - m), fun(GetFuncPtr<T>(RmainFun))) {
+void ConstraintsClass<T>::SetComparison(const std::string &currComp) {
+    compOne = GetCompPtr<T>(currComp);
+    compTwo = compOne;
 
+    const auto itComp = std::find(compSpecial.cbegin(),
+                                  compSpecial.cend(), currComp);
+
+    if (itComp != compSpecial.end()) {
+        const int myIndex = std::distance(compSpecial.cbegin(), itComp);
+        compTwo = GetCompPtr<T>(compHelper[myIndex]);
+    }
+
+    testVec.assign(m, 0);
     check_0 = true;
     check_1 = true;
 }
 
 template <typename T>
-void Constraints<T>::startOver() {
-    Combo::startOver();
-}
+void ConstraintsClass<T>::PopulateVec(
+        const std::vector<T> &v, std::vector<T> &cnstrntVec, int limit
+    ) {
 
-template <typename T>
-SEXP Constraints<T>::nextComb() {
+    if (IsComb) {
+        for (int k = 0; k < m; ++k) {
+            cnstrntVec.push_back(v[z[k]]);
+        }
 
-    if (CheckEqSi(IsGmp, mpzIndex, dblIndex, 0)) {
-        increment(IsGmp, mpzIndex, dblIndex);
-        return VecReturn();
-    } else if (CheckIndLT(IsGmp, mpzIndex, dblIndex,
-                          cnstrtCountMpz, cnstrtCount)) {
-        increment(IsGmp, mpzIndex, dblIndex);
-        nextCnstrnt(v, targetVals, freqs, zIndex, testVec, z, fun, comp, m,
-                    m1, m2, nMinusM, maxZ, pentExtreme, check_0, check_1);
-        return VecReturn();
-    } else if (CheckEqInd(IsGmp, mpzIndex, dblIndex,
-                          cnstrtCountMpz, cnstrtCount)) {
-        const std::string message = "No more results. To see the last "
-                                    "result, use the prevIter method(s)\n\n";
-        Rprintf(message.c_str());
-        increment(IsGmp, mpzIndex, dblIndex);
-        return Rf_ScalarLogical(false);
+        ++count;
     } else {
-        return Rf_ScalarLogical(false);
+        do {
+            for (int k = 0; k < m; ++k) {
+                cnstrntVec.push_back(v[z[k]]);
+            }
+
+            ++count;
+        } while (count < limit && std::next_permutation(z.begin(), z.end()));
     }
 }
 
 template <typename T>
-SEXP Constraints<T>::nextNumCombs(SEXP RNum) {
+void ConstraintsClass<T>::FilterProspects(
+        const std::vector<T> &v, const std::vector<T> &targetVals,
+        std::vector<T> &cnstrntVec, std::vector<T> &resVec, int limit
+    ) {
 
-    int num;
-    CleanConvert::convertPrimitive(RNum, num, VecType::Integer,
-                                   "The number of results");
+    for (int i = 0; i < m; ++i) {
+        testVec[i] = v[z[i]];
+    }
 
-    if (CheckIndLT(IsGmp, mpzIndex, dblIndex,
-                   cnstrtCountMpz, cnstrtCount)) {
+    const T partialVal = fun(testVec, m1);
+    T testVal = partial(partialVal, testVec.back(), m);
+    check_0 = compTwo(testVal, targetVals);
 
-        int nRows = 0;
-        int numIncrement = 0;
+    while (check_0 && check_1) {
+        if (compOne(testVal, targetVals)) {
+            const int myStart = count;
+            PopulateVec(v, cnstrntVec, limit);
 
-        if (IsGmp) {
-            mpz_sub(mpzTemp, cnstrtCountMpz, mpzIndex);
-            nRows = mpz_cmp_si(mpzTemp, num) < 0 ? mpz_get_si(mpzTemp) : num;
-            numIncrement = mpz_cmp_si(mpzTemp, num) < 0 ? (nRows + 1) : nRows;
+            for (int i = myStart; xtraCol && i < count; ++i) {
+                resVec.push_back(testVal);
+            }
+
+            check_1 = count < limit;
+        }
+
+        check_0 = z[m1] != maxZ;
+
+        if (check_0) {
+            ++z[m1];
+            testVec[m1] = v[z[m1]];
+            testVal = partial(partialVal, testVec.back(), m);
+            check_0 = compTwo(testVal, targetVals);
+        }
+    }
+}
+
+template <typename T>
+void ConstraintsClass<T>::GetSolutions(
+        const std::vector<T> &v, const std::vector<T> &targetVals,
+        std::vector<T> &cnstrntVec, std::vector<T> &resVec, int limit
+    ) {
+
+    if (m == 1) {
+        int ind = 0;
+        T testVal = v[ind];
+        check_0 = compTwo(testVal, targetVals);
+        
+        while (check_0 && check_1) {
+            if (compOne(testVal, targetVals)) {
+                for (int k = 0; k < m; ++k) {
+                    cnstrntVec.push_back(v[ind]);
+                }
+                
+                ++count;
+                
+                if (xtraCol) {
+                    resVec.push_back(testVal);
+                }
+                
+                check_1 =  (count < limit);
+            }
+            
+            check_0 = ind != maxZ;
+            
+            if (check_0) {
+                ++ind;
+                testVal = v[ind];
+                check_0 = compTwo(testVal, targetVals);
+            }
+        }
+    } else {
+        while (check_1) {
+            FilterProspects(v, targetVals, cnstrntVec, resVec, limit);
+            NextSection(v, targetVals, testVec, z, fun, compTwo,
+                        m, m1, m2, check_0, check_1);
+        }
+    }
+}
+
+template <typename T>
+ConstraintsClass<T>::ConstraintsClass(
+    const std::vector<std::string> &comparison,
+    const std::string &myFun, int n_, int m_,
+    bool IsComb_, bool xtraCol_
+) : maxZ(n_ - 1), n(n_), m(m_), m1(m - 1),
+    m2(m - 2), IsComb(IsComb_), xtraCol(xtraCol_),
+    fun(GetFuncPtr<T>(myFun)), partial(GetPartialPtr<T>(myFun)) {
+
+    z.assign(m, 0);
+    testVec.assign(m, 0);
+    count = 0;
+}
+
+template <typename T>
+std::unique_ptr<ConstraintsClass<T>> MakeConstraints(
+        const std::vector<std::string> &comparison, const std::string &myFun,
+        std::vector<int> &Reps, const std::vector<T> &targetVals,
+        ConstraintType ctype, int n, int m, bool IsComb,
+        bool xtraCol, bool IsMult, bool IsRep
+    ) {
+
+    if (ctype == ConstraintType::PartitionEsque) {
+        if (IsMult) {
+            return FromCpp14::make_unique<PartitionsEsqueMultiset<T>>(
+                comparison, myFun, n, m, IsComb, xtraCol, targetVals, Reps
+            );
+        } else if (IsRep) {
+            return FromCpp14::make_unique<PartitionsEsqueRep<T>>(
+                comparison, myFun, n, m, IsComb, xtraCol, targetVals
+            );
         } else {
-            dblTemp = cnstrtCount - dblIndex;
-            nRows = num > dblTemp ? dblTemp : num;
-            numIncrement = num > dblTemp ? (nRows + 1) : nRows;
+            return FromCpp14::make_unique<PartitionsEsqueDistinct<T>>(
+                comparison, myFun, n, m, IsComb, xtraCol, targetVals
+            );
         }
-
-        if (CheckGrTSi(IsGmp, mpzIndex, dblIndex, 0)) {
-            nextCnstrnt(v, targetVals, freqs, zIndex, testVec,
-                        z, fun, comp, m, m1, m2, nMinusM, maxZ,
-                        pentExtreme, check_0, check_1);
-        }
-
-        SEXP res = PROTECT(MatrixReturn(nRows));
-        increment(IsGmp, mpzIndex, dblIndex, numIncrement);
-        zUpdateIndex(vNum, vInt, z, sexpVec, res, width, nRows);
-        UNPROTECT(1);
-        return res;
-    } else if (CheckEqInd(IsGmp, mpzIndex, dblIndex,
-                          cnstrtCountMpz, cnstrtCount)) {
-        const std::string message = "No more results. To see the last result"
-                                    ", use the prevIter method(s)\n\n";
-        Rprintf(message.c_str());
-        increment(IsGmp, mpzIndex, dblIndex);
-        return Rf_ScalarLogical(false);
+    } else if (IsMult) {
+        return FromCpp14::make_unique<ConstraintsMultiset<T>>(
+            comparison, myFun, n, m, IsComb, xtraCol, Reps
+        );
+    } else if (IsRep) {
+        return FromCpp14::make_unique<ConstraintsRep<T>>(
+            comparison, myFun, n, m, IsComb, xtraCol
+        );
     } else {
-        return Rf_ScalarLogical(false);
+        return FromCpp14::make_unique<ConstraintsDistinct<T>>(
+            comparison, myFun, n, m, IsComb, xtraCol
+        );
     }
 }
 
-template <typename T>
-SEXP Constraints<T>::nextGather() {
+template class ConstraintsClass<int>;
+template class ConstraintsClass<double>;
 
-    if (IsGmp) {
-        mpz_sub(mpzTemp, cnstrtCountMpz, mpzIndex);
+template std::unique_ptr<ConstraintsClass<int>> MakeConstraints(
+        const std::vector<std::string>&, const std::string&,
+        std::vector<int>&, const std::vector<int>&, ConstraintType,
+        int, int, bool, bool, bool, bool
+    );
 
-        if (mpz_cmp_si(mpzTemp, std::numeric_limits<int>::max()) > 0) {
-            Rf_error("The number of requested rows is greater than ",
-                     std::to_string(std::numeric_limits<int>::max()).c_str());
-        }
-    } else {
-        dblTemp = cnstrtCount - dblIndex;
-
-        if (dblTemp > std::numeric_limits<int>::max()) {
-            Rf_error("The number of requested rows is greater than ",
-                     std::to_string(std::numeric_limits<int>::max()).c_str());
-        }
-    }
-
-    const int nRows = (IsGmp) ? mpz_get_si(mpzTemp) : dblTemp;
-
-    if (nRows > 0) {
-        if (CheckGrTSi(IsGmp, mpzIndex, dblIndex, 0)) {
-            nextCnstrnt(freqs, z, n1, m1);
-        }
-
-        SEXP res = PROTECT(MatrixReturn(nRows));
-
-        if (IsGmp) {
-            mpz_add_ui(mpzIndex, cnstrtCountMpz, 1u);
-        } else {
-            dblIndex = cnstrtCount + 1;
-        }
-
-        zUpdateIndex(vNum, vInt, z, sexpVec, res, width, nRows);
-        UNPROTECT(1);
-        return res;
-    } else {
-        return Rf_ScalarLogical(false);
-    }
-}
-
-template <typename T>
-SEXP Constraints<T>::currComb() {
-
-    if (CheckIndGrT(IsGmp, mpzIndex, dblIndex,
-                    cnstrtCountMpz, cnstrtCount)) {
-        const std::string message = "No more results. To see the last "
-                                    "result, use the prevIter method(s)\n\n";
-        Rprintf(message.c_str());
-        return Rf_ScalarLogical(0);
-    } else if (CheckGrTSi(IsGmp, mpzIndex, dblIndex, 0)) {
-        return VecReturn();
-    } else {
-        const std::string message = "Iterator Initialized. To see the first "
-                                    "result, use the nextIter method(s)\n\n";
-        Rprintf(message.c_str());
-        return Rf_ScalarLogical(0);
-    }
-}
-
-template <typename T>
-SEXP Constraints<T>::summary() {
-    SEXP res = PROTECT(Combo::summary());
-    std::string desc(R_CHAR(STRING_ELT(VECTOR_ELT(res, 0), 0)));
-    desc += " with " + mainFun + " applied to each result";
-    SET_VECTOR_ELT(res, 0, Rf_mkString(desc.c_str()));
-    UNPROTECT(1);
-    return res;
-}
+template std::unique_ptr<ConstraintsClass<double>> MakeConstraints(
+        const std::vector<std::string>&, const std::string&,
+        std::vector<int>&, const std::vector<double>&, ConstraintType,
+        int, int, bool, bool, bool, bool
+    );
