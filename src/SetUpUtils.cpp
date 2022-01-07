@@ -123,6 +123,10 @@ void SetFinalValues(VecType &myType, std::vector<int> &Reps,
             }
         }
 
+        if (IsRep) {
+            vNum.erase(std::unique(vNum.begin(), vNum.end()), vNum.end());
+        }
+
         n = vNum.size();
 
         if (IsMult) {
