@@ -2,66 +2,50 @@
 #include "CleanConvert.h"
 
 template <typename T>
-void PopulateVec(const std::vector<T> &v,
-                 std::vector<T> &cnstrntVec,
-                 std::vector<int> &z, int &count,
-                 int m, int nRows, bool IsComb) {
+void AddResultToParts(T* mat, std::int64_t result,
+                      std::size_t numResult,
+                      std::size_t width) {
 
-    if (IsComb) {
-        for (int k = 0; k < m; ++k) {
-            cnstrntVec.push_back(v[z[k]]);
-        }
+    const T t_result = result;
+    const std::size_t limit = static_cast<std::size_t>(numResult) *
+        static_cast<std::size_t>(width + 1);
 
-        ++count;
-    } else {
-        do {
-            for (int k = 0; k < m; ++k) {
-                cnstrntVec.push_back(v[z[k]]);
-            }
-
-            ++count;
-        } while (std::next_permutation(z.begin(), z.end()) && count < nRows);
+    for (std::size_t i = numResult * width; i < limit; ++i) {
+        mat[i] = t_result;
     }
 }
 
 template <typename T>
-void SectionOne(const std::vector<T> &v, std::vector<T> &testVec,
-                std::vector<int> &z, const std::vector<T> &targetVals,
-                std::vector<T> &cnstrntVec, std::vector<T> &resVec,
-                bool &check_0, bool &check_1, int &count,
-                partialPtr<T> partial, funcPtr<T> fun,
-                compPtr<T> compOne, compPtr<T> compTwo, int m, int m1,
-                int nRows, int maxZ, bool IsComb, bool xtraCol) {
+void VectorToMatrix(const std::vector<T> &cnstrntVec,
+                    const std::vector<T> &resVec, T* mat,
+                    std::int64_t result, std::size_t numResult,
+                    std::size_t width, int upperBound,
+                    bool xtraCol, bool IsPart) {
 
-    for (int i = 0; i < m; ++i) {
-        testVec[i] = v[z[i]];
+    if (numResult >= (upperBound - 1)) {
+        Rf_warning("The algorithm terminated early as the number of results"
+                       " meeting the criteria exceeds the container's maximum"
+                       " capacity or 2^31 - 1");
     }
 
-    const T partialVal = fun(testVec, m1);
-    T testVal = partial(partialVal, testVec.back(), m);
-    check_0 = compTwo(testVal, targetVals);
-
-    while (check_0 && check_1) {
-        if (compOne(testVal, targetVals)) {
-            int myStart = count;
-            PopulateVec(v, cnstrntVec, z, count, m, nRows, IsComb);
-
-            if (xtraCol) {
-                for (int i = myStart; i < count; ++i) {
-                    resVec.push_back(testVal);
-                }
-            }
-
-            check_1 = count < nRows;
+    for (std::size_t count = 0, k = 0; count < numResult; ++count) {
+        for (std::size_t j = 0; j < width; ++j, ++k) {
+            mat[count + numResult * j] = cnstrntVec[k];
         }
+    }
 
-        check_0 = z[m1] != maxZ;
+    if (xtraCol) {
+        const std::size_t limit = static_cast<std::size_t>(numResult) *
+            static_cast<std::size_t>(width + 1);
 
-        if (check_0) {
-            ++z[m1];
-            testVec[m1] = v[z[m1]];
-            testVal = partial(partialVal, testVec.back(), m);
-            check_0 = compTwo(testVal, targetVals);
+        if (IsPart) {
+            AddResultToParts(mat, result, numResult, width);
+        } else {
+            for (std::size_t i = numResult * width, k = 0;
+                 i < limit; ++i, ++k) {
+
+                mat[i] = resVec[k];
+            }
         }
     }
 }
@@ -132,7 +116,7 @@ void ConstraintStructure(std::vector<std::string> &compFunVec,
 
         if (itComp == compForms.end()) {
             Rf_error("comparison operators must be one of the"
-                     " following: '>", ">=", "<", "<=', or '=='");
+                     " following: '>', '>=', '<', '<=', or '=='");
         } else {
             compFunVec[i] = itComp->second;
         }
@@ -410,23 +394,22 @@ void ConstraintSetup(const std::vector<double> &vNum,
     }
 }
 
+template void AddResultToParts(int* mat, std::int64_t result,
+                               std::size_t numResult,
+                               std::size_t width);
 
-template void PopulateVec(const std::vector<int>&, std::vector<int>&,
-                          std::vector<int>&, int&, int, int, bool);
+template void AddResultToParts(double* mat, std::int64_t result,
+                               std::size_t numResult,
+                               std::size_t width);
 
-template void PopulateVec(const std::vector<double>&, std::vector<double>&,
-                          std::vector<int>&, int&, int, int, bool);
+template void VectorToMatrix(const std::vector<int> &cnstrntVec,
+                             const std::vector<int> &resVec, int* mat,
+                             std::int64_t result, std::size_t numResult,
+                             std::size_t width, int upperBound,
+                             bool xtraCol, bool IsPart);
 
-template void SectionOne(const std::vector<int>&, std::vector<int>&,
-                         std::vector<int>&, const std::vector<int>&,
-                         std::vector<int>&, std::vector<int>&,
-                         bool&, bool&, int&, partialPtr<int>, funcPtr<int>,
-                         compPtr<int>, compPtr<int>, int, int,
-                         int, int, bool, bool);
-
-template void SectionOne(const std::vector<double>&, std::vector<double>&,
-                         std::vector<int>&, const std::vector<double>&,
-                         std::vector<double>&, std::vector<double>&,
-                         bool&, bool&, int&, partialPtr<double>,
-                         funcPtr<double>, compPtr<double>, compPtr<double>,
-                         int, int, int, int, bool, bool);
+template void VectorToMatrix(const std::vector<double> &cnstrntVec,
+                             const std::vector<double> &resVec, double* mat,
+                             std::int64_t result, std::size_t numResult,
+                             std::size_t width, int upperBound,
+                             bool xtraCol, bool IsPart);

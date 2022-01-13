@@ -7,55 +7,6 @@
 #include "CombinatoricsResGlue.h"
 
 template <typename T>
-void AddResultToParts(T* mat, std::int64_t result,
-                      std::size_t numResult,
-                      std::size_t width) {
-
-    const T t_result = result;
-    const std::size_t limit = static_cast<std::size_t>(numResult) *
-        static_cast<std::size_t>(width + 1);
-
-    for (std::size_t i = numResult * width; i < limit; ++i) {
-        mat[i] = t_result;
-    }
-}
-
-template <typename T>
-void VectorToMatrix(const std::vector<T> &cnstrntVec,
-                    const std::vector<T> &resVec, T* mat,
-                    std::int64_t result, std::size_t numResult,
-                    std::size_t width, int upperBound,
-                    bool xtraCol, bool IsPart) {
-
-    if (numResult >= (upperBound - 1)) {
-        Rf_warning("The algorithm terminated early as the number of results"
-                       " meeting the criteria exceeds the container's maximum"
-                       " capacity or 2^31 - 1");
-    }
-
-    for (std::size_t count = 0, k = 0; count < numResult; ++count) {
-        for (std::size_t j = 0; j < width; ++j, ++k) {
-            mat[count + numResult * j] = cnstrntVec[k];
-        }
-    }
-
-    if (xtraCol) {
-        const std::size_t limit = static_cast<std::size_t>(numResult) *
-            static_cast<std::size_t>(width + 1);
-
-        if (IsPart) {
-            AddResultToParts(mat, result, numResult, width);
-        } else {
-            for (std::size_t i = numResult * width, k = 0;
-                 i < limit; ++i, ++k) {
-
-                mat[i] = resVec[k];
-            }
-        }
-    }
-}
-
-template <typename T>
 void ConstraintsVector(const std::vector<int> &freqs,
                        std::vector<T> &cnstrntVec, std::vector<T> &resVec,
                        std::vector<T> &v, std::vector<T> &tarVals,
@@ -93,7 +44,7 @@ SEXP ConstraintsReturn(
         int n, int m, int nRows, int nThreads, double strt, bool IsComb,
         bool IsRep, bool IsMult, bool bUpper, bool xtraCol, bool numUnknown,
         int strtLen, int cap, bool IsGmp
-) {
+    ) {
 
     const int width = (part.isPart) ? part.width : m;
     const int nCols = (xtraCol) ? width + 1 : width;
