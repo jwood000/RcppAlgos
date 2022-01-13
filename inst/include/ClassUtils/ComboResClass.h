@@ -7,7 +7,7 @@
 class ComboRes : public Combo {
 protected:
     SEXP ApplyFun(SEXP res);
-    virtual SEXP VecReturn();
+    SEXP VecReturn();
     SEXP MatrixReturn(int nRows);
 
     const int cap;
