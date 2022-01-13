@@ -5,25 +5,73 @@
 #include "Constraints/ConstraintsDistinct.h"
 #include "Constraints/ConstraintsRep.h"
 
-template <typename T>
-bool ConstraintsClass<T>::BruteNextElem(
-        int &idx, int lowBnd, T tarMin, T partVal, int m,
-        const std::vector<T> &v, partialPtr<T> partial, bool notLast
-    ) {
-    
-    T dist = tarMin - partial(partVal, v[idx], m);
-    const int origInd = idx;
-    
-    while (idx > lowBnd && dist < 0) {
-        --idx;
-        dist = tarMin - partial(partVal, v[idx], m);
-    }
-    
-    if (dist > 0 && idx != origInd && notLast) {
-        ++idx;
-        return true;
+FunType GetFunType(const std::string &myFun) {
+
+    if (myFun == "min") {
+        return FunType::Min;
+    } else if (myFun == "max") {
+        return FunType::Max;
+    } else if (myFun == "sum") {
+        return FunType::Sum;
+    } else if (myFun == "prod") {
+        return FunType::Prod;
     } else {
+        return FunType::Mean;
+    }
+}
+
+template <typename T>
+double ConstraintsClass<T>::GetBound(double tarMin, double partVal) {
+
+    switch (ftype) {
+        case FunType::Sum : {
+            return tarMin - partVal;
+        } case FunType::Prod : {
+            return tarMin / partVal;
+        } default : {
+            return (tarMin * m) - (partVal * (m - 1));
+        }
+    }
+}
+
+template <typename T>
+bool ConstraintsClass<T>::LowerBound(
+        const std::vector<T> &v, T tarMin,
+        T partVal, int &idx, int low
+    ) {
+
+    const double bound = GetBound(tarMin, partVal);
+
+    if (v[idx] <= bound) {
         return false;
+    } else if (v[low] < bound) {
+        auto lower = std::find_if(
+            v.cbegin() + low, v.cbegin() + idx,
+            [=](T v_i) {return v_i >= bound;}
+        );
+
+        idx = std::distance(v.cbegin(), lower);
+        return v[idx] > bound;
+    } else {
+        idx = low;
+        return false;
+    }
+}
+
+template <typename T>
+void ConstraintsClass<T>::LowerBoundLast(
+        const std::vector<T> &v, T tarMin,
+        T partVal, int &idx, int low
+    ) {
+
+    const double bound = GetBound(tarMin, partVal);
+
+    if (v[idx] > bound && v[low] < bound) {
+        while (idx > low && v[idx] > bound) {
+            --idx;
+        }
+    } else {
+        idx = low;
     }
 }
 
@@ -110,28 +158,26 @@ void ConstraintsClass<T>::GetSolutions(
         std::vector<T> &cnstrntVec, std::vector<T> &resVec, int limit
     ) {
 
+    check_1 = count < limit;
+
     if (m == 1) {
         int ind = 0;
         T testVal = v[ind];
         check_0 = compTwo(testVal, targetVals);
-        
+
         while (check_0 && check_1) {
             if (compOne(testVal, targetVals)) {
                 for (int k = 0; k < m; ++k) {
                     cnstrntVec.push_back(v[ind]);
                 }
-                
+
                 ++count;
-                
-                if (xtraCol) {
-                    resVec.push_back(testVal);
-                }
-                
-                check_1 =  (count < limit);
+                check_1 = (count < limit);
+                if (xtraCol) {resVec.push_back(testVal);}
             }
-            
+
             check_0 = ind != maxZ;
-            
+
             if (check_0) {
                 ++ind;
                 testVal = v[ind];
@@ -139,10 +185,10 @@ void ConstraintsClass<T>::GetSolutions(
             }
         }
     } else {
-        while (check_1) {
+        while (check_0 && check_1) {
             FilterProspects(v, targetVals, cnstrntVec, resVec, limit);
-            NextSection(v, targetVals, testVec, z, fun, compTwo,
-                        m, m1, m2, check_0, check_1);
+            NextSection(v, targetVals, testVec, z,
+                        fun, compTwo, m, m1, m2);
         }
     }
 }
@@ -154,7 +200,8 @@ ConstraintsClass<T>::ConstraintsClass(
     bool IsComb_, bool xtraCol_
 ) : maxZ(n_ - 1), n(n_), m(m_), m1(m - 1),
     m2(m - 2), IsComb(IsComb_), xtraCol(xtraCol_),
-    fun(GetFuncPtr<T>(myFun)), partial(GetPartialPtr<T>(myFun)) {
+    ftype(GetFunType(myFun)), fun(GetFuncPtr<T>(myFun)),
+    partial(GetPartialPtr<T>(myFun)) {
 
     z.assign(m, 0);
     testVec.assign(m, 0);

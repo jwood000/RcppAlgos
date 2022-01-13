@@ -10,7 +10,7 @@ private:
         const std::vector<T> &v, const std::vector<T> &targetVals,
         std::vector<T> &testVec, std::vector<int> &z,
         const funcPtr<T> f, const compPtr<T> comp,
-        int m, int m1, int m2, bool check_0, bool &check_1
+        int m, int m1, int m2
     );
 
 public:

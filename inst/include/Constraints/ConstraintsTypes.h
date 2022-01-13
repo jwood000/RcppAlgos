@@ -49,4 +49,12 @@ enum class ConstraintType {
     PartStandard   = 5,
 };
 
+enum class FunType {
+    Min  = 1,
+    Max  = 2,
+    Sum  = 3,
+    Prod = 4,
+    Mean = 5
+};
+
 #endif

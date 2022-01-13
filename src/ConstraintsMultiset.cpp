@@ -5,29 +5,22 @@ void ConstraintsMultiset<T>::NextSection(
         const std::vector<T> &v, const std::vector<T> &targetVals,
         std::vector<T> &testVec, std::vector<int> &z,
         const funcPtr<T> f, const compPtr<T> comp,
-        int m, int m1, int m2, bool check_0, bool &check_1
+        int m, int m1, int m2
     ) {
 
-    if (check_1) {
-        bool noChange = true;
+    for (int i = m2; i >= 0 && !this->check_0; --i) {
+        if (z[i] != freqs[pentExtreme + i]) {
+            ++z[i];
+            testVec[i] = v[z[i]];
 
-        for (int i = m2; i >= 0 && !check_0; --i) {
-            if (z[i] != freqs[pentExtreme + i]) {
-                ++z[i];
-                testVec[i] = v[z[i]];
-
-                for (int j = i + 1, k = zIndex[z[i]] + 1; j < m; ++j, ++k) {
-                    z[j] = freqs[k];
-                    testVec[j] = v[z[j]];
-                }
-
-                T testVal = f(testVec, m);
-                check_0 = comp(testVal, targetVals);
-                noChange = false;
+            for (int j = i + 1, k = zIndex[z[i]] + 1; j < m; ++j, ++k) {
+                z[j] = freqs[k];
+                testVec[j] = v[z[j]];
             }
-        }
 
-        check_1 = (!noChange && check_0);
+            T testVal = f(testVec, m);
+            this->check_0 = comp(testVal, targetVals);
+        }
     }
 }
 

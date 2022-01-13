@@ -11,9 +11,7 @@ using compPtr = bool (*)(T x, const std::vector<T> &y);
 
 // Below, we define five main functions that will be utilized
 // as constraint functions. We also define five comparison
-// operations (<, <=, >, >=, ==). The framework is based on
-// the information posted by Dirk Eddelbuettel from
-// this Rcpp Gallery (http://gallery.rcpp.org/articles/passing-cpp-function-pointers/)
+// operations (<, <=, >, >=, ==).
 
 template <typename T>
 T prod(const std::vector<T> &v, int mySize) {
@@ -167,32 +165,32 @@ compPtr<T> GetCompPtr(const std::string &fstr) {
 }
 
 template <typename T>
-using partialReducePtr = void (*const)(int m, T &partial, T w);
+using reducePtr = void (*const)(int m, T &partial, T w);
 
 template <typename T>
-void PartialReduceProd(int m, T &partial, T w) {
+void ReduceProd(int m, T &partial, T w) {
     partial /= w;
 }
 
 template <typename T>
-void PartialReduceSum(int m, T &partial, T w) {
+void ReduceSum(int m, T &partial, T w) {
     partial -= w;
 }
 
 template <typename T>
-void PartialReduceMean(int m, T& partial, T w) {
+void ReduceMean(int m, T& partial, T w) {
     partial = (partial * static_cast<double>(m) - w) / static_cast<double>(m - 1);
 }
 
 template <typename T>
-partialReducePtr<T> GetPartialReducePtr(const std::string &fstr) {
+reducePtr<T> GetReducePtr(const std::string &fstr) {
 
     if (fstr == "prod") {
-        return(partialReducePtr<T>(PartialReduceProd));
+        return(reducePtr<T>(ReduceProd));
     } else if (fstr == "sum") {
-        return(partialReducePtr<T>(PartialReduceSum));
+        return(reducePtr<T>(ReduceSum));
     } else {
-        return(partialReducePtr<T>(PartialReduceMean));
+        return(reducePtr<T>(ReduceMean));
     }
 }
 
@@ -205,5 +203,5 @@ template partialPtr<double> GetPartialPtr(const std::string&);
 template funcPtr<int> GetFuncPtr(const std::string&);
 template funcPtr<double> GetFuncPtr(const std::string&);
 
-template partialReducePtr<int> GetPartialReducePtr(const std::string&);
-template partialReducePtr<double> GetPartialReducePtr(const std::string&);
+template reducePtr<int> GetReducePtr(const std::string&);
+template reducePtr<double> GetReducePtr(const std::string&);

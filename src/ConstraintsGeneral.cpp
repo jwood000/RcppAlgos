@@ -7,6 +7,18 @@
 // can safely skip several combinations knowing that they will exceed the
 // given constraint value.
 
+// The PartitionEsque* algorithms are similar to the Constraints* algorithm.
+// The main difference is in getting the next section of combinations. With
+// the constraints algo, we rely on an iterative approach. The other algo
+// makes heavy use of the respective "GetLowerBound" algos. Given a particular
+// starting index vector as well as the specific index we are trying to set,
+// these algorithms return the next lexicographical combination such that
+// when the fun (e.g. "sum") is applied, the value doesn't exceed the minimum
+// target value. This algo is particularly effective when we need to find
+// combinations of a vector such that the value when the fun is applied is
+// between a range (e.g. comparisonFun = "==" and tolerance = 100, or
+// comparisonFun = c(">", "<") and limitConstraints = c(60, 62))
+
 template <typename T>
 void ConstraintsGeneral(std::vector<T> &v, std::vector<int> &Reps,
                         const std::vector<std::string> &comparison,
@@ -34,8 +46,8 @@ void ConstraintsGeneral(std::vector<T> &v, std::vector<int> &Reps,
         n, m, IsComb, xtraCol, IsMult, IsRep
     );
 
-    for (std::size_t nC = 0; nC < comparison.size(); ++nC) {
-        Cnstrt->Prepare(comparison[nC], v);
+    for (auto comp: comparison) {
+        Cnstrt->Prepare(comp, v);
         Cnstrt->GetSolutions(v, targetVals, cnstrntVec, resVec, maxRows);
         targetVals.erase(targetVals.begin());
     }

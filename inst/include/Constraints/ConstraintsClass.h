@@ -16,6 +16,7 @@ protected:
     const bool IsComb;
     const bool xtraCol;
 
+    const FunType ftype;
     compPtr<T> compOne;
     compPtr<T> compTwo;
 
@@ -27,10 +28,18 @@ protected:
 
     std::vector<int> z;
     std::vector<T> testVec;
-    
-    bool BruteNextElem(int &idx, int lowBnd, T tarMin,
-                       T partVal, int m, const std::vector<T> &v,
-                       partialPtr<T> partial, bool notLast = true);
+
+    double GetBound(double tarMin, double partVal);
+
+    bool LowerBound(
+        const std::vector<T> &v, T tarMin,
+        T partVal, int &idx, int low
+    );
+
+    void LowerBoundLast(
+        const std::vector<T> &v, T tarMin,
+        T partVal, int &idx, int low
+    );
 
     void PopulateVec(const std::vector<T> &v,
                      std::vector<T> &cnstrntVec, int limit);
@@ -44,7 +53,7 @@ protected:
         const std::vector<T> &v, const std::vector<T> &targetVals,
         std::vector<T> &testVec, std::vector<int> &z,
         const funcPtr<T> f, const compPtr<T> comp,
-        int m, int m1, int m2, bool check_0, bool &check_1
+        int m, int m1, int m2
     ) = 0;
 
 public:
@@ -62,8 +71,9 @@ public:
         const std::vector<T> &v, const std::vector<T> &targetVals,
         std::vector<T> &cnstrntVec, std::vector<T> &resVec, int limit
     );
-    
+
     int GetCount() const {return count;}
+    void Reset() {count = 0;}
 };
 
 template <typename T>
