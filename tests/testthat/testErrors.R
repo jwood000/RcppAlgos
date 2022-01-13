@@ -6,7 +6,7 @@ context("testing errors in all functions")
 ## commenting out every error check in every test file.
 
 test_that("comboGeneral produces appropriate error messages", {
-    expect_error(comboGeneral(9,4,TRUE,NULL,NULL,NULL,"summ","<",10), "prod, sum, mean, max, or min")
+    expect_error(comboGeneral(9,4,TRUE,NULL,NULL,NULL,"summ","<",10), "'prod', 'sum', 'mean', 'max', or 'min'")
     expect_error(comboGeneral(9,4,TRUE,NULL,NULL,NULL,"sum","=<>",10), "'>', '>=', '<', '<=', or '=='")
     expect_error(comboGeneral(9,4,TRUE,NULL,NULL,NULL,"sum",60,10), "must be passed as a character")
     expect_error(comboGeneral(9,4,FALSE,NULL,NULL,NULL,sum,"<",10), "must be passed as a character")
@@ -39,11 +39,7 @@ test_that("comboGeneral produces appropriate error messages", {
     
     expect_error(comboGeneral(10,7,FALSE,NULL,NULL,NULL,"sum",c("<=","<"),c(20,20)), 
                  "The limitConstraints must be different")
-    
-    expect_error(comboGeneral(-100:100, 25, constraintFun = "prod",
-                              comparisonFun = "<=", limitConstraints = 10, upper = 100), 
-                 "The number of rows cannot exceed")
-    
+
     expect_error(comboGeneral(5, 3, TRUE, constraintFun = "product"), 
                  "contraintFun must be one of the following:")
     expect_error(comboGeneral((1:5)+.01, 3, TRUE, constraintFun = "product", keepResults = TRUE), 
@@ -152,7 +148,7 @@ test_that("permuteGeneral produces appropriate error messages", {
                  "The number of rows cannot exceed")
     expect_error(permuteGeneral(9,4,TRUE,constraintFun = "summ",
                                 comparisonFun = "<",limitConstraints = 10),
-                 "prod, sum, mean, max, or min")
+                 "'prod', 'sum', 'mean', 'max', or 'min'")
     expect_error(permuteGeneral(9,4,TRUE,constraintFun = "sum",
                                 comparisonFun = "=<>",limitConstraints = 10),
                  "'>', '>=', '<', '<=', or '=='")
@@ -281,8 +277,6 @@ test_that("permuteSample produces appropriate error messages", {
     expect_error(permuteSample(100, 10, n = -200), "n must be a positive whole number")
     expect_error(permuteSample(100, 10, sampleVec = c("62815650955529472001")),
                  "One or more of the requested values in sampleVec")
-    expect_error(permuteSample(3.3, 2, n = 1), 
-                 "If v is not a character and of length 1, it must be a whole number")
     expect_error(permuteSample(3, 2.2, n = 1), "m must be a whole number")
     expect_error(permuteSample(3, 2, n = 1.1), "n must be a whole number")
     expect_error(permuteSample(3, 2, sampleVec = as.complex(1)), 
@@ -294,8 +288,7 @@ test_that("permuteSample produces appropriate error messages", {
     expect_error(permuteSample(5, 3, n = 5, nThreads = 3.2), "nThreads must be a whole number")
     expect_error(permuteSample(5000, 10, n = 5.5), "n must be a whole number")
     expect_error(permuteSample(5000, 10, n = NA_integer_), "n cannot be NA or NaN")
-    expect_error(permuteSample(5000, 10, n = NA), 
-                 "This type is not supported! No conversion possible for n")
+    expect_error(permuteSample(5000, 10, n = NA), "n cannot be NA or NaN")
     expect_error(permuteSample(5000, 10, sampleVec = -1), 
                  "sampleVec must be a positive number")
     expect_error(permuteSample(5000, 10, sampleVec = c(1e9, -1)), 
