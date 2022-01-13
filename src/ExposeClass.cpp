@@ -1,3 +1,4 @@
+#include "Constraints/CnstrntsToRClass.h"
 #include "Partitions/PartitionsClass.h"
 #include "ClassUtils/ComboApplyClass.h"
 #include "ClassUtils/ComboResClass.h"
@@ -176,22 +177,10 @@ SEXP CombClassNew(SEXP RVals, SEXP RboolVec, SEXP freqInfo, SEXP Rparallel,
 
             UNPROTECT(1);
             return ext;
-        } else if (ctype == ConstraintType::General) {
-            class ComboRes* ptr = new ComboRes(
-                VECTOR_ELT(RVals, 0), m, VECTOR_ELT(RVals, 4), bVec, myReps,
-                freqs, vInt, vNum, myType, maxThreads, VECTOR_ELT(RVals, 6),
-                Parallel, part, compVec, tarVals, tarIntVals, startZ, mainFun,
-                funDbl, ctype, strtLen, cap, KeepRes, numUnknown,
-                computedRows, computedRowsMpz[0]
-            );
+        } else if (ctype == ConstraintType::General ||
+                   ctype == ConstraintType::PartitionEsque) {
 
-            SEXP ext = PROTECT(R_MakeExternalPtr(ptr, R_NilValue, R_NilValue));
-            R_RegisterCFinalizerEx(ext, Finalizer, TRUE);
-
-            UNPROTECT(1);
-            return ext;
-        } else if (ctype == ConstraintType::PartitionEsque) {
-            class ComboRes* ptr = new ComboRes(
+            class CnstrntsToR* ptr = new CnstrntsToR(
                 VECTOR_ELT(RVals, 0), m, VECTOR_ELT(RVals, 4), bVec, myReps,
                 freqs, vInt, vNum, myType, maxThreads, VECTOR_ELT(RVals, 6),
                 Parallel, part, compVec, tarVals, tarIntVals, startZ, mainFun,
