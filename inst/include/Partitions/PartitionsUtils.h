@@ -8,10 +8,6 @@
 #include <numeric>
 #include <cmath>
 
-#define R_NO_REMAP
-#include <Rinternals.h>
-#include <R.h>
-
 void CheckPartition(const std::vector<std::string> &compFunVec,
                     const std::vector<double> &v, const std::string &mainFun,
                     const std::vector<double> &target, PartDesign &part,

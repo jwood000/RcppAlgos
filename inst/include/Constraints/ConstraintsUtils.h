@@ -8,10 +8,6 @@
 #include <limits>
 #include <map>
 
-#define R_NO_REMAP
-#include <Rinternals.h>
-#include <R.h>
-
 constexpr double dblIntMax = std::numeric_limits<int>::max();
 
 // This fixes inequalites where the symbols are swapped. That is: "=>" amd "=<"
@@ -36,19 +32,16 @@ static const std::array<std::string, 5> compHelper = {
 constexpr double defaultTolerance = std::numeric_limits<float>::epsilon() / 8.0;
 
 template <typename T>
-void PopulateVec(const std::vector<T> &v,
-                 std::vector<T> &cnstrntVec,
-                 std::vector<int> &z, int &count,
-                 int m, int nRows, bool IsComb);
+void AddResultToParts(T* mat, std::int64_t result,
+                      std::size_t numResult,
+                      std::size_t width);
 
 template <typename T>
-void SectionOne(const std::vector<T> &v, std::vector<T> &testVec,
-                std::vector<int> &z, const std::vector<T> &targetVals,
-                std::vector<T> &cnstrntVec, std::vector<T> &resVec,
-                bool &check_0, bool &check_1, int &count,
-                partialPtr<T> partial, funcPtr<T> fun,
-                compPtr<T> compOne, compPtr<T> compTwo, int m, int m1,
-                int nRows, int maxZ, bool IsComb, bool xtraCol);
+void VectorToMatrix(const std::vector<T> &cnstrntVec,
+                    const std::vector<T> &resVec, T* mat,
+                    std::int64_t result, std::size_t numResult,
+                    std::size_t width, int upperBound,
+                    bool xtraCol, bool IsPart);
 
 bool CheckSpecialCase(bool bLower, const std::string &mainFun,
                       const std::vector<double> &vNum);

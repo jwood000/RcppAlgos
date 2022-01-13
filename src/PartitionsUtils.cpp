@@ -572,7 +572,7 @@ void CheckPartition(const std::vector<std::string> &compFunVec,
 
     part.isPart = IsPartition;
 }
-#include <iostream>
+
 // Right now, we have no fast method for calculating the number of partitions
 // of multisets, so the variable bCalcMultiset, is used only when we call
 // partitionCount from R. If we are actually generating results, this will

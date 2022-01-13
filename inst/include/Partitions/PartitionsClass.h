@@ -23,6 +23,9 @@ private:
 
     void SetPartValues();
     void MoveZToIndex();
+
+    // We need a dedicated method for multisets to
+    // avoid issues with updating the indexing vector
     SEXP MultisetMatrix(int nRows);
 
 public:
