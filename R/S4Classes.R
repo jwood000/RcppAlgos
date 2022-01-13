@@ -16,14 +16,14 @@ ALGOS_METHODS <- c(
             .Call(Algos_PrevGatherGlue, .Object@ptr)}",
         currIter      = ".Object@currIter <- function() {
             .Call(Algos_CurrCombGlue, .Object@ptr)}",
-        randomAccess  = ".Object@front <- function() {
-            .Call(Algos_FrontGlue, .Object@ptr)}",
-        sourceVector  = ".Object@back <- function() {
-            .Call(Algos_BackGlue, .Object@ptr)}",
-        front         = ".Object@randomAccess <- function(samp) {
+        randomAccess  = ".Object@randomAccess <- function(samp) {
             .Call(Algos_RandomAccessGlue, .Object@ptr, samp)}",
-        back          = ".Object@sourceVector <- function() {
+        sourceVector  = ".Object@sourceVector <- function() {
             .Call(Algos_SourceVectorGlue, .Object@ptr)}",
+        front         = ".Object@front <- function() {
+            .Call(Algos_FrontGlue, .Object@ptr)}",
+        back          = ".Object@back <- function() {
+            .Call(Algos_BackGlue, .Object@ptr)}",
         summary       = ".Object@summary <- function() {
             .Call(Algos_SummaryGlue, .Object@ptr)}",
         object        = ".Object"
