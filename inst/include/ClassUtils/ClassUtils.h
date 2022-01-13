@@ -15,14 +15,14 @@ void increment(bool IsGmp, mpz_t mpzIndex, double &dblIndex, int nRows);
 void decrement(bool IsGmp, mpz_t mpzIndex, double &dblIndex);
 void decrement(bool IsGmp, mpz_t mpzIndex, double &dblIndex, int nRows);
 
-bool CheckEqSi(bool IsGmp, mpz_t mpzIndex, double &dblIndex, int si);
-bool CheckIndLT(bool IsGmp, mpz_t mpzIndex, double &dblIndex,
+bool CheckEqSi(bool IsGmp, mpz_t mpzIndex, double dblIndex, int si);
+bool CheckIndLT(bool IsGmp, mpz_t mpzIndex, double dblIndex,
                 mpz_t computedRowsMpz, double computedRows, bool eq = false);
-bool CheckEqInd(bool IsGmp, mpz_t mpzIndex, double &dblIndex,
+bool CheckEqInd(bool IsGmp, mpz_t mpzIndex, double dblIndex,
                 mpz_t computedRowsMpz, double computedRows);
-bool CheckIndGrT(bool IsGmp, mpz_t mpzIndex, double &dblIndex,
+bool CheckIndGrT(bool IsGmp, mpz_t mpzIndex, double dblIndex,
                  mpz_t computedRowsMpz, double computedRows);
-bool CheckGrTSi(bool IsGmp, mpz_t mpzIndex, double &dblIndex, int si);
+bool CheckGrTSi(bool IsGmp, mpz_t mpzIndex, double dblIndex, int si);
 
 void zUpdateIndex(const std::vector<double> &vNum,
                   const std::vector<int> &vInt, std::vector<int> &z,

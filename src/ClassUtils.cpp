@@ -94,7 +94,7 @@ void decrement(bool IsGmp, mpz_t mpzIndex, double &dblIndex, int nRows) {
     }
 }
 
-bool CheckEqSi(bool IsGmp, mpz_t mpzIndex, double &dblIndex, int si) {
+bool CheckEqSi(bool IsGmp, mpz_t mpzIndex, double dblIndex, int si) {
     if (IsGmp) {
         return mpz_cmp_si(mpzIndex, si) == 0;
     } else {
@@ -102,7 +102,7 @@ bool CheckEqSi(bool IsGmp, mpz_t mpzIndex, double &dblIndex, int si) {
     }
 }
 
-bool CheckIndLT(bool IsGmp, mpz_t mpzIndex, double &dblIndex,
+bool CheckIndLT(bool IsGmp, mpz_t mpzIndex, double dblIndex,
                 mpz_t computedRowsMpz, double computedRows, bool eq = false) {
     if (eq) {
         if (IsGmp) {
@@ -119,7 +119,7 @@ bool CheckIndLT(bool IsGmp, mpz_t mpzIndex, double &dblIndex,
     }
 }
 
-bool CheckEqInd(bool IsGmp, mpz_t mpzIndex, double &dblIndex,
+bool CheckEqInd(bool IsGmp, mpz_t mpzIndex, double dblIndex,
                 mpz_t computedRowsMpz, double computedRows) {
     if (IsGmp) {
         return mpz_cmp(mpzIndex, computedRowsMpz) == 0;
@@ -128,7 +128,7 @@ bool CheckEqInd(bool IsGmp, mpz_t mpzIndex, double &dblIndex,
     }
 }
 
-bool CheckIndGrT(bool IsGmp, mpz_t mpzIndex, double &dblIndex,
+bool CheckIndGrT(bool IsGmp, mpz_t mpzIndex, double dblIndex,
                  mpz_t computedRowsMpz, double computedRows) {
     if (IsGmp) {
         return mpz_cmp(mpzIndex, computedRowsMpz) > 0;
@@ -137,7 +137,7 @@ bool CheckIndGrT(bool IsGmp, mpz_t mpzIndex, double &dblIndex,
     }
 }
 
-bool CheckGrTSi(bool IsGmp, mpz_t mpzIndex, double &dblIndex, int si) {
+bool CheckGrTSi(bool IsGmp, mpz_t mpzIndex, double dblIndex, int si) {
     if (IsGmp) {
         return mpz_cmp_si(mpzIndex, si) > 0;
     } else {
