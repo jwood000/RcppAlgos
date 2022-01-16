@@ -17,7 +17,7 @@ primeSieve <- function(bound1, bound2 = NULL, nThreads = NULL) {
 
 divisorsSieve <- function(bound1, bound2 = NULL,
                           namedList = FALSE, nThreads = NULL) {
-    return(.Call(Algos_DivNumSieveCpp, bound1, bound2, TRUE, namedList, 
+    return(.Call(Algos_DivNumSieveCpp, bound1, bound2, TRUE, namedList,
                  nThreads, pkgEnv$nThreads))
 }
 

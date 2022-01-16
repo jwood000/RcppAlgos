@@ -4,7 +4,7 @@ comboGeneral <- function(v, m = NULL, repetition = FALSE, freqs = NULL,
                          keepResults = NULL, FUN = NULL, Parallel = FALSE,
                          nThreads = NULL, tolerance = NULL,
                          FUN.VALUE = NULL) {
-    
+
     RetValue <- .Call(Algos_CheckReturn, v, constraintFun,
                       comparisonFun, limitConstraints,
                       keepResults, FUN)
@@ -33,7 +33,7 @@ comboSample <- function(v, m = NULL, repetition = FALSE, freqs = NULL,
     if (!is.null(seed)) {
         set.seed(seed)
     }
-    
+
     return(.Call(Algos_SampleCombPerm, v, m, repetition, freqs, sampleVec,
                  TRUE, seed, n, sample, FUN, new.env(), Parallel, nThreads,
                  pkgEnv$nThreads, namedSample, FUN.VALUE))
@@ -49,7 +49,7 @@ comboIter <- function(v, m = NULL, repetition = FALSE, freqs = NULL,
                       limitConstraints = NULL, keepResults = NULL,
                       FUN = NULL, Parallel = FALSE, nThreads = NULL,
                       tolerance = NULL, FUN.VALUE = NULL) {
-    
+
     RetValue <- .Call(Algos_CheckReturn, v, constraintFun,
                       comparisonFun, limitConstraints,
                       keepResults, FUN)
@@ -57,7 +57,7 @@ comboIter <- function(v, m = NULL, repetition = FALSE, freqs = NULL,
                       comparisonFun, limitConstraints)
     InitVals <- .Call(Algos_GetClassVals, v, m, repetition, freqs,
                       TRUE, FUN, nThreads, pkgEnv$nThreads, IsCnstrd)
-    
+
     if (RetValue == 1) {
         new("Combo", InitVals, Parallel)
     } else if (RetValue == 2) {

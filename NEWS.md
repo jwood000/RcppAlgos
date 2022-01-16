@@ -1,12 +1,40 @@
+# RcppAlgos 2.5.0
+
+## New Features:
+
+* Added partition specific functions: `partionsGeneral`, `partitionsCount`, `partitionsIter`, and `partitionsSample`
+
+* `comboIter` and `permuteIter` now work with constraints.
+
+* Dropped `Rcpp` and `RcppThread` as a dependency to reduce compile time and binary size. As a result, there is no longer the ability to interrupt long running processes. Will investigate in next release..
+
+## Enhancements:
+
+*
+
+## Bug Fixes:
+
+* When `permuteGeneral` is used with multisets and the width is maximized, multithreading would fail. This is fixed in 2.5.0.
+
+# RcppAlgos 2.4.3
+
+## Other:
+
+* Fixed old urls
+
 # RcppAlgos 2.4.2
 
 ## New Features:
 
-* Added function `comboGrid` for efficiently generating the cartesian product where order does not matter.
+* Added function `comboGrid` for efficiently generating the Cartesian product where order does not matter.
 
 ## Enhancements:
 
 * Refactored code base to reduce binary size
+
+## Other:
+
+* Removed LazyData from DESCRIPTION. Also added `rmarkdown` to Suggests.
 
 # RcppAlgos 2.4.1
 
@@ -27,9 +55,10 @@
 * Now able to interrupt general constraint problems (See [Interrupt Execution with Rcpp::checkUserInterrupt](<https://jwood000.github.io/RcppAlgos/articles/CombPermConstraints.html#safely-interrupt-execution-with-rcppcheckuserinterrupt>))
 
 ## Bug Fixes:
-* In 2.3.5 and 2.3.6, we mistakingly allowed a `constraintFun` to be applied to a logical vector which was crashing R. We have corrected this in 2.4.0.
 
-* Changed the data type for sizing the index matrix in `permuteGeneral`. Originally, we were using `int` and when the output was large enough, it was causing an integer overflow thus causing the index matrix to be unproperly sized. We have sinced changed the data type to the recommended `std::size_t` (See [Is there a max array length limit in C++?](<https://stackoverflow.com/q/216259/4408538>))
+* In 2.3.5 and 2.3.6, we mistakenly allowed a `constraintFun` to be applied to a logical vector which was crashing R. We have corrected this in 2.4.0.
+
+* Changed the data type for sizing the index matrix in `permuteGeneral`. Originally, we were using `int` and when the output was large enough, it was causing an integer overflow thus causing the index matrix to be improperly sized. We have since changed the data type to the recommended `std::size_t` (See [Is there a max array length limit in C++?](<https://stackoverflow.com/q/216259/4408538>))
 
 # RcppAlgos 2.3.6
 
@@ -41,7 +70,7 @@
 
 ## New Features:
 
-* Added `comboGroups`, `comboGroupsCount`, and `comboGroupsSample`. These functions deal with partitioning a vector/set into groups of equal size. See [Combinations in R by Groups](<https://stackoverflow.com/q/57732672/4408538Create>). See the related integer sequences A025035-A025042 at https://oeis.orgOEIS (E.g. https://oeis.org/A025036A025036 for Number of partitions of `(1, 2, ..., 4n)` into sets of size 4.)
+* Added `comboGroups`, `comboGroupsCount`, and `comboGroupsSample`. These functions deal with partitioning a vector/set into groups of equal size. See [Combinations in R by Groups](<https://stackoverflow.com/q/57732672/4408538Create>). See the related integer sequences A025035-A025042 at https://oeis.org (E.g. https://oeis.org/A025036A025036 for Number of partitions of `(1, 2, ..., 4n)` into sets of size 4.)
 
 * Added vignettes (First version with vignettes)
 
@@ -95,21 +124,13 @@
 
 # RcppAlgos 2.3.0
 
-## New Features:
-
-* Added `stdThreadMax` for obtaining the number of threads available on a machine
-
-## Enhancements:
-
-* All functions now have parallel capabilites via `RcppThread`.
+* All functions now have parallel capabilities via `RcppThread`.
 
 * Utilizes `RMatrix.h` from `RcppParallel` for thread safe matrix class.
 
 * Major overhaul of primeSieve for large primes.
 
-## Bug Fixes:
-
-* Corrected `primeCount` for values around `1e9`. See [Issue #14](<https://github.com/jwood000/RcppAlgos/issues/14>)
+* Added `stdThreadMax` for obtaining the number of threads available on a machine
 
 # RcppAlgos 2.2.0
 
@@ -122,7 +143,7 @@
 * Added argument `Parallel` to general and sampling functions for increased gains in efficiency.
 
     * `comboGeneral(30, 10, Parallel = TRUE)`
-    
+
     * `permuteGeneral(12, 7, TRUE, constraintFun = "sum", Parallel = TRUE)`
 
 * Logical class is now preserved in combinatorial functions
@@ -130,14 +151,14 @@
 * Added gmp support to combinatorial functions. Now, one can accurately and quickly work with combinations/permutations of large vectors _E.g._:
 
     * `comboSample(runif(10000), 100, n = 10, seed = 42, Parallel = TRUE)`
-    
+
     * `permuteGeneral(factor(state.name), 20, lower = 1e15, upper = 1e15 + 1000)`
-    
+
 * Added `FUN` argument to all combinatorial functions. Allows user to pass custom functions to be applied to combinations/permutations.
 
 # RcppAlgos 2.0.3
 
-* Corrected clang `UBSAN` error identified by two different unit tests. In both situations, the problem was occurring as a result of populating a vector of integers with values from a vector of doubles that contained a nan (Not-a-Number). Most information was obtained from Brian J. Knaus's blog titled : "Reproducing a clang-UBSAN issue" (https://knausb.github.io/2017/06/reproducing-a-clang-ubsan-issue/)
+* Corrected clang `UBSAN` error identified by two different unit tests. In both situations, the problem was occurring as a result of populating a vector of integers with values from a vector of doubles that contained a NaN (Not-a-Number). Most information was obtained from Brian J. Knaus's blog titled : "Reproducing a clang-UBSAN issue" (https://knausb.github.io/2017/06/reproducing-a-clang-ubsan-issue/)
 
 # RcppAlgos 2.0.2
 
@@ -204,7 +225,7 @@
 # RcppAlgos 0.2.4
 
 * Fixed bug that occurs when non-unique elements are present for combinations with replacement.
-    
+
 # RcppAlgos 0.2.3
 
 * Fixed segmentation fault error highlighted by valgrind check in version `0.2.2`.

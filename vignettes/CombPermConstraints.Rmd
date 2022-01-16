@@ -81,8 +81,8 @@ Unit: milliseconds
  parallel  37.70034  46.51309  48.82646  48.39089  51.16243 112.6135   100
   rowsums  98.50969 100.68145 105.76113 102.10867 107.19118 135.9790   100
 
-all.equal(rowSums(combs), 
-          comboGeneral(25, 10, 
+all.equal(rowSums(combs),
+          comboGeneral(25, 10,
                        constraintFun = "sum",
                        Parallel = TRUE)[,11])
 [1] TRUE
@@ -96,9 +96,9 @@ Unit: milliseconds
    serial 171.22701 182.2575 198.14229 198.29388 213.14787 240.1016   100
  parallel  54.41817  59.2010  73.12819  74.61183  77.93679 119.8481   100
  rowmeans 102.34084 103.2962 115.09863 107.12878 120.19177 174.8596   100
- 
-all.equal(rowMeans(combs), 
-          comboGeneral(25, 10, 
+
+all.equal(rowMeans(combs),
+          comboGeneral(25, 10,
                        constraintFun = "mean",
                        Parallel = TRUE)[,11])
 [1] TRUE
@@ -124,11 +124,11 @@ myNums
 
 ## Find all 5-tuples combinations without repetition of myNums
 ## (defined above) such that the sum is equal to 1176.
-p1 <- comboGeneral(v = myNums, m = 5, 
-                   constraintFun = "sum", 
-                   comparisonFun = "==", 
+p1 <- comboGeneral(v = myNums, m = 5,
+                   constraintFun = "sum",
+                   comparisonFun = "==",
                    limitConstraints = 1176)
- 
+
 tail(p1)
       [,1] [,2] [,3] [,4] [,5]
 [28,]  124  149  287  289  327
@@ -148,8 +148,8 @@ identical(p1, allCombs[which(rowSums(allCombs) == 1176), ])
 ## How about finding combinations with repetition
 ## whose mean is less than or equal to 150.
 p2 <- comboGeneral(v = myNums, m = 5, TRUE,
-                   constraintFun = "mean", 
-                   comparisonFun = "<=", 
+                   constraintFun = "mean",
+                   comparisonFun = "<=",
                    limitConstraints = 150)
 
 ## Again, we authenticate with brute force
@@ -164,7 +164,7 @@ class(p2[1, ])
 class(allCombs[1, ])
 [1] "integer"
 
-## When mean is employed or it can be determined that integral 
+## When mean is employed or it can be determined that integral
 ## values will not suffice for the comparison, we fall back to
 ## numeric types, thus all.equal should return TRUE
 all.equal(p2, allCombs[which(rowMeans(allCombs) <= 150), ])
@@ -183,8 +183,8 @@ Note that in the examples below, we have `keepResults = TRUE`. This means an add
 ## Get combinations such that the product is
 ## strictly between 3600 and 4000
 comboGeneral(5, 7, TRUE, constraintFun = "prod",
-             comparisonFun = c(">","<"),          ## Find results > 3600 and < 4000 
-             limitConstraints = c(3600, 4000),    
+             comparisonFun = c(">","<"),          ## Find results > 3600 and < 4000
+             limitConstraints = c(3600, 4000),
              keepResults = TRUE)
      [,1] [,2] [,3] [,4] [,5] [,6] [,7] [,8]
 [1,]    1    2    3    5    5    5    5 3750
@@ -236,9 +236,9 @@ This default value is good and bad.
 For the good side:
 
 ```r
-dim(comboGeneral(seq(0,0.5,0.05), 6, TRUE, 
-                 constraintFun = "sum", 
-                 comparisonFun = "==", 
+dim(comboGeneral(seq(0,0.5,0.05), 6, TRUE,
+                 constraintFun = "sum",
+                 comparisonFun = "==",
                  limitConstraints = 1))
 [1] 199   6
 
@@ -253,9 +253,9 @@ If we had a tolerance of zero, we would have obtained an incorrect result:
 
 ```r
 ## We miss 29 combinations that add up to 1
-dim(comboGeneral(seq(0,0.5,0.05), 6, TRUE, 
-                 constraintFun = "sum", 
-                 comparisonFun = "==", 
+dim(comboGeneral(seq(0,0.5,0.05), 6, TRUE,
+                 constraintFun = "sum",
+                 comparisonFun = "==",
                  limitConstraints = 1, tolerance = 0))
 [1] 170   6
 ```
@@ -346,7 +346,7 @@ system.time(takeTwo <- comboGeneral(s, 20, TRUE,
                                     comparisonFun = "==",
                                     limitConstraints = 0,
                                     upper = 10, tolerance = 0.00001))
- user  system elapsed 
+ user  system elapsed
 0.056   0.000   0.058
 
 dim(takeTwo)
@@ -359,7 +359,7 @@ system.time(takeThree <- comboGeneral(s, 20, TRUE,
                                       comparisonFun = "==",
                                       limitConstraints = 0,
                                       upper = 10, tolerance = 0.0000001))
- user  system elapsed 
+ user  system elapsed
 9.194   0.011   9.212
 
 dim(takeThree)
@@ -656,9 +656,9 @@ permuteGeneral(0:6, freqs = c(6, rep(1, 6)),
 system.time(parts60 <- comboGeneral(0:60, repetition = TRUE,
                                     constraintFun = "sum",
                                     comparisonFun = "==", limitConstraints = 60))
- user  system elapsed 
+ user  system elapsed
 0.079   0.046   0.126
-  
+
 dim(parts60)
 [1] 966467     60
 
@@ -667,7 +667,7 @@ system.time(partsDist120 <- comboGeneral(0:120, freqs = c(120, rep(1, 120)),
                                          constraintFun = "sum",
                                          comparisonFun = "==",
                                          limitConstraints = 120))
- user  system elapsed 
+ user  system elapsed
 0.126   0.000   0.126
 
 dim(partsDist120)
@@ -677,7 +677,7 @@ dim(partsDist120)
 system.time(comp25 <- permuteGeneral(0:25, repetition = TRUE,
                                      constraintFun = "sum",
                                      comparisonFun = "==", limitConstraints = 25))
- user  system elapsed 
+ user  system elapsed
 1.266   0.332   1.601
 
 dim(comp25)
@@ -687,7 +687,7 @@ dim(comp25)
 system.time(weakComp12 <- permuteGeneral(0:12, 12, repetition = TRUE,
                                          constraintFun = "sum",
                                          comparisonFun = "==", limitConstraints = 12))
- user  system elapsed 
+ user  system elapsed
 0.029   0.000   0.030
 
 dim(weakComp12)
@@ -697,13 +697,13 @@ dim(weakComp12)
 system.time(compDist50 <- permuteGeneral(0:50, freqs = c(50, rep(1, 50)),
                                         constraintFun = "sum",
                                         comparisonFun = "==", limitConstraints = 50))
- user  system elapsed 
+ user  system elapsed
 0.231   0.074   0.305
-  
+
 dim(compDist50)
 [1] 10759321        9
 
-## Using ht function defined in "Combination and Permutation Basics" vignette 
+## Using ht function defined in "Combination and Permutation Basics" vignette
 ht(compDist50)
 head -->
      [,1] [,2] [,3] [,4] [,5] [,6] [,7] [,8] [,9]

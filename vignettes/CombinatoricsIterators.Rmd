@@ -46,15 +46,15 @@ while (!isFALSE(iter)) {
     iter = a$nextIter()
     i = i + 1
 }
-1   1 2 4 
-2   1 2 5 
-3   1 3 4 
-4   1 3 5 
-5   1 4 5 
-6   2 3 4 
-7   2 3 5 
-8   2 4 5 
-9   3 4 5 
+1   1 2 4
+2   1 2 5
+3   1 3 4
+4   1 3 5
+5   1 4 5
+6   2 3 4
+7   2 3 5
+8   2 4 5
+9   3 4 5
 No more results. To see the last result, use the prevIter method(s)
 
 ## See the output of comboGeneral for comparison
@@ -118,15 +118,15 @@ while (!isFALSE(iter)) {
     cat(i, " ", iter, "\n")
     iter = a$prevIter()
 }
-9   2 4 5 
-8   2 3 5 
-7   2 3 4 
-6   1 4 5 
-5   1 3 5 
-4   1 3 4 
-3   1 2 5 
-2   1 2 4 
-1   1 2 3 
+9   2 4 5
+8   2 3 5
+7   2 3 4
+6   1 4 5
+5   1 3 5
+4   1 3 4
+3   1 2 5
+2   1 2 4
+1   1 2 3
 Iterator Initialized. To see the first result, use the nextIter method(s)
 
 ## Call the summary method to see information about our iterator
@@ -459,7 +459,7 @@ b$nextRemaining()
 a[[5]]
 [1] "ADB"
 
- 
+
 b$prevRemaining()
 [[1]]
 [1] "ACD"

@@ -1,15 +1,28 @@
 \name{NEWS}
 \title{News for Package \pkg{RcppAlgos}}
 
-\section{Changes in RcppAlgos version 2.4.2 (Release date: 2020-04-27)}{
+\section{Changes in RcppAlgos version 2.4.3 (Release date: 2021-05-30)}{
+    \itemize{
+        \item Other:
+        \itemize{
+            \item Fixed old urls
+        }
+    }
+}
+
+\section{Changes in RcppAlgos version 2.4.2 (Release date: Never Released)}{
     \itemize{
         \item New Features:
         \itemize{
-            \item Added function \code{comboGrid} for efficiently generating the cartesian product where order does not matter.
+            \item Added function \code{comboGrid} for efficiently generating the Cartesian product where order does not matter.
         }
         \item Enhancements:
         \itemize{
             \item Refactored code base to reduce binary size
+        }
+        \item Other:
+        \itemize{
+            \item Removed LazyData from DESCRIPTION. Also added \code{rmarkdown} to Suggests.
         }
     }
 }
@@ -37,7 +50,7 @@
         \item Bug Fixes:
         \itemize{
             \item In 2.3.5 and 2.3.6, we mistakingly allowed a \code{constraintFun} to be applied to a logical vector which was crashing R. We have corrected this in 2.4.0+.
-            \item Changed the data type for sizing the index matrix in \code{permuteGeneral}. Originally, we were using \code{int} and when the output was large enough, it was causing an integer overflow thus causing the index matrix to be unproperly sized. We have sinced changed the data type to the recommended \code{std::size_t}.
+            \item Changed the data type for sizing the index matrix in \code{permuteGeneral}. Originally, we were using \code{int} and when the output was large enough, it was causing an integer overflow thus causing the index matrix to be improperly sized. We have since changed the data type to the recommended \code{std::size_t}.
         }
     }
 }
@@ -107,20 +120,10 @@
 
 \section{Changes in RcppAlgos version 2.3.0 (Release date: 2019-03-17)}{
     \itemize{
-        \item New Features:
-        \itemize{
-            \item Added stdThreadMax for obtaining the number of threads available on a machine
-        }
-        \item Enhancements:
-        \itemize{
-            \item All functions now have parallel capabilites via RcppThread.
-            \item Utilizes RMatrix.h from RcppParallel for thread safe matrix class.
-            \item Major overhaul of primeSieve for large primes.
-        }
-        \item Bug Fixes:
-        \itemize{
-            \item Corrected \code{primeCount} for values around \code{1e9}. See \href{https://github.com/jwood000/RcppAlgos/issues/14}{Issue #14}
-        }
+        \item All functions now have parallel capabilites via RcppThread.
+        \item Utilizes RMatrix.h from RcppParallel for thread safe matrix class.
+        \item Major overhaul of primeSieve for large primes.
+        \item Added stdThreadMax for obtaining the number of threads available on a machine
     }
 }
 

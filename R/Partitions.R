@@ -7,7 +7,7 @@ partitionsGeneral <- function(v, m = NULL, repetition = FALSE,
                               freqs = NULL, target = NULL, lower = NULL,
                               upper = NULL, nThreads = NULL,
                               tolerance = NULL) {
-    
+
     return(.Call(Algos_CombinatoricsCnstrt, v, m, repetition, freqs,
                  lower, upper, "sum", "==", GetTarget(v, target), TRUE,
                  FALSE, FALSE, nThreads, pkgEnv$nThreads, tolerance))
@@ -22,7 +22,7 @@ partitionsCount <- function(v, m = NULL, repetition = FALSE,
 partitionsDesign <- function(v, m = NULL, repetition = FALSE,
                              freqs = NULL, target = NULL,
                              showDesign = FALSE) {
-    
+
     return(.Call(Algos_PartitionsCount, GetTarget(v, target), v, m,
                  repetition, freqs, "==", NULL, NULL, TRUE, showDesign))
 }
@@ -36,7 +36,7 @@ partitionsSample <- function(v, m = NULL, repetition = FALSE, freqs = NULL,
     if (!is.null(seed)) {
         set.seed(seed)
     }
-    
+
     return(.Call(Algos_SamplePartitions, v, m, repetition, freqs,
                  sampleVec, seed, n, sample, Parallel, nThreads,
                  pkgEnv$nThreads, namedSample, "==", GetTarget(v, target),

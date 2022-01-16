@@ -3,55 +3,55 @@ context("testing comboGrid")
 test_that("comboGrid generates correct output", {
     bruteCheck <- function(myList, rep = TRUE) {
         testOut <- comboGrid(myList, repetition = rep)
-        
+
         t <- expand.grid(myList)
         t <- t[do.call(order, t), ]
         t1 <- apply(t, 1, function(x) paste0(sort(x), collapse = ""))
         t2 <- t[!duplicated(t1), ]
-        
+
         if (!rep) {
             t2 <- t2[!apply(t2, 1, function(x) any(duplicated(x))), ]
         }
-        
+
         if (length(unique(sapply(t2, class))) == 1) {
             t2 <- as.matrix(t2)
             dimnames(t2) <- dimnames(testOut)
         } else {
             attributes(t2) <- attributes(testOut)
         }
-        
+
         all.equal(t2, testOut)
     }
-    
+
     expect_equal(comboGrid(), expand.grid())
-    
+
     myList <- list(1:5, 2:6, 3:7)
     expect_true(bruteCheck(myList, rep = TRUE))
     expect_true(bruteCheck(myList, rep = FALSE))
-    
+
     myList <- list(1:5, 2:6, letters[1:4], letters[2:4])
     expect_true(bruteCheck(myList, rep = TRUE))
     expect_true(bruteCheck(myList, rep = FALSE))
-    
+
     myList <- list("name1" = 1:5, 2:6)
     expect_true(bruteCheck(myList, rep = TRUE))
-    
+
     myList <- list(1:5, factor(2:6))
     expect_true(bruteCheck(myList, rep = TRUE))
-    
+
     myList <- list(1:5 + 0.1, 2:6 + 0.1)
     expect_true(bruteCheck(myList, rep = TRUE))
-    
+
     myList <- list(1:5 + 0.1, factor(2:6 + 0.1))
     expect_true(bruteCheck(myList, rep = TRUE))
-    
+
     myList <- list(letters[1:5], letters[2:6], letters[3:7])
     expect_true(bruteCheck(myList, rep = TRUE))
     expect_true(bruteCheck(myList, rep = FALSE))
-    
+
     myList <- rep(list(c(T, F)), 10)
     expect_true(bruteCheck(myList, rep = TRUE))
-    
+
     ## Huge test... This will trigger mpz_t keys in ComboCartesian.cpp
     pools <- list(c(1, 10, 14, 6),
                   c(7, 2, 4, 8, 3, 11, 12),
@@ -63,14 +63,14 @@ test_that("comboGrid generates correct output", {
                   c(7, 6, 13, 14, 10, 11, 9, 4),
                   c(6,  3,  2, 14,  7, 12,  9),
                   c(6, 11,  2,  5, 15,  7), 16:19, 20:23, 24:28)
-    
+
     hugeTest = comboGrid(pools, repetition = FALSE)
     expect_equal(nrow(hugeTest), 238480)
-    
+
     ## If NULL is an input, we return an empty named data.frame
     expect_equal(dim(comboGrid(NA, NA, 1:10, NA, 1:5, NULL)),
                  c(0, 5))
-    
+
     ## If NA is an input, we tack on a column of NA's
     df <- comboGrid(NA, 1:10)
     expect_equal(df$Var1, rep(NA, 10))

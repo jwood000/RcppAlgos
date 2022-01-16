@@ -79,34 +79,34 @@ test_that("comboGeneral produces correct results with constraintFun only", {
                               lower = 100000, upper = 103000)),
                  comboGeneral(50, 7, freqs = rep(1:5, 10), lower = 100000,
                               upper = 103000, constraintFun = "mean")[,8])
-    
+
     set.seed(12345)
     myNums = rnorm(15)
-    expect_equal(comboGeneral(myNums, 8, constraintFun = "sum", keepResults = TRUE)[, 9], 
+    expect_equal(comboGeneral(myNums, 8, constraintFun = "sum", keepResults = TRUE)[, 9],
                  rowSums(comboGeneral(myNums, 8)))
-    
-    expect_equal(comboGeneral(myNums, 5, TRUE, constraintFun = "sum", keepResults = TRUE)[, 6], 
+
+    expect_equal(comboGeneral(myNums, 5, TRUE, constraintFun = "sum", keepResults = TRUE)[, 6],
                  rowSums(comboGeneral(myNums, 5, TRUE)))
-    
-    expect_equal(comboGeneral(myNums, 5, freqs = rep(2, 15), 
-                              constraintFun = "sum", keepResults = TRUE)[, 6], 
+
+    expect_equal(comboGeneral(myNums, 5, freqs = rep(2, 15),
+                              constraintFun = "sum", keepResults = TRUE)[, 6],
                  rowSums(comboGeneral(myNums, 5, freqs = rep(2, 15))))
-    
+
     ## test product
-    expect_equal(comboGeneral(myNums, 8, constraintFun = "prod", keepResults = TRUE)[, 9], 
+    expect_equal(comboGeneral(myNums, 8, constraintFun = "prod", keepResults = TRUE)[, 9],
                  apply(comboGeneral(myNums, 8), 1, prod))
-    
+
     ## test mean
-    expect_equal(comboGeneral(myNums, 5, freqs = rep(2, 15), 
-                              constraintFun = "mean", keepResults = TRUE)[, 6], 
+    expect_equal(comboGeneral(myNums, 5, freqs = rep(2, 15),
+                              constraintFun = "mean", keepResults = TRUE)[, 6],
                  rowMeans(comboGeneral(myNums, 5, freqs = rep(2, 15))))
-    
+
     ## test max
-    expect_equal(comboGeneral(myNums, 8, constraintFun = "max", keepResults = TRUE)[, 9], 
+    expect_equal(comboGeneral(myNums, 8, constraintFun = "max", keepResults = TRUE)[, 9],
                  apply(comboGeneral(myNums, 8), 1, max))
-    
+
     ## test min
-    expect_equal(comboGeneral(myNums, 5, TRUE, constraintFun = "min", keepResults = TRUE)[, 6], 
+    expect_equal(comboGeneral(myNums, 5, TRUE, constraintFun = "min", keepResults = TRUE)[, 6],
                  apply(comboGeneral(myNums, 5, TRUE), 1, min))
 })
 

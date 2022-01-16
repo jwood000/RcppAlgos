@@ -27,24 +27,24 @@ microbenchmark(primeSieve(1e6))
 Unit: milliseconds
               expr      min       lq    mean   median       uq      max neval
  primeSieve(1e+06) 1.151969 1.175597 1.28727 1.264687 1.316879 1.687415   100
- 
+
 ## Single threaded primes under a billion!!!
 system.time(a <- primeSieve(10^9))
-   user  system elapsed 
+   user  system elapsed
   1.161   0.091   1.253
 
 ## Using 8 threads we can get under 0.5 seconds!!!
 system.time(primeSieve(10^9, nThreads = 8))
- user  system elapsed 
+ user  system elapsed
 2.033   0.045   0.374
 
 ## Quickly generate large primes over small interval. N.B. The
 ## order for the bounds does not matter.
 options(scipen = 50)
 system.time(myPs <- primeSieve(10^13 + 10^3, 10^13))
-   user  system elapsed 
+   user  system elapsed
   0.016   0.005   0.021
-  
+
 myPs
  [1] 10000000000037 10000000000051 10000000000099 10000000000129
  [5] 10000000000183 10000000000259 10000000000267 10000000000273
@@ -68,19 +68,19 @@ Since version `2.3.0`, we are implementing the cache-friendly improvements for l
 ```r
 ## Version <= 2.2.0.. i.e. older versions
 system.time(old <- RcppAlgos2.2::primeSieve(1e15, 1e15 + 1e9))
-   user  system elapsed 
+   user  system elapsed
   7.615   0.140   7.792
 
-## v2.3.0 is over 3x faster!  
+## v2.3.0 is over 3x faster!
 system.time(a <- primeSieve(1e15, 1e15 + 1e9))
-   user  system elapsed 
+   user  system elapsed
   2.237   0.183   2.420
-  
+
 ## And using nThreads we are ~8x faster
 system.time(b <- primeSieve(1e15, 1e15 + 1e9, nThreads = 8))
-   user  system elapsed 
+   user  system elapsed
   4.872   0.807   0.917
-  
+
 identical(a, b)
 [1] TRUE
 
@@ -98,12 +98,12 @@ We can certainly do this, but what you will find is that _n - 1_ threads will co
 
 With this is mind, here are some results:
 
-```r  
+```r
 ## Enumerate the number of primes below trillion
 system.time(underOneTrillion <- primeCount(10^12))
-   user  system elapsed 
+   user  system elapsed
   0.478   0.000   0.480
-  
+
 underOneTrillion
 [1] 37607912018
 
@@ -114,15 +114,15 @@ microbenchmark(primeCount(10^9))
 Unit: milliseconds
              expr       min      lq    mean   median       uq      max neval
  primeCount(10^9) 1.93462 1.938516 2.044785 1.957809 2.090828 3.584245   100
- 
+
 
 system.time(underOneHundredTrillion <- primeCount(1e14, nThreads = 8))
-   user  system elapsed 
+   user  system elapsed
  49.894   0.102   6.774
- 
+
 underOneHundredTrillion
 [1] 3204941750802
- 
+
 ## From Kim Walisch's primecount library:
 ## Josephs-MBP:primecount-4 josephwood$ ./primecount 1e14 --legendre --time
 ## 3204941750802
@@ -143,7 +143,7 @@ numDivisorSieve(20)
 
 ## If you want the complete factorization from 1 to n, use divisorsList
 system.time(allFacs <- divisorsSieve(10^5, namedList = TRUE))
-   user  system elapsed 
+   user  system elapsed
   0.040   0.003   0.043
 
 allFacs[c(4339, 15613, 22080)]
@@ -185,19 +185,19 @@ primeFactorizeSieve(10^12, 10^12 + 5)
 
 ## Creating a named object
 eulerPhiSieve(20, namedVector = TRUE)
- 1  2  3  4  5  6  7  8  9 10 11 12 13 14 15 16 17 18 19 20 
+ 1  2  3  4  5  6  7  8  9 10 11 12 13 14 15 16 17 18 19 20
  1  1  2  2  4  2  6  4  6  4 10  4 12  6  8  8 16  6 18  8
- 
- 
+
+
 system.time(a <- eulerPhiSieve(1e12, 1e12 + 1e7))
-   user  system elapsed 
+   user  system elapsed
   0.998   0.042   1.041
 
 ## Using nThreads for greater efficiency
 system.time(b <- eulerPhiSieve(1e12, 1e12 + 1e7, nThreads = 8))
-   user  system elapsed 
+   user  system elapsed
   3.576   0.014   0.485
-  
+
 identical(a, b)
 [1] TRUE
 ```
@@ -248,18 +248,18 @@ $`-6290143`
 
 ## Creating a named object
 isPrimeRcpp(995:1000, namedVector = TRUE)
-  995   996   997   998   999  1000 
+  995   996   997   998   999  1000
 FALSE FALSE  TRUE FALSE FALSE FALSE
 
 system.time(a <- primeFactorize(1e12:(1e12 + 1e5)))
-   user  system elapsed 
+   user  system elapsed
   1.721   0.004   1.725
 
-## Using nThreads for greater efficiency  
+## Using nThreads for greater efficiency
 system.time(b <- primeFactorize(1e12:(1e12 + 1e5), nThreads = 8))
-   user  system elapsed 
+   user  system elapsed
   3.155   0.002   0.410
-  
+
 identical(a, b)
 [1] TRUE
 ```

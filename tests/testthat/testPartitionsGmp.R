@@ -1,5 +1,5 @@
 test_that("partitionGeneral Distinct Parallel Lower GMP", {
-    
+
     #######################################################################
     ## See commentary above
     ########********************** Lower Only *******************##########
@@ -7,7 +7,7 @@ test_that("partitionGeneral Distinct Parallel Lower GMP", {
     ## $num_partitions
     ## Big Integer ('bigz') :
     ## [1] 3649675516801903698
-    ## 
+    ##
     ## $partition_type
     ## [1] "DstctNoZero"
     bench <- partitionsGeneral(1000, 15, lower = "3649675516801803698")
@@ -16,17 +16,17 @@ test_that("partitionGeneral Distinct Parallel Lower GMP", {
     expect_equal(gmp::sub.bigz("3649675516801903698",
                                "3649675516801803698") + 1, nrow(bench))
     expect_true(all(rowSums(bench) == 1000))
-    
+
     ## partitionsDesign((1:1000) * 2e9, 15)[c("num_partitions",
     ##                                        "partition_type",
     ##                                        "mapped_target")]
     ## $num_partitions
     ## Big Integer ('bigz') :
     ## [1] 3649675516801903698
-    ## 
+    ##
     ## $partition_type
     ## [1] "DstctNoZero"
-    ## 
+    ##
     ## $mapped_target
     ## [1] 1000
     bench <- partitionsGeneral((1:1000) * 2e9, 15,
@@ -37,17 +37,17 @@ test_that("partitionGeneral Distinct Parallel Lower GMP", {
     expect_equal(gmp::sub.bigz("3649675516801903698",
                                "3649675516801803698") + 1, nrow(bench))
     expect_true(all(rowSums(bench) == 1000 * 2e9))
-    
+
     ## partitionsDesign(0:1000, 15)[c("num_partitions",
     ##                                "partition_type",
     ##                                "mapped_target")]
     ## $num_partitions
     ## Big Integer ('bigz') :
     ## [1] 4556757507869210155
-    ## 
+    ##
     ## $partition_type
     ## [1] "DstctOneZero"
-    ## 
+    ##
     ## $mapped_target
     ## [1] 1015
     bench <- partitionsGeneral(0:1000, 15,
@@ -58,17 +58,17 @@ test_that("partitionGeneral Distinct Parallel Lower GMP", {
     expect_equal(gmp::sub.bigz("4556757507869210155",
                                "4556757507869110155") + 1, nrow(bench))
     expect_true(all(rowSums(bench) == 1000))
-    
+
     ## partitionsDesign(0:1000 * 2e9, 15)[c("num_partitions",
     ##                                      "partition_type",
     ##                                      "mapped_target")]
     ## $num_partitions
     ## Big Integer ('bigz') :
     ## [1] 4556757507869210155
-    ## 
+    ##
     ## $partition_type
     ## [1] "DstctOneZero"
-    ## 
+    ##
     ## $mapped_target
     ## [1] 1015
     bench <- partitionsGeneral(0:1000 * 2e9, 15,
@@ -79,7 +79,7 @@ test_that("partitionGeneral Distinct Parallel Lower GMP", {
     expect_equal(gmp::sub.bigz("4556757507869210155",
                                "4556757507869110155") + 1, nrow(bench))
     expect_true(all(rowSums(bench) == 1000 * 2e9))
-    
+
     ## partitionsDesign(0:1000, 12,
     ##                  freqs = c(3, rep(1, 1000)))[c("num_partitions",
     ##                                                "mapped_target",
@@ -87,10 +87,10 @@ test_that("partitionGeneral Distinct Parallel Lower GMP", {
     ## $num_partitions
     ## Big Integer ('bigz') :
     ## [1] 39228755152043560
-    ## 
+    ##
     ## $mapped_target
     ## [1] 1000
-    ## 
+    ##
     ## $partition_type
     ## [1] "DstctMultiZero"
     bench <- partitionsGeneral(0:1000, 12,
@@ -103,7 +103,7 @@ test_that("partitionGeneral Distinct Parallel Lower GMP", {
     expect_equal(gmp::sub.bigz("39228755152043560",
                                "39228755151943560") + 1, nrow(bench))
     expect_true(all(rowSums(bench) == 1000))
-    
+
     ## 15 * 12 + 1000 * 3 = 3180
     ##
     ## partitionsDesign(15 + 0:1000 * 3, 12,
@@ -114,10 +114,10 @@ test_that("partitionGeneral Distinct Parallel Lower GMP", {
     ## $num_partitions
     ## Big Integer ('bigz') :
     ## [1] 39228755152043560
-    ## 
+    ##
     ## $mapped_target
     ## [1] 1000
-    ## 
+    ##
     ## $partition_type
     ## [1] "DstctMultiZero"
     bench <- partitionsGeneral(15 + 0:1000 * 3, 12,
@@ -139,10 +139,10 @@ test_that("partitionGeneral Distinct Parallel Lower GMP", {
     ## $num_partitions
     ## Big Integer ('bigz') :
     ## [1] 39233351450439724
-    ## 
+    ##
     ## $mapped_target
     ## [1] 1000
-    ## 
+    ##
     ## $partition_type
     ## [1] "DstctMultiZero"
     bench <- partitionsGeneral(0:1000, 12,
@@ -155,7 +155,7 @@ test_that("partitionGeneral Distinct Parallel Lower GMP", {
     expect_equal(gmp::sub.bigz("39233351450439724",
                                "39233351450339724") + 1, nrow(bench))
     expect_true(all(rowSums(bench) == 1000))
-    
+
     ## 19 * 12 + 1000 * 2 = 2228
     ##
     ## partitionsDesign(19 + 0:1000 * 2, 12, target = 2228,
@@ -165,10 +165,10 @@ test_that("partitionGeneral Distinct Parallel Lower GMP", {
     ## $num_partitions
     ## Big Integer ('bigz') :
     ## [1] 39233351450439724
-    ## 
+    ##
     ## $mapped_target
     ## [1] 1000
-    ## 
+    ##
     ## $partition_type
     ## [1] "DstctMultiZero"
     bench <- partitionsGeneral(19 + 0:1000 * 2, 12, target = 2228,
@@ -189,10 +189,10 @@ test_that("partitionGeneral Distinct Parallel Lower GMP", {
     ## $num_partitions
     ## Big Integer ('bigz') :
     ## [1] 9605186196368891
-    ## 
+    ##
     ## $mapped_target
     ## [1] 1380
-    ## 
+    ##
     ## $partition_type
     ## [1] "DistCapped"
     bench <- partitionsGeneral(500, 10, lower = "9605186196218891",
@@ -202,7 +202,7 @@ test_that("partitionGeneral Distinct Parallel Lower GMP", {
     expect_equal(gmp::sub.bigz("9605186196368891",
                                "9605186196218891") + 1, nrow(bench))
     expect_true(all(rowSums(bench) == 1380))
-    
+
     ## partitionsDesign(0:500, 10, target = 1380,
     ##                  freqs = c(3, rep(1, 500)))[c("num_partitions",
     ##                                               "mapped_target",
@@ -210,10 +210,10 @@ test_that("partitionGeneral Distinct Parallel Lower GMP", {
     ## $num_partitions
     ## Big Integer ('bigz') :
     ## [1] 10236925075643716
-    ## 
+    ##
     ## $mapped_target
     ## [1] 1380
-    ## 
+    ##
     ## $partition_type
     ## [1] "DstctCappedMZ"
     bench <- partitionsGeneral(0:500, 10, freqs = c(3, rep(1, 500)),

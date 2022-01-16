@@ -8,7 +8,7 @@ permuteGeneral <- function(v, m = NULL, repetition = FALSE, freqs = NULL,
     RetValue <- .Call(Algos_CheckReturn, v, constraintFun,
                       comparisonFun, limitConstraints,
                       keepResults, FUN)
-    
+
     if (RetValue == 1) {
         return(.Call(Algos_CombinatoricsStndrd, v, m, repetition,
                      freqs, lower, upper, Parallel, nThreads,
@@ -29,11 +29,11 @@ permuteSample <- function(v, m = NULL, repetition = FALSE, freqs = NULL,
                           n = NULL, sampleVec = NULL, seed = NULL,
                           FUN = NULL, Parallel = FALSE, nThreads = NULL,
                           namedSample = FALSE, FUN.VALUE = NULL) {
-    
+
     if (!is.null(seed)) {
         set.seed(seed)
     }
-    
+
     return(.Call(Algos_SampleCombPerm, v, m, repetition, freqs, sampleVec,
                  FALSE, seed, n, sample, FUN, new.env(), Parallel, nThreads,
                  pkgEnv$nThreads, namedSample, FUN.VALUE))
@@ -49,7 +49,7 @@ permuteIter <- function(v, m = NULL, repetition = FALSE, freqs = NULL,
                         limitConstraints = NULL, keepResults = NULL,
                         FUN = NULL, Parallel = FALSE, nThreads = NULL,
                         tolerance = NULL, FUN.VALUE = NULL) {
-    
+
     RetValue <- .Call(Algos_CheckReturn, v, constraintFun,
                       comparisonFun, limitConstraints,
                       keepResults, FUN)
@@ -57,7 +57,7 @@ permuteIter <- function(v, m = NULL, repetition = FALSE, freqs = NULL,
                       comparisonFun, limitConstraints)
     InitVals <- .Call(Algos_GetClassVals, v, m, repetition, freqs,
                       FALSE, FUN, nThreads, pkgEnv$nThreads, IsCnstrd)
-    
+
     if (RetValue == 1) {
         new("Combo", InitVals, Parallel)
     } else if (RetValue == 2) {

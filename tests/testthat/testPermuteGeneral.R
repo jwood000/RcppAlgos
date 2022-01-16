@@ -16,7 +16,7 @@ test_that("permuteGeneral produces correct results with no constraints and no re
     ## Constraint should not be carried out if no comparisonFun is given
     expect_equal(permuteGeneral(3, 3, constraintFun = "sum",
                                 limitConstraints = 100), permuteGeneral(1:3, 3))
-    
+
     expect_equal(nrow(permuteGeneral(8, 8)), factorial(8))
 
     set.seed(11)
@@ -52,9 +52,9 @@ test_that("permuteGeneral produces correct results with no constraints and has r
 
     expect_equal(nrow(permuteGeneral(5, 3, TRUE, upper = 10)), 10)
     expect_equal(ncol(permuteGeneral(5, 3, TRUE, constraintFun = "prod", keepResults = TRUE)), 4)
-    
+
     ## In older versions the test below would fail b/c it would produce NaNs during prep
-    expect_equal(nrow(permuteGeneral(2, 180, freqs = c(180, 2))), 
+    expect_equal(nrow(permuteGeneral(2, 180, freqs = c(180, 2))),
                  permuteCount(2, 180, freqs = c(180, 2)))
 })
 
@@ -87,7 +87,7 @@ test_that("permuteGeneral produces correct results with no constraints for multi
 
     expect_equal(permuteGeneral(5, 5),
                  permuteGeneral(5, 5, freqs = rep(1, 5)))
-    
+
     expect_equal(permuteCount(30, freqs = rep(1:2, 15)),
                  permuteCount(30, 45, freqs = rep(1:2, 15)))
 
@@ -102,12 +102,12 @@ test_that("permuteGeneral produces correct results with constraints", {
     expect_equal(nrow(permuteGeneral(15, 7,
                                      comparisonFun = "==", constraintFun = "sum",
                                      limitConstraints = 80, upper = 100)), 100)
-    
-    expect_equal(nrow(permuteGeneral(15, 7, TRUE, 
+
+    expect_equal(nrow(permuteGeneral(15, 7, TRUE,
                                      comparisonFun = "==", constraintFun = "sum",
                                      limitConstraints = 80, upper = 200)), 200)
-    
-    expect_equal(nrow(permuteGeneral(15, 7, freqs = rep(1:5, 3), 
+
+    expect_equal(nrow(permuteGeneral(15, 7, freqs = rep(1:5, 3),
                                      comparisonFun = "==", constraintFun = "sum",
                                      limitConstraints = 80, upper = 220)), 220)
 
@@ -296,13 +296,13 @@ test_that("permuteGeneral produces correct results with exotic constraints", {
 test_that("permuteGeneral produces correct results with use of FUN", {
     test <- permuteGeneral(6, 6, constraintFun = "mean")[, 7]
     expect_equal(as.vector(test), unlist(permuteGeneral(6, 6, FUN = mean)))
-    
+
     expect_equal(sum(unlist(permuteGeneral(as.complex(c(1, -1, -1i, 1i)), 3,
                                            FUN = function(x) sum(Re(x))))), 0)
-    
+
     test <- permuteGeneral(6, 6, lower = 100, constraintFun = "prod")[, 7]
     expect_equal(as.vector(test), unlist(permuteGeneral(6, 6, lower = 100, FUN = prod)))
-    
+
     test <- permuteGeneral(10, 5, constraintFun = "sum", keepResults = TRUE)
     expect_equal(as.vector(test[,6]), unlist(permuteGeneral(10, 5, FUN = sum)))
 
@@ -313,19 +313,19 @@ test_that("permuteGeneral produces correct results with use of FUN", {
     test <- permuteGeneral(8, 4, freqs = rep(1:4, 2))
     testFun <- lapply(1:nrow(test), function(x) cumsum(test[x, ]))
     expect_equal(testFun, permuteGeneral(8, 4, freqs = rep(1:4, 2), FUN = cumsum))
-    
+
     test <- apply(permuteGeneral(4, 8, freqs = c(1,3,1,3)), 1, {
         function(x) paste0(cumprod(x), collapse = "")
     })
-    
+
     testFun <- unlist(permuteGeneral(4, 8, freqs = c(1,3,1,3), FUN = function(x) {
         paste0(cumprod(x), collapse = "")
     }))
-    
+
     expect_equal(test, testFun)
-    
-    expect_equal(permuteGeneral(4, 8, freqs = c(1,3,1,3), 
-                                constraintFun = "sum", nThreads = 2)[, 9], 
+
+    expect_equal(permuteGeneral(4, 8, freqs = c(1,3,1,3),
+                                constraintFun = "sum", nThreads = 2)[, 9],
                  rowSums(permuteGeneral(4, 8, freqs = c(1,3,1,3), nThreads = 2)))
 })
 

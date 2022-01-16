@@ -1,23 +1,23 @@
 comboGrid <- function(..., repetition = TRUE) {
     ## This is from expand.grid
     nargs <- length(args <- list(...))
-    
+
     if (any(sapply(args, is.null))) {
         return(expand.grid(args))
     }
-    
+
     if (!nargs) {
         return(as.data.frame(list()))
     }
-    
+
     if (nargs == 1L && is.list(a1 <- args[[1L]])) {
         nargs <- length(args <- a1)
     }
-    
+
     if (nargs == 0L) {
         return(as.data.frame(list()))
     }
-    
+
     iArgs <- seq_len(nargs)
     nmc   <- paste0("Var", iArgs)
     nm    <- names(args)
@@ -55,16 +55,16 @@ comboGrid <- function(..., repetition = TRUE) {
     })
 
     res <- .Call(Algos_ComboGridCpp, pools, repetition)
-    
+
     if (length(idx_nas)) {
         res <- as.data.frame(res)
 
         for (idx in idx_nas) {
             res[, nmc[idx]] <- NA
         }
-        
+
         res <- res[, nmc]
     }
-    
+
     return(res)
 }
