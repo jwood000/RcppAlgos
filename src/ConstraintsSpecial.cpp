@@ -28,13 +28,9 @@ void CnstrntSpcWorker(const std::vector<T> &v,
             if (compOne(testVal, targetVals)) {
                 cnstrntVec.insert(cnstrntVec.end(),
                                   testVec.begin(), testVec.end());
-
-                if (xtraCol) {
-                    resVec.push_back(testVal);
-                }
+                if (xtraCol) resVec.push_back(testVal);
+                ++count;
             }
-
-            ++count;
         } while (count < maxRows && nextIter(freqs, z, n1, m1));
     } else {
         compPtr<T> compTwo = GetCompPtr<T>(compVec.back());
@@ -49,16 +45,11 @@ void CnstrntSpcWorker(const std::vector<T> &v,
 
             if (compOne(testVal, targetVals) ||
                 compTwo(testVal, targetVals2)) {
-
                 cnstrntVec.insert(cnstrntVec.end(),
                                   testVec.begin(), testVec.end());
-
-                if (xtraCol) {
-                    resVec.push_back(testVal);
-                }
+                if (xtraCol) resVec.push_back(testVal);
+                ++count;
             }
-
-            ++count;
         } while (count < maxRows && nextIter(freqs, z, n1, m1));
     }
 }
@@ -152,22 +143,18 @@ void ConstraintsSpecial(const std::vector<T> &v,
     }
 }
 
-template void ConstraintsSpecial(const std::vector<int>&,
-                                 const std::vector<int>&,
-                                 const std::vector<std::string>&,
-                                 const std::vector<int>&,
-                                 std::vector<int>, std::vector<int>&,
-                                 std::vector<int>&, const std::string&,
-                                 std::vector<int>&, double, mpz_t,
-                                 int, int, int, int, bool, bool,
-                                 bool, bool, bool);
+template void ConstraintsSpecial(
+    const std::vector<int>&, const std::vector<int>&,
+    const std::vector<std::string>&, const std::vector<int>&, 
+    std::vector<int>, std::vector<int>&, std::vector<int>&,
+    const std::string&, std::vector<int>&, double, mpz_t,
+    int, int, int, int, bool, bool, bool, bool, bool
+);
 
-template void ConstraintsSpecial(const std::vector<double>&,
-                                 const std::vector<double>&,
-                                 const std::vector<std::string>&,
-                                 const std::vector<int>&,
-                                 std::vector<int>, std::vector<double>&,
-                                 std::vector<double>&, const std::string&,
-                                 std::vector<int>&, double, mpz_t,
-                                 int, int, int, int, bool, bool,
-                                 bool, bool, bool);
+template void ConstraintsSpecial(
+    const std::vector<double>&, const std::vector<double>&,
+    const std::vector<std::string>&, const std::vector<int>&,
+    std::vector<int>, std::vector<double>&, std::vector<double>&,
+    const std::string&, std::vector<int>&, double, mpz_t,
+    int, int, int, int, bool, bool, bool, bool, bool
+);
