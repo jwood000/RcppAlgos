@@ -65,6 +65,7 @@ SEXP CnstrntsSpecial::nextNumCombs(SEXP RNum) {
 
             if (Rf_nrows(res)) {
                 const int returned_nrows = Rf_nrows(res);
+                keepGoing = num == returned_nrows;
                 count = dblIndex - (num - returned_nrows);
                 UNPROTECT(1);
                 return res;
@@ -84,6 +85,7 @@ SEXP CnstrntsSpecial::nextNumCombs(SEXP RNum) {
 SEXP CnstrntsSpecial::nextGather() {
     if (keepGoing) {
         SEXP res = PROTECT(ComboRes::nextGather());
+        count += Rf_nrows(res);
         keepGoing = false;
         UNPROTECT(1);
         return res;
