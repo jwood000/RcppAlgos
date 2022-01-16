@@ -17,6 +17,8 @@ protected:
     const bool xtraCol;
 
     const FunType ftype;
+    const FunType ftesttype;
+
     compPtr<T> compOne;
     compPtr<T> compTwo;
 
@@ -61,8 +63,8 @@ public:
     virtual ~ConstraintsClass() = default;
     ConstraintsClass(
         const std::vector<std::string> &comparison,
-        const std::string &myFun, int n_, int m_,
-        bool IsComb_, bool xtraCol_
+        const std::string &myFun, const std::string &myFunTest,
+        int n_, int m_, bool IsComb_, bool xtraCol_
     );
 
     virtual void Prepare(const std::string &currComp, std::vector<T> &v) = 0;
@@ -79,9 +81,9 @@ public:
 template <typename T>
 std::unique_ptr<ConstraintsClass<T>> MakeConstraints(
     const std::vector<std::string> &comparison, const std::string &myFun,
-    std::vector<int> &Reps, const std::vector<T> &targetVals,
-    ConstraintType ctype, int n, int m, bool IsComb,
-    bool xtraCol, bool IsMult, bool IsRep
+    const std::string &myFunTest, std::vector<int> &Reps,
+    const std::vector<T> &targetVals, ConstraintType ctype, int n,
+    int m, bool IsComb, bool xtraCol, bool IsMult, bool IsRep
 );
 
 #endif

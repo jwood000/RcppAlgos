@@ -174,8 +174,8 @@ SEXP SamplePartitions(SEXP Rv, SEXP Rm, SEXP RisRep, SEXP RFreqs,
     SEXP Rlow = R_NilValue;
 
     ConstraintSetup(vNum, myReps, targetVals, vInt, targetIntVals,
-                    funDbl, part, ctype, n, m, compVec, mainFun, myType,
-                    Rtarget, RcompFun, Rtolerance, Rlow, true, false);
+                    funDbl, part, ctype, n, m, compVec, mainFun, mainFun,
+                    myType, Rtarget, RcompFun, Rtolerance, Rlow, true, false);
 
     if (part.ptype == PartitionType::Multiset ||
         part.ptype == PartitionType::CoarseGrained ||

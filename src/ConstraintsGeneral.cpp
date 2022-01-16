@@ -24,8 +24,8 @@ void ConstraintsGeneral(std::vector<T> &v, std::vector<int> &Reps,
                         const std::vector<std::string> &comparison,
                         std::vector<T> &cnstrntVec,
                         std::vector<T> &resVec, std::vector<T> &targetVals,
-                        const std::string &myFun, double numRows,
-                        int n, int m, bool IsRep, bool IsComb,
+                        const std::string &myFun, const std::string &myFunTest,
+                        double numRows, int n, int m, bool IsRep, bool IsComb,
                         bool IsMult, bool bUserRows, bool xtraCol,
                         ConstraintType ctype) {
 
@@ -33,7 +33,6 @@ void ConstraintsGeneral(std::vector<T> &v, std::vector<int> &Reps,
     // "mean", "min", or "max"; The comparison vector contains up to 2 of the
     // following comparison operator:
     //           "<", "<=", ">", ">=", "==", ">,<", ">=,<", ">,<=", ">=,<="
-
     const int maxRows = std::min(dblIntMax, numRows);
 
     if (bUserRows) {
@@ -42,8 +41,8 @@ void ConstraintsGeneral(std::vector<T> &v, std::vector<int> &Reps,
     }
 
     std::unique_ptr<ConstraintsClass<T>> Cnstrt = MakeConstraints<T>(
-        comparison, myFun, Reps, targetVals, ctype,
-        n, m, IsComb, xtraCol, IsMult, IsRep
+        comparison, myFun, myFunTest, Reps, targetVals,
+        ctype, n, m, IsComb, xtraCol, IsMult, IsRep
     );
 
     for (auto comp: comparison) {
@@ -57,12 +56,12 @@ template void ConstraintsGeneral(std::vector<int>&, std::vector<int>&,
                                  const std::vector<std::string>&,
                                  std::vector<int>&, std::vector<int>&,
                                  std::vector<int>&, const std::string&,
-                                 double, int, int, bool, bool,
-                                 bool, bool, bool, ConstraintType);
+                                 const std::string&, double, int, int, bool,
+                                 bool, bool, bool, bool, ConstraintType);
 
 template void ConstraintsGeneral(std::vector<double>&, std::vector<int>&,
                                  const std::vector<std::string>&,
                                  std::vector<double>&, std::vector<double>&,
                                  std::vector<double>&, const std::string&,
-                                 double, int, int, bool, bool,
-                                 bool, bool, bool, ConstraintType);
+                                 const std::string&, double, int, int, bool,
+                                 bool, bool, bool, bool, ConstraintType);

@@ -12,17 +12,17 @@ void ConstraintsVector(const std::vector<int> &freqs,
                        std::vector<T> &v, std::vector<T> &tarVals,
                        const std::vector<std::string> &compVec,
                        std::vector<int> &Reps, const std::string &mainFun,
-                       std::vector<int> &z, ConstraintType ctype,
-                       PartitionType ptype, double lower, mpz_t lowerMpz,
-                       int n, int maxRows, int width, int nThreads,
-                       bool IsComb, bool IsRep, bool IsMult,
-                       bool bUpper, bool xtraCol, bool IsGmp) {
+                       const std::string &funTest, std::vector<int> &z,
+                       ConstraintType ctype, PartitionType ptype,
+                       double lower, mpz_t lowerMpz, int n, int maxRows,
+                       int width, int nThreads, bool IsComb, bool IsRep,
+                       bool IsMult, bool bUpper, bool xtraCol, bool IsGmp) {
 
     if (ctype == ConstraintType::General ||
         ctype == ConstraintType::PartitionEsque) {
         ConstraintsGeneral(v, Reps, compVec, cnstrntVec, resVec,
-                           tarVals, mainFun, maxRows, n, width, IsRep,
-                           IsComb, IsMult, bUpper, xtraCol, ctype);
+                           tarVals, mainFun, funTest, maxRows, n, width,
+                           IsRep, IsComb, IsMult, bUpper, xtraCol, ctype);
     } else if (ctype == ConstraintType::SpecialCnstrnt) {
         ConstraintsSpecial(v, tarVals, compVec, Reps, freqs, cnstrntVec,
                            resVec, mainFun, z, lower, lowerMpz, n, width,
@@ -39,10 +39,11 @@ SEXP ConstraintsReturn(
         std::vector<int> &vInt, std::vector<int> &Reps,
         std::vector<double> &tarVals, std::vector<int> &tarIntVals,
         std::vector<int> &z, const std::vector<std::string> &compVec,
-        const std::string &mainFun, const PartDesign &part, VecType myType,
-        ConstraintType ctype, double userNum, double lower, mpz_t lowerMpz,
-        int n, int m, int nRows, int nThreads, double strt, bool IsComb,
-        bool IsRep, bool IsMult, bool bUpper, bool xtraCol, bool numUnknown,
+        const std::string &mainFun, const std::string &funTest,
+        const PartDesign &part, VecType myType, ConstraintType ctype,
+        double userNum, double lower, mpz_t lowerMpz, int n, int m,
+        int nRows, int nThreads, double strt, bool IsComb, bool IsRep,
+        bool IsMult, bool bUpper, bool xtraCol, bool numUnknown,
         int strtLen, int cap, bool IsGmp
     ) {
 
@@ -68,15 +69,17 @@ SEXP ConstraintsReturn(
             const int maxRows = std::min(upperBound, userNum);
 
             ConstraintsVector(freqs, cnstrntVec, resVec, vInt, tarIntVals,
-                              compVec, Reps, mainFun, z, ctype, part.ptype,
-                              lower, lowerMpz, n, maxRows, width, nThreads,
-                              IsComb, IsRep, IsMult, bUpper, xtraCol, IsGmp);
+                              compVec, Reps, mainFun, funTest, z, ctype,
+                              part.ptype, lower, lowerMpz, n, maxRows, width,
+                              nThreads, IsComb, IsRep, IsMult, bUpper,
+                              xtraCol, IsGmp);
 
             const int vecLen = cnstrntVec.size();
             const int numResult = vecLen / width;
 
             SEXP res = PROTECT(Rf_allocMatrix(INTSXP, numResult, nCols));
             int* matInt = INTEGER(res);
+
             VectorToMatrix(cnstrntVec, resVec, matInt,
                            part.target, numResult, width,
                            upperBound, xtraCol, part.isPart);
@@ -90,9 +93,10 @@ SEXP ConstraintsReturn(
             const int maxRows = std::min(upperBound, userNum);
 
             ConstraintsVector(freqs, cnstrntVec, resVec, vNum, tarVals,
-                              compVec, Reps, mainFun, z, ctype, part.ptype,
-                              lower, lowerMpz, n, maxRows, width, nThreads,
-                              IsComb, IsRep, IsMult, bUpper, xtraCol, IsGmp);
+                              compVec, Reps, mainFun, funTest, z, ctype,
+                              part.ptype, lower, lowerMpz, n, maxRows, width,
+                              nThreads, IsComb, IsRep, IsMult, bUpper,
+                              xtraCol, IsGmp);
 
             const int vecLen = cnstrntVec.size();
             const int numResult = vecLen / width;
@@ -148,24 +152,25 @@ SEXP GetConstraints(
         std::vector<double> &vNum, std::vector<int> &vInt,
         std::vector<double> &tarVals, std::vector<int> &tarIntVals,
         std::vector<int> &startZ, const std::string &mainFun,
-        funcPtr<double> funDbl, double lower, mpz_t lowerMpz, double userNum,
-        ConstraintType ctype, VecType myType, int nThreads, int nRows, int n,
-        int strtLen, int cap, int m, bool IsComb, bool Parallel, bool IsGmp,
-        bool IsRep, bool IsMult, bool bUpper, bool KeepRes, bool numUnknown
+        const std::string &funTest, funcPtr<double> funDbl, double lower,
+        mpz_t lowerMpz, double userNum, ConstraintType ctype, VecType myType,
+        int nThreads, int nRows, int n, int strtLen, int cap, int m,
+        bool IsComb, bool Parallel, bool IsGmp, bool IsRep, bool IsMult,
+        bool bUpper, bool KeepRes, bool numUnknown
     ) {
 
     if (ctype == ConstraintType::NoConstraint) {
         const int nCols = m + 1;
 
         if (myType == VecType::Integer) {
-            if (!CheckIsInteger(mainFun, n, m, vNum, vNum, funDbl,
+            if (!CheckIsInteger(funTest, n, m, vNum, vNum, funDbl,
                                 false, IsRep, IsMult, false)) {
                 myType = VecType::Numeric;
             }
         }
 
         if (myType == VecType::Integer) {
-            const funcPtr<int> funInt = GetFuncPtr<int>(mainFun);
+            const funcPtr<int> funInt = GetFuncPtr<int>(funTest);
             SEXP res = PROTECT(Rf_allocMatrix(INTSXP, nRows, nCols));
             int* matInt = INTEGER(res);
 
@@ -176,6 +181,7 @@ SEXP GetConstraints(
             UNPROTECT(1);
             return res;
         } else {
+            funDbl = GetFuncPtr<double>(funTest);
             SEXP res = PROTECT(Rf_allocMatrix(REALSXP, nRows, nCols));
             double* matNum = REAL(res);
 
@@ -189,9 +195,9 @@ SEXP GetConstraints(
     } else {
         return ConstraintsReturn(freqs, vNum, vInt, myReps, tarVals,
                                  tarIntVals, startZ, compVec, mainFun,
-                                 part, myType, ctype, userNum, lower,
-                                 lowerMpz, n, m, nRows, nThreads, lower,
-                                 IsComb, IsRep, IsMult, bUpper, KeepRes,
-                                 numUnknown, strtLen, cap, IsGmp);
+                                 funTest, part, myType, ctype, userNum,
+                                 lower, lowerMpz, n, m, nRows, nThreads,
+                                 lower, IsComb, IsRep, IsMult, bUpper,
+                                 KeepRes, numUnknown, strtLen, cap, IsGmp);
     }
 }

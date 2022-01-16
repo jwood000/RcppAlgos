@@ -135,7 +135,11 @@ void ConstraintsClass<T>::FilterProspects(
             PopulateVec(v, cnstrntVec, limit);
 
             for (int i = myStart; xtraCol && i < count; ++i) {
-                resVec.push_back(testVal);
+                if (ftesttype == FunType::Mean) {
+                    resVec.push_back(testVal / m);
+                } else {
+                    resVec.push_back(testVal);
+                }
             }
 
             check_1 = count < limit;
@@ -196,12 +200,12 @@ void ConstraintsClass<T>::GetSolutions(
 template <typename T>
 ConstraintsClass<T>::ConstraintsClass(
     const std::vector<std::string> &comparison,
-    const std::string &myFun, int n_, int m_,
-    bool IsComb_, bool xtraCol_
+    const std::string &myFun, const std::string &myFunTest,
+    int n_, int m_, bool IsComb_, bool xtraCol_
 ) : maxZ(n_ - 1), n(n_), m(m_), m1(m - 1),
     m2(m - 2), IsComb(IsComb_), xtraCol(xtraCol_),
-    ftype(GetFunType(myFun)), fun(GetFuncPtr<T>(myFun)),
-    partial(GetPartialPtr<T>(myFun)) {
+    ftype(GetFunType(myFun)), ftesttype(GetFunType(myFunTest)),
+    fun(GetFuncPtr<T>(myFun)), partial(GetPartialPtr<T>(myFun)) {
 
     z.assign(m, 0);
     testVec.assign(m, 0);
@@ -211,36 +215,39 @@ ConstraintsClass<T>::ConstraintsClass(
 template <typename T>
 std::unique_ptr<ConstraintsClass<T>> MakeConstraints(
         const std::vector<std::string> &comparison, const std::string &myFun,
-        std::vector<int> &Reps, const std::vector<T> &targetVals,
-        ConstraintType ctype, int n, int m, bool IsComb,
-        bool xtraCol, bool IsMult, bool IsRep
+        const std::string &myFunTest, std::vector<int> &Reps,
+        const std::vector<T> &targetVals, ConstraintType ctype, int n,
+        int m, bool IsComb, bool xtraCol, bool IsMult, bool IsRep
     ) {
 
     if (ctype == ConstraintType::PartitionEsque) {
         if (IsMult) {
             return FromCpp14::make_unique<PartitionsEsqueMultiset<T>>(
-                comparison, myFun, n, m, IsComb, xtraCol, targetVals, Reps
+                comparison, myFun, myFunTest, n, m,
+                IsComb, xtraCol, targetVals, Reps
             );
         } else if (IsRep) {
             return FromCpp14::make_unique<PartitionsEsqueRep<T>>(
-                comparison, myFun, n, m, IsComb, xtraCol, targetVals
+                comparison, myFun, myFunTest, n, m,
+                IsComb, xtraCol, targetVals
             );
         } else {
             return FromCpp14::make_unique<PartitionsEsqueDistinct<T>>(
-                comparison, myFun, n, m, IsComb, xtraCol, targetVals
+                comparison, myFun, myFunTest, n, m,
+                IsComb, xtraCol, targetVals
             );
         }
     } else if (IsMult) {
         return FromCpp14::make_unique<ConstraintsMultiset<T>>(
-            comparison, myFun, n, m, IsComb, xtraCol, Reps
+            comparison, myFun, myFunTest, n, m, IsComb, xtraCol, Reps
         );
     } else if (IsRep) {
         return FromCpp14::make_unique<ConstraintsRep<T>>(
-            comparison, myFun, n, m, IsComb, xtraCol
+            comparison, myFun, myFunTest, n, m, IsComb, xtraCol
         );
     } else {
         return FromCpp14::make_unique<ConstraintsDistinct<T>>(
-            comparison, myFun, n, m, IsComb, xtraCol
+            comparison, myFun, myFunTest, n, m, IsComb, xtraCol
         );
     }
 }
@@ -250,12 +257,12 @@ template class ConstraintsClass<double>;
 
 template std::unique_ptr<ConstraintsClass<int>> MakeConstraints(
         const std::vector<std::string>&, const std::string&,
-        std::vector<int>&, const std::vector<int>&, ConstraintType,
-        int, int, bool, bool, bool, bool
+        const std::string&, std::vector<int>&, const std::vector<int>&,
+        ConstraintType, int, int, bool, bool, bool, bool
     );
 
 template std::unique_ptr<ConstraintsClass<double>> MakeConstraints(
         const std::vector<std::string>&, const std::string&,
-        std::vector<int>&, const std::vector<double>&, ConstraintType,
-        int, int, bool, bool, bool, bool
+        const std::string&, std::vector<int>&, const std::vector<double>&,
+        ConstraintType, int, int, bool, bool, bool, bool
     );

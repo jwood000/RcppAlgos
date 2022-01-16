@@ -85,8 +85,8 @@ SEXP PartitionsCount(SEXP Rtarget, SEXP Rv, SEXP Rm,
 
     if (IsConstrained) {
         ConstraintSetup(vNum, myReps, targetVals, vInt, targetIntVals,
-                        funDbl, part, ctype, n, m, compVec, mainFun, myType,
-                        Rtarget, RcompFun, Rtolerance, Rlow, true, true);
+                        funDbl, part, ctype, n, m, compVec, mainFun, mainFun,
+                        myType, Rtarget, RcompFun, Rtolerance, Rlow, true, true);
     }
 
     if (part.ptype != PartitionType::CoarseGrained &&

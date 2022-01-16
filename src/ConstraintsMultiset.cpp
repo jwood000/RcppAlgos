@@ -68,9 +68,11 @@ void ConstraintsMultiset<T>::Prepare(const std::string &currComp,
 template <typename T>
 ConstraintsMultiset<T>::ConstraintsMultiset(
     const std::vector<std::string> &comparison,
-    const std::string &myFun, int n_, int m_,
-    bool IsComb_, bool xtraCol_, std::vector<int> &Reps_
-) : ConstraintsClass<T>(comparison, myFun, n_, m_, IsComb_, xtraCol_),
+    const std::string &myFun, const std::string &myFunTest,
+    int n_, int m_, bool IsComb_, bool xtraCol_,
+    std::vector<int> &Reps_
+) : ConstraintsClass<T>(comparison, myFun, myFunTest,
+                        n_, m_, IsComb_, xtraCol_),
     freqsSize(std::accumulate(Reps_.cbegin(), Reps_.cend(), 0)),
     pentExtreme(freqsSize - m_),
     Reps(Reps_) {}

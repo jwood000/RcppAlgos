@@ -33,8 +33,8 @@ private:
 public:
     PartitionsEsqueMultiset(
         const std::vector<std::string> &comparison,
-        const std::string &myFun, int n_, int m_,
-        bool IsComb_, bool xtraCol_,
+        const std::string &myFun, const std::string &myFunTest,
+        int n_, int m_, bool IsComb_, bool xtraCol_,
         const std::vector<T> &targetVals,
         std::vector<int> &Reps_
     );

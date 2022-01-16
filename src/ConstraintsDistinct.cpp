@@ -42,9 +42,10 @@ void ConstraintsDistinct<T>::Prepare(const std::string &currComp,
 template <typename T>
 ConstraintsDistinct<T>::ConstraintsDistinct(
     const std::vector<std::string> &comparison,
-    const std::string &myFun, int n_, int m_,
-    bool IsComb_, bool xtraCol_
-) : ConstraintsClass<T>(comparison, myFun, n_, m_, IsComb_, xtraCol_),
+    const std::string &myFun, const std::string &myFunTest,
+    int n_, int m_, bool IsComb_, bool xtraCol_
+) : ConstraintsClass<T>(comparison, myFun, myFunTest,
+                        n_, m_, IsComb_, xtraCol_),
     nMinusM(n_ - m_) {}
 
 template class ConstraintsDistinct<int>;

@@ -38,9 +38,9 @@ public:
         const PartDesign &Rpart, const std::vector<std::string> &RcompVec,
         std::vector<double> &RtarVals, std::vector<int> &RtarIntVals,
         std::vector<int> &RstartZ, const std::string &RmainFun,
-        funcPtr<double> RfunDbl, ConstraintType Rctype, int RstrtLen,
-        int Rcap, bool RKeepRes, bool RnumUnknown, double RcnstrtRows,
-        mpz_t RcnstrtRowsMpz
+        const std::string &RFunTest, funcPtr<double> RfunDbl,
+        ConstraintType Rctype, int RstrtLen, int Rcap, bool RKeepRes,
+        bool RnumUnknown, double RcnstrtRows, mpz_t RcnstrtRowsMpz
     );
 
     void startOver();

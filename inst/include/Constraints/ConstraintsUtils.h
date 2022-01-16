@@ -59,8 +59,9 @@ void ConstraintSetup(const std::vector<double> &vNum,
                      const funcPtr<double> funDbl, PartDesign &part,
                      ConstraintType &ctype, int lenV, int m,
                      std::vector<std::string> &compFunVec,
-                     const std::string &mainFun, VecType &myType,
-                     SEXP Rtarget, SEXP RcompFun, SEXP Rtolerance,
-                     SEXP Rlow, bool IsComb, bool bCalcMulti = false);
+                     const std::string &mainFun, const std::string &funTest,
+                     VecType &myType, SEXP Rtarget, SEXP RcompFun,
+                     SEXP Rtolerance, SEXP Rlow,
+                     bool IsComb, bool bCalcMulti = false);
 
 #endif

@@ -38,8 +38,8 @@ SEXP CombinatoricsCnstrt(SEXP Rv, SEXP Rm, SEXP RisRep, SEXP RFreqs,
                  " 'prod', 'sum', 'mean', 'max', or 'min'");
     }
 
-    const std::string mainFun(CHAR(STRING_ELT(RmainFun, 0)));
-    const auto funIt = std::find(mainFunSet.begin(), mainFunSet.end(), mainFun);
+    const std::string funTest(CHAR(STRING_ELT(RmainFun, 0)));
+    const auto funIt = std::find(mainFunSet.begin(), mainFunSet.end(), funTest);
 
     if (funIt == mainFunSet.end()) {
         Rf_error("contraintFun must be one of the following:"
@@ -49,6 +49,7 @@ SEXP CombinatoricsCnstrt(SEXP Rv, SEXP Rm, SEXP RisRep, SEXP RFreqs,
     // Must be defined inside IsInteger check as tarVals could be
     // outside integer data type range which causes undefined behavior
     std::vector<int> tarIntVals;
+    const std::string mainFun = funTest == "mean" ? "sum" : funTest;
     const funcPtr<double> funDbl = GetFuncPtr<double>(mainFun);
 
     std::vector<std::string> compVec;
@@ -63,8 +64,9 @@ SEXP CombinatoricsCnstrt(SEXP Rv, SEXP Rm, SEXP RisRep, SEXP RFreqs,
 
     if (IsConstrained) {
         ConstraintSetup(vNum, myReps, tarVals, vInt, tarIntVals,
-                        funDbl, part, ctype, n, m, compVec, mainFun, myType,
-                        Rtarget, RcompFun, Rtolerance, Rlow, IsComb, false);
+                        funDbl, part, ctype, n, m, compVec, mainFun,
+                        funTest, myType, Rtarget, RcompFun,
+                        Rtolerance, Rlow, IsComb, false);
     }
 
     const double computedRows = (part.count > 0) ? part.count :
@@ -159,8 +161,8 @@ SEXP CombinatoricsCnstrt(SEXP Rv, SEXP Rm, SEXP RisRep, SEXP RFreqs,
 
     return GetConstraints(
       part, compVec, freqs, myReps, vNum, vInt, tarVals, tarIntVals, startZ,
-      mainFun, funDbl, lower, lowerMpz[0], userNum, ctype, myType, nThreads,
-      nRows, n, strtLen, cap, m, IsComb, Parallel, IsGmp, IsRep, IsMult,
-      bUpper, KeepRes, numUnknown
+      mainFun, funTest, funDbl, lower, lowerMpz[0], userNum, ctype, myType,
+      nThreads, nRows, n, strtLen, cap, m, IsComb, Parallel, IsGmp, IsRep,
+      IsMult, bUpper, KeepRes, numUnknown
     );
 }

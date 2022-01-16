@@ -109,9 +109,9 @@ SEXP ComboRes::MatrixReturn(int nRows) {
 
     return GetConstraints(
         part, compVec, freqs, myReps, vNum, vInt, tarVals, tarIntVals, z,
-        mainFun, funDbl, dblTemp, mpzTemp, userNum, ctype, myType, nThreads,
-        nRows, n, strtLen, cap, width, IsComb, LocalPar, IsGmp, IsRep, IsMult,
-        bUpper, KeepRes, numUnknown
+        mainFun, funTest, funDbl, dblTemp, mpzTemp, userNum, ctype, myType,
+        nThreads, nRows, n, strtLen, cap, width, IsComb, LocalPar, IsGmp,
+        IsRep, IsMult, bUpper, KeepRes, numUnknown
     );
 }
 
@@ -123,16 +123,16 @@ ComboRes::ComboRes(
     const PartDesign &Rpart, const std::vector<std::string> &RcompVec,
     std::vector<double> &RtarVals, std::vector<int> &RtarIntVals,
     std::vector<int> &RstartZ, const std::string &RmainFun,
-    funcPtr<double> RfunDbl, ConstraintType Rctype, int RstrtLen,
-    int Rcap, bool RKeepRes, bool RnumUnknown, double RcnstrtRows,
-    mpz_t RcnstrtRowsMpz
+    const std::string &RFunTest, funcPtr<double> RfunDbl,
+    ConstraintType Rctype, int RstrtLen, int Rcap, bool RKeepRes,
+    bool RnumUnknown, double RcnstrtRows, mpz_t RcnstrtRowsMpz
 ) : Combo(Rv, Rm, RcompRows, bVec, Rreps, Rfreqs, RvInt, RvNum, typePass,
           RmaxThreads, RnumThreads, Rparallel), cap(Rcap),
           width(Rpart.isPart ? Rpart.width : m), nCols(RKeepRes ? width + 1 :
                 width), strtLen(RstrtLen),
           KeepRes(RKeepRes), numUnknown(RnumUnknown), cnstrtCount(RcnstrtRows),
           tarIntVals(RtarIntVals), tarVals(RtarVals), ctype(Rctype),
-          part(Rpart), mainFun(RmainFun), compVec(RcompVec),
+          part(Rpart), mainFun(RmainFun), funTest(RFunTest), compVec(RcompVec),
           funDbl(RfunDbl), funInt(GetFuncPtr<int>(mainFun)) {
 
     z = RstartZ;
@@ -211,7 +211,17 @@ SEXP ComboRes::nextNumCombs(SEXP RNum) {
         }
 
         if (CheckGrTSi(IsGmp, mpzIndex, dblIndex, 0)) {
-            nextIter(freqs, z, n1, m1);
+            if (!nextIter(freqs, z, n1, m1)) {
+                if (IsGmp) {
+                    mpz_add_ui(mpzIndex, cnstrtCountMpz, 1u);
+                } else {
+                    dblIndex = cnstrtCount + 1;
+                }
+                
+                const std::string message = "No more results\n\n";
+                Rprintf(message.c_str());
+                return Rf_ScalarLogical(false);
+            }
         }
 
         SEXP res = PROTECT(MatrixReturn(nRows));
@@ -261,7 +271,17 @@ SEXP ComboRes::nextGather() {
 
     if (nRows > 0) {
         if (CheckGrTSi(IsGmp, mpzIndex, dblIndex, 0)) {
-            nextIter(freqs, z, n1, m1);
+            if (!nextIter(freqs, z, n1, m1)) {
+                if (IsGmp) {
+                    mpz_add_ui(mpzIndex, cnstrtCountMpz, 1u);
+                } else {
+                    dblIndex = cnstrtCount + 1;
+                }
+                
+                const std::string message = "No more results\n\n";
+                Rprintf(message.c_str());
+                return Rf_ScalarLogical(false);
+            }
         }
 
         SEXP res = PROTECT(MatrixReturn(nRows));

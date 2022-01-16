@@ -1,24 +1,35 @@
 #include "Constraints/CnstrntsToRClass.h"
 
+template <typename T>
+void SetCurrVec(const std::vector<T> &cnstrntVec,
+                const std::vector<T> &resVec,
+                std::vector<T> &curr, std::size_t m, bool Keep) {
+    
+    std::vector<T> newCurr(cnstrntVec.end() - std::min(m, cnstrntVec.size()),
+                           cnstrntVec.end());
+    if (Keep) newCurr.push_back(resVec.back());
+    curr = newCurr;
+}
+
 template <int sexpType, typename T>
 SEXP CnstrtVecReturn(const std::vector<T> &v) {
-
+    
     SEXP res = PROTECT(Rf_allocVector(sexpType, v.size()));
-
+    
     if (sexpType == INTSXP) {
         int* ptrOut = INTEGER(res);
-
+        
         for (std::size_t j = 0; j < v.size(); ++j) {
             ptrOut[j] = v[j];
         }
     } else {
         double* ptrOut = REAL(res);
-
+        
         for (std::size_t j = 0; j < v.size(); ++j) {
             ptrOut[j] = v[j];
         }
     }
-
+    
     UNPROTECT(1);
     return res;
 }
@@ -70,17 +81,6 @@ SEXP CnstrntsToR::GetNext() {
         return GetNextCnstrt<REALSXP>(compVec, CnstrtDbl, vNum, tarVals,
                                       currDblVec, KeepRes, keepGoing);
     }
-}
-
-template <typename T>
-void SetCurrVec(const std::vector<T> &cnstrntVec,
-                const std::vector<T> &resVec,
-                std::vector<T> &curr, std::size_t m, bool Keep) {
-
-    std::vector<T> newCurr(cnstrntVec.end() - std::min(m, cnstrntVec.size()),
-                           cnstrntVec.end());
-    if (Keep) newCurr.push_back(resVec.back());
-    curr = newCurr;
 }
 
 SEXP CnstrntsToR::GetNextN(int n) {
@@ -137,24 +137,26 @@ CnstrntsToR::CnstrntsToR(
     const PartDesign &Rpart, const std::vector<std::string> &RcompVec,
     std::vector<double> &RtarVals, std::vector<int> &RtarIntVals,
     std::vector<int> &RstartZ, const std::string &RmainFun,
-    funcPtr<double> RfunDbl, ConstraintType Rctype, int RstrtLen,
-    int Rcap, bool RKeepRes, bool RnumUnknown, double RcnstrtRows,
-    mpz_t RcnstrtRowsMpz
+    const std::string &RFunTest, funcPtr<double> RfunDbl,
+    ConstraintType Rctype, int RstrtLen, int Rcap, bool RKeepRes,
+    bool RnumUnknown, double RcnstrtRows, mpz_t RcnstrtRowsMpz
 ) : ComboRes(Rv, Rm, RcompRows, bVec, Rreps, Rfreqs, RvInt, RvNum, typePass,
              RmaxThreads, RnumThreads, Rparallel, Rpart, RcompVec, RtarVals,
-             RtarIntVals, RstartZ, RmainFun, RfunDbl, Rctype, RstrtLen, Rcap,
-             RKeepRes, RnumUnknown, RcnstrtRows, RcnstrtRowsMpz),
+             RtarIntVals, RstartZ, RmainFun, RFunTest, RfunDbl, Rctype,
+             RstrtLen, Rcap, RKeepRes, RnumUnknown, RcnstrtRows,
+             RcnstrtRowsMpz),
     maxRows(std::min(dblIntMax, RcnstrtRows)),
     origTarIntVals(RtarIntVals), origTarVals(RtarVals) {
 
     if (RTYPE == INTSXP) {
-        CnstrtInt = MakeConstraints(compVec, mainFun, myReps,
+        CnstrtInt = MakeConstraints(compVec, mainFun, funTest, myReps,
                                     tarIntVals, ctype, n, m, IsComb,
                                     KeepRes, IsMult, IsRep);
         CnstrtInt->Prepare(compVec.front(), vInt);
     } else {
-        CnstrtDbl = MakeConstraints(compVec, mainFun, myReps, tarVals, ctype,
-                                    n, m, IsComb, KeepRes, IsMult, IsRep);
+        CnstrtDbl = MakeConstraints(compVec, mainFun, funTest, myReps,
+                                    tarVals, ctype, n, m, IsComb,
+                                    KeepRes, IsMult, IsRep);
         CnstrtDbl->Prepare(compVec.front(), vNum);
     }
 

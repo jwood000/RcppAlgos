@@ -209,7 +209,13 @@ void SetTolerance(const std::vector<double> &vNum,
 void AdjustTargetVals(VecType myType, std::vector<double> &targetVals,
                       std::vector<int> &targetIntVals, SEXP Rtolerance,
                       std::vector<std::string> &compFunVec, double &tolerance,
-                      const std::string &mainFun, const std::vector<double> &vNum) {
+                      const std::string &funTest, const std::string &mainFun,
+                      const std::vector<double> &vNum, double m) {
+
+    if (funTest == "mean") {
+        targetVals[0] = targetVals[0] * m;
+        if (targetVals.size() > 1) targetVals[1] = targetVals[1] * m;
+    }
 
     if (myType == VecType::Integer) {
         targetIntVals.assign(targetVals.cbegin(), targetVals.cend());
@@ -326,9 +332,10 @@ void ConstraintSetup(const std::vector<double> &vNum,
                      const funcPtr<double> funDbl, PartDesign &part,
                      ConstraintType &ctype, int lenV, int m,
                      std::vector<std::string> &compFunVec,
-                     const std::string &mainFun, VecType &myType,
-                     SEXP Rtarget, SEXP RcompFun, SEXP Rtolerance,
-                     SEXP Rlow, bool IsComb, bool bCalcMulti) {
+                     const std::string &mainFun, const std::string &funTest,
+                     VecType &myType, SEXP Rtarget, SEXP RcompFun,
+                     SEXP Rtolerance, SEXP Rlow,
+                     bool IsComb, bool bCalcMulti) {
 
     // numOnly = true, checkWhole = false, negPoss = true
     CleanConvert::convertVector(Rtarget, targetVals,
@@ -353,21 +360,20 @@ void ConstraintSetup(const std::vector<double> &vNum,
     // CheckPartition. We must have this here as AdjustTargetVals
     // relies on an accurate setting of VecType.
     if (myType == VecType::Integer &&
-        !CheckIsInteger(mainFun, lenV, m, vNum, targetVals, funDbl,
+        !CheckIsInteger(funTest, lenV, m, vNum, targetVals, funDbl,
                         true, part.isRep, part.isMult, false)) {
-
         myType = VecType::Numeric;
     }
 
     double tolerance = 0;
-    AdjustTargetVals(myType, targetVals, targetIntVals,
-                     Rtolerance, compFunVec, tolerance, mainFun, vNum);
+    AdjustTargetVals(myType, targetVals, targetIntVals, Rtolerance,
+                     compFunVec, tolerance, funTest, mainFun, vNum, m);
 
-    CheckPartition(compFunVec, vNum, mainFun, targetVals,
+    CheckPartition(compFunVec, vNum, funTest, targetVals,
                    part, lenV, m, tolerance, IsBetweenComp);
 
     if (myType == VecType::Numeric && origType == VecType::Integer &&
-        CheckIsInteger(mainFun, lenV, m, vNum, targetVals, funDbl,
+        CheckIsInteger(funTest, lenV, m, vNum, targetVals, funDbl,
                        true, part.isRep, part.isMult, part.isPart)) {
 
         vInt.assign(vNum.cbegin(), vNum.cend());
@@ -387,7 +393,7 @@ void ConstraintSetup(const std::vector<double> &vNum,
         bLower = mpz_cmp_si(tempLower[0], 1) > 0;
     }
 
-    SetConstraintType(vNum, mainFun, part.ptype, ctype, bLower);
+    SetConstraintType(vNum, funTest, part.ptype, ctype, bLower);
 
     if (part.isPart) {
         SetPartitionDesign(Reps, vNum, part, ctype, lenV, m, bCalcMulti, IsComb);

@@ -23,8 +23,9 @@ private:
 public:
     ConstraintsMultiset(
         const std::vector<std::string> &comparison,
-        const std::string &myFun, int n_, int m_,
-        bool IsComb_, bool xtraCol_, std::vector<int> &Reps_
+        const std::string &myFun, const std::string &myFunTest,
+        int n_, int m_, bool IsComb_, bool xtraCol_,
+        std::vector<int> &Reps_
     );
 
     void Prepare(const std::string &currComp, std::vector<T> &v);
