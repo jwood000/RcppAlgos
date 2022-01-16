@@ -5,14 +5,64 @@
 #include <thread>
 
 template <typename T>
-void CnstrntSpcWorker(const std::vector<T> &v,
-                      const std::vector<T> &targetVals,
-                      const std::vector<int> &freqs,
-                      const std::vector<std::string> &compVec,
-                      std::vector<T> &cnstrntVec, std::vector<T> &resVec,
-                      std::vector<int> &z, nextIterPtr nextIter,
-                      funcPtr<T> fun, compPtr<T> compOne, int m,
-                      int n1, int m1, int maxRows, bool xtraCol) {
+void CnstrntLowerWorker(
+    const std::vector<T> &v, const std::vector<T> &targetVals,
+    const std::vector<int> &freqs, const std::vector<std::string> &compVec,
+    std::vector<T> &cnstrntVec, std::vector<T> &resVec, std::vector<int> &z,
+    nextIterPtr nextIter, funcPtr<T> fun, compPtr<T> compOne, int m, int n1,
+    int m1, int maxRows, bool xtraCol
+) {
+
+    int count = 0;
+    std::vector<T> testVec(m);
+
+    if (compVec.size() == 1) {
+        do {
+            for (int j = 0; j < m; ++j) {
+                testVec[j] = v[z[j]];
+            }
+
+            const T testVal = fun(testVec, m);
+
+            if (compOne(testVal, targetVals)) {
+                cnstrntVec.insert(cnstrntVec.end(),
+                                  testVec.begin(), testVec.end());
+                if (xtraCol) resVec.push_back(testVal);
+            }
+
+            ++count;
+        } while (count < maxRows && nextIter(freqs, z, n1, m1));
+    } else {
+        compPtr<T> compTwo = GetCompPtr<T>(compVec.back());
+        std::vector<T> targetVals2(1, targetVals.back());
+
+        do {
+            for (int j = 0; j < m; ++j) {
+                testVec[j] = v[z[j]];
+            }
+
+            const T testVal = fun(testVec, m);
+
+            if (compOne(testVal, targetVals) ||
+                compTwo(testVal, targetVals2)) {
+                cnstrntVec.insert(cnstrntVec.end(),
+                                  testVec.begin(), testVec.end());
+                if (xtraCol) resVec.push_back(testVal);
+            }
+
+            ++count;
+        } while (count < maxRows && nextIter(freqs, z, n1, m1));
+    }
+}
+
+template <typename T>
+void CnstrntSpcWorker(
+    const std::vector<T> &v, const std::vector<T> &targetVals,
+    const std::vector<int> &freqs, const std::vector<std::string> &compVec,
+    std::vector<T> &cnstrntVec, std::vector<T> &resVec, std::vector<int> &z,
+    nextIterPtr nextIter, funcPtr<T> fun, compPtr<T> compOne, int m, int n1,
+    int m1, int maxRows, bool xtraCol
+) {
 
     int count = 0;
     std::vector<T> testVec(m);
@@ -59,16 +109,14 @@ void CnstrntSpcWorker(const std::vector<T> &v,
 // when we are using "prod" and we have negative numbers involved. We also call this
 // when lower is invoked implying that we are testing a specific range.
 template <typename T>
-void ConstraintsSpecial(const std::vector<T> &v,
-                        const std::vector<T> &targetVals,
-                        const std::vector<std::string> &compVec,
-                        const std::vector<int> &myRep,
-                        std::vector<int> freqs,
-                        std::vector<T> &cnstrntVec, std::vector<T> &resVec,
-                        const std::string &mainFun, std::vector<int> &z,
-                        double lower, mpz_t lowerMpz, int n, int m,
-                        int maxRows, int nThreads, bool IsRep, bool xtraCol,
-                        bool IsComb, bool IsMult, bool IsGmp) {
+void ConstraintsSpecial(
+    const std::vector<T> &v, const std::vector<T> &targetVals,
+    const std::vector<std::string> &compVec, const std::vector<int> &myRep,
+    std::vector<int> freqs, std::vector<T> &cnstrntVec,
+    std::vector<T> &resVec, const std::string &mainFun, std::vector<int> &z,
+    double lower, mpz_t lowerMpz, int n, int m, int maxRows, int nThreads,
+    bool IsRep, bool xtraCol, bool IsComb, bool IsMult, bool IsGmp
+) {
 
     // Needed to determine if nextFullPerm or nextPerm will be called
     const bool IsFullPerm = (IsComb || IsRep) ? false :
@@ -103,7 +151,7 @@ void ConstraintsSpecial(const std::vector<T> &v,
         for (int j = 0; j < (nThreads - 1);
              ++j, step += stepSize, nextStep += stepSize) {
 
-            threads.emplace_back(std::cref(CnstrntSpcWorker<T>),
+            threads.emplace_back(std::cref(CnstrntLowerWorker<T>),
                                  std::cref(v), std::cref(targetVals),
                                  std::cref(freqs), std::cref(compVec),
                                  std::ref(cnstrThrd[j]),
@@ -118,7 +166,7 @@ void ConstraintsSpecial(const std::vector<T> &v,
 
         const int leftOver = maxRows - ((nThreads - 1) * stepSize);
 
-        threads.emplace_back(std::cref(CnstrntSpcWorker<T>),
+        threads.emplace_back(std::cref(CnstrntLowerWorker<T>),
                              std::cref(v), std::cref(targetVals),
                              std::cref(freqs), std::cref(compVec),
                              std::ref(cnstrThrd.back()),
@@ -137,9 +185,15 @@ void ConstraintsSpecial(const std::vector<T> &v,
                           resThrd[i].end());
         }
     } else {
-        CnstrntSpcWorker(v, targetVals, freqs, compVec,
-                         cnstrntVec, resVec, z, nextIter, fun,
-                         compOne, m, n1, m1, maxRows, xtraCol);
+        if (lower > 0) {
+            CnstrntLowerWorker(v, targetVals, freqs, compVec,
+                               cnstrntVec, resVec, z, nextIter, fun,
+                               compOne, m, n1, m1, maxRows, xtraCol);
+        } else {
+            CnstrntSpcWorker(v, targetVals, freqs, compVec,
+                             cnstrntVec, resVec, z, nextIter, fun,
+                             compOne, m, n1, m1, maxRows, xtraCol);
+        }
     }
 }
 

@@ -20,7 +20,7 @@ test_that("ConstraintsClass produces correct results", {
         if (length(v_pass) == 1) {
             if (v_pass < 0) {
                 myResults <- c(myResults, isTRUE(
-                    all.equal(v_pass + 2, length(a@sourceVector()))
+                    all.equal(abs(v_pass) + 2, length(a@sourceVector()))
                 ))
             } else {
                 myResults <- c(myResults, isTRUE(
@@ -62,7 +62,6 @@ test_that("ConstraintsClass produces correct results", {
 
         rm(a, a1, b)
         gc()
-        print(myResults)
         all(myResults)
     }
 
