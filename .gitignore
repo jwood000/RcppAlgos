@@ -9,3 +9,4 @@ src/*.dll
 tests/.DS_Store
 tests/testthat/.DS_Store
 man/.Rapp.history
+remove_whitespace.sh
