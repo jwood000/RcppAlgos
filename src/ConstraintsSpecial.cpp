@@ -145,7 +145,7 @@ void ConstraintsSpecial(const std::vector<T> &v,
 
 template void ConstraintsSpecial(
     const std::vector<int>&, const std::vector<int>&,
-    const std::vector<std::string>&, const std::vector<int>&, 
+    const std::vector<std::string>&, const std::vector<int>&,
     std::vector<int>, std::vector<int>&, std::vector<int>&,
     const std::string&, std::vector<int>&, double, mpz_t,
     int, int, int, int, bool, bool, bool, bool, bool

@@ -217,7 +217,7 @@ SEXP ComboRes::nextNumCombs(SEXP RNum) {
                 } else {
                     dblIndex = cnstrtCount + 1;
                 }
-                
+
                 const std::string message = "No more results\n\n";
                 Rprintf(message.c_str());
                 return Rf_ScalarLogical(false);
@@ -277,7 +277,7 @@ SEXP ComboRes::nextGather() {
                 } else {
                     dblIndex = cnstrtCount + 1;
                 }
-                
+
                 const std::string message = "No more results\n\n";
                 Rprintf(message.c_str());
                 return Rf_ScalarLogical(false);

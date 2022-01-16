@@ -4,7 +4,7 @@ template <typename T>
 void SetCurrVec(const std::vector<T> &cnstrntVec,
                 const std::vector<T> &resVec,
                 std::vector<T> &curr, std::size_t m, bool Keep) {
-    
+
     std::vector<T> newCurr(cnstrntVec.end() - std::min(m, cnstrntVec.size()),
                            cnstrntVec.end());
     if (Keep) newCurr.push_back(resVec.back());
@@ -13,23 +13,23 @@ void SetCurrVec(const std::vector<T> &cnstrntVec,
 
 template <int sexpType, typename T>
 SEXP CnstrtVecReturn(const std::vector<T> &v) {
-    
+
     SEXP res = PROTECT(Rf_allocVector(sexpType, v.size()));
-    
+
     if (sexpType == INTSXP) {
         int* ptrOut = INTEGER(res);
-        
+
         for (std::size_t j = 0; j < v.size(); ++j) {
             ptrOut[j] = v[j];
         }
     } else {
         double* ptrOut = REAL(res);
-        
+
         for (std::size_t j = 0; j < v.size(); ++j) {
             ptrOut[j] = v[j];
         }
     }
-    
+
     UNPROTECT(1);
     return res;
 }

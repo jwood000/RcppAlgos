@@ -29,7 +29,7 @@ void CnstrntsSpecial::startOver() {
 SEXP CnstrntsSpecial::nextComb() {
     if (keepGoing) {
         SEXP res = PROTECT(ComboRes::nextNumCombs(Rf_ScalarInteger(1)));
-        
+
         if (TYPEOF(res) == LGLSXP) {
             UNPROTECT(1);
             return res;
@@ -54,7 +54,7 @@ SEXP CnstrntsSpecial::nextComb() {
 SEXP CnstrntsSpecial::nextNumCombs(SEXP RNum) {
     if (keepGoing) {
         SEXP res = PROTECT(ComboRes::nextNumCombs(RNum));
-    
+
         if (TYPEOF(res) == LGLSXP) {
             UNPROTECT(1);
             return res;
@@ -62,7 +62,7 @@ SEXP CnstrntsSpecial::nextNumCombs(SEXP RNum) {
             int num;
             CleanConvert::convertPrimitive(RNum, num, VecType::Integer,
                                            "The number of results");
-            
+
             if (Rf_nrows(res)) {
                 const int returned_nrows = Rf_nrows(res);
                 count = dblIndex - (num - returned_nrows);
