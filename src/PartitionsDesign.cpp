@@ -1,7 +1,6 @@
 #include "Constraints/ConstraintsTypes.h"
 #include "Partitions/PartitionsTypes.h"
 #include "CleanConvert.h"
-#include <iostream>
 #include <numeric>
 
 std::string GetPartitionType(const PartDesign &part) {
@@ -11,6 +10,9 @@ std::string GetPartitionType(const PartDesign &part) {
     switch (part.ptype) {
         case PartitionType::NotPartition: {
             res = "NotPartition";
+            break;
+        } case PartitionType::LengthOne: {
+            res = "LengthOne";
             break;
         } case PartitionType::DstctCapped: {
             res = "DistCapped";
@@ -60,51 +62,60 @@ SEXP GetDesign(const PartDesign &part, ConstraintType ctype,
     const std::string ptype = GetPartitionType(part);
 
     if (verbose) {
-        std::cout << "          Partition Design Overview\n";
-        std::cout << "*********************************************\n\n";
+        Rprintf("          Partition Design Overview\n");
+        Rprintf("*********************************************\n\n");
+        std::string strWidth = std::to_string(part.width);
 
         if (part.isMult) {
-            std::cout << "Partitions of Multiset of width: " <<
-                part.width << "\n\n";
+            Rprintf("Partitions of Multiset of width: %s\n",
+                    strWidth.c_str());
         } else if (part.isRep) {
-            std::cout << "Partitions with Repetition of width: " <<
-                part.width << "\n\n";
+            Rprintf("Partitions with Repetition of width: %s\n",
+                    strWidth.c_str());
         } else {
-            std::cout << "Distinct Partitions of width: " <<
-                part.width << "\n\n";
+            Rprintf("Distinct Partitions of width: %s\n",
+                    strWidth.c_str());
         }
 
-        std::cout << "Partition Type:  " << ptype << "\n\n";
+        Rprintf("Partition Type: %s\n\n", ptype.c_str());
 
         std::string strBool = (part.mIsNull) ? "TRUE" : "FALSE";
-        std::cout << "Is m NULL?: " << strBool << "\n";
+        Rprintf("Is m NULL?: %s\n", strBool.c_str());
         strBool = (part.solnExist) ? "TRUE" : "FALSE";
-        std::cout << "Does Soln Exist?: " << strBool << "\n";
+        Rprintf("Does Soln Exist?: %s\n", strBool.c_str());
 
-        std::cout << "\nThe isomorphic vector:\nv: ";
+        Rprintf("\nThe isomorphic vector:\nv: ");
+        std::string strVMap = "";
 
-        for (int i = 0; i < (lenV - 1); ++i)
-            std::cout << vMap[i] << ", ";
+        for (auto v_i: vMap) {
+            strVMap += (std::to_string(v_i) + " ");
+        }
 
-        std::cout << vMap.back() << "\n\n";
-        std::cout << "The first indexing vector is given by:\nstartZ: ";
+        Rprintf("%s\n\n", strVMap.c_str());
+        Rprintf("The first indexing vector is given by:\nstartZ: ");
+        std::string strStartZ = "";
 
-        for (int i = 0; i < (part.startZ.size() - 1); ++i)
-            std::cout << part.startZ[i] << ", ";
+        for (auto z_i: part.startZ) {
+            strStartZ += (std::to_string(z_i) + " ");
+        }
 
-        std::cout << part.startZ.back() << "\n\n";
-        std::cout << "Number of partitions: " <<  part.count << "\n\n";
+        Rprintf("%s\n\n", strStartZ.c_str());
+        Rprintf("Number of partitions: %s\n",
+                std::to_string(part.count).c_str());
+        Rprintf("Shift:           %s\n",
+                std::to_string(part.count).c_str());
+        Rprintf("Slope:           %s\n",
+                std::to_string(part.slope).c_str());
+        Rprintf("Mapped target:   %s\n",
+                std::to_string(part.mapTar).c_str());
+        Rprintf("Original target: %s\n\n",
+                std::to_string(part.target).c_str());
 
-        std::cout << "Shift:           " <<  part.shift << "\n";
-        std::cout << "Slope:           " <<  part.slope << "\n\n";
-        std::cout << "Mapped target:   " <<  part.mapTar << "\n";
-        std::cout << "Original target: " <<  part.target << "\n\n";
-
-        std::cout << "Confirm MappedTar = (Target + Width * Shift) / Slope\n";
+        Rprintf("Confirm MappedTar = (Target + Width * Shift) / Slope\n");
         const std::string eqn_check_str = std::to_string(part.mapTar) + " == (" +
             std::to_string(part.target) + " + " + std::to_string(part.width) +
             " * " + std::to_string(part.shift) + ") / " + std::to_string(part.slope);
-        std::cout << eqn_check_str << std::endl;
+        Rprintf("%s\n\n", eqn_check_str.c_str());
     }
 
     bool eqn_check_val = part.mapTar == (part.target +

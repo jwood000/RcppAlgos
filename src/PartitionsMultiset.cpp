@@ -28,10 +28,9 @@ void PartsGenMultiset(std::vector<T> &partsVec, const std::vector<T> &v,
     int p = 0;
     int e = 0;
 
-    const int lastCol = width - 1;
+    const int lastCol  = width - 1;
     const int lastElem = v.size() - 1;
     std::vector<int> rpsCnt(Reps.cbegin(), Reps.cend());
-
     PrepareMultisetPart(rpsCnt, z, b, p, e, lastCol, lastElem);
 
     for (int count = 0; keepGoing(rpsCnt, lastElem, z, e, b);

@@ -68,7 +68,7 @@ SEXP GetNextCnstrt(const std::vector<std::string> &compVec,
         keepGoing = false;
         const std::string message = "No more results.\n\n";
         Rprintf(message.c_str());
-        return Rf_ScalarLogical(false);
+        return R_NilValue;
     }
 }
 
@@ -126,7 +126,7 @@ SEXP CnstrntsToR::GetNextN(int n) {
     keepGoing = false;
     const std::string message = "No more results.\n\n";
     Rprintf(message.c_str());
-    return Rf_ScalarLogical(false);
+    return R_NilValue;
 }
 
 CnstrntsToR::CnstrntsToR(
@@ -167,6 +167,7 @@ CnstrntsToR::CnstrntsToR(
     std::vector<int> intVec;
     vecMax = std::floor(intVec.max_size() / m);
     upperBoundInt = std::min(vecMax, dblIntMax);
+    prevIterAvailable = false;
 }
 
 void CnstrntsToR::startOver() {
@@ -188,7 +189,7 @@ SEXP CnstrntsToR::nextComb() {
     if (keepGoing) {
         return GetNext();
     } else {
-        return Rf_ScalarLogical(false);
+        return R_NilValue;
     }
 }
 
@@ -201,7 +202,7 @@ SEXP CnstrntsToR::nextNumCombs(SEXP RNum) {
     if (keepGoing) {
         return GetNextN(num);
     } else {
-        return Rf_ScalarLogical(false);
+        return R_NilValue;
     }
 }
 
@@ -212,29 +213,26 @@ SEXP CnstrntsToR::nextGather() {
                                             maxRows - CnstrtDbl->GetCount();
         return GetNextN(num);
     } else {
-        return Rf_ScalarLogical(false);
+        return R_NilValue;
     }
 }
 
 SEXP CnstrntsToR::currComb() {
 
     if (!keepGoing) {
-        return Rf_ScalarLogical(0);
+        return R_NilValue;
     } else if (RTYPE == INTSXP && CnstrtInt->GetCount()) {
         return CnstrtVecReturn<INTSXP>(currIntVec);
     } else if (RTYPE == REALSXP && CnstrtDbl->GetCount()) {
         return CnstrtVecReturn<REALSXP>(currDblVec);
     } else {
-        const std::string message = "Iterator Initialized. To see the first "
-                                    "result, use the nextIter method(s)\n\n";
-        Rprintf(message.c_str());
-        return Rf_ScalarLogical(0);
+        return ToSeeFirst(false);
     }
 }
 
 SEXP CnstrntsToR::summary() {
-    SEXP parent = PROTECT(Combo::summary());
-    std::string desc(R_CHAR(STRING_ELT(VECTOR_ELT(parent, 0), 0)));
+    SEXP res = PROTECT(Combo::summary());
+    std::string desc(R_CHAR(STRING_ELT(VECTOR_ELT(res, 0), 0)));
 
     std::string val1 = (RTYPE == INTSXP) ?
                        std::to_string(tarIntVals.front()) :
@@ -260,14 +258,12 @@ SEXP CnstrntsToR::summary() {
 
     const int idx = (RTYPE == INTSXP) ? CnstrtInt->GetCount() :
                                         CnstrtDbl->GetCount();
-    const char *names[] = {"description", "currentIndex",
-                           "totalResultsWithoutConstraints", ""};
 
-    SEXP res = PROTECT(Rf_mkNamed(VECSXP, names));
     SET_VECTOR_ELT(res, 0, Rf_mkString(desc.c_str()));
     SET_VECTOR_ELT(res, 1, Rf_ScalarInteger(idx));
-    SET_VECTOR_ELT(res, 2, VECTOR_ELT(parent, 2));
+    SET_VECTOR_ELT(res, 2, Rf_ScalarReal(R_NaReal));
+    SET_VECTOR_ELT(res, 3, Rf_ScalarReal(R_NaReal));
 
-    UNPROTECT(2);
+    UNPROTECT(1);
     return res;
 }

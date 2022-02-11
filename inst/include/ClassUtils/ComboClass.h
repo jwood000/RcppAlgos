@@ -63,6 +63,10 @@ protected:
     const nextIterPtr nextIter;
     const prevIterPtr prevIter;
 
+    bool prevIterAvailable;
+    SEXP ToSeeLast(bool AdjustIdx = true);
+    SEXP ToSeeFirst(bool AdjustIdx = true);
+
 public:
 
     Combo(

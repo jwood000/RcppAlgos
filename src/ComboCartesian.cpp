@@ -124,7 +124,6 @@ void comboGrid(std::vector<int> &cartCombs,
         primes[myVecs.back().back()]) {
         NeedsMpz = true;
     }
-
     if (!NeedsMpz && myVecs.size() > 1) {
         uintHash.clear();
         lenGrps.assign(uintKeyKeeper.size(), 0);

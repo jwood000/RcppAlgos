@@ -282,8 +282,8 @@ bool CheckIsInteger(const std::string &funPass, int n,
 
     std::vector<double> vAbs;
 
-    for (int i = 0; i < n; ++i) {
-        vAbs.push_back(std::abs(vNum[i]));
+    for (auto v_i: vNum) {
+        vAbs.push_back(std::abs(v_i));
     }
 
     const double vecMax = *std::max_element(vAbs.cbegin(), vAbs.cend());
@@ -307,11 +307,11 @@ bool CheckIsInteger(const std::string &funPass, int n,
     if (checkLim) {
         vAbs.clear();
 
-        for (std::size_t i = 0; i < targetVals.size(); ++i) {
-            if (static_cast<std::int64_t>(targetVals[i]) != targetVals[i]) {
+        for (auto tar: targetVals) {
+            if (static_cast<std::int64_t>(tar) != tar) {
                 return false;
             } else {
-                vAbs.push_back(std::abs(targetVals[i]));
+                vAbs.push_back(std::abs(tar));
             }
         }
 
@@ -340,7 +340,7 @@ void ConstraintSetup(const std::vector<double> &vNum,
     // numOnly = true, checkWhole = false, negPoss = true
     CleanConvert::convertVector(Rtarget, targetVals,
                                 VecType::Numeric,
-                                "limitConstraints",
+                                "limitConstraints/target",
                                 true, false, true);
 
     int len_comp = Rf_length(RcompFun);
@@ -375,7 +375,6 @@ void ConstraintSetup(const std::vector<double> &vNum,
     if (myType == VecType::Numeric && origType == VecType::Integer &&
         CheckIsInteger(funTest, lenV, m, vNum, targetVals, funDbl,
                        true, part.isRep, part.isMult, part.isPart)) {
-
         vInt.assign(vNum.cbegin(), vNum.cend());
         myType = VecType::Integer;
     }
@@ -396,7 +395,8 @@ void ConstraintSetup(const std::vector<double> &vNum,
     SetConstraintType(vNum, funTest, part.ptype, ctype, bLower);
 
     if (part.isPart) {
-        SetPartitionDesign(Reps, vNum, part, ctype, lenV, m, bCalcMulti, IsComb);
+        SetPartitionDesign(Reps, vNum, part, ctype,
+                           lenV, m, bCalcMulti, IsComb);
     }
 }
 

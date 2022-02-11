@@ -14,8 +14,10 @@ void MultisetComboApplyFun(SEXP res, const std::vector<T> &v,
     std::vector<int> zIndex(n);
     const int retType = TYPEOF(res);
 
-    for (int i = 0; i < n; ++i)
-        zIndex[i] = std::find(freqs.cbegin(), freqs.cend(), i) - freqs.cbegin();
+    for (int i = 0; i < n; ++i) {
+        zIndex[i] = std::find(freqs.cbegin(),
+                              freqs.cend(), i) - freqs.cbegin();
+    }
 
     for (int count = 0, m1 = m - 1,
          pentExtreme = freqs.size() - m; count < nRows;) {
@@ -42,8 +44,10 @@ void MultisetComboApplyFun(SEXP res, SEXP v, SEXP vectorPass,
     std::vector<int> zIndex(n);
     const int retType = TYPEOF(res);
 
-    for (int i = 0; i < n; ++i)
-        zIndex[i] = std::find(freqs.cbegin(), freqs.cend(), i) - freqs.cbegin();
+    for (int i = 0; i < n; ++i) {
+        zIndex[i] = std::find(freqs.cbegin(),
+                              freqs.cend(), i) - freqs.cbegin();
+    }
 
     for (int count = 0, m1 = m - 1,
          pentExtreme = freqs.size() - m; count < nRows;) {

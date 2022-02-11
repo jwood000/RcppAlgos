@@ -8,7 +8,9 @@ void PartsStdManager(int* mat, std::vector<int> &z, int width,
                      int lastElem, int lastCol, int nRows,
                      bool IsComb, bool IsRep) {
 
-    if (IsRep && IsComb) {
+    if (width == 1) {
+        if (nRows) mat[0] = z.front();
+    } else if (IsRep && IsComb) {
         PartsRep(mat, z, width, lastElem, lastCol, nRows);
     } else if (IsRep) {
         PartsPermRep(mat, z, width, lastElem, lastCol, nRows);
@@ -31,7 +33,9 @@ void PartsGenManager(T* mat, const std::vector<T> &v, std::vector<int> &z,
                      int width, int lastElem, int lastCol, int nRows,
                      bool IsComb, bool IsRep) {
 
-    if (IsComb) {
+    if (width == 1) {
+        if (nRows) mat[0] = v[z.front()];
+    } else if (IsComb) {
         if (IsRep) {
             PartsGenRep(mat, v, z, width, lastElem, lastCol, nRows);
         } else {
@@ -61,7 +65,9 @@ void PartsGenManager(std::vector<T> &partsVec, const std::vector<T> &v,
                      PartitionType ptype, int width, int nRows,
                      bool IsComb) {
 
-    if (ptype == PartitionType::Multiset) {
+    if (width == 1) {
+        if (nRows) partsVec.push_back(v[z.front()]);
+    } else if (ptype == PartitionType::Multiset) {
         PartsGenMultiset(partsVec, v, Reps, z, width, nRows, IsComb);
     } else if (ptype == PartitionType::RepCapped) {
         PartsGenRep(partsVec, v, z, width, nRows, IsComb);

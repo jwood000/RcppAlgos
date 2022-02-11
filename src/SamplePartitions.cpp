@@ -216,16 +216,20 @@ SEXP SamplePartitions(SEXP Rv, SEXP Rm, SEXP RisRep, SEXP RFreqs,
                                       part.startZ.cend(),
                                       [](int i){return i > 0;});
 
-    const nthPartsPtr nthPartFun = GetNthPartsFunc(part.ptype, part.isGmp);
-
     if (myType == VecType::Integer) {
         SEXP res = PROTECT(Rf_allocMatrix(INTSXP, sampSize, part.width));
         int* matInt = INTEGER(res);
 
-        ThreadSafeSample(matInt, res, vInt, mySample, myVec.get(),
-                         myReps, nthPartFun, part.width, sampSize,
-                         nThreads, Parallel, IsNamed, part.mapTar,
-                         strtLen, cap, part.isGmp);
+        if (part.width == 1) {
+            matInt[0] = Rf_asInteger(Rtarget);
+        } else {
+            const nthPartsPtr nthPartFun = GetNthPartsFunc(part.ptype,
+                                                           part.isGmp);
+            ThreadSafeSample(matInt, res, vInt, mySample, myVec.get(),
+                             myReps, nthPartFun, part.width, sampSize,
+                             nThreads, Parallel, IsNamed, part.mapTar,
+                             strtLen, cap, part.isGmp);
+        }
 
         UNPROTECT(1);
         return res;
@@ -233,10 +237,16 @@ SEXP SamplePartitions(SEXP Rv, SEXP Rm, SEXP RisRep, SEXP RFreqs,
         SEXP res = PROTECT(Rf_allocMatrix(REALSXP, sampSize, part.width));
         double* matNum = REAL(res);
 
-        ThreadSafeSample(matNum, res, vNum, mySample, myVec.get(),
-                         myReps, nthPartFun, part.width, sampSize,
-                         nThreads, Parallel, IsNamed, part.mapTar,
-                         strtLen, cap, part.isGmp);
+        if (part.width == 1) {
+            matNum[0] = Rf_asReal(Rtarget);
+        } else {
+            const nthPartsPtr nthPartFun = GetNthPartsFunc(part.ptype,
+                                                           part.isGmp);
+            ThreadSafeSample(matNum, res, vNum, mySample, myVec.get(),
+                             myReps, nthPartFun, part.width, sampSize,
+                             nThreads, Parallel, IsNamed, part.mapTar,
+                             strtLen, cap, part.isGmp);
+        }
 
         UNPROTECT(1);
         return res;

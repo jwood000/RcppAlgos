@@ -99,13 +99,9 @@ SEXP ComboApply::nextComb() {
         return VecApplyReturn();
     } else if (CheckEqInd(IsGmp, mpzIndex, dblIndex,
                           computedRowsMpz, computedRows)) {
-        const std::string message = "No more results. To see the last "
-                                    "result, use the prevIter method(s)\n\n";
-        Rprintf(message.c_str());
-        increment(IsGmp, mpzIndex, dblIndex);
-        return Rf_ScalarLogical(false);
+        return ToSeeLast();
     } else {
-        return Rf_ScalarLogical(false);
+        return R_NilValue;
     }
 }
 
@@ -120,13 +116,9 @@ SEXP ComboApply::prevComb() {
         prevIter(freqs, z, n1, m1);
         return VecApplyReturn();
     } else if (CheckEqSi(IsGmp, mpzIndex, dblIndex, 1)) {
-        const std::string message = "Iterator Initialized. To see the first"
-                                    " result, use the nextIter method(s)\n\n";
-        Rprintf(message.c_str());
-        decrement(IsGmp, mpzIndex, dblIndex);
-        return Rf_ScalarLogical(false);
+        return ToSeeFirst();
     } else {
-        return Rf_ScalarLogical(false);
+        return R_NilValue;
     }
 }
 
@@ -171,13 +163,9 @@ SEXP ComboApply::nextNumCombs(SEXP RNum) {
         return res;
     } else if (CheckEqInd(IsGmp, mpzIndex, dblIndex,
                           computedRowsMpz, computedRows)) {
-        const std::string message = "No more results. To see the last result"
-                                    ", use the prevIter method(s)\n\n";
-        Rprintf(message.c_str());
-        increment(IsGmp, mpzIndex, dblIndex);
-        return Rf_ScalarLogical(false);
+        return ToSeeLast();
     } else {
-        return Rf_ScalarLogical(false);
+        return R_NilValue;
     }
 }
 
@@ -187,7 +175,7 @@ SEXP ComboApply::prevNumCombs(SEXP RNum) {
     CleanConvert::convertPrimitive(RNum, num, VecType::Integer,
                                    "The number of results");
 
-    if (CheckGrTSi(IsGmp, mpzIndex, dblIndex, 2)) {
+    if (CheckGrTSi(IsGmp, mpzIndex, dblIndex, 1)) {
         int nRows = 0;
         int numDecrement = 0;
 
@@ -208,18 +196,19 @@ SEXP ComboApply::prevNumCombs(SEXP RNum) {
 
         decrement(IsGmp, mpzIndex, dblIndex, numDecrement);
         return ApplyReverse(nRows);
-    } else if (CheckEqSi(IsGmp, mpzIndex, dblIndex, 2)) {
-        const std::string message = "No more results. To see the last result"
-                                    ", use the prevIter method(s)\n\n";
-        Rprintf(message.c_str());
-        decrement(IsGmp, mpzIndex, dblIndex);
-        return Rf_ScalarLogical(false);
+    } else if (CheckEqSi(IsGmp, mpzIndex, dblIndex, 1)) {
+        return ToSeeFirst();
     } else {
-        return Rf_ScalarLogical(false);
+        return R_NilValue;
     }
 }
 
 SEXP ComboApply::nextGather() {
+
+    if (CheckEqInd(IsGmp, mpzIndex, dblIndex,
+                   computedRowsMpz, computedRows)) {
+        return ToSeeLast();
+    }
 
     if (IsGmp) {
         mpz_sub(mpzTemp, computedRowsMpz, mpzIndex);
@@ -262,11 +251,15 @@ SEXP ComboApply::nextGather() {
         UNPROTECT(1);
         return res;
     } else {
-        return Rf_ScalarLogical(false);
+        return R_NilValue;
     }
 }
 
 SEXP ComboApply::prevGather() {
+
+    if (CheckEqSi(IsGmp, mpzIndex, dblIndex, 1)) {
+        return ToSeeFirst();
+    }
 
     if (IsGmp) {
         mpz_sub_ui(mpzTemp, mpzIndex, 1);
@@ -286,7 +279,7 @@ SEXP ComboApply::prevGather() {
 
     const int nRows = (IsGmp) ? mpz_get_si(mpzTemp) : dblTemp;
 
-    if (nRows) {
+    if (nRows > 0) {
         if (CheckIndLT(IsGmp, mpzIndex, dblIndex, computedRowsMpz, computedRows, true))
             prevIter(freqs, z, n1, m1);
 
@@ -298,7 +291,7 @@ SEXP ComboApply::prevGather() {
 
         return ApplyReverse(nRows);
     } else {
-        return Rf_ScalarLogical(false);
+        return R_NilValue;
     }
 }
 
@@ -306,17 +299,11 @@ SEXP ComboApply::currComb() {
 
     if (CheckIndGrT(IsGmp, mpzIndex, dblIndex,
                     computedRowsMpz, computedRows)) {
-        const std::string message = "No more results. To see the last "
-                                    "result, use the prevIter method(s)\n\n";
-        Rprintf(message.c_str());
-        return Rf_ScalarLogical(0);
+        return ToSeeLast(false);
     } else if (CheckGrTSi(IsGmp, mpzIndex, dblIndex, 0)) {
         return VecApplyReturn();
     } else {
-        const std::string message = "Iterator Initialized. To see the first "
-                                    "result, use the nextIter method(s)\n\n";
-        Rprintf(message.c_str());
-        return Rf_ScalarLogical(0);
+        return ToSeeFirst(false);
     }
 }
 

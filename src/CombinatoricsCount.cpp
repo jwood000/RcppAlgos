@@ -62,7 +62,7 @@ SEXP PartitionsCount(SEXP Rtarget, SEXP Rv, SEXP Rm,
     const std::string mainFun = "sum";
     bool IsRep = CleanConvert::convertFlag(RisRep, "repetition");
     const bool bDesign = CleanConvert::convertFlag(RPartDesign,
-                                                      "PartitionsDesign");
+                                                   "PartitionsDesign");
 
     SetType(myType, Rv);
     SetValues(myType, myReps, freqs, vInt, vNum, Rv,
@@ -85,8 +85,9 @@ SEXP PartitionsCount(SEXP Rtarget, SEXP Rv, SEXP Rm,
 
     if (IsConstrained) {
         ConstraintSetup(vNum, myReps, targetVals, vInt, targetIntVals,
-                        funDbl, part, ctype, n, m, compVec, mainFun, mainFun,
-                        myType, Rtarget, RcompFun, Rtolerance, Rlow, true, true);
+                        funDbl, part, ctype, n, m, compVec, mainFun,
+                        mainFun, myType, Rtarget, RcompFun, Rtolerance,
+                        Rlow, true, true);
     }
 
     if (part.ptype != PartitionType::CoarseGrained &&
@@ -99,24 +100,11 @@ SEXP PartitionsCount(SEXP Rtarget, SEXP Rv, SEXP Rm,
             return CleanConvert::GetCount(part.isGmp, part.bigCount,
                                           part.count);
         }
+    } else if (bDesign) {
+        Rf_error("No design available for this case!");
     } else {
-        if (m == 1) {
-            const auto it = std::find(vNum.cbegin(), vNum.cend(),
-                                      targetVals.front());
-            if (it != vNum.cend()) {
-                return Rf_ScalarInteger(1);
-            } else {
-                return Rf_ScalarInteger(0);
-            }
-        } else if (n == 1) {
-            if (m == targetVals.front()) {
-                return Rf_ScalarInteger(1);
-            } else {
-                return Rf_ScalarInteger(0);
-            }
-        } else {
-            return Rf_ScalarInteger(0);
-        }
+        Rf_error("The count is unknown for this case. To get the total"
+                 " number, generate all results!");
     }
 }
 

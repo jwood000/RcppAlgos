@@ -111,7 +111,7 @@ SEXP ConstraintsReturn(
         }
     } else {
         const int lastElem = n - 1;
-        const int lastCol = width - 1;
+        const int lastCol  = width - 1;
 
         if (myType == VecType::Integer) {
             SEXP res = PROTECT(Rf_allocMatrix(INTSXP, nRows, nCols));

@@ -18,6 +18,7 @@ CnstrntsSpecial::CnstrntsSpecial(
              RcnstrtRowsMpz) {
     count = 0;
     keepGoing = true;
+    prevIterAvailable = false;
 }
 
 void CnstrntsSpecial::startOver() {
@@ -43,11 +44,11 @@ SEXP CnstrntsSpecial::nextComb() {
                 const std::string message = "No more results\n\n";
                 Rprintf(message.c_str());
                 UNPROTECT(1);
-                return Rf_ScalarLogical(false);
+                return R_NilValue;
             }
         }
     } else {
-        return Rf_ScalarLogical(false);
+        return R_NilValue;
     }
 }
 
@@ -74,11 +75,11 @@ SEXP CnstrntsSpecial::nextNumCombs(SEXP RNum) {
                 const std::string message = "No more results\n\n";
                 Rprintf(message.c_str());
                 UNPROTECT(1);
-                return Rf_ScalarLogical(false);
+                return R_NilValue;
             }
         }
     } else {
-        return Rf_ScalarLogical(false);
+        return R_NilValue;
     }
 }
 
@@ -90,7 +91,7 @@ SEXP CnstrntsSpecial::nextGather() {
         UNPROTECT(1);
         return res;
     } else {
-        return Rf_ScalarLogical(false);
+        return R_NilValue;
     }
 }
 
@@ -99,8 +100,8 @@ SEXP CnstrntsSpecial::currComb() {
 }
 
 SEXP CnstrntsSpecial::summary() {
-    SEXP parent = PROTECT(Combo::summary());
-    std::string desc(R_CHAR(STRING_ELT(VECTOR_ELT(parent, 0), 0)));
+    SEXP res = PROTECT(Combo::summary());
+    std::string desc(R_CHAR(STRING_ELT(VECTOR_ELT(res, 0), 0)));
 
     std::string val1 = (RTYPE == INTSXP) ?
                        std::to_string(tarIntVals.front()) :
@@ -124,14 +125,11 @@ SEXP CnstrntsSpecial::summary() {
         desc += compVec.front() + " " + val1;
     }
 
-    const char *names[] = {"description", "currentIndex",
-                           "totalResultsWithoutConstraints", ""};
-
-    SEXP res = PROTECT(Rf_mkNamed(VECSXP, names));
     SET_VECTOR_ELT(res, 0, Rf_mkString(desc.c_str()));
     SET_VECTOR_ELT(res, 1, Rf_ScalarInteger(count));
-    SET_VECTOR_ELT(res, 2, VECTOR_ELT(parent, 2));
+    SET_VECTOR_ELT(res, 2, Rf_ScalarReal(R_NaReal));
+    SET_VECTOR_ELT(res, 3, Rf_ScalarReal(R_NaReal));
 
-    UNPROTECT(2);
+    UNPROTECT(1);
     return res;
 }

@@ -53,7 +53,7 @@ void SetFactorClass(SEXP res, SEXP Rv) {
 bool IsDecimal(SEXP Rv) {
 
     if (TYPEOF(Rv) == REALSXP && Rf_length(Rv) == 1) {
-        double res = REAL(Rv)[0];
+        double res = Rf_asReal(Rv);
 
         if (static_cast<std::int64_t>(res) == res) {
             return false;
@@ -192,11 +192,12 @@ void SetBasic(SEXP Rv, std::vector<double> &vNum,
 
         // numOnly = true, checkWhole = true, negPoss = true
         CleanConvert::convertPrimitive(Rv, seqEnd, myType,
-                                       "If v is not a character"
-                                       " and of length 1, it",
+                                       "v, if v is not a character"
+                                       " and of length 1,",
                                        true, true, true);
 
-        std::pair<int, int> mnmx = std::minmax(1, seqEnd);
+        const int first = (seqEnd < 0) ? -1 : ((seqEnd == 0) ? 0 : 1);
+        std::pair<int, int> mnmx = std::minmax(first, seqEnd);
         n = mnmx.second - mnmx.first + 1;
         constexpr int maxVecSize = std::numeric_limits<int>::max() / 2;
 

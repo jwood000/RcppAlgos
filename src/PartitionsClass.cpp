@@ -91,6 +91,7 @@ Partitions::Partitions(
     bAddOne = (ctype == ConstraintType::PartStandard) && !part.includeZero;
     rpsCnt = myReps;
     SetPartValues();
+    prevIterAvailable = false;
 }
 
 void Partitions::startOver() {
@@ -118,13 +119,9 @@ SEXP Partitions::nextComb() {
         return VecReturn();
     } else if (CheckEqInd(part.isGmp, mpzIndex, dblIndex,
                           cnstrtCountMpz, cnstrtCount)) {
-        const std::string message = "No more results. To see the last "
-                                    "result, use the prevIter method(s)\n\n";
-        Rprintf(message.c_str());
-        increment(part.isGmp, mpzIndex, dblIndex);
-        return Rf_ScalarLogical(false);
+        return ToSeeLast();
     } else {
-        return Rf_ScalarLogical(false);
+        return R_NilValue;
     }
 }
 
@@ -168,17 +165,18 @@ SEXP Partitions::nextNumCombs(SEXP RNum) {
         }
     } else if (CheckEqInd(part.isGmp, mpzIndex, dblIndex,
                           cnstrtCountMpz, cnstrtCount)) {
-        const std::string message = "No more results. To see the last result"
-                                    ", use the prevIter method(s)\n\n";
-        Rprintf(message.c_str());
-        increment(part.isGmp, mpzIndex, dblIndex);
-        return Rf_ScalarLogical(false);
+        return ToSeeLast();
     } else {
-        return Rf_ScalarLogical(false);
+        return R_NilValue;
     }
 }
 
 SEXP Partitions::nextGather() {
+
+    if (CheckEqInd(part.isGmp, mpzIndex, dblIndex,
+                   cnstrtCountMpz, cnstrtCount)) {
+        return ToSeeLast();
+    }
 
     if (part.isGmp) {
         mpz_sub(mpzTemp, cnstrtCountMpz, mpzIndex);
@@ -220,7 +218,7 @@ SEXP Partitions::nextGather() {
             return res;
         }
     } else {
-        return Rf_ScalarLogical(false);
+        return R_NilValue;
     }
 }
 
@@ -228,17 +226,11 @@ SEXP Partitions::currComb() {
 
     if (CheckIndGrT(part.isGmp, mpzIndex, dblIndex,
                     cnstrtCountMpz, cnstrtCount)) {
-        const std::string message = "No more results. To see the last "
-                                    "result, use the prevIter method(s)\n\n";
-        Rprintf(message.c_str());
-        return Rf_ScalarLogical(0);
+        return ToSeeLast(false);
     } else if (CheckGrTSi(part.isGmp, mpzIndex, dblIndex, 0)) {
         return VecReturn();
     } else {
-        const std::string message = "Iterator Initialized. To see the first "
-                                    "result, use the nextIter method(s)\n\n";
-        Rprintf(message.c_str());
-        return Rf_ScalarLogical(0);
+        return ToSeeFirst(false);
     }
 }
 
