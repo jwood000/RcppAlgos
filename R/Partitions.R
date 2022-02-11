@@ -1,5 +1,5 @@
 GetTarget <- function(v, target) {
-    if (is.null(target)) {target = max(v)}
+    if (is.null(target)) {target = max(v, na.rm = TRUE)}
     return(target)
 }
 
@@ -30,8 +30,7 @@ partitionsDesign <- function(v, m = NULL, repetition = FALSE,
 partitionsSample <- function(v, m = NULL, repetition = FALSE, freqs = NULL,
                              target = NULL, n = NULL, sampleVec = NULL,
                              seed = NULL, Parallel = FALSE,
-                             nThreads = NULL, namedSample = FALSE,
-                             tolerance = NULL) {
+                             nThreads = NULL, namedSample = FALSE) {
 
     if (!is.null(seed)) {
         set.seed(seed)
@@ -39,28 +38,17 @@ partitionsSample <- function(v, m = NULL, repetition = FALSE, freqs = NULL,
 
     return(.Call(Algos_SamplePartitions, v, m, repetition, freqs,
                  sampleVec, seed, n, sample, Parallel, nThreads,
-                 pkgEnv$nThreads, namedSample, "==", GetTarget(v, target),
-                 tolerance, new.env()))
+                 pkgEnv$nThreads, namedSample, "==",
+                 GetTarget(v, target), NULL, new.env()))
 }
 
 partitionsIter <- function(v, m = NULL, repetition = FALSE,
-                           freqs = NULL, target = NULL, lower = NULL,
-                           upper = NULL, nThreads = NULL,
-                           tolerance = NULL) {
+                           freqs = NULL, target = NULL,
+                           nThreads = NULL, tolerance = NULL) {
 
     InitVals <- .Call(Algos_GetClassVals, v, m, repetition, freqs,
                       TRUE, NULL, nThreads, pkgEnv$nThreads, TRUE)
 
     new("Partitions", InitVals, FALSE, "sum", "==",
         GetTarget(v, target), FALSE, tolerance, is.null(m))
-}
-
-partLen <- function(tar, m, v, rep = FALSE, fr = NULL, comb = TRUE) {
-    if (comb) {
-        RcppAlgos243::comboGeneral(v, m, rep, fr, constraintFun = "sum",
-                                   comparisonFun = "==", limitConstraints = tar)
-    } else {
-        RcppAlgos243::permuteGeneral(v, m, rep, fr, constraintFun = "sum",
-                                     comparisonFun = "==", limitConstraints = tar)
-    }
 }
