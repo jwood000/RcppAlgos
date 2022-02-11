@@ -37,6 +37,8 @@ double CountPartsDistinctLenCap(int n, int m, int cap, int strtLen) {
     //
     // (max * m) - ((m - 1) * m) / 2
 
+    CheckMultIsInt(cap, m);
+    CheckMultIsInt(m - 1, m);
     const int limit = (cap * m) - ((m - 1) * m) / 2;
 
     if (limit <= n) {
@@ -48,6 +50,7 @@ double CountPartsDistinctLenCap(int n, int m, int cap, int strtLen) {
     }
 
     const int width = n + 1;
+    CheckMultIsInt(cap + 1, width);
     const int maxSize = (cap + 1) * width;
 
     std::vector<double> p1(maxSize);

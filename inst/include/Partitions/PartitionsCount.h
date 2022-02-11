@@ -16,18 +16,16 @@ protected:
 public:
     virtual ~CountClass() = default;
     void SetArrSize(PartitionType ptype, int n, int m, int cap);
-    static std::unique_ptr<CountClass> MakeCount(PartitionType ptype);
 
-    virtual double GetCount(int n, int m, int cap, int strtLen) {
-        return 0.0;
-    };
-
+    virtual double GetCount(int n, int m, int cap, int strtLen)  = 0;
     virtual void GetCount(mpz_t res, int n, int m, int cap,
-                          int strtLen, bool bLiteral = true) {};
+                          int strtLen, bool bLiteral = true) = 0;
 
     void InitializeMpz();
     void ClearMpz();
 };
+
+std::unique_ptr<CountClass> MakeCount(PartitionType ptype);
 
 class DistinctAll : public CountClass {
     double GetCount(int n, int m, int cap, int strtLen);

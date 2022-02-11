@@ -19,6 +19,7 @@
 // DstctNoZero    :  CountPartDistinctLen(20, 5)
 // DstctCapped    :  CountPartDistinctLenCap(20, 4, 9)
 // DstctCappedMZ  :  CountPartsDistinctMultiZeroCap(c(0, 0, 9, 11), 20, 4, 11)
+// LengthOne      :  1 or 0
 // Multiset       :  CountPartMultiset(rep(1:3, 6), c(1, 2, 2, 15), 4, 20 - 1, 4 - 1)
 
 enum class PartitionType {
@@ -32,9 +33,10 @@ enum class PartitionType {
     DstctNoZero    = 7,  // E.g. tar = 20 startZ = c(1, 2, 3, 4, 10)
     DstctCapped    = 8,  // E.g. tar = 20, m = 4, from 1:9 gives startZ = c(1, 2, 8, 9)
     DstctCappedMZ  = 9,  // E.g. tar = 20, m = 4, from 0:11, freqs = c(2, rep(1, 11)) gives startZ = c(0, 0, 9, 11)
-    Multiset       = 10, // Partitions of non-trivial multisets
-    CoarseGrained  = 11, // This is equivalent to ConstraintType::PartitionEsque
-    NotPartition   = 12
+    LengthOne      = 10, // Any partition when m = 1
+    Multiset       = 11, // Partitions of non-trivial multisets
+    CoarseGrained  = 12, // This is equivalent to ConstraintType::PartitionEsque
+    NotPartition   = 13
 };
 
 const std::array<PartitionType, 4> RepPTypeArr{{
@@ -64,6 +66,7 @@ struct PartDesign {
     bool mapIncZero = false;
     bool numUnknown = false;
     std::vector<int> startZ;
+    std::int64_t cap = 0;
     std::int64_t shift = 0;
     std::int64_t slope = 0;
     std::int64_t target = 0;

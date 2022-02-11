@@ -1,5 +1,6 @@
 #include "Partitions/PartitionsCountMultiset.h"
 #include "Partitions/PartitionsCountDistinct.h"
+#include "Partitions/PartitionsCountSection.h"
 #include "Partitions/BigPartsCountDistinct.h"
 #include "Partitions/PartitionsCountRep.h"
 #include "Partitions/BigPartsCountRep.h"
@@ -11,7 +12,7 @@
 
 constexpr double cutOff = 3.0;
 
-std::unique_ptr<CountClass> CountClass::MakeCount(PartitionType ptype) {
+std::unique_ptr<CountClass> MakeCount(PartitionType ptype) {
 
     switch (ptype) {
         case PartitionType::RepStdAll: {
@@ -218,30 +219,40 @@ void CountClass::SetArrSize(PartitionType ptype, int n, int m, int cap) {
     switch (ptype) {
         case PartitionType::RepNoZero: {
             const int limit = std::min(n - m, m);
+            CheckMultIsInt(2, m);
+            CheckMultIsInt(2, limit);
             n = (n < 2 * m) ? 2 * limit : n;
             size = (n + 1);
             break;
         } case PartitionType::RepShort: {
             const int limit = std::min(n - m, m);
+            CheckMultIsInt(2, m);
+            CheckMultIsInt(2, limit);
             n = (n < 2 * m) ? 2 * limit : n;
             size = (n + 1);
             break;
         } case PartitionType::RepCapped: {
+            CheckMultIsInt(cap + 1, n + 1);
             size = (cap + 1) * (n + 1);
             break;
         } case PartitionType::DstctMultiZero: {
+            CheckMultIsInt(1, n + 1);
             size = (n + 1);
             break;
         } case PartitionType::DstctOneZero: {
+            CheckMultIsInt(1, n + 1);
             size = (n + 1);
             break;
         } case PartitionType::DstctNoZero: {
+            CheckMultIsInt(1, n + 1);
             size = (n + 1);
             break;
         } case PartitionType::DstctCapped: {
+            CheckMultIsInt(cap + 1, n + 1);
             size = (cap + 1) * (n + 1);
             break;
         } case PartitionType::DstctCappedMZ: {
+            CheckMultIsInt(cap + 1, n + 1);
             size = (cap + 1) * (n + 1);
             break;
         } default: {
@@ -262,18 +273,17 @@ void PartitionsCount(const std::vector<int> &Reps, PartDesign &part,
 
     const bool bWorthIt = OverTheBar(part.ptype, capNumIters, lenV, part.width);
 
-    if (IsComb && part.ptype != PartitionType::Multiset) {
+    if (part.ptype == PartitionType::LengthOne) {
+        part.count = static_cast<int>(part.solnExist);
+    } else if (IsComb && part.ptype != PartitionType::Multiset) {
         if (bCalcDifficult || bWorthIt) {
             const int strtLen = std::count_if(part.startZ.cbegin(),
                                               part.startZ.cend(),
                                               [](int i){return i > 0;});
 
-            const int cap = lenV - part.mapIncZero;
-
-            CountClass init;
-            std::unique_ptr<CountClass> myClass = init.MakeCount(part.ptype);
+            std::unique_ptr<CountClass> myClass = MakeCount(part.ptype);
             part.count = myClass->GetCount(part.mapTar, part.width,
-                                           cap, strtLen);
+                                           part.cap, strtLen);
 
             if (part.count > Significand53) {
                 part.isGmp = true;
@@ -282,14 +292,14 @@ void PartitionsCount(const std::vector<int> &Reps, PartDesign &part,
                     part.ptype != PartitionType::DstctStdAll) {
 
                     myClass->SetArrSize(part.ptype, part.mapTar,
-                                        part.width, cap);
+                                        part.width, part.cap);
                     myClass->InitializeMpz();
                     myClass->GetCount(part.bigCount, part.mapTar,
-                                      part.width, cap, strtLen);
+                                      part.width, part.cap, strtLen);
                     myClass->ClearMpz();
                 } else {
                     myClass->GetCount(part.bigCount, part.mapTar,
-                                      part.width, cap, strtLen);
+                                      part.width, part.cap, strtLen);
                 }
             }
         } else {
@@ -315,8 +325,7 @@ void PartitionsCount(const std::vector<int> &Reps, PartDesign &part,
                    part.ptype == PartitionType::DstctCappedMZ) {
 
             if (bCalcDifficult || bWorthIt) {
-                part.count = CountPartsPermDistinctCap(part.startZ,
-                                                       lenV - part.mapIncZero,
+                part.count = CountPartsPermDistinctCap(part.startZ, part.cap,
                                                        part.mapTar, part.width,
                                                        part.mapIncZero);
             } else {

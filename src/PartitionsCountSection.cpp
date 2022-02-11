@@ -1,5 +1,4 @@
-#include <cstdint>
-#include <cmath>
+#include "Constraints/ConstraintsUtils.h"
 
 // Consider finding partitions of 50 of length 5 with no zeros.
 // The first few results are:
@@ -59,4 +58,10 @@ int GetMaxWidth(double target) {
     const double discriminant = 1.0 + 8.0 * target;
     int max_width = (-1 + std::sqrt(discriminant)) / 2;
     return max_width;
+}
+
+void CheckMultIsInt(double x, double y) {
+    if ((x * y) > dblIntMax) {
+        Rf_error("Sorry, this case is too large!");
+    }
 }

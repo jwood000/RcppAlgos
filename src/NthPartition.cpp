@@ -229,8 +229,7 @@ std::vector<int> nthPartsRepLenGmp(int n, int m, int cap, int k,
     mpz_set(index, mpzIdx);
     const PartitionType ptype = PartitionType::RepShort;
 
-    CountClass init;
-    std::unique_ptr<CountClass> myClass = init.MakeCount(ptype);
+    std::unique_ptr<CountClass> myClass = MakeCount(ptype);
     myClass->SetArrSize(ptype, n, m, cap);
     myClass->InitializeMpz();
 
@@ -286,8 +285,7 @@ std::vector<int> nthPartsRepCapGmp(int n, int m, int cap, int k,
     mpz_set(index, mpzIdx);
     const PartitionType ptype = PartitionType::RepCapped;
 
-    CountClass init;
-    std::unique_ptr<CountClass> myClass = init.MakeCount(ptype);
+    std::unique_ptr<CountClass> myClass = MakeCount(ptype);
     myClass->SetArrSize(ptype, n, m, cap);
     myClass->InitializeMpz();
 
@@ -332,8 +330,7 @@ std::vector<int> nthPartsDistinctLenGmp(int n, int m, int cap, int k,
     mpz_set(index, mpzIdx);
     const PartitionType ptype = PartitionType::DstctNoZero;
 
-    CountClass init;
-    std::unique_ptr<CountClass> myClass = init.MakeCount(ptype);
+    std::unique_ptr<CountClass> myClass = MakeCount(ptype);
     myClass->SetArrSize(ptype, n, m, cap);
     myClass->InitializeMpz();
 
@@ -382,8 +379,7 @@ std::vector<int> nthPartsDistinctMultiZeroGmp(int n, int m, int cap, int k,
     mpz_set(index, mpzIdx);
     const PartitionType ptype = PartitionType::DstctMultiZero;
 
-    CountClass init;
-    std::unique_ptr<CountClass> myClass = init.MakeCount(ptype);
+    std::unique_ptr<CountClass> myClass = MakeCount(ptype);
     myClass->SetArrSize(ptype, n, m, cap);
     myClass->InitializeMpz();
 
@@ -434,8 +430,7 @@ std::vector<int> nthPartsDistinctCapGmp(int n, int m, int cap, int k,
     mpz_set(index, mpzIdx);
     const PartitionType ptype = PartitionType::DstctCapped;
 
-    CountClass init;
-    std::unique_ptr<CountClass> myClass = init.MakeCount(ptype);
+    std::unique_ptr<CountClass> myClass = MakeCount(ptype);
     myClass->SetArrSize(ptype, n, m, cap);
     myClass->InitializeMpz();
 
@@ -479,8 +474,7 @@ std::vector<int> nthPartsDistinctCapMZGmp(int n, int m, int cap, int k,
     mpz_set(index, mpzIdx);
     const PartitionType ptype = PartitionType::DstctCappedMZ;
 
-    CountClass init;
-    std::unique_ptr<CountClass> myClass = init.MakeCount(ptype);
+    std::unique_ptr<CountClass> myClass = MakeCount(ptype);
     myClass->SetArrSize(ptype, n, m, cap);
     myClass->InitializeMpz();
 
@@ -538,12 +532,14 @@ nthPartsPtr GetNthPartsFunc(PartitionType ptype, bool IsGmp) {
                 return(nthPartsPtr(nthPartsRepShortGmp));
             } case PartitionType::RepStdAll : {
                 return(nthPartsPtr(nthPartsRepGmp));
+            } case PartitionType::LengthOne : {
+                Rf_error("Length one partition. This should not happen!");
             } case PartitionType::Multiset : {
                 Rf_error("Investigate multiset algo later");
             } case PartitionType::CoarseGrained : {
                 Rf_error("No algo available");
             } case PartitionType::NotPartition : {
-                Rf_error("Error... Not partition! This should not happen");
+                Rf_error("Error... Not partition! This should not happen!");
             }
         }
     } else {
@@ -568,6 +564,8 @@ nthPartsPtr GetNthPartsFunc(PartitionType ptype, bool IsGmp) {
                 return(nthPartsPtr(nthPartsRepShort));
             } case PartitionType::RepStdAll: {
                 return(nthPartsPtr(nthPartsRep));
+            } case PartitionType::LengthOne : {
+                Rf_error("Length one partition. This should not happen!");
             } case PartitionType::Multiset: {
                 Rf_error("Investigate multiset algo later");
             } case PartitionType::CoarseGrained: {

@@ -6,11 +6,13 @@
 double CountPartsRepLenCap(int n, int m, int cap, int strtLen) {
 
     if (cap > n) cap = n;
+    CheckMultIsInt(cap, m);
     if (cap * m < n || n < m) return 0;
     if (cap * m == n || n <= m + 1) return 1;
     if (m < 2) return m;
 
     if (m == 2) {
+        CheckMultIsInt(2, cap);
         if (cap * 2 >= n) {
             cap = std::min(cap, n - 1);
             return n / m - (n - 1 - cap);
@@ -20,6 +22,7 @@ double CountPartsRepLenCap(int n, int m, int cap, int strtLen) {
     }
 
     const int width = n + 1;
+    CheckMultIsInt(cap + 1, width);
     const int maxSize = (cap + 1) * width;
 
     std::vector<double> p1(maxSize);
@@ -85,6 +88,8 @@ double CountPartsRepLen(int n, int m, int cap, int strtLen) {
         return(res);
     } else {
         const int limit = std::min(n - m, m);
+        CheckMultIsInt(2, m);
+        CheckMultIsInt(2, limit);
         n = (n < 2 * m) ? 2 * limit : n;
 
         std::vector<double> p1(n + 1);
