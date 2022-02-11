@@ -16,7 +16,6 @@ export(
   comboSample,
   permuteSample,
   partitionsSample,
-  partitionsDesign,
   comboGroups,
   comboGroupsCount,
   comboGroupsSample,
