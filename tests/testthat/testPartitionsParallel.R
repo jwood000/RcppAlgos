@@ -1,3 +1,5 @@
+context("testing partitionGeneral Parallel")
+
 test_that("partitionGeneral Distinct Parallel", {
 
     ## N.B. Parallel has no effect when number of results is less than 40000

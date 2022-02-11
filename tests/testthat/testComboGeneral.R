@@ -195,14 +195,29 @@ test_that("comboGeneral produces correct results with use of FUN", {
 
     test <- comboGeneral(10, 5, constraintFun = "sum")
     expect_equal(as.vector(test[,6]), unlist(comboGeneral(10, 5, FUN = sum)))
+    expect_equal(dim(comboGeneral(LETTERS, 5, freqs = c(rep(1:4, 6), 1:2),
+                                  FUN = function(x) sapply(x, charToRaw),
+                                  upper = 8, FUN.VALUE = as.raw(1:5))), c(8, 5))
 
+    expect_equal(class(comboGeneral(
+        LETTERS, 5, TRUE, FUN = function(x) {
+            sapply(x, function(y) rawToBits(charToRaw(y)))
+        }, upper = 8, FUN.VALUE = rawToBits(as.raw(1:5))
+    )[1, ]), "raw")
     test <- comboGeneral(10, 4, TRUE)
     testFun <- apply(test, 1, function(x) mean(x) * 2)
-    expect_equal(testFun, unlist(comboGeneral(10, 4, T, FUN = function(x) {mean(x) * 2})))
+    expect_equal(testFun,
+                 comboGeneral(10, 4, T, FUN = function(x) {mean(x) * 2},
+                              FUN.VALUE = 2.2))
 
     test <- comboGeneral(8, 4, freqs = rep(1:4, 2))
     testFun <- lapply(1:nrow(test), function(x) cumsum(test[x, ]))
     expect_equal(testFun, comboGeneral(8, 4, freqs = rep(1:4, 2), FUN = cumsum))
+
+    expect_equal(class(comboGeneral(5, 3, FUN = cumsum,
+                                    FUN.VALUE = as.numeric(1:3))[1, ]), "numeric")
+    expect_equal(class(comboGeneral(5, 3, FUN = cumsum,
+                                    FUN.VALUE = as.complex(1:3))[1, ]), "complex")
 
     expect_equal(testFun[1:100], comboGeneral(8, 4, freqs = rep(1:4, 2), upper = 100, FUN = cumsum))
     expect_equal(testFun[101:length(testFun)],

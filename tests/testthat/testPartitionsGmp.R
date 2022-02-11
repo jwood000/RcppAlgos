@@ -1,3 +1,5 @@
+context("testing partitionGeneral GMP")
+
 test_that("partitionGeneral Distinct Parallel Lower GMP", {
 
     #######################################################################

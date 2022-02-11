@@ -18,15 +18,9 @@ test_that("ConstraintsClass produces correct results", {
         myRows <- nrow(b)
 
         if (length(v_pass) == 1) {
-            if (v_pass < 0) {
-                myResults <- c(myResults, isTRUE(
-                    all.equal(abs(v_pass) + 2, length(a@sourceVector()))
-                ))
-            } else {
-                myResults <- c(myResults, isTRUE(
-                    all.equal(v_pass, length(a@sourceVector()))
-                ))
-            }
+            myResults <- c(myResults, isTRUE(
+                all.equal(abs(v_pass), length(a@sourceVector()))
+            ))
         } else {
             myResults <- c(myResults, isTRUE(
                 all.equal(sort(v_pass), a@sourceVector())
@@ -42,8 +36,8 @@ test_that("ConstraintsClass produces correct results", {
 
         myResults <- c(myResults, isTRUE(all.equal(a1, b)))
         noMore <- capture.output(a@nextIter())
-        myResults <- c(myResults, grepl("FALSE", tail(noMore, 1L)))
-        myResults <- c(myResults, a@nextIter() == FALSE)
+        myResults <- c(myResults, grepl("NULL", tail(noMore, 1L)))
+        myResults <- c(myResults, is.null(a@nextIter()))
         a@startOver()
         numTest <- as.integer(myRows / 3);
 

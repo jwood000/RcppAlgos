@@ -26,7 +26,7 @@ test_that("comboGeneral produces appropriate error messages", {
     expect_error(comboGeneral(10,7,FALSE,NULL,NULL,NULL,"sum","<",c(20,30,40)),
                  "there cannot be more than 2 limitConstraints")
     expect_error(comboGeneral(10,7,FALSE,NULL,NULL,NULL,"sum","<",c(20,NA)),
-                 "limitConstraints cannot be NA")
+                 "limitConstraints/target cannot be NA or NaN")
 
     expect_error(comboGeneral(10,7,FALSE,NULL,NULL,NULL,"sum",c("<",">","=="),c(20,30)),
                  "there cannot be more than 2 comparison operator")
@@ -65,6 +65,8 @@ test_that("comboGeneral produces appropriate error messages", {
                  "number of rows cannot exceed")
 
     expect_error(comboGeneral(5, 3, FUN = 2), "FUN must be a function")
+    expect_error(comboGeneral(5, 3, FUN = cumsum, FUN.VALUE = 1L),
+                 "values must be length 1")
 
     expect_error(comboGeneral(5, 3.3), "must be a whole number")
     expect_error(comboGeneral(gmp::as.bigz(1:5), 3), "Only atomic types are supported for v")
@@ -135,6 +137,11 @@ test_that("numDivisorSieve produces appropriate error messages", {
 })
 
 test_that("combo/permuteGeneral produces correct error messages with Parallel", {
+    expect_error(partitionsSample(3.3, 1),
+                 "Partition sampling not available for this case")
+})
+
+test_that("partitionsSample produces correct error messages", {
     expect_error(permuteGeneral(10, 5, Parallel = "TRUE"),
                  "Only logical values are supported for Parallel")
 })
@@ -294,7 +301,7 @@ test_that("permuteSample produces appropriate error messages", {
     expect_error(permuteSample(5000, 10, sampleVec = c(1e9, -1)),
                  "Each element in sampleVec must be a positive number")
     expect_error(permuteSample(NA_integer_, 3, n = 5),
-                 "If v is not a character and of length 1, it cannot be NA or NaN")
+                 "v, if v is not a character and of length 1, cannot be NA or NaN")
     expect_error(permuteSample(1000, 20, sampleVec = c(NA, "1234567890")),
                  "Each element in sampleVec cannot be NA or NaN")
 })

@@ -59,6 +59,8 @@ test_that("partitionsIter produces correct results", {
 
         a@startOver()
         myResults <- c(myResults, isTRUE(all.equal(a@nextRemaining(), b)))
+        t <- capture.output(a@nextIter())
+        myResults <- c(myResults, is.null(a@nextIter()))
 
         if (testRand) {
             samp <- sample(myRows, numTest)

@@ -115,6 +115,7 @@ test_that("comboIter & permuteIter produces correct results", {
         ## Prepare a for reverse iteration
         temp <- a@back()
         t <- capture.output(a@nextIter())
+        myResults <- c(myResults, is.null(a@nextIter()))
         a2 <- b
 
         if (is.atomic(b) && !is.matrix(b)) {
@@ -141,6 +142,7 @@ test_that("comboIter & permuteIter produces correct results", {
         ## Prepare a for reverse iteration
         temp <- a@back()
         t <- capture.output(a@nextIter())
+        myResults <- c(myResults, is.null(a@nextNIter()))
 
         # .method("prevNIter", &Combo::prevNumCombs)
         for (i in 1:3) {
@@ -159,6 +161,7 @@ test_that("comboIter & permuteIter produces correct results", {
         ## Prepare a for reverse iteration
         temp <- a@back()
         t <- capture.output(a@nextIter())
+        myResults <- c(myResults, is.null(a@nextRemaining()))
         a3 <- a@prevRemaining()
 
         # .method("prevRemaining", &Combo::prevGather)
@@ -234,6 +237,9 @@ test_that("comboIter & permuteIter produces correct results", {
     expect_true(comboClassTest(5, 3, FUN1 = sum, FUN.VALUE1 = 1L))
     expect_true(comboClassTest(as.complex(1:5), 3, TRUE, FUN1 = mean,
                                FUN.VALUE1 = as.complex(1.1)))
+    expect_true(comboClassTest(as.complex(1:3 + 1i), 5, TRUE,
+                               FUN1 = function(x) {sum(x / (as.complex(1:5 + 1i)))},
+                               FUN.VALUE1 = as.complex(1), IsComb = FALSE))
 
     set.seed(103)
     myNums = rnorm(5)
@@ -247,6 +253,21 @@ test_that("comboIter & permuteIter produces correct results", {
     expect_true(comboClassTest(letters[1:4], 5, freqs1 = 1:4, IsComb = FALSE,
                                FUN1 = function(x) {paste0(x, collapse = "")},
                                FUN.VALUE1 = "a"))
+    expect_true(comboClassTest(letters[1:3], 5, TRUE, IsComb = FALSE,
+                               FUN1 = function(x) {charToRaw(paste0(x, collapse = ""))},
+                               FUN.VALUE1 = charToRaw("aaaaa")))
+    expect_true(comboClassTest(as.character(1:3), 5, TRUE,
+                               FUN1 = function(x) {sum(as.integer(x))},
+                               FUN.VALUE1 = 2L))
+    expect_true(comboClassTest(as.character(1:3), 5, TRUE,
+                               FUN1 = function(x) {mean(as.numeric(x) + 0.1234)},
+                               FUN.VALUE1 = 2.0))
+    expect_true(comboClassTest(as.character(1:5), 5, freqs1 = c(2:4, 2:3),
+                               FUN1 = function(x) {sum(as.numeric(x) + 1i)},
+                               FUN.VALUE1 = as.complex(2.0)))
+    expect_true(comboClassTest(letters[1:5], 5, IsComb = FALSE,
+                               FUN1 = function(x) {list(x)},
+                               FUN.VALUE1 = list(letters[1:5])))
 
     ## With constraintFun
     expect_true(comboClassTest(myNums, 4, freqs1 = c(1, 2, 3, 2, 1),
