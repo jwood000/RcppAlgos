@@ -118,7 +118,7 @@ void FunAssign(SEXP res, SEXP vectorPass, SEXP sexpFun,
                int count, int nRows, int retType) {
 
     if (retType == VECSXP) {
-        SETCADR(sexpFun, vectorPass);
+        SETCADR(sexpFun, Rf_duplicate(vectorPass));
         SET_VECTOR_ELT(res, count, Rf_eval(sexpFun, rho));
     } else {
         VapplyAssign(res, vectorPass, sexpFun, rho,
