@@ -1,6 +1,7 @@
 #ifndef THREAD_SAFE_COMBINATIONS_H
 #define THREAD_SAFE_COMBINATIONS_H
 
+#include <vector>
 #include <gmp.h>
 
 template <typename T>

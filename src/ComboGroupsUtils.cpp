@@ -1,7 +1,10 @@
 #include "Combinations/NthCombination.h"
 #include "Combinations/BigComboCount.h"
 #include "Combinations/ComboCount.h"
-#include <numeric>
+#include <algorithm> // std::sort
+#include <numeric>   // std::iota
+#include <cstdint>
+#include <limits>
 #include <vector>
 #include <cmath>
 #include <gmp.h>

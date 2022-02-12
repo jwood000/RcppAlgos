@@ -2,6 +2,7 @@
 #include "Partitions/PartitionsDistinct.h"
 #include "Partitions/PartitionsTypes.h"
 #include "Partitions/PartitionsRep.h"
+#include <algorithm> // std::find
 #include "RMatrix.h"
 
 void PartsStdManager(int* mat, std::vector<int> &z, int width,

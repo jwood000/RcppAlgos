@@ -1,6 +1,7 @@
 #ifndef THREAD_SAFE_PERMUTATIONS_H
 #define THREAD_SAFE_PERMUTATIONS_H
 
+#include <vector>
 #include <gmp.h>
 
 template <typename T>

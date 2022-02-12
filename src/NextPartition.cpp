@@ -1,4 +1,5 @@
 #include "Partitions/PartitionsTypes.h"
+#include <algorithm>  // std::find
 
 void NextDistinctPart(std::vector<int> &z, int &boundary,
                       int &edge, int &tarDiff, int lastCol) {

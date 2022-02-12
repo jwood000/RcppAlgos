@@ -3,6 +3,7 @@
 
 #include "NextComboSection.h"
 #include "FunAssign.h"
+#include <algorithm>
 
 template <typename T>
 void MultisetComboApplyFun(SEXP res, const std::vector<T> &v,

@@ -3,7 +3,8 @@
 #include "Cpp14MakeUnique.h"
 #include "PopulateVec.h"
 #include "RMatrix.h"
-#include <numeric>  // std::iota
+#include <algorithm>  // std::next_permutation
+#include <numeric>    // std::iota
 
 template <typename T>
 void PartsGenDistinct(T* mat, const std::vector<T> &v,

@@ -1,6 +1,6 @@
 #include "Permutations/BigPermuteCount.h"
 #include "CleanConvert.h"
-#include <algorithm>  // std::min, std::max
+#include <algorithm>  // std::min, std::max, std::sort
 #include <numeric>    // std::accumulate, std::partial_sum, std::iota
 #include <limits>     // std::numeric_limits
 

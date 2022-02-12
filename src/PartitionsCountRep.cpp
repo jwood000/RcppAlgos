@@ -1,6 +1,7 @@
 #include "Partitions/PartitionsCountSection.h"
 #include "Combinations/ComboCount.h"
 #include "Cpp14MakeUnique.h"
+#include <algorithm>  // std::next_permutation
 #include <cmath>
 
 double CountPartsRepLenCap(int n, int m, int cap, int strtLen) {

@@ -5,6 +5,7 @@
 #include "Partitions/PartitionsCount.h"
 #include "Cpp14MakeUnique.h"
 #include "ImportExportMPZ.h"
+#include <algorithm>
 #include <numeric>
 #include <cmath>
 

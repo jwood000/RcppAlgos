@@ -1,4 +1,5 @@
 #include "Combinations/NextComboSection.h"
+#include <algorithm>
 
 using nextIterPtr = bool (*const)(const std::vector<int> &freqs,
                           std::vector<int> &z, int n1, int m1);

@@ -1,5 +1,6 @@
 #include "Permutations/BigPermuteCount.h"
 #include "Permutations/PermuteCount.h"
+#include <algorithm> // std::find
 #include <numeric>
 #include <cmath>
 

@@ -5,6 +5,7 @@
 #include <Rinternals.h>
 #include <R.h>
 
+#include <limits>
 #include <vector>
 #include <string>
 #include <gmp.h>

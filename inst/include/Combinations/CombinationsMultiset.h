@@ -2,6 +2,7 @@
 #define COMBINATIONS_MULTISET_H
 
 #include "NextComboSection.h"
+#include <algorithm>  // std::find
 
 template <typename T>
 void MultisetCombination(T* mat, const std::vector<T> &v,

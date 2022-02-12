@@ -1,10 +1,10 @@
 #ifndef PARTITION_TYPES_H
 #define PARTITION_TYPES_H
 
+#include <cstdint>
+#include <vector>
 #include <gmp.h>
 #include <array>
-#include <vector>
-#include <cstdint>
 
 // Here are the corresponding functions that one would use for each example below:
 //

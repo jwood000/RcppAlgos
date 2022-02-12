@@ -1,6 +1,7 @@
 #include "Constraints/ConstraintsTypes.h"
 #include "ImportExportMPZ.h"
 #include "CleanConvert.h"
+#include <algorithm>   // std::max_element
 
 void SetIndexVec(SEXP RindexVec, std::vector<double> &mySample,
                  std::size_t &sampSize, bool IsGmp, double computedRows) {

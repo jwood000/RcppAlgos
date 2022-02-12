@@ -3,6 +3,7 @@
 #include "NumbersUtils/PhiTinyLookup.h"
 #include "NumbersUtils/Eratosthenes.h"
 #include "CleanConvert.h"
+#include <algorithm>
 #include <numeric>
 #include <thread>
 #include <mutex>

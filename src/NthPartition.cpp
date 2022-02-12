@@ -540,6 +540,8 @@ nthPartsPtr GetNthPartsFunc(PartitionType ptype, bool IsGmp) {
                 Rf_error("No algo available");
             } case PartitionType::NotPartition : {
                 Rf_error("Error... Not partition! This should not happen!");
+            } default : {
+                return nullptr;
             }
         }
     } else {
@@ -572,6 +574,8 @@ nthPartsPtr GetNthPartsFunc(PartitionType ptype, bool IsGmp) {
                 Rf_error("No algo available");
             } case PartitionType::NotPartition: {
                 Rf_error("Error... Not partition! This should not happen");
+            } default : {
+                return nullptr;
             }
         }
     }

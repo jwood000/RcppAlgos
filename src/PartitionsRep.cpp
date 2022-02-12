@@ -1,6 +1,7 @@
 #include "Partitions/NextPartition.h"
 #include "PopulateVec.h"
 #include "RMatrix.h"
+#include <algorithm>  // std::next_permutation
 
 template <typename T>
 void PartsGenRep(T* mat, const std::vector<T> &v, std::vector<int> &z,

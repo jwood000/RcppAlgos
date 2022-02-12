@@ -1,3 +1,4 @@
+#include <algorithm>
 #include <vector>
 
 using prevIterPtr = void (*const)(const std::vector<int> &freqs,

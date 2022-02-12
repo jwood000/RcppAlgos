@@ -4,8 +4,8 @@
 #include "Cpp14MakeUnique.h"
 #include "ImportExportMPZ.h"
 #include "CleanConvert.h"
-#include <algorithm>
-#include <numeric>
+#include <algorithm> // std:: sort, std::minmax
+#include <numeric>   // std::iota
 
 static gmp_randstate_t seed_state;
 static int seed_init = 0;

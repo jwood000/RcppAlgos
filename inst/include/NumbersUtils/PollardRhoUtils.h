@@ -2,6 +2,7 @@
 #define POLLARD_RHO_UTILS_H
 
 #include "PrimesPolRho.h"
+#include <algorithm>
 #include <vector>
 #include <gmp.h>
 

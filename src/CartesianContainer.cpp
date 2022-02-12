@@ -4,7 +4,7 @@
 #include "CleanConvert.h"
 #include "SetUpUtils.h"
 #include <unordered_map>
-#include <numeric>
+#include <numeric>  // std::accumulate
 
 enum rcppType {
     tInt = 0,
