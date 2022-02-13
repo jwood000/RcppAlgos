@@ -37,8 +37,9 @@ SEXP CnstrntsSpecial::nextComb() {
         } else {
             if (Rf_nrows(res)) {
                 count = dblIndex;
+                Rf_setAttrib(res, R_DimSymbol, R_NilValue);
                 UNPROTECT(1);
-                return Rf_DropDims(res);
+                return res;
             } else {
                 keepGoing = false;
                 const std::string message = "No more results\n\n";
