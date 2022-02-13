@@ -25,7 +25,7 @@ namespace PrimeCounting {
 
         constexpr int segSize = Almost210L1Cache;
         constexpr int nWheels = N_WHEELS210_PER_SEG;
-        constexpr std::size_t szWheel210 = SZ_WHEEL210;
+        constexpr int szWheel210 = SZ_WHEEL210;
         const int sqrtBound = std::sqrt(static_cast<double>(maxNum));
 
         // the wheel already has the first 4 primes marked as
@@ -160,7 +160,7 @@ namespace PrimeCounting {
             return myTinyPi[y];
     }
 
-    template <int SIGN>
+    template <std::int64_t SIGN>
     std::int64_t phiWorker(std::int64_t x, std::int64_t a) {
         if (x <= phiPrimes[a]) {
             return SIGN;
@@ -171,7 +171,7 @@ namespace PrimeCounting {
         } else if (isCached(x, a)) {
             return phiCache[a][x] * SIGN;
         } else {
-            std::int64_t sqrtx = static_cast<std::int64_t>(std::sqrt(static_cast<double>(x)));
+            std::size_t sqrtx = static_cast<std::size_t>(std::sqrt(static_cast<double>(x)));
             std::int64_t piSqrtx = a;
             std::int64_t strt = getStrt(sqrtx);
 

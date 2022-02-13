@@ -19,7 +19,7 @@ template <typename T>
 void VectorToMatrix(const std::vector<T> &cnstrntVec,
                     const std::vector<T> &resVec, T* mat,
                     std::int64_t result, std::size_t numResult,
-                    std::size_t width, int upperBound,
+                    std::size_t width, std::size_t upperBound,
                     bool xtraCol, bool IsPart) {
 
     if (numResult >= (upperBound - 1)) {
@@ -411,11 +411,11 @@ template void AddResultToParts(double* mat, std::int64_t result,
 template void VectorToMatrix(const std::vector<int> &cnstrntVec,
                              const std::vector<int> &resVec, int* mat,
                              std::int64_t result, std::size_t numResult,
-                             std::size_t width, int upperBound,
+                             std::size_t width, std::size_t upperBound,
                              bool xtraCol, bool IsPart);
 
 template void VectorToMatrix(const std::vector<double> &cnstrntVec,
                              const std::vector<double> &resVec, double* mat,
                              std::int64_t result, std::size_t numResult,
-                             std::size_t width, int upperBound,
+                             std::size_t width, std::size_t upperBound,
                              bool xtraCol, bool IsPart);

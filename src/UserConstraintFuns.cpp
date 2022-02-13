@@ -1,14 +1,5 @@
 #include "Constraints/UserConstraintFuns.h"
 
-template <typename T>
-using funcPtr = T (*)(const std::vector<T> &v, int mySize);
-
-template <typename T>
-using partialPtr = T (*)(T partial, T w, int mySize);
-
-template <typename T>
-using compPtr = bool (*)(T x, const std::vector<T> &y);
-
 // Below, we define five main functions that will be utilized
 // as constraint functions. We also define five comparison
 // operations (<, <=, >, >=, ==).
@@ -163,9 +154,6 @@ compPtr<T> GetCompPtr(const std::string &fstr) {
         }
     }
 }
-
-template <typename T>
-using reducePtr = void (*const)(int m, T &partial, T w);
 
 template <typename T>
 void ReduceProd(int m, T &partial, T w) {

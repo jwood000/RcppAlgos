@@ -74,7 +74,7 @@ void comboGrid(std::vector<int> &cartCombs,
 
     for (std::size_t size = myVecs.size() - 1; i < size; ++i) {
         if ((std::numeric_limits<std::uint64_t>::max() / maxKey) <
-            primes[myVecs[i].back()]) {
+            static_cast<std::uint64_t>(primes[myVecs[i].back()])) {
             NeedsMpz = true;
             break;
         }
@@ -122,7 +122,7 @@ void comboGrid(std::vector<int> &cartCombs,
     }
 
     if ((std::numeric_limits<std::uint64_t>::max() / maxKey) <
-        primes[myVecs.back().back()]) {
+        static_cast<std::uint64_t>(primes[myVecs.back().back()])) {
         NeedsMpz = true;
     }
     if (!NeedsMpz && myVecs.size() > 1) {

@@ -130,12 +130,12 @@ SEXP GetDesign(const PartDesign &part, ConstraintType ctype,
     }
 
     if (ctype == ConstraintType::PartStandard) {
-        for (int i = 0; i < part.startZ.size(); ++i) {
+        for (std::size_t i = 0; i < part.startZ.size(); ++i) {
             INTEGER(sexp_index)[i] = part.startZ[i] +
                 static_cast<int>(part.includeZero);
         }
     } else {
-        for (int i = 0; i < part.startZ.size(); ++i) {
+        for (std::size_t i = 0; i < part.startZ.size(); ++i) {
             INTEGER(sexp_index)[i] = part.startZ[i] + 1;
         }
     }

@@ -232,6 +232,16 @@ test_that("comboIter & permuteIter produces correct results", {
                                IsComb = FALSE, FUN1 = var))
     expect_true(comboClassTest(letters[1:4], 5, freqs1 = 1:4, IsComb = FALSE,
                                FUN1 = function(x) {paste0(x, collapse = "")}))
+    expect_true(comboClassTest(letters[1:4], 5, freqs1 = 1:4, IsComb = TRUE,
+                               FUN1 = function(x) {paste0(x, collapse = "")}))
+    expect_true(comboClassTest(letters[1:3], 5, TRUE, IsComb = FALSE,
+                               FUN1 = function(x) {charToRaw(paste0(x, collapse = ""))},
+                               FUN.VALUE1 = charToRaw("aaaaa")))
+    expect_true(comboClassTest(as.character(1:3), 5, TRUE,
+                               FUN1 = function(x) {sum(as.integer(x))},
+                               FUN.VALUE1 = 2L))
+    expect_true(comboClassTest(letters[1:5], 5, IsComb = FALSE,
+                               FUN1 = function(x) {which(x == "b")}))
 
     ## With FUN and FUN.VALUE
     expect_true(comboClassTest(5, 3, FUN1 = sum, FUN.VALUE1 = 1L))
@@ -267,6 +277,23 @@ test_that("comboIter & permuteIter produces correct results", {
                                FUN.VALUE1 = as.complex(2.0)))
     expect_true(comboClassTest(letters[1:5], 5, IsComb = FALSE,
                                FUN1 = function(x) {list(x)},
+                               FUN.VALUE1 = list(letters[1:5])))
+    expect_true(comboClassTest(letters[1:5], 3, IsComb = TRUE,
+                               FUN1 = function(x) {x == "a"},
+                               FUN.VALUE1 = rep(TRUE, 3)))
+    
+    expect_true(comboClassTest(4, 5, freqs1 = 1:4, IsComb = FALSE,
+                               FUN1 = function(x) {paste0(letters[x], collapse = "")},
+                               FUN.VALUE1 = "a"))
+    expect_true(comboClassTest(3, 5, TRUE, IsComb = FALSE,
+                               FUN1 = function(x) {
+                                   charToRaw(paste0(letters[x], collapse = ""))
+                               }, FUN.VALUE1 = charToRaw("aaaaa")))
+    expect_true(comboClassTest(5, 3, IsComb = TRUE,
+                               FUN1 = function(x) {letters[x] == "a"},
+                               FUN.VALUE1 = rep(TRUE, 3)))
+    expect_true(comboClassTest(5, 5, IsComb = FALSE,
+                               FUN1 = function(x) {list(letters[x])},
                                FUN.VALUE1 = list(letters[1:5])))
 
     ## With constraintFun

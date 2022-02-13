@@ -332,10 +332,10 @@ test_that("comboGeneral produces correct results with exotic constraints", {
         t
     })
 
-    theVals1  = lapply(allCombs1, \(x) x[, m + 1])
-    theVals2  = lapply(allCombs2, \(x) x[, m + 1])
-    allCombs1 = lapply(allCombs1, \(x) x[, 1:m])
-    allCombs2 = lapply(allCombs2, \(x) x[, 1:m])
+    theVals1  = lapply(allCombs1, function(x) x[, m + 1])
+    theVals2  = lapply(allCombs2, function(x) x[, m + 1])
+    allCombs1 = lapply(allCombs1, function(x) x[, 1:m])
+    allCombs2 = lapply(allCombs2, function(x) x[, 1:m])
 
     for (f in seq_along(funs)) {
         for (i in 1:2) {
@@ -394,10 +394,10 @@ test_that("comboGeneral produces correct results with exotic constraints", {
         t
     })
 
-    theVals1  = lapply(allCombs1, \(x) x[, m + 1])
-    theVals2  = lapply(allCombs2, \(x) x[, m + 1])
-    allCombs1 = lapply(allCombs1, \(x) x[, 1:m])
-    allCombs2 = lapply(allCombs2, \(x) x[, 1:m])
+    theVals1  = lapply(allCombs1, function(x) x[, m + 1])
+    theVals2  = lapply(allCombs2, function(x) x[, m + 1])
+    allCombs1 = lapply(allCombs1, function(x) x[, 1:m])
+    allCombs2 = lapply(allCombs2, function(x) x[, 1:m])
 
     for (f in seq_along(funs)) {
         for (i in 1:2) {
@@ -454,10 +454,10 @@ test_that("comboGeneral produces correct results with exotic constraints", {
         t
     })
 
-    theVals1  = lapply(allCombs1, \(x) x[, m + 1])
-    theVals2  = lapply(allCombs2, \(x) x[, m + 1])
-    allCombs1 = lapply(allCombs1, \(x) x[, 1:m])
-    allCombs2 = lapply(allCombs2, \(x) x[, 1:m])
+    theVals1  = lapply(allCombs1, function(x) x[, m + 1])
+    theVals2  = lapply(allCombs2, function(x) x[, m + 1])
+    allCombs1 = lapply(allCombs1, function(x) x[, 1:m])
+    allCombs2 = lapply(allCombs2, function(x) x[, 1:m])
 
     for (f in seq_along(funs)) {
         for (i in 1:2) {

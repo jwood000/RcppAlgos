@@ -161,7 +161,7 @@ void SetFinalValues(VecType &myType, std::vector<int> &Reps,
         // C++ variable, we are referring to the expansion of this
         // variable. myReps and Reps in C++ are converted directly
         // from the user supplied 'freqs' parameter.
-        if (n != Reps.size()) {
+        if (n != static_cast<int>(Reps.size())) {
             Rf_error("the length of freqs must equal the length of v");
         }
 

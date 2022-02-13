@@ -32,4 +32,9 @@ test_that("partitionsDesign produces correct results", {
     verbose <- capture.output(partitionsDesign(15, 4, target = 20,
                                                showDesign = TRUE))
     expect_true(any(grepl("Partition Design Overview", verbose)))
+    
+    # https://www.wolframalpha.com/input?i=number+of+distinct+partitions+of+1000
+    expect_equal(partitionsDesign(
+            0:1000, freqs = c(1000, rep(1, 1000))
+        )$num_partitions, gmp::as.bigz("8635565795744155161506"))
 })

@@ -136,6 +136,7 @@ ComboRes::ComboRes(
           funDbl(RfunDbl), funInt(GetFuncPtr<int>(mainFun)) {
 
     z = RstartZ;
+    bUpper = false;
     mpz_init(cnstrtCountMpz);
     mpz_set(cnstrtCountMpz, RcnstrtRowsMpz);
     RTYPE = (myType == VecType::Integer) ? INTSXP : REALSXP;
@@ -216,6 +217,7 @@ SEXP ComboRes::nextNumCombs(SEXP RNum) {
             }
         }
 
+        bUpper   = true;
         SEXP res = PROTECT(MatrixReturn(nRows));
         increment(IsGmp, mpzIndex, dblIndex, numIncrement);
         zUpdateIndex(vNum, vInt, z, sexpVec, res, width, nRows);
@@ -277,6 +279,7 @@ SEXP ComboRes::nextGather() {
             }
         }
 
+        bUpper   = false;
         SEXP res = PROTECT(MatrixReturn(nRows));
 
         if (IsGmp) {

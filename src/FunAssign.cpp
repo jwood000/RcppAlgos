@@ -21,7 +21,7 @@ void VapplyAssign(SEXP ans, SEXP vectorPass,
 
     valType = TYPEOF(val);
 
-    if (valType != commonType) {
+    if (static_cast<int>(valType) != commonType) {
         bool okay = false;
         switch (commonType) {
             case CPLXSXP: okay = (valType == REALSXP) || (valType == INTSXP)

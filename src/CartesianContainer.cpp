@@ -443,7 +443,7 @@ SEXP ComboGridCpp(SEXP RList, SEXP RIsRep) {
     std::vector<std::vector<int>> facList(numFactorVec,
                                           std::vector<int>(sumLength, 0));
 
-    for (std::size_t i = 0, total = 0, myIndex = 0, facInd = 0; i < nCols; ++i) {
+    for (int i = 0, total = 0, myIndex = 0, facInd = 0; i < nCols; ++i) {
         rcppType myType;
         std::vector<std::string> tempVec;
         convertToString(tempVec, VECTOR_ELT(RList, i), myType, IsFactor[i]);
@@ -502,7 +502,7 @@ SEXP ComboGridCpp(SEXP RList, SEXP RIsRep) {
     if (typeCheck[tFac] && mySum == 1) {
         std::vector<std::string> testLevels;
 
-        for (std::size_t i = 0; i < nCols; ++i) {
+        for (int i = 0; i < nCols; ++i) {
             if (IsFactor[i]) {
                 SEXP facVec = PROTECT(Rf_getAttrib(VECTOR_ELT(RList, i),
                                                    R_LevelsSymbol));

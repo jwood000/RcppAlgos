@@ -40,7 +40,7 @@ template <typename T>
 void VectorToMatrix(const std::vector<T> &cnstrntVec,
                     const std::vector<T> &resVec, T* mat,
                     std::int64_t result, std::size_t numResult,
-                    std::size_t width, int upperBound,
+                    std::size_t width, std::size_t upperBound,
                     bool xtraCol, bool IsPart);
 
 bool CheckSpecialCase(bool bLower, const std::string &mainFun,
