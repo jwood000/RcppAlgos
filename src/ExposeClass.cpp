@@ -14,8 +14,8 @@ static void Finalizer(SEXP ext) {
     }
 
     class Combo* ptr = (class Combo*) R_ExternalPtrAddr(ext);
-    Free(ptr);
     R_ClearExternalPtr(ext);
+    if (ptr) delete ptr;
 }
 
 // RVals contains: v, vNum, vInt, m, RcompRows, maxThreads, & nThreads
