@@ -156,6 +156,7 @@ SEXP Partitions::nextNumCombs(SEXP RNum) {
             increment(part.isGmp, mpzIndex, dblIndex, numIncrement);
             return MultisetMatrix(nRows);
         } else {
+            bUpper   = true;
             SEXP res = PROTECT(MatrixReturn(nRows));
             increment(part.isGmp, mpzIndex, dblIndex, numIncrement);
             zUpdateIndex(vNum, vInt, z, sexpVec, res, width, nRows, bAddOne);
@@ -211,6 +212,7 @@ SEXP Partitions::nextGather() {
         if (part.ptype == PartitionType::Multiset) {
             return MultisetMatrix(nRows);
         } else {
+            bUpper   = false;
             SEXP res = PROTECT(MatrixReturn(nRows));
             zUpdateIndex(vNum, vInt, z, sexpVec, res, width, nRows, bAddOne);
             SetPartValues();
