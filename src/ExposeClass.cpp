@@ -199,9 +199,16 @@ SEXP CombClassNew(SEXP RVals, SEXP RboolVec, SEXP freqInfo, SEXP Rparallel,
             UNPROTECT(1);
             return ext;
         } else if (ctype == ConstraintType::SpecialCnstrnt) {
+            // We must use a single thread to ensure the proper constraint
+            // algorithm is called here: ConstraintsSpecial.cpp. Note that
+            // the multithreaded algo is constrained by the maximum number
+            // of results (i.e. count is incremented in the main body and
+            // is checked in the do while. In the single threaded case,
+            // count is incremented when the condition is met and isn't
+            // relied on in the do while).
             class CnstrntsSpecial* ptr = new CnstrntsSpecial(
                 VECTOR_ELT(RVals, 0), m, VECTOR_ELT(RVals, 4), bVec, myReps,
-                freqs, vInt, vNum, myType, maxThreads, VECTOR_ELT(RVals, 6),
+                freqs, vInt, vNum, myType, maxThreads, Rf_ScalarInteger(1),
                 Parallel, part, compVec, tarVals, tarIntVals, startZ, mainFun,
                 funTest, funDbl, ctype, strtLen, cap, KeepRes, numUnknown,
                 computedRows, computedRowsMpz[0]
