@@ -464,8 +464,8 @@ SEXP ComboGroupsCpp(SEXP Rv, SEXP RNumGroups, SEXP RRetType, SEXP Rlow,
             SEXP res = PROTECT(Rf_allocMatrix(STRSXP, numResults, n));
 
             CharacterGlue(res, charVec, mySample, myVec.get(), startZ,
-                          computedRowMpz, computedRows, n, numGroups,
-                          grpSize, nRows, IsArray, IsGmp, IsSample, IsNamed);
+                          computedRowMpz, computedRows, n, numGroups, grpSize,
+                          numResults, IsArray, IsGmp, IsSample, IsNamed);
 
             UNPROTECT(2);
             return res;
@@ -482,7 +482,8 @@ SEXP ComboGroupsCpp(SEXP Rv, SEXP RNumGroups, SEXP RRetType, SEXP Rlow,
 
             SerialGlue(matCmplx, res, stlCmplxVec, mySample, myVec.get(),
                        startZ, computedRowMpz, computedRows, n, numGroups,
-                       grpSize, nRows, IsArray, IsGmp, IsSample, IsNamed);
+                       grpSize, numResults, IsArray, IsGmp, IsSample,
+                       IsNamed);
 
             UNPROTECT(1);
             return res;
@@ -497,9 +498,9 @@ SEXP ComboGroupsCpp(SEXP Rv, SEXP RNumGroups, SEXP RRetType, SEXP Rlow,
             SEXP res = PROTECT(Rf_allocMatrix(RAWSXP, numResults, n));
             Rbyte* matRaw = RAW(res);
 
-            SerialGlue(matRaw, res, stlRawVec, mySample, myVec.get(),
-                       startZ, computedRowMpz, computedRows, n, numGroups,
-                       grpSize, nRows, IsArray, IsGmp, IsSample, IsNamed);
+            SerialGlue(matRaw, res, stlRawVec, mySample, myVec.get(), startZ,
+                       computedRowMpz, computedRows, n, numGroups, grpSize,
+                       numResults, IsArray, IsGmp, IsSample, IsNamed);
 
             UNPROTECT(1);
             return res;
@@ -514,9 +515,9 @@ SEXP ComboGroupsCpp(SEXP Rv, SEXP RNumGroups, SEXP RRetType, SEXP Rlow,
             SEXP res = PROTECT(Rf_allocMatrix(LGLSXP, numResults, n));
             int* matBool = LOGICAL(res);
 
-            SerialGlue(matBool, res, vInt, mySample, myVec.get(),
-                       startZ, computedRowMpz, computedRows, n, numGroups,
-                       grpSize, nRows, IsArray, IsGmp, IsSample, IsNamed);
+            SerialGlue(matBool, res, vInt, mySample, myVec.get(), startZ,
+                       computedRowMpz, computedRows, n, numGroups, grpSize,
+                       numResults, IsArray, IsGmp, IsSample, IsNamed);
 
             UNPROTECT(1);
             return res;
