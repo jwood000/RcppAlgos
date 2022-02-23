@@ -1,9 +1,9 @@
 #include "ClassUtils/ComboClass.h"
 
 SEXP Combo::ToSeeLast(bool AdjustIdx) {
-    std::string message = "No more results";
+    std::string message = "No more results.";
     if (prevIterAvailable) {
-        message += ". To see the last result, use the prevIter method(s)\n\n";
+        message += " To see the last result, use the prevIter method(s)\n\n";
     } else {
         message += "\n\n";
     }
@@ -112,8 +112,8 @@ Combo::Combo(
     VecType typePass, int RmaxThreads, SEXP RnThreads, bool Rparallel
 ) : n(Rf_length(Rv)), m(Rm), m1(Rm - 1), RTYPE(TYPEOF(Rv)),
     maxThreads(RmaxThreads), sexpVec(Rv), sexpNThreads(RnThreads),
-    IsFactor(bVec[0]), IsComb(bVec[1]), IsMult(bVec[2]), IsRep(bVec[3]),
-    IsGmp(bVec[4]), Parallel(Rparallel),
+    IsGmp(bVec[4]), IsFactor(bVec[0]), IsComb(bVec[1]),
+    IsMult(bVec[2]), IsRep(bVec[3]), Parallel(Rparallel),
     computedRows(IsGmp ? 0 : Rf_asReal(RcompRow)), myType(typePass),
     vInt(RvInt), vNum(RvNum), freqs(Rfreqs), myReps(Rreps),
     n1(IsComb ? n - 1 : (IsMult ? freqs.size() - 1 : n - 1)),
@@ -274,14 +274,14 @@ SEXP Combo::nextGather() {
         mpz_sub(mpzTemp, computedRowsMpz, mpzIndex);
 
         if (mpz_cmp_si(mpzTemp, std::numeric_limits<int>::max()) > 0) {
-            Rf_error("The number of requested rows is greater than ",
+            Rf_error("The number of requested rows is greater than %s",
                 std::to_string(std::numeric_limits<int>::max()).c_str());
         }
     } else {
         dblTemp = computedRows - dblIndex;
 
         if (dblTemp > std::numeric_limits<int>::max()) {
-            Rf_error("The number of requested rows is greater than ",
+            Rf_error("The number of requested rows is greater than %s",
                 std::to_string(std::numeric_limits<int>::max()).c_str());
         }
     }
@@ -315,14 +315,14 @@ SEXP Combo::prevGather() {
         mpz_sub_ui(mpzTemp, mpzIndex, 1);
 
         if (mpz_cmp_si(mpzTemp, std::numeric_limits<int>::max()) > 0) {
-            Rf_error("The number of requested rows is greater than ",
+            Rf_error("The number of requested rows is greater than %s",
                 std::to_string(std::numeric_limits<int>::max()).c_str());
         }
     } else {
         dblTemp = dblIndex - 1;
 
         if (dblTemp > std::numeric_limits<int>::max()) {
-            Rf_error("The number of requested rows is greater than ",
+            Rf_error("The number of requested rows is greater than %s",
                 std::to_string(std::numeric_limits<int>::max()).c_str());
         }
     }

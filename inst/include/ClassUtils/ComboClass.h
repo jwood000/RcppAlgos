@@ -28,11 +28,12 @@ protected:
     const SEXP sexpVec;
     const SEXP sexpNThreads;
 
+    // IsGmp may change depending on whether we have partitions
+    bool IsGmp;
     const bool IsFactor;
     const bool IsComb;
     const bool IsMult;
     const bool IsRep;
-    const bool IsGmp;
     const bool Parallel;
 
     double computedRows;
