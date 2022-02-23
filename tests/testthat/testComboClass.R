@@ -68,6 +68,40 @@ test_that("comboIter & permuteIter produces correct results", {
 
         # .method("startOver", &Combo::startOver)
         a@startOver()
+        a@nextIter()
+        msg <- capture.output(noMore <- a@prevIter())
+        myResults <- c(myResults, is.null(noMore))
+        myResults <- c(myResults, grepl("Iterator Initialized. To see the first", msg[1]))
+        msg <- capture.output(noMore <- a@currIter())
+        myResults <- c(myResults, grepl("Iterator Initialized. To see the first", msg[1]))
+        myResults <- c(myResults, is.null(a@prevIter()))
+
+        a@nextIter()
+        msg <- capture.output(noMore <- a@prevNIter(1))
+        myResults <- c(myResults, is.null(noMore))
+        myResults <- c(myResults, grepl("Iterator Initialized. To see the first", msg[1]))
+        myResults <- c(myResults, is.null(a@prevNIter(1)))
+
+        a@nextIter()
+        msg <- capture.output(noMore <- a@prevRemaining())
+        myResults <- c(myResults, is.null(noMore))
+        myResults <- c(myResults, grepl("Iterator Initialized. To see the first", msg[1]))
+        myResults <- c(myResults, is.null(a@prevRemaining()))
+
+        a@startOver()
+        a@back()
+        msg <- capture.output(noMore <- a@nextNIter(1))
+        myResults <- c(myResults, is.null(noMore))
+        myResults <- c(myResults, grepl("No more results. To see the last ", msg[1]))
+        msg <- capture.output(noMore <- a@currIter())
+        myResults <- c(myResults, grepl("No more results. To see the last ", msg[1]))
+
+        a@startOver()
+        a@back()
+        msg <- capture.output(noMore <- a@nextRemaining())
+        myResults <- c(myResults, is.null(noMore))
+        myResults <- c(myResults, grepl("No more results. To see the last ", msg[1]))
+        a@startOver()
         a1 <- b
 
         if (is.atomic(b) && !is.matrix(b)) {
@@ -222,6 +256,7 @@ test_that("comboIter & permuteIter produces correct results", {
     ## With FUN
     expect_true(comboClassTest(5, 3, FUN1 = sum))
     expect_true(comboClassTest(as.complex(1:5), 3, TRUE, FUN1 = mean))
+    expect_true(comboClassTest(as.raw(1:5), 3, FUN1 = rawToChar))
 
     set.seed(103)
     myNums = rnorm(5)
@@ -260,6 +295,9 @@ test_that("comboIter & permuteIter produces correct results", {
                                FUN.VALUE1 = 1.1))
     expect_true(comboClassTest(as.complex(1:5), 3, TRUE, IsComb = FALSE,
                                FUN1 = var, FUN.VALUE1 = 1.1))
+    expect_true(comboClassTest(letters[1:3], freqs1 = 3:1, IsComb = FALSE,
+                               FUN1 = function(x) {paste0(x, collapse = "")},
+                               FUN.VALUE1 = "a"))
     expect_true(comboClassTest(letters[1:4], 5, freqs1 = 1:4, IsComb = FALSE,
                                FUN1 = function(x) {paste0(x, collapse = "")},
                                FUN.VALUE1 = "a"))
@@ -281,7 +319,7 @@ test_that("comboIter & permuteIter produces correct results", {
     expect_true(comboClassTest(letters[1:5], 3, IsComb = TRUE,
                                FUN1 = function(x) {x == "a"},
                                FUN.VALUE1 = rep(TRUE, 3)))
-    
+
     expect_true(comboClassTest(4, 5, freqs1 = 1:4, IsComb = FALSE,
                                FUN1 = function(x) {paste0(letters[x], collapse = "")},
                                FUN.VALUE1 = "a"))

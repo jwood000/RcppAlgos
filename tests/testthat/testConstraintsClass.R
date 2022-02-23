@@ -16,6 +16,7 @@ test_that("ConstraintsClass produces correct results", {
                           keepResults = keep, tolerance = tol)
 
         myRows <- nrow(b)
+        myResults <- c(myResults, is.na(a@summary()$totalResults))
 
         if (length(v_pass) == 1) {
             myResults <- c(myResults, isTRUE(
@@ -27,6 +28,8 @@ test_that("ConstraintsClass produces correct results", {
             ))
         }
 
+        a@nextIter()
+        myResults <- c(myResults, all.equal(a@currIter(), b[1, ]))
         a@startOver()
         a1 <- b
 
@@ -35,8 +38,12 @@ test_that("ConstraintsClass produces correct results", {
         }
 
         myResults <- c(myResults, isTRUE(all.equal(a1, b)))
-        noMore <- capture.output(a@nextIter())
-        myResults <- c(myResults, grepl("NULL", tail(noMore, 1L)))
+
+        msg <- capture.output(noMore <- a@nextIter())
+        myResults <- c(myResults, is.null(noMore))
+        myResults <- c(myResults, msg[1] == "No more results.")
+        myResults <- c(myResults, is.null(a@nextNIter(1)))
+        myResults <- c(myResults, is.null(a@nextRemaining()))
         myResults <- c(myResults, is.null(a@nextIter()))
         a@startOver()
         numTest <- as.integer(myRows / 3);
@@ -51,8 +58,29 @@ test_that("ConstraintsClass produces correct results", {
             e <- e + numTest
         }
 
+        idx <- a@summary()$currentIndex
+
+        while (idx < myRows) {
+            a@nextNIter(1)
+            idx <- idx + 1L
+        }
+
+        capture.output(noMore <- a@nextNIter(1))
+        myResults <- c(myResults, is.null(noMore))
         a@startOver()
         myResults <- c(myResults, isTRUE(all.equal(a@nextRemaining(), b)))
+
+        a@startOver()
+        tmp <- a@nextNIter(myRows)
+        msg <- capture.output(noMore <- a@nextNIter(1))
+        myResults <- c(myResults, is.null(noMore))
+        myResults <- c(myResults, msg[1] == "No more results.")
+
+        a@startOver()
+        tmp <- a@nextNIter(myRows)
+        msg <- capture.output(noMore <- a@nextRemaining())
+        myResults <- c(myResults, is.null(noMore))
+        myResults <- c(myResults, msg[1] == "No more results.")
 
         rm(a, a1, b)
         gc()
@@ -89,6 +117,20 @@ test_that("ConstraintsClass produces correct results", {
     expect_true(constraintsClassTest(-5, 7, TRUE, fun = "prod",
                                      comp = c("<=",">="),
                                      tar = c(2000, 5000),
+                                     keep = TRUE))
+    set.seed(42)
+    s <- runif(10, -5, 5)
+    expect_true(constraintsClassTest(s, 5, fr = rep(2:3, 5),
+                                     fun = "prod",
+                                     comp = ">",
+                                     tar = 1000,
+                                     keep = TRUE))
+
+    expect_true(constraintsClassTest(s, 5,
+                                     fun = "prod",
+                                     comp = "==",
+                                     tar = 100,
+                                     tol = 10,
                                      keep = TRUE))
 
     ## Testing sums in a range

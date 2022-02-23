@@ -236,6 +236,9 @@ test_that("comboGeneral produces correct results for special subset sum", {
     }
 
     expect_true(testCombMultiset(1:10, 7, rep(1:5, 2)))
+    scrambled = as.integer(c(8, 2, 5, 10, 1, 6, 3, 9, 4, 7))
+    expect_true(testCombMultiset(scrambled, 7, rep(1:5, 2)[scrambled]))
+
     expect_true(testCombMultiset(0:9, 7, rep(1:5, 2)))
     expect_true(testCombMultiset(-4:5, 7, rep(1:5, 2)))
     expect_true(testCombMultiset((1e10 + 1):(1e10 + 10), 7, rep(1:5, 2)))

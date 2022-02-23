@@ -83,6 +83,33 @@ test_that("comboGroups related functions produces appropriate error messages", {
                  "n and sampleVec cannot both be NULL")
 })
 
+test_that("comboIter related functions produces appropriate error messages", {
+    a <- comboIter(500, 10)
+    expect_error(a@nextRemaining(), "The number of requested rows is greater")
+    a@back()
+    expect_error(a@prevRemaining(), "The number of requested rows is greater")
+    a <- comboIter(100, 10)
+    expect_error(a@nextRemaining(), "The number of requested rows is greater")
+    a@back()
+    expect_error(a@prevRemaining(), "The number of requested rows is greater")
+    rm(a)
+    gc()
+})
+
+test_that("partitionsIter related functions produces appropriate error messages", {
+    a <- partitionsIter(100, 10, freqs = rep(1:10, 10))
+    expect_error(a@front(), "No random access available for this scenario")
+    expect_error(a@back(), "No random access available for this scenario")
+    expect_error(a[[10]], "No random access available for this scenario")
+    expect_error(a@back(), "No random access available for this scenario")
+    a <- partitionsIter(400, 25, TRUE)
+    expect_error(a@nextRemaining(), "The number of requested rows is greater")
+    a <- partitionsIter(300, 20, TRUE)
+    expect_error(a@nextRemaining(), "The number of requested rows is greater")
+    rm(a)
+    gc()
+})
+
 test_that("divisorsRcpp produces appropriate error messages", {
     expect_error(divisorsRcpp(2^53), "The abs value of each element in v must be less than")
     expect_error(divisorsRcpp(-2^53), "The abs value of each element in v must be less than")

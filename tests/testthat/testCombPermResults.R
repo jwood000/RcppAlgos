@@ -184,6 +184,12 @@ test_that("permuteGeneral produces correct results with constrainFun only", {
     expect_equal(rowSums(permuteGeneral(11, 5)),
                  permuteGeneral(11, 5, constraintFun = "sum")[,6])
 
+    #### NO Repetition
+    ## permuteCount(8)
+    ## [1] 40320
+    expect_equal(permuteGeneral(8, constraintFun = "sum", nThreads = 2),
+                 permuteGeneral(8, constraintFun = "sum"))
+
     #### With Repetition
     numVec <- rnorm(9)
     expect_equal(apply(permuteGeneral(numVec, 5, TRUE), 1, prod),
@@ -193,6 +199,13 @@ test_that("permuteGeneral produces correct results with constrainFun only", {
     numVec <- runif(9)
     expect_equal(rowMeans(permuteGeneral(numVec, 5, freqs = rep(1:3, 3))),
                  permuteGeneral(numVec, 5, freqs = rep(1:3, 3), constraintFun = "mean")[,6])
+
+    #### Multisets
+    ## permuteCount(4, freqs = c(1:3, 6))
+    ## [1] 55440
+    expect_equal(permuteGeneral(4, constraintFun = "sum", freqs = c(1:3, 6),
+                                nThreads = 2),
+                 permuteGeneral(4, constraintFun = "sum", freqs = c(1:3, 6)))
 
 
     ######********************** Upper Only *******************#########

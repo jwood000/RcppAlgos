@@ -70,6 +70,14 @@ test_that("permuteGeneral produces correct results with no constraints for multi
     expect_equal(permuteGeneral(month.name[1:5], 3, TRUE),
                  permuteGeneral(month.name[1:5], 3, freqs = rep(3, 5)))
 
+    all.equal(t(as.matrix(partitions::multiset(rep(1:4, times = c(1:3, 6))))),
+              permuteGeneral(4, freqs = c(1:3, 6), nThreads = 2))
+
+    expect_equal(permuteGeneral(letters[1:3], freqs = 1:3),
+                 matrix(letters[1:3][t(partitions::multiset(rep(1:3, times = 1:3)))], ncol = 6))
+
+    expect_equal(permuteGeneral(3, lower = 3), permuteGeneral(3)[3:6, ])
+
     myNums2 <- 1:10 / 3
     expect_equal(permuteGeneral(myNums2, 5, freqs = rep(2, 10))[80000:90000, ],
                  permuteGeneral(myNums2, 5, freqs = rep(2, 10),

@@ -1,4 +1,4 @@
-context("testing comboGeneral Parallel")
+context("testing comboGeneral and permuteGeneral Parallel")
 
 test_that("comboGeneral produces correct results with Parallel enabled and no constrainFun", {
 
@@ -114,8 +114,6 @@ test_that("comboGeneral produces correct results with Parallel enabled and const
                               upper = 130000, constraintFun = "mean", keepResults = TRUE))
 })
 
-context("testing permuteGeneral Parallel")
-
 test_that("permuteGeneral produces correct results with Parallel enabled and no constrainFun", {
 
     set.seed(14)
@@ -126,6 +124,11 @@ test_that("permuteGeneral produces correct results with Parallel enabled and no 
     ## permuteCount(11, 5)
     ## [1] 55440
     expect_equal(permuteGeneral(11, 5, nThreads = 2), permuteGeneral(11, 5))
+
+    #### NO Repetition
+    ## permuteCount(8)
+    ## [1] 40320
+    expect_equal(permuteGeneral(8, nThreads = 2), permuteGeneral(8))
 
     #### With Repetition
     ## permuteCount(9, 5, T)
@@ -139,6 +142,11 @@ test_that("permuteGeneral produces correct results with Parallel enabled and no 
     expect_equal(permuteGeneral(factor(1:9), 5, freqs = rep(1:3, 3), nThreads = 2),
                  permuteGeneral(factor(1:9), 5, freqs = rep(1:3, 3)))
 
+    #### Multisets
+    ## permuteCount(4, freqs = c(1:3, 6))
+    ## [1] 55440
+    expect_equal(permuteGeneral(4, freqs = c(1:3, 6), nThreads = 2),
+                 permuteGeneral(4, freqs = c(1:3, 6)))
 
     ######********************** Upper Only *******************#########
     #### NO Repetition
@@ -250,8 +258,6 @@ test_that("permuteGeneral produces correct results with Parallel enabled and con
                               upper = 130000, constraintFun = "sum", keepResults = TRUE))
 })
 
-context("testing comboGeneral GMP Parallel")
-
 test_that("comboGeneral produces correct results with Parallel and GMP enabled", {
 
     set.seed(16)
@@ -325,8 +331,6 @@ test_that("comboGeneral produces correct results with Parallel, GMP, and constra
                               upper = "24551856075980529030000",
                               constraintFun = "min", keepResults = TRUE))
 })
-
-context("testing permuteGeneral GMP Parallel")
 
 test_that("permuteGeneral produces correct results with Parallel and GMP enabled", {
 

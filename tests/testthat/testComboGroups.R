@@ -49,6 +49,23 @@ test_that("comboGroups produces correct results", {
     expect_equal(class(comboGroups(c(T, F), 2)[1, ]), "logical")
     expect_equal(class(comboGroups(as.complex(c(1, -1, 1i, -1i)), 2)[1,]), "complex")
 
+    ## comboGroupsCount(9, 3)
+    ## [1] 280
+    expect_equal(comboGroups(as.raw(1:9), 3)[c(1, 100, 280), ],
+                 comboGroupsSample(as.raw(1:9), 3, sampleVec = c(1, 100, 280)))
+    expect_equal(comboGroups(LETTERS[1:9], 3)[c(1, 100, 280), ],
+                 comboGroupsSample(LETTERS[1:9], 3, sampleVec = c(1, 100, 280)))
+    cmp_v = c(1, -1, 1i, -1i, 2, -2, 2i, -2i, -3i)
+    expect_equal(comboGroups(cmp_v, 3)[c(1, 100, 280), ],
+                 comboGroupsSample(cmp_v, 3, sampleVec = c(1, 100, 280)))
+
+    ## The logical case is bit strange... with only two values, we can only have
+    ## result with numGroups = 1 or 2
+    expect_equal(comboGroups(c(T, F), 1),
+                 comboGroupsSample(c(T, F), 1, n = 1))
+    expect_equal(comboGroups(c(T, F), 2),
+                 comboGroupsSample(c(T, F), 2, n = 1))
+
     expect_equal(rownames(comboGroupsSample(30, 5, n = 2,
                                             seed = 1, namedSample = TRUE)),
                  c("7162662695786451", "3525427663529072"))

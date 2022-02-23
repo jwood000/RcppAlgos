@@ -36,7 +36,7 @@ test_that("comboGeneral produces correct results with no constraints", {
     expect_equal(comboGeneral(myNums2, 8, freqs = rep(2, 15))[150000:157000, ],
                  comboGeneral(myNums2, 8, freqs = rep(2, 15), lower = 150000, upper = 157000))
 
-    expect_equal(comboGeneral(letters[1:15], 8, TRUE)[319000:comboCount(15,8,T), ],
+    expect_equal(comboGeneral(letters[1:15], 8, TRUE)[319000:comboCount(15, 8, TRUE), ],
                  comboGeneral(letters[1:15], 8, TRUE, lower = 319000))
 
     expect_equal(nrow(comboGeneral(myNums, 3, TRUE)), 35)
@@ -207,7 +207,7 @@ test_that("comboGeneral produces correct results with use of FUN", {
     test <- comboGeneral(10, 4, TRUE)
     testFun <- apply(test, 1, function(x) mean(x) * 2)
     expect_equal(testFun,
-                 comboGeneral(10, 4, T, FUN = function(x) {mean(x) * 2},
+                 comboGeneral(10, 4, TRUE, FUN = function(x) {mean(x) * 2},
                               FUN.VALUE = 2.2))
 
     test <- comboGeneral(8, 4, freqs = rep(1:4, 2))
@@ -278,19 +278,29 @@ test_that("comboGeneral produces correct results with exotic constraints", {
                               lower = 7900, upper = 8500),
                  a[(7900:8500)[b[7900:8500] == 3], ])
 
-    a = comboGeneral(5, 7, T)
+    a = comboGeneral(5, 7, TRUE)
     b = apply(a, 1, prod)
     expect_equal(comboGeneral(5, 7, TRUE, constraintFun = "prod",
                  comparisonFun = c(">=","<="),
                  limitConstraints = c(2000, 5000)), a[which(b >= 2000 & b <= 5000), ])
 
-    a = comboGeneral(-5, 7, T)
+    a = comboGeneral(-5, 7, TRUE)
     b = apply(a, 1, prod)
     expect_equal(nrow(comboGeneral(-5, 7, TRUE, constraintFun = "prod",
                               comparisonFun = c("<=",">="),
                               limitConstraints = c(-2000, 5000),
                               keepResults = TRUE)),
                  nrow(rbind(a[which(b <= -2000),], a[which(b >= 5000), ])))
+
+    set.seed(4321)
+    samp = sample(-50:50, 16)
+    a = comboGeneral(samp, 6, TRUE)
+    b = apply(a, 1, prod)
+    expect_equal(nrow(comboGeneral(samp, 6, TRUE, constraintFun = "prod",
+                                   comparisonFun = c("<",">"),
+                                   limitConstraints = c(-6e9, 6e9),
+                                   keepResults = TRUE, nThreads = 2)),
+                 nrow(rbind(a[which(b <= -6e9),], a[which(b >= 6e9), ])))
 
     ## Testing sums in a range
     a = comboGeneral(10, 8, TRUE, lower = 23500, upper = 24000,
