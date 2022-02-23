@@ -211,7 +211,7 @@ SEXP ComboRes::nextNumCombs(SEXP RNum) {
                     dblIndex = cnstrtCount + 1;
                 }
 
-                const std::string message = "No more results\n\n";
+                const std::string message = "No more results.\n\n";
                 Rprintf(message.c_str());
                 return R_NilValue;
             }
@@ -234,9 +234,15 @@ SEXP ComboRes::nextNumCombs(SEXP RNum) {
 
 SEXP ComboRes::prevNumCombs(SEXP RNum) {
     SEXP mat = PROTECT(Combo::prevNumCombs(RNum));
-    SEXP res = PROTECT(ApplyFun(mat));
-    UNPROTECT(2);
-    return res;
+
+    if (Rf_isNull(mat)) {
+        UNPROTECT(1);
+        return R_NilValue;
+    } else {
+        SEXP res = PROTECT(ApplyFun(mat));
+        UNPROTECT(2);
+        return res;
+    }
 }
 
 SEXP ComboRes::nextGather() {
@@ -273,7 +279,7 @@ SEXP ComboRes::nextGather() {
                     dblIndex = cnstrtCount + 1;
                 }
 
-                const std::string message = "No more results\n\n";
+                const std::string message = "No more results.\n\n";
                 Rprintf(message.c_str());
                 return R_NilValue;
             }
@@ -299,9 +305,15 @@ SEXP ComboRes::nextGather() {
 
 SEXP ComboRes::prevGather() {
     SEXP mat = PROTECT(Combo::prevGather());
-    SEXP res = PROTECT(ApplyFun(mat));
-    UNPROTECT(2);
-    return res;
+
+    if (Rf_isNull(mat)) {
+        UNPROTECT(1);
+        return R_NilValue;
+    } else {
+        SEXP res = PROTECT(ApplyFun(mat));
+        UNPROTECT(2);
+        return res;
+    }
 }
 
 SEXP ComboRes::currComb() {

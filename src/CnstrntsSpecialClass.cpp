@@ -31,7 +31,8 @@ SEXP CnstrntsSpecial::nextComb() {
     if (keepGoing) {
         SEXP res = PROTECT(ComboRes::nextNumCombs(Rf_ScalarInteger(1)));
 
-        if (TYPEOF(res) == LGLSXP) {
+        if (Rf_isNull(res)) {
+            keepGoing = false;
             UNPROTECT(1);
             return res;
         } else {
@@ -41,23 +42,24 @@ SEXP CnstrntsSpecial::nextComb() {
                 UNPROTECT(1);
                 return res;
             } else {
-                keepGoing = false;
-                const std::string message = "No more results\n\n";
-                Rprintf(message.c_str());
                 UNPROTECT(1);
-                return R_NilValue;
+                keepGoing = false;
+                return ToSeeLast();
             }
         }
     } else {
+        keepGoing = false;
         return R_NilValue;
     }
 }
 
 SEXP CnstrntsSpecial::nextNumCombs(SEXP RNum) {
+
     if (keepGoing) {
         SEXP res = PROTECT(ComboRes::nextNumCombs(RNum));
 
-        if (TYPEOF(res) == LGLSXP) {
+        if (Rf_isNull(res)) {
+            keepGoing = false;
             UNPROTECT(1);
             return res;
         } else {
@@ -72,26 +74,38 @@ SEXP CnstrntsSpecial::nextNumCombs(SEXP RNum) {
                 UNPROTECT(1);
                 return res;
             } else {
-                keepGoing = false;
-                const std::string message = "No more results\n\n";
-                Rprintf(message.c_str());
                 UNPROTECT(1);
-                return R_NilValue;
+                keepGoing = false;
+                return ToSeeLast();
             }
         }
     } else {
+        keepGoing = false;
         return R_NilValue;
     }
 }
 
 SEXP CnstrntsSpecial::nextGather() {
+
     if (keepGoing) {
         SEXP res = PROTECT(ComboRes::nextGather());
-        count += Rf_nrows(res);
-        keepGoing = false;
-        UNPROTECT(1);
-        return res;
+
+        if (Rf_isNull(res)) {
+            keepGoing = false;
+            UNPROTECT(1);
+            return res;
+        } else if (Rf_nrows(res)) {
+            count += Rf_nrows(res);
+            keepGoing = false;
+            UNPROTECT(1);
+            return res;
+        } else {
+            UNPROTECT(1);
+            keepGoing = false;
+            return ToSeeLast();
+        }
     } else {
+        keepGoing = false;
         return R_NilValue;
     }
 }
