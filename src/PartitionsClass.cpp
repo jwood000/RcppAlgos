@@ -90,12 +90,13 @@ Partitions::Partitions(
 
     bAddOne = (ctype == ConstraintType::PartStandard) && !part.includeZero;
     rpsCnt = myReps;
+    IsGmp  = part.isGmp;
     SetPartValues();
     prevIterAvailable = false;
 }
 
 void Partitions::startOver() {
-    if (part.isGmp) {
+    if (IsGmp) {
       mpz_set_ui(mpzIndex, 0u);
     } else {
       dblIndex = 0;
@@ -108,16 +109,16 @@ void Partitions::startOver() {
 
 SEXP Partitions::nextComb() {
 
-    if (CheckEqSi(part.isGmp, mpzIndex, dblIndex, 0)) {
-        increment(part.isGmp, mpzIndex, dblIndex);
+    if (CheckEqSi(IsGmp, mpzIndex, dblIndex, 0)) {
+        increment(IsGmp, mpzIndex, dblIndex);
         return VecReturn();
-    } else if (CheckIndLT(part.isGmp, mpzIndex, dblIndex,
+    } else if (CheckIndLT(IsGmp, mpzIndex, dblIndex,
                           cnstrtCountMpz, cnstrtCount)) {
-        increment(part.isGmp, mpzIndex, dblIndex);
+        increment(IsGmp, mpzIndex, dblIndex);
         nextParts(rpsCnt, z, edge, boundary, pivot,
                   tarDiff, lastCol, lastElem);
         return VecReturn();
-    } else if (CheckEqInd(part.isGmp, mpzIndex, dblIndex,
+    } else if (CheckEqInd(IsGmp, mpzIndex, dblIndex,
                           cnstrtCountMpz, cnstrtCount)) {
         return ToSeeLast();
     } else {
@@ -131,13 +132,13 @@ SEXP Partitions::nextNumCombs(SEXP RNum) {
     CleanConvert::convertPrimitive(RNum, num, VecType::Integer,
                                    "The number of results");
 
-    if (CheckIndLT(part.isGmp, mpzIndex, dblIndex,
+    if (CheckIndLT(IsGmp, mpzIndex, dblIndex,
                    cnstrtCountMpz, cnstrtCount)) {
 
         int nRows = 0;
         int numIncrement = 0;
 
-        if (part.isGmp) {
+        if (IsGmp) {
             mpz_sub(mpzTemp, cnstrtCountMpz, mpzIndex);
             nRows = mpz_cmp_si(mpzTemp, num) < 0 ? mpz_get_si(mpzTemp) : num;
             numIncrement = mpz_cmp_si(mpzTemp, num) < 0 ? (nRows + 1) : nRows;
@@ -147,24 +148,24 @@ SEXP Partitions::nextNumCombs(SEXP RNum) {
             numIncrement = num > dblTemp ? (nRows + 1) : nRows;
         }
 
-        if (CheckGrTSi(part.isGmp, mpzIndex, dblIndex, 0)) {
+        if (CheckGrTSi(IsGmp, mpzIndex, dblIndex, 0)) {
             nextParts(rpsCnt, z, edge, boundary, pivot,
                       tarDiff, lastCol, lastElem);
         }
 
         if (part.ptype == PartitionType::Multiset) {
-            increment(part.isGmp, mpzIndex, dblIndex, numIncrement);
+            increment(IsGmp, mpzIndex, dblIndex, numIncrement);
             return MultisetMatrix(nRows);
         } else {
             bUpper   = true;
             SEXP res = PROTECT(MatrixReturn(nRows));
-            increment(part.isGmp, mpzIndex, dblIndex, numIncrement);
+            increment(IsGmp, mpzIndex, dblIndex, numIncrement);
             zUpdateIndex(vNum, vInt, z, sexpVec, res, width, nRows, bAddOne);
             SetPartValues();
             UNPROTECT(1);
             return res;
         }
-    } else if (CheckEqInd(part.isGmp, mpzIndex, dblIndex,
+    } else if (CheckEqInd(IsGmp, mpzIndex, dblIndex,
                           cnstrtCountMpz, cnstrtCount)) {
         return ToSeeLast();
     } else {
@@ -174,36 +175,36 @@ SEXP Partitions::nextNumCombs(SEXP RNum) {
 
 SEXP Partitions::nextGather() {
 
-    if (CheckEqInd(part.isGmp, mpzIndex, dblIndex,
+    if (CheckEqInd(IsGmp, mpzIndex, dblIndex,
                    cnstrtCountMpz, cnstrtCount)) {
         return ToSeeLast();
     }
 
-    if (part.isGmp) {
+    if (IsGmp) {
         mpz_sub(mpzTemp, cnstrtCountMpz, mpzIndex);
 
         if (mpz_cmp_si(mpzTemp, std::numeric_limits<int>::max()) > 0) {
-            Rf_error("The number of requested rows is greater than ",
+            Rf_error("The number of requested rows is greater than %s",
                 std::to_string(std::numeric_limits<int>::max()).c_str());
         }
     } else {
         dblTemp = cnstrtCount - dblIndex;
 
         if (dblTemp > std::numeric_limits<int>::max()) {
-            Rf_error("The number of requested rows is greater than ",
+            Rf_error("The number of requested rows is greater than %s",
                 std::to_string(std::numeric_limits<int>::max()).c_str());
         }
     }
 
-    const int nRows = (part.isGmp) ? mpz_get_si(mpzTemp) : dblTemp;
+    const int nRows = (IsGmp) ? mpz_get_si(mpzTemp) : dblTemp;
 
     if (nRows > 0) {
-        if (CheckGrTSi(part.isGmp, mpzIndex, dblIndex, 0)) {
+        if (CheckGrTSi(IsGmp, mpzIndex, dblIndex, 0)) {
             nextParts(rpsCnt, z, edge, boundary, pivot,
                       tarDiff, lastCol, lastElem);
         }
 
-        if (part.isGmp) {
+        if (IsGmp) {
             mpz_add_ui(mpzIndex, cnstrtCountMpz, 1u);
         } else {
             dblIndex = cnstrtCount + 1;
@@ -226,10 +227,10 @@ SEXP Partitions::nextGather() {
 
 SEXP Partitions::currComb() {
 
-    if (CheckIndGrT(part.isGmp, mpzIndex, dblIndex,
+    if (CheckIndGrT(IsGmp, mpzIndex, dblIndex,
                     cnstrtCountMpz, cnstrtCount)) {
         return ToSeeLast(false);
-    } else if (CheckGrTSi(part.isGmp, mpzIndex, dblIndex, 0)) {
+    } else if (CheckGrTSi(IsGmp, mpzIndex, dblIndex, 0)) {
         return VecReturn();
     } else {
         return ToSeeFirst(false);
@@ -273,7 +274,7 @@ SEXP Partitions::randomAccess(SEXP RindexVec) {
             ThreadSafeSample(matInt, res, vInt, mySample, mpzVec.get(),
                              myReps, nthParts, part.width, sampSize,
                              nThreads, Parallel, false, part.mapTar,
-                             strtLen, cap, part.isGmp);
+                             strtLen, cap, IsGmp);
             zUpdateIndex(vNum, vInt, z, sexpVec, res, width, sampSize, bAddOne);
             SetPartValues();
             UNPROTECT(1);
@@ -285,14 +286,14 @@ SEXP Partitions::randomAccess(SEXP RindexVec) {
             ThreadSafeSample(matNum, res, vNum, mySample, mpzVec.get(),
                              myReps, nthParts, part.width, sampSize,
                              nThreads, Parallel, false, part.mapTar,
-                             strtLen, cap, part.isGmp);
+                             strtLen, cap, IsGmp);
             zUpdateIndex(vNum, vInt, z, sexpVec, res, width, sampSize, bAddOne);
             SetPartValues();
             UNPROTECT(1);
             return res;
         }
     } else {
-        if (part.isGmp) {
+        if (IsGmp) {
             mpz_add_ui(mpzIndex, mpzVec[0], 1u);
             mpz_set(mpzTemp, mpzVec[0]);
         } else {
@@ -311,7 +312,7 @@ SEXP Partitions::front() {
         Rf_error("No random access available for this scenario");
     }
 
-    if (part.isGmp) {
+    if (IsGmp) {
         mpz_set_ui(mpzIndex, 1u);
         mpz_set_ui(mpzTemp, 0u);
     } else {
@@ -329,7 +330,7 @@ SEXP Partitions::back() {
         Rf_error("No random access available for this scenario");
     }
 
-    if (part.isGmp) {
+    if (IsGmp) {
         mpz_set(mpzIndex, cnstrtCountMpz);
         mpz_sub_ui(mpzTemp, cnstrtCountMpz, 1u);
     } else {
@@ -346,9 +347,9 @@ SEXP Partitions::summary() {
     const std::string MultiStr = (IsMult) ? "of a multiset " : "";
     const std::string strDesc = "Partitions " + RepStr + MultiStr + "of "
           + std::to_string(n) + " into " + std::to_string(width) + " parts";
-    const double dblDiff = (part.isGmp) ? 0 : cnstrtCount - dblIndex;
+    const double dblDiff = (IsGmp) ? 0 : cnstrtCount - dblIndex;
 
-    if (part.isGmp) {
+    if (IsGmp) {
         mpz_sub(mpzTemp, cnstrtCountMpz, mpzIndex);
     }
 
@@ -358,9 +359,9 @@ SEXP Partitions::summary() {
     SEXP res = PROTECT(Rf_mkNamed(VECSXP, names));
 
     SET_VECTOR_ELT(res, 0, Rf_mkString(strDesc.c_str()));
-    SET_VECTOR_ELT(res, 1, CleanConvert::GetCount(part.isGmp, mpzIndex, dblIndex));
-    SET_VECTOR_ELT(res, 2, CleanConvert::GetCount(part.isGmp, cnstrtCountMpz, cnstrtCount));
-    SET_VECTOR_ELT(res, 3, CleanConvert::GetCount(part.isGmp, mpzTemp, dblDiff));
+    SET_VECTOR_ELT(res, 1, CleanConvert::GetCount(IsGmp, mpzIndex, dblIndex));
+    SET_VECTOR_ELT(res, 2, CleanConvert::GetCount(IsGmp, cnstrtCountMpz, cnstrtCount));
+    SET_VECTOR_ELT(res, 3, CleanConvert::GetCount(IsGmp, mpzTemp, dblDiff));
 
     UNPROTECT(1);
     return res;

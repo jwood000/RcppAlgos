@@ -103,7 +103,7 @@ SEXP GetDesign(const PartDesign &part, ConstraintType ctype,
         Rprintf("Number of partitions: %s\n",
                 std::to_string(part.count).c_str());
         Rprintf("Shift:           %s\n",
-                std::to_string(part.count).c_str());
+                std::to_string(part.shift).c_str());
         Rprintf("Slope:           %s\n",
                 std::to_string(part.slope).c_str());
         Rprintf("Mapped target:   %s\n",
