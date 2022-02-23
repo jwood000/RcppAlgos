@@ -14,16 +14,11 @@ SEXP ComboApply::VecApplyReturn() {
                 ptrOut[j] = vInt[z[j]];
             }
 
-            if (IsFactor) {
-                Rf_setAttrib(vectorPass, R_ClassSymbol, myClass);
-                Rf_setAttrib(vectorPass, R_LevelsSymbol, myLevels);
-            }
-
             break;
         } case STRSXP: {
             for (int j = 0; j < m; ++j) {
-            SET_STRING_ELT(vectorPass, j, STRING_ELT(sexpVec, z[j]));
-        }
+                SET_STRING_ELT(vectorPass, j, STRING_ELT(sexpVec, z[j]));
+            }
 
             break;
         } case CPLXSXP: {
@@ -55,7 +50,7 @@ SEXP ComboApply::VecApplyReturn() {
         }
     }
 
-    SETCADR(sexpFun, vectorPass);
+    SETCADR(sexpFun, Rf_duplicate(vectorPass));
     SEXP res = Rf_eval(sexpFun, rho);
     UNPROTECT(2);
     return res;

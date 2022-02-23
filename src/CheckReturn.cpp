@@ -93,8 +93,9 @@ SEXP CheckReturn(SEXP Rv, SEXP RCnstrntFun, SEXP RCompFun,
         const bool applyFun = !Rf_isNull(stdFun) && !Rf_isFactor(Rv);
 
         if (applyFun) {
-            if (!Rf_isFunction(stdFun))
+            if (!Rf_isFunction(stdFun)) {
                 Rf_error("FUN must be a function!");
+            }
 
             res = CheckReturnType::anonymousFun;
         }
