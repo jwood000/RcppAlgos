@@ -152,22 +152,14 @@ void PartitionsEsqueMultiset<T>::Prepare(const std::string &currComp,
 
     this->SetComparison(currComp);
 
-    if (currComp == ">" || currComp == ">=") {
-        for (int i = 0; i < (this->n - 1); ++i) {
-            for (int j = i + 1; j < this->n; ++j) {
-                if (v[i] < v[j]) {
-                    std::swap(v[i], v[j]);
-                    std::swap(Reps[i], Reps[j]);
-                }
-            }
-        }
-    } else {
-        for (int i = 0; i < (this->n - 1); ++i) {
-            for (int j = i + 1; j < this->n; ++j) {
-                if (v[i] > v[j]) {
-                    std::swap(v[i], v[j]);
-                    std::swap(Reps[i], Reps[j]);
-                }
+    // Since PartitionsEsque only occurs for "==" or "IsBetween" (See
+    // ConstraintStructure  in ConstraintsUtils.cpp) we will not need
+    // to sort in reverse order as we do in ConstraintsMultiset.cpp
+    for (int i = 0; i < (this->n - 1); ++i) {
+        for (int j = i + 1; j < this->n; ++j) {
+            if (v[i] > v[j]) {
+                std::swap(v[i], v[j]);
+                std::swap(Reps[i], Reps[j]);
             }
         }
     }
