@@ -37,4 +37,12 @@ test_that("partitionsDesign produces correct results", {
     expect_equal(partitionsDesign(
             0:1000, freqs = c(1000, rep(1, 1000))
         )$num_partitions, gmp::as.bigz("8635565795744155161506"))
+
+    ## N.B. In the partition case, since all values will be less than 2^31 - 1,
+    ## the integerness will be preserverd. Compare this to the obtaining the sum
+    ## of every combination (i.e. the values will exceed 2^31 - 1).
+    expect_equal(class(partitionsGeneral(as.integer((1:100) * 2e7),
+                                         10, upper = 10)[1, ]), "integer")
+    expect_equal(class(comboGeneral(as.integer((1:100) * 2e7), 10, upper = 10,
+                                    constraintFun = "sum")[1,]), "numeric")
 })

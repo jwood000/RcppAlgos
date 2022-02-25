@@ -189,6 +189,22 @@ test_that("comboGeneral produces correct results with constraints", {
     expect_equal(comboGeneral(5, 5, TRUE, constraintFun = "sum",
                               comparisonFun = "==",
                               limitConstraints = 25, keepResults = TRUE)[,6], 25)
+
+    all_combs = comboGeneral(10, 5, freqs = rep(1:5, 2), constraintFun = "sum")
+    all_combs = all_combs[500:nrow(all_combs), ]
+    expect_equal(comboGeneral(10, 5, freqs = rep(1:5, 2), keepResults = TRUE,
+                              constraintFun = "sum", comparisonFun = "==",
+                              limitConstraints =  25, lower = 500),
+                 all_combs[all_combs[,6] == 25, ])
+
+
+    test = comboGeneral(10, 5, freqs = rep(1:5, 2),
+                        constraintFun = "sum", comparisonFun = c(">=", "=<"),
+                        limitConstraints = c(27, 23),
+                        lower = 1000, tolerance = 1, keepResults = TRUE)
+    bench = comboGeneral(10, 5, freqs = rep(1:5, 2),
+                         constraintFun = "sum", lower = 1000)
+    expect_equal(test, bench[c(which(bench[, 6] > 26 | bench[, 6] < 24)), ])
 })
 
 test_that("comboGeneral produces correct results with use of FUN", {
