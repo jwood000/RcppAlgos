@@ -90,7 +90,6 @@ void SetConstraintType(const std::vector<double> &vNum,
         part.isPart = false;
         ctype = ConstraintType::PartitionEsque;
     } else if (ctype < ConstraintType::PartMapping) {
-        part.isPart = false;
         ctype = ConstraintType::General;
     } else {
         // If we get here, ctype will be set to PartMapping
@@ -395,12 +394,12 @@ void ConstraintSetup(const std::vector<double> &vNum,
         bLower = mpz_cmp_si(tempLower[0], 1) > 0;
     }
 
-    SetConstraintType(vNum, funTest, part, ctype, bLower);
-
     if (part.isPart) {
         SetPartitionDesign(Reps, vNum, part, ctype,
                            lenV, m, bCalcMulti, IsComb);
     }
+
+    SetConstraintType(vNum, funTest, part, ctype, bLower);
 }
 
 template void AddResultToParts(int* mat, std::int64_t result,
