@@ -80,18 +80,21 @@ bool CheckSpecialCase(const std::vector<double> &vNum,
 }
 
 void SetConstraintType(const std::vector<double> &vNum,
-                       const std::string &mainFun, PartitionType ptype,
+                       const std::string &mainFun, PartDesign &part,
                        ConstraintType &ctype, bool bLower) {
 
-    if (CheckSpecialCase(vNum, mainFun, ptype, ctype, bLower)) {
+    if (CheckSpecialCase(vNum, mainFun, part.ptype, ctype, bLower)) {
+        part.isPart = false;
         ctype = ConstraintType::SpecialCnstrnt;
-    } else if (ptype == PartitionType::CoarseGrained) {
+    } else if (part.ptype == PartitionType::CoarseGrained) {
+        part.isPart = false;
         ctype = ConstraintType::PartitionEsque;
     } else if (ctype < ConstraintType::PartMapping) {
+        part.isPart = false;
         ctype = ConstraintType::General;
     } else {
-        // If we get here, ctype has already been set to
-        // PartMapping or PartStandard in SetPartitionDesign
+        // If we get here, ctype will be set to PartMapping
+        // or PartStandard in SetPartitionDesign
     }
 }
 
@@ -392,7 +395,7 @@ void ConstraintSetup(const std::vector<double> &vNum,
         bLower = mpz_cmp_si(tempLower[0], 1) > 0;
     }
 
-    SetConstraintType(vNum, funTest, part.ptype, ctype, bLower);
+    SetConstraintType(vNum, funTest, part, ctype, bLower);
 
     if (part.isPart) {
         SetPartitionDesign(Reps, vNum, part, ctype,
