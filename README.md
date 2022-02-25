@@ -2,6 +2,7 @@
 # RcppAlgos <img src='inst/figures/RcppAlgos-logo.png' width="150px" align="right" />
 
 <!-- badges: start -->
+[![R build status](https://github.com/jwood000/RcppAlgos/workflows/R-CMD-check/badge.svg)](https://github.com/jwood000/RcppAlgos/actions)
 [![CRAN status](https://www.r-pkg.org/badges/version/RcppAlgos)](https://cran.r-project.org/package=RcppAlgos)
 ![](http://cranlogs.r-pkg.org/badges/RcppAlgos?color=orange)
 ![](http://cranlogs.r-pkg.org/badges/grand-total/RcppAlgos?color=brightgreen)

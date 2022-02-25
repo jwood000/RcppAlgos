@@ -3,3 +3,4 @@
 \.travis\.yml
 LICENSE
 remove_whitespace.sh
+^\.github$

@@ -15,22 +15,44 @@ Combination and Permutation Iterator
 \usage{
 comboIter(v, m = NULL, repetition = FALSE, freqs = NULL,
           constraintFun = NULL, comparisonFun = NULL,
-          limitConstraints = NULL, FUN = NULL, tolerance = NULL)
+          limitConstraints = NULL, keepResults = NULL,
+          FUN = NULL, Parallel = FALSE, nThreads = NULL,
+          tolerance = NULL, FUN.VALUE = NULL)
 
 permuteIter(v, m = NULL, repetition = FALSE, freqs = NULL,
             constraintFun = NULL, comparisonFun = NULL,
-            limitConstraints = NULL, FUN = NULL, tolerance = NULL)
+            limitConstraints = NULL, keepResults = NULL,
+            FUN = NULL, Parallel = FALSE, nThreads = NULL,
+            tolerance = NULL, FUN.VALUE = NULL)
 }
 \arguments{
-  \item{v}{Source vector. If \code{v} is an integer (including nonpositive integers), it will be converted to the sequence \code{1:v}. All atomic types are supported (See \code{?is.atomic}).}
-  \item{m}{Number of elements to choose. If \code{repetition = TRUE} or \code{freqs} is utilized, \code{m} can exceed the length of \code{v}. If \code{m = NULL}, the length will default to \code{length(v)} or \code{sum(freqs)}.}
+  \item{v}{Source vector. If \code{v} is a positive integer, it will be converted to the sequence \code{1:v}. If \code{v} is a negative integer, it will be converted to the sequence \code{v:-1}. All atomic types are supported (See \code{?is.atomic}).}
+  \item{m}{Number of elements to choose.  If \code{repetition = TRUE} or \code{freqs} is utilized, \code{m} can exceed the length of \code{v}. If \code{m = NULL}, the length will default to \code{length(v)} or \code{sum(freqs)}.}
   \item{repetition}{Logical value indicating whether combinations/permutations should be with or without repetition. The default is \code{FALSE}.}
   \item{freqs}{A vector of frequencies used for producing all combinations/permutations of a multiset of \code{v}. Each element of \code{freqs} represents how many times each element of the source vector, \code{v}, is repeated. It is analogous to the \code{times} argument in \code{\link[base]{rep}}. The default value is \code{NULL}.}
-  \item{constraintFun}{This feature will be available in future releases. The default is \code{NULL}.}
-  \item{comparisonFun}{This feature will be available in future releases. The default is \code{NULL}.}
-  \item{limitConstraints}{This feature will be available in future releases. The default is \code{NULL}.}
+  \item{constraintFun}{Function to be applied to the elements of \code{v} that should be passed as a string (\emph{e.g.} \code{constraintFun = "sum"}). The possible constraint functions are: \code{"sum"}, \code{"prod"}, \code{"mean"}, \code{"max"}, & \code{"min"}. The default is \code{NULL}, meaning no function is applied.}
+  \item{comparisonFun}{Comparison operator that will be used to compare \code{limitConstraints} with the result of \code{constraintFun} applied to \code{v}. It should be passed as a string or a vector of two strings (\emph{e.g.} \code{comparisonFun = "<="} or  \code{comparisonFun = c(">","<")}). The possible comparison operators are: \code{"<"}, \code{">"}, \code{"<="}, \code{">="}, \code{"=="}. The default is \code{NULL}.
+  
+  When \code{comparisonFun} is a vector of two comparison strings, \emph{e.g} \code{comparisonFun = c(comp1, comp2)}, and \code{limitConstraints} is a vector of two numerical values, \emph{e.g} \code{limitConstraints = c(x1, x2)}, the combinations/permutations will be filtered in one of the following two ways:
+  \enumerate{
+      \item{When \code{comp1} is one of the 'greater-than' operators (\emph{i.e.} ">=" or ">"), \code{comp2} is one of the 'less-than' operators (\emph{i.e.} "<=" or "<"), and \code{x1 < x2}, the combinations/permutations that are returned will have a value (after \code{constraintFun} has been applied) between \code{x1} and \code{x2}.}
+      \item{When \code{comp1} and \code{comp2} are defined as in #1 and \code{x1 > x2}, the combinations/permutations that are returned will have a value outside the range of \code{x1} and \code{x2}. See the examples below.}
+        }
+  In other words, the first comparison operator is applied to the first limit and the second operator is applied to the second limit.}
+  \item{limitConstraints}{This is the value(s) that will be used for comparison. Can be passed as a single value or a vector of two numerical values. The default is \code{NULL}. See the definition of \code{comparisonFun} as well as the examples below for more information.}
+  \item{keepResults}{A logical flag indicating if the result of \code{constraintFun} applied to \code{v} should be displayed; if \code{TRUE}, an additional column of results will be added to the resulting matrix. The default is \code{FALSE}. If user is only applying \code{constraintFun}, \code{keepResults} will default to \code{TRUE}.
+  
+      \emph{E.g}. The following are equivalent and will produce a \eqn{4^{th}}{4th} column of row sums:
+      \itemize{
+            \item \code{comboGeneral(5, 3 constraintFun = "sum", keepResults = TRUE)}
+            \item \code{comboGeneral(5, 3 constraintFun = "sum")}
+        }
+    }
   \item{FUN}{Function to be applied to each combination/permutation. The default is \code{NULL}.}
-  \item{tolerance}{This feature will be available in future releases. The default is \code{NULL}.}
+  \item{Parallel}{Logical value indicating whether combinations/permutations should be generated in parallel using \eqn{n - 1} threads, where \eqn{n} is the maximum number of threads. The default is \code{FALSE}. If \code{nThreads} is not \code{NULL}, it will be given preference (\emph{e.g.} if user has 8 threads with \code{Parallel = TRUE} and \code{nThreads = 4}, only 4 threads will be spawned). If your system is single-threaded, the arguments \code{Parallel} and \code{nThreads} are ignored.}
+  \item{nThreads}{Specific number of threads to be used. The default is \code{NULL}. See \code{Parallel}.}
+  \item{tolerance}{A numeric value greater than or equal to zero. This parameter is utilized when a constraint is applied on a numeric vector. The default value is 0 when it can be determined that whole values are being utilized, otherwise it is \code{sqrt(.Machine$double.eps)} which is approximately \eqn{1.5e-8}. N.B. If the input vector is of type integer, this parameter will be ignored and strict equality will be enforced.}
+  \item{FUN.VALUE}{A template for the return value from \code{FUN}. See 'Details' of \code{\link[base]{vapply}} for more information.}
 }
 
 \value{
@@ -75,17 +97,17 @@ Joseph Wood
 }
 \examples{
 a = permuteIter(unique(state.region))
-a$nextIter()
-a$nextNIter(3)
-a$front()
-a$nextRemaining()
-a$prevIter()
-a$prevNIter(15)
-a$summary()
-a$back()
-a$prevRemaining()
+a@nextIter()
+a@nextNIter(3)
+a@front()
+a@nextRemaining()
+a@prevIter()
+a@prevNIter(15)
+a@summary()
+a@back()
+a@prevRemaining()
 a[[5]]
-a$summary()
+a@summary()
 a[[c(1, 17, 3)]]
-a$summary()
+a@summary()
 }
