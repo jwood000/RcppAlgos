@@ -5,24 +5,24 @@
 // From the partitions.c, here are Hankin's comments for c_numbdiffparts:
 //      "the recursion on p826 of Abramowitz and Stegun"
 double c_numbdiffparts(int n) {
-    
+
     const int n1 = n + 1;
     std::vector<double> qq(n1, 1);
-    
+
     for(int i = 2 ; i < n1; ++i) {
         qq[i] = 0;
-        
+
         for (int s = 1, f = 5, r = 2; i >= r; r += f, f += 3, s *= -1) {
             qq[i] += s * qq[i - r];
             if(i == r * 2) {qq[i] -= s;}
         }
-        
+
         for (int s = 1, f = 4, r = 1; i >= r; r += f, f += 3, s *= -1) {
             qq[i] += s * qq[i - r];
             if(i == r * 2) {qq[i] -= s;}
         }
     }
-    
+
     return qq.back();
 }
 
@@ -58,7 +58,7 @@ double c_numbdiffparts(int n) {
 // equivalent to (1 43). The next few groups are (3 42), (4, 40),
 // (5, 38), and (6, 36). These all get converted to (1, 40),
 // (1, 37), (1, 34), and (1, 31). The number of results for
-// each are given by (assume integer division and don't 
+// each are given by (assume integer division and don't
 // forget to add 1):
 //          44 / 2, 41 / 2, 38 / 2, 35 / 2, 32 / 2
 //
@@ -91,77 +91,77 @@ double SumSection(int n) {
 static std::vector<double> memoize;
 
 double pStd(int n, int m, int w) {
-    
+
     if (memoize[(n - m) * w + m - 2])
         return memoize[(n - m) * w + m - 2];
-    
+
     if (m == 3)
         return SumSection(n + 1);
-    
+
     int myLim = n / m;
     double count = 0;
-    
+
     for (; myLim--; n -= m)
         count += (memoize[(n - m) * w + m - 3] = pStd(n - 1, m - 1, w));
-    
+
     return count;
 }
 
 double CountStdPartLen(int n, int m) {
-    
+
     if (m < 2)
         return 1;
-    
+
     if (m == 2)
         return std::floor(n / 2);
-    
+
     memoize.assign((n - m + 1) * m, 0.0);
     double count = pStd(n, m, m);
-    
+
     return count;
 }
 
 // *********************************************************************** //
 
 double pDist(int n, int m, int w) {
-    
-    if (memoize[n * w + m]) 
+
+    if (memoize[n * w + m])
         return memoize[n * w + m];
-    
+
     if (m == 3)
         return SumSection(n - 2);
-    
+
     int myLim = n / m;
     double count = 0;
-    
+
     for (; --myLim; n -= m)
         count += (memoize[(n - m) * w + m - 1] = pDist(n - m, m - 1, w));
-    
+
     return count;
 }
 
 double CountDistinctPartLen(int n, int m) {
-    
+
     if (m < 2)
         return 1;
-    
+
     if (m == 2)
         return std::floor((n - 1) / 2);
-    
+
     memoize.assign((n + 1) * (m + 1), 0.0);
     double count = pDist(n, m, m + 1);
-    
+
     return count;
 }
 
-double GetComputedPartsComps(const std::vector<int> &z, PartitionType PartType, 
+double GetComputedPartsComps(const std::vector<int> &z, PartitionType PartType,
                              int target, int m, bool IsComb, bool IncludeZero, bool mIsNull) {
-    
+
     double partCountTest = 0;
     const bool IsDistinct = PartType > PartitionType::PartTradNoZero;
-    const int startLen = std::count_if(z.cbegin(), z.cend(), 
+    const int startLen = std::count_if(z.cbegin(), z.cend(),
                                        [](int i){return i > 0;});
-    
+
     if (IsDistinct) {
         if (IsComb) {
             if (PartType == PartitionType::PartDstctStdAll) {
@@ -187,16 +187,16 @@ double GetComputedPartsComps(const std::vector<int> &z, PartitionType PartType,
                 //             [10,]    4    0    0    3
                 //             [11,]    4    0    3    0
                 //             [12,]    4    3    0    0
-                
+
                 if (mIsNull) {
-                    
+
                     for (int i = startLen; i <= m; ++i)
                         partCountTest += (CountDistinctPartLen(target, i) * NumPermsNoRep(i, i));
-                    
+
                 } else {
                     std::vector<int> permCountVec(m);
                     std::iota(permCountVec.begin(), permCountVec.begin() + startLen, 1);
-                    
+
                     for (int i = startLen; i <= m; ++i) {
                         permCountVec[i - 1] = i;
                         partCountTest += (CountDistinctPartLen(target, i)
@@ -211,7 +211,7 @@ double GetComputedPartsComps(const std::vector<int> &z, PartitionType PartType,
         if (IsComb) {
             for (int i = startLen; i <= m; ++i)
                 partCountTest += CountStdPartLen(target, i);
-            
+
         } else if (mIsNull && IncludeZero) {
             partCountTest = std::pow(2.0, static_cast<double>(target - 1));
         } else {
@@ -219,6 +219,6 @@ double GetComputedPartsComps(const std::vector<int> &z, PartitionType PartType,
                                           : nChooseK(target - 1, m - 1);
         }
     }
-    
+
     return partCountTest;
 }

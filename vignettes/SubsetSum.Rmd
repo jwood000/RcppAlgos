@@ -87,10 +87,10 @@ In fact, these optimized algorithms can be applied when the vector passed has th
 
 ```r
 system.time(genParts <- comboGeneral(seq(121, 221, 5), 13, TRUE,
-                                     constraintFun = "sum", 
-                                     comparisonFun = "==", 
+                                     constraintFun = "sum",
+                                     comparisonFun = "==",
                                      limitConstraints = 2613))
- user  system elapsed     
+ user  system elapsed
 0.015   0.001   0.016    ## over 100 thousand results out of a possible 573 million
 
 ht(genParts)
@@ -115,10 +115,10 @@ prettyNum(comboCount(seq(121, 221, 5), 13, TRUE), big.mark = ",")
 
 system.time(genMultiParts <- comboGeneral(seq(121, 221, 5), 13,
                                           freqs = rep(1:7, 3),
-                                          constraintFun = "sum", 
-                                          comparisonFun = "==", 
+                                          constraintFun = "sum",
+                                          comparisonFun = "==",
                                           limitConstraints = 2613))
- user  system elapsed 
+ user  system elapsed
 0.011   0.000   0.012    ## over 70 thousand results out of a possible 256 million!
 
 ht(genMultiParts)
@@ -148,9 +148,9 @@ Generally, integer partition algorithms are restricted to positive integers. How
 ```r
 system.time(genDistParts <- comboGeneral(seq(-173L, 204L, 13L), 11, constraintFun = "sum",
                                          comparisonFun = "==", limitConstraints = -460))
- user  system elapsed 
+ user  system elapsed
 0.012   0.001   0.013
-  
+
 all(rowSums(genDistParts) == -460L)
 [1] TRUE
 
@@ -185,10 +185,10 @@ diff(inpVec)
 [1] 10  5  5  5  5  5  5  5  5  5  5  5  5  5  5  5  5  5  5  5
 
 system.time(genParts2 <- comboGeneral(inpVec, 13, TRUE,
-                                      constraintFun = "sum", 
-                                      comparisonFun = "==", 
+                                      constraintFun = "sum",
+                                      comparisonFun = "==",
                                       limitConstraints = 2613))
- user  system elapsed 
+ user  system elapsed
 0.097   0.005   0.103  ##  We still find over 100 thousand results out of
                        ##  a possible 573 million in under a second
 
@@ -228,7 +228,7 @@ sort(mySamp)
 system.time(exotic <- comboGeneral(mySamp, 8, freqs = rep(1:5, 10),
                                    constraintFun = "sum", comparisonFun = "==",
                                    limitConstraints = 496))
- user  system elapsed 
+ user  system elapsed
 0.284   0.001   0.285
 
 dim(exotic)
@@ -242,7 +242,7 @@ prettyNum(comboCount(mySamp, 8, freqs = rep(1:5, 10)), big.mark = ",")
 system.time(comboGeneral(mySamp, 8, freqs = rep(1:5, 10),
                          constraintFun = "sum", comparisonFun = "==",
                          limitConstraints = 496, upper = 1e3))
- user  system elapsed 
+ user  system elapsed
 0.003   0.000   0.002
 ```
 
@@ -259,10 +259,10 @@ set.seed(22213)
 football_player_salaries <- 2e7 * rbeta(100, 2, 25)
 
 summary(football_player_salaries)
-  Min.  1st Qu.   Median     Mean  3rd Qu.     Max. 
+  Min.  1st Qu.   Median     Mean  3rd Qu.     Max.
 115308   768338  1261683  1612271  1950565 10895883
 
-## Over 1 billion combinations... 
+## Over 1 billion combinations...
 ## An exhaustive search will not be feasible
 prettyNum(comboCount(football_player_salaries, 6), big.mark = ",")
 [1] "1,192,052,400"
@@ -270,7 +270,7 @@ prettyNum(comboCount(football_player_salaries, 6), big.mark = ",")
 system.time(exactly20 <- comboGeneral(football_player_salaries, 6,
                                       constraintFun = "sum", comparisonFun = "==",
                                       limitConstraints = 2e7, tolerance = 0))
- user  system elapsed 
+ user  system elapsed
 3.088   0.011   3.104
 
 ## No results that equal exactly 2e7
@@ -287,7 +287,7 @@ system.time(almost20 <- comboGeneral(football_player_salaries, 6,
                                      constraintFun = "sum", comparisonFun = "==",
                                      limitConstraints = 2e7, tolerance = 1000,
                                      upper = 1000, keepResults = TRUE))
- user  system elapsed 
+ user  system elapsed
 0.130   0.000   0.131
 
 dim(almost20)
@@ -315,7 +315,7 @@ system.time(superClose20 <- comboGeneral(football_player_salaries, 6,
                                          constraintFun = "sum", comparisonFun = "==",
                                          limitConstraints = 2e7, tolerance = 10,
                                          upper = 1000, keepResults = TRUE))
- user  system elapsed 
+ user  system elapsed
 2.970   0.006   2.980
 
 ht(superClose20)
@@ -355,7 +355,7 @@ Unit: relative
       expr     min      lq    mean   median       uq      max neval
  optimized  1.0000  1.0000  1.0000  1.00000  1.00000  1.00000    20
      brute 40.1571 41.8612 49.3823 45.57399 48.00895 67.39401    20
-     
+
 ## What about cases when brute force isn't feasible
 set.seed(101)
 v <- runif(1000, 1, 2)
@@ -367,7 +367,7 @@ system.time(prodAlmost100 <- comboGeneral(v, 100, constraintFun = "prod",
                                           comparisonFun = "==",
                                           limitConstraints = 100,
                                           tolerance = 0.0001, upper = 20))
- user  system elapsed 
+ user  system elapsed
 0.038   0.000   0.038
 
 dim(prodAlmost100)
@@ -383,7 +383,7 @@ system.time(meanAlmost1.5 <- comboGeneral(v, 100, constraintFun = "mean",
                                           comparisonFun = "==",
                                           limitConstraints = 1.5,
                                           tolerance = 0.0001, upper = 20))
- user  system elapsed 
+ user  system elapsed
 0.000   0.000   0.001
 
 dim(meanAlmost1.5)

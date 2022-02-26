@@ -5,14 +5,14 @@ void TopOffPartialPerm(std::vector<int> &z, const std::vector<int> &myReps,
     if (!IsComb) {
         if (IsMult) {
             std::vector<int> f(n, 0);
-            
+
             for (int i = 0; i < m; ++i)
                 ++f[z[i]];
-            
+
             for (int i = 0; i < n; ++i)
                 for (int j = 0; j < (myReps[i] - f[i]); ++j)
-                    z.push_back(i); 
-            
+                    z.push_back(i);
+
         } else if (!IsRep) {
             if (m < n)
                 for (int i = 0; i < n; ++i)
@@ -24,7 +24,7 @@ void TopOffPartialPerm(std::vector<int> &z, const std::vector<int> &myReps,
 
 void SetIndexVec(SEXP RindexVec, std::vector<double> &mySample,
                  std::size_t &sampSize, bool IsGmp, double computedRows) {
-    
+
     if (IsGmp) {
         switch (TYPEOF(RindexVec)) {
             case RAWSXP: {
@@ -39,17 +39,17 @@ void SetIndexVec(SEXP RindexVec, std::vector<double> &mySample,
     } else {
         CleanConvert::convertVector(RindexVec, mySample, "indexVec", false);
         sampSize = mySample.size();
-        
+
         double myMax = *std::max_element(mySample.cbegin(), mySample.cend());
-        
+
         if (myMax > computedRows) {
             Rcpp::stop("One or more of the requested values "
                            "exceeds the maximum number of possible results");
         }
-        
+
         if (sampSize > std::numeric_limits<int>::max())
             Rcpp::stop("The number of rows cannot exceed 2^31 - 1");
-        
+
         // Get zero base index
         for (auto &s: mySample)
             --s;
@@ -58,21 +58,21 @@ void SetIndexVec(SEXP RindexVec, std::vector<double> &mySample,
 
 void SetIndexVecMpz(SEXP RindexVec, mpz_t *myVec,
                     std::size_t sampSize, mpz_t &computedRowsMpz) {
-    
+
     createMPZArray(RindexVec, myVec, sampSize, "sampleVec");
-    
+
     // get zero base
     for (std::size_t i = 0; i < sampSize; ++i)
         mpz_sub_ui(myVec[i], myVec[i], 1);
-    
+
     mpz_t maxGmp;
     mpz_init(maxGmp);
     mpz_set(maxGmp, myVec[0]);
-    
+
     for (std::size_t i = 1; i < sampSize; ++i)
         if (mpz_cmp(myVec[i], maxGmp) > 0)
             mpz_set(maxGmp, myVec[i]);
-        
+
     if (mpz_cmp(maxGmp, computedRowsMpz) >= 0) {
         Rcpp::stop("One or more of the requested values in sampleVec "
                        "exceeds the maximum number of possible results");

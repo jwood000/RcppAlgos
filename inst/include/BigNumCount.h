@@ -12,7 +12,7 @@ void MultisetCombRowNumGmp(mpz_t result, int n, int r, const std::vector<int> &R
 void MultisetPermRowNumGmp(mpz_t result, int n, int r, const std::vector<int> &myReps);
 
 void GetComputedRowMpz(mpz_t computedRowMpz, bool IsMultiset, bool IsComb, bool IsRep,
-                       int n, int m, const SEXP &Rm, const std::vector<int> &freqs, 
+                       int n, int m, const SEXP &Rm, const std::vector<int> &freqs,
                        const std::vector<int> &myReps);
 
 #endif

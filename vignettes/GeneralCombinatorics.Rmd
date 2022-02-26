@@ -12,7 +12,7 @@ vignette: >
   \usepackage[utf8]{inputenc}
 ---
 
-This document serves as an overview for attacking _common_ combinatorial problems in `R`. One of the goals of `RcppAlgos` is to provide a comprehensive and accessible suite of functionality so that users can easily get to the heart of their problem. As a bonus, the functions in `RcppAlgos` are extremely efficient and are constantly being improved with every release. 
+This document serves as an overview for attacking _common_ combinatorial problems in `R`. One of the goals of `RcppAlgos` is to provide a comprehensive and accessible suite of functionality so that users can easily get to the heart of their problem. As a bonus, the functions in `RcppAlgos` are extremely efficient and are constantly being improved with every release.
 
 It should be noted that this document only covers common problems. For more information on other combinatorial problems addressed by `RcppAlgos`, see the following vignettes:
 
@@ -72,7 +72,7 @@ head(permuteGeneral(4, 3))
 [5,]    1    4    2
 [6,]    1    4    3
 
-## If you don't specify m, the length of v (if v is a vector) or v (if v is a 
+## If you don't specify m, the length of v (if v is a vector) or v (if v is a
 ## scalar (see the examples above)) will be used
 v <- c(2, 3, 5, 7, 11, 13)
 comboGeneral(v)
@@ -91,9 +91,9 @@ head(permuteGeneral(v))
 
 ## They are very efficient...
 system.time(comboGeneral(25, 12))
- user  system elapsed 
+ user  system elapsed
 0.101   0.048   0.151
- 
+
 comboCount(25, 12)
 [1] 5200300
 
@@ -117,9 +117,9 @@ tail -->
 
 ## And for permutations... over 8 million instantly
 system.time(permuteCount(13, 7))
-user  system elapsed 
+user  system elapsed
    0       0       0
-    
+
 permuteCount(13, 7)
 [1] 8648640
 
@@ -147,11 +147,11 @@ permuteGeneral(factor(c("low", "med", "high"),
                ordered = TRUE))
      [,1] [,2] [,3]
 [1,] low  med  high
-[2,] low  high med 
+[2,] low  high med
 [3,] med  low  high
-[4,] med  high low 
-[5,] high low  med 
-[6,] high med  low 
+[4,] med  high low
+[5,] high low  med
+[6,] high med  low
 Levels: low < med < high
 ```
 
@@ -163,7 +163,7 @@ There are many problems in combinatorics which require finding combinations/perm
 fourDays <- weekdays(as.Date("2019-10-09") + 0:3, TRUE)
 ht(comboGeneral(fourDays, repetition = TRUE))
 head -->
-     [,1]  [,2]  [,3]  [,4] 
+     [,1]  [,2]  [,3]  [,4]
 [1,] "Wed" "Wed" "Wed" "Wed"
 [2,] "Wed" "Wed" "Wed" "Thu"
 [3,] "Wed" "Wed" "Wed" "Fri"
@@ -171,7 +171,7 @@ head -->
 [5,] "Wed" "Wed" "Thu" "Thu"
 --------
 tail -->
-      [,1]  [,2]  [,3]  [,4] 
+      [,1]  [,2]  [,3]  [,4]
 [31,] "Fri" "Fri" "Fri" "Fri"
 [32,] "Fri" "Fri" "Fri" "Sat"
 [33,] "Fri" "Fri" "Sat" "Sat"
@@ -181,7 +181,7 @@ tail -->
 ## When repetition = TRUE, m can exceed length(v)
 ht(comboGeneral(fourDays, 8, TRUE))
 head -->
-     [,1]  [,2]  [,3]  [,4]  [,5]  [,6]  [,7]  [,8] 
+     [,1]  [,2]  [,3]  [,4]  [,5]  [,6]  [,7]  [,8]
 [1,] "Wed" "Wed" "Wed" "Wed" "Wed" "Wed" "Wed" "Wed"
 [2,] "Wed" "Wed" "Wed" "Wed" "Wed" "Wed" "Wed" "Thu"
 [3,] "Wed" "Wed" "Wed" "Wed" "Wed" "Wed" "Wed" "Fri"
@@ -189,7 +189,7 @@ head -->
 [5,] "Wed" "Wed" "Wed" "Wed" "Wed" "Wed" "Thu" "Thu"
 --------
 tail -->
-       [,1]  [,2]  [,3]  [,4]  [,5]  [,6]  [,7]  [,8] 
+       [,1]  [,2]  [,3]  [,4]  [,5]  [,6]  [,7]  [,8]
 [161,] "Fri" "Fri" "Fri" "Fri" "Sat" "Sat" "Sat" "Sat"
 [162,] "Fri" "Fri" "Fri" "Sat" "Sat" "Sat" "Sat" "Sat"
 [163,] "Fri" "Fri" "Sat" "Sat" "Sat" "Sat" "Sat" "Sat"
@@ -263,7 +263,7 @@ getPermsWithSpecificRepetition <- function(z, n) {
 a <- c(1,1,1,1,2,2,2,7,7,7,7,7)
 
 system.time(test <- getPermsWithSpecificRepetition(a, 6))
-  user  system elapsed 
+  user  system elapsed
  2.317   0.059   2.385
 ```
 
@@ -274,15 +274,15 @@ of times each unique element is repeated and Voila!
 
 ``` r
 system.time(test2 <- permuteGeneral(unique(a), 6, freqs = rle(a)$lengths))
- user  system elapsed 
+ user  system elapsed
     0       0       0
-      
+
 identical(test, test2)
 [1] TRUE
 ```
- 
+
 Here are some more general examples with multisets:
- 
+
 ```r
 ## Generate all permutations of a vector with specific
 ## length of repetition for each element (i.e. multiset)
@@ -328,7 +328,7 @@ RcppAlgos::stdThreadMax()
 microbenchmark(combn = combn(25, 10),
                serAlgos = comboGeneral(25, 10),
                parAlgos = comboGeneral(25, 10, nThreads = 4),
-               times = 10, 
+               times = 10,
                unit = "relative")
 Unit: relative
      expr        min         lq      mean     median         uq       max neval
@@ -344,7 +344,7 @@ Unit: milliseconds
      expr       min         lq      mean     median         uq       max neval
    serial  3.031987   2.990349  2.969633   3.000991   2.992326  2.014025   100
  parallel  1.000000   1.000000  1.000000   1.000000   1.000000  1.000000   100
- 
+
 
 set.seed(2187)
 bigVec <- sort(sample(10^7, 600))
@@ -353,7 +353,7 @@ bigVec <- sort(sample(10^7, 600))
 system.time(permuteGeneral(bigVec, 3, Parallel = T))
   user  system elapsed
  1.067   3.645   0.902
- 
+
 prettyNum(permuteCount(bigVec, 3), big.mark = ",")
 [1] "214,921,200"
 ```
@@ -396,7 +396,7 @@ system.time(lapply(seq(1, 3247943160, 10086780), function(x) {
      ## do something
      x
 }))
-   user  system elapsed 
+   user  system elapsed
  99.495  49.993 149.467
 
 
@@ -407,7 +407,7 @@ system.time(mclapply(seq(1, 3247943160, 10086780), function(x) {
      ## do something
      x
 }, mc.cores = 6))
-   user  system elapsed 
+   user  system elapsed
 125.361  85.916  35.641
 ```
 
@@ -425,12 +425,12 @@ Big Integer ('bigz') :
 [1] 109740941767310814894854141592555528130828577427079559745647393417766593803205094888320
 
 ## Let's look at one hundred thousand combinations in the range (1e15 + 1, 1e15 + 1e5)
-system.time(b <- comboGeneral(myVec, 50, TRUE, 
+system.time(b <- comboGeneral(myVec, 50, TRUE,
                               lower = 1e15 + 1,
                               upper = 1e15 + 1e5))
-   user  system elapsed 
+   user  system elapsed
   0.008   0.000   0.008
-  
+
 b[1:5, 45:50]
           [,1]      [,2]      [,3]     [,4]      [,5]       [,6]
 [1,] 0.5454861 0.4787456 0.7797122 2.004614 -1.257629 -0.7740501
@@ -459,7 +459,7 @@ unit: relative
  expr      min       lq     mean   median       uq      max neval
    f1 6.948574 6.955633 6.960554 6.961681 6.515623 9.688503   100
    f2 1.000000 1.000000 1.000000 1.000000 1.000000 1.000000   100
-   
+
 comboGeneral(15, 8, FUN = cumprod, upper = 3)
 [[1]]
 [1]     1     2     6    24   120   720  5040 40320
@@ -472,7 +472,7 @@ comboGeneral(15, 8, FUN = cumprod, upper = 3)
 
 
 ## An example involving the powerset
-unlist(comboGeneral(c("", letters[1:3]), 3, 
+unlist(comboGeneral(c("", letters[1:3]), 3,
                     freqs = c(2, rep(1, 3)),
                     FUN = function(x) paste0(x, collapse = "")))
 [1] "a"   "b"   "c"   "ab"  "ac"  "bc"  "abc"
@@ -552,7 +552,7 @@ pools = list(c(1, 10, 14, 6),
              c(7, 6, 13, 14, 10, 11, 9, 4),
              c(6,  3,  2, 14,  7, 12,  9),
              c(6, 11,  2,  5, 15,  7))
-  
+
 ## If we used expand.grid, we would have to filter
 ## more than 100 million results
 prod(lengths(pools))
@@ -560,7 +560,7 @@ prod(lengths(pools))
 
 ## With comboGrid, this is no problem
 system.time(myCombs <- comboGrid(pools))
-   user  system elapsed 
+   user  system elapsed
   0.958   0.069   1.027
 
 print(object.size(myCombs), unit = "Mb")
@@ -587,17 +587,17 @@ tail -->
 ## This is just the time to create the cartesian product
 ## Generating keys, then filtering will take much more time
 system.time(cartProd <- expand.grid(pools))
-   user  system elapsed 
+   user  system elapsed
   7.531   2.899  10.431
 
 ## Creates huge object
 print(object.size(cartProd), unit = "Mb")
 7717.5 Mb
 
-## What if we want results with unique values... 
+## What if we want results with unique values...
 ## Simply set repetition = FALSE
 system.time(myCombs <- comboGrid(pools, repetition = FALSE))
-   user  system elapsed 
+   user  system elapsed
   0.029   0.007   0.035
 
 ht(myCombsNoRep)
@@ -622,7 +622,7 @@ tail -->
 The function `comboGrid` was highly inspired by the following question on stackoverflow:
 
   * [Picking unordered combinations from pools with overlap](<https://stackoverflow.com/q/51834467/4408538>)
-  
+
 Currenlty, the underlying algorithm is not the gold standard. By that, we mean that results are not generated one by one. Efforts are underway to achieve this, but up until this point it has proven quite difficult (See the comprehensive answer by Tim Peters (yes, that [Tim Peters](<https://stackoverflow.com/users/2705542/tim-peters>))).
 
 The algorithm in `comboGrid` leverages [The Fundamental Theorem of Arithmetic](<https://en.wikipedia.org/wiki/Fundamental_theorem_of_arithmetic>) to efficiently generate keys that will be used in a hash function to determine if a particular combination of elements have been encountered. For greater efficiency, we make use of deduplication as [user2357112](<https://stackoverflow.com/a/51886857/4408538>) suggests.
@@ -646,7 +646,7 @@ funBruteGrp <- function(myLow = 1, myUp) {
 
 ## All of these are the same as only the 3rd group is being permuted
 funBruteGrp(myUp = 6)
-  Grp1          Grp2          Grp3            
+  Grp1          Grp2          Grp3
 1 "( 1 2 3 4 )" "( 5 6 7 8 )" "( 9 10 11 12 )"
 2 "( 1 2 3 4 )" "( 5 6 7 8 )" "( 9 10 12 11 )"
 3 "( 1 2 3 4 )" "( 5 6 7 8 )" "( 9 11 10 12 )"
@@ -656,17 +656,17 @@ funBruteGrp(myUp = 6)
 
 ## We found our second distinct partition
 funBruteGrp(myLow = 23, myUp = 26)
-   Grp1          Grp2          Grp3            
+   Grp1          Grp2          Grp3
 23 "( 1 2 3 4 )" "( 5 6 7 8 )" "( 12 11 9 10 )"
 24 "( 1 2 3 4 )" "( 5 6 7 8 )" "( 12 11 10 9 )"
 25 "( 1 2 3 4 )" "( 5 6 7 9 )" "( 8 10 11 12 )"  ## <<-- 2nd distinct partition of groups
 26 "( 1 2 3 4 )" "( 5 6 7 9 )" "( 8 10 12 11 )"
 
 funBruteGrp(myLow = 48, myUp = 50)
-   Grp1          Grp2           Grp3            
+   Grp1          Grp2           Grp3
 48 "( 1 2 3 4 )" "( 5 6 7 9 )"  "( 12 11 10 8 )"
 49 "( 1 2 3 4 )" "( 5 6 7 10 )" "( 8 9 11 12 )"  ## <<-- 3rd distinct partition of groups
-50 "( 1 2 3 4 )" "( 5 6 7 10 )" "( 8 9 12 11 )" 
+50 "( 1 2 3 4 )" "( 5 6 7 10 )" "( 8 9 12 11 )"
 ```
 
 We are starting to see a pattern. Each new partition is exactly 24 spots away. This makes sense as there are `factorial(4) = 24` permutations of size 4. Now, this is an oversimplification as if we simply generate every _24<sup>th</sup>_ permutation, we will still get duplication as they start to carry over to the other groups. Observe:
@@ -675,26 +675,26 @@ We are starting to see a pattern. Each new partition is exactly 24 spots away. T
 do.call(rbind, lapply(seq(1, 145, 24), function(x) {
     funBruteGrp(myLow = x, myUp = x)
 }))
-Grp1          Grp2           Grp3            
+Grp1          Grp2           Grp3
 1   "( 1 2 3 4 )" "( 5 6 7 8 )"  "( 9 10 11 12 )"
 25  "( 1 2 3 4 )" "( 5 6 7 9 )"  "( 8 10 11 12 )"
-49  "( 1 2 3 4 )" "( 5 6 7 10 )" "( 8 9 11 12 )" 
-73  "( 1 2 3 4 )" "( 5 6 7 11 )" "( 8 9 10 12 )" 
-97  "( 1 2 3 4 )" "( 5 6 7 12 )" "( 8 9 10 11 )" 
+49  "( 1 2 3 4 )" "( 5 6 7 10 )" "( 8 9 11 12 )"
+73  "( 1 2 3 4 )" "( 5 6 7 11 )" "( 8 9 10 12 )"
+97  "( 1 2 3 4 )" "( 5 6 7 12 )" "( 8 9 10 11 )"
 121 "( 1 2 3 4 )" "( 5 6 8 7 )"  "( 9 10 11 12 )"  ## <<-- This is the same as the 1st
 145 "( 1 2 3 4 )" "( 5 6 8 9 )"  "( 7 10 11 12 )"  ## partition. The only difference is
 169 "( 1 2 3 4 )" "( 5 6 8 10 )" "( 7 9 11 12 )"   ## that the 2nd Grp has been permuted
 ```
 
-This only gets more muddled as the number of groups increases. It is also very inefficient, however this exercise hopefully serves to better illustrate these structures. 
+This only gets more muddled as the number of groups increases. It is also very inefficient, however this exercise hopefully serves to better illustrate these structures.
 
 The algorithm in `comboGroups` avoids all of this duplication by implementing a novel algorithm akin to [std::next_permutation](https://en.cppreference.com/w/cpp/algorithm/next_permutation) from the algorithm library in `C++`.
 
 ```
 system.time(comboGroups(12, numGroups = 3))
-   user  system elapsed 
+   user  system elapsed
       0       0       0
-      
+
 ht(comboGroups(12, numGroups = 3))
 head -->
      Grp1 Grp1 Grp1 Grp1 Grp2 Grp2 Grp2 Grp2 Grp3 Grp3 Grp3 Grp3
@@ -720,26 +720,26 @@ comboGroupsCount(30, 6)
 Big Integer ('bigz') :
 [1] 123378675083039376
 
-system.time(a1 <- comboGroups(30, numGroups = 6, 
+system.time(a1 <- comboGroups(30, numGroups = 6,
                               lower = "123378675000000000",
                               upper = "123378675005000000"))
-   user  system elapsed 
+   user  system elapsed
   0.299   0.113   0.412
 
 ## Use specific number of threads
-system.time(a2 <- comboGroups(30, numGroups = 6, 
+system.time(a2 <- comboGroups(30, numGroups = 6,
                               lower = "123378675000000000",
                               upper = "123378675005000000", nThreads = 4))
-   user  system elapsed 
+   user  system elapsed
   0.358   0.197   0.146
 
 ## Use n - 1 number of threads (in this case, there are 7)
-system.time(a3 <- comboGroups(30, numGroups = 6, 
+system.time(a3 <- comboGroups(30, numGroups = 6,
                               lower = "123378675000000000",
                               upper = "123378675005000000", Parallel = TRUE))
-   user  system elapsed 
+   user  system elapsed
   0.466   0.307   0.118
-  
+
 identical(a1, a2)
 [1] TRUE
 
@@ -753,9 +753,9 @@ There is one additional argument (i.e. `retType`) not present in the other two g
 my3D <- comboGroups(factor(month.abb), 4, retType = "3Darray")
 my3D[1, , ]
      Grp1 Grp2 Grp3 Grp4
-[1,] Jan  Apr  Jul  Oct 
-[2,] Feb  May  Aug  Nov 
-[3,] Mar  Jun  Sep  Dec 
+[1,] Jan  Apr  Jul  Oct
+[2,] Feb  May  Aug  Nov
+[3,] Mar  Jun  Sep  Dec
 Levels: Apr Aug Dec Feb Jan Jul Jun Mar May Nov Oct Sep
 
 comboGroupsCount(12, 4)
@@ -763,9 +763,9 @@ comboGroupsCount(12, 4)
 
 my3D[15400, , ]
      Grp1 Grp2 Grp3 Grp4
-[1,] Jan  Feb  Mar  Apr 
-[2,] Nov  Sep  Jul  May 
-[3,] Dec  Oct  Aug  Jun 
+[1,] Jan  Feb  Mar  Apr
+[2,] Nov  Sep  Jul  May
+[3,] Dec  Oct  Aug  Jun
 Levels: Apr Aug Dec Feb Jan Jul Jun Mar May Nov Oct Sep
 ```
 

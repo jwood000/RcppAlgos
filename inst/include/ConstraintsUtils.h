@@ -61,7 +61,7 @@ void PartialReduceMean(int m, typeVector& partial, typeVector w) {
 
 template <typename T>
 Rcpp::XPtr<partialReducePtr<T>> putPartialReduceInXPtr(const std::string &myFun) {
-    
+
     if (myFun == "prod") {
         return(Rcpp::XPtr<partialReducePtr<T>>(new partialReducePtr<T>(&PartialReduceProd)));
     } else if (myFun == "sum") {

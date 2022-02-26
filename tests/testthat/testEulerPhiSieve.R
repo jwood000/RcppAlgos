@@ -2,7 +2,7 @@ context("testing eulerPhiSieve")
 
 test_that("eulerPhiSieve generates correct numbers", {
     options(scipen = 50)
-    
+
     individualEulerPhi <- function(b1, b2) {
         r <- b1:b2
         p <- primeFactorizeSieve(b1, b2)
@@ -11,12 +11,12 @@ test_that("eulerPhiSieve generates correct numbers", {
             prod(uni - 1) * r[x] / prod(uni)
         })
     }
-    
+
     expect_equal(eulerPhiSieve(1e4), c(1, individualEulerPhi(2, 1e4)))
-    
-    expect_equal(eulerPhiSieve(1e13, 1e13 + 1e4), 
+
+    expect_equal(eulerPhiSieve(1e13, 1e13 + 1e4),
                  individualEulerPhi(1e13, 1e13 + 1e4))
-    
+
     expect_equal(eulerPhiSieve(10)[10], 4)
     expect_equal(length(eulerPhiSieve(1000)), 1000)
     expect_equal(eulerPhiSieve(2), c(1, 1))
@@ -32,8 +32,8 @@ test_that("eulerPhiSieve generates correct numbers", {
     ## Parallel tests
     expect_equal(eulerPhiSieve(198, 2e5, nThreads = 3), eulerPhiSieve(198, 2e5))
     expect_equal(eulerPhiSieve(2e5, nThreads = 2), eulerPhiSieve(2e5))
-    
-    expect_equal(eulerPhiSieve(1e12, 1e12 + 1e6, nThreads = 2), 
+
+    expect_equal(eulerPhiSieve(1e12, 1e12 + 1e6, nThreads = 2),
                                     eulerPhiSieve(1e12, 1e12 + 1e6))
-    
+
 })

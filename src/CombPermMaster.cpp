@@ -8,8 +8,8 @@ void SerialReturn(const Rcpp::Vector<T> &v, Rcpp::Matrix<T> &matRcpp,
                   std::vector<int> &z, int n, int m, int nRows, bool IsComb,
                   bool IsRep, bool IsMult, bool generalRet,
                   const std::vector<int> &freqs) {
-    
-    Rcpp::XPtr<combPermPtr<Rcpp::Matrix<T>, Rcpp::Vector<T>>> xpFunCoPePtr = 
+
+    Rcpp::XPtr<combPermPtr<Rcpp::Matrix<T>, Rcpp::Vector<T>>> xpFunCoPePtr =
         putCombPtrInXPtr<Rcpp::Matrix<T>, Rcpp::Vector<T>>(IsComb, IsMult, IsRep, generalRet);
 
     const combPermPtr<Rcpp::Matrix<T>, Rcpp::Vector<T>> myFunCombPerm = *xpFunCoPePtr;
@@ -17,7 +17,7 @@ void SerialReturn(const Rcpp::Vector<T> &v, Rcpp::Matrix<T> &matRcpp,
 }
 
 template <typename typeRcpp, typename T>
-void MasterReturn(typeRcpp &matRcpp, std::vector<T> v, int n, int m, bool IsRep, 
+void MasterReturn(typeRcpp &matRcpp, std::vector<T> v, int n, int m, bool IsRep,
                   bool IsComb, bool IsMult, bool IsGmp, bool generalRet, const std::vector<int> &freqs,
                   std::vector<int> z, const std::vector<int> &myReps, double lower, mpz_t &lowerMpz,
                   int nRows, int nThreads, bool Parallel, int phaseOne) {
@@ -30,26 +30,26 @@ void MasterReturn(typeRcpp &matRcpp, std::vector<T> v, int n, int m, bool IsRep,
             const int stepSize = nRows / nThreads;
             int nextStep = stepSize;
             int step = 0;
-            
-            Rcpp::XPtr<combPermPtr<RcppParallel::RMatrix<T>, 
-                                   std::vector<T>>> xpFunCoPePtr = 
-                    putCombPtrInXPtr<RcppParallel::RMatrix<T>, 
+
+            Rcpp::XPtr<combPermPtr<RcppParallel::RMatrix<T>,
+                                   std::vector<T>>> xpFunCoPePtr =
+                    putCombPtrInXPtr<RcppParallel::RMatrix<T>,
                                      std::vector<T>>(IsComb, IsMult, IsRep, generalRet);
-            
-            const combPermPtr<RcppParallel::RMatrix<T>, 
+
+            const combPermPtr<RcppParallel::RMatrix<T>,
                               std::vector<T>> myFunParCombPerm = *xpFunCoPePtr;
-            
+
             Rcpp::XPtr<nthResultPtr> xpNthComb = putNthResPtrInXPtr(IsComb, IsMult, IsRep, IsGmp);
             const nthResultPtr nthResFun = *xpNthComb;
 
             for (int j = 0; j < (nThreads - 1); ++j, step += stepSize, nextStep += stepSize) {
                 pool.push(std::cref(myFunParCombPerm), std::ref(parMat),
                           std::cref(v), z, n, m, step, nextStep, std::cref(freqs));
-                
+
                 SetStartZ(n, m, lower, stepSize, lowerMpz, IsRep,
                           IsComb, IsMult, IsGmp, myReps, freqs, z, nthResFun);
             }
-            
+
             pool.push(std::cref(myFunParCombPerm), std::ref(parMat),
                       std::cref(v), z, n, m, step, nRows, std::cref(freqs));
 
@@ -58,7 +58,7 @@ void MasterReturn(typeRcpp &matRcpp, std::vector<T> v, int n, int m, bool IsRep,
             PermuteParallel(parMat, v, z, n, m, nRows, phaseOne, nThreads, IsRep);
         }
     } else {
-        Rcpp::XPtr<combPermPtr<typeRcpp, std::vector<T>>> xpFunCoPePtr = putCombPtrInXPtr<typeRcpp, 
+        Rcpp::XPtr<combPermPtr<typeRcpp, std::vector<T>>> xpFunCoPePtr = putCombPtrInXPtr<typeRcpp,
                                std::vector<T>>(IsComb, IsMult, IsRep, generalRet);
         const combPermPtr<typeRcpp, std::vector<T>> myFunCombPerm = *xpFunCoPePtr;
         myFunCombPerm(matRcpp, v, z, n, m, 0, nRows, freqs);
@@ -92,13 +92,13 @@ SEXP CombinatoricsStndrd(SEXP Rv, SEXP Rm, SEXP RisRep, SEXP RFreqs, SEXP Rlow,
     mpz_init(computedRowsMpz);
 
     if (IsGmp) {
-        GetComputedRowMpz(computedRowsMpz, IsMult, 
+        GetComputedRowMpz(computedRowsMpz, IsMult,
                           IsComb, IsRep, n, m, Rm, freqs, myReps);
     }
-    
+
     double lower = 0, upper = 0;
     bool bLower = false, bUpper = false;
-    
+
     auto lowerMpz = FromCpp14::make_unique<mpz_t[]>(1);
     auto upperMpz = FromCpp14::make_unique<mpz_t[]>(1);
     mpz_init(lowerMpz[0]); mpz_init(upperMpz[0]);
@@ -108,17 +108,17 @@ SEXP CombinatoricsStndrd(SEXP Rv, SEXP Rm, SEXP RisRep, SEXP RFreqs, SEXP Rlow,
 
     std::vector<int> startZ(m);
     const bool permNonTriv = (!IsComb && bLower);
-    
+
     Rcpp::XPtr<nthResultPtr> xpComb = putNthResPtrInXPtr(IsComb, IsMult, IsRep, IsGmp);
     const nthResultPtr nthResFun = *xpComb;
-    
+
     SetStartZ(n, m, lower, 0, lowerMpz[0], IsRep, IsComb,
               IsMult, IsGmp, myReps, freqs, startZ, nthResFun);
-    
+
     double userNumRows = 0;
     SetNumResults(IsGmp, bLower, bUpper, false, upperMpz.get(), lowerMpz.get(),
                   lower, upper, computedRows, computedRowsMpz, nRows, userNumRows);
-    
+
     int nThreads = 1;
     const int limit = 20000;
     SetThreads(Parallel, maxThreads, nRows, myType, nThreads, RNumThreads, limit);
@@ -127,8 +127,8 @@ SEXP CombinatoricsStndrd(SEXP Rv, SEXP Rm, SEXP RisRep, SEXP RFreqs, SEXP Rlow,
                                ((IsRep) ? std::pow(static_cast<double>(n),
                                              static_cast<double>(m - 1)) :
                                NumPermsNoRep(n - 1, m - 1)) : 0;
-    
-    bool generalRet = IsComb || IsMult || permNonTriv || 
+
+    bool generalRet = IsComb || IsMult || permNonTriv ||
                       n == 1 || phaseOneDbl > std::numeric_limits<int>::max();
 
     if (!generalRet) {
@@ -139,15 +139,15 @@ SEXP CombinatoricsStndrd(SEXP Rv, SEXP Rm, SEXP RisRep, SEXP RFreqs, SEXP Rlow,
             // by taking advantage of the max_size method of vectors
             std::vector<int> sizeTestVec;
             const double first = (IsRep) ? 1 : 0;
-            
+
             if (phaseOneDbl * (static_cast<double>(m) - first) > sizeTestVec.max_size()) {
                 generalRet = true;
             }
         }
     }
-    
+
     const int phaseOne = (generalRet) ? 0 : static_cast<int>(phaseOneDbl);
-    
+
     switch (myType) {
         case VecType::Character : {
             Rcpp::CharacterVector charVec(Rcpp::clone(Rv));

@@ -1,7 +1,7 @@
 #include "CleanConvert.h"
 
 void SetType(VecType &myType, const SEXP &Rv) {
-    
+
     switch(TYPEOF(Rv)) {
         case LGLSXP: {
             myType = VecType::Logical;
@@ -26,7 +26,7 @@ void SetType(VecType &myType, const SEXP &Rv) {
             // a function for returning a matrix of class bigz. I observed terrible
             // performance compared to simply converting to a character vector.
             Rcpp::RawVector tempRaw(Rcpp::clone(Rv));
-            
+
             if (tempRaw.attributeNames().size() == 0) {
                 myType = VecType::Raw;
                 break;
@@ -38,25 +38,25 @@ void SetType(VecType &myType, const SEXP &Rv) {
 }
 
 std::vector<int> zUpdateIndex(SEXP x, SEXP y, int m) {
-    
+
     Rcpp::IntegerVector nonZeroBased(m);
     constexpr double myTolerance = 8 * std::numeric_limits<double>::epsilon();
     const int n1 = Rf_length(x) - 1;
-    
+
     switch (TYPEOF(x)) {
     case LGLSXP: {
         Rcpp::LogicalVector xBool(Rcpp::clone(x));
         Rcpp::LogicalVector yBool(Rcpp::clone(y));
-        
+
         for (int j = 0; j < m; ++j) {
             int ind = 0;
-            
+
             while (ind < n1 && xBool[ind] != yBool[j])
                 ++ind;
-            
+
             nonZeroBased[j] = ind + 1;
         }
-        
+
         break;
     }
     case INTSXP: {
@@ -68,16 +68,16 @@ std::vector<int> zUpdateIndex(SEXP x, SEXP y, int m) {
     case REALSXP: {
         Rcpp::NumericVector xNum(Rcpp::clone(x));
         Rcpp::NumericVector yNum(Rcpp::clone(y));
-        
+
         for (int j = 0; j < m; ++j) {
             int ind = 0;
-            
+
             while (ind < n1 && std::abs(xNum[ind] - yNum[j]) > myTolerance)
                 ++ind;
-            
+
             nonZeroBased[j] = ind + 1;
         }
-        
+
         break;
     }
     case STRSXP: {
@@ -89,48 +89,48 @@ std::vector<int> zUpdateIndex(SEXP x, SEXP y, int m) {
     case CPLXSXP: {
         Rcpp::ComplexVector xCmplx(Rcpp::clone(x));
         Rcpp::ComplexVector yCmplx(Rcpp::clone(y));
-        
+
         for (int j = 0; j < m; ++j) {
             int ind = 0;
             bool bTestImg = std::abs(xCmplx[ind].i - yCmplx[j].i) > myTolerance;
             bool bTestReal = std::abs(xCmplx[ind].r - yCmplx[j].r) > myTolerance;
-            
+
             while (ind < n1 && (bTestImg || bTestReal)) {
                 ++ind;
                 bTestImg = std::abs(xCmplx[ind].i - yCmplx[j].i) > myTolerance;
                 bTestReal = std::abs(xCmplx[ind].r - yCmplx[j].r) > myTolerance;
             }
-            
+
             nonZeroBased[j] = ind + 1;
         }
-        
+
         break;
     }
     case RAWSXP: {
         Rcpp::RawVector xRaw(Rcpp::clone(x));
         Rcpp::RawVector yRaw(Rcpp::clone(y));
-        
+
         for (int j = 0; j < m; ++j) {
             int ind = 0;
-            
+
             while (ind < n1 && xRaw[ind] != yRaw[j])
                 ++ind;
-            
+
             nonZeroBased[j] = ind + 1;
         }
-        
+
         break;
     }
     default:{
         Rcpp::stop("Only atomic types are supported for v");
     }
     }
-    
+
     std::vector<int> res(m, 0);
-    
+
     for (int i = 0; i < m; ++i)
         res[i] = nonZeroBased[i] - 1;
-    
+
     return res;
 }
 
@@ -144,7 +144,7 @@ void SetFactorClass(Rcpp::IntegerMatrix &matInt, const SEXP &Rv) {
 
 void SetValues(VecType &myType, std::vector<int> &vInt,
                std::vector<double> &vNum, int &n, const SEXP &Rv) {
-    
+
     if (myType > VecType::Logical) {
         n = Rf_length(Rv);
     } else if (myType == VecType::Logical) {
@@ -161,20 +161,20 @@ void SetValues(VecType &myType, std::vector<int> &vInt,
         } else {
             vNum = Rcpp::as<std::vector<double>>(Rv);
         }
-        
+
         n = vNum.size();
     }
-    
+
     if (myType == VecType::Integer) {
         bool IsInteger = true;
-        
+
         for (int i = 0; i < n && IsInteger; ++i) {
             if (Rcpp::NumericVector::is_na(vNum[i])) {
                 IsInteger = false;
                 myType = VecType::Numeric;
             }
         }
-        
+
         if (IsInteger)
             vInt.assign(vNum.cbegin(), vNum.cend());
     }
@@ -182,7 +182,7 @@ void SetValues(VecType &myType, std::vector<int> &vInt,
 
 void SetFreqsAndM(SEXP RFreqs, bool &IsMultiset, std::vector<int> &Reps, bool &IsRepetition,
                   int &lenFreqs, std::vector<int> &freqsExpanded, const SEXP &Rm, int n, int &m) {
-    
+
     if (Rf_isNull(RFreqs)) {
         IsMultiset = false;
         Reps.push_back(1);
@@ -190,20 +190,20 @@ void SetFreqsAndM(SEXP RFreqs, bool &IsMultiset, std::vector<int> &Reps, bool &I
         IsRepetition = false;
         CleanConvert::convertVector(RFreqs, Reps, "freqs");
         lenFreqs = static_cast<int>(Reps.size());
-        bool allOne = std::all_of(Reps.cbegin(), Reps.cend(), 
+        bool allOne = std::all_of(Reps.cbegin(), Reps.cend(),
                                   [](int v_i) {return v_i == 1;});
         if (allOne) {
             IsMultiset = false;
             freqsExpanded = Reps;
         } else {
             IsMultiset = true;
-            
+
             for (int i = 0; i < lenFreqs; ++i)
                 for (int j = 0; j < Reps[i]; ++j)
                     freqsExpanded.push_back(i);
         }
     }
-    
+
     if (Rf_isNull(Rm)) {
         if (freqsExpanded.empty()) {
             m = n;
@@ -213,14 +213,14 @@ void SetFreqsAndM(SEXP RFreqs, bool &IsMultiset, std::vector<int> &Reps, bool &I
     } else {
         if (Rf_length(Rm) > 1)
             Rcpp::stop("length of m must be 1");
-        
+
         CleanConvert::convertPrimitive(Rm, m, "m");
     }
 }
 
 SEXP CopyRv(const SEXP &Rv, const std::vector<int> &vInt,
             const std::vector<double> &vNum, VecType myType, bool IsFactor) {
-    
+
     if (myType > VecType::Numeric || IsFactor) {
         return Rcpp::clone(Rv);
     } else if (myType == VecType::Integer) {
@@ -232,9 +232,9 @@ SEXP CopyRv(const SEXP &Rv, const std::vector<int> &vInt,
 
 void SetThreads(bool &Parallel, int maxThreads, int nRows,
                 VecType myType, int &nThreads, SEXP RNumThreads, int limit) {
-    
+
     const int halfLimit = limit / 2;
-    
+
     // Determined empirically. Setting up threads can be expensive,
     // so we set the cutoff below to ensure threads aren't spawned
     // unnecessarily. We also protect users with fewer than 2 threads
@@ -242,17 +242,17 @@ void SetThreads(bool &Parallel, int maxThreads, int nRows,
         Parallel = false;
     } else if (!Rf_isNull(RNumThreads)) {
         int userThreads = 1;
-        
+
         if (!Rf_isNull(RNumThreads))
             CleanConvert::convertPrimitive(RNumThreads, userThreads, "nThreads");
-        
+
         if (userThreads > maxThreads)
             userThreads = maxThreads;
-        
+
         // Ensure that each thread has at least halfLimit
         if ((nRows / userThreads) < halfLimit)
             userThreads = nRows / halfLimit;
-        
+
         if (userThreads > 1) {
             Parallel = true;
             nThreads = userThreads;
@@ -260,10 +260,10 @@ void SetThreads(bool &Parallel, int maxThreads, int nRows,
             Parallel = false;
         }
     } else if (Parallel) {
-        // We have already ruled out cases when the user has fewer than 2 
+        // We have already ruled out cases when the user has fewer than 2
         // threads. So if user has exactly 2 threads, we enable them both.
         nThreads = (maxThreads > 2) ? (maxThreads - 1) : maxThreads;
-        
+
         // Ensure that each thread has at least halfLimit
         if ((nRows / nThreads) < halfLimit)
             nThreads = nRows / halfLimit;
@@ -273,7 +273,7 @@ void SetThreads(bool &Parallel, int maxThreads, int nRows,
 void SetRandomSample(SEXP RindexVec, SEXP RNumSamp, std::size_t &sampSize,
                      bool IsGmp, double computedRows, std::vector<double> &mySample,
                      Rcpp::Function baseSample) {
-    
+
     // We must treat gmp case special. We first have to get the size of our sample
     // vector, as we have to declare a mpz_t array with known size. You will note
     // that in the base case below, we simply populate mySample, otherwise we just
@@ -281,18 +281,18 @@ void SetRandomSample(SEXP RindexVec, SEXP RNumSamp, std::size_t &sampSize,
     if (Rf_isNull(RindexVec)) {
         if (Rf_isNull(RNumSamp))
             Rcpp::stop("n and sampleVec cannot both be NULL");
-        
+
         if (Rf_length(RNumSamp) > 1)
             Rcpp::stop("length of n must be 1. For specific combinations, use sampleVec.");
-        
+
         int nPass;
         CleanConvert::convertPrimitive(RNumSamp, nPass, "n");
         sampSize = static_cast<std::size_t>(nPass);
-        
+
         if (!IsGmp) {
             if (nPass > computedRows)
                 Rcpp::stop("n exceeds the maximum number of possible results");
-            
+
             Rcpp::NumericVector tempSamp = baseSample(computedRows, nPass);
             mySample = Rcpp::as<std::vector<double>>(tempSamp);
         }
@@ -311,19 +311,19 @@ void SetRandomSample(SEXP RindexVec, SEXP RNumSamp, std::size_t &sampSize,
         } else {                                             // numOnly = false
             CleanConvert::convertVector(RindexVec, mySample, "sampleVec", false);
             sampSize = mySample.size();
-            
+
             double myMax = *std::max_element(mySample.cbegin(), mySample.cend());
-            
+
             if (myMax > computedRows) {
                 Rcpp::stop("One or more of the requested values in sampleVec "
                                "exceeds the maximum number of possible results");
             }
         }
-        
+
         if (sampSize > std::numeric_limits<int>::max())
             Rcpp::stop("The number of rows cannot exceed 2^31 - 1");
     }
-    
+
     // Get zero base index
     for (auto &s: mySample)
         --s;

@@ -8,7 +8,7 @@ using combPermPtr = void (*const)(T &matRcpp, const U &v, std::vector<int> z,
 
 template <typename T, typename U>
 Rcpp::XPtr<combPermPtr<T, U>> putCombPtrInXPtr(bool IsComb, bool IsMult, bool IsRep, bool IsGen) {
-    
+
     if (IsComb) {
         if (IsMult)
             return(Rcpp::XPtr<combPermPtr<T, U>>(new combPermPtr<T, U>(&MultisetCombination)));
@@ -63,4 +63,4 @@ template Rcpp::XPtr<combPermPtr<Rcpp::ComplexMatrix,
 template Rcpp::XPtr<combPermPtr<Rcpp::RawMatrix,
                                 Rcpp::RawVector>> putCombPtrInXPtr(bool, bool, bool, bool);
 
-    
+

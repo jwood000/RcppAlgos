@@ -51,7 +51,7 @@ primeCount(1e10)
 [1] 455052511
 
 
-## Find all 3-tuples combinations of 1:4 
+## Find all 3-tuples combinations of 1:4
 comboGeneral(4, 3)
      [,1] [,2] [,3]
 [1,]   1    2    3
@@ -75,10 +75,10 @@ a[[2]]
 ## Pass any atomic type vector
 permuteGeneral(letters, 3, upper = 4)
      [,1] [,2] [,3]
-[1,] "a"  "b"  "c" 
-[2,] "a"  "b"  "d" 
-[3,] "a"  "b"  "e" 
-[4,] "a"  "b"  "f" 
+[1,] "a"  "b"  "c"
+[2,] "a"  "b"  "d"
+[3,] "a"  "b"  "e"
+[4,] "a"  "b"  "f"
 
 
 ## Generate a reproducible sample

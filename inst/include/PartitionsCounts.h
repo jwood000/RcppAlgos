@@ -3,7 +3,7 @@
 
 #include "CleanConvert.h"
 
-double GetComputedPartsComps(const std::vector<int> &z, PartitionType PartType, 
+double GetComputedPartsComps(const std::vector<int> &z, PartitionType PartType,
                              int target, int m, bool IsComb, bool IncludeZero, bool mIsNull);
-    
+
 #endif

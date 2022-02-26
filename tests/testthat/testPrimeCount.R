@@ -2,7 +2,7 @@ context("testing primeCount")
 
 test_that("primeCount generates correct numbers", {
     expect_equal(primeCount(10), 4)
-    
+
     ## Pi(x) obtained from https://en.wikipedia.org/wiki/Prime-counting_function
     expect_equal(primeCount(10^6), 78498L)
     expect_equal(primeCount(as.integer(1e8)), 5761455L)

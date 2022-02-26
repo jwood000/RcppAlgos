@@ -1,4 +1,4 @@
-useDynLib("RcppAlgos243", .registration = TRUE)
+useDynLib("RcppAlgos", .registration = TRUE)
 import(gmp, Rcpp, methods)
 
 export(comboGeneral,

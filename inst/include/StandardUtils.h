@@ -23,5 +23,5 @@ SEXP CopyRv(const SEXP &Rv, const std::vector<int> &vInt,
 void SetRandomSample(SEXP RindexVec, SEXP RNumSamp, std::size_t &sampSize,
                      bool IsGmp, double computedRows, std::vector<double> &mySample,
                      Rcpp::Function baseSample);
-    
+
 #endif

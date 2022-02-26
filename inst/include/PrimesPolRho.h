@@ -6,9 +6,9 @@
 
 // The first 550 prime numbers (i.e. the first prime numbers less than 4000).
 // Starting with the first prime number 2,  add each successive element in
-// primesDiffPR to obtain the next prime number (e.g. p = 2 + primesDiffPR[0] = 3, 
+// primesDiffPR to obtain the next prime number (e.g. p = 2 + primesDiffPR[0] = 3,
 // p = p + primesDiffPR[1] = 5,  etc.)
-// 
+//
 // N.B. The last prime in primesDiffPR is 3989,  Thus the first prime omitted
 // is 4001. That is:
 //

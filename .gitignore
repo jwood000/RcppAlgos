@@ -10,3 +10,4 @@ tests/.DS_Store
 tests/testthat/.DS_Store
 man/.Rapp.history
 docs
+remove_whitespace.sh

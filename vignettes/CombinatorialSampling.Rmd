@@ -179,9 +179,9 @@ permuteSample(500, 10, TRUE, n = 5, seed = 123, Parallel = TRUE)
 
 permuteSample(factor(state.abb), 15, n = 3, seed = 50, nThreads = 3)
      [,1] [,2] [,3] [,4] [,5] [,6] [,7] [,8] [,9] [,10] [,11] [,12] [,13] [,14] [,15]
-[1,] ME   FL   DE   OK   ND   CA   PA   AL   ID   MO    NM    HI    KY    MT    NJ   
-[2,] AZ   CA   AL   CT   ME   SD   ID   SC   OK   NH    HI    TN    ND    IA    MT   
-[3,] MD   MO   NC   MT   NH   AL   VA   MA   VT   WV    NJ    NE    MN    MS    MI   
+[1,] ME   FL   DE   OK   ND   CA   PA   AL   ID   MO    NM    HI    KY    MT    NJ
+[2,] AZ   CA   AL   CT   ME   SD   ID   SC   OK   NH    HI    TN    ND    IA    MT
+[3,] MD   MO   NC   MT   NH   AL   VA   MA   VT   WV    NJ    NE    MN    MS    MI
 50 Levels: AK AL AR AZ CA CO CT DE FL GA HI IA ID IL IN KS KY LA MA MD ME MI MN ... WY
 
 permuteCount(factor(state.abb), 15)
@@ -196,20 +196,20 @@ The algorithms are incredibly efficient and offer tremendous gains over the naiv
 ```r
 ## the function "naive" is defined above
 system.time(naive(25, 10, 5, 15))
-  user  system elapsed 
+  user  system elapsed
  3.526   0.065   3.604
- 
+
 system.time(comboSample(25, 10, n = 5, seed = 15))
-  user  system elapsed 
+  user  system elapsed
  0.002   0.000   0.001
-``` 
+```
 
 Even when dealing with extremely large numbers, these algorithms are very fast. And using the parallel options have even greater effects than we saw with the general counterparts (typically around ~2-3 times faster with the general functions, whereas with the last example below with sampling we see a nearly 5 fold improvement).
 
 ```r
 ## Lightning fast even with examples involving many results
 system.time(comboSample(2500, 100, n = 5, seed = 15))
-   user  system elapsed 
+   user  system elapsed
   0.002   0.000   0.002
 
 ## The total number of combinations has ~180 digits
@@ -218,12 +218,12 @@ gmp::log10.bigz(comboCount(2500, 100))
 
 ## Still fast with larger samples
 system.time(comboSample(2500, 100, n = 1e4, seed = 157))
-   user  system elapsed 
+   user  system elapsed
   1.482   0.006   1.491
-  
+
 ## Using Parallel/nThreads in these cases has an even greater effect
 system.time(comboSample(2500, 100, n = 1e4, seed = 157, nThreads = 8))
-   user  system elapsed 
+   user  system elapsed
   2.409   0.002   0.310
 ```
 
@@ -246,7 +246,7 @@ permuteSample(5000, 1000, n = 3, seed = 101, FUN = sd)
 ## Example using complex numbers
 myCplx <- as.complex(1:100 + rep(c(-1, 1), 50) * 1i)
 
-permuteSample(myCplx, 10, freqs = rep(1:5, 20), 
+permuteSample(myCplx, 10, freqs = rep(1:5, 20),
               n = 3, seed = 101, FUN = function(x) {
                   sqrt(sum(x))
               })
@@ -285,8 +285,8 @@ shuffled <- factor(deck[sample(52)], levels = deck)
 ## Here are 3 possibilities
 comboGroupsSample(shuffled[1:12], numGroups = 4, n = 2, seed = 13)
      Grp1 Grp1 Grp1 Grp2 Grp2 Grp2 Grp3 Grp3 Grp3 Grp4 Grp4 Grp4
-[1,] A♠   2♥   6♠   10♦  10♥  J♣   8♠   10♣  3♠   Q♦   6♣   8♦  
-[2,] A♠   10♥  Q♦   10♦  2♥   8♦   8♠   J♣   6♣   10♣  3♠   6♠  
+[1,] A♠   2♥   6♠   10♦  10♥  J♣   8♠   10♣  3♠   Q♦   6♣   8♦
+[2,] A♠   10♥  Q♦   10♦  2♥   8♦   8♠   J♣   6♣   10♣  3♠   6♠
 52 Levels: 2♠ 3♠ 4♠ 5♠ 6♠ 7♠ 8♠ 9♠ 10♠ J♠ Q♠ K♠ A♠ 2♥ 3♥ 4♥ 5♥ 6♥ 7♥ 8♥ ... A♣
 
 
@@ -295,26 +295,26 @@ comboGroupsSample(shuffled[1:12], numGroups = 4, retType = "3Darray",
 , , Grp1
 
       [,1] [,2] [,3]
-10939 A♠   2♥   6♠  
-3791  A♠   10♥  Q♦  
+10939 A♠   2♥   6♠
+3791  A♠   10♥  Q♦
 
 , , Grp2
 
       [,1] [,2] [,3]
-10939 10♦  10♥  J♣  
-3791  10♦  2♥   8♦  
+10939 10♦  10♥  J♣
+3791  10♦  2♥   8♦
 
 , , Grp3
 
       [,1] [,2] [,3]
-10939 8♠   10♣  3♠  
-3791  8♠   J♣   6♣  
+10939 8♠   10♣  3♠
+3791  8♠   J♣   6♣
 
 , , Grp4
 
       [,1] [,2] [,3]
-10939 Q♦   6♣   8♦  
-3791  10♣  3♠   6♠  
+10939 Q♦   6♣   8♦
+3791  10♣  3♠   6♠
 
 52 Levels: 2♠ 3♠ 4♠ 5♠ 6♠ 7♠ 8♠ 9♠ 10♠ J♠ Q♠ K♠ A♠ 2♥ 3♥ 4♥ 5♥ 6♥ 7♥ 8♥ ... A♣
 ```

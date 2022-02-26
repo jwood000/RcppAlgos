@@ -10,10 +10,10 @@ namespace MotleyPrimes {
     // (i.e. else if (myPrime < lowerB)).
     template <typename typeInt>
     inline typeInt getStartIndexPowP(typeInt lowerB, typeInt step, typeInt myPrime) {
-        
+
         typeInt retStrt;
         typeInt remTest = lowerB % step;
-        
+
         if (remTest == 0) {
             retStrt = 0;
         } else if (myPrime < lowerB) {
@@ -21,7 +21,7 @@ namespace MotleyPrimes {
         } else {
             retStrt = step - lowerB;
         }
-        
+
         return retStrt;
     }
 }

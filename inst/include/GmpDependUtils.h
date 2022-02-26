@@ -11,7 +11,7 @@
 // cannot utilize the full range of 53-bit significand
 // precision. Here is the condition from `do_dample2`:
 //     if (!R_FINITE(dn) || dn < 0 || dn > 4.5e15 || (k > 0 && dn == 0))
-// Here is the source (line ~1800): 
+// Here is the source (line ~1800):
 //     https://github.com/wch/r-source/blob/trunk/src/main/unique.c
 constexpr double sampleLimit = 4500000000000000.0;
 
@@ -30,19 +30,19 @@ void SetRandomSampleMpz(const SEXP &RindexVec, const SEXP &RmySeed, std::size_t 
 
 void SetStartZ(int n, int m, double &lower, int stepSize, mpz_t &lowerMpz, bool IsRep,
                bool IsComb, bool IsMultiset, bool IsGmp, const std::vector<int> &myReps,
-               const std::vector<int> &freqs, std::vector<int> &z, 
+               const std::vector<int> &freqs, std::vector<int> &z,
                const nthResultPtr nthResFun);
 
 template <typename typeRcpp>
 inline void SetSampleNames(bool IsGmp, std::size_t sampSize, typeRcpp &objRcpp,
-                           const std::vector<double> &mySample, 
+                           const std::vector<double> &mySample,
                            mpz_t *const myBigSamp, bool IsMatrix = true) {
-    
+
     Rcpp::CharacterVector myRowNames(sampSize);
-    
+
     if (IsGmp) {
         constexpr int base10 = 10;
-        
+
         for (std::size_t i = 0; i < sampSize; ++i) {
             mpz_add_ui(myBigSamp[i], myBigSamp[i], 1);
             auto buffer = FromCpp14::make_unique<char[]>(mpz_sizeinbase(myBigSamp[i], base10) + 2);
@@ -53,7 +53,7 @@ inline void SetSampleNames(bool IsGmp, std::size_t sampSize, typeRcpp &objRcpp,
         for (std::size_t i = 0; i < sampSize; ++i)
             myRowNames[i] = std::to_string(static_cast<int64_t>(mySample[i] + 1));
     }
-    
+
     if (IsMatrix)
         Rcpp::rownames(objRcpp) = myRowNames;
     else

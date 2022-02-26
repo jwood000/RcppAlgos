@@ -37,14 +37,14 @@ private:
     const nthResultPtr nthResFun;
     const nextIterPtr nextIter;
     const prevIterPtr prevIter;
-    
+
     // This has to be initialized later becuase it
     // depends on freqs.size, IsMult, and n
     const int n1;
-    
+
     const SEXP stdFun;
     const SEXP rho;
-    
+
     SEXP VecFUNReturn(const SEXP &v);
     SEXP ListReturn(const SEXP &v, int nRows, bool IsReverse);
     SEXP SampListReturn(const SEXP &v, const std::vector<double> &mySample,

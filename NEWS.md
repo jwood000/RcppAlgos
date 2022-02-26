@@ -124,7 +124,7 @@
 * Added argument `Parallel` to general and sampling functions for increased gains in efficiency.
 
     * `comboGeneral(30, 10, Parallel = TRUE)`
-    
+
     * `permuteGeneral(12, 7, TRUE, constraintFun = "sum", Parallel = TRUE)`
 
 * Logical class is now preserved in combinatorial functions
@@ -132,9 +132,9 @@
 * Added gmp support to combinatorial functions. Now, one can accurately and quickly work with combinations/permutations of large vectors _E.g._:
 
     * `comboSample(runif(10000), 100, n = 10, seed = 42, Parallel = TRUE)`
-    
+
     * `permuteGeneral(factor(state.name), 20, lower = 1e15, upper = 1e15 + 1000)`
-    
+
 * Added `FUN` argument to all combinatorial functions. Allows user to pass custom functions to be applied to combinations/permutations.
 
 # RcppAlgos 2.0.3
@@ -206,7 +206,7 @@
 # RcppAlgos 0.2.4
 
 * Fixed bug that occurs when non-unique elements are present for combinations with replacement.
-    
+
 # RcppAlgos 0.2.3
 
 * Fixed segmentation fault error highlighted by valgrind check in version `0.2.2`.

@@ -1,7 +1,7 @@
 #include "ComboClass.h"
 
 SEXP Combo::VecReturn(const SEXP &v) {
-    
+
     switch (TYPEOF(v)) {
         case LGLSXP: {
             Rcpp::LogicalVector boolVec(Rcpp::clone(v));
@@ -26,7 +26,7 @@ SEXP Combo::VecReturn(const SEXP &v) {
 }
 
 SEXP Combo::MatReturn(const SEXP &v, int nr, bool IsReverse) {
-    
+
     switch (TYPEOF(v)) {
         case LGLSXP: {
             Rcpp::LogicalVector bv(Rcpp::clone(v));
@@ -52,7 +52,7 @@ SEXP Combo::MatReturn(const SEXP &v, int nr, bool IsReverse) {
 
 SEXP Combo::SampReturn(const SEXP &v, const std::vector<double> &mySample,
                        mpz_t *const myBigSamp, std::size_t sampSize) {
-    
+
     switch (TYPEOF(v)) {
         case LGLSXP: {
             Rcpp::LogicalVector boolVec(Rcpp::clone(v));
@@ -78,25 +78,25 @@ SEXP Combo::SampReturn(const SEXP &v, const std::vector<double> &mySample,
 
 template <int RTYPE>
 Rcpp::Vector<RTYPE> Combo::VecPopulate(const Rcpp::Vector<RTYPE> &v) {
-    
+
     Rcpp::Vector<RTYPE> vOut(m);
-    
+
     for (int j = 0; j < m; ++j)
         vOut[j] = v[z[j]];
-    
+
     if (IsFactor) {
         Rf_setAttrib(vOut, R_ClassSymbol, myClass);
         Rf_setAttrib(vOut, R_LevelsSymbol, myLevels);
     }
-    
+
     return vOut;
 }
 
 template <int RTYPE>
 Rcpp::Matrix<RTYPE> Combo::MatCombo(const Rcpp::Vector<RTYPE> &v, int nRows) {
-    
+
     Rcpp::Matrix<RTYPE> matRcpp = Rcpp::no_init_matrix(nRows, m);
-    
+
     Rcpp::XPtr<combPermPtr<Rcpp::Matrix<RTYPE>, Rcpp::Vector<RTYPE>>> xpFunCoPePtr =
         putCombPtrInXPtr<Rcpp::Matrix<RTYPE>, Rcpp::Vector<RTYPE>>(IsComb, IsMult, IsRep, true);
 
@@ -118,21 +118,21 @@ Rcpp::Matrix<RTYPE> Combo::MatCombo(const Rcpp::Vector<RTYPE> &v, int nRows) {
 
 template <int RTYPE>
 Rcpp::Matrix<RTYPE> Combo::MatComboReverse(const Rcpp::Vector<RTYPE> &v, int nRows) {
-    
+
     Rcpp::Matrix<RTYPE> matRcpp = Rcpp::no_init_matrix(nRows, m);
-    
+
     const int loc_n1 = IsComb ? n - 1 : (IsMult ? freqs.size() - 1 : n - 1);
     const int lastRow = nRows - 1;
     const int loc_m = m;
-    
+
     // We iterater to the pentultimate row to avoid iterating z one too many times
     for (int count = 0, loc_m1 = m - 1; count < lastRow; ++count) {
         for (int j = 0; j < loc_m; ++j)
             matRcpp(count, j) = v[z[j]];
-        
+
         prevIter(freqs, z, loc_n1, loc_m1);
     }
-    
+
     // Get the last result
     for (int j = 0; j < loc_m; ++j)
         matRcpp(lastRow, j) = v[z[j]];
@@ -151,20 +151,20 @@ Rcpp::Matrix<RTYPE> Combo::SampMatrix(const Rcpp::Vector<RTYPE> &v,
                                       mpz_t *const myBigSamp, std::size_t sampSize) {
 
     Rcpp::Matrix<RTYPE> matRcpp = Rcpp::no_init_matrix(sampSize, m);
-    
+
     if (IsGmp) {
         constexpr double dblDefault = 0;
-        
+
         for (std::size_t i = 0; i < sampSize; ++i) {
             const std::vector<int> tempZ = nthResFun(n, m, dblDefault, myBigSamp[i], myReps);
-            
+
             for (int j = 0; j < m; ++j)
                 matRcpp(i, j) = v[tempZ[j]];
         }
     } else {
         for (std::size_t i = 0; i < sampSize; ++i) {
             const std::vector<int> tempZ = nthResFun(n, m, mySample[i], mpzTemp, myReps);
-            
+
             for (int j = 0; j < m; ++j)
                 matRcpp(i, j) = v[tempZ[j]];
         }
@@ -183,7 +183,7 @@ Combo::Combo(SEXP Rv, int Rm, SEXP RcompRows,
              Rcpp::LogicalVector bVec, std::vector<std::vector<int>> freqInfo)
             : n(Rf_length(Rv)), m(Rm), m1(Rm - 1), sexpVec(Rv),
               IsFactor(bVec[0]), IsComb(bVec[1]), IsMult(bVec[2]),
-              IsRep(bVec[3]), IsGmp(bVec[4]), 
+              IsRep(bVec[3]), IsGmp(bVec[4]),
               computedRows(IsGmp ? 0 : Rcpp::as<double>(RcompRows)),
               freqs(freqInfo[0]), myReps(freqInfo[1]),
               testFactor(bVec[0] ? Rcpp::as<Rcpp::IntegerVector>(Rv) :
@@ -203,13 +203,13 @@ Combo::Combo(SEXP Rv, int Rm, SEXP RcompRows,
     mpz_init(mpzTemp);
     mpz_init(mpzIndex[0]);
     mpz_init(computedRowsMpz[0]);
-    
+
     if (IsGmp)
         createMPZArray(RcompRows, computedRowsMpz, 1, "index vector");
-    
+
     dblIndex = 0;
 
-    SetStartZ(n, m, dblIndex, 0, mpzIndex[0], IsRep, 
+    SetStartZ(n, m, dblIndex, 0, mpzIndex[0], IsRep,
               IsComb, IsMult, IsGmp, myReps, freqs, z, nthResFun);
 }
 
@@ -219,13 +219,13 @@ void Combo::startOver() {
     } else {
         dblIndex = 0;
     }
-    
-    SetStartZ(n, m, dblIndex, 0, mpzIndex[0], IsRep, 
+
+    SetStartZ(n, m, dblIndex, 0, mpzIndex[0], IsRep,
               IsComb, IsMult, IsGmp, myReps, freqs, z, nthResFun);
 }
 
 SEXP Combo::nextComb() {
-    
+
     if (CheckEqSi(IsGmp, mpzIndex[0], dblIndex, 0)) {
         increment(IsGmp, mpzIndex[0], dblIndex);
         return VecReturn(sexpVec);
@@ -244,7 +244,7 @@ SEXP Combo::nextComb() {
 }
 
 SEXP Combo::prevComb() {
-    
+
     if (CheckIndGrT(IsGmp, mpzIndex[0], dblIndex, computedRowsMpz[0], computedRows)) {
         decrement(IsGmp, mpzIndex[0], dblIndex);
         return VecReturn(sexpVec);
@@ -263,14 +263,14 @@ SEXP Combo::prevComb() {
 }
 
 SEXP Combo::nextNumCombs(SEXP RNum) {
-    
+
     int num;
     CleanConvert::convertPrimitive(RNum, num, "The number of results");
 
     if (CheckIndLT(IsGmp, mpzIndex[0], dblIndex, computedRowsMpz[0], computedRows)) {
         int nRows = 0;
         int numIncrement = 0;
-        
+
         if (IsGmp) {
             mpz_sub(mpzTemp, computedRowsMpz[0], mpzIndex[0]);
             nRows = mpz_cmp_si(mpzTemp, num) < 0 ? mpz_get_si(mpzTemp) : num;
@@ -280,10 +280,10 @@ SEXP Combo::nextNumCombs(SEXP RNum) {
             nRows = num > dblTemp ? dblTemp : num;
             numIncrement = num > dblTemp ? (nRows + 1) : nRows;
         }
-        
+
         if (CheckGrTSi(IsGmp, mpzIndex[0], dblIndex, 0))
             nextIter(freqs, z, n1, m1);
-        
+
         increment(IsGmp, mpzIndex[0], dblIndex, numIncrement);
         return MatReturn(sexpVec, nRows, false);
     } else if (CheckEqInd(IsGmp, mpzIndex[0], dblIndex, computedRowsMpz[0], computedRows)) {
@@ -297,14 +297,14 @@ SEXP Combo::nextNumCombs(SEXP RNum) {
 }
 
 SEXP Combo::prevNumCombs(SEXP RNum) {
-    
+
     int num;
     CleanConvert::convertPrimitive(RNum, num, "The number of results");
 
     if (CheckGrTSi(IsGmp, mpzIndex[0], dblIndex, 2)) {
         int nRows = 0;
         int numDecrement = 0;
-        
+
         if (IsGmp) {
             mpz_sub_ui(mpzTemp, mpzIndex[0], 1u);
             nRows = mpz_cmp_si(mpzTemp, num) < 0 ? mpz_get_si(mpzTemp) : num;
@@ -314,10 +314,10 @@ SEXP Combo::prevNumCombs(SEXP RNum) {
             nRows = num > dblTemp ? dblTemp : num;
             numDecrement = num > dblTemp ? (nRows + 1) : nRows;
         }
-        
+
         if (CheckIndLT(IsGmp, mpzIndex[0], dblIndex, computedRowsMpz[0], computedRows, true))
             prevIter(freqs, z, n1, m1);
-        
+
         decrement(IsGmp, mpzIndex[0], dblIndex, numDecrement);
         return MatReturn(sexpVec, nRows, true);
     } else if (CheckEqSi(IsGmp, mpzIndex[0], dblIndex, 2)) {
@@ -331,17 +331,17 @@ SEXP Combo::prevNumCombs(SEXP RNum) {
 }
 
 SEXP Combo::nextGather() {
-    
+
     if (IsGmp) {
         mpz_sub(mpzTemp, computedRowsMpz[0], mpzIndex[0]);
-        
+
         if (mpz_cmp_si(mpzTemp, std::numeric_limits<int>::max()) > 0) {
             Rcpp::stop("The number of requested rows is greater than " +
                 std::to_string(std::numeric_limits<int>::max()));
         }
     } else {
         dblTemp = computedRows - dblIndex;
-        
+
         if (dblTemp > std::numeric_limits<int>::max()) {
             Rcpp::stop("The number of requested rows is greater than " +
                 std::to_string(std::numeric_limits<int>::max()));
@@ -353,13 +353,13 @@ SEXP Combo::nextGather() {
     if (nRows > 0) {
         if (CheckGrTSi(IsGmp, mpzIndex[0], dblIndex, 0))
             nextIter(freqs, z, n1, m1);
-        
+
         if (IsGmp) {
             mpz_add_ui(mpzIndex[0], computedRowsMpz[0], 1u);
         } else {
             dblIndex = computedRows + 1;
         }
-        
+
         return MatReturn(sexpVec, nRows, false);
     } else {
         return Rcpp::wrap(false);
@@ -367,17 +367,17 @@ SEXP Combo::nextGather() {
 }
 
 SEXP Combo::prevGather() {
-    
+
     if (IsGmp) {
         mpz_sub_ui(mpzTemp, mpzIndex[0], 1);
-        
+
         if (mpz_cmp_si(mpzTemp, std::numeric_limits<int>::max()) > 0) {
             Rcpp::stop("The number of requested rows is greater than " +
                 std::to_string(std::numeric_limits<int>::max()));
         }
     } else {
         dblTemp = dblIndex - 1;
-        
+
         if (dblTemp > std::numeric_limits<int>::max()) {
             Rcpp::stop("The number of requested rows is greater than " +
                 std::to_string(std::numeric_limits<int>::max()));
@@ -389,13 +389,13 @@ SEXP Combo::prevGather() {
     if (nRows) {
         if (CheckIndLT(IsGmp, mpzIndex[0], dblIndex, computedRowsMpz[0], computedRows, true))
             prevIter(freqs, z, n1, m1);
-        
+
         if (IsGmp) {
             mpz_set_si(mpzIndex[0], 0u);
         } else {
             dblIndex = 0;
         }
-        
+
         return MatReturn(sexpVec, nRows, true);
     } else {
         return Rcpp::wrap(false);
@@ -403,7 +403,7 @@ SEXP Combo::prevGather() {
 }
 
 SEXP Combo::currComb() {
-    
+
     if (CheckIndGrT(IsGmp, mpzIndex[0], dblIndex, computedRowsMpz[0], computedRows)) {
         Rcpp::Rcout << "No more results. To see the last result,"
                         " use the prevIter method(s)\n" << std::endl;
@@ -418,17 +418,17 @@ SEXP Combo::currComb() {
 }
 
 SEXP Combo::combIndex(SEXP RindexVec) {
-    
+
     std::size_t sampSize;
     std::vector<double> mySample;
     SetIndexVec(RindexVec, mySample, sampSize, IsGmp, computedRows);
-    
+
     const std::size_t bigSampSize = (IsGmp) ? sampSize : 1;
     auto mpzVec = FromCpp14::make_unique<mpz_t[]>(bigSampSize);
-    
+
     for (std::size_t i = 0; i < bigSampSize; ++i)
         mpz_init(mpzVec[i]);
-    
+
     if (IsGmp)
         SetIndexVecMpz(RindexVec, mpzVec.get(), sampSize, computedRowsMpz[0]);
 
@@ -442,7 +442,7 @@ SEXP Combo::combIndex(SEXP RindexVec) {
             dblIndex = mySample.front() + 1;
             dblTemp = mySample.front();
         }
-        
+
         z = nthResFun(n, m, dblTemp, mpzTemp, myReps);
         TopOffPartialPerm(z, myReps, n, m, IsComb, IsRep, IsMult);
         return VecReturn(sexpVec);
@@ -450,7 +450,7 @@ SEXP Combo::combIndex(SEXP RindexVec) {
 }
 
 SEXP Combo::front() {
-    
+
     if (IsGmp) {
         mpz_set_ui(mpzIndex[0], 1u);
         mpz_set_ui(mpzTemp, 0u);
@@ -458,14 +458,14 @@ SEXP Combo::front() {
         dblIndex = 1;
         dblTemp = 0;
     }
-    
+
     z = nthResFun(n, m, dblTemp, mpzTemp, myReps);
     TopOffPartialPerm(z, myReps, n, m, IsComb, IsRep, IsMult);
     return VecReturn(sexpVec);
 }
 
 SEXP Combo::back() {
-    
+
     if (IsGmp) {
         mpz_set(mpzIndex[0], computedRowsMpz[0]);
         mpz_sub_ui(mpzTemp, computedRowsMpz[0], 1u);
@@ -473,7 +473,7 @@ SEXP Combo::back() {
         dblIndex = computedRows;
         dblTemp = computedRows - 1;
     }
-    
+
     z = nthResFun(n, m, dblTemp, mpzTemp, myReps);
     TopOffPartialPerm(z, myReps, n, m, IsComb, IsRep, IsMult);
     return VecReturn(sexpVec);
@@ -490,7 +490,7 @@ Rcpp::List Combo::summary() {
     const std::string strDesc = CoPerm + RepStr + MultiStr + "of "
                                 + std::to_string(n) + " choose " + std::to_string(m);
     const double dblDiff = (IsGmp) ? 0 : computedRows - dblIndex;
-    
+
     if (IsGmp)
         mpz_sub(mpzTemp, computedRowsMpz[0], mpzIndex[0]);
 
@@ -502,11 +502,11 @@ Rcpp::List Combo::summary() {
 
 RCPP_MODULE(Combo) {
     Rcpp::class_<Combo>("Combo")
-    
-        .constructor<SEXP, int, SEXP, 
+
+        .constructor<SEXP, int, SEXP,
                      Rcpp::LogicalVector,
                      std::vector<std::vector<int>>>("constructor")
-    
+
         .method("nextIter", &Combo::nextComb, "Get the next combination/permutation")
         .method("nextNIter", &Combo::nextNumCombs, "Get the next n combinations/permutations")
         .method("nextRemaining", &Combo::nextGather, "Get all of the remaining combinations/permutations")

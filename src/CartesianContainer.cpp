@@ -12,80 +12,80 @@ enum rcppType {
 
 void convertToString(std::vector<std::string> &tempVec,
                      SEXP ListElement, rcppType &typePass, bool bFac) {
-    
+
     switch(TYPEOF(ListElement)) {
         case INTSXP: {
             if (bFac) {
                 Rcpp::IntegerVector facVec = Rcpp::as<Rcpp::IntegerVector>(ListElement);
                 std::vector<std::string> strVec = Rcpp::as<std::vector<std::string>>(facVec.attr("levels"));
                 typePass = tFac;
-                
+
                 for (auto v: strVec) {
                     bool isNum = (!v.empty() && v.find_first_not_of("0123456789.") == std::string::npos);
-                    
+
                     if (isNum) {
                         double n = std::atof(v.c_str());
                         if (std::floor(n) != n) v += "dbl";
                     } else {
                         v += "str";
                     }
-                    
+
                     tempVec.push_back(v);
                 }
             } else {
                 std::vector<int> intVec = Rcpp::as<std::vector<int>>(ListElement);
                 typePass = tInt;
-                
+
                 for (auto v: intVec)
                     tempVec.push_back(std::to_string(v));
             }
-            
+
             break;
         }
         case LGLSXP: {
             std::vector<int> intVec = Rcpp::as<std::vector<int>>(ListElement);
             typePass = tLog;
-            
+
             for (auto v: intVec) {
                 std::string r = std::to_string(v);
                 tempVec.push_back(r + "log");
             }
-            
+
             break;
         }
         case REALSXP: {
             std::vector<double> dblVec = Rcpp::as<std::vector<double>>(ListElement);
             typePass = tDbl;
-            
+
             for (auto v: dblVec) {
                 std::string r = std::to_string(v);
-                
+
                 while (r.back() == '0')
                     r.pop_back();
-                
+
                 if (std::floor(v) != v) r += "dbl";
                 tempVec.push_back(r);
             }
-            
+
             break;
         }
         case STRSXP: {
             std::vector<std::string> strVec = Rcpp::as<std::vector<std::string>>(ListElement);
             typePass = tStr;
-            
+
             for (auto v: strVec) {
                 bool isNum = (!v.empty() && v.find_first_not_of("0123456789.") == std::string::npos);
-                
+
                 if (isNum) {
                     double n = std::atof(v.c_str());
                     if (std::floor(n) != n) v += "dbl";
                 } else {
                     v += "str";
                 }
-                
+
                 tempVec.push_back(v);
             }
-            
+
             break;
         }
     }
@@ -93,13 +93,13 @@ void convertToString(std::vector<std::string> &tempVec,
 
 template <typename typeVec, typename typeRcpp>
 void GetPureOutput(const std::vector<int> &cartCombs,
-                   const Rcpp::List &RList, const typeVec &standardVec, 
+                   const Rcpp::List &RList, const typeVec &standardVec,
                    typeRcpp &result, std::size_t nCols, std::size_t nRows) {
-    
+
     for (std::size_t i = 0, row = 0; i < nRows; ++i, row += nCols)
         for (std::size_t j = 0; j < nCols; ++j)
             result(i, j) = standardVec[cartCombs[row + j]];
-    
+
     if (!Rf_isNull(RList.attr("names"))) {
         Rcpp::CharacterVector myNames = RList.attr("names");
         colnames(result) = myNames;
@@ -109,14 +109,14 @@ void GetPureOutput(const std::vector<int> &cartCombs,
 SEXP GlueComboCart(const std::vector<int> &cartCombs,
                    Rcpp::List &RList, const Rcpp::IntegerVector &intVec,
                    const Rcpp::LogicalVector &boolVec, const Rcpp::NumericVector &dblVec,
-                   const Rcpp::CharacterVector &charVec, 
+                   const Rcpp::CharacterVector &charVec,
                    const std::vector<std::vector<int>> &facList,
                    std::vector<int> &typeCheck, bool IsDF, std::size_t nRows,
                    std::size_t nCols, std::vector<int> IsFactor) {
-    
+
     if (IsDF) {
         Rcpp::List resList(nCols);
-        
+
         for (std::size_t i = 0, facInd = 0; i < nCols; ++i) {
             switch (TYPEOF(RList[i])) {
                 case INTSXP: {
@@ -124,7 +124,7 @@ SEXP GlueComboCart(const std::vector<int> &cartCombs,
 
                     if (IsFactor[i]) {
                         Rcpp::IntegerVector facVec(facList[facInd].cbegin(), facList[facInd].cend());
-                        
+
                         for (std::size_t j = 0, row = i; j < nRows; ++j, row += nCols)
                             rcppVec[j] = facVec[cartCombs[row]];
 
@@ -215,50 +215,50 @@ void getAtLeastNPrimes(std::vector<int> &primes, std::size_t sumLength) {
         limit *= 2;
         guess = PrimeSieve::EstimatePiPrime(1.0, limit);
     }
-    
+
     bool tempPar = false;
     int_fast64_t intMin = static_cast<int_fast64_t>(1);
     int_fast64_t intMax = static_cast<int_fast64_t>(limit);
     std::vector<std::vector<int>> tempList;
-    
+
     PrimeSieve::PrimeSieveMaster(intMin, intMax, primes, tempList, tempPar);
 }
 
 // [[Rcpp::export]]
 SEXP comboGridRcpp(Rcpp::List RList, std::vector<int> IsFactor,
                    bool IsRep, std::size_t sumLength) {
-    
+
     std::vector<int> primes;
     getAtLeastNPrimes(primes, sumLength);
     std::size_t numFactorVec = std::accumulate(IsFactor.cbegin(), IsFactor.cend(), 0);
-    
+
     // All duplicates have been removed from RList via lapply(RList, function(x) sort(unique(x)))
     std::size_t nCols = RList.size();
     std::vector<std::vector<int>> myVec(nCols);
     std::unordered_map<std::string, int> mapIndex;
     std::vector<int> typeCheck(5, 0);
-    
+
     Rcpp::CharacterVector charVec(sumLength);
     Rcpp::NumericVector dblVec(sumLength);
     Rcpp::IntegerVector intVec(sumLength);
     Rcpp::LogicalVector boolVec(sumLength);
-    
+
     std::vector<std::vector<int>> facList(numFactorVec,
                                           std::vector<int>(sumLength, 0));
-    
+
     for (std::size_t i = 0, total = 0, myIndex = 0, facInd = 0; i < nCols; ++i) {
         std::vector<std::string> tempVec;
         rcppType myType;
-        
+
         convertToString(tempVec, RList[i], myType, IsFactor[i]);
         std::size_t j = 0;
-        
+
         for (const auto &v: tempVec) {
             if (mapIndex.empty()) {
                 mapIndex.insert({v, total});
             } else {
                 auto mapCheck = mapIndex.find(v);
-                
+
                 if (mapCheck == mapIndex.end()) {
                     ++total;
                     mapIndex.insert({v, total});
@@ -267,9 +267,9 @@ SEXP comboGridRcpp(Rcpp::List RList, std::vector<int> IsFactor,
                     myIndex = mapCheck->second;
                 }
             }
-            
+
             myVec[i].push_back(myIndex);
-            
+
             switch(myType) {
                 case tInt: {
                     intVec[myIndex] = Rcpp::as<Rcpp::IntegerVector>(RList[i])[j];
@@ -297,23 +297,23 @@ SEXP comboGridRcpp(Rcpp::List RList, std::vector<int> IsFactor,
                     break;
                 }
             }
-            
+
             ++j;
         }
-        
+
         facInd += IsFactor[i];
     }
-    
+
     int mySum = std::accumulate(typeCheck.cbegin(), typeCheck.cend(), 0);
     std::vector<std::string> testLevels;
     Rcpp::IntegerVector facVec(sumLength);
-    
+
     if (typeCheck[tFac] && mySum == 1) {
         for (std::size_t i = 0; i < nCols; ++i) {
             if (IsFactor[i]) {
                 facVec = Rcpp::as<Rcpp::IntegerVector>(RList[i]);
                 std::vector<std::string> strVec = Rcpp::as<std::vector<std::string>>(facVec.attr("levels"));
-                
+
                 if (testLevels.size()) {
                     if (strVec != testLevels) {
                         ++mySum;
@@ -325,11 +325,11 @@ SEXP comboGridRcpp(Rcpp::List RList, std::vector<int> IsFactor,
             }
         }
     }
-    
+
     bool IsDF = (mySum > 1) ? true : false;
     std::vector<int> cartCombs;
     comboGrid(cartCombs, IsRep, myVec, primes);
-    
+
     const std::size_t nRows = cartCombs.size() / nCols;
     return GlueComboCart(cartCombs, RList, intVec, boolVec, dblVec,
                          charVec, facList, typeCheck, IsDF, nRows, nCols, IsFactor);

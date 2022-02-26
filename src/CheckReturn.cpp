@@ -7,27 +7,27 @@ enum returnType : int {
 };
 
 bool CheckConstrnd(SEXP f1, SEXP f2, SEXP Rtarget) {
-    // No need to check myType, as we have already done 
-    // so in CheckStdRet. Same goes for IsFactor. 
+    // No need to check myType, as we have already done
+    // so in CheckStdRet. Same goes for IsFactor.
     bool result = !Rf_isNull(f1) && !Rf_isNull(f2) && !Rf_isNull(Rtarget);
-    
+
     if (result) {
         if (!Rf_isString(f1))
             Rcpp::stop("constraintFun must be passed as a character");
-        
+
         if (!Rf_isString(f2))
             Rcpp::stop("comparisonFun must be passed as a character");
     }
-    
+
     return result;
 }
 
 // [[Rcpp::export]]
 int CheckReturn(SEXP Rv, SEXP f1, SEXP f2, SEXP Rtarget,
                 bool IsFactor, SEXP RKeepRes, SEXP stdFun) {
-    
+
     int res = returnType::constrained;
-    
+
     if (Rf_isNull(f1)) {
         res = returnType::standard;
     } else {
@@ -36,7 +36,7 @@ int CheckReturn(SEXP Rv, SEXP f1, SEXP f2, SEXP Rtarget,
         } else {
             VecType myType = VecType::Integer;
             SetType(myType, Rv);
-            
+
             if (myType > VecType::Numeric) {
                 res = returnType::standard;
             } else {
@@ -48,7 +48,7 @@ int CheckReturn(SEXP Rv, SEXP f1, SEXP f2, SEXP Rtarget,
                         res = returnType::constrained;
                     } else {
                         bool keepRes = CleanConvert::convertLogical(RKeepRes, "keepResults");
-                        
+
                         if (keepRes) {
                             res = returnType::constrained;
                         } else {
@@ -62,17 +62,17 @@ int CheckReturn(SEXP Rv, SEXP f1, SEXP f2, SEXP Rtarget,
             }
         }
     }
-    
+
     if (res) {
         const bool applyFun = !Rf_isNull(stdFun) && !IsFactor;
-        
+
         if (applyFun) {
             if (!Rf_isFunction(stdFun))
                 Rcpp::stop("FUN must be a function!");
-            
+
             res = returnType::applyFun;
         }
     }
-    
+
     return res;
 }

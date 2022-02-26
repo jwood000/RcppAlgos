@@ -388,7 +388,7 @@ testVector7 <- sort(sample(10^7, 10^3 + 100))
 
 for (i in 1:1) {
     gc()
-    cat("\n************ ", prettyNum(comboCount(1100, 3), big.mark = ","), 
+    cat("\n************ ", prettyNum(comboCount(1100, 3), big.mark = ","),
     " COMBINATIONS **************\n")
     cat("\nRcppAlgos::comboGeneral with ", numThreads, " threads:\n")
     print(system.time(RcppAlgos::comboGeneral(testVector7, 3, nThreads = numThreads)))
@@ -399,7 +399,7 @@ for (i in 1:1) {
     cat("\narrangements::combinations:\n")
     print(system.time(arrangements::combinations(x = testVector7, k = 3)))
     gc()
-    cat("\n\n************** ", prettyNum(permuteCount(600, 3), big.mark = ","), 
+    cat("\n\n************** ", prettyNum(permuteCount(600, 3), big.mark = ","),
     " PERMUTATIONS **************\n")
     cat("\nRcppAlgos::permuteGeneral with ", numThreads, " threads:\n")
     print(system.time(RcppAlgos::permuteGeneral(testVector7[1:600], 3, nThreads = numThreads)))
@@ -411,33 +411,33 @@ for (i in 1:1) {
     print(system.time(arrangements::permutations(x = testVector7[1:600], k = 3)))
     gc()
 }
-#> 
+#>
 #> ************  221,228,700  COMBINATIONS **************
-#> 
+#>
 #> RcppAlgos::comboGeneral with  4  threads:
-#>    user  system elapsed 
-#>   1.271   0.736   0.534 
-#> 
+#>    user  system elapsed
+#>   1.271   0.736   0.534
+#>
 #> RcppAlgos::comboGeneral single-threaded:
-#>    user  system elapsed 
-#>   1.091   0.474   1.566 
-#> 
+#>    user  system elapsed
+#>   1.091   0.474   1.566
+#>
 #> arrangements::combinations:
-#>    user  system elapsed 
-#>   1.356   0.471   1.827 
-#> 
-#> 
+#>    user  system elapsed
+#>   1.356   0.471   1.827
+#>
+#>
 #> **************  214,921,200  PERMUTATIONS **************
-#> 
+#>
 #> RcppAlgos::permuteGeneral with  4  threads:
-#>    user  system elapsed 
-#>   0.987   1.692   0.780 
-#> 
+#>    user  system elapsed
+#>   0.987   1.692   0.780
+#>
 #> RcppAlgos::permuteGeneral single-threaded:
-#>    user  system elapsed 
-#>   0.930   0.481   1.412 
-#> 
+#>    user  system elapsed
+#>   0.930   0.481   1.412
+#>
 #> arrangements::permutations:
-#>    user  system elapsed 
+#>    user  system elapsed
 #>   1.645   0.460   2.105
 ```

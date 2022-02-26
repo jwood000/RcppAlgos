@@ -156,10 +156,10 @@ enum myComps {
 // function with y being altered in the calling function to give a range (y - e, y + e)
 template <typename stdType>
 Rcpp::XPtr<compPtr<stdType>> putCompPtrInXPtr(std::string fstr) {
-    
+
     auto it = std::find(compVec.cbegin(), compVec.cend(), fstr);
     const int myIndex = std::distance(compVec.cbegin(), it);
-    
+
     switch(myIndex) {
         case LT:
             return(Rcpp::XPtr<compPtr<stdType>>(new compPtr<stdType>(&less)));
@@ -177,7 +177,7 @@ Rcpp::XPtr<compPtr<stdType>> putCompPtrInXPtr(std::string fstr) {
         case GTLT:
             return(Rcpp::XPtr<compPtr<stdType>>(new compPtr<stdType>(&greaterLess)));
         case GELT:
-            return(Rcpp::XPtr<compPtr<stdType>>(new compPtr<stdType>(&greaterEqlLess)));    
+            return(Rcpp::XPtr<compPtr<stdType>>(new compPtr<stdType>(&greaterEqlLess)));
         case GTLE:
             return(Rcpp::XPtr<compPtr<stdType>>(new compPtr<stdType>(&greaterLessEql)));
         case GELE:

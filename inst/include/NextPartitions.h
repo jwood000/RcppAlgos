@@ -14,10 +14,10 @@ void NextPartition(std::vector<int> &z, int &boundary, int &edge, int lastCol);
 void NextMultiSetGenPart(std::vector<int> &rpsCnt, std::vector<int> &z,
                          int &e, int &b, int &p, int lastCol, int lastElem);
 
-void NextRepGenPart(std::vector<int> &z, int &boundary, int &edge, 
+void NextRepGenPart(std::vector<int> &z, int &boundary, int &edge,
                     int &pivot, int lastCol, int lastElem);
 
-void NextDistinctGenPart(std::vector<int> &z, int &boundary, int &edge, 
+void NextDistinctGenPart(std::vector<int> &z, int &boundary, int &edge,
                          int &pivot, int &tarDiff, int lastCol, int lastElem);
 
 #endif
