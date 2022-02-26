@@ -5,12 +5,15 @@
 <meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>High Performance Tools for Combinatorics and Computational Mathematics • RcppAlgos</title>
-<!-- jquery --><script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script><!-- Bootstrap --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha256-916EbMg70RQy9LHiGkXzG8hSg9EdNy97GazNG/aiY1w=" crossorigin="anonymous">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha256-U5ZEeKfGNOja007MMD3YBI0A3OSZOQbeG6z2f2Y0hu8=" crossorigin="anonymous"></script><!-- Font Awesome icons --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.7.1/css/all.min.css" integrity="sha256-nAmazAk6vS34Xqo0BSrTb+abbtFlgsFK7NKSi6o7Y78=" crossorigin="anonymous">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.7.1/css/v4-shims.min.css" integrity="sha256-6qHlizsOWFskGlwVOKuns+D1nB6ssZrHQrNj1wGplHc=" crossorigin="anonymous">
-<!-- clipboard.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.4/clipboard.min.js" integrity="sha256-FiZwavyI2V6+EXO1U+xzLG3IKldpiTFf3153ea9zikQ=" crossorigin="anonymous"></script><!-- headroom.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.9.4/headroom.min.js" integrity="sha256-DJFC1kqIhelURkuza0AvYal5RxMtpzLjFhsnVIeuk+U=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.9.4/jQuery.headroom.min.js" integrity="sha256-ZX/yNShbjqsohH1k95liqY9Gd8uOiE1S4vZc+9KQ1K4=" crossorigin="anonymous"></script><!-- pkgdown --><link href="pkgdown.css" rel="stylesheet">
-<script src="pkgdown.js"></script><meta property="og:title" content="High Performance Tools for Combinatorics and Computational Mathematics">
+<title>High Performance Tools for Combinatorics and Computational
+        Mathematics • RcppAlgos243</title>
+<!-- jquery --><script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script><!-- Bootstrap --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.4.1/css/bootstrap.min.css" integrity="sha256-bZLfwXAP04zRMK2BjiO8iu9pf4FbLqX6zitd+tIvLhE=" crossorigin="anonymous">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.4.1/js/bootstrap.min.js" integrity="sha256-nuL8/2cJ5NDSSwnKD8VqreErSWHtnEP9E7AySL+1ev4=" crossorigin="anonymous"></script><!-- bootstrap-toc --><link rel="stylesheet" href="bootstrap-toc.css">
+<script src="bootstrap-toc.js"></script><!-- Font Awesome icons --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/all.min.css" integrity="sha256-mmgLkCYLUQbXn0B1SRqzHar6dCnv9oZFPEC1g1cwlkk=" crossorigin="anonymous">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/v4-shims.min.css" integrity="sha256-wZjR52fzng1pJHwx4aV2AO3yyTOXrcDW7jBpJtTwVxw=" crossorigin="anonymous">
+<!-- clipboard.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.6/clipboard.min.js" integrity="sha256-inc5kl9MA1hkeYUt+EC3BhlIgyp/2jDIyBLS6k3UxPI=" crossorigin="anonymous"></script><!-- headroom.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/headroom.min.js" integrity="sha256-AsUX4SJE1+yuDu5+mAVzJbuYNPHj/WroHuZ8Ir/CkE0=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/jQuery.headroom.min.js" integrity="sha256-ZX/yNShbjqsohH1k95liqY9Gd8uOiE1S4vZc+9KQ1K4=" crossorigin="anonymous"></script><!-- pkgdown --><link href="pkgdown.css" rel="stylesheet">
+<script src="pkgdown.js"></script><meta property="og:title" content="High Performance Tools for Combinatorics and Computational
+        Mathematics">
 <meta property="og:description" content="Provides optimized functions and flexible combinatorial iterators
     implemented in C++ with Rcpp for solving problems in combinatorics and
     computational mathematics. Utilizes parallel programming via RcppThread
@@ -31,13 +34,14 @@
     numbers by using the cache friendly improvements originally developed by
     Tomás Oliveira. Finally, there is a prime counting function that implements
     Legendre's formula based on the work of Kim Walisch.">
-<meta name="twitter:card" content="summary">
 <!-- mathjax --><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js" integrity="sha256-nvJJv9wWKEm88qvoQl9ekL2J+k/RWIsaSScxxlsrv8k=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/config/TeX-AMS-MML_HTMLorMML.js" integrity="sha256-84DKXVJXs0/F8OTMzX4UR909+jtl4G7SPypPavF+GfA=" crossorigin="anonymous"></script><!--[if lt IE 9]>
 <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
 <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
 <![endif]-->
 </head>
-<body>
+<body data-spy="scroll" data-target="#toc">
+    
+
     <div class="container template-home">
       <header><div class="navbar navbar-default navbar-fixed-top" role="navigation">
   <div class="container">
@@ -49,19 +53,13 @@
         <span class="icon-bar"></span>
       </button>
       <span class="navbar-brand">
-        <a class="navbar-link" href="index.html">RcppAlgos</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">2.4.2</span>
+        <a class="navbar-link" href="index.html">RcppAlgos243</a>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">2.4.3</span>
       </span>
     </div>
 
     <div id="navbar" class="navbar-collapse collapse">
       <ul class="nav navbar-nav">
-<li>
-  <a href="index.html">
-    <span class="fas fa fas fa-home fa-lg"></span>
-     
-  </a>
-</li>
 <li>
   <a href="reference/index.html">Reference</a>
 </li>
@@ -101,8 +99,8 @@
       </ul>
 <ul class="nav navbar-nav navbar-right">
 <li>
-  <a href="https://github.com/jwood000/RcppAlgos">
-    <span class="fab fa fab fa-github fa-lg"></span>
+  <a href="https://github.com/jwood000/RcppAlgos/" class="external-link">
+    <span class="fab fa-github fa-lg"></span>
      
   </a>
 </li>
@@ -118,19 +116,18 @@
 
       </header><div class="row">
   <div class="contents col-md-9">
-<div id="rcppalgos-" class="section level1">
-<div class="page-header"><h1 class="hasAnchor">
-<a href="#rcppalgos-" class="anchor"></a>RcppAlgos <img src="inst/figures/RcppAlgos-logo.png" width="150px" align="right">
+<div class="section level1">
+<div class="page-header"><h1 id="rcppalgos-">RcppAlgos <img src="reference/figures/RcppAlgos-logo.png" width="150px" align="right"><a class="anchor" aria-label="anchor" href="#rcppalgos-"></a>
 </h1></div>
 <!-- badges: start -->
-<p><a href="https://cran.r-project.org/package=RcppAlgos"><img src="https://www.r-pkg.org/badges/version/RcppAlgos" alt="CRAN status"></a> <a href="https://travis-ci.com/jwood000/RcppAlgos"><img src="https://travis-ci.com/jwood000/RcppAlgos.svg?branch=master" alt="Travis build status"></a> <img src="http://cranlogs.r-pkg.org/badges/RcppAlgos?color=orange"><img src="http://cranlogs.r-pkg.org/badges/grand-total/RcppAlgos?color=brightgreen"><a href="https://codecov.io/github/jwood000/RcppAlgos?branch=master"><img src="https://codecov.io/gh/jwood000/RcppAlgos/branch/master/graph/badge.svg" alt="Coverage status"></a> <a href="https://app.codacy.com/app/jwood000/RcppAlgos?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=jwood000/RcppAlgos&amp;utm_campaign=Badge_Grade_Settings"><img src="https://api.codacy.com/project/badge/Grade/47c85553b9bd4479a722857c1f2fdcf3" alt="Codacy Badge"></a> <a href="https://cran.r-project.org/package=RcppAlgos"><img src="https://tinyverse.netlify.com/badge/RcppAlgos" alt="Dependencies"></a> <!-- badges: end --></p>
-<p>A collection of high performance functions implemented in C++ with Rcpp for solving problems in combinatorics and computational mathematics. Utilizes the <a href="https://github.com/tnagler/RcppThread">RcppThread</a> library for easy access to thread safe multithreading. We also make use of the <a href="https://github.com/RcppCore/RcppParallel/blob/master/inst/include/RcppParallel/RMatrix.h">RMatrix.h</a> header file from <a href="https://github.com/RcppCore/RcppParallel">RcppParallel</a> for thread safe accessors for Rcpp matrices.</p>
-<div id="featured-functions" class="section level2">
-<h2 class="hasAnchor">
-<a href="#featured-functions" class="anchor"></a>Featured Functions</h2>
+
+<p>A collection of high performance functions implemented in C++ with Rcpp for solving problems in combinatorics and computational mathematics. Utilizes the <a href="https://github.com/tnagler/RcppThread" class="external-link">RcppThread</a> library for easy access to thread safe multithreading. We also make use of the <a href="https://github.com/RcppCore/RcppParallel/blob/master/inst/include/RcppParallel/RMatrix.h" class="external-link">RMatrix.h</a> header file from <a href="https://github.com/RcppCore/RcppParallel" class="external-link">RcppParallel</a> for thread safe accessors for Rcpp matrices.</p>
+<div class="section level2">
+<h2 id="featured-functions">Featured Functions<a class="anchor" aria-label="anchor" href="#featured-functions"></a>
+</h2>
 <ul>
 <li>
-<strong><code>comboGeneral/permuteGeneral</code></strong>: Generate all combinations/permutations of a vector (including <a href="https://en.wikipedia.org/wiki/Multiset">multisets</a>) meeting specific criteria.</li>
+<strong><code>comboGeneral/permuteGeneral</code></strong>: Generate all combinations/permutations of a vector (including <a href="https://en.wikipedia.org/wiki/Multiset" class="external-link">multisets</a>) meeting specific criteria.</li>
 <li>
 <strong><code>comboSample/permuteSample</code></strong>: Generate reproducible random samples of combinations/permutations</li>
 <li>
@@ -138,138 +135,156 @@
 <li>
 <strong><code>primeSieve</code></strong>: Fast prime number generator</li>
 <li>
-<strong><code>primeCount</code></strong>: Prime counting function using <a href="http://mathworld.wolfram.com/LegendresFormula.html">Legendre’s formula</a>
+<strong><code>primeCount</code></strong>: Prime counting function using <a href="http://mathworld.wolfram.com/LegendresFormula.html" class="external-link">Legendre’s formula</a>
 </li>
 </ul>
-<p>The <code>primeSieve</code> function and the <code>primeCount</code> function are both based off of the excellent work by <a href="https://github.com/kimwalisch">Kim Walisch</a>. The respective repos can be found here: <a href="https://github.com/kimwalisch/primesieve">kimwalisch/primesieve</a>; <a href="https://github.com/kimwalisch/primecount">kimwalisch/primecount</a></p>
-<p>Additionally, many of the sieving functions make use of the fast integer division library <a href="https://github.com/ridiculousfish/libdivide">libdivide</a> by <a href="https://github.com/ridiculousfish">ridiculousfish</a>.</p>
+<p>The <code>primeSieve</code> function and the <code>primeCount</code> function are both based off of the excellent work by <a href="https://github.com/kimwalisch" class="external-link">Kim Walisch</a>. The respective repos can be found here: <a href="https://github.com/kimwalisch/primesieve" class="external-link">kimwalisch/primesieve</a>; <a href="https://github.com/kimwalisch/primecount" class="external-link">kimwalisch/primecount</a></p>
+<p>Additionally, many of the sieving functions make use of the fast integer division library <a href="https://github.com/ridiculousfish/libdivide" class="external-link">libdivide</a> by <a href="https://github.com/ridiculousfish" class="external-link">ridiculousfish</a>.</p>
 </div>
-<div id="benchmarks" class="section level2">
-<h2 class="hasAnchor">
-<a href="#benchmarks" class="anchor"></a>Benchmarks</h2>
+<div class="section level2">
+<h2 id="benchmarks">Benchmarks<a class="anchor" aria-label="anchor" href="#benchmarks"></a>
+</h2>
 <ul>
-<li><a href="https://jwood000.github.io/RcppAlgos/articles/HighPerformanceBenchmarks.html">High Performance Benchmarks</a></li>
+<li><a href="https://jwood000.github.io/RcppAlgos/articles/HighPerformanceBenchmarks.html" class="external-link">High Performance Benchmarks</a></li>
 </ul>
 </div>
-<div id="installation" class="section level2">
-<h2 class="hasAnchor">
-<a href="#installation" class="anchor"></a>Installation</h2>
-<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1"></a><span class="kw"><a href="https://rdrr.io/r/utils/install.packages.html">install.packages</a></span>(<span class="st">"RcppAlgos"</span>)</span>
-<span id="cb1-2"><a href="#cb1-2"></a></span>
-<span id="cb1-3"><a href="#cb1-3"></a><span class="co">## install the development version</span></span>
-<span id="cb1-4"><a href="#cb1-4"></a>devtools<span class="op">::</span><span class="kw"><a href="https://rdrr.io/pkg/devtools/man/remote-reexports.html">install_github</a></span>(<span class="st">"jwood000/RcppAlgos"</span>)</span></code></pre></div>
+<div class="section level2">
+<h2 id="installation">Installation<a class="anchor" aria-label="anchor" href="#installation"></a>
+</h2>
+<div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">"RcppAlgos"</span><span class="op">)</span>
+
+<span class="co">## install the development version</span>
+<span class="fu">devtools</span><span class="fu">::</span><span class="fu"><a href="https://devtools.r-lib.org/reference/remote-reexports.html" class="external-link">install_github</a></span><span class="op">(</span><span class="st">"jwood000/RcppAlgos"</span><span class="op">)</span></code></pre></div>
 </div>
-<div id="basic-usage" class="section level2">
-<h2 class="hasAnchor">
-<a href="#basic-usage" class="anchor"></a>Basic Usage</h2>
-<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1"></a><span class="co">## Generate prime numbers</span></span>
-<span id="cb2-2"><a href="#cb2-2"></a><span class="kw"><a href="reference/primeSieve.html">primeSieve</a></span>(<span class="dv">50</span>, <span class="dv">100</span>)</span>
-<span id="cb2-3"><a href="#cb2-3"></a>[<span class="dv">1</span>] <span class="dv">53</span> <span class="dv">59</span> <span class="dv">61</span> <span class="dv">67</span> <span class="dv">71</span> <span class="dv">73</span> <span class="dv">79</span> <span class="dv">83</span> <span class="dv">89</span> <span class="dv">97</span></span>
-<span id="cb2-4"><a href="#cb2-4"></a></span>
-<span id="cb2-5"><a href="#cb2-5"></a></span>
-<span id="cb2-6"><a href="#cb2-6"></a><span class="co">## Count prime numbers less than n</span></span>
-<span id="cb2-7"><a href="#cb2-7"></a><span class="kw"><a href="reference/primeCount.html">primeCount</a></span>(<span class="fl">1e10</span>)</span>
-<span id="cb2-8"><a href="#cb2-8"></a>[<span class="dv">1</span>] <span class="dv">455052511</span></span>
-<span id="cb2-9"><a href="#cb2-9"></a></span>
-<span id="cb2-10"><a href="#cb2-10"></a></span>
-<span id="cb2-11"><a href="#cb2-11"></a><span class="co">## Find all 3-tuples combinations of 1:4 </span></span>
-<span id="cb2-12"><a href="#cb2-12"></a><span class="kw"><a href="reference/combinatoricsGeneral.html">comboGeneral</a></span>(<span class="dv">4</span>, <span class="dv">3</span>)</span>
-<span id="cb2-13"><a href="#cb2-13"></a>     [,<span class="dv">1</span>] [,<span class="dv">2</span>] [,<span class="dv">3</span>]</span>
-<span id="cb2-14"><a href="#cb2-14"></a>[<span class="dv">1</span>,]   <span class="dv">1</span>    <span class="dv">2</span>    <span class="dv">3</span></span>
-<span id="cb2-15"><a href="#cb2-15"></a>[<span class="dv">2</span>,]   <span class="dv">1</span>    <span class="dv">2</span>    <span class="dv">4</span></span>
-<span id="cb2-16"><a href="#cb2-16"></a>[<span class="dv">3</span>,]   <span class="dv">1</span>    <span class="dv">3</span>    <span class="dv">4</span></span>
-<span id="cb2-17"><a href="#cb2-17"></a>[<span class="dv">4</span>,]   <span class="dv">2</span>    <span class="dv">3</span>    <span class="dv">4</span></span>
-<span id="cb2-18"><a href="#cb2-18"></a></span>
-<span id="cb2-19"><a href="#cb2-19"></a></span>
-<span id="cb2-20"><a href="#cb2-20"></a><span class="co">## Alternatively, iterate over combinations</span></span>
-<span id="cb2-21"><a href="#cb2-21"></a>a =<span class="st"> </span><span class="kw"><a href="reference/combinatoricsIterator.html">comboIter</a></span>(<span class="dv">4</span>, <span class="dv">3</span>)</span>
-<span id="cb2-22"><a href="#cb2-22"></a>a<span class="op">$</span><span class="kw">nextIter</span>()</span>
-<span id="cb2-23"><a href="#cb2-23"></a>[<span class="dv">1</span>] <span class="dv">1</span> <span class="dv">2</span> <span class="dv">3</span></span>
-<span id="cb2-24"><a href="#cb2-24"></a></span>
-<span id="cb2-25"><a href="#cb2-25"></a>a<span class="op">$</span><span class="kw">back</span>()</span>
-<span id="cb2-26"><a href="#cb2-26"></a>[<span class="dv">1</span>] <span class="dv">2</span> <span class="dv">3</span> <span class="dv">4</span></span>
-<span id="cb2-27"><a href="#cb2-27"></a></span>
-<span id="cb2-28"><a href="#cb2-28"></a>a[[<span class="dv">2</span>]]</span>
-<span id="cb2-29"><a href="#cb2-29"></a>[<span class="dv">1</span>] <span class="dv">1</span> <span class="dv">2</span> <span class="dv">4</span></span>
-<span id="cb2-30"><a href="#cb2-30"></a></span>
-<span id="cb2-31"><a href="#cb2-31"></a></span>
-<span id="cb2-32"><a href="#cb2-32"></a><span class="co">## Pass any atomic type vector</span></span>
-<span id="cb2-33"><a href="#cb2-33"></a><span class="kw"><a href="reference/combinatoricsGeneral.html">permuteGeneral</a></span>(letters, <span class="dv">3</span>, <span class="dt">upper =</span> <span class="dv">4</span>)</span>
-<span id="cb2-34"><a href="#cb2-34"></a>     [,<span class="dv">1</span>] [,<span class="dv">2</span>] [,<span class="dv">3</span>]</span>
-<span id="cb2-35"><a href="#cb2-35"></a>[<span class="dv">1</span>,] <span class="st">"a"</span>  <span class="st">"b"</span>  <span class="st">"c"</span> </span>
-<span id="cb2-36"><a href="#cb2-36"></a>[<span class="dv">2</span>,] <span class="st">"a"</span>  <span class="st">"b"</span>  <span class="st">"d"</span> </span>
-<span id="cb2-37"><a href="#cb2-37"></a>[<span class="dv">3</span>,] <span class="st">"a"</span>  <span class="st">"b"</span>  <span class="st">"e"</span> </span>
-<span id="cb2-38"><a href="#cb2-38"></a>[<span class="dv">4</span>,] <span class="st">"a"</span>  <span class="st">"b"</span>  <span class="st">"f"</span> </span>
-<span id="cb2-39"><a href="#cb2-39"></a></span>
-<span id="cb2-40"><a href="#cb2-40"></a></span>
-<span id="cb2-41"><a href="#cb2-41"></a><span class="co">## Generate a reproducible sample</span></span>
-<span id="cb2-42"><a href="#cb2-42"></a><span class="kw"><a href="reference/combinatoricsSample.html">comboSample</a></span>(<span class="dv">10</span>, <span class="dv">8</span>, <span class="ot">TRUE</span>, <span class="dt">n =</span> <span class="dv">5</span>, <span class="dt">seed =</span> <span class="dv">84</span>)</span>
-<span id="cb2-43"><a href="#cb2-43"></a>     [,<span class="dv">1</span>] [,<span class="dv">2</span>] [,<span class="dv">3</span>] [,<span class="dv">4</span>] [,<span class="dv">5</span>] [,<span class="dv">6</span>] [,<span class="dv">7</span>] [,<span class="dv">8</span>]</span>
-<span id="cb2-44"><a href="#cb2-44"></a>[<span class="dv">1</span>,]    <span class="dv">3</span>    <span class="dv">3</span>    <span class="dv">3</span>    <span class="dv">6</span>    <span class="dv">6</span>   <span class="dv">10</span>   <span class="dv">10</span>   <span class="dv">10</span></span>
-<span id="cb2-45"><a href="#cb2-45"></a>[<span class="dv">2</span>,]    <span class="dv">1</span>    <span class="dv">3</span>    <span class="dv">3</span>    <span class="dv">4</span>    <span class="dv">4</span>    <span class="dv">7</span>    <span class="dv">9</span>   <span class="dv">10</span></span>
-<span id="cb2-46"><a href="#cb2-46"></a>[<span class="dv">3</span>,]    <span class="dv">3</span>    <span class="dv">7</span>    <span class="dv">7</span>    <span class="dv">7</span>    <span class="dv">9</span>   <span class="dv">10</span>   <span class="dv">10</span>   <span class="dv">10</span></span>
-<span id="cb2-47"><a href="#cb2-47"></a>[<span class="dv">4</span>,]    <span class="dv">3</span>    <span class="dv">3</span>    <span class="dv">3</span>    <span class="dv">9</span>   <span class="dv">10</span>   <span class="dv">10</span>   <span class="dv">10</span>   <span class="dv">10</span></span>
-<span id="cb2-48"><a href="#cb2-48"></a>[<span class="dv">5</span>,]    <span class="dv">1</span>    <span class="dv">2</span>    <span class="dv">2</span>    <span class="dv">3</span>    <span class="dv">3</span>    <span class="dv">4</span>    <span class="dv">4</span>    <span class="dv">7</span></span>
-<span id="cb2-49"><a href="#cb2-49"></a></span>
-<span id="cb2-50"><a href="#cb2-50"></a></span>
-<span id="cb2-51"><a href="#cb2-51"></a><span class="co">## Get combinations such that the product is between</span></span>
-<span id="cb2-52"><a href="#cb2-52"></a><span class="co">## 3600 and 4000 (including 3600 but not 4000)</span></span>
-<span id="cb2-53"><a href="#cb2-53"></a><span class="kw"><a href="reference/combinatoricsGeneral.html">comboGeneral</a></span>(<span class="dv">5</span>, <span class="dv">7</span>, <span class="ot">TRUE</span>, <span class="dt">constraintFun =</span> <span class="st">"prod"</span>,</span>
-<span id="cb2-54"><a href="#cb2-54"></a>             <span class="dt">comparisonFun =</span> <span class="kw"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">"&gt;="</span>,<span class="st">"&lt;"</span>),</span>
-<span id="cb2-55"><a href="#cb2-55"></a>             <span class="dt">limitConstraints =</span> <span class="kw"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="dv">3600</span>, <span class="dv">4000</span>),</span>
-<span id="cb2-56"><a href="#cb2-56"></a>             <span class="dt">keepResults =</span> <span class="ot">TRUE</span>)</span>
-<span id="cb2-57"><a href="#cb2-57"></a>     [,<span class="dv">1</span>] [,<span class="dv">2</span>] [,<span class="dv">3</span>] [,<span class="dv">4</span>] [,<span class="dv">5</span>] [,<span class="dv">6</span>] [,<span class="dv">7</span>] [,<span class="dv">8</span>]</span>
-<span id="cb2-58"><a href="#cb2-58"></a>[<span class="dv">1</span>,]    <span class="dv">1</span>    <span class="dv">2</span>    <span class="dv">3</span>    <span class="dv">5</span>    <span class="dv">5</span>    <span class="dv">5</span>    <span class="dv">5</span> <span class="dv">3750</span></span>
-<span id="cb2-59"><a href="#cb2-59"></a>[<span class="dv">2</span>,]    <span class="dv">1</span>    <span class="dv">3</span>    <span class="dv">3</span>    <span class="dv">4</span>    <span class="dv">4</span>    <span class="dv">5</span>    <span class="dv">5</span> <span class="dv">3600</span></span>
-<span id="cb2-60"><a href="#cb2-60"></a>[<span class="dv">3</span>,]    <span class="dv">1</span>    <span class="dv">3</span>    <span class="dv">4</span>    <span class="dv">4</span>    <span class="dv">4</span>    <span class="dv">4</span>    <span class="dv">5</span> <span class="dv">3840</span></span>
-<span id="cb2-61"><a href="#cb2-61"></a>[<span class="dv">4</span>,]    <span class="dv">2</span>    <span class="dv">2</span>    <span class="dv">3</span>    <span class="dv">3</span>    <span class="dv">4</span>    <span class="dv">5</span>    <span class="dv">5</span> <span class="dv">3600</span></span>
-<span id="cb2-62"><a href="#cb2-62"></a>[<span class="dv">5</span>,]    <span class="dv">2</span>    <span class="dv">2</span>    <span class="dv">3</span>    <span class="dv">4</span>    <span class="dv">4</span>    <span class="dv">4</span>    <span class="dv">5</span> <span class="dv">3840</span></span>
-<span id="cb2-63"><a href="#cb2-63"></a>[<span class="dv">6</span>,]    <span class="dv">3</span>    <span class="dv">3</span>    <span class="dv">3</span>    <span class="dv">3</span>    <span class="dv">3</span>    <span class="dv">3</span>    <span class="dv">5</span> <span class="dv">3645</span></span>
-<span id="cb2-64"><a href="#cb2-64"></a>[<span class="dv">7</span>,]    <span class="dv">3</span>    <span class="dv">3</span>    <span class="dv">3</span>    <span class="dv">3</span>    <span class="dv">3</span>    <span class="dv">4</span>    <span class="dv">4</span> <span class="dv">3888</span></span></code></pre></div>
+<div class="section level2">
+<h2 id="basic-usage">Basic Usage<a class="anchor" aria-label="anchor" href="#basic-usage"></a>
+</h2>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="do">## Generate prime numbers</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="fu">primeSieve</span>(<span class="dv">50</span>, <span class="dv">100</span>)</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>[<span class="dv">1</span>] <span class="dv">53</span> <span class="dv">59</span> <span class="dv">61</span> <span class="dv">67</span> <span class="dv">71</span> <span class="dv">73</span> <span class="dv">79</span> <span class="dv">83</span> <span class="dv">89</span> <span class="dv">97</span></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a><span class="do">## Count prime numbers less than n</span></span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a><span class="fu">primeCount</span>(<span class="fl">1e10</span>)</span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>[<span class="dv">1</span>] <span class="dv">455052511</span></span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a><span class="do">## Find all 3-tuples combinations of 1:4 </span></span>
+<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a><span class="fu">comboGeneral</span>(<span class="dv">4</span>, <span class="dv">3</span>)</span>
+<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a>     [,<span class="dv">1</span>] [,<span class="dv">2</span>] [,<span class="dv">3</span>]</span>
+<span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a>[<span class="dv">1</span>,]   <span class="dv">1</span>    <span class="dv">2</span>    <span class="dv">3</span></span>
+<span id="cb2-15"><a href="#cb2-15" aria-hidden="true" tabindex="-1"></a>[<span class="dv">2</span>,]   <span class="dv">1</span>    <span class="dv">2</span>    <span class="dv">4</span></span>
+<span id="cb2-16"><a href="#cb2-16" aria-hidden="true" tabindex="-1"></a>[<span class="dv">3</span>,]   <span class="dv">1</span>    <span class="dv">3</span>    <span class="dv">4</span></span>
+<span id="cb2-17"><a href="#cb2-17" aria-hidden="true" tabindex="-1"></a>[<span class="dv">4</span>,]   <span class="dv">2</span>    <span class="dv">3</span>    <span class="dv">4</span></span>
+<span id="cb2-18"><a href="#cb2-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-19"><a href="#cb2-19" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-20"><a href="#cb2-20" aria-hidden="true" tabindex="-1"></a><span class="do">## Alternatively, iterate over combinations</span></span>
+<span id="cb2-21"><a href="#cb2-21" aria-hidden="true" tabindex="-1"></a>a <span class="ot">=</span> <span class="fu">comboIter</span>(<span class="dv">4</span>, <span class="dv">3</span>)</span>
+<span id="cb2-22"><a href="#cb2-22" aria-hidden="true" tabindex="-1"></a>a<span class="sc">$</span><span class="fu">nextIter</span>()</span>
+<span id="cb2-23"><a href="#cb2-23" aria-hidden="true" tabindex="-1"></a>[<span class="dv">1</span>] <span class="dv">1</span> <span class="dv">2</span> <span class="dv">3</span></span>
+<span id="cb2-24"><a href="#cb2-24" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-25"><a href="#cb2-25" aria-hidden="true" tabindex="-1"></a>a<span class="sc">$</span><span class="fu">back</span>()</span>
+<span id="cb2-26"><a href="#cb2-26" aria-hidden="true" tabindex="-1"></a>[<span class="dv">1</span>] <span class="dv">2</span> <span class="dv">3</span> <span class="dv">4</span></span>
+<span id="cb2-27"><a href="#cb2-27" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-28"><a href="#cb2-28" aria-hidden="true" tabindex="-1"></a>a[[<span class="dv">2</span>]]</span>
+<span id="cb2-29"><a href="#cb2-29" aria-hidden="true" tabindex="-1"></a>[<span class="dv">1</span>] <span class="dv">1</span> <span class="dv">2</span> <span class="dv">4</span></span>
+<span id="cb2-30"><a href="#cb2-30" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-31"><a href="#cb2-31" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-32"><a href="#cb2-32" aria-hidden="true" tabindex="-1"></a><span class="do">## Pass any atomic type vector</span></span>
+<span id="cb2-33"><a href="#cb2-33" aria-hidden="true" tabindex="-1"></a><span class="fu">permuteGeneral</span>(letters, <span class="dv">3</span>, <span class="at">upper =</span> <span class="dv">4</span>)</span>
+<span id="cb2-34"><a href="#cb2-34" aria-hidden="true" tabindex="-1"></a>     [,<span class="dv">1</span>] [,<span class="dv">2</span>] [,<span class="dv">3</span>]</span>
+<span id="cb2-35"><a href="#cb2-35" aria-hidden="true" tabindex="-1"></a>[<span class="dv">1</span>,] <span class="st">"a"</span>  <span class="st">"b"</span>  <span class="st">"c"</span> </span>
+<span id="cb2-36"><a href="#cb2-36" aria-hidden="true" tabindex="-1"></a>[<span class="dv">2</span>,] <span class="st">"a"</span>  <span class="st">"b"</span>  <span class="st">"d"</span> </span>
+<span id="cb2-37"><a href="#cb2-37" aria-hidden="true" tabindex="-1"></a>[<span class="dv">3</span>,] <span class="st">"a"</span>  <span class="st">"b"</span>  <span class="st">"e"</span> </span>
+<span id="cb2-38"><a href="#cb2-38" aria-hidden="true" tabindex="-1"></a>[<span class="dv">4</span>,] <span class="st">"a"</span>  <span class="st">"b"</span>  <span class="st">"f"</span> </span>
+<span id="cb2-39"><a href="#cb2-39" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-40"><a href="#cb2-40" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-41"><a href="#cb2-41" aria-hidden="true" tabindex="-1"></a><span class="do">## Generate a reproducible sample</span></span>
+<span id="cb2-42"><a href="#cb2-42" aria-hidden="true" tabindex="-1"></a><span class="fu">comboSample</span>(<span class="dv">10</span>, <span class="dv">8</span>, <span class="cn">TRUE</span>, <span class="at">n =</span> <span class="dv">5</span>, <span class="at">seed =</span> <span class="dv">84</span>)</span>
+<span id="cb2-43"><a href="#cb2-43" aria-hidden="true" tabindex="-1"></a>     [,<span class="dv">1</span>] [,<span class="dv">2</span>] [,<span class="dv">3</span>] [,<span class="dv">4</span>] [,<span class="dv">5</span>] [,<span class="dv">6</span>] [,<span class="dv">7</span>] [,<span class="dv">8</span>]</span>
+<span id="cb2-44"><a href="#cb2-44" aria-hidden="true" tabindex="-1"></a>[<span class="dv">1</span>,]    <span class="dv">3</span>    <span class="dv">3</span>    <span class="dv">3</span>    <span class="dv">6</span>    <span class="dv">6</span>   <span class="dv">10</span>   <span class="dv">10</span>   <span class="dv">10</span></span>
+<span id="cb2-45"><a href="#cb2-45" aria-hidden="true" tabindex="-1"></a>[<span class="dv">2</span>,]    <span class="dv">1</span>    <span class="dv">3</span>    <span class="dv">3</span>    <span class="dv">4</span>    <span class="dv">4</span>    <span class="dv">7</span>    <span class="dv">9</span>   <span class="dv">10</span></span>
+<span id="cb2-46"><a href="#cb2-46" aria-hidden="true" tabindex="-1"></a>[<span class="dv">3</span>,]    <span class="dv">3</span>    <span class="dv">7</span>    <span class="dv">7</span>    <span class="dv">7</span>    <span class="dv">9</span>   <span class="dv">10</span>   <span class="dv">10</span>   <span class="dv">10</span></span>
+<span id="cb2-47"><a href="#cb2-47" aria-hidden="true" tabindex="-1"></a>[<span class="dv">4</span>,]    <span class="dv">3</span>    <span class="dv">3</span>    <span class="dv">3</span>    <span class="dv">9</span>   <span class="dv">10</span>   <span class="dv">10</span>   <span class="dv">10</span>   <span class="dv">10</span></span>
+<span id="cb2-48"><a href="#cb2-48" aria-hidden="true" tabindex="-1"></a>[<span class="dv">5</span>,]    <span class="dv">1</span>    <span class="dv">2</span>    <span class="dv">2</span>    <span class="dv">3</span>    <span class="dv">3</span>    <span class="dv">4</span>    <span class="dv">4</span>    <span class="dv">7</span></span>
+<span id="cb2-49"><a href="#cb2-49" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-50"><a href="#cb2-50" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-51"><a href="#cb2-51" aria-hidden="true" tabindex="-1"></a><span class="do">## Get combinations such that the product is between</span></span>
+<span id="cb2-52"><a href="#cb2-52" aria-hidden="true" tabindex="-1"></a><span class="do">## 3600 and 4000 (including 3600 but not 4000)</span></span>
+<span id="cb2-53"><a href="#cb2-53" aria-hidden="true" tabindex="-1"></a><span class="fu">comboGeneral</span>(<span class="dv">5</span>, <span class="dv">7</span>, <span class="cn">TRUE</span>, <span class="at">constraintFun =</span> <span class="st">"prod"</span>,</span>
+<span id="cb2-54"><a href="#cb2-54" aria-hidden="true" tabindex="-1"></a>             <span class="at">comparisonFun =</span> <span class="fu">c</span>(<span class="st">"&gt;="</span>,<span class="st">"&lt;"</span>),</span>
+<span id="cb2-55"><a href="#cb2-55" aria-hidden="true" tabindex="-1"></a>             <span class="at">limitConstraints =</span> <span class="fu">c</span>(<span class="dv">3600</span>, <span class="dv">4000</span>),</span>
+<span id="cb2-56"><a href="#cb2-56" aria-hidden="true" tabindex="-1"></a>             <span class="at">keepResults =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb2-57"><a href="#cb2-57" aria-hidden="true" tabindex="-1"></a>     [,<span class="dv">1</span>] [,<span class="dv">2</span>] [,<span class="dv">3</span>] [,<span class="dv">4</span>] [,<span class="dv">5</span>] [,<span class="dv">6</span>] [,<span class="dv">7</span>] [,<span class="dv">8</span>]</span>
+<span id="cb2-58"><a href="#cb2-58" aria-hidden="true" tabindex="-1"></a>[<span class="dv">1</span>,]    <span class="dv">1</span>    <span class="dv">2</span>    <span class="dv">3</span>    <span class="dv">5</span>    <span class="dv">5</span>    <span class="dv">5</span>    <span class="dv">5</span> <span class="dv">3750</span></span>
+<span id="cb2-59"><a href="#cb2-59" aria-hidden="true" tabindex="-1"></a>[<span class="dv">2</span>,]    <span class="dv">1</span>    <span class="dv">3</span>    <span class="dv">3</span>    <span class="dv">4</span>    <span class="dv">4</span>    <span class="dv">5</span>    <span class="dv">5</span> <span class="dv">3600</span></span>
+<span id="cb2-60"><a href="#cb2-60" aria-hidden="true" tabindex="-1"></a>[<span class="dv">3</span>,]    <span class="dv">1</span>    <span class="dv">3</span>    <span class="dv">4</span>    <span class="dv">4</span>    <span class="dv">4</span>    <span class="dv">4</span>    <span class="dv">5</span> <span class="dv">3840</span></span>
+<span id="cb2-61"><a href="#cb2-61" aria-hidden="true" tabindex="-1"></a>[<span class="dv">4</span>,]    <span class="dv">2</span>    <span class="dv">2</span>    <span class="dv">3</span>    <span class="dv">3</span>    <span class="dv">4</span>    <span class="dv">5</span>    <span class="dv">5</span> <span class="dv">3600</span></span>
+<span id="cb2-62"><a href="#cb2-62" aria-hidden="true" tabindex="-1"></a>[<span class="dv">5</span>,]    <span class="dv">2</span>    <span class="dv">2</span>    <span class="dv">3</span>    <span class="dv">4</span>    <span class="dv">4</span>    <span class="dv">4</span>    <span class="dv">5</span> <span class="dv">3840</span></span>
+<span id="cb2-63"><a href="#cb2-63" aria-hidden="true" tabindex="-1"></a>[<span class="dv">6</span>,]    <span class="dv">3</span>    <span class="dv">3</span>    <span class="dv">3</span>    <span class="dv">3</span>    <span class="dv">3</span>    <span class="dv">3</span>    <span class="dv">5</span> <span class="dv">3645</span></span>
+<span id="cb2-64"><a href="#cb2-64" aria-hidden="true" tabindex="-1"></a>[<span class="dv">7</span>,]    <span class="dv">3</span>    <span class="dv">3</span>    <span class="dv">3</span>    <span class="dv">3</span>    <span class="dv">3</span>    <span class="dv">4</span>    <span class="dv">4</span> <span class="dv">3888</span></span></code></pre></div>
 </div>
-<div id="further-reading" class="section level2">
-<h2 class="hasAnchor">
-<a href="#further-reading" class="anchor"></a>Further Reading</h2>
+<div class="section level2">
+<h2 id="further-reading">Further Reading<a class="anchor" aria-label="anchor" href="#further-reading"></a>
+</h2>
 <ul>
-<li><a href="https://jwood000.github.io/RcppAlgos/reference/index.html">Function Documentation</a></li>
-<li><a href="https://jwood000.github.io/RcppAlgos/articles/ComputationalMathematics.html">Computational Mathematics Overview</a></li>
-<li><a href="https://jwood000.github.io/RcppAlgos/articles/GeneralCombinatorics.html">Combination and Permutation Basics</a></li>
-<li><a href="https://jwood000.github.io/RcppAlgos/articles/CombinatorialSampling.html">Combinatorial Sampling</a></li>
-<li><a href="https://jwood000.github.io/RcppAlgos/articles/CombPermConstraints.html">Constraints, Integer Partitions, and Compositions</a></li>
-<li><a href="https://jwood000.github.io/RcppAlgos/articles/SubsetSum.html">Attacking Problems Related to the Subset Sum Problem</a></li>
-<li><a href="https://jwood000.github.io/RcppAlgos/articles/CombinatoricsIterators.html">Combinatorial Iterators in RcppAlgos</a></li>
+<li><a href="https://jwood000.github.io/RcppAlgos/reference/index.html" class="external-link">Function Documentation</a></li>
+<li><a href="https://jwood000.github.io/RcppAlgos/articles/ComputationalMathematics.html" class="external-link">Computational Mathematics Overview</a></li>
+<li><a href="https://jwood000.github.io/RcppAlgos/articles/GeneralCombinatorics.html" class="external-link">Combination and Permutation Basics</a></li>
+<li><a href="https://jwood000.github.io/RcppAlgos/articles/CombinatorialSampling.html" class="external-link">Combinatorial Sampling</a></li>
+<li><a href="https://jwood000.github.io/RcppAlgos/articles/CombPermConstraints.html" class="external-link">Constraints, Integer Partitions, and Compositions</a></li>
+<li><a href="https://jwood000.github.io/RcppAlgos/articles/SubsetSum.html" class="external-link">Attacking Problems Related to the Subset Sum Problem</a></li>
+<li><a href="https://jwood000.github.io/RcppAlgos/articles/CombinatoricsIterators.html" class="external-link">Combinatorial Iterators in RcppAlgos</a></li>
 </ul>
 </div>
-<div id="contact" class="section level2">
-<h2 class="hasAnchor">
-<a href="#contact" class="anchor"></a>Contact</h2>
-<p>I welcome any and all feedback. If you would like to report a bug, have a question, or have suggestions for possible improvements, please file an <a href="https://github.com/jwood000/RcppAlgos/issues">issue</a>.</p>
+<div class="section level2">
+<h2 id="contact">Contact<a class="anchor" aria-label="anchor" href="#contact"></a>
+</h2>
+<p>I welcome any and all feedback. If you would like to report a bug, have a question, or have suggestions for possible improvements, please file an <a href="https://github.com/jwood000/RcppAlgos/issues" class="external-link">issue</a>.</p>
 </div>
 </div>
   </div>
 
-  <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
+  <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <div class="links">
-<h2>Links</h2>
+<h2 data-toc-skip>Links</h2>
 <ul class="list-unstyled">
-<li>Download from CRAN at <br><a href="https://cloud.r-project.org/package=RcppAlgos">https://​cloud.r-project.org/​package=RcppAlgos</a>
-</li>
-<li>Browse source code at <br><a href="https://github.com/jwood000/RcppAlgos">https://​github.com/​jwood000/​RcppAlgos</a>
-</li>
-<li>Report a bug at <br><a href="https://github.com/jwood000/RcppAlgos/issues">https://​github.com/​jwood000/​RcppAlgos/​issues</a>
-</li>
+<li><a href="https://github.com/jwood000/RcppAlgos/" class="external-link">Browse source code</a></li>
+<li><a href="https://github.com/jwood000/RcppAlgos/issues" class="external-link">Report a bug</a></li>
 </ul>
 </div>
+
 <div class="license">
-<h2>License</h2>
+<h2 data-toc-skip>License</h2>
 <ul class="list-unstyled">
 <li>GPL (&gt;=2)</li>
 </ul>
 </div>
+
+
+<div class="citation">
+<h2 data-toc-skip>Citation</h2>
+<ul class="list-unstyled">
+<li><a href="authors.html#citation">Citing RcppAlgos243</a></li>
+</ul>
+</div>
+
 <div class="developers">
-<h2>Developers</h2>
+<h2 data-toc-skip>Developers</h2>
 <ul class="list-unstyled">
 <li>Joseph Wood <br><small class="roles"> Maintainer </small>  </li>
+</ul>
+</div>
+
+<div class="dev-status">
+<h2 data-toc-skip>Dev status</h2>
+<ul class="list-unstyled">
+<li><a href="https://github.com/jwood000/RcppAlgos/actions" class="external-link"><img src="https://github.com/jwood000/RcppAlgos/workflows/R-CMD-check/badge.svg" alt="R build status"></a></li>
+<li><a href="https://cran.r-project.org/package=RcppAlgos" class="external-link"><img src="https://www.r-pkg.org/badges/version/RcppAlgos" alt="CRAN status"></a></li>
+<li><a href="https://codecov.io/github/jwood000/RcppAlgos?branch=main" class="external-link"><img src="https://codecov.io/gh/jwood000/RcppAlgos/branch/main/graph/badge.svg" alt="Coverage status"></a></li>
+<li><a href="https://app.codacy.com/app/jwood000/RcppAlgos?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=jwood000/RcppAlgos&amp;utm_campaign=Badge_Grade_Settings" class="external-link"><img src="https://api.codacy.com/project/badge/Grade/47c85553b9bd4479a722857c1f2fdcf3" alt="Codacy Badge"></a></li>
+<li><a href="https://cran.r-project.org/package=RcppAlgos" class="external-link"><img src="https://tinyverse.netlify.com/badge/RcppAlgos" alt="Dependencies"></a></li>
 </ul>
 </div>
 
@@ -278,11 +293,13 @@
 
 
       <footer><div class="copyright">
-  <p>Developed by Joseph Wood.</p>
+  <p></p>
+<p>Developed by Joseph Wood.</p>
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.4.1.</p>
+  <p></p>
+<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.2.</p>
 </div>
 
       </footer>
@@ -290,6 +307,8 @@
 
   
 
+
+  
 
   </body>
 </html>

@@ -1,5 +1,5 @@
-pandoc: 2.7.3
-pkgdown: 1.4.1
+pandoc: 2.14.0.3
+pkgdown: 2.0.2
 pkgdown_sha: ~
 articles:
   CombPermConstraints: CombPermConstraints.html
@@ -9,4 +9,5 @@ articles:
   GeneralCombinatorics: GeneralCombinatorics.html
   HighPerformanceBenchmarks: HighPerformanceBenchmarks.html
   SubsetSum: SubsetSum.html
+last_built: 2022-02-26T01:12Z
 

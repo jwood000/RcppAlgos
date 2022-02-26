@@ -1,12 +1,12 @@
 
-# RcppAlgos <img src='inst/figures/RcppAlgos-logo.png' width="150px" align="right" />
+# RcppAlgos <img src='man/figures/RcppAlgos-logo.png' width="150px" align="right" />
 
 <!-- badges: start -->
+[![R build status](https://github.com/jwood000/RcppAlgos/workflows/R-CMD-check/badge.svg)](https://github.com/jwood000/RcppAlgos/actions)
 [![CRAN status](https://www.r-pkg.org/badges/version/RcppAlgos)](https://cran.r-project.org/package=RcppAlgos)
-[![Travis build status](https://travis-ci.com/jwood000/RcppAlgos.svg?branch=master)](https://travis-ci.com/jwood000/RcppAlgos)
 ![](http://cranlogs.r-pkg.org/badges/RcppAlgos?color=orange)
 ![](http://cranlogs.r-pkg.org/badges/grand-total/RcppAlgos?color=brightgreen)
-[![Coverage status](https://codecov.io/gh/jwood000/RcppAlgos/branch/master/graph/badge.svg)](https://codecov.io/github/jwood000/RcppAlgos?branch=master)
+[![Coverage status](https://codecov.io/gh/jwood000/RcppAlgos/branch/main/graph/badge.svg)](https://codecov.io/github/jwood000/RcppAlgos?branch=main)
 [![Codacy Badge](https://api.codacy.com/project/badge/Grade/47c85553b9bd4479a722857c1f2fdcf3)](https://app.codacy.com/app/jwood000/RcppAlgos?utm_source=github.com&utm_medium=referral&utm_content=jwood000/RcppAlgos&utm_campaign=Badge_Grade_Settings)
 [![Dependencies](https://tinyverse.netlify.com/badge/RcppAlgos)](https://cran.r-project.org/package=RcppAlgos)
 <!-- badges: end -->
