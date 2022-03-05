@@ -8,7 +8,7 @@ Generate Combinations and Permutations of a Vector with/without Constraints
     \itemize{
         \item Generate combinations or permutations of a vector with or without constraints.
         \item Produce results in parallel using the \code{Parallel} or \code{nThreads} arguments. You can also apply each of the five compiled functions given by the argument \code{constraintFun} in parallel.
-        \item Alternatively, the arguments \code{lower} and \code{upper} make it possible to generate combinations/permutations in chunks allowing for parallelization via the parallel package. This is convenient when you want to apply a custom function to the output in parallel.
+        \item The arguments \code{lower} and \code{upper} make it possible to generate combinations/permutations in chunks allowing for parallelization via the \code{\link{parallel-package}}. This is convenient when you want to apply a custom function to the output in parallel.
         \item Attack integer partition and general subset sum problems.
         \item GMP support allows for exploration of combinations/permutations of vectors with many elements.
         \item The output is in lexicographical order.
@@ -28,7 +28,7 @@ permuteGeneral(v, m = NULL, repetition = FALSE, freqs = NULL,
                nThreads = NULL, tolerance = NULL, FUN.VALUE = NULL)
 }
 \arguments{
-  \item{v}{Source vector. If \code{v} is a positive integer, it will be converted to the sequence \code{1:v}. If \code{v} is a negative integer, it will be converted to the sequence \code{v:-1}. All atomic types are supported (See \code{?is.atomic}).}
+  \item{v}{Source vector. If \code{v} is a positive integer, it will be converted to the sequence \code{1:v}. If \code{v} is a negative integer, it will be converted to the sequence \code{v:-1}. All atomic types are supported (See \code{\link{is.atomic}}).}
   \item{m}{Number of elements to choose.  If \code{repetition = TRUE} or \code{freqs} is utilized, \code{m} can exceed the length of \code{v}. If \code{m = NULL}, the length will default to \code{length(v)} or \code{sum(freqs)}.}
   \item{repetition}{Logical value indicating whether combinations/permutations should be with or without repetition. The default is \code{FALSE}.}
   \item{freqs}{A vector of frequencies used for producing all combinations/permutations of a multiset of \code{v}. Each element of \code{freqs} represents how many times each element of the source vector, \code{v}, is repeated. It is analogous to the \code{times} argument in \code{\link[base]{rep}}. The default value is \code{NULL}.}
@@ -72,20 +72,20 @@ permuteGeneral(v, m = NULL, repetition = FALSE, freqs = NULL,
 \details{
 Finding all combinations/permutations with constraints is optimized by organizing them in such a way that when \code{constraintFun} is applied, a \emph{partially} monotonic sequence is produced. Combinations/permutations are added successively, until a particular combination exceeds the given constraint value for a given constraint/comparison function combo. After this point, we can safely skip several combinations knowing that they will exceed the given constraint value.
 
-When there are any negative values in \code{v} and \code{constraintFun = "prod"}, producing a monotonic set is non-trivial for the general case. As a result, performance will suffer as all combinations/permutations must be tested against the constraint criteria. Additionally, \code{upper} will not have its normal effectiveness (\emph{i.e.} it will only limit the number of rows after producing all combinations/permutations).
+When there are any negative values in \code{v} and \code{constraintFun = "prod"}, producing a monotonic set is non-trivial for the general case. As a result, performance will suffer as all combinations/permutations must be tested against the constraint criteria.
 }
 \note{
     \itemize{
         \item {\code{Parallel} and \code{nThreads} will be ignored in the following cases:
             \itemize{
-                \item When the output is constrained.
+                \item When the output is constrained (except for most partitions cases)
                 \item If the class of the vector passed is \code{character}, \code{raw}, and \code{complex} (N.B. \code{Rcpp::CharacterMatrix} is not thread safe). Alternatively, you can generate an indexing matrix in parallel.
                 \item If \code{FUN} is utilized.
             }
         }
-        \item If either \code{constraintFun}, \code{comparisonFun} or \code{limitConstraints} is \code{NULL} --or-- if the class of the vector passed is \code{logical}, \code{character}, \code{raw}, and \code{complex}, the constraint check will not be carried out. This is equivalent to simply finding all combinations/permutations of \eqn{v} choose \eqn{m}.
+        \item If either \code{constraintFun}, \code{comparisonFun} or \code{limitConstraints} is \code{NULL} --or-- if the class of the vector passed is \code{logical}, \code{character}, \code{raw}, \code{factor}, or \code{complex}, the constraint check will not be carried out. This is equivalent to simply finding all combinations/permutations of \eqn{v} choose \eqn{m}.
         \item The maximum number of combinations/permutations that can be generated at one time is \eqn{2^{31} - 1}{2^31 - 1}. Utilizing \code{lower} and \code{upper} makes it possible to generate additional combinations/permutations.
-        \item Factor vectors are accepted. Class and level attributes are preserved.
+        \item Factor vectors are accepted. Class and level attributes are preserved except when \code{FUN} is used.
         \item Lexicographical ordering isn't guaranteed for permutations if \code{lower} isn't supplied and the output is constrained.
         \item If \code{lower} is supplied and the output is constrained, the combinations/permutations that will be tested will be in the lexicographical range \code{lower} to \code{upper} or up to the total possible number of results if \code{upper} is not given. See the second paragraph for the definition of \code{upper}.
         \item \code{FUN} will be ignored if the constraint check is satisfied.
@@ -141,8 +141,9 @@ system.time(comboGeneral(mySamp, 7, lower = choose(75, 7) - 9))
 ## use both "lower" and "upper". E.g. Generate one
 ## million combinations starting with the 900,000,001
 ## lexicographic combination.
-t1 = comboGeneral(mySamp, 7, lower = 9*10^8 + 1, 
-                        upper = 9*10^8 + 10^6)
+t1 = comboGeneral(mySamp, 7,
+                  lower = 9*10^8 + 1, 
+                  upper = 9*10^8 + 10^6)
 
 ## class of the source vector is preserved
 class(comboGeneral(5,3)[1,]) == class(1:5)
@@ -198,6 +199,8 @@ comboGeneral(10000, 5, lower = 20, upper = 22,
 library(parallel)
 numCores = detectCores() - 1
 
+## 10086780 evenly divides choose(35, 15) and is "small enough" to
+## generate quickly in chunks.
 system.time(mclapply(seq(1, comboCount(35, 15), 10086780), function(x) {
     a = comboGeneral(35, 15, lower = x, upper = x + 10086779)
     ## do something
@@ -236,16 +239,10 @@ system.time(comboGeneral(30, 10))
 system.time(comboGeneral(30, 10, Parallel = TRUE, constraintFun = "sum"))
 system.time(comboGeneral(30, 10, constraintFun = "sum"))
 
-## Using Parallel argument only uses 1 minus the maximal # of threads.
-## The below should run a bit faster as we are utilizing all threads.
-maxThreads = RcppAlgos::stdThreadMax()
-system.time(comboGeneral(30, 10, nThreads = maxThreads, constraintFun = "sum"))
-
 ## Depending on # of cores available, using Parallel with
 ## constraintFun is faster than rowSums or rowMeans alone
 combs = comboGeneral(30, 10)
 system.time(rowSums(combs))
-
 
 ## Fun example... see stackoverflow:
 ## https://stackoverflow.com/q/22218640/4408538
@@ -255,3 +252,6 @@ system.time(permuteGeneral(seq(0L,100L,10L),8,TRUE,
                                 limitConstraints = 100))
 }
 }
+\keyword{combinations}
+\keyword{permutations}
+\keyword{combinatorics}

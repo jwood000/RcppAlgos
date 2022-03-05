@@ -15,7 +15,7 @@ divisorsRcpp(v, namedList = FALSE, nThreads = NULL)
     \item{nThreads}{Specific number of threads to be used. The default is \code{NULL}.}
 }
 \details{
-Highly efficient algorithm that builds on \code{\link{primeFactorize}} to generate the complete factorization of many numbers.
+Efficient algorithm that builds on \code{\link{primeFactorize}} to generate the complete factorization of many numbers.
 }
 \value{
     \itemize{

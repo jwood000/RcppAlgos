@@ -178,22 +178,22 @@ setMethod(
 ## should prefer using the '@' accessor to avoid calling the C function
 ## 'duplicate'. For more information see:
 ## https://cran.r-project.org/doc/manuals/R-exts.html#Profiling-R-code-for-memory-use
-# setMethod("$", "Combo", function(x, name) {
-#     function(...) slot(x, name)(...)
-# })
-#
-# setMethod("$", "ComboApply", function(x, name) {
-#     function(...) slot(x, name)(...)
-# })
-#
-# setMethod("$", "ComboRes", function(x, name) {
-#     function(...) slot(x, name)(...)
-# })
-#
-# setMethod("$", "Constraints", function(x, name) {
-#     function(...) slot(x, name)(...)
-# })
-#
-# setMethod("$", "Partitions", function(x, name) {
-#     function(...) slot(x, name)(...)
-# })
+setMethod("$", "Combo", function(x, name) {
+    function(...) slot(x, name)(...)
+})
+
+setMethod("$", "ComboApply", function(x, name) {
+    function(...) slot(x, name)(...)
+})
+
+setMethod("$", "ComboRes", function(x, name) {
+    function(...) slot(x, name)(...)
+})
+
+setMethod("$", "Constraints", function(x, name) {
+    function(...) slot(x, name)(...)
+})
+
+setMethod("$", "Partitions", function(x, name) {
+    function(...) slot(x, name)(...)
+})
