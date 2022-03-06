@@ -16,8 +16,9 @@ A collection of high performance functions implemented in C++ with Rcpp for solv
 ## Featured Functions
 
   - **`comboGeneral/permuteGeneral`**: Generate all combinations/permutations of a vector (including [multisets](<https://en.wikipedia.org/wiki/Multiset>)) meeting specific criteria.
-  - **`comboSample/permuteSample`**: Generate reproducible random samples of combinations/permutations
-  - **`comboIter/permuteIter`**: Flexible iterators allow for bidirectional iteration as well as random access.
+  - **`partitionsGeneral`**: Efficient algorithms for partitioning numbers under various constraints
+  - **`comboSample/permuteSample/partitionsSample`**: Generate reproducible random samples of combinations/permutations/partitions
+  - **`comboIter/permuteIter/partitionsIter`**: Flexible iterators allow for bidirectional iteration as well as random access.
   - **`primeSieve`**: Fast prime number generator
   - **`primeCount`**: Prime counting function using [Legendre's formula](<http://mathworld.wolfram.com/LegendresFormula.html>)
 
@@ -80,6 +81,14 @@ permuteGeneral(letters, 3, upper = 4)
 [3,] "a"  "b"  "e"
 [4,] "a"  "b"  "f"
 
+## Flexible partitioning algorithms
+partitionsGeneral(0:5, 3, freqs = rep(1:2, 3), target = 6)
+     [,1] [,2] [,3]
+[1,]    0    1    5
+[2,]    0    2    4
+[3,]    0    3    3
+[4,]    1    1    4
+[5,]    1    2    3
 
 ## Generate a reproducible sample
 comboSample(10, 8, TRUE, n = 5, seed = 84)
