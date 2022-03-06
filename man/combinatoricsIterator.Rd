@@ -17,7 +17,6 @@ comboIter(v, m = NULL, repetition = FALSE, freqs = NULL,
           constraintFun = NULL, comparisonFun = NULL,
           limitConstraints = NULL, keepResults = NULL,
           FUN = NULL, Parallel = FALSE, nThreads = NULL,
-          
           tolerance = NULL, FUN.VALUE = NULL)
 
 permuteIter(v, m = NULL, repetition = FALSE, freqs = NULL,

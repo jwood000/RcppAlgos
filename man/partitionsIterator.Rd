@@ -5,10 +5,10 @@ Partition Iterator
 }
 \description{
     \itemize{
-        \item Returns an iterator for iterating over combinations or permutations of a vector.
+        \item Returns an iterator for iterating over partitions of a numbers.
         \item Supports random access via the \code{[[} method.
-        \item GMP support allows for exploration of combinations/permutations of vectors with many elements.
-        \item The output is in lexicographical order for the \code{next} methods and reverse lexicographical order for the \code{prev} methods.
+        \item GMP support allows for exploration of cases where the number of partitions is large.
+        \item Use the \code{next} methods to obtain results in lexicographical order.
     }
 }
 \usage{
@@ -19,15 +19,18 @@ partitionsIter(v, m = NULL, repetition = FALSE,
 \arguments{
   \item{v}{Source vector. If \code{v} is a positive integer, it will be converted to the sequence \code{1:v}. If \code{v} is a negative integer, it will be converted to the sequence \code{v:-1}. Only integer and numeric vectors are accepted.}
   \item{m}{Number of elements to choose.  If \code{repetition = TRUE} or \code{freqs} is utilized, \code{m} can exceed the length of \code{v}. If \code{m = NULL}, the length will default to \code{length(v)} or \code{sum(freqs)}.}
-  \item{repetition}{Logical value indicating whether combinations/permutations should be with or without repetition. The default is \code{FALSE}.}
-  \item{freqs}{A vector of frequencies used for producing all combinations/permutations of a multiset of \code{v}. Each element of \code{freqs} represents how many times each element of the source vector, \code{v}, is repeated. It is analogous to the \code{times} argument in \code{\link[base]{rep}}. The default value is \code{NULL}.}
+  \item{repetition}{Logical value indicating whether partitions should be with or without repetition. The default is \code{FALSE}.}
+  \item{freqs}{A vector of frequencies used for producing all partitions of a multiset of \code{v}. Each element of \code{freqs} represents how many times each element of the source vector, \code{v}, is repeated. It is analogous to the \code{times} argument in \code{\link[base]{rep}}. The default value is \code{NULL}.}
   \item{target}{Number to be partitioned.}
   \item{nThreads}{Specific number of threads to be used. The default is \code{NULL}.}
   \item{tolerance}{A numeric value greater than or equal to zero. This parameter is utilized when a constraint is applied on a numeric vector. The default value is 0 when it can be determined that whole values are being utilized, otherwise it is \code{sqrt(.Machine$double.eps)} which is approximately \eqn{1.5e-8}. N.B. If the input vector is of type integer, this parameter will be ignored and strict equality will be enforced.}
 }
 
 \value{
-A vector of length \emph{m} is returned if \code{nextIter} or \code{prevIter} is called, otherwise a matrix is returned with each row containing a vector of length \eqn{m}. If \code{FUN} is utilized and either \code{nextIter} or \code{prevIter} is called, the result will be determined by \code{FUN}, otherwise a list is returned.
+    \itemize{
+        \item If \code{nextIter} or \code{prevIter} is called, a vector is returned
+        \item Otherwise, a matrix with \eqn{m} columns
+    }
 }
 \details{
 Once you initialize a new iterator, the following methods are available:
@@ -46,9 +49,25 @@ Once you initialize a new iterator, the following methods are available:
 }
 \note{
     \itemize{
-        \item The maximum number of combinations/permutations that can be generated at one time is \eqn{2^{31} - 1}{2^31 - 1}.
-        \item Factor vectors are accepted. Class and level attributes are preserved.
-        \item Currently, constrained iterators are not supported (Will be available in future releases).
+        \item{If \code{nThreads} is utilized, it will only take effect if the number of elements requested is greater than some threshold (determined internally). \emph{E.g}:
+            \itemize{
+                \preformatted{serial   <- partitionsIter(1000, 10)
+multi    <- partitionsIter(1000, 10, nThreads = 4)
+fetch1e6 <- multi@nextNIter(1e6)  ## much faster than serial@nextNIter(1e6)
+fetch1e3 <- multi@nextNIter(1e3)  ## only one thread used... same as serial@nextNIter(1e3)
+
+library(microbenchmark)
+microbenchmark(multi@nextNIter(1e6), serial@nextNIter(1e6))
+microbenchmark(multi@nextNIter(1e3), serial@nextNIter(1e3))}
+            }
+        }
+        \item{\code{nThreads} will be ignored in the following cases (i.e. Generating the \eqn{n^{th}}{nth} partition in these cases are currently unavailable):
+            \itemize{
+                \item With standard multisets. If zero is the only element with a non-trivial multiplicity, multithreading is possible.
+                \item If the source vector is not isomorphic to \code{1:length(v)}
+            }
+        }
+        \item The maximum number of partitions that can be generated at one time is \eqn{2^{31} - 1}{2^31 - 1}.
     }
 }
 \seealso{
@@ -57,6 +76,8 @@ Once you initialize a new iterator, the following methods are available:
 \references{
     \itemize{
         \item{\href{https://en.wikipedia.org/wiki/Lexicographical_order}{Lexicographical Order}}
+        \item{\href{https://en.wikipedia.org/wiki/Subset_sum_problem}{Subset Sum Problem}}
+        \item{\href{https://en.wikipedia.org/wiki/Partition_(number_theory)}{Partition (Number Theory)}}
     }
 }
 \author{
@@ -74,4 +95,12 @@ a[[5]]
 a@summary()
 a[[c(1, 17, 3)]]
 a@summary()
+
+## Multisets... no random access
+b = partitionsIter(40, 5, freqs = rep(1:4, 10), target = 80)
+b@nextIter()
+b@nextNIter(10)
+b@summary()
+b@nextIter()
+b@currIter()
 }

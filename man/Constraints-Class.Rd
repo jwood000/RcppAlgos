@@ -6,7 +6,7 @@
 \alias{$,Constraints-method}
 %
 \description{
-  The \code{Constraints} class is an S4-class that expose C++ classes that provide access to iterators and other useful methods.
+  The \code{Constraints} class is an S4-class that exposes C++ classes that provide access to iterators and other useful methods.
 }
 \section{Slots}{
   \describe{

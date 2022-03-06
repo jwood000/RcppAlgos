@@ -4,7 +4,7 @@
 Max Number of Concurrent Threads
 }
 \description{
-Rcpp wrapper of \href{https://en.cppreference.com/w/cpp/thread/thread/hardware_concurrency}{std::thread::hardware_concurrency()}. As stated by \href{https://en.cppreference.com/w/}{cppreference}, the returned value should be considered only a hint.
+Wrapper of \href{https://en.cppreference.com/w/cpp/thread/thread/hardware_concurrency}{std::thread::hardware_concurrency()}. As stated by \href{https://en.cppreference.com/w/}{cppreference}, the returned value should be considered only a hint.
 }
 \usage{
 stdThreadMax()

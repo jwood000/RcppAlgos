@@ -10,12 +10,12 @@ Generate Partitions
             \item Standard (with repetition)
             \item Distinct
             \item Restricted
-            \item Where each part has a specific multiplicity (the source vector is a multiset).
+            \item Where each part has a specific multiplicity (i.e. when using \code{freqs} for multisets).
             \item Arbitrary target and source vector (\emph{e.g.} \code{partitionsGeneral(sample(1000, 20), 10, TRUE, target = 5000)})
         }
         \item Produce results in parallel using the \code{nThreads} arguments.
-        \item Alternatively, the arguments \code{lower} and \code{upper} make it possible to generate partitions in chunks allowing for parallelization via the parallel package. This is convenient when you want to apply a custom function to the output in parallel.
-        \item GMP support allows for exploration of partitions of vectors with many elements.
+        \item Alternatively, the arguments \code{lower} and \code{upper} make it possible to generate partitions in chunks allowing for parallelization via the parallel package.
+        \item GMP support allows for exploration of cases where the number of partitions is large.
         \item The output is in lexicographical order.
     }
 }
@@ -37,14 +37,14 @@ partitionsGeneral(v, m = NULL, repetition = FALSE,
   \item{tolerance}{A numeric value greater than or equal to zero. This parameter is utilized when a constraint is applied on a numeric vector. The default value is 0 when it can be determined that whole values are being utilized, otherwise it is \code{sqrt(.Machine$double.eps)} which is approximately \eqn{1.5e-8}. N.B. If the input vector is of type integer, this parameter will be ignored and strict equality will be enforced.}
 }
 \value{
-A matrix
+A matrix is returned with each row containing a vector of length \eqn{m}.
 }
 \note{
     \itemize{
-        \item {\code{nThreads} will be ignored in the following cases (i.e. Generating the \eqn{n^{th}}{nth} partition in these cases are currently unavailable):
+        \item{\code{nThreads} will be ignored in the following cases (i.e. Generating the \eqn{n^{th}}{nth} partition in these cases are currently unavailable):
             \itemize{
-                \item When multisets are involved.
-                \item If the source vector is not isomorphic to \code{1:length(v)}
+                \item With standard multisets. If zero is the only element with a non-trivial multiplicity, multithreading is possible (\emph{e.g.} \code{partitionsGeneral(0:100, freqs = c(100, rep(1, 100)), nThreads = 4)}).
+                \item If the source vector is not isomorphic to \code{1:length(v)} (\emph{e.g.} \code{v = c(1, 4, 6, 7, 8)}).
             }
         }
         \item The maximum number of partitions that can be generated at one time is \eqn{2^{31} - 1}{2^31 - 1}. Utilizing \code{lower} and \code{upper} makes it possible to generate additional partitions.

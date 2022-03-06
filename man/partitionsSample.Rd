@@ -5,16 +5,15 @@ Sample Partitions
 }
 \description{
     \itemize{
-        \item Generate a specific (lexicographically) or random sample of partitions.
+        \item Generate a specific (lexicographically) or random sample of partitions of a number.
         \item Produce results in parallel using the \code{Parallel} or \code{nThreads} arguments.
-        \item GMP support allows for exploration of partitions of vectors with many elements.
+        \item GMP support allows for exploration of cases where the number of partitions is large.
     }
 }
 \usage{
 partitionsSample(v, m = NULL, repetition = FALSE, freqs = NULL,
                  target = NULL, n = NULL, sampleVec = NULL,
-                 seed = NULL, Parallel = FALSE,
-                 nThreads = NULL, namedSample = FALSE)
+                 seed = NULL, nThreads = NULL, namedSample = FALSE)
 }
 \arguments{
   \item{v}{Source vector. If \code{v} is a positive integer, it will be converted to the sequence \code{1:v}. If \code{v} is a negative integer, it will be converted to the sequence \code{v:-1}. Only integer and numeric vectors are accepted.}
@@ -25,35 +24,43 @@ partitionsSample(v, m = NULL, repetition = FALSE, freqs = NULL,
   \item{n}{Number of partitions to return. The default is \code{NULL}.}
   \item{sampleVec}{A vector of numbers representing the lexicographical partitions to return. Accepts vectors of class \code{bigz} as well as vectors of characters}
   \item{seed}{Random seed initialization. The default is \code{NULL}. N.B. If the gmp library is needed, this parameter must be set in order to have reproducible results (\emph{E.g} \code{set.seed()} has no effect in these cases).}
-  \item{Parallel}{Logical value indicating whether partitions should be generated in parallel. The default is \code{FALSE}. If \code{TRUE} and \code{nThreads = NULL}, the number of threads used is equal to the minimum of one minus the number of threads available on your system and the number of results requested (\emph{e.g.} if user has 16 threads and only needs 5 results, 5 threads will be used (\emph{i.e.} \code{min(16 - 1, 5) = 5})). If \code{nThreads} is not \code{NULL}, it will be given preference (\emph{e.g.} if user has 8 threads with \code{Parallel = TRUE} and \code{nThreads = 4}, only 4 threads will be spawned). If your system is single-threaded, the arguments \code{Parallel} and \code{nThreads} are ignored.}
-  \item{nThreads}{Specific number of threads to be used. The default is \code{NULL}. See \code{Parallel}.}
+  \item{nThreads}{Specific number of threads to be used. The default is \code{NULL}.}
   \item{namedSample}{Logical flag. If \code{TRUE}, \code{rownames} corresponding to the lexicographical partition, will be added to the returned matrix. The default is \code{FALSE}.}
  }
 \details{
 These algorithms rely on efficiently generating the \eqn{n^{th}}{nth} lexicographical partition. This is the process of \href{https://rosettacode.org/wiki/Permutations/Rank_of_a_permutation}{unranking}.
 }
 \value{
-In general, a matrix is returned with each row containing a vector of length \eqn{m}. If \code{FUN} is utilized, a list is returned.
+A matrix is returned with each row containing a vector of length \eqn{m}.
 }
 \references{
-\href{https://en.wikipedia.org/wiki/Lexicographical_order}{Lexicographical order}
+    \itemize{
+        \item{\href{https://en.wikipedia.org/wiki/Lexicographical_order}{Lexicographical order}}
+        \item{\href{https://en.wikipedia.org/wiki/Partition_(number_theory)}{Partition (Number Theory)}}
+    }
 }
 \author{
 Joseph Wood
 }
 \note{
     \itemize{
-        \item {\code{Parallel} and \code{nThreads} will be ignored in the following cases:
+        \item{\code{partitionsSample} is not available for the following cases:
             \itemize{
-                \item If the class of the vector passed is \code{character} (N.B. \code{Rcpp::CharacterMatrix} is not thread safe). Alternatively, you can generate an indexing matrix in parallel.
-                \item If \code{FUN} is utilized.
+                \item With standard multisets. If zero is the only element with a non-trivial multiplicity, sampling is allowed (\emph{e.g.} \code{partitionsSample(0:100, freqs = c(100, rep(1, 100)), n = 2)})
+                \item If the source vector is not isomorphic to \code{1:length(v)} (\emph{e.g.} \code{v = c(1, 4, 6, 7, 8)}).
             }
         }
         \item \code{n} and \code{sampleVec} cannot both be \code{NULL}.
-        \item Factor vectors are accepted. Class and level attributes are preserved.
     }
 }
 
 \examples{
-partitionsSample(100, 10, n = 10)
+partitionsSample(100, 10, n = 5)
+partitionsSample(100, 10, seed = 42, n = 5, target = 200)
+
+## retrieve specific results (lexicographically)
+partitionsCount(100, 10, TRUE, target = 500)
+## [1] 175591757896
+partitionsSample(100, 10, TRUE, target = 500,
+                 sampleVec = c(1, 1000, 175591757896))
 }

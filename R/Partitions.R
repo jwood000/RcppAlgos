@@ -29,15 +29,15 @@ partitionsDesign <- function(v, m = NULL, repetition = FALSE,
 
 partitionsSample <- function(v, m = NULL, repetition = FALSE, freqs = NULL,
                              target = NULL, n = NULL, sampleVec = NULL,
-                             seed = NULL, Parallel = FALSE,
-                             nThreads = NULL, namedSample = FALSE) {
+                             seed = NULL, nThreads = NULL,
+                             namedSample = FALSE) {
 
     if (!is.null(seed)) {
         set.seed(seed)
     }
 
     return(.Call(Algos_SamplePartitions, v, m, repetition, freqs,
-                 sampleVec, seed, n, sample, Parallel, nThreads,
+                 sampleVec, seed, n, sample, FALSE, nThreads,
                  pkgEnv$nThreads, namedSample, "==",
                  GetTarget(v, target), NULL, new.env()))
 }
