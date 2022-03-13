@@ -350,15 +350,15 @@ namespace PrimeCounting {
     }
 
     // All values verified by Kim Walisch's primecount library (nThreads = 8)
-    //  10^9 -->>          50,847,534   -->>   811.6 microseconds
-    // 10^10 -->>         455,052,511   -->>   5.362 milliseconds
-    // 10^11 -->>       4,118,054,813   -->>   21.45 milliseconds
-    // 10^12 -->>      37,607,912,018   -->>   119.4 milliseconds
-    // 10^13 -->>     346,065,536,839   -->>   868.4 milliseconds
-    // 10^14 -->>   3,204,941,750,802   -->>   6.724 seconds
-    // 10^15 -->>  29,844,570,422,669   -->>  49.554 seconds
+    //  10^9 -->>          50,847,534   -->>   711.5 microseconds
+    // 10^10 -->>         455,052,511   -->>   3.25  milliseconds
+    // 10^11 -->>       4,118,054,813   -->>   12.45 milliseconds
+    // 10^12 -->>      37,607,912,018   -->>   67.95 milliseconds
+    // 10^13 -->>     346,065,536,839   -->>   507.4 milliseconds
+    // 10^14 -->>   3,204,941,750,802   -->>   3.867 seconds
+    // 10^15 -->>  29,844,570,422,669   -->>  28.407 seconds
     // MAX VALUE (2^53 - 1) -->>
-    //            252,252,704,148,404   -->> 352.862 seconds
+    //            252,252,704,148,404   -->> 213.575 seconds
 
     std::int64_t MainPrimeCount(std::int64_t n, int nThreads = 1, int maxThreads = 1) {
 

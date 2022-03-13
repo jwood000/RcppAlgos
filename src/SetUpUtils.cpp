@@ -12,6 +12,10 @@ static int seed_init = 0;
 
 void SetType(VecType &myType, SEXP Rv) {
 
+    if (Rf_isMatrix(Rv)) {
+        Rf_error("Matrics are not supported for v");
+    }
+
     switch(TYPEOF(Rv)) {
         case LGLSXP: {
             myType = VecType::Logical;

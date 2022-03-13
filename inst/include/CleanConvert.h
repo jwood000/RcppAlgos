@@ -10,6 +10,7 @@
 #include <string>
 #include <gmp.h>
 
+// std::pow(2, 53) - 1 is not constexpr as of C++11
 constexpr double Significand53 = 9007199254740991.0;
 
 // Based off the internal limitations of sample, we
