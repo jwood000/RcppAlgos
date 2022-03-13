@@ -1,4 +1,7 @@
 #include "Constraints/CnstrntsToRClass.h"
+#include <sstream>
+#include <iomanip>
+#include <limits>
 
 template <typename T>
 void SetCurrVec(const std::vector<T> &cnstrntVec,
@@ -234,20 +237,49 @@ SEXP CnstrntsToR::summary() {
     SEXP res = PROTECT(Combo::summary());
     std::string desc(R_CHAR(STRING_ELT(VECTOR_ELT(res, 0), 0)));
 
-    std::string val1 = (RTYPE == INTSXP) ?
-                       std::to_string(tarIntVals.front()) :
-                       std::to_string(tarVals.front());
+    constexpr auto max_digits10 = std::numeric_limits<double>::max_digits10;
+    const double testVal1 = (funTest == "mean") ?
+                            tarVals.front() / static_cast<double>(m) :
+                            tarVals.front();
 
-    desc += " where the " + mainFun + " is ";
+    const double testVal2 = (funTest == "mean") ?
+                            tarVals.back() / static_cast<double>(m) :
+                            tarVals.back();
+
+    const double dblVal1 = (RTYPE == INTSXP) ? tarIntVals.front() :
+                           testVal1;
+
+    std::stringstream ss1;
+    ss1 << std::setprecision(max_digits10) << dblVal1;
+    std::string val1;
+    ss1 >> val1;
+
+    desc += " where the " + funTest + " is ";
 
     if (origTarVals.size() == 2) {
-        std::string val2 = (RTYPE == INTSXP) ?
-                            std::to_string(tarIntVals.back()) :
-                            std::to_string(tarVals.back());
+        const double dblVal2 = (RTYPE == INTSXP) ? tarIntVals.back() :
+                               testVal2;
 
-        if (compVec.size() == 1) {
-            desc += "between (" + compVec.front() +
-                    ") " + val1 + " and " + val2;
+        std::stringstream ss2;
+        ss2 << std::setprecision(max_digits10) << dblVal2;
+        std::string val2;
+        ss2 >> val2;
+
+        const bool is_equal = (RTYPE == INTSXP) ?
+                              tarIntVals.front() == tarIntVals.back() :
+                              tarVals.front() == tarVals.back();
+
+        if (is_equal) {
+            desc += "equal to " + val1;
+        } else if (compVec.size() == 1) {
+            // N.B. The smallest value corresponds to back(). That is why
+            // val2 comes before val1. From UserConstraintFuns.cpp:
+            //
+            // template <typename T>
+            // bool greaterEqlLessEql(T x, const std::vector<T> &y) {return x <= y[0] && x >= y[1];}
+            //
+            // Here we see that the first element is the largest
+            desc += "between " + val2 + " and " + val1;
         } else {
             desc += compVec.front() + " " + val1 +
                     " or " + compVec.back() + " " + val2;
