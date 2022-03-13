@@ -6,19 +6,21 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Combinatorial Iterators in RcppAlgos • RcppAlgos</title>
-<!-- jquery --><script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script><!-- Bootstrap --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha256-916EbMg70RQy9LHiGkXzG8hSg9EdNy97GazNG/aiY1w=" crossorigin="anonymous">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha256-U5ZEeKfGNOja007MMD3YBI0A3OSZOQbeG6z2f2Y0hu8=" crossorigin="anonymous"></script><!-- Font Awesome icons --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.7.1/css/all.min.css" integrity="sha256-nAmazAk6vS34Xqo0BSrTb+abbtFlgsFK7NKSi6o7Y78=" crossorigin="anonymous">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.7.1/css/v4-shims.min.css" integrity="sha256-6qHlizsOWFskGlwVOKuns+D1nB6ssZrHQrNj1wGplHc=" crossorigin="anonymous">
-<!-- clipboard.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.4/clipboard.min.js" integrity="sha256-FiZwavyI2V6+EXO1U+xzLG3IKldpiTFf3153ea9zikQ=" crossorigin="anonymous"></script><!-- headroom.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.9.4/headroom.min.js" integrity="sha256-DJFC1kqIhelURkuza0AvYal5RxMtpzLjFhsnVIeuk+U=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.9.4/jQuery.headroom.min.js" integrity="sha256-ZX/yNShbjqsohH1k95liqY9Gd8uOiE1S4vZc+9KQ1K4=" crossorigin="anonymous"></script><!-- pkgdown --><link href="../pkgdown.css" rel="stylesheet">
+<!-- jquery --><script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script><!-- Bootstrap --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.4.1/css/bootstrap.min.css" integrity="sha256-bZLfwXAP04zRMK2BjiO8iu9pf4FbLqX6zitd+tIvLhE=" crossorigin="anonymous">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.4.1/js/bootstrap.min.js" integrity="sha256-nuL8/2cJ5NDSSwnKD8VqreErSWHtnEP9E7AySL+1ev4=" crossorigin="anonymous"></script><!-- bootstrap-toc --><link rel="stylesheet" href="../bootstrap-toc.css">
+<script src="../bootstrap-toc.js"></script><!-- Font Awesome icons --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/all.min.css" integrity="sha256-mmgLkCYLUQbXn0B1SRqzHar6dCnv9oZFPEC1g1cwlkk=" crossorigin="anonymous">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/v4-shims.min.css" integrity="sha256-wZjR52fzng1pJHwx4aV2AO3yyTOXrcDW7jBpJtTwVxw=" crossorigin="anonymous">
+<!-- clipboard.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.6/clipboard.min.js" integrity="sha256-inc5kl9MA1hkeYUt+EC3BhlIgyp/2jDIyBLS6k3UxPI=" crossorigin="anonymous"></script><!-- headroom.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/headroom.min.js" integrity="sha256-AsUX4SJE1+yuDu5+mAVzJbuYNPHj/WroHuZ8Ir/CkE0=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/jQuery.headroom.min.js" integrity="sha256-ZX/yNShbjqsohH1k95liqY9Gd8uOiE1S4vZc+9KQ1K4=" crossorigin="anonymous"></script><!-- pkgdown --><link href="../pkgdown.css" rel="stylesheet">
 <script src="../pkgdown.js"></script><meta property="og:title" content="Combinatorial Iterators in RcppAlgos">
-<meta property="og:description" content="">
-<meta name="twitter:card" content="summary">
+<meta property="og:description" content="RcppAlgos">
 <!-- mathjax --><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js" integrity="sha256-nvJJv9wWKEm88qvoQl9ekL2J+k/RWIsaSScxxlsrv8k=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/config/TeX-AMS-MML_HTMLorMML.js" integrity="sha256-84DKXVJXs0/F8OTMzX4UR909+jtl4G7SPypPavF+GfA=" crossorigin="anonymous"></script><!--[if lt IE 9]>
 <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
 <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
 <![endif]-->
 </head>
-<body>
+<body data-spy="scroll" data-target="#toc">
+    
+
     <div class="container template-article">
       <header><div class="navbar navbar-default navbar-fixed-top" role="navigation">
   <div class="container">
@@ -31,18 +33,12 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">RcppAlgos</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">2.4.2</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">2.5.0</span>
       </span>
     </div>
 
     <div id="navbar" class="navbar-collapse collapse">
       <ul class="nav navbar-nav">
-<li>
-  <a href="../index.html">
-    <span class="fas fa fas fa-home fa-lg"></span>
-     
-  </a>
-</li>
 <li>
   <a href="../reference/index.html">Reference</a>
 </li>
@@ -54,7 +50,7 @@
   </a>
   <ul class="dropdown-menu" role="menu">
 <li>
-      <a href="../articles/CombPermConstraints.html">Constraints, Integer Partitions, and Compositions</a>
+      <a href="../articles/CombPermConstraints.html">Constraints and Integer Partitions</a>
     </li>
     <li>
       <a href="../articles/CombinatorialSampling.html">Combinatorial Sampling</a>
@@ -72,6 +68,9 @@
       <a href="../articles/HighPerformanceBenchmarks.html">High Performance Benchmarks</a>
     </li>
     <li>
+      <a href="../articles/OtherCombinatorics.html">Cartesian Products and Partitions of Groups into Equal Size</a>
+    </li>
+    <li>
       <a href="../articles/SubsetSum.html">Attacking Problems Related to the Subset Sum Problem</a>
     </li>
   </ul>
@@ -82,8 +81,8 @@
       </ul>
 <ul class="nav navbar-nav navbar-right">
 <li>
-  <a href="https://github.com/jwood000/RcppAlgos">
-    <span class="fab fa fab fa-github fa-lg"></span>
+  <a href="https://github.com/jwood000/RcppAlgos/" class="external-link">
+    <span class="fab fa-github fa-lg"></span>
      
   </a>
 </li>
@@ -100,12 +99,12 @@
       </header><div class="row">
   <div class="col-md-9 contents">
     <div class="page-header toc-ignore">
-      <h1>Combinatorial Iterators in RcppAlgos</h1>
-                        <h4 class="author">Joseph Wood</h4>
+      <h1 data-toc-skip>Combinatorial Iterators in RcppAlgos</h1>
+                        <h4 data-toc-skip class="author">Joseph Wood</h4>
             
-            <h4 class="date">3/19/2019</h4>
+            <h4 data-toc-skip class="date">03/11/2022</h4>
       
-      <small class="dont-index">Source: <a href="https://github.com/jwood000/RcppAlgos/blob/master/vignettes/CombinatoricsIterators.Rmd"><code>vignettes/CombinatoricsIterators.Rmd</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/jwood000/RcppAlgos/blob/HEAD/vignettes/CombinatoricsIterators.Rmd" class="external-link"><code>vignettes/CombinatoricsIterators.Rmd</code></a></small>
       <div class="hidden name"><code>CombinatoricsIterators.Rmd</code></div>
 
     </div>
@@ -113,477 +112,843 @@
     
     
 <p>This document covers working with combinatorial iterators in <code>RcppAlgos</code>. Combinatorial iterators in <code>RcppAlgos</code> are memory efficient like traditional iterator objects. They allow traversal of combinations/permutations one by one without the necessity for storing all results in memory.</p>
-<p>Unlike traditional combinatorial iterators, the iterators in <code>RcppAlgos</code> offers random access via the <code><a href="https://rdrr.io/r/base/Extract.html">[[</a></code> operator. This means, we can access the <em>n<sup>th</sup></em> <a href="https://en.wikipedia.org/wiki/Lexicographical_order">lexicographical order</a> result on demand without having to first iterate over the previous <em>n - 1</em> results.</p>
+<p>Unlike traditional combinatorial iterators, the iterators in <code>RcppAlgos</code> offers random access via the <code>[[</code> operator. This means, we can access the <em>n<sup>th</sup></em> <a href="https://en.wikipedia.org/wiki/Lexicographical_order" class="external-link">lexicographical order</a> result on demand without having to first iterate over the previous <em>n - 1</em> results.</p>
 <hr>
-<div id="iterating-over-combinations-and-permutations" class="section level2">
-<h2 class="hasAnchor">
-<a href="#iterating-over-combinations-and-permutations" class="anchor"></a>Iterating over Combinations and Permutations</h2>
+<div class="section level2">
+<h2 id="iterating-over-combinations-and-permutations">Iterating over Combinations and Permutations<a class="anchor" aria-label="anchor" href="#iterating-over-combinations-and-permutations"></a>
+</h2>
 <p>In order to iterate, we must initialize an iterator via <code>comboIter</code> or <code>permuteIter</code>. The interface is very similar to <code>comboGeneral</code> and <code>permuteGeneral</code>.</p>
-<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1"></a><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span>(RcppAlgos)</span>
-<span id="cb1-2"><a href="#cb1-2"></a></span>
-<span id="cb1-3"><a href="#cb1-3"></a><span class="co">## Initialize the iterator</span></span>
-<span id="cb1-4"><a href="#cb1-4"></a>a =<span class="st"> </span><span class="kw"><a href="../reference/combinatoricsIterator.html">comboIter</a></span>(<span class="dv">5</span>, <span class="dv">3</span>)</span>
-<span id="cb1-5"><a href="#cb1-5"></a></span>
-<span id="cb1-6"><a href="#cb1-6"></a><span class="co">## Get the first combination</span></span>
-<span id="cb1-7"><a href="#cb1-7"></a>a<span class="op">$</span><span class="kw">nextIter</span>()</span>
-<span id="cb1-8"><a href="#cb1-8"></a>[<span class="dv">1</span>] <span class="dv">1</span> <span class="dv">2</span> <span class="dv">3</span></span>
-<span id="cb1-9"><a href="#cb1-9"></a></span>
-<span id="cb1-10"><a href="#cb1-10"></a><span class="co">## And the next</span></span>
-<span id="cb1-11"><a href="#cb1-11"></a>a<span class="op">$</span><span class="kw">nextIter</span>()</span>
-<span id="cb1-12"><a href="#cb1-12"></a>[<span class="dv">1</span>] <span class="dv">1</span> <span class="dv">2</span> <span class="dv">4</span></span>
-<span id="cb1-13"><a href="#cb1-13"></a></span>
-<span id="cb1-14"><a href="#cb1-14"></a><span class="co">## Set the current iterator to a variable</span></span>
-<span id="cb1-15"><a href="#cb1-15"></a>iter =<span class="st"> </span>a<span class="op">$</span><span class="kw">currIter</span>()</span>
-<span id="cb1-16"><a href="#cb1-16"></a>i =<span class="st"> </span><span class="dv">1</span></span>
-<span id="cb1-17"><a href="#cb1-17"></a></span>
-<span id="cb1-18"><a href="#cb1-18"></a><span class="co">## Iterate until there are no more</span></span>
-<span id="cb1-19"><a href="#cb1-19"></a><span class="cf">while</span> (<span class="op">!</span><span class="kw"><a href="https://rdrr.io/r/base/Logic.html">isFALSE</a></span>(iter)) {</span>
-<span id="cb1-20"><a href="#cb1-20"></a>    <span class="kw"><a href="https://rdrr.io/r/base/cat.html">cat</a></span>(i, <span class="st">" "</span>, iter, <span class="st">"</span><span class="ch">\n</span><span class="st">"</span>)</span>
-<span id="cb1-21"><a href="#cb1-21"></a>    iter =<span class="st"> </span>a<span class="op">$</span><span class="kw">nextIter</span>()</span>
-<span id="cb1-22"><a href="#cb1-22"></a>    i =<span class="st"> </span>i <span class="op">+</span><span class="st"> </span><span class="dv">1</span></span>
-<span id="cb1-23"><a href="#cb1-23"></a>}</span>
-<span id="cb1-24"><a href="#cb1-24"></a><span class="dv">1</span>   <span class="dv">1</span> <span class="dv">2</span> <span class="dv">4</span> </span>
-<span id="cb1-25"><a href="#cb1-25"></a><span class="dv">2</span>   <span class="dv">1</span> <span class="dv">2</span> <span class="dv">5</span> </span>
-<span id="cb1-26"><a href="#cb1-26"></a><span class="dv">3</span>   <span class="dv">1</span> <span class="dv">3</span> <span class="dv">4</span> </span>
-<span id="cb1-27"><a href="#cb1-27"></a><span class="dv">4</span>   <span class="dv">1</span> <span class="dv">3</span> <span class="dv">5</span> </span>
-<span id="cb1-28"><a href="#cb1-28"></a><span class="dv">5</span>   <span class="dv">1</span> <span class="dv">4</span> <span class="dv">5</span> </span>
-<span id="cb1-29"><a href="#cb1-29"></a><span class="dv">6</span>   <span class="dv">2</span> <span class="dv">3</span> <span class="dv">4</span> </span>
-<span id="cb1-30"><a href="#cb1-30"></a><span class="dv">7</span>   <span class="dv">2</span> <span class="dv">3</span> <span class="dv">5</span> </span>
-<span id="cb1-31"><a href="#cb1-31"></a><span class="dv">8</span>   <span class="dv">2</span> <span class="dv">4</span> <span class="dv">5</span> </span>
-<span id="cb1-32"><a href="#cb1-32"></a><span class="dv">9</span>   <span class="dv">3</span> <span class="dv">4</span> <span class="dv">5</span> </span>
-<span id="cb1-33"><a href="#cb1-33"></a>No more results. To see the last result, use the prevIter <span class="kw">method</span>(s)</span>
-<span id="cb1-34"><a href="#cb1-34"></a></span>
-<span id="cb1-35"><a href="#cb1-35"></a><span class="co">## See the output of comboGeneral for comparison</span></span>
-<span id="cb1-36"><a href="#cb1-36"></a><span class="kw"><a href="../reference/combinatoricsGeneral.html">comboGeneral</a></span>(<span class="dv">5</span>, <span class="dv">3</span>, <span class="dt">lower =</span> <span class="dv">2</span>)</span>
-<span id="cb1-37"><a href="#cb1-37"></a>      [,<span class="dv">1</span>] [,<span class="dv">2</span>] [,<span class="dv">3</span>]</span>
-<span id="cb1-38"><a href="#cb1-38"></a> [<span class="dv">1</span>,]    <span class="dv">1</span>    <span class="dv">2</span>    <span class="dv">4</span></span>
-<span id="cb1-39"><a href="#cb1-39"></a> [<span class="dv">2</span>,]    <span class="dv">1</span>    <span class="dv">2</span>    <span class="dv">5</span></span>
-<span id="cb1-40"><a href="#cb1-40"></a> [<span class="dv">3</span>,]    <span class="dv">1</span>    <span class="dv">3</span>    <span class="dv">4</span></span>
-<span id="cb1-41"><a href="#cb1-41"></a> [<span class="dv">4</span>,]    <span class="dv">1</span>    <span class="dv">3</span>    <span class="dv">5</span></span>
-<span id="cb1-42"><a href="#cb1-42"></a> [<span class="dv">5</span>,]    <span class="dv">1</span>    <span class="dv">4</span>    <span class="dv">5</span></span>
-<span id="cb1-43"><a href="#cb1-43"></a> [<span class="dv">6</span>,]    <span class="dv">2</span>    <span class="dv">3</span>    <span class="dv">4</span></span>
-<span id="cb1-44"><a href="#cb1-44"></a> [<span class="dv">7</span>,]    <span class="dv">2</span>    <span class="dv">3</span>    <span class="dv">5</span></span>
-<span id="cb1-45"><a href="#cb1-45"></a> [<span class="dv">8</span>,]    <span class="dv">2</span>    <span class="dv">4</span>    <span class="dv">5</span></span>
-<span id="cb1-46"><a href="#cb1-46"></a> [<span class="dv">9</span>,]    <span class="dv">3</span>    <span class="dv">4</span>    <span class="dv">5</span></span>
-<span id="cb1-47"><a href="#cb1-47"></a></span>
-<span id="cb1-48"><a href="#cb1-48"></a><span class="co">## Call the summary method to see information about our iterator</span></span>
-<span id="cb1-49"><a href="#cb1-49"></a>a<span class="op">$</span><span class="kw"><a href="https://rdrr.io/r/base/summary.html">summary</a></span>()</span>
-<span id="cb1-50"><a href="#cb1-50"></a><span class="op">$</span>description</span>
-<span id="cb1-51"><a href="#cb1-51"></a>[<span class="dv">1</span>] <span class="st">"Combinations of 5 choose 3"</span></span>
-<span id="cb1-52"><a href="#cb1-52"></a></span>
-<span id="cb1-53"><a href="#cb1-53"></a><span class="op">$</span>currentIndex</span>
-<span id="cb1-54"><a href="#cb1-54"></a>[<span class="dv">1</span>] <span class="dv">11</span></span>
-<span id="cb1-55"><a href="#cb1-55"></a></span>
-<span id="cb1-56"><a href="#cb1-56"></a><span class="op">$</span>totalResults</span>
-<span id="cb1-57"><a href="#cb1-57"></a>[<span class="dv">1</span>] <span class="dv">10</span></span>
-<span id="cb1-58"><a href="#cb1-58"></a></span>
-<span id="cb1-59"><a href="#cb1-59"></a><span class="op">$</span>totalRemaining</span>
-<span id="cb1-60"><a href="#cb1-60"></a>[<span class="dv">1</span>] <span class="dv">-1</span></span></code></pre></div>
+<div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/jwood000/RcppAlgos" class="external-link">RcppAlgos</a></span><span class="op">)</span>
+
+<span class="co">## Initialize the iterator</span>
+<span class="va">a</span> <span class="op">=</span> <span class="fu"><a href="../reference/combinatoricsIterator.html">comboIter</a></span><span class="op">(</span><span class="fl">5</span>, <span class="fl">3</span><span class="op">)</span>
+
+<span class="co">## Get the first combination</span>
+<span class="va">a</span><span class="op">$</span><span class="fu">nextIter</span><span class="op">(</span><span class="op">)</span>
+<span class="co">#&gt; [1] 1 2 3</span>
+
+<span class="co">## And the next</span>
+<span class="va">a</span><span class="op">$</span><span class="fu">nextIter</span><span class="op">(</span><span class="op">)</span>
+<span class="co">#&gt; [1] 1 2 4</span>
+
+<span class="co">## Set the current iterator to a variable</span>
+<span class="va">iter</span> <span class="op">=</span> <span class="va">a</span><span class="op">$</span><span class="fu">currIter</span><span class="op">(</span><span class="op">)</span>
+<span class="va">i</span> <span class="op">=</span> <span class="fl">1</span>
+
+<span class="co">## Iterate until there are no more</span>
+<span class="kw">while</span> <span class="op">(</span><span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/NULL.html" class="external-link">is.null</a></span><span class="op">(</span><span class="va">iter</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span>
+    <span class="fu"><a href="https://rdrr.io/r/base/cat.html" class="external-link">cat</a></span><span class="op">(</span><span class="va">i</span>, <span class="st">" "</span>, <span class="va">iter</span>, <span class="st">"\n"</span><span class="op">)</span>
+    <span class="va">iter</span> <span class="op">=</span> <span class="va">a</span><span class="op">$</span><span class="fu">nextIter</span><span class="op">(</span><span class="op">)</span>
+    <span class="va">i</span> <span class="op">=</span> <span class="va">i</span> <span class="op">+</span> <span class="fl">1</span>
+<span class="op">}</span>
+<span class="co">#&gt; 1   1 2 4</span>
+<span class="co">#&gt; 2   1 2 5</span>
+<span class="co">#&gt; 3   1 3 4</span>
+<span class="co">#&gt; 4   1 3 5</span>
+<span class="co">#&gt; 5   1 4 5</span>
+<span class="co">#&gt; 6   2 3 4</span>
+<span class="co">#&gt; 7   2 3 5</span>
+<span class="co">#&gt; 8   2 4 5</span>
+<span class="co">#&gt; 9   3 4 5</span>
+<span class="co">#&gt; No more results. To see the last result, use the prevIter method(s)</span>
+
+<span class="co">## See the output of comboGeneral for comparison</span>
+<span class="fu"><a href="../reference/combinatoricsGeneral.html">comboGeneral</a></span><span class="op">(</span><span class="fl">5</span>, <span class="fl">3</span>, lower <span class="op">=</span> <span class="fl">2</span><span class="op">)</span>
+<span class="co">#&gt;       [,1] [,2] [,3]</span>
+<span class="co">#&gt;  [1,]    1    2    4</span>
+<span class="co">#&gt;  [2,]    1    2    5</span>
+<span class="co">#&gt;  [3,]    1    3    4</span>
+<span class="co">#&gt;  [4,]    1    3    5</span>
+<span class="co">#&gt;  [5,]    1    4    5</span>
+<span class="co">#&gt;  [6,]    2    3    4</span>
+<span class="co">#&gt;  [7,]    2    3    5</span>
+<span class="co">#&gt;  [8,]    2    4    5</span>
+<span class="co">#&gt;  [9,]    3    4    5</span>
+
+<span class="co">## Call the summary method to see information about our iterator</span>
+<span class="va">a</span><span class="op">$</span><span class="fu">summary</span><span class="op">(</span><span class="op">)</span>
+<span class="co">#&gt; $description</span>
+<span class="co">#&gt; [1] "Combinations of 5 choose 3"</span>
+<span class="co">#&gt;</span>
+<span class="co">#&gt; $currentIndex</span>
+<span class="co">#&gt; [1] 11</span>
+<span class="co">#&gt;</span>
+<span class="co">#&gt; $totalResults</span>
+<span class="co">#&gt; [1] 10</span>
+<span class="co">#&gt;</span>
+<span class="co">#&gt; $totalRemaining</span>
+<span class="co">#&gt; [1] -1</span></code></pre></div>
+<div class="section level3">
+<h3 id="bidirectional-iterators">Bidirectional Iterators<a class="anchor" aria-label="anchor" href="#bidirectional-iterators"></a>
+</h3>
+<p>Some of the combinatorial iterators in <code>RcppAlgos</code> are bidirectional iterators. This means that not only can we iterate in a forward manner (i.e. lexicographically), but we can also iterate backwards (i.e. <a href="https://oeis.org/wiki/Orderings#Reverse_lexicographic_order" class="external-link">Reverse Lexicographical Order</a>) via the <code>prevIter</code> method(s).</p>
+<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="co">## Using the same iterable from the previous section</span>
+<span class="va">a</span><span class="op">$</span><span class="fu">currIter</span><span class="op">(</span><span class="op">)</span>
+<span class="co">#&gt; No more results. To see the last result, use the prevIter method(s)</span>
+<span class="co">#&gt;</span>
+<span class="co">#&gt; NULL</span>
+
+<span class="co">## As the comment says, we call the prevIter method to see the last result</span>
+<span class="va">a</span><span class="op">$</span><span class="fu">prevIter</span><span class="op">(</span><span class="op">)</span>
+<span class="co">#&gt; [1] 3 4 5</span>
+
+<span class="co">## Get the previous result</span>
+<span class="va">a</span><span class="op">$</span><span class="fu">prevIter</span><span class="op">(</span><span class="op">)</span>
+<span class="co">#&gt; [1] 2 4 5</span>
+
+<span class="co">## As in the previous example, we set the current iterator to a variable</span>
+<span class="va">iter</span> <span class="op">=</span> <span class="va">a</span><span class="op">$</span><span class="fu">currIter</span><span class="op">(</span><span class="op">)</span>
+
+<span class="co">## Defined above</span>
+<span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">i</span><span class="op">)</span>
+<span class="co">#&gt; [1] 10</span>
+
+<span class="co">## Iterate until we are at the very beginning. Note that the</span>
+<span class="co">## output is exactly the same as above, but in reverse order</span>
+<span class="kw">while</span> <span class="op">(</span><span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/NULL.html" class="external-link">is.null</a></span><span class="op">(</span><span class="va">iter</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span>
+    <span class="va">i</span> <span class="op">=</span> <span class="va">i</span> <span class="op">-</span> <span class="fl">1</span>
+    <span class="fu"><a href="https://rdrr.io/r/base/cat.html" class="external-link">cat</a></span><span class="op">(</span><span class="va">i</span>, <span class="st">" "</span>, <span class="va">iter</span>, <span class="st">"\n"</span><span class="op">)</span>
+    <span class="va">iter</span> <span class="op">=</span> <span class="va">a</span><span class="op">$</span><span class="fu">prevIter</span><span class="op">(</span><span class="op">)</span>
+<span class="op">}</span>
+<span class="co">#&gt; 9   2 4 5</span>
+<span class="co">#&gt; 8   2 3 5</span>
+<span class="co">#&gt; 7   2 3 4</span>
+<span class="co">#&gt; 6   1 4 5</span>
+<span class="co">#&gt; 5   1 3 5</span>
+<span class="co">#&gt; 4   1 3 4</span>
+<span class="co">#&gt; 3   1 2 5</span>
+<span class="co">#&gt; 2   1 2 4</span>
+<span class="co">#&gt; 1   1 2 3</span>
+<span class="co">#&gt; Iterator Initialized. To see the first result, use the nextIter method(s)</span>
+
+<span class="co">## Call the summary method to see information about our iterator</span>
+<span class="va">a</span><span class="op">$</span><span class="fu">summary</span><span class="op">(</span><span class="op">)</span>
+<span class="co">#&gt; $description</span>
+<span class="co">#&gt; [1] "Combinations of 5 choose 3"</span>
+<span class="co">#&gt;</span>
+<span class="co">#&gt; $currentIndex</span>
+<span class="co">#&gt; [1] 0</span>
+<span class="co">#&gt;</span>
+<span class="co">#&gt; $totalResults</span>
+<span class="co">#&gt; [1] 10</span>
+<span class="co">#&gt;</span>
+<span class="co">#&gt; $totalRemaining</span>
+<span class="co">#&gt; [1] 10</span></code></pre></div>
 </div>
-<div id="bidirectional-iterators" class="section level2">
-<h2 class="hasAnchor">
-<a href="#bidirectional-iterators" class="anchor"></a>Bidirectional Iterators</h2>
-<p>The standard combinatorial iterators in <code>RcppAlgos</code> are bidirectional iterators. This means that not only can we iterate in a forward manner (i.e. lexicographically), but we can also iterate backwards (i.e. <a href="https://oeis.org/wiki/Orderings#Reverse_lexicographic_order">Reverse Lexicographical Order</a>) via the <code>prevIter</code> method(s).</p>
-<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1"></a><span class="co">## Using the same iterable from the previous section</span></span>
-<span id="cb2-2"><a href="#cb2-2"></a>a<span class="op">$</span><span class="kw">currIter</span>()</span>
-<span id="cb2-3"><a href="#cb2-3"></a>No more results. To see the last result, use the prevIter <span class="kw">method</span>(s)</span>
-<span id="cb2-4"><a href="#cb2-4"></a></span>
-<span id="cb2-5"><a href="#cb2-5"></a>[<span class="dv">1</span>] <span class="ot">FALSE</span></span>
-<span id="cb2-6"><a href="#cb2-6"></a></span>
-<span id="cb2-7"><a href="#cb2-7"></a><span class="co">## As the comment says, we call the prevIter method to see the last result</span></span>
-<span id="cb2-8"><a href="#cb2-8"></a>a<span class="op">$</span><span class="kw">prevIter</span>()</span>
-<span id="cb2-9"><a href="#cb2-9"></a>[<span class="dv">1</span>] <span class="dv">3</span> <span class="dv">4</span> <span class="dv">5</span></span>
-<span id="cb2-10"><a href="#cb2-10"></a></span>
-<span id="cb2-11"><a href="#cb2-11"></a><span class="co">## Get the previous result</span></span>
-<span id="cb2-12"><a href="#cb2-12"></a>a<span class="op">$</span><span class="kw">prevIter</span>()</span>
-<span id="cb2-13"><a href="#cb2-13"></a>[<span class="dv">1</span>] <span class="dv">2</span> <span class="dv">4</span> <span class="dv">5</span></span>
-<span id="cb2-14"><a href="#cb2-14"></a></span>
-<span id="cb2-15"><a href="#cb2-15"></a><span class="co">## As in the previous example, we set the current iterator to a variable</span></span>
-<span id="cb2-16"><a href="#cb2-16"></a>iter =<span class="st"> </span>a<span class="op">$</span><span class="kw">currIter</span>()</span>
-<span id="cb2-17"><a href="#cb2-17"></a></span>
-<span id="cb2-18"><a href="#cb2-18"></a><span class="co">## Defined above</span></span>
-<span id="cb2-19"><a href="#cb2-19"></a><span class="kw"><a href="https://rdrr.io/r/base/print.html">print</a></span>(i)</span>
-<span id="cb2-20"><a href="#cb2-20"></a>[<span class="dv">1</span>] <span class="dv">10</span></span>
-<span id="cb2-21"><a href="#cb2-21"></a></span>
-<span id="cb2-22"><a href="#cb2-22"></a><span class="co">## Iterate until we are at the very beginning. Note that the</span></span>
-<span id="cb2-23"><a href="#cb2-23"></a><span class="co">## output is exactly the same as above, but in reverse order</span></span>
-<span id="cb2-24"><a href="#cb2-24"></a><span class="cf">while</span> (<span class="op">!</span><span class="kw"><a href="https://rdrr.io/r/base/Logic.html">isFALSE</a></span>(iter)) {</span>
-<span id="cb2-25"><a href="#cb2-25"></a>    i =<span class="st"> </span>i <span class="op">-</span><span class="st"> </span><span class="dv">1</span></span>
-<span id="cb2-26"><a href="#cb2-26"></a>    <span class="kw"><a href="https://rdrr.io/r/base/cat.html">cat</a></span>(i, <span class="st">" "</span>, iter, <span class="st">"</span><span class="ch">\n</span><span class="st">"</span>)</span>
-<span id="cb2-27"><a href="#cb2-27"></a>    iter =<span class="st"> </span>a<span class="op">$</span><span class="kw">prevIter</span>()</span>
-<span id="cb2-28"><a href="#cb2-28"></a>}</span>
-<span id="cb2-29"><a href="#cb2-29"></a><span class="dv">9</span>   <span class="dv">2</span> <span class="dv">4</span> <span class="dv">5</span> </span>
-<span id="cb2-30"><a href="#cb2-30"></a><span class="dv">8</span>   <span class="dv">2</span> <span class="dv">3</span> <span class="dv">5</span> </span>
-<span id="cb2-31"><a href="#cb2-31"></a><span class="dv">7</span>   <span class="dv">2</span> <span class="dv">3</span> <span class="dv">4</span> </span>
-<span id="cb2-32"><a href="#cb2-32"></a><span class="dv">6</span>   <span class="dv">1</span> <span class="dv">4</span> <span class="dv">5</span> </span>
-<span id="cb2-33"><a href="#cb2-33"></a><span class="dv">5</span>   <span class="dv">1</span> <span class="dv">3</span> <span class="dv">5</span> </span>
-<span id="cb2-34"><a href="#cb2-34"></a><span class="dv">4</span>   <span class="dv">1</span> <span class="dv">3</span> <span class="dv">4</span> </span>
-<span id="cb2-35"><a href="#cb2-35"></a><span class="dv">3</span>   <span class="dv">1</span> <span class="dv">2</span> <span class="dv">5</span> </span>
-<span id="cb2-36"><a href="#cb2-36"></a><span class="dv">2</span>   <span class="dv">1</span> <span class="dv">2</span> <span class="dv">4</span> </span>
-<span id="cb2-37"><a href="#cb2-37"></a><span class="dv">1</span>   <span class="dv">1</span> <span class="dv">2</span> <span class="dv">3</span> </span>
-<span id="cb2-38"><a href="#cb2-38"></a>Iterator Initialized. To see the first result, use the nextIter <span class="kw">method</span>(s)</span>
-<span id="cb2-39"><a href="#cb2-39"></a></span>
-<span id="cb2-40"><a href="#cb2-40"></a><span class="co">## Call the summary method to see information about our iterator</span></span>
-<span id="cb2-41"><a href="#cb2-41"></a>a<span class="op">$</span><span class="kw"><a href="https://rdrr.io/r/base/summary.html">summary</a></span>()</span>
-<span id="cb2-42"><a href="#cb2-42"></a><span class="op">$</span>description</span>
-<span id="cb2-43"><a href="#cb2-43"></a>[<span class="dv">1</span>] <span class="st">"Combinations of 5 choose 3"</span></span>
-<span id="cb2-44"><a href="#cb2-44"></a></span>
-<span id="cb2-45"><a href="#cb2-45"></a><span class="op">$</span>currentIndex</span>
-<span id="cb2-46"><a href="#cb2-46"></a>[<span class="dv">1</span>] <span class="dv">0</span></span>
-<span id="cb2-47"><a href="#cb2-47"></a></span>
-<span id="cb2-48"><a href="#cb2-48"></a><span class="op">$</span>totalResults</span>
-<span id="cb2-49"><a href="#cb2-49"></a>[<span class="dv">1</span>] <span class="dv">10</span></span>
-<span id="cb2-50"><a href="#cb2-50"></a></span>
-<span id="cb2-51"><a href="#cb2-51"></a><span class="op">$</span>totalRemaining</span>
-<span id="cb2-52"><a href="#cb2-52"></a>[<span class="dv">1</span>] <span class="dv">10</span></span></code></pre></div>
-</div>
-<div id="retrieving-more-than-one-result-at-a-time" class="section level2">
-<h2 class="hasAnchor">
-<a href="#retrieving-more-than-one-result-at-a-time" class="anchor"></a>Retrieving More than One Result at a Time</h2>
+<div class="section level3">
+<h3 id="retrieving-more-than-one-result-at-a-time">Retrieving More than One Result at a Time<a class="anchor" aria-label="anchor" href="#retrieving-more-than-one-result-at-a-time"></a>
+</h3>
 <p>There are four methods which allow for obtaining more than one result at a time: <code>nextNIter</code>, <code>prevNIter</code>, <code>nextRemaining</code>, and <code>prevRemaining</code>.</p>
-<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1"></a><span class="co">## Reset the iterator</span></span>
-<span id="cb3-2"><a href="#cb3-2"></a>a<span class="op">$</span>startOver</span>
-<span id="cb3-3"><a href="#cb3-3"></a></span>
-<span id="cb3-4"><a href="#cb3-4"></a><span class="co">## Get the next 4 combinations</span></span>
-<span id="cb3-5"><a href="#cb3-5"></a>a<span class="op">$</span><span class="kw">nextNIter</span>(<span class="dv">4</span>)</span>
-<span id="cb3-6"><a href="#cb3-6"></a>     [,<span class="dv">1</span>] [,<span class="dv">2</span>] [,<span class="dv">3</span>]</span>
-<span id="cb3-7"><a href="#cb3-7"></a>[<span class="dv">1</span>,]    <span class="dv">1</span>    <span class="dv">2</span>    <span class="dv">3</span></span>
-<span id="cb3-8"><a href="#cb3-8"></a>[<span class="dv">2</span>,]    <span class="dv">1</span>    <span class="dv">2</span>    <span class="dv">4</span></span>
-<span id="cb3-9"><a href="#cb3-9"></a>[<span class="dv">3</span>,]    <span class="dv">1</span>    <span class="dv">2</span>    <span class="dv">5</span></span>
-<span id="cb3-10"><a href="#cb3-10"></a>[<span class="dv">4</span>,]    <span class="dv">1</span>    <span class="dv">3</span>    <span class="dv">4</span></span>
-<span id="cb3-11"><a href="#cb3-11"></a></span>
-<span id="cb3-12"><a href="#cb3-12"></a><span class="co">## Get the summary. Note that the index has been updated</span></span>
-<span id="cb3-13"><a href="#cb3-13"></a>a<span class="op">$</span><span class="kw"><a href="https://rdrr.io/r/base/summary.html">summary</a></span>()</span>
-<span id="cb3-14"><a href="#cb3-14"></a><span class="op">$</span>description</span>
-<span id="cb3-15"><a href="#cb3-15"></a>[<span class="dv">1</span>] <span class="st">"Combinations of 5 choose 3"</span></span>
-<span id="cb3-16"><a href="#cb3-16"></a></span>
-<span id="cb3-17"><a href="#cb3-17"></a><span class="op">$</span>currentIndex</span>
-<span id="cb3-18"><a href="#cb3-18"></a>[<span class="dv">1</span>] <span class="dv">4</span></span>
-<span id="cb3-19"><a href="#cb3-19"></a></span>
-<span id="cb3-20"><a href="#cb3-20"></a><span class="op">$</span>totalResults</span>
-<span id="cb3-21"><a href="#cb3-21"></a>[<span class="dv">1</span>] <span class="dv">10</span></span>
-<span id="cb3-22"><a href="#cb3-22"></a></span>
-<span id="cb3-23"><a href="#cb3-23"></a><span class="op">$</span>totalRemaining</span>
-<span id="cb3-24"><a href="#cb3-24"></a>[<span class="dv">1</span>] <span class="dv">6</span></span>
-<span id="cb3-25"><a href="#cb3-25"></a></span>
-<span id="cb3-26"><a href="#cb3-26"></a><span class="co">## View the current combination</span></span>
-<span id="cb3-27"><a href="#cb3-27"></a>a<span class="op">$</span><span class="kw">currIter</span>()</span>
-<span id="cb3-28"><a href="#cb3-28"></a>[<span class="dv">1</span>] <span class="dv">1</span> <span class="dv">3</span> <span class="dv">4</span></span>
-<span id="cb3-29"><a href="#cb3-29"></a></span>
-<span id="cb3-30"><a href="#cb3-30"></a><span class="co">## Get the remaining combinations with nextRemaining</span></span>
-<span id="cb3-31"><a href="#cb3-31"></a>a<span class="op">$</span><span class="kw">nextRemaining</span>()</span>
-<span id="cb3-32"><a href="#cb3-32"></a>     [,<span class="dv">1</span>] [,<span class="dv">2</span>] [,<span class="dv">3</span>]</span>
-<span id="cb3-33"><a href="#cb3-33"></a>[<span class="dv">1</span>,]    <span class="dv">1</span>    <span class="dv">3</span>    <span class="dv">5</span></span>
-<span id="cb3-34"><a href="#cb3-34"></a>[<span class="dv">2</span>,]    <span class="dv">1</span>    <span class="dv">4</span>    <span class="dv">5</span></span>
-<span id="cb3-35"><a href="#cb3-35"></a>[<span class="dv">3</span>,]    <span class="dv">2</span>    <span class="dv">3</span>    <span class="dv">4</span></span>
-<span id="cb3-36"><a href="#cb3-36"></a>[<span class="dv">4</span>,]    <span class="dv">2</span>    <span class="dv">3</span>    <span class="dv">5</span></span>
-<span id="cb3-37"><a href="#cb3-37"></a>[<span class="dv">5</span>,]    <span class="dv">2</span>    <span class="dv">4</span>    <span class="dv">5</span></span>
-<span id="cb3-38"><a href="#cb3-38"></a>[<span class="dv">6</span>,]    <span class="dv">3</span>    <span class="dv">4</span>    <span class="dv">5</span></span>
-<span id="cb3-39"><a href="#cb3-39"></a></span>
-<span id="cb3-40"><a href="#cb3-40"></a></span>
-<span id="cb3-41"><a href="#cb3-41"></a>a<span class="op">$</span><span class="kw"><a href="https://rdrr.io/r/base/summary.html">summary</a></span>()</span>
-<span id="cb3-42"><a href="#cb3-42"></a><span class="op">$</span>description</span>
-<span id="cb3-43"><a href="#cb3-43"></a>[<span class="dv">1</span>] <span class="st">"Combinations of 5 choose 3"</span></span>
-<span id="cb3-44"><a href="#cb3-44"></a></span>
-<span id="cb3-45"><a href="#cb3-45"></a><span class="op">$</span>currentIndex</span>
-<span id="cb3-46"><a href="#cb3-46"></a>[<span class="dv">1</span>] <span class="dv">11</span></span>
-<span id="cb3-47"><a href="#cb3-47"></a></span>
-<span id="cb3-48"><a href="#cb3-48"></a><span class="op">$</span>totalResults</span>
-<span id="cb3-49"><a href="#cb3-49"></a>[<span class="dv">1</span>] <span class="dv">10</span></span>
-<span id="cb3-50"><a href="#cb3-50"></a></span>
-<span id="cb3-51"><a href="#cb3-51"></a><span class="op">$</span>totalRemaining</span>
-<span id="cb3-52"><a href="#cb3-52"></a>[<span class="dv">1</span>] <span class="dv">-1</span></span></code></pre></div>
+<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="co">## Reset the iterator</span>
+<span class="va">a</span><span class="op">$</span><span class="fu">startOver</span><span class="op">(</span><span class="op">)</span>
+
+<span class="co">## Get the next 4 combinations</span>
+<span class="va">a</span><span class="op">$</span><span class="fu">nextNIter</span><span class="op">(</span><span class="fl">4</span><span class="op">)</span>
+<span class="co">#&gt;      [,1] [,2] [,3]</span>
+<span class="co">#&gt; [1,]    1    2    3</span>
+<span class="co">#&gt; [2,]    1    2    4</span>
+<span class="co">#&gt; [3,]    1    2    5</span>
+<span class="co">#&gt; [4,]    1    3    4</span>
+
+<span class="co">## Get the summary. Note that the index has been updated</span>
+<span class="va">a</span><span class="op">$</span><span class="fu">summary</span><span class="op">(</span><span class="op">)</span>
+<span class="co">#&gt; $description</span>
+<span class="co">#&gt; [1] "Combinations of 5 choose 3"</span>
+<span class="co">#&gt;</span>
+<span class="co">#&gt; $currentIndex</span>
+<span class="co">#&gt; [1] 4</span>
+<span class="co">#&gt;</span>
+<span class="co">#&gt; $totalResults</span>
+<span class="co">#&gt; [1] 10</span>
+<span class="co">#&gt;</span>
+<span class="co">#&gt; $totalRemaining</span>
+<span class="co">#&gt; [1] 6</span>
+
+<span class="co">## View the current combination</span>
+<span class="va">a</span><span class="op">$</span><span class="fu">currIter</span><span class="op">(</span><span class="op">)</span>
+<span class="co">#&gt; [1] 1 3 4</span>
+
+<span class="co">## Get the remaining combinations with nextRemaining</span>
+<span class="va">a</span><span class="op">$</span><span class="fu">nextRemaining</span><span class="op">(</span><span class="op">)</span>
+<span class="co">#&gt;      [,1] [,2] [,3]</span>
+<span class="co">#&gt; [1,]    1    3    5</span>
+<span class="co">#&gt; [2,]    1    4    5</span>
+<span class="co">#&gt; [3,]    2    3    4</span>
+<span class="co">#&gt; [4,]    2    3    5</span>
+<span class="co">#&gt; [5,]    2    4    5</span>
+<span class="co">#&gt; [6,]    3    4    5</span>
+
+
+<span class="va">a</span><span class="op">$</span><span class="fu">summary</span><span class="op">(</span><span class="op">)</span>
+<span class="co">#&gt; $description</span>
+<span class="co">#&gt; [1] "Combinations of 5 choose 3"</span>
+<span class="co">#&gt;</span>
+<span class="co">#&gt; $currentIndex</span>
+<span class="co">#&gt; [1] 11</span>
+<span class="co">#&gt;</span>
+<span class="co">#&gt; $totalResults</span>
+<span class="co">#&gt; [1] 10</span>
+<span class="co">#&gt;</span>
+<span class="co">#&gt; $totalRemaining</span>
+<span class="co">#&gt; [1] -1</span></code></pre></div>
 <p>Now, we look at the opposite direction.</p>
-<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1"></a><span class="co">## Get the previous 4 combinations</span></span>
-<span id="cb4-2"><a href="#cb4-2"></a>a<span class="op">$</span><span class="kw">prevNIter</span>(<span class="dv">4</span>)</span>
-<span id="cb4-3"><a href="#cb4-3"></a>     [,<span class="dv">1</span>] [,<span class="dv">2</span>] [,<span class="dv">3</span>]</span>
-<span id="cb4-4"><a href="#cb4-4"></a>[<span class="dv">1</span>,]    <span class="dv">3</span>    <span class="dv">4</span>    <span class="dv">5</span></span>
-<span id="cb4-5"><a href="#cb4-5"></a>[<span class="dv">2</span>,]    <span class="dv">2</span>    <span class="dv">4</span>    <span class="dv">5</span></span>
-<span id="cb4-6"><a href="#cb4-6"></a>[<span class="dv">3</span>,]    <span class="dv">2</span>    <span class="dv">3</span>    <span class="dv">5</span></span>
-<span id="cb4-7"><a href="#cb4-7"></a>[<span class="dv">4</span>,]    <span class="dv">2</span>    <span class="dv">3</span>    <span class="dv">4</span></span>
-<span id="cb4-8"><a href="#cb4-8"></a></span>
-<span id="cb4-9"><a href="#cb4-9"></a><span class="co">## Get the summary. Note that the index has been updated</span></span>
-<span id="cb4-10"><a href="#cb4-10"></a>a<span class="op">$</span><span class="kw"><a href="https://rdrr.io/r/base/summary.html">summary</a></span>()</span>
-<span id="cb4-11"><a href="#cb4-11"></a><span class="op">$</span>description</span>
-<span id="cb4-12"><a href="#cb4-12"></a>[<span class="dv">1</span>] <span class="st">"Combinations of 5 choose 3"</span></span>
-<span id="cb4-13"><a href="#cb4-13"></a></span>
-<span id="cb4-14"><a href="#cb4-14"></a><span class="op">$</span>currentIndex</span>
-<span id="cb4-15"><a href="#cb4-15"></a>[<span class="dv">1</span>] <span class="dv">7</span></span>
-<span id="cb4-16"><a href="#cb4-16"></a></span>
-<span id="cb4-17"><a href="#cb4-17"></a><span class="op">$</span>totalResults</span>
-<span id="cb4-18"><a href="#cb4-18"></a>[<span class="dv">1</span>] <span class="dv">10</span></span>
-<span id="cb4-19"><a href="#cb4-19"></a></span>
-<span id="cb4-20"><a href="#cb4-20"></a><span class="op">$</span>totalRemaining</span>
-<span id="cb4-21"><a href="#cb4-21"></a>[<span class="dv">1</span>] <span class="dv">3</span></span>
-<span id="cb4-22"><a href="#cb4-22"></a></span>
-<span id="cb4-23"><a href="#cb4-23"></a><span class="co">## View the current combination</span></span>
-<span id="cb4-24"><a href="#cb4-24"></a>a<span class="op">$</span><span class="kw">currIter</span>()</span>
-<span id="cb4-25"><a href="#cb4-25"></a>[<span class="dv">1</span>] <span class="dv">2</span> <span class="dv">3</span> <span class="dv">4</span></span>
-<span id="cb4-26"><a href="#cb4-26"></a></span>
-<span id="cb4-27"><a href="#cb4-27"></a><span class="co">## Get the remaining previous combinations with prevRemaining</span></span>
-<span id="cb4-28"><a href="#cb4-28"></a>a<span class="op">$</span><span class="kw">prevRemaining</span>()</span>
-<span id="cb4-29"><a href="#cb4-29"></a>     [,<span class="dv">1</span>] [,<span class="dv">2</span>] [,<span class="dv">3</span>]</span>
-<span id="cb4-30"><a href="#cb4-30"></a>[<span class="dv">1</span>,]    <span class="dv">1</span>    <span class="dv">4</span>    <span class="dv">5</span></span>
-<span id="cb4-31"><a href="#cb4-31"></a>[<span class="dv">2</span>,]    <span class="dv">1</span>    <span class="dv">3</span>    <span class="dv">5</span></span>
-<span id="cb4-32"><a href="#cb4-32"></a>[<span class="dv">3</span>,]    <span class="dv">1</span>    <span class="dv">3</span>    <span class="dv">4</span></span>
-<span id="cb4-33"><a href="#cb4-33"></a>[<span class="dv">4</span>,]    <span class="dv">1</span>    <span class="dv">2</span>    <span class="dv">5</span></span>
-<span id="cb4-34"><a href="#cb4-34"></a>[<span class="dv">5</span>,]    <span class="dv">1</span>    <span class="dv">2</span>    <span class="dv">4</span></span>
-<span id="cb4-35"><a href="#cb4-35"></a>[<span class="dv">6</span>,]    <span class="dv">1</span>    <span class="dv">2</span>    <span class="dv">3</span></span>
-<span id="cb4-36"><a href="#cb4-36"></a></span>
-<span id="cb4-37"><a href="#cb4-37"></a></span>
-<span id="cb4-38"><a href="#cb4-38"></a>a<span class="op">$</span><span class="kw"><a href="https://rdrr.io/r/base/summary.html">summary</a></span>()</span>
-<span id="cb4-39"><a href="#cb4-39"></a><span class="op">$</span>description</span>
-<span id="cb4-40"><a href="#cb4-40"></a>[<span class="dv">1</span>] <span class="st">"Combinations of 5 choose 3"</span></span>
-<span id="cb4-41"><a href="#cb4-41"></a></span>
-<span id="cb4-42"><a href="#cb4-42"></a><span class="op">$</span>currentIndex</span>
-<span id="cb4-43"><a href="#cb4-43"></a>[<span class="dv">1</span>] <span class="dv">0</span></span>
-<span id="cb4-44"><a href="#cb4-44"></a></span>
-<span id="cb4-45"><a href="#cb4-45"></a><span class="op">$</span>totalResults</span>
-<span id="cb4-46"><a href="#cb4-46"></a>[<span class="dv">1</span>] <span class="dv">10</span></span>
-<span id="cb4-47"><a href="#cb4-47"></a></span>
-<span id="cb4-48"><a href="#cb4-48"></a><span class="op">$</span>totalRemaining</span>
-<span id="cb4-49"><a href="#cb4-49"></a>[<span class="dv">1</span>] <span class="dv">10</span></span></code></pre></div>
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="co">## Get the previous 4 combinations</span>
+<span class="va">a</span><span class="op">$</span><span class="fu">prevNIter</span><span class="op">(</span><span class="fl">4</span><span class="op">)</span>
+<span class="co">#&gt;      [,1] [,2] [,3]</span>
+<span class="co">#&gt; [1,]    3    4    5</span>
+<span class="co">#&gt; [2,]    2    4    5</span>
+<span class="co">#&gt; [3,]    2    3    5</span>
+<span class="co">#&gt; [4,]    2    3    4</span>
+
+<span class="co">## Get the summary. Note that the index has been updated</span>
+<span class="va">a</span><span class="op">$</span><span class="fu">summary</span><span class="op">(</span><span class="op">)</span>
+<span class="co">#&gt; $description</span>
+<span class="co">#&gt; [1] "Combinations of 5 choose 3"</span>
+<span class="co">#&gt;</span>
+<span class="co">#&gt; $currentIndex</span>
+<span class="co">#&gt; [1] 7</span>
+<span class="co">#&gt;</span>
+<span class="co">#&gt; $totalResults</span>
+<span class="co">#&gt; [1] 10</span>
+<span class="co">#&gt;</span>
+<span class="co">#&gt; $totalRemaining</span>
+<span class="co">#&gt; [1] 3</span>
+
+<span class="co">## View the current combination</span>
+<span class="va">a</span><span class="op">$</span><span class="fu">currIter</span><span class="op">(</span><span class="op">)</span>
+<span class="co">#&gt; [1] 2 3 4</span>
+
+<span class="co">## Get the remaining previous combinations with prevRemaining</span>
+<span class="va">a</span><span class="op">$</span><span class="fu">prevRemaining</span><span class="op">(</span><span class="op">)</span>
+<span class="co">#&gt;      [,1] [,2] [,3]</span>
+<span class="co">#&gt; [1,]    1    4    5</span>
+<span class="co">#&gt; [2,]    1    3    5</span>
+<span class="co">#&gt; [3,]    1    3    4</span>
+<span class="co">#&gt; [4,]    1    2    5</span>
+<span class="co">#&gt; [5,]    1    2    4</span>
+<span class="co">#&gt; [6,]    1    2    3</span>
+
+
+<span class="va">a</span><span class="op">$</span><span class="fu">summary</span><span class="op">(</span><span class="op">)</span>
+<span class="co">#&gt; $description</span>
+<span class="co">#&gt; [1] "Combinations of 5 choose 3"</span>
+<span class="co">#&gt;</span>
+<span class="co">#&gt; $currentIndex</span>
+<span class="co">#&gt; [1] 0</span>
+<span class="co">#&gt;</span>
+<span class="co">#&gt; $totalResults</span>
+<span class="co">#&gt; [1] 10</span>
+<span class="co">#&gt;</span>
+<span class="co">#&gt; $totalRemaining</span>
+<span class="co">#&gt; [1] 10</span></code></pre></div>
 </div>
-<div id="random-access-iterator" class="section level2">
-<h2 class="hasAnchor">
-<a href="#random-access-iterator" class="anchor"></a>Random Access Iterator</h2>
-<p>For standard combinatorial iterators in <code>RcppAlgos</code>, we can jump to the <em>n<sup>th</sup></em> combination/permutation without the need for iterating over the first <em>n - 1</em> results.</p>
-<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1"></a><span class="co">## Reset the iterator</span></span>
-<span id="cb5-2"><a href="#cb5-2"></a>a<span class="op">$</span><span class="kw">startOver</span>()</span>
-<span id="cb5-3"><a href="#cb5-3"></a></span>
-<span id="cb5-4"><a href="#cb5-4"></a><span class="co">## How many total combinations do we have?</span></span>
-<span id="cb5-5"><a href="#cb5-5"></a>a<span class="op">$</span><span class="kw"><a href="https://rdrr.io/r/base/summary.html">summary</a></span>()<span class="op">$</span>totalResults</span>
-<span id="cb5-6"><a href="#cb5-6"></a>[<span class="dv">1</span>] <span class="dv">10</span></span>
-<span id="cb5-7"><a href="#cb5-7"></a></span>
-<span id="cb5-8"><a href="#cb5-8"></a><span class="co">## Let's get the 3rd combination</span></span>
-<span id="cb5-9"><a href="#cb5-9"></a>a[[<span class="dv">3</span>]]</span>
-<span id="cb5-10"><a href="#cb5-10"></a>[<span class="dv">1</span>] <span class="dv">1</span> <span class="dv">2</span> <span class="dv">5</span></span>
-<span id="cb5-11"><a href="#cb5-11"></a></span>
-<span id="cb5-12"><a href="#cb5-12"></a><span class="co">## See the summary. Note that the index has been updated</span></span>
-<span id="cb5-13"><a href="#cb5-13"></a>a<span class="op">$</span><span class="kw"><a href="https://rdrr.io/r/base/summary.html">summary</a></span>()</span>
-<span id="cb5-14"><a href="#cb5-14"></a><span class="op">$</span>description</span>
-<span id="cb5-15"><a href="#cb5-15"></a>[<span class="dv">1</span>] <span class="st">"Combinations of 5 choose 3"</span></span>
-<span id="cb5-16"><a href="#cb5-16"></a></span>
-<span id="cb5-17"><a href="#cb5-17"></a><span class="op">$</span>currentIndex</span>
-<span id="cb5-18"><a href="#cb5-18"></a>[<span class="dv">1</span>] <span class="dv">3</span></span>
-<span id="cb5-19"><a href="#cb5-19"></a></span>
-<span id="cb5-20"><a href="#cb5-20"></a><span class="op">$</span>totalResults</span>
-<span id="cb5-21"><a href="#cb5-21"></a>[<span class="dv">1</span>] <span class="dv">10</span></span>
-<span id="cb5-22"><a href="#cb5-22"></a></span>
-<span id="cb5-23"><a href="#cb5-23"></a><span class="op">$</span>totalRemaining</span>
-<span id="cb5-24"><a href="#cb5-24"></a>[<span class="dv">1</span>] <span class="dv">7</span></span>
-<span id="cb5-25"><a href="#cb5-25"></a></span>
-<span id="cb5-26"><a href="#cb5-26"></a><span class="co">## Let's see the 9th combination</span></span>
-<span id="cb5-27"><a href="#cb5-27"></a>a[[<span class="dv">9</span>]]</span>
-<span id="cb5-28"><a href="#cb5-28"></a>[<span class="dv">1</span>] <span class="dv">2</span> <span class="dv">4</span> <span class="dv">5</span></span>
-<span id="cb5-29"><a href="#cb5-29"></a></span>
-<span id="cb5-30"><a href="#cb5-30"></a><span class="co">## What about the first and last combination?</span></span>
-<span id="cb5-31"><a href="#cb5-31"></a>a<span class="op">$</span><span class="kw">front</span>()</span>
-<span id="cb5-32"><a href="#cb5-32"></a>[<span class="dv">1</span>] <span class="dv">1</span> <span class="dv">2</span> <span class="dv">3</span></span>
-<span id="cb5-33"><a href="#cb5-33"></a></span>
-<span id="cb5-34"><a href="#cb5-34"></a>a<span class="op">$</span><span class="kw">back</span>()</span>
-<span id="cb5-35"><a href="#cb5-35"></a>[<span class="dv">1</span>] <span class="dv">3</span> <span class="dv">4</span> <span class="dv">5</span></span>
-<span id="cb5-36"><a href="#cb5-36"></a></span>
-<span id="cb5-37"><a href="#cb5-37"></a><span class="co">## Again the index has been updated</span></span>
-<span id="cb5-38"><a href="#cb5-38"></a>a<span class="op">$</span><span class="kw"><a href="https://rdrr.io/r/base/summary.html">summary</a></span>()</span>
-<span id="cb5-39"><a href="#cb5-39"></a><span class="op">$</span>description</span>
-<span id="cb5-40"><a href="#cb5-40"></a>[<span class="dv">1</span>] <span class="st">"Combinations of 5 choose 3"</span></span>
-<span id="cb5-41"><a href="#cb5-41"></a></span>
-<span id="cb5-42"><a href="#cb5-42"></a><span class="op">$</span>currentIndex</span>
-<span id="cb5-43"><a href="#cb5-43"></a>[<span class="dv">1</span>] <span class="dv">10</span></span>
-<span id="cb5-44"><a href="#cb5-44"></a></span>
-<span id="cb5-45"><a href="#cb5-45"></a><span class="op">$</span>totalResults</span>
-<span id="cb5-46"><a href="#cb5-46"></a>[<span class="dv">1</span>] <span class="dv">10</span></span>
-<span id="cb5-47"><a href="#cb5-47"></a></span>
-<span id="cb5-48"><a href="#cb5-48"></a><span class="op">$</span>totalRemaining</span>
-<span id="cb5-49"><a href="#cb5-49"></a>[<span class="dv">1</span>] <span class="dv">0</span></span>
-<span id="cb5-50"><a href="#cb5-50"></a></span>
-<span id="cb5-51"><a href="#cb5-51"></a>a<span class="op">$</span><span class="kw">currIter</span>()</span>
-<span id="cb5-52"><a href="#cb5-52"></a>[<span class="dv">1</span>] <span class="dv">3</span> <span class="dv">4</span> <span class="dv">5</span></span></code></pre></div>
-<p>We can also easily return a random sample of combinations with the <code><a href="https://rdrr.io/r/base/Extract.html">[[</a></code> operator by passing a vector of indices. In these cases, it should be noted that the current index will not be updated.</p>
-<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1"></a><span class="co">## Set the current index to the second combination</span></span>
-<span id="cb6-2"><a href="#cb6-2"></a>a[[<span class="dv">2</span>]]</span>
-<span id="cb6-3"><a href="#cb6-3"></a>[<span class="dv">1</span>] <span class="dv">1</span> <span class="dv">2</span> <span class="dv">4</span></span>
-<span id="cb6-4"><a href="#cb6-4"></a></span>
-<span id="cb6-5"><a href="#cb6-5"></a></span>
-<span id="cb6-6"><a href="#cb6-6"></a>a<span class="op">$</span><span class="kw"><a href="https://rdrr.io/r/base/summary.html">summary</a></span>()</span>
-<span id="cb6-7"><a href="#cb6-7"></a><span class="op">$</span>description</span>
-<span id="cb6-8"><a href="#cb6-8"></a>[<span class="dv">1</span>] <span class="st">"Combinations of 5 choose 3"</span></span>
-<span id="cb6-9"><a href="#cb6-9"></a></span>
-<span id="cb6-10"><a href="#cb6-10"></a><span class="op">$</span>currentIndex</span>
-<span id="cb6-11"><a href="#cb6-11"></a>[<span class="dv">1</span>] <span class="dv">2</span></span>
-<span id="cb6-12"><a href="#cb6-12"></a></span>
-<span id="cb6-13"><a href="#cb6-13"></a><span class="op">$</span>totalResults</span>
-<span id="cb6-14"><a href="#cb6-14"></a>[<span class="dv">1</span>] <span class="dv">10</span></span>
-<span id="cb6-15"><a href="#cb6-15"></a></span>
-<span id="cb6-16"><a href="#cb6-16"></a><span class="op">$</span>totalRemaining</span>
-<span id="cb6-17"><a href="#cb6-17"></a>[<span class="dv">1</span>] <span class="dv">8</span></span>
-<span id="cb6-18"><a href="#cb6-18"></a></span>
-<span id="cb6-19"><a href="#cb6-19"></a></span>
-<span id="cb6-20"><a href="#cb6-20"></a><span class="kw"><a href="https://rdrr.io/r/base/Random.html">set.seed</a></span>(<span class="dv">121</span>)</span>
-<span id="cb6-21"><a href="#cb6-21"></a>samp =<span class="st"> </span><span class="kw"><a href="https://rdrr.io/r/base/sample.html">sample</a></span>(a<span class="op">$</span><span class="kw"><a href="https://rdrr.io/r/base/summary.html">summary</a></span>()<span class="op">$</span>totalResults, <span class="dv">4</span>)</span>
-<span id="cb6-22"><a href="#cb6-22"></a></span>
-<span id="cb6-23"><a href="#cb6-23"></a>samp</span>
-<span id="cb6-24"><a href="#cb6-24"></a>[<span class="dv">1</span>]  <span class="dv">4</span>  <span class="dv">7</span> <span class="dv">10</span>  <span class="dv">1</span></span>
-<span id="cb6-25"><a href="#cb6-25"></a></span>
-<span id="cb6-26"><a href="#cb6-26"></a>a[[samp]]</span>
-<span id="cb6-27"><a href="#cb6-27"></a>     [,<span class="dv">1</span>] [,<span class="dv">2</span>] [,<span class="dv">3</span>]</span>
-<span id="cb6-28"><a href="#cb6-28"></a>[<span class="dv">1</span>,]    <span class="dv">1</span>    <span class="dv">3</span>    <span class="dv">4</span></span>
-<span id="cb6-29"><a href="#cb6-29"></a>[<span class="dv">2</span>,]    <span class="dv">2</span>    <span class="dv">3</span>    <span class="dv">4</span></span>
-<span id="cb6-30"><a href="#cb6-30"></a>[<span class="dv">3</span>,]    <span class="dv">3</span>    <span class="dv">4</span>    <span class="dv">5</span></span>
-<span id="cb6-31"><a href="#cb6-31"></a>[<span class="dv">4</span>,]    <span class="dv">1</span>    <span class="dv">2</span>    <span class="dv">3</span></span>
-<span id="cb6-32"><a href="#cb6-32"></a></span>
-<span id="cb6-33"><a href="#cb6-33"></a></span>
-<span id="cb6-34"><a href="#cb6-34"></a><span class="co">## Note that the current index remains unchanged</span></span>
-<span id="cb6-35"><a href="#cb6-35"></a>a<span class="op">$</span><span class="kw"><a href="https://rdrr.io/r/base/summary.html">summary</a></span>()</span>
-<span id="cb6-36"><a href="#cb6-36"></a><span class="op">$</span>description</span>
-<span id="cb6-37"><a href="#cb6-37"></a>[<span class="dv">1</span>] <span class="st">"Combinations of 5 choose 3"</span></span>
-<span id="cb6-38"><a href="#cb6-38"></a></span>
-<span id="cb6-39"><a href="#cb6-39"></a><span class="op">$</span>currentIndex</span>
-<span id="cb6-40"><a href="#cb6-40"></a>[<span class="dv">1</span>] <span class="dv">2</span></span>
-<span id="cb6-41"><a href="#cb6-41"></a></span>
-<span id="cb6-42"><a href="#cb6-42"></a><span class="op">$</span>totalResults</span>
-<span id="cb6-43"><a href="#cb6-43"></a>[<span class="dv">1</span>] <span class="dv">10</span></span>
-<span id="cb6-44"><a href="#cb6-44"></a></span>
-<span id="cb6-45"><a href="#cb6-45"></a><span class="op">$</span>totalRemaining</span>
-<span id="cb6-46"><a href="#cb6-46"></a>[<span class="dv">1</span>] <span class="dv">8</span></span></code></pre></div>
+<div class="section level3">
+<h3 id="random-access-iterator">Random Access Iterator<a class="anchor" aria-label="anchor" href="#random-access-iterator"></a>
+</h3>
+<p>As with the bidirectional iterators, with some of the combinatorial iterators in <code>RcppAlgos</code>, we can jump to the <em>n<sup>th</sup></em> result without the need for iterating over the first <em>n - 1</em> results.</p>
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="co">## Reset the iterator</span>
+<span class="va">a</span><span class="op">$</span><span class="fu">startOver</span><span class="op">(</span><span class="op">)</span>
+
+<span class="co">## How many total combinations do we have?</span>
+<span class="va">a</span><span class="op">$</span><span class="fu">summary</span><span class="op">(</span><span class="op">)</span><span class="op">$</span><span class="va">totalResults</span>
+<span class="co">#&gt; [1] 10</span>
+
+<span class="co">## Let's get the 3rd combination</span>
+<span class="va">a</span><span class="op">[[</span><span class="fl">3</span><span class="op">]</span><span class="op">]</span>
+<span class="co">#&gt; [1] 1 2 5</span>
+
+<span class="co">## See the summary. Note that the index has been updated</span>
+<span class="va">a</span><span class="op">$</span><span class="fu">summary</span><span class="op">(</span><span class="op">)</span>
+<span class="co">#&gt; $description</span>
+<span class="co">#&gt; [1] "Combinations of 5 choose 3"</span>
+<span class="co">#&gt;</span>
+<span class="co">#&gt; $currentIndex</span>
+<span class="co">#&gt; [1] 3</span>
+<span class="co">#&gt;</span>
+<span class="co">#&gt; $totalResults</span>
+<span class="co">#&gt; [1] 10</span>
+<span class="co">#&gt;</span>
+<span class="co">#&gt; $totalRemaining</span>
+<span class="co">#&gt; [1] 7</span>
+
+<span class="co">## Let's see the 9th combination</span>
+<span class="va">a</span><span class="op">[[</span><span class="fl">9</span><span class="op">]</span><span class="op">]</span>
+<span class="co">#&gt; [1] 2 4 5</span>
+
+<span class="co">## What about the first and last combination?</span>
+<span class="va">a</span><span class="op">$</span><span class="fu">front</span><span class="op">(</span><span class="op">)</span>
+<span class="co">#&gt; [1] 1 2 3</span>
+
+<span class="va">a</span><span class="op">$</span><span class="fu">back</span><span class="op">(</span><span class="op">)</span>
+<span class="co">#&gt; [1] 3 4 5</span>
+
+<span class="co">## Again the index has been updated</span>
+<span class="va">a</span><span class="op">$</span><span class="fu">summary</span><span class="op">(</span><span class="op">)</span>
+<span class="co">#&gt; $description</span>
+<span class="co">#&gt; [1] "Combinations of 5 choose 3"</span>
+<span class="co">#&gt;</span>
+<span class="co">#&gt; $currentIndex</span>
+<span class="co">#&gt; [1] 10</span>
+<span class="co">#&gt;</span>
+<span class="co">#&gt; $totalResults</span>
+<span class="co">#&gt; [1] 10</span>
+<span class="co">#&gt;</span>
+<span class="co">#&gt; $totalRemaining</span>
+<span class="co">#&gt; [1] 0</span>
+
+<span class="va">a</span><span class="op">$</span><span class="fu">currIter</span><span class="op">(</span><span class="op">)</span>
+<span class="co">#&gt; [1] 3 4 5</span></code></pre></div>
+<p>We can also easily return a random sample of combinations with the <code>[[</code> operator by passing a vector of indices. In these cases, it should be noted that the current index will not be updated.</p>
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="co">## Set the current index to the second combination</span>
+<span class="va">a</span><span class="op">[[</span><span class="fl">2</span><span class="op">]</span><span class="op">]</span>
+<span class="co">#&gt; [1] 1 2 4</span>
+
+
+<span class="va">a</span><span class="op">$</span><span class="fu">summary</span><span class="op">(</span><span class="op">)</span>
+<span class="co">#&gt; $description</span>
+<span class="co">#&gt; [1] "Combinations of 5 choose 3"</span>
+<span class="co">#&gt;</span>
+<span class="co">#&gt; $currentIndex</span>
+<span class="co">#&gt; [1] 2</span>
+<span class="co">#&gt;</span>
+<span class="co">#&gt; $totalResults</span>
+<span class="co">#&gt; [1] 10</span>
+<span class="co">#&gt;</span>
+<span class="co">#&gt; $totalRemaining</span>
+<span class="co">#&gt; [1] 8</span>
+
+
+<span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="fl">121</span><span class="op">)</span>
+<span class="va">samp</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sample.html" class="external-link">sample</a></span><span class="op">(</span><span class="va">a</span><span class="op">$</span><span class="fu">summary</span><span class="op">(</span><span class="op">)</span><span class="op">$</span><span class="va">totalResults</span>, <span class="fl">4</span><span class="op">)</span>
+
+<span class="va">samp</span>
+<span class="co">#&gt; [1]  4  7 10  1</span>
+
+<span class="va">a</span><span class="op">[[</span><span class="va">samp</span><span class="op">]</span><span class="op">]</span>
+<span class="co">#&gt;      [,1] [,2] [,3]</span>
+<span class="co">#&gt; [1,]    1    3    4</span>
+<span class="co">#&gt; [2,]    2    3    4</span>
+<span class="co">#&gt; [3,]    3    4    5</span>
+<span class="co">#&gt; [4,]    1    2    3</span>
+
+
+<span class="co">## Note that the current index remains unchanged</span>
+<span class="va">a</span><span class="op">$</span><span class="fu">summary</span><span class="op">(</span><span class="op">)</span>
+<span class="co">#&gt; $description</span>
+<span class="co">#&gt; [1] "Combinations of 5 choose 3"</span>
+<span class="co">#&gt;</span>
+<span class="co">#&gt; $currentIndex</span>
+<span class="co">#&gt; [1] 2</span>
+<span class="co">#&gt;</span>
+<span class="co">#&gt; $totalResults</span>
+<span class="co">#&gt; [1] 10</span>
+<span class="co">#&gt;</span>
+<span class="co">#&gt; $totalRemaining</span>
+<span class="co">#&gt; [1] 8</span></code></pre></div>
 </div>
-<div id="user-defined-functions" class="section level2">
-<h2 class="hasAnchor">
-<a href="#user-defined-functions" class="anchor"></a>User Defined Functions</h2>
+<div class="section level3">
+<h3 id="user-defined-functions">User Defined Functions<a class="anchor" aria-label="anchor" href="#user-defined-functions"></a>
+</h3>
 <p>Just as with <code>comboGeneral</code> and <code>permuteGeneral</code>, we can pass a user defined function to <code>comboIter</code> and <code>permuteIter</code>.</p>
-<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1"></a><span class="co">## Initialize the iterator</span></span>
-<span id="cb7-2"><a href="#cb7-2"></a>b =<span class="st"> </span><span class="kw"><a href="../reference/combinatoricsIterator.html">permuteIter</a></span>(LETTERS[<span class="dv">1</span><span class="op">:</span><span class="dv">4</span>], <span class="dv">3</span>, <span class="dt">FUN =</span> <span class="cf">function</span>(p) <span class="kw"><a href="https://rdrr.io/r/base/paste.html">paste</a></span>(p, <span class="dt">collapse =</span> <span class="st">""</span>))</span>
-<span id="cb7-3"><a href="#cb7-3"></a></span>
-<span id="cb7-4"><a href="#cb7-4"></a></span>
-<span id="cb7-5"><a href="#cb7-5"></a>b<span class="op">$</span><span class="kw">nextIter</span>()</span>
-<span id="cb7-6"><a href="#cb7-6"></a>[<span class="dv">1</span>] <span class="st">"ABC"</span></span>
-<span id="cb7-7"><a href="#cb7-7"></a></span>
-<span id="cb7-8"><a href="#cb7-8"></a></span>
-<span id="cb7-9"><a href="#cb7-9"></a>b<span class="op">$</span><span class="kw">nextNIter</span>(<span class="dv">5</span>)</span>
-<span id="cb7-10"><a href="#cb7-10"></a>[[<span class="dv">1</span>]]</span>
-<span id="cb7-11"><a href="#cb7-11"></a>[<span class="dv">1</span>] <span class="st">"ABD"</span></span>
-<span id="cb7-12"><a href="#cb7-12"></a></span>
-<span id="cb7-13"><a href="#cb7-13"></a>[[<span class="dv">2</span>]]</span>
-<span id="cb7-14"><a href="#cb7-14"></a>[<span class="dv">1</span>] <span class="st">"ACB"</span></span>
-<span id="cb7-15"><a href="#cb7-15"></a></span>
-<span id="cb7-16"><a href="#cb7-16"></a>[[<span class="dv">3</span>]]</span>
-<span id="cb7-17"><a href="#cb7-17"></a>[<span class="dv">1</span>] <span class="st">"ACD"</span></span>
-<span id="cb7-18"><a href="#cb7-18"></a></span>
-<span id="cb7-19"><a href="#cb7-19"></a>[[<span class="dv">4</span>]]</span>
-<span id="cb7-20"><a href="#cb7-20"></a>[<span class="dv">1</span>] <span class="st">"ADB"</span></span>
-<span id="cb7-21"><a href="#cb7-21"></a></span>
-<span id="cb7-22"><a href="#cb7-22"></a>[[<span class="dv">5</span>]]</span>
-<span id="cb7-23"><a href="#cb7-23"></a>[<span class="dv">1</span>] <span class="st">"ADC"</span></span>
-<span id="cb7-24"><a href="#cb7-24"></a></span>
-<span id="cb7-25"><a href="#cb7-25"></a></span>
-<span id="cb7-26"><a href="#cb7-26"></a>b<span class="op">$</span><span class="kw">back</span>()</span>
-<span id="cb7-27"><a href="#cb7-27"></a>[<span class="dv">1</span>] <span class="st">"DCB"</span></span>
-<span id="cb7-28"><a href="#cb7-28"></a></span>
-<span id="cb7-29"><a href="#cb7-29"></a></span>
-<span id="cb7-30"><a href="#cb7-30"></a>b<span class="op">$</span><span class="kw"><a href="https://rdrr.io/r/base/summary.html">summary</a></span>()</span>
-<span id="cb7-31"><a href="#cb7-31"></a><span class="op">$</span>description</span>
-<span id="cb7-32"><a href="#cb7-32"></a>[<span class="dv">1</span>] <span class="st">"Permutations of 4 choose 3"</span></span>
-<span id="cb7-33"><a href="#cb7-33"></a></span>
-<span id="cb7-34"><a href="#cb7-34"></a><span class="op">$</span>currentIndex</span>
-<span id="cb7-35"><a href="#cb7-35"></a>[<span class="dv">1</span>] <span class="dv">24</span></span>
-<span id="cb7-36"><a href="#cb7-36"></a></span>
-<span id="cb7-37"><a href="#cb7-37"></a><span class="op">$</span>totalResults</span>
-<span id="cb7-38"><a href="#cb7-38"></a>[<span class="dv">1</span>] <span class="dv">24</span></span>
-<span id="cb7-39"><a href="#cb7-39"></a></span>
-<span id="cb7-40"><a href="#cb7-40"></a><span class="op">$</span>totalRemaining</span>
-<span id="cb7-41"><a href="#cb7-41"></a>[<span class="dv">1</span>] <span class="dv">0</span></span>
-<span id="cb7-42"><a href="#cb7-42"></a></span>
-<span id="cb7-43"><a href="#cb7-43"></a></span>
-<span id="cb7-44"><a href="#cb7-44"></a>b<span class="op">$</span><span class="kw">prevIter</span>()</span>
-<span id="cb7-45"><a href="#cb7-45"></a>[<span class="dv">1</span>] <span class="st">"DCA"</span></span>
-<span id="cb7-46"><a href="#cb7-46"></a></span>
-<span id="cb7-47"><a href="#cb7-47"></a></span>
-<span id="cb7-48"><a href="#cb7-48"></a>b<span class="op">$</span><span class="kw">prevNIter</span>(<span class="dv">5</span>)</span>
-<span id="cb7-49"><a href="#cb7-49"></a>[[<span class="dv">1</span>]]</span>
-<span id="cb7-50"><a href="#cb7-50"></a>[<span class="dv">1</span>] <span class="st">"DBC"</span></span>
-<span id="cb7-51"><a href="#cb7-51"></a></span>
-<span id="cb7-52"><a href="#cb7-52"></a>[[<span class="dv">2</span>]]</span>
-<span id="cb7-53"><a href="#cb7-53"></a>[<span class="dv">1</span>] <span class="st">"DBA"</span></span>
-<span id="cb7-54"><a href="#cb7-54"></a></span>
-<span id="cb7-55"><a href="#cb7-55"></a>[[<span class="dv">3</span>]]</span>
-<span id="cb7-56"><a href="#cb7-56"></a>[<span class="dv">1</span>] <span class="st">"DAC"</span></span>
-<span id="cb7-57"><a href="#cb7-57"></a></span>
-<span id="cb7-58"><a href="#cb7-58"></a>[[<span class="dv">4</span>]]</span>
-<span id="cb7-59"><a href="#cb7-59"></a>[<span class="dv">1</span>] <span class="st">"DAB"</span></span>
-<span id="cb7-60"><a href="#cb7-60"></a></span>
-<span id="cb7-61"><a href="#cb7-61"></a>[[<span class="dv">5</span>]]</span>
-<span id="cb7-62"><a href="#cb7-62"></a>[<span class="dv">1</span>] <span class="st">"CDB"</span></span>
-<span id="cb7-63"><a href="#cb7-63"></a></span>
-<span id="cb7-64"><a href="#cb7-64"></a></span>
-<span id="cb7-65"><a href="#cb7-65"></a>b<span class="op">$</span><span class="kw">nextRemaining</span>()</span>
-<span id="cb7-66"><a href="#cb7-66"></a>[[<span class="dv">1</span>]]</span>
-<span id="cb7-67"><a href="#cb7-67"></a>[<span class="dv">1</span>] <span class="st">"DAB"</span></span>
-<span id="cb7-68"><a href="#cb7-68"></a></span>
-<span id="cb7-69"><a href="#cb7-69"></a>[[<span class="dv">2</span>]]</span>
-<span id="cb7-70"><a href="#cb7-70"></a>[<span class="dv">1</span>] <span class="st">"DAC"</span></span>
-<span id="cb7-71"><a href="#cb7-71"></a></span>
-<span id="cb7-72"><a href="#cb7-72"></a>[[<span class="dv">3</span>]]</span>
-<span id="cb7-73"><a href="#cb7-73"></a>[<span class="dv">1</span>] <span class="st">"DBA"</span></span>
-<span id="cb7-74"><a href="#cb7-74"></a></span>
-<span id="cb7-75"><a href="#cb7-75"></a>[[<span class="dv">4</span>]]</span>
-<span id="cb7-76"><a href="#cb7-76"></a>[<span class="dv">1</span>] <span class="st">"DBC"</span></span>
-<span id="cb7-77"><a href="#cb7-77"></a></span>
-<span id="cb7-78"><a href="#cb7-78"></a>[[<span class="dv">5</span>]]</span>
-<span id="cb7-79"><a href="#cb7-79"></a>[<span class="dv">1</span>] <span class="st">"DCA"</span></span>
-<span id="cb7-80"><a href="#cb7-80"></a></span>
-<span id="cb7-81"><a href="#cb7-81"></a>[[<span class="dv">6</span>]]</span>
-<span id="cb7-82"><a href="#cb7-82"></a>[<span class="dv">1</span>] <span class="st">"DCB"</span></span>
-<span id="cb7-83"><a href="#cb7-83"></a></span>
-<span id="cb7-84"><a href="#cb7-84"></a><span class="co">## Random access</span></span>
-<span id="cb7-85"><a href="#cb7-85"></a>a[[<span class="dv">5</span>]]</span>
-<span id="cb7-86"><a href="#cb7-86"></a>[<span class="dv">1</span>] <span class="st">"ADB"</span></span>
-<span id="cb7-87"><a href="#cb7-87"></a></span>
-<span id="cb7-88"><a href="#cb7-88"></a> </span>
-<span id="cb7-89"><a href="#cb7-89"></a>b<span class="op">$</span><span class="kw">prevRemaining</span>()</span>
-<span id="cb7-90"><a href="#cb7-90"></a>[[<span class="dv">1</span>]]</span>
-<span id="cb7-91"><a href="#cb7-91"></a>[<span class="dv">1</span>] <span class="st">"ACD"</span></span>
-<span id="cb7-92"><a href="#cb7-92"></a></span>
-<span id="cb7-93"><a href="#cb7-93"></a>[[<span class="dv">2</span>]]</span>
-<span id="cb7-94"><a href="#cb7-94"></a>[<span class="dv">1</span>] <span class="st">"ACB"</span></span>
-<span id="cb7-95"><a href="#cb7-95"></a></span>
-<span id="cb7-96"><a href="#cb7-96"></a>[[<span class="dv">3</span>]]</span>
-<span id="cb7-97"><a href="#cb7-97"></a>[<span class="dv">1</span>] <span class="st">"ABD"</span></span>
-<span id="cb7-98"><a href="#cb7-98"></a></span>
-<span id="cb7-99"><a href="#cb7-99"></a>[[<span class="dv">4</span>]]</span>
-<span id="cb7-100"><a href="#cb7-100"></a>[<span class="dv">1</span>] <span class="st">"ABC"</span></span>
-<span id="cb7-101"><a href="#cb7-101"></a></span>
-<span id="cb7-102"><a href="#cb7-102"></a><span class="co">## View the source vector</span></span>
-<span id="cb7-103"><a href="#cb7-103"></a>b<span class="op">$</span><span class="kw">sourceVector</span>()</span>
-<span id="cb7-104"><a href="#cb7-104"></a>[<span class="dv">1</span>] <span class="st">"A"</span> <span class="st">"B"</span> <span class="st">"C"</span> <span class="st">"D"</span></span></code></pre></div>
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="co">## Initialize the iterator</span>
+<span class="va">b</span> <span class="op">=</span> <span class="fu"><a href="../reference/combinatoricsIterator.html">permuteIter</a></span><span class="op">(</span><span class="va">LETTERS</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">4</span><span class="op">]</span>, <span class="fl">3</span>, FUN <span class="op">=</span> <span class="kw">function</span><span class="op">(</span><span class="va">p</span><span class="op">)</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste</a></span><span class="op">(</span><span class="va">p</span>, collapse <span class="op">=</span> <span class="st">""</span><span class="op">)</span><span class="op">)</span>
+
+
+<span class="va">b</span><span class="op">$</span><span class="fu">nextIter</span><span class="op">(</span><span class="op">)</span>
+<span class="co">#&gt; [1] "ABC"</span>
+
+
+<span class="va">b</span><span class="op">$</span><span class="fu">nextNIter</span><span class="op">(</span><span class="fl">5</span><span class="op">)</span>
+<span class="co">#&gt; [[1]]</span>
+<span class="co">#&gt; [1] "ABD"</span>
+<span class="co">#&gt;</span>
+<span class="co">#&gt; [[2]]</span>
+<span class="co">#&gt; [1] "ACB"</span>
+<span class="co">#&gt;</span>
+<span class="co">#&gt; [[3]]</span>
+<span class="co">#&gt; [1] "ACD"</span>
+<span class="co">#&gt;</span>
+<span class="co">#&gt; [[4]]</span>
+<span class="co">#&gt; [1] "ADB"</span>
+<span class="co">#&gt;</span>
+<span class="co">#&gt; [[5]]</span>
+<span class="co">#&gt; [1] "ADC"</span>
+
+
+<span class="va">b</span><span class="op">$</span><span class="fu">back</span><span class="op">(</span><span class="op">)</span>
+<span class="co">#&gt; [1] "DCB"</span>
+
+
+<span class="va">b</span><span class="op">$</span><span class="fu">summary</span><span class="op">(</span><span class="op">)</span>
+<span class="co">#&gt; $description</span>
+<span class="co">#&gt; [1] "Permutations of 4 choose 3"</span>
+<span class="co">#&gt;</span>
+<span class="co">#&gt; $currentIndex</span>
+<span class="co">#&gt; [1] 24</span>
+<span class="co">#&gt;</span>
+<span class="co">#&gt; $totalResults</span>
+<span class="co">#&gt; [1] 24</span>
+<span class="co">#&gt;</span>
+<span class="co">#&gt; $totalRemaining</span>
+<span class="co">#&gt; [1] 0</span>
+
+
+<span class="va">b</span><span class="op">$</span><span class="fu">prevIter</span><span class="op">(</span><span class="op">)</span>
+<span class="co">#&gt; [1] "DCA"</span>
+
+
+<span class="va">b</span><span class="op">$</span><span class="fu">prevNIter</span><span class="op">(</span><span class="fl">5</span><span class="op">)</span>
+<span class="co">#&gt; [[1]]</span>
+<span class="co">#&gt; [1] "DBC"</span>
+
+<span class="co">#&gt; [[2]]</span>
+<span class="co">#&gt; [1] "DBA"</span>
+
+<span class="co">#&gt; [[3]]</span>
+<span class="co">#&gt; [1] "DAC"</span>
+
+<span class="co">#&gt; [[4]]</span>
+<span class="co">#&gt; [1] "DAB"</span>
+
+<span class="co">#&gt; [[5]]</span>
+<span class="co">#&gt; [1] "CDB"</span>
+
+
+<span class="va">b</span><span class="op">$</span><span class="fu">nextRemaining</span><span class="op">(</span><span class="op">)</span>
+<span class="co">#&gt; [[1]]</span>
+<span class="co">#&gt; [1] "DAB"</span>
+<span class="co">#&gt;</span>
+<span class="co">#&gt; [[2]]</span>
+<span class="co">#&gt; [1] "DAC"</span>
+<span class="co">#&gt;</span>
+<span class="co">#&gt; [[3]]</span>
+<span class="co">#&gt; [1] "DBA"</span>
+<span class="co">#&gt;</span>
+<span class="co">#&gt; [[4]]</span>
+<span class="co">#&gt; [1] "DBC"</span>
+<span class="co">#&gt;</span>
+<span class="co">#&gt; [[5]]</span>
+<span class="co">#&gt; [1] "DCA"</span>
+<span class="co">#&gt;</span>
+<span class="co">#&gt; [[6]]</span>
+<span class="co">#&gt; [1] "DCB"</span>
+
+<span class="co">## Random access</span>
+<span class="va">b</span><span class="op">[[</span><span class="fl">5</span><span class="op">]</span><span class="op">]</span>
+<span class="co">#&gt; [1] "ADB"</span>
+
+
+<span class="va">b</span><span class="op">$</span><span class="fu">prevRemaining</span><span class="op">(</span><span class="op">)</span>
+<span class="co">#&gt; [[1]]</span>
+<span class="co">#&gt; [1] "ACD"</span>
+<span class="co">#&gt;</span>
+<span class="co">#&gt; [[2]]</span>
+<span class="co">#&gt; [1] "ACB"</span>
+<span class="co">#&gt;</span>
+<span class="co">#&gt; [[3]]</span>
+<span class="co">#&gt; [1] "ABD"</span>
+<span class="co">#&gt;</span>
+<span class="co">#&gt; [[4]]</span>
+<span class="co">#&gt; [1] "ABC"</span>
+
+<span class="co">## View the source vector</span>
+<span class="va">b</span><span class="op">$</span><span class="fu">sourceVector</span><span class="op">(</span><span class="op">)</span>
+<span class="co">#&gt; [1] "A" "B" "C" "D"</span></code></pre></div>
+</div>
+</div>
+<div class="section level2">
+<h2 id="new-in-verison-2-5-0">New in Verison <code>2.5.0</code><a class="anchor" aria-label="anchor" href="#new-in-verison-2-5-0"></a>
+</h2>
+<p>As of version <code>2.5.0</code>, we no longer rely on <code>Rcpp</code> as a dependency, which means that we do not utilize <code>Rcpp</code> modules for exposing C++ classes. This is now carried out using external pointers (See <a href="https://cran.r-project.org/doc/manuals/r-release/R-exts.html#External-pointers-and-weak-references" class="external-link">External pointers and weak references</a>) along with <a href="http://adv-r.had.co.nz/S4.html" class="external-link">S4 Classes</a>. We use the slots of <code>S4</code> classes for exposing each method so access is carried out with the “at sign”, <code>@</code>. We have also added the ability to access each method with the “dollar sign”, <code>$</code>, for backwards compatibility.</p>
+<div class="section level3">
+<h3 id="access-efficiency-in-2-5-0">Access Efficiency in <code>2.5.0</code><a class="anchor" aria-label="anchor" href="#access-efficiency-in-2-5-0"></a>
+</h3>
+<p>Our tests show that accessing methods is much more efficient in <code>2.5.0</code> compared to prior versions. In the below tests, we measure excecution time of calling <code>nextIter</code> multiple times in different versions. We will use the function <code>test_nextIter</code> for our testing:</p>
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">test_nextIter</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">n</span>, <span class="va">m</span>, <span class="va">get_val</span> <span class="op">=</span> <span class="cn">FALSE</span>, <span class="va">v</span> <span class="op">=</span> <span class="fl">243</span><span class="op">)</span> <span class="op">{</span>
+    <span class="va">a</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/combinatoricsIterator.html">comboIter</a></span><span class="op">(</span><span class="va">n</span>, <span class="va">m</span><span class="op">)</span>
+    <span class="va">total</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/combinatoricsCount.html">comboCount</a></span><span class="op">(</span><span class="va">n</span>, <span class="va">m</span><span class="op">)</span>
+
+    <span class="kw">if</span> <span class="op">(</span><span class="va">get_val</span><span class="op">)</span> <span class="op">{</span>
+        <span class="va">mat</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">matrix</a></span><span class="op">(</span><span class="fl">0L</span>, nrow <span class="op">=</span> <span class="va">total</span>, ncol <span class="op">=</span> <span class="va">m</span><span class="op">)</span>
+        <span class="kw">for</span> <span class="op">(</span><span class="va">i</span> <span class="kw">in</span> <span class="fl">1</span><span class="op">:</span><span class="va">total</span><span class="op">)</span> <span class="va">mat</span><span class="op">[</span><span class="va">i</span>, <span class="op">]</span> <span class="op">&lt;-</span> <span class="va">a</span><span class="op">$</span><span class="fu">nextIter</span><span class="op">(</span><span class="op">)</span>
+        <span class="kw"><a href="https://rdrr.io/r/base/function.html" class="external-link">return</a></span><span class="op">(</span><span class="va">mat</span><span class="op">)</span>
+    <span class="op">}</span> <span class="kw">else</span> <span class="op">{</span>
+        <span class="kw">if</span> <span class="op">(</span><span class="va">v</span> <span class="op">==</span> <span class="fl">243</span><span class="op">)</span> <span class="op">{</span>
+            <span class="kw">for</span> <span class="op">(</span><span class="va">i</span> <span class="kw">in</span> <span class="fl">1</span><span class="op">:</span><span class="va">total</span><span class="op">)</span> <span class="va">a</span><span class="op">$</span><span class="fu">nextIter</span><span class="op">(</span><span class="op">)</span>
+        <span class="op">}</span> <span class="kw">else</span> <span class="op">{</span>
+            <span class="kw">for</span> <span class="op">(</span><span class="va">i</span> <span class="kw">in</span> <span class="fl">1</span><span class="op">:</span><span class="va">total</span><span class="op">)</span> <span class="va">a</span><span class="op">@</span><span class="va">nextIter</span><span class="op">(</span><span class="op">)</span>
+        <span class="op">}</span>
+
+        <span class="fu"><a href="https://rdrr.io/r/base/invisible.html" class="external-link">invisible</a></span><span class="op">(</span><span class="cn">NULL</span><span class="op">)</span>
+    <span class="op">}</span>
+<span class="op">}</span></code></pre></div>
+<div class="section level4">
+<h4 id="version-2-4-3-using-rcpp">Version <code>2.4.3</code> Using <code>Rcpp</code><a class="anchor" aria-label="anchor" href="#version-2-4-3-using-rcpp"></a>
+</h4>
+<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/joshuaulrich/microbenchmark/" class="external-link">microbenchmark</a></span><span class="op">)</span>
+
+<span class="fu"><a href="../reference/combinatoricsCount.html">comboCount</a></span><span class="op">(</span><span class="fl">15</span>, <span class="fl">8</span><span class="op">)</span>
+<span class="co">#&gt; [1] 6435</span>
+
+<span class="fu"><a href="https://rdrr.io/pkg/microbenchmark/man/microbenchmark.html" class="external-link">microbenchmark</a></span><span class="op">(</span><span class="fu">test_nextIter</span><span class="op">(</span><span class="fl">15</span>, <span class="fl">8</span><span class="op">)</span><span class="op">)</span>
+<span class="co">#&gt; Unit: milliseconds</span>
+<span class="co">#&gt;                  expr      min       lq     mean   median      uq      max neval</span>
+<span class="co">#&gt;  test_nextIter(15, 8) 45.40534 47.86895 50.09872 48.72708 50.7684 108.5482   100</span>
+
+<span class="fu"><a href="https://rdrr.io/r/base/identical.html" class="external-link">identical</a></span><span class="op">(</span><span class="fu">test_nextIter</span><span class="op">(</span><span class="fl">15</span>, <span class="fl">8</span>, get_val <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>, <span class="fu"><a href="../reference/combinatoricsGeneral.html">comboGeneral</a></span><span class="op">(</span><span class="fl">15</span>, <span class="fl">8</span><span class="op">)</span><span class="op">)</span>
+<span class="co">#&gt; [1] TRUE</span>
+
+<span class="fu"><a href="../reference/combinatoricsCount.html">comboCount</a></span><span class="op">(</span><span class="fl">25</span>, <span class="fl">10</span><span class="op">)</span>
+<span class="co">#&gt; [1] 3268760</span>
+
+<span class="fu"><a href="https://rdrr.io/r/base/system.time.html" class="external-link">system.time</a></span><span class="op">(</span><span class="fu">test_nextIter</span><span class="op">(</span><span class="fl">25</span>, <span class="fl">10</span><span class="op">)</span><span class="op">)</span>
+<span class="co">#&gt;    user  system elapsed</span>
+<span class="co">#&gt;  24.764   0.064  24.841</span>
+
+<span class="fu"><a href="https://rdrr.io/r/utils/Rprof.html" class="external-link">Rprof</a></span><span class="op">(</span><span class="st">"Version243.out"</span>, memory.profiling <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>
+<span class="fu">test_nextIter</span><span class="op">(</span><span class="fl">25</span>, <span class="fl">10</span><span class="op">)</span>
+<span class="fu"><a href="https://rdrr.io/r/utils/Rprof.html" class="external-link">Rprof</a></span><span class="op">(</span><span class="cn">NULL</span><span class="op">)</span>
+<span class="fu"><a href="https://rdrr.io/r/utils/summaryRprof.html" class="external-link">summaryRprof</a></span><span class="op">(</span><span class="st">"Version243.out"</span>, memory <span class="op">=</span> <span class="st">"both"</span><span class="op">)</span>
+<span class="co">#&gt; $by.self</span>
+<span class="co">#&gt;                  self.time self.pct total.time total.pct mem.total</span>
+<span class="co">#&gt; "$"                   7.56    31.95      17.48     73.88    6200.3</span>
+<span class="co">#&gt; "as.environment"      6.60    27.90       6.60     27.90    2506.6</span>
+<span class="co">#&gt; "test_nextIter"       2.78    11.75      23.66    100.00    8351.5</span>
+<span class="co">#&gt; ".External"           2.34     9.89       2.34      9.89     802.4</span>
+<span class="co">#&gt; "exists"              1.80     7.61       1.80      7.61     582.3</span>
+<span class="co">#&gt; "get"                 1.32     5.58       1.32      5.58     406.6</span>
+<span class="co">#&gt; "a$nextIter"          1.06     4.48       3.40     14.37    1196.0</span>
+<span class="co">#&gt; "is.symbol"           0.20     0.85       0.20      0.85      89.0</span>
+<span class="co">#&gt;</span>
+<span class="co">#&gt; $by.total</span>
+<span class="co">#&gt;                  total.time total.pct mem.total self.time self.pct</span>
+<span class="co">#&gt; "test_nextIter"       23.66    100.00    8351.5      2.78    11.75</span>
+<span class="co">#&gt; "$"                   17.48     73.88    6200.3      7.56    31.95</span>
+<span class="co">#&gt; "as.environment"       6.60     27.90    2506.6      6.60    27.90</span>
+<span class="co">#&gt; "a$nextIter"           3.40     14.37    1196.0      1.06     4.48</span>
+<span class="co">#&gt; ".External"            2.34      9.89     802.4      2.34     9.89</span>
+<span class="co">#&gt; "exists"               1.80      7.61     582.3      1.80     7.61</span>
+<span class="co">#&gt; "get"                  1.32      5.58     406.6      1.32     5.58</span>
+<span class="co">#&gt; "is.symbol"            0.20      0.85      89.0      0.20     0.85</span>
+<span class="co">#&gt;</span>
+<span class="co">#&gt; $sample.interval</span>
+<span class="co">#&gt; [1] 0.02</span>
+<span class="co">#&gt;</span>
+<span class="co">#&gt; $sampling.time</span>
+<span class="co">#&gt; [1] 23.66</span></code></pre></div>
+</div>
+<div class="section level4">
+<h4 id="version-2-5-0-no-rcpp">Version <code>2.5.0</code> (No <code>Rcpp</code>)<a class="anchor" aria-label="anchor" href="#version-2-5-0-no-rcpp"></a>
+</h4>
+<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/pkg/microbenchmark/man/microbenchmark.html" class="external-link">microbenchmark</a></span><span class="op">(</span><span class="fu">test_nextIter</span><span class="op">(</span><span class="fl">15</span>, <span class="fl">8</span>, v <span class="op">=</span> <span class="fl">250</span><span class="op">)</span><span class="op">)</span>
+<span class="co">#&gt; Unit: milliseconds</span>
+<span class="co">#&gt;                           expr      min       lq    mean   median        uq      max neval</span>
+<span class="co">#&gt;  test_nextIter(15, 8, v = 250) 3.344143 3.580636 3.877448 3.753536 4.000129 9.354305   100</span>
+
+<span class="fu"><a href="https://rdrr.io/r/base/system.time.html" class="external-link">system.time</a></span><span class="op">(</span><span class="fu">test_nextIter</span><span class="op">(</span><span class="fl">25</span>, <span class="fl">10</span>, v <span class="op">=</span> <span class="fl">250</span><span class="op">)</span><span class="op">)</span>
+<span class="co">#&gt;    user  system elapsed</span>
+<span class="co">#&gt;   1.794   0.018   1.818</span>
+
+<span class="fu"><a href="https://rdrr.io/r/base/identical.html" class="external-link">identical</a></span><span class="op">(</span><span class="fu">test_nextIter</span><span class="op">(</span><span class="fl">15</span>, <span class="fl">8</span>, get_val <span class="op">=</span> <span class="cn">TRUE</span>, v <span class="op">=</span> <span class="fl">250</span><span class="op">)</span>, <span class="fu"><a href="../reference/combinatoricsGeneral.html">comboGeneral</a></span><span class="op">(</span><span class="fl">15</span>, <span class="fl">8</span><span class="op">)</span><span class="op">)</span>
+<span class="co">#&gt; [1] TRUE</span>
+
+<span class="fu"><a href="https://rdrr.io/r/utils/Rprof.html" class="external-link">Rprof</a></span><span class="op">(</span><span class="st">"Version250.out"</span>, memory.profiling <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>
+<span class="fu">test_nextIter</span><span class="op">(</span><span class="fl">25</span>, <span class="fl">10</span>, v <span class="op">=</span> <span class="fl">250</span><span class="op">)</span>
+<span class="fu"><a href="https://rdrr.io/r/utils/Rprof.html" class="external-link">Rprof</a></span><span class="op">(</span><span class="cn">NULL</span><span class="op">)</span>
+<span class="fu"><a href="https://rdrr.io/r/utils/summaryRprof.html" class="external-link">summaryRprof</a></span><span class="op">(</span><span class="st">"Version250.out"</span>, memory <span class="op">=</span> <span class="st">"both"</span><span class="op">)</span>
+<span class="co">#&gt; $by.self</span>
+<span class="co">#&gt;                 self.time self.pct total.time total.pct mem.total</span>
+<span class="co">#&gt; "&lt;Anonymous&gt;"        0.98    53.85       1.50     82.42     684.2</span>
+<span class="co">#&gt; ".Call"              0.52    28.57       0.52     28.57     250.8</span>
+<span class="co">#&gt; "test_nextIter"      0.32    17.58       1.82    100.00     835.7</span>
+<span class="co">#&gt;</span>
+<span class="co">#&gt; $by.total</span>
+<span class="co">#&gt;                 total.time total.pct mem.total self.time self.pct</span>
+<span class="co">#&gt; "test_nextIter"       1.82    100.00     835.7      0.32    17.58</span>
+<span class="co">#&gt; "&lt;Anonymous&gt;"         1.50     82.42     684.2      0.98    53.85</span>
+<span class="co">#&gt; ".Call"               0.52     28.57     250.8      0.52    28.57</span>
+<span class="co">#&gt;</span>
+<span class="co">#&gt; $sample.interval</span>
+<span class="co">#&gt; [1] 0.02</span>
+<span class="co">#&gt;</span>
+<span class="co">#&gt; $sampling.time</span>
+<span class="co">#&gt; [1] 1.82</span></code></pre></div>
+</div>
+<div class="section level4">
+<h4 id="conclusions">Conclusions<a class="anchor" aria-label="anchor" href="#conclusions"></a>
+</h4>
+<p>It appears that memory is the issue in previous versions. Indeed, if we look at <a href="https://cran.r-project.org/doc/manuals/r-release/R-exts.html#Memory-statistics-from-Rprof" class="external-link">Memory statistics from Rprof</a>, and view both files with <code>memory = "stats"</code> we see that the C funciton, <code>duplicate</code>, appears to be the main culprit.</p>
+<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="co">### Verison 2.4.3</span>
+<span class="fu"><a href="https://rdrr.io/r/utils/summaryRprof.html" class="external-link">summaryRprof</a></span><span class="op">(</span><span class="st">"Version243.out"</span>, memory <span class="op">=</span> <span class="st">"stats"</span><span class="op">)</span>
+<span class="co">#&gt; index: "test_nextIter"</span>
+<span class="co">#&gt;      vsize.small  max.vsize.small      vsize.large  max.vsize.large            nodes        max.nodes     duplications tot.duplications          samples</span>
+<span class="co">#&gt;           348052           913680                0                0          6857538         18002712             7959          1106263              139</span>
+<span class="co">#&gt; ------------------------------------------------------------------------------------------------------------------------------------------------------</span>
+<span class="co">#&gt; index: "test_nextIter":"$"</span>
+<span class="co">#&gt;      vsize.small  max.vsize.small      vsize.large  max.vsize.large            nodes        max.nodes     duplications tot.duplications          samples</span>
+<span class="co">#&gt;           365200          5153656             6301          5507128          7142755         55272952             8367          7313083              874</span>
+<span class="co">#&gt; ------------------------------------------------------------------------------------------------------------------------------------------------------</span>
+<span class="co">#&gt; index: "test_nextIter":"a$nextIter"</span>
+<span class="co">#&gt;      vsize.small  max.vsize.small      vsize.large  max.vsize.large            nodes        max.nodes     duplications tot.duplications          samples</span>
+<span class="co">#&gt;           356272           913248                0                0          7020598         17994648             8149          1385360              170</span>
+
+<span class="co">## Version 2.5.0</span>
+<span class="fu"><a href="https://rdrr.io/r/utils/summaryRprof.html" class="external-link">summaryRprof</a></span><span class="op">(</span><span class="st">"Version250.out"</span>, memory <span class="op">=</span> <span class="st">"stats"</span><span class="op">)</span>
+<span class="co">#&gt; index: "test_nextIter"</span>
+<span class="co">#&gt;      vsize.small  max.vsize.small      vsize.large  max.vsize.large            nodes        max.nodes     duplications tot.duplications          samples</span>
+<span class="co">#&gt;          2207368          2874304                0                0          7725736         10060008                0                0               16</span>
+<span class="co">#&gt; ------------------------------------------------------------------------------------------------------------------------------------------------------</span>
+<span class="co">#&gt; index: "test_nextIter":"&lt;Anonymous&gt;"</span>
+<span class="co">#&gt;      vsize.small  max.vsize.small      vsize.large  max.vsize.large            nodes        max.nodes     duplications tot.duplications          samples</span>
+<span class="co">#&gt;          2326084         15036072           194289         14571640          8842636        105225624                0                7               75</span></code></pre></div>
+<p>With verison <code>2.5.0</code> there are only 7 <code>tot.duplications</code> whereas with version <code>2.4.3</code> there are millions of <code>tot.duplications</code>. In fact, there are a total of <code>1106263 + 7313083 + 1385360 = 9,804,706</code> duplications with version <code>2.4.3</code>. This together with <code>comboCount(25, 10) = 3,268,760</code> implies that the C funciton, <code>duplicate</code>, is called about 3 times per iteration with older versions (i.e. <code>9804706 / 3268760 ~= 2.999518</code>).</p>
+</div>
+</div>
+<div class="section level3">
+<h3 id="iterating-over-partitions-of-a-number">Iterating over Partitions of a Number<a class="anchor" aria-label="anchor" href="#iterating-over-partitions-of-a-number"></a>
+</h3>
+<p>For most partition cases, we have all of the capabilities of the standard <code>comboIter</code> and <code>permuteIter</code> except for bidirectionality (i.e. the <code>prevIter</code> methods). For cases involving standard multisets we also don’t have random access methods.</p>
+<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="co">## Similar illustration of comboIter(5, 3) at the top</span>
+<span class="va">p</span> <span class="op">=</span> <span class="fu"><a href="../reference/partitionsIterator.html">partitionsIter</a></span><span class="op">(</span><span class="fl">16</span>, <span class="fl">4</span><span class="op">)</span>
+<span class="va">p</span><span class="op">@</span><span class="va">nextIter</span><span class="op">(</span><span class="op">)</span>
+<span class="co">#&gt; [1]  1  2  3 10</span>
+
+<span class="va">p</span><span class="op">@</span><span class="va">nextIter</span><span class="op">(</span><span class="op">)</span>
+<span class="co">#&gt; [1] 1 2 4 9</span>
+
+<span class="va">iter</span> <span class="op">=</span> <span class="va">p</span><span class="op">@</span><span class="va">currIter</span><span class="op">(</span><span class="op">)</span>
+<span class="va">i</span> <span class="op">=</span> <span class="fl">1</span>
+
+<span class="kw">while</span> <span class="op">(</span><span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/NULL.html" class="external-link">is.null</a></span><span class="op">(</span><span class="va">iter</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span>
+    <span class="fu"><a href="https://rdrr.io/r/base/cat.html" class="external-link">cat</a></span><span class="op">(</span><span class="va">i</span>, <span class="st">" "</span>, <span class="va">iter</span>, <span class="st">"\n"</span><span class="op">)</span>
+    <span class="va">iter</span> <span class="op">=</span> <span class="va">p</span><span class="op">@</span><span class="va">nextIter</span><span class="op">(</span><span class="op">)</span>
+    <span class="va">i</span> <span class="op">=</span> <span class="va">i</span> <span class="op">+</span> <span class="fl">1</span>
+<span class="op">}</span>
+<span class="co">#&gt; 1   1 2 4 9</span>
+<span class="co">#&gt; 2   1 2 5 8</span>
+<span class="co">#&gt; 3   1 2 6 7</span>
+<span class="co">#&gt; 4   1 3 4 8</span>
+<span class="co">#&gt; 5   1 3 5 7</span>
+<span class="co">#&gt; 6   1 4 5 6</span>
+<span class="co">#&gt; 7   2 3 4 7</span>
+<span class="co">#&gt; 8   2 3 5 6</span>
+<span class="co">#&gt; No more results.</span>
+
+<span class="fu"><a href="../reference/partitionsGeneral.html">partitionsGeneral</a></span><span class="op">(</span><span class="fl">16</span>, <span class="fl">4</span>, lower <span class="op">=</span> <span class="fl">2</span><span class="op">)</span>
+<span class="co">#&gt;      [,1] [,2] [,3] [,4]</span>
+<span class="co">#&gt; [1,]    1    2    4    9</span>
+<span class="co">#&gt; [2,]    1    2    5    8</span>
+<span class="co">#&gt; [3,]    1    2    6    7</span>
+<span class="co">#&gt; [4,]    1    3    4    8</span>
+<span class="co">#&gt; [5,]    1    3    5    7</span>
+<span class="co">#&gt; [6,]    1    4    5    6</span>
+<span class="co">#&gt; [7,]    2    3    4    7</span>
+<span class="co">#&gt; [8,]    2    3    5    6</span>
+
+<span class="va">p</span><span class="op">@</span><span class="va">summary</span><span class="op">(</span><span class="op">)</span>
+<span class="co">#&gt; $description</span>
+<span class="co">#&gt; [1] "Partitions of 16 into 4 parts"</span>
+<span class="co">#&gt;</span>
+<span class="co">#&gt; $currentIndex</span>
+<span class="co">#&gt; [1] 10</span>
+<span class="co">#&gt;</span>
+<span class="co">#&gt; $totalResults</span>
+<span class="co">#&gt; [1] 9</span>
+<span class="co">#&gt;</span>
+<span class="co">#&gt; $totalRemaining</span>
+<span class="co">#&gt; [1] -1</span>
+
+<span class="co">## Using random access</span>
+<span class="va">p</span><span class="op">[[</span><span class="fl">7</span><span class="op">]</span><span class="op">]</span>
+<span class="co">#&gt; [1] 1 4 5 6</span>
+
+<span class="co">## No previous iterators</span>
+<span class="va">p</span><span class="op">@</span><span class="va">prevIter</span><span class="op">(</span><span class="op">)</span>
+<span class="co">#&gt; Error: no slot of name "prevIter" for this object of class "Partitions"</span></code></pre></div>
+</div>
+<div class="section level3">
+<h3 id="iterating-over-constrained-combinationspermutations">Iterating over Constrained Combinations/Permutations<a class="anchor" aria-label="anchor" href="#iterating-over-constrained-combinationspermutations"></a>
+</h3>
+<p>Now, the combinatorial iterators have all of the features of their “general” analogs (I.e. <code>{combo|permute|partitions}General</code>), which includes constrained results.</p>
+<p>For general constrained cases, these iterators offer huge advantages over their “general” counterparts. Previously, one had to guess how many results there would be using the <code>upper</code> parameter as executing the function with no constraints meant the user could be waiting for a while or consume a large amount of resources.</p>
+<p>Another drawback is that it difficult to start generating from a particular point. With the “general” functions, if the <code>lower</code> parameter is used, we have to make a decision in order to disambiguate the use. Without constraints, using <code>lower</code> is easy to understand. It simply means to start generating results starting at a particular lexicographical result, which we can do efficiently (i.e. no need to generate the first <code>lower - 1</code> results). With constraints, it could mean one of two things:</p>
+<ol style="list-style-type: decimal">
+<li>Start checking from a particular lexicographical result without considering the constraint (as we do normally).</li>
+<li>Start generating results from a particular result with regards to the final constrained output.</li>
+</ol>
+<p>In <code>RcppAlgos</code> we have always used the first interpretation. A big downside for the second point is that we don’t have any fast algorithms for enumerating the total number of results, which reduces determining the <em>n<sup>th</sup></em> result to a brute force approach.</p>
+<p>With iterators, we can generate <em>n</em> results with <code>nextNIter(n)</code> or calling <code>nextIter()</code> <em>n</em> times (or some combination of the two). Then, if we want to continue iterating, we pick up where we left off fetching the <em>(n + 1)<sup>th</sup></em> result and beyond (if there are any results left). This allows us to keep memory low without sacrificing our current state.</p>
+<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="fl">55</span><span class="op">)</span>
+<span class="va">s</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/Uniform.html" class="external-link">runif</a></span><span class="op">(</span><span class="fl">10</span>, <span class="op">-</span><span class="fl">5</span>, <span class="fl">5</span><span class="op">)</span>
+
+<span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">s</span><span class="op">)</span>
+<span class="co">#&gt; [1]  0.478135161 -2.818403214 -4.650360052  2.915492940</span>
+<span class="co">#&gt; [5]  0.602420762 -4.257748260 -3.684770642 -2.058761222</span>
+<span class="co">#&gt; [9]  0.007612633 -4.116755421</span>
+
+<span class="co">## Using comboGeneral to retrieve all results</span>
+<span class="fu"><a href="../reference/combinatoricsGeneral.html">comboGeneral</a></span><span class="op">(</span><span class="va">s</span>, <span class="fl">5</span>, constraintFun <span class="op">=</span> <span class="st">"mean"</span>,
+             comparisonFun <span class="op">=</span> <span class="st">"&lt;"</span>, limitConstraints <span class="op">=</span> <span class="op">-</span><span class="fl">3</span><span class="op">)</span>
+<span class="co">#&gt;            [,1]      [,2]      [,3]      [,4]         [,5]</span>
+<span class="co">#&gt;  [1,] -4.650360 -4.257748 -4.116755 -3.684771 -2.818403214</span>
+<span class="co">#&gt;  [2,] -4.650360 -4.257748 -4.116755 -3.684771 -2.058761222</span>
+<span class="co">#&gt;  [3,] -4.650360 -4.257748 -4.116755 -3.684771  0.007612633</span>
+<span class="co">#&gt;  [4,] -4.650360 -4.257748 -4.116755 -3.684771  0.478135161</span>
+<span class="co">#&gt;  [5,] -4.650360 -4.257748 -4.116755 -3.684771  0.602420762</span>
+<span class="co">#&gt;  [6,] -4.650360 -4.257748 -4.116755 -2.818403 -2.058761222</span>
+<span class="co">#&gt;  [7,] -4.650360 -4.257748 -4.116755 -2.818403  0.007612633</span>
+<span class="co">#&gt;  [8,] -4.650360 -4.257748 -4.116755 -2.818403  0.478135161</span>
+<span class="co">#&gt;  [9,] -4.650360 -4.257748 -4.116755 -2.818403  0.602420762</span>
+<span class="co">#&gt; [10,] -4.650360 -4.257748 -4.116755 -2.058761  0.007612633</span>
+<span class="co">#&gt; [11,] -4.650360 -4.257748 -3.684771 -2.818403 -2.058761222</span>
+<span class="co">#&gt; [12,] -4.650360 -4.257748 -3.684771 -2.818403  0.007612633</span>
+<span class="co">#&gt; [13,] -4.650360 -4.116755 -3.684771 -2.818403 -2.058761222</span>
+<span class="co">#&gt; [14,] -4.650360 -4.116755 -3.684771 -2.818403  0.007612633</span>
+<span class="co">#&gt; [15,] -4.257748 -4.116755 -3.684771 -2.818403 -2.058761222</span>
+
+
+<span class="co">## Using comboIter</span>
+<span class="va">a</span> <span class="op">=</span> <span class="fu"><a href="../reference/combinatoricsIterator.html">comboIter</a></span><span class="op">(</span><span class="va">s</span>, <span class="fl">5</span>, constraintFun <span class="op">=</span> <span class="st">"mean"</span>,
+              comparisonFun <span class="op">=</span> <span class="st">"&lt;"</span>, limitConstraints <span class="op">=</span> <span class="op">-</span><span class="fl">3</span><span class="op">)</span>
+
+<span class="co">## See the first result</span>
+<span class="va">a</span><span class="op">@</span><span class="va">nextIter</span><span class="op">(</span><span class="op">)</span>
+<span class="co">#&gt; [1] -4.650360 -4.257748 -4.116755 -3.684771 -2.818403</span>
+
+<span class="co">## Get the next three</span>
+<span class="va">a</span><span class="op">@</span><span class="va">nextNIter</span><span class="op">(</span><span class="fl">3</span><span class="op">)</span>
+<span class="co">#&gt;          [,1]      [,2]      [,3]      [,4]         [,5]</span>
+<span class="co">#&gt; [1,] -4.65036 -4.257748 -4.116755 -3.684771 -2.058761222</span>
+<span class="co">#&gt; [2,] -4.65036 -4.257748 -4.116755 -3.684771  0.007612633</span>
+<span class="co">#&gt; [3,] -4.65036 -4.257748 -4.116755 -3.684771  0.478135161</span>
+
+<span class="co">## See the summary... Note the totalResults and totalRemaining</span>
+<span class="co">## fields are NA as we are not able to calculate this upfront.</span>
+<span class="va">a</span><span class="op">@</span><span class="va">summary</span><span class="op">(</span><span class="op">)</span>
+<span class="co">#&gt; $description</span>
+<span class="co">#&gt; [1] "Combinations of 10 choose 5 where the mean is &lt; -3"</span>
+<span class="co">#&gt;</span>
+<span class="co">#&gt; $currentIndex</span>
+<span class="co">#&gt; [1] 4</span>
+<span class="co">#&gt;</span>
+<span class="co">#&gt; $totalResults</span>
+<span class="co">#&gt; [1] NA</span>
+<span class="co">#&gt;</span>
+<span class="co">#&gt; $totalRemaining</span>
+<span class="co">#&gt; [1] NA</span>
+
+
+<span class="va">a</span><span class="op">@</span><span class="va">nextNIter</span><span class="op">(</span><span class="fl">3</span><span class="op">)</span>
+<span class="co">#&gt;          [,1]      [,2]      [,3]      [,4]         [,5]</span>
+<span class="co">#&gt; [1,] -4.65036 -4.257748 -4.116755 -3.684771  0.602420762</span>
+<span class="co">#&gt; [2,] -4.65036 -4.257748 -4.116755 -2.818403 -2.058761222</span>
+<span class="co">#&gt; [3,] -4.65036 -4.257748 -4.116755 -2.818403  0.007612633</span>
+
+<span class="co">## Get the rest</span>
+<span class="va">a</span><span class="op">@</span><span class="va">nextRemaining</span><span class="op">(</span><span class="op">)</span>
+<span class="co">#&gt;           [,1]      [,2]      [,3]      [,4]         [,5]</span>
+<span class="co">#&gt; [1,] -4.650360 -4.257748 -4.116755 -2.818403  0.478135161</span>
+<span class="co">#&gt; [2,] -4.650360 -4.257748 -4.116755 -2.818403  0.602420762</span>
+<span class="co">#&gt; [3,] -4.650360 -4.257748 -4.116755 -2.058761  0.007612633</span>
+<span class="co">#&gt; [4,] -4.650360 -4.257748 -3.684771 -2.818403 -2.058761222</span>
+<span class="co">#&gt; [5,] -4.650360 -4.257748 -3.684771 -2.818403  0.007612633</span>
+<span class="co">#&gt; [6,] -4.650360 -4.116755 -3.684771 -2.818403 -2.058761222</span>
+<span class="co">#&gt; [7,] -4.650360 -4.116755 -3.684771 -2.818403  0.007612633</span>
+<span class="co">#&gt; [8,] -4.257748 -4.116755 -3.684771 -2.818403 -2.058761222</span></code></pre></div>
+<p>They are very efficient as well. Consider the example below where we use <code>comboGeneral</code> to generate all results without capping the output. Again, we are in a situation where we don’t know <em>a priori</em> how many results we will obtain.</p>
+<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="fl">77</span><span class="op">)</span>
+<span class="va">s</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/Uniform.html" class="external-link">runif</a></span><span class="op">(</span><span class="fl">50</span>, <span class="fl">20</span>, <span class="fl">100</span><span class="op">)</span>
+
+<span class="co">## Over one trillion results to sift through</span>
+<span class="fu"><a href="../reference/combinatoricsCount.html">comboCount</a></span><span class="op">(</span><span class="va">s</span>, <span class="fl">15</span><span class="op">)</span>
+<span class="co">#&gt; [1] 2.25083e+12</span>
+
+<span class="fu"><a href="https://rdrr.io/r/base/system.time.html" class="external-link">system.time</a></span><span class="op">(</span><span class="op">{</span>
+    <span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span>
+        <span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span>
+            <span class="fu"><a href="../reference/combinatoricsGeneral.html">comboGeneral</a></span><span class="op">(</span><span class="va">s</span>, <span class="fl">15</span>,
+                         constraintFun <span class="op">=</span> <span class="st">"mean"</span>,
+                         comparisonFun <span class="op">=</span> <span class="st">"&gt;"</span>,
+                         limitConstraints <span class="op">=</span> <span class="fl">83</span><span class="op">)</span>
+        <span class="op">)</span>
+    <span class="op">)</span>
+<span class="op">}</span><span class="op">)</span>
+<span class="co">#&gt; [1] 38935252</span>
+<span class="co">#&gt;    user  system elapsed</span>
+<span class="co">#&gt;   6.140   4.446  11.208</span>
+
+<span class="co">## Over 4 GBs of results</span>
+<span class="op">(</span><span class="fl">38935252</span> <span class="op">*</span> <span class="fl">15</span> <span class="op">*</span> <span class="fl">8</span><span class="op">)</span> <span class="op">/</span> <span class="fl">2</span><span class="op">^</span><span class="fl">30</span>
+<span class="co">#&gt; [1] 4.351353</span></code></pre></div>
+<p>Just over 11 seconds isn’t bad, however 4 GBs could put a strain on your computer.</p>
+<p>Let’s use iterators instead and only generate ten thousand at a time to keep memory low. We should mention here that the iterators are “smart” in that there is no fear in requesting more results than what is actually left. For example, if in the problem above, we had iterated to the 38<sup>th</sup> million result and requested 10 million more, we would only obtain 935,252 results.</p>
+<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/base/system.time.html" class="external-link">system.time</a></span><span class="op">(</span><span class="op">{</span>
+    <span class="va">a</span> <span class="op">=</span> <span class="fu"><a href="../reference/combinatoricsIterator.html">comboIter</a></span><span class="op">(</span><span class="va">s</span>, <span class="fl">15</span>,
+                  constraintFun <span class="op">=</span> <span class="st">"mean"</span>,
+                  comparisonFun <span class="op">=</span> <span class="st">"&gt;"</span>,
+                  limitConstraints <span class="op">=</span> <span class="fl">83</span><span class="op">)</span>
+    <span class="kw">while</span> <span class="op">(</span><span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/NULL.html" class="external-link">is.null</a></span><span class="op">(</span><span class="va">a</span><span class="op">@</span><span class="va">nextNIter</span><span class="op">(</span><span class="fl">1e54</span><span class="op">)</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span><span class="op">}</span>
+    <span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">a</span><span class="op">@</span><span class="va">summary</span><span class="op">(</span><span class="op">)</span><span class="op">)</span>
+<span class="op">}</span><span class="op">)</span>
+<span class="co">#&gt; No more results.</span>
+<span class="co">#&gt;</span>
+<span class="co">#&gt; $description</span>
+<span class="co">#&gt; [1] "Combinations of 50 choose 15 where the mean is &gt; 83"</span>
+<span class="co">#&gt;</span>
+<span class="co">#&gt; $currentIndex</span>
+<span class="co">#&gt; [1] 38935252</span>
+<span class="co">#&gt;</span>
+<span class="co">#&gt; $totalResults</span>
+<span class="co">#&gt; [1] NA</span>
+<span class="co">#&gt;</span>
+<span class="co">#&gt; $totalRemaining</span>
+<span class="co">#&gt; [1] NA</span>
+<span class="co">#&gt;</span>
+<span class="co">#&gt;    user  system elapsed</span>
+<span class="co">#&gt;   2.852   1.051   3.907</span>
+
+
+<span class="co">## Only 11 MBs per iteration</span>
+<span class="op">(</span><span class="fl">1e4</span> <span class="op">*</span> <span class="fl">15</span> <span class="op">*</span> <span class="fl">8</span><span class="op">)</span> <span class="op">/</span> <span class="fl">2</span><span class="op">^</span><span class="fl">20</span>
+<span class="co">#&gt; [1] 1.144409</span></code></pre></div>
+<p>Wow! Using the iterator approach is almost 3 times faster (<code>11.208 / 3.907 ~= 2.869</code>)! Our gains came strictly from memory efficiency (From over 4 GBs to just over 1 MB) as the underlying algorithm is exactly the same.</p>
+</div>
 </div>
   </div>
 
-  <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
+  <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
 
-        <div id="tocnav">
-      <h2 class="hasAnchor">
-<a href="#tocnav" class="anchor"></a>Contents</h2>
-      <ul class="nav nav-pills nav-stacked">
-<li><a href="#iterating-over-combinations-and-permutations">Iterating over Combinations and Permutations</a></li>
-      <li><a href="#bidirectional-iterators">Bidirectional Iterators</a></li>
-      <li><a href="#retrieving-more-than-one-result-at-a-time">Retrieving More than One Result at a Time</a></li>
-      <li><a href="#random-access-iterator">Random Access Iterator</a></li>
-      <li><a href="#user-defined-functions">User Defined Functions</a></li>
-      </ul>
+        <nav id="toc" data-toggle="toc"><h2 data-toc-skip>Contents</h2>
+    </nav>
 </div>
-      </div>
 
 </div>
 
 
 
       <footer><div class="copyright">
-  <p>Developed by Joseph Wood.</p>
+  <p></p>
+<p>Developed by Joseph Wood.</p>
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.4.1.</p>
+  <p></p>
+<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.2.</p>
 </div>
 
       </footer>
@@ -591,6 +956,8 @@
 
   
 
+
+  
 
   </body>
 </html>
