@@ -38,7 +38,7 @@ Returns an integer vector if \code{max(bound1, bound2)} \eqn{< 2^{31}}{< 2^31}, 
 }
 \references{
 \itemize{
-\item{\href{https://primesieve.org}{primesieve (Fast C/C++ prime number generator)}}
+\item{\href{https://github.com/kimwalisch/primesieve}{primesieve (Fast C/C++ prime number generator)}}
 \item{\href{https://en.wikipedia.org/wiki/Sieve_of_Eratosthenes}{Sieve of Eratosthenes}}
 \item{\href{https://en.wikipedia.org/wiki/Wheel_factorization}{Wheel factorization}}
 \item{\href{https://en.wikipedia.org/wiki/Double-precision_floating-point_format}{53-bit significand precision}}
