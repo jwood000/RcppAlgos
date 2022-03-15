@@ -147,9 +147,15 @@ namespace PrimeSieve {
                     int sieveInd = myNum - lowerBnd;
 
                     for (int q = strtChunk; q < N_WHEELS2310_PER_SEG; ++q) {
-                        for (auto w: ARR_WHEEL2310) {
+                        for (int w = 0; w < SZ_WHEEL2310; sieveInd += ARR_WHEEL2310[w + 7], w += 8) {
                             if (sieve[sieveInd]) primes.push_back(sieveInd + lowerBnd);
-                            sieveInd += w;
+                            if (sieve[sieveInd += ARR_WHEEL2310[w]]) primes.push_back(sieveInd + lowerBnd);
+                            if (sieve[sieveInd += ARR_WHEEL2310[w + 1]]) primes.push_back(sieveInd + lowerBnd);
+                            if (sieve[sieveInd += ARR_WHEEL2310[w + 2]]) primes.push_back(sieveInd + lowerBnd);
+                            if (sieve[sieveInd += ARR_WHEEL2310[w + 3]]) primes.push_back(sieveInd + lowerBnd);
+                            if (sieve[sieveInd += ARR_WHEEL2310[w + 4]]) primes.push_back(sieveInd + lowerBnd);
+                            if (sieve[sieveInd += ARR_WHEEL2310[w + 5]]) primes.push_back(sieveInd + lowerBnd);
+                            if (sieve[sieveInd += ARR_WHEEL2310[w + 6]]) primes.push_back(sieveInd + lowerBnd);
                         }
                     }
 
@@ -211,9 +217,15 @@ namespace PrimeSieve {
                 }
 
                 for (int q = 0, idx = myNum - lowerBnd; q < N_WHEELS2310_PER_SEG; ++q) {
-                    for (auto w: ARR_WHEEL2310) {
+                    for (int w = 0; w < SZ_WHEEL2310; idx += ARR_WHEEL2310[w + 7], w += 8) {
                         if (sieve[idx]) primes.push_back(idx + lowerBnd);
-                        idx += w;
+                        if (sieve[idx += ARR_WHEEL2310[w]]) primes.push_back(idx + lowerBnd);
+                        if (sieve[idx += ARR_WHEEL2310[w + 1]]) primes.push_back(idx + lowerBnd);
+                        if (sieve[idx += ARR_WHEEL2310[w + 2]]) primes.push_back(idx + lowerBnd);
+                        if (sieve[idx += ARR_WHEEL2310[w + 3]]) primes.push_back(idx + lowerBnd);
+                        if (sieve[idx += ARR_WHEEL2310[w + 4]]) primes.push_back(idx + lowerBnd);
+                        if (sieve[idx += ARR_WHEEL2310[w + 5]]) primes.push_back(idx + lowerBnd);
+                        if (sieve[idx += ARR_WHEEL2310[w + 6]]) primes.push_back(idx + lowerBnd);
                     }
                 }
 
