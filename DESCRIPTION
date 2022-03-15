@@ -22,8 +22,7 @@ Description: Provides optimized functions and flexible combinatorial iterators
     Legendre's formula based on the work of Kim Walisch.
 URL: https://github.com/jwood000/RcppAlgos, https://gmplib.org/,
         https://github.com/kimwalisch/primesieve, http://libdivide.com,
-        https://github.com/kimwalisch/primecount,
-        http://ridiculousfish.com/,
+        https://github.com/kimwalisch/primecount, http://ridiculousfish.com/,
         http://sweet.ua.pt/tos/software/prime_sieve.html
 BugReports: https://github.com/jwood000/RcppAlgos/issues
 Imports: gmp, methods
