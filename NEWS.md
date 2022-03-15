@@ -6,15 +6,21 @@
 
 * `comboIter` and `permuteIter` now work with constraints.
 
-* Dropped `Rcpp` and `RcppThread` as a dependency to reduce compile time and binary size. As a result, there is no longer the ability to interrupt long running processes. Will investigate in next release..
+* Dropped `Rcpp` and `RcppThread` as a dependency to reduce compile time and binary size. As a result, there is no longer the ability to interrupt long running processes. Will investigate in next release.
+
+* We have added the parameter `FUN.VALUE` to `comboGeneral` and `permuteGeneral`. It acts as a template for the return value of `FUN`. The implementation is modeled after `vapply`.
 
 ## Enhancements:
 
-*
+* Improved underlying algorithm for `comboGrid` to be more memory efficient.
+
+* Made minor changes to make data types more consistent in `primeCount` and `primeSieve`.
 
 ## Bug Fixes:
 
 * When `permuteGeneral` is used with multisets and the width is maximized, multithreading would fail. This is fixed in 2.5.0.
+
+* Fixed bug in retreiving the nth result in `comboGroup` and `comboGroupSample` when the number of results was greater than `2^31 - 1` and less than `2^53 - 1`. E.g. `comboGroupsSample(27, 9, seed = 4, sampleVec = 1606990240475839)` gives incorrect results in the 5th group in prior versions. Now fixed!.
 
 # RcppAlgos 2.4.3
 

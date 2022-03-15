@@ -1,6 +1,28 @@
 \name{NEWS}
 \title{News for Package \pkg{RcppAlgos}}
 
+\section{Changes in RcppAlgos version 2.5.0 (Release date: 2022-03-16)}{
+    \itemize{
+        \item New Features:
+        \itemize{
+            \item Added partition specific functions: \code{partionsGeneral}, \code{partitionsCount}, \code{partitionsIter}, and \code{partitionsSample}
+            \item \code{comboIter} and \code{permuteIter} now work with constraints.
+            \item Dropped Rcpp and RcppThread as a dependency to reduce compile time and binary size. As a result, there is no longer the ability to interrupt long running processes. Will investigate in next release.
+            \item We have added the parameter \code{FUN.VALUE} to \code{comboGeneral} and \code{permuteGeneral}. It acts as a template for the return value of \code{FUN}. The implementation is modeled after \code{vapply}.
+        }
+        \item Enhancements:
+        \itemize{
+            \item Improved underlying algorithm for \code{comboGrid} to be more memory efficient.
+            \item Made minor changes to make data types more consistent in \code{primeCount} and \code{primeSieve}.
+        }
+        \item Other:
+        \itemize{
+            \item When \code{permuteGeneral} is used with multisets and the width is maximized, multithreading would fail. This is fixed in 2.5.0.
+            \item Fixed bug in retreiving the \eqn{n^{th}}{nth} result in \code{comboGroup} and \code{comboGroupSample} when the number of results was greater than \eqn{2^{31} - 1}{2^31 - 1} and less than \eqn{2^{53} - 1}{2^53 - 1}. \emph{E.g.} \code{comboGroupsSample(27, 9, seed = 4, sampleVec = 1606990240475839)} gives incorrect results in the \eqn{5^{th}}{5th} group in prior versions. Now fixed!.
+        }
+    }
+}
+
 \section{Changes in RcppAlgos version 2.4.3 (Release date: 2021-05-30)}{
     \itemize{
         \item Other:
