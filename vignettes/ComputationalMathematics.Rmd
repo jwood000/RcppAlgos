@@ -26,17 +26,17 @@ library(microbenchmark)
 microbenchmark(primeSieve(1e6))
 #> Unit: milliseconds
 #>               expr      min       lq     mean   median       uq      max neval
-#>  primeSieve(1e+06) 1.438733 1.453663 1.571274 1.534462 1.587023 2.409306   100
+#>  primeSieve(1e+06) 1.340562 1.349327 1.440573 1.367405 1.465378 1.828833   100
 
 ## Single threaded primes under a billion!!!
 system.time(a <- primeSieve(10^9))
 #>  user  system elapsed
-#> 1.525   0.100   1.626
+#> 1.404   0.084   1.487
 
 ## Using 8 threads we can get under 0.5 seconds!!!
 system.time(primeSieve(10^9, nThreads = 8))
 #>  user  system elapsed
-#> 2.549   0.050   0.442
+#> 2.520   0.047   0.436
 
 ## Quickly generate large primes over small interval. N.B. The
 ## order for the bounds does not matter.
