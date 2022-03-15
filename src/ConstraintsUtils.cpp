@@ -122,14 +122,6 @@ void ConstraintStructure(std::vector<std::string> &compFunVec,
         } else {
             compFunVec[i] = itComp->second;
         }
-
-        int myIndex = std::distance(compForms.cbegin(), itComp);
-
-        // The first 5 are "standard" whereas the 6th and 7th
-        // are written with the equality first. Converting
-        // them here makes it easier to deal with later.
-        if (myIndex > 4) {myIndex -= 3;}
-        compFunVec[i] = compForms[myIndex];
     }
 
     if (compFunVec.size() == 2) {
@@ -150,7 +142,7 @@ void ConstraintStructure(std::vector<std::string> &compFunVec,
 
             // The two cases below are for when we are looking for all combs/perms such that when
             // myFun is applied, the result is between 2 values. These comparisons are defined in
-            // compSpecial in ConstraintsMaster.h. If we look at the definitions of these comparison
+            // compSpecial in ConstraintsMain.h. If we look at the definitions of these comparison
             // functions in ConstraintsUtils.h, we see the following trend for all 4 cases:
             //
             // bool greaterLess(stdType x, const std::vector<stdType> &y) {return (x < y[0]) && (x > y[1]);}

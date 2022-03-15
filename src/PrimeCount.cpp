@@ -9,7 +9,7 @@
 #include <mutex>
 #include <cmath>
 
-// "MasterPrimeCount" based off of the highly optimized
+// "MainPrimeCount" based off of the highly optimized
 // "pi_legendre.cpp" algorithm by Kim Walisch, which calculates
 // the numbers of primes less than n using Legendre's formula.
 // Kim Walisch's official github repo for "pi_legendre" is:
@@ -391,7 +391,7 @@ namespace PrimeCounting {
         }
 
         const std::int64_t piSqrt = PiPrime(sqrtBound);
-        const std::int64_t phiSqrt = phiMaster(n, piSqrt, nThreads, Parallel);
+        const std::int64_t phiSqrt = phiMain(n, piSqrt, nThreads, Parallel);
         const std::int64_t int64result = piSqrt + phiSqrt - 1;
 
         return int64result;
