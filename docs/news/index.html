@@ -84,15 +84,18 @@
 <h3 id="new-features-2-5-0">New Features:<a class="anchor" aria-label="anchor" href="#new-features-2-5-0"></a></h3>
 <ul><li><p>Added partition specific functions: <code>partionsGeneral</code>, <code>partitionsCount</code>, <code>partitionsIter</code>, and <code>partitionsSample</code></p></li>
 <li><p><code>comboIter</code> and <code>permuteIter</code> now work with constraints.</p></li>
-<li><p>Dropped <code>Rcpp</code> and <code>RcppThread</code> as a dependency to reduce compile time and binary size. As a result, there is no longer the ability to interrupt long running processes. Will investigate in next release..</p></li>
+<li><p>Dropped <code>Rcpp</code> and <code>RcppThread</code> as a dependency to reduce compile time and binary size. As a result, there is no longer the ability to interrupt long running processes. Will investigate in next release.</p></li>
+<li><p>We have added the parameter <code>FUN.VALUE</code> to <code>comboGeneral</code> and <code>permuteGeneral</code>. It acts as a template for the return value of <code>FUN</code>. The implementation is modeled after <code>vapply</code>.</p></li>
 </ul></div>
 <div class="section level3">
 <h3 id="enhancements-2-5-0">Enhancements:<a class="anchor" aria-label="anchor" href="#enhancements-2-5-0"></a></h3>
-<ul><li>
-</li></ul></div>
+<ul><li><p>Improved underlying algorithm for <code>comboGrid</code> to be more memory efficient.</p></li>
+<li><p>Made minor changes to make data types more consistent in <code>primeCount</code> and <code>primeSieve</code>.</p></li>
+</ul></div>
 <div class="section level3">
 <h3 id="bug-fixes-2-5-0">Bug Fixes:<a class="anchor" aria-label="anchor" href="#bug-fixes-2-5-0"></a></h3>
-<ul><li>When <code>permuteGeneral</code> is used with multisets and the width is maximized, multithreading would fail. This is fixed in 2.5.0.</li>
+<ul><li><p>When <code>permuteGeneral</code> is used with multisets and the width is maximized, multithreading would fail. This is fixed in 2.5.0.</p></li>
+<li><p>Fixed bug in retreiving the nth result in <code>comboGroup</code> and <code>comboGroupSample</code> when the number of results was greater than <code>2^31 - 1</code> and less than <code>2^53 - 1</code>. E.g. <code>comboGroupsSample(27, 9, seed = 4, sampleVec = 1606990240475839)</code> gives incorrect results in the 5th group in prior versions. Now fixed!.</p></li>
 </ul></div>
 </div>
     <div class="section level2">

@@ -124,17 +124,17 @@
 <span class="fu"><a href="https://rdrr.io/pkg/microbenchmark/man/microbenchmark.html" class="external-link">microbenchmark</a></span><span class="op">(</span><span class="fu"><a href="../reference/primeSieve.html">primeSieve</a></span><span class="op">(</span><span class="fl">1e6</span><span class="op">)</span><span class="op">)</span>
 <span class="co">#&gt; Unit: milliseconds</span>
 <span class="co">#&gt;               expr      min       lq     mean   median       uq      max neval</span>
-<span class="co">#&gt;  primeSieve(1e+06) 1.438733 1.453663 1.571274 1.534462 1.587023 2.409306   100</span>
+<span class="co">#&gt;  primeSieve(1e+06) 1.340562 1.349327 1.440573 1.367405 1.465378 1.828833   100</span>
 
 <span class="co">## Single threaded primes under a billion!!!</span>
 <span class="fu"><a href="https://rdrr.io/r/base/system.time.html" class="external-link">system.time</a></span><span class="op">(</span><span class="va">a</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/primeSieve.html">primeSieve</a></span><span class="op">(</span><span class="fl">10</span><span class="op">^</span><span class="fl">9</span><span class="op">)</span><span class="op">)</span>
 <span class="co">#&gt;  user  system elapsed</span>
-<span class="co">#&gt; 1.525   0.100   1.626</span>
+<span class="co">#&gt; 1.404   0.084   1.487</span>
 
 <span class="co">## Using 8 threads we can get under 0.5 seconds!!!</span>
 <span class="fu"><a href="https://rdrr.io/r/base/system.time.html" class="external-link">system.time</a></span><span class="op">(</span><span class="fu"><a href="../reference/primeSieve.html">primeSieve</a></span><span class="op">(</span><span class="fl">10</span><span class="op">^</span><span class="fl">9</span>, nThreads <span class="op">=</span> <span class="fl">8</span><span class="op">)</span><span class="op">)</span>
 <span class="co">#&gt;  user  system elapsed</span>
-<span class="co">#&gt; 2.549   0.050   0.442</span>
+<span class="co">#&gt; 2.520   0.047   0.436</span>
 
 <span class="co">## Quickly generate large primes over small interval. N.B. The</span>
 <span class="co">## order for the bounds does not matter.</span>
