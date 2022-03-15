@@ -1,25 +1,36 @@
-useDynLib("RcppAlgos", .registration = TRUE)
-import(gmp, Rcpp, methods)
+useDynLib(RcppAlgos, .registration = TRUE, .fixes = "Algos_")
+import(gmp, methods)
 
-export(comboGeneral,
-       permuteGeneral,
-       comboCount,
-       permuteCount,
-       comboSample,
-       permuteSample,
-       comboGrid,
-       comboGroups,
-       comboGroupsCount,
-       comboGroupsSample,
-       comboIter,
-       permuteIter,
-       primeSieve,
-       eulerPhiSieve,
-       primeFactorizeSieve,
-       stdThreadMax,
-       numDivisorSieve,
-       divisorsSieve,
-       primeFactorize,
-       divisorsRcpp,
-       isPrimeRcpp,
-       primeCount)
+S3method("[[", "Combo")
+S3method("[[", "ComboApply")
+S3method("[[", "ComboRes")
+S3method("[[", "Partitions")
+
+export(
+  comboGeneral,
+  permuteGeneral,
+  partitionsGeneral,
+  comboCount,
+  permuteCount,
+  partitionsCount,
+  comboSample,
+  permuteSample,
+  partitionsSample,
+  comboGroups,
+  comboGroupsCount,
+  comboGroupsSample,
+  comboGrid,
+  comboIter,
+  permuteIter,
+  partitionsIter,
+  primeSieve,
+  eulerPhiSieve,
+  primeFactorizeSieve,
+  numDivisorSieve,
+  divisorsSieve,
+  primeFactorize,
+  divisorsRcpp,
+  isPrimeRcpp,
+  primeCount,
+  stdThreadMax
+)

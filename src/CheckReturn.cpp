@@ -1,78 +1,106 @@
-#include "StandardUtils.h"
+#include "CheckReturn.h"
+#include "SetUpUtils.h"
 
-enum returnType : int {
-    constrained = 0,
-    standard = 1,
-    applyFun = 2
-};
-
-bool CheckConstrnd(SEXP f1, SEXP f2, SEXP Rtarget) {
+bool CheckConstrnd(SEXP RCnstrntFun, SEXP RCompFun, SEXP Rtarget) {
     // No need to check myType, as we have already done
     // so in CheckStdRet. Same goes for IsFactor.
-    bool result = !Rf_isNull(f1) && !Rf_isNull(f2) && !Rf_isNull(Rtarget);
+    bool result = !Rf_isNull(RCnstrntFun) &&
+                  !Rf_isNull(RCompFun) &&
+                  !Rf_isNull(Rtarget);
 
     if (result) {
-        if (!Rf_isString(f1))
-            Rcpp::stop("constraintFun must be passed as a character");
+        if (!Rf_isString(RCnstrntFun))
+            Rf_error("constraintFun must be passed as a character");
 
-        if (!Rf_isString(f2))
-            Rcpp::stop("comparisonFun must be passed as a character");
+        if (!Rf_isString(RCompFun))
+            Rf_error("comparisonFun must be passed as a character");
     }
 
     return result;
 }
 
-// [[Rcpp::export]]
-int CheckReturn(SEXP Rv, SEXP f1, SEXP f2, SEXP Rtarget,
-                bool IsFactor, SEXP RKeepRes, SEXP stdFun) {
+SEXP CheckConstrndCpp(SEXP RCnstrntFun, SEXP RCompFun, SEXP Rtarget) {
+    return Rf_ScalarLogical(CheckConstrnd(RCnstrntFun, RCompFun, Rtarget));
+}
 
-    int res = returnType::constrained;
+// CheckReturn(v, constraintFun, comparisonFun,
+//             limitConstraints, keepResults, FUN)
+//
+//                v: the source vector
+//    constraintFun: "sum", "mean", "prod", "min", "max"
+//    comparisonFun: "==", ">", "<", ">=", "<=" (Single comparisons)
+//
+// When using two comparison operations, we could have the following
+// assuming limitConstraints also has two values with the first value
+// less than the second value:
+//
+// **** Between: c(">", "<" ), c(">", "<="), c(">=", "<"), c(">=", "<=")
+// **** Outside: c("<",  ">"), c("<=", ">=")
+//
+// limitConstraints: The value(s) that will be used for comparison.
+//      keepResults: Are we keeping the results of constraintFun?
+//              FUN: This is an anonymous function
 
-    if (Rf_isNull(f1)) {
-        res = returnType::standard;
+enum CheckReturnType : int {
+    constraintFun = 0,
+    standard = 1,
+    anonymousFun = 2,
+};
+
+SEXP CheckReturn(SEXP Rv, SEXP RCnstrntFun, SEXP RCompFun,
+                 SEXP Rtarget, SEXP RKeepRes, SEXP stdFun) {
+
+    int res = CheckReturnType::constraintFun;
+
+    if (Rf_isNull(RCnstrntFun)) {
+        res = CheckReturnType::standard;
     } else {
-        if (IsFactor) {
-            res = returnType::standard;
+        if (Rf_isFactor(Rv)) {
+            res = CheckReturnType::standard;
         } else {
             VecType myType = VecType::Integer;
             SetType(myType, Rv);
 
             if (myType > VecType::Numeric) {
-                res = returnType::standard;
+                res = CheckReturnType::standard;
             } else {
-                if (!Rf_isNull(f2) && !Rf_isNull(Rtarget)) {
-                    res = returnType::constrained;  // This is a constrained output
-                } else if (Rf_isNull(f2) && Rf_isNull(Rtarget)) {
+                if (!Rf_isNull(RCompFun) && !Rf_isNull(Rtarget)) {
+                    // This is a constrained output
+                    res = CheckReturnType::constraintFun;
+                } else if (Rf_isNull(RCompFun) && Rf_isNull(Rtarget)) {
                     // This is applying a constrained func only
                     if (Rf_isNull(RKeepRes)) {
-                        res = returnType::constrained;
+                        res = CheckReturnType::constraintFun;
                     } else {
-                        bool keepRes = CleanConvert::convertLogical(RKeepRes, "keepResults");
+                        bool keepRes = CleanConvert::convertFlag(RKeepRes, "keepResults");
 
                         if (keepRes) {
-                            res = returnType::constrained;
+                            res = CheckReturnType::constraintFun;
                         } else {
-                            res = returnType::standard;
+                            res = CheckReturnType::standard;
                         }
                     }
                 } else {
                     // This means the input is non-sensible... std res = only
-                    res = returnType::standard;
+                    res = CheckReturnType::standard;
                 }
             }
         }
     }
 
+    // if res isn't constrained (i.e. CheckReturnType::constraintFun)
     if (res) {
-        const bool applyFun = !Rf_isNull(stdFun) && !IsFactor;
+        const bool applyFun = !Rf_isNull(stdFun) && !Rf_isFactor(Rv);
 
         if (applyFun) {
-            if (!Rf_isFunction(stdFun))
-                Rcpp::stop("FUN must be a function!");
+            if (!Rf_isFunction(stdFun)) {
+                Rf_error("FUN must be a function!");
+            }
 
-            res = returnType::applyFun;
+            res = CheckReturnType::anonymousFun;
         }
     }
 
-    return res;
+    SEXP sexpRes = Rf_ScalarInteger(res);
+    return sexpRes;
 }

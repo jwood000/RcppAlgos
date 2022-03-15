@@ -1,90 +1,90 @@
-#include "MotleyStartIndex.h"
-#include "Eratosthenes.h"
-#include <libdivide.h>
+#include "NumbersUtils/MotleyStartIndex.h"
+#include "NumbersUtils/Eratosthenes.h"
+#include "NumbersUtils/libdivide.h"
+#include <cmath>
 
 namespace MotleyPrimes {
 
-    template <typename typeInt, typename typeReturn, typename typeRcpp>
-    void EulerPhiSieve(typeInt m, typeReturn retN, typeInt offsetStrt,
-                       const std::vector<typeInt> &primes,
-                       std::vector<typeInt> &numSeq,
-                       typeRcpp &EulerPhis) {
+    template <typename T, typename U>
+    void EulerPhiSieve(T m, U retN, T offsetStrt,
+                       const std::vector<T> &primes,
+                       std::vector<T> &numSeq,
+                       U* EulerPhis) {
 
-        const typeInt n = static_cast<typeInt>(retN);
-        const typeInt myRange = (n - m) + 1;
+        const T n = static_cast<T>(retN);
+        const T myRange = (n - m) + 1;
 
-        const double myLogN = std::log(n);
-        typeReturn retNum = static_cast<typeReturn>(m);
+        const double myLogN = std::log(static_cast<double>(n));
+        U retNum = static_cast<U>(m);
 
         for (std::size_t i = offsetStrt; retNum <= retN; ++retNum, ++i) {
             EulerPhis[i] = retNum;
-            numSeq[i] = static_cast<typeInt>(retNum);
+            numSeq[i] = static_cast<T>(retNum);
         }
 
         if (m < 2) {
             bool tempPar = false;
-            std::vector<typeInt> fullPrimes;
+            std::vector<T> fullPrimes;
             const std::int_fast64_t intMin = static_cast<std::int_fast64_t>(m);
             const std::int_fast64_t intMax = static_cast<std::int_fast64_t>(retN);
-            std::vector<std::vector<typeInt>> tempList;
-            PrimeSieve::PrimeSieveMaster(intMin, intMax, fullPrimes, tempList, tempPar);
-            typename std::vector<typeInt>::iterator p;
+            std::vector<std::vector<T>> tempList;
+            PrimeSieve::PrimeSieveMain(tempList, fullPrimes, intMin, intMax, tempPar);
 
-            for (p = fullPrimes.begin(); p < fullPrimes.end(); ++p) {
-                const libdivide::divider<typeInt> fastDiv(*p);
-                for (typeInt j = (*p - 1); j < n; j += *p) {
-                    typeInt myNum = static_cast<typeInt>(EulerPhis[j]);
+            for (auto p: fullPrimes) {
+                const libdivide::divider<T> fastDiv(p);
+                for (T j = (p - 1); j < n; j += p) {
+                    T myNum = static_cast<T>(EulerPhis[j]);
                     myNum /= fastDiv;
-                    EulerPhis[j] -= static_cast<typeReturn>(myNum);
+                    EulerPhis[j] -= static_cast<U>(myNum);
                 }
             }
         } else if (n > 3) {
-            typename std::vector<typeInt>::const_iterator p;
-            const typeInt sqrtBound = static_cast<typeInt>(std::sqrt(static_cast<double>(retN)));
-            const typeInt offsetRange = myRange + offsetStrt;
+            typename std::vector<T>::const_iterator p;
+            const T sqrtBound = static_cast<T>(std::sqrt(static_cast<double>(retN)));
+            const T offsetRange = myRange + offsetStrt;
 
             for (p = primes.cbegin(); (*p) <= sqrtBound; ++p) {
                 const std::size_t limit = static_cast<std::size_t>(myLogN / std::log(*p));
-                const typeInt myStart = offsetStrt + getStartIndexPowP(m, *p, *p);
-                const libdivide::divider<typeInt> fastDiv(*p);
+                const T myStart = offsetStrt + getStartIndexPowP(m, *p, *p);
+                const libdivide::divider<T> fastDiv(*p);
 
-                for (typeInt j = myStart; j < offsetRange; j += *p) {
+                for (T j = myStart; j < offsetRange; j += *p) {
                     numSeq[j] /= fastDiv;
-                    typeInt myNum = static_cast<typeInt>(EulerPhis[j]);
+                    T myNum = static_cast<T>(EulerPhis[j]);
                     myNum /= fastDiv;
-                    EulerPhis[j] -= static_cast<typeReturn>(myNum);
+                    EulerPhis[j] -= static_cast<U>(myNum);
                 }
 
                 for (std::size_t i = 2; i <= limit; ++i) {
-                    const typeInt myStep = static_cast<typeInt>(std::pow(*p, i));
-                    const typeInt myStart = offsetStrt + getStartIndexPowP(m, myStep, *p);
+                    const T myStep = static_cast<T>(std::pow(*p, i));
+                    const T myStart = offsetStrt + getStartIndexPowP(m, myStep, *p);
 
-                    for (typeInt j = myStart; j < offsetRange; j += myStep)
+                    for (T j = myStart; j < offsetRange; j += myStep) {
                         numSeq[j] /= fastDiv;
+                    }
                 }
             }
 
-            for (typeInt i = offsetStrt; i < offsetRange; ++i) {
+            for (T i = offsetStrt; i < offsetRange; ++i) {
                 if (numSeq[i] > 1) {
-                    typeInt myNum = static_cast<typeInt>(EulerPhis[i]);
+                    T myNum = static_cast<T>(EulerPhis[i]);
                     myNum /= numSeq[i];
-                    EulerPhis[i] -= static_cast<typeReturn>(myNum);
+                    EulerPhis[i] -= static_cast<U>(myNum);
                 }
             }
 
         } else { // edge case where m,n = 2 or 3
-            for (int i = 0; i < myRange; ++i)
+            for (int i = 0; i < myRange; ++i) {
                 --EulerPhis[i];
+            }
         }
     }
 }
 
 template void MotleyPrimes::EulerPhiSieve(int, int, int,
                                           const std::vector<int>&,
-                                          std::vector<int>&,
-                                          Rcpp::IntegerVector&);
+                                          std::vector<int>&, int*);
 
 template void MotleyPrimes::EulerPhiSieve(std::int64_t, double, std::int64_t,
                                           const std::vector<std::int64_t>&,
-                                          std::vector<std::int64_t>&,
-                                          Rcpp::NumericVector&);
+                                          std::vector<std::int64_t>&, double*);

@@ -4,7 +4,7 @@
 Vectorized Prime Factorization
 }
 \description{
-Implementation of Pollard's rho algorithm for generating the prime factorization. The algorithm is based on the "factorize.c" source file from the gmp library found here \url{https://gmplib.org/}.
+Implementation of Pollard's rho algorithm for generating the prime factorization. The algorithm is based on the "factorize.c" source file from the gmp library found here \url{https://gmplib.org}.
 }
 \usage{
 primeFactorize(v, namedList = FALSE, nThreads = NULL)

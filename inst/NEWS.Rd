@@ -1,7 +1,29 @@
 \name{NEWS}
 \title{News for Package \pkg{RcppAlgos}}
 
-\section{Changes in RcppAlgos version 2.4.3 (Release date: 2021-06-01)}{
+\section{Changes in RcppAlgos version 2.5.0 (Release date: 2022-03-16)}{
+    \itemize{
+        \item New Features:
+        \itemize{
+            \item Added partition specific functions: \code{partionsGeneral}, \code{partitionsCount}, \code{partitionsIter}, and \code{partitionsSample}
+            \item \code{comboIter} and \code{permuteIter} now work with constraints.
+            \item Dropped Rcpp and RcppThread as a dependency to reduce compile time and binary size. As a result, there is no longer the ability to interrupt long running processes. Will investigate in next release.
+            \item We have added the parameter \code{FUN.VALUE} to \code{comboGeneral} and \code{permuteGeneral}. It acts as a template for the return value of \code{FUN}. The implementation is modeled after \code{vapply}.
+        }
+        \item Enhancements:
+        \itemize{
+            \item Improved underlying algorithm for \code{comboGrid} to be more memory efficient.
+            \item Made minor changes to make data types more consistent in \code{primeCount} and \code{primeSieve}.
+        }
+        \item Other:
+        \itemize{
+            \item When \code{permuteGeneral} is used with multisets and the width is maximized, multithreading would fail. This is fixed in 2.5.0.
+            \item Fixed bug in retreiving the \eqn{n^{th}}{nth} result in \code{comboGroup} and \code{comboGroupSample} when the number of results was greater than \eqn{2^{31} - 1}{2^31 - 1} and less than \eqn{2^{53} - 1}{2^53 - 1}. \emph{E.g.} \code{comboGroupsSample(27, 9, seed = 4, sampleVec = 1606990240475839)} gives incorrect results in the \eqn{5^{th}}{5th} group in prior versions. Now fixed!.
+        }
+    }
+}
+
+\section{Changes in RcppAlgos version 2.4.3 (Release date: 2021-05-30)}{
     \itemize{
         \item Other:
         \itemize{
@@ -14,7 +36,7 @@
     \itemize{
         \item New Features:
         \itemize{
-            \item Added function \code{comboGrid} for efficiently generating the cartesian product where order does not matter.
+            \item Added function \code{comboGrid} for efficiently generating the Cartesian product where order does not matter.
         }
         \item Enhancements:
         \itemize{
@@ -50,7 +72,7 @@
         \item Bug Fixes:
         \itemize{
             \item In 2.3.5 and 2.3.6, we mistakingly allowed a \code{constraintFun} to be applied to a logical vector which was crashing R. We have corrected this in 2.4.0+.
-            \item Changed the data type for sizing the index matrix in \code{permuteGeneral}. Originally, we were using \code{int} and when the output was large enough, it was causing an integer overflow thus causing the index matrix to be unproperly sized. We have sinced changed the data type to the recommended \code{std::size_t}.
+            \item Changed the data type for sizing the index matrix in \code{permuteGeneral}. Originally, we were using \code{int} and when the output was large enough, it was causing an integer overflow thus causing the index matrix to be improperly sized. We have since changed the data type to the recommended \code{std::size_t}.
         }
     }
 }

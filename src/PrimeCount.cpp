@@ -1,8 +1,11 @@
+#include "NumbersUtils/PrimeSieveCount.h"
+#include "NumbersUtils/PrimesSegSieve.h"
+#include "NumbersUtils/PhiTinyLookup.h"
+#include "NumbersUtils/Eratosthenes.h"
 #include "CleanConvert.h"
-#include "PrimesSegSieve.h"
-#include "PhiTinyLookup.h"
-#include "Eratosthenes.h"
-#include <RcppThread.h>
+#include <algorithm>
+#include <numeric>
+#include <thread>
 #include <mutex>
 #include <cmath>
 
@@ -18,12 +21,12 @@ namespace PrimeCounting {
     // considering a range. That is, we are only concerned with finding
     // the number of primes less than maxNum. We are also only counting
     // primes instead of generating them.
-    std::int64_t PiPrime (std::int64_t maxNum) {
+    std::int64_t PiPrime(std::int64_t maxNum) {
 
-        constexpr std::int_fast64_t segSize = Almost210L1Cache;
-        constexpr std::size_t nWheels = N_WHEELS210_PER_SEG;
-        constexpr std::size_t szWheel210 = SZ_WHEEL210;
-        const int sqrtBound = static_cast<int>(std::sqrt(static_cast<double>(maxNum)));
+        constexpr int segSize = Almost210L1Cache;
+        constexpr int nWheels = N_WHEELS210_PER_SEG;
+        constexpr int szWheel210 = SZ_WHEEL210;
+        const int sqrtBound = std::sqrt(static_cast<double>(maxNum));
 
         // the wheel already has the first 4 primes marked as
         // false, so we need to account for them here. N.B.
@@ -31,43 +34,51 @@ namespace PrimeCounting {
         // maxNum is less than 11, so no need to check here.
         std::int64_t count = 4;
 
-        std::vector<std::int64_t> smallPrimes, nextStrt;
-        const std::int64_t flrMaxNum = segSize * std::floor(maxNum / segSize);
+        std::vector<int> smallPrimes;
+        std::vector<int> nextStrt;
+        const int flrMaxNum = segSize * (maxNum / segSize);
 
         std::size_t ind = 1;
-        for (; smallPrimeBase[ind] <= sqrtBound; ++ind)
+
+        for (; smallPrimeBase[ind] <= sqrtBound; ++ind) {
             smallPrimes.push_back(smallPrimeBase[ind]);
+        }
 
         smallPrimes.push_back(smallPrimeBase[ind]);
         std::vector<char> sieve(segSize, 1);
         sieve[1] = 0;
 
-        std::int64_t sqrPrime = 9;
-        std::int64_t lowerBnd = 0;
-        std::int64_t myNum = 1;
+        int sqrPrime = 9;
+        int lowerBnd = 0;
+        int myNum = 1;
         std::size_t p = 1;
 
         for (; lowerBnd < flrMaxNum; lowerBnd += segSize) {
-            std::int64_t upperBnd = lowerBnd + segSize;
-
-            for (; sqrPrime <= upperBnd; ++p) {
+            for (; sqrPrime <= (lowerBnd + segSize); ++p) {
                 nextStrt.push_back(sqrPrime - lowerBnd);
                 sqrPrime = smallPrimes[p] * smallPrimes[p];
             }
 
             for (std::size_t i = 3; i < nextStrt.size(); ++i) {
-                std::int64_t j = nextStrt[i];
-                for (std::int64_t k = smallPrimes[i] * 2; j < segSize; j += k)
-                    sieve[j] = 0;
+                for (int k = smallPrimes[i] * 2, j = nextStrt[i];
+                     j < segSize; j += k) {
 
-                nextStrt[i] = j - segSize;
+                    sieve[j] = 0;
+                }
+
+                nextStrt[i] = (smallPrimes[i] * 2) - (
+                    (segSize - nextStrt[i]) % (smallPrimes[i] * 2)
+                );
             }
 
-            for (std::size_t q = 0; q < nWheels; ++q)
-                for (std::size_t w = 0; w < szWheel210; myNum += ARR_WHEEL210[w], ++w)
-                    if (sieve[myNum - lowerBnd])
-                        ++count;
+            for (int q = 0, idx = myNum - lowerBnd; q < nWheels; ++q) {
+                for (auto w: ARR_WHEEL210) {
+                    if (sieve[idx]) ++count;
+                    idx += w;
+                }
+            }
 
+            myNum += segSize;
             std::fill(sieve.begin(), sieve.end(), 1);
         }
 
@@ -78,24 +89,25 @@ namespace PrimeCounting {
             }
 
             for (std::size_t i = 3; i < nextStrt.size(); ++i) {
-                std::int64_t j = nextStrt[i];
-                for (std::int64_t k = smallPrimes[i] * 2; j < segSize; j += k)
+                for (int k = smallPrimes[i] * 2, j = nextStrt[i];
+                     j < segSize; j += k) {
                     sieve[j] = 0;
-
-                nextStrt[i] = j - segSize;
+                }
             }
 
-            for (std::size_t q = 0; q < nWheels && myNum <= maxNum; ++q)
-                for (std::size_t w = 0; w < szWheel210 && myNum <= maxNum; myNum += ARR_WHEEL210[w], ++w)
-                    if (sieve[myNum - lowerBnd])
-                        ++count;
+            for (int q = 0; q < nWheels && myNum <= maxNum; ++q) {
+                for (int w = 0; w < szWheel210 && myNum <= maxNum;
+                     myNum += ARR_WHEEL210[w], ++w) {
+                    if (sieve[myNum - lowerBnd]) ++count;
+                }
+            }
         }
 
         return count;
     }
 
     constexpr int MAX_A = 100;
-    std::array<std::vector<uint16_t>, MAX_A> phiCache;
+    std::array<std::vector<std::uint16_t>, MAX_A> phiCache;
     std::mutex theBlocker;
 
     // Increment MAX_A, so we can have easier access to indexing. E.g.
@@ -119,11 +131,11 @@ namespace PrimeCounting {
 
     void updateCache(std::uint64_t x, std::uint64_t a, std::int64_t mySum) {
         if (a < phiCache.size() &&
-            x <= std::numeric_limits<uint16_t>::max()) {
+            x <= std::numeric_limits<std::uint16_t>::max()) {
             // Protect phiCache while its being updated
             std::lock_guard<std::mutex> guard(theBlocker);
             if (x >= phiCache[a].size()) phiCache[a].resize(x + 1, 0);
-            phiCache[a][x] = static_cast<uint16_t>(std::abs(mySum));
+            phiCache[a][x] = static_cast<std::uint16_t>(std::abs(mySum));
         }
     }
 
@@ -148,7 +160,7 @@ namespace PrimeCounting {
             return myTinyPi[y];
     }
 
-    template <int SIGN>
+    template <std::int64_t SIGN>
     std::int64_t phiWorker(std::int64_t x, std::int64_t a) {
         if (x <= phiPrimes[a]) {
             return SIGN;
@@ -159,16 +171,15 @@ namespace PrimeCounting {
         } else if (isCached(x, a)) {
             return phiCache[a][x] * SIGN;
         } else {
-            std::int64_t sqrtx = static_cast<std::int64_t>(std::sqrt(static_cast<double>(x)));
+            std::size_t sqrtx = static_cast<std::size_t>(std::sqrt(static_cast<double>(x)));
             std::int64_t piSqrtx = a;
             std::int64_t strt = getStrt(sqrtx);
 
-            if (sqrtx < static_cast<std::int64_t>(phiPi.size()))
+            if (sqrtx < phiPi.size()) {
                 piSqrtx = std::min(static_cast<std::int64_t>(phiPi[sqrtx]), a);
+            }
 
-            std::int64_t mySum = 0;
-            mySum += (piSqrtx - a) * SIGN;
-            mySum += phiTinyCalc(x, strt) * SIGN;
+            std::int64_t mySum = (piSqrtx - a) * SIGN + phiTinyCalc(x, strt) * SIGN;
 
             for (std::int64_t i = strt; i < piSqrtx; ++i) {
                 std::int64_t x2 = x / phiPrimes[i + 1];
@@ -185,14 +196,12 @@ namespace PrimeCounting {
         }
     }
 
-    std::int64_t phiForeman(std::int64_t lowerBound, std::int64_t upperBound, std::int64_t x) {
+    void phiForeman(std::int64_t &mySum, std::int64_t lowerBound,
+                    std::int64_t upperBound, std::int64_t x) {
 
-        std::int64_t mySum = 0;
-
-        for (std::int64_t i = lowerBound; i < upperBound; ++i)
+        for (std::int64_t i = lowerBound; i < upperBound; ++i) {
             mySum += phiWorker<-1>(x / phiPrimes[i + 1], i);
-
-        return mySum;
+        }
     }
 
     const double getChunkFactor(std::int64_t x) {
@@ -203,7 +212,7 @@ namespace PrimeCounting {
         return std::log(factor[it - nums.cbegin()]);
     }
 
-    std::int64_t phiMaster(std::int64_t x, std::int64_t a, int nThreads, bool Parallel) {
+    std::int64_t phiMain(std::int64_t x, std::int64_t a, int nThreads, bool Parallel) {
 
         const std::int64_t sqrtx = static_cast<std::int64_t>(std::sqrt(static_cast<double>(x)));
         const std::int64_t piSqrtx = std::min(static_cast<std::int64_t>(phiPi[sqrtx]), a);
@@ -220,8 +229,6 @@ namespace PrimeCounting {
             std::int64_t myRange = (piSqrtx - strt) + 1;
             std::int64_t lower = strt;
             std::int64_t upper;
-            RcppThread::ThreadPool pool(nThreads);
-            std::vector<std::future<std::int64_t>> myFutures;
 
             if (x > divLim) {
                 const double chunkFactor = getChunkFactor(x);
@@ -246,12 +253,23 @@ namespace PrimeCounting {
                 const int firstLoops = std::ceil(((std::pow(multOne, power) +
                                                  base) / firstStep) / nThreads);
                 upper = lower + firstStep;
+                std::vector<std::int64_t> mySums;
 
                 for (int i = 0; i < firstLoops; ++i) {
-                    for (int j = 0; j < nThreads; lower = upper, upper += firstStep, ++j)
-                        myFutures.push_back(pool.pushReturn(phiForeman, lower, upper, x));
+                    std::vector<std::int64_t> intermediate(nThreads, 0);
+                    std::vector<std::thread> threads;
 
-                    pool.wait();
+                    for (int j = 0; j < nThreads; lower = upper, upper += firstStep, ++j) {
+                        threads.emplace_back(phiForeman, std::ref(intermediate[j]),
+                                             lower, upper, x);
+                    }
+
+                    for (auto& thr: threads) {
+                        thr.join();
+                    }
+
+                    mySums.insert(mySums.end(), intermediate.cbegin(),
+                                  intermediate.cend());
                 }
 
                 //*********************** End of firstThreads *****************************
@@ -265,61 +283,86 @@ namespace PrimeCounting {
                 upper = static_cast<std::int64_t>(dblChunk) + base;
 
                 while ((dblChunk * std::pow(multOne, nThreads - 1) + base) < piSqrtx) {
+                    std::vector<std::int64_t> intermediate(nThreads, 0);
+                    std::vector<std::thread> threads;
+
                     for (int j = 0; j < nThreads; lower = upper, ++j,
                             dblChunk *= multOne, upper = static_cast<std::int64_t>(dblChunk) + base) {
-                        myFutures.push_back(pool.pushReturn(phiForeman, lower, upper, x));
+                        threads.emplace_back(phiForeman, std::ref(intermediate[j]),
+                                             lower, upper, x);
                     }
 
-                    pool.wait();
+                    for (auto& thr: threads) {
+                        thr.join();
+                    }
+
+                    mySums.insert(mySums.end(), intermediate.cbegin(),
+                                  intermediate.cend());
                 }
+
+                std::vector<std::int64_t> intermediate(nThreads, 0);
+                std::vector<std::thread> threads;
 
                 for (int j = 0; j < (nThreads - 1) && upper < piSqrtx; lower = upper, ++j,
                         dblChunk *= multOne, upper = static_cast<std::int64_t>(dblChunk) + base) {
-                    myFutures.push_back(pool.pushReturn(phiForeman, lower, upper, x));
+                    threads.emplace_back(phiForeman, std::ref(intermediate[j]),
+                                         lower, upper, x);
                 }
 
-                myFutures.push_back(pool.pushReturn(phiForeman, lower, piSqrtx, x));
+                threads.emplace_back(phiForeman, std::ref(intermediate.back()),
+                                     lower, piSqrtx, x);
 
-                for (std::size_t j = 0; j < myFutures.size(); ++j)
-                    mySum += myFutures[j].get();
+                for (auto& thr: threads) {
+                    thr.join();
+                }
 
-                pool.join();
+                mySums.insert(mySums.end(), intermediate.cbegin(),
+                              intermediate.cend());
 
+                mySum += std::accumulate(mySums.cbegin(), mySums.cend(),
+                                         static_cast<std::int64_t>(0));
             } else {
+                std::vector<std::int64_t> mySums(nThreads, 0);
+                std::vector<std::thread> threads;
                 std::int64_t chunk = myRange / nThreads;
                 upper = lower + chunk - 1;
 
-                for (int j = 0; j < (nThreads - 1); lower = upper, upper += chunk, ++j)
-                    myFutures.push_back(pool.pushReturn(phiForeman, lower, upper, x));
+                for (int j = 0; j < (nThreads - 1); lower = upper, upper += chunk, ++j) {
+                    threads.emplace_back(phiForeman, std::ref(mySums[j]),
+                                         lower, upper, x);
+                }
 
-                myFutures.push_back(pool.pushReturn(phiForeman, lower, piSqrtx, x));
+                threads.emplace_back(phiForeman, std::ref(mySums.back()),
+                                     lower, piSqrtx, x);
 
-                for (std::size_t j = 0; j < myFutures.size(); ++j)
-                    mySum += myFutures[j].get();
+                for (auto& thr: threads) {
+                    thr.join();
+                }
 
-                pool.join();
+                mySum += std::accumulate(mySums.cbegin(), mySums.cend(),
+                                         static_cast<std::int64_t>(0));
             }
         } else {
-            mySum += phiForeman(strt, piSqrtx, x);
+            phiForeman(mySum, strt, piSqrtx, x);
         }
 
         return mySum;
     }
 
     // All values verified by Kim Walisch's primecount library (nThreads = 8)
-    //  10^9 -->>          50,847,534   -->>   811.6 microseconds
-    // 10^10 -->>         455,052,511   -->>   5.362 milliseconds
-    // 10^11 -->>       4,118,054,813   -->>   21.45 milliseconds
-    // 10^12 -->>      37,607,912,018   -->>   119.4 milliseconds
-    // 10^13 -->>     346,065,536,839   -->>   868.4 milliseconds
-    // 10^14 -->>   3,204,941,750,802   -->>   6.724 seconds
-    // 10^15 -->>  29,844,570,422,669   -->>  49.554 seconds
+    //  10^9 -->>          50,847,534   -->>   711.5 microseconds
+    // 10^10 -->>         455,052,511   -->>   3.25  milliseconds
+    // 10^11 -->>       4,118,054,813   -->>   12.45 milliseconds
+    // 10^12 -->>      37,607,912,018   -->>   67.95 milliseconds
+    // 10^13 -->>     346,065,536,839   -->>   507.4 milliseconds
+    // 10^14 -->>   3,204,941,750,802   -->>   3.867 seconds
+    // 10^15 -->>  29,844,570,422,669   -->>  28.407 seconds
     // MAX VALUE (2^53 - 1) -->>
-    //            252,252,704,148,404   -->> 352.862 seconds
+    //            252,252,704,148,404   -->> 213.575 seconds
 
-    std::int64_t MasterPrimeCount(std::int64_t n, int nThreads = 1, int maxThreads = 1) {
+    std::int64_t MainPrimeCount(std::int64_t n, int nThreads = 1, int maxThreads = 1) {
 
-        const std::int64_t sqrtBound = static_cast<std::int64_t>(std::sqrt(static_cast<double>(n)));
+        const std::int64_t sqrtBound = std::sqrt(static_cast<double>(n));
         std::vector<std::int64_t> resetPhiPrimes;
         PrimeSieve::sqrtBigPrimes(sqrtBound, true, false, true, resetPhiPrimes);
         phiPrimes = resetPhiPrimes;
@@ -329,8 +372,9 @@ namespace PrimeCounting {
         const std::int64_t maxPrime = phiPrimes.back();
 
         for (std::int64_t i = 1; i <= maxPrime; ++i) {
-            if (i >= phiPrimes[count + 1])
+            if (i >= phiPrimes[count + 1]) {
                 ++count;
+            }
 
             phiPi[i] = count;
         }
@@ -342,8 +386,8 @@ namespace PrimeCounting {
 
         if (nThreads > 1 && maxThreads > 1) {
             Parallel = true;
-            if (nThreads > maxThreads) {nThreads = maxThreads;}
-            if ((maxThreads < 2) || (n < 1e7)) {Parallel = false;}
+            if (nThreads > maxThreads) nThreads = maxThreads;
+            if ((maxThreads < 2) || (n < 1e7)) Parallel = false;
         }
 
         const std::int64_t piSqrt = PiPrime(sqrtBound);
@@ -354,38 +398,43 @@ namespace PrimeCounting {
     }
 }
 
-//[[Rcpp::export]]
-SEXP PrimeCountRcpp(SEXP Rn, SEXP RNumThreads, int maxThreads) {
+SEXP PrimeCountCpp(SEXP Rn, SEXP RNumThreads, SEXP RmaxThreads) {
     double dblNum;
-    CleanConvert::convertPrimitive(Rn, dblNum, "n");
+    CleanConvert::convertPrimitive(Rn, dblNum, VecType::Numeric, "n");
     const std::int64_t n = static_cast<std::int64_t>(dblNum);
+
+    int nThreads = 1;
+    int maxThreads = 1;
+    CleanConvert::convertPrimitive(RmaxThreads, maxThreads,
+                                   VecType::Integer, "maxThreads");
 
     if (n < 100000) {
         if (n < 10) {
             if (n == 1)
-                return Rcpp::wrap(0);
+                return Rf_ScalarInteger(0);
             else if (n == 2)
-                return Rcpp::wrap(1);
+                return Rf_ScalarInteger(1);
             else if (n < 5)
-                return Rcpp::wrap(2);
+                return Rf_ScalarInteger(2);
             else if (n < 7)
-                return Rcpp::wrap(3);
+                return Rf_ScalarInteger(3);
             else
-                return Rcpp::wrap(4);
+                return Rf_ScalarInteger(4);
         }
 
-        return Rcpp::wrap(static_cast<int>(PrimeCounting::PiPrime(n)));
+        return Rf_ScalarInteger(static_cast<int>(PrimeCounting::PiPrime(n)));
     }
 
-    int nThreads = 1;
-    if (!Rf_isNull(RNumThreads))
-        CleanConvert::convertPrimitive(RNumThreads, nThreads, "nThreads");
+    if (!Rf_isNull(RNumThreads)) {
+        CleanConvert::convertPrimitive(RNumThreads, nThreads,
+                                       VecType::Integer, "nThreads");
+    }
 
-    std::int64_t result = PrimeCounting::MasterPrimeCount(n, nThreads, maxThreads);
+    std::int64_t result = PrimeCounting::MainPrimeCount(n, nThreads, maxThreads);
 
     if (result > std::numeric_limits<int>::max()) {
-        return Rcpp::wrap(static_cast<double>(result));
+        return Rf_ScalarReal(static_cast<double>(result));
     } else {
-        return Rcpp::wrap(static_cast<int>(result));
+        return Rf_ScalarInteger(static_cast<int>(result));
     }
 }

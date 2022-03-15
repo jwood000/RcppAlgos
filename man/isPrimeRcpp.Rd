@@ -4,7 +4,7 @@
 Vectorized Primality Test
 }
 \description{
-Implementation of the \href{https://en.wikipedia.org/wiki/Miller-Rabin_primality_test}{Miller-Rabin primality test}. Based on the "mp_prime_p" function from the "factorize.c" source file found in the gmp library: \url{https://gmplib.org/}.
+Implementation of the \href{https://en.wikipedia.org/wiki/Miller-Rabin_primality_test}{Miller-Rabin primality test}. Based on the "mp_prime_p" function from the "factorize.c" source file found in the gmp library: \url{https://gmplib.org}.
 }
 \usage{
 isPrimeRcpp(v, namedVector = FALSE, nThreads = NULL)

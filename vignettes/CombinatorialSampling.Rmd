@@ -1,7 +1,7 @@
 ---
 title: "Combinatorial Sampling"
 author: "Joseph Wood"
-date: "10/12/2019"
+date: "03/12/2022"
 output:
   rmarkdown::html_vignette:
     toc: true
@@ -16,7 +16,7 @@ This document covers topics in generating random samples of combinations/permuta
 
 ***
 
-To illustrate this in `base R`, let us consider getting 5 random combinations of the vector `1:20` of length 10. How should we proceed?
+To illustrate this in base R, let us consider getting 5 random combinations of the vector `1:20` of length 10. How should we proceed?
 
 ## Base R
 
@@ -31,31 +31,33 @@ naive <- function(v, m, n, s) {
 
 fiveRndCombs <- naive(20, 10, 5, 42)
 t(fiveRndCombs)
-     [,1] [,2] [,3] [,4] [,5] [,6] [,7] [,8] [,9] [,10]
-[1,]    4    5    7    8    9   11   13   14   17    18
-[2,]    4    6    7   10   11   12   13   14   15    16
-[3,]    1    3    4    7    9   11   14   15   17    20
-[4,]    3    4    9   10   11   12   14   18   19    20
-[5,]    2    4    5    6    8   11   12   16   17    20
+#>      [,1] [,2] [,3] [,4] [,5] [,6] [,7] [,8] [,9] [,10]
+#> [1,]    1    3    5   10   11   14   15   16   18    20
+#> [2,]    1    3    4    9   10   11   12   13   18    19
+#> [3,]    2    3    4    6    9   10   12   13   15    19
+#> [4,]    1    4    5   10   13   14   15   17   18    19
+#> [5,]    1    3    4    5    7    8   13   15   18    19
 ```
 
 This is okay for this small example (there are only `choose(20, 10) = 184756` results), however what if we wanted to find one hundred thousand random combinations from the vector `1:100` of length 20? Clearly, the approach above will not be feasible as there are far too many results to generate (`choose(100, 20) = 5.359834e+20`). Furthermore, there are internal limitations on `sample`. If we try to pass `choose(100, 20)`, we will get an error:
 
 ```r
 sample(choose(100, 20), 5)
-Error in sample.int(x, size, replace, prob) : invalid first argument
+#> Error in sample.int(x, size, replace, prob) : invalid first argument
 ```
 
 We could also try calling `sample(100, 20)` a bunch of times and hope we don't get duplicate combinations. This is neither promising nor elegant.
 
+***
+
 ## RcppAlgos Solutions
 
-`RcppAlgos` provides three functions: `comboSample`, `permuteSample`, and `comboGroupsSample` for seamlessly attacking these types of problems. All functions provide the following:
+`RcppAlgos` provides four functions: `comboSample`, `permuteSample`, `partitionsSample`, and `comboGroupsSample` for seamlessly attacking these types of problems. All functions provide the following:
 
-* Easily generate random samples of combinations/permutations or partition of groups in parallel.
+* Easily generate random samples of combinations/permutations/partitions or partition of groups in parallel.
 * You can pass a vector of specific indices or rely on the internal sampling functions. We call `sample` when the total number of results is small and for larger cases, the sampling is done in a very similar fashion to `urand.bigz` from the `gmp` package.
-* Consistent interface to their respective general functions (i.e. `combo/permuteGeneral` and `comboGroups`)
-* Useful when we need a reproducible set of random combinations/permutations or partitions of groups.
+* Consistent interface to their respective general functions (i.e. `{combo/permute/partitions}General` and `comboGroups`)
+* Useful when we need a reproducible set of random combinations/permutations/partitions or partitions of groups.
 * If the gmp library is needed, the `seed` parameter must be set in order to have reproducible results (_E.g._ `set.seed()`) has no effect in these cases).
 
 ## `comboSample` and `permuteSample`
@@ -66,142 +68,142 @@ Let's first look at the first problem above (i.e. getting 5 random combinations 
 library(RcppAlgos)
 set.seed(42)
 comboSample(20, 10, n = 5)
-     [,1] [,2] [,3] [,4] [,5] [,6] [,7] [,8] [,9] [,10]
-[1,]    4    5    7    8    9   11   13   14   17    18
-[2,]    4    6    7   10   11   12   13   14   15    16
-[3,]    1    3    4    7    9   11   14   15   17    20
-[4,]    3    4    9   10   11   12   14   18   19    20
-[5,]    2    4    5    6    8   11   12   16   17    20
+#>      [,1] [,2] [,3] [,4] [,5] [,6] [,7] [,8] [,9] [,10]
+#> [1,]    1    3    5   10   11   14   15   16   18    20
+#> [2,]    1    3    4    9   10   11   12   13   18    19
+#> [3,]    2    3    4    6    9   10   12   13   15    19
+#> [4,]    1    4    5   10   13   14   15   17   18    19
+#> [5,]    1    3    4    5    7    8   13   15   18    19
 
 ## Use the seed argument directly to produce the same output
 comboSample(20, 10, n = 5, seed = 42)
-     [,1] [,2] [,3] [,4] [,5] [,6] [,7] [,8] [,9] [,10]
-[1,]    4    5    7    8    9   11   13   14   17    18
-[2,]    4    6    7   10   11   12   13   14   15    16
-[3,]    1    3    4    7    9   11   14   15   17    20
-[4,]    3    4    9   10   11   12   14   18   19    20
-[5,]    2    4    5    6    8   11   12   16   17    20
+#>      [,1] [,2] [,3] [,4] [,5] [,6] [,7] [,8] [,9] [,10]
+#> [1,]    1    3    5   10   11   14   15   16   18    20
+#> [2,]    1    3    4    9   10   11   12   13   18    19
+#> [3,]    2    3    4    6    9   10   12   13   15    19
+#> [4,]    1    4    5   10   13   14   15   17   18    19
+#> [5,]    1    3    4    5    7    8   13   15   18    19
 
 ## fiveRndCombs produced above
 identical(t(fiveRndCombs),
           comboSample(20, 10, n = 5, seed = 42))
-[1] TRUE
+#> [1] TRUE
 ```
 
-## Samples of Results with Repetition
+### Samples of Results with Repetition
 
 Just like with `comboGeneral` and `permuteGeneral`, we can explore results with repetition.
 
 ```r
 comboSample(10, 8, TRUE, n = 3, seed = 84)
-     [,1] [,2] [,3] [,4] [,5] [,6] [,7] [,8]
-[1,]    3    3    3    6    6   10   10   10
-[2,]    1    3    3    4    4    7    9   10
-[3,]    3    7    7    7    9   10   10   10
+#>      [,1] [,2] [,3] [,4] [,5] [,6] [,7] [,8]
+#> [1,]    2    5    5    7    9    9    9    9
+#> [2,]    4    5    8    8    8   10   10   10
+#> [3,]    2    6    6    6    6    6    9    9
 
 permuteSample(10, 8, TRUE, n = 3)
-     [,1] [,2] [,3] [,4] [,5] [,6] [,7] [,8]
-[1,]    8    7    8   10    1    2    7    6
-[2,]    3    3    8   10    2    4    4    6
-[3,]    3    7    8    4    2    9   10    4
+#>      [,1] [,2] [,3] [,4] [,5] [,6] [,7] [,8]
+#> [1,]    4   10    4    4   10    2    2   10
+#> [2,]    1    4    5   10    5    5    2    2
+#> [3,]    4    1    7    9    1    5    6    5
 
 comboSample(10, 12, freqs = 1:10, n = 3)
-     [,1] [,2] [,3] [,4] [,5] [,6] [,7] [,8] [,9] [,10] [,11] [,12]
-[1,]    1    2    3    4    5    5    6    8    8     9    10    10
-[2,]    1    4    4    4    5    5    5    5    5     7     7     7
-[3,]    2    3    4    5    5    6    7    7    7     7     7     7
+#>      [,1] [,2] [,3] [,4] [,5] [,6] [,7] [,8] [,9] [,10] [,11] [,12]
+#> [1,]    2    2    3    5    5    6    6    6    7     8     9    10
+#> [2,]    1    2    3    3    5    5    6    7    9     9     9     9
+#> [3,]    1    2    5    5    5    6    6    9   10    10    10    10
 
 permuteSample(10, 12, freqs = 1:10, n = 3, seed = 123)
-     [,1] [,2] [,3] [,4] [,5] [,6] [,7] [,8] [,9] [,10] [,11] [,12]
-[1,]    4    6    7    7    1   10    8    7    8     7     4     6
-[2,]    5    7    7    8    7    7    2    5    5     3     4     2
-[3,]   10    6    1   10    8    5    3    9    7     2     9     3
+#>      [,1] [,2] [,3] [,4] [,5] [,6] [,7] [,8] [,9] [,10] [,11] [,12]
+#> [1,]    2    8    7    4    8    9   10   10    7     1     8     2
+#> [2,]    5    5    9    8    1    8    3    2    6     4     3    10
+#> [3,]   10    3    8    8    4    8    8    6   10     6     3     8
 ```
 
-## Specific Results with `sampleVec`
+### Specific Results with `sampleVec`
 
 We can also utilize `sampleVec` to generate specific results.
 
 ```r
 ## E.g. the below generates the 1st, 5th, 25th, 125th, and
-## 625th lexicographical combinations
+#> 625th lexicographical combinations
 comboSample(10, 8, TRUE, sampleVec = c(1, 5, 25, 125, 625))
-     [,1] [,2] [,3] [,4] [,5] [,6] [,7] [,8]
-[1,]    1    1    1    1    1    1    1    1
-[2,]    1    1    1    1    1    1    1    5
-[3,]    1    1    1    1    1    1    3    8
-[4,]    1    1    1    1    1    3    6    9
-[5,]    1    1    1    1    5    6   10   10
+#>      [,1] [,2] [,3] [,4] [,5] [,6] [,7] [,8]
+#> [1,]    1    1    1    1    1    1    1    1
+#> [2,]    1    1    1    1    1    1    1    5
+#> [3,]    1    1    1    1    1    1    3    8
+#> [4,]    1    1    1    1    1    3    6    9
+#> [5,]    1    1    1    1    5    6   10   10
 
 ## Is the same as:
 comboGeneral(10, 8, TRUE)[5^(0:4), ]
-     [,1] [,2] [,3] [,4] [,5] [,6] [,7] [,8]
-[1,]    1    1    1    1    1    1    1    1
-[2,]    1    1    1    1    1    1    1    5
-[3,]    1    1    1    1    1    1    3    8
-[4,]    1    1    1    1    1    3    6    9
-[5,]    1    1    1    1    5    6   10   10
+#>      [,1] [,2] [,3] [,4] [,5] [,6] [,7] [,8]
+#> [1,]    1    1    1    1    1    1    1    1
+#> [2,]    1    1    1    1    1    1    1    5
+#> [3,]    1    1    1    1    1    1    3    8
+#> [4,]    1    1    1    1    1    3    6    9
+#> [5,]    1    1    1    1    5    6   10   10
 ```
 
-## Using `namedSample`
+### Using `namedSample`
 
 Have you ever wondered which lexicographical combinations/permutations are returned when sampling? No worries, simply set `namedSample = TRUE`:
 
 ```r
 testInd <- permuteSample(30, 10, n = 3, seed = 100, namedSample = TRUE)
 testInd
-               [,1] [,2] [,3] [,4] [,5] [,6] [,7] [,8] [,9] [,10]
-33554924331145   10    7   24    5   29    6   30   12   16    11
-60218249947169   17   18   15   19   14    2    1    4    7    29
-51084688265260   15    2   20   27    8   10   25   30    3    18
+#>                [,1] [,2] [,3] [,4] [,5] [,6] [,7] [,8] [,9] [,10]
+#> 86626302070118   24   26    7   29    3   21   20    9   16    28
+#> 15871916538841    5   12   21    9    6    3   14   23    4    20
+#> 87932455980012   25    6   20   23   18   10   27   30   19    29
 
 ## Same output as above
 permuteSample(30, 10, sampleVec = row.names(testInd))
-     [,1] [,2] [,3] [,4] [,5] [,6] [,7] [,8] [,9] [,10]
-[1,]   10    7   24    5   29    6   30   12   16    11
-[2,]   17   18   15   19   14    2    1    4    7    29
-[3,]   15    2   20   27    8   10   25   30    3    18
+#>      [,1] [,2] [,3] [,4] [,5] [,6] [,7] [,8] [,9] [,10]
+#> [1,]   24   26    7   29    3   21   20    9   16    28
+#> [2,]    5   12   21    9    6    3   14   23    4    20
+#> [3,]   25    6   20   23   18   10   27   30   19    29
 ```
 
-## Parallel Computing and GMP Support
+### Parallel Computing and GMP Support
 
 Just like the `General` counterparts, the sampling functions utilize GMP to allow for exploration of combinations/permutations of large vectors where the total number of results is enormous. They also offer parallel options using `Parallel` or `nThreads`.
 
 ```r
 ## Uses min(stdThreadMax() - 1, 5) threads (in this case)
 permuteSample(500, 10, TRUE, n = 5, seed = 123, Parallel = TRUE)
-     [,1] [,2] [,3] [,4] [,5] [,6] [,7] [,8] [,9] [,10]
-[1,]   55  435  274  324  200  152    6  313  121   377
-[2,]  196  166  331  154  443  329  155  233  354   442
-[3,]  235  325   94   27  370  117  302   86  229   126
-[4,]  284  104  464  104  207  127  117    9  390   414
-[5,]  456   76  381  456  219   23  376  187   11   123
+#>      [,1] [,2] [,3] [,4] [,5] [,6] [,7] [,8] [,9] [,10]
+#> [1,]   55  435  274  324  200  152    6  313  121   377
+#> [2,]  196  166  331  154  443  329  155  233  354   442
+#> [3,]  235  325   94   27  370  117  302   86  229   126
+#> [4,]  284  104  464  104  207  127  117    9  390   414
+#> [5,]  456   76  381  456  219   23  376  187   11   123
 
 permuteSample(factor(state.abb), 15, n = 3, seed = 50, nThreads = 3)
-     [,1] [,2] [,3] [,4] [,5] [,6] [,7] [,8] [,9] [,10] [,11] [,12] [,13] [,14] [,15]
-[1,] ME   FL   DE   OK   ND   CA   PA   AL   ID   MO    NM    HI    KY    MT    NJ
-[2,] AZ   CA   AL   CT   ME   SD   ID   SC   OK   NH    HI    TN    ND    IA    MT
-[3,] MD   MO   NC   MT   NH   AL   VA   MA   VT   WV    NJ    NE    MN    MS    MI
-50 Levels: AK AL AR AZ CA CO CT DE FL GA HI IA ID IL IN KS KY LA MA MD ME MI MN ... WY
+#>      [,1] [,2] [,3] [,4] [,5] [,6] [,7] [,8] [,9] [,10] [,11] [,12] [,13] [,14] [,15]
+#> [1,] ME   FL   DE   OK   ND   CA   PA   AL   ID   MO    NM    HI    KY    MT    NJ
+#> [2,] AZ   CA   AL   CT   ME   SD   ID   SC   OK   NH    HI    TN    ND    IA    MT
+#> [3,] MD   MO   NC   MT   NH   AL   VA   MA   VT   WV    NJ    NE    MN    MS    MI
+#> 50 Levels: AK AL AR AZ CA CO CT DE FL GA HI IA ID IL IN KS KY LA MA MD ME MI MN ... WY
 
 permuteCount(factor(state.abb), 15)
-Big Integer ('bigz') :
-[1] 2943352142120754524160000
+#> Big Integer ('bigz') :
+#> [1] 2943352142120754524160000
 ```
 
-## Efficiency
+### Efficiency
 
 The algorithms are incredibly efficient and offer tremendous gains over the naive approach above:
 
 ```r
 ## the function "naive" is defined above
 system.time(naive(25, 10, 5, 15))
-  user  system elapsed
- 3.526   0.065   3.604
+#>   user  system elapsed
+#>  3.197   0.066   3.287
 
 system.time(comboSample(25, 10, n = 5, seed = 15))
-  user  system elapsed
- 0.002   0.000   0.001
+#>   user  system elapsed
+#>  0.002   0.000   0.001
 ```
 
 Even when dealing with extremely large numbers, these algorithms are very fast. And using the parallel options have even greater effects than we saw with the general counterparts (typically around ~2-3 times faster with the general functions, whereas with the last example below with sampling we see a nearly 5 fold improvement).
@@ -209,38 +211,38 @@ Even when dealing with extremely large numbers, these algorithms are very fast. 
 ```r
 ## Lightning fast even with examples involving many results
 system.time(comboSample(2500, 100, n = 5, seed = 15))
-   user  system elapsed
-  0.002   0.000   0.002
+#>    user  system elapsed
+#>   0.002   0.000   0.002
 
 ## The total number of combinations has ~180 digits
 gmp::log10.bigz(comboCount(2500, 100))
-[1] 180.9525
+#> [1] 180.9525
 
 ## Still fast with larger samples
 system.time(comboSample(2500, 100, n = 1e4, seed = 157))
-   user  system elapsed
-  1.482   0.006   1.491
+#>    user  system elapsed
+#>   1.124   0.008   1.142
 
 ## Using Parallel/nThreads in these cases has an even greater effect
 system.time(comboSample(2500, 100, n = 1e4, seed = 157, nThreads = 8))
-   user  system elapsed
-  2.409   0.002   0.310
+#>    user  system elapsed
+#>   2.032   0.005   0.268
 ```
 
-## User Defined Functions
+### User Defined Functions
 
 Again, just as with the general functions, you can pass a custom function to `combo/permuteSample` using the `FUN` argument.
 
 ```r
 permuteSample(5000, 1000, n = 3, seed = 101, FUN = sd)
-[[1]]
-[1] 1431.949
-
-[[2]]
-[1] 1446.859
-
-[[3]]
-[1] 1449.272
+#> [[1]]
+#> [1] 1431.949
+#>
+#> [[2]]
+#> [1] 1446.859
+#>
+#> [[3]]
+#> [1] 1449.272
 
 
 ## Example using complex numbers
@@ -250,21 +252,107 @@ permuteSample(myCplx, 10, freqs = rep(1:5, 20),
               n = 3, seed = 101, FUN = function(x) {
                   sqrt(sum(x))
               })
-[[1]]
-[1] 24.83948+0i
-
-[[2]]
-[1] 20.9285+0.04778i
-
-[[3]]
-[1] 22.20379+0.09007i
+#> [[1]]
+#> [1] 24.83948+0i
+#>
+#> [[2]]
+#> [1] 20.9285+0.04778i
+#>
+#> [[3]]
+#> [1] 22.20379+0.09007i
 ```
+
+## `partitionsSample`
+
+The `partitionsSample` function allows one to draw a random sample of partitions of a number. Many of the features present in `comboSample` and `permuteSample` are available in `partitionsSample`.
+
+```r
+## Use the seed parameter to obtain reproducible results
+partitionsSample(100, 8, TRUE, n = 3, seed = 42)
+#>      [,1] [,2] [,3] [,4] [,5] [,6] [,7] [,8]
+#> [1,]    1    1    3    3    4   20   23   45
+#> [2,]    1    1    2    7   14   14   29   32
+#> [3,]    2   10   11   11   16   16   16   18
+
+## Used namedSample to obtain the lexicographical indices
+partitionsSample(100, 8, TRUE, n = 3, seed = 42, namedSample = TRUE)
+#>        [,1] [,2] [,3] [,4] [,5] [,6] [,7] [,8]
+#> 61413     1    1    3    3    4   20   23   45
+#> 54425     1    1    2    7   14   14   29   32
+#> 623844    2   10   11   11   16   16   16   18
+
+## Use sampleVec to obtain specific results
+partitionsSample(100, 8, TRUE, sampleVec = c(61413, 54425, 623844))
+#>      [,1] [,2] [,3] [,4] [,5] [,6] [,7] [,8]
+#> [1,]    1    1    3    3    4   20   23   45
+#> [2,]    1    1    2    7   14   14   29   32
+#> [3,]    2   10   11   11   16   16   16   18
+
+partitionsCount(2500, 10)
+#> Big Integer ('bigz') :
+#> [1] 2621914835336941325
+
+## Algorithms are very efficient
+system.time(serial = partitionsSample(2500, 10, n = 1e3,
+                                      seed = 8128))
+#>    user  system elapsed
+#>   5.220   0.010   5.235
+
+## Use nThreads for greater efficiency
+system.time(multi = partitionsSample(2500, 10, n = 1e3,
+                                     seed = 8128, nThreads = 8))
+#>    user  system elapsed
+#>  10.723   0.022   1.358
+
+identical(multi, serial)
+#> [1] TRUE
+
+## Even works with non-standard setup
+partitionsSample(17 + (1:10) * 3, 10, TRUE,
+                 target = 320, n = 3, seed = 111)
+#>      [,1] [,2] [,3] [,4] [,5] [,6] [,7] [,8] [,9] [,10]
+#> [1,]   23   23   26   26   29   29   38   38   41    47
+#> [2,]   26   26   26   29   29   29   32   41   41    41
+#> [3,]   20   23   23   26   26   35   38   41   44    44
+```
+
+There are sampling algorithms available for most partition cases, but some cases are not covered. For example, with standard multisets, we are currently unable to _efficiently_ generate the _n<sup>th</sup>_ lexicographical result. Another example is when the source vector is not uniform (_e.g._ when the distance between each element is irregular).
+
+Observe the following:
+
+```r
+## No sampling algorithm available when the source vector is not uniform
+partitionsSample(c(1, 4, 6, 7, 10, seq(11, 100, 7)), 10, n = 1, target = 340)
+#> Error in partitionsSample(c(1, 4, 6, 7, 10, seq(11, 100, 7)), 10, n = 1,  :
+#>   Partition sampling not available for this case.
+
+## As stated above, the standard multiset case doesn't work either
+partitionsSample(0:50, 6, freqs = rep(1:3, 17), n = 2)
+#> Error in partitionsSample(0:50, 6, freqs = rep(1:3, 17), n = 2) :
+#>   Partition sampling not available for this case.
+
+## If we use freqs to indicate that zeros can repeat,
+## then we can obtain random samples
+partitionsSample(0:50, 6, freqs = c(50, rep(1, 50)), n = 3, seed = 222)
+#>      [,1] [,2] [,3] [,4] [,5] [,6]
+#> [1,]    0    0    1    4    9   36
+#> [2,]    0    0    0    0   17   33
+#> [3,]    2    4    5    6    8   25
+
+## Even works when the vector is restricted in regards to the target
+partitionsSample(0:50, 6, freqs = c(50, rep(1, 50)),
+                 n = 3, seed = 222, target = 100)
+#>      [,1] [,2] [,3] [,4] [,5] [,6]
+#> [1,]    0    1    6   15   29   49
+#> [2,]    0    0    0    8   43   49
+#> [3,]    4    7   17   19   22   31
+```
+
+There is ongoing research in this area and our goal is to eventually be able to cover the standard multiset case.
 
 ## Sampling Partitions of Groups of Equal Size with `comboGroupsSample`
 
-Just as we can generate random samples of combinations and permutations, we are also able to generate random samples of partitions of groups of equal size.
-
-There are many problems that present in this manner. Below, we examine one involving playing cards.
+Just as we can generate random samples of combinations and permutations, we are also able to generate random samples of partitions of groups of equal size. There are many problems that present in this manner. Below, we examine one involving playing cards.
 
 Let's say we have 4 players and each player is to have 3 cards a piece. Given that the deck is shuffled, the dealer then distrubutes 12 cards.
 
@@ -284,37 +372,37 @@ shuffled <- factor(deck[sample(52)], levels = deck)
 
 ## Here are 3 possibilities
 comboGroupsSample(shuffled[1:12], numGroups = 4, n = 2, seed = 13)
-     Grp1 Grp1 Grp1 Grp2 Grp2 Grp2 Grp3 Grp3 Grp3 Grp4 Grp4 Grp4
-[1,] A♠   2♥   6♠   10♦  10♥  J♣   8♠   10♣  3♠   Q♦   6♣   8♦
-[2,] A♠   10♥  Q♦   10♦  2♥   8♦   8♠   J♣   6♣   10♣  3♠   6♠
-52 Levels: 2♠ 3♠ 4♠ 5♠ 6♠ 7♠ 8♠ 9♠ 10♠ J♠ Q♠ K♠ A♠ 2♥ 3♥ 4♥ 5♥ 6♥ 7♥ 8♥ ... A♣
+#>      Grp1 Grp1 Grp1 Grp2 Grp2 Grp2 Grp3 Grp3 Grp3 Grp4 Grp4 Grp4
+#> [1,] 8♦   3♥   5♦   9♦   J♠   7♥   8♠   K♦   10♦  A♦   J♥   3♦
+#> [2,] 8♦   K♦   10♦  9♦   J♥   3♥   J♠   8♠   3♦   A♦   5♦   7♥
+#> 52 Levels: 2♠ 3♠ 4♠ 5♠ 6♠ 7♠ 8♠ 9♠ 10♠ J♠ Q♠ K♠ A♠ 2♥ 3♥ 4♥ 5♥ 6♥ 7♥ 8♥ ... A
 
 
 comboGroupsSample(shuffled[1:12], numGroups = 4, retType = "3Darray",
                   n = 2, seed = 13, namedSample = TRUE)
-, , Grp1
-
-      [,1] [,2] [,3]
-10939 A♠   2♥   6♠
-3791  A♠   10♥  Q♦
-
-, , Grp2
-
-      [,1] [,2] [,3]
-10939 10♦  10♥  J♣
-3791  10♦  2♥   8♦
-
-, , Grp3
-
-      [,1] [,2] [,3]
-10939 8♠   10♣  3♠
-3791  8♠   J♣   6♣
-
-, , Grp4
-
-      [,1] [,2] [,3]
-10939 Q♦   6♣   8♦
-3791  10♣  3♠   6♠
-
-52 Levels: 2♠ 3♠ 4♠ 5♠ 6♠ 7♠ 8♠ 9♠ 10♠ J♠ Q♠ K♠ A♠ 2♥ 3♥ 4♥ 5♥ 6♥ 7♥ 8♥ ... A♣
+#> , , Grp1
+#>
+#>       [,1] [,2] [,3]
+#> 13784 8♦   3♥   5♦
+#> 9152  8♦   K♦   10♦
+#>
+#> , , Grp2
+#>
+#>       [,1] [,2] [,3]
+#> 13784 9♦   J♠   7♥
+#> 9152  9♦   J♥   3♥
+#>
+#> , , Grp3
+#>
+#>       [,1] [,2] [,3]
+#> 13784 8♠   K♦   10♦
+#> 9152  J♠   8♠   3♦
+#>
+#> , , Grp4
+#>
+#>       [,1] [,2] [,3]
+#> 13784 A♦   J♥   3♦
+#> 9152  A♦   5♦   7♥
+#>
+#> 52 Levels: 2♠ 3♠ 4♠ 5♠ 6♠ 7♠ 8♠ 9♠ 10♠ J♠ Q♠ K♠ A♠ 2♥ 3♥ 4♥ 5♥ 6♥ 7♥ 8♥ ... A♣♣
 ```

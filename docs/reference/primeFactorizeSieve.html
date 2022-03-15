@@ -17,7 +17,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">RcppAlgos</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">2.4.3</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">2.5.0</span>
       </span>
     </div>
 
@@ -32,7 +32,7 @@
     <span class="caret"></span>
   </a>
   <ul class="dropdown-menu" role="menu"><li>
-      <a href="../articles/CombPermConstraints.html">Constraints, Integer Partitions, and Compositions</a>
+      <a href="../articles/CombPermConstraints.html">Constraints and Integer Partitions</a>
     </li>
     <li>
       <a href="../articles/CombinatorialSampling.html">Combinatorial Sampling</a>
@@ -48,6 +48,9 @@
     </li>
     <li>
       <a href="../articles/HighPerformanceBenchmarks.html">High Performance Benchmarks</a>
+    </li>
+    <li>
+      <a href="../articles/OtherCombinatorics.html">Cartesian Products and Partitions of Groups into Equal Size</a>
     </li>
     <li>
       <a href="../articles/SubsetSum.html">Attacking Problems Related to the Subset Sum Problem</a>
@@ -135,7 +138,7 @@
 <span class="r-in"><span class="co">## to 10^5 (max element from mySamp)</span></span>
 <span class="r-in"><span class="fu"><a href="https://rdrr.io/r/base/system.time.html" class="external-link">system.time</a></span><span class="op">(</span><span class="va">allPFacs</span> <span class="op">&lt;-</span> <span class="fu">primeFactorizeSieve</span><span class="op">(</span><span class="fl">10</span><span class="op">^</span><span class="fl">5</span><span class="op">)</span><span class="op">)</span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>    user  system elapsed </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   0.020   0.002   0.022 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   0.022   0.001   0.024 </span>
 <span class="r-in"></span>
 <span class="r-in"><span class="co">## Use generated prime factorization for further</span></span>
 <span class="r-in"><span class="co">## analysis by accessing the index of allPFacs</span></span>
@@ -148,7 +151,7 @@
 <span class="r-in"><span class="co">## a range is efficient as well</span></span>
 <span class="r-in"><span class="fu"><a href="https://rdrr.io/r/base/system.time.html" class="external-link">system.time</a></span><span class="op">(</span><span class="fu">primeFactorizeSieve</span><span class="op">(</span><span class="fl">10</span><span class="op">^</span><span class="fl">12</span>, <span class="fl">10</span><span class="op">^</span><span class="fl">12</span> <span class="op">+</span> <span class="fl">10</span><span class="op">^</span><span class="fl">5</span><span class="op">)</span><span class="op">)</span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>    user  system elapsed </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   0.057   0.002   0.059 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   0.055   0.001   0.056 </span>
 <span class="r-in"></span>
 <span class="r-in"><span class="co">## Set 'namedList' to TRUE to return a named list</span></span>
 <span class="r-in"><span class="fu">primeFactorizeSieve</span><span class="op">(</span><span class="fl">27</span>, <span class="fl">30</span>, namedList <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>

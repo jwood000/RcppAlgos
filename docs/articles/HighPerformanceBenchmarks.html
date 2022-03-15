@@ -33,7 +33,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">RcppAlgos</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">2.4.3</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">2.5.0</span>
       </span>
     </div>
 
@@ -50,7 +50,7 @@
   </a>
   <ul class="dropdown-menu" role="menu">
 <li>
-      <a href="../articles/CombPermConstraints.html">Constraints, Integer Partitions, and Compositions</a>
+      <a href="../articles/CombPermConstraints.html">Constraints and Integer Partitions</a>
     </li>
     <li>
       <a href="../articles/CombinatorialSampling.html">Combinatorial Sampling</a>
@@ -66,6 +66,9 @@
     </li>
     <li>
       <a href="../articles/HighPerformanceBenchmarks.html">High Performance Benchmarks</a>
+    </li>
+    <li>
+      <a href="../articles/OtherCombinatorics.html">Cartesian Products and Partitions of Groups into Equal Size</a>
     </li>
     <li>
       <a href="../articles/SubsetSum.html">Attacking Problems Related to the Subset Sum Problem</a>
@@ -99,7 +102,7 @@
       <h1 data-toc-skip>High Performance Benchmarks</h1>
                         <h4 data-toc-skip class="author">Joseph Wood</h4>
             
-            <h4 data-toc-skip class="date">2/8/2020</h4>
+            <h4 data-toc-skip class="date">03/14/2022</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/jwood000/RcppAlgos/blob/HEAD/vignettes/HighPerformanceBenchmarks.Rmd" class="external-link"><code>vignettes/HighPerformanceBenchmarks.Rmd</code></a></small>
       <div class="hidden name"><code>HighPerformanceBenchmarks.Rmd</code></div>
@@ -108,7 +111,7 @@
 
     
     
-<p>This document serves as an overview for measuring the performance of <code>RcppAlgos</code> against other tools that were determined to be efficient for generating combinations and permutations from the benchmarks found here: <a href="https://stackoverflow.com/a/47983855/4408538" class="external-link">Permutations and combinations with/without replacement and for distinct/non-distinct items/multiset</a>. You will note that the examples in that post were relatively small. The benchmarks below will focus on larger examples where performance really matters and for this reason we only consider the packages <a href="https://cran.r-project.org/package=arrangements" class="external-link">arrangements</a>, <a href="https://cran.r-project.org/package=partitions" class="external-link">partitions</a>, and <a href="https://cran.r-project.org/package=RcppAlgos" class="external-link">RcppAlgos</a>.</p>
+<p>This document serves as an overview for measuring the performance of <code>RcppAlgos</code> against other tools for generating combinations, permutations, and partitions. This stackoverflow post: <a href="https://stackoverflow.com/a/47983855/4408538" class="external-link">Permutations and combinations with/without replacement and for distinct/non-distinct items/multiset</a> has some benchmarks. You will note that the examples in that post were relatively small. The benchmarks below will focus on larger examples where performance really matters and for this reason we only consider the packages <a href="https://cran.r-project.org/package=arrangements" class="external-link">arrangements</a>, <a href="https://cran.r-project.org/package=partitions" class="external-link">partitions</a>, and <a href="https://cran.r-project.org/package=RcppAlgos" class="external-link">RcppAlgos</a>.</p>
 <div class="section level2">
 <h2 id="setup-information">Setup Information<a class="anchor" aria-label="anchor" href="#setup-information"></a>
 </h2>
@@ -122,12 +125,12 @@
 
 <span class="fu"><a href="https://rdrr.io/r/base/options.html" class="external-link">options</a></span><span class="op">(</span>digits <span class="op">=</span> <span class="fl">4</span><span class="op">)</span>
 <span class="fu"><a href="https://rdrr.io/r/base/cat.html" class="external-link">cat</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste</a></span><span class="op">(</span><span class="va">pertinent_output</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">3</span><span class="op">]</span>, collapse <span class="op">=</span> <span class="st">"\n"</span><span class="op">)</span><span class="op">)</span>
-<span class="co">#&gt; R version 3.6.2 (2019-12-12)</span>
-<span class="co">#&gt; Platform: x86_64-apple-darwin15.6.0 (64-bit)</span>
-<span class="co">#&gt; Running under: macOS Mojave 10.14.6</span>
+<span class="co">#&gt; R version 4.1.0 (2021-05-18)</span>
+<span class="co">#&gt; Platform: x86_64-apple-darwin17.0 (64-bit)</span>
+<span class="co">#&gt; Running under: macOS 12.0.1</span>
 
 <span class="fu"><a href="https://rdrr.io/r/base/cat.html" class="external-link">cat</a></span><span class="op">(</span><span class="va">pertinent_output</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/which.html" class="external-link">which</a></span><span class="op">(</span><span class="va">pertinent_output</span> <span class="op">==</span> <span class="st">"other attached packages:"</span><span class="op">)</span> <span class="op">+</span> <span class="fl">1L</span><span class="op">]</span><span class="op">)</span>
-<span class="co">#&gt; [1] microbenchmark_1.4-7 partitions_1.9-22    arrangements_1.1.8   RcppAlgos_2.3.6</span>
+<span class="co">#&gt; [1] microbenchmark_1.4-7 arrangements_1.1.9   partitions_1.10-2    RcppAlgos_2.5.0</span>
 
 <span class="va">numThreads</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/integer.html" class="external-link">as.integer</a></span><span class="op">(</span><span class="fu">RcppAlgos</span><span class="fu">::</span><span class="fu"><a href="../reference/stdThreadMax.html">stdThreadMax</a></span><span class="op">(</span><span class="op">)</span> <span class="op">/</span> <span class="fl">2</span><span class="op">)</span>
 <span class="fu"><a href="https://rdrr.io/pkg/partitions/man/print.partition.html" class="external-link">print</a></span><span class="op">(</span><span class="va">numThreads</span><span class="op">)</span>
@@ -156,10 +159,10 @@
                cbArrangements <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/pkg/arrangements/man/combinations.html" class="external-link">combinations</a></span><span class="op">(</span><span class="va">v1</span>, <span class="va">m</span><span class="op">)</span>,
                times <span class="op">=</span> <span class="fl">15</span>, unit <span class="op">=</span> <span class="st">"relative"</span><span class="op">)</span>
 <span class="co">#&gt; Unit: relative</span>
-<span class="co">#&gt;            expr   min    lq  mean median    uq   max neval</span>
-<span class="co">#&gt;  cbRcppAlgosPar 1.000 1.000 1.000  1.000 1.000 1.000    15</span>
-<span class="co">#&gt;  cbRcppAlgosSer 2.403 2.382 2.373  2.389 2.374 2.243    15</span>
-<span class="co">#&gt;  cbArrangements 2.095 2.365 2.343  2.380 2.365 2.237    15</span></code></pre></div>
+<span class="co">#&gt;            expr   min    lq  mean median    uq   max neval cld</span>
+<span class="co">#&gt;  cbRcppAlgosPar 1.000 1.000 1.000  1.000 1.000 1.000    15  a</span>
+<span class="co">#&gt;  cbRcppAlgosSer 3.581 2.518 2.516  2.536 2.387 2.336    15   b</span>
+<span class="co">#&gt;  cbArrangements 3.564 2.502 2.510  2.510 2.398 2.372    15   b</span></code></pre></div>
 </div>
 <div class="section level3">
 <h3 id="combinations---repetition">Combinations - Repetition<a class="anchor" aria-label="anchor" href="#combinations---repetition"></a>
@@ -180,34 +183,33 @@
                cbArrangements <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/pkg/arrangements/man/combinations.html" class="external-link">combinations</a></span><span class="op">(</span><span class="va">v2</span>, <span class="va">m</span>, replace <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>,
                times <span class="op">=</span> <span class="fl">15</span>, unit <span class="op">=</span> <span class="st">"relative"</span><span class="op">)</span>
 <span class="co">#&gt; Unit: relative</span>
-<span class="co">#&gt;            expr   min    lq  mean median    uq   max neval</span>
-<span class="co">#&gt;  cbRcppAlgosPar 1.000 1.000 1.000  1.000 1.000 1.000    15</span>
-<span class="co">#&gt;  cbRcppAlgosSer 2.567 2.566 2.562  2.560 2.556 2.560    15</span>
-<span class="co">#&gt;  cbArrangements 2.262 2.562 2.542  2.565 2.552 2.592    15</span></code></pre></div>
+<span class="co">#&gt;            expr   min    lq  mean median    uq   max neval cld</span>
+<span class="co">#&gt;  cbRcppAlgosPar 1.000 1.000 1.000  1.000 1.000 1.000    15 a</span>
+<span class="co">#&gt;  cbRcppAlgosSer 2.350 2.554 2.459  2.538 2.462 2.186    15   c</span>
+<span class="co">#&gt;  cbArrangements 2.421 2.420 2.369  2.420 2.344 2.341    15  b</span></code></pre></div>
 </div>
 <div class="section level3">
 <h3 id="combinations---multisets">Combinations - Multisets<a class="anchor" aria-label="anchor" href="#combinations---multisets"></a>
 </h3>
-<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">myFreqs</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">2</span>, <span class="fl">4</span>, <span class="fl">4</span>, <span class="fl">5</span>, <span class="fl">3</span>, <span class="fl">2</span>, <span class="fl">2</span>, <span class="fl">2</span>, <span class="fl">3</span>, <span class="fl">4</span>, <span class="fl">1</span>, <span class="fl">4</span>, <span class="fl">2</span>, <span class="fl">5</span><span class="op">)</span>
-<span class="va">v3</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/integer.html" class="external-link">as.integer</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">2</span>, <span class="fl">3</span>, <span class="fl">5</span>, <span class="fl">8</span>, <span class="fl">13</span>, <span class="fl">21</span>, <span class="fl">34</span>, <span class="fl">55</span>, <span class="fl">89</span>, <span class="fl">144</span>, <span class="fl">233</span>, <span class="fl">377</span>, <span class="fl">610</span><span class="op">)</span><span class="op">)</span>
-<span class="va">t1</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/combinatoricsGeneral.html">comboGeneral</a></span><span class="op">(</span><span class="va">v3</span>, <span class="fl">20</span>, freqs <span class="op">=</span> <span class="va">myFreqs</span>, nThreads <span class="op">=</span> <span class="va">numThreads</span><span class="op">)</span>
-<span class="va">t2</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/arrangements/man/combinations.html" class="external-link">combinations</a></span><span class="op">(</span>freq <span class="op">=</span> <span class="va">myFreqs</span>, k <span class="op">=</span> <span class="fl">20</span>, x <span class="op">=</span> <span class="va">v3</span><span class="op">)</span>
-<span class="fu"><a href="https://rdrr.io/r/base/identical.html" class="external-link">identical</a></span><span class="op">(</span><span class="va">t1</span>, <span class="va">t2</span><span class="op">)</span>
-<span class="co">#&gt; [1] TRUE</span>
-<span class="fu"><a href="https://rdrr.io/r/base/dim.html" class="external-link">dim</a></span><span class="op">(</span><span class="va">t1</span><span class="op">)</span>
-<span class="co">#&gt; [1] 14594082       20</span>
-<span class="fu"><a href="https://rdrr.io/r/base/rm.html" class="external-link">rm</a></span><span class="op">(</span><span class="va">t1</span>, <span class="va">t2</span><span class="op">)</span>
-<span class="fu"><a href="https://rdrr.io/r/base/invisible.html" class="external-link">invisible</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/gc.html" class="external-link">gc</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span>
-<span class="fu"><a href="https://rdrr.io/pkg/microbenchmark/man/microbenchmark.html" class="external-link">microbenchmark</a></span><span class="op">(</span>cbRcppAlgosPar <span class="op">=</span> <span class="fu"><a href="../reference/combinatoricsGeneral.html">comboGeneral</a></span><span class="op">(</span><span class="va">v3</span>, <span class="fl">20</span>, freqs <span class="op">=</span> <span class="va">myFreqs</span>, nThreads <span class="op">=</span> <span class="va">numThreads</span><span class="op">)</span>,
-               cbRcppAlgosSer <span class="op">=</span> <span class="fu"><a href="../reference/combinatoricsGeneral.html">comboGeneral</a></span><span class="op">(</span><span class="va">v3</span>, <span class="fl">20</span>, freqs <span class="op">=</span> <span class="va">myFreqs</span><span class="op">)</span>,
-               cbArrangements <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/pkg/arrangements/man/combinations.html" class="external-link">combinations</a></span><span class="op">(</span>freq <span class="op">=</span> <span class="va">myFreqs</span>, k <span class="op">=</span> <span class="fl">20</span>, x <span class="op">=</span> <span class="va">v3</span><span class="op">)</span>,
-               times <span class="op">=</span> <span class="fl">10</span>, unit <span class="op">=</span> <span class="st">"relative"</span><span class="op">)</span>
-<span class="co">#&gt; Unit: relative</span>
-<span class="co">#&gt;            expr   min    lq  mean median    uq   max neval</span>
-<span class="co">#&gt;  cbRcppAlgosPar 1.000 1.000 1.000  1.000 1.000 1.000    10</span>
-<span class="co">#&gt;  cbRcppAlgosSer 3.640 2.737 2.792  2.719 2.719 2.720    10</span>
-<span class="co">#&gt;  cbArrangements 6.461 4.862 4.936  4.817 4.803 4.734    10</span></code></pre></div>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>myFreqs <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="dv">2</span>, <span class="dv">4</span>, <span class="dv">4</span>, <span class="dv">5</span>, <span class="dv">3</span>, <span class="dv">2</span>, <span class="dv">2</span>, <span class="dv">2</span>, <span class="dv">3</span>, <span class="dv">4</span>, <span class="dv">1</span>, <span class="dv">4</span>, <span class="dv">2</span>, <span class="dv">5</span>)</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>v3 <span class="ot">&lt;-</span> <span class="fu">as.integer</span>(<span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">2</span>, <span class="dv">3</span>, <span class="dv">5</span>, <span class="dv">8</span>, <span class="dv">13</span>, <span class="dv">21</span>, <span class="dv">34</span>, <span class="dv">55</span>, <span class="dv">89</span>, <span class="dv">144</span>, <span class="dv">233</span>, <span class="dv">377</span>, <span class="dv">610</span>))</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>t1 <span class="ot">&lt;-</span> <span class="fu">comboGeneral</span>(v3, <span class="dv">20</span>, <span class="at">freqs =</span> myFreqs, <span class="at">nThreads =</span> numThreads)</span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>t2 <span class="ot">&lt;-</span> <span class="fu">combinations</span>(<span class="at">freq =</span> myFreqs, <span class="at">k =</span> <span class="dv">20</span>, <span class="at">x =</span> v3)</span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a><span class="fu">identical</span>(t1, t2)</span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [1] TRUE</span></span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a><span class="fu">dim</span>(t1)</span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [1] 14594082       20</span></span>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a><span class="fu">rm</span>(t1, t2)</span>
+<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a><span class="fu">invisible</span>(<span class="fu">gc</span>())</span>
+<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a><span class="fu">microbenchmark</span>(<span class="at">cbRcppAlgosPar =</span> <span class="fu">comboGeneral</span>(v3, <span class="dv">20</span>, <span class="at">freqs =</span> myFreqs, <span class="at">nThreads =</span> numThreads),</span>
+<span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a>               <span class="at">cbRcppAlgosSer =</span> <span class="fu">comboGeneral</span>(v3, <span class="dv">20</span>, <span class="at">freqs =</span> myFreqs),</span>
+<span id="cb4-13"><a href="#cb4-13" aria-hidden="true" tabindex="-1"></a>               <span class="at">cbArrangements =</span> <span class="fu">combinations</span>(<span class="at">freq =</span> myFreqs, <span class="at">k =</span> <span class="dv">20</span>, <span class="at">x =</span> v3),</span>
+<span id="cb4-14"><a href="#cb4-14" aria-hidden="true" tabindex="-1"></a>               <span class="at">times =</span> <span class="dv">10</span>, <span class="at">unit =</span> <span class="st">"relative"</span>)</span>
+<span id="cb4-15"><a href="#cb4-15" aria-hidden="true" tabindex="-1"></a>Unit<span class="sc">:</span> relative</span>
+<span id="cb4-16"><a href="#cb4-16" aria-hidden="true" tabindex="-1"></a>           expr   min    lq  mean median    uq   max neval cld</span>
+<span id="cb4-17"><a href="#cb4-17" aria-hidden="true" tabindex="-1"></a> cbRcppAlgosPar <span class="fl">1.000</span> <span class="fl">1.000</span> <span class="fl">1.000</span>  <span class="fl">1.000</span> <span class="fl">1.000</span> <span class="fl">1.000</span>    <span class="dv">10</span> a</span>
+<span id="cb4-18"><a href="#cb4-18" aria-hidden="true" tabindex="-1"></a> cbRcppAlgosSer <span class="fl">2.608</span> <span class="fl">2.589</span> <span class="fl">2.378</span>  <span class="fl">2.505</span> <span class="fl">2.107</span> <span class="fl">2.160</span>    <span class="dv">10</span>  b</span>
+<span id="cb4-19"><a href="#cb4-19" aria-hidden="true" tabindex="-1"></a> cbArrangements <span class="fl">3.776</span> <span class="fl">3.931</span> <span class="fl">3.634</span>  <span class="fl">3.829</span> <span class="fl">3.220</span> <span class="fl">3.397</span>    <span class="dv">10</span>   c</span></code></pre></div>
 </div>
 </div>
 <div class="section level2">
@@ -216,53 +218,52 @@
 <div class="section level3">
 <h3 id="permutations---distinct">Permutations - Distinct<a class="anchor" aria-label="anchor" href="#permutations---distinct"></a>
 </h3>
-<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">v4</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/integer.html" class="external-link">as.integer</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">2</span>, <span class="fl">3</span>, <span class="fl">5</span>, <span class="fl">7</span>, <span class="fl">11</span>, <span class="fl">13</span>, <span class="fl">17</span>, <span class="fl">19</span>, <span class="fl">23</span>, <span class="fl">29</span>, <span class="fl">31</span>, <span class="fl">37</span>, <span class="fl">41</span>, <span class="fl">43</span>, <span class="fl">47</span>, <span class="fl">53</span>, <span class="fl">59</span><span class="op">)</span><span class="op">)</span>
-<span class="va">t1</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/combinatoricsGeneral.html">permuteGeneral</a></span><span class="op">(</span><span class="va">v4</span>, <span class="fl">6</span>, nThreads <span class="op">=</span> <span class="va">numThreads</span><span class="op">)</span>
-<span class="va">t2</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/arrangements/man/permutations.html" class="external-link">permutations</a></span><span class="op">(</span><span class="va">v4</span>, <span class="fl">6</span><span class="op">)</span>
-<span class="fu"><a href="https://rdrr.io/r/base/identical.html" class="external-link">identical</a></span><span class="op">(</span><span class="va">t1</span>, <span class="va">t2</span><span class="op">)</span>
-<span class="co">#&gt; [1] TRUE</span>
-<span class="fu"><a href="https://rdrr.io/r/base/dim.html" class="external-link">dim</a></span><span class="op">(</span><span class="va">t1</span><span class="op">)</span>
-<span class="co">#&gt; [1] 8910720       6</span>
-<span class="fu"><a href="https://rdrr.io/r/base/rm.html" class="external-link">rm</a></span><span class="op">(</span><span class="va">t1</span>, <span class="va">t2</span><span class="op">)</span>
-<span class="fu"><a href="https://rdrr.io/r/base/invisible.html" class="external-link">invisible</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/gc.html" class="external-link">gc</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span>
-<span class="fu"><a href="https://rdrr.io/pkg/microbenchmark/man/microbenchmark.html" class="external-link">microbenchmark</a></span><span class="op">(</span>cbRcppAlgosPar <span class="op">=</span> <span class="fu"><a href="../reference/combinatoricsGeneral.html">permuteGeneral</a></span><span class="op">(</span><span class="va">v4</span>, <span class="fl">6</span>, nThreads <span class="op">=</span> <span class="va">numThreads</span><span class="op">)</span>,
-               cbRcppAlgosSer <span class="op">=</span> <span class="fu"><a href="../reference/combinatoricsGeneral.html">permuteGeneral</a></span><span class="op">(</span><span class="va">v4</span>, <span class="fl">6</span><span class="op">)</span>,
-               cbArrangements <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/pkg/arrangements/man/permutations.html" class="external-link">permutations</a></span><span class="op">(</span><span class="va">v4</span>, <span class="fl">6</span><span class="op">)</span>,
-               times <span class="op">=</span> <span class="fl">15</span>, unit <span class="op">=</span> <span class="st">"relative"</span><span class="op">)</span>
-<span class="co">#&gt; Unit: relative</span>
-<span class="co">#&gt;            expr   min    lq  mean median    uq   max neval</span>
-<span class="co">#&gt;  cbRcppAlgosPar 1.000 1.000 1.000  1.000 1.000 1.000    15</span>
-<span class="co">#&gt;  cbRcppAlgosSer 1.828 1.837 1.851  1.863 1.875 2.049    15</span>
-<span class="co">#&gt;  cbArrangements 2.239 2.211 2.115  2.194 2.076 1.888    15</span>
-
-
-<span class="co">## Indexing permutation example with the partitions package</span>
-<span class="va">t1</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/combinatoricsGeneral.html">permuteGeneral</a></span><span class="op">(</span><span class="fl">11</span>, nThreads <span class="op">=</span> <span class="fl">4</span><span class="op">)</span>
-<span class="va">t2</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/arrangements/man/permutations.html" class="external-link">permutations</a></span><span class="op">(</span><span class="fl">11</span><span class="op">)</span>
-<span class="va">t3</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/partitions/man/perms.html" class="external-link">perms</a></span><span class="op">(</span><span class="fl">11</span><span class="op">)</span>
-
-<span class="fu"><a href="https://rdrr.io/r/base/dim.html" class="external-link">dim</a></span><span class="op">(</span><span class="va">t1</span><span class="op">)</span>
-<span class="co">#&gt; [1] 39916800       11</span>
-
-<span class="fu"><a href="https://rdrr.io/r/base/identical.html" class="external-link">identical</a></span><span class="op">(</span><span class="va">t1</span>, <span class="va">t2</span><span class="op">)</span>
-<span class="co">#&gt; [1] TRUE</span>
-<span class="fu"><a href="https://rdrr.io/r/base/identical.html" class="external-link">identical</a></span><span class="op">(</span><span class="va">t1</span>, <span class="fu"><a href="https://rdrr.io/r/base/t.html" class="external-link">t</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">as.matrix</a></span><span class="op">(</span><span class="va">t3</span><span class="op">)</span><span class="op">)</span><span class="op">)</span>
-<span class="co">#&gt; [1] TRUE</span>
-<span class="fu"><a href="https://rdrr.io/r/base/rm.html" class="external-link">rm</a></span><span class="op">(</span><span class="va">t1</span>, <span class="va">t2</span>, <span class="va">t3</span><span class="op">)</span>
-<span class="fu"><a href="https://rdrr.io/r/base/invisible.html" class="external-link">invisible</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/gc.html" class="external-link">gc</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span>
-
-<span class="fu"><a href="https://rdrr.io/pkg/microbenchmark/man/microbenchmark.html" class="external-link">microbenchmark</a></span><span class="op">(</span>cbRcppAlgosPar <span class="op">=</span> <span class="fu"><a href="../reference/combinatoricsGeneral.html">permuteGeneral</a></span><span class="op">(</span><span class="fl">11</span>, nThreads <span class="op">=</span> <span class="fl">4</span><span class="op">)</span>,
-               cbRcppAlgosSer <span class="op">=</span> <span class="fu"><a href="../reference/combinatoricsGeneral.html">permuteGeneral</a></span><span class="op">(</span><span class="fl">11</span><span class="op">)</span>,
-               cbArrangements <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/pkg/arrangements/man/permutations.html" class="external-link">permutations</a></span><span class="op">(</span><span class="fl">11</span><span class="op">)</span>,
-               cbPartitions <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/pkg/partitions/man/perms.html" class="external-link">perms</a></span><span class="op">(</span><span class="fl">11</span><span class="op">)</span>,
-               times <span class="op">=</span> <span class="fl">5</span>, unit <span class="op">=</span> <span class="st">"relative"</span><span class="op">)</span>
-<span class="co">#&gt; Unit: relative</span>
-<span class="co">#&gt;            expr      min       lq     mean   median       uq      max neval</span>
-<span class="co">#&gt;  cbRcppAlgosPar 1.000000 1.000000 1.000000 1.000000 1.000000 1.000000     5</span>
-<span class="co">#&gt;  cbRcppAlgosSer 1.905055 1.904145 1.856310 1.932584 1.943967 1.689898     5</span>
-<span class="co">#&gt;  cbArrangements 2.085293 2.087785 2.118516 2.418879 2.417984 1.769080     5</span>
-<span class="co">#&gt;    cbPartitions 2.572582 2.562715 2.440539 2.737129 2.772614 1.874632     5</span></code></pre></div>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>v4 <span class="ot">&lt;-</span> <span class="fu">as.integer</span>(<span class="fu">c</span>(<span class="dv">2</span>, <span class="dv">3</span>, <span class="dv">5</span>, <span class="dv">7</span>, <span class="dv">11</span>, <span class="dv">13</span>, <span class="dv">17</span>, <span class="dv">19</span>, <span class="dv">23</span>, <span class="dv">29</span>, <span class="dv">31</span>, <span class="dv">37</span>, <span class="dv">41</span>, <span class="dv">43</span>, <span class="dv">47</span>, <span class="dv">53</span>, <span class="dv">59</span>))</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>t1 <span class="ot">&lt;-</span> <span class="fu">permuteGeneral</span>(v4, <span class="dv">6</span>, <span class="at">nThreads =</span> numThreads)</span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>t2 <span class="ot">&lt;-</span> <span class="fu">permutations</span>(v4, <span class="dv">6</span>)</span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a><span class="fu">identical</span>(t1, t2)</span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [1] TRUE</span></span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a><span class="fu">dim</span>(t1)</span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [1] 8910720       6</span></span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a><span class="fu">rm</span>(t1, t2)</span>
+<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a><span class="fu">invisible</span>(<span class="fu">gc</span>())</span>
+<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a><span class="fu">microbenchmark</span>(<span class="at">cbRcppAlgosPar =</span> <span class="fu">permuteGeneral</span>(v4, <span class="dv">6</span>, <span class="at">nThreads =</span> numThreads),</span>
+<span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a>               <span class="at">cbRcppAlgosSer =</span> <span class="fu">permuteGeneral</span>(v4, <span class="dv">6</span>),</span>
+<span id="cb5-12"><a href="#cb5-12" aria-hidden="true" tabindex="-1"></a>               <span class="at">cbArrangements =</span> <span class="fu">permutations</span>(v4, <span class="dv">6</span>),</span>
+<span id="cb5-13"><a href="#cb5-13" aria-hidden="true" tabindex="-1"></a>               <span class="at">times =</span> <span class="dv">15</span>, <span class="at">unit =</span> <span class="st">"relative"</span>)</span>
+<span id="cb5-14"><a href="#cb5-14" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Unit: relative</span></span>
+<span id="cb5-15"><a href="#cb5-15" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;            expr   min    lq  mean median    uq   max neval cld</span></span>
+<span id="cb5-16"><a href="#cb5-16" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  cbRcppAlgosPar 1.000 1.000 1.000  1.000 1.000 1.000    15 a</span></span>
+<span id="cb5-17"><a href="#cb5-17" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  cbRcppAlgosSer 2.324 2.340 2.178  2.380 2.436 1.527    15  b</span></span>
+<span id="cb5-18"><a href="#cb5-18" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  cbArrangements 3.050 3.035 2.893  3.033 3.524 1.950    15   c</span></span>
+<span id="cb5-19"><a href="#cb5-19" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-20"><a href="#cb5-20" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-21"><a href="#cb5-21" aria-hidden="true" tabindex="-1"></a><span class="do">## Indexing permutation example with the partitions package</span></span>
+<span id="cb5-22"><a href="#cb5-22" aria-hidden="true" tabindex="-1"></a>t1 <span class="ot">&lt;-</span> <span class="fu">permuteGeneral</span>(<span class="dv">11</span>, <span class="at">nThreads =</span> <span class="dv">4</span>)</span>
+<span id="cb5-23"><a href="#cb5-23" aria-hidden="true" tabindex="-1"></a>t2 <span class="ot">&lt;-</span> <span class="fu">permutations</span>(<span class="dv">11</span>)</span>
+<span id="cb5-24"><a href="#cb5-24" aria-hidden="true" tabindex="-1"></a>t3 <span class="ot">&lt;-</span> <span class="fu">perms</span>(<span class="dv">11</span>)</span>
+<span id="cb5-25"><a href="#cb5-25" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-26"><a href="#cb5-26" aria-hidden="true" tabindex="-1"></a><span class="fu">dim</span>(t1)</span>
+<span id="cb5-27"><a href="#cb5-27" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [1] 39916800       11</span></span>
+<span id="cb5-28"><a href="#cb5-28" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-29"><a href="#cb5-29" aria-hidden="true" tabindex="-1"></a><span class="fu">identical</span>(t1, t2)</span>
+<span id="cb5-30"><a href="#cb5-30" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [1] TRUE</span></span>
+<span id="cb5-31"><a href="#cb5-31" aria-hidden="true" tabindex="-1"></a><span class="fu">identical</span>(t1, <span class="fu">t</span>(<span class="fu">as.matrix</span>(t3)))</span>
+<span id="cb5-32"><a href="#cb5-32" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [1] TRUE</span></span>
+<span id="cb5-33"><a href="#cb5-33" aria-hidden="true" tabindex="-1"></a><span class="fu">rm</span>(t1, t2, t3)</span>
+<span id="cb5-34"><a href="#cb5-34" aria-hidden="true" tabindex="-1"></a><span class="fu">invisible</span>(<span class="fu">gc</span>())</span>
+<span id="cb5-35"><a href="#cb5-35" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-36"><a href="#cb5-36" aria-hidden="true" tabindex="-1"></a><span class="fu">microbenchmark</span>(<span class="at">cbRcppAlgosPar =</span> <span class="fu">permuteGeneral</span>(<span class="dv">11</span>, <span class="at">nThreads =</span> <span class="dv">4</span>),</span>
+<span id="cb5-37"><a href="#cb5-37" aria-hidden="true" tabindex="-1"></a>               <span class="at">cbRcppAlgosSer =</span> <span class="fu">permuteGeneral</span>(<span class="dv">11</span>),</span>
+<span id="cb5-38"><a href="#cb5-38" aria-hidden="true" tabindex="-1"></a>               <span class="at">cbArrangements =</span> <span class="fu">permutations</span>(<span class="dv">11</span>),</span>
+<span id="cb5-39"><a href="#cb5-39" aria-hidden="true" tabindex="-1"></a>               <span class="at">cbPartitions   =</span> <span class="fu">perms</span>(<span class="dv">11</span>),</span>
+<span id="cb5-40"><a href="#cb5-40" aria-hidden="true" tabindex="-1"></a>               <span class="at">times =</span> <span class="dv">5</span>, <span class="at">unit =</span> <span class="st">"relative"</span>)</span>
+<span id="cb5-41"><a href="#cb5-41" aria-hidden="true" tabindex="-1"></a>Unit<span class="sc">:</span> relative</span>
+<span id="cb5-42"><a href="#cb5-42" aria-hidden="true" tabindex="-1"></a>           expr    min    lq  mean median    uq   max neval cld</span>
+<span id="cb5-43"><a href="#cb5-43" aria-hidden="true" tabindex="-1"></a> cbRcppAlgosPar  <span class="fl">1.000</span> <span class="fl">1.000</span> <span class="fl">1.000</span>  <span class="fl">1.000</span> <span class="fl">1.000</span> <span class="fl">1.000</span>     <span class="dv">5</span> a</span>
+<span id="cb5-44"><a href="#cb5-44" aria-hidden="true" tabindex="-1"></a> cbRcppAlgosSer  <span class="fl">3.129</span> <span class="fl">3.299</span> <span class="fl">2.621</span>  <span class="fl">3.284</span> <span class="fl">1.947</span> <span class="fl">2.289</span>     <span class="dv">5</span>  b</span>
+<span id="cb5-45"><a href="#cb5-45" aria-hidden="true" tabindex="-1"></a> cbArrangements  <span class="fl">3.664</span> <span class="fl">3.630</span> <span class="fl">2.791</span>  <span class="fl">3.639</span> <span class="fl">2.201</span> <span class="fl">2.032</span>     <span class="dv">5</span>  b</span>
+<span id="cb5-46"><a href="#cb5-46" aria-hidden="true" tabindex="-1"></a>   cbPartitions <span class="fl">10.040</span> <span class="fl">9.932</span> <span class="fl">7.974</span> <span class="fl">10.901</span> <span class="fl">6.497</span> <span class="fl">5.797</span>     <span class="dv">5</span>   c</span></code></pre></div>
 </div>
 <div class="section level3">
 <h3 id="permutations---repetition">Permutations - Repetition<a class="anchor" aria-label="anchor" href="#permutations---repetition"></a>
@@ -282,10 +283,10 @@
                cbArrangements <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/pkg/arrangements/man/permutations.html" class="external-link">permutations</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">v5</span>, k <span class="op">=</span> <span class="fl">10</span>, replace <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>,
                times <span class="op">=</span> <span class="fl">10</span>, unit <span class="op">=</span> <span class="st">"relative"</span><span class="op">)</span>
 <span class="co">#&gt; Unit: relative</span>
-<span class="co">#&gt;            expr   min    lq  mean median    uq   max neval</span>
-<span class="co">#&gt;  cbRcppAlgosPar 1.000 1.000 1.000  1.000 1.000 1.000    10</span>
-<span class="co">#&gt;  cbRcppAlgosSer 1.639 1.590 1.509  1.582 1.380 1.402    10</span>
-<span class="co">#&gt;  cbArrangements 1.530 1.492 1.303  1.477 1.033 1.258    10</span></code></pre></div>
+<span class="co">#&gt;            expr   min    lq  mean median    uq   max neval cld</span>
+<span class="co">#&gt;  cbRcppAlgosPar 1.000 1.000 1.000  1.000 1.000 1.000    10  a</span>
+<span class="co">#&gt;  cbRcppAlgosSer 3.261 3.300 4.096  3.296 3.412 6.233    10   b</span>
+<span class="co">#&gt;  cbArrangements 3.185 3.155 3.067  3.121 3.109 2.655    10   b</span></code></pre></div>
 </div>
 <div class="section level3">
 <h3 id="permutations---multisets">Permutations - Multisets<a class="anchor" aria-label="anchor" href="#permutations---multisets"></a>
@@ -305,10 +306,10 @@
                cbArrangements <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/pkg/arrangements/man/permutations.html" class="external-link">permutations</a></span><span class="op">(</span>freq <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fl">1</span><span class="op">:</span><span class="fl">3</span>, <span class="fl">4</span><span class="op">)</span>, k <span class="op">=</span> <span class="fl">7</span>, x <span class="op">=</span> <span class="va">v6</span><span class="op">)</span>,
                times <span class="op">=</span> <span class="fl">10</span>, unit <span class="op">=</span> <span class="st">"relative"</span><span class="op">)</span>
 <span class="co">#&gt; Unit: relative</span>
-<span class="co">#&gt;            expr   min    lq  mean median    uq   max neval</span>
-<span class="co">#&gt;  cbRcppAlgosPar 1.000 1.000 1.000  1.000 1.000 1.000    10</span>
-<span class="co">#&gt;  cbRcppAlgosSer 3.345 2.392 2.461  2.389 2.393 2.400    10</span>
-<span class="co">#&gt;  cbArrangements 3.455 2.482 2.544  2.477 2.465 2.459    10</span></code></pre></div>
+<span class="co">#&gt;            expr   min    lq  mean median    uq   max neval cld</span>
+<span class="co">#&gt;  cbRcppAlgosPar 1.000 1.000 1.000  1.000 1.000 1.000    10  a</span>
+<span class="co">#&gt;  cbRcppAlgosSer 3.396 3.412 2.370  2.930 1.600 1.971    10   b</span>
+<span class="co">#&gt;  cbArrangements 3.539 3.552 2.521  3.021 2.074 1.990    10   b</span></code></pre></div>
 </div>
 </div>
 <div class="section level2">
@@ -344,18 +345,17 @@
 <span class="co">#&gt; [1] 9617150      16</span>
 <span class="fu"><a href="https://rdrr.io/r/base/rm.html" class="external-link">rm</a></span><span class="op">(</span><span class="va">t1</span>, <span class="va">t2</span>, <span class="va">t3</span><span class="op">)</span>
 <span class="fu"><a href="https://rdrr.io/r/base/invisible.html" class="external-link">invisible</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/gc.html" class="external-link">gc</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span>
-<span class="fu"><a href="https://rdrr.io/pkg/microbenchmark/man/microbenchmark.html" class="external-link">microbenchmark</a></span><span class="op">(</span>cbRcppAlgosSer <span class="op">=</span> <span class="fu"><a href="../reference/combinatoricsGeneral.html">comboGeneral</a></span><span class="op">(</span><span class="fl">0</span><span class="op">:</span><span class="fl">140</span>, freqs<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">140</span>, <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">140</span><span class="op">)</span><span class="op">)</span>,
-                                             constraintFun <span class="op">=</span> <span class="st">"sum"</span>,
-                                             comparisonFun <span class="op">=</span> <span class="st">"=="</span>,
-                                             limitConstraints <span class="op">=</span> <span class="fl">140</span><span class="op">)</span>,
+<span class="fu"><a href="https://rdrr.io/pkg/microbenchmark/man/microbenchmark.html" class="external-link">microbenchmark</a></span><span class="op">(</span>cbRcppAlgosPar <span class="op">=</span> <span class="fu"><a href="../reference/partitionsGeneral.html">partitionsGeneral</a></span><span class="op">(</span><span class="fl">0</span><span class="op">:</span><span class="fl">140</span>, freqs<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">140</span>, <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">140</span><span class="op">)</span><span class="op">)</span>, nThreads <span class="op">=</span> <span class="va">numThreads</span><span class="op">)</span>,
+               cbRcppAlgosSer <span class="op">=</span> <span class="fu"><a href="../reference/partitionsGeneral.html">partitionsGeneral</a></span><span class="op">(</span><span class="fl">0</span><span class="op">:</span><span class="fl">140</span>, freqs<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">140</span>, <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">140</span><span class="op">)</span><span class="op">)</span><span class="op">)</span>,
                cbArrangements <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/pkg/partitions/man/partitions.package.html" class="external-link">partitions</a></span><span class="op">(</span><span class="fl">140</span>, distinct <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>,
-               cbPartitions <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/pkg/partitions/man/parts.html" class="external-link">diffparts</a></span><span class="op">(</span><span class="fl">140</span><span class="op">)</span>,
+               cbPartitions   <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/pkg/partitions/man/parts.html" class="external-link">diffparts</a></span><span class="op">(</span><span class="fl">140</span><span class="op">)</span>,
                times <span class="op">=</span> <span class="fl">10</span>, unit <span class="op">=</span> <span class="st">"relative"</span><span class="op">)</span>
 <span class="co">#&gt; Unit: relative</span>
-<span class="co">#&gt;            expr   min    lq  mean median    uq   max neval</span>
-<span class="co">#&gt;  cbRcppAlgosSer 1.241 1.237 1.224  1.203 1.178 1.378    10</span>
-<span class="co">#&gt;  cbArrangements 1.000 1.000 1.000  1.000 1.000 1.000    10</span>
-<span class="co">#&gt;    cbPartitions 5.807 5.795 5.658  5.771 5.670 5.205    10</span></code></pre></div>
+<span class="co">#&gt;            expr    min     lq   mean median     uq    max neval cld</span>
+<span class="co">#&gt;  cbRcppAlgosPar  1.000  1.000  1.000  1.000  1.000  1.000    10 a</span>
+<span class="co">#&gt;  cbRcppAlgosSer  3.033  3.055  3.030  3.105  3.613  2.345    10  b</span>
+<span class="co">#&gt;  cbArrangements  2.843  2.875  2.939  3.184  3.860  2.202    10  b</span>
+<span class="co">#&gt;    cbPartitions 19.742 20.600 18.420 20.926 20.458 12.175    10   c</span></code></pre></div>
 </div>
 <div class="section level4">
 <h4 id="restricted-distinct-partitions">Restricted Distinct Partitions<a class="anchor" aria-label="anchor" href="#restricted-distinct-partitions"></a>
@@ -371,16 +371,15 @@
 <span class="co">#&gt; [1] 8942920      10</span>
 <span class="fu"><a href="https://rdrr.io/r/base/rm.html" class="external-link">rm</a></span><span class="op">(</span><span class="va">t1</span>, <span class="va">t2</span><span class="op">)</span>
 <span class="fu"><a href="https://rdrr.io/r/base/invisible.html" class="external-link">invisible</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/gc.html" class="external-link">gc</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span>
-<span class="fu"><a href="https://rdrr.io/pkg/microbenchmark/man/microbenchmark.html" class="external-link">microbenchmark</a></span><span class="op">(</span>cbRcppAlgosSer <span class="op">=</span> <span class="fu"><a href="../reference/combinatoricsGeneral.html">comboGeneral</a></span><span class="op">(</span><span class="fl">160</span>, <span class="fl">10</span>,
-                                             constraintFun <span class="op">=</span> <span class="st">"sum"</span>,
-                                             comparisonFun <span class="op">=</span> <span class="st">"=="</span>,
-                                             limitConstraints <span class="op">=</span> <span class="fl">160</span><span class="op">)</span>,
+<span class="fu"><a href="https://rdrr.io/pkg/microbenchmark/man/microbenchmark.html" class="external-link">microbenchmark</a></span><span class="op">(</span>cbRcppAlgosPar <span class="op">=</span> <span class="fu"><a href="../reference/partitionsGeneral.html">partitionsGeneral</a></span><span class="op">(</span><span class="fl">160</span>, <span class="fl">10</span>, nThreads <span class="op">=</span> <span class="va">numThreads</span><span class="op">)</span>,
+               cbRcppAlgosSer <span class="op">=</span> <span class="fu"><a href="../reference/partitionsGeneral.html">partitionsGeneral</a></span><span class="op">(</span><span class="fl">160</span>, <span class="fl">10</span><span class="op">)</span>,
                cbArrangements <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/pkg/partitions/man/partitions.package.html" class="external-link">partitions</a></span><span class="op">(</span><span class="fl">160</span>, <span class="fl">10</span>, distinct <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>,
                times <span class="op">=</span> <span class="fl">10</span>, unit <span class="op">=</span> <span class="st">"relative"</span><span class="op">)</span>
 <span class="co">#&gt; Unit: relative</span>
-<span class="co">#&gt;            expr   min    lq  mean median    uq   max neval</span>
-<span class="co">#&gt;  cbRcppAlgosSer 1.000 1.000 1.000  1.000 1.000 1.000    10</span>
-<span class="co">#&gt;  cbArrangements 1.084 1.081 1.208  1.087 1.467 1.486    10</span></code></pre></div>
+<span class="co">#&gt;            expr   min    lq  mean median    uq   max neval cld</span>
+<span class="co">#&gt;  cbRcppAlgosPar 1.000 1.000 1.000  1.000 1.000 1.000    10  a</span>
+<span class="co">#&gt;  cbRcppAlgosSer 3.134 3.141 3.002  3.143 3.342 1.838    10   b</span>
+<span class="co">#&gt;  cbArrangements 3.430 3.426 3.066  3.394 3.379 1.925    10   b</span></code></pre></div>
 </div>
 </div>
 <div class="section level3">
@@ -411,18 +410,18 @@
 <span class="co">#&gt; [1] 2012558      65</span>
 <span class="fu"><a href="https://rdrr.io/r/base/rm.html" class="external-link">rm</a></span><span class="op">(</span><span class="va">t1</span>, <span class="va">t2</span>, <span class="va">t3</span><span class="op">)</span>
 <span class="fu"><a href="https://rdrr.io/r/base/invisible.html" class="external-link">invisible</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/gc.html" class="external-link">gc</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span>
-<span class="fu"><a href="https://rdrr.io/pkg/microbenchmark/man/microbenchmark.html" class="external-link">microbenchmark</a></span><span class="op">(</span>cbRcppAlgosSer <span class="op">=</span> <span class="fu"><a href="../reference/combinatoricsGeneral.html">comboGeneral</a></span><span class="op">(</span><span class="fl">0</span><span class="op">:</span><span class="fl">65</span>, repetition <span class="op">=</span> <span class="cn">TRUE</span>,
-                                             constraintFun <span class="op">=</span> <span class="st">"sum"</span>,
-                                             comparisonFun <span class="op">=</span> <span class="st">"=="</span>,
-                                             limitConstraints <span class="op">=</span> <span class="fl">65</span><span class="op">)</span>,
+<span class="fu"><a href="https://rdrr.io/pkg/microbenchmark/man/microbenchmark.html" class="external-link">microbenchmark</a></span><span class="op">(</span>cbRcppAlgosPar <span class="op">=</span> <span class="fu"><a href="../reference/partitionsGeneral.html">partitionsGeneral</a></span><span class="op">(</span><span class="fl">0</span><span class="op">:</span><span class="fl">65</span>, repetition <span class="op">=</span> <span class="cn">TRUE</span>,
+                                                  nThreads <span class="op">=</span> <span class="va">numThreads</span><span class="op">)</span>,
+               cbRcppAlgosSer <span class="op">=</span> <span class="fu"><a href="../reference/partitionsGeneral.html">partitionsGeneral</a></span><span class="op">(</span><span class="fl">0</span><span class="op">:</span><span class="fl">65</span>, repetition <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>,
                cbArrangements <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/pkg/partitions/man/partitions.package.html" class="external-link">partitions</a></span><span class="op">(</span><span class="fl">65</span><span class="op">)</span>,
-               cbPartitions <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/pkg/partitions/man/parts.html" class="external-link">parts</a></span><span class="op">(</span><span class="fl">65</span><span class="op">)</span>,
+               cbPartitions   <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/pkg/partitions/man/parts.html" class="external-link">parts</a></span><span class="op">(</span><span class="fl">65</span><span class="op">)</span>,
                times <span class="op">=</span> <span class="fl">20</span>, unit <span class="op">=</span> <span class="st">"relative"</span><span class="op">)</span>
 <span class="co">#&gt; Unit: relative</span>
-<span class="co">#&gt;            expr   min    lq  mean median    uq    max neval</span>
-<span class="co">#&gt;  cbRcppAlgosSer 1.000 1.000 1.000  1.000 1.000 1.0000    20</span>
-<span class="co">#&gt;  cbArrangements 1.042 1.049 1.015  1.041 1.014 0.8623    20</span>
-<span class="co">#&gt;    cbPartitions 1.723 1.710 1.618  1.695 1.596 1.3554    20</span></code></pre></div>
+<span class="co">#&gt;            expr    min     lq  mean median    uq   max neval cld</span>
+<span class="co">#&gt;  cbRcppAlgosPar  1.000  1.000 1.000  1.000 1.000 1.000    20 a</span>
+<span class="co">#&gt;  cbRcppAlgosSer  2.996  2.985 2.362  2.691 2.102 1.688    20  b</span>
+<span class="co">#&gt;  cbArrangements  2.901  2.844 2.297  2.608 2.042 1.831    20  b</span>
+<span class="co">#&gt;    cbPartitions 10.852 10.695 7.695  9.581 6.311 4.514    20   c</span></code></pre></div>
 </div>
 <div class="section level4">
 <h4 id="restricted-partitions">Restricted Partitions<a class="anchor" aria-label="anchor" href="#restricted-partitions"></a>
@@ -447,18 +446,19 @@
 <span class="co">#&gt; [1] TRUE</span>
 <span class="fu"><a href="https://rdrr.io/r/base/rm.html" class="external-link">rm</a></span><span class="op">(</span><span class="va">t3</span><span class="op">)</span>
 <span class="fu"><a href="https://rdrr.io/r/base/invisible.html" class="external-link">invisible</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/gc.html" class="external-link">gc</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span>
-<span class="fu"><a href="https://rdrr.io/pkg/microbenchmark/man/microbenchmark.html" class="external-link">microbenchmark</a></span><span class="op">(</span>cbRcppAlgosSer <span class="op">=</span> <span class="fu"><a href="../reference/combinatoricsGeneral.html">comboGeneral</a></span><span class="op">(</span><span class="fl">100</span>, <span class="fl">15</span>, <span class="cn">TRUE</span>,
-                                             constraintFun <span class="op">=</span> <span class="st">"sum"</span>,
-                                             comparisonFun <span class="op">=</span> <span class="st">"=="</span>,
-                                             limitConstraints <span class="op">=</span> <span class="fl">100</span><span class="op">)</span>,
-                       cbArrangements <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/pkg/partitions/man/partitions.package.html" class="external-link">partitions</a></span><span class="op">(</span><span class="fl">100</span>, <span class="fl">15</span><span class="op">)</span>,
-                       cbPartitions <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/pkg/partitions/man/parts.html" class="external-link">restrictedparts</a></span><span class="op">(</span><span class="fl">100</span>, <span class="fl">15</span>, include.zero<span class="op">=</span><span class="cn">FALSE</span><span class="op">)</span>,
-                       times <span class="op">=</span> <span class="fl">10</span>, unit <span class="op">=</span> <span class="st">"relative"</span><span class="op">)</span>
+<span class="fu"><a href="https://rdrr.io/pkg/microbenchmark/man/microbenchmark.html" class="external-link">microbenchmark</a></span><span class="op">(</span>cbRcppAlgosPar <span class="op">=</span> <span class="fu"><a href="../reference/partitionsGeneral.html">partitionsGeneral</a></span><span class="op">(</span><span class="fl">100</span>, <span class="fl">15</span>, <span class="cn">TRUE</span>,
+                                                  nThreads <span class="op">=</span> <span class="va">numThreads</span><span class="op">)</span>,
+               cbRcppAlgosSer <span class="op">=</span> <span class="fu"><a href="../reference/partitionsGeneral.html">partitionsGeneral</a></span><span class="op">(</span><span class="fl">100</span>, <span class="fl">15</span>, <span class="cn">TRUE</span><span class="op">)</span>,
+               cbArrangements <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/pkg/partitions/man/partitions.package.html" class="external-link">partitions</a></span><span class="op">(</span><span class="fl">100</span>, <span class="fl">15</span><span class="op">)</span>,
+               cbPartitions   <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/pkg/partitions/man/parts.html" class="external-link">restrictedparts</a></span><span class="op">(</span><span class="fl">100</span>, <span class="fl">15</span>,
+                                                include.zero <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span>,
+               times <span class="op">=</span> <span class="fl">10</span>, unit <span class="op">=</span> <span class="st">"relative"</span><span class="op">)</span>
 <span class="co">#&gt; Unit: relative</span>
-<span class="co">#&gt;            expr   min    lq  mean median     uq   max neval</span>
-<span class="co">#&gt;  cbRcppAlgosSer 1.092 1.087 1.048  1.009 0.9924 1.075    10</span>
-<span class="co">#&gt;  cbArrangements 1.000 1.000 1.000  1.000 1.0000 1.000    10</span>
-<span class="co">#&gt;    cbPartitions 3.256 3.240 2.910  2.853 2.6818 2.646    10</span></code></pre></div>
+<span class="co">#&gt;            expr    min     lq   mean median    uq   max neval cld</span>
+<span class="co">#&gt;  cbRcppAlgosPar  1.000  1.000  1.000  1.000 1.000 1.000    10 a</span>
+<span class="co">#&gt;  cbRcppAlgosSer  3.054  3.049  2.222  1.857 2.132 2.115    10  b</span>
+<span class="co">#&gt;  cbArrangements  3.035  3.047  2.191  1.853 2.088 2.096    10  b</span>
+<span class="co">#&gt;    cbPartitions 15.445 15.745 10.670  9.610 9.221 9.002    10   c</span></code></pre></div>
 </div>
 </div>
 <div class="section level3">
@@ -473,76 +473,107 @@
 <span class="co">#&gt; [1] 7340225      10</span>
 <span class="fu"><a href="https://rdrr.io/r/base/all.html" class="external-link">all</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/colSums.html" class="external-link">rowSums</a></span><span class="op">(</span><span class="va">t1</span><span class="op">)</span> <span class="op">==</span> <span class="fl">120</span><span class="op">)</span>
 <span class="co">#&gt; [1] TRUE</span>
-<span class="fu"><a href="https://rdrr.io/pkg/microbenchmark/man/microbenchmark.html" class="external-link">microbenchmark</a></span><span class="op">(</span>cbRcppAlgos <span class="op">=</span> <span class="fu"><a href="../reference/combinatoricsGeneral.html">comboGeneral</a></span><span class="op">(</span><span class="fl">120</span>, <span class="fl">10</span>, freqs<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fl">1</span><span class="op">:</span><span class="fl">8</span>, <span class="fl">15</span><span class="op">)</span>,
-                                          constraintFun <span class="op">=</span> <span class="st">"sum"</span>, comparisonFun <span class="op">=</span> <span class="st">"=="</span>,
-                                          limitConstraints <span class="op">=</span> <span class="fl">120</span><span class="op">)</span>, times <span class="op">=</span> <span class="fl">10</span><span class="op">)</span>
+<span class="fu"><a href="https://rdrr.io/pkg/microbenchmark/man/microbenchmark.html" class="external-link">microbenchmark</a></span><span class="op">(</span>cbRcppAlgos <span class="op">=</span> <span class="fu"><a href="../reference/partitionsGeneral.html">partitionsGeneral</a></span><span class="op">(</span><span class="fl">120</span>, <span class="fl">10</span>, freqs<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fl">1</span><span class="op">:</span><span class="fl">8</span>, <span class="fl">15</span><span class="op">)</span><span class="op">)</span>,
+               times <span class="op">=</span> <span class="fl">10</span><span class="op">)</span>
+<span class="co">#&gt; Unit: milliseconds</span>
+<span class="co">#&gt;         expr   min      lq   mean median     uq    max neval</span>
+<span class="co">#&gt;  cbRcppAlgos 715.2   724.8  750.5  735.3  791.5  804.5    10</span>
+
+<span class="co">### In RcppAlgos 2.3.6 - 2.4.3</span>
 <span class="co">#&gt; Unit: seconds</span>
-<span class="co">#&gt;         expr   min  lq  mean median    uq   max neval</span>
-<span class="co">#&gt;  cbRcppAlgos 1.196 1.2 1.215  1.214 1.231 1.236    10</span></code></pre></div>
+<span class="co">#&gt;         expr   min      lq   mean median     uq    max neval</span>
+<span class="co">#&gt;  cbRcppAlgos 1172.9 1175.1 1223.5 1193.3 1200.5 1482.0    10    10</span></code></pre></div>
 </div>
 </div>
 <div class="section level2">
-<h2 id="extreme-test">Extreme Test<a class="anchor" aria-label="anchor" href="#extreme-test"></a>
+<h2 id="iterators">Iterators<a class="anchor" aria-label="anchor" href="#iterators"></a>
 </h2>
+<p>We will show one example from each category to demonstrate the efficiency of the iterators in <code>RcppAlgos</code>. The results are similar for the rest of the cases not shown.</p>
+<div class="section level3">
+<h3 id="combinations-1">Combinations<a class="anchor" aria-label="anchor" href="#combinations-1"></a>
+</h3>
 <div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
-<code class="sourceCode R">
-<span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="fl">2187</span><span class="op">)</span>
-<span class="va">testVector7</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/sort.html" class="external-link">sort</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/sample.html" class="external-link">sample</a></span><span class="op">(</span><span class="fl">10</span><span class="op">^</span><span class="fl">7</span>, <span class="fl">10</span><span class="op">^</span><span class="fl">3</span> <span class="op">+</span> <span class="fl">100</span><span class="op">)</span><span class="op">)</span>
-
-<span class="kw">for</span> <span class="op">(</span><span class="va">i</span> <span class="kw">in</span> <span class="fl">1</span><span class="op">:</span><span class="fl">1</span><span class="op">)</span> <span class="op">{</span>
-    <span class="fu"><a href="https://rdrr.io/r/base/gc.html" class="external-link">gc</a></span><span class="op">(</span><span class="op">)</span>
-    <span class="fu"><a href="https://rdrr.io/r/base/cat.html" class="external-link">cat</a></span><span class="op">(</span><span class="st">"\n************ "</span>, <span class="fu"><a href="https://rdrr.io/r/base/formatc.html" class="external-link">prettyNum</a></span><span class="op">(</span><span class="fu"><a href="../reference/combinatoricsCount.html">comboCount</a></span><span class="op">(</span><span class="fl">1100</span>, <span class="fl">3</span><span class="op">)</span>, big.mark <span class="op">=</span> <span class="st">","</span><span class="op">)</span>,
-    <span class="st">" COMBINATIONS **************\n"</span><span class="op">)</span>
-    <span class="fu"><a href="https://rdrr.io/r/base/cat.html" class="external-link">cat</a></span><span class="op">(</span><span class="st">"\nRcppAlgos::comboGeneral with "</span>, <span class="va">numThreads</span>, <span class="st">" threads:\n"</span><span class="op">)</span>
-    <span class="fu"><a href="https://rdrr.io/pkg/partitions/man/print.partition.html" class="external-link">print</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/system.time.html" class="external-link">system.time</a></span><span class="op">(</span><span class="fu">RcppAlgos</span><span class="fu">::</span><span class="fu"><a href="../reference/combinatoricsGeneral.html">comboGeneral</a></span><span class="op">(</span><span class="va">testVector7</span>, <span class="fl">3</span>, nThreads <span class="op">=</span> <span class="va">numThreads</span><span class="op">)</span><span class="op">)</span><span class="op">)</span>
-    <span class="fu"><a href="https://rdrr.io/r/base/gc.html" class="external-link">gc</a></span><span class="op">(</span><span class="op">)</span>
-    <span class="fu"><a href="https://rdrr.io/r/base/cat.html" class="external-link">cat</a></span><span class="op">(</span><span class="st">"\nRcppAlgos::comboGeneral single-threaded:\n"</span><span class="op">)</span>
-    <span class="fu"><a href="https://rdrr.io/pkg/partitions/man/print.partition.html" class="external-link">print</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/system.time.html" class="external-link">system.time</a></span><span class="op">(</span><span class="fu">RcppAlgos</span><span class="fu">::</span><span class="fu"><a href="../reference/combinatoricsGeneral.html">comboGeneral</a></span><span class="op">(</span><span class="va">testVector7</span>, <span class="fl">3</span><span class="op">)</span><span class="op">)</span><span class="op">)</span>
-    <span class="fu"><a href="https://rdrr.io/r/base/gc.html" class="external-link">gc</a></span><span class="op">(</span><span class="op">)</span>
-    <span class="fu"><a href="https://rdrr.io/r/base/cat.html" class="external-link">cat</a></span><span class="op">(</span><span class="st">"\narrangements::combinations:\n"</span><span class="op">)</span>
-    <span class="fu"><a href="https://rdrr.io/pkg/partitions/man/print.partition.html" class="external-link">print</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/system.time.html" class="external-link">system.time</a></span><span class="op">(</span><span class="fu">arrangements</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/arrangements/man/combinations.html" class="external-link">combinations</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">testVector7</span>, k <span class="op">=</span> <span class="fl">3</span><span class="op">)</span><span class="op">)</span><span class="op">)</span>
-    <span class="fu"><a href="https://rdrr.io/r/base/gc.html" class="external-link">gc</a></span><span class="op">(</span><span class="op">)</span>
-    <span class="fu"><a href="https://rdrr.io/r/base/cat.html" class="external-link">cat</a></span><span class="op">(</span><span class="st">"\n\n************** "</span>, <span class="fu"><a href="https://rdrr.io/r/base/formatc.html" class="external-link">prettyNum</a></span><span class="op">(</span><span class="fu"><a href="../reference/combinatoricsCount.html">permuteCount</a></span><span class="op">(</span><span class="fl">600</span>, <span class="fl">3</span><span class="op">)</span>, big.mark <span class="op">=</span> <span class="st">","</span><span class="op">)</span>,
-    <span class="st">" PERMUTATIONS **************\n"</span><span class="op">)</span>
-    <span class="fu"><a href="https://rdrr.io/r/base/cat.html" class="external-link">cat</a></span><span class="op">(</span><span class="st">"\nRcppAlgos::permuteGeneral with "</span>, <span class="va">numThreads</span>, <span class="st">" threads:\n"</span><span class="op">)</span>
-    <span class="fu"><a href="https://rdrr.io/pkg/partitions/man/print.partition.html" class="external-link">print</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/system.time.html" class="external-link">system.time</a></span><span class="op">(</span><span class="fu">RcppAlgos</span><span class="fu">::</span><span class="fu"><a href="../reference/combinatoricsGeneral.html">permuteGeneral</a></span><span class="op">(</span><span class="va">testVector7</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">600</span><span class="op">]</span>, <span class="fl">3</span>, nThreads <span class="op">=</span> <span class="va">numThreads</span><span class="op">)</span><span class="op">)</span><span class="op">)</span>
-    <span class="fu"><a href="https://rdrr.io/r/base/gc.html" class="external-link">gc</a></span><span class="op">(</span><span class="op">)</span>
-    <span class="fu"><a href="https://rdrr.io/r/base/cat.html" class="external-link">cat</a></span><span class="op">(</span><span class="st">"\nRcppAlgos::permuteGeneral single-threaded:\n"</span><span class="op">)</span>
-    <span class="fu"><a href="https://rdrr.io/pkg/partitions/man/print.partition.html" class="external-link">print</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/system.time.html" class="external-link">system.time</a></span><span class="op">(</span><span class="fu">RcppAlgos</span><span class="fu">::</span><span class="fu"><a href="../reference/combinatoricsGeneral.html">permuteGeneral</a></span><span class="op">(</span><span class="va">testVector7</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">600</span><span class="op">]</span>, <span class="fl">3</span><span class="op">)</span><span class="op">)</span><span class="op">)</span>
-    <span class="fu"><a href="https://rdrr.io/r/base/gc.html" class="external-link">gc</a></span><span class="op">(</span><span class="op">)</span>
-    <span class="fu"><a href="https://rdrr.io/r/base/cat.html" class="external-link">cat</a></span><span class="op">(</span><span class="st">"\narrangements::permutations:\n"</span><span class="op">)</span>
-    <span class="fu"><a href="https://rdrr.io/pkg/partitions/man/print.partition.html" class="external-link">print</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/system.time.html" class="external-link">system.time</a></span><span class="op">(</span><span class="fu">arrangements</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/arrangements/man/permutations.html" class="external-link">permutations</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">testVector7</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">600</span><span class="op">]</span>, k <span class="op">=</span> <span class="fl">3</span><span class="op">)</span><span class="op">)</span><span class="op">)</span>
-    <span class="fu"><a href="https://rdrr.io/r/base/gc.html" class="external-link">gc</a></span><span class="op">(</span><span class="op">)</span>
+<code class="sourceCode R"><span class="va">pkg_arrangements</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">n</span>, <span class="va">total</span><span class="op">)</span> <span class="op">{</span>
+    <span class="va">a</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/arrangements/man/icombinations.html" class="external-link">icombinations</a></span><span class="op">(</span><span class="va">n</span>, <span class="fu"><a href="https://rdrr.io/r/base/integer.html" class="external-link">as.integer</a></span><span class="op">(</span><span class="va">n</span> <span class="op">/</span> <span class="fl">2</span><span class="op">)</span><span class="op">)</span>
+    <span class="kw">for</span> <span class="op">(</span><span class="va">i</span> <span class="kw">in</span> <span class="fl">1</span><span class="op">:</span><span class="va">total</span><span class="op">)</span> <span class="va">a</span><span class="op">$</span><span class="fu">getnext</span><span class="op">(</span><span class="op">)</span>
 <span class="op">}</span>
-<span class="co">#&gt;</span>
-<span class="co">#&gt; ************  221,228,700  COMBINATIONS **************</span>
-<span class="co">#&gt;</span>
-<span class="co">#&gt; RcppAlgos::comboGeneral with  4  threads:</span>
-<span class="co">#&gt;    user  system elapsed</span>
-<span class="co">#&gt;   1.271   0.736   0.534</span>
-<span class="co">#&gt;</span>
-<span class="co">#&gt; RcppAlgos::comboGeneral single-threaded:</span>
-<span class="co">#&gt;    user  system elapsed</span>
-<span class="co">#&gt;   1.091   0.474   1.566</span>
-<span class="co">#&gt;</span>
-<span class="co">#&gt; arrangements::combinations:</span>
-<span class="co">#&gt;    user  system elapsed</span>
-<span class="co">#&gt;   1.356   0.471   1.827</span>
-<span class="co">#&gt;</span>
-<span class="co">#&gt;</span>
-<span class="co">#&gt; **************  214,921,200  PERMUTATIONS **************</span>
-<span class="co">#&gt;</span>
-<span class="co">#&gt; RcppAlgos::permuteGeneral with  4  threads:</span>
-<span class="co">#&gt;    user  system elapsed</span>
-<span class="co">#&gt;   0.987   1.692   0.780</span>
-<span class="co">#&gt;</span>
-<span class="co">#&gt; RcppAlgos::permuteGeneral single-threaded:</span>
-<span class="co">#&gt;    user  system elapsed</span>
-<span class="co">#&gt;   0.930   0.481   1.412</span>
-<span class="co">#&gt;</span>
-<span class="co">#&gt; arrangements::permutations:</span>
-<span class="co">#&gt;    user  system elapsed</span>
-<span class="co">#&gt;   1.645   0.460   2.105</span></code></pre></div>
+
+<span class="va">pkg_RcppAlgos</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">n</span>, <span class="va">total</span><span class="op">)</span> <span class="op">{</span>
+    <span class="va">a</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/combinatoricsIterator.html">comboIter</a></span><span class="op">(</span><span class="va">n</span>, <span class="fu"><a href="https://rdrr.io/r/base/integer.html" class="external-link">as.integer</a></span><span class="op">(</span><span class="va">n</span> <span class="op">/</span> <span class="fl">2</span><span class="op">)</span><span class="op">)</span>
+    <span class="kw">for</span> <span class="op">(</span><span class="va">i</span> <span class="kw">in</span> <span class="fl">1</span><span class="op">:</span><span class="va">total</span><span class="op">)</span> <span class="va">a</span><span class="op">@</span><span class="va">nextIter</span><span class="op">(</span><span class="op">)</span>
+<span class="op">}</span>
+
+<span class="va">total</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/combinatoricsCount.html">comboCount</a></span><span class="op">(</span><span class="fl">18</span>, <span class="fl">9</span><span class="op">)</span>
+<span class="va">total</span>
+<span class="co">#&gt; [1] 48620</span>
+
+<span class="fu"><a href="https://rdrr.io/pkg/microbenchmark/man/microbenchmark.html" class="external-link">microbenchmark</a></span><span class="op">(</span>cbRcppAlgos    <span class="op">=</span> <span class="fu">pkg_RcppAlgos</span><span class="op">(</span><span class="fl">18</span>, <span class="va">total</span><span class="op">)</span>,
+               cbArrangements <span class="op">=</span> <span class="fu">pkg_arrangements</span><span class="op">(</span><span class="fl">18</span>, <span class="va">total</span><span class="op">)</span>,
+               times <span class="op">=</span> <span class="fl">15</span>, unit <span class="op">=</span> <span class="st">"relative"</span><span class="op">)</span>
+<span class="co">#&gt; Unit: relative</span>
+<span class="co">#&gt;            expr      min       lq     mean   median       uq      max neval cld</span>
+<span class="co">#&gt;     cbRcppAlgos  1.00000  1.00000  1.00000  1.00000  1.00000  1.00000    15  a</span>
+<span class="co">#&gt;  cbArrangements 31.54841 29.13514 27.23368 28.86445 24.94846 25.37289    15   b</span></code></pre></div>
+</div>
+<div class="section level3">
+<h3 id="permutations-1">Permutations<a class="anchor" aria-label="anchor" href="#permutations-1"></a>
+</h3>
+<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">pkg_arrangements</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">n</span>, <span class="va">total</span><span class="op">)</span> <span class="op">{</span>
+    <span class="va">a</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/arrangements/man/ipermutations.html" class="external-link">ipermutations</a></span><span class="op">(</span><span class="va">n</span><span class="op">)</span>
+    <span class="kw">for</span> <span class="op">(</span><span class="va">i</span> <span class="kw">in</span> <span class="fl">1</span><span class="op">:</span><span class="va">total</span><span class="op">)</span> <span class="va">a</span><span class="op">$</span><span class="fu">getnext</span><span class="op">(</span><span class="op">)</span>
+<span class="op">}</span>
+
+<span class="va">pkg_RcppAlgos</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">n</span>, <span class="va">total</span><span class="op">)</span> <span class="op">{</span>
+    <span class="va">a</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/combinatoricsIterator.html">permuteIter</a></span><span class="op">(</span><span class="va">n</span><span class="op">)</span>
+    <span class="kw">for</span> <span class="op">(</span><span class="va">i</span> <span class="kw">in</span> <span class="fl">1</span><span class="op">:</span><span class="va">total</span><span class="op">)</span> <span class="va">a</span><span class="op">@</span><span class="va">nextIter</span><span class="op">(</span><span class="op">)</span>
+<span class="op">}</span>
+
+<span class="va">total</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/combinatoricsCount.html">permuteCount</a></span><span class="op">(</span><span class="fl">8</span><span class="op">)</span>
+<span class="va">total</span>
+<span class="co">#&gt; [1] 40320</span>
+
+<span class="fu"><a href="https://rdrr.io/pkg/microbenchmark/man/microbenchmark.html" class="external-link">microbenchmark</a></span><span class="op">(</span>cbRcppAlgos    <span class="op">=</span> <span class="fu">pkg_RcppAlgos</span><span class="op">(</span><span class="fl">8</span>, <span class="va">total</span><span class="op">)</span>,
+               cbArrangements <span class="op">=</span> <span class="fu">pkg_arrangements</span><span class="op">(</span><span class="fl">8</span>, <span class="va">total</span><span class="op">)</span>,
+               times <span class="op">=</span> <span class="fl">15</span>, unit <span class="op">=</span> <span class="st">"relative"</span><span class="op">)</span>
+<span class="co">#&gt; Unit: relative</span>
+<span class="co">#&gt;            expr      min      lq     mean median       uq      max neval cld</span>
+<span class="co">#&gt;     cbRcppAlgos  1.00000  1.0000  1.00000  1.000  1.00000  1.00000    15  a</span>
+<span class="co">#&gt;  cbArrangements 31.00003 30.7734 30.37699 30.645 30.54221 29.50756    15   b</span></code></pre></div>
+</div>
+<div class="section level3">
+<h3 id="partitions-1">Partitions<a class="anchor" aria-label="anchor" href="#partitions-1"></a>
+</h3>
+<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">pkg_partitions</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">n</span>, <span class="va">total</span><span class="op">)</span> <span class="op">{</span>
+    <span class="va">a</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/partitions/man/nextpart.html" class="external-link">firstpart</a></span><span class="op">(</span><span class="va">n</span><span class="op">)</span>
+    <span class="kw">for</span> <span class="op">(</span><span class="va">i</span> <span class="kw">in</span> <span class="fl">1</span><span class="op">:</span><span class="op">(</span><span class="va">total</span> <span class="op">-</span> <span class="fl">1</span><span class="op">)</span><span class="op">)</span> <span class="va">a</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/partitions/man/nextpart.html" class="external-link">nextpart</a></span><span class="op">(</span><span class="va">a</span><span class="op">)</span>
+<span class="op">}</span>
+
+<span class="va">pkg_arrangements</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">n</span>, <span class="va">total</span><span class="op">)</span> <span class="op">{</span>
+    <span class="va">a</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/arrangements/man/ipartitions.html" class="external-link">ipartitions</a></span><span class="op">(</span><span class="va">n</span><span class="op">)</span>
+    <span class="kw">for</span> <span class="op">(</span><span class="va">i</span> <span class="kw">in</span> <span class="fl">1</span><span class="op">:</span><span class="va">total</span><span class="op">)</span> <span class="va">a</span><span class="op">$</span><span class="fu">getnext</span><span class="op">(</span><span class="op">)</span>
+<span class="op">}</span>
+
+<span class="va">pkg_RcppAlgos</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">n</span>, <span class="va">total</span><span class="op">)</span> <span class="op">{</span>
+    <span class="va">a</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/partitionsIterator.html">partitionsIter</a></span><span class="op">(</span><span class="fl">0</span><span class="op">:</span><span class="va">n</span>, repetition <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>
+    <span class="kw">for</span> <span class="op">(</span><span class="va">i</span> <span class="kw">in</span> <span class="fl">1</span><span class="op">:</span><span class="va">total</span><span class="op">)</span> <span class="va">a</span><span class="op">@</span><span class="va">nextIter</span><span class="op">(</span><span class="op">)</span>
+<span class="op">}</span>
+
+<span class="va">total</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/partitionsCount.html">partitionsCount</a></span><span class="op">(</span><span class="fl">0</span><span class="op">:</span><span class="fl">40</span>, repetition <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>
+<span class="va">total</span>
+<span class="co">#&gt; [1] 37338</span>
+
+<span class="fu"><a href="https://rdrr.io/pkg/microbenchmark/man/microbenchmark.html" class="external-link">microbenchmark</a></span><span class="op">(</span>cbRcppAlgos    <span class="op">=</span> <span class="fu">pkg_RcppAlgos</span><span class="op">(</span><span class="fl">40</span>, <span class="va">total</span><span class="op">)</span>,
+               cbArrangements <span class="op">=</span> <span class="fu">pkg_arrangements</span><span class="op">(</span><span class="fl">40</span>, <span class="va">total</span><span class="op">)</span>,
+               cbPartitions   <span class="op">=</span> <span class="fu">pkg_partitions</span><span class="op">(</span><span class="fl">40</span>, <span class="va">total</span><span class="op">)</span>,
+               times <span class="op">=</span> <span class="fl">15</span>, unit <span class="op">=</span> <span class="st">"relative"</span><span class="op">)</span>
+<span class="co">#&gt; Unit: relative</span>
+<span class="co">#&gt;            expr      min       lq     mean   median       uq      max neval cld</span>
+<span class="co">#&gt;     cbRcppAlgos  1.00000  1.00000  1.00000  1.00000  1.00000  1.00000    15 a</span>
+<span class="co">#&gt;  cbArrangements 23.69586 23.78484 22.18956 23.23983 23.01122 17.62236    15  b</span>
+<span class="co">#&gt;    cbPartitions 49.11071 49.63465 46.15867 48.57430 48.13571 34.14395    15   c</span></code></pre></div>
+</div>
 </div>
   </div>
 

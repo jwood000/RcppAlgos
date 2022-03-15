@@ -18,7 +18,7 @@ comboGroups(v, numGroups, retType = "matrix",
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
-  \item{v}{Source vector. If \code{v} is an integer (including nonpositive integers), it will be converted to the sequence \code{1:v}. All atomic types are supported (See \code{?is.atomic}).}
+  \item{v}{Source vector. If \code{v} is a positive integer, it will be converted to the sequence \code{1:v}. If \code{v} is a negative integer, it will be converted to the sequence \code{v:-1}. All atomic types are supported (See \code{\link{is.atomic}}).}
   \item{numGroups}{An Integer. The number of groups that the vector will be partitioned into. Must divide the length of v (if v is a vector) or v (if v is a scalar).
 }
   \item{retType}{A string, "3Darray" or "matrix", that determines the shape of the output. The default is "matrix".
@@ -35,40 +35,40 @@ Conceptually, this problem can be viewed as generating all permutations of the v
       \tabular{ccccccccc}{
       \tab \tab \tab Grp1 \tab \tab \tab Grp2 \tab \tab \cr
       \tab C1\tab C2\tab C3\tab C4\tab C5\tab C6\tab C7\tab C8\cr
-      R1 \tab  |1 \tab 2 \tab 3 \tab 4| \tab |5 \tab 6 \tab 7 \tab 8|\cr
-      R2 \tab  |1 \tab 2 \tab 3 \tab 4| \tab |5 \tab 6 \tab 8 \tab 7|\cr
-      R3 \tab  |1 \tab 2 \tab 3 \tab 4| \tab |5 \tab 7 \tab 6 \tab 8|\cr
-      R4 \tab  |1 \tab 2 \tab 3 \tab 4| \tab |5 \tab 7 \tab 8 \tab 6|\cr
-      R5 \tab  |1 \tab 2 \tab 3 \tab 4| \tab |5 \tab 8 \tab 6 \tab 7|\cr
-      R6 \tab  |1 \tab 2 \tab 3 \tab 4| \tab |5 \tab 8 \tab 7 \tab 6|
+      R1 \tab  | 1 \tab 2 \tab 3 \tab 4 | \tab | 5 \tab 6 \tab 7 \tab 8 |\cr
+      R2 \tab  | 1 \tab 2 \tab 3 \tab 4 | \tab | 5 \tab 6 \tab 8 \tab 7 |\cr
+      R3 \tab  | 1 \tab 2 \tab 3 \tab 4 | \tab | 5 \tab 7 \tab 6 \tab 8 |\cr
+      R4 \tab  | 1 \tab 2 \tab 3 \tab 4 | \tab | 5 \tab 7 \tab 8 \tab 6 |\cr
+      R5 \tab  | 1 \tab 2 \tab 3 \tab 4 | \tab | 5 \tab 8 \tab 6 \tab 7 |\cr
+      R6 \tab  | 1 \tab 2 \tab 3 \tab 4 | \tab | 5 \tab 8 \tab 7 \tab 6 |
       }
     }
     \item{Note that the permutations above are equivalent partitions of 2 groups of size 4 as only the last four elements are permuted. If we look at at the \eqn{25^{th}}{25th} lexicographical permutation, we observe our second distinct partition.
       \tabular{ccccccccc}{
       \tab \tab \tab Grp1 \tab \tab \tab Grp2 \tab \tab \cr
       \tab C1\tab C2\tab C3\tab C4\tab C5\tab C6\tab C7\tab C8\cr
-      R24 \tab  |1 \tab 2 \tab 3 \tab 4| \tab |8 \tab 7 \tab 6 \tab 5|\cr
-      \strong{R25} \tab  \strong{|1} \tab \strong{2} \tab \strong{3} \tab \strong{5|} \tab \strong{|4} \tab \strong{6} \tab \strong{7} \tab \strong{8|}\cr
-      R26 \tab  |1 \tab 2 \tab 3 \tab 5| \tab |4 \tab 6 \tab 8 \tab 7|\cr
-      R27 \tab  |1 \tab 2 \tab 3 \tab 5| \tab |4 \tab 7 \tab 6 \tab 8|\cr
-      R28 \tab  |1 \tab 2 \tab 3 \tab 5| \tab |4 \tab 7 \tab 8 \tab 6|
+      R24 \tab  | 1 \tab 2 \tab 3 \tab 4 | \tab | 8 \tab 7 \tab 6 \tab 5 |\cr
+      \strong{R25} \tab  \strong{| 1} \tab \strong{2} \tab \strong{3} \tab \strong{5 |} \tab \strong{| 4} \tab \strong{6} \tab \strong{7} \tab \strong{8 |}\cr
+      R26 \tab  | 1 \tab 2 \tab 3 \tab 5 | \tab | 4 \tab 6 \tab 8 \tab 7 |\cr
+      R27 \tab  | 1 \tab 2 \tab 3 \tab 5 | \tab | 4 \tab 7 \tab 6 \tab 8 |\cr
+      R28 \tab  | 1 \tab 2 \tab 3 \tab 5 | \tab | 4 \tab 7 \tab 8 \tab 6 |
       }
     }
     \item{Continuing on, we will reach the \eqn{3,457^{th}}{3,457th} lexicographical permutation, which represents the last result:
       \tabular{ccccccccc}{
       \tab \tab \tab Grp1 \tab \tab \tab Grp2 \tab \tab \cr
       \tab C1\tab C2\tab C3\tab C4\tab C5\tab C6\tab C7\tab C8\cr
-      R3454 \tab  |1 \tab 6 \tab 7 \tab 5| \tab |8 \tab 3 \tab 4 \tab 2|\cr
-      R3455 \tab  |1 \tab 6 \tab 7 \tab 5| \tab |8 \tab 4 \tab 2 \tab 3|\cr
-      R3456 \tab  |1 \tab 6 \tab 7 \tab 5| \tab |8 \tab 4 \tab 3 \tab 2|\cr
-      \strong{R3457} \tab  \strong{|1} \tab \strong{6} \tab \strong{7} \tab \strong{8|} \tab \strong{|2} \tab \strong{3} \tab \strong{4} \tab \strong{5|}\cr
-      R3458 \tab  |1 \tab 6 \tab 7 \tab 8| \tab |2 \tab 3 \tab 5 \tab 4|
+      R3454 \tab  | 1 \tab 6 \tab 7 \tab 5 | \tab |8 \tab 3 \tab 4 \tab 2 |\cr
+      R3455 \tab  | 1 \tab 6 \tab 7 \tab 5 | \tab |8 \tab 4 \tab 2 \tab 3 |\cr
+      R3456 \tab  | 1 \tab 6 \tab 7 \tab 5 | \tab |8 \tab 4 \tab 3 \tab 2 |\cr
+      \strong{R3457} \tab  \strong{| 1} \tab \strong{6} \tab \strong{7} \tab \strong{8 |} \tab \strong{| 2} \tab \strong{3} \tab \strong{4} \tab \strong{5 |}\cr
+      R3458 \tab  | 1 \tab 6 \tab 7 \tab 8 | \tab |2 \tab 3 \tab 5 \tab 4 |
       }
     }
     \item{
     For this small example, the method above will not be that computationally expensive. In fact, there are only 35 total partitions of \code{1:8} into 2 groups of size 4 out of a possible \code{factorial(8) = 40320} permutations. However, just doubling the size of the vector will make this approach infeasible as there are over 10 trillion permutations of \code{1:16}.
     }
-    \item{The algorithm in \code{comboGroups} avoids these duplicate partitions of groups by utlizing an efficient algorithm analogous to the \href{https://en.cppreference.com/w/cpp/algorithm/next_permutation}{std::next_permutation} found in the standard algorithm library in C++.
+    \item{The algorithm in \code{comboGroups} avoids these duplicate partitions of groups by utilizing an efficient algorithm analogous to the \href{https://en.cppreference.com/w/cpp/algorithm/next_permutation}{std::next_permutation} found in the standard algorithm library in C++.
     }
   }
 }

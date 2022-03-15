@@ -4,7 +4,7 @@
 Efficient Version of \code{expand.grid} Where order Does Not Matter
 }
 \description{
-    This function efficiently generates cartesian-product-like output where order does not matter. It is loosely equivalent to the following:
+    This function efficiently generates Cartesian-product-like output where order does not matter. It is loosely equivalent to the following:
     \itemize{
         \item{\code{t = expand.grid(list)}}
         \item{\code{t = t[do.call(order, t), ]}}

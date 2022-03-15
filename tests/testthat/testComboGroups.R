@@ -26,6 +26,10 @@ test_that("comboGroups produces correct results", {
     expect_equal(dim(comboGroups(200, 5, "3Darray", upper = 100)),
                  c(100, 40, 5))
 
+    expect_equal(comboGroups(30, 15, lower = 5e15, upper = 5e15 + 1e5),
+                 comboGroupsSample(30, 15, nThreads = 2,
+                                   sampleVec = (5e15):(5e15 + 1e5)))
+
     expect_equal(comboGroups(14, 7, nThreads = 2), comboGroups(14, 7))
     expect_equal(sum(comboGroups(c(T, F), 2, "3Darray")), 1)
 
@@ -44,6 +48,23 @@ test_that("comboGroups produces correct results", {
     expect_equal(class(comboGroups(1:4 + 0.1, 2)[1,]), "numeric")
     expect_equal(class(comboGroups(c(T, F), 2)[1, ]), "logical")
     expect_equal(class(comboGroups(as.complex(c(1, -1, 1i, -1i)), 2)[1,]), "complex")
+
+    ## comboGroupsCount(9, 3)
+    ## [1] 280
+    expect_equal(comboGroups(as.raw(1:9), 3)[c(1, 100, 280), ],
+                 comboGroupsSample(as.raw(1:9), 3, sampleVec = c(1, 100, 280)))
+    expect_equal(comboGroups(LETTERS[1:9], 3)[c(1, 100, 280), ],
+                 comboGroupsSample(LETTERS[1:9], 3, sampleVec = c(1, 100, 280)))
+    cmp_v = c(1, -1, 1i, -1i, 2, -2, 2i, -2i, -3i)
+    expect_equal(comboGroups(cmp_v, 3)[c(1, 100, 280), ],
+                 comboGroupsSample(cmp_v, 3, sampleVec = c(1, 100, 280)))
+
+    ## The logical case is bit strange... with only two values, we can only have
+    ## result with numGroups = 1 or 2
+    expect_equal(comboGroups(c(T, F), 1),
+                 comboGroupsSample(c(T, F), 1, n = 1))
+    expect_equal(comboGroups(c(T, F), 2),
+                 comboGroupsSample(c(T, F), 2, n = 1))
 
     expect_equal(rownames(comboGroupsSample(30, 5, n = 2,
                                             seed = 1, namedSample = TRUE)),

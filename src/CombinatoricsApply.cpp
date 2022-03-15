@@ -1,54 +1,42 @@
-#include "GmpDependUtils.h"
-#include "CombinationApply.h"
-#include "PermutationsApply.h"
+#include "CombinatoricsApply.h"
+#include "GetCombPermApply.h"
+#include "Cpp14MakeUnique.h"
+#include "ComputedCount.h"
+#include "SetUpUtils.h"
 
-template <int RTYPE>
-Rcpp::List ApplyFunction(const Rcpp::Vector<RTYPE> &v, int n, int m, bool IsRep, int nRows,
-                         bool IsComb, const std::vector<int> &freqs, std::vector<int> &z,
-                         bool IsMult, SEXP stdFun, SEXP rho) {
+SEXP CombinatoricsApply(SEXP Rv, SEXP Rm, SEXP RisRep,
+                        SEXP RFreqs, SEXP Rlow, SEXP Rhigh,
+                        SEXP stdFun, SEXP myEnv,
+                        SEXP RFunVal, SEXP RIsComb) {
+    int n = 0;
+    int m = 0;
+    int nRows = 0;
 
-    Rcpp::List myList(nRows);
-    SEXP sexpFun = PROTECT(Rf_lang2(stdFun, R_NilValue));
-
-    if (IsComb) {
-        if (IsMult)
-            MultisetComboApplyFun(myList, v, z, n, m, nRows, sexpFun, rho, freqs);
-        else
-            ComboGeneralApplyFun(myList, v, z, n, m, IsRep, nRows, sexpFun, rho);
-    } else {
-        PermutationApplyFun(myList, v, z, n, m, IsRep, IsMult, nRows, sexpFun, rho);
-    }
-
-    UNPROTECT(1);
-    return myList;
-}
-
-// [[Rcpp::export]]
-SEXP CombinatoricsApply(SEXP Rv, SEXP Rm, SEXP RisRep, SEXP RFreqs, SEXP Rlow,
-                        SEXP Rhigh, bool IsComb, SEXP stdFun, SEXP myEnv) {
-
-    int n, m = 0, lenFreqs = 0, nRows = 0;
     VecType myType = VecType::Integer;
     bool IsMult = false;
 
     std::vector<double> vNum;
-    std::vector<int> vInt, myReps, freqs;
-    bool IsRep = CleanConvert::convertLogical(RisRep, "repetition");
+    std::vector<int> vInt;
+    std::vector<int> myReps;
+    std::vector<int> freqs;
+
+    bool IsRep = CleanConvert::convertFlag(RisRep, "repetition");
+    const bool IsComb = CleanConvert::convertFlag(RIsComb, "IsComb");
 
     SetType(myType, Rv);
-    SetValues(myType, vInt, vNum, n, Rv);
-    SetFreqsAndM(RFreqs, IsMult, myReps, IsRep, lenFreqs, freqs, Rm, n, m);
+    SetValues(myType, myReps, freqs, vInt, vNum,
+              Rv, RFreqs, Rm, n, m, IsMult, IsRep);
 
-    const double computedRows = GetComputedRows(IsMult, IsComb, IsRep, n,
-                                                m, Rm, lenFreqs, freqs, myReps);
-
+    const double computedRows = GetComputedRows(IsMult, IsComb, IsRep,
+                                                n, m, Rm, freqs, myReps);
     const bool IsGmp = (computedRows > Significand53);
+
     mpz_t computedRowsMpz;
     mpz_init(computedRowsMpz);
 
     if (IsGmp) {
-        GetComputedRowMpz(computedRowsMpz, IsMult,
-                          IsComb, IsRep, n, m, Rm, freqs, myReps);
+        GetComputedRowMpz(computedRowsMpz, IsMult, IsComb,
+                          IsRep, n, m, Rm, freqs, myReps);
     }
 
     double lower = 0, upper = 0;
@@ -56,48 +44,23 @@ SEXP CombinatoricsApply(SEXP Rv, SEXP Rm, SEXP RisRep, SEXP RFreqs, SEXP Rlow,
 
     auto lowerMpz = FromCpp14::make_unique<mpz_t[]>(1);
     auto upperMpz = FromCpp14::make_unique<mpz_t[]>(1);
-    mpz_init(lowerMpz[0]); mpz_init(upperMpz[0]);
+
+    mpz_init(lowerMpz[0]);
+    mpz_init(upperMpz[0]);
 
     SetBounds(Rlow, Rhigh, IsGmp, bLower, bUpper, lower, upper,
               lowerMpz.get(), upperMpz.get(), computedRowsMpz, computedRows);
 
     std::vector<int> startZ(m);
-    Rcpp::XPtr<nthResultPtr> xpComb = putNthResPtrInXPtr(IsComb, IsMult, IsRep, IsGmp);
-    const nthResultPtr nthResFun = *xpComb;
+    SetStartZ(myReps, freqs, startZ, IsComb, n, m,
+              lower, lowerMpz[0], IsRep, IsMult, IsGmp);
 
-    SetStartZ(n, m, lower, 0, lowerMpz[0], IsRep, IsComb,
-              IsMult, IsGmp, myReps, freqs, startZ, nthResFun);
+    double userNumRows = 0;   // IsGenCnstrd = false
+    SetNumResults(IsGmp, bLower, bUpper, true, upperMpz[0],
+                  lowerMpz[0], lower, upper, computedRows,
+                  computedRowsMpz, nRows, userNumRows);
 
-    double userNumRows = 0;
-    SetNumResults(IsGmp, bLower, bUpper, false, upperMpz.get(), lowerMpz.get(),
-                  lower, upper, computedRows, computedRowsMpz, nRows, userNumRows);
-
-    switch (myType) {
-        case VecType::Character : {
-            Rcpp::CharacterVector charVec(Rcpp::clone(Rv));
-            return ApplyFunction(charVec, n, m, IsRep, nRows,IsComb,
-                                 freqs, startZ, IsMult, stdFun, myEnv);
-        } case VecType::Complex : {
-            Rcpp::ComplexVector cmplxVec(Rcpp::clone(Rv));
-            return ApplyFunction(cmplxVec, n, m, IsRep, nRows,IsComb,
-                                 freqs, startZ, IsMult, stdFun, myEnv);
-        } case VecType::Raw : {
-            Rcpp::RawVector rawVec(Rcpp::clone(Rv));
-            return ApplyFunction(rawVec, n, m, IsRep, nRows,IsComb,
-                                 freqs, startZ, IsMult, stdFun, myEnv);
-        } case VecType::Logical : {
-            Rcpp::LogicalVector boolVec(Rcpp::clone(Rv));
-            return ApplyFunction(boolVec, n, m, IsRep, nRows,IsComb,
-                                 freqs, startZ, IsMult, stdFun, myEnv);
-        } case VecType::Integer : {
-            Rcpp::IntegerVector intVec = Rcpp::wrap(vInt);
-            return ApplyFunction(intVec, n, m, IsRep, nRows,IsComb,
-                                 freqs, startZ, IsMult, stdFun, myEnv);
-        } default : {
-            Rcpp::NumericVector numVec = Rcpp::wrap(vNum);
-            return ApplyFunction(numVec, n, m, IsRep, nRows,IsComb,
-                                 freqs, startZ, IsMult, stdFun, myEnv);
-        }
-    }
+    return GetCombPermApply(Rv, vNum, vInt, n, m, IsComb, IsRep,
+                            IsMult, freqs, startZ, myReps, myType,
+                            nRows, stdFun, myEnv, RFunVal);
 }
-

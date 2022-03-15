@@ -3,8 +3,10 @@
 
 #include <vector>
 
-void comboGrid(std::vector<int> &cartCombs, bool IsRep,
-               const std::vector<std::vector<int>> &myVec,
-               const std::vector<int> &primes);
+void comboGrid(std::vector<int> &cartCombs,
+               std::vector<int> &lastCol,
+               std::vector<int> &lenGrps,
+               const std::vector<std::vector<int>> &myVecs,
+               const std::vector<int> &primes, bool IsRep);
 
 #endif

@@ -1,61 +1,67 @@
-#include <RcppThread.h>
-#include <libdivide.h>
+#include "NumbersUtils/DivNumSieve.h"
+#include "NumbersUtils/libdivide.h"
 #include "CleanConvert.h"
+#include "SetUpUtils.h"
+#include <thread>
 #include <cmath>
 
-template <typename typeInt>
-inline typeInt getStartingIndex (typeInt lowerB, typeInt step) {
+template <typename T>
+inline T getStartingIndex(T lowerB, T step) {
 
-    if (step >= lowerB)
+    if (step >= lowerB) {
         return (2 * step - lowerB);
+    }
 
-    const typeInt remTest = lowerB % step;
-    const typeInt retStrt = (remTest == 0) ? 0 : (step - remTest);
+    T remTest = lowerB % step;
 
-    return retStrt;
+    return (remTest == 0) ? 0 : (step - remTest);
 }
 
-template <typename typeInt, typename typeReturn>
-void NumDivisorsSieve(typeInt m, typeInt n, typeInt offsetStrt, typeReturn &numFacs) {
+template <typename T, typename U>
+void NumDivisorsSieve(T m, T n, T offsetStrt, U* numFacs) {
 
-    const typeInt myRange = offsetStrt + (n - m) + 1;
-    const typeInt sqrtBound = static_cast<typeInt>(std::sqrt(n));
+    const T myRange = offsetStrt + (n - m) + 1;
+    const T sqrtBound = static_cast<T>(std::sqrt(n));
 
-    for (typeInt i = 2; i <= sqrtBound; ++i) {
-        const typeInt myNum = offsetStrt + (i * sqrtBound) - m;
-        typeInt j = offsetStrt + getStartingIndex(m, i);
+    for (T i = 2; i <= sqrtBound; ++i) {
+        const T myNum = offsetStrt + (i * sqrtBound) - m;
+        T j = offsetStrt + getStartingIndex(m, i);
 
-        for (; j <= myNum; j += i)
+        for (; j <= myNum; j += i) {
             ++numFacs[j];
+        }
 
-        for (; j < myRange; j += i)
+        for (; j < myRange; j += i) {
             numFacs[j] += 2;
+        }
     }
 
     // Subtract 1 from the first entry as 1 has only itself
     // as a divisor. N.B. myRange was initialized with 2
-    if (m < 2)
-        --numFacs[0];
+    if (m < 2) --numFacs[0];
 }
 
-template <typename typeInt, typename typeReturn>
-void DivisorsSieve(typeInt m, typeReturn retN, typeInt offsetStrt,
-                   std::vector<std::vector<typeReturn>> &MyDivList) {
+template <typename T, typename U>
+void DivisorsSieve(T m, U retN, T offsetStrt,
+                   std::vector<std::vector<U>> &MyDivList) {
 
-    const typeInt n = static_cast<typeInt>(retN);
-    constexpr typeInt zeroOffset = 0;
-    const typeInt myRange = (n - m) + 1;
+    const T n = retN;
+    constexpr T zeroOffset = 0;
+    const T myRange = (n - m) + 1;
 
-    typename std::vector<std::vector<typeReturn>>::iterator it2d, itEnd;
-    itEnd = MyDivList.begin() + offsetStrt + myRange;
+    typename std::vector<std::vector<U>>::iterator it2d;
+    typename std::vector<std::vector<U>>::iterator itEnd =
+        MyDivList.begin() + offsetStrt + myRange;
 
     std::vector<int> myMemory(myRange, 2);
-    NumDivisorsSieve(m, n, zeroOffset, myMemory);
+    int* ptrMemory = &myMemory.front();
+    NumDivisorsSieve(m, n, zeroOffset, ptrMemory);
 
-    if (m < 2)
+    if (m < 2) {
         it2d = MyDivList.begin() + 1;
-    else
+    } else {
         it2d = MyDivList.begin() + offsetStrt;
+    }
 
     if (m < 2) {
         for (std::size_t i = 1; it2d < itEnd; ++it2d, ++i) {
@@ -65,12 +71,13 @@ void DivisorsSieve(typeInt m, typeReturn retN, typeInt offsetStrt,
 
         MyDivList[0].push_back(1);
 
-        for (typeInt i = 2; i <= n; ++i)
-            for (typeInt j = i; j <= n; j += i)
-                MyDivList[j - 1].push_back(static_cast<typeReturn>(i));
-
+        for (T i = 2; i <= n; ++i) {
+            for (T j = i; j <= n; j += i) {
+                MyDivList[j - 1].push_back(static_cast<U>(i));
+            }
+        }
     } else {
-        typeReturn numRet = static_cast<typeReturn>(m);
+        U numRet = m;
         std::vector<int> begIndex(myRange, 0);
 
         for (std::size_t i = 0; it2d < itEnd; ++it2d, ++i, ++numRet) {
@@ -80,19 +87,18 @@ void DivisorsSieve(typeInt m, typeReturn retN, typeInt offsetStrt,
             --myMemory[i];
         }
 
-        typeInt sqrtBound = static_cast<typeInt>(std::sqrt(n));
-        typeInt offsetRange = myRange + offsetStrt;
+        T sqrtBound = static_cast<T>(std::sqrt(n));
+        T offsetRange = myRange + offsetStrt;
 
-        for (typeInt i = 2; i <= sqrtBound; ++i) {
+        for (T i = 2; i <= sqrtBound; ++i) {
+            const T myStart = getStartingIndex(m, i);
+            const libdivide::divider<T> fastDiv(i);
 
-            const typeInt myStart = getStartingIndex(m, i);
-            const libdivide::divider<typeInt> fastDiv(i);
-
-            for (typeInt j = myStart + offsetStrt, myNum = m + myStart,
+            for (T j = myStart + offsetStrt, myNum = m + myStart,
                      memInd = myStart; j < offsetRange; j += i, myNum += i, memInd += i) {
 
-                MyDivList[j][++begIndex[memInd]] = static_cast<typeReturn>(i);
-                const typeInt testNum = myNum / fastDiv;
+                MyDivList[j][++begIndex[memInd]] = static_cast<U>(i);
+                const T testNum = myNum / fastDiv;
 
                 // Ensure we won't duplicate adding an element. If
                 // testNum <= sqrtBound, it will be added in later
@@ -104,60 +110,67 @@ void DivisorsSieve(typeInt m, typeReturn retN, typeInt offsetStrt,
                 // added to the second position above). With i = 5,
                 // testNum = 100 / 5 = 20, thus we add it to the
                 // pentultimate position to give v = 1 5 10 20 100.
-                if (testNum > sqrtBound)
-                    MyDivList[j][--myMemory[memInd]] = static_cast<typeReturn>(testNum);
+                if (testNum > sqrtBound) {
+                    MyDivList[j][--myMemory[memInd]] = static_cast<U>(testNum);
+                }
             }
         }
     }
 }
 
-template <typename typeInt, typename typeReturn, typename typeDivCount>
-void DivisorMaster(typeInt myMin, typeReturn myMax, bool bDivSieve,
-                   typeDivCount &DivCountV, std::vector<std::vector<typeReturn>> &MyDivList,
-                   std::size_t myRange, int nThreads = 1, int maxThreads = 1) {
+template <typename T, typename U, typename V>
+void DivisorMain(T myMin, U myMax, bool bDivSieve,
+                 V* DivCountV, std::vector<std::vector<U>> &MyDivList,
+                 std::size_t myRange, int nThreads, int maxThreads) {
 
     bool Parallel = false;
-    typeInt offsetStrt = 0;
-    const typeInt intMax = static_cast<typeInt>(myMax);
+    T offsetStrt = 0;
+    const T intMax = static_cast<T>(myMax);
 
     if (nThreads > 1 && maxThreads > 1  && myRange >= 20000) {
         Parallel = true;
 
-        if (nThreads > maxThreads)
+        if (nThreads > maxThreads) {
             nThreads = maxThreads;
+        }
 
         // Ensure that each thread has at least 10000
-        if ((myRange / nThreads) < 10000)
+        if ((myRange / nThreads) < 10000) {
             nThreads = myRange / 10000;
+        }
     }
 
     if (Parallel) {
-        RcppThread::ThreadPool pool(nThreads);
-        typeInt lowerBnd = myMin;
-        const typeInt chunkSize = myRange / nThreads;
-        typeReturn upperBnd = lowerBnd + chunkSize - 1;
+        std::vector<std::thread> threads;
+        T lowerBnd = myMin;
+        const T chunkSize = myRange / nThreads;
+        T upperBnd = lowerBnd + chunkSize - 1;
 
         for (int ind = 0; ind < (nThreads - 1); offsetStrt += chunkSize,
                     lowerBnd = (upperBnd + 1), upperBnd += chunkSize, ++ind) {
             if (bDivSieve) {
-                pool.push(std::cref(DivisorsSieve<typeInt, typeReturn>),
-                          lowerBnd, upperBnd, offsetStrt, std::ref(MyDivList));
+                threads.emplace_back(std::cref(DivisorsSieve<T, U>),
+                                     lowerBnd, static_cast<U>(upperBnd),
+                                     offsetStrt, std::ref(MyDivList));
             } else {
-                pool.push(std::cref(NumDivisorsSieve<typeInt, typeDivCount>), lowerBnd,
-                          static_cast<typeInt>(upperBnd), offsetStrt, std::ref(DivCountV));
+                threads.emplace_back(std::cref(NumDivisorsSieve<T, V>),
+                                     lowerBnd, upperBnd,
+                                     offsetStrt, DivCountV);
             }
         }
 
         if (bDivSieve) {
-            pool.push(std::cref(DivisorsSieve<typeInt, typeReturn>),
-                      lowerBnd, myMax, offsetStrt, std::ref(MyDivList));
+            threads.emplace_back(std::cref(DivisorsSieve<T, U>),
+                                 lowerBnd, myMax, offsetStrt,
+                                 std::ref(MyDivList));
         } else {
-            pool.push(std::cref(NumDivisorsSieve<typeInt, typeDivCount>),
-                      lowerBnd, intMax, offsetStrt, std::ref(DivCountV));
+            threads.emplace_back(std::cref(NumDivisorsSieve<T, V>),
+                                 lowerBnd, intMax, offsetStrt, DivCountV);
         }
 
-        pool.join();
-
+        for (auto& thr: threads) {
+            thr.join();
+        }
     } else {
         if (bDivSieve) {
             DivisorsSieve(myMin, myMax, offsetStrt, MyDivList);
@@ -167,56 +180,125 @@ void DivisorMaster(typeInt myMin, typeReturn myMax, bool bDivSieve,
     }
 }
 
-template <typename typeInt, typename typeReturn>
-SEXP TheGlue(typeInt myMin, typeReturn myMax, bool bDivSieve,
+SEXP GlueInt(int myMin, int myMax, bool bDivSieve,
              bool keepNames, int nThreads, int maxThreads) {
 
-    const std::size_t myRange = (myMax - myMin) + 1;
-    std::vector<typeReturn> myNames;
-
-    if (keepNames) {
-        myNames.resize(myRange);
-        typeReturn retM = myMin;
-        for (std::size_t k = 0; retM <= myMax; ++retM, ++k)
-            myNames[k] = retM;
-    }
+    int numUnprotects = 1;
+    std::size_t myRange = (myMax - myMin) + 1;
 
     if (bDivSieve) {
-        std::vector<std::vector<typeReturn>>
-            MyDivList(myRange, std::vector<typeReturn>());
-        Rcpp::IntegerVector tempRcpp;
-        DivisorMaster(myMin, myMax, bDivSieve, tempRcpp,
-                      MyDivList, myRange, nThreads, maxThreads);
+        std::vector<std::vector<int>> MyDivList(myRange, std::vector<int>());
+        int* tempNumDivs = nullptr;
 
-        Rcpp::List myList = Rcpp::wrap(MyDivList);
-        if (keepNames)
-            myList.attr("names") = myNames;
+        DivisorMain(myMin, myMax, bDivSieve, tempNumDivs,
+                    MyDivList, myRange, nThreads, maxThreads);
 
+        SEXP myList = PROTECT(Rf_allocVector(VECSXP, myRange));
+
+        for (std::size_t i = 0; i < myRange; ++i) {
+            SET_VECTOR_ELT(myList, i, GetIntVec(MyDivList[i]));
+        }
+
+        if (keepNames) {
+            ++numUnprotects;
+            SetIntNames(myList, myRange, myMin, myMax);
+        }
+
+        UNPROTECT(numUnprotects);
         return myList;
     } else {
-        std::vector<std::vector<typeReturn>> tempList;
-        Rcpp::IntegerVector facCountV(myRange, 2);
-        DivisorMaster(myMin, myMax, bDivSieve, facCountV,
-                      tempList, myRange, nThreads, maxThreads);
+        std::vector<std::vector<int>> tempList;
+        SEXP facCountV = PROTECT(Rf_allocVector(INTSXP, myRange));
+        int* ptrFacCount  = INTEGER(facCountV);
+        std::fill_n(ptrFacCount, myRange, 2);
 
-        if (keepNames)
-            facCountV.attr("names") = myNames;
+        DivisorMain(myMin, myMax, bDivSieve, ptrFacCount,
+                    tempList, myRange, nThreads, maxThreads);
 
+        if (keepNames) {
+            ++numUnprotects;
+            SetIntNames(facCountV, myRange, myMin, myMax);
+        }
+
+        UNPROTECT(numUnprotects);
         return facCountV;
     }
 }
 
-// [[Rcpp::export]]
-SEXP DivNumSieve(SEXP Rb1, SEXP Rb2, bool bDivSieve,
-                 SEXP RNamed, SEXP RNumThreads, int maxThreads) {
+SEXP GlueDbl(std::int_fast64_t myMin, double myMax,
+             bool bDivSieve, bool keepNames,
+             int nThreads, int maxThreads) {
 
-    double bound1, myMax, myMin;
+    int numUnprotects = 1;
+    std::size_t myRange = (myMax - myMin) + 1;
+
+    if (bDivSieve) {
+        std::vector<std::vector<double>>
+            MyDivList(myRange, std::vector<double>());
+        double* tempNumDivs = nullptr;
+
+        DivisorMain(myMin, myMax, bDivSieve, tempNumDivs,
+                    MyDivList, myRange, nThreads, maxThreads);
+
+        SEXP myList = PROTECT(Rf_allocVector(VECSXP, myRange));
+
+        for (std::size_t i = 0; i < myRange; ++i) {
+            SET_VECTOR_ELT(myList, i, GetDblVec(MyDivList[i]));
+        }
+
+        if (keepNames) {
+            ++numUnprotects;
+            SetDblNames(myList, myRange, myMin, myMax);
+        }
+
+        UNPROTECT(numUnprotects);
+        return myList;
+    } else {
+        std::vector<std::vector<double>> tempList;
+        SEXP facCountV = PROTECT(Rf_allocVector(INTSXP, myRange));
+        int* ptrFacCount  = INTEGER(facCountV);
+        std::fill_n(ptrFacCount, myRange, 2);
+
+        DivisorMain(myMin, myMax, bDivSieve, ptrFacCount,
+                    tempList, myRange, nThreads, maxThreads);
+
+        if (keepNames) {
+            ++numUnprotects;
+            SetDblNames(facCountV, myRange, myMin, myMax);
+        }
+
+        UNPROTECT(numUnprotects);
+        return facCountV;
+    }
+}
+
+SEXP DivNumSieveCpp(SEXP Rb1, SEXP Rb2, SEXP RbDivSieve,
+                    SEXP RisNamed, SEXP RNumThreads,
+                    SEXP RmaxThreads) {
+
+    double bound1;
+    double bound2;
+
+    double myMin;
+    double myMax;
+
+    int nThreads = 1;
+    int maxThreads = 1;
+
+    CleanConvert::convertPrimitive(RmaxThreads, maxThreads,
+                                   VecType::Integer, "maxThreads");
+    const bool bDivSieve = CleanConvert::convertFlag(RbDivSieve,
+                                                        "bDivSieve");
+
     const std::string namedObject = (bDivSieve) ? "namedList" : "namedVector";
-    bool keepNames = CleanConvert::convertLogical(RNamed, namedObject);
-    CleanConvert::convertPrimitive(Rb1, bound1, "bound1");
+    bool IsNamed = CleanConvert::convertFlag(RisNamed, namedObject);
+    CleanConvert::convertPrimitive(Rb1, bound1, VecType::Numeric, "bound1");
 
-    double bound2 = 1;
-    if (!Rf_isNull(Rb2)) CleanConvert::convertPrimitive(Rb2, bound2, "bound2");
+    if (Rf_isNull(Rb2)) {
+        bound2 = 1;
+    } else {
+        CleanConvert::convertPrimitive(Rb2, bound2, VecType::Numeric, "bound2");
+    }
 
     if (bound1 > bound2) {
         myMax = std::floor(bound1);
@@ -228,31 +310,41 @@ SEXP DivNumSieve(SEXP Rb1, SEXP Rb2, bool bDivSieve,
 
     if (myMax < 2) {
         if (bDivSieve) {
-            std::vector<std::vector<int> > trivialRet(1, std::vector<int>(1, 1));
-            Rcpp::List z = Rcpp::wrap(trivialRet);
-            if (keepNames)
-                z.attr("names") = 1;
+            SEXP res = PROTECT(Rf_allocVector(VECSXP, 1));
+            SET_VECTOR_ELT(res, 0, GetIntVec(std::vector<int>(1, 1)));
 
-            return z;
+            if (IsNamed) {
+                Rf_setAttrib(res, R_NamesSymbol, Rf_mkString("1"));
+            }
+
+            UNPROTECT(1);
+            return res;
         } else {
-            Rcpp::IntegerVector v(1, 1);
-            if (keepNames)
-                v.attr("names") = 1;
+            SEXP res = PROTECT(Rf_allocVector(INTSXP, 1));
+            INTEGER(res)[0] = 1;
 
-            return v;
+            if (IsNamed) {
+                Rf_setAttrib(res, R_NamesSymbol, Rf_mkString("1"));
+            }
+
+            UNPROTECT(1);
+            return res;
         }
     }
 
-    int nThreads = 1;
-    if (!Rf_isNull(RNumThreads))
-        CleanConvert::convertPrimitive(RNumThreads, nThreads, "nThreads");
+    if (!Rf_isNull(RNumThreads)) {
+        CleanConvert::convertPrimitive(RNumThreads, nThreads,
+                                       VecType::Integer, "nThreads");
+    }
 
     if (myMax > std::numeric_limits<int>::max()) {
         std::int_fast64_t intMin = static_cast<std::int_fast64_t>(myMin);
-        return TheGlue(intMin, myMax, bDivSieve, keepNames, nThreads, maxThreads);
+        return GlueDbl(intMin, myMax, bDivSieve,
+                       IsNamed, nThreads, maxThreads);
     } else {
         int intMin = static_cast<int>(myMin);
         int intMax = static_cast<int>(myMax);
-        return TheGlue(intMin, intMax, bDivSieve, keepNames, nThreads, maxThreads);
+        return GlueInt(intMin, intMax, bDivSieve,
+                       IsNamed, nThreads, maxThreads);
     }
 }

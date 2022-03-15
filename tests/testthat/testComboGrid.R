@@ -1,6 +1,6 @@
 context("testing comboGrid")
 
-test_that("divisorsSieve generates correct numbers", {
+test_that("comboGrid generates correct output", {
     bruteCheck <- function(myList, rep = TRUE) {
         testOut <- comboGrid(myList, repetition = rep)
 
@@ -62,8 +62,18 @@ test_that("divisorsSieve generates correct numbers", {
                   c(14, 9, 11, 15),
                   c(7, 6, 13, 14, 10, 11, 9, 4),
                   c(6,  3,  2, 14,  7, 12,  9),
-                  c(6, 11,  2,  5, 15,  7), 16:19, 20:23, 24:28)
+                  c(6, 11,  2,  5, 15,  7),
+                  16:19, 20:23, 24:28,
+                  c(16, 20, 28, 1))
 
     hugeTest = comboGrid(pools, repetition = FALSE)
-    expect_equal(nrow(hugeTest), 238480)
+    expect_equal(ncol(hugeTest), length(pools))
+
+    ## If NULL is an input, we return an empty named data.frame
+    expect_equal(dim(comboGrid(NA, NA, 1:10, NA, 1:5, NULL)),
+                 c(0, 5))
+
+    ## If NA is an input, we tack on a column of NA's
+    df <- comboGrid(NA, 1:10)
+    expect_equal(df$Var1, rep(NA, 10))
 })

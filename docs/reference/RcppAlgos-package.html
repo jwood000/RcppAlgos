@@ -17,7 +17,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">RcppAlgos</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">2.4.3</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">2.5.0</span>
       </span>
     </div>
 
@@ -32,7 +32,7 @@
     <span class="caret"></span>
   </a>
   <ul class="dropdown-menu" role="menu"><li>
-      <a href="../articles/CombPermConstraints.html">Constraints, Integer Partitions, and Compositions</a>
+      <a href="../articles/CombPermConstraints.html">Constraints and Integer Partitions</a>
     </li>
     <li>
       <a href="../articles/CombinatorialSampling.html">Combinatorial Sampling</a>
@@ -48,6 +48,9 @@
     </li>
     <li>
       <a href="../articles/HighPerformanceBenchmarks.html">High Performance Benchmarks</a>
+    </li>
+    <li>
+      <a href="../articles/OtherCombinatorics.html">Cartesian Products and Partitions of Groups into Equal Size</a>
     </li>
     <li>
       <a href="../articles/SubsetSum.html">Attacking Problems Related to the Subset Sum Problem</a>
@@ -89,19 +92,21 @@
                     </p><ul><li><p><code>primeFactorizeSieve(10^13 - 10^7, 10^13 + 10^7)</code></p></li>
 <li><p><code>primeSieve(2^53 - 10^10, 2^53 - 1, nThreads = 32)</code></p></li>
 </ul></li>
-<li><p>Easily explore combinations/permutations that would otherwise be inaccessible due to time of execution/memory constraints:
-                    </p><ul><li><p></p><div class="sourceCode"><pre><code><span class="va">iter</span> <span class="op">=</span> <span class="fu"><a href="../reference/combinatoricsIterator.html">comboIter</a></span><span class="op">(</span><span class="fl">10000</span>, <span class="fl">100</span><span class="op">)</span>
+<li><p>Easily explore combinations/permutations/partitions that would otherwise be inaccessible due to time of execution/memory constraints:
+                    </p><ul><li><p></p><div class="sourceCode"><pre><code><span class="va">c_iter</span> <span class="op">=</span> <span class="fu"><a href="../reference/combinatoricsIterator.html">comboIter</a></span><span class="op">(</span><span class="fl">10000</span>, <span class="fl">100</span><span class="op">)</span>
 <span class="va">bigSamp</span> <span class="op">=</span> <span class="fu">gmp</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/gmp/man/biginteger.rand.html" class="external-link">urand.bigz</a></span><span class="op">(</span><span class="fl">3</span>, <span class="fu">gmp</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/gmp/man/add.biginteger.html" class="external-link">log2.bigz</a></span><span class="op">(</span><span class="fu"><a href="../reference/combinatoricsCount.html">comboCount</a></span><span class="op">(</span><span class="fl">10000</span>, <span class="fl">100</span><span class="op">)</span><span class="op">)</span><span class="op">)</span>
 <span class="va">iter</span><span class="op">[[</span><span class="va">bigSamp</span><span class="op">]</span><span class="op">]</span></code></pre></div></li>
+<li><p></p><div class="sourceCode"><pre><code><span class="va">p_iter</span> <span class="op">=</span> <span class="fu"><a href="../reference/partitionsIterator.html">partitionsIter</a></span><span class="op">(</span><span class="fl">5000</span>, <span class="fl">100</span>, target <span class="op">=</span> <span class="fl">6000</span><span class="op">)</span>
+<span class="va">p_iter</span><span class="op">[[</span><span class="fl">1e9</span><span class="op">]</span><span class="op">]</span> <span class="co">## start iterating from index = 1e9</span>
+<span class="va">p_iter</span><span class="op">@</span><span class="va">nextIter</span><span class="op">(</span><span class="op">)</span>
+<span class="va">p_iter</span><span class="op">@</span><span class="va">nextNIter</span><span class="op">(</span><span class="fl">1e3</span><span class="op">)</span></code></pre></div></li>
 <li><p><code>comboGeneral(150, 5, constraintFun = "sum", Parallel = TRUE)</code></p></li>
 <li><p></p><div class="sourceCode"><pre><code>parallel::mclapply(seq(...), function(x) {
             temp = permuteGeneral(15, 10, lower = x, upper = y)
             ## analyze permutations
             ## output results
     }, mc.cores = detectCores() - 1))</code></pre></div></li>
-<li><p></p><div class="sourceCode"><pre><code><span class="fu"><a href="../reference/combinatoricsGeneral.html">comboGeneral</a></span><span class="op">(</span><span class="fl">0</span><span class="op">:</span><span class="fl">80</span>, m <span class="op">=</span> <span class="fl">80</span>, repetition <span class="op">=</span> <span class="cn">TRUE</span>,
-            constraintFun <span class="op">=</span> <span class="st">"sum"</span>, comparisonFun <span class="op">=</span> <span class="st">"=="</span>,
-            limitConstraints <span class="op">=</span> <span class="fl">80</span><span class="op">)</span></code></pre></div></li>
+<li><p></p><div class="sourceCode"><pre><code><span class="fu"><a href="../reference/partitionsGeneral.html">partitionsGeneral</a></span><span class="op">(</span><span class="fl">0</span><span class="op">:</span><span class="fl">80</span>, repetition <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></code></pre></div></li>
 <li><p><code>permuteSample(rnorm(100), 10, freqs = rep(1:4, 25), n = 15, seed = 123)</code></p></li>
 <li><p></p><div class="sourceCode"><pre><code><span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="fl">123</span><span class="op">)</span>
 <span class="fu"><a href="../reference/combinatoricsGeneral.html">comboGeneral</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/stats/Uniform.html" class="external-link">runif</a></span><span class="op">(</span><span class="fl">42</span>, <span class="fl">0</span>, <span class="fl">50</span><span class="op">)</span>, <span class="fl">10</span>,

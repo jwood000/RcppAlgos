@@ -1,6 +1,10 @@
-#include "CleanConvert.h"
+#include "NumbersUtils/Eratosthenes.h"
+#include "CartesianContainer.h"
 #include "ComboCartesian.h"
-#include "Eratosthenes.h"
+#include "CleanConvert.h"
+#include "SetUpUtils.h"
+#include <unordered_map>
+#include <numeric>  // std::accumulate
 
 enum rcppType {
     tInt = 0,
@@ -13,15 +17,26 @@ enum rcppType {
 void convertToString(std::vector<std::string> &tempVec,
                      SEXP ListElement, rcppType &typePass, bool bFac) {
 
+    const int len = Rf_length(ListElement);
+
     switch(TYPEOF(ListElement)) {
         case INTSXP: {
             if (bFac) {
-                Rcpp::IntegerVector facVec = Rcpp::as<Rcpp::IntegerVector>(ListElement);
-                std::vector<std::string> strVec = Rcpp::as<std::vector<std::string>>(facVec.attr("levels"));
+                SEXP facVec = PROTECT(Rf_coerceVector(ListElement, INTSXP));
+                SEXP myLevels = PROTECT(Rf_getAttrib(facVec, R_LevelsSymbol));
+                std::vector<std::string> strVec;
+
+                for (int i = 0, faclen = Rf_length(myLevels); i < faclen; ++i) {
+                    strVec.push_back(CHAR(STRING_ELT(myLevels, i)));
+                }
+
+                UNPROTECT(2);
                 typePass = tFac;
 
                 for (auto v: strVec) {
-                    bool isNum = (!v.empty() && v.find_first_not_of("0123456789.") == std::string::npos);
+                    bool isNum = !v.empty() &&
+                                 v.find_first_not_of("0123456789.") ==
+                                 std::string::npos;
 
                     if (isNum) {
                         double n = std::atof(v.c_str());
@@ -33,17 +48,19 @@ void convertToString(std::vector<std::string> &tempVec,
                     tempVec.push_back(v);
                 }
             } else {
-                std::vector<int> intVec = Rcpp::as<std::vector<int>>(ListElement);
+                int* intPtr = INTEGER(ListElement);
+                std::vector<int> intVec(intPtr, intPtr + len);
                 typePass = tInt;
 
-                for (auto v: intVec)
+                for (auto v: intVec) {
                     tempVec.push_back(std::to_string(v));
+                }
             }
 
             break;
-        }
-        case LGLSXP: {
-            std::vector<int> intVec = Rcpp::as<std::vector<int>>(ListElement);
+        } case LGLSXP: {
+            int* intPtr = INTEGER(ListElement);
+            std::vector<int> intVec(intPtr, intPtr + len);
             typePass = tLog;
 
             for (auto v: intVec) {
@@ -52,29 +69,36 @@ void convertToString(std::vector<std::string> &tempVec,
             }
 
             break;
-        }
-        case REALSXP: {
-            std::vector<double> dblVec = Rcpp::as<std::vector<double>>(ListElement);
+        } case REALSXP: {
+            double* dblPtr = REAL(ListElement);
+            std::vector<double> dblVec(dblPtr, dblPtr + len);
             typePass = tDbl;
 
             for (auto v: dblVec) {
                 std::string r = std::to_string(v);
 
-                while (r.back() == '0')
+                while (r.back() == '0') {
                     r.pop_back();
+                }
 
                 if (std::floor(v) != v) r += "dbl";
                 tempVec.push_back(r);
             }
 
             break;
-        }
-        case STRSXP: {
-            std::vector<std::string> strVec = Rcpp::as<std::vector<std::string>>(ListElement);
+        } case STRSXP: {
+            std::vector<std::string> strVec;
             typePass = tStr;
 
+            for (int i = 0; i < len; ++i) {
+                const std::string temp(CHAR(STRING_ELT(ListElement, i)));
+                strVec.push_back(temp);
+            }
+
             for (auto v: strVec) {
-                bool isNum = (!v.empty() && v.find_first_not_of("0123456789.") == std::string::npos);
+                bool isNum = !v.empty() &&
+                    v.find_first_not_of("0123456789.") ==
+                    std::string::npos;
 
                 if (isNum) {
                     double n = std::atof(v.c_str());
@@ -91,122 +115,276 @@ void convertToString(std::vector<std::string> &tempVec,
     }
 }
 
-template <typename typeVec, typename typeRcpp>
-void GetPureOutput(const std::vector<int> &cartCombs,
-                   const Rcpp::List &RList, const typeVec &standardVec,
-                   typeRcpp &result, std::size_t nCols, std::size_t nRows) {
-
-    for (std::size_t i = 0, row = 0; i < nRows; ++i, row += nCols)
-        for (std::size_t j = 0; j < nCols; ++j)
-            result(i, j) = standardVec[cartCombs[row + j]];
-
-    if (!Rf_isNull(RList.attr("names"))) {
-        Rcpp::CharacterVector myNames = RList.attr("names");
-        colnames(result) = myNames;
+void AddNames(SEXP res, SEXP RList) {
+    if (!Rf_isNull(Rf_getAttrib(RList, R_NamesSymbol))) {
+        SEXP myNames = PROTECT(Rf_getAttrib(RList, R_NamesSymbol));
+        SEXP dimNames = PROTECT(Rf_allocVector(VECSXP, 2));
+        SET_VECTOR_ELT(dimNames, 1, myNames);
+        Rf_setAttrib(res, R_DimNamesSymbol, dimNames);
+        UNPROTECT(2);
     }
 }
 
+void GetCharOutput(SEXP res, SEXP RList,
+                   const std::vector<int> &cartCombs,
+                   const std::vector<int> &lastCol,
+                   const std::vector<int> &lenGrps,
+                   SEXP charVec, int nCols, int nRows) {
+
+    for (int i = 0, n1 = nCols - 1, row = 0, m_idx = 0,
+         baseSize = lenGrps.size(); i < baseSize; ++i, m_idx = row) {
+
+        for (int j = 0, c_idx = i * n1, grpSize = lenGrps[i];
+             j < n1; ++j, ++c_idx, m_idx += nRows) {
+
+            SEXP comb = PROTECT(STRING_ELT(charVec, cartCombs[c_idx]));
+
+            for (int k = 0; k < grpSize; ++k) {
+                SET_STRING_ELT(res, m_idx + k, comb);
+            }
+
+            UNPROTECT(1);
+        }
+
+        for (int k = 0; k < lenGrps[i]; ++k, ++row) {
+            SET_STRING_ELT(res, m_idx + k,
+                           STRING_ELT(charVec, lastCol[row]));
+        }
+    }
+
+    AddNames(res, RList);
+}
+
+template <typename T>
+void GetPureOutput(T* mat, SEXP res, SEXP RList,
+                   const std::vector<int> &cartCombs,
+                   const std::vector<int> &lastCol,
+                   const std::vector<int> &lenGrps,
+                   const T* standardVec, int nCols, int nRows) {
+
+    for (int i = 0, n1 = nCols - 1, row = 0, m_idx = 0,
+         baseSize = lenGrps.size(); i < baseSize; ++i, m_idx = row) {
+
+        for (int j = 0, c_idx = i * n1, grpSize = lenGrps[i];
+             j < n1; ++j, ++c_idx, m_idx += nRows) {
+
+            auto&& comb = standardVec[cartCombs[c_idx]];
+
+            for (int k = 0; k < grpSize; ++k) {
+                mat[m_idx + k] = comb;
+            }
+        }
+
+        for (int k = 0; k < lenGrps[i]; ++k, ++row) {
+            mat[m_idx + k] = standardVec[lastCol[row]];
+        }
+    }
+
+    AddNames(res, RList);
+}
+
 SEXP GlueComboCart(const std::vector<int> &cartCombs,
-                   Rcpp::List &RList, const Rcpp::IntegerVector &intVec,
-                   const Rcpp::LogicalVector &boolVec, const Rcpp::NumericVector &dblVec,
-                   const Rcpp::CharacterVector &charVec,
+                   const std::vector<int> &lastCol,
+                   const std::vector<int> &lenGrps,
                    const std::vector<std::vector<int>> &facList,
-                   std::vector<int> &typeCheck, bool IsDF, std::size_t nRows,
-                   std::size_t nCols, std::vector<int> IsFactor) {
+                   const std::vector<int> &typeCheck,
+                   const std::vector<int> &IsFactor, SEXP RList,
+                   int* intVec, int* boolVec, double* dblVec,
+                   SEXP charVec, int nRows, int nCols, bool IsDF) {
 
     if (IsDF) {
-        Rcpp::List resList(nCols);
+        SEXP DataFrame = PROTECT(Rf_allocVector(VECSXP, nCols));
+        int numProtects = 1;
 
-        for (std::size_t i = 0, facInd = 0; i < nCols; ++i) {
-            switch (TYPEOF(RList[i])) {
+        for (int i = 0, facInd = 0; i < nCols; ++i) {
+            switch (TYPEOF(VECTOR_ELT(RList, i))) {
                 case INTSXP: {
-                    Rcpp::IntegerVector rcppVec = Rcpp::no_init_vector(nRows);
+                    SEXP sexpVec = PROTECT(Rf_allocVector(INTSXP, nRows));
+                    int* intSexpVec = INTEGER(sexpVec);
+                    ++numProtects;
 
                     if (IsFactor[i]) {
-                        Rcpp::IntegerVector facVec(facList[facInd].cbegin(), facList[facInd].cend());
+                        const int size = facList[facInd].size();
+                        SEXP facVec = PROTECT(Rf_allocVector(INTSXP, size));
+                        int* intFacVec = INTEGER(facVec);
+                        ++numProtects;
 
-                        for (std::size_t j = 0, row = i; j < nRows; ++j, row += nCols)
-                            rcppVec[j] = facVec[cartCombs[row]];
+                        for (int j = 0; j < size; ++j) {
+                            intFacVec[j] = facList[facInd][j];
+                        }
 
-                        Rcpp::IntegerVector testFactor = Rcpp::as<Rcpp::IntegerVector>(RList[i]);
-                        Rcpp::CharacterVector myClass = testFactor.attr("class");
-                        Rcpp::CharacterVector myLevels = testFactor.attr("levels");
-                        rcppVec.attr("class") = myClass;
-                        rcppVec.attr("levels") = myLevels;
+                        if (i < (nCols - 1)) {
+                            for (int j = 0, n1 = nCols - 1, row = i, idx = 0,
+                                 baseSize = lenGrps.size(); idx < baseSize;
+                                 ++idx, row += n1) {
+
+                                auto&& comb = intFacVec[cartCombs[row]];
+
+                                for (int k = 0; k < lenGrps[idx]; ++k, ++j) {
+                                    intSexpVec[j] = comb;
+                                }
+                            }
+                        } else {
+                            for (int j = 0; j < nRows; ++j) {
+                                intSexpVec[j] = intFacVec[lastCol[j]];
+                            }
+                        }
+
+                        SetFactorClass(sexpVec, VECTOR_ELT(RList, i));
                         ++facInd;
                     } else {
-                        for (std::size_t j = 0, row = i; j < nRows; ++j, row += nCols)
-                            rcppVec[j] = intVec[cartCombs[row]];
+                        if (i < (nCols - 1)) {
+                            for (int j = 0, n1 = nCols - 1, row = i, idx = 0,
+                                 baseSize = lenGrps.size(); idx < baseSize;
+                                 ++idx, row += n1) {
+
+                                auto&& comb = intVec[cartCombs[row]];
+
+                                for (int k = 0; k < lenGrps[idx]; ++k, ++j) {
+                                    intSexpVec[j] = comb;
+                                }
+                            }
+                        } else {
+                            for (int j = 0; j < nRows; ++j) {
+                                intSexpVec[j] = intVec[lastCol[j]];
+                            }
+                        }
                     }
 
-                    resList[i] = rcppVec;
+                    SET_VECTOR_ELT(DataFrame, i, sexpVec);
                     break;
-                }
-                case LGLSXP: {
-                    Rcpp::LogicalVector rcppVec = Rcpp::no_init_vector(nRows);
+                } case LGLSXP: {
+                    SEXP sexpVec = PROTECT(Rf_allocVector(LGLSXP, nRows));
+                    int* boolSexpVec = INTEGER(sexpVec);
+                    ++numProtects;
 
-                    for (std::size_t j = 0, row = i; j < nRows; ++j, row += nCols)
-                        rcppVec[j] = boolVec[cartCombs[row]];
+                    if (i < (nCols - 1)) {
+                        for (int j = 0, n1 = nCols - 1, row = i, idx = 0,
+                             baseSize = lenGrps.size(); idx < baseSize;
+                             ++idx, row += n1) {
 
-                    resList[i] = rcppVec;
+                            auto&& comb = boolVec[cartCombs[row]];
+
+                            for (int k = 0; k < lenGrps[idx]; ++k, ++j) {
+                                boolSexpVec[j] = comb;
+                            }
+                        }
+                    } else {
+                        for (int j = 0; j < nRows; ++j) {
+                            boolSexpVec[j] = boolVec[lastCol[j]];
+                        }
+                    }
+
+                    SET_VECTOR_ELT(DataFrame, i, sexpVec);
                     break;
-                }
-                case REALSXP: {
-                    Rcpp::NumericVector rcppVec = Rcpp::no_init_vector(nRows);
+                } case REALSXP: {
+                    SEXP sexpVec = PROTECT(Rf_allocVector(REALSXP, nRows));
+                    double* dblSexpVec = REAL(sexpVec);
+                    ++numProtects;
 
-                    for (std::size_t j = 0, row = i; j < nRows; ++j, row += nCols)
-                        rcppVec[j] = dblVec[cartCombs[row]];
+                    if (i < (nCols - 1)) {
+                        for (int j = 0, n1 = nCols - 1, row = i, idx = 0,
+                             baseSize = lenGrps.size(); idx < baseSize;
+                             ++idx, row += n1) {
 
-                    resList[i] = rcppVec;
+                            auto&& comb = dblVec[cartCombs[row]];
+
+                            for (int k = 0; k < lenGrps[idx]; ++k, ++j) {
+                                dblSexpVec[j] = comb;
+                            }
+                        }
+                    } else {
+                        for (int j = 0; j < nRows; ++j) {
+                            dblSexpVec[j] = dblVec[lastCol[j]];
+                        }
+                    }
+
+                    SET_VECTOR_ELT(DataFrame, i, sexpVec);
                     break;
-                }
-                case STRSXP: {
-                    Rcpp::CharacterVector rcppVec = Rcpp::no_init_vector(nRows);
+                } case STRSXP: {
+                    SEXP sexpVec = PROTECT(Rf_allocVector(STRSXP, nRows));
+                    ++numProtects;
 
-                    for (std::size_t j = 0, row = i; j < nRows; ++j, row += nCols)
-                        rcppVec[j] = charVec[cartCombs[row]];
+                    if (i < (nCols - 1)) {
+                        for (int j = 0, n1 = nCols - 1, row = i, idx = 0,
+                             baseSize = lenGrps.size(); j < baseSize;
+                             ++idx, row += n1) {
 
-                    resList[i] = rcppVec;
+                            SEXP comb = PROTECT(STRING_ELT(charVec, cartCombs[row]));
+
+                            for (int k = 0; k < lenGrps[idx]; ++k, ++j) {
+                                SET_STRING_ELT(sexpVec, j, comb);
+                            }
+
+                            UNPROTECT(1);
+                        }
+                    } else {
+                        for (int j = 0; j < nRows; ++j) {
+                            SET_STRING_ELT(sexpVec, j,
+                                           STRING_ELT(charVec, lastCol[j]));
+                        }
+                    }
+
+                    SET_VECTOR_ELT(DataFrame, i, sexpVec);
                     break;
                 }
             }
         }
 
-        Rcpp::DataFrame myDF(resList);
-        myDF.attr("names") = RList.attr("names");
-        return myDF;
+        Rf_setAttrib(DataFrame, R_ClassSymbol, Rf_mkString("data.frame"));
+        Rf_setAttrib(DataFrame, R_NamesSymbol,
+                     Rf_getAttrib(RList, R_NamesSymbol));
+        SEXP rownames = PROTECT(Rf_allocVector(INTSXP, nRows));
+        int* intRows  = INTEGER(rownames);
 
+        for (int i = 1; i <= nRows; ++i) {
+            intRows[i - 1] = i;
+        }
+
+        Rf_setAttrib(DataFrame, R_RowNamesSymbol, rownames);
+        UNPROTECT(numProtects + 1);
+        return DataFrame;
     } else {
         if (typeCheck[tInt]) {
-            Rcpp::IntegerMatrix intMat = Rcpp::no_init_matrix(nRows, nCols);
-            GetPureOutput(cartCombs, RList, intVec, intMat, nCols, nRows);
-            return intMat;
+            SEXP res = PROTECT(Rf_allocMatrix(INTSXP, nRows, nCols));
+            int* intMat = INTEGER(res);
+            GetPureOutput(intMat, res, RList, cartCombs, lastCol,
+                          lenGrps, intVec, nCols, nRows);
+            UNPROTECT(1);
+            return res;
         } else if (typeCheck[tFac]) {
-            Rcpp::IntegerMatrix intMat = Rcpp::no_init_matrix(nRows, nCols);
-            GetPureOutput(cartCombs, RList, facList.front(), intMat, nCols, nRows);
-            Rcpp::IntegerVector testFactor = Rcpp::as<Rcpp::IntegerVector>(RList[0]);
-            Rcpp::CharacterVector myClass = testFactor.attr("class");
-            Rcpp::CharacterVector myLevels = testFactor.attr("levels");
-            intMat.attr("class") = myClass;
-            intMat.attr("levels") = myLevels;
-            return intMat;
+            SEXP res = PROTECT(Rf_allocMatrix(INTSXP, nRows, nCols));
+            int* intMat = INTEGER(res);
+            GetPureOutput(intMat, res, RList, cartCombs, lastCol,
+                          lenGrps, intVec, nCols, nRows);
+            SetFactorClass(res, VECTOR_ELT(RList, 0));
+            UNPROTECT(1);
+            return res;
         } else if (typeCheck[tLog]) {
-            Rcpp::LogicalMatrix boolMat = Rcpp::no_init_matrix(nRows, nCols);
-            GetPureOutput(cartCombs, RList, boolVec, boolMat, nCols, nRows);
-            return boolMat;
+            SEXP res = PROTECT(Rf_allocMatrix(LGLSXP, nRows, nCols));
+            int* intMat = INTEGER(res);
+            GetPureOutput(intMat, res, RList, cartCombs, lastCol,
+                          lenGrps, boolVec, nCols, nRows);
+            UNPROTECT(1);
+            return res;
         } else if (typeCheck[tDbl]) {
-            Rcpp::NumericMatrix dblMat = Rcpp::no_init_matrix(nRows, nCols);
-            GetPureOutput(cartCombs, RList, dblVec, dblMat, nCols, nRows);
-            return dblMat;
+            SEXP res = Rf_allocMatrix(REALSXP, nRows, nCols);
+            double* dblMat = REAL(res);
+            GetPureOutput(dblMat, res, RList, cartCombs, lastCol,
+                          lenGrps, dblVec, nCols, nRows);
+            return res;
         } else {
-            Rcpp::CharacterMatrix charMat = Rcpp::no_init_matrix(nRows, nCols);
-            GetPureOutput(cartCombs, RList, charVec, charMat, nCols, nRows);
-            return charMat;
+            SEXP res = PROTECT(Rf_allocMatrix(STRSXP, nRows, nCols));
+            GetCharOutput(res, RList, cartCombs, lastCol,
+                          lenGrps, charVec, nCols, nRows);
+            UNPROTECT(1);
+            return res;
         }
     }
 }
 
-void getAtLeastNPrimes(std::vector<int> &primes, std::size_t sumLength) {
+void getAtLeastNPrimes(std::vector<int> &primes,
+                       std::size_t sumLength) {
 
     double limit = 100;
     std::size_t guess = PrimeSieve::EstimatePiPrime(1.0, limit);
@@ -221,36 +399,54 @@ void getAtLeastNPrimes(std::vector<int> &primes, std::size_t sumLength) {
     int_fast64_t intMax = static_cast<int_fast64_t>(limit);
     std::vector<std::vector<int>> tempList;
 
-    PrimeSieve::PrimeSieveMaster(intMin, intMax, primes, tempList, tempPar);
+    PrimeSieve::PrimeSieveMain(tempList, primes, intMin, intMax, tempPar);
 }
 
-// [[Rcpp::export]]
-SEXP comboGridRcpp(Rcpp::List RList, std::vector<int> IsFactor,
-                   bool IsRep, std::size_t sumLength) {
+SEXP ComboGridCpp(SEXP RList, SEXP RIsRep) {
+
+    int sumLength = 0;
+    const int nCols = Rf_length(RList);
+    std::vector<int> IsFactor(nCols);
+
+    for (int i = 0; i < nCols; ++i) {
+        if (Rf_isFactor(VECTOR_ELT(RList, i))) {
+            IsFactor[i] = 1;
+        } else {
+            IsFactor[i] = 0;
+        }
+
+        sumLength += Rf_length(VECTOR_ELT(RList, i));
+    }
 
     std::vector<int> primes;
     getAtLeastNPrimes(primes, sumLength);
-    std::size_t numFactorVec = std::accumulate(IsFactor.cbegin(), IsFactor.cend(), 0);
 
-    // All duplicates have been removed from RList via lapply(RList, function(x) sort(unique(x)))
-    std::size_t nCols = RList.size();
+    int numFactorVec = std::accumulate(IsFactor.cbegin(),
+                                       IsFactor.cend(), 0);
+    const int IsRep = CleanConvert::convertFlag(RIsRep, "IsRep");
+
+    // All duplicates have been removed from RList via
+    // lapply(RList, function(x) sort(unique(x)))
     std::vector<std::vector<int>> myVec(nCols);
     std::unordered_map<std::string, int> mapIndex;
     std::vector<int> typeCheck(5, 0);
 
-    Rcpp::CharacterVector charVec(sumLength);
-    Rcpp::NumericVector dblVec(sumLength);
-    Rcpp::IntegerVector intVec(sumLength);
-    Rcpp::LogicalVector boolVec(sumLength);
+    SEXP charVec     = PROTECT(Rf_allocVector(STRSXP, sumLength));
+    SEXP dblSexpVec  = PROTECT(Rf_allocVector(REALSXP, sumLength));
+    SEXP intSexpVec  = PROTECT(Rf_allocVector(INTSXP, sumLength));
+    SEXP boolSexpVec = PROTECT(Rf_allocVector(LGLSXP, sumLength));
+
+    double* dblVec = REAL(dblSexpVec);
+    int* intVec    = INTEGER(intSexpVec);
+    int* boolVec   = INTEGER(boolSexpVec);
 
     std::vector<std::vector<int>> facList(numFactorVec,
                                           std::vector<int>(sumLength, 0));
 
-    for (std::size_t i = 0, total = 0, myIndex = 0, facInd = 0; i < nCols; ++i) {
-        std::vector<std::string> tempVec;
+    for (int i = 0, total = 0, myIndex = 0, facInd = 0; i < nCols; ++i) {
         rcppType myType;
-
-        convertToString(tempVec, RList[i], myType, IsFactor[i]);
+        std::vector<std::string> tempVec;
+        convertToString(tempVec, VECTOR_ELT(RList, i), myType, IsFactor[i]);
         std::size_t j = 0;
 
         for (const auto &v: tempVec) {
@@ -272,27 +468,23 @@ SEXP comboGridRcpp(Rcpp::List RList, std::vector<int> IsFactor,
 
             switch(myType) {
                 case tInt: {
-                    intVec[myIndex] = Rcpp::as<Rcpp::IntegerVector>(RList[i])[j];
+                    intVec[myIndex] = INTEGER(VECTOR_ELT(RList, i))[j];
                     typeCheck[tInt] = 1;
                     break;
-                }
-                case tFac: {
-                    facList[facInd][myIndex] = Rcpp::as<std::vector<int>>(RList[i])[j];
+                } case tFac: {
+                    facList[facInd][myIndex] = INTEGER(VECTOR_ELT(RList, i))[j];
                     typeCheck[tFac] = 1;
                     break;
-                }
-                case tDbl: {
-                    dblVec[myIndex] = Rcpp::as<Rcpp::NumericVector>(RList[i])[j];
+                } case tDbl: {
+                    dblVec[myIndex] = REAL(VECTOR_ELT(RList, i))[j];
                     typeCheck[tDbl] = 1;
                     break;
-                }
-                case tStr: {
-                    charVec[myIndex] = Rcpp::as<Rcpp::CharacterVector>(RList[i])[j];
+                } case tStr: {
+                    SET_STRING_ELT(charVec, myIndex, STRING_ELT(VECTOR_ELT(RList, i), j));
                     typeCheck[tStr] = 1;
                     break;
-                }
-                case tLog: {
-                    boolVec[myIndex] = Rcpp::as<Rcpp::LogicalVector>(RList[i])[j];
+                } case tLog: {
+                    boolVec[myIndex] = INTEGER(VECTOR_ELT(RList, i))[j];
                     typeCheck[tLog] = 1;
                     break;
                 }
@@ -305,14 +497,25 @@ SEXP comboGridRcpp(Rcpp::List RList, std::vector<int> IsFactor,
     }
 
     int mySum = std::accumulate(typeCheck.cbegin(), typeCheck.cend(), 0);
-    std::vector<std::string> testLevels;
-    Rcpp::IntegerVector facVec(sumLength);
 
+    // We need to check to see if there is overlap in factor levels
     if (typeCheck[tFac] && mySum == 1) {
-        for (std::size_t i = 0; i < nCols; ++i) {
+        std::vector<std::string> testLevels;
+
+        for (int i = 0; i < nCols; ++i) {
             if (IsFactor[i]) {
-                facVec = Rcpp::as<Rcpp::IntegerVector>(RList[i]);
-                std::vector<std::string> strVec = Rcpp::as<std::vector<std::string>>(facVec.attr("levels"));
+                SEXP facVec = PROTECT(Rf_getAttrib(VECTOR_ELT(RList, i),
+                                                   R_LevelsSymbol));
+                std::vector<std::string> strVec;
+
+                int len_comp = Rf_length(facVec);
+
+                for (int i = 0; i < len_comp; ++i) {
+                    const std::string temp(CHAR(STRING_ELT(facVec, i)));
+                    strVec.push_back(temp);
+                }
+
+                UNPROTECT(1);
 
                 if (testLevels.size()) {
                     if (strVec != testLevels) {
@@ -327,10 +530,15 @@ SEXP comboGridRcpp(Rcpp::List RList, std::vector<int> IsFactor,
     }
 
     bool IsDF = (mySum > 1) ? true : false;
+    std::vector<int> lenGrps;
+    std::vector<int> lastCol;
     std::vector<int> cartCombs;
-    comboGrid(cartCombs, IsRep, myVec, primes);
+    comboGrid(cartCombs, lastCol, lenGrps, myVec, primes, IsRep);
 
-    const std::size_t nRows = cartCombs.size() / nCols;
-    return GlueComboCart(cartCombs, RList, intVec, boolVec, dblVec,
-                         charVec, facList, typeCheck, IsDF, nRows, nCols, IsFactor);
+    const int nRows = lastCol.size();
+    SEXP res =  PROTECT(GlueComboCart(cartCombs, lastCol, lenGrps, facList,
+                                      typeCheck, IsFactor, RList, intVec,
+                                      boolVec, dblVec, charVec, nRows, nCols, IsDF));
+    UNPROTECT(5);
+    return res;
 }

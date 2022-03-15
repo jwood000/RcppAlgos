@@ -1,30 +1,70 @@
-#include <Rcpp.h>
-#include <gmp.h>
-#include <unordered_set>
 #include "Cpp14MakeUnique.h"
+#include <unordered_set>
+#include <limits>
+#include <vector>
+#include <string>
+#include <gmp.h>
 
-constexpr int base10 = 10;
+void AddComb(std::unordered_set<std::uint64_t> &uintHash,
+             std::vector<std::uint64_t> &uintKeyKeeper,
+             const std::vector<int> &rowIdx, std::vector<int> &cartCombs,
+             std::uint64_t &maxKey, std::uint64_t masterKey,
+             int prime, int idx) {
 
-void comboGrid(std::vector<int> &cartCombs, bool IsRep,
-               const std::vector<std::vector<int>> &myVec,
-               const std::vector<int> &primes) {
+    const std::uint64_t key = masterKey * prime;
+    if (key > maxKey) maxKey = key;
 
-    std::unordered_set<uint64_t> uintHash;
-    std::vector<uint64_t> uintKeyKeeper;
-    uint64_t maxKey = 0;
+    if (uintHash.find(key) == uintHash.end()) {
+        uintHash.insert(key);
+        cartCombs.insert(cartCombs.end(),
+                         rowIdx.cbegin(),
+                         rowIdx.cend());
+        cartCombs.push_back(idx);
+        uintKeyKeeper.push_back(key);
+    }
+}
 
-    for (const auto ind: myVec[0]) {
-        uint64_t key = primes[ind];
+void AddComb(std::unordered_set<std::string> &strHash,
+             std::vector<std::string> &strKeyKeeper,
+             const std::vector<int> &rowIdx,
+             std::vector<int> &cartCombs,
+             mpz_t key, mpz_t masterKey,
+             int prime, int idx) {
 
-        if (key > maxKey) {
-            maxKey = key;
-        }
+    mpz_mul_si(key, masterKey, prime);
+    auto buffer = FromCpp14::make_unique<char[]>(
+        mpz_sizeinbase(key, 10) + 2
+    );
+    mpz_get_str(buffer.get(), 10, key);
+    const std::string strKey = buffer.get();
 
-        const auto it = uintHash.find(key);
+    if (strHash.find(strKey) == strHash.end()) {
+        strHash.insert(strKey);
+        cartCombs.insert(cartCombs.end(),
+                         rowIdx.cbegin(),
+                         rowIdx.cend());
+        cartCombs.push_back(idx);
+        strKeyKeeper.push_back(strKey);
+    }
+}
 
-        if (it == uintHash.end()) {
+void comboGrid(std::vector<int> &cartCombs,
+               std::vector<int> &lastCol,
+               std::vector<int> &lenGrps,
+               const std::vector<std::vector<int>> &myVecs,
+               const std::vector<int> &primes, bool IsRep) {
+
+    std::unordered_set<std::uint64_t> uintHash;
+    std::vector<std::uint64_t> uintKeyKeeper;
+    std::uint64_t maxKey = 0;
+
+    for (const auto idx: myVecs[0]) {
+        const std::uint64_t key = primes[idx];
+        if (key > maxKey) maxKey = key;
+
+        if (uintHash.find(key) == uintHash.end()) {
             uintHash.insert(key);
-            cartCombs.push_back(ind);
+            cartCombs.push_back(idx);
             uintKeyKeeper.push_back(key);
         }
     }
@@ -32,88 +72,111 @@ void comboGrid(std::vector<int> &cartCombs, bool IsRep,
     std::size_t i = 1;
     bool NeedsMpz = false;
 
-    for (; i < myVec.size(); ++i) {
-        if ((std::numeric_limits<uint64_t>::max() / maxKey) < primes[myVec[i].back()]) {
+    for (std::size_t size = myVecs.size() - 1; i < size; ++i) {
+        if ((std::numeric_limits<std::uint64_t>::max() / maxKey) <
+            static_cast<std::uint64_t>(primes[myVecs[i].back()])) {
             NeedsMpz = true;
             break;
         }
 
         const std::vector<int> tempCombs = cartCombs;
-        const std::vector<uint64_t> tempKeyKeeper = uintKeyKeeper;
+        const std::vector<std::uint64_t> tempKeyKeeper = uintKeyKeeper;
 
+        uintHash.clear();
         cartCombs.clear();
         uintKeyKeeper.clear();
-        uintHash.clear();
 
-        cartCombs.reserve(tempKeyKeeper.size() * myVec[i].size() * (i + 1));
-        uintKeyKeeper.reserve(tempKeyKeeper.size() * myVec[i].size());
-        uintHash.reserve(tempKeyKeeper.size() * myVec[i].size());
+        uintHash.reserve(tempKeyKeeper.size() * myVecs[i].size());
+        uintKeyKeeper.reserve(tempKeyKeeper.size() * myVecs[i].size());
+        cartCombs.reserve(tempKeyKeeper.size() * myVecs[i].size() * (i + 1));
 
         if (IsRep) {
             for (std::size_t j = 0, myStrt = 0, myEnd = i;
                  j < tempKeyKeeper.size(); ++j, myStrt = myEnd, myEnd += i) {
 
-                const uint64_t masterKey = tempKeyKeeper[j];
-                const std::vector<int> masterVec(tempCombs.begin() + myStrt, tempCombs.begin() + myEnd);
+                const std::uint64_t masterKey = tempKeyKeeper[j];
+                const std::vector<int> rowIdx(tempCombs.begin() + myStrt,
+                                              tempCombs.begin() + myEnd);
 
-                for (const auto ind: myVec[i]) {
-                    uint64_t key = masterKey * primes[ind];
-                    const auto it = uintHash.find(key);
-
-                    if (key > maxKey) {
-                        maxKey = key;
-                    }
-
-                    if (it == uintHash.end()) {
-                        std::vector<int> vecVal = masterVec;
-                        vecVal.push_back(ind);
-                        uintHash.insert(key);
-                        cartCombs.insert(cartCombs.end(), vecVal.cbegin(), vecVal.cend());
-                        uintKeyKeeper.push_back(key);
-                    }
+                for (auto idx: myVecs[i]) {
+                    AddComb(uintHash, uintKeyKeeper, rowIdx, cartCombs,
+                            maxKey, masterKey, primes[idx], idx);
                 }
             }
         } else {
             for (std::size_t j = 0, myStrt = 0, myEnd = i;
                  j < tempKeyKeeper.size(); ++j, myStrt = myEnd, myEnd += i) {
 
-                const uint64_t masterKey = tempKeyKeeper[j];
-                const std::vector<int> masterVec(tempCombs.begin() + myStrt, tempCombs.begin() + myEnd);
+                const std::uint64_t masterKey = tempKeyKeeper[j];
+                const std::vector<int> rowIdx(tempCombs.begin() + myStrt,
+                                              tempCombs.begin() + myEnd);
 
-                for (const auto ind: myVec[i]) {
-                    if (masterKey % primes[ind] != 0) {
-                        uint64_t key = masterKey * primes[ind];
-                        const auto it = uintHash.find(key);
-
-                        if (key > maxKey) {
-                            maxKey = key;
-                        }
-
-                        if (it == uintHash.end()) {
-                            std::vector<int> vecVal = masterVec;
-                            vecVal.push_back(ind);
-                            uintHash.insert(key);
-                            cartCombs.insert(cartCombs.end(), vecVal.cbegin(), vecVal.cend());
-                            uintKeyKeeper.push_back(key);
-                        }
+                for (auto idx: myVecs[i]) {
+                    if (masterKey % primes[idx] != 0) {
+                        AddComb(uintHash, uintKeyKeeper, rowIdx, cartCombs,
+                                maxKey, masterKey, primes[idx], idx);
                     }
                 }
             }
         }
     }
 
-    if (NeedsMpz) {
+    if ((std::numeric_limits<std::uint64_t>::max() / maxKey) <
+        static_cast<std::uint64_t>(primes[myVecs.back().back()])) {
+        NeedsMpz = true;
+    }
+    if (!NeedsMpz && myVecs.size() > 1) {
+        uintHash.clear();
+        lenGrps.assign(uintKeyKeeper.size(), 0);
+        lastCol.reserve(uintKeyKeeper.size() * myVecs.back().size());
+        uintHash.reserve(uintKeyKeeper.size() * myVecs.back().size());
+
+        if (IsRep) {
+            for (std::size_t j = 0; j < uintKeyKeeper.size(); ++j) {
+                const std::uint64_t masterKey = uintKeyKeeper[j];
+
+                for (auto idx: myVecs.back()) {
+                    if (uintHash.find(masterKey * primes[idx]) == uintHash.end()) {
+                        uintHash.insert(masterKey * primes[idx]);
+                        lastCol.push_back(idx);
+                        ++lenGrps[j];
+                    }
+                }
+            }
+        } else {
+            for (std::size_t j = 0; j < uintKeyKeeper.size(); ++j) {
+                const std::uint64_t masterKey = uintKeyKeeper[j];
+
+                for (auto idx: myVecs.back()) {
+                    if (masterKey % primes[idx] != 0) {
+                        if (uintHash.find(masterKey * primes[idx]) == uintHash.end()) {
+                            uintHash.insert(masterKey * primes[idx]);
+                            lastCol.push_back(idx);
+                            ++lenGrps[j];
+                        }
+                    }
+                }
+            }
+        }
+    } else if (myVecs.size() == 1) {
+        lastCol = cartCombs;
+        cartCombs.clear();
+        lenGrps.assign(lastCol.size(), 1);
+    } else {
         std::vector<std::string> strKeyKeeper(uintKeyKeeper.size());
 
-        for (std::size_t j = 0; j < uintKeyKeeper.size(); ++j)
+        for (std::size_t j = 0; j < uintKeyKeeper.size(); ++j) {
             strKeyKeeper[j] = std::to_string(uintKeyKeeper[j]);
+        }
 
+        mpz_t key;
+        mpz_t masterKey;
+
+        mpz_init(key);
+        mpz_init(masterKey);
         std::unordered_set<std::string> strHash;
 
-        mpz_t masterKey, key;
-        mpz_init(masterKey); mpz_init(key);
-
-        for (; i < myVec.size(); ++i) {
+        for (std::size_t size = myVecs.size() - 1; i < size; ++i) {
             const std::vector<int> tempCombs = cartCombs;
             const std::vector<std::string> tempKeyKeeper = strKeyKeeper;
 
@@ -121,61 +184,89 @@ void comboGrid(std::vector<int> &cartCombs, bool IsRep,
             strKeyKeeper.clear();
             strHash.clear();
 
-            cartCombs.reserve(tempKeyKeeper.size() * myVec[i].size() * (i + 1));
-            strKeyKeeper.reserve(tempKeyKeeper.size() * myVec[i].size());
-            strHash.reserve(tempKeyKeeper.size() * myVec[i].size());
+            cartCombs.reserve(tempKeyKeeper.size() * myVecs[i].size() * (i + 1));
+            strKeyKeeper.reserve(tempKeyKeeper.size() * myVecs[i].size());
+            strHash.reserve(tempKeyKeeper.size() * myVecs[i].size());
 
             if (IsRep) {
                 for (std::size_t j = 0, myStrt = 0, myEnd = i;
                      j < tempKeyKeeper.size(); ++j, myStrt = myEnd, myEnd += i) {
 
-                    mpz_set_str(masterKey, tempKeyKeeper[j].c_str(), base10);
-                    const std::vector<int> masterVec(tempCombs.begin() + myStrt, tempCombs.begin() + myEnd);
+                    mpz_set_str(masterKey, tempKeyKeeper[j].c_str(), 10);
+                    const std::vector<int> rowIdx(tempCombs.begin() + myStrt,
+                                                  tempCombs.begin() + myEnd);
 
-                    for (const auto ind: myVec[i]) {
-                        mpz_mul_si(key, masterKey, primes[ind]);
-                        auto buffer = FromCpp14::make_unique<char[]>(mpz_sizeinbase(key, base10) + 2);
-                        mpz_get_str(buffer.get(), base10, key);
-                        const std::string strKey = buffer.get();
-                        const auto it = strHash.find(strKey);
-
-                        if (it == strHash.end()) {
-                            std::vector<int> vecVal = masterVec;
-                            vecVal.push_back(ind);
-                            strHash.insert(strKey);
-                            cartCombs.insert(cartCombs.end(), vecVal.cbegin(), vecVal.cend());
-                            strKeyKeeper.push_back(strKey);
-                        }
+                    for (auto idx: myVecs[i]) {
+                        AddComb(strHash, strKeyKeeper, rowIdx, cartCombs,
+                                key, masterKey, primes[idx], idx);
                     }
                 }
             } else {
                 for (std::size_t j = 0, myStrt = 0, myEnd = i;
                      j < tempKeyKeeper.size(); ++j, myStrt = myEnd, myEnd += i) {
 
-                    mpz_set_str(masterKey, tempKeyKeeper[j].c_str(), base10);
-                    const std::vector<int> masterVec(tempCombs.begin() + myStrt, tempCombs.begin() + myEnd);
+                    mpz_set_str(masterKey, tempKeyKeeper[j].c_str(), 10);
+                    const std::vector<int> rowIdx(tempCombs.begin() + myStrt,
+                                                  tempCombs.begin() + myEnd);
 
-                    for (const auto ind: myVec[i]) {
-                        if (mpz_divisible_ui_p(masterKey, primes[ind]) == 0) {
-                            mpz_mul_si(key, masterKey, primes[ind]);
-                            auto buffer = FromCpp14::make_unique<char[]>(mpz_sizeinbase(key, base10) + 2);
-                            mpz_get_str(buffer.get(), base10, key);
-                            const std::string strKey = buffer.get();
-                            const auto it = strHash.find(strKey);
-
-                            if (it == strHash.end()) {
-                                std::vector<int> vecVal = masterVec;
-                                vecVal.push_back(ind);
-                                strHash.insert(strKey);
-                                cartCombs.insert(cartCombs.end(), vecVal.cbegin(), vecVal.cend());
-                                strKeyKeeper.push_back(strKey);
-                            }
+                    for (auto idx: myVecs[i]) {
+                        if (mpz_divisible_ui_p(masterKey, primes[idx]) == 0) {
+                            AddComb(strHash, strKeyKeeper, rowIdx, cartCombs,
+                                    key, masterKey, primes[idx], idx);
                         }
                     }
                 }
             }
         }
 
-        mpz_clear(masterKey); mpz_clear(key);
+        strHash.clear();
+        lenGrps.assign(strKeyKeeper.size(), 0);
+        lastCol.reserve(strKeyKeeper.size() * myVecs.back().size());
+        strHash.reserve(strKeyKeeper.size() * myVecs.back().size());
+
+        if (IsRep) {
+            for (std::size_t j = 0; j < strKeyKeeper.size(); ++j) {
+                mpz_set_str(masterKey, strKeyKeeper[j].c_str(), 10);
+
+                for (auto idx: myVecs.back()) {
+                    mpz_mul_si(key, masterKey, primes[idx]);
+                    auto buffer = FromCpp14::make_unique<char[]>(
+                        mpz_sizeinbase(key, 10) + 2
+                    );
+                    mpz_get_str(buffer.get(), 10, key);
+                    const std::string strKey = buffer.get();
+
+                    if (strHash.find(strKey) == strHash.end()) {
+                        strHash.insert(strKey);
+                        lastCol.push_back(idx);
+                        ++lenGrps[j];
+                    }
+                }
+            }
+        } else {
+            for (std::size_t j = 0; j < strKeyKeeper.size(); ++j) {
+                mpz_set_str(masterKey, strKeyKeeper[j].c_str(), 10);
+
+                for (auto idx: myVecs.back()) {
+                    if (mpz_divisible_ui_p(masterKey, primes[idx]) == 0) {
+                        mpz_mul_si(key, masterKey, primes[idx]);
+                        auto buffer = FromCpp14::make_unique<char[]>(
+                            mpz_sizeinbase(key, 10) + 2
+                        );
+                        mpz_get_str(buffer.get(), 10, key);
+                        const std::string strKey = buffer.get();
+
+                        if (strHash.find(strKey) == strHash.end()) {
+                            strHash.insert(strKey);
+                            lastCol.push_back(idx);
+                            ++lenGrps[j];
+                        }
+                    }
+                }
+            }
+        }
+
+        mpz_clear(masterKey);
+        mpz_clear(key);
     }
 }

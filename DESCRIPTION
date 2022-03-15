@@ -1,14 +1,12 @@
 Package: RcppAlgos
-Version: 2.4.3
-Title: High Performance Tools for Combinatorics and Computational
-        Mathematics
+Version: 2.5.0
+Title: High Performance Tools for Combinatorics and Computational Mathematics
 Description: Provides optimized functions and flexible combinatorial iterators
-    implemented in C++ with 'Rcpp' for solving problems in combinatorics and
-    computational mathematics. Utilizes parallel programming via 'RcppThread'
-    for maximal performance. Also makes use of the RMatrix class from the
-    'RcppParallel' library. There are combination/permutation functions with
+    implemented in C++ for solving problems in combinatorics and
+    computational mathematics. Utilizes the RMatrix class from 'RcppParallel'
+    for thread safety. There are combination/permutation functions with
     constraint parameters that allow for generation of all results of a vector
-    meeting specific criteria (e.g. generating integer partitions/compositions
+    meeting specific criteria (e.g. generating integer partitions
     or finding all combinations such that the sum is between two bounds).
     Capable of generating specific combinations/permutations (e.g. retrieve
     only the nth lexicographical result) which sets up nicely for
@@ -28,9 +26,8 @@ URL: https://github.com/jwood000/RcppAlgos, https://gmplib.org/,
         http://ridiculousfish.com/,
         http://sweet.ua.pt/tos/software/prime_sieve.html
 BugReports: https://github.com/jwood000/RcppAlgos/issues
-Imports: gmp, Rcpp, methods
-LinkingTo: Rcpp, RcppThread
-Suggests: testthat, numbers, microbenchmark, knitr, RcppBigIntAlgos, rmarkdown
+Imports: gmp, methods
+Suggests: testthat, numbers, partitions, microbenchmark, knitr, RcppBigIntAlgos, rmarkdown
 License: GPL (>=2)
 SystemRequirements: C++11, gmp (>= 4.2.3)
 VignetteBuilder: knitr
@@ -38,4 +35,4 @@ NeedsCompilation: yes
 Author: Joseph Wood
 Maintainer: Joseph Wood <jwood000@gmail.com>
 Encoding: UTF-8
-RoxygenNote: 7.1.0
+RoxygenNote: 7.1.2

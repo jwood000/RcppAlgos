@@ -8,10 +8,7 @@
 // from the source files bigintegerR.cc/ biginteger.cc from
 // the R gmp package.
 
-#include <gmp.h>
-#include <Rcpp.h>
-
-constexpr std::size_t intSize = sizeof(int);
+#include "ImportExportMPZ.h"
 
 void createMPZArray(SEXP input, mpz_t *myVec, std::size_t vecSize,
                     const std::string &nameOfObject, bool negPoss) {
@@ -33,45 +30,50 @@ void createMPZArray(SEXP input, mpz_t *myVec, std::size_t vecSize,
                     mpz_import(myVec[i], r[0], 1, intSize, 0, 0, (void*)&(r[2]));
 
                     if(r[1] == -1) {
-                        if (negPoss)
+                        if (negPoss) {
                             mpz_neg(myVec[i], myVec[i]);
-                        else
-                            Rcpp::stop(suffix + " must be a positive number");
+                        } else {
+                            Rf_error("%s must be a positive number", suffix.c_str());
+                        }
                     }
                 } else {
-                    Rcpp::stop(suffix + " cannot be NA or NaN");
+                    Rf_error("%s cannot be NA or NaN", suffix.c_str());
                 }
 
                 pos += intSize * (2 + (mpz_sizeinbase(myVec[i], 2) + numb - 1) / numb);
             }
 
             break;
-        }
-        case REALSXP: {
-            std::vector<double> dblVec = Rcpp::as<std::vector<double>>(input);
+        } case REALSXP: {
+            double* dblInput = REAL(input);
+            std::vector<double> dblVec(dblInput, dblInput + vecSize);
             constexpr double Sig53 = 9007199254740991.0;
 
             for (std::size_t j = 0; j < vecSize; ++j) {
-                if (Rcpp::NumericVector::is_na(dblVec[j]) || std::isnan(dblVec[j]))
-                    Rcpp::stop(suffix + " cannot be NA or NaN");
+                if (ISNAN(dblVec[j]))
+                    Rf_error("%s cannot be NA or NaN", suffix.c_str());
 
                 if (negPoss) {
                     if (std::abs(dblVec[j]) > Sig53) {
-                        Rcpp::stop("Number is too large for double precision. Consider "
-                                       "using gmp::as.bigz or as.character for " + nameOfObject);
+                        Rf_error("Number is too large for double precision. Consider "
+                                 "using gmp::as.bigz or as.character for %s",
+                                 nameOfObject.c_str());
                     }
                 } else {
-                    if (dblVec[j] < 1)
-                        Rcpp::stop(suffix + " must be a positive number");
+                    if (dblVec[j] < 1) {
+                        Rf_error("%s must be a positive number", suffix.c_str());
+                    }
 
                     if (dblVec[j] > Sig53) {
-                        Rcpp::stop("Number is too large for double precision. Consider "
-                                       "using gmp::as.bigz or as.character for " + nameOfObject);
+                        Rf_error("Number is too large for double precision. Consider "
+                                 "using gmp::as.bigz or as.character for %s",
+                                 nameOfObject.c_str());
                     }
                 }
 
-                if (static_cast<int64_t>(dblVec[j]) != dblVec[j])
-                    Rcpp::stop(suffix + " must be a whole number.");
+                if (static_cast<int64_t>(dblVec[j]) != dblVec[j]) {
+                    Rf_error("%s must be a whole number.", suffix.c_str());
+                }
 
                 mpz_set_d(myVec[j], dblVec[j]);
             }
@@ -80,43 +82,46 @@ void createMPZArray(SEXP input, mpz_t *myVec, std::size_t vecSize,
         }
         case INTSXP:
         case LGLSXP: {
-            std::vector<int> intVec = Rcpp::as<std::vector<int>>(input);
-            std::vector<double> dblVec = Rcpp::as<std::vector<double>>(input);
+            int* intInput = INTEGER(input);
+            std::vector<double> dblVec(intInput, intInput + vecSize);
+            std::vector<int> intVec(intInput, intInput + vecSize);
 
             for (std::size_t j = 0; j < vecSize; ++j) {
-                if (Rcpp::NumericVector::is_na(dblVec[j]) || std::isnan(dblVec[j]))
-                    Rcpp::stop(suffix + " cannot be NA or NaN");
+                if (ISNAN(dblVec[j])) {
+                    Rf_error("%s cannot be NA or NaN", suffix.c_str());
+                }
 
-                if (!negPoss)
-                    if (intVec[j] < 1)
-                        Rcpp::stop(suffix + " must be a positive number");
+                if (!negPoss && intVec[j] < 1) {
+                    Rf_error("%s must be a positive number", suffix.c_str());
+                }
 
                 mpz_set_si(myVec[j], intVec[j]);
             }
 
             break;
-        }
-        case STRSXP: {
+        } case STRSXP: {
             for (std::size_t i = 0; i < vecSize; ++i) {
                 if (STRING_ELT(input, i) == NA_STRING) {
-                    Rcpp::stop(suffix + " cannot be NA or NaN");
+                    Rf_error("%s cannot be NA or NaN", suffix.c_str());
                 } else {
                     mpz_set_str(myVec[i], CHAR(STRING_ELT(input, i)), 10);
 
-                    if (!negPoss)
-                        if (mpz_sgn(myVec[i]) < 1)
-                            Rcpp::stop(suffix + " must be a positive whole number");
+                    if (!negPoss && mpz_sgn(myVec[i]) < 1) {
+                        Rf_error("%s must be a positive whole number",
+                                 suffix.c_str());
+                    }
                 }
             }
 
             break;
+        } default: {
+            Rf_error("This type is not supported! No conversion"
+                     " possible for %s", nameOfObject.c_str());
         }
-        default:
-            Rcpp::stop("This type is not supported! No conversion possible for " + nameOfObject);
     }
 }
 
-int myRaw(char* raw, mpz_t value, std::size_t totals) {
+int myRaw(char* raw, const mpz_t value, std::size_t totals) {
     memset(raw, 0, totals);
 
     int* r = (int*)raw;

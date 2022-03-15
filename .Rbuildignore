@@ -2,6 +2,6 @@
 ^\.Rproj\.user$
 \.travis\.yml
 LICENSE
-^_pkgdown\.yml$
+remove_whitespace.sh
+^\.github$
 ^docs$
-^pkgdown$

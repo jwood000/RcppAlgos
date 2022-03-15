@@ -25,7 +25,8 @@ test_that("permuteGeneral produces correct results with no constraints and no re
                  permuteGeneral(myNums, 3, freqs = rep(1, 5)))
 
     expect_equal(ncol(permuteGeneral(5, 3)), 3)
-    expect_equal(ncol(permuteGeneral(5, 3, FALSE, constraintFun = "prod", keepResults = TRUE)), 4)
+    expect_equal(ncol(permuteGeneral(5, 3, FALSE, constraintFun = "prod",
+                                     keepResults = TRUE)), 4)
     expect_equal(nrow(permuteGeneral(5, 3, upper = 20)), 20)
     expect_equal(nrow(permuteGeneral(5, 3, FALSE, constraintFun = "prod",
                                      keepResults = TRUE, upper = 10L)), 10)
@@ -68,6 +69,14 @@ test_that("permuteGeneral produces correct results with no constraints for multi
 
     expect_equal(permuteGeneral(month.name[1:5], 3, TRUE),
                  permuteGeneral(month.name[1:5], 3, freqs = rep(3, 5)))
+
+    all.equal(t(as.matrix(partitions::multiset(rep(1:4, times = c(1:3, 6))))),
+              permuteGeneral(4, freqs = c(1:3, 6), nThreads = 2))
+
+    expect_equal(permuteGeneral(letters[1:3], freqs = 1:3),
+                 matrix(letters[1:3][t(partitions::multiset(rep(1:3, times = 1:3)))], ncol = 6))
+
+    expect_equal(permuteGeneral(3, lower = 3), permuteGeneral(3)[3:6, ])
 
     myNums2 <- 1:10 / 3
     expect_equal(permuteGeneral(myNums2, 5, freqs = rep(2, 10))[80000:90000, ],
@@ -117,7 +126,7 @@ test_that("permuteGeneral produces correct results with constraints", {
     expect_true(all(permuteGeneral(5, 5L, TRUE,
                                    constraintFun = "min",
                                    comparisonFun = "<", limitConstraints = 3,
-                                       keepResults = TRUE)[,6] < 3))
+                                   keepResults = TRUE)[,6] < 3))
 
     expect_true(all(permuteGeneral(5, 5, TRUE,
                                    constraintFun = "prod",
@@ -127,7 +136,7 @@ test_that("permuteGeneral produces correct results with constraints", {
     expect_true(all(permuteGeneral(5, 3, FALSE,
                                    constraintFun = "max",
                                    comparisonFun = "=<", limitConstraints = 4,
-                                keepResults = TRUE)[,4] <= 4))
+                                   keepResults = TRUE)[,4] <= 4))
 
     expect_true(all(permuteGeneral(3, 5, TRUE,
                                    constraintFun = "mean",
@@ -136,8 +145,8 @@ test_that("permuteGeneral produces correct results with constraints", {
 
     expect_true(all(permuteGeneral(5, 5, FALSE, constraintFun = "sum",
                                    comparisonFun = ">", limitConstraints = 18,
-                                     freqs = c(1,2,1,2,4),
-                                     keepResults = TRUE)[,6] > 18))
+                                   freqs = c(1,2,1,2,4),
+                                   keepResults = TRUE)[,6] > 18))
 
     expect_equal(sum(permuteGeneral(4, 6, freqs = c(1,3,2,2),
                                    constraintFun = "sum",
@@ -192,9 +201,11 @@ test_that("permuteGeneral produces correct results with exotic constraints", {
         for (j in a) {
             for (k in b) {
                 myComp <- c(j, k)
-                myTest <- permuteGeneral(c(-6:(-1),1:2), 5, freqs = c(rep(1:3, 2), 2:3),
-                                       constraintFun = "prod", comparisonFun = myComp,
-                                       limitConstraints = c(q[2], q[4]))
+                myTest <- permuteGeneral(c(-6:(-1),1:2), 5,
+                                         freqs = c(rep(1:3, 2), 2:3),
+                                         constraintFun = "prod",
+                                         comparisonFun = myComp,
+                                         limitConstraints = c(q[2], q[4]))
                 fun1 <- match.fun(j)
                 fun2 <- match.fun(k)
 
@@ -204,7 +215,7 @@ test_that("permuteGeneral produces correct results with exotic constraints", {
                     temp <- allPerms[fun1(theSum, q[2]) & fun2(theSum, q[4]),]
                 }
 
-                expect_equal(temp, myTest)
+                expect_equal(temp, myTest, info = c(myComp, q[2], q[4]))
             }
         }
     }
@@ -290,6 +301,23 @@ test_that("permuteGeneral produces correct results with use of FUN", {
     expect_equal(sum(unlist(permuteGeneral(as.complex(c(1, -1, -1i, 1i)), 3,
                                            FUN = function(x) sum(Re(x))))), 0)
 
+    expect_equal(class(permuteGeneral(as.complex(1:5 + 1i),
+                                      3, TRUE, FUN = prod, FUN.VALUE = 1i)),
+                 "complex")
+    expect_equal(permuteGeneral(c("A", "B", "C"), 2,
+                                FUN = function(x) paste(x, collapse = ""),
+                                FUN.VALUE = "A"),
+                 c("AB", "AC", "BA", "BC", "CA", "CB"))
+    expect_equal(apply(expand.grid(rep(list(as.complex(1:3 + 1i)), 5)), 1,
+                         function(x) sum(rev(x) / (as.complex(1:5 + 1i)))),
+                 permuteGeneral(as.complex(1:3 + 1i), 5, TRUE,
+                                FUN = function(x) sum(x / (as.complex(1:5 + 1i))),
+                                FUN.VALUE = as.complex(1)))
+    expect_equal(permuteGeneral(as.complex(1:3), FUN = function(x) as.numeric(mean(x)),
+                                FUN.VALUE = 2), rep(2, permuteCount(3)))
+    expect_equal(class(permuteGeneral(c(TRUE, FALSE), 5, TRUE,
+                                      FUN = any, FUN.VALUE = 1L)), "integer")
+
     test <- permuteGeneral(6, 6, lower = 100, constraintFun = "prod")[, 7]
     expect_equal(as.vector(test), unlist(permuteGeneral(6, 6, lower = 100, FUN = prod)))
 
@@ -298,7 +326,8 @@ test_that("permuteGeneral produces correct results with use of FUN", {
 
     test <- permuteGeneral(10, 4, TRUE)
     testFun <- apply(test, 1, function(x) mean(x) * 2)
-    expect_equal(testFun, unlist(permuteGeneral(10, 4, T, FUN = function(x) {mean(x) * 2})))
+    expect_equal(testFun, unlist(permuteGeneral(10, 4, T,
+                                                FUN = function(x) {mean(x) * 2})))
 
     test <- permuteGeneral(8, 4, freqs = rep(1:4, 2))
     testFun <- lapply(1:nrow(test), function(x) cumsum(test[x, ]))

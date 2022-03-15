@@ -5,22 +5,19 @@
 <meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>High Performance Tools for Combinatorics and Computational
-        Mathematics • RcppAlgos</title>
+<title>High Performance Tools for Combinatorics and Computational Mathematics • RcppAlgos</title>
 <!-- jquery --><script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script><!-- Bootstrap --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.4.1/css/bootstrap.min.css" integrity="sha256-bZLfwXAP04zRMK2BjiO8iu9pf4FbLqX6zitd+tIvLhE=" crossorigin="anonymous">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.4.1/js/bootstrap.min.js" integrity="sha256-nuL8/2cJ5NDSSwnKD8VqreErSWHtnEP9E7AySL+1ev4=" crossorigin="anonymous"></script><!-- bootstrap-toc --><link rel="stylesheet" href="bootstrap-toc.css">
 <script src="bootstrap-toc.js"></script><!-- Font Awesome icons --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/all.min.css" integrity="sha256-mmgLkCYLUQbXn0B1SRqzHar6dCnv9oZFPEC1g1cwlkk=" crossorigin="anonymous">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/v4-shims.min.css" integrity="sha256-wZjR52fzng1pJHwx4aV2AO3yyTOXrcDW7jBpJtTwVxw=" crossorigin="anonymous">
 <!-- clipboard.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.6/clipboard.min.js" integrity="sha256-inc5kl9MA1hkeYUt+EC3BhlIgyp/2jDIyBLS6k3UxPI=" crossorigin="anonymous"></script><!-- headroom.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/headroom.min.js" integrity="sha256-AsUX4SJE1+yuDu5+mAVzJbuYNPHj/WroHuZ8Ir/CkE0=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/jQuery.headroom.min.js" integrity="sha256-ZX/yNShbjqsohH1k95liqY9Gd8uOiE1S4vZc+9KQ1K4=" crossorigin="anonymous"></script><!-- pkgdown --><link href="pkgdown.css" rel="stylesheet">
-<script src="pkgdown.js"></script><meta property="og:title" content="High Performance Tools for Combinatorics and Computational
-        Mathematics">
+<script src="pkgdown.js"></script><meta property="og:title" content="High Performance Tools for Combinatorics and Computational Mathematics">
 <meta property="og:description" content="Provides optimized functions and flexible combinatorial iterators
-    implemented in C++ with Rcpp for solving problems in combinatorics and
-    computational mathematics. Utilizes parallel programming via RcppThread
-    for maximal performance. Also makes use of the RMatrix class from the
-    RcppParallel library. There are combination/permutation functions with
+    implemented in C++ for solving problems in combinatorics and
+    computational mathematics. Utilizes the RMatrix class from RcppParallel
+    for thread safety. There are combination/permutation functions with
     constraint parameters that allow for generation of all results of a vector
-    meeting specific criteria (e.g. generating integer partitions/compositions
+    meeting specific criteria (e.g. generating integer partitions
     or finding all combinations such that the sum is between two bounds).
     Capable of generating specific combinations/permutations (e.g. retrieve
     only the nth lexicographical result) which sets up nicely for
@@ -54,7 +51,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="index.html">RcppAlgos</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">2.4.3</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">2.5.0</span>
       </span>
     </div>
 
@@ -71,7 +68,7 @@
   </a>
   <ul class="dropdown-menu" role="menu">
 <li>
-      <a href="articles/CombPermConstraints.html">Constraints, Integer Partitions, and Compositions</a>
+      <a href="articles/CombPermConstraints.html">Constraints and Integer Partitions</a>
     </li>
     <li>
       <a href="articles/CombinatorialSampling.html">Combinatorial Sampling</a>
@@ -87,6 +84,9 @@
     </li>
     <li>
       <a href="articles/HighPerformanceBenchmarks.html">High Performance Benchmarks</a>
+    </li>
+    <li>
+      <a href="articles/OtherCombinatorics.html">Cartesian Products and Partitions of Groups into Equal Size</a>
     </li>
     <li>
       <a href="articles/SubsetSum.html">Attacking Problems Related to the Subset Sum Problem</a>
@@ -121,7 +121,7 @@
 </h1></div>
 <!-- badges: start -->
 
-<p>A collection of high performance functions implemented in C++ with Rcpp for solving problems in combinatorics and computational mathematics. Utilizes the <a href="https://github.com/tnagler/RcppThread" class="external-link">RcppThread</a> library for easy access to thread safe multithreading. We also make use of the <a href="https://github.com/RcppCore/RcppParallel/blob/master/inst/include/RcppParallel/RMatrix.h" class="external-link">RMatrix.h</a> header file from <a href="https://github.com/RcppCore/RcppParallel" class="external-link">RcppParallel</a> for thread safe accessors for Rcpp matrices.</p>
+<p>A collection of high performance functions implemented in C++ for solving problems in combinatorics and computational mathematics.</p>
 <div class="section level2">
 <h2 id="featured-functions">Featured Functions<a class="anchor" aria-label="anchor" href="#featured-functions"></a>
 </h2>
@@ -129,9 +129,11 @@
 <li>
 <strong><code>comboGeneral/permuteGeneral</code></strong>: Generate all combinations/permutations of a vector (including <a href="https://en.wikipedia.org/wiki/Multiset" class="external-link">multisets</a>) meeting specific criteria.</li>
 <li>
-<strong><code>comboSample/permuteSample</code></strong>: Generate reproducible random samples of combinations/permutations</li>
+<strong><code>partitionsGeneral</code></strong>: Efficient algorithms for partitioning numbers under various constraints</li>
 <li>
-<strong><code>comboIter/permuteIter</code></strong>: Flexible iterators allow for bidirectional iteration as well as random access.</li>
+<strong><code>comboSample/permuteSample/partitionsSample</code></strong>: Generate reproducible random samples of combinations/permutations/partitions</li>
+<li>
+<strong><code>comboIter/permuteIter/partitionsIter</code></strong>: Flexible iterators allow for bidirectional iteration as well as random access.</li>
 <li>
 <strong><code>primeSieve</code></strong>: Fast prime number generator</li>
 <li>
@@ -160,70 +162,92 @@
 <div class="section level2">
 <h2 id="basic-usage">Basic Usage<a class="anchor" aria-label="anchor" href="#basic-usage"></a>
 </h2>
-<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="do">## Generate prime numbers</span></span>
-<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="fu">primeSieve</span>(<span class="dv">50</span>, <span class="dv">100</span>)</span>
-<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>[<span class="dv">1</span>] <span class="dv">53</span> <span class="dv">59</span> <span class="dv">61</span> <span class="dv">67</span> <span class="dv">71</span> <span class="dv">73</span> <span class="dv">79</span> <span class="dv">83</span> <span class="dv">89</span> <span class="dv">97</span></span>
-<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a><span class="do">## Count prime numbers less than n</span></span>
-<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a><span class="fu">primeCount</span>(<span class="fl">1e10</span>)</span>
-<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>[<span class="dv">1</span>] <span class="dv">455052511</span></span>
-<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a><span class="do">## Find all 3-tuples combinations of 1:4</span></span>
-<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a><span class="fu">comboGeneral</span>(<span class="dv">4</span>, <span class="dv">3</span>)</span>
-<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a>     [,<span class="dv">1</span>] [,<span class="dv">2</span>] [,<span class="dv">3</span>]</span>
-<span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a>[<span class="dv">1</span>,]   <span class="dv">1</span>    <span class="dv">2</span>    <span class="dv">3</span></span>
-<span id="cb2-15"><a href="#cb2-15" aria-hidden="true" tabindex="-1"></a>[<span class="dv">2</span>,]   <span class="dv">1</span>    <span class="dv">2</span>    <span class="dv">4</span></span>
-<span id="cb2-16"><a href="#cb2-16" aria-hidden="true" tabindex="-1"></a>[<span class="dv">3</span>,]   <span class="dv">1</span>    <span class="dv">3</span>    <span class="dv">4</span></span>
-<span id="cb2-17"><a href="#cb2-17" aria-hidden="true" tabindex="-1"></a>[<span class="dv">4</span>,]   <span class="dv">2</span>    <span class="dv">3</span>    <span class="dv">4</span></span>
-<span id="cb2-18"><a href="#cb2-18" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-19"><a href="#cb2-19" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-20"><a href="#cb2-20" aria-hidden="true" tabindex="-1"></a><span class="do">## Alternatively, iterate over combinations</span></span>
-<span id="cb2-21"><a href="#cb2-21" aria-hidden="true" tabindex="-1"></a>a <span class="ot">=</span> <span class="fu">comboIter</span>(<span class="dv">4</span>, <span class="dv">3</span>)</span>
-<span id="cb2-22"><a href="#cb2-22" aria-hidden="true" tabindex="-1"></a>a<span class="sc">$</span><span class="fu">nextIter</span>()</span>
-<span id="cb2-23"><a href="#cb2-23" aria-hidden="true" tabindex="-1"></a>[<span class="dv">1</span>] <span class="dv">1</span> <span class="dv">2</span> <span class="dv">3</span></span>
-<span id="cb2-24"><a href="#cb2-24" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-25"><a href="#cb2-25" aria-hidden="true" tabindex="-1"></a>a<span class="sc">$</span><span class="fu">back</span>()</span>
-<span id="cb2-26"><a href="#cb2-26" aria-hidden="true" tabindex="-1"></a>[<span class="dv">1</span>] <span class="dv">2</span> <span class="dv">3</span> <span class="dv">4</span></span>
-<span id="cb2-27"><a href="#cb2-27" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-28"><a href="#cb2-28" aria-hidden="true" tabindex="-1"></a>a[[<span class="dv">2</span>]]</span>
-<span id="cb2-29"><a href="#cb2-29" aria-hidden="true" tabindex="-1"></a>[<span class="dv">1</span>] <span class="dv">1</span> <span class="dv">2</span> <span class="dv">4</span></span>
-<span id="cb2-30"><a href="#cb2-30" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-31"><a href="#cb2-31" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-32"><a href="#cb2-32" aria-hidden="true" tabindex="-1"></a><span class="do">## Pass any atomic type vector</span></span>
-<span id="cb2-33"><a href="#cb2-33" aria-hidden="true" tabindex="-1"></a><span class="fu">permuteGeneral</span>(letters, <span class="dv">3</span>, <span class="at">upper =</span> <span class="dv">4</span>)</span>
-<span id="cb2-34"><a href="#cb2-34" aria-hidden="true" tabindex="-1"></a>     [,<span class="dv">1</span>] [,<span class="dv">2</span>] [,<span class="dv">3</span>]</span>
-<span id="cb2-35"><a href="#cb2-35" aria-hidden="true" tabindex="-1"></a>[<span class="dv">1</span>,] <span class="st">"a"</span>  <span class="st">"b"</span>  <span class="st">"c"</span></span>
-<span id="cb2-36"><a href="#cb2-36" aria-hidden="true" tabindex="-1"></a>[<span class="dv">2</span>,] <span class="st">"a"</span>  <span class="st">"b"</span>  <span class="st">"d"</span></span>
-<span id="cb2-37"><a href="#cb2-37" aria-hidden="true" tabindex="-1"></a>[<span class="dv">3</span>,] <span class="st">"a"</span>  <span class="st">"b"</span>  <span class="st">"e"</span></span>
-<span id="cb2-38"><a href="#cb2-38" aria-hidden="true" tabindex="-1"></a>[<span class="dv">4</span>,] <span class="st">"a"</span>  <span class="st">"b"</span>  <span class="st">"f"</span></span>
-<span id="cb2-39"><a href="#cb2-39" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-40"><a href="#cb2-40" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-41"><a href="#cb2-41" aria-hidden="true" tabindex="-1"></a><span class="do">## Generate a reproducible sample</span></span>
-<span id="cb2-42"><a href="#cb2-42" aria-hidden="true" tabindex="-1"></a><span class="fu">comboSample</span>(<span class="dv">10</span>, <span class="dv">8</span>, <span class="cn">TRUE</span>, <span class="at">n =</span> <span class="dv">5</span>, <span class="at">seed =</span> <span class="dv">84</span>)</span>
-<span id="cb2-43"><a href="#cb2-43" aria-hidden="true" tabindex="-1"></a>     [,<span class="dv">1</span>] [,<span class="dv">2</span>] [,<span class="dv">3</span>] [,<span class="dv">4</span>] [,<span class="dv">5</span>] [,<span class="dv">6</span>] [,<span class="dv">7</span>] [,<span class="dv">8</span>]</span>
-<span id="cb2-44"><a href="#cb2-44" aria-hidden="true" tabindex="-1"></a>[<span class="dv">1</span>,]    <span class="dv">3</span>    <span class="dv">3</span>    <span class="dv">3</span>    <span class="dv">6</span>    <span class="dv">6</span>   <span class="dv">10</span>   <span class="dv">10</span>   <span class="dv">10</span></span>
-<span id="cb2-45"><a href="#cb2-45" aria-hidden="true" tabindex="-1"></a>[<span class="dv">2</span>,]    <span class="dv">1</span>    <span class="dv">3</span>    <span class="dv">3</span>    <span class="dv">4</span>    <span class="dv">4</span>    <span class="dv">7</span>    <span class="dv">9</span>   <span class="dv">10</span></span>
-<span id="cb2-46"><a href="#cb2-46" aria-hidden="true" tabindex="-1"></a>[<span class="dv">3</span>,]    <span class="dv">3</span>    <span class="dv">7</span>    <span class="dv">7</span>    <span class="dv">7</span>    <span class="dv">9</span>   <span class="dv">10</span>   <span class="dv">10</span>   <span class="dv">10</span></span>
-<span id="cb2-47"><a href="#cb2-47" aria-hidden="true" tabindex="-1"></a>[<span class="dv">4</span>,]    <span class="dv">3</span>    <span class="dv">3</span>    <span class="dv">3</span>    <span class="dv">9</span>   <span class="dv">10</span>   <span class="dv">10</span>   <span class="dv">10</span>   <span class="dv">10</span></span>
-<span id="cb2-48"><a href="#cb2-48" aria-hidden="true" tabindex="-1"></a>[<span class="dv">5</span>,]    <span class="dv">1</span>    <span class="dv">2</span>    <span class="dv">2</span>    <span class="dv">3</span>    <span class="dv">3</span>    <span class="dv">4</span>    <span class="dv">4</span>    <span class="dv">7</span></span>
-<span id="cb2-49"><a href="#cb2-49" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-50"><a href="#cb2-50" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-51"><a href="#cb2-51" aria-hidden="true" tabindex="-1"></a><span class="do">## Get combinations such that the product is between</span></span>
-<span id="cb2-52"><a href="#cb2-52" aria-hidden="true" tabindex="-1"></a><span class="do">## 3600 and 4000 (including 3600 but not 4000)</span></span>
-<span id="cb2-53"><a href="#cb2-53" aria-hidden="true" tabindex="-1"></a><span class="fu">comboGeneral</span>(<span class="dv">5</span>, <span class="dv">7</span>, <span class="cn">TRUE</span>, <span class="at">constraintFun =</span> <span class="st">"prod"</span>,</span>
-<span id="cb2-54"><a href="#cb2-54" aria-hidden="true" tabindex="-1"></a>             <span class="at">comparisonFun =</span> <span class="fu">c</span>(<span class="st">"&gt;="</span>,<span class="st">"&lt;"</span>),</span>
-<span id="cb2-55"><a href="#cb2-55" aria-hidden="true" tabindex="-1"></a>             <span class="at">limitConstraints =</span> <span class="fu">c</span>(<span class="dv">3600</span>, <span class="dv">4000</span>),</span>
-<span id="cb2-56"><a href="#cb2-56" aria-hidden="true" tabindex="-1"></a>             <span class="at">keepResults =</span> <span class="cn">TRUE</span>)</span>
-<span id="cb2-57"><a href="#cb2-57" aria-hidden="true" tabindex="-1"></a>     [,<span class="dv">1</span>] [,<span class="dv">2</span>] [,<span class="dv">3</span>] [,<span class="dv">4</span>] [,<span class="dv">5</span>] [,<span class="dv">6</span>] [,<span class="dv">7</span>] [,<span class="dv">8</span>]</span>
-<span id="cb2-58"><a href="#cb2-58" aria-hidden="true" tabindex="-1"></a>[<span class="dv">1</span>,]    <span class="dv">1</span>    <span class="dv">2</span>    <span class="dv">3</span>    <span class="dv">5</span>    <span class="dv">5</span>    <span class="dv">5</span>    <span class="dv">5</span> <span class="dv">3750</span></span>
-<span id="cb2-59"><a href="#cb2-59" aria-hidden="true" tabindex="-1"></a>[<span class="dv">2</span>,]    <span class="dv">1</span>    <span class="dv">3</span>    <span class="dv">3</span>    <span class="dv">4</span>    <span class="dv">4</span>    <span class="dv">5</span>    <span class="dv">5</span> <span class="dv">3600</span></span>
-<span id="cb2-60"><a href="#cb2-60" aria-hidden="true" tabindex="-1"></a>[<span class="dv">3</span>,]    <span class="dv">1</span>    <span class="dv">3</span>    <span class="dv">4</span>    <span class="dv">4</span>    <span class="dv">4</span>    <span class="dv">4</span>    <span class="dv">5</span> <span class="dv">3840</span></span>
-<span id="cb2-61"><a href="#cb2-61" aria-hidden="true" tabindex="-1"></a>[<span class="dv">4</span>,]    <span class="dv">2</span>    <span class="dv">2</span>    <span class="dv">3</span>    <span class="dv">3</span>    <span class="dv">4</span>    <span class="dv">5</span>    <span class="dv">5</span> <span class="dv">3600</span></span>
-<span id="cb2-62"><a href="#cb2-62" aria-hidden="true" tabindex="-1"></a>[<span class="dv">5</span>,]    <span class="dv">2</span>    <span class="dv">2</span>    <span class="dv">3</span>    <span class="dv">4</span>    <span class="dv">4</span>    <span class="dv">4</span>    <span class="dv">5</span> <span class="dv">3840</span></span>
-<span id="cb2-63"><a href="#cb2-63" aria-hidden="true" tabindex="-1"></a>[<span class="dv">6</span>,]    <span class="dv">3</span>    <span class="dv">3</span>    <span class="dv">3</span>    <span class="dv">3</span>    <span class="dv">3</span>    <span class="dv">3</span>    <span class="dv">5</span> <span class="dv">3645</span></span>
-<span id="cb2-64"><a href="#cb2-64" aria-hidden="true" tabindex="-1"></a>[<span class="dv">7</span>,]    <span class="dv">3</span>    <span class="dv">3</span>    <span class="dv">3</span>    <span class="dv">3</span>    <span class="dv">3</span>    <span class="dv">4</span>    <span class="dv">4</span> <span class="dv">3888</span></span></code></pre></div>
+<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="co">## Generate prime numbers</span>
+<span class="fu"><a href="reference/primeSieve.html">primeSieve</a></span><span class="op">(</span><span class="fl">50</span><span class="op">)</span>
+<span class="co"># [1]  2  3  5  7 11 13 17 19 23 29 31 37 41 43 47</span>
+
+<span class="co">## Many of the functions can produce results in</span>
+<span class="co">## parallel for even greater performance</span>
+<span class="va">p</span> <span class="op">=</span> <span class="fu"><a href="reference/primeSieve.html">primeSieve</a></span><span class="op">(</span><span class="fl">1e15</span>, <span class="fl">1e15</span> <span class="op">+</span> <span class="fl">1e8</span>, nThreads <span class="op">=</span> <span class="fl">4</span><span class="op">)</span>
+
+<span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">p</span><span class="op">)</span>
+<span class="co"># [1] 1000000000000037 1000000000000091 1000000000000159</span>
+<span class="co"># [4] 1000000000000187 1000000000000223 1000000000000241</span>
+<span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">tail</a></span><span class="op">(</span><span class="va">p</span><span class="op">)</span>
+<span class="co"># [1] 1000000099999847 1000000099999867 1000000099999907</span>
+<span class="co"># [4] 1000000099999919 1000000099999931 1000000099999963</span>
+
+
+<span class="co">## Count prime numbers less than n</span>
+<span class="fu"><a href="reference/primeCount.html">primeCount</a></span><span class="op">(</span><span class="fl">1e10</span><span class="op">)</span>
+<span class="co"># [1] 455052511</span>
+
+
+<span class="co">## Find all 3-tuples combinations of 1:4</span>
+<span class="fu"><a href="reference/combinatoricsGeneral.html">comboGeneral</a></span><span class="op">(</span><span class="fl">4</span>, <span class="fl">3</span><span class="op">)</span>
+<span class="co">#      [,1] [,2] [,3]</span>
+<span class="co"># [1,]   1    2    3</span>
+<span class="co"># [2,]   1    2    4</span>
+<span class="co"># [3,]   1    3    4</span>
+<span class="co"># [4,]   2    3    4</span>
+
+
+<span class="co">## Alternatively, iterate over combinations</span>
+<span class="va">a</span> <span class="op">=</span> <span class="fu"><a href="reference/combinatoricsIterator.html">comboIter</a></span><span class="op">(</span><span class="fl">4</span>, <span class="fl">3</span><span class="op">)</span>
+<span class="va">a</span><span class="op">$</span><span class="fu">nextIter</span><span class="op">(</span><span class="op">)</span>
+<span class="co"># [1] 1 2 3</span>
+
+<span class="va">a</span><span class="op">$</span><span class="fu">back</span><span class="op">(</span><span class="op">)</span>
+<span class="co"># [1] 2 3 4</span>
+
+<span class="va">a</span><span class="op">[[</span><span class="fl">2</span><span class="op">]</span><span class="op">]</span>
+<span class="co"># [1] 1 2 4</span>
+
+
+<span class="co">## Pass any atomic type vector</span>
+<span class="fu"><a href="reference/combinatoricsGeneral.html">permuteGeneral</a></span><span class="op">(</span><span class="va">letters</span>, <span class="fl">3</span>, upper <span class="op">=</span> <span class="fl">4</span><span class="op">)</span>
+<span class="co">#      [,1] [,2] [,3]</span>
+<span class="co"># [1,] "a"  "b"  "c"</span>
+<span class="co"># [2,] "a"  "b"  "d"</span>
+<span class="co"># [3,] "a"  "b"  "e"</span>
+<span class="co"># [4,] "a"  "b"  "f"</span>
+
+
+<span class="co">## Flexible partitioning algorithms</span>
+<span class="fu"><a href="reference/partitionsGeneral.html">partitionsGeneral</a></span><span class="op">(</span><span class="fl">0</span><span class="op">:</span><span class="fl">5</span>, <span class="fl">3</span>, freqs <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fl">1</span><span class="op">:</span><span class="fl">2</span>, <span class="fl">3</span><span class="op">)</span>, target <span class="op">=</span> <span class="fl">6</span><span class="op">)</span>
+<span class="co">#      [,1] [,2] [,3]</span>
+<span class="co"># [1,]    0    1    5</span>
+<span class="co"># [2,]    0    2    4</span>
+<span class="co"># [3,]    0    3    3</span>
+<span class="co"># [4,]    1    1    4</span>
+<span class="co"># [5,]    1    2    3</span>
+
+
+<span class="co">## Generate a reproducible sample</span>
+<span class="fu"><a href="reference/combinatoricsSample.html">comboSample</a></span><span class="op">(</span><span class="fl">10</span>, <span class="fl">8</span>, <span class="cn">TRUE</span>, n <span class="op">=</span> <span class="fl">5</span>, seed <span class="op">=</span> <span class="fl">84</span><span class="op">)</span>
+<span class="co">#      [,1] [,2] [,3] [,4] [,5] [,6] [,7] [,8]</span>
+<span class="co"># [1,]    3    3    3    6    6   10   10   10</span>
+<span class="co"># [2,]    1    3    3    4    4    7    9   10</span>
+<span class="co"># [3,]    3    7    7    7    9   10   10   10</span>
+<span class="co"># [4,]    3    3    3    9   10   10   10   10</span>
+<span class="co"># [5,]    1    2    2    3    3    4    4    7</span>
+
+
+<span class="co">## Get combinations such that the product is between</span>
+<span class="co">## 3600 and 4000 (including 3600 but not 4000)</span>
+<span class="fu"><a href="reference/combinatoricsGeneral.html">comboGeneral</a></span><span class="op">(</span><span class="fl">5</span>, <span class="fl">7</span>, <span class="cn">TRUE</span>, constraintFun <span class="op">=</span> <span class="st">"prod"</span>,
+             comparisonFun <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"&gt;="</span>,<span class="st">"&lt;"</span><span class="op">)</span>,
+             limitConstraints <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">3600</span>, <span class="fl">4000</span><span class="op">)</span>,
+             keepResults <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>
+<span class="co">#      [,1] [,2] [,3] [,4] [,5] [,6] [,7] [,8]</span>
+<span class="co"># [1,]    1    2    3    5    5    5    5 3750</span>
+<span class="co"># [2,]    1    3    3    4    4    5    5 3600</span>
+<span class="co"># [3,]    1    3    4    4    4    4    5 3840</span>
+<span class="co"># [4,]    2    2    3    3    4    5    5 3600</span>
+<span class="co"># [5,]    2    2    3    4    4    4    5 3840</span>
+<span class="co"># [6,]    3    3    3    3    3    3    5 3645</span>
+<span class="co"># [7,]    3    3    3    3    3    4    4 3888</span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="further-reading">Further Reading<a class="anchor" aria-label="anchor" href="#further-reading"></a>
@@ -233,15 +257,20 @@
 <li><a href="https://jwood000.github.io/RcppAlgos/articles/ComputationalMathematics.html" class="external-link">Computational Mathematics Overview</a></li>
 <li><a href="https://jwood000.github.io/RcppAlgos/articles/GeneralCombinatorics.html" class="external-link">Combination and Permutation Basics</a></li>
 <li><a href="https://jwood000.github.io/RcppAlgos/articles/CombinatorialSampling.html" class="external-link">Combinatorial Sampling</a></li>
-<li><a href="https://jwood000.github.io/RcppAlgos/articles/CombPermConstraints.html" class="external-link">Constraints, Integer Partitions, and Compositions</a></li>
+<li><a href="https://jwood000.github.io/RcppAlgos/articles/CombPermConstraints.html" class="external-link">Constraints and Integer Partitions</a></li>
 <li><a href="https://jwood000.github.io/RcppAlgos/articles/SubsetSum.html" class="external-link">Attacking Problems Related to the Subset Sum Problem</a></li>
 <li><a href="https://jwood000.github.io/RcppAlgos/articles/CombinatoricsIterators.html" class="external-link">Combinatorial Iterators in RcppAlgos</a></li>
 </ul>
 </div>
 <div class="section level2">
+<h2 id="why-rcppalgos-but-no-rcpp">Why <strong><code>RcppAlgos</code></strong> but no <strong><code>Rcpp</code></strong>?<a class="anchor" aria-label="anchor" href="#why-rcppalgos-but-no-rcpp"></a>
+</h2>
+<p>Previous versions of <code>RcppAlgos</code> relied on <a href="https://github.com/RcppCore/Rcpp" class="external-link">Rcpp</a> to ease the burden of exposing C++ to R. While the current version of <code>RcppAlgos</code> does not utilize <code>Rcpp</code>, it would not be possible without the myriad of excellent contributions to <code>Rcpp</code>.</p>
+</div>
+<div class="section level2">
 <h2 id="contact">Contact<a class="anchor" aria-label="anchor" href="#contact"></a>
 </h2>
-<p>I welcome any and all feedback. If you would like to report a bug, have a question, or have suggestions for possible improvements, please file an <a href="https://github.com/jwood000/RcppAlgos/issues" class="external-link">issue</a>.</p>
+<p>If you would like to report a bug, have a question, or have suggestions for possible improvements, please file an <a href="https://github.com/jwood000/RcppAlgos/issues" class="external-link">issue</a>.</p>
 </div>
 </div>
   </div>
@@ -283,8 +312,8 @@
 <ul class="list-unstyled">
 <li><a href="https://github.com/jwood000/RcppAlgos/actions" class="external-link"><img src="https://github.com/jwood000/RcppAlgos/workflows/R-CMD-check/badge.svg" alt="R build status"></a></li>
 <li><a href="https://cran.r-project.org/package=RcppAlgos" class="external-link"><img src="https://www.r-pkg.org/badges/version/RcppAlgos" alt="CRAN status"></a></li>
-<li><a href="https://codecov.io/github/jwood000/RcppAlgos?branch=main" class="external-link"><img src="https://codecov.io/gh/jwood000/RcppAlgos/branch/main/graph/badge.svg" alt="Coverage status"></a></li>
-<li><a href="https://app.codacy.com/app/jwood000/RcppAlgos?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=jwood000/RcppAlgos&amp;utm_campaign=Badge_Grade_Settings" class="external-link"><img src="https://api.codacy.com/project/badge/Grade/47c85553b9bd4479a722857c1f2fdcf3" alt="Codacy Badge"></a></li>
+<li><a href="https://codecov.io/github/jwood000/RcppAlgos?branch=master" class="external-link"><img src="https://codecov.io/gh/jwood000/RcppAlgos/branch/master/graph/badge.svg" alt="Coverage status"></a></li>
+<li><a href="https://app.codacy.com/gh/jwood000/RcppAlgos/dashboard?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=jwood000/RcppAlgos&amp;utm_campaign=Badge_Grade" class="external-link"><img src="https://app.codacy.com/project/badge/Grade/e7fef773f6514aa4a2decda9adf57ae8" alt="Codacy Badge"></a></li>
 <li><a href="https://cran.r-project.org/package=RcppAlgos" class="external-link"><img src="https://tinyverse.netlify.com/badge/RcppAlgos" alt="Dependencies"></a></li>
 </ul>
 </div>

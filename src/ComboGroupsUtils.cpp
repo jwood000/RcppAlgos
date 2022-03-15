@@ -1,12 +1,23 @@
-#include "GmpDependUtils.h"
+#include "Combinations/NthCombination.h"
+#include "Combinations/BigComboCount.h"
+#include "Combinations/ComboCount.h"
+#include <algorithm> // std::sort
+#include <numeric>   // std::iota
+#include <cstdint>
+#include <limits>
+#include <vector>
+#include <cmath>
+#include <gmp.h>
 
 // ******* Overview of the Crucial Part of the Algorithm *******
 // -------------------------------------------------------------
-// last1 is one plus the upper bound in the previous section, so to obtain the current
-// current upper bound, we must first add the size of a section (i.e. grpSize) and su-
-// bstract one. We can now compute the length we need to reset v by subtracting idx1. E.g.
+// last1 is one plus the upper bound in the previous section, so to obtain
+// the current current upper bound, we must first add the size of a section
+// (i.e. grpSize) and substract one. We can now compute the length we need
+// to reset v by subtracting idx1. E.g.
 //
-// Given a portion of v w/ s1 = 9, gSize = 4, idx1 = 9, 6 groups (24 subjects) and base 0:
+// Given a portion of v w/ s1 = 9, gSize = 4, idx1 = 9, 6 groups
+// (24 subjects) and base 0:
 //
 //              prev sections   bound (index = 8)
 //                  /  \        |
@@ -30,11 +41,12 @@
 //
 //                      ... 8 | 9 13 __ __ | 10 11 12 14 | 15 16 ...
 //
-// Identify and move indices that are successively incrementing values of v past idx1:
-//
+// Identify and move indices that are successively incrementing values of
+// v past idx1:
 //                      ... 8 | 9 13 14 15 | 10 11 12 16 | 17 ...
 //
-// The last two steps are accomplished with std::rotate. This completes the algorithm.
+// The last two steps are accomplished with std::rotate.
+// This completes the algorithm.
 
 bool nextComboGroup(std::vector<int> &z, int nGrps,
                     int grpSize, int idx1, int idx2, int last1) {
@@ -120,35 +132,41 @@ void numGroupCombsGmp(mpz_t result, int n,
 std::vector<int> nthComboGroup(int n, int gSize, int r,
                                double myIndex, double total) {
 
-    double ind1 = myIndex, ind2 = myIndex;
     int s = n - 1;
     const int g = gSize - 1;
-    int temp = static_cast<int>(nChooseK(s, g));
-    int secLen = total / temp;
+    std::int64_t temp   = static_cast<std::int64_t>(nChooseK(s, g));
+    std::int64_t secLen = static_cast<std::int64_t>(total) / temp;
 
-    std::vector<int> res(n, 0);
-    std::vector<int> v(s);
+    std::vector<int>  res(n, 0);
+    std::vector<char> idx_used(n, 0);
+    std::vector<int>  v(s);
     std::iota(v.begin(), v.end(), 1);
 
     int myMin = 0;
+    std::int64_t ind1 = myIndex;
+    std::int64_t ind2 = myIndex;
+
     mpz_t mpzDefault;
     mpz_init(mpzDefault);
 
     for (int j = 0; j < (r - 1); ++j) {
-        ind2 = std::floor(ind2 / secLen);
-        res[j * gSize] = myMin;
-        const std::vector<int> comb = nthComb(s, g, ind2, mpzDefault, v);
+        ind2 = ind2 / secLen;
+        res[j * gSize]  = myMin;
+        idx_used[myMin] = 1;
+        const std::vector<int> comb = (g == 1) ? std::vector<int>(1, ind2) :
+            nthComb(s, g, ind2, mpzDefault, v);
 
-        for (int k = j * gSize + 1, i = 0; k < ((j + 1) * gSize); ++k, ++i)
+        for (int k = j * gSize + 1, i = 0; i < g; ++k, ++i) {
             res[k] = v[comb[i]];
+            idx_used[res[k]] = 1;
+        }
 
         v.clear();
 
-        for (int i = 1; i <= n; ++i) {
-            const auto it = std::find(res.begin(), res.end(), i);
-
-            if (it == res.end())
+        for (int i = 1; i < n; ++i) {
+            if (!idx_used[i]) {
                 v.push_back(i);
+            }
         }
 
         myMin = v.front();
@@ -157,35 +175,43 @@ std::vector<int> nthComboGroup(int n, int gSize, int r,
         ind2 = ind1;
 
         s -= gSize;
-        temp = static_cast<int>(nChooseK(s, g));
+        temp = nChooseK(s, g);
         secLen /= temp;
     }
 
     res[(r - 1) * gSize] = myMin;
 
-    for (int k = (r - 1) * gSize + 1, i = 0; k < (r * gSize); ++k, ++i)
+    for (int k = (r - 1) * gSize + 1, i = 0; i < g; ++k, ++i) {
         res[k] = v[i];
+    }
 
+    mpz_clear(mpzDefault);
     return res;
 }
 
 std::vector<int> nthComboGroupGmp(int n, int gSize, int r,
                                   mpz_t lowerMpz, mpz_t computedRowMpz) {
-    mpz_t ind1, ind2;
-    mpz_init(ind1); mpz_init(ind2);
-    mpz_set(ind1, lowerMpz); mpz_set(ind2, lowerMpz);
+    mpz_t ind1;
+    mpz_t ind2;
+
+    mpz_init_set(ind1, lowerMpz);
+    mpz_init_set(ind2, lowerMpz);
 
     int s = n - 1;
     const int g = gSize - 1;
 
-    mpz_t temp, secLen;
-    mpz_init(temp); mpz_init(secLen);
+    mpz_t temp;
+    mpz_t secLen;
+
+    mpz_init(temp);
+    mpz_init(secLen);
 
     nChooseKGmp(temp, s, g);
     mpz_divexact(secLen, computedRowMpz, temp);
 
-    std::vector<int> res(n, 0);
-    std::vector<int> v(s);
+    std::vector<int>  res(n, 0);
+    std::vector<char> idx_used(n, 0);
+    std::vector<int>  v(s);
     std::iota(v.begin(), v.end(), 1);
 
     int myMin = 0;
@@ -194,18 +220,23 @@ std::vector<int> nthComboGroupGmp(int n, int gSize, int r,
     for (int j = 0; j < (r - 1); ++j) {
         mpz_tdiv_q(ind2, ind2, secLen);
         res[j * gSize] = myMin;
-        const std::vector<int> comb = nthCombGmp(s, g, dblDefault, ind2, v);
+        idx_used[myMin] = 1;
 
-        for (int k = j * gSize + 1, i = 0; k < ((j + 1) * gSize); ++k, ++i)
+        const std::vector<int> comb = (g == 1) ?
+            std::vector<int>(1, mpz_get_si(ind2)) :
+            nthCombGmp(s, g, dblDefault, ind2, v);
+
+        for (int k = j * gSize + 1, i = 0; i < g; ++k, ++i) {
             res[k] = v[comb[i]];
+            idx_used[res[k]] = 1;
+        }
 
         v.clear();
 
-        for (int i = 1; i <= n; ++i) {
-            const auto it = std::find(res.begin(), res.end(), i);
-
-            if (it == res.end())
+        for (int i = 1; i < n; ++i) {
+            if (!idx_used[i]) {
                 v.push_back(i);
+            }
         }
 
         myMin = v.front();
@@ -221,8 +252,9 @@ std::vector<int> nthComboGroupGmp(int n, int gSize, int r,
 
     res[(r - 1) * gSize] = myMin;
 
-    for (int k = (r - 1) * gSize + 1, i = 0; k < (r * gSize); ++k, ++i)
+    for (int k = (r - 1) * gSize + 1, i = 0; i < g; ++k, ++i) {
         res[k] = v[i];
+    }
 
     return res;
 }

@@ -22,7 +22,7 @@ GMP support allows for exploration where the number of results is large.
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">RcppAlgos</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">2.4.3</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">2.5.0</span>
       </span>
     </div>
 
@@ -37,7 +37,7 @@ GMP support allows for exploration where the number of results is large.
     <span class="caret"></span>
   </a>
   <ul class="dropdown-menu" role="menu"><li>
-      <a href="../articles/CombPermConstraints.html">Constraints, Integer Partitions, and Compositions</a>
+      <a href="../articles/CombPermConstraints.html">Constraints and Integer Partitions</a>
     </li>
     <li>
       <a href="../articles/CombinatorialSampling.html">Combinatorial Sampling</a>
@@ -53,6 +53,9 @@ GMP support allows for exploration where the number of results is large.
     </li>
     <li>
       <a href="../articles/HighPerformanceBenchmarks.html">High Performance Benchmarks</a>
+    </li>
+    <li>
+      <a href="../articles/OtherCombinatorics.html">Cartesian Products and Partitions of Groups into Equal Size</a>
     </li>
     <li>
       <a href="../articles/SubsetSum.html">Attacking Problems Related to the Subset Sum Problem</a>
@@ -96,7 +99,7 @@ GMP support allows for exploration where the number of results is large.
     <div id="arguments">
     <h2>Arguments</h2>
     <dl><dt>v</dt>
-<dd><p>Source vector. If <code>v</code> is an integer (including nonpositive integers), it will be converted to the sequence <code>1:v</code>. All atomic types are supported (See <code><a href="https://rdrr.io/r/base/is.recursive.html" class="external-link">?is.atomic</a></code>).</p></dd>
+<dd><p>Source vector. If <code>v</code> is a positive integer, it will be converted to the sequence <code>1:v</code>. If <code>v</code> is a negative integer, it will be converted to the sequence <code>v:-1</code>. All atomic types are supported (See <code><a href="https://rdrr.io/r/base/is.recursive.html" class="external-link">is.atomic</a></code>).</p></dd>
 <dt>numGroups</dt>
 <dd><p>An Integer. The number of groups that the vector will be partitioned into. Must divide the length of v (if v is a vector) or v (if v is a scalar).</p></dd>
 <dt>retType</dt>

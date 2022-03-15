@@ -1,17 +1,32 @@
-#include "Eratosthenes.h"
+#include "NumbersUtils/PrimeSieveCount.h"
+#include "NumbersUtils/Eratosthenes.h"
 #include "CleanConvert.h"
 
-// [[Rcpp::export]]
-SEXP EratosthenesRcpp(SEXP Rb1, SEXP Rb2, SEXP RNumThreads, int maxCores, int maxThreads) {
+SEXP PrimeSieveCpp(SEXP Rb1, SEXP Rb2, SEXP RNumThreads,
+                   SEXP RmaxCores, SEXP RmaxThreads) {
 
-    double bound1, bound2;
-    std::int_fast64_t myMax, myMin;
-    CleanConvert::convertPrimitive(Rb1, bound1, "bound1", true, false);
+    double bound1;
+    double bound2;
+
+    std::int_fast64_t myMin;
+    std::int_fast64_t myMax;
+
+    int maxCores = 1;
+    int nThreads = 1;
+    int maxThreads = 1;
+
+    CleanConvert::convertPrimitive(RmaxCores, maxCores,
+                                   VecType::Integer, "maxCores");
+    CleanConvert::convertPrimitive(RmaxThreads, maxThreads,
+                                   VecType::Integer, "maxThreads");
+    CleanConvert::convertPrimitive(Rb1, bound1, VecType::Numeric,
+                                   "bound1", true, false);
 
     if (Rf_isNull(Rb2)) {
         bound2 = 1;
     } else {
-        CleanConvert::convertPrimitive(Rb2, bound2, "bound2", true, false);
+        CleanConvert::convertPrimitive(Rb2, bound2, VecType::Numeric,
+                                       "bound2", true, false);
     }
 
     if (bound1 > bound2) {
@@ -22,8 +37,9 @@ SEXP EratosthenesRcpp(SEXP Rb1, SEXP Rb2, SEXP RNumThreads, int maxCores, int ma
         myMin = static_cast<std::int_fast64_t>(std::ceil(bound1));
     }
 
-    if (myMax <= 1)
-        return Rcpp::IntegerVector();
+    if (myMax <= 1) {
+        return Rf_allocVector(INTSXP, 0);
+    }
 
     if (myMin <= 2) myMin = 1;
 
@@ -31,69 +47,84 @@ SEXP EratosthenesRcpp(SEXP Rb1, SEXP Rb2, SEXP RNumThreads, int maxCores, int ma
         if (myMax % 2) {
             ++myMax;
         } else {
-            if (myMax > std::numeric_limits<int>::max())
-                return Rcpp::NumericVector();
-            else
-                return Rcpp::IntegerVector();
+            if (myMax > std::numeric_limits<int>::max()) {
+                return Rf_allocVector(REALSXP, 0);
+            } else {
+                return Rf_allocVector(INTSXP, 0);
+            }
         }
     }
 
-    int nThreads = 1;
-    if (!Rf_isNull(RNumThreads))
-        CleanConvert::convertPrimitive(RNumThreads, nThreads, "nThreads");
+    if (!Rf_isNull(RNumThreads)) {
+        CleanConvert::convertPrimitive(RNumThreads, nThreads,
+                                       VecType::Integer, "nThreads");
+    }
 
-    std::size_t numPrimes = 0u;
-    std::vector<std::size_t> runningCount;
-    runningCount.push_back(0u);
-    std::size_t numSects = nThreads;
+    int numPrimes = 0;
+    std::vector<int> runningCount;
+
+    runningCount.push_back(0);
+    int numSects = nThreads;
     bool Parallel = false;
 
     if (myMax > std::numeric_limits<int>::max()) {
-        std::vector<std::vector<double>> primeList(numSects, std::vector<double>());
+        std::vector<std::vector<double>> primeList(numSects,
+                                                   std::vector<double>());
         std::vector<double> tempPrimes;
 
-        PrimeSieve::PrimeSieveMaster(myMin, myMax, tempPrimes, primeList,
-                                     Parallel, nThreads, maxThreads, maxCores);
+        PrimeSieve::PrimeSieveMain(primeList, tempPrimes, myMin, myMax,
+                                   Parallel, nThreads, maxThreads, maxCores);
 
         if (Parallel) {
-            for (std::size_t i = 0; i < numSects; ++i) {
+            for (int i = 0; i < numSects; ++i) {
                 numPrimes += primeList[i].size();
                 runningCount.push_back(numPrimes);
             }
 
-            Rcpp::NumericVector primes(numPrimes);
-            Rcpp::NumericVector::iterator priBeg = primes.begin();
+            SEXP res = PROTECT(Rf_allocVector(REALSXP, numPrimes));
+            double* primes = REAL(res);
 
-            for (std::size_t i = 0; i < numSects; ++i)
-                std::move(primeList[i].cbegin(), primeList[i].cend(), priBeg + runningCount[i]);
+            for (int i = 0; i < numSects; ++i) {
+                std::copy(primeList[i].cbegin(), primeList[i].cend(),
+                          primes + runningCount[i]);
+            }
 
-            return primes;
+            UNPROTECT(1);
+            return res;
         } else {
-            Rcpp::NumericVector primes(tempPrimes.cbegin(), tempPrimes.cend());
+            SEXP primes = PROTECT(Rf_allocVector(REALSXP, tempPrimes.size()));
+            std::copy(tempPrimes.cbegin(), tempPrimes.cend(), REAL(primes));
+            UNPROTECT(1);
             return primes;
         }
     } else {
-        std::vector<std::vector<int>> primeList(numSects, std::vector<int>());
+        std::vector<std::vector<int>> primeList(numSects,
+                                                std::vector<int>());
         std::vector<int> tempPrimes;
 
-        PrimeSieve::PrimeSieveMaster(myMin, myMax, tempPrimes, primeList,
-                                     Parallel, nThreads, maxThreads, maxCores);
+        PrimeSieve::PrimeSieveMain(primeList, tempPrimes, myMin, myMax,
+                                   Parallel, nThreads, maxThreads, maxCores);
 
         if (Parallel) {
-            for (std::size_t i = 0; i < numSects; ++i) {
+            for (int i = 0; i < numSects; ++i) {
                 numPrimes += primeList[i].size();
                 runningCount.push_back(numPrimes);
             }
 
-            Rcpp::IntegerVector primes(numPrimes);
-            Rcpp::IntegerVector::iterator priBeg = primes.begin();
+            SEXP res = PROTECT(Rf_allocVector(INTSXP, numPrimes));
+            int* primes = INTEGER(res);
 
-            for (std::size_t i = 0; i < numSects; ++i)
-                std::move(primeList[i].cbegin(), primeList[i].cend(), priBeg + runningCount[i]);
+            for (int i = 0; i < numSects; ++i) {
+                std::copy(primeList[i].cbegin(), primeList[i].cend(),
+                          primes + runningCount[i]);
+            }
 
-            return primes;
+            UNPROTECT(1);
+            return res;
         } else {
-            Rcpp::IntegerVector primes(tempPrimes.cbegin(), tempPrimes.cend());
+            SEXP primes = PROTECT(Rf_allocVector(INTSXP, tempPrimes.size()));
+            std::move(tempPrimes.cbegin(), tempPrimes.cend(), INTEGER(primes));
+            UNPROTECT(1);
             return primes;
         }
     }

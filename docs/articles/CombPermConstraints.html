@@ -5,13 +5,13 @@
 <meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Constraints, Integer Partitions, and Compositions • RcppAlgos</title>
+<title>Constraints and Integer Partitions • RcppAlgos</title>
 <!-- jquery --><script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script><!-- Bootstrap --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.4.1/css/bootstrap.min.css" integrity="sha256-bZLfwXAP04zRMK2BjiO8iu9pf4FbLqX6zitd+tIvLhE=" crossorigin="anonymous">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.4.1/js/bootstrap.min.js" integrity="sha256-nuL8/2cJ5NDSSwnKD8VqreErSWHtnEP9E7AySL+1ev4=" crossorigin="anonymous"></script><!-- bootstrap-toc --><link rel="stylesheet" href="../bootstrap-toc.css">
 <script src="../bootstrap-toc.js"></script><!-- Font Awesome icons --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/all.min.css" integrity="sha256-mmgLkCYLUQbXn0B1SRqzHar6dCnv9oZFPEC1g1cwlkk=" crossorigin="anonymous">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/v4-shims.min.css" integrity="sha256-wZjR52fzng1pJHwx4aV2AO3yyTOXrcDW7jBpJtTwVxw=" crossorigin="anonymous">
 <!-- clipboard.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.6/clipboard.min.js" integrity="sha256-inc5kl9MA1hkeYUt+EC3BhlIgyp/2jDIyBLS6k3UxPI=" crossorigin="anonymous"></script><!-- headroom.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/headroom.min.js" integrity="sha256-AsUX4SJE1+yuDu5+mAVzJbuYNPHj/WroHuZ8Ir/CkE0=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/jQuery.headroom.min.js" integrity="sha256-ZX/yNShbjqsohH1k95liqY9Gd8uOiE1S4vZc+9KQ1K4=" crossorigin="anonymous"></script><!-- pkgdown --><link href="../pkgdown.css" rel="stylesheet">
-<script src="../pkgdown.js"></script><meta property="og:title" content="Constraints, Integer Partitions, and Compositions">
+<script src="../pkgdown.js"></script><meta property="og:title" content="Constraints and Integer Partitions">
 <meta property="og:description" content="RcppAlgos">
 <!-- mathjax --><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js" integrity="sha256-nvJJv9wWKEm88qvoQl9ekL2J+k/RWIsaSScxxlsrv8k=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/config/TeX-AMS-MML_HTMLorMML.js" integrity="sha256-84DKXVJXs0/F8OTMzX4UR909+jtl4G7SPypPavF+GfA=" crossorigin="anonymous"></script><!--[if lt IE 9]>
 <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
@@ -33,7 +33,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">RcppAlgos</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">2.4.3</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">2.5.0</span>
       </span>
     </div>
 
@@ -50,7 +50,7 @@
   </a>
   <ul class="dropdown-menu" role="menu">
 <li>
-      <a href="../articles/CombPermConstraints.html">Constraints, Integer Partitions, and Compositions</a>
+      <a href="../articles/CombPermConstraints.html">Constraints and Integer Partitions</a>
     </li>
     <li>
       <a href="../articles/CombinatorialSampling.html">Combinatorial Sampling</a>
@@ -66,6 +66,9 @@
     </li>
     <li>
       <a href="../articles/HighPerformanceBenchmarks.html">High Performance Benchmarks</a>
+    </li>
+    <li>
+      <a href="../articles/OtherCombinatorics.html">Cartesian Products and Partitions of Groups into Equal Size</a>
     </li>
     <li>
       <a href="../articles/SubsetSum.html">Attacking Problems Related to the Subset Sum Problem</a>
@@ -96,10 +99,10 @@
       </header><div class="row">
   <div class="col-md-9 contents">
     <div class="page-header toc-ignore">
-      <h1 data-toc-skip>Constraints, Integer Partitions, and Compositions</h1>
+      <h1 data-toc-skip>Constraints and Integer Partitions</h1>
                         <h4 data-toc-skip class="author">Joseph Wood</h4>
             
-            <h4 data-toc-skip class="date">10/9/2019</h4>
+            <h4 data-toc-skip class="date">03/13/2022</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/jwood000/RcppAlgos/blob/HEAD/vignettes/CombPermConstraints.Rmd" class="external-link"><code>vignettes/CombPermConstraints.Rmd</code></a></small>
       <div class="hidden name"><code>CombPermConstraints.Rmd</code></div>
@@ -122,76 +125,78 @@
 <li>min</li>
 </ol>
 <p>They are passed as strings to the <code>constraintFun</code> parameter. When these are employed without any other parameters being set, an additional column is added that represents the result of applying the given function to that combination/permutation. You can also set <code>keepResults = TRUE</code> (more on this later).</p>
-<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(RcppAlgos)</span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="do">## base R using combn and FUN</span></span>
-<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>combnSum <span class="ot">&lt;-</span> <span class="fu">combn</span>(<span class="dv">20</span>, <span class="dv">10</span>, sum)</span>
-<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>algosSum <span class="ot">&lt;-</span> <span class="fu">comboGeneral</span>(<span class="dv">20</span>, <span class="dv">10</span>, <span class="at">constraintFun =</span> <span class="st">"sum"</span>)</span>
-<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="do">## Notice the additional column (i.e. the 11th column)</span></span>
-<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(algosSum)</span>
-<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>     [,<span class="dv">1</span>] [,<span class="dv">2</span>] [,<span class="dv">3</span>] [,<span class="dv">4</span>] [,<span class="dv">5</span>] [,<span class="dv">6</span>] [,<span class="dv">7</span>] [,<span class="dv">8</span>] [,<span class="dv">9</span>] [,<span class="dv">10</span>] [,<span class="dv">11</span>]</span>
-<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>[<span class="dv">1</span>,]    <span class="dv">1</span>    <span class="dv">2</span>    <span class="dv">3</span>    <span class="dv">4</span>    <span class="dv">5</span>    <span class="dv">6</span>    <span class="dv">7</span>    <span class="dv">8</span>    <span class="dv">9</span>    <span class="dv">10</span>    <span class="dv">55</span></span>
-<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>[<span class="dv">2</span>,]    <span class="dv">1</span>    <span class="dv">2</span>    <span class="dv">3</span>    <span class="dv">4</span>    <span class="dv">5</span>    <span class="dv">6</span>    <span class="dv">7</span>    <span class="dv">8</span>    <span class="dv">9</span>    <span class="dv">11</span>    <span class="dv">56</span></span>
-<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>[<span class="dv">3</span>,]    <span class="dv">1</span>    <span class="dv">2</span>    <span class="dv">3</span>    <span class="dv">4</span>    <span class="dv">5</span>    <span class="dv">6</span>    <span class="dv">7</span>    <span class="dv">8</span>    <span class="dv">9</span>    <span class="dv">12</span>    <span class="dv">57</span></span>
-<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>[<span class="dv">4</span>,]    <span class="dv">1</span>    <span class="dv">2</span>    <span class="dv">3</span>    <span class="dv">4</span>    <span class="dv">5</span>    <span class="dv">6</span>    <span class="dv">7</span>    <span class="dv">8</span>    <span class="dv">9</span>    <span class="dv">13</span>    <span class="dv">58</span></span>
-<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a>[<span class="dv">5</span>,]    <span class="dv">1</span>    <span class="dv">2</span>    <span class="dv">3</span>    <span class="dv">4</span>    <span class="dv">5</span>    <span class="dv">6</span>    <span class="dv">7</span>    <span class="dv">8</span>    <span class="dv">9</span>    <span class="dv">14</span>    <span class="dv">59</span></span>
-<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a>[<span class="dv">6</span>,]    <span class="dv">1</span>    <span class="dv">2</span>    <span class="dv">3</span>    <span class="dv">4</span>    <span class="dv">5</span>    <span class="dv">6</span>    <span class="dv">7</span>    <span class="dv">8</span>    <span class="dv">9</span>    <span class="dv">15</span>    <span class="dv">60</span></span>
-<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a><span class="fu">identical</span>(<span class="fu">as.integer</span>(combnSum), algosSum[,<span class="dv">11</span>])</span>
-<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a>[<span class="dv">1</span>] <span class="cn">TRUE</span></span>
-<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a><span class="do">## Using parallel</span></span>
-<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a>paralSum <span class="ot">&lt;-</span> <span class="fu">comboGeneral</span>(<span class="dv">20</span>, <span class="dv">10</span>, <span class="at">constraintFun =</span> <span class="st">"sum"</span>, <span class="at">Parallel =</span> <span class="cn">TRUE</span>)</span>
-<span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a><span class="fu">identical</span>(paralSum, algosSum)</span>
-<span id="cb1-22"><a href="#cb1-22" aria-hidden="true" tabindex="-1"></a>[<span class="dv">1</span>] <span class="cn">TRUE</span></span>
-<span id="cb1-23"><a href="#cb1-23" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-24"><a href="#cb1-24" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(microbenchmark)</span>
-<span id="cb1-25"><a href="#cb1-25" aria-hidden="true" tabindex="-1"></a><span class="fu">microbenchmark</span>(<span class="at">serial =</span> <span class="fu">comboGeneral</span>(<span class="dv">20</span>, <span class="dv">10</span>, <span class="at">constraintFun =</span> <span class="st">"sum"</span>),</span>
-<span id="cb1-26"><a href="#cb1-26" aria-hidden="true" tabindex="-1"></a>             <span class="at">parallel =</span> <span class="fu">comboGeneral</span>(<span class="dv">20</span>, <span class="dv">10</span>, <span class="at">constraintFun =</span> <span class="st">"sum"</span>, <span class="at">Parallel =</span> <span class="cn">TRUE</span>),</span>
-<span id="cb1-27"><a href="#cb1-27" aria-hidden="true" tabindex="-1"></a>             <span class="at">combnSum =</span> <span class="fu">combn</span>(<span class="dv">20</span>, <span class="dv">10</span>, sum))</span>
-<span id="cb1-28"><a href="#cb1-28" aria-hidden="true" tabindex="-1"></a>Unit<span class="sc">:</span> milliseconds</span>
-<span id="cb1-29"><a href="#cb1-29" aria-hidden="true" tabindex="-1"></a>     expr        min         lq       mean     median         uq        max neval</span>
-<span id="cb1-30"><a href="#cb1-30" aria-hidden="true" tabindex="-1"></a>   serial   <span class="fl">3.244201</span>   <span class="fl">3.829026</span>   <span class="fl">4.263844</span>   <span class="fl">3.977368</span>   <span class="fl">4.083782</span>   <span class="fl">8.391110</span>   <span class="dv">100</span></span>
-<span id="cb1-31"><a href="#cb1-31" aria-hidden="true" tabindex="-1"></a> parallel   <span class="fl">1.108852</span>   <span class="fl">1.261750</span>   <span class="fl">1.501602</span>   <span class="fl">1.316356</span>   <span class="fl">1.362703</span>   <span class="fl">3.678798</span>   <span class="dv">100</span></span>
-<span id="cb1-32"><a href="#cb1-32" aria-hidden="true" tabindex="-1"></a> combnSum <span class="fl">227.889743</span> <span class="fl">233.444273</span> <span class="fl">239.778906</span> <span class="fl">236.130796</span> <span class="fl">239.313303</span> <span class="fl">297.253419</span>   <span class="dv">100</span></span></code></pre></div>
+<div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/jwood000/RcppAlgos" class="external-link">RcppAlgos</a></span><span class="op">)</span>
+<span class="co">## base R using combn and FUN</span>
+<span class="va">combnSum</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/utils/combn.html" class="external-link">combn</a></span><span class="op">(</span><span class="fl">20</span>, <span class="fl">10</span>, <span class="va">sum</span><span class="op">)</span>
+<span class="va">algosSum</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/combinatoricsGeneral.html">comboGeneral</a></span><span class="op">(</span><span class="fl">20</span>, <span class="fl">10</span>, constraintFun <span class="op">=</span> <span class="st">"sum"</span><span class="op">)</span>
+
+<span class="co">## Notice the additional column (i.e. the 11th column)</span>
+<span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">algosSum</span><span class="op">)</span>
+<span class="co">#&gt;      [,1] [,2] [,3] [,4] [,5] [,6] [,7] [,8] [,9] [,10] [,11]</span>
+<span class="co">#&gt; [1,]    1    2    3    4    5    6    7    8    9    10    55</span>
+<span class="co">#&gt; [2,]    1    2    3    4    5    6    7    8    9    11    56</span>
+<span class="co">#&gt; [3,]    1    2    3    4    5    6    7    8    9    12    57</span>
+<span class="co">#&gt; [4,]    1    2    3    4    5    6    7    8    9    13    58</span>
+<span class="co">#&gt; [5,]    1    2    3    4    5    6    7    8    9    14    59</span>
+<span class="co">#&gt; [6,]    1    2    3    4    5    6    7    8    9    15    60</span>
+
+<span class="fu"><a href="https://rdrr.io/r/base/identical.html" class="external-link">identical</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/integer.html" class="external-link">as.integer</a></span><span class="op">(</span><span class="va">combnSum</span><span class="op">)</span>, <span class="va">algosSum</span><span class="op">[</span>,<span class="fl">11</span><span class="op">]</span><span class="op">)</span>
+<span class="co">#&gt; [1] TRUE</span>
+
+<span class="co">## Using parallel</span>
+<span class="va">paralSum</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/combinatoricsGeneral.html">comboGeneral</a></span><span class="op">(</span><span class="fl">20</span>, <span class="fl">10</span>, constraintFun <span class="op">=</span> <span class="st">"sum"</span>, Parallel <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>
+<span class="fu"><a href="https://rdrr.io/r/base/identical.html" class="external-link">identical</a></span><span class="op">(</span><span class="va">paralSum</span>, <span class="va">algosSum</span><span class="op">)</span>
+<span class="co">#&gt; [1] TRUE</span>
+
+<span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/joshuaulrich/microbenchmark/" class="external-link">microbenchmark</a></span><span class="op">)</span>
+<span class="fu"><a href="https://rdrr.io/pkg/microbenchmark/man/microbenchmark.html" class="external-link">microbenchmark</a></span><span class="op">(</span>serial <span class="op">=</span> <span class="fu"><a href="../reference/combinatoricsGeneral.html">comboGeneral</a></span><span class="op">(</span><span class="fl">20</span>, <span class="fl">10</span>, constraintFun <span class="op">=</span> <span class="st">"sum"</span><span class="op">)</span>,
+             parallel <span class="op">=</span> <span class="fu"><a href="../reference/combinatoricsGeneral.html">comboGeneral</a></span><span class="op">(</span><span class="fl">20</span>, <span class="fl">10</span>, constraintFun <span class="op">=</span> <span class="st">"sum"</span>, Parallel <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>,
+             combnSum <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/utils/combn.html" class="external-link">combn</a></span><span class="op">(</span><span class="fl">20</span>, <span class="fl">10</span>, <span class="va">sum</span><span class="op">)</span>, unit <span class="op">=</span> <span class="st">"relative"</span><span class="op">)</span>
+<span class="co">#&gt; Unit: relative</span>
+<span class="co">#&gt;      expr        min         lq       mean    median         uq        max neval cld</span>
+<span class="co">#&gt;    serial   3.177339   3.173798   3.054257   3.14192   2.948129   2.859115   100  a</span>
+<span class="co">#&gt;  parallel   1.000000   1.000000   1.000000   1.00000   1.000000   1.000000   100  a</span>
+<span class="co">#&gt;  combnSum 234.997953 208.891710 189.269384 201.36549 188.176221 176.208449   100   b</span></code></pre></div>
 <div class="section level3">
 <h3 id="faster-than-rowsums-and-rowmeans">Faster than <code>rowSums</code> and <code>rowMeans</code><a class="anchor" aria-label="anchor" href="#faster-than-rowsums-and-rowmeans"></a>
 </h3>
 <p>Finding row sums or row means is even faster than simply applying the highly efficient <code>rowSums</code>/<code>rowMeans</code> <em>after</em> the combinations have already been generated:</p>
-<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="do">## Pre-generate combinations</span></span>
-<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>combs <span class="ot">&lt;-</span> <span class="fu">comboGeneral</span>(<span class="dv">25</span>, <span class="dv">10</span>)</span>
-<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a><span class="do">## Testing rowSums alone against generating combinations as well as summing</span></span>
-<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a><span class="fu">microbenchmark</span>(<span class="at">serial =</span> <span class="fu">comboGeneral</span>(<span class="dv">25</span>, <span class="dv">10</span>, <span class="at">constraintFun =</span> <span class="st">"sum"</span>),</span>
-<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>             <span class="at">parallel =</span> <span class="fu">comboGeneral</span>(<span class="dv">25</span>, <span class="dv">10</span>, <span class="at">constraintFun =</span> <span class="st">"sum"</span>, <span class="at">Parallel =</span> <span class="cn">TRUE</span>),</span>
-<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>              <span class="at">rowsums =</span> <span class="fu">rowSums</span>(combs))</span>
-<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>Unit<span class="sc">:</span> milliseconds</span>
-<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>     expr       min        lq      mean    median        uq       max neval</span>
-<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a>   serial <span class="fl">104.54241</span> <span class="fl">116.17949</span> <span class="fl">120.57489</span> <span class="fl">119.61571</span> <span class="fl">123.86698</span> <span class="fl">174.2058</span>   <span class="dv">100</span></span>
-<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a> parallel  <span class="fl">37.70034</span>  <span class="fl">46.51309</span>  <span class="fl">48.82646</span>  <span class="fl">48.39089</span>  <span class="fl">51.16243</span> <span class="fl">112.6135</span>   <span class="dv">100</span></span>
-<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a>  rowsums  <span class="fl">98.50969</span> <span class="fl">100.68145</span> <span class="fl">105.76113</span> <span class="fl">102.10867</span> <span class="fl">107.19118</span> <span class="fl">135.9790</span>   <span class="dv">100</span></span>
-<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a><span class="fu">all.equal</span>(<span class="fu">rowSums</span>(combs),</span>
-<span id="cb2-15"><a href="#cb2-15" aria-hidden="true" tabindex="-1"></a>          <span class="fu">comboGeneral</span>(<span class="dv">25</span>, <span class="dv">10</span>,</span>
-<span id="cb2-16"><a href="#cb2-16" aria-hidden="true" tabindex="-1"></a>                       <span class="at">constraintFun =</span> <span class="st">"sum"</span>,</span>
-<span id="cb2-17"><a href="#cb2-17" aria-hidden="true" tabindex="-1"></a>                       <span class="at">Parallel =</span> <span class="cn">TRUE</span>)[,<span class="dv">11</span>])</span>
-<span id="cb2-18"><a href="#cb2-18" aria-hidden="true" tabindex="-1"></a>[<span class="dv">1</span>] <span class="cn">TRUE</span></span>
-<span id="cb2-19"><a href="#cb2-19" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-20"><a href="#cb2-20" aria-hidden="true" tabindex="-1"></a><span class="do">## Testing rowMeans alone against generating combinations as well as obtain row means</span></span>
-<span id="cb2-21"><a href="#cb2-21" aria-hidden="true" tabindex="-1"></a><span class="fu">microbenchmark</span>(<span class="at">serial =</span> <span class="fu">comboGeneral</span>(<span class="dv">25</span>, <span class="dv">10</span>, <span class="at">constraintFun =</span> <span class="st">"mean"</span>),</span>
-<span id="cb2-22"><a href="#cb2-22" aria-hidden="true" tabindex="-1"></a>             <span class="at">parallel =</span> <span class="fu">comboGeneral</span>(<span class="dv">25</span>, <span class="dv">10</span>, <span class="at">constraintFun =</span> <span class="st">"mean"</span>, <span class="at">Parallel =</span> <span class="cn">TRUE</span>),</span>
-<span id="cb2-23"><a href="#cb2-23" aria-hidden="true" tabindex="-1"></a>             <span class="at">rowmeans =</span> <span class="fu">rowMeans</span>(combs))</span>
-<span id="cb2-24"><a href="#cb2-24" aria-hidden="true" tabindex="-1"></a>Unit<span class="sc">:</span> milliseconds</span>
-<span id="cb2-25"><a href="#cb2-25" aria-hidden="true" tabindex="-1"></a>     expr       min       lq      mean    median        uq      max neval</span>
-<span id="cb2-26"><a href="#cb2-26" aria-hidden="true" tabindex="-1"></a>   serial <span class="fl">171.22701</span> <span class="fl">182.2575</span> <span class="fl">198.14229</span> <span class="fl">198.29388</span> <span class="fl">213.14787</span> <span class="fl">240.1016</span>   <span class="dv">100</span></span>
-<span id="cb2-27"><a href="#cb2-27" aria-hidden="true" tabindex="-1"></a> parallel  <span class="fl">54.41817</span>  <span class="fl">59.2010</span>  <span class="fl">73.12819</span>  <span class="fl">74.61183</span>  <span class="fl">77.93679</span> <span class="fl">119.8481</span>   <span class="dv">100</span></span>
-<span id="cb2-28"><a href="#cb2-28" aria-hidden="true" tabindex="-1"></a> rowmeans <span class="fl">102.34084</span> <span class="fl">103.2962</span> <span class="fl">115.09863</span> <span class="fl">107.12878</span> <span class="fl">120.19177</span> <span class="fl">174.8596</span>   <span class="dv">100</span></span>
-<span id="cb2-29"><a href="#cb2-29" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-30"><a href="#cb2-30" aria-hidden="true" tabindex="-1"></a><span class="fu">all.equal</span>(<span class="fu">rowMeans</span>(combs),</span>
-<span id="cb2-31"><a href="#cb2-31" aria-hidden="true" tabindex="-1"></a>          <span class="fu">comboGeneral</span>(<span class="dv">25</span>, <span class="dv">10</span>,</span>
-<span id="cb2-32"><a href="#cb2-32" aria-hidden="true" tabindex="-1"></a>                       <span class="at">constraintFun =</span> <span class="st">"mean"</span>,</span>
-<span id="cb2-33"><a href="#cb2-33" aria-hidden="true" tabindex="-1"></a>                       <span class="at">Parallel =</span> <span class="cn">TRUE</span>)[,<span class="dv">11</span>])</span>
-<span id="cb2-34"><a href="#cb2-34" aria-hidden="true" tabindex="-1"></a>[<span class="dv">1</span>] <span class="cn">TRUE</span></span></code></pre></div>
+<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="co">## Pre-generate combinations</span>
+<span class="va">combs</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/combinatoricsGeneral.html">comboGeneral</a></span><span class="op">(</span><span class="fl">25</span>, <span class="fl">10</span><span class="op">)</span>
+
+<span class="co">## Testing rowSums alone against generating combinations as well as summing</span>
+<span class="fu"><a href="https://rdrr.io/pkg/microbenchmark/man/microbenchmark.html" class="external-link">microbenchmark</a></span><span class="op">(</span>serial <span class="op">=</span> <span class="fu"><a href="../reference/combinatoricsGeneral.html">comboGeneral</a></span><span class="op">(</span><span class="fl">25</span>, <span class="fl">10</span>, constraintFun <span class="op">=</span> <span class="st">"sum"</span><span class="op">)</span>,
+             parallel <span class="op">=</span> <span class="fu"><a href="../reference/combinatoricsGeneral.html">comboGeneral</a></span><span class="op">(</span><span class="fl">25</span>, <span class="fl">10</span>, constraintFun <span class="op">=</span> <span class="st">"sum"</span>, Parallel <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>,
+              rowsums <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/colSums.html" class="external-link">rowSums</a></span><span class="op">(</span><span class="va">combs</span><span class="op">)</span>, unit <span class="op">=</span> <span class="st">"relative"</span><span class="op">)</span>
+<span class="co">#&gt; Unit: relative</span>
+<span class="co">#&gt;      expr     min       lq     mean   median       uq       max neval cld</span>
+<span class="co">#&gt;    serial 3.18877 3.009145 2.592448 2.556819 2.446044 1.4423210   100   c</span>
+<span class="co">#&gt;  parallel 1.00000 1.000000 1.000000 1.000000 1.000000 1.0000000   100 a</span>
+<span class="co">#&gt;   rowsums 2.90689 2.636867 2.212371 2.069613 2.254097 0.6039177   100  b</span>
+
+<span class="fu"><a href="https://rdrr.io/r/base/all.equal.html" class="external-link">all.equal</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/colSums.html" class="external-link">rowSums</a></span><span class="op">(</span><span class="va">combs</span><span class="op">)</span>,
+          <span class="fu"><a href="../reference/combinatoricsGeneral.html">comboGeneral</a></span><span class="op">(</span><span class="fl">25</span>, <span class="fl">10</span>,
+                       constraintFun <span class="op">=</span> <span class="st">"sum"</span>,
+                       Parallel <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">[</span>,<span class="fl">11</span><span class="op">]</span><span class="op">)</span>
+<span class="co">#&gt; [1] TRUE</span>
+
+<span class="co">## Testing rowMeans alone against generating combinations as well as obtain row means</span>
+<span class="fu"><a href="https://rdrr.io/pkg/microbenchmark/man/microbenchmark.html" class="external-link">microbenchmark</a></span><span class="op">(</span>serial <span class="op">=</span> <span class="fu"><a href="../reference/combinatoricsGeneral.html">comboGeneral</a></span><span class="op">(</span><span class="fl">25</span>, <span class="fl">10</span>, constraintFun <span class="op">=</span> <span class="st">"mean"</span><span class="op">)</span>,
+             parallel <span class="op">=</span> <span class="fu"><a href="../reference/combinatoricsGeneral.html">comboGeneral</a></span><span class="op">(</span><span class="fl">25</span>, <span class="fl">10</span>, constraintFun <span class="op">=</span> <span class="st">"mean"</span>, Parallel <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>,
+             rowmeans <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/colSums.html" class="external-link">rowMeans</a></span><span class="op">(</span><span class="va">combs</span><span class="op">)</span>, unit <span class="op">=</span> <span class="st">"relative"</span><span class="op">)</span>
+<span class="co">#&gt; Unit: relative</span>
+<span class="co">#&gt;      expr      min       lq     mean   median       uq      max neval cld</span>
+<span class="co">#&gt;    serial 3.063023 2.561861 2.411453 2.542078 2.529883 1.553592   100   c</span>
+<span class="co">#&gt;  parallel 1.000000 1.000000 1.000000 1.000000 1.000000 1.000000   100 a</span>
+<span class="co">#&gt;  rowmeans 1.759344 1.443430 1.348248 1.418801 1.404468 0.532154   100  b</span>
+
+<span class="fu"><a href="https://rdrr.io/r/base/all.equal.html" class="external-link">all.equal</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/colSums.html" class="external-link">rowMeans</a></span><span class="op">(</span><span class="va">combs</span><span class="op">)</span>,
+          <span class="fu"><a href="../reference/combinatoricsGeneral.html">comboGeneral</a></span><span class="op">(</span><span class="fl">25</span>, <span class="fl">10</span>,
+                       constraintFun <span class="op">=</span> <span class="st">"mean"</span>,
+                       Parallel <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">[</span>,<span class="fl">11</span><span class="op">]</span><span class="op">)</span>
+<span class="co">#&gt; [1] TRUE</span></code></pre></div>
 <p>In both cases above, <code>RcppAlgos</code> is doing double the work nearly twice as fast!!!</p>
 </div>
 </div>
@@ -203,60 +208,61 @@
 <h3 id="one-comparison-operator">One Comparison Operator<a class="anchor" aria-label="anchor" href="#one-comparison-operator"></a>
 </h3>
 <p>First we will look at cases with only one comparison and one value for the <code>limitConstraint</code>.</p>
-<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="do">## Generate some random data. N.B. Using R &gt;= 3.6.0</span></span>
-<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">101</span>)</span>
-<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>myNums <span class="ot">&lt;-</span> <span class="fu">sample</span>(<span class="dv">500</span>, <span class="dv">20</span>)</span>
-<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>myNums</span>
-<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>[<span class="dv">1</span>] <span class="dv">187</span>  <span class="dv">22</span> <span class="dv">354</span> <span class="dv">327</span> <span class="dv">124</span> <span class="dv">149</span> <span class="dv">289</span> <span class="dv">165</span> <span class="dv">307</span> <span class="dv">269</span> <span class="dv">432</span> <span class="dv">346</span> <span class="dv">358</span> <span class="dv">454</span> <span class="dv">222</span> <span class="dv">287</span> <span class="dv">398</span> <span class="dv">109</span> <span class="dv">199</span>  <span class="dv">19</span></span>
-<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a><span class="do">## Find all 5-tuples combinations without repetition of myNums</span></span>
-<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a><span class="do">## (defined above) such that the sum is equal to 1176.</span></span>
-<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a>p1 <span class="ot">&lt;-</span> <span class="fu">comboGeneral</span>(<span class="at">v =</span> myNums, <span class="at">m =</span> <span class="dv">5</span>,</span>
-<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a>                   <span class="at">constraintFun =</span> <span class="st">"sum"</span>,</span>
-<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a>                   <span class="at">comparisonFun =</span> <span class="st">"=="</span>,</span>
-<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a>                   <span class="at">limitConstraints =</span> <span class="dv">1176</span>)</span>
-<span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-15"><a href="#cb3-15" aria-hidden="true" tabindex="-1"></a><span class="fu">tail</span>(p1)</span>
-<span id="cb3-16"><a href="#cb3-16" aria-hidden="true" tabindex="-1"></a>      [,<span class="dv">1</span>] [,<span class="dv">2</span>] [,<span class="dv">3</span>] [,<span class="dv">4</span>] [,<span class="dv">5</span>]</span>
-<span id="cb3-17"><a href="#cb3-17" aria-hidden="true" tabindex="-1"></a>[<span class="dv">28</span>,]  <span class="dv">124</span>  <span class="dv">149</span>  <span class="dv">287</span>  <span class="dv">289</span>  <span class="dv">327</span></span>
-<span id="cb3-18"><a href="#cb3-18" aria-hidden="true" tabindex="-1"></a>[<span class="dv">29</span>,]  <span class="dv">124</span>  <span class="dv">165</span>  <span class="dv">187</span>  <span class="dv">346</span>  <span class="dv">354</span></span>
-<span id="cb3-19"><a href="#cb3-19" aria-hidden="true" tabindex="-1"></a>[<span class="dv">30</span>,]  <span class="dv">124</span>  <span class="dv">165</span>  <span class="dv">222</span>  <span class="dv">307</span>  <span class="dv">358</span></span>
-<span id="cb3-20"><a href="#cb3-20" aria-hidden="true" tabindex="-1"></a>[<span class="dv">31</span>,]  <span class="dv">124</span>  <span class="dv">187</span>  <span class="dv">222</span>  <span class="dv">289</span>  <span class="dv">354</span></span>
-<span id="cb3-21"><a href="#cb3-21" aria-hidden="true" tabindex="-1"></a>[<span class="dv">32</span>,]  <span class="dv">124</span>  <span class="dv">187</span>  <span class="dv">269</span>  <span class="dv">289</span>  <span class="dv">307</span></span>
-<span id="cb3-22"><a href="#cb3-22" aria-hidden="true" tabindex="-1"></a>[<span class="dv">33</span>,]  <span class="dv">149</span>  <span class="dv">187</span>  <span class="dv">199</span>  <span class="dv">287</span>  <span class="dv">354</span></span>
-<span id="cb3-23"><a href="#cb3-23" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-24"><a href="#cb3-24" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-25"><a href="#cb3-25" aria-hidden="true" tabindex="-1"></a><span class="do">## Authenticate with brute force</span></span>
-<span id="cb3-26"><a href="#cb3-26" aria-hidden="true" tabindex="-1"></a>allCombs <span class="ot">&lt;-</span> <span class="fu">comboGeneral</span>(<span class="fu">sort</span>(myNums), <span class="dv">5</span>)</span>
-<span id="cb3-27"><a href="#cb3-27" aria-hidden="true" tabindex="-1"></a><span class="fu">identical</span>(p1, allCombs[<span class="fu">which</span>(<span class="fu">rowSums</span>(allCombs) <span class="sc">==</span> <span class="dv">1176</span>), ])</span>
-<span id="cb3-28"><a href="#cb3-28" aria-hidden="true" tabindex="-1"></a>[<span class="dv">1</span>] <span class="cn">TRUE</span></span>
-<span id="cb3-29"><a href="#cb3-29" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-30"><a href="#cb3-30" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-31"><a href="#cb3-31" aria-hidden="true" tabindex="-1"></a><span class="do">## How about finding combinations with repetition</span></span>
-<span id="cb3-32"><a href="#cb3-32" aria-hidden="true" tabindex="-1"></a><span class="do">## whose mean is less than or equal to 150.</span></span>
-<span id="cb3-33"><a href="#cb3-33" aria-hidden="true" tabindex="-1"></a>p2 <span class="ot">&lt;-</span> <span class="fu">comboGeneral</span>(<span class="at">v =</span> myNums, <span class="at">m =</span> <span class="dv">5</span>, <span class="cn">TRUE</span>,</span>
-<span id="cb3-34"><a href="#cb3-34" aria-hidden="true" tabindex="-1"></a>                   <span class="at">constraintFun =</span> <span class="st">"mean"</span>,</span>
-<span id="cb3-35"><a href="#cb3-35" aria-hidden="true" tabindex="-1"></a>                   <span class="at">comparisonFun =</span> <span class="st">"&lt;="</span>,</span>
-<span id="cb3-36"><a href="#cb3-36" aria-hidden="true" tabindex="-1"></a>                   <span class="at">limitConstraints =</span> <span class="dv">150</span>)</span>
-<span id="cb3-37"><a href="#cb3-37" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-38"><a href="#cb3-38" aria-hidden="true" tabindex="-1"></a><span class="do">## Again, we authenticate with brute force</span></span>
-<span id="cb3-39"><a href="#cb3-39" aria-hidden="true" tabindex="-1"></a>allCombs <span class="ot">&lt;-</span> <span class="fu">comboGeneral</span>(<span class="fu">sort</span>(myNums), <span class="dv">5</span>, <span class="cn">TRUE</span>)</span>
-<span id="cb3-40"><a href="#cb3-40" aria-hidden="true" tabindex="-1"></a><span class="fu">identical</span>(p2, allCombs[<span class="fu">which</span>(<span class="fu">rowMeans</span>(allCombs) <span class="sc">&lt;=</span> <span class="dv">150</span>), ])</span>
-<span id="cb3-41"><a href="#cb3-41" aria-hidden="true" tabindex="-1"></a>[<span class="dv">1</span>] <span class="cn">FALSE</span>  <span class="do">### &lt;&lt;--- What? They should be the same</span></span>
-<span id="cb3-42"><a href="#cb3-42" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-43"><a href="#cb3-43" aria-hidden="true" tabindex="-1"></a><span class="do">## N.B.</span></span>
-<span id="cb3-44"><a href="#cb3-44" aria-hidden="true" tabindex="-1"></a><span class="fu">class</span>(p2[<span class="dv">1</span>, ])</span>
-<span id="cb3-45"><a href="#cb3-45" aria-hidden="true" tabindex="-1"></a>[<span class="dv">1</span>] <span class="st">"numeric"</span></span>
-<span id="cb3-46"><a href="#cb3-46" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-47"><a href="#cb3-47" aria-hidden="true" tabindex="-1"></a><span class="fu">class</span>(allCombs[<span class="dv">1</span>, ])</span>
-<span id="cb3-48"><a href="#cb3-48" aria-hidden="true" tabindex="-1"></a>[<span class="dv">1</span>] <span class="st">"integer"</span></span>
-<span id="cb3-49"><a href="#cb3-49" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-50"><a href="#cb3-50" aria-hidden="true" tabindex="-1"></a><span class="do">## When mean is employed or it can be determined that integral</span></span>
-<span id="cb3-51"><a href="#cb3-51" aria-hidden="true" tabindex="-1"></a><span class="do">## values will not suffice for the comparison, we fall back to</span></span>
-<span id="cb3-52"><a href="#cb3-52" aria-hidden="true" tabindex="-1"></a><span class="do">## numeric types, thus all.equal should return TRUE</span></span>
-<span id="cb3-53"><a href="#cb3-53" aria-hidden="true" tabindex="-1"></a><span class="fu">all.equal</span>(p2, allCombs[<span class="fu">which</span>(<span class="fu">rowMeans</span>(allCombs) <span class="sc">&lt;=</span> <span class="dv">150</span>), ])</span>
-<span id="cb3-54"><a href="#cb3-54" aria-hidden="true" tabindex="-1"></a>[<span class="dv">1</span>] <span class="cn">TRUE</span></span></code></pre></div>
+<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="co">## Generate some random data. N.B. Using R &gt;= 4.0.0</span>
+<span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="fl">101</span><span class="op">)</span>
+<span class="va">myNums</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/sample.html" class="external-link">sample</a></span><span class="op">(</span><span class="fl">500</span>, <span class="fl">20</span><span class="op">)</span>
+
+<span class="va">myNums</span>
+<span class="co">#&gt; [1] 329 313 430  95 209 442 351 317 444 315 246 355 128 131 288   9 352 489 354 244</span>
+
+<span class="co">## Find all 5-tuples combinations without repetition of myNums</span>
+<span class="co">## (defined above) such that the sum is equal to 1176.</span>
+<span class="va">p1</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/combinatoricsGeneral.html">comboGeneral</a></span><span class="op">(</span>v <span class="op">=</span> <span class="va">myNums</span>, m <span class="op">=</span> <span class="fl">5</span>,
+                   constraintFun <span class="op">=</span> <span class="st">"sum"</span>,
+                   comparisonFun <span class="op">=</span> <span class="st">"=="</span>,
+                   limitConstraints <span class="op">=</span> <span class="fl">1176</span><span class="op">)</span>
+
+<span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">tail</a></span><span class="op">(</span><span class="va">p1</span><span class="op">)</span>
+<span class="co">#&gt;       [,1] [,2] [,3] [,4] [,5]</span>
+<span class="co">#&gt; [10,]   95  128  246  352  355</span>
+<span class="co">#&gt; [11,]   95  128  288  313  352</span>
+<span class="co">#&gt; [12,]   95  131  244  351  355</span>
+<span class="co">#&gt; [13,]   95  131  244  352  354</span>
+<span class="co">#&gt; [14,]   95  209  244  313  315</span>
+<span class="co">#&gt; [15,]  128  131  246  317  354</span>
+
+
+<span class="co">## Authenticate with brute force</span>
+<span class="va">allCombs</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/combinatoricsGeneral.html">comboGeneral</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/sort.html" class="external-link">sort</a></span><span class="op">(</span><span class="va">myNums</span><span class="op">)</span>, <span class="fl">5</span><span class="op">)</span>
+<span class="fu"><a href="https://rdrr.io/r/base/identical.html" class="external-link">identical</a></span><span class="op">(</span><span class="va">p1</span>, <span class="va">allCombs</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/which.html" class="external-link">which</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/colSums.html" class="external-link">rowSums</a></span><span class="op">(</span><span class="va">allCombs</span><span class="op">)</span> <span class="op">==</span> <span class="fl">1176</span><span class="op">)</span>, <span class="op">]</span><span class="op">)</span>
+<span class="co">#&gt; [1] TRUE</span>
+
+
+<span class="co">## How about finding combinations with repetition</span>
+<span class="co">## whose mean is less than or equal to 150.</span>
+<span class="va">p2</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/combinatoricsGeneral.html">comboGeneral</a></span><span class="op">(</span>v <span class="op">=</span> <span class="va">myNums</span>, m <span class="op">=</span> <span class="fl">5</span>, <span class="cn">TRUE</span>,
+                   constraintFun <span class="op">=</span> <span class="st">"mean"</span>,
+                   comparisonFun <span class="op">=</span> <span class="st">"&lt;="</span>,
+                   limitConstraints <span class="op">=</span> <span class="fl">150</span><span class="op">)</span>
+
+<span class="co">## Again, we authenticate with brute force</span>
+<span class="va">allCombs</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/combinatoricsGeneral.html">comboGeneral</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/sort.html" class="external-link">sort</a></span><span class="op">(</span><span class="va">myNums</span><span class="op">)</span>, <span class="fl">5</span>, <span class="cn">TRUE</span><span class="op">)</span>
+<span class="fu"><a href="https://rdrr.io/r/base/identical.html" class="external-link">identical</a></span><span class="op">(</span><span class="va">p2</span>, <span class="va">allCombs</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/which.html" class="external-link">which</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/colSums.html" class="external-link">rowMeans</a></span><span class="op">(</span><span class="va">allCombs</span><span class="op">)</span> <span class="op">&lt;=</span> <span class="fl">150</span><span class="op">)</span>, <span class="op">]</span><span class="op">)</span>
+<span class="co">#&gt; [1] FALSE  ### &lt;&lt;--- What? They should be the same</span>
+
+<span class="co">## N.B.</span>
+<span class="fu"><a href="https://rdrr.io/r/base/class.html" class="external-link">class</a></span><span class="op">(</span><span class="va">p2</span><span class="op">[</span><span class="fl">1</span>, <span class="op">]</span><span class="op">)</span>
+<span class="co">#&gt; [1] "numeric"</span>
+
+<span class="fu"><a href="https://rdrr.io/r/base/class.html" class="external-link">class</a></span><span class="op">(</span><span class="va">allCombs</span><span class="op">[</span><span class="fl">1</span>, <span class="op">]</span><span class="op">)</span>
+<span class="co">#&gt; [1] "integer"</span>
+
+<span class="co">## When mean is employed or it can be determined that integral</span>
+<span class="co">## values will not suffice for the comparison, we fall back to</span>
+<span class="co">## numeric types, thus all.equal should return TRUE</span>
+<span class="fu"><a href="https://rdrr.io/r/base/all.equal.html" class="external-link">all.equal</a></span><span class="op">(</span><span class="va">p2</span>, <span class="va">allCombs</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/which.html" class="external-link">which</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/colSums.html" class="external-link">rowMeans</a></span><span class="op">(</span><span class="va">allCombs</span><span class="op">)</span> <span class="op">&lt;=</span> <span class="fl">150</span><span class="op">)</span>, <span class="op">]</span><span class="op">)</span>
+<span class="co">#&gt; [1] TRUE</span></code></pre></div>
 </div>
 <div class="section level3">
 <h3 id="two-comparison-operators">Two Comparison Operators<a class="anchor" aria-label="anchor" href="#two-comparison-operators"></a>
@@ -264,43 +270,44 @@
 <p>Sometimes, we need to generate combinations/permutations such that when we apply a constraint function, the results are between (or outside) a given range. There is a natural two step process when finding results outside a range, however for finding results between a range, this two step approach could become computationally demanding. The underlying algorithms in <code>RcppAlgos</code> are optimized for both cases and avoids adding results that will eventually be removed.</p>
 <p>Using two comparisons is easy. The first comparison operator is applied to the first limit and the second operator is applied to the second limit.</p>
 <p>Note that in the examples below, we have <code>keepResults = TRUE</code>. This means an additional column will be added to the output that is the result of applying <code>constraintFun</code> to that particular combination.</p>
-<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="do">## Get combinations such that the product is</span></span>
-<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="do">## strictly between 3600 and 4000</span></span>
-<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a><span class="fu">comboGeneral</span>(<span class="dv">5</span>, <span class="dv">7</span>, <span class="cn">TRUE</span>, <span class="at">constraintFun =</span> <span class="st">"prod"</span>,</span>
-<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>             <span class="at">comparisonFun =</span> <span class="fu">c</span>(<span class="st">"&gt;"</span>,<span class="st">"&lt;"</span>),          <span class="do">## Find results &gt; 3600 and &lt; 4000</span></span>
-<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>             <span class="at">limitConstraints =</span> <span class="fu">c</span>(<span class="dv">3600</span>, <span class="dv">4000</span>),</span>
-<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>             <span class="at">keepResults =</span> <span class="cn">TRUE</span>)</span>
-<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>     [,<span class="dv">1</span>] [,<span class="dv">2</span>] [,<span class="dv">3</span>] [,<span class="dv">4</span>] [,<span class="dv">5</span>] [,<span class="dv">6</span>] [,<span class="dv">7</span>] [,<span class="dv">8</span>]</span>
-<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a>[<span class="dv">1</span>,]    <span class="dv">1</span>    <span class="dv">2</span>    <span class="dv">3</span>    <span class="dv">5</span>    <span class="dv">5</span>    <span class="dv">5</span>    <span class="dv">5</span> <span class="dv">3750</span></span>
-<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a>[<span class="dv">2</span>,]    <span class="dv">1</span>    <span class="dv">3</span>    <span class="dv">4</span>    <span class="dv">4</span>    <span class="dv">4</span>    <span class="dv">4</span>    <span class="dv">5</span> <span class="dv">3840</span></span>
-<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a>[<span class="dv">3</span>,]    <span class="dv">2</span>    <span class="dv">2</span>    <span class="dv">3</span>    <span class="dv">4</span>    <span class="dv">4</span>    <span class="dv">4</span>    <span class="dv">5</span> <span class="dv">3840</span></span>
-<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a>[<span class="dv">4</span>,]    <span class="dv">3</span>    <span class="dv">3</span>    <span class="dv">3</span>    <span class="dv">3</span>    <span class="dv">3</span>    <span class="dv">3</span>    <span class="dv">5</span> <span class="dv">3645</span></span>
-<span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a>[<span class="dv">5</span>,]    <span class="dv">3</span>    <span class="dv">3</span>    <span class="dv">3</span>    <span class="dv">3</span>    <span class="dv">3</span>    <span class="dv">4</span>    <span class="dv">4</span> <span class="dv">3888</span></span>
-<span id="cb4-13"><a href="#cb4-13" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-14"><a href="#cb4-14" aria-hidden="true" tabindex="-1"></a><span class="co"># ## The above is the same as doing the following:</span></span>
-<span id="cb4-15"><a href="#cb4-15" aria-hidden="true" tabindex="-1"></a><span class="co"># comboGeneral(5, 7, TRUE, constraintFun = "prod",</span></span>
-<span id="cb4-16"><a href="#cb4-16" aria-hidden="true" tabindex="-1"></a><span class="co">#              comparisonFun = c("&lt;","&gt;"),          ## Note that the comparison vector</span></span>
-<span id="cb4-17"><a href="#cb4-17" aria-hidden="true" tabindex="-1"></a><span class="co">#              limitConstraints = c(4000, 3600),    ## and the limits have flipped</span></span>
-<span id="cb4-18"><a href="#cb4-18" aria-hidden="true" tabindex="-1"></a><span class="co">#              keepResults = TRUE)</span></span>
-<span id="cb4-19"><a href="#cb4-19" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-20"><a href="#cb4-20" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-21"><a href="#cb4-21" aria-hidden="true" tabindex="-1"></a><span class="do">## What about finding combinations outside a range</span></span>
-<span id="cb4-22"><a href="#cb4-22" aria-hidden="true" tabindex="-1"></a>outside <span class="ot">&lt;-</span> <span class="fu">comboGeneral</span>(<span class="dv">5</span>, <span class="dv">7</span>, <span class="cn">TRUE</span>, <span class="at">constraintFun =</span> <span class="st">"prod"</span>,</span>
-<span id="cb4-23"><a href="#cb4-23" aria-hidden="true" tabindex="-1"></a>                        <span class="at">comparisonFun =</span> <span class="fu">c</span>(<span class="st">"&lt;="</span>,<span class="st">"&gt;="</span>),</span>
-<span id="cb4-24"><a href="#cb4-24" aria-hidden="true" tabindex="-1"></a>                        <span class="at">limitConstraints =</span> <span class="fu">c</span>(<span class="dv">3600</span>, <span class="dv">4000</span>),</span>
-<span id="cb4-25"><a href="#cb4-25" aria-hidden="true" tabindex="-1"></a>                        <span class="at">keepResults =</span> <span class="cn">TRUE</span>)</span>
-<span id="cb4-26"><a href="#cb4-26" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-27"><a href="#cb4-27" aria-hidden="true" tabindex="-1"></a><span class="fu">all</span>(<span class="fu">apply</span>(outside[, <span class="sc">-</span><span class="dv">8</span>], <span class="dv">1</span>, prod) <span class="sc">&lt;=</span> <span class="dv">3600</span></span>
-<span id="cb4-28"><a href="#cb4-28" aria-hidden="true" tabindex="-1"></a>    <span class="sc">|</span> <span class="fu">apply</span>(outside[, <span class="sc">-</span><span class="dv">8</span>], <span class="dv">1</span>, prod) <span class="sc">&gt;=</span> <span class="dv">4000</span>)</span>
-<span id="cb4-29"><a href="#cb4-29" aria-hidden="true" tabindex="-1"></a>[<span class="dv">1</span>] <span class="cn">TRUE</span></span>
-<span id="cb4-30"><a href="#cb4-30" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-31"><a href="#cb4-31" aria-hidden="true" tabindex="-1"></a><span class="fu">dim</span>(outside)</span>
-<span id="cb4-32"><a href="#cb4-32" aria-hidden="true" tabindex="-1"></a>[<span class="dv">1</span>] <span class="dv">325</span>   <span class="dv">8</span></span>
-<span id="cb4-33"><a href="#cb4-33" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-34"><a href="#cb4-34" aria-hidden="true" tabindex="-1"></a><span class="do">## Note that we obtained 5 results when searching "between"</span></span>
-<span id="cb4-35"><a href="#cb4-35" aria-hidden="true" tabindex="-1"></a><span class="do">## 3600 and 4000. Thus we have: 325 + 5 = 330</span></span>
-<span id="cb4-36"><a href="#cb4-36" aria-hidden="true" tabindex="-1"></a><span class="fu">comboCount</span>(<span class="dv">5</span>, <span class="dv">7</span>, T)</span>
-<span id="cb4-37"><a href="#cb4-37" aria-hidden="true" tabindex="-1"></a>[<span class="dv">1</span>] <span class="dv">330</span></span></code></pre></div>
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="co">## Get combinations such that the product is</span>
+<span class="co">## strictly between 3600 and 4000</span>
+<span class="fu"><a href="../reference/combinatoricsGeneral.html">comboGeneral</a></span><span class="op">(</span><span class="fl">5</span>, <span class="fl">7</span>, <span class="cn">TRUE</span>, constraintFun <span class="op">=</span> <span class="st">"prod"</span>,
+             comparisonFun <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"&gt;"</span>,<span class="st">"&lt;"</span><span class="op">)</span>,          <span class="co">## Find results &gt; 3600 and &lt; 4000</span>
+             limitConstraints <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">3600</span>, <span class="fl">4000</span><span class="op">)</span>,
+             keepResults <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>
+<span class="co">#&gt;      [,1] [,2] [,3] [,4] [,5] [,6] [,7] [,8]</span>
+<span class="co">#&gt; [1,]    1    2    3    5    5    5    5 3750</span>
+<span class="co">#&gt; [2,]    1    3    4    4    4    4    5 3840</span>
+<span class="co">#&gt; [3,]    2    2    3    4    4    4    5 3840</span>
+<span class="co">#&gt; [4,]    3    3    3    3    3    3    5 3645</span>
+<span class="co">#&gt; [5,]    3    3    3    3    3    4    4 3888</span>
+
+<span class="co"># ## The above is the same as doing the following:</span>
+<span class="co"># comboGeneral(5, 7, TRUE, constraintFun = "prod",</span>
+<span class="co">#              comparisonFun = c("&lt;","&gt;"),          ## Note that the comparison vector</span>
+<span class="co">#              limitConstraints = c(4000, 3600),    ## and the limits have flipped</span>
+<span class="co">#              keepResults = TRUE)</span>
+
+
+<span class="co">## What about finding combinations outside a range</span>
+<span class="va">outside</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/combinatoricsGeneral.html">comboGeneral</a></span><span class="op">(</span><span class="fl">5</span>, <span class="fl">7</span>, <span class="cn">TRUE</span>, constraintFun <span class="op">=</span> <span class="st">"prod"</span>,
+                        comparisonFun <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"&lt;="</span>,<span class="st">"&gt;="</span><span class="op">)</span>,
+                        limitConstraints <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">3600</span>, <span class="fl">4000</span><span class="op">)</span>,
+                        keepResults <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>
+
+<span class="fu"><a href="https://rdrr.io/r/base/all.html" class="external-link">all</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/apply.html" class="external-link">apply</a></span><span class="op">(</span><span class="va">outside</span><span class="op">[</span>, <span class="op">-</span><span class="fl">8</span><span class="op">]</span>, <span class="fl">1</span>, <span class="va">prod</span><span class="op">)</span> <span class="op">&lt;=</span> <span class="fl">3600</span>
+     <span class="op">|</span> <span class="fu"><a href="https://rdrr.io/r/base/apply.html" class="external-link">apply</a></span><span class="op">(</span><span class="va">outside</span><span class="op">[</span>, <span class="op">-</span><span class="fl">8</span><span class="op">]</span>, <span class="fl">1</span>, <span class="va">prod</span><span class="op">)</span> <span class="op">&gt;=</span> <span class="fl">4000</span><span class="op">)</span>
+<span class="co">#&gt; [1] TRUE</span>
+
+<span class="fu"><a href="https://rdrr.io/r/base/dim.html" class="external-link">dim</a></span><span class="op">(</span><span class="va">outside</span><span class="op">)</span>
+<span class="co">#&gt; [1] 325   8</span>
+
+<span class="co">## Note that we obtained 5 results when searching "between"</span>
+<span class="co">## 3600 and 4000. Thus we have: 325 + 5 = 330</span>
+<span class="fu"><a href="../reference/combinatoricsCount.html">comboCount</a></span><span class="op">(</span><span class="fl">5</span>, <span class="fl">7</span>, <span class="cn">T</span><span class="op">)</span>
+<span class="co">#&gt; [1] 330</span></code></pre></div>
 </div>
 <div class="section level3">
 <h3 id="using-tolerance">Using <code>tolerance</code><a class="anchor" aria-label="anchor" href="#using-tolerance"></a>
@@ -316,457 +323,301 @@
 <p>For these reasons, the argument <code>tolerance</code> can be utilized to refine a given constraint. It is added to the upper limit and subtracted from the lower limit. The default value is <code>sqrt(.Machine$double.eps) ~= 0.00000001490116</code>.</p>
 <p>This default value is good and bad.</p>
 <p>For the good side:</p>
-<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="fu">dim</span>(<span class="fu">comboGeneral</span>(<span class="fu">seq</span>(<span class="dv">0</span>,<span class="fl">0.5</span>,<span class="fl">0.05</span>), <span class="dv">6</span>, <span class="cn">TRUE</span>,</span>
-<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>                 <span class="at">constraintFun =</span> <span class="st">"sum"</span>,</span>
-<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>                 <span class="at">comparisonFun =</span> <span class="st">"=="</span>,</span>
-<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>                 <span class="at">limitConstraints =</span> <span class="dv">1</span>))</span>
-<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>[<span class="dv">1</span>] <span class="dv">199</span>   <span class="dv">6</span></span>
-<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a><span class="do">## Confirm with integers and brute force</span></span>
-<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a>allCbs <span class="ot">&lt;-</span> <span class="fu">comboGeneral</span>(<span class="fu">seq</span>(0L,50L,5L), <span class="dv">6</span>, <span class="cn">TRUE</span>, <span class="at">constraintFun =</span> <span class="st">"sum"</span>)</span>
-<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a><span class="fu">sum</span>(allCbs[, <span class="dv">7</span>] <span class="sc">==</span> 100L)</span>
-<span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a>[<span class="dv">1</span>] <span class="dv">199</span></span></code></pre></div>
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/base/dim.html" class="external-link">dim</a></span><span class="op">(</span><span class="fu"><a href="../reference/combinatoricsGeneral.html">comboGeneral</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">0.5</span>, <span class="fl">0.05</span><span class="op">)</span>, <span class="fl">6</span>, <span class="cn">TRUE</span>,
+                 constraintFun <span class="op">=</span> <span class="st">"sum"</span>,
+                 comparisonFun <span class="op">=</span> <span class="st">"=="</span>,
+                 limitConstraints <span class="op">=</span> <span class="fl">1</span><span class="op">)</span><span class="op">)</span>
+<span class="co">#&gt; [1] 199   6</span>
+
+<span class="co">## Confirm with integers and brute force</span>
+<span class="va">allCbs</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/combinatoricsGeneral.html">comboGeneral</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq</a></span><span class="op">(</span><span class="fl">0L</span>, <span class="fl">50L</span>, <span class="fl">5L</span><span class="op">)</span>, <span class="fl">6</span>, <span class="cn">TRUE</span>, constraintFun <span class="op">=</span> <span class="st">"sum"</span><span class="op">)</span>
+
+<span class="fu"><a href="https://rdrr.io/r/base/sum.html" class="external-link">sum</a></span><span class="op">(</span><span class="va">allCbs</span><span class="op">[</span>, <span class="fl">7</span><span class="op">]</span> <span class="op">==</span> <span class="fl">100L</span><span class="op">)</span>
+<span class="co">#&gt; [1] 199</span></code></pre></div>
 <p>If we had a tolerance of zero, we would have obtained an incorrect result:</p>
-<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="do">## We miss 29 combinations that add up to 1</span></span>
-<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="fu">dim</span>(<span class="fu">comboGeneral</span>(<span class="fu">seq</span>(<span class="dv">0</span>,<span class="fl">0.5</span>,<span class="fl">0.05</span>), <span class="dv">6</span>, <span class="cn">TRUE</span>,</span>
-<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>                 <span class="at">constraintFun =</span> <span class="st">"sum"</span>,</span>
-<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>                 <span class="at">comparisonFun =</span> <span class="st">"=="</span>,</span>
-<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>                 <span class="at">limitConstraints =</span> <span class="dv">1</span>, <span class="at">tolerance =</span> <span class="dv">0</span>))</span>
-<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>[<span class="dv">1</span>] <span class="dv">170</span>   <span class="dv">6</span></span></code></pre></div>
-<p>And now for a less desirable result. The example below appears to give incorrect results. That is, we shouldn’t return any combination with a mean of 4 or 5.</p>
-<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="fu">comboGeneral</span>(<span class="fu">c</span>(<span class="dv">2</span>, <span class="dv">3</span>, <span class="dv">5</span>, <span class="dv">7</span>), <span class="dv">3</span>, T,</span>
-<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>             <span class="at">constraintFun =</span> <span class="st">"mean"</span>, <span class="at">comparisonFun =</span> <span class="fu">c</span>(<span class="st">"&lt;"</span>, <span class="st">"&gt;"</span>),</span>
-<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>             <span class="at">limitConstraints =</span> <span class="fu">c</span>(<span class="dv">5</span>, <span class="dv">4</span>), <span class="at">keepResults =</span> <span class="cn">TRUE</span>)</span>
-<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>     [,<span class="dv">1</span>] [,<span class="dv">2</span>] [,<span class="dv">3</span>]     [,<span class="dv">4</span>]</span>
-<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>[<span class="dv">1</span>,]    <span class="dv">2</span>    <span class="dv">3</span>    <span class="dv">7</span> <span class="fl">4.000000</span></span>
-<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a>[<span class="dv">2</span>,]    <span class="dv">2</span>    <span class="dv">5</span>    <span class="dv">5</span> <span class="fl">4.000000</span></span>
-<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a>[<span class="dv">3</span>,]    <span class="dv">2</span>    <span class="dv">5</span>    <span class="dv">7</span> <span class="fl">4.666667</span></span>
-<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a>[<span class="dv">4</span>,]    <span class="dv">3</span>    <span class="dv">3</span>    <span class="dv">7</span> <span class="fl">4.333333</span></span>
-<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a>[<span class="dv">5</span>,]    <span class="dv">3</span>    <span class="dv">5</span>    <span class="dv">5</span> <span class="fl">4.333333</span></span>
-<span id="cb7-10"><a href="#cb7-10" aria-hidden="true" tabindex="-1"></a>[<span class="dv">6</span>,]    <span class="dv">3</span>    <span class="dv">5</span>    <span class="dv">7</span> <span class="fl">5.000000</span></span>
-<span id="cb7-11"><a href="#cb7-11" aria-hidden="true" tabindex="-1"></a>[<span class="dv">7</span>,]    <span class="dv">5</span>    <span class="dv">5</span>    <span class="dv">5</span> <span class="fl">5.000000</span></span></code></pre></div>
-<p>In the above example, the range that is actually tested against is <code>c(3.99999998509884, 5.00000001490116)</code>. To obtain the intended result, we use a more restrictive tolerance.</p>
-<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="fu">comboGeneral</span>(<span class="fu">c</span>(<span class="dv">2</span>, <span class="dv">3</span>, <span class="dv">5</span>, <span class="dv">7</span>), <span class="dv">3</span>, T,</span>
-<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>             <span class="at">constraintFun =</span> <span class="st">"mean"</span>, <span class="at">comparisonFun =</span> <span class="fu">c</span>(<span class="st">"&lt;"</span>, <span class="st">"&gt;"</span>),</span>
-<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>             <span class="at">limitConstraints =</span> <span class="fu">c</span>(<span class="dv">5</span>, <span class="dv">4</span>), <span class="at">keepResults =</span> <span class="cn">TRUE</span>, <span class="at">tolerance =</span> .Machine<span class="sc">$</span>double.eps)</span>
-<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>     [,<span class="dv">1</span>] [,<span class="dv">2</span>] [,<span class="dv">3</span>]     [,<span class="dv">4</span>]</span>
-<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>[<span class="dv">1</span>,]    <span class="dv">2</span>    <span class="dv">5</span>    <span class="dv">7</span> <span class="fl">4.666667</span></span>
-<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a>[<span class="dv">2</span>,]    <span class="dv">3</span>    <span class="dv">3</span>    <span class="dv">7</span> <span class="fl">4.333333</span></span>
-<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a>[<span class="dv">3</span>,]    <span class="dv">3</span>    <span class="dv">5</span>    <span class="dv">5</span> <span class="fl">4.333333</span></span></code></pre></div>
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="co">## We miss 31 combinations that add up to 1</span>
+<span class="fu"><a href="https://rdrr.io/r/base/dim.html" class="external-link">dim</a></span><span class="op">(</span><span class="fu"><a href="../reference/combinatoricsGeneral.html">comboGeneral</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">0.5</span>, <span class="fl">0.05</span><span class="op">)</span>, <span class="fl">6</span>, <span class="cn">TRUE</span>,
+                 constraintFun <span class="op">=</span> <span class="st">"sum"</span>,
+                 comparisonFun <span class="op">=</span> <span class="st">"=="</span>,
+                 limitConstraints <span class="op">=</span> <span class="fl">1</span>, tolerance <span class="op">=</span> <span class="fl">0</span><span class="op">)</span><span class="op">)</span>
+<span class="co">#&gt; [1] 168   6</span></code></pre></div>
+<p>And now for a less desirable result. The example below appears to give incorrect results. That is, we shouldn’t return any combination with a mean of 4.1 or 5.1.</p>
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="fu"><a href="../reference/combinatoricsGeneral.html">comboGeneral</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">2.1</span>, <span class="fl">3.1</span>, <span class="fl">5.1</span>, <span class="fl">7.1</span><span class="op">)</span>, <span class="fl">3</span>, <span class="cn">T</span>,
+             constraintFun <span class="op">=</span> <span class="st">"mean"</span>, comparisonFun <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"&lt;"</span>, <span class="st">"&gt;"</span><span class="op">)</span>,
+             limitConstraints <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">5.1</span>, <span class="fl">4.1</span><span class="op">)</span>, keepResults <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>
+<span class="co">#&gt;      [,1] [,2] [,3]     [,4]</span>
+<span class="co">#&gt; [1,]  2.1  3.1  7.1 4.100000</span>
+<span class="co">#&gt; [2,]  2.1  5.1  5.1 4.100000</span>
+<span class="co">#&gt; [3,]  2.1  5.1  7.1 4.766667</span>
+<span class="co">#&gt; [4,]  3.1  3.1  7.1 4.433333</span>
+<span class="co">#&gt; [5,]  3.1  5.1  5.1 4.433333</span>
+<span class="co">#&gt; [6,]  3.1  5.1  7.1 5.100000</span>
+<span class="co">#&gt; [7,]  5.1  5.1  5.1 5.100000</span></code></pre></div>
+<p>In the above example, the range that is actually tested against is <code>c(4.0999999950329462, 5.1000000049670531)</code>.</p>
+<p>If you want to be absolutely sure you are getting the correct results, one must rely on integers as simple changes in arithmetic can throw off precision in floating point operations.</p>
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="fu"><a href="../reference/combinatoricsGeneral.html">comboGeneral</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">21</span>, <span class="fl">31</span>, <span class="fl">51</span>, <span class="fl">71</span><span class="op">)</span>, <span class="fl">3</span>, <span class="cn">T</span>,
+             constraintFun <span class="op">=</span> <span class="st">"mean"</span>, comparisonFun <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"&lt;"</span>, <span class="st">"&gt;"</span><span class="op">)</span>,
+             limitConstraints <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">51</span>, <span class="fl">41</span><span class="op">)</span>, keepResults <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span> <span class="op">/</span> <span class="fl">10</span>
+<span class="co">#&gt;      [,1] [,2] [,3]     [,4]</span>
+<span class="co">#&gt; [1,]    2    5    7 4.666667</span>
+<span class="co">#&gt; [2,]    3    3    7 4.333333</span>
+<span class="co">#&gt; [3,]    3    5    5 4.333333</span></code></pre></div>
 </div>
 <div class="section level3">
 <h3 id="output-order-with-permutegeneral">Output Order with <code>permuteGeneral</code><a class="anchor" aria-label="anchor" href="#output-order-with-permutegeneral"></a>
 </h3>
 <p>Typically, when we call <code>permuteGeneral</code>, the output is in lexicographical order, however when we apply a constraint, the underlying algorithm checks against combinations only, as this is more efficient. If a particular combination meets a constraint, then all permutations of that vector also meet that constraint, so there is no need to check them. For this reason, the output isn’t in order. Observe:</p>
-<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="fu">permuteGeneral</span>(<span class="fu">c</span>(<span class="dv">2</span>, <span class="dv">3</span>, <span class="dv">5</span>, <span class="dv">7</span>), <span class="dv">3</span>, <span class="at">freqs =</span> <span class="fu">rep</span>(<span class="dv">2</span>, <span class="dv">4</span>),</span>
-<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>               <span class="at">constraintFun =</span> <span class="st">"mean"</span>, <span class="at">comparisonFun =</span> <span class="fu">c</span>(<span class="st">"&gt;"</span>, <span class="st">"&lt;"</span>),</span>
-<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>               <span class="at">limitConstraints =</span> <span class="fu">c</span>(<span class="dv">4</span>, <span class="dv">5</span>), <span class="at">keepResults =</span> <span class="cn">TRUE</span>, <span class="at">tolerance =</span> <span class="dv">0</span>)</span>
-<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>      [,<span class="dv">1</span>] [,<span class="dv">2</span>] [,<span class="dv">3</span>]     [,<span class="dv">4</span>]</span>
-<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a> [<span class="dv">1</span>,]    <span class="dv">2</span>    <span class="dv">5</span>    <span class="dv">7</span> <span class="fl">4.666667</span>   <span class="ot">&lt;-</span><span class="sc">-</span> First combination that meets the criteria</span>
-<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a> [<span class="dv">2</span>,]    <span class="dv">2</span>    <span class="dv">7</span>    <span class="dv">5</span> <span class="fl">4.666667</span></span>
-<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a> [<span class="dv">3</span>,]    <span class="dv">5</span>    <span class="dv">2</span>    <span class="dv">7</span> <span class="fl">4.666667</span></span>
-<span id="cb9-8"><a href="#cb9-8" aria-hidden="true" tabindex="-1"></a> [<span class="dv">4</span>,]    <span class="dv">5</span>    <span class="dv">7</span>    <span class="dv">2</span> <span class="fl">4.666667</span></span>
-<span id="cb9-9"><a href="#cb9-9" aria-hidden="true" tabindex="-1"></a> [<span class="dv">5</span>,]    <span class="dv">7</span>    <span class="dv">2</span>    <span class="dv">5</span> <span class="fl">4.666667</span></span>
-<span id="cb9-10"><a href="#cb9-10" aria-hidden="true" tabindex="-1"></a> [<span class="dv">6</span>,]    <span class="dv">7</span>    <span class="dv">5</span>    <span class="dv">2</span> <span class="fl">4.666667</span></span>
-<span id="cb9-11"><a href="#cb9-11" aria-hidden="true" tabindex="-1"></a> [<span class="dv">7</span>,]    <span class="dv">3</span>    <span class="dv">3</span>    <span class="dv">7</span> <span class="fl">4.333333</span>   <span class="ot">&lt;-</span><span class="sc">-</span> Second combination that meets the criteria</span>
-<span id="cb9-12"><a href="#cb9-12" aria-hidden="true" tabindex="-1"></a> [<span class="dv">8</span>,]    <span class="dv">3</span>    <span class="dv">7</span>    <span class="dv">3</span> <span class="fl">4.333333</span></span>
-<span id="cb9-13"><a href="#cb9-13" aria-hidden="true" tabindex="-1"></a> [<span class="dv">9</span>,]    <span class="dv">7</span>    <span class="dv">3</span>    <span class="dv">3</span> <span class="fl">4.333333</span></span>
-<span id="cb9-14"><a href="#cb9-14" aria-hidden="true" tabindex="-1"></a>[<span class="dv">10</span>,]    <span class="dv">3</span>    <span class="dv">5</span>    <span class="dv">5</span> <span class="fl">4.333333</span>   <span class="ot">&lt;-</span><span class="sc">-</span> Third combination that meets the criteria</span>
-<span id="cb9-15"><a href="#cb9-15" aria-hidden="true" tabindex="-1"></a>[<span class="dv">11</span>,]    <span class="dv">5</span>    <span class="dv">3</span>    <span class="dv">5</span> <span class="fl">4.333333</span></span>
-<span id="cb9-16"><a href="#cb9-16" aria-hidden="true" tabindex="-1"></a>[<span class="dv">12</span>,]    <span class="dv">5</span>    <span class="dv">5</span>    <span class="dv">3</span> <span class="fl">4.333333</span></span></code></pre></div>
+<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="fu"><a href="../reference/combinatoricsGeneral.html">permuteGeneral</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">2</span>, <span class="fl">3</span>, <span class="fl">5</span>, <span class="fl">7</span><span class="op">)</span>, <span class="fl">3</span>, freqs <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fl">2</span>, <span class="fl">4</span><span class="op">)</span>,
+               constraintFun <span class="op">=</span> <span class="st">"mean"</span>, comparisonFun <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"&gt;"</span>, <span class="st">"&lt;"</span><span class="op">)</span>,
+               limitConstraints <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">4</span>, <span class="fl">5</span><span class="op">)</span>, keepResults <span class="op">=</span> <span class="cn">TRUE</span>, tolerance <span class="op">=</span> <span class="fl">0</span><span class="op">)</span>
+<span class="co">#&gt;       [,1] [,2] [,3]     [,4]</span>
+<span class="co">#&gt;  [1,]    2    5    7 4.666667   &lt;-- First combination that meets the criteria</span>
+<span class="co">#&gt;  [2,]    2    7    5 4.666667</span>
+<span class="co">#&gt;  [3,]    5    2    7 4.666667</span>
+<span class="co">#&gt;  [4,]    5    7    2 4.666667</span>
+<span class="co">#&gt;  [5,]    7    2    5 4.666667</span>
+<span class="co">#&gt;  [6,]    7    5    2 4.666667</span>
+<span class="co">#&gt;  [7,]    3    3    7 4.333333   &lt;-- Second combination that meets the criteria</span>
+<span class="co">#&gt;  [8,]    3    7    3 4.333333</span>
+<span class="co">#&gt;  [9,]    7    3    3 4.333333</span>
+<span class="co">#&gt; [10,]    3    5    5 4.333333   &lt;-- Third combination that meets the criteria</span>
+<span class="co">#&gt; [11,]    5    3    5 4.333333</span>
+<span class="co">#&gt; [12,]    5    5    3 4.333333</span></code></pre></div>
 <p>As you can see, the <em>2<sup>nd</sup></em> through the <em>6<sup>th</sup></em> entries are simply permutations of the <em>1<sup>st</sup></em> entry. Similarly, entries <em>8</em> and <em>9</em> are permutations of the <em>7<sup>th</sup></em> and entries <em>11</em> and <em>12</em> are permutations of the <em>10<sup>th</sup></em>.</p>
 </div>
 </div>
 <div class="section level2">
-<h2 id="safely-interrupt-execution-with-rcppcheckuserinterrupt">Safely Interrupt Execution with <code>Rcpp::checkUserInterrupt</code><a class="anchor" aria-label="anchor" href="#safely-interrupt-execution-with-rcppcheckuserinterrupt"></a>
+<h2 id="note-about-interrupting-execution">Note about Interrupting Execution<a class="anchor" aria-label="anchor" href="#note-about-interrupting-execution"></a>
 </h2>
-<p>Some of these operations can take some time, especially when you are in the exploratory phase and you don’t have that much information about what type of solution you will obtain. For this reason, we have added the ability to interrupt execution as of version <code>2.4.0</code>. Under the hood, we call <code>Rcpp::checkUserInterrupt()</code> once every second to check if the user has requested for the process to be interrupted. Note that we only check for user interruptions when we cannot determine the number of results up front.</p>
-<p>In prior versions, the example below would have executed indefinitely and the only way to stop it would have been to force quit <code>R</code>. This is not a very good solution.</p>
-<p>With version <code>2.4.0</code>, if we initiate a process that will take a long time or exhaust all of the available memory (e.g. we forget to put an upper limit on the number of results, relax the tolerance, etc.), we can simply hit <code>Ctrl + c</code>, or <code>esc</code> if using <code>RStudio</code>, to stop execution.</p>
-<div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">123</span>)</span>
-<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>s <span class="ot">&lt;-</span> <span class="fu">rnorm</span>(<span class="dv">1000</span>)</span>
-<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a><span class="do">## Oops!! We forgot to limit the output/put a loose tolerance</span></span>
-<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a><span class="do">## There are as.numeric(comboCount(s, 20, T)) ~= 4.964324e+41</span></span>
-<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a><span class="do">## This will either take a long long time, or all of your</span></span>
-<span id="cb10-7"><a href="#cb10-7" aria-hidden="true" tabindex="-1"></a><span class="do">## memory will be consumed!!!</span></span>
-<span id="cb10-8"><a href="#cb10-8" aria-hidden="true" tabindex="-1"></a><span class="do">##</span></span>
-<span id="cb10-9"><a href="#cb10-9" aria-hidden="true" tabindex="-1"></a><span class="do">## No problem... simply hit Ctrl + c or if in RStudio, hit esc</span></span>
-<span id="cb10-10"><a href="#cb10-10" aria-hidden="true" tabindex="-1"></a><span class="do">## or hit the "Stop" button</span></span>
-<span id="cb10-11"><a href="#cb10-11" aria-hidden="true" tabindex="-1"></a><span class="fu">system.time</span>(testInterrupt <span class="ot">&lt;-</span> <span class="fu">comboGeneral</span>(s, <span class="dv">20</span>, <span class="cn">TRUE</span>,</span>
-<span id="cb10-12"><a href="#cb10-12" aria-hidden="true" tabindex="-1"></a>                                          <span class="at">constraintFun =</span> <span class="st">"sum"</span>,</span>
-<span id="cb10-13"><a href="#cb10-13" aria-hidden="true" tabindex="-1"></a>                                          <span class="at">comparisonFun =</span> <span class="st">"=="</span>,</span>
-<span id="cb10-14"><a href="#cb10-14" aria-hidden="true" tabindex="-1"></a>                                          <span class="at">limitConstraints =</span> <span class="dv">0</span>))</span>
-<span id="cb10-15"><a href="#cb10-15" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb10-16"><a href="#cb10-16" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb10-17"><a href="#cb10-17" aria-hidden="true" tabindex="-1"></a>Timing stopped at<span class="sc">:</span> <span class="fl">2.982</span> <span class="fl">0.011</span> <span class="fl">3.002</span></span>
-<span id="cb10-18"><a href="#cb10-18" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb10-19"><a href="#cb10-19" aria-hidden="true" tabindex="-1"></a><span class="do">## Whew, that was close! Let's try again.</span></span>
-<span id="cb10-20"><a href="#cb10-20" aria-hidden="true" tabindex="-1"></a><span class="fu">system.time</span>(takeTwo <span class="ot">&lt;-</span> <span class="fu">comboGeneral</span>(s, <span class="dv">20</span>, <span class="cn">TRUE</span>,</span>
-<span id="cb10-21"><a href="#cb10-21" aria-hidden="true" tabindex="-1"></a>                                    <span class="at">constraintFun =</span> <span class="st">"sum"</span>,</span>
-<span id="cb10-22"><a href="#cb10-22" aria-hidden="true" tabindex="-1"></a>                                    <span class="at">comparisonFun =</span> <span class="st">"=="</span>,</span>
-<span id="cb10-23"><a href="#cb10-23" aria-hidden="true" tabindex="-1"></a>                                    <span class="at">limitConstraints =</span> <span class="dv">0</span>,</span>
-<span id="cb10-24"><a href="#cb10-24" aria-hidden="true" tabindex="-1"></a>                                    <span class="at">upper =</span> <span class="dv">10</span>, <span class="at">tolerance =</span> <span class="fl">0.00001</span>))</span>
-<span id="cb10-25"><a href="#cb10-25" aria-hidden="true" tabindex="-1"></a> user  system elapsed</span>
-<span id="cb10-26"><a href="#cb10-26" aria-hidden="true" tabindex="-1"></a><span class="fl">0.056</span>   <span class="fl">0.000</span>   <span class="fl">0.058</span></span>
-<span id="cb10-27"><a href="#cb10-27" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb10-28"><a href="#cb10-28" aria-hidden="true" tabindex="-1"></a><span class="fu">dim</span>(takeTwo)</span>
-<span id="cb10-29"><a href="#cb10-29" aria-hidden="true" tabindex="-1"></a>[<span class="dv">1</span>] <span class="dv">10</span> <span class="dv">20</span></span>
-<span id="cb10-30"><a href="#cb10-30" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb10-31"><a href="#cb10-31" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb10-32"><a href="#cb10-32" aria-hidden="true" tabindex="-1"></a><span class="do">## Tighten the tolerance</span></span>
-<span id="cb10-33"><a href="#cb10-33" aria-hidden="true" tabindex="-1"></a><span class="fu">system.time</span>(takeThree <span class="ot">&lt;-</span> <span class="fu">comboGeneral</span>(s, <span class="dv">20</span>, <span class="cn">TRUE</span>,</span>
-<span id="cb10-34"><a href="#cb10-34" aria-hidden="true" tabindex="-1"></a>                                      <span class="at">constraintFun =</span> <span class="st">"sum"</span>,</span>
-<span id="cb10-35"><a href="#cb10-35" aria-hidden="true" tabindex="-1"></a>                                      <span class="at">comparisonFun =</span> <span class="st">"=="</span>,</span>
-<span id="cb10-36"><a href="#cb10-36" aria-hidden="true" tabindex="-1"></a>                                      <span class="at">limitConstraints =</span> <span class="dv">0</span>,</span>
-<span id="cb10-37"><a href="#cb10-37" aria-hidden="true" tabindex="-1"></a>                                      <span class="at">upper =</span> <span class="dv">10</span>, <span class="at">tolerance =</span> <span class="fl">0.0000001</span>))</span>
-<span id="cb10-38"><a href="#cb10-38" aria-hidden="true" tabindex="-1"></a> user  system elapsed</span>
-<span id="cb10-39"><a href="#cb10-39" aria-hidden="true" tabindex="-1"></a><span class="fl">9.194</span>   <span class="fl">0.011</span>   <span class="fl">9.212</span></span>
-<span id="cb10-40"><a href="#cb10-40" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb10-41"><a href="#cb10-41" aria-hidden="true" tabindex="-1"></a><span class="fu">dim</span>(takeThree)</span>
-<span id="cb10-42"><a href="#cb10-42" aria-hidden="true" tabindex="-1"></a>[<span class="dv">1</span>] <span class="dv">10</span> <span class="dv">20</span></span>
-<span id="cb10-43"><a href="#cb10-43" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb10-44"><a href="#cb10-44" aria-hidden="true" tabindex="-1"></a><span class="do">## We are getting closer... tighten the tolerance and repeat</span></span></code></pre></div>
+<p>In version <code>2.4.*</code> it was possible to interrupt long running jobs by taking advantage of <code>Rcpp::checkUserInterrupt</code>. Since we no longer rely on <code>Rcpp</code> in version <code>2.5.0</code>, we are currently not checking for user interruption. Our goal is to eventually include this feature as it is very convenient, however it will take great care to implement as it is non-trivial.</p>
+<p>For now, we encourage user to use iterators (See <a href="https://jwood000.github.io/RcppAlgos/articles/CombinatoricsIterators.html" class="external-link">Combinatorial Iterators in RcppAlgos</a>) as they offer greater flexibility. For example, with iterators it is easy to avoid resource consuming calls by only fetching a few results at a time.</p>
+<p>Here is an example of how to investigate difficult problems due to combinatorial explosion without fear of having to restart R.</p>
+<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="fl">123</span><span class="op">)</span>
+<span class="va">s</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/Normal.html" class="external-link">rnorm</a></span><span class="op">(</span><span class="fl">1000</span><span class="op">)</span>
+
+<span class="co">## In previous versions, you could execute commands and interrupt</span>
+<span class="co">## them if it took a really long.</span>
+<span class="co">##</span>
+<span class="co">## Now, we use iterators.</span>
+<span class="va">iter</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/combinatoricsIterator.html">comboIter</a></span><span class="op">(</span><span class="va">s</span>, <span class="fl">20</span>, <span class="cn">TRUE</span>,
+                  constraintFun <span class="op">=</span> <span class="st">"sum"</span>,
+                  comparisonFun <span class="op">=</span> <span class="st">"=="</span>,
+                  limitConstraints <span class="op">=</span> <span class="fl">0</span><span class="op">)</span>
+
+<span class="co">## Test one iteration to see if we need to relax the tolerance</span>
+<span class="fu"><a href="https://rdrr.io/r/base/system.time.html" class="external-link">system.time</a></span><span class="op">(</span><span class="va">iter</span><span class="op">@</span><span class="va">nextIter</span><span class="op">(</span><span class="op">)</span><span class="op">)</span>
+<span class="co">#&gt;    user  system elapsed</span>
+<span class="co">#&gt;   7.448   0.013   7.468</span>
+
+<span class="co">## 8 seconds per iteration is a bit much... Let's loosen things</span>
+<span class="co">## a little by increasing the tolerance from sqrt(.Machine$double.eps)</span>
+<span class="co">## ~= 1.49e-8 to 1e-5.</span>
+<span class="va">relaxedIter</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/combinatoricsIterator.html">comboIter</a></span><span class="op">(</span><span class="va">s</span>, <span class="fl">20</span>, <span class="cn">TRUE</span>,
+                         constraintFun <span class="op">=</span> <span class="st">"sum"</span>,
+                         comparisonFun <span class="op">=</span> <span class="st">"=="</span>,
+                         limitConstraints <span class="op">=</span> <span class="fl">0</span>,
+                         tolerance <span class="op">=</span> <span class="fl">1e-5</span><span class="op">)</span>
+
+<span class="fu"><a href="https://rdrr.io/r/base/system.time.html" class="external-link">system.time</a></span><span class="op">(</span><span class="va">relaxedIter</span><span class="op">@</span><span class="va">nextIter</span><span class="op">(</span><span class="op">)</span><span class="op">)</span>
+<span class="co">#&gt;    user  system elapsed</span>
+<span class="co">#&gt;   0.001   0.000   0.001</span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="integer-partitions">Integer Partitions<a class="anchor" aria-label="anchor" href="#integer-partitions"></a>
 </h2>
 <p>Specialized algorithms are employed when it can be determined that we are looking for <a href="https://en.wikipedia.org/wiki/Partition_(number_theory)" class="external-link">integer partitions</a>.</p>
+<p>As of version <code>2.5.0</code>, we now have added <code>partitionsGeneral</code> which is a wrapper of <code>comboGeneral</code> with <code>constraintFun = "sum"</code> and <code>comparisonFun = "=="</code>. Instead of using the very general <code>limitConstraints</code> parameter, we use <code>target</code> with a default of <code>max(abs(v))</code> as it seems more fitting for partitions.</p>
 <div class="section level3">
 <h3 id="case-1-all-integer-partitions-of-n">Case 1: All Integer Partitions of <em>N</em><a class="anchor" aria-label="anchor" href="#case-1-all-integer-partitions-of-n"></a>
 </h3>
-<p>We need <code>v = 0:N</code>, <code>repetition = TRUE</code>, <code>constraintFun = "sum"</code>, <code>comparisonFun = "=="</code>, and <code>limitConstraints = N</code>. When we leave <code>m = NULL</code>, <code>m</code> is internally set to the length of the longest non-zero combination (this is true for all cases below).</p>
-<div class="sourceCode" id="cb11"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="fu">comboGeneral</span>(<span class="dv">0</span><span class="sc">:</span><span class="dv">5</span>, <span class="at">repetition =</span> <span class="cn">TRUE</span>,</span>
-<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>             <span class="at">constraintFun =</span> <span class="st">"sum"</span>,</span>
-<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>             <span class="at">comparisonFun =</span> <span class="st">"=="</span>, <span class="at">limitConstraints =</span> <span class="dv">5</span>)</span>
-<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a>     [,<span class="dv">1</span>] [,<span class="dv">2</span>] [,<span class="dv">3</span>] [,<span class="dv">4</span>] [,<span class="dv">5</span>]</span>
-<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a>[<span class="dv">1</span>,]    <span class="dv">0</span>    <span class="dv">0</span>    <span class="dv">0</span>    <span class="dv">0</span>    <span class="dv">5</span></span>
-<span id="cb11-6"><a href="#cb11-6" aria-hidden="true" tabindex="-1"></a>[<span class="dv">2</span>,]    <span class="dv">0</span>    <span class="dv">0</span>    <span class="dv">0</span>    <span class="dv">1</span>    <span class="dv">4</span></span>
-<span id="cb11-7"><a href="#cb11-7" aria-hidden="true" tabindex="-1"></a>[<span class="dv">3</span>,]    <span class="dv">0</span>    <span class="dv">0</span>    <span class="dv">0</span>    <span class="dv">2</span>    <span class="dv">3</span></span>
-<span id="cb11-8"><a href="#cb11-8" aria-hidden="true" tabindex="-1"></a>[<span class="dv">4</span>,]    <span class="dv">0</span>    <span class="dv">0</span>    <span class="dv">1</span>    <span class="dv">1</span>    <span class="dv">3</span></span>
-<span id="cb11-9"><a href="#cb11-9" aria-hidden="true" tabindex="-1"></a>[<span class="dv">5</span>,]    <span class="dv">0</span>    <span class="dv">0</span>    <span class="dv">1</span>    <span class="dv">2</span>    <span class="dv">2</span></span>
-<span id="cb11-10"><a href="#cb11-10" aria-hidden="true" tabindex="-1"></a>[<span class="dv">6</span>,]    <span class="dv">0</span>    <span class="dv">1</span>    <span class="dv">1</span>    <span class="dv">1</span>    <span class="dv">2</span></span>
-<span id="cb11-11"><a href="#cb11-11" aria-hidden="true" tabindex="-1"></a>[<span class="dv">7</span>,]    <span class="dv">1</span>    <span class="dv">1</span>    <span class="dv">1</span>    <span class="dv">1</span>    <span class="dv">1</span></span></code></pre></div>
+<p>We need <code>v = 0:N</code>, <code>repetition = TRUE</code>. When we leave <code>m = NULL</code>, <code>m</code> is internally set to the length of the longest non-zero combination (this is true for all cases below).</p>
+<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="fu"><a href="../reference/partitionsGeneral.html">partitionsGeneral</a></span><span class="op">(</span><span class="fl">0</span><span class="op">:</span><span class="fl">5</span>, repetition <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>
+<span class="co">#&gt;      [,1] [,2] [,3] [,4] [,5]</span>
+<span class="co">#&gt; [1,]    0    0    0    0    5</span>
+<span class="co">#&gt; [2,]    0    0    0    1    4</span>
+<span class="co">#&gt; [3,]    0    0    0    2    3</span>
+<span class="co">#&gt; [4,]    0    0    1    1    3</span>
+<span class="co">#&gt; [5,]    0    0    1    2    2</span>
+<span class="co">#&gt; [6,]    0    1    1    1    2</span>
+<span class="co">#&gt; [7,]    1    1    1    1    1</span>
+
+<span class="co">## Note that we could also use comboGeneral:</span>
+<span class="co">## comboGeneral(0:5, repetition = TRUE,</span>
+<span class="co">##              constraintFun = "sum",</span>
+<span class="co">##              comparisonFun = "==", limitConstraints = 5)</span>
+<span class="co">##</span>
+<span class="co">## The same goes for any of the examples below</span></code></pre></div>
 </div>
 <div class="section level3">
 <h3 id="case-2-integer-partitions-of-n-of-length-m">Case 2: Integer Partitions of <em>N</em> of Length <em>m</em><a class="anchor" aria-label="anchor" href="#case-2-integer-partitions-of-n-of-length-m"></a>
 </h3>
 <p>Everything is the same as above except for explicitly setting the desired length and deciding whether to include zero or not.</p>
-<div class="sourceCode" id="cb12"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="do">## Including zero</span></span>
-<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a><span class="fu">comboGeneral</span>(<span class="dv">0</span><span class="sc">:</span><span class="dv">5</span>, <span class="dv">3</span>, <span class="at">repetition =</span> <span class="cn">TRUE</span>,</span>
-<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>             <span class="at">constraintFun =</span> <span class="st">"sum"</span>,</span>
-<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a>             <span class="at">comparisonFun =</span> <span class="st">"=="</span>, <span class="at">limitConstraints =</span> <span class="dv">5</span>)</span>
-<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a>     [,<span class="dv">1</span>] [,<span class="dv">2</span>] [,<span class="dv">3</span>]</span>
-<span id="cb12-6"><a href="#cb12-6" aria-hidden="true" tabindex="-1"></a>[<span class="dv">1</span>,]    <span class="dv">0</span>    <span class="dv">0</span>    <span class="dv">5</span></span>
-<span id="cb12-7"><a href="#cb12-7" aria-hidden="true" tabindex="-1"></a>[<span class="dv">2</span>,]    <span class="dv">0</span>    <span class="dv">1</span>    <span class="dv">4</span></span>
-<span id="cb12-8"><a href="#cb12-8" aria-hidden="true" tabindex="-1"></a>[<span class="dv">3</span>,]    <span class="dv">0</span>    <span class="dv">2</span>    <span class="dv">3</span></span>
-<span id="cb12-9"><a href="#cb12-9" aria-hidden="true" tabindex="-1"></a>[<span class="dv">4</span>,]    <span class="dv">1</span>    <span class="dv">1</span>    <span class="dv">3</span></span>
-<span id="cb12-10"><a href="#cb12-10" aria-hidden="true" tabindex="-1"></a>[<span class="dv">5</span>,]    <span class="dv">1</span>    <span class="dv">2</span>    <span class="dv">2</span></span>
-<span id="cb12-11"><a href="#cb12-11" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb12-12"><a href="#cb12-12" aria-hidden="true" tabindex="-1"></a><span class="do">## Zero not included</span></span>
-<span id="cb12-13"><a href="#cb12-13" aria-hidden="true" tabindex="-1"></a><span class="fu">comboGeneral</span>(<span class="dv">5</span>, <span class="dv">3</span>, <span class="at">repetition =</span> <span class="cn">TRUE</span>,</span>
-<span id="cb12-14"><a href="#cb12-14" aria-hidden="true" tabindex="-1"></a>             <span class="at">constraintFun =</span> <span class="st">"sum"</span>,</span>
-<span id="cb12-15"><a href="#cb12-15" aria-hidden="true" tabindex="-1"></a>             <span class="at">comparisonFun =</span> <span class="st">"=="</span>, <span class="at">limitConstraints =</span> <span class="dv">5</span>)</span>
-<span id="cb12-16"><a href="#cb12-16" aria-hidden="true" tabindex="-1"></a>     [,<span class="dv">1</span>] [,<span class="dv">2</span>] [,<span class="dv">3</span>]</span>
-<span id="cb12-17"><a href="#cb12-17" aria-hidden="true" tabindex="-1"></a>[<span class="dv">1</span>,]    <span class="dv">1</span>    <span class="dv">1</span>    <span class="dv">3</span></span>
-<span id="cb12-18"><a href="#cb12-18" aria-hidden="true" tabindex="-1"></a>[<span class="dv">2</span>,]    <span class="dv">1</span>    <span class="dv">2</span>    <span class="dv">2</span></span></code></pre></div>
+<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="co">## Including zero</span>
+<span class="fu"><a href="../reference/partitionsGeneral.html">partitionsGeneral</a></span><span class="op">(</span><span class="fl">0</span><span class="op">:</span><span class="fl">5</span>, <span class="fl">3</span>, repetition <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>
+<span class="co">#&gt;      [,1] [,2] [,3]</span>
+<span class="co">#&gt; [1,]    0    0    5</span>
+<span class="co">#&gt; [2,]    0    1    4</span>
+<span class="co">#&gt; [3,]    0    2    3</span>
+<span class="co">#&gt; [4,]    1    1    3</span>
+<span class="co">#&gt; [5,]    1    2    2</span>
+
+<span class="co">## Zero not included</span>
+<span class="fu"><a href="../reference/partitionsGeneral.html">partitionsGeneral</a></span><span class="op">(</span><span class="fl">5</span>, <span class="fl">3</span>, repetition <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>
+<span class="co">#&gt;      [,1] [,2] [,3]</span>
+<span class="co">#&gt; [1,]    1    1    3</span>
+<span class="co">#&gt; [2,]    1    2    2</span></code></pre></div>
 </div>
 <div class="section level3">
 <h3 id="case-3-integer-partitions-of-n-into-distinct-parts">Case 3: Integer Partitions of <em>N</em> into Distinct Parts<a class="anchor" aria-label="anchor" href="#case-3-integer-partitions-of-n-into-distinct-parts"></a>
 </h3>
 <p>Same as <code>Case 1 &amp; 2</code> except now we have <code>repetition = FALSE</code>.</p>
-<div class="sourceCode" id="cb13"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="fu">comboGeneral</span>(<span class="dv">0</span><span class="sc">:</span><span class="dv">10</span>, <span class="at">constraintFun =</span> <span class="st">"sum"</span>,</span>
-<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>             <span class="at">comparisonFun =</span> <span class="st">"=="</span>, <span class="at">limitConstraints =</span> <span class="dv">10</span>)</span>
-<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>     [,<span class="dv">1</span>] [,<span class="dv">2</span>] [,<span class="dv">3</span>] [,<span class="dv">4</span>]</span>
-<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a>[<span class="dv">1</span>,]    <span class="dv">0</span>    <span class="dv">1</span>    <span class="dv">2</span>    <span class="dv">7</span></span>
-<span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a>[<span class="dv">2</span>,]    <span class="dv">0</span>    <span class="dv">1</span>    <span class="dv">3</span>    <span class="dv">6</span></span>
-<span id="cb13-6"><a href="#cb13-6" aria-hidden="true" tabindex="-1"></a>[<span class="dv">3</span>,]    <span class="dv">0</span>    <span class="dv">1</span>    <span class="dv">4</span>    <span class="dv">5</span></span>
-<span id="cb13-7"><a href="#cb13-7" aria-hidden="true" tabindex="-1"></a>[<span class="dv">4</span>,]    <span class="dv">0</span>    <span class="dv">2</span>    <span class="dv">3</span>    <span class="dv">5</span></span>
-<span id="cb13-8"><a href="#cb13-8" aria-hidden="true" tabindex="-1"></a>[<span class="dv">5</span>,]    <span class="dv">1</span>    <span class="dv">2</span>    <span class="dv">3</span>    <span class="dv">4</span></span>
-<span id="cb13-9"><a href="#cb13-9" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb13-10"><a href="#cb13-10" aria-hidden="true" tabindex="-1"></a><span class="do">## Zero not included and restrict the length</span></span>
-<span id="cb13-11"><a href="#cb13-11" aria-hidden="true" tabindex="-1"></a><span class="fu">comboGeneral</span>(<span class="dv">10</span>, <span class="dv">3</span>, <span class="at">constraintFun =</span> <span class="st">"sum"</span>,</span>
-<span id="cb13-12"><a href="#cb13-12" aria-hidden="true" tabindex="-1"></a>             <span class="at">comparisonFun =</span> <span class="st">"=="</span>, <span class="at">limitConstraints =</span> <span class="dv">10</span>)</span>
-<span id="cb13-13"><a href="#cb13-13" aria-hidden="true" tabindex="-1"></a>     [,<span class="dv">1</span>] [,<span class="dv">2</span>] [,<span class="dv">3</span>]</span>
-<span id="cb13-14"><a href="#cb13-14" aria-hidden="true" tabindex="-1"></a>[<span class="dv">1</span>,]    <span class="dv">1</span>    <span class="dv">2</span>    <span class="dv">7</span></span>
-<span id="cb13-15"><a href="#cb13-15" aria-hidden="true" tabindex="-1"></a>[<span class="dv">2</span>,]    <span class="dv">1</span>    <span class="dv">3</span>    <span class="dv">6</span></span>
-<span id="cb13-16"><a href="#cb13-16" aria-hidden="true" tabindex="-1"></a>[<span class="dv">3</span>,]    <span class="dv">1</span>    <span class="dv">4</span>    <span class="dv">5</span></span>
-<span id="cb13-17"><a href="#cb13-17" aria-hidden="true" tabindex="-1"></a>[<span class="dv">4</span>,]    <span class="dv">2</span>    <span class="dv">3</span>    <span class="dv">5</span></span>
-<span id="cb13-18"><a href="#cb13-18" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb13-19"><a href="#cb13-19" aria-hidden="true" tabindex="-1"></a><span class="do">## Include zero and restrict the length</span></span>
-<span id="cb13-20"><a href="#cb13-20" aria-hidden="true" tabindex="-1"></a><span class="fu">comboGeneral</span>(<span class="dv">0</span><span class="sc">:</span><span class="dv">10</span>, <span class="dv">3</span>, <span class="at">constraintFun =</span> <span class="st">"sum"</span>,</span>
-<span id="cb13-21"><a href="#cb13-21" aria-hidden="true" tabindex="-1"></a>             <span class="at">comparisonFun =</span> <span class="st">"=="</span>, <span class="at">limitConstraints =</span> <span class="dv">10</span>)</span>
-<span id="cb13-22"><a href="#cb13-22" aria-hidden="true" tabindex="-1"></a>     [,<span class="dv">1</span>] [,<span class="dv">2</span>] [,<span class="dv">3</span>]</span>
-<span id="cb13-23"><a href="#cb13-23" aria-hidden="true" tabindex="-1"></a>[<span class="dv">1</span>,]    <span class="dv">0</span>    <span class="dv">1</span>    <span class="dv">9</span></span>
-<span id="cb13-24"><a href="#cb13-24" aria-hidden="true" tabindex="-1"></a>[<span class="dv">2</span>,]    <span class="dv">0</span>    <span class="dv">2</span>    <span class="dv">8</span></span>
-<span id="cb13-25"><a href="#cb13-25" aria-hidden="true" tabindex="-1"></a>[<span class="dv">3</span>,]    <span class="dv">0</span>    <span class="dv">3</span>    <span class="dv">7</span></span>
-<span id="cb13-26"><a href="#cb13-26" aria-hidden="true" tabindex="-1"></a>[<span class="dv">4</span>,]    <span class="dv">0</span>    <span class="dv">4</span>    <span class="dv">6</span></span>
-<span id="cb13-27"><a href="#cb13-27" aria-hidden="true" tabindex="-1"></a>[<span class="dv">5</span>,]    <span class="dv">1</span>    <span class="dv">2</span>    <span class="dv">7</span></span>
-<span id="cb13-28"><a href="#cb13-28" aria-hidden="true" tabindex="-1"></a>[<span class="dv">6</span>,]    <span class="dv">1</span>    <span class="dv">3</span>    <span class="dv">6</span></span>
-<span id="cb13-29"><a href="#cb13-29" aria-hidden="true" tabindex="-1"></a>[<span class="dv">7</span>,]    <span class="dv">1</span>    <span class="dv">4</span>    <span class="dv">5</span></span>
-<span id="cb13-30"><a href="#cb13-30" aria-hidden="true" tabindex="-1"></a>[<span class="dv">8</span>,]    <span class="dv">2</span>    <span class="dv">3</span>    <span class="dv">5</span></span>
-<span id="cb13-31"><a href="#cb13-31" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb13-32"><a href="#cb13-32" aria-hidden="true" tabindex="-1"></a><span class="do">## partitions of 10 into distinct parts of every length</span></span>
-<span id="cb13-33"><a href="#cb13-33" aria-hidden="true" tabindex="-1"></a><span class="fu">lapply</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">4</span>, <span class="cf">function</span>(x) {</span>
-<span id="cb13-34"><a href="#cb13-34" aria-hidden="true" tabindex="-1"></a>    <span class="fu">comboGeneral</span>(<span class="dv">10</span>, x, <span class="at">constraintFun =</span> <span class="st">"sum"</span>,</span>
-<span id="cb13-35"><a href="#cb13-35" aria-hidden="true" tabindex="-1"></a>             <span class="at">comparisonFun =</span> <span class="st">"=="</span>, <span class="at">limitConstraints =</span> <span class="dv">10</span>)</span>
-<span id="cb13-36"><a href="#cb13-36" aria-hidden="true" tabindex="-1"></a>})</span>
-<span id="cb13-37"><a href="#cb13-37" aria-hidden="true" tabindex="-1"></a>[[<span class="dv">1</span>]]</span>
-<span id="cb13-38"><a href="#cb13-38" aria-hidden="true" tabindex="-1"></a>     [,<span class="dv">1</span>]</span>
-<span id="cb13-39"><a href="#cb13-39" aria-hidden="true" tabindex="-1"></a>[<span class="dv">1</span>,]   <span class="dv">10</span></span>
-<span id="cb13-40"><a href="#cb13-40" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb13-41"><a href="#cb13-41" aria-hidden="true" tabindex="-1"></a>[[<span class="dv">2</span>]]</span>
-<span id="cb13-42"><a href="#cb13-42" aria-hidden="true" tabindex="-1"></a>     [,<span class="dv">1</span>] [,<span class="dv">2</span>]</span>
-<span id="cb13-43"><a href="#cb13-43" aria-hidden="true" tabindex="-1"></a>[<span class="dv">1</span>,]    <span class="dv">1</span>    <span class="dv">9</span></span>
-<span id="cb13-44"><a href="#cb13-44" aria-hidden="true" tabindex="-1"></a>[<span class="dv">2</span>,]    <span class="dv">2</span>    <span class="dv">8</span></span>
-<span id="cb13-45"><a href="#cb13-45" aria-hidden="true" tabindex="-1"></a>[<span class="dv">3</span>,]    <span class="dv">3</span>    <span class="dv">7</span></span>
-<span id="cb13-46"><a href="#cb13-46" aria-hidden="true" tabindex="-1"></a>[<span class="dv">4</span>,]    <span class="dv">4</span>    <span class="dv">6</span></span>
-<span id="cb13-47"><a href="#cb13-47" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb13-48"><a href="#cb13-48" aria-hidden="true" tabindex="-1"></a>[[<span class="dv">3</span>]]</span>
-<span id="cb13-49"><a href="#cb13-49" aria-hidden="true" tabindex="-1"></a>     [,<span class="dv">1</span>] [,<span class="dv">2</span>] [,<span class="dv">3</span>]</span>
-<span id="cb13-50"><a href="#cb13-50" aria-hidden="true" tabindex="-1"></a>[<span class="dv">1</span>,]    <span class="dv">1</span>    <span class="dv">2</span>    <span class="dv">7</span></span>
-<span id="cb13-51"><a href="#cb13-51" aria-hidden="true" tabindex="-1"></a>[<span class="dv">2</span>,]    <span class="dv">1</span>    <span class="dv">3</span>    <span class="dv">6</span></span>
-<span id="cb13-52"><a href="#cb13-52" aria-hidden="true" tabindex="-1"></a>[<span class="dv">3</span>,]    <span class="dv">1</span>    <span class="dv">4</span>    <span class="dv">5</span></span>
-<span id="cb13-53"><a href="#cb13-53" aria-hidden="true" tabindex="-1"></a>[<span class="dv">4</span>,]    <span class="dv">2</span>    <span class="dv">3</span>    <span class="dv">5</span></span>
-<span id="cb13-54"><a href="#cb13-54" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb13-55"><a href="#cb13-55" aria-hidden="true" tabindex="-1"></a>[[<span class="dv">4</span>]]</span>
-<span id="cb13-56"><a href="#cb13-56" aria-hidden="true" tabindex="-1"></a>     [,<span class="dv">1</span>] [,<span class="dv">2</span>] [,<span class="dv">3</span>] [,<span class="dv">4</span>]</span>
-<span id="cb13-57"><a href="#cb13-57" aria-hidden="true" tabindex="-1"></a>[<span class="dv">1</span>,]    <span class="dv">1</span>    <span class="dv">2</span>    <span class="dv">3</span>    <span class="dv">4</span></span></code></pre></div>
+<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="fu"><a href="../reference/partitionsGeneral.html">partitionsGeneral</a></span><span class="op">(</span><span class="fl">0</span><span class="op">:</span><span class="fl">10</span><span class="op">)</span>
+<span class="co">#&gt;      [,1] [,2] [,3] [,4]</span>
+<span class="co">#&gt; [1,]    0    1    2    7</span>
+<span class="co">#&gt; [2,]    0    1    3    6</span>
+<span class="co">#&gt; [3,]    0    1    4    5</span>
+<span class="co">#&gt; [4,]    0    2    3    5</span>
+<span class="co">#&gt; [5,]    1    2    3    4</span>
+
+<span class="co">## Zero not included and restrict the length</span>
+<span class="fu"><a href="../reference/partitionsGeneral.html">partitionsGeneral</a></span><span class="op">(</span><span class="fl">10</span>, <span class="fl">3</span><span class="op">)</span>
+<span class="co">#&gt;      [,1] [,2] [,3]</span>
+<span class="co">#&gt; [1,]    1    2    7</span>
+<span class="co">#&gt; [2,]    1    3    6</span>
+<span class="co">#&gt; [3,]    1    4    5</span>
+<span class="co">#&gt; [4,]    2    3    5</span>
+
+<span class="co">## Include zero and restrict the length</span>
+<span class="fu"><a href="../reference/partitionsGeneral.html">partitionsGeneral</a></span><span class="op">(</span><span class="fl">0</span><span class="op">:</span><span class="fl">10</span>, <span class="fl">3</span><span class="op">)</span>
+<span class="co">#&gt;      [,1] [,2] [,3]</span>
+<span class="co">#&gt; [1,]    0    1    9</span>
+<span class="co">#&gt; [2,]    0    2    8</span>
+<span class="co">#&gt; [3,]    0    3    7</span>
+<span class="co">#&gt; [4,]    0    4    6</span>
+<span class="co">#&gt; [5,]    1    2    7</span>
+<span class="co">#&gt; [6,]    1    3    6</span>
+<span class="co">#&gt; [7,]    1    4    5</span>
+<span class="co">#&gt; [8,]    2    3    5</span>
+
+<span class="co">## partitions of 10 into distinct parts of every length</span>
+<span class="fu"><a href="https://rdrr.io/r/base/lapply.html" class="external-link">lapply</a></span><span class="op">(</span><span class="fl">1</span><span class="op">:</span><span class="fl">4</span>, <span class="kw">function</span><span class="op">(</span><span class="va">x</span><span class="op">)</span> <span class="op">{</span>
+    <span class="fu"><a href="../reference/partitionsGeneral.html">partitionsGeneral</a></span><span class="op">(</span><span class="fl">10</span>, <span class="va">x</span><span class="op">)</span>
+<span class="op">}</span><span class="op">)</span>
+<span class="co">#&gt; [[1]]</span>
+<span class="co">#&gt;      [,1]</span>
+<span class="co">#&gt; [1,]   10</span>
+<span class="co">#&gt;</span>
+<span class="co">#&gt; [[2]]</span>
+<span class="co">#&gt;      [,1] [,2]</span>
+<span class="co">#&gt; [1,]    1    9</span>
+<span class="co">#&gt; [2,]    2    8</span>
+<span class="co">#&gt; [3,]    3    7</span>
+<span class="co">#&gt; [4,]    4    6</span>
+<span class="co">#&gt;</span>
+<span class="co">#&gt; [[3]]</span>
+<span class="co">#&gt;      [,1] [,2] [,3]</span>
+<span class="co">#&gt; [1,]    1    2    7</span>
+<span class="co">#&gt; [2,]    1    3    6</span>
+<span class="co">#&gt; [3,]    1    4    5</span>
+<span class="co">#&gt; [4,]    2    3    5</span>
+<span class="co">#&gt;</span>
+<span class="co">#&gt; [[4]]</span>
+<span class="co">#&gt;      [,1] [,2] [,3] [,4]</span>
+<span class="co">#&gt; [1,]    1    2    3    4</span></code></pre></div>
 <div class="section level4">
 <h4 id="using-freqs-to-refine-length">Using <code>freqs</code> to Refine Length<a class="anchor" aria-label="anchor" href="#using-freqs-to-refine-length"></a>
 </h4>
 <p>We can utilize the <code>freqs</code> argument to obtain more distinct partitions by allowing for repeated zeros. The super optimized algorithm will only be carried out if zero is included and the number of repetitions for every number except zero is one.</p>
-<p>For example, given <code>v = 0:N</code> and <code>J &gt;= 1</code>, if <code>freqs = c(J, rep(1, N))</code>, then the super optimized algorithm will be used, however if <code>freqs = c(J, 2, rep(1, N - 1))</code>, the general algorithm will be used. It should be noted that the general algorithm is still highly optimized so one should not fear using it.</p>
+<p>For example, given <code>v = 0:N</code> and <code>J &gt;= 1</code>, if <code>freqs = c(J, rep(1, N))</code>, then the super optimized algorithm will be used, however if <code>freqs = c(J, 2, rep(1, N - 1))</code>, the general algorithm will be used. It should be noted that the general algorithms are still highly optimized so one should not fear using it.</p>
 <p>A pattern that is guaranteed to retrieve all distinct partitions of <em>N</em> is to set <code>v = 0:N</code> and <code>freqs = c(N, rep(1, N))</code> (the extra zeros will be left off).</p>
-<div class="sourceCode" id="cb14"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="do">## Obtain all distinct partitions of 10</span></span>
-<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a><span class="fu">comboGeneral</span>(<span class="dv">0</span><span class="sc">:</span><span class="dv">10</span>, <span class="at">freqs =</span> <span class="fu">c</span>(<span class="dv">10</span>, <span class="fu">rep</span>(<span class="dv">1</span>, <span class="dv">10</span>)),    <span class="do">## Same as c(3, rep(1, 10))</span></span>
-<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a>             <span class="at">constraintFun =</span> <span class="st">"sum"</span>,</span>
-<span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a>             <span class="at">comparisonFun =</span> <span class="st">"=="</span>, <span class="at">limitConstraints =</span> <span class="dv">10</span>)</span>
-<span id="cb14-5"><a href="#cb14-5" aria-hidden="true" tabindex="-1"></a>      [,<span class="dv">1</span>] [,<span class="dv">2</span>] [,<span class="dv">3</span>] [,<span class="dv">4</span>]</span>
-<span id="cb14-6"><a href="#cb14-6" aria-hidden="true" tabindex="-1"></a> [<span class="dv">1</span>,]    <span class="dv">0</span>    <span class="dv">0</span>    <span class="dv">0</span>   <span class="dv">10</span></span>
-<span id="cb14-7"><a href="#cb14-7" aria-hidden="true" tabindex="-1"></a> [<span class="dv">2</span>,]    <span class="dv">0</span>    <span class="dv">0</span>    <span class="dv">1</span>    <span class="dv">9</span></span>
-<span id="cb14-8"><a href="#cb14-8" aria-hidden="true" tabindex="-1"></a> [<span class="dv">3</span>,]    <span class="dv">0</span>    <span class="dv">0</span>    <span class="dv">2</span>    <span class="dv">8</span></span>
-<span id="cb14-9"><a href="#cb14-9" aria-hidden="true" tabindex="-1"></a> [<span class="dv">4</span>,]    <span class="dv">0</span>    <span class="dv">0</span>    <span class="dv">3</span>    <span class="dv">7</span></span>
-<span id="cb14-10"><a href="#cb14-10" aria-hidden="true" tabindex="-1"></a> [<span class="dv">5</span>,]    <span class="dv">0</span>    <span class="dv">0</span>    <span class="dv">4</span>    <span class="dv">6</span></span>
-<span id="cb14-11"><a href="#cb14-11" aria-hidden="true" tabindex="-1"></a> [<span class="dv">6</span>,]    <span class="dv">0</span>    <span class="dv">1</span>    <span class="dv">2</span>    <span class="dv">7</span></span>
-<span id="cb14-12"><a href="#cb14-12" aria-hidden="true" tabindex="-1"></a> [<span class="dv">7</span>,]    <span class="dv">0</span>    <span class="dv">1</span>    <span class="dv">3</span>    <span class="dv">6</span></span>
-<span id="cb14-13"><a href="#cb14-13" aria-hidden="true" tabindex="-1"></a> [<span class="dv">8</span>,]    <span class="dv">0</span>    <span class="dv">1</span>    <span class="dv">4</span>    <span class="dv">5</span></span>
-<span id="cb14-14"><a href="#cb14-14" aria-hidden="true" tabindex="-1"></a> [<span class="dv">9</span>,]    <span class="dv">0</span>    <span class="dv">2</span>    <span class="dv">3</span>    <span class="dv">5</span></span>
-<span id="cb14-15"><a href="#cb14-15" aria-hidden="true" tabindex="-1"></a>[<span class="dv">10</span>,]    <span class="dv">1</span>    <span class="dv">2</span>    <span class="dv">3</span>    <span class="dv">4</span></span></code></pre></div>
+<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="co">## Obtain all distinct partitions of 10</span>
+<span class="fu"><a href="../reference/partitionsGeneral.html">partitionsGeneral</a></span><span class="op">(</span><span class="fl">0</span><span class="op">:</span><span class="fl">10</span>, freqs <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">10</span>, <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">10</span><span class="op">)</span><span class="op">)</span><span class="op">)</span>    <span class="co">## Same as c(3, rep(1, 10))</span>
+<span class="co">#&gt;       [,1] [,2] [,3] [,4]</span>
+<span class="co">#&gt;  [1,]    0    0    0   10</span>
+<span class="co">#&gt;  [2,]    0    0    1    9</span>
+<span class="co">#&gt;  [3,]    0    0    2    8</span>
+<span class="co">#&gt;  [4,]    0    0    3    7</span>
+<span class="co">#&gt;  [5,]    0    0    4    6</span>
+<span class="co">#&gt;  [6,]    0    1    2    7</span>
+<span class="co">#&gt;  [7,]    0    1    3    6</span>
+<span class="co">#&gt;  [8,]    0    1    4    5</span>
+<span class="co">#&gt;  [9,]    0    2    3    5</span>
+<span class="co">#&gt; [10,]    1    2    3    4</span></code></pre></div>
 </div>
 <div class="section level4">
 <h4 id="caveats-using-freqs">Caveats Using <code>freqs</code><a class="anchor" aria-label="anchor" href="#caveats-using-freqs"></a>
 </h4>
 <p>As noted in <code>Case 1</code>, if <code>m = NULL</code>, the length of the output will be determined by the longest non-zero combination that sums to <em>N</em>.</p>
-<div class="sourceCode" id="cb15"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="do">## m is NOT NULL and output has at most 2 zeros</span></span>
-<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a><span class="fu">comboGeneral</span>(<span class="dv">0</span><span class="sc">:</span><span class="dv">10</span>, <span class="dv">3</span>, <span class="at">freqs =</span> <span class="fu">c</span>(<span class="dv">2</span>, <span class="fu">rep</span>(<span class="dv">1</span>, <span class="dv">10</span>)),</span>
-<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a>             <span class="at">constraintFun =</span> <span class="st">"sum"</span>,</span>
-<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a>             <span class="at">comparisonFun =</span> <span class="st">"=="</span>, <span class="at">limitConstraints =</span> <span class="dv">10</span>)</span>
-<span id="cb15-5"><a href="#cb15-5" aria-hidden="true" tabindex="-1"></a>     [,<span class="dv">1</span>] [,<span class="dv">2</span>] [,<span class="dv">3</span>]</span>
-<span id="cb15-6"><a href="#cb15-6" aria-hidden="true" tabindex="-1"></a>[<span class="dv">1</span>,]    <span class="dv">0</span>    <span class="dv">0</span>   <span class="dv">10</span></span>
-<span id="cb15-7"><a href="#cb15-7" aria-hidden="true" tabindex="-1"></a>[<span class="dv">2</span>,]    <span class="dv">0</span>    <span class="dv">1</span>    <span class="dv">9</span></span>
-<span id="cb15-8"><a href="#cb15-8" aria-hidden="true" tabindex="-1"></a>[<span class="dv">3</span>,]    <span class="dv">0</span>    <span class="dv">2</span>    <span class="dv">8</span></span>
-<span id="cb15-9"><a href="#cb15-9" aria-hidden="true" tabindex="-1"></a>[<span class="dv">4</span>,]    <span class="dv">0</span>    <span class="dv">3</span>    <span class="dv">7</span></span>
-<span id="cb15-10"><a href="#cb15-10" aria-hidden="true" tabindex="-1"></a>[<span class="dv">5</span>,]    <span class="dv">0</span>    <span class="dv">4</span>    <span class="dv">6</span></span>
-<span id="cb15-11"><a href="#cb15-11" aria-hidden="true" tabindex="-1"></a>[<span class="dv">6</span>,]    <span class="dv">1</span>    <span class="dv">2</span>    <span class="dv">7</span></span>
-<span id="cb15-12"><a href="#cb15-12" aria-hidden="true" tabindex="-1"></a>[<span class="dv">7</span>,]    <span class="dv">1</span>    <span class="dv">3</span>    <span class="dv">6</span></span>
-<span id="cb15-13"><a href="#cb15-13" aria-hidden="true" tabindex="-1"></a>[<span class="dv">8</span>,]    <span class="dv">1</span>    <span class="dv">4</span>    <span class="dv">5</span></span>
-<span id="cb15-14"><a href="#cb15-14" aria-hidden="true" tabindex="-1"></a>[<span class="dv">9</span>,]    <span class="dv">2</span>    <span class="dv">3</span>    <span class="dv">5</span></span>
-<span id="cb15-15"><a href="#cb15-15" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb15-16"><a href="#cb15-16" aria-hidden="true" tabindex="-1"></a><span class="do">## m is NULL and output has at most 2 zeros</span></span>
-<span id="cb15-17"><a href="#cb15-17" aria-hidden="true" tabindex="-1"></a><span class="fu">comboGeneral</span>(<span class="dv">0</span><span class="sc">:</span><span class="dv">10</span>, <span class="at">freqs =</span> <span class="fu">c</span>(<span class="dv">2</span>, <span class="fu">rep</span>(<span class="dv">1</span>, <span class="dv">10</span>)),</span>
-<span id="cb15-18"><a href="#cb15-18" aria-hidden="true" tabindex="-1"></a>             <span class="at">constraintFun =</span> <span class="st">"sum"</span>,</span>
-<span id="cb15-19"><a href="#cb15-19" aria-hidden="true" tabindex="-1"></a>             <span class="at">comparisonFun =</span> <span class="st">"=="</span>, <span class="at">limitConstraints =</span> <span class="dv">10</span>)</span>
-<span id="cb15-20"><a href="#cb15-20" aria-hidden="true" tabindex="-1"></a>     [,<span class="dv">1</span>] [,<span class="dv">2</span>] [,<span class="dv">3</span>] [,<span class="dv">4</span>]</span>
-<span id="cb15-21"><a href="#cb15-21" aria-hidden="true" tabindex="-1"></a>[<span class="dv">1</span>,]    <span class="dv">0</span>    <span class="dv">0</span>    <span class="dv">1</span>    <span class="dv">9</span></span>
-<span id="cb15-22"><a href="#cb15-22" aria-hidden="true" tabindex="-1"></a>[<span class="dv">2</span>,]    <span class="dv">0</span>    <span class="dv">0</span>    <span class="dv">2</span>    <span class="dv">8</span></span>
-<span id="cb15-23"><a href="#cb15-23" aria-hidden="true" tabindex="-1"></a>[<span class="dv">3</span>,]    <span class="dv">0</span>    <span class="dv">0</span>    <span class="dv">3</span>    <span class="dv">7</span></span>
-<span id="cb15-24"><a href="#cb15-24" aria-hidden="true" tabindex="-1"></a>[<span class="dv">4</span>,]    <span class="dv">0</span>    <span class="dv">0</span>    <span class="dv">4</span>    <span class="dv">6</span></span>
-<span id="cb15-25"><a href="#cb15-25" aria-hidden="true" tabindex="-1"></a>[<span class="dv">5</span>,]    <span class="dv">0</span>    <span class="dv">1</span>    <span class="dv">2</span>    <span class="dv">7</span></span>
-<span id="cb15-26"><a href="#cb15-26" aria-hidden="true" tabindex="-1"></a>[<span class="dv">6</span>,]    <span class="dv">0</span>    <span class="dv">1</span>    <span class="dv">3</span>    <span class="dv">6</span></span>
-<span id="cb15-27"><a href="#cb15-27" aria-hidden="true" tabindex="-1"></a>[<span class="dv">7</span>,]    <span class="dv">0</span>    <span class="dv">1</span>    <span class="dv">4</span>    <span class="dv">5</span></span>
-<span id="cb15-28"><a href="#cb15-28" aria-hidden="true" tabindex="-1"></a>[<span class="dv">8</span>,]    <span class="dv">0</span>    <span class="dv">2</span>    <span class="dv">3</span>    <span class="dv">5</span></span>
-<span id="cb15-29"><a href="#cb15-29" aria-hidden="true" tabindex="-1"></a>[<span class="dv">9</span>,]    <span class="dv">1</span>    <span class="dv">2</span>    <span class="dv">3</span>    <span class="dv">4</span></span></code></pre></div>
+<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="co">## m is NOT NULL and output has at most 2 zeros</span>
+<span class="fu"><a href="../reference/partitionsGeneral.html">partitionsGeneral</a></span><span class="op">(</span><span class="fl">0</span><span class="op">:</span><span class="fl">10</span>, <span class="fl">3</span>, freqs <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">2</span>, <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">10</span><span class="op">)</span><span class="op">)</span><span class="op">)</span>
+<span class="co">#&gt;      [,1] [,2] [,3]</span>
+<span class="co">#&gt; [1,]    0    0   10</span>
+<span class="co">#&gt; [2,]    0    1    9</span>
+<span class="co">#&gt; [3,]    0    2    8</span>
+<span class="co">#&gt; [4,]    0    3    7</span>
+<span class="co">#&gt; [5,]    0    4    6</span>
+<span class="co">#&gt; [6,]    1    2    7</span>
+<span class="co">#&gt; [7,]    1    3    6</span>
+<span class="co">#&gt; [8,]    1    4    5</span>
+<span class="co">#&gt; [9,]    2    3    5</span>
+
+<span class="co">## m is NULL and output has at most 2 zeros</span>
+<span class="fu"><a href="../reference/partitionsGeneral.html">partitionsGeneral</a></span><span class="op">(</span><span class="fl">0</span><span class="op">:</span><span class="fl">10</span>, freqs <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">2</span>, <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">10</span><span class="op">)</span><span class="op">)</span><span class="op">)</span>
+<span class="co">#&gt;      [,1] [,2] [,3] [,4]</span>
+<span class="co">#&gt; [1,]    0    0    1    9</span>
+<span class="co">#&gt; [2,]    0    0    2    8</span>
+<span class="co">#&gt; [3,]    0    0    3    7</span>
+<span class="co">#&gt; [4,]    0    0    4    6</span>
+<span class="co">#&gt; [5,]    0    1    2    7</span>
+<span class="co">#&gt; [6,]    0    1    3    6</span>
+<span class="co">#&gt; [7,]    0    1    4    5</span>
+<span class="co">#&gt; [8,]    0    2    3    5</span>
+<span class="co">#&gt; [9,]    1    2    3    4</span></code></pre></div>
 </div>
 </div>
 </div>
 <div class="section level2">
-<h2 id="compositions">Compositions<a class="anchor" aria-label="anchor" href="#compositions"></a>
+<h2 id="efficiency-generating-partitions">Efficiency Generating Partitions<a class="anchor" aria-label="anchor" href="#efficiency-generating-partitions"></a>
 </h2>
-<p><a href="https://en.wikipedia.org/wiki/Composition_(combinatorics)" class="external-link">Compositions</a> are related to integer partitions, however order matters. With <code>RcppAlgos</code>, we generate compositions in a similar manner to generating partitions, but instead of using <code>comboGeneral</code>, we use <code>permuteGeneral</code>.</p>
-<p>As noted above, when we call <code>permuteGeneral</code> with constraints, the output is not in lexicographical order. This holds for generating compositions as well, so if order is important to you, there are a couple of great packages that take care to preserve order when generating compositions (the <code>partitions</code> packages and the <code>arrangements</code> package).</p>
-<p>With that in mind, generating compositions with <code>RcppAlgos</code> is easy, flexible, and quite efficient. One thing to keep in mind is that when we explicitly give <code>m</code> and zero is included, we will obtain <strong><em>weak compositions</em></strong>, which allow for zeros to be a part of the sequence (E.g. <code>c(0, 0, 5), c(0, 5, 0), c(5, 0, 0)</code> are weak compositions of 5).</p>
-<div class="section level3">
-<h3 id="case-4-all-compositions-of-n">Case 4: All Compositions of <em>N</em><a class="anchor" aria-label="anchor" href="#case-4-all-compositions-of-n"></a>
-</h3>
-<div class="sourceCode" id="cb16"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="do">## See Case 1</span></span>
-<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a><span class="fu">permuteGeneral</span>(<span class="dv">0</span><span class="sc">:</span><span class="dv">5</span>, <span class="at">repetition =</span> <span class="cn">TRUE</span>,</span>
-<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a>               <span class="at">constraintFun =</span> <span class="st">"sum"</span>,</span>
-<span id="cb16-4"><a href="#cb16-4" aria-hidden="true" tabindex="-1"></a>               <span class="at">comparisonFun =</span> <span class="st">"=="</span>, <span class="at">limitConstraints =</span> <span class="dv">5</span>)</span>
-<span id="cb16-5"><a href="#cb16-5" aria-hidden="true" tabindex="-1"></a>      [,<span class="dv">1</span>] [,<span class="dv">2</span>] [,<span class="dv">3</span>] [,<span class="dv">4</span>] [,<span class="dv">5</span>]</span>
-<span id="cb16-6"><a href="#cb16-6" aria-hidden="true" tabindex="-1"></a> [<span class="dv">1</span>,]    <span class="dv">0</span>    <span class="dv">0</span>    <span class="dv">0</span>    <span class="dv">0</span>    <span class="dv">5</span></span>
-<span id="cb16-7"><a href="#cb16-7" aria-hidden="true" tabindex="-1"></a> [<span class="dv">2</span>,]    <span class="dv">0</span>    <span class="dv">0</span>    <span class="dv">0</span>    <span class="dv">1</span>    <span class="dv">4</span></span>
-<span id="cb16-8"><a href="#cb16-8" aria-hidden="true" tabindex="-1"></a> [<span class="dv">3</span>,]    <span class="dv">0</span>    <span class="dv">0</span>    <span class="dv">0</span>    <span class="dv">4</span>    <span class="dv">1</span></span>
-<span id="cb16-9"><a href="#cb16-9" aria-hidden="true" tabindex="-1"></a> [<span class="dv">4</span>,]    <span class="dv">0</span>    <span class="dv">0</span>    <span class="dv">0</span>    <span class="dv">2</span>    <span class="dv">3</span></span>
-<span id="cb16-10"><a href="#cb16-10" aria-hidden="true" tabindex="-1"></a> [<span class="dv">5</span>,]    <span class="dv">0</span>    <span class="dv">0</span>    <span class="dv">0</span>    <span class="dv">3</span>    <span class="dv">2</span></span>
-<span id="cb16-11"><a href="#cb16-11" aria-hidden="true" tabindex="-1"></a> [<span class="dv">6</span>,]    <span class="dv">0</span>    <span class="dv">0</span>    <span class="dv">1</span>    <span class="dv">1</span>    <span class="dv">3</span></span>
-<span id="cb16-12"><a href="#cb16-12" aria-hidden="true" tabindex="-1"></a> [<span class="dv">7</span>,]    <span class="dv">0</span>    <span class="dv">0</span>    <span class="dv">1</span>    <span class="dv">3</span>    <span class="dv">1</span></span>
-<span id="cb16-13"><a href="#cb16-13" aria-hidden="true" tabindex="-1"></a> [<span class="dv">8</span>,]    <span class="dv">0</span>    <span class="dv">0</span>    <span class="dv">3</span>    <span class="dv">1</span>    <span class="dv">1</span></span>
-<span id="cb16-14"><a href="#cb16-14" aria-hidden="true" tabindex="-1"></a> [<span class="dv">9</span>,]    <span class="dv">0</span>    <span class="dv">0</span>    <span class="dv">1</span>    <span class="dv">2</span>    <span class="dv">2</span></span>
-<span id="cb16-15"><a href="#cb16-15" aria-hidden="true" tabindex="-1"></a>[<span class="dv">10</span>,]    <span class="dv">0</span>    <span class="dv">0</span>    <span class="dv">2</span>    <span class="dv">1</span>    <span class="dv">2</span></span>
-<span id="cb16-16"><a href="#cb16-16" aria-hidden="true" tabindex="-1"></a>[<span class="dv">11</span>,]    <span class="dv">0</span>    <span class="dv">0</span>    <span class="dv">2</span>    <span class="dv">2</span>    <span class="dv">1</span></span>
-<span id="cb16-17"><a href="#cb16-17" aria-hidden="true" tabindex="-1"></a>[<span class="dv">12</span>,]    <span class="dv">0</span>    <span class="dv">1</span>    <span class="dv">1</span>    <span class="dv">1</span>    <span class="dv">2</span></span>
-<span id="cb16-18"><a href="#cb16-18" aria-hidden="true" tabindex="-1"></a>[<span class="dv">13</span>,]    <span class="dv">0</span>    <span class="dv">1</span>    <span class="dv">1</span>    <span class="dv">2</span>    <span class="dv">1</span></span>
-<span id="cb16-19"><a href="#cb16-19" aria-hidden="true" tabindex="-1"></a>[<span class="dv">14</span>,]    <span class="dv">0</span>    <span class="dv">1</span>    <span class="dv">2</span>    <span class="dv">1</span>    <span class="dv">1</span></span>
-<span id="cb16-20"><a href="#cb16-20" aria-hidden="true" tabindex="-1"></a>[<span class="dv">15</span>,]    <span class="dv">0</span>    <span class="dv">2</span>    <span class="dv">1</span>    <span class="dv">1</span>    <span class="dv">1</span></span>
-<span id="cb16-21"><a href="#cb16-21" aria-hidden="true" tabindex="-1"></a>[<span class="dv">16</span>,]    <span class="dv">1</span>    <span class="dv">1</span>    <span class="dv">1</span>    <span class="dv">1</span>    <span class="dv">1</span></span>
-<span id="cb16-22"><a href="#cb16-22" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb16-23"><a href="#cb16-23" aria-hidden="true" tabindex="-1"></a><span class="do">## When m is NOT NULL, we get weak compositions as well. Using ht</span></span>
-<span id="cb16-24"><a href="#cb16-24" aria-hidden="true" tabindex="-1"></a><span class="do">## function defined in "Combination and Permutation Basics" vignette</span></span>
-<span id="cb16-25"><a href="#cb16-25" aria-hidden="true" tabindex="-1"></a><span class="fu">ht</span>(<span class="fu">permuteGeneral</span>(<span class="dv">0</span><span class="sc">:</span><span class="dv">5</span>, <span class="dv">5</span>, <span class="at">repetition =</span> <span class="cn">TRUE</span>,</span>
-<span id="cb16-26"><a href="#cb16-26" aria-hidden="true" tabindex="-1"></a>                  <span class="at">constraintFun =</span> <span class="st">"sum"</span>,</span>
-<span id="cb16-27"><a href="#cb16-27" aria-hidden="true" tabindex="-1"></a>                  <span class="at">comparisonFun =</span> <span class="st">"=="</span>, <span class="at">limitConstraints =</span> <span class="dv">5</span>))</span>
-<span id="cb16-28"><a href="#cb16-28" aria-hidden="true" tabindex="-1"></a>head <span class="sc">-</span><span class="ot">-&gt;</span></span>
-<span id="cb16-29"><a href="#cb16-29" aria-hidden="true" tabindex="-1"></a>     [,<span class="dv">1</span>] [,<span class="dv">2</span>] [,<span class="dv">3</span>] [,<span class="dv">4</span>] [,<span class="dv">5</span>]</span>
-<span id="cb16-30"><a href="#cb16-30" aria-hidden="true" tabindex="-1"></a>[<span class="dv">1</span>,]    <span class="dv">0</span>    <span class="dv">0</span>    <span class="dv">0</span>    <span class="dv">0</span>    <span class="dv">5</span></span>
-<span id="cb16-31"><a href="#cb16-31" aria-hidden="true" tabindex="-1"></a>[<span class="dv">2</span>,]    <span class="dv">0</span>    <span class="dv">0</span>    <span class="dv">0</span>    <span class="dv">5</span>    <span class="dv">0</span></span>
-<span id="cb16-32"><a href="#cb16-32" aria-hidden="true" tabindex="-1"></a>[<span class="dv">3</span>,]    <span class="dv">0</span>    <span class="dv">0</span>    <span class="dv">5</span>    <span class="dv">0</span>    <span class="dv">0</span></span>
-<span id="cb16-33"><a href="#cb16-33" aria-hidden="true" tabindex="-1"></a>[<span class="dv">4</span>,]    <span class="dv">0</span>    <span class="dv">5</span>    <span class="dv">0</span>    <span class="dv">0</span>    <span class="dv">0</span></span>
-<span id="cb16-34"><a href="#cb16-34" aria-hidden="true" tabindex="-1"></a>[<span class="dv">5</span>,]    <span class="dv">5</span>    <span class="dv">0</span>    <span class="dv">0</span>    <span class="dv">0</span>    <span class="dv">0</span></span>
-<span id="cb16-35"><a href="#cb16-35" aria-hidden="true" tabindex="-1"></a><span class="sc">--------</span></span>
-<span id="cb16-36"><a href="#cb16-36" aria-hidden="true" tabindex="-1"></a>tail <span class="sc">-</span><span class="ot">-&gt;</span></span>
-<span id="cb16-37"><a href="#cb16-37" aria-hidden="true" tabindex="-1"></a>       [,<span class="dv">1</span>] [,<span class="dv">2</span>] [,<span class="dv">3</span>] [,<span class="dv">4</span>] [,<span class="dv">5</span>]</span>
-<span id="cb16-38"><a href="#cb16-38" aria-hidden="true" tabindex="-1"></a>[<span class="dv">122</span>,]    <span class="dv">2</span>    <span class="dv">0</span>    <span class="dv">1</span>    <span class="dv">1</span>    <span class="dv">1</span></span>
-<span id="cb16-39"><a href="#cb16-39" aria-hidden="true" tabindex="-1"></a>[<span class="dv">123</span>,]    <span class="dv">2</span>    <span class="dv">1</span>    <span class="dv">0</span>    <span class="dv">1</span>    <span class="dv">1</span></span>
-<span id="cb16-40"><a href="#cb16-40" aria-hidden="true" tabindex="-1"></a>[<span class="dv">124</span>,]    <span class="dv">2</span>    <span class="dv">1</span>    <span class="dv">1</span>    <span class="dv">0</span>    <span class="dv">1</span></span>
-<span id="cb16-41"><a href="#cb16-41" aria-hidden="true" tabindex="-1"></a>[<span class="dv">125</span>,]    <span class="dv">2</span>    <span class="dv">1</span>    <span class="dv">1</span>    <span class="dv">1</span>    <span class="dv">0</span></span>
-<span id="cb16-42"><a href="#cb16-42" aria-hidden="true" tabindex="-1"></a>[<span class="dv">126</span>,]    <span class="dv">1</span>    <span class="dv">1</span>    <span class="dv">1</span>    <span class="dv">1</span>    <span class="dv">1</span></span></code></pre></div>
-</div>
-<div class="section level3">
-<h3 id="case-5-compositions-of-n-of-length-m">Case 5: Compositions of <em>N</em> of Length <em>m</em><a class="anchor" aria-label="anchor" href="#case-5-compositions-of-n-of-length-m"></a>
-</h3>
-<div class="sourceCode" id="cb17"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="do">## See Case 2</span></span>
-<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a><span class="fu">permuteGeneral</span>(<span class="dv">6</span>, <span class="dv">3</span>, <span class="at">repetition =</span> <span class="cn">TRUE</span>,</span>
-<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a>               <span class="at">constraintFun =</span> <span class="st">"sum"</span>,</span>
-<span id="cb17-4"><a href="#cb17-4" aria-hidden="true" tabindex="-1"></a>               <span class="at">comparisonFun =</span> <span class="st">"=="</span>, <span class="at">limitConstraints =</span> <span class="dv">6</span>)</span>
-<span id="cb17-5"><a href="#cb17-5" aria-hidden="true" tabindex="-1"></a>      [,<span class="dv">1</span>] [,<span class="dv">2</span>] [,<span class="dv">3</span>]</span>
-<span id="cb17-6"><a href="#cb17-6" aria-hidden="true" tabindex="-1"></a> [<span class="dv">1</span>,]    <span class="dv">1</span>    <span class="dv">1</span>    <span class="dv">4</span></span>
-<span id="cb17-7"><a href="#cb17-7" aria-hidden="true" tabindex="-1"></a> [<span class="dv">2</span>,]    <span class="dv">1</span>    <span class="dv">4</span>    <span class="dv">1</span></span>
-<span id="cb17-8"><a href="#cb17-8" aria-hidden="true" tabindex="-1"></a> [<span class="dv">3</span>,]    <span class="dv">4</span>    <span class="dv">1</span>    <span class="dv">1</span></span>
-<span id="cb17-9"><a href="#cb17-9" aria-hidden="true" tabindex="-1"></a> [<span class="dv">4</span>,]    <span class="dv">1</span>    <span class="dv">2</span>    <span class="dv">3</span></span>
-<span id="cb17-10"><a href="#cb17-10" aria-hidden="true" tabindex="-1"></a> [<span class="dv">5</span>,]    <span class="dv">1</span>    <span class="dv">3</span>    <span class="dv">2</span></span>
-<span id="cb17-11"><a href="#cb17-11" aria-hidden="true" tabindex="-1"></a> [<span class="dv">6</span>,]    <span class="dv">2</span>    <span class="dv">1</span>    <span class="dv">3</span></span>
-<span id="cb17-12"><a href="#cb17-12" aria-hidden="true" tabindex="-1"></a> [<span class="dv">7</span>,]    <span class="dv">2</span>    <span class="dv">3</span>    <span class="dv">1</span></span>
-<span id="cb17-13"><a href="#cb17-13" aria-hidden="true" tabindex="-1"></a> [<span class="dv">8</span>,]    <span class="dv">3</span>    <span class="dv">1</span>    <span class="dv">2</span></span>
-<span id="cb17-14"><a href="#cb17-14" aria-hidden="true" tabindex="-1"></a> [<span class="dv">9</span>,]    <span class="dv">3</span>    <span class="dv">2</span>    <span class="dv">1</span></span>
-<span id="cb17-15"><a href="#cb17-15" aria-hidden="true" tabindex="-1"></a>[<span class="dv">10</span>,]    <span class="dv">2</span>    <span class="dv">2</span>    <span class="dv">2</span></span></code></pre></div>
-</div>
-<div class="section level3">
-<h3 id="case-6-compositions-of-n-into-distinct-parts">Case 6: Compositions of <em>N</em> into Distinct Parts<a class="anchor" aria-label="anchor" href="#case-6-compositions-of-n-into-distinct-parts"></a>
-</h3>
-<div class="sourceCode" id="cb18"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="do">## See Case 3</span></span>
-<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a><span class="fu">permuteGeneral</span>(<span class="dv">6</span>, <span class="dv">3</span>,</span>
-<span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a>               <span class="at">constraintFun =</span> <span class="st">"sum"</span>,</span>
-<span id="cb18-4"><a href="#cb18-4" aria-hidden="true" tabindex="-1"></a>               <span class="at">comparisonFun =</span> <span class="st">"=="</span>, <span class="at">limitConstraints =</span> <span class="dv">6</span>)</span>
-<span id="cb18-5"><a href="#cb18-5" aria-hidden="true" tabindex="-1"></a>     [,<span class="dv">1</span>] [,<span class="dv">2</span>] [,<span class="dv">3</span>]</span>
-<span id="cb18-6"><a href="#cb18-6" aria-hidden="true" tabindex="-1"></a>[<span class="dv">1</span>,]    <span class="dv">1</span>    <span class="dv">2</span>    <span class="dv">3</span></span>
-<span id="cb18-7"><a href="#cb18-7" aria-hidden="true" tabindex="-1"></a>[<span class="dv">2</span>,]    <span class="dv">1</span>    <span class="dv">3</span>    <span class="dv">2</span></span>
-<span id="cb18-8"><a href="#cb18-8" aria-hidden="true" tabindex="-1"></a>[<span class="dv">3</span>,]    <span class="dv">2</span>    <span class="dv">1</span>    <span class="dv">3</span></span>
-<span id="cb18-9"><a href="#cb18-9" aria-hidden="true" tabindex="-1"></a>[<span class="dv">4</span>,]    <span class="dv">2</span>    <span class="dv">3</span>    <span class="dv">1</span></span>
-<span id="cb18-10"><a href="#cb18-10" aria-hidden="true" tabindex="-1"></a>[<span class="dv">5</span>,]    <span class="dv">3</span>    <span class="dv">1</span>    <span class="dv">2</span></span>
-<span id="cb18-11"><a href="#cb18-11" aria-hidden="true" tabindex="-1"></a>[<span class="dv">6</span>,]    <span class="dv">3</span>    <span class="dv">2</span>    <span class="dv">1</span></span>
-<span id="cb18-12"><a href="#cb18-12" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb18-13"><a href="#cb18-13" aria-hidden="true" tabindex="-1"></a><span class="do">## Using freqs along with including zero to obtain</span></span>
-<span id="cb18-14"><a href="#cb18-14" aria-hidden="true" tabindex="-1"></a><span class="do">## all compositions into distinct parts</span></span>
-<span id="cb18-15"><a href="#cb18-15" aria-hidden="true" tabindex="-1"></a><span class="fu">permuteGeneral</span>(<span class="dv">0</span><span class="sc">:</span><span class="dv">6</span>, <span class="at">freqs =</span> <span class="fu">c</span>(<span class="dv">6</span>, <span class="fu">rep</span>(<span class="dv">1</span>, <span class="dv">6</span>)),</span>
-<span id="cb18-16"><a href="#cb18-16" aria-hidden="true" tabindex="-1"></a>               <span class="at">constraintFun =</span> <span class="st">"sum"</span>,</span>
-<span id="cb18-17"><a href="#cb18-17" aria-hidden="true" tabindex="-1"></a>               <span class="at">comparisonFun =</span> <span class="st">"=="</span>, <span class="at">limitConstraints =</span> <span class="dv">6</span>)</span>
-<span id="cb18-18"><a href="#cb18-18" aria-hidden="true" tabindex="-1"></a>      [,<span class="dv">1</span>] [,<span class="dv">2</span>] [,<span class="dv">3</span>]</span>
-<span id="cb18-19"><a href="#cb18-19" aria-hidden="true" tabindex="-1"></a> [<span class="dv">1</span>,]    <span class="dv">0</span>    <span class="dv">0</span>    <span class="dv">6</span></span>
-<span id="cb18-20"><a href="#cb18-20" aria-hidden="true" tabindex="-1"></a> [<span class="dv">2</span>,]    <span class="dv">0</span>    <span class="dv">1</span>    <span class="dv">5</span></span>
-<span id="cb18-21"><a href="#cb18-21" aria-hidden="true" tabindex="-1"></a> [<span class="dv">3</span>,]    <span class="dv">0</span>    <span class="dv">5</span>    <span class="dv">1</span></span>
-<span id="cb18-22"><a href="#cb18-22" aria-hidden="true" tabindex="-1"></a> [<span class="dv">4</span>,]    <span class="dv">0</span>    <span class="dv">2</span>    <span class="dv">4</span></span>
-<span id="cb18-23"><a href="#cb18-23" aria-hidden="true" tabindex="-1"></a> [<span class="dv">5</span>,]    <span class="dv">0</span>    <span class="dv">4</span>    <span class="dv">2</span></span>
-<span id="cb18-24"><a href="#cb18-24" aria-hidden="true" tabindex="-1"></a> [<span class="dv">6</span>,]    <span class="dv">1</span>    <span class="dv">2</span>    <span class="dv">3</span></span>
-<span id="cb18-25"><a href="#cb18-25" aria-hidden="true" tabindex="-1"></a> [<span class="dv">7</span>,]    <span class="dv">1</span>    <span class="dv">3</span>    <span class="dv">2</span></span>
-<span id="cb18-26"><a href="#cb18-26" aria-hidden="true" tabindex="-1"></a> [<span class="dv">8</span>,]    <span class="dv">2</span>    <span class="dv">1</span>    <span class="dv">3</span></span>
-<span id="cb18-27"><a href="#cb18-27" aria-hidden="true" tabindex="-1"></a> [<span class="dv">9</span>,]    <span class="dv">2</span>    <span class="dv">3</span>    <span class="dv">1</span></span>
-<span id="cb18-28"><a href="#cb18-28" aria-hidden="true" tabindex="-1"></a>[<span class="dv">10</span>,]    <span class="dv">3</span>    <span class="dv">1</span>    <span class="dv">2</span></span>
-<span id="cb18-29"><a href="#cb18-29" aria-hidden="true" tabindex="-1"></a>[<span class="dv">11</span>,]    <span class="dv">3</span>    <span class="dv">2</span>    <span class="dv">1</span></span></code></pre></div>
-</div>
-</div>
-<div class="section level2">
-<h2 id="efficiency-generating-partitions-and-compositions">Efficiency Generating Partitions and Compositions<a class="anchor" aria-label="anchor" href="#efficiency-generating-partitions-and-compositions"></a>
-</h2>
-<div class="sourceCode" id="cb19"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="do">## partitions of 60</span></span>
-<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a><span class="fu">system.time</span>(parts60 <span class="ot">&lt;-</span> <span class="fu">comboGeneral</span>(<span class="dv">0</span><span class="sc">:</span><span class="dv">60</span>, <span class="at">repetition =</span> <span class="cn">TRUE</span>,</span>
-<span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a>                                    <span class="at">constraintFun =</span> <span class="st">"sum"</span>,</span>
-<span id="cb19-4"><a href="#cb19-4" aria-hidden="true" tabindex="-1"></a>                                    <span class="at">comparisonFun =</span> <span class="st">"=="</span>, <span class="at">limitConstraints =</span> <span class="dv">60</span>))</span>
-<span id="cb19-5"><a href="#cb19-5" aria-hidden="true" tabindex="-1"></a> user  system elapsed</span>
-<span id="cb19-6"><a href="#cb19-6" aria-hidden="true" tabindex="-1"></a><span class="fl">0.079</span>   <span class="fl">0.046</span>   <span class="fl">0.126</span></span>
-<span id="cb19-7"><a href="#cb19-7" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb19-8"><a href="#cb19-8" aria-hidden="true" tabindex="-1"></a><span class="fu">dim</span>(parts60)</span>
-<span id="cb19-9"><a href="#cb19-9" aria-hidden="true" tabindex="-1"></a>[<span class="dv">1</span>] <span class="dv">966467</span>     <span class="dv">60</span></span>
-<span id="cb19-10"><a href="#cb19-10" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb19-11"><a href="#cb19-11" aria-hidden="true" tabindex="-1"></a><span class="do">## partitions of 120 into distinct parts</span></span>
-<span id="cb19-12"><a href="#cb19-12" aria-hidden="true" tabindex="-1"></a><span class="fu">system.time</span>(partsDist120 <span class="ot">&lt;-</span> <span class="fu">comboGeneral</span>(<span class="dv">0</span><span class="sc">:</span><span class="dv">120</span>, <span class="at">freqs =</span> <span class="fu">c</span>(<span class="dv">120</span>, <span class="fu">rep</span>(<span class="dv">1</span>, <span class="dv">120</span>)),</span>
-<span id="cb19-13"><a href="#cb19-13" aria-hidden="true" tabindex="-1"></a>                                         <span class="at">constraintFun =</span> <span class="st">"sum"</span>,</span>
-<span id="cb19-14"><a href="#cb19-14" aria-hidden="true" tabindex="-1"></a>                                         <span class="at">comparisonFun =</span> <span class="st">"=="</span>,</span>
-<span id="cb19-15"><a href="#cb19-15" aria-hidden="true" tabindex="-1"></a>                                         <span class="at">limitConstraints =</span> <span class="dv">120</span>))</span>
-<span id="cb19-16"><a href="#cb19-16" aria-hidden="true" tabindex="-1"></a> user  system elapsed</span>
-<span id="cb19-17"><a href="#cb19-17" aria-hidden="true" tabindex="-1"></a><span class="fl">0.126</span>   <span class="fl">0.000</span>   <span class="fl">0.126</span></span>
-<span id="cb19-18"><a href="#cb19-18" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb19-19"><a href="#cb19-19" aria-hidden="true" tabindex="-1"></a><span class="fu">dim</span>(partsDist120)</span>
-<span id="cb19-20"><a href="#cb19-20" aria-hidden="true" tabindex="-1"></a>[<span class="dv">1</span>] <span class="dv">2194432</span>      <span class="dv">15</span></span>
-<span id="cb19-21"><a href="#cb19-21" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb19-22"><a href="#cb19-22" aria-hidden="true" tabindex="-1"></a><span class="do">## compositions of 25</span></span>
-<span id="cb19-23"><a href="#cb19-23" aria-hidden="true" tabindex="-1"></a><span class="fu">system.time</span>(comp25 <span class="ot">&lt;-</span> <span class="fu">permuteGeneral</span>(<span class="dv">0</span><span class="sc">:</span><span class="dv">25</span>, <span class="at">repetition =</span> <span class="cn">TRUE</span>,</span>
-<span id="cb19-24"><a href="#cb19-24" aria-hidden="true" tabindex="-1"></a>                                     <span class="at">constraintFun =</span> <span class="st">"sum"</span>,</span>
-<span id="cb19-25"><a href="#cb19-25" aria-hidden="true" tabindex="-1"></a>                                     <span class="at">comparisonFun =</span> <span class="st">"=="</span>, <span class="at">limitConstraints =</span> <span class="dv">25</span>))</span>
-<span id="cb19-26"><a href="#cb19-26" aria-hidden="true" tabindex="-1"></a> user  system elapsed</span>
-<span id="cb19-27"><a href="#cb19-27" aria-hidden="true" tabindex="-1"></a><span class="fl">1.266</span>   <span class="fl">0.332</span>   <span class="fl">1.601</span></span>
-<span id="cb19-28"><a href="#cb19-28" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb19-29"><a href="#cb19-29" aria-hidden="true" tabindex="-1"></a><span class="fu">dim</span>(comp25)</span>
-<span id="cb19-30"><a href="#cb19-30" aria-hidden="true" tabindex="-1"></a>[<span class="dv">1</span>] <span class="dv">16777216</span>       <span class="dv">25</span></span>
-<span id="cb19-31"><a href="#cb19-31" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb19-32"><a href="#cb19-32" aria-hidden="true" tabindex="-1"></a><span class="do">## weak compositions of 12</span></span>
-<span id="cb19-33"><a href="#cb19-33" aria-hidden="true" tabindex="-1"></a><span class="fu">system.time</span>(weakComp12 <span class="ot">&lt;-</span> <span class="fu">permuteGeneral</span>(<span class="dv">0</span><span class="sc">:</span><span class="dv">12</span>, <span class="dv">12</span>, <span class="at">repetition =</span> <span class="cn">TRUE</span>,</span>
-<span id="cb19-34"><a href="#cb19-34" aria-hidden="true" tabindex="-1"></a>                                         <span class="at">constraintFun =</span> <span class="st">"sum"</span>,</span>
-<span id="cb19-35"><a href="#cb19-35" aria-hidden="true" tabindex="-1"></a>                                         <span class="at">comparisonFun =</span> <span class="st">"=="</span>, <span class="at">limitConstraints =</span> <span class="dv">12</span>))</span>
-<span id="cb19-36"><a href="#cb19-36" aria-hidden="true" tabindex="-1"></a> user  system elapsed</span>
-<span id="cb19-37"><a href="#cb19-37" aria-hidden="true" tabindex="-1"></a><span class="fl">0.029</span>   <span class="fl">0.000</span>   <span class="fl">0.030</span></span>
-<span id="cb19-38"><a href="#cb19-38" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb19-39"><a href="#cb19-39" aria-hidden="true" tabindex="-1"></a><span class="fu">dim</span>(weakComp12)</span>
-<span id="cb19-40"><a href="#cb19-40" aria-hidden="true" tabindex="-1"></a>[<span class="dv">1</span>] <span class="dv">1352078</span>      <span class="dv">12</span></span>
-<span id="cb19-41"><a href="#cb19-41" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb19-42"><a href="#cb19-42" aria-hidden="true" tabindex="-1"></a><span class="do">## compositions of 50 into distinct parts</span></span>
-<span id="cb19-43"><a href="#cb19-43" aria-hidden="true" tabindex="-1"></a><span class="fu">system.time</span>(compDist50 <span class="ot">&lt;-</span> <span class="fu">permuteGeneral</span>(<span class="dv">0</span><span class="sc">:</span><span class="dv">50</span>, <span class="at">freqs =</span> <span class="fu">c</span>(<span class="dv">50</span>, <span class="fu">rep</span>(<span class="dv">1</span>, <span class="dv">50</span>)),</span>
-<span id="cb19-44"><a href="#cb19-44" aria-hidden="true" tabindex="-1"></a>                                        <span class="at">constraintFun =</span> <span class="st">"sum"</span>,</span>
-<span id="cb19-45"><a href="#cb19-45" aria-hidden="true" tabindex="-1"></a>                                        <span class="at">comparisonFun =</span> <span class="st">"=="</span>, <span class="at">limitConstraints =</span> <span class="dv">50</span>))</span>
-<span id="cb19-46"><a href="#cb19-46" aria-hidden="true" tabindex="-1"></a> user  system elapsed</span>
-<span id="cb19-47"><a href="#cb19-47" aria-hidden="true" tabindex="-1"></a><span class="fl">0.231</span>   <span class="fl">0.074</span>   <span class="fl">0.305</span></span>
-<span id="cb19-48"><a href="#cb19-48" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb19-49"><a href="#cb19-49" aria-hidden="true" tabindex="-1"></a><span class="fu">dim</span>(compDist50)</span>
-<span id="cb19-50"><a href="#cb19-50" aria-hidden="true" tabindex="-1"></a>[<span class="dv">1</span>] <span class="dv">10759321</span>        <span class="dv">9</span></span>
-<span id="cb19-51"><a href="#cb19-51" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb19-52"><a href="#cb19-52" aria-hidden="true" tabindex="-1"></a><span class="do">## Using ht function defined in "Combination and Permutation Basics" vignette</span></span>
-<span id="cb19-53"><a href="#cb19-53" aria-hidden="true" tabindex="-1"></a><span class="fu">ht</span>(compDist50)</span>
-<span id="cb19-54"><a href="#cb19-54" aria-hidden="true" tabindex="-1"></a>head <span class="sc">-</span><span class="ot">-&gt;</span></span>
-<span id="cb19-55"><a href="#cb19-55" aria-hidden="true" tabindex="-1"></a>     [,<span class="dv">1</span>] [,<span class="dv">2</span>] [,<span class="dv">3</span>] [,<span class="dv">4</span>] [,<span class="dv">5</span>] [,<span class="dv">6</span>] [,<span class="dv">7</span>] [,<span class="dv">8</span>] [,<span class="dv">9</span>]</span>
-<span id="cb19-56"><a href="#cb19-56" aria-hidden="true" tabindex="-1"></a>[<span class="dv">1</span>,]    <span class="dv">0</span>    <span class="dv">0</span>    <span class="dv">0</span>    <span class="dv">0</span>    <span class="dv">0</span>    <span class="dv">0</span>    <span class="dv">0</span>    <span class="dv">0</span>   <span class="dv">50</span></span>
-<span id="cb19-57"><a href="#cb19-57" aria-hidden="true" tabindex="-1"></a>[<span class="dv">2</span>,]    <span class="dv">0</span>    <span class="dv">0</span>    <span class="dv">0</span>    <span class="dv">0</span>    <span class="dv">0</span>    <span class="dv">0</span>    <span class="dv">0</span>    <span class="dv">1</span>   <span class="dv">49</span></span>
-<span id="cb19-58"><a href="#cb19-58" aria-hidden="true" tabindex="-1"></a>[<span class="dv">3</span>,]    <span class="dv">0</span>    <span class="dv">0</span>    <span class="dv">0</span>    <span class="dv">0</span>    <span class="dv">0</span>    <span class="dv">0</span>    <span class="dv">0</span>   <span class="dv">49</span>    <span class="dv">1</span></span>
-<span id="cb19-59"><a href="#cb19-59" aria-hidden="true" tabindex="-1"></a>[<span class="dv">4</span>,]    <span class="dv">0</span>    <span class="dv">0</span>    <span class="dv">0</span>    <span class="dv">0</span>    <span class="dv">0</span>    <span class="dv">0</span>    <span class="dv">0</span>    <span class="dv">2</span>   <span class="dv">48</span></span>
-<span id="cb19-60"><a href="#cb19-60" aria-hidden="true" tabindex="-1"></a>[<span class="dv">5</span>,]    <span class="dv">0</span>    <span class="dv">0</span>    <span class="dv">0</span>    <span class="dv">0</span>    <span class="dv">0</span>    <span class="dv">0</span>    <span class="dv">0</span>   <span class="dv">48</span>    <span class="dv">2</span></span>
-<span id="cb19-61"><a href="#cb19-61" aria-hidden="true" tabindex="-1"></a><span class="sc">--------</span></span>
-<span id="cb19-62"><a href="#cb19-62" aria-hidden="true" tabindex="-1"></a>tail <span class="sc">-</span><span class="ot">-&gt;</span></span>
-<span id="cb19-63"><a href="#cb19-63" aria-hidden="true" tabindex="-1"></a>            [,<span class="dv">1</span>] [,<span class="dv">2</span>] [,<span class="dv">3</span>] [,<span class="dv">4</span>] [,<span class="dv">5</span>] [,<span class="dv">6</span>] [,<span class="dv">7</span>] [,<span class="dv">8</span>] [,<span class="dv">9</span>]</span>
-<span id="cb19-64"><a href="#cb19-64" aria-hidden="true" tabindex="-1"></a>[<span class="dv">10759317</span>,]   <span class="dv">10</span>    <span class="dv">9</span>    <span class="dv">8</span>    <span class="dv">7</span>    <span class="dv">6</span>    <span class="dv">4</span>    <span class="dv">1</span>    <span class="dv">3</span>    <span class="dv">2</span></span>
-<span id="cb19-65"><a href="#cb19-65" aria-hidden="true" tabindex="-1"></a>[<span class="dv">10759318</span>,]   <span class="dv">10</span>    <span class="dv">9</span>    <span class="dv">8</span>    <span class="dv">7</span>    <span class="dv">6</span>    <span class="dv">4</span>    <span class="dv">2</span>    <span class="dv">1</span>    <span class="dv">3</span></span>
-<span id="cb19-66"><a href="#cb19-66" aria-hidden="true" tabindex="-1"></a>[<span class="dv">10759319</span>,]   <span class="dv">10</span>    <span class="dv">9</span>    <span class="dv">8</span>    <span class="dv">7</span>    <span class="dv">6</span>    <span class="dv">4</span>    <span class="dv">2</span>    <span class="dv">3</span>    <span class="dv">1</span></span>
-<span id="cb19-67"><a href="#cb19-67" aria-hidden="true" tabindex="-1"></a>[<span class="dv">10759320</span>,]   <span class="dv">10</span>    <span class="dv">9</span>    <span class="dv">8</span>    <span class="dv">7</span>    <span class="dv">6</span>    <span class="dv">4</span>    <span class="dv">3</span>    <span class="dv">1</span>    <span class="dv">2</span></span>
-<span id="cb19-68"><a href="#cb19-68" aria-hidden="true" tabindex="-1"></a>[<span class="dv">10759321</span>,]   <span class="dv">10</span>    <span class="dv">9</span>    <span class="dv">8</span>    <span class="dv">7</span>    <span class="dv">6</span>    <span class="dv">4</span>    <span class="dv">3</span>    <span class="dv">2</span>    <span class="dv">1</span></span></code></pre></div>
+<p>Note, as of version <code>2.5.0</code>, one can generate partitions in parallel using the <code>nThreads</code> argument.</p>
+<div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="co">## partitions of 60</span>
+<span class="fu"><a href="../reference/partitionsCount.html">partitionsCount</a></span><span class="op">(</span><span class="fl">0</span><span class="op">:</span><span class="fl">60</span>, repetition <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>
+<span class="co">#&gt; [1] 966467</span>
+
+<span class="co">## Single threaded</span>
+<span class="fu"><a href="https://rdrr.io/r/base/system.time.html" class="external-link">system.time</a></span><span class="op">(</span><span class="fu"><a href="../reference/partitionsGeneral.html">partitionsGeneral</a></span><span class="op">(</span><span class="fl">0</span><span class="op">:</span><span class="fl">60</span>, repetition <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span>
+<span class="co">#&gt;  user  system elapsed</span>
+<span class="co">#&gt; 0.092   0.051   0.143</span>
+
+<span class="co">## Using nThreads</span>
+<span class="fu"><a href="https://rdrr.io/r/base/system.time.html" class="external-link">system.time</a></span><span class="op">(</span><span class="fu"><a href="../reference/partitionsGeneral.html">partitionsGeneral</a></span><span class="op">(</span><span class="fl">0</span><span class="op">:</span><span class="fl">60</span>, repetition <span class="op">=</span> <span class="cn">TRUE</span>, nThreads<span class="op">=</span><span class="fl">4</span><span class="op">)</span><span class="op">)</span>
+<span class="co">#&gt;  user  system elapsed</span>
+<span class="co">#&gt; 0.116   0.103   0.056</span>
+
+
+<span class="co">## partitions of 120 into distinct parts</span>
+<span class="fu"><a href="../reference/partitionsCount.html">partitionsCount</a></span><span class="op">(</span><span class="fl">0</span><span class="op">:</span><span class="fl">120</span>, freqs <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">120</span>, <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">120</span><span class="op">)</span><span class="op">)</span><span class="op">)</span>
+<span class="co">#&gt; [1] 2194432</span>
+
+<span class="fu"><a href="https://rdrr.io/r/base/system.time.html" class="external-link">system.time</a></span><span class="op">(</span><span class="fu"><a href="../reference/partitionsGeneral.html">partitionsGeneral</a></span><span class="op">(</span><span class="fl">0</span><span class="op">:</span><span class="fl">120</span>, freqs <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">120</span>, <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">120</span><span class="op">)</span><span class="op">)</span><span class="op">)</span><span class="op">)</span>
+<span class="co">#&gt;  user  system elapsed</span>
+<span class="co">#&gt;  0.11    0.00    0.11</span>
+
+<span class="fu"><a href="https://rdrr.io/r/base/system.time.html" class="external-link">system.time</a></span><span class="op">(</span><span class="fu"><a href="../reference/partitionsGeneral.html">partitionsGeneral</a></span><span class="op">(</span><span class="fl">0</span><span class="op">:</span><span class="fl">120</span>, freqs <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">120</span>, <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">120</span><span class="op">)</span><span class="op">)</span>, nThreads<span class="op">=</span><span class="fl">4</span><span class="op">)</span><span class="op">)</span>
+<span class="co">#&gt;  user  system elapsed</span>
+<span class="co">#&gt; 0.146   0.001   0.038</span></code></pre></div>
 </div>
   </div>
 

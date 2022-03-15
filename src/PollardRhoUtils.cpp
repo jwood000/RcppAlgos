@@ -1,4 +1,4 @@
-#include "PollardRhoUtils.h"
+#include "NumbersUtils/PollardRhoUtils.h"
 #include "CleanConvert.h"
 
 template <typename typeReturn>
@@ -169,7 +169,7 @@ int IsPrime(std::int64_t n) {
         }
     }
 
-    Rcpp::stop("Lucas prime test failure. This should not happen");
+    Rf_error("Lucas prime test failure. This should not happen");
     ret1:
         factors.resize(0);
 
@@ -202,8 +202,11 @@ void PollardRhoMpzT(mpz_t n, std::size_t a, std::vector<double> &factors) {
 
                 if (k % 32 == 1) {
                     mpz_gcd(t, P, n);
-                    if (mpz_cmp_ui(t, 1) != 0)
+
+                    if (mpz_cmp_ui(t, 1) != 0) {
                         goto factor_found;
+                    }
+
                     mpz_set(y, x);
                 }
 
@@ -287,8 +290,11 @@ void PollardRho(std::int64_t n, std::int64_t a, std::vector<int>& factors) {
 
                 if (k % 32 == 1) {
                     t = myGCD(P, n);
-                    if (t != 1)
+
+                    if (t != 1) {
                         goto factor_found;
+                    }
+
                     y = x;
                 }
 
@@ -351,7 +357,8 @@ void getPrimeFactors(std::int64_t& t, std::vector<typeReturn>& factors) {
             } else {
                 std::vector<int> intFactors;
                 PollardRho(t, 1, intFactors);
-                factors.insert(factors.end(), intFactors.cbegin(), intFactors.cend());
+                factors.insert(factors.end(), intFactors.cbegin(),
+                               intFactors.cend());
             }
         } else {
             mpz_t bigT;

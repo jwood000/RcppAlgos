@@ -1,129 +1,194 @@
-#include "Eratosthenes.h"
-#include "PrimeFactorizeSieve.h"
-#include "EulerPhiSieve.h"
-#include <RcppThread.h>
+#include "NumbersUtils/PrimeFactorizeSieve.h"
+#include "NumbersUtils/EulerPhiSieve.h"
+#include "NumbersUtils/Eratosthenes.h"
+#include "NumbersUtils/MotleyPrimes.h"
 #include "CleanConvert.h"
-#include <RcppThread.h>
+#include "SetUpUtils.h"
+#include <thread>
 
-template <typename typeInt, typename typeReturn, typename typeRcpp>
-void MotleyMaster(typeInt myMin, typeReturn myMax, bool isEuler,
-                  typeRcpp &EulerPhis, std::vector<typeInt> &numSeq,
-                  std::vector<std::vector<typeInt>> &primeList,
-                  int nThreads, int maxThreads) {
+template <typename T, typename U>
+void MotleyMain(T myMin, U myMax, bool IsEuler,
+                U* EulerPhis, std::vector<T> &numSeq,
+                std::vector<std::vector<T>> &primeList,
+                int nThreads, int maxThreads) {
 
     bool Parallel = false;
     std::int_fast64_t myRange = (myMax - myMin) + 1;
-    typeInt offsetStrt = 0;
+    T offsetStrt = 0;
 
     if (nThreads > 1 && maxThreads > 1 && myRange >= 20000) {
         Parallel = true;
-
-        if (nThreads > maxThreads)
-            nThreads = maxThreads;
+        if (nThreads > maxThreads) nThreads = maxThreads;
 
         // Ensure that each thread has at least 10000
-        if ((myRange / nThreads) < 10000)
-            nThreads = myRange / 10000;
+        if ((myRange / nThreads) < 10000) nThreads = myRange / 10000;
     }
 
+    std::vector<T> primes;
     int sqrtBound = std::sqrt(static_cast<double>(myMax));
-    std::vector<typeInt> primes;
     PrimeSieve::sqrtBigPrimes(sqrtBound, false, true, true, primes);
 
     if (Parallel) {
-        RcppThread::ThreadPool pool(nThreads);
-        typeInt lower = myMin;
-        typeInt chunkSize = myRange / nThreads;
-        typeReturn upper = lower + chunkSize - 1;
+        std::vector<std::thread> threads;
+        T lower = myMin;
+        T chunkSize = myRange / nThreads;
+        U upper = lower + chunkSize - 1;
 
         for (int ind = 0; ind < (nThreads - 1); offsetStrt += chunkSize,
              lower = (upper + 1), upper += chunkSize, ++ind) {
-            if (isEuler) {
-                pool.push(std::cref(MotleyPrimes::EulerPhiSieve<typeInt, typeReturn, typeRcpp>), lower,
-                          upper, offsetStrt, std::ref(primes), std::ref(numSeq), std::ref(EulerPhis));
+            if (IsEuler) {
+                threads.emplace_back(std::cref(MotleyPrimes::EulerPhiSieve<T, U>),
+                                     lower, upper, offsetStrt, std::ref(primes),
+                                     std::ref(numSeq), EulerPhis);
             } else {
-                pool.push(std::cref(MotleyPrimes::PrimeFactorizationSieve<typeInt>),
-                          lower, static_cast<typeInt>(upper), offsetStrt,
-                          std::ref(primes), std::ref(primeList));
+                threads.emplace_back(std::cref(MotleyPrimes::PrimeFactorizationSieve<T>),
+                                     lower, static_cast<T>(upper), offsetStrt,
+                                     std::cref(primes), std::ref(primeList));
             }
         }
 
-        if (isEuler) {
-            pool.push(std::cref(MotleyPrimes::EulerPhiSieve<typeInt, typeReturn, typeRcpp>), lower,
-                      myMax, offsetStrt, std::ref(primes), std::ref(numSeq), std::ref(EulerPhis));
+        if (IsEuler) {
+            threads.emplace_back(std::cref(MotleyPrimes::EulerPhiSieve<T, U>),
+                                 lower, myMax, offsetStrt, std::ref(primes),
+                                 std::ref(numSeq), EulerPhis);
         } else {
-            pool.push(std::cref(MotleyPrimes::PrimeFactorizationSieve<typeInt>),
-                      lower, static_cast<typeInt>(myMax), offsetStrt,
-                      std::ref(primes), std::ref(primeList));
+            threads.emplace_back(std::cref(MotleyPrimes::PrimeFactorizationSieve<T>),
+                                 lower, static_cast<T>(myMax), offsetStrt,
+                                 std::cref(primes), std::ref(primeList));
         }
 
-        pool.join();
-
+        for (auto& thr: threads) {
+            thr.join();
+        }
     } else {
-        if (isEuler) {
+        if (IsEuler) {
             MotleyPrimes::EulerPhiSieve(myMin, myMax, offsetStrt, primes, numSeq, EulerPhis);
         } else {
-            MotleyPrimes::PrimeFactorizationSieve(myMin, static_cast<typeInt>(myMax),
+            MotleyPrimes::PrimeFactorizationSieve(myMin, static_cast<T>(myMax),
                                                   offsetStrt, primes, primeList);
         }
     }
 }
 
-template <typename typeInt, typename typeReturn, typename typeRcpp>
-SEXP GlueMotley(typeInt myMin, typeReturn myMax, bool isEuler,
-                typeRcpp temp, bool keepNames, int nThreads, int maxThreads) {
+SEXP GlueIntMotley(int myMin, int myMax, bool IsEuler,
+                   bool keepNames, int nThreads, int maxThreads) {
 
+    int numUnprotects = 1;
     std::size_t myRange = (myMax - myMin) + 1;
-    std::vector<typeReturn> myNames;
 
-    if (keepNames) {
-        myNames.resize(myRange);
-        typeReturn retM = myMin;
-        for (std::size_t k = 0; retM <= myMax; ++retM, ++k)
-            myNames[k] = retM;
-    }
+    if (IsEuler) {
+        std::vector<std::vector<int>> tempList;
+        SEXP EulerPhis = PROTECT(Rf_allocVector(INTSXP, myRange));
+        int* ptrEuler  = INTEGER(EulerPhis);
+        std::vector<int> numSeq(myRange);
 
-    if (isEuler) {
-        std::vector<std::vector<typeInt>> tempList;
-        typeRcpp EulerPhis(myRange);
-        std::vector<typeInt> numSeq(myRange);
-        MotleyMaster(myMin, myMax, isEuler, EulerPhis,
-                     numSeq, tempList, nThreads, maxThreads);
+        MotleyMain(myMin, myMax, IsEuler, ptrEuler,
+                   numSeq, tempList, nThreads, maxThreads);
 
-        if (keepNames)
-            EulerPhis.attr("names") = myNames;
+        if (keepNames) {
+            ++numUnprotects;
+            SetIntNames(EulerPhis, myRange, myMin, myMax);
+        }
 
+        UNPROTECT(numUnprotects);
         return EulerPhis;
     } else {
-        std::vector<std::vector<typeInt>>
-            primeList(myRange, std::vector<typeInt>());
-        typeRcpp tempRcpp;
-        std::vector<typeInt> tempVec;
-        MotleyMaster(myMin, myMax, isEuler, tempRcpp,
-                     tempVec, primeList, nThreads, maxThreads);
+        std::vector<std::vector<int>>
+            primeList(myRange, std::vector<int>());
 
-        Rcpp::List myList = Rcpp::wrap(primeList);
+        int* tempEuler = nullptr;
+        std::vector<int> tempVec;
+        MotleyMain(myMin, myMax, IsEuler, tempEuler,
+                   tempVec, primeList, nThreads, maxThreads);
 
-        if (keepNames)
-            myList.attr("names") = myNames;
+        SEXP myList = PROTECT(Rf_allocVector(VECSXP, myRange));
 
+        for (std::size_t i = 0; i < myRange; ++i) {
+            SET_VECTOR_ELT(myList, i, GetIntVec(primeList[i]));
+        }
+
+        if (keepNames) {
+            ++numUnprotects;
+            SetIntNames(myList, myRange, myMin, myMax);
+        }
+
+        UNPROTECT(numUnprotects);
         return myList;
     }
 }
 
-// [[Rcpp::export]]
-SEXP MotleyContainer(SEXP Rb1, SEXP Rb2, bool isEuler,
-                     SEXP RNamed, SEXP RNumThreads, int maxThreads) {
+SEXP GlueDblMotley(std::int64_t myMin, double myMax, bool IsEuler,
+                   bool keepNames, int nThreads, int maxThreads) {
 
-    double bound1, bound2, myMin, myMax;
-    const std::string namedObject = (isEuler) ? "namedVector" : "namedList";
-    bool isNamed = CleanConvert::convertLogical(RNamed, namedObject);
-    CleanConvert::convertPrimitive(Rb1, bound1, "bound1");
+    int numUnprotects = 1;
+    std::size_t myRange = (myMax - myMin) + 1;
+
+    if (IsEuler) {
+        std::vector<std::vector<std::int64_t>> tempList;
+        SEXP EulerPhis = PROTECT(Rf_allocVector(REALSXP, myRange));
+        double* ptrEuler = REAL(EulerPhis);
+        std::vector<std::int64_t> numSeq(myRange);
+
+        MotleyMain(myMin, myMax, IsEuler, ptrEuler,
+                   numSeq, tempList, nThreads, maxThreads);
+
+        if (keepNames) {
+            ++numUnprotects;
+            SetDblNames(EulerPhis, myRange,
+                        static_cast<double>(myMin), myMax);
+        }
+
+        UNPROTECT(numUnprotects);
+        return EulerPhis;
+    } else {
+        std::vector<std::vector<std::int64_t>>
+            primeList(myRange, std::vector<std::int64_t>());
+
+        double* tempEuler = nullptr;
+        std::vector<std::int64_t> tempVec;
+        MotleyMain(myMin, myMax, IsEuler, tempEuler,
+                   tempVec, primeList, nThreads, maxThreads);
+
+        SEXP myList = PROTECT(Rf_allocVector(VECSXP, myRange));
+
+        for (std::size_t i = 0; i < myRange; ++i) {
+            SET_VECTOR_ELT(myList, i, GetInt64Vec(primeList[i]));
+        }
+
+        if (keepNames) {
+            ++numUnprotects;
+            SetDblNames(myList, myRange,
+                        static_cast<double>(myMin), myMax);
+        }
+
+        UNPROTECT(numUnprotects);
+        return myList;
+    }
+}
+
+SEXP MotleyContainer(SEXP Rb1, SEXP Rb2, SEXP RIsEuler, SEXP RNamed,
+                     SEXP RNumThreads, SEXP RmaxThreads) {
+
+    double bound1 = 0;
+    double bound2 = 0;
+
+    double myMin;
+    double myMax;
+
+    int nThreads = 1;
+    int maxThreads = 1;
+
+    CleanConvert::convertPrimitive(RmaxThreads, maxThreads,
+                                   VecType::Integer, "maxThreads");
+    const bool IsEuler = CleanConvert::convertFlag(RIsEuler, "IsEuler");
+    const std::string namedObject = (IsEuler) ? "namedVector" : "namedList";
+    bool IsNamed = CleanConvert::convertFlag(RNamed, namedObject);
+    CleanConvert::convertPrimitive(Rb1, bound1, VecType::Numeric, "bound1");
 
     if (Rf_isNull(Rb2)) {
         bound2 = 1;
     } else {
-        CleanConvert::convertPrimitive(Rb2, bound2, "bound2");
+        CleanConvert::convertPrimitive(Rb2, bound2, VecType::Numeric, "bound2");
     }
 
     if (bound1 > bound2) {
@@ -135,32 +200,42 @@ SEXP MotleyContainer(SEXP Rb1, SEXP Rb2, bool isEuler,
     }
 
     if (myMax < 2) {
-        if (isEuler) {
-            Rcpp::IntegerVector z(1, 1);
-            if (isNamed)
-                z.attr("names") = 1;
-            return z;
+        if (IsEuler) {
+            SEXP res = PROTECT(Rf_allocVector(INTSXP, 1));
+            INTEGER(res)[0] = 1;
+
+            if (IsNamed) {
+                Rf_setAttrib(res, R_NamesSymbol, Rf_mkString("1"));
+            }
+
+            UNPROTECT(1);
+            return res;
         } else {
-            std::vector<std::vector<int>> trivialRet(1, std::vector<int>());
-            Rcpp::List z = Rcpp::wrap(trivialRet);
-            if (isNamed)
-                z.attr("names") = 1;
-            return z;
+            SEXP res = PROTECT(Rf_allocVector(VECSXP, 1));
+            SET_VECTOR_ELT(res, 0, Rf_allocVector(INTSXP, 0));
+
+            if (IsNamed) {
+                Rf_setAttrib(res, R_NamesSymbol, Rf_mkString("1"));
+            }
+
+            UNPROTECT(1);
+            return res;
         }
     }
 
-    int nThreads = 1;
-    if (!Rf_isNull(RNumThreads))
-        CleanConvert::convertPrimitive(RNumThreads, nThreads, "nThreads");
+    if (!Rf_isNull(RNumThreads)) {
+        CleanConvert::convertPrimitive(RNumThreads, nThreads,
+                                       VecType::Integer, "nThreads");
+    }
 
     if (myMax > std::numeric_limits<int>::max()) {
         std::int64_t intMin = static_cast<std::int64_t>(myMin);
-        Rcpp::NumericVector temp;
-        return GlueMotley(intMin, myMax, isEuler, temp, isNamed, nThreads, maxThreads);
+        return GlueDblMotley(intMin, myMax, IsEuler,
+                             IsNamed, nThreads, maxThreads);
     } else {
         int intMin = static_cast<int>(myMin);
         int intMax = static_cast<int>(myMax);
-        Rcpp::IntegerVector temp;
-        return GlueMotley(intMin, intMax, isEuler, temp, isNamed, nThreads, maxThreads);
+        return GlueIntMotley(intMin, intMax, IsEuler,
+                             IsNamed, nThreads, maxThreads);
     }
 }

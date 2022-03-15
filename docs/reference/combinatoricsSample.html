@@ -22,7 +22,7 @@ GMP support allows for exploration of combinations/permutations of vectors with 
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">RcppAlgos</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">2.4.3</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">2.5.0</span>
       </span>
     </div>
 
@@ -37,7 +37,7 @@ GMP support allows for exploration of combinations/permutations of vectors with 
     <span class="caret"></span>
   </a>
   <ul class="dropdown-menu" role="menu"><li>
-      <a href="../articles/CombPermConstraints.html">Constraints, Integer Partitions, and Compositions</a>
+      <a href="../articles/CombPermConstraints.html">Constraints and Integer Partitions</a>
     </li>
     <li>
       <a href="../articles/CombinatorialSampling.html">Combinatorial Sampling</a>
@@ -53,6 +53,9 @@ GMP support allows for exploration of combinations/permutations of vectors with 
     </li>
     <li>
       <a href="../articles/HighPerformanceBenchmarks.html">High Performance Benchmarks</a>
+    </li>
+    <li>
+      <a href="../articles/OtherCombinatorics.html">Cartesian Products and Partitions of Groups into Equal Size</a>
     </li>
     <li>
       <a href="../articles/SubsetSum.html">Attacking Problems Related to the Subset Sum Problem</a>
@@ -88,19 +91,19 @@ GMP support allows for exploration of combinations/permutations of vectors with 
 </ul></div>
 
     <div id="ref-usage">
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="fu">comboSample</span><span class="op">(</span><span class="va">v</span>, m <span class="op">=</span> <span class="cn">NULL</span>, repetition <span class="op">=</span> <span class="cn">FALSE</span>, freqs <span class="op">=</span> <span class="cn">NULL</span>, 
-             n <span class="op">=</span> <span class="cn">NULL</span>, sampleVec <span class="op">=</span> <span class="cn">NULL</span>, seed <span class="op">=</span> <span class="cn">NULL</span>, FUN <span class="op">=</span> <span class="cn">NULL</span>,
-              Parallel <span class="op">=</span> <span class="cn">FALSE</span>, nThreads <span class="op">=</span> <span class="cn">NULL</span>, namedSample <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="fu">comboSample</span><span class="op">(</span><span class="va">v</span>, m <span class="op">=</span> <span class="cn">NULL</span>, repetition <span class="op">=</span> <span class="cn">FALSE</span>, freqs <span class="op">=</span> <span class="cn">NULL</span>, n <span class="op">=</span> <span class="cn">NULL</span>,
+            sampleVec <span class="op">=</span> <span class="cn">NULL</span>, seed <span class="op">=</span> <span class="cn">NULL</span>, FUN <span class="op">=</span> <span class="cn">NULL</span>, Parallel <span class="op">=</span> <span class="cn">FALSE</span>,
+            nThreads <span class="op">=</span> <span class="cn">NULL</span>, namedSample <span class="op">=</span> <span class="cn">FALSE</span>, FUN.VALUE <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span>
 
-<span class="fu">permuteSample</span><span class="op">(</span><span class="va">v</span>, m <span class="op">=</span> <span class="cn">NULL</span>, repetition <span class="op">=</span> <span class="cn">FALSE</span>, freqs <span class="op">=</span> <span class="cn">NULL</span>,
-               n <span class="op">=</span> <span class="cn">NULL</span>, sampleVec <span class="op">=</span> <span class="cn">NULL</span>, seed <span class="op">=</span> <span class="cn">NULL</span>, FUN <span class="op">=</span> <span class="cn">NULL</span>,
-                Parallel <span class="op">=</span> <span class="cn">FALSE</span>, nThreads <span class="op">=</span> <span class="cn">NULL</span>, namedSample <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></code></pre></div>
+<span class="fu">permuteSample</span><span class="op">(</span><span class="va">v</span>, m <span class="op">=</span> <span class="cn">NULL</span>, repetition <span class="op">=</span> <span class="cn">FALSE</span>, freqs <span class="op">=</span> <span class="cn">NULL</span>, n <span class="op">=</span> <span class="cn">NULL</span>,
+              sampleVec <span class="op">=</span> <span class="cn">NULL</span>, seed <span class="op">=</span> <span class="cn">NULL</span>, FUN <span class="op">=</span> <span class="cn">NULL</span>, Parallel <span class="op">=</span> <span class="cn">FALSE</span>,
+              nThreads <span class="op">=</span> <span class="cn">NULL</span>, namedSample <span class="op">=</span> <span class="cn">FALSE</span>, FUN.VALUE <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span></code></pre></div>
     </div>
 
     <div id="arguments">
     <h2>Arguments</h2>
     <dl><dt>v</dt>
-<dd><p>Source vector. If <code>v</code> is an integer (including nonpositive integers), it will be converted to the sequence <code>1:v</code>. All atomic types are supported (See <code><a href="https://rdrr.io/r/base/is.recursive.html" class="external-link">?is.atomic</a></code>).</p></dd>
+<dd><p>Source vector. If <code>v</code> is a positive integer, it will be converted to the sequence <code>1:v</code>. If <code>v</code> is a negative integer, it will be converted to the sequence <code>v:-1</code>. All atomic types are supported (See <code><a href="https://rdrr.io/r/base/is.recursive.html" class="external-link">is.atomic</a></code>).</p></dd>
 <dt>m</dt>
 <dd><p>Number of elements to choose.  If <code>repetition = TRUE</code> or <code>freqs</code> is utilized, <code>m</code> can exceed the length of <code>v</code>. If <code>m = NULL</code>, the length will default to <code>length(v)</code> or <code>sum(freqs)</code>.</p></dd>
 <dt>repetition</dt>
@@ -110,7 +113,7 @@ GMP support allows for exploration of combinations/permutations of vectors with 
 <dt>n</dt>
 <dd><p>Number of combinations/permutations to return. The default is <code>NULL</code>.</p></dd>
 <dt>sampleVec</dt>
-<dd><p>A vector of numbers representing the lexicographical combination/permutations to return. Accepts vectors of class <code>bigz</code> as well as vectors of characters</p></dd>
+<dd><p>A vector of indices representing the lexicographical combination/permutations to return. Accepts whole numbers as well as vectors of class <code>bigz</code> as well as vectors of characters</p></dd>
 <dt>seed</dt>
 <dd><p>Random seed initialization. The default is <code>NULL</code>. N.B. If the gmp library is needed, this parameter must be set in order to have reproducible results (<em>E.g</em> <code><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed()</a></code> has no effect in these cases).</p></dd>
 <dt>FUN</dt>
@@ -121,15 +124,19 @@ GMP support allows for exploration of combinations/permutations of vectors with 
 <dd><p>Specific number of threads to be used. The default is <code>NULL</code>. See <code>Parallel</code>.</p></dd>
 <dt>namedSample</dt>
 <dd><p>Logical flag. If <code>TRUE</code>, <code>rownames</code> corresponding to the lexicographical combination/permutation, will be added to the returned matrix. The default is <code>FALSE</code>.</p></dd>
+<dt>FUN.VALUE</dt>
+<dd><p>A template for the return value from <code>FUN</code>. See 'Details' of <code><a href="https://rdrr.io/r/base/lapply.html" class="external-link">vapply</a></code> for more information.</p></dd>
 </dl></div>
     <div id="details">
     <h2>Details</h2>
-    <p>These algorithms rely on efficiently generating the \(n^{th}\) lexicographical combination/permutation (sometimes called the <a href="https://rosettacode.org/wiki/Permutations/Rank_of_a_permutation" class="external-link">rank</a>).</p>
+    <p>These algorithms rely on efficiently generating the \(n^{th}\) lexicographical combination/permutation. This is the process of <a href="https://rosettacode.org/wiki/Permutations/Rank_of_a_permutation" class="external-link">unranking</a>.</p>
     </div>
     <div id="value">
     <h2>Value</h2>
-    <p>In general, a matrix is returned with each row containing a vector of length \(m\). If <code>FUN</code> is utilized, a list is returned.</p>
-    </div>
+    <ul><li><p>In general, a matrix with \(m\) or \(m + 1\) columns, depending on the value of <code>keepResults</code></p></li>
+<li><p>If <code>FUN</code> is utilized and <code>FUN.VALUE = NULL</code>, a list is returned</p></li>
+<li><p>When both <code>FUN</code> and <code>FUN.VALUE</code> are not <code>NULL</code>, the return is modeled after the return of <code>vapply</code>. See the 'Value' section of <code><a href="https://rdrr.io/r/base/lapply.html" class="external-link">vapply</a></code>.</p></li>
+</ul></div>
     <div id="references">
     <h2>References</h2>
     <p><a href="https://en.wikipedia.org/wiki/Lexicographical_order" class="external-link">Lexicographical order</a></p>
@@ -145,7 +152,7 @@ GMP support allows for exploration of combinations/permutations of vectors with 
 <li><p>If <code>FUN</code> is utilized.</p></li>
 </ul></li>
 <li><p><code>n</code> and <code>sampleVec</code> cannot both be <code>NULL</code>.</p></li>
-<li><p>Factor vectors are accepted. Class and level attributes are preserved.</p></li>
+<li><p>Factor vectors are accepted. Class and level attributes are preserved except when <code>FUN</code> is used.</p></li>
 </ul></div>
 
     <div id="ref-examples">

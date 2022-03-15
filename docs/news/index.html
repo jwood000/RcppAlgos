@@ -17,7 +17,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">RcppAlgos</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">2.4.3</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">2.5.0</span>
       </span>
     </div>
 
@@ -32,7 +32,7 @@
     <span class="caret"></span>
   </a>
   <ul class="dropdown-menu" role="menu"><li>
-      <a href="../articles/CombPermConstraints.html">Constraints, Integer Partitions, and Compositions</a>
+      <a href="../articles/CombPermConstraints.html">Constraints and Integer Partitions</a>
     </li>
     <li>
       <a href="../articles/CombinatorialSampling.html">Combinatorial Sampling</a>
@@ -48,6 +48,9 @@
     </li>
     <li>
       <a href="../articles/HighPerformanceBenchmarks.html">High Performance Benchmarks</a>
+    </li>
+    <li>
+      <a href="../articles/OtherCombinatorics.html">Cartesian Products and Partitions of Groups into Equal Size</a>
     </li>
     <li>
       <a href="../articles/SubsetSum.html">Attacking Problems Related to the Subset Sum Problem</a>
@@ -76,6 +79,26 @@
     </div>
 
     <div class="section level2">
+<h2 class="page-header" data-toc-text="2.5.0" id="rcppalgos-250">RcppAlgos 2.5.0<a class="anchor" aria-label="anchor" href="#rcppalgos-250"></a></h2>
+<div class="section level3">
+<h3 id="new-features-2-5-0">New Features:<a class="anchor" aria-label="anchor" href="#new-features-2-5-0"></a></h3>
+<ul><li><p>Added partition specific functions: <code>partionsGeneral</code>, <code>partitionsCount</code>, <code>partitionsIter</code>, and <code>partitionsSample</code></p></li>
+<li><p><code>comboIter</code> and <code>permuteIter</code> now work with constraints.</p></li>
+<li><p>Dropped <code>Rcpp</code> and <code>RcppThread</code> as a dependency to reduce compile time and binary size. As a result, there is no longer the ability to interrupt long running processes. Will investigate in next release.</p></li>
+<li><p>We have added the parameter <code>FUN.VALUE</code> to <code>comboGeneral</code> and <code>permuteGeneral</code>. It acts as a template for the return value of <code>FUN</code>. The implementation is modeled after <code>vapply</code>.</p></li>
+</ul></div>
+<div class="section level3">
+<h3 id="enhancements-2-5-0">Enhancements:<a class="anchor" aria-label="anchor" href="#enhancements-2-5-0"></a></h3>
+<ul><li><p>Improved underlying algorithm for <code>comboGrid</code> to be more memory efficient.</p></li>
+<li><p>Made minor changes to make data types more consistent in <code>primeCount</code> and <code>primeSieve</code>.</p></li>
+</ul></div>
+<div class="section level3">
+<h3 id="bug-fixes-2-5-0">Bug Fixes:<a class="anchor" aria-label="anchor" href="#bug-fixes-2-5-0"></a></h3>
+<ul><li><p>When <code>permuteGeneral</code> is used with multisets and the width is maximized, multithreading would fail. This is fixed in 2.5.0.</p></li>
+<li><p>Fixed bug in retreiving the nth result in <code>comboGroup</code> and <code>comboGroupSample</code> when the number of results was greater than <code>2^31 - 1</code> and less than <code>2^53 - 1</code>. E.g. <code>comboGroupsSample(27, 9, seed = 4, sampleVec = 1606990240475839)</code> gives incorrect results in the 5th group in prior versions. Now fixed!.</p></li>
+</ul></div>
+</div>
+    <div class="section level2">
 <h2 class="page-header" data-toc-text="2.4.3" id="rcppalgos-243">RcppAlgos 2.4.3<small>2021-05-30</small><a class="anchor" aria-label="anchor" href="#rcppalgos-243"></a></h2>
 <div class="section level3">
 <h3 id="other-2-4-3">Other:<a class="anchor" aria-label="anchor" href="#other-2-4-3"></a></h3>
@@ -86,7 +109,7 @@
 <h2 class="page-header" data-toc-text="2.4.2" id="rcppalgos-242">RcppAlgos 2.4.2<a class="anchor" aria-label="anchor" href="#rcppalgos-242"></a></h2>
 <div class="section level3">
 <h3 id="new-features-2-4-2">New Features:<a class="anchor" aria-label="anchor" href="#new-features-2-4-2"></a></h3>
-<ul><li>Added function <code>comboGrid</code> for efficiently generating the cartesian product where order does not matter.</li>
+<ul><li>Added function <code>comboGrid</code> for efficiently generating the Cartesian product where order does not matter.</li>
 </ul></div>
 <div class="section level3">
 <h3 id="enhancements-2-4-2">Enhancements:<a class="anchor" aria-label="anchor" href="#enhancements-2-4-2"></a></h3>
@@ -117,8 +140,8 @@
 </ul></div>
 <div class="section level3">
 <h3 id="bug-fixes-2-4-0">Bug Fixes:<a class="anchor" aria-label="anchor" href="#bug-fixes-2-4-0"></a></h3>
-<ul><li><p>In 2.3.5 and 2.3.6, we mistakingly allowed a <code>constraintFun</code> to be applied to a logical vector which was crashing R. We have corrected this in 2.4.0.</p></li>
-<li><p>Changed the data type for sizing the index matrix in <code>permuteGeneral</code>. Originally, we were using <code>int</code> and when the output was large enough, it was causing an integer overflow thus causing the index matrix to be unproperly sized. We have sinced changed the data type to the recommended <code>std::size_t</code> (See <a href="https://stackoverflow.com/q/216259/4408538" class="external-link">Is there a max array length limit in C++?</a>)</p></li>
+<ul><li><p>In 2.3.5 and 2.3.6, we mistakenly allowed a <code>constraintFun</code> to be applied to a logical vector which was crashing R. We have corrected this in 2.4.0.</p></li>
+<li><p>Changed the data type for sizing the index matrix in <code>permuteGeneral</code>. Originally, we were using <code>int</code> and when the output was large enough, it was causing an integer overflow thus causing the index matrix to be improperly sized. We have since changed the data type to the recommended <code>std::size_t</code> (See <a href="https://stackoverflow.com/q/216259/4408538" class="external-link">Is there a max array length limit in C++?</a>)</p></li>
 </ul></div>
 </div>
     <div class="section level2">
@@ -132,7 +155,7 @@
 <h2 class="page-header" data-toc-text="2.3.5" id="rcppalgos-235">RcppAlgos 2.3.5<small>2020-01-26</small><a class="anchor" aria-label="anchor" href="#rcppalgos-235"></a></h2>
 <div class="section level3">
 <h3 id="new-features-2-3-5">New Features:<a class="anchor" aria-label="anchor" href="#new-features-2-3-5"></a></h3>
-<ul><li><p>Added <code>comboGroups</code>, <code>comboGroupsCount</code>, and <code>comboGroupsSample</code>. These functions deal with partitioning a vector/set into groups of equal size. See <a href="https://stackoverflow.com/q/57732672/4408538Create" class="external-link">Combinations in R by Groups</a>. See the related integer sequences A025035-A025042 at <a href="https://oeis.orgOEIS" class="external-link uri">https://oeis.orgOEIS</a> (E.g. <a href="https://oeis.org/A025036A025036" class="external-link uri">https://oeis.org/A025036A025036</a> for Number of partitions of <code>(1, 2, ..., 4n)</code> into sets of size 4.)</p></li>
+<ul><li><p>Added <code>comboGroups</code>, <code>comboGroupsCount</code>, and <code>comboGroupsSample</code>. These functions deal with partitioning a vector/set into groups of equal size. See <a href="https://stackoverflow.com/q/57732672/4408538Create" class="external-link">Combinations in R by Groups</a>. See the related integer sequences A025035-A025042 at <a href="https://oeis.org" class="external-link uri">https://oeis.org</a> (E.g. <a href="https://oeis.org/A025036A025036" class="external-link uri">https://oeis.org/A025036A025036</a> for Number of partitions of <code>(1, 2, ..., 4n)</code> into sets of size 4.)</p></li>
 <li><p>Added vignettes (First version with vignettes)</p></li>
 <li><p>Added website via the excellent package <code>pkgdown</code></p></li>
 <li><p>Now using C++11 instead of C++14. See <a href="https://github.com/jwood000/RcppAlgos/issues/10" class="external-link">Issue </a><a href="https://github.com/jwood000/RcppAlgos/issues/10" class="external-link">#10</a> for more information.</p></li>
@@ -174,7 +197,7 @@
 </ul></div>
     <div class="section level2">
 <h2 class="page-header" data-toc-text="2.3.0" id="rcppalgos-230">RcppAlgos 2.3.0<small>2019-03-17</small><a class="anchor" aria-label="anchor" href="#rcppalgos-230"></a></h2>
-<ul><li><p>All functions now have parallel capabilites via <code>RcppThread</code>.</p></li>
+<ul><li><p>All functions now have parallel capabilities via <code>RcppThread</code>.</p></li>
 <li><p>Utilizes <code>RMatrix.h</code> from <code>RcppParallel</code> for thread safe matrix class.</p></li>
 <li><p>Major overhaul of primeSieve for large primes.</p></li>
 <li><p>Added <code>stdThreadMax</code> for obtaining the number of threads available on a machine</p></li>
@@ -201,7 +224,7 @@
 </ul></div>
     <div class="section level2">
 <h2 class="page-header" data-toc-text="2.0.3" id="rcppalgos-203">RcppAlgos 2.0.3<small>2018-06-30</small><a class="anchor" aria-label="anchor" href="#rcppalgos-203"></a></h2>
-<ul><li>Corrected clang <code>UBSAN</code> error identified by two different unit tests. In both situations, the problem was occurring as a result of populating a vector of integers with values from a vector of doubles that contained a nan (Not-a-Number). Most information was obtained from Brian J. Knaus’s blog titled : “Reproducing a clang-UBSAN issue” (<a href="https://knausb.github.io/2017/06/reproducing-a-clang-ubsan-issue/" class="external-link uri">https://knausb.github.io/2017/06/reproducing-a-clang-ubsan-issue/</a>)</li>
+<ul><li>Corrected clang <code>UBSAN</code> error identified by two different unit tests. In both situations, the problem was occurring as a result of populating a vector of integers with values from a vector of doubles that contained a NaN (Not-a-Number). Most information was obtained from Brian J. Knaus’s blog titled : “Reproducing a clang-UBSAN issue” (<a href="https://knausb.github.io/2017/06/reproducing-a-clang-ubsan-issue/" class="external-link uri">https://knausb.github.io/2017/06/reproducing-a-clang-ubsan-issue/</a>)</li>
 </ul></div>
     <div class="section level2">
 <h2 class="page-header" data-toc-text="2.0.2" id="rcppalgos-202">RcppAlgos 2.0.2<small>2018-06-14</small><a class="anchor" aria-label="anchor" href="#rcppalgos-202"></a></h2>

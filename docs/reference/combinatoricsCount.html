@@ -17,7 +17,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">RcppAlgos</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">2.4.3</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">2.5.0</span>
       </span>
     </div>
 
@@ -32,7 +32,7 @@
     <span class="caret"></span>
   </a>
   <ul class="dropdown-menu" role="menu"><li>
-      <a href="../articles/CombPermConstraints.html">Constraints, Integer Partitions, and Compositions</a>
+      <a href="../articles/CombPermConstraints.html">Constraints and Integer Partitions</a>
     </li>
     <li>
       <a href="../articles/CombinatorialSampling.html">Combinatorial Sampling</a>
@@ -48,6 +48,9 @@
     </li>
     <li>
       <a href="../articles/HighPerformanceBenchmarks.html">High Performance Benchmarks</a>
+    </li>
+    <li>
+      <a href="../articles/OtherCombinatorics.html">Cartesian Products and Partitions of Groups into Equal Size</a>
     </li>
     <li>
       <a href="../articles/SubsetSum.html">Attacking Problems Related to the Subset Sum Problem</a>
@@ -89,7 +92,7 @@
     <div id="arguments">
     <h2>Arguments</h2>
     <dl><dt>v</dt>
-<dd><p>Source vector. If <code>v</code> is an integer, it will be converted to the sequence <code>1:v</code>.</p></dd>
+<dd><p>Source vector. If <code>v</code> is a positive integer, it will be converted to the sequence <code>1:v</code>. If <code>v</code> is a negative integer, it will be converted to the sequence <code>v:-1</code>. All atomic types are supported (See <code><a href="https://rdrr.io/r/base/is.recursive.html" class="external-link">is.atomic</a></code>).</p></dd>
 <dt>m</dt>
 <dd><p>Number of elements to choose.  If <code>repetition = TRUE</code> or <code>freqs</code> is utilized, <code>m</code> can exceed the length of <code>v</code>. If <code>m = NULL</code>, the length will default to <code>length(v)</code> or <code>sum(freqs)</code>.</p></dd>
 <dt>repetition</dt>
@@ -115,12 +118,14 @@
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span class="co">## Same interface as the respective "general" functions:</span></span>
 <span class="r-in"><span class="co">## i.e. comboGeneral &amp; permuteGeneral</span></span>
 <span class="r-in"></span>
+<span class="r-in"><span class="fu">permuteCount</span><span class="op">(</span><span class="op">-</span><span class="fl">5</span><span class="op">)</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 120</span>
+<span class="r-in"><span class="fu">permuteCount</span><span class="op">(</span><span class="fl">5</span><span class="op">)</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 120</span>
 <span class="r-in"><span class="fu">comboCount</span><span class="op">(</span><span class="fl">25</span>, <span class="fl">12</span><span class="op">)</span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] 5200300</span>
-<span class="r-in"></span>
 <span class="r-in"><span class="fu">permuteCount</span><span class="op">(</span><span class="fl">15</span>, <span class="fl">7</span>, <span class="cn">TRUE</span><span class="op">)</span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] 170859375</span>
-<span class="r-in"></span>
 <span class="r-in"><span class="fu">comboCount</span><span class="op">(</span><span class="fl">25</span>, <span class="fl">12</span>, freqs <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fl">2</span>, <span class="fl">25</span><span class="op">)</span><span class="op">)</span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] 458917850</span>
 <span class="r-in"></span>
