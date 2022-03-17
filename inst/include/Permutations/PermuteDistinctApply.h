@@ -13,8 +13,9 @@ void PermuteDistinctApplyFun(SEXP res, const std::vector<T> &v,
     const int retType = TYPEOF(res);
     auto arrPerm = FromCpp14::make_unique<int[]>(n);
 
-    for (int i = 0; i < n; ++i)
+    for (int i = 0; i < n; ++i) {
         arrPerm[i] = z[i];
+    }
 
     if (m == n) {
         for (int count = 0, numR1 = nRows - 1,
@@ -59,8 +60,9 @@ void PermuteDistinctApplyFun(SEXP res, SEXP v, SEXP vectorPass,
     const int retType = TYPEOF(res);
     auto arrPerm = FromCpp14::make_unique<int[]>(n);
 
-    for (int i = 0; i < n; ++i)
+    for (int i = 0; i < n; ++i) {
         arrPerm[i] = z[i];
+    }
 
     if (m == n) {
         for (int count = 0, numR1 = nRows - 1,

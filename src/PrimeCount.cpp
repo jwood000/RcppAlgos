@@ -379,8 +379,9 @@ namespace PrimeCounting {
             phiPi[i] = count;
         }
 
-        for (std::int64_t i = (maxPrime + 1); i <= sqrtBound; ++i)
+        for (std::int64_t i = (maxPrime + 1); i <= sqrtBound; ++i) {
             phiPi[i] = count;
+        }
 
         bool Parallel = false;
 

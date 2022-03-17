@@ -95,14 +95,16 @@ double numGroupCombs(int n, int numGroups, int grpSize) {
 
     double result = 1;
 
-    for (double i = n; i > numGroups; --i)
+    for (double i = n; i > numGroups; --i) {
         result *= i;
+    }
 
     if (result < std::numeric_limits<double>::max()) {
         double myDiv = 1;
 
-        for (double i = 2; i <= grpSize; ++i)
+        for (double i = 2; i <= grpSize; ++i) {
             myDiv *= i;
+        }
 
         result /= std::pow(myDiv, numGroups);
         return std::round(result);
@@ -114,15 +116,17 @@ double numGroupCombs(int n, int numGroups, int grpSize) {
 void numGroupCombsGmp(mpz_t result, int n,
                       int numGroups, int grpSize) {
 
-    for (int i = n; i > numGroups; --i)
+    for (int i = n; i > numGroups; --i) {
         mpz_mul_ui(result, result, i);
+    }
 
     mpz_t myDiv;
     mpz_init(myDiv);
     mpz_set_ui(myDiv, 1);
 
-    for (int i = 2; i <= grpSize; ++i)
+    for (int i = 2; i <= grpSize; ++i) {
         mpz_mul_ui(myDiv, myDiv, i);
+    }
 
     mpz_pow_ui(myDiv, myDiv, numGroups);
     mpz_divexact(result, result, myDiv);

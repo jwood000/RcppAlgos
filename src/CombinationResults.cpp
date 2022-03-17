@@ -117,9 +117,10 @@ void MultisetComboResult(T* mat, const std::vector<T> &v,
     std::vector<int> zIndex(n);
     std::vector<T> vPass(m);
 
-    for (int i = 0; i < n; ++i)
+    for (int i = 0; i < n; ++i) {
         zIndex[i] = std::find(freqs.cbegin(),
                               freqs.cend(), i) - freqs.cbegin();
+    }
 
     // pentExtreme is the location in freqs that represents
     // the maximal value of the second to the last element
@@ -155,8 +156,10 @@ void MultisetComboResult(RcppParallel::RMatrix<T> &mat,
     std::vector<int> zIndex(n);
     std::vector<T> vPass(m);
 
-    for (int i = 0; i < n; ++i)
-        zIndex[i] = std::find(freqs.cbegin(), freqs.cend(), i) - freqs.cbegin();
+    for (int i = 0; i < n; ++i) {
+        zIndex[i] = std::find(freqs.cbegin(),
+                              freqs.cend(), i) - freqs.cbegin();
+    }
 
     // pentExtreme is the location in freqs that represents
     // the maximal value of the second to the last element

@@ -157,9 +157,11 @@ namespace PhiTinyLookup {
         std::vector<std::int16_t> res;
         res.push_back(0);
 
-        for (int16_t i = 1; i < 5760; ++i)
-            for (int j = 0; j < ARR_WHEEL30030[i - 1]; ++j)
+        for (int16_t i = 1; i < 5760; ++i) {
+            for (int j = 0; j < ARR_WHEEL30030[i - 1]; ++j) {
                 res.push_back(i);
+            }
+        }
 
         res.push_back(5760);
         return res;
