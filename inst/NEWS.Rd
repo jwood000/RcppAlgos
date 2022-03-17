@@ -1,6 +1,15 @@
 \name{NEWS}
 \title{News for Package \pkg{RcppAlgos}}
 
+\section{Changes in RcppAlgos version 2.5.1 (Release date: 2022-03-18)}{
+    \itemize{
+        \item Bug Fixes:
+        \itemize{
+            \item Fixed memory issue when the number of results under contraint is less than the requested number.
+        }
+    }
+}
+
 \section{Changes in RcppAlgos version 2.5.0 (Release date: 2022-03-16)}{
     \itemize{
         \item New Features:
@@ -15,7 +24,7 @@
             \item Improved underlying algorithm for \code{comboGrid} to be more memory efficient.
             \item Made minor changes to make data types more consistent in \code{primeCount} and \code{primeSieve}.
         }
-        \item Other:
+        \item Bug Fixes:
         \itemize{
             \item When \code{permuteGeneral} is used with multisets and the width is maximized, multithreading would fail. This is fixed in 2.5.0.
             \item Fixed bug in retreiving the \eqn{n^{th}}{nth} result in \code{comboGroup} and \code{comboGroupSample} when the number of results was greater than \eqn{2^{31} - 1}{2^31 - 1} and less than \eqn{2^{53} - 1}{2^53 - 1}. \emph{E.g.} \code{comboGroupsSample(27, 9, seed = 4, sampleVec = 1606990240475839)} gives incorrect results in the \eqn{5^{th}}{5th} group in prior versions. Now fixed!.
