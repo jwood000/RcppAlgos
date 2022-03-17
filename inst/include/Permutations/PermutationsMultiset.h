@@ -52,8 +52,9 @@ void PermuteMultiset(RcppParallel::RMatrix<T> &mat, const std::vector<T> &v,
     const int lenFreqs = z.size();
     auto arrPerm = FromCpp14::make_unique<int[]>(lenFreqs);
 
-    for (int i = 0; i < lenFreqs; ++i)
+    for (int i = 0; i < lenFreqs; ++i) {
         arrPerm[i] = z[i];
+    }
 
     if (m == lenFreqs) {
         for (int count = strt, numR1 = nRows - 1,

@@ -50,8 +50,9 @@ void prevCombMultiCpp(const std::vector<int> &freqs,
         myReps[i] -= myReps[i - 1];
     };
 
-    for (int i = m1; i >= 0; --i)
+    for (int i = m1; i >= 0; --i) {
         --myReps[z[i]];
+    }
 
     bool keepGoing = true;
 

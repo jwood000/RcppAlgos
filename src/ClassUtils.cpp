@@ -46,16 +46,19 @@ void SetIndexVecMpz(SEXP RindexVec, mpz_t *myVec,
     createMPZArray(RindexVec, myVec, sampSize, "sampleVec");
 
     // get zero base
-    for (std::size_t i = 0; i < sampSize; ++i)
+    for (std::size_t i = 0; i < sampSize; ++i) {
         mpz_sub_ui(myVec[i], myVec[i], 1);
+    }
 
     mpz_t maxGmp;
     mpz_init(maxGmp);
     mpz_set(maxGmp, myVec[0]);
 
-    for (std::size_t i = 1; i < sampSize; ++i)
-        if (mpz_cmp(myVec[i], maxGmp) > 0)
+    for (std::size_t i = 1; i < sampSize; ++i) {
+        if (mpz_cmp(myVec[i], maxGmp) > 0) {
             mpz_set(maxGmp, myVec[i]);
+        }
+    }
 
     if (mpz_cmp(maxGmp, computedRowsMpz) >= 0) {
         Rf_error("One or more of the requested values in sampleVec "

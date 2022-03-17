@@ -165,8 +165,9 @@ void PrepareMultisetPart(std::vector<int> &rpsCnt,
 
     b = lastCol;
 
-    for (const auto ind: z)
+    for (const auto ind: z) {
         --rpsCnt[ind];
+    }
 
     while (BndDecrementPossible(rpsCnt, z, b)) {
         --b;

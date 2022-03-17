@@ -13,8 +13,9 @@ inline void nextCombSec(std::vector<int> &z, int m1, int nMinusM) {
         if (z[i] != (nMinusM + i)) {
             ++z[i];
 
-            for (int j = i; j < m1; ++j)
+            for (int j = i; j < m1; ++j) {
                 z[j + 1] = z[j] + 1;
+            }
 
             break;
         }
@@ -27,8 +28,9 @@ inline void nextCombSecRep(std::vector<int> &z, int m1, int n1) {
         if (z[i] != n1) {
             ++z[i];
 
-            for (int j = i, val = z[i]; j < m1; ++j)
+            for (int j = i, val = z[i]; j < m1; ++j) {
                 z[j + 1] = val;
+            }
 
             break;
         }
@@ -44,8 +46,9 @@ inline void nextCombSecMulti(const std::vector<int> &freqs,
         if (z[i] != freqs[pentExtreme + i]) {
             ++z[i];
 
-            for (int j = i + 1, k = zIndex[z[i]] + 1; j <= m1; ++j, ++k)
+            for (int j = i + 1, k = zIndex[z[i]] + 1; j <= m1; ++j, ++k) {
                 z[j] = freqs[k];
+            }
 
             break;
         }

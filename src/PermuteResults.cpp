@@ -68,8 +68,9 @@ void PermuteResDistinct(RcppParallel::RMatrix<T> &mat,
     std::vector<T> vPass(m);
     auto arrPerm = FromCpp14::make_unique<int[]>(n);
 
-    for (int i = 0; i < n; ++i)
+    for (int i = 0; i < n; ++i) {
         arrPerm[i] = z[i];
+    }
 
     if (m == n) {
         // Since we are getting all permutations of v, we know that
@@ -88,8 +89,9 @@ void PermuteResDistinct(RcppParallel::RMatrix<T> &mat,
         for (int count = strt + 1, numR1 = nRows - 1,
              maxInd = n - 1; count < numR1; ++count) {
 
-            for (int j = 0; j < m; ++j)
+            for (int j = 0; j < m; ++j) {
                 mat(count, j) = v[arrPerm[j]];
+            }
 
             mat(count, m) = myRes;
             nextFullPerm(arrPerm.get(), maxInd);
@@ -243,8 +245,9 @@ void MultisetPermRes(RcppParallel::RMatrix<T> &mat, const std::vector<T> &v,
     auto arrPerm = FromCpp14::make_unique<int[]>(lenFreqs);
     std::vector<T> vPass(m);
 
-    for (int j = 0; j < lenFreqs; ++j)
+    for (int j = 0; j < lenFreqs; ++j) {
         arrPerm[j] = z[j];
+    }
 
     if (m == lenFreqs) {
         // Since we are getting all permutations of v, we know that
@@ -263,8 +266,9 @@ void MultisetPermRes(RcppParallel::RMatrix<T> &mat, const std::vector<T> &v,
         for (int count = strt + 1, numR1 = nRows - 1,
              maxInd = lenFreqs - 1; count < numR1; ++count) {
 
-            for (int j = 0; j < m; ++j)
+            for (int j = 0; j < m; ++j) {
                 mat(count, j) = v[arrPerm[j]];
+            }
 
             mat(count, m) = myRes;
             nextFullPerm(arrPerm.get(), maxInd);

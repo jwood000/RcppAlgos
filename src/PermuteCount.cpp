@@ -34,8 +34,9 @@ double NumPermsWithRep(const std::vector<int> &v) {
     const int numUni = myLens.size();
     double result = 1;
 
-    for (int i = v.size(); i > myMax; --i)
+    for (int i = v.size(); i > myMax; --i) {
         result *= i;
+    }
 
     if (numUni > 1) {
         double div = 1.0;
@@ -124,8 +125,9 @@ double MultisetPermRowNum(int n, int r, const std::vector<int> &Reps) {
 
     int myMin = std::min(r, Reps[0]);
 
-    for (int i = 0; i <= myMin; ++i)
+    for (int i = 0; i <= myMin; ++i) {
         resV[i] = prodR / cumProd[i];
+    }
 
     for (int i = 1; i < n1; ++i) {
         for (int j = r; j > 0; --j) {

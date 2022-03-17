@@ -1,3 +1,9 @@
+# RcppAlgos 2.5.1
+
+## Bug Fixes:
+
+* Fixed memory issue when the number of results under contraint is less than the requested number.
+
 # RcppAlgos 2.5.0
 
 ## New Features:

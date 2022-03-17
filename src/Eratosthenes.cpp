@@ -309,8 +309,9 @@ namespace PrimeSieve {
         for (std::size_t i = strt30030; i < nextStrt.size(); ++i) {
             int j = nextStrt[i];
 
-            for (int k = sievePrimes[i] * 2; j < segSize; j += k)
+            for (int k = sievePrimes[i] * 2; j < segSize; j += k) {
                 sieve[j] = false;
+            }
 
             nextStrt[i] = j - segSize;
         }
@@ -621,8 +622,9 @@ namespace PrimeSieve {
             if (bAddZero) sievePrimes.push_back(0);
             std::size_t ind = (bAddTwo) ? 0u : 1u;
 
-            for (; smallPrimeBase[ind] <= sqrtBound; ++ind)
+            for (; smallPrimeBase[ind] <= sqrtBound; ++ind) {
                 sievePrimes.push_back(smallPrimeBase[ind]);
+            }
 
             if (bAddExtraPrime)
                 sievePrimes.push_back(smallPrimeBase[ind]);
