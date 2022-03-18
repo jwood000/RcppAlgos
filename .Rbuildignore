@@ -5,3 +5,4 @@ LICENSE
 remove_whitespace.sh
 ^\.github$
 ^docs$
+^vignettes/*.html
