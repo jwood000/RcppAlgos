@@ -102,7 +102,7 @@
       <h1 data-toc-skip>Cartesian Products and Partitions of Groups into Equal Size</h1>
                         <h4 data-toc-skip class="author">Joseph Wood</h4>
             
-            <h4 data-toc-skip class="date">03/12/2022</h4>
+            <h4 data-toc-skip class="date">03/18/2022</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/jwood000/RcppAlgos/blob/HEAD/vignettes/OtherCombinatorics.Rmd" class="external-link"><code>vignettes/OtherCombinatorics.Rmd</code></a></small>
       <div class="hidden name"><code>OtherCombinatorics.Rmd</code></div>
@@ -296,7 +296,7 @@
 <span class="co">#&gt; 50 "( 1 2 3 4 )" "( 5 6 7 10 )" "( 8 9 12 11 )"</span></code></pre></div>
 <p>We are starting to see a pattern. Each new partition is exactly 24 spots away. This makes sense as there are <code>factorial(4) = 24</code> permutations of size 4. Now, this is an oversimplification as if we simply generate every <em>24<sup>th</sup></em> permutation, we will still get duplication as they start to carry over to the other groups. Observe:</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/base/do.call.html" class="external-link">do.call</a></span><span class="op">(</span><span class="va">rbind</span>, <span class="fu"><a href="https://rdrr.io/r/base/lapply.html" class="external-link">lapply</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">145</span>, <span class="fl">24</span><span class="op">)</span>, <span class="kw">function</span><span class="op">(</span><span class="va">x</span><span class="op">)</span> <span class="op">{</span>
+<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/base/do.call.html" class="external-link">do.call</a></span><span class="op">(</span><span class="va">rbind</span>, <span class="fu"><a href="https://rdrr.io/r/base/lapply.html" class="external-link">lapply</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">169</span>, <span class="fl">24</span><span class="op">)</span>, <span class="kw">function</span><span class="op">(</span><span class="va">x</span><span class="op">)</span> <span class="op">{</span>
     <span class="fu">funBruteGrp</span><span class="op">(</span>myLow <span class="op">=</span> <span class="va">x</span>, myUp <span class="op">=</span> <span class="va">x</span><span class="op">)</span>
 <span class="op">}</span><span class="op">)</span><span class="op">)</span>
 <span class="co">#&gt;              Grp1          Grp2           Grp3</span>

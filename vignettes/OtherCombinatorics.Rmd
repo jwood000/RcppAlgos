@@ -1,7 +1,7 @@
 ---
 title: "Cartesian Products and Partitions of Groups into Equal Size"
 author: "Joseph Wood"
-date: "03/12/2022"
+date: "03/18/2022"
 output:
   rmarkdown::html_vignette:
     toc: true
@@ -211,7 +211,7 @@ funBruteGrp(myLow = 48, myUp = 50)
 We are starting to see a pattern. Each new partition is exactly 24 spots away. This makes sense as there are `factorial(4) = 24` permutations of size 4. Now, this is an oversimplification as if we simply generate every _24<sup>th</sup>_ permutation, we will still get duplication as they start to carry over to the other groups. Observe:
 
 ```r
-do.call(rbind, lapply(seq(1, 145, 24), function(x) {
+do.call(rbind, lapply(seq(1, 169, 24), function(x) {
     funBruteGrp(myLow = x, myUp = x)
 }))
 #>              Grp1          Grp2           Grp3

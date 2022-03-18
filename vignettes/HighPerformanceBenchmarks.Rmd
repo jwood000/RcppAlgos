@@ -1,7 +1,7 @@
 ---
 title: "High Performance Benchmarks"
 author: "Joseph Wood"
-date: "03/14/2022"
+date: "03/18/2022"
 output:
   rmarkdown::html_vignette:
     toc: true
@@ -27,12 +27,12 @@ pertinent_output <- capture.output(sessionInfo())
 
 options(digits = 4)
 cat(paste(pertinent_output[1:3], collapse = "\n"))
-#> R version 4.1.0 (2021-05-18)
+#> R version 4.1.3 (2022-03-10)
 #> Platform: x86_64-apple-darwin17.0 (64-bit)
-#> Running under: macOS 12.0.1
+#> Running under: macOS Monterey 12.3
 
 cat(pertinent_output[which(pertinent_output == "other attached packages:") + 1L])
-#> [1] microbenchmark_1.4-7 arrangements_1.1.9   partitions_1.10-2    RcppAlgos_2.5.0
+#> [1] microbenchmark_1.4-7 arrangements_1.1.9   partitions_1.10-2    RcppAlgos_2.5.1
 
 numThreads <- as.integer(RcppAlgos::stdThreadMax() / 2)
 print(numThreads)
@@ -107,11 +107,11 @@ microbenchmark(cbRcppAlgosPar = comboGeneral(v3, 20, freqs = myFreqs, nThreads =
                cbRcppAlgosSer = comboGeneral(v3, 20, freqs = myFreqs),
                cbArrangements = combinations(freq = myFreqs, k = 20, x = v3),
                times = 10, unit = "relative")
-Unit: relative
-           expr   min    lq  mean median    uq   max neval cld
- cbRcppAlgosPar 1.000 1.000 1.000  1.000 1.000 1.000    10 a
- cbRcppAlgosSer 2.608 2.589 2.378  2.505 2.107 2.160    10  b
- cbArrangements 3.776 3.931 3.634  3.829 3.220 3.397    10   c
+#> Unit: relative
+#>            expr   min    lq  mean median    uq   max neval cld
+#>  cbRcppAlgosPar 1.000 1.000 1.000  1.000 1.000 1.000    10 a
+#>  cbRcppAlgosSer 2.608 2.589 2.378  2.505 2.107 2.160    10  b
+#>  cbArrangements 3.776 3.931 3.634  3.829 3.220 3.397    10   c
 ```
 
 ## Permutations
@@ -159,12 +159,12 @@ microbenchmark(cbRcppAlgosPar = permuteGeneral(11, nThreads = 4),
                cbArrangements = permutations(11),
                cbPartitions   = perms(11),
                times = 5, unit = "relative")
-Unit: relative
-           expr    min    lq  mean median    uq   max neval cld
- cbRcppAlgosPar  1.000 1.000 1.000  1.000 1.000 1.000     5 a
- cbRcppAlgosSer  3.129 3.299 2.621  3.284 1.947 2.289     5  b
- cbArrangements  3.664 3.630 2.791  3.639 2.201 2.032     5  b
-   cbPartitions 10.040 9.932 7.974 10.901 6.497 5.797     5   c
+#> Unit: relative
+#>            expr    min    lq  mean median    uq   max neval cld
+#>  cbRcppAlgosPar  1.000 1.000 1.000  1.000 1.000 1.000     5 a
+#>  cbRcppAlgosSer  3.129 3.299 2.621  3.284 1.947 2.289     5  b
+#>  cbArrangements  3.664 3.630 2.791  3.639 2.201 2.032     5  b
+#>    cbPartitions 10.040 9.932 7.974 10.901 6.497 5.797     5   c
 ```
 
 ### Permutations - Repetition

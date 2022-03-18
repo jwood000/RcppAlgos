@@ -1,7 +1,7 @@
 ---
 title: "Constraints and Integer Partitions"
 author: "Joseph Wood"
-date: "03/13/2022"
+date: "03/18/2022"
 output:
   rmarkdown::html_vignette:
     toc: true
@@ -285,9 +285,9 @@ comboGeneral(c(21, 31, 51, 71), 3, T,
              constraintFun = "mean", comparisonFun = c("<", ">"),
              limitConstraints = c(51, 41), keepResults = TRUE) / 10
 #>      [,1] [,2] [,3]     [,4]
-#> [1,]    2    5    7 4.666667
-#> [2,]    3    3    7 4.333333
-#> [3,]    3    5    5 4.333333
+#> [1,]  2.1  5.1  7.1 4.766667
+#> [2,]  3.1  3.1  7.1 4.433333
+#> [3,]  3.1  5.1  5.1 4.433333
 ```
 
 ### Output Order with `permuteGeneral`
