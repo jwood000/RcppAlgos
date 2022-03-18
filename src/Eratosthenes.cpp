@@ -43,7 +43,7 @@ namespace PrimeSieve {
                                                    10000000000000000.0}};
 
     // The following function is based off of the prime number theorem
-    int EstimatePiPrime(double minNum, double maxNum) {
+    std::size_t EstimatePiPrime(double minNum, double maxNum) {
         const auto it = std::upper_bound(CUTPOINTS.cbegin(), CUTPOINTS.cend(), maxNum);
         const std::size_t myIndex = it - CUTPOINTS.cbegin();
         double dblRes = std::ceil((maxNum / std::log(maxNum)) * (1 + PERCINC[myIndex]));
@@ -59,9 +59,9 @@ namespace PrimeSieve {
     void PrimeSieveSmall(const std::vector<int> &sievePrimes,
                          std::vector<T> &primes, int minNum, int maxNum) {
 
-        const int myReserve = EstimatePiPrime(static_cast<double>(minNum),
-                                              static_cast<double>(maxNum));
-        primes.reserve(myReserve);
+        primes.reserve(EstimatePiPrime(
+            static_cast<double>(minNum), static_cast<double>(maxNum)
+        ));
 
         if (maxNum <= smallPrimeBase.back()) {
             int ind = 0;
@@ -272,9 +272,11 @@ namespace PrimeSieve {
         const std::int_fast64_t segSize = nWheels * sz30030;
 
         // We have to add primes.size() because we could have started in PrimeSieveSmall
-        const std::size_t myReserve = EstimatePiPrime(static_cast<double>(minNum),
-                                                      static_cast<double>(maxNum)) + primes.size();
-        primes.reserve(myReserve);
+        primes.reserve(
+            EstimatePiPrime(static_cast<double>(minNum),
+                            static_cast<double>(maxNum)) + primes.size()
+        );
+
         const std::int_fast64_t flrMaxNum = segSize * (maxNum / segSize);
         std::vector<bool> sieve(segSize, true);
 
@@ -419,9 +421,11 @@ namespace PrimeSieve {
         const std::size_t szWheel30030 = SZ_WHEEL30030;
 
         // We have to add primes.size() because we could have started in PrimeSieveMedium
-        const std::size_t myReserve = EstimatePiPrime(static_cast<double>(minNum),
-                                                      static_cast<double>(maxNum)) + primes.size();;
-        primes.reserve(myReserve);
+        primes.reserve(
+            EstimatePiPrime(static_cast<double>(minNum),
+                            static_cast<double>(maxNum)) + primes.size()
+        );
+
         std::int_fast64_t lowerBnd = static_cast<std::int_fast64_t>(
             segSize * (minNum / segSize)
         );
@@ -812,16 +816,16 @@ namespace PrimeSieve {
     }
 }
 
-template void PrimeSieve::PrimeSieveMain(std::vector<std::vector<std::int64_t>>&,
-                                         std::vector<std::int64_t>&, std::int_fast64_t,
+template void PrimeSieve::PrimeSieveMain(std::vector<std::vector<int>>&,
+                                         std::vector<int>&, std::int_fast64_t,
                                          std::int_fast64_t, bool&, int, int, int);
 template void PrimeSieve::PrimeSieveMain(std::vector<std::vector<double>>&,
                                          std::vector<double>&, std::int_fast64_t,
                                          std::int_fast64_t, bool&, int, int, int);
-template void PrimeSieve::PrimeSieveMain(std::vector<std::vector<int>>&,
-                                         std::vector<int>&, std::int_fast64_t,
+template void PrimeSieve::PrimeSieveMain(std::vector<std::vector<std::int64_t>>&,
+                                         std::vector<std::int64_t>&, std::int_fast64_t,
                                          std::int_fast64_t, bool&, int, int, int);
 
+template void PrimeSieve::sqrtBigPrimes(int, bool, bool, bool, std::vector<int>&);
 template void PrimeSieve::sqrtBigPrimes(int, bool, bool, bool, std::vector<double>&);
 template void PrimeSieve::sqrtBigPrimes(int, bool, bool, bool, std::vector<std::int64_t>&);
-template void PrimeSieve::sqrtBigPrimes(int, bool, bool, bool, std::vector<int>&);
