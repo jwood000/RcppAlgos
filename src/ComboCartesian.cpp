@@ -1,5 +1,6 @@
 #include "Cpp14MakeUnique.h"
 #include <unordered_set>
+#include <cstdint>
 #include <limits>
 #include <vector>
 #include <string>
@@ -11,7 +12,7 @@ void AddComb(std::unordered_set<std::uint64_t> &uintHash,
              std::uint64_t &maxKey, std::uint64_t masterKey,
              int prime, int idx) {
 
-    const std::uint64_t key = masterKey * prime;
+    const std::uint64_t key = masterKey * static_cast<std::uint64_t>(prime);
     if (key > maxKey) maxKey = key;
 
     if (uintHash.find(key) == uintHash.end()) {
@@ -112,7 +113,7 @@ void comboGrid(std::vector<int> &cartCombs,
                                               tempCombs.begin() + myEnd);
 
                 for (auto idx: myVecs[i]) {
-                    if (masterKey % primes[idx] != 0) {
+                    if (masterKey % static_cast<std::uint64_t>(primes[idx]) != 0) {
                         AddComb(uintHash, uintKeyKeeper, rowIdx, cartCombs,
                                 maxKey, masterKey, primes[idx], idx);
                     }
@@ -136,8 +137,12 @@ void comboGrid(std::vector<int> &cartCombs,
                 const std::uint64_t masterKey = uintKeyKeeper[j];
 
                 for (auto idx: myVecs.back()) {
-                    if (uintHash.find(masterKey * primes[idx]) == uintHash.end()) {
-                        uintHash.insert(masterKey * primes[idx]);
+                    if (uintHash.find(masterKey *
+                        static_cast<std::uint64_t>(
+                            primes[idx]
+                        )) == uintHash.end()) {
+                        uintHash.insert(masterKey *
+                            static_cast<std::uint64_t>(primes[idx]));
                         lastCol.push_back(idx);
                         ++lenGrps[j];
                     }
@@ -148,9 +153,9 @@ void comboGrid(std::vector<int> &cartCombs,
                 const std::uint64_t masterKey = uintKeyKeeper[j];
 
                 for (auto idx: myVecs.back()) {
-                    if (masterKey % primes[idx] != 0) {
-                        if (uintHash.find(masterKey * primes[idx]) == uintHash.end()) {
-                            uintHash.insert(masterKey * primes[idx]);
+                    if (masterKey % static_cast<std::uint64_t>(primes[idx]) != 0) {
+                        if (uintHash.find(masterKey * static_cast<std::uint64_t>(primes[idx])) == uintHash.end()) {
+                            uintHash.insert(masterKey * static_cast<std::uint64_t>(primes[idx]));
                             lastCol.push_back(idx);
                             ++lenGrps[j];
                         }
