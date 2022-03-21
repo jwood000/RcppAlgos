@@ -29,6 +29,10 @@
             \item When \code{permuteGeneral} is used with multisets and the width is maximized, multithreading would fail. This is fixed in 2.5.0.
             \item Fixed bug in retreiving the \eqn{n^{th}}{nth} result in \code{comboGroup} and \code{comboGroupSample} when the number of results was greater than \eqn{2^{31} - 1}{2^31 - 1} and less than \eqn{2^{53} - 1}{2^53 - 1}. \emph{E.g.} \code{comboGroupsSample(27, 9, seed = 4, sampleVec = 1606990240475839)} gives incorrect results in the \eqn{5^{th}}{5th} group in prior versions. Now fixed!.
         }
+        \item Other:
+        \itemize{
+            \item In this version we no longer output lexicographical composititions in very special circumstances outlined in older documentation using \code{permuteGeneral}. This was done for consistency as we felt that the output diverged too much from the general constrained output of \code{permuteGeneral} (See \href{https://jwood000.github.io/RcppAlgos/articles/CombPermConstraints.html#output-order-with-permutegeneral}{Output Order with permuteGeneral}). Research is in the initial stage that is focused on implementing a new family of functions similar to the partition family of functions, but for compositions.
+        }
     }
 }
 

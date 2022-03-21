@@ -28,6 +28,10 @@
 
 * Fixed bug in retreiving the nth result in `comboGroup` and `comboGroupSample` when the number of results was greater than `2^31 - 1` and less than `2^53 - 1`. E.g. `comboGroupsSample(27, 9, seed = 4, sampleVec = 1606990240475839)` gives incorrect results in the 5th group in prior versions. Now fixed!.
 
+## Other:
+
+* In this version we no longer output lexicographical composititions in very special circumstances outlined in older documentation using `permuteGeneral`. This was done for consistency as we felt that the output diverged too much from the general constrained output of `permuteGeneral` (See [Output Order with permuteGeneral](<https://jwood000.github.io/RcppAlgos/articles/CombPermConstraints.html#output-order-with-permutegeneral>)). Research is in the initial stage that is focused on implementing a new family of functions similar to the partition family of functions, but for compositions.
+
 # RcppAlgos 2.4.3
 
 ## Other:
