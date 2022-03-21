@@ -475,7 +475,7 @@ comboCount(25, 10)
 #> [1] 3268760
 
 system.time(test_nextIter(25, 10))
-#>    user  system elapsed 
+#>    user  system elapsed
 #>  11.113   0.041  11.168
 
 Rprof("Version243.out", memory.profiling = TRUE)
@@ -490,7 +490,7 @@ summaryRprof("Version243.out", memory = "both")
 #> "slot"               1.32    12.99       1.32     12.99    1003.9
 #> "<Anonymous>"        0.98     9.65       1.44     14.17    1297.6
 #> ".Call"              0.46     4.53       0.46      4.53     397.5
-#> 
+#>
 #> $by.total
 #>                 total.time total.pct mem.total self.time self.pct
 #> "test_nextIter"      10.16    100.00    7840.6      1.62    15.94
@@ -499,10 +499,10 @@ summaryRprof("Version243.out", memory = "both")
 #> "<Anonymous>"         1.44     14.17    1297.6      0.98     9.65
 #> "slot"                1.32     12.99    1003.9      1.32    12.99
 #> ".Call"               0.46      4.53     397.5      0.46     4.53
-#> 
+#>
 #> $sample.interval
 #> [1] 0.02
-#> 
+#>
 #> $sampling.time
 #> [1] 10.16
 ```
@@ -531,16 +531,16 @@ summaryRprof("Version250.out", memory = "both")
 #> "<Anonymous>"        0.82    50.00       1.22     74.39     591.4
 #> "test_nextIter"      0.42    25.61       1.64    100.00     828.1
 #> ".Call"              0.40    24.39       0.40     24.39     208.5
-#> 
+#>
 #> $by.total
 #>                 total.time total.pct mem.total self.time self.pct
 #> "test_nextIter"       1.64    100.00     828.1      0.42    25.61
 #> "<Anonymous>"         1.22     74.39     591.4      0.82    50.00
 #> ".Call"               0.40     24.39     208.5      0.40    24.39
-#> 
+#>
 #> $sample.interval
 #> [1] 0.02
-#> 
+#>
 #> $sampling.time
 #> [1] 1.64
 ```
@@ -553,26 +553,26 @@ It appears that memory is the issue in previous versions. Indeed, if we look at 
 ### Verison 2.4.3
 summaryRprof("Version243.out", memory = "stats")
 #> index: "test_nextIter"
-#>      vsize.small  max.vsize.small      vsize.large  max.vsize.large            nodes        max.nodes     duplications tot.duplications          samples 
-#>           818856          1528208                0                0         15084023         28150864            12915          1046139               81 
-#> ------------------------------------------------------------------------------------------------------------------------------------------------------ 
+#>      vsize.small  max.vsize.small      vsize.large  max.vsize.large            nodes        max.nodes     duplications tot.duplications          samples
+#>           818856          1528208                0                0         15084023         28150864            12915          1046139               81
+#> ------------------------------------------------------------------------------------------------------------------------------------------------------
 #> index: "test_nextIter":"$"
-#>      vsize.small  max.vsize.small      vsize.large  max.vsize.large            nodes        max.nodes     duplications tot.duplications          samples 
-#>           893682         18816032            92410         19128912         15580492        164092096            12582          2604432              207 
-#> ------------------------------------------------------------------------------------------------------------------------------------------------------ 
+#>      vsize.small  max.vsize.small      vsize.large  max.vsize.large            nodes        max.nodes     duplications tot.duplications          samples
+#>           893682         18816032            92410         19128912         15580492        164092096            12582          2604432              207
+#> ------------------------------------------------------------------------------------------------------------------------------------------------------
 #> index: "test_nextIter":"a$nextIter"
-#>      vsize.small  max.vsize.small      vsize.large  max.vsize.large            nodes        max.nodes     duplications tot.duplications          samples 
-#>           867378          1534896                0                0         15978375         28274568            13087          2879232              220 
+#>      vsize.small  max.vsize.small      vsize.large  max.vsize.large            nodes        max.nodes     duplications tot.duplications          samples
+#>           867378          1534896                0                0         15978375         28274568            13087          2879232              220
 
 ## Version 2.5.0
 summaryRprof("Version250.out", memory = "stats")
 #> index: "test_nextIter"
-#>      vsize.small  max.vsize.small      vsize.large  max.vsize.large            nodes        max.nodes     duplications tot.duplications          samples 
-#>          2626749          3953536                0                0          9193563         13837376                0                0               21 
-#> --------------------------------------------------------------------------------------------------------------------------------------------------- 
+#>      vsize.small  max.vsize.small      vsize.large  max.vsize.large            nodes        max.nodes     duplications tot.duplications          samples
+#>          2626749          3953536                0                0          9193563         13837376                0                0               21
+#> ---------------------------------------------------------------------------------------------------------------------------------------------------
 #> index: "test_nextIter":"<Anonymous>"
-#>      vsize.small  max.vsize.small      vsize.large  max.vsize.large            nodes        max.nodes     duplications tot.duplications          samples 
-#>          2533896         17629656           277772         16944064         10035058        132854400                0                7               61 
+#>      vsize.small  max.vsize.small      vsize.large  max.vsize.large            nodes        max.nodes     duplications tot.duplications          samples
+#>          2533896         17629656           277772         16944064         10035058        132854400                0                7               61
 ```
 
 With verison `2.5.0` there are only 7 `tot.duplications` whereas with version `2.4.3` there are millions of `tot.duplications`. In fact, there are a total of `1046139 + 2604432 + 2879232 = 6,529,803` duplications with version `2.4.3`. This together with `comboCount(25, 10) = 3,268,760` implies that the C funciton, `duplicate`, is called about 2 times per iteration with older versions (i.e. `6529803 / 3268760 ~= 1.997639`).
