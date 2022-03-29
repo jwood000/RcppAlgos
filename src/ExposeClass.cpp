@@ -3,7 +3,6 @@
 #include "Partitions/PartitionsClass.h"
 #include "ClassUtils/ComboApplyClass.h"
 #include "ClassUtils/ComboResClass.h"
-#include "ClassUtils/ExposeClass.h"
 #include "ClassUtils/ComboClass.h"
 #include "CheckReturn.h"
 
@@ -21,6 +20,7 @@ static void Finalizer(SEXP ext) {
 // RVals contains: v, vNum, vInt, m, RcompRows, maxThreads, & nThreads
 // RboolVec contains: IsFac, IsComb, IsMult, IsRep, IsGmp, & IsFull
 // freqInfo contains: myReps & freqs
+[[cpp11::register]]
 SEXP CombClassNew(SEXP RVals, SEXP RboolVec, SEXP freqInfo, SEXP Rparallel,
                   SEXP RstdFun, SEXP Rrho, SEXP R_RFunVal, SEXP RmainFun,
                   SEXP RcompFun, SEXP Rtarget, SEXP RKeepRes,
@@ -80,7 +80,7 @@ SEXP CombClassNew(SEXP RVals, SEXP RboolVec, SEXP freqInfo, SEXP Rparallel,
         const int n = vNum.size();
 
         if (!Rf_isString(RmainFun) || Rf_length(RmainFun) != 1) {
-            Rf_error("contraintFun must be one of the following:"
+            cpp11::stop("contraintFun must be one of the following:"
                          " 'prod', 'sum', 'mean', 'max', or 'min'");
         }
 
@@ -88,7 +88,7 @@ SEXP CombClassNew(SEXP RVals, SEXP RboolVec, SEXP freqInfo, SEXP Rparallel,
         const auto funIt = std::find(mainFunSet.begin(), mainFunSet.end(), funTest);
 
         if (funIt == mainFunSet.end()) {
-            Rf_error("contraintFun must be one of the following:"
+            cpp11::stop("contraintFun must be one of the following:"
                          " 'prod', 'sum', 'mean', 'max', or 'min'");
         }
 
@@ -237,67 +237,80 @@ SEXP CombClassNew(SEXP RVals, SEXP RboolVec, SEXP freqInfo, SEXP Rparallel,
     }
 }
 
+[[cpp11::register]]
 SEXP StartOverGlue(SEXP ext) {
     class Combo* ptr = (class Combo*) R_ExternalPtrAddr(ext);
     ptr->startOver();
     return R_NilValue;
 }
 
+[[cpp11::register]]
 SEXP NextCombGlue(SEXP ext) {
     class Combo* ptr = (class Combo*) R_ExternalPtrAddr(ext);
     return ptr->nextComb();
 }
 
+[[cpp11::register]]
 SEXP NextNumCombGlue(SEXP ext, SEXP Rnum) {
     class Combo* ptr = (class Combo*) R_ExternalPtrAddr(ext);
     return ptr->nextNumCombs(Rnum);
 }
 
+[[cpp11::register]]
 SEXP NextGatherGlue(SEXP ext) {
     class Combo* ptr = (class Combo*) R_ExternalPtrAddr(ext);
     return ptr->nextGather();
 }
 
+[[cpp11::register]]
 SEXP PrevCombGlue(SEXP ext) {
     class Combo* ptr = (class Combo*) R_ExternalPtrAddr(ext);
     return ptr->prevComb();
 }
 
+[[cpp11::register]]
 SEXP PrevNumCombGlue(SEXP ext, SEXP Rnum) {
     class Combo* ptr = (class Combo*) R_ExternalPtrAddr(ext);
     return ptr->prevNumCombs(Rnum);
 }
 
+[[cpp11::register]]
 SEXP PrevGatherGlue(SEXP ext) {
     class Combo* ptr = (class Combo*) R_ExternalPtrAddr(ext);
     return ptr->prevGather();
 }
 
+[[cpp11::register]]
 SEXP CurrCombGlue(SEXP ext) {
     class Combo* ptr = (class Combo*) R_ExternalPtrAddr(ext);
     return ptr->currComb();
 }
 
+[[cpp11::register]]
 SEXP RandomAccessGlue(SEXP ext, SEXP RIndexVec) {
     class Combo* ptr = (class Combo*) R_ExternalPtrAddr(ext);
     return ptr->randomAccess(RIndexVec);
 }
 
+[[cpp11::register]]
 SEXP SourceVectorGlue(SEXP ext) {
     class Combo* ptr = (class Combo*) R_ExternalPtrAddr(ext);
     return ptr->sourceVector();
 }
 
+[[cpp11::register]]
 SEXP FrontGlue(SEXP ext) {
     class Combo* ptr = (class Combo*) R_ExternalPtrAddr(ext);
     return ptr->front();
 }
 
+[[cpp11::register]]
 SEXP BackGlue(SEXP ext) {
     class Combo* ptr = (class Combo*) R_ExternalPtrAddr(ext);
     return ptr->back();
 }
 
+[[cpp11::register]]
 SEXP SummaryGlue(SEXP ext) {
     class Combo* ptr = (class Combo*) R_ExternalPtrAddr(ext);
     return ptr->summary();

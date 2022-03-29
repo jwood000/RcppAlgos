@@ -21,9 +21,7 @@
 #include <stdlib.h>
 #endif
 
-#define R_NO_REMAP
-#include <Rinternals.h>
-#include <R.h>
+#include "cpp11/R.hpp"
 
 #if defined(LIBDIVIDE_SSE2)
 #include <emmintrin.h>

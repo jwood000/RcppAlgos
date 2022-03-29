@@ -1,4 +1,3 @@
-#include "NumbersUtils/DivNumSieve.h"
 #include "NumbersUtils/libdivide.h"
 #include "CleanConvert.h"
 #include "SetUpUtils.h"
@@ -272,6 +271,7 @@ SEXP GlueDbl(std::int_fast64_t myMin, double myMax,
     }
 }
 
+[[cpp11::register]]
 SEXP DivNumSieveCpp(SEXP Rb1, SEXP Rb2, SEXP RbDivSieve,
                     SEXP RisNamed, SEXP RNumThreads,
                     SEXP RmaxThreads) {

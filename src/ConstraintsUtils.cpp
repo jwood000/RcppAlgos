@@ -102,13 +102,13 @@ void ConstraintStructure(std::vector<std::string> &compFunVec,
                          bool &IsBetweenComp) {
 
     if (targetVals.size() > 2) {
-        Rf_error("there cannot be more than 2 limitConstraints");
+        cpp11::stop("there cannot be more than 2 limitConstraints");
     } else if (targetVals.size() == 2 && targetVals[0] == targetVals[1]) {
-        Rf_error("The limitConstraints must be different");
+        cpp11::stop("The limitConstraints must be different");
     }
 
     if (compFunVec.size() > 2)
-        Rf_error("there cannot be more than 2 comparison operators");
+        cpp11::stop("there cannot be more than 2 comparison operators");
 
     // The first 5 are "standard" whereas the 6th and 7th
     // are written with the equality first. Converting
@@ -117,7 +117,7 @@ void ConstraintStructure(std::vector<std::string> &compFunVec,
         auto itComp = compForms.find(compFunVec[i]);
 
         if (itComp == compForms.end()) {
-            Rf_error("comparison operators must be one of the"
+            cpp11::stop("comparison operators must be one of the"
                      " following: '>', '>=', '<', '<=', or '=='");
         } else {
             compFunVec[i] = itComp->second;
@@ -129,13 +129,13 @@ void ConstraintStructure(std::vector<std::string> &compFunVec,
             compFunVec.pop_back();
         } else {
             if (compFunVec[0] == "==" || compFunVec[1] == "==") {
-                Rf_error("If comparing against two limitConstraints, the "
+                cpp11::stop("If comparing against two limitConstraints, the "
                          "equality comparisonFun (i.e. '==') cannot be used."
                          " Instead, use '>=' or '<='.");
             }
 
             if (compFunVec[0].substr(0, 1) == compFunVec[1].substr(0, 1)) {
-                Rf_error("Cannot have two 'less than' comparisonFuns or two"
+                cpp11::stop("Cannot have two 'less than' comparisonFuns or two"
                         " 'greater than' comparisonFuns (E.g. c('<", "<=')"
                         " is not allowed).");
             }
@@ -392,6 +392,7 @@ void ConstraintSetup(const std::vector<double> &vNum,
 
         createMPZArray(Rlow, tempLower.get(), 1, "lower");
         bLower = mpz_cmp_si(tempLower[0], 1) > 0;
+        mpz_clear(tempLower[0]);
     }
 
     if (part.isPart) {

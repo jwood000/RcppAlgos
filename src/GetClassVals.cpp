@@ -1,7 +1,5 @@
 #include "ImportExportMPZ.h"
-#include "GetClassValues.h"
 #include "ComputedCount.h"
-#include "CheckReturn.h"
 #include "SetUpUtils.h"
 
 SEXP CopyRv(SEXP Rv, const std::vector<int> &vInt,
@@ -17,6 +15,7 @@ SEXP CopyRv(SEXP Rv, const std::vector<int> &vInt,
     }
 }
 
+[[cpp11::register]]
 SEXP GetClassVals(SEXP Rv, SEXP Rm, SEXP RisRep, SEXP RFreqs,
                   SEXP RIsComb, SEXP stdFun, SEXP RThreads,
                   SEXP RmaxThreads, SEXP RIsCnstrd) {
@@ -58,6 +57,7 @@ SEXP GetClassVals(SEXP Rv, SEXP Rm, SEXP RisRep, SEXP RFreqs,
         IsGmp, computedRowsMpz, computedRows
     ));
 
+    mpz_clear(computedRowsMpz);
     SEXP freqsInfo = PROTECT(Rf_allocVector(VECSXP, 2));
     SET_VECTOR_ELT(freqsInfo, 0, GetIntVec(myReps));
     SET_VECTOR_ELT(freqsInfo, 1, GetIntVec(freqs));
@@ -77,7 +77,7 @@ SEXP GetClassVals(SEXP Rv, SEXP Rm, SEXP RisRep, SEXP RFreqs,
     const bool applyFun = !Rf_isNull(stdFun) && !IsFactor;
 
     if (applyFun && !Rf_isFunction(stdFun)) {
-        Rf_error("FUN must be a function!");
+        cpp11::stop("FUN must be a function!");
     }
 
     // RVals is a list containing: v, vNum, vInt, m,

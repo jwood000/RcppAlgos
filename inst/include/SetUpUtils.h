@@ -42,6 +42,8 @@ void SetRandomSample(SEXP RindexVec, SEXP RNumSamp, int &sampSize,
                      std::vector<double> &mySample,
                      SEXP baseSample, SEXP rho);
 
+void MpzClearVec(mpz_t *const myVec, int size, bool cond = true);
+
 void SetRandomSampleMpz(SEXP RindexVec, SEXP RmySeed, int sampSize,
                         bool IsGmp, mpz_t computedRowsMpz,
                         mpz_t *const myVec);

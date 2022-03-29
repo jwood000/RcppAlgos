@@ -184,14 +184,14 @@ SEXP Partitions::nextGather() {
         mpz_sub(mpzTemp, cnstrtCountMpz, mpzIndex);
 
         if (mpz_cmp_si(mpzTemp, std::numeric_limits<int>::max()) > 0) {
-            Rf_error("The number of requested rows is greater than %s",
+            cpp11::stop("The number of requested rows is greater than %s",
                 std::to_string(std::numeric_limits<int>::max()).c_str());
         }
     } else {
         dblTemp = cnstrtCount - dblIndex;
 
         if (dblTemp > std::numeric_limits<int>::max()) {
-            Rf_error("The number of requested rows is greater than %s",
+            cpp11::stop("The number of requested rows is greater than %s",
                 std::to_string(std::numeric_limits<int>::max()).c_str());
         }
     }
@@ -240,7 +240,7 @@ SEXP Partitions::currComb() {
 SEXP Partitions::randomAccess(SEXP RindexVec) {
 
     if (nthParts == nullptr) {
-        Rf_error("No random access available for this scenario");
+        cpp11::stop("No random access available for this scenario");
     }
 
     std::size_t sampSize;
@@ -296,6 +296,7 @@ SEXP Partitions::randomAccess(SEXP RindexVec) {
         if (IsGmp) {
             mpz_add_ui(mpzIndex, mpzVec[0], 1u);
             mpz_set(mpzTemp, mpzVec[0]);
+            mpz_clear(mpzVec[0]);
         } else {
             dblIndex = mySample.front() + 1;
             dblTemp = mySample.front();
@@ -309,7 +310,7 @@ SEXP Partitions::randomAccess(SEXP RindexVec) {
 SEXP Partitions::front() {
 
     if (nthParts == nullptr) {
-        Rf_error("No random access available for this scenario");
+        cpp11::stop("No random access available for this scenario");
     }
 
     if (IsGmp) {
@@ -327,7 +328,7 @@ SEXP Partitions::front() {
 SEXP Partitions::back() {
 
     if (nthParts == nullptr) {
-        Rf_error("No random access available for this scenario");
+        cpp11::stop("No random access available for this scenario");
     }
 
     if (IsGmp) {

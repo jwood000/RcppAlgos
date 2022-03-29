@@ -85,7 +85,7 @@ SEXP ApplyFunction(SEXP v, SEXP vectorPass, int n, int m, bool IsComb,
                    SEXP rho, SEXP RFunVal) {
 
     if (!Rf_isNull(RFunVal)) {
-        if (!Rf_isVector(RFunVal)) Rf_error("'FUN.VALUE' must be a vector");
+        if (!Rf_isVector(RFunVal)) cpp11::stop("'FUN.VALUE' must be a vector");
         const int commonLen = Rf_length(RFunVal);
 
         switch (TYPEOF(RFunVal)) {
@@ -188,7 +188,7 @@ SEXP ApplyFunction(const std::vector<T> &v, SEXP vectorPass,
                    SEXP rho, SEXP RFunVal) {
 
     if (!Rf_isNull(RFunVal)) {
-        if (!Rf_isVector(RFunVal)) Rf_error("'FUN.VALUE' must be a vector");
+        if (!Rf_isVector(RFunVal)) cpp11::stop("'FUN.VALUE' must be a vector");
         const int commonLen = Rf_length(RFunVal);
 
         switch (TYPEOF(RFunVal)) {

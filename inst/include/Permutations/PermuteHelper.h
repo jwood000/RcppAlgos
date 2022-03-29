@@ -6,8 +6,6 @@
 #include "Cpp14MakeUnique.h"
 #include <vector>
 
-#define R_NO_REMAP
-#include <Rinternals.h>
-#include <R.h>
+#include "cpp11/R.hpp"
 
 #endif

@@ -1,12 +1,12 @@
 #include "Constraints/ConstraintsUtils.h"
 #include "Partitions/PartitionsDesign.h"
 #include "Partitions/PartitionsCount.h"
-#include "CombinatoricsCount.h"
 #include "ComboGroupsUtils.h"
 #include "ImportExportMPZ.h"
 #include "ComputedCount.h"
 #include "SetUpUtils.h"
 
+[[cpp11::register]]
 SEXP CombinatoricsCount(SEXP Rv, SEXP Rm, SEXP RisRep,
                         SEXP RFreqs, SEXP RIsComb) {
 
@@ -43,6 +43,7 @@ SEXP CombinatoricsCount(SEXP Rv, SEXP Rm, SEXP RisRep,
     return CleanConvert::GetCount(IsGmp, computedRowsMpz, computedRows);
 }
 
+[[cpp11::register]]
 SEXP PartitionsCount(SEXP Rtarget, SEXP Rv, SEXP Rm,
                      SEXP RisRep, SEXP RFreqs, SEXP RcompFun,
                      SEXP Rlow, SEXP Rtolerance,
@@ -101,13 +102,14 @@ SEXP PartitionsCount(SEXP Rtarget, SEXP Rv, SEXP Rm,
                                           part.count);
         }
     } else if (bDesign) {
-        Rf_error("No design available for this case!");
+        cpp11::stop("No design available for this case!");
     } else {
-        Rf_error("The count is unknown for this case. To get the total"
+        cpp11::stop("The count is unknown for this case. To get the total"
                  " number, generate all results!");
     }
 }
 
+[[cpp11::register]]
 SEXP ComboGroupsCountCpp(SEXP Rv, SEXP RNumGroups) {
 
     int n, numGroups;
@@ -122,7 +124,7 @@ SEXP ComboGroupsCountCpp(SEXP Rv, SEXP RNumGroups) {
     SetBasic(Rv, vNum, vInt, n, myType);
 
     if (n % numGroups != 0) {
-        Rf_error("The length of v (if v is a vector) or v (if v"
+        cpp11::stop("The length of v (if v is a vector) or v (if v"
                  " is a scalar) must be divisible by numGroups");
     }
 

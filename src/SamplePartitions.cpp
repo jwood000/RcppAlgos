@@ -1,7 +1,6 @@
 #include "Constraints/ConstraintsUtils.h"
 #include "Partitions/PartitionsUtils.h"
 #include "Partitions/NthPartition.h"
-#include "Sample/SamplePartitions.h"
 #include "Cpp14MakeUnique.h"
 #include "RMatrix.h"
 #include <thread>
@@ -124,8 +123,11 @@ void ThreadSafeSample(T* mat, SEXP res, const std::vector<T> &v,
     if (IsNamed) {
         SetSampleNames(res, IsGmp, sampSize, mySample, myBigSamp);
     }
+
+    MpzClearVec(myBigSamp, sampSize, IsGmp);
 }
 
+[[cpp11::register]]
 SEXP SamplePartitions(SEXP Rv, SEXP Rm, SEXP RisRep, SEXP RFreqs,
                       SEXP RindexVec, SEXP RmySeed, SEXP RNumSamp,
                       SEXP baseSample, SEXP Rparallel, SEXP RNumThreads,
@@ -181,7 +183,7 @@ SEXP SamplePartitions(SEXP Rv, SEXP Rm, SEXP RisRep, SEXP RFreqs,
         part.ptype == PartitionType::CoarseGrained ||
         part.ptype == PartitionType::NotPartition) {
 
-        Rf_error("Partition sampling not available for this case.");
+        cpp11::stop("Partition sampling not available for this case.");
     }
 
     int sampSize;

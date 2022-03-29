@@ -1,7 +1,7 @@
 #include "Partitions/PartitionsCountSection.h"
 #include "Partitions/BigPartsCountSection.h"
 #include "Cpp14MakeUnique.h"
-#include <vector>
+#include "SetUpUtils.h"
 
 void CountPartsDistinctLenCap(mpz_t res, mpz_t* p1, mpz_t* p2,
                               int n, int m, int cap, int strtLen) {
@@ -118,6 +118,8 @@ void CountPartsDistinctLen(mpz_t res, mpz_t* p1, mpz_t* p2,
                 mpz_set_si(tempN, i - 3);
                 SumSection(tempN, p1[i]);
             }
+
+            mpz_clear(tempN);
         }
 
         for (int i = 4; i <= limit; ++i) {
@@ -202,10 +204,7 @@ void CountPartsDistinct(mpz_t res, int n, int m, int cap, int strtLen) {
     }
 
     mpz_set(res, qq[n]);
-
-    for (int i = 0; i <= n; ++i) {
-        mpz_clear(qq[i]);
-    }
+    MpzClearVec(qq.get(), n + 1);
 }
 
 void CountPartsDistinctMultiZero(mpz_t res, mpz_t* p1, mpz_t* p2,

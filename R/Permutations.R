@@ -5,20 +5,20 @@ permuteGeneral <- function(v, m = NULL, repetition = FALSE, freqs = NULL,
                            nThreads = NULL, tolerance = NULL,
                            FUN.VALUE = NULL) {
 
-    RetValue <- .Call(Algos_CheckReturn, v, constraintFun,
+    RetValue <- .Call(`_RcppAlgos_CheckReturn`, v, constraintFun,
                       comparisonFun, limitConstraints,
                       keepResults, FUN)
 
     if (RetValue == 1) {
-        return(.Call(Algos_CombinatoricsStndrd, v, m, repetition,
+        return(.Call(`_RcppAlgos_CombinatoricsStndrd`, v, m, repetition,
                      freqs, lower, upper, Parallel, nThreads,
                      pkgEnv$nThreads, FALSE))
     } else if (RetValue == 2) {
-        return(.Call(Algos_CombinatoricsApply, v, m,
+        return(.Call(`_RcppAlgos_CombinatoricsApply`, v, m,
                      repetition, freqs, lower, upper,
                      FUN, new.env(), FUN.VALUE, FALSE))
     } else {
-        return(.Call(Algos_CombinatoricsCnstrt, v, m, repetition,
+        return(.Call(`_RcppAlgos_CombinatoricsCnstrt`, v, m, repetition,
                      freqs, lower, upper, constraintFun, comparisonFun,
                      limitConstraints, FALSE, keepResults, Parallel,
                      nThreads, pkgEnv$nThreads, tolerance))
@@ -34,13 +34,13 @@ permuteSample <- function(v, m = NULL, repetition = FALSE, freqs = NULL,
         set.seed(seed)
     }
 
-    return(.Call(Algos_SampleCombPerm, v, m, repetition, freqs, sampleVec,
+    return(.Call(`_RcppAlgos_SampleCombPerm`, v, m, repetition, freqs, sampleVec,
                  FALSE, seed, n, sample, FUN, new.env(), Parallel, nThreads,
                  pkgEnv$nThreads, namedSample, FUN.VALUE))
 }
 
 permuteCount <- function(v, m = NULL, repetition = FALSE, freqs = NULL) {
-    .Call(Algos_CombinatoricsCount, v, m,
+    .Call(`_RcppAlgos_CombinatoricsCount`, v, m,
           repetition, freqs, FALSE);
 }
 
@@ -50,12 +50,12 @@ permuteIter <- function(v, m = NULL, repetition = FALSE, freqs = NULL,
                         FUN = NULL, Parallel = FALSE, nThreads = NULL,
                         tolerance = NULL, FUN.VALUE = NULL) {
 
-    RetValue <- .Call(Algos_CheckReturn, v, constraintFun,
+    RetValue <- .Call(`_RcppAlgos_CheckReturn`, v, constraintFun,
                       comparisonFun, limitConstraints,
                       keepResults, FUN)
-    IsCnstrd <- .Call(Algos_CheckConstrndCpp, constraintFun,
+    IsCnstrd <- .Call(`_RcppAlgos_CheckConstrndCpp`, constraintFun,
                       comparisonFun, limitConstraints)
-    InitVals <- .Call(Algos_GetClassVals, v, m, repetition, freqs,
+    InitVals <- .Call(`_RcppAlgos_GetClassVals`, v, m, repetition, freqs,
                       FALSE, FUN, nThreads, pkgEnv$nThreads, IsCnstrd)
 
     if (RetValue == 1) {

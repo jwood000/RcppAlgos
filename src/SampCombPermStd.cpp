@@ -83,6 +83,8 @@ void SampNoThrdSafe(T* sampleMatrix, SEXP res, const std::vector<T> &v,
     if (IsNamed) {
         SetSampleNames(res, IsGmp, sampSize, mySample, myBigSamp);
     }
+
+    MpzClearVec(myBigSamp, sampSize, IsGmp);
 }
 
 template <typename T>
@@ -139,6 +141,8 @@ void ThreadSafeSample(T* mat, SEXP res, const std::vector<T> &v,
     if (IsNamed) {
         SetSampleNames(res, IsGmp, sampSize, mySample, myBigSamp);
     }
+
+    MpzClearVec(myBigSamp, sampSize, IsGmp);
 }
 
 void SampleResults(SEXP sampleMatrix, SEXP v,
@@ -158,6 +162,8 @@ void SampleResults(SEXP sampleMatrix, SEXP v,
                                STRING_ELT(v, z[j]));
             }
         }
+
+        MpzClearVec(myBigSamp, sampSize);
     } else {
         mpz_t mpzDefault;
         mpz_init(mpzDefault);
@@ -214,6 +220,7 @@ SEXP SampCombPermMain(SEXP Rv, const std::vector<int> &vInt,
             SampNoThrdSafe(matCmplx, res, stlCmplxVec, mySample,
                            myBigSamp, myReps, nthResFun, m, sampSize,
                            n, IsGmp, IsNamed);
+
             UNPROTECT(1);
             return res;
         } case VecType::Raw : {
@@ -230,6 +237,7 @@ SEXP SampCombPermMain(SEXP Rv, const std::vector<int> &vInt,
             SampNoThrdSafe(rawMat, res, stlRawVec, mySample,
                            myBigSamp, myReps, nthResFun, m, sampSize,
                            n, IsGmp, IsNamed);
+
             UNPROTECT(1);
             return res;
         } case VecType::Logical : {
@@ -245,6 +253,7 @@ SEXP SampCombPermMain(SEXP Rv, const std::vector<int> &vInt,
 
             SampNoThrdSafe(matBool, res, vBool, mySample, myBigSamp, myReps,
                            nthResFun, m, sampSize, n, IsGmp, IsNamed);
+
             UNPROTECT(1);
             return res;
         } case VecType::Integer : {

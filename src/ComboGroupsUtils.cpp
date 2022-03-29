@@ -260,5 +260,9 @@ std::vector<int> nthComboGroupGmp(int n, int gSize, int r,
         res[k] = v[i];
     }
 
+    mpz_clear(ind1);
+    mpz_clear(ind2);
+    mpz_clear(temp);
+    mpz_clear(secLen);
     return res;
 }

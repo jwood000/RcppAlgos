@@ -1,6 +1,5 @@
 #include "NumbersUtils/PollardRhoDepends.h"
 #include "NumbersUtils/PollardRhoUtils.h"
-#include "NumbersUtils/PollardRho.h"
 #include "CleanConvert.h"
 #include "SetUpUtils.h"
 #include <thread>
@@ -309,6 +308,7 @@ SEXP PolGlueDbl(std::vector<double> &myNums, double myMax,
     }
 }
 
+[[cpp11::register]]
 SEXP PollardRhoContainer(SEXP Rv, SEXP RNamed,
                          SEXP RbPrimeFacs, SEXP RbAllFacs,
                          SEXP RNumThreads, SEXP RmaxThreads) {

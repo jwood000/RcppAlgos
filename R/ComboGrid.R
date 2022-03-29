@@ -54,7 +54,7 @@ comboGrid <- function(..., repetition = TRUE) {
         }
     })
 
-    res <- .Call(Algos_ComboGridCpp, pools, repetition)
+    res <- .Call(`_RcppAlgos_ComboGridCpp`, pools, repetition)
 
     if (length(idx_nas)) {
         res <- as.data.frame(res)

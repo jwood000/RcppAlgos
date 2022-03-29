@@ -274,14 +274,14 @@ SEXP Combo::nextGather() {
         mpz_sub(mpzTemp, computedRowsMpz, mpzIndex);
 
         if (mpz_cmp_si(mpzTemp, std::numeric_limits<int>::max()) > 0) {
-            Rf_error("The number of requested rows is greater than %s",
+            cpp11::stop("The number of requested rows is greater than %s",
                 std::to_string(std::numeric_limits<int>::max()).c_str());
         }
     } else {
         dblTemp = computedRows - dblIndex;
 
         if (dblTemp > std::numeric_limits<int>::max()) {
-            Rf_error("The number of requested rows is greater than %s",
+            cpp11::stop("The number of requested rows is greater than %s",
                 std::to_string(std::numeric_limits<int>::max()).c_str());
         }
     }
@@ -315,14 +315,14 @@ SEXP Combo::prevGather() {
         mpz_sub_ui(mpzTemp, mpzIndex, 1);
 
         if (mpz_cmp_si(mpzTemp, std::numeric_limits<int>::max()) > 0) {
-            Rf_error("The number of requested rows is greater than %s",
+            cpp11::stop("The number of requested rows is greater than %s",
                 std::to_string(std::numeric_limits<int>::max()).c_str());
         }
     } else {
         dblTemp = dblIndex - 1;
 
         if (dblTemp > std::numeric_limits<int>::max()) {
-            Rf_error("The number of requested rows is greater than %s",
+            cpp11::stop("The number of requested rows is greater than %s",
                 std::to_string(std::numeric_limits<int>::max()).c_str());
         }
     }
@@ -391,6 +391,7 @@ SEXP Combo::randomAccess(SEXP RindexVec) {
         if (IsGmp) {
             mpz_add_ui(mpzIndex, mpzVec[0], 1u);
             mpz_set(mpzTemp, mpzVec[0]);
+            mpz_clear(mpzVec[0]);
         } else {
             dblIndex = mySample.front() + 1;
             dblTemp = mySample.front();

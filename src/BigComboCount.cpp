@@ -129,7 +129,8 @@ void MultisetCombRowNumGmp(mpz_t result, int n, int r,
             mpz_clear(temp[i]);
         }
 
-        mpz_clear(mySum); mpz_clear(t);
+        mpz_clear(mySum);
+        mpz_clear(t);
     } else {
         mpz_set_ui(result, 1);
     }

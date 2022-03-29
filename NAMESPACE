@@ -1,4 +1,4 @@
-useDynLib(RcppAlgos, .registration = TRUE, .fixes = "Algos_")
+useDynLib(RcppAlgos, .registration = TRUE)
 import(gmp, methods)
 
 S3method("[[", "Combo")

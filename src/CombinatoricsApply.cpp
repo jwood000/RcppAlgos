@@ -1,9 +1,9 @@
-#include "CombinatoricsApply.h"
 #include "GetCombPermApply.h"
 #include "Cpp14MakeUnique.h"
 #include "ComputedCount.h"
 #include "SetUpUtils.h"
 
+[[cpp11::register]]
 SEXP CombinatoricsApply(SEXP Rv, SEXP Rm, SEXP RisRep,
                         SEXP RFreqs, SEXP Rlow, SEXP Rhigh,
                         SEXP stdFun, SEXP myEnv,
@@ -60,6 +60,7 @@ SEXP CombinatoricsApply(SEXP Rv, SEXP Rm, SEXP RisRep,
                   lowerMpz[0], lower, upper, computedRows,
                   computedRowsMpz, nRows, userNumRows);
 
+    mpz_clear(computedRowsMpz);
     return GetCombPermApply(Rv, vNum, vInt, n, m, IsComb, IsRep,
                             IsMult, freqs, startZ, myReps, myType,
                             nRows, stdFun, myEnv, RFunVal);

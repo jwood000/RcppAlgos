@@ -7,9 +7,8 @@
 #include "Partitions/PartitionsCount.h"
 #include <numeric>  // std::accumulate
 
-#define R_NO_REMAP
-#include <Rinternals.h>
-#include <R.h>
+#include "cpp11/R.hpp"
+#include "cpp11/protect.hpp"
 
 // The variable k is strtLen
 using nthPartsPtr = std::vector<int> (*const)(int n, int m, int cap, int k,
@@ -250,7 +249,6 @@ std::vector<int> nthPartsRepLenGmp(int n, int m, int cap, int k,
     mpz_clear(temp);
     mpz_clear(index);
     myClass->ClearMpz();
-
     return res;
 }
 
@@ -307,7 +305,6 @@ std::vector<int> nthPartsRepCapGmp(int n, int m, int cap, int k,
     mpz_clear(temp);
     mpz_clear(index);
     myClass->ClearMpz();
-
     return res;
 }
 
@@ -351,7 +348,6 @@ std::vector<int> nthPartsDistinctLenGmp(int n, int m, int cap, int k,
     mpz_clear(temp);
     mpz_clear(index);
     myClass->ClearMpz();
-
     return res;
 }
 
@@ -407,7 +403,6 @@ std::vector<int> nthPartsDistinctMultiZeroGmp(int n, int m, int cap, int k,
     mpz_clear(temp);
     mpz_clear(index);
     myClass->ClearMpz();
-
     return res;
 }
 
@@ -452,7 +447,6 @@ std::vector<int> nthPartsDistinctCapGmp(int n, int m, int cap, int k,
     mpz_clear(temp);
     mpz_clear(index);
     myClass->ClearMpz();
-
     return res;
 }
 
@@ -504,7 +498,6 @@ std::vector<int> nthPartsDistinctCapMZGmp(int n, int m, int cap, int k,
     mpz_clear(temp);
     mpz_clear(index);
     myClass->ClearMpz();
-
     return res;
 }
 
@@ -533,13 +526,13 @@ nthPartsPtr GetNthPartsFunc(PartitionType ptype, bool IsGmp) {
             } case PartitionType::RepStdAll : {
                 return(nthPartsPtr(nthPartsRepGmp));
             } case PartitionType::LengthOne : {
-                Rf_error("Length one partition. This should not happen!");
+                cpp11::stop("Length one partition. This should not happen!");
             } case PartitionType::Multiset : {
-                Rf_error("Investigate multiset algo later");
+                cpp11::stop("Investigate multiset algo later");
             } case PartitionType::CoarseGrained : {
-                Rf_error("No algo available");
+                cpp11::stop("No algo available");
             } case PartitionType::NotPartition : {
-                Rf_error("Error... Not partition! This should not happen!");
+                cpp11::stop("Error... Not partition! This should not happen!");
             } default : {
                 return nullptr;
             }
@@ -567,13 +560,13 @@ nthPartsPtr GetNthPartsFunc(PartitionType ptype, bool IsGmp) {
             } case PartitionType::RepStdAll: {
                 return(nthPartsPtr(nthPartsRep));
             } case PartitionType::LengthOne : {
-                Rf_error("Length one partition. This should not happen!");
+                cpp11::stop("Length one partition. This should not happen!");
             } case PartitionType::Multiset: {
-                Rf_error("Investigate multiset algo later");
+                cpp11::stop("Investigate multiset algo later");
             } case PartitionType::CoarseGrained: {
-                Rf_error("No algo available");
+                cpp11::stop("No algo available");
             } case PartitionType::NotPartition: {
-                Rf_error("Error... Not partition! This should not happen");
+                cpp11::stop("Error... Not partition! This should not happen");
             } default : {
                 return nullptr;
             }

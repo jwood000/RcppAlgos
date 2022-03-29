@@ -74,7 +74,7 @@ SEXP ApplyFunPrev(SEXP v, SEXP vectorPass, const std::vector<int> &freqs,
     SEXP sexpFun = PROTECT(Rf_lang2(stdFun, R_NilValue));
 
     if (!Rf_isNull(RFunVal)) {
-        if (!Rf_isVector(RFunVal)) Rf_error("'FUN.VALUE' must be a vector");
+        if (!Rf_isVector(RFunVal)) cpp11::stop("'FUN.VALUE' must be a vector");
         const int commonLen = Rf_length(RFunVal);
 
         switch (TYPEOF(RFunVal)) {
@@ -168,7 +168,7 @@ SEXP ApplyFunPrev(const std::vector<T> &v, SEXP vectorPass, T* ptr_vec,
     SEXP sexpFun = PROTECT(Rf_lang2(stdFun, R_NilValue));
 
     if (!Rf_isNull(RFunVal)) {
-        if (!Rf_isVector(RFunVal)) Rf_error("'FUN.VALUE' must be a vector");
+        if (!Rf_isVector(RFunVal)) cpp11::stop("'FUN.VALUE' must be a vector");
         const int commonLen = Rf_length(RFunVal);
 
         switch (TYPEOF(RFunVal)) {

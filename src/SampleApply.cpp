@@ -108,7 +108,7 @@ SEXP ApplyFunction(const std::vector<T> &v, SEXP vectorPass,
                    bool IsNamed, bool IsGmp, int lenV) {
 
     if (!Rf_isNull(RFunVal)) {
-        if (!Rf_isVector(RFunVal)) Rf_error("'FUN.VALUE' must be a vector");
+        if (!Rf_isVector(RFunVal)) cpp11::stop("'FUN.VALUE' must be a vector");
         const int commonLen = Rf_length(RFunVal);
 
         switch (TYPEOF(RFunVal)) {
@@ -223,7 +223,7 @@ SEXP ApplyFunction(SEXP v, SEXP vectorPass,
                    bool IsNamed, bool IsGmp, int lenV) {
 
     if (!Rf_isNull(RFunVal)) {
-        if (!Rf_isVector(RFunVal)) Rf_error("'FUN.VALUE' must be a vector");
+        if (!Rf_isVector(RFunVal)) cpp11::stop("'FUN.VALUE' must be a vector");
         const int commonLen = Rf_length(RFunVal);
 
         switch (TYPEOF(RFunVal)) {
@@ -343,6 +343,7 @@ SEXP SampleCombPermApply(SEXP Rv, const std::vector<int> &vInt,
                               m, sampSize, IsNamed, IsGmp, n)
             );
 
+            MpzClearVec(myBigSamp, sampSize, IsGmp);
             UNPROTECT(3);
             return res;
         } case VecType::Complex : {
@@ -357,6 +358,8 @@ SEXP SampleCombPermApply(SEXP Rv, const std::vector<int> &vInt,
                               myBigSamp, myReps, stdFun, rho, RFunVal,
                               nthResFun, m, sampSize, IsNamed, IsGmp, n)
             );
+
+            MpzClearVec(myBigSamp, sampSize, IsGmp);
             UNPROTECT(2);
             return res;
         } case VecType::Raw : {
@@ -371,6 +374,8 @@ SEXP SampleCombPermApply(SEXP Rv, const std::vector<int> &vInt,
                               myBigSamp, myReps, stdFun, rho, RFunVal,
                               nthResFun, m, sampSize, IsNamed, IsGmp, n)
             );
+
+            MpzClearVec(myBigSamp, sampSize, IsGmp);
             UNPROTECT(2);
             return res;
         } case VecType::Logical : {
@@ -382,26 +387,34 @@ SEXP SampleCombPermApply(SEXP Rv, const std::vector<int> &vInt,
                               myBigSamp, myReps, stdFun, rho, RFunVal,
                               nthResFun, m, sampSize, IsNamed, IsGmp, n)
             );
+
+            MpzClearVec(myBigSamp, sampSize, IsGmp);
             UNPROTECT(2);
             return res;
         } case VecType::Integer : {
             SEXP vectorPass = PROTECT(Rf_allocVector(INTSXP, m));
             int* ptr_vec = INTEGER(vectorPass);
+
             SEXP res = PROTECT(
                 ApplyFunction(vInt, vectorPass, ptr_vec, mySample,
                               myBigSamp, myReps, stdFun, rho, RFunVal,
                               nthResFun, m, sampSize, IsNamed, IsGmp, n)
             );
+
+            MpzClearVec(myBigSamp, sampSize, IsGmp);
             UNPROTECT(2);
             return res;
         } default : {
             SEXP vectorPass = PROTECT(Rf_allocVector(REALSXP, m));
             double* ptr_vec = REAL(vectorPass);
+
             SEXP res = PROTECT(
                 ApplyFunction(vNum, vectorPass, ptr_vec, mySample,
                               myBigSamp, myReps, stdFun, rho, RFunVal,
                               nthResFun, m, sampSize, IsNamed, IsGmp, n)
             );
+
+            MpzClearVec(myBigSamp, sampSize, IsGmp);
             UNPROTECT(2);
             return res;
         }
