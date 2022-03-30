@@ -33,7 +33,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">RcppAlgos</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">2.5.1</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">2.5.3</span>
       </span>
     </div>
 
@@ -100,7 +100,8 @@
   <div class="col-md-9 contents">
     <div class="page-header toc-ignore">
       <h1 data-toc-skip>Constraints and Integer Partitions</h1>
-                        <h4 data-toc-skip class="author">Joseph Wood</h4>
+                        <h4 data-toc-skip class="author">Joseph
+Wood</h4>
             
             <h4 data-toc-skip class="date">03/18/2022</h4>
       
@@ -111,12 +112,16 @@
 
     
     
-<p>This document covers the topic of finding combinations or permutations that meet a specific set of criteria. For example, retrieving all combinations of a vector that have a product between two bounds.</p>
+<p>This document covers the topic of finding combinations or
+permutations that meet a specific set of criteria. For example,
+retrieving all combinations of a vector that have a product between two
+bounds.</p>
 <hr>
 <div class="section level2">
 <h2 id="constraint-functions">Constraint Functions<a class="anchor" aria-label="anchor" href="#constraint-functions"></a>
 </h2>
-<p>There are 5 compiled constraint functions that can be utilized efficiently to test a given result.</p>
+<p>There are 5 compiled constraint functions that can be utilized
+efficiently to test a given result.</p>
 <ol style="list-style-type: decimal">
 <li>sum</li>
 <li>prod</li>
@@ -124,7 +129,11 @@
 <li>max</li>
 <li>min</li>
 </ol>
-<p>They are passed as strings to the <code>constraintFun</code> parameter. When these are employed without any other parameters being set, an additional column is added that represents the result of applying the given function to that combination/permutation. You can also set <code>keepResults = TRUE</code> (more on this later).</p>
+<p>They are passed as strings to the <code>constraintFun</code>
+parameter. When these are employed without any other parameters being
+set, an additional column is added that represents the result of
+applying the given function to that combination/permutation. You can
+also set <code>keepResults = TRUE</code> (more on this later).</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/jwood000/RcppAlgos" class="external-link">RcppAlgos</a></span><span class="op">)</span>
 <span class="co">## base R using combn and FUN</span>
@@ -161,7 +170,9 @@
 <div class="section level3">
 <h3 id="faster-than-rowsums-and-rowmeans">Faster than <code>rowSums</code> and <code>rowMeans</code><a class="anchor" aria-label="anchor" href="#faster-than-rowsums-and-rowmeans"></a>
 </h3>
-<p>Finding row sums or row means is even faster than simply applying the highly efficient <code>rowSums</code>/<code>rowMeans</code> <em>after</em> the combinations have already been generated:</p>
+<p>Finding row sums or row means is even faster than simply applying the
+highly efficient <code>rowSums</code>/<code>rowMeans</code>
+<em>after</em> the combinations have already been generated:</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co">## Pre-generate combinations</span>
 <span class="va">combs</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/combinatoricsGeneral.html">comboGeneral</a></span><span class="op">(</span><span class="fl">25</span>, <span class="fl">10</span><span class="op">)</span>
@@ -197,17 +208,27 @@
                        constraintFun <span class="op">=</span> <span class="st">"mean"</span>,
                        Parallel <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">[</span>,<span class="fl">11</span><span class="op">]</span><span class="op">)</span>
 <span class="co">#&gt; [1] TRUE</span></code></pre></div>
-<p>In both cases above, <code>RcppAlgos</code> is doing double the work nearly twice as fast!!!</p>
+<p>In both cases above, <code>RcppAlgos</code> is doing double the work
+nearly twice as fast!!!</p>
 </div>
 </div>
 <div class="section level2">
 <h2 id="comparison-operators-and-limitconstraints">Comparison Operators and <code>limitConstraints</code><a class="anchor" aria-label="anchor" href="#comparison-operators-and-limitconstraints"></a>
 </h2>
-<p>The standard 5 comparison operators (i.e. <code>"&lt;"</code>, <code>"&gt;"</code>, <code>"&lt;="</code>, <code>"&gt;="</code>, &amp; <code>"=="</code>) can be used in a variety of ways. In order for them to have any effect, they must be used in conjunction with <code>constraintFun</code> as well as <code>limitConstraints</code>. The latter is the value(s) that will be used for comparison. It can be passed as a single value or a vector of two numerical values. This is useful when one wants to find results that are between (or outside) of a given range.</p>
+<p>The standard 5 comparison operators (i.e. <code>"&lt;"</code>,
+<code>"&gt;"</code>, <code>"&lt;="</code>, <code>"&gt;="</code>, &amp;
+<code>"=="</code>) can be used in a variety of ways. In order for them
+to have any effect, they must be used in conjunction with
+<code>constraintFun</code> as well as <code>limitConstraints</code>. The
+latter is the value(s) that will be used for comparison. It can be
+passed as a single value or a vector of two numerical values. This is
+useful when one wants to find results that are between (or outside) of a
+given range.</p>
 <div class="section level3">
 <h3 id="one-comparison-operator">One Comparison Operator<a class="anchor" aria-label="anchor" href="#one-comparison-operator"></a>
 </h3>
-<p>First we will look at cases with only one comparison and one value for the <code>limitConstraint</code>.</p>
+<p>First we will look at cases with only one comparison and one value
+for the <code>limitConstraint</code>.</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co">## Generate some random data. N.B. Using R &gt;= 4.0.0</span>
 <span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="fl">101</span><span class="op">)</span>
@@ -267,9 +288,20 @@
 <div class="section level3">
 <h3 id="two-comparison-operators">Two Comparison Operators<a class="anchor" aria-label="anchor" href="#two-comparison-operators"></a>
 </h3>
-<p>Sometimes, we need to generate combinations/permutations such that when we apply a constraint function, the results are between (or outside) a given range. There is a natural two step process when finding results outside a range, however for finding results between a range, this two step approach could become computationally demanding. The underlying algorithms in <code>RcppAlgos</code> are optimized for both cases and avoids adding results that will eventually be removed.</p>
-<p>Using two comparisons is easy. The first comparison operator is applied to the first limit and the second operator is applied to the second limit.</p>
-<p>Note that in the examples below, we have <code>keepResults = TRUE</code>. This means an additional column will be added to the output that is the result of applying <code>constraintFun</code> to that particular combination.</p>
+<p>Sometimes, we need to generate combinations/permutations such that
+when we apply a constraint function, the results are between (or
+outside) a given range. There is a natural two step process when finding
+results outside a range, however for finding results between a range,
+this two step approach could become computationally demanding. The
+underlying algorithms in <code>RcppAlgos</code> are optimized for both
+cases and avoids adding results that will eventually be removed.</p>
+<p>Using two comparisons is easy. The first comparison operator is
+applied to the first limit and the second operator is applied to the
+second limit.</p>
+<p>Note that in the examples below, we have
+<code>keepResults = TRUE</code>. This means an additional column will be
+added to the output that is the result of applying
+<code>constraintFun</code> to that particular combination.</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co">## Get combinations such that the product is</span>
 <span class="co">## strictly between 3600 and 4000</span>
@@ -312,15 +344,24 @@
 <div class="section level3">
 <h3 id="using-tolerance">Using <code>tolerance</code><a class="anchor" aria-label="anchor" href="#using-tolerance"></a>
 </h3>
-<p>When the underlying type is <code>numeric</code>, <a href="https://en.wikipedia.org/wiki/Round-off_error" class="external-link">round-off errors</a> can occur. As stated in <a href="https://en.wikipedia.org/wiki/Floating-point_error_mitigation" class="external-link">floating-point error mitigation</a>:</p>
+<p>When the underlying type is <code>numeric</code>, <a href="https://en.wikipedia.org/wiki/Round-off_error" class="external-link">round-off
+errors</a> can occur. As stated in <a href="https://en.wikipedia.org/wiki/Floating-point_error_mitigation" class="external-link">floating-point
+error mitigation</a>:</p>
 <blockquote>
-<p><em><strong>“By definition, floating-point error cannot be eliminated, and, at best, can only be managed.”</strong></em></p>
+<p><em><strong>“By definition, floating-point error cannot be
+eliminated, and, at best, can only be managed.”</strong></em></p>
 </blockquote>
-<p>Here is a great stackoverflow post that further illuminates this tricky topic:</p>
+<p>Here is a great stackoverflow post that further illuminates this
+tricky topic:</p>
 <ul>
-<li><a href="https://stackoverflow.com/q/59229545/4408538" class="external-link">What is the correct/standard way to check if difference is smaller than machine precision?</a></li>
+<li><a href="https://stackoverflow.com/q/59229545/4408538" class="external-link">What is the
+correct/standard way to check if difference is smaller than machine
+precision?</a></li>
 </ul>
-<p>For these reasons, the argument <code>tolerance</code> can be utilized to refine a given constraint. It is added to the upper limit and subtracted from the lower limit. The default value is <code>sqrt(.Machine$double.eps) ~= 0.00000001490116</code>.</p>
+<p>For these reasons, the argument <code>tolerance</code> can be
+utilized to refine a given constraint. It is added to the upper limit
+and subtracted from the lower limit. The default value is
+<code>sqrt(.Machine$double.eps) ~= 0.00000001490116</code>.</p>
 <p>This default value is good and bad.</p>
 <p>For the good side:</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
@@ -335,7 +376,8 @@
 
 <span class="fu"><a href="https://rdrr.io/r/base/sum.html" class="external-link">sum</a></span><span class="op">(</span><span class="va">allCbs</span><span class="op">[</span>, <span class="fl">7</span><span class="op">]</span> <span class="op">==</span> <span class="fl">100L</span><span class="op">)</span>
 <span class="co">#&gt; [1] 199</span></code></pre></div>
-<p>If we had a tolerance of zero, we would have obtained an incorrect result:</p>
+<p>If we had a tolerance of zero, we would have obtained an incorrect
+result:</p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co">## We miss 31 combinations that add up to 1</span>
 <span class="fu"><a href="https://rdrr.io/r/base/dim.html" class="external-link">dim</a></span><span class="op">(</span><span class="fu"><a href="../reference/combinatoricsGeneral.html">comboGeneral</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">0.5</span>, <span class="fl">0.05</span><span class="op">)</span>, <span class="fl">6</span>, <span class="cn">TRUE</span>,
@@ -343,7 +385,9 @@
                  comparisonFun <span class="op">=</span> <span class="st">"=="</span>,
                  limitConstraints <span class="op">=</span> <span class="fl">1</span>, tolerance <span class="op">=</span> <span class="fl">0</span><span class="op">)</span><span class="op">)</span>
 <span class="co">#&gt; [1] 168   6</span></code></pre></div>
-<p>And now for a less desirable result. The example below appears to give incorrect results. That is, we shouldn’t return any combination with a mean of 4.1 or 5.1.</p>
+<p>And now for a less desirable result. The example below appears to
+give incorrect results. That is, we shouldn’t return any combination
+with a mean of 4.1 or 5.1.</p>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="../reference/combinatoricsGeneral.html">comboGeneral</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">2.1</span>, <span class="fl">3.1</span>, <span class="fl">5.1</span>, <span class="fl">7.1</span><span class="op">)</span>, <span class="fl">3</span>, <span class="cn">T</span>,
              constraintFun <span class="op">=</span> <span class="st">"mean"</span>, comparisonFun <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"&lt;"</span>, <span class="st">"&gt;"</span><span class="op">)</span>,
@@ -356,8 +400,11 @@
 <span class="co">#&gt; [5,]  3.1  5.1  5.1 4.433333</span>
 <span class="co">#&gt; [6,]  3.1  5.1  7.1 5.100000</span>
 <span class="co">#&gt; [7,]  5.1  5.1  5.1 5.100000</span></code></pre></div>
-<p>In the above example, the range that is actually tested against is <code>c(4.0999999950329462, 5.1000000049670531)</code>.</p>
-<p>If you want to be absolutely sure you are getting the correct results, one must rely on integers as simple changes in arithmetic can throw off precision in floating point operations.</p>
+<p>In the above example, the range that is actually tested against is
+<code>c(4.0999999950329462, 5.1000000049670531)</code>.</p>
+<p>If you want to be absolutely sure you are getting the correct
+results, one must rely on integers as simple changes in arithmetic can
+throw off precision in floating point operations.</p>
 <div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="../reference/combinatoricsGeneral.html">comboGeneral</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">21</span>, <span class="fl">31</span>, <span class="fl">51</span>, <span class="fl">71</span><span class="op">)</span>, <span class="fl">3</span>, <span class="cn">T</span>,
              constraintFun <span class="op">=</span> <span class="st">"mean"</span>, comparisonFun <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"&lt;"</span>, <span class="st">"&gt;"</span><span class="op">)</span>,
@@ -370,7 +417,13 @@
 <div class="section level3">
 <h3 id="output-order-with-permutegeneral">Output Order with <code>permuteGeneral</code><a class="anchor" aria-label="anchor" href="#output-order-with-permutegeneral"></a>
 </h3>
-<p>Typically, when we call <code>permuteGeneral</code>, the output is in lexicographical order, however when we apply a constraint, the underlying algorithm checks against combinations only, as this is more efficient. If a particular combination meets a constraint, then all permutations of that vector also meet that constraint, so there is no need to check them. For this reason, the output isn’t in order. Observe:</p>
+<p>Typically, when we call <code>permuteGeneral</code>, the output is in
+lexicographical order, however when we apply a constraint, the
+underlying algorithm checks against combinations only, as this is more
+efficient. If a particular combination meets a constraint, then all
+permutations of that vector also meet that constraint, so there is no
+need to check them. For this reason, the output isn’t in order.
+Observe:</p>
 <div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="../reference/combinatoricsGeneral.html">permuteGeneral</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">2</span>, <span class="fl">3</span>, <span class="fl">5</span>, <span class="fl">7</span><span class="op">)</span>, <span class="fl">3</span>, freqs <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fl">2</span>, <span class="fl">4</span><span class="op">)</span>,
                constraintFun <span class="op">=</span> <span class="st">"mean"</span>, comparisonFun <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"&gt;"</span>, <span class="st">"&lt;"</span><span class="op">)</span>,
@@ -388,15 +441,30 @@
 <span class="co">#&gt; [10,]    3    5    5 4.333333   &lt;-- Third combination that meets the criteria</span>
 <span class="co">#&gt; [11,]    5    3    5 4.333333</span>
 <span class="co">#&gt; [12,]    5    5    3 4.333333</span></code></pre></div>
-<p>As you can see, the <em>2<sup>nd</sup></em> through the <em>6<sup>th</sup></em> entries are simply permutations of the <em>1<sup>st</sup></em> entry. Similarly, entries <em>8</em> and <em>9</em> are permutations of the <em>7<sup>th</sup></em> and entries <em>11</em> and <em>12</em> are permutations of the <em>10<sup>th</sup></em>.</p>
+<p>As you can see, the <em>2<sup>nd</sup></em> through the
+<em>6<sup>th</sup></em> entries are simply permutations of the
+<em>1<sup>st</sup></em> entry. Similarly, entries <em>8</em> and
+<em>9</em> are permutations of the <em>7<sup>th</sup></em> and entries
+<em>11</em> and <em>12</em> are permutations of the
+<em>10<sup>th</sup></em>.</p>
 </div>
 </div>
 <div class="section level2">
 <h2 id="note-about-interrupting-execution">Note about Interrupting Execution<a class="anchor" aria-label="anchor" href="#note-about-interrupting-execution"></a>
 </h2>
-<p>In version <code>2.4.*</code> it was possible to interrupt long running jobs by taking advantage of <code>Rcpp::checkUserInterrupt</code>. Since we no longer rely on <code>Rcpp</code> in version <code>2.5.0</code>, we are currently not checking for user interruption. Our goal is to eventually include this feature as it is very convenient, however it will take great care to implement as it is non-trivial.</p>
-<p>For now, we encourage user to use iterators (See <a href="https://jwood000.github.io/RcppAlgos/articles/CombinatoricsIterators.html" class="external-link">Combinatorial Iterators in RcppAlgos</a>) as they offer greater flexibility. For example, with iterators it is easy to avoid resource consuming calls by only fetching a few results at a time.</p>
-<p>Here is an example of how to investigate difficult problems due to combinatorial explosion without fear of having to restart R.</p>
+<p>In version <code>2.4.*</code> it was possible to interrupt long
+running jobs by taking advantage of
+<code>Rcpp::checkUserInterrupt</code>. Since we no longer rely on
+<code>Rcpp</code> in version <code>2.5.0</code>, we are currently not
+checking for user interruption. Our goal is to eventually include this
+feature as it is very convenient, however it will take great care to
+implement as it is non-trivial.</p>
+<p>For now, we encourage user to use iterators (See <a href="https://jwood000.github.io/RcppAlgos/articles/CombinatoricsIterators.html" class="external-link">Combinatorial
+Iterators in RcppAlgos</a>) as they offer greater flexibility. For
+example, with iterators it is easy to avoid resource consuming calls by
+only fetching a few results at a time.</p>
+<p>Here is an example of how to investigate difficult problems due to
+combinatorial explosion without fear of having to restart R.</p>
 <div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="fl">123</span><span class="op">)</span>
 <span class="va">s</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/Normal.html" class="external-link">rnorm</a></span><span class="op">(</span><span class="fl">1000</span><span class="op">)</span>
@@ -431,12 +499,23 @@
 <div class="section level2">
 <h2 id="integer-partitions">Integer Partitions<a class="anchor" aria-label="anchor" href="#integer-partitions"></a>
 </h2>
-<p>Specialized algorithms are employed when it can be determined that we are looking for <a href="https://en.wikipedia.org/wiki/Partition_(number_theory)" class="external-link">integer partitions</a>.</p>
-<p>As of version <code>2.5.0</code>, we now have added <code>partitionsGeneral</code> which is a wrapper of <code>comboGeneral</code> with <code>constraintFun = "sum"</code> and <code>comparisonFun = "=="</code>. Instead of using the very general <code>limitConstraints</code> parameter, we use <code>target</code> with a default of <code>max(abs(v))</code> as it seems more fitting for partitions.</p>
+<p>Specialized algorithms are employed when it can be determined that we
+are looking for <a href="https://en.wikipedia.org/wiki/Partition_(number_theory)" class="external-link">integer
+partitions</a>.</p>
+<p>As of version <code>2.5.0</code>, we now have added
+<code>partitionsGeneral</code> which is a wrapper of
+<code>comboGeneral</code> with <code>constraintFun = "sum"</code> and
+<code>comparisonFun = "=="</code>. Instead of using the very general
+<code>limitConstraints</code> parameter, we use <code>target</code> with
+a default of <code>max(abs(v))</code> as it seems more fitting for
+partitions.</p>
 <div class="section level3">
 <h3 id="case-1-all-integer-partitions-of-n">Case 1: All Integer Partitions of <em>N</em><a class="anchor" aria-label="anchor" href="#case-1-all-integer-partitions-of-n"></a>
 </h3>
-<p>We need <code>v = 0:N</code>, <code>repetition = TRUE</code>. When we leave <code>m = NULL</code>, <code>m</code> is internally set to the length of the longest non-zero combination (this is true for all cases below).</p>
+<p>We need <code>v = 0:N</code>, <code>repetition = TRUE</code>. When we
+leave <code>m = NULL</code>, <code>m</code> is internally set to the
+length of the longest non-zero combination (this is true for all cases
+below).</p>
 <div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="../reference/partitionsGeneral.html">partitionsGeneral</a></span><span class="op">(</span><span class="fl">0</span><span class="op">:</span><span class="fl">5</span>, repetition <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>
 <span class="co">#&gt;      [,1] [,2] [,3] [,4] [,5]</span>
@@ -458,7 +537,8 @@
 <div class="section level3">
 <h3 id="case-2-integer-partitions-of-n-of-length-m">Case 2: Integer Partitions of <em>N</em> of Length <em>m</em><a class="anchor" aria-label="anchor" href="#case-2-integer-partitions-of-n-of-length-m"></a>
 </h3>
-<p>Everything is the same as above except for explicitly setting the desired length and deciding whether to include zero or not.</p>
+<p>Everything is the same as above except for explicitly setting the
+desired length and deciding whether to include zero or not.</p>
 <div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co">## Including zero</span>
 <span class="fu"><a href="../reference/partitionsGeneral.html">partitionsGeneral</a></span><span class="op">(</span><span class="fl">0</span><span class="op">:</span><span class="fl">5</span>, <span class="fl">3</span>, repetition <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>
@@ -478,7 +558,8 @@
 <div class="section level3">
 <h3 id="case-3-integer-partitions-of-n-into-distinct-parts">Case 3: Integer Partitions of <em>N</em> into Distinct Parts<a class="anchor" aria-label="anchor" href="#case-3-integer-partitions-of-n-into-distinct-parts"></a>
 </h3>
-<p>Same as <code>Case 1 &amp; 2</code> except now we have <code>repetition = FALSE</code>.</p>
+<p>Same as <code>Case 1 &amp; 2</code> except now we have
+<code>repetition = FALSE</code>.</p>
 <div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="../reference/partitionsGeneral.html">partitionsGeneral</a></span><span class="op">(</span><span class="fl">0</span><span class="op">:</span><span class="fl">10</span><span class="op">)</span>
 <span class="co">#&gt;      [,1] [,2] [,3] [,4]</span>
@@ -536,9 +617,20 @@
 <div class="section level4">
 <h4 id="using-freqs-to-refine-length">Using <code>freqs</code> to Refine Length<a class="anchor" aria-label="anchor" href="#using-freqs-to-refine-length"></a>
 </h4>
-<p>We can utilize the <code>freqs</code> argument to obtain more distinct partitions by allowing for repeated zeros. The super optimized algorithm will only be carried out if zero is included and the number of repetitions for every number except zero is one.</p>
-<p>For example, given <code>v = 0:N</code> and <code>J &gt;= 1</code>, if <code>freqs = c(J, rep(1, N))</code>, then the super optimized algorithm will be used, however if <code>freqs = c(J, 2, rep(1, N - 1))</code>, the general algorithm will be used. It should be noted that the general algorithms are still highly optimized so one should not fear using it.</p>
-<p>A pattern that is guaranteed to retrieve all distinct partitions of <em>N</em> is to set <code>v = 0:N</code> and <code>freqs = c(N, rep(1, N))</code> (the extra zeros will be left off).</p>
+<p>We can utilize the <code>freqs</code> argument to obtain more
+distinct partitions by allowing for repeated zeros. The super optimized
+algorithm will only be carried out if zero is included and the number of
+repetitions for every number except zero is one.</p>
+<p>For example, given <code>v = 0:N</code> and <code>J &gt;= 1</code>,
+if <code>freqs = c(J, rep(1, N))</code>, then the super optimized
+algorithm will be used, however if
+<code>freqs = c(J, 2, rep(1, N - 1))</code>, the general algorithm will
+be used. It should be noted that the general algorithms are still highly
+optimized so one should not fear using it.</p>
+<p>A pattern that is guaranteed to retrieve all distinct partitions of
+<em>N</em> is to set <code>v = 0:N</code> and
+<code>freqs = c(N, rep(1, N))</code> (the extra zeros will be left
+off).</p>
 <div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co">## Obtain all distinct partitions of 10</span>
 <span class="fu"><a href="../reference/partitionsGeneral.html">partitionsGeneral</a></span><span class="op">(</span><span class="fl">0</span><span class="op">:</span><span class="fl">10</span>, freqs <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">10</span>, <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">10</span><span class="op">)</span><span class="op">)</span><span class="op">)</span>    <span class="co">## Same as c(3, rep(1, 10))</span>
@@ -557,7 +649,9 @@
 <div class="section level4">
 <h4 id="caveats-using-freqs">Caveats Using <code>freqs</code><a class="anchor" aria-label="anchor" href="#caveats-using-freqs"></a>
 </h4>
-<p>As noted in <code>Case 1</code>, if <code>m = NULL</code>, the length of the output will be determined by the longest non-zero combination that sums to <em>N</em>.</p>
+<p>As noted in <code>Case 1</code>, if <code>m = NULL</code>, the length
+of the output will be determined by the longest non-zero combination
+that sums to <em>N</em>.</p>
 <div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co">## m is NOT NULL and output has at most 2 zeros</span>
 <span class="fu"><a href="../reference/partitionsGeneral.html">partitionsGeneral</a></span><span class="op">(</span><span class="fl">0</span><span class="op">:</span><span class="fl">10</span>, <span class="fl">3</span>, freqs <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">2</span>, <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">10</span><span class="op">)</span><span class="op">)</span><span class="op">)</span>
@@ -590,7 +684,8 @@
 <div class="section level2">
 <h2 id="efficiency-generating-partitions">Efficiency Generating Partitions<a class="anchor" aria-label="anchor" href="#efficiency-generating-partitions"></a>
 </h2>
-<p>Note, as of version <code>2.5.0</code>, one can generate partitions in parallel using the <code>nThreads</code> argument.</p>
+<p>Note, as of version <code>2.5.0</code>, one can generate partitions
+in parallel using the <code>nThreads</code> argument.</p>
 <div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co">## partitions of 60</span>
 <span class="fu"><a href="../reference/partitionsCount.html">partitionsCount</a></span><span class="op">(</span><span class="fl">0</span><span class="op">:</span><span class="fl">60</span>, repetition <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>
@@ -638,7 +733,8 @@
 
 <div class="pkgdown">
   <p></p>
-<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.2.</p>
+<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a>
+2.0.2.</p>
 </div>
 
       </footer>

@@ -33,7 +33,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">RcppAlgos</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">2.5.1</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">2.5.3</span>
       </span>
     </div>
 
@@ -99,8 +99,10 @@
       </header><div class="row">
   <div class="col-md-9 contents">
     <div class="page-header toc-ignore">
-      <h1 data-toc-skip>Cartesian Products and Partitions of Groups into Equal Size</h1>
-                        <h4 data-toc-skip class="author">Joseph Wood</h4>
+      <h1 data-toc-skip>Cartesian Products and Partitions of Groups into
+Equal Size</h1>
+                        <h4 data-toc-skip class="author">Joseph
+Wood</h4>
             
             <h4 data-toc-skip class="date">03/18/2022</h4>
       
@@ -111,12 +113,28 @@
 
     
     
-<p>In combinatorics, sometimes it can be difficult to figure out exactly which tool/method we need to attack our problem. Do we need combinations? permutations? Cartesian product? partitions? What about repetition or multiplicity? The list goes on. Oftentimes the solution ends up being overly complicated and prone to error, or more commonly, a simple brute force solution is employed. The latter is okay in some situations, but in many real world problems, this approach becomes untenable very quickly. The two types of problems addressed below fall into this category.</p>
+<p>In combinatorics, sometimes it can be difficult to figure out exactly
+which tool/method we need to attack our problem. Do we need
+combinations? permutations? Cartesian product? partitions? What about
+repetition or multiplicity? The list goes on. Oftentimes the solution
+ends up being overly complicated and prone to error, or more commonly, a
+simple brute force solution is employed. The latter is okay in some
+situations, but in many real world problems, this approach becomes
+untenable very quickly. The two types of problems addressed below fall
+into this category.</p>
 <div class="section level2">
 <h2 id="cartesian-product-where-order-does-not-matter">Cartesian Product where Order does not Matter<a class="anchor" aria-label="anchor" href="#cartesian-product-where-order-does-not-matter"></a>
 </h2>
-<p>Given a list of vectors, <em>v<sub>1</sub></em>, <em>v<sub>2</sub></em>, … , <em>v<sub>n</sub></em>, where the intersection of two or more vectors in non-empty, find all unique combinations (order does not matter) of elements of the cartesian product of all of the vectors.</p>
-<p>For example, lets say we have: <code>v1 = 1:4</code> and <code>v2 = 2:5</code>. The cartestion product is given by <code>expand.grid(v1, v2)</code> (We continue to use the <code>ht</code> function defined in the <a href="https://jwood000.github.io/RcppAlgos/articles/GeneralCombinatorics.html" class="external-link">Combination and Permutation Basics</a> vignette):</p>
+<p>Given a list of vectors, <em>v<sub>1</sub></em>,
+<em>v<sub>2</sub></em>, … , <em>v<sub>n</sub></em>, where the
+intersection of two or more vectors in non-empty, find all unique
+combinations (order does not matter) of elements of the cartesian
+product of all of the vectors.</p>
+<p>For example, lets say we have: <code>v1 = 1:4</code> and
+<code>v2 = 2:5</code>. The cartestion product is given by
+<code>expand.grid(v1, v2)</code> (We continue to use the <code>ht</code>
+function defined in the <a href="https://jwood000.github.io/RcppAlgos/articles/GeneralCombinatorics.html" class="external-link">Combination
+and Permutation Basics</a> vignette):</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/base/expand.grid.html" class="external-link">expand.grid</a></span><span class="op">(</span><span class="fl">1</span><span class="op">:</span><span class="fl">4</span>, <span class="fl">2</span><span class="op">:</span><span class="fl">5</span><span class="op">)</span>
 <span class="co">#&gt;    Var1 Var2</span>
@@ -136,7 +154,8 @@
 <span class="co">#&gt; 14    2    5</span>
 <span class="co">#&gt; 15    3    5</span>
 <span class="co">#&gt; 16    4    5</span></code></pre></div>
-<p>If we don’t care about order, the following row pairs are considered equal and can therefore be pruned to obtain our desired results:</p>
+<p>If we don’t care about order, the following row pairs are considered
+equal and can therefore be pruned to obtain our desired results:</p>
 <ul>
 <li>(r3, r6)</li>
 <li>(r4, r10)</li>
@@ -160,9 +179,22 @@
 <span class="co">#&gt; [11,]    3    5</span>
 <span class="co">#&gt; [12,]    4    4</span>
 <span class="co">#&gt; [13,]    4    5</span></code></pre></div>
-<p>Note that the order of <code>expand.grid</code> and <code>comboGrid</code> differ. The order of <code>comboGrid</code> is lexicographical meaning that the last column will vary the fastest whereas with <code>expand.grid</code>, the first column will vary the fastest.</p>
-<p>You will also note that the output of <code>expand.grid</code> is a <code>data.frame</code> whereas with <code>comboGrid</code>, we get a <code>matrix</code>. With <code>comboGrid</code>, we only get a <code>data.frame</code> when the classes of each vector are different as generally speaking, working with matrices is preferrable.</p>
-<p>With the small example above, we only had to filter out 3 out of 16 total results (less than 20%). That isn’t that bad. If this was the general case, we might as well just stick with <code>expand.grid</code> as it is very efficient. Unfortunately, this is not the general case and as the number of vectors with overlap increases, filtering will become impractical.</p>
+<p>Note that the order of <code>expand.grid</code> and
+<code>comboGrid</code> differ. The order of <code>comboGrid</code> is
+lexicographical meaning that the last column will vary the fastest
+whereas with <code>expand.grid</code>, the first column will vary the
+fastest.</p>
+<p>You will also note that the output of <code>expand.grid</code> is a
+<code>data.frame</code> whereas with <code>comboGrid</code>, we get a
+<code>matrix</code>. With <code>comboGrid</code>, we only get a
+<code>data.frame</code> when the classes of each vector are different as
+generally speaking, working with matrices is preferrable.</p>
+<p>With the small example above, we only had to filter out 3 out of 16
+total results (less than 20%). That isn’t that bad. If this was the
+general case, we might as well just stick with <code>expand.grid</code>
+as it is very efficient. Unfortunately, this is not the general case and
+as the number of vectors with overlap increases, filtering will become
+impractical.</p>
 <p>Consider the following example:</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">pools</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">10</span>, <span class="fl">14</span>, <span class="fl">6</span><span class="op">)</span>,
@@ -239,25 +271,46 @@
 <span class="co">#&gt; [2979,]   14    3    4    7    8   15    9   13   12    11</span>
 <span class="co">#&gt; [2980,]   14    3    5    7    8   15    9   13   12    11</span>
 <span class="co">#&gt; [2981,]   14    4    5    7    8   15    9   13   12    11</span></code></pre></div>
-<p>The function <code>comboGrid</code> was highly inspired by the following question on stackoverflow:</p>
+<p>The function <code>comboGrid</code> was highly inspired by the
+following question on stackoverflow:</p>
 <ul>
-<li><a href="https://stackoverflow.com/q/51834467/4408538" class="external-link">Picking unordered combinations from pools with overlap</a></li>
+<li><a href="https://stackoverflow.com/q/51834467/4408538" class="external-link">Picking
+unordered combinations from pools with overlap</a></li>
 </ul>
-<p>Currenlty, the underlying algorithm is not the gold standard. By that, we mean that results are not generated one by one. Efforts are underway to achieve this, but up until this point it has proven quite difficult (See the comprehensive answer by Tim Peters (yes, that <a href="https://stackoverflow.com/users/2705542/tim-peters" class="external-link">Tim Peters</a>)).</p>
-<p>The algorithm in <code>comboGrid</code> leverages <a href="https://en.wikipedia.org/wiki/Fundamental_theorem_of_arithmetic" class="external-link">The Fundamental Theorem of Arithmetic</a> to efficiently generate keys that will be used in a hash function to determine if a particular combination of elements have been encountered. For greater efficiency, we make use of deduplication as <a href="https://stackoverflow.com/a/51886857/4408538" class="external-link">user2357112</a> suggests.</p>
+<p>Currenlty, the underlying algorithm is not the gold standard. By
+that, we mean that results are not generated one by one. Efforts are
+underway to achieve this, but up until this point it has proven quite
+difficult (See the comprehensive answer by Tim Peters (yes, that <a href="https://stackoverflow.com/users/2705542/tim-peters" class="external-link">Tim
+Peters</a>)).</p>
+<p>The algorithm in <code>comboGrid</code> leverages <a href="https://en.wikipedia.org/wiki/Fundamental_theorem_of_arithmetic" class="external-link">The
+Fundamental Theorem of Arithmetic</a> to efficiently generate keys that
+will be used in a hash function to determine if a particular combination
+of elements have been encountered. For greater efficiency, we make use
+of deduplication as <a href="https://stackoverflow.com/a/51886857/4408538" class="external-link">user2357112</a>
+suggests.</p>
 <div class="section level3">
 <h3 id="in-the-wild">In the Wild<a class="anchor" aria-label="anchor" href="#in-the-wild"></a>
 </h3>
 <ul>
-<li><a href="https://stackoverflow.com/q/68047141/4408538" class="external-link">R - Expand Grid Without Duplicates</a></li>
-<li><a href="https://stackoverflow.com/a/68050873/4408538" class="external-link">Non-redundant version of expand.grid</a></li>
+<li><a href="https://stackoverflow.com/q/68047141/4408538" class="external-link">R - Expand
+Grid Without Duplicates</a></li>
+<li><a href="https://stackoverflow.com/a/68050873/4408538" class="external-link">Non-redundant
+version of expand.grid</a></li>
 </ul>
 </div>
 </div>
 <div class="section level2">
-<h2 id="partitions-of-groups-of-equal-size-with-combogroups">Partitions of Groups of Equal Size with <code>comboGroups</code><a class="anchor" aria-label="anchor" href="#partitions-of-groups-of-equal-size-with-combogroups"></a>
+<h2 id="partitions-of-groups-of-equal-size-with-combogroups">Partitions of Groups of Equal Size with
+<code>comboGroups</code><a class="anchor" aria-label="anchor" href="#partitions-of-groups-of-equal-size-with-combogroups"></a>
 </h2>
-<p>Given a vector of length <em>n</em> and <em>k</em> groups, where <em>k</em> divides <em>n</em>, each group is comprised of a combination of the vector chosen <em>g = n / k</em> at a time. As is stated in the documentation (see <code><a href="../reference/comboGroups.html">?comboGroups</a></code>), these can be constructed by first generating all permutations of the vector and subsequently removing entries with permuted groups. Let us consider the following example. Given <code>v = 1:12</code>, generate all partitions <code>v</code> into 3 groups each of size 4.</p>
+<p>Given a vector of length <em>n</em> and <em>k</em> groups, where
+<em>k</em> divides <em>n</em>, each group is comprised of a combination
+of the vector chosen <em>g = n / k</em> at a time. As is stated in the
+documentation (see <code><a href="../reference/comboGroups.html">?comboGroups</a></code>), these can be constructed
+by first generating all permutations of the vector and subsequently
+removing entries with permuted groups. Let us consider the following
+example. Given <code>v = 1:12</code>, generate all partitions
+<code>v</code> into 3 groups each of size 4.</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">funBruteGrp</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">myLow</span> <span class="op">=</span> <span class="fl">1</span>, <span class="va">myUp</span><span class="op">)</span> <span class="op">{</span>
     <span class="va">mat</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/do.call.html" class="external-link">do.call</a></span><span class="op">(</span><span class="va">rbind</span>, <span class="fu"><a href="../reference/combinatoricsGeneral.html">permuteGeneral</a></span><span class="op">(</span><span class="fl">12</span>, lower <span class="op">=</span> <span class="va">myLow</span>, upper <span class="op">=</span> <span class="va">myUp</span>,
@@ -294,7 +347,12 @@
 <span class="co">#&gt; 48 "( 1 2 3 4 )" "( 5 6 7 9 )"  "( 12 11 10 8 )"</span>
 <span class="co">#&gt; 49 "( 1 2 3 4 )" "( 5 6 7 10 )" "( 8 9 11 12 )"  ## &lt;&lt;-- 3rd distinct partition of groups</span>
 <span class="co">#&gt; 50 "( 1 2 3 4 )" "( 5 6 7 10 )" "( 8 9 12 11 )"</span></code></pre></div>
-<p>We are starting to see a pattern. Each new partition is exactly 24 spots away. This makes sense as there are <code>factorial(4) = 24</code> permutations of size 4. Now, this is an oversimplification as if we simply generate every <em>24<sup>th</sup></em> permutation, we will still get duplication as they start to carry over to the other groups. Observe:</p>
+<p>We are starting to see a pattern. Each new partition is exactly 24
+spots away. This makes sense as there are <code>factorial(4) = 24</code>
+permutations of size 4. Now, this is an oversimplification as if we
+simply generate every <em>24<sup>th</sup></em> permutation, we will
+still get duplication as they start to carry over to the other groups.
+Observe:</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/base/do.call.html" class="external-link">do.call</a></span><span class="op">(</span><span class="va">rbind</span>, <span class="fu"><a href="https://rdrr.io/r/base/lapply.html" class="external-link">lapply</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">169</span>, <span class="fl">24</span><span class="op">)</span>, <span class="kw">function</span><span class="op">(</span><span class="va">x</span><span class="op">)</span> <span class="op">{</span>
     <span class="fu">funBruteGrp</span><span class="op">(</span>myLow <span class="op">=</span> <span class="va">x</span>, myUp <span class="op">=</span> <span class="va">x</span><span class="op">)</span>
@@ -308,8 +366,12 @@
 <span class="co">#&gt; 121 "( 1 2 3 4 )" "( 5 6 8 7 )"  "( 9 10 11 12 )"  ## &lt;&lt;-- This is the same as the 1st</span>
 <span class="co">#&gt; 145 "( 1 2 3 4 )" "( 5 6 8 9 )"  "( 7 10 11 12 )"  ## partition. The only difference is</span>
 <span class="co">#&gt; 169 "( 1 2 3 4 )" "( 5 6 8 10 )" "( 7 9 11 12 )"   ## that the 2nd Grp has been permuted</span></code></pre></div>
-<p>This only gets more muddled as the number of groups increases. It is also very inefficient, however this exercise hopefully serves to better illustrate these structures.</p>
-<p>The algorithm in <code>comboGroups</code> avoids all of this duplication by implementing a novel algorithm akin to <a href="https://en.cppreference.com/w/cpp/algorithm/next_permutation" class="external-link">std::next_permutation</a> from the algorithm library in <code>C++</code>.</p>
+<p>This only gets more muddled as the number of groups increases. It is
+also very inefficient, however this exercise hopefully serves to better
+illustrate these structures.</p>
+<p>The algorithm in <code>comboGroups</code> avoids all of this
+duplication by implementing a novel algorithm akin to <a href="https://en.cppreference.com/w/cpp/algorithm/next_permutation" class="external-link">std::next_permutation</a>
+from the algorithm library in <code>C++</code>.</p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/base/system.time.html" class="external-link">system.time</a></span><span class="op">(</span><span class="fu"><a href="../reference/comboGroups.html">comboGroups</a></span><span class="op">(</span><span class="fl">12</span>, numGroups <span class="op">=</span> <span class="fl">3</span><span class="op">)</span><span class="op">)</span>
 <span class="co">#&gt;    user  system elapsed</span>
@@ -331,7 +393,9 @@
 <span class="co">#&gt; [5773,]    1   10   11   12    2    6    7    9    3    4    5    8</span>
 <span class="co">#&gt; [5774,]    1   10   11   12    2    6    8    9    3    4    5    7</span>
 <span class="co">#&gt; [5775,]    1   10   11   12    2    7    8    9    3    4    5    6</span></code></pre></div>
-<p>Just as in <code>combo/permuteGeneral</code>, we can utilize the arguments <code>lower</code>, <code>upper</code>, <code>Parallel</code>, and <code>nThreads</code>.</p>
+<p>Just as in <code>combo/permuteGeneral</code>, we can utilize the
+arguments <code>lower</code>, <code>upper</code>, <code>Parallel</code>,
+and <code>nThreads</code>.</p>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="../reference/comboGroupsCount.html">comboGroupsCount</a></span><span class="op">(</span><span class="fl">30</span>, <span class="fl">6</span><span class="op">)</span>
 <span class="co">#&gt; Big Integer ('bigz') :</span>
@@ -362,7 +426,14 @@
 
 <span class="fu"><a href="https://rdrr.io/r/base/identical.html" class="external-link">identical</a></span><span class="op">(</span><span class="va">a1</span>, <span class="va">a3</span><span class="op">)</span>
 <span class="co">#&gt; [1] TRUE</span></code></pre></div>
-<p>There is one additional argument (i.e. <code>retType</code>) not present in the other two general functions that allows the user to specify the type of object returned. The user can select between <code>"matrix"</code> (the default) and <code>"3Darray"</code>. This structure has a natural connection to 3D space. We have a particular result (<em>1<sup>st</sup></em> dimension) broken down into groups (<em>2<sup>nd</sup></em> dimension) of a certain size (<em>3<sup>rd</sup></em> dimension).</p>
+<p>There is one additional argument (i.e. <code>retType</code>) not
+present in the other two general functions that allows the user to
+specify the type of object returned. The user can select between
+<code>"matrix"</code> (the default) and <code>"3Darray"</code>. This
+structure has a natural connection to 3D space. We have a particular
+result (<em>1<sup>st</sup></em> dimension) broken down into groups
+(<em>2<sup>nd</sup></em> dimension) of a certain size
+(<em>3<sup>rd</sup></em> dimension).</p>
 <div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">my3D</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/comboGroups.html">comboGroups</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/factor.html" class="external-link">factor</a></span><span class="op">(</span><span class="va">month.abb</span><span class="op">)</span>, <span class="fl">4</span>, retType <span class="op">=</span> <span class="st">"3Darray"</span><span class="op">)</span>
 <span class="va">my3D</span><span class="op">[</span><span class="fl">1</span>, , <span class="op">]</span>
@@ -385,11 +456,16 @@
 <h3 id="relevant-posts-on-stackoverflow-as-well-as-oeis-">Relevant Posts on Stackoverflow as well as OEIS.<a class="anchor" aria-label="anchor" href="#relevant-posts-on-stackoverflow-as-well-as-oeis-"></a>
 </h3>
 <ul>
-<li><a href="https://stackoverflow.com/a/51754958/4408538" class="external-link">Iterating through combinations of groups of 4 within a group of 16</a></li>
-<li><a href="https://stackoverflow.com/q/57732672/4408538" class="external-link">Create Combinations in R by Groups</a></li>
-<li><a href="https://stackoverflow.com/q/39126712/4408538" class="external-link">Algorithm that can create all combinations and all groups of those combinations</a></li>
+<li><a href="https://stackoverflow.com/a/51754958/4408538" class="external-link">Iterating
+through combinations of groups of 4 within a group of 16</a></li>
+<li><a href="https://stackoverflow.com/q/57732672/4408538" class="external-link">Create
+Combinations in R by Groups</a></li>
+<li><a href="https://stackoverflow.com/q/39126712/4408538" class="external-link">Algorithm
+that can create all combinations and all groups of those
+combinations</a></li>
 <li>
-<a href="https://oeis.org/A025035" class="external-link uri">https://oeis.org/A025035</a> (See also sequences A025036-A025042)</li>
+<a href="https://oeis.org/A025035" class="external-link uri">https://oeis.org/A025035</a> (See also sequences
+A025036-A025042)</li>
 </ul>
 </div>
 </div>
@@ -412,7 +488,8 @@
 
 <div class="pkgdown">
   <p></p>
-<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.2.</p>
+<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a>
+2.0.2.</p>
 </div>
 
       </footer>

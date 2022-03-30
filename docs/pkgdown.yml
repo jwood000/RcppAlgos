@@ -1,4 +1,4 @@
-pandoc: 2.14.0.3
+pandoc: 2.17.1.1
 pkgdown: 2.0.2
 pkgdown_sha: ~
 articles:
@@ -10,5 +10,5 @@ articles:
   HighPerformanceBenchmarks: HighPerformanceBenchmarks.html
   OtherCombinatorics: OtherCombinatorics.html
   SubsetSum: SubsetSum.html
-last_built: 2022-03-18T20:04Z
+last_built: 2022-03-30T12:06Z
 

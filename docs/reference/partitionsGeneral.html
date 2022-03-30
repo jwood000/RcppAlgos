@@ -30,7 +30,7 @@ The output is in lexicographical order.
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">RcppAlgos</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">2.5.1</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">2.5.3</span>
       </span>
     </div>
 
@@ -685,10 +685,10 @@ The output is in lexicographical order.
 <span class="r-in"></span>
 <span class="r-in"><span class="fu"><a href="https://rdrr.io/r/base/system.time.html" class="external-link">system.time</a></span><span class="op">(</span><span class="va">one_thread</span>  <span class="op">&lt;-</span> <span class="fu">partitionsGeneral</span><span class="op">(</span><span class="fl">80</span>, <span class="fl">10</span>, <span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>    user  system elapsed </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   0.014   0.005   0.018 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   0.013   0.006   0.019 </span>
 <span class="r-in"><span class="fu"><a href="https://rdrr.io/r/base/system.time.html" class="external-link">system.time</a></span><span class="op">(</span><span class="va">two_threads</span> <span class="op">&lt;-</span> <span class="fu">partitionsGeneral</span><span class="op">(</span><span class="fl">80</span>, <span class="fl">10</span>, <span class="cn">TRUE</span>, nThreads <span class="op">=</span> <span class="fl">2</span><span class="op">)</span><span class="op">)</span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>    user  system elapsed </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   0.015   0.007   0.012 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   0.015   0.009   0.012 </span>
 <span class="r-in"><span class="fu"><a href="https://rdrr.io/r/base/identical.html" class="external-link">identical</a></span><span class="op">(</span><span class="va">one_thread</span>, <span class="va">two_threads</span><span class="op">)</span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] TRUE</span>
 </code></pre></div>
@@ -705,7 +705,8 @@ The output is in lexicographical order.
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.2.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a>
+2.0.2.</p>
 </div>
 
       </footer></div>

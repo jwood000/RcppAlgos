@@ -19,7 +19,7 @@ The fundamental concepts of this algorithm are based off of the implementation b
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">RcppAlgos</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">2.5.1</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">2.5.3</span>
       </span>
     </div>
 
@@ -151,13 +151,13 @@ The fundamental concepts of this algorithm are based off of the implementation b
 <span class="r-in"><span class="co">## Primes up to one hundred million in no time</span></span>
 <span class="r-in"><span class="fu"><a href="https://rdrr.io/r/base/system.time.html" class="external-link">system.time</a></span><span class="op">(</span><span class="fu">primeSieve</span><span class="op">(</span><span class="fl">10</span><span class="op">^</span><span class="fl">8</span><span class="op">)</span><span class="op">)</span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>    user  system elapsed </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   0.148   0.011   0.160 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   0.145   0.013   0.160 </span>
 <span class="r-in"></span>
 <span class="r-in"><span class="co">## options(scipen = 50)</span></span>
 <span class="r-in"><span class="co">## Generate large primes over interval</span></span>
 <span class="r-in"><span class="fu"><a href="https://rdrr.io/r/base/system.time.html" class="external-link">system.time</a></span><span class="op">(</span><span class="va">myPs</span> <span class="op">&lt;-</span> <span class="fu">primeSieve</span><span class="op">(</span><span class="fl">10</span><span class="op">^</span><span class="fl">13</span><span class="op">+</span><span class="fl">10</span><span class="op">^</span><span class="fl">6</span>, <span class="fl">10</span><span class="op">^</span><span class="fl">13</span><span class="op">)</span><span class="op">)</span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>    user  system elapsed </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   0.016   0.001   0.016 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   0.015   0.001   0.017 </span>
 <span class="r-in"><span class="co">## Object created is small</span></span>
 <span class="r-in"><span class="fu"><a href="https://rdrr.io/r/utils/object.size.html" class="external-link">object.size</a></span><span class="op">(</span><span class="va">myPs</span><span class="op">)</span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 267696 bytes</span>
@@ -165,7 +165,7 @@ The fundamental concepts of this algorithm are based off of the implementation b
 <span class="r-in"><span class="co">## Using nThreads</span></span>
 <span class="r-in"><span class="fu"><a href="https://rdrr.io/r/base/system.time.html" class="external-link">system.time</a></span><span class="op">(</span><span class="fu">primeSieve</span><span class="op">(</span><span class="fl">1e7</span>, nThreads <span class="op">=</span> <span class="fl">2</span><span class="op">)</span><span class="op">)</span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>    user  system elapsed </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   0.023   0.001   0.014 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   0.022   0.002   0.013 </span>
 </code></pre></div>
     </div>
   </div>
@@ -180,7 +180,8 @@ The fundamental concepts of this algorithm are based off of the implementation b
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.2.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a>
+2.0.2.</p>
 </div>
 
       </footer></div>

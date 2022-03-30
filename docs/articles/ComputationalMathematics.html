@@ -33,7 +33,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">RcppAlgos</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">2.5.1</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">2.5.3</span>
       </span>
     </div>
 
@@ -100,7 +100,8 @@
   <div class="col-md-9 contents">
     <div class="page-header toc-ignore">
       <h1 data-toc-skip>Computational Mathematics Overview</h1>
-                        <h4 data-toc-skip class="author">Joseph Wood</h4>
+                        <h4 data-toc-skip class="author">Joseph
+Wood</h4>
             
             <h4 data-toc-skip class="date">03/13/2022</h4>
       
@@ -111,13 +112,20 @@
 
     
     
-<p>This document serves as an overview for solving problems common in <a href="https://en.wikipedia.org/wiki/Computational_mathematics" class="external-link">Computational Mathematics</a>. Of note, <code>primeSieve</code> and <code>primeCount</code> are based on the excellent work by <a href="https://github.com/kimwalisch" class="external-link">Kim Walisch</a>.</p>
+<p>This document serves as an overview for solving problems common in <a href="https://en.wikipedia.org/wiki/Computational_mathematics" class="external-link">Computational
+Mathematics</a>. Of note, <code>primeSieve</code> and
+<code>primeCount</code> are based on the excellent work by <a href="https://github.com/kimwalisch" class="external-link">Kim Walisch</a>.</p>
 <hr>
 <div class="section level2">
 <h2 id="primesieve">
 <code>primeSieve</code><a class="anchor" aria-label="anchor" href="#primesieve"></a>
 </h2>
-<p>The primeSieve function is based on the <a href="https://en.wikipedia.org/wiki/Sieve_of_Eratosthenes#Segmented_sieve" class="external-link">Segmented Sieve of Eratosthenes</a>. As stated in the linked article, the sieve itself is already very efficient. The problem from an efficiency standpoint, is due to the memory requirements. The segmented version overcomes this by only sieving small sections at a time, which greatly facilitates use of the cache.</p>
+<p>The primeSieve function is based on the <a href="https://en.wikipedia.org/wiki/Sieve_of_Eratosthenes#Segmented_sieve" class="external-link">Segmented
+Sieve of Eratosthenes</a>. As stated in the linked article, the sieve
+itself is already very efficient. The problem from an efficiency
+standpoint, is due to the memory requirements. The segmented version
+overcomes this by only sieving small sections at a time, which greatly
+facilitates use of the cache.</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/jwood000/RcppAlgos" class="external-link">RcppAlgos</a></span><span class="op">)</span>
 <span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/joshuaulrich/microbenchmark/" class="external-link">microbenchmark</a></span><span class="op">)</span>
@@ -160,7 +168,9 @@
 <div class="section level3">
 <h3 id="larger-primes">Larger primes<a class="anchor" aria-label="anchor" href="#larger-primes"></a>
 </h3>
-<p>Since version <code>2.3.0</code>, we are implementing the cache-friendly improvements for larger primes originally developed by <a href="http://sweet.ua.pt/tos/software/prime_sieve.html" class="external-link">Tomás Oliveira</a>.</p>
+<p>Since version <code>2.3.0</code>, we are implementing the
+cache-friendly improvements for larger primes originally developed by <a href="http://sweet.ua.pt/tos/software/prime_sieve.html" class="external-link">Tomás
+Oliveira</a>.</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co">## Version &lt;= 2.2.0.. i.e. older versions</span>
 <span class="co"># system.time(old &lt;- RcppAlgos2.2::primeSieve(1e15, 1e15 + 1e9))</span>
@@ -185,9 +195,32 @@
 <h2 id="primecount">
 <code>primeCount</code><a class="anchor" aria-label="anchor" href="#primecount"></a>
 </h2>
-<p>The library by Kim Walisch relies on <a href="https://en.wikipedia.org/wiki/OpenMP" class="external-link">OpenMP</a> for parallel computation with <a href="http://mathworld.wolfram.com/LegendresFormula.html" class="external-link">Legendre’s Formula</a>. Currently, the default compiler on <code>macOS</code> is <code>clang</code>, which does not support <code>OpenMP</code>. James Balamuta (a.k.a. TheCoatlessProfessor… well at least <a href="https://thecoatlessprofessor.com/about/" class="external-link">we think so</a>) has written a great article on this topic, which you can find here: <a href="https://thecoatlessprofessor.com/programming/openmp-in-r-on-os-x/" class="external-link uri">https://thecoatlessprofessor.com/programming/openmp-in-r-on-os-x/</a>. One of the goals of <code>RcppAlgos</code> is to be accessible by all users. With this in mind, we set out to count primes in parallel <em>without</em> <code>OpenMP</code>.</p>
-<p>At first glance, this seems trivial as we have a function in <code>Primes.cpp</code> called <code>phiWorker</code> that counts the primes up to <code>x</code>. If you look in <a href="https://github.com/kimwalisch/primecount/blob/master/src/phi.cpp" class="external-link">phi.cpp</a> in the <code>primecount</code> library by Kim Walisch, we see that <code>OpenMP</code> does its magic on a for loop that makes repeated calls to <code>phi</code> (which is what <code>phiWorker</code> is based on). All we need to do is break this loop into <em>n</em> intervals where <em>n</em> is the number of threads. Simple, right?</p>
-<p>We can certainly do this, but what you will find is that <em>n - 1</em> threads will complete very quickly and the <em>n<sup>th</sup></em> thread will be left with a heavy computation. In order to alleviate this unbalanced load, we divide the loop mentioned above into smaller intervals. The idea is to completely calculate <code>phi</code> up to a limit <em>m</em> using all <em>n</em> threads and then gradually increase <em>m</em>. The advantage here is that we are benefiting greatly from the caching done by the work of the previous <em>n</em> threads.</p>
+<p>The library by Kim Walisch relies on <a href="https://en.wikipedia.org/wiki/OpenMP" class="external-link">OpenMP</a> for parallel
+computation with <a href="http://mathworld.wolfram.com/LegendresFormula.html" class="external-link">Legendre’s
+Formula</a>. Currently, the default compiler on <code>macOS</code> is
+<code>clang</code>, which does not support <code>OpenMP</code>. James
+Balamuta (a.k.a. TheCoatlessProfessor… well at least <a href="https://thecoatlessprofessor.com/about/" class="external-link">we think so</a>) has
+written a great article on this topic, which you can find here: <a href="https://thecoatlessprofessor.com/programming/openmp-in-r-on-os-x/" class="external-link uri">https://thecoatlessprofessor.com/programming/openmp-in-r-on-os-x/</a>.
+One of the goals of <code>RcppAlgos</code> is to be accessible by all
+users. With this in mind, we set out to count primes in parallel
+<em>without</em> <code>OpenMP</code>.</p>
+<p>At first glance, this seems trivial as we have a function in
+<code>Primes.cpp</code> called <code>phiWorker</code> that counts the
+primes up to <code>x</code>. If you look in <a href="https://github.com/kimwalisch/primecount/blob/master/src/phi.cpp" class="external-link">phi.cpp</a>
+in the <code>primecount</code> library by Kim Walisch, we see that
+<code>OpenMP</code> does its magic on a for loop that makes repeated
+calls to <code>phi</code> (which is what <code>phiWorker</code> is based
+on). All we need to do is break this loop into <em>n</em> intervals
+where <em>n</em> is the number of threads. Simple, right?</p>
+<p>We can certainly do this, but what you will find is that <em>n -
+1</em> threads will complete very quickly and the
+<em>n<sup>th</sup></em> thread will be left with a heavy computation. In
+order to alleviate this unbalanced load, we divide the loop mentioned
+above into smaller intervals. The idea is to completely calculate
+<code>phi</code> up to a limit <em>m</em> using all <em>n</em> threads
+and then gradually increase <em>m</em>. The advantage here is that we
+are benefiting greatly from the caching done by the work of the previous
+<em>n</em> threads.</p>
 <p>With this is mind, here are some results:</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co">## Enumerate the number of primes below trillion</span>
@@ -221,8 +254,14 @@
 <div class="section level2">
 <h2 id="other-sieving-functions">Other Sieving Functions<a class="anchor" aria-label="anchor" href="#other-sieving-functions"></a>
 </h2>
-<p><code>RcppAlgos</code> comes equipped with several functions for quickly generating essential components for problems common in computational mathematics. All functions below can be executed in parallel by using the argument <code>nThreads</code>.</p>
-<p>The following sieving functions (<code>primeFactorizeSieve</code>, <code>divisorsSieve</code>, <code>numDivisorSieve</code>, &amp; <code>eulerPhiSieve</code>) are very useful and flexible. Generate components up to a number or between two bounds.</p>
+<p><code>RcppAlgos</code> comes equipped with several functions for
+quickly generating essential components for problems common in
+computational mathematics. All functions below can be executed in
+parallel by using the argument <code>nThreads</code>.</p>
+<p>The following sieving functions (<code>primeFactorizeSieve</code>,
+<code>divisorsSieve</code>, <code>numDivisorSieve</code>, &amp;
+<code>eulerPhiSieve</code>) are very useful and flexible. Generate
+components up to a number or between two bounds.</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co">## get the number of divisors for every number from 1 to n</span>
 <span class="fu"><a href="../reference/numDivisorSieve.html">numDivisorSieve</a></span><span class="op">(</span><span class="fl">20</span><span class="op">)</span>
@@ -291,7 +330,10 @@
 <div class="section level2">
 <h2 id="vectorized-functions">Vectorized Functions<a class="anchor" aria-label="anchor" href="#vectorized-functions"></a>
 </h2>
-<p>There are three very fast vectorized functions for general factoring (e.g. all divisors of number), primality testing, as well as prime factoring (<code>divisorsRcpp</code>, <code>isPrimeRcpp</code>, <code>primeFactorize</code>).</p>
+<p>There are three very fast vectorized functions for general factoring
+(e.g. all divisors of number), primality testing, as well as prime
+factoring (<code>divisorsRcpp</code>, <code>isPrimeRcpp</code>,
+<code>primeFactorize</code>).</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co">## get result for individual numbers</span>
 <span class="fu"><a href="../reference/primeFactorize.html">primeFactorize</a></span><span class="op">(</span><span class="fl">123456789</span><span class="op">)</span>
@@ -361,7 +403,8 @@
 
 <div class="pkgdown">
   <p></p>
-<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.2.</p>
+<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a>
+2.0.2.</p>
 </div>
 
       </footer>

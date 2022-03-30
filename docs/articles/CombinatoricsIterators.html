@@ -33,7 +33,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">RcppAlgos</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">2.5.1</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">2.5.3</span>
       </span>
     </div>
 
@@ -100,9 +100,10 @@
   <div class="col-md-9 contents">
     <div class="page-header toc-ignore">
       <h1 data-toc-skip>Combinatorial Iterators in RcppAlgos</h1>
-                        <h4 data-toc-skip class="author">Joseph Wood</h4>
+                        <h4 data-toc-skip class="author">Joseph
+Wood</h4>
             
-            <h4 data-toc-skip class="date">03/18/2022</h4>
+            <h4 data-toc-skip class="date">03/29/2022</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/jwood000/RcppAlgos/blob/HEAD/vignettes/CombinatoricsIterators.Rmd" class="external-link"><code>vignettes/CombinatoricsIterators.Rmd</code></a></small>
       <div class="hidden name"><code>CombinatoricsIterators.Rmd</code></div>
@@ -111,13 +112,24 @@
 
     
     
-<p>This document covers working with combinatorial iterators in <code>RcppAlgos</code>. Combinatorial iterators in <code>RcppAlgos</code> are memory efficient like traditional iterator objects. They allow traversal of combinations/permutations one by one without the necessity for storing all results in memory.</p>
-<p>Unlike traditional combinatorial iterators, the iterators in <code>RcppAlgos</code> offers random access via the <code>[[</code> operator. This means, we can access the <em>n<sup>th</sup></em> <a href="https://en.wikipedia.org/wiki/Lexicographical_order" class="external-link">lexicographical order</a> result on demand without having to first iterate over the previous <em>n - 1</em> results.</p>
+<p>This document covers working with combinatorial iterators in
+<code>RcppAlgos</code>. Combinatorial iterators in
+<code>RcppAlgos</code> are memory efficient like traditional iterator
+objects. They allow traversal of combinations/permutations one by one
+without the necessity for storing all results in memory.</p>
+<p>Unlike traditional combinatorial iterators, the iterators in
+<code>RcppAlgos</code> offers random access via the <code>[[</code>
+operator. This means, we can access the <em>n<sup>th</sup></em> <a href="https://en.wikipedia.org/wiki/Lexicographical_order" class="external-link">lexicographical
+order</a> result on demand without having to first iterate over the
+previous <em>n - 1</em> results.</p>
 <hr>
 <div class="section level2">
 <h2 id="iterating-over-combinations-and-permutations">Iterating over Combinations and Permutations<a class="anchor" aria-label="anchor" href="#iterating-over-combinations-and-permutations"></a>
 </h2>
-<p>In order to iterate, we must initialize an iterator via <code>comboIter</code> or <code>permuteIter</code>. The interface is very similar to <code>comboGeneral</code> and <code>permuteGeneral</code>.</p>
+<p>In order to iterate, we must initialize an iterator via
+<code>comboIter</code> or <code>permuteIter</code>. The interface is
+very similar to <code>comboGeneral</code> and
+<code>permuteGeneral</code>.</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/jwood000/RcppAlgos" class="external-link">RcppAlgos</a></span><span class="op">)</span>
 
@@ -182,7 +194,11 @@
 <div class="section level3">
 <h3 id="bidirectional-iterators">Bidirectional Iterators<a class="anchor" aria-label="anchor" href="#bidirectional-iterators"></a>
 </h3>
-<p>Some of the combinatorial iterators in <code>RcppAlgos</code> are bidirectional iterators. This means that not only can we iterate in a forward manner (i.e. lexicographically), but we can also iterate backwards (i.e. <a href="https://oeis.org/wiki/Orderings#Reverse_lexicographic_order" class="external-link">Reverse Lexicographical Order</a>) via the <code>prevIter</code> method(s).</p>
+<p>Some of the combinatorial iterators in <code>RcppAlgos</code> are
+bidirectional iterators. This means that not only can we iterate in a
+forward manner (i.e. lexicographically), but we can also iterate
+backwards (i.e. <a href="https://oeis.org/wiki/Orderings#Reverse_lexicographic_order" class="external-link">Reverse
+Lexicographical Order</a>) via the <code>prevIter</code> method(s).</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co">## Using the same iterable from the previous section</span>
 <span class="va">a</span><span class="op">$</span><span class="fu">currIter</span><span class="op">(</span><span class="op">)</span>
@@ -240,7 +256,9 @@
 <div class="section level3">
 <h3 id="retrieving-more-than-one-result-at-a-time">Retrieving More than One Result at a Time<a class="anchor" aria-label="anchor" href="#retrieving-more-than-one-result-at-a-time"></a>
 </h3>
-<p>There are four methods which allow for obtaining more than one result at a time: <code>nextNIter</code>, <code>prevNIter</code>, <code>nextRemaining</code>, and <code>prevRemaining</code>.</p>
+<p>There are four methods which allow for obtaining more than one result
+at a time: <code>nextNIter</code>, <code>prevNIter</code>,
+<code>nextRemaining</code>, and <code>prevRemaining</code>.</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co">## Reset the iterator</span>
 <span class="va">a</span><span class="op">$</span><span class="fu">startOver</span><span class="op">(</span><span class="op">)</span>
@@ -280,7 +298,6 @@
 <span class="co">#&gt; [4,]    2    3    5</span>
 <span class="co">#&gt; [5,]    2    4    5</span>
 <span class="co">#&gt; [6,]    3    4    5</span>
-
 
 <span class="va">a</span><span class="op">$</span><span class="fu">summary</span><span class="op">(</span><span class="op">)</span>
 <span class="co">#&gt; $description</span>
@@ -332,7 +349,6 @@
 <span class="co">#&gt; [5,]    1    2    4</span>
 <span class="co">#&gt; [6,]    1    2    3</span>
 
-
 <span class="va">a</span><span class="op">$</span><span class="fu">summary</span><span class="op">(</span><span class="op">)</span>
 <span class="co">#&gt; $description</span>
 <span class="co">#&gt; [1] "Combinations of 5 choose 3"</span>
@@ -349,7 +365,10 @@
 <div class="section level3">
 <h3 id="random-access-iterator">Random Access Iterator<a class="anchor" aria-label="anchor" href="#random-access-iterator"></a>
 </h3>
-<p>As with the bidirectional iterators, with some of the combinatorial iterators in <code>RcppAlgos</code>, we can jump to the <em>n<sup>th</sup></em> result without the need for iterating over the first <em>n - 1</em> results.</p>
+<p>As with the bidirectional iterators, with some of the combinatorial
+iterators in <code>RcppAlgos</code>, we can jump to the
+<em>n<sup>th</sup></em> result without the need for iterating over the
+first <em>n - 1</em> results.</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co">## Reset the iterator</span>
 <span class="va">a</span><span class="op">$</span><span class="fu">startOver</span><span class="op">(</span><span class="op">)</span>
@@ -403,26 +422,13 @@
 
 <span class="va">a</span><span class="op">$</span><span class="fu">currIter</span><span class="op">(</span><span class="op">)</span>
 <span class="co">#&gt; [1] 3 4 5</span></code></pre></div>
-<p>We can also easily return a random sample of combinations with the <code>[[</code> operator by passing a vector of indices. In these cases, it should be noted that the current index will not be updated.</p>
+<p>We can also easily return a random sample of combinations with the
+<code>[[</code> operator by passing a vector of indices. In these cases,
+it should be noted that the current index will not be updated.</p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co">## Set the current index to the second combination</span>
 <span class="va">a</span><span class="op">[[</span><span class="fl">2</span><span class="op">]</span><span class="op">]</span>
 <span class="co">#&gt; [1] 1 2 4</span>
-
-
-<span class="va">a</span><span class="op">$</span><span class="fu">summary</span><span class="op">(</span><span class="op">)</span>
-<span class="co">#&gt; $description</span>
-<span class="co">#&gt; [1] "Combinations of 5 choose 3"</span>
-<span class="co">#&gt;</span>
-<span class="co">#&gt; $currentIndex</span>
-<span class="co">#&gt; [1] 2</span>
-<span class="co">#&gt;</span>
-<span class="co">#&gt; $totalResults</span>
-<span class="co">#&gt; [1] 10</span>
-<span class="co">#&gt;</span>
-<span class="co">#&gt; $totalRemaining</span>
-<span class="co">#&gt; [1] 8</span>
-
 
 <span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="fl">121</span><span class="op">)</span>
 <span class="va">samp</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sample.html" class="external-link">sample</a></span><span class="op">(</span><span class="va">a</span><span class="op">$</span><span class="fu">summary</span><span class="op">(</span><span class="op">)</span><span class="op">$</span><span class="va">totalResults</span>, <span class="fl">4</span><span class="op">)</span>
@@ -436,7 +442,6 @@
 <span class="co">#&gt; [2,]    2    3    4</span>
 <span class="co">#&gt; [3,]    3    4    5</span>
 <span class="co">#&gt; [4,]    1    2    3</span>
-
 
 <span class="co">## Note that the current index remains unchanged</span>
 <span class="va">a</span><span class="op">$</span><span class="fu">summary</span><span class="op">(</span><span class="op">)</span>
@@ -455,45 +460,27 @@
 <div class="section level3">
 <h3 id="user-defined-functions">User Defined Functions<a class="anchor" aria-label="anchor" href="#user-defined-functions"></a>
 </h3>
-<p>Just as with <code>comboGeneral</code> and <code>permuteGeneral</code>, we can pass a user defined function to <code>comboIter</code> and <code>permuteIter</code>.</p>
+<p>Just as with <code>comboGeneral</code> and
+<code>permuteGeneral</code>, we can pass a user defined function to
+<code>comboIter</code> and <code>permuteIter</code>.</p>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co">## Initialize the iterator</span>
 <span class="va">b</span> <span class="op">=</span> <span class="fu"><a href="../reference/combinatoricsIterator.html">permuteIter</a></span><span class="op">(</span><span class="va">LETTERS</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">4</span><span class="op">]</span>, <span class="fl">3</span>, FUN <span class="op">=</span> <span class="kw">function</span><span class="op">(</span><span class="va">p</span><span class="op">)</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste</a></span><span class="op">(</span><span class="va">p</span>, collapse <span class="op">=</span> <span class="st">""</span><span class="op">)</span>,
                 FUN.VALUE <span class="op">=</span> <span class="st">"a"</span><span class="op">)</span>
-
 <span class="va">b</span><span class="op">$</span><span class="fu">nextIter</span><span class="op">(</span><span class="op">)</span>
 <span class="co">#&gt; [1] "ABC"</span>
-
 
 <span class="va">b</span><span class="op">$</span><span class="fu">nextNIter</span><span class="op">(</span><span class="fl">5</span><span class="op">)</span>
 <span class="co">#&gt; [1] "ABD" "ACB" "ACD" "ADB" "ADC"</span>
 
-
 <span class="va">b</span><span class="op">$</span><span class="fu">back</span><span class="op">(</span><span class="op">)</span>
 <span class="co">#&gt; [1] "DCB"</span>
-
-
-<span class="va">b</span><span class="op">$</span><span class="fu">summary</span><span class="op">(</span><span class="op">)</span>
-<span class="co">#&gt; $description</span>
-<span class="co">#&gt; [1] "Permutations of 4 choose 3"</span>
-<span class="co">#&gt;</span>
-<span class="co">#&gt; $currentIndex</span>
-<span class="co">#&gt; [1] 24</span>
-<span class="co">#&gt;</span>
-<span class="co">#&gt; $totalResults</span>
-<span class="co">#&gt; [1] 24</span>
-<span class="co">#&gt;</span>
-<span class="co">#&gt; $totalRemaining</span>
-<span class="co">#&gt; [1] 0</span>
-
 
 <span class="va">b</span><span class="op">$</span><span class="fu">prevIter</span><span class="op">(</span><span class="op">)</span>
 <span class="co">#&gt; [1] "DCA"</span>
 
-
 <span class="va">b</span><span class="op">$</span><span class="fu">prevNIter</span><span class="op">(</span><span class="fl">5</span><span class="op">)</span>
 <span class="co">#&gt; [1] "DBC" "DBA" "DAC" "DAB" "CDB"</span>
-
 
 <span class="va">b</span><span class="op">$</span><span class="fu">nextRemaining</span><span class="op">(</span><span class="op">)</span>
 <span class="co">#&gt; [1] "DAB" "DAC" "DBA" "DBC" "DCA" "DCB"</span>
@@ -501,7 +488,6 @@
 <span class="co">## Random access</span>
 <span class="va">b</span><span class="op">[[</span><span class="fl">5</span><span class="op">]</span><span class="op">]</span>
 <span class="co">#&gt; [1] "ADB"</span>
-
 
 <span class="va">b</span><span class="op">$</span><span class="fu">prevRemaining</span><span class="op">(</span><span class="op">)</span>
 <span class="co">#&gt; [1] "ACD" "ACB" "ABD" "ABC"</span>
@@ -514,14 +500,35 @@
 <div class="section level2">
 <h2 id="new-in-verison-2-5-0">New in Verison <code>2.5.0</code><a class="anchor" aria-label="anchor" href="#new-in-verison-2-5-0"></a>
 </h2>
-<p>As of version <code>2.5.0</code>, we no longer rely on <code>Rcpp</code> as a dependency, which means that we do not utilize <code>Rcpp</code> modules for exposing C++ classes. This is now carried out using external pointers (See <a href="https://cran.r-project.org/doc/manuals/r-release/R-exts.html#External-pointers-and-weak-references" class="external-link">External pointers and weak references</a>) along with <a href="http://adv-r.had.co.nz/S4.html" class="external-link">S4 Classes</a>. We use the slots of <code>S4</code> classes for exposing each method so access is carried out with the “at sign”, <code>@</code>. We have also added the ability to access each method with the “dollar sign”, <code>$</code>, for backwards compatibility.</p>
+<p>As of version <code>2.5.0</code>, we no longer rely on
+<code>Rcpp</code> as a dependency, which means that we do not utilize
+<code>Rcpp</code> modules for exposing C++ classes. This is now carried
+out using external pointers (See <a href="https://cran.r-project.org/doc/manuals/r-release/R-exts.html#External-pointers-and-weak-references" class="external-link">External
+pointers and weak references</a>) along with <a href="http://adv-r.had.co.nz/S4.html" class="external-link">S4 Classes</a>. We use the slots
+of <code>S4</code> classes for exposing each method so access is carried
+out with the “at sign”, <code>@</code>. We have also added the ability
+to access each method with the “dollar sign”, <code>$</code>, for
+backwards compatibility.</p>
 <div class="section level3">
 <h3 id="access-efficiency-in-2-5-0">Access Efficiency in <code>2.5.0</code><a class="anchor" aria-label="anchor" href="#access-efficiency-in-2-5-0"></a>
 </h3>
-<p>Our tests show that accessing methods is much more efficient in <code>2.5.0</code> compared to prior versions. In the below tests, we measure excecution time of calling <code>nextIter</code> multiple times in different versions. We will use the function <code>test_nextIter</code> for our testing:</p>
+<p>Our tests show that accessing methods is much more efficient in
+<code>2.5.0</code> compared to prior versions. In the below tests, we
+measure excecution time of calling <code>nextIter</code> multiple times
+in different versions. We will use the function
+<code>test_nextIter</code> for our testing. If one needs to reproduce,
+simply download the <code>2.4.3</code> tar here: <a href="https://cran.r-project.org/src/contrib/Archive/RcppAlgos/" class="external-link uri">https://cran.r-project.org/src/contrib/Archive/RcppAlgos/</a>,
+change <code>RcppAlgos</code> to <code>RcppAlgos243</code> in a few
+place (e.g. <code>DESCRIPTION</code>, <code>NAMESPACE</code>, etc.), and
+rebuild.</p>
 <div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">test_nextIter</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">n</span>, <span class="va">m</span>, <span class="va">get_val</span> <span class="op">=</span> <span class="cn">FALSE</span>, <span class="va">v</span> <span class="op">=</span> <span class="fl">243</span><span class="op">)</span> <span class="op">{</span>
-    <span class="va">a</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/combinatoricsIterator.html">comboIter</a></span><span class="op">(</span><span class="va">n</span>, <span class="va">m</span><span class="op">)</span>
+    <span class="va">a</span> <span class="op">&lt;-</span> <span class="kw">if</span> <span class="op">(</span><span class="va">v</span> <span class="op">==</span> <span class="fl">243</span><span class="op">)</span> <span class="op">{</span>
+        <span class="fu">RcppAlgos243</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/RcppAlgos243/man/combinatoricsIterator.html" class="external-link">comboIter</a></span><span class="op">(</span><span class="va">n</span>, <span class="va">m</span><span class="op">)</span>
+    <span class="op">}</span> <span class="kw">else</span> <span class="op">{</span>
+        <span class="fu"><a href="../reference/combinatoricsIterator.html">comboIter</a></span><span class="op">(</span><span class="va">n</span>, <span class="va">m</span><span class="op">)</span>
+    <span class="op">}</span>
+
     <span class="va">total</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/combinatoricsCount.html">comboCount</a></span><span class="op">(</span><span class="va">n</span>, <span class="va">m</span><span class="op">)</span>
 
     <span class="kw">if</span> <span class="op">(</span><span class="va">get_val</span><span class="op">)</span> <span class="op">{</span>
@@ -549,8 +556,8 @@
 
 <span class="fu"><a href="https://rdrr.io/pkg/microbenchmark/man/microbenchmark.html" class="external-link">microbenchmark</a></span><span class="op">(</span><span class="fu">test_nextIter</span><span class="op">(</span><span class="fl">15</span>, <span class="fl">8</span><span class="op">)</span><span class="op">)</span>
 <span class="co">#&gt; Unit: milliseconds</span>
-<span class="co">#&gt;                  expr      min       lq    mean  median       uq      max neval</span>
-<span class="co">#&gt;  test_nextIter(15, 8) 18.96939 20.49509 22.8305 22.2211 24.70213 31.21137   100</span>
+<span class="co">#&gt;                  expr      min       lq     mean   median       uq      max neval</span>
+<span class="co">#&gt;  test_nextIter(15, 8) 46.31869 51.43212 57.28727 51.93104 52.92773 516.2674   100</span>
 
 <span class="fu"><a href="https://rdrr.io/r/base/identical.html" class="external-link">identical</a></span><span class="op">(</span><span class="fu">test_nextIter</span><span class="op">(</span><span class="fl">15</span>, <span class="fl">8</span>, get_val <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>, <span class="fu"><a href="../reference/combinatoricsGeneral.html">comboGeneral</a></span><span class="op">(</span><span class="fl">15</span>, <span class="fl">8</span><span class="op">)</span><span class="op">)</span>
 <span class="co">#&gt; [1] TRUE</span>
@@ -559,36 +566,40 @@
 <span class="co">#&gt; [1] 3268760</span>
 
 <span class="fu"><a href="https://rdrr.io/r/base/system.time.html" class="external-link">system.time</a></span><span class="op">(</span><span class="fu">test_nextIter</span><span class="op">(</span><span class="fl">25</span>, <span class="fl">10</span><span class="op">)</span><span class="op">)</span>
-<span class="co">#&gt;    user  system elapsed </span>
-<span class="co">#&gt;  11.113   0.041  11.168</span>
+<span class="co">#&gt;    user  system elapsed</span>
+<span class="co">#&gt;  23.537   0.070  23.614</span>
 
 <span class="fu"><a href="https://rdrr.io/r/utils/Rprof.html" class="external-link">Rprof</a></span><span class="op">(</span><span class="st">"Version243.out"</span>, memory.profiling <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>
 <span class="fu">test_nextIter</span><span class="op">(</span><span class="fl">25</span>, <span class="fl">10</span><span class="op">)</span>
 <span class="fu"><a href="https://rdrr.io/r/utils/Rprof.html" class="external-link">Rprof</a></span><span class="op">(</span><span class="cn">NULL</span><span class="op">)</span>
 <span class="fu"><a href="https://rdrr.io/r/utils/summaryRprof.html" class="external-link">summaryRprof</a></span><span class="op">(</span><span class="st">"Version243.out"</span>, memory <span class="op">=</span> <span class="st">"both"</span><span class="op">)</span>
 <span class="co">#&gt; $by.self</span>
-<span class="co">#&gt;                 self.time self.pct total.time total.pct mem.total</span>
-<span class="co">#&gt; "$"                  4.14    40.75       4.14     40.75    3077.7</span>
-<span class="co">#&gt; "a$nextIter"         1.64    16.14       4.40     43.31    3534.4</span>
-<span class="co">#&gt; "test_nextIter"      1.62    15.94      10.16    100.00    7840.6</span>
-<span class="co">#&gt; "slot"               1.32    12.99       1.32     12.99    1003.9</span>
-<span class="co">#&gt; "&lt;Anonymous&gt;"        0.98     9.65       1.44     14.17    1297.6</span>
-<span class="co">#&gt; ".Call"              0.46     4.53       0.46      4.53     397.5</span>
-<span class="co">#&gt; </span>
+<span class="co">#&gt;                  self.time self.pct total.time total.pct mem.total</span>
+<span class="co">#&gt; "as.environment"      6.98    32.37       6.98     32.37    4045.5</span>
+<span class="co">#&gt; "$"                   6.28    29.13      16.40     76.07    9433.6</span>
+<span class="co">#&gt; "test_nextIter"       2.36    10.95      21.56    100.00   12438.3</span>
+<span class="co">#&gt; ".External"           2.02     9.37       2.02      9.37    1172.9</span>
+<span class="co">#&gt; "exists"              1.50     6.96       1.50      6.96     823.7</span>
+<span class="co">#&gt; "get"                 1.50     6.96       1.50      6.96     856.2</span>
+<span class="co">#&gt; "a$nextIter"          0.78     3.62       2.80     12.99    1620.6</span>
+<span class="co">#&gt; "is.symbol"           0.14     0.65       0.14      0.65      72.5</span>
+<span class="co">#&gt;</span>
 <span class="co">#&gt; $by.total</span>
-<span class="co">#&gt;                 total.time total.pct mem.total self.time self.pct</span>
-<span class="co">#&gt; "test_nextIter"      10.16    100.00    7840.6      1.62    15.94</span>
-<span class="co">#&gt; "a$nextIter"          4.40     43.31    3534.4      1.64    16.14</span>
-<span class="co">#&gt; "$"                   4.14     40.75    3077.7      4.14    40.75</span>
-<span class="co">#&gt; "&lt;Anonymous&gt;"         1.44     14.17    1297.6      0.98     9.65</span>
-<span class="co">#&gt; "slot"                1.32     12.99    1003.9      1.32    12.99</span>
-<span class="co">#&gt; ".Call"               0.46      4.53     397.5      0.46     4.53</span>
-<span class="co">#&gt; </span>
+<span class="co">#&gt;                  total.time total.pct mem.total self.time self.pct</span>
+<span class="co">#&gt; "test_nextIter"       21.56    100.00   12438.3      2.36    10.95</span>
+<span class="co">#&gt; "$"                   16.40     76.07    9433.6      6.28    29.13</span>
+<span class="co">#&gt; "as.environment"       6.98     32.37    4045.5      6.98    32.37</span>
+<span class="co">#&gt; "a$nextIter"           2.80     12.99    1620.6      0.78     3.62</span>
+<span class="co">#&gt; ".External"            2.02      9.37    1172.9      2.02     9.37</span>
+<span class="co">#&gt; "exists"               1.50      6.96     823.7      1.50     6.96</span>
+<span class="co">#&gt; "get"                  1.50      6.96     856.2      1.50     6.96</span>
+<span class="co">#&gt; "is.symbol"            0.14      0.65      72.5      0.14     0.65</span>
+<span class="co">#&gt;</span>
 <span class="co">#&gt; $sample.interval</span>
 <span class="co">#&gt; [1] 0.02</span>
-<span class="co">#&gt; </span>
+<span class="co">#&gt;</span>
 <span class="co">#&gt; $sampling.time</span>
-<span class="co">#&gt; [1] 10.16</span></code></pre></div>
+<span class="co">#&gt; [1] 21.56</span></code></pre></div>
 </div>
 <div class="section level4">
 <h4 id="version-2-5-0-no-rcpp">Version <code>2.5.0</code> (No <code>Rcpp</code>)<a class="anchor" aria-label="anchor" href="#version-2-5-0-no-rcpp"></a>
@@ -596,12 +607,12 @@
 <div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/pkg/microbenchmark/man/microbenchmark.html" class="external-link">microbenchmark</a></span><span class="op">(</span><span class="fu">test_nextIter</span><span class="op">(</span><span class="fl">15</span>, <span class="fl">8</span>, v <span class="op">=</span> <span class="fl">250</span><span class="op">)</span><span class="op">)</span>
 <span class="co">#&gt; Unit: milliseconds</span>
-<span class="co">#&gt;                           expr      min       lq     mean  median       uq    max neval</span>
-<span class="co">#&gt;  test_nextIter(15, 8, v = 251) 3.324678 3.462249 3.755247 3.64253 3.856856 9.4942   100</span>
+<span class="co">#&gt;                           expr      min       lq     mean   median       uq      max neval</span>
+<span class="co">#&gt;  test_nextIter(15, 8, v = 251) 3.872621 4.105784 4.464846 4.376151 4.647602 9.961372   100</span>
 
 <span class="fu"><a href="https://rdrr.io/r/base/system.time.html" class="external-link">system.time</a></span><span class="op">(</span><span class="fu">test_nextIter</span><span class="op">(</span><span class="fl">25</span>, <span class="fl">10</span>, v <span class="op">=</span> <span class="fl">250</span><span class="op">)</span><span class="op">)</span>
 <span class="co">#&gt;    user  system elapsed</span>
-<span class="co">#&gt;   1.794   0.018   1.818</span>
+<span class="co">#&gt;   2.093   0.011   2.110</span>
 
 <span class="fu"><a href="https://rdrr.io/r/base/identical.html" class="external-link">identical</a></span><span class="op">(</span><span class="fu">test_nextIter</span><span class="op">(</span><span class="fl">15</span>, <span class="fl">8</span>, get_val <span class="op">=</span> <span class="cn">TRUE</span>, v <span class="op">=</span> <span class="fl">250</span><span class="op">)</span>, <span class="fu"><a href="../reference/combinatoricsGeneral.html">comboGeneral</a></span><span class="op">(</span><span class="fl">15</span>, <span class="fl">8</span><span class="op">)</span><span class="op">)</span>
 <span class="co">#&gt; [1] TRUE</span>
@@ -612,57 +623,72 @@
 <span class="fu"><a href="https://rdrr.io/r/utils/summaryRprof.html" class="external-link">summaryRprof</a></span><span class="op">(</span><span class="st">"Version250.out"</span>, memory <span class="op">=</span> <span class="st">"both"</span><span class="op">)</span>
 <span class="co">#&gt; $by.self</span>
 <span class="co">#&gt;                 self.time self.pct total.time total.pct mem.total</span>
-<span class="co">#&gt; "&lt;Anonymous&gt;"        0.82    50.00       1.22     74.39     591.4</span>
-<span class="co">#&gt; "test_nextIter"      0.42    25.61       1.64    100.00     828.1</span>
-<span class="co">#&gt; ".Call"              0.40    24.39       0.40     24.39     208.5</span>
-<span class="co">#&gt; </span>
+<span class="co">#&gt; "&lt;Anonymous&gt;"        1.10    55.56       1.66     83.84     701.2</span>
+<span class="co">#&gt; ".Call"              0.56    28.28       0.56     28.28     255.6</span>
+<span class="co">#&gt; "test_nextIter"      0.32    16.16       1.98    100.00     831.8</span>
+<span class="co">#&gt;</span>
 <span class="co">#&gt; $by.total</span>
 <span class="co">#&gt;                 total.time total.pct mem.total self.time self.pct</span>
-<span class="co">#&gt; "test_nextIter"       1.64    100.00     828.1      0.42    25.61</span>
-<span class="co">#&gt; "&lt;Anonymous&gt;"         1.22     74.39     591.4      0.82    50.00</span>
-<span class="co">#&gt; ".Call"               0.40     24.39     208.5      0.40    24.39</span>
-<span class="co">#&gt; </span>
+<span class="co">#&gt; "test_nextIter"       1.98    100.00     831.8      0.32    16.16</span>
+<span class="co">#&gt; "&lt;Anonymous&gt;"         1.66     83.84     701.2      1.10    55.56</span>
+<span class="co">#&gt; ".Call"               0.56     28.28     255.6      0.56    28.28</span>
+<span class="co">#&gt;</span>
 <span class="co">#&gt; $sample.interval</span>
 <span class="co">#&gt; [1] 0.02</span>
-<span class="co">#&gt; </span>
+<span class="co">#&gt;</span>
 <span class="co">#&gt; $sampling.time</span>
-<span class="co">#&gt; [1] 1.64</span></code></pre></div>
+<span class="co">#&gt; [1] 1.98</span></code></pre></div>
 </div>
 <div class="section level4">
 <h4 id="conclusions">Conclusions<a class="anchor" aria-label="anchor" href="#conclusions"></a>
 </h4>
-<p>It appears that memory is the issue in previous versions. Indeed, if we look at <a href="https://cran.r-project.org/doc/manuals/r-release/R-exts.html#Memory-statistics-from-Rprof" class="external-link">Memory statistics from Rprof</a>, and view both files with <code>memory = "stats"</code> we see that the C funciton, <code>duplicate</code>, appears to be the main culprit.</p>
+<p>It appears that memory is the issue in previous versions. Indeed, if
+we look at <a href="https://cran.r-project.org/doc/manuals/r-release/R-exts.html#Memory-statistics-from-Rprof" class="external-link">Memory
+statistics from Rprof</a>, and view both files with
+<code>memory = "stats"</code> we see that the C funciton,
+<code>duplicate</code>, appears to be the main culprit.</p>
 <div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co">### Verison 2.4.3</span>
 <span class="fu"><a href="https://rdrr.io/r/utils/summaryRprof.html" class="external-link">summaryRprof</a></span><span class="op">(</span><span class="st">"Version243.out"</span>, memory <span class="op">=</span> <span class="st">"stats"</span><span class="op">)</span>
 <span class="co">#&gt; index: "test_nextIter"</span>
-<span class="co">#&gt;      vsize.small  max.vsize.small      vsize.large  max.vsize.large            nodes        max.nodes     duplications tot.duplications          samples </span>
-<span class="co">#&gt;           818856          1528208                0                0         15084023         28150864            12915          1046139               81 </span>
-<span class="co">#&gt; ------------------------------------------------------------------------------------------------------------------------------------------------------ </span>
+<span class="co">#&gt;      vsize.small  max.vsize.small      vsize.large  max.vsize.large            nodes        max.nodes     duplications tot.duplications          samples</span>
+<span class="co">#&gt;           594132           981272                0                0         11705787         19332264             9200          1085637              118</span>
+<span class="co">#&gt; --------------------------------------------------------------------------------------------------------------------------------------------------------</span>
 <span class="co">#&gt; index: "test_nextIter":"$"</span>
-<span class="co">#&gt;      vsize.small  max.vsize.small      vsize.large  max.vsize.large            nodes        max.nodes     duplications tot.duplications          samples </span>
-<span class="co">#&gt;           893682         18816032            92410         19128912         15580492        164092096            12582          2604432              207 </span>
-<span class="co">#&gt; ------------------------------------------------------------------------------------------------------------------------------------------------------ </span>
+<span class="co">#&gt;      vsize.small  max.vsize.small      vsize.large  max.vsize.large            nodes        max.nodes     duplications tot.duplications          samples</span>
+<span class="co">#&gt;           602919         16615120            19309         15833656         11636867        128195480             9069          7436251              820</span>
+<span class="co">#&gt; --------------------------------------------------------------------------------------------------------------------------------------------------------</span>
 <span class="co">#&gt; index: "test_nextIter":"a$nextIter"</span>
-<span class="co">#&gt;      vsize.small  max.vsize.small      vsize.large  max.vsize.large            nodes        max.nodes     duplications tot.duplications          samples </span>
-<span class="co">#&gt;           867378          1534896                0                0         15978375         28274568            13087          2879232              220 </span>
+<span class="co">#&gt;      vsize.small  max.vsize.small      vsize.large  max.vsize.large            nodes        max.nodes     duplications tot.duplications          samples</span>
+<span class="co">#&gt;           586247           980856                0                0         11551771         19329128             9169          1283636              140</span>
 
 <span class="co">## Version 2.5.0</span>
 <span class="fu"><a href="https://rdrr.io/r/utils/summaryRprof.html" class="external-link">summaryRprof</a></span><span class="op">(</span><span class="st">"Version250.out"</span>, memory <span class="op">=</span> <span class="st">"stats"</span><span class="op">)</span>
 <span class="co">#&gt; index: "test_nextIter"</span>
-<span class="co">#&gt;      vsize.small  max.vsize.small      vsize.large  max.vsize.large            nodes        max.nodes     duplications tot.duplications          samples </span>
-<span class="co">#&gt;          2626749          3953536                0                0          9193563         13837376                0                0               21 </span>
-<span class="co">#&gt; --------------------------------------------------------------------------------------------------------------------------------------------------- </span>
+<span class="co">#&gt;      vsize.small  max.vsize.small      vsize.large  max.vsize.large            nodes        max.nodes     duplications tot.duplications          samples</span>
+<span class="co">#&gt;          1901132          3243968                0                0          6653888         11353832                0                0               16</span>
+<span class="co">#&gt; --------------------------------------------------------------------------------------------------------------------------------------------------------</span>
 <span class="co">#&gt; index: "test_nextIter":"&lt;Anonymous&gt;"</span>
-<span class="co">#&gt;      vsize.small  max.vsize.small      vsize.large  max.vsize.large            nodes        max.nodes     duplications tot.duplications          samples </span>
-<span class="co">#&gt;          2533896         17629656           277772         16944064         10035058        132854400                0                7               61 </span></code></pre></div>
-<p>With verison <code>2.5.0</code> there are only 7 <code>tot.duplications</code> whereas with version <code>2.4.3</code> there are millions of <code>tot.duplications</code>. In fact, there are a total of <code>1046139 + 2604432 + 2879232 = 6,529,803</code> duplications with version <code>2.4.3</code>. This together with <code>comboCount(25, 10) = 3,268,760</code> implies that the C funciton, <code>duplicate</code>, is called about 2 times per iteration with older versions (i.e. <code>6529803 / 3268760 ~= 1.997639</code>).</p>
+<span class="co">#&gt;      vsize.small  max.vsize.small      vsize.large  max.vsize.large            nodes        max.nodes     duplications tot.duplications          samples</span>
+<span class="co">#&gt;          2412388         36833808           196363         16298112          9270795        197594096                0                7               83</span></code></pre></div>
+<p>With verison <code>2.5.0</code> there are only 7
+<code>tot.duplications</code> whereas with version <code>2.4.3</code>
+there are millions of <code>tot.duplications</code>. In fact, there are
+a total of <code>1085637 + 7436251 + 1283636 = 9,805,524</code>
+duplications with version <code>2.4.3</code>. This together with
+<code>comboCount(25, 10) = 3,268,760</code> implies that the C funciton,
+<code>duplicate</code>, is called about 3 times per iteration with older
+versions (i.e. <code>9805524 / 3268760 ~= 2.999769</code>).</p>
 </div>
 </div>
 <div class="section level3">
 <h3 id="iterating-over-partitions-of-a-number">Iterating over Partitions of a Number<a class="anchor" aria-label="anchor" href="#iterating-over-partitions-of-a-number"></a>
 </h3>
-<p>For most partition cases, we have all of the capabilities of the standard <code>comboIter</code> and <code>permuteIter</code> except for bidirectionality (i.e. the <code>prevIter</code> methods). For cases involving standard multisets we also don’t have random access methods.</p>
+<p>For most partition cases, we have all of the capabilities of the
+standard <code>comboIter</code> and <code>permuteIter</code> except for
+bidirectionality (i.e. the <code>prevIter</code> methods). For cases
+involving standard multisets we also don’t have random access
+methods.</p>
 <div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co">## Similar illustration of comboIter(5, 3) at the top</span>
 <span class="va">p</span> <span class="op">=</span> <span class="fu"><a href="../reference/partitionsIterator.html">partitionsIter</a></span><span class="op">(</span><span class="fl">16</span>, <span class="fl">4</span><span class="op">)</span>
@@ -725,15 +751,41 @@
 <div class="section level3">
 <h3 id="iterating-over-constrained-combinationspermutations">Iterating over Constrained Combinations/Permutations<a class="anchor" aria-label="anchor" href="#iterating-over-constrained-combinationspermutations"></a>
 </h3>
-<p>Now, the combinatorial iterators have all of the features of their “general” analogs (I.e. <code>{combo|permute|partitions}General</code>), which includes constrained results.</p>
-<p>For general constrained cases, these iterators offer huge advantages over their “general” counterparts. Previously, one had to guess how many results there would be using the <code>upper</code> parameter as executing the function with no constraints meant the user could be waiting for a while or consume a large amount of resources.</p>
-<p>Another drawback is that it difficult to start generating from a particular point. With the “general” functions, if the <code>lower</code> parameter is used, we have to make a decision in order to disambiguate the use. Without constraints, using <code>lower</code> is easy to understand. It simply means to start generating results starting at a particular lexicographical result, which we can do efficiently (i.e. no need to generate the first <code>lower - 1</code> results). With constraints, it could mean one of two things:</p>
+<p>Now, the combinatorial iterators have all of the features of their
+“general” analogs (I.e. <code>{combo|permute|partitions}General</code>),
+which includes constrained results.</p>
+<p>For general constrained cases, these iterators offer huge advantages
+over their “general” counterparts. Previously, one had to guess how many
+results there would be using the <code>upper</code> parameter as
+executing the function with no constraints meant the user could be
+waiting for a while or consume a large amount of resources.</p>
+<p>Another drawback is that it difficult to start generating from a
+particular point. With the “general” functions, if the
+<code>lower</code> parameter is used, we have to make a decision in
+order to disambiguate the use. Without constraints, using
+<code>lower</code> is easy to understand. It simply means to start
+generating results starting at a particular lexicographical result,
+which we can do efficiently (i.e. no need to generate the first
+<code>lower - 1</code> results). With constraints, it could mean one of
+two things:</p>
 <ol style="list-style-type: decimal">
-<li>Start checking from a particular lexicographical result without considering the constraint (as we do normally).</li>
-<li>Start generating results from a particular result with regards to the final constrained output.</li>
+<li>Start checking from a particular lexicographical result without
+considering the constraint (as we do normally).</li>
+<li>Start generating results from a particular result with regards to
+the final constrained output.</li>
 </ol>
-<p>In <code>RcppAlgos</code> we have always used the first interpretation. A big downside for the second point is that we don’t have any fast algorithms for enumerating the total number of results, which reduces determining the <em>n<sup>th</sup></em> result to a brute force approach.</p>
-<p>With iterators, we can generate <em>n</em> results with <code>nextNIter(n)</code> or calling <code>nextIter()</code> <em>n</em> times (or some combination of the two). Then, if we want to continue iterating, we pick up where we left off fetching the <em>(n + 1)<sup>th</sup></em> result and beyond (if there are any results left). This allows us to keep memory low without sacrificing our current state.</p>
+<p>In <code>RcppAlgos</code> we have always used the first
+interpretation. A big downside for the second point is that we don’t
+have any fast algorithms for enumerating the total number of results,
+which reduces determining the <em>n<sup>th</sup></em> result to a brute
+force approach.</p>
+<p>With iterators, we can generate <em>n</em> results with
+<code>nextNIter(n)</code> or calling <code>nextIter()</code> <em>n</em>
+times (or some combination of the two). Then, if we want to continue
+iterating, we pick up where we left off fetching the <em>(n +
+1)<sup>th</sup></em> result and beyond (if there are any results left).
+This allows us to keep memory low without sacrificing our current
+state.</p>
 <div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="fl">55</span><span class="op">)</span>
 <span class="va">s</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/Uniform.html" class="external-link">runif</a></span><span class="op">(</span><span class="fl">10</span>, <span class="op">-</span><span class="fl">5</span>, <span class="fl">5</span><span class="op">)</span>
@@ -812,7 +864,10 @@
 <span class="co">#&gt; [6,] -4.650360 -4.116755 -3.684771 -2.818403 -2.058761222</span>
 <span class="co">#&gt; [7,] -4.650360 -4.116755 -3.684771 -2.818403  0.007612633</span>
 <span class="co">#&gt; [8,] -4.257748 -4.116755 -3.684771 -2.818403 -2.058761222</span></code></pre></div>
-<p>They are very efficient as well. Consider the example below where we use <code>comboGeneral</code> to generate all results without capping the output. Again, we are in a situation where we don’t know <em>a priori</em> how many results we will obtain.</p>
+<p>They are very efficient as well. Consider the example below where we
+use <code>comboGeneral</code> to generate all results without capping
+the output. Again, we are in a situation where we don’t know <em>a
+priori</em> how many results we will obtain.</p>
 <div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="fl">77</span><span class="op">)</span>
 <span class="va">s</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/Uniform.html" class="external-link">runif</a></span><span class="op">(</span><span class="fl">50</span>, <span class="fl">20</span>, <span class="fl">100</span><span class="op">)</span>
@@ -838,8 +893,14 @@
 <span class="co">## Over 4 GBs of results</span>
 <span class="op">(</span><span class="fl">38935252</span> <span class="op">*</span> <span class="fl">15</span> <span class="op">*</span> <span class="fl">8</span><span class="op">)</span> <span class="op">/</span> <span class="fl">2</span><span class="op">^</span><span class="fl">30</span>
 <span class="co">#&gt; [1] 4.351353</span></code></pre></div>
-<p>Just over 11 seconds isn’t bad, however 4 GBs could put a strain on your computer.</p>
-<p>Let’s use iterators instead and only generate ten thousand at a time to keep memory low. We should mention here that the iterators are “smart” in that there is no fear in requesting more results than what is actually left. For example, if in the problem above, we had iterated to the 38<sup>th</sup> million result and requested 10 million more, we would only obtain 935,252 results.</p>
+<p>Just over 11 seconds isn’t bad, however 4 GBs could put a strain on
+your computer.</p>
+<p>Let’s use iterators instead and only generate ten thousand at a time
+to keep memory low. We should mention here that the iterators are
+“smart” in that there is no fear in requesting more results than what is
+actually left. For example, if in the problem above, we had iterated to
+the 38<sup>th</sup> million result and requested 10 million more, we
+would only obtain 935,252 results.</p>
 <div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/base/system.time.html" class="external-link">system.time</a></span><span class="op">(</span><span class="op">{</span>
     <span class="va">a</span> <span class="op">=</span> <span class="fu"><a href="../reference/combinatoricsIterator.html">comboIter</a></span><span class="op">(</span><span class="va">s</span>, <span class="fl">15</span>,
@@ -870,7 +931,10 @@
 <span class="co">## Only 11 MBs per iteration</span>
 <span class="op">(</span><span class="fl">1e4</span> <span class="op">*</span> <span class="fl">15</span> <span class="op">*</span> <span class="fl">8</span><span class="op">)</span> <span class="op">/</span> <span class="fl">2</span><span class="op">^</span><span class="fl">20</span>
 <span class="co">#&gt; [1] 1.144409</span></code></pre></div>
-<p>Wow! Using the iterator approach is almost 3 times faster (<code>11.208 / 3.907 ~= 2.869</code>)! Our gains came strictly from memory efficiency (From over 4 GBs to just over 1 MB) as the underlying algorithm is exactly the same.</p>
+<p>Wow! Using the iterator approach is almost 3 times faster
+(<code>11.208 / 3.907 ~= 2.869</code>)! Our gains came strictly from
+memory efficiency (From over 4 GBs to just over 1 MB) as the underlying
+algorithm is exactly the same.</p>
 </div>
 </div>
   </div>
@@ -892,7 +956,8 @@
 
 <div class="pkgdown">
   <p></p>
-<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.2.</p>
+<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a>
+2.0.2.</p>
 </div>
 
       </footer>

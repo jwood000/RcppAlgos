@@ -33,7 +33,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">RcppAlgos</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">2.5.1</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">2.5.3</span>
       </span>
     </div>
 
@@ -100,9 +100,10 @@
   <div class="col-md-9 contents">
     <div class="page-header toc-ignore">
       <h1 data-toc-skip>Combinatorial Sampling</h1>
-                        <h4 data-toc-skip class="author">Joseph Wood</h4>
+                        <h4 data-toc-skip class="author">Joseph
+Wood</h4>
             
-            <h4 data-toc-skip class="date">03/12/2022</h4>
+            <h4 data-toc-skip class="date">03/29/2022</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/jwood000/RcppAlgos/blob/HEAD/vignettes/CombinatorialSampling.Rmd" class="external-link"><code>vignettes/CombinatorialSampling.Rmd</code></a></small>
       <div class="hidden name"><code>CombinatorialSampling.Rmd</code></div>
@@ -111,13 +112,18 @@
 
     
     
-<p>This document covers topics in generating random samples of combinations/permutations. It is encouraged to read <a href="https://jwood000.github.io/RcppAlgos/articles/GeneralCombinatorics.html" class="external-link">General Combinatorics</a> first.</p>
+<p>This document covers topics in generating random samples of
+combinations/permutations. It is encouraged to read <a href="https://jwood000.github.io/RcppAlgos/articles/GeneralCombinatorics.html" class="external-link">General
+Combinatorics</a> first.</p>
 <hr>
-<p>To illustrate this in base R, let us consider getting 5 random combinations of the vector <code>1:20</code> of length 10. How should we proceed?</p>
+<p>To illustrate this in base R, let us consider getting 5 random
+combinations of the vector <code>1:20</code> of length 10. How should we
+proceed?</p>
 <div class="section level2">
 <h2 id="base-r">Base R<a class="anchor" aria-label="anchor" href="#base-r"></a>
 </h2>
-<p>A naive approach would be to generate all of the combinations using <code>combn</code> and then call <code>sample</code>:</p>
+<p>A naive approach would be to generate all of the combinations using
+<code>combn</code> and then call <code>sample</code>:</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">naive</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">v</span>, <span class="va">m</span>, <span class="va">n</span>, <span class="va">s</span><span class="op">)</span> <span class="op">{</span>
     <span class="va">allCombs</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/utils/combn.html" class="external-link">combn</a></span><span class="op">(</span><span class="va">v</span>, <span class="va">m</span><span class="op">)</span>
@@ -133,30 +139,55 @@
 <span class="co">#&gt; [3,]    2    3    4    6    9   10   12   13   15    19</span>
 <span class="co">#&gt; [4,]    1    4    5   10   13   14   15   17   18    19</span>
 <span class="co">#&gt; [5,]    1    3    4    5    7    8   13   15   18    19</span></code></pre></div>
-<p>This is okay for this small example (there are only <code>choose(20, 10) = 184756</code> results), however what if we wanted to find one hundred thousand random combinations from the vector <code>1:100</code> of length 20? Clearly, the approach above will not be feasible as there are far too many results to generate (<code>choose(100, 20) = 5.359834e+20</code>). Furthermore, there are internal limitations on <code>sample</code>. If we try to pass <code>choose(100, 20)</code>, we will get an error:</p>
+<p>This is okay for this small example (there are only
+<code>choose(20, 10) = 184756</code> results), however what if we wanted
+to find one hundred thousand random combinations from the vector
+<code>1:100</code> of length 20? Clearly, the approach above will not be
+feasible as there are far too many results to generate
+(<code>choose(100, 20) = 5.359834e+20</code>). Furthermore, there are
+internal limitations on <code>sample</code>. If we try to pass
+<code>choose(100, 20)</code>, we will get an error:</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/base/sample.html" class="external-link">sample</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/Special.html" class="external-link">choose</a></span><span class="op">(</span><span class="fl">100</span>, <span class="fl">20</span><span class="op">)</span>, <span class="fl">5</span><span class="op">)</span>
 <span class="co">#&gt; Error in sample.int(x, size, replace, prob) : invalid first argument</span></code></pre></div>
-<p>We could also try calling <code>sample(100, 20)</code> a bunch of times and hope we don’t get duplicate combinations. This is neither promising nor elegant.</p>
+<p>We could also try calling <code>sample(100, 20)</code> a bunch of
+times and hope we don’t get duplicate combinations. This is neither
+promising nor elegant.</p>
 <hr>
 </div>
 <div class="section level2">
 <h2 id="rcppalgos-solutions">RcppAlgos Solutions<a class="anchor" aria-label="anchor" href="#rcppalgos-solutions"></a>
 </h2>
-<p><code>RcppAlgos</code> provides four functions: <code>comboSample</code>, <code>permuteSample</code>, <code>partitionsSample</code>, and <code>comboGroupsSample</code> for seamlessly attacking these types of problems. All functions provide the following:</p>
+<p><code>RcppAlgos</code> provides four functions:
+<code>comboSample</code>, <code>permuteSample</code>,
+<code>partitionsSample</code>, and <code>comboGroupsSample</code> for
+seamlessly attacking these types of problems. All functions provide the
+following:</p>
 <ul>
-<li>Easily generate random samples of combinations/permutations/partitions or partition of groups in parallel.</li>
-<li>You can pass a vector of specific indices or rely on the internal sampling functions. We call <code>sample</code> when the total number of results is small and for larger cases, the sampling is done in a very similar fashion to <code>urand.bigz</code> from the <code>gmp</code> package.</li>
-<li>Consistent interface to their respective general functions (i.e. <code>{combo/permute/partitions}General</code> and <code>comboGroups</code>)</li>
-<li>Useful when we need a reproducible set of random combinations/permutations/partitions or partitions of groups.</li>
-<li>If the gmp library is needed, the <code>seed</code> parameter must be set in order to have reproducible results (<em>E.g.</em> <code><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed()</a></code>) has no effect in these cases).</li>
+<li>Easily generate random samples of
+combinations/permutations/partitions or partition of groups in
+parallel.</li>
+<li>You can pass a vector of specific indices or rely on the internal
+sampling functions. We call <code>sample</code> when the total number of
+results is small and for larger cases, the sampling is done in a very
+similar fashion to <code>urand.bigz</code> from the <code>gmp</code>
+package.</li>
+<li>Consistent interface to their respective general functions
+(i.e. <code>{combo/permute/partitions}General</code> and
+<code>comboGroups</code>)</li>
+<li>Useful when we need a reproducible set of random
+combinations/permutations/partitions or partitions of groups.</li>
+<li>If the gmp library is needed, the <code>seed</code> parameter must
+be set in order to have reproducible results (<em>E.g.</em>
+<code><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed()</a></code>) has no effect in these cases).</li>
 </ul>
 </div>
 <div class="section level2">
 <h2 id="combosample-and-permutesample">
 <code>comboSample</code> and <code>permuteSample</code><a class="anchor" aria-label="anchor" href="#combosample-and-permutesample"></a>
 </h2>
-<p>Let’s first look at the first problem above (i.e. getting 5 random combinations of the vector <code>1:20</code> of length 10):</p>
+<p>Let’s first look at the first problem above (i.e. getting 5 random
+combinations of the vector <code>1:20</code> of length 10):</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/jwood000/RcppAlgos" class="external-link">RcppAlgos</a></span><span class="op">)</span>
 <span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="fl">42</span><span class="op">)</span>
@@ -184,7 +215,8 @@
 <div class="section level3">
 <h3 id="samples-of-results-with-repetition">Samples of Results with Repetition<a class="anchor" aria-label="anchor" href="#samples-of-results-with-repetition"></a>
 </h3>
-<p>Just like with <code>comboGeneral</code> and <code>permuteGeneral</code>, we can explore results with repetition.</p>
+<p>Just like with <code>comboGeneral</code> and
+<code>permuteGeneral</code>, we can explore results with repetition.</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="../reference/combinatoricsSample.html">comboSample</a></span><span class="op">(</span><span class="fl">10</span>, <span class="fl">8</span>, <span class="cn">TRUE</span>, n <span class="op">=</span> <span class="fl">3</span>, seed <span class="op">=</span> <span class="fl">84</span><span class="op">)</span>
 <span class="co">#&gt;      [,1] [,2] [,3] [,4] [,5] [,6] [,7] [,8]</span>
@@ -213,7 +245,8 @@
 <div class="section level3">
 <h3 id="specific-results-with-samplevec">Specific Results with <code>sampleVec</code><a class="anchor" aria-label="anchor" href="#specific-results-with-samplevec"></a>
 </h3>
-<p>We can also utilize <code>sampleVec</code> to generate specific results.</p>
+<p>We can also utilize <code>sampleVec</code> to generate specific
+results.</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co">## E.g. the below generates the 1st, 5th, 25th, 125th, and</span>
 <span class="co">#&gt; 625th lexicographical combinations</span>
@@ -237,7 +270,9 @@
 <div class="section level3">
 <h3 id="using-namedsample">Using <code>namedSample</code><a class="anchor" aria-label="anchor" href="#using-namedsample"></a>
 </h3>
-<p>Have you ever wondered which lexicographical combinations/permutations are returned when sampling? No worries, simply set <code>namedSample = TRUE</code>:</p>
+<p>Have you ever wondered which lexicographical
+combinations/permutations are returned when sampling? No worries, simply
+set <code>namedSample = TRUE</code>:</p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">testInd</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/combinatoricsSample.html">permuteSample</a></span><span class="op">(</span><span class="fl">30</span>, <span class="fl">10</span>, n <span class="op">=</span> <span class="fl">3</span>, seed <span class="op">=</span> <span class="fl">100</span>, namedSample <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>
 <span class="va">testInd</span>
@@ -256,7 +291,11 @@
 <div class="section level3">
 <h3 id="parallel-computing-and-gmp-support">Parallel Computing and GMP Support<a class="anchor" aria-label="anchor" href="#parallel-computing-and-gmp-support"></a>
 </h3>
-<p>Just like the <code>General</code> counterparts, the sampling functions utilize GMP to allow for exploration of combinations/permutations of large vectors where the total number of results is enormous. They also offer parallel options using <code>Parallel</code> or <code>nThreads</code>.</p>
+<p>Just like the <code>General</code> counterparts, the sampling
+functions utilize GMP to allow for exploration of
+combinations/permutations of large vectors where the total number of
+results is enormous. They also offer parallel options using
+<code>Parallel</code> or <code>nThreads</code>.</p>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co">## Uses min(stdThreadMax() - 1, 5) threads (in this case)</span>
 <span class="fu"><a href="../reference/combinatoricsSample.html">permuteSample</a></span><span class="op">(</span><span class="fl">500</span>, <span class="fl">10</span>, <span class="cn">TRUE</span>, n <span class="op">=</span> <span class="fl">5</span>, seed <span class="op">=</span> <span class="fl">123</span>, Parallel <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>
@@ -281,7 +320,8 @@
 <div class="section level3">
 <h3 id="efficiency">Efficiency<a class="anchor" aria-label="anchor" href="#efficiency"></a>
 </h3>
-<p>The algorithms are incredibly efficient and offer tremendous gains over the naive approach above:</p>
+<p>The algorithms are incredibly efficient and offer tremendous gains
+over the naive approach above:</p>
 <div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co">## the function "naive" is defined above</span>
 <span class="fu"><a href="https://rdrr.io/r/base/system.time.html" class="external-link">system.time</a></span><span class="op">(</span><span class="fu">naive</span><span class="op">(</span><span class="fl">25</span>, <span class="fl">10</span>, <span class="fl">5</span>, <span class="fl">15</span><span class="op">)</span><span class="op">)</span>
@@ -291,7 +331,11 @@
 <span class="fu"><a href="https://rdrr.io/r/base/system.time.html" class="external-link">system.time</a></span><span class="op">(</span><span class="fu"><a href="../reference/combinatoricsSample.html">comboSample</a></span><span class="op">(</span><span class="fl">25</span>, <span class="fl">10</span>, n <span class="op">=</span> <span class="fl">5</span>, seed <span class="op">=</span> <span class="fl">15</span><span class="op">)</span><span class="op">)</span>
 <span class="co">#&gt;   user  system elapsed</span>
 <span class="co">#&gt;  0.002   0.000   0.001</span></code></pre></div>
-<p>Even when dealing with extremely large numbers, these algorithms are very fast. And using the parallel options have even greater effects than we saw with the general counterparts (typically around ~2-3 times faster with the general functions, whereas with the last example below with sampling we see a nearly 5 fold improvement).</p>
+<p>Even when dealing with extremely large numbers, these algorithms are
+very fast. And using the parallel options have even greater effects than
+we saw with the general counterparts (typically around ~2-3 times faster
+with the general functions, whereas with the last example below with
+sampling we see a nearly 5 fold improvement).</p>
 <div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co">## Lightning fast even with examples involving many results</span>
 <span class="fu"><a href="https://rdrr.io/r/base/system.time.html" class="external-link">system.time</a></span><span class="op">(</span><span class="fu"><a href="../reference/combinatoricsSample.html">comboSample</a></span><span class="op">(</span><span class="fl">2500</span>, <span class="fl">100</span>, n <span class="op">=</span> <span class="fl">5</span>, seed <span class="op">=</span> <span class="fl">15</span><span class="op">)</span><span class="op">)</span>
@@ -315,7 +359,9 @@
 <div class="section level3">
 <h3 id="user-defined-functions">User Defined Functions<a class="anchor" aria-label="anchor" href="#user-defined-functions"></a>
 </h3>
-<p>Again, just as with the general functions, you can pass a custom function to <code>combo/permuteSample</code> using the <code>FUN</code> argument.</p>
+<p>Again, just as with the general functions, you can pass a custom
+function to <code>combo/permuteSample</code> using the <code>FUN</code>
+argument.</p>
 <div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="../reference/combinatoricsSample.html">permuteSample</a></span><span class="op">(</span><span class="fl">5000</span>, <span class="fl">1000</span>, n <span class="op">=</span> <span class="fl">3</span>, seed <span class="op">=</span> <span class="fl">101</span>, FUN <span class="op">=</span> <span class="va">sd</span><span class="op">)</span>
 <span class="co">#&gt; [[1]]</span>
@@ -349,7 +395,10 @@
 <h2 id="partitionssample">
 <code>partitionsSample</code><a class="anchor" aria-label="anchor" href="#partitionssample"></a>
 </h2>
-<p>The <code>partitionsSample</code> function allows one to draw a random sample of partitions of a number. Many of the features present in <code>comboSample</code> and <code>permuteSample</code> are available in <code>partitionsSample</code>.</p>
+<p>The <code>partitionsSample</code> function allows one to draw a
+random sample of partitions of a number. Many of the features present in
+<code>comboSample</code> and <code>permuteSample</code> are available in
+<code>partitionsSample</code>.</p>
 <div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co">## Use the seed parameter to obtain reproducible results</span>
 <span class="fu"><a href="../reference/partitionsSample.html">partitionsSample</a></span><span class="op">(</span><span class="fl">100</span>, <span class="fl">8</span>, <span class="cn">TRUE</span>, n <span class="op">=</span> <span class="fl">3</span>, seed <span class="op">=</span> <span class="fl">42</span><span class="op">)</span>
@@ -377,14 +426,14 @@
 <span class="co">#&gt; [1] 2621914835336941325</span>
 
 <span class="co">## Algorithms are very efficient</span>
-<span class="fu"><a href="https://rdrr.io/r/base/system.time.html" class="external-link">system.time</a></span><span class="op">(</span>serial <span class="op">=</span> <span class="fu"><a href="../reference/partitionsSample.html">partitionsSample</a></span><span class="op">(</span><span class="fl">2500</span>, <span class="fl">10</span>, n <span class="op">=</span> <span class="fl">1e3</span>,
-                                      seed <span class="op">=</span> <span class="fl">8128</span><span class="op">)</span><span class="op">)</span>
+<span class="fu"><a href="https://rdrr.io/r/base/system.time.html" class="external-link">system.time</a></span><span class="op">(</span><span class="va">serial</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/partitionsSample.html">partitionsSample</a></span><span class="op">(</span><span class="fl">2500</span>, <span class="fl">10</span>, n <span class="op">=</span> <span class="fl">1e3</span>,
+                                       seed <span class="op">=</span> <span class="fl">8128</span><span class="op">)</span><span class="op">)</span>
 <span class="co">#&gt;    user  system elapsed</span>
 <span class="co">#&gt;   5.220   0.010   5.235</span>
 
 <span class="co">## Use nThreads for greater efficiency</span>
-<span class="fu"><a href="https://rdrr.io/r/base/system.time.html" class="external-link">system.time</a></span><span class="op">(</span>multi <span class="op">=</span> <span class="fu"><a href="../reference/partitionsSample.html">partitionsSample</a></span><span class="op">(</span><span class="fl">2500</span>, <span class="fl">10</span>, n <span class="op">=</span> <span class="fl">1e3</span>,
-                                     seed <span class="op">=</span> <span class="fl">8128</span>, nThreads <span class="op">=</span> <span class="fl">8</span><span class="op">)</span><span class="op">)</span>
+<span class="fu"><a href="https://rdrr.io/r/base/system.time.html" class="external-link">system.time</a></span><span class="op">(</span><span class="va">multi</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/partitionsSample.html">partitionsSample</a></span><span class="op">(</span><span class="fl">2500</span>, <span class="fl">10</span>, n <span class="op">=</span> <span class="fl">1e3</span>,
+                                      seed <span class="op">=</span> <span class="fl">8128</span>, nThreads <span class="op">=</span> <span class="fl">8</span><span class="op">)</span><span class="op">)</span>
 <span class="co">#&gt;    user  system elapsed</span>
 <span class="co">#&gt;  10.723   0.022   1.358</span>
 
@@ -398,7 +447,12 @@
 <span class="co">#&gt; [1,]   23   23   26   26   29   29   38   38   41    47</span>
 <span class="co">#&gt; [2,]   26   26   26   29   29   29   32   41   41    41</span>
 <span class="co">#&gt; [3,]   20   23   23   26   26   35   38   41   44    44</span></code></pre></div>
-<p>There are sampling algorithms available for most partition cases, but some cases are not covered. For example, with standard multisets, we are currently unable to <em>efficiently</em> generate the <em>n<sup>th</sup></em> lexicographical result. Another example is when the source vector is not uniform (<em>e.g.</em> when the distance between each element is irregular).</p>
+<p>There are sampling algorithms available for most partition cases, but
+some cases are not covered. For example, with standard multisets, we are
+currently unable to <em>efficiently</em> generate the
+<em>n<sup>th</sup></em> lexicographical result. Another example is when
+the source vector is not uniform (<em>e.g.</em> when the distance
+between each element is irregular).</p>
 <p>Observe the following:</p>
 <div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co">## No sampling algorithm available when the source vector is not uniform</span>
@@ -426,17 +480,26 @@
 <span class="co">#&gt; [1,]    0    1    6   15   29   49</span>
 <span class="co">#&gt; [2,]    0    0    0    8   43   49</span>
 <span class="co">#&gt; [3,]    4    7   17   19   22   31</span></code></pre></div>
-<p>There is ongoing research in this area and our goal is to eventually be able to cover the standard multiset case.</p>
+<p>There is ongoing research in this area and our goal is to eventually
+be able to cover the standard multiset case.</p>
 </div>
 <div class="section level2">
-<h2 id="sampling-partitions-of-groups-of-equal-size-with-combogroupssample">Sampling Partitions of Groups of Equal Size with <code>comboGroupsSample</code><a class="anchor" aria-label="anchor" href="#sampling-partitions-of-groups-of-equal-size-with-combogroupssample"></a>
+<h2 id="sampling-partitions-of-groups-of-equal-size-with-combogroupssample">Sampling Partitions of Groups of Equal Size with
+<code>comboGroupsSample</code><a class="anchor" aria-label="anchor" href="#sampling-partitions-of-groups-of-equal-size-with-combogroupssample"></a>
 </h2>
-<p>Just as we can generate random samples of combinations and permutations, we are also able to generate random samples of partitions of groups of equal size. There are many problems that present in this manner. Below, we examine one involving playing cards.</p>
-<p>Let’s say we have 4 players and each player is to have 3 cards a piece. Given that the deck is shuffled, the dealer then distrubutes 12 cards.</p>
+<p>Just as we can generate random samples of combinations and
+permutations, we are also able to generate random samples of partitions
+of groups of equal size. There are many problems that present in this
+manner. Below, we examine one involving playing cards.</p>
+<p>Let’s say we have 4 players and each player is to have 3 cards a
+piece. Given that the deck is shuffled, the dealer then distrubutes 12
+cards.</p>
 <blockquote>
 <p>What possible hands can each player have?</p>
 </blockquote>
-<p>See <a href="https://stackoverflow.com/a/36903806/4408538" class="external-link">Creating A Deck Of Cards In R Without Using While And Double For Loop</a> (Credit to <span class="citation">@MichaelChirico</span>)</p>
+<p>See <a href="https://stackoverflow.com/a/36903806/4408538" class="external-link">Creating A
+Deck Of Cards In R Without Using While And Double For Loop</a> (Credit
+to <span class="citation">@MichaelChirico</span>)</p>
 <div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">cards</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">2</span><span class="op">:</span><span class="fl">10</span>, <span class="st">"J"</span>, <span class="st">"Q"</span>, <span class="st">"K"</span>, <span class="st">"A"</span><span class="op">)</span>
 <span class="va">suits</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"♠"</span>, <span class="st">"♥"</span>, <span class="st">"♦"</span>, <span class="st">"♣"</span><span class="op">)</span>
@@ -501,7 +564,8 @@
 
 <div class="pkgdown">
   <p></p>
-<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.2.</p>
+<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a>
+2.0.2.</p>
 </div>
 
       </footer>

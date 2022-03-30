@@ -51,7 +51,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="index.html">RcppAlgos</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">2.5.1</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">2.5.3</span>
       </span>
     </div>
 
@@ -117,37 +117,54 @@
       </header><div class="row">
   <div class="contents col-md-9">
 <div class="section level1">
-<div class="page-header"><h1 id="rcppalgos-">RcppAlgos <img src="reference/figures/RcppAlgos-logo.png" width="150px" align="right"><a class="anchor" aria-label="anchor" href="#rcppalgos-"></a>
+<div class="page-header"><h1 id="rcppalgos-">RcppAlgos
+<img src="reference/figures/RcppAlgos-logo.png" width="150px" align="right"><a class="anchor" aria-label="anchor" href="#rcppalgos-"></a>
 </h1></div>
 <!-- badges: start -->
 
-<p>A collection of high performance functions implemented in C++ for solving problems in combinatorics and computational mathematics.</p>
+<p>A collection of high performance functions implemented in C++ for
+solving problems in combinatorics and computational mathematics.</p>
 <div class="section level2">
 <h2 id="featured-functions">Featured Functions<a class="anchor" aria-label="anchor" href="#featured-functions"></a>
 </h2>
 <ul>
 <li>
-<strong><code>comboGeneral/permuteGeneral</code></strong>: Generate all combinations/permutations of a vector (including <a href="https://en.wikipedia.org/wiki/Multiset" class="external-link">multisets</a>) meeting specific criteria.</li>
+<strong><code>comboGeneral/permuteGeneral</code></strong>: Generate
+all combinations/permutations of a vector (including <a href="https://en.wikipedia.org/wiki/Multiset" class="external-link">multisets</a>) meeting
+specific criteria.</li>
 <li>
-<strong><code>partitionsGeneral</code></strong>: Efficient algorithms for partitioning numbers under various constraints</li>
+<strong><code>partitionsGeneral</code></strong>: Efficient
+algorithms for partitioning numbers under various constraints</li>
 <li>
-<strong><code>comboSample/permuteSample/partitionsSample</code></strong>: Generate reproducible random samples of combinations/permutations/partitions</li>
+<strong><code>comboSample/permuteSample/partitionsSample</code></strong>:
+Generate reproducible random samples of
+combinations/permutations/partitions</li>
 <li>
-<strong><code>comboIter/permuteIter/partitionsIter</code></strong>: Flexible iterators allow for bidirectional iteration as well as random access.</li>
+<strong><code>comboIter/permuteIter/partitionsIter</code></strong>:
+Flexible iterators allow for bidirectional iteration as well as random
+access.</li>
 <li>
-<strong><code>primeSieve</code></strong>: Fast prime number generator</li>
+<strong><code>primeSieve</code></strong>: Fast prime number
+generator</li>
 <li>
-<strong><code>primeCount</code></strong>: Prime counting function using <a href="http://mathworld.wolfram.com/LegendresFormula.html" class="external-link">Legendre’s formula</a>
+<strong><code>primeCount</code></strong>: Prime counting function
+using <a href="http://mathworld.wolfram.com/LegendresFormula.html" class="external-link">Legendre’s
+formula</a>
 </li>
 </ul>
-<p>The <code>primeSieve</code> function and the <code>primeCount</code> function are both based off of the excellent work by <a href="https://github.com/kimwalisch" class="external-link">Kim Walisch</a>. The respective repos can be found here: <a href="https://github.com/kimwalisch/primesieve" class="external-link">kimwalisch/primesieve</a>; <a href="https://github.com/kimwalisch/primecount" class="external-link">kimwalisch/primecount</a></p>
-<p>Additionally, many of the sieving functions make use of the fast integer division library <a href="https://github.com/ridiculousfish/libdivide" class="external-link">libdivide</a> by <a href="https://github.com/ridiculousfish" class="external-link">ridiculousfish</a>.</p>
+<p>The <code>primeSieve</code> function and the <code>primeCount</code>
+function are both based off of the excellent work by <a href="https://github.com/kimwalisch" class="external-link">Kim Walisch</a>. The respective
+repos can be found here: <a href="https://github.com/kimwalisch/primesieve" class="external-link">kimwalisch/primesieve</a>;
+<a href="https://github.com/kimwalisch/primecount" class="external-link">kimwalisch/primecount</a></p>
+<p>Additionally, many of the sieving functions make use of the fast
+integer division library <a href="https://github.com/ridiculousfish/libdivide" class="external-link">libdivide</a> by <a href="https://github.com/ridiculousfish" class="external-link">ridiculousfish</a>.</p>
 </div>
 <div class="section level2">
 <h2 id="benchmarks">Benchmarks<a class="anchor" aria-label="anchor" href="#benchmarks"></a>
 </h2>
 <ul>
-<li><a href="https://jwood000.github.io/RcppAlgos/articles/HighPerformanceBenchmarks.html" class="external-link">High Performance Benchmarks</a></li>
+<li><a href="https://jwood000.github.io/RcppAlgos/articles/HighPerformanceBenchmarks.html" class="external-link">High
+Performance Benchmarks</a></li>
 </ul>
 </div>
 <div class="section level2">
@@ -253,25 +270,38 @@
 <h2 id="further-reading">Further Reading<a class="anchor" aria-label="anchor" href="#further-reading"></a>
 </h2>
 <ul>
-<li><a href="https://jwood000.github.io/RcppAlgos/reference/index.html" class="external-link">Function Documentation</a></li>
-<li><a href="https://jwood000.github.io/RcppAlgos/articles/ComputationalMathematics.html" class="external-link">Computational Mathematics Overview</a></li>
-<li><a href="https://jwood000.github.io/RcppAlgos/articles/GeneralCombinatorics.html" class="external-link">Combination and Permutation Basics</a></li>
-<li><a href="https://jwood000.github.io/RcppAlgos/articles/CombinatorialSampling.html" class="external-link">Combinatorial Sampling</a></li>
-<li><a href="https://jwood000.github.io/RcppAlgos/articles/CombPermConstraints.html" class="external-link">Constraints and Integer Partitions</a></li>
-<li><a href="https://jwood000.github.io/RcppAlgos/articles/SubsetSum.html" class="external-link">Attacking Problems Related to the Subset Sum Problem</a></li>
-<li><a href="https://jwood000.github.io/RcppAlgos/articles/CombinatoricsIterators.html" class="external-link">Combinatorial Iterators in RcppAlgos</a></li>
-<li><a href="https://jwood000.github.io/RcppAlgos/articles/OtherCombinatorics.html" class="external-link">Cartesian Products and Partitions of Groups into Equal Size</a></li>
+<li><a href="https://jwood000.github.io/RcppAlgos/reference/index.html" class="external-link">Function
+Documentation</a></li>
+<li><a href="https://jwood000.github.io/RcppAlgos/articles/ComputationalMathematics.html" class="external-link">Computational
+Mathematics Overview</a></li>
+<li><a href="https://jwood000.github.io/RcppAlgos/articles/GeneralCombinatorics.html" class="external-link">Combination
+and Permutation Basics</a></li>
+<li><a href="https://jwood000.github.io/RcppAlgos/articles/CombinatorialSampling.html" class="external-link">Combinatorial
+Sampling</a></li>
+<li><a href="https://jwood000.github.io/RcppAlgos/articles/CombPermConstraints.html" class="external-link">Constraints
+and Integer Partitions</a></li>
+<li><a href="https://jwood000.github.io/RcppAlgos/articles/SubsetSum.html" class="external-link">Attacking
+Problems Related to the Subset Sum Problem</a></li>
+<li><a href="https://jwood000.github.io/RcppAlgos/articles/CombinatoricsIterators.html" class="external-link">Combinatorial
+Iterators in RcppAlgos</a></li>
+<li><a href="https://jwood000.github.io/RcppAlgos/articles/OtherCombinatorics.html" class="external-link">Cartesian
+Products and Partitions of Groups into Equal Size</a></li>
 </ul>
 </div>
 <div class="section level2">
-<h2 id="why-rcppalgos-but-no-rcpp">Why <strong><code>RcppAlgos</code></strong> but no <strong><code>Rcpp</code></strong>?<a class="anchor" aria-label="anchor" href="#why-rcppalgos-but-no-rcpp"></a>
+<h2 id="why-rcppalgos-but-no-rcpp">Why <strong><code>RcppAlgos</code></strong> but no
+<strong><code>Rcpp</code></strong>?<a class="anchor" aria-label="anchor" href="#why-rcppalgos-but-no-rcpp"></a>
 </h2>
-<p>Previous versions of <code>RcppAlgos</code> relied on <a href="https://github.com/RcppCore/Rcpp" class="external-link">Rcpp</a> to ease the burden of exposing C++ to R. While the current version of <code>RcppAlgos</code> does not utilize <code>Rcpp</code>, it would not be possible without the myriad of excellent contributions to <code>Rcpp</code>.</p>
+<p>Previous versions of <code>RcppAlgos</code> relied on <a href="https://github.com/RcppCore/Rcpp" class="external-link">Rcpp</a> to ease the burden of
+exposing C++ to R. While the current version of <code>RcppAlgos</code>
+does not utilize <code>Rcpp</code>, it would not be possible without the
+myriad of excellent contributions to <code>Rcpp</code>.</p>
 </div>
 <div class="section level2">
 <h2 id="contact">Contact<a class="anchor" aria-label="anchor" href="#contact"></a>
 </h2>
-<p>If you would like to report a bug, have a question, or have suggestions for possible improvements, please file an <a href="https://github.com/jwood000/RcppAlgos/issues" class="external-link">issue</a>.</p>
+<p>If you would like to report a bug, have a question, or have
+suggestions for possible improvements, please file an <a href="https://github.com/jwood000/RcppAlgos/issues" class="external-link">issue</a>.</p>
 </div>
 </div>
   </div>
@@ -330,7 +360,8 @@
 
 <div class="pkgdown">
   <p></p>
-<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.2.</p>
+<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a>
+2.0.2.</p>
 </div>
 
       </footer>

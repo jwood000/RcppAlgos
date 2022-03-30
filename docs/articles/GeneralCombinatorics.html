@@ -33,7 +33,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">RcppAlgos</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">2.5.1</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">2.5.3</span>
       </span>
     </div>
 
@@ -100,9 +100,10 @@
   <div class="col-md-9 contents">
     <div class="page-header toc-ignore">
       <h1 data-toc-skip>Combination and Permutation Basics</h1>
-                        <h4 data-toc-skip class="author">Joseph Wood</h4>
+                        <h4 data-toc-skip class="author">Joseph
+Wood</h4>
             
-            <h4 data-toc-skip class="date">03/08/2022</h4>
+            <h4 data-toc-skip class="date">03/29/2022</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/jwood000/RcppAlgos/blob/HEAD/vignettes/GeneralCombinatorics.Rmd" class="external-link"><code>vignettes/GeneralCombinatorics.Rmd</code></a></small>
       <div class="hidden name"><code>GeneralCombinatorics.Rmd</code></div>
@@ -111,15 +112,29 @@
 
     
     
-<p>This document serves as an overview for attacking <em>common</em> combinatorial problems in <code>R</code>. One of the goals of <code>RcppAlgos</code> is to provide a comprehensive and accessible suite of functionality so that users can easily get to the heart of their problem. As a bonus, the functions in <code>RcppAlgos</code> are extremely efficient and are constantly being improved with every release.</p>
-<p>It should be noted that this document only covers common problems. For more information on other combinatorial problems addressed by <code>RcppAlgos</code>, see the following vignettes:</p>
+<p>This document serves as an overview for attacking <em>common</em>
+combinatorial problems in <code>R</code>. One of the goals of
+<code>RcppAlgos</code> is to provide a comprehensive and accessible
+suite of functionality so that users can easily get to the heart of
+their problem. As a bonus, the functions in <code>RcppAlgos</code> are
+extremely efficient and are constantly being improved with every
+release.</p>
+<p>It should be noted that this document only covers common problems.
+For more information on other combinatorial problems addressed by
+<code>RcppAlgos</code>, see the following vignettes:</p>
 <ul>
-<li><a href="https://jwood000.github.io/RcppAlgos/articles/CombinatorialSampling.html" class="external-link">Combinatorial Sampling</a></li>
-<li><a href="https://jwood000.github.io/RcppAlgos/articles/CombPermConstraints.html" class="external-link">Constraints and Integer Partitions</a></li>
-<li><a href="https://jwood000.github.io/RcppAlgos/articles/SubsetSum.html" class="external-link">Attacking Problems Related to the Subset Sum Problem</a></li>
-<li><a href="https://jwood000.github.io/RcppAlgos/articles/CombinatoricsIterators.html" class="external-link">Combinatorial Iterators in RcppAlgos</a></li>
+<li><a href="https://jwood000.github.io/RcppAlgos/articles/CombinatorialSampling.html" class="external-link">Combinatorial
+Sampling</a></li>
+<li><a href="https://jwood000.github.io/RcppAlgos/articles/CombPermConstraints.html" class="external-link">Constraints
+and Integer Partitions</a></li>
+<li><a href="https://jwood000.github.io/RcppAlgos/articles/SubsetSum.html" class="external-link">Attacking
+Problems Related to the Subset Sum Problem</a></li>
+<li><a href="https://jwood000.github.io/RcppAlgos/articles/CombinatoricsIterators.html" class="external-link">Combinatorial
+Iterators in RcppAlgos</a></li>
 </ul>
-<p>For much of the output below, we will be using the following function obtained here <a href="https://stackoverflow.com/a/11601162/4408538" class="external-link">combining head and tail methods in R</a> (credit to user <span class="citation">@flodel</span>)</p>
+<p>For much of the output below, we will be using the following function
+obtained here <a href="https://stackoverflow.com/a/11601162/4408538" class="external-link">combining head and
+tail methods in R</a> (credit to user <span class="citation">@flodel</span>)</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">ht</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">d</span>, <span class="va">m</span> <span class="op">=</span> <span class="fl">5</span>, <span class="va">n</span> <span class="op">=</span> <span class="va">m</span><span class="op">)</span> <span class="op">{</span>
   <span class="co">## print the head and tail together</span>
@@ -131,10 +146,16 @@
 <span class="op">}</span></code></pre></div>
 <hr>
 <div class="section level2">
-<h2 id="introducing-combogeneral-and-permutegeneral">Introducing <code>comboGeneral</code> and <code>permuteGeneral</code><a class="anchor" aria-label="anchor" href="#introducing-combogeneral-and-permutegeneral"></a>
+<h2 id="introducing-combogeneral-and-permutegeneral">Introducing <code>comboGeneral</code> and
+<code>permuteGeneral</code><a class="anchor" aria-label="anchor" href="#introducing-combogeneral-and-permutegeneral"></a>
 </h2>
-<p>Easily executed with a very simple interface. The output is in <a href="https://en.wikipedia.org/wiki/Lexicographical_order" class="external-link">lexicographical order</a>.</p>
-<p>We first look at getting results without repetition. You can pass an integer <em>n</em> and it will be converted to the sequence <code>1:n</code>, or you can pass any vector with an atomic type (i.e. <code>logical</code>, <code>integer</code>, <code>numeric</code>, <code>complex</code>, <code>character</code>, and <code>raw</code>).</p>
+<p>Easily executed with a very simple interface. The output is in <a href="https://en.wikipedia.org/wiki/Lexicographical_order" class="external-link">lexicographical
+order</a>.</p>
+<p>We first look at getting results without repetition. You can pass an
+integer <em>n</em> and it will be converted to the sequence
+<code>1:n</code>, or you can pass any vector with an atomic type
+(i.e. <code>logical</code>, <code>integer</code>, <code>numeric</code>,
+<code>complex</code>, <code>character</code>, and <code>raw</code>).</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/jwood000/RcppAlgos" class="external-link">RcppAlgos</a></span><span class="op">)</span>
 
@@ -249,7 +270,9 @@
 <div class="section level2">
 <h2 id="combinationspermutations-with-repetition">Combinations/Permutations with Repetition<a class="anchor" aria-label="anchor" href="#combinationspermutations-with-repetition"></a>
 </h2>
-<p>There are many problems in combinatorics which require finding combinations/permutations with repetition. This is easily achieved by setting <code>repetition</code> to <code>TRUE</code>.</p>
+<p>There are many problems in combinatorics which require finding
+combinations/permutations with repetition. This is easily achieved by
+setting <code>repetition</code> to <code>TRUE</code>.</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">fourDays</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/weekday.POSIXt.html" class="external-link">weekdays</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/as.Date.html" class="external-link">as.Date</a></span><span class="op">(</span><span class="st">"2019-10-09"</span><span class="op">)</span> <span class="op">+</span> <span class="fl">0</span><span class="op">:</span><span class="fl">3</span>, <span class="cn">TRUE</span><span class="op">)</span>
 <span class="fu">ht</span><span class="op">(</span><span class="fu"><a href="../reference/combinatoricsGeneral.html">comboGeneral</a></span><span class="op">(</span><span class="va">fourDays</span>, repetition <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span>
@@ -337,7 +360,16 @@
 <div class="section level2">
 <h2 id="working-with-multisets">Working with Multisets<a class="anchor" aria-label="anchor" href="#working-with-multisets"></a>
 </h2>
-<p>Sometimes, the standard combination/permutation functions don’t quite get us to our desired goal. For example, one may need all permutations of a vector with some of the elements repeated a specific number of times (i.e. a multiset). Consider the following vector <code>a &lt;- c(1,1,1,1,2,2,2,7,7,7,7,7)</code> and one would like to find permutations of <code>a</code> of length 6. Using traditional methods, we would need to generate all permutations, then eliminate duplicate values. Even considering that <code>permuteGeneral</code> is very efficient, this approach is clunky and not as fast as it could be. Observe:</p>
+<p>Sometimes, the standard combination/permutation functions don’t quite
+get us to our desired goal. For example, one may need all permutations
+of a vector with some of the elements repeated a specific number of
+times (i.e. a multiset). Consider the following vector
+<code>a &lt;- c(1,1,1,1,2,2,2,7,7,7,7,7)</code> and one would like to
+find permutations of <code>a</code> of length 6. Using traditional
+methods, we would need to generate all permutations, then eliminate
+duplicate values. Even considering that <code>permuteGeneral</code> is
+very efficient, this approach is clunky and not as fast as it could be.
+Observe:</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">getPermsWithSpecificRepetition</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">z</span>, <span class="va">n</span><span class="op">)</span> <span class="op">{</span>
     <span class="va">b</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/combinatoricsGeneral.html">permuteGeneral</a></span><span class="op">(</span><span class="va">z</span>, <span class="va">n</span><span class="op">)</span>
@@ -353,7 +385,9 @@
 <div class="section level3">
 <h3 id="enter-freqs">Enter <code>freqs</code><a class="anchor" aria-label="anchor" href="#enter-freqs"></a>
 </h3>
-<p>Situations like this call for the use of the <code>freqs</code> argument. Simply, enter the number of times each unique element is repeated and Voila!</p>
+<p>Situations like this call for the use of the <code>freqs</code>
+argument. Simply, enter the number of times each unique element is
+repeated and Voila!</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/base/system.time.html" class="external-link">system.time</a></span><span class="op">(</span><span class="va">test2</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/combinatoricsGeneral.html">permuteGeneral</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/unique.html" class="external-link">unique</a></span><span class="op">(</span><span class="va">a</span><span class="op">)</span>, <span class="fl">6</span>, freqs <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/rle.html" class="external-link">rle</a></span><span class="op">(</span><span class="va">a</span><span class="op">)</span><span class="op">$</span><span class="va">lengths</span><span class="op">)</span><span class="op">)</span>
 <span class="co">#&gt;  user  system elapsed</span>
@@ -395,7 +429,8 @@
 <div class="section level2">
 <h2 id="parallel-computing">Parallel Computing<a class="anchor" aria-label="anchor" href="#parallel-computing"></a>
 </h2>
-<p>Using the parameter <code>Parallel</code> or <code>nThreads</code>, we can generate combinations/permutations with greater efficiency.</p>
+<p>Using the parameter <code>Parallel</code> or <code>nThreads</code>,
+we can generate combinations/permutations with greater efficiency.</p>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/joshuaulrich/microbenchmark/" class="external-link">microbenchmark</a></span><span class="op">)</span>
 
@@ -427,7 +462,20 @@
 <div class="section level3">
 <h3 id="using-arguments-lower-and-upper">Using arguments <code>lower</code> and <code>upper</code><a class="anchor" aria-label="anchor" href="#using-arguments-lower-and-upper"></a>
 </h3>
-<p>There are arguments <code>lower</code> and <code>upper</code> that can be utilized to generate chunks of combinations/permutations without having to generate all of them followed by subsetting. As the output is in lexicographical order, these arguments specify where to start and stop generating. For example, <code>comboGeneral(5, 3)</code> outputs 10 combinations of the vector <code>1:5</code> chosen 3 at a time. We can set <code>lower</code> to 5 in order to start generation from the <em>5<sup>th</sup></em> lexicographical combination. Similarly, we can set <code>upper</code> to 4 in order to only generate the first 4 combinations. We can also use them together to produce only a certain chunk of combinations. For example, setting <code>lower</code> to 4 and <code>upper</code> to 6 only produces the <em>4<sup>th</sup></em>, <em>5<sup>th</sup></em>, and <em>6<sup>th</sup></em> lexicographical combinations. Observe:</p>
+<p>There are arguments <code>lower</code> and <code>upper</code> that
+can be utilized to generate chunks of combinations/permutations without
+having to generate all of them followed by subsetting. As the output is
+in lexicographical order, these arguments specify where to start and
+stop generating. For example, <code>comboGeneral(5, 3)</code> outputs 10
+combinations of the vector <code>1:5</code> chosen 3 at a time. We can
+set <code>lower</code> to 5 in order to start generation from the
+<em>5<sup>th</sup></em> lexicographical combination. Similarly, we can
+set <code>upper</code> to 4 in order to only generate the first 4
+combinations. We can also use them together to produce only a certain
+chunk of combinations. For example, setting <code>lower</code> to 4 and
+<code>upper</code> to 6 only produces the <em>4<sup>th</sup></em>,
+<em>5<sup>th</sup></em>, and <em>6<sup>th</sup></em> lexicographical
+combinations. Observe:</p>
 <div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="../reference/combinatoricsGeneral.html">comboGeneral</a></span><span class="op">(</span><span class="fl">5</span>, <span class="fl">3</span>, lower <span class="op">=</span> <span class="fl">4</span>, upper <span class="op">=</span> <span class="fl">6</span><span class="op">)</span>
 <span class="co">#&gt;      [,1] [,2] [,3]</span>
@@ -445,7 +493,12 @@
 <div class="section level3">
 <h3 id="generating-results-beyond--machineinteger-max">Generating Results Beyond <code>.Machine$integer.max</code><a class="anchor" aria-label="anchor" href="#generating-results-beyond--machineinteger-max"></a>
 </h3>
-<p>#&gt; In addition to being useful by avoiding the unnecessary overhead of generating all combination/permutations followed by subsetting just to see a few specific results, <code>lower</code> and <code>upper</code> can be utilized to generate large number of combinations/permutations in parallel (see this <a href="https://stackoverflow.com/a/51595866/4408538" class="external-link">stackoverflow post</a> for a real use case). Observe:</p>
+<p>#&gt; In addition to being useful by avoiding the unnecessary
+overhead of generating all combination/permutations followed by
+subsetting just to see a few specific results, <code>lower</code> and
+<code>upper</code> can be utilized to generate large number of
+combinations/permutations in parallel (see this <a href="https://stackoverflow.com/a/51595866/4408538" class="external-link">stackoverflow
+post</a> for a real use case). Observe:</p>
 <div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co">## Over 3 billion results</span>
 <span class="fu"><a href="../reference/combinatoricsCount.html">comboCount</a></span><span class="op">(</span><span class="fl">35</span>, <span class="fl">15</span><span class="op">)</span>
@@ -473,13 +526,15 @@
      <span class="va">x</span>
 <span class="op">}</span>, mc.cores <span class="op">=</span> <span class="fl">6</span><span class="op">)</span><span class="op">)</span>
 <span class="co">#&gt;    user  system elapsed</span>
-<span class="co">#&gt;  29.387  30.304  32.721</span></code></pre></div>
+<span class="co">#&gt;  63.994  59.189  31.574</span></code></pre></div>
 </div>
 </div>
 <div class="section level2">
 <h2 id="gmp-support">GMP Support<a class="anchor" aria-label="anchor" href="#gmp-support"></a>
 </h2>
-<p>The arguments <code>lower</code> and <code>upper</code> are also useful when one needs to explore combinations/permutations where the number of results is large:</p>
+<p>The arguments <code>lower</code> and <code>upper</code> are also
+useful when one needs to explore combinations/permutations where the
+number of results is large:</p>
 <div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="fl">222</span><span class="op">)</span>
 <span class="va">myVec</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/Normal.html" class="external-link">rnorm</a></span><span class="op">(</span><span class="fl">1000</span><span class="op">)</span>
@@ -507,7 +562,12 @@
 <div class="section level2">
 <h2 id="user-defined-functions">User Defined Functions<a class="anchor" aria-label="anchor" href="#user-defined-functions"></a>
 </h2>
-<p>You can also pass user defined functions by utilizing the argument <code>FUN</code>. This feature’s main purpose is for convenience, however it is somewhat more efficient than generating all combinations/permutations and then using a function from the <code>apply</code> family (N.B. the argument <code>Parallel</code> has no effect when <code>FUN</code> is employed).</p>
+<p>You can also pass user defined functions by utilizing the argument
+<code>FUN</code>. This feature’s main purpose is for convenience,
+however it is somewhat more efficient than generating all
+combinations/permutations and then using a function from the
+<code>apply</code> family (N.B. the argument <code>Parallel</code> has
+no effect when <code>FUN</code> is employed).</p>
 <div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">funCustomComb</span> <span class="op">=</span> <span class="kw">function</span><span class="op">(</span><span class="va">n</span>, <span class="va">r</span><span class="op">)</span> <span class="op">{</span>
     <span class="va">combs</span> <span class="op">=</span> <span class="fu"><a href="../reference/combinatoricsGeneral.html">comboGeneral</a></span><span class="op">(</span><span class="va">n</span>, <span class="va">r</span><span class="op">)</span>
@@ -545,7 +605,10 @@
 <div class="section level3">
 <h3 id="using-fun-value">Using <code>FUN.VALUE</code><a class="anchor" aria-label="anchor" href="#using-fun-value"></a>
 </h3>
-<p>As of version <code>2.5.0</code>, we can make use of <code>FUN.VALUE</code> which serves as a template for the return value from <code>FUN</code>. The behavior is nearly identical to <code>vapply</code>:</p>
+<p>As of version <code>2.5.0</code>, we can make use of
+<code>FUN.VALUE</code> which serves as a template for the return value
+from <code>FUN</code>. The behavior is nearly identical to
+<code>vapply</code>:</p>
 <div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co">## Example from earlier involving the powerset</span>
 <span class="fu"><a href="../reference/combinatoricsGeneral.html">comboGeneral</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">""</span>, <span class="va">letters</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">3</span><span class="op">]</span><span class="op">)</span>, <span class="fl">3</span>,
@@ -599,7 +662,8 @@
 
 <div class="pkgdown">
   <p></p>
-<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.2.</p>
+<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a>
+2.0.2.</p>
 </div>
 
       </footer>

@@ -33,7 +33,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">RcppAlgos</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">2.5.1</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">2.5.3</span>
       </span>
     </div>
 
@@ -99,8 +99,10 @@
       </header><div class="row">
   <div class="col-md-9 contents">
     <div class="page-header toc-ignore">
-      <h1 data-toc-skip>Attacking Problems Related to the Subset Sum Problem</h1>
-                        <h4 data-toc-skip class="author">Joseph Wood</h4>
+      <h1 data-toc-skip>Attacking Problems Related to the Subset Sum
+Problem</h1>
+                        <h4 data-toc-skip class="author">Joseph
+Wood</h4>
             
             <h4 data-toc-skip class="date">03/13/2022</h4>
       
@@ -111,14 +113,31 @@
 
     
     
-<p>This document covers the topic of solving problems related to the <a href="https://en.wikipedia.org/wiki/Subset_sum_problem" class="external-link">subset sum problem</a> with <code>RcppAlgos</code>. We have already covered integer partitions, which is a special case of the subset sum problem, in <a href="https://jwood000.github.io/RcppAlgos/articles/CombPermConstraints.html#integer-partitions" class="external-link">Constraints and Integer Partitions</a> and it is highly encouraged to read that vignette first.</p>
+<p>This document covers the topic of solving problems related to the <a href="https://en.wikipedia.org/wiki/Subset_sum_problem" class="external-link">subset sum
+problem</a> with <code>RcppAlgos</code>. We have already covered integer
+partitions, which is a special case of the subset sum problem, in <a href="https://jwood000.github.io/RcppAlgos/articles/CombPermConstraints.html#integer-partitions" class="external-link">Constraints
+and Integer Partitions</a> and it is highly encouraged to read that
+vignette first.</p>
 <hr>
 <div class="section level2">
 <h2 id="building-on-integer-partitions">Building on Integer Partitions<a class="anchor" aria-label="anchor" href="#building-on-integer-partitions"></a>
 </h2>
-<p>The <a href="https://en.wikipedia.org/wiki/Partition_(number_theory)" class="external-link">integer partition problem</a> presents the question <em>“how can we write n as a sum of positive integers?”</em> There are well-known algorithms for enumerating <em>all</em> partitions of an integer <em>n</em>. We even have algorithms for generating partitions of a specific length or with distinct parts only. But how do we enumerate partitions of <em>n</em> with a specific set of numbers? What about enumerating partitions of a specific length <em>m</em> of <em>n</em> given a specific set of numbers?</p>
-<p>For example, using only the numbers <code>3:18</code>, find all partitions of <code>50</code> of length <code>5</code>.</p>
-<p>With <code>RcppAlgos</code>, this is easily achieved. We simply use the same template as we did in <a href="https://jwood000.github.io/RcppAlgos/articles/CombPermConstraints.html#integer-partitions" class="external-link">Constraints and Integer Partitions</a>. Observe (We continue to use the <code>ht</code> function defined in the <a href="https://jwood000.github.io/RcppAlgos/articles/GeneralCombinatorics.html" class="external-link">Combination and Permutation Basics</a> vignette):</p>
+<p>The <a href="https://en.wikipedia.org/wiki/Partition_(number_theory)" class="external-link">integer
+partition problem</a> presents the question <em>“how can we write n as a
+sum of positive integers?”</em> There are well-known algorithms for
+enumerating <em>all</em> partitions of an integer <em>n</em>. We even
+have algorithms for generating partitions of a specific length or with
+distinct parts only. But how do we enumerate partitions of <em>n</em>
+with a specific set of numbers? What about enumerating partitions of a
+specific length <em>m</em> of <em>n</em> given a specific set of
+numbers?</p>
+<p>For example, using only the numbers <code>3:18</code>, find all
+partitions of <code>50</code> of length <code>5</code>.</p>
+<p>With <code>RcppAlgos</code>, this is easily achieved. We simply use
+the same template as we did in <a href="https://jwood000.github.io/RcppAlgos/articles/CombPermConstraints.html#integer-partitions" class="external-link">Constraints
+and Integer Partitions</a>. Observe (We continue to use the
+<code>ht</code> function defined in the <a href="https://jwood000.github.io/RcppAlgos/articles/GeneralCombinatorics.html" class="external-link">Combination
+and Permutation Basics</a> vignette):</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/jwood000/RcppAlgos" class="external-link">RcppAlgos</a></span><span class="op">)</span>
 
@@ -175,7 +194,10 @@
 <span class="co">#&gt; [403,]    9    9    9   11   12</span>
 <span class="co">#&gt; [404,]    9    9   10   10   12</span>
 <span class="co">#&gt; [405,]    9   10   10   10   11</span></code></pre></div>
-<p>In fact, these optimized algorithms can be applied when the vector passed has the quality that if you were to sort them, the difference of each element with it’s neighbor is constant (E.g. <code>c(121, 126, 131, 136, ..., 221)</code>).</p>
+<p>In fact, these optimized algorithms can be applied when the vector
+passed has the quality that if you were to sort them, the difference of
+each element with it’s neighbor is constant (E.g.
+<code>c(121, 126, 131, 136, ..., 221)</code>).</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/base/system.time.html" class="external-link">system.time</a></span><span class="op">(</span><span class="va">genParts</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/partitionsGeneral.html">partitionsGeneral</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq</a></span><span class="op">(</span><span class="fl">121</span>, <span class="fl">221</span>, <span class="fl">5</span><span class="op">)</span>, <span class="fl">13</span>,
                                           <span class="cn">TRUE</span>, target <span class="op">=</span> <span class="fl">2613</span><span class="op">)</span><span class="op">)</span>
@@ -230,7 +252,11 @@
 <div class="section level3">
 <h3 id="working-with-negative-numbers">Working with Negative Numbers<a class="anchor" aria-label="anchor" href="#working-with-negative-numbers"></a>
 </h3>
-<p>Generally, integer partition algorithms are restricted to positive integers. However, with the generalized partition algorithms in <code>RcppAlgos</code>, we can make light work of vectors with negative numbers (again, the sorted vector has to have the property that the difference of each element with it’s neighbor is constant).</p>
+<p>Generally, integer partition algorithms are restricted to positive
+integers. However, with the generalized partition algorithms in
+<code>RcppAlgos</code>, we can make light work of vectors with negative
+numbers (again, the sorted vector has to have the property that the
+difference of each element with it’s neighbor is constant).</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/base/system.time.html" class="external-link">system.time</a></span><span class="op">(</span><span class="va">genDistParts</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/partitionsGeneral.html">partitionsGeneral</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq</a></span><span class="op">(</span><span class="op">-</span><span class="fl">173L</span>, <span class="fl">204L</span>, <span class="fl">13L</span><span class="op">)</span>,
                                               <span class="fl">11</span>, target <span class="op">=</span> <span class="op">-</span><span class="fl">460</span><span class="op">)</span><span class="op">)</span>
@@ -261,8 +287,15 @@
 <div class="section level2">
 <h2 id="partitions-with-no-restrictions">Partitions with no Restrictions<a class="anchor" aria-label="anchor" href="#partitions-with-no-restrictions"></a>
 </h2>
-<p>With the examples illustrated above, we had the restriction that the sorted input vector had to have the property that the difference of each element with it’s neighbor is constant. If this requirement is broken, it only means that we cannot use a particular algorithm and we must fall back to a more general algorithm. <em>Fret not!!</em> These general algorithms are extremely efficient and very flexible. We can use them with random input vectors, random targets, as well as over ranges.</p>
-<p>Let us revisit the example above but with a slight variation that breaks the requirement.</p>
+<p>With the examples illustrated above, we had the restriction that the
+sorted input vector had to have the property that the difference of each
+element with it’s neighbor is constant. If this requirement is broken,
+it only means that we cannot use a particular algorithm and we must fall
+back to a more general algorithm. <em>Fret not!!</em> These general
+algorithms are extremely efficient and very flexible. We can use them
+with random input vectors, random targets, as well as over ranges.</p>
+<p>Let us revisit the example above but with a slight variation that
+breaks the requirement.</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">inpVec</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">116</span>, <span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq</a></span><span class="op">(</span><span class="fl">126</span>, <span class="fl">221</span>, <span class="fl">5</span><span class="op">)</span><span class="op">)</span>
 
@@ -292,8 +325,13 @@
 <span class="co">#&gt; [118558,]  196  196  201  201  201  201  201  201  201   201   201   206   206</span>
 <span class="co">#&gt; [118559,]  196  201  201  201  201  201  201  201  201   201   201   201   206</span>
 <span class="co">#&gt; [118560,]  201  201  201  201  201  201  201  201  201   201   201   201   201</span></code></pre></div>
-<p>Although the above was about 13 times slower than the first example dealing with 573 million combinations (101 milliseconds vs. 8 milliseconds), we are still dealing in milliseconds!!! For reference, version <code>2.3.4</code> takes about 18 seconds to find all 118,560 solutions.</p>
-<p>Here are some more exotic examples demonstrating the power of these algorithms.</p>
+<p>Although the above was about 13 times slower than the first example
+dealing with 573 million combinations (101 milliseconds vs. 8
+milliseconds), we are still dealing in milliseconds!!! For reference,
+version <code>2.3.4</code> takes about 18 seconds to find all 118,560
+solutions.</p>
+<p>Here are some more exotic examples demonstrating the power of these
+algorithms.</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="fl">42</span><span class="op">)</span>
 <span class="va">mySamp</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/sample.html" class="external-link">sample</a></span><span class="op">(</span><span class="op">-</span><span class="fl">100</span><span class="op">:</span><span class="fl">100</span>, <span class="fl">50</span><span class="op">)</span>
@@ -320,12 +358,25 @@
                               target <span class="op">=</span> <span class="fl">496</span>, upper <span class="op">=</span> <span class="fl">1e3</span><span class="op">)</span><span class="op">)</span>
 <span class="co">#&gt;  user  system elapsed</span>
 <span class="co">#&gt; 0.004   0.000   0.004</span></code></pre></div>
-<p>The function <code>permuteGeneral</code> benefits from these optimized algorithms as well. However, just as we discussed in <a href="https://jwood000.github.io/RcppAlgos/articles/CombPermConstraints.html#output-order-with-permutegeneral" class="external-link">Output Order with <code>permuteGeneral</code></a>, the output will not be in lexicographical order.</p>
+<p>The function <code>permuteGeneral</code> benefits from these
+optimized algorithms as well. However, just as we discussed in <a href="https://jwood000.github.io/RcppAlgos/articles/CombPermConstraints.html#output-order-with-permutegeneral" class="external-link">Output
+Order with <code>permuteGeneral</code></a>, the output will not be in
+lexicographical order.</p>
 </div>
 <div class="section level2">
 <h2 id="taming-floating-point-numbers">Taming Floating Point Numbers<a class="anchor" aria-label="anchor" href="#taming-floating-point-numbers"></a>
 </h2>
-<p>Oftentimes when working with numerical vectors, it can be hard to find combinations that sum to a particular number because of floating point errors (See <a href="https://jwood000.github.io/RcppAlgos/articles/CombPermConstraints.html#using-tolerance" class="external-link">Using <code>tolerance</code></a>). In practice, we may not need an exact match and a close approximation will suffice. For example, let’s say we have a football team of 100 players (including practice squad) and we are interested in a trade involving 6 players and a total salary of 20 million dollars. We may not be able to find 6 players whose sum of salaries is exactly 20 million, but we can find many 6 player combinations whose sum of salaries is within a tolerance of 20 million.</p>
+<p>Oftentimes when working with numerical vectors, it can be hard to
+find combinations that sum to a particular number because of floating
+point errors (See <a href="https://jwood000.github.io/RcppAlgos/articles/CombPermConstraints.html#using-tolerance" class="external-link">Using
+<code>tolerance</code></a>). In practice, we may not need an exact match
+and a close approximation will suffice. For example, let’s say we have a
+football team of 100 players (including practice squad) and we are
+interested in a trade involving 6 players and a total salary of 20
+million dollars. We may not be able to find 6 players whose sum of
+salaries is exactly 20 million, but we can find many 6 player
+combinations whose sum of salaries is within a tolerance of 20
+million.</p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="fl">22213</span><span class="op">)</span>
 <span class="va">football_player_salaries</span> <span class="op">&lt;-</span> <span class="fl">2e7</span> <span class="op">*</span> <span class="fu"><a href="https://rdrr.io/r/stats/Beta.html" class="external-link">rbeta</a></span><span class="op">(</span><span class="fl">100</span>, <span class="fl">2</span>, <span class="fl">25</span><span class="op">)</span>
@@ -347,7 +398,12 @@
 <span class="co">## No results that equal exactly 2e7</span>
 <span class="fu"><a href="https://rdrr.io/r/base/dim.html" class="external-link">dim</a></span><span class="op">(</span><span class="va">exactly20</span><span class="op">)</span>
 <span class="co">#&gt; [1] 0 6</span></code></pre></div>
-<p>What if we increase the tolerance to <code>$</code>1000 (Honestly… what’s <code>$</code>1000 when we are talking about 20 million dollars)? Our intent is to explore these options, so we take advantage of the <code>upper</code> argument in anticipation that we obtain many results that meet the criteria. If we obtain the upper bound, we decrease the tolerance (if needed) and repeat.</p>
+<p>What if we increase the tolerance to <code>$</code>1000 (Honestly…
+what’s <code>$</code>1000 when we are talking about 20 million dollars)?
+Our intent is to explore these options, so we take advantage of the
+<code>upper</code> argument in anticipation that we obtain many results
+that meet the criteria. If we obtain the upper bound, we decrease the
+tolerance (if needed) and repeat.</p>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co">## N.B. This is much more efficient. Also, we set keepResults</span>
 <span class="co">## to TRUE so we can see the total sum of salaries.</span>
@@ -407,7 +463,9 @@
 <h2 id="prod-and-mean">
 <code>prod</code> and <code>mean</code><a class="anchor" aria-label="anchor" href="#prod-and-mean"></a>
 </h2>
-<p>These optimized algorithms are also employed when <code>constraintFun</code> is <code>"prod"</code> or <code>"mean"</code>.</p>
+<p>These optimized algorithms are also employed when
+<code>constraintFun</code> is <code>"prod"</code> or
+<code>"mean"</code>.</p>
 <div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">getAllThenFilter</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">n</span>, <span class="va">m</span>, <span class="va">lim</span><span class="op">)</span> <span class="op">{</span>
     <span class="va">t</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/combinatoricsGeneral.html">comboGeneral</a></span><span class="op">(</span><span class="va">n</span>, <span class="va">m</span>, constraintFun <span class="op">=</span> <span class="st">"prod"</span><span class="op">)</span>
@@ -465,8 +523,15 @@
 <div class="section level2">
 <h2 id="using-iterators">Using Iterators<a class="anchor" aria-label="anchor" href="#using-iterators"></a>
 </h2>
-<p>As of version <code>2.5.0</code> all of the above cases can be attacked with iterators (See <a href="https://jwood000.github.io/RcppAlgos/articles/CombinatoricsIterators.html#iterating-over-constrained-combinations/permutations" class="external-link">Combinatorial Iterators in RcppAlgos</a>). As mentioned in the suggested reading, iterators are very flexible and just as efficient as their “general” counterparts. They have the added benefit of allowing one to save the current state, allowing one to generate <em>n</em> results at a time.</p>
-<p>Below are a few demonstrations using some of the examples in earlier sections.</p>
+<p>As of version <code>2.5.0</code> all of the above cases can be
+attacked with iterators (See <a href="https://jwood000.github.io/RcppAlgos/articles/CombinatoricsIterators.html#iterating-over-constrained-combinations/permutations" class="external-link">Combinatorial
+Iterators in RcppAlgos</a>). As mentioned in the suggested reading,
+iterators are very flexible and just as efficient as their “general”
+counterparts. They have the added benefit of allowing one to save the
+current state, allowing one to generate <em>n</em> results at a
+time.</p>
+<p>Below are a few demonstrations using some of the examples in earlier
+sections.</p>
 <div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co">## The football salary example</span>
 <span class="va">salary</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/partitionsIterator.html">partitionsIter</a></span><span class="op">(</span><span class="va">football_player_salaries</span>, <span class="fl">6</span>,
@@ -580,7 +645,8 @@
 
 <div class="pkgdown">
   <p></p>
-<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.2.</p>
+<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a>
+2.0.2.</p>
 </div>
 
       </footer>
