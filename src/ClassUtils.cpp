@@ -1,6 +1,6 @@
 #include "Constraints/ConstraintsTypes.h"
 #include "ImportExportMPZ.h"
-#include "CleanConvert.h"
+#include "SetUpUtils.h"
 #include <algorithm>   // std::max_element
 
 void SetIndexVec(SEXP RindexVec, std::vector<double> &mySample,
@@ -25,12 +25,12 @@ void SetIndexVec(SEXP RindexVec, std::vector<double> &mySample,
         double myMax = *std::max_element(mySample.cbegin(), mySample.cend());
 
         if (myMax > computedRows) {
-            Rf_error("One or more of the requested values exceeds"
+            cpp11::stop("One or more of the requested values exceeds"
                      " the maximum number of possible results");
         }
 
         if (sampSize > std::numeric_limits<int>::max()) {
-            Rf_error("The number of rows cannot exceed 2^31 - 1");
+            cpp11::stop("The number of rows cannot exceed 2^31 - 1");
         }
 
         // Get zero base index
@@ -61,9 +61,13 @@ void SetIndexVecMpz(SEXP RindexVec, mpz_t *myVec,
     }
 
     if (mpz_cmp(maxGmp, computedRowsMpz) >= 0) {
-        Rf_error("One or more of the requested values in sampleVec "
+        mpz_clear(maxGmp);
+        MpzClearVec(myVec, sampSize);
+        cpp11::stop("One or more of the requested values in sampleVec "
                  "exceeds the maximum number of possible results");
     }
+
+    mpz_clear(maxGmp);
 }
 
 void increment(bool IsGmp, mpz_t mpzIndex, double &dblIndex) {
@@ -280,7 +284,7 @@ void zUpdateIndex(const std::vector<double> &vNum,
             UNPROTECT(1);
             break;
         } default:{
-            Rf_error("Only atomic types are supported for v");
+            cpp11::stop("Only atomic types are supported for v");
         }
     }
 }

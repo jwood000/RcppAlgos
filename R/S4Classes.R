@@ -1,31 +1,31 @@
 ALGOS_METHODS <- c(
     startOver     = ".Object@startOver <- function() {
-        .Call(Algos_StartOverGlue, .Object@ptr)
+        .Call(`_RcppAlgos_StartOverGlue`, .Object@ptr)
         invisible(NULL)}",
     nextIter      = ".Object@nextIter <- function() {
-        .Call(Algos_NextCombGlue, .Object@ptr)}",
+        .Call(`_RcppAlgos_NextCombGlue`, .Object@ptr)}",
     nextNIter     = ".Object@nextNIter <- function(n = 1) {
-        .Call(Algos_NextNumCombGlue, .Object@ptr, n)}",
+        .Call(`_RcppAlgos_NextNumCombGlue`, .Object@ptr, n)}",
     nextRemaining = ".Object@nextRemaining <- function() {
-        .Call(Algos_NextGatherGlue, .Object@ptr)}",
+        .Call(`_RcppAlgos_NextGatherGlue`, .Object@ptr)}",
     prevIter      = ".Object@prevIter <- function() {
-        .Call(Algos_PrevCombGlue, .Object@ptr)}",
+        .Call(`_RcppAlgos_PrevCombGlue`, .Object@ptr)}",
     prevNIter     = ".Object@prevNIter <- function(n = 1) {
-        .Call(Algos_PrevNumCombGlue, .Object@ptr, n)}",
+        .Call(`_RcppAlgos_PrevNumCombGlue`, .Object@ptr, n)}",
     prevRemaining = ".Object@prevRemaining <- function() {
-        .Call(Algos_PrevGatherGlue, .Object@ptr)}",
+        .Call(`_RcppAlgos_PrevGatherGlue`, .Object@ptr)}",
     currIter      = ".Object@currIter <- function() {
-        .Call(Algos_CurrCombGlue, .Object@ptr)}",
+        .Call(`_RcppAlgos_CurrCombGlue`, .Object@ptr)}",
     randomAccess  = ".Object@randomAccess <- function(samp) {
-        .Call(Algos_RandomAccessGlue, .Object@ptr, samp)}",
+        .Call(`_RcppAlgos_RandomAccessGlue`, .Object@ptr, samp)}",
     sourceVector  = ".Object@sourceVector <- function() {
-        .Call(Algos_SourceVectorGlue, .Object@ptr)}",
+        .Call(`_RcppAlgos_SourceVectorGlue`, .Object@ptr)}",
     front         = ".Object@front <- function() {
-        .Call(Algos_FrontGlue, .Object@ptr)}",
+        .Call(`_RcppAlgos_FrontGlue`, .Object@ptr)}",
     back          = ".Object@back <- function() {
-        .Call(Algos_BackGlue, .Object@ptr)}",
+        .Call(`_RcppAlgos_BackGlue`, .Object@ptr)}",
     summary       = ".Object@summary <- function() {
-        .Call(Algos_SummaryGlue, .Object@ptr)}",
+        .Call(`_RcppAlgos_SummaryGlue`, .Object@ptr)}",
     object        = ".Object"
 )
 
@@ -94,7 +94,7 @@ setMethod(
     "initialize",
     "Combo",
     function(.Object, init, Parallel) {
-        .Object@ptr <- .Call(Algos_CombClassNew, init$RVals, init$bVec,
+        .Object@ptr <- .Call(`_RcppAlgos_CombClassNew`, init$RVals, init$bVec,
                              init$FreqsInfo, Parallel, NULL, NULL, NULL,
                              NULL, NULL, NULL, NULL, NULL, NULL, 1)
         eval(str2expression(text = ALGOS_METHODS))
@@ -105,7 +105,7 @@ setMethod(
     "initialize",
     "ComboApply",
     function(.Object, init, stdFun, rho, RFunVal) {
-        .Object@ptr <- .Call(Algos_CombClassNew, init$RVals, init$bVec,
+        .Object@ptr <- .Call(`_RcppAlgos_CombClassNew`, init$RVals, init$bVec,
                              init$FreqsInfo, FALSE, stdFun, rho, RFunVal,
                              NULL, NULL, NULL, NULL, NULL, NULL, 2)
         eval(str2expression(text = ALGOS_METHODS))
@@ -117,7 +117,7 @@ setMethod(
     "ComboRes",
     function(.Object, init, Parallel, constraintFun, comparisonFun,
              limitConstraints, keepResults, tolerance, mIsNull) {
-        .Object@ptr <- .Call(Algos_CombClassNew, init$RVals, init$bVec,
+        .Object@ptr <- .Call(`_RcppAlgos_CombClassNew`, init$RVals, init$bVec,
                              init$FreqsInfo, Parallel, NULL, NULL, NULL,
                              constraintFun, comparisonFun, limitConstraints,
                              keepResults, tolerance, mIsNull, 3)
@@ -130,7 +130,7 @@ setMethod(
     "Constraints",
     function(.Object, init, Parallel, constraintFun, comparisonFun,
              limitConstraints, keepResults, tolerance, mIsNull) {
-        .Object@ptr <- .Call(Algos_CombClassNew, init$RVals, init$bVec,
+        .Object@ptr <- .Call(`_RcppAlgos_CombClassNew`, init$RVals, init$bVec,
                              init$FreqsInfo, Parallel, NULL, NULL, NULL,
                              constraintFun, comparisonFun, limitConstraints,
                              keepResults, tolerance, mIsNull, 3)
@@ -146,7 +146,7 @@ setMethod(
     "Partitions",
     function(.Object, init, Parallel, constraintFun, comparisonFun,
              limitConstraints, keepResults, tolerance, mIsNull) {
-        .Object@ptr <- .Call(Algos_CombClassNew, init$RVals, init$bVec,
+        .Object@ptr <- .Call(`_RcppAlgos_CombClassNew`, init$RVals, init$bVec,
                              init$FreqsInfo, Parallel, NULL, NULL, NULL,
                              constraintFun, comparisonFun, limitConstraints,
                              keepResults, tolerance, mIsNull, 3)

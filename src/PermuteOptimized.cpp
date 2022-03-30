@@ -1,4 +1,5 @@
 #include "Permutations/PermuteHelper.h"
+#include <cmath>
 
 constexpr int unrollSize = 8;
 

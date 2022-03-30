@@ -1,7 +1,6 @@
 #include "NumbersUtils/PrimeFactorizeSieve.h"
 #include "NumbersUtils/EulerPhiSieve.h"
 #include "NumbersUtils/Eratosthenes.h"
-#include "NumbersUtils/MotleyPrimes.h"
 #include "CleanConvert.h"
 #include "SetUpUtils.h"
 #include <thread>
@@ -166,6 +165,7 @@ SEXP GlueDblMotley(std::int64_t myMin, double myMax, bool IsEuler,
     }
 }
 
+[[cpp11::register]]
 SEXP MotleyContainer(SEXP Rb1, SEXP Rb2, SEXP RIsEuler, SEXP RNamed,
                      SEXP RNumThreads, SEXP RmaxThreads) {
 

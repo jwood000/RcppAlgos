@@ -62,6 +62,6 @@ int GetMaxWidth(double target) {
 
 void CheckMultIsInt(double x, double y) {
     if ((x * y) > dblIntMax) {
-        Rf_error("Sorry, this case is too large!");
+        cpp11::stop("Sorry, this case is too large!");
     }
 }

@@ -1,7 +1,16 @@
 \name{NEWS}
 \title{News for Package \pkg{RcppAlgos}}
 
-\section{Changes in RcppAlgos version 2.5.1 (Release date: 2022-03-18)}{
+\section{Changes in RcppAlgos version 2.5.2 (Release date: 2022-03-27)}{
+    \itemize{
+        \item Bug Fixes:
+        \itemize{
+            \item Fixed valgrind memory issue.
+        }
+    }
+}
+
+\section{Changes in RcppAlgos version 2.5.1 (Release date: Never Released)}{
     \itemize{
         \item Bug Fixes:
         \itemize{

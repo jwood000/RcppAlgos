@@ -1,7 +1,6 @@
 #include "ComboGroupsUtils.h"
 #include "Cpp14MakeUnique.h"
 #include "CleanConvert.h"
-#include "ComboGroups.h"
 #include "SetUpUtils.h"
 #include "RMatrix.h"
 #include <numeric>
@@ -9,7 +8,7 @@
 
 void FinalTouch(SEXP res, bool IsArray, int grpSize, int r, int n,
                 int nRows, bool IsNamed, const std::vector<double> &mySample,
-                mpz_t *const myBigSamp, bool IsGmp) {
+                mpz_t *const myBigSamp, bool IsGmp, bool IsSample) {
 
     std::vector<std::string> myColNames(r, "Grp");
 
@@ -57,6 +56,8 @@ void FinalTouch(SEXP res, bool IsArray, int grpSize, int r, int n,
             UNPROTECT(2);
         }
     }
+
+    MpzClearVec(myBigSamp, nRows, IsGmp && IsSample);
 }
 
 void SampleResults(SEXP GroupsMat, SEXP v,
@@ -237,7 +238,7 @@ void SerialGlue(T* GroupsMat, SEXP res, const std::vector<T> &v,
     }
 
     FinalTouch(res, IsArray, grpSize, r, n, nRows,
-               IsNamed, mySamp, myBigSamp, IsGmp);
+               IsNamed, mySamp, myBigSamp, IsGmp, IsSample);
 }
 
 void CharacterGlue(SEXP res, SEXP v,
@@ -255,7 +256,7 @@ void CharacterGlue(SEXP res, SEXP v,
     }
 
     FinalTouch(res, IsArray, grpSize, r, n, nRows,
-               IsNamed, mySamp, myBigSamp, IsGmp);
+               IsNamed, mySamp, myBigSamp, IsGmp, IsSample);
 }
 
 template <typename T>
@@ -327,7 +328,7 @@ void GroupsMain(T* GroupsMat, SEXP res, const std::vector<T> &v,
         }
 
         FinalTouch(res, IsArray, grpSize, r, n, nRows,
-                   IsNamed, mySample, myBigSamp, IsGmp);
+                   IsNamed, mySample, myBigSamp, IsGmp, IsSample);
     } else {
         SerialGlue(GroupsMat, res, v, mySample, myBigSamp, z, computedRowMpz,
                    computedRows, n, r, grpSize, nRows, IsArray, IsGmp,
@@ -335,6 +336,7 @@ void GroupsMain(T* GroupsMat, SEXP res, const std::vector<T> &v,
     }
 }
 
+[[cpp11::register]]
 SEXP ComboGroupsCpp(SEXP Rv, SEXP RNumGroups, SEXP RRetType, SEXP Rlow,
                     SEXP Rhigh, SEXP Rparallel, SEXP RNumThreads,
                     SEXP RmaxThreads, SEXP RIsSample, SEXP RindexVec,
@@ -369,7 +371,7 @@ SEXP ComboGroupsCpp(SEXP Rv, SEXP RNumGroups, SEXP RRetType, SEXP Rlow,
     }
 
     if (n % numGroups != 0) {
-        Rf_error("The length of v (if v is a vector) or v (if v"
+        cpp11::stop("The length of v (if v is a vector) or v (if v"
                  " is a scalar) must be divisible by numGroups");
     }
 
@@ -429,7 +431,7 @@ SEXP ComboGroupsCpp(SEXP Rv, SEXP RNumGroups, SEXP RRetType, SEXP Rlow,
     const std::string retType(CHAR(STRING_ELT(RRetType, 0)));
 
     if (retType != "3Darray" && retType != "matrix") {
-        Rf_error("retType must be '3Darray' or 'matrix'");
+        cpp11::stop("retType must be '3Darray' or 'matrix'");
     }
 
     int sampSize;

@@ -1,3 +1,9 @@
+# RcppAlgos 2.5.2
+
+## Bug Fixes:
+
+* Fixed valgrind memory issue.
+
 # RcppAlgos 2.5.1
 
 ## Bug Fixes:

@@ -133,7 +133,6 @@ std::vector<int> nthPermGmp(int n, int r, double dblIdx,
     mpz_clear(temp);
     mpz_clear(temp2);
     mpz_clear(index1);
-
     return res;
 }
 
@@ -160,7 +159,9 @@ std::vector<int> nthPermRepGmp(int n, int r, double dblIdx,
         mpz_submul_ui(index1, temp, j);
     }
 
-    mpz_clear(temp); mpz_clear(temp2); mpz_clear(index1);
+    mpz_clear(temp);
+    mpz_clear(temp2);
+    mpz_clear(index1);
     return res;
 }
 
@@ -223,7 +224,6 @@ std::vector<int> nthPermMultGmp(int n, int r, double dblIdx,
     mpz_clear(index2);
     mpz_clear(temp);
     mpz_clear(index1);
-
     return res;
 }
 

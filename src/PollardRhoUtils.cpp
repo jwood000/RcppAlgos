@@ -169,7 +169,7 @@ int IsPrime(std::int64_t n) {
         }
     }
 
-    Rf_error("Lucas prime test failure. This should not happen");
+    cpp11::stop("Lucas prime test failure. This should not happen");
     ret1:
         factors.resize(0);
 

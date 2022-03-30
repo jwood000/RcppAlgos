@@ -9,12 +9,16 @@
 // the R gmp package.
 
 #include "ImportExportMPZ.h"
+#include "SetUpUtils.h"
+#include <cstring>
 
 void createMPZArray(SEXP input, mpz_t *myVec, std::size_t vecSize,
                     const std::string &nameOfObject, bool negPoss) {
 
     const std::string suffix = (vecSize > 1) ?
                                "Each element in " + nameOfObject : nameOfObject;
+    std::string myError;
+    bool foundError = false;
 
     switch (TYPEOF(input)) {
         case RAWSXP: {
@@ -33,11 +37,15 @@ void createMPZArray(SEXP input, mpz_t *myVec, std::size_t vecSize,
                         if (negPoss) {
                             mpz_neg(myVec[i], myVec[i]);
                         } else {
-                            Rf_error("%s must be a positive number", suffix.c_str());
+                            myError = suffix + " must be a positive number";
+                            foundError = true;
+                            break;
                         }
                     }
                 } else {
-                    Rf_error("%s cannot be NA or NaN", suffix.c_str());
+                    myError = suffix + " cannot be NA or NaN";
+                    foundError = true;
+                    break;
                 }
 
                 pos += intSize * (2 + (mpz_sizeinbase(myVec[i], 2) + numb - 1) / numb);
@@ -50,29 +58,40 @@ void createMPZArray(SEXP input, mpz_t *myVec, std::size_t vecSize,
             constexpr double Sig53 = 9007199254740991.0;
 
             for (std::size_t j = 0; j < vecSize; ++j) {
-                if (ISNAN(dblVec[j]))
-                    Rf_error("%s cannot be NA or NaN", suffix.c_str());
+                if (ISNAN(dblVec[j])) {
+                    myError = suffix + " cannot be NA or NaN";
+                    foundError = true;
+                    break;
+                }
 
                 if (negPoss) {
                     if (std::abs(dblVec[j]) > Sig53) {
-                        Rf_error("Number is too large for double precision. Consider "
-                                 "using gmp::as.bigz or as.character for %s",
-                                 nameOfObject.c_str());
+                        myError = "Number is too large for double precision."
+                                  " Consider using gmp::as.bigz or "
+                                  "as.character for " + nameOfObject;
+                        foundError = true;
+                        break;
                     }
                 } else {
                     if (dblVec[j] < 1) {
-                        Rf_error("%s must be a positive number", suffix.c_str());
+                        myError = suffix + " must be a positive number";
+                        foundError = true;
+                        break;
                     }
 
                     if (dblVec[j] > Sig53) {
-                        Rf_error("Number is too large for double precision. Consider "
-                                 "using gmp::as.bigz or as.character for %s",
-                                 nameOfObject.c_str());
+                        myError = "Number is too large for double precision."
+                                  " Consider using gmp::as.bigz or "
+                                  "as.character for " + nameOfObject;
+                        foundError = true;
+                        break;
                     }
                 }
 
                 if (static_cast<int64_t>(dblVec[j]) != dblVec[j]) {
-                    Rf_error("%s must be a whole number.", suffix.c_str());
+                    myError = suffix + " must be a whole number";
+                    foundError = true;
+                    break;
                 }
 
                 mpz_set_d(myVec[j], dblVec[j]);
@@ -88,11 +107,15 @@ void createMPZArray(SEXP input, mpz_t *myVec, std::size_t vecSize,
 
             for (std::size_t j = 0; j < vecSize; ++j) {
                 if (ISNAN(dblVec[j])) {
-                    Rf_error("%s cannot be NA or NaN", suffix.c_str());
+                    myError = suffix + " cannot be NA or NaN";
+                    foundError = true;
+                    break;
                 }
 
                 if (!negPoss && intVec[j] < 1) {
-                    Rf_error("%s must be a positive number", suffix.c_str());
+                    myError = suffix + " must be a positive number";
+                    foundError = true;
+                    break;
                 }
 
                 mpz_set_si(myVec[j], intVec[j]);
@@ -102,27 +125,37 @@ void createMPZArray(SEXP input, mpz_t *myVec, std::size_t vecSize,
         } case STRSXP: {
             for (std::size_t i = 0; i < vecSize; ++i) {
                 if (STRING_ELT(input, i) == NA_STRING) {
-                    Rf_error("%s cannot be NA or NaN", suffix.c_str());
+                    myError = suffix + " cannot be NA or NaN";
+                    foundError = true;
+                    break;
                 } else {
                     mpz_set_str(myVec[i], CHAR(STRING_ELT(input, i)), 10);
 
                     if (!negPoss && mpz_sgn(myVec[i]) < 1) {
-                        Rf_error("%s must be a positive whole number",
-                                 suffix.c_str());
+                        myError = suffix + " must be a positive whole number";
+                        foundError = true;
+                        break;
                     }
                 }
             }
 
             break;
         } default: {
-            Rf_error("This type is not supported! No conversion"
-                     " possible for %s", nameOfObject.c_str());
+            myError = "This type is not supported! No conversion"
+                      " possible for " + nameOfObject;
+            foundError = true;
+            break;
         }
+    }
+
+    if (foundError) {
+        MpzClearVec(myVec, vecSize);
+        cpp11::stop(myError.c_str());
     }
 }
 
 int myRaw(char* raw, const mpz_t value, std::size_t totals) {
-    memset(raw, 0, totals);
+    std::memset(raw, 0, totals);
 
     int* r = (int*)raw;
     r[0] = totals / intSize - 2;

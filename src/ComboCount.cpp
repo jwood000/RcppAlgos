@@ -3,9 +3,7 @@
 #include <numeric>   // std::accumulate
 #include <cmath>     // std::round
 
-#define R_NO_REMAP
-#include <Rinternals.h>
-#include <R.h>
+#include "cpp11/R.hpp"
 
 // Returns number of k-combinations from n elements.
 // Mathematically speaking, we have: n!/(k!*(n-k)!)

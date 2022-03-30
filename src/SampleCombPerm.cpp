@@ -1,10 +1,10 @@
 #include "Sample/SampCombPermStd.h"
-#include "Sample/SampleCombPerm.h"
 #include "Sample/SampleApply.h"
 #include "Cpp14MakeUnique.h"
 #include "ComputedCount.h"
 #include "SetUpUtils.h"
 
+[[cpp11::register]]
 SEXP SampleCombPerm(SEXP Rv, SEXP Rm, SEXP RisRep, SEXP RFreqs,
                     SEXP RindexVec, SEXP RIsComb, SEXP RmySeed,
                     SEXP RNumSamp, SEXP baseSample, SEXP stdFun, SEXP myEnv,
@@ -15,6 +15,15 @@ SEXP SampleCombPerm(SEXP Rv, SEXP Rm, SEXP RisRep, SEXP RFreqs,
     int m = 0;
     int nThreads = 1;
     int maxThreads = 1;
+    bool applyFun = false;
+
+    if (!Rf_isNull(stdFun) && !Rf_isFactor(Rv)) {
+        if (!Rf_isFunction(stdFun)) {
+            cpp11::stop("FUN must be a function!");
+        }
+
+        applyFun = true;
+    }
 
     VecType myType = VecType::Integer;
     CleanConvert::convertPrimitive(RmaxThreads, maxThreads,
@@ -69,11 +78,7 @@ SEXP SampleCombPerm(SEXP Rv, SEXP Rm, SEXP RisRep, SEXP RFreqs,
     const nthResultPtr nthResFun = GetNthResultFunc(IsComb, IsMult,
                                                     IsRep, IsGmp);
 
-    if (!Rf_isNull(stdFun) && !Rf_isFactor(Rv)) {
-        if (!Rf_isFunction(stdFun)) {
-            Rf_error("FUN must be a function!");
-        }
-
+    if (applyFun) {
         return SampleCombPermApply(Rv, vInt, vNum, mySample, myVec.get(),
                                    myReps, stdFun, myEnv, RFunVal, nthResFun,
                                    myType, n, m, sampSize, IsNamed, IsGmp);

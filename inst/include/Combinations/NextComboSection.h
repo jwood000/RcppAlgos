@@ -1,11 +1,8 @@
 #ifndef NEXT_COMBO_SECTION_H
 #define NEXT_COMBO_SECTION_H
 
+#include "cpp11/R.hpp"
 #include <vector>
-
-#define R_NO_REMAP
-#include <Rinternals.h>
-#include <R.h>
 
 inline void nextCombSec(std::vector<int> &z, int m1, int nMinusM) {
 

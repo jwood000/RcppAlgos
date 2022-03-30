@@ -1,7 +1,7 @@
-#include "NumbersUtils/PrimeSieveCount.h"
 #include "NumbersUtils/Eratosthenes.h"
 #include "CleanConvert.h"
 
+[[cpp11::register]]
 SEXP PrimeSieveCpp(SEXP Rb1, SEXP Rb2, SEXP RNumThreads,
                    SEXP RmaxCores, SEXP RmaxThreads) {
 

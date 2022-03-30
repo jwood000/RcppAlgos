@@ -261,14 +261,14 @@ SEXP ComboRes::nextGather() {
         mpz_sub(mpzTemp, cnstrtCountMpz, mpzIndex);
 
         if (mpz_cmp_si(mpzTemp, std::numeric_limits<int>::max()) > 0) {
-            Rf_error("The number of requested rows is greater than ",
+            cpp11::stop("The number of requested rows is greater than ",
                 std::to_string(std::numeric_limits<int>::max()).c_str());
         }
     } else {
         dblTemp = cnstrtCount - dblIndex;
 
         if (dblTemp > std::numeric_limits<int>::max()) {
-            Rf_error("The number of requested rows is greater than ",
+            cpp11::stop("The number of requested rows is greater than ",
                 std::to_string(std::numeric_limits<int>::max()).c_str());
         }
     }

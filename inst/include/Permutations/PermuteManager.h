@@ -1,9 +1,7 @@
 #ifndef PERMUTE_MANAGER_H
 #define PERMUTE_MANAGER_H
 
-#define R_NO_REMAP
-#include <Rinternals.h>
-#include <R.h>
+#include "cpp11/R.hpp"
 
 #include "RMatrix.h"
 #include <vector>

@@ -1,10 +1,10 @@
 #include "Constraints/GetContraints.h"
 #include "Partitions/NthPartition.h"
-#include "CombinatoricsCnstrt.h"
 #include "Cpp14MakeUnique.h"
 #include "ComputedCount.h"
 #include "CheckReturn.h"
 
+[[cpp11::register]]
 SEXP CombinatoricsCnstrt(SEXP Rv, SEXP Rm, SEXP RisRep, SEXP RFreqs,
                          SEXP Rlow, SEXP Rhigh, SEXP RmainFun,
                          SEXP RcompFun, SEXP Rtarget, SEXP RIsComb,
@@ -34,7 +34,7 @@ SEXP CombinatoricsCnstrt(SEXP Rv, SEXP Rm, SEXP RisRep, SEXP RFreqs,
               RFreqs, Rm, n, m, IsMult, IsRep, IsConstrained);
 
     if (!Rf_isString(RmainFun) || Rf_length(RmainFun) != 1) {
-        Rf_error("contraintFun must be one of the following:"
+        cpp11::stop("contraintFun must be one of the following:"
                  " 'prod', 'sum', 'mean', 'max', or 'min'");
     }
 
@@ -42,7 +42,7 @@ SEXP CombinatoricsCnstrt(SEXP Rv, SEXP Rm, SEXP RisRep, SEXP RFreqs,
     const auto funIt = std::find(mainFunSet.begin(), mainFunSet.end(), funTest);
 
     if (funIt == mainFunSet.end()) {
-        Rf_error("contraintFun must be one of the following:"
+        cpp11::stop("contraintFun must be one of the following:"
                  " 'prod', 'sum', 'mean', 'max', or 'min'");
     }
 
@@ -145,6 +145,7 @@ SEXP CombinatoricsCnstrt(SEXP Rv, SEXP Rm, SEXP RisRep, SEXP RFreqs,
     SetNumResults(IsGmp, bLower, bUpper, bSetNum, upperMpz[0],
                   lowerMpz[0], lower, upper, computedRows,
                   computedRowsMpz, nRows, userNum);
+    mpz_clear(computedRowsMpz);
 
     int nThreads = 1;
     int maxThreads = 1;
@@ -159,10 +160,17 @@ SEXP CombinatoricsCnstrt(SEXP Rv, SEXP Rm, SEXP RisRep, SEXP RFreqs,
     SetThreads(Parallel, maxThreads, nRows,
                myType, nThreads, RnThreads, limit);
 
-    return GetConstraints(
-      part, compVec, freqs, myReps, vNum, vInt, tarVals, tarIntVals, startZ,
-      mainFun, funTest, funDbl, lower, lowerMpz[0], userNum, ctype, myType,
-      nThreads, nRows, n, strtLen, cap, m, IsComb, Parallel, IsGmp, IsRep,
-      IsMult, bUpper, KeepRes, numUnknown
+    SEXP res = PROTECT(
+        GetConstraints(
+          part, compVec, freqs, myReps, vNum, vInt, tarVals, tarIntVals,
+          startZ, mainFun, funTest, funDbl, lower, lowerMpz[0], userNum,
+          ctype, myType, nThreads, nRows, n, strtLen, cap, m, IsComb,
+          Parallel, IsGmp, IsRep, IsMult, bUpper, KeepRes, numUnknown
+        )
     );
+
+    mpz_clear(lowerMpz[0]);
+    mpz_clear(upperMpz[0]);
+    UNPROTECT(1);
+    return res;
 }

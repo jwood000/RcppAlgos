@@ -1,9 +1,7 @@
 #ifndef COMBO_MANAGER_H
 #define COMBO_MANAGER_H
 
-#define R_NO_REMAP
-#include <Rinternals.h>
-#include <R.h>
+#include "cpp11/R.hpp"
 #include <vector>
 #include "RMatrix.h"
 

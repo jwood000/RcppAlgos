@@ -1,4 +1,5 @@
 #include "FunAssign.h"
+#include "cpp11/protect.hpp"
 
 // See function do_vapply found here:
 //     https://github.com/wch/r-source/blob/trunk/src/main/apply.c
@@ -14,7 +15,7 @@ void VapplyAssign(SEXP ans, SEXP vectorPass,
     PROTECT_WITH_INDEX(val, &indx);
 
     if (Rf_length(val) != commonLen) {
-        Rf_error("values must be length %d,\n but "
+        cpp11::stop("values must be length %d,\n but "
                  "FUN(X[[%d]]) result is length %d",
                  commonLen, count + 1, Rf_length(val));
     }
@@ -30,7 +31,7 @@ void VapplyAssign(SEXP ans, SEXP vectorPass,
             case INTSXP:  okay = (valType == LGLSXP); break;
         }
         if (!okay)
-            Rf_error("values must be type '%s',\n but FUN(X[[%d]]) result is type '%s'",
+            cpp11::stop("values must be type '%s',\n but FUN(X[[%d]]) result is type '%s'",
                   Rf_type2char(commonType), count + 1, Rf_type2char(valType));
         REPROTECT(val = Rf_coerceVector(val, commonType), indx);
     }

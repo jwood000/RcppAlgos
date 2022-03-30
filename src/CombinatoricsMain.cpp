@@ -1,9 +1,9 @@
-#include "CombinatoricsMain.h"
 #include "Cpp14MakeUnique.h"
 #include "ComputedCount.h"
 #include "GetCombPerm.h"
 #include "SetUpUtils.h"
 
+[[cpp11::register]]
 SEXP CombinatoricsStndrd(SEXP Rv, SEXP Rm, SEXP RisRep, SEXP RFreqs,
                          SEXP Rlow, SEXP Rhigh, SEXP Rparallel,
                          SEXP RNumThreads, SEXP RmaxThreads, SEXP RIsComb) {

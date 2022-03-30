@@ -17,12 +17,12 @@ namespace CleanConvert {
     template <typename T>
     std::vector<T> GetNumVec(SEXP Rv) {
         std::vector<T> v;
-        int len = Rf_length(Rv);
+        const int len = Rf_length(Rv);
 
-        if (TYPEOF(Rv) == REALSXP) {
+        if (TYPEOF(Rv) == REALSXP && len) {
             double* dblRv = REAL(Rv);
             v.assign(dblRv, dblRv + len);
-        } else {
+        } else if (len) {
             int* intRv = INTEGER(Rv);
             v.assign(intRv, intRv + len);
         }
@@ -63,22 +63,22 @@ namespace CleanConvert {
         if (!Rf_isNull(boolInput)) {
             if (TYPEOF(boolInput) == LGLSXP) {
                 if (Rf_length(boolInput) > 1) {
-                    Rf_error("Expecting a single value for %s", nameOfBool.c_str());
+                    cpp11::stop("Expecting a single value for %s", nameOfBool.c_str());
                 }
 
                 double dblInp = Rf_asReal(boolInput);
 
                 if (CheckNA(dblInp, VecType::Integer)) {
-                    Rf_error("%s cannot be NA or NaN", nameOfBool.c_str());
+                    cpp11::stop("%s cannot be NA or NaN", nameOfBool.c_str());
                 }
 
                 if (std::abs(dblInp) > Significand53) {
-                    Rf_error("Only logical values are allowed for %s", nameOfBool.c_str());
+                    cpp11::stop("Only logical values are allowed for %s", nameOfBool.c_str());
                 }
 
                 result = Rf_asLogical(boolInput);
             } else {
-                Rf_error("Only logical values are supported for %s", nameOfBool.c_str());
+                cpp11::stop("Only logical values are supported for %s", nameOfBool.c_str());
             }
         }
 
@@ -100,28 +100,28 @@ namespace CleanConvert {
                 const double posDblInp = std::abs(dblInp);
 
                 if (CheckNA(dblInp, myType)) {
-                    Rf_error("%s cannot be NA or NaN", nameOfObject.c_str());
+                    cpp11::stop("%s cannot be NA or NaN", nameOfObject.c_str());
                 }
 
                 if (!negPoss) {
                     if (decimalFraction) {
-                        if (dblInp < 0) Rf_error("%s must be a positive number", nameOfObject.c_str());
+                        if (dblInp < 0) cpp11::stop("%s must be a positive number", nameOfObject.c_str());
                     } else if (dblInp < 1) {
-                        Rf_error("%s must be a positive whole number", nameOfObject.c_str());
+                        cpp11::stop("%s must be a positive whole number", nameOfObject.c_str());
                     }
                 }
 
                 if (checkWhole && static_cast<int64_t>(dblInp) != dblInp) {
-                    Rf_error("%s must be a whole number", nameOfObject.c_str());
+                    cpp11::stop("%s must be a whole number", nameOfObject.c_str());
                 }
 
                 if (posDblInp > maxType) {
-                    Rf_error("The abs value of %s must be less than or equal to %s",
+                    cpp11::stop("The abs value of %s must be less than or equal to %s",
                              nameOfObject.c_str(), std::to_string(maxType).c_str());
                 }
 
                 if (posDblInp > Significand53) {
-                    Rf_error("The abs value of %s must be less than 2^53", nameOfObject.c_str());
+                    cpp11::stop("The abs value of %s must be less than 2^53", nameOfObject.c_str());
                 }
 
                 result = static_cast<T>(Rf_asReal(input));
@@ -130,7 +130,7 @@ namespace CleanConvert {
             case RAWSXP:
             case STRSXP: {
                 if (numOnly) {
-                    Rf_error("%s must be of type numeric or integer", nameOfObject.c_str());
+                    cpp11::stop("%s must be of type numeric or integer", nameOfObject.c_str());
                 }
 
                 mpz_t temp[1];
@@ -140,35 +140,35 @@ namespace CleanConvert {
                 const double posDblTemp = std::abs(dblTemp);
 
                 if (CheckNA(dblTemp, myType)) {
-                    Rf_error("%s cannot be NA or NaN", nameOfObject.c_str());
+                    cpp11::stop("%s cannot be NA or NaN", nameOfObject.c_str());
                 }
 
                 if (!negPoss) {
                     if (decimalFraction) {
-                        if (dblTemp < 0) Rf_error("%s must be a positive number", nameOfObject.c_str());
+                        if (dblTemp < 0) cpp11::stop("%s must be a positive number", nameOfObject.c_str());
                     } else if (dblTemp < 1) {
-                        Rf_error("%s must be a positive whole number", nameOfObject.c_str());
+                        cpp11::stop("%s must be a positive whole number", nameOfObject.c_str());
                     }
                 }
 
                 if (posDblTemp > maxType) {
-                    Rf_error("The abs value of %s must be less than or equal to %s",
+                    cpp11::stop("The abs value of %s must be less than or equal to %s",
                              std::to_string(maxType).c_str(), nameOfObject.c_str());
                 }
 
                 if (posDblTemp > Significand53) {
-                    Rf_error("The abs value of %s must be less than 2^53", nameOfObject.c_str());
+                    cpp11::stop("The abs value of %s must be less than 2^53", nameOfObject.c_str());
                 }
 
                 if (checkWhole && static_cast<int64_t>(dblTemp) != dblTemp) {
-                    Rf_error("%s must be a whole number", nameOfObject.c_str());
+                    cpp11::stop("%s must be a whole number", nameOfObject.c_str());
                 }
 
                 result = dblTemp;
                 mpz_clear(temp[0]);
                 break;
             } default: {
-                Rf_error("This type is not supported! No conversion possible for %s", nameOfObject.c_str());
+                cpp11::stop("This type is not supported! No conversion possible for %s", nameOfObject.c_str());
             }
         }
     }
@@ -192,24 +192,24 @@ namespace CleanConvert {
                     const double posDblInp = std::abs(vecCheck[i]);
 
                     if (CheckNA(vecCheck[i], myType)) {
-                        Rf_error("%s cannot be NA or NaN", nameOfObject.c_str());
+                        cpp11::stop("%s cannot be NA or NaN", nameOfObject.c_str());
                     }
 
                     if (!negPoss && vecCheck[i] < 1) {
-                        Rf_error("Each element in %s must be a positive number", nameOfObject.c_str());
+                        cpp11::stop("Each element in %s must be a positive number", nameOfObject.c_str());
                     }
 
                     if (posDblInp > maxType) {
-                        Rf_error("The abs value of each element in %s must be less than or equal to %s",
+                        cpp11::stop("The abs value of each element in %s must be less than or equal to %s",
                                  std::to_string(maxType).c_str(), nameOfObject.c_str());
                     }
 
                     if (posDblInp > Significand53) {
-                        Rf_error("The abs value of each element in %s must be less than 2^53", nameOfObject.c_str());
+                        cpp11::stop("The abs value of each element in %s must be less than 2^53", nameOfObject.c_str());
                     }
 
                     if (checkWhole && static_cast<int64_t>(vecCheck[i]) != vecCheck[i]) {
-                        Rf_error("Each element in %s must be a whole number", nameOfObject.c_str());
+                        cpp11::stop("Each element in %s must be a whole number", nameOfObject.c_str());
                     }
 
                     result[i] = static_cast<T>(vecCheck[i]);
@@ -218,7 +218,7 @@ namespace CleanConvert {
                 break;
             } case RAWSXP: {
                 if (numOnly) {
-                    Rf_error("%s must be of type numeric or integer", nameOfObject.c_str());
+                    cpp11::stop("%s must be of type numeric or integer", nameOfObject.c_str());
                 }
 
                 const char* raw = (char*) RAW(input);
@@ -227,7 +227,7 @@ namespace CleanConvert {
                 // the next case for complete conversion
             } case STRSXP: {
                 if (numOnly) {
-                    Rf_error("%s must be of type numeric or integer", nameOfObject.c_str());
+                    cpp11::stop("%s must be of type numeric or integer", nameOfObject.c_str());
                 }
 
                 auto temp = FromCpp14::make_unique<mpz_t[]>(total);
@@ -245,24 +245,24 @@ namespace CleanConvert {
                     const double posDblInp = std::abs(dblTemp[i]);
 
                     if (CheckNA(dblTemp[i], myType)) {
-                        Rf_error("%s cannot be NA or NaN", nameOfObject.c_str());
+                        cpp11::stop("%s cannot be NA or NaN", nameOfObject.c_str());
                     }
 
                     if (!negPoss && dblTemp[i] < 1) {
-                        Rf_error("Each element in %s must be a positive number", nameOfObject.c_str());
+                        cpp11::stop("Each element in %s must be a positive number", nameOfObject.c_str());
                     }
 
                     if (posDblInp > maxType) {
-                        Rf_error("The abs value of each element in %s must be less than or equal to %s",
+                        cpp11::stop("The abs value of each element in %s must be less than or equal to %s",
                                  std::to_string(maxType).c_str(), nameOfObject.c_str());
                     }
 
                     if (posDblInp > Significand53) {
-                        Rf_error("The abs value of each element in %s must be less than 2^53", nameOfObject.c_str());
+                        cpp11::stop("The abs value of each element in %s must be less than 2^53", nameOfObject.c_str());
                     }
 
                     if (checkWhole && static_cast<int64_t>(dblTemp[i]) != dblTemp[i]) {
-                        Rf_error("Each element in %s must be a whole number", nameOfObject.c_str());
+                        cpp11::stop("Each element in %s must be a whole number", nameOfObject.c_str());
                     }
 
                     result[i] = static_cast<T>(dblTemp[i]);
@@ -274,7 +274,7 @@ namespace CleanConvert {
 
                 break;
             } default: {
-                Rf_error("This type is not supported! No conversion possible for %s", nameOfObject.c_str());
+                cpp11::stop("This type is not supported! No conversion possible for %s", nameOfObject.c_str());
             }
         }
     }

@@ -1,4 +1,3 @@
-#include "CheckReturn.h"
 #include "SetUpUtils.h"
 
 bool CheckConstrnd(SEXP RCnstrntFun, SEXP RCompFun, SEXP Rtarget) {
@@ -10,15 +9,16 @@ bool CheckConstrnd(SEXP RCnstrntFun, SEXP RCompFun, SEXP Rtarget) {
 
     if (result) {
         if (!Rf_isString(RCnstrntFun))
-            Rf_error("constraintFun must be passed as a character");
+            cpp11::stop("constraintFun must be passed as a character");
 
         if (!Rf_isString(RCompFun))
-            Rf_error("comparisonFun must be passed as a character");
+            cpp11::stop("comparisonFun must be passed as a character");
     }
 
     return result;
 }
 
+[[cpp11::register]]
 SEXP CheckConstrndCpp(SEXP RCnstrntFun, SEXP RCompFun, SEXP Rtarget) {
     return Rf_ScalarLogical(CheckConstrnd(RCnstrntFun, RCompFun, Rtarget));
 }
@@ -47,6 +47,7 @@ enum CheckReturnType : int {
     anonymousFun = 2,
 };
 
+[[cpp11::register]]
 SEXP CheckReturn(SEXP Rv, SEXP RCnstrntFun, SEXP RCompFun,
                  SEXP Rtarget, SEXP RKeepRes, SEXP stdFun) {
 
@@ -94,7 +95,7 @@ SEXP CheckReturn(SEXP Rv, SEXP RCnstrntFun, SEXP RCompFun,
 
         if (applyFun) {
             if (!Rf_isFunction(stdFun)) {
-                Rf_error("FUN must be a function!");
+                cpp11::stop("FUN must be a function!");
             }
 
             res = CheckReturnType::anonymousFun;

@@ -182,7 +182,7 @@ void GetTarget(const std::vector<double> &v,
                          static_cast<int>(!part.includeZero) * m;
 
         if ((part.mapTar * part.slope - part.target) % (part.width)) {
-            Rf_error("Strange mapping!!!");
+            cpp11::stop("Strange mapping!!!");
         }
 
         part.shift = (part.mapTar * part.slope - part.target) / part.width;

@@ -1,4 +1,3 @@
-#include "NumbersUtils/PrimeSieveCount.h"
 #include "NumbersUtils/PrimesSegSieve.h"
 #include "NumbersUtils/PhiTinyLookup.h"
 #include "NumbersUtils/Eratosthenes.h"
@@ -399,6 +398,7 @@ namespace PrimeCounting {
     }
 }
 
+[[cpp11::register]]
 SEXP PrimeCountCpp(SEXP Rn, SEXP RNumThreads, SEXP RmaxThreads) {
     double dblNum;
     CleanConvert::convertPrimitive(Rn, dblNum, VecType::Numeric, "n");

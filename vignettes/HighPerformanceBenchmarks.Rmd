@@ -1,7 +1,7 @@
 ---
 title: "High Performance Benchmarks"
 author: "Joseph Wood"
-date: "03/18/2022"
+date: "03/29/2022"
 output:
   rmarkdown::html_vignette:
     toc: true
@@ -406,9 +406,9 @@ microbenchmark(cbRcppAlgos    = pkg_RcppAlgos(18, total),
                cbArrangements = pkg_arrangements(18, total),
                times = 15, unit = "relative")
 #> Unit: relative
-#>            expr      min       lq     mean   median       uq      max neval cld
-#>     cbRcppAlgos  1.00000  1.00000  1.00000  1.00000  1.00000  1.00000    15  a
-#>  cbArrangements 31.54841 29.13514 27.23368 28.86445 24.94846 25.37289    15   b
+#>            expr   min    lq  mean median uq   max neval cld
+#>     cbRcppAlgos  1.00  1.00  1.00   1.00  1  1.00    15  a 
+#>  cbArrangements 26.56 25.94 24.94  25.39 25 19.61    15   b
 ```
 
 ### Permutations
@@ -432,9 +432,9 @@ microbenchmark(cbRcppAlgos    = pkg_RcppAlgos(8, total),
                cbArrangements = pkg_arrangements(8, total),
                times = 15, unit = "relative")
 #> Unit: relative
-#>            expr      min      lq     mean median       uq      max neval cld
-#>     cbRcppAlgos  1.00000  1.0000  1.00000  1.000  1.00000  1.00000    15  a
-#>  cbArrangements 31.00003 30.7734 30.37699 30.645 30.54221 29.50756    15   b
+#>            expr   min    lq  mean median    uq   max neval cld
+#>     cbRcppAlgos  1.00  1.00  1.00   1.00  1.00  1.00    15  a 
+#>  cbArrangements 26.12 25.83 24.53  24.95 24.03 22.15    15   b
 ```
 
 ### Partitions
@@ -464,8 +464,8 @@ microbenchmark(cbRcppAlgos    = pkg_RcppAlgos(40, total),
                cbPartitions   = pkg_partitions(40, total),
                times = 15, unit = "relative")
 #> Unit: relative
-#>            expr      min       lq     mean   median       uq      max neval cld
-#>     cbRcppAlgos  1.00000  1.00000  1.00000  1.00000  1.00000  1.00000    15 a
-#>  cbArrangements 23.69586 23.78484 22.18956 23.23983 23.01122 17.62236    15  b
-#>    cbPartitions 49.11071 49.63465 46.15867 48.57430 48.13571 34.14395    15   c
+#>            expr   min    lq  mean median    uq   max neval cld
+#>     cbRcppAlgos  1.00  1.00  1.00   1.00  1.00  1.00    15 a  
+#>  cbArrangements 20.84 20.97 20.53  20.51 20.69 18.32    15  b 
+#>    cbPartitions 38.10 38.29 37.01  37.66 37.01 30.80    15   c
 ```

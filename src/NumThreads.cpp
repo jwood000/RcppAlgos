@@ -1,8 +1,9 @@
+#include "cpp11/R.hpp"
+#include "cpp11/sexp.hpp"
 #include <thread>
-#include "NumThreads.h"
 
+[[cpp11::register]]
 SEXP cpp11GetNumThreads() {
     const int nThreads =  std::thread::hardware_concurrency();
-    SEXP sexpRes = Rf_ScalarInteger(nThreads);
-    return sexpRes;
+    return cpp11::as_sexp(nThreads);
 }

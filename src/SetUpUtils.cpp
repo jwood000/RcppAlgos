@@ -6,6 +6,7 @@
 #include "CleanConvert.h"
 #include <algorithm> // std:: sort, std::minmax
 #include <numeric>   // std::iota
+#include <cmath>
 
 static gmp_randstate_t seed_state;
 static int seed_init = 0;
@@ -13,7 +14,7 @@ static int seed_init = 0;
 void SetType(VecType &myType, SEXP Rv) {
 
     if (Rf_isMatrix(Rv)) {
-        Rf_error("Matrics are not supported for v");
+        cpp11::stop("Matrices are not supported for v");
     }
 
     switch(TYPEOF(Rv)) {
@@ -44,7 +45,7 @@ void SetType(VecType &myType, SEXP Rv) {
                 break;
             }
         } default: {
-            Rf_error("Only atomic types are supported for v");
+            cpp11::stop("Only atomic types are supported for v");
         }
     }
 }
@@ -102,7 +103,7 @@ void SetFreqsAndM(std::vector<int> &Reps,
         m = freqs.empty() ? n : freqs.size();
     } else {
         if (Rf_length(Rm) > 1)
-            Rf_error("length of m must be 1");
+            cpp11::stop("length of m must be 1");
 
         CleanConvert::convertPrimitive(Rm, m, VecType::Integer, "m");
     }
@@ -116,7 +117,7 @@ void SetFinalValues(VecType &myType, std::vector<int> &Reps,
                     std::vector<double> &vNum, int &n, int &m,
                     bool IsMult, bool IsRep, bool IsConstrained) {
 
-    if (IsConstrained) {
+    if (IsConstrained && vNum.size()) {
         for (int i = (vNum.size() - 1); i >= 0; --i) {
             if (CleanConvert::CheckNA(vNum[i], myType)) {
                 vNum.erase(vNum.begin() + i);
@@ -155,8 +156,12 @@ void SetFinalValues(VecType &myType, std::vector<int> &Reps,
         }
     }
 
-    if (myType == VecType::Integer) {
-        vInt.assign(vNum.cbegin(), vNum.cend());
+    if (myType == VecType::Integer && vInt.size() == 0) {
+        vInt.reserve(n);
+
+        for (auto v_i: vNum) {
+            vInt.push_back(static_cast<int>(v_i));
+        }
     }
 
     if (IsMult) {
@@ -166,14 +171,14 @@ void SetFinalValues(VecType &myType, std::vector<int> &Reps,
         // variable. myReps and Reps in C++ are converted directly
         // from the user supplied 'freqs' parameter.
         if (n != static_cast<int>(Reps.size())) {
-            Rf_error("the length of freqs must equal the length of v");
+            cpp11::stop("the length of freqs must equal the length of v");
         }
 
         if (m > static_cast<int>(freqs.size())) {
             m = freqs.size();
         }
     } else if (!IsRep && m > n) {
-        Rf_error("m must be less than or equal to the length of v");
+        cpp11::stop("m must be less than or equal to the length of v");
     }
 }
 
@@ -205,15 +210,14 @@ void SetBasic(SEXP Rv, std::vector<double> &vNum,
         n = mnmx.second - mnmx.first + 1;
         constexpr int maxVecSize = std::numeric_limits<int>::max() / 2;
 
-        if (n < maxVecSize) {
-            vNum.resize(n);
-        } else {
-            Rf_error("Not enough memory! The vector you have"
+        if (n >= maxVecSize) {
+            cpp11::stop("Not enough memory! The vector you have"
                          " requested is larger than %s",
                          std::to_string(maxVecSize).c_str());
         }
 
-        std::iota(vNum.begin(), vNum.end(), mnmx.first);
+        vNum.resize(n);
+        std::iota(vNum.begin(), vNum.end(), static_cast<double>(mnmx.first));
     } else {
         vNum = CleanConvert::GetNumVec<double>(Rv);
         n = vNum.size();
@@ -295,14 +299,14 @@ void SetNumResults(bool IsGmp, bool bLower, bool bUpper, bool bSetNum,
             mpz_abs(absTestBound, testBound);
 
             if (mpz_cmp_si(absTestBound, std::numeric_limits<int>::max()) > 0) {
-                Rf_error("The number of rows cannot exceed 2^31 - 1.");
+                cpp11::stop("The number of rows cannot exceed 2^31 - 1.");
             }
 
             userNumRows = mpz_get_d(testBound);
             mpz_clear(absTestBound);
         } else if (bUpper) {
             if (mpz_cmp_si(upperMpz, std::numeric_limits<int>::max()) > 0) {
-                Rf_error("The number of rows cannot exceed 2^31 - 1.");
+                cpp11::stop("The number of rows cannot exceed 2^31 - 1.");
             }
 
             userNumRows = mpz_get_d(upperMpz);
@@ -311,7 +315,7 @@ void SetNumResults(bool IsGmp, bool bLower, bool bUpper, bool bSetNum,
             mpz_abs(testBound, testBound);
 
             if (mpz_cmp_si(testBound, std::numeric_limits<int>::max()) > 0) {
-                Rf_error("The number of rows cannot exceed 2^31 - 1.");
+                cpp11::stop("The number of rows cannot exceed 2^31 - 1.");
             }
 
             userNumRows = mpz_get_d(testBound);
@@ -333,7 +337,7 @@ void SetNumResults(bool IsGmp, bool bLower, bool bUpper, bool bSetNum,
             // Since lower is decremented and upper isn't, this implies that upper - lower = 0
             // which means that lower is one larger than upper as put in by the user
 
-            Rf_error("The number of rows must be positive. Either the"
+            cpp11::stop("The number of rows must be positive. Either the"
                      "lowerBound exceeds the maximum number of possible"
                      " results or the lowerBound is greater "
                      "than the upperBound.");
@@ -343,7 +347,7 @@ void SetNumResults(bool IsGmp, bool bLower, bool bUpper, bool bSetNum,
             // results we have as computedRows is a strict upper bound and not
             // the least upper bound.
             if (bSetNum && computedRows > std::numeric_limits<int>::max()) {
-                Rf_error("The number of rows cannot exceed 2^31 - 1.");
+                cpp11::stop("The number of rows cannot exceed 2^31 - 1.");
             }
 
             userNumRows = computedRows;
@@ -353,11 +357,11 @@ void SetNumResults(bool IsGmp, bool bLower, bool bUpper, bool bSetNum,
             }
         }
     } else if (userNumRows < 0) {
-        Rf_error("The number of rows must be positive. Either the lowerBound"
+        cpp11::stop("The number of rows must be positive. Either the lowerBound"
                  " exceeds the maximum number of possible results or the"
                  " lowerBound is greater than the upperBound.");
     } else if (userNumRows > std::numeric_limits<int>::max()) {
-        Rf_error("The number of rows cannot exceed 2^31 - 1.");
+        cpp11::stop("The number of rows cannot exceed 2^31 - 1.");
     } else {
         nRows = static_cast<int>(userNumRows);
     }
@@ -375,7 +379,7 @@ void SetBounds(SEXP Rlow, SEXP Rhigh, bool IsGmp, bool &bLower,
             lower = (bLower) ? 1 : 0;
 
             if (mpz_cmp(lowerMpz[0], computedRowsMpz) > 0) {
-                Rf_error("bounds cannot exceed the maximum "
+                cpp11::stop("bounds cannot exceed the maximum "
                              "number of possible results");
             }
 
@@ -386,7 +390,7 @@ void SetBounds(SEXP Rlow, SEXP Rhigh, bool IsGmp, bool &bLower,
             bLower = lower > 1;
 
             if (lower > computedRows) {
-                Rf_error("bounds cannot exceed the maximum "
+                cpp11::stop("bounds cannot exceed the maximum "
                              "number of possible results");
             }
 
@@ -401,7 +405,7 @@ void SetBounds(SEXP Rlow, SEXP Rhigh, bool IsGmp, bool &bLower,
             createMPZArray(Rhigh, upperMpz, 1, "upper");
 
             if (mpz_cmp(upperMpz[0], computedRowsMpz) > 0) {
-                Rf_error("bounds cannot exceed the maximum "
+                cpp11::stop("bounds cannot exceed the maximum "
                              "number of possible results");
             }
         } else {
@@ -409,7 +413,7 @@ void SetBounds(SEXP Rlow, SEXP Rhigh, bool IsGmp, bool &bLower,
                                            VecType::Numeric, "upper", false);
 
             if (upper > computedRows) {
-                Rf_error("bounds cannot exceed the maximum "
+                cpp11::stop("bounds cannot exceed the maximum "
                              "number of possible results");
             }
         }
@@ -517,11 +521,11 @@ void SetRandomSample(SEXP RindexVec, SEXP RNumSamp, int &sampSize,
     // get the size. This size var will be used in the next block (If (IsGmp)...)
     if (Rf_isNull(RindexVec)) {
         if (Rf_isNull(RNumSamp)) {
-            Rf_error("n and sampleVec cannot both be NULL");
+            cpp11::stop("n and sampleVec cannot both be NULL");
         }
 
         if (Rf_length(RNumSamp) > 1) {
-            Rf_error("length of n must be 1. For specific "
+            cpp11::stop("length of n must be 1. For specific "
                      "combinations, use sampleVec.");
         }
 
@@ -530,7 +534,7 @@ void SetRandomSample(SEXP RindexVec, SEXP RNumSamp, int &sampSize,
 
         if (!IsGmp) {
             if (sampSize > computedRows) {
-                Rf_error("n exceeds the maximum number of possible results");
+                cpp11::stop("n exceeds the maximum number of possible results");
             }
 
             SEXP sample = PROTECT(Rf_lang3(baseSample,
@@ -575,19 +579,27 @@ void SetRandomSample(SEXP RindexVec, SEXP RNumSamp, int &sampSize,
                                                    mySample.cend());
 
             if (myMax > computedRows) {
-                Rf_error("One or more of the requested values in sampleVec "
+                cpp11::stop("One or more of the requested values in sampleVec "
                          "exceeds the maximum number of possible results");
             }
         }
 
         if (sampSize > std::numeric_limits<int>::max()) {
-            Rf_error("The number of rows cannot exceed 2^31 - 1");
+            cpp11::stop("The number of rows cannot exceed 2^31 - 1");
         }
     }
 
     // Get zero base index
     for (auto &s: mySample) {
         --s;
+    }
+}
+
+void MpzClearVec(mpz_t *const myVec, int size, bool cond) {
+    if (cond) {
+        for (int i = 0; i < size; ++i) {
+            mpz_clear(myVec[i]);
+        }
     }
 }
 
@@ -624,7 +636,6 @@ void SetRandomSampleMpz(SEXP RindexVec, SEXP RmySeed, int sampSize,
             // random number is between 0 and gmpRows[0] - 1
             // so we need to add 1 to each element
             for (int i = 0; i < sampSize; ++i) {
-                mpz_init(myVec[i]);
                 mpz_urandomm(myVec[i], seed_state, computedRowsMpz);
             }
         }
@@ -640,9 +651,13 @@ void SetRandomSampleMpz(SEXP RindexVec, SEXP RmySeed, int sampSize,
         }
 
         if (mpz_cmp(maxGmp, computedRowsMpz) >= 0) {
-            Rf_error("One or more of the requested values in sampleVec "
+            mpz_clear(maxGmp);
+            MpzClearVec(myVec, sampSize, true);
+            cpp11::stop("One or more of the requested values in sampleVec "
                      "exceeds the maximum number of possible results");
         }
+
+        mpz_clear(maxGmp);
     }
 }
 

@@ -1,5 +1,4 @@
 #include "NumbersUtils/Eratosthenes.h"
-#include "CartesianContainer.h"
 #include "ComboCartesian.h"
 #include "CleanConvert.h"
 #include "SetUpUtils.h"
@@ -402,6 +401,7 @@ void getAtLeastNPrimes(std::vector<int> &primes,
     PrimeSieve::PrimeSieveMain(tempList, primes, intMin, intMax, tempPar);
 }
 
+[[cpp11::register]]
 SEXP ComboGridCpp(SEXP RList, SEXP RIsRep) {
 
     int sumLength = 0;

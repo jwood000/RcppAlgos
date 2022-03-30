@@ -1,8 +1,8 @@
 #include "Permutations/PermuteCount.h"
 #include "Cpp14MakeUnique.h"
+#include "SetUpUtils.h"
 #include <algorithm> // std::sort, std::max_element
 #include <numeric>   // std::accumulate, std::iota
-#include <gmp.h>
 
 // All functions below are exactly the same as the functions
 // in StandardCount.cpp. The only difference is that they
@@ -137,13 +137,7 @@ void MultisetPermRowNumGmp(mpz_t result, int n, int r,
 
         mpz_clear(temp);
         mpz_clear(prodR);
-
-        for (int i = 0; i < myMax; ++i) {
-            mpz_clear(cumProd[i]);
-        }
-
-        for (std::size_t i = 0; i < uR1; ++i) {
-            mpz_clear(resV[i]);
-        }
+        MpzClearVec(cumProd.get(), myMax);
+        MpzClearVec(resV.get(), uR1);
     }
 }
