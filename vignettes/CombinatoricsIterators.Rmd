@@ -1,7 +1,7 @@
 ---
 title: "Combinatorial Iterators in RcppAlgos"
 author: "Joseph Wood"
-date: "03/18/2022"
+date: "03/29/2022"
 output:
   rmarkdown::html_vignette:
     toc: true
@@ -188,7 +188,6 @@ a$nextRemaining()
 #> [5,]    2    4    5
 #> [6,]    3    4    5
 
-
 a$summary()
 #> $description
 #> [1] "Combinations of 5 choose 3"
@@ -241,7 +240,6 @@ a$prevRemaining()
 #> [4,]    1    2    5
 #> [5,]    1    2    4
 #> [6,]    1    2    3
-
 
 a$summary()
 #> $description
@@ -323,21 +321,6 @@ We can also easily return a random sample of combinations with the `[[` operator
 a[[2]]
 #> [1] 1 2 4
 
-
-a$summary()
-#> $description
-#> [1] "Combinations of 5 choose 3"
-#>
-#> $currentIndex
-#> [1] 2
-#>
-#> $totalResults
-#> [1] 10
-#>
-#> $totalRemaining
-#> [1] 8
-
-
 set.seed(121)
 samp = sample(a$summary()$totalResults, 4)
 
@@ -350,7 +333,6 @@ a[[samp]]
 #> [2,]    2    3    4
 #> [3,]    3    4    5
 #> [4,]    1    2    3
-
 
 ## Note that the current index remains unchanged
 a$summary()
@@ -375,40 +357,20 @@ Just as with `comboGeneral` and `permuteGeneral`, we can pass a user defined fun
 ## Initialize the iterator
 b = permuteIter(LETTERS[1:4], 3, FUN = function(p) paste(p, collapse = ""),
                 FUN.VALUE = "a")
-
 b$nextIter()
 #> [1] "ABC"
-
 
 b$nextNIter(5)
 #> [1] "ABD" "ACB" "ACD" "ADB" "ADC"
 
-
 b$back()
 #> [1] "DCB"
-
-
-b$summary()
-#> $description
-#> [1] "Permutations of 4 choose 3"
-#>
-#> $currentIndex
-#> [1] 24
-#>
-#> $totalResults
-#> [1] 24
-#>
-#> $totalRemaining
-#> [1] 0
-
 
 b$prevIter()
 #> [1] "DCA"
 
-
 b$prevNIter(5)
 #> [1] "DBC" "DBA" "DAC" "DAB" "CDB"
-
 
 b$nextRemaining()
 #> [1] "DAB" "DAC" "DBA" "DBC" "DCA" "DCB"
@@ -416,7 +378,6 @@ b$nextRemaining()
 ## Random access
 b[[5]]
 #> [1] "ADB"
-
 
 b$prevRemaining()
 #> [1] "ACD" "ACB" "ABD" "ABC"
@@ -432,11 +393,16 @@ As of version `2.5.0`, we no longer rely on `Rcpp` as a dependency, which means 
 
 ### Access Efficiency in `2.5.0`
 
-Our tests show that accessing methods is much more efficient in `2.5.0` compared to prior versions. In the below tests, we measure excecution time of calling `nextIter` multiple times in different versions. We will use the function `test_nextIter` for our testing:
+Our tests show that accessing methods is much more efficient in `2.5.0` compared to prior versions. In the below tests, we measure excecution time of calling `nextIter` multiple times in different versions. We will use the function `test_nextIter` for our testing. If one needs to reproduce, simply download the `2.4.3` tar here: https://cran.r-project.org/src/contrib/Archive/RcppAlgos, change `RcppAlgos` to `RcppAlgos243` in a few place (e.g. `DESCRIPTION`, `NAMESPACE`, etc.), and rebuild.
 
 ```r
 test_nextIter <- function(n, m, get_val = FALSE, v = 243) {
-    a <- comboIter(n, m)
+    a <- if (v == 243) {
+        RcppAlgos243::comboIter(n, m)
+    } else {
+        comboIter(n, m)
+    }
+
     total <- comboCount(n, m)
 
     if (get_val) {
@@ -465,8 +431,8 @@ comboCount(15, 8)
 
 microbenchmark(test_nextIter(15, 8))
 #> Unit: milliseconds
-#>                  expr      min       lq    mean  median       uq      max neval
-#>  test_nextIter(15, 8) 18.96939 20.49509 22.8305 22.2211 24.70213 31.21137   100
+#>                  expr      min       lq     mean   median       uq      max neval
+#>  test_nextIter(15, 8) 46.31869 51.43212 57.28727 51.93104 52.92773 516.2674   100
 
 identical(test_nextIter(15, 8, get_val = TRUE), comboGeneral(15, 8))
 #> [1] TRUE
@@ -476,35 +442,39 @@ comboCount(25, 10)
 
 system.time(test_nextIter(25, 10))
 #>    user  system elapsed
-#>  11.113   0.041  11.168
+#>  23.537   0.070  23.614
 
 Rprof("Version243.out", memory.profiling = TRUE)
 test_nextIter(25, 10)
 Rprof(NULL)
 summaryRprof("Version243.out", memory = "both")
 #> $by.self
-#>                 self.time self.pct total.time total.pct mem.total
-#> "$"                  4.14    40.75       4.14     40.75    3077.7
-#> "a$nextIter"         1.64    16.14       4.40     43.31    3534.4
-#> "test_nextIter"      1.62    15.94      10.16    100.00    7840.6
-#> "slot"               1.32    12.99       1.32     12.99    1003.9
-#> "<Anonymous>"        0.98     9.65       1.44     14.17    1297.6
-#> ".Call"              0.46     4.53       0.46      4.53     397.5
+#>                  self.time self.pct total.time total.pct mem.total
+#> "as.environment"      6.98    32.37       6.98     32.37    4045.5
+#> "$"                   6.28    29.13      16.40     76.07    9433.6
+#> "test_nextIter"       2.36    10.95      21.56    100.00   12438.3
+#> ".External"           2.02     9.37       2.02      9.37    1172.9
+#> "exists"              1.50     6.96       1.50      6.96     823.7
+#> "get"                 1.50     6.96       1.50      6.96     856.2
+#> "a$nextIter"          0.78     3.62       2.80     12.99    1620.6
+#> "is.symbol"           0.14     0.65       0.14      0.65      72.5
 #>
 #> $by.total
-#>                 total.time total.pct mem.total self.time self.pct
-#> "test_nextIter"      10.16    100.00    7840.6      1.62    15.94
-#> "a$nextIter"          4.40     43.31    3534.4      1.64    16.14
-#> "$"                   4.14     40.75    3077.7      4.14    40.75
-#> "<Anonymous>"         1.44     14.17    1297.6      0.98     9.65
-#> "slot"                1.32     12.99    1003.9      1.32    12.99
-#> ".Call"               0.46      4.53     397.5      0.46     4.53
+#>                  total.time total.pct mem.total self.time self.pct
+#> "test_nextIter"       21.56    100.00   12438.3      2.36    10.95
+#> "$"                   16.40     76.07    9433.6      6.28    29.13
+#> "as.environment"       6.98     32.37    4045.5      6.98    32.37
+#> "a$nextIter"           2.80     12.99    1620.6      0.78     3.62
+#> ".External"            2.02      9.37    1172.9      2.02     9.37
+#> "exists"               1.50      6.96     823.7      1.50     6.96
+#> "get"                  1.50      6.96     856.2      1.50     6.96
+#> "is.symbol"            0.14      0.65      72.5      0.14     0.65
 #>
 #> $sample.interval
 #> [1] 0.02
 #>
 #> $sampling.time
-#> [1] 10.16
+#> [1] 21.56
 ```
 
 #### Version `2.5.0` (No `Rcpp`)
@@ -512,12 +482,12 @@ summaryRprof("Version243.out", memory = "both")
 ```r
 microbenchmark(test_nextIter(15, 8, v = 250))
 #> Unit: milliseconds
-#>                           expr      min       lq     mean  median       uq    max neval
-#>  test_nextIter(15, 8, v = 251) 3.324678 3.462249 3.755247 3.64253 3.856856 9.4942   100
+#>                           expr      min       lq     mean   median       uq      max neval
+#>  test_nextIter(15, 8, v = 251) 3.872621 4.105784 4.464846 4.376151 4.647602 9.961372   100
 
 system.time(test_nextIter(25, 10, v = 250))
 #>    user  system elapsed
-#>   1.794   0.018   1.818
+#>   2.093   0.011   2.110
 
 identical(test_nextIter(15, 8, get_val = TRUE, v = 250), comboGeneral(15, 8))
 #> [1] TRUE
@@ -528,21 +498,21 @@ Rprof(NULL)
 summaryRprof("Version250.out", memory = "both")
 #> $by.self
 #>                 self.time self.pct total.time total.pct mem.total
-#> "<Anonymous>"        0.82    50.00       1.22     74.39     591.4
-#> "test_nextIter"      0.42    25.61       1.64    100.00     828.1
-#> ".Call"              0.40    24.39       0.40     24.39     208.5
+#> "<Anonymous>"        1.10    55.56       1.66     83.84     701.2
+#> ".Call"              0.56    28.28       0.56     28.28     255.6
+#> "test_nextIter"      0.32    16.16       1.98    100.00     831.8
 #>
 #> $by.total
 #>                 total.time total.pct mem.total self.time self.pct
-#> "test_nextIter"       1.64    100.00     828.1      0.42    25.61
-#> "<Anonymous>"         1.22     74.39     591.4      0.82    50.00
-#> ".Call"               0.40     24.39     208.5      0.40    24.39
+#> "test_nextIter"       1.98    100.00     831.8      0.32    16.16
+#> "<Anonymous>"         1.66     83.84     701.2      1.10    55.56
+#> ".Call"               0.56     28.28     255.6      0.56    28.28
 #>
 #> $sample.interval
 #> [1] 0.02
 #>
 #> $sampling.time
-#> [1] 1.64
+#> [1] 1.98
 ```
 
 #### Conclusions
@@ -554,28 +524,28 @@ It appears that memory is the issue in previous versions. Indeed, if we look at 
 summaryRprof("Version243.out", memory = "stats")
 #> index: "test_nextIter"
 #>      vsize.small  max.vsize.small      vsize.large  max.vsize.large            nodes        max.nodes     duplications tot.duplications          samples
-#>           818856          1528208                0                0         15084023         28150864            12915          1046139               81
-#> ------------------------------------------------------------------------------------------------------------------------------------------------------
+#>           594132           981272                0                0         11705787         19332264             9200          1085637              118
+#> --------------------------------------------------------------------------------------------------------------------------------------------------------
 #> index: "test_nextIter":"$"
 #>      vsize.small  max.vsize.small      vsize.large  max.vsize.large            nodes        max.nodes     duplications tot.duplications          samples
-#>           893682         18816032            92410         19128912         15580492        164092096            12582          2604432              207
-#> ------------------------------------------------------------------------------------------------------------------------------------------------------
+#>           602919         16615120            19309         15833656         11636867        128195480             9069          7436251              820
+#> --------------------------------------------------------------------------------------------------------------------------------------------------------
 #> index: "test_nextIter":"a$nextIter"
 #>      vsize.small  max.vsize.small      vsize.large  max.vsize.large            nodes        max.nodes     duplications tot.duplications          samples
-#>           867378          1534896                0                0         15978375         28274568            13087          2879232              220
+#>           586247           980856                0                0         11551771         19329128             9169          1283636              140
 
 ## Version 2.5.0
 summaryRprof("Version250.out", memory = "stats")
 #> index: "test_nextIter"
 #>      vsize.small  max.vsize.small      vsize.large  max.vsize.large            nodes        max.nodes     duplications tot.duplications          samples
-#>          2626749          3953536                0                0          9193563         13837376                0                0               21
-#> ---------------------------------------------------------------------------------------------------------------------------------------------------
+#>          1901132          3243968                0                0          6653888         11353832                0                0               16
+#> --------------------------------------------------------------------------------------------------------------------------------------------------------
 #> index: "test_nextIter":"<Anonymous>"
 #>      vsize.small  max.vsize.small      vsize.large  max.vsize.large            nodes        max.nodes     duplications tot.duplications          samples
-#>          2533896         17629656           277772         16944064         10035058        132854400                0                7               61
+#>          2412388         36833808           196363         16298112          9270795        197594096                0                7               83
 ```
 
-With verison `2.5.0` there are only 7 `tot.duplications` whereas with version `2.4.3` there are millions of `tot.duplications`. In fact, there are a total of `1046139 + 2604432 + 2879232 = 6,529,803` duplications with version `2.4.3`. This together with `comboCount(25, 10) = 3,268,760` implies that the C funciton, `duplicate`, is called about 2 times per iteration with older versions (i.e. `6529803 / 3268760 ~= 1.997639`).
+With verison `2.5.0` there are only 7 `tot.duplications` whereas with version `2.4.3` there are millions of `tot.duplications`. In fact, there are a total of `1085637 + 7436251 + 1283636 = 9,805,524` duplications with version `2.4.3`. This together with `comboCount(25, 10) = 3,268,760` implies that the C funciton, `duplicate`, is called about 3 times per iteration with older versions (i.e. `9805524 / 3268760 ~= 2.999769`).
 
 ### Iterating over Partitions of a Number
 

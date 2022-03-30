@@ -1,7 +1,7 @@
 ---
 title: "Combinatorial Sampling"
 author: "Joseph Wood"
-date: "03/12/2022"
+date: "03/29/2022"
 output:
   rmarkdown::html_vignette:
     toc: true
@@ -293,14 +293,14 @@ partitionsCount(2500, 10)
 #> [1] 2621914835336941325
 
 ## Algorithms are very efficient
-system.time(serial = partitionsSample(2500, 10, n = 1e3,
-                                      seed = 8128))
+system.time(serial <- partitionsSample(2500, 10, n = 1e3,
+                                       seed = 8128))
 #>    user  system elapsed
 #>   5.220   0.010   5.235
 
 ## Use nThreads for greater efficiency
-system.time(multi = partitionsSample(2500, 10, n = 1e3,
-                                     seed = 8128, nThreads = 8))
+system.time(multi <- partitionsSample(2500, 10, n = 1e3,
+                                      seed = 8128, nThreads = 8))
 #>    user  system elapsed
 #>  10.723   0.022   1.358
 

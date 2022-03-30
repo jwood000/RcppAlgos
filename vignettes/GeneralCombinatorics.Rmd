@@ -1,7 +1,7 @@
 ---
 title: "Combination and Permutation Basics"
 author: "Joseph Wood"
-date: "03/08/2022"
+date: "03/29/2022"
 output:
   rmarkdown::html_vignette:
     toc: true
@@ -397,7 +397,7 @@ system.time(mclapply(seq(1, 3247943160, 10086780), function(x) {
      x
 }, mc.cores = 6))
 #>    user  system elapsed
-#>  29.387  30.304  32.721
+#>  63.994  59.189  31.574
 ```
 
 ## GMP Support
