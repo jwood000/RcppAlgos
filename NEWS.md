@@ -1,8 +1,14 @@
+# RcppAlgos 2.5.3
+
+## Other:
+
+* Fixed urls
+
 # RcppAlgos 2.5.2
 
 ## Bug Fixes:
 
-* Fixed valgrind memory issue.
+* Fixed valgrind memory issue with package `cpp11`. Now using `cpp11::stop` instead of `Rf_error` so as to avoid `longjmp` (the root cause of the memory issues).
 
 # RcppAlgos 2.5.1
 

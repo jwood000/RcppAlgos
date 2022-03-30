@@ -5,7 +5,7 @@ comboGeneral <- function(v, m = NULL, repetition = FALSE, freqs = NULL,
                          nThreads = NULL, tolerance = NULL,
                          FUN.VALUE = NULL) {
 
-    RetValue <- CheckReturn(v, constraintFun,
+    RetValue <- .Call(`_RcppAlgos_CheckReturn`, v, constraintFun,
                       comparisonFun, limitConstraints,
                       keepResults, FUN)
 

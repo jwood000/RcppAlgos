@@ -1,11 +1,20 @@
 \name{NEWS}
 \title{News for Package \pkg{RcppAlgos}}
 
-\section{Changes in RcppAlgos version 2.5.2 (Release date: 2022-03-27)}{
+\section{Changes in RcppAlgos version 2.5.3 (Release date: 2022-03-30)}{
+    \itemize{
+        \item Other:
+        \itemize{
+            \item Fixed urls
+        }
+    }
+}
+
+\section{Changes in RcppAlgos version 2.5.2 (Release date: Never Released)}{
     \itemize{
         \item Bug Fixes:
         \itemize{
-            \item Fixed valgrind memory issue.
+            \item Fixed valgrind memory issue with package cpp11. Now using \code{cpp11::stop} instead of \code{Rf_error} so as to avoid \code{longjmp} (the root cause of the memory issues).
         }
     }
 }
