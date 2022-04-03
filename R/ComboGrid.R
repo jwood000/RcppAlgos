@@ -41,13 +41,13 @@ comboGrid <- function(..., repetition = TRUE) {
         pools <- pools[-idx_nas]
     }
 
-    numChars <- sum(sapply(pools, class) == "character")
+    numChars <- sum(sapply(pools, is.character))
     convertCharToFac <- numChars < length(pools) && length(pools) > 1
 
     pools <- lapply(pools, function(x) {
         t <- sort(unique(x), na.last = FALSE)
 
-        if (convertCharToFac && class(t) == "character") {
+        if (convertCharToFac && is.character(t)) {
             return(factor(t, levels = t))
         } else {
             return(t)

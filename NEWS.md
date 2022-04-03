@@ -1,3 +1,9 @@
+# RcppAlgos 2.5.5
+
+## Other:
+
+* Corrected `if()` conditions comparing `class()` to string. Changed to `is.character`.
+
 # RcppAlgos 2.5.4
 
 ## Other:
