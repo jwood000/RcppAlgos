@@ -22,7 +22,7 @@ GMP support allows for exploration of combinations/permutations of vectors with 
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">RcppAlgos</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">2.5.3</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">2.5.4</span>
       </span>
     </div>
 
@@ -167,7 +167,7 @@ GMP support allows for exploration of combinations/permutations of vectors with 
 <span class="r-out co"><span class="r-pr">#&gt;</span> [5,]    5   12   14   18   21   22   25   27</span>
 <span class="r-in"></span>
 <span class="r-in"><span class="co">## using sampleVec to generate specific permutations</span></span>
-<span class="r-in"><span class="fu">permuteSample</span><span class="op">(</span><span class="fl">15</span>, <span class="fl">10</span>, freqs <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>,<span class="fl">2</span>,<span class="fl">2</span>,<span class="fl">1</span>,<span class="fl">2</span>,<span class="fl">2</span>,<span class="fl">1</span>,<span class="fl">2</span>,<span class="fl">1</span>,<span class="fl">2</span>,<span class="fl">2</span>,<span class="fl">1</span>,<span class="fl">2</span>,<span class="fl">1</span>,<span class="fl">1</span><span class="op">)</span>, </span>
+<span class="r-in"><span class="fu">permuteSample</span><span class="op">(</span><span class="fl">15</span>, <span class="fl">10</span>, freqs <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>,<span class="fl">2</span>,<span class="fl">2</span>,<span class="fl">1</span>,<span class="fl">2</span>,<span class="fl">2</span>,<span class="fl">1</span>,<span class="fl">2</span>,<span class="fl">1</span>,<span class="fl">2</span>,<span class="fl">2</span>,<span class="fl">1</span>,<span class="fl">2</span>,<span class="fl">1</span>,<span class="fl">1</span><span class="op">)</span>,</span>
 <span class="r-in">              sampleVec <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">10</span><span class="op">^</span><span class="fl">2</span>, <span class="fl">10</span><span class="op">^</span><span class="fl">5</span>, <span class="fl">10</span><span class="op">^</span><span class="fl">8</span>, <span class="fl">10</span><span class="op">^</span><span class="fl">11</span><span class="op">)</span><span class="op">)</span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>      [,1] [,2] [,3] [,4] [,5] [,6] [,7] [,8] [,9] [,10]</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1,]    1    2    2    3    3    4    5    5    6     6</span>
@@ -175,12 +175,12 @@ GMP support allows for exploration of combinations/permutations of vectors with 
 <span class="r-out co"><span class="r-pr">#&gt;</span> [3,]    1    2    2    3    3   11    8    4   15     6</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [4,]    1    2    5    3   10    7    6   11    9    13</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [5,]   13   15    8   11    5    5    6    1   11    12</span>
-<span class="r-in">              </span>
-<span class="r-in"><span class="fu"><a href="https://rdrr.io/r/base/all.equal.html" class="external-link">all.equal</a></span><span class="op">(</span><span class="fu">comboSample</span><span class="op">(</span><span class="fl">10</span>, <span class="fl">5</span>, </span>
+<span class="r-in"></span>
+<span class="r-in"><span class="fu"><a href="https://rdrr.io/r/base/all.equal.html" class="external-link">all.equal</a></span><span class="op">(</span><span class="fu">comboSample</span><span class="op">(</span><span class="fl">10</span>, <span class="fl">5</span>,</span>
 <span class="r-in">            sampleVec <span class="op">=</span> <span class="fl">1</span><span class="op">:</span><span class="fu"><a href="combinatoricsCount.html">comboCount</a></span><span class="op">(</span><span class="fl">10</span>, <span class="fl">5</span><span class="op">)</span><span class="op">)</span>,</span>
 <span class="r-in">         <span class="fu"><a href="combinatoricsGeneral.html">comboGeneral</a></span><span class="op">(</span><span class="fl">10</span>, <span class="fl">5</span><span class="op">)</span><span class="op">)</span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] TRUE</span>
-<span class="r-in">         </span>
+<span class="r-in"></span>
 <span class="r-in"><span class="co">## Examples with enormous number of total permutations</span></span>
 <span class="r-in"><span class="va">num</span> <span class="op">=</span> <span class="fu"><a href="combinatoricsCount.html">permuteCount</a></span><span class="op">(</span><span class="fl">10000</span>, <span class="fl">20</span><span class="op">)</span></span>
 <span class="r-in"><span class="fu">gmp</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/gmp/man/add.biginteger.html" class="external-link">log2.bigz</a></span><span class="op">(</span><span class="va">num</span><span class="op">)</span></span>
@@ -200,7 +200,7 @@ GMP support allows for exploration of combinations/permutations of vectors with 
 <span class="r-in"><span class="va">pSamp</span> <span class="op">=</span> <span class="fu">permuteSample</span><span class="op">(</span><span class="fl">10000</span>, <span class="fl">20</span>, sampleVec <span class="op">=</span> <span class="va">mySamp</span><span class="op">)</span></span>
 <span class="r-in"></span>
 <span class="r-in"><span class="co">## using permuteGeneral</span></span>
-<span class="r-in"><span class="va">pGeneral</span> <span class="op">=</span> <span class="fu"><a href="combinatoricsGeneral.html">permuteGeneral</a></span><span class="op">(</span><span class="fl">10000</span>, <span class="fl">20</span>, </span>
+<span class="r-in"><span class="va">pGeneral</span> <span class="op">=</span> <span class="fu"><a href="combinatoricsGeneral.html">permuteGeneral</a></span><span class="op">(</span><span class="fl">10000</span>, <span class="fl">20</span>,</span>
 <span class="r-in">                          lower <span class="op">=</span> <span class="va">first</span>,</span>
 <span class="r-in">                          upper <span class="op">=</span> <span class="fu">gmp</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/gmp/man/add.biginteger.html" class="external-link">add.bigz</a></span><span class="op">(</span><span class="va">first</span>, <span class="fl">10</span><span class="op">)</span><span class="op">)</span></span>
 <span class="r-in"></span>

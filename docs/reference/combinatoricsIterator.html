@@ -23,7 +23,7 @@ The output is in lexicographical order for the next methods and reverse lexicogr
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">RcppAlgos</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">2.5.3</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">2.5.4</span>
       </span>
     </div>
 
@@ -119,7 +119,7 @@ The output is in lexicographical order for the next methods and reverse lexicogr
 <dt>constraintFun</dt>
 <dd><p>Function to be applied to the elements of <code>v</code> that should be passed as a string (<em>e.g.</em> <code>constraintFun = "sum"</code>). The possible constraint functions are: <code>"sum"</code>, <code>"prod"</code>, <code>"mean"</code>, <code>"max"</code>, &amp; <code>"min"</code>. The default is <code>NULL</code>, meaning no function is applied.</p></dd>
 <dt>comparisonFun</dt>
-<dd><p>Comparison operator that will be used to compare <code>limitConstraints</code> with the result of <code>constraintFun</code> applied to <code>v</code>. It should be passed as a string or a vector of two strings (<em>e.g.</em> <code>comparisonFun = "&lt;="</code> or  <code>comparisonFun = c("&gt;","&lt;")</code>). The possible comparison operators are: <code>"&lt;"</code>, <code>"&gt;"</code>, <code>"&lt;="</code>, <code>"&gt;="</code>, <code>"=="</code>. The default is <code>NULL</code>.</p>  
+<dd><p>Comparison operator that will be used to compare <code>limitConstraints</code> with the result of <code>constraintFun</code> applied to <code>v</code>. It should be passed as a string or a vector of two strings (<em>e.g.</em> <code>comparisonFun = "&lt;="</code> or  <code>comparisonFun = c("&gt;","&lt;")</code>). The possible comparison operators are: <code>"&lt;"</code>, <code>"&gt;"</code>, <code>"&lt;="</code>, <code>"&gt;="</code>, <code>"=="</code>. The default is <code>NULL</code>.</p>
 <p>When <code>comparisonFun</code> is a vector of two comparison strings, <em>e.g</em> <code>comparisonFun = c(comp1, comp2)</code>, and <code>limitConstraints</code> is a vector of two numerical values, <em>e.g</em> <code>limitConstraints = c(x1, x2)</code>, the combinations/permutations will be filtered in one of the following two ways:</p><ol><li><p>When <code>comp1</code> is one of the 'greater-than' operators (<em>i.e.</em> "&gt;=" or "&gt;"), <code>comp2</code> is one of the 'less-than' operators (<em>i.e.</em> "&lt;=" or "&lt;"), and <code>x1 &lt; x2</code>, the combinations/permutations that are returned will have a value (after <code>constraintFun</code> has been applied) between <code>x1</code> and <code>x2</code>.</p></li>
 <li><p>When <code>comp1</code> and <code>comp2</code> are defined as in #1 and <code>x1 &gt; x2</code>, the combinations/permutations that are returned will have a value outside the range of <code>x1</code> and <code>x2</code>. See the examples below.</p></li>
 </ol><p>In other words, the first comparison operator is applied to the first limit and the second operator is applied to the second limit.</p></dd>
