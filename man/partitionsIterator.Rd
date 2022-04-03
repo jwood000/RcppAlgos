@@ -13,7 +13,7 @@ Partition Iterator
 }
 \usage{
 partitionsIter(v, m = NULL, repetition = FALSE,
-               freqs = NULL, target = NULL, 
+               freqs = NULL, target = NULL,
                nThreads = NULL, tolerance = NULL)
 }
 \arguments{

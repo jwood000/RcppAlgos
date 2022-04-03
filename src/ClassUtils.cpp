@@ -2,6 +2,7 @@
 #include "ImportExportMPZ.h"
 #include "SetUpUtils.h"
 #include <algorithm>   // std::max_element
+#include <cmath>       // std::abs
 
 void SetIndexVec(SEXP RindexVec, std::vector<double> &mySample,
                  std::size_t &sampSize, bool IsGmp, double computedRows) {
@@ -255,12 +256,12 @@ void zUpdateIndex(const std::vector<double> &vNum,
 
             for (int j = 0; j < m; ++j) {
                 int ind = 0;
-                bool bTestImg = std::abs(xCmplxPt[ind].i - yCmplxPt[j].i) > myTolerance;
+                bool bTestImg  = std::abs(xCmplxPt[ind].i - yCmplxPt[j].i) > myTolerance;
                 bool bTestReal = std::abs(xCmplxPt[ind].r - yCmplxPt[j].r) > myTolerance;
 
                 while (ind < n1 && (bTestImg || bTestReal)) {
                     ++ind;
-                    bTestImg = std::abs(xCmplxPt[ind].i - yCmplxPt[j].i) > myTolerance;
+                    bTestImg  = std::abs(xCmplxPt[ind].i - yCmplxPt[j].i) > myTolerance;
                     bTestReal = std::abs(xCmplxPt[ind].r - yCmplxPt[j].r) > myTolerance;
                 }
 

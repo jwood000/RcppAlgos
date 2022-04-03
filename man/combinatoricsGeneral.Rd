@@ -34,13 +34,13 @@ permuteGeneral(v, m = NULL, repetition = FALSE, freqs = NULL,
   \item{freqs}{A vector of frequencies used for producing all combinations/permutations of a multiset of \code{v}. Each element of \code{freqs} represents how many times each element of the source vector, \code{v}, is repeated. It is analogous to the \code{times} argument in \code{\link[base]{rep}}. The default value is \code{NULL}.}
   \item{lower}{The lower bound. Combinations/permutations are generated lexicographically, thus utilizing this argument will determine which specific combination/permutation to start generating from (\emph{e.g.} \code{comboGeneral(5, 3, lower = 6)} is equivalent to \code{comboGeneral(5, 3)[6:choose(5, 3), ]}). This argument along with \code{upper} is very useful for generating combinations/permutations in chunks allowing for easy parallelization.}
   \item{upper}{The upper bound. Similar to \code{lower}, however this parameter allows the user to \emph{stop} generation at a specific combination/permutation (\emph{e.g.} \code{comboGeneral(5, 3, upper = 5)} is equivalent to \code{comboGeneral(5, 3)[1:5, ]})
-  
+
   If the output is constrained and \code{lower} isn't supplied, \code{upper} serves as a cap for how many results will be returned that meet the criteria (\emph{e.g.} setting \code{upper = 100} alone will return the first 100 results that meet the criteria, while setting \code{lower = 1} and \code{upper = 100} will test the first 100 results against the criteria).
-  
+
   In addition to the benefits listed for \code{lower}, this parameter is useful when the total number of combinations/permutations without constraint is large and you expect/need a small number of combinations/permutations that meet a certain criteria. Using \code{upper} can improve run time if used judiciously as we call the member function \href{https://en.cppreference.com/w/cpp/container/vector/reserve}{reserve} of \href{https://en.cppreference.com/w/cpp/container/vector}{std::vector}. See examples below.}
   \item{constraintFun}{Function to be applied to the elements of \code{v} that should be passed as a string (\emph{e.g.} \code{constraintFun = "sum"}). The possible constraint functions are: \code{"sum"}, \code{"prod"}, \code{"mean"}, \code{"max"}, & \code{"min"}. The default is \code{NULL}, meaning no function is applied.}
   \item{comparisonFun}{Comparison operator that will be used to compare \code{limitConstraints} with the result of \code{constraintFun} applied to \code{v}. It should be passed as a string or a vector of two strings (\emph{e.g.} \code{comparisonFun = "<="} or  \code{comparisonFun = c(">","<")}). The possible comparison operators are: \code{"<"}, \code{">"}, \code{"<="}, \code{">="}, \code{"=="}. The default is \code{NULL}.
-  
+
   When \code{comparisonFun} is a vector of two comparison strings, \emph{e.g} \code{comparisonFun = c(comp1, comp2)}, and \code{limitConstraints} is a vector of two numerical values, \emph{e.g} \code{limitConstraints = c(x1, x2)}, the combinations/permutations will be filtered in one of the following two ways:
   \enumerate{
       \item{When \code{comp1} is one of the 'greater-than' operators (\emph{i.e.} ">=" or ">"), \code{comp2} is one of the 'less-than' operators (\emph{i.e.} "<=" or "<"), and \code{x1 < x2}, the combinations/permutations that are returned will have a value (after \code{constraintFun} has been applied) between \code{x1} and \code{x2}.}
@@ -49,7 +49,7 @@ permuteGeneral(v, m = NULL, repetition = FALSE, freqs = NULL,
   In other words, the first comparison operator is applied to the first limit and the second operator is applied to the second limit.}
   \item{limitConstraints}{This is the value(s) that will be used for comparison. Can be passed as a single value or a vector of two numerical values. The default is \code{NULL}. See the definition of \code{comparisonFun} as well as the examples below for more information.}
   \item{keepResults}{A logical flag indicating if the result of \code{constraintFun} applied to \code{v} should be displayed; if \code{TRUE}, an additional column of results will be added to the resulting matrix. The default is \code{FALSE}. If user is only applying \code{constraintFun}, \code{keepResults} will default to \code{TRUE}.
-  
+
       \emph{E.g}. The following are equivalent and will produce a \eqn{4^{th}}{4th} column of row sums:
       \itemize{
             \item \code{comboGeneral(5, 3 constraintFun = "sum", keepResults = TRUE)}
@@ -125,7 +125,7 @@ permuteCount(75, 10, freqs = rep(1:3, 25))
 # >[1] 4606842576291495952
 
 ## See specific range of permutations
-permuteGeneral(75, 10, freqs = rep(1:3, 25), 
+permuteGeneral(75, 10, freqs = rep(1:3, 25),
                lower = 1e12, upper = 1e12 + 10)
 
 ## Researcher only needs 1000 7-tuples of mySamp
@@ -142,7 +142,7 @@ system.time(comboGeneral(mySamp, 7, lower = choose(75, 7) - 9))
 ## million combinations starting with the 900,000,001
 ## lexicographic combination.
 t1 = comboGeneral(mySamp, 7,
-                  lower = 9*10^8 + 1, 
+                  lower = 9*10^8 + 1,
                   upper = 9*10^8 + 10^6)
 
 ## class of the source vector is preserved
@@ -151,14 +151,14 @@ class(comboGeneral(c(1,2:5),3)[1,]) == class(c(1,2:5))
 class(comboGeneral(factor(month.name),3)[1,]) == class(factor(month.name))
 
 ## Using keepResults will add a column of results
-t2 = permuteGeneral(-3,6,TRUE,constraintFun = "prod", 
+t2 = permuteGeneral(-3,6,TRUE,constraintFun = "prod",
                          keepResults = TRUE)
 
-t3 = comboGeneral(-3,6,TRUE,constraintFun = "sum", 
+t3 = comboGeneral(-3,6,TRUE,constraintFun = "sum",
                         comparisonFun = "==",
-                        limitConstraints = -8, 
+                        limitConstraints = -8,
                         keepResults = TRUE)
-                        
+
 ## Using multiple constraints:
 
 ## Get combinations such that the product
@@ -167,7 +167,7 @@ comboGeneral(5, 7, TRUE, constraintFun = "prod",
              comparisonFun = c(">=","<="),
              limitConstraints = c(3000, 4000),
              keepResults = TRUE)
-             
+
 ## Or, get the combinations such that the
 ## product is less than or equal to 10 or
 ## greater than or equal to 40000
@@ -175,21 +175,21 @@ comboGeneral(5, 7, TRUE, constraintFun = "prod",
              comparisonFun = c("<=",">="),
              limitConstraints = c(10, 40000),
              keepResults = TRUE)
-             
+
 #### General subset sum problem
 set.seed(516781810)
 comboGeneral(runif(100, 0, 42), 5, constraintFun = "mean",
              comparisonFun = "==", limitConstraints = 30,
              tolerance = 0.0000002)
 
-             
+
 #### Integer Partitions
 comboGeneral(0:5, 5, TRUE, constraintFun = "sum",
              comparisonFun = "==", limitConstraints = 5)
-             
-             
+
+
 ## Using FUN
-comboGeneral(10000, 5, lower = 20, upper = 22, 
+comboGeneral(10000, 5, lower = 20, upper = 22,
              FUN = function(x) {
                  which(cummax(x) \%\% 2 == 1)
              })
@@ -247,7 +247,7 @@ system.time(rowSums(combs))
 ## Fun example... see stackoverflow:
 ## https://stackoverflow.com/q/22218640/4408538
 system.time(permuteGeneral(seq(0L,100L,10L),8,TRUE,
-                                constraintFun = "sum", 
+                                constraintFun = "sum",
                                 comparisonFun = "==",
                                 limitConstraints = 100))
 }

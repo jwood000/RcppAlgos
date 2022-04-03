@@ -68,13 +68,13 @@ Joseph Wood
 comboSample(30, 8, TRUE, n = 5, seed = 10)
 
 ## using sampleVec to generate specific permutations
-permuteSample(15, 10, freqs = c(1,2,2,1,2,2,1,2,1,2,2,1,2,1,1), 
+permuteSample(15, 10, freqs = c(1,2,2,1,2,2,1,2,1,2,2,1,2,1,1),
               sampleVec = c(1, 10^2, 10^5, 10^8, 10^11))
-              
-all.equal(comboSample(10, 5, 
+
+all.equal(comboSample(10, 5,
             sampleVec = 1:comboCount(10, 5)),
          comboGeneral(10, 5))
-         
+
 ## Examples with enormous number of total permutations
 num = permuteCount(10000, 20)
 gmp::log2.bigz(num)
@@ -90,7 +90,7 @@ class(mySamp)
 pSamp = permuteSample(10000, 20, sampleVec = mySamp)
 
 ## using permuteGeneral
-pGeneral = permuteGeneral(10000, 20, 
+pGeneral = permuteGeneral(10000, 20,
                           lower = first,
                           upper = gmp::add.bigz(first, 10))
 

@@ -1,3 +1,9 @@
+# RcppAlgos 2.5.4
+
+## Other:
+
+* Added missing includes
+
 # RcppAlgos 2.5.3
 
 ## Other:

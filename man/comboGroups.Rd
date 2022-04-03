@@ -12,7 +12,7 @@ Partition a Vector into Groups of Equal Size
     }
 }
 \usage{
-comboGroups(v, numGroups, retType = "matrix", 
+comboGroups(v, numGroups, retType = "matrix",
             lower = NULL, upper = NULL, Parallel = FALSE,
             nThreads = NULL)
 }

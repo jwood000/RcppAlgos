@@ -11,7 +11,7 @@ Sample Partitions of a Vector into Groups of Equal Size
     }
 }
 \usage{
-comboGroupsSample(v, numGroups, retType = "matrix", n = NULL, 
+comboGroupsSample(v, numGroups, retType = "matrix", n = NULL,
                   sampleVec = NULL, seed = NULL, Parallel = FALSE,
                   nThreads = NULL, namedSample = FALSE)
 }
@@ -46,11 +46,11 @@ comboGroupsSample(10, 2, n = 10, seed = 123)
 
 ## using sampleVec to generate specific results
 comboGroupsSample(15, 5, sampleVec = c(1, 100, 1e3, 1e6))
-              
-all.equal(comboGroupsSample(10, 5, 
+
+all.equal(comboGroupsSample(10, 5,
             sampleVec = 1:comboGroupsCount(10, 5)),
          comboGroups(10, 5))
-         
+
 ## Examples with enormous number of total results
 num = comboGroupsCount(100, 20)
 gmp::log2.bigz(num)
@@ -66,7 +66,7 @@ class(mySamp)
 cbgSamp = comboGroupsSample(100, 20, sampleVec = mySamp)
 
 ## using the standard function
-cbgGeneral = comboGroups(100, 20, 
+cbgGeneral = comboGroups(100, 20,
                          lower = first,
                          upper = gmp::add.bigz(first, 10))
 

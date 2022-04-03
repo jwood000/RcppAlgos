@@ -57,7 +57,7 @@ primeSieve(100)
 ## Primes between 42 and 17
 primeSieve(42, 17)
 
-## Equivalent to 
+## Equivalent to
 primeSieve(17, 42)
 
 ## Primes up to one hundred million in no time

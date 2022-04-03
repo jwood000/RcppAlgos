@@ -46,7 +46,7 @@ The maximum value for either of the bounds is \eqn{2^{53} - 1}{2^53 - 1}.
 set.seed(33550336)
 mySamp <- sample(10^5, 5*10^4)
 
-## Generate complete factorizations up 
+## Generate complete factorizations up
 ## to 10^5 (max element from mySamp)
 system.time(allFacs <- divisorsSieve(10^5))
 

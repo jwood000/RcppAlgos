@@ -34,7 +34,7 @@ tail(expGridNoOrder)
 
 expGridNoOrderNoRep = comboGrid(1:5, 3:9, letters[1:5],
                                 letters[c(1,4,5,8)], repetition = FALSE)
-                                
+
 head(expGridNoOrderNoRep)
 tail(expGridNoOrderNoRep)
 }

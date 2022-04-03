@@ -46,7 +46,7 @@ Joseph Wood
 set.seed(28)
 mySamp <- sample(10^5, 5*10^4)
 
-## Generate prime factorizations up 
+## Generate prime factorizations up
 ## to 10^5 (max element from mySamp)
 system.time(allPFacs <- primeFactorizeSieve(10^5))
 

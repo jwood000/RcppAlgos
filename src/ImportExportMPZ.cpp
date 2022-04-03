@@ -11,6 +11,7 @@
 #include "ImportExportMPZ.h"
 #include "SetUpUtils.h"
 #include <cstring>
+#include <cmath>    // std::abs
 
 void createMPZArray(SEXP input, mpz_t *myVec, std::size_t vecSize,
                     const std::string &nameOfObject, bool negPoss) {
