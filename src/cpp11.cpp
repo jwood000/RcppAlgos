@@ -6,10 +6,10 @@
 #include <R_ext/Visibility.h>
 
 // CartesianContainer.cpp
-SEXP ComboGridCpp(SEXP RList, SEXP RIsRep);
-extern "C" SEXP _RcppAlgos_ComboGridCpp(SEXP RList, SEXP RIsRep) {
+SEXP ComboGridCpp(cpp11::list RList, bool IsRep);
+extern "C" SEXP _RcppAlgos_ComboGridCpp(SEXP RList, SEXP IsRep) {
   BEGIN_CPP11
-    return cpp11::as_sexp(ComboGridCpp(cpp11::as_cpp<cpp11::decay_t<SEXP>>(RList), cpp11::as_cpp<cpp11::decay_t<SEXP>>(RIsRep)));
+    return cpp11::as_sexp(ComboGridCpp(cpp11::as_cpp<cpp11::decay_t<cpp11::list>>(RList), cpp11::as_cpp<cpp11::decay_t<bool>>(IsRep)));
   END_CPP11
 }
 // CheckReturn.cpp
