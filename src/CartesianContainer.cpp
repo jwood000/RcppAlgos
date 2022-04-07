@@ -63,11 +63,11 @@ void convertToString(std::vector<std::string> &tempVec,
 
             break;
         } case LGLSXP: {
-            cpp11::integers intVec(ListElement);
+            cpp11::logicals boolVec(ListElement);
             typePass = tLog;
 
-            for (auto v: intVec) {
-                std::string r = std::to_string(v);
+            for (auto v: boolVec) {
+                std::string r = std::to_string(v ? 1 : 0);
                 tempVec.push_back(r + "log");
             }
 
@@ -117,36 +117,37 @@ void convertToString(std::vector<std::string> &tempVec,
     }
 }
 
-void GetCharOutput(cpp11::writable::strings_matrix<> &mat,
-                   const cpp11::list &RList,
+void GetCharOutput(cpp11::writable::strings_matrix<> &res,
                    const std::vector<int> &cartCombs,
                    const std::vector<int> &lastCol,
                    const std::vector<int> &lenGrps,
-                   const cpp11::strings &charVec, int nCols, int nRows) {
+                   const cpp11::strings &charVec,
+                   int nCols, int nRows) {
 
-    for (int i = 0, n1 = nCols - 1, row = 0,
-         baseSize = lenGrps.size(); i < baseSize; ++i) {
+    for (int i = 0, n1 = nCols - 1, row = 0, m_idx = 0,
+         baseSize = lenGrps.size(); i < baseSize; ++i, m_idx = row) {
 
         for (int j = 0, c_idx = i * n1, grpSize = lenGrps[i];
-             j < n1; ++j, ++c_idx) {
+             j < n1; ++j, ++c_idx, m_idx += nRows) {
 
-            auto&& comb = charVec[cartCombs[c_idx]];
+            SEXP comb = PROTECT(STRING_ELT(charVec, cartCombs[c_idx]));
 
             for (int k = 0; k < grpSize; ++k) {
-                mat(k, j) = comb;
+                SET_STRING_ELT(res, m_idx + k, comb);
             }
+
+            UNPROTECT(1);
         }
 
         for (int k = 0; k < lenGrps[i]; ++k, ++row) {
-            mat(k, n1) = charVec[lastCol[row]];
+            SET_STRING_ELT(res, m_idx + k,
+                           STRING_ELT(charVec, lastCol[row]));
         }
     }
-
-    if (RList.named()) mat.attr("colnames") = RList.names();
 }
 
 template <typename matType, typename T>
-void GetPureOutput(matType &mat, const cpp11::list &RList,
+void GetPureOutput(matType &mat,
                    const std::vector<int> &cartCombs,
                    const std::vector<int> &lastCol,
                    const std::vector<int> &lenGrps,
@@ -171,10 +172,6 @@ void GetPureOutput(matType &mat, const cpp11::list &RList,
         }
 
         m_idx += lenGrps[i];
-    }
-
-    if (RList.named()) {
-        mat.attr("colnames") = RList.names();
     }
 }
 
@@ -222,10 +219,7 @@ SEXP GlueComboCart(const std::vector<int> &cartCombs,
                             }
                         }
 
-                        // cpp11::integers myLevels(RList[i]);
-                        // intSexpVec.attr("levels") = myLevels.attr("levels");
-                        // intSexpVec.attr("class")  = "factor";
-                        // SetFactorClass(sexpVec, VECTOR_ELT(RList, i));
+                        SetFactorClass(intSexpVec, RList[i]);
                         ++facInd;
                     } else {
                         if (i < (nCols - 1)) {
@@ -300,15 +294,18 @@ SEXP GlueComboCart(const std::vector<int> &cartCombs,
                              baseSize = lenGrps.size(); j < baseSize;
                              ++idx, row += n1) {
 
-                            auto&& comb = charVec[cartCombs[row]];
+                            SEXP comb = PROTECT(STRING_ELT(charVec, cartCombs[row]));
 
                             for (int k = 0; k < lenGrps[idx]; ++k, ++j) {
-                                sexpVec[j] = comb;
+                                SET_STRING_ELT(sexpVec, j, comb);
                             }
+
+                            UNPROTECT(1);
                         }
                     } else {
                         for (int j = 0; j < nRows; ++j) {
-                            sexpVec[j] = charVec[lastCol[j]];
+                            SET_STRING_ELT(sexpVec, j,
+                                           STRING_ELT(charVec, lastCol[j]));
                         }
                     }
 
@@ -325,28 +322,28 @@ SEXP GlueComboCart(const std::vector<int> &cartCombs,
     } else {
         if (typeCheck[tInt]) {
             cpp11::writable::integers_matrix<> intMat(nRows, nCols);
-            GetPureOutput(intMat, RList, cartCombs, lastCol,
+            GetPureOutput(intMat, cartCombs, lastCol,
                           lenGrps, intVec, nCols, nRows);
             return intMat;
         } else if (typeCheck[tFac]) {
             cpp11::writable::integers_matrix<> intMat(nRows, nCols);
-            GetPureOutput(intMat, RList, cartCombs, lastCol,
+            GetPureOutput(intMat, cartCombs, lastCol,
                           lenGrps, intVec, nCols, nRows);
-            // SetFactorClass(res, VECTOR_ELT(RList, 0));
+            SetFactorClass(intMat, RList[0]);
             return intMat;
         } else if (typeCheck[tLog]) {
             cpp11::writable::logicals_matrix<> boolMat(nRows, nCols);
-            GetPureOutput(boolMat, RList, cartCombs, lastCol,
+            GetPureOutput(boolMat, cartCombs, lastCol,
                           lenGrps, boolVec, nCols, nRows);
             return boolMat;
         } else if (typeCheck[tDbl]) {
             cpp11::writable::doubles_matrix<> dblMat(nRows, nCols);
-            GetPureOutput(dblMat, RList, cartCombs, lastCol,
+            GetPureOutput(dblMat, cartCombs, lastCol,
                           lenGrps, dblVec, nCols, nRows);
             return dblMat;
         } else {
             cpp11::writable::strings_matrix<> res(nRows, nCols);
-            GetCharOutput(res, RList, cartCombs, lastCol,
+            GetCharOutput(res, cartCombs, lastCol,
                           lenGrps, charVec, nCols, nRows);
             return res;
         }
@@ -446,11 +443,11 @@ SEXP ComboGridCpp(cpp11::list RList, bool IsRep) {
                     typeCheck[tDbl] = 1;
                     break;
                 } case tStr: {
-                    charVec[myIndex] = STRING_ELT(RList[i], j);
+                    SET_STRING_ELT(charVec, myIndex, STRING_ELT(RList[i], j));
                     typeCheck[tStr] = 1;
                     break;
                 } case tLog: {
-                    boolVec[myIndex] = INTEGER(RList[i])[j];
+                    boolVec[myIndex] = LOGICAL(RList[i])[j];
                     typeCheck[tLog] = 1;
                     break;
                 }
