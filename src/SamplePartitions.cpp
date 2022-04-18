@@ -219,7 +219,7 @@ SEXP SamplePartitions(SEXP Rv, SEXP Rm, SEXP RisRep, SEXP RFreqs,
                                       [](int i){return i > 0;});
 
     if (myType == VecType::Integer) {
-        SEXP res = PROTECT(Rf_allocMatrix(INTSXP, sampSize, part.width));
+        cpp11::sexp res = Rf_allocMatrix(INTSXP, sampSize, part.width);
         int* matInt = INTEGER(res);
 
         if (part.width == 1) {
@@ -233,10 +233,9 @@ SEXP SamplePartitions(SEXP Rv, SEXP Rm, SEXP RisRep, SEXP RFreqs,
                              strtLen, cap, part.isGmp);
         }
 
-        UNPROTECT(1);
         return res;
     } else {
-        SEXP res = PROTECT(Rf_allocMatrix(REALSXP, sampSize, part.width));
+        cpp11::sexp res = Rf_allocMatrix(REALSXP, sampSize, part.width);
         double* matNum = REAL(res);
 
         if (part.width == 1) {
@@ -250,7 +249,6 @@ SEXP SamplePartitions(SEXP Rv, SEXP Rm, SEXP RisRep, SEXP RFreqs,
                              strtLen, cap, part.isGmp);
         }
 
-        UNPROTECT(1);
         return res;
     }
 }

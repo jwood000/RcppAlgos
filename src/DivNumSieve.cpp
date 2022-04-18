@@ -192,22 +192,20 @@ SEXP GlueInt(int myMin, int myMax, bool bDivSieve,
         DivisorMain(myMin, myMax, bDivSieve, tempNumDivs,
                     MyDivList, myRange, nThreads, maxThreads);
 
-        SEXP myList = PROTECT(Rf_allocVector(VECSXP, myRange));
+        cpp11::sexp myList = Rf_allocVector(VECSXP, myRange);
 
         for (std::size_t i = 0; i < myRange; ++i) {
             SET_VECTOR_ELT(myList, i, GetIntVec(MyDivList[i]));
         }
 
         if (keepNames) {
-            ++numUnprotects;
             SetIntNames(myList, myRange, myMin, myMax);
         }
 
-        UNPROTECT(numUnprotects);
         return myList;
     } else {
         std::vector<std::vector<int>> tempList;
-        SEXP facCountV = PROTECT(Rf_allocVector(INTSXP, myRange));
+        cpp11::sexp facCountV = Rf_allocVector(INTSXP, myRange);
         int* ptrFacCount  = INTEGER(facCountV);
         std::fill_n(ptrFacCount, myRange, 2);
 
@@ -215,11 +213,9 @@ SEXP GlueInt(int myMin, int myMax, bool bDivSieve,
                     tempList, myRange, nThreads, maxThreads);
 
         if (keepNames) {
-            ++numUnprotects;
             SetIntNames(facCountV, myRange, myMin, myMax);
         }
 
-        UNPROTECT(numUnprotects);
         return facCountV;
     }
 }
@@ -239,7 +235,7 @@ SEXP GlueDbl(std::int_fast64_t myMin, double myMax,
         DivisorMain(myMin, myMax, bDivSieve, tempNumDivs,
                     MyDivList, myRange, nThreads, maxThreads);
 
-        SEXP myList = PROTECT(Rf_allocVector(VECSXP, myRange));
+        cpp11::sexp myList = Rf_allocVector(VECSXP, myRange);
 
         for (std::size_t i = 0; i < myRange; ++i) {
             SET_VECTOR_ELT(myList, i, GetDblVec(MyDivList[i]));
@@ -250,11 +246,10 @@ SEXP GlueDbl(std::int_fast64_t myMin, double myMax,
             SetDblNames(myList, myRange, myMin, myMax);
         }
 
-        UNPROTECT(numUnprotects);
         return myList;
     } else {
         std::vector<std::vector<double>> tempList;
-        SEXP facCountV = PROTECT(Rf_allocVector(INTSXP, myRange));
+        cpp11::sexp facCountV = Rf_allocVector(INTSXP, myRange);
         int* ptrFacCount  = INTEGER(facCountV);
         std::fill_n(ptrFacCount, myRange, 2);
 
@@ -266,7 +261,6 @@ SEXP GlueDbl(std::int_fast64_t myMin, double myMax,
             SetDblNames(facCountV, myRange, myMin, myMax);
         }
 
-        UNPROTECT(numUnprotects);
         return facCountV;
     }
 }
@@ -310,24 +304,22 @@ SEXP DivNumSieveCpp(SEXP Rb1, SEXP Rb2, SEXP RbDivSieve,
 
     if (myMax < 2) {
         if (bDivSieve) {
-            SEXP res = PROTECT(Rf_allocVector(VECSXP, 1));
+            cpp11::sexp res = Rf_allocVector(VECSXP, 1);
             SET_VECTOR_ELT(res, 0, GetIntVec(std::vector<int>(1, 1)));
 
             if (IsNamed) {
                 Rf_setAttrib(res, R_NamesSymbol, Rf_mkString("1"));
             }
 
-            UNPROTECT(1);
             return res;
         } else {
-            SEXP res = PROTECT(Rf_allocVector(INTSXP, 1));
+            cpp11::sexp res = Rf_allocVector(INTSXP, 1);
             INTEGER(res)[0] = 1;
 
             if (IsNamed) {
                 Rf_setAttrib(res, R_NamesSymbol, Rf_mkString("1"));
             }
 
-            UNPROTECT(1);
             return res;
         }
     }

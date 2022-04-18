@@ -122,8 +122,8 @@ SEXP GetDesign(const PartDesign &part, ConstraintType ctype,
                                          part.width * part.shift) /
                                          part.slope;
 
-    SEXP sexp_vec = PROTECT(Rf_allocVector(INTSXP, lenV));
-    SEXP sexp_index = PROTECT(Rf_allocVector(INTSXP, part.startZ.size()));
+    cpp11::sexp sexp_vec = Rf_allocVector(INTSXP, lenV);
+    cpp11::sexp sexp_index = Rf_allocVector(INTSXP, part.startZ.size());
 
     for (int i = 0; i < lenV; ++i) {
         INTEGER(sexp_vec)[i] = vMap[i];
@@ -144,7 +144,7 @@ SEXP GetDesign(const PartDesign &part, ConstraintType ctype,
                            "mapped_target", "first_index_vector",
                            "eqn_check", "partition_type", ""};
 
-    SEXP res = PROTECT(Rf_mkNamed(VECSXP, names));
+    cpp11::sexp res = Rf_mkNamed(VECSXP, names);
     SET_VECTOR_ELT(res, 0, CleanConvert::GetCount(part.isGmp, part.bigCount, part.count));
     SET_VECTOR_ELT(res, 1, sexp_vec);
     SET_VECTOR_ELT(res, 2, Rf_ScalarInteger(part.mapTar));
@@ -152,6 +152,5 @@ SEXP GetDesign(const PartDesign &part, ConstraintType ctype,
     SET_VECTOR_ELT(res, 4, Rf_ScalarLogical(eqn_check_val));
     SET_VECTOR_ELT(res, 5, Rf_mkString(ptype.c_str()));
 
-    UNPROTECT(3);
     return res;
 }

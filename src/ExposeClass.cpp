@@ -57,10 +57,9 @@ SEXP CombClassNew(SEXP RVals, SEXP RboolVec, SEXP freqInfo, SEXP Rparallel,
             Parallel
         );
 
-        SEXP ext = PROTECT(R_MakeExternalPtr(ptr, R_NilValue, R_NilValue));
+        cpp11::sexp ext = R_MakeExternalPtr(ptr, R_NilValue, R_NilValue);
         R_RegisterCFinalizerEx(ext, Finalizer, TRUE);
 
-        UNPROTECT(1);
         return ext;
     } else if (ReturnValue == 2) {
         class ComboApply* ptr = new ComboApply(
@@ -69,10 +68,9 @@ SEXP CombClassNew(SEXP RVals, SEXP RboolVec, SEXP freqInfo, SEXP Rparallel,
             Parallel, RstdFun, Rrho, R_RFunVal
         );
 
-        SEXP ext = PROTECT(R_MakeExternalPtr(ptr, R_NilValue, R_NilValue));
+        cpp11::sexp ext = R_MakeExternalPtr(ptr, R_NilValue, R_NilValue);
         R_RegisterCFinalizerEx(ext, Finalizer, TRUE);
 
-        UNPROTECT(1);
         return ext;
     } else {
         const bool KeepRes = CleanConvert::convertFlag(RKeepRes, "keepResults");
@@ -177,10 +175,9 @@ SEXP CombClassNew(SEXP RVals, SEXP RboolVec, SEXP freqInfo, SEXP Rparallel,
                 computedRows, computedRowsMpz[0]
             );
 
-            SEXP ext = PROTECT(R_MakeExternalPtr(ptr, R_NilValue, R_NilValue));
+            cpp11::sexp ext = R_MakeExternalPtr(ptr, R_NilValue, R_NilValue);
             R_RegisterCFinalizerEx(ext, Finalizer, TRUE);
 
-            UNPROTECT(1);
             return ext;
         } else if (ctype == ConstraintType::General ||
                    ctype == ConstraintType::PartitionEsque) {
@@ -193,10 +190,9 @@ SEXP CombClassNew(SEXP RVals, SEXP RboolVec, SEXP freqInfo, SEXP Rparallel,
                 computedRows, computedRowsMpz[0]
             );
 
-            SEXP ext = PROTECT(R_MakeExternalPtr(ptr, R_NilValue, R_NilValue));
+            cpp11::sexp ext = R_MakeExternalPtr(ptr, R_NilValue, R_NilValue);
             R_RegisterCFinalizerEx(ext, Finalizer, TRUE);
 
-            UNPROTECT(1);
             return ext;
         } else if (ctype == ConstraintType::SpecialCnstrnt) {
             // We must use a single thread to ensure the proper constraint
@@ -214,10 +210,9 @@ SEXP CombClassNew(SEXP RVals, SEXP RboolVec, SEXP freqInfo, SEXP Rparallel,
                 computedRows, computedRowsMpz[0]
             );
 
-            SEXP ext = PROTECT(R_MakeExternalPtr(ptr, R_NilValue, R_NilValue));
+            cpp11::sexp ext = R_MakeExternalPtr(ptr, R_NilValue, R_NilValue);
             R_RegisterCFinalizerEx(ext, Finalizer, TRUE);
 
-            UNPROTECT(1);
             return ext;
         } else {
             class Partitions* ptr = new Partitions(
@@ -228,10 +223,9 @@ SEXP CombClassNew(SEXP RVals, SEXP RboolVec, SEXP freqInfo, SEXP Rparallel,
                 computedRows, computedRowsMpz[0]
             );
 
-            SEXP ext = PROTECT(R_MakeExternalPtr(ptr, R_NilValue, R_NilValue));
+            cpp11::sexp ext = R_MakeExternalPtr(ptr, R_NilValue, R_NilValue);
             R_RegisterCFinalizerEx(ext, Finalizer, TRUE);
 
-            UNPROTECT(1);
             return ext;
         }
     }

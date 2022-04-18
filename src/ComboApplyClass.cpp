@@ -2,8 +2,8 @@
 
 SEXP ComboApply::VecApplyReturn() {
 
-    SEXP vectorPass = PROTECT(Rf_allocVector(RTYPE, m));
-    SEXP sexpFun = PROTECT(Rf_lang2(stdFun, R_NilValue));
+    cpp11::sexp vectorPass = Rf_allocVector(RTYPE, m);
+    cpp11::sexp sexpFun = Rf_lang2(stdFun, R_NilValue);
 
     switch (RTYPE) {
         case LGLSXP:
@@ -51,8 +51,7 @@ SEXP ComboApply::VecApplyReturn() {
     }
 
     SETCADR(sexpFun, Rf_duplicate(vectorPass));
-    SEXP res = Rf_eval(sexpFun, rho);
-    UNPROTECT(2);
+    cpp11::sexp res = Rf_eval(sexpFun, rho);
     return res;
 }
 
@@ -144,7 +143,7 @@ SEXP ComboApply::nextNumCombs(SEXP RNum) {
         }
 
         increment(IsGmp, mpzIndex, dblIndex, numIncrement);
-        SEXP res = PROTECT(ApplyForward(nRows));
+        cpp11::sexp res = ApplyForward(nRows);
 
         if (IsGmp) {
             mpz_sub_ui(mpzTemp, mpzIndex, 1u);
@@ -154,7 +153,6 @@ SEXP ComboApply::nextNumCombs(SEXP RNum) {
 
         z = nthResFun(n, m, dblTemp, mpzTemp, myReps);
         if (!IsComb) TopOffPerm(z, myReps, n, m, IsRep, IsMult);
-        UNPROTECT(1);
         return res;
     } else if (CheckEqInd(IsGmp, mpzIndex, dblIndex,
                           computedRowsMpz, computedRows)) {
@@ -233,7 +231,7 @@ SEXP ComboApply::nextGather() {
             dblIndex = computedRows + 1;
         }
 
-        SEXP res = PROTECT(ApplyForward(nRows));
+        cpp11::sexp res = ApplyForward(nRows);
 
         if (IsGmp) {
             mpz_sub_ui(mpzTemp, computedRowsMpz, 1u);
@@ -243,7 +241,6 @@ SEXP ComboApply::nextGather() {
 
         z = nthResFun(n, m, dblTemp, mpzTemp, myReps);
         if (!IsComb) TopOffPerm(z, myReps, n, m, IsRep, IsMult);
-        UNPROTECT(1);
         return res;
     } else {
         return R_NilValue;

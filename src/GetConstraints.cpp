@@ -52,12 +52,10 @@ SEXP ConstraintsReturn(
 
     if (part.isPart && !part.solnExist) {
         if (myType == VecType::Integer) {
-            SEXP res = PROTECT(Rf_allocMatrix(INTSXP, 0, width));
-            UNPROTECT(1);
+            cpp11::sexp res = Rf_allocMatrix(INTSXP, 0, width);
             return res;
         } else {
-            SEXP res = PROTECT(Rf_allocMatrix(REALSXP, 0, width));
-            UNPROTECT(1);
+            cpp11::sexp res = Rf_allocMatrix(REALSXP, 0, width);
             return res;
         }
     } else if (numUnknown || part.ptype == PartitionType::Multiset) {
@@ -77,13 +75,12 @@ SEXP ConstraintsReturn(
             const int vecLen = cnstrntVec.size();
             const int numResult = vecLen / width;
 
-            SEXP res = PROTECT(Rf_allocMatrix(INTSXP, numResult, nCols));
+            cpp11::sexp res = Rf_allocMatrix(INTSXP, numResult, nCols);
             int* matInt = INTEGER(res);
 
             VectorToMatrix(cnstrntVec, resVec, matInt,
                            part.target, numResult, width,
                            upperBound, xtraCol, part.isPart);
-            UNPROTECT(1);
             return res;
         } else {
             std::vector<double> cnstrntVec;
@@ -101,12 +98,11 @@ SEXP ConstraintsReturn(
             const int vecLen = cnstrntVec.size();
             const int numResult = vecLen / width;
 
-            SEXP res = PROTECT(Rf_allocMatrix(REALSXP, numResult, nCols));
+            cpp11::sexp res = Rf_allocMatrix(REALSXP, numResult, nCols);
             double* matDbl = REAL(res);
             VectorToMatrix(cnstrntVec, resVec, matDbl,
                            part.target, numResult, width,
                            upperBound, xtraCol, part.isPart);
-            UNPROTECT(1);
             return res;
         }
     } else {
@@ -114,7 +110,7 @@ SEXP ConstraintsReturn(
         const int lastCol  = width - 1;
 
         if (myType == VecType::Integer) {
-            SEXP res = PROTECT(Rf_allocMatrix(INTSXP, nRows, nCols));
+            cpp11::sexp res = Rf_allocMatrix(INTSXP, nRows, nCols);
             int* matInt = INTEGER(res);
 
             if (ctype == ConstraintType::PartStandard) {
@@ -129,10 +125,9 @@ SEXP ConstraintsReturn(
             }
 
             if (xtraCol) AddResultToParts(matInt, part.target, nRows, width);
-            UNPROTECT(1);
             return res;
         } else {
-            SEXP res = PROTECT(Rf_allocMatrix(REALSXP, nRows, nCols));
+            cpp11::sexp res = Rf_allocMatrix(REALSXP, nRows, nCols);
             double* matDbl = REAL(res);
 
             GeneralPartitions(matDbl, vNum, z, part, lower, lowerMpz,
@@ -140,7 +135,6 @@ SEXP ConstraintsReturn(
                               strtLen, cap, IsComb);
 
             if (xtraCol) AddResultToParts(matDbl, part.target, nRows, width);
-            UNPROTECT(1);
             return res;
         }
     }
@@ -171,25 +165,23 @@ SEXP GetConstraints(
 
         if (myType == VecType::Integer) {
             const funcPtr<int> funInt = GetFuncPtr<int>(funTest);
-            SEXP res = PROTECT(Rf_allocMatrix(INTSXP, nRows, nCols));
+            cpp11::sexp res = Rf_allocMatrix(INTSXP, nRows, nCols);
             int* matInt = INTEGER(res);
 
             ResultsMain(matInt, vInt, funInt, n, m, IsComb, Parallel,
                         IsRep, IsMult, IsGmp, freqs, startZ, myReps,
                         lower, lowerMpz, nRows, nThreads);
 
-            UNPROTECT(1);
             return res;
         } else {
             funDbl = GetFuncPtr<double>(funTest);
-            SEXP res = PROTECT(Rf_allocMatrix(REALSXP, nRows, nCols));
+            cpp11::sexp res = Rf_allocMatrix(REALSXP, nRows, nCols);
             double* matNum = REAL(res);
 
             ResultsMain(matNum, vNum, funDbl, n, m, IsComb, Parallel,
                         IsRep, IsMult, IsGmp, freqs, startZ, myReps,
                         lower, lowerMpz, nRows, nThreads);
 
-            UNPROTECT(1);
             return res;
         }
     } else {

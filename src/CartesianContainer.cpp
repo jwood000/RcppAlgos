@@ -130,6 +130,8 @@ void GetCharOutput(cpp11::writable::strings_matrix<> &res,
         for (int j = 0, c_idx = i * n1, grpSize = lenGrps[i];
              j < n1; ++j, ++c_idx, m_idx += nRows) {
 
+            // Benchmarks show that this set up is about 30%
+            // faster than using cpp11::sexp
             SEXP comb = PROTECT(STRING_ELT(charVec, cartCombs[c_idx]));
 
             for (int k = 0; k < grpSize; ++k) {
@@ -175,6 +177,31 @@ void GetPureOutput(matType &mat,
     }
 }
 
+template <typename cpp11Type, typename T>
+void PoulateColumn(const std::vector<int> &cartCombs,
+                   const std::vector<int> &lastCol,
+                   const std::vector<int> &lenGrps,
+                   const std::vector<T> &poolVec,
+                   cpp11Type &res, int nCols, int nRows, int i) {
+
+    if (i < (nCols - 1)) {
+        for (int j = 0, n1 = nCols - 1, row = i, idx = 0,
+             baseSize = lenGrps.size(); idx < baseSize;
+             ++idx, row += n1) {
+            
+            auto&& comb = poolVec[cartCombs[row]];
+            
+            for (int k = 0; k < lenGrps[idx]; ++k, ++j) {
+                res[j] = comb;
+            }
+        }
+    } else {
+        for (int j = 0; j < nRows; ++j) {
+            res[j] = poolVec[lastCol[j]];
+        }
+    }
+}
+
 SEXP GlueComboCart(const std::vector<int> &cartCombs,
                    const std::vector<int> &lastCol,
                    const std::vector<int> &lenGrps,
@@ -197,93 +224,31 @@ SEXP GlueComboCart(const std::vector<int> &cartCombs,
                     cpp11::writable::integers intSexpVec(nRows);
 
                     if (IsFactor[i]) {
-                        const std::vector<int> intFacVec(
-                                facList[facInd].begin(),
-                                facList[facInd].end()
+                        const std::vector<int> facVec(
+                            facList[facInd].begin(), facList[facInd].end()
                         );
 
-                        if (i < (nCols - 1)) {
-                            for (int j = 0, n1 = nCols - 1, row = i, idx = 0,
-                                 baseSize = lenGrps.size(); idx < baseSize;
-                                 ++idx, row += n1) {
-
-                                auto&& comb = intFacVec[cartCombs[row]];
-
-                                for (int k = 0; k < lenGrps[idx]; ++k, ++j) {
-                                    intSexpVec[j] = comb;
-                                }
-                            }
-                        } else {
-                            for (int j = 0; j < nRows; ++j) {
-                                intSexpVec[j] = intFacVec[lastCol[j]];
-                            }
-                        }
-
+                        PoulateColumn(cartCombs, lastCol, lenGrps,
+                                      facVec, intSexpVec, nCols, nRows, i);
                         SetFactorClass(intSexpVec, RList[i]);
                         ++facInd;
                     } else {
-                        if (i < (nCols - 1)) {
-                            for (int j = 0, n1 = nCols - 1, row = i, idx = 0,
-                                 baseSize = lenGrps.size(); idx < baseSize;
-                                 ++idx, row += n1) {
-
-                                auto&& comb = intVec[cartCombs[row]];
-
-                                for (int k = 0; k < lenGrps[idx]; ++k, ++j) {
-                                    intSexpVec[j] = comb;
-                                }
-                            }
-                        } else {
-                            for (int j = 0; j < nRows; ++j) {
-                                intSexpVec[j] = intVec[lastCol[j]];
-                            }
-                        }
+                        PoulateColumn(cartCombs, lastCol, lenGrps,
+                                      intVec, intSexpVec, nCols, nRows, i);
                     }
 
                     DataFrame[i] = intSexpVec;
                     break;
                 } case LGLSXP: {
                     cpp11::writable::logicals boolSexpVec(nRows);
-
-                    if (i < (nCols - 1)) {
-                        for (int j = 0, n1 = nCols - 1, row = i, idx = 0,
-                             baseSize = lenGrps.size(); idx < baseSize;
-                             ++idx, row += n1) {
-
-                            auto&& comb = boolVec[cartCombs[row]];
-
-                            for (int k = 0; k < lenGrps[idx]; ++k, ++j) {
-                                boolSexpVec[j] = comb;
-                            }
-                        }
-                    } else {
-                        for (int j = 0; j < nRows; ++j) {
-                            boolSexpVec[j] = boolVec[lastCol[j]];
-                        }
-                    }
-
+                    PoulateColumn(cartCombs, lastCol, lenGrps,
+                                  boolVec, boolSexpVec, nCols, nRows, i);
                     DataFrame[i] = boolSexpVec;
                     break;
                 } case REALSXP: {
                     cpp11::writable::doubles dblSexpVec(nRows);
-
-                    if (i < (nCols - 1)) {
-                        for (int j = 0, n1 = nCols - 1, row = i, idx = 0,
-                             baseSize = lenGrps.size(); idx < baseSize;
-                             ++idx, row += n1) {
-
-                            auto&& comb = dblVec[cartCombs[row]];
-
-                            for (int k = 0; k < lenGrps[idx]; ++k, ++j) {
-                                dblSexpVec[j] = comb;
-                            }
-                        }
-                    } else {
-                        for (int j = 0; j < nRows; ++j) {
-                            dblSexpVec[j] = dblVec[lastCol[j]];
-                        }
-                    }
-
+                    PoulateColumn(cartCombs, lastCol, lenGrps,
+                                  dblVec, dblSexpVec, nCols, nRows, i);
                     DataFrame[i] = dblSexpVec;
                     break;
                 } case STRSXP: {

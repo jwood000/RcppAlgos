@@ -29,20 +29,17 @@ void CnstrntsSpecial::startOver() {
 
 SEXP CnstrntsSpecial::nextComb() {
     if (keepGoing) {
-        SEXP res = PROTECT(ComboRes::nextNumCombs(Rf_ScalarInteger(1)));
+        cpp11::sexp res = ComboRes::nextNumCombs(Rf_ScalarInteger(1));
 
         if (Rf_isNull(res)) {
             keepGoing = false;
-            UNPROTECT(1);
             return res;
         } else {
             if (Rf_nrows(res)) {
                 count = dblIndex;
                 Rf_setAttrib(res, R_DimSymbol, R_NilValue);
-                UNPROTECT(1);
                 return res;
             } else {
-                UNPROTECT(1);
                 keepGoing = false;
                 return ToSeeLast();
             }
@@ -56,11 +53,10 @@ SEXP CnstrntsSpecial::nextComb() {
 SEXP CnstrntsSpecial::nextNumCombs(SEXP RNum) {
 
     if (keepGoing) {
-        SEXP res = PROTECT(ComboRes::nextNumCombs(RNum));
+        cpp11::sexp res = ComboRes::nextNumCombs(RNum);
 
         if (Rf_isNull(res)) {
             keepGoing = false;
-            UNPROTECT(1);
             return res;
         } else {
             int num;
@@ -71,10 +67,8 @@ SEXP CnstrntsSpecial::nextNumCombs(SEXP RNum) {
                 const int returned_nrows = Rf_nrows(res);
                 keepGoing = num == returned_nrows;
                 count = dblIndex - (num - returned_nrows);
-                UNPROTECT(1);
                 return res;
             } else {
-                UNPROTECT(1);
                 keepGoing = false;
                 return ToSeeLast();
             }
@@ -88,19 +82,16 @@ SEXP CnstrntsSpecial::nextNumCombs(SEXP RNum) {
 SEXP CnstrntsSpecial::nextGather() {
 
     if (keepGoing) {
-        SEXP res = PROTECT(ComboRes::nextGather());
+        cpp11::sexp res = ComboRes::nextGather();
 
         if (Rf_isNull(res)) {
             keepGoing = false;
-            UNPROTECT(1);
             return res;
         } else if (Rf_nrows(res)) {
             count += Rf_nrows(res);
             keepGoing = false;
-            UNPROTECT(1);
             return res;
         } else {
-            UNPROTECT(1);
             keepGoing = false;
             return ToSeeLast();
         }
@@ -115,7 +106,7 @@ SEXP CnstrntsSpecial::currComb() {
 }
 
 SEXP CnstrntsSpecial::summary() {
-    SEXP res = PROTECT(Combo::summary());
+    cpp11::sexp res = Combo::summary();
     std::string desc(R_CHAR(STRING_ELT(VECTOR_ELT(res, 0), 0)));
 
     std::string val1 = (RTYPE == INTSXP) ?
@@ -144,7 +135,5 @@ SEXP CnstrntsSpecial::summary() {
     SET_VECTOR_ELT(res, 1, Rf_ScalarInteger(count));
     SET_VECTOR_ELT(res, 2, Rf_ScalarReal(R_NaReal));
     SET_VECTOR_ELT(res, 3, Rf_ScalarReal(R_NaReal));
-
-    UNPROTECT(1);
     return res;
 }

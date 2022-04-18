@@ -81,7 +81,7 @@ SEXP PrimeSieveCpp(SEXP Rb1, SEXP Rb2, SEXP RNumThreads,
                 runningCount.push_back(numPrimes);
             }
 
-            SEXP res = PROTECT(Rf_allocVector(REALSXP, numPrimes));
+            cpp11::sexp res = Rf_allocVector(REALSXP, numPrimes);
             double* primes = REAL(res);
 
             for (int i = 0; i < numSects; ++i) {
@@ -89,12 +89,10 @@ SEXP PrimeSieveCpp(SEXP Rb1, SEXP Rb2, SEXP RNumThreads,
                           primes + runningCount[i]);
             }
 
-            UNPROTECT(1);
             return res;
         } else {
-            SEXP primes = PROTECT(Rf_allocVector(REALSXP, tempPrimes.size()));
+            cpp11::sexp primes = Rf_allocVector(REALSXP, tempPrimes.size());
             std::copy(tempPrimes.cbegin(), tempPrimes.cend(), REAL(primes));
-            UNPROTECT(1);
             return primes;
         }
     } else {
@@ -111,7 +109,7 @@ SEXP PrimeSieveCpp(SEXP Rb1, SEXP Rb2, SEXP RNumThreads,
                 runningCount.push_back(numPrimes);
             }
 
-            SEXP res = PROTECT(Rf_allocVector(INTSXP, numPrimes));
+            cpp11::sexp res = Rf_allocVector(INTSXP, numPrimes);
             int* primes = INTEGER(res);
 
             for (int i = 0; i < numSects; ++i) {
@@ -119,12 +117,10 @@ SEXP PrimeSieveCpp(SEXP Rb1, SEXP Rb2, SEXP RNumThreads,
                           primes + runningCount[i]);
             }
 
-            UNPROTECT(1);
             return res;
         } else {
-            SEXP primes = PROTECT(Rf_allocVector(INTSXP, tempPrimes.size()));
+            cpp11::sexp primes = Rf_allocVector(INTSXP, tempPrimes.size());
             std::move(tempPrimes.cbegin(), tempPrimes.cend(), INTEGER(primes));
-            UNPROTECT(1);
             return primes;
         }
     }

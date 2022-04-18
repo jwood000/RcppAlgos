@@ -537,10 +537,10 @@ void SetRandomSample(SEXP RindexVec, SEXP RNumSamp, int &sampSize,
                 cpp11::stop("n exceeds the maximum number of possible results");
             }
 
-            SEXP sample = PROTECT(Rf_lang3(baseSample,
-                                           Rf_ScalarReal(computedRows),
-                                           RNumSamp));
-            SEXP val = PROTECT(Rf_eval(sample, rho));
+            cpp11::sexp sample = Rf_lang3(baseSample,
+                                          Rf_ScalarReal(computedRows),
+                                          RNumSamp);
+            cpp11::sexp val = Rf_eval(sample, rho);
             mySample.resize(sampSize);
 
             if (computedRows < std::numeric_limits<int>::max()) {
@@ -557,7 +557,6 @@ void SetRandomSample(SEXP RindexVec, SEXP RNumSamp, int &sampSize,
                 }
             }
 
-            UNPROTECT(2);
         }
     } else {
         if (IsGmp) {
@@ -666,7 +665,7 @@ void SetSampleNames(SEXP object, bool IsGmp, int sampSize,
                     mpz_t *const myBigSamp, SEXP colNames,
                     int xtraDims) {
 
-    SEXP myNames = PROTECT(Rf_allocVector(STRSXP, sampSize));
+    cpp11::sexp myNames = Rf_allocVector(STRSXP, sampSize);
 
     if (IsGmp) {
         for (int i = 0; i < sampSize; ++i) {
@@ -689,59 +688,54 @@ void SetSampleNames(SEXP object, bool IsGmp, int sampSize,
     }
 
     if (Rf_isMatrix(object) || Rf_isArray(object)) {
-        SEXP dimNames = PROTECT(Rf_allocVector(VECSXP, 1 + xtraDims));
+        cpp11::sexp dimNames = Rf_allocVector(VECSXP, 1 + xtraDims);
         SET_VECTOR_ELT(dimNames, 0, myNames);
         if (xtraDims) SET_VECTOR_ELT(dimNames, xtraDims, colNames);
         Rf_setAttrib(object, R_DimNamesSymbol, dimNames);
-        UNPROTECT(2 + (xtraDims > 0));
     } else if (Rf_isList(object) || Rf_isVector(object)) {
         Rf_setAttrib(object, R_NamesSymbol, myNames);
-        UNPROTECT(1);
     }
 }
 
 SEXP GetIntVec(const std::vector<int> &v) {
     const int size = v.size();
-    SEXP res = PROTECT(Rf_allocVector(INTSXP, size));
+    cpp11::sexp res = Rf_allocVector(INTSXP, size);
     int* ptrRes = INTEGER(res);
 
     for (int i = 0; i < size; ++i) {
         ptrRes[i] = v[i];
     }
 
-    UNPROTECT(1);
     return res;
 }
 
 SEXP GetDblVec(const std::vector<double> &v) {
     const int size = v.size();
-    SEXP res = PROTECT(Rf_allocVector(REALSXP, size));
+    cpp11::sexp res = Rf_allocVector(REALSXP, size);
     double* ptrRes = REAL(res);
 
     for (int i = 0; i < size; ++i) {
         ptrRes[i] = v[i];
     }
 
-    UNPROTECT(1);
     return res;
 }
 
 SEXP GetInt64Vec(const std::vector<std::int64_t> &v) {
     const int size = v.size();
-    SEXP res = PROTECT(Rf_allocVector(REALSXP, size));
+    cpp11::sexp res = Rf_allocVector(REALSXP, size);
     double* ptrRes = REAL(res);
 
     for (int i = 0; i < size; ++i) {
         ptrRes[i] = v[i];
     }
 
-    UNPROTECT(1);
     return res;
 }
 
 void SetIntNames(SEXP res, std::size_t myRange, int myMin, int myMax) {
 
-    SEXP myNames  = PROTECT(Rf_allocVector(INTSXP, myRange));
+    cpp11::sexp myNames  = Rf_allocVector(INTSXP, myRange);
     int* ptrNames = INTEGER(myNames);
 
     for (int k = 0, retM = myMin; retM <= myMax; ++retM, ++k) {
@@ -755,7 +749,7 @@ void SetDblNames(SEXP res, std::size_t myRange,
                  double myMin, double myMax) {
 
     double retM = myMin;
-    SEXP myNames  = PROTECT(Rf_allocVector(REALSXP, myRange));
+    cpp11::sexp myNames  = Rf_allocVector(REALSXP, myRange);
     double* ptrNames = REAL(myNames);
 
     for (int k = 0; retM <= myMax; ++retM, ++k) {
@@ -768,7 +762,7 @@ void SetDblNames(SEXP res, std::size_t myRange,
 void SetDblNames(SEXP res, const std::vector<double> &myNums) {
 
     const int size = myNums.size();
-    SEXP myNames  = PROTECT(Rf_allocVector(REALSXP, size));
+    cpp11::sexp myNames  = Rf_allocVector(REALSXP, size);
     double* ptrNames = REAL(myNames);
 
     for (int k = 0; k < size; ++k) {

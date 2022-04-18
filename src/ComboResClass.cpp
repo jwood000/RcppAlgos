@@ -7,7 +7,7 @@ SEXP ComboRes::ApplyFun(SEXP mat) {
     }
 
     const int nRows = Rf_nrows(mat);
-    SEXP res = PROTECT(Rf_allocMatrix(RTYPE, nRows, nCols));
+    cpp11::sexp res = Rf_allocMatrix(RTYPE, nRows, nCols);
 
     if (RTYPE == INTSXP) {
         int* ptrOut = INTEGER(res);
@@ -37,13 +37,12 @@ SEXP ComboRes::ApplyFun(SEXP mat) {
         }
     }
 
-    UNPROTECT(1);
     return res;
 }
 
 SEXP ComboRes::VecReturn() {
 
-    SEXP res = PROTECT(Rf_allocVector(RTYPE, nCols));
+    cpp11::sexp res = Rf_allocVector(RTYPE, nCols);
 
     if (ctype == ConstraintType::PartStandard) {
         int* ptrOut = INTEGER(res);
@@ -87,7 +86,6 @@ SEXP ComboRes::VecReturn() {
         }
     }
 
-    UNPROTECT(1);
     return res;
 }
 
@@ -218,16 +216,15 @@ SEXP ComboRes::nextNumCombs(SEXP RNum) {
         }
 
         bUpper   = true;
-        SEXP res = PROTECT(MatrixReturn(nRows));
+        cpp11::sexp res = MatrixReturn(nRows);
         increment(IsGmp, mpzIndex, dblIndex, numIncrement);
 
         // Since this is called with constraints as well, the
         // requested number of results may not materialize thus
         // Rf_nrows(res) may not equal nRows
         nRows = Rf_nrows(res);
-        if (nRows) zUpdateIndex(vNum, vInt, z, sexpVec, res, width, nRows);
+        if (nRows > 0) zUpdateIndex(vNum, vInt, z, sexpVec, res, width, nRows);
         if (!IsComb) TopOffPerm(z, myReps, n, width, IsRep, IsMult);
-        UNPROTECT(1);
         return res;
     } else if (CheckEqInd(IsGmp, mpzIndex, dblIndex,
                           cnstrtCountMpz, cnstrtCount)) {
@@ -238,14 +235,12 @@ SEXP ComboRes::nextNumCombs(SEXP RNum) {
 }
 
 SEXP ComboRes::prevNumCombs(SEXP RNum) {
-    SEXP mat = PROTECT(Combo::prevNumCombs(RNum));
+    cpp11::sexp mat = Combo::prevNumCombs(RNum);
 
     if (Rf_isNull(mat)) {
-        UNPROTECT(1);
         return R_NilValue;
     } else {
-        SEXP res = PROTECT(ApplyFun(mat));
-        UNPROTECT(2);
+        cpp11::sexp res = ApplyFun(mat);
         return res;
     }
 }
@@ -290,8 +285,8 @@ SEXP ComboRes::nextGather() {
             }
         }
 
-        bUpper   = false;
-        SEXP res = PROTECT(MatrixReturn(nRows));
+        bUpper = false;
+        cpp11::sexp res = MatrixReturn(nRows);
 
         if (IsGmp) {
             mpz_add_ui(mpzIndex, cnstrtCountMpz, 1u);
@@ -303,9 +298,8 @@ SEXP ComboRes::nextGather() {
         // requested number of results may not materialize thus
         // Rf_nrows(res) may not equal nRows
         nRows = Rf_nrows(res);
-        if (nRows) zUpdateIndex(vNum, vInt, z, sexpVec, res, width, nRows);
+        if (nRows > 0) zUpdateIndex(vNum, vInt, z, sexpVec, res, width, nRows);
         if (!IsComb) TopOffPerm(z, myReps, n, width, IsRep, IsMult);
-        UNPROTECT(1);
         return res;
     } else {
         return R_NilValue;
@@ -313,14 +307,12 @@ SEXP ComboRes::nextGather() {
 }
 
 SEXP ComboRes::prevGather() {
-    SEXP mat = PROTECT(Combo::prevGather());
+    cpp11::sexp mat = Combo::prevGather();
 
     if (Rf_isNull(mat)) {
-        UNPROTECT(1);
         return R_NilValue;
     } else {
-        SEXP res = PROTECT(ApplyFun(mat));
-        UNPROTECT(2);
+        cpp11::sexp res = ApplyFun(mat);
         return res;
     }
 }
@@ -338,9 +330,8 @@ SEXP ComboRes::currComb() {
 }
 
 SEXP ComboRes::randomAccess(SEXP RindexVec) {
-    SEXP samp = PROTECT(Combo::randomAccess(RindexVec));
-    SEXP res  = PROTECT(Rf_isMatrix(samp) ? ApplyFun(samp) : VecReturn());
-    UNPROTECT(2);
+    cpp11::sexp samp = Combo::randomAccess(RindexVec);
+    cpp11::sexp res  = Rf_isMatrix(samp) ? ApplyFun(samp) : VecReturn();
     return res;
 }
 
@@ -375,10 +366,9 @@ SEXP ComboRes::back() {
 }
 
 SEXP ComboRes::summary() {
-    SEXP res = PROTECT(Combo::summary());
+    cpp11::sexp res = Combo::summary();
     std::string desc(R_CHAR(STRING_ELT(VECTOR_ELT(res, 0), 0)));
     desc += " with " + mainFun + " applied to each result";
     SET_VECTOR_ELT(res, 0, Rf_mkString(desc.c_str()));
-    UNPROTECT(1);
     return res;
 }
