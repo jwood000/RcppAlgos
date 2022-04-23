@@ -188,9 +188,9 @@ void PoulateColumn(const std::vector<int> &cartCombs,
         for (int j = 0, n1 = nCols - 1, row = i, idx = 0,
              baseSize = lenGrps.size(); idx < baseSize;
              ++idx, row += n1) {
-            
+
             auto&& comb = poolVec[cartCombs[row]];
-            
+
             for (int k = 0; k < lenGrps[idx]; ++k, ++j) {
                 res[j] = comb;
             }

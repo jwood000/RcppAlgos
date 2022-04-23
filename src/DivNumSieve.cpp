@@ -182,7 +182,6 @@ void DivisorMain(T myMin, U myMax, bool bDivSieve,
 SEXP GlueInt(int myMin, int myMax, bool bDivSieve,
              bool keepNames, int nThreads, int maxThreads) {
 
-    int numUnprotects = 1;
     std::size_t myRange = (myMax - myMin) + 1;
 
     if (bDivSieve) {
@@ -224,7 +223,6 @@ SEXP GlueDbl(std::int_fast64_t myMin, double myMax,
              bool bDivSieve, bool keepNames,
              int nThreads, int maxThreads) {
 
-    int numUnprotects = 1;
     std::size_t myRange = (myMax - myMin) + 1;
 
     if (bDivSieve) {
@@ -242,7 +240,6 @@ SEXP GlueDbl(std::int_fast64_t myMin, double myMax,
         }
 
         if (keepNames) {
-            ++numUnprotects;
             SetDblNames(myList, myRange, myMin, myMax);
         }
 
@@ -257,7 +254,6 @@ SEXP GlueDbl(std::int_fast64_t myMin, double myMax,
                     tempList, myRange, nThreads, maxThreads);
 
         if (keepNames) {
-            ++numUnprotects;
             SetDblNames(facCountV, myRange, myMin, myMax);
         }
 

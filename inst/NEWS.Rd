@@ -216,7 +216,7 @@
         \item {Added gmp support to combinatorial functions. Now, one can accurately and quickly work with combinations/permutations of large vectors \emph{E.g.}:
             \itemize{
                 \item \code{comboSample(runif(10000), 100, n = 10, seed = 42, Parallel = TRUE)}
-                \item \code{permuteGeneral(factor(state.name), 20, 
+                \item \code{permuteGeneral(factor(state.name), 20,
                             lower = 1e15, upper = 1e15 + 1000)}
             }
         }
@@ -345,5 +345,3 @@
         \item Initial Release
     }
 }
-
-
