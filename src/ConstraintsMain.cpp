@@ -160,17 +160,14 @@ SEXP CombinatoricsCnstrt(SEXP Rv, SEXP Rm, SEXP RisRep, SEXP RFreqs,
     SetThreads(Parallel, maxThreads, nRows,
                myType, nThreads, RnThreads, limit);
 
-    SEXP res = PROTECT(
-        GetConstraints(
-          part, compVec, freqs, myReps, vNum, vInt, tarVals, tarIntVals,
-          startZ, mainFun, funTest, funDbl, lower, lowerMpz[0], userNum,
-          ctype, myType, nThreads, nRows, n, strtLen, cap, m, IsComb,
-          Parallel, IsGmp, IsRep, IsMult, bUpper, KeepRes, numUnknown
-        )
+    cpp11::sexp res = GetConstraints(
+      part, compVec, freqs, myReps, vNum, vInt, tarVals, tarIntVals,
+      startZ, mainFun, funTest, funDbl, lower, lowerMpz[0], userNum,
+      ctype, myType, nThreads, nRows, n, strtLen, cap, m, IsComb,
+      Parallel, IsGmp, IsRep, IsMult, bUpper, KeepRes, numUnknown
     );
 
     mpz_clear(lowerMpz[0]);
     mpz_clear(upperMpz[0]);
-    UNPROTECT(1);
     return res;
 }

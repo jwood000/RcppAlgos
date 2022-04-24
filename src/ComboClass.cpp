@@ -23,7 +23,7 @@ SEXP Combo::ToSeeFirst(bool AdjustIdx) {
 
 SEXP Combo::VecReturn() {
 
-    SEXP res = PROTECT(Rf_allocVector(RTYPE, m));
+    cpp11::sexp res = Rf_allocVector(RTYPE, m);
 
     switch (RTYPE) {
         case LGLSXP:
@@ -75,7 +75,6 @@ SEXP Combo::VecReturn() {
         }
     }
 
-    UNPROTECT(1);
     return res;
 }
 
@@ -88,14 +87,13 @@ SEXP Combo::MatForward(int nRows) {
     SetThreads(LocalPar, maxThreads, nRows,
                myType, nThreads, sexpNThreads, limit);
 
-    SEXP res = PROTECT(GetCombPerms(
+    cpp11::sexp res = GetCombPerms(
         sexpVec, vNum, vInt, n, m, 0, true, IsComb, LocalPar, IsRep, IsMult,
         IsGmp, freqs, z, myReps, dblIndex, mpzIndex, nRows, nThreads, myType
-    ));
+    );
 
     zUpdateIndex(vNum, vInt, z, sexpVec, res, m, nRows);
     if (!IsComb) TopOffPerm(z, myReps, n, m, IsRep, IsMult);
-    UNPROTECT(1);
     return res;
 }
 
@@ -442,7 +440,8 @@ SEXP Combo::summary() {
     const std::string RepStr = (IsRep) ? "with repetition " : "";
     const std::string MultiStr = (IsMult) ? "of a multiset " : "";
     const std::string strDesc = CoPerm + RepStr + MultiStr + "of "
-                                + std::to_string(n) + " choose " + std::to_string(m);
+                                + std::to_string(n) + " choose " +
+                                    std::to_string(m);
     const double dblDiff = (IsGmp) ? 0 : computedRows - dblIndex;
 
     if (IsGmp) {
@@ -452,13 +451,11 @@ SEXP Combo::summary() {
     const char *names[] = {"description", "currentIndex",
                            "totalResults", "totalRemaining", ""};
 
-    SEXP res = PROTECT(Rf_mkNamed(VECSXP, names));
+    cpp11::sexp res = Rf_mkNamed(VECSXP, names);
 
     SET_VECTOR_ELT(res, 0, Rf_mkString(strDesc.c_str()));
     SET_VECTOR_ELT(res, 1, CleanConvert::GetCount(IsGmp, mpzIndex, dblIndex));
     SET_VECTOR_ELT(res, 2, CleanConvert::GetCount(IsGmp, computedRowsMpz, computedRows));
     SET_VECTOR_ELT(res, 3, CleanConvert::GetCount(IsGmp, mpzTemp, dblDiff));
-
-    UNPROTECT(1);
     return res;
 }

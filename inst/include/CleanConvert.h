@@ -3,6 +3,7 @@
 
 #include "cpp11/R.hpp"
 #include "cpp11/protect.hpp"
+#include "cpp11/sexp.hpp"
 
 #include <limits>
 #include <vector>
@@ -36,8 +37,7 @@ namespace CleanConvert {
     template <typename T>
     std::vector<T> GetNumVec(SEXP Rv);
 
-    SEXP GetCount(bool IsGmp, const mpz_t computedRowsMpz,
-                  double computedRows);
+    SEXP GetCount(bool IsGmp, const mpz_t numMpz, double numDbl);
 
     bool convertFlag(SEXP boolInput, const std::string &nameOfBool);
 
@@ -45,7 +45,8 @@ namespace CleanConvert {
     void convertPrimitive(SEXP input, T &result, VecType myType,
                           const std::string &nameOfObject,
                           bool numOnly = true, bool checkWhole = true,
-                          bool negPoss = false, bool decimalFraction = false);
+                          bool negPoss = false,
+                          bool decimalFraction = false);
 
     template <typename T>
     void convertVector(SEXP input, std::vector<T> &result,

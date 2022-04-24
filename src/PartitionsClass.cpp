@@ -27,7 +27,7 @@ void Partitions::MoveZToIndex() {
 
 SEXP Partitions::MultisetMatrix(int nRows) {
 
-    SEXP res = PROTECT(Rf_allocMatrix(RTYPE, nRows, nCols));
+    cpp11::sexp res = Rf_allocMatrix(RTYPE, nRows, nCols);
     const int lastRow = nRows - 1;
 
     if (RTYPE == INTSXP) {
@@ -62,7 +62,6 @@ SEXP Partitions::MultisetMatrix(int nRows) {
         }
     }
 
-    UNPROTECT(1);
     return res;
 }
 
@@ -157,12 +156,11 @@ SEXP Partitions::nextNumCombs(SEXP RNum) {
             increment(IsGmp, mpzIndex, dblIndex, numIncrement);
             return MultisetMatrix(nRows);
         } else {
-            bUpper   = true;
-            SEXP res = PROTECT(MatrixReturn(nRows));
+            bUpper = true;
+            cpp11::sexp res = MatrixReturn(nRows);
             increment(IsGmp, mpzIndex, dblIndex, numIncrement);
             zUpdateIndex(vNum, vInt, z, sexpVec, res, width, nRows, bAddOne);
             SetPartValues();
-            UNPROTECT(1);
             return res;
         }
     } else if (CheckEqInd(IsGmp, mpzIndex, dblIndex,
@@ -213,11 +211,10 @@ SEXP Partitions::nextGather() {
         if (part.ptype == PartitionType::Multiset) {
             return MultisetMatrix(nRows);
         } else {
-            bUpper   = false;
-            SEXP res = PROTECT(MatrixReturn(nRows));
+            bUpper = false;
+            cpp11::sexp res = MatrixReturn(nRows);
             zUpdateIndex(vNum, vInt, z, sexpVec, res, width, nRows, bAddOne);
             SetPartValues();
-            UNPROTECT(1);
             return res;
         }
     } else {
@@ -268,28 +265,28 @@ SEXP Partitions::randomAccess(SEXP RindexVec) {
                    myType, nThreads, sexpNThreads, limit);
 
         if (myType == VecType::Integer) {
-            SEXP res = PROTECT(Rf_allocMatrix(INTSXP, sampSize, part.width));
+            cpp11::sexp res = Rf_allocMatrix(INTSXP, sampSize, part.width);
             int* matInt = INTEGER(res);
 
             ThreadSafeSample(matInt, res, vInt, mySample, mpzVec.get(),
                              myReps, nthParts, part.width, sampSize,
                              nThreads, Parallel, false, part.mapTar,
                              strtLen, cap, IsGmp);
+
             zUpdateIndex(vNum, vInt, z, sexpVec, res, width, sampSize, bAddOne);
             SetPartValues();
-            UNPROTECT(1);
             return res;
         } else {
-            SEXP res = PROTECT(Rf_allocMatrix(REALSXP, sampSize, part.width));
+            cpp11::sexp res = Rf_allocMatrix(REALSXP, sampSize, part.width);
             double* matNum = REAL(res);
 
             ThreadSafeSample(matNum, res, vNum, mySample, mpzVec.get(),
                              myReps, nthParts, part.width, sampSize,
                              nThreads, Parallel, false, part.mapTar,
                              strtLen, cap, IsGmp);
+
             zUpdateIndex(vNum, vInt, z, sexpVec, res, width, sampSize, bAddOne);
             SetPartValues();
-            UNPROTECT(1);
             return res;
         }
     } else {
@@ -357,13 +354,11 @@ SEXP Partitions::summary() {
     const char *names[] = {"description", "currentIndex",
                            "totalResults", "totalRemaining", ""};
 
-    SEXP res = PROTECT(Rf_mkNamed(VECSXP, names));
+    cpp11::sexp res = Rf_mkNamed(VECSXP, names);
 
     SET_VECTOR_ELT(res, 0, Rf_mkString(strDesc.c_str()));
     SET_VECTOR_ELT(res, 1, CleanConvert::GetCount(IsGmp, mpzIndex, dblIndex));
     SET_VECTOR_ELT(res, 2, CleanConvert::GetCount(IsGmp, cnstrtCountMpz, cnstrtCount));
     SET_VECTOR_ELT(res, 3, CleanConvert::GetCount(IsGmp, mpzTemp, dblDiff));
-
-    UNPROTECT(1);
     return res;
 }

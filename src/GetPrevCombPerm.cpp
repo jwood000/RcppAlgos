@@ -57,13 +57,12 @@ SEXP GetPrevCombPerms(SEXP Rv, const std::vector<double> &vNum,
 
     switch (myType) {
         case VecType::Character : {
-            SEXP charVec = PROTECT(Rf_duplicate(Rv));
-            SEXP res = PROTECT(Rf_allocMatrix(STRSXP, nRows, m));
+            cpp11::sexp charVec = Rf_duplicate(Rv);
+            cpp11::sexp res = Rf_allocMatrix(STRSXP, nRows, m);
 
             GetPrevious(res, charVec, z, prevIter, n, m,
                         nRows, freqs, IsComb, IsMult);
 
-            UNPROTECT(2);
             return res;
         } case VecType::Complex : {
             std::vector<Rcomplex> stlCmplxVec(n);
@@ -73,13 +72,12 @@ SEXP GetPrevCombPerms(SEXP Rv, const std::vector<double> &vNum,
                 stlCmplxVec[i] = vecCmplx[i];
             }
 
-            SEXP res = PROTECT(Rf_allocMatrix(CPLXSXP, nRows, m));
+            cpp11::sexp res = Rf_allocMatrix(CPLXSXP, nRows, m);
             Rcomplex* matCmplx = COMPLEX(res);
 
             GetPrevious(matCmplx, stlCmplxVec, z, prevIter,
                         n, m, nRows, freqs, IsComb, IsMult);
 
-            UNPROTECT(1);
             return res;
         } case VecType::Raw : {
             std::vector<Rbyte> stlRawVec(n);
@@ -89,13 +87,12 @@ SEXP GetPrevCombPerms(SEXP Rv, const std::vector<double> &vNum,
                 stlRawVec[i] = rawVec[i];
             }
 
-            SEXP res = PROTECT(Rf_allocMatrix(RAWSXP, nRows, m));
+            cpp11::sexp res = Rf_allocMatrix(RAWSXP, nRows, m);
             Rbyte* rawMat = RAW(res);
 
             GetPrevious(rawMat, stlRawVec, z, prevIter,
                         n, m, nRows, freqs, IsComb, IsMult);
 
-            UNPROTECT(1);
             return res;
         } case VecType::Logical : {
             std::vector<int> vBool(n, 0);
@@ -105,16 +102,15 @@ SEXP GetPrevCombPerms(SEXP Rv, const std::vector<double> &vNum,
                 vBool[i] = vecBool[i];
             }
 
-            SEXP res = PROTECT(Rf_allocMatrix(LGLSXP, nRows, m));
+            cpp11::sexp res = Rf_allocMatrix(LGLSXP, nRows, m);
             int* matBool = LOGICAL(res);
 
             GetPrevious(matBool, vBool, z, prevIter, n,
                         m, nRows, freqs, IsComb, IsMult);
 
-            UNPROTECT(1);
             return res;
         } case VecType::Integer : {
-            SEXP res = PROTECT(Rf_allocMatrix(INTSXP, nRows, m));
+            cpp11::sexp res = Rf_allocMatrix(INTSXP, nRows, m);
             int* matInt = INTEGER(res);
 
             GetPrevious(matInt, vInt, z, prevIter, n,
@@ -124,16 +120,14 @@ SEXP GetPrevCombPerms(SEXP Rv, const std::vector<double> &vNum,
                 SetFactorClass(res, Rv);
             }
 
-            UNPROTECT(1);
             return res;
         } default : {
-            SEXP res = PROTECT(Rf_allocMatrix(REALSXP, nRows, m));
+            cpp11::sexp res = Rf_allocMatrix(REALSXP, nRows, m);
             double* matNum = REAL(res);
 
             GetPrevious(matNum, vNum, z, prevIter, n,
                         m, nRows, freqs, IsComb, IsMult);
 
-            UNPROTECT(1);
             return res;
         }
     }

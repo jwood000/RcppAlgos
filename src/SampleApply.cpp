@@ -11,7 +11,7 @@ void SampleApplyFun(SEXP res, const std::vector<T> &v, SEXP vectorPass,
                     int commonLen = 1, int commonType = INTSXP) {
 
     const int retType = TYPEOF(res);
-    SEXP sexpFun = PROTECT(Rf_lang2(func, R_NilValue));
+    cpp11::sexp sexpFun = Rf_lang2(func, R_NilValue);
 
     if (IsGmp) {
         for (int count = 0; count < sampSize; ++count) {
@@ -44,7 +44,6 @@ void SampleApplyFun(SEXP res, const std::vector<T> &v, SEXP vectorPass,
         mpz_clear(mpzDefault);
     }
 
-    UNPROTECT(1);
 
     if (IsNamed) {
         SetSampleNames(res, IsGmp, sampSize, mySample, myBigSamp);
@@ -59,7 +58,7 @@ void SampleApplyFun(SEXP res, SEXP v, SEXP vectorPass,
                     int commonLen = 1, int commonType = INTSXP) {
 
     const int retType = TYPEOF(res);
-    SEXP sexpFun = PROTECT(Rf_lang2(func, R_NilValue));
+    cpp11::sexp sexpFun = Rf_lang2(func, R_NilValue);
 
     if (IsGmp) {
         for (int count = 0; count < sampSize; ++count) {
@@ -92,7 +91,6 @@ void SampleApplyFun(SEXP res, SEXP v, SEXP vectorPass,
         mpz_clear(mpzDefault);
     }
 
-    UNPROTECT(1);
 
     if (IsNamed) {
         SetSampleNames(res, IsGmp, sampSize, mySample, myBigSamp);
@@ -104,7 +102,7 @@ SEXP ApplyFunction(const std::vector<T> &v, SEXP vectorPass,
                    T* ptr_vec, const std::vector<double> &mySample,
                    mpz_t *const myBigSamp, const std::vector<int> &myReps,
                    SEXP stdFun, SEXP rho, SEXP RFunVal,
-                   nthResultPtr nthResFun, int m, int sampSize,
+                   nthResultPtr nthResFun, int m, int n_samp,
                    bool IsNamed, bool IsGmp, int lenV) {
 
     if (!Rf_isNull(RFunVal)) {
@@ -113,104 +111,82 @@ SEXP ApplyFunction(const std::vector<T> &v, SEXP vectorPass,
 
         switch (TYPEOF(RFunVal)) {
             case STRSXP : {
-                SEXP res = PROTECT(
-                    Rf_allocVector(STRSXP, sampSize * commonLen)
-                );
+                cpp11::sexp res = Rf_allocVector(STRSXP, n_samp * commonLen);
 
                 SampleApplyFun(res, v, vectorPass, ptr_vec, mySample,
                                myBigSamp, myReps, stdFun, rho, nthResFun,
-                               m, sampSize, IsNamed, IsGmp, lenV,
+                               m, n_samp, IsNamed, IsGmp, lenV,
                                commonLen, STRSXP);
 
-                SetDims(RFunVal, res, commonLen, sampSize);
-                UNPROTECT(1);
+                SetDims(RFunVal, res, commonLen, n_samp);
                 return res;
             } case CPLXSXP : {
-                SEXP res = PROTECT(
-                    Rf_allocVector(CPLXSXP, sampSize * commonLen)
-                );
+                cpp11::sexp res = Rf_allocVector(CPLXSXP, n_samp * commonLen);
 
                 SampleApplyFun(res, v, vectorPass, ptr_vec, mySample,
                                myBigSamp, myReps, stdFun, rho, nthResFun,
-                               m, sampSize, IsNamed, IsGmp, lenV,
+                               m, n_samp, IsNamed, IsGmp, lenV,
                                commonLen, CPLXSXP);
 
-                SetDims(RFunVal, res, commonLen, sampSize);
-                UNPROTECT(1);
+                SetDims(RFunVal, res, commonLen, n_samp);
                 return res;
             } case RAWSXP : {
-                SEXP res = PROTECT(
-                    Rf_allocVector(RAWSXP, sampSize * commonLen)
-                );
+                cpp11::sexp res = Rf_allocVector(RAWSXP, n_samp * commonLen);
 
                 SampleApplyFun(res, v, vectorPass, ptr_vec, mySample,
                                myBigSamp, myReps, stdFun, rho, nthResFun,
-                               m, sampSize, IsNamed, IsGmp, lenV,
+                               m, n_samp, IsNamed, IsGmp, lenV,
                                commonLen, RAWSXP);
 
-                SetDims(RFunVal, res, commonLen, sampSize);
-                UNPROTECT(1);
+                SetDims(RFunVal, res, commonLen, n_samp);
                 return res;
             } case LGLSXP : {
-                SEXP res = PROTECT(
-                    Rf_allocVector(LGLSXP, sampSize * commonLen)
-                );
+                cpp11::sexp res = Rf_allocVector(LGLSXP, n_samp * commonLen);
 
                 SampleApplyFun(res, v, vectorPass, ptr_vec, mySample,
                                myBigSamp, myReps, stdFun, rho, nthResFun,
-                               m, sampSize, IsNamed, IsGmp, lenV,
+                               m, n_samp, IsNamed, IsGmp, lenV,
                                commonLen, LGLSXP);
 
-                SetDims(RFunVal, res, commonLen, sampSize);
-                UNPROTECT(1);
+                SetDims(RFunVal, res, commonLen, n_samp);
                 return res;
             } case INTSXP : {
-                SEXP res = PROTECT(
-                    Rf_allocVector(INTSXP, sampSize * commonLen)
-                );
+                cpp11::sexp res = Rf_allocVector(INTSXP, n_samp * commonLen);
 
                 SampleApplyFun(res, v, vectorPass, ptr_vec, mySample,
                                myBigSamp, myReps, stdFun, rho, nthResFun,
-                               m, sampSize, IsNamed, IsGmp, lenV,
+                               m, n_samp, IsNamed, IsGmp, lenV,
                                commonLen, INTSXP);
 
-                SetDims(RFunVal, res, commonLen, sampSize);
-                UNPROTECT(1);
+                SetDims(RFunVal, res, commonLen, n_samp);
                 return res;
             } case REALSXP : {
-                SEXP res = PROTECT(
-                    Rf_allocVector(REALSXP, sampSize * commonLen)
-                );
+                cpp11::sexp res = Rf_allocVector(REALSXP, n_samp * commonLen);
 
                 SampleApplyFun(res, v, vectorPass, ptr_vec, mySample,
                                myBigSamp, myReps, stdFun, rho, nthResFun,
-                               m, sampSize, IsNamed, IsGmp, lenV,
+                               m, n_samp, IsNamed, IsGmp, lenV,
                                commonLen, REALSXP);
 
-                SetDims(RFunVal, res, commonLen, sampSize);
-                UNPROTECT(1);
+                SetDims(RFunVal, res, commonLen, n_samp);
                 return res;
             } default : {
-                SEXP res = PROTECT(
-                    Rf_allocVector(VECSXP, sampSize * commonLen)
-                );
+                cpp11::sexp res = Rf_allocVector(VECSXP, n_samp * commonLen);
 
                 SampleApplyFun(res, v, vectorPass, ptr_vec, mySample,
                                myBigSamp, myReps, stdFun, rho, nthResFun,
-                               m, sampSize, IsNamed, IsGmp, lenV,
+                               m, n_samp, IsNamed, IsGmp, lenV,
                                commonLen, VECSXP);
 
-                SetDims(RFunVal, res, commonLen, sampSize);
-                UNPROTECT(1);
+                SetDims(RFunVal, res, commonLen, n_samp);
                 return res;
             }
         }
     } else {
-        SEXP myList = PROTECT(Rf_allocVector(VECSXP, sampSize));
+        cpp11::sexp myList = Rf_allocVector(VECSXP, n_samp);
         SampleApplyFun(myList, v, vectorPass, ptr_vec, mySample,
                        myBigSamp, myReps, stdFun, rho, nthResFun,
-                       m, sampSize, IsNamed, IsGmp, lenV);
-        UNPROTECT(1);
+                       m, n_samp, IsNamed, IsGmp, lenV);
         return myList;
     }
 }
@@ -219,7 +195,7 @@ SEXP ApplyFunction(SEXP v, SEXP vectorPass,
                    const std::vector<double> &mySample,
                    mpz_t *const myBigSamp, const std::vector<int> &myReps,
                    SEXP stdFun, SEXP rho, SEXP RFunVal,
-                   nthResultPtr nthResFun, int m, int sampSize,
+                   nthResultPtr nthResFun, int m, int n_samp,
                    bool IsNamed, bool IsGmp, int lenV) {
 
     if (!Rf_isNull(RFunVal)) {
@@ -228,97 +204,75 @@ SEXP ApplyFunction(SEXP v, SEXP vectorPass,
 
         switch (TYPEOF(RFunVal)) {
             case STRSXP : {
-                SEXP res = PROTECT(
-                    Rf_allocVector(STRSXP, sampSize * commonLen)
-                );
+                cpp11::sexp res = Rf_allocVector(STRSXP, n_samp * commonLen);
 
                 SampleApplyFun(res, v, vectorPass, mySample, myBigSamp,
-                               myReps, stdFun, rho, nthResFun, m, sampSize,
+                               myReps, stdFun, rho, nthResFun, m, n_samp,
                                IsNamed, IsGmp, lenV, commonLen, STRSXP);
 
-                SetDims(RFunVal, res, commonLen, sampSize);
-                UNPROTECT(1);
+                SetDims(RFunVal, res, commonLen, n_samp);
                 return res;
             } case CPLXSXP : {
-                SEXP res = PROTECT(
-                    Rf_allocVector(CPLXSXP, sampSize * commonLen)
-                );
+                cpp11::sexp res = Rf_allocVector(CPLXSXP, n_samp * commonLen);
 
                 SampleApplyFun(res, v, vectorPass, mySample, myBigSamp,
-                               myReps, stdFun, rho, nthResFun, m, sampSize,
+                               myReps, stdFun, rho, nthResFun, m, n_samp,
                                IsNamed, IsGmp, lenV, commonLen, CPLXSXP);
 
-                SetDims(RFunVal, res, commonLen, sampSize);
-                UNPROTECT(1);
+                SetDims(RFunVal, res, commonLen, n_samp);
                 return res;
             } case RAWSXP : {
-                SEXP res = PROTECT(
-                    Rf_allocVector(RAWSXP, sampSize * commonLen)
-                );
+                cpp11::sexp res = Rf_allocVector(RAWSXP, n_samp * commonLen);
 
                 SampleApplyFun(res, v, vectorPass, mySample, myBigSamp,
-                               myReps, stdFun, rho, nthResFun, m, sampSize,
+                               myReps, stdFun, rho, nthResFun, m, n_samp,
                                IsNamed, IsGmp, lenV, commonLen, RAWSXP);
 
-                SetDims(RFunVal, res, commonLen, sampSize);
-                UNPROTECT(1);
+                SetDims(RFunVal, res, commonLen, n_samp);
                 return res;
             } case LGLSXP : {
-                SEXP res = PROTECT(
-                    Rf_allocVector(LGLSXP, sampSize * commonLen)
-                );
+                cpp11::sexp res = Rf_allocVector(LGLSXP, n_samp * commonLen);
 
                 SampleApplyFun(res, v, vectorPass, mySample, myBigSamp,
-                               myReps, stdFun, rho, nthResFun, m, sampSize,
+                               myReps, stdFun, rho, nthResFun, m, n_samp,
                                IsNamed, IsGmp, lenV, commonLen, LGLSXP);
 
-                SetDims(RFunVal, res, commonLen, sampSize);
-                UNPROTECT(1);
+                SetDims(RFunVal, res, commonLen, n_samp);
                 return res;
             } case INTSXP : {
-                SEXP res = PROTECT(
-                    Rf_allocVector(INTSXP, sampSize * commonLen)
-                );
+                cpp11::sexp res = Rf_allocVector(INTSXP, n_samp * commonLen);
 
                 SampleApplyFun(res, v, vectorPass, mySample, myBigSamp,
-                               myReps, stdFun, rho, nthResFun, m, sampSize,
+                               myReps, stdFun, rho, nthResFun, m, n_samp,
                                IsNamed, IsGmp, lenV, commonLen, INTSXP);
 
-                SetDims(RFunVal, res, commonLen, sampSize);
-                UNPROTECT(1);
+                SetDims(RFunVal, res, commonLen, n_samp);
                 return res;
             } case REALSXP : {
-                SEXP res = PROTECT(
-                    Rf_allocVector(REALSXP, sampSize * commonLen)
-                );
+                cpp11::sexp res = Rf_allocVector(REALSXP, n_samp * commonLen);
 
                 SampleApplyFun(res, v, vectorPass, mySample, myBigSamp,
-                               myReps, stdFun, rho, nthResFun, m, sampSize,
+                               myReps, stdFun, rho, nthResFun, m, n_samp,
                                IsNamed, IsGmp, lenV, commonLen, REALSXP);
 
-                SetDims(RFunVal, res, commonLen, sampSize);
-                UNPROTECT(1);
+                SetDims(RFunVal, res, commonLen, n_samp);
                 return res;
             } default : {
-                SEXP res = PROTECT(
-                    Rf_allocVector(VECSXP, sampSize * commonLen)
-                );
+                cpp11::sexp res = Rf_allocVector(VECSXP, n_samp * commonLen);
 
                 SampleApplyFun(res, v, vectorPass, mySample, myBigSamp,
-                               myReps, stdFun, rho, nthResFun, m, sampSize,
+                               myReps, stdFun, rho, nthResFun, m, n_samp,
                                IsNamed, IsGmp, lenV, commonLen, VECSXP);
 
-                SetDims(RFunVal, res, commonLen, sampSize);
-                UNPROTECT(1);
+                SetDims(RFunVal, res, commonLen, n_samp);
                 return res;
             }
         }
     } else {
-        SEXP myList = PROTECT(Rf_allocVector(VECSXP, sampSize));
+        cpp11::sexp myList = Rf_allocVector(VECSXP, n_samp);
         SampleApplyFun(myList, v, vectorPass, mySample, myBigSamp,
-                       myReps, stdFun, rho, nthResFun, m, sampSize,
+                       myReps, stdFun, rho, nthResFun, m, n_samp,
                        IsNamed, IsGmp, lenV);
-        UNPROTECT(1);
         return myList;
     }
 }
@@ -334,88 +288,81 @@ SEXP SampleCombPermApply(SEXP Rv, const std::vector<int> &vInt,
 
     switch (myType) {
         case VecType::Character : {
-            SEXP charVec = PROTECT(Rf_duplicate(Rv));
-            SEXP vectorPass = PROTECT(Rf_allocVector(STRSXP, m));
+            cpp11::sexp charVec = Rf_duplicate(Rv);
+            cpp11::sexp vectorPass = Rf_allocVector(STRSXP, m);
 
-            SEXP res = PROTECT(
-                ApplyFunction(charVec, vectorPass, mySample, myBigSamp,
-                              myReps, stdFun, rho, RFunVal, nthResFun,
-                              m, sampSize, IsNamed, IsGmp, n)
+            cpp11::sexp res = ApplyFunction(
+                charVec, vectorPass, mySample, myBigSamp, myReps, stdFun,
+                rho, RFunVal, nthResFun, m, sampSize, IsNamed, IsGmp, n
             );
 
             MpzClearVec(myBigSamp, sampSize, IsGmp);
-            UNPROTECT(3);
             return res;
         } case VecType::Complex : {
-            SEXP vectorPass = PROTECT(Rf_allocVector(CPLXSXP, m));
+            cpp11::sexp vectorPass = Rf_allocVector(CPLXSXP, m);
             Rcomplex* ptr_vec = COMPLEX(vectorPass);
 
             Rcomplex* cmplxVec = COMPLEX(Rv);
             std::vector<Rcomplex> vCmplx(cmplxVec, cmplxVec + n);
 
-            SEXP res = PROTECT(
-                ApplyFunction(vCmplx, vectorPass, ptr_vec, mySample,
-                              myBigSamp, myReps, stdFun, rho, RFunVal,
-                              nthResFun, m, sampSize, IsNamed, IsGmp, n)
+            cpp11::sexp res = ApplyFunction(
+                vCmplx, vectorPass, ptr_vec, mySample, myBigSamp, myReps,
+                stdFun, rho, RFunVal, nthResFun, m, sampSize, IsNamed,
+                IsGmp, n
             );
 
             MpzClearVec(myBigSamp, sampSize, IsGmp);
-            UNPROTECT(2);
             return res;
         } case VecType::Raw : {
-            SEXP vectorPass = PROTECT(Rf_allocVector(RAWSXP, m));
+            cpp11::sexp vectorPass = Rf_allocVector(RAWSXP, m);
             Rbyte* ptr_vec = RAW(vectorPass);
 
             Rbyte* rawVec = RAW(Rv);
             std::vector<Rbyte> vByte(rawVec, rawVec + n);
 
-            SEXP res = PROTECT(
-                ApplyFunction(vByte, vectorPass, ptr_vec, mySample,
-                              myBigSamp, myReps, stdFun, rho, RFunVal,
-                              nthResFun, m, sampSize, IsNamed, IsGmp, n)
+            cpp11::sexp res = ApplyFunction(
+                vByte, vectorPass, ptr_vec, mySample, myBigSamp, myReps,
+                stdFun, rho, RFunVal, nthResFun, m, sampSize, IsNamed,
+                IsGmp, n
             );
 
             MpzClearVec(myBigSamp, sampSize, IsGmp);
-            UNPROTECT(2);
             return res;
         } case VecType::Logical : {
-            SEXP vectorPass = PROTECT(Rf_allocVector(LGLSXP, m));
+            cpp11::sexp vectorPass = Rf_allocVector(LGLSXP, m);
             int* ptr_vec = LOGICAL(vectorPass);
 
-            SEXP res = PROTECT(
-                ApplyFunction(vInt, vectorPass, ptr_vec, mySample,
-                              myBigSamp, myReps, stdFun, rho, RFunVal,
-                              nthResFun, m, sampSize, IsNamed, IsGmp, n)
+            cpp11::sexp res = ApplyFunction(
+                vInt, vectorPass, ptr_vec, mySample, myBigSamp, myReps,
+                stdFun, rho, RFunVal, nthResFun, m, sampSize, IsNamed,
+                IsGmp, n
             );
 
             MpzClearVec(myBigSamp, sampSize, IsGmp);
-            UNPROTECT(2);
             return res;
         } case VecType::Integer : {
-            SEXP vectorPass = PROTECT(Rf_allocVector(INTSXP, m));
+            cpp11::sexp vectorPass = Rf_allocVector(INTSXP, m);
             int* ptr_vec = INTEGER(vectorPass);
 
-            SEXP res = PROTECT(
-                ApplyFunction(vInt, vectorPass, ptr_vec, mySample,
-                              myBigSamp, myReps, stdFun, rho, RFunVal,
-                              nthResFun, m, sampSize, IsNamed, IsGmp, n)
+            cpp11::sexp res = ApplyFunction(
+                vInt, vectorPass, ptr_vec, mySample, myBigSamp, myReps,
+                stdFun, rho, RFunVal, nthResFun, m, sampSize, IsNamed,
+                IsGmp, n
             );
 
             MpzClearVec(myBigSamp, sampSize, IsGmp);
-            UNPROTECT(2);
             return res;
         } default : {
-            SEXP vectorPass = PROTECT(Rf_allocVector(REALSXP, m));
+            cpp11::sexp vectorPass = Rf_allocVector(REALSXP, m);
             double* ptr_vec = REAL(vectorPass);
 
-            SEXP res = PROTECT(
-                ApplyFunction(vNum, vectorPass, ptr_vec, mySample,
-                              myBigSamp, myReps, stdFun, rho, RFunVal,
-                              nthResFun, m, sampSize, IsNamed, IsGmp, n)
+            cpp11::sexp res = ApplyFunction(
+                vNum, vectorPass, ptr_vec, mySample, myBigSamp, myReps,
+                stdFun, rho, RFunVal, nthResFun, m, sampSize, IsNamed,
+                IsGmp, n
             );
 
             MpzClearVec(myBigSamp, sampSize, IsGmp);
-            UNPROTECT(2);
             return res;
         }
     }

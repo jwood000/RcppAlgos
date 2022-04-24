@@ -57,13 +57,12 @@ SEXP GetCombPerms(SEXP Rv, const std::vector<double> &vNum,
 
     switch (myType) {
         case VecType::Character : {
-            SEXP charVec = PROTECT(Rf_duplicate(Rv));
-            SEXP res = PROTECT(Rf_allocMatrix(STRSXP, nRows, m));
+            cpp11::sexp charVec = Rf_duplicate(Rv);
+            cpp11::sexp res = Rf_allocMatrix(STRSXP, nRows, m);
 
             CharacterGlue(res, charVec, IsComb, z, n, m,
                           nRows, freqs, IsMult, IsRep);
 
-            UNPROTECT(2);
             return res;
         } case VecType::Complex : {
             std::vector<Rcomplex> stlCmplxVec(n);
@@ -73,13 +72,12 @@ SEXP GetCombPerms(SEXP Rv, const std::vector<double> &vNum,
                 stlCmplxVec[i] = vecCmplx[i];
             }
 
-            SEXP res = PROTECT(Rf_allocMatrix(CPLXSXP, nRows, m));
+            cpp11::sexp res = Rf_allocMatrix(CPLXSXP, nRows, m);
             Rcomplex* matCmplx = COMPLEX(res);
 
             ManagerGlue(matCmplx, stlCmplxVec, z, n, m, nRows, IsComb,
                         phaseOne, generalRet, freqs, IsMult, IsRep);
 
-            UNPROTECT(1);
             return res;
         } case VecType::Raw : {
             std::vector<Rbyte> stlRawVec(n);
@@ -89,13 +87,12 @@ SEXP GetCombPerms(SEXP Rv, const std::vector<double> &vNum,
                 stlRawVec[i] = rawVec[i];
             }
 
-            SEXP res = PROTECT(Rf_allocMatrix(RAWSXP, nRows, m));
+            cpp11::sexp res = Rf_allocMatrix(RAWSXP, nRows, m);
             Rbyte* rawMat = RAW(res);
 
             ManagerGlue(rawMat, stlRawVec, z, n, m, nRows, IsComb,
                         phaseOne, generalRet, freqs, IsMult, IsRep);
 
-            UNPROTECT(1);
             return res;
         } case VecType::Logical : {
             std::vector<int> vBool(n, 0);
@@ -105,37 +102,31 @@ SEXP GetCombPerms(SEXP Rv, const std::vector<double> &vNum,
                 vBool[i] = vecBool[i];
             }
 
-            SEXP res = PROTECT(Rf_allocMatrix(LGLSXP, nRows, m));
+            cpp11::sexp res = Rf_allocMatrix(LGLSXP, nRows, m);
             int* matBool = LOGICAL(res);
 
             ManagerGlue(matBool, vBool, z, n, m, nRows, IsComb,
                         phaseOne, generalRet, freqs, IsMult, IsRep);
 
-            UNPROTECT(1);
             return res;
         } case VecType::Integer : {
-            SEXP res = PROTECT(Rf_allocMatrix(INTSXP, nRows, m));
+            cpp11::sexp res = Rf_allocMatrix(INTSXP, nRows, m);
             int* matInt = INTEGER(res);
 
             ParallelGlue(matInt, vInt, n, m, phaseOne, generalRet, IsComb,
                          Parallel, IsRep, IsMult, IsGmp, freqs, z, myReps,
                          lower, lowerMpz, nRows, nThreads);
 
-            if (Rf_isFactor(Rv)) {
-                SetFactorClass(res, Rv);
-            }
-
-            UNPROTECT(1);
+            if (Rf_isFactor(Rv)) SetFactorClass(res, Rv);
             return res;
         } default : {
-            SEXP res = PROTECT(Rf_allocMatrix(REALSXP, nRows, m));
+            cpp11::sexp res = Rf_allocMatrix(REALSXP, nRows, m);
             double* matNum = REAL(res);
 
             ParallelGlue(matNum, vNum, n, m, phaseOne, generalRet, IsComb,
                          Parallel, IsRep, IsMult, IsGmp, freqs, z, myReps,
                          lower, lowerMpz, nRows, nThreads);
 
-            UNPROTECT(1);
             return res;
         }
     }

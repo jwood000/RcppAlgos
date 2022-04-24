@@ -92,7 +92,7 @@ SEXP PolGlueInt(std::vector<double> &myNums, int myMax,
             PollardRhoMaster(myNums, myMax, bPrimeFacs, bAllFacs,
                              MyPrimeList, tempVec, myRange, nThreads, maxThreads);
 
-            SEXP myList = PROTECT(Rf_allocVector(VECSXP, myRange));
+            cpp11::sexp myList = Rf_allocVector(VECSXP, myRange);
 
             for (std::size_t i = 0; i < myRange; ++i) {
                 SET_VECTOR_ELT(myList, i, GetIntVec(MyPrimeList[i]));
@@ -103,7 +103,6 @@ SEXP PolGlueInt(std::vector<double> &myNums, int myMax,
                 SetDblNames(myList, myNums);
             }
 
-            UNPROTECT(numUnprotects);
             return myList;
         }
     } else if (bAllFacs) {
@@ -153,7 +152,7 @@ SEXP PolGlueInt(std::vector<double> &myNums, int myMax,
         PollardRhoMaster(myNums, myMax, bPrimeFacs, bAllFacs,
                          MyPrimeList, tempVec, myRange, nThreads, maxThreads);
 
-        SEXP myList = PROTECT(Rf_allocVector(VECSXP, myRange));
+        cpp11::sexp myList = Rf_allocVector(VECSXP, myRange);
 
         for (std::size_t i = 0; i < myRange; ++i) {
             SET_VECTOR_ELT(myList, i, GetIntVec(MyPrimeList[i]));
@@ -164,10 +163,9 @@ SEXP PolGlueInt(std::vector<double> &myNums, int myMax,
             SetDblNames(myList, myNums);
         }
 
-        UNPROTECT(numUnprotects);
         return myList;
     } else {
-        SEXP isPrimeVec = PROTECT(Rf_allocVector(LGLSXP, myRange));
+        cpp11::sexp isPrimeVec = Rf_allocVector(LGLSXP, myRange);
         int* ptrPrimeVec = INTEGER(isPrimeVec);
         std::fill_n(ptrPrimeVec, myRange, 1);
         std::vector<std::vector<int>> tempList;
@@ -180,7 +178,6 @@ SEXP PolGlueInt(std::vector<double> &myNums, int myMax,
             SetDblNames(isPrimeVec, myNums);
         }
 
-        UNPROTECT(numUnprotects);
         return isPrimeVec;
     }
 }
@@ -214,7 +211,7 @@ SEXP PolGlueDbl(std::vector<double> &myNums, double myMax,
                              false, MyPrimeList, tempVec,
                              myRange, nThreads, maxThreads);
 
-            SEXP myList = PROTECT(Rf_allocVector(VECSXP, myRange));
+            cpp11::sexp myList = Rf_allocVector(VECSXP, myRange);
 
             for (std::size_t i = 0; i < myRange; ++i) {
                 SET_VECTOR_ELT(myList, i, GetDblVec(MyPrimeList[i]));
@@ -225,7 +222,6 @@ SEXP PolGlueDbl(std::vector<double> &myNums, double myMax,
                 SetDblNames(myList, myNums);
             }
 
-            UNPROTECT(numUnprotects);
             return myList;
         }
     } else if (bAllFacs) {
@@ -276,7 +272,7 @@ SEXP PolGlueDbl(std::vector<double> &myNums, double myMax,
                          true, MyPrimeList, tempVec,
                          myRange, nThreads, maxThreads);
 
-        SEXP myList = PROTECT(Rf_allocVector(VECSXP, myRange));
+        cpp11::sexp myList = Rf_allocVector(VECSXP, myRange);
 
         for (std::size_t i = 0; i < myRange; ++i) {
             SET_VECTOR_ELT(myList, i, GetDblVec(MyPrimeList[i]));
@@ -287,10 +283,9 @@ SEXP PolGlueDbl(std::vector<double> &myNums, double myMax,
             SetDblNames(myList, myNums);
         }
 
-        UNPROTECT(numUnprotects);
         return myList;
     } else {
-        SEXP isPrimeVec = PROTECT(Rf_allocVector(LGLSXP, myRange));
+        cpp11::sexp isPrimeVec = Rf_allocVector(LGLSXP, myRange);
         int* ptrPrimeVec = INTEGER(isPrimeVec);
         std::fill_n(ptrPrimeVec, myRange, 1);
         std::vector<std::vector<double>> tempList;
@@ -303,7 +298,6 @@ SEXP PolGlueDbl(std::vector<double> &myNums, double myMax,
             SetDblNames(isPrimeVec, myNums);
         }
 
-        UNPROTECT(numUnprotects);
         return isPrimeVec;
     }
 }

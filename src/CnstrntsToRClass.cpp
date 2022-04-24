@@ -17,7 +17,7 @@ void SetCurrVec(const std::vector<T> &cnstrntVec,
 template <int sexpType, typename T>
 SEXP CnstrtVecReturn(const std::vector<T> &v) {
 
-    SEXP res = PROTECT(Rf_allocVector(sexpType, v.size()));
+    cpp11::sexp res = Rf_allocVector(sexpType, v.size());
 
     if (sexpType == INTSXP) {
         int* ptrOut = INTEGER(res);
@@ -33,7 +33,6 @@ SEXP CnstrtVecReturn(const std::vector<T> &v) {
         }
     }
 
-    UNPROTECT(1);
     return res;
 }
 
@@ -98,12 +97,11 @@ SEXP CnstrntsToR::GetNextN(int n) {
             const int vecLen = cnstrntVec.size();
             const int numResult = vecLen / m;
 
-            SEXP res = PROTECT(Rf_allocMatrix(INTSXP, numResult, nCols));
+            cpp11::sexp res = Rf_allocMatrix(INTSXP, numResult, nCols);
             int* matInt = INTEGER(res);
 
             VectorToMatrix(cnstrntVec, resVec, matInt, 0, numResult,
                            width, upperBoundInt, KeepRes, false);
-            UNPROTECT(1);
             return res;
         }
     } else {
@@ -116,12 +114,11 @@ SEXP CnstrntsToR::GetNextN(int n) {
             const int vecLen = cnstrntVec.size();
             const int numResult = vecLen / m;
 
-            SEXP res = PROTECT(Rf_allocMatrix(REALSXP, numResult, nCols));
+            cpp11::sexp res = Rf_allocMatrix(REALSXP, numResult, nCols);
             double* matNum = REAL(res);
 
             VectorToMatrix(cnstrntVec, resVec, matNum, 0, numResult,
                            width, upperBoundDbl, KeepRes, false);
-            UNPROTECT(1);
             return res;
         }
     }
@@ -234,7 +231,7 @@ SEXP CnstrntsToR::currComb() {
 }
 
 SEXP CnstrntsToR::summary() {
-    SEXP res = PROTECT(Combo::summary());
+    cpp11::sexp res = Combo::summary();
     std::string desc(R_CHAR(STRING_ELT(VECTOR_ELT(res, 0), 0)));
 
     constexpr auto max_digits10 = std::numeric_limits<double>::max_digits10;
@@ -295,7 +292,5 @@ SEXP CnstrntsToR::summary() {
     SET_VECTOR_ELT(res, 1, Rf_ScalarInteger(idx));
     SET_VECTOR_ELT(res, 2, Rf_ScalarReal(R_NaReal));
     SET_VECTOR_ELT(res, 3, Rf_ScalarReal(R_NaReal));
-
-    UNPROTECT(1);
     return res;
 }

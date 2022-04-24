@@ -8,11 +8,13 @@ bool CheckConstrnd(SEXP RCnstrntFun, SEXP RCompFun, SEXP Rtarget) {
                   !Rf_isNull(Rtarget);
 
     if (result) {
-        if (!Rf_isString(RCnstrntFun))
+        if (!Rf_isString(RCnstrntFun)) {
             cpp11::stop("constraintFun must be passed as a character");
+        }
 
-        if (!Rf_isString(RCompFun))
+        if (!Rf_isString(RCompFun)) {
             cpp11::stop("comparisonFun must be passed as a character");
+        }
     }
 
     return result;
@@ -102,6 +104,5 @@ SEXP CheckReturn(SEXP Rv, SEXP RCnstrntFun, SEXP RCompFun,
         }
     }
 
-    SEXP sexpRes = Rf_ScalarInteger(res);
-    return sexpRes;
+    return Rf_ScalarInteger(res);
 }

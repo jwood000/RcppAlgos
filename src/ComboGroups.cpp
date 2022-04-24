@@ -17,14 +17,13 @@ void FinalTouch(SEXP res, bool IsArray, int grpSize, int r, int n,
     }
 
     if (IsArray) {
-        SEXP dim = PROTECT(Rf_allocVector(INTSXP, 3));
+        cpp11::sexp dim = Rf_allocVector(INTSXP, 3);
         INTEGER(dim)[0] = nRows;
         INTEGER(dim)[1] = grpSize;
         INTEGER(dim)[2] = r;
         Rf_setAttrib(res, R_DimSymbol, dim);
-        UNPROTECT(1);
 
-        SEXP myNames = PROTECT(Rf_allocVector(STRSXP, r));
+        cpp11::sexp myNames = Rf_allocVector(STRSXP, r);
 
         for (int i = 0; i < r; ++i) {
             SET_STRING_ELT(myNames, i, Rf_mkChar(myColNames[i].c_str()));
@@ -33,13 +32,12 @@ void FinalTouch(SEXP res, bool IsArray, int grpSize, int r, int n,
         if (IsNamed) {
             SetSampleNames(res, IsGmp, nRows, mySample, myBigSamp, myNames, 2);
         } else {
-            SEXP dimNames = PROTECT(Rf_allocVector(VECSXP, 3));
+            cpp11::sexp dimNames = Rf_allocVector(VECSXP, 3);
             SET_VECTOR_ELT(dimNames, 2, myNames);
             Rf_setAttrib(res, R_DimNamesSymbol, dimNames);
-            UNPROTECT(2);
         }
     } else {
-        SEXP myNames = PROTECT(Rf_allocVector(STRSXP, n));
+        cpp11::sexp myNames = Rf_allocVector(STRSXP, n);
 
         for (int i = 0, k = 0; i < r; ++i) {
             for (int j = 0; j < grpSize; ++j, ++k) {
@@ -50,10 +48,9 @@ void FinalTouch(SEXP res, bool IsArray, int grpSize, int r, int n,
         if (IsNamed) {
             SetSampleNames(res, IsGmp, nRows, mySample, myBigSamp, myNames, 1);
         } else {
-            SEXP dimNames = PROTECT(Rf_allocVector(VECSXP, 2));
+            cpp11::sexp dimNames = Rf_allocVector(VECSXP, 2);
             SET_VECTOR_ELT(dimNames, 1, myNames);
             Rf_setAttrib(res, R_DimNamesSymbol, dimNames);
-            UNPROTECT(2);
         }
     }
 
@@ -462,14 +459,13 @@ SEXP ComboGroupsCpp(SEXP Rv, SEXP RNumGroups, SEXP RRetType, SEXP Rlow,
 
     switch (myType) {
         case VecType::Character: {
-            SEXP charVec = PROTECT(Rf_duplicate(Rv));
-            SEXP res = PROTECT(Rf_allocMatrix(STRSXP, numResults, n));
+            cpp11::sexp charVec = Rf_duplicate(Rv);
+            cpp11::sexp res = Rf_allocMatrix(STRSXP, numResults, n);
 
             CharacterGlue(res, charVec, mySample, myVec.get(), startZ,
                           computedRowMpz, computedRows, n, numGroups, grpSize,
                           numResults, IsArray, IsGmp, IsSample, IsNamed);
 
-            UNPROTECT(2);
             return res;
         } case VecType::Complex: {
             std::vector<Rcomplex> stlCmplxVec(n);
@@ -479,7 +475,7 @@ SEXP ComboGroupsCpp(SEXP Rv, SEXP RNumGroups, SEXP RRetType, SEXP Rlow,
                 stlCmplxVec[i] = vecCmplx[i];
             }
 
-            SEXP res = PROTECT(Rf_allocMatrix(CPLXSXP, numResults, n));
+            cpp11::sexp res = Rf_allocMatrix(CPLXSXP, numResults, n);
             Rcomplex* matCmplx = COMPLEX(res);
 
             SerialGlue(matCmplx, res, stlCmplxVec, mySample, myVec.get(),
@@ -487,7 +483,6 @@ SEXP ComboGroupsCpp(SEXP Rv, SEXP RNumGroups, SEXP RRetType, SEXP Rlow,
                        grpSize, numResults, IsArray, IsGmp, IsSample,
                        IsNamed);
 
-            UNPROTECT(1);
             return res;
         } case VecType::Raw : {
             std::vector<Rbyte> stlRawVec(n);
@@ -497,14 +492,13 @@ SEXP ComboGroupsCpp(SEXP Rv, SEXP RNumGroups, SEXP RRetType, SEXP Rlow,
                 stlRawVec[i] = vecRaw[i];
             }
 
-            SEXP res = PROTECT(Rf_allocMatrix(RAWSXP, numResults, n));
+            cpp11::sexp res = Rf_allocMatrix(RAWSXP, numResults, n);
             Rbyte* matRaw = RAW(res);
 
             SerialGlue(matRaw, res, stlRawVec, mySample, myVec.get(), startZ,
                        computedRowMpz, computedRows, n, numGroups, grpSize,
                        numResults, IsArray, IsGmp, IsSample, IsNamed);
 
-            UNPROTECT(1);
             return res;
         } case VecType::Logical : {
             vInt.assign(n, 0);
@@ -514,17 +508,16 @@ SEXP ComboGroupsCpp(SEXP Rv, SEXP RNumGroups, SEXP RRetType, SEXP Rlow,
                 vInt[i] = vecBool[i];
             }
 
-            SEXP res = PROTECT(Rf_allocMatrix(LGLSXP, numResults, n));
+            cpp11::sexp res = Rf_allocMatrix(LGLSXP, numResults, n);
             int* matBool = LOGICAL(res);
 
             SerialGlue(matBool, res, vInt, mySample, myVec.get(), startZ,
                        computedRowMpz, computedRows, n, numGroups, grpSize,
                        numResults, IsArray, IsGmp, IsSample, IsNamed);
 
-            UNPROTECT(1);
             return res;
         } case VecType::Integer : {
-            SEXP res = PROTECT(Rf_allocMatrix(INTSXP, numResults, n));
+            cpp11::sexp res = Rf_allocMatrix(INTSXP, numResults, n);
             int* matInt = INTEGER(res);
 
             GroupsMain(matInt, res, vInt, startZ, mySample, myVec.get(),
@@ -536,10 +529,9 @@ SEXP ComboGroupsCpp(SEXP Rv, SEXP RNumGroups, SEXP RRetType, SEXP Rlow,
                 SetFactorClass(res, Rv);
             }
 
-            UNPROTECT(1);
             return res;
         } default : {
-            SEXP res = PROTECT(Rf_allocMatrix(REALSXP, numResults, n));
+            cpp11::sexp res = Rf_allocMatrix(REALSXP, numResults, n);
             double* matNum = REAL(res);
 
             GroupsMain(matNum, res, vNum, startZ, mySample, myVec.get(),
@@ -547,7 +539,6 @@ SEXP ComboGroupsCpp(SEXP Rv, SEXP RNumGroups, SEXP RRetType, SEXP Rlow,
                        numGroups, grpSize, numResults, nThreads, IsArray,
                        IsNamed, Parallel, IsGmp, IsSample);
 
-            UNPROTECT(1);
             return res;
         }
     }

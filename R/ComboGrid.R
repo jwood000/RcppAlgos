@@ -58,12 +58,15 @@ comboGrid <- function(..., repetition = TRUE) {
 
     if (length(idx_nas)) {
         res <- as.data.frame(res)
+        names(res) <- nmc[setdiff(iArgs, idx_nas)]
 
         for (idx in idx_nas) {
-            res[, nmc[idx]] <- NA
+            res[nmc[idx]] <- NA
         }
 
         res <- res[, nmc]
+    } else if (is.matrix(res)) {
+        colnames(res) <- nmc
     }
 
     return(res)

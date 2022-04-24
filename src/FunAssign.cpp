@@ -1,5 +1,6 @@
 #include "FunAssign.h"
 #include "cpp11/protect.hpp"
+#include "cpp11/sexp.hpp"
 
 // See function do_vapply found here:
 //     https://github.com/wch/r-source/blob/trunk/src/main/apply.c
@@ -129,12 +130,12 @@ void FunAssign(SEXP res, SEXP vectorPass, SEXP sexpFun,
 
 void SetDims(SEXP RFunVal, SEXP res, int commonLen, int nRows) {
 
-    SEXP dim_v = PROTECT(Rf_getAttrib(RFunVal, R_DimSymbol));
+    cpp11::sexp dim_v = Rf_getAttrib(RFunVal, R_DimSymbol);
     const bool array_value = (TYPEOF(dim_v) == INTSXP && LENGTH(dim_v) >= 1);
 
     if (commonLen != 1) {
         const int rnk_v = array_value ? LENGTH(dim_v) : 1;
-        SEXP dim = PROTECT(Rf_allocVector(INTSXP, rnk_v + 1));
+        cpp11::sexp dim = Rf_allocVector(INTSXP, rnk_v + 1);
         INTEGER(dim)[0] = nRows;
 
         if(array_value) {
@@ -146,9 +147,7 @@ void SetDims(SEXP RFunVal, SEXP res, int commonLen, int nRows) {
         }
 
         Rf_setAttrib(res, R_DimSymbol, dim);
-        UNPROTECT(1);
     }
 
-    UNPROTECT(1);
 }
 

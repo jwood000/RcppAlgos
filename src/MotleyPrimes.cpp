@@ -77,7 +77,7 @@ SEXP GlueIntMotley(int myMin, int myMax, bool IsEuler,
 
     if (IsEuler) {
         std::vector<std::vector<int>> tempList;
-        SEXP EulerPhis = PROTECT(Rf_allocVector(INTSXP, myRange));
+        cpp11::sexp EulerPhis = Rf_allocVector(INTSXP, myRange);
         int* ptrEuler  = INTEGER(EulerPhis);
         std::vector<int> numSeq(myRange);
 
@@ -89,7 +89,6 @@ SEXP GlueIntMotley(int myMin, int myMax, bool IsEuler,
             SetIntNames(EulerPhis, myRange, myMin, myMax);
         }
 
-        UNPROTECT(numUnprotects);
         return EulerPhis;
     } else {
         std::vector<std::vector<int>>
@@ -100,7 +99,7 @@ SEXP GlueIntMotley(int myMin, int myMax, bool IsEuler,
         MotleyMain(myMin, myMax, IsEuler, tempEuler,
                    tempVec, primeList, nThreads, maxThreads);
 
-        SEXP myList = PROTECT(Rf_allocVector(VECSXP, myRange));
+        cpp11::sexp myList = Rf_allocVector(VECSXP, myRange);
 
         for (std::size_t i = 0; i < myRange; ++i) {
             SET_VECTOR_ELT(myList, i, GetIntVec(primeList[i]));
@@ -111,7 +110,6 @@ SEXP GlueIntMotley(int myMin, int myMax, bool IsEuler,
             SetIntNames(myList, myRange, myMin, myMax);
         }
 
-        UNPROTECT(numUnprotects);
         return myList;
     }
 }
@@ -124,7 +122,7 @@ SEXP GlueDblMotley(std::int64_t myMin, double myMax, bool IsEuler,
 
     if (IsEuler) {
         std::vector<std::vector<std::int64_t>> tempList;
-        SEXP EulerPhis = PROTECT(Rf_allocVector(REALSXP, myRange));
+        cpp11::sexp EulerPhis = Rf_allocVector(REALSXP, myRange);
         double* ptrEuler = REAL(EulerPhis);
         std::vector<std::int64_t> numSeq(myRange);
 
@@ -137,7 +135,6 @@ SEXP GlueDblMotley(std::int64_t myMin, double myMax, bool IsEuler,
                         static_cast<double>(myMin), myMax);
         }
 
-        UNPROTECT(numUnprotects);
         return EulerPhis;
     } else {
         std::vector<std::vector<std::int64_t>>
@@ -148,7 +145,7 @@ SEXP GlueDblMotley(std::int64_t myMin, double myMax, bool IsEuler,
         MotleyMain(myMin, myMax, IsEuler, tempEuler,
                    tempVec, primeList, nThreads, maxThreads);
 
-        SEXP myList = PROTECT(Rf_allocVector(VECSXP, myRange));
+        cpp11::sexp myList = Rf_allocVector(VECSXP, myRange);
 
         for (std::size_t i = 0; i < myRange; ++i) {
             SET_VECTOR_ELT(myList, i, GetInt64Vec(primeList[i]));
@@ -160,7 +157,6 @@ SEXP GlueDblMotley(std::int64_t myMin, double myMax, bool IsEuler,
                         static_cast<double>(myMin), myMax);
         }
 
-        UNPROTECT(numUnprotects);
         return myList;
     }
 }
@@ -201,24 +197,22 @@ SEXP MotleyContainer(SEXP Rb1, SEXP Rb2, SEXP RIsEuler, SEXP RNamed,
 
     if (myMax < 2) {
         if (IsEuler) {
-            SEXP res = PROTECT(Rf_allocVector(INTSXP, 1));
+            cpp11::sexp res = Rf_allocVector(INTSXP, 1);
             INTEGER(res)[0] = 1;
 
             if (IsNamed) {
                 Rf_setAttrib(res, R_NamesSymbol, Rf_mkString("1"));
             }
 
-            UNPROTECT(1);
             return res;
         } else {
-            SEXP res = PROTECT(Rf_allocVector(VECSXP, 1));
+            cpp11::sexp res = Rf_allocVector(VECSXP, 1);
             SET_VECTOR_ELT(res, 0, Rf_allocVector(INTSXP, 0));
 
             if (IsNamed) {
                 Rf_setAttrib(res, R_NamesSymbol, Rf_mkString("1"));
             }
 
-            UNPROTECT(1);
             return res;
         }
     }
