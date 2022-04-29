@@ -70,7 +70,7 @@ test_that("comboRank produces correct results", {
     mat3 = comboSample(100, 15, n = 5, seed = 97, namedSample = TRUE)
     myRank = comboRank(int = mat1, dbl = mat2, bigz = mat3, v = 100)
     expect_named(myRank, c("int", "dbl", "bigz"))
-    expect_equal(sapply(myRank, class), c("integer", "numeric", "bigz"))
+    expect_equal(unname(sapply(myRank, class)), c("integer", "numeric", "bigz"))
     expect_true(all(mapply(function(x, y) {
         identical(as.character(x), rownames(y))
     }, myRank, list(mat1, mat2, mat3))))
