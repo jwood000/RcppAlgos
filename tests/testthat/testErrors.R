@@ -288,6 +288,23 @@ test_that("comboSample produces appropriate error messages", {
                  "Each element in sampleVec cannot be NA or NaN")
 })
 
+test_that("combo/permuteRank produces appropriate error messages", {
+    expect_error(comboRank(1:3, list(2:4), v = 5), "Inputs must be atomic")
+    expect_error(permuteRank(1:3, 2:4, v = 3), "Inputs must be a subset of v")
+    expect_error(comboRank(matrix(c(1:3, 2:4), nrow = 2, byrow = TRUE), v = 3),
+                 "Inputs must be a subset of v")
+    expect_error(permuteRank(2:4, v = 3), "Inputs must be a subset of v")
+    expect_error(comboRank(list(1:3), v = 3), "Input must be atomic")
+    expect_error(permuteRank(1:3, v = list(1:3)), "Only atomic types are supported for v")
+    expect_error(comboRank(1:3, v = 3, freqs = 1:4), "The length of freqs must equal the length of v")
+    expect_error(permuteRank(c(1, 2, 2, 3, 3, 3, 3), v = 3, freqs = 1:3),
+                 "The input width is too large for the given freqs")
+    expect_error(comboRank(c(1, 2, 3, 3, 3, 3), v = 3, freqs = 1:3),
+                 "Input frequencies do not match supplied freqs")
+    expect_error(permuteRank(c(1, 3, 3), v = 3),
+                 "No duplicates allowed when repetition = FALSE and freqs = NULL")
+})
+
 test_that("permuteSample produces appropriate error messages", {
     expect_error(permuteSample(5, 6, n = 3), "m must be less than or equal to the length of v")
     expect_error(permuteSample(5, 1:5), "length of m must be 1")

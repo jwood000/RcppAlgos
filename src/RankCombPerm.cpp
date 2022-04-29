@@ -70,11 +70,11 @@ SEXP RankCombPerm(SEXP RIdx, SEXP Rv, SEXP RisRep,
     if (IsMult) {
         // See comment in SetUpUtils.cpp in the SetFinalValues function
         if (n != static_cast<int>(myReps.size())) {
-            cpp11::stop("the length of freqs must equal the length of v");
+            cpp11::stop("The length of freqs must equal the length of v");
         }
 
         if (m > static_cast<int>(freqs.size())) {
-            m = freqs.size();
+            cpp11::stop("The input width is too large for the given freqs");
         }
     } else if (!IsRep && m > n) {
         cpp11::stop("m must be less than or equal to the length of v");

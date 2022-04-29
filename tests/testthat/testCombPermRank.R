@@ -2,6 +2,7 @@ context("testing comboRank and permuteRank")
 
 test_that("comboRank produces correct results", {
 
+    expect_equal(comboRank(), integer(0))
     expect_equal(comboRank(comboGeneral(5, 3), v = 5), 1:10)
     expect_equal(comboRank(1, v = 1), 1)
 
@@ -62,6 +63,17 @@ test_that("comboRank produces correct results", {
                          seed = 17, namedSample = TRUE)
     expect_equal(comboRank(mySamp, v = as.factor(LETTERS), repetition = TRUE),
                  as.integer(rownames(mySamp)))
+
+    ## Multiple inputs
+    mat1 = comboSample(100, 5, n = 5, seed = 123, namedSample = TRUE)
+    mat2 = comboSample(100, 7, n = 5, seed = 987, namedSample = TRUE)
+    mat3 = comboSample(100, 15, n = 5, seed = 97, namedSample = TRUE)
+    myRank = comboRank(int = mat1, dbl = mat2, bigz = mat3, v = 100)
+    expect_named(myRank, c("int", "dbl", "bigz"))
+    expect_equal(sapply(myRank, class), c("integer", "numeric", "bigz"))
+    expect_true(all(mapply(function(x, y) {
+        identical(as.character(x), rownames(y))
+    }, myRank, list(mat1, mat2, mat3))))
 })
 
 test_that("permuteRank produces correct results", {

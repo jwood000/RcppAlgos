@@ -30,6 +30,8 @@ GetRank <- function(..., v, repetition = FALSE,
         return(integer(0))
     } else if (n_args > 1L) {
         arg_s <- list(arg_s)
+    } else if (!is.atomic(arg_s[[1]])) {
+        stop("Input must be atomic")
     }
 
     input <- arg_s[[1L]]
@@ -40,7 +42,7 @@ GetRank <- function(..., v, repetition = FALSE,
         return(
             Map(function(obj) {
                 if (!is.atomic(obj)) stop("Inputs must be atomic")
-                idx <- match(if (is.matrix(obj)) t(input) else input, v)
+                idx <- match(if (is.matrix(obj)) t(obj) else obj, v)
                 if (any(is.na(idx))) stop(msg)
                 .Call(`_RcppAlgos_RankCombPerm`, idx, v, repetition, freqs,
                       if (is.matrix(obj)) ncol(obj) else length(obj), IsComb)
@@ -51,12 +53,10 @@ GetRank <- function(..., v, repetition = FALSE,
         if (any(is.na(idx))) stop(msg)
         return(.Call(`_RcppAlgos_RankCombPerm`, idx, v,
                      repetition, freqs, ncol(input), IsComb));
-    } else if (is.atomic(input)) {
+    } else {
         idx <- match(input, v)
         if (any(is.na(idx))) stop(msg)
         return(.Call(`_RcppAlgos_RankCombPerm`, idx, v,
                      repetition, freqs, length(input), IsComb));
-    } else {
-        stop("Input not supported")
     }
 }
