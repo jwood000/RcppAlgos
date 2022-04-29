@@ -1,8 +1,3 @@
-GetTarget <- function(v, target) {
-    if (is.null(target)) {target = max(v, na.rm = TRUE)}
-    return(target)
-}
-
 partitionsGeneral <- function(v, m = NULL, repetition = FALSE,
                               freqs = NULL, target = NULL, lower = NULL,
                               upper = NULL, nThreads = NULL,
