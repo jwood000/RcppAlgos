@@ -5,8 +5,8 @@
 #include <gmp.h>
 
 void NumPermsWithRepGmp(mpz_t result, const std::vector<int> &v);
-void NumPermsNoRepGmp(mpz_t result, int n, int k);
-void MultisetPermRowNumGmp(mpz_t result, int n, int r,
+void NumPermsNoRepGmp(mpz_t result, int n, int m);
+void MultisetPermRowNumGmp(mpz_t result, int n, int m,
                            const std::vector<int> &myReps);
 
 #endif

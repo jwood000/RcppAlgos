@@ -4,10 +4,9 @@
 #include <vector>
 #include <gmp.h>
 
-using It = std::vector<int>::iterator;
-
-using rankCombPtr = void (*const)(It iter, int n, int r, double &dblIdx,
-                          mpz_t mpzIdx, const std::vector<int> &Reps);
+using rankCombPtr = void (*const)(std::vector<int>::iterator iter, int n,
+                          int m, double &dblIdx, mpz_t mpzIdx,
+                          const std::vector<int> &Reps);
 
 rankCombPtr GetRankCombFunc(bool IsMult, bool IsRep, bool IsGmp);
 

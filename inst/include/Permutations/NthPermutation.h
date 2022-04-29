@@ -4,7 +4,7 @@
 #include <vector>
 #include <gmp.h>
 
-using nthPermPtr = std::vector<int> (*const)(int n, int r, double dblIdx,
+using nthPermPtr = std::vector<int> (*const)(int n, int m, double dblIdx,
                                      mpz_t mpzIdx, const std::vector<int> &Reps);
 
 nthPermPtr GetNthPermFunc(bool IsMult, bool IsRep, bool IsGmp);

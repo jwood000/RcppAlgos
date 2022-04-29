@@ -303,6 +303,8 @@ test_that("combo/permuteRank produces appropriate error messages", {
                  "Input frequencies do not match supplied freqs")
     expect_error(permuteRank(c(1, 3, 3), v = 3),
                  "No duplicates allowed when repetition = FALSE and freqs = NULL")
+    expect_error(comboRank(c(1, 2, 3, 3), v = 3),
+                 "m must be less than or equal to the length of v")
 })
 
 test_that("permuteSample produces appropriate error messages", {

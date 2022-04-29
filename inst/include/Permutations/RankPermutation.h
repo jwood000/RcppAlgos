@@ -4,10 +4,9 @@
 #include <vector>
 #include <gmp.h>
 
-using It = std::vector<int>::iterator;
-
-using rankPermPtr = void (*const)(It iter, int n, int r, double &dblIdx,
-                          mpz_t mpzIdx, const std::vector<int> &Reps);
+using rankPermPtr = void (*const)(std::vector<int>::iterator iter, int n,
+                          int m, double &dblIdx, mpz_t mpzIdx,
+                          const std::vector<int> &Reps);
 
 rankPermPtr GetRankPermFunc(bool IsMult, bool IsRep, bool IsGmp);
 
