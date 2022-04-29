@@ -4,7 +4,7 @@
 #include "SetUpUtils.h"
 #include "RankResult.h"
 #include <unordered_map>
-#include <thread>
+#include <algorithm>
 
 constexpr std::size_t numb = 8 * intSize;
 
@@ -139,7 +139,7 @@ SEXP RankCombPerm(SEXP RIdx, SEXP Rv, SEXP RisRep,
         std::size_t size = intSize;
         std::vector<std::size_t> mySizes(numResults);
 
-        for (std::size_t i = 0; i < numResults; ++i) { // adding each bigint's needed size
+        for (int i = 0; i < numResults; ++i) { // adding each bigint's needed size
             const std::size_t tempSize = intSize * (
                 2 + (mpz_sizeinbase(myVec[i], 2) + numb - 1) / numb
             );
@@ -155,7 +155,7 @@ SEXP RankCombPerm(SEXP RIdx, SEXP Rv, SEXP RisRep,
         // current position in rPos[] (starting after vector-size-header)
         std::size_t posPos = intSize;
 
-        for (std::size_t i = 0; i < numResults; ++i) {
+        for (int i = 0; i < numResults; ++i) {
             posPos += myRaw(&rPos[posPos], myVec[i], mySizes[i]);
         }
 
