@@ -7,18 +7,6 @@
 using nthPermPtr = std::vector<int> (*const)(int n, int r, double dblIdx,
                                      mpz_t mpzIdx, const std::vector<int> &Reps);
 
-std::vector<int> nonZeroVec(std::vector<int> v) {
-    std::vector<int> nonZero;
-
-    for (std::size_t i = 0; i < v.size(); i++) {
-        if (v[i] > 0) {
-            nonZero.push_back(v[i]);
-        }
-    }
-
-    return nonZero;
-}
-
 std::vector<int> nthPerm(int n, int r, double dblIdx,
                          mpz_t mpzIdx, const std::vector<int> &Reps) {
 

@@ -152,3 +152,15 @@ double MultisetPermRowNum(int n, int r, const std::vector<int> &Reps) {
 
     return numPerms;
 }
+
+std::vector<int> nonZeroVec(const std::vector<int> &v) {
+    std::vector<int> nonZero;
+
+    for (std::size_t i = 0; i < v.size(); i++) {
+        if (v[i] > 0) {
+            nonZero.push_back(v[i]);
+        }
+    }
+
+    return nonZero;
+}

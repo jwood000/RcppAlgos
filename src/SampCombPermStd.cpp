@@ -116,8 +116,7 @@ void ThreadSafeSample(T* mat, SEXP res, const std::vector<T> &v,
         int nextStep = stepSize;
 
         for (int j = 0; j < (nThreads - 1);
-        ++j, step += stepSize, nextStep += stepSize) {
-
+             ++j, step += stepSize, nextStep += stepSize) {
             threads.emplace_back(std::cref(ParallelGlue<T>),
                                  std::ref(parMat), std::cref(v),
                                  std::cref(mySample), myBigSamp,

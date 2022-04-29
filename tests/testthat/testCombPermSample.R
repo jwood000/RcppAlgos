@@ -72,11 +72,13 @@ test_that("comboSample produces correct results", {
 
     ## only used 2 threads
     expect_equal(comboSample(as.factor(LETTERS), 12, TRUE, n = 2, seed = 17),
-                 comboSample(as.factor(LETTERS), 12, TRUE, n = 2, seed = 17, Parallel = TRUE))
+                 comboSample(as.factor(LETTERS), 12, TRUE, n = 2,
+                             seed = 17, Parallel = TRUE))
 })
 
 test_that("permuteSample produces correct results", {
-    expect_equal(permuteSample(5, 3, sampleVec = 1:(permuteCount(5, 3))), permuteGeneral(5, 3))
+    expect_equal(permuteSample(5, 3, sampleVec = 1:(permuteCount(5, 3))),
+                 permuteGeneral(5, 3))
     set.seed(2)
     expect_equal(nrow(permuteSample(5, 3, n = 5)), 5)
     expect_equal(as.vector(permuteSample(1, 1, n = 1)), 1)
@@ -96,7 +98,7 @@ test_that("permuteSample produces correct results", {
 
     expect_equal(rownames(permuteSample(as.raw(1:4), 8, T,
                                         sampleVec = c(31788, 59688, 3780), namedSample = T)),
-                 rownames(permuteSample(as.complex(c(1, 1, 1i, -1i)),
+                 rownames(permuteSample(as.complex(c(1, -1, 1i, -1i)),
                                         8, T, sampleVec = c(31788, 59688, 3780), namedSample = T)))
 
     ## Count Test

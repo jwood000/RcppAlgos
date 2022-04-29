@@ -5,6 +5,11 @@
 
 void SetType(VecType &myType, SEXP Rv);
 void SetFactorClass(SEXP res, SEXP Rv);
+int GetLength(SEXP Rv, VecType myType);
+
+void SetFreqsAndM(std::vector<int> &Reps,
+                  std::vector<int> &freqs, SEXP RFreqs, SEXP Rm,
+                  int &n, int &m, bool &IsMult, bool &IsRep);
 
 void SetBasic(SEXP Rv, std::vector<double> &vNum,
               std::vector<int> &vInt, int &n, VecType &myType);

@@ -222,6 +222,13 @@ extern "C" SEXP _RcppAlgos_PrimeSieveCpp(SEXP Rb1, SEXP Rb2, SEXP RNumThreads, S
     return cpp11::as_sexp(PrimeSieveCpp(cpp11::as_cpp<cpp11::decay_t<SEXP>>(Rb1), cpp11::as_cpp<cpp11::decay_t<SEXP>>(Rb2), cpp11::as_cpp<cpp11::decay_t<SEXP>>(RNumThreads), cpp11::as_cpp<cpp11::decay_t<SEXP>>(RmaxCores), cpp11::as_cpp<cpp11::decay_t<SEXP>>(RmaxThreads)));
   END_CPP11
 }
+// RankCombPerm.cpp
+SEXP RankCombPerm(SEXP RIdx, SEXP Rv, SEXP RisRep, SEXP RFreqs, SEXP Rm, SEXP RIsComb);
+extern "C" SEXP _RcppAlgos_RankCombPerm(SEXP RIdx, SEXP Rv, SEXP RisRep, SEXP RFreqs, SEXP Rm, SEXP RIsComb) {
+  BEGIN_CPP11
+    return cpp11::as_sexp(RankCombPerm(cpp11::as_cpp<cpp11::decay_t<SEXP>>(RIdx), cpp11::as_cpp<cpp11::decay_t<SEXP>>(Rv), cpp11::as_cpp<cpp11::decay_t<SEXP>>(RisRep), cpp11::as_cpp<cpp11::decay_t<SEXP>>(RFreqs), cpp11::as_cpp<cpp11::decay_t<SEXP>>(Rm), cpp11::as_cpp<cpp11::decay_t<SEXP>>(RIsComb)));
+  END_CPP11
+}
 // SampleCombPerm.cpp
 SEXP SampleCombPerm(SEXP Rv, SEXP Rm, SEXP RisRep, SEXP RFreqs, SEXP RindexVec, SEXP RIsComb, SEXP RmySeed, SEXP RNumSamp, SEXP baseSample, SEXP stdFun, SEXP myEnv, SEXP Rparallel, SEXP RNumThreads, SEXP RmaxThreads, SEXP RNamed, SEXP RFunVal);
 extern "C" SEXP _RcppAlgos_SampleCombPerm(SEXP Rv, SEXP Rm, SEXP RisRep, SEXP RFreqs, SEXP RindexVec, SEXP RIsComb, SEXP RmySeed, SEXP RNumSamp, SEXP baseSample, SEXP stdFun, SEXP myEnv, SEXP Rparallel, SEXP RNumThreads, SEXP RmaxThreads, SEXP RNamed, SEXP RFunVal) {
@@ -266,6 +273,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_RcppAlgos_PrimeCountCpp",       (DL_FUNC) &_RcppAlgos_PrimeCountCpp,        3},
     {"_RcppAlgos_PrimeSieveCpp",       (DL_FUNC) &_RcppAlgos_PrimeSieveCpp,        5},
     {"_RcppAlgos_RandomAccessGlue",    (DL_FUNC) &_RcppAlgos_RandomAccessGlue,     2},
+    {"_RcppAlgos_RankCombPerm",        (DL_FUNC) &_RcppAlgos_RankCombPerm,         6},
     {"_RcppAlgos_SampleCombPerm",      (DL_FUNC) &_RcppAlgos_SampleCombPerm,      16},
     {"_RcppAlgos_SamplePartitions",    (DL_FUNC) &_RcppAlgos_SamplePartitions,    16},
     {"_RcppAlgos_SourceVectorGlue",    (DL_FUNC) &_RcppAlgos_SourceVectorGlue,     1},
