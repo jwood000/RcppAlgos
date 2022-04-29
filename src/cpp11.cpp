@@ -222,7 +222,7 @@ extern "C" SEXP _RcppAlgos_PrimeSieveCpp(SEXP Rb1, SEXP Rb2, SEXP RNumThreads, S
     return cpp11::as_sexp(PrimeSieveCpp(cpp11::as_cpp<cpp11::decay_t<SEXP>>(Rb1), cpp11::as_cpp<cpp11::decay_t<SEXP>>(Rb2), cpp11::as_cpp<cpp11::decay_t<SEXP>>(RNumThreads), cpp11::as_cpp<cpp11::decay_t<SEXP>>(RmaxCores), cpp11::as_cpp<cpp11::decay_t<SEXP>>(RmaxThreads)));
   END_CPP11
 }
-// RankCombPerm.cpp
+// RankCombPermMain.cpp
 SEXP RankCombPerm(SEXP RIdx, SEXP Rv, SEXP RisRep, SEXP RFreqs, SEXP Rm, SEXP RIsComb);
 extern "C" SEXP _RcppAlgos_RankCombPerm(SEXP RIdx, SEXP Rv, SEXP RisRep, SEXP RFreqs, SEXP Rm, SEXP RIsComb) {
   BEGIN_CPP11
