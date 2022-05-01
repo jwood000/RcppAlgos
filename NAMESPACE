@@ -18,6 +18,7 @@ export(
   partitionsSample,
   comboRank,
   permuteRank,
+  partitionsRank,
   comboGroups,
   comboGroupsCount,
   comboGroupsSample,

@@ -44,10 +44,7 @@ void SampleApplyFun(SEXP res, const std::vector<T> &v, SEXP vectorPass,
         mpz_clear(mpzDefault);
     }
 
-
-    if (IsNamed) {
-        SetSampleNames(res, IsGmp, sampSize, mySample, myBigSamp);
-    }
+    SetSampleNames(res, IsGmp, sampSize, mySample, myBigSamp, IsNamed);
 }
 
 void SampleApplyFun(SEXP res, SEXP v, SEXP vectorPass,
@@ -91,10 +88,7 @@ void SampleApplyFun(SEXP res, SEXP v, SEXP vectorPass,
         mpz_clear(mpzDefault);
     }
 
-
-    if (IsNamed) {
-        SetSampleNames(res, IsGmp, sampSize, mySample, myBigSamp);
-    }
+    SetSampleNames(res, IsGmp, sampSize, mySample, myBigSamp, IsNamed);
 }
 
 template <typename T>

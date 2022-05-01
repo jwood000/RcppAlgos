@@ -29,9 +29,10 @@ void FinalTouch(SEXP res, bool IsArray, int grpSize, int r, int n,
             SET_STRING_ELT(myNames, i, Rf_mkChar(myColNames[i].c_str()));
         }
 
-        if (IsNamed) {
-            SetSampleNames(res, IsGmp, nRows, mySample, myBigSamp, myNames, 2);
-        } else {
+        SetSampleNames(res, IsGmp, nRows, mySample,
+                       myBigSamp, IsNamed, myNames, 2);
+
+        if (!IsNamed) {
             cpp11::sexp dimNames = Rf_allocVector(VECSXP, 3);
             SET_VECTOR_ELT(dimNames, 2, myNames);
             Rf_setAttrib(res, R_DimNamesSymbol, dimNames);
@@ -45,9 +46,10 @@ void FinalTouch(SEXP res, bool IsArray, int grpSize, int r, int n,
             }
         }
 
-        if (IsNamed) {
-            SetSampleNames(res, IsGmp, nRows, mySample, myBigSamp, myNames, 1);
-        } else {
+        SetSampleNames(res, IsGmp, nRows, mySample,
+                       myBigSamp, IsNamed, myNames, 1);
+
+        if (!IsNamed) {
             cpp11::sexp dimNames = Rf_allocVector(VECSXP, 2);
             SET_VECTOR_ELT(dimNames, 1, myNames);
             Rf_setAttrib(res, R_DimNamesSymbol, dimNames);

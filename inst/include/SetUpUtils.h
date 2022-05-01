@@ -55,8 +55,8 @@ void SetRandomSampleMpz(SEXP RindexVec, SEXP RmySeed, int sampSize,
 
 void SetSampleNames(SEXP objRcpp, bool IsGmp, int sampSize,
                     const std::vector<double> &mySample,
-                    mpz_t *const myBigSamp, SEXP colNames = R_NilValue,
-                    int xtraDims = 0);
+                    mpz_t *const myBigSamp, bool IsNamed,
+                    SEXP colNames = R_NilValue, int xtraDims = 0);
 
 SEXP GetIntVec(const std::vector<int> &v);
 SEXP GetDblVec(const std::vector<double> &v);

@@ -696,38 +696,40 @@ void SetRandomSampleMpz(SEXP RindexVec, SEXP RmySeed, int sampSize,
 
 void SetSampleNames(SEXP object, bool IsGmp, int sampSize,
                     const std::vector<double> &mySample,
-                    mpz_t *const myBigSamp, SEXP colNames,
-                    int xtraDims) {
+                    mpz_t *const myBigSamp, bool IsNamed,
+                    SEXP colNames, int xtraDims) {
 
-    cpp11::sexp myNames = Rf_allocVector(STRSXP, sampSize);
+    if (IsNamed) {
+        cpp11::sexp myNames = Rf_allocVector(STRSXP, sampSize);
 
-    if (IsGmp) {
-        for (int i = 0; i < sampSize; ++i) {
-            mpz_add_ui(myBigSamp[i], myBigSamp[i], 1);
-            auto buffer = FromCpp14::make_unique<char[]>(
-                mpz_sizeinbase(myBigSamp[i], 10) + 2
-            );
+        if (IsGmp) {
+            for (int i = 0; i < sampSize; ++i) {
+                mpz_add_ui(myBigSamp[i], myBigSamp[i], 1);
+                auto buffer = FromCpp14::make_unique<char[]>(
+                    mpz_sizeinbase(myBigSamp[i], 10) + 2
+                );
 
-            mpz_get_str(buffer.get(), 10, myBigSamp[i]);
-            SET_STRING_ELT(myNames, i, Rf_mkChar(buffer.get()));
+                mpz_get_str(buffer.get(), 10, myBigSamp[i]);
+                SET_STRING_ELT(myNames, i, Rf_mkChar(buffer.get()));
+            }
+        } else {
+            for (int i = 0; i < sampSize; ++i) {
+                const std::string name = std::to_string(
+                    static_cast<int64_t>(mySample[i] + 1)
+                );
+
+                SET_STRING_ELT(myNames, i, Rf_mkChar(name.c_str()));
+            }
         }
-    } else {
-        for (int i = 0; i < sampSize; ++i) {
-            const std::string name = std::to_string(
-                static_cast<int64_t>(mySample[i] + 1)
-            );
 
-            SET_STRING_ELT(myNames, i, Rf_mkChar(name.c_str()));
+        if (Rf_isMatrix(object) || Rf_isArray(object)) {
+            cpp11::sexp dimNames = Rf_allocVector(VECSXP, 1 + xtraDims);
+            SET_VECTOR_ELT(dimNames, 0, myNames);
+            if (xtraDims) SET_VECTOR_ELT(dimNames, xtraDims, colNames);
+            Rf_setAttrib(object, R_DimNamesSymbol, dimNames);
+        } else if (Rf_isList(object) || Rf_isVector(object)) {
+            Rf_setAttrib(object, R_NamesSymbol, myNames);
         }
-    }
-
-    if (Rf_isMatrix(object) || Rf_isArray(object)) {
-        cpp11::sexp dimNames = Rf_allocVector(VECSXP, 1 + xtraDims);
-        SET_VECTOR_ELT(dimNames, 0, myNames);
-        if (xtraDims) SET_VECTOR_ELT(dimNames, xtraDims, colNames);
-        Rf_setAttrib(object, R_DimNamesSymbol, dimNames);
-    } else if (Rf_isList(object) || Rf_isVector(object)) {
-        Rf_setAttrib(object, R_NamesSymbol, myNames);
     }
 }
 
