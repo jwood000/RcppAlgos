@@ -288,7 +288,7 @@ test_that("comboSample produces appropriate error messages", {
                  "Each element in sampleVec cannot be NA or NaN")
 })
 
-test_that("combo/permuteRank produces appropriate error messages", {
+test_that("combo/permute/partitionsRank produces appropriate error messages", {
     expect_error(comboRank(1:3, list(2:4), v = 5), "Inputs must be atomic")
     expect_error(permuteRank(1:3, 2:4, v = 3), "Inputs must be a subset of v")
     expect_error(comboRank(matrix(c(1:3, 2:4), nrow = 2, byrow = TRUE), v = 3),
@@ -305,6 +305,9 @@ test_that("combo/permuteRank produces appropriate error messages", {
                  "No duplicates allowed when repetition = FALSE and freqs = NULL")
     expect_error(comboRank(c(1, 2, 3, 3), v = 3),
                  "m must be less than or equal to the length of v")
+
+    expect_error(partitionsRank(1:3, v = 5, freqs = 1:5, target = 6),
+                 "Partition ranking not available for this case.")
 })
 
 test_that("permuteSample produces appropriate error messages", {

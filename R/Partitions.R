@@ -30,6 +30,7 @@ partitionsRank <- function(..., v, repetition = FALSE,
                            freqs = NULL, target = NULL) {
 
     n_args   <- length(arg_s <- list(...))
+    target   <- GetTarget(v, target)
     msg_sub  <- "Inputs must be a subset of v"
     msg_part <- paste("Inputs must be a partition of", target)
     msg_cls  <- "Inputs must be of class numeric or integer"
@@ -48,8 +49,6 @@ partitionsRank <- function(..., v, repetition = FALSE,
     if (!is.numeric(v)) {
         stop("v must be of class numeric or integer")
     }
-
-    target <- GetTarget(v, target)
 
     if (is.list(input)) {
         return(
