@@ -2,6 +2,8 @@ context("testing partitionsSample")
 
 test_that("parttionsSample produces correct results", {
 
+    expect_identical(partitionsRank(v = 100), integer(0))
+
     mySamp = partitionsSample((1:10) * 1e13, 1, n = 1, namedSample = TRUE)
     expect_equal(unname(mySamp), matrix(1e14))
     expect_equal(as.character(partitionsRank(mySamp, v = (1:10) * 1e13)),

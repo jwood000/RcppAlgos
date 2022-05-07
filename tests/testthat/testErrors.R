@@ -308,6 +308,28 @@ test_that("combo/permute/partitionsRank produces appropriate error messages", {
 
     expect_error(partitionsRank(1:3, v = 5, freqs = 1:5, target = 6),
                  "Partition ranking not available for this case.")
+    expect_error(partitionsRank(letters, v = 100),
+                 "Inputs must be of class numeric or integer")
+    expect_error(partitionsRank(letters, v = 100),
+                 "Inputs must be of class numeric or integer")
+    expect_error(partitionsRank(c(23, 24, 25, 28), letters, v = 100),
+                 "Inputs must be of class numeric or integer")
+    expect_error(partitionsRank(c(23, 24, 25, 28),
+                                c(23, 24, 25, 27), v = 100),
+                 "Inputs must be a partition of 100")
+    expect_error(partitionsRank(c(23, 24, 25, 28),
+                                c(-1, 101), v = 100),
+                 "Inputs must be a subset of v")
+    expect_error(partitionsRank(matrix(letters), v = 100),
+                 "Inputs must be of class numeric or integer")
+    expect_error(partitionsRank(matrix(1:100, ncol = 10), v = 100),
+                 "Inputs must be a partition of 100")
+    expect_error(partitionsRank(matrix(c(-5:14, 10), nrow = 1), v = 100),
+                 "Inputs must be a subset of v")
+    expect_error(partitionsRank(1:10, v = 100),
+                 "Inputs must be a partition of 100")
+    expect_error(partitionsRank(c(-5:14, 10), v = 100),
+                 "Inputs must be a subset of v")
 })
 
 test_that("permuteSample produces appropriate error messages", {
