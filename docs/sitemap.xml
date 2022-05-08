@@ -64,6 +64,9 @@
     <loc>/reference/combinatoricsIterator.html</loc>
   </url>
   <url>
+    <loc>/reference/combinatoricsRank.html</loc>
+  </url>
+  <url>
     <loc>/reference/combinatoricsSample.html</loc>
   </url>
   <url>
@@ -104,6 +107,9 @@
   </url>
   <url>
     <loc>/reference/partitionsIterator.html</loc>
+  </url>
+  <url>
+    <loc>/reference/partitionsRank.html</loc>
   </url>
   <url>
     <loc>/reference/partitionsSample.html</loc>
