@@ -1,8 +1,16 @@
 # RcppAlgos 2.5.5
 
+## New Features:
+
+* Added ranking functions: `comboRank`, `permuteRank`, and `partitionsRank`.
+
 ## Other:
 
 * Corrected `if()` conditions comparing `class()` to string. Changed to `is.character`.
+
+## Bug Fixes:
+
+* Now checking class of input vector for partition funcitons.
 
 # RcppAlgos 2.5.4
 

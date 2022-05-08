@@ -5,6 +5,11 @@
 
 void SetType(VecType &myType, SEXP Rv);
 void SetFactorClass(SEXP res, SEXP Rv);
+int GetLength(SEXP Rv, VecType myType);
+
+void SetFreqsAndM(std::vector<int> &Reps,
+                  std::vector<int> &freqs, SEXP RFreqs, SEXP Rm,
+                  int &n, int &m, bool &IsMult, bool &IsRep);
 
 void SetBasic(SEXP Rv, std::vector<double> &vNum,
               std::vector<int> &vInt, int &n, VecType &myType);
@@ -50,8 +55,8 @@ void SetRandomSampleMpz(SEXP RindexVec, SEXP RmySeed, int sampSize,
 
 void SetSampleNames(SEXP objRcpp, bool IsGmp, int sampSize,
                     const std::vector<double> &mySample,
-                    mpz_t *const myBigSamp, SEXP colNames = R_NilValue,
-                    int xtraDims = 0);
+                    mpz_t *const myBigSamp, bool IsNamed,
+                    SEXP colNames = R_NilValue, int xtraDims = 0);
 
 SEXP GetIntVec(const std::vector<int> &v);
 SEXP GetDblVec(const std::vector<double> &v);

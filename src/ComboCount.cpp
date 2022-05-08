@@ -6,25 +6,25 @@
 #include "cpp11/R.hpp"
 
 // Returns number of k-combinations from n elements.
-// Mathematically speaking, we have: n!/(k!*(n-k)!)
-double nChooseK(int n, int k) {
+// Mathematically speaking, we have: n!/(m! * (n - m)!)
+double nChooseK(int n, int m) {
 
-    if (k == n || k == 0) {
+    if (m == n || m == 0) {
         return 1.0;
     }
 
-    double nCk = 1;
+    double nCm = 1;
 
-    for (double i = (n - k + 1), d = 1; d <= k; ++i, ++d) {
-        nCk *= i;
-        nCk /= d;
+    for (double i = (n - m + 1), d = 1; d <= m; ++i, ++d) {
+        nCm *= i;
+        nCm /= d;
     }
 
-    return std::round(nCk);
+    return std::round(nCm);
 }
 
-double NumCombsWithRep(int n, int r) {
-    return nChooseK(n + r - 1, r);
+double NumCombsWithRep(int n, int m) {
+    return nChooseK(n + m - 1, m);
 }
 
 // The resulting vector, "triangleVec" resembles triangle numbers. In
@@ -33,23 +33,23 @@ double NumCombsWithRep(int n, int r) {
 // in mind is that we can't guarantee the following:
 //      1) the repetition of each element is greater than or equal to n
 //      2) that the repetition of each element isn't the same
-double MultisetCombRowNumFast(int n, int r, const std::vector<int> &Reps) {
+double MultisetCombRowNumFast(int n, int m, const std::vector<int> &Reps) {
 
-    if (r < 1 || n <= 1) {
+    if (m < 1 || n <= 1) {
         return 1.0;
     }
 
-    if (r == n) {
+    if (m == n) {
         if (std::accumulate(Reps.cbegin(), Reps.cend(), 0) == n) {
             return 1.0;
         }
     }
 
-    const int r1 = r + 1;
-    std::vector<double> triangleVec(r1);
-    std::vector<double> temp(r1);
+    const int m1 = m + 1;
+    std::vector<double> triangleVec(m1);
+    std::vector<double> temp(m1);
 
-    int myMax = r1;
+    int myMax = m1;
 
     if (myMax > Reps[0] + 1) {
         myMax = Reps[0] + 1;
@@ -62,14 +62,14 @@ double MultisetCombRowNumFast(int n, int r, const std::vector<int> &Reps) {
     --myMax;
     int ind = 1;
 
-    for (; myMax < r; ++ind) {
-        int myMin = std::min(Reps[ind], r);
+    for (; myMax < m; ++ind) {
+        int myMin = std::min(Reps[ind], m);
 
         for (int i = 1; i <= myMin; ++i) {
             triangleVec[i] += triangleVec[i - 1];
         }
 
-        myMin = std::min(Reps[ind] + myMax, r);
+        myMin = std::min(Reps[ind] + myMax, m);
         int j = 0;
 
         for (int i = (Reps[ind] + 1); i <= myMin; ++i, ++j) {
@@ -88,16 +88,16 @@ double MultisetCombRowNumFast(int n, int r, const std::vector<int> &Reps) {
     const int n1 = n - 1;
 
     for (; ind < n1; ++ind) {
-        double t = triangleVec[r];
-        const int s = std::min(Reps[ind], r);
+        double t = triangleVec[m];
+        const int s = std::min(Reps[ind], m);
 
         for (int i = 1; i <= s; ++i) {
-            triangleVec[r] += triangleVec[r - i];
+            triangleVec[m] += triangleVec[m - i];
         }
 
-        double mySum = triangleVec[r];
+        double mySum = triangleVec[m];
 
-        for (int i = r - 1; i >= s; --i) {
+        for (int i = m - 1; i >= s; --i) {
             mySum -= t;
             t = triangleVec[i];
             mySum += triangleVec[i - s];
@@ -112,30 +112,30 @@ double MultisetCombRowNumFast(int n, int r, const std::vector<int> &Reps) {
     }
 
     if (ind < n) {
-        const int myMin2 = std::min(Reps[n1], r);
+        const int myMin2 = std::min(Reps[n1], m);
 
         for (int i = 1; i <= myMin2; ++i) {
-            triangleVec[r] += triangleVec[r - i];
+            triangleVec[m] += triangleVec[m - i];
         }
     }
 
-    return triangleVec[r];
+    return triangleVec[m];
 }
 
 // This function will be used in the main function to determine whether
 // gmp analogs are needed as the fast algorithm above could potentially
 // produce negative results because of issues with double precision
-double MultisetCombRowNum(int n, int r, const std::vector<int> &Reps) {
+double MultisetCombRowNum(int n, int m, const std::vector<int> &Reps) {
 
-    if (r < 1 || n <= 1) {
+    if (m < 1 || n <= 1) {
         return 1;
     }
 
-    const int r1 = r + 1;
-    const int limit = (r1 > Reps[0] + 1) ? Reps[0] + 1 : r1;
+    const int m1 = m + 1;
+    const int limit = (m1 > Reps[0] + 1) ? Reps[0] + 1 : m1;
 
-    std::vector<double> temp(r1);
-    std::vector<double> triangleVec(r1);
+    std::vector<double> temp(m1);
+    std::vector<double> triangleVec(m1);
 
     for (int i = 0; i < limit; ++i) {
         triangleVec[i] = 1;
@@ -144,7 +144,7 @@ double MultisetCombRowNum(int n, int r, const std::vector<int> &Reps) {
     temp = triangleVec;
 
     for (int k = 1; k < n; ++k) {
-        for (int i = r; i > 0; --i) {
+        for (int i = m; i > 0; --i) {
             int myMax = i - Reps[k];
 
             if (myMax < 0) {
@@ -163,5 +163,5 @@ double MultisetCombRowNum(int n, int r, const std::vector<int> &Reps) {
         triangleVec = temp;
     }
 
-    return triangleVec[r];
+    return triangleVec[m];
 }

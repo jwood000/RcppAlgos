@@ -25,6 +25,11 @@ permuteGeneral <- function(v, m = NULL, repetition = FALSE, freqs = NULL,
     }
 }
 
+permuteRank <- function(..., v, repetition = FALSE, freqs = NULL) {
+    GetRank(..., v = v, repetition = repetition,
+            freqs = freqs, IsComb = FALSE)
+}
+
 permuteSample <- function(v, m = NULL, repetition = FALSE, freqs = NULL,
                           n = NULL, sampleVec = NULL, seed = NULL,
                           FUN = NULL, Parallel = FALSE, nThreads = NULL,

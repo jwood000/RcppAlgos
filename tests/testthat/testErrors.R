@@ -288,6 +288,50 @@ test_that("comboSample produces appropriate error messages", {
                  "Each element in sampleVec cannot be NA or NaN")
 })
 
+test_that("combo/permute/partitionsRank produces appropriate error messages", {
+    expect_error(comboRank(1:3, list(2:4), v = 5), "Inputs must be atomic")
+    expect_error(permuteRank(1:3, 2:4, v = 3), "Inputs must be a subset of v")
+    expect_error(comboRank(matrix(c(1:3, 2:4), nrow = 2, byrow = TRUE), v = 3),
+                 "Inputs must be a subset of v")
+    expect_error(permuteRank(2:4, v = 3), "Inputs must be a subset of v")
+    expect_error(comboRank(list(1:3), v = 3), "Input must be atomic")
+    expect_error(permuteRank(1:3, v = list(1:3)), "Only atomic types are supported for v")
+    expect_error(comboRank(1:3, v = 3, freqs = 1:4), "The length of freqs must equal the length of v")
+    expect_error(permuteRank(c(1, 2, 2, 3, 3, 3, 3), v = 3, freqs = 1:3),
+                 "The input width is too large for the given freqs")
+    expect_error(comboRank(c(1, 2, 3, 3, 3, 3), v = 3, freqs = 1:3),
+                 "Input frequencies do not match supplied freqs")
+    expect_error(permuteRank(c(1, 3, 3), v = 3),
+                 "No duplicates allowed when repetition = FALSE and freqs = NULL")
+    expect_error(comboRank(c(1, 2, 3, 3), v = 3),
+                 "m must be less than or equal to the length of v")
+
+    expect_error(partitionsRank(1:3, v = 5, freqs = 1:5, target = 6),
+                 "Partition ranking not available for this case.")
+    expect_error(partitionsRank(letters, v = 100),
+                 "Inputs must be of class numeric or integer")
+    expect_error(partitionsRank(letters, v = 100),
+                 "Inputs must be of class numeric or integer")
+    expect_error(partitionsRank(c(23, 24, 25, 28), letters, v = 100),
+                 "Inputs must be of class numeric or integer")
+    expect_error(partitionsRank(c(23, 24, 25, 28),
+                                c(23, 24, 25, 27), v = 100),
+                 "Inputs must be a partition of 100")
+    expect_error(partitionsRank(c(23, 24, 25, 28),
+                                c(-1, 101), v = 100),
+                 "Inputs must be a subset of v")
+    expect_error(partitionsRank(matrix(letters), v = 100),
+                 "Inputs must be of class numeric or integer")
+    expect_error(partitionsRank(matrix(1:100, ncol = 10), v = 100),
+                 "Inputs must be a partition of 100")
+    expect_error(partitionsRank(matrix(c(-5:14, 10), nrow = 1), v = 100),
+                 "Inputs must be a subset of v")
+    expect_error(partitionsRank(1:10, v = 100),
+                 "Inputs must be a partition of 100")
+    expect_error(partitionsRank(c(-5:14, 10), v = 100),
+                 "Inputs must be a subset of v")
+})
+
 test_that("permuteSample produces appropriate error messages", {
     expect_error(permuteSample(5, 6, n = 3), "m must be less than or equal to the length of v")
     expect_error(permuteSample(5, 1:5), "length of m must be 1")

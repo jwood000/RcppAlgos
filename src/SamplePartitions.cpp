@@ -120,10 +120,7 @@ void ThreadSafeSample(T* mat, SEXP res, const std::vector<T> &v,
                       nthPartFun, m, sampSize, tar, strtLen, cap, IsGmp);
     }
 
-    if (IsNamed) {
-        SetSampleNames(res, IsGmp, sampSize, mySample, myBigSamp);
-    }
-
+    SetSampleNames(res, IsGmp, sampSize, mySample, myBigSamp, IsNamed);
     MpzClearVec(myBigSamp, sampSize, IsGmp);
 }
 
@@ -173,7 +170,7 @@ SEXP SamplePartitions(SEXP Rv, SEXP Rm, SEXP RisRep, SEXP RFreqs,
     part.isRep = IsRep;
     part.isMult = IsMult;
     part.mIsNull = Rf_isNull(Rm);
-    SEXP Rlow = R_NilValue;
+    cpp11::sexp Rlow = R_NilValue;
 
     ConstraintSetup(vNum, myReps, targetVals, vInt, targetIntVals,
                     funDbl, part, ctype, n, m, compVec, mainFun, mainFun,
@@ -224,6 +221,8 @@ SEXP SamplePartitions(SEXP Rv, SEXP Rm, SEXP RisRep, SEXP RFreqs,
 
         if (part.width == 1) {
             matInt[0] = Rf_asInteger(Rtarget);
+            SetSampleNames(res, false, sampSize,
+                           mySample, myVec.get(), IsNamed);
         } else {
             const nthPartsPtr nthPartFun = GetNthPartsFunc(part.ptype,
                                                            part.isGmp);
@@ -240,6 +239,8 @@ SEXP SamplePartitions(SEXP Rv, SEXP Rm, SEXP RisRep, SEXP RFreqs,
 
         if (part.width == 1) {
             matNum[0] = Rf_asReal(Rtarget);
+            SetSampleNames(res, false, sampSize,
+                           mySample, myVec.get(), IsNamed);
         } else {
             const nthPartsPtr nthPartFun = GetNthPartsFunc(part.ptype,
                                                            part.isGmp);

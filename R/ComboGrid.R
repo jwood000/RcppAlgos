@@ -1,26 +1,26 @@
 comboGrid <- function(..., repetition = TRUE) {
     ## This is from expand.grid
-    nargs <- length(args <- list(...))
+    n_args <- length(arg_s <- list(...))
 
-    if (any(sapply(args, is.null))) {
-        return(expand.grid(args))
+    if (any(sapply(arg_s, is.null))) {
+        return(expand.grid(arg_s))
     }
 
-    if (!nargs) {
+    if (!n_args) {
         return(as.data.frame(list()))
     }
 
-    if (nargs == 1L && is.list(a1 <- args[[1L]])) {
-        nargs <- length(args <- a1)
+    if (n_args == 1L && is.list(a1 <- arg_s[[1L]])) {
+        n_args <- length(arg_s <- a1)
     }
 
-    if (nargs == 0L) {
+    if (n_args == 0L) {
         return(as.data.frame(list()))
     }
 
-    iArgs <- seq_len(nargs)
+    iArgs <- seq_len(n_args)
     nmc   <- paste0("Var", iArgs)
-    nm    <- names(args)
+    nm    <- names(arg_s)
 
     if (is.null(nm)) {
         nm <- nmc
@@ -28,13 +28,13 @@ comboGrid <- function(..., repetition = TRUE) {
         nmc[ng0] <- nm[ng0]
     }
 
-    idx_nas <- which(sapply(args, function(x) all(is.na(x))))
+    idx_nas <- which(sapply(arg_s, function(x) all(is.na(x))))
 
-    pools <- args
+    pools <- arg_s
     names(pools) <- nmc
 
     if (length(idx_nas)) {
-        if (length(idx_nas) == nargs) {
+        if (length(idx_nas) == n_args) {
             return(as.data.frame(pools))
         }
 

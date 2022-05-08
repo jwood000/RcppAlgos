@@ -30,8 +30,9 @@ test_that("partitionGeneral Distinct Parallel", {
     ##
     ## $partition_type
     ## [1] "DstctNoZero"
-    expect_identical(partitionsGeneral(902, nThreads = 2),
-                     partitionsGeneral(902))
+    myParts = partitionsGeneral(902, nThreads = 2)
+    expect_identical(myParts, partitionsGeneral(902))
+    expect_identical(10000L, partitionsRank(myParts[10000, ], v = 902))
 
     #### Mapped version
     ##
@@ -48,9 +49,13 @@ test_that("partitionGeneral Distinct Parallel", {
     ##
     ## $partition_type
     ## [1] "DstctNoZero"
-    expect_identical(partitionsGeneral(3 + (1:902) * 17, 41,
-                                       target = 15457, nThreads = 2),
+    myParts = partitionsGeneral(3 + (1:902) * 17, 41,
+                               target = 15457, nThreads = 2)
+    expect_identical(myParts,
                      partitionsGeneral(3 + (1:902) * 17, 41, target = 15457))
+    expect_identical(partitionsRank(myParts[10000, ],
+                                    v = 3 + (1:902) * 17,
+                                    target = 15457), 10000L)
 
     #### Distinct; Specific Length; No zero
     ##
@@ -60,8 +65,11 @@ test_that("partitionGeneral Distinct Parallel", {
     ##
     ## $partition_type
     ## [1] "DstctNoZero"
-    expect_identical(partitionsGeneral(105, 10, nThreads = 2),
-                     partitionsGeneral(105, 10))
+    myParts = partitionsGeneral(105, 10, nThreads = 2)
+    expect_identical(myParts, partitionsGeneral(105, 10))
+    expect_identical(partitionsRank(myParts[1000, ],
+                                    myParts[10000, ], v = 105),
+                     list(1000L, 10000L))
 
     #### Mapped version
     ##
@@ -78,9 +86,13 @@ test_that("partitionGeneral Distinct Parallel", {
     ##
     ## $partition_type
     ## [1] "DstctNoZero"
+    myParts = partitionsGeneral(6 + (1:105) * 3, 10, target = 375)
     expect_identical(partitionsGeneral(6 + (1:105) * 3, 10,
                                        target = 375, nThreads = 2),
-                     partitionsGeneral(6 + (1:105) * 3, 10, target = 375))
+                     myParts)
+    expect_identical(partitionsRank(myParts[seq(1, 60000, 10000), ],
+                                    v = 6 + (1:105) * 3, target = 375),
+                     seq(1L, 60000L, 10000L))
 
     #### Distinct; Specific Length; One zero
     ##
@@ -90,8 +102,10 @@ test_that("partitionGeneral Distinct Parallel", {
     ##
     ## $partition_type
     ## [1] "DstctOneZero"
-    expect_identical(partitionsGeneral(0:95, 10, nThreads = 2),
-                     partitionsGeneral(0:95, 10))
+    myParts = partitionsGeneral(0:95, 10, nThreads = 2)
+    expect_identical(myParts, partitionsGeneral(0:95, 10))
+    expect_identical(partitionsRank(myParts[seq(1, 60000, 10000), ],
+                                    v = 0:95), seq(1L, 60000L, 10000L))
 
     #### Mapped version. N.B. partition_type is different since we are in
     #### a mapped case.
@@ -109,9 +123,11 @@ test_that("partitionGeneral Distinct Parallel", {
     ##
     ## $partition_type
     ## [1] "DstctNoZero"
+    myParts = partitionsGeneral((0:95) * 7, 10, target = 665)
     expect_identical(partitionsGeneral((0:95) * 7, 10,
-                                       target = 665, nThreads = 2),
-                     partitionsGeneral((0:95) * 7, 10, target = 665))
+                                       target = 665, nThreads = 2), myParts)
+    expect_identical(partitionsRank(myParts[1000, ], v = (0:95) * 7,
+                                    target = 665), 1000L)
 
     #### Distinct; Specific Length; Multiple Zeros; Not enough to maximize
     ##
@@ -123,9 +139,11 @@ test_that("partitionGeneral Distinct Parallel", {
     ##
     ## $partition_type
     ## [1] "DstctMultiZero"
+    myParts = partitionsGeneral(0:77, 8, freqs = c(3, rep(1, 77)))
     expect_identical(partitionsGeneral(0:77, 8, freqs = c(3, rep(1, 77)),
-                                       nThreads = 2),
-                     partitionsGeneral(0:77, 8, freqs = c(3, rep(1, 77))))
+                                       nThreads = 2), myParts)
+    expect_identical(partitionsRank(myParts[50349, ], v = 0:77,
+                                    freqs = c(3, rep(1, 77))), 50349L)
 
     #### Mapped version
     ##
@@ -143,10 +161,13 @@ test_that("partitionGeneral Distinct Parallel", {
     ##
     ## $partition_type
     ## [1] "DstctMultiZero"
+    myParts = partitionsGeneral(15 + 0:77 * 3, 8, target = 351,
+                               freqs = c(3, rep(1, 77)), nThreads = 2)
     expect_identical(partitionsGeneral(15 + 0:77 * 3, 8, target = 351,
-                                       freqs = c(3, rep(1, 77)), nThreads = 2),
-                     partitionsGeneral(15 + 0:77 * 3, 8, target = 351,
-                                       freqs = c(3, rep(1, 77))))
+                                       freqs = c(3, rep(1, 77))), myParts)
+    expect_identical(partitionsRank(myParts[c(1, 50349), ], v = 15 + 0:77 * 3,
+                                    target = 351, freqs = c(3, rep(1, 77))),
+                     c(1L, 50349L))
 
     #### Distinct; Specific Length; Multiple Zeros; Enough to maximize;
     #### Length is restrictive
@@ -159,9 +180,12 @@ test_that("partitionGeneral Distinct Parallel", {
     ##
     ## $partition_type
     ## [1] "DstctMultiZero"
+    myParts = partitionsGeneral(0:110, 5, freqs = c(8, rep(1, 110)))
     expect_identical(partitionsGeneral(0:110, 5, freqs = c(8, rep(1, 110)),
-                                       nThreads = 2),
-                     partitionsGeneral(0:110, 5, freqs = c(8, rep(1, 110))))
+                                       nThreads = 2), myParts)
+    expect_identical(partitionsRank(myParts[c(1, 20000, 47271), ],
+                                    v = 0:110, freqs = c(8, rep(1, 110))),
+                     c(1L, 20000L, 47271L))
 
     #### Mapped version
     ##
@@ -179,10 +203,14 @@ test_that("partitionGeneral Distinct Parallel", {
     ##
     ## $partition_type
     ## [1] "DstctMultiZero"
+    myParts = partitionsGeneral(19 + (0:110) * 2, 5, target = 315,
+                                freqs = c(8, rep(1, 110)), nThreads = 2)
     expect_identical(partitionsGeneral(19 + (0:110) * 2, 5, target = 315,
-                                       freqs = c(8, rep(1, 110)), nThreads = 2),
-                     partitionsGeneral(19 + (0:110) * 2, 5, target = 315,
-                                       freqs = c(8, rep(1, 110))))
+                                       freqs = c(8, rep(1, 110))), myParts)
+    expect_identical(partitionsRank(myParts[seq(15757, 47271, 15757), ],
+                                    v = 19 + (0:110) * 2, target = 315,
+                                    freqs = c(8, rep(1, 110))),
+                     seq(15757L, 47271L, 15757L))
 
     #### Distinct; Length determined internally; Multiple Zeros;
     #### Enough to maximize; N.B. There is no mapped version of this case
@@ -195,9 +223,12 @@ test_that("partitionGeneral Distinct Parallel", {
     ##
     ## $partition_type
     ## [1] "DstctStdAll"
+    myParts = partitionsGeneral(0:80, freqs = c(80, rep(1, 80)))
     expect_identical(partitionsGeneral(0:80, freqs = c(80, rep(1, 80)),
-                                       nThreads = 2),
-                     partitionsGeneral(0:80, freqs = c(80, rep(1, 80))))
+                                       nThreads = 2), myParts)
+    expect_identical(partitionsRank(myParts[c(1, 12345, 77312), ],
+                                    v = 0:80, freqs = c(80, rep(1, 80))),
+                     c(1L, 12345L, 77312L))
 
     #### Distinct; Specific Length; No Zeros; Specific Target; N.B.
     #### Technically this is already a mapped case, however we will
@@ -210,8 +241,11 @@ test_that("partitionGeneral Distinct Parallel", {
     ##
     ## $partition_type
     ## [1] "DistCapped"
-    expect_identical(partitionsGeneral(40, 10, target = 115, nThreads = 2),
-                     partitionsGeneral(40, 10, target = 115))
+    myParts = partitionsGeneral(40, 10, target = 115, nThreads = 2)
+    expect_identical(partitionsGeneral(40, 10, target = 115), myParts)
+    expect_identical(partitionsRank(myParts[seq(45109, 180436, 45109), ],
+                                    v = 40, target = 115),
+                     seq(45109L, 180436L, 45109L))
 
     #### Mapped version
     ##
@@ -229,10 +263,13 @@ test_that("partitionGeneral Distinct Parallel", {
     ##
     ## $partition_type
     ## [1] "DistCapped"
+    myParts = partitionsGeneral(1001 + (1:40) * 107, 10,
+                                target = 22315, nThreads = 2)
     expect_identical(partitionsGeneral(1001 + (1:40) * 107, 10,
-                                       target = 22315, nThreads = 2),
-                     partitionsGeneral(1001 + (1:40) * 107, 10,
-                                       target = 22315))
+                                       target = 22315), myParts)
+    expect_identical(partitionsRank(a = myParts[123456, ], b = myParts[54321, ],
+                                    v = 1001 + (1:40) * 107, target = 22315),
+                     list(a = 123456L, b = 54321L))
 
     #### Distinct; Specific Length; Multi Zeros; Specific Target; N.B.
     #### Technically this is already a mapped case, however we will
@@ -246,10 +283,13 @@ test_that("partitionGeneral Distinct Parallel", {
     ##
     ## $partition_type
     ## [1] "DstctCappedMZ"
+    myParts = partitionsGeneral(0:30, 9, freqs = c(3, rep(1, 30)),
+                                target = 115, nThreads = 2)
     expect_identical(partitionsGeneral(0:30, 9, freqs = c(3, rep(1, 30)),
-                                       target = 115, nThreads = 2),
-                     partitionsGeneral(0:30, 9, freqs = c(3, rep(1, 30)),
-                                       target = 115))
+                                       target = 115), myParts)
+    expect_identical(partitionsRank(myParts[seq(56941, 284705, 56941), ],
+                                    v = 0:30, freqs = c(3, rep(1, 30)),
+                                    target = 115), seq(56941L, 284705L, 56941L))
 
     #### Mapped version
     ##
@@ -263,12 +303,17 @@ test_that("partitionGeneral Distinct Parallel", {
     ##
     ## $partition_type
     ## [1] "DstctCappedMZ"
+    myParts = partitionsGeneral(1001 + (0:30) * 107, 9,
+                                freqs = c(3, rep(1, 30)),
+                                target = 21314, nThreads = 2)
     expect_identical(partitionsGeneral(1001 + (0:30) * 107, 9,
                                        freqs = c(3, rep(1, 30)),
-                                       target = 21314, nThreads = 2),
-                     partitionsGeneral(1001 + (0:30) * 107, 9,
-                                       freqs = c(3, rep(1, 30)),
-                                       target = 21314))
+                                       target = 21314), myParts)
+    expect_identical(partitionsRank(myParts[c(1, 123456, 284705), ],
+                                    v = 1001 + (0:30) * 107,
+                                    freqs = c(3, rep(1, 30)),
+                                    target = 21314),
+                     c(1L, 123456L, 284705L))
 })
 
 test_that("partitionGeneral Distinct Parallel Lower", {
@@ -361,8 +406,11 @@ test_that("partitionGeneral Repetition Parallel", {
     ## N.B. Parallel has no effect when number of results is less than 40000
     ## partitionsCount(0:20, repetition = TRUE)
     ## [1] 627
-    expect_identical(partitionsGeneral(0:20, repetition = TRUE, nThreads = 2),
-                     partitionsGeneral(0:20, repetition = TRUE))
+    myParts = partitionsGeneral(0:20, repetition = TRUE, nThreads = 2)
+    expect_identical(partitionsGeneral(0:20, repetition = TRUE), myParts)
+    expect_identical(partitionsRank(myParts[c(1L, 321L, 627L), ],
+                                    v = 0:20, repetition = TRUE),
+                     c(1L, 321L, 627L))
 
     ## For both of the usages below, only 2 threads will be spawned
     ## partitionsCount(0:100, repetition = T)
@@ -401,11 +449,16 @@ test_that("partitionGeneral Repetition Parallel", {
     ##
     ## $partition_type
     ## [1] "RepNoZero"
-    expect_identical(partitionsGeneral(3L + (0:45) * 17L, 45,
-                                       repetition = TRUE,
-                                       target = 900L, nThreads = 2),
+    myParts = partitionsGeneral(3L + (0:45) * 17L, 45,
+                                repetition = TRUE,
+                                target = 900L, nThreads = 2)
+    expect_identical(myParts,
                      partitionsGeneral(3L + (0:45) * 17L, 45,
                                        repetition = TRUE, target = 900L))
+    expect_identical(partitionsRank(myParts[c(1L, 12345L, 89134L), ],
+                                    v = 3L + (0:45) * 17L, target = 900L,
+                                    repetition = TRUE),
+                     c(1L, 12345L, 89134L))
 
     #### Repetition; Specific Length; No zero
     ##
@@ -415,8 +468,11 @@ test_that("partitionGeneral Repetition Parallel", {
     ##
     ## $partition_type
     ## [1] "RepNoZero"
-    expect_identical(partitionsGeneral(60, 10, TRUE, nThreads = 2),
-                     partitionsGeneral(60, 10, TRUE))
+    myParts = partitionsGeneral(60, 10, TRUE, nThreads = 2)
+    expect_identical(partitionsGeneral(60, 10, TRUE), myParts)
+    expect_identical(partitionsRank(myParts[c(1L, 12345L, 62740L), ],
+                                            v = 60, repetition = TRUE),
+                     c(1L, 12345L, 62740L))
 
     #### Mapped version
     ##
@@ -433,10 +489,14 @@ test_that("partitionGeneral Repetition Parallel", {
     ##
     ## $partition_type
     ## [1] "RepNoZero"
-    expect_identical(partitionsGeneral(6 + (1:60) * 3, 10, TRUE,
-                                       target = 240, nThreads = 2),
-                     partitionsGeneral(6 + (1:60) * 3, 10,
-                                       TRUE, target = 240))
+    myParts = partitionsGeneral(6 + (1:60) * 3, 10, TRUE,
+                                target = 240, nThreads = 2)
+    expect_identical(partitionsGeneral(6 + (1:60) * 3, 10,
+                                       TRUE, target = 240), myParts)
+    expect_identical(partitionsRank(myParts[c(1L, 12345L, 62740L), ],
+                                    v = 6 + (1:60) * 3,
+                                    target = 240, repetition = TRUE),
+                     c(1L, 12345L, 62740L))
 
     #### Repetition; Specific Length; Zero included
     ##
@@ -446,8 +506,11 @@ test_that("partitionGeneral Repetition Parallel", {
     ##
     ## $partition_type
     ## [1] "RepShort"
-    expect_identical(partitionsGeneral(0:60, 10, TRUE, nThreads = 2),
-                     partitionsGeneral(0:60, 10, TRUE))
+    myParts = partitionsGeneral(0:60, 10, TRUE, nThreads = 2)
+    expect_identical(myParts, partitionsGeneral(0:60, 10, TRUE))
+    expect_identical(partitionsRank(myParts[c(1L, 123456L, 195491L), ],
+                                    v = 0:60, repetition = TRUE),
+                     c(1L, 123456L, 195491L))
 
     #### Mapped version
     ##
@@ -464,10 +527,14 @@ test_that("partitionGeneral Repetition Parallel", {
     ##
     ## $partition_type
     ## [1] "RepNoZero"
-    expect_identical(partitionsGeneral(6 + (0:60) * 3, 10, TRUE,
-                                       target = 240, nThreads = 2),
-                     partitionsGeneral(6 + (0:60) * 3, 10,
-                                       TRUE, target = 240))
+    myParts = partitionsGeneral(6 + (0:60) * 3, 10, TRUE,
+                                target = 240, nThreads = 2)
+    expect_identical(partitionsGeneral(6 + (0:60) * 3, 10,
+                                       TRUE, target = 240), myParts)
+    expect_identical(partitionsRank(myParts[c(1L, 123456L, 195491L), ],
+                                    v = 6 + (0:60) * 3,
+                                    target = 240, repetition = TRUE),
+                     c(1L, 123456L, 195491L))
 
     #### Repetition; Specific Length; No Zeros; Specific Target; N.B.
     #### Technically this is already a mapped case, however we will
@@ -480,9 +547,13 @@ test_that("partitionGeneral Repetition Parallel", {
     ##
     ## $partition_type
     ## [1] "RepCapped"
-    expect_identical(partitionsGeneral(18, 10, TRUE,
-                                       target = 100, nThreads = 2),
-                     partitionsGeneral(18, 10, TRUE, target = 100))
+    myParts = partitionsGeneral(18, 10, TRUE,
+                                target = 100, nThreads = 2)
+    expect_identical(myParts, partitionsGeneral(18, 10, TRUE, target = 100))
+    expect_identical(partitionsRank(myParts[c(1, 10000, 161073), ],
+                                    v = 18, target = 100,
+                                    repetition = TRUE),
+                     c(1L, 10000L, 161073L))
 
     #### Mapped version
     ##
@@ -500,10 +571,14 @@ test_that("partitionGeneral Repetition Parallel", {
     ##
     ## $partition_type
     ## [1] "RepCapped"
+    myParts = partitionsGeneral(1001 + (1:18) * 107, 10, TRUE,
+                                target = 20710, nThreads = 2)
     expect_identical(partitionsGeneral(1001 + (1:18) * 107, 10, TRUE,
-                                       target = 20710, nThreads = 2),
-                     partitionsGeneral(1001 + (1:18) * 107, 10, TRUE,
-                                       target = 20710))
+                                       target = 20710), myParts)
+    expect_identical(partitionsRank(myParts[c(1, 10000, 161073), ],
+                                    v = 1001 + (1:18) * 107,
+                                    target = 20710, repetition = TRUE),
+                     c(1L, 10000L, 161073L))
 })
 
 test_that("partitionGeneral Repetition Parallel Lower", {

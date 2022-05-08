@@ -67,14 +67,14 @@ double NumPermsNoRep(int n, int k) {
 // and iterpc. It is much faster than the original naive approach whereby
 // we create all combinations of the multiset, thensubsequently count the
 // number of permutations of each of those combinations.
-double MultisetPermRowNum(int n, int r, const std::vector<int> &Reps) {
+double MultisetPermRowNum(int n, int m, const std::vector<int> &Reps) {
 
-    if (n < 2 || r < 1)
+    if (n < 2 || m < 1)
         return 1.0;
 
     const int sumFreqs = std::accumulate(Reps.cbegin(), Reps.cend(), 0);
 
-    if (r == sumFreqs) {
+    if (m == sumFreqs) {
         std::vector<int> freqs(sumFreqs);
 
         for (int i = 0, k = 0; i < static_cast<int>(Reps.size()); ++i) {
@@ -86,21 +86,21 @@ double MultisetPermRowNum(int n, int r, const std::vector<int> &Reps) {
         return NumPermsWithRep(freqs);
     }
 
-    if (r > sumFreqs)
+    if (m > sumFreqs)
         return 0.0;
 
     const int n1 = n - 1;
     const int maxFreq = *std::max_element(Reps.cbegin(), Reps.cend());
-    const int myMax = (r < maxFreq) ? (r + 1) : (maxFreq + 1);
+    const int myMax = (m < maxFreq) ? (m + 1) : (maxFreq + 1);
 
     // factorial(171)
     // [1] Inf
     // factorial(170)
     // [1] 7.257416e+306
-    if (myMax > 170 || r > 170) {
+    if (myMax > 170 || m > 170) {
         mpz_t result;
         mpz_init(result);
-        MultisetPermRowNumGmp(result, n, r, Reps);
+        MultisetPermRowNumGmp(result, n, m, Reps);
 
         const double dblRes = (mpz_cmp_d(result, Significand53) > 0) ?
                                std::numeric_limits<double>::infinity() :
@@ -110,28 +110,28 @@ double MultisetPermRowNum(int n, int r, const std::vector<int> &Reps) {
         return dblRes;
     }
 
-    std::vector<int> seqR(r);
+    std::vector<int> seqR(m);
     std::iota(seqR.begin(), seqR.end(), 1);
     const double prodR = std::accumulate(seqR.cbegin(), seqR.cend(),
                                          1.0, std::multiplies<double>());
 
     // Create seqeunce from 1 to myMax, then add another
     // 1 at the front... equivalent to c(1, 1:myMax)
-    std::vector<double> cumProd(myMax), resV(r + 1, 0.0);
+    std::vector<double> cumProd(myMax), resV(m + 1, 0.0);
     std::iota(cumProd.begin(), cumProd.end(), 1);
 
     cumProd.insert(cumProd.begin(), 1);
     std::partial_sum(cumProd.begin(), cumProd.end(),
                      cumProd.begin(), std::multiplies<double>());
 
-    int myMin = std::min(r, Reps[0]);
+    int myMin = std::min(m, Reps[0]);
 
     for (int i = 0; i <= myMin; ++i) {
         resV[i] = prodR / cumProd[i];
     }
 
     for (int i = 1; i < n1; ++i) {
-        for (int j = r; j > 0; --j) {
+        for (int j = m; j > 0; --j) {
             int myMin = std::min(j, Reps[i]);
             double numPerms = 0;
 
@@ -143,12 +143,24 @@ double MultisetPermRowNum(int n, int r, const std::vector<int> &Reps) {
         }
     }
 
-    myMin = std::min(r, Reps[n1]);
+    myMin = std::min(m, Reps[n1]);
     double numPerms = 0.0;
 
     for (int i = 0; i <= myMin; ++i) {
-        numPerms += resV[r - i] / cumProd[i];
+        numPerms += resV[m - i] / cumProd[i];
     }
 
     return numPerms;
+}
+
+std::vector<int> nonZeroVec(const std::vector<int> &v) {
+    std::vector<int> nonZero;
+
+    for (std::size_t i = 0; i < v.size(); i++) {
+        if (v[i] > 0) {
+            nonZero.push_back(v[i]);
+        }
+    }
+
+    return nonZero;
 }

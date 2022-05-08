@@ -22,7 +22,7 @@ GMP support allows for exploration of cases where the number of partitions is la
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">RcppAlgos</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">2.5.4</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">2.5.5</span>
       </span>
     </div>
 
@@ -40,7 +40,7 @@ GMP support allows for exploration of cases where the number of partitions is la
       <a href="../articles/CombPermConstraints.html">Constraints and Integer Partitions</a>
     </li>
     <li>
-      <a href="../articles/CombinatorialSampling.html">Combinatorial Sampling</a>
+      <a href="../articles/CombinatorialSampling.html">Combinatorial Sampling and Ranking</a>
     </li>
     <li>
       <a href="../articles/CombinatoricsIterators.html">Combinatorial Iterators in RcppAlgos</a>
@@ -149,11 +149,11 @@ GMP support allows for exploration of cases where the number of partitions is la
     <h2>Examples</h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span class="fu">partitionsSample</span><span class="op">(</span><span class="fl">100</span>, <span class="fl">10</span>, n <span class="op">=</span> <span class="fl">5</span><span class="op">)</span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>      [,1] [,2] [,3] [,4] [,5] [,6] [,7] [,8] [,9] [,10]</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1,]    1    2    3    4    6    9   13   19   21    22</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [2,]    2    4    5    6    7    8   11   12   20    25</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [3,]    1    4    5    6    7    8   10   12   16    31</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [4,]    1    2    3    5    7    8   11   14   20    29</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [5,]    2    3    4    7    8   10   14   15   16    21</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1,]    1    3    4    5    6    7    9   12   25    28</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [2,]    2    3    4    6    8    9   13   14   17    24</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [3,]    2    3    4    6    8    9   11   12   20    25</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [4,]    1    2    6    7    8   10   12   15   18    21</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [5,]    1    3    6    7    9   11   12   16   17    18</span>
 <span class="r-in"><span class="fu">partitionsSample</span><span class="op">(</span><span class="fl">100</span>, <span class="fl">10</span>, seed <span class="op">=</span> <span class="fl">42</span>, n <span class="op">=</span> <span class="fl">5</span>, target <span class="op">=</span> <span class="fl">200</span><span class="op">)</span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>      [,1] [,2] [,3] [,4] [,5] [,6] [,7] [,8] [,9] [,10]</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1,]    1    6    9   11   12   14   20   25   48    54</span>

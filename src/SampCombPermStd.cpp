@@ -79,11 +79,7 @@ void SampNoThrdSafe(T* sampleMatrix, SEXP res, const std::vector<T> &v,
 
     SampleResults(sampleMatrix, v, mySample, myBigSamp, myReps,
                   nthResFun, m, sampSize, lenV, IsGmp);
-
-    if (IsNamed) {
-        SetSampleNames(res, IsGmp, sampSize, mySample, myBigSamp);
-    }
-
+    SetSampleNames(res, IsGmp, sampSize, mySample, myBigSamp, IsNamed);
     MpzClearVec(myBigSamp, sampSize, IsGmp);
 }
 
@@ -116,8 +112,7 @@ void ThreadSafeSample(T* mat, SEXP res, const std::vector<T> &v,
         int nextStep = stepSize;
 
         for (int j = 0; j < (nThreads - 1);
-        ++j, step += stepSize, nextStep += stepSize) {
-
+             ++j, step += stepSize, nextStep += stepSize) {
             threads.emplace_back(std::cref(ParallelGlue<T>),
                                  std::ref(parMat), std::cref(v),
                                  std::cref(mySample), myBigSamp,
@@ -138,10 +133,7 @@ void ThreadSafeSample(T* mat, SEXP res, const std::vector<T> &v,
                       nthResFun, m, sampSize, lenV, IsGmp);
     }
 
-    if (IsNamed) {
-        SetSampleNames(res, IsGmp, sampSize, mySample, myBigSamp);
-    }
-
+    SetSampleNames(res, IsGmp, sampSize, mySample, myBigSamp, IsNamed);
     MpzClearVec(myBigSamp, sampSize, IsGmp);
 }
 
@@ -182,9 +174,8 @@ void SampleResults(SEXP sampleMatrix, SEXP v,
         mpz_clear(mpzDefault);
     }
 
-    if (IsNamed) {
-        SetSampleNames(sampleMatrix, IsGmp, sampSize, mySample, myBigSamp);
-    }
+    SetSampleNames(sampleMatrix, IsGmp, sampSize,
+                   mySample, myBigSamp, IsNamed);
 }
 
 SEXP SampCombPermMain(SEXP Rv, const std::vector<int> &vInt,

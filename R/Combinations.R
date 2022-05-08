@@ -39,6 +39,11 @@ comboSample <- function(v, m = NULL, repetition = FALSE, freqs = NULL,
                  pkgEnv$nThreads, namedSample, FUN.VALUE))
 }
 
+comboRank <- function(..., v, repetition = FALSE, freqs = NULL) {
+    GetRank(..., v = v, repetition = repetition,
+            freqs = freqs, IsComb = TRUE)
+}
+
 comboCount <-  function(v, m = NULL, repetition = FALSE, freqs = NULL) {
     .Call(`_RcppAlgos_CombinatoricsCount`, v, m,
           repetition, freqs, TRUE);

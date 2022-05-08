@@ -47,6 +47,9 @@ These algorithms rely on efficiently generating the \eqn{n^{th}}{nth} lexicograp
 \references{
 \href{https://en.wikipedia.org/wiki/Lexicographical_order}{Lexicographical order}
 }
+\seealso{
+\code{\link{comboRank}}, \code{\link{permuteRank}}
+}
 \author{
 Joseph Wood
 }

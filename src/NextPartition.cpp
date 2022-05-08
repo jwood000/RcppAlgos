@@ -480,18 +480,18 @@ void NextMultisetGen(std::vector<int> &rpsCnt, std::vector<int> &z,
                      int &e, int &b, int &p, int &tarDiff, int lastCol,
                      int lastElem) {
     NextMultisetGenPart(rpsCnt, z, e, b, p, lastCol, lastElem);
-};
+}
 
 void NextRepGen(std::vector<int> &rpsCnt, std::vector<int> &z, int &e,
                 int &b, int &p, int &tarDiff, int lastCol, int lastElem) {
     NextRepGenPart(z, b, e, p, lastCol, lastElem);
-};
+}
 
 void NextDistinctGen(std::vector<int> &rpsCnt, std::vector<int> &z,
                      int &e, int &b, int &p, int &tarDiff, int lastCol,
                      int lastElem) {
     NextDistinctGenPart(z, b, e, p, tarDiff, lastCol, lastElem);
-};
+}
 
 nextPartsPtr GetNextPartsPtr(PartitionType ptype, bool IsGen) {
 

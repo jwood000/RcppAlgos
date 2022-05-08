@@ -1,11 +1,19 @@
 \name{NEWS}
 \title{News for Package \pkg{RcppAlgos}}
 
-\section{Changes in RcppAlgos version 2.5.5 (Release date: 2022-04-05)}{
+\section{Changes in RcppAlgos version 2.5.5 (Release date: 2022-05-06)}{
     \itemize{
+        \item New Features:
+        \itemize{
+            \item Added ranking functions: \code{comboRank}, \code{permuteRank}, and \code{partitionsRank}
+        }
         \item Other:
         \itemize{
             \item Corrected \code{if()} conditions comparing \code{class()} to string. Changed to \code{is.character}.
+        }
+        \item Bug Fixes:
+        \itemize{
+            \item Now checking class of input vector for partition funcitons.
         }
     }
 }

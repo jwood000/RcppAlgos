@@ -4,32 +4,20 @@
 #include <numeric>
 #include <cmath>
 
-using nthPermPtr = std::vector<int> (*const)(int n, int r, double dblIdx,
+using nthPermPtr = std::vector<int> (*const)(int n, int m, double dblIdx,
                                      mpz_t mpzIdx, const std::vector<int> &Reps);
 
-std::vector<int> nonZeroVec(std::vector<int> v) {
-    std::vector<int> nonZero;
-
-    for (std::size_t i = 0; i < v.size(); i++) {
-        if (v[i] > 0) {
-            nonZero.push_back(v[i]);
-        }
-    }
-
-    return nonZero;
-}
-
-std::vector<int> nthPerm(int n, int r, double dblIdx,
+std::vector<int> nthPerm(int n, int m, double dblIdx,
                          mpz_t mpzIdx, const std::vector<int> &Reps) {
 
     double index1 = dblIdx;
-    std::vector<int> res(r);
+    std::vector<int> res(m);
 
-    double temp = NumPermsNoRep(n, r);
+    double temp = NumPermsNoRep(n, m);
     std::vector<int> indexVec(n);
     std::iota(indexVec.begin(), indexVec.end(), 0);
 
-    for (int k = 0, n1 = n; k < r; ++k, --n1) {
+    for (int k = 0, n1 = n; k < m; ++k, --n1) {
         temp /= n1;
         int j = static_cast<int>(index1 / temp);
         res[k] = indexVec[j];
@@ -40,16 +28,16 @@ std::vector<int> nthPerm(int n, int r, double dblIdx,
     return res;
 }
 
-std::vector<int> nthPermRep(int n, int r, double dblIdx,
+std::vector<int> nthPermRep(int n, int m, double dblIdx,
                             mpz_t mpzIdx, const std::vector<int> &Reps) {
 
     double index1 = dblIdx;
-    std::vector<int> res(r);
+    std::vector<int> res(m);
 
     double temp = std::pow(static_cast<double>(n),
-                           static_cast<double>(r));
+                           static_cast<double>(m));
 
-    for (int k = 0; k < r; ++k) {
+    for (int k = 0; k < m; ++k) {
         temp /= n;
         int j = static_cast<int>(index1 / temp);
         res[k] = j;
@@ -59,17 +47,17 @@ std::vector<int> nthPermRep(int n, int r, double dblIdx,
     return res;
 }
 
-std::vector<int> nthPermMult(int n, int r, double dblIdx,
+std::vector<int> nthPermMult(int n, int m, double dblIdx,
                              mpz_t mpzIdx, const std::vector<int> &Reps) {
 
     double index1 = dblIdx + 1;
     double index2 = index1;
 
-    std::vector<int> res(r);
+    std::vector<int> res(m);
     std::vector<int> Counts;
     std::vector<int> TempReps = Reps;
 
-    for (int k = 0, r1 = r - 1; k < r; ++k, --r1) {
+    for (int k = 0, r1 = m - 1; k < m; ++k, --r1) {
 
         int j = 0;
 
@@ -103,7 +91,7 @@ std::vector<int> nthPermMult(int n, int r, double dblIdx,
     return res;
 }
 
-std::vector<int> nthPermGmp(int n, int r, double dblIdx,
+std::vector<int> nthPermGmp(int n, int m, double dblIdx,
                             mpz_t mpzIdx, const std::vector<int> &Reps) {
 
     mpz_t temp;
@@ -115,13 +103,13 @@ std::vector<int> nthPermGmp(int n, int r, double dblIdx,
     mpz_init(index1);
 
     mpz_set(index1, mpzIdx);
-    std::vector<int> res(r);
+    std::vector<int> res(m);
 
-    NumPermsNoRepGmp(temp, n, r);
+    NumPermsNoRepGmp(temp, n, m);
     std::vector<int> indexVec(n);
     std::iota(indexVec.begin(), indexVec.end(), 0);
 
-    for (int k = 0, n1 = n; k < r; ++k, --n1) {
+    for (int k = 0, n1 = n; k < m; ++k, --n1) {
         mpz_divexact_ui(temp, temp, n1);
         mpz_tdiv_q(temp2, index1, temp);
         int j = mpz_get_si(temp2);
@@ -136,7 +124,7 @@ std::vector<int> nthPermGmp(int n, int r, double dblIdx,
     return res;
 }
 
-std::vector<int> nthPermRepGmp(int n, int r, double dblIdx,
+std::vector<int> nthPermRepGmp(int n, int m, double dblIdx,
                                mpz_t mpzIdx, const std::vector<int> &Reps) {
 
     mpz_t temp;
@@ -148,10 +136,10 @@ std::vector<int> nthPermRepGmp(int n, int r, double dblIdx,
     mpz_init(index1);
 
     mpz_set(index1, mpzIdx);
-    std::vector<int> res(r);
-    mpz_ui_pow_ui(temp, n, r);
+    std::vector<int> res(m);
+    mpz_ui_pow_ui(temp, n, m);
 
-    for (int k = 0; k < r; ++k) {
+    for (int k = 0; k < m; ++k) {
         mpz_divexact_ui(temp, temp, n);
         mpz_tdiv_q(temp2, index1, temp);
         int j = mpz_get_si(temp2);
@@ -165,7 +153,7 @@ std::vector<int> nthPermRepGmp(int n, int r, double dblIdx,
     return res;
 }
 
-std::vector<int> nthPermMultGmp(int n, int r, double dblIdx,
+std::vector<int> nthPermMultGmp(int n, int m, double dblIdx,
                                 mpz_t mpzIdx, const std::vector<int> &Reps) {
 
     mpz_t temp;
@@ -175,7 +163,7 @@ std::vector<int> nthPermMultGmp(int n, int r, double dblIdx,
     mpz_init(index1);
 
     mpz_set(index1, mpzIdx);
-    std::vector<int> res(r);
+    std::vector<int> res(m);
 
     mpz_add_ui(index1, index1, 1);
     std::vector<int> Counts;
@@ -188,7 +176,7 @@ std::vector<int> nthPermMultGmp(int n, int r, double dblIdx,
     mpz_init(index2);
     mpz_set(index2, index1);
 
-    for (int k = 0, r1 = r - 1; k < r; ++k, --r1) {
+    for (int k = 0, r1 = m - 1; k < m; ++k, --r1) {
 
         int j = 0;
 

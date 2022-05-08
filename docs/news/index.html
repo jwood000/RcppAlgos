@@ -17,7 +17,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">RcppAlgos</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">2.5.4</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">2.5.5</span>
       </span>
     </div>
 
@@ -35,7 +35,7 @@
       <a href="../articles/CombPermConstraints.html">Constraints and Integer Partitions</a>
     </li>
     <li>
-      <a href="../articles/CombinatorialSampling.html">Combinatorial Sampling</a>
+      <a href="../articles/CombinatorialSampling.html">Combinatorial Sampling and Ranking</a>
     </li>
     <li>
       <a href="../articles/CombinatoricsIterators.html">Combinatorial Iterators in RcppAlgos</a>
@@ -78,6 +78,24 @@
       <small>Source: <a href="https://github.com/jwood000/RcppAlgos/blob/HEAD/NEWS.md" class="external-link"><code>NEWS.md</code></a></small>
     </div>
 
+    <div class="section level2">
+<h2 class="page-header" data-toc-text="2.5.5" id="rcppalgos-255">RcppAlgos 2.5.5<a class="anchor" aria-label="anchor" href="#rcppalgos-255"></a></h2>
+<div class="section level3">
+<h3 id="new-features-2-5-5">New Features:<a class="anchor" aria-label="anchor" href="#new-features-2-5-5"></a></h3>
+<ul><li>Added ranking functions: <code>comboRank</code>,
+<code>permuteRank</code>, and <code>partitionsRank</code>.</li>
+</ul></div>
+<div class="section level3">
+<h3 id="other-2-5-5">Other:<a class="anchor" aria-label="anchor" href="#other-2-5-5"></a></h3>
+<ul><li>Corrected <code>if()</code> conditions comparing
+<code><a href="https://rdrr.io/r/base/class.html" class="external-link">class()</a></code> to string. Changed to
+<code>is.character</code>.</li>
+</ul></div>
+<div class="section level3">
+<h3 id="bug-fixes-2-5-5">Bug Fixes:<a class="anchor" aria-label="anchor" href="#bug-fixes-2-5-5"></a></h3>
+<ul><li>Now checking class of input vector for partition funcitons.</li>
+</ul></div>
+</div>
     <div class="section level2">
 <h2 class="page-header" data-toc-text="2.5.4" id="rcppalgos-254">RcppAlgos 2.5.4<a class="anchor" aria-label="anchor" href="#rcppalgos-254"></a></h2>
 <div class="section level3">
