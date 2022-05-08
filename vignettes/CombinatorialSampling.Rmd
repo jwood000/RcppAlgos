@@ -18,7 +18,7 @@ This document covers topics in generating random samples of combinations/permuta
 
 # Sampling
 
-At the heart of sampling is the ability to efficiently generate the _n<sup>th</sup>_ [lexicographical](<https://en.wikipedia.org/wiki/Lexicographic_order) result. The algorithms in `RcppAlgos` are flexible and optimized, allowing for tackling this task with ease.
+At the heart of sampling is the ability to efficiently generate the _n<sup>th</sup>_ [lexicographical](<https://en.wikipedia.org/wiki/Lexicographic_order>) result. The algorithms in `RcppAlgos` are flexible and optimized, allowing for tackling this task with ease.
 
 ## Base R
 
