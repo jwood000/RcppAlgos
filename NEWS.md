@@ -3,6 +3,7 @@
 ## New Features:
 
 * Added ranking functions: `comboRank`, `permuteRank`, and `partitionsRank`.
+* Added back the ability to interrupt general constraint problems via `cpp11::check_user_interrupt()`.
 
 ## Other:
 

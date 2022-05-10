@@ -1,7 +1,7 @@
 ---
 title: "Constraints and Integer Partitions"
 author: "Joseph Wood"
-date: "03/18/2022"
+date: "05/09/2022"
 output:
   rmarkdown::html_vignette:
     toc: true
@@ -315,46 +315,6 @@ permuteGeneral(c(2, 3, 5, 7), 3, freqs = rep(2, 4),
 
 As you can see, the _2<sup>nd</sup>_ through the _6<sup>th</sup>_ entries are simply permutations of the _1<sup>st</sup>_ entry. Similarly, entries _8_ and _9_ are permutations of the _7<sup>th</sup>_ and entries _11_ and _12_ are permutations of the _10<sup>th</sup>_.
 
-## Note about Interrupting Execution
-
-In version `2.4.*` it was possible to interrupt long running jobs by taking advantage of `Rcpp::checkUserInterrupt`. Since we no longer rely on `Rcpp` in version `2.5.0`, we are currently not checking for user interruption. Our goal is to eventually include this feature as it is very convenient, however it will take great care to implement as it is non-trivial.
-
-For now, we encourage user to use iterators (See [Combinatorial Iterators in RcppAlgos](<https://jwood000.github.io/RcppAlgos/articles/CombinatoricsIterators.html>)) as they offer greater flexibility. For example, with iterators it is easy to avoid resource consuming calls by only fetching a few results at a time.
-
-Here is an example of how to investigate difficult problems due to combinatorial explosion without fear of having to restart R.
-
-```r
-set.seed(123)
-s <- rnorm(1000)
-
-## In previous versions, you could execute commands and interrupt
-## them if it took a really long.
-##
-## Now, we use iterators.
-iter <- comboIter(s, 20, TRUE,
-                  constraintFun = "sum",
-                  comparisonFun = "==",
-                  limitConstraints = 0)
-
-## Test one iteration to see if we need to relax the tolerance
-system.time(iter@nextIter())
-#>    user  system elapsed
-#>   7.448   0.013   7.468
-
-## 8 seconds per iteration is a bit much... Let's loosen things
-## a little by increasing the tolerance from sqrt(.Machine$double.eps)
-## ~= 1.49e-8 to 1e-5.
-relaxedIter <- comboIter(s, 20, TRUE,
-                         constraintFun = "sum",
-                         comparisonFun = "==",
-                         limitConstraints = 0,
-                         tolerance = 1e-5)
-
-system.time(relaxedIter@nextIter())
-#>    user  system elapsed
-#>   0.001   0.000   0.001
-```
-
 ## Integer Partitions
 
 Specialized algorithms are employed when it can be determined that we are looking for [integer partitions](<https://en.wikipedia.org/wiki/Partition_(number_theory)>).
@@ -551,4 +511,51 @@ system.time(partitionsGeneral(0:120, freqs = c(120, rep(1, 120))))
 system.time(partitionsGeneral(0:120, freqs = c(120, rep(1, 120)), nThreads=4))
 #>  user  system elapsed
 #> 0.146   0.001   0.038
+```
+
+## Safely Interrupt Execution with `cpp11::check_user_interrupt`
+
+Some of these operations can take some time, especially when you are in the exploratory phase and you don't have that much information about what type of solution you will obtain. For this reason, we have added the ability to interrupt execution. Under the hood, we call `cpp11::check_user_interrupt()` once every second to check if the user has requested for the process to be interrupted. Note that we only check for user interruptions when we cannot determine the number of results up front.
+
+This means that if we initiate a process that will take a long time or exhaust all of the available memory (e.g. we forget to put an upper limit on the number of results, relax the tolerance, etc.), we can simply hit `Ctrl + c`, or `esc` if using `RStudio`, to stop execution.
+
+```r
+set.seed(123)
+s <- rnorm(1000)
+
+## Oops!! We forgot to limit the output/put a loose tolerance
+## There are as.numeric(comboCount(s, 20, T)) ~= 4.964324e+41
+## This will either take a long long time, or all of your
+## memory will be consumed!!!
+##
+## No problem... simply hit Ctrl + c or if in RStudio, hit esc
+## or hit the "Stop" button
+
+system.time(testInterrupt <- partitionsGeneral(s, 20, TRUE, target = 0))
+Timing stopped at: 2.012 0.006 2.023
+```
+
+### Note about Interrupting Execution
+
+Generally, we encourage user to use iterators (See [Combinatorial Iterators in RcppAlgos](<https://jwood000.github.io/RcppAlgos/articles/CombinatoricsIterators.html>)) as they offer greater flexibility. For example, with iterators it is easy to avoid resource consuming calls by only fetching a few results at a time.
+
+Here is an example of how to investigate difficult problems due to combinatorial explosion without fear of having to restart R.
+
+```r
+## We use "s" defined above
+iter <- partitionsIter(s, 20, TRUE, target = 0)
+
+## Test one iteration to see if we need to relax the tolerance
+system.time(iter@nextIter())
+#>    user  system elapsed
+#>   7.777   0.005   7.783
+
+## 8 seconds per iteration is a bit much... Let's loosen things
+## a little by increasing the tolerance from sqrt(.Machine$double.eps)
+## ~= 1.49e-8 to 1e-5.
+relaxedIter <- partitionsIter(s, 20, TRUE, target = 0, tolerance = 1e-5)
+
+system.time(relaxedIter@nextIter())
+#>    user  system elapsed
+#>   0.001   0.000   0.001
 ```

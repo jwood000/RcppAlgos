@@ -1,11 +1,12 @@
 \name{NEWS}
 \title{News for Package \pkg{RcppAlgos}}
 
-\section{Changes in RcppAlgos version 2.5.5 (Release date: 2022-05-06)}{
+\section{Changes in RcppAlgos version 2.5.5 (Release date: 2022-05-13)}{
     \itemize{
         \item New Features:
         \itemize{
             \item Added ranking functions: \code{comboRank}, \code{permuteRank}, and \code{partitionsRank}
+            \item Added back the ability to interrupt general constraint problems via \code{cpp11::check_user_interrupt()}.
         }
         \item Other:
         \itemize{
