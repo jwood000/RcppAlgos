@@ -4,6 +4,10 @@
 #include "Constraints/ConstraintsMultiset.h"
 #include "Constraints/ConstraintsDistinct.h"
 #include "Constraints/ConstraintsRep.h"
+#include <chrono>
+
+// Used for checking whether user has interrupted computation
+constexpr auto timeout = std::chrono::milliseconds(1000);
 
 FunType GetFunType(const std::string &myFun) {
 
@@ -189,10 +193,19 @@ void ConstraintsClass<T>::GetSolutions(
             }
         }
     } else {
+        auto check_point_1 = std::chrono::steady_clock::now();
+
         while (check_0 && check_1) {
             FilterProspects(v, targetVals, cnstrntVec, resVec, limit);
             NextSection(v, targetVals, testVec, z,
                         fun, compTwo, m, m1, m2);
+
+            const auto check_point_2 = std::chrono::steady_clock::now();
+
+            if (check_point_2 - check_point_1 > timeout) {
+                cpp11::check_user_interrupt();
+                check_point_1 = std::chrono::steady_clock::now();
+            }
         }
     }
 }
