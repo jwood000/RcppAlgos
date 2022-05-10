@@ -103,7 +103,7 @@
                         <h4 data-toc-skip class="author">Joseph
 Wood</h4>
             
-            <h4 data-toc-skip class="date">03/18/2022</h4>
+            <h4 data-toc-skip class="date">05/09/2022</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/jwood000/RcppAlgos/blob/HEAD/vignettes/CombPermConstraints.Rmd" class="external-link"><code>vignettes/CombPermConstraints.Rmd</code></a></small>
       <div class="hidden name"><code>CombPermConstraints.Rmd</code></div>
@@ -450,53 +450,6 @@ Observe:</p>
 </div>
 </div>
 <div class="section level2">
-<h2 id="note-about-interrupting-execution">Note about Interrupting Execution<a class="anchor" aria-label="anchor" href="#note-about-interrupting-execution"></a>
-</h2>
-<p>In version <code>2.4.*</code> it was possible to interrupt long
-running jobs by taking advantage of
-<code>Rcpp::checkUserInterrupt</code>. Since we no longer rely on
-<code>Rcpp</code> in version <code>2.5.0</code>, we are currently not
-checking for user interruption. Our goal is to eventually include this
-feature as it is very convenient, however it will take great care to
-implement as it is non-trivial.</p>
-<p>For now, we encourage user to use iterators (See <a href="https://jwood000.github.io/RcppAlgos/articles/CombinatoricsIterators.html" class="external-link">Combinatorial
-Iterators in RcppAlgos</a>) as they offer greater flexibility. For
-example, with iterators it is easy to avoid resource consuming calls by
-only fetching a few results at a time.</p>
-<p>Here is an example of how to investigate difficult problems due to
-combinatorial explosion without fear of having to restart R.</p>
-<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="fl">123</span><span class="op">)</span>
-<span class="va">s</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/Normal.html" class="external-link">rnorm</a></span><span class="op">(</span><span class="fl">1000</span><span class="op">)</span>
-
-<span class="co">## In previous versions, you could execute commands and interrupt</span>
-<span class="co">## them if it took a really long.</span>
-<span class="co">##</span>
-<span class="co">## Now, we use iterators.</span>
-<span class="va">iter</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/combinatoricsIterator.html">comboIter</a></span><span class="op">(</span><span class="va">s</span>, <span class="fl">20</span>, <span class="cn">TRUE</span>,
-                  constraintFun <span class="op">=</span> <span class="st">"sum"</span>,
-                  comparisonFun <span class="op">=</span> <span class="st">"=="</span>,
-                  limitConstraints <span class="op">=</span> <span class="fl">0</span><span class="op">)</span>
-
-<span class="co">## Test one iteration to see if we need to relax the tolerance</span>
-<span class="fu"><a href="https://rdrr.io/r/base/system.time.html" class="external-link">system.time</a></span><span class="op">(</span><span class="va">iter</span><span class="op">@</span><span class="va">nextIter</span><span class="op">(</span><span class="op">)</span><span class="op">)</span>
-<span class="co">#&gt;    user  system elapsed</span>
-<span class="co">#&gt;   7.448   0.013   7.468</span>
-
-<span class="co">## 8 seconds per iteration is a bit much... Let's loosen things</span>
-<span class="co">## a little by increasing the tolerance from sqrt(.Machine$double.eps)</span>
-<span class="co">## ~= 1.49e-8 to 1e-5.</span>
-<span class="va">relaxedIter</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/combinatoricsIterator.html">comboIter</a></span><span class="op">(</span><span class="va">s</span>, <span class="fl">20</span>, <span class="cn">TRUE</span>,
-                         constraintFun <span class="op">=</span> <span class="st">"sum"</span>,
-                         comparisonFun <span class="op">=</span> <span class="st">"=="</span>,
-                         limitConstraints <span class="op">=</span> <span class="fl">0</span>,
-                         tolerance <span class="op">=</span> <span class="fl">1e-5</span><span class="op">)</span>
-
-<span class="fu"><a href="https://rdrr.io/r/base/system.time.html" class="external-link">system.time</a></span><span class="op">(</span><span class="va">relaxedIter</span><span class="op">@</span><span class="va">nextIter</span><span class="op">(</span><span class="op">)</span><span class="op">)</span>
-<span class="co">#&gt;    user  system elapsed</span>
-<span class="co">#&gt;   0.001   0.000   0.001</span></code></pre></div>
-</div>
-<div class="section level2">
 <h2 id="integer-partitions">Integer Partitions<a class="anchor" aria-label="anchor" href="#integer-partitions"></a>
 </h2>
 <p>Specialized algorithms are employed when it can be determined that we
@@ -516,7 +469,7 @@ partitions.</p>
 leave <code>m = NULL</code>, <code>m</code> is internally set to the
 length of the longest non-zero combination (this is true for all cases
 below).</p>
-<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="../reference/partitionsGeneral.html">partitionsGeneral</a></span><span class="op">(</span><span class="fl">0</span><span class="op">:</span><span class="fl">5</span>, repetition <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>
 <span class="co">#&gt;      [,1] [,2] [,3] [,4] [,5]</span>
 <span class="co">#&gt; [1,]    0    0    0    0    5</span>
@@ -539,7 +492,7 @@ below).</p>
 </h3>
 <p>Everything is the same as above except for explicitly setting the
 desired length and deciding whether to include zero or not.</p>
-<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co">## Including zero</span>
 <span class="fu"><a href="../reference/partitionsGeneral.html">partitionsGeneral</a></span><span class="op">(</span><span class="fl">0</span><span class="op">:</span><span class="fl">5</span>, <span class="fl">3</span>, repetition <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>
 <span class="co">#&gt;      [,1] [,2] [,3]</span>
@@ -560,7 +513,7 @@ desired length and deciding whether to include zero or not.</p>
 </h3>
 <p>Same as <code>Case 1 &amp; 2</code> except now we have
 <code>repetition = FALSE</code>.</p>
-<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="../reference/partitionsGeneral.html">partitionsGeneral</a></span><span class="op">(</span><span class="fl">0</span><span class="op">:</span><span class="fl">10</span><span class="op">)</span>
 <span class="co">#&gt;      [,1] [,2] [,3] [,4]</span>
 <span class="co">#&gt; [1,]    0    1    2    7</span>
@@ -631,7 +584,7 @@ optimized so one should not fear using it.</p>
 <em>N</em> is to set <code>v = 0:N</code> and
 <code>freqs = c(N, rep(1, N))</code> (the extra zeros will be left
 off).</p>
-<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co">## Obtain all distinct partitions of 10</span>
 <span class="fu"><a href="../reference/partitionsGeneral.html">partitionsGeneral</a></span><span class="op">(</span><span class="fl">0</span><span class="op">:</span><span class="fl">10</span>, freqs <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">10</span>, <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">10</span><span class="op">)</span><span class="op">)</span><span class="op">)</span>    <span class="co">## Same as c(3, rep(1, 10))</span>
 <span class="co">#&gt;       [,1] [,2] [,3] [,4]</span>
@@ -652,7 +605,7 @@ off).</p>
 <p>As noted in <code>Case 1</code>, if <code>m = NULL</code>, the length
 of the output will be determined by the longest non-zero combination
 that sums to <em>N</em>.</p>
-<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co">## m is NOT NULL and output has at most 2 zeros</span>
 <span class="fu"><a href="../reference/partitionsGeneral.html">partitionsGeneral</a></span><span class="op">(</span><span class="fl">0</span><span class="op">:</span><span class="fl">10</span>, <span class="fl">3</span>, freqs <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">2</span>, <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">10</span><span class="op">)</span><span class="op">)</span><span class="op">)</span>
 <span class="co">#&gt;      [,1] [,2] [,3]</span>
@@ -686,7 +639,7 @@ that sums to <em>N</em>.</p>
 </h2>
 <p>Note, as of version <code>2.5.0</code>, one can generate partitions
 in parallel using the <code>nThreads</code> argument.</p>
-<div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co">## partitions of 60</span>
 <span class="fu"><a href="../reference/partitionsCount.html">partitionsCount</a></span><span class="op">(</span><span class="fl">0</span><span class="op">:</span><span class="fl">60</span>, repetition <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>
 <span class="co">#&gt; [1] 966467</span>
@@ -713,6 +666,64 @@ in parallel using the <code>nThreads</code> argument.</p>
 <span class="fu"><a href="https://rdrr.io/r/base/system.time.html" class="external-link">system.time</a></span><span class="op">(</span><span class="fu"><a href="../reference/partitionsGeneral.html">partitionsGeneral</a></span><span class="op">(</span><span class="fl">0</span><span class="op">:</span><span class="fl">120</span>, freqs <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">120</span>, <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">120</span><span class="op">)</span><span class="op">)</span>, nThreads<span class="op">=</span><span class="fl">4</span><span class="op">)</span><span class="op">)</span>
 <span class="co">#&gt;  user  system elapsed</span>
 <span class="co">#&gt; 0.146   0.001   0.038</span></code></pre></div>
+</div>
+<div class="section level2">
+<h2 id="safely-interrupt-execution-with-cpp11check_user_interrupt">Safely Interrupt Execution with
+<code>cpp11::check_user_interrupt</code><a class="anchor" aria-label="anchor" href="#safely-interrupt-execution-with-cpp11check_user_interrupt"></a>
+</h2>
+<p>Some of these operations can take some time, especially when you are
+in the exploratory phase and you don’t have that much information about
+what type of solution you will obtain. For this reason, we have added
+the ability to interrupt execution. Under the hood, we call
+<code>cpp11::check_user_interrupt()</code> once every second to check if
+the user has requested for the process to be interrupted. Note that we
+only check for user interruptions when we cannot determine the number of
+results up front.</p>
+<p>This means that if we initiate a process that will take a long time
+or exhaust all of the available memory (e.g. we forget to put an upper
+limit on the number of results, relax the tolerance, etc.), we can
+simply hit <code>Ctrl + c</code>, or <code>esc</code> if using
+<code>RStudio</code>, to stop execution.</p>
+<div class="sourceCode" id="cb16"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">123</span>)</span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a>s <span class="ot">&lt;-</span> <span class="fu">rnorm</span>(<span class="dv">1000</span>)</span>
+<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-4"><a href="#cb16-4" aria-hidden="true" tabindex="-1"></a><span class="do">## Oops!! We forgot to limit the output/put a loose tolerance</span></span>
+<span id="cb16-5"><a href="#cb16-5" aria-hidden="true" tabindex="-1"></a><span class="do">## There are as.numeric(comboCount(s, 20, T)) ~= 4.964324e+41</span></span>
+<span id="cb16-6"><a href="#cb16-6" aria-hidden="true" tabindex="-1"></a><span class="do">## This will either take a long long time, or all of your</span></span>
+<span id="cb16-7"><a href="#cb16-7" aria-hidden="true" tabindex="-1"></a><span class="do">## memory will be consumed!!!</span></span>
+<span id="cb16-8"><a href="#cb16-8" aria-hidden="true" tabindex="-1"></a><span class="do">##</span></span>
+<span id="cb16-9"><a href="#cb16-9" aria-hidden="true" tabindex="-1"></a><span class="do">## No problem... simply hit Ctrl + c or if in RStudio, hit esc</span></span>
+<span id="cb16-10"><a href="#cb16-10" aria-hidden="true" tabindex="-1"></a><span class="do">## or hit the "Stop" button</span></span>
+<span id="cb16-11"><a href="#cb16-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-12"><a href="#cb16-12" aria-hidden="true" tabindex="-1"></a><span class="fu">system.time</span>(testInterrupt <span class="ot">&lt;-</span> <span class="fu">partitionsGeneral</span>(s, <span class="dv">20</span>, <span class="cn">TRUE</span>, <span class="at">target =</span> <span class="dv">0</span>))</span>
+<span id="cb16-13"><a href="#cb16-13" aria-hidden="true" tabindex="-1"></a>Timing stopped at<span class="sc">:</span> <span class="fl">2.012</span> <span class="fl">0.006</span> <span class="fl">2.023</span></span></code></pre></div>
+<div class="section level3">
+<h3 id="note-about-interrupting-execution">Note about Interrupting Execution<a class="anchor" aria-label="anchor" href="#note-about-interrupting-execution"></a>
+</h3>
+<p>Generally, we encourage user to use iterators (See <a href="https://jwood000.github.io/RcppAlgos/articles/CombinatoricsIterators.html" class="external-link">Combinatorial
+Iterators in RcppAlgos</a>) as they offer greater flexibility. For
+example, with iterators it is easy to avoid resource consuming calls by
+only fetching a few results at a time.</p>
+<p>Here is an example of how to investigate difficult problems due to
+combinatorial explosion without fear of having to restart R.</p>
+<div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="co">## We use "s" defined above</span>
+<span class="va">iter</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/partitionsIterator.html">partitionsIter</a></span><span class="op">(</span><span class="va">s</span>, <span class="fl">20</span>, <span class="cn">TRUE</span>, target <span class="op">=</span> <span class="fl">0</span><span class="op">)</span>
+
+<span class="co">## Test one iteration to see if we need to relax the tolerance</span>
+<span class="fu"><a href="https://rdrr.io/r/base/system.time.html" class="external-link">system.time</a></span><span class="op">(</span><span class="va">iter</span><span class="op">@</span><span class="va">nextIter</span><span class="op">(</span><span class="op">)</span><span class="op">)</span>
+<span class="co">#&gt;    user  system elapsed</span>
+<span class="co">#&gt;   7.777   0.005   7.783</span>
+
+<span class="co">## 8 seconds per iteration is a bit much... Let's loosen things</span>
+<span class="co">## a little by increasing the tolerance from sqrt(.Machine$double.eps)</span>
+<span class="co">## ~= 1.49e-8 to 1e-5.</span>
+<span class="va">relaxedIter</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/partitionsIterator.html">partitionsIter</a></span><span class="op">(</span><span class="va">s</span>, <span class="fl">20</span>, <span class="cn">TRUE</span>, target <span class="op">=</span> <span class="fl">0</span>, tolerance <span class="op">=</span> <span class="fl">1e-5</span><span class="op">)</span>
+
+<span class="fu"><a href="https://rdrr.io/r/base/system.time.html" class="external-link">system.time</a></span><span class="op">(</span><span class="va">relaxedIter</span><span class="op">@</span><span class="va">nextIter</span><span class="op">(</span><span class="op">)</span><span class="op">)</span>
+<span class="co">#&gt;    user  system elapsed</span>
+<span class="co">#&gt;   0.001   0.000   0.001</span></code></pre></div>
+</div>
 </div>
   </div>
 
