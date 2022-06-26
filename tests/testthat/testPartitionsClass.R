@@ -1,4 +1,56 @@
-context("testing partitionsIter")
+test_that(paste("partitionsGeneral and partitionsIter produces empty",
+                "matrix when there are no partitions"), {
+
+    ## Distinct case
+    expect_identical(partitionsGeneral(10, 5),
+                     matrix(integer(0), nrow = 0, ncol = 5))
+    iter <- partitionsIter(10, 5)
+    msg <- capture.output(noMore <- iter@nextIter())
+    expect_null(noMore)
+
+    expect_identical(comboGeneral(10, 5, constraintFun = "prod",
+                                  comparisonFun = "==",
+                                  limitConstraints = 7),
+                     matrix(integer(0), nrow = 0, ncol = 5))
+    iter <- comboIter(10, 5, constraintFun = "prod",
+                      comparisonFun = "==", limitConstraints = 7)
+    msg <- capture.output(noMore <- iter@nextIter())
+    expect_null(noMore)
+
+    ## Repetition case
+    expect_identical(partitionsGeneral(10, 11, TRUE),
+                     matrix(integer(0), nrow = 0, ncol = 11))
+    iter <- partitionsIter(10, 11, TRUE)
+    msg <- capture.output(noMore <- iter@nextIter())
+    expect_null(noMore)
+
+    expect_identical(comboGeneral(10, 5, TRUE,
+                                  constraintFun = "prod",
+                                  comparisonFun = "==",
+                                  limitConstraints = 17),
+                     matrix(integer(0), nrow = 0, ncol = 5))
+    iter <- comboIter(10, 5, TRUE, constraintFun = "prod",
+                      comparisonFun = "==", limitConstraints = 17)
+    msg <- capture.output(noMore <- iter@nextIter())
+    expect_null(noMore)
+
+    ## Multiset case
+    expect_identical(partitionsGeneral(10, 5, freqs = rep(1:2, 5)),
+                     matrix(integer(0), nrow = 0, ncol = 5))
+    iter <- partitionsIter(10, 5, freqs = rep(1:2, 5))
+    msg <- capture.output(noMore <- iter@nextIter())
+    expect_null(noMore)
+
+    expect_identical(comboGeneral(10, 5, freqs = rep(1:2, 5),
+                                  constraintFun = "prod",
+                                  comparisonFun = "==",
+                                  limitConstraints = 7),
+                     matrix(integer(0), nrow = 0, ncol = 5))
+    iter <- comboIter(10, 5, freqs = rep(1:2, 5), constraintFun = "prod",
+                      comparisonFun = "==", limitConstraints = 7)
+    msg <- capture.output(noMore <- iter@nextIter())
+    expect_null(noMore)
+})
 
 test_that("partitionsIter produces correct results", {
 

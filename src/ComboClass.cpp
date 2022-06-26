@@ -157,7 +157,9 @@ void Combo::startOver() {
 
 SEXP Combo::nextComb() {
 
-    if (CheckEqSi(IsGmp, mpzIndex, dblIndex, 0)) {
+    if (CheckEqSi(IsGmp, mpzIndex, dblIndex, 0) &&
+        CheckIndLT(IsGmp, mpzIndex, dblIndex,
+                   computedRowsMpz, computedRows)) {
         increment(IsGmp, mpzIndex, dblIndex);
         return VecReturn();
     } else if (CheckIndLT(IsGmp, mpzIndex, dblIndex,

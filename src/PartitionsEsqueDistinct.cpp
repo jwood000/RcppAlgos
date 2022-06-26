@@ -116,6 +116,7 @@ void PartitionsEsqueDistinct<T>::Prepare(const std::string &currComp,
 
     this->SetComparison(currComp);
     std::sort(v.begin(), v.end());
+    std::iota(this->z.begin(), this->z.end(), 0);
 
     this->check_1 = GetLowerBound(
         v, this->z, this->fun, reduce,
