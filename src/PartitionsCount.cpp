@@ -263,7 +263,8 @@ void CountClass::SetArrSize(PartitionType ptype, int n, int m, int cap) {
 }
 
 void PartitionsCount(const std::vector<int> &Reps, PartDesign &part,
-                     int lenV, bool bCalcDifficult, bool IsComb) {
+                     int lenV, bool bCalcDifficult, bool IsComb,
+                     bool IsComposition) {
 
     part.count = 0.0;
     mpz_init(part.bigCount);
@@ -271,16 +272,17 @@ void PartitionsCount(const std::vector<int> &Reps, PartDesign &part,
                                static_cast<double>(part.width - 1) *
                                static_cast<double>(lenV + 1);
 
-    const bool bWorthIt = OverTheBar(part.ptype, capNumIters, lenV, part.width);
+    const int strtLen = std::count_if(part.startZ.cbegin(),
+                                      part.startZ.cend(),
+                                      [](int i){return i > 0;});
+
+    const bool bWorthIt = OverTheBar(part.ptype, capNumIters,
+                                     lenV, part.width);
 
     if (part.ptype == PartitionType::LengthOne) {
         part.count = static_cast<int>(part.solnExist);
     } else if (IsComb && part.ptype != PartitionType::Multiset) {
         if (bCalcDifficult || bWorthIt) {
-            const int strtLen = std::count_if(part.startZ.cbegin(),
-                                              part.startZ.cend(),
-                                              [](int i){return i > 0;});
-
             std::unique_ptr<CountClass> myClass = MakeCount(part.ptype);
             part.count = myClass->GetCount(part.mapTar, part.width,
                                            part.cap, strtLen);
@@ -306,23 +308,31 @@ void PartitionsCount(const std::vector<int> &Reps, PartDesign &part,
             part.numUnknown = true;
         }
     } else if (IsComb && part.ptype == PartitionType::Multiset) {
-        if (bCalcDifficult && part.solnExist) {
-            part.count = CountPartsMultiset(Reps, part.startZ);
+        if (bCalcDifficult) {
+            part.count = (part.solnExist) ?
+                         CountPartsMultiset(Reps, part.startZ) : 0;
         } else {
             part.numUnknown = true;
         }
     } else {
         const auto it = std::find(DistPTypeArr.cbegin(),
                                   DistPTypeArr.cend(), part.ptype);
+
         if (part.isRep) {
-            if (part.ptype != PartitionType::RepCapped) {
+            if (part.ptype != PartitionType::RepCapped &&
+                IsComposition && part.mapIncZero) {
+                for (int i = 1; i <= part.width; ++i) {
+                    part.count += CountPartsPermRep(part.mapTar, i);
+                }
+            } else if (part.ptype != PartitionType::RepCapped) {
                 part.count = CountPartsPermRep(part.mapTar, part.width,
                                                part.mapIncZero);
             } else {
                 part.numUnknown = true;
             }
-        } else if (part.ptype == PartitionType::DstctCapped ||
-                   part.ptype == PartitionType::DstctCappedMZ) {
+        } else if (!IsComposition &&
+                   (part.ptype == PartitionType::DstctCapped ||
+                    part.ptype == PartitionType::DstctCappedMZ)) {
 
             if (bCalcDifficult || bWorthIt) {
                 part.count = CountPartsPermDistinctCap(part.startZ, part.cap,
@@ -330,6 +340,12 @@ void PartitionsCount(const std::vector<int> &Reps, PartDesign &part,
                                                        part.mapIncZero);
             } else {
                 part.numUnknown = true;
+            }
+        } else if (it != DistPTypeArr.cend() &&
+                   IsComposition && part.mapIncZero) {
+            for (int i = strtLen; i <= part.width; ++i) {
+                part.count += CountPartsPermDistinct(part.startZ,
+                                                     part.mapTar, i);
             }
         } else if (it != DistPTypeArr.cend()) {
             part.count = CountPartsPermDistinct(part.startZ,

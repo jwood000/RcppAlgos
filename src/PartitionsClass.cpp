@@ -84,8 +84,9 @@ Partitions::Partitions(
     lastCol(part.width - 1), lastElem(n - 1),
     nextParts(GetNextPartsPtr(part.ptype,
                               ctype != ConstraintType::PartStandard)),
-    nthParts(part.ptype == PartitionType::Multiset ? nullptr :
-               GetNthPartsFunc(part.ptype, part.isGmp)) {
+    nthParts((part.ptype == PartitionType::Multiset ||
+              CheckEqSi(part.isGmp, cnstrtCountMpz, cnstrtCount, 0)) ?
+              nullptr : GetNthPartsFunc(part.ptype, part.isGmp)) {
 
     bAddOne = (ctype == ConstraintType::PartStandard) && !part.includeZero;
     rpsCnt = myReps;
@@ -108,7 +109,9 @@ void Partitions::startOver() {
 
 SEXP Partitions::nextComb() {
 
-    if (CheckEqSi(IsGmp, mpzIndex, dblIndex, 0)) {
+    if (CheckEqSi(IsGmp, mpzIndex, dblIndex, 0) &&
+        CheckIndLT(IsGmp, mpzIndex, dblIndex,
+                   cnstrtCountMpz, cnstrtCount)) {
         increment(IsGmp, mpzIndex, dblIndex);
         return VecReturn();
     } else if (CheckIndLT(IsGmp, mpzIndex, dblIndex,
