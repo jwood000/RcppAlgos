@@ -1,16 +1,15 @@
-#include <vector>
 #include <algorithm>
+#include <vector>
 
-template <int num>
-void NextComposition(std::vector<int> &z, int lastCol) {
+void NextCompositionRep(std::vector<int> &z, int lastCol) {
 
-    if (z[lastCol] != num) {
+    if (z[lastCol] != 1) {
         --z[lastCol];
         ++z[lastCol - 1];
     } else {
         int j = lastCol - 1;
 
-        while (z[j] == num) {
+        while (z[j] == 1) {
             --j;
         }
 
@@ -19,6 +18,3 @@ void NextComposition(std::vector<int> &z, int lastCol) {
         --z[lastCol];
     }
 }
-
-template void NextComposition<0>(std::vector<int>&, int);
-template void NextComposition<1>(std::vector<int>&, int);

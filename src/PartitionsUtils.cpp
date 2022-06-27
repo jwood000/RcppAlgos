@@ -239,14 +239,19 @@ void SetStartPartitionZ(const std::vector<int> &Reps,
     }
 }
 
-int DiscoverPType(const std::vector<int> &Reps,
-                  PartDesign &part, int lenV) {
+int DiscoverPType(const std::vector<int> &Reps, PartDesign &part,
+                  int lenV, bool IsComposition) {
 
     if (part.ptype == PartitionType::RepCapped) {
         std::vector<int> isoz(part.width, 0);
-        isoz.back() = part.mapTar - part.width;
+        isoz.back() = part.mapTar -
+            static_cast<int>(!part.includeZero) * part.width;
 
-        if (isoz == part.startZ) {
+        if (IsComposition && isoz == part.startZ) {
+            part.ptype = (part.includeZero) ? PartitionType::RepShort :
+                                              PartitionType::RepNoZero;
+            return 1;
+        } else if (isoz == part.startZ) {
             part.ptype = PartitionType::RepNoZero;
             return 1;
         }
@@ -385,8 +390,8 @@ int DiscoverPType(const std::vector<int> &Reps,
 // give that to them. If the user leaves it NULL, we figure
 // out the 'best' width possible. You will see that we
 // give preference to the longest possible width.
-void StandardDesign(const std::vector<int> &Reps,
-                    PartDesign &part, int m, int lenV) {
+void StandardDesign(const std::vector<int> &Reps, PartDesign &part,
+                    int m, int lenV, bool IsComposition) {
 
     // The excerpt below only holds when elements are
     // distinct (except zero)
@@ -492,22 +497,29 @@ void StandardDesign(const std::vector<int> &Reps,
         } else if (part.mIsNull) {
             width = part.target; // i.e. 1 * target = target
             part.ptype = PartitionType::RepNoZero;
+        } else if (part.includeZero    &&
+                   width < part.target &&
+                   IsComposition) {
+            part.ptype = PartitionType::RepShort;
         } else if (part.includeZero && width < part.target) {
             part.ptype = PartitionType::RepShort;
             // We need to add width in target in order to
             // correctly count the number of partitions
             part.mapTar += width;
             part.mapIncZero = false;
-        } else if (part.includeZero) {
+        }else if (part.includeZero) {
             width = part.target;
             part.ptype = PartitionType::RepStdAll;
         } else if (width <= part.target) {
             part.ptype = PartitionType::RepNoZero;
         } else {
+            part.ptype = PartitionType::RepNoZero;
             part.solnExist = false;
         }
     } else {
-        if (part.includeZero) {
+        if (part.includeZero && IsComposition) {
+            part.ptype = PartitionType::DstctOneZero;
+        } else if (part.includeZero) {
             part.ptype = PartitionType::DstctOneZero;
              // We need to add m in target in order to
              // correctly count the number of partitions
@@ -584,9 +596,10 @@ void CheckPartition(const std::vector<std::string> &compFunVec,
 // partitionCount from R. If we are actually generating results, this will
 // be set to false.
 void SetPartitionDesign(const std::vector<int> &Reps,
-                        const std::vector<double> &v, PartDesign &part,
-                        ConstraintType &ctype, int lenV, int &m,
-                        bool bCalcDifficult, bool IsComb) {
+                        const std::vector<double> &v,
+                        PartDesign &part, ConstraintType &ctype,
+                        int lenV, int &m, bool bCalcDifficult,
+                        bool IsComb, bool IsComposition) {
 
     // Now that we know we have partitions, we need to determine
     // if we are in a mapping case. There are a few of ways
@@ -627,7 +640,7 @@ void SetPartitionDesign(const std::vector<int> &Reps,
                                                 return v_i == 1;
                                             }) : false;
 
-    // When we have with repetition or the distinct case, part.isMult will
+    // When we have repetition or the distinct case, part.isMult will
     // be false as well as part.allOne will be false. When part.isMult is
     // true, the only way we are in the standard case is when part.allOne
     // is also true. Thus the expression below.
@@ -650,15 +663,16 @@ void SetPartitionDesign(const std::vector<int> &Reps,
         part.mapTar = part.target;
         part.cap = v.back();
 
-        ctype = ConstraintType::PartStandard;
-        StandardDesign(Reps, part, m, lenV);
+        ctype = (IsComposition) ? ConstraintType::CompStandard :
+            ConstraintType::PartStandard;
+        StandardDesign(Reps, part, m, lenV, IsComposition);
         SetStartPartitionZ(Reps, part);
     } else {
         // For right now, if m is not provided (i.e. mIsNull = true),
         // we don't try to figure out the appropriate length. Note,
         // this only applies to non-canonical partitions.
         part.mIsNull = false;
-        part.includeZero = part.allOne;
+        part.includeZero = part.allOne || (IsComposition && v.front() == 0);
         part.mapIncZero  = part.includeZero;
         part.cap = lenV - part.mapIncZero;
 
@@ -667,14 +681,15 @@ void SetPartitionDesign(const std::vector<int> &Reps,
             (part.isRep ? PartitionType::RepCapped :
                  PartitionType::DstctCapped));
 
-        ctype = ConstraintType::PartMapping;
+        ctype = (IsComposition) ? ConstraintType::CompMapping :
+            ConstraintType::PartMapping;
         GetTarget(v, Reps, part, m, lenV);
 
         if (part.solnExist && part.ptype != PartitionType::LengthOne) {
-            DiscoverPType(Reps, part, lenV);
+            DiscoverPType(Reps, part, lenV, IsComposition);
         }
     }
 
     part.numUnknown = false;
-    PartitionsCount(Reps, part, lenV, bCalcDifficult, IsComb);
+    PartitionsCount(Reps, part, lenV, bCalcDifficult, IsComb, IsComposition);
 }

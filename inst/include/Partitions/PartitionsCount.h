@@ -5,7 +5,8 @@
 #include "Cpp14MakeUnique.h"
 
 void PartitionsCount(const std::vector<int> &Reps, PartDesign &part,
-                     int lenV, bool bCalcDifficult, bool IsComb);
+                     int lenV, bool bCalcDifficult, bool IsComb,
+                     bool IsComposition);
 
 class CountClass {
 protected:

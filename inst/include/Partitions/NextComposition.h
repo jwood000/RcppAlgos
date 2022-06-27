@@ -3,7 +3,6 @@
 
 #include <vector>
 
-template <int num>
-void NextComposition(std::vector<int> &z, int lastCol);
+void NextCompositionRep(std::vector<int> &z, int lastCol);
 
 #endif

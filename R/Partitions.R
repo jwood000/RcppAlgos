@@ -6,7 +6,7 @@ partitionsGeneral <- function(v, m = NULL, repetition = FALSE,
     stopifnot(is.numeric(v))
     return(.Call(`_RcppAlgos_CombinatoricsCnstrt`, v, m, repetition, freqs,
                  lower, upper, "sum", "==", GetTarget(v, target), TRUE,
-                 FALSE, FALSE, nThreads, pkgEnv$nThreads, tolerance))
+                 FALSE, FALSE, nThreads, pkgEnv$nThreads, tolerance, FALSE))
 }
 
 partitionsCount <- function(v, m = NULL, repetition = FALSE,
@@ -14,7 +14,7 @@ partitionsCount <- function(v, m = NULL, repetition = FALSE,
 
     stopifnot(is.numeric(v))
     return(.Call(`_RcppAlgos_PartitionsCount`, GetTarget(v, target), v, m,
-                 repetition, freqs, "==", NULL, NULL, FALSE, FALSE))
+                 repetition, freqs, "==", NULL, NULL, FALSE, FALSE, FALSE))
 }
 
 partitionsDesign <- function(v, m = NULL, repetition = FALSE,
@@ -22,8 +22,9 @@ partitionsDesign <- function(v, m = NULL, repetition = FALSE,
                              showDesign = FALSE) {
 
     stopifnot(is.numeric(v))
-    return(.Call(`_RcppAlgos_PartitionsCount`, GetTarget(v, target), v, m,
-                 repetition, freqs, "==", NULL, NULL, TRUE, showDesign))
+    return(.Call(`_RcppAlgos_PartitionsCount`, GetTarget(v, target),
+                 v, m, repetition, freqs, "==", NULL, NULL, TRUE,
+                 showDesign, FALSE))
 }
 
 partitionsRank <- function(..., v, repetition = FALSE,

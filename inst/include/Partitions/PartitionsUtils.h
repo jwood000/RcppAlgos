@@ -16,8 +16,9 @@ void CheckPartition(const std::vector<std::string> &compFunVec,
                     bool IsBetween);
 
 void SetPartitionDesign(const std::vector<int> &Reps,
-                        const std::vector<double> &v, PartDesign &part,
-                        ConstraintType &ctype, int lenV, int &m,
-                        bool bCalcDifficult, bool IsComb);
+                        const std::vector<double> &v,
+                        PartDesign &part, ConstraintType &ctype,
+                        int lenV, int &m, bool bCalcDifficult,
+                        bool IsComb, bool IsComposition);
 
 #endif

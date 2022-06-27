@@ -47,6 +47,8 @@ enum class ConstraintType {
     PartitionEsque = 3,
     PartMapping    = 4,
     PartStandard   = 5,
+    CompMapping    = 6,
+    CompStandard   = 7
 };
 
 enum class FunType {

@@ -528,9 +528,9 @@ nthPartsPtr GetNthPartsFunc(PartitionType ptype, bool IsGmp) {
             } case PartitionType::LengthOne : {
                 cpp11::stop("Length one partition. This should not happen!");
             } case PartitionType::Multiset : {
-                cpp11::stop("Investigate multiset algo later");
+                cpp11::stop("Investigate multiset algorithm later");
             } case PartitionType::CoarseGrained : {
-                cpp11::stop("No algo available");
+                cpp11::stop("No algorithm available");
             } case PartitionType::NotPartition : {
                 cpp11::stop("Error... Not partition! This should not happen!");
             } default : {
@@ -562,9 +562,9 @@ nthPartsPtr GetNthPartsFunc(PartitionType ptype, bool IsGmp) {
             } case PartitionType::LengthOne : {
                 cpp11::stop("Length one partition. This should not happen!");
             } case PartitionType::Multiset: {
-                cpp11::stop("Investigate multiset algo later");
+                cpp11::stop("Investigate multiset algorithm later");
             } case PartitionType::CoarseGrained: {
-                cpp11::stop("No algo available");
+                cpp11::stop("No algorithm available");
             } case PartitionType::NotPartition: {
                 cpp11::stop("Error... Not partition! This should not happen");
             } default : {

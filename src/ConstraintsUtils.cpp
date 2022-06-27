@@ -92,8 +92,8 @@ void SetConstraintType(const std::vector<double> &vNum,
     } else if (ctype < ConstraintType::PartMapping) {
         ctype = ConstraintType::General;
     } else {
-        // If we get here, ctype will be set to PartMapping
-        // or PartStandard in SetPartitionDesign
+        // If we get here, ctype will be set to PartMapping,
+        // PartStandard, CompMapping, or CompStandard in SetPartitionDesign
     }
 }
 
@@ -336,8 +336,8 @@ void ConstraintSetup(const std::vector<double> &vNum,
                      std::vector<std::string> &compFunVec,
                      const std::string &mainFun, const std::string &funTest,
                      VecType &myType, SEXP Rtarget, SEXP RcompFun,
-                     SEXP Rtolerance, SEXP Rlow,
-                     bool IsComb, bool bCalcMulti) {
+                     SEXP Rtolerance, SEXP Rlow, bool IsComb,
+                     bool bCalcMulti, bool IsComposition) {
 
     // numOnly = true, checkWhole = false, negPoss = true
     CleanConvert::convertVector(Rtarget, targetVals,
@@ -396,8 +396,14 @@ void ConstraintSetup(const std::vector<double> &vNum,
     }
 
     if (part.isPart) {
-        SetPartitionDesign(Reps, vNum, part, ctype,
-                           lenV, m, bCalcMulti, IsComb);
+        SetPartitionDesign(Reps, vNum, part, ctype, lenV, m,
+                           bCalcMulti, IsComb, IsComposition);
+
+        if (part.numUnknown && IsComposition) {
+            const std::string msg = "Currently, there is no composition "
+                "algorithm for the case. Use permuteGeneral instead.";
+            cpp11::stop(msg.c_str());
+        }
     }
 
     SetConstraintType(vNum, funTest, part, ctype, bLower);

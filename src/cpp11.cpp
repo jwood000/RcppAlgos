@@ -41,10 +41,10 @@ extern "C" SEXP _RcppAlgos_CombinatoricsCount(SEXP Rv, SEXP Rm, SEXP RisRep, SEX
   END_CPP11
 }
 // CombinatoricsCount.cpp
-SEXP PartitionsCount(SEXP Rtarget, SEXP Rv, SEXP Rm, SEXP RisRep, SEXP RFreqs, SEXP RcompFun, SEXP Rlow, SEXP Rtolerance, SEXP RPartDesign, SEXP Rshow);
-extern "C" SEXP _RcppAlgos_PartitionsCount(SEXP Rtarget, SEXP Rv, SEXP Rm, SEXP RisRep, SEXP RFreqs, SEXP RcompFun, SEXP Rlow, SEXP Rtolerance, SEXP RPartDesign, SEXP Rshow) {
+SEXP PartitionsCount(SEXP Rtarget, SEXP Rv, SEXP Rm, SEXP RisRep, SEXP RFreqs, SEXP RcompFun, SEXP Rlow, SEXP Rtolerance, SEXP RPartDesign, SEXP Rshow, SEXP RIsComposition);
+extern "C" SEXP _RcppAlgos_PartitionsCount(SEXP Rtarget, SEXP Rv, SEXP Rm, SEXP RisRep, SEXP RFreqs, SEXP RcompFun, SEXP Rlow, SEXP Rtolerance, SEXP RPartDesign, SEXP Rshow, SEXP RIsComposition) {
   BEGIN_CPP11
-    return cpp11::as_sexp(PartitionsCount(cpp11::as_cpp<cpp11::decay_t<SEXP>>(Rtarget), cpp11::as_cpp<cpp11::decay_t<SEXP>>(Rv), cpp11::as_cpp<cpp11::decay_t<SEXP>>(Rm), cpp11::as_cpp<cpp11::decay_t<SEXP>>(RisRep), cpp11::as_cpp<cpp11::decay_t<SEXP>>(RFreqs), cpp11::as_cpp<cpp11::decay_t<SEXP>>(RcompFun), cpp11::as_cpp<cpp11::decay_t<SEXP>>(Rlow), cpp11::as_cpp<cpp11::decay_t<SEXP>>(Rtolerance), cpp11::as_cpp<cpp11::decay_t<SEXP>>(RPartDesign), cpp11::as_cpp<cpp11::decay_t<SEXP>>(Rshow)));
+    return cpp11::as_sexp(PartitionsCount(cpp11::as_cpp<cpp11::decay_t<SEXP>>(Rtarget), cpp11::as_cpp<cpp11::decay_t<SEXP>>(Rv), cpp11::as_cpp<cpp11::decay_t<SEXP>>(Rm), cpp11::as_cpp<cpp11::decay_t<SEXP>>(RisRep), cpp11::as_cpp<cpp11::decay_t<SEXP>>(RFreqs), cpp11::as_cpp<cpp11::decay_t<SEXP>>(RcompFun), cpp11::as_cpp<cpp11::decay_t<SEXP>>(Rlow), cpp11::as_cpp<cpp11::decay_t<SEXP>>(Rtolerance), cpp11::as_cpp<cpp11::decay_t<SEXP>>(RPartDesign), cpp11::as_cpp<cpp11::decay_t<SEXP>>(Rshow), cpp11::as_cpp<cpp11::decay_t<SEXP>>(RIsComposition)));
   END_CPP11
 }
 // CombinatoricsCount.cpp
@@ -69,10 +69,10 @@ extern "C" SEXP _RcppAlgos_ComboGroupsCpp(SEXP Rv, SEXP RNumGroups, SEXP RRetTyp
   END_CPP11
 }
 // ConstraintsMain.cpp
-SEXP CombinatoricsCnstrt(SEXP Rv, SEXP Rm, SEXP RisRep, SEXP RFreqs, SEXP Rlow, SEXP Rhigh, SEXP RmainFun, SEXP RcompFun, SEXP Rtarget, SEXP RIsComb, SEXP RKeepRes, SEXP Rparallel, SEXP RnThreads, SEXP RmaxThreads, SEXP Rtolerance);
-extern "C" SEXP _RcppAlgos_CombinatoricsCnstrt(SEXP Rv, SEXP Rm, SEXP RisRep, SEXP RFreqs, SEXP Rlow, SEXP Rhigh, SEXP RmainFun, SEXP RcompFun, SEXP Rtarget, SEXP RIsComb, SEXP RKeepRes, SEXP Rparallel, SEXP RnThreads, SEXP RmaxThreads, SEXP Rtolerance) {
+SEXP CombinatoricsCnstrt(SEXP Rv, SEXP Rm, SEXP RisRep, SEXP RFreqs, SEXP Rlow, SEXP Rhigh, SEXP RmainFun, SEXP RcompFun, SEXP Rtarget, SEXP RIsComb, SEXP RKeepRes, SEXP Rparallel, SEXP RnThreads, SEXP RmaxThreads, SEXP Rtolerance, SEXP RIsComposition);
+extern "C" SEXP _RcppAlgos_CombinatoricsCnstrt(SEXP Rv, SEXP Rm, SEXP RisRep, SEXP RFreqs, SEXP Rlow, SEXP Rhigh, SEXP RmainFun, SEXP RcompFun, SEXP Rtarget, SEXP RIsComb, SEXP RKeepRes, SEXP Rparallel, SEXP RnThreads, SEXP RmaxThreads, SEXP Rtolerance, SEXP RIsComposition) {
   BEGIN_CPP11
-    return cpp11::as_sexp(CombinatoricsCnstrt(cpp11::as_cpp<cpp11::decay_t<SEXP>>(Rv), cpp11::as_cpp<cpp11::decay_t<SEXP>>(Rm), cpp11::as_cpp<cpp11::decay_t<SEXP>>(RisRep), cpp11::as_cpp<cpp11::decay_t<SEXP>>(RFreqs), cpp11::as_cpp<cpp11::decay_t<SEXP>>(Rlow), cpp11::as_cpp<cpp11::decay_t<SEXP>>(Rhigh), cpp11::as_cpp<cpp11::decay_t<SEXP>>(RmainFun), cpp11::as_cpp<cpp11::decay_t<SEXP>>(RcompFun), cpp11::as_cpp<cpp11::decay_t<SEXP>>(Rtarget), cpp11::as_cpp<cpp11::decay_t<SEXP>>(RIsComb), cpp11::as_cpp<cpp11::decay_t<SEXP>>(RKeepRes), cpp11::as_cpp<cpp11::decay_t<SEXP>>(Rparallel), cpp11::as_cpp<cpp11::decay_t<SEXP>>(RnThreads), cpp11::as_cpp<cpp11::decay_t<SEXP>>(RmaxThreads), cpp11::as_cpp<cpp11::decay_t<SEXP>>(Rtolerance)));
+    return cpp11::as_sexp(CombinatoricsCnstrt(cpp11::as_cpp<cpp11::decay_t<SEXP>>(Rv), cpp11::as_cpp<cpp11::decay_t<SEXP>>(Rm), cpp11::as_cpp<cpp11::decay_t<SEXP>>(RisRep), cpp11::as_cpp<cpp11::decay_t<SEXP>>(RFreqs), cpp11::as_cpp<cpp11::decay_t<SEXP>>(Rlow), cpp11::as_cpp<cpp11::decay_t<SEXP>>(Rhigh), cpp11::as_cpp<cpp11::decay_t<SEXP>>(RmainFun), cpp11::as_cpp<cpp11::decay_t<SEXP>>(RcompFun), cpp11::as_cpp<cpp11::decay_t<SEXP>>(Rtarget), cpp11::as_cpp<cpp11::decay_t<SEXP>>(RIsComb), cpp11::as_cpp<cpp11::decay_t<SEXP>>(RKeepRes), cpp11::as_cpp<cpp11::decay_t<SEXP>>(Rparallel), cpp11::as_cpp<cpp11::decay_t<SEXP>>(RnThreads), cpp11::as_cpp<cpp11::decay_t<SEXP>>(RmaxThreads), cpp11::as_cpp<cpp11::decay_t<SEXP>>(Rtolerance), cpp11::as_cpp<cpp11::decay_t<SEXP>>(RIsComposition)));
   END_CPP11
 }
 // DivNumSieve.cpp
@@ -258,7 +258,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_RcppAlgos_CheckReturn",         (DL_FUNC) &_RcppAlgos_CheckReturn,          6},
     {"_RcppAlgos_CombClassNew",        (DL_FUNC) &_RcppAlgos_CombClassNew,        14},
     {"_RcppAlgos_CombinatoricsApply",  (DL_FUNC) &_RcppAlgos_CombinatoricsApply,  10},
-    {"_RcppAlgos_CombinatoricsCnstrt", (DL_FUNC) &_RcppAlgos_CombinatoricsCnstrt, 15},
+    {"_RcppAlgos_CombinatoricsCnstrt", (DL_FUNC) &_RcppAlgos_CombinatoricsCnstrt, 16},
     {"_RcppAlgos_CombinatoricsCount",  (DL_FUNC) &_RcppAlgos_CombinatoricsCount,   5},
     {"_RcppAlgos_CombinatoricsStndrd", (DL_FUNC) &_RcppAlgos_CombinatoricsStndrd, 10},
     {"_RcppAlgos_ComboGridCpp",        (DL_FUNC) &_RcppAlgos_ComboGridCpp,         2},
@@ -272,7 +272,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_RcppAlgos_NextCombGlue",        (DL_FUNC) &_RcppAlgos_NextCombGlue,         1},
     {"_RcppAlgos_NextGatherGlue",      (DL_FUNC) &_RcppAlgos_NextGatherGlue,       1},
     {"_RcppAlgos_NextNumCombGlue",     (DL_FUNC) &_RcppAlgos_NextNumCombGlue,      2},
-    {"_RcppAlgos_PartitionsCount",     (DL_FUNC) &_RcppAlgos_PartitionsCount,     10},
+    {"_RcppAlgos_PartitionsCount",     (DL_FUNC) &_RcppAlgos_PartitionsCount,     11},
     {"_RcppAlgos_PollardRhoContainer", (DL_FUNC) &_RcppAlgos_PollardRhoContainer,  6},
     {"_RcppAlgos_PrevCombGlue",        (DL_FUNC) &_RcppAlgos_PrevCombGlue,         1},
     {"_RcppAlgos_PrevGatherGlue",      (DL_FUNC) &_RcppAlgos_PrevGatherGlue,       1},
