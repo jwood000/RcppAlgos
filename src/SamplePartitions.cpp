@@ -174,7 +174,7 @@ SEXP SamplePartitions(SEXP Rv, SEXP Rm, SEXP RisRep, SEXP RFreqs,
 
     ConstraintSetup(vNum, myReps, targetVals, vInt, targetIntVals,
                     funDbl, part, ctype, n, m, compVec, mainFun, mainFun,
-                    myType, Rtarget, RcompFun, Rtolerance, Rlow, true, false);
+                    myType, Rtarget, RcompFun, Rtolerance, Rlow, true);
 
     if (part.ptype == PartitionType::Multiset ||
         part.ptype == PartitionType::CoarseGrained ||
@@ -186,6 +186,16 @@ SEXP SamplePartitions(SEXP Rv, SEXP Rm, SEXP RisRep, SEXP RFreqs,
     int sampSize;
     std::vector<double> mySample;
 
+    // This can occur if we are dealing with capped cases where calculating
+    // the number of partitions could take a long time. When this occurs with
+    // partitionsGeneral, it is faster to generate partitions and push them
+    // to a vector until the next partitions algorithm exhaust, then we can
+    // convert this to an R matrix (instead of preallocating a matrix).
+    //
+    // When we are dealing with sampling, we have to know the total number
+    // of partitions, thus the following:
+
+    if (part.numUnknown) PartitionsCount(myReps, part, n, true, true);
     const bool SampleGmp = (part.count > SampleLimit);
 
     if (SampleGmp && !part.isGmp) {
