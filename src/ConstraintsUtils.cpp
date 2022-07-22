@@ -336,8 +336,8 @@ void ConstraintSetup(const std::vector<double> &vNum,
                      std::vector<std::string> &compFunVec,
                      const std::string &mainFun, const std::string &funTest,
                      VecType &myType, SEXP Rtarget, SEXP RcompFun,
-                     SEXP Rtolerance, SEXP Rlow, bool IsComb,
-                     bool bCalcMulti, bool IsComposition) {
+                     SEXP Rtolerance, SEXP Rlow,
+                     bool IsComb, bool bIsCount) {
 
     // numOnly = true, checkWhole = false, negPoss = true
     CleanConvert::convertVector(Rtarget, targetVals,
@@ -396,12 +396,12 @@ void ConstraintSetup(const std::vector<double> &vNum,
     }
 
     if (part.isPart) {
-        SetPartitionDesign(Reps, vNum, part, ctype, lenV, m,
-                           bCalcMulti, IsComb, IsComposition);
+        SetPartitionDesign(Reps, vNum, part, ctype,
+                           lenV, m, bIsCount, IsComb);
 
-        if (part.numUnknown && IsComposition) {
+        if (part.numUnknown && part.isComp) {
             const std::string msg = "Currently, there is no composition "
-                "algorithm for the case. Use permuteGeneral instead.";
+                "algorithm for this case. Use permuteGeneral instead.";
             cpp11::stop(msg.c_str());
         }
     }

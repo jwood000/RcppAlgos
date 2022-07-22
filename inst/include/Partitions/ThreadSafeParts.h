@@ -9,7 +9,7 @@ void StandardPartitions(int* mat, std::vector<int> &z, PartitionType ptype,
                         int width, int nRows, int nThreads, int lastCol,
                         int lastElem, int tar, int strtLen, int cap,
                         bool IsRep, bool IsMult, bool IsGmp,
-                        bool IsComb, bool includeZero);
+                        bool IsComb, bool includeZero, bool IsComp);
 
 template <typename T>
 void GeneralPartitions(T* mat, const std::vector<T> &v, std::vector<int> &z,

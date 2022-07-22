@@ -95,7 +95,7 @@ partitionsSample <- function(v, m = NULL, repetition = FALSE, freqs = NULL,
     return(.Call(`_RcppAlgos_SamplePartitions`, v, m, repetition, freqs,
                  sampleVec, seed, n, sample, FALSE, nThreads,
                  pkgEnv$nThreads, namedSample, "==",
-                 GetTarget(v, target), NULL, new.env()))
+                 GetTarget(v, target), NULL, new.env(), FALSE))
 }
 
 partitionsIter <- function(v, m = NULL, repetition = FALSE,

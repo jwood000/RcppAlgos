@@ -61,15 +61,16 @@ SEXP CombinatoricsCnstrt(SEXP Rv, SEXP Rm, SEXP RisRep, SEXP RFreqs,
     ConstraintType ctype = ConstraintType::NoConstraint;
     PartDesign part;
 
-    part.isRep = IsRep;
-    part.isMult = IsMult;
+    part.isRep   = IsRep;
+    part.isMult  = IsMult;
     part.mIsNull = Rf_isNull(Rm);
+    part.isComp  = IsComposition;
 
     if (IsConstrained) {
         ConstraintSetup(vNum, myReps, tarVals, vInt, tarIntVals,
                         funDbl, part, ctype, n, m, compVec, mainFun,
-                        funTest, myType, Rtarget, RcompFun, Rtolerance,
-                        Rlow, IsComb, false, IsComposition);
+                        funTest, myType, Rtarget, RcompFun,
+                        Rtolerance, Rlow, IsComb);
     }
 
     const bool usePartCount = part.isPart &&
@@ -128,9 +129,11 @@ SEXP CombinatoricsCnstrt(SEXP Rv, SEXP Rm, SEXP RisRep, SEXP RFreqs,
                   lower, lowerMpz[0], IsRep, IsMult, IsGmp);
     } else {
         if (bLower) {
-            nthPartsPtr nthPartFun = GetNthPartsFunc(part.ptype, IsGmp);
-            startZ = nthPartFun(part.mapTar, part.width,
-                                cap, strtLen, lower, lowerMpz[0]);
+            const nthPartsPtr nthPartFun = GetNthPartsFunc(
+                part.ptype, IsGmp, part.isComp
+            );
+            startZ = nthPartFun(part.mapTar, part.width, cap,
+                                strtLen, lower, lowerMpz[0]);
 
             if (ctype == ConstraintType::PartStandard && !part.includeZero) {
                 for (auto &z_i: startZ) {

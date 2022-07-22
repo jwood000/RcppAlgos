@@ -5,8 +5,7 @@
 #include "Cpp14MakeUnique.h"
 
 void PartitionsCount(const std::vector<int> &Reps, PartDesign &part,
-                     int lenV, bool bCalcDifficult, bool IsComb,
-                     bool IsComposition);
+                     int lenV, bool bIsCount, bool IsComb);
 
 class CountClass {
 protected:
@@ -26,7 +25,8 @@ public:
     void ClearMpz();
 };
 
-std::unique_ptr<CountClass> MakeCount(PartitionType ptype);
+std::unique_ptr<CountClass> MakeCount(PartitionType ptype,
+                                      bool IsComp = false);
 
 class DistinctAll : public CountClass {
     double GetCount(int n, int m, int cap, int strtLen);
@@ -71,6 +71,18 @@ class RepLen : public CountClass {
 };
 
 class RepLenCap : public CountClass {
+    double GetCount(int n, int m, int cap, int strtLen);
+    void GetCount(mpz_t res, int n, int m, int cap,
+                  int strtLen, bool bLiteral = true);
+};
+
+class CompsRepLen : public CountClass {
+    double GetCount(int n, int m, int cap, int strtLen);
+    void GetCount(mpz_t res, int n, int m, int cap,
+                  int strtLen, bool bLiteral = true);
+};
+
+class CompsRepZero : public CountClass {
     double GetCount(int n, int m, int cap, int strtLen);
     void GetCount(mpz_t res, int n, int m, int cap,
                   int strtLen, bool bLiteral = true);

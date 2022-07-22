@@ -114,20 +114,12 @@ SEXP ConstraintsReturn(
             StandardPartitions(matInt, z, part.ptype, lower, lowerMpz,
                                nCols, width, nRows, nThreads, lastCol,
                                lastElem, part.mapTar, strtLen, cap, IsRep,
-                               IsMult, IsGmp, IsComb, part.includeZero);
-        } else if (ctype == ConstraintType::PartMapping) {
+                               IsMult, IsGmp, IsComb, part.includeZero,
+                               part.isComp);
+        } else {
             GeneralPartitions(matInt, vInt, z, part, lower, lowerMpz,
                               nCols, nRows, nThreads, lastCol, lastElem,
                               strtLen, cap, IsComb);
-        } else if (ctype == ConstraintType::CompStandard) {
-            // StandardCompositions(matInt, z, part.ptype, lower, lowerMpz,
-            //                      nCols, width, nRows, nThreads, lastCol,
-            //                      lastElem, part.mapTar, strtLen, cap, IsRep,
-            //                      IsMult, IsGmp, IsComb, part.includeZero);
-        } else {
-            // GeneralCompositions(matInt, vInt, z, part, lower, lowerMpz,
-            //                     nCols, nRows, nThreads, lastCol, lastElem,
-            //                     strtLen, cap, IsComb);
         }
 
         if (xtraCol) AddResultToParts(matInt, part.target, nRows, width);
@@ -136,15 +128,9 @@ SEXP ConstraintsReturn(
         cpp11::sexp res = Rf_allocMatrix(REALSXP, nRows, nCols);
         double* matDbl = REAL(res);
 
-        if (ctype == ConstraintType::PartMapping) {
-            GeneralPartitions(matDbl, vNum, z, part, lower, lowerMpz,
-                              nCols, nRows, nThreads, lastCol, lastElem,
-                              strtLen, cap, IsComb);
-        } else {
-            // GeneralCompositions(matDbl, vNum, z, part, lower, lowerMpz,
-            //                     nCols, nRows, nThreads, lastCol, lastElem,
-            //                     strtLen, cap, IsComb);
-        }
+        GeneralPartitions(matDbl, vNum, z, part, lower, lowerMpz,
+                          nCols, nRows, nThreads, lastCol, lastElem,
+                          strtLen, cap, IsComb);
 
         if (xtraCol) AddResultToParts(matDbl, part.target, nRows, width);
         return res;

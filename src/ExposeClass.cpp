@@ -120,8 +120,8 @@ SEXP CombClassNew(SEXP RVals, SEXP RboolVec, SEXP freqInfo, SEXP Rparallel,
         mpz_init(computedRowsMpz[0]);
 
         if (IsStdGmp) {
-            createMPZArray(VECTOR_ELT(RVals, 4), computedRowsMpz.get(), 1,
-                           "computedRowsMpz");
+            createMPZArray(VECTOR_ELT(RVals, 4), computedRowsMpz.get(),
+                           1, "computedRowsMpz");
         }
 
         const bool usePartCount = part.isPart &&

@@ -1,5 +1,6 @@
 #include "Partitions/PartitionsCountSection.h"
 #include "Partitions/BigPartsCountSection.h"
+#include "Combinations/BigComboCount.h"
 #include "Cpp14MakeUnique.h"
 #include "SetUpUtils.h"
 
@@ -187,4 +188,26 @@ void CountPartsRep(mpz_t res, int n, int m, int cap, int strtLen) {
 
     mpz_set(res, qq[n]);
     MpzClearVec(qq.get(), n + 1);
+}
+
+void CountCompsRepLen(mpz_t res, int n, int m, int cap, int strtLen) {
+    nChooseKGmp(res, n - 1, m - 1);
+}
+
+void CountCompsRepZero(mpz_t res, int n, int m, int cap, int strtLen) {
+
+    if (n == m) {
+        mpz_set_ui(res, 1);
+        mpz_mul_2exp(res, res, n - 1);
+    } else {
+        mpz_t temp;
+        mpz_init(temp);
+
+        for (int i = 1; i <= m; ++i) {
+            nChooseKGmp(temp, n - 1, i - 1);
+            mpz_add(res, res, temp);
+        }
+
+        mpz_clear(temp);
+    }
 }

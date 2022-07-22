@@ -1,20 +1,26 @@
 #include <algorithm>
 #include <vector>
 
+template <int one_or_zero>
 void NextCompositionRep(std::vector<int> &z, int lastCol) {
 
-    if (z[lastCol] != 1) {
+    if (z[lastCol] != one_or_zero) {
         --z[lastCol];
         ++z[lastCol - 1];
     } else {
         int j = lastCol - 1;
 
-        while (z[j] == 1) {
+        while (z[j] == one_or_zero) {
             --j;
         }
 
-        ++z[j - 1];
-        std::reverse(z.begin() + j, z.end());
-        --z[lastCol];
+        if (j > 0) {
+            ++z[j - 1];
+            std::reverse(z.begin() + j, z.end());
+            --z[lastCol];
+        }
     }
 }
+
+template void NextCompositionRep<0>(std::vector<int>&, int);
+template void NextCompositionRep<1>(std::vector<int>&, int);

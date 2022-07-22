@@ -1,8 +1,8 @@
 #include "Partitions/PartitionsCountSection.h"
 #include "Combinations/ComboCount.h"
 #include "Cpp14MakeUnique.h"
-#include <algorithm>  // std::next_permutation
-#include <cmath>
+#include <algorithm>  // std::fill; std::min
+#include <cmath>      // std::floor
 
 double CountPartsRepLenCap(int n, int m, int cap, int strtLen) {
 
@@ -155,7 +155,19 @@ double CountPartsRep(int n, int m, int cap, int strtLen) {
     return qq.back();
 }
 
-double CountPartsPermRep(int n, int m, bool includeZero) {
-    return (includeZero) ? nChooseK(n + m - 1, m - 1) :
-                           nChooseK(n - 1, m - 1);
+double CountCompsRepLen(int n, int m, int cap, int strtLen) {
+    return nChooseK(n - 1, m - 1);
+}
+
+double CountCompsRepZero(int n, int m, int cap, int strtLen) {
+
+    if (n == m) return std::pow(2.0, static_cast<double>(n - 1));
+
+    double res = 0;
+
+    for (int i = 1; i <= m; ++i) {
+        res += nChooseK(n - 1, i - 1);
+    }
+
+    return res;
 }

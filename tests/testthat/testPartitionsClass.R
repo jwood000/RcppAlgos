@@ -66,9 +66,11 @@ test_that("partitionsIter produces correct results", {
             a@summary()$totalResults, myRows)
         ))
 
-        if (length(v_pass) == 1) {
+        if (length(v_pass) == 1 && v_pass == 0) {
+            myResults <- c(myResults, v_pass == a@sourceVector())
+        } else if (length(v_pass) == 1) {
             myResults <- c(myResults, isTRUE(
-                all.equal(v_pass, length(a@sourceVector()))
+                all.equal(abs(v_pass), length(a@sourceVector()))
             ))
         } else {
             myResults <- c(myResults, isTRUE(
@@ -94,31 +96,58 @@ test_that("partitionsIter produces correct results", {
         myResults <- c(myResults, grepl("Iterator Initialized. To see the first", msg[1]))
         a1 <- b
 
-        for (i in 1:myRows) {
-            a1[i, ] <- a@nextIter()
-        }
+        if (myRows) {
+            for (i in 1:myRows) {
+                a1[i, ] <- a@nextIter()
+            }
 
-        myResults <- c(myResults, isTRUE(all.equal(a1, b)))
-        a@startOver()
-        numTest <- as.integer(myRows / 3);
+            myResults <- c(myResults, isTRUE(all.equal(a1, b)))
+            a@startOver()
+            num_iters <- if (myRows > 10) 3L else 1L
+            numTest   <- as.integer(myRows / num_iters);
 
-        s <- 1L
-        e <- numTest
+            s <- 1L
+            e <- numTest
 
-        for (i in 1:3) {
-            myResults <- c(myResults, isTRUE(all.equal(a@nextNIter(numTest),
-                                                       b[s:e, ])))
-            s <- e + 1L
-            e <- e + numTest
-        }
+            for (i in 1:num_iters) {
+                myResults <- c(myResults, isTRUE(all.equal(a@nextNIter(numTest),
+                                                           b[s:e, , drop = FALSE])))
+                s <- e + 1L
+                e <- e + numTest
+            }
 
-        a@startOver()
-        myResults <- c(myResults, isTRUE(all.equal(a@nextRemaining(), b)))
-        msg <- capture.output(noMore <- a@nextIter())
-        myResults <- c(myResults, is.null(noMore))
+            a@startOver()
+            myResults <- c(myResults, isTRUE(all.equal(a@nextRemaining(), b)))
+            msg <- capture.output(noMore <- a@nextIter())
+            myResults <- c(myResults, is.null(noMore))
 
-        if (testRand) {
-            a@back()
+            if (testRand) {
+                a@back()
+                msg <- capture.output(noMore <- a@nextNIter(1))
+                myResults <- c(myResults, is.null(noMore))
+                myResults <- c(myResults, "No more results." == msg[1])
+                msg <- capture.output(noMore <- a@currIter())
+                myResults <- c(myResults, "No more results." == msg[1])
+
+                a@startOver()
+                a@back()
+                msg <- capture.output(noMore <- a@nextRemaining())
+                myResults <- c(myResults, is.null(noMore))
+                myResults <- c(myResults, "No more results." == msg[1])
+
+                a@startOver()
+                a@back()
+                msg <- capture.output(noMore <- a@nextIter())
+                myResults <- c(myResults, is.null(noMore))
+                myResults <- c(myResults, "No more results." == msg[1])
+
+                samp <- sample(myRows, numTest)
+                myResults <- c(myResults, isTRUE(all.equal(a[[samp]], b[samp, ])))
+                one_samp <- sample(myRows, 1)
+                myResults <- c(myResults, isTRUE(all.equal(a[[one_samp]], b[one_samp, ])))
+            }
+        } else {
+            a@startOver()
             msg <- capture.output(noMore <- a@nextNIter(1))
             myResults <- c(myResults, is.null(noMore))
             myResults <- c(myResults, "No more results." == msg[1])
@@ -126,27 +155,36 @@ test_that("partitionsIter produces correct results", {
             myResults <- c(myResults, "No more results." == msg[1])
 
             a@startOver()
-            a@back()
-            msg <- capture.output(noMore <- a@nextRemaining())
-            myResults <- c(myResults, is.null(noMore))
-            myResults <- c(myResults, "No more results." == msg[1])
-
-            a@startOver()
-            a@back()
             msg <- capture.output(noMore <- a@nextIter())
             myResults <- c(myResults, is.null(noMore))
             myResults <- c(myResults, "No more results." == msg[1])
 
-            samp <- sample(myRows, numTest)
-            myResults <- c(myResults, isTRUE(all.equal(a[[samp]], b[samp, ])))
-            one_samp <- sample(myRows, 1)
-            myResults <- c(myResults, isTRUE(all.equal(a[[one_samp]], b[one_samp, ])))
+            a@startOver()
+            msg <- capture.output(noMore <- a@nextRemaining())
+            myResults <- c(myResults, is.null(noMore))
+            myResults <- c(myResults, "No more results." == msg[1])
         }
 
         rm(a, a1, b)
         gc()
         all(myResults)
     }
+
+    #### Trivial Cases
+    expect_true(partitionClassTest(0, testRand = FALSE))
+    expect_true(partitionClassTest(1, testRand = FALSE))
+    expect_true(partitionClassTest(2, testRand = FALSE))
+    expect_true(partitionClassTest(0, rep = TRUE, testRand = FALSE))
+    expect_true(partitionClassTest(1, rep = TRUE, testRand = FALSE))
+    expect_true(partitionClassTest(2, rep = TRUE, testRand = FALSE))
+    expect_true(partitionClassTest(0:1, rep = TRUE, testRand = FALSE))
+    expect_true(partitionClassTest(0:2, rep = TRUE, testRand = FALSE))
+    expect_true(partitionClassTest(-1, testRand = FALSE))
+    expect_true(partitionClassTest(-2, testRand = FALSE))
+    expect_true(partitionClassTest(-1, rep = TRUE, testRand = FALSE))
+    expect_true(partitionClassTest(-2, rep = TRUE, testRand = FALSE))
+    expect_true(partitionClassTest(-1:0, rep = TRUE, testRand = FALSE))
+    expect_true(partitionClassTest(-2:0, rep = TRUE, testRand = FALSE))
 
     #### Distinct; Length determined internally; No zero;
     expect_true(partitionClassTest(189))
