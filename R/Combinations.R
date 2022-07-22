@@ -61,7 +61,7 @@ comboIter <- function(v, m = NULL, repetition = FALSE, freqs = NULL,
     IsCnstrd <- .Call(`_RcppAlgos_CheckConstrndCpp`, constraintFun,
                       comparisonFun, limitConstraints)
     InitVals <- .Call(`_RcppAlgos_GetClassVals`, v, m, repetition, freqs,
-                      TRUE, FUN, nThreads, pkgEnv$nThreads, IsCnstrd)
+                      TRUE, FUN, nThreads, pkgEnv$nThreads, IsCnstrd, FALSE)
 
     if (RetValue == 1) {
         new("Combo", InitVals, Parallel)

@@ -319,7 +319,6 @@ std::vector<int> nthCompsRepZeroGmp(int n, int m, int cap, int k,
     mpz_init(temp);
     mpz_init(index);
     mpz_set(index, mpzIdx);
-    mpz_set_d(index, dblIdx);
 
     const PartitionType ptype = PartitionType::RepShort;
     std::unique_ptr<CountClass> myClass = MakeCount(ptype, true);

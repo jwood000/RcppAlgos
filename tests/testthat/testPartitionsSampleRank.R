@@ -1,12 +1,18 @@
-context("testing partitionsSample")
+context("testing partitionsSample and compositionsSample")
 
 test_that("parttionsSample produces correct results", {
 
     expect_identical(partitionsRank(v = 100), integer(0))
+    expect_identical(compositionsRank(v = 100), integer(0))
 
     mySamp = partitionsSample((1:10) * 1e13, 1, n = 1, namedSample = TRUE)
     expect_equal(unname(mySamp), matrix(1e14))
     expect_equal(as.character(partitionsRank(mySamp, v = (1:10) * 1e13)),
+                 rownames(mySamp))
+
+    mySamp = compositionsSample((1:10) * 1e13, 1, n = 1, namedSample = TRUE)
+    expect_equal(unname(mySamp), matrix(1e14))
+    expect_equal(as.character(compositionsRank(mySamp, v = (1:10) * 1e13)),
                  rownames(mySamp))
 
     mySamp = partitionsSample(100, 1, n = 1, namedSample = TRUE)

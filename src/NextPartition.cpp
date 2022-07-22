@@ -1,3 +1,4 @@
+#include "Partitions/NextComposition.h"
 #include "Partitions/PartitionsTypes.h"
 #include <algorithm>  // std::find
 
@@ -493,9 +494,25 @@ void NextDistinctGen(std::vector<int> &rpsCnt, std::vector<int> &z,
     NextDistinctGenPart(z, b, e, p, tarDiff, lastCol, lastElem);
 }
 
-nextPartsPtr GetNextPartsPtr(PartitionType ptype, bool IsGen) {
+void NextRepCompGen(std::vector<int> &rpsCnt,
+                    std::vector<int> &z, int &e, int &b, int &p,
+                    int &tarDiff, int lastCol, int lastElem) {
+    NextCompositionRep<0>(z, lastCol);
+}
 
-    if (IsGen) {
+void NextRepComp(std::vector<int> &rpsCnt,
+                 std::vector<int> &z, int &e, int &b, int &p,
+                 int &tarDiff, int lastCol, int lastElem) {
+    NextCompositionRep<1>(z, lastCol);
+}
+
+nextPartsPtr GetNextPartsPtr(PartitionType ptype, bool IsGen, bool IsComp) {
+
+    if (IsComp && IsGen) {
+        return(nextPartsPtr(NextRepCompGen));
+    } else if (IsComp) {
+        return(nextPartsPtr(NextRepComp));
+    } else if (IsGen) {
         if (ptype == PartitionType::Multiset) {
             return(nextPartsPtr(NextMultisetGen));
         } else if (std::find(RepPTypeArr.cbegin(), RepPTypeArr.cend(),
@@ -504,12 +521,10 @@ nextPartsPtr GetNextPartsPtr(PartitionType ptype, bool IsGen) {
         } else {
             return(nextPartsPtr(NextDistinctGen));
         }
+    } else if (std::find(RepPTypeArr.cbegin(), RepPTypeArr.cend(),
+                         ptype) != RepPTypeArr.cend()) {
+        return(nextPartsPtr(NextRep));
     } else {
-        if (std::find(RepPTypeArr.cbegin(), RepPTypeArr.cend(),
-                      ptype) != RepPTypeArr.cend()) {
-            return(nextPartsPtr(NextRep));
-        } else {
-            return(nextPartsPtr(NextDistinct));
-        }
+        return(nextPartsPtr(NextDistinct));
     }
 }

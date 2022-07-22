@@ -15,6 +15,54 @@ using rankPartsPtr = void (*const)(std::vector<int>::iterator iter,
                            int n, int m, int cap, int k,
                            double &dblIdx, mpz_t mpzIdx);
 
+//*********************** Compositions Funcitons **************************//
+
+void rankCompsRep(std::vector<int>::iterator iter, int n, int m,
+                  int cap, int k, double &dblIdx, mpz_t mpzIdx) {
+
+    const int width = m;
+    dblIdx = 0;
+
+    --n;
+    --m;
+
+    for (int i = 0, j = 0; i < (width - 1); ++i, --n, --m, j = 0, ++iter) {
+        double temp = CountCompsRepLen(n, m, cap, k);
+
+        for (int idx = *iter; j < idx; ++j) {
+            --n;
+            dblIdx += temp;
+            temp = CountCompsRepLen(n, m, cap, k);
+        }
+    }
+}
+
+void rankCompsRepZero(std::vector<int>::iterator iter, int n, int m,
+                      int cap, int k, double &dblIdx, mpz_t mpzIdx) {
+
+    const int width = m;
+    dblIdx = 0;
+
+    bool incr_j = false;
+    --m;
+
+    for (int i = 0, j = 0; i < (width - 1); ++i, --m, j = incr_j, ++iter) {
+        double temp = incr_j ? CountCompsRepLen(n, m, cap, k) :
+                               CountCompsRepZero(n, m, cap, k);
+
+        for (int idx = *iter; j < idx; ++j) {
+            incr_j = true;
+            --n;
+            dblIdx += temp;
+            temp = CountCompsRepLen(n, m, cap, k);
+        }
+
+        if (incr_j) --n;
+    }
+}
+
+//************************* Paritions Funcitons ***************************//
+
 void rankPartsRepLen(std::vector<int>::iterator iter, int n, int m,
                      int cap, int k, double &dblIdx, mpz_t mpzIdx) {
 
@@ -175,6 +223,68 @@ void rankPartsDistinctCapMZ(std::vector<int>::iterator iter, int n, int m,
     }
 }
 
+//*********************** Starting Gmp Funcitons **************************//
+
+void rankCompsRepGmp(std::vector<int>::iterator iter, int n, int m,
+                     int cap, int k, double &dblIdx, mpz_t mpzIdx) {
+
+    const int width = m;
+    mpz_set_ui(mpzIdx, 0u);
+
+    --n;
+    --m;
+
+    mpz_t temp;
+    mpz_init(temp);
+
+    const PartitionType ptype = PartitionType::RepNoZero;
+    std::unique_ptr<CountClass> myClass = MakeCount(ptype, true);
+
+    for (int i = 0, j = 0; i < (width - 1); ++i, --n, --m, j = 0, ++iter) {
+        myClass->GetCount(temp, n, m, cap, k);
+
+        for (int idx = *iter; j < idx; ++j) {
+            --n;
+            mpz_add(mpzIdx, mpzIdx, temp);
+            myClass->GetCount(temp, n, m, cap, k);
+        }
+    }
+
+    mpz_clear(temp);
+}
+
+void rankCompsRepZeroGmp(std::vector<int>::iterator iter, int n, int m,
+                         int cap, int k, double &dblIdx, mpz_t mpzIdx) {
+
+    const int width = m;
+    mpz_set_ui(mpzIdx, 0u);
+
+    bool incr_j = false;
+    --m;
+
+    mpz_t temp;
+    mpz_init(temp);
+
+    const PartitionType ptype = PartitionType::RepShort;
+    std::unique_ptr<CountClass> myClass = MakeCount(ptype, true);
+
+    for (int i = 0, j = 0; i < (width - 1); ++i, --m, j = incr_j, ++iter) {
+        myClass->GetCount(temp, n, m, cap, k, !incr_j);
+
+        for (int idx = *iter; j < idx; ++j) {
+            incr_j = true;
+            --n;
+            mpz_add(mpzIdx, mpzIdx, temp);
+            myClass->GetCount(temp, n, m, cap, k, false);
+        }
+
+        mpz_set_ui(temp, 0);
+        if (incr_j) --n;
+    }
+
+    mpz_clear(temp);
+}
+
 void rankPartsRepLenGmp(std::vector<int>::iterator iter, int n, int m,
                         int cap, int k, double &dblIdx, mpz_t mpzIdx) {
 
@@ -186,9 +296,10 @@ void rankPartsRepLenGmp(std::vector<int>::iterator iter, int n, int m,
 
     mpz_t temp;
     mpz_init(temp);
-    const PartitionType ptype = PartitionType::RepShort;
 
+    const PartitionType ptype = PartitionType::RepShort;
     std::unique_ptr<CountClass> myClass = MakeCount(ptype);
+
     myClass->SetArrSize(ptype, n, m, cap);
     myClass->InitializeMpz();
 
@@ -229,9 +340,10 @@ void rankPartsRepCapGmp(std::vector<int>::iterator iter, int n, int m,
 
     mpz_t temp;
     mpz_init(temp);
-    const PartitionType ptype = PartitionType::RepCapped;
 
+    const PartitionType ptype = PartitionType::RepCapped;
     std::unique_ptr<CountClass> myClass = MakeCount(ptype);
+
     myClass->SetArrSize(ptype, n, m, cap);
     myClass->InitializeMpz();
 
@@ -261,9 +373,10 @@ void rankPartsDistinctLenGmp(std::vector<int>::iterator iter, int n, int m,
 
     mpz_t temp;
     mpz_init(temp);
-    const PartitionType ptype = PartitionType::DstctNoZero;
 
+    const PartitionType ptype = PartitionType::DstctNoZero;
     std::unique_ptr<CountClass> myClass = MakeCount(ptype);
+
     myClass->SetArrSize(ptype, n, m, cap);
     myClass->InitializeMpz();
 
@@ -300,9 +413,10 @@ void rankPartsDistinctMultiZeroGmp(std::vector<int>::iterator iter,
 
     mpz_t temp;
     mpz_init(temp);
-    const PartitionType ptype = PartitionType::DstctMultiZero;
 
+    const PartitionType ptype = PartitionType::DstctMultiZero;
     std::unique_ptr<CountClass> myClass = MakeCount(ptype);
+
     myClass->SetArrSize(ptype, n, m, cap);
     myClass->InitializeMpz();
 
@@ -340,9 +454,10 @@ void rankPartsDistinctCapGmp(std::vector<int>::iterator iter,
 
     mpz_t temp;
     mpz_init(temp);
-    const PartitionType ptype = PartitionType::DstctCapped;
 
+    const PartitionType ptype = PartitionType::DstctCapped;
     std::unique_ptr<CountClass> myClass = MakeCount(ptype);
+
     myClass->SetArrSize(ptype, n, m, cap);
     myClass->InitializeMpz();
 
@@ -374,9 +489,10 @@ void rankPartsDistinctCapMZGmp(std::vector<int>::iterator iter,
 
     mpz_t temp;
     mpz_init(temp);
-    const PartitionType ptype = PartitionType::DstctCappedMZ;
 
+    const PartitionType ptype = PartitionType::DstctCappedMZ;
     std::unique_ptr<CountClass> myClass = MakeCount(ptype);
+
     myClass->SetArrSize(ptype, n, m, cap);
     myClass->InitializeMpz();
 
@@ -403,9 +519,33 @@ void rankPartsDistinctCapMZGmp(std::vector<int>::iterator iter,
     myClass->ClearMpz();
 }
 
-rankPartsPtr GetRankPartsFunc(PartitionType ptype, bool IsGmp) {
+rankPartsPtr GetRankPartsFunc(PartitionType ptype, bool IsGmp, bool IsComp) {
 
-    if (IsGmp) {
+    if (IsComp && IsGmp) {
+        switch (ptype) {
+            case PartitionType::RepNoZero : {
+                return(rankPartsPtr(rankCompsRepGmp));
+            } case PartitionType::RepShort : {
+                return(rankPartsPtr(rankCompsRepZeroGmp));
+            } case PartitionType::RepStdAll : {
+                return(rankPartsPtr(rankCompsRepZeroGmp));
+            }default : {
+                cpp11::stop("No algorithm available");
+            }
+        }
+    } else if (IsComp) {
+        switch (ptype) {
+            case PartitionType::RepNoZero : {
+                return(rankPartsPtr(rankCompsRep));
+            } case PartitionType::RepShort : {
+                return(rankPartsPtr(rankCompsRepZero));
+            } case PartitionType::RepStdAll : {
+                return(rankPartsPtr(rankCompsRepZero));
+            } default : {
+                cpp11::stop("No algorithm available");
+            }
+        }
+    } else if (IsGmp) {
         switch (ptype) {
             case PartitionType::DstctCapped: {
                 return(rankPartsPtr(rankPartsDistinctCapGmp));
@@ -427,16 +567,8 @@ rankPartsPtr GetRankPartsFunc(PartitionType ptype, bool IsGmp) {
                 return(rankPartsPtr(rankPartsRepShortGmp));
             } case PartitionType::RepStdAll : {
                 return(rankPartsPtr(rankPartsRepGmp));
-            } case PartitionType::LengthOne : {
-                cpp11::stop("Length one partition. This should not happen!");
-            } case PartitionType::Multiset : {
-                cpp11::stop("Investigate multiset algo later");
-            } case PartitionType::CoarseGrained : {
-                cpp11::stop("No algo available");
-            } case PartitionType::NotPartition : {
-                cpp11::stop("Error... Not partition! This should not happen!");
             } default : {
-                return nullptr;
+                cpp11::stop("No algorithm available");
             }
         }
     } else {
@@ -461,16 +593,8 @@ rankPartsPtr GetRankPartsFunc(PartitionType ptype, bool IsGmp) {
                 return(rankPartsPtr(rankPartsRepShort));
             } case PartitionType::RepStdAll: {
                 return(rankPartsPtr(rankPartsRep));
-            } case PartitionType::LengthOne : {
-                cpp11::stop("Length one partition. This should not happen!");
-            } case PartitionType::Multiset: {
-                cpp11::stop("Investigate multiset algo later");
-            } case PartitionType::CoarseGrained: {
-                cpp11::stop("No algo available");
-            } case PartitionType::NotPartition: {
-                cpp11::stop("Error... Not partition! This should not happen");
             } default : {
-                return nullptr;
+                cpp11::stop("No algorithm available");
             }
         }
     }

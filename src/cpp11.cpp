@@ -181,10 +181,10 @@ extern "C" SEXP _RcppAlgos_SummaryGlue(SEXP ext) {
   END_CPP11
 }
 // GetClassVals.cpp
-SEXP GetClassVals(SEXP Rv, SEXP Rm, SEXP RisRep, SEXP RFreqs, SEXP RIsComb, SEXP stdFun, SEXP RThreads, SEXP RmaxThreads, SEXP RIsCnstrd);
-extern "C" SEXP _RcppAlgos_GetClassVals(SEXP Rv, SEXP Rm, SEXP RisRep, SEXP RFreqs, SEXP RIsComb, SEXP stdFun, SEXP RThreads, SEXP RmaxThreads, SEXP RIsCnstrd) {
+SEXP GetClassVals(SEXP Rv, SEXP Rm, SEXP RisRep, SEXP RFreqs, SEXP RIsComb, SEXP stdFun, SEXP RThreads, SEXP RmaxThreads, SEXP RIsCnstrd, SEXP RIsComposition);
+extern "C" SEXP _RcppAlgos_GetClassVals(SEXP Rv, SEXP Rm, SEXP RisRep, SEXP RFreqs, SEXP RIsComb, SEXP stdFun, SEXP RThreads, SEXP RmaxThreads, SEXP RIsCnstrd, SEXP RIsComposition) {
   BEGIN_CPP11
-    return cpp11::as_sexp(GetClassVals(cpp11::as_cpp<cpp11::decay_t<SEXP>>(Rv), cpp11::as_cpp<cpp11::decay_t<SEXP>>(Rm), cpp11::as_cpp<cpp11::decay_t<SEXP>>(RisRep), cpp11::as_cpp<cpp11::decay_t<SEXP>>(RFreqs), cpp11::as_cpp<cpp11::decay_t<SEXP>>(RIsComb), cpp11::as_cpp<cpp11::decay_t<SEXP>>(stdFun), cpp11::as_cpp<cpp11::decay_t<SEXP>>(RThreads), cpp11::as_cpp<cpp11::decay_t<SEXP>>(RmaxThreads), cpp11::as_cpp<cpp11::decay_t<SEXP>>(RIsCnstrd)));
+    return cpp11::as_sexp(GetClassVals(cpp11::as_cpp<cpp11::decay_t<SEXP>>(Rv), cpp11::as_cpp<cpp11::decay_t<SEXP>>(Rm), cpp11::as_cpp<cpp11::decay_t<SEXP>>(RisRep), cpp11::as_cpp<cpp11::decay_t<SEXP>>(RFreqs), cpp11::as_cpp<cpp11::decay_t<SEXP>>(RIsComb), cpp11::as_cpp<cpp11::decay_t<SEXP>>(stdFun), cpp11::as_cpp<cpp11::decay_t<SEXP>>(RThreads), cpp11::as_cpp<cpp11::decay_t<SEXP>>(RmaxThreads), cpp11::as_cpp<cpp11::decay_t<SEXP>>(RIsCnstrd), cpp11::as_cpp<cpp11::decay_t<SEXP>>(RIsComposition)));
   END_CPP11
 }
 // MotleyPrimes.cpp
@@ -230,10 +230,10 @@ extern "C" SEXP _RcppAlgos_RankCombPerm(SEXP RIdx, SEXP Rv, SEXP RisRep, SEXP RF
   END_CPP11
 }
 // RankPartitionMain.cpp
-SEXP RankPartitionMain(SEXP RIdx, SEXP Rv, SEXP RisRep, SEXP RFreqs, SEXP Rm, SEXP RcompFun, SEXP Rtarget, SEXP Rtolerance);
-extern "C" SEXP _RcppAlgos_RankPartitionMain(SEXP RIdx, SEXP Rv, SEXP RisRep, SEXP RFreqs, SEXP Rm, SEXP RcompFun, SEXP Rtarget, SEXP Rtolerance) {
+SEXP RankPartitionMain(SEXP RIdx, SEXP Rv, SEXP RisRep, SEXP RFreqs, SEXP Rm, SEXP RcompFun, SEXP Rtarget, SEXP Rtolerance, SEXP RIsComposition);
+extern "C" SEXP _RcppAlgos_RankPartitionMain(SEXP RIdx, SEXP Rv, SEXP RisRep, SEXP RFreqs, SEXP Rm, SEXP RcompFun, SEXP Rtarget, SEXP Rtolerance, SEXP RIsComposition) {
   BEGIN_CPP11
-    return cpp11::as_sexp(RankPartitionMain(cpp11::as_cpp<cpp11::decay_t<SEXP>>(RIdx), cpp11::as_cpp<cpp11::decay_t<SEXP>>(Rv), cpp11::as_cpp<cpp11::decay_t<SEXP>>(RisRep), cpp11::as_cpp<cpp11::decay_t<SEXP>>(RFreqs), cpp11::as_cpp<cpp11::decay_t<SEXP>>(Rm), cpp11::as_cpp<cpp11::decay_t<SEXP>>(RcompFun), cpp11::as_cpp<cpp11::decay_t<SEXP>>(Rtarget), cpp11::as_cpp<cpp11::decay_t<SEXP>>(Rtolerance)));
+    return cpp11::as_sexp(RankPartitionMain(cpp11::as_cpp<cpp11::decay_t<SEXP>>(RIdx), cpp11::as_cpp<cpp11::decay_t<SEXP>>(Rv), cpp11::as_cpp<cpp11::decay_t<SEXP>>(RisRep), cpp11::as_cpp<cpp11::decay_t<SEXP>>(RFreqs), cpp11::as_cpp<cpp11::decay_t<SEXP>>(Rm), cpp11::as_cpp<cpp11::decay_t<SEXP>>(RcompFun), cpp11::as_cpp<cpp11::decay_t<SEXP>>(Rtarget), cpp11::as_cpp<cpp11::decay_t<SEXP>>(Rtolerance), cpp11::as_cpp<cpp11::decay_t<SEXP>>(RIsComposition)));
   END_CPP11
 }
 // SampleCombPerm.cpp
@@ -267,7 +267,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_RcppAlgos_CurrCombGlue",        (DL_FUNC) &_RcppAlgos_CurrCombGlue,         1},
     {"_RcppAlgos_DivNumSieveCpp",      (DL_FUNC) &_RcppAlgos_DivNumSieveCpp,       6},
     {"_RcppAlgos_FrontGlue",           (DL_FUNC) &_RcppAlgos_FrontGlue,            1},
-    {"_RcppAlgos_GetClassVals",        (DL_FUNC) &_RcppAlgos_GetClassVals,         9},
+    {"_RcppAlgos_GetClassVals",        (DL_FUNC) &_RcppAlgos_GetClassVals,        10},
     {"_RcppAlgos_MotleyContainer",     (DL_FUNC) &_RcppAlgos_MotleyContainer,      6},
     {"_RcppAlgos_NextCombGlue",        (DL_FUNC) &_RcppAlgos_NextCombGlue,         1},
     {"_RcppAlgos_NextGatherGlue",      (DL_FUNC) &_RcppAlgos_NextGatherGlue,       1},
@@ -281,7 +281,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_RcppAlgos_PrimeSieveCpp",       (DL_FUNC) &_RcppAlgos_PrimeSieveCpp,        5},
     {"_RcppAlgos_RandomAccessGlue",    (DL_FUNC) &_RcppAlgos_RandomAccessGlue,     2},
     {"_RcppAlgos_RankCombPerm",        (DL_FUNC) &_RcppAlgos_RankCombPerm,         6},
-    {"_RcppAlgos_RankPartitionMain",   (DL_FUNC) &_RcppAlgos_RankPartitionMain,    8},
+    {"_RcppAlgos_RankPartitionMain",   (DL_FUNC) &_RcppAlgos_RankPartitionMain,    9},
     {"_RcppAlgos_SampleCombPerm",      (DL_FUNC) &_RcppAlgos_SampleCombPerm,      16},
     {"_RcppAlgos_SamplePartitions",    (DL_FUNC) &_RcppAlgos_SamplePartitions,    17},
     {"_RcppAlgos_SourceVectorGlue",    (DL_FUNC) &_RcppAlgos_SourceVectorGlue,     1},

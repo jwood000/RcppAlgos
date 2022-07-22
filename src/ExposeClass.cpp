@@ -18,7 +18,7 @@ static void Finalizer(SEXP ext) {
 }
 
 // RVals contains: v, vNum, vInt, m, RcompRows, maxThreads, & nThreads
-// RboolVec contains: IsFac, IsComb, IsMult, IsRep, IsGmp, & IsFull
+// RboolVec contains: IsFac, IsComb, IsMult, IsRep, IsGmp, IsFull, & IsComp
 // freqInfo contains: myReps & freqs
 [[cpp11::register]]
 SEXP CombClassNew(SEXP RVals, SEXP RboolVec, SEXP freqInfo, SEXP Rparallel,
@@ -93,7 +93,8 @@ SEXP CombClassNew(SEXP RVals, SEXP RboolVec, SEXP freqInfo, SEXP Rparallel,
         const std::string mainFun = funTest == "mean" ? "sum" : funTest;
         funcPtr<double> funDbl = GetFuncPtr<double>(mainFun);
 
-        const bool IsComb   = static_cast<bool>(bVec[1]);
+        const bool IsComp   = static_cast<bool>(bVec[6]);
+        const bool IsComb   = static_cast<bool>(bVec[1]) && !IsComp;
         const bool IsMult   = static_cast<bool>(bVec[2]);
         const bool IsRep    = static_cast<bool>(bVec[3]);
         const bool IsStdGmp = static_cast<bool>(bVec[4]);
@@ -104,6 +105,7 @@ SEXP CombClassNew(SEXP RVals, SEXP RboolVec, SEXP freqInfo, SEXP Rparallel,
         part.isRep   = IsRep;
         part.isMult  = IsMult;
         part.mIsNull = static_cast<bool>(Rf_asLogical(RmIsNull));
+        part.isComp  = IsComp;
 
         std::vector<std::string> compVec;
         std::vector<double> tarVals;
