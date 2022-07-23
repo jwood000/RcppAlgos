@@ -84,8 +84,8 @@ void GeneralPartitions(T* mat, const std::vector<T> &v, std::vector<int> &z,
 
             threads.emplace_back(
                 std::cref(PartsGenParallel<T>), std::ref(parMat),
-                std::cref(v), std::ref(zs[j]), step, part.width,
-                lastElem, lastCol, nextStep, part.isRep, part.isComp
+                std::cref(v), std::ref(zs[j]), step, part.width, lastElem,
+                lastCol, nextStep, part.isRep, part.isComp, part.mapIncZero
             );
 
             if (part.isGmp) {
@@ -101,15 +101,15 @@ void GeneralPartitions(T* mat, const std::vector<T> &v, std::vector<int> &z,
         threads.emplace_back(
             std::cref(PartsGenParallel<T>), std::ref(parMat), std::cref(v),
             std::ref(zs.back()), step, part.width, lastElem, lastCol, nRows,
-            part.isRep, part.isComp
+            part.isRep, part.isComp, part.mapIncZero
         );
 
         for (auto& thr: threads) {
             thr.join();
         }
     } else {
-        PartsGenManager(mat, v, z, part.width, lastElem, lastCol,
-                        nRows, IsComb, part.isRep, part.isComp);
+        PartsGenManager(mat, v, z, part.width, lastElem, lastCol, nRows,
+                        IsComb, part.isRep, part.isComp, part.mapIncZero);
     }
 }
 

@@ -143,7 +143,7 @@ SEXP CombClassNew(SEXP RVals, SEXP RboolVec, SEXP freqInfo, SEXP Rparallel,
         const bool numUnknown = ctype == ConstraintType::PartitionEsque ||
                                 ctype == ConstraintType::SpecialCnstrnt ||
                                 ctype == ConstraintType::General        ||
-                                part.numUnknown;
+                                (part.isPart && part.numUnknown);
 
         std::vector<int> startZ(m);
         const int cap     = n - part.includeZero;

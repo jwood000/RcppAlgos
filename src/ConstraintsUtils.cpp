@@ -401,8 +401,8 @@ void ConstraintSetup(const std::vector<double> &vNum,
 
         if (part.numUnknown && part.isComp) {
             const std::string msg = "Currently, there is no composition "
-                "algorithm for this case. Use permuteCount, permuteIter, "
-                "permuteGeneral, permuteSample, or permuteRank instead.";
+                "algorithm for this case.\n Use permuteCount, permuteIter, "
+                "permuteGeneral, permuteSample, or\n permuteRank instead.";
             cpp11::stop(msg.c_str());
         }
     }

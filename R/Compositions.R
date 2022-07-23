@@ -17,6 +17,16 @@ compositionsCount <- function(v, m = NULL, repetition = FALSE,
                  repetition, freqs, "==", NULL, NULL, FALSE, FALSE, TRUE))
 }
 
+compositionsDesign <- function(v, m = NULL, repetition = FALSE,
+                               freqs = NULL, target = NULL,
+                               showDesign = FALSE) {
+
+    stopifnot(is.numeric(v))
+    return(.Call(`_RcppAlgos_PartitionsCount`, GetTarget(v, target),
+                 v, m, repetition, freqs, "==", NULL, NULL, TRUE,
+                 showDesign, TRUE))
+}
+
 compositionsRank <- function(..., v, repetition = FALSE,
                              freqs = NULL, target = NULL) {
     GetRankPart(..., v = v, repetition = repetition, freqs = freqs,

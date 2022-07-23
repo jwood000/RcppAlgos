@@ -411,6 +411,13 @@ test_that("partitionGeneral Repetition Parallel", {
     expect_identical(partitionsRank(myParts[c(1L, 321L, 627L), ],
                                     v = 0:20, repetition = TRUE),
                      c(1L, 321L, 627L))
+    ## compositionsCount(0:10, repetition = TRUE)
+    ## [1] 512
+    myComps = compositionsGeneral(0:10, repetition = TRUE, nThreads = 2)
+    expect_identical(compositionsGeneral(0:10, repetition = TRUE), myComps)
+    expect_identical(compositionsRank(myComps[c(1L, 321L, 512L), ],
+                                      v = 0:10, repetition = TRUE),
+                     c(1L, 321L, 512L))
 
     ## For both of the usages below, only 2 threads will be spawned
     ## partitionsCount(0:100, repetition = T)
@@ -419,6 +426,10 @@ test_that("partitionGeneral Repetition Parallel", {
                                        nThreads = 3, upper = 50000),
                      partitionsGeneral(0:100, repetition = TRUE,
                                        nThreads = 8, upper = 50000))
+    expect_identical(compositionsGeneral(0:30, repetition = TRUE,
+                                         nThreads = 3, upper = 50000),
+                     compositionsGeneral(0:30, repetition = TRUE,
+                                         nThreads = 8, upper = 50000))
 
     ######****************** All Results Repetition **************#########
     #### Repetition; Length determined internally; Multiple Zero;
@@ -460,6 +471,38 @@ test_that("partitionGeneral Repetition Parallel", {
                                     repetition = TRUE),
                      c(1L, 12345L, 89134L))
 
+    #### Repetition; Length determined internally; Multiple Zero; Composition
+    ##
+    ## compositionsDesign(0:17, repetition = TRUE)[c("num_partitions",
+    ##                                               "partition_type")]
+    ## $num_partitions
+    ## [1] 65536
+    ##
+    ## $partition_type
+    ## [1] "RepStdAll"
+    expect_identical(compositionsGeneral(0:17, repetition = TRUE,
+                                       nThreads = 2),
+                     compositionsGeneral(0:17, repetition = TRUE))
+
+    #### Mapped version
+    ##
+    ## 17 * 17 = 289  // No need to supply below. See GetTarget.R
+    ##
+    ## compositionsDesign((0:17) * 17, repetition = TRUE)[c(
+    ##       "num_partitions", "mapped_target", "partition_type"
+    ## )]
+    ## $num_partitions
+    ## [1] 65536
+    ##
+    ## $mapped_target
+    ## [1] 17
+    ##
+    ## $partition_type
+    ## [1] "RepShort"
+    expect_identical(compositionsGeneral((0:17) * 17L, repetition = TRUE,
+                                         nThreads = 2),
+                     compositionsGeneral((0:17) * 17L, repetition = TRUE))
+
     #### Repetition; Specific Length; No zero
     ##
     ## partitionsDesign(60, 10, TRUE)[c("num_partitions", "partition_type")]
@@ -498,6 +541,44 @@ test_that("partitionGeneral Repetition Parallel", {
                                     target = 240, repetition = TRUE),
                      c(1L, 12345L, 62740L))
 
+    #### Repetition; Specific Length; No zero; Composition
+    ##
+    ## compositionsDesign(28, 6, TRUE)[c("num_partitions", "partition_type")]
+    ## $num_partitions
+    ## [1] 80730
+    ##
+    ## $partition_type
+    ## [1] "RepNoZero"
+    myComps = compositionsGeneral(28, 6, TRUE, nThreads = 2)
+    expect_identical(compositionsGeneral(28, 6, TRUE), myComps)
+    expect_identical(compositionsRank(myComps[c(1L, 12345L, 80730L), ],
+                                    v = 28, repetition = TRUE),
+                     c(1L, 12345L, 80730L))
+
+    #### Mapped version
+    ##
+    ## 28 * 3 + 6 * 6 = 120
+    ##
+    ## compositionsDesign(6 + (1:28) * 3, 6, repetition = TRUE,
+    ##                    target = 120)[c("num_partitions",
+    ##                                    "mapped_target", "partition_type")]
+    ## $num_partitions
+    ## [1] 80730
+    ##
+    ## $mapped_target
+    ## [1] 28
+    ##
+    ## $partition_type
+    ## [1] "RepNoZero"
+    myComps = compositionsGeneral(6 + (1:28) * 3, 10, TRUE,
+                                  target = 120, nThreads = 2)
+    expect_identical(compositionsGeneral(6 + (1:28) * 3, 10,
+                                         TRUE, target = 120), myComps)
+    expect_identical(compositionsRank(myComps[c(1L, 12345L, 80730L), ],
+                                      v = 6 + (1:28) * 3,
+                                      target = 120, repetition = TRUE),
+                     c(1L, 12345L, 80730L))
+
     #### Repetition; Specific Length; Zero included
     ##
     ## partitionsDesign(0:60, 10, TRUE)[c("num_partitions", "partition_type")]
@@ -535,6 +616,41 @@ test_that("partitionGeneral Repetition Parallel", {
                                     v = 6 + (0:60) * 3,
                                     target = 240, repetition = TRUE),
                      c(1L, 123456L, 195491L))
+
+    #### Repetition; Specific Length; Zero included; Composition
+    ##
+    ## compositionsDesign(0:28, 6, TRUE)[c("num_partitions", "partition_type")]
+    ## $num_partitions
+    ## [1] 101584
+    ##
+    ## $partition_type
+    ## [1] "RepShort"
+    myComps = compositionsGeneral(0:28, 6, TRUE, nThreads = 2)
+    expect_identical(myComps, compositionsGeneral(0:28, 6, TRUE))
+    expect_identical(compositionsRank(myComps[c(1L, 12345L, 101584L), ],
+                                      v = 0:28, repetition = TRUE),
+                     c(1L, 12345L, 101584L))
+
+    #### Mapped version
+    ##
+    ## 28 * 3 = 84  // No need to supply below. See GetTarget.R
+    ##
+    ## compositionsDesign((0:28) * 3, 6, repetition = TRUE,
+    ##                    target = 84)[c("num_partitions",
+    ##                                   "mapped_target", "partition_type")]
+    ## $num_partitions
+    ## [1] 101584
+    ##
+    ## $mapped_target
+    ## [1] 28
+    ##
+    ## $partition_type
+    ## [1] "RepShort"
+    myComps = compositionsGeneral((0:28) * 3, 6, TRUE, nThreads = 2)
+    expect_identical(myComps, compositionsGeneral((0:28) * 3, 6, TRUE))
+    expect_identical(compositionsRank(myComps[c(1L, 12345L, 101584L), ],
+                                      v = (0:28) * 3, repetition = TRUE),
+                     c(1L, 12345L, 101584L))
 
     #### Repetition; Specific Length; No Zeros; Specific Target; N.B.
     #### Technically this is already a mapped case, however we will

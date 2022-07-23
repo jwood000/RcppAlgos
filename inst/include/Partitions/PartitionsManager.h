@@ -16,12 +16,12 @@ template <typename T>
 void PartsGenParallel(RcppParallel::RMatrix<T> &mat,
                       const std::vector<T> &v, std::vector<int> &z,
                       int strt, int width, int lastElem, int lastCol,
-                      int nRows, bool IsRep, bool IsComp);
+                      int nRows, bool IsRep, bool IsComp, bool inc_zero);
 
 template <typename T>
 void PartsGenManager(T* mat, const std::vector<T> &v, std::vector<int> &z,
                      int width, int lastElem, int lastCol, int nRows,
-                     bool IsComb, bool IsRep, bool IsComp);
+                     bool IsComb, bool IsRep, bool IsComp, bool inc_zero);
 
 template <typename T>
 void PartsGenManager(std::vector<T> &partsVec, const std::vector<T> &v,

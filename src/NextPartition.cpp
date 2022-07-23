@@ -494,24 +494,24 @@ void NextDistinctGen(std::vector<int> &rpsCnt, std::vector<int> &z,
     NextDistinctGenPart(z, b, e, p, tarDiff, lastCol, lastElem);
 }
 
-void NextRepCompGen(std::vector<int> &rpsCnt,
-                    std::vector<int> &z, int &e, int &b, int &p,
-                    int &tarDiff, int lastCol, int lastElem) {
+void NextRepCompZero(std::vector<int> &rpsCnt,
+                     std::vector<int> &z, int &e, int &b, int &p,
+                     int &tarDiff, int lastCol, int lastElem) {
     NextCompositionRep<0>(z, lastCol);
 }
 
-void NextRepComp(std::vector<int> &rpsCnt,
-                 std::vector<int> &z, int &e, int &b, int &p,
-                 int &tarDiff, int lastCol, int lastElem) {
+void NextRepCompOne(std::vector<int> &rpsCnt,
+                    std::vector<int> &z, int &e, int &b, int &p,
+                    int &tarDiff, int lastCol, int lastElem) {
     NextCompositionRep<1>(z, lastCol);
 }
 
 nextPartsPtr GetNextPartsPtr(PartitionType ptype, bool IsGen, bool IsComp) {
 
     if (IsComp && IsGen) {
-        return(nextPartsPtr(NextRepCompGen));
+        return(nextPartsPtr(NextRepCompZero));
     } else if (IsComp) {
-        return(nextPartsPtr(NextRepComp));
+        return(nextPartsPtr(NextRepCompOne));
     } else if (IsGen) {
         if (ptype == PartitionType::Multiset) {
             return(nextPartsPtr(NextMultisetGen));

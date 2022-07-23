@@ -88,16 +88,12 @@ SEXP PartitionsCount(SEXP Rtarget, SEXP Rv, SEXP Rm,
     part.mIsNull = Rf_isNull(Rm);
     part.isComp  = IsComposition;
 
-    if (IsConstrained) {
-        ConstraintSetup(vNum, myReps, targetVals, vInt, targetIntVals,
-                        funDbl, part, ctype, n, m, compVec, mainFun,
-                        mainFun, myType, Rtarget, RcompFun, Rtolerance,
-                        Rlow, !IsComposition, true);
-    }
+    ConstraintSetup(vNum, myReps, targetVals, vInt, targetIntVals,
+                    funDbl, part, ctype, n, m, compVec, mainFun,
+                    mainFun, myType, Rtarget, RcompFun, Rtolerance,
+                    Rlow, !IsComposition, true);
 
-    if (part.ptype != PartitionType::CoarseGrained &&
-        part.ptype != PartitionType::NotPartition) {
-
+    if (!part.numUnknown) {
         if (bDesign) {
             bool Verbose = CleanConvert::convertFlag(Rshow, "showDetail");
             return GetDesign(part, ctype, n, Verbose);
@@ -108,8 +104,8 @@ SEXP PartitionsCount(SEXP Rtarget, SEXP Rv, SEXP Rm,
     } else if (bDesign) {
         cpp11::stop("No design available for this case!");
     } else {
-        cpp11::stop("The count is unknown for this case. To get the total"
-                 " number, generate all results!");
+        cpp11::stop("The count is unknown for this case.\n To get the"
+                    " total number, generate all results!");
     }
 }
 

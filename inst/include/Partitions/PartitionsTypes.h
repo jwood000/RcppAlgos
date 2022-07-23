@@ -71,7 +71,7 @@ struct PartDesign {
     bool solnExist = false;
     bool includeZero = false; // Is the leading element zero?
     bool mapIncZero = false;
-    bool numUnknown = false;
+    bool numUnknown = true;
     std::vector<int> startZ;
     std::int64_t cap = 0;
     std::int64_t shift = 0;

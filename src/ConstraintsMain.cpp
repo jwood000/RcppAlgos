@@ -100,7 +100,7 @@ SEXP CombinatoricsCnstrt(SEXP Rv, SEXP Rm, SEXP RisRep, SEXP RFreqs,
     const bool numUnknown = ctype == ConstraintType::PartitionEsque ||
                             ctype == ConstraintType::SpecialCnstrnt ||
                             ctype == ConstraintType::General        ||
-                            part.numUnknown;
+                            (part.isPart && part.numUnknown);
 
     double lower = 0;
     double upper = 0;

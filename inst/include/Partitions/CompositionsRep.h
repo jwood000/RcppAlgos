@@ -4,11 +4,11 @@
 #include "RMatrix.h"
 #include <vector>
 
-template <typename T>
+template <int one_or_zero, typename T>
 void CompsGenRep(T* mat, const std::vector<T> &v,
                  std::vector<int> &z, int width, int nRows);
 
-template <typename T>
+template <int one_or_zero, typename T>
 void CompsGenRep(RcppParallel::RMatrix<T> &mat, const std::vector<T> &v,
                  std::vector<int> &z, int strt, int width, int nRows);
 

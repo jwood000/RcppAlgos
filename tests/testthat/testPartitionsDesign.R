@@ -3,10 +3,14 @@ context("testing partitionsDesign")
 test_that("partitionsDesign produces correct results", {
     expect_equal(partitionsDesign(0:10, repetition = TRUE)$partition_type,
                  "RepStdAll")
+    expect_equal(compositionsDesign(0:10, repetition = TRUE)$partition_type,
+                 "RepStdAll")
     expect_equal(partitionsDesign(
             0:10, freqs = c(10, rep(1, 10))
         )$partition_type, "DstctStdAll")
     expect_equal(partitionsDesign(0:10, 1)$partition_type,
+                 "LengthOne")
+    expect_equal(compositionsDesign(0:10, 1)$partition_type,
                  "LengthOne")
     expect_equal(partitionsDesign(0:15, 4, target = 20)$partition_type,
                  "DistCapped")
@@ -27,6 +31,10 @@ test_that("partitionsDesign produces correct results", {
     expect_equal(partitionsDesign(0:40, 8, repetition = TRUE)$partition_type,
                  "RepShort")
     expect_equal(partitionsDesign(40, 8, repetition = TRUE)$partition_type,
+                 "RepNoZero")
+    expect_equal(compositionsDesign(0:40, 8, repetition = TRUE)$partition_type,
+                 "RepShort")
+    expect_equal(compositionsDesign(40, 8, repetition = TRUE)$partition_type,
                  "RepNoZero")
 
     verbose <- capture.output(partitionsDesign(15, 4, target = 20,

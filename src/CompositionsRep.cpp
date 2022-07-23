@@ -2,12 +2,12 @@
 #include "RMatrix.h"
 #include <algorithm>  // std::next_permutation
 
-template <typename T>
+template <int one_or_zero, typename T>
 void CompsGenRep(T* mat, const std::vector<T> &v,
                  std::vector<int> &z, int width, int nRows) {
 
     for (int count = 0, lastCol = width - 1; count < nRows; ++count,
-         NextCompositionRep<0>(z, lastCol)) {
+         NextCompositionRep<one_or_zero>(z, lastCol)) {
 
         for (int k = 0; k < width; ++k) {
             mat[count + nRows * k] = v[z[k]];
@@ -15,12 +15,12 @@ void CompsGenRep(T* mat, const std::vector<T> &v,
     }
 }
 
-template <typename T>
+template <int one_or_zero, typename T>
 void CompsGenRep(RcppParallel::RMatrix<T> &mat, const std::vector<T> &v,
                  std::vector<int> &z, int strt, int width, int nRows) {
 
     for (int count = strt, lastCol = width - 1; count < nRows; ++count,
-         NextCompositionRep<0>(z, lastCol)) {
+         NextCompositionRep<one_or_zero>(z, lastCol)) {
 
         for (int k = 0; k < width; ++k) {
             mat(count, k) = v[z[k]];
@@ -52,14 +52,24 @@ void CompsRep(RcppParallel::RMatrix<int> &mat, std::vector<int> &z,
     }
 }
 
-template void CompsGenRep(int*, const std::vector<int>&,
-                          std::vector<int>&, int, int);
-template void CompsGenRep(double*, const std::vector<double>&,
-                          std::vector<int>&, int, int);
+template void CompsGenRep<0>(int*, const std::vector<int>&,
+                             std::vector<int>&, int, int);
+template void CompsGenRep<0>(double*, const std::vector<double>&,
+                             std::vector<int>&, int, int);
+template void CompsGenRep<1>(int*, const std::vector<int>&,
+                             std::vector<int>&, int, int);
+template void CompsGenRep<1>(double*, const std::vector<double>&,
+                             std::vector<int>&, int, int);
 
-template void CompsGenRep(RcppParallel::RMatrix<int>&,
-                          const std::vector<int>&,
-                          std::vector<int>&, int, int, int);
-template void CompsGenRep(RcppParallel::RMatrix<double>&,
-                          const std::vector<double>&,
-                          std::vector<int>&, int, int, int);
+template void CompsGenRep<0>(RcppParallel::RMatrix<int>&,
+                             const std::vector<int>&,
+                             std::vector<int>&, int, int, int);
+template void CompsGenRep<0>(RcppParallel::RMatrix<double>&,
+                             const std::vector<double>&,
+                             std::vector<int>&, int, int, int);
+template void CompsGenRep<1>(RcppParallel::RMatrix<int>&,
+                             const std::vector<int>&,
+                             std::vector<int>&, int, int, int);
+template void CompsGenRep<1>(RcppParallel::RMatrix<double>&,
+                             const std::vector<double>&,
+                             std::vector<int>&, int, int, int);
