@@ -1,12 +1,12 @@
 Package: RcppAlgos
-Version: 2.5.5
+Version: 2.6.0
 Title: High Performance Tools for Combinatorics and Computational Mathematics
 Description: Provides optimized functions and flexible combinatorial iterators
     implemented in C++ for solving problems in combinatorics and
     computational mathematics. Utilizes the RMatrix class from 'RcppParallel'
     for thread safety. There are combination/permutation functions with
     constraint parameters that allow for generation of all results of a vector
-    meeting specific criteria (e.g. generating integer partitions
+    meeting specific criteria (e.g. generating integer partitions/compositions
     or finding all combinations such that the sum is between two bounds).
     Capable of generating specific combinations/permutations (e.g. retrieve
     only the nth lexicographical result) which sets up nicely for

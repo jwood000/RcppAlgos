@@ -1,3 +1,9 @@
+# RcppAlgos 2.6.0
+
+## New Features:
+
+* Added integer composition functions: `compositionsCount`, `compositionsGeneral`, `compositionsSample`, `compositionsIter`, and `compositionsRank`.
+
 # RcppAlgos 2.5.5
 
 ## New Features:
@@ -15,6 +21,8 @@
 * Now checking class of input vector for partition funcitons.
 
 * Now when `partitionsCount` returns 0, the number of results is zero. Before, we were checking for count of partitions to be greater than zero, otherwise we would use the standard combinatorial counting functions to determine the number of results. This lead to strange results with elements not present in the original vector.
+
+* For `partitionsSample`, in cases when we would rely on generating the partitions one at a time until there are no more (e.g. with `partitionsGeneral`), the number of partitions isn't calculated. This leads to the error: "n exceeds the maximum number of possible results". This is now fixed.
 
 # RcppAlgos 2.5.4
 
