@@ -25,7 +25,7 @@ The output is in lexicographical order.
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">RcppAlgos</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">2.5.5</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">2.6.0</span>
       </span>
     </div>
 
@@ -34,13 +34,13 @@ The output is in lexicographical order.
   <a href="../reference/index.html">Reference</a>
 </li>
 <li class="dropdown">
-  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
     Articles
      
     <span class="caret"></span>
   </a>
   <ul class="dropdown-menu" role="menu"><li>
-      <a href="../articles/CombPermConstraints.html">Constraints and Integer Partitions</a>
+      <a href="../articles/CombPermConstraints.html">Constraints, Integer Partitions, and Integer Compositions</a>
     </li>
     <li>
       <a href="../articles/CombinatorialSampling.html">Combinatorial Sampling and Ranking</a>
@@ -97,63 +97,79 @@ The output is in lexicographical order.
 </ul></div>
 
     <div id="ref-usage">
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="fu">comboGeneral</span><span class="op">(</span><span class="va">v</span>, m <span class="op">=</span> <span class="cn">NULL</span>, repetition <span class="op">=</span> <span class="cn">FALSE</span>, freqs <span class="op">=</span> <span class="cn">NULL</span>,
-             lower <span class="op">=</span> <span class="cn">NULL</span>, upper <span class="op">=</span> <span class="cn">NULL</span>, constraintFun <span class="op">=</span> <span class="cn">NULL</span>,
-             comparisonFun <span class="op">=</span> <span class="cn">NULL</span>, limitConstraints <span class="op">=</span> <span class="cn">NULL</span>,
-             keepResults <span class="op">=</span> <span class="cn">NULL</span>, FUN <span class="op">=</span> <span class="cn">NULL</span>, Parallel <span class="op">=</span> <span class="cn">FALSE</span>,
-             nThreads <span class="op">=</span> <span class="cn">NULL</span>, tolerance <span class="op">=</span> <span class="cn">NULL</span>, FUN.VALUE <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span>
-
-<span class="fu">permuteGeneral</span><span class="op">(</span><span class="va">v</span>, m <span class="op">=</span> <span class="cn">NULL</span>, repetition <span class="op">=</span> <span class="cn">FALSE</span>, freqs <span class="op">=</span> <span class="cn">NULL</span>,
-               lower <span class="op">=</span> <span class="cn">NULL</span>, upper <span class="op">=</span> <span class="cn">NULL</span>, constraintFun <span class="op">=</span> <span class="cn">NULL</span>,
-               comparisonFun <span class="op">=</span> <span class="cn">NULL</span>, limitConstraints <span class="op">=</span> <span class="cn">NULL</span>,
-               keepResults <span class="op">=</span> <span class="cn">NULL</span>, FUN <span class="op">=</span> <span class="cn">NULL</span>, Parallel <span class="op">=</span> <span class="cn">FALSE</span>,
-               nThreads <span class="op">=</span> <span class="cn">NULL</span>, tolerance <span class="op">=</span> <span class="cn">NULL</span>, FUN.VALUE <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">comboGeneral</span><span class="op">(</span><span class="va">v</span>, m <span class="op">=</span> <span class="cn">NULL</span>, repetition <span class="op">=</span> <span class="cn">FALSE</span>, freqs <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>             lower <span class="op">=</span> <span class="cn">NULL</span>, upper <span class="op">=</span> <span class="cn">NULL</span>, constraintFun <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>             comparisonFun <span class="op">=</span> <span class="cn">NULL</span>, limitConstraints <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>             keepResults <span class="op">=</span> <span class="cn">NULL</span>, FUN <span class="op">=</span> <span class="cn">NULL</span>, Parallel <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>             nThreads <span class="op">=</span> <span class="cn">NULL</span>, tolerance <span class="op">=</span> <span class="cn">NULL</span>, FUN.VALUE <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu">permuteGeneral</span><span class="op">(</span><span class="va">v</span>, m <span class="op">=</span> <span class="cn">NULL</span>, repetition <span class="op">=</span> <span class="cn">FALSE</span>, freqs <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>               lower <span class="op">=</span> <span class="cn">NULL</span>, upper <span class="op">=</span> <span class="cn">NULL</span>, constraintFun <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>               comparisonFun <span class="op">=</span> <span class="cn">NULL</span>, limitConstraints <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>               keepResults <span class="op">=</span> <span class="cn">NULL</span>, FUN <span class="op">=</span> <span class="cn">NULL</span>, Parallel <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>               nThreads <span class="op">=</span> <span class="cn">NULL</span>, tolerance <span class="op">=</span> <span class="cn">NULL</span>, FUN.VALUE <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div id="arguments">
     <h2>Arguments</h2>
     <dl><dt>v</dt>
 <dd><p>Source vector. If <code>v</code> is a positive integer, it will be converted to the sequence <code>1:v</code>. If <code>v</code> is a negative integer, it will be converted to the sequence <code>v:-1</code>. All atomic types are supported (See <code><a href="https://rdrr.io/r/base/is.recursive.html" class="external-link">is.atomic</a></code>).</p></dd>
-<dt>m</dt>
+
+  <dt>m</dt>
 <dd><p>Number of elements to choose.  If <code>repetition = TRUE</code> or <code>freqs</code> is utilized, <code>m</code> can exceed the length of <code>v</code>. If <code>m = NULL</code>, the length will default to <code>length(v)</code> or <code>sum(freqs)</code>.</p></dd>
-<dt>repetition</dt>
+
+  <dt>repetition</dt>
 <dd><p>Logical value indicating whether combinations/permutations should be with or without repetition. The default is <code>FALSE</code>.</p></dd>
-<dt>freqs</dt>
+
+  <dt>freqs</dt>
 <dd><p>A vector of frequencies used for producing all combinations/permutations of a multiset of <code>v</code>. Each element of <code>freqs</code> represents how many times each element of the source vector, <code>v</code>, is repeated. It is analogous to the <code>times</code> argument in <code><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></code>. The default value is <code>NULL</code>.</p></dd>
-<dt>lower</dt>
+
+  <dt>lower</dt>
 <dd><p>The lower bound. Combinations/permutations are generated lexicographically, thus utilizing this argument will determine which specific combination/permutation to start generating from (<em>e.g.</em> <code>comboGeneral(5, 3, lower = 6)</code> is equivalent to <code>comboGeneral(5, 3)[6:choose(5, 3), ]</code>). This argument along with <code>upper</code> is very useful for generating combinations/permutations in chunks allowing for easy parallelization.</p></dd>
-<dt>upper</dt>
+
+  <dt>upper</dt>
 <dd><p>The upper bound. Similar to <code>lower</code>, however this parameter allows the user to <em>stop</em> generation at a specific combination/permutation (<em>e.g.</em> <code>comboGeneral(5, 3, upper = 5)</code> is equivalent to <code>comboGeneral(5, 3)[1:5, ]</code>)</p>
 <p>If the output is constrained and <code>lower</code> isn't supplied, <code>upper</code> serves as a cap for how many results will be returned that meet the criteria (<em>e.g.</em> setting <code>upper = 100</code> alone will return the first 100 results that meet the criteria, while setting <code>lower = 1</code> and <code>upper = 100</code> will test the first 100 results against the criteria).</p>
 <p>In addition to the benefits listed for <code>lower</code>, this parameter is useful when the total number of combinations/permutations without constraint is large and you expect/need a small number of combinations/permutations that meet a certain criteria. Using <code>upper</code> can improve run time if used judiciously as we call the member function <a href="https://en.cppreference.com/w/cpp/container/vector/reserve" class="external-link">reserve</a> of <a href="https://en.cppreference.com/w/cpp/container/vector" class="external-link">std::vector</a>. See examples below.</p></dd>
-<dt>constraintFun</dt>
+
+  <dt>constraintFun</dt>
 <dd><p>Function to be applied to the elements of <code>v</code> that should be passed as a string (<em>e.g.</em> <code>constraintFun = "sum"</code>). The possible constraint functions are: <code>"sum"</code>, <code>"prod"</code>, <code>"mean"</code>, <code>"max"</code>, &amp; <code>"min"</code>. The default is <code>NULL</code>, meaning no function is applied.</p></dd>
-<dt>comparisonFun</dt>
+
+  <dt>comparisonFun</dt>
 <dd><p>Comparison operator that will be used to compare <code>limitConstraints</code> with the result of <code>constraintFun</code> applied to <code>v</code>. It should be passed as a string or a vector of two strings (<em>e.g.</em> <code>comparisonFun = "&lt;="</code> or  <code>comparisonFun = c("&gt;","&lt;")</code>). The possible comparison operators are: <code>"&lt;"</code>, <code>"&gt;"</code>, <code>"&lt;="</code>, <code>"&gt;="</code>, <code>"=="</code>. The default is <code>NULL</code>.</p>
 <p>When <code>comparisonFun</code> is a vector of two comparison strings, <em>e.g</em> <code>comparisonFun = c(comp1, comp2)</code>, and <code>limitConstraints</code> is a vector of two numerical values, <em>e.g</em> <code>limitConstraints = c(x1, x2)</code>, the combinations/permutations will be filtered in one of the following two ways:</p><ol><li><p>When <code>comp1</code> is one of the 'greater-than' operators (<em>i.e.</em> "&gt;=" or "&gt;"), <code>comp2</code> is one of the 'less-than' operators (<em>i.e.</em> "&lt;=" or "&lt;"), and <code>x1 &lt; x2</code>, the combinations/permutations that are returned will have a value (after <code>constraintFun</code> has been applied) between <code>x1</code> and <code>x2</code>.</p></li>
 <li><p>When <code>comp1</code> and <code>comp2</code> are defined as in #1 and <code>x1 &gt; x2</code>, the combinations/permutations that are returned will have a value outside the range of <code>x1</code> and <code>x2</code>. See the examples below.</p></li>
 </ol><p>In other words, the first comparison operator is applied to the first limit and the second operator is applied to the second limit.</p></dd>
-<dt>limitConstraints</dt>
+
+  <dt>limitConstraints</dt>
 <dd><p>This is the value(s) that will be used for comparison. Can be passed as a single value or a vector of two numerical values. The default is <code>NULL</code>. See the definition of <code>comparisonFun</code> as well as the examples below for more information.</p></dd>
-<dt>keepResults</dt>
+
+  <dt>keepResults</dt>
 <dd><p>A logical flag indicating if the result of <code>constraintFun</code> applied to <code>v</code> should be displayed; if <code>TRUE</code>, an additional column of results will be added to the resulting matrix. The default is <code>FALSE</code>. If user is only applying <code>constraintFun</code>, <code>keepResults</code> will default to <code>TRUE</code>.</p>
 <p><em>E.g</em>. The following are equivalent and will produce a \(4^{th}\) column of row sums:</p><ul><li><p><code>comboGeneral(5, 3 constraintFun = "sum", keepResults = TRUE)</code></p></li>
 <li><p><code>comboGeneral(5, 3 constraintFun = "sum")</code></p></li>
 </ul><p></p></dd>
-<dt>FUN</dt>
+
+  <dt>FUN</dt>
 <dd><p>Function to be applied to each combination/permutation. The default is <code>NULL</code>.</p></dd>
-<dt>Parallel</dt>
+
+  <dt>Parallel</dt>
 <dd><p>Logical value indicating whether combinations/permutations should be generated in parallel using \(n - 1\) threads, where \(n\) is the maximum number of threads. The default is <code>FALSE</code>. If <code>nThreads</code> is not <code>NULL</code>, it will be given preference (<em>e.g.</em> if user has 8 threads with <code>Parallel = TRUE</code> and <code>nThreads = 4</code>, only 4 threads will be spawned). If your system is single-threaded, the arguments <code>Parallel</code> and <code>nThreads</code> are ignored.</p></dd>
-<dt>nThreads</dt>
+
+  <dt>nThreads</dt>
 <dd><p>Specific number of threads to be used. The default is <code>NULL</code>. See <code>Parallel</code>.</p></dd>
-<dt>tolerance</dt>
+
+  <dt>tolerance</dt>
 <dd><p>A numeric value greater than or equal to zero. This parameter is utilized when a constraint is applied on a numeric vector. The default value is 0 when it can be determined that whole values are being utilized, otherwise it is <code>sqrt(.Machine$double.eps)</code> which is approximately \(1.5e-8\). N.B. If the input vector is of type integer, this parameter will be ignored and strict equality will be enforced.</p></dd>
-<dt>FUN.VALUE</dt>
+
+  <dt>FUN.VALUE</dt>
 <dd><p>A template for the return value from <code>FUN</code>. See 'Details' of <code><a href="https://rdrr.io/r/base/lapply.html" class="external-link">vapply</a></code> for more information.</p></dd>
+
 </dl></div>
     <div id="value">
     <h2>Value</h2>
-    <ul><li><p>In general, a matrix with \(m\) or \(m + 1\) columns, depending on the value of <code>keepResults</code></p></li>
+    <p></p>
+<ul><li><p>In general, a matrix with \(m\) or \(m + 1\) columns, depending on the value of <code>keepResults</code></p></li>
 <li><p>If <code>FUN</code> is utilized and <code>FUN.VALUE = NULL</code>, a list is returned</p></li>
 <li><p>When both <code>FUN</code> and <code>FUN.VALUE</code> are not <code>NULL</code>, the return is modeled after the return of <code>vapply</code>. See the 'Value' section of <code><a href="https://rdrr.io/r/base/lapply.html" class="external-link">vapply</a></code>.</p></li>
 </ul></div>
@@ -192,40 +208,40 @@ The output is in lexicographical order.
 
     <div id="ref-examples">
     <h2>Examples</h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span class="fu"><a href="https://rdrr.io/r/base/system.time.html" class="external-link">system.time</a></span><span class="op">(</span><span class="fu">comboGeneral</span><span class="op">(</span><span class="fl">17</span>, <span class="fl">8</span><span class="op">)</span><span class="op">)</span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/system.time.html" class="external-link">system.time</a></span><span class="op">(</span><span class="fu">comboGeneral</span><span class="op">(</span><span class="fl">17</span>, <span class="fl">8</span><span class="op">)</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>    user  system elapsed </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   0.001   0.001   0.001 </span>
-<span class="r-in"><span class="fu"><a href="https://rdrr.io/r/base/system.time.html" class="external-link">system.time</a></span><span class="op">(</span><span class="fu">permuteGeneral</span><span class="op">(</span><span class="fl">13</span>, <span class="fl">6</span><span class="op">)</span><span class="op">)</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   0.001   0.000   0.001 </span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/system.time.html" class="external-link">system.time</a></span><span class="op">(</span><span class="fu">permuteGeneral</span><span class="op">(</span><span class="fl">13</span>, <span class="fl">6</span><span class="op">)</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>    user  system elapsed </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   0.014   0.008   0.022 </span>
-<span class="r-in"></span>
-<span class="r-in"><span class="fu"><a href="https://rdrr.io/r/base/system.time.html" class="external-link">system.time</a></span><span class="op">(</span><span class="fu">comboGeneral</span><span class="op">(</span><span class="fl">13</span>,<span class="fl">10</span>,repetition <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   0.014   0.010   0.025 </span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/system.time.html" class="external-link">system.time</a></span><span class="op">(</span><span class="fu">comboGeneral</span><span class="op">(</span><span class="fl">13</span>,<span class="fl">10</span>,repetition <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>    user  system elapsed </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   0.009   0.000   0.010 </span>
-<span class="r-in"><span class="fu"><a href="https://rdrr.io/r/base/system.time.html" class="external-link">system.time</a></span><span class="op">(</span><span class="fu">permuteGeneral</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/factor.html" class="external-link">factor</a></span><span class="op">(</span><span class="va">letters</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">9</span><span class="op">]</span><span class="op">)</span>,<span class="fl">6</span>,<span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   0.010   0.001   0.009 </span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/system.time.html" class="external-link">system.time</a></span><span class="op">(</span><span class="fu">permuteGeneral</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/factor.html" class="external-link">factor</a></span><span class="op">(</span><span class="va">letters</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">9</span><span class="op">]</span><span class="op">)</span>,<span class="fl">6</span>,<span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>    user  system elapsed </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   0.006   0.003   0.010 </span>
-<span class="r-in"></span>
-<span class="r-in"><span class="co">## permutations of the multiset (with or w/o setting m) :</span></span>
-<span class="r-in"><span class="co">## c(1,1,1,1,2,2,2,3,3,4)</span></span>
-<span class="r-in"><span class="fu"><a href="https://rdrr.io/r/base/system.time.html" class="external-link">system.time</a></span><span class="op">(</span><span class="fu">permuteGeneral</span><span class="op">(</span><span class="fl">4</span>, freqs <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">4</span>,<span class="fl">3</span>,<span class="fl">2</span>,<span class="fl">1</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   0.005   0.004   0.010 </span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co">## permutations of the multiset (with or w/o setting m) :</span></span></span>
+<span class="r-in"><span><span class="co">## c(1,1,1,1,2,2,2,3,3,4)</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/system.time.html" class="external-link">system.time</a></span><span class="op">(</span><span class="fu">permuteGeneral</span><span class="op">(</span><span class="fl">4</span>, freqs <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">4</span>,<span class="fl">3</span>,<span class="fl">2</span>,<span class="fl">1</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>    user  system elapsed </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   0.000   0.000   0.001 </span>
-<span class="r-in"></span>
-<span class="r-in"><span class="co">#### Examples using "upper" and "lower":</span></span>
-<span class="r-in"><span class="co">## Generate some random data</span></span>
-<span class="r-in"><span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="fl">1009</span><span class="op">)</span></span>
-<span class="r-in"><span class="va">mySamp</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sort.html" class="external-link">sort</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/stats/Normal.html" class="external-link">rnorm</a></span><span class="op">(</span><span class="fl">75</span>, <span class="fl">997</span>, <span class="fl">23</span><span class="op">)</span><span class="op">)</span></span>
-<span class="r-in"></span>
-<span class="r-in"><span class="fu"><a href="combinatoricsCount.html">permuteCount</a></span><span class="op">(</span><span class="fl">75</span>, <span class="fl">10</span>, freqs <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fl">1</span><span class="op">:</span><span class="fl">3</span>, <span class="fl">25</span><span class="op">)</span><span class="op">)</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   0.001   0.000   0.000 </span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co">#### Examples using "upper" and "lower":</span></span></span>
+<span class="r-in"><span><span class="co">## Generate some random data</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="fl">1009</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">mySamp</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sort.html" class="external-link">sort</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/stats/Normal.html" class="external-link">rnorm</a></span><span class="op">(</span><span class="fl">75</span>, <span class="fl">997</span>, <span class="fl">23</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="fu"><a href="combinatoricsCount.html">permuteCount</a></span><span class="op">(</span><span class="fl">75</span>, <span class="fl">10</span>, freqs <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fl">1</span><span class="op">:</span><span class="fl">3</span>, <span class="fl">25</span><span class="op">)</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Big Integer ('bigz') :</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] 4606842579278688000</span>
-<span class="r-in"><span class="co"># &gt;Big Integer ('bigz') :</span></span>
-<span class="r-in"><span class="co"># &gt;[1] 4606842576291495952</span></span>
-<span class="r-in"></span>
-<span class="r-in"><span class="co">## See specific range of permutations</span></span>
-<span class="r-in"><span class="fu">permuteGeneral</span><span class="op">(</span><span class="fl">75</span>, <span class="fl">10</span>, freqs <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fl">1</span><span class="op">:</span><span class="fl">3</span>, <span class="fl">25</span><span class="op">)</span>,</span>
-<span class="r-in">               lower <span class="op">=</span> <span class="fl">1e12</span>, upper <span class="op">=</span> <span class="fl">1e12</span> <span class="op">+</span> <span class="fl">10</span><span class="op">)</span></span>
+<span class="r-in"><span><span class="co"># &gt;Big Integer ('bigz') :</span></span></span>
+<span class="r-in"><span><span class="co"># &gt;[1] 4606842576291495952</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co">## See specific range of permutations</span></span></span>
+<span class="r-in"><span><span class="fu">permuteGeneral</span><span class="op">(</span><span class="fl">75</span>, <span class="fl">10</span>, freqs <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fl">1</span><span class="op">:</span><span class="fl">3</span>, <span class="fl">25</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>               lower <span class="op">=</span> <span class="fl">1e12</span>, upper <span class="op">=</span> <span class="fl">1e12</span> <span class="op">+</span> <span class="fl">10</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>       [,1] [,2] [,3] [,4] [,5] [,6] [,7] [,8] [,9] [,10]</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>  [1,]    1    2    2   10   22   18   69   57   47    25</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>  [2,]    1    2    2   10   22   18   69   57   47    26</span>
@@ -238,53 +254,53 @@ The output is in lexicographical order.
 <span class="r-out co"><span class="r-pr">#&gt;</span>  [9,]    1    2    2   10   22   18   69   57   47    33</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [10,]    1    2    2   10   22   18   69   57   47    34</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [11,]    1    2    2   10   22   18   69   57   47    35</span>
-<span class="r-in"></span>
-<span class="r-in"><span class="co">## Researcher only needs 1000 7-tuples of mySamp</span></span>
-<span class="r-in"><span class="co">## such that the sum is greater than 7200.</span></span>
-<span class="r-in"><span class="fu"><a href="https://rdrr.io/r/base/system.time.html" class="external-link">system.time</a></span><span class="op">(</span><span class="fu">comboGeneral</span><span class="op">(</span><span class="va">mySamp</span>, <span class="fl">7</span>, <span class="cn">FALSE</span>, constraintFun <span class="op">=</span> <span class="st">"sum"</span>,</span>
-<span class="r-in">             comparisonFun <span class="op">=</span> <span class="st">"&gt;"</span>, limitConstraints <span class="op">=</span> <span class="fl">7200</span>, upper <span class="op">=</span> <span class="fl">1000</span><span class="op">)</span><span class="op">)</span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co">## Researcher only needs 1000 7-tuples of mySamp</span></span></span>
+<span class="r-in"><span><span class="co">## such that the sum is greater than 7200.</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/system.time.html" class="external-link">system.time</a></span><span class="op">(</span><span class="fu">comboGeneral</span><span class="op">(</span><span class="va">mySamp</span>, <span class="fl">7</span>, <span class="cn">FALSE</span>, constraintFun <span class="op">=</span> <span class="st">"sum"</span>,</span></span>
+<span class="r-in"><span>             comparisonFun <span class="op">=</span> <span class="st">"&gt;"</span>, limitConstraints <span class="op">=</span> <span class="fl">7200</span>, upper <span class="op">=</span> <span class="fl">1000</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    user  system elapsed </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   0.000   0.000   0.001 </span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co">## Similarly, you can use "lower" to obtain the last rows.</span></span></span>
+<span class="r-in"><span><span class="co">## Generate the last 10 rows</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/system.time.html" class="external-link">system.time</a></span><span class="op">(</span><span class="fu">comboGeneral</span><span class="op">(</span><span class="va">mySamp</span>, <span class="fl">7</span>, lower <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Special.html" class="external-link">choose</a></span><span class="op">(</span><span class="fl">75</span>, <span class="fl">7</span><span class="op">)</span> <span class="op">-</span> <span class="fl">9</span><span class="op">)</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>    user  system elapsed </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>       0       0       0 </span>
-<span class="r-in"></span>
-<span class="r-in"><span class="co">## Similarly, you can use "lower" to obtain the last rows.</span></span>
-<span class="r-in"><span class="co">## Generate the last 10 rows</span></span>
-<span class="r-in"><span class="fu"><a href="https://rdrr.io/r/base/system.time.html" class="external-link">system.time</a></span><span class="op">(</span><span class="fu">comboGeneral</span><span class="op">(</span><span class="va">mySamp</span>, <span class="fl">7</span>, lower <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Special.html" class="external-link">choose</a></span><span class="op">(</span><span class="fl">75</span>, <span class="fl">7</span><span class="op">)</span> <span class="op">-</span> <span class="fl">9</span><span class="op">)</span><span class="op">)</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    user  system elapsed </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>       0       0       0 </span>
-<span class="r-in"></span>
-<span class="r-in"><span class="co">## Or if you would like to generate a specific chunk,</span></span>
-<span class="r-in"><span class="co">## use both "lower" and "upper". E.g. Generate one</span></span>
-<span class="r-in"><span class="co">## million combinations starting with the 900,000,001</span></span>
-<span class="r-in"><span class="co">## lexicographic combination.</span></span>
-<span class="r-in"><span class="va">t1</span> <span class="op">=</span> <span class="fu">comboGeneral</span><span class="op">(</span><span class="va">mySamp</span>, <span class="fl">7</span>,</span>
-<span class="r-in">                  lower <span class="op">=</span> <span class="fl">9</span><span class="op">*</span><span class="fl">10</span><span class="op">^</span><span class="fl">8</span> <span class="op">+</span> <span class="fl">1</span>,</span>
-<span class="r-in">                  upper <span class="op">=</span> <span class="fl">9</span><span class="op">*</span><span class="fl">10</span><span class="op">^</span><span class="fl">8</span> <span class="op">+</span> <span class="fl">10</span><span class="op">^</span><span class="fl">6</span><span class="op">)</span></span>
-<span class="r-in"></span>
-<span class="r-in"><span class="co">## class of the source vector is preserved</span></span>
-<span class="r-in"><span class="fu"><a href="https://rdrr.io/r/base/class.html" class="external-link">class</a></span><span class="op">(</span><span class="fu">comboGeneral</span><span class="op">(</span><span class="fl">5</span>,<span class="fl">3</span><span class="op">)</span><span class="op">[</span><span class="fl">1</span>,<span class="op">]</span><span class="op">)</span> <span class="op">==</span> <span class="fu"><a href="https://rdrr.io/r/base/class.html" class="external-link">class</a></span><span class="op">(</span><span class="fl">1</span><span class="op">:</span><span class="fl">5</span><span class="op">)</span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co">## Or if you would like to generate a specific chunk,</span></span></span>
+<span class="r-in"><span><span class="co">## use both "lower" and "upper". E.g. Generate one</span></span></span>
+<span class="r-in"><span><span class="co">## million combinations starting with the 900,000,001</span></span></span>
+<span class="r-in"><span><span class="co">## lexicographic combination.</span></span></span>
+<span class="r-in"><span><span class="va">t1</span> <span class="op">=</span> <span class="fu">comboGeneral</span><span class="op">(</span><span class="va">mySamp</span>, <span class="fl">7</span>,</span></span>
+<span class="r-in"><span>                  lower <span class="op">=</span> <span class="fl">9</span><span class="op">*</span><span class="fl">10</span><span class="op">^</span><span class="fl">8</span> <span class="op">+</span> <span class="fl">1</span>,</span></span>
+<span class="r-in"><span>                  upper <span class="op">=</span> <span class="fl">9</span><span class="op">*</span><span class="fl">10</span><span class="op">^</span><span class="fl">8</span> <span class="op">+</span> <span class="fl">10</span><span class="op">^</span><span class="fl">6</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co">## class of the source vector is preserved</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/class.html" class="external-link">class</a></span><span class="op">(</span><span class="fu">comboGeneral</span><span class="op">(</span><span class="fl">5</span>,<span class="fl">3</span><span class="op">)</span><span class="op">[</span><span class="fl">1</span>,<span class="op">]</span><span class="op">)</span> <span class="op">==</span> <span class="fu"><a href="https://rdrr.io/r/base/class.html" class="external-link">class</a></span><span class="op">(</span><span class="fl">1</span><span class="op">:</span><span class="fl">5</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] TRUE</span>
-<span class="r-in"><span class="fu"><a href="https://rdrr.io/r/base/class.html" class="external-link">class</a></span><span class="op">(</span><span class="fu">comboGeneral</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>,<span class="fl">2</span><span class="op">:</span><span class="fl">5</span><span class="op">)</span>,<span class="fl">3</span><span class="op">)</span><span class="op">[</span><span class="fl">1</span>,<span class="op">]</span><span class="op">)</span> <span class="op">==</span> <span class="fu"><a href="https://rdrr.io/r/base/class.html" class="external-link">class</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>,<span class="fl">2</span><span class="op">:</span><span class="fl">5</span><span class="op">)</span><span class="op">)</span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/class.html" class="external-link">class</a></span><span class="op">(</span><span class="fu">comboGeneral</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>,<span class="fl">2</span><span class="op">:</span><span class="fl">5</span><span class="op">)</span>,<span class="fl">3</span><span class="op">)</span><span class="op">[</span><span class="fl">1</span>,<span class="op">]</span><span class="op">)</span> <span class="op">==</span> <span class="fu"><a href="https://rdrr.io/r/base/class.html" class="external-link">class</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>,<span class="fl">2</span><span class="op">:</span><span class="fl">5</span><span class="op">)</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] TRUE</span>
-<span class="r-in"><span class="fu"><a href="https://rdrr.io/r/base/class.html" class="external-link">class</a></span><span class="op">(</span><span class="fu">comboGeneral</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/factor.html" class="external-link">factor</a></span><span class="op">(</span><span class="va">month.name</span><span class="op">)</span>,<span class="fl">3</span><span class="op">)</span><span class="op">[</span><span class="fl">1</span>,<span class="op">]</span><span class="op">)</span> <span class="op">==</span> <span class="fu"><a href="https://rdrr.io/r/base/class.html" class="external-link">class</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/factor.html" class="external-link">factor</a></span><span class="op">(</span><span class="va">month.name</span><span class="op">)</span><span class="op">)</span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/class.html" class="external-link">class</a></span><span class="op">(</span><span class="fu">comboGeneral</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/factor.html" class="external-link">factor</a></span><span class="op">(</span><span class="va">month.name</span><span class="op">)</span>,<span class="fl">3</span><span class="op">)</span><span class="op">[</span><span class="fl">1</span>,<span class="op">]</span><span class="op">)</span> <span class="op">==</span> <span class="fu"><a href="https://rdrr.io/r/base/class.html" class="external-link">class</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/factor.html" class="external-link">factor</a></span><span class="op">(</span><span class="va">month.name</span><span class="op">)</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] TRUE</span>
-<span class="r-in"></span>
-<span class="r-in"><span class="co">## Using keepResults will add a column of results</span></span>
-<span class="r-in"><span class="va">t2</span> <span class="op">=</span> <span class="fu">permuteGeneral</span><span class="op">(</span><span class="op">-</span><span class="fl">3</span>,<span class="fl">6</span>,<span class="cn">TRUE</span>,constraintFun <span class="op">=</span> <span class="st">"prod"</span>,</span>
-<span class="r-in">                         keepResults <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
-<span class="r-in"></span>
-<span class="r-in"><span class="va">t3</span> <span class="op">=</span> <span class="fu">comboGeneral</span><span class="op">(</span><span class="op">-</span><span class="fl">3</span>,<span class="fl">6</span>,<span class="cn">TRUE</span>,constraintFun <span class="op">=</span> <span class="st">"sum"</span>,</span>
-<span class="r-in">                        comparisonFun <span class="op">=</span> <span class="st">"=="</span>,</span>
-<span class="r-in">                        limitConstraints <span class="op">=</span> <span class="op">-</span><span class="fl">8</span>,</span>
-<span class="r-in">                        keepResults <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
-<span class="r-in"></span>
-<span class="r-in"><span class="co">## Using multiple constraints:</span></span>
-<span class="r-in"></span>
-<span class="r-in"><span class="co">## Get combinations such that the product</span></span>
-<span class="r-in"><span class="co">## is between 3000 and 4000 inclusive</span></span>
-<span class="r-in"><span class="fu">comboGeneral</span><span class="op">(</span><span class="fl">5</span>, <span class="fl">7</span>, <span class="cn">TRUE</span>, constraintFun <span class="op">=</span> <span class="st">"prod"</span>,</span>
-<span class="r-in">             comparisonFun <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"&gt;="</span>,<span class="st">"&lt;="</span><span class="op">)</span>,</span>
-<span class="r-in">             limitConstraints <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">3000</span>, <span class="fl">4000</span><span class="op">)</span>,</span>
-<span class="r-in">             keepResults <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co">## Using keepResults will add a column of results</span></span></span>
+<span class="r-in"><span><span class="va">t2</span> <span class="op">=</span> <span class="fu">permuteGeneral</span><span class="op">(</span><span class="op">-</span><span class="fl">3</span>,<span class="fl">6</span>,<span class="cn">TRUE</span>,constraintFun <span class="op">=</span> <span class="st">"prod"</span>,</span></span>
+<span class="r-in"><span>                         keepResults <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="va">t3</span> <span class="op">=</span> <span class="fu">comboGeneral</span><span class="op">(</span><span class="op">-</span><span class="fl">3</span>,<span class="fl">6</span>,<span class="cn">TRUE</span>,constraintFun <span class="op">=</span> <span class="st">"sum"</span>,</span></span>
+<span class="r-in"><span>                        comparisonFun <span class="op">=</span> <span class="st">"=="</span>,</span></span>
+<span class="r-in"><span>                        limitConstraints <span class="op">=</span> <span class="op">-</span><span class="fl">8</span>,</span></span>
+<span class="r-in"><span>                        keepResults <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co">## Using multiple constraints:</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co">## Get combinations such that the product</span></span></span>
+<span class="r-in"><span><span class="co">## is between 3000 and 4000 inclusive</span></span></span>
+<span class="r-in"><span><span class="fu">comboGeneral</span><span class="op">(</span><span class="fl">5</span>, <span class="fl">7</span>, <span class="cn">TRUE</span>, constraintFun <span class="op">=</span> <span class="st">"prod"</span>,</span></span>
+<span class="r-in"><span>             comparisonFun <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"&gt;="</span>,<span class="st">"&lt;="</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>             limitConstraints <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">3000</span>, <span class="fl">4000</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>             keepResults <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>       [,1] [,2] [,3] [,4] [,5] [,6] [,7] [,8]</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>  [1,]    1    1    5    5    5    5    5 3125</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>  [2,]    1    2    3    4    5    5    5 3000</span>
@@ -305,14 +321,14 @@ The output is in lexicographical order.
 <span class="r-out co"><span class="r-pr">#&gt;</span> [17,]    2    3    3    3    4    4    4 3456</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [18,]    3    3    3    3    3    3    5 3645</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [19,]    3    3    3    3    3    4    4 3888</span>
-<span class="r-in"></span>
-<span class="r-in"><span class="co">## Or, get the combinations such that the</span></span>
-<span class="r-in"><span class="co">## product is less than or equal to 10 or</span></span>
-<span class="r-in"><span class="co">## greater than or equal to 40000</span></span>
-<span class="r-in"><span class="fu">comboGeneral</span><span class="op">(</span><span class="fl">5</span>, <span class="fl">7</span>, <span class="cn">TRUE</span>, constraintFun <span class="op">=</span> <span class="st">"prod"</span>,</span>
-<span class="r-in">             comparisonFun <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"&lt;="</span>,<span class="st">"&gt;="</span><span class="op">)</span>,</span>
-<span class="r-in">             limitConstraints <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">10</span>, <span class="fl">40000</span><span class="op">)</span>,</span>
-<span class="r-in">             keepResults <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co">## Or, get the combinations such that the</span></span></span>
+<span class="r-in"><span><span class="co">## product is less than or equal to 10 or</span></span></span>
+<span class="r-in"><span><span class="co">## greater than or equal to 40000</span></span></span>
+<span class="r-in"><span><span class="fu">comboGeneral</span><span class="op">(</span><span class="fl">5</span>, <span class="fl">7</span>, <span class="cn">TRUE</span>, constraintFun <span class="op">=</span> <span class="st">"prod"</span>,</span></span>
+<span class="r-in"><span>             comparisonFun <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"&lt;="</span>,<span class="st">"&gt;="</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>             limitConstraints <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">10</span>, <span class="fl">40000</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>             keepResults <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>       [,1] [,2] [,3] [,4] [,5] [,6] [,7]  [,8]</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>  [1,]    1    1    1    1    1    1    1     1</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>  [2,]    1    1    1    1    1    1    2     2</span>
@@ -330,19 +346,19 @@ The output is in lexicographical order.
 <span class="r-out co"><span class="r-pr">#&gt;</span> [14,]    5    5    5    5    5    5    3 46875</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [15,]    5    5    5    5    5    4    4 50000</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [16,]    5    5    5    5    4    4    4 40000</span>
-<span class="r-in"></span>
-<span class="r-in"><span class="co">#### General subset sum problem</span></span>
-<span class="r-in"><span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="fl">516781810</span><span class="op">)</span></span>
-<span class="r-in"><span class="fu">comboGeneral</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/stats/Uniform.html" class="external-link">runif</a></span><span class="op">(</span><span class="fl">100</span>, <span class="fl">0</span>, <span class="fl">42</span><span class="op">)</span>, <span class="fl">5</span>, constraintFun <span class="op">=</span> <span class="st">"mean"</span>,</span>
-<span class="r-in">             comparisonFun <span class="op">=</span> <span class="st">"=="</span>, limitConstraints <span class="op">=</span> <span class="fl">30</span>,</span>
-<span class="r-in">             tolerance <span class="op">=</span> <span class="fl">0.0000002</span><span class="op">)</span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co">#### General subset sum problem</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="fl">516781810</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu">comboGeneral</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/stats/Uniform.html" class="external-link">runif</a></span><span class="op">(</span><span class="fl">100</span>, <span class="fl">0</span>, <span class="fl">42</span><span class="op">)</span>, <span class="fl">5</span>, constraintFun <span class="op">=</span> <span class="st">"mean"</span>,</span></span>
+<span class="r-in"><span>             comparisonFun <span class="op">=</span> <span class="st">"=="</span>, limitConstraints <span class="op">=</span> <span class="fl">30</span>,</span></span>
+<span class="r-in"><span>             tolerance <span class="op">=</span> <span class="fl">0.0000002</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>          [,1]     [,2]    [,3]     [,4]     [,5]</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1,] 7.554598 31.01344 34.7431 37.39019 39.29867</span>
-<span class="r-in"></span>
-<span class="r-in"></span>
-<span class="r-in"><span class="co">#### Integer Partitions</span></span>
-<span class="r-in"><span class="fu">comboGeneral</span><span class="op">(</span><span class="fl">0</span><span class="op">:</span><span class="fl">5</span>, <span class="fl">5</span>, <span class="cn">TRUE</span>, constraintFun <span class="op">=</span> <span class="st">"sum"</span>,</span>
-<span class="r-in">             comparisonFun <span class="op">=</span> <span class="st">"=="</span>, limitConstraints <span class="op">=</span> <span class="fl">5</span><span class="op">)</span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co">#### Integer Partitions</span></span></span>
+<span class="r-in"><span><span class="fu">comboGeneral</span><span class="op">(</span><span class="fl">0</span><span class="op">:</span><span class="fl">5</span>, <span class="fl">5</span>, <span class="cn">TRUE</span>, constraintFun <span class="op">=</span> <span class="st">"sum"</span>,</span></span>
+<span class="r-in"><span>             comparisonFun <span class="op">=</span> <span class="st">"=="</span>, limitConstraints <span class="op">=</span> <span class="fl">5</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>      [,1] [,2] [,3] [,4] [,5]</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1,]    0    0    0    0    5</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [2,]    0    0    0    1    4</span>
@@ -351,13 +367,13 @@ The output is in lexicographical order.
 <span class="r-out co"><span class="r-pr">#&gt;</span> [5,]    0    0    1    2    2</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [6,]    0    1    1    1    2</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [7,]    1    1    1    1    1</span>
-<span class="r-in"></span>
-<span class="r-in"></span>
-<span class="r-in"><span class="co">## Using FUN</span></span>
-<span class="r-in"><span class="fu">comboGeneral</span><span class="op">(</span><span class="fl">10000</span>, <span class="fl">5</span>, lower <span class="op">=</span> <span class="fl">20</span>, upper <span class="op">=</span> <span class="fl">22</span>,</span>
-<span class="r-in">             FUN <span class="op">=</span> <span class="kw">function</span><span class="op">(</span><span class="va">x</span><span class="op">)</span> <span class="op">{</span></span>
-<span class="r-in">                 <span class="fu"><a href="https://rdrr.io/r/base/which.html" class="external-link">which</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/cumsum.html" class="external-link">cummax</a></span><span class="op">(</span><span class="va">x</span><span class="op">)</span> <span class="op"><a href="https://rdrr.io/r/base/Arithmetic.html" class="external-link">%%</a></span> <span class="fl">2</span> <span class="op">==</span> <span class="fl">1</span><span class="op">)</span></span>
-<span class="r-in">             <span class="op">}</span><span class="op">)</span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co">## Using FUN</span></span></span>
+<span class="r-in"><span><span class="fu">comboGeneral</span><span class="op">(</span><span class="fl">10000</span>, <span class="fl">5</span>, lower <span class="op">=</span> <span class="fl">20</span>, upper <span class="op">=</span> <span class="fl">22</span>,</span></span>
+<span class="r-in"><span>             FUN <span class="op">=</span> <span class="kw">function</span><span class="op">(</span><span class="va">x</span><span class="op">)</span> <span class="op">{</span></span></span>
+<span class="r-in"><span>                 <span class="fu"><a href="https://rdrr.io/r/base/which.html" class="external-link">which</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/cumsum.html" class="external-link">cummax</a></span><span class="op">(</span><span class="va">x</span><span class="op">)</span> <span class="op"><a href="https://rdrr.io/r/base/Arithmetic.html" class="external-link">%%</a></span> <span class="fl">2</span> <span class="op">==</span> <span class="fl">1</span><span class="op">)</span></span></span>
+<span class="r-in"><span>             <span class="op">}</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [[1]]</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] 1 3</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
@@ -367,64 +383,64 @@ The output is in lexicographical order.
 <span class="r-out co"><span class="r-pr">#&gt;</span> [[3]]</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] 1 3</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-in"></span>
-<span class="r-in"><span class="kw">if</span> <span class="op">(</span><span class="cn">FALSE</span><span class="op">)</span> <span class="op">{</span></span>
-<span class="r-in"><span class="co">## Parallel example generating more than 2^31 - 1 combinations.</span></span>
-<span class="r-in"><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va">parallel</span><span class="op">)</span></span>
-<span class="r-in"><span class="va">numCores</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/parallel/detectCores.html" class="external-link">detectCores</a></span><span class="op">(</span><span class="op">)</span> <span class="op">-</span> <span class="fl">1</span></span>
-<span class="r-in"></span>
-<span class="r-in"><span class="co">## 10086780 evenly divides choose(35, 15) and is "small enough" to</span></span>
-<span class="r-in"><span class="co">## generate quickly in chunks.</span></span>
-<span class="r-in"><span class="fu"><a href="https://rdrr.io/r/base/system.time.html" class="external-link">system.time</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/parallel/mclapply.html" class="external-link">mclapply</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fu"><a href="combinatoricsCount.html">comboCount</a></span><span class="op">(</span><span class="fl">35</span>, <span class="fl">15</span><span class="op">)</span>, <span class="fl">10086780</span><span class="op">)</span>, <span class="kw">function</span><span class="op">(</span><span class="va">x</span><span class="op">)</span> <span class="op">{</span></span>
-<span class="r-in">    <span class="va">a</span> <span class="op">=</span> <span class="fu">comboGeneral</span><span class="op">(</span><span class="fl">35</span>, <span class="fl">15</span>, lower <span class="op">=</span> <span class="va">x</span>, upper <span class="op">=</span> <span class="va">x</span> <span class="op">+</span> <span class="fl">10086779</span><span class="op">)</span></span>
-<span class="r-in">    <span class="co">## do something</span></span>
-<span class="r-in">    <span class="va">x</span></span>
-<span class="r-in"><span class="op">}</span>, mc.cores <span class="op">=</span> <span class="va">numCores</span><span class="op">)</span><span class="op">)</span></span>
-<span class="r-in"></span>
-<span class="r-in"></span>
-<span class="r-in"><span class="co">## Find 13-tuple combinations of 1:25 such</span></span>
-<span class="r-in"><span class="co">## that the mean is less than 10</span></span>
-<span class="r-in"><span class="fu"><a href="https://rdrr.io/r/base/system.time.html" class="external-link">system.time</a></span><span class="op">(</span><span class="va">myComb</span> <span class="op">&lt;-</span> <span class="fu">comboGeneral</span><span class="op">(</span><span class="fl">25</span>, <span class="fl">13</span>, <span class="cn">FALSE</span>,</span>
-<span class="r-in">                                   constraintFun <span class="op">=</span> <span class="st">"mean"</span>,</span>
-<span class="r-in">                                   comparisonFun <span class="op">=</span> <span class="st">"&lt;"</span>,</span>
-<span class="r-in">                                   limitConstraints <span class="op">=</span> <span class="fl">10</span><span class="op">)</span><span class="op">)</span></span>
-<span class="r-in"></span>
-<span class="r-in"><span class="co">## Alternatively, you must generate all combinations and subsequently</span></span>
-<span class="r-in"><span class="co">## subset to obtain the combinations that meet the criteria</span></span>
-<span class="r-in"><span class="fu"><a href="https://rdrr.io/r/base/system.time.html" class="external-link">system.time</a></span><span class="op">(</span><span class="va">myComb2</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/utils/combn.html" class="external-link">combn</a></span><span class="op">(</span><span class="fl">25</span>, <span class="fl">13</span><span class="op">)</span><span class="op">)</span></span>
-<span class="r-in"><span class="fu"><a href="https://rdrr.io/r/base/system.time.html" class="external-link">system.time</a></span><span class="op">(</span><span class="va">myCols</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/which.html" class="external-link">which</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/colSums.html" class="external-link">colMeans</a></span><span class="op">(</span><span class="va">myComb2</span><span class="op">)</span> <span class="op">&lt;</span> <span class="fl">10</span><span class="op">)</span><span class="op">)</span></span>
-<span class="r-in"><span class="fu"><a href="https://rdrr.io/r/base/system.time.html" class="external-link">system.time</a></span><span class="op">(</span><span class="va">myComb2</span> <span class="op">&lt;-</span> <span class="va">myComb2</span><span class="op">[</span>, <span class="va">myCols</span><span class="op">]</span><span class="op">)</span></span>
-<span class="r-in"></span>
-<span class="r-in"><span class="co">## Any variation is much slower</span></span>
-<span class="r-in"><span class="fu"><a href="https://rdrr.io/r/base/system.time.html" class="external-link">system.time</a></span><span class="op">(</span><span class="va">myComb2</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/utils/combn.html" class="external-link">combn</a></span><span class="op">(</span><span class="fl">25</span>, <span class="fl">13</span><span class="op">)</span><span class="op">[</span>,<span class="fu"><a href="https://rdrr.io/r/utils/combn.html" class="external-link">combn</a></span><span class="op">(</span><span class="fl">25</span>, <span class="fl">13</span>, <span class="va">mean</span><span class="op">)</span> <span class="op">&lt;</span> <span class="fl">10</span><span class="op">]</span><span class="op">)</span></span>
-<span class="r-in"></span>
-<span class="r-in"><span class="co">## Test equality with myComb above</span></span>
-<span class="r-in"><span class="fu"><a href="https://rdrr.io/r/base/all.equal.html" class="external-link">all.equal</a></span><span class="op">(</span><span class="va">myComb</span>, <span class="fu"><a href="https://rdrr.io/r/base/t.html" class="external-link">t</a></span><span class="op">(</span><span class="va">myComb2</span><span class="op">)</span><span class="op">)</span></span>
-<span class="r-in"></span>
-<span class="r-in"></span>
-<span class="r-in"><span class="co">## much faster using Parallel = TRUE</span></span>
-<span class="r-in"><span class="fu"><a href="https://rdrr.io/r/base/system.time.html" class="external-link">system.time</a></span><span class="op">(</span><span class="fu">permuteGeneral</span><span class="op">(</span><span class="fl">15</span>, <span class="fl">8</span>, lower <span class="op">=</span> <span class="fl">250000000</span>, Parallel <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span></span>
-<span class="r-in"><span class="fu"><a href="https://rdrr.io/r/base/system.time.html" class="external-link">system.time</a></span><span class="op">(</span><span class="fu">permuteGeneral</span><span class="op">(</span><span class="fl">15</span>, <span class="fl">8</span>, lower <span class="op">=</span> <span class="fl">250000000</span><span class="op">)</span><span class="op">)</span></span>
-<span class="r-in"></span>
-<span class="r-in"><span class="fu"><a href="https://rdrr.io/r/base/system.time.html" class="external-link">system.time</a></span><span class="op">(</span><span class="fu">comboGeneral</span><span class="op">(</span><span class="fl">30</span>, <span class="fl">10</span>, Parallel <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span></span>
-<span class="r-in"><span class="fu"><a href="https://rdrr.io/r/base/system.time.html" class="external-link">system.time</a></span><span class="op">(</span><span class="fu">comboGeneral</span><span class="op">(</span><span class="fl">30</span>, <span class="fl">10</span><span class="op">)</span><span class="op">)</span></span>
-<span class="r-in"></span>
-<span class="r-in"><span class="co">## Parallel also works when applying constraintFun solely</span></span>
-<span class="r-in"><span class="fu"><a href="https://rdrr.io/r/base/system.time.html" class="external-link">system.time</a></span><span class="op">(</span><span class="fu">comboGeneral</span><span class="op">(</span><span class="fl">30</span>, <span class="fl">10</span>, Parallel <span class="op">=</span> <span class="cn">TRUE</span>, constraintFun <span class="op">=</span> <span class="st">"sum"</span><span class="op">)</span><span class="op">)</span></span>
-<span class="r-in"><span class="fu"><a href="https://rdrr.io/r/base/system.time.html" class="external-link">system.time</a></span><span class="op">(</span><span class="fu">comboGeneral</span><span class="op">(</span><span class="fl">30</span>, <span class="fl">10</span>, constraintFun <span class="op">=</span> <span class="st">"sum"</span><span class="op">)</span><span class="op">)</span></span>
-<span class="r-in"></span>
-<span class="r-in"><span class="co">## Depending on # of cores available, using Parallel with</span></span>
-<span class="r-in"><span class="co">## constraintFun is faster than rowSums or rowMeans alone</span></span>
-<span class="r-in"><span class="va">combs</span> <span class="op">=</span> <span class="fu">comboGeneral</span><span class="op">(</span><span class="fl">30</span>, <span class="fl">10</span><span class="op">)</span></span>
-<span class="r-in"><span class="fu"><a href="https://rdrr.io/r/base/system.time.html" class="external-link">system.time</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/colSums.html" class="external-link">rowSums</a></span><span class="op">(</span><span class="va">combs</span><span class="op">)</span><span class="op">)</span></span>
-<span class="r-in"></span>
-<span class="r-in"><span class="co">## Fun example... see stackoverflow:</span></span>
-<span class="r-in"><span class="co">## https://stackoverflow.com/q/22218640/4408538</span></span>
-<span class="r-in"><span class="fu"><a href="https://rdrr.io/r/base/system.time.html" class="external-link">system.time</a></span><span class="op">(</span><span class="fu">permuteGeneral</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq</a></span><span class="op">(</span><span class="fl">0L</span>,<span class="fl">100L</span>,<span class="fl">10L</span><span class="op">)</span>,<span class="fl">8</span>,<span class="cn">TRUE</span>,</span>
-<span class="r-in">                                constraintFun <span class="op">=</span> <span class="st">"sum"</span>,</span>
-<span class="r-in">                                comparisonFun <span class="op">=</span> <span class="st">"=="</span>,</span>
-<span class="r-in">                                limitConstraints <span class="op">=</span> <span class="fl">100</span><span class="op">)</span><span class="op">)</span></span>
-<span class="r-in"><span class="op">}</span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="kw">if</span> <span class="op">(</span><span class="cn">FALSE</span><span class="op">)</span> <span class="op">{</span></span></span>
+<span class="r-in"><span><span class="co">## Parallel example generating more than 2^31 - 1 combinations.</span></span></span>
+<span class="r-in"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va">parallel</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">numCores</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/parallel/detectCores.html" class="external-link">detectCores</a></span><span class="op">(</span><span class="op">)</span> <span class="op">-</span> <span class="fl">1</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co">## 10086780 evenly divides choose(35, 15) and is "small enough" to</span></span></span>
+<span class="r-in"><span><span class="co">## generate quickly in chunks.</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/system.time.html" class="external-link">system.time</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/parallel/mclapply.html" class="external-link">mclapply</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fu"><a href="combinatoricsCount.html">comboCount</a></span><span class="op">(</span><span class="fl">35</span>, <span class="fl">15</span><span class="op">)</span>, <span class="fl">10086780</span><span class="op">)</span>, <span class="kw">function</span><span class="op">(</span><span class="va">x</span><span class="op">)</span> <span class="op">{</span></span></span>
+<span class="r-in"><span>    <span class="va">a</span> <span class="op">=</span> <span class="fu">comboGeneral</span><span class="op">(</span><span class="fl">35</span>, <span class="fl">15</span>, lower <span class="op">=</span> <span class="va">x</span>, upper <span class="op">=</span> <span class="va">x</span> <span class="op">+</span> <span class="fl">10086779</span><span class="op">)</span></span></span>
+<span class="r-in"><span>    <span class="co">## do something</span></span></span>
+<span class="r-in"><span>    <span class="va">x</span></span></span>
+<span class="r-in"><span><span class="op">}</span>, mc.cores <span class="op">=</span> <span class="va">numCores</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co">## Find 13-tuple combinations of 1:25 such</span></span></span>
+<span class="r-in"><span><span class="co">## that the mean is less than 10</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/system.time.html" class="external-link">system.time</a></span><span class="op">(</span><span class="va">myComb</span> <span class="op">&lt;-</span> <span class="fu">comboGeneral</span><span class="op">(</span><span class="fl">25</span>, <span class="fl">13</span>, <span class="cn">FALSE</span>,</span></span>
+<span class="r-in"><span>                                   constraintFun <span class="op">=</span> <span class="st">"mean"</span>,</span></span>
+<span class="r-in"><span>                                   comparisonFun <span class="op">=</span> <span class="st">"&lt;"</span>,</span></span>
+<span class="r-in"><span>                                   limitConstraints <span class="op">=</span> <span class="fl">10</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co">## Alternatively, you must generate all combinations and subsequently</span></span></span>
+<span class="r-in"><span><span class="co">## subset to obtain the combinations that meet the criteria</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/system.time.html" class="external-link">system.time</a></span><span class="op">(</span><span class="va">myComb2</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/utils/combn.html" class="external-link">combn</a></span><span class="op">(</span><span class="fl">25</span>, <span class="fl">13</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/system.time.html" class="external-link">system.time</a></span><span class="op">(</span><span class="va">myCols</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/which.html" class="external-link">which</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/colSums.html" class="external-link">colMeans</a></span><span class="op">(</span><span class="va">myComb2</span><span class="op">)</span> <span class="op">&lt;</span> <span class="fl">10</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/system.time.html" class="external-link">system.time</a></span><span class="op">(</span><span class="va">myComb2</span> <span class="op">&lt;-</span> <span class="va">myComb2</span><span class="op">[</span>, <span class="va">myCols</span><span class="op">]</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co">## Any variation is much slower</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/system.time.html" class="external-link">system.time</a></span><span class="op">(</span><span class="va">myComb2</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/utils/combn.html" class="external-link">combn</a></span><span class="op">(</span><span class="fl">25</span>, <span class="fl">13</span><span class="op">)</span><span class="op">[</span>,<span class="fu"><a href="https://rdrr.io/r/utils/combn.html" class="external-link">combn</a></span><span class="op">(</span><span class="fl">25</span>, <span class="fl">13</span>, <span class="va">mean</span><span class="op">)</span> <span class="op">&lt;</span> <span class="fl">10</span><span class="op">]</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co">## Test equality with myComb above</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/all.equal.html" class="external-link">all.equal</a></span><span class="op">(</span><span class="va">myComb</span>, <span class="fu"><a href="https://rdrr.io/r/base/t.html" class="external-link">t</a></span><span class="op">(</span><span class="va">myComb2</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co">## much faster using Parallel = TRUE</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/system.time.html" class="external-link">system.time</a></span><span class="op">(</span><span class="fu">permuteGeneral</span><span class="op">(</span><span class="fl">15</span>, <span class="fl">8</span>, lower <span class="op">=</span> <span class="fl">250000000</span>, Parallel <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/system.time.html" class="external-link">system.time</a></span><span class="op">(</span><span class="fu">permuteGeneral</span><span class="op">(</span><span class="fl">15</span>, <span class="fl">8</span>, lower <span class="op">=</span> <span class="fl">250000000</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/system.time.html" class="external-link">system.time</a></span><span class="op">(</span><span class="fu">comboGeneral</span><span class="op">(</span><span class="fl">30</span>, <span class="fl">10</span>, Parallel <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/system.time.html" class="external-link">system.time</a></span><span class="op">(</span><span class="fu">comboGeneral</span><span class="op">(</span><span class="fl">30</span>, <span class="fl">10</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co">## Parallel also works when applying constraintFun solely</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/system.time.html" class="external-link">system.time</a></span><span class="op">(</span><span class="fu">comboGeneral</span><span class="op">(</span><span class="fl">30</span>, <span class="fl">10</span>, Parallel <span class="op">=</span> <span class="cn">TRUE</span>, constraintFun <span class="op">=</span> <span class="st">"sum"</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/system.time.html" class="external-link">system.time</a></span><span class="op">(</span><span class="fu">comboGeneral</span><span class="op">(</span><span class="fl">30</span>, <span class="fl">10</span>, constraintFun <span class="op">=</span> <span class="st">"sum"</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co">## Depending on # of cores available, using Parallel with</span></span></span>
+<span class="r-in"><span><span class="co">## constraintFun is faster than rowSums or rowMeans alone</span></span></span>
+<span class="r-in"><span><span class="va">combs</span> <span class="op">=</span> <span class="fu">comboGeneral</span><span class="op">(</span><span class="fl">30</span>, <span class="fl">10</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/system.time.html" class="external-link">system.time</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/colSums.html" class="external-link">rowSums</a></span><span class="op">(</span><span class="va">combs</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co">## Fun example... see stackoverflow:</span></span></span>
+<span class="r-in"><span><span class="co">## https://stackoverflow.com/q/22218640/4408538</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/system.time.html" class="external-link">system.time</a></span><span class="op">(</span><span class="fu">permuteGeneral</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq</a></span><span class="op">(</span><span class="fl">0L</span>,<span class="fl">100L</span>,<span class="fl">10L</span><span class="op">)</span>,<span class="fl">8</span>,<span class="cn">TRUE</span>,</span></span>
+<span class="r-in"><span>                                constraintFun <span class="op">=</span> <span class="st">"sum"</span>,</span></span>
+<span class="r-in"><span>                                comparisonFun <span class="op">=</span> <span class="st">"=="</span>,</span></span>
+<span class="r-in"><span>                                limitConstraints <span class="op">=</span> <span class="fl">100</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="op">}</span></span></span>
 </code></pre></div>
     </div>
   </div>
@@ -439,8 +455,7 @@ The output is in lexicographical order.
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a>
-2.0.2.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.6.</p>
 </div>
 
       </footer></div>

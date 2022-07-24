@@ -33,7 +33,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">RcppAlgos</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">2.5.5</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">2.6.0</span>
       </span>
     </div>
 
@@ -43,14 +43,14 @@
   <a href="../reference/index.html">Reference</a>
 </li>
 <li class="dropdown">
-  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
     Articles
      
     <span class="caret"></span>
   </a>
   <ul class="dropdown-menu" role="menu">
 <li>
-      <a href="../articles/CombPermConstraints.html">Constraints and Integer Partitions</a>
+      <a href="../articles/CombPermConstraints.html">Constraints, Integer Partitions, and Integer Compositions</a>
     </li>
     <li>
       <a href="../articles/CombinatorialSampling.html">Combinatorial Sampling and Ranking</a>
@@ -139,116 +139,116 @@ and Integer Partitions</a>. Observe (We continue to use the
 <code>ht</code> function defined in the <a href="https://jwood000.github.io/RcppAlgos/articles/GeneralCombinatorics.html" class="external-link">Combination
 and Permutation Basics</a> vignette):</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/jwood000/RcppAlgos" class="external-link">RcppAlgos</a></span><span class="op">)</span>
-
-<span class="co">## Each element can only occur once</span>
-<span class="fu">ht</span><span class="op">(</span><span class="fu"><a href="../reference/partitionsGeneral.html">partitionsGeneral</a></span><span class="op">(</span><span class="fl">3</span><span class="op">:</span><span class="fl">18</span>, <span class="fl">5</span>, target <span class="op">=</span> <span class="fl">50</span><span class="op">)</span><span class="op">)</span>
-<span class="co">#&gt; head --&gt;</span>
-<span class="co">#&gt;      [,1] [,2] [,3] [,4] [,5]</span>
-<span class="co">#&gt; [1,]    3    4    8   17   18</span>
-<span class="co">#&gt; [2,]    3    4    9   16   18</span>
-<span class="co">#&gt; [3,]    3    4   10   15   18</span>
-<span class="co">#&gt; [4,]    3    4   10   16   17</span>
-<span class="co">#&gt; [5,]    3    4   11   14   18</span>
-<span class="co">#&gt; --------</span>
-<span class="co">#&gt; tail --&gt;</span>
-<span class="co">#&gt;        [,1] [,2] [,3] [,4] [,5]</span>
-<span class="co">#&gt; [180,]    7    8    9   12   14</span>
-<span class="co">#&gt; [181,]    7    8   10   11   14</span>
-<span class="co">#&gt; [182,]    7    8   10   12   13</span>
-<span class="co">#&gt; [183,]    7    9   10   11   13</span>
-<span class="co">#&gt; [184,]    8    9   10   11   12</span>
-
-<span class="co">## What about allowing repetition?</span>
-<span class="fu">ht</span><span class="op">(</span><span class="fu"><a href="../reference/partitionsGeneral.html">partitionsGeneral</a></span><span class="op">(</span><span class="fl">3</span><span class="op">:</span><span class="fl">18</span>, <span class="fl">5</span>, <span class="cn">TRUE</span>, target <span class="op">=</span> <span class="fl">50</span><span class="op">)</span><span class="op">)</span>
-<span class="co">#&gt; head --&gt;</span>
-<span class="co">#&gt;      [,1] [,2] [,3] [,4] [,5]</span>
-<span class="co">#&gt; [1,]    3    3    8   18   18</span>
-<span class="co">#&gt; [2,]    3    3    9   17   18</span>
-<span class="co">#&gt; [3,]    3    3   10   16   18</span>
-<span class="co">#&gt; [4,]    3    3   10   17   17</span>
-<span class="co">#&gt; [5,]    3    3   11   15   18</span>
-<span class="co">#&gt; --------</span>
-<span class="co">#&gt; tail --&gt;</span>
-<span class="co">#&gt;        [,1] [,2] [,3] [,4] [,5]</span>
-<span class="co">#&gt; [507,]    9    9    9   11   12</span>
-<span class="co">#&gt; [508,]    9    9   10   10   12</span>
-<span class="co">#&gt; [509,]    9    9   10   11   11</span>
-<span class="co">#&gt; [510,]    9   10   10   10   11</span>
-<span class="co">#&gt; [511,]   10   10   10   10   10</span>
-
-<span class="co">## Even works on multisets</span>
-<span class="fu">ht</span><span class="op">(</span><span class="fu"><a href="../reference/partitionsGeneral.html">partitionsGeneral</a></span><span class="op">(</span><span class="fl">3</span><span class="op">:</span><span class="fl">18</span>, <span class="fl">5</span>, freqs <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fl">1</span><span class="op">:</span><span class="fl">4</span>, <span class="fl">4</span><span class="op">)</span>, target <span class="op">=</span> <span class="fl">50</span><span class="op">)</span><span class="op">)</span>
-<span class="co">#&gt; head --&gt;</span>
-<span class="co">#&gt;      [,1] [,2] [,3] [,4] [,5]</span>
-<span class="co">#&gt; [1,]    3    4    7   18   18</span>
-<span class="co">#&gt; [2,]    3    4    8   17   18</span>
-<span class="co">#&gt; [3,]    3    4    9   16   18</span>
-<span class="co">#&gt; [4,]    3    4    9   17   17</span>
-<span class="co">#&gt; [5,]    3    4   10   15   18</span>
-<span class="co">#&gt; --------</span>
-<span class="co">#&gt; tail --&gt;</span>
-<span class="co">#&gt;        [,1] [,2] [,3] [,4] [,5]</span>
-<span class="co">#&gt; [401,]    8   10   10   10   12</span>
-<span class="co">#&gt; [402,]    9    9    9   10   13</span>
-<span class="co">#&gt; [403,]    9    9    9   11   12</span>
-<span class="co">#&gt; [404,]    9    9   10   10   12</span>
-<span class="co">#&gt; [405,]    9   10   10   10   11</span></code></pre></div>
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/jwood000/RcppAlgos" class="external-link">RcppAlgos</a></span><span class="op">)</span></span>
+<span></span>
+<span><span class="co">## Each element can only occur once</span></span>
+<span><span class="fu">ht</span><span class="op">(</span><span class="fu"><a href="../reference/partitionsGeneral.html">partitionsGeneral</a></span><span class="op">(</span><span class="fl">3</span><span class="op">:</span><span class="fl">18</span>, <span class="fl">5</span>, target <span class="op">=</span> <span class="fl">50</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="co">#&gt; head --&gt;</span></span>
+<span><span class="co">#&gt;      [,1] [,2] [,3] [,4] [,5]</span></span>
+<span><span class="co">#&gt; [1,]    3    4    8   17   18</span></span>
+<span><span class="co">#&gt; [2,]    3    4    9   16   18</span></span>
+<span><span class="co">#&gt; [3,]    3    4   10   15   18</span></span>
+<span><span class="co">#&gt; [4,]    3    4   10   16   17</span></span>
+<span><span class="co">#&gt; [5,]    3    4   11   14   18</span></span>
+<span><span class="co">#&gt; --------</span></span>
+<span><span class="co">#&gt; tail --&gt;</span></span>
+<span><span class="co">#&gt;        [,1] [,2] [,3] [,4] [,5]</span></span>
+<span><span class="co">#&gt; [180,]    7    8    9   12   14</span></span>
+<span><span class="co">#&gt; [181,]    7    8   10   11   14</span></span>
+<span><span class="co">#&gt; [182,]    7    8   10   12   13</span></span>
+<span><span class="co">#&gt; [183,]    7    9   10   11   13</span></span>
+<span><span class="co">#&gt; [184,]    8    9   10   11   12</span></span>
+<span></span>
+<span><span class="co">## What about allowing repetition?</span></span>
+<span><span class="fu">ht</span><span class="op">(</span><span class="fu"><a href="../reference/partitionsGeneral.html">partitionsGeneral</a></span><span class="op">(</span><span class="fl">3</span><span class="op">:</span><span class="fl">18</span>, <span class="fl">5</span>, <span class="cn">TRUE</span>, target <span class="op">=</span> <span class="fl">50</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="co">#&gt; head --&gt;</span></span>
+<span><span class="co">#&gt;      [,1] [,2] [,3] [,4] [,5]</span></span>
+<span><span class="co">#&gt; [1,]    3    3    8   18   18</span></span>
+<span><span class="co">#&gt; [2,]    3    3    9   17   18</span></span>
+<span><span class="co">#&gt; [3,]    3    3   10   16   18</span></span>
+<span><span class="co">#&gt; [4,]    3    3   10   17   17</span></span>
+<span><span class="co">#&gt; [5,]    3    3   11   15   18</span></span>
+<span><span class="co">#&gt; --------</span></span>
+<span><span class="co">#&gt; tail --&gt;</span></span>
+<span><span class="co">#&gt;        [,1] [,2] [,3] [,4] [,5]</span></span>
+<span><span class="co">#&gt; [507,]    9    9    9   11   12</span></span>
+<span><span class="co">#&gt; [508,]    9    9   10   10   12</span></span>
+<span><span class="co">#&gt; [509,]    9    9   10   11   11</span></span>
+<span><span class="co">#&gt; [510,]    9   10   10   10   11</span></span>
+<span><span class="co">#&gt; [511,]   10   10   10   10   10</span></span>
+<span></span>
+<span><span class="co">## Even works on multisets</span></span>
+<span><span class="fu">ht</span><span class="op">(</span><span class="fu"><a href="../reference/partitionsGeneral.html">partitionsGeneral</a></span><span class="op">(</span><span class="fl">3</span><span class="op">:</span><span class="fl">18</span>, <span class="fl">5</span>, freqs <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fl">1</span><span class="op">:</span><span class="fl">4</span>, <span class="fl">4</span><span class="op">)</span>, target <span class="op">=</span> <span class="fl">50</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="co">#&gt; head --&gt;</span></span>
+<span><span class="co">#&gt;      [,1] [,2] [,3] [,4] [,5]</span></span>
+<span><span class="co">#&gt; [1,]    3    4    7   18   18</span></span>
+<span><span class="co">#&gt; [2,]    3    4    8   17   18</span></span>
+<span><span class="co">#&gt; [3,]    3    4    9   16   18</span></span>
+<span><span class="co">#&gt; [4,]    3    4    9   17   17</span></span>
+<span><span class="co">#&gt; [5,]    3    4   10   15   18</span></span>
+<span><span class="co">#&gt; --------</span></span>
+<span><span class="co">#&gt; tail --&gt;</span></span>
+<span><span class="co">#&gt;        [,1] [,2] [,3] [,4] [,5]</span></span>
+<span><span class="co">#&gt; [401,]    8   10   10   10   12</span></span>
+<span><span class="co">#&gt; [402,]    9    9    9   10   13</span></span>
+<span><span class="co">#&gt; [403,]    9    9    9   11   12</span></span>
+<span><span class="co">#&gt; [404,]    9    9   10   10   12</span></span>
+<span><span class="co">#&gt; [405,]    9   10   10   10   11</span></span></code></pre></div>
 <p>In fact, these optimized algorithms can be applied when the vector
 passed has the quality that if you were to sort them, the difference of
 each element with it’s neighbor is constant (E.g.
 <code>c(121, 126, 131, 136, ..., 221)</code>).</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/base/system.time.html" class="external-link">system.time</a></span><span class="op">(</span><span class="va">genParts</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/partitionsGeneral.html">partitionsGeneral</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq</a></span><span class="op">(</span><span class="fl">121</span>, <span class="fl">221</span>, <span class="fl">5</span><span class="op">)</span>, <span class="fl">13</span>,
-                                          <span class="cn">TRUE</span>, target <span class="op">=</span> <span class="fl">2613</span><span class="op">)</span><span class="op">)</span>
-<span class="co">#&gt;  user  system elapsed</span>
-<span class="co">#&gt; 0.006   0.002   0.008    ## over 100 thousand results out of a possible 573 million</span>
-
-<span class="fu">ht</span><span class="op">(</span><span class="va">genParts</span><span class="op">)</span>
-<span class="co">#&gt; head --&gt;</span>
-<span class="co">#&gt;      [,1] [,2] [,3] [,4] [,5] [,6] [,7] [,8] [,9] [,10] [,11] [,12] [,13]</span>
-<span class="co">#&gt; [1,]  121  121  161  221  221  221  221  221  221   221   221   221   221</span>
-<span class="co">#&gt; [2,]  121  121  166  216  221  221  221  221  221   221   221   221   221</span>
-<span class="co">#&gt; [3,]  121  121  171  211  221  221  221  221  221   221   221   221   221</span>
-<span class="co">#&gt; [4,]  121  121  171  216  216  221  221  221  221   221   221   221   221</span>
-<span class="co">#&gt; [5,]  121  121  176  206  221  221  221  221  221   221   221   221   221</span>
-<span class="co">#&gt; --------</span>
-<span class="co">#&gt; tail --&gt;</span>
-<span class="co">#&gt;           [,1] [,2] [,3] [,4] [,5] [,6] [,7] [,8] [,9] [,10] [,11] [,12] [,13]</span>
-<span class="co">#&gt; [119542,]  196  196  196  201  201  201  201  201  201   201   206   206   206</span>
-<span class="co">#&gt; [119543,]  196  196  201  201  201  201  201  201  201   201   201   201   211</span>
-<span class="co">#&gt; [119544,]  196  196  201  201  201  201  201  201  201   201   201   206   206</span>
-<span class="co">#&gt; [119545,]  196  201  201  201  201  201  201  201  201   201   201   201   206</span>
-<span class="co">#&gt; [119546,]  201  201  201  201  201  201  201  201  201   201   201   201   201</span>
-
-<span class="fu"><a href="https://rdrr.io/r/base/formatc.html" class="external-link">prettyNum</a></span><span class="op">(</span><span class="fu"><a href="../reference/combinatoricsCount.html">comboCount</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq</a></span><span class="op">(</span><span class="fl">121</span>, <span class="fl">221</span>, <span class="fl">5</span><span class="op">)</span>, <span class="fl">13</span>, <span class="cn">TRUE</span><span class="op">)</span>, big.mark <span class="op">=</span> <span class="st">","</span><span class="op">)</span>
-<span class="co">#&gt; [1] "573,166,440"</span>
-
-<span class="fu"><a href="https://rdrr.io/r/base/system.time.html" class="external-link">system.time</a></span><span class="op">(</span><span class="va">genMultiParts</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/partitionsGeneral.html">partitionsGeneral</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq</a></span><span class="op">(</span><span class="fl">121</span>, <span class="fl">221</span>, <span class="fl">5</span><span class="op">)</span>, <span class="fl">13</span>,
-                                               freqs <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fl">1</span><span class="op">:</span><span class="fl">7</span>, <span class="fl">3</span><span class="op">)</span>,
-                                               targe <span class="op">=</span> <span class="fl">2613</span><span class="op">)</span><span class="op">)</span>
-<span class="co">#&gt;  user  system elapsed</span>
-<span class="co">#&gt; 0.007   0.003   0.011    ## over 70 thousand results out of a possible 256 million!</span>
-
-<span class="fu">ht</span><span class="op">(</span><span class="va">genMultiParts</span><span class="op">)</span>
-<span class="co">#&gt; head --&gt;</span>
-<span class="co">#&gt;      [,1] [,2] [,3] [,4] [,5] [,6] [,7] [,8] [,9] [,10] [,11] [,12] [,13]</span>
-<span class="co">#&gt; [1,]  121  126  171  216  216  216  221  221  221   221   221   221   221</span>
-<span class="co">#&gt; [2,]  121  126  176  211  216  216  221  221  221   221   221   221   221</span>
-<span class="co">#&gt; [3,]  121  126  176  216  216  216  216  221  221   221   221   221   221</span>
-<span class="co">#&gt; [4,]  121  126  181  206  216  216  221  221  221   221   221   221   221</span>
-<span class="co">#&gt; [5,]  121  126  181  211  211  216  221  221  221   221   221   221   221</span>
-<span class="co">#&gt; --------</span>
-<span class="co">#&gt; tail --&gt;</span>
-<span class="co">#&gt;          [,1] [,2] [,3] [,4] [,5] [,6] [,7] [,8] [,9] [,10] [,11] [,12] [,13]</span>
-<span class="co">#&gt; [70291,]  186  186  191  196  196  201  201  206  206   211   211   211   211</span>
-<span class="co">#&gt; [70292,]  186  186  191  196  196  201  206  206  206   206   211   211   211</span>
-<span class="co">#&gt; [70293,]  186  186  191  196  201  201  201  206  206   206   206   211   216</span>
-<span class="co">#&gt; [70294,]  186  186  191  196  201  201  201  206  206   206   211   211   211</span>
-<span class="co">#&gt; [70295,]  186  186  196  196  201  201  201  206  206   206   206   211   211</span>
-
-<span class="fu"><a href="https://rdrr.io/r/base/formatc.html" class="external-link">prettyNum</a></span><span class="op">(</span><span class="fu"><a href="../reference/combinatoricsCount.html">comboCount</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq</a></span><span class="op">(</span><span class="fl">121</span>, <span class="fl">221</span>, <span class="fl">5</span><span class="op">)</span>, <span class="fl">13</span>, freqs <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fl">1</span><span class="op">:</span><span class="fl">7</span>, <span class="fl">3</span><span class="op">)</span><span class="op">)</span>, big.mark <span class="op">=</span> <span class="st">","</span><span class="op">)</span>
-<span class="co">#&gt; [1] "256,047,675"</span></code></pre></div>
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/system.time.html" class="external-link">system.time</a></span><span class="op">(</span><span class="va">genParts</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/partitionsGeneral.html">partitionsGeneral</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq</a></span><span class="op">(</span><span class="fl">121</span>, <span class="fl">221</span>, <span class="fl">5</span><span class="op">)</span>, <span class="fl">13</span>,</span>
+<span>                                          <span class="cn">TRUE</span>, target <span class="op">=</span> <span class="fl">2613</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="co">#&gt;  user  system elapsed</span></span>
+<span><span class="co">#&gt; 0.006   0.002   0.008    ## over 100 thousand results out of a possible 573 million</span></span>
+<span></span>
+<span><span class="fu">ht</span><span class="op">(</span><span class="va">genParts</span><span class="op">)</span></span>
+<span><span class="co">#&gt; head --&gt;</span></span>
+<span><span class="co">#&gt;      [,1] [,2] [,3] [,4] [,5] [,6] [,7] [,8] [,9] [,10] [,11] [,12] [,13]</span></span>
+<span><span class="co">#&gt; [1,]  121  121  161  221  221  221  221  221  221   221   221   221   221</span></span>
+<span><span class="co">#&gt; [2,]  121  121  166  216  221  221  221  221  221   221   221   221   221</span></span>
+<span><span class="co">#&gt; [3,]  121  121  171  211  221  221  221  221  221   221   221   221   221</span></span>
+<span><span class="co">#&gt; [4,]  121  121  171  216  216  221  221  221  221   221   221   221   221</span></span>
+<span><span class="co">#&gt; [5,]  121  121  176  206  221  221  221  221  221   221   221   221   221</span></span>
+<span><span class="co">#&gt; --------</span></span>
+<span><span class="co">#&gt; tail --&gt;</span></span>
+<span><span class="co">#&gt;           [,1] [,2] [,3] [,4] [,5] [,6] [,7] [,8] [,9] [,10] [,11] [,12] [,13]</span></span>
+<span><span class="co">#&gt; [119542,]  196  196  196  201  201  201  201  201  201   201   206   206   206</span></span>
+<span><span class="co">#&gt; [119543,]  196  196  201  201  201  201  201  201  201   201   201   201   211</span></span>
+<span><span class="co">#&gt; [119544,]  196  196  201  201  201  201  201  201  201   201   201   206   206</span></span>
+<span><span class="co">#&gt; [119545,]  196  201  201  201  201  201  201  201  201   201   201   201   206</span></span>
+<span><span class="co">#&gt; [119546,]  201  201  201  201  201  201  201  201  201   201   201   201   201</span></span>
+<span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/formatc.html" class="external-link">prettyNum</a></span><span class="op">(</span><span class="fu"><a href="../reference/combinatoricsCount.html">comboCount</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq</a></span><span class="op">(</span><span class="fl">121</span>, <span class="fl">221</span>, <span class="fl">5</span><span class="op">)</span>, <span class="fl">13</span>, <span class="cn">TRUE</span><span class="op">)</span>, big.mark <span class="op">=</span> <span class="st">","</span><span class="op">)</span></span>
+<span><span class="co">#&gt; [1] "573,166,440"</span></span>
+<span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/system.time.html" class="external-link">system.time</a></span><span class="op">(</span><span class="va">genMultiParts</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/partitionsGeneral.html">partitionsGeneral</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq</a></span><span class="op">(</span><span class="fl">121</span>, <span class="fl">221</span>, <span class="fl">5</span><span class="op">)</span>, <span class="fl">13</span>,</span>
+<span>                                               freqs <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fl">1</span><span class="op">:</span><span class="fl">7</span>, <span class="fl">3</span><span class="op">)</span>,</span>
+<span>                                               targe <span class="op">=</span> <span class="fl">2613</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="co">#&gt;  user  system elapsed</span></span>
+<span><span class="co">#&gt; 0.007   0.003   0.011    ## over 70 thousand results out of a possible 256 million!</span></span>
+<span></span>
+<span><span class="fu">ht</span><span class="op">(</span><span class="va">genMultiParts</span><span class="op">)</span></span>
+<span><span class="co">#&gt; head --&gt;</span></span>
+<span><span class="co">#&gt;      [,1] [,2] [,3] [,4] [,5] [,6] [,7] [,8] [,9] [,10] [,11] [,12] [,13]</span></span>
+<span><span class="co">#&gt; [1,]  121  126  171  216  216  216  221  221  221   221   221   221   221</span></span>
+<span><span class="co">#&gt; [2,]  121  126  176  211  216  216  221  221  221   221   221   221   221</span></span>
+<span><span class="co">#&gt; [3,]  121  126  176  216  216  216  216  221  221   221   221   221   221</span></span>
+<span><span class="co">#&gt; [4,]  121  126  181  206  216  216  221  221  221   221   221   221   221</span></span>
+<span><span class="co">#&gt; [5,]  121  126  181  211  211  216  221  221  221   221   221   221   221</span></span>
+<span><span class="co">#&gt; --------</span></span>
+<span><span class="co">#&gt; tail --&gt;</span></span>
+<span><span class="co">#&gt;          [,1] [,2] [,3] [,4] [,5] [,6] [,7] [,8] [,9] [,10] [,11] [,12] [,13]</span></span>
+<span><span class="co">#&gt; [70291,]  186  186  191  196  196  201  201  206  206   211   211   211   211</span></span>
+<span><span class="co">#&gt; [70292,]  186  186  191  196  196  201  206  206  206   206   211   211   211</span></span>
+<span><span class="co">#&gt; [70293,]  186  186  191  196  201  201  201  206  206   206   206   211   216</span></span>
+<span><span class="co">#&gt; [70294,]  186  186  191  196  201  201  201  206  206   206   211   211   211</span></span>
+<span><span class="co">#&gt; [70295,]  186  186  196  196  201  201  201  206  206   206   206   211   211</span></span>
+<span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/formatc.html" class="external-link">prettyNum</a></span><span class="op">(</span><span class="fu"><a href="../reference/combinatoricsCount.html">comboCount</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq</a></span><span class="op">(</span><span class="fl">121</span>, <span class="fl">221</span>, <span class="fl">5</span><span class="op">)</span>, <span class="fl">13</span>, freqs <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fl">1</span><span class="op">:</span><span class="fl">7</span>, <span class="fl">3</span><span class="op">)</span><span class="op">)</span>, big.mark <span class="op">=</span> <span class="st">","</span><span class="op">)</span></span>
+<span><span class="co">#&gt; [1] "256,047,675"</span></span></code></pre></div>
 <div class="section level3">
 <h3 id="working-with-negative-numbers">Working with Negative Numbers<a class="anchor" aria-label="anchor" href="#working-with-negative-numbers"></a>
 </h3>
@@ -258,30 +258,30 @@ integers. However, with the generalized partition algorithms in
 numbers (again, the sorted vector has to have the property that the
 difference of each element with it’s neighbor is constant).</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/base/system.time.html" class="external-link">system.time</a></span><span class="op">(</span><span class="va">genDistParts</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/partitionsGeneral.html">partitionsGeneral</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq</a></span><span class="op">(</span><span class="op">-</span><span class="fl">173L</span>, <span class="fl">204L</span>, <span class="fl">13L</span><span class="op">)</span>,
-                                              <span class="fl">11</span>, target <span class="op">=</span> <span class="op">-</span><span class="fl">460</span><span class="op">)</span><span class="op">)</span>
-<span class="co">#&gt;  user  system elapsed</span>
-<span class="co">#&gt; 0.003   0.000   0.003</span>
-
-<span class="fu"><a href="https://rdrr.io/r/base/all.html" class="external-link">all</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/colSums.html" class="external-link">rowSums</a></span><span class="op">(</span><span class="va">genDistParts</span><span class="op">)</span> <span class="op">==</span> <span class="op">-</span><span class="fl">460L</span><span class="op">)</span>
-<span class="co">#&gt; [1] TRUE</span>
-
-<span class="fu">ht</span><span class="op">(</span><span class="va">genDistParts</span><span class="op">)</span>
-<span class="co">#&gt; head --&gt;</span>
-<span class="co">#&gt;      [,1] [,2] [,3] [,4] [,5] [,6] [,7] [,8] [,9] [,10] [,11]</span>
-<span class="co">#&gt; [1,] -173 -160 -147 -134 -121 -108  -95  -82  165   191   204</span>
-<span class="co">#&gt; [2,] -173 -160 -147 -134 -121 -108  -95  -69  152   191   204</span>
-<span class="co">#&gt; [3,] -173 -160 -147 -134 -121 -108  -95  -69  165   178   204</span>
-<span class="co">#&gt; [4,] -173 -160 -147 -134 -121 -108  -95  -56  139   191   204</span>
-<span class="co">#&gt; [5,] -173 -160 -147 -134 -121 -108  -95  -56  152   178   204</span>
-<span class="co">#&gt; --------</span>
-<span class="co">#&gt; tail --&gt;</span>
-<span class="co">#&gt;           [,1] [,2] [,3] [,4] [,5] [,6] [,7] [,8] [,9] [,10] [,11]</span>
-<span class="co">#&gt; [108940,] -121 -108  -82  -69  -56  -43  -30  -17   -4    22    48</span>
-<span class="co">#&gt; [108941,] -121 -108  -82  -69  -56  -43  -30  -17    9    22    35</span>
-<span class="co">#&gt; [108942,] -121  -95  -82  -69  -56  -43  -30  -17   -4     9    48</span>
-<span class="co">#&gt; [108943,] -121  -95  -82  -69  -56  -43  -30  -17   -4    22    35</span>
-<span class="co">#&gt; [108944,] -108  -95  -82  -69  -56  -43  -30  -17   -4     9    35</span></code></pre></div>
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/system.time.html" class="external-link">system.time</a></span><span class="op">(</span><span class="va">genDistParts</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/partitionsGeneral.html">partitionsGeneral</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq</a></span><span class="op">(</span><span class="op">-</span><span class="fl">173L</span>, <span class="fl">204L</span>, <span class="fl">13L</span><span class="op">)</span>,</span>
+<span>                                              <span class="fl">11</span>, target <span class="op">=</span> <span class="op">-</span><span class="fl">460</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="co">#&gt;  user  system elapsed</span></span>
+<span><span class="co">#&gt; 0.003   0.000   0.003</span></span>
+<span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/all.html" class="external-link">all</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/colSums.html" class="external-link">rowSums</a></span><span class="op">(</span><span class="va">genDistParts</span><span class="op">)</span> <span class="op">==</span> <span class="op">-</span><span class="fl">460L</span><span class="op">)</span></span>
+<span><span class="co">#&gt; [1] TRUE</span></span>
+<span></span>
+<span><span class="fu">ht</span><span class="op">(</span><span class="va">genDistParts</span><span class="op">)</span></span>
+<span><span class="co">#&gt; head --&gt;</span></span>
+<span><span class="co">#&gt;      [,1] [,2] [,3] [,4] [,5] [,6] [,7] [,8] [,9] [,10] [,11]</span></span>
+<span><span class="co">#&gt; [1,] -173 -160 -147 -134 -121 -108  -95  -82  165   191   204</span></span>
+<span><span class="co">#&gt; [2,] -173 -160 -147 -134 -121 -108  -95  -69  152   191   204</span></span>
+<span><span class="co">#&gt; [3,] -173 -160 -147 -134 -121 -108  -95  -69  165   178   204</span></span>
+<span><span class="co">#&gt; [4,] -173 -160 -147 -134 -121 -108  -95  -56  139   191   204</span></span>
+<span><span class="co">#&gt; [5,] -173 -160 -147 -134 -121 -108  -95  -56  152   178   204</span></span>
+<span><span class="co">#&gt; --------</span></span>
+<span><span class="co">#&gt; tail --&gt;</span></span>
+<span><span class="co">#&gt;           [,1] [,2] [,3] [,4] [,5] [,6] [,7] [,8] [,9] [,10] [,11]</span></span>
+<span><span class="co">#&gt; [108940,] -121 -108  -82  -69  -56  -43  -30  -17   -4    22    48</span></span>
+<span><span class="co">#&gt; [108941,] -121 -108  -82  -69  -56  -43  -30  -17    9    22    35</span></span>
+<span><span class="co">#&gt; [108942,] -121  -95  -82  -69  -56  -43  -30  -17   -4     9    48</span></span>
+<span><span class="co">#&gt; [108943,] -121  -95  -82  -69  -56  -43  -30  -17   -4    22    35</span></span>
+<span><span class="co">#&gt; [108944,] -108  -95  -82  -69  -56  -43  -30  -17   -4     9    35</span></span></code></pre></div>
 </div>
 </div>
 <div class="section level2">
@@ -297,34 +297,34 @@ with random input vectors, random targets, as well as over ranges.</p>
 <p>Let us revisit the example above but with a slight variation that
 breaks the requirement.</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">inpVec</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">116</span>, <span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq</a></span><span class="op">(</span><span class="fl">126</span>, <span class="fl">221</span>, <span class="fl">5</span><span class="op">)</span><span class="op">)</span>
-
-<span class="co">## Non-constant difference... The specialized algo can't be used</span>
-<span class="fu"><a href="https://rdrr.io/r/base/diff.html" class="external-link">diff</a></span><span class="op">(</span><span class="va">inpVec</span><span class="op">)</span>
-<span class="co">#&gt; [1] 10  5  5  5  5  5  5  5  5  5  5  5  5  5  5  5  5  5  5  5</span>
-
-<span class="fu"><a href="https://rdrr.io/r/base/system.time.html" class="external-link">system.time</a></span><span class="op">(</span><span class="va">genParts2</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/partitionsGeneral.html">partitionsGeneral</a></span><span class="op">(</span><span class="va">inpVec</span>, <span class="fl">13</span>, <span class="cn">TRUE</span>, target <span class="op">=</span> <span class="fl">2613</span><span class="op">)</span><span class="op">)</span>
-<span class="co">#&gt;  user  system elapsed</span>
-<span class="co">#&gt; 0.096   0.005   0.101  ##  We still find over 100 thousand results out of</span>
-                          <span class="co">##  a possible 573 million in under a second</span>
-
-
-<span class="fu">ht</span><span class="op">(</span><span class="va">genParts2</span><span class="op">)</span>
-<span class="co">#&gt; head --&gt;</span>
-<span class="co">#&gt;      [,1] [,2] [,3] [,4] [,5] [,6] [,7] [,8] [,9] [,10] [,11] [,12] [,13]</span>
-<span class="co">#&gt; [1,]  116  116  171  221  221  221  221  221  221   221   221   221   221</span>
-<span class="co">#&gt; [2,]  116  116  176  216  221  221  221  221  221   221   221   221   221</span>
-<span class="co">#&gt; [3,]  116  116  181  211  221  221  221  221  221   221   221   221   221</span>
-<span class="co">#&gt; [4,]  116  116  181  216  216  221  221  221  221   221   221   221   221</span>
-<span class="co">#&gt; [5,]  116  116  186  206  221  221  221  221  221   221   221   221   221</span>
-<span class="co">#&gt; --------</span>
-<span class="co">#&gt; tail --&gt;</span>
-<span class="co">#&gt;           [,1] [,2] [,3] [,4] [,5] [,6] [,7] [,8] [,9] [,10] [,11] [,12] [,13]</span>
-<span class="co">#&gt; [118556,]  196  196  196  201  201  201  201  201  201   201   206   206   206</span>
-<span class="co">#&gt; [118557,]  196  196  201  201  201  201  201  201  201   201   201   201   211</span>
-<span class="co">#&gt; [118558,]  196  196  201  201  201  201  201  201  201   201   201   206   206</span>
-<span class="co">#&gt; [118559,]  196  201  201  201  201  201  201  201  201   201   201   201   206</span>
-<span class="co">#&gt; [118560,]  201  201  201  201  201  201  201  201  201   201   201   201   201</span></code></pre></div>
+<code class="sourceCode R"><span><span class="va">inpVec</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">116</span>, <span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq</a></span><span class="op">(</span><span class="fl">126</span>, <span class="fl">221</span>, <span class="fl">5</span><span class="op">)</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co">## Non-constant difference... The specialized algo can't be used</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/diff.html" class="external-link">diff</a></span><span class="op">(</span><span class="va">inpVec</span><span class="op">)</span></span>
+<span><span class="co">#&gt; [1] 10  5  5  5  5  5  5  5  5  5  5  5  5  5  5  5  5  5  5  5</span></span>
+<span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/system.time.html" class="external-link">system.time</a></span><span class="op">(</span><span class="va">genParts2</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/partitionsGeneral.html">partitionsGeneral</a></span><span class="op">(</span><span class="va">inpVec</span>, <span class="fl">13</span>, <span class="cn">TRUE</span>, target <span class="op">=</span> <span class="fl">2613</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="co">#&gt;  user  system elapsed</span></span>
+<span><span class="co">#&gt; 0.096   0.005   0.101  ##  We still find over 100 thousand results out of</span></span>
+<span>                          <span class="co">##  a possible 573 million in under a second</span></span>
+<span></span>
+<span></span>
+<span><span class="fu">ht</span><span class="op">(</span><span class="va">genParts2</span><span class="op">)</span></span>
+<span><span class="co">#&gt; head --&gt;</span></span>
+<span><span class="co">#&gt;      [,1] [,2] [,3] [,4] [,5] [,6] [,7] [,8] [,9] [,10] [,11] [,12] [,13]</span></span>
+<span><span class="co">#&gt; [1,]  116  116  171  221  221  221  221  221  221   221   221   221   221</span></span>
+<span><span class="co">#&gt; [2,]  116  116  176  216  221  221  221  221  221   221   221   221   221</span></span>
+<span><span class="co">#&gt; [3,]  116  116  181  211  221  221  221  221  221   221   221   221   221</span></span>
+<span><span class="co">#&gt; [4,]  116  116  181  216  216  221  221  221  221   221   221   221   221</span></span>
+<span><span class="co">#&gt; [5,]  116  116  186  206  221  221  221  221  221   221   221   221   221</span></span>
+<span><span class="co">#&gt; --------</span></span>
+<span><span class="co">#&gt; tail --&gt;</span></span>
+<span><span class="co">#&gt;           [,1] [,2] [,3] [,4] [,5] [,6] [,7] [,8] [,9] [,10] [,11] [,12] [,13]</span></span>
+<span><span class="co">#&gt; [118556,]  196  196  196  201  201  201  201  201  201   201   206   206   206</span></span>
+<span><span class="co">#&gt; [118557,]  196  196  201  201  201  201  201  201  201   201   201   201   211</span></span>
+<span><span class="co">#&gt; [118558,]  196  196  201  201  201  201  201  201  201   201   201   206   206</span></span>
+<span><span class="co">#&gt; [118559,]  196  201  201  201  201  201  201  201  201   201   201   201   206</span></span>
+<span><span class="co">#&gt; [118560,]  201  201  201  201  201  201  201  201  201   201   201   201   201</span></span></code></pre></div>
 <p>Although the above was about 13 times slower than the first example
 dealing with 573 million combinations (101 milliseconds vs. 8
 milliseconds), we are still dealing in milliseconds!!! For reference,
@@ -333,31 +333,31 @@ solutions.</p>
 <p>Here are some more exotic examples demonstrating the power of these
 algorithms.</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="fl">42</span><span class="op">)</span>
-<span class="va">mySamp</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/sample.html" class="external-link">sample</a></span><span class="op">(</span><span class="op">-</span><span class="fl">100</span><span class="op">:</span><span class="fl">100</span>, <span class="fl">50</span><span class="op">)</span>
-
-<span class="fu"><a href="https://rdrr.io/r/base/sort.html" class="external-link">sort</a></span><span class="op">(</span><span class="va">mySamp</span><span class="op">)</span>
-<span class="co">#&gt;  [1] -98 -97 -96 -95 -81 -77 -74 -65 -60 -59 -58 -54 -52 -43 -36 -33 -30</span>
-<span class="co">#&gt; [18] -27 -12  -9  -2  -1   3   8   9  10  13  21  27  30  33  35  42  45</span>
-<span class="co">#&gt; [35]  49  52  53  57  61  63  64  70  73  76  83  84  88  91  96 100</span>
-
-<span class="fu"><a href="https://rdrr.io/r/base/system.time.html" class="external-link">system.time</a></span><span class="op">(</span><span class="va">exotic</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/partitionsGeneral.html">partitionsGeneral</a></span><span class="op">(</span><span class="va">mySamp</span>, <span class="fl">8</span>, freqs <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fl">1</span><span class="op">:</span><span class="fl">5</span>, <span class="fl">10</span><span class="op">)</span>,
-                                        target <span class="op">=</span> <span class="fl">496</span><span class="op">)</span><span class="op">)</span>
-<span class="co">#&gt;  user  system elapsed</span>
-<span class="co">#&gt; 0.226   0.001   0.228</span>
-
-<span class="fu"><a href="https://rdrr.io/r/base/dim.html" class="external-link">dim</a></span><span class="op">(</span><span class="va">exotic</span><span class="op">)</span>
-<span class="co">#&gt; [1] 102241      8</span>
-
-<span class="co">## Over 1 billion total combinations</span>
-<span class="fu"><a href="https://rdrr.io/r/base/formatc.html" class="external-link">prettyNum</a></span><span class="op">(</span><span class="fu"><a href="../reference/combinatoricsCount.html">comboCount</a></span><span class="op">(</span><span class="va">mySamp</span>, <span class="fl">8</span>, freqs <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fl">1</span><span class="op">:</span><span class="fl">5</span>, <span class="fl">10</span><span class="op">)</span><span class="op">)</span>, big.mark <span class="op">=</span> <span class="st">","</span><span class="op">)</span>
-<span class="co">#&gt; [1] "1,343,133,680"</span>
-
-<span class="co">## Only getting a few (a thousand in this case) is much faster</span>
-<span class="fu"><a href="https://rdrr.io/r/base/system.time.html" class="external-link">system.time</a></span><span class="op">(</span><span class="fu"><a href="../reference/partitionsGeneral.html">partitionsGeneral</a></span><span class="op">(</span><span class="va">mySamp</span>, <span class="fl">8</span>, freqs <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fl">1</span><span class="op">:</span><span class="fl">5</span>, <span class="fl">10</span><span class="op">)</span>,
-                              target <span class="op">=</span> <span class="fl">496</span>, upper <span class="op">=</span> <span class="fl">1e3</span><span class="op">)</span><span class="op">)</span>
-<span class="co">#&gt;  user  system elapsed</span>
-<span class="co">#&gt; 0.004   0.000   0.004</span></code></pre></div>
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="fl">42</span><span class="op">)</span></span>
+<span><span class="va">mySamp</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/sample.html" class="external-link">sample</a></span><span class="op">(</span><span class="op">-</span><span class="fl">100</span><span class="op">:</span><span class="fl">100</span>, <span class="fl">50</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/sort.html" class="external-link">sort</a></span><span class="op">(</span><span class="va">mySamp</span><span class="op">)</span></span>
+<span><span class="co">#&gt;  [1] -98 -97 -96 -95 -81 -77 -74 -65 -60 -59 -58 -54 -52 -43 -36 -33 -30</span></span>
+<span><span class="co">#&gt; [18] -27 -12  -9  -2  -1   3   8   9  10  13  21  27  30  33  35  42  45</span></span>
+<span><span class="co">#&gt; [35]  49  52  53  57  61  63  64  70  73  76  83  84  88  91  96 100</span></span>
+<span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/system.time.html" class="external-link">system.time</a></span><span class="op">(</span><span class="va">exotic</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/partitionsGeneral.html">partitionsGeneral</a></span><span class="op">(</span><span class="va">mySamp</span>, <span class="fl">8</span>, freqs <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fl">1</span><span class="op">:</span><span class="fl">5</span>, <span class="fl">10</span><span class="op">)</span>,</span>
+<span>                                        target <span class="op">=</span> <span class="fl">496</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="co">#&gt;  user  system elapsed</span></span>
+<span><span class="co">#&gt; 0.226   0.001   0.228</span></span>
+<span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/dim.html" class="external-link">dim</a></span><span class="op">(</span><span class="va">exotic</span><span class="op">)</span></span>
+<span><span class="co">#&gt; [1] 102241      8</span></span>
+<span></span>
+<span><span class="co">## Over 1 billion total combinations</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/formatc.html" class="external-link">prettyNum</a></span><span class="op">(</span><span class="fu"><a href="../reference/combinatoricsCount.html">comboCount</a></span><span class="op">(</span><span class="va">mySamp</span>, <span class="fl">8</span>, freqs <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fl">1</span><span class="op">:</span><span class="fl">5</span>, <span class="fl">10</span><span class="op">)</span><span class="op">)</span>, big.mark <span class="op">=</span> <span class="st">","</span><span class="op">)</span></span>
+<span><span class="co">#&gt; [1] "1,343,133,680"</span></span>
+<span></span>
+<span><span class="co">## Only getting a few (a thousand in this case) is much faster</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/system.time.html" class="external-link">system.time</a></span><span class="op">(</span><span class="fu"><a href="../reference/partitionsGeneral.html">partitionsGeneral</a></span><span class="op">(</span><span class="va">mySamp</span>, <span class="fl">8</span>, freqs <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fl">1</span><span class="op">:</span><span class="fl">5</span>, <span class="fl">10</span><span class="op">)</span>,</span>
+<span>                              target <span class="op">=</span> <span class="fl">496</span>, upper <span class="op">=</span> <span class="fl">1e3</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="co">#&gt;  user  system elapsed</span></span>
+<span><span class="co">#&gt; 0.004   0.000   0.004</span></span></code></pre></div>
 <p>The function <code>permuteGeneral</code> benefits from these
 optimized algorithms as well. However, just as we discussed in <a href="https://jwood000.github.io/RcppAlgos/articles/CombPermConstraints.html#output-order-with-permutegeneral" class="external-link">Output
 Order with <code>permuteGeneral</code></a>, the output will not be in
@@ -378,26 +378,26 @@ salaries is exactly 20 million, but we can find many 6 player
 combinations whose sum of salaries is within a tolerance of 20
 million.</p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="fl">22213</span><span class="op">)</span>
-<span class="va">football_player_salaries</span> <span class="op">&lt;-</span> <span class="fl">2e7</span> <span class="op">*</span> <span class="fu"><a href="https://rdrr.io/r/stats/Beta.html" class="external-link">rbeta</a></span><span class="op">(</span><span class="fl">100</span>, <span class="fl">2</span>, <span class="fl">25</span><span class="op">)</span>
-
-<span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="va">football_player_salaries</span><span class="op">)</span>
-<span class="co">#&gt;   Min.  1st Qu.   Median     Mean  3rd Qu.     Max.</span>
-<span class="co">#&gt; 115308   768338  1261683  1612271  1950565 10895883</span>
-
-<span class="co">## Over 1 billion combinations...</span>
-<span class="co">## An exhaustive search will not be feasible</span>
-<span class="fu"><a href="https://rdrr.io/r/base/formatc.html" class="external-link">prettyNum</a></span><span class="op">(</span><span class="fu"><a href="../reference/combinatoricsCount.html">comboCount</a></span><span class="op">(</span><span class="va">football_player_salaries</span>, <span class="fl">6</span><span class="op">)</span>, big.mark <span class="op">=</span> <span class="st">","</span><span class="op">)</span>
-<span class="co">#&gt; [1] "1,192,052,400"</span>
-
-<span class="fu"><a href="https://rdrr.io/r/base/system.time.html" class="external-link">system.time</a></span><span class="op">(</span><span class="va">exactly20</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/partitionsGeneral.html">partitionsGeneral</a></span><span class="op">(</span><span class="va">football_player_salaries</span>, <span class="fl">6</span>,
-                                           target <span class="op">=</span> <span class="fl">2e7</span>, tolerance <span class="op">=</span> <span class="fl">0</span><span class="op">)</span><span class="op">)</span>
-<span class="co">#&gt;  user  system elapsed</span>
-<span class="co">#&gt; 2.841   0.017   2.874</span>
-
-<span class="co">## No results that equal exactly 2e7</span>
-<span class="fu"><a href="https://rdrr.io/r/base/dim.html" class="external-link">dim</a></span><span class="op">(</span><span class="va">exactly20</span><span class="op">)</span>
-<span class="co">#&gt; [1] 0 6</span></code></pre></div>
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="fl">22213</span><span class="op">)</span></span>
+<span><span class="va">football_player_salaries</span> <span class="op">&lt;-</span> <span class="fl">2e7</span> <span class="op">*</span> <span class="fu"><a href="https://rdrr.io/r/stats/Beta.html" class="external-link">rbeta</a></span><span class="op">(</span><span class="fl">100</span>, <span class="fl">2</span>, <span class="fl">25</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="va">football_player_salaries</span><span class="op">)</span></span>
+<span><span class="co">#&gt;   Min.  1st Qu.   Median     Mean  3rd Qu.     Max.</span></span>
+<span><span class="co">#&gt; 115308   768338  1261683  1612271  1950565 10895883</span></span>
+<span></span>
+<span><span class="co">## Over 1 billion combinations...</span></span>
+<span><span class="co">## An exhaustive search will not be feasible</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/formatc.html" class="external-link">prettyNum</a></span><span class="op">(</span><span class="fu"><a href="../reference/combinatoricsCount.html">comboCount</a></span><span class="op">(</span><span class="va">football_player_salaries</span>, <span class="fl">6</span><span class="op">)</span>, big.mark <span class="op">=</span> <span class="st">","</span><span class="op">)</span></span>
+<span><span class="co">#&gt; [1] "1,192,052,400"</span></span>
+<span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/system.time.html" class="external-link">system.time</a></span><span class="op">(</span><span class="va">exactly20</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/partitionsGeneral.html">partitionsGeneral</a></span><span class="op">(</span><span class="va">football_player_salaries</span>, <span class="fl">6</span>,</span>
+<span>                                           target <span class="op">=</span> <span class="fl">2e7</span>, tolerance <span class="op">=</span> <span class="fl">0</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="co">#&gt;  user  system elapsed</span></span>
+<span><span class="co">#&gt; 2.841   0.017   2.874</span></span>
+<span></span>
+<span><span class="co">## No results that equal exactly 2e7</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/dim.html" class="external-link">dim</a></span><span class="op">(</span><span class="va">exactly20</span><span class="op">)</span></span>
+<span><span class="co">#&gt; [1] 0 6</span></span></code></pre></div>
 <p>What if we increase the tolerance to <code>$</code>1000 (Honestly…
 what’s <code>$</code>1000 when we are talking about 20 million dollars)?
 Our intent is to explore these options, so we take advantage of the
@@ -405,59 +405,59 @@ Our intent is to explore these options, so we take advantage of the
 that meet the criteria. If we obtain the upper bound, we decrease the
 tolerance (if needed) and repeat.</p>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="co">## N.B. This is much more efficient. Also, we set keepResults</span>
-<span class="co">## to TRUE so we can see the total sum of salaries.</span>
-<span class="fu"><a href="https://rdrr.io/r/base/system.time.html" class="external-link">system.time</a></span><span class="op">(</span><span class="va">almost20</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/combinatoricsGeneral.html">comboGeneral</a></span><span class="op">(</span><span class="va">football_player_salaries</span>, <span class="fl">6</span>,
-                                     constraintFun <span class="op">=</span> <span class="st">"sum"</span>, comparisonFun <span class="op">=</span> <span class="st">"=="</span>,
-                                     limitConstraints <span class="op">=</span> <span class="fl">2e7</span>, tolerance <span class="op">=</span> <span class="fl">1000</span>,
-                                     upper <span class="op">=</span> <span class="fl">1000</span>, keepResults <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span>
-<span class="co">#&gt;  user  system elapsed</span>
-<span class="co">#&gt; 0.130   0.000   0.131</span>
-
-<span class="fu"><a href="https://rdrr.io/r/base/dim.html" class="external-link">dim</a></span><span class="op">(</span><span class="va">almost20</span><span class="op">)</span>
-<span class="co">#&gt; [1] 1000    6</span>
-
-<span class="fu">ht</span><span class="op">(</span><span class="va">almost20</span><span class="op">)</span>
-<span class="co">#&gt; head --&gt;</span>
-<span class="co">#&gt;          [,1]     [,2]      [,3]    [,4]    [,5]     [,6]     [,7]</span>
-<span class="co">#&gt; [1,] 115307.7 152563.4  809407.9 3163109 4863446 10895883 19999717</span>
-<span class="co">#&gt; [2,] 115307.7 152563.4 1590746.9 2381655 4863446 10895883 19999602</span>
-<span class="co">#&gt; [3,] 115307.7 152563.4 1669898.9 2302265 4863446 10895883 19999365</span>
-<span class="co">#&gt; [4,] 115307.7 152563.4 1746659.2 2225285 4863446 10895883 19999145</span>
-<span class="co">#&gt; [5,] 115307.7 152563.4 1853727.8 2850338 4132545 10895883 20000364</span>
-<span class="co">#&gt; --------</span>
-<span class="co">#&gt; tail --&gt;</span>
-<span class="co">#&gt;             [,1]     [,2]    [,3]    [,4]    [,5]     [,6]     [,7]</span>
-<span class="co">#&gt;  [996,] 200278.8 550414.4 1751652 2984500 3618110 10895883 20000838</span>
-<span class="co">#&gt;  [997,] 200278.8 550414.4 1855829 3163109 3334046 10895883 19999560</span>
-<span class="co">#&gt;  [998,] 200278.8 550414.4 1884764 2850338 3618110 10895883 19999788</span>
-<span class="co">#&gt;  [999,] 200278.8 550414.4 2013884 2850338 3489156 10895883 19999953</span>
-<span class="co">#&gt; [1000,] 200278.8 550414.4 2051845 2984500 3316996 10895883 19999917</span>
-
-<span class="co">## decreasing the tolerance to $10 further we obtain 158 results</span>
-<span class="fu"><a href="https://rdrr.io/r/base/system.time.html" class="external-link">system.time</a></span><span class="op">(</span><span class="va">superClose20</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/combinatoricsGeneral.html">comboGeneral</a></span><span class="op">(</span><span class="va">football_player_salaries</span>, <span class="fl">6</span>,
-                                         constraintFun <span class="op">=</span> <span class="st">"sum"</span>, comparisonFun <span class="op">=</span> <span class="st">"=="</span>,
-                                         limitConstraints <span class="op">=</span> <span class="fl">2e7</span>, tolerance <span class="op">=</span> <span class="fl">10</span>,
-                                         upper <span class="op">=</span> <span class="fl">1000</span>, keepResults <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span>
-<span class="co">#&gt;  user  system elapsed</span>
-<span class="co">#&gt; 2.734   0.009   2.747</span>
-
-<span class="fu">ht</span><span class="op">(</span><span class="va">superClose20</span><span class="op">)</span>
-<span class="co">#&gt; head --&gt;</span>
-<span class="co">#&gt;          [,1]      [,2]      [,3]    [,4]    [,5]     [,6]     [,7]</span>
-<span class="co">#&gt; [1,] 115307.7  266606.5  695657.2 3163109 4863446 10895883 20000009</span>
-<span class="co">#&gt; [2,] 115307.7 1117835.0 1318811.6 1688714 4863446 10895883 19999998</span>
-<span class="co">#&gt; [3,] 152563.4  628078.8 1117835.0 3334046 3871591 10895883 19999997</span>
-<span class="co">#&gt; [4,] 152563.4  695657.2 1635144.3 2984500 3636247 10895883 19999995</span>
-<span class="co">#&gt; [5,] 200278.8  765448.4 1174496.9 1923219 5040664 10895883 19999990</span>
-<span class="co">#&gt; --------</span>
-<span class="co">#&gt; tail --&gt;</span>
-<span class="co">#&gt;           [,1]    [,2]    [,3]    [,4]    [,5]     [,6]     [,7]</span>
-<span class="co">#&gt; [154,] 1318812 1359188 1512157 1929459 2984500 10895883 19999997</span>
-<span class="co">#&gt; [155,] 1318812 1371670 1771874 2225285 2416482 10895883 20000006</span>
-<span class="co">#&gt; [156,] 1338303 1706514 1823915 1853728 2381655 10895883 19999998</span>
-<span class="co">#&gt; [157,] 1371670 1512157 1516215 1853728 2850338 10895883 19999990</span>
-<span class="co">#&gt; [158,] 1371670 1516215 1635144 2189663 2391419 10895883 19999994</span></code></pre></div>
+<code class="sourceCode R"><span><span class="co">## N.B. This is much more efficient. Also, we set keepResults</span></span>
+<span><span class="co">## to TRUE so we can see the total sum of salaries.</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/system.time.html" class="external-link">system.time</a></span><span class="op">(</span><span class="va">almost20</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/combinatoricsGeneral.html">comboGeneral</a></span><span class="op">(</span><span class="va">football_player_salaries</span>, <span class="fl">6</span>,</span>
+<span>                                     constraintFun <span class="op">=</span> <span class="st">"sum"</span>, comparisonFun <span class="op">=</span> <span class="st">"=="</span>,</span>
+<span>                                     limitConstraints <span class="op">=</span> <span class="fl">2e7</span>, tolerance <span class="op">=</span> <span class="fl">1000</span>,</span>
+<span>                                     upper <span class="op">=</span> <span class="fl">1000</span>, keepResults <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="co">#&gt;  user  system elapsed</span></span>
+<span><span class="co">#&gt; 0.130   0.000   0.131</span></span>
+<span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/dim.html" class="external-link">dim</a></span><span class="op">(</span><span class="va">almost20</span><span class="op">)</span></span>
+<span><span class="co">#&gt; [1] 1000    6</span></span>
+<span></span>
+<span><span class="fu">ht</span><span class="op">(</span><span class="va">almost20</span><span class="op">)</span></span>
+<span><span class="co">#&gt; head --&gt;</span></span>
+<span><span class="co">#&gt;          [,1]     [,2]      [,3]    [,4]    [,5]     [,6]     [,7]</span></span>
+<span><span class="co">#&gt; [1,] 115307.7 152563.4  809407.9 3163109 4863446 10895883 19999717</span></span>
+<span><span class="co">#&gt; [2,] 115307.7 152563.4 1590746.9 2381655 4863446 10895883 19999602</span></span>
+<span><span class="co">#&gt; [3,] 115307.7 152563.4 1669898.9 2302265 4863446 10895883 19999365</span></span>
+<span><span class="co">#&gt; [4,] 115307.7 152563.4 1746659.2 2225285 4863446 10895883 19999145</span></span>
+<span><span class="co">#&gt; [5,] 115307.7 152563.4 1853727.8 2850338 4132545 10895883 20000364</span></span>
+<span><span class="co">#&gt; --------</span></span>
+<span><span class="co">#&gt; tail --&gt;</span></span>
+<span><span class="co">#&gt;             [,1]     [,2]    [,3]    [,4]    [,5]     [,6]     [,7]</span></span>
+<span><span class="co">#&gt;  [996,] 200278.8 550414.4 1751652 2984500 3618110 10895883 20000838</span></span>
+<span><span class="co">#&gt;  [997,] 200278.8 550414.4 1855829 3163109 3334046 10895883 19999560</span></span>
+<span><span class="co">#&gt;  [998,] 200278.8 550414.4 1884764 2850338 3618110 10895883 19999788</span></span>
+<span><span class="co">#&gt;  [999,] 200278.8 550414.4 2013884 2850338 3489156 10895883 19999953</span></span>
+<span><span class="co">#&gt; [1000,] 200278.8 550414.4 2051845 2984500 3316996 10895883 19999917</span></span>
+<span></span>
+<span><span class="co">## decreasing the tolerance to $10 further we obtain 158 results</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/system.time.html" class="external-link">system.time</a></span><span class="op">(</span><span class="va">superClose20</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/combinatoricsGeneral.html">comboGeneral</a></span><span class="op">(</span><span class="va">football_player_salaries</span>, <span class="fl">6</span>,</span>
+<span>                                         constraintFun <span class="op">=</span> <span class="st">"sum"</span>, comparisonFun <span class="op">=</span> <span class="st">"=="</span>,</span>
+<span>                                         limitConstraints <span class="op">=</span> <span class="fl">2e7</span>, tolerance <span class="op">=</span> <span class="fl">10</span>,</span>
+<span>                                         upper <span class="op">=</span> <span class="fl">1000</span>, keepResults <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="co">#&gt;  user  system elapsed</span></span>
+<span><span class="co">#&gt; 2.734   0.009   2.747</span></span>
+<span></span>
+<span><span class="fu">ht</span><span class="op">(</span><span class="va">superClose20</span><span class="op">)</span></span>
+<span><span class="co">#&gt; head --&gt;</span></span>
+<span><span class="co">#&gt;          [,1]      [,2]      [,3]    [,4]    [,5]     [,6]     [,7]</span></span>
+<span><span class="co">#&gt; [1,] 115307.7  266606.5  695657.2 3163109 4863446 10895883 20000009</span></span>
+<span><span class="co">#&gt; [2,] 115307.7 1117835.0 1318811.6 1688714 4863446 10895883 19999998</span></span>
+<span><span class="co">#&gt; [3,] 152563.4  628078.8 1117835.0 3334046 3871591 10895883 19999997</span></span>
+<span><span class="co">#&gt; [4,] 152563.4  695657.2 1635144.3 2984500 3636247 10895883 19999995</span></span>
+<span><span class="co">#&gt; [5,] 200278.8  765448.4 1174496.9 1923219 5040664 10895883 19999990</span></span>
+<span><span class="co">#&gt; --------</span></span>
+<span><span class="co">#&gt; tail --&gt;</span></span>
+<span><span class="co">#&gt;           [,1]    [,2]    [,3]    [,4]    [,5]     [,6]     [,7]</span></span>
+<span><span class="co">#&gt; [154,] 1318812 1359188 1512157 1929459 2984500 10895883 19999997</span></span>
+<span><span class="co">#&gt; [155,] 1318812 1371670 1771874 2225285 2416482 10895883 20000006</span></span>
+<span><span class="co">#&gt; [156,] 1338303 1706514 1823915 1853728 2381655 10895883 19999998</span></span>
+<span><span class="co">#&gt; [157,] 1371670 1512157 1516215 1853728 2850338 10895883 19999990</span></span>
+<span><span class="co">#&gt; [158,] 1371670 1516215 1635144 2189663 2391419 10895883 19999994</span></span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="prod-and-mean">
@@ -467,58 +467,58 @@ tolerance (if needed) and repeat.</p>
 <code>constraintFun</code> is <code>"prod"</code> or
 <code>"mean"</code>.</p>
 <div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">getAllThenFilter</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">n</span>, <span class="va">m</span>, <span class="va">lim</span><span class="op">)</span> <span class="op">{</span>
-    <span class="va">t</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/combinatoricsGeneral.html">comboGeneral</a></span><span class="op">(</span><span class="va">n</span>, <span class="va">m</span>, constraintFun <span class="op">=</span> <span class="st">"prod"</span><span class="op">)</span>
-    <span class="va">t</span><span class="op">[</span><span class="va">t</span><span class="op">[</span>, <span class="va">m</span> <span class="op">+</span> <span class="fl">1</span><span class="op">]</span> <span class="op">==</span> <span class="va">lim</span>, <span class="op">-</span><span class="op">(</span><span class="va">m</span><span class="op">+</span><span class="fl">1</span><span class="op">)</span><span class="op">]</span>
-<span class="op">}</span>
-
-<span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/joshuaulrich/microbenchmark/" class="external-link">microbenchmark</a></span><span class="op">)</span>
-<span class="fu"><a href="https://rdrr.io/pkg/microbenchmark/man/microbenchmark.html" class="external-link">microbenchmark</a></span><span class="op">(</span>optimized <span class="op">=</span> <span class="fu"><a href="../reference/combinatoricsGeneral.html">comboGeneral</a></span><span class="op">(</span><span class="fl">25</span>, <span class="fl">10</span>, constraintFun <span class="op">=</span> <span class="st">"prod"</span>,
-                                        comparisonFun <span class="op">=</span> <span class="st">"=="</span>,
-                                        limitConstraints <span class="op">=</span> <span class="fl">1037836800</span><span class="op">)</span>,
-               brute <span class="op">=</span> <span class="fu">getAllThenFilter</span><span class="op">(</span><span class="fl">25</span>, <span class="fl">10</span>, <span class="fl">1037836800</span><span class="op">)</span>, times <span class="op">=</span> <span class="fl">20</span>,
-               unit <span class="op">=</span> <span class="st">"relative"</span>, check <span class="op">=</span> <span class="st">"equal"</span><span class="op">)</span>
-<span class="co">#&gt; Unit: relative</span>
-<span class="co">#&gt;       expr      min       lq    mean   median       uq      max neval  cld</span>
-<span class="co">#&gt;  optimized  1.00000  1.00000  1.0000  1.00000  1.00000  1.00000    20  a</span>
-<span class="co">#&gt;      brute 46.86513 46.87535 49.3752 47.36287 47.81427 60.11692    20   b</span>
-
-<span class="co">## What about cases when brute force isn't feasible</span>
-<span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="fl">101</span><span class="op">)</span>
-<span class="va">v</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/Uniform.html" class="external-link">runif</a></span><span class="op">(</span><span class="fl">1000</span>, <span class="fl">1</span>, <span class="fl">2</span><span class="op">)</span>
-
-<span class="fu"><a href="https://rdrr.io/r/base/formatc.html" class="external-link">prettyNum</a></span><span class="op">(</span><span class="fu"><a href="../reference/combinatoricsCount.html">comboCount</a></span><span class="op">(</span><span class="va">v</span>, <span class="fl">100</span><span class="op">)</span>, big.mark <span class="op">=</span> <span class="st">","</span><span class="op">)</span>
-<span class="co">#&gt; [1] "63,850,511,926,305,130,236,698,511,142,022,274,281,262,900,693,853,331,776,286,816,221,524,376,994,750,901,948,920,974,351,797,699,894,319,420,811,933,446,197,797,592,213,357,065,053,890"</span>
-
-<span class="fu"><a href="https://rdrr.io/r/base/system.time.html" class="external-link">system.time</a></span><span class="op">(</span><span class="va">prodAlmost100</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/combinatoricsGeneral.html">comboGeneral</a></span><span class="op">(</span><span class="va">v</span>, <span class="fl">100</span>, constraintFun <span class="op">=</span> <span class="st">"prod"</span>,
-                                          comparisonFun <span class="op">=</span> <span class="st">"=="</span>,
-                                          limitConstraints <span class="op">=</span> <span class="fl">100</span>,
-                                          tolerance <span class="op">=</span> <span class="fl">0.0001</span>, upper <span class="op">=</span> <span class="fl">20</span><span class="op">)</span><span class="op">)</span>
-<span class="co">#&gt;  user  system elapsed</span>
-<span class="co">#&gt; 0.027   0.000   0.027</span>
-
-<span class="fu"><a href="https://rdrr.io/r/base/dim.html" class="external-link">dim</a></span><span class="op">(</span><span class="va">prodAlmost100</span><span class="op">)</span>
-<span class="co">#&gt; [1]  20 100</span>
-
-<span class="fu"><a href="https://rdrr.io/r/base/apply.html" class="external-link">apply</a></span><span class="op">(</span><span class="va">prodAlmost100</span>, <span class="fl">1</span>, <span class="va">prod</span><span class="op">)</span>
-<span class="co">#&gt;  [1] 100.00008 100.00003 100.00003 100.00006 100.00010 100.00000  99.99993  99.99995 100.00002</span>
-<span class="co">#&gt; [10]  99.99992 100.00004  99.99994 100.00002 100.00005  99.99992  99.99996 100.00006 100.00003</span>
-<span class="co">#&gt; [19] 100.00006 100.00002</span>
-
-<span class="co">## Showcasing mean</span>
-<span class="fu"><a href="https://rdrr.io/r/base/system.time.html" class="external-link">system.time</a></span><span class="op">(</span><span class="va">meanAlmost1.5</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/combinatoricsGeneral.html">comboGeneral</a></span><span class="op">(</span><span class="va">v</span>, <span class="fl">100</span>, constraintFun <span class="op">=</span> <span class="st">"mean"</span>,
-                                          comparisonFun <span class="op">=</span> <span class="st">"=="</span>,
-                                          limitConstraints <span class="op">=</span> <span class="fl">1.5</span>,
-                                          tolerance <span class="op">=</span> <span class="fl">0.0001</span>, upper <span class="op">=</span> <span class="fl">20</span><span class="op">)</span><span class="op">)</span>
-<span class="co">#&gt;  user  system elapsed</span>
-<span class="co">#&gt; 0.001   0.000   0.000</span>
-
-<span class="fu"><a href="https://rdrr.io/r/base/dim.html" class="external-link">dim</a></span><span class="op">(</span><span class="va">meanAlmost1.5</span><span class="op">)</span>
-<span class="co">#&gt; [1]  20 100</span>
-
-<span class="fu"><a href="https://rdrr.io/r/base/colSums.html" class="external-link">rowMeans</a></span><span class="op">(</span><span class="va">meanAlmost1.5</span><span class="op">)</span>
-<span class="co">#&gt;  [1] 1.500000 1.499999 1.500001 1.500000 1.500000 1.500001 1.500000 1.500000 1.500000 1.500000</span>
-<span class="co">#&gt; [11] 1.499999 1.500000 1.500001 1.500001 1.499999 1.499999 1.500001 1.500000 1.500001 1.500000</span></code></pre></div>
+<code class="sourceCode R"><span><span class="va">getAllThenFilter</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">n</span>, <span class="va">m</span>, <span class="va">lim</span><span class="op">)</span> <span class="op">{</span></span>
+<span>    <span class="va">t</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/combinatoricsGeneral.html">comboGeneral</a></span><span class="op">(</span><span class="va">n</span>, <span class="va">m</span>, constraintFun <span class="op">=</span> <span class="st">"prod"</span><span class="op">)</span></span>
+<span>    <span class="va">t</span><span class="op">[</span><span class="va">t</span><span class="op">[</span>, <span class="va">m</span> <span class="op">+</span> <span class="fl">1</span><span class="op">]</span> <span class="op">==</span> <span class="va">lim</span>, <span class="op">-</span><span class="op">(</span><span class="va">m</span><span class="op">+</span><span class="fl">1</span><span class="op">)</span><span class="op">]</span></span>
+<span><span class="op">}</span></span>
+<span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/joshuaulrich/microbenchmark/" class="external-link">microbenchmark</a></span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/pkg/microbenchmark/man/microbenchmark.html" class="external-link">microbenchmark</a></span><span class="op">(</span>optimized <span class="op">=</span> <span class="fu"><a href="../reference/combinatoricsGeneral.html">comboGeneral</a></span><span class="op">(</span><span class="fl">25</span>, <span class="fl">10</span>, constraintFun <span class="op">=</span> <span class="st">"prod"</span>,</span>
+<span>                                        comparisonFun <span class="op">=</span> <span class="st">"=="</span>,</span>
+<span>                                        limitConstraints <span class="op">=</span> <span class="fl">1037836800</span><span class="op">)</span>,</span>
+<span>               brute <span class="op">=</span> <span class="fu">getAllThenFilter</span><span class="op">(</span><span class="fl">25</span>, <span class="fl">10</span>, <span class="fl">1037836800</span><span class="op">)</span>, times <span class="op">=</span> <span class="fl">20</span>,</span>
+<span>               unit <span class="op">=</span> <span class="st">"relative"</span>, check <span class="op">=</span> <span class="st">"equal"</span><span class="op">)</span></span>
+<span><span class="co">#&gt; Unit: relative</span></span>
+<span><span class="co">#&gt;       expr      min       lq    mean   median       uq      max neval  cld</span></span>
+<span><span class="co">#&gt;  optimized  1.00000  1.00000  1.0000  1.00000  1.00000  1.00000    20  a</span></span>
+<span><span class="co">#&gt;      brute 46.86513 46.87535 49.3752 47.36287 47.81427 60.11692    20   b</span></span>
+<span></span>
+<span><span class="co">## What about cases when brute force isn't feasible</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="fl">101</span><span class="op">)</span></span>
+<span><span class="va">v</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/Uniform.html" class="external-link">runif</a></span><span class="op">(</span><span class="fl">1000</span>, <span class="fl">1</span>, <span class="fl">2</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/formatc.html" class="external-link">prettyNum</a></span><span class="op">(</span><span class="fu"><a href="../reference/combinatoricsCount.html">comboCount</a></span><span class="op">(</span><span class="va">v</span>, <span class="fl">100</span><span class="op">)</span>, big.mark <span class="op">=</span> <span class="st">","</span><span class="op">)</span></span>
+<span><span class="co">#&gt; [1] "63,850,511,926,305,130,236,698,511,142,022,274,281,262,900,693,853,331,776,286,816,221,524,376,994,750,901,948,920,974,351,797,699,894,319,420,811,933,446,197,797,592,213,357,065,053,890"</span></span>
+<span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/system.time.html" class="external-link">system.time</a></span><span class="op">(</span><span class="va">prodAlmost100</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/combinatoricsGeneral.html">comboGeneral</a></span><span class="op">(</span><span class="va">v</span>, <span class="fl">100</span>, constraintFun <span class="op">=</span> <span class="st">"prod"</span>,</span>
+<span>                                          comparisonFun <span class="op">=</span> <span class="st">"=="</span>,</span>
+<span>                                          limitConstraints <span class="op">=</span> <span class="fl">100</span>,</span>
+<span>                                          tolerance <span class="op">=</span> <span class="fl">0.0001</span>, upper <span class="op">=</span> <span class="fl">20</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="co">#&gt;  user  system elapsed</span></span>
+<span><span class="co">#&gt; 0.027   0.000   0.027</span></span>
+<span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/dim.html" class="external-link">dim</a></span><span class="op">(</span><span class="va">prodAlmost100</span><span class="op">)</span></span>
+<span><span class="co">#&gt; [1]  20 100</span></span>
+<span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/apply.html" class="external-link">apply</a></span><span class="op">(</span><span class="va">prodAlmost100</span>, <span class="fl">1</span>, <span class="va">prod</span><span class="op">)</span></span>
+<span><span class="co">#&gt;  [1] 100.00008 100.00003 100.00003 100.00006 100.00010 100.00000  99.99993  99.99995 100.00002</span></span>
+<span><span class="co">#&gt; [10]  99.99992 100.00004  99.99994 100.00002 100.00005  99.99992  99.99996 100.00006 100.00003</span></span>
+<span><span class="co">#&gt; [19] 100.00006 100.00002</span></span>
+<span></span>
+<span><span class="co">## Showcasing mean</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/system.time.html" class="external-link">system.time</a></span><span class="op">(</span><span class="va">meanAlmost1.5</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/combinatoricsGeneral.html">comboGeneral</a></span><span class="op">(</span><span class="va">v</span>, <span class="fl">100</span>, constraintFun <span class="op">=</span> <span class="st">"mean"</span>,</span>
+<span>                                          comparisonFun <span class="op">=</span> <span class="st">"=="</span>,</span>
+<span>                                          limitConstraints <span class="op">=</span> <span class="fl">1.5</span>,</span>
+<span>                                          tolerance <span class="op">=</span> <span class="fl">0.0001</span>, upper <span class="op">=</span> <span class="fl">20</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="co">#&gt;  user  system elapsed</span></span>
+<span><span class="co">#&gt; 0.001   0.000   0.000</span></span>
+<span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/dim.html" class="external-link">dim</a></span><span class="op">(</span><span class="va">meanAlmost1.5</span><span class="op">)</span></span>
+<span><span class="co">#&gt; [1]  20 100</span></span>
+<span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/colSums.html" class="external-link">rowMeans</a></span><span class="op">(</span><span class="va">meanAlmost1.5</span><span class="op">)</span></span>
+<span><span class="co">#&gt;  [1] 1.500000 1.499999 1.500001 1.500000 1.500000 1.500001 1.500000 1.500000 1.500000 1.500000</span></span>
+<span><span class="co">#&gt; [11] 1.499999 1.500000 1.500001 1.500001 1.499999 1.499999 1.500001 1.500000 1.500001 1.500000</span></span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="using-iterators">Using Iterators<a class="anchor" aria-label="anchor" href="#using-iterators"></a>
@@ -533,98 +533,98 @@ time.</p>
 <p>Below are a few demonstrations using some of the examples in earlier
 sections.</p>
 <div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="co">## The football salary example</span>
-<span class="va">salary</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/partitionsIterator.html">partitionsIter</a></span><span class="op">(</span><span class="va">football_player_salaries</span>, <span class="fl">6</span>,
-                         target <span class="op">=</span> <span class="fl">2e7</span>, tolerance <span class="op">=</span> <span class="fl">1000</span><span class="op">)</span>
-
-<span class="co">## Or use comboIter:</span>
-<span class="co">##</span>
-<span class="co">## comboIter(football_player_salaries, 6, constraintFun = "sum",</span>
-<span class="co">##           comparisonFun = "==", limitConstraints = 2e7,</span>
-<span class="co">##           tolerance = 1000, upper = 1000, keepResults = TRUE))</span>
-
-<span class="fu"><a href="https://rdrr.io/r/base/system.time.html" class="external-link">system.time</a></span><span class="op">(</span><span class="va">almost20withIter</span> <span class="op">&lt;-</span> <span class="va">salary</span><span class="op">@</span><span class="va">nextNIter</span><span class="op">(</span><span class="fl">1e3</span><span class="op">)</span><span class="op">)</span>
-<span class="co">#&gt;  user  system elapsed</span>
-<span class="co">#&gt; 0.126   0.000   0.127</span>
-
-<span class="co">## almost20 was generated above with comboGeneral</span>
-<span class="fu"><a href="https://rdrr.io/r/base/all.equal.html" class="external-link">all.equal</a></span><span class="op">(</span><span class="va">almost20</span><span class="op">[</span>, <span class="fl">1</span><span class="op">:</span><span class="fl">6</span><span class="op">]</span>, <span class="va">almost20withIter</span><span class="op">)</span>
-<span class="co">#&gt; [1] TRUE</span>
-
-<span class="co">## With iterators we can easily continue iterating. With the general</span>
-<span class="co">## functions if we wanted the next 1000 results, we would have to</span>
-<span class="co">## generate the first 1000 along with the next 1000</span>
-<span class="fu"><a href="https://rdrr.io/r/base/system.time.html" class="external-link">system.time</a></span><span class="op">(</span><span class="va">nextAlmost20withIter</span> <span class="op">&lt;-</span> <span class="va">salary</span><span class="op">@</span><span class="va">nextNIter</span><span class="op">(</span><span class="fl">1e3</span><span class="op">)</span><span class="op">)</span>
-<span class="co">#&gt;  user  system elapsed</span>
-<span class="co">#&gt; 0.124   0.001   0.125</span>
-
-<span class="fu">ht</span><span class="op">(</span><span class="va">nextAlmost20withIter</span><span class="op">)</span>
-<span class="co">#&gt; head --&gt;</span>
-<span class="co">#&gt;          [,1]     [,2]      [,3]    [,4]    [,5]     [,6]</span>
-<span class="co">#&gt; [1,] 200278.8 550414.4 2189662.6 2829267 3334046 10895883</span>
-<span class="co">#&gt; [2,] 200278.8 628078.8  653771.4 3489156 4132545 10895883</span>
-<span class="co">#&gt; [3,] 200278.8 628078.8  809407.9 3334046 4132545 10895883</span>
-<span class="co">#&gt; [4,] 200278.8 628078.8  852693.7 2381655 5040664 10895883</span>
-<span class="co">#&gt; [5,] 200278.8 628078.8 1165478.3 3239395 3871591 10895883</span>
-<span class="co">#&gt; --------</span>
-<span class="co">#&gt; tail --&gt;</span>
-<span class="co">#&gt;             [,1]   [,2]    [,3]    [,4]    [,5]     [,6]</span>
-<span class="co">#&gt;  [996,] 264972.3 663453 1318812 3239395 3618110 10895883</span>
-<span class="co">#&gt;  [997,] 264972.3 663453 1376878 3163109 3636247 10895883</span>
-<span class="co">#&gt;  [998,] 264972.3 663453 1688714 2850338 3636247 10895883</span>
-<span class="co">#&gt;  [999,] 264972.3 663453 1706514 2850338 3618110 10895883</span>
-<span class="co">#&gt; [1000,] 264972.3 663453 1853728 2189663 4132545 10895883</span>
-
-<span class="va">salary</span><span class="op">@</span><span class="va">summary</span><span class="op">(</span><span class="op">)</span>
-<span class="co">#&gt; $description</span>
-<span class="co">#&gt; [1] "Combinations of 100 choose 6 where the sum is between 19999000 and 20001000"</span>
-<span class="co">#&gt;</span>
-<span class="co">#&gt; $currentIndex</span>
-<span class="co">#&gt; [1] 2000</span>
-<span class="co">#&gt;</span>
-<span class="co">#&gt; $totalResults</span>
-<span class="co">#&gt; [1] NA</span>
-<span class="co">#&gt;</span>
-<span class="co">#&gt; $totalRemaining</span>
-<span class="co">#&gt; [1] NA</span>
-
-
-<span class="co">## The prodAlmost100 example</span>
-<span class="va">prodIter</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/combinatoricsIterator.html">comboIter</a></span><span class="op">(</span><span class="va">v</span>, <span class="fl">100</span>,
-                      constraintFun <span class="op">=</span> <span class="st">"prod"</span>, comparisonFun <span class="op">=</span> <span class="st">"=="</span>,
-                      limitConstraints <span class="op">=</span> <span class="fl">100</span>, tolerance <span class="op">=</span> <span class="fl">0.0001</span><span class="op">)</span>
-
-<span class="fu"><a href="https://rdrr.io/r/base/system.time.html" class="external-link">system.time</a></span><span class="op">(</span><span class="va">prodAlmost100WithIter</span> <span class="op">&lt;-</span> <span class="va">prodIter</span><span class="op">@</span><span class="va">nextNIter</span><span class="op">(</span><span class="fl">20</span><span class="op">)</span><span class="op">)</span>
-<span class="co">#&gt;  user  system elapsed</span>
-<span class="co">#&gt; 0.024   0.000   0.024</span>
-
-<span class="fu"><a href="https://rdrr.io/r/base/all.equal.html" class="external-link">all.equal</a></span><span class="op">(</span><span class="va">prodAlmost100</span>, <span class="va">prodAlmost100WithIter</span><span class="op">)</span>
-<span class="co">#&gt; [1] TRUE</span>
-
-<span class="co">## Again, with iterators, we can continue iterating from</span>
-<span class="co">## where we left off</span>
-<span class="fu"><a href="https://rdrr.io/r/base/system.time.html" class="external-link">system.time</a></span><span class="op">(</span><span class="va">nextAlmost100WithIter</span> <span class="op">&lt;-</span> <span class="va">prodIter</span><span class="op">@</span><span class="va">nextNIter</span><span class="op">(</span><span class="fl">20</span><span class="op">)</span><span class="op">)</span>
-<span class="co">#&gt;  user  system elapsed</span>
-<span class="co">#&gt; 0.018   0.000   0.018</span>
-
-<span class="fu"><a href="https://rdrr.io/r/base/dim.html" class="external-link">dim</a></span><span class="op">(</span><span class="va">nextAlmost100WithIter</span><span class="op">)</span>
-<span class="co">#&gt; [1]  20 100</span>
-
-<span class="co">## Use @ or $ to access methods. If one needs to access these methods</span>
-<span class="co">## often (e.g. nextIter inside a loop), it is recommended to use the</span>
-<span class="co">## @ accessor as it is much more efficient.</span>
-<span class="va">prodIter</span><span class="op">$</span><span class="fu">summary</span><span class="op">(</span><span class="op">)</span>
-<span class="co">#&gt; $description</span>
-<span class="co">#&gt; [1] "Combinations of 1000 choose 100 where the prod is between 99.999899999999997 and 100.0001"</span>
-<span class="co">#&gt;</span>
-<span class="co">#&gt; $currentIndex</span>
-<span class="co">#&gt; [1] 40</span>
-<span class="co">#&gt;</span>
-<span class="co">#&gt; $totalResults</span>
-<span class="co">#&gt; [1] NA</span>
-<span class="co">#&gt;</span>
-<span class="co">#&gt; $totalRemaining</span>
-<span class="co">#&gt; [1] NA</span></code></pre></div>
+<code class="sourceCode R"><span><span class="co">## The football salary example</span></span>
+<span><span class="va">salary</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/partitionsIterator.html">partitionsIter</a></span><span class="op">(</span><span class="va">football_player_salaries</span>, <span class="fl">6</span>,</span>
+<span>                         target <span class="op">=</span> <span class="fl">2e7</span>, tolerance <span class="op">=</span> <span class="fl">1000</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co">## Or use comboIter:</span></span>
+<span><span class="co">##</span></span>
+<span><span class="co">## comboIter(football_player_salaries, 6, constraintFun = "sum",</span></span>
+<span><span class="co">##           comparisonFun = "==", limitConstraints = 2e7,</span></span>
+<span><span class="co">##           tolerance = 1000, upper = 1000, keepResults = TRUE))</span></span>
+<span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/system.time.html" class="external-link">system.time</a></span><span class="op">(</span><span class="va">almost20withIter</span> <span class="op">&lt;-</span> <span class="va">salary</span><span class="op">@</span><span class="va">nextNIter</span><span class="op">(</span><span class="fl">1e3</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="co">#&gt;  user  system elapsed</span></span>
+<span><span class="co">#&gt; 0.126   0.000   0.127</span></span>
+<span></span>
+<span><span class="co">## almost20 was generated above with comboGeneral</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/all.equal.html" class="external-link">all.equal</a></span><span class="op">(</span><span class="va">almost20</span><span class="op">[</span>, <span class="fl">1</span><span class="op">:</span><span class="fl">6</span><span class="op">]</span>, <span class="va">almost20withIter</span><span class="op">)</span></span>
+<span><span class="co">#&gt; [1] TRUE</span></span>
+<span></span>
+<span><span class="co">## With iterators we can easily continue iterating. With the general</span></span>
+<span><span class="co">## functions if we wanted the next 1000 results, we would have to</span></span>
+<span><span class="co">## generate the first 1000 along with the next 1000</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/system.time.html" class="external-link">system.time</a></span><span class="op">(</span><span class="va">nextAlmost20withIter</span> <span class="op">&lt;-</span> <span class="va">salary</span><span class="op">@</span><span class="va">nextNIter</span><span class="op">(</span><span class="fl">1e3</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="co">#&gt;  user  system elapsed</span></span>
+<span><span class="co">#&gt; 0.124   0.001   0.125</span></span>
+<span></span>
+<span><span class="fu">ht</span><span class="op">(</span><span class="va">nextAlmost20withIter</span><span class="op">)</span></span>
+<span><span class="co">#&gt; head --&gt;</span></span>
+<span><span class="co">#&gt;          [,1]     [,2]      [,3]    [,4]    [,5]     [,6]</span></span>
+<span><span class="co">#&gt; [1,] 200278.8 550414.4 2189662.6 2829267 3334046 10895883</span></span>
+<span><span class="co">#&gt; [2,] 200278.8 628078.8  653771.4 3489156 4132545 10895883</span></span>
+<span><span class="co">#&gt; [3,] 200278.8 628078.8  809407.9 3334046 4132545 10895883</span></span>
+<span><span class="co">#&gt; [4,] 200278.8 628078.8  852693.7 2381655 5040664 10895883</span></span>
+<span><span class="co">#&gt; [5,] 200278.8 628078.8 1165478.3 3239395 3871591 10895883</span></span>
+<span><span class="co">#&gt; --------</span></span>
+<span><span class="co">#&gt; tail --&gt;</span></span>
+<span><span class="co">#&gt;             [,1]   [,2]    [,3]    [,4]    [,5]     [,6]</span></span>
+<span><span class="co">#&gt;  [996,] 264972.3 663453 1318812 3239395 3618110 10895883</span></span>
+<span><span class="co">#&gt;  [997,] 264972.3 663453 1376878 3163109 3636247 10895883</span></span>
+<span><span class="co">#&gt;  [998,] 264972.3 663453 1688714 2850338 3636247 10895883</span></span>
+<span><span class="co">#&gt;  [999,] 264972.3 663453 1706514 2850338 3618110 10895883</span></span>
+<span><span class="co">#&gt; [1000,] 264972.3 663453 1853728 2189663 4132545 10895883</span></span>
+<span></span>
+<span><span class="va">salary</span><span class="op">@</span><span class="va">summary</span><span class="op">(</span><span class="op">)</span></span>
+<span><span class="co">#&gt; $description</span></span>
+<span><span class="co">#&gt; [1] "Combinations of 100 choose 6 where the sum is between 19999000 and 20001000"</span></span>
+<span><span class="co">#&gt;</span></span>
+<span><span class="co">#&gt; $currentIndex</span></span>
+<span><span class="co">#&gt; [1] 2000</span></span>
+<span><span class="co">#&gt;</span></span>
+<span><span class="co">#&gt; $totalResults</span></span>
+<span><span class="co">#&gt; [1] NA</span></span>
+<span><span class="co">#&gt;</span></span>
+<span><span class="co">#&gt; $totalRemaining</span></span>
+<span><span class="co">#&gt; [1] NA</span></span>
+<span></span>
+<span></span>
+<span><span class="co">## The prodAlmost100 example</span></span>
+<span><span class="va">prodIter</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/combinatoricsIterator.html">comboIter</a></span><span class="op">(</span><span class="va">v</span>, <span class="fl">100</span>,</span>
+<span>                      constraintFun <span class="op">=</span> <span class="st">"prod"</span>, comparisonFun <span class="op">=</span> <span class="st">"=="</span>,</span>
+<span>                      limitConstraints <span class="op">=</span> <span class="fl">100</span>, tolerance <span class="op">=</span> <span class="fl">0.0001</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/system.time.html" class="external-link">system.time</a></span><span class="op">(</span><span class="va">prodAlmost100WithIter</span> <span class="op">&lt;-</span> <span class="va">prodIter</span><span class="op">@</span><span class="va">nextNIter</span><span class="op">(</span><span class="fl">20</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="co">#&gt;  user  system elapsed</span></span>
+<span><span class="co">#&gt; 0.024   0.000   0.024</span></span>
+<span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/all.equal.html" class="external-link">all.equal</a></span><span class="op">(</span><span class="va">prodAlmost100</span>, <span class="va">prodAlmost100WithIter</span><span class="op">)</span></span>
+<span><span class="co">#&gt; [1] TRUE</span></span>
+<span></span>
+<span><span class="co">## Again, with iterators, we can continue iterating from</span></span>
+<span><span class="co">## where we left off</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/system.time.html" class="external-link">system.time</a></span><span class="op">(</span><span class="va">nextAlmost100WithIter</span> <span class="op">&lt;-</span> <span class="va">prodIter</span><span class="op">@</span><span class="va">nextNIter</span><span class="op">(</span><span class="fl">20</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="co">#&gt;  user  system elapsed</span></span>
+<span><span class="co">#&gt; 0.018   0.000   0.018</span></span>
+<span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/dim.html" class="external-link">dim</a></span><span class="op">(</span><span class="va">nextAlmost100WithIter</span><span class="op">)</span></span>
+<span><span class="co">#&gt; [1]  20 100</span></span>
+<span></span>
+<span><span class="co">## Use @ or $ to access methods. If one needs to access these methods</span></span>
+<span><span class="co">## often (e.g. nextIter inside a loop), it is recommended to use the</span></span>
+<span><span class="co">## @ accessor as it is much more efficient.</span></span>
+<span><span class="va">prodIter</span><span class="op">$</span><span class="fu">summary</span><span class="op">(</span><span class="op">)</span></span>
+<span><span class="co">#&gt; $description</span></span>
+<span><span class="co">#&gt; [1] "Combinations of 1000 choose 100 where the prod is between 99.999899999999997 and 100.0001"</span></span>
+<span><span class="co">#&gt;</span></span>
+<span><span class="co">#&gt; $currentIndex</span></span>
+<span><span class="co">#&gt; [1] 40</span></span>
+<span><span class="co">#&gt;</span></span>
+<span><span class="co">#&gt; $totalResults</span></span>
+<span><span class="co">#&gt; [1] NA</span></span>
+<span><span class="co">#&gt;</span></span>
+<span><span class="co">#&gt; $totalRemaining</span></span>
+<span><span class="co">#&gt; [1] NA</span></span></code></pre></div>
 </div>
   </div>
 
@@ -645,8 +645,7 @@ sections.</p>
 
 <div class="pkgdown">
   <p></p>
-<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a>
-2.0.2.</p>
+<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.6.</p>
 </div>
 
       </footer>

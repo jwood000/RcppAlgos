@@ -17,7 +17,7 @@ This document serves as an overview for attacking _common_ combinatorial problem
 It should be noted that this document only covers common problems. For more information on other combinatorial problems addressed by `RcppAlgos`, see the following vignettes:
 
 * [Combinatorial Sampling](<https://jwood000.github.io/RcppAlgos/articles/CombinatorialSampling.html>)
-* [Constraints and Integer Partitions/Compositions](<https://jwood000.github.io/RcppAlgos/articles/CombPermConstraints.html>)
+* [Constraints, Integer Partitions, and Integer Compositions](<https://jwood000.github.io/RcppAlgos/articles/CombPermConstraints.html>)
 * [Attacking Problems Related to the Subset Sum Problem](<https://jwood000.github.io/RcppAlgos/articles/SubsetSum.html>)
 * [Combinatorial Iterators in RcppAlgos](<https://jwood000.github.io/RcppAlgos/articles/CombinatoricsIterators.html>)
 

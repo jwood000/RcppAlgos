@@ -17,7 +17,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">RcppAlgos</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">2.5.5</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">2.6.0</span>
       </span>
     </div>
 
@@ -26,13 +26,13 @@
   <a href="../reference/index.html">Reference</a>
 </li>
 <li class="dropdown">
-  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
     Articles
      
     <span class="caret"></span>
   </a>
   <ul class="dropdown-menu" role="menu"><li>
-      <a href="../articles/CombPermConstraints.html">Constraints and Integer Partitions</a>
+      <a href="../articles/CombPermConstraints.html">Constraints, Integer Partitions, and Integer Compositions</a>
     </li>
     <li>
       <a href="../articles/CombinatorialSampling.html">Combinatorial Sampling and Ranking</a>
@@ -84,19 +84,23 @@
     </div>
 
     <div id="ref-usage">
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="fu">eulerPhiSieve</span><span class="op">(</span><span class="va">bound1</span>, bound2 <span class="op">=</span> <span class="cn">NULL</span>, namedVector <span class="op">=</span> <span class="cn">FALSE</span>, nThreads <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">eulerPhiSieve</span><span class="op">(</span><span class="va">bound1</span>, bound2 <span class="op">=</span> <span class="cn">NULL</span>, namedVector <span class="op">=</span> <span class="cn">FALSE</span>, nThreads <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div id="arguments">
     <h2>Arguments</h2>
     <dl><dt>bound1</dt>
 <dd><p>Positive integer or numeric value.</p></dd>
-<dt>bound2</dt>
+
+    <dt>bound2</dt>
 <dd><p>Positive integer or numeric value.</p></dd>
-<dt>namedVector</dt>
+
+    <dt>namedVector</dt>
 <dd><p>Logical flag. If <code>TRUE</code>, a named vector is returned. The default is <code>FALSE</code>.</p></dd>
-<dt>nThreads</dt>
+
+    <dt>nThreads</dt>
 <dd><p>Specific number of threads to be used. The default is <code>NULL</code>.</p></dd>
+
 </dl></div>
     <div id="details">
     <h2>Details</h2>
@@ -106,7 +110,11 @@
 </ul></div>
     <div id="value">
     <h2>Value</h2>
-    <p>Returns a named/unnamed integer vector if <code>max(bound1, bound2)</code>\(&lt; 2^{31}\), or a numeric vector otherwise.</p>
+    
+
+<p>Returns a named/unnamed integer vector if <code>max(bound1, bound2)</code></p>
+<p></p>
+<p>\(&lt; 2^{31}\), or a numeric vector otherwise.</p>
     </div>
     <div id="author">
     <h2>Author</h2>
@@ -131,42 +139,42 @@
 
     <div id="ref-examples">
     <h2>Examples</h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span class="co">## Generate some random data</span></span>
-<span class="r-in"><span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="fl">496</span><span class="op">)</span></span>
-<span class="r-in"><span class="va">mySamp</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/sample.html" class="external-link">sample</a></span><span class="op">(</span><span class="fl">10</span><span class="op">^</span><span class="fl">6</span>, <span class="fl">5</span><span class="op">*</span><span class="fl">10</span><span class="op">^</span><span class="fl">5</span><span class="op">)</span></span>
-<span class="r-in"></span>
-<span class="r-in"><span class="co">## Generate number of coprime elements for many numbers</span></span>
-<span class="r-in"><span class="fu"><a href="https://rdrr.io/r/base/system.time.html" class="external-link">system.time</a></span><span class="op">(</span><span class="va">myPhis</span> <span class="op">&lt;-</span> <span class="fu">eulerPhiSieve</span><span class="op">(</span><span class="fl">10</span><span class="op">^</span><span class="fl">6</span><span class="op">)</span><span class="op">)</span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="co">## Generate some random data</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="fl">496</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">mySamp</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/sample.html" class="external-link">sample</a></span><span class="op">(</span><span class="fl">10</span><span class="op">^</span><span class="fl">6</span>, <span class="fl">5</span><span class="op">*</span><span class="fl">10</span><span class="op">^</span><span class="fl">5</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co">## Generate number of coprime elements for many numbers</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/system.time.html" class="external-link">system.time</a></span><span class="op">(</span><span class="va">myPhis</span> <span class="op">&lt;-</span> <span class="fu">eulerPhiSieve</span><span class="op">(</span><span class="fl">10</span><span class="op">^</span><span class="fl">6</span><span class="op">)</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>    user  system elapsed </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   0.016   0.001   0.017 </span>
-<span class="r-in"></span>
-<span class="r-in"><span class="co">## Now use result in algorithm</span></span>
-<span class="r-in"><span class="kw">for</span> <span class="op">(</span><span class="va">s</span> <span class="kw">in</span> <span class="va">mySamp</span><span class="op">)</span> <span class="op">{</span></span>
-<span class="r-in">    <span class="va">sPhi</span> <span class="op">&lt;-</span> <span class="va">myPhis</span><span class="op">[</span><span class="va">s</span><span class="op">]</span></span>
-<span class="r-in">    <span class="co">## Continue algorithm</span></span>
-<span class="r-in"><span class="op">}</span></span>
-<span class="r-in"></span>
-<span class="r-in"><span class="co">## See https://projecteuler.net</span></span>
-<span class="r-in"><span class="fu"><a href="https://rdrr.io/r/base/system.time.html" class="external-link">system.time</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/which.min.html" class="external-link">which.max</a></span><span class="op">(</span><span class="op">(</span><span class="fl">1</span><span class="op">:</span><span class="fl">10</span><span class="op">^</span><span class="fl">6</span><span class="op">)</span><span class="op">/</span><span class="fu">eulerPhiSieve</span><span class="op">(</span><span class="fl">10</span><span class="op">^</span><span class="fl">6</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   0.017   0.002   0.019 </span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co">## Now use result in algorithm</span></span></span>
+<span class="r-in"><span><span class="kw">for</span> <span class="op">(</span><span class="va">s</span> <span class="kw">in</span> <span class="va">mySamp</span><span class="op">)</span> <span class="op">{</span></span></span>
+<span class="r-in"><span>    <span class="va">sPhi</span> <span class="op">&lt;-</span> <span class="va">myPhis</span><span class="op">[</span><span class="va">s</span><span class="op">]</span></span></span>
+<span class="r-in"><span>    <span class="co">## Continue algorithm</span></span></span>
+<span class="r-in"><span><span class="op">}</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co">## See https://projecteuler.net</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/system.time.html" class="external-link">system.time</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/which.min.html" class="external-link">which.max</a></span><span class="op">(</span><span class="op">(</span><span class="fl">1</span><span class="op">:</span><span class="fl">10</span><span class="op">^</span><span class="fl">6</span><span class="op">)</span><span class="op">/</span><span class="fu">eulerPhiSieve</span><span class="op">(</span><span class="fl">10</span><span class="op">^</span><span class="fl">6</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>    user  system elapsed </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   0.024   0.003   0.026 </span>
-<span class="r-in"></span>
-<span class="r-in"><span class="co">## Generating number of coprime elements</span></span>
-<span class="r-in"><span class="co">## for every number in a range is no problem</span></span>
-<span class="r-in"><span class="fu"><a href="https://rdrr.io/r/base/system.time.html" class="external-link">system.time</a></span><span class="op">(</span><span class="va">myPhiRange</span> <span class="op">&lt;-</span> <span class="fu">eulerPhiSieve</span><span class="op">(</span><span class="fl">10</span><span class="op">^</span><span class="fl">13</span>, <span class="fl">10</span><span class="op">^</span><span class="fl">13</span> <span class="op">+</span> <span class="fl">10</span><span class="op">^</span><span class="fl">6</span><span class="op">)</span><span class="op">)</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   0.023   0.004   0.026 </span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co">## Generating number of coprime elements</span></span></span>
+<span class="r-in"><span><span class="co">## for every number in a range is no problem</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/system.time.html" class="external-link">system.time</a></span><span class="op">(</span><span class="va">myPhiRange</span> <span class="op">&lt;-</span> <span class="fu">eulerPhiSieve</span><span class="op">(</span><span class="fl">10</span><span class="op">^</span><span class="fl">13</span>, <span class="fl">10</span><span class="op">^</span><span class="fl">13</span> <span class="op">+</span> <span class="fl">10</span><span class="op">^</span><span class="fl">6</span><span class="op">)</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>    user  system elapsed </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   0.135   0.004   0.139 </span>
-<span class="r-in"></span>
-<span class="r-in"><span class="co">## Returning a named vector</span></span>
-<span class="r-in"><span class="fu">eulerPhiSieve</span><span class="op">(</span><span class="fl">10</span>, <span class="fl">20</span>, namedVector <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   0.148   0.006   0.157 </span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co">## Returning a named vector</span></span></span>
+<span class="r-in"><span><span class="fu">eulerPhiSieve</span><span class="op">(</span><span class="fl">10</span>, <span class="fl">20</span>, namedVector <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 10 11 12 13 14 15 16 17 18 19 20 </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>  4 10  4 12  6  8  8 16  6 18  8 </span>
-<span class="r-in"><span class="fu">eulerPhiSieve</span><span class="op">(</span><span class="fl">10</span>, namedVector <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
+<span class="r-in"><span><span class="fu">eulerPhiSieve</span><span class="op">(</span><span class="fl">10</span>, namedVector <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>  1  2  3  4  5  6  7  8  9 10 </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>  1  1  2  2  4  2  6  4  6  4 </span>
-<span class="r-in"></span>
-<span class="r-in"><span class="co">## Using nThreads</span></span>
-<span class="r-in"><span class="fu"><a href="https://rdrr.io/r/base/system.time.html" class="external-link">system.time</a></span><span class="op">(</span><span class="fu">eulerPhiSieve</span><span class="op">(</span><span class="fl">1e5</span>, <span class="fl">2e5</span>, nThreads <span class="op">=</span> <span class="fl">2</span><span class="op">)</span><span class="op">)</span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co">## Using nThreads</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/system.time.html" class="external-link">system.time</a></span><span class="op">(</span><span class="fu">eulerPhiSieve</span><span class="op">(</span><span class="fl">1e5</span>, <span class="fl">2e5</span>, nThreads <span class="op">=</span> <span class="fl">2</span><span class="op">)</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>    user  system elapsed </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   0.002   0.001   0.001 </span>
 </code></pre></div>
@@ -183,8 +191,7 @@
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a>
-2.0.2.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.6.</p>
 </div>
 
       </footer></div>

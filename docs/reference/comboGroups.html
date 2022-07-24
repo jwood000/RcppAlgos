@@ -23,7 +23,7 @@ The output is in lexicographical order by groups.
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">RcppAlgos</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">2.5.5</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">2.6.0</span>
       </span>
     </div>
 
@@ -32,13 +32,13 @@ The output is in lexicographical order by groups.
   <a href="../reference/index.html">Reference</a>
 </li>
 <li class="dropdown">
-  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
     Articles
      
     <span class="caret"></span>
   </a>
   <ul class="dropdown-menu" role="menu"><li>
-      <a href="../articles/CombPermConstraints.html">Constraints and Integer Partitions</a>
+      <a href="../articles/CombPermConstraints.html">Constraints, Integer Partitions, and Integer Compositions</a>
     </li>
     <li>
       <a href="../articles/CombinatorialSampling.html">Combinatorial Sampling and Ranking</a>
@@ -93,27 +93,34 @@ The output is in lexicographical order by groups.
 </ul></div>
 
     <div id="ref-usage">
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="fu">comboGroups</span><span class="op">(</span><span class="va">v</span>, <span class="va">numGroups</span>, retType <span class="op">=</span> <span class="st">"matrix"</span>,
-            lower <span class="op">=</span> <span class="cn">NULL</span>, upper <span class="op">=</span> <span class="cn">NULL</span>, Parallel <span class="op">=</span> <span class="cn">FALSE</span>,
-            nThreads <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">comboGroups</span><span class="op">(</span><span class="va">v</span>, <span class="va">numGroups</span>, retType <span class="op">=</span> <span class="st">"matrix"</span>,</span>
+<span>            lower <span class="op">=</span> <span class="cn">NULL</span>, upper <span class="op">=</span> <span class="cn">NULL</span>, Parallel <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>            nThreads <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div id="arguments">
     <h2>Arguments</h2>
     <dl><dt>v</dt>
 <dd><p>Source vector. If <code>v</code> is a positive integer, it will be converted to the sequence <code>1:v</code>. If <code>v</code> is a negative integer, it will be converted to the sequence <code>v:-1</code>. All atomic types are supported (See <code><a href="https://rdrr.io/r/base/is.recursive.html" class="external-link">is.atomic</a></code>).</p></dd>
-<dt>numGroups</dt>
+
+  <dt>numGroups</dt>
 <dd><p>An Integer. The number of groups that the vector will be partitioned into. Must divide the length of v (if v is a vector) or v (if v is a scalar).</p></dd>
-<dt>retType</dt>
+
+  <dt>retType</dt>
 <dd><p>A string, "3Darray" or "matrix", that determines the shape of the output. The default is "matrix".</p></dd>
-<dt>lower</dt>
+
+  <dt>lower</dt>
 <dd><p>The lower bound. Partitions of groups are generated lexicographically, thus utilizing this argument will determine which specific result to start generating from (<em>e.g.</em> <code>comboGroups(8, 2, lower = 30)</code> is equivalent to <code>comboGroups(8, 2)[30:comboGroupsCount(8, 2), ]</code>). This argument along with <code>upper</code> is very useful for generating results in chunks allowing for easy parallelization.</p></dd>
-<dt>upper</dt>
+
+  <dt>upper</dt>
 <dd><p>The upper bound. Similar to <code>lower</code>, however this parameter allows the user to <em>stop</em> generation at a specific result (<em>e.g.</em> <code>comboGroups(8, 2, upper = 5)</code> is equivalent to <code>comboGroups(8, 2)[1:5, ]</code>)</p></dd>
-<dt>Parallel</dt>
+
+  <dt>Parallel</dt>
 <dd><p>Logical value indicating whether results should be generated in parallel using \(n - 1\) threads, where \(n\) is the maximum number of threads. The default is <code>FALSE</code>. If <code>nThreads</code> is not <code>NULL</code>, it will be given preference (<em>e.g.</em> if user has 8 threads with <code>Parallel = TRUE</code> and <code>nThreads = 4</code>, only 4 threads will be spawned). If your system is single-threaded, the arguments <code>Parallel</code> and <code>nThreads</code> are ignored.</p></dd>
-<dt>nThreads</dt>
+
+  <dt>nThreads</dt>
 <dd><p>Specific number of threads to be used. The default is <code>NULL</code>. See <code>Parallel</code>.</p></dd>
+
 </dl></div>
     <div id="details">
     <h2>Details</h2>
@@ -128,7 +135,9 @@ The output is in lexicographical order by groups.
 </ul></div>
     <div id="value">
     <h2>Value</h2>
-    <p>By default, a matrix is returned with column names corresponding to the associated group. If <code>retType = "3Darray"</code>, a 3D array is returned.</p>
+    
+
+<p>By default, a matrix is returned with column names corresponding to the associated group. If <code>retType = "3Darray"</code>, a 3D array is returned.</p>
     </div>
     <div id="author">
     <h2>Author</h2>
@@ -141,8 +150,8 @@ The output is in lexicographical order by groups.
 
     <div id="ref-examples">
     <h2>Examples</h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span class="co">## return a matrix</span></span>
-<span class="r-in"><span class="fu">comboGroups</span><span class="op">(</span><span class="fl">8</span>, <span class="fl">2</span><span class="op">)</span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="co">## return a matrix</span></span></span>
+<span class="r-in"><span><span class="fu">comboGroups</span><span class="op">(</span><span class="fl">8</span>, <span class="fl">2</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>       Grp1 Grp1 Grp1 Grp1 Grp2 Grp2 Grp2 Grp2</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>  [1,]    1    2    3    4    5    6    7    8</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>  [2,]    1    2    3    5    4    6    7    8</span>
@@ -179,12 +188,12 @@ The output is in lexicographical order by groups.
 <span class="r-out co"><span class="r-pr">#&gt;</span> [33,]    1    5    6    8    2    3    4    7</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [34,]    1    5    7    8    2    3    4    6</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [35,]    1    6    7    8    2    3    4    5</span>
-<span class="r-in"></span>
-<span class="r-in"><span class="co">## or a 3 dimensional array</span></span>
-<span class="r-in"><span class="va">temp</span> <span class="op">=</span> <span class="fu">comboGroups</span><span class="op">(</span><span class="fl">8</span>, <span class="fl">2</span>, <span class="st">"3Darray"</span><span class="op">)</span></span>
-<span class="r-in"></span>
-<span class="r-in"><span class="co">## view the first partition</span></span>
-<span class="r-in"><span class="va">temp</span><span class="op">[</span><span class="fl">1</span>, , <span class="op">]</span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co">## or a 3 dimensional array</span></span></span>
+<span class="r-in"><span><span class="va">temp</span> <span class="op">=</span> <span class="fu">comboGroups</span><span class="op">(</span><span class="fl">8</span>, <span class="fl">2</span>, <span class="st">"3Darray"</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co">## view the first partition</span></span></span>
+<span class="r-in"><span><span class="va">temp</span><span class="op">[</span><span class="fl">1</span>, , <span class="op">]</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>      Grp1 Grp2</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1,]    1    5</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [2,]    2    6</span>
@@ -204,8 +213,7 @@ The output is in lexicographical order by groups.
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a>
-2.0.2.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.6.</p>
 </div>
 
       </footer></div>
