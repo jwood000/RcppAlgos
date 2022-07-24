@@ -181,29 +181,15 @@ void RepAll::GetCount(mpz_t res, int n, int m, int cap,
 
 void CompsRepLen::GetCount(mpz_t res, int n, int m, int cap,
                            int strtLen, bool bLiteral) {
-
-    if (mpz_cmp_ui(res, 0u) == 0 || mpz_cmp_d(res, Significand53) > 0) {
-        CountCompsRepLen(res, n, m, cap, strtLen);
-    } else {
-        const double dblRes = CountCompsRepLen(n, m, cap, strtLen);
-        mpz_set_d(res, dblRes);
-    }
+    CountCompsRepLen(res, n, m, cap, strtLen);
 }
 
 void CompsRepZero::GetCount(mpz_t res, int n, int m, int cap,
                             int strtLen, bool bLiteral) {
-
-    if (mpz_cmp_ui(res, 0u) == 0 || mpz_cmp_d(res, Significand53) > 0) {
-        if (bLiteral) {
-            CountCompsRepZero(res, n, m, cap, strtLen);
-        } else {
-            CountCompsRepLen(res, n, m, cap, strtLen);
-        }
+    if (bLiteral) {
+        CountCompsRepZero(res, n, m, cap, strtLen);
     } else {
-        const double dblRes = bLiteral ?
-            CountCompsRepZero(n, m, cap, strtLen) :
-            CountCompsRepLen(n, m, cap, strtLen);
-        mpz_set_d(res, dblRes);
+        CountCompsRepLen(res, n, m, cap, strtLen);
     }
 }
 

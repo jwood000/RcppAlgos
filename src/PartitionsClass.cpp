@@ -363,8 +363,9 @@ SEXP Partitions::back() {
 SEXP Partitions::summary() {
     const std::string RepStr = (IsRep) ? "with repetition " : "";
     const std::string MultiStr = (IsMult) ? "of a multiset " : "";
-    const std::string strDesc = "Partitions " + RepStr + MultiStr + "of "
-          + std::to_string(part.target) + " into " + std::to_string(width) + " parts";
+    const std::string strDesc = (part.isComp ? "Compositions " : "Partitions ")
+          + RepStr + MultiStr + "of " + std::to_string(part.target) +
+              " into " + std::to_string(width) + " parts";
     const double dblDiff = (IsGmp) ? 0 : cnstrtCount - dblIndex;
 
     if (IsGmp) {
