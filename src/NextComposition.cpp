@@ -10,7 +10,7 @@ void NextCompositionRep(std::vector<int> &z, int lastCol) {
     } else {
         int j = lastCol - 1;
 
-        while (z[j] == one_or_zero) {
+        while (j > 0 && z[j] == one_or_zero) {
             --j;
         }
 

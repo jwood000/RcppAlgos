@@ -185,6 +185,7 @@ void GetTarget(const std::vector<double> &v,
 
         part.shift = (part.mapTar * part.slope - part.target) / part.width;
     } else {
+        part.startZ.assign(part.width, 0);
         part.solnExist = false;
     }
 }

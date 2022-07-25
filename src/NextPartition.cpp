@@ -26,7 +26,7 @@ void NextDistinctPart(std::vector<int> &z, int &boundary,
     edge = boundary - 1;
     tarDiff = 3;
 
-    while (edge && (z[boundary] - z[edge]) < tarDiff) {
+    while (edge > 0 && (z[boundary] - z[edge]) < tarDiff) {
         --edge;
         ++tarDiff;
     }
@@ -56,7 +56,7 @@ void NextRepPart(std::vector<int> &z, int &boundary,
     edge = boundary - 1;
     const int edgeTest = z[boundary] - 2;
 
-    while (edge && edgeTest < z[edge]) {
+    while (edge > 0 && edgeTest < z[edge]) {
         --edge;
     }
 }
@@ -204,7 +204,7 @@ void PrepareRepPart(const std::vector<int> &z, int &boundary,
     edge = boundary - 1;
     int edgeTest = z[boundary] - 2;
 
-    while (edge && edgeTest < z[edge]) {
+    while (edge > 0 && edgeTest < z[edge]) {
         --edge;
     }
 }
@@ -233,7 +233,7 @@ void PrepareDistinctPart(const std::vector<int> &z, int &boundary,
     edge = boundary - 1;
     tarDiff = 3;
 
-    while (edge && (z[boundary] - z[edge]) < tarDiff) {
+    while (edge > 0 && (z[boundary] - z[edge]) < tarDiff) {
         --edge;
         ++tarDiff;
     }
@@ -397,7 +397,7 @@ void NextRepGenPart(std::vector<int> &z, int &boundary, int &edge,
     edge = boundary - 1;
     int edgeTest = z[boundary] - 2;
 
-    while (edge && edgeTest < z[edge]) {
+    while (edge > 0 && edgeTest < z[edge]) {
         --edge;
     }
 }
@@ -457,7 +457,7 @@ void NextDistinctGenPart(std::vector<int> &z, int &boundary,
     edge = boundary - 1;
     tarDiff = 3;
 
-    while (edge && (z[boundary] - z[edge]) < tarDiff) {
+    while (edge > 0 && (z[boundary] - z[edge]) < tarDiff) {
         --edge;
         ++tarDiff;
     }
