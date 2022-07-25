@@ -16,9 +16,9 @@ A collection of high performance functions implemented in C++ for solving proble
 ## Featured Functions
 
   - **`comboGeneral/permuteGeneral`**: Generate all combinations/permutations of a vector (including [multisets](<https://en.wikipedia.org/wiki/Multiset>)) meeting specific criteria.
-  - **`partitionsGeneral`**: Efficient algorithms for partitioning numbers under various constraints
-  - **`comboSample/permuteSample/partitionsSample`**: Generate reproducible random samples of combinations/permutations/partitions
-  - **`comboIter/permuteIter/partitionsIter`**: Flexible iterators allow for bidirectional iteration as well as random access.
+  - **`partitionsGeneral/compositionsGeneral`**: Efficient algorithms for partitioning numbers under various constraints
+  - **`comboSample/permuteSample/partitionsSample/compositions/Sample`**: Generate reproducible random samples of combinations/permutations/partitions/compositions
+  - **`comboIter/permuteIter/partitionsIter/compositionsIter`**: Flexible iterators allow for bidirectional iteration as well as random access.
   - **`primeSieve`**: Fast prime number generator
   - **`primeCount`**: Prime counting function using [Legendre's formula](<http://mathworld.wolfram.com/LegendresFormula.html>)
 
@@ -101,6 +101,15 @@ partitionsGeneral(0:5, 3, freqs = rep(1:2, 3), target = 6)
 # [3,]    0    3    3
 # [4,]    1    1    4
 # [5,]    1    2    3
+
+
+## And compositions
+compositionsGeneral(0:3, repetition = TRUE)
+#      [,1] [,2] [,3]
+# [1,]    0    0    3
+# [2,]    0    1    2
+# [3,]    0    2    1
+# [4,]    1    1    1
 
 
 ## Generate a reproducible sample

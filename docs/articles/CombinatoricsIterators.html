@@ -33,7 +33,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">RcppAlgos</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">2.5.5</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">2.6.0</span>
       </span>
     </div>
 
@@ -43,14 +43,14 @@
   <a href="../reference/index.html">Reference</a>
 </li>
 <li class="dropdown">
-  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
     Articles
      
     <span class="caret"></span>
   </a>
   <ul class="dropdown-menu" role="menu">
 <li>
-      <a href="../articles/CombPermConstraints.html">Constraints and Integer Partitions</a>
+      <a href="../articles/CombPermConstraints.html">Constraints, Integer Partitions, and Integer Compositions</a>
     </li>
     <li>
       <a href="../articles/CombinatorialSampling.html">Combinatorial Sampling and Ranking</a>
@@ -103,7 +103,7 @@
                         <h4 data-toc-skip class="author">Joseph
 Wood</h4>
             
-            <h4 data-toc-skip class="date">03/29/2022</h4>
+            <h4 data-toc-skip class="date">07/22/2022</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/jwood000/RcppAlgos/blob/HEAD/vignettes/CombinatoricsIterators.Rmd" class="external-link"><code>vignettes/CombinatoricsIterators.Rmd</code></a></small>
       <div class="hidden name"><code>CombinatoricsIterators.Rmd</code></div>
@@ -115,8 +115,9 @@ Wood</h4>
 <p>This document covers working with combinatorial iterators in
 <code>RcppAlgos</code>. Combinatorial iterators in
 <code>RcppAlgos</code> are memory efficient like traditional iterator
-objects. They allow traversal of combinations/permutations one by one
-without the necessity for storing all results in memory.</p>
+objects. They allow traversal of
+combinations/permutations/partitions/compositions one by one without the
+necessity for storing all results in memory.</p>
 <p>Unlike traditional combinatorial iterators, the iterators in
 <code>RcppAlgos</code> offers random access via the <code>[[</code>
 operator. This means, we can access the <em>n<sup>th</sup></em> <a href="https://en.wikipedia.org/wiki/Lexicographical_order" class="external-link">lexicographical
@@ -131,66 +132,66 @@ previous <em>n - 1</em> results.</p>
 very similar to <code>comboGeneral</code> and
 <code>permuteGeneral</code>.</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/jwood000/RcppAlgos" class="external-link">RcppAlgos</a></span><span class="op">)</span>
-
-<span class="co">## Initialize the iterator</span>
-<span class="va">a</span> <span class="op">=</span> <span class="fu"><a href="../reference/combinatoricsIterator.html">comboIter</a></span><span class="op">(</span><span class="fl">5</span>, <span class="fl">3</span><span class="op">)</span>
-
-<span class="co">## Get the first combination</span>
-<span class="va">a</span><span class="op">$</span><span class="fu">nextIter</span><span class="op">(</span><span class="op">)</span>
-<span class="co">#&gt; [1] 1 2 3</span>
-
-<span class="co">## And the next</span>
-<span class="va">a</span><span class="op">$</span><span class="fu">nextIter</span><span class="op">(</span><span class="op">)</span>
-<span class="co">#&gt; [1] 1 2 4</span>
-
-<span class="co">## Set the current iterator to a variable</span>
-<span class="va">iter</span> <span class="op">=</span> <span class="va">a</span><span class="op">$</span><span class="fu">currIter</span><span class="op">(</span><span class="op">)</span>
-<span class="va">i</span> <span class="op">=</span> <span class="fl">1</span>
-
-<span class="co">## Iterate until there are no more</span>
-<span class="kw">while</span> <span class="op">(</span><span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/NULL.html" class="external-link">is.null</a></span><span class="op">(</span><span class="va">iter</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span>
-    <span class="fu"><a href="https://rdrr.io/r/base/cat.html" class="external-link">cat</a></span><span class="op">(</span><span class="va">i</span>, <span class="st">" "</span>, <span class="va">iter</span>, <span class="st">"\n"</span><span class="op">)</span>
-    <span class="va">iter</span> <span class="op">=</span> <span class="va">a</span><span class="op">$</span><span class="fu">nextIter</span><span class="op">(</span><span class="op">)</span>
-    <span class="va">i</span> <span class="op">=</span> <span class="va">i</span> <span class="op">+</span> <span class="fl">1</span>
-<span class="op">}</span>
-<span class="co">#&gt; 1   1 2 4</span>
-<span class="co">#&gt; 2   1 2 5</span>
-<span class="co">#&gt; 3   1 3 4</span>
-<span class="co">#&gt; 4   1 3 5</span>
-<span class="co">#&gt; 5   1 4 5</span>
-<span class="co">#&gt; 6   2 3 4</span>
-<span class="co">#&gt; 7   2 3 5</span>
-<span class="co">#&gt; 8   2 4 5</span>
-<span class="co">#&gt; 9   3 4 5</span>
-<span class="co">#&gt; No more results. To see the last result, use the prevIter method(s)</span>
-
-<span class="co">## See the output of comboGeneral for comparison</span>
-<span class="fu"><a href="../reference/combinatoricsGeneral.html">comboGeneral</a></span><span class="op">(</span><span class="fl">5</span>, <span class="fl">3</span>, lower <span class="op">=</span> <span class="fl">2</span><span class="op">)</span>
-<span class="co">#&gt;       [,1] [,2] [,3]</span>
-<span class="co">#&gt;  [1,]    1    2    4</span>
-<span class="co">#&gt;  [2,]    1    2    5</span>
-<span class="co">#&gt;  [3,]    1    3    4</span>
-<span class="co">#&gt;  [4,]    1    3    5</span>
-<span class="co">#&gt;  [5,]    1    4    5</span>
-<span class="co">#&gt;  [6,]    2    3    4</span>
-<span class="co">#&gt;  [7,]    2    3    5</span>
-<span class="co">#&gt;  [8,]    2    4    5</span>
-<span class="co">#&gt;  [9,]    3    4    5</span>
-
-<span class="co">## Call the summary method to see information about our iterator</span>
-<span class="va">a</span><span class="op">$</span><span class="fu">summary</span><span class="op">(</span><span class="op">)</span>
-<span class="co">#&gt; $description</span>
-<span class="co">#&gt; [1] "Combinations of 5 choose 3"</span>
-<span class="co">#&gt;</span>
-<span class="co">#&gt; $currentIndex</span>
-<span class="co">#&gt; [1] 11</span>
-<span class="co">#&gt;</span>
-<span class="co">#&gt; $totalResults</span>
-<span class="co">#&gt; [1] 10</span>
-<span class="co">#&gt;</span>
-<span class="co">#&gt; $totalRemaining</span>
-<span class="co">#&gt; [1] -1</span></code></pre></div>
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/jwood000/RcppAlgos" class="external-link">RcppAlgos</a></span><span class="op">)</span></span>
+<span></span>
+<span><span class="co">## Initialize the iterator</span></span>
+<span><span class="va">a</span> <span class="op">=</span> <span class="fu"><a href="../reference/combinatoricsIterator.html">comboIter</a></span><span class="op">(</span><span class="fl">5</span>, <span class="fl">3</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co">## Get the first combination</span></span>
+<span><span class="va">a</span><span class="op">$</span><span class="fu">nextIter</span><span class="op">(</span><span class="op">)</span></span>
+<span><span class="co">#&gt; [1] 1 2 3</span></span>
+<span></span>
+<span><span class="co">## And the next</span></span>
+<span><span class="va">a</span><span class="op">$</span><span class="fu">nextIter</span><span class="op">(</span><span class="op">)</span></span>
+<span><span class="co">#&gt; [1] 1 2 4</span></span>
+<span></span>
+<span><span class="co">## Set the current iterator to a variable</span></span>
+<span><span class="va">iter</span> <span class="op">=</span> <span class="va">a</span><span class="op">$</span><span class="fu">currIter</span><span class="op">(</span><span class="op">)</span></span>
+<span><span class="va">i</span> <span class="op">=</span> <span class="fl">1</span></span>
+<span></span>
+<span><span class="co">## Iterate until there are no more</span></span>
+<span><span class="kw">while</span> <span class="op">(</span><span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/NULL.html" class="external-link">is.null</a></span><span class="op">(</span><span class="va">iter</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span>
+<span>    <span class="fu"><a href="https://rdrr.io/r/base/cat.html" class="external-link">cat</a></span><span class="op">(</span><span class="va">i</span>, <span class="st">" "</span>, <span class="va">iter</span>, <span class="st">"\n"</span><span class="op">)</span></span>
+<span>    <span class="va">iter</span> <span class="op">=</span> <span class="va">a</span><span class="op">$</span><span class="fu">nextIter</span><span class="op">(</span><span class="op">)</span></span>
+<span>    <span class="va">i</span> <span class="op">=</span> <span class="va">i</span> <span class="op">+</span> <span class="fl">1</span></span>
+<span><span class="op">}</span></span>
+<span><span class="co">#&gt; 1   1 2 4</span></span>
+<span><span class="co">#&gt; 2   1 2 5</span></span>
+<span><span class="co">#&gt; 3   1 3 4</span></span>
+<span><span class="co">#&gt; 4   1 3 5</span></span>
+<span><span class="co">#&gt; 5   1 4 5</span></span>
+<span><span class="co">#&gt; 6   2 3 4</span></span>
+<span><span class="co">#&gt; 7   2 3 5</span></span>
+<span><span class="co">#&gt; 8   2 4 5</span></span>
+<span><span class="co">#&gt; 9   3 4 5</span></span>
+<span><span class="co">#&gt; No more results. To see the last result, use the prevIter method(s)</span></span>
+<span></span>
+<span><span class="co">## See the output of comboGeneral for comparison</span></span>
+<span><span class="fu"><a href="../reference/combinatoricsGeneral.html">comboGeneral</a></span><span class="op">(</span><span class="fl">5</span>, <span class="fl">3</span>, lower <span class="op">=</span> <span class="fl">2</span><span class="op">)</span></span>
+<span><span class="co">#&gt;       [,1] [,2] [,3]</span></span>
+<span><span class="co">#&gt;  [1,]    1    2    4</span></span>
+<span><span class="co">#&gt;  [2,]    1    2    5</span></span>
+<span><span class="co">#&gt;  [3,]    1    3    4</span></span>
+<span><span class="co">#&gt;  [4,]    1    3    5</span></span>
+<span><span class="co">#&gt;  [5,]    1    4    5</span></span>
+<span><span class="co">#&gt;  [6,]    2    3    4</span></span>
+<span><span class="co">#&gt;  [7,]    2    3    5</span></span>
+<span><span class="co">#&gt;  [8,]    2    4    5</span></span>
+<span><span class="co">#&gt;  [9,]    3    4    5</span></span>
+<span></span>
+<span><span class="co">## Call the summary method to see information about our iterator</span></span>
+<span><span class="va">a</span><span class="op">$</span><span class="fu">summary</span><span class="op">(</span><span class="op">)</span></span>
+<span><span class="co">#&gt; $description</span></span>
+<span><span class="co">#&gt; [1] "Combinations of 5 choose 3"</span></span>
+<span><span class="co">#&gt;</span></span>
+<span><span class="co">#&gt; $currentIndex</span></span>
+<span><span class="co">#&gt; [1] 11</span></span>
+<span><span class="co">#&gt;</span></span>
+<span><span class="co">#&gt; $totalResults</span></span>
+<span><span class="co">#&gt; [1] 10</span></span>
+<span><span class="co">#&gt;</span></span>
+<span><span class="co">#&gt; $totalRemaining</span></span>
+<span><span class="co">#&gt; [1] -1</span></span></code></pre></div>
 <div class="section level3">
 <h3 id="bidirectional-iterators">Bidirectional Iterators<a class="anchor" aria-label="anchor" href="#bidirectional-iterators"></a>
 </h3>
@@ -200,58 +201,58 @@ forward manner (i.e. lexicographically), but we can also iterate
 backwards (i.e. <a href="https://oeis.org/wiki/Orderings#Reverse_lexicographic_order" class="external-link">Reverse
 Lexicographical Order</a>) via the <code>prevIter</code> method(s).</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="co">## Using the same iterable from the previous section</span>
-<span class="va">a</span><span class="op">$</span><span class="fu">currIter</span><span class="op">(</span><span class="op">)</span>
-<span class="co">#&gt; No more results. To see the last result, use the prevIter method(s)</span>
-<span class="co">#&gt;</span>
-<span class="co">#&gt; NULL</span>
-
-<span class="co">## As the comment says, we call the prevIter method to see the last result</span>
-<span class="va">a</span><span class="op">$</span><span class="fu">prevIter</span><span class="op">(</span><span class="op">)</span>
-<span class="co">#&gt; [1] 3 4 5</span>
-
-<span class="co">## Get the previous result</span>
-<span class="va">a</span><span class="op">$</span><span class="fu">prevIter</span><span class="op">(</span><span class="op">)</span>
-<span class="co">#&gt; [1] 2 4 5</span>
-
-<span class="co">## As in the previous example, we set the current iterator to a variable</span>
-<span class="va">iter</span> <span class="op">=</span> <span class="va">a</span><span class="op">$</span><span class="fu">currIter</span><span class="op">(</span><span class="op">)</span>
-
-<span class="co">## Defined above</span>
-<span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">i</span><span class="op">)</span>
-<span class="co">#&gt; [1] 10</span>
-
-<span class="co">## Iterate until we are at the very beginning. Note that the</span>
-<span class="co">## output is exactly the same as above, but in reverse order</span>
-<span class="kw">while</span> <span class="op">(</span><span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/NULL.html" class="external-link">is.null</a></span><span class="op">(</span><span class="va">iter</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span>
-    <span class="va">i</span> <span class="op">=</span> <span class="va">i</span> <span class="op">-</span> <span class="fl">1</span>
-    <span class="fu"><a href="https://rdrr.io/r/base/cat.html" class="external-link">cat</a></span><span class="op">(</span><span class="va">i</span>, <span class="st">" "</span>, <span class="va">iter</span>, <span class="st">"\n"</span><span class="op">)</span>
-    <span class="va">iter</span> <span class="op">=</span> <span class="va">a</span><span class="op">$</span><span class="fu">prevIter</span><span class="op">(</span><span class="op">)</span>
-<span class="op">}</span>
-<span class="co">#&gt; 9   2 4 5</span>
-<span class="co">#&gt; 8   2 3 5</span>
-<span class="co">#&gt; 7   2 3 4</span>
-<span class="co">#&gt; 6   1 4 5</span>
-<span class="co">#&gt; 5   1 3 5</span>
-<span class="co">#&gt; 4   1 3 4</span>
-<span class="co">#&gt; 3   1 2 5</span>
-<span class="co">#&gt; 2   1 2 4</span>
-<span class="co">#&gt; 1   1 2 3</span>
-<span class="co">#&gt; Iterator Initialized. To see the first result, use the nextIter method(s)</span>
-
-<span class="co">## Call the summary method to see information about our iterator</span>
-<span class="va">a</span><span class="op">$</span><span class="fu">summary</span><span class="op">(</span><span class="op">)</span>
-<span class="co">#&gt; $description</span>
-<span class="co">#&gt; [1] "Combinations of 5 choose 3"</span>
-<span class="co">#&gt;</span>
-<span class="co">#&gt; $currentIndex</span>
-<span class="co">#&gt; [1] 0</span>
-<span class="co">#&gt;</span>
-<span class="co">#&gt; $totalResults</span>
-<span class="co">#&gt; [1] 10</span>
-<span class="co">#&gt;</span>
-<span class="co">#&gt; $totalRemaining</span>
-<span class="co">#&gt; [1] 10</span></code></pre></div>
+<code class="sourceCode R"><span><span class="co">## Using the same iterable from the previous section</span></span>
+<span><span class="va">a</span><span class="op">$</span><span class="fu">currIter</span><span class="op">(</span><span class="op">)</span></span>
+<span><span class="co">#&gt; No more results. To see the last result, use the prevIter method(s)</span></span>
+<span><span class="co">#&gt;</span></span>
+<span><span class="co">#&gt; NULL</span></span>
+<span></span>
+<span><span class="co">## As the comment says, we call the prevIter method to see the last result</span></span>
+<span><span class="va">a</span><span class="op">$</span><span class="fu">prevIter</span><span class="op">(</span><span class="op">)</span></span>
+<span><span class="co">#&gt; [1] 3 4 5</span></span>
+<span></span>
+<span><span class="co">## Get the previous result</span></span>
+<span><span class="va">a</span><span class="op">$</span><span class="fu">prevIter</span><span class="op">(</span><span class="op">)</span></span>
+<span><span class="co">#&gt; [1] 2 4 5</span></span>
+<span></span>
+<span><span class="co">## As in the previous example, we set the current iterator to a variable</span></span>
+<span><span class="va">iter</span> <span class="op">=</span> <span class="va">a</span><span class="op">$</span><span class="fu">currIter</span><span class="op">(</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co">## Defined above</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">i</span><span class="op">)</span></span>
+<span><span class="co">#&gt; [1] 10</span></span>
+<span></span>
+<span><span class="co">## Iterate until we are at the very beginning. Note that the</span></span>
+<span><span class="co">## output is exactly the same as above, but in reverse order</span></span>
+<span><span class="kw">while</span> <span class="op">(</span><span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/NULL.html" class="external-link">is.null</a></span><span class="op">(</span><span class="va">iter</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span>
+<span>    <span class="va">i</span> <span class="op">=</span> <span class="va">i</span> <span class="op">-</span> <span class="fl">1</span></span>
+<span>    <span class="fu"><a href="https://rdrr.io/r/base/cat.html" class="external-link">cat</a></span><span class="op">(</span><span class="va">i</span>, <span class="st">" "</span>, <span class="va">iter</span>, <span class="st">"\n"</span><span class="op">)</span></span>
+<span>    <span class="va">iter</span> <span class="op">=</span> <span class="va">a</span><span class="op">$</span><span class="fu">prevIter</span><span class="op">(</span><span class="op">)</span></span>
+<span><span class="op">}</span></span>
+<span><span class="co">#&gt; 9   2 4 5</span></span>
+<span><span class="co">#&gt; 8   2 3 5</span></span>
+<span><span class="co">#&gt; 7   2 3 4</span></span>
+<span><span class="co">#&gt; 6   1 4 5</span></span>
+<span><span class="co">#&gt; 5   1 3 5</span></span>
+<span><span class="co">#&gt; 4   1 3 4</span></span>
+<span><span class="co">#&gt; 3   1 2 5</span></span>
+<span><span class="co">#&gt; 2   1 2 4</span></span>
+<span><span class="co">#&gt; 1   1 2 3</span></span>
+<span><span class="co">#&gt; Iterator Initialized. To see the first result, use the nextIter method(s)</span></span>
+<span></span>
+<span><span class="co">## Call the summary method to see information about our iterator</span></span>
+<span><span class="va">a</span><span class="op">$</span><span class="fu">summary</span><span class="op">(</span><span class="op">)</span></span>
+<span><span class="co">#&gt; $description</span></span>
+<span><span class="co">#&gt; [1] "Combinations of 5 choose 3"</span></span>
+<span><span class="co">#&gt;</span></span>
+<span><span class="co">#&gt; $currentIndex</span></span>
+<span><span class="co">#&gt; [1] 0</span></span>
+<span><span class="co">#&gt;</span></span>
+<span><span class="co">#&gt; $totalResults</span></span>
+<span><span class="co">#&gt; [1] 10</span></span>
+<span><span class="co">#&gt;</span></span>
+<span><span class="co">#&gt; $totalRemaining</span></span>
+<span><span class="co">#&gt; [1] 10</span></span></code></pre></div>
 </div>
 <div class="section level3">
 <h3 id="retrieving-more-than-one-result-at-a-time">Retrieving More than One Result at a Time<a class="anchor" aria-label="anchor" href="#retrieving-more-than-one-result-at-a-time"></a>
@@ -260,107 +261,107 @@ Lexicographical Order</a>) via the <code>prevIter</code> method(s).</p>
 at a time: <code>nextNIter</code>, <code>prevNIter</code>,
 <code>nextRemaining</code>, and <code>prevRemaining</code>.</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="co">## Reset the iterator</span>
-<span class="va">a</span><span class="op">$</span><span class="fu">startOver</span><span class="op">(</span><span class="op">)</span>
-
-<span class="co">## Get the next 4 combinations</span>
-<span class="va">a</span><span class="op">$</span><span class="fu">nextNIter</span><span class="op">(</span><span class="fl">4</span><span class="op">)</span>
-<span class="co">#&gt;      [,1] [,2] [,3]</span>
-<span class="co">#&gt; [1,]    1    2    3</span>
-<span class="co">#&gt; [2,]    1    2    4</span>
-<span class="co">#&gt; [3,]    1    2    5</span>
-<span class="co">#&gt; [4,]    1    3    4</span>
-
-<span class="co">## Get the summary. Note that the index has been updated</span>
-<span class="va">a</span><span class="op">$</span><span class="fu">summary</span><span class="op">(</span><span class="op">)</span>
-<span class="co">#&gt; $description</span>
-<span class="co">#&gt; [1] "Combinations of 5 choose 3"</span>
-<span class="co">#&gt;</span>
-<span class="co">#&gt; $currentIndex</span>
-<span class="co">#&gt; [1] 4</span>
-<span class="co">#&gt;</span>
-<span class="co">#&gt; $totalResults</span>
-<span class="co">#&gt; [1] 10</span>
-<span class="co">#&gt;</span>
-<span class="co">#&gt; $totalRemaining</span>
-<span class="co">#&gt; [1] 6</span>
-
-<span class="co">## View the current combination</span>
-<span class="va">a</span><span class="op">$</span><span class="fu">currIter</span><span class="op">(</span><span class="op">)</span>
-<span class="co">#&gt; [1] 1 3 4</span>
-
-<span class="co">## Get the remaining combinations with nextRemaining</span>
-<span class="va">a</span><span class="op">$</span><span class="fu">nextRemaining</span><span class="op">(</span><span class="op">)</span>
-<span class="co">#&gt;      [,1] [,2] [,3]</span>
-<span class="co">#&gt; [1,]    1    3    5</span>
-<span class="co">#&gt; [2,]    1    4    5</span>
-<span class="co">#&gt; [3,]    2    3    4</span>
-<span class="co">#&gt; [4,]    2    3    5</span>
-<span class="co">#&gt; [5,]    2    4    5</span>
-<span class="co">#&gt; [6,]    3    4    5</span>
-
-<span class="va">a</span><span class="op">$</span><span class="fu">summary</span><span class="op">(</span><span class="op">)</span>
-<span class="co">#&gt; $description</span>
-<span class="co">#&gt; [1] "Combinations of 5 choose 3"</span>
-<span class="co">#&gt;</span>
-<span class="co">#&gt; $currentIndex</span>
-<span class="co">#&gt; [1] 11</span>
-<span class="co">#&gt;</span>
-<span class="co">#&gt; $totalResults</span>
-<span class="co">#&gt; [1] 10</span>
-<span class="co">#&gt;</span>
-<span class="co">#&gt; $totalRemaining</span>
-<span class="co">#&gt; [1] -1</span></code></pre></div>
+<code class="sourceCode R"><span><span class="co">## Reset the iterator</span></span>
+<span><span class="va">a</span><span class="op">$</span><span class="fu">startOver</span><span class="op">(</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co">## Get the next 4 combinations</span></span>
+<span><span class="va">a</span><span class="op">$</span><span class="fu">nextNIter</span><span class="op">(</span><span class="fl">4</span><span class="op">)</span></span>
+<span><span class="co">#&gt;      [,1] [,2] [,3]</span></span>
+<span><span class="co">#&gt; [1,]    1    2    3</span></span>
+<span><span class="co">#&gt; [2,]    1    2    4</span></span>
+<span><span class="co">#&gt; [3,]    1    2    5</span></span>
+<span><span class="co">#&gt; [4,]    1    3    4</span></span>
+<span></span>
+<span><span class="co">## Get the summary. Note that the index has been updated</span></span>
+<span><span class="va">a</span><span class="op">$</span><span class="fu">summary</span><span class="op">(</span><span class="op">)</span></span>
+<span><span class="co">#&gt; $description</span></span>
+<span><span class="co">#&gt; [1] "Combinations of 5 choose 3"</span></span>
+<span><span class="co">#&gt;</span></span>
+<span><span class="co">#&gt; $currentIndex</span></span>
+<span><span class="co">#&gt; [1] 4</span></span>
+<span><span class="co">#&gt;</span></span>
+<span><span class="co">#&gt; $totalResults</span></span>
+<span><span class="co">#&gt; [1] 10</span></span>
+<span><span class="co">#&gt;</span></span>
+<span><span class="co">#&gt; $totalRemaining</span></span>
+<span><span class="co">#&gt; [1] 6</span></span>
+<span></span>
+<span><span class="co">## View the current combination</span></span>
+<span><span class="va">a</span><span class="op">$</span><span class="fu">currIter</span><span class="op">(</span><span class="op">)</span></span>
+<span><span class="co">#&gt; [1] 1 3 4</span></span>
+<span></span>
+<span><span class="co">## Get the remaining combinations with nextRemaining</span></span>
+<span><span class="va">a</span><span class="op">$</span><span class="fu">nextRemaining</span><span class="op">(</span><span class="op">)</span></span>
+<span><span class="co">#&gt;      [,1] [,2] [,3]</span></span>
+<span><span class="co">#&gt; [1,]    1    3    5</span></span>
+<span><span class="co">#&gt; [2,]    1    4    5</span></span>
+<span><span class="co">#&gt; [3,]    2    3    4</span></span>
+<span><span class="co">#&gt; [4,]    2    3    5</span></span>
+<span><span class="co">#&gt; [5,]    2    4    5</span></span>
+<span><span class="co">#&gt; [6,]    3    4    5</span></span>
+<span></span>
+<span><span class="va">a</span><span class="op">$</span><span class="fu">summary</span><span class="op">(</span><span class="op">)</span></span>
+<span><span class="co">#&gt; $description</span></span>
+<span><span class="co">#&gt; [1] "Combinations of 5 choose 3"</span></span>
+<span><span class="co">#&gt;</span></span>
+<span><span class="co">#&gt; $currentIndex</span></span>
+<span><span class="co">#&gt; [1] 11</span></span>
+<span><span class="co">#&gt;</span></span>
+<span><span class="co">#&gt; $totalResults</span></span>
+<span><span class="co">#&gt; [1] 10</span></span>
+<span><span class="co">#&gt;</span></span>
+<span><span class="co">#&gt; $totalRemaining</span></span>
+<span><span class="co">#&gt; [1] -1</span></span></code></pre></div>
 <p>Now, we look at the opposite direction.</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="co">## Get the previous 4 combinations</span>
-<span class="va">a</span><span class="op">$</span><span class="fu">prevNIter</span><span class="op">(</span><span class="fl">4</span><span class="op">)</span>
-<span class="co">#&gt;      [,1] [,2] [,3]</span>
-<span class="co">#&gt; [1,]    3    4    5</span>
-<span class="co">#&gt; [2,]    2    4    5</span>
-<span class="co">#&gt; [3,]    2    3    5</span>
-<span class="co">#&gt; [4,]    2    3    4</span>
-
-<span class="co">## Get the summary. Note that the index has been updated</span>
-<span class="va">a</span><span class="op">$</span><span class="fu">summary</span><span class="op">(</span><span class="op">)</span>
-<span class="co">#&gt; $description</span>
-<span class="co">#&gt; [1] "Combinations of 5 choose 3"</span>
-<span class="co">#&gt;</span>
-<span class="co">#&gt; $currentIndex</span>
-<span class="co">#&gt; [1] 7</span>
-<span class="co">#&gt;</span>
-<span class="co">#&gt; $totalResults</span>
-<span class="co">#&gt; [1] 10</span>
-<span class="co">#&gt;</span>
-<span class="co">#&gt; $totalRemaining</span>
-<span class="co">#&gt; [1] 3</span>
-
-<span class="co">## View the current combination</span>
-<span class="va">a</span><span class="op">$</span><span class="fu">currIter</span><span class="op">(</span><span class="op">)</span>
-<span class="co">#&gt; [1] 2 3 4</span>
-
-<span class="co">## Get the remaining previous combinations with prevRemaining</span>
-<span class="va">a</span><span class="op">$</span><span class="fu">prevRemaining</span><span class="op">(</span><span class="op">)</span>
-<span class="co">#&gt;      [,1] [,2] [,3]</span>
-<span class="co">#&gt; [1,]    1    4    5</span>
-<span class="co">#&gt; [2,]    1    3    5</span>
-<span class="co">#&gt; [3,]    1    3    4</span>
-<span class="co">#&gt; [4,]    1    2    5</span>
-<span class="co">#&gt; [5,]    1    2    4</span>
-<span class="co">#&gt; [6,]    1    2    3</span>
-
-<span class="va">a</span><span class="op">$</span><span class="fu">summary</span><span class="op">(</span><span class="op">)</span>
-<span class="co">#&gt; $description</span>
-<span class="co">#&gt; [1] "Combinations of 5 choose 3"</span>
-<span class="co">#&gt;</span>
-<span class="co">#&gt; $currentIndex</span>
-<span class="co">#&gt; [1] 0</span>
-<span class="co">#&gt;</span>
-<span class="co">#&gt; $totalResults</span>
-<span class="co">#&gt; [1] 10</span>
-<span class="co">#&gt;</span>
-<span class="co">#&gt; $totalRemaining</span>
-<span class="co">#&gt; [1] 10</span></code></pre></div>
+<code class="sourceCode R"><span><span class="co">## Get the previous 4 combinations</span></span>
+<span><span class="va">a</span><span class="op">$</span><span class="fu">prevNIter</span><span class="op">(</span><span class="fl">4</span><span class="op">)</span></span>
+<span><span class="co">#&gt;      [,1] [,2] [,3]</span></span>
+<span><span class="co">#&gt; [1,]    3    4    5</span></span>
+<span><span class="co">#&gt; [2,]    2    4    5</span></span>
+<span><span class="co">#&gt; [3,]    2    3    5</span></span>
+<span><span class="co">#&gt; [4,]    2    3    4</span></span>
+<span></span>
+<span><span class="co">## Get the summary. Note that the index has been updated</span></span>
+<span><span class="va">a</span><span class="op">$</span><span class="fu">summary</span><span class="op">(</span><span class="op">)</span></span>
+<span><span class="co">#&gt; $description</span></span>
+<span><span class="co">#&gt; [1] "Combinations of 5 choose 3"</span></span>
+<span><span class="co">#&gt;</span></span>
+<span><span class="co">#&gt; $currentIndex</span></span>
+<span><span class="co">#&gt; [1] 7</span></span>
+<span><span class="co">#&gt;</span></span>
+<span><span class="co">#&gt; $totalResults</span></span>
+<span><span class="co">#&gt; [1] 10</span></span>
+<span><span class="co">#&gt;</span></span>
+<span><span class="co">#&gt; $totalRemaining</span></span>
+<span><span class="co">#&gt; [1] 3</span></span>
+<span></span>
+<span><span class="co">## View the current combination</span></span>
+<span><span class="va">a</span><span class="op">$</span><span class="fu">currIter</span><span class="op">(</span><span class="op">)</span></span>
+<span><span class="co">#&gt; [1] 2 3 4</span></span>
+<span></span>
+<span><span class="co">## Get the remaining previous combinations with prevRemaining</span></span>
+<span><span class="va">a</span><span class="op">$</span><span class="fu">prevRemaining</span><span class="op">(</span><span class="op">)</span></span>
+<span><span class="co">#&gt;      [,1] [,2] [,3]</span></span>
+<span><span class="co">#&gt; [1,]    1    4    5</span></span>
+<span><span class="co">#&gt; [2,]    1    3    5</span></span>
+<span><span class="co">#&gt; [3,]    1    3    4</span></span>
+<span><span class="co">#&gt; [4,]    1    2    5</span></span>
+<span><span class="co">#&gt; [5,]    1    2    4</span></span>
+<span><span class="co">#&gt; [6,]    1    2    3</span></span>
+<span></span>
+<span><span class="va">a</span><span class="op">$</span><span class="fu">summary</span><span class="op">(</span><span class="op">)</span></span>
+<span><span class="co">#&gt; $description</span></span>
+<span><span class="co">#&gt; [1] "Combinations of 5 choose 3"</span></span>
+<span><span class="co">#&gt;</span></span>
+<span><span class="co">#&gt; $currentIndex</span></span>
+<span><span class="co">#&gt; [1] 0</span></span>
+<span><span class="co">#&gt;</span></span>
+<span><span class="co">#&gt; $totalResults</span></span>
+<span><span class="co">#&gt; [1] 10</span></span>
+<span><span class="co">#&gt;</span></span>
+<span><span class="co">#&gt; $totalRemaining</span></span>
+<span><span class="co">#&gt; [1] 10</span></span></code></pre></div>
 </div>
 <div class="section level3">
 <h3 id="random-access-iterator">Random Access Iterator<a class="anchor" aria-label="anchor" href="#random-access-iterator"></a>
@@ -370,92 +371,92 @@ iterators in <code>RcppAlgos</code>, we can jump to the
 <em>n<sup>th</sup></em> result without the need for iterating over the
 first <em>n - 1</em> results.</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="co">## Reset the iterator</span>
-<span class="va">a</span><span class="op">$</span><span class="fu">startOver</span><span class="op">(</span><span class="op">)</span>
-
-<span class="co">## How many total combinations do we have?</span>
-<span class="va">a</span><span class="op">$</span><span class="fu">summary</span><span class="op">(</span><span class="op">)</span><span class="op">$</span><span class="va">totalResults</span>
-<span class="co">#&gt; [1] 10</span>
-
-<span class="co">## Let's get the 3rd combination</span>
-<span class="va">a</span><span class="op">[[</span><span class="fl">3</span><span class="op">]</span><span class="op">]</span>
-<span class="co">#&gt; [1] 1 2 5</span>
-
-<span class="co">## See the summary. Note that the index has been updated</span>
-<span class="va">a</span><span class="op">$</span><span class="fu">summary</span><span class="op">(</span><span class="op">)</span>
-<span class="co">#&gt; $description</span>
-<span class="co">#&gt; [1] "Combinations of 5 choose 3"</span>
-<span class="co">#&gt;</span>
-<span class="co">#&gt; $currentIndex</span>
-<span class="co">#&gt; [1] 3</span>
-<span class="co">#&gt;</span>
-<span class="co">#&gt; $totalResults</span>
-<span class="co">#&gt; [1] 10</span>
-<span class="co">#&gt;</span>
-<span class="co">#&gt; $totalRemaining</span>
-<span class="co">#&gt; [1] 7</span>
-
-<span class="co">## Let's see the 9th combination</span>
-<span class="va">a</span><span class="op">[[</span><span class="fl">9</span><span class="op">]</span><span class="op">]</span>
-<span class="co">#&gt; [1] 2 4 5</span>
-
-<span class="co">## What about the first and last combination?</span>
-<span class="va">a</span><span class="op">$</span><span class="fu">front</span><span class="op">(</span><span class="op">)</span>
-<span class="co">#&gt; [1] 1 2 3</span>
-
-<span class="va">a</span><span class="op">$</span><span class="fu">back</span><span class="op">(</span><span class="op">)</span>
-<span class="co">#&gt; [1] 3 4 5</span>
-
-<span class="co">## Again the index has been updated</span>
-<span class="va">a</span><span class="op">$</span><span class="fu">summary</span><span class="op">(</span><span class="op">)</span>
-<span class="co">#&gt; $description</span>
-<span class="co">#&gt; [1] "Combinations of 5 choose 3"</span>
-<span class="co">#&gt;</span>
-<span class="co">#&gt; $currentIndex</span>
-<span class="co">#&gt; [1] 10</span>
-<span class="co">#&gt;</span>
-<span class="co">#&gt; $totalResults</span>
-<span class="co">#&gt; [1] 10</span>
-<span class="co">#&gt;</span>
-<span class="co">#&gt; $totalRemaining</span>
-<span class="co">#&gt; [1] 0</span>
-
-<span class="va">a</span><span class="op">$</span><span class="fu">currIter</span><span class="op">(</span><span class="op">)</span>
-<span class="co">#&gt; [1] 3 4 5</span></code></pre></div>
+<code class="sourceCode R"><span><span class="co">## Reset the iterator</span></span>
+<span><span class="va">a</span><span class="op">$</span><span class="fu">startOver</span><span class="op">(</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co">## How many total combinations do we have?</span></span>
+<span><span class="va">a</span><span class="op">$</span><span class="fu">summary</span><span class="op">(</span><span class="op">)</span><span class="op">$</span><span class="va">totalResults</span></span>
+<span><span class="co">#&gt; [1] 10</span></span>
+<span></span>
+<span><span class="co">## Let's get the 3rd combination</span></span>
+<span><span class="va">a</span><span class="op">[[</span><span class="fl">3</span><span class="op">]</span><span class="op">]</span></span>
+<span><span class="co">#&gt; [1] 1 2 5</span></span>
+<span></span>
+<span><span class="co">## See the summary. Note that the index has been updated</span></span>
+<span><span class="va">a</span><span class="op">$</span><span class="fu">summary</span><span class="op">(</span><span class="op">)</span></span>
+<span><span class="co">#&gt; $description</span></span>
+<span><span class="co">#&gt; [1] "Combinations of 5 choose 3"</span></span>
+<span><span class="co">#&gt;</span></span>
+<span><span class="co">#&gt; $currentIndex</span></span>
+<span><span class="co">#&gt; [1] 3</span></span>
+<span><span class="co">#&gt;</span></span>
+<span><span class="co">#&gt; $totalResults</span></span>
+<span><span class="co">#&gt; [1] 10</span></span>
+<span><span class="co">#&gt;</span></span>
+<span><span class="co">#&gt; $totalRemaining</span></span>
+<span><span class="co">#&gt; [1] 7</span></span>
+<span></span>
+<span><span class="co">## Let's see the 9th combination</span></span>
+<span><span class="va">a</span><span class="op">[[</span><span class="fl">9</span><span class="op">]</span><span class="op">]</span></span>
+<span><span class="co">#&gt; [1] 2 4 5</span></span>
+<span></span>
+<span><span class="co">## What about the first and last combination?</span></span>
+<span><span class="va">a</span><span class="op">$</span><span class="fu">front</span><span class="op">(</span><span class="op">)</span></span>
+<span><span class="co">#&gt; [1] 1 2 3</span></span>
+<span></span>
+<span><span class="va">a</span><span class="op">$</span><span class="fu">back</span><span class="op">(</span><span class="op">)</span></span>
+<span><span class="co">#&gt; [1] 3 4 5</span></span>
+<span></span>
+<span><span class="co">## Again the index has been updated</span></span>
+<span><span class="va">a</span><span class="op">$</span><span class="fu">summary</span><span class="op">(</span><span class="op">)</span></span>
+<span><span class="co">#&gt; $description</span></span>
+<span><span class="co">#&gt; [1] "Combinations of 5 choose 3"</span></span>
+<span><span class="co">#&gt;</span></span>
+<span><span class="co">#&gt; $currentIndex</span></span>
+<span><span class="co">#&gt; [1] 10</span></span>
+<span><span class="co">#&gt;</span></span>
+<span><span class="co">#&gt; $totalResults</span></span>
+<span><span class="co">#&gt; [1] 10</span></span>
+<span><span class="co">#&gt;</span></span>
+<span><span class="co">#&gt; $totalRemaining</span></span>
+<span><span class="co">#&gt; [1] 0</span></span>
+<span></span>
+<span><span class="va">a</span><span class="op">$</span><span class="fu">currIter</span><span class="op">(</span><span class="op">)</span></span>
+<span><span class="co">#&gt; [1] 3 4 5</span></span></code></pre></div>
 <p>We can also easily return a random sample of combinations with the
 <code>[[</code> operator by passing a vector of indices. In these cases,
 it should be noted that the current index will not be updated.</p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="co">## Set the current index to the second combination</span>
-<span class="va">a</span><span class="op">[[</span><span class="fl">2</span><span class="op">]</span><span class="op">]</span>
-<span class="co">#&gt; [1] 1 2 4</span>
-
-<span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="fl">121</span><span class="op">)</span>
-<span class="va">samp</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sample.html" class="external-link">sample</a></span><span class="op">(</span><span class="va">a</span><span class="op">$</span><span class="fu">summary</span><span class="op">(</span><span class="op">)</span><span class="op">$</span><span class="va">totalResults</span>, <span class="fl">4</span><span class="op">)</span>
-
-<span class="va">samp</span>
-<span class="co">#&gt; [1]  4  7 10  1</span>
-
-<span class="va">a</span><span class="op">[[</span><span class="va">samp</span><span class="op">]</span><span class="op">]</span>
-<span class="co">#&gt;      [,1] [,2] [,3]</span>
-<span class="co">#&gt; [1,]    1    3    4</span>
-<span class="co">#&gt; [2,]    2    3    4</span>
-<span class="co">#&gt; [3,]    3    4    5</span>
-<span class="co">#&gt; [4,]    1    2    3</span>
-
-<span class="co">## Note that the current index remains unchanged</span>
-<span class="va">a</span><span class="op">$</span><span class="fu">summary</span><span class="op">(</span><span class="op">)</span>
-<span class="co">#&gt; $description</span>
-<span class="co">#&gt; [1] "Combinations of 5 choose 3"</span>
-<span class="co">#&gt;</span>
-<span class="co">#&gt; $currentIndex</span>
-<span class="co">#&gt; [1] 2</span>
-<span class="co">#&gt;</span>
-<span class="co">#&gt; $totalResults</span>
-<span class="co">#&gt; [1] 10</span>
-<span class="co">#&gt;</span>
-<span class="co">#&gt; $totalRemaining</span>
-<span class="co">#&gt; [1] 8</span></code></pre></div>
+<code class="sourceCode R"><span><span class="co">## Set the current index to the second combination</span></span>
+<span><span class="va">a</span><span class="op">[[</span><span class="fl">2</span><span class="op">]</span><span class="op">]</span></span>
+<span><span class="co">#&gt; [1] 1 2 4</span></span>
+<span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="fl">121</span><span class="op">)</span></span>
+<span><span class="va">samp</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sample.html" class="external-link">sample</a></span><span class="op">(</span><span class="va">a</span><span class="op">$</span><span class="fu">summary</span><span class="op">(</span><span class="op">)</span><span class="op">$</span><span class="va">totalResults</span>, <span class="fl">4</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">samp</span></span>
+<span><span class="co">#&gt; [1]  4  7 10  1</span></span>
+<span></span>
+<span><span class="va">a</span><span class="op">[[</span><span class="va">samp</span><span class="op">]</span><span class="op">]</span></span>
+<span><span class="co">#&gt;      [,1] [,2] [,3]</span></span>
+<span><span class="co">#&gt; [1,]    1    3    4</span></span>
+<span><span class="co">#&gt; [2,]    2    3    4</span></span>
+<span><span class="co">#&gt; [3,]    3    4    5</span></span>
+<span><span class="co">#&gt; [4,]    1    2    3</span></span>
+<span></span>
+<span><span class="co">## Note that the current index remains unchanged</span></span>
+<span><span class="va">a</span><span class="op">$</span><span class="fu">summary</span><span class="op">(</span><span class="op">)</span></span>
+<span><span class="co">#&gt; $description</span></span>
+<span><span class="co">#&gt; [1] "Combinations of 5 choose 3"</span></span>
+<span><span class="co">#&gt;</span></span>
+<span><span class="co">#&gt; $currentIndex</span></span>
+<span><span class="co">#&gt; [1] 2</span></span>
+<span><span class="co">#&gt;</span></span>
+<span><span class="co">#&gt; $totalResults</span></span>
+<span><span class="co">#&gt; [1] 10</span></span>
+<span><span class="co">#&gt;</span></span>
+<span><span class="co">#&gt; $totalRemaining</span></span>
+<span><span class="co">#&gt; [1] 8</span></span></code></pre></div>
 </div>
 <div class="section level3">
 <h3 id="user-defined-functions">User Defined Functions<a class="anchor" aria-label="anchor" href="#user-defined-functions"></a>
@@ -464,37 +465,37 @@ it should be noted that the current index will not be updated.</p>
 <code>permuteGeneral</code>, we can pass a user defined function to
 <code>comboIter</code> and <code>permuteIter</code>.</p>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="co">## Initialize the iterator</span>
-<span class="va">b</span> <span class="op">=</span> <span class="fu"><a href="../reference/combinatoricsIterator.html">permuteIter</a></span><span class="op">(</span><span class="va">LETTERS</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">4</span><span class="op">]</span>, <span class="fl">3</span>, FUN <span class="op">=</span> <span class="kw">function</span><span class="op">(</span><span class="va">p</span><span class="op">)</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste</a></span><span class="op">(</span><span class="va">p</span>, collapse <span class="op">=</span> <span class="st">""</span><span class="op">)</span>,
-                FUN.VALUE <span class="op">=</span> <span class="st">"a"</span><span class="op">)</span>
-<span class="va">b</span><span class="op">$</span><span class="fu">nextIter</span><span class="op">(</span><span class="op">)</span>
-<span class="co">#&gt; [1] "ABC"</span>
-
-<span class="va">b</span><span class="op">$</span><span class="fu">nextNIter</span><span class="op">(</span><span class="fl">5</span><span class="op">)</span>
-<span class="co">#&gt; [1] "ABD" "ACB" "ACD" "ADB" "ADC"</span>
-
-<span class="va">b</span><span class="op">$</span><span class="fu">back</span><span class="op">(</span><span class="op">)</span>
-<span class="co">#&gt; [1] "DCB"</span>
-
-<span class="va">b</span><span class="op">$</span><span class="fu">prevIter</span><span class="op">(</span><span class="op">)</span>
-<span class="co">#&gt; [1] "DCA"</span>
-
-<span class="va">b</span><span class="op">$</span><span class="fu">prevNIter</span><span class="op">(</span><span class="fl">5</span><span class="op">)</span>
-<span class="co">#&gt; [1] "DBC" "DBA" "DAC" "DAB" "CDB"</span>
-
-<span class="va">b</span><span class="op">$</span><span class="fu">nextRemaining</span><span class="op">(</span><span class="op">)</span>
-<span class="co">#&gt; [1] "DAB" "DAC" "DBA" "DBC" "DCA" "DCB"</span>
-
-<span class="co">## Random access</span>
-<span class="va">b</span><span class="op">[[</span><span class="fl">5</span><span class="op">]</span><span class="op">]</span>
-<span class="co">#&gt; [1] "ADB"</span>
-
-<span class="va">b</span><span class="op">$</span><span class="fu">prevRemaining</span><span class="op">(</span><span class="op">)</span>
-<span class="co">#&gt; [1] "ACD" "ACB" "ABD" "ABC"</span>
-
-<span class="co">## View the source vector</span>
-<span class="va">b</span><span class="op">$</span><span class="fu">sourceVector</span><span class="op">(</span><span class="op">)</span>
-<span class="co">#&gt; [1] "A" "B" "C" "D"</span></code></pre></div>
+<code class="sourceCode R"><span><span class="co">## Initialize the iterator</span></span>
+<span><span class="va">b</span> <span class="op">=</span> <span class="fu"><a href="../reference/combinatoricsIterator.html">permuteIter</a></span><span class="op">(</span><span class="va">LETTERS</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">4</span><span class="op">]</span>, <span class="fl">3</span>, FUN <span class="op">=</span> <span class="kw">function</span><span class="op">(</span><span class="va">p</span><span class="op">)</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste</a></span><span class="op">(</span><span class="va">p</span>, collapse <span class="op">=</span> <span class="st">""</span><span class="op">)</span>,</span>
+<span>                FUN.VALUE <span class="op">=</span> <span class="st">"a"</span><span class="op">)</span></span>
+<span><span class="va">b</span><span class="op">$</span><span class="fu">nextIter</span><span class="op">(</span><span class="op">)</span></span>
+<span><span class="co">#&gt; [1] "ABC"</span></span>
+<span></span>
+<span><span class="va">b</span><span class="op">$</span><span class="fu">nextNIter</span><span class="op">(</span><span class="fl">5</span><span class="op">)</span></span>
+<span><span class="co">#&gt; [1] "ABD" "ACB" "ACD" "ADB" "ADC"</span></span>
+<span></span>
+<span><span class="va">b</span><span class="op">$</span><span class="fu">back</span><span class="op">(</span><span class="op">)</span></span>
+<span><span class="co">#&gt; [1] "DCB"</span></span>
+<span></span>
+<span><span class="va">b</span><span class="op">$</span><span class="fu">prevIter</span><span class="op">(</span><span class="op">)</span></span>
+<span><span class="co">#&gt; [1] "DCA"</span></span>
+<span></span>
+<span><span class="va">b</span><span class="op">$</span><span class="fu">prevNIter</span><span class="op">(</span><span class="fl">5</span><span class="op">)</span></span>
+<span><span class="co">#&gt; [1] "DBC" "DBA" "DAC" "DAB" "CDB"</span></span>
+<span></span>
+<span><span class="va">b</span><span class="op">$</span><span class="fu">nextRemaining</span><span class="op">(</span><span class="op">)</span></span>
+<span><span class="co">#&gt; [1] "DAB" "DAC" "DBA" "DBC" "DCA" "DCB"</span></span>
+<span></span>
+<span><span class="co">## Random access</span></span>
+<span><span class="va">b</span><span class="op">[[</span><span class="fl">5</span><span class="op">]</span><span class="op">]</span></span>
+<span><span class="co">#&gt; [1] "ADB"</span></span>
+<span></span>
+<span><span class="va">b</span><span class="op">$</span><span class="fu">prevRemaining</span><span class="op">(</span><span class="op">)</span></span>
+<span><span class="co">#&gt; [1] "ACD" "ACB" "ABD" "ABC"</span></span>
+<span></span>
+<span><span class="co">## View the source vector</span></span>
+<span><span class="va">b</span><span class="op">$</span><span class="fu">sourceVector</span><span class="op">(</span><span class="op">)</span></span>
+<span><span class="co">#&gt; [1] "A" "B" "C" "D"</span></span></code></pre></div>
 </div>
 </div>
 <div class="section level2">
@@ -522,122 +523,122 @@ change <code>RcppAlgos</code> to <code>RcppAlgos243</code> in a few
 place (e.g. <code>DESCRIPTION</code>, <code>NAMESPACE</code>, etc.), and
 rebuild.</p>
 <div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">test_nextIter</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">n</span>, <span class="va">m</span>, <span class="va">get_val</span> <span class="op">=</span> <span class="cn">FALSE</span>, <span class="va">v</span> <span class="op">=</span> <span class="fl">243</span><span class="op">)</span> <span class="op">{</span>
-    <span class="va">a</span> <span class="op">&lt;-</span> <span class="kw">if</span> <span class="op">(</span><span class="va">v</span> <span class="op">==</span> <span class="fl">243</span><span class="op">)</span> <span class="op">{</span>
-        <span class="fu">RcppAlgos243</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/RcppAlgos243/man/combinatoricsIterator.html" class="external-link">comboIter</a></span><span class="op">(</span><span class="va">n</span>, <span class="va">m</span><span class="op">)</span>
-    <span class="op">}</span> <span class="kw">else</span> <span class="op">{</span>
-        <span class="fu"><a href="../reference/combinatoricsIterator.html">comboIter</a></span><span class="op">(</span><span class="va">n</span>, <span class="va">m</span><span class="op">)</span>
-    <span class="op">}</span>
-
-    <span class="va">total</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/combinatoricsCount.html">comboCount</a></span><span class="op">(</span><span class="va">n</span>, <span class="va">m</span><span class="op">)</span>
-
-    <span class="kw">if</span> <span class="op">(</span><span class="va">get_val</span><span class="op">)</span> <span class="op">{</span>
-        <span class="va">mat</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">matrix</a></span><span class="op">(</span><span class="fl">0L</span>, nrow <span class="op">=</span> <span class="va">total</span>, ncol <span class="op">=</span> <span class="va">m</span><span class="op">)</span>
-        <span class="kw">for</span> <span class="op">(</span><span class="va">i</span> <span class="kw">in</span> <span class="fl">1</span><span class="op">:</span><span class="va">total</span><span class="op">)</span> <span class="va">mat</span><span class="op">[</span><span class="va">i</span>, <span class="op">]</span> <span class="op">&lt;-</span> <span class="va">a</span><span class="op">$</span><span class="fu">nextIter</span><span class="op">(</span><span class="op">)</span>
-        <span class="kw"><a href="https://rdrr.io/r/base/function.html" class="external-link">return</a></span><span class="op">(</span><span class="va">mat</span><span class="op">)</span>
-    <span class="op">}</span> <span class="kw">else</span> <span class="op">{</span>
-        <span class="kw">if</span> <span class="op">(</span><span class="va">v</span> <span class="op">==</span> <span class="fl">243</span><span class="op">)</span> <span class="op">{</span>
-            <span class="kw">for</span> <span class="op">(</span><span class="va">i</span> <span class="kw">in</span> <span class="fl">1</span><span class="op">:</span><span class="va">total</span><span class="op">)</span> <span class="va">a</span><span class="op">$</span><span class="fu">nextIter</span><span class="op">(</span><span class="op">)</span>
-        <span class="op">}</span> <span class="kw">else</span> <span class="op">{</span>
-            <span class="kw">for</span> <span class="op">(</span><span class="va">i</span> <span class="kw">in</span> <span class="fl">1</span><span class="op">:</span><span class="va">total</span><span class="op">)</span> <span class="va">a</span><span class="op">@</span><span class="va">nextIter</span><span class="op">(</span><span class="op">)</span>
-        <span class="op">}</span>
-
-        <span class="fu"><a href="https://rdrr.io/r/base/invisible.html" class="external-link">invisible</a></span><span class="op">(</span><span class="cn">NULL</span><span class="op">)</span>
-    <span class="op">}</span>
-<span class="op">}</span></code></pre></div>
+<code class="sourceCode R"><span><span class="va">test_nextIter</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">n</span>, <span class="va">m</span>, <span class="va">get_val</span> <span class="op">=</span> <span class="cn">FALSE</span>, <span class="va">v</span> <span class="op">=</span> <span class="fl">243</span><span class="op">)</span> <span class="op">{</span></span>
+<span>    <span class="va">a</span> <span class="op">&lt;-</span> <span class="kw">if</span> <span class="op">(</span><span class="va">v</span> <span class="op">==</span> <span class="fl">243</span><span class="op">)</span> <span class="op">{</span></span>
+<span>        <span class="fu">RcppAlgos243</span><span class="fu">::</span><span class="fu">comboIter</span><span class="op">(</span><span class="va">n</span>, <span class="va">m</span><span class="op">)</span></span>
+<span>    <span class="op">}</span> <span class="kw">else</span> <span class="op">{</span></span>
+<span>        <span class="fu"><a href="../reference/combinatoricsIterator.html">comboIter</a></span><span class="op">(</span><span class="va">n</span>, <span class="va">m</span><span class="op">)</span></span>
+<span>    <span class="op">}</span></span>
+<span></span>
+<span>    <span class="va">total</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/combinatoricsCount.html">comboCount</a></span><span class="op">(</span><span class="va">n</span>, <span class="va">m</span><span class="op">)</span></span>
+<span></span>
+<span>    <span class="kw">if</span> <span class="op">(</span><span class="va">get_val</span><span class="op">)</span> <span class="op">{</span></span>
+<span>        <span class="va">mat</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">matrix</a></span><span class="op">(</span><span class="fl">0L</span>, nrow <span class="op">=</span> <span class="va">total</span>, ncol <span class="op">=</span> <span class="va">m</span><span class="op">)</span></span>
+<span>        <span class="kw">for</span> <span class="op">(</span><span class="va">i</span> <span class="kw">in</span> <span class="fl">1</span><span class="op">:</span><span class="va">total</span><span class="op">)</span> <span class="va">mat</span><span class="op">[</span><span class="va">i</span>, <span class="op">]</span> <span class="op">&lt;-</span> <span class="va">a</span><span class="op">$</span><span class="fu">nextIter</span><span class="op">(</span><span class="op">)</span></span>
+<span>        <span class="kw"><a href="https://rdrr.io/r/base/function.html" class="external-link">return</a></span><span class="op">(</span><span class="va">mat</span><span class="op">)</span></span>
+<span>    <span class="op">}</span> <span class="kw">else</span> <span class="op">{</span></span>
+<span>        <span class="kw">if</span> <span class="op">(</span><span class="va">v</span> <span class="op">==</span> <span class="fl">243</span><span class="op">)</span> <span class="op">{</span></span>
+<span>            <span class="kw">for</span> <span class="op">(</span><span class="va">i</span> <span class="kw">in</span> <span class="fl">1</span><span class="op">:</span><span class="va">total</span><span class="op">)</span> <span class="va">a</span><span class="op">$</span><span class="fu">nextIter</span><span class="op">(</span><span class="op">)</span></span>
+<span>        <span class="op">}</span> <span class="kw">else</span> <span class="op">{</span></span>
+<span>            <span class="kw">for</span> <span class="op">(</span><span class="va">i</span> <span class="kw">in</span> <span class="fl">1</span><span class="op">:</span><span class="va">total</span><span class="op">)</span> <span class="va">a</span><span class="op">@</span><span class="va">nextIter</span><span class="op">(</span><span class="op">)</span></span>
+<span>        <span class="op">}</span></span>
+<span></span>
+<span>        <span class="fu"><a href="https://rdrr.io/r/base/invisible.html" class="external-link">invisible</a></span><span class="op">(</span><span class="cn">NULL</span><span class="op">)</span></span>
+<span>    <span class="op">}</span></span>
+<span><span class="op">}</span></span></code></pre></div>
 <div class="section level4">
 <h4 id="version-2-4-3-using-rcpp">Version <code>2.4.3</code> Using <code>Rcpp</code><a class="anchor" aria-label="anchor" href="#version-2-4-3-using-rcpp"></a>
 </h4>
 <div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/joshuaulrich/microbenchmark/" class="external-link">microbenchmark</a></span><span class="op">)</span>
-<span class="co">## Using R version 4.1.3</span>
-<span class="fu"><a href="../reference/combinatoricsCount.html">comboCount</a></span><span class="op">(</span><span class="fl">15</span>, <span class="fl">8</span><span class="op">)</span>
-<span class="co">#&gt; [1] 6435</span>
-
-<span class="fu"><a href="https://rdrr.io/pkg/microbenchmark/man/microbenchmark.html" class="external-link">microbenchmark</a></span><span class="op">(</span><span class="fu">test_nextIter</span><span class="op">(</span><span class="fl">15</span>, <span class="fl">8</span><span class="op">)</span><span class="op">)</span>
-<span class="co">#&gt; Unit: milliseconds</span>
-<span class="co">#&gt;                  expr      min       lq     mean   median       uq      max neval</span>
-<span class="co">#&gt;  test_nextIter(15, 8) 46.31869 51.43212 57.28727 51.93104 52.92773 516.2674   100</span>
-
-<span class="fu"><a href="https://rdrr.io/r/base/identical.html" class="external-link">identical</a></span><span class="op">(</span><span class="fu">test_nextIter</span><span class="op">(</span><span class="fl">15</span>, <span class="fl">8</span>, get_val <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>, <span class="fu"><a href="../reference/combinatoricsGeneral.html">comboGeneral</a></span><span class="op">(</span><span class="fl">15</span>, <span class="fl">8</span><span class="op">)</span><span class="op">)</span>
-<span class="co">#&gt; [1] TRUE</span>
-
-<span class="fu"><a href="../reference/combinatoricsCount.html">comboCount</a></span><span class="op">(</span><span class="fl">25</span>, <span class="fl">10</span><span class="op">)</span>
-<span class="co">#&gt; [1] 3268760</span>
-
-<span class="fu"><a href="https://rdrr.io/r/base/system.time.html" class="external-link">system.time</a></span><span class="op">(</span><span class="fu">test_nextIter</span><span class="op">(</span><span class="fl">25</span>, <span class="fl">10</span><span class="op">)</span><span class="op">)</span>
-<span class="co">#&gt;    user  system elapsed</span>
-<span class="co">#&gt;  23.537   0.070  23.614</span>
-
-<span class="fu"><a href="https://rdrr.io/r/utils/Rprof.html" class="external-link">Rprof</a></span><span class="op">(</span><span class="st">"Version243.out"</span>, memory.profiling <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>
-<span class="fu">test_nextIter</span><span class="op">(</span><span class="fl">25</span>, <span class="fl">10</span><span class="op">)</span>
-<span class="fu"><a href="https://rdrr.io/r/utils/Rprof.html" class="external-link">Rprof</a></span><span class="op">(</span><span class="cn">NULL</span><span class="op">)</span>
-<span class="fu"><a href="https://rdrr.io/r/utils/summaryRprof.html" class="external-link">summaryRprof</a></span><span class="op">(</span><span class="st">"Version243.out"</span>, memory <span class="op">=</span> <span class="st">"both"</span><span class="op">)</span>
-<span class="co">#&gt; $by.self</span>
-<span class="co">#&gt;                  self.time self.pct total.time total.pct mem.total</span>
-<span class="co">#&gt; "as.environment"      6.98    32.37       6.98     32.37    4045.5</span>
-<span class="co">#&gt; "$"                   6.28    29.13      16.40     76.07    9433.6</span>
-<span class="co">#&gt; "test_nextIter"       2.36    10.95      21.56    100.00   12438.3</span>
-<span class="co">#&gt; ".External"           2.02     9.37       2.02      9.37    1172.9</span>
-<span class="co">#&gt; "exists"              1.50     6.96       1.50      6.96     823.7</span>
-<span class="co">#&gt; "get"                 1.50     6.96       1.50      6.96     856.2</span>
-<span class="co">#&gt; "a$nextIter"          0.78     3.62       2.80     12.99    1620.6</span>
-<span class="co">#&gt; "is.symbol"           0.14     0.65       0.14      0.65      72.5</span>
-<span class="co">#&gt;</span>
-<span class="co">#&gt; $by.total</span>
-<span class="co">#&gt;                  total.time total.pct mem.total self.time self.pct</span>
-<span class="co">#&gt; "test_nextIter"       21.56    100.00   12438.3      2.36    10.95</span>
-<span class="co">#&gt; "$"                   16.40     76.07    9433.6      6.28    29.13</span>
-<span class="co">#&gt; "as.environment"       6.98     32.37    4045.5      6.98    32.37</span>
-<span class="co">#&gt; "a$nextIter"           2.80     12.99    1620.6      0.78     3.62</span>
-<span class="co">#&gt; ".External"            2.02      9.37    1172.9      2.02     9.37</span>
-<span class="co">#&gt; "exists"               1.50      6.96     823.7      1.50     6.96</span>
-<span class="co">#&gt; "get"                  1.50      6.96     856.2      1.50     6.96</span>
-<span class="co">#&gt; "is.symbol"            0.14      0.65      72.5      0.14     0.65</span>
-<span class="co">#&gt;</span>
-<span class="co">#&gt; $sample.interval</span>
-<span class="co">#&gt; [1] 0.02</span>
-<span class="co">#&gt;</span>
-<span class="co">#&gt; $sampling.time</span>
-<span class="co">#&gt; [1] 21.56</span></code></pre></div>
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/joshuaulrich/microbenchmark/" class="external-link">microbenchmark</a></span><span class="op">)</span></span>
+<span><span class="co">## Using R version 4.1.3</span></span>
+<span><span class="fu"><a href="../reference/combinatoricsCount.html">comboCount</a></span><span class="op">(</span><span class="fl">15</span>, <span class="fl">8</span><span class="op">)</span></span>
+<span><span class="co">#&gt; [1] 6435</span></span>
+<span></span>
+<span><span class="fu"><a href="https://rdrr.io/pkg/microbenchmark/man/microbenchmark.html" class="external-link">microbenchmark</a></span><span class="op">(</span><span class="fu">test_nextIter</span><span class="op">(</span><span class="fl">15</span>, <span class="fl">8</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="co">#&gt; Unit: milliseconds</span></span>
+<span><span class="co">#&gt;                  expr      min       lq     mean   median       uq      max neval</span></span>
+<span><span class="co">#&gt;  test_nextIter(15, 8) 46.31869 51.43212 57.28727 51.93104 52.92773 516.2674   100</span></span>
+<span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/identical.html" class="external-link">identical</a></span><span class="op">(</span><span class="fu">test_nextIter</span><span class="op">(</span><span class="fl">15</span>, <span class="fl">8</span>, get_val <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>, <span class="fu"><a href="../reference/combinatoricsGeneral.html">comboGeneral</a></span><span class="op">(</span><span class="fl">15</span>, <span class="fl">8</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="co">#&gt; [1] TRUE</span></span>
+<span></span>
+<span><span class="fu"><a href="../reference/combinatoricsCount.html">comboCount</a></span><span class="op">(</span><span class="fl">25</span>, <span class="fl">10</span><span class="op">)</span></span>
+<span><span class="co">#&gt; [1] 3268760</span></span>
+<span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/system.time.html" class="external-link">system.time</a></span><span class="op">(</span><span class="fu">test_nextIter</span><span class="op">(</span><span class="fl">25</span>, <span class="fl">10</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="co">#&gt;    user  system elapsed</span></span>
+<span><span class="co">#&gt;  23.537   0.070  23.614</span></span>
+<span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/Rprof.html" class="external-link">Rprof</a></span><span class="op">(</span><span class="st">"Version243.out"</span>, memory.profiling <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
+<span><span class="fu">test_nextIter</span><span class="op">(</span><span class="fl">25</span>, <span class="fl">10</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/Rprof.html" class="external-link">Rprof</a></span><span class="op">(</span><span class="cn">NULL</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/summaryRprof.html" class="external-link">summaryRprof</a></span><span class="op">(</span><span class="st">"Version243.out"</span>, memory <span class="op">=</span> <span class="st">"both"</span><span class="op">)</span></span>
+<span><span class="co">#&gt; $by.self</span></span>
+<span><span class="co">#&gt;                  self.time self.pct total.time total.pct mem.total</span></span>
+<span><span class="co">#&gt; "as.environment"      6.98    32.37       6.98     32.37    4045.5</span></span>
+<span><span class="co">#&gt; "$"                   6.28    29.13      16.40     76.07    9433.6</span></span>
+<span><span class="co">#&gt; "test_nextIter"       2.36    10.95      21.56    100.00   12438.3</span></span>
+<span><span class="co">#&gt; ".External"           2.02     9.37       2.02      9.37    1172.9</span></span>
+<span><span class="co">#&gt; "exists"              1.50     6.96       1.50      6.96     823.7</span></span>
+<span><span class="co">#&gt; "get"                 1.50     6.96       1.50      6.96     856.2</span></span>
+<span><span class="co">#&gt; "a$nextIter"          0.78     3.62       2.80     12.99    1620.6</span></span>
+<span><span class="co">#&gt; "is.symbol"           0.14     0.65       0.14      0.65      72.5</span></span>
+<span><span class="co">#&gt;</span></span>
+<span><span class="co">#&gt; $by.total</span></span>
+<span><span class="co">#&gt;                  total.time total.pct mem.total self.time self.pct</span></span>
+<span><span class="co">#&gt; "test_nextIter"       21.56    100.00   12438.3      2.36    10.95</span></span>
+<span><span class="co">#&gt; "$"                   16.40     76.07    9433.6      6.28    29.13</span></span>
+<span><span class="co">#&gt; "as.environment"       6.98     32.37    4045.5      6.98    32.37</span></span>
+<span><span class="co">#&gt; "a$nextIter"           2.80     12.99    1620.6      0.78     3.62</span></span>
+<span><span class="co">#&gt; ".External"            2.02      9.37    1172.9      2.02     9.37</span></span>
+<span><span class="co">#&gt; "exists"               1.50      6.96     823.7      1.50     6.96</span></span>
+<span><span class="co">#&gt; "get"                  1.50      6.96     856.2      1.50     6.96</span></span>
+<span><span class="co">#&gt; "is.symbol"            0.14      0.65      72.5      0.14     0.65</span></span>
+<span><span class="co">#&gt;</span></span>
+<span><span class="co">#&gt; $sample.interval</span></span>
+<span><span class="co">#&gt; [1] 0.02</span></span>
+<span><span class="co">#&gt;</span></span>
+<span><span class="co">#&gt; $sampling.time</span></span>
+<span><span class="co">#&gt; [1] 21.56</span></span></code></pre></div>
 </div>
 <div class="section level4">
 <h4 id="version-2-5-0-no-rcpp">Version <code>2.5.0</code> (No <code>Rcpp</code>)<a class="anchor" aria-label="anchor" href="#version-2-5-0-no-rcpp"></a>
 </h4>
 <div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/pkg/microbenchmark/man/microbenchmark.html" class="external-link">microbenchmark</a></span><span class="op">(</span><span class="fu">test_nextIter</span><span class="op">(</span><span class="fl">15</span>, <span class="fl">8</span>, v <span class="op">=</span> <span class="fl">250</span><span class="op">)</span><span class="op">)</span>
-<span class="co">#&gt; Unit: milliseconds</span>
-<span class="co">#&gt;                           expr      min       lq     mean   median       uq      max neval</span>
-<span class="co">#&gt;  test_nextIter(15, 8, v = 251) 3.872621 4.105784 4.464846 4.376151 4.647602 9.961372   100</span>
-
-<span class="fu"><a href="https://rdrr.io/r/base/system.time.html" class="external-link">system.time</a></span><span class="op">(</span><span class="fu">test_nextIter</span><span class="op">(</span><span class="fl">25</span>, <span class="fl">10</span>, v <span class="op">=</span> <span class="fl">250</span><span class="op">)</span><span class="op">)</span>
-<span class="co">#&gt;    user  system elapsed</span>
-<span class="co">#&gt;   2.093   0.011   2.110</span>
-
-<span class="fu"><a href="https://rdrr.io/r/base/identical.html" class="external-link">identical</a></span><span class="op">(</span><span class="fu">test_nextIter</span><span class="op">(</span><span class="fl">15</span>, <span class="fl">8</span>, get_val <span class="op">=</span> <span class="cn">TRUE</span>, v <span class="op">=</span> <span class="fl">250</span><span class="op">)</span>, <span class="fu"><a href="../reference/combinatoricsGeneral.html">comboGeneral</a></span><span class="op">(</span><span class="fl">15</span>, <span class="fl">8</span><span class="op">)</span><span class="op">)</span>
-<span class="co">#&gt; [1] TRUE</span>
-
-<span class="fu"><a href="https://rdrr.io/r/utils/Rprof.html" class="external-link">Rprof</a></span><span class="op">(</span><span class="st">"Version250.out"</span>, memory.profiling <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>
-<span class="fu">test_nextIter</span><span class="op">(</span><span class="fl">25</span>, <span class="fl">10</span>, v <span class="op">=</span> <span class="fl">250</span><span class="op">)</span>
-<span class="fu"><a href="https://rdrr.io/r/utils/Rprof.html" class="external-link">Rprof</a></span><span class="op">(</span><span class="cn">NULL</span><span class="op">)</span>
-<span class="fu"><a href="https://rdrr.io/r/utils/summaryRprof.html" class="external-link">summaryRprof</a></span><span class="op">(</span><span class="st">"Version250.out"</span>, memory <span class="op">=</span> <span class="st">"both"</span><span class="op">)</span>
-<span class="co">#&gt; $by.self</span>
-<span class="co">#&gt;                 self.time self.pct total.time total.pct mem.total</span>
-<span class="co">#&gt; "&lt;Anonymous&gt;"        1.10    55.56       1.66     83.84     701.2</span>
-<span class="co">#&gt; ".Call"              0.56    28.28       0.56     28.28     255.6</span>
-<span class="co">#&gt; "test_nextIter"      0.32    16.16       1.98    100.00     831.8</span>
-<span class="co">#&gt;</span>
-<span class="co">#&gt; $by.total</span>
-<span class="co">#&gt;                 total.time total.pct mem.total self.time self.pct</span>
-<span class="co">#&gt; "test_nextIter"       1.98    100.00     831.8      0.32    16.16</span>
-<span class="co">#&gt; "&lt;Anonymous&gt;"         1.66     83.84     701.2      1.10    55.56</span>
-<span class="co">#&gt; ".Call"               0.56     28.28     255.6      0.56    28.28</span>
-<span class="co">#&gt;</span>
-<span class="co">#&gt; $sample.interval</span>
-<span class="co">#&gt; [1] 0.02</span>
-<span class="co">#&gt;</span>
-<span class="co">#&gt; $sampling.time</span>
-<span class="co">#&gt; [1] 1.98</span></code></pre></div>
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/pkg/microbenchmark/man/microbenchmark.html" class="external-link">microbenchmark</a></span><span class="op">(</span><span class="fu">test_nextIter</span><span class="op">(</span><span class="fl">15</span>, <span class="fl">8</span>, v <span class="op">=</span> <span class="fl">250</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="co">#&gt; Unit: milliseconds</span></span>
+<span><span class="co">#&gt;                           expr      min       lq     mean   median       uq      max neval</span></span>
+<span><span class="co">#&gt;  test_nextIter(15, 8, v = 251) 3.872621 4.105784 4.464846 4.376151 4.647602 9.961372   100</span></span>
+<span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/system.time.html" class="external-link">system.time</a></span><span class="op">(</span><span class="fu">test_nextIter</span><span class="op">(</span><span class="fl">25</span>, <span class="fl">10</span>, v <span class="op">=</span> <span class="fl">250</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="co">#&gt;    user  system elapsed</span></span>
+<span><span class="co">#&gt;   2.093   0.011   2.110</span></span>
+<span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/identical.html" class="external-link">identical</a></span><span class="op">(</span><span class="fu">test_nextIter</span><span class="op">(</span><span class="fl">15</span>, <span class="fl">8</span>, get_val <span class="op">=</span> <span class="cn">TRUE</span>, v <span class="op">=</span> <span class="fl">250</span><span class="op">)</span>, <span class="fu"><a href="../reference/combinatoricsGeneral.html">comboGeneral</a></span><span class="op">(</span><span class="fl">15</span>, <span class="fl">8</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="co">#&gt; [1] TRUE</span></span>
+<span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/Rprof.html" class="external-link">Rprof</a></span><span class="op">(</span><span class="st">"Version250.out"</span>, memory.profiling <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
+<span><span class="fu">test_nextIter</span><span class="op">(</span><span class="fl">25</span>, <span class="fl">10</span>, v <span class="op">=</span> <span class="fl">250</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/Rprof.html" class="external-link">Rprof</a></span><span class="op">(</span><span class="cn">NULL</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/summaryRprof.html" class="external-link">summaryRprof</a></span><span class="op">(</span><span class="st">"Version250.out"</span>, memory <span class="op">=</span> <span class="st">"both"</span><span class="op">)</span></span>
+<span><span class="co">#&gt; $by.self</span></span>
+<span><span class="co">#&gt;                 self.time self.pct total.time total.pct mem.total</span></span>
+<span><span class="co">#&gt; "&lt;Anonymous&gt;"        1.10    55.56       1.66     83.84     701.2</span></span>
+<span><span class="co">#&gt; ".Call"              0.56    28.28       0.56     28.28     255.6</span></span>
+<span><span class="co">#&gt; "test_nextIter"      0.32    16.16       1.98    100.00     831.8</span></span>
+<span><span class="co">#&gt;</span></span>
+<span><span class="co">#&gt; $by.total</span></span>
+<span><span class="co">#&gt;                 total.time total.pct mem.total self.time self.pct</span></span>
+<span><span class="co">#&gt; "test_nextIter"       1.98    100.00     831.8      0.32    16.16</span></span>
+<span><span class="co">#&gt; "&lt;Anonymous&gt;"         1.66     83.84     701.2      1.10    55.56</span></span>
+<span><span class="co">#&gt; ".Call"               0.56     28.28     255.6      0.56    28.28</span></span>
+<span><span class="co">#&gt;</span></span>
+<span><span class="co">#&gt; $sample.interval</span></span>
+<span><span class="co">#&gt; [1] 0.02</span></span>
+<span><span class="co">#&gt;</span></span>
+<span><span class="co">#&gt; $sampling.time</span></span>
+<span><span class="co">#&gt; [1] 1.98</span></span></code></pre></div>
 </div>
 <div class="section level4">
 <h4 id="conclusions">Conclusions<a class="anchor" aria-label="anchor" href="#conclusions"></a>
@@ -648,29 +649,29 @@ statistics from Rprof</a>, and view both files with
 <code>memory = "stats"</code> we see that the C funciton,
 <code>duplicate</code>, appears to be the main culprit.</p>
 <div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="co">### Verison 2.4.3</span>
-<span class="fu"><a href="https://rdrr.io/r/utils/summaryRprof.html" class="external-link">summaryRprof</a></span><span class="op">(</span><span class="st">"Version243.out"</span>, memory <span class="op">=</span> <span class="st">"stats"</span><span class="op">)</span>
-<span class="co">#&gt; index: "test_nextIter"</span>
-<span class="co">#&gt;      vsize.small  max.vsize.small      vsize.large  max.vsize.large            nodes        max.nodes     duplications tot.duplications          samples</span>
-<span class="co">#&gt;           594132           981272                0                0         11705787         19332264             9200          1085637              118</span>
-<span class="co">#&gt; --------------------------------------------------------------------------------------------------------------------------------------------------------</span>
-<span class="co">#&gt; index: "test_nextIter":"$"</span>
-<span class="co">#&gt;      vsize.small  max.vsize.small      vsize.large  max.vsize.large            nodes        max.nodes     duplications tot.duplications          samples</span>
-<span class="co">#&gt;           602919         16615120            19309         15833656         11636867        128195480             9069          7436251              820</span>
-<span class="co">#&gt; --------------------------------------------------------------------------------------------------------------------------------------------------------</span>
-<span class="co">#&gt; index: "test_nextIter":"a$nextIter"</span>
-<span class="co">#&gt;      vsize.small  max.vsize.small      vsize.large  max.vsize.large            nodes        max.nodes     duplications tot.duplications          samples</span>
-<span class="co">#&gt;           586247           980856                0                0         11551771         19329128             9169          1283636              140</span>
-
-<span class="co">## Version 2.5.0</span>
-<span class="fu"><a href="https://rdrr.io/r/utils/summaryRprof.html" class="external-link">summaryRprof</a></span><span class="op">(</span><span class="st">"Version250.out"</span>, memory <span class="op">=</span> <span class="st">"stats"</span><span class="op">)</span>
-<span class="co">#&gt; index: "test_nextIter"</span>
-<span class="co">#&gt;      vsize.small  max.vsize.small      vsize.large  max.vsize.large            nodes        max.nodes     duplications tot.duplications          samples</span>
-<span class="co">#&gt;          1901132          3243968                0                0          6653888         11353832                0                0               16</span>
-<span class="co">#&gt; --------------------------------------------------------------------------------------------------------------------------------------------------------</span>
-<span class="co">#&gt; index: "test_nextIter":"&lt;Anonymous&gt;"</span>
-<span class="co">#&gt;      vsize.small  max.vsize.small      vsize.large  max.vsize.large            nodes        max.nodes     duplications tot.duplications          samples</span>
-<span class="co">#&gt;          2412388         36833808           196363         16298112          9270795        197594096                0                7               83</span></code></pre></div>
+<code class="sourceCode R"><span><span class="co">### Verison 2.4.3</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/summaryRprof.html" class="external-link">summaryRprof</a></span><span class="op">(</span><span class="st">"Version243.out"</span>, memory <span class="op">=</span> <span class="st">"stats"</span><span class="op">)</span></span>
+<span><span class="co">#&gt; index: "test_nextIter"</span></span>
+<span><span class="co">#&gt;      vsize.small  max.vsize.small      vsize.large  max.vsize.large            nodes        max.nodes     duplications tot.duplications          samples</span></span>
+<span><span class="co">#&gt;           594132           981272                0                0         11705787         19332264             9200          1085637              118</span></span>
+<span><span class="co">#&gt; --------------------------------------------------------------------------------------------------------------------------------------------------------</span></span>
+<span><span class="co">#&gt; index: "test_nextIter":"$"</span></span>
+<span><span class="co">#&gt;      vsize.small  max.vsize.small      vsize.large  max.vsize.large            nodes        max.nodes     duplications tot.duplications          samples</span></span>
+<span><span class="co">#&gt;           602919         16615120            19309         15833656         11636867        128195480             9069          7436251              820</span></span>
+<span><span class="co">#&gt; --------------------------------------------------------------------------------------------------------------------------------------------------------</span></span>
+<span><span class="co">#&gt; index: "test_nextIter":"a$nextIter"</span></span>
+<span><span class="co">#&gt;      vsize.small  max.vsize.small      vsize.large  max.vsize.large            nodes        max.nodes     duplications tot.duplications          samples</span></span>
+<span><span class="co">#&gt;           586247           980856                0                0         11551771         19329128             9169          1283636              140</span></span>
+<span></span>
+<span><span class="co">## Version 2.5.0</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/summaryRprof.html" class="external-link">summaryRprof</a></span><span class="op">(</span><span class="st">"Version250.out"</span>, memory <span class="op">=</span> <span class="st">"stats"</span><span class="op">)</span></span>
+<span><span class="co">#&gt; index: "test_nextIter"</span></span>
+<span><span class="co">#&gt;      vsize.small  max.vsize.small      vsize.large  max.vsize.large            nodes        max.nodes     duplications tot.duplications          samples</span></span>
+<span><span class="co">#&gt;          1901132          3243968                0                0          6653888         11353832                0                0               16</span></span>
+<span><span class="co">#&gt; --------------------------------------------------------------------------------------------------------------------------------------------------------</span></span>
+<span><span class="co">#&gt; index: "test_nextIter":"&lt;Anonymous&gt;"</span></span>
+<span><span class="co">#&gt;      vsize.small  max.vsize.small      vsize.large  max.vsize.large            nodes        max.nodes     duplications tot.duplications          samples</span></span>
+<span><span class="co">#&gt;          2412388         36833808           196363         16298112          9270795        197594096                0                7               83</span></span></code></pre></div>
 <p>With verison <code>2.5.0</code> there are only 7
 <code>tot.duplications</code> whereas with version <code>2.4.3</code>
 there are millions of <code>tot.duplications</code>. In fact, there are
@@ -682,7 +683,7 @@ versions (i.e. <code>9805524 / 3268760 ~= 2.999769</code>).</p>
 </div>
 </div>
 <div class="section level3">
-<h3 id="iterating-over-partitions-of-a-number">Iterating over Partitions of a Number<a class="anchor" aria-label="anchor" href="#iterating-over-partitions-of-a-number"></a>
+<h3 id="iterating-over-partitions-and-compositions-of-a-number">Iterating over Partitions and Compositions of a Number<a class="anchor" aria-label="anchor" href="#iterating-over-partitions-and-compositions-of-a-number"></a>
 </h3>
 <p>For most partition cases, we have all of the capabilities of the
 standard <code>comboIter</code> and <code>permuteIter</code> except for
@@ -690,70 +691,133 @@ bidirectionality (i.e. the <code>prevIter</code> methods). For cases
 involving standard multisets we also don’t have random access
 methods.</p>
 <div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="co">## Similar illustration of comboIter(5, 3) at the top</span>
-<span class="va">p</span> <span class="op">=</span> <span class="fu"><a href="../reference/partitionsIterator.html">partitionsIter</a></span><span class="op">(</span><span class="fl">16</span>, <span class="fl">4</span><span class="op">)</span>
-<span class="va">p</span><span class="op">@</span><span class="va">nextIter</span><span class="op">(</span><span class="op">)</span>
-<span class="co">#&gt; [1]  1  2  3 10</span>
-
-<span class="va">p</span><span class="op">@</span><span class="va">nextIter</span><span class="op">(</span><span class="op">)</span>
-<span class="co">#&gt; [1] 1 2 4 9</span>
-
-<span class="va">iter</span> <span class="op">=</span> <span class="va">p</span><span class="op">@</span><span class="va">currIter</span><span class="op">(</span><span class="op">)</span>
-<span class="va">i</span> <span class="op">=</span> <span class="fl">1</span>
-
-<span class="kw">while</span> <span class="op">(</span><span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/NULL.html" class="external-link">is.null</a></span><span class="op">(</span><span class="va">iter</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span>
-    <span class="fu"><a href="https://rdrr.io/r/base/cat.html" class="external-link">cat</a></span><span class="op">(</span><span class="va">i</span>, <span class="st">" "</span>, <span class="va">iter</span>, <span class="st">"\n"</span><span class="op">)</span>
-    <span class="va">iter</span> <span class="op">=</span> <span class="va">p</span><span class="op">@</span><span class="va">nextIter</span><span class="op">(</span><span class="op">)</span>
-    <span class="va">i</span> <span class="op">=</span> <span class="va">i</span> <span class="op">+</span> <span class="fl">1</span>
-<span class="op">}</span>
-<span class="co">#&gt; 1   1 2 4 9</span>
-<span class="co">#&gt; 2   1 2 5 8</span>
-<span class="co">#&gt; 3   1 2 6 7</span>
-<span class="co">#&gt; 4   1 3 4 8</span>
-<span class="co">#&gt; 5   1 3 5 7</span>
-<span class="co">#&gt; 6   1 4 5 6</span>
-<span class="co">#&gt; 7   2 3 4 7</span>
-<span class="co">#&gt; 8   2 3 5 6</span>
-<span class="co">#&gt; No more results.</span>
-
-<span class="fu"><a href="../reference/partitionsGeneral.html">partitionsGeneral</a></span><span class="op">(</span><span class="fl">16</span>, <span class="fl">4</span>, lower <span class="op">=</span> <span class="fl">2</span><span class="op">)</span>
-<span class="co">#&gt;      [,1] [,2] [,3] [,4]</span>
-<span class="co">#&gt; [1,]    1    2    4    9</span>
-<span class="co">#&gt; [2,]    1    2    5    8</span>
-<span class="co">#&gt; [3,]    1    2    6    7</span>
-<span class="co">#&gt; [4,]    1    3    4    8</span>
-<span class="co">#&gt; [5,]    1    3    5    7</span>
-<span class="co">#&gt; [6,]    1    4    5    6</span>
-<span class="co">#&gt; [7,]    2    3    4    7</span>
-<span class="co">#&gt; [8,]    2    3    5    6</span>
-
-<span class="va">p</span><span class="op">@</span><span class="va">summary</span><span class="op">(</span><span class="op">)</span>
-<span class="co">#&gt; $description</span>
-<span class="co">#&gt; [1] "Partitions of 16 into 4 parts"</span>
-<span class="co">#&gt;</span>
-<span class="co">#&gt; $currentIndex</span>
-<span class="co">#&gt; [1] 10</span>
-<span class="co">#&gt;</span>
-<span class="co">#&gt; $totalResults</span>
-<span class="co">#&gt; [1] 9</span>
-<span class="co">#&gt;</span>
-<span class="co">#&gt; $totalRemaining</span>
-<span class="co">#&gt; [1] -1</span>
-
-<span class="co">## Using random access</span>
-<span class="va">p</span><span class="op">[[</span><span class="fl">7</span><span class="op">]</span><span class="op">]</span>
-<span class="co">#&gt; [1] 1 4 5 6</span>
-
-<span class="co">## No previous iterators</span>
-<span class="va">p</span><span class="op">@</span><span class="va">prevIter</span><span class="op">(</span><span class="op">)</span>
-<span class="co">#&gt; Error: no slot of name "prevIter" for this object of class "Partitions"</span></code></pre></div>
+<code class="sourceCode R"><span><span class="co">## Similar illustration of comboIter(5, 3) at the top</span></span>
+<span><span class="va">p</span> <span class="op">=</span> <span class="fu"><a href="../reference/partitionsIterator.html">partitionsIter</a></span><span class="op">(</span><span class="fl">16</span>, <span class="fl">4</span><span class="op">)</span></span>
+<span><span class="va">p</span><span class="op">@</span><span class="va">nextIter</span><span class="op">(</span><span class="op">)</span></span>
+<span><span class="co">#&gt; [1]  1  2  3 10</span></span>
+<span></span>
+<span><span class="va">p</span><span class="op">@</span><span class="va">nextIter</span><span class="op">(</span><span class="op">)</span></span>
+<span><span class="co">#&gt; [1] 1 2 4 9</span></span>
+<span></span>
+<span><span class="va">iter</span> <span class="op">=</span> <span class="va">p</span><span class="op">@</span><span class="va">currIter</span><span class="op">(</span><span class="op">)</span></span>
+<span><span class="va">i</span> <span class="op">=</span> <span class="fl">1</span></span>
+<span></span>
+<span><span class="kw">while</span> <span class="op">(</span><span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/NULL.html" class="external-link">is.null</a></span><span class="op">(</span><span class="va">iter</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span>
+<span>    <span class="fu"><a href="https://rdrr.io/r/base/cat.html" class="external-link">cat</a></span><span class="op">(</span><span class="va">i</span>, <span class="st">" "</span>, <span class="va">iter</span>, <span class="st">"\n"</span><span class="op">)</span></span>
+<span>    <span class="va">iter</span> <span class="op">=</span> <span class="va">p</span><span class="op">@</span><span class="va">nextIter</span><span class="op">(</span><span class="op">)</span></span>
+<span>    <span class="va">i</span> <span class="op">=</span> <span class="va">i</span> <span class="op">+</span> <span class="fl">1</span></span>
+<span><span class="op">}</span></span>
+<span><span class="co">#&gt; 1   1 2 4 9</span></span>
+<span><span class="co">#&gt; 2   1 2 5 8</span></span>
+<span><span class="co">#&gt; 3   1 2 6 7</span></span>
+<span><span class="co">#&gt; 4   1 3 4 8</span></span>
+<span><span class="co">#&gt; 5   1 3 5 7</span></span>
+<span><span class="co">#&gt; 6   1 4 5 6</span></span>
+<span><span class="co">#&gt; 7   2 3 4 7</span></span>
+<span><span class="co">#&gt; 8   2 3 5 6</span></span>
+<span><span class="co">#&gt; No more results.</span></span>
+<span></span>
+<span><span class="fu"><a href="../reference/partitionsGeneral.html">partitionsGeneral</a></span><span class="op">(</span><span class="fl">16</span>, <span class="fl">4</span>, lower <span class="op">=</span> <span class="fl">2</span><span class="op">)</span></span>
+<span><span class="co">#&gt;      [,1] [,2] [,3] [,4]</span></span>
+<span><span class="co">#&gt; [1,]    1    2    4    9</span></span>
+<span><span class="co">#&gt; [2,]    1    2    5    8</span></span>
+<span><span class="co">#&gt; [3,]    1    2    6    7</span></span>
+<span><span class="co">#&gt; [4,]    1    3    4    8</span></span>
+<span><span class="co">#&gt; [5,]    1    3    5    7</span></span>
+<span><span class="co">#&gt; [6,]    1    4    5    6</span></span>
+<span><span class="co">#&gt; [7,]    2    3    4    7</span></span>
+<span><span class="co">#&gt; [8,]    2    3    5    6</span></span>
+<span></span>
+<span><span class="va">p</span><span class="op">@</span><span class="va">summary</span><span class="op">(</span><span class="op">)</span></span>
+<span><span class="co">#&gt; $description</span></span>
+<span><span class="co">#&gt; [1] "Partitions of 16 into 4 parts"</span></span>
+<span><span class="co">#&gt;</span></span>
+<span><span class="co">#&gt; $currentIndex</span></span>
+<span><span class="co">#&gt; [1] 10</span></span>
+<span><span class="co">#&gt;</span></span>
+<span><span class="co">#&gt; $totalResults</span></span>
+<span><span class="co">#&gt; [1] 9</span></span>
+<span><span class="co">#&gt;</span></span>
+<span><span class="co">#&gt; $totalRemaining</span></span>
+<span><span class="co">#&gt; [1] -1</span></span>
+<span></span>
+<span><span class="co">## Using random access</span></span>
+<span><span class="va">p</span><span class="op">[[</span><span class="fl">7</span><span class="op">]</span><span class="op">]</span></span>
+<span><span class="co">#&gt; [1] 1 4 5 6</span></span>
+<span></span>
+<span><span class="co">## No previous iterators</span></span>
+<span><span class="va">p</span><span class="op">@</span><span class="va">prevIter</span><span class="op">(</span><span class="op">)</span></span>
+<span><span class="co">#&gt; Error: no slot of name "prevIter" for this object of class "Partitions"</span></span></code></pre></div>
+<p>For compositions, the options are limited to a subset of compositions
+with repetition.</p>
+<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co">## Similar illustration of comboIter(5, 3) at the top</span></span>
+<span><span class="va">p</span> <span class="op">=</span> <span class="fu"><a href="../reference/partitionsIterator.html">compositionsIter</a></span><span class="op">(</span><span class="fl">6</span>, <span class="fl">3</span>, <span class="cn">TRUE</span><span class="op">)</span></span>
+<span><span class="va">p</span><span class="op">@</span><span class="va">nextIter</span><span class="op">(</span><span class="op">)</span></span>
+<span><span class="co">#&gt; [1] 1 1 4</span></span>
+<span></span>
+<span><span class="va">p</span><span class="op">@</span><span class="va">nextIter</span><span class="op">(</span><span class="op">)</span></span>
+<span><span class="co">#&gt; [1] 1 2 3</span></span>
+<span></span>
+<span><span class="va">iter</span> <span class="op">=</span> <span class="va">p</span><span class="op">@</span><span class="va">currIter</span><span class="op">(</span><span class="op">)</span></span>
+<span><span class="va">i</span> <span class="op">=</span> <span class="fl">1</span></span>
+<span></span>
+<span><span class="kw">while</span> <span class="op">(</span><span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/NULL.html" class="external-link">is.null</a></span><span class="op">(</span><span class="va">iter</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span>
+<span>    <span class="fu"><a href="https://rdrr.io/r/base/cat.html" class="external-link">cat</a></span><span class="op">(</span><span class="va">i</span>, <span class="st">" "</span>, <span class="va">iter</span>, <span class="st">"\n"</span><span class="op">)</span></span>
+<span>    <span class="va">iter</span> <span class="op">=</span> <span class="va">p</span><span class="op">@</span><span class="va">nextIter</span><span class="op">(</span><span class="op">)</span></span>
+<span>    <span class="va">i</span> <span class="op">=</span> <span class="va">i</span> <span class="op">+</span> <span class="fl">1</span></span>
+<span><span class="op">}</span></span>
+<span><span class="co">#&gt; 1   1 2 3</span></span>
+<span><span class="co">#&gt; 2   1 3 2</span></span>
+<span><span class="co">#&gt; 3   1 4 1</span></span>
+<span><span class="co">#&gt; 4   2 1 3</span></span>
+<span><span class="co">#&gt; 5   2 2 2</span></span>
+<span><span class="co">#&gt; 6   2 3 1</span></span>
+<span><span class="co">#&gt; 7   3 1 2</span></span>
+<span><span class="co">#&gt; 8   3 2 1</span></span>
+<span><span class="co">#&gt; 9   4 1 1</span></span>
+<span><span class="co">#&gt; No more results.</span></span>
+<span></span>
+<span><span class="fu"><a href="../reference/partitionsGeneral.html">compositionsGeneral</a></span><span class="op">(</span><span class="fl">6</span>, <span class="fl">3</span>, <span class="cn">TRUE</span>, lower <span class="op">=</span> <span class="fl">2</span><span class="op">)</span></span>
+<span><span class="co">#&gt;       [,1] [,2] [,3]</span></span>
+<span><span class="co">#&gt;  [1,]    1    2    3</span></span>
+<span><span class="co">#&gt;  [2,]    1    3    2</span></span>
+<span><span class="co">#&gt;  [3,]    1    4    1</span></span>
+<span><span class="co">#&gt;  [4,]    2    1    3</span></span>
+<span><span class="co">#&gt;  [5,]    2    2    2</span></span>
+<span><span class="co">#&gt;  [6,]    2    3    1</span></span>
+<span><span class="co">#&gt;  [7,]    3    1    2</span></span>
+<span><span class="co">#&gt;  [8,]    3    2    1</span></span>
+<span><span class="co">#&gt;  [9,]    4    1    1</span></span>
+<span></span>
+<span><span class="va">p</span><span class="op">@</span><span class="va">summary</span><span class="op">(</span><span class="op">)</span></span>
+<span><span class="co">#&gt; $description</span></span>
+<span><span class="co">#&gt; [1] "Compositions with repetition of 6 into 3 parts"</span></span>
+<span><span class="co">#&gt;</span></span>
+<span><span class="co">#&gt; $currentIndex</span></span>
+<span><span class="co">#&gt; [1] 11</span></span>
+<span><span class="co">#&gt;</span></span>
+<span><span class="co">#&gt; $totalResults</span></span>
+<span><span class="co">#&gt; [1] 10</span></span>
+<span><span class="co">#&gt;</span></span>
+<span><span class="co">#&gt; $totalRemaining</span></span>
+<span><span class="co">#&gt; [1] -1</span></span>
+<span></span>
+<span><span class="co">## Using random access</span></span>
+<span><span class="va">p</span><span class="op">[[</span><span class="fl">7</span><span class="op">]</span><span class="op">]</span></span>
+<span><span class="co">#&gt; [1] 2 3 1</span></span>
+<span></span>
+<span><span class="co">## No previous iterators</span></span>
+<span><span class="va">p</span><span class="op">@</span><span class="va">prevIter</span><span class="op">(</span><span class="op">)</span></span>
+<span><span class="co">#&gt; Error: no slot of name "prevIter" for this object of class "Partitions"</span></span></code></pre></div>
 </div>
 <div class="section level3">
 <h3 id="iterating-over-constrained-combinationspermutations">Iterating over Constrained Combinations/Permutations<a class="anchor" aria-label="anchor" href="#iterating-over-constrained-combinationspermutations"></a>
 </h3>
 <p>Now, the combinatorial iterators have all of the features of their
-“general” analogs (I.e. <code>{combo|permute|partitions}General</code>),
-which includes constrained results.</p>
+“general” analogs (I.e.
+<code>{combo|permute|partitions|compositions}General</code>), which
+includes constrained results.</p>
 <p>For general constrained cases, these iterators offer huge advantages
 over their “general” counterparts. Previously, one had to guess how many
 results there would be using the <code>upper</code> parameter as
@@ -786,113 +850,113 @@ iterating, we pick up where we left off fetching the <em>(n +
 1)<sup>th</sup></em> result and beyond (if there are any results left).
 This allows us to keep memory low without sacrificing our current
 state.</p>
-<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="fl">55</span><span class="op">)</span>
-<span class="va">s</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/Uniform.html" class="external-link">runif</a></span><span class="op">(</span><span class="fl">10</span>, <span class="op">-</span><span class="fl">5</span>, <span class="fl">5</span><span class="op">)</span>
-
-<span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">s</span><span class="op">)</span>
-<span class="co">#&gt; [1]  0.478135161 -2.818403214 -4.650360052  2.915492940</span>
-<span class="co">#&gt; [5]  0.602420762 -4.257748260 -3.684770642 -2.058761222</span>
-<span class="co">#&gt; [9]  0.007612633 -4.116755421</span>
-
-<span class="co">## Using comboGeneral to retrieve all results</span>
-<span class="fu"><a href="../reference/combinatoricsGeneral.html">comboGeneral</a></span><span class="op">(</span><span class="va">s</span>, <span class="fl">5</span>, constraintFun <span class="op">=</span> <span class="st">"mean"</span>,
-             comparisonFun <span class="op">=</span> <span class="st">"&lt;"</span>, limitConstraints <span class="op">=</span> <span class="op">-</span><span class="fl">3</span><span class="op">)</span>
-<span class="co">#&gt;            [,1]      [,2]      [,3]      [,4]         [,5]</span>
-<span class="co">#&gt;  [1,] -4.650360 -4.257748 -4.116755 -3.684771 -2.818403214</span>
-<span class="co">#&gt;  [2,] -4.650360 -4.257748 -4.116755 -3.684771 -2.058761222</span>
-<span class="co">#&gt;  [3,] -4.650360 -4.257748 -4.116755 -3.684771  0.007612633</span>
-<span class="co">#&gt;  [4,] -4.650360 -4.257748 -4.116755 -3.684771  0.478135161</span>
-<span class="co">#&gt;  [5,] -4.650360 -4.257748 -4.116755 -3.684771  0.602420762</span>
-<span class="co">#&gt;  [6,] -4.650360 -4.257748 -4.116755 -2.818403 -2.058761222</span>
-<span class="co">#&gt;  [7,] -4.650360 -4.257748 -4.116755 -2.818403  0.007612633</span>
-<span class="co">#&gt;  [8,] -4.650360 -4.257748 -4.116755 -2.818403  0.478135161</span>
-<span class="co">#&gt;  [9,] -4.650360 -4.257748 -4.116755 -2.818403  0.602420762</span>
-<span class="co">#&gt; [10,] -4.650360 -4.257748 -4.116755 -2.058761  0.007612633</span>
-<span class="co">#&gt; [11,] -4.650360 -4.257748 -3.684771 -2.818403 -2.058761222</span>
-<span class="co">#&gt; [12,] -4.650360 -4.257748 -3.684771 -2.818403  0.007612633</span>
-<span class="co">#&gt; [13,] -4.650360 -4.116755 -3.684771 -2.818403 -2.058761222</span>
-<span class="co">#&gt; [14,] -4.650360 -4.116755 -3.684771 -2.818403  0.007612633</span>
-<span class="co">#&gt; [15,] -4.257748 -4.116755 -3.684771 -2.818403 -2.058761222</span>
-
-
-<span class="co">## Using comboIter</span>
-<span class="va">a</span> <span class="op">=</span> <span class="fu"><a href="../reference/combinatoricsIterator.html">comboIter</a></span><span class="op">(</span><span class="va">s</span>, <span class="fl">5</span>, constraintFun <span class="op">=</span> <span class="st">"mean"</span>,
-              comparisonFun <span class="op">=</span> <span class="st">"&lt;"</span>, limitConstraints <span class="op">=</span> <span class="op">-</span><span class="fl">3</span><span class="op">)</span>
-
-<span class="co">## See the first result</span>
-<span class="va">a</span><span class="op">@</span><span class="va">nextIter</span><span class="op">(</span><span class="op">)</span>
-<span class="co">#&gt; [1] -4.650360 -4.257748 -4.116755 -3.684771 -2.818403</span>
-
-<span class="co">## Get the next three</span>
-<span class="va">a</span><span class="op">@</span><span class="va">nextNIter</span><span class="op">(</span><span class="fl">3</span><span class="op">)</span>
-<span class="co">#&gt;          [,1]      [,2]      [,3]      [,4]         [,5]</span>
-<span class="co">#&gt; [1,] -4.65036 -4.257748 -4.116755 -3.684771 -2.058761222</span>
-<span class="co">#&gt; [2,] -4.65036 -4.257748 -4.116755 -3.684771  0.007612633</span>
-<span class="co">#&gt; [3,] -4.65036 -4.257748 -4.116755 -3.684771  0.478135161</span>
-
-<span class="co">## See the summary... Note the totalResults and totalRemaining</span>
-<span class="co">## fields are NA as we are not able to calculate this upfront.</span>
-<span class="va">a</span><span class="op">@</span><span class="va">summary</span><span class="op">(</span><span class="op">)</span>
-<span class="co">#&gt; $description</span>
-<span class="co">#&gt; [1] "Combinations of 10 choose 5 where the mean is &lt; -3"</span>
-<span class="co">#&gt;</span>
-<span class="co">#&gt; $currentIndex</span>
-<span class="co">#&gt; [1] 4</span>
-<span class="co">#&gt;</span>
-<span class="co">#&gt; $totalResults</span>
-<span class="co">#&gt; [1] NA</span>
-<span class="co">#&gt;</span>
-<span class="co">#&gt; $totalRemaining</span>
-<span class="co">#&gt; [1] NA</span>
-
-
-<span class="va">a</span><span class="op">@</span><span class="va">nextNIter</span><span class="op">(</span><span class="fl">3</span><span class="op">)</span>
-<span class="co">#&gt;          [,1]      [,2]      [,3]      [,4]         [,5]</span>
-<span class="co">#&gt; [1,] -4.65036 -4.257748 -4.116755 -3.684771  0.602420762</span>
-<span class="co">#&gt; [2,] -4.65036 -4.257748 -4.116755 -2.818403 -2.058761222</span>
-<span class="co">#&gt; [3,] -4.65036 -4.257748 -4.116755 -2.818403  0.007612633</span>
-
-<span class="co">## Get the rest</span>
-<span class="va">a</span><span class="op">@</span><span class="va">nextRemaining</span><span class="op">(</span><span class="op">)</span>
-<span class="co">#&gt;           [,1]      [,2]      [,3]      [,4]         [,5]</span>
-<span class="co">#&gt; [1,] -4.650360 -4.257748 -4.116755 -2.818403  0.478135161</span>
-<span class="co">#&gt; [2,] -4.650360 -4.257748 -4.116755 -2.818403  0.602420762</span>
-<span class="co">#&gt; [3,] -4.650360 -4.257748 -4.116755 -2.058761  0.007612633</span>
-<span class="co">#&gt; [4,] -4.650360 -4.257748 -3.684771 -2.818403 -2.058761222</span>
-<span class="co">#&gt; [5,] -4.650360 -4.257748 -3.684771 -2.818403  0.007612633</span>
-<span class="co">#&gt; [6,] -4.650360 -4.116755 -3.684771 -2.818403 -2.058761222</span>
-<span class="co">#&gt; [7,] -4.650360 -4.116755 -3.684771 -2.818403  0.007612633</span>
-<span class="co">#&gt; [8,] -4.257748 -4.116755 -3.684771 -2.818403 -2.058761222</span></code></pre></div>
+<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="fl">55</span><span class="op">)</span></span>
+<span><span class="va">s</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/Uniform.html" class="external-link">runif</a></span><span class="op">(</span><span class="fl">10</span>, <span class="op">-</span><span class="fl">5</span>, <span class="fl">5</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">s</span><span class="op">)</span></span>
+<span><span class="co">#&gt; [1]  0.478135161 -2.818403214 -4.650360052  2.915492940</span></span>
+<span><span class="co">#&gt; [5]  0.602420762 -4.257748260 -3.684770642 -2.058761222</span></span>
+<span><span class="co">#&gt; [9]  0.007612633 -4.116755421</span></span>
+<span></span>
+<span><span class="co">## Using comboGeneral to retrieve all results</span></span>
+<span><span class="fu"><a href="../reference/combinatoricsGeneral.html">comboGeneral</a></span><span class="op">(</span><span class="va">s</span>, <span class="fl">5</span>, constraintFun <span class="op">=</span> <span class="st">"mean"</span>,</span>
+<span>             comparisonFun <span class="op">=</span> <span class="st">"&lt;"</span>, limitConstraints <span class="op">=</span> <span class="op">-</span><span class="fl">3</span><span class="op">)</span></span>
+<span><span class="co">#&gt;            [,1]      [,2]      [,3]      [,4]         [,5]</span></span>
+<span><span class="co">#&gt;  [1,] -4.650360 -4.257748 -4.116755 -3.684771 -2.818403214</span></span>
+<span><span class="co">#&gt;  [2,] -4.650360 -4.257748 -4.116755 -3.684771 -2.058761222</span></span>
+<span><span class="co">#&gt;  [3,] -4.650360 -4.257748 -4.116755 -3.684771  0.007612633</span></span>
+<span><span class="co">#&gt;  [4,] -4.650360 -4.257748 -4.116755 -3.684771  0.478135161</span></span>
+<span><span class="co">#&gt;  [5,] -4.650360 -4.257748 -4.116755 -3.684771  0.602420762</span></span>
+<span><span class="co">#&gt;  [6,] -4.650360 -4.257748 -4.116755 -2.818403 -2.058761222</span></span>
+<span><span class="co">#&gt;  [7,] -4.650360 -4.257748 -4.116755 -2.818403  0.007612633</span></span>
+<span><span class="co">#&gt;  [8,] -4.650360 -4.257748 -4.116755 -2.818403  0.478135161</span></span>
+<span><span class="co">#&gt;  [9,] -4.650360 -4.257748 -4.116755 -2.818403  0.602420762</span></span>
+<span><span class="co">#&gt; [10,] -4.650360 -4.257748 -4.116755 -2.058761  0.007612633</span></span>
+<span><span class="co">#&gt; [11,] -4.650360 -4.257748 -3.684771 -2.818403 -2.058761222</span></span>
+<span><span class="co">#&gt; [12,] -4.650360 -4.257748 -3.684771 -2.818403  0.007612633</span></span>
+<span><span class="co">#&gt; [13,] -4.650360 -4.116755 -3.684771 -2.818403 -2.058761222</span></span>
+<span><span class="co">#&gt; [14,] -4.650360 -4.116755 -3.684771 -2.818403  0.007612633</span></span>
+<span><span class="co">#&gt; [15,] -4.257748 -4.116755 -3.684771 -2.818403 -2.058761222</span></span>
+<span></span>
+<span></span>
+<span><span class="co">## Using comboIter</span></span>
+<span><span class="va">a</span> <span class="op">=</span> <span class="fu"><a href="../reference/combinatoricsIterator.html">comboIter</a></span><span class="op">(</span><span class="va">s</span>, <span class="fl">5</span>, constraintFun <span class="op">=</span> <span class="st">"mean"</span>,</span>
+<span>              comparisonFun <span class="op">=</span> <span class="st">"&lt;"</span>, limitConstraints <span class="op">=</span> <span class="op">-</span><span class="fl">3</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co">## See the first result</span></span>
+<span><span class="va">a</span><span class="op">@</span><span class="va">nextIter</span><span class="op">(</span><span class="op">)</span></span>
+<span><span class="co">#&gt; [1] -4.650360 -4.257748 -4.116755 -3.684771 -2.818403</span></span>
+<span></span>
+<span><span class="co">## Get the next three</span></span>
+<span><span class="va">a</span><span class="op">@</span><span class="va">nextNIter</span><span class="op">(</span><span class="fl">3</span><span class="op">)</span></span>
+<span><span class="co">#&gt;          [,1]      [,2]      [,3]      [,4]         [,5]</span></span>
+<span><span class="co">#&gt; [1,] -4.65036 -4.257748 -4.116755 -3.684771 -2.058761222</span></span>
+<span><span class="co">#&gt; [2,] -4.65036 -4.257748 -4.116755 -3.684771  0.007612633</span></span>
+<span><span class="co">#&gt; [3,] -4.65036 -4.257748 -4.116755 -3.684771  0.478135161</span></span>
+<span></span>
+<span><span class="co">## See the summary... Note the totalResults and totalRemaining</span></span>
+<span><span class="co">## fields are NA as we are not able to calculate this upfront.</span></span>
+<span><span class="va">a</span><span class="op">@</span><span class="va">summary</span><span class="op">(</span><span class="op">)</span></span>
+<span><span class="co">#&gt; $description</span></span>
+<span><span class="co">#&gt; [1] "Combinations of 10 choose 5 where the mean is &lt; -3"</span></span>
+<span><span class="co">#&gt;</span></span>
+<span><span class="co">#&gt; $currentIndex</span></span>
+<span><span class="co">#&gt; [1] 4</span></span>
+<span><span class="co">#&gt;</span></span>
+<span><span class="co">#&gt; $totalResults</span></span>
+<span><span class="co">#&gt; [1] NA</span></span>
+<span><span class="co">#&gt;</span></span>
+<span><span class="co">#&gt; $totalRemaining</span></span>
+<span><span class="co">#&gt; [1] NA</span></span>
+<span></span>
+<span></span>
+<span><span class="va">a</span><span class="op">@</span><span class="va">nextNIter</span><span class="op">(</span><span class="fl">3</span><span class="op">)</span></span>
+<span><span class="co">#&gt;          [,1]      [,2]      [,3]      [,4]         [,5]</span></span>
+<span><span class="co">#&gt; [1,] -4.65036 -4.257748 -4.116755 -3.684771  0.602420762</span></span>
+<span><span class="co">#&gt; [2,] -4.65036 -4.257748 -4.116755 -2.818403 -2.058761222</span></span>
+<span><span class="co">#&gt; [3,] -4.65036 -4.257748 -4.116755 -2.818403  0.007612633</span></span>
+<span></span>
+<span><span class="co">## Get the rest</span></span>
+<span><span class="va">a</span><span class="op">@</span><span class="va">nextRemaining</span><span class="op">(</span><span class="op">)</span></span>
+<span><span class="co">#&gt;           [,1]      [,2]      [,3]      [,4]         [,5]</span></span>
+<span><span class="co">#&gt; [1,] -4.650360 -4.257748 -4.116755 -2.818403  0.478135161</span></span>
+<span><span class="co">#&gt; [2,] -4.650360 -4.257748 -4.116755 -2.818403  0.602420762</span></span>
+<span><span class="co">#&gt; [3,] -4.650360 -4.257748 -4.116755 -2.058761  0.007612633</span></span>
+<span><span class="co">#&gt; [4,] -4.650360 -4.257748 -3.684771 -2.818403 -2.058761222</span></span>
+<span><span class="co">#&gt; [5,] -4.650360 -4.257748 -3.684771 -2.818403  0.007612633</span></span>
+<span><span class="co">#&gt; [6,] -4.650360 -4.116755 -3.684771 -2.818403 -2.058761222</span></span>
+<span><span class="co">#&gt; [7,] -4.650360 -4.116755 -3.684771 -2.818403  0.007612633</span></span>
+<span><span class="co">#&gt; [8,] -4.257748 -4.116755 -3.684771 -2.818403 -2.058761222</span></span></code></pre></div>
 <p>They are very efficient as well. Consider the example below where we
 use <code>comboGeneral</code> to generate all results without capping
 the output. Again, we are in a situation where we don’t know <em>a
 priori</em> how many results we will obtain.</p>
-<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="fl">77</span><span class="op">)</span>
-<span class="va">s</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/Uniform.html" class="external-link">runif</a></span><span class="op">(</span><span class="fl">50</span>, <span class="fl">20</span>, <span class="fl">100</span><span class="op">)</span>
-
-<span class="co">## Over one trillion results to sift through</span>
-<span class="fu"><a href="../reference/combinatoricsCount.html">comboCount</a></span><span class="op">(</span><span class="va">s</span>, <span class="fl">15</span><span class="op">)</span>
-<span class="co">#&gt; [1] 2.25083e+12</span>
-
-<span class="fu"><a href="https://rdrr.io/r/base/system.time.html" class="external-link">system.time</a></span><span class="op">(</span><span class="op">{</span>
-    <span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span>
-        <span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span>
-            <span class="fu"><a href="../reference/combinatoricsGeneral.html">comboGeneral</a></span><span class="op">(</span><span class="va">s</span>, <span class="fl">15</span>,
-                         constraintFun <span class="op">=</span> <span class="st">"mean"</span>,
-                         comparisonFun <span class="op">=</span> <span class="st">"&gt;"</span>,
-                         limitConstraints <span class="op">=</span> <span class="fl">83</span><span class="op">)</span>
-        <span class="op">)</span>
-    <span class="op">)</span>
-<span class="op">}</span><span class="op">)</span>
-<span class="co">#&gt; [1] 38935252</span>
-<span class="co">#&gt;    user  system elapsed</span>
-<span class="co">#&gt;   6.140   4.446  11.208</span>
-
-<span class="co">## Over 4 GBs of results</span>
-<span class="op">(</span><span class="fl">38935252</span> <span class="op">*</span> <span class="fl">15</span> <span class="op">*</span> <span class="fl">8</span><span class="op">)</span> <span class="op">/</span> <span class="fl">2</span><span class="op">^</span><span class="fl">30</span>
-<span class="co">#&gt; [1] 4.351353</span></code></pre></div>
+<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="fl">77</span><span class="op">)</span></span>
+<span><span class="va">s</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/Uniform.html" class="external-link">runif</a></span><span class="op">(</span><span class="fl">50</span>, <span class="fl">20</span>, <span class="fl">100</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co">## Over one trillion results to sift through</span></span>
+<span><span class="fu"><a href="../reference/combinatoricsCount.html">comboCount</a></span><span class="op">(</span><span class="va">s</span>, <span class="fl">15</span><span class="op">)</span></span>
+<span><span class="co">#&gt; [1] 2.25083e+12</span></span>
+<span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/system.time.html" class="external-link">system.time</a></span><span class="op">(</span><span class="op">{</span></span>
+<span>    <span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span></span>
+<span>        <span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span></span>
+<span>            <span class="fu"><a href="../reference/combinatoricsGeneral.html">comboGeneral</a></span><span class="op">(</span><span class="va">s</span>, <span class="fl">15</span>,</span>
+<span>                         constraintFun <span class="op">=</span> <span class="st">"mean"</span>,</span>
+<span>                         comparisonFun <span class="op">=</span> <span class="st">"&gt;"</span>,</span>
+<span>                         limitConstraints <span class="op">=</span> <span class="fl">83</span><span class="op">)</span></span>
+<span>        <span class="op">)</span></span>
+<span>    <span class="op">)</span></span>
+<span><span class="op">}</span><span class="op">)</span></span>
+<span><span class="co">#&gt; [1] 38935252</span></span>
+<span><span class="co">#&gt;    user  system elapsed</span></span>
+<span><span class="co">#&gt;   6.140   4.446  11.208</span></span>
+<span></span>
+<span><span class="co">## Over 4 GBs of results</span></span>
+<span><span class="op">(</span><span class="fl">38935252</span> <span class="op">*</span> <span class="fl">15</span> <span class="op">*</span> <span class="fl">8</span><span class="op">)</span> <span class="op">/</span> <span class="fl">2</span><span class="op">^</span><span class="fl">30</span></span>
+<span><span class="co">#&gt; [1] 4.351353</span></span></code></pre></div>
 <p>Just over 11 seconds isn’t bad, however 4 GBs could put a strain on
 your computer.</p>
 <p>Let’s use iterators instead and only generate ten thousand at a time
@@ -901,36 +965,36 @@ to keep memory low. We should mention here that the iterators are
 actually left. For example, if in the problem above, we had iterated to
 the 38<sup>th</sup> million result and requested 10 million more, we
 would only obtain 935,252 results.</p>
-<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/base/system.time.html" class="external-link">system.time</a></span><span class="op">(</span><span class="op">{</span>
-    <span class="va">a</span> <span class="op">=</span> <span class="fu"><a href="../reference/combinatoricsIterator.html">comboIter</a></span><span class="op">(</span><span class="va">s</span>, <span class="fl">15</span>,
-                  constraintFun <span class="op">=</span> <span class="st">"mean"</span>,
-                  comparisonFun <span class="op">=</span> <span class="st">"&gt;"</span>,
-                  limitConstraints <span class="op">=</span> <span class="fl">83</span><span class="op">)</span>
-    <span class="kw">while</span> <span class="op">(</span><span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/NULL.html" class="external-link">is.null</a></span><span class="op">(</span><span class="va">a</span><span class="op">@</span><span class="va">nextNIter</span><span class="op">(</span><span class="fl">1e4</span><span class="op">)</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span><span class="op">}</span>
-    <span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">a</span><span class="op">@</span><span class="va">summary</span><span class="op">(</span><span class="op">)</span><span class="op">)</span>
-<span class="op">}</span><span class="op">)</span>
-<span class="co">#&gt; No more results.</span>
-<span class="co">#&gt;</span>
-<span class="co">#&gt; $description</span>
-<span class="co">#&gt; [1] "Combinations of 50 choose 15 where the mean is &gt; 83"</span>
-<span class="co">#&gt;</span>
-<span class="co">#&gt; $currentIndex</span>
-<span class="co">#&gt; [1] 38935252</span>
-<span class="co">#&gt;</span>
-<span class="co">#&gt; $totalResults</span>
-<span class="co">#&gt; [1] NA</span>
-<span class="co">#&gt;</span>
-<span class="co">#&gt; $totalRemaining</span>
-<span class="co">#&gt; [1] NA</span>
-<span class="co">#&gt;</span>
-<span class="co">#&gt;    user  system elapsed</span>
-<span class="co">#&gt;   2.852   1.051   3.907</span>
-
-
-<span class="co">## Only 11 MBs per iteration</span>
-<span class="op">(</span><span class="fl">1e4</span> <span class="op">*</span> <span class="fl">15</span> <span class="op">*</span> <span class="fl">8</span><span class="op">)</span> <span class="op">/</span> <span class="fl">2</span><span class="op">^</span><span class="fl">20</span>
-<span class="co">#&gt; [1] 1.144409</span></code></pre></div>
+<div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/system.time.html" class="external-link">system.time</a></span><span class="op">(</span><span class="op">{</span></span>
+<span>    <span class="va">a</span> <span class="op">=</span> <span class="fu"><a href="../reference/combinatoricsIterator.html">comboIter</a></span><span class="op">(</span><span class="va">s</span>, <span class="fl">15</span>,</span>
+<span>                  constraintFun <span class="op">=</span> <span class="st">"mean"</span>,</span>
+<span>                  comparisonFun <span class="op">=</span> <span class="st">"&gt;"</span>,</span>
+<span>                  limitConstraints <span class="op">=</span> <span class="fl">83</span><span class="op">)</span></span>
+<span>    <span class="kw">while</span> <span class="op">(</span><span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/NULL.html" class="external-link">is.null</a></span><span class="op">(</span><span class="va">a</span><span class="op">@</span><span class="va">nextNIter</span><span class="op">(</span><span class="fl">1e4</span><span class="op">)</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span><span class="op">}</span></span>
+<span>    <span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">a</span><span class="op">@</span><span class="va">summary</span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="op">}</span><span class="op">)</span></span>
+<span><span class="co">#&gt; No more results.</span></span>
+<span><span class="co">#&gt;</span></span>
+<span><span class="co">#&gt; $description</span></span>
+<span><span class="co">#&gt; [1] "Combinations of 50 choose 15 where the mean is &gt; 83"</span></span>
+<span><span class="co">#&gt;</span></span>
+<span><span class="co">#&gt; $currentIndex</span></span>
+<span><span class="co">#&gt; [1] 38935252</span></span>
+<span><span class="co">#&gt;</span></span>
+<span><span class="co">#&gt; $totalResults</span></span>
+<span><span class="co">#&gt; [1] NA</span></span>
+<span><span class="co">#&gt;</span></span>
+<span><span class="co">#&gt; $totalRemaining</span></span>
+<span><span class="co">#&gt; [1] NA</span></span>
+<span><span class="co">#&gt;</span></span>
+<span><span class="co">#&gt;    user  system elapsed</span></span>
+<span><span class="co">#&gt;   2.852   1.051   3.907</span></span>
+<span></span>
+<span></span>
+<span><span class="co">## Only 11 MBs per iteration</span></span>
+<span><span class="op">(</span><span class="fl">1e4</span> <span class="op">*</span> <span class="fl">15</span> <span class="op">*</span> <span class="fl">8</span><span class="op">)</span> <span class="op">/</span> <span class="fl">2</span><span class="op">^</span><span class="fl">20</span></span>
+<span><span class="co">#&gt; [1] 1.144409</span></span></code></pre></div>
 <p>Wow! Using the iterator approach is almost 3 times faster
 (<code>11.208 / 3.907 ~= 2.869</code>)! Our gains came strictly from
 memory efficiency (From over 4 GBs to just over 1 MB) as the underlying
@@ -956,8 +1020,7 @@ algorithm is exactly the same.</p>
 
 <div class="pkgdown">
   <p></p>
-<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a>
-2.0.2.</p>
+<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.6.</p>
 </div>
 
       </footer>

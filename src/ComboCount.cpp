@@ -2,25 +2,29 @@
 #include <algorithm> // std::min
 #include <numeric>   // std::accumulate
 #include <cmath>     // std::round
+#include <gmp.h>
 
 #include "cpp11/R.hpp"
 
 // Returns number of k-combinations from n elements.
-// Mathematically speaking, we have: n!/(m! * (n - m)!)
+// Mathematically speaking, we have: n! / (m! * (n - m)!)
+//
+// Using gmp function to get rid of floating point errors.
+// E.g. choose(92, 13) = 2232785266876081
+// shoule be gmp::chooseZ(92, 13) = 2232785266876080
 double nChooseK(int n, int m) {
 
     if (m == n || m == 0) {
         return 1.0;
     }
 
-    double nCm = 1;
+    mpz_t temp;
+    mpz_init(temp);
+    mpz_bin_uiui(temp, n, m);
 
-    for (double i = (n - m + 1), d = 1; d <= m; ++i, ++d) {
-        nCm *= i;
-        nCm /= d;
-    }
-
-    return std::round(nCm);
+    double res = mpz_get_d(temp);
+    mpz_clear(temp);
+    return res;
 }
 
 double NumCombsWithRep(int n, int m) {

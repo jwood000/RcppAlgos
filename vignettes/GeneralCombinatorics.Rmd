@@ -1,7 +1,7 @@
 ---
 title: "Combination and Permutation Basics"
 author: "Joseph Wood"
-date: "03/29/2022"
+date: "07/22/2022"
 output:
   rmarkdown::html_vignette:
     toc: true
@@ -17,7 +17,7 @@ This document serves as an overview for attacking _common_ combinatorial problem
 It should be noted that this document only covers common problems. For more information on other combinatorial problems addressed by `RcppAlgos`, see the following vignettes:
 
 * [Combinatorial Sampling](<https://jwood000.github.io/RcppAlgos/articles/CombinatorialSampling.html>)
-* [Constraints and Integer Partitions](<https://jwood000.github.io/RcppAlgos/articles/CombPermConstraints.html>)
+* [Constraints, Integer Partitions, and Integer Compositions](<https://jwood000.github.io/RcppAlgos/articles/CombPermConstraints.html>)
 * [Attacking Problems Related to the Subset Sum Problem](<https://jwood000.github.io/RcppAlgos/articles/SubsetSum.html>)
 * [Combinatorial Iterators in RcppAlgos](<https://jwood000.github.io/RcppAlgos/articles/CombinatoricsIterators.html>)
 

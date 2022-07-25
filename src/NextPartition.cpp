@@ -1,3 +1,4 @@
+#include "Partitions/NextComposition.h"
 #include "Partitions/PartitionsTypes.h"
 #include <algorithm>  // std::find
 
@@ -25,7 +26,7 @@ void NextDistinctPart(std::vector<int> &z, int &boundary,
     edge = boundary - 1;
     tarDiff = 3;
 
-    while (edge && (z[boundary] - z[edge]) < tarDiff) {
+    while (edge > 0 && (z[boundary] - z[edge]) < tarDiff) {
         --edge;
         ++tarDiff;
     }
@@ -55,7 +56,7 @@ void NextRepPart(std::vector<int> &z, int &boundary,
     edge = boundary - 1;
     const int edgeTest = z[boundary] - 2;
 
-    while (edge && edgeTest < z[edge]) {
+    while (edge > 0 && edgeTest < z[edge]) {
         --edge;
     }
 }
@@ -203,7 +204,7 @@ void PrepareRepPart(const std::vector<int> &z, int &boundary,
     edge = boundary - 1;
     int edgeTest = z[boundary] - 2;
 
-    while (edge && edgeTest < z[edge]) {
+    while (edge > 0 && edgeTest < z[edge]) {
         --edge;
     }
 }
@@ -232,7 +233,7 @@ void PrepareDistinctPart(const std::vector<int> &z, int &boundary,
     edge = boundary - 1;
     tarDiff = 3;
 
-    while (edge && (z[boundary] - z[edge]) < tarDiff) {
+    while (edge > 0 && (z[boundary] - z[edge]) < tarDiff) {
         --edge;
         ++tarDiff;
     }
@@ -396,7 +397,7 @@ void NextRepGenPart(std::vector<int> &z, int &boundary, int &edge,
     edge = boundary - 1;
     int edgeTest = z[boundary] - 2;
 
-    while (edge && edgeTest < z[edge]) {
+    while (edge > 0 && edgeTest < z[edge]) {
         --edge;
     }
 }
@@ -456,7 +457,7 @@ void NextDistinctGenPart(std::vector<int> &z, int &boundary,
     edge = boundary - 1;
     tarDiff = 3;
 
-    while (edge && (z[boundary] - z[edge]) < tarDiff) {
+    while (edge > 0 && (z[boundary] - z[edge]) < tarDiff) {
         --edge;
         ++tarDiff;
     }
@@ -493,9 +494,25 @@ void NextDistinctGen(std::vector<int> &rpsCnt, std::vector<int> &z,
     NextDistinctGenPart(z, b, e, p, tarDiff, lastCol, lastElem);
 }
 
-nextPartsPtr GetNextPartsPtr(PartitionType ptype, bool IsGen) {
+void NextRepCompZero(std::vector<int> &rpsCnt,
+                     std::vector<int> &z, int &e, int &b, int &p,
+                     int &tarDiff, int lastCol, int lastElem) {
+    NextCompositionRep<0>(z, lastCol);
+}
 
-    if (IsGen) {
+void NextRepCompOne(std::vector<int> &rpsCnt,
+                    std::vector<int> &z, int &e, int &b, int &p,
+                    int &tarDiff, int lastCol, int lastElem) {
+    NextCompositionRep<1>(z, lastCol);
+}
+
+nextPartsPtr GetNextPartsPtr(PartitionType ptype, bool IsGen, bool IsComp) {
+
+    if (IsComp && IsGen) {
+        return(nextPartsPtr(NextRepCompZero));
+    } else if (IsComp) {
+        return(nextPartsPtr(NextRepCompOne));
+    } else if (IsGen) {
         if (ptype == PartitionType::Multiset) {
             return(nextPartsPtr(NextMultisetGen));
         } else if (std::find(RepPTypeArr.cbegin(), RepPTypeArr.cend(),
@@ -504,12 +521,10 @@ nextPartsPtr GetNextPartsPtr(PartitionType ptype, bool IsGen) {
         } else {
             return(nextPartsPtr(NextDistinctGen));
         }
+    } else if (std::find(RepPTypeArr.cbegin(), RepPTypeArr.cend(),
+                         ptype) != RepPTypeArr.cend()) {
+        return(nextPartsPtr(NextRep));
     } else {
-        if (std::find(RepPTypeArr.cbegin(), RepPTypeArr.cend(),
-                      ptype) != RepPTypeArr.cend()) {
-            return(nextPartsPtr(NextRep));
-        } else {
-            return(nextPartsPtr(NextDistinct));
-        }
+        return(nextPartsPtr(NextDistinct));
     }
 }

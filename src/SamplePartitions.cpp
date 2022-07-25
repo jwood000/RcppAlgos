@@ -129,7 +129,8 @@ SEXP SamplePartitions(SEXP Rv, SEXP Rm, SEXP RisRep, SEXP RFreqs,
                       SEXP RindexVec, SEXP RmySeed, SEXP RNumSamp,
                       SEXP baseSample, SEXP Rparallel, SEXP RNumThreads,
                       SEXP RmaxThreads, SEXP RNamed, SEXP RcompFun,
-                      SEXP Rtarget, SEXP Rtolerance, SEXP myEnv) {
+                      SEXP Rtarget, SEXP Rtolerance, SEXP myEnv,
+                      SEXP RIsComposition) {
 
     int n = 0;
     int m = 0;
@@ -155,6 +156,8 @@ SEXP SamplePartitions(SEXP Rv, SEXP Rm, SEXP RisRep, SEXP RFreqs,
               RFreqs, Rm, n, m, IsMult, IsRep, true);
 
     const std::string mainFun = "sum";
+    const bool IsComposition  = CleanConvert::convertFlag(RIsComposition,
+                                                          "IsComposition");
 
     // Must be defined inside IsInteger check as targetVals could be
     // outside integer data type range which causes undefined behavior
@@ -167,14 +170,16 @@ SEXP SamplePartitions(SEXP Rv, SEXP Rm, SEXP RisRep, SEXP RFreqs,
     ConstraintType ctype = ConstraintType::NoConstraint;
     PartDesign part;
 
-    part.isRep = IsRep;
-    part.isMult = IsMult;
+    part.isRep   = IsRep;
+    part.isMult  = IsMult;
     part.mIsNull = Rf_isNull(Rm);
-    cpp11::sexp Rlow = R_NilValue;
+    part.isComp  = IsComposition;
 
+    cpp11::sexp Rlow = R_NilValue;
     ConstraintSetup(vNum, myReps, targetVals, vInt, targetIntVals,
-                    funDbl, part, ctype, n, m, compVec, mainFun, mainFun,
-                    myType, Rtarget, RcompFun, Rtolerance, Rlow, true, false);
+                    funDbl, part, ctype, n, m, compVec, mainFun,
+                    mainFun, myType, Rtarget, RcompFun, Rtolerance,
+                    Rlow, !IsComposition);
 
     if (part.ptype == PartitionType::Multiset ||
         part.ptype == PartitionType::CoarseGrained ||
@@ -186,6 +191,16 @@ SEXP SamplePartitions(SEXP Rv, SEXP Rm, SEXP RisRep, SEXP RFreqs,
     int sampSize;
     std::vector<double> mySample;
 
+    // This can occur if we are dealing with capped cases where calculating
+    // the number of partitions could take a long time. When this occurs with
+    // partitionsGeneral, it is faster to generate partitions and push them
+    // to a vector until the next partitions algorithm exhaust, then we can
+    // convert this to an R matrix (instead of preallocating a matrix).
+    //
+    // When we are dealing with sampling, we have to know the total number
+    // of partitions, thus the following:
+
+    if (part.numUnknown) PartitionsCount(myReps, part, n, true, true);
     const bool SampleGmp = (part.count > SampleLimit);
 
     if (SampleGmp && !part.isGmp) {
@@ -224,8 +239,10 @@ SEXP SamplePartitions(SEXP Rv, SEXP Rm, SEXP RisRep, SEXP RFreqs,
             SetSampleNames(res, false, sampSize,
                            mySample, myVec.get(), IsNamed);
         } else {
-            const nthPartsPtr nthPartFun = GetNthPartsFunc(part.ptype,
-                                                           part.isGmp);
+            const nthPartsPtr nthPartFun = GetNthPartsFunc(
+                part.ptype, part.isGmp, part.isComp
+            );
+
             ThreadSafeSample(matInt, res, vInt, mySample, myVec.get(),
                              myReps, nthPartFun, part.width, sampSize,
                              nThreads, Parallel, IsNamed, part.mapTar,
@@ -242,8 +259,10 @@ SEXP SamplePartitions(SEXP Rv, SEXP Rm, SEXP RisRep, SEXP RFreqs,
             SetSampleNames(res, false, sampSize,
                            mySample, myVec.get(), IsNamed);
         } else {
-            const nthPartsPtr nthPartFun = GetNthPartsFunc(part.ptype,
-                                                           part.isGmp);
+            const nthPartsPtr nthPartFun = GetNthPartsFunc(
+                part.ptype, part.isGmp, part.isComp
+            );
+
             ThreadSafeSample(matNum, res, vNum, mySample, myVec.get(),
                              myReps, nthPartFun, part.width, sampSize,
                              nThreads, Parallel, IsNamed, part.mapTar,

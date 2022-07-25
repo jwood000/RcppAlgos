@@ -83,7 +83,9 @@ void ComboApply::startOver() {
 
 SEXP ComboApply::nextComb() {
 
-    if (CheckEqSi(IsGmp, mpzIndex, dblIndex, 0)) {
+    if (CheckEqSi(IsGmp, mpzIndex, dblIndex, 0) &&
+        CheckIndLT(IsGmp, mpzIndex, dblIndex,
+                   computedRowsMpz, computedRows)) {
         increment(IsGmp, mpzIndex, dblIndex);
         return VecApplyReturn();
     } else if (CheckIndLT(IsGmp, mpzIndex, dblIndex,

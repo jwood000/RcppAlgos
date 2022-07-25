@@ -34,6 +34,7 @@ using nextPartsPtr = void (*const)(std::vector<int> &rpsCnt,
                            std::vector<int> &z, int &e, int &b, int &p,
                            int &tarDiff, int lastCol, int lastElem);
 
-nextPartsPtr GetNextPartsPtr(PartitionType ptype, bool IsGen);
+nextPartsPtr GetNextPartsPtr(PartitionType ptype, bool IsGen,
+                             bool IsComp);
 
 #endif

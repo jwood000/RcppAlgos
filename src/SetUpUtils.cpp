@@ -560,7 +560,7 @@ void SetRandomSample(SEXP RindexVec, SEXP RNumSamp, int &sampSize,
 
         if (Rf_length(RNumSamp) > 1) {
             cpp11::stop("length of n must be 1. For specific "
-                     "combinations, use sampleVec.");
+                        "combinations, use sampleVec.");
         }
 
         CleanConvert::convertPrimitive(RNumSamp, sampSize,

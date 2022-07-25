@@ -59,12 +59,19 @@ struct PartDesign {
     bool isRep = false;
     bool isMult = false;
     bool isPart = false;
-    bool allOne = false;
-    bool mIsNull = false;
+    bool isComp = false;      // Are we dealing with compositions?
+    bool allOne = false;      // When we have multisets with the pattern:
+                              //     freqs = c(n, rep(1, p))
+                              // This reduces to distinct
+                              // partitions/compositions of differing widths.
+                              // allOne translates to:
+                              // "Every multiplicity is one expect the first element"
+
+    bool mIsNull = false;     // Is the width provided by the user
     bool solnExist = false;
-    bool includeZero = false;
+    bool includeZero = false; // Is the leading element zero?
     bool mapIncZero = false;
-    bool numUnknown = false;
+    bool numUnknown = true;
     std::vector<int> startZ;
     std::int64_t cap = 0;
     std::int64_t shift = 0;

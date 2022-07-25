@@ -82,10 +82,28 @@ Partitions::Partitions(
              RstrtLen, Rcap, RKeepRes, RnumUnknown, RcnstrtRows,
              RcnstrtRowsMpz),
     lastCol(part.width - 1), lastElem(n - 1),
-    nextParts(GetNextPartsPtr(part.ptype,
-                              ctype != ConstraintType::PartStandard)),
-    nthParts(part.ptype == PartitionType::Multiset ? nullptr :
-               GetNthPartsFunc(part.ptype, part.isGmp)) {
+    // Not very happy with the second condition, but oh well.
+    //
+    // In nextParts, the second parameter is bool IsGen, meaning is the
+    // next partition or composition algorithm of the general nature.
+    // Thus, it is standard if the Constraint Type is standard
+    //              -OR-
+    // if we are dealing with compositions and zero is involved. In
+    // logical form we have:
+    //
+    // IsStandard = (ctype == standard) || (iscomp && inc_zero)
+    //
+    // IsGeneral is simply the negation of IsStandard, so we use
+    // De Morgan's law to arrive at the line below.
+    nextParts(GetNextPartsPtr(
+        part.ptype, ctype != ConstraintType::PartStandard &&
+                    !(part.isComp && part.mapIncZero), part.isComp
+    )),
+    nthParts((part.ptype == PartitionType::LengthOne ||
+              part.ptype == PartitionType::Multiset  ||
+              CheckEqSi(part.isGmp, cnstrtCountMpz, cnstrtCount, 0)) ?
+              nullptr : GetNthPartsFunc(part.ptype, part.isGmp,
+                                        part.isComp)) {
 
     bAddOne = (ctype == ConstraintType::PartStandard) && !part.includeZero;
     rpsCnt = myReps;
@@ -108,7 +126,9 @@ void Partitions::startOver() {
 
 SEXP Partitions::nextComb() {
 
-    if (CheckEqSi(IsGmp, mpzIndex, dblIndex, 0)) {
+    if (CheckEqSi(IsGmp, mpzIndex, dblIndex, 0) &&
+        CheckIndLT(IsGmp, mpzIndex, dblIndex,
+                   cnstrtCountMpz, cnstrtCount)) {
         increment(IsGmp, mpzIndex, dblIndex);
         return VecReturn();
     } else if (CheckIndLT(IsGmp, mpzIndex, dblIndex,
@@ -343,8 +363,9 @@ SEXP Partitions::back() {
 SEXP Partitions::summary() {
     const std::string RepStr = (IsRep) ? "with repetition " : "";
     const std::string MultiStr = (IsMult) ? "of a multiset " : "";
-    const std::string strDesc = "Partitions " + RepStr + MultiStr + "of "
-          + std::to_string(part.target) + " into " + std::to_string(width) + " parts";
+    const std::string strDesc = (part.isComp ? "Compositions " : "Partitions ")
+          + RepStr + MultiStr + "of " + std::to_string(part.target) +
+              " into " + std::to_string(width) + " parts";
     const double dblDiff = (IsGmp) ? 0 : cnstrtCount - dblIndex;
 
     if (IsGmp) {

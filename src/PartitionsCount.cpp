@@ -12,7 +12,21 @@
 
 constexpr double cutOff = 3.0;
 
-std::unique_ptr<CountClass> MakeCount(PartitionType ptype) {
+std::unique_ptr<CountClass> MakeCount(PartitionType ptype, bool isComp) {
+
+    if (isComp) {
+        switch (ptype) {
+            case PartitionType::RepStdAll: {
+                return FromCpp14::make_unique<CompsRepZero>();
+            } case PartitionType::RepNoZero: {
+                return FromCpp14::make_unique<CompsRepLen>();
+            } case PartitionType::RepShort: {
+                return FromCpp14::make_unique<CompsRepZero>();
+            } default: {
+                return nullptr;
+            }
+        }
+    }
 
     switch (ptype) {
         case PartitionType::RepStdAll: {
@@ -165,6 +179,20 @@ void RepAll::GetCount(mpz_t res, int n, int m, int cap,
     }
 }
 
+void CompsRepLen::GetCount(mpz_t res, int n, int m, int cap,
+                           int strtLen, bool bLiteral) {
+    CountCompsRepLen(res, n, m, cap, strtLen);
+}
+
+void CompsRepZero::GetCount(mpz_t res, int n, int m, int cap,
+                            int strtLen, bool bLiteral) {
+    if (bLiteral) {
+        CountCompsRepZero(res, n, m, cap, strtLen);
+    } else {
+        CountCompsRepLen(res, n, m, cap, strtLen);
+    }
+}
+
 double DistinctAll::GetCount(int n, int m, int cap, int strtLen) {
     return CountPartsDistinct(n, m, cap, strtLen);
 }
@@ -195,6 +223,14 @@ double RepLen::GetCount(int n, int m, int cap, int strtLen) {
 
 double RepLenCap::GetCount(int n, int m, int cap, int strtLen) {
     return CountPartsRepLenCap(n, m, cap, strtLen);
+}
+
+double CompsRepLen::GetCount(int n, int m, int cap, int strtLen) {
+    return CountCompsRepLen(n, m, cap, strtLen);
+}
+
+double CompsRepZero::GetCount(int n, int m, int cap, int strtLen) {
+    return CountCompsRepZero(n, m, cap, strtLen);
 }
 
 bool OverTheBar(PartitionType ptype, double capNumIters, int n, int m) {
@@ -263,24 +299,26 @@ void CountClass::SetArrSize(PartitionType ptype, int n, int m, int cap) {
 }
 
 void PartitionsCount(const std::vector<int> &Reps, PartDesign &part,
-                     int lenV, bool bCalcDifficult, bool IsComb) {
+                     int lenV, bool bIsCount, bool IsComb) {
 
     part.count = 0.0;
+    part.numUnknown = false;
     mpz_init(part.bigCount);
     const double capNumIters = static_cast<double>(part.mapTar + 1) *
                                static_cast<double>(part.width - 1) *
                                static_cast<double>(lenV + 1);
 
-    const bool bWorthIt = OverTheBar(part.ptype, capNumIters, lenV, part.width);
+    const int strtLen = std::count_if(part.startZ.cbegin(),
+                                      part.startZ.cend(),
+                                      [](int i){return i > 0;});
+
+    const bool bWorthIt = OverTheBar(part.ptype, capNumIters,
+                                     lenV, part.width);
 
     if (part.ptype == PartitionType::LengthOne) {
         part.count = static_cast<int>(part.solnExist);
     } else if (IsComb && part.ptype != PartitionType::Multiset) {
-        if (bCalcDifficult || bWorthIt) {
-            const int strtLen = std::count_if(part.startZ.cbegin(),
-                                              part.startZ.cend(),
-                                              [](int i){return i > 0;});
-
+        if (bIsCount || bWorthIt) {
             std::unique_ptr<CountClass> myClass = MakeCount(part.ptype);
             part.count = myClass->GetCount(part.mapTar, part.width,
                                            part.cap, strtLen);
@@ -305,33 +343,49 @@ void PartitionsCount(const std::vector<int> &Reps, PartDesign &part,
         } else {
             part.numUnknown = true;
         }
-    } else if (IsComb && part.ptype == PartitionType::Multiset) {
-        if (bCalcDifficult && part.solnExist) {
-            part.count = CountPartsMultiset(Reps, part.startZ);
+    } else if (IsComb) {
+        if (bIsCount) {
+            part.count = (part.solnExist) ?
+                         CountPartsMultiset(Reps, part.startZ) : 0;
         } else {
             part.numUnknown = true;
         }
     } else {
         const auto it = std::find(DistPTypeArr.cbegin(),
                                   DistPTypeArr.cend(), part.ptype);
-        if (part.isRep) {
-            if (part.ptype != PartitionType::RepCapped) {
-                part.count = CountPartsPermRep(part.mapTar, part.width,
-                                               part.mapIncZero);
+
+        if (part.isRep && part.isComp) {
+            std::unique_ptr<CountClass> myClass = MakeCount(part.ptype, true);
+
+            if (myClass) {
+                part.count = myClass->GetCount(part.mapTar, part.width,
+                                               part.cap, strtLen);
+
+                if (part.count > Significand53) {
+                    part.isGmp = true;
+                    myClass->GetCount(part.bigCount, part.mapTar,
+                                      part.width, part.cap, strtLen);
+                }
             } else {
                 part.numUnknown = true;
             }
-        } else if (part.ptype == PartitionType::DstctCapped ||
-                   part.ptype == PartitionType::DstctCappedMZ) {
+        } else if (part.isRep && part.ptype != PartitionType::RepCapped) {
+            part.count = CountCompsRepLen(
+                part.mapTar + static_cast<int>(part.mapIncZero) * part.width,
+                part.width, part.cap, strtLen
+            );
+        } else if (!part.isComp &&
+                   (part.ptype == PartitionType::DstctCapped ||
+                    part.ptype == PartitionType::DstctCappedMZ)) {
 
-            if (bCalcDifficult || bWorthIt) {
+            if (bIsCount || bWorthIt) {
                 part.count = CountPartsPermDistinctCap(part.startZ, part.cap,
                                                        part.mapTar, part.width,
                                                        part.mapIncZero);
             } else {
                 part.numUnknown = true;
             }
-        } else if (it != DistPTypeArr.cend()) {
+        } else if (!part.isComp && it != DistPTypeArr.cend()) {
             part.count = CountPartsPermDistinct(part.startZ,
                                                 part.mapTar, part.width,
                                                 part.mapIncZero);

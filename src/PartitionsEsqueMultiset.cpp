@@ -164,6 +164,7 @@ void PartitionsEsqueMultiset<T>::Prepare(const std::string &currComp,
         }
     }
 
+    this->z.clear();
     zIndex.clear();
     freqs.clear();
 
@@ -175,6 +176,7 @@ void PartitionsEsqueMultiset<T>::Prepare(const std::string &currComp,
         }
     }
 
+    this->z.assign(freqs.cbegin(), freqs.cbegin() + this->m);
     this->check_1 = GetLowerBound(
         v, this->z, this->fun, reduce, this->partial,
         currPartial, this->n, this->m, this->count

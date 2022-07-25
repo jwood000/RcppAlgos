@@ -17,7 +17,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">RcppAlgos</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">2.5.5</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">2.6.0</span>
       </span>
     </div>
 
@@ -26,13 +26,13 @@
   <a href="../reference/index.html">Reference</a>
 </li>
 <li class="dropdown">
-  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
     Articles
      
     <span class="caret"></span>
   </a>
   <ul class="dropdown-menu" role="menu"><li>
-      <a href="../articles/CombPermConstraints.html">Constraints and Integer Partitions</a>
+      <a href="../articles/CombPermConstraints.html">Constraints, Integer Partitions, and Integer Compositions</a>
     </li>
     <li>
       <a href="../articles/CombinatorialSampling.html">Combinatorial Sampling and Ranking</a>
@@ -84,25 +84,31 @@
     </div>
 
     <div id="ref-usage">
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="fu">comboCount</span><span class="op">(</span><span class="va">v</span>, m <span class="op">=</span> <span class="cn">NULL</span>, repetition <span class="op">=</span> <span class="cn">FALSE</span>, freqs <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span>
-
-<span class="fu">permuteCount</span><span class="op">(</span><span class="va">v</span>, m <span class="op">=</span> <span class="cn">NULL</span>, repetition <span class="op">=</span> <span class="cn">FALSE</span>, freqs <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">comboCount</span><span class="op">(</span><span class="va">v</span>, m <span class="op">=</span> <span class="cn">NULL</span>, repetition <span class="op">=</span> <span class="cn">FALSE</span>, freqs <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu">permuteCount</span><span class="op">(</span><span class="va">v</span>, m <span class="op">=</span> <span class="cn">NULL</span>, repetition <span class="op">=</span> <span class="cn">FALSE</span>, freqs <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div id="arguments">
     <h2>Arguments</h2>
     <dl><dt>v</dt>
 <dd><p>Source vector. If <code>v</code> is a positive integer, it will be converted to the sequence <code>1:v</code>. If <code>v</code> is a negative integer, it will be converted to the sequence <code>v:-1</code>. All atomic types are supported (See <code><a href="https://rdrr.io/r/base/is.recursive.html" class="external-link">is.atomic</a></code>).</p></dd>
-<dt>m</dt>
+
+  <dt>m</dt>
 <dd><p>Number of elements to choose.  If <code>repetition = TRUE</code> or <code>freqs</code> is utilized, <code>m</code> can exceed the length of <code>v</code>. If <code>m = NULL</code>, the length will default to <code>length(v)</code> or <code>sum(freqs)</code>.</p></dd>
-<dt>repetition</dt>
+
+  <dt>repetition</dt>
 <dd><p>Logical value indicating whether combinations/permutations should be with or without repetition. The default is <code>FALSE</code>.</p></dd>
-<dt>freqs</dt>
+
+  <dt>freqs</dt>
 <dd><p>A vector of frequencies used for producing all combinations/permutations of a multiset of <code>v</code>. Each element of <code>freqs</code> represents how many times each element of the source vector, <code>v</code>, is repeated. It is analogous to the <code>times</code> argument in <code><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></code>. The default value is <code>NULL</code>.</p></dd>
+
 </dl></div>
     <div id="value">
     <h2>Value</h2>
-    <p>A numerical value representing the total number of combinations/permutations.</p>
+    
+
+<p>A numerical value representing the total number of combinations/permutations.</p>
     </div>
     <div id="note">
     <h2>Note</h2>
@@ -115,22 +121,22 @@
 
     <div id="ref-examples">
     <h2>Examples</h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span class="co">## Same interface as the respective "general" functions:</span></span>
-<span class="r-in"><span class="co">## i.e. comboGeneral &amp; permuteGeneral</span></span>
-<span class="r-in"></span>
-<span class="r-in"><span class="fu">permuteCount</span><span class="op">(</span><span class="op">-</span><span class="fl">5</span><span class="op">)</span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="co">## Same interface as the respective "general" functions:</span></span></span>
+<span class="r-in"><span><span class="co">## i.e. comboGeneral &amp; permuteGeneral</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="fu">permuteCount</span><span class="op">(</span><span class="op">-</span><span class="fl">5</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] 120</span>
-<span class="r-in"><span class="fu">permuteCount</span><span class="op">(</span><span class="fl">5</span><span class="op">)</span></span>
+<span class="r-in"><span><span class="fu">permuteCount</span><span class="op">(</span><span class="fl">5</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] 120</span>
-<span class="r-in"><span class="fu">comboCount</span><span class="op">(</span><span class="fl">25</span>, <span class="fl">12</span><span class="op">)</span></span>
+<span class="r-in"><span><span class="fu">comboCount</span><span class="op">(</span><span class="fl">25</span>, <span class="fl">12</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] 5200300</span>
-<span class="r-in"><span class="fu">permuteCount</span><span class="op">(</span><span class="fl">15</span>, <span class="fl">7</span>, <span class="cn">TRUE</span><span class="op">)</span></span>
+<span class="r-in"><span><span class="fu">permuteCount</span><span class="op">(</span><span class="fl">15</span>, <span class="fl">7</span>, <span class="cn">TRUE</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] 170859375</span>
-<span class="r-in"><span class="fu">comboCount</span><span class="op">(</span><span class="fl">25</span>, <span class="fl">12</span>, freqs <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fl">2</span>, <span class="fl">25</span><span class="op">)</span><span class="op">)</span></span>
+<span class="r-in"><span><span class="fu">comboCount</span><span class="op">(</span><span class="fl">25</span>, <span class="fl">12</span>, freqs <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fl">2</span>, <span class="fl">25</span><span class="op">)</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] 458917850</span>
-<span class="r-in"></span>
-<span class="r-in"><span class="co">## Return object of class 'bigz'</span></span>
-<span class="r-in"><span class="fu">comboCount</span><span class="op">(</span><span class="fl">250</span>, <span class="fl">15</span>, freqs <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fl">2</span>, <span class="fl">250</span><span class="op">)</span><span class="op">)</span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co">## Return object of class 'bigz'</span></span></span>
+<span class="r-in"><span><span class="fu">comboCount</span><span class="op">(</span><span class="fl">250</span>, <span class="fl">15</span>, freqs <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fl">2</span>, <span class="fl">250</span><span class="op">)</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Big Integer ('bigz') :</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] 1035444613157684247678300</span>
 </code></pre></div>
@@ -147,8 +153,7 @@
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a>
-2.0.2.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.6.</p>
 </div>
 
       </footer></div>

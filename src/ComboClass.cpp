@@ -110,7 +110,7 @@ Combo::Combo(
     VecType typePass, int RmaxThreads, SEXP RnThreads, bool Rparallel
 ) : n(Rf_length(Rv)), m(Rm), m1(Rm - 1), RTYPE(TYPEOF(Rv)),
     maxThreads(RmaxThreads), sexpVec(Rv), sexpNThreads(RnThreads),
-    IsGmp(bVec[4]), IsFactor(bVec[0]), IsComb(bVec[1]),
+    IsGmp(bVec[4]), IsFactor(bVec[0]), IsComb(bVec[1] && !bVec[6]),
     IsMult(bVec[2]), IsRep(bVec[3]), Parallel(Rparallel),
     computedRows(IsGmp ? 0 : Rf_asReal(RcompRow)), myType(typePass),
     vInt(RvInt), vNum(RvNum), freqs(Rfreqs), myReps(Rreps),
@@ -157,7 +157,9 @@ void Combo::startOver() {
 
 SEXP Combo::nextComb() {
 
-    if (CheckEqSi(IsGmp, mpzIndex, dblIndex, 0)) {
+    if (CheckEqSi(IsGmp, mpzIndex, dblIndex, 0) &&
+        CheckIndLT(IsGmp, mpzIndex, dblIndex,
+                   computedRowsMpz, computedRows)) {
         increment(IsGmp, mpzIndex, dblIndex);
         return VecReturn();
     } else if (CheckIndLT(IsGmp, mpzIndex, dblIndex,

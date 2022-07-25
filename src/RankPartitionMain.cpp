@@ -34,7 +34,8 @@ void RankPartsResults(mpz_t* bigRes, int* intRes, double* dblRes,
 [[cpp11::register]]
 SEXP RankPartitionMain(SEXP RIdx, SEXP Rv, SEXP RisRep,
                        SEXP RFreqs, SEXP Rm, SEXP RcompFun,
-                       SEXP Rtarget, SEXP Rtolerance) {
+                       SEXP Rtarget, SEXP Rtolerance,
+                       SEXP RIsComposition) {
 
     int n = 0;
     int m = 0;
@@ -49,11 +50,13 @@ SEXP RankPartitionMain(SEXP RIdx, SEXP Rv, SEXP RisRep,
     std::vector<int> vInt;
     std::vector<double> vNum;
 
-    SetUpRank(RIdx, Rv, RisRep, RFreqs, Rm, idx, freqs,
-              myReps, myType, n, m, true, IsMult, IsRep);
-    SetBasic(Rv, vNum, vInt, n, myType);
-
     const std::string mainFun = "sum";
+    const bool IsComposition  = CleanConvert::convertFlag(RIsComposition,
+                                                          "IsComposition");
+
+    SetUpRank(RIdx, Rv, RisRep, RFreqs, Rm, idx, freqs, myReps,
+              myType, n, m, !IsComposition, IsMult, IsRep);
+    SetBasic(Rv, vNum, vInt, n, myType);
 
     // Must be defined inside IsInteger check as targetVals could be
     // outside integer data type range which causes undefined behavior
@@ -66,14 +69,16 @@ SEXP RankPartitionMain(SEXP RIdx, SEXP Rv, SEXP RisRep,
     ConstraintType ctype = ConstraintType::NoConstraint;
     PartDesign part;
 
-    part.isRep       = IsRep;
-    part.isMult      = IsMult;
-    part.mIsNull     = Rf_isNull(Rm);
-    cpp11::sexp Rlow = R_NilValue;
+    part.isRep   = IsRep;
+    part.isMult  = IsMult;
+    part.mIsNull = Rf_isNull(Rm);
+    part.isComp  = IsComposition;
 
+    cpp11::sexp Rlow = R_NilValue;
     ConstraintSetup(vNum, myReps, targetVals, vInt, targetIntVals,
-                    funDbl, part, ctype, n, m, compVec, mainFun, mainFun,
-                    myType, Rtarget, RcompFun, Rtolerance, Rlow, true, false);
+                    funDbl, part, ctype, n, m, compVec, mainFun,
+                    mainFun, myType, Rtarget, RcompFun, Rtolerance,
+                    Rlow, !IsComposition);
 
     if (part.ptype == PartitionType::Multiset ||
         part.ptype == PartitionType::CoarseGrained ||
@@ -82,6 +87,8 @@ SEXP RankPartitionMain(SEXP RIdx, SEXP Rv, SEXP RisRep,
         cpp11::stop("Partition ranking not available for this case.");
     }
 
+    // See comment in SamplePartitions.cpp
+    if (part.numUnknown) PartitionsCount(myReps, part, n, true, true);
     const int numResults  = Rf_length(RIdx) / m;
     const int bigSampSize = (part.isGmp) ? numResults : 1;
     auto myVec = FromCpp14::make_unique<mpz_t[]>(bigSampSize);
@@ -105,7 +112,9 @@ SEXP RankPartitionMain(SEXP RIdx, SEXP Rv, SEXP RisRep,
     double* res_dbl = REAL(res_std_dbl);
 
     if (m == 1) return Rf_ScalarInteger(1);
-    const rankPartsPtr rankFun = GetRankPartsFunc(part.ptype, part.isGmp);
+    const rankPartsPtr rankFun = GetRankPartsFunc(
+        part.ptype, part.isGmp, part.isComp
+    );
 
     RankPartsResults(myVec.get(), res_int, res_dbl, idx,
                      rankFun, part.mapTar, m, cap, strtLen,

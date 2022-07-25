@@ -1,7 +1,7 @@
 ---
 title: "Cartesian Products and Partitions of Groups into Equal Size"
 author: "Joseph Wood"
-date: "03/18/2022"
+date: "07/2/2022"
 output:
   rmarkdown::html_vignette:
     toc: true
@@ -12,7 +12,7 @@ vignette: >
    \usepackage[utf8]{inputenc}
 ---
 
-In combinatorics, sometimes it can be difficult to figure out exactly which tool/method we need to attack our problem. Do we need combinations? permutations? Cartesian product? partitions? What about repetition or multiplicity? The list goes on. Oftentimes the solution ends up being overly complicated and prone to error, or more commonly, a simple brute force solution is employed. The latter is okay in some situations, but in many real world problems, this approach becomes untenable very quickly. The two types of problems addressed below fall into this category.
+In combinatorics, sometimes it can be difficult to figure out exactly which tool/method we need to attack our problem. Do we need combinations? permutations? Cartesian product? partitions? compositions? What about repetition or multiplicity? The list goes on. Oftentimes the solution ends up being overly complicated and prone to error, or more commonly, a simple brute force solution is employed. The latter is okay in some situations, but in many real world problems, this approach becomes untenable very quickly. The two types of problems addressed below fall into this category.
 
 ## Cartesian Product where Order does not Matter
 

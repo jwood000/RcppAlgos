@@ -22,7 +22,7 @@ GMP support allows for exploration where the number of results is large.
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">RcppAlgos</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">2.5.5</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">2.6.0</span>
       </span>
     </div>
 
@@ -31,13 +31,13 @@ GMP support allows for exploration where the number of results is large.
   <a href="../reference/index.html">Reference</a>
 </li>
 <li class="dropdown">
-  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
     Articles
      
     <span class="caret"></span>
   </a>
   <ul class="dropdown-menu" role="menu"><li>
-      <a href="../articles/CombPermConstraints.html">Constraints and Integer Partitions</a>
+      <a href="../articles/CombPermConstraints.html">Constraints, Integer Partitions, and Integer Compositions</a>
     </li>
     <li>
       <a href="../articles/CombinatorialSampling.html">Combinatorial Sampling and Ranking</a>
@@ -91,39 +91,50 @@ GMP support allows for exploration where the number of results is large.
 </ul></div>
 
     <div id="ref-usage">
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="fu">comboGroupsSample</span><span class="op">(</span><span class="va">v</span>, <span class="va">numGroups</span>, retType <span class="op">=</span> <span class="st">"matrix"</span>, n <span class="op">=</span> <span class="cn">NULL</span>,
-                  sampleVec <span class="op">=</span> <span class="cn">NULL</span>, seed <span class="op">=</span> <span class="cn">NULL</span>, Parallel <span class="op">=</span> <span class="cn">FALSE</span>,
-                  nThreads <span class="op">=</span> <span class="cn">NULL</span>, namedSample <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">comboGroupsSample</span><span class="op">(</span><span class="va">v</span>, <span class="va">numGroups</span>, retType <span class="op">=</span> <span class="st">"matrix"</span>, n <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>                  sampleVec <span class="op">=</span> <span class="cn">NULL</span>, seed <span class="op">=</span> <span class="cn">NULL</span>, Parallel <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>                  nThreads <span class="op">=</span> <span class="cn">NULL</span>, namedSample <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div id="arguments">
     <h2>Arguments</h2>
     <dl><dt>v</dt>
 <dd><p>Source vector. If <code>v</code> is a positive integer, it will be converted to the sequence <code>1:v</code>. If <code>v</code> is a negative integer, it will be converted to the sequence <code>v:-1</code>. All atomic types are supported (See <code><a href="https://rdrr.io/r/base/is.recursive.html" class="external-link">is.atomic</a></code>).</p></dd>
-<dt>numGroups</dt>
+
+  <dt>numGroups</dt>
 <dd><p>An Integer. The number of groups that the vector will be partitioned into. Must divide the length of v (if v is a vector) or v (if v is a scalar).</p></dd>
-<dt>retType</dt>
+
+  <dt>retType</dt>
 <dd><p>A string, "3Darray" or "matrix", that determines the shape of the output. The default is "matrix".</p></dd>
-<dt>n</dt>
+
+  <dt>n</dt>
 <dd><p>Number of results to return. The default is <code>NULL</code>.</p></dd>
-<dt>sampleVec</dt>
+
+  <dt>sampleVec</dt>
 <dd><p>A vector of numbers representing the lexicographical partition of groups to return. Accepts vectors of class <code>bigz</code> as well as vectors of characters</p></dd>
-<dt>seed</dt>
+
+  <dt>seed</dt>
 <dd><p>Random seed initialization. The default is <code>NULL</code>. N.B. If the gmp library is needed, this parameter must be set in order to have reproducible results (<em>E.g</em> <code><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed()</a></code> has no effect in these cases).</p></dd>
-<dt>Parallel</dt>
+
+  <dt>Parallel</dt>
 <dd><p>Logical value indicating whether results should be generated in parallel. The default is <code>FALSE</code>. If <code>TRUE</code> and <code>nThreads = NULL</code>, the number of threads used is equal to the minimum of one minus the number of threads available on your system and the number of results requested (<em>e.g.</em> if user has 16 threads and only needs 5 results, 5 threads will be used (<em>i.e.</em> <code>min(16 - 1, 5) = 5</code>)). If <code>nThreads</code> is not <code>NULL</code>, it will be given preference (<em>e.g.</em> if user has 8 threads with <code>Parallel = TRUE</code> and <code>nThreads = 4</code>, only 4 threads will be spawned). If your system is single-threaded, the arguments <code>Parallel</code> and <code>nThreads</code> are ignored.</p></dd>
-<dt>nThreads</dt>
+
+  <dt>nThreads</dt>
 <dd><p>Specific number of threads to be used. The default is <code>NULL</code>. See <code>Parallel</code>.</p></dd>
-<dt>namedSample</dt>
+
+  <dt>namedSample</dt>
 <dd><p>Logical flag. If <code>TRUE</code>, <code>rownames</code> corresponding to the lexicographical partitions of groups of equal size, will be added to the returned matrix. The default is <code>FALSE</code>.</p></dd>
-</dl></div>
+
+ </dl></div>
     <div id="details">
     <h2>Details</h2>
     <p>These algorithms rely on efficiently generating the \(n^{th}\) lexicographical partition of groups of equal size.</p>
     </div>
     <div id="value">
     <h2>Value</h2>
-    <p>By default, a matrix is returned with column names corresponding to the associated group. If <code>retType = "3Darray"</code>, a 3D array is returned.</p>
+    
+
+<p>By default, a matrix is returned with column names corresponding to the associated group. If <code>retType = "3Darray"</code>, a 3D array is returned.</p>
     </div>
     <div id="references">
     <h2>References</h2>
@@ -136,8 +147,8 @@ GMP support allows for exploration where the number of results is large.
 
     <div id="ref-examples">
     <h2>Examples</h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span class="co">## generate 10 random partitions of groups</span></span>
-<span class="r-in"><span class="fu">comboGroupsSample</span><span class="op">(</span><span class="fl">10</span>, <span class="fl">2</span>, n <span class="op">=</span> <span class="fl">10</span>, seed <span class="op">=</span> <span class="fl">123</span><span class="op">)</span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="co">## generate 10 random partitions of groups</span></span></span>
+<span class="r-in"><span><span class="fu">comboGroupsSample</span><span class="op">(</span><span class="fl">10</span>, <span class="fl">2</span>, n <span class="op">=</span> <span class="fl">10</span>, seed <span class="op">=</span> <span class="fl">123</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>       Grp1 Grp1 Grp1 Grp1 Grp1 Grp2 Grp2 Grp2 Grp2 Grp2</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>  [1,]    1    2    4    7    8    3    5    6    9   10</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>  [2,]    1    3    5    8    9    2    4    6    7   10</span>
@@ -149,50 +160,50 @@ GMP support allows for exploration where the number of results is large.
 <span class="r-out co"><span class="r-pr">#&gt;</span>  [8,]    1    5    7    8    9    2    3    4    6   10</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>  [9,]    1    2    5    7   10    3    4    6    8    9</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [10,]    1    4    5    9   10    2    3    6    7    8</span>
-<span class="r-in"></span>
-<span class="r-in"><span class="co">## using sampleVec to generate specific results</span></span>
-<span class="r-in"><span class="fu">comboGroupsSample</span><span class="op">(</span><span class="fl">15</span>, <span class="fl">5</span>, sampleVec <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">100</span>, <span class="fl">1e3</span>, <span class="fl">1e6</span><span class="op">)</span><span class="op">)</span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co">## using sampleVec to generate specific results</span></span></span>
+<span class="r-in"><span><span class="fu">comboGroupsSample</span><span class="op">(</span><span class="fl">15</span>, <span class="fl">5</span>, sampleVec <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">100</span>, <span class="fl">1e3</span>, <span class="fl">1e6</span><span class="op">)</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>      Grp1 Grp1 Grp1 Grp2 Grp2 Grp2 Grp3 Grp3 Grp3 Grp4 Grp4 Grp4 Grp5 Grp5 Grp5</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1,]    1    2    3    4    5    6    7    8    9   10   11   12   13   14   15</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [2,]    1    2    3    4    5    6    7    9   12    8   14   15   10   11   13</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [3,]    1    2    3    4    5    9    6   10   13    7   14   15    8   11   12</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [4,]    1    8   10    2   12   15    3    5   13    4   11   14    6    7    9</span>
-<span class="r-in"></span>
-<span class="r-in"><span class="fu"><a href="https://rdrr.io/r/base/all.equal.html" class="external-link">all.equal</a></span><span class="op">(</span><span class="fu">comboGroupsSample</span><span class="op">(</span><span class="fl">10</span>, <span class="fl">5</span>,</span>
-<span class="r-in">            sampleVec <span class="op">=</span> <span class="fl">1</span><span class="op">:</span><span class="fu"><a href="comboGroupsCount.html">comboGroupsCount</a></span><span class="op">(</span><span class="fl">10</span>, <span class="fl">5</span><span class="op">)</span><span class="op">)</span>,</span>
-<span class="r-in">         <span class="fu"><a href="comboGroups.html">comboGroups</a></span><span class="op">(</span><span class="fl">10</span>, <span class="fl">5</span><span class="op">)</span><span class="op">)</span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/all.equal.html" class="external-link">all.equal</a></span><span class="op">(</span><span class="fu">comboGroupsSample</span><span class="op">(</span><span class="fl">10</span>, <span class="fl">5</span>,</span></span>
+<span class="r-in"><span>            sampleVec <span class="op">=</span> <span class="fl">1</span><span class="op">:</span><span class="fu"><a href="comboGroupsCount.html">comboGroupsCount</a></span><span class="op">(</span><span class="fl">10</span>, <span class="fl">5</span><span class="op">)</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>         <span class="fu"><a href="comboGroups.html">comboGroups</a></span><span class="op">(</span><span class="fl">10</span>, <span class="fl">5</span><span class="op">)</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] TRUE</span>
-<span class="r-in"></span>
-<span class="r-in"><span class="co">## Examples with enormous number of total results</span></span>
-<span class="r-in"><span class="va">num</span> <span class="op">=</span> <span class="fu"><a href="comboGroupsCount.html">comboGroupsCount</a></span><span class="op">(</span><span class="fl">100</span>, <span class="fl">20</span><span class="op">)</span></span>
-<span class="r-in"><span class="fu">gmp</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/gmp/man/add.biginteger.html" class="external-link">log2.bigz</a></span><span class="op">(</span><span class="va">num</span><span class="op">)</span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co">## Examples with enormous number of total results</span></span></span>
+<span class="r-in"><span><span class="va">num</span> <span class="op">=</span> <span class="fu"><a href="comboGroupsCount.html">comboGroupsCount</a></span><span class="op">(</span><span class="fl">100</span>, <span class="fl">20</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu">gmp</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/gmp/man/add.biginteger.html" class="external-link">log2.bigz</a></span><span class="op">(</span><span class="va">num</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] 325.5498</span>
-<span class="r-in"><span class="co">## [1] 325.5498</span></span>
-<span class="r-in"></span>
-<span class="r-in"><span class="va">first</span> <span class="op">=</span> <span class="fu">gmp</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/gmp/man/biginteger.rand.html" class="external-link">urand.bigz</a></span><span class="op">(</span>n <span class="op">=</span> <span class="fl">1</span>, size <span class="op">=</span> <span class="fl">325</span>, seed <span class="op">=</span> <span class="fl">123</span><span class="op">)</span></span>
+<span class="r-in"><span><span class="co">## [1] 325.5498</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="va">first</span> <span class="op">=</span> <span class="fu">gmp</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/gmp/man/biginteger.rand.html" class="external-link">urand.bigz</a></span><span class="op">(</span>n <span class="op">=</span> <span class="fl">1</span>, size <span class="op">=</span> <span class="fl">325</span>, seed <span class="op">=</span> <span class="fl">123</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Seed initialisation</span>
-<span class="r-in"><span class="va">mySamp</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/do.call.html" class="external-link">do.call</a></span><span class="op">(</span><span class="va">c</span>, <span class="fu"><a href="https://rdrr.io/r/base/lapply.html" class="external-link">lapply</a></span><span class="op">(</span><span class="fl">0</span><span class="op">:</span><span class="fl">10</span>, <span class="kw">function</span><span class="op">(</span><span class="va">x</span><span class="op">)</span> <span class="fu">gmp</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/gmp/man/add.biginteger.html" class="external-link">add.bigz</a></span><span class="op">(</span><span class="va">first</span>, <span class="va">x</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
-<span class="r-in"></span>
-<span class="r-in"><span class="fu"><a href="https://rdrr.io/r/base/class.html" class="external-link">class</a></span><span class="op">(</span><span class="va">mySamp</span><span class="op">)</span></span>
+<span class="r-in"><span><span class="va">mySamp</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/do.call.html" class="external-link">do.call</a></span><span class="op">(</span><span class="va">c</span>, <span class="fu"><a href="https://rdrr.io/r/base/lapply.html" class="external-link">lapply</a></span><span class="op">(</span><span class="fl">0</span><span class="op">:</span><span class="fl">10</span>, <span class="kw">function</span><span class="op">(</span><span class="va">x</span><span class="op">)</span> <span class="fu">gmp</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/gmp/man/add.biginteger.html" class="external-link">add.bigz</a></span><span class="op">(</span><span class="va">first</span>, <span class="va">x</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/class.html" class="external-link">class</a></span><span class="op">(</span><span class="va">mySamp</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] "bigz"</span>
-<span class="r-in"><span class="co">## [1] "bigz"</span></span>
-<span class="r-in"></span>
-<span class="r-in"><span class="co">## using the sampling function</span></span>
-<span class="r-in"><span class="va">cbgSamp</span> <span class="op">=</span> <span class="fu">comboGroupsSample</span><span class="op">(</span><span class="fl">100</span>, <span class="fl">20</span>, sampleVec <span class="op">=</span> <span class="va">mySamp</span><span class="op">)</span></span>
-<span class="r-in"></span>
-<span class="r-in"><span class="co">## using the standard function</span></span>
-<span class="r-in"><span class="va">cbgGeneral</span> <span class="op">=</span> <span class="fu"><a href="comboGroups.html">comboGroups</a></span><span class="op">(</span><span class="fl">100</span>, <span class="fl">20</span>,</span>
-<span class="r-in">                         lower <span class="op">=</span> <span class="va">first</span>,</span>
-<span class="r-in">                         upper <span class="op">=</span> <span class="fu">gmp</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/gmp/man/add.biginteger.html" class="external-link">add.bigz</a></span><span class="op">(</span><span class="va">first</span>, <span class="fl">10</span><span class="op">)</span><span class="op">)</span></span>
-<span class="r-in"></span>
-<span class="r-in"><span class="fu"><a href="https://rdrr.io/r/base/identical.html" class="external-link">identical</a></span><span class="op">(</span><span class="va">cbgSamp</span>, <span class="va">cbgGeneral</span><span class="op">)</span></span>
+<span class="r-in"><span><span class="co">## [1] "bigz"</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co">## using the sampling function</span></span></span>
+<span class="r-in"><span><span class="va">cbgSamp</span> <span class="op">=</span> <span class="fu">comboGroupsSample</span><span class="op">(</span><span class="fl">100</span>, <span class="fl">20</span>, sampleVec <span class="op">=</span> <span class="va">mySamp</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co">## using the standard function</span></span></span>
+<span class="r-in"><span><span class="va">cbgGeneral</span> <span class="op">=</span> <span class="fu"><a href="comboGroups.html">comboGroups</a></span><span class="op">(</span><span class="fl">100</span>, <span class="fl">20</span>,</span></span>
+<span class="r-in"><span>                         lower <span class="op">=</span> <span class="va">first</span>,</span></span>
+<span class="r-in"><span>                         upper <span class="op">=</span> <span class="fu">gmp</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/gmp/man/add.biginteger.html" class="external-link">add.bigz</a></span><span class="op">(</span><span class="va">first</span>, <span class="fl">10</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/identical.html" class="external-link">identical</a></span><span class="op">(</span><span class="va">cbgSamp</span>, <span class="va">cbgGeneral</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] TRUE</span>
-<span class="r-in"><span class="co">## [1] TRUE</span></span>
-<span class="r-in"></span>
-<span class="r-in"><span class="kw">if</span> <span class="op">(</span><span class="cn">FALSE</span><span class="op">)</span> <span class="op">{</span></span>
-<span class="r-in"><span class="co">## Using Parallel</span></span>
-<span class="r-in"><span class="fu"><a href="https://rdrr.io/r/base/system.time.html" class="external-link">system.time</a></span><span class="op">(</span><span class="fu">comboGroupsSample</span><span class="op">(</span><span class="fl">1000</span>, <span class="fl">20</span>, n <span class="op">=</span> <span class="fl">80</span>, seed <span class="op">=</span> <span class="fl">10</span>, Parallel <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span></span>
-<span class="r-in"><span class="op">}</span></span>
+<span class="r-in"><span><span class="co">## [1] TRUE</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="kw">if</span> <span class="op">(</span><span class="cn">FALSE</span><span class="op">)</span> <span class="op">{</span></span></span>
+<span class="r-in"><span><span class="co">## Using Parallel</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/system.time.html" class="external-link">system.time</a></span><span class="op">(</span><span class="fu">comboGroupsSample</span><span class="op">(</span><span class="fl">1000</span>, <span class="fl">20</span>, n <span class="op">=</span> <span class="fl">80</span>, seed <span class="op">=</span> <span class="fl">10</span>, Parallel <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="op">}</span></span></span>
 </code></pre></div>
     </div>
   </div>
@@ -207,8 +218,7 @@ GMP support allows for exploration where the number of results is large.
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a>
-2.0.2.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.6.</p>
 </div>
 
       </footer></div>

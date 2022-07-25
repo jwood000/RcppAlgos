@@ -1,22 +1,84 @@
-context("testing partitionsIter")
+test_that(paste("partitionsGeneral and partitionsIter produces empty",
+                "matrix when there are no partitions"), {
+
+    ## Distinct case
+    expect_identical(partitionsGeneral(10, 5),
+                     matrix(integer(0), nrow = 0, ncol = 5))
+    iter <- partitionsIter(10, 5)
+    msg <- capture.output(noMore <- iter@nextIter())
+    expect_null(noMore)
+
+    expect_identical(comboGeneral(10, 5, constraintFun = "prod",
+                                  comparisonFun = "==",
+                                  limitConstraints = 7),
+                     matrix(integer(0), nrow = 0, ncol = 5))
+    iter <- comboIter(10, 5, constraintFun = "prod",
+                      comparisonFun = "==", limitConstraints = 7)
+    msg <- capture.output(noMore <- iter@nextIter())
+    expect_null(noMore)
+
+    ## Repetition case
+    expect_identical(partitionsGeneral(10, 11, TRUE),
+                     matrix(integer(0), nrow = 0, ncol = 11))
+    iter <- partitionsIter(10, 11, TRUE)
+    msg <- capture.output(noMore <- iter@nextIter())
+    expect_null(noMore)
+
+    expect_identical(comboGeneral(10, 5, TRUE,
+                                  constraintFun = "prod",
+                                  comparisonFun = "==",
+                                  limitConstraints = 17),
+                     matrix(integer(0), nrow = 0, ncol = 5))
+    iter <- comboIter(10, 5, TRUE, constraintFun = "prod",
+                      comparisonFun = "==", limitConstraints = 17)
+    msg <- capture.output(noMore <- iter@nextIter())
+    expect_null(noMore)
+
+    ## Multiset case
+    expect_identical(partitionsGeneral(10, 5, freqs = rep(1:2, 5)),
+                     matrix(integer(0), nrow = 0, ncol = 5))
+    iter <- partitionsIter(10, 5, freqs = rep(1:2, 5))
+    msg <- capture.output(noMore <- iter@nextIter())
+    expect_null(noMore)
+
+    expect_identical(comboGeneral(10, 5, freqs = rep(1:2, 5),
+                                  constraintFun = "prod",
+                                  comparisonFun = "==",
+                                  limitConstraints = 7),
+                     matrix(integer(0), nrow = 0, ncol = 5))
+    iter <- comboIter(10, 5, freqs = rep(1:2, 5), constraintFun = "prod",
+                      comparisonFun = "==", limitConstraints = 7)
+    msg <- capture.output(noMore <- iter@nextIter())
+    expect_null(noMore)
+})
 
 test_that("partitionsIter produces correct results", {
 
     partitionClassTest <- function(v_pass, m_pass = NULL, rep = FALSE,
-                                   fr = NULL, tar = NULL, testRand = TRUE) {
+                                   fr = NULL, tar = NULL, testRand = TRUE,
+                                   IsComposition = FALSE) {
 
         myResults <- vector(mode = "logical")
-        myRows <- partitionsCount(v_pass, m_pass, rep, fr, tar)
 
-        a <- partitionsIter(v_pass, m_pass, rep, fr, tar)
-        b <- partitionsGeneral(v_pass, m_pass, rep, fr, tar)
+        if (IsComposition) {
+            myRows <- compositionsCount(v_pass, m_pass, rep, fr, tar)
+            a <- compositionsIter(v_pass, m_pass, rep, fr, tar)
+            b <- compositionsGeneral(v_pass, m_pass, rep, fr, tar)
+        } else {
+            myRows <- partitionsCount(v_pass, m_pass, rep, fr, tar)
+            a <- partitionsIter(v_pass, m_pass, rep, fr, tar)
+            b <- partitionsGeneral(v_pass, m_pass, rep, fr, tar)
+        }
+
         myResults <- c(myResults, isTRUE(all.equal(
             a@summary()$totalResults, myRows)
         ))
 
-        if (length(v_pass) == 1) {
+        if (length(v_pass) == 1 && v_pass == 0) {
+            myResults <- c(myResults, v_pass == a@sourceVector())
+        } else if (length(v_pass) == 1) {
             myResults <- c(myResults, isTRUE(
-                all.equal(v_pass, length(a@sourceVector()))
+                all.equal(abs(v_pass), length(a@sourceVector()))
             ))
         } else {
             myResults <- c(myResults, isTRUE(
@@ -42,31 +104,58 @@ test_that("partitionsIter produces correct results", {
         myResults <- c(myResults, grepl("Iterator Initialized. To see the first", msg[1]))
         a1 <- b
 
-        for (i in 1:myRows) {
-            a1[i, ] <- a@nextIter()
-        }
+        if (myRows) {
+            for (i in 1:myRows) {
+                a1[i, ] <- a@nextIter()
+            }
 
-        myResults <- c(myResults, isTRUE(all.equal(a1, b)))
-        a@startOver()
-        numTest <- as.integer(myRows / 3);
+            myResults <- c(myResults, isTRUE(all.equal(a1, b)))
+            a@startOver()
+            num_iters <- if (myRows > 10) 3L else 1L
+            numTest   <- as.integer(myRows / num_iters);
 
-        s <- 1L
-        e <- numTest
+            s <- 1L
+            e <- numTest
 
-        for (i in 1:3) {
-            myResults <- c(myResults, isTRUE(all.equal(a@nextNIter(numTest),
-                                                       b[s:e, ])))
-            s <- e + 1L
-            e <- e + numTest
-        }
+            for (i in 1:num_iters) {
+                myResults <- c(myResults, isTRUE(all.equal(a@nextNIter(numTest),
+                                                           b[s:e, , drop = FALSE])))
+                s <- e + 1L
+                e <- e + numTest
+            }
 
-        a@startOver()
-        myResults <- c(myResults, isTRUE(all.equal(a@nextRemaining(), b)))
-        msg <- capture.output(noMore <- a@nextIter())
-        myResults <- c(myResults, is.null(noMore))
+            a@startOver()
+            myResults <- c(myResults, isTRUE(all.equal(a@nextRemaining(), b)))
+            msg <- capture.output(noMore <- a@nextIter())
+            myResults <- c(myResults, is.null(noMore))
 
-        if (testRand) {
-            a@back()
+            if (testRand) {
+                a@back()
+                msg <- capture.output(noMore <- a@nextNIter(1))
+                myResults <- c(myResults, is.null(noMore))
+                myResults <- c(myResults, "No more results." == msg[1])
+                msg <- capture.output(noMore <- a@currIter())
+                myResults <- c(myResults, "No more results." == msg[1])
+
+                a@startOver()
+                a@back()
+                msg <- capture.output(noMore <- a@nextRemaining())
+                myResults <- c(myResults, is.null(noMore))
+                myResults <- c(myResults, "No more results." == msg[1])
+
+                a@startOver()
+                a@back()
+                msg <- capture.output(noMore <- a@nextIter())
+                myResults <- c(myResults, is.null(noMore))
+                myResults <- c(myResults, "No more results." == msg[1])
+
+                samp <- sample(myRows, numTest)
+                myResults <- c(myResults, isTRUE(all.equal(a[[samp]], b[samp, ])))
+                one_samp <- sample(myRows, 1)
+                myResults <- c(myResults, isTRUE(all.equal(a[[one_samp]], b[one_samp, ])))
+            }
+        } else {
+            a@startOver()
             msg <- capture.output(noMore <- a@nextNIter(1))
             myResults <- c(myResults, is.null(noMore))
             myResults <- c(myResults, "No more results." == msg[1])
@@ -74,27 +163,47 @@ test_that("partitionsIter produces correct results", {
             myResults <- c(myResults, "No more results." == msg[1])
 
             a@startOver()
-            a@back()
-            msg <- capture.output(noMore <- a@nextRemaining())
-            myResults <- c(myResults, is.null(noMore))
-            myResults <- c(myResults, "No more results." == msg[1])
-
-            a@startOver()
-            a@back()
             msg <- capture.output(noMore <- a@nextIter())
             myResults <- c(myResults, is.null(noMore))
             myResults <- c(myResults, "No more results." == msg[1])
 
-            samp <- sample(myRows, numTest)
-            myResults <- c(myResults, isTRUE(all.equal(a[[samp]], b[samp, ])))
-            one_samp <- sample(myRows, 1)
-            myResults <- c(myResults, isTRUE(all.equal(a[[one_samp]], b[one_samp, ])))
+            a@startOver()
+            msg <- capture.output(noMore <- a@nextRemaining())
+            myResults <- c(myResults, is.null(noMore))
+            myResults <- c(myResults, "No more results." == msg[1])
         }
 
         rm(a, a1, b)
         gc()
         all(myResults)
     }
+
+    #### Trivial Cases
+    expect_true(partitionClassTest(0, testRand = FALSE))
+    expect_true(partitionClassTest(1, testRand = FALSE))
+    expect_true(partitionClassTest(2, testRand = FALSE))
+    expect_true(partitionClassTest(0, rep = TRUE, testRand = FALSE))
+    expect_true(partitionClassTest(1, rep = TRUE, testRand = FALSE))
+    expect_true(partitionClassTest(2, rep = TRUE, testRand = FALSE))
+    expect_true(partitionClassTest(2, rep = TRUE, testRand = FALSE,
+                                   IsComposition = TRUE))
+    expect_true(partitionClassTest(0:1, rep = TRUE, testRand = FALSE))
+    expect_true(partitionClassTest(0:2, rep = TRUE, testRand = FALSE))
+    expect_true(partitionClassTest(0:2, rep = TRUE, testRand = FALSE,
+                                   IsComposition = TRUE))
+    expect_true(partitionClassTest(-1, testRand = FALSE))
+    expect_true(partitionClassTest(-2, testRand = FALSE))
+    expect_true(partitionClassTest(-1, rep = TRUE, testRand = FALSE))
+    expect_true(partitionClassTest(-2, rep = TRUE, testRand = FALSE))
+    expect_true(partitionClassTest(-1:0, rep = TRUE, testRand = FALSE))
+    expect_true(partitionClassTest(-2:0, rep = TRUE, testRand = FALSE))
+    expect_true(partitionClassTest(-1:0, rep = TRUE, tar = -1,
+                                   testRand = FALSE))
+    expect_true(partitionClassTest(-2:0, rep = TRUE, tar = -2,
+                                   testRand = FALSE))
+    expect_true(partitionClassTest(-2:0, 2, rep = TRUE,
+                                   tar = -2, testRand = FALSE,
+                                   IsComposition = TRUE))
 
     #### Distinct; Length determined internally; No zero;
     expect_true(partitionClassTest(189))
@@ -145,11 +254,25 @@ test_that("partitionsIter produces correct results", {
     expect_true(partitionClassTest(19 + (0:30) * 3e9, 30,
                                    rep = TRUE, tar = 90000000570))
 
+    expect_true(partitionClassTest(0:15, rep = TRUE,
+                                   IsComposition = TRUE))
+    #### Mapped version
+    ## 15 * 3e9 = 45000000000
+    expect_true(partitionClassTest((0:15) * 3e9, 15,
+                                   rep = TRUE, tar = 45000000000,
+                                   IsComposition = TRUE))
+
     #### Repetition; Specific Length; No zero
     expect_true(partitionClassTest(50, 5, TRUE))
     #### Mapped version
     ## 19 * 5 + 50 * 3 = 245
     expect_true(partitionClassTest(19 + (1:50) * 3, 5, TRUE, tar = 245))
+
+    expect_true(partitionClassTest(20, 5, TRUE, IsComposition = TRUE))
+    #### Mapped version
+    ## 20 * 3 = 60
+    expect_true(partitionClassTest((1:20) * 3, 5, TRUE, tar = 60,
+                                   IsComposition = TRUE))
 
     #### Repetition; Specific Length; Zero included
     expect_true(partitionClassTest(0:30, 10, rep = TRUE))
@@ -157,6 +280,14 @@ test_that("partitionsIter produces correct results", {
     ## 19 * 10 + 30 * 3 = 280
     expect_true(partitionClassTest(19 + (0:30) * 3, 10,
                                    rep = TRUE, tar = 280))
+
+    expect_true(partitionClassTest(0:20, 5, rep = TRUE,
+                                   IsComposition = TRUE))
+    #### Mapped version
+    ## 20 * 3 = 60
+    expect_true(partitionClassTest((0:20) * 3, 5,
+                                   rep = TRUE, tar = 60,
+                                   IsComposition = TRUE))
 
     #### Repetition; Specific Length; No Zeros; Specific Target;
     expect_true(partitionClassTest(20, 10, rep = TRUE, tar = 45))
@@ -224,15 +355,24 @@ test_that("partitionsIter produces correct results", {
 
     ##******** BIG TESTS *********##
     partitionClassBigZTest <- function(v_pass, m_pass = NULL, rep = FALSE,
-                                       fr = NULL, tar = NULL, lenCheck = 1000) {
+                                       fr = NULL, tar = NULL, lenCheck = 1000,
+                                       IsComposition = FALSE) {
 
         myResults <- vector(mode = "logical")
-        myRows <- partitionsCount(v_pass, m_pass, rep, fr, tar)
 
-        a <- partitionsIter(v_pass, m_pass, rep, fr, tar)
-        b1 <- partitionsGeneral(v_pass, m_pass, rep, fr, tar, upper = lenCheck)
-        b2 <- partitionsGeneral(v_pass, m_pass, rep, fr, tar,
-                                lower = gmp::sub.bigz(myRows, lenCheck - 1))
+        if (IsComposition) {
+            myRows <- compositionsCount(v_pass, m_pass, rep, fr, tar)
+            a  <- compositionsIter(v_pass, m_pass, rep, fr, tar)
+            b1 <- compositionsGeneral(v_pass, m_pass, rep, fr, tar, upper = lenCheck)
+            b2 <- compositionsGeneral(v_pass, m_pass, rep, fr, tar,
+                                      lower = gmp::sub.bigz(myRows, lenCheck - 1))
+        } else {
+            myRows <- partitionsCount(v_pass, m_pass, rep, fr, tar)
+            a  <- partitionsIter(v_pass, m_pass, rep, fr, tar)
+            b1 <- partitionsGeneral(v_pass, m_pass, rep, fr, tar, upper = lenCheck)
+            b2 <- partitionsGeneral(v_pass, m_pass, rep, fr, tar,
+                                    lower = gmp::sub.bigz(myRows, lenCheck - 1))
+        }
 
         myResults <- c(myResults, isTRUE(all.equal(
             a@summary()$totalResults, myRows)
@@ -298,8 +438,22 @@ test_that("partitionsIter produces correct results", {
 
     expect_true(partitionClassBigZTest(2000, 10, TRUE))
     #### Mapped version
-    ## 17 * 10 + 2000 * 123456789 = 280
+    ## 17 * 10 + 2000 * 123456789 = 246913578170
     expect_true(partitionClassBigZTest(17 + (1:2000) * 123456789,
                                        10, TRUE, tar = 246913578170))
+
+    expect_true(partitionClassBigZTest(2000, 10, TRUE, IsComposition = TRUE))
+    #### Mapped version
+    ## 2000 * 123456789 = 246913578000
+    expect_true(partitionClassBigZTest((1:2000) * 123456789, 10, TRUE,
+                                       IsComposition = TRUE,
+                                       tar = 246913578000))
+
+    expect_true(partitionClassBigZTest(0:150, rep = TRUE, IsComposition = TRUE))
+    #### Mapped version
+    ## 150 * 123456789 = 18518518350
+    expect_true(partitionClassBigZTest((0:150) * 123456789, rep = TRUE,
+                                       IsComposition = TRUE,
+                                       tar = 18518518350))
     expect_true(partitionClassBigZTest(2000, 10))
 })

@@ -29,14 +29,13 @@ void ConstraintsRep<T>::Prepare(const std::string &currComp,
                                 std::vector<T> &v) {
 
     this->SetComparison(currComp);
+    this->z.assign(this->m, 0);
 
     if (currComp == ">" || currComp == ">=") {
         std::sort(v.begin(), v.end(), std::greater<T>());
     } else {
         std::sort(v.begin(), v.end());
     }
-
-    this->z.assign(this->m, 0);
 }
 
 template <typename T>

@@ -17,7 +17,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">RcppAlgos</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">2.5.5</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">2.6.0</span>
       </span>
     </div>
 
@@ -26,13 +26,13 @@
   <a href="../reference/index.html">Reference</a>
 </li>
 <li class="dropdown">
-  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
     Articles
      
     <span class="caret"></span>
   </a>
   <ul class="dropdown-menu" role="menu"><li>
-      <a href="../articles/CombPermConstraints.html">Constraints and Integer Partitions</a>
+      <a href="../articles/CombPermConstraints.html">Constraints, Integer Partitions, and Integer Compositions</a>
     </li>
     <li>
       <a href="../articles/CombinatorialSampling.html">Combinatorial Sampling and Ranking</a>
@@ -79,23 +79,28 @@
     </div>
 
     <div class="section level2">
+<h2 class="page-header" data-toc-text="2.6.0" id="rcppalgos-260">RcppAlgos 2.6.0<a class="anchor" aria-label="anchor" href="#rcppalgos-260"></a></h2>
+<div class="section level3">
+<h3 id="new-features-2-6-0">New Features:<a class="anchor" aria-label="anchor" href="#new-features-2-6-0"></a></h3>
+<ul><li>Added integer composition functions: <code>compositionsCount</code>, <code>compositionsGeneral</code>, <code>compositionsSample</code>, <code>compositionsIter</code>, and <code>compositionsRank</code>.</li>
+</ul></div>
+</div>
+    <div class="section level2">
 <h2 class="page-header" data-toc-text="2.5.5" id="rcppalgos-255">RcppAlgos 2.5.5<a class="anchor" aria-label="anchor" href="#rcppalgos-255"></a></h2>
 <div class="section level3">
 <h3 id="new-features-2-5-5">New Features:<a class="anchor" aria-label="anchor" href="#new-features-2-5-5"></a></h3>
-<ul><li>Added ranking functions: <code>comboRank</code>,
-<code>permuteRank</code>, and <code>partitionsRank</code>.</li>
-<li>Added back the ability to interrupt general constraint problems via
-<code>cpp11::check_user_interrupt()</code>.</li>
+<ul><li><p>Added ranking functions: <code>comboRank</code>, <code>permuteRank</code>, and <code>partitionsRank</code>.</p></li>
+<li><p>Added back the ability to interrupt general constraint problems via <code>cpp11::check_user_interrupt()</code>.</p></li>
 </ul></div>
 <div class="section level3">
 <h3 id="other-2-5-5">Other:<a class="anchor" aria-label="anchor" href="#other-2-5-5"></a></h3>
-<ul><li>Corrected <code>if()</code> conditions comparing
-<code><a href="https://rdrr.io/r/base/class.html" class="external-link">class()</a></code> to string. Changed to
-<code>is.character</code>.</li>
+<ul><li>Corrected <code>if()</code> conditions comparing <code><a href="https://rdrr.io/r/base/class.html" class="external-link">class()</a></code> to string. Changed to <code>is.character</code>.</li>
 </ul></div>
 <div class="section level3">
 <h3 id="bug-fixes-2-5-5">Bug Fixes:<a class="anchor" aria-label="anchor" href="#bug-fixes-2-5-5"></a></h3>
-<ul><li>Now checking class of input vector for partition funcitons.</li>
+<ul><li><p>Now checking class of input vector for partition funcitons.</p></li>
+<li><p>Now when <code>partitionsCount</code> returns 0, the number of results is zero. Before, we were checking for count of partitions to be greater than zero, otherwise we would use the standard combinatorial counting functions to determine the number of results. This lead to strange results with elements not present in the original vector.</p></li>
+<li><p>For <code>partitionsSample</code>, in cases when we would rely on generating the partitions one at a time until there are no more (e.g. with <code>partitionsGeneral</code>), the number of partitions isn’t calculated. This leads to the error: “n exceeds the maximum number of possible results”. This is now fixed.</p></li>
 </ul></div>
 </div>
     <div class="section level2">
@@ -116,66 +121,38 @@
 <h2 class="page-header" data-toc-text="2.5.2" id="rcppalgos-252">RcppAlgos 2.5.2<a class="anchor" aria-label="anchor" href="#rcppalgos-252"></a></h2>
 <div class="section level3">
 <h3 id="bug-fixes-2-5-2">Bug Fixes:<a class="anchor" aria-label="anchor" href="#bug-fixes-2-5-2"></a></h3>
-<ul><li>Fixed valgrind memory issue with package <code>cpp11</code>. Now
-using <code>cpp11::stop</code> instead of <code>Rf_error</code> so as to
-avoid <code>longjmp</code> (the root cause of the memory issues).</li>
+<ul><li>Fixed valgrind memory issue with package <code>cpp11</code>. Now using <code>cpp11::stop</code> instead of <code>Rf_error</code> so as to avoid <code>longjmp</code> (the root cause of the memory issues).</li>
 </ul></div>
 </div>
     <div class="section level2">
 <h2 class="page-header" data-toc-text="2.5.1" id="rcppalgos-251">RcppAlgos 2.5.1<a class="anchor" aria-label="anchor" href="#rcppalgos-251"></a></h2>
 <div class="section level3">
 <h3 id="bug-fixes-2-5-1">Bug Fixes:<a class="anchor" aria-label="anchor" href="#bug-fixes-2-5-1"></a></h3>
-<ul><li>Fixed memory issue when the number of results under contraint is
-less than the requested number.</li>
+<ul><li>Fixed memory issue when the number of results under contraint is less than the requested number.</li>
 </ul></div>
 </div>
     <div class="section level2">
 <h2 class="page-header" data-toc-text="2.5.0" id="rcppalgos-250">RcppAlgos 2.5.0<small>2022-03-16</small><a class="anchor" aria-label="anchor" href="#rcppalgos-250"></a></h2>
 <div class="section level3">
 <h3 id="new-features-2-5-0">New Features:<a class="anchor" aria-label="anchor" href="#new-features-2-5-0"></a></h3>
-<ul><li><p>Added partition specific functions: <code>partionsGeneral</code>,
-<code>partitionsCount</code>, <code>partitionsIter</code>, and
-<code>partitionsSample</code></p></li>
-<li><p><code>comboIter</code> and <code>permuteIter</code> now work with
-constraints.</p></li>
-<li><p>Dropped <code>Rcpp</code> and <code>RcppThread</code> as a
-dependency to reduce compile time and binary size. As a result, there is
-no longer the ability to interrupt long running processes. Will
-investigate in next release.</p></li>
-<li><p>We have added the parameter <code>FUN.VALUE</code> to
-<code>comboGeneral</code> and <code>permuteGeneral</code>. It acts as a
-template for the return value of <code>FUN</code>. The implementation is
-modeled after <code>vapply</code>.</p></li>
+<ul><li><p>Added partition specific functions: <code>partionsGeneral</code>, <code>partitionsCount</code>, <code>partitionsIter</code>, and <code>partitionsSample</code></p></li>
+<li><p><code>comboIter</code> and <code>permuteIter</code> now work with constraints.</p></li>
+<li><p>Dropped <code>Rcpp</code> and <code>RcppThread</code> as a dependency to reduce compile time and binary size. As a result, there is no longer the ability to interrupt long running processes. Will investigate in next release.</p></li>
+<li><p>We have added the parameter <code>FUN.VALUE</code> to <code>comboGeneral</code> and <code>permuteGeneral</code>. It acts as a template for the return value of <code>FUN</code>. The implementation is modeled after <code>vapply</code>.</p></li>
 </ul></div>
 <div class="section level3">
 <h3 id="enhancements-2-5-0">Enhancements:<a class="anchor" aria-label="anchor" href="#enhancements-2-5-0"></a></h3>
-<ul><li><p>Improved underlying algorithm for <code>comboGrid</code> to be
-more memory efficient.</p></li>
-<li><p>Made minor changes to make data types more consistent in
-<code>primeCount</code> and <code>primeSieve</code>.</p></li>
+<ul><li><p>Improved underlying algorithm for <code>comboGrid</code> to be more memory efficient.</p></li>
+<li><p>Made minor changes to make data types more consistent in <code>primeCount</code> and <code>primeSieve</code>.</p></li>
 </ul></div>
 <div class="section level3">
 <h3 id="bug-fixes-2-5-0">Bug Fixes:<a class="anchor" aria-label="anchor" href="#bug-fixes-2-5-0"></a></h3>
-<ul><li><p>When <code>permuteGeneral</code> is used with multisets and the
-width is maximized, multithreading would fail. This is fixed in
-2.5.0.</p></li>
-<li><p>Fixed bug in retreiving the nth result in <code>comboGroup</code>
-and <code>comboGroupSample</code> when the number of results was greater
-than <code>2^31 - 1</code> and less than <code>2^53 - 1</code>. E.g.
-<code>comboGroupsSample(27, 9, seed = 4, sampleVec = 1606990240475839)</code>
-gives incorrect results in the 5th group in prior versions. Now
-fixed!.</p></li>
+<ul><li><p>When <code>permuteGeneral</code> is used with multisets and the width is maximized, multithreading would fail. This is fixed in 2.5.0.</p></li>
+<li><p>Fixed bug in retreiving the nth result in <code>comboGroup</code> and <code>comboGroupSample</code> when the number of results was greater than <code>2^31 - 1</code> and less than <code>2^53 - 1</code>. E.g. <code>comboGroupsSample(27, 9, seed = 4, sampleVec = 1606990240475839)</code> gives incorrect results in the 5th group in prior versions. Now fixed!.</p></li>
 </ul></div>
 <div class="section level3">
 <h3 id="other-2-5-0">Other:<a class="anchor" aria-label="anchor" href="#other-2-5-0"></a></h3>
-<ul><li>In this version we no longer output lexicographical composititions
-in very special circumstances outlined in older documentation using
-<code>permuteGeneral</code>. This was done for consistency as we felt
-that the output diverged too much from the general constrained output of
-<code>permuteGeneral</code> (See <a href="https://jwood000.github.io/RcppAlgos/articles/CombPermConstraints.html#output-order-with-permutegeneral" class="external-link">Output
-Order with permuteGeneral</a>). Research is in the initial stage that is
-focused on implementing a new family of functions similar to the
-partition family of functions, but for compositions.</li>
+<ul><li>In this version we no longer output lexicographical composititions in very special circumstances outlined in older documentation using <code>permuteGeneral</code>. This was done for consistency as we felt that the output diverged too much from the general constrained output of <code>permuteGeneral</code> (See <a href="https://jwood000.github.io/RcppAlgos/articles/CombPermConstraints.html#output-order-with-permutegeneral" class="external-link">Output Order with permuteGeneral</a>). Research is in the initial stage that is focused on implementing a new family of functions similar to the partition family of functions, but for compositions.</li>
 </ul></div>
 </div>
     <div class="section level2">
@@ -189,8 +166,7 @@ partition family of functions, but for compositions.</li>
 <h2 class="page-header" data-toc-text="2.4.2" id="rcppalgos-242">RcppAlgos 2.4.2<a class="anchor" aria-label="anchor" href="#rcppalgos-242"></a></h2>
 <div class="section level3">
 <h3 id="new-features-2-4-2">New Features:<a class="anchor" aria-label="anchor" href="#new-features-2-4-2"></a></h3>
-<ul><li>Added function <code>comboGrid</code> for efficiently generating the
-Cartesian product where order does not matter.</li>
+<ul><li>Added function <code>comboGrid</code> for efficiently generating the Cartesian product where order does not matter.</li>
 </ul></div>
 <div class="section level3">
 <h3 id="enhancements-2-4-2">Enhancements:<a class="anchor" aria-label="anchor" href="#enhancements-2-4-2"></a></h3>
@@ -198,8 +174,7 @@ Cartesian product where order does not matter.</li>
 </ul></div>
 <div class="section level3">
 <h3 id="other-2-4-2">Other:<a class="anchor" aria-label="anchor" href="#other-2-4-2"></a></h3>
-<ul><li>Removed LazyData from DESCRIPTION. Also added <code>rmarkdown</code>
-to Suggests.</li>
+<ul><li>Removed LazyData from DESCRIPTION. Also added <code>rmarkdown</code> to Suggests.</li>
 </ul></div>
 </div>
     <div class="section level2">
@@ -213,117 +188,64 @@ to Suggests.</li>
 <h2 class="page-header" data-toc-text="2.4.0" id="rcppalgos-240">RcppAlgos 2.4.0<a class="anchor" aria-label="anchor" href="#rcppalgos-240"></a></h2>
 <div class="section level3">
 <h3 id="new-features-2-4-0">New Features:<a class="anchor" aria-label="anchor" href="#new-features-2-4-0"></a></h3>
-<ul><li><p>Added <code>comboIter</code> and <code>permuteIter</code>. These
-functions return iterators for iterating over combinations and
-permutations. They have a similar interface to <code>comboGeneral</code>
-and <code>permuteGeneral</code> and currently only work with standard
-combinations and permutations. They do not yet work with constraints
-(This will be the focus of the next release).</p></li>
-<li><p>Added “High Performance Benchmarks” and “Combinatorial Iterators
-in RcppAlgos” vignettes</p></li>
+<ul><li><p>Added <code>comboIter</code> and <code>permuteIter</code>. These functions return iterators for iterating over combinations and permutations. They have a similar interface to <code>comboGeneral</code> and <code>permuteGeneral</code> and currently only work with standard combinations and permutations. They do not yet work with constraints (This will be the focus of the next release).</p></li>
+<li><p>Added “High Performance Benchmarks” and “Combinatorial Iterators in RcppAlgos” vignettes</p></li>
 </ul></div>
 <div class="section level3">
 <h3 id="enhancements-2-4-0">Enhancements:<a class="anchor" aria-label="anchor" href="#enhancements-2-4-0"></a></h3>
-<ul><li>Now able to interrupt general constraint problems (See <a href="https://jwood000.github.io/RcppAlgos/articles/CombPermConstraints.html#safely-interrupt-execution-with-rcppcheckuserinterrupt" class="external-link">Interrupt
-Execution with Rcpp::checkUserInterrupt</a>)</li>
+<ul><li>Now able to interrupt general constraint problems (See <a href="https://jwood000.github.io/RcppAlgos/articles/CombPermConstraints.html#safely-interrupt-execution-with-rcppcheckuserinterrupt" class="external-link">Interrupt Execution with Rcpp::checkUserInterrupt</a>)</li>
 </ul></div>
 <div class="section level3">
 <h3 id="bug-fixes-2-4-0">Bug Fixes:<a class="anchor" aria-label="anchor" href="#bug-fixes-2-4-0"></a></h3>
-<ul><li><p>In 2.3.5 and 2.3.6, we mistakenly allowed a
-<code>constraintFun</code> to be applied to a logical vector which was
-crashing R. We have corrected this in 2.4.0.</p></li>
-<li><p>Changed the data type for sizing the index matrix in
-<code>permuteGeneral</code>. Originally, we were using <code>int</code>
-and when the output was large enough, it was causing an integer overflow
-thus causing the index matrix to be improperly sized. We have since
-changed the data type to the recommended <code>std::size_t</code> (See
-<a href="https://stackoverflow.com/q/216259/4408538" class="external-link">Is there a max
-array length limit in C++?</a>)</p></li>
+<ul><li><p>In 2.3.5 and 2.3.6, we mistakenly allowed a <code>constraintFun</code> to be applied to a logical vector which was crashing R. We have corrected this in 2.4.0.</p></li>
+<li><p>Changed the data type for sizing the index matrix in <code>permuteGeneral</code>. Originally, we were using <code>int</code> and when the output was large enough, it was causing an integer overflow thus causing the index matrix to be improperly sized. We have since changed the data type to the recommended <code>std::size_t</code> (See <a href="https://stackoverflow.com/q/216259/4408538" class="external-link">Is there a max array length limit in C++?</a>)</p></li>
 </ul></div>
 </div>
     <div class="section level2">
 <h2 class="page-header" data-toc-text="2.3.6" id="rcppalgos-236">RcppAlgos 2.3.6<small>2020-01-29</small><a class="anchor" aria-label="anchor" href="#rcppalgos-236"></a></h2>
 <div class="section level3">
 <h3 id="bug-fixes-2-3-6">Bug Fixes:<a class="anchor" aria-label="anchor" href="#bug-fixes-2-3-6"></a></h3>
-<ul><li>Fixed bug associated with integer vectors, multisets, and
-constraints. See <a href="https://github.com/jwood000/RcppAlgos/issues/12#issue-467908452" class="external-link">Issue
-</a><a href="https://github.com/jwood000/RcppAlgos/issues/12" class="external-link">#12</a> for more information.</li>
+<ul><li>Fixed bug associated with integer vectors, multisets, and constraints. See <a href="https://github.com/jwood000/RcppAlgos/issues/12#issue-467908452" class="external-link">Issue </a><a href="https://github.com/jwood000/RcppAlgos/issues/12" class="external-link">#12</a> for more information.</li>
 </ul></div>
 </div>
     <div class="section level2">
 <h2 class="page-header" data-toc-text="2.3.5" id="rcppalgos-235">RcppAlgos 2.3.5<small>2020-01-26</small><a class="anchor" aria-label="anchor" href="#rcppalgos-235"></a></h2>
 <div class="section level3">
 <h3 id="new-features-2-3-5">New Features:<a class="anchor" aria-label="anchor" href="#new-features-2-3-5"></a></h3>
-<ul><li><p>Added <code>comboGroups</code>, <code>comboGroupsCount</code>,
-and <code>comboGroupsSample</code>. These functions deal with
-partitioning a vector/set into groups of equal size. See <a href="https://stackoverflow.com/q/57732672/4408538Create" class="external-link">Combinations
-in R by Groups</a>. See the related integer sequences A025035-A025042 at
-<a href="https://oeis.org" class="external-link uri">https://oeis.org</a> (E.g. <a href="https://oeis.org/A025036A025036" class="external-link uri">https://oeis.org/A025036A025036</a> for Number of partitions
-of <code>(1, 2, ..., 4n)</code> into sets of size 4.)</p></li>
+<ul><li><p>Added <code>comboGroups</code>, <code>comboGroupsCount</code>, and <code>comboGroupsSample</code>. These functions deal with partitioning a vector/set into groups of equal size. See <a href="https://stackoverflow.com/q/57732672/4408538Create" class="external-link">Combinations in R by Groups</a>. See the related integer sequences A025035-A025042 at <a href="https://oeis.org" class="external-link uri">https://oeis.org</a> (E.g. <a href="https://oeis.org/A025036A025036" class="external-link uri">https://oeis.org/A025036A025036</a> for Number of partitions of <code>(1, 2, ..., 4n)</code> into sets of size 4.)</p></li>
 <li><p>Added vignettes (First version with vignettes)</p></li>
-<li><p>Added website via the excellent package
-<code>pkgdown</code></p></li>
-<li><p>Now using C++11 instead of C++14. See <a href="https://github.com/jwood000/RcppAlgos/issues/10" class="external-link">Issue </a><a href="https://github.com/jwood000/RcppAlgos/issues/10" class="external-link">#10</a> for
-more information.</p></li>
+<li><p>Added website via the excellent package <code>pkgdown</code></p></li>
+<li><p>Now using C++11 instead of C++14. See <a href="https://github.com/jwood000/RcppAlgos/issues/10" class="external-link">Issue </a><a href="https://github.com/jwood000/RcppAlgos/issues/10" class="external-link">#10</a> for more information.</p></li>
 </ul></div>
 <div class="section level3">
 <h3 id="enhancements-2-3-5">Enhancements:<a class="anchor" aria-label="anchor" href="#enhancements-2-3-5"></a></h3>
-<ul><li><p>Extended general partitions algorithm to multisets. E.g.
-<code>comboGeneral(10, 8, freqs = rep(1:5, 2), constraintFun = "sum", comparisonFun = "==", limitConstraints = 55)</code></p></li>
+<ul><li><p>Extended general partitions algorithm to multisets. E.g. <code>comboGeneral(10, 8, freqs = rep(1:5, 2), constraintFun = "sum", comparisonFun = "==", limitConstraints = 55)</code></p></li>
 <li><p>Improved constraint algorithm for the general case.</p></li>
-<li><p>Added support for complex and raw types for all combinatorial
-functions.</p></li>
-<li><p>Improved permutation algorithm for all cases (I.e. no rep, with
-rep, and with multisets).</p></li>
-<li><p>Added loop unrolling to prime sieve algorithm for improved
-efficiency.</p></li>
+<li><p>Added support for complex and raw types for all combinatorial functions.</p></li>
+<li><p>Improved permutation algorithm for all cases (I.e. no rep, with rep, and with multisets).</p></li>
+<li><p>Added loop unrolling to prime sieve algorithm for improved efficiency.</p></li>
 </ul></div>
 <div class="section level3">
 <h3 id="bug-fixes-2-3-5">Bug Fixes:<a class="anchor" aria-label="anchor" href="#bug-fixes-2-3-5"></a></h3>
-<ul><li><p>Corrected checks for total number of partitions and assignment of
-number of rows when <code>upper</code> is applied in
-<code>combo/permuteGeneral</code>. See <a href="https://github.com/jwood000/RcppAlgos/issues/9#issue-467908452Issue%20#9" class="external-link">Issue
-</a><a href="https://github.com/jwood000/RcppAlgos/issues/9" class="external-link">#9</a> for more information.</p></li>
-<li><p><code>permuteGeneral</code> no longer alters source vector. See
-<a href="https://github.com/jwood000/RcppAlgos/issues/11" class="external-link">Issue </a><a href="https://github.com/jwood000/RcppAlgos/issues/11" class="external-link">#11</a>
-for more information.</p></li>
+<ul><li><p>Corrected checks for total number of partitions and assignment of number of rows when <code>upper</code> is applied in <code>combo/permuteGeneral</code>. See <a href="https://github.com/jwood000/RcppAlgos/issues/9#issue-467908452Issue%20#9" class="external-link">Issue </a><a href="https://github.com/jwood000/RcppAlgos/issues/9" class="external-link">#9</a> for more information.</p></li>
+<li><p><code>permuteGeneral</code> no longer alters source vector. See <a href="https://github.com/jwood000/RcppAlgos/issues/11" class="external-link">Issue </a><a href="https://github.com/jwood000/RcppAlgos/issues/11" class="external-link">#11</a> for more information.</p></li>
 </ul></div>
 </div>
     <div class="section level2">
 <h2 class="page-header" data-toc-text="2.3.4" id="rcppalgos-234">RcppAlgos 2.3.4<small>2019-07-03</small><a class="anchor" aria-label="anchor" href="#rcppalgos-234"></a></h2>
-<ul><li>Fixed clang/gcc-ASAN and valgrind issues in <code>2.3.3</code>.
-These issues were arising from finding the first vector to meet the
-criteria in PartitionRep/Distinct. We also found further issues in the
-standard functions when the length of the partition was 2. The algorithm
-would eventually try and access an element of a vector at index -1.
-These fixes were confirmed by successful Rdevel CMD check under
-‘r-devel-ubsan-clang’ via docker using the advice found here: <a href="https://knausb.github.io/2017/06/reproducing-a-clang-ubsan-issue/" class="external-link uri">https://knausb.github.io/2017/06/reproducing-a-clang-ubsan-issue/</a>
-and <a href="http://dirk.eddelbuettel.com/code/sanitizers.html" class="external-link uri">http://dirk.eddelbuettel.com/code/sanitizers.html</a>.</li>
+<ul><li>Fixed clang/gcc-ASAN and valgrind issues in <code>2.3.3</code>. These issues were arising from finding the first vector to meet the criteria in PartitionRep/Distinct. We also found further issues in the standard functions when the length of the partition was 2. The algorithm would eventually try and access an element of a vector at index -1. These fixes were confirmed by successful Rdevel CMD check under ‘r-devel-ubsan-clang’ via docker using the advice found here: <a href="https://knausb.github.io/2017/06/reproducing-a-clang-ubsan-issue/" class="external-link uri">https://knausb.github.io/2017/06/reproducing-a-clang-ubsan-issue/</a> and <a href="http://dirk.eddelbuettel.com/code/sanitizers.html" class="external-link uri">http://dirk.eddelbuettel.com/code/sanitizers.html</a>.</li>
 </ul></div>
     <div class="section level2">
 <h2 class="page-header" data-toc-text="2.3.3" id="rcppalgos-233">RcppAlgos 2.3.3<small>2019-06-30</small><a class="anchor" aria-label="anchor" href="#rcppalgos-233"></a></h2>
-<ul><li><p>Fixed clang-UBSAN issue in <code>2.3.2</code>. It was caused by
-populating a vector of ints with values larger than
-<code>2^31 - 1</code>.</p></li>
-<li><p>Added optimized algorithm to <code>combo/permuteGeneral</code>
-when <code>constraintFun = "sum"</code>,
-<code>comparisonFun = "=="</code>, and the vector passed has a special
-form. This problem is a special case of the subset sum problem.</p></li>
-<li><p>Using <code>std::vector</code> and <code>push_back</code> member
-function instead of pre-allocating matrix when constraint is applied in
-combo/permuteGeneral. This alleviates the need to guess the upper limit
-and subsequently subset as only elements that meet the constraints are
-added.</p></li>
-<li><p>Fixed error in <code>PollardRho.cpp</code> when number passed had
-factors close to the limit in the predefined lookup table
-(i.e. <code>constexpr int64_t FirstOmittedPrime = 3989</code>)</p></li>
+<ul><li><p>Fixed clang-UBSAN issue in <code>2.3.2</code>. It was caused by populating a vector of ints with values larger than <code>2^31 - 1</code>.</p></li>
+<li><p>Added optimized algorithm to <code>combo/permuteGeneral</code> when <code>constraintFun = "sum"</code>, <code>comparisonFun = "=="</code>, and the vector passed has a special form. This problem is a special case of the subset sum problem.</p></li>
+<li><p>Using <code>std::vector</code> and <code>push_back</code> member function instead of pre-allocating matrix when constraint is applied in combo/permuteGeneral. This alleviates the need to guess the upper limit and subsequently subset as only elements that meet the constraints are added.</p></li>
+<li><p>Fixed error in <code>PollardRho.cpp</code> when number passed had factors close to the limit in the predefined lookup table (i.e. <code>constexpr int64_t FirstOmittedPrime = 3989</code>)</p></li>
 </ul></div>
     <div class="section level2">
 <h2 class="page-header" data-toc-text="2.3.2" id="rcppalgos-232">RcppAlgos 2.3.2<small>2019-04-14</small><a class="anchor" aria-label="anchor" href="#rcppalgos-232"></a></h2>
-<ul><li><p>Fixed clang-UBSAN issue in <code>2.3.1</code>. It was caused by
-casting extremely large values to <code>int64_t</code>.</p></li>
-<li><p>Corrected handling of small values in
-<code>PrimeSieveBig</code>.</p></li>
+<ul><li><p>Fixed clang-UBSAN issue in <code>2.3.1</code>. It was caused by casting extremely large values to <code>int64_t</code>.</p></li>
+<li><p>Corrected handling of small values in <code>PrimeSieveBig</code>.</p></li>
 </ul></div>
     <div class="section level2">
 <h2 class="page-header" data-toc-text="2.3.1" id="rcppalgos-231">RcppAlgos 2.3.1<small>2019-03-21</small><a class="anchor" aria-label="anchor" href="#rcppalgos-231"></a></h2>
@@ -332,57 +254,38 @@ casting extremely large values to <code>int64_t</code>.</p></li>
 </ul></div>
     <div class="section level2">
 <h2 class="page-header" data-toc-text="2.3.0" id="rcppalgos-230">RcppAlgos 2.3.0<small>2019-03-17</small><a class="anchor" aria-label="anchor" href="#rcppalgos-230"></a></h2>
-<ul><li><p>All functions now have parallel capabilities via
-<code>RcppThread</code>.</p></li>
-<li><p>Utilizes <code>RMatrix.h</code> from <code>RcppParallel</code>
-for thread safe matrix class.</p></li>
+<ul><li><p>All functions now have parallel capabilities via <code>RcppThread</code>.</p></li>
+<li><p>Utilizes <code>RMatrix.h</code> from <code>RcppParallel</code> for thread safe matrix class.</p></li>
 <li><p>Major overhaul of primeSieve for large primes.</p></li>
-<li><p>Added <code>stdThreadMax</code> for obtaining the number of
-threads available on a machine</p></li>
+<li><p>Added <code>stdThreadMax</code> for obtaining the number of threads available on a machine</p></li>
 </ul></div>
     <div class="section level2">
 <h2 class="page-header" data-toc-text="2.2.0" id="rcppalgos-220">RcppAlgos 2.2.0<small>2018-09-14</small><a class="anchor" aria-label="anchor" href="#rcppalgos-220"></a></h2>
-<ul><li><p>Disabled <code>Parallel</code> argument as it was causing
-unpredictable errors on certain platforms. Research is ongoing to
-correct this for use in future versions. The development version will
-retain this feature.</p></li>
-<li><p>Corrected <code>UBSAN</code> error that caused by filling a
-vector of integers with numbers larger than
-<code>2^31 - 1</code>.</p></li>
+<ul><li><p>Disabled <code>Parallel</code> argument as it was causing unpredictable errors on certain platforms. Research is ongoing to correct this for use in future versions. The development version will retain this feature.</p></li>
+<li><p>Corrected <code>UBSAN</code> error that caused by filling a vector of integers with numbers larger than <code>2^31 - 1</code>.</p></li>
 </ul></div>
     <div class="section level2">
 <h2 class="page-header" data-toc-text="2.1.0" id="rcppalgos-210">RcppAlgos 2.1.0<small>2018-09-11</small><a class="anchor" aria-label="anchor" href="#rcppalgos-210"></a></h2>
 <ul><li>
-<p>Added argument <code>Parallel</code> to general and sampling
-functions for increased gains in efficiency.</p>
+<p>Added argument <code>Parallel</code> to general and sampling functions for increased gains in efficiency.</p>
 <ul><li><p><code>comboGeneral(30, 10, Parallel = TRUE)</code></p></li>
 <li><p><code>permuteGeneral(12, 7, TRUE, constraintFun = "sum", Parallel = TRUE)</code></p></li>
 </ul></li>
-<li><p>Logical class is now preserved in combinatorial
-functions</p></li>
+<li><p>Logical class is now preserved in combinatorial functions</p></li>
 <li>
-<p>Added gmp support to combinatorial functions. Now, one can
-accurately and quickly work with combinations/permutations of large
-vectors <em>E.g.</em>:</p>
+<p>Added gmp support to combinatorial functions. Now, one can accurately and quickly work with combinations/permutations of large vectors <em>E.g.</em>:</p>
 <ul><li><p><code>comboSample(runif(10000), 100, n = 10, seed = 42, Parallel = TRUE)</code></p></li>
 <li><p><code>permuteGeneral(factor(state.name), 20, lower = 1e15, upper = 1e15 + 1000)</code></p></li>
 </ul></li>
-<li><p>Added <code>FUN</code> argument to all combinatorial functions.
-Allows user to pass custom functions to be applied to
-combinations/permutations.</p></li>
+<li><p>Added <code>FUN</code> argument to all combinatorial functions. Allows user to pass custom functions to be applied to combinations/permutations.</p></li>
 </ul></div>
     <div class="section level2">
 <h2 class="page-header" data-toc-text="2.0.3" id="rcppalgos-203">RcppAlgos 2.0.3<small>2018-06-30</small><a class="anchor" aria-label="anchor" href="#rcppalgos-203"></a></h2>
-<ul><li>Corrected clang <code>UBSAN</code> error identified by two different
-unit tests. In both situations, the problem was occurring as a result of
-populating a vector of integers with values from a vector of doubles
-that contained a NaN (Not-a-Number). Most information was obtained from
-Brian J. Knaus’s blog titled : “Reproducing a clang-UBSAN issue” (<a href="https://knausb.github.io/2017/06/reproducing-a-clang-ubsan-issue/" class="external-link uri">https://knausb.github.io/2017/06/reproducing-a-clang-ubsan-issue/</a>)</li>
+<ul><li>Corrected clang <code>UBSAN</code> error identified by two different unit tests. In both situations, the problem was occurring as a result of populating a vector of integers with values from a vector of doubles that contained a NaN (Not-a-Number). Most information was obtained from Brian J. Knaus’s blog titled : “Reproducing a clang-UBSAN issue” (<a href="https://knausb.github.io/2017/06/reproducing-a-clang-ubsan-issue/" class="external-link uri">https://knausb.github.io/2017/06/reproducing-a-clang-ubsan-issue/</a>)</li>
 </ul></div>
     <div class="section level2">
 <h2 class="page-header" data-toc-text="2.0.2" id="rcppalgos-202">RcppAlgos 2.0.2<small>2018-06-14</small><a class="anchor" aria-label="anchor" href="#rcppalgos-202"></a></h2>
-<ul><li>Corrected divide by zero in <code>divisorsRcpp</code> unit
-test.</li>
+<ul><li>Corrected divide by zero in <code>divisorsRcpp</code> unit test.</li>
 </ul></div>
     <div class="section level2">
 <h2 class="page-header" data-toc-text="2.0.1" id="rcppalgos-201">RcppAlgos 2.0.1<small>2018-06-10</small><a class="anchor" aria-label="anchor" href="#rcppalgos-201"></a></h2>
@@ -391,144 +294,79 @@ test.</li>
 </ul></div>
     <div class="section level2">
 <h2 class="page-header" data-toc-text="2.0.0" id="rcppalgos-200">RcppAlgos 2.0.0<a class="anchor" aria-label="anchor" href="#rcppalgos-200"></a></h2>
-<ul><li><p>Changed max value and explicitly casted a few values to
-<code>int64_t</code> in PollardRho.cpp for efficiency while still
-maintaining accuracy from <code>2^60</code> to <code>2^62</code>
-(<code>isPrimeRcpp</code> is roughly 10% faster now).</p></li>
-<li><p>Updated core permutation algorithm for greater efficiency and
-generality</p></li>
-<li><p>Added capability of generating specific
-combinations/permutations</p></li>
-<li><p>Changed arguments to <code>comboGeneral/permuteGeneral</code>.
-<code>rowCap</code> is now <code>upper</code>.</p></li>
-<li><p>Added <code>comboSample</code>, <code>permuteSample</code>,
-<code>comboCount</code>, and <code>permuteCount</code></p></li>
-<li><p>Fixed bug with <code>numDivisorSieve</code> and
-<code>divisorSieve</code> when the lower bound was greater than 1 and
-less than the <code>sqrt</code> of the upper bound. In the previous
-version, the numbers in this range would have duplicated
-values/counts.</p></li>
-<li><p>Increased efficiency of <code>numDivisorSieve</code> by a factor
-of 2.</p></li>
-<li><p>Updated unit tests for greater coverage. See the function
-<code>package_coverage</code> from the package
-<code>covr</code>.</p></li>
+<ul><li><p>Changed max value and explicitly casted a few values to <code>int64_t</code> in PollardRho.cpp for efficiency while still maintaining accuracy from <code>2^60</code> to <code>2^62</code> (<code>isPrimeRcpp</code> is roughly 10% faster now).</p></li>
+<li><p>Updated core permutation algorithm for greater efficiency and generality</p></li>
+<li><p>Added capability of generating specific combinations/permutations</p></li>
+<li><p>Changed arguments to <code>comboGeneral/permuteGeneral</code>. <code>rowCap</code> is now <code>upper</code>.</p></li>
+<li><p>Added <code>comboSample</code>, <code>permuteSample</code>, <code>comboCount</code>, and <code>permuteCount</code></p></li>
+<li><p>Fixed bug with <code>numDivisorSieve</code> and <code>divisorSieve</code> when the lower bound was greater than 1 and less than the <code>sqrt</code> of the upper bound. In the previous version, the numbers in this range would have duplicated values/counts.</p></li>
+<li><p>Increased efficiency of <code>numDivisorSieve</code> by a factor of 2.</p></li>
+<li><p>Updated unit tests for greater coverage. See the function <code>package_coverage</code> from the package <code>covr</code>.</p></li>
 </ul></div>
     <div class="section level2">
 <h2 class="page-header" data-toc-text="1.0.1" id="rcppalgos-101">RcppAlgos 1.0.1<small>2018-03-10</small><a class="anchor" aria-label="anchor" href="#rcppalgos-101"></a></h2>
-<ul><li><p>Corrected precision limits in documentation from
-<code>2^64</code> to <code>2^63</code>.</p></li>
-<li><p>Changed const type in <code>PollardRho.cpp</code> from
-<code>int64_t</code> to <code>double</code> to correct
-“UndefinedBehaviorSanitizer”</p></li>
-<li><p>Changed examples in <code>primeFactorizeSieve</code> to reduce
-check time</p></li>
+<ul><li><p>Corrected precision limits in documentation from <code>2^64</code> to <code>2^63</code>.</p></li>
+<li><p>Changed const type in <code>PollardRho.cpp</code> from <code>int64_t</code> to <code>double</code> to correct “UndefinedBehaviorSanitizer”</p></li>
+<li><p>Changed examples in <code>primeFactorizeSieve</code> to reduce check time</p></li>
 <li><p>Added <code>RcppAlgos-package</code> man file.</p></li>
 </ul></div>
     <div class="section level2">
 <h2 class="page-header" data-toc-text="1.0.0" id="rcppalgos-100">RcppAlgos 1.0.0<small>2018-03-07</small><a class="anchor" aria-label="anchor" href="#rcppalgos-100"></a></h2>
-<ul><li><p>Added the following functions: <code>primeFactorize</code>
-(vectorized pollard rho factorization), <code>divisorsRcpp</code>
-(vectorized factoring (complete)), <code>isPrimeRcpp</code> (vectorized
-primality testing using Miller-Rabin algorithm), &amp;
-<code>primeCount</code> (based on the primecount algorithm by Kim
-Walisch)</p></li>
-<li><p>Completely revamped the <code>primeSieve</code> function. It is
-now a segmented sieve of Eratosthenes with wheel factorization based on
-primesieve by Kim Walisch.</p></li>
-<li><p>Renamed <code>divisorsList</code> to <code>divisorsSieve</code>
-(reason for the major version update to <code>1.0.0</code>)</p></li>
-<li><p>Renamed <code>primeFactorizationList</code> to
-<code>primeFactorizeSieve</code></p></li>
-<li><p>Made the sieving functions more flexible. They are now able to
-generate results over a range and can also produce named
-objects.</p></li>
-<li><p>All number theoretic functions have been made more efficient.
-Some make use of the fast integer division library
-<code>libdivide</code> by ridiculousfish.</p></li>
+<ul><li><p>Added the following functions: <code>primeFactorize</code> (vectorized pollard rho factorization), <code>divisorsRcpp</code> (vectorized factoring (complete)), <code>isPrimeRcpp</code> (vectorized primality testing using Miller-Rabin algorithm), &amp; <code>primeCount</code> (based on the primecount algorithm by Kim Walisch)</p></li>
+<li><p>Completely revamped the <code>primeSieve</code> function. It is now a segmented sieve of Eratosthenes with wheel factorization based on primesieve by Kim Walisch.</p></li>
+<li><p>Renamed <code>divisorsList</code> to <code>divisorsSieve</code> (reason for the major version update to <code>1.0.0</code>)</p></li>
+<li><p>Renamed <code>primeFactorizationList</code> to <code>primeFactorizeSieve</code></p></li>
+<li><p>Made the sieving functions more flexible. They are now able to generate results over a range and can also produce named objects.</p></li>
+<li><p>All number theoretic functions have been made more efficient. Some make use of the fast integer division library <code>libdivide</code> by ridiculousfish.</p></li>
 </ul></div>
     <div class="section level2">
 <h2 class="page-header" data-toc-text="0.2.5" id="rcppalgos-025">RcppAlgos 0.2.5<small>2018-01-04</small><a class="anchor" aria-label="anchor" href="#rcppalgos-025"></a></h2>
 <ul><li><p>Added unit tests.</p></li>
 <li><p>Removed unnecessary files.</p></li>
-<li><p>Fixed bug in primeSieve that occurred when a number with a
-decimal was passed (e.g. 2.01).</p></li>
-<li><p>Adjusted accepted lower bound for <code>numDivisorSieve</code>,
-<code>eulerPhiSieve</code>, <code>divisorsList</code>,
-<code>primeSieve</code>, and
-<code>primeFactorizationList</code>.</p></li>
-<li><p>Fixed bug when non-unique elements are present with
-factors.</p></li>
+<li><p>Fixed bug in primeSieve that occurred when a number with a decimal was passed (e.g. 2.01).</p></li>
+<li><p>Adjusted accepted lower bound for <code>numDivisorSieve</code>, <code>eulerPhiSieve</code>, <code>divisorsList</code>, <code>primeSieve</code>, and <code>primeFactorizationList</code>.</p></li>
+<li><p>Fixed bug when non-unique elements are present with factors.</p></li>
 </ul></div>
     <div class="section level2">
 <h2 class="page-header" data-toc-text="0.2.4" id="rcppalgos-024">RcppAlgos 0.2.4<small>2017-12-18</small><a class="anchor" aria-label="anchor" href="#rcppalgos-024"></a></h2>
-<ul><li>Fixed bug that occurs when non-unique elements are present for
-combinations with replacement.</li>
+<ul><li>Fixed bug that occurs when non-unique elements are present for combinations with replacement.</li>
 </ul></div>
     <div class="section level2">
 <h2 class="page-header" data-toc-text="0.2.3" id="rcppalgos-023">RcppAlgos 0.2.3<a class="anchor" aria-label="anchor" href="#rcppalgos-023"></a></h2>
-<ul><li><p>Fixed segmentation fault error highlighted by valgrind check in
-version <code>0.2.2</code>.</p></li>
+<ul><li><p>Fixed segmentation fault error highlighted by valgrind check in version <code>0.2.2</code>.</p></li>
 <li><p>Updated <code>DESCRIPTION</code> file.</p></li>
 </ul></div>
     <div class="section level2">
 <h2 class="page-header" data-toc-text="0.2.2" id="rcppalgos-022">RcppAlgos 0.2.2<small>2017-12-15</small><a class="anchor" aria-label="anchor" href="#rcppalgos-022"></a></h2>
-<ul><li><p>Fixed bug in constraint functions that occurred when
-<code>m = 1</code> and the constraint limit was equal to the last
-element in <code>v</code>. It was returning a 2x1 matrix with the same
-value twice. It is now correctly returning a 1x1 matrix with the correct
-value 1 time.</p></li>
-<li><p>Reorganized source code such that all utility functions for the
-combinatoric functions are now in their own file. Additionally added
-header for this file.</p></li>
-<li><p>All combinatoric functions can now utilize the rowCap argument.
-Before, rowCap only applied to the combinatorial functions with
-constraints.</p></li>
-<li><p><code>comboGeneral</code> can now find all combinations of
-multisets.</p></li>
-<li><p>Both <code>comboGeneral</code> and <code>permuteGeneral</code>
-can utilize the argument <code>m</code> when dealing with multisets.
-Before, <code>permuteGeneral</code> would simply return all permutations
-of a multiset. Now you can specify the lengths of the output.</p></li>
+<ul><li><p>Fixed bug in constraint functions that occurred when <code>m = 1</code> and the constraint limit was equal to the last element in <code>v</code>. It was returning a 2x1 matrix with the same value twice. It is now correctly returning a 1x1 matrix with the correct value 1 time.</p></li>
+<li><p>Reorganized source code such that all utility functions for the combinatoric functions are now in their own file. Additionally added header for this file.</p></li>
+<li><p>All combinatoric functions can now utilize the rowCap argument. Before, rowCap only applied to the combinatorial functions with constraints.</p></li>
+<li><p><code>comboGeneral</code> can now find all combinations of multisets.</p></li>
+<li><p>Both <code>comboGeneral</code> and <code>permuteGeneral</code> can utilize the argument <code>m</code> when dealing with multisets. Before, <code>permuteGeneral</code> would simply return all permutations of a multiset. Now you can specify the lengths of the output.</p></li>
 </ul></div>
     <div class="section level2">
 <h2 class="page-header" data-toc-text="0.2.1" id="rcppalgos-021">RcppAlgos 0.2.1<small>2017-11-29</small><a class="anchor" aria-label="anchor" href="#rcppalgos-021"></a></h2>
-<ul><li><p>Fixed bug that would occur in two edge cases involving the
-constraint functions.</p></li>
-<li><p>Slightly modified formatting for
-<code>primeSieve.Rd</code></p></li>
+<ul><li><p>Fixed bug that would occur in two edge cases involving the constraint functions.</p></li>
+<li><p>Slightly modified formatting for <code>primeSieve.Rd</code></p></li>
 </ul></div>
     <div class="section level2">
 <h2 class="page-header" data-toc-text="0.2.0" id="rcppalgos-020">RcppAlgos 0.2.0<small>2017-11-28</small><a class="anchor" aria-label="anchor" href="#rcppalgos-020"></a></h2>
-<ul><li><p>Updated combination algorithms. They are now more than twice as
-fast.</p></li>
-<li><p>Updated constraint functions so that memory access is always
-within container bounds</p></li>
-<li><p>Consolidated redundant code for outputting different
-<code>Rcpp</code> types (e.g. <code>IntegerMatrix</code>,
-<code>CharacterMatrix</code>, etc.) via a templated approach.</p></li>
-<li><p>Added the function permuteGeneral that is analogous to
-comboGeneral only instead of combinations, it gives all permutations. It
-has an additional argument (i.e. ‘freqs’) that is used to generate
-permutations of multisets.</p></li>
+<ul><li><p>Updated combination algorithms. They are now more than twice as fast.</p></li>
+<li><p>Updated constraint functions so that memory access is always within container bounds</p></li>
+<li><p>Consolidated redundant code for outputting different <code>Rcpp</code> types (e.g. <code>IntegerMatrix</code>, <code>CharacterMatrix</code>, etc.) via a templated approach.</p></li>
+<li><p>Added the function permuteGeneral that is analogous to comboGeneral only instead of combinations, it gives all permutations. It has an additional argument (i.e. ‘freqs’) that is used to generate permutations of multisets.</p></li>
 <li><p>All combinatoric functions now support factor types.</p></li>
 </ul></div>
     <div class="section level2">
 <h2 class="page-header" data-toc-text="0.1.2" id="rcppalgos-012">RcppAlgos 0.1.2<small>2017-11-03</small><a class="anchor" aria-label="anchor" href="#rcppalgos-012"></a></h2>
 <ul><li><p>Corrected minor typo in <code>README</code> file.</p></li>
-<li><p>Fixed minor error regarding explicitly comparing variables to
-large numbers that are typed out. Simply adding a decimal along with a
-zero remedies the situation.</p></li>
+<li><p>Fixed minor error regarding explicitly comparing variables to large numbers that are typed out. Simply adding a decimal along with a zero remedies the situation.</p></li>
 </ul></div>
     <div class="section level2">
 <h2 class="page-header" data-toc-text="0.1.1" id="rcppalgos-011">RcppAlgos 0.1.1<small>2017-11-03</small><a class="anchor" aria-label="anchor" href="#rcppalgos-011"></a></h2>
-<ul><li><p>Improved <code>ComboConstraint</code> function by removing
-unnecessary subsetting.</p></li>
-<li><p>Improved <code>PrimeSieve</code> internal <code>C++</code>
-algorithm.</p></li>
-<li><p>Corrected the errors with respect to the math functions in
-<code>C++</code>. Explicitly overloaded the parameters of these
-functions by casting them to the <code>double</code> type.</p></li>
+<ul><li><p>Improved <code>ComboConstraint</code> function by removing unnecessary subsetting.</p></li>
+<li><p>Improved <code>PrimeSieve</code> internal <code>C++</code> algorithm.</p></li>
+<li><p>Corrected the errors with respect to the math functions in <code>C++</code>. Explicitly overloaded the parameters of these functions by casting them to the <code>double</code> type.</p></li>
 </ul></div>
     <div class="section level2">
 <h2 class="page-header" data-toc-text="0.1.0" id="rcppalgos-010">RcppAlgos 0.1.0<small>2017-10-26</small><a class="anchor" aria-label="anchor" href="#rcppalgos-010"></a></h2>
@@ -548,8 +386,7 @@ functions by casting them to the <code>double</code> type.</p></li>
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a>
-2.0.2.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.6.</p>
 </div>
 
       </footer></div>

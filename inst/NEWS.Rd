@@ -1,7 +1,16 @@
 \name{NEWS}
 \title{News for Package \pkg{RcppAlgos}}
 
-\section{Changes in RcppAlgos version 2.5.5 (Release date: 2022-05-13)}{
+\section{Changes in RcppAlgos version 2.6.0 (Release date: 2022-07-30)}{
+    \itemize{
+        \item New Features:
+        \itemize{
+            \item Added integer composition functions: \code{compositionsCount}, \code{compositionsGeneral}, \code{compositionsSample}, \code{compositionsIter}, and \code{compositionsRank}.
+        }
+    }
+}
+
+\section{Changes in RcppAlgos version 2.5.5 (Release date: Never Released)}{
     \itemize{
         \item New Features:
         \itemize{
@@ -15,6 +24,8 @@
         \item Bug Fixes:
         \itemize{
             \item Now checking class of input vector for partition funcitons.
+            \item Now when \code{partitionsCount} returns 0, the number of results is zero. Before, we were checking for the count of partitions to be greater than zero, otherwise we would use the standard combinatorial counting functions to determine the number of results. This lead to strange results with elements not present in the original vector.
+            \item For \code{partitionsSample}, in cases when we would rely on generating the partitions one at a time until there are no more (e.g. with \code{partitionsGeneral}), the number of partitions isn't calculated. This leads to the error: "n exceeds the maximum number of possible results". This is now fixed.
         }
     }
 }

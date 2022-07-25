@@ -112,6 +112,7 @@ void PartitionsEsqueRep<T>::Prepare(const std::string &currComp,
 
     this->SetComparison(currComp);
     std::sort(v.begin(), v.end());
+    this->z.assign(this->m, 0);
 
     this->check_1 = GetLowerBound(
         v, this->z, this->fun, reduce,
