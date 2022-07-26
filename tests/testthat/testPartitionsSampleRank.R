@@ -118,4 +118,12 @@ test_that("parttionsSample and compositionsSample produces correct results", {
                               namedSample = TRUE)
     expect_equal(as.numeric(rownames(mySamp)), seq(1, 10000, 1000))
     expect_equal(partitionsRank(mySamp, v = 100), seq(1, 10000, 1000))
+
+    mySamp = partitionsSample(40, 3, repetition = TRUE, target = 110,
+                              n = 14, namedSample = TRUE)
+    expect_equal(sort(as.integer(rownames(mySamp))), 1:14)
+    expect_equal(partitionsRank(mySamp, v = 40,
+                                repetition = TRUE,
+                                target = 110),
+                 as.integer(rownames(mySamp)))
 })

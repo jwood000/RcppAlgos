@@ -4,7 +4,8 @@ test_that("ConstraintsClass produces correct results", {
 
     constraintsClassTest <- function(v_pass, m_pass = NULL, rep = FALSE,
                                      fr = NULL, tar, fun, comp,
-                                     keep = FALSE, tol = NULL) {
+                                     keep = FALSE, tol = NULL,
+                                     expect_zero_res = FALSE) {
 
         myResults <- vector(mode = "logical")
 
@@ -16,6 +17,8 @@ test_that("ConstraintsClass produces correct results", {
                           keepResults = keep, tolerance = tol)
 
         myRows <- nrow(b)
+        myResults <- c(myResults,
+                       if (expect_zero_res) myRows == 0 else myRows > 0)
         myResults <- c(myResults, is.na(a@summary()$totalResults))
 
         if (length(v_pass) == 1) {
@@ -28,16 +31,19 @@ test_that("ConstraintsClass produces correct results", {
             ))
         }
 
-        a@nextIter()
-        myResults <- c(myResults, all.equal(a@currIter(), b[1, ]))
-        a@startOver()
         a1 <- b
 
-        for (i in 1:myRows) {
-            a1[i, ] <- a@nextIter()
-        }
+        if (myRows) {
+            a@nextIter()
+            myResults <- c(myResults, all.equal(a@currIter(), b[1, ]))
+            a@startOver()
 
-        myResults <- c(myResults, isTRUE(all.equal(a1, b)))
+            for (i in 1:myRows) {
+                a1[i, ] <- a@nextIter()
+            }
+
+            myResults <- c(myResults, isTRUE(all.equal(a1, b)))
+        }
 
         msg <- capture.output(noMore <- a@nextIter())
         myResults <- c(myResults, is.null(noMore))
@@ -46,16 +52,19 @@ test_that("ConstraintsClass produces correct results", {
         myResults <- c(myResults, is.null(a@nextRemaining()))
         myResults <- c(myResults, is.null(a@nextIter()))
         a@startOver()
-        numTest <- as.integer(myRows / 3);
 
-        s <- 1L
-        e <- numTest
+        if (myRows) {
+            numTest <- as.integer(myRows / 3);
 
-        for (i in 1:3) {
-            myResults <- c(myResults, isTRUE(all.equal(a@nextNIter(numTest),
-                                                       b[s:e, ])))
-            s <- e + 1L
-            e <- e + numTest
+            s <- 1L
+            e <- numTest
+
+            for (i in 1:3) {
+                myResults <- c(myResults, isTRUE(all.equal(a@nextNIter(numTest),
+                                                           b[s:e, ])))
+                s <- e + 1L
+                e <- e + numTest
+            }
         }
 
         idx <- a@summary()$currentIndex
@@ -68,16 +77,16 @@ test_that("ConstraintsClass produces correct results", {
         capture.output(noMore <- a@nextNIter(1))
         myResults <- c(myResults, is.null(noMore))
         a@startOver()
-        myResults <- c(myResults, isTRUE(all.equal(a@nextRemaining(), b)))
+        if (myRows) myResults <- c(myResults, isTRUE(all.equal(a@nextRemaining(), b)))
 
         a@startOver()
-        tmp <- a@nextNIter(myRows)
+        if (myRows) tmp <- a@nextNIter(myRows)
         msg <- capture.output(noMore <- a@nextNIter(1))
         myResults <- c(myResults, is.null(noMore))
         myResults <- c(myResults, msg[1] == "No more results.")
 
         a@startOver()
-        tmp <- a@nextNIter(myRows)
+        if (myRows) tmp <- a@nextNIter(myRows)
         msg <- capture.output(noMore <- a@nextRemaining())
         myResults <- c(myResults, is.null(noMore))
         myResults <- c(myResults, msg[1] == "No more results.")
@@ -87,19 +96,30 @@ test_that("ConstraintsClass produces correct results", {
         all(myResults)
     }
 
+    ## no viable results 1st
+    expect_true(constraintsClassTest(10, 7, fun = "sum",
+                                     comp = c(">","<"), tar = c(49, 51),
+                                     expect_zero_res = TRUE))
     expect_true(constraintsClassTest(10, 7, fun = "sum",
                                      comp = c(">","<"), tar = c(40, 45)))
 
     set.seed(13)
     rSet = 1:10 + rnorm(10)
+    ## no viable results 1st
+    expect_true(constraintsClassTest(rSet, 7, TRUE, fun = "sum",
+                                     comp = ">=", tar = 100,
+                                     expect_zero_res = TRUE))
     expect_true(constraintsClassTest(rSet, 7, TRUE, fun = "sum",
                                      comp = c(">=","<="),
                                      tar = c(42.50001, 45.76277)))
-
     expect_true(constraintsClassTest(rSet, 7, TRUE, fun = "sum",
                                      comp = c("<=",">="),
                                      tar = c(20.05669, 60.93901), keep = TRUE))
 
+    ## no viable results 1st
+    expect_true(constraintsClassTest(10, 7, fr = rep(2:3, 5), fun = "sum",
+                                     comp = ">", tar = 100,
+                                     expect_zero_res = TRUE))
     expect_true(constraintsClassTest(10, 7, fr = rep(3, 10), fun = "sum",
                                      comp = c("<=",">"),
                                      tar = c(50, 47), keep = TRUE))
@@ -110,13 +130,21 @@ test_that("ConstraintsClass produces correct results", {
     expect_true(constraintsClassTest(10, 7, fr = rep(3, 10), fun = "min",
                                      comp = "==", tar = 3))
 
+    ## no viable results 1st
+    expect_true(constraintsClassTest(5, 7, TRUE, fun = "prod",
+                                     comp = "<", tar = -1,
+                                     expect_zero_res = TRUE))
     expect_true(constraintsClassTest(5, 7, TRUE, fun = "prod",
                                      comp = c(">=","<="),
                                      tar = c(2000, 5000)))
     ## Need special
     expect_true(constraintsClassTest(-5, 7, TRUE, fun = "prod",
-                                     comp = c("<=",">="),
+                                     comp = c(">=","<="),
                                      tar = c(2000, 5000),
+                                     keep = TRUE, expect_zero_res = TRUE))
+    expect_true(constraintsClassTest(-5, 7, TRUE, fun = "prod",
+                                     comp = c("<=",">="),
+                                     tar = c(-2000, -5000),
                                      keep = TRUE))
     set.seed(42)
     s <- runif(10, -5, 5)
