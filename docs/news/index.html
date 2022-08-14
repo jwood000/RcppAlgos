@@ -32,7 +32,7 @@
     <span class="caret"></span>
   </a>
   <ul class="dropdown-menu" role="menu"><li>
-      <a href="../articles/CombPermConstraints.html">Constraints, Integer Partitions, and Integer Compositions</a>
+      <a href="../articles/CombPermConstraints.html">Constraints, Partitions, and Compositions</a>
     </li>
     <li>
       <a href="../articles/CombinatorialSampling.html">Combinatorial Sampling and Ranking</a>
@@ -227,7 +227,7 @@
 </ul></div>
 <div class="section level3">
 <h3 id="bug-fixes-2-3-5">Bug Fixes:<a class="anchor" aria-label="anchor" href="#bug-fixes-2-3-5"></a></h3>
-<ul><li><p>Corrected checks for total number of partitions and assignment of number of rows when <code>upper</code> is applied in <code>combo/permuteGeneral</code>. See <a href="https://github.com/jwood000/RcppAlgos/issues/9#issue-467908452Issue%20#9" class="external-link">Issue </a><a href="https://github.com/jwood000/RcppAlgos/issues/9" class="external-link">#9</a> for more information.</p></li>
+<ul><li><p>Corrected checks for total number of partitions and assignment of number of rows when <code>upper</code> is applied in <code>{combo|permute}General</code>. See <a href="https://github.com/jwood000/RcppAlgos/issues/9#issue-467908452Issue%20#9" class="external-link">Issue </a><a href="https://github.com/jwood000/RcppAlgos/issues/9" class="external-link">#9</a> for more information.</p></li>
 <li><p><code>permuteGeneral</code> no longer alters source vector. See <a href="https://github.com/jwood000/RcppAlgos/issues/11" class="external-link">Issue </a><a href="https://github.com/jwood000/RcppAlgos/issues/11" class="external-link">#11</a> for more information.</p></li>
 </ul></div>
 </div>
@@ -238,8 +238,8 @@
     <div class="section level2">
 <h2 class="page-header" data-toc-text="2.3.3" id="rcppalgos-233">RcppAlgos 2.3.3<small>2019-06-30</small><a class="anchor" aria-label="anchor" href="#rcppalgos-233"></a></h2>
 <ul><li><p>Fixed clang-UBSAN issue in <code>2.3.2</code>. It was caused by populating a vector of ints with values larger than <code>2^31 - 1</code>.</p></li>
-<li><p>Added optimized algorithm to <code>combo/permuteGeneral</code> when <code>constraintFun = "sum"</code>, <code>comparisonFun = "=="</code>, and the vector passed has a special form. This problem is a special case of the subset sum problem.</p></li>
-<li><p>Using <code>std::vector</code> and <code>push_back</code> member function instead of pre-allocating matrix when constraint is applied in combo/permuteGeneral. This alleviates the need to guess the upper limit and subsequently subset as only elements that meet the constraints are added.</p></li>
+<li><p>Added optimized algorithm to <code>{combo|permute}General</code> when <code>constraintFun = "sum"</code>, <code>comparisonFun = "=="</code>, and the vector passed has a special form. This problem is a special case of the subset sum problem.</p></li>
+<li><p>Using <code>std::vector</code> and <code>push_back</code> member function instead of pre-allocating matrix when constraint is applied in <code>{combo|permute}General</code>. This alleviates the need to guess the upper limit and subsequently subset as only elements that meet the constraints are added.</p></li>
 <li><p>Fixed error in <code>PollardRho.cpp</code> when number passed had factors close to the limit in the predefined lookup table (i.e. <code>constexpr int64_t FirstOmittedPrime = 3989</code>)</p></li>
 </ul></div>
     <div class="section level2">

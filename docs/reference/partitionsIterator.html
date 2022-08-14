@@ -38,7 +38,7 @@ Use the next methods to obtain results in lexicographical order.
     <span class="caret"></span>
   </a>
   <ul class="dropdown-menu" role="menu"><li>
-      <a href="../articles/CombPermConstraints.html">Constraints, Integer Partitions, and Integer Compositions</a>
+      <a href="../articles/CombPermConstraints.html">Constraints, Partitions, and Compositions</a>
     </li>
     <li>
       <a href="../articles/CombinatorialSampling.html">Combinatorial Sampling and Ranking</a>
@@ -97,9 +97,9 @@ Use the next methods to obtain results in lexicographical order.
 <span>               freqs <span class="op">=</span> <span class="cn">NULL</span>, target <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>               nThreads <span class="op">=</span> <span class="cn">NULL</span>, tolerance <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span></span>
 <span></span>
-<span><span class="fu">compositionsIter</span><span class="op">(</span><span class="va">v</span>, m <span class="op">=</span> <span class="cn">NULL</span>, repetition <span class="op">=</span> <span class="cn">FALSE</span>,</span>
-<span>                 freqs <span class="op">=</span> <span class="cn">NULL</span>, target <span class="op">=</span> <span class="cn">NULL</span>,</span>
-<span>                 nThreads <span class="op">=</span> <span class="cn">NULL</span>, tolerance <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span></span></code></pre></div>
+<span><span class="fu">compositionsIter</span><span class="op">(</span><span class="va">v</span>, m <span class="op">=</span> <span class="cn">NULL</span>, repetition <span class="op">=</span> <span class="cn">FALSE</span>, freqs <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>                 target <span class="op">=</span> <span class="cn">NULL</span>, weak <span class="op">=</span> <span class="cn">FALSE</span>, nThreads <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>                 tolerance <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div id="arguments">
@@ -117,7 +117,10 @@ Use the next methods to obtain results in lexicographical order.
 <dd><p>A vector of frequencies used for producing all partitions of a multiset of <code>v</code>. Each element of <code>freqs</code> represents how many times each element of the source vector, <code>v</code>, is repeated. It is analogous to the <code>times</code> argument in <code><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></code>. The default value is <code>NULL</code>.</p></dd>
 
   <dt>target</dt>
-<dd><p>Number to be partitioned.</p></dd>
+<dd><p>Number to be partitioned. If <code>NULL</code>, the <code>max(v)</code> will be used.</p></dd>
+
+  <dt>weak</dt>
+<dd><p>(Compositions only) Logical flag indicating whether to allow terms of the sequence to be zero.</p></dd>
 
   <dt>nThreads</dt>
 <dd><p>Specific number of threads to be used. The default is <code>NULL</code>.</p></dd>

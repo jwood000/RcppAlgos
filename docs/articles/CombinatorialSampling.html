@@ -50,7 +50,7 @@
   </a>
   <ul class="dropdown-menu" role="menu">
 <li>
-      <a href="../articles/CombPermConstraints.html">Constraints, Integer Partitions, and Integer Compositions</a>
+      <a href="../articles/CombPermConstraints.html">Constraints, Partitions, and Compositions</a>
     </li>
     <li>
       <a href="../articles/CombinatorialSampling.html">Combinatorial Sampling and Ranking</a>
@@ -103,7 +103,7 @@
                         <h4 data-toc-skip class="author">Joseph
 Wood</h4>
             
-            <h4 data-toc-skip class="date">07/22/2022</h4>
+            <h4 data-toc-skip class="date">08/14/2022</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/jwood000/RcppAlgos/blob/HEAD/vignettes/CombinatorialSampling.Rmd" class="external-link"><code>vignettes/CombinatorialSampling.Rmd</code></a></small>
       <div class="hidden name"><code>CombinatorialSampling.Rmd</code></div>
@@ -113,7 +113,7 @@ Wood</h4>
     
     
 <p>This document covers topics in generating random samples of
-combinations/permutations/partitions/compositions or partition of
+combinations, permutations, partitions, compositions and partition of
 groups. It is encouraged to read <a href="https://jwood000.github.io/RcppAlgos/articles/GeneralCombinatorics.html" class="external-link">General
 Combinatorics</a> first.</p>
 <hr>
@@ -172,20 +172,17 @@ promising nor elegant.</p>
 <code>comboGroupsSample</code> for seamlessly attacking these types of
 problems. All functions provide the following:</p>
 <ul>
-<li>Easily generate random samples of
-combinations/permutations/partitions/compositions or partition of groups
-in parallel.</li>
-<li>You can pass a vector of specific indices or rely on the internal
-sampling functions. We call <code>sample</code> when the total number of
-results is small and for larger cases, the sampling is done in a very
-similar fashion to <code>urand.bigz</code> from the <code>gmp</code>
-package.</li>
+<li>Easily generate random samples in parallel using the
+<code>nThreads</code> or the <code>Parallel</code> parameters.</li>
+<li>You can pass a vector of specific indices via <code>sampleVec</code>
+or rely on the internal sampling functions. We call <code>sample</code>
+when the total number of results is small and for larger cases, the
+sampling is done in a very similar fashion to <code>urand.bigz</code>
+from the <code>gmp</code> package.</li>
 <li>Consistent interface to their respective general functions
-(i.e. <code>{combo/permute/partitions/compositions}General</code> and
-<code>comboGroups</code>)</li>
-<li>Useful when we need a reproducible set of random
-combinations/permutations/partitions/compositions or partitions of
-groups.</li>
+(e.g. <code>partitionsGeneral</code>)</li>
+<li>The <code>seed</code> parameter allows for generating reproducible
+samples.</li>
 <li>If the gmp library is needed, the <code>seed</code> parameter must
 be set in order to have reproducible results (<em>E.g.</em>
 <code><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed()</a></code>) has no effect in these cases).</li>
@@ -369,8 +366,8 @@ sampling we see a nearly 5 fold improvement).</p>
 <h4 id="user-defined-functions">User Defined Functions<a class="anchor" aria-label="anchor" href="#user-defined-functions"></a>
 </h4>
 <p>Again, just as with the general functions, you can pass a custom
-function to <code>combo/permuteSample</code> using the <code>FUN</code>
-argument.</p>
+function to <code>{combo|permute}Sample</code> using the
+<code>FUN</code> argument.</p>
 <div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/combinatoricsSample.html">permuteSample</a></span><span class="op">(</span><span class="fl">5000</span>, <span class="fl">1000</span>, n <span class="op">=</span> <span class="fl">3</span>, seed <span class="op">=</span> <span class="fl">101</span>, FUN <span class="op">=</span> <span class="va">sd</span><span class="op">)</span></span>
 <span><span class="co">#&gt; [[1]]</span></span>
@@ -541,7 +538,15 @@ in <code>compositionsSample</code>.</p>
 <span><span class="co">#&gt;   1.154   0.004   0.152</span></span>
 <span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/identical.html" class="external-link">identical</a></span><span class="op">(</span><span class="va">multi</span>, <span class="va">serial</span><span class="op">)</span></span>
-<span><span class="co">#&gt; [1] TRUE</span></span></code></pre></div>
+<span><span class="co">#&gt; [1] TRUE</span></span>
+<span></span>
+<span><span class="co">## Sample weak compositions</span></span>
+<span><span class="fu"><a href="../reference/partitionsSample.html">compositionsSample</a></span><span class="op">(</span><span class="fl">0</span><span class="op">:</span><span class="fl">100</span>, <span class="fl">8</span>, repetition <span class="op">=</span> <span class="cn">TRUE</span>, weak <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>                   seed <span class="op">=</span> <span class="fl">245659</span>, n <span class="op">=</span> <span class="fl">3</span>, namedSample <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
+<span><span class="co">#&gt;             [,1] [,2] [,3] [,4] [,5] [,6] [,7] [,8]</span></span>
+<span><span class="co">#&gt; 21547195040   23    0    0    8    5   22   25   17</span></span>
+<span><span class="co">#&gt; 7649268748     5    0   13   36   42    4    0    0</span></span>
+<span><span class="co">#&gt; 7598223523     4   54   21    4    6    0    8    3</span></span></code></pre></div>
 <p>Currently, there are only sampling algorithms for most cases of
 compositions with repetition. There is ongoing work to expand these
 algorithms in the future.</p>
