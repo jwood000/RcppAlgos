@@ -251,7 +251,7 @@ int DiscoverPType(const std::vector<int> &Reps,
             static_cast<int>(!part.includeZero) * part.width;
 
         if (part.isWeak && isoz == part.startZ) {
-            part.ptype = part.ptype = PartitionType::RepNoZero;
+            part.ptype = PartitionType::RepNoZero;
             return 1;
         } else if (part.isComp && isoz == part.startZ) {
             part.ptype = part.includeZero ? PartitionType::RepShort :

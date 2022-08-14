@@ -56,14 +56,14 @@ test_that("partitionsIter produces correct results", {
 
     partitionClassTest <- function(v_pass, m_pass = NULL, rep = FALSE,
                                    fr = NULL, tar = NULL, testRand = TRUE,
-                                   IsComposition = FALSE) {
+                                   IsComposition = FALSE, IsWeak = FALSE) {
 
         myResults <- vector(mode = "logical")
 
         if (IsComposition) {
-            myRows <- compositionsCount(v_pass, m_pass, rep, fr, tar)
-            a <- compositionsIter(v_pass, m_pass, rep, fr, tar)
-            b <- compositionsGeneral(v_pass, m_pass, rep, fr, tar)
+            myRows <- compositionsCount(v_pass, m_pass, rep, fr, tar, IsWeak)
+            a <- compositionsIter(v_pass, m_pass, rep, fr, tar, IsWeak)
+            b <- compositionsGeneral(v_pass, m_pass, rep, fr, tar, IsWeak)
         } else {
             myRows <- partitionsCount(v_pass, m_pass, rep, fr, tar)
             a <- partitionsIter(v_pass, m_pass, rep, fr, tar)
@@ -191,6 +191,8 @@ test_that("partitionsIter produces correct results", {
     expect_true(partitionClassTest(0:2, rep = TRUE, testRand = FALSE))
     expect_true(partitionClassTest(0:2, rep = TRUE, testRand = FALSE,
                                    IsComposition = TRUE))
+    expect_true(partitionClassTest(0:2, rep = TRUE, testRand = FALSE,
+                                   IsComposition = TRUE, IsWeak = TRUE))
     expect_true(partitionClassTest(-1, testRand = FALSE))
     expect_true(partitionClassTest(-2, testRand = FALSE))
     expect_true(partitionClassTest(-1, rep = TRUE, testRand = FALSE))
@@ -204,6 +206,9 @@ test_that("partitionsIter produces correct results", {
     expect_true(partitionClassTest(-2:0, 2, rep = TRUE,
                                    tar = -2, testRand = FALSE,
                                    IsComposition = TRUE))
+    expect_true(partitionClassTest(-2:0, 2, rep = TRUE,
+                                   tar = -2, testRand = FALSE,
+                                   IsComposition = TRUE, IsWeak = TRUE))
 
     #### Distinct; Length determined internally; No zero;
     expect_true(partitionClassTest(189))
@@ -256,10 +261,15 @@ test_that("partitionsIter produces correct results", {
 
     expect_true(partitionClassTest(0:15, rep = TRUE,
                                    IsComposition = TRUE))
+    expect_true(partitionClassTest(0:7, rep = TRUE, IsWeak = TRUE,
+                                   IsComposition = TRUE))
     #### Mapped version
     ## 15 * 3e9 = 45000000000
     expect_true(partitionClassTest((0:15) * 3e9, 15,
                                    rep = TRUE, tar = 45000000000,
+                                   IsComposition = TRUE))
+    expect_true(partitionClassTest((0:7) * 3e9, 7, rep = TRUE,
+                                   IsWeak = TRUE, tar = 21000000000,
                                    IsComposition = TRUE))
 
     #### Repetition; Specific Length; No zero
@@ -283,9 +293,16 @@ test_that("partitionsIter produces correct results", {
 
     expect_true(partitionClassTest(0:20, 5, rep = TRUE,
                                    IsComposition = TRUE))
+    expect_true(partitionClassTest(0:20, 5, rep = TRUE,
+                                   IsComposition = TRUE,
+                                   IsWeak = TRUE))
+
     #### Mapped version
     ## 20 * 3 = 60
     expect_true(partitionClassTest((0:20) * 3, 5,
+                                   rep = TRUE, tar = 60,
+                                   IsComposition = TRUE))
+    expect_true(partitionClassTest((0:20) * 3, 5, IsWeak = TRUE,
                                    rep = TRUE, tar = 60,
                                    IsComposition = TRUE))
 
