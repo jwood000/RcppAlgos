@@ -17,7 +17,7 @@ partitionsSample(v, m = NULL, repetition = FALSE, freqs = NULL,
                  seed = NULL, nThreads = NULL, namedSample = FALSE)
 
 compositionsSample(v, m = NULL, repetition = FALSE, freqs = NULL,
-                   target = NULL, n = NULL, sampleVec = NULL,
+                   target = NULL, weak = FALSE, n = NULL, sampleVec = NULL,
                    seed = NULL, nThreads = NULL, namedSample = FALSE)
 }
 \arguments{
@@ -26,6 +26,7 @@ compositionsSample(v, m = NULL, repetition = FALSE, freqs = NULL,
   \item{repetition}{Logical value indicating whether partitions/compositions should be with or without repetition. The default is \code{FALSE}.}
   \item{freqs}{A vector of frequencies used for producing all partitions of a multiset of \code{v}. Each element of \code{freqs} represents how many times each element of the source vector, \code{v}, is repeated. It is analogous to the \code{times} argument in \code{\link[base]{rep}}. The default value is \code{NULL}.}
   \item{target}{Number to be partitioned.}
+  \item{weak}{(Compositions only) Logical flag indicating whether to allow terms of the sequence to be zero.}
   \item{n}{Number of partitions/compositions to return. The default is \code{NULL}.}
   \item{sampleVec}{A vector of numbers representing the lexicographical partitions/compositions to return. Accepts vectors of class \code{bigz} as well as vectors of characters}
   \item{seed}{Random seed initialization. The default is \code{NULL}. N.B. If the gmp library is needed, this parameter must be set in order to have reproducible results (\emph{E.g} \code{set.seed()} has no effect in these cases).}

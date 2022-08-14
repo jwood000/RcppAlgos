@@ -14,6 +14,12 @@ private:
     int boundary;
 
     bool bAddOne;
+
+    const bool paragon;
+    const bool stdPartNext;
+    const bool stdCompZeroSpesh;
+    const bool genCompZeroSpesh;
+
     const int lastCol;
     const int lastElem;
 

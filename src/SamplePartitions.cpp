@@ -130,7 +130,7 @@ SEXP SamplePartitions(SEXP Rv, SEXP Rm, SEXP RisRep, SEXP RFreqs,
                       SEXP baseSample, SEXP Rparallel, SEXP RNumThreads,
                       SEXP RmaxThreads, SEXP RNamed, SEXP RcompFun,
                       SEXP Rtarget, SEXP Rtolerance, SEXP myEnv,
-                      SEXP RIsComposition) {
+                      SEXP RIsComposition, SEXP RIsWeak) {
 
     int n = 0;
     int m = 0;
@@ -156,8 +156,6 @@ SEXP SamplePartitions(SEXP Rv, SEXP Rm, SEXP RisRep, SEXP RFreqs,
               RFreqs, Rm, n, m, IsMult, IsRep, true);
 
     const std::string mainFun = "sum";
-    const bool IsComposition  = CleanConvert::convertFlag(RIsComposition,
-                                                          "IsComposition");
 
     // Must be defined inside IsInteger check as targetVals could be
     // outside integer data type range which causes undefined behavior
@@ -173,13 +171,15 @@ SEXP SamplePartitions(SEXP Rv, SEXP Rm, SEXP RisRep, SEXP RFreqs,
     part.isRep   = IsRep;
     part.isMult  = IsMult;
     part.mIsNull = Rf_isNull(Rm);
-    part.isComp  = IsComposition;
+    part.isWeak  = CleanConvert::convertFlag(RIsWeak, "weak");
+    part.isComp  = CleanConvert::convertFlag(RIsComposition,
+                                             "IsComposition");
 
     cpp11::sexp Rlow = R_NilValue;
     ConstraintSetup(vNum, myReps, targetVals, vInt, targetIntVals,
                     funDbl, part, ctype, n, m, compVec, mainFun,
                     mainFun, myType, Rtarget, RcompFun, Rtolerance,
-                    Rlow, !IsComposition);
+                    Rlow, !part.isComp);
 
     if (part.ptype == PartitionType::Multiset ||
         part.ptype == PartitionType::CoarseGrained ||

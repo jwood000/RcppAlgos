@@ -17,9 +17,9 @@ partitionsIter(v, m = NULL, repetition = FALSE,
                freqs = NULL, target = NULL,
                nThreads = NULL, tolerance = NULL)
 
-compositionsIter(v, m = NULL, repetition = FALSE,
-                 freqs = NULL, target = NULL,
-                 nThreads = NULL, tolerance = NULL)
+compositionsIter(v, m = NULL, repetition = FALSE, freqs = NULL,
+                 target = NULL, weak = FALSE, nThreads = NULL,
+                 tolerance = NULL)
 }
 \arguments{
   \item{v}{Source vector. If \code{v} is a positive integer, it will be converted to the sequence \code{1:v}. If \code{v} is a negative integer, it will be converted to the sequence \code{v:-1}. Only integer and numeric vectors are accepted.}
@@ -27,6 +27,7 @@ compositionsIter(v, m = NULL, repetition = FALSE,
   \item{repetition}{Logical value indicating whether partitions/compositions should be with or without repetition. The default is \code{FALSE}.}
   \item{freqs}{A vector of frequencies used for producing all partitions of a multiset of \code{v}. Each element of \code{freqs} represents how many times each element of the source vector, \code{v}, is repeated. It is analogous to the \code{times} argument in \code{\link[base]{rep}}. The default value is \code{NULL}.}
   \item{target}{Number to be partitioned.}
+  \item{weak}{(Compositions only) Logical flag indicating whether to allow terms of the sequence to be zero.}
   \item{nThreads}{Specific number of threads to be used. The default is \code{NULL}.}
   \item{tolerance}{A numeric value greater than or equal to zero. This parameter is utilized when a constraint is applied on a numeric vector. The default value is 0 when it can be determined that whole values are being utilized, otherwise it is \code{sqrt(.Machine$double.eps)} which is approximately \eqn{1.5e-8}. N.B. If the input vector is of type integer, this parameter will be ignored and strict equality will be enforced.}
 }

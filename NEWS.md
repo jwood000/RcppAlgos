@@ -152,7 +152,7 @@
 
 ## Bug Fixes:
 
-* Corrected checks for total number of partitions and assignment of number of rows when `upper` is applied in `combo/permuteGeneral`. See [Issue #9](<https://github.com/jwood000/RcppAlgos/issues/9#issue-467908452Issue%20#9>) for more information.
+* Corrected checks for total number of partitions and assignment of number of rows when `upper` is applied in `{combo|permute}General`. See [Issue #9](<https://github.com/jwood000/RcppAlgos/issues/9#issue-467908452Issue%20#9>) for more information.
 
 * `permuteGeneral` no longer alters source vector. See [Issue #11](<https://github.com/jwood000/RcppAlgos/issues/11>) for more information.
 
@@ -164,9 +164,9 @@
 
 * Fixed clang-UBSAN issue in `2.3.2`. It was caused by populating a vector of ints with values larger than `2^31 - 1`.
 
-* Added optimized algorithm to `combo/permuteGeneral` when `constraintFun = "sum"`, `comparisonFun = "=="`, and the vector passed has a special form. This problem is a special case of the subset sum problem.
+* Added optimized algorithm to `{combo|permute}General` when `constraintFun = "sum"`, `comparisonFun = "=="`, and the vector passed has a special form. This problem is a special case of the subset sum problem.
 
-* Using `std::vector` and `push_back` member function instead of pre-allocating matrix when constraint is applied in combo/permuteGeneral. This alleviates the need to guess the upper limit and subsequently subset as only elements that meet the constraints are added.
+* Using `std::vector` and `push_back` member function instead of pre-allocating matrix when constraint is applied in `{combo|permute}General`. This alleviates the need to guess the upper limit and subsequently subset as only elements that meet the constraints are added.
 
 * Fixed error in `PollardRho.cpp` when number passed had factors close to the limit in the predefined lookup table (i.e. `constexpr int64_t FirstOmittedPrime = 3989`)
 

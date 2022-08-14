@@ -21,7 +21,7 @@ permuteGeneral <- function(v, m = NULL, repetition = FALSE, freqs = NULL,
         return(.Call(`_RcppAlgos_CombinatoricsCnstrt`, v, m, repetition,
                      freqs, lower, upper, constraintFun, comparisonFun,
                      limitConstraints, FALSE, keepResults, Parallel,
-                     nThreads, pkgEnv$nThreads, tolerance, FALSE))
+                     nThreads, pkgEnv$nThreads, tolerance, FALSE, FALSE))
     }
 }
 
@@ -60,8 +60,9 @@ permuteIter <- function(v, m = NULL, repetition = FALSE, freqs = NULL,
                       keepResults, FUN)
     IsCnstrd <- .Call(`_RcppAlgos_CheckConstrndCpp`, constraintFun,
                       comparisonFun, limitConstraints)
-    InitVals <- .Call(`_RcppAlgos_GetClassVals`, v, m, repetition, freqs,
-                      FALSE, FUN, nThreads, pkgEnv$nThreads, IsCnstrd, FALSE)
+    InitVals <- .Call(`_RcppAlgos_GetClassVals`, v, m, repetition,
+                      freqs, FALSE, FUN, nThreads, pkgEnv$nThreads,
+                      IsCnstrd, FALSE, FALSE)
 
     if (RetValue == 1) {
         new("Combo", InitVals, Parallel)

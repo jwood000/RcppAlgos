@@ -15,10 +15,10 @@ A collection of high performance functions implemented in C++ for solving proble
 
 ## Featured Functions
 
-  - **`comboGeneral/permuteGeneral`**: Generate all combinations/permutations of a vector (including [multisets](<https://en.wikipedia.org/wiki/Multiset>)) meeting specific criteria.
-  - **`partitionsGeneral/compositionsGeneral`**: Efficient algorithms for partitioning numbers under various constraints
-  - **`comboSample/permuteSample/partitionsSample/compositions/Sample`**: Generate reproducible random samples of combinations/permutations/partitions/compositions
-  - **`comboIter/permuteIter/partitionsIter/compositionsIter`**: Flexible iterators allow for bidirectional iteration as well as random access.
+  - **`{combo|permute}General`**: Generate all combinations/permutations of a vector (including [multisets](<https://en.wikipedia.org/wiki/Multiset>)) meeting specific criteria.
+  - **`{partitions|compositions}General`**: Efficient algorithms for partitioning numbers under various constraints
+  - **`{combo|permute|partitions|compositions}Sample`**: Generate reproducible random samples
+  - **`{combo|permute|partitions|compositions}Iter`**: Flexible iterators allow for bidirectional iteration as well as random access.
   - **`primeSieve`**: Fast prime number generator
   - **`primeCount`**: Prime counting function using [Legendre's formula](<http://mathworld.wolfram.com/LegendresFormula.html>)
 

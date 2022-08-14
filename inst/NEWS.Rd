@@ -1,7 +1,7 @@
 \name{NEWS}
 \title{News for Package \pkg{RcppAlgos}}
 
-\section{Changes in RcppAlgos version 2.6.0 (Release date: 2022-07-30)}{
+\section{Changes in RcppAlgos version 2.6.0 (Release date: 2022-08-15)}{
     \itemize{
         \item New Features:
         \itemize{
@@ -174,7 +174,7 @@
         }
         \item Bug Fixes:
         \itemize{
-            \item Corrected checks for total number of partitions and assignment of number of rows when \code{upper} is applied in \code{combo/permuteGeneral}. See \href{https://github.com/jwood000/RcppAlgos/issues/9#issue-467908452}{Issue #9} for more information.
+            \item Corrected checks for total number of partitions and assignment of number of rows when \code{upper} is applied in \code{{combo|permute}General}. See \href{https://github.com/jwood000/RcppAlgos/issues/9#issue-467908452}{Issue #9} for more information.
             \item \code{permuteGeneral} no longer alters source vector. See \href{https://github.com/jwood000/RcppAlgos/issues/11}{Issue #11} for more information.
         }
     }
@@ -189,8 +189,8 @@
 \section{Changes in RcppAlgos version 2.3.3 (Release date: 2019-06-30)}{
     \itemize{
         \item Fixed clang-UBSAN issue in 2.3.2. It was caused by populating a vector of ints with values larger than 2^31 - 1.
-        \item Added optimized algorithm to combo/permuteGeneral when constraintFun = "sum", comparisonFun = "==", and the vector passed has a special form. This problem is a special case of the subset sum problem.
-        \item Using std::vector and push_back member function instead of pre-allocating matrix when constraint is applied in combo/permuteGeneral. This alleviates the need to guess the upper limit and subsequently subset as only elements that meet the constraints are added.
+        \item Added optimized algorithm to \code{{combo|permute}General} when constraintFun = "sum", comparisonFun = "==", and the vector passed has a special form. This problem is a special case of the subset sum problem.
+        \item Using std::vector and push_back member function instead of pre-allocating matrix when constraint is applied in \code{{combo|permute}General}. This alleviates the need to guess the upper limit and subsequently subset as only elements that meet the constraints are added.
         \item Fixed error in PollardRho.cpp when number passed had factors close to the limit in the predefined lookup table (i.e. constexpr int64_t FirstOmittedPrime = 3989)
     }
 }

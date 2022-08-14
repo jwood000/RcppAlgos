@@ -369,6 +369,58 @@ test_that("partition/compositionsGeneral and Repetition Parallel Lower GMP", {
                                "576460752303223488") + 1, nrow(bench))
     expect_true(all(rowSums(bench) == 60 * 19))
 
+    ## Weak = TRUE
+    ##
+    ## compositionsDesign(0:60, repetition = T, weak = T)[c("num_partitions",
+    ##                                                      "mapped_target",
+    ##                                                     "partition_type")]
+    ## $num_partitions
+    ## Big Integer ('bigz') :
+    ## [1] 48307454420181661301946569760686328
+    ##
+    ## $mapped_target
+    ## [1] 120
+    ##
+    ## $partition_type
+    ## [1] "RepNoZero"
+    bench <- compositionsGeneral(0:60, repetition = TRUE, weak = TRUE,
+                                 lower = "48307454420181661301946569760486328")
+    expect_identical(compositionsGeneral(0:60, repetition = TRUE, weak = TRUE,
+                                         lower = "48307454420181661301946569760486328",
+                                         nThreads = 2), bench)
+    expect_identical(compositionsRank(bench[1:5, ], v = 0:60,
+                                      repetition = TRUE, weak = TRUE),
+                     gmp::as.bigz("48307454420181661301946569760486328") + 0:4)
+    expect_equal(gmp::sub.bigz("48307454420181661301946569760686328",
+                               "48307454420181661301946569760486328") + 1, nrow(bench))
+    expect_true(all(rowSums(bench) == 60))
+
+    ## Mapped Version; Weak = TRUE
+    ##
+    ## compositionsDesign((0:60) * 19, 60, repetition = T,
+    ##                    weak = T)[c("num_partitions", "mapped_target",
+    ##                                "partition_type")]
+    ## $num_partitions
+    ## Big Integer ('bigz') :
+    ## [1] 48307454420181661301946569760686328
+    ##
+    ## $mapped_target
+    ## [1] 120
+    ##
+    ## $partition_type
+    ## [1] "RepNoZero"
+    bench <- compositionsGeneral((0:60) * 19, 60, repetition = TRUE, weak = TRUE,
+                                 lower = "48307454420181661301946569760486328")
+    expect_identical(compositionsGeneral((0:60) * 19, 60, repetition = TRUE, weak = TRUE,
+                                         lower = "48307454420181661301946569760486328",
+                                         nThreads = 2), bench)
+    expect_identical(compositionsRank(bench[1:5, ], v = (0:60) * 19,
+                                      repetition = TRUE, weak = TRUE),
+                     gmp::as.bigz("48307454420181661301946569760486328") + 0:4)
+    expect_equal(gmp::sub.bigz("48307454420181661301946569760686328",
+                               "48307454420181661301946569760486328") + 1, nrow(bench))
+    expect_true(all(rowSums(bench) == 60 * 19))
+
     ## partitionsDesign(6000, 10, TRUE)[c("num_partitions",
     ##                                    "mapped_target",
     ##                                    "partition_type")]

@@ -27,8 +27,8 @@ partitionsGeneral(v, m = NULL, repetition = FALSE,
                   tolerance = NULL)
 
 compositionsGeneral(v, m = NULL, repetition = FALSE,
-                    freqs = NULL, target = NULL, lower = NULL,
-                    upper = NULL, nThreads = NULL,
+                    freqs = NULL, target = NULL, weak = FALSE,
+                    lower = NULL, upper = NULL, nThreads = NULL,
                     tolerance = NULL)
 }
 \arguments{
@@ -39,6 +39,7 @@ compositionsGeneral(v, m = NULL, repetition = FALSE,
   \item{lower}{The lower bound. Partitions/compositions are generated lexicographically, thus utilizing this argument will determine which specific partition to start generating from (\emph{e.g.} \code{partitionsGeneral(15, 3, lower = 6)} is equivalent to \code{partitionsGeneral(15, 3)[6:partitionsCount(15, 3), ]}). This argument along with \code{upper} is very useful for generating partitions/compositions in chunks allowing for easy parallelization.}
   \item{upper}{The upper bound. Similar to \code{lower}, however this parameter allows the user to \emph{stop} generation at a specific partition (\emph{e.g.} \code{partitionsGeneral(15, 3, upper = 5)} is equivalent to \code{partitionsGeneral(15, 3)[1:5, ]})}
   \item{target}{Number to be partitioned.}
+  \item{weak}{(Compositions only) Logical flag indicating whether to allow terms of the sequence to be zero.}
   \item{nThreads}{Specific number of threads to be used. The default is \code{NULL}.}
   \item{tolerance}{A numeric value greater than or equal to zero. This parameter is utilized when a constraint is applied on a numeric vector. The default value is 0 when it can be determined that whole values are being utilized, otherwise it is \code{sqrt(.Machine$double.eps)} which is approximately \eqn{1.5e-8}. N.B. If the input vector is of type integer, this parameter will be ignored and strict equality will be enforced.}
 }

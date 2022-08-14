@@ -12,7 +12,7 @@ partitionsCount(v, m = NULL, repetition = FALSE,
                 freqs = NULL, target = NULL)
 
 compositionsCount(v, m = NULL, repetition = FALSE,
-                  freqs = NULL, target = NULL)
+                  freqs = NULL, target = NULL, weak = FALSE)
 }
 \arguments{
   \item{v}{Source vector. If \code{v} is a positive integer, it will be converted to the sequence \code{1:v}. If \code{v} is a negative integer, it will be converted to the sequence \code{v:-1}. Only integer and numeric vectors are accepted.}
@@ -20,6 +20,7 @@ compositionsCount(v, m = NULL, repetition = FALSE,
   \item{repetition}{Logical value indicating whether partitions/compositions should be with or without repetition. The default is \code{FALSE}.}
   \item{freqs}{A vector of frequencies used for producing all partitions of a multiset of \code{v}. Each element of \code{freqs} represents how many times each element of the source vector, \code{v}, is repeated. It is analogous to the \code{times} argument in \code{\link[base]{rep}}. The default value is \code{NULL}.}
   \item{target}{Number to be partitioned.}
+  \item{weak}{(Compositions only) Logical flag indicating whether to allow terms of the sequence to be zero.}
 }
 \value{
 A numerical value representing the total number of partitions/compositions.

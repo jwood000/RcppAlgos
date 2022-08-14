@@ -16,7 +16,7 @@ void Partitions::SetPartValues() {
 void Partitions::MoveZToIndex() {
     z = nthParts(part.mapTar, width, cap, strtLen, dblTemp, mpzTemp);
 
-    if (ctype == ConstraintType::PartStandard) {
+    if (paragon) {
         for (auto &z_i: z) {
             z_i = vInt[z_i];
         }
@@ -81,31 +81,26 @@ Partitions::Partitions(
              RtarIntVals, RstartZ, RmainFun, RFunTest, RfunDbl, Rctype,
              RstrtLen, Rcap, RKeepRes, RnumUnknown, RcnstrtRows,
              RcnstrtRowsMpz),
+    paragon(ctype == ConstraintType::PartStandard),
+    stdPartNext(paragon && !part.isComp),
+    stdCompZeroSpesh(paragon && part.isComp && !part.isWeak),
+    genCompZeroSpesh(!paragon && part.isComp && !part.isWeak &&
+        part.includeZero),
     lastCol(part.width - 1), lastElem(n - 1),
-    // Not very happy with the second condition, but oh well.
-    //
-    // In nextParts, the second parameter is bool IsGen, meaning is the
-    // next partition or composition algorithm of the general nature.
-    // Thus, it is standard if the Constraint Type is standard
-    //              -OR-
-    // if we are dealing with compositions and zero is involved. In
-    // logical form we have:
-    //
-    // IsStandard = (ctype == standard) || (iscomp && inc_zero)
-    //
-    // IsGeneral is simply the negation of IsStandard, so we use
-    // De Morgan's law to arrive at the line below.
-    nextParts(GetNextPartsPtr(
-        part.ptype, ctype != ConstraintType::PartStandard &&
-                    !(part.isComp && part.mapIncZero), part.isComp
-    )),
+    nextParts(
+        GetNextPartsPtr(
+            part.ptype,
+            !(stdPartNext || stdCompZeroSpesh || genCompZeroSpesh),
+            part.isComp
+        )
+    ),
     nthParts((part.ptype == PartitionType::LengthOne ||
               part.ptype == PartitionType::Multiset  ||
               CheckEqSi(part.isGmp, cnstrtCountMpz, cnstrtCount, 0)) ?
               nullptr : GetNthPartsFunc(part.ptype, part.isGmp,
                                         part.isComp)) {
 
-    bAddOne = (ctype == ConstraintType::PartStandard) && !part.includeZero;
+    bAddOne = paragon && !part.includeZero;
     rpsCnt = myReps;
     IsGmp  = part.isGmp;
     SetPartValues();

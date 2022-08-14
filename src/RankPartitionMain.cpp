@@ -35,7 +35,7 @@ void RankPartsResults(mpz_t* bigRes, int* intRes, double* dblRes,
 SEXP RankPartitionMain(SEXP RIdx, SEXP Rv, SEXP RisRep,
                        SEXP RFreqs, SEXP Rm, SEXP RcompFun,
                        SEXP Rtarget, SEXP Rtolerance,
-                       SEXP RIsComposition) {
+                       SEXP RIsComposition, SEXP RIsWeak) {
 
     int n = 0;
     int m = 0;
@@ -73,6 +73,7 @@ SEXP RankPartitionMain(SEXP RIdx, SEXP Rv, SEXP RisRep,
     part.isMult  = IsMult;
     part.mIsNull = Rf_isNull(Rm);
     part.isComp  = IsComposition;
+    part.isWeak  = CleanConvert::convertFlag(RIsWeak, "weak");
 
     cpp11::sexp Rlow = R_NilValue;
     ConstraintSetup(vNum, myReps, targetVals, vInt, targetIntVals,
@@ -85,6 +86,24 @@ SEXP RankPartitionMain(SEXP RIdx, SEXP Rv, SEXP RisRep,
         part.ptype == PartitionType::NotPartition) {
 
         cpp11::stop("Partition ranking not available for this case.");
+    }
+
+    if (part.isComp && !part.isWeak && part.includeZero) {
+        for (auto it = idx.rbegin(); it != idx.rend();) {
+
+            bool zero_found = false;
+
+            for (int i = 0; i < m; ++i, ++it) {
+                if (vNum[*it] != 0 && zero_found) {
+                    cpp11::stop("Malformed composition. If weak = FALSE,"
+                                " zero cannot come after nonzero values!");
+                }
+
+                if (vNum[*it] == 0) {
+                    zero_found = true;
+                }
+            }
+        }
     }
 
     // See comment in SamplePartitions.cpp
@@ -102,13 +121,13 @@ SEXP RankPartitionMain(SEXP RIdx, SEXP Rv, SEXP RisRep,
                                       part.startZ.cend(),
                                       [](int i){return i > 0;});
 
-    const bool IsInteger = (part.count <= std::numeric_limits<int>::max());
-    cpp11::sexp res_std_int = Rf_allocVector(INTSXP, (IsInteger) ?
-                                                 numResults : 0);
+    const bool IsInt = (part.count <= std::numeric_limits<int>::max());
+    cpp11::sexp res_std_int = Rf_allocVector(INTSXP, IsInt ? numResults : 0);
     int* res_int = INTEGER(res_std_int);
 
-    cpp11::sexp res_std_dbl = Rf_allocVector(REALSXP, (!IsInteger && !part.isGmp)
-                                                 ? numResults : 0);
+    cpp11::sexp res_std_dbl = Rf_allocVector(
+        REALSXP, (!IsInt && !part.isGmp) ? numResults : 0
+    );
     double* res_dbl = REAL(res_std_dbl);
 
     if (m == 1) return Rf_ScalarInteger(1);
@@ -118,9 +137,9 @@ SEXP RankPartitionMain(SEXP RIdx, SEXP Rv, SEXP RisRep,
 
     RankPartsResults(myVec.get(), res_int, res_dbl, idx,
                      rankFun, part.mapTar, m, cap, strtLen,
-                     numResults, part.isGmp, IsInteger);
+                     numResults, part.isGmp, IsInt);
 
-    if (IsInteger) {
+    if (IsInt) {
         return res_std_int;
     } else if (part.isGmp) {
         return MpzReturn(myVec.get(), numResults);

@@ -19,7 +19,7 @@ SEXP CopyRv(SEXP Rv, const std::vector<int> &vInt,
 SEXP GetClassVals(SEXP Rv, SEXP Rm, SEXP RisRep, SEXP RFreqs,
                   SEXP RIsComb, SEXP stdFun, SEXP RThreads,
                   SEXP RmaxThreads, SEXP RIsCnstrd,
-                  SEXP RIsComposition) {
+                  SEXP RIsComposition, SEXP RIsWeak) {
 
     int n = 0;
     int m = 0;
@@ -33,11 +33,9 @@ SEXP GetClassVals(SEXP Rv, SEXP Rm, SEXP RisRep, SEXP RFreqs,
     std::vector<double> vNum;
 
     bool IsRep = CleanConvert::convertFlag(RisRep, "repetition");
-    const bool IsComb = CleanConvert::convertFlag(RIsComb, "IsComb");
+    const bool IsComb        = CleanConvert::convertFlag(RIsComb, "IsComb");
+    const bool IsFactor      = Rf_isFactor(Rv);
     const bool IsConstrained = Rf_asLogical(RIsCnstrd);
-    const bool IsFactor = Rf_isFactor(Rv);
-    const bool IsComposition  = CleanConvert::convertFlag(RIsComposition,
-                                                          "IsComposition");
 
     SetType(myType, Rv);
     SetValues(myType, myReps, freqs, vInt, vNum, Rv,
@@ -69,14 +67,16 @@ SEXP GetClassVals(SEXP Rv, SEXP Rm, SEXP RisRep, SEXP RFreqs,
     const bool IsFullPerm = (IsComb || IsRep) ? false :
         (m == n || m == static_cast<int>(freqs.size()));
 
-    cpp11::sexp bVec = Rf_allocVector(LGLSXP, 7);
+    cpp11::sexp bVec = Rf_allocVector(LGLSXP, 8);
     INTEGER(bVec)[0] = IsFactor;
     INTEGER(bVec)[1] = IsComb;
     INTEGER(bVec)[2] = IsMult;
     INTEGER(bVec)[3] = IsRep;
     INTEGER(bVec)[4] = IsGmp;
     INTEGER(bVec)[5] = IsFullPerm;
-    INTEGER(bVec)[6] = IsComposition;
+    INTEGER(bVec)[6] = CleanConvert::convertFlag(RIsComposition,
+                                                 "IsComposition");
+    INTEGER(bVec)[7] = CleanConvert::convertFlag(RIsWeak, "weak");
 
     const bool applyFun = !Rf_isNull(stdFun) && !IsFactor;
 

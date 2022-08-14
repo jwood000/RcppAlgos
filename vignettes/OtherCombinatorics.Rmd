@@ -252,7 +252,7 @@ ht(comboGroups(12, numGroups = 3))
 #> [5775,]    1   10   11   12    2    7    8    9    3    4    5    6
 ```
 
-Just as in `combo/permuteGeneral`, we can utilize the arguments `lower`, `upper`, `Parallel`, and `nThreads`.
+Just as in `{combo|permute}General`, we can utilize the arguments `lower`, `upper`, `Parallel`, and `nThreads`.
 
 ```r
 comboGroupsCount(30, 6)

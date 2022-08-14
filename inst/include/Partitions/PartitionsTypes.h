@@ -60,6 +60,8 @@ struct PartDesign {
     bool isMult = false;
     bool isPart = false;
     bool isComp = false;      // Are we dealing with compositions?
+    bool isWeak = false;      // Do we allow terms of the sequence to be zero?
+                              //  See: https://en.wikipedia.org/wiki/Composition_(combinatorics)
     bool allOne = false;      // When we have multisets with the pattern:
                               //     freqs = c(n, rep(1, p))
                               // This reduces to distinct

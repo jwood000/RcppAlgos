@@ -6,8 +6,8 @@ void StandardPartitions(int* mat, std::vector<int> &z, PartitionType ptype,
                         double lower, mpz_t lowerMpz, int nCols,
                         int width, int nRows, int nThreads, int lastCol,
                         int lastElem, int tar, int strtLen, int cap,
-                        bool IsRep, bool IsMult, bool IsGmp,bool IsComb,
-                        bool includeZero, bool IsComp) {
+                        bool IsRep, bool IsMult, bool IsGmp, bool IsComb,
+                        bool includeZero, bool IsComp, bool zero_spesh) {
 
     if (nThreads > 1 && (IsComb || IsComp)) {
         RcppParallel::RMatrix<int> parMat(mat, nRows, nCols);
@@ -26,7 +26,7 @@ void StandardPartitions(int* mat, std::vector<int> &z, PartitionType ptype,
             threads.emplace_back(
                 std::cref(PartsStdParallel), std::ref(parMat),
                 std::ref(zs[j]), step, width, lastElem, lastCol,
-                nextStep, IsRep, IsComp
+                nextStep, IsRep, IsComp, zero_spesh
             );
 
             if (IsGmp) {
@@ -48,15 +48,15 @@ void StandardPartitions(int* mat, std::vector<int> &z, PartitionType ptype,
         threads.emplace_back(
             std::cref(PartsStdParallel), std::ref(parMat),
             std::ref(zs.back()), step, width, lastElem,
-            lastCol, nRows, IsRep, IsComp
+            lastCol, nRows, IsRep, IsComp, zero_spesh
         );
 
         for (auto& thr: threads) {
             thr.join();
         }
     } else {
-        PartsStdManager(mat, z, width, lastElem, lastCol,
-                        nRows, IsComb, IsRep, IsComp);
+        PartsStdManager(mat, z, width, lastElem, lastCol, nRows,
+                        IsComb, IsRep, IsComp, zero_spesh);
     }
 }
 
@@ -65,6 +65,8 @@ void GeneralPartitions(T* mat, const std::vector<T> &v, std::vector<int> &z,
                        const PartDesign &part, double lower, mpz_t lowerMpz,
                        int nCols, int nRows, int nThreads, int lastCol,
                        int lastElem, int strtLen, int cap, bool IsComb) {
+
+    const bool zero_spesh = part.includeZero && !part.isWeak;
 
     if (nThreads > 1 && (IsComb || part.isComp)) {
         RcppParallel::RMatrix<T> parMat(mat, nRows, nCols);
@@ -85,7 +87,7 @@ void GeneralPartitions(T* mat, const std::vector<T> &v, std::vector<int> &z,
             threads.emplace_back(
                 std::cref(PartsGenParallel<T>), std::ref(parMat),
                 std::cref(v), std::ref(zs[j]), step, part.width, lastElem,
-                lastCol, nextStep, part.isRep, part.isComp, part.mapIncZero
+                lastCol, nextStep, part.isRep, part.isComp, zero_spesh
             );
 
             if (part.isGmp) {
@@ -101,7 +103,7 @@ void GeneralPartitions(T* mat, const std::vector<T> &v, std::vector<int> &z,
         threads.emplace_back(
             std::cref(PartsGenParallel<T>), std::ref(parMat), std::cref(v),
             std::ref(zs.back()), step, part.width, lastElem, lastCol, nRows,
-            part.isRep, part.isComp, part.mapIncZero
+            part.isRep, part.isComp, zero_spesh
         );
 
         for (auto& thr: threads) {
@@ -109,7 +111,7 @@ void GeneralPartitions(T* mat, const std::vector<T> &v, std::vector<int> &z,
         }
     } else {
         PartsGenManager(mat, v, z, part.width, lastElem, lastCol, nRows,
-                        IsComb, part.isRep, part.isComp, part.mapIncZero);
+                        IsComb, part.isRep, part.isComp, zero_spesh);
     }
 }
 

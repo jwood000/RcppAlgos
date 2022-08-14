@@ -48,7 +48,7 @@ SEXP PartitionsCount(SEXP Rtarget, SEXP Rv, SEXP Rm,
                      SEXP RisRep, SEXP RFreqs, SEXP RcompFun,
                      SEXP Rlow, SEXP Rtolerance,
                      SEXP RPartDesign, SEXP Rshow,
-                     SEXP RIsComposition) {
+                     SEXP RIsComposition, SEXP RIsWeak) {
     int n = 0;
     int m = 0;
 
@@ -65,8 +65,6 @@ SEXP PartitionsCount(SEXP Rtarget, SEXP Rv, SEXP Rm,
     bool IsRep = CleanConvert::convertFlag(RisRep, "repetition");
     const bool bDesign = CleanConvert::convertFlag(RPartDesign,
                                                    "PartitionsDesign");
-    const bool IsComposition = CleanConvert::convertFlag(RIsComposition,
-                                                         "IsComposition");
 
     SetType(myType, Rv);
     SetValues(myType, myReps, freqs, vInt, vNum, Rv,
@@ -86,12 +84,13 @@ SEXP PartitionsCount(SEXP Rtarget, SEXP Rv, SEXP Rm,
     part.isRep   = IsRep;
     part.isMult  = IsMult;
     part.mIsNull = Rf_isNull(Rm);
-    part.isComp  = IsComposition;
+    part.isWeak  = CleanConvert::convertFlag(RIsWeak, "weak");
+    part.isComp  = CleanConvert::convertFlag(RIsComposition, "composition");
 
     ConstraintSetup(vNum, myReps, targetVals, vInt, targetIntVals,
                     funDbl, part, ctype, n, m, compVec, mainFun,
                     mainFun, myType, Rtarget, RcompFun, Rtolerance,
-                    Rlow, !IsComposition, true);
+                    Rlow, !part.isComp, true);
 
     if (!part.numUnknown) {
         if (bDesign) {

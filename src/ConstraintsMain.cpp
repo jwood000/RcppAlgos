@@ -10,7 +10,7 @@ SEXP CombinatoricsCnstrt(SEXP Rv, SEXP Rm, SEXP RisRep, SEXP RFreqs,
                          SEXP RcompFun, SEXP Rtarget, SEXP RIsComb,
                          SEXP RKeepRes, SEXP Rparallel, SEXP RnThreads,
                          SEXP RmaxThreads, SEXP Rtolerance,
-                         SEXP RIsComposition) {
+                         SEXP RIsComposition, SEXP RIsWeak) {
     int n = 0;
     int m = 0;
     int nRows = 0;
@@ -29,8 +29,6 @@ SEXP CombinatoricsCnstrt(SEXP Rv, SEXP Rm, SEXP RisRep, SEXP RFreqs,
 
     const bool IsComb = CleanConvert::convertFlag(RIsComb, "IsComb");
     const bool IsConstrained = CheckConstrnd(RmainFun, RcompFun, Rtarget);
-    const bool IsComposition = CleanConvert::convertFlag(RIsComposition,
-                                                         "IsComposition");
 
     SetType(myType, Rv);
     SetValues(myType, myReps, freqs, vInt, vNum, Rv,
@@ -64,7 +62,9 @@ SEXP CombinatoricsCnstrt(SEXP Rv, SEXP Rm, SEXP RisRep, SEXP RFreqs,
     part.isRep   = IsRep;
     part.isMult  = IsMult;
     part.mIsNull = Rf_isNull(Rm);
-    part.isComp  = IsComposition;
+    part.isWeak  = CleanConvert::convertFlag(RIsWeak, "weak");
+    part.isComp  = CleanConvert::convertFlag(RIsComposition,
+                                             "IsComposition");
 
     if (IsConstrained) {
         ConstraintSetup(vNum, myReps, tarVals, vInt, tarIntVals,

@@ -203,8 +203,12 @@ void SetStartPartitionZ(const std::vector<int> &Reps,
             part.startZ.back() = part.target;
             break;
         } case PartitionType::RepNoZero: {
-            std::fill(part.startZ.begin(), part.startZ.end(), 1);
-            part.startZ.back() = part.target - part.width + 1;
+            if (part.isWeak && part.includeZero) {
+                part.startZ.back() = part.target;
+            } else {
+                std::fill(part.startZ.begin(), part.startZ.end(), 1);
+                part.startZ.back() = part.target - part.width + 1;
+            }
             break;
         } case PartitionType::RepShort: {
             part.startZ.back() = part.target;
@@ -246,9 +250,12 @@ int DiscoverPType(const std::vector<int> &Reps,
         isoz.back() = part.mapTar -
             static_cast<int>(!part.includeZero) * part.width;
 
-        if (part.isComp && isoz == part.startZ) {
-            part.ptype = (part.includeZero) ? PartitionType::RepShort :
-                                              PartitionType::RepNoZero;
+        if (part.isWeak && isoz == part.startZ) {
+            part.ptype = part.ptype = PartitionType::RepNoZero;
+            return 1;
+        } else if (part.isComp && isoz == part.startZ) {
+            part.ptype = part.includeZero ? PartitionType::RepShort :
+                                            PartitionType::RepNoZero;
             return 1;
         } else if (isoz == part.startZ) {
             part.ptype = PartitionType::RepNoZero;
@@ -492,23 +499,25 @@ void StandardDesign(const std::vector<int> &Reps,
             }
         }
     } else if (part.isRep) {
-        if (part.mIsNull && part.includeZero) {
-            width = part.target; // i.e. 1 * target = target
+        if (part.isWeak && part.includeZero) {
+            if (part.mIsNull) width = part.target;
+            part.ptype      = PartitionType::RepNoZero;
+            part.mapTar    += width;
+            part.mapIncZero = false;
+        } else if (part.mIsNull && part.includeZero) {
+            width      = part.target; // i.e. 1 * target = target
             part.ptype = PartitionType::RepStdAll;
         } else if (part.mIsNull) {
-            width = part.target; // i.e. 1 * target = target
+            width      = part.target; // i.e. 1 * target = target
             part.ptype = PartitionType::RepNoZero;
-        } else if (part.includeZero && width < part.target) {
+        } else if (part.isComp && part.includeZero && width < part.target) {
             part.ptype = PartitionType::RepShort;
-
-            if (!part.isComp) {
-                // We need to add width in target in order to
-                // correctly count the number of partitions
-                part.mapTar += width;
-                part.mapIncZero = false;
-            }
+        } else if (part.includeZero && width < part.target) {
+            part.ptype      = PartitionType::RepShort;
+            part.mapTar    += width;
+            part.mapIncZero = false;
         }else if (part.includeZero) {
-            width = part.target;
+            width      = part.target;
             part.ptype = PartitionType::RepStdAll;
         } else if (width <= part.target) {
             part.ptype = PartitionType::RepNoZero;
@@ -670,7 +679,7 @@ void SetPartitionDesign(const std::vector<int> &Reps,
         // we don't try to figure out the appropriate length. Note,
         // this only applies to non-canonical partitions.
         part.mIsNull = false;
-        part.includeZero = part.allOne || (part.isComp && v.front() == 0);
+        part.includeZero = part.allOne || (part.isComp && v.front() == 0 && !part.isWeak);
         part.mapIncZero  = part.includeZero;
         part.cap = lenV - part.mapIncZero;
 

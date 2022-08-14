@@ -13,7 +13,8 @@ Rank Partitions/Compositions
 \usage{
 partitionsRank(..., v, repetition = FALSE, freqs = NULL, target = NULL)
 
-compositionsRank(..., v, repetition = FALSE, freqs = NULL, target = NULL)
+compositionsRank(..., v, repetition = FALSE, freqs = NULL,
+                 target = NULL, weak = FALSE)
 }
 \arguments{
   \item{...}{vectors or matrices to be ranked.}
@@ -21,6 +22,7 @@ compositionsRank(..., v, repetition = FALSE, freqs = NULL, target = NULL)
   \item{repetition}{Logical value indicating whether partitions/compositions should be with or without repetition. The default is \code{FALSE}.}
   \item{freqs}{A vector of frequencies used for producing all partitions of a multiset of \code{v}. Each element of \code{freqs} represents how many times each element of the source vector, \code{v}, is repeated. It is analogous to the \code{times} argument in \code{\link[base]{rep}}. The default value is \code{NULL}.}
   \item{target}{Number to be partitioned.}
+  \item{weak}{(Compositions only) Logical flag indicating whether to allow terms of the sequence to be zero.}
  }
 \details{
 These algorithms rely on efficiently ranking the \eqn{n^{th}}{nth} lexicographical partition.

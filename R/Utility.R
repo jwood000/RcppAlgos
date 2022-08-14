@@ -62,7 +62,7 @@ GetRank <- function(..., v, repetition = FALSE,
 }
 
 GetRankPart <- function(..., v, repetition = FALSE, freqs = NULL,
-                        target = NULL, IsComposition = FALSE) {
+                        target = NULL, IsComposition = FALSE, weak = FALSE) {
 
     n_args   <- length(arg_s <- list(...))
     target   <- GetTarget(v, target)
@@ -95,7 +95,7 @@ GetRankPart <- function(..., v, repetition = FALSE, freqs = NULL,
                 if (any(is.na(idx))) stop(msg_sub)
                 .Call(`_RcppAlgos_RankPartitionMain`, idx, v, repetition, freqs,
                       if (is.matrix(obj)) ncol(obj) else length(obj),
-                      "==", target, NULL, IsComposition)
+                      "==", target, NULL, IsComposition, weak)
             }, input)
         )
     } else if (!is.numeric(input)) {
@@ -104,13 +104,15 @@ GetRankPart <- function(..., v, repetition = FALSE, freqs = NULL,
         if (any(rowSums(input) != target)) stop(msg_part)
         idx <- match(t(input), v)
         if (any(is.na(idx))) stop(msg_sub)
-        return(.Call(`_RcppAlgos_RankPartitionMain`, idx, v, repetition,
-                     freqs, ncol(input), "==", target, NULL, IsComposition));
+        return(.Call(`_RcppAlgos_RankPartitionMain`, idx, v,
+                     repetition, freqs, ncol(input), "==", target,
+                     NULL, IsComposition, weak));
     } else {
         if (sum(input) != target) stop(msg_part)
         idx <- match(input, v)
         if (any(is.na(idx))) stop(msg_sub)
-        return(.Call(`_RcppAlgos_RankPartitionMain`, idx, v, repetition,
-                     freqs, length(input), "==", target, NULL, IsComposition));
+        return(.Call(`_RcppAlgos_RankPartitionMain`, idx, v,
+                     repetition, freqs, length(input), "==", target,
+                     NULL, IsComposition, weak));
     }
 }

@@ -1,7 +1,7 @@
 ---
 title: "Combinatorial Sampling and Ranking"
 author: "Joseph Wood"
-date: "07/22/2022"
+date: "08/05/2022"
 output:
   rmarkdown::html_vignette:
     toc: true
@@ -12,7 +12,7 @@ vignette: >
   \usepackage[utf8]{inputenc}
 ---
 
-This document covers topics in generating random samples of combinations/permutations/partitions/compositions or partition of groups. It is encouraged to read [General Combinatorics](<https://jwood000.github.io/RcppAlgos/articles/GeneralCombinatorics.html>) first.
+This document covers topics in generating random samples of combinations, permutations, partitions, compositions and partition of groups. It is encouraged to read [General Combinatorics](<https://jwood000.github.io/RcppAlgos/articles/GeneralCombinatorics.html>) first.
 
 ***
 
@@ -58,10 +58,10 @@ We could also try calling `sample(100, 20)` a bunch of times and hope we don't g
 
 `RcppAlgos` provides five functions: `comboSample`, `permuteSample`, `partitionsSample`, `compositionsSample`, and `comboGroupsSample` for seamlessly attacking these types of problems. All functions provide the following:
 
-* Easily generate random samples of combinations/permutations/partitions/compositions or partition of groups in parallel.
-* You can pass a vector of specific indices or rely on the internal sampling functions. We call `sample` when the total number of results is small and for larger cases, the sampling is done in a very similar fashion to `urand.bigz` from the `gmp` package.
-* Consistent interface to their respective general functions (i.e. `{combo/permute/partitions/compositions}General` and `comboGroups`)
-* Useful when we need a reproducible set of random combinations/permutations/partitions/compositions or partitions of groups.
+* Easily generate random samples in parallel using the `nThreads` or the `Parallel` parameters.
+* You can pass a vector of specific indices via `sampleVec` or rely on the internal sampling functions. We call `sample` when the total number of results is small and for larger cases, the sampling is done in a very similar fashion to `urand.bigz` from the `gmp` package.
+* Consistent interface to their respective general functions (e.g. `partitionsGeneral`)
+* The `seed` parameter allows for generating reproducible samples.
 * If the gmp library is needed, the `seed` parameter must be set in order to have reproducible results (_E.g._ `set.seed()`) has no effect in these cases).
 
 ## `comboSample` and `permuteSample`
@@ -235,7 +235,7 @@ system.time(comboSample(2500, 100, n = 1e4, seed = 157, nThreads = 8))
 
 ### User Defined Functions
 
-Again, just as with the general functions, you can pass a custom function to `combo/permuteSample` using the `FUN` argument.
+Again, just as with the general functions, you can pass a custom function to `{combo|permute}Sample` using the `FUN` argument.
 
 ```r
 permuteSample(5000, 1000, n = 3, seed = 101, FUN = sd)
