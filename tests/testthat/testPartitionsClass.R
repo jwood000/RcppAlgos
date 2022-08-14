@@ -265,9 +265,23 @@ test_that("partitionsIter produces correct results", {
                                    IsComposition = TRUE))
     #### Mapped version
     ## 15 * 3e9 = 45000000000
+    comp <- compositionsGeneral((0:15) * 3e9, 15, repetition = TRUE,
+                                target = 45000000000)
+    expect_equal(nrow(comp), compositionsCount(0:15, repetition = TRUE))
+    expect_equal(comp[nrow(comp), ], rep(3e9, 15))
+    expect_equal(comp[1, ], c(rep(0, 14), 45000000000))
     expect_true(partitionClassTest((0:15) * 3e9, 15,
                                    rep = TRUE, tar = 45000000000,
                                    IsComposition = TRUE))
+
+    #### Mapped version
+    ## 7 * 3e9 = 21000000000
+    comp <- compositionsGeneral((0:7) * 3e9, 7, repetition = TRUE,
+                                weak = TRUE, target = 21000000000)
+    expect_equal(nrow(comp), compositionsCount(0:7, repetition = TRUE,
+                                               weak = TRUE))
+    expect_equal(comp[nrow(comp), ], c(21000000000, rep(0, 6)))
+    expect_equal(comp[1, ], c(rep(0, 6), 21000000000))
     expect_true(partitionClassTest((0:7) * 3e9, 7, rep = TRUE,
                                    IsWeak = TRUE, tar = 21000000000,
                                    IsComposition = TRUE))

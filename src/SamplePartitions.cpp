@@ -174,12 +174,12 @@ SEXP SamplePartitions(SEXP Rv, SEXP Rm, SEXP RisRep, SEXP RFreqs,
     part.isWeak  = CleanConvert::convertFlag(RIsWeak, "weak");
     part.isComp  = CleanConvert::convertFlag(RIsComposition,
                                              "IsComposition");
+    part.isComb = !part.isComp;
 
     cpp11::sexp Rlow = R_NilValue;
-    ConstraintSetup(vNum, myReps, targetVals, vInt, targetIntVals,
-                    funDbl, part, ctype, n, m, compVec, mainFun,
-                    mainFun, myType, Rtarget, RcompFun, Rtolerance,
-                    Rlow, !part.isComp);
+    ConstraintSetup(vNum, myReps, targetVals, vInt, targetIntVals, funDbl,
+                    part, ctype, n, m, compVec, mainFun, mainFun, myType,
+                    Rtarget, RcompFun, Rtolerance, Rlow);
 
     if (part.ptype == PartitionType::Multiset ||
         part.ptype == PartitionType::CoarseGrained ||
@@ -200,7 +200,7 @@ SEXP SamplePartitions(SEXP Rv, SEXP Rm, SEXP RisRep, SEXP RFreqs,
     // When we are dealing with sampling, we have to know the total number
     // of partitions, thus the following:
 
-    if (part.numUnknown) PartitionsCount(myReps, part, n, true, true);
+    if (part.numUnknown) PartitionsCount(myReps, part, n, true);
     const bool SampleGmp = (part.count > SampleLimit);
 
     if (SampleGmp && !part.isGmp) {

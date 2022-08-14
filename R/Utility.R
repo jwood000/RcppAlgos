@@ -17,7 +17,7 @@ GetV <- function(v) {
 }
 
 GetTarget <- function(v, target) {
-    if (is.null(target)) {target = max(v, na.rm = TRUE)}
+    if (is.null(target)) {target <- max(v, na.rm = TRUE)}
     return(target)
 }
 

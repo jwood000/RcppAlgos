@@ -86,11 +86,12 @@ SEXP PartitionsCount(SEXP Rtarget, SEXP Rv, SEXP Rm,
     part.mIsNull = Rf_isNull(Rm);
     part.isWeak  = CleanConvert::convertFlag(RIsWeak, "weak");
     part.isComp  = CleanConvert::convertFlag(RIsComposition, "composition");
+    part.isComb  = !part.isComp;
 
     ConstraintSetup(vNum, myReps, targetVals, vInt, targetIntVals,
                     funDbl, part, ctype, n, m, compVec, mainFun,
                     mainFun, myType, Rtarget, RcompFun, Rtolerance,
-                    Rlow, !part.isComp, true);
+                    Rlow, true);
 
     if (!part.numUnknown) {
         if (bDesign) {

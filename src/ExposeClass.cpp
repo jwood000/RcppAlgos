@@ -108,6 +108,7 @@ SEXP CombClassNew(SEXP RVals, SEXP RboolVec, SEXP freqInfo, SEXP Rparallel,
         part.isMult  = IsMult;
         part.mIsNull = static_cast<bool>(Rf_asLogical(RmIsNull));
         part.isComp  = IsComp;
+        part.isComb  = IsComb;
         part.isWeak  = static_cast<bool>(bVec[7]);
 
         std::vector<std::string> compVec;
@@ -118,7 +119,7 @@ SEXP CombClassNew(SEXP RVals, SEXP RboolVec, SEXP freqInfo, SEXP Rparallel,
             ConstraintSetup(vNum, myReps, tarVals, vInt, tarIntVals,
                             funDbl, part, ctype, n, m, compVec, mainFun,
                             funTest, myType, Rtarget, RcompFun,
-                            Rtolerance, R_NilValue, IsComb, true);
+                            Rtolerance, R_NilValue, true);
         }
 
         auto computedRowsMpz = FromCpp14::make_unique<mpz_t[]>(1);

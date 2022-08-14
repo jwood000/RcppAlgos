@@ -462,7 +462,7 @@ void StandardDesign(const std::vector<int> &Reps,
                 } else {
                     part.ptype = PartitionType::DstctMultiZero;
                 }
-            } else if (width <= max_width + Reps.front()) {
+            } else if (width <= (max_width + Reps.front())) {
                 part.ptype = PartitionType::DstctMultiZero;
             } else {
                 part.solnExist = false;
@@ -516,6 +516,8 @@ void StandardDesign(const std::vector<int> &Reps,
             part.ptype      = PartitionType::RepShort;
             part.mapTar    += width;
             part.mapIncZero = false;
+        } else if (!part.isComp && !part.isComb && part.includeZero) {
+            part.ptype = PartitionType::RepStdAll;
         }else if (part.includeZero) {
             width      = part.target;
             part.ptype = PartitionType::RepStdAll;
@@ -607,7 +609,7 @@ void CheckPartition(const std::vector<std::string> &compFunVec,
 void SetPartitionDesign(const std::vector<int> &Reps,
                         const std::vector<double> &v,
                         PartDesign &part, ConstraintType &ctype,
-                        int lenV, int &m, bool bIsCount, bool IsComb) {
+                        int lenV, int &m, bool bIsCount) {
 
     // Now that we know we have partitions, we need to determine
     // if we are in a mapping case. There are a few of ways
@@ -668,8 +670,9 @@ void SetPartitionDesign(const std::vector<int> &Reps,
 
         part.includeZero = (v.front() == 0);
         part.mapIncZero  = part.includeZero;
-        part.mapTar = part.target;
-        part.cap = v.back();
+        part.isWeak      = part.isWeak && part.includeZero;
+        part.mapTar      = part.target;
+        part.cap         = v.back();
 
         ctype = ConstraintType::PartStandard;
         StandardDesign(Reps, part, m, lenV);
@@ -679,9 +682,17 @@ void SetPartitionDesign(const std::vector<int> &Reps,
         // we don't try to figure out the appropriate length. Note,
         // this only applies to non-canonical partitions.
         part.mIsNull = false;
+
+        // We can only have weak compositions when zero is included. We
+        // can't use part.includeZero for the reasons in the below comment
+        part.isWeak = part.isWeak && (v.front() == 0);
+
+        // When we are mapping cases, it is easy to calculate the number of
+        // results when we map zero to one, since the mapped value  will
+        // count zero as one when weak = TRUE.
         part.includeZero = part.allOne || (part.isComp && v.front() == 0 && !part.isWeak);
         part.mapIncZero  = part.includeZero;
-        part.cap = lenV - part.mapIncZero;
+        part.cap         = lenV - part.mapIncZero;
 
         part.ptype = (m == 1) ? PartitionType::LengthOne :
             (part.isMult ? PartitionType::Multiset :
@@ -696,5 +707,5 @@ void SetPartitionDesign(const std::vector<int> &Reps,
         }
     }
 
-    PartitionsCount(Reps, part, lenV, bIsCount, IsComb);
+    PartitionsCount(Reps, part, lenV, bIsCount);
 }

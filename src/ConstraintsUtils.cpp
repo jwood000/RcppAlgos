@@ -336,8 +336,7 @@ void ConstraintSetup(const std::vector<double> &vNum,
                      std::vector<std::string> &compFunVec,
                      const std::string &mainFun, const std::string &funTest,
                      VecType &myType, SEXP Rtarget, SEXP RcompFun,
-                     SEXP Rtolerance, SEXP Rlow,
-                     bool IsComb, bool bIsCount) {
+                     SEXP Rtolerance, SEXP Rlow, bool bIsCount) {
 
     // numOnly = true, checkWhole = false, negPoss = true
     CleanConvert::convertVector(Rtarget, targetVals,
@@ -396,8 +395,7 @@ void ConstraintSetup(const std::vector<double> &vNum,
     }
 
     if (part.isPart) {
-        SetPartitionDesign(Reps, vNum, part, ctype,
-                           lenV, m, bIsCount, IsComb);
+        SetPartitionDesign(Reps, vNum, part, ctype, lenV, m, bIsCount);
 
         if (part.numUnknown && part.isComp) {
             const std::string msg = "Currently, there is no composition "

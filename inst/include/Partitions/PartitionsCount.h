@@ -4,8 +4,8 @@
 #include "Partitions/PartitionsTypes.h"
 #include "Cpp14MakeUnique.h"
 
-void PartitionsCount(const std::vector<int> &Reps, PartDesign &part,
-                     int lenV, bool bIsCount, bool IsComb);
+void PartitionsCount(const std::vector<int> &Reps,
+                     PartDesign &part, int lenV, bool bIsCount);
 
 class CountClass {
 protected:

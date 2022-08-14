@@ -61,7 +61,6 @@ void ConstraintSetup(const std::vector<double> &vNum,
                      std::vector<std::string> &compFunVec,
                      const std::string &mainFun, const std::string &funTest,
                      VecType &myType, SEXP Rtarget, SEXP RcompFun,
-                     SEXP Rtolerance, SEXP Rlow, bool IsComb,
-                     bool bIsCount = false);
+                     SEXP Rtolerance, SEXP Rlow, bool bIsCount = false);
 
 #endif

@@ -73,13 +73,13 @@ SEXP RankPartitionMain(SEXP RIdx, SEXP Rv, SEXP RisRep,
     part.isMult  = IsMult;
     part.mIsNull = Rf_isNull(Rm);
     part.isComp  = IsComposition;
+    part.isComb  = !part.isComp;
     part.isWeak  = CleanConvert::convertFlag(RIsWeak, "weak");
 
     cpp11::sexp Rlow = R_NilValue;
-    ConstraintSetup(vNum, myReps, targetVals, vInt, targetIntVals,
-                    funDbl, part, ctype, n, m, compVec, mainFun,
-                    mainFun, myType, Rtarget, RcompFun, Rtolerance,
-                    Rlow, !IsComposition);
+    ConstraintSetup(vNum, myReps, targetVals, vInt, targetIntVals, funDbl,
+                    part, ctype, n, m, compVec, mainFun, mainFun, myType,
+                    Rtarget, RcompFun, Rtolerance, Rlow);
 
     if (part.ptype == PartitionType::Multiset ||
         part.ptype == PartitionType::CoarseGrained ||
@@ -107,7 +107,7 @@ SEXP RankPartitionMain(SEXP RIdx, SEXP Rv, SEXP RisRep,
     }
 
     // See comment in SamplePartitions.cpp
-    if (part.numUnknown) PartitionsCount(myReps, part, n, true, true);
+    if (part.numUnknown) PartitionsCount(myReps, part, n, true);
     const int numResults  = Rf_length(RIdx) / m;
     const int bigSampSize = (part.isGmp) ? numResults : 1;
     auto myVec = FromCpp14::make_unique<mpz_t[]>(bigSampSize);

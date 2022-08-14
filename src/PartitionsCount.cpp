@@ -298,8 +298,8 @@ void CountClass::SetArrSize(PartitionType ptype, int n, int m, int cap) {
     }
 }
 
-void PartitionsCount(const std::vector<int> &Reps, PartDesign &part,
-                     int lenV, bool bIsCount, bool IsComb) {
+void PartitionsCount(const std::vector<int> &Reps,
+                     PartDesign &part, int lenV, bool bIsCount) {
 
     part.count = 0.0;
     part.numUnknown = false;
@@ -317,7 +317,7 @@ void PartitionsCount(const std::vector<int> &Reps, PartDesign &part,
 
     if (part.ptype == PartitionType::LengthOne) {
         part.count = static_cast<int>(part.solnExist);
-    } else if (IsComb && part.ptype != PartitionType::Multiset) {
+    } else if (part.isComb && part.ptype != PartitionType::Multiset) {
         if (bIsCount || bWorthIt) {
             std::unique_ptr<CountClass> myClass = MakeCount(part.ptype);
             part.count = myClass->GetCount(part.mapTar, part.width,
@@ -343,7 +343,7 @@ void PartitionsCount(const std::vector<int> &Reps, PartDesign &part,
         } else {
             part.numUnknown = true;
         }
-    } else if (IsComb) {
+    } else if (part.isComb) {
         if (bIsCount) {
             part.count = (part.solnExist) ?
                          CountPartsMultiset(Reps, part.startZ) : 0;

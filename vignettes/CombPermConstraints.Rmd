@@ -1,13 +1,13 @@
 ---
-title: "Constraints, Integer Partitions, and Integer Compositions"
+title: "Constraints, Partitions, and Compositions"
 author: "Joseph Wood"
-date: "07/22/2022"
+date: "08/14/2022"
 output:
   rmarkdown::html_vignette:
     toc: true
     number_sections: false
 vignette: >
-  %\VignetteIndexEntry{Constraints, Integer Partitions, and Integer Compositions}
+  %\VignetteIndexEntry{Constraints, Partitions, and Compositions}
   %\VignetteEngine{knitr::rmarkdown}
   \usepackage[utf8]{inputenc}
 ---
@@ -549,7 +549,9 @@ system.time(partitionsGeneral(100, 15, freqs = rep(4:8, 20)))
 
 [Compositions](<https://en.wikipedia.org/wiki/Composition_(combinatorics)>) are related to integer partitions, however order matters. With `RcppAlgos`, we generate standard compositions with `compositionsGeneral`. Currently, the composition algorithms are limited to a subset of cases of compositions with repetiion.
 
-For more general cases, we can make use of `permuteGeneral`, keeping in mind that the output will not be in lexicographical order. Another consideration with `permuteGeneral` is that when we include zero, we will obtain **_weak compositions_**, which allow for zeros to be a part of the sequence (E.g. `c(0, 0, 5), c(0, 5, 0), c(5, 0, 0)` are weak compositions of 5).
+The output with `compositionGeneral` will be in lexicographical order. When we set `weak = TRUE`, we will obtain **_weak compositions_**, which allow for zeros to be a part of the sequence (E.g. `c(0, 0, 5), c(0, 5, 0), c(5, 0, 0)` are weak compositions of 5). As the Wikipedia article points out, we can increase the number of zeros indefinitely when `weak = TRUE`.
+
+For more general cases, we can make use of `permuteGeneral`, keeping in mind that the output will not be in lexicographical order. Another consideration with `permuteGeneral` is that when we include zero, we will always obtain weak compositions.
 
 With that in mind, generating compositions with `RcppAlgos` is easy, flexible, and quite efficient.
 
@@ -564,7 +566,32 @@ compositionsGeneral(0:3, repetition = TRUE)
 #> [3,]    0    2    1
 #> [4,]    1    1    1
 
-## With permuteGeneral, we get weak compositions.
+## Get weak compositions
+compositionsGeneral(0:3, repetition = TRUE, weak = TRUE)
+#>       [,1] [,2] [,3]
+#>  [1,]    0    0    3
+#>  [2,]    0    1    2
+#>  [3,]    0    2    1
+#>  [4,]    0    3    0
+#>  [5,]    1    0    2
+#>  [6,]    1    1    1
+#>  [7,]    1    2    0
+#>  [8,]    2    0    1
+#>  [9,]    2    1    0
+#> [10,]    3    0    0
+
+## Get weak compositions with width > than target
+tail(compositionsGeneral(0:3, 10, repetition = TRUE, weak = TRUE))
+#>        [,1] [,2] [,3] [,4] [,5] [,6] [,7] [,8] [,9] [,10]
+#> [215,]    2    0    0    0    0    1    0    0    0     0
+#> [216,]    2    0    0    0    1    0    0    0    0     0
+#> [217,]    2    0    0    1    0    0    0    0    0     0
+#> [218,]    2    0    1    0    0    0    0    0    0     0
+#> [219,]    2    1    0    0    0    0    0    0    0     0
+#> [220,]    3    0    0    0    0    0    0    0    0     0
+
+## With permuteGeneral, we always get weak compositions, just
+## not in lexicographical order
 permuteGeneral(0:3, repetition = TRUE,
                constraintFun = "sum",
                comparisonFun = "==", limitConstraints = 3)
@@ -579,12 +606,23 @@ permuteGeneral(0:3, repetition = TRUE,
 #>  [8,]    2    0    1
 #>  [9,]    2    1    0
 #> [10,]    1    1    1
+
+tail(permuteGeneral(0:3, 10, repetition = TRUE,
+                    constraintFun = "sum",
+                    comparisonFun = "==", limitConstraints = 3))
+#>        [,1] [,2] [,3] [,4] [,5] [,6] [,7] [,8] [,9] [,10]
+#> [215,]    1    1    0    0    0    0    0    1    0     0
+#> [216,]    1    1    0    0    0    0    1    0    0     0
+#> [217,]    1    1    0    0    0    1    0    0    0     0
+#> [218,]    1    1    0    0    1    0    0    0    0     0
+#> [219,]    1    1    0    1    0    0    0    0    0     0
+#> [220,]    1    1    1    0    0    0    0    0    0     0
 ```
 
 ### Case 6: Compositions of _N_ of Length _m_
 
 ```r
-## See Case 2
+## See Case 2. N.B. weak = TRUE has no effect
 compositionsGeneral(6, 3, repetition = TRUE)
 #>       [,1] [,2] [,3]
 #>  [1,]    1    1    4
@@ -659,15 +697,28 @@ system.time(compositionsGeneral(0:25, repetition = TRUE, nThreads = 4))
 #>    user  system elapsed
 #>   1.921   0.465   0.734
 
-## weak compositions of 12
-system.time(weakComp12 <- permuteGeneral(0:12, 12, repetition = TRUE,
-                                         constraintFun = "sum",
-                                         comparisonFun = "==", limitConstraints = 12))
-#>  user  system elapsed
-#> 0.036   0.016   0.051
 
-dim(weakComp12)
+## weak compositions of 12 usnig nThreads = 4
+system.time(weakComp12 <- compositionsGeneral(0:12, repetition = TRUE,
+                                              weak = TRUE, nThreads = 4))
+#>  user  system elapsed 
+#> 0.028   0.000   0.007
+
+## And using permuteGeneral
+system.time(weakPerm12 <- permuteGeneral(0:12, 12, repetition = TRUE,
+                                         constraintFun = "sum",
+                                         comparisonFun = "==",
+                                         limitConstraints = 12))
+#>  user  system elapsed
+#> 0.021   0.000   0.021
+
+dim(weakPerm12)
 #> [1] 1352078      12
+
+identical(weakPerm12[do.call(order, as.data.frame(weakPerm12)), ],
+          weakComp12)
+#> [1] TRUE
+
 
 ## General compositions with varying multiplicities
 system.time(comp25_gen <- permuteGeneral(25, 10, freqs = rep(4:8, 5),

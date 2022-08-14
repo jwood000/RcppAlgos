@@ -65,12 +65,13 @@ SEXP CombinatoricsCnstrt(SEXP Rv, SEXP Rm, SEXP RisRep, SEXP RFreqs,
     part.isWeak  = CleanConvert::convertFlag(RIsWeak, "weak");
     part.isComp  = CleanConvert::convertFlag(RIsComposition,
                                              "IsComposition");
+    part.isComb = IsComb;
 
     if (IsConstrained) {
         ConstraintSetup(vNum, myReps, tarVals, vInt, tarIntVals,
                         funDbl, part, ctype, n, m, compVec, mainFun,
                         funTest, myType, Rtarget, RcompFun,
-                        Rtolerance, Rlow, IsComb);
+                        Rtolerance, Rlow);
     }
 
     const bool usePartCount = part.isPart &&

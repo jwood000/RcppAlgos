@@ -58,6 +58,7 @@ struct PartDesign {
     bool isGmp = false;
     bool isRep = false;
     bool isMult = false;
+    bool isComb = false;
     bool isPart = false;
     bool isComp = false;      // Are we dealing with compositions?
     bool isWeak = false;      // Do we allow terms of the sequence to be zero?

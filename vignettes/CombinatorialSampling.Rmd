@@ -1,7 +1,7 @@
 ---
 title: "Combinatorial Sampling and Ranking"
 author: "Joseph Wood"
-date: "08/05/2022"
+date: "08/14/2022"
 output:
   rmarkdown::html_vignette:
     toc: true
@@ -400,6 +400,14 @@ system.time(multi <- compositionsSample(2500, 10, TRUE, n = 1e4,
 
 identical(multi, serial)
 #> [1] TRUE
+
+## Sample weak compositions
+compositionsSample(0:100, 8, repetition = TRUE, weak = TRUE,
+                   seed = 245659, n = 3, namedSample = TRUE)
+#>             [,1] [,2] [,3] [,4] [,5] [,6] [,7] [,8]
+#> 21547195040   23    0    0    8    5   22   25   17
+#> 7649268748     5    0   13   36   42    4    0    0
+#> 7598223523     4   54   21    4    6    0    8    3
 ```
 
 Currently, there are only sampling algorithms for most cases of compositions with repetition. There is ongoing work to expand these algorithms in the future.

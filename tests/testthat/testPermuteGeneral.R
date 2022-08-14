@@ -102,6 +102,19 @@ test_that("permuteGeneral produces correct results with no constraints for multi
 })
 
 test_that("permuteGeneral produces correct results with constraints", {
+
+    perms <- permuteGeneral(10, 5, TRUE, constraintFun = "sum",
+                            comparisonFun = "==", limitConstraints = 10)
+    comps <- compositionsGeneral(10, 5, TRUE)
+    expect_equal(comps, perms[do.call(order, as.data.frame(perms)), ])
+    ## weak does nothing here
+    expect_equal(compositionsGeneral(10, 5, TRUE, weak = TRUE), comps)
+
+    perms <- permuteGeneral(0:10, 5, TRUE, constraintFun = "sum",
+                            comparisonFun = "==", limitConstraints = 10)
+    comps <- compositionsGeneral(0:10, 5, TRUE, weak = TRUE)
+    expect_equal(comps, perms[do.call(order, as.data.frame(perms)), ])
+
     expect_equal(nrow(permuteGeneral(15, 7,
                                      comparisonFun = "==", constraintFun = "sum",
                                      limitConstraints = 80, upper = 100)), 100)
