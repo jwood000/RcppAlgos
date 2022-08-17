@@ -319,7 +319,7 @@ As you can see, the _2<sup>nd</sup>_ through the _6<sup>th</sup>_ entries are si
 
 Specialized algorithms are employed when it can be determined that we are looking for [integer partitions](<https://en.wikipedia.org/wiki/Partition_(number_theory)>).
 
-As of version `2.5.0`, we now have added `partitionsGeneral` which is similar to `comboGeneral` with `constraintFun = "sum"` and `comparisonFun = "=="`. Instead of using the very general `limitConstraints` parameter, we use `target` with a default of `max(abs(v))` as it seems more fitting for partitions.
+As of version `2.5.0`, we now have added `partitionsGeneral` which is similar to `comboGeneral` with `constraintFun = "sum"` and `comparisonFun = "=="`. Instead of using the very general `limitConstraints` parameter, we use `target` with a default of `max(v)` as it seems more fitting for partitions.
 
 ### Case 1: All Integer Partitions of _N_
 

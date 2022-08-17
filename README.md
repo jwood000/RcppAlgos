@@ -144,7 +144,7 @@ comboGeneral(5, 7, TRUE, constraintFun = "prod",
 * [Computational Mathematics Overview](<https://jwood000.github.io/RcppAlgos/articles/ComputationalMathematics.html>)
 * [Combination and Permutation Basics](<https://jwood000.github.io/RcppAlgos/articles/GeneralCombinatorics.html>)
 * [Combinatorial Sampling](<https://jwood000.github.io/RcppAlgos/articles/CombinatorialSampling.html>)
-* [Constraints and Integer Partitions](<https://jwood000.github.io/RcppAlgos/articles/CombPermConstraints.html>)
+* [Constraints, Partitions, and Compositions](<https://jwood000.github.io/RcppAlgos/articles/CombPermConstraints.html>)
 * [Attacking Problems Related to the Subset Sum Problem](<https://jwood000.github.io/RcppAlgos/articles/SubsetSum.html>)
 * [Combinatorial Iterators in RcppAlgos](<https://jwood000.github.io/RcppAlgos/articles/CombinatoricsIterators.html>)
 * [Cartesian Products and Partitions of Groups into Equal Size](<https://jwood000.github.io/RcppAlgos/articles/OtherCombinatorics.html>)
