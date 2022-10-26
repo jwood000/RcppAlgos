@@ -5,7 +5,8 @@
 template <typename T>
 void SampleApplyFun(SEXP res, const std::vector<T> &v, SEXP vectorPass,
                     T* ptr_vec, const std::vector<double> &mySample,
-                    mpz_t *const myBigSamp, const std::vector<int> &myReps,
+                    const std::vector<mpz_class> &myBigSamp,
+                    const std::vector<int> &myReps,
                     SEXP func, SEXP rho, nthResultPtr nthResFun, int m,
                     int sampSize, bool IsNamed, bool IsGmp, int lenV,
                     int commonLen = 1, int commonType = INTSXP) {
@@ -26,8 +27,7 @@ void SampleApplyFun(SEXP res, const std::vector<T> &v, SEXP vectorPass,
                       commonLen, count, sampSize, retType);
         }
     } else {
-        mpz_t mpzDefault;
-        mpz_init(mpzDefault);
+        mpz_class mpzDefault;
 
         for (int count = 0; count < sampSize; ++count) {
             const std::vector<int> z = nthResFun(lenV, m, mySample[count],
@@ -40,8 +40,6 @@ void SampleApplyFun(SEXP res, const std::vector<T> &v, SEXP vectorPass,
             FunAssign(res, vectorPass, sexpFun, rho, commonType,
                       commonLen, count, sampSize, retType);
         }
-
-        mpz_clear(mpzDefault);
     }
 
     SetSampleNames(res, IsGmp, sampSize, mySample, myBigSamp, IsNamed);
@@ -49,7 +47,8 @@ void SampleApplyFun(SEXP res, const std::vector<T> &v, SEXP vectorPass,
 
 void SampleApplyFun(SEXP res, SEXP v, SEXP vectorPass,
                     const std::vector<double> &mySample,
-                    mpz_t *const myBigSamp, const std::vector<int> &myReps,
+                    const std::vector<mpz_class> &myBigSamp,
+                    const std::vector<int> &myReps,
                     SEXP func, SEXP rho, nthResultPtr nthResFun, int m,
                     int sampSize, bool IsNamed, bool IsGmp, int lenV,
                     int commonLen = 1, int commonType = INTSXP) {
@@ -70,8 +69,7 @@ void SampleApplyFun(SEXP res, SEXP v, SEXP vectorPass,
                       commonLen, count, sampSize, retType);
         }
     } else {
-        mpz_t mpzDefault;
-        mpz_init(mpzDefault);
+        mpz_class mpzDefault;
 
         for (int count = 0; count < sampSize; ++count) {
             const std::vector<int> z = nthResFun(lenV, m, mySample[count],
@@ -84,8 +82,6 @@ void SampleApplyFun(SEXP res, SEXP v, SEXP vectorPass,
             FunAssign(res, vectorPass, sexpFun, rho, commonType,
                       commonLen, count, sampSize, retType);
         }
-
-        mpz_clear(mpzDefault);
     }
 
     SetSampleNames(res, IsGmp, sampSize, mySample, myBigSamp, IsNamed);
@@ -94,7 +90,8 @@ void SampleApplyFun(SEXP res, SEXP v, SEXP vectorPass,
 template <typename T>
 SEXP ApplyFunction(const std::vector<T> &v, SEXP vectorPass,
                    T* ptr_vec, const std::vector<double> &mySample,
-                   mpz_t *const myBigSamp, const std::vector<int> &myReps,
+                   const std::vector<mpz_class> &myBigSamp,
+                   const std::vector<int> &myReps,
                    SEXP stdFun, SEXP rho, SEXP RFunVal,
                    nthResultPtr nthResFun, int m, int n_samp,
                    bool IsNamed, bool IsGmp, int lenV) {
@@ -187,7 +184,8 @@ SEXP ApplyFunction(const std::vector<T> &v, SEXP vectorPass,
 
 SEXP ApplyFunction(SEXP v, SEXP vectorPass,
                    const std::vector<double> &mySample,
-                   mpz_t *const myBigSamp, const std::vector<int> &myReps,
+                   const std::vector<mpz_class> &myBigSamp,
+                   const std::vector<int> &myReps,
                    SEXP stdFun, SEXP rho, SEXP RFunVal,
                    nthResultPtr nthResFun, int m, int n_samp,
                    bool IsNamed, bool IsGmp, int lenV) {
@@ -274,7 +272,7 @@ SEXP ApplyFunction(SEXP v, SEXP vectorPass,
 SEXP SampleCombPermApply(SEXP Rv, const std::vector<int> &vInt,
                          const std::vector<double> &vNum,
                          const std::vector<double> &mySample,
-                         mpz_t *const myBigSamp,
+                         const std::vector<mpz_class> &myBigSamp,
                          const std::vector<int> &myReps, SEXP stdFun,
                          SEXP rho, SEXP RFunVal, nthResultPtr nthResFun,
                          VecType myType, int n, int m, int sampSize,
@@ -290,7 +288,6 @@ SEXP SampleCombPermApply(SEXP Rv, const std::vector<int> &vInt,
                 rho, RFunVal, nthResFun, m, sampSize, IsNamed, IsGmp, n
             );
 
-            MpzClearVec(myBigSamp, sampSize, IsGmp);
             return res;
         } case VecType::Complex : {
             cpp11::sexp vectorPass = Rf_allocVector(CPLXSXP, m);
@@ -305,7 +302,6 @@ SEXP SampleCombPermApply(SEXP Rv, const std::vector<int> &vInt,
                 IsGmp, n
             );
 
-            MpzClearVec(myBigSamp, sampSize, IsGmp);
             return res;
         } case VecType::Raw : {
             cpp11::sexp vectorPass = Rf_allocVector(RAWSXP, m);
@@ -320,7 +316,6 @@ SEXP SampleCombPermApply(SEXP Rv, const std::vector<int> &vInt,
                 IsGmp, n
             );
 
-            MpzClearVec(myBigSamp, sampSize, IsGmp);
             return res;
         } case VecType::Logical : {
             cpp11::sexp vectorPass = Rf_allocVector(LGLSXP, m);
@@ -332,7 +327,6 @@ SEXP SampleCombPermApply(SEXP Rv, const std::vector<int> &vInt,
                 IsGmp, n
             );
 
-            MpzClearVec(myBigSamp, sampSize, IsGmp);
             return res;
         } case VecType::Integer : {
             cpp11::sexp vectorPass = Rf_allocVector(INTSXP, m);
@@ -344,7 +338,6 @@ SEXP SampleCombPermApply(SEXP Rv, const std::vector<int> &vInt,
                 IsGmp, n
             );
 
-            MpzClearVec(myBigSamp, sampSize, IsGmp);
             return res;
         } default : {
             cpp11::sexp vectorPass = Rf_allocVector(REALSXP, m);
@@ -356,7 +349,6 @@ SEXP SampleCombPermApply(SEXP Rv, const std::vector<int> &vInt,
                 IsGmp, n
             );
 
-            MpzClearVec(myBigSamp, sampSize, IsGmp);
             return res;
         }
     }

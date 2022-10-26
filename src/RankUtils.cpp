@@ -1,9 +1,6 @@
-#include "ImportExportMPZ.h"
 #include "SetUpUtils.h"
 #include <unordered_map>
 #include <algorithm>
-
-constexpr std::size_t numb = 8 * intSize;
 
 void SetUpRank(SEXP RIdx, SEXP Rv, SEXP RisRep, SEXP RFreqs, SEXP Rm,
                std::vector<int> &idx, std::vector<int> &freqs,
@@ -11,8 +8,8 @@ void SetUpRank(SEXP RIdx, SEXP Rv, SEXP RisRep, SEXP RFreqs, SEXP Rm,
                bool IsComb, bool &IsMult, bool &IsRep) {
 
     SetType(myType, Rv);
-    CleanConvert::convertPrimitive(Rm, m, VecType::Integer, "m");
-    CleanConvert::convertVector(RIdx, idx, VecType::Integer, "idx");
+    CppConvert::convertPrimitive(Rm, m, VecType::Integer, "m");
+    CppConvert::convertVector(RIdx, idx, VecType::Integer, "idx");
 
     for (auto &i: idx) {
         --i;
@@ -67,13 +64,13 @@ void SetUpRank(SEXP RIdx, SEXP Rv, SEXP RisRep, SEXP RFreqs, SEXP Rm,
     }
 }
 
-SEXP MpzReturn(mpz_t *myVec, int numResults) {
+SEXP MpzReturn(const std::vector<mpz_class> &myVec, int numResults) {
     std::size_t size = intSize;
     std::vector<std::size_t> mySizes(numResults);
 
     for (int i = 0; i < numResults; ++i) { // adding each bigint's needed size
         const std::size_t tempSize = intSize * (
-            2 + (mpz_sizeinbase(myVec[i], 2) + numb - 1) / numb
+            2 + (mpz_sizeinbase(myVec[i].get_mpz_t(), 2) + numb - 1) / numb
         );
         size += tempSize;
         mySizes[i] = tempSize;
@@ -88,10 +85,9 @@ SEXP MpzReturn(mpz_t *myVec, int numResults) {
     std::size_t posPos = intSize;
 
     for (int i = 0; i < numResults; ++i) {
-        posPos += myRaw(&rPos[posPos], myVec[i], mySizes[i]);
+        posPos += CppConvert::rawExport(&rPos[posPos], myVec[i], mySizes[i]);
     }
 
     res_bigz.attr("class") = "bigz";
-    MpzClearVec(myVec, numResults);
     return res_bigz;
 }

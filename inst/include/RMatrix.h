@@ -1,5 +1,4 @@
-#ifndef __RCPP_PARALLEL_RMATRIX__
-#define __RCPP_PARALLEL_RMATRIX__
+#pragma once
 
 #include <cstddef>
 #include <iterator>
@@ -259,5 +258,3 @@ class RMatrix {
     };
 
 } // namespace RcppParallel
-
-#endif // __RCPP_PARALLEL_RMATRIX__

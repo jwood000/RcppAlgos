@@ -1,22 +1,20 @@
-#include "Cpp14MakeUnique.h"
 #include "ComputedCount.h"
 #include "RankResult.h"
 #include "RankUtils.h"
 
-void RankResults(mpz_t* bigRes, int* intRes, double* dblRes,
+void RankResults(std::vector<mpz_class> &bigRes, int* intRes, double* dblRes,
                  std::vector<int> &idx, const std::vector<int> &myReps,
                  rankResultPtr rankFun, int m, int lenV, int numResults,
                  bool IsGmp, bool IsInteger) {
 
-    mpz_t mpzIdx;
-    mpz_init_set_ui(mpzIdx, 0u);
+    mpz_class mpzIdx(0);
 
     if (IsGmp) {
         for (int i = 0, j = 0; i < numResults; ++i, j += m) {
             double dblIdx = 0;
             rankFun(idx.begin() + j, lenV, m, dblIdx, mpzIdx, myReps);
-            mpz_add_ui(mpzIdx, mpzIdx, 1u);
-            mpz_set(bigRes[i], mpzIdx);
+            ++mpzIdx;
+            bigRes[i] = mpzIdx;
         }
     } else {
         for (int i = 0, j = 0; i < numResults; ++i, j += m) {
@@ -26,8 +24,6 @@ void RankResults(mpz_t* bigRes, int* intRes, double* dblRes,
             if (IsInteger) intRes[i] = dblIdx; else dblRes[i] = dblIdx;
         }
     }
-
-    mpz_clear(mpzIdx);
 }
 
 [[cpp11::register]]
@@ -38,8 +34,8 @@ SEXP RankCombPerm(SEXP RIdx, SEXP Rv, SEXP RisRep,
     int m = 0;
     VecType myType = VecType::Integer;
 
-    bool IsRep = CleanConvert::convertFlag(RisRep, "repetition");
-    const bool IsComb = CleanConvert::convertFlag(RIsComb, "IsComb");
+    bool IsRep = CppConvert::convertFlag(RisRep, "repetition");
+    const bool IsComb = CppConvert::convertFlag(RIsComb, "IsComb");
     bool IsMult = false;
 
     std::vector<int> idx;
@@ -62,24 +58,21 @@ SEXP RankCombPerm(SEXP RIdx, SEXP Rv, SEXP RisRep,
                                                  numResults : 0);
     int* res_int = INTEGER(res_std_int);
 
-    cpp11::sexp res_std_dbl = Rf_allocVector(REALSXP, (!IsInteger && !IsGmp)
-                                                 ? numResults : 0);
+    cpp11::sexp res_std_dbl = Rf_allocVector(
+        REALSXP, (!IsInteger && !IsGmp) ? numResults : 0
+    );
     double* res_dbl = REAL(res_std_dbl);
 
-    const int bigNumResults = (IsGmp) ? numResults : 0;
-    auto myVec = FromCpp14::make_unique<mpz_t[]>(bigNumResults);
+    const int bigNumResults = IsGmp ? numResults : 0;
+    std::vector<mpz_class> myVec(bigNumResults);
 
-    for (int i = 0; i < bigNumResults; ++i) {
-        mpz_init(myVec[i]);
-    }
-
-    RankResults(myVec.get(), res_int, res_dbl, idx, myReps,
+    RankResults(myVec, res_int, res_dbl, idx, myReps,
                 rankFun, m, n, numResults, IsGmp, IsInteger);
 
     if (IsInteger) {
         return res_std_int;
     } else if (IsGmp) {
-        return MpzReturn(myVec.get(), numResults);
+        return MpzReturn(myVec, numResults);
     } else {
         return res_std_dbl;
     }

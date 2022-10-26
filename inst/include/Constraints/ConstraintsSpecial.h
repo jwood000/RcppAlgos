@@ -1,8 +1,7 @@
-#ifndef CONSTRAINTS_SPECIAL_H
-#define CONSTRAINTS_SPECIAL_H
+#pragma once
 
 #include <vector>
-#include <gmp.h>
+#include <gmpxx.h>
 
 template <typename T>
 void ConstraintsSpecial(const std::vector<T> &v,
@@ -12,8 +11,6 @@ void ConstraintsSpecial(const std::vector<T> &v,
                         std::vector<int> freqs,
                         std::vector<T> &cnstrntVec, std::vector<T> &resVec,
                         const std::string &mainFun, std::vector<int> &z,
-                        double lower, mpz_t lowerMpz, int n, int m,
+                        double lower, mpz_class &lowerMpz, int n, int m,
                         int maxRows, int nThreads, bool IsRep, bool xtraCol,
                         bool IsComb, bool IsMult, bool IsGmp);
-
-#endif

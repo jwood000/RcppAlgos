@@ -1,5 +1,4 @@
-#ifndef COMBINATIONS_DISTINCT_H
-#define COMBINATIONS_DISTINCT_H
+#pragma once
 
 #include "NextComboSection.h"
 
@@ -47,5 +46,3 @@ void CombinationsDistinct(SEXP mat, SEXP v, std::vector<int> &z,
         nextCombSec(z, m1, nMinusM);
     }
 }
-
-#endif

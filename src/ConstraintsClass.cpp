@@ -4,6 +4,7 @@
 #include "Constraints/ConstraintsMultiset.h"
 #include "Constraints/ConstraintsDistinct.h"
 #include "Constraints/ConstraintsRep.h"
+#include "CppConvert/Cpp14MakeUnique.h"
 #include <chrono>
 
 // Used for checking whether user has interrupted computation

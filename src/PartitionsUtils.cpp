@@ -1,3 +1,4 @@
+#include "cpp11/protect.hpp"
 #include "Partitions/PartitionsUtils.h"
 
 void BinaryNextElem(int &uppBnd, int &lowBnd, int &ind, int lastElem,

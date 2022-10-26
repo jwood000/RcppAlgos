@@ -1,5 +1,4 @@
-#ifndef ERATOSTHENES_H
-#define ERATOSTHENES_H
+#pragma once
 
 #include <cmath>
 #include <vector>
@@ -19,5 +18,3 @@ namespace PrimeSieve{
     void sqrtBigPrimes(int sqrtBound, bool bAddZero, bool bAddExtraPrime,
                        bool bAddTwo, std::vector<T> &sievePrimes);
 }
-
-#endif

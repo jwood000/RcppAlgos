@@ -1,5 +1,4 @@
-#ifndef GET_CONSTRAINTS_H
-#define GET_CONSTRAINTS_H
+#pragma once
 
 #include "Constraints/ConstraintsUtils.h"
 #include "Partitions/PartitionsTypes.h"
@@ -11,10 +10,8 @@ SEXP GetConstraints(
     std::vector<double> &tarVals, std::vector<int> &tarIntVals,
     std::vector<int> &startZ, const std::string &mainFun,
     const std::string &funTest, funcPtr<double> funDbl, double lower,
-    mpz_t lowerMpz, double userNum, ConstraintType ctype, VecType myType,
+    mpz_class &lowerMpz, double userNum, ConstraintType ctype, VecType myType,
     int nThreads, int nRows, int n, int strtLen, int cap, int m,
     bool IsComb, bool Parallel, bool IsGmp, bool IsRep, bool IsMult,
     bool bUpper, bool KeepRes, bool numUnknown
 );
-
-#endif

@@ -2,11 +2,11 @@
 #include "Combinations/ComboCount.h"
 
 using rankCombPtr = void (*const)(std::vector<int>::iterator iter, int n,
-                          int m, double &dblIdx, mpz_t mpzIdx,
+                          int m, double &dblIdx, mpz_class &mpzIdx,
                           const std::vector<int> &Reps);
 
 void rankComb(std::vector<int>::iterator iter, int n, int m,
-              double &dblIdx, mpz_t mpzIdx,
+              double &dblIdx, mpz_class &mpzIdx,
               const std::vector<int> &Reps) {
 
     dblIdx = 0;
@@ -27,7 +27,7 @@ void rankComb(std::vector<int>::iterator iter, int n, int m,
 }
 
 void rankCombRep(std::vector<int>::iterator iter, int n, int m,
-                 double &dblIdx, mpz_t mpzIdx,
+                 double &dblIdx, mpz_class &mpzIdx,
                  const std::vector<int> &Reps) {
 
     dblIdx = 0;
@@ -46,7 +46,7 @@ void rankCombRep(std::vector<int>::iterator iter, int n, int m,
 }
 
 void rankCombMult(std::vector<int>::iterator iter, int n, int m,
-                  double &dblIdx, mpz_t mpzIdx,
+                  double &dblIdx, mpz_class &mpzIdx,
                   const std::vector<int> &Reps) {
 
     dblIdx = 0;
@@ -87,53 +87,45 @@ void rankCombMult(std::vector<int>::iterator iter, int n, int m,
 }
 
 void rankCombGmp(std::vector<int>::iterator iter, int n, int m,
-                 double &dblIdx, mpz_t mpzIdx,
+                 double &dblIdx, mpz_class &mpzIdx,
                  const std::vector<int> &Reps) {
 
-    mpz_t temp;
-    mpz_init(temp);
-
-    mpz_set_ui(mpzIdx, 0u);
+    mpz_class temp;
+    mpzIdx = 0;
     nChooseKGmp(temp, n - 1, m - 1);
 
     for (int k = 0, j = 0, n1 = n - 1, r1 = m - 1;
          k < m; ++k, --n1, --r1, ++j, ++iter) {
 
         for (int s = n1 - r1, idx = *iter; j < idx; --s, ++j, --n1) {
-            mpz_add(mpzIdx, mpzIdx, temp);
-            mpz_mul_ui(temp, temp, s);
-            mpz_divexact_ui(temp, temp, n1);
+            mpzIdx += temp;
+            temp *= s;
+            mpz_divexact_ui(temp.get_mpz_t(), temp.get_mpz_t(), n1);
         }
 
-        mpz_mul_ui(temp, temp, r1);
-        if (n1 > 0) mpz_divexact_ui(temp, temp, n1);
+        temp *= r1;
+        if (n1 > 0) mpz_divexact_ui(temp.get_mpz_t(), temp.get_mpz_t(), n1);
     }
-
-    mpz_clear(temp);
 }
 
 void rankCombRepGmp(std::vector<int>::iterator iter, int n, int m,
-                    double &dblIdx, mpz_t mpzIdx,
+                    double &dblIdx, mpz_class &mpzIdx,
                     const std::vector<int> &Reps) {
 
-    mpz_t temp;
-    mpz_init(temp);
-
-    mpz_set_ui(mpzIdx, 0u);
+    mpz_class temp;
+    mpzIdx = 0;
     NumCombsWithRepGmp(temp, n, m - 1);
 
     for (int k = 0, j = 0, n1 = n, r1 = m - 1; k < m; ++k, --r1, ++iter) {
         for (int idx = *iter; j < idx; ++j, --n1) {
-            mpz_add(mpzIdx, mpzIdx, temp);
-            mpz_mul_ui(temp, temp, n1 - 1);
-            mpz_divexact_ui(temp, temp, n1 + r1 - 1);
+            mpzIdx += temp;
+            temp *= (n1 - 1);
+            mpz_divexact_ui(temp.get_mpz_t(), temp.get_mpz_t(), n1 + r1 - 1);
         }
 
-        mpz_mul_ui(temp, temp, r1);
-        if ((n1 + r1) > 2) mpz_divexact_ui(temp, temp, n1 + r1 - 1);
+        temp *= r1;
+        if ((n1 + r1) > 2) mpz_divexact_ui(temp.get_mpz_t(), temp.get_mpz_t(), n1 + r1 - 1);
     }
-
-    mpz_clear(temp);
 }
 
 // N.B. In the non-Gmp version, Counts is a vector. Here, we use a deque.
@@ -142,13 +134,12 @@ void rankCombRepGmp(std::vector<int>::iterator iter, int n, int m,
 // complexity is larger. However, with larger cases, deque proves to be
 // more efficient.
 void rankCombMultGmp(std::vector<int>::iterator iter, int n, int m,
-                     double &dblIdx, mpz_t mpzIdx,
+                     double &dblIdx, mpz_class &mpzIdx,
                      const std::vector<int> &Reps) {
 
-    mpz_t temp;
-    mpz_init(temp);
+    mpz_class temp;
+    mpzIdx = 0;
 
-    mpz_set_ui(mpzIdx, 0u);
     std::deque<int> Counts(Reps.cbegin(), Reps.cend());
     std::vector<int> TempReps(Reps.cbegin(), Reps.cend());
 
@@ -163,7 +154,7 @@ void rankCombMultGmp(std::vector<int>::iterator iter, int n, int m,
         MultisetCombRowNumGmp(temp, n1, r1, Counts);
 
         for (int idx = *iter; j < idx; ++j) {
-            mpz_add(mpzIdx, mpzIdx, temp);
+            mpzIdx += temp;
             TempReps[j] = 0;
 
             if (static_cast<int>(Counts.size()) == (n - j)) {
@@ -183,8 +174,6 @@ void rankCombMultGmp(std::vector<int>::iterator iter, int n, int m,
         --TempReps[j];
         if (TempReps[j] <= 0) ++j;
     }
-
-    mpz_clear(temp);
 }
 
 rankCombPtr GetRankCombFunc(bool IsMult, bool IsRep, bool IsGmp) {

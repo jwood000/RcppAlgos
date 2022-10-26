@@ -124,33 +124,21 @@ Combo::Combo(
 
     z.resize(Rm);
 
-    // Initialize trivial mpz_t value for functions which require mpz_t
-    mpz_init(mpzTemp);
-    mpz_init(mpzIndex);
-
-    mpz_t temp[1];
-    mpz_init(temp[0]);
-    mpz_init(computedRowsMpz);
-
     if (IsGmp) {
-        createMPZArray(RcompRow, temp, 1, "computedRowsMpz");
-        mpz_set(computedRowsMpz, temp[0]);
+        CppConvert::convertMpzClass(RcompRow, computedRowsMpz,
+                                    "computedRowsMpz");
     }
 
     dblIndex = 0;
+    mpzIndex = 0;
     SetStartZ(myReps, freqs, z, IsComb, n, m, dblIndex,
               mpzIndex, IsRep, IsMult, IsGmp);
-    mpz_clear(temp[0]);
     prevIterAvailable = true;
 }
 
 void Combo::startOver() {
-    if (IsGmp) {
-        mpz_set_ui(mpzIndex, 0u);
-    } else {
-        dblIndex = 0;
-    }
-
+    mpzIndex = 0;
+    dblIndex = 0;
     SetStartZ(myReps, freqs, z, IsComb, n, m, dblIndex,
               mpzIndex, IsRep, IsMult, IsGmp);
 }
@@ -195,7 +183,7 @@ SEXP Combo::prevComb() {
 SEXP Combo::nextNumCombs(SEXP RNum) {
 
     int num;
-    CleanConvert::convertPrimitive(RNum, num, VecType::Integer,
+    CppConvert::convertPrimitive(RNum, num, VecType::Integer,
                                    "The number of results");
 
     if (CheckIndLT(IsGmp, mpzIndex, dblIndex,
@@ -205,10 +193,9 @@ SEXP Combo::nextNumCombs(SEXP RNum) {
         int numIncrement = 0;
 
         if (IsGmp) {
-            mpz_sub(mpzTemp, computedRowsMpz, mpzIndex);
-            nRows = mpz_cmp_si(mpzTemp, num) < 0 ? mpz_get_si(mpzTemp) : num;
-            numIncrement = mpz_cmp_si(mpzTemp, num) < 0 ?
-                           (nRows + 1) : nRows;
+            mpzTemp = computedRowsMpz - mpzIndex;
+            nRows = cmp(mpzTemp, num) < 0 ? mpzTemp.get_si() : num;
+            numIncrement = cmp(mpzTemp, num) < 0 ? (nRows + 1) : nRows;
         } else {
             dblTemp = computedRows - dblIndex;
             nRows = num > dblTemp ? dblTemp : num;
@@ -232,7 +219,7 @@ SEXP Combo::nextNumCombs(SEXP RNum) {
 SEXP Combo::prevNumCombs(SEXP RNum) {
 
     int num;
-    CleanConvert::convertPrimitive(RNum, num, VecType::Integer,
+    CppConvert::convertPrimitive(RNum, num, VecType::Integer,
                                    "The number of results");
 
     if (CheckGrTSi(IsGmp, mpzIndex, dblIndex, 1)) {
@@ -240,9 +227,9 @@ SEXP Combo::prevNumCombs(SEXP RNum) {
         int numDecrement = 0;
 
         if (IsGmp) {
-            mpz_sub_ui(mpzTemp, mpzIndex, 1u);
-            nRows = mpz_cmp_si(mpzTemp, num) < 0 ? mpz_get_si(mpzTemp) : num;
-            numDecrement = mpz_cmp_si(mpzTemp, num) < 0 ? (nRows + 1) : nRows;
+            mpzTemp = mpzIndex - 1;
+            nRows = cmp(mpzTemp, num) < 0 ? mpzTemp.get_si() : num;
+            numDecrement = cmp(mpzTemp, num) < 0 ? (nRows + 1) : nRows;
         } else {
             dblTemp = dblIndex - 1;
             nRows = num > dblTemp ? dblTemp : num;
@@ -271,9 +258,9 @@ SEXP Combo::nextGather() {
     }
 
     if (IsGmp) {
-        mpz_sub(mpzTemp, computedRowsMpz, mpzIndex);
+        mpzTemp = computedRowsMpz - mpzIndex;
 
-        if (mpz_cmp_si(mpzTemp, std::numeric_limits<int>::max()) > 0) {
+        if (cmp(mpzTemp, std::numeric_limits<int>::max()) > 0) {
             cpp11::stop("The number of requested rows is greater than %s",
                 std::to_string(std::numeric_limits<int>::max()).c_str());
         }
@@ -286,7 +273,7 @@ SEXP Combo::nextGather() {
         }
     }
 
-    const int nRows = (IsGmp) ? mpz_get_si(mpzTemp) : dblTemp;
+    const int nRows = IsGmp ? mpzTemp.get_si() : dblTemp;
 
     if (nRows > 0) {
         if (CheckGrTSi(IsGmp, mpzIndex, dblIndex, 0)) {
@@ -294,7 +281,7 @@ SEXP Combo::nextGather() {
         }
 
         if (IsGmp) {
-            mpz_add_ui(mpzIndex, computedRowsMpz, 1u);
+            mpzIndex = computedRowsMpz + 1;
         } else {
             dblIndex = computedRows + 1;
         }
@@ -312,9 +299,9 @@ SEXP Combo::prevGather() {
     }
 
     if (IsGmp) {
-        mpz_sub_ui(mpzTemp, mpzIndex, 1);
+        mpzTemp = mpzIndex - 1;
 
-        if (mpz_cmp_si(mpzTemp, std::numeric_limits<int>::max()) > 0) {
+        if (cmp(mpzTemp, std::numeric_limits<int>::max()) > 0) {
             cpp11::stop("The number of requested rows is greater than %s",
                 std::to_string(std::numeric_limits<int>::max()).c_str());
         }
@@ -327,7 +314,7 @@ SEXP Combo::prevGather() {
         }
     }
 
-    const int nRows = (IsGmp) ? mpz_get_si(mpzTemp) : dblTemp;
+    const int nRows = IsGmp ? mpzTemp.get_si() : dblTemp;
 
     if (nRows > 0) {
         if (CheckIndLT(IsGmp, mpzIndex, dblIndex,
@@ -336,7 +323,7 @@ SEXP Combo::prevGather() {
         }
 
         if (IsGmp) {
-            mpz_set_si(mpzIndex, 0u);
+            mpzIndex = 0;
         } else {
             dblIndex = 0;
         }
@@ -365,15 +352,11 @@ SEXP Combo::randomAccess(SEXP RindexVec) {
     std::vector<double> mySample;
     SetIndexVec(RindexVec, mySample, sampSize, IsGmp, computedRows);
 
-    const std::size_t bigSampSize = (IsGmp) ? sampSize : 1;
-    auto mpzVec = FromCpp14::make_unique<mpz_t[]>(bigSampSize);
-
-    for (std::size_t i = 0; i < bigSampSize; ++i) {
-        mpz_init(mpzVec[i]);
-    }
+    const std::size_t bigSampSize = IsGmp ? sampSize : 1;
+    std::vector<mpz_class> mpzVec(bigSampSize);
 
     if (IsGmp) {
-        SetIndexVecMpz(RindexVec, mpzVec.get(), sampSize, computedRowsMpz);
+        SetIndexVecMpz(RindexVec, mpzVec, sampSize, computedRowsMpz);
     }
 
     if (sampSize > 1) {
@@ -384,17 +367,16 @@ SEXP Combo::randomAccess(SEXP RindexVec) {
         SetThreads(LocalPar, maxThreads, sampSize,
                    myType, nThreads, sexpNThreads, limit);
 
-        return SampCombPermMain(sexpVec, vInt, vNum, mySample, mpzVec.get(),
+        return SampCombPermMain(sexpVec, vInt, vNum, mySample, mpzVec,
                                 myReps, nthResFun, myType, n, m, sampSize,
                                 nThreads, false, IsGmp, Parallel);
     } else {
         if (IsGmp) {
-            mpz_add_ui(mpzIndex, mpzVec[0], 1u);
-            mpz_set(mpzTemp, mpzVec[0]);
-            mpz_clear(mpzVec[0]);
+            mpzIndex = mpzVec.front() + 1;
+            mpzTemp  = mpzVec.front();
         } else {
             dblIndex = mySample.front() + 1;
-            dblTemp = mySample.front();
+            dblTemp  = mySample.front();
         }
 
         z = nthResFun(n, m, dblTemp, mpzTemp, myReps);
@@ -406,11 +388,11 @@ SEXP Combo::randomAccess(SEXP RindexVec) {
 SEXP Combo::front() {
 
     if (IsGmp) {
-        mpz_set_ui(mpzIndex, 1u);
-        mpz_set_ui(mpzTemp, 0u);
+        mpzIndex = 1;
+        mpzTemp  = 0;
     } else {
         dblIndex = 1;
-        dblTemp = 0;
+        dblTemp  = 0;
     }
 
     z = nthResFun(n, m, dblTemp, mpzTemp, myReps);
@@ -421,11 +403,11 @@ SEXP Combo::front() {
 SEXP Combo::back() {
 
     if (IsGmp) {
-        mpz_set(mpzIndex, computedRowsMpz);
-        mpz_sub_ui(mpzTemp, computedRowsMpz, 1u);
+        mpzIndex = computedRowsMpz;
+        mpzTemp  = computedRowsMpz - 1;
     } else {
         dblIndex = computedRows;
-        dblTemp = computedRows - 1;
+        dblTemp  = computedRows - 1;
     }
 
     z = nthResFun(n, m, dblTemp, mpzTemp, myReps);
@@ -438,16 +420,16 @@ SEXP Combo::sourceVector() const {
 }
 
 SEXP Combo::summary() {
-    const std::string CoPerm = (IsComb) ? "Combinations " : "Permutations ";
-    const std::string RepStr = (IsRep) ? "with repetition " : "";
-    const std::string MultiStr = (IsMult) ? "of a multiset " : "";
+    const std::string CoPerm = IsComb ? "Combinations " : "Permutations ";
+    const std::string RepStr = IsRep ? "with repetition " : "";
+    const std::string MultiStr = IsMult ? "of a multiset " : "";
     const std::string strDesc = CoPerm + RepStr + MultiStr + "of "
                                 + std::to_string(n) + " choose " +
                                     std::to_string(m);
-    const double dblDiff = (IsGmp) ? 0 : computedRows - dblIndex;
+    const double dblDiff = IsGmp ? 0 : computedRows - dblIndex;
 
     if (IsGmp) {
-        mpz_sub(mpzTemp, computedRowsMpz, mpzIndex);
+        mpzTemp = computedRowsMpz - mpzIndex;
     }
 
     const char *names[] = {"description", "currentIndex",
@@ -456,8 +438,8 @@ SEXP Combo::summary() {
     cpp11::sexp res = Rf_mkNamed(VECSXP, names);
 
     SET_VECTOR_ELT(res, 0, Rf_mkString(strDesc.c_str()));
-    SET_VECTOR_ELT(res, 1, CleanConvert::GetCount(IsGmp, mpzIndex, dblIndex));
-    SET_VECTOR_ELT(res, 2, CleanConvert::GetCount(IsGmp, computedRowsMpz, computedRows));
-    SET_VECTOR_ELT(res, 3, CleanConvert::GetCount(IsGmp, mpzTemp, dblDiff));
+    SET_VECTOR_ELT(res, 1, CppConvert::GetCount(IsGmp, mpzIndex, dblIndex));
+    SET_VECTOR_ELT(res, 2, CppConvert::GetCount(IsGmp, computedRowsMpz, computedRows));
+    SET_VECTOR_ELT(res, 3, CppConvert::GetCount(IsGmp, mpzTemp, dblDiff));
     return res;
 }

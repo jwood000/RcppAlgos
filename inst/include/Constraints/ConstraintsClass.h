@@ -1,5 +1,4 @@
-#ifndef CONSTRAINTS_CLASS_H
-#define CONSTRAINTS_CLASS_H
+#pragma once
 
 #include "Constraints/ConstraintsUtils.h"
 
@@ -85,5 +84,3 @@ std::unique_ptr<ConstraintsClass<T>> MakeConstraints(
     const std::vector<T> &targetVals, ConstraintType ctype, int n,
     int m, bool IsComb, bool xtraCol, bool IsMult, bool IsRep
 );
-
-#endif

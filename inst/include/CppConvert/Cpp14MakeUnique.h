@@ -1,5 +1,4 @@
-#ifndef CPP14_MAKE_UNIQUE_H
-#define CPP14_MAKE_UNIQUE_H
+#pragma once
 
 #include <cstddef>
 #include <memory>
@@ -36,5 +35,3 @@ namespace FromCpp14 {
     typename _Unique_if<T>::_Known_bound
         make_unique(Args&&...) = delete;
 }
-
-#endif

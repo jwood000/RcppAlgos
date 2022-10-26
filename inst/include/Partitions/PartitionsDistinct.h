@@ -1,5 +1,4 @@
-#ifndef PARTITIONS_DISTINCT_H
-#define PARTITIONS_DISTINCT_H
+#pragma once
 
 #include "RMatrix.h"
 #include <vector>
@@ -42,5 +41,3 @@ void PartsPermDistinct(int* mat, std::vector<int> &z, int width,
 
 void PartsPermZeroDistinct(int* mat, std::vector<int> &z, int width,
                            int lastElem, int lastCol, int nRows);
-
-#endif

@@ -1,5 +1,4 @@
-#ifndef CONSTRAINTS_MULTISET_H
-#define CONSTRAINTS_MULTISET_H
+#pragma once
 
 #include "Constraints/ConstraintsClass.h"
 
@@ -30,5 +29,3 @@ public:
 
     void Prepare(const std::string &currComp, std::vector<T> &v);
 };
-
-#endif

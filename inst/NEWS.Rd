@@ -1,6 +1,15 @@
 \name{NEWS}
 \title{News for Package \pkg{RcppAlgos}}
 
+\section{Changes in RcppAlgos version 2.7.0 (Release date: 2022-11-01)}{
+    \itemize{
+        \item Others:
+        \itemize{
+            \item Now using \code{gmpxx.h} instead of \code{gmp.h}.
+        }
+    }
+}
+
 \section{Changes in RcppAlgos version 2.6.0 (Release date: 2022-08-15)}{
     \itemize{
         \item New Features:

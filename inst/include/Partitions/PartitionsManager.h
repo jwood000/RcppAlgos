@@ -1,5 +1,4 @@
-#ifndef PARTITIONS_MANAGER_H
-#define PARTITIONS_MANAGER_H
+#pragma once
 
 #include "Partitions/PartitionsTypes.h"
 #include "RMatrix.h"
@@ -27,5 +26,3 @@ template <typename T>
 void PartsGenManager(std::vector<T> &partsVec, const std::vector<T> &v,
                      const std::vector<int> &Reps, std::vector<int> &z,
                      PartitionType ptype, int width, int nRows, bool IsComb);
-
-#endif

@@ -1,5 +1,4 @@
-#ifndef COMBO_RES_CLASS_H
-#define COMBO_RES_CLASS_H
+#pragma once
 
 #include "Constraints/GetContraints.h"
 #include "ClassUtils/ComboClass.h"
@@ -22,7 +21,7 @@ protected:
     const bool numUnknown;
 
     const double cnstrtCount;
-    mpz_t cnstrtCountMpz;
+    const mpz_class cnstrtCountMpz;
 
     std::vector<int> tarIntVals;
     std::vector<double> tarVals;
@@ -49,7 +48,7 @@ public:
         std::vector<int> &RstartZ, const std::string &RmainFun,
         const std::string &RFunTest, funcPtr<double> RfunDbl,
         ConstraintType Rctype, int RstrtLen, int Rcap, bool RKeepRes,
-        bool RnumUnknown, double RcnstrtRows, mpz_t RcnstrtRowsMpz
+        bool RnumUnknown, double RcnstrtRows, const mpz_class &RcnstrtRowsMpz
     );
 
     void startOver();
@@ -65,5 +64,3 @@ public:
     SEXP back();
     SEXP summary();
 };
-
-#endif

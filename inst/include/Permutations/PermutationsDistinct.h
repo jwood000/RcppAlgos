@@ -1,5 +1,4 @@
-#ifndef PERMUTATIONS_DISTINCT_H
-#define PERMUTATIONS_DISTINCT_H
+#pragma once
 
 #include "PermuteHelper.h"
 #include "RMatrix.h"
@@ -121,5 +120,3 @@ void PermuteDistinct(SEXP mat, SEXP v,
                        STRING_ELT(v, arrPerm[j]));
     }
 }
-
-#endif

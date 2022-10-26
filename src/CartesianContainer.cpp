@@ -7,7 +7,7 @@
 
 #include "NumbersUtils/Eratosthenes.h"
 #include "ComboCartesian.h"
-#include "CleanConvert.h"
+#include "CppConvert.h"
 #include "SetUpUtils.h"
 #include <unordered_map>
 #include <numeric>  // std::accumulate

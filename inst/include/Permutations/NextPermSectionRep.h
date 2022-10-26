@@ -1,5 +1,4 @@
-#ifndef NEXT_PERM_SECTION_REP_H
-#define NEXT_PERM_SECTION_REP_H
+#pragma once
 
 #include <vector>
 
@@ -14,5 +13,3 @@ inline void NextSecRep(std::vector<int> &z, int maxInd, int lastCol) {
         }
     }
 }
-
-#endif

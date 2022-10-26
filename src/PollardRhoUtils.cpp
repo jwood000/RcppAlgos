@@ -1,8 +1,8 @@
 #include "NumbersUtils/PollardRhoUtils.h"
-#include "CleanConvert.h"
+#include "CppConvert.h"
 
-template <typename typeReturn>
-void FactorTrialDivision(std::int64_t &t, std::vector<typeReturn> &factors) {
+template <typename T>
+void FactorTrialDivision(std::int64_t &t, std::vector<T> &factors) {
 
     int p = 3;
 
@@ -14,17 +14,16 @@ void FactorTrialDivision(std::int64_t &t, std::vector<typeReturn> &factors) {
     for (std::size_t i = 1; i < primesDiffPR.size();) {
         if ((t % p) != 0) {
             p += primesDiffPR[i++];
-            if (t < (p * p))
-                break;
+            if (t < (p * p)) break;
         } else {
             t /= p;
-            factors.push_back(static_cast<typeReturn>(p));
+            factors.push_back(static_cast<T>(p));
         }
     }
 
     if ((t % p) == 0) {
         t /= p;
-        factors.push_back(static_cast<typeReturn>(p));
+        factors.push_back(static_cast<T>(p));
     }
 }
 
@@ -144,7 +143,7 @@ int IsPrime(std::int64_t n) {
 
     /* Factor n-1 for Lucas.  */
     tmp = nm1;
-    getPrimeFactors(tmp, factors);
+    GetPrimeFactors(tmp, factors);
 
     /* Loop until Lucas proves our number prime, or Miller-Rabin proves our
     number composite.  */
@@ -177,94 +176,78 @@ int IsPrime(std::int64_t n) {
         return primeTestReturn;
 }
 
-void PollardRhoMpzT(mpz_t n, std::size_t a, std::vector<double> &factors) {
+void PollardRhoMpzT(mpz_class &n, unsigned long int a,
+                    std::vector<double> &factors) {
 
-    mpz_t x, z, y, P, t;
-    std::size_t k, q;
+    mpz_class x(2);
+    mpz_class z(2);
+    mpz_class y(2);
+    mpz_class p(1);
+    mpz_class t;
 
-    mpz_init(t);
-    mpz_init_set_si(y, 2);
-    mpz_init_set_si(x, 2);
-    mpz_init_set_si(z, 2);
-    mpz_init_set_ui(P, 1);
-    k = q = 1;
+    std::size_t k = 1;
+    std::size_t q = 1;
 
-    while(mpz_cmp_ui(n, 1) != 0) {
+    while(cmp(n, 1) != 0) {
         for (;;) {
             do {
-                mpz_mul(t, x, x);
-                mpz_mod(x, t, n);
-                mpz_add_ui(x, x, a);
+                x = (x * x) % n + a;
+                t = z - x;
 
-                mpz_sub(t, z, x);
-                mpz_mul(t, P, t);
-                mpz_mod(P, t, n);
+                // Need to guarantee that t is positive so we must use mpz_mod
+                mpz_mod(t.get_mpz_t(), t.get_mpz_t(), n.get_mpz_t());
+                p *= t;
+                p %= n;
 
                 if (k % 32 == 1) {
-                    mpz_gcd(t, P, n);
+                    t = gcd(p, n);
 
-                    if (mpz_cmp_ui(t, 1) != 0) {
+                    if (cmp(t, 1) != 0) {
                         goto factor_found;
                     }
 
-                    mpz_set(y, x);
+                    y = x;
                 }
-
             } while (--k != 0);
 
-            mpz_set(z, x);
+            z = x;
             k = q;
             q <<= 1;
 
             for (std::size_t i = 0; i < k; ++i) {
-                mpz_mul(t, x, x);
-                mpz_mod(x, t, n);
-                mpz_add_ui(x, x, a);
+                x = (x * x) % n + a;
             }
-
-            mpz_set(y, x);
         }
 
         factor_found:
-            do {
-                mpz_mul(t, y, y);
-                mpz_mod(y, t, n);
-                mpz_add_ui(y, y, a);
+        do {
+            y = (y * y) % n + a;
+            t = gcd(z - y, n);
+        } while (t == 1);
 
-                mpz_sub(t, z, y);
-                mpz_gcd(t, t, n);
+        n /= t;	/* divide by t, before t is overwritten */
 
-            } while (mpz_cmp_ui(t, 1) == 0);
-
-        mpz_divexact(n, n, t);	/* divide by t, before t is overwritten */
-
-        if (mpz_probab_prime_p(t, MR_REPS) == 0) {
+        if (mpz_probab_prime_p(t.get_mpz_t(), MR_REPS) == 0) {
             PollardRhoMpzT(t, a + 1, factors);
         } else {
-            double dblT = mpz_get_d(t);
+            double dblT = t.get_d();
             factors.push_back(dblT);
 
-            while (mpz_divisible_p(n, t)) {
-                mpz_divexact(n, n, t);
+            while (mpz_divisible_p(n.get_mpz_t(), t.get_mpz_t())) {
+                n /= t;
                 factors.push_back(dblT);
             }
         }
 
-        if (mpz_probab_prime_p(n, MR_REPS) != 0) {
-            factors.push_back(mpz_get_d(n));
+        if (mpz_probab_prime_p(n.get_mpz_t(), MR_REPS) != 0) {
+            factors.push_back(n.get_d());
             break;
         }
 
-        mpz_mod(x, x, n);
-        mpz_mod(z, z, n);
-        mpz_mod(y, y, n);
+        x %= n;
+        z %= n;
+        y %= n;
     }
-
-    mpz_clear(P);
-    mpz_clear(t);
-    mpz_clear(z);
-    mpz_clear(x);
-    mpz_clear(y);
 }
 
 void PollardRho(std::int64_t n, std::int64_t a, std::vector<int>& factors) {
@@ -346,8 +329,8 @@ void PollardRho(std::int64_t n, std::int64_t a, std::vector<int>& factors) {
     }
 }
 
-template <typename typeReturn>
-void getPrimeFactors(std::int64_t& t, std::vector<typeReturn>& factors) {
+template <typename T>
+void GetPrimeFactors(std::int64_t& t, std::vector<T>& factors) {
     FactorTrialDivision(t, factors);
 
     if (t > 1) {
@@ -361,11 +344,9 @@ void getPrimeFactors(std::int64_t& t, std::vector<typeReturn>& factors) {
                                intFactors.cend());
             }
         } else {
-            mpz_t bigT;
-            mpz_init(bigT);
-            mpz_set_d(bigT, static_cast<double>(t));
+            mpz_class bigT(static_cast<double>(t));
 
-            if (mpz_probab_prime_p(bigT, MR_REPS)) {
+            if (mpz_probab_prime_p(bigT.get_mpz_t(), MR_REPS)) {
                 factors.push_back(t);
             } else {
                 std::vector<double> dblFactors;
@@ -374,14 +355,12 @@ void getPrimeFactors(std::int64_t& t, std::vector<typeReturn>& factors) {
                                std::make_move_iterator(dblFactors.cbegin()),
                                std::make_move_iterator(dblFactors.cend()));
             }
-
-            mpz_clear(bigT);
         }
     }
 
     std::sort(factors.begin(), factors.end());
 }
 
-template void getPrimeFactors(std::int64_t&, std::vector<int>&);
-template void getPrimeFactors(std::int64_t&, std::vector<double>&);
+template void GetPrimeFactors(std::int64_t&, std::vector<int>&);
+template void GetPrimeFactors(std::int64_t&, std::vector<double>&);
 

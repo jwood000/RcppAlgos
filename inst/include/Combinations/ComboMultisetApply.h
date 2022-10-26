@@ -1,5 +1,4 @@
-#ifndef COMBO_MULTISET_APPLY_H
-#define COMBO_MULTISET_APPLY_H
+#pragma once
 
 #include "NextComboSection.h"
 #include "FunAssign.h"
@@ -65,5 +64,3 @@ void MultisetComboApplyFun(SEXP res, SEXP v, SEXP vectorPass,
         nextCombSecMulti(freqs, zIndex, z, m1, pentExtreme);
     }
 }
-
-#endif

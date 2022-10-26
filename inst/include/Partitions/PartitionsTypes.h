@@ -1,9 +1,8 @@
-#ifndef PARTITION_TYPES_H
-#define PARTITION_TYPES_H
+#pragma once
 
 #include <cstdint>
 #include <vector>
-#include <gmp.h>
+#include <gmpxx.h>
 #include <array>
 
 // Here are the corresponding functions that one would use for each example below:
@@ -54,7 +53,7 @@ struct PartDesign {
     int width = 0;
     int mapTar = 0; // mapped target value
     double count = 0;
-    mpz_t bigCount;
+    mpz_class bigCount;
     bool isGmp = false;
     bool isRep = false;
     bool isMult = false;
@@ -82,5 +81,3 @@ struct PartDesign {
     std::int64_t target = 0;
     PartitionType ptype = PartitionType::NotPartition;
 };
-
-#endif

@@ -1,6 +1,7 @@
+#include "CppConvert.h"
+#include "cpp11/list.hpp"
+
 #include "NumbersUtils/libdivide.h"
-#include "CleanConvert.h"
-#include "SetUpUtils.h"
 #include <thread>
 #include <cmath>
 
@@ -179,82 +180,42 @@ void DivisorMain(T myMin, U myMax, bool bDivSieve,
     }
 }
 
-SEXP GlueInt(int myMin, int myMax, bool bDivSieve,
+template <typename T, typename U>
+SEXP GlueDiv(T myMin, U myMax, bool bDivSieve,
              bool keepNames, int nThreads, int maxThreads) {
 
     std::size_t myRange = (myMax - myMin) + 1;
 
     if (bDivSieve) {
-        std::vector<std::vector<int>> MyDivList(myRange, std::vector<int>());
-        int* tempNumDivs = nullptr;
+        std::vector<std::vector<U>>
+            MyDivList(myRange, std::vector<U>());
+        U* tempNumDivs = nullptr;
 
         DivisorMain(myMin, myMax, bDivSieve, tempNumDivs,
                     MyDivList, myRange, nThreads, maxThreads);
 
-        cpp11::sexp myList = Rf_allocVector(VECSXP, myRange);
+        cpp11::writable::list myList(myRange);
 
         for (std::size_t i = 0; i < myRange; ++i) {
-            SET_VECTOR_ELT(myList, i, GetIntVec(MyDivList[i]));
+            myList[i] = cpp11::writable::r_vector<U>(MyDivList[i]);
         }
 
         if (keepNames) {
-            SetIntNames(myList, myRange, myMin, myMax);
+            CppConvert::SetNames(myList, static_cast<U>(myMin), myMax);
         }
 
         return myList;
     } else {
-        std::vector<std::vector<int>> tempList;
-        cpp11::sexp facCountV = Rf_allocVector(INTSXP, myRange);
-        int* ptrFacCount  = INTEGER(facCountV);
+        std::vector<std::vector<U>> tempList;
+        cpp11::writable::integers facCountV(Rf_allocVector(INTSXP, myRange));
+        int* ptrFacCount = INTEGER(facCountV);
         std::fill_n(ptrFacCount, myRange, 2);
 
         DivisorMain(myMin, myMax, bDivSieve, ptrFacCount,
                     tempList, myRange, nThreads, maxThreads);
 
         if (keepNames) {
-            SetIntNames(facCountV, myRange, myMin, myMax);
-        }
-
-        return facCountV;
-    }
-}
-
-SEXP GlueDbl(std::int_fast64_t myMin, double myMax,
-             bool bDivSieve, bool keepNames,
-             int nThreads, int maxThreads) {
-
-    std::size_t myRange = (myMax - myMin) + 1;
-
-    if (bDivSieve) {
-        std::vector<std::vector<double>>
-            MyDivList(myRange, std::vector<double>());
-        double* tempNumDivs = nullptr;
-
-        DivisorMain(myMin, myMax, bDivSieve, tempNumDivs,
-                    MyDivList, myRange, nThreads, maxThreads);
-
-        cpp11::sexp myList = Rf_allocVector(VECSXP, myRange);
-
-        for (std::size_t i = 0; i < myRange; ++i) {
-            SET_VECTOR_ELT(myList, i, GetDblVec(MyDivList[i]));
-        }
-
-        if (keepNames) {
-            SetDblNames(myList, myRange, myMin, myMax);
-        }
-
-        return myList;
-    } else {
-        std::vector<std::vector<double>> tempList;
-        cpp11::sexp facCountV = Rf_allocVector(INTSXP, myRange);
-        int* ptrFacCount  = INTEGER(facCountV);
-        std::fill_n(ptrFacCount, myRange, 2);
-
-        DivisorMain(myMin, myMax, bDivSieve, ptrFacCount,
-                    tempList, myRange, nThreads, maxThreads);
-
-        if (keepNames) {
-            SetDblNames(facCountV, myRange, myMin, myMax);
+            CppConvert::SetNames(facCountV, static_cast<U>(myMin), myMax);
         }
 
         return facCountV;
@@ -275,19 +236,19 @@ SEXP DivNumSieveCpp(SEXP Rb1, SEXP Rb2, SEXP RbDivSieve,
     int nThreads = 1;
     int maxThreads = 1;
 
-    CleanConvert::convertPrimitive(RmaxThreads, maxThreads,
+    CppConvert::convertPrimitive(RmaxThreads, maxThreads,
                                    VecType::Integer, "maxThreads");
-    const bool bDivSieve = CleanConvert::convertFlag(RbDivSieve,
+    const bool bDivSieve = CppConvert::convertFlag(RbDivSieve,
                                                         "bDivSieve");
 
     const std::string namedObject = (bDivSieve) ? "namedList" : "namedVector";
-    bool IsNamed = CleanConvert::convertFlag(RisNamed, namedObject);
-    CleanConvert::convertPrimitive(Rb1, bound1, VecType::Numeric, "bound1");
+    bool IsNamed = CppConvert::convertFlag(RisNamed, namedObject);
+    CppConvert::convertPrimitive(Rb1, bound1, VecType::Numeric, "bound1");
 
     if (Rf_isNull(Rb2)) {
         bound2 = 1;
     } else {
-        CleanConvert::convertPrimitive(Rb2, bound2, VecType::Numeric, "bound2");
+        CppConvert::convertPrimitive(Rb2, bound2, VecType::Numeric, "bound2");
     }
 
     if (bound1 > bound2) {
@@ -300,39 +261,26 @@ SEXP DivNumSieveCpp(SEXP Rb1, SEXP Rb2, SEXP RbDivSieve,
 
     if (myMax < 2) {
         if (bDivSieve) {
-            cpp11::sexp res = Rf_allocVector(VECSXP, 1);
-            SET_VECTOR_ELT(res, 0, GetIntVec(std::vector<int>(1, 1)));
-
-            if (IsNamed) {
-                Rf_setAttrib(res, R_NamesSymbol, Rf_mkString("1"));
-            }
-
+            cpp11::writable::list res({cpp11::r_vector<int>({1})});
+            if (IsNamed) Rf_setAttrib(res, R_NamesSymbol, Rf_mkString("1"));
             return res;
         } else {
-            cpp11::sexp res = Rf_allocVector(INTSXP, 1);
-            INTEGER(res)[0] = 1;
-
-            if (IsNamed) {
-                Rf_setAttrib(res, R_NamesSymbol, Rf_mkString("1"));
-            }
-
+            cpp11::writable::r_vector<int> res({1});
+            if (IsNamed) Rf_setAttrib(res, R_NamesSymbol, Rf_mkString("1"));
             return res;
         }
     }
 
     if (!Rf_isNull(RNumThreads)) {
-        CleanConvert::convertPrimitive(RNumThreads, nThreads,
+        CppConvert::convertPrimitive(RNumThreads, nThreads,
                                        VecType::Integer, "nThreads");
     }
 
     if (myMax > std::numeric_limits<int>::max()) {
-        std::int_fast64_t intMin = static_cast<std::int_fast64_t>(myMin);
-        return GlueDbl(intMin, myMax, bDivSieve,
-                       IsNamed, nThreads, maxThreads);
+        return GlueDiv(static_cast<std::int_fast64_t>(myMin), myMax,
+                       bDivSieve, IsNamed, nThreads, maxThreads);
     } else {
-        int intMin = static_cast<int>(myMin);
-        int intMax = static_cast<int>(myMax);
-        return GlueInt(intMin, intMax, bDivSieve,
-                       IsNamed, nThreads, maxThreads);
+        return GlueDiv(static_cast<int>(myMin), static_cast<int>(myMax),
+                       bDivSieve, IsNamed, nThreads, maxThreads);
     }
 }

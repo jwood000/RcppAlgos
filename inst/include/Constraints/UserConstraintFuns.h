@@ -1,5 +1,4 @@
-#ifndef USER_CONSTRAINT_FUNS_H
-#define USER_CONSTRAINT_FUNS_H
+#pragma once
 
 #include <vector>
 #include <numeric>     // std::accumulate
@@ -56,5 +55,3 @@ compPtr<T> GetCompPtr(const std::string &fstr);
 
 template <typename T>
 reducePtr<T> GetReducePtr(const std::string &fstr);
-
-#endif

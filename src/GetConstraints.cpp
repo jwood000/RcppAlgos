@@ -14,7 +14,7 @@ void ConstraintsVector(const std::vector<int> &freqs,
                        std::vector<int> &Reps, const std::string &mainFun,
                        const std::string &funTest, std::vector<int> &z,
                        ConstraintType ctype, PartitionType ptype,
-                       double lower, mpz_t lowerMpz, int n, int maxRows,
+                       double lower, mpz_class &lowerMpz, int n, int maxRows,
                        int width, int nThreads, bool IsComb, bool IsRep,
                        bool IsMult, bool bUpper, bool xtraCol, bool IsGmp) {
 
@@ -35,17 +35,17 @@ void ConstraintsVector(const std::vector<int> &freqs,
 }
 
 SEXP ConstraintsReturn(
-        const std::vector<int> &freqs, std::vector<double> &vNum,
-        std::vector<int> &vInt, std::vector<int> &Reps,
-        std::vector<double> &tarVals, std::vector<int> &tarIntVals,
-        std::vector<int> &z, const std::vector<std::string> &compVec,
-        const std::string &mainFun, const std::string &funTest,
-        const PartDesign &part, VecType myType, ConstraintType ctype,
-        double userNum, double lower, mpz_t lowerMpz, int n, int m,
-        int nRows, int nThreads, double strt, bool IsComb, bool IsRep,
-        bool IsMult, bool bUpper, bool xtraCol, bool numUnknown,
-        int strtLen, int cap, bool IsGmp
-    ) {
+    const std::vector<int> &freqs, std::vector<double> &vNum,
+    std::vector<int> &vInt, std::vector<int> &Reps,
+    std::vector<double> &tarVals, std::vector<int> &tarIntVals,
+    std::vector<int> &z, const std::vector<std::string> &compVec,
+    const std::string &mainFun, const std::string &funTest,
+    const PartDesign &part, VecType myType, ConstraintType ctype,
+    double userNum, double lower, mpz_class &lowerMpz, int n, int m,
+    int nRows, int nThreads, double strt, bool IsComb, bool IsRep,
+    bool IsMult, bool bUpper, bool xtraCol, bool numUnknown,
+    int strtLen, int cap, bool IsGmp
+) {
 
     const int width     = (part.isPart) ? part.width : m;
     const int nCols     = (xtraCol) ? width + 1 : width;
@@ -138,17 +138,17 @@ SEXP ConstraintsReturn(
 }
 
 SEXP GetConstraints(
-        const PartDesign &part, const std::vector<std::string> &compVec,
-        const std::vector<int> &freqs, std::vector<int> &myReps,
-        std::vector<double> &vNum, std::vector<int> &vInt,
-        std::vector<double> &tarVals, std::vector<int> &tarIntVals,
-        std::vector<int> &startZ, const std::string &mainFun,
-        const std::string &funTest, funcPtr<double> funDbl, double lower,
-        mpz_t lowerMpz, double userNum, ConstraintType ctype, VecType myType,
-        int nThreads, int nRows, int n, int strtLen, int cap, int m,
-        bool IsComb, bool Parallel, bool IsGmp, bool IsRep, bool IsMult,
-        bool bUpper, bool KeepRes, bool numUnknown
-    ) {
+    const PartDesign &part, const std::vector<std::string> &compVec,
+    const std::vector<int> &freqs, std::vector<int> &myReps,
+    std::vector<double> &vNum, std::vector<int> &vInt,
+    std::vector<double> &tarVals, std::vector<int> &tarIntVals,
+    std::vector<int> &startZ, const std::string &mainFun,
+    const std::string &funTest, funcPtr<double> funDbl, double lower,
+    mpz_class &lowerMpz, double userNum, ConstraintType ctype, VecType myType,
+    int nThreads, int nRows, int n, int strtLen, int cap, int m,
+    bool IsComb, bool Parallel, bool IsGmp, bool IsRep, bool IsMult,
+    bool bUpper, bool KeepRes, bool numUnknown
+) {
 
     if (ctype == ConstraintType::NoConstraint) {
         const int nCols = m + 1;

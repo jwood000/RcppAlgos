@@ -1,5 +1,4 @@
-#ifndef PARTITIONS_ESQUE_REP_H
-#define PARTITIONS_ESQUE_REP_H
+#pragma once
 
 #include "Constraints/ConstraintsClass.h"
 
@@ -33,5 +32,3 @@ public:
 
     void Prepare(const std::string &currComp, std::vector<T> &v);
 };
-
-#endif

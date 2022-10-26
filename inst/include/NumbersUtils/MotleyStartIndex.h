@@ -1,5 +1,4 @@
-#ifndef MOTLEY_START_INDEX_H
-#define MOTLEY_START_INDEX_H
+#pragma once
 
 #include <cstdint>
 
@@ -22,5 +21,3 @@ namespace MotleyPrimes {
         }
     }
 }
-
-#endif

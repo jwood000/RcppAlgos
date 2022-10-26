@@ -1,16 +1,15 @@
 #include "Permutations/PermuteCount.h"
-#include "Cpp14MakeUnique.h"
-#include "SetUpUtils.h"
 #include <algorithm> // std::sort, std::max_element
 #include <numeric>   // std::accumulate, std::iota
+#include <gmpxx.h>
 
 // All functions below are exactly the same as the functions
 // in StandardCount.cpp. The only difference is that they
 // utilize the gmp library and deal mostly with mpz_t types
 
-void NumPermsWithRepGmp(mpz_t result, const std::vector<int> &v) {
+void NumPermsWithRepGmp(mpz_class &result, const std::vector<int> &v) {
 
-    mpz_set_ui(result, 1u);
+    result = 1;
     std::vector<int> myLens = rleCpp(v);
     std::sort(myLens.begin(), myLens.end(), std::greater<int>());
 
@@ -18,42 +17,40 @@ void NumPermsWithRepGmp(mpz_t result, const std::vector<int> &v) {
     const int numUni = myLens.size();
 
     for (int i = v.size(); i > myMax; --i) {
-        mpz_mul_ui(result, result, i);
+        result *= i;
     }
 
     if (numUni > 1) {
-        mpz_t div;
-        mpz_init_set_ui(div, 1u);
+        mpz_class div(1);
 
         for (int i = 1; i < numUni; ++i) {
             for (int j = 2; j <= myLens[i]; ++j) {
-                mpz_mul_ui(div, div, j);
+                div *= j;
             }
         }
 
-        mpz_divexact(result, result, div);
-        mpz_clear(div);
+        mpz_divexact(result.get_mpz_t(), result.get_mpz_t(), div.get_mpz_t());
     }
 }
 
-void NumPermsNoRepGmp(mpz_t result, int n, int k) {
+void NumPermsNoRepGmp(mpz_class &result, int n, int k) {
 
-    mpz_set_ui(result, 1u);
+    result = 1;
 
     for (int i = n, m = n - k; i > m; --i) {
-        mpz_mul_ui(result, result, i);
+        result *= i;
     }
 }
 
-void MultisetPermRowNumGmp(mpz_t result, int n, int m,
+void MultisetPermRowNumGmp(mpz_class &result, int n, int m,
                            const std::vector<int> &myReps) {
 
     const int sumFreqs = std::accumulate(myReps.cbegin(), myReps.cend(), 0);
 
     if (n < 2 || m < 1) {
-        mpz_set_ui(result, 1);
+        result = 1;
     } else if (m > sumFreqs) {
-        mpz_set_ui(result, 0);
+        result = 0;
     } else if (m == sumFreqs) {
         std::vector<int> freqs(sumFreqs);
 
@@ -71,73 +68,60 @@ void MultisetPermRowNumGmp(mpz_t result, int n, int m,
         std::vector<int> seqR(m);
         std::iota(seqR.begin(), seqR.end(), 1);
 
-        mpz_t prodR;
-        mpz_init(prodR);
-        mpz_set_ui(prodR, 1);
+        mpz_class prodR(1);
 
         for (int i = 0; i < m; ++i) {
-            mpz_mul_ui(prodR, prodR, seqR[i]);
+            prodR *= seqR[i];
         }
 
         const std::size_t uR1 = m + 1;
         const int myMax = (m < maxFreq) ? (m + 2) : (maxFreq + 2);
-        auto cumProd = FromCpp14::make_unique<mpz_t[]>(myMax);
-        auto resV = FromCpp14::make_unique<mpz_t[]>(uR1);
 
-        for (int i = 0; i < myMax; ++i) {
-            mpz_init(cumProd[i]);
-        }
+        std::vector<mpz_class> cumProd(myMax);
+        std::vector<mpz_class> resV(uR1, 0);
 
         // Equivalent to c(1, 1:myMax)
-        mpz_set_ui(cumProd[0], 1);
+        cumProd[0] = 1;
 
         for (int i = 1; i < myMax; ++i) {
-            mpz_set_ui(cumProd[i], i);
-        }
-
-        for (std::size_t i = 0; i < uR1; ++i) {
-            mpz_init(resV[i]);
-            mpz_set_ui(resV[i], 0);
+            cumProd[i] = i;
         }
 
         for (int i = 1; i < myMax; ++i) {
-            mpz_mul(cumProd[i], cumProd[i], cumProd[i - 1]);
+            cumProd[i] *= cumProd[i - 1];
         }
 
         int myMin = std::min(m, myReps[0]);
 
         for (int i = 0; i <= myMin; ++i) {
-            mpz_divexact(resV[i], prodR, cumProd[i]);
+            mpz_divexact(resV[i].get_mpz_t(), prodR.get_mpz_t(),
+                         cumProd[i].get_mpz_t());
         }
 
-        mpz_t temp;
-        mpz_init(temp);
+        mpz_class temp;
 
         for (int i = 1; i < n1; ++i) {
             for (int j = m; j > 0; --j) {
                 myMin = std::min(j, myReps[i]);
-                mpz_set_ui(result, 0);
+                result = 0;
 
                 for (int k = 0; k <= myMin; ++k) {
-                    mpz_divexact(temp, resV[j - k], cumProd[k]);
-                    mpz_add(result, result, temp);
+                    mpz_divexact(temp.get_mpz_t(), resV[j - k].get_mpz_t(),
+                                 cumProd[k].get_mpz_t());
+                    result += temp;
                 }
 
-                mpz_set(resV[j], result);
+                resV[j] = result;
             }
         }
 
         myMin = std::min(m, myReps[n1]);
-        mpz_set_ui(result, 0);
+        result = 0;
 
         for (int k = 0; k <= myMin; ++k) {
-            mpz_divexact(temp, resV[m - k], cumProd[k]);
-            mpz_add(result, result, temp);
+            mpz_divexact(temp.get_mpz_t(), resV[m - k].get_mpz_t(),
+                         cumProd[k].get_mpz_t());
+            result += temp;
         }
-
-        mpz_clear(temp);
-        mpz_clear(prodR);
-        MpzClearVec(cumProd.get(), myMax);
-        MpzClearVec(resV.get(), uR1);
     }
 }

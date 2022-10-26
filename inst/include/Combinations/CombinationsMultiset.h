@@ -1,5 +1,4 @@
-#ifndef COMBINATIONS_MULTISET_H
-#define COMBINATIONS_MULTISET_H
+#pragma once
 
 #include "NextComboSection.h"
 #include <algorithm>  // std::find
@@ -86,5 +85,3 @@ void MultisetCombination(SEXP mat, SEXP v, std::vector<int> &z,
         nextCombSecMulti(freqs, zIndex, z, m1, pentExtreme);
     }
 }
-
-#endif

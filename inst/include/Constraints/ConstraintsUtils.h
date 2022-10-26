@@ -1,5 +1,4 @@
-#ifndef CONSTRAINTS_UTILS_H
-#define CONSTRAINTS_UTILS_H
+#pragma once
 
 #include "Constraints/ConstraintsTypes.h"
 #include "Constraints/UserConstraintFuns.h"
@@ -7,8 +6,6 @@
 #include "SetUpUtils.h"
 #include <limits>
 #include <map>
-
-constexpr double dblIntMax = std::numeric_limits<int>::max();
 
 // This fixes inequalites where the symbols are swapped. That is: "=>" amd "=<"
 static const std::map<std::string, std::string> compForms = {
@@ -62,5 +59,3 @@ void ConstraintSetup(const std::vector<double> &vNum,
                      const std::string &mainFun, const std::string &funTest,
                      VecType &myType, SEXP Rtarget, SEXP RcompFun,
                      SEXP Rtolerance, SEXP Rlow, bool bIsCount = false);
-
-#endif

@@ -1,6 +1,5 @@
 #include "Partitions/PartitionsCountSection.h"
 #include "Permutations/PermuteCount.h"
-#include "Cpp14MakeUnique.h"
 #include <algorithm>  // std::count_if
 #include <numeric>
 #include <cmath>

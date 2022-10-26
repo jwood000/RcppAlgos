@@ -1,5 +1,4 @@
-#ifndef CONSTRAINTS_REP_H
-#define CONSTRAINTS_REP_H
+#pragma once
 
 #include "Constraints/ConstraintsClass.h"
 
@@ -22,5 +21,3 @@ public:
 
     void Prepare(const std::string &currComp, std::vector<T> &v);
 };
-
-#endif

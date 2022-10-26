@@ -4,7 +4,7 @@
 #include "Combinations/ComboMultisetApply.h"
 #include "Permutations/PermuteRepApply.h"
 #include "Combinations/ComboRepApply.h"
-#include "CleanConvert.h"
+#include "CppConvert.h"
 
 template <typename T>
 void VecApply(SEXP res, const std::vector<T> &v, SEXP vectorPass,

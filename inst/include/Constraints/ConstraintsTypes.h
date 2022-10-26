@@ -1,5 +1,4 @@
-#ifndef CONSTRAINT_TYPES_H
-#define CONSTRAINT_TYPES_H
+#pragma once
 
 // SpecialCnstrnt = 1: For this case, we have either lower = true,
 // which means the user is looking for combinations/permutations in a
@@ -56,5 +55,3 @@ enum class FunType {
     Prod = 4,
     Mean = 5
 };
-
-#endif

@@ -1,5 +1,4 @@
-#ifndef PHI_TINY_LOOKUP_H
-#define PHI_TINY_LOOKUP_H
+#pragma once
 
 #include "NumbersUtils/Wheel.h"
 #include <vector>
@@ -188,5 +187,3 @@ namespace PhiTinyLookup {
 
 constexpr int phiTinySize = 6;
 static const std::array<std::vector<std::int16_t>, phiTinySize + 1> phiTiny = PhiTinyLookup::createPhiTiny();
-
-#endif

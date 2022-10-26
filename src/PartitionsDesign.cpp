@@ -1,6 +1,6 @@
 #include "Constraints/ConstraintsTypes.h"
 #include "Partitions/PartitionsTypes.h"
-#include "CleanConvert.h"
+#include "CppConvert.h"
 #include <numeric>
 
 std::string GetPartitionType(const PartDesign &part) {
@@ -145,7 +145,7 @@ SEXP GetDesign(const PartDesign &part, ConstraintType ctype,
                            "eqn_check", "partition_type", ""};
 
     cpp11::sexp res = Rf_mkNamed(VECSXP, names);
-    SET_VECTOR_ELT(res, 0, CleanConvert::GetCount(part.isGmp, part.bigCount, part.count));
+    SET_VECTOR_ELT(res, 0, CppConvert::GetCount(part.isGmp, part.bigCount, part.count));
     SET_VECTOR_ELT(res, 1, sexp_vec);
     SET_VECTOR_ELT(res, 2, Rf_ScalarInteger(part.mapTar));
     SET_VECTOR_ELT(res, 3, sexp_index);

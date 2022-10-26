@@ -1,5 +1,4 @@
-#ifndef PRIME_FACTORIZE_SIEVE_H
-#define PRIME_FACTORIZE_SIEVE_H
+#pragma once
 
 #include <cstddef>
 #include <vector>
@@ -10,5 +9,3 @@ namespace MotleyPrimes {
                                  const std::vector<T> &primes,
                                  std::vector<std::vector<T>> &primeList);
 }
-
-#endif

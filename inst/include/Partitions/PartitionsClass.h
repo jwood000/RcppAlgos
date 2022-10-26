@@ -1,5 +1,4 @@
-#ifndef PARTITIONS_CLASS_H
-#define PARTITIONS_CLASS_H
+#pragma once
 
 #include "ClassUtils/ComboResClass.h"
 #include "Partitions/NextPartition.h"
@@ -46,7 +45,7 @@ public:
         std::vector<int> &RstartZ, const std::string &RmainFun,
         const std::string &RFunTest, funcPtr<double> RfunDbl,
         ConstraintType Rctype, int RstrtLen, int Rcap, bool RKeepRes,
-        bool RnumUnknown, double RcnstrtRows, mpz_t RcnstrtRowsMpz
+        bool RnumUnknown, double RcnstrtRows, const mpz_class &RcnstrtRowsMpz
     );
 
     void startOver();
@@ -59,5 +58,3 @@ public:
     SEXP back();
     SEXP summary();
 };
-
-#endif

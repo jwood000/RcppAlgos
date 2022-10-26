@@ -1,6 +1,6 @@
+#include "CppConvert/Cpp14MakeUnique.h"
 #include "Permutations/PermuteCount.h"
 #include "Partitions/NextPartition.h"
-#include "Cpp14MakeUnique.h"
 #include "PopulateVec.h"
 #include "RMatrix.h"
 #include <algorithm>  // std::next_permutation

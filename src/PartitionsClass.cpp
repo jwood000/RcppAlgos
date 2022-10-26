@@ -75,7 +75,7 @@ Partitions::Partitions(
     std::vector<int> &RstartZ, const std::string &RmainFun,
     const std::string &RFunTest, funcPtr<double> RfunDbl,
     ConstraintType Rctype, int RstrtLen, int Rcap, bool RKeepRes,
-    bool RnumUnknown, double RcnstrtRows, mpz_t RcnstrtRowsMpz
+    bool RnumUnknown, double RcnstrtRows, const mpz_class &RcnstrtRowsMpz
 ) : ComboRes(Rv, Rm, RcompRows, bVec, Rreps, Rfreqs, RvInt, RvNum, typePass,
              RmaxThreads, RnumThreads, Rparallel, Rpart, RcompVec, RtarVals,
              RtarIntVals, RstartZ, RmainFun, RFunTest, RfunDbl, Rctype,
@@ -108,12 +108,8 @@ Partitions::Partitions(
 }
 
 void Partitions::startOver() {
-    if (IsGmp) {
-      mpz_set_ui(mpzIndex, 0u);
-    } else {
-      dblIndex = 0;
-    }
-
+    mpzIndex = 0;
+    dblIndex = 0;
     rpsCnt = myReps;
     z = part.startZ;
     SetPartValues();
@@ -143,7 +139,7 @@ SEXP Partitions::nextComb() {
 SEXP Partitions::nextNumCombs(SEXP RNum) {
 
     int num;
-    CleanConvert::convertPrimitive(RNum, num, VecType::Integer,
+    CppConvert::convertPrimitive(RNum, num, VecType::Integer,
                                    "The number of results");
 
     if (CheckIndLT(IsGmp, mpzIndex, dblIndex,
@@ -153,9 +149,9 @@ SEXP Partitions::nextNumCombs(SEXP RNum) {
         int numIncrement = 0;
 
         if (IsGmp) {
-            mpz_sub(mpzTemp, cnstrtCountMpz, mpzIndex);
-            nRows = mpz_cmp_si(mpzTemp, num) < 0 ? mpz_get_si(mpzTemp) : num;
-            numIncrement = mpz_cmp_si(mpzTemp, num) < 0 ? (nRows + 1) : nRows;
+            mpzTemp = cnstrtCountMpz - mpzIndex;
+            nRows = cmp(mpzTemp, num) < 0 ? mpzTemp.get_si() : num;
+            numIncrement = cmp(mpzTemp, num) < 0 ? (nRows + 1) : nRows;
         } else {
             dblTemp = cnstrtCount - dblIndex;
             nRows = num > dblTemp ? dblTemp : num;
@@ -194,9 +190,9 @@ SEXP Partitions::nextGather() {
     }
 
     if (IsGmp) {
-        mpz_sub(mpzTemp, cnstrtCountMpz, mpzIndex);
+        mpzTemp = cnstrtCountMpz - mpzIndex;
 
-        if (mpz_cmp_si(mpzTemp, std::numeric_limits<int>::max()) > 0) {
+        if (cmp(mpzTemp, std::numeric_limits<int>::max()) > 0) {
             cpp11::stop("The number of requested rows is greater than %s",
                 std::to_string(std::numeric_limits<int>::max()).c_str());
         }
@@ -209,7 +205,7 @@ SEXP Partitions::nextGather() {
         }
     }
 
-    const int nRows = (IsGmp) ? mpz_get_si(mpzTemp) : dblTemp;
+    const int nRows = IsGmp ? mpzTemp.get_si() : dblTemp;
 
     if (nRows > 0) {
         if (CheckGrTSi(IsGmp, mpzIndex, dblIndex, 0)) {
@@ -218,7 +214,7 @@ SEXP Partitions::nextGather() {
         }
 
         if (IsGmp) {
-            mpz_add_ui(mpzIndex, cnstrtCountMpz, 1u);
+            mpzIndex = cnstrtCountMpz + 1;
         } else {
             dblIndex = cnstrtCount + 1;
         }
@@ -260,15 +256,11 @@ SEXP Partitions::randomAccess(SEXP RindexVec) {
     const bool SampIsGmp = (cnstrtCount > SampleLimit);
     SetIndexVec(RindexVec, mySample, sampSize, SampIsGmp, cnstrtCount);
 
-    const std::size_t bigSampSize = (SampIsGmp) ? sampSize : 1;
-    auto mpzVec = FromCpp14::make_unique<mpz_t[]>(bigSampSize);
-
-    for (std::size_t i = 0; i < bigSampSize; ++i) {
-        mpz_init(mpzVec[i]);
-    }
+    const std::size_t bigSampSize = SampIsGmp ? sampSize : 1;
+    std::vector<mpz_class> mpzVec(bigSampSize);
 
     if (SampIsGmp) {
-        SetIndexVecMpz(RindexVec, mpzVec.get(), sampSize, cnstrtCountMpz);
+        SetIndexVecMpz(RindexVec, mpzVec, sampSize, cnstrtCountMpz);
     }
 
     if (sampSize > 1) {
@@ -283,7 +275,7 @@ SEXP Partitions::randomAccess(SEXP RindexVec) {
             cpp11::sexp res = Rf_allocMatrix(INTSXP, sampSize, part.width);
             int* matInt = INTEGER(res);
 
-            ThreadSafeSample(matInt, res, vInt, mySample, mpzVec.get(),
+            ThreadSafeSample(matInt, res, vInt, mySample, mpzVec,
                              myReps, nthParts, part.width, sampSize,
                              nThreads, Parallel, false, part.mapTar,
                              strtLen, cap, IsGmp);
@@ -295,7 +287,7 @@ SEXP Partitions::randomAccess(SEXP RindexVec) {
             cpp11::sexp res = Rf_allocMatrix(REALSXP, sampSize, part.width);
             double* matNum = REAL(res);
 
-            ThreadSafeSample(matNum, res, vNum, mySample, mpzVec.get(),
+            ThreadSafeSample(matNum, res, vNum, mySample, mpzVec,
                              myReps, nthParts, part.width, sampSize,
                              nThreads, Parallel, false, part.mapTar,
                              strtLen, cap, IsGmp);
@@ -306,12 +298,11 @@ SEXP Partitions::randomAccess(SEXP RindexVec) {
         }
     } else {
         if (IsGmp) {
-            mpz_add_ui(mpzIndex, mpzVec[0], 1u);
-            mpz_set(mpzTemp, mpzVec[0]);
-            mpz_clear(mpzVec[0]);
+            mpzIndex = mpzVec.front() + 1;
+            mpzTemp  = mpzVec.front();
         } else {
             dblIndex = mySample.front() + 1;
-            dblTemp = mySample.front();
+            dblTemp  = mySample.front();
         }
 
         MoveZToIndex();
@@ -326,11 +317,11 @@ SEXP Partitions::front() {
     }
 
     if (IsGmp) {
-        mpz_set_ui(mpzIndex, 1u);
-        mpz_set_ui(mpzTemp, 0u);
+        mpzIndex = 1;
+        mpzTemp  = 0;
     } else {
         dblIndex = 1;
-        dblTemp = 0;
+        dblTemp  = 0;
     }
 
     MoveZToIndex();
@@ -344,11 +335,11 @@ SEXP Partitions::back() {
     }
 
     if (IsGmp) {
-        mpz_set(mpzIndex, cnstrtCountMpz);
-        mpz_sub_ui(mpzTemp, cnstrtCountMpz, 1u);
+        mpzIndex = cnstrtCountMpz;
+        mpzTemp  = cnstrtCountMpz - 1;
     } else {
         dblIndex = cnstrtCount;
-        dblTemp = cnstrtCount - 1;
+        dblTemp  = cnstrtCount - 1;
     }
 
     MoveZToIndex();
@@ -361,20 +352,17 @@ SEXP Partitions::summary() {
     const std::string strDesc = (part.isComp ? "Compositions " : "Partitions ")
           + RepStr + MultiStr + "of " + std::to_string(part.target) +
               " into " + std::to_string(width) + " parts";
-    const double dblDiff = (IsGmp) ? 0 : cnstrtCount - dblIndex;
+    const double dblDiff = IsGmp ? 0 : cnstrtCount - dblIndex;
 
-    if (IsGmp) {
-        mpz_sub(mpzTemp, cnstrtCountMpz, mpzIndex);
-    }
-
+    if (IsGmp) mpzTemp = cnstrtCountMpz - mpzIndex;
     const char *names[] = {"description", "currentIndex",
                            "totalResults", "totalRemaining", ""};
 
     cpp11::sexp res = Rf_mkNamed(VECSXP, names);
 
     SET_VECTOR_ELT(res, 0, Rf_mkString(strDesc.c_str()));
-    SET_VECTOR_ELT(res, 1, CleanConvert::GetCount(IsGmp, mpzIndex, dblIndex));
-    SET_VECTOR_ELT(res, 2, CleanConvert::GetCount(IsGmp, cnstrtCountMpz, cnstrtCount));
-    SET_VECTOR_ELT(res, 3, CleanConvert::GetCount(IsGmp, mpzTemp, dblDiff));
+    SET_VECTOR_ELT(res, 1, CppConvert::GetCount(IsGmp, mpzIndex, dblIndex));
+    SET_VECTOR_ELT(res, 2, CppConvert::GetCount(IsGmp, cnstrtCountMpz, cnstrtCount));
+    SET_VECTOR_ELT(res, 3, CppConvert::GetCount(IsGmp, mpzTemp, dblDiff));
     return res;
 }

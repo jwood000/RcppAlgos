@@ -1,5 +1,4 @@
-#ifndef COMBINATION_RESULTS_H
-#define COMBINATION_RESULTS_H
+#pragma once
 
 #include "Constraints/UserConstraintFuns.h"
 #include "Combinations/NextComboSection.h"
@@ -34,5 +33,3 @@ void MultisetComboResult(RcppParallel::RMatrix<T> &mat,
                          int n, int m, int strt, int nRows,
                          const std::vector<int> &freqs,
                          const funcPtr<T> myFun);
-
-#endif

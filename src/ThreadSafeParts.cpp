@@ -3,7 +3,7 @@
 #include <thread>
 
 void StandardPartitions(int* mat, std::vector<int> &z, PartitionType ptype,
-                        double lower, mpz_t lowerMpz, int nCols,
+                        double lower, mpz_class &lowerMpz, int nCols,
                         int width, int nRows, int nThreads, int lastCol,
                         int lastElem, int tar, int strtLen, int cap,
                         bool IsRep, bool IsMult, bool IsGmp, bool IsComb,
@@ -30,9 +30,9 @@ void StandardPartitions(int* mat, std::vector<int> &z, PartitionType ptype,
             );
 
             if (IsGmp) {
-                mpz_add_ui(lowerMpz, lowerMpz, stepSize);
+                lowerMpz += stepSize;
             } else {
-                lower += stepSize;
+                lower    += stepSize;
             }
 
             zs[j + 1] = nthPartFun(tar, width, cap,
@@ -62,9 +62,10 @@ void StandardPartitions(int* mat, std::vector<int> &z, PartitionType ptype,
 
 template <typename T>
 void GeneralPartitions(T* mat, const std::vector<T> &v, std::vector<int> &z,
-                       const PartDesign &part, double lower, mpz_t lowerMpz,
-                       int nCols, int nRows, int nThreads, int lastCol,
-                       int lastElem, int strtLen, int cap, bool IsComb) {
+                       const PartDesign &part, double lower,
+                       mpz_class &lowerMpz, int nCols, int nRows,
+                       int nThreads, int lastCol, int lastElem, int strtLen,
+                       int cap, bool IsComb) {
 
     const bool zero_spesh = part.includeZero && !part.isWeak;
 
@@ -91,9 +92,9 @@ void GeneralPartitions(T* mat, const std::vector<T> &v, std::vector<int> &z,
             );
 
             if (part.isGmp) {
-                mpz_add_ui(lowerMpz, lowerMpz, stepSize);
+                lowerMpz += stepSize;
             } else {
-                lower += stepSize;
+                lower    += stepSize;
             }
 
             zs[j + 1] = nthPartFun(part.mapTar, part.width,
@@ -117,10 +118,10 @@ void GeneralPartitions(T* mat, const std::vector<T> &v, std::vector<int> &z,
 
 template void GeneralPartitions(int*, const std::vector<int>&,
                                 std::vector<int>&, const PartDesign&,
-                                double, mpz_t, int, int, int, int,
+                                double, mpz_class&, int, int, int, int,
                                 int, int, int, bool);
 
 template void GeneralPartitions(double*, const std::vector<double>&,
                                 std::vector<int>&, const PartDesign&,
-                                double, mpz_t, int, int, int, int,
+                                double, mpz_class&, int, int, int, int,
                                 int, int, int, bool);

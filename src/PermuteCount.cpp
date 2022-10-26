@@ -1,5 +1,5 @@
 #include "Permutations/BigPermuteCount.h"
-#include "CleanConvert.h"
+#include "CppConvert.h"
 #include <algorithm>  // std::min, std::max, std::sort
 #include <numeric>    // std::accumulate, std::partial_sum, std::iota
 #include <limits>     // std::numeric_limits
@@ -98,15 +98,13 @@ double MultisetPermRowNum(int n, int m, const std::vector<int> &Reps) {
     // factorial(170)
     // [1] 7.257416e+306
     if (myMax > 170 || m > 170) {
-        mpz_t result;
-        mpz_init(result);
+        mpz_class result;
         MultisetPermRowNumGmp(result, n, m, Reps);
 
-        const double dblRes = (mpz_cmp_d(result, Significand53) > 0) ?
-                               std::numeric_limits<double>::infinity() :
-                               mpz_get_d(result);
+        const double dblRes = cmp(result, Significand53) > 0 ?
+                              std::numeric_limits<double>::infinity() :
+                              result.get_d();
 
-        mpz_clear(result);
         return dblRes;
     }
 

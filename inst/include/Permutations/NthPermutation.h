@@ -1,15 +1,13 @@
-#ifndef NTH_PERMUTATION_H
-#define NTH_PERMUTATION_H
+#pragma once
 
 #include <vector>
-#include <gmp.h>
+#include <gmpxx.h>
 
 using nthPermPtr = std::vector<int> (*const)(int n, int m, double dblIdx,
-                                     mpz_t mpzIdx, const std::vector<int> &Reps);
+                                     const mpz_class &mpzIdx,
+                                     const std::vector<int> &Reps);
 
 nthPermPtr GetNthPermFunc(bool IsMult, bool IsRep, bool IsGmp);
 
 void TopOffPerm(std::vector<int> &z, const std::vector<int> &myReps,
                 int n, int m, bool IsRep, bool IsMult);
-
-#endif

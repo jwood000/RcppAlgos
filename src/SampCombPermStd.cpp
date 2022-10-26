@@ -6,7 +6,8 @@
 template <typename T>
 void SampleResults(T* sampleMatrix, const std::vector<T> &v,
                    const std::vector<double> &mySample,
-                   mpz_t *const myBigSamp, const std::vector<int> &myReps,
+                   const std::vector<mpz_class> &myBigSamp,
+                   const std::vector<int> &myReps,
                    nthResultPtr nthResFun, int m, int sampSize,
                    int lenV, bool IsGmp) {
 
@@ -20,8 +21,7 @@ void SampleResults(T* sampleMatrix, const std::vector<T> &v,
             }
         }
     } else {
-        mpz_t mpzDefault;
-        mpz_init(mpzDefault);
+        mpz_class mpzDefault;
 
         for (int i = 0; i < sampSize; ++i) {
             const std::vector<int> z = nthResFun(lenV, m, mySample[i],
@@ -31,8 +31,6 @@ void SampleResults(T* sampleMatrix, const std::vector<T> &v,
                 sampleMatrix[i + sampSize * j] = v[z[j]];
             }
         }
-
-        mpz_clear(mpzDefault);
     }
 }
 
@@ -40,9 +38,9 @@ template <typename T>
 void SampleResults(RcppParallel::RMatrix<T> &sampleMatrix,
                    const std::vector<T> &v,
                    const std::vector<double> &mySample,
-                   mpz_t *const myBigSamp, const std::vector<int> &myReps,
-                   nthResultPtr nthResFun, int m, int strtIdx, int endIdx,
-                   int lenV, bool IsGmp) {
+                   const std::vector<mpz_class> &myBigSamp,
+                   const std::vector<int> &myReps, nthResultPtr nthResFun,
+                   int m, int strtIdx, int endIdx, int lenV, bool IsGmp) {
 
     if (IsGmp) {
         for (int i = strtIdx; i < endIdx; ++i) {
@@ -54,8 +52,7 @@ void SampleResults(RcppParallel::RMatrix<T> &sampleMatrix,
             }
         }
     } else {
-        mpz_t mpzDefault;
-        mpz_init(mpzDefault);
+        mpz_class mpzDefault;
 
         for (int i = strtIdx; i < endIdx; ++i) {
             const std::vector<int> z = nthResFun(lenV, m, mySample[i],
@@ -65,29 +62,28 @@ void SampleResults(RcppParallel::RMatrix<T> &sampleMatrix,
                 sampleMatrix(i, j) = v[z[j]];
             }
         }
-
-        mpz_clear(mpzDefault);
     }
 }
 
 template <typename T>
 void SampNoThrdSafe(T* sampleMatrix, SEXP res, const std::vector<T> &v,
                     const std::vector<double> &mySample,
-                    mpz_t *const myBigSamp, const std::vector<int> &myReps,
+                    const std::vector<mpz_class> &myBigSamp,
+                    const std::vector<int> &myReps,
                     nthResultPtr nthResFun, int m, int sampSize,
                     int lenV, bool IsGmp, bool IsNamed) {
 
     SampleResults(sampleMatrix, v, mySample, myBigSamp, myReps,
                   nthResFun, m, sampSize, lenV, IsGmp);
     SetSampleNames(res, IsGmp, sampSize, mySample, myBigSamp, IsNamed);
-    MpzClearVec(myBigSamp, sampSize, IsGmp);
 }
 
 template <typename T>
 void ParallelGlue(RcppParallel::RMatrix<T> &sampleMatrix,
                   const std::vector<T> &v,
                   const std::vector<double> &mySample,
-                  mpz_t *const myBigSamp, const std::vector<int> &myReps,
+                  const std::vector<mpz_class> &myBigSamp,
+                  const std::vector<int> &myReps,
                   nthResultPtr nthResFun, int m, int strtIdx, int endIdx,
                   int lenV, bool IsGmp) {
 
@@ -98,7 +94,8 @@ void ParallelGlue(RcppParallel::RMatrix<T> &sampleMatrix,
 template <typename T>
 void ThreadSafeSample(T* mat, SEXP res, const std::vector<T> &v,
                       const std::vector<double> &mySample,
-                      mpz_t *const myBigSamp, const std::vector<int> &myReps,
+                      const std::vector<mpz_class> &myBigSamp,
+                      const std::vector<int> &myReps,
                       nthResultPtr nthResFun, int m, int sampSize,
                       int nThreads, bool Parallel, bool IsNamed,
                       bool IsGmp, int lenV) {
@@ -115,15 +112,16 @@ void ThreadSafeSample(T* mat, SEXP res, const std::vector<T> &v,
              ++j, step += stepSize, nextStep += stepSize) {
             threads.emplace_back(std::cref(ParallelGlue<T>),
                                  std::ref(parMat), std::cref(v),
-                                 std::cref(mySample), myBigSamp,
+                                 std::cref(mySample), std::cref(myBigSamp),
                                  std::cref(myReps), nthResFun,
                                  m, step, nextStep, lenV, IsGmp);
         }
 
-        threads.emplace_back(std::cref(ParallelGlue<T>), std::ref(parMat),
-                             std::cref(v), std::cref(mySample), myBigSamp,
-                             std::cref(myReps), nthResFun, m, step, sampSize,
-                             lenV, IsGmp);
+        threads.emplace_back(
+            std::cref(ParallelGlue<T>), std::ref(parMat), std::cref(v),
+            std::cref(mySample),std::cref(myBigSamp), std::cref(myReps),
+            nthResFun, m, step, sampSize, lenV, IsGmp
+        );
 
         for (auto& thr: threads) {
             thr.join();
@@ -134,12 +132,12 @@ void ThreadSafeSample(T* mat, SEXP res, const std::vector<T> &v,
     }
 
     SetSampleNames(res, IsGmp, sampSize, mySample, myBigSamp, IsNamed);
-    MpzClearVec(myBigSamp, sampSize, IsGmp);
 }
 
 void SampleResults(SEXP sampleMatrix, SEXP v,
                    const std::vector<double> &mySample,
-                   mpz_t *const myBigSamp, const std::vector<int> &myReps,
+                   const std::vector<mpz_class> &myBigSamp,
+                   const std::vector<int> &myReps,
                    nthResultPtr nthResFun, int m, int sampSize,
                    int lenV, bool IsGmp, bool IsNamed) {
 
@@ -154,11 +152,8 @@ void SampleResults(SEXP sampleMatrix, SEXP v,
                                STRING_ELT(v, z[j]));
             }
         }
-
-        MpzClearVec(myBigSamp, sampSize);
     } else {
-        mpz_t mpzDefault;
-        mpz_init(mpzDefault);
+        mpz_class mpzDefault;
 
         for (int count = 0; count < sampSize; ++count) {
             const std::vector<int> z = nthResFun(lenV, m, mySample[count],
@@ -170,8 +165,6 @@ void SampleResults(SEXP sampleMatrix, SEXP v,
                                STRING_ELT(v, z[j]));
             }
         }
-
-        mpz_clear(mpzDefault);
     }
 
     SetSampleNames(sampleMatrix, IsGmp, sampSize,
@@ -181,7 +174,7 @@ void SampleResults(SEXP sampleMatrix, SEXP v,
 SEXP SampCombPermMain(SEXP Rv, const std::vector<int> &vInt,
                       const std::vector<double> &vNum,
                       const std::vector<double> &mySample,
-                      mpz_t *const myBigSamp,
+                      const std::vector<mpz_class> &myBigSamp,
                       const std::vector<int> &myReps,
                       nthResultPtr nthResFun, VecType myType, int n,
                       int m, int sampSize, int nThreads, bool IsNamed,

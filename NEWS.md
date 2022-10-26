@@ -1,5 +1,11 @@
 # RcppAlgos 2.6.0
 
+## Other:
+
+* Now using `gmpxx.h` instead of `gmp.h`.
+
+# RcppAlgos 2.6.0
+
 ## New Features:
 
 * Added integer composition functions: `compositionsCount`, `compositionsGeneral`, `compositionsSample`, `compositionsIter`, and `compositionsRank`.

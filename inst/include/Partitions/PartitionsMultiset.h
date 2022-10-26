@@ -1,5 +1,4 @@
-#ifndef PARTITIONS_MULTISET_H
-#define PARTITIONS_MULTISET_H
+#pragma once
 
 #include <vector>
 
@@ -10,5 +9,3 @@ template <typename T>
 void PartsGenMultiset(std::vector<T> &partsVec, const std::vector<T> &v,
                       const std::vector<int> &Reps, std::vector<int> &z,
                       int width, int nRows, bool IsComb);
-
-#endif

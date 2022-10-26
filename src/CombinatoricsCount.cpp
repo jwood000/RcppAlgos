@@ -2,7 +2,6 @@
 #include "Partitions/PartitionsDesign.h"
 #include "Partitions/PartitionsCount.h"
 #include "ComboGroupsUtils.h"
-#include "ImportExportMPZ.h"
 #include "ComputedCount.h"
 #include "SetUpUtils.h"
 
@@ -21,8 +20,8 @@ SEXP CombinatoricsCount(SEXP Rv, SEXP Rm, SEXP RisRep,
     std::vector<int> freqs;
     std::vector<double> vNum;
 
-    bool IsRep = CleanConvert::convertFlag(RisRep, "repetition");
-    bool IsComb = CleanConvert::convertFlag(RIsComb, "IsComb");
+    bool IsRep = CppConvert::convertFlag(RisRep, "repetition");
+    bool IsComb = CppConvert::convertFlag(RIsComb, "IsComb");
 
     SetType(myType, Rv);
     SetValues(myType, myReps, freqs, vInt, vNum,
@@ -32,15 +31,14 @@ SEXP CombinatoricsCount(SEXP Rv, SEXP Rm, SEXP RisRep,
                                                 n, m, Rm, freqs, myReps);
     const bool IsGmp = (computedRows > Significand53);
 
-    mpz_t computedRowsMpz;
-    mpz_init(computedRowsMpz);
+    mpz_class computedRowsMpz;
 
     if (IsGmp) {
         GetComputedRowMpz(computedRowsMpz, IsMult,
                           IsComb, IsRep, n, m, Rm, freqs, myReps);
     }
 
-    return CleanConvert::GetCount(IsGmp, computedRowsMpz, computedRows);
+    return CppConvert::GetCount(IsGmp, computedRowsMpz, computedRows);
 }
 
 [[cpp11::register]]
@@ -62,8 +60,8 @@ SEXP PartitionsCount(SEXP Rtarget, SEXP Rv, SEXP Rm,
 
     const bool IsConstrained = true;
     const std::string mainFun = "sum";
-    bool IsRep = CleanConvert::convertFlag(RisRep, "repetition");
-    const bool bDesign = CleanConvert::convertFlag(RPartDesign,
+    bool IsRep = CppConvert::convertFlag(RisRep, "repetition");
+    const bool bDesign = CppConvert::convertFlag(RPartDesign,
                                                    "PartitionsDesign");
 
     SetType(myType, Rv);
@@ -84,8 +82,8 @@ SEXP PartitionsCount(SEXP Rtarget, SEXP Rv, SEXP Rm,
     part.isRep   = IsRep;
     part.isMult  = IsMult;
     part.mIsNull = Rf_isNull(Rm);
-    part.isWeak  = CleanConvert::convertFlag(RIsWeak, "weak");
-    part.isComp  = CleanConvert::convertFlag(RIsComposition, "composition");
+    part.isWeak  = CppConvert::convertFlag(RIsWeak, "weak");
+    part.isComp  = CppConvert::convertFlag(RIsComposition, "composition");
     part.isComb  = !part.isComp;
 
     ConstraintSetup(vNum, myReps, targetVals, vInt, targetIntVals,
@@ -95,10 +93,10 @@ SEXP PartitionsCount(SEXP Rtarget, SEXP Rv, SEXP Rm,
 
     if (!part.numUnknown) {
         if (bDesign) {
-            bool Verbose = CleanConvert::convertFlag(Rshow, "showDetail");
+            bool Verbose = CppConvert::convertFlag(Rshow, "showDetail");
             return GetDesign(part, ctype, n, Verbose);
         } else {
-            return CleanConvert::GetCount(part.isGmp, part.bigCount,
+            return CppConvert::GetCount(part.isGmp, part.bigCount,
                                           part.count);
         }
     } else if (bDesign) {
@@ -114,7 +112,7 @@ SEXP ComboGroupsCountCpp(SEXP Rv, SEXP RNumGroups) {
 
     int n, numGroups;
     VecType myType = VecType::Integer;
-    CleanConvert::convertPrimitive(RNumGroups, numGroups,
+    CppConvert::convertPrimitive(RNumGroups, numGroups,
                                    VecType::Integer, "numGroups");
 
     std::vector<int> vInt;
@@ -132,13 +130,12 @@ SEXP ComboGroupsCountCpp(SEXP Rv, SEXP RNumGroups) {
     const double computedRows = numGroupCombs(n, numGroups, grpSize);
     bool IsGmp = (computedRows > Significand53);
 
-    mpz_t computedRowMpz;
-    mpz_init(computedRowMpz);
+    mpz_class computedRowMpz;
 
     if (IsGmp) {
-        mpz_set_ui(computedRowMpz, 1);
+        computedRowMpz = 1;
         numGroupCombsGmp(computedRowMpz, n, numGroups, grpSize);
     }
 
-    return CleanConvert::GetCount(IsGmp, computedRowMpz, computedRows);
+    return CppConvert::GetCount(IsGmp, computedRowMpz, computedRows);
 }

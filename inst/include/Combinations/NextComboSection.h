@@ -1,5 +1,4 @@
-#ifndef NEXT_COMBO_SECTION_H
-#define NEXT_COMBO_SECTION_H
+#pragma once
 
 #include "cpp11/R.hpp"
 #include <vector>
@@ -51,5 +50,3 @@ inline void nextCombSecMulti(const std::vector<int> &freqs,
         }
     }
 }
-
-#endif

@@ -1,7 +1,7 @@
 #include "NumbersUtils/PrimesSegSieve.h"
 #include "NumbersUtils/PhiTinyLookup.h"
 #include "NumbersUtils/Eratosthenes.h"
-#include "CleanConvert.h"
+#include "CppConvert.h"
 #include <algorithm>
 #include <numeric>
 #include <thread>
@@ -401,12 +401,12 @@ namespace PrimeCounting {
 [[cpp11::register]]
 SEXP PrimeCountCpp(SEXP Rn, SEXP RNumThreads, SEXP RmaxThreads) {
     double dblNum;
-    CleanConvert::convertPrimitive(Rn, dblNum, VecType::Numeric, "n");
+    CppConvert::convertPrimitive(Rn, dblNum, VecType::Numeric, "n");
     const std::int64_t n = static_cast<std::int64_t>(dblNum);
 
     int nThreads = 1;
     int maxThreads = 1;
-    CleanConvert::convertPrimitive(RmaxThreads, maxThreads,
+    CppConvert::convertPrimitive(RmaxThreads, maxThreads,
                                    VecType::Integer, "maxThreads");
 
     if (n < 100000) {
@@ -427,7 +427,7 @@ SEXP PrimeCountCpp(SEXP Rn, SEXP RNumThreads, SEXP RmaxThreads) {
     }
 
     if (!Rf_isNull(RNumThreads)) {
-        CleanConvert::convertPrimitive(RNumThreads, nThreads,
+        CppConvert::convertPrimitive(RNumThreads, nThreads,
                                        VecType::Integer, "nThreads");
     }
 

@@ -533,14 +533,17 @@ test_that("comboIter & permuteIter produces correct results", {
 
     expect_true(comboClassBigZTest(100, 20, lenCheck = 100))
     expect_true(comboClassBigZTest(as.raw(1:100), 10, TRUE, lenCheck = 100))
-    expect_true(comboClassBigZTest(factor(1:50), 20, freqs1 = rep(1:10, 5), lenCheck = 100))
+    expect_true(comboClassBigZTest(factor(1:50), 20, freqs1 = rep(1:10, 5),
+                                   lenCheck = 100))
 
-    expect_true(comboClassBigZTest(as.complex(1:50), 10, IsComb = FALSE, lenCheck = 100))
-    expect_true(comboClassBigZTest(state.abb[1:30], 15,
-                                   freqs1 = rep(1:10, 3), IsComb = FALSE, lenCheck = 100))
+    expect_true(comboClassBigZTest(as.complex(1:50), 10, IsComb = FALSE,
+                                   lenCheck = 100))
+    expect_true(comboClassBigZTest(state.abb[1:30], 15, freqs1 = rep(1:10, 3),
+                                   IsComb = FALSE, lenCheck = 100))
     set.seed(103)
     myNums = rnorm(20)
-    expect_true(comboClassBigZTest(myNums, 20, T, IsComb = FALSE, lenCheck = 100))
+    expect_true(comboClassBigZTest(myNums, 20, T, IsComb = FALSE,
+                                   lenCheck = 100))
 
     ## With FUN
     expect_true(comboClassBigZTest(100, 20, lenCheck = 100, FUN1 = sum))
@@ -551,11 +554,13 @@ test_that("comboIter & permuteIter produces correct results", {
     expect_true(comboClassBigZTest(as.complex(1:50), 10, IsComb = FALSE,
                                    lenCheck = 100, FUN1 = sd))
     expect_true(comboClassBigZTest(state.abb[1:30], 15,
-                                   freqs1 = rep(1:10, 3), IsComb = FALSE, lenCheck = 100,
+                                   freqs1 = rep(1:10, 3),
+                                   IsComb = FALSE, lenCheck = 100,
                                    FUN1 = function(x) {paste0(x, collapse = "")}))
     set.seed(103)
     myNums = rnorm(20)
-    expect_true(comboClassBigZTest(myNums, 20, T, IsComb = FALSE, lenCheck = 100, FUN1 = cumsum))
+    expect_true(comboClassBigZTest(myNums, 20, T, IsComb = FALSE,
+                                   lenCheck = 100, FUN1 = cumsum))
 
     ## With constraintFun
     expect_true(comboClassBigZTest(myNums, 20, T, IsComb = FALSE,

@@ -1,5 +1,4 @@
 #include "Constraints/ConstraintsTypes.h"
-#include "ImportExportMPZ.h"
 #include "SetUpUtils.h"
 #include <algorithm>   // std::max_element
 #include <cmath>       // std::abs
@@ -18,9 +17,8 @@ void SetIndexVec(SEXP RindexVec, std::vector<double> &mySample,
             }
         }
     } else {
-        CleanConvert::convertVector(RindexVec, mySample,
-                                    VecType::Numeric,
-                                    "indexVec", false);
+        CppConvert::convertVector(RindexVec, mySample, VecType::Numeric,
+                                  "indexVec", false);
         sampSize = mySample.size();
 
         double myMax = *std::max_element(mySample.cbegin(), mySample.cend());
@@ -41,114 +39,111 @@ void SetIndexVec(SEXP RindexVec, std::vector<double> &mySample,
     }
 }
 
-void SetIndexVecMpz(SEXP RindexVec, mpz_t *myVec,
-                    std::size_t sampSize, mpz_t computedRowsMpz) {
+void SetIndexVecMpz(SEXP RindexVec, std::vector<mpz_class> &myVec,
+                    std::size_t sampSize, mpz_class computedRowsMpz) {
 
-    createMPZArray(RindexVec, myVec, sampSize, "sampleVec");
+    CppConvert::convertMPZVector(RindexVec, myVec, sampSize, "sampleVec");
 
     // get zero base
     for (std::size_t i = 0; i < sampSize; ++i) {
-        mpz_sub_ui(myVec[i], myVec[i], 1);
+        myVec[i]--;
     }
 
-    mpz_t maxGmp;
-    mpz_init(maxGmp);
-    mpz_set(maxGmp, myVec[0]);
+    mpz_class maxGmp(myVec[0]);
 
     for (std::size_t i = 1; i < sampSize; ++i) {
-        if (mpz_cmp(myVec[i], maxGmp) > 0) {
-            mpz_set(maxGmp, myVec[i]);
+        if (cmp(myVec[i], maxGmp) > 0) {
+            maxGmp = myVec[i];
         }
     }
 
-    if (mpz_cmp(maxGmp, computedRowsMpz) >= 0) {
-        mpz_clear(maxGmp);
-        MpzClearVec(myVec, sampSize);
+    if (cmp(maxGmp, computedRowsMpz) >= 0) {
         cpp11::stop("One or more of the requested values in sampleVec "
                  "exceeds the maximum number of possible results");
     }
-
-    mpz_clear(maxGmp);
 }
 
-void increment(bool IsGmp, mpz_t mpzIndex, double &dblIndex) {
+void increment(bool IsGmp, mpz_class &mpzIndex, double &dblIndex) {
     if (IsGmp) {
-        mpz_add_ui(mpzIndex, mpzIndex, 1u);
+        ++mpzIndex;
     } else {
         ++dblIndex;
     }
 }
 
-void increment(bool IsGmp, mpz_t mpzIndex, double &dblIndex, int nRows) {
+void increment(bool IsGmp, mpz_class &mpzIndex, double &dblIndex, int nRows) {
     if (IsGmp) {
-        mpz_add_ui(mpzIndex, mpzIndex, nRows);
+        mpzIndex += nRows;
     } else {
         dblIndex += nRows;
     }
 }
 
-void decrement(bool IsGmp, mpz_t mpzIndex, double &dblIndex) {
+void decrement(bool IsGmp, mpz_class &mpzIndex, double &dblIndex) {
     if (IsGmp) {
-        mpz_sub_ui(mpzIndex, mpzIndex, 1u);
+        --mpzIndex;
     } else {
         --dblIndex;
     }
 }
 
-void decrement(bool IsGmp, mpz_t mpzIndex, double &dblIndex, int nRows) {
+void decrement(bool IsGmp, mpz_class &mpzIndex, double &dblIndex, int nRows) {
     if (IsGmp) {
-        mpz_sub_ui(mpzIndex, mpzIndex, nRows);
+        mpzIndex -= nRows;
     } else {
         dblIndex -= nRows;
     }
 }
 
-bool CheckEqSi(bool IsGmp, mpz_t mpzIndex, double dblIndex, int si) {
+bool CheckEqSi(bool IsGmp, const mpz_class &mpzIndex,
+               double dblIndex, int si) {
     if (IsGmp) {
-        return mpz_cmp_si(mpzIndex, si) == 0;
+        return cmp(mpzIndex, si) == 0;
     } else {
         return dblIndex == si;
     }
 }
 
-bool CheckIndLT(bool IsGmp, mpz_t mpzIndex, double dblIndex,
-                mpz_t computedRowsMpz, double computedRows, bool eq = false) {
+bool CheckIndLT(bool IsGmp, const mpz_class &mpzIndex, double dblIndex,
+                const mpz_class &computedRowsMpz, double computedRows,
+                bool eq = false) {
     if (eq) {
         if (IsGmp) {
-            return mpz_cmp(mpzIndex, computedRowsMpz) <= 0;
+            return cmp(mpzIndex, computedRowsMpz) <= 0;
         } else {
             return dblIndex <= computedRows;
         }
     } else {
         if (IsGmp) {
-            return mpz_cmp(mpzIndex, computedRowsMpz) < 0;
+            return cmp(mpzIndex, computedRowsMpz) < 0;
         } else {
             return dblIndex < computedRows;
         }
     }
 }
 
-bool CheckEqInd(bool IsGmp, mpz_t mpzIndex, double dblIndex,
-                mpz_t computedRowsMpz, double computedRows) {
+bool CheckEqInd(bool IsGmp, const mpz_class &mpzIndex, double dblIndex,
+                const mpz_class &computedRowsMpz, double computedRows) {
     if (IsGmp) {
-        return mpz_cmp(mpzIndex, computedRowsMpz) == 0;
+        return cmp(mpzIndex, computedRowsMpz) == 0;
     } else {
         return dblIndex == computedRows;
     }
 }
 
-bool CheckIndGrT(bool IsGmp, mpz_t mpzIndex, double dblIndex,
-                 mpz_t computedRowsMpz, double computedRows) {
+bool CheckIndGrT(bool IsGmp, const mpz_class &mpzIndex, double dblIndex,
+                 const mpz_class &computedRowsMpz, double computedRows) {
     if (IsGmp) {
-        return mpz_cmp(mpzIndex, computedRowsMpz) > 0;
+        return cmp(mpzIndex, computedRowsMpz) > 0;
     } else {
         return dblIndex > computedRows;
     }
 }
 
-bool CheckGrTSi(bool IsGmp, mpz_t mpzIndex, double dblIndex, int si) {
+bool CheckGrTSi(bool IsGmp, const mpz_class &mpzIndex,
+                double dblIndex, int si) {
     if (IsGmp) {
-        return mpz_cmp_si(mpzIndex, si) > 0;
+        return cmp(mpzIndex, si) > 0;
     } else {
         return dblIndex > si;
     }

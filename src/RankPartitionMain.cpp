@@ -1,23 +1,21 @@
 #include "Constraints/ConstraintsUtils.h"
 #include "Partitions/PartitionsUtils.h"
 #include "Partitions/RankPartition.h"
-#include "Cpp14MakeUnique.h"
 #include "RankUtils.h"
 
-void RankPartsResults(mpz_t* bigRes, int* intRes, double* dblRes,
+void RankPartsResults(std::vector<mpz_class> &bigRes, int* intRes, double* dblRes,
                       std::vector<int> &idx, rankPartsPtr rankFun,
                       int tar, int m, int cap, int strtLen,
                       int numResults, bool IsGmp, bool IsInteger) {
 
-    mpz_t mpzIdx;
-    mpz_init_set_ui(mpzIdx, 0u);
+    mpz_class mpzIdx(0);
 
     if (IsGmp) {
         for (int i = 0, j = 0; i < numResults; ++i, j += m) {
             double dblIdx = 0;
             rankFun(idx.begin() + j, tar, m, cap, strtLen, dblIdx, mpzIdx);
-            mpz_add_ui(mpzIdx, mpzIdx, 1u);
-            mpz_set(bigRes[i], mpzIdx);
+            ++mpzIdx;
+            bigRes[i] = mpzIdx;
         }
     } else {
         for (int i = 0, j = 0; i < numResults; ++i, j += m) {
@@ -27,8 +25,6 @@ void RankPartsResults(mpz_t* bigRes, int* intRes, double* dblRes,
             if (IsInteger) intRes[i] = dblIdx; else dblRes[i] = dblIdx;
         }
     }
-
-    mpz_clear(mpzIdx);
 }
 
 [[cpp11::register]]
@@ -41,7 +37,7 @@ SEXP RankPartitionMain(SEXP RIdx, SEXP Rv, SEXP RisRep,
     int m = 0;
     VecType myType = VecType::Integer;
 
-    bool IsRep  = CleanConvert::convertFlag(RisRep, "repetition");
+    bool IsRep  = CppConvert::convertFlag(RisRep, "repetition");
     bool IsMult = false;
 
     std::vector<int> idx;
@@ -51,7 +47,7 @@ SEXP RankPartitionMain(SEXP RIdx, SEXP Rv, SEXP RisRep,
     std::vector<double> vNum;
 
     const std::string mainFun = "sum";
-    const bool IsComposition  = CleanConvert::convertFlag(RIsComposition,
+    const bool IsComposition  = CppConvert::convertFlag(RIsComposition,
                                                           "IsComposition");
 
     SetUpRank(RIdx, Rv, RisRep, RFreqs, Rm, idx, freqs, myReps,
@@ -74,7 +70,7 @@ SEXP RankPartitionMain(SEXP RIdx, SEXP Rv, SEXP RisRep,
     part.mIsNull = Rf_isNull(Rm);
     part.isComp  = IsComposition;
     part.isComb  = !part.isComp;
-    part.isWeak  = CleanConvert::convertFlag(RIsWeak, "weak");
+    part.isWeak  = CppConvert::convertFlag(RIsWeak, "weak");
 
     cpp11::sexp Rlow = R_NilValue;
     ConstraintSetup(vNum, myReps, targetVals, vInt, targetIntVals, funDbl,
@@ -110,11 +106,7 @@ SEXP RankPartitionMain(SEXP RIdx, SEXP Rv, SEXP RisRep,
     if (part.numUnknown) PartitionsCount(myReps, part, n, true);
     const int numResults  = Rf_length(RIdx) / m;
     const int bigSampSize = (part.isGmp) ? numResults : 1;
-    auto myVec = FromCpp14::make_unique<mpz_t[]>(bigSampSize);
-
-    for (int i = 0; i < bigSampSize; ++i) {
-        mpz_init(myVec[i]);
-    }
+    std::vector<mpz_class> myVec(bigSampSize);
 
     const int cap     = n - static_cast<int>(part.includeZero);
     const int strtLen = std::count_if(part.startZ.cbegin(),
@@ -135,14 +127,14 @@ SEXP RankPartitionMain(SEXP RIdx, SEXP Rv, SEXP RisRep,
         part.ptype, part.isGmp, part.isComp
     );
 
-    RankPartsResults(myVec.get(), res_int, res_dbl, idx,
+    RankPartsResults(myVec, res_int, res_dbl, idx,
                      rankFun, part.mapTar, m, cap, strtLen,
                      numResults, part.isGmp, IsInt);
 
     if (IsInt) {
         return res_std_int;
     } else if (part.isGmp) {
-        return MpzReturn(myVec.get(), numResults);
+        return MpzReturn(myVec, numResults);
     } else {
         return res_std_dbl;
     }
