@@ -33,7 +33,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">RcppAlgos</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">2.6.0</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">2.7.0</span>
       </span>
     </div>
 
@@ -103,7 +103,7 @@
                         <h4 data-toc-skip class="author">Joseph
 Wood</h4>
             
-            <h4 data-toc-skip class="date">08/14/2022</h4>
+            <h4 data-toc-skip class="date">10/30/2022</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/jwood000/RcppAlgos/blob/HEAD/vignettes/CombPermConstraints.Rmd" class="external-link"><code>vignettes/CombPermConstraints.Rmd</code></a></small>
       <div class="hidden name"><code>CombPermConstraints.Rmd</code></div>
@@ -136,6 +136,16 @@ applying the given function to that combination/permutation. You can
 also set <code>keepResults = TRUE</code> (more on this later).</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/jwood000/RcppAlgos" class="external-link">RcppAlgos</a></span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/options.html" class="external-link">options</a></span><span class="op">(</span>width <span class="op">=</span> <span class="fl">90</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/packageDescription.html" class="external-link">packageVersion</a></span><span class="op">(</span><span class="st">"RcppAlgos"</span><span class="op">)</span></span>
+<span><span class="co">#&gt; [1] ‘2.7.0’</span></span>
+<span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/cat.html" class="external-link">cat</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/utils/capture.output.html" class="external-link">capture.output</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/utils/sessionInfo.html" class="external-link">sessionInfo</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">3</span><span class="op">]</span>, collapse <span class="op">=</span> <span class="st">"\n"</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="co">#&gt; R version 4.2.1 (2022-06-23)</span></span>
+<span><span class="co">#&gt; Platform: aarch64-apple-darwin20 (64-bit)</span></span>
+<span><span class="co">#&gt; Running under: macOS Monterey 12.6</span></span>
+<span></span>
 <span><span class="co">## base R using combn and FUN</span></span>
 <span><span class="va">combnSum</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/utils/combn.html" class="external-link">combn</a></span><span class="op">(</span><span class="fl">20</span>, <span class="fl">10</span>, <span class="va">sum</span><span class="op">)</span></span>
 <span><span class="va">algosSum</span> <span class="op">=</span> <span class="fu"><a href="../reference/combinatoricsGeneral.html">comboGeneral</a></span><span class="op">(</span><span class="fl">20</span>, <span class="fl">10</span>, constraintFun <span class="op">=</span> <span class="st">"sum"</span><span class="op">)</span></span>
@@ -162,11 +172,13 @@ also set <code>keepResults = TRUE</code> (more on this later).</p>
 <span><span class="fu"><a href="https://rdrr.io/pkg/microbenchmark/man/microbenchmark.html" class="external-link">microbenchmark</a></span><span class="op">(</span>serial <span class="op">=</span> <span class="fu"><a href="../reference/combinatoricsGeneral.html">comboGeneral</a></span><span class="op">(</span><span class="fl">20</span>, <span class="fl">10</span>, constraintFun <span class="op">=</span> <span class="st">"sum"</span><span class="op">)</span>,</span>
 <span>             parallel <span class="op">=</span> <span class="fu"><a href="../reference/combinatoricsGeneral.html">comboGeneral</a></span><span class="op">(</span><span class="fl">20</span>, <span class="fl">10</span>, constraintFun <span class="op">=</span> <span class="st">"sum"</span>, Parallel <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>,</span>
 <span>             combnSum <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/utils/combn.html" class="external-link">combn</a></span><span class="op">(</span><span class="fl">20</span>, <span class="fl">10</span>, <span class="va">sum</span><span class="op">)</span>, unit <span class="op">=</span> <span class="st">"relative"</span><span class="op">)</span></span>
+<span><span class="co">#&gt; Warning in microbenchmark(serial = comboGeneral(20, 10, constraintFun = "sum"), : less</span></span>
+<span><span class="co">#&gt; accurate nanosecond times to avoid potential integer overflows</span></span>
 <span><span class="co">#&gt; Unit: relative</span></span>
-<span><span class="co">#&gt;      expr        min         lq       mean    median         uq        max neval cld</span></span>
-<span><span class="co">#&gt;    serial   3.177339   3.173798   3.054257   3.14192   2.948129   2.859115   100  a</span></span>
-<span><span class="co">#&gt;  parallel   1.000000   1.000000   1.000000   1.00000   1.000000   1.000000   100  a</span></span>
-<span><span class="co">#&gt;  combnSum 234.997953 208.891710 189.269384 201.36549 188.176221 176.208449   100   b</span></span></code></pre></div>
+<span><span class="co">#&gt;      expr        min         lq       mean     median         uq       max neval</span></span>
+<span><span class="co">#&gt;    serial   2.974281   2.706903   2.344922   2.514726   2.406935  1.518758   100</span></span>
+<span><span class="co">#&gt;  parallel   1.000000   1.000000   1.000000   1.000000   1.000000  1.000000   100</span></span>
+<span><span class="co">#&gt;  combnSum 147.770840 130.213737 110.430530 120.947312 113.300148 57.916672   100</span></span></code></pre></div>
 <div class="section level3">
 <h3 id="faster-than-rowsums-and-rowmeans">Faster than <code>rowSums</code> and <code>rowMeans</code><a class="anchor" aria-label="anchor" href="#faster-than-rowsums-and-rowmeans"></a>
 </h3>
@@ -182,10 +194,10 @@ highly efficient <code>rowSums</code>/<code>rowMeans</code>
 <span>             parallel <span class="op">=</span> <span class="fu"><a href="../reference/combinatoricsGeneral.html">comboGeneral</a></span><span class="op">(</span><span class="fl">25</span>, <span class="fl">10</span>, constraintFun <span class="op">=</span> <span class="st">"sum"</span>, Parallel <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>,</span>
 <span>              rowsums <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/colSums.html" class="external-link">rowSums</a></span><span class="op">(</span><span class="va">combs</span><span class="op">)</span>, unit <span class="op">=</span> <span class="st">"relative"</span><span class="op">)</span></span>
 <span><span class="co">#&gt; Unit: relative</span></span>
-<span><span class="co">#&gt;      expr     min       lq     mean   median       uq       max neval cld</span></span>
-<span><span class="co">#&gt;    serial 3.18877 3.009145 2.592448 2.556819 2.446044 1.4423210   100   c</span></span>
-<span><span class="co">#&gt;  parallel 1.00000 1.000000 1.000000 1.000000 1.000000 1.0000000   100 a</span></span>
-<span><span class="co">#&gt;   rowsums 2.90689 2.636867 2.212371 2.069613 2.254097 0.6039177   100  b</span></span>
+<span><span class="co">#&gt;      expr      min       lq     mean   median       uq       max neval</span></span>
+<span><span class="co">#&gt;    serial 3.318426 2.814649 2.681666 2.702586 2.604239 1.6642068   100</span></span>
+<span><span class="co">#&gt;  parallel 1.000000 1.000000 1.000000 1.000000 1.000000 1.0000000   100</span></span>
+<span><span class="co">#&gt;   rowsums 1.980012 1.669279 1.600155 1.566228 1.532897 0.8042702   100</span></span>
 <span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/all.equal.html" class="external-link">all.equal</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/colSums.html" class="external-link">rowSums</a></span><span class="op">(</span><span class="va">combs</span><span class="op">)</span>,</span>
 <span>          <span class="fu"><a href="../reference/combinatoricsGeneral.html">comboGeneral</a></span><span class="op">(</span><span class="fl">25</span>, <span class="fl">10</span>,</span>
@@ -198,10 +210,10 @@ highly efficient <code>rowSums</code>/<code>rowMeans</code>
 <span>             parallel <span class="op">=</span> <span class="fu"><a href="../reference/combinatoricsGeneral.html">comboGeneral</a></span><span class="op">(</span><span class="fl">25</span>, <span class="fl">10</span>, constraintFun <span class="op">=</span> <span class="st">"mean"</span>, Parallel <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>,</span>
 <span>             rowmeans <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/colSums.html" class="external-link">rowMeans</a></span><span class="op">(</span><span class="va">combs</span><span class="op">)</span>, unit <span class="op">=</span> <span class="st">"relative"</span><span class="op">)</span></span>
 <span><span class="co">#&gt; Unit: relative</span></span>
-<span><span class="co">#&gt;      expr      min       lq     mean   median       uq      max neval cld</span></span>
-<span><span class="co">#&gt;    serial 3.063023 2.561861 2.411453 2.542078 2.529883 1.553592   100   c</span></span>
-<span><span class="co">#&gt;  parallel 1.000000 1.000000 1.000000 1.000000 1.000000 1.000000   100 a</span></span>
-<span><span class="co">#&gt;  rowmeans 1.759344 1.443430 1.348248 1.418801 1.404468 0.532154   100  b</span></span>
+<span><span class="co">#&gt;      expr      min       lq     mean   median       uq       max neval</span></span>
+<span><span class="co">#&gt;    serial 2.543445 2.312172 2.232081 2.242439 2.182972 1.7099576   100</span></span>
+<span><span class="co">#&gt;  parallel 1.000000 1.000000 1.000000 1.000000 1.000000 1.0000000   100</span></span>
+<span><span class="co">#&gt;  rowmeans 1.464793 1.292659 1.243793 1.251504 1.224597 0.7458984   100</span></span>
 <span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/all.equal.html" class="external-link">all.equal</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/colSums.html" class="external-link">rowMeans</a></span><span class="op">(</span><span class="va">combs</span><span class="op">)</span>,</span>
 <span>          <span class="fu"><a href="../reference/combinatoricsGeneral.html">comboGeneral</a></span><span class="op">(</span><span class="fl">25</span>, <span class="fl">10</span>,</span>
@@ -235,7 +247,7 @@ for the <code>limitConstraint</code>.</p>
 <span><span class="va">myNums</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sample.html" class="external-link">sample</a></span><span class="op">(</span><span class="fl">500</span>, <span class="fl">20</span><span class="op">)</span></span>
 <span></span>
 <span><span class="va">myNums</span></span>
-<span><span class="co">#&gt; [1] 329 313 430  95 209 442 351 317 444 315 246 355 128 131 288   9 352 489 354 244</span></span>
+<span><span class="co">#&gt;  [1] 329 313 430  95 209 442 351 317 444 315 246 355 128 131 288   9 352 489 354 244</span></span>
 <span></span>
 <span><span class="co">## Find all 5-tuples combinations without repetition of myNums</span></span>
 <span><span class="co">## (defined above) such that the sum is equal to 1176.</span></span>
@@ -270,7 +282,7 @@ for the <code>limitConstraint</code>.</p>
 <span><span class="co">## Again, we authenticate with brute force</span></span>
 <span><span class="va">allCombs</span> <span class="op">=</span> <span class="fu"><a href="../reference/combinatoricsGeneral.html">comboGeneral</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/sort.html" class="external-link">sort</a></span><span class="op">(</span><span class="va">myNums</span><span class="op">)</span>, <span class="fl">5</span>, <span class="cn">TRUE</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/identical.html" class="external-link">identical</a></span><span class="op">(</span><span class="va">p2</span>, <span class="va">allCombs</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/which.html" class="external-link">which</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/colSums.html" class="external-link">rowMeans</a></span><span class="op">(</span><span class="va">allCombs</span><span class="op">)</span> <span class="op">&lt;=</span> <span class="fl">150</span><span class="op">)</span>, <span class="op">]</span><span class="op">)</span></span>
-<span><span class="co">#&gt; [1] FALSE  ### &lt;&lt;--- What? They should be the same</span></span>
+<span><span class="co">#&gt; [1] FALSE  ### &lt;-- What? They should be the same</span></span>
 <span></span>
 <span><span class="co">## N.B.</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/class.html" class="external-link">class</a></span><span class="op">(</span><span class="va">p2</span><span class="op">[</span><span class="fl">1</span>, <span class="op">]</span><span class="op">)</span></span>
@@ -348,8 +360,8 @@ added to the output that is the result of applying
 errors</a> can occur. As stated in <a href="https://en.wikipedia.org/wiki/Floating-point_error_mitigation" class="external-link">floating-point
 error mitigation</a>:</p>
 <blockquote>
-<p><em><strong>“By definition, floating-point error cannot be
-eliminated, and, at best, can only be managed.”</strong></em></p>
+<p><strong><em>“By definition, floating-point error cannot be
+eliminated, and, at best, can only be managed.”</em></strong></p>
 </blockquote>
 <p>Here is a great stackoverflow post that further illuminates this
 tricky topic:</p>
@@ -429,16 +441,16 @@ Observe:</p>
 <span>               constraintFun <span class="op">=</span> <span class="st">"mean"</span>, comparisonFun <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"&gt;"</span>, <span class="st">"&lt;"</span><span class="op">)</span>,</span>
 <span>               limitConstraints <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">4</span>, <span class="fl">5</span><span class="op">)</span>, keepResults <span class="op">=</span> <span class="cn">TRUE</span>, tolerance <span class="op">=</span> <span class="fl">0</span><span class="op">)</span></span>
 <span><span class="co">#&gt;       [,1] [,2] [,3]     [,4]</span></span>
-<span><span class="co">#&gt;  [1,]    2    5    7 4.666667   &lt;-- First combination that meets the criteria</span></span>
+<span><span class="co">#&gt;  [1,]    2    5    7 4.666667   ### &lt;-- First combination that meets the criteria</span></span>
 <span><span class="co">#&gt;  [2,]    2    7    5 4.666667</span></span>
 <span><span class="co">#&gt;  [3,]    5    2    7 4.666667</span></span>
 <span><span class="co">#&gt;  [4,]    5    7    2 4.666667</span></span>
 <span><span class="co">#&gt;  [5,]    7    2    5 4.666667</span></span>
 <span><span class="co">#&gt;  [6,]    7    5    2 4.666667</span></span>
-<span><span class="co">#&gt;  [7,]    3    3    7 4.333333   &lt;-- Second combination that meets the criteria</span></span>
+<span><span class="co">#&gt;  [7,]    3    3    7 4.333333   ### &lt;-- Second combination that meets the criteria</span></span>
 <span><span class="co">#&gt;  [8,]    3    7    3 4.333333</span></span>
 <span><span class="co">#&gt;  [9,]    7    3    3 4.333333</span></span>
-<span><span class="co">#&gt; [10,]    3    5    5 4.333333   &lt;-- Third combination that meets the criteria</span></span>
+<span><span class="co">#&gt; [10,]    3    5    5 4.333333   ### &lt;-- Third combination that meets the criteria</span></span>
 <span><span class="co">#&gt; [11,]    5    3    5 4.333333</span></span>
 <span><span class="co">#&gt; [12,]    5    5    3 4.333333</span></span></code></pre></div>
 <p>As you can see, the <em>2<sup>nd</sup></em> through the
@@ -549,21 +561,21 @@ desired length and deciding whether to include zero or not.</p>
 <span><span class="co">#&gt; [[1]]</span></span>
 <span><span class="co">#&gt;      [,1]</span></span>
 <span><span class="co">#&gt; [1,]   10</span></span>
-<span><span class="co">#&gt;</span></span>
+<span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; [[2]]</span></span>
 <span><span class="co">#&gt;      [,1] [,2]</span></span>
 <span><span class="co">#&gt; [1,]    1    9</span></span>
 <span><span class="co">#&gt; [2,]    2    8</span></span>
 <span><span class="co">#&gt; [3,]    3    7</span></span>
 <span><span class="co">#&gt; [4,]    4    6</span></span>
-<span><span class="co">#&gt;</span></span>
+<span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; [[3]]</span></span>
 <span><span class="co">#&gt;      [,1] [,2] [,3]</span></span>
 <span><span class="co">#&gt; [1,]    1    2    7</span></span>
 <span><span class="co">#&gt; [2,]    1    3    6</span></span>
 <span><span class="co">#&gt; [3,]    1    4    5</span></span>
 <span><span class="co">#&gt; [4,]    2    3    5</span></span>
-<span><span class="co">#&gt;</span></span>
+<span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; [[4]]</span></span>
 <span><span class="co">#&gt;      [,1] [,2] [,3] [,4]</span></span>
 <span><span class="co">#&gt; [1,]    1    2    3    4</span></span></code></pre></div>
@@ -608,29 +620,29 @@ that sums to <em>N</em>.</p>
 <div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co">## m is NOT NULL and output has at most 2 zeros</span></span>
 <span><span class="fu"><a href="../reference/partitionsGeneral.html">partitionsGeneral</a></span><span class="op">(</span><span class="fl">0</span><span class="op">:</span><span class="fl">10</span>, <span class="fl">3</span>, freqs <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">2</span>, <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">10</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="co">#&gt;      [,1] [,2] [,3]</span></span>
-<span><span class="co">#&gt; [1,]    0    0   10</span></span>
-<span><span class="co">#&gt; [2,]    0    1    9</span></span>
-<span><span class="co">#&gt; [3,]    0    2    8</span></span>
-<span><span class="co">#&gt; [4,]    0    3    7</span></span>
-<span><span class="co">#&gt; [5,]    0    4    6</span></span>
-<span><span class="co">#&gt; [6,]    1    2    7</span></span>
-<span><span class="co">#&gt; [7,]    1    3    6</span></span>
-<span><span class="co">#&gt; [8,]    1    4    5</span></span>
-<span><span class="co">#&gt; [9,]    2    3    5</span></span>
+<span><span class="co">#&gt;       [,1] [,2] [,3]</span></span>
+<span><span class="co">#&gt;  [1,]    0    0   10</span></span>
+<span><span class="co">#&gt;  [2,]    0    1    9</span></span>
+<span><span class="co">#&gt;  [3,]    0    2    8</span></span>
+<span><span class="co">#&gt;  [4,]    0    3    7</span></span>
+<span><span class="co">#&gt;  [5,]    0    4    6</span></span>
+<span><span class="co">#&gt;  [6,]    1    2    7</span></span>
+<span><span class="co">#&gt;  [7,]    1    3    6</span></span>
+<span><span class="co">#&gt;  [8,]    1    4    5</span></span>
+<span><span class="co">#&gt;  [9,]    2    3    5</span></span>
 <span></span>
 <span><span class="co">## m is NULL and output has at most 2 zeros</span></span>
 <span><span class="fu"><a href="../reference/partitionsGeneral.html">partitionsGeneral</a></span><span class="op">(</span><span class="fl">0</span><span class="op">:</span><span class="fl">10</span>, freqs <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">2</span>, <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">10</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="co">#&gt;      [,1] [,2] [,3] [,4]</span></span>
-<span><span class="co">#&gt; [1,]    0    0    1    9</span></span>
-<span><span class="co">#&gt; [2,]    0    0    2    8</span></span>
-<span><span class="co">#&gt; [3,]    0    0    3    7</span></span>
-<span><span class="co">#&gt; [4,]    0    0    4    6</span></span>
-<span><span class="co">#&gt; [5,]    0    1    2    7</span></span>
-<span><span class="co">#&gt; [6,]    0    1    3    6</span></span>
-<span><span class="co">#&gt; [7,]    0    1    4    5</span></span>
-<span><span class="co">#&gt; [8,]    0    2    3    5</span></span>
-<span><span class="co">#&gt; [9,]    1    2    3    4</span></span></code></pre></div>
+<span><span class="co">#&gt;       [,1] [,2] [,3] [,4]</span></span>
+<span><span class="co">#&gt;  [1,]    0    0    1    9</span></span>
+<span><span class="co">#&gt;  [2,]    0    0    2    8</span></span>
+<span><span class="co">#&gt;  [3,]    0    0    3    7</span></span>
+<span><span class="co">#&gt;  [4,]    0    0    4    6</span></span>
+<span><span class="co">#&gt;  [5,]    0    1    2    7</span></span>
+<span><span class="co">#&gt;  [6,]    0    1    3    6</span></span>
+<span><span class="co">#&gt;  [7,]    0    1    4    5</span></span>
+<span><span class="co">#&gt;  [8,]    0    2    3    5</span></span>
+<span><span class="co">#&gt;  [9,]    1    2    3    4</span></span></code></pre></div>
 </div>
 </div>
 <div class="section level3">
@@ -669,13 +681,13 @@ in parallel using the <code>nThreads</code> argument.</p>
 <span></span>
 <span><span class="co">## Single threaded</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/system.time.html" class="external-link">system.time</a></span><span class="op">(</span><span class="fu"><a href="../reference/partitionsGeneral.html">partitionsGeneral</a></span><span class="op">(</span><span class="fl">0</span><span class="op">:</span><span class="fl">60</span>, repetition <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="co">#&gt;  user  system elapsed</span></span>
-<span><span class="co">#&gt; 0.092   0.051   0.143</span></span>
+<span><span class="co">#&gt;    user  system elapsed </span></span>
+<span><span class="co">#&gt;   0.025   0.012   0.036</span></span>
 <span></span>
 <span><span class="co">## Using nThreads</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/system.time.html" class="external-link">system.time</a></span><span class="op">(</span><span class="fu"><a href="../reference/partitionsGeneral.html">partitionsGeneral</a></span><span class="op">(</span><span class="fl">0</span><span class="op">:</span><span class="fl">60</span>, repetition <span class="op">=</span> <span class="cn">TRUE</span>, nThreads<span class="op">=</span><span class="fl">4</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="co">#&gt;  user  system elapsed</span></span>
-<span><span class="co">#&gt; 0.116   0.103   0.056</span></span>
+<span><span class="co">#&gt;    user  system elapsed </span></span>
+<span><span class="co">#&gt;   0.032   0.023   0.014</span></span>
 <span></span>
 <span></span>
 <span><span class="co">## partitions of 120 into distinct parts</span></span>
@@ -683,12 +695,12 @@ in parallel using the <code>nThreads</code> argument.</p>
 <span><span class="co">#&gt; [1] 2194432</span></span>
 <span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/system.time.html" class="external-link">system.time</a></span><span class="op">(</span><span class="fu"><a href="../reference/partitionsGeneral.html">partitionsGeneral</a></span><span class="op">(</span><span class="fl">0</span><span class="op">:</span><span class="fl">120</span>, freqs <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">120</span>, <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">120</span><span class="op">)</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="co">#&gt;  user  system elapsed</span></span>
-<span><span class="co">#&gt;  0.11    0.00    0.11</span></span>
+<span><span class="co">#&gt;    user  system elapsed </span></span>
+<span><span class="co">#&gt;   0.020   0.007   0.027</span></span>
 <span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/system.time.html" class="external-link">system.time</a></span><span class="op">(</span><span class="fu"><a href="../reference/partitionsGeneral.html">partitionsGeneral</a></span><span class="op">(</span><span class="fl">0</span><span class="op">:</span><span class="fl">120</span>, freqs <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">120</span>, <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">120</span><span class="op">)</span><span class="op">)</span>, nThreads<span class="op">=</span><span class="fl">4</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="co">#&gt;  user  system elapsed</span></span>
-<span><span class="co">#&gt; 0.146   0.001   0.038</span></span>
+<span><span class="co">#&gt;    user  system elapsed </span></span>
+<span><span class="co">#&gt;   0.023   0.005   0.008</span></span>
 <span></span>
 <span></span>
 <span><span class="co">## partitions of 100 into parts of 15 with specific multiplicity</span></span>
@@ -697,8 +709,8 @@ in parallel using the <code>nThreads</code> argument.</p>
 <span></span>
 <span><span class="co">## Over 6 million in just over a second!</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/system.time.html" class="external-link">system.time</a></span><span class="op">(</span><span class="fu"><a href="../reference/partitionsGeneral.html">partitionsGeneral</a></span><span class="op">(</span><span class="fl">100</span>, <span class="fl">15</span>, freqs <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fl">4</span><span class="op">:</span><span class="fl">8</span>, <span class="fl">20</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="co">#&gt;    user  system elapsed</span></span>
-<span><span class="co">#&gt;   0.735   0.366   1.100</span></span></code></pre></div>
+<span><span class="co">#&gt;    user  system elapsed </span></span>
+<span><span class="co">#&gt;   0.300   0.088   0.388</span></span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="integer-compositions">Integer Compositions<a class="anchor" aria-label="anchor" href="#integer-compositions"></a>
@@ -855,8 +867,8 @@ options have no effect when generating compositions.</p>
 <div class="sourceCode" id="cb21"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co">## compositions of 25</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/system.time.html" class="external-link">system.time</a></span><span class="op">(</span><span class="fu"><a href="../reference/partitionsGeneral.html">compositionsGeneral</a></span><span class="op">(</span><span class="fl">0</span><span class="op">:</span><span class="fl">25</span>, repetition <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="co">#&gt;    user  system elapsed</span></span>
-<span><span class="co">#&gt;   1.624   0.384   2.013</span></span>
+<span><span class="co">#&gt;    user  system elapsed </span></span>
+<span><span class="co">#&gt;   1.632   0.096   1.729</span></span>
 <span></span>
 <span><span class="fu"><a href="../reference/partitionsCount.html">compositionsCount</a></span><span class="op">(</span><span class="fl">0</span><span class="op">:</span><span class="fl">25</span>, repetition<span class="op">=</span><span class="cn">TRUE</span><span class="op">)</span></span>
 <span><span class="co">#&gt; [1] 16777216</span></span>
@@ -864,23 +876,23 @@ options have no effect when generating compositions.</p>
 <span><span class="co">## Use multiple threads for greater efficiency. Generate</span></span>
 <span><span class="co">## over 16 million compositions in under a second!</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/system.time.html" class="external-link">system.time</a></span><span class="op">(</span><span class="fu"><a href="../reference/partitionsGeneral.html">compositionsGeneral</a></span><span class="op">(</span><span class="fl">0</span><span class="op">:</span><span class="fl">25</span>, repetition <span class="op">=</span> <span class="cn">TRUE</span>, nThreads <span class="op">=</span> <span class="fl">4</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="co">#&gt;    user  system elapsed</span></span>
-<span><span class="co">#&gt;   1.921   0.465   0.734</span></span>
+<span><span class="co">#&gt;    user  system elapsed </span></span>
+<span><span class="co">#&gt;   1.818   0.103   0.509</span></span>
 <span></span>
 <span></span>
 <span><span class="co">## weak compositions of 12 usnig nThreads = 4</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/system.time.html" class="external-link">system.time</a></span><span class="op">(</span><span class="va">weakComp12</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/partitionsGeneral.html">compositionsGeneral</a></span><span class="op">(</span><span class="fl">0</span><span class="op">:</span><span class="fl">12</span>, repetition <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>                                              weak <span class="op">=</span> <span class="cn">TRUE</span>, nThreads <span class="op">=</span> <span class="fl">4</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="co">#&gt;  user  system elapsed </span></span>
-<span><span class="co">#&gt; 0.028   0.000   0.007</span></span>
+<span><span class="co">#&gt;    user  system elapsed </span></span>
+<span><span class="co">#&gt;   0.012   0.007   0.005</span></span>
 <span></span>
 <span><span class="co">## And using permuteGeneral</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/system.time.html" class="external-link">system.time</a></span><span class="op">(</span><span class="va">weakPerm12</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/combinatoricsGeneral.html">permuteGeneral</a></span><span class="op">(</span><span class="fl">0</span><span class="op">:</span><span class="fl">12</span>, <span class="fl">12</span>, repetition <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>                                         constraintFun <span class="op">=</span> <span class="st">"sum"</span>,</span>
 <span>                                         comparisonFun <span class="op">=</span> <span class="st">"=="</span>,</span>
 <span>                                         limitConstraints <span class="op">=</span> <span class="fl">12</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="co">#&gt;  user  system elapsed</span></span>
-<span><span class="co">#&gt; 0.021   0.000   0.021</span></span>
+<span><span class="co">#&gt;    user  system elapsed </span></span>
+<span><span class="co">#&gt;   0.012   0.003   0.015</span></span>
 <span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/dim.html" class="external-link">dim</a></span><span class="op">(</span><span class="va">weakPerm12</span><span class="op">)</span></span>
 <span><span class="co">#&gt; [1] 1352078      12</span></span>
@@ -895,8 +907,8 @@ options have no effect when generating compositions.</p>
 <span>                                         constraintFun <span class="op">=</span> <span class="st">"sum"</span>,</span>
 <span>                                         comparisonFun <span class="op">=</span> <span class="st">"=="</span>,</span>
 <span>                                         limitConstraints <span class="op">=</span> <span class="fl">25</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="co">#&gt;    user  system elapsed</span></span>
-<span><span class="co">#&gt;   0.045   0.009   0.054</span></span>
+<span><span class="co">#&gt;    user  system elapsed </span></span>
+<span><span class="co">#&gt;   0.025   0.006   0.031</span></span>
 <span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/dim.html" class="external-link">dim</a></span><span class="op">(</span><span class="va">comp25_gen</span><span class="op">)</span></span>
 <span><span class="co">#&gt; [1] 946092     10</span></span></code></pre></div>
@@ -930,8 +942,10 @@ simply hit <code>Ctrl + c</code>, or <code>esc</code> if using
 <span><span class="co">## No problem... simply hit Ctrl + c or if in RStudio, hit esc</span></span>
 <span><span class="co">## or hit the "Stop" button</span></span>
 <span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/base/system.time.html" class="external-link">system.time</a></span><span class="op">(</span><span class="va">testInterrupt</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/partitionsGeneral.html">partitionsGeneral</a></span><span class="op">(</span><span class="va">s</span>, <span class="fl">20</span>, <span class="cn">TRUE</span>, target <span class="op">=</span> <span class="fl">0</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="co">#&gt; Timing stopped at: 2.012 0.006 2.023</span></span></code></pre></div>
+<span><span class="co">##</span></span>
+<span><span class="co">## system.time(testInterrupt &lt;- partitionsGeneral(s, 20, TRUE, target = 0))</span></span>
+<span><span class="co">## Timing stopped at: 1.029 0.011 1.04</span></span>
+<span><span class="co">##</span></span></code></pre></div>
 <div class="section level3">
 <h3 id="note-about-interrupting-execution">Note about Interrupting Execution<a class="anchor" aria-label="anchor" href="#note-about-interrupting-execution"></a>
 </h3>
@@ -947,8 +961,8 @@ combinatorial explosion without fear of having to restart R.</p>
 <span></span>
 <span><span class="co">## Test one iteration to see if we need to relax the tolerance</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/system.time.html" class="external-link">system.time</a></span><span class="op">(</span><span class="va">iter</span><span class="op">@</span><span class="va">nextIter</span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="co">#&gt;    user  system elapsed</span></span>
-<span><span class="co">#&gt;   7.777   0.005   7.783</span></span>
+<span><span class="co">#&gt;    user  system elapsed </span></span>
+<span><span class="co">#&gt;   5.284   0.017   5.301</span></span>
 <span></span>
 <span><span class="co">## 8 seconds per iteration is a bit much... Let's loosen things</span></span>
 <span><span class="co">## a little by increasing the tolerance from sqrt(.Machine$double.eps)</span></span>
@@ -956,8 +970,8 @@ combinatorial explosion without fear of having to restart R.</p>
 <span><span class="va">relaxedIter</span> <span class="op">=</span> <span class="fu"><a href="../reference/partitionsIterator.html">partitionsIter</a></span><span class="op">(</span><span class="va">s</span>, <span class="fl">20</span>, <span class="cn">TRUE</span>, target <span class="op">=</span> <span class="fl">0</span>, tolerance <span class="op">=</span> <span class="fl">1e-5</span><span class="op">)</span></span>
 <span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/system.time.html" class="external-link">system.time</a></span><span class="op">(</span><span class="va">relaxedIter</span><span class="op">@</span><span class="va">nextIter</span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="co">#&gt;    user  system elapsed</span></span>
-<span><span class="co">#&gt;   0.001   0.000   0.001</span></span></code></pre></div>
+<span><span class="co">#&gt;    user  system elapsed </span></span>
+<span><span class="co">#&gt;   0.000   0.000   0.001</span></span></code></pre></div>
 </div>
 </div>
   </div>
