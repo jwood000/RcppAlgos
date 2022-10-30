@@ -1,5 +1,4 @@
-#ifndef EULER_PHI_SIEVE_H
-#define EULER_PHI_SIEVE_H
+#pragma once
 
 #include <vector>
 #include <cstdint>
@@ -12,5 +11,3 @@ namespace MotleyPrimes {
                        std::vector<T> &numSeq,
                        U* EulerPhis);
 }
-
-#endif

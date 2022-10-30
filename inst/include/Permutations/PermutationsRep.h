@@ -1,5 +1,4 @@
-#ifndef PERMUTATIONS_REP_H
-#define PERMUTATIONS_REP_H
+#pragma once
 
 #include "NextPermSectionRep.h"
 #include "PermuteHelper.h"
@@ -48,5 +47,3 @@ void PermuteRep(SEXP mat, SEXP v, std::vector<int> &z,
         NextSecRep(z, maxInd, lastCol);
     }
 }
-
-#endif

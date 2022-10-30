@@ -8,7 +8,7 @@ int CountPartsMultiset(const std::vector<int> &Reps,
     std::vector<int> z(pz.cbegin(), pz.cend());
     std::vector<int> rpsCnt(Reps.cbegin(), Reps.cend());
 
-    const int lastCol = pz.size() - 1;
+    const int lastCol  = pz.size() - 1;
     const int lastElem = Reps.size() - 1;
 
     int p = 0;

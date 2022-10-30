@@ -13,12 +13,12 @@
 // The variable k is strtLen
 using rankPartsPtr = void (*const)(std::vector<int>::iterator iter,
                            int n, int m, int cap, int k,
-                           double &dblIdx, mpz_t mpzIdx);
+                           double &dblIdx, mpz_class &mpzIdx);
 
 //*********************** Compositions Funcitons **************************//
 
 void rankCompsRep(std::vector<int>::iterator iter, int n, int m,
-                  int cap, int k, double &dblIdx, mpz_t mpzIdx) {
+                  int cap, int k, double &dblIdx, mpz_class &mpzIdx) {
 
     const int width = m;
     dblIdx = 0;
@@ -38,7 +38,7 @@ void rankCompsRep(std::vector<int>::iterator iter, int n, int m,
 }
 
 void rankCompsRepZero(std::vector<int>::iterator iter, int n, int m,
-                      int cap, int k, double &dblIdx, mpz_t mpzIdx) {
+                      int cap, int k, double &dblIdx, mpz_class &mpzIdx) {
 
     const int width = m;
     dblIdx = 0;
@@ -64,7 +64,7 @@ void rankCompsRepZero(std::vector<int>::iterator iter, int n, int m,
 //************************* Paritions Funcitons ***************************//
 
 void rankPartsRepLen(std::vector<int>::iterator iter, int n, int m,
-                     int cap, int k, double &dblIdx, mpz_t mpzIdx) {
+                     int cap, int k, double &dblIdx, mpz_class &mpzIdx) {
 
     const int width = m;
     dblIdx = 0;
@@ -84,19 +84,19 @@ void rankPartsRepLen(std::vector<int>::iterator iter, int n, int m,
 }
 
 void rankPartsRepShort(std::vector<int>::iterator iter, int n, int m,
-                       int cap, int k, double &dblIdx, mpz_t mpzIdx) {
+                       int cap, int k, double &dblIdx, mpz_class &mpzIdx) {
 
     rankPartsRepLen(iter, n, m, cap, k, dblIdx, mpzIdx);
 }
 
 void rankPartsRep(std::vector<int>::iterator iter, int n, int m,
-                  int cap, int k, double &dblIdx, mpz_t mpzIdx) {
+                  int cap, int k, double &dblIdx, mpz_class &mpzIdx) {
 
     rankPartsRepLen(iter, n * 2, m, cap, k, dblIdx, mpzIdx);
 }
 
 void rankPartsRepCap(std::vector<int>::iterator iter, int n, int m,
-                     int cap, int k, double &dblIdx, mpz_t mpzIdx) {
+                     int cap, int k, double &dblIdx, mpz_class &mpzIdx) {
 
     const int width = m;
     dblIdx = 0;
@@ -117,7 +117,7 @@ void rankPartsRepCap(std::vector<int>::iterator iter, int n, int m,
 }
 
 void rankPartsDistinctLen(std::vector<int>::iterator iter, int n, int m,
-                          int cap, int k, double &dblIdx, mpz_t mpzIdx) {
+                          int cap, int k, double &dblIdx, mpz_class &mpzIdx) {
 
     const int width = m;
     dblIdx = 0;
@@ -137,13 +137,13 @@ void rankPartsDistinctLen(std::vector<int>::iterator iter, int n, int m,
 }
 
 void rankPartsDistinctOneZero(std::vector<int>::iterator iter, int n, int m,
-                              int cap, int k, double &dblIdx, mpz_t mpzIdx) {
+                              int cap, int k, double &dblIdx, mpz_class &mpzIdx) {
 
     rankPartsDistinctLen(iter, n, m, cap, k, dblIdx, mpzIdx);
 }
 
 void rankPartsDistinctMultiZero(std::vector<int>::iterator iter, int n, int m,
-                                int cap, int k, double &dblIdx, mpz_t mpzIdx) {
+                                int cap, int k, double &dblIdx, mpz_class &mpzIdx) {
 
     const int width = m;
     dblIdx = 0;
@@ -171,7 +171,7 @@ void rankPartsDistinctMultiZero(std::vector<int>::iterator iter, int n, int m,
 }
 
 void rankPartsDistinctCap(std::vector<int>::iterator iter, int n, int m,
-                          int cap, int k, double &dblIdx, mpz_t mpzIdx) {
+                          int cap, int k, double &dblIdx, mpz_class &mpzIdx) {
 
     const int width = m;
     dblIdx = 0;
@@ -194,7 +194,7 @@ void rankPartsDistinctCap(std::vector<int>::iterator iter, int n, int m,
 }
 
 void rankPartsDistinctCapMZ(std::vector<int>::iterator iter, int n, int m,
-                            int cap, int k, double &dblIdx, mpz_t mpzIdx) {
+                            int cap, int k, double &dblIdx, mpz_class &mpzIdx) {
 
     const int width = m;
     dblIdx = 0;
@@ -226,17 +226,15 @@ void rankPartsDistinctCapMZ(std::vector<int>::iterator iter, int n, int m,
 //*********************** Starting Gmp Funcitons **************************//
 
 void rankCompsRepGmp(std::vector<int>::iterator iter, int n, int m,
-                     int cap, int k, double &dblIdx, mpz_t mpzIdx) {
+                     int cap, int k, double &dblIdx, mpz_class &mpzIdx) {
 
     const int width = m;
-    mpz_set_ui(mpzIdx, 0u);
+    mpzIdx = 0;
 
     --n;
     --m;
 
-    mpz_t temp;
-    mpz_init(temp);
-
+    mpz_class temp;
     const PartitionType ptype = PartitionType::RepNoZero;
     std::unique_ptr<CountClass> myClass = MakeCount(ptype, true);
 
@@ -245,26 +243,22 @@ void rankCompsRepGmp(std::vector<int>::iterator iter, int n, int m,
 
         for (int idx = *iter; j < idx; ++j) {
             --n;
-            mpz_add(mpzIdx, mpzIdx, temp);
+            mpzIdx += temp;
             myClass->GetCount(temp, n, m, cap, k);
         }
     }
-
-    mpz_clear(temp);
 }
 
 void rankCompsRepZeroGmp(std::vector<int>::iterator iter, int n, int m,
-                         int cap, int k, double &dblIdx, mpz_t mpzIdx) {
+                         int cap, int k, double &dblIdx, mpz_class &mpzIdx) {
 
     const int width = m;
-    mpz_set_ui(mpzIdx, 0u);
+    mpzIdx = 0;
 
     bool incr_j = false;
     --m;
 
-    mpz_t temp;
-    mpz_init(temp);
-
+    mpz_class temp;
     const PartitionType ptype = PartitionType::RepShort;
     std::unique_ptr<CountClass> myClass = MakeCount(ptype, true);
 
@@ -274,29 +268,25 @@ void rankCompsRepZeroGmp(std::vector<int>::iterator iter, int n, int m,
         for (int idx = *iter; j < idx; ++j) {
             incr_j = true;
             --n;
-            mpz_add(mpzIdx, mpzIdx, temp);
+            mpzIdx += temp;
             myClass->GetCount(temp, n, m, cap, k, false);
         }
 
-        mpz_set_ui(temp, 0);
+        temp = 0;
         if (incr_j) --n;
     }
-
-    mpz_clear(temp);
 }
 
 void rankPartsRepLenGmp(std::vector<int>::iterator iter, int n, int m,
-                        int cap, int k, double &dblIdx, mpz_t mpzIdx) {
+                        int cap, int k, double &dblIdx, mpz_class &mpzIdx) {
 
     const int width = m;
-    mpz_set_ui(mpzIdx, 0u);
+    mpzIdx = 0;
 
     --n;
     --m;
 
-    mpz_t temp;
-    mpz_init(temp);
-
+    mpz_class temp;
     const PartitionType ptype = PartitionType::RepShort;
     std::unique_ptr<CountClass> myClass = MakeCount(ptype);
 
@@ -308,39 +298,34 @@ void rankPartsRepLenGmp(std::vector<int>::iterator iter, int n, int m,
 
         for (int idx = *iter; j < idx; ++j) {
             n -= (m + 1);
-            mpz_add(mpzIdx, mpzIdx, temp);
+            mpzIdx += temp;
             myClass->GetCount(temp, n, m, cap, k);
         }
     }
-
-    mpz_clear(temp);
-    myClass->ClearMpz();
 }
 
 void rankPartsRepShortGmp(std::vector<int>::iterator iter, int n, int m,
-                          int cap, int k, double &dblIdx, mpz_t mpzIdx) {
+                          int cap, int k, double &dblIdx, mpz_class &mpzIdx) {
 
     rankPartsRepLenGmp(iter, n, m, cap, k, dblIdx, mpzIdx);
 }
 
 void rankPartsRepGmp(std::vector<int>::iterator iter, int n, int m,
-                     int cap, int k, double &dblIdx, mpz_t mpzIdx) {
+                     int cap, int k, double &dblIdx, mpz_class &mpzIdx) {
 
     rankPartsRepLenGmp(iter, n * 2, m, cap, k, dblIdx, mpzIdx);
 }
 
 void rankPartsRepCapGmp(std::vector<int>::iterator iter, int n, int m,
-                        int cap, int k, double &dblIdx, mpz_t mpzIdx) {
+                        int cap, int k, double &dblIdx, mpz_class &mpzIdx) {
 
     const int width = m;
-    mpz_set_ui(mpzIdx, 0u);
+    mpzIdx = 0;
 
     --n;
     --m;
 
-    mpz_t temp;
-    mpz_init(temp);
-
+    mpz_class temp;
     const PartitionType ptype = PartitionType::RepCapped;
     std::unique_ptr<CountClass> myClass = MakeCount(ptype);
 
@@ -353,27 +338,22 @@ void rankPartsRepCapGmp(std::vector<int>::iterator iter, int n, int m,
         for (int idx = *iter; j < idx; ++j) {
             n -= (m + 1);
             --cap;
-            mpz_add(mpzIdx, mpzIdx, temp);
+            mpzIdx += temp;
             myClass->GetCount(temp, n, m, cap, k);
         }
     }
-
-    mpz_clear(temp);
-    myClass->ClearMpz();
 }
 
 void rankPartsDistinctLenGmp(std::vector<int>::iterator iter, int n, int m,
-                             int cap, int k, double &dblIdx, mpz_t mpzIdx) {
+                             int cap, int k, double &dblIdx, mpz_class &mpzIdx) {
 
     const int width = m;
-    mpz_set_ui(mpzIdx, 0u);
+    mpzIdx = 0;
 
     n -= m;
     --m;
 
-    mpz_t temp;
-    mpz_init(temp);
-
+    mpz_class temp;
     const PartitionType ptype = PartitionType::DstctNoZero;
     std::unique_ptr<CountClass> myClass = MakeCount(ptype);
 
@@ -385,35 +365,30 @@ void rankPartsDistinctLenGmp(std::vector<int>::iterator iter, int n, int m,
 
         for (int idx = *iter; j < idx; ++j) {
             n -= (m + 1);
-            mpz_add(mpzIdx, mpzIdx, temp);
+            mpzIdx += temp;
             myClass->GetCount(temp, n, m, cap, k);
         }
     }
-
-    mpz_clear(temp);
-    myClass->ClearMpz();
 }
 
 void rankPartsDistinctOneZeroGmp(std::vector<int>::iterator iter,
                                  int n, int m, int cap, int k,
-                                 double &dblIdx, mpz_t mpzIdx) {
+                                 double &dblIdx, mpz_class &mpzIdx) {
 
     rankPartsDistinctLenGmp(iter, n, m, cap, k, dblIdx, mpzIdx);
 }
 
 void rankPartsDistinctMultiZeroGmp(std::vector<int>::iterator iter,
                                    int n, int m, int cap, int k,
-                                   double &dblIdx, mpz_t mpzIdx) {
+                                   double &dblIdx, mpz_class &mpzIdx) {
 
     const int width = m;
-    mpz_set_ui(mpzIdx, 0u);
+    mpzIdx = 0;
 
     bool incr_j = false;
     --m;
 
-    mpz_t temp;
-    mpz_init(temp);
-
+    mpz_class temp;
     const PartitionType ptype = PartitionType::DstctMultiZero;
     std::unique_ptr<CountClass> myClass = MakeCount(ptype);
 
@@ -427,7 +402,7 @@ void rankPartsDistinctMultiZeroGmp(std::vector<int>::iterator iter,
         for (int idx = *iter; j < idx; ++j) {
             incr_j = true;
             n -= (m + 1);
-            mpz_add(mpzIdx, mpzIdx, temp);
+            mpzIdx += temp;
             myClass->GetCount(temp, n, m, cap, k, false);
         }
 
@@ -436,25 +411,20 @@ void rankPartsDistinctMultiZeroGmp(std::vector<int>::iterator iter,
             n -= m;
         }
     }
-
-    mpz_clear(temp);
-    myClass->ClearMpz();
 }
 
 void rankPartsDistinctCapGmp(std::vector<int>::iterator iter,
                              int n, int m, int cap, int k,
-                             double &dblIdx, mpz_t mpzIdx) {
+                             double &dblIdx, mpz_class &mpzIdx) {
 
     const int width = m;
-    mpz_set_ui(mpzIdx, 0u);
+    mpzIdx = 0;
 
     n -= m;
     --cap;
     --m;
 
-    mpz_t temp;
-    mpz_init(temp);
-
+    mpz_class temp;
     const PartitionType ptype = PartitionType::DstctCapped;
     std::unique_ptr<CountClass> myClass = MakeCount(ptype);
 
@@ -468,28 +438,23 @@ void rankPartsDistinctCapGmp(std::vector<int>::iterator iter,
         for (int idx = *iter; j < idx; ++j) {
             n -= (m + 1);
             --cap;
-            mpz_add(mpzIdx, mpzIdx, temp);
+            mpzIdx += temp;
             myClass->GetCount(temp, n, m, cap, k);
         }
     }
-
-    mpz_clear(temp);
-    myClass->ClearMpz();
 }
 
 void rankPartsDistinctCapMZGmp(std::vector<int>::iterator iter,
                                int n, int m, int cap, int k,
-                               double &dblIdx, mpz_t mpzIdx) {
+                               double &dblIdx, mpz_class &mpzIdx) {
 
     const int width = m;
-    mpz_set_ui(mpzIdx, 0u);
+    mpzIdx = 0;
 
     bool incr_j = false;
     --m;
 
-    mpz_t temp;
-    mpz_init(temp);
-
+    mpz_class temp;
     const PartitionType ptype = PartitionType::DstctCappedMZ;
     std::unique_ptr<CountClass> myClass = MakeCount(ptype);
 
@@ -504,7 +469,7 @@ void rankPartsDistinctCapMZGmp(std::vector<int>::iterator iter,
             incr_j = true;
             n -= (m + 1);
             --cap;
-            mpz_add(mpzIdx, mpzIdx, temp);
+            mpzIdx += temp;
             myClass->GetCount(temp, n, m, cap, k, false);
         }
 
@@ -514,9 +479,6 @@ void rankPartsDistinctCapMZGmp(std::vector<int>::iterator iter,
             --cap;
         }
     }
-
-    mpz_clear(temp);
-    myClass->ClearMpz();
 }
 
 rankPartsPtr GetRankPartsFunc(PartitionType ptype, bool IsGmp, bool IsComp) {

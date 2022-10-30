@@ -2,7 +2,7 @@
 #include "Combinations/BigComboCount.h"
 #include "Permutations/PermuteCount.h"
 #include "Combinations/ComboCount.h"
-#include "CleanConvert.h"
+#include "CppConvert.h"
 #include <cmath>
 
 double GetComputedRows(bool IsMult, bool IsComb, bool IsRep,
@@ -42,7 +42,7 @@ double GetComputedRows(bool IsMult, bool IsComb, bool IsRep,
     return computedRows;
 }
 
-void GetComputedRowMpz(mpz_t computedRowsMpz, bool IsMult, bool IsComb,
+void GetComputedRowMpz(mpz_class &computedRowsMpz, bool IsMult, bool IsComb,
                        bool IsRep, int n, int m, const SEXP &Rm,
                        const std::vector<int> &freqs,
                        const std::vector<int> &myReps) {
@@ -63,7 +63,7 @@ void GetComputedRowMpz(mpz_t computedRowsMpz, bool IsMult, bool IsComb,
             if (IsComb) {
                 NumCombsWithRepGmp(computedRowsMpz, n, m);
             } else {
-                mpz_ui_pow_ui(computedRowsMpz, n, m);
+                mpz_ui_pow_ui(computedRowsMpz.get_mpz_t(), n, m);
             }
         } else {
             if (IsComb) {

@@ -1,5 +1,4 @@
-#ifndef PREV_COMBINATORICS_H
-#define PREV_COMBINATORICS_H
+#pragma once
 
 #include <vector>
 
@@ -8,5 +7,3 @@ using prevIterPtr = void (*const)(const std::vector<int> &freqs,
 
 prevIterPtr GetPrevIterPtr(bool IsComb, bool IsMult,
                            bool IsRep, bool IsFull);
-
-#endif

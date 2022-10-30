@@ -1,5 +1,4 @@
-#ifndef PERMUTE_COUNT_H
-#define PERMUTE_COUNT_H
+#pragma once
 
 #include <vector>
 
@@ -8,5 +7,3 @@ double NumPermsWithRep(const std::vector<int> &v);
 double NumPermsNoRep(int n, int m);
 double MultisetPermRowNum(int n, int m, const std::vector<int> &Reps);
 std::vector<int> nonZeroVec(const std::vector<int> &v);
-
-#endif

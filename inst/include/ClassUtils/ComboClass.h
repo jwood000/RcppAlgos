@@ -1,13 +1,10 @@
-#ifndef COMBO_CLASS_H
-#define COMBO_CLASS_H
+#pragma once
 
 #include "ClassUtils/NextCombinatorics.h"
 #include "Permutations/NthPermutation.h"
 #include "ClassUtils/GetPrevCombPerm.h"
 #include "Sample/SampCombPermStd.h"
 #include "ClassUtils/ClassUtils.h"
-#include "Cpp14MakeUnique.h"
-#include "ImportExportMPZ.h"
 #include "GetCombPerm.h"
 #include "SetUpUtils.h"
 #include "NthResult.h"
@@ -38,10 +35,10 @@ protected:
 
     double computedRows;
     const VecType myType;
-    mpz_t computedRowsMpz;
+    mpz_class computedRowsMpz;
 
     double dblTemp;
-    mpz_t mpzTemp;
+    mpz_class mpzTemp;
 
     std::vector<int> z;
     std::vector<int> vInt;
@@ -55,7 +52,7 @@ protected:
     const int n1;
 
     double dblIndex;
-    mpz_t mpzIndex;
+    mpz_class mpzIndex;
 
     SEXP myClass;
     SEXP myLevels;
@@ -92,5 +89,3 @@ public:
     SEXP sourceVector() const;
     virtual SEXP summary();
 };
-
-#endif

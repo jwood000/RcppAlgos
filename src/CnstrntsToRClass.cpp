@@ -139,7 +139,7 @@ CnstrntsToR::CnstrntsToR(
     std::vector<int> &RstartZ, const std::string &RmainFun,
     const std::string &RFunTest, funcPtr<double> RfunDbl,
     ConstraintType Rctype, int RstrtLen, int Rcap, bool RKeepRes,
-    bool RnumUnknown, double RcnstrtRows, mpz_t RcnstrtRowsMpz
+    bool RnumUnknown, double RcnstrtRows, const mpz_class &RcnstrtRowsMpz
 ) : ComboRes(Rv, Rm, RcompRows, bVec, Rreps, Rfreqs, RvInt, RvNum, typePass,
              RmaxThreads, RnumThreads, Rparallel, Rpart, RcompVec, RtarVals,
              RtarIntVals, RstartZ, RmainFun, RFunTest, RfunDbl, Rctype,
@@ -196,7 +196,7 @@ SEXP CnstrntsToR::nextComb() {
 SEXP CnstrntsToR::nextNumCombs(SEXP RNum) {
 
     int num;
-    CleanConvert::convertPrimitive(RNum, num, VecType::Integer,
+    CppConvert::convertPrimitive(RNum, num, VecType::Integer,
                                    "The number of results");
 
     if (keepGoing) {

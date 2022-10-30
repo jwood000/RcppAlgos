@@ -1,5 +1,4 @@
-#ifndef PRIMES_SEG_SIEVE_H
-#define PRIMES_SEG_SIEVE_H
+#pragma once
 
 #include <cstddef>
 #include <array>
@@ -277,5 +276,3 @@ static const std::array<int, nPriSqrtBillion> smallPrimeBase = {{
     31253,31259,31267,31271,31277,31307,31319,31321,31327,31333,31337,31357,
     31379,31387,31391,31393,31397,31469,31477,31481,31489,31511,31513,31517,
     31531,31541,31543,31547,31567,31573,31583,31601,31607,31627}};
-
-#endif

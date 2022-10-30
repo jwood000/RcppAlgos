@@ -1,5 +1,4 @@
-#ifndef CONSTRAINTS_GENERAL_H
-#define CONSTRAINTS_GENERAL_H
+#pragma once
 
 #include "Constraints/ConstraintsTypes.h"
 #include <vector>
@@ -14,5 +13,3 @@ void ConstraintsGeneral(std::vector<T> &v, std::vector<int> &Reps,
                         double numRows, int n, int m, bool IsRep, bool IsComb,
                         bool IsMult, bool bUserRows, bool xtraCol,
                         ConstraintType ctype);
-
-#endif

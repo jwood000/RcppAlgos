@@ -1,5 +1,4 @@
-#ifndef COMBO_MANAGER_H
-#define COMBO_MANAGER_H
+#pragma once
 
 #include "cpp11/R.hpp"
 #include <vector>
@@ -18,5 +17,3 @@ void ComboParallel(RcppParallel::RMatrix<T> &mat, const std::vector<T> &v,
 void ComboCharacter(SEXP mat, SEXP v, std::vector<int> &z, int n,
                     int m, int nRows, const std::vector<int> &freqs,
                     bool IsMult, bool IsRep);
-
-#endif

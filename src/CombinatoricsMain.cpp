@@ -1,4 +1,3 @@
-#include "Cpp14MakeUnique.h"
 #include "ComputedCount.h"
 #include "GetCombPerm.h"
 #include "SetUpUtils.h"
@@ -14,7 +13,7 @@ SEXP CombinatoricsStndrd(SEXP Rv, SEXP Rm, SEXP RisRep, SEXP RFreqs,
     int maxThreads = 1;
 
     VecType myType = VecType::Integer;
-    CleanConvert::convertPrimitive(RmaxThreads, maxThreads,
+    CppConvert::convertPrimitive(RmaxThreads, maxThreads,
                                    VecType::Integer, "maxThreads");
 
     std::vector<int> vInt;
@@ -22,9 +21,9 @@ SEXP CombinatoricsStndrd(SEXP Rv, SEXP Rm, SEXP RisRep, SEXP RFreqs,
     std::vector<int> freqs;
     std::vector<double> vNum;
 
-    bool Parallel = CleanConvert::convertFlag(Rparallel, "Parallel");
-    bool IsRep = CleanConvert::convertFlag(RisRep, "repetition");
-    const bool IsComb = CleanConvert::convertFlag(RIsComb, "IsComb");
+    bool Parallel = CppConvert::convertFlag(Rparallel, "Parallel");
+    bool IsRep = CppConvert::convertFlag(RisRep, "repetition");
+    const bool IsComb = CppConvert::convertFlag(RIsComb, "IsComb");
     bool IsMult = false;
 
     SetType(myType, Rv);
@@ -35,8 +34,7 @@ SEXP CombinatoricsStndrd(SEXP Rv, SEXP Rm, SEXP RisRep, SEXP RFreqs,
                                                 n, m, Rm, freqs, myReps);
     const bool IsGmp = (computedRows > Significand53);
 
-    mpz_t computedRowsMpz;
-    mpz_init(computedRowsMpz);
+    mpz_class computedRowsMpz;
 
     if (IsGmp) {
         GetComputedRowMpz(computedRowsMpz, IsMult, IsComb,
@@ -49,22 +47,19 @@ SEXP CombinatoricsStndrd(SEXP Rv, SEXP Rm, SEXP RisRep, SEXP RFreqs,
     bool bLower = false;
     bool bUpper = false;
 
-    auto lowerMpz = FromCpp14::make_unique<mpz_t[]>(1);
-    auto upperMpz = FromCpp14::make_unique<mpz_t[]>(1);
-
-    mpz_init(lowerMpz[0]);
-    mpz_init(upperMpz[0]);
+    mpz_class lowerMpz;
+    mpz_class upperMpz;
 
     SetBounds(Rlow, Rhigh, IsGmp, bLower, bUpper, lower, upper,
-              lowerMpz.get(), upperMpz.get(), computedRowsMpz, computedRows);
+              lowerMpz, upperMpz, computedRowsMpz, computedRows);
 
     std::vector<int> startZ(m);
     SetStartZ(myReps, freqs, startZ, IsComb, n, m,
-              lower, lowerMpz[0], IsRep, IsMult, IsGmp);
+              lower, lowerMpz, IsRep, IsMult, IsGmp);
 
     double userNumRows = 0;
-    SetNumResults(IsGmp, bLower, bUpper, true, upperMpz[0],
-                  lowerMpz[0], lower, upper, computedRows,
+    SetNumResults(IsGmp, bLower, bUpper, true, upperMpz,
+                  lowerMpz, lower, upper, computedRows,
                   computedRowsMpz, nRows, userNumRows);
 
     const int limit = 20000;
@@ -80,6 +75,6 @@ SEXP CombinatoricsStndrd(SEXP Rv, SEXP Rm, SEXP RisRep, SEXP RFreqs,
 
     return GetCombPerms(Rv, vNum, vInt, n, m, phaseOne, generalRet,
                         IsComb, Parallel, IsRep, IsMult, IsGmp, freqs,
-                        startZ, myReps, lower, lowerMpz[0], nRows,
+                        startZ, myReps, lower, lowerMpz, nRows,
                         nThreads, myType);
 }

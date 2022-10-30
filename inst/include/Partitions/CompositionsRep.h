@@ -1,5 +1,4 @@
-#ifndef COMPOSITIONS_REP_H
-#define COMPOSITIONS_REP_H
+#pragma once
 
 #include "RMatrix.h"
 #include <vector>
@@ -19,5 +18,3 @@ void CompsRep(int* mat, std::vector<int> &z,
 template <int one_or_zero>
 void CompsRep(RcppParallel::RMatrix<int> &mat, std::vector<int> &z,
               int strt, int width, int nRows);
-
-#endif

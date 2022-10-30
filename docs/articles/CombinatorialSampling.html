@@ -33,7 +33,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">RcppAlgos</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">2.6.0</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">2.7.0</span>
       </span>
     </div>
 
@@ -103,7 +103,7 @@
                         <h4 data-toc-skip class="author">Joseph
 Wood</h4>
             
-            <h4 data-toc-skip class="date">08/14/2022</h4>
+            <h4 data-toc-skip class="date">10/30/2022</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/jwood000/RcppAlgos/blob/HEAD/vignettes/CombinatorialSampling.Rmd" class="external-link"><code>vignettes/CombinatorialSampling.Rmd</code></a></small>
       <div class="hidden name"><code>CombinatorialSampling.Rmd</code></div>
@@ -133,7 +133,8 @@ proceed?</p>
 <p>A naive approach would be to generate all of the combinations using
 <code>combn</code> and then call <code>sample</code>:</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">naive</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">v</span>, <span class="va">m</span>, <span class="va">n</span>, <span class="va">s</span><span class="op">)</span> <span class="op">{</span></span>
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/options.html" class="external-link">options</a></span><span class="op">(</span>width <span class="op">=</span> <span class="fl">90</span><span class="op">)</span></span>
+<span><span class="va">naive</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">v</span>, <span class="va">m</span>, <span class="va">n</span>, <span class="va">s</span><span class="op">)</span> <span class="op">{</span></span>
 <span>    <span class="va">allCombs</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/utils/combn.html" class="external-link">combn</a></span><span class="op">(</span><span class="va">v</span>, <span class="va">m</span><span class="op">)</span></span>
 <span>    <span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="va">s</span><span class="op">)</span></span>
 <span>    <span class="va">allCombs</span><span class="op">[</span>, <span class="fu"><a href="https://rdrr.io/r/base/sample.html" class="external-link">sample</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">ncol</a></span><span class="op">(</span><span class="va">allCombs</span><span class="op">)</span>, <span class="va">n</span><span class="op">)</span><span class="op">]</span></span>
@@ -157,7 +158,7 @@ internal limitations on <code>sample</code>. If we try to pass
 <code>choose(100, 20)</code>, we will get an error:</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/sample.html" class="external-link">sample</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/Special.html" class="external-link">choose</a></span><span class="op">(</span><span class="fl">100</span>, <span class="fl">20</span><span class="op">)</span>, <span class="fl">5</span><span class="op">)</span></span>
-<span><span class="co">#&gt; Error in sample.int(x, size, replace, prob) : invalid first argument</span></span></code></pre></div>
+<span><span class="co">#&gt; Error in sample.int(x, size, replace, prob): invalid first argument</span></span></code></pre></div>
 <p>We could also try calling <code>sample(100, 20)</code> a bunch of
 times and hope we don’t get duplicate combinations. This is neither
 promising nor elegant.</p>
@@ -184,8 +185,8 @@ from the <code>gmp</code> package.</li>
 <li>The <code>seed</code> parameter allows for generating reproducible
 samples.</li>
 <li>If the gmp library is needed, the <code>seed</code> parameter must
-be set in order to have reproducible results (<em>E.g.</em>
-<code><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed()</a></code>) has no effect in these cases).</li>
+be set in order to have reproducible results
+(e.g. <code><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed()</a></code>) has no effect in these cases).</li>
 </ul>
 </div>
 <div class="section level3">
@@ -314,10 +315,10 @@ results is enormous. They also offer parallel options using
 <span></span>
 <span><span class="fu"><a href="../reference/combinatoricsSample.html">permuteSample</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/factor.html" class="external-link">factor</a></span><span class="op">(</span><span class="va">state.abb</span><span class="op">)</span>, <span class="fl">15</span>, n <span class="op">=</span> <span class="fl">3</span>, seed <span class="op">=</span> <span class="fl">50</span>, nThreads <span class="op">=</span> <span class="fl">3</span><span class="op">)</span></span>
 <span><span class="co">#&gt;      [,1] [,2] [,3] [,4] [,5] [,6] [,7] [,8] [,9] [,10] [,11] [,12] [,13] [,14] [,15]</span></span>
-<span><span class="co">#&gt; [1,] ME   FL   DE   OK   ND   CA   PA   AL   ID   MO    NM    HI    KY    MT    NJ</span></span>
-<span><span class="co">#&gt; [2,] AZ   CA   AL   CT   ME   SD   ID   SC   OK   NH    HI    TN    ND    IA    MT</span></span>
-<span><span class="co">#&gt; [3,] MD   MO   NC   MT   NH   AL   VA   MA   VT   WV    NJ    NE    MN    MS    MI</span></span>
-<span><span class="co">#&gt; 50 Levels: AK AL AR AZ CA CO CT DE FL GA HI IA ID IL IN KS KY LA MA MD ME MI MN ... WY</span></span>
+<span><span class="co">#&gt; [1,] ME   FL   DE   OK   ND   CA   PA   AL   ID   MO    NM    HI    KY    MT    NJ   </span></span>
+<span><span class="co">#&gt; [2,] AZ   CA   AL   CT   ME   SD   ID   SC   OK   NH    HI    TN    ND    IA    MT   </span></span>
+<span><span class="co">#&gt; [3,] MD   MO   NC   MT   NH   AL   VA   MA   VT   WV    NJ    NE    MN    MS    MI   </span></span>
+<span><span class="co">#&gt; 50 Levels: AK AL AR AZ CA CO CT DE FL GA HI IA ID IL IN KS KY LA MA MD ME MI MN MO ... WY</span></span>
 <span></span>
 <span><span class="fu"><a href="../reference/combinatoricsCount.html">permuteCount</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/factor.html" class="external-link">factor</a></span><span class="op">(</span><span class="va">state.abb</span><span class="op">)</span>, <span class="fl">15</span><span class="op">)</span></span>
 <span><span class="co">#&gt; Big Integer ('bigz') :</span></span>
@@ -331,22 +332,22 @@ over the naive approach above:</p>
 <div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co">## the function "naive" is defined above</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/system.time.html" class="external-link">system.time</a></span><span class="op">(</span><span class="fu">naive</span><span class="op">(</span><span class="fl">25</span>, <span class="fl">10</span>, <span class="fl">5</span>, <span class="fl">15</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="co">#&gt;   user  system elapsed</span></span>
-<span><span class="co">#&gt;  3.197   0.066   3.287</span></span>
+<span><span class="co">#&gt;    user  system elapsed </span></span>
+<span><span class="co">#&gt;   1.470   0.027   1.499</span></span>
 <span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/system.time.html" class="external-link">system.time</a></span><span class="op">(</span><span class="fu"><a href="../reference/combinatoricsSample.html">comboSample</a></span><span class="op">(</span><span class="fl">25</span>, <span class="fl">10</span>, n <span class="op">=</span> <span class="fl">5</span>, seed <span class="op">=</span> <span class="fl">15</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="co">#&gt;   user  system elapsed</span></span>
-<span><span class="co">#&gt;  0.002   0.000   0.001</span></span></code></pre></div>
+<span><span class="co">#&gt;    user  system elapsed </span></span>
+<span><span class="co">#&gt;   0.000   0.000   0.001</span></span></code></pre></div>
 <p>Even when dealing with extremely large numbers, these algorithms are
 very fast. And using the parallel options have even greater effects than
 we saw with the general counterparts (typically around ~2-3 times faster
 with the general functions, whereas with the last example below with
-sampling we see a nearly 5 fold improvement).</p>
+sampling we see a nearly 5x improvement).</p>
 <div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co">## Lightning fast even with examples involving many results</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/system.time.html" class="external-link">system.time</a></span><span class="op">(</span><span class="fu"><a href="../reference/combinatoricsSample.html">comboSample</a></span><span class="op">(</span><span class="fl">2500</span>, <span class="fl">100</span>, n <span class="op">=</span> <span class="fl">5</span>, seed <span class="op">=</span> <span class="fl">15</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="co">#&gt;    user  system elapsed</span></span>
-<span><span class="co">#&gt;   0.002   0.000   0.002</span></span>
+<span><span class="co">#&gt;    user  system elapsed </span></span>
+<span><span class="co">#&gt;       0       0       0</span></span>
 <span></span>
 <span><span class="co">## The total number of combinations has ~180 digits</span></span>
 <span><span class="fu">gmp</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/gmp/man/add.biginteger.html" class="external-link">log10.bigz</a></span><span class="op">(</span><span class="fu"><a href="../reference/combinatoricsCount.html">comboCount</a></span><span class="op">(</span><span class="fl">2500</span>, <span class="fl">100</span><span class="op">)</span><span class="op">)</span></span>
@@ -354,13 +355,13 @@ sampling we see a nearly 5 fold improvement).</p>
 <span></span>
 <span><span class="co">## Still fast with larger samples</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/system.time.html" class="external-link">system.time</a></span><span class="op">(</span><span class="fu"><a href="../reference/combinatoricsSample.html">comboSample</a></span><span class="op">(</span><span class="fl">2500</span>, <span class="fl">100</span>, n <span class="op">=</span> <span class="fl">1e4</span>, seed <span class="op">=</span> <span class="fl">157</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="co">#&gt;    user  system elapsed</span></span>
-<span><span class="co">#&gt;   1.124   0.008   1.142</span></span>
+<span><span class="co">#&gt;    user  system elapsed </span></span>
+<span><span class="co">#&gt;   0.656   0.004   0.661</span></span>
 <span></span>
 <span><span class="co">## Using Parallel/nThreads in these cases has an even greater effect</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/system.time.html" class="external-link">system.time</a></span><span class="op">(</span><span class="fu"><a href="../reference/combinatoricsSample.html">comboSample</a></span><span class="op">(</span><span class="fl">2500</span>, <span class="fl">100</span>, n <span class="op">=</span> <span class="fl">1e4</span>, seed <span class="op">=</span> <span class="fl">157</span>, nThreads <span class="op">=</span> <span class="fl">8</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="co">#&gt;    user  system elapsed</span></span>
-<span><span class="co">#&gt;   2.032   0.005   0.268</span></span></code></pre></div>
+<span><span class="co">#&gt;    user  system elapsed </span></span>
+<span><span class="co">#&gt;   0.904   0.004   0.130</span></span></code></pre></div>
 </div>
 <div class="section level4">
 <h4 id="user-defined-functions">User Defined Functions<a class="anchor" aria-label="anchor" href="#user-defined-functions"></a>
@@ -372,13 +373,12 @@ function to <code>{combo|permute}Sample</code> using the
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/combinatoricsSample.html">permuteSample</a></span><span class="op">(</span><span class="fl">5000</span>, <span class="fl">1000</span>, n <span class="op">=</span> <span class="fl">3</span>, seed <span class="op">=</span> <span class="fl">101</span>, FUN <span class="op">=</span> <span class="va">sd</span><span class="op">)</span></span>
 <span><span class="co">#&gt; [[1]]</span></span>
 <span><span class="co">#&gt; [1] 1431.949</span></span>
-<span><span class="co">#&gt;</span></span>
+<span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; [[2]]</span></span>
 <span><span class="co">#&gt; [1] 1446.859</span></span>
-<span><span class="co">#&gt;</span></span>
+<span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; [[3]]</span></span>
 <span><span class="co">#&gt; [1] 1449.272</span></span>
-<span></span>
 <span></span>
 <span><span class="co">## Example using complex numbers</span></span>
 <span><span class="va">myCplx</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/complex.html" class="external-link">as.complex</a></span><span class="op">(</span><span class="fl">1</span><span class="op">:</span><span class="fl">100</span> <span class="op">+</span> <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="op">-</span><span class="fl">1</span>, <span class="fl">1</span><span class="op">)</span>, <span class="fl">50</span><span class="op">)</span> <span class="op">*</span> <span class="fl">1i</span><span class="op">)</span></span>
@@ -389,10 +389,10 @@ function to <code>{combo|permute}Sample</code> using the
 <span>              <span class="op">}</span><span class="op">)</span></span>
 <span><span class="co">#&gt; [[1]]</span></span>
 <span><span class="co">#&gt; [1] 24.83948+0i</span></span>
-<span><span class="co">#&gt;</span></span>
+<span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; [[2]]</span></span>
 <span><span class="co">#&gt; [1] 20.9285+0.04778i</span></span>
-<span><span class="co">#&gt;</span></span>
+<span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; [[3]]</span></span>
 <span><span class="co">#&gt; [1] 22.20379+0.09007i</span></span></code></pre></div>
 </div>
@@ -434,14 +434,14 @@ random sample of partitions of a number. Many of the features present in
 <span><span class="co">## Algorithms are very efficient</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/system.time.html" class="external-link">system.time</a></span><span class="op">(</span><span class="va">serial</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/partitionsSample.html">partitionsSample</a></span><span class="op">(</span><span class="fl">2500</span>, <span class="fl">10</span>, n <span class="op">=</span> <span class="fl">1e3</span>,</span>
 <span>                                       seed <span class="op">=</span> <span class="fl">8128</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="co">#&gt;    user  system elapsed</span></span>
-<span><span class="co">#&gt;   5.220   0.010   5.235</span></span>
+<span><span class="co">#&gt;    user  system elapsed </span></span>
+<span><span class="co">#&gt;   2.868   0.013   2.882</span></span>
 <span></span>
 <span><span class="co">## Use nThreads for greater efficiency</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/system.time.html" class="external-link">system.time</a></span><span class="op">(</span><span class="va">multi</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/partitionsSample.html">partitionsSample</a></span><span class="op">(</span><span class="fl">2500</span>, <span class="fl">10</span>, n <span class="op">=</span> <span class="fl">1e3</span>,</span>
 <span>                                      seed <span class="op">=</span> <span class="fl">8128</span>, nThreads <span class="op">=</span> <span class="fl">8</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="co">#&gt;    user  system elapsed</span></span>
-<span><span class="co">#&gt;  10.723   0.022   1.358</span></span>
+<span><span class="co">#&gt;    user  system elapsed </span></span>
+<span><span class="co">#&gt;   4.222   0.014   0.561</span></span>
 <span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/identical.html" class="external-link">identical</a></span><span class="op">(</span><span class="va">multi</span>, <span class="va">serial</span><span class="op">)</span></span>
 <span><span class="co">#&gt; [1] TRUE</span></span>
@@ -457,19 +457,17 @@ random sample of partitions of a number. Many of the features present in
 some cases are not covered. For example, with standard multisets, we are
 currently unable to <em>efficiently</em> generate the
 <em>n<sup>th</sup></em> lexicographical result. Another example is when
-the source vector is not uniform (<em>e.g.</em> when the distance
-between each element is irregular).</p>
+the source vector is not uniform (e.g. when the distance between each
+element is irregular).</p>
 <p>Observe the following:</p>
 <div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co">## No sampling algorithm available when the source vector is not uniform</span></span>
 <span><span class="fu"><a href="../reference/partitionsSample.html">partitionsSample</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">4</span>, <span class="fl">6</span>, <span class="fl">7</span>, <span class="fl">10</span>, <span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq</a></span><span class="op">(</span><span class="fl">11</span>, <span class="fl">100</span>, <span class="fl">7</span><span class="op">)</span><span class="op">)</span>, <span class="fl">10</span>, n <span class="op">=</span> <span class="fl">1</span>, target <span class="op">=</span> <span class="fl">340</span><span class="op">)</span></span>
-<span><span class="co">#&gt; Error in partitionsSample(c(1, 4, 6, 7, 10, seq(11, 100, 7)), 10, n = 1,  :</span></span>
-<span><span class="co">#&gt;   Partition sampling not available for this case.</span></span>
+<span><span class="co">#&gt; Error: Partition sampling not available for this case.</span></span>
 <span></span>
 <span><span class="co">## As stated above, the standard multiset case doesn't work either</span></span>
 <span><span class="fu"><a href="../reference/partitionsSample.html">partitionsSample</a></span><span class="op">(</span><span class="fl">0</span><span class="op">:</span><span class="fl">50</span>, <span class="fl">6</span>, freqs <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fl">1</span><span class="op">:</span><span class="fl">3</span>, <span class="fl">17</span><span class="op">)</span>, n <span class="op">=</span> <span class="fl">2</span><span class="op">)</span></span>
-<span><span class="co">#&gt; Error in partitionsSample(0:50, 6, freqs = rep(1:3, 17), n = 2) :</span></span>
-<span><span class="co">#&gt;   Partition sampling not available for this case.</span></span>
+<span><span class="co">#&gt; Error: Partition sampling not available for this case.</span></span>
 <span></span>
 <span><span class="co">## If we use freqs to indicate that zeros can repeat,</span></span>
 <span><span class="co">## then we can obtain random samples</span></span>
@@ -528,14 +526,14 @@ in <code>compositionsSample</code>.</p>
 <span><span class="co">## The below retrieves 10,000 compositions in under a second</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/system.time.html" class="external-link">system.time</a></span><span class="op">(</span><span class="va">serial</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/partitionsSample.html">compositionsSample</a></span><span class="op">(</span><span class="fl">2500</span>, <span class="fl">10</span>, <span class="cn">TRUE</span>,</span>
 <span>                                         n <span class="op">=</span> <span class="fl">1e4</span>, seed <span class="op">=</span> <span class="fl">8128</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="co">#&gt;    user  system elapsed</span></span>
-<span><span class="co">#&gt;   0.506   0.002   0.507</span></span>
+<span><span class="co">#&gt;    user  system elapsed </span></span>
+<span><span class="co">#&gt;   0.262   0.001   0.263</span></span>
 <span></span>
 <span><span class="co">## Use nThreads for greater efficiency</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/system.time.html" class="external-link">system.time</a></span><span class="op">(</span><span class="va">multi</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/partitionsSample.html">compositionsSample</a></span><span class="op">(</span><span class="fl">2500</span>, <span class="fl">10</span>, <span class="cn">TRUE</span>, n <span class="op">=</span> <span class="fl">1e4</span>,</span>
 <span>                                        seed <span class="op">=</span> <span class="fl">8128</span>, nThreads <span class="op">=</span> <span class="fl">8</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="co">#&gt;    user  system elapsed</span></span>
-<span><span class="co">#&gt;   1.154   0.004   0.152</span></span>
+<span><span class="co">#&gt;    user  system elapsed </span></span>
+<span><span class="co">#&gt;   0.367   0.001   0.051</span></span>
 <span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/identical.html" class="external-link">identical</a></span><span class="op">(</span><span class="va">multi</span>, <span class="va">serial</span><span class="op">)</span></span>
 <span><span class="co">#&gt; [1] TRUE</span></span>
@@ -580,38 +578,38 @@ to <span class="citation">@MichaelChirico</span>)</p>
 <span><span class="co">## Here are 3 possibilities</span></span>
 <span><span class="fu"><a href="../reference/comboGroupsSample.html">comboGroupsSample</a></span><span class="op">(</span><span class="va">shuffled</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">12</span><span class="op">]</span>, numGroups <span class="op">=</span> <span class="fl">4</span>, n <span class="op">=</span> <span class="fl">2</span>, seed <span class="op">=</span> <span class="fl">13</span><span class="op">)</span></span>
 <span><span class="co">#&gt;      Grp1 Grp1 Grp1 Grp2 Grp2 Grp2 Grp3 Grp3 Grp3 Grp4 Grp4 Grp4</span></span>
-<span><span class="co">#&gt; [1,] 8♦   3♥   5♦   9♦   J♠   7♥   8♠   K♦   10♦  A♦   J♥   3♦</span></span>
-<span><span class="co">#&gt; [2,] 8♦   K♦   10♦  9♦   J♥   3♥   J♠   8♠   3♦   A♦   5♦   7♥</span></span>
-<span><span class="co">#&gt; 52 Levels: 2♠ 3♠ 4♠ 5♠ 6♠ 7♠ 8♠ 9♠ 10♠ J♠ Q♠ K♠ A♠ 2♥ 3♥ 4♥ 5♥ 6♥ 7♥ 8♥ ... A</span></span>
+<span><span class="co">#&gt; [1,] 8♦   3♥   5♦   9♦   J♠   7♥   8♠   K♦   10♦  A♦   J♥   3♦  </span></span>
+<span><span class="co">#&gt; [2,] 8♦   K♦   10♦  9♦   J♥   3♥   J♠   8♠   3♦   A♦   5♦   7♥  </span></span>
+<span><span class="co">#&gt; 52 Levels: 2♠ 3♠ 4♠ 5♠ 6♠ 7♠ 8♠ 9♠ 10♠ J♠ Q♠ K♠ A♠ 2♥ 3♥ 4♥ 5♥ 6♥ 7♥ 8♥ 9♥ 10♥ J♥ ... A♣</span></span>
 <span></span>
 <span></span>
 <span><span class="fu"><a href="../reference/comboGroupsSample.html">comboGroupsSample</a></span><span class="op">(</span><span class="va">shuffled</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">12</span><span class="op">]</span>, numGroups <span class="op">=</span> <span class="fl">4</span>, retType <span class="op">=</span> <span class="st">"3Darray"</span>,</span>
 <span>                  n <span class="op">=</span> <span class="fl">2</span>, seed <span class="op">=</span> <span class="fl">13</span>, namedSample <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
 <span><span class="co">#&gt; , , Grp1</span></span>
-<span><span class="co">#&gt;</span></span>
+<span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt;       [,1] [,2] [,3]</span></span>
-<span><span class="co">#&gt; 13784 8♦   3♥   5♦</span></span>
-<span><span class="co">#&gt; 9152  8♦   K♦   10♦</span></span>
-<span><span class="co">#&gt;</span></span>
+<span><span class="co">#&gt; 13784 8♦   3♥   5♦  </span></span>
+<span><span class="co">#&gt; 9152  8♦   K♦   10♦ </span></span>
+<span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; , , Grp2</span></span>
-<span><span class="co">#&gt;</span></span>
+<span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt;       [,1] [,2] [,3]</span></span>
-<span><span class="co">#&gt; 13784 9♦   J♠   7♥</span></span>
-<span><span class="co">#&gt; 9152  9♦   J♥   3♥</span></span>
-<span><span class="co">#&gt;</span></span>
+<span><span class="co">#&gt; 13784 9♦   J♠   7♥  </span></span>
+<span><span class="co">#&gt; 9152  9♦   J♥   3♥  </span></span>
+<span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; , , Grp3</span></span>
-<span><span class="co">#&gt;</span></span>
+<span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt;       [,1] [,2] [,3]</span></span>
-<span><span class="co">#&gt; 13784 8♠   K♦   10♦</span></span>
-<span><span class="co">#&gt; 9152  J♠   8♠   3♦</span></span>
-<span><span class="co">#&gt;</span></span>
+<span><span class="co">#&gt; 13784 8♠   K♦   10♦ </span></span>
+<span><span class="co">#&gt; 9152  J♠   8♠   3♦  </span></span>
+<span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; , , Grp4</span></span>
-<span><span class="co">#&gt;</span></span>
+<span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt;       [,1] [,2] [,3]</span></span>
-<span><span class="co">#&gt; 13784 A♦   J♥   3♦</span></span>
-<span><span class="co">#&gt; 9152  A♦   5♦   7♥</span></span>
-<span><span class="co">#&gt;</span></span>
-<span><span class="co">#&gt; 52 Levels: 2♠ 3♠ 4♠ 5♠ 6♠ 7♠ 8♠ 9♠ 10♠ J♠ Q♠ K♠ A♠ 2♥ 3♥ 4♥ 5♥ 6♥ 7♥ 8♥ ... A♣♣</span></span></code></pre></div>
+<span><span class="co">#&gt; 13784 A♦   J♥   3♦  </span></span>
+<span><span class="co">#&gt; 9152  A♦   5♦   7♥  </span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; 52 Levels: 2♠ 3♠ 4♠ 5♠ 6♠ 7♠ 8♠ 9♠ 10♠ J♠ Q♠ K♠ A♠ 2♥ 3♥ 4♥ 5♥ 6♥ 7♥ 8♥ 9♥ 10♥ J♥ ... A♣</span></span></code></pre></div>
 </div>
 </div>
 <div class="section level2">
@@ -656,8 +654,8 @@ very quickly. For example:</p>
 <span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/system.time.html" class="external-link">system.time</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="fu">naive_rank</span><span class="op">(</span><span class="fl">25</span>, <span class="fl">12</span>, <span class="va">comb</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="co">#&gt; [1] 2000000</span></span>
-<span><span class="co">#&gt;    user  system elapsed</span></span>
-<span><span class="co">#&gt;  13.703   0.172  13.901</span></span></code></pre></div>
+<span><span class="co">#&gt;    user  system elapsed </span></span>
+<span><span class="co">#&gt;   5.959   0.077   6.037</span></span></code></pre></div>
 </div>
 <div class="section level3">
 <h3 id="rcppalgos-solutions-1">RcppAlgos Solutions<a class="anchor" aria-label="anchor" href="#rcppalgos-solutions-1"></a>
@@ -681,7 +679,7 @@ with <code>comboRank</code>:</p>
 <span><span class="co">## comb was provided above</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/system.time.html" class="external-link">system.time</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="fu"><a href="../reference/combinatoricsRank.html">comboRank</a></span><span class="op">(</span><span class="va">comb</span>, v <span class="op">=</span> <span class="fl">25</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="co">#&gt; [1] 2000000</span></span>
-<span><span class="co">#&gt;    user  system elapsed</span></span>
+<span><span class="co">#&gt;    user  system elapsed </span></span>
 <span><span class="co">#&gt;       0       0       0</span></span></code></pre></div>
 <p>All that is needed is the original vector that was used to produce
 the results and whether or not repetition is used via the
@@ -715,8 +713,8 @@ vectors, and we can even pass matrices.</p>
 <span><span class="co">#&gt; 292830028    5    8   16   19   34   35   46   47</span></span>
 <span></span>
 <span><span class="fu"><a href="../reference/combinatoricsRank.html">comboRank</a></span><span class="op">(</span><span class="va">combs</span>, v <span class="op">=</span> <span class="fl">50</span><span class="op">)</span></span>
-<span><span class="co">#&gt;  [1] 161401295 120710262 220886245 442099291 334689371</span></span>
-<span><span class="co">#&gt;  [6] 189241370 168175018 105740881  36321127 292830028</span></span></code></pre></div>
+<span><span class="co">#&gt;  [1] 161401295 120710262 220886245 442099291 334689371 189241370 168175018 105740881</span></span>
+<span><span class="co">#&gt;  [9]  36321127 292830028</span></span></code></pre></div>
 </div>
 <div class="section level3">
 <h3 id="permuterank">
@@ -744,7 +742,7 @@ vectors, and we can even pass matrices.</p>
 <span>            v <span class="op">=</span> <span class="fl">100</span>, freqs <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fl">1</span><span class="op">:</span><span class="fl">5</span>, <span class="fl">20</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="co">#&gt; $p5</span></span>
 <span><span class="co">#&gt; [1] 3474930553 5793832271  797663634</span></span>
-<span><span class="co">#&gt;</span></span>
+<span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; $p8</span></span>
 <span><span class="co">#&gt; Big Integer ('bigz') object of length 3:</span></span>
 <span><span class="co">#&gt; [1] 6897937625624040 6937176899580966 5771073522599470</span></span></code></pre></div>

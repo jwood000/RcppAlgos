@@ -1,8 +1,7 @@
-#ifndef THREAD_SAFE_PERMUTATIONS_H
-#define THREAD_SAFE_PERMUTATIONS_H
+#pragma once
 
 #include <vector>
-#include <gmp.h>
+#include <gmpxx.h>
 
 template <typename T>
 void ThreadSafePermutations(T* mat, const std::vector<T> &v, int n, int m,
@@ -11,6 +10,4 @@ void ThreadSafePermutations(T* mat, const std::vector<T> &v, int n, int m,
                             const std::vector<int> &freqs,
                             std::vector<int> &z,
                             const std::vector<int> &myReps, double lower,
-                            mpz_t lowerMpz, int nRows, int nThreads);
-
-#endif
+                            mpz_class &lowerMpz, int nRows, int nThreads);

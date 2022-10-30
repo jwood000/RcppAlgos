@@ -75,7 +75,7 @@ SEXP CheckReturn(SEXP Rv, SEXP RCnstrntFun, SEXP RCompFun,
                     if (Rf_isNull(RKeepRes)) {
                         res = CheckReturnType::constraintFun;
                     } else {
-                        bool keepRes = CleanConvert::convertFlag(RKeepRes, "keepResults");
+                        bool keepRes = CppConvert::convertFlag(RKeepRes, "keepResults");
 
                         if (keepRes) {
                             res = CheckReturnType::constraintFun;

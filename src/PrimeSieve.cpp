@@ -1,5 +1,5 @@
 #include "NumbersUtils/Eratosthenes.h"
-#include "CleanConvert.h"
+#include "CppConvert.h"
 
 [[cpp11::register]]
 SEXP PrimeSieveCpp(SEXP Rb1, SEXP Rb2, SEXP RNumThreads,
@@ -15,17 +15,17 @@ SEXP PrimeSieveCpp(SEXP Rb1, SEXP Rb2, SEXP RNumThreads,
     int nThreads = 1;
     int maxThreads = 1;
 
-    CleanConvert::convertPrimitive(RmaxCores, maxCores,
+    CppConvert::convertPrimitive(RmaxCores, maxCores,
                                    VecType::Integer, "maxCores");
-    CleanConvert::convertPrimitive(RmaxThreads, maxThreads,
+    CppConvert::convertPrimitive(RmaxThreads, maxThreads,
                                    VecType::Integer, "maxThreads");
-    CleanConvert::convertPrimitive(Rb1, bound1, VecType::Numeric,
+    CppConvert::convertPrimitive(Rb1, bound1, VecType::Numeric,
                                    "bound1", true, false);
 
     if (Rf_isNull(Rb2)) {
         bound2 = 1;
     } else {
-        CleanConvert::convertPrimitive(Rb2, bound2, VecType::Numeric,
+        CppConvert::convertPrimitive(Rb2, bound2, VecType::Numeric,
                                        "bound2", true, false);
     }
 
@@ -56,7 +56,7 @@ SEXP PrimeSieveCpp(SEXP Rb1, SEXP Rb2, SEXP RNumThreads,
     }
 
     if (!Rf_isNull(RNumThreads)) {
-        CleanConvert::convertPrimitive(RNumThreads, nThreads,
+        CppConvert::convertPrimitive(RNumThreads, nThreads,
                                        VecType::Integer, "nThreads");
     }
 

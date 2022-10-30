@@ -1,5 +1,4 @@
-#ifndef PARTITIONS_REP_H
-#define PARTITIONS_REP_H
+#pragma once
 
 #include "RMatrix.h"
 #include <vector>
@@ -29,5 +28,3 @@ void PartsRep(RcppParallel::RMatrix<int> &mat, std::vector<int> &z,
 
 void PartsPermRep(int* mat, std::vector<int> &z, int width,
                   int lastElem, int lastCol, int nRows);
-
-#endif

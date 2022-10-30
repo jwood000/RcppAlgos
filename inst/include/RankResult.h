@@ -1,14 +1,11 @@
-#ifndef RANK_RESULT_H
-#define RANK_RESULT_H
+#pragma once
 
 #include <vector>
-#include <gmp.h>
+#include <gmpxx.h>
 
 using rankResultPtr = void (*const)(std::vector<int>::iterator iter, int n,
-                            int m, double &dblIdx, mpz_t mpzIdx,
+                            int m, double &dblIdx, mpz_class &mpzIdx,
                             const std::vector<int> &Reps);
 
 rankResultPtr GetRankResultFunc(bool IsComb, bool IsMult,
                                 bool IsRep, bool IsGmp);
-
-#endif

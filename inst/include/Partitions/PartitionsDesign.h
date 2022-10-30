@@ -1,5 +1,4 @@
-#ifndef PARTITION_DESIGN_H
-#define PARTITION_DESIGN_H
+#pragma once
 
 #include "cpp11/R.hpp"
 
@@ -8,5 +7,3 @@
 
 SEXP GetDesign(const PartDesign &part, ConstraintType ctype,
                int lenV, bool verbose);
-
-#endif

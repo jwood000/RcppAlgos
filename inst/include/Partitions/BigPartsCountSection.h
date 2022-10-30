@@ -1,12 +1,9 @@
-#ifndef BIG_PARTS_COUNT_SECTION_H
-#define BIG_PARTS_COUNT_SECTION_H
+#pragma once
 
-#include <gmp.h>
+#include <gmpxx.h>
 
 // This is the maximum n such that SumSection(n) < 2^53 - 1.
-// After this, we must use void SumSection(mpz_t n, mpz_t res)
+// After this, we must use void SumSection(mpz_class n, mpz_class res)
 constexpr int typeSwitchBnd = 328764948;
 
-void SumSection(mpz_t n, mpz_t res);
-
-#endif
+void SumSection(const mpz_class &n, mpz_class &res);

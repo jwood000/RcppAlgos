@@ -1,10 +1,9 @@
-#include <vector>
-#include <algorithm> // std::min
-#include <numeric>   // std::accumulate
-#include <cmath>     // std::round
-#include <gmp.h>
-
 #include "cpp11/R.hpp"
+#include <algorithm> // std::min
+#include <gmpxx.h>
+#include <numeric>   // std::accumulate
+#include <vector>
+#include <cmath>     // std::round
 
 // Returns number of k-combinations from n elements.
 // Mathematically speaking, we have: n! / (m! * (n - m)!)
@@ -18,12 +17,10 @@ double nChooseK(int n, int m) {
         return 1.0;
     }
 
-    mpz_t temp;
-    mpz_init(temp);
-    mpz_bin_uiui(temp, n, m);
+    mpz_class temp;
+    mpz_bin_uiui(temp.get_mpz_t(), n, m);
 
-    double res = mpz_get_d(temp);
-    mpz_clear(temp);
+    double res = temp.get_d();
     return res;
 }
 

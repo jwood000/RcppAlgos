@@ -1,5 +1,4 @@
-#ifndef PERMUTE_REP_APPLY_H
-#define PERMUTE_REP_APPLY_H
+#pragma once
 
 #include "NextPermSectionRep.h"
 #include "PermuteHelper.h"
@@ -45,5 +44,3 @@ void PermuteRepApplyFun(SEXP res, SEXP v, SEXP vectorPass,
         NextSecRep(z, maxInd, lastCol);
     }
 }
-
-#endif

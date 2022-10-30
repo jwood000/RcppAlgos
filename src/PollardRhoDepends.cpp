@@ -17,7 +17,7 @@ void PrimeFacList(std::size_t m, std::size_t n,
         }
 
         if (mPass > 0) {
-            getPrimeFactors(mPass, factors);
+            GetPrimeFactors(mPass, factors);
             MyPrimeList[i] = factors;
         }
     }
@@ -101,7 +101,7 @@ void FactorList(std::size_t m, std::size_t n,
 
         if (mPass > 1) {
             std::vector<T> factors;
-            getPrimeFactors(mPass, factors);
+            GetPrimeFactors(mPass, factors);
             myDivisors = Factorize<T>(factors);
 
             if (isNegative) {
@@ -131,8 +131,7 @@ void IsPrimeVec(std::size_t m, std::size_t n,
                 const std::vector<double> &myNums,
                 int* primeTest) {
 
-    mpz_t testMpzt;
-    mpz_init(testMpzt);
+    mpz_class testMpzt;
 
     for (std::size_t j = m; j < n; ++j) {
         std::int64_t testVal = static_cast<std::int64_t>(myNums[j]);
@@ -164,16 +163,14 @@ void IsPrimeVec(std::size_t m, std::size_t n,
             if (myNums[j] < 1000000000) {
                 primeTest[j] = IsPrime(testVal);
             } else {
-                mpz_set_d(testMpzt, myNums[j]);
+                testMpzt = myNums[j];
 
-                if (mpz_probab_prime_p(testMpzt, MR_REPS) == 0) {
+                if (mpz_probab_prime_p(testMpzt.get_mpz_t(), MR_REPS) == 0) {
                     primeTest[j] = false;
                 }
             }
         }
     }
-
-    mpz_clear(testMpzt);
 }
 
 

@@ -1,6 +1,5 @@
 #include "Partitions/PartitionsCountSection.h"
 #include "Combinations/ComboCount.h"
-#include "Cpp14MakeUnique.h"
 #include <algorithm>  // std::fill; std::min
 #include <cmath>      // std::floor
 

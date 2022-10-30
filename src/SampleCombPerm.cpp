@@ -1,6 +1,5 @@
 #include "Sample/SampCombPermStd.h"
 #include "Sample/SampleApply.h"
-#include "Cpp14MakeUnique.h"
 #include "ComputedCount.h"
 #include "SetUpUtils.h"
 
@@ -26,18 +25,18 @@ SEXP SampleCombPerm(SEXP Rv, SEXP Rm, SEXP RisRep, SEXP RFreqs,
     }
 
     VecType myType = VecType::Integer;
-    CleanConvert::convertPrimitive(RmaxThreads, maxThreads,
+    CppConvert::convertPrimitive(RmaxThreads, maxThreads,
                                    VecType::Integer, "maxThreads");
-    bool IsNamed = CleanConvert::convertFlag(RNamed, "namedSample");
+    bool IsNamed = CppConvert::convertFlag(RNamed, "namedSample");
 
     std::vector<int> vInt;
     std::vector<int> myReps;
     std::vector<int> freqs;
     std::vector<double> vNum;
 
-    bool Parallel = CleanConvert::convertFlag(Rparallel, "Parallel");
-    bool IsRep = CleanConvert::convertFlag(RisRep, "repetition");
-    const bool IsComb = CleanConvert::convertFlag(RIsComb, "IsComb");
+    bool Parallel = CppConvert::convertFlag(Rparallel, "Parallel");
+    bool IsRep = CppConvert::convertFlag(RisRep, "repetition");
+    const bool IsComb = CppConvert::convertFlag(RIsComb, "IsComb");
     bool IsMult = false;
 
     SetType(myType, Rv);
@@ -48,8 +47,7 @@ SEXP SampleCombPerm(SEXP Rv, SEXP Rm, SEXP RisRep, SEXP RFreqs,
                                                 n, m, Rm, freqs, myReps);
     const bool IsGmp = (computedRows > SampleLimit);
 
-    mpz_t computedRowsMpz;
-    mpz_init(computedRowsMpz);
+    mpz_class computedRowsMpz;
 
     if (IsGmp) {
         GetComputedRowMpz(computedRowsMpz, IsMult, IsComb,
@@ -61,15 +59,11 @@ SEXP SampleCombPerm(SEXP Rv, SEXP Rm, SEXP RisRep, SEXP RFreqs,
     SetRandomSample(RindexVec, RNumSamp, sampSize, IsGmp,
                     computedRows, mySample, baseSample, myEnv);
 
-    const int bigSampSize = (IsGmp) ? sampSize : 1;
-    auto myVec = FromCpp14::make_unique<mpz_t[]>(bigSampSize);
-
-    for (int i = 0; i < bigSampSize; ++i) {
-        mpz_init(myVec[i]);
-    }
+    const int bigSampSize = IsGmp ? sampSize : 1;
+    std::vector<mpz_class> myVec(bigSampSize);
 
     SetRandomSampleMpz(RindexVec, RmySeed, sampSize,
-                       IsGmp, computedRowsMpz, myVec.get());
+                       IsGmp, computedRowsMpz, myVec);
 
     const int limit = 2;
     SetThreads(Parallel, maxThreads, sampSize,
@@ -79,12 +73,12 @@ SEXP SampleCombPerm(SEXP Rv, SEXP Rm, SEXP RisRep, SEXP RFreqs,
                                                     IsRep, IsGmp);
 
     if (applyFun) {
-        return SampleCombPermApply(Rv, vInt, vNum, mySample, myVec.get(),
+        return SampleCombPermApply(Rv, vInt, vNum, mySample, myVec,
                                    myReps, stdFun, myEnv, RFunVal, nthResFun,
                                    myType, n, m, sampSize, IsNamed, IsGmp);
     }
 
-    return SampCombPermMain(Rv, vInt, vNum, mySample, myVec.get(),
+    return SampCombPermMain(Rv, vInt, vNum, mySample, myVec,
                             myReps, nthResFun, myType, n, m, sampSize,
                             nThreads, IsNamed, IsGmp, Parallel);
 }

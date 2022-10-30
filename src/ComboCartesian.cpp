@@ -1,10 +1,9 @@
-#include "Cpp14MakeUnique.h"
 #include <unordered_set>
+#include <gmpxx.h>
 #include <cstdint>
 #include <limits>
 #include <vector>
 #include <string>
-#include <gmp.h>
 
 void AddComb(std::unordered_set<std::uint64_t> &uintHash,
              std::vector<std::uint64_t> &uintKeyKeeper,
@@ -29,15 +28,11 @@ void AddComb(std::unordered_set<std::string> &strHash,
              std::vector<std::string> &strKeyKeeper,
              const std::vector<int> &rowIdx,
              std::vector<int> &cartCombs,
-             mpz_t key, mpz_t masterKey,
+             mpz_class key, mpz_class masterKey,
              int prime, int idx) {
 
-    mpz_mul_si(key, masterKey, prime);
-    auto buffer = FromCpp14::make_unique<char[]>(
-        mpz_sizeinbase(key, 10) + 2
-    );
-    mpz_get_str(buffer.get(), 10, key);
-    const std::string strKey = buffer.get();
+    key = masterKey * prime;
+    const std::string strKey = key.get_str();
 
     if (strHash.find(strKey) == strHash.end()) {
         strHash.insert(strKey);
@@ -174,11 +169,8 @@ void comboGrid(std::vector<int> &cartCombs,
             strKeyKeeper[j] = std::to_string(uintKeyKeeper[j]);
         }
 
-        mpz_t key;
-        mpz_t masterKey;
-
-        mpz_init(key);
-        mpz_init(masterKey);
+        mpz_class key;
+        mpz_class masterKey;
         std::unordered_set<std::string> strHash;
 
         for (std::size_t size = myVecs.size() - 1; i < size; ++i) {
@@ -197,7 +189,8 @@ void comboGrid(std::vector<int> &cartCombs,
                 for (std::size_t j = 0, myStrt = 0, myEnd = i;
                      j < tempKeyKeeper.size(); ++j, myStrt = myEnd, myEnd += i) {
 
-                    mpz_set_str(masterKey, tempKeyKeeper[j].c_str(), 10);
+                    mpz_set_str(masterKey.get_mpz_t(),
+                                tempKeyKeeper[j].c_str(), 10);
                     const std::vector<int> rowIdx(tempCombs.begin() + myStrt,
                                                   tempCombs.begin() + myEnd);
 
@@ -210,12 +203,14 @@ void comboGrid(std::vector<int> &cartCombs,
                 for (std::size_t j = 0, myStrt = 0, myEnd = i;
                      j < tempKeyKeeper.size(); ++j, myStrt = myEnd, myEnd += i) {
 
-                    mpz_set_str(masterKey, tempKeyKeeper[j].c_str(), 10);
+                    mpz_set_str(masterKey.get_mpz_t(),
+                                tempKeyKeeper[j].c_str(), 10);
                     const std::vector<int> rowIdx(tempCombs.begin() + myStrt,
                                                   tempCombs.begin() + myEnd);
 
                     for (auto idx: myVecs[i]) {
-                        if (mpz_divisible_ui_p(masterKey, primes[idx]) == 0) {
+                        if (mpz_divisible_ui_p(masterKey.get_mpz_t(),
+                                               primes[idx]) == 0) {
                             AddComb(strHash, strKeyKeeper, rowIdx, cartCombs,
                                     key, masterKey, primes[idx], idx);
                         }
@@ -231,15 +226,12 @@ void comboGrid(std::vector<int> &cartCombs,
 
         if (IsRep) {
             for (std::size_t j = 0; j < strKeyKeeper.size(); ++j) {
-                mpz_set_str(masterKey, strKeyKeeper[j].c_str(), 10);
+                mpz_set_str(masterKey.get_mpz_t(),
+                            strKeyKeeper[j].c_str(), 10);
 
                 for (auto idx: myVecs.back()) {
-                    mpz_mul_si(key, masterKey, primes[idx]);
-                    auto buffer = FromCpp14::make_unique<char[]>(
-                        mpz_sizeinbase(key, 10) + 2
-                    );
-                    mpz_get_str(buffer.get(), 10, key);
-                    const std::string strKey = buffer.get();
+                    key = masterKey * primes[idx];
+                    const std::string strKey = key.get_str();
 
                     if (strHash.find(strKey) == strHash.end()) {
                         strHash.insert(strKey);
@@ -250,16 +242,14 @@ void comboGrid(std::vector<int> &cartCombs,
             }
         } else {
             for (std::size_t j = 0; j < strKeyKeeper.size(); ++j) {
-                mpz_set_str(masterKey, strKeyKeeper[j].c_str(), 10);
+                mpz_set_str(masterKey.get_mpz_t(),
+                            strKeyKeeper[j].c_str(), 10);
 
                 for (auto idx: myVecs.back()) {
-                    if (mpz_divisible_ui_p(masterKey, primes[idx]) == 0) {
-                        mpz_mul_si(key, masterKey, primes[idx]);
-                        auto buffer = FromCpp14::make_unique<char[]>(
-                            mpz_sizeinbase(key, 10) + 2
-                        );
-                        mpz_get_str(buffer.get(), 10, key);
-                        const std::string strKey = buffer.get();
+                    if (mpz_divisible_ui_p(masterKey.get_mpz_t(),
+                                           primes[idx]) == 0) {
+                        key = masterKey * primes[idx];
+                        const std::string strKey = key.get_str();
 
                         if (strHash.find(strKey) == strHash.end()) {
                             strHash.insert(strKey);
@@ -270,8 +260,5 @@ void comboGrid(std::vector<int> &cartCombs,
                 }
             }
         }
-
-        mpz_clear(masterKey);
-        mpz_clear(key);
     }
 }

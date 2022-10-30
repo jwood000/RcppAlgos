@@ -34,7 +34,7 @@ void ParallelGlue(T* mat, const std::vector<T> &v, int n, int m, int phaseOne,
                   bool generalRet, bool IsComb, bool Parallel, bool IsRep,
                   bool IsMult, bool IsGmp, const std::vector<int> &freqs,
                   std::vector<int> &z, const std::vector<int> &myReps,
-                  double lower, mpz_t lowerMpz, int nRows, int nThreads) {
+                  double lower, mpz_class lowerMpz, int nRows, int nThreads) {
 
     if (IsComb) {
         ThreadSafeCombinations(mat, v, n, m, Parallel, IsRep,
@@ -52,7 +52,7 @@ SEXP GetCombPerms(SEXP Rv, const std::vector<double> &vNum,
                   bool generalRet, bool IsComb, bool Parallel, bool IsRep,
                   bool IsMult, bool IsGmp, const std::vector<int> &freqs,
                   std::vector<int> &z, const std::vector<int> &myReps,
-                  double lower, mpz_t lowerMpz, int nRows,
+                  double lower, mpz_class &lowerMpz, int nRows,
                   int nThreads, VecType myType) {
 
     switch (myType) {

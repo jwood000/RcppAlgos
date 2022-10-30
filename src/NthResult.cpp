@@ -1,11 +1,11 @@
+#include <gmpxx.h>
 #include <vector>
-#include <gmp.h>
 
 #include "Permutations/NthPermutation.h"
 #include "Combinations/NthCombination.h"
 
 using nthResultPtr = std::vector<int> (*const)(int n, int m,
-                                       double dblIdx, mpz_t mpzIdx,
+                                       double dblIdx, const mpz_class &mpzIdx,
                                        const std::vector<int> &Reps);
 
 nthResultPtr GetNthResultFunc(bool IsComb, bool IsMult,
@@ -19,11 +19,11 @@ nthResultPtr GetNthResultFunc(bool IsComb, bool IsMult,
 
 void SetNextIter(const std::vector<int> &myReps, std::vector<int> &z,
                  const nthResultPtr nthResFun, double &lower,
-                 mpz_t lowerMpz, int stepSize, int n, int m, bool IsGmp,
+                 mpz_class &lowerMpz, int stepSize, int n, int m, bool IsGmp,
                  bool IsComb, bool IsRep, bool IsMult) {
 
     if (IsGmp) {
-        mpz_add_ui(lowerMpz, lowerMpz, stepSize);
+        lowerMpz += stepSize;
     } else {
         lower += stepSize;
     }

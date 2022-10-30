@@ -1,5 +1,4 @@
-#ifndef STD_COMBO_COUNT_H
-#define STD_COMBO_COUNT_H
+#pragma once
 
 #include <vector>
 
@@ -11,5 +10,3 @@ double MultisetCombRowNumFast(int n,int m, const std::vector<int> &Reps);
 // not produce negative results and is thus used in determining whether
 // gmp analogs are necessary
 double MultisetCombRowNum(int n, int m, const std::vector<int> &Reps);
-
-#endif

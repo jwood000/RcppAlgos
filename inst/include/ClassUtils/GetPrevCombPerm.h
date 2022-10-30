@@ -1,8 +1,7 @@
-#ifndef GET_PREV_COMB_PERM_H
-#define GET_PREV_COMB_PERM_H
+#pragma once
 
 #include "ClassUtils/PrevCombinatorics.h"
-#include "CleanConvert.h"
+#include "CppConvert.h"
 
 SEXP GetPrevCombPerms(SEXP Rv, const std::vector<double> &vNum,
                       const std::vector<int> &vInt,
@@ -10,5 +9,3 @@ SEXP GetPrevCombPerms(SEXP Rv, const std::vector<double> &vNum,
                       const std::vector<int> &freqs, std::vector<int> &z,
                       prevIterPtr prevIter, int n, int m, bool IsComb,
                       bool IsMult, int nRows, VecType myType);
-
-#endif

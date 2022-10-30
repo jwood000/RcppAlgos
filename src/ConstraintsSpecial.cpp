@@ -114,7 +114,7 @@ void ConstraintsSpecial(
     const std::vector<std::string> &compVec, const std::vector<int> &myRep,
     std::vector<int> freqs, std::vector<T> &cnstrntVec,
     std::vector<T> &resVec, const std::string &mainFun, std::vector<int> &z,
-    double lower, mpz_t lowerMpz, int n, int m, int maxRows, int nThreads,
+    double lower, mpz_class &lowerMpz, int n, int m, int maxRows, int nThreads,
     bool IsRep, bool xtraCol, bool IsComb, bool IsMult, bool IsGmp
 ) {
 
@@ -201,7 +201,7 @@ template void ConstraintsSpecial(
     const std::vector<int>&, const std::vector<int>&,
     const std::vector<std::string>&, const std::vector<int>&,
     std::vector<int>, std::vector<int>&, std::vector<int>&,
-    const std::string&, std::vector<int>&, double, mpz_t,
+    const std::string&, std::vector<int>&, double, mpz_class&,
     int, int, int, int, bool, bool, bool, bool, bool
 );
 
@@ -209,6 +209,6 @@ template void ConstraintsSpecial(
     const std::vector<double>&, const std::vector<double>&,
     const std::vector<std::string>&, const std::vector<int>&,
     std::vector<int>, std::vector<double>&, std::vector<double>&,
-    const std::string&, std::vector<int>&, double, mpz_t,
+    const std::string&, std::vector<int>&, double, mpz_class&,
     int, int, int, int, bool, bool, bool, bool, bool
 );

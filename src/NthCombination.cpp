@@ -2,10 +2,12 @@
 #include "Combinations/ComboCount.h"
 
 using nthCombPtr = std::vector<int> (*const)(int n, int m, double dblIdx,
-                                     mpz_t mpzIdx, const std::vector<int> &Reps);
+                                     const mpz_class &mpzIdx,
+                                     const std::vector<int> &Reps);
 
 std::vector<int> nthComb(int n, int m, double dblIdx,
-                         mpz_t mpzIdx, const std::vector<int> &Reps) {
+                         const mpz_class &mpzIdx,
+                         const std::vector<int> &Reps) {
 
     std::vector<int> res(m);
     double temp = nChooseK(n - 1, m - 1);
@@ -28,7 +30,8 @@ std::vector<int> nthComb(int n, int m, double dblIdx,
 }
 
 std::vector<int> nthCombRep(int n, int m, double dblIdx,
-                            mpz_t mpzIdx, const std::vector<int> &Reps) {
+                            const mpz_class &mpzIdx,
+                            const std::vector<int> &Reps) {
 
     std::vector<int> res(m);
     double temp = NumCombsWithRep(n, m - 1);
@@ -49,7 +52,8 @@ std::vector<int> nthCombRep(int n, int m, double dblIdx,
 }
 
 std::vector<int> nthCombMult(int n, int m, double dblIdx,
-                             mpz_t mpzIdx, const std::vector<int> &Reps) {
+                             const mpz_class &mpzIdx,
+                             const std::vector<int> &Reps) {
 
     std::vector<int> res(m);
     std::vector<int> Counts = Reps;
@@ -92,13 +96,11 @@ std::vector<int> nthCombMult(int n, int m, double dblIdx,
 }
 
 std::vector<int> nthCombGmp(int n, int m, double dblIdx,
-                            mpz_t mpzIdx, const std::vector<int> &Reps) {
+                            const mpz_class &mpzIdx,
+                            const std::vector<int> &Reps) {
 
-    mpz_t idx;
-    mpz_t temp;
-
-    mpz_init(temp);
-    mpz_init_set(idx, mpzIdx);
+    mpz_class idx(mpzIdx);
+    mpz_class temp;
 
     std::vector<int> res(m);
     nChooseKGmp(temp, n - 1, m - 1);
@@ -106,48 +108,46 @@ std::vector<int> nthCombGmp(int n, int m, double dblIdx,
     for (int k = 0, j = 0, n1 = n - 1, r1 = m - 1;
          k < m; ++k, --n1, --r1, ++j) {
 
-        for (int s = n1 - r1; mpz_cmp(temp, idx) <= 0; --s, ++j, --n1) {
-            mpz_sub(idx, idx, temp);
-            mpz_mul_ui(temp, temp, s);
-            mpz_divexact_ui(temp, temp, n1);
+        for (int s = n1 - r1; cmp(temp, idx) <= 0; --s, ++j, --n1) {
+            idx -= temp;
+            temp *= s;
+            mpz_divexact_ui(temp.get_mpz_t(), temp.get_mpz_t(), n1);
         }
 
-        mpz_mul_ui(temp, temp, r1);
-        if (n1 > 0) mpz_divexact_ui(temp, temp, n1);
+        temp *= r1;
+        if (n1 > 0) mpz_divexact_ui(temp.get_mpz_t(), temp.get_mpz_t(), n1);
         res[k] = j;
     }
 
-    mpz_clear(temp);
-    mpz_clear(idx);
     return res;
 }
 
 std::vector<int> nthCombRepGmp(int n, int m, double dblIdx,
-                               mpz_t mpzIdx, const std::vector<int> &Reps) {
+                               const mpz_class &mpzIdx,
+                               const std::vector<int> &Reps) {
 
-    mpz_t idx;
-    mpz_t temp;
-
-    mpz_init(temp);
-    mpz_init_set(idx, mpzIdx);
+    mpz_class idx(mpzIdx);
+    mpz_class temp;
 
     std::vector<int> res(m);
     NumCombsWithRepGmp(temp, n, m - 1);
 
     for (int k = 0, j = 0, n1 = n, r1 = m - 1; k < m; ++k, --r1) {
-        for (; mpz_cmp(temp, idx) <= 0; ++j, --n1) {
-            mpz_sub(idx, idx, temp);
-            mpz_mul_ui(temp, temp, n1 - 1);
-            mpz_divexact_ui(temp, temp, n1 + r1 - 1);
+        for (; cmp(temp, idx) <= 0; ++j, --n1) {
+            idx -= temp;
+            temp *= (n1 - 1);
+            mpz_divexact_ui(temp.get_mpz_t(), temp.get_mpz_t(), n1 + r1 - 1);
         }
 
-        mpz_mul_ui(temp, temp, r1);
-        if ((n1 + r1) > 2) mpz_divexact_ui(temp, temp, n1 + r1 - 1);
+        temp *= r1;
+
+        if ((n1 + r1) > 2) {
+            mpz_divexact_ui(temp.get_mpz_t(), temp.get_mpz_t(), n1 + r1 - 1);
+        }
+
         res[k] = j;
     }
 
-    mpz_clear(temp);
-    mpz_clear(idx);
     return res;
 }
 
@@ -157,13 +157,11 @@ std::vector<int> nthCombRepGmp(int n, int m, double dblIdx,
 // complexity is larger. However, with larger cases, deque proves to be
 // more efficient.
 std::vector<int> nthCombMultGmp(int n, int m, double dblIdx,
-                                mpz_t mpzIdx, const std::vector<int> &Reps) {
+                                const mpz_class &mpzIdx,
+                                const std::vector<int> &Reps) {
 
-    mpz_t idx;
-    mpz_t temp;
-
-    mpz_init(temp);
-    mpz_init_set(idx, mpzIdx);
+    mpz_class idx(mpzIdx);
+    mpz_class temp;
 
     std::vector<int> res(m);
     std::deque<int> Counts(Reps.cbegin(), Reps.cend());
@@ -179,8 +177,8 @@ std::vector<int> nthCombMultGmp(int n, int m, double dblIdx,
 
         MultisetCombRowNumGmp(temp, n1, r1, Counts);
 
-        for (; mpz_cmp(temp, idx) <= 0; ++j) {
-            mpz_sub(idx, idx, temp);
+        for (; cmp(temp, idx) <= 0; ++j) {
+            idx -= temp;
             TempReps[j] = 0;
 
             if (static_cast<int>(Counts.size()) == (n - j)) {
@@ -202,8 +200,6 @@ std::vector<int> nthCombMultGmp(int n, int m, double dblIdx,
         if (TempReps[j] <= 0) ++j;
     }
 
-    mpz_clear(temp);
-    mpz_clear(idx);
     return res;
 }
 

@@ -1,6 +1,5 @@
-#include "ImportExportMPZ.h"
-#include "ComputedCount.h"
 #include "SetUpUtils.h"
+#include "ComputedCount.h"
 
 SEXP CopyRv(SEXP Rv, const std::vector<int> &vInt,
             const std::vector<double> &vNum,
@@ -9,9 +8,9 @@ SEXP CopyRv(SEXP Rv, const std::vector<int> &vInt,
     if (myType > VecType::Numeric || IsFactor) {
         return Rf_duplicate(Rv);
     } else if (myType == VecType::Integer) {
-        return GetIntVec(vInt);
+        return cpp11::writable::integers(vInt);
     } else {
-        return GetDblVec(vNum);
+        return cpp11::writable::doubles(vNum);
     }
 }
 
@@ -32,8 +31,8 @@ SEXP GetClassVals(SEXP Rv, SEXP Rm, SEXP RisRep, SEXP RFreqs,
     std::vector<int> freqs;
     std::vector<double> vNum;
 
-    bool IsRep = CleanConvert::convertFlag(RisRep, "repetition");
-    const bool IsComb        = CleanConvert::convertFlag(RIsComb, "IsComb");
+    bool IsRep = CppConvert::convertFlag(RisRep, "repetition");
+    const bool IsComb        = CppConvert::convertFlag(RIsComb, "IsComb");
     const bool IsFactor      = Rf_isFactor(Rv);
     const bool IsConstrained = Rf_asLogical(RIsCnstrd);
 
@@ -46,22 +45,20 @@ SEXP GetClassVals(SEXP Rv, SEXP Rm, SEXP RisRep, SEXP RFreqs,
                                                 n, m, Rm, freqs, myReps);
     const bool IsGmp = (computedRows > SampleLimit);
 
-    mpz_t computedRowsMpz;
-    mpz_init(computedRowsMpz);
+    mpz_class computedRowsMpz;
 
     if (IsGmp) {
         GetComputedRowMpz(computedRowsMpz, IsMult,
                           IsComb, IsRep, n, m, Rm, freqs, myReps);
     }
 
-    cpp11::sexp sexpNumRows = CleanConvert::GetCount(
+    cpp11::sexp sexpNumRows = CppConvert::GetCount(
         IsGmp, computedRowsMpz, computedRows
     );
 
-    mpz_clear(computedRowsMpz);
     cpp11::sexp freqsInfo = Rf_allocVector(VECSXP, 2);
-    SET_VECTOR_ELT(freqsInfo, 0, GetIntVec(myReps));
-    SET_VECTOR_ELT(freqsInfo, 1, GetIntVec(freqs));
+    SET_VECTOR_ELT(freqsInfo, 0, cpp11::writable::integers(myReps));
+    SET_VECTOR_ELT(freqsInfo, 1, cpp11::writable::integers(freqs));
 
     // Needed to determine if nextFullPerm or nextPerm will be called
     const bool IsFullPerm = (IsComb || IsRep) ? false :
@@ -74,9 +71,8 @@ SEXP GetClassVals(SEXP Rv, SEXP Rm, SEXP RisRep, SEXP RFreqs,
     INTEGER(bVec)[3] = IsRep;
     INTEGER(bVec)[4] = IsGmp;
     INTEGER(bVec)[5] = IsFullPerm;
-    INTEGER(bVec)[6] = CleanConvert::convertFlag(RIsComposition,
-                                                 "IsComposition");
-    INTEGER(bVec)[7] = CleanConvert::convertFlag(RIsWeak, "weak");
+    INTEGER(bVec)[6] = CppConvert::convertFlag(RIsComposition, "IsComposition");
+    INTEGER(bVec)[7] = CppConvert::convertFlag(RIsWeak, "weak");
 
     const bool applyFun = !Rf_isNull(stdFun) && !IsFactor;
 
@@ -88,8 +84,8 @@ SEXP GetClassVals(SEXP Rv, SEXP Rm, SEXP RisRep, SEXP RFreqs,
     // RcompRows, nThreads, maxThreads
     cpp11::sexp RVals = Rf_allocVector(VECSXP, 7);
     SET_VECTOR_ELT(RVals, 0, sexpVec);
-    SET_VECTOR_ELT(RVals, 1, GetDblVec(vNum));
-    SET_VECTOR_ELT(RVals, 2, GetIntVec(vInt));
+    SET_VECTOR_ELT(RVals, 1, cpp11::writable::doubles(vNum));
+    SET_VECTOR_ELT(RVals, 2, cpp11::writable::integers(vInt));
     SET_VECTOR_ELT(RVals, 3, Rf_ScalarInteger(m));
     SET_VECTOR_ELT(RVals, 4, sexpNumRows);
     SET_VECTOR_ELT(RVals, 5, RmaxThreads);

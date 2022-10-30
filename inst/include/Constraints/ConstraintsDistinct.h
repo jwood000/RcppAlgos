@@ -1,5 +1,4 @@
-#ifndef CONSTRAINTS_DISTINCT_H
-#define CONSTRAINTS_DISTINCT_H
+#pragma once
 
 #include "Constraints/ConstraintsClass.h"
 
@@ -24,5 +23,3 @@ public:
 
     void Prepare(const std::string &currComp, std::vector<T> &v);
 };
-
-#endif

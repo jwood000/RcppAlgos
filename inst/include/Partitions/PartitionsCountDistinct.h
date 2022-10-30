@@ -1,5 +1,4 @@
-#ifndef PARTITIONS_COUNT_DISTINCT_H
-#define PARTITIONS_COUNT_DISTINCT_H
+#pragma once
 
 #include <vector>
 
@@ -13,5 +12,3 @@ double CountPartsPermDistinct(const std::vector<int> &z,
                              int tar, int width, bool includeZero = false);
 double CountPartsPermDistinctCap(const std::vector<int> &z, int cap,
                                 int tar, int width, bool includeZero);
-
-#endif

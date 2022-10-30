@@ -33,7 +33,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">RcppAlgos</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">2.6.0</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">2.7.0</span>
       </span>
     </div>
 
@@ -103,7 +103,7 @@
                         <h4 data-toc-skip class="author">Joseph
 Wood</h4>
             
-            <h4 data-toc-skip class="date">08/14/2022</h4>
+            <h4 data-toc-skip class="date">10/30/2022</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/jwood000/RcppAlgos/blob/HEAD/vignettes/GeneralCombinatorics.Rmd" class="external-link"><code>vignettes/GeneralCombinatorics.Rmd</code></a></small>
       <div class="hidden name"><code>GeneralCombinatorics.Rmd</code></div>
@@ -158,6 +158,7 @@ integer <em>n</em> and it will be converted to the sequence
 <code>complex</code>, <code>character</code>, and <code>raw</code>).</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/jwood000/RcppAlgos" class="external-link">RcppAlgos</a></span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/options.html" class="external-link">options</a></span><span class="op">(</span>width <span class="op">=</span> <span class="fl">90</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co">## combn output for reference</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/combn.html" class="external-link">combn</a></span><span class="op">(</span><span class="fl">4</span>, <span class="fl">3</span><span class="op">)</span></span>
@@ -201,11 +202,10 @@ integer <em>n</em> and it will be converted to the sequence
 <span><span class="co">#&gt; [5,]    2    3    5   13    7   11</span></span>
 <span><span class="co">#&gt; [6,]    2    3    5   13   11    7</span></span>
 <span></span>
-<span></span>
 <span><span class="co">## They are very efficient...</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/system.time.html" class="external-link">system.time</a></span><span class="op">(</span><span class="fu"><a href="../reference/combinatoricsGeneral.html">comboGeneral</a></span><span class="op">(</span><span class="fl">25</span>, <span class="fl">12</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="co">#&gt;  user  system elapsed</span></span>
-<span><span class="co">#&gt; 0.097   0.051   0.148</span></span>
+<span><span class="co">#&gt;    user  system elapsed </span></span>
+<span><span class="co">#&gt;   0.051   0.013   0.064</span></span>
 <span></span>
 <span><span class="fu"><a href="../reference/combinatoricsCount.html">comboCount</a></span><span class="op">(</span><span class="fl">25</span>, <span class="fl">12</span><span class="op">)</span></span>
 <span><span class="co">#&gt; [1] 5200300</span></span>
@@ -227,11 +227,10 @@ integer <em>n</em> and it will be converted to the sequence
 <span><span class="co">#&gt; [5200299,]   13   15   16   17   18   19   20   21   22    23    24    25</span></span>
 <span><span class="co">#&gt; [5200300,]   14   15   16   17   18   19   20   21   22    23    24    25</span></span>
 <span></span>
-<span></span>
 <span><span class="co">## And for permutations... over 8 million instantly</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/system.time.html" class="external-link">system.time</a></span><span class="op">(</span><span class="fu"><a href="../reference/combinatoricsGeneral.html">permuteGeneral</a></span><span class="op">(</span><span class="fl">13</span>, <span class="fl">7</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="co">#&gt;    user  system elapsed</span></span>
-<span><span class="co">#&gt;   0.090   0.050   0.141</span></span>
+<span><span class="co">#&gt;    user  system elapsed </span></span>
+<span><span class="co">#&gt;   0.024   0.014   0.038</span></span>
 <span></span>
 <span><span class="fu"><a href="../reference/combinatoricsCount.html">permuteCount</a></span><span class="op">(</span><span class="fl">13</span>, <span class="fl">7</span><span class="op">)</span></span>
 <span><span class="co">#&gt; [1] 8648640</span></span>
@@ -253,18 +252,17 @@ integer <em>n</em> and it will be converted to the sequence
 <span><span class="co">#&gt; [8648639,]   13   12   11   10    9    8    6</span></span>
 <span><span class="co">#&gt; [8648640,]   13   12   11   10    9    8    7</span></span>
 <span></span>
-<span></span>
 <span><span class="co">## Factors are preserved</span></span>
 <span><span class="fu"><a href="../reference/combinatoricsGeneral.html">permuteGeneral</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/factor.html" class="external-link">factor</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"low"</span>, <span class="st">"med"</span>, <span class="st">"high"</span><span class="op">)</span>,</span>
 <span>               levels <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"low"</span>, <span class="st">"med"</span>, <span class="st">"high"</span><span class="op">)</span>,</span>
 <span>               ordered <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="co">#&gt;      [,1] [,2] [,3]</span></span>
 <span><span class="co">#&gt; [1,] low  med  high</span></span>
-<span><span class="co">#&gt; [2,] low  high med</span></span>
+<span><span class="co">#&gt; [2,] low  high med </span></span>
 <span><span class="co">#&gt; [3,] med  low  high</span></span>
-<span><span class="co">#&gt; [4,] med  high low</span></span>
-<span><span class="co">#&gt; [5,] high low  med</span></span>
-<span><span class="co">#&gt; [6,] high med  low</span></span>
+<span><span class="co">#&gt; [4,] med  high low </span></span>
+<span><span class="co">#&gt; [5,] high low  med </span></span>
+<span><span class="co">#&gt; [6,] high med  low </span></span>
 <span><span class="co">#&gt; Levels: low &lt; med &lt; high</span></span></code></pre></div>
 </div>
 <div class="section level2">
@@ -277,7 +275,7 @@ setting <code>repetition</code> to <code>TRUE</code>.</p>
 <code class="sourceCode R"><span><span class="va">fourDays</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/weekday.POSIXt.html" class="external-link">weekdays</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/as.Date.html" class="external-link">as.Date</a></span><span class="op">(</span><span class="st">"2019-10-09"</span><span class="op">)</span> <span class="op">+</span> <span class="fl">0</span><span class="op">:</span><span class="fl">3</span>, <span class="cn">TRUE</span><span class="op">)</span></span>
 <span><span class="fu">ht</span><span class="op">(</span><span class="fu"><a href="../reference/combinatoricsGeneral.html">comboGeneral</a></span><span class="op">(</span><span class="va">fourDays</span>, repetition <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="co">#&gt; head --&gt;</span></span>
-<span><span class="co">#&gt;      [,1]  [,2]  [,3]  [,4]</span></span>
+<span><span class="co">#&gt;      [,1]  [,2]  [,3]  [,4] </span></span>
 <span><span class="co">#&gt; [1,] "Wed" "Wed" "Wed" "Wed"</span></span>
 <span><span class="co">#&gt; [2,] "Wed" "Wed" "Wed" "Thu"</span></span>
 <span><span class="co">#&gt; [3,] "Wed" "Wed" "Wed" "Fri"</span></span>
@@ -285,7 +283,7 @@ setting <code>repetition</code> to <code>TRUE</code>.</p>
 <span><span class="co">#&gt; [5,] "Wed" "Wed" "Thu" "Thu"</span></span>
 <span><span class="co">#&gt; --------</span></span>
 <span><span class="co">#&gt; tail --&gt;</span></span>
-<span><span class="co">#&gt;       [,1]  [,2]  [,3]  [,4]</span></span>
+<span><span class="co">#&gt;       [,1]  [,2]  [,3]  [,4] </span></span>
 <span><span class="co">#&gt; [31,] "Fri" "Fri" "Fri" "Fri"</span></span>
 <span><span class="co">#&gt; [32,] "Fri" "Fri" "Fri" "Sat"</span></span>
 <span><span class="co">#&gt; [33,] "Fri" "Fri" "Sat" "Sat"</span></span>
@@ -295,7 +293,7 @@ setting <code>repetition</code> to <code>TRUE</code>.</p>
 <span><span class="co">## When repetition = TRUE, m can exceed length(v)</span></span>
 <span><span class="fu">ht</span><span class="op">(</span><span class="fu"><a href="../reference/combinatoricsGeneral.html">comboGeneral</a></span><span class="op">(</span><span class="va">fourDays</span>, <span class="fl">8</span>, <span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="co">#&gt; head --&gt;</span></span>
-<span><span class="co">#&gt;      [,1]  [,2]  [,3]  [,4]  [,5]  [,6]  [,7]  [,8]</span></span>
+<span><span class="co">#&gt;      [,1]  [,2]  [,3]  [,4]  [,5]  [,6]  [,7]  [,8] </span></span>
 <span><span class="co">#&gt; [1,] "Wed" "Wed" "Wed" "Wed" "Wed" "Wed" "Wed" "Wed"</span></span>
 <span><span class="co">#&gt; [2,] "Wed" "Wed" "Wed" "Wed" "Wed" "Wed" "Wed" "Thu"</span></span>
 <span><span class="co">#&gt; [3,] "Wed" "Wed" "Wed" "Wed" "Wed" "Wed" "Wed" "Fri"</span></span>
@@ -303,13 +301,12 @@ setting <code>repetition</code> to <code>TRUE</code>.</p>
 <span><span class="co">#&gt; [5,] "Wed" "Wed" "Wed" "Wed" "Wed" "Wed" "Thu" "Thu"</span></span>
 <span><span class="co">#&gt; --------</span></span>
 <span><span class="co">#&gt; tail --&gt;</span></span>
-<span><span class="co">#&gt;        [,1]  [,2]  [,3]  [,4]  [,5]  [,6]  [,7]  [,8]</span></span>
+<span><span class="co">#&gt;        [,1]  [,2]  [,3]  [,4]  [,5]  [,6]  [,7]  [,8] </span></span>
 <span><span class="co">#&gt; [161,] "Fri" "Fri" "Fri" "Fri" "Sat" "Sat" "Sat" "Sat"</span></span>
 <span><span class="co">#&gt; [162,] "Fri" "Fri" "Fri" "Sat" "Sat" "Sat" "Sat" "Sat"</span></span>
 <span><span class="co">#&gt; [163,] "Fri" "Fri" "Sat" "Sat" "Sat" "Sat" "Sat" "Sat"</span></span>
 <span><span class="co">#&gt; [164,] "Fri" "Sat" "Sat" "Sat" "Sat" "Sat" "Sat" "Sat"</span></span>
 <span><span class="co">#&gt; [165,] "Sat" "Sat" "Sat" "Sat" "Sat" "Sat" "Sat" "Sat"</span></span>
-<span></span>
 <span></span>
 <span><span class="va">fibonacci</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1L</span>, <span class="fl">2L</span>, <span class="fl">3L</span>, <span class="fl">5L</span>, <span class="fl">8L</span>, <span class="fl">13L</span>, <span class="fl">21L</span>, <span class="fl">34L</span><span class="op">)</span></span>
 <span><span class="va">permsFib</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/combinatoricsGeneral.html">permuteGeneral</a></span><span class="op">(</span><span class="va">fibonacci</span>, <span class="fl">5</span>, <span class="cn">TRUE</span><span class="op">)</span></span>
@@ -330,7 +327,6 @@ setting <code>repetition</code> to <code>TRUE</code>.</p>
 <span><span class="co">#&gt; [32766,]   34   34   34   34   13</span></span>
 <span><span class="co">#&gt; [32767,]   34   34   34   34   21</span></span>
 <span><span class="co">#&gt; [32768,]   34   34   34   34   34</span></span>
-<span></span>
 <span></span>
 <span><span class="co">## N.B. class is preserved</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/class.html" class="external-link">class</a></span><span class="op">(</span><span class="va">fibonacci</span><span class="op">)</span></span>
@@ -380,8 +376,8 @@ Observe:</p>
 <span><span class="va">a</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>,<span class="fl">1</span>,<span class="fl">1</span>,<span class="fl">1</span>,<span class="fl">2</span>,<span class="fl">2</span>,<span class="fl">2</span>,<span class="fl">7</span>,<span class="fl">7</span>,<span class="fl">7</span>,<span class="fl">7</span>,<span class="fl">7</span><span class="op">)</span></span>
 <span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/system.time.html" class="external-link">system.time</a></span><span class="op">(</span><span class="va">test</span> <span class="op">&lt;-</span> <span class="fu">getPermsWithSpecificRepetition</span><span class="op">(</span><span class="va">a</span>, <span class="fl">6</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="co">#&gt;   user  system elapsed</span></span>
-<span><span class="co">#&gt;  2.477   0.069   2.553</span></span></code></pre></div>
+<span><span class="co">#&gt;    user  system elapsed </span></span>
+<span><span class="co">#&gt;   0.898   0.025   0.924</span></span></code></pre></div>
 <div class="section level3">
 <h3 id="enter-freqs">Enter <code>freqs</code><a class="anchor" aria-label="anchor" href="#enter-freqs"></a>
 </h3>
@@ -390,8 +386,8 @@ argument. Simply, enter the number of times each unique element is
 repeated and Voila!</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/system.time.html" class="external-link">system.time</a></span><span class="op">(</span><span class="va">test2</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/combinatoricsGeneral.html">permuteGeneral</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/unique.html" class="external-link">unique</a></span><span class="op">(</span><span class="va">a</span><span class="op">)</span>, <span class="fl">6</span>, freqs <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/rle.html" class="external-link">rle</a></span><span class="op">(</span><span class="va">a</span><span class="op">)</span><span class="op">$</span><span class="va">lengths</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="co">#&gt;  user  system elapsed</span></span>
-<span><span class="co">#&gt;     0       0       0</span></span>
+<span><span class="co">#&gt;    user  system elapsed </span></span>
+<span><span class="co">#&gt;       0       0       0</span></span>
 <span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/identical.html" class="external-link">identical</a></span><span class="op">(</span><span class="va">test</span>, <span class="va">test2</span><span class="op">)</span></span>
 <span><span class="co">#&gt; [1] TRUE</span></span></code></pre></div>
@@ -438,27 +434,31 @@ we can generate combinations/permutations with greater efficiency.</p>
 <span><span class="fu">RcppAlgos</span><span class="fu">::</span><span class="fu"><a href="../reference/stdThreadMax.html">stdThreadMax</a></span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="co">#&gt; [1] 8</span></span>
 <span></span>
+<span><span class="fu"><a href="../reference/combinatoricsCount.html">comboCount</a></span><span class="op">(</span><span class="fl">26</span>, <span class="fl">13</span><span class="op">)</span></span>
+<span><span class="co">#&gt; [1] 10400600</span></span>
+<span></span>
 <span><span class="co">## Compared to combn using 4 threads</span></span>
-<span><span class="fu"><a href="https://rdrr.io/pkg/microbenchmark/man/microbenchmark.html" class="external-link">microbenchmark</a></span><span class="op">(</span>combn <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/utils/combn.html" class="external-link">combn</a></span><span class="op">(</span><span class="fl">25</span>, <span class="fl">10</span><span class="op">)</span>,</span>
-<span>               serAlgos <span class="op">=</span> <span class="fu"><a href="../reference/combinatoricsGeneral.html">comboGeneral</a></span><span class="op">(</span><span class="fl">25</span>, <span class="fl">10</span><span class="op">)</span>,</span>
-<span>               parAlgos <span class="op">=</span> <span class="fu"><a href="../reference/combinatoricsGeneral.html">comboGeneral</a></span><span class="op">(</span><span class="fl">25</span>, <span class="fl">10</span>, nThreads <span class="op">=</span> <span class="fl">4</span><span class="op">)</span>,</span>
+<span><span class="fu"><a href="https://rdrr.io/pkg/microbenchmark/man/microbenchmark.html" class="external-link">microbenchmark</a></span><span class="op">(</span>combn <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/utils/combn.html" class="external-link">combn</a></span><span class="op">(</span><span class="fl">26</span>, <span class="fl">13</span><span class="op">)</span>,</span>
+<span>               serAlgos <span class="op">=</span> <span class="fu"><a href="../reference/combinatoricsGeneral.html">comboGeneral</a></span><span class="op">(</span><span class="fl">26</span>, <span class="fl">13</span><span class="op">)</span>,</span>
+<span>               parAlgos <span class="op">=</span> <span class="fu"><a href="../reference/combinatoricsGeneral.html">comboGeneral</a></span><span class="op">(</span><span class="fl">26</span>, <span class="fl">13</span>, nThreads <span class="op">=</span> <span class="fl">4</span><span class="op">)</span>,</span>
 <span>               times <span class="op">=</span> <span class="fl">10</span>,</span>
 <span>               unit <span class="op">=</span> <span class="st">"relative"</span><span class="op">)</span></span>
+<span><span class="co">#&gt; Warning in microbenchmark(combn = combn(26, 13), serAlgos = comboGeneral(26, : less</span></span>
+<span><span class="co">#&gt; accurate nanosecond times to avoid potential integer overflows</span></span>
 <span><span class="co">#&gt; Unit: relative</span></span>
-<span><span class="co">#&gt;      expr        min         lq      mean    median        uq       max neval cld</span></span>
-<span><span class="co">#&gt;     combn 117.041129 113.265819 41.953407 67.182638 22.416065 17.111740    10   b</span></span>
-<span><span class="co">#&gt;  serAlgos   1.871675   1.802551  1.524188  2.206488  1.181195  1.097826    10  a</span></span>
-<span><span class="co">#&gt;  parAlgos   1.000000   1.000000  1.000000  1.000000  1.000000  1.000000    10  a</span></span>
-<span></span>
+<span><span class="co">#&gt;      expr        min         lq      mean     median        uq       max neval</span></span>
+<span><span class="co">#&gt;     combn 133.274275 132.711198 83.083133 133.021760 45.717692 44.023253    10</span></span>
+<span><span class="co">#&gt;  serAlgos   2.823874   2.835351  2.245049   2.843294  1.611441  1.568329    10</span></span>
+<span><span class="co">#&gt;  parAlgos   1.000000   1.000000  1.000000   1.000000  1.000000  1.000000    10</span></span>
 <span></span>
 <span><span class="co">## Using 7 cores w/ Parallel = TRUE</span></span>
 <span><span class="fu"><a href="https://rdrr.io/pkg/microbenchmark/man/microbenchmark.html" class="external-link">microbenchmark</a></span><span class="op">(</span>serial <span class="op">=</span> <span class="fu"><a href="../reference/combinatoricsGeneral.html">comboGeneral</a></span><span class="op">(</span><span class="fl">20</span>, <span class="fl">10</span>, freqs <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fl">1</span><span class="op">:</span><span class="fl">4</span>, <span class="fl">5</span><span class="op">)</span><span class="op">)</span>,</span>
 <span>             parallel <span class="op">=</span> <span class="fu"><a href="../reference/combinatoricsGeneral.html">comboGeneral</a></span><span class="op">(</span><span class="fl">20</span>, <span class="fl">10</span>, freqs <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fl">1</span><span class="op">:</span><span class="fl">4</span>, <span class="fl">5</span><span class="op">)</span>, Parallel <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>,</span>
 <span>             unit <span class="op">=</span> <span class="st">"relative"</span><span class="op">)</span></span>
 <span><span class="co">#&gt; Unit: relative</span></span>
-<span><span class="co">#&gt;      expr      min       lq     mean   median       uq     max neval cld</span></span>
-<span><span class="co">#&gt;    serial 3.027218 2.983932 2.830728 2.981056 2.885341 1.58061   100   b</span></span>
-<span><span class="co">#&gt;  parallel 1.000000 1.000000 1.000000 1.000000 1.000000 1.00000   100  a</span></span></code></pre></div>
+<span><span class="co">#&gt;      expr      min       lq     mean   median       uq      max neval</span></span>
+<span><span class="co">#&gt;    serial 2.671257 2.565653 2.478888 2.506123 2.467719 1.696427   100</span></span>
+<span><span class="co">#&gt;  parallel 1.000000 1.000000 1.000000 1.000000 1.000000 1.000000   100</span></span></code></pre></div>
 <div class="section level3">
 <h3 id="using-arguments-lower-and-upper">Using arguments <code>lower</code> and <code>upper</code><a class="anchor" aria-label="anchor" href="#using-arguments-lower-and-upper"></a>
 </h3>
@@ -493,11 +493,10 @@ combinations. Observe:</p>
 <div class="section level3">
 <h3 id="generating-results-beyond--machineinteger-max">Generating Results Beyond <code>.Machine$integer.max</code><a class="anchor" aria-label="anchor" href="#generating-results-beyond--machineinteger-max"></a>
 </h3>
-<p>#&gt; In addition to being useful by avoiding the unnecessary
-overhead of generating all combination/permutations followed by
-subsetting just to see a few specific results, <code>lower</code> and
-<code>upper</code> can be utilized to generate large number of
-combinations/permutations in parallel (see this <a href="https://stackoverflow.com/a/51595866/4408538" class="external-link">stackoverflow
+<p>In addition to being useful by avoiding the unnecessary overhead of
+generating all combination/permutations followed by subsetting just to
+see a few specific results, lower and upper can be utilized to generate
+large number of combinations/permutations in parallel (see this <a href="https://stackoverflow.com/a/51595866/4408538" class="external-link">stackoverflow
 post</a> for a real use case). Observe:</p>
 <div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co">## Over 3 billion results</span></span>
@@ -514,9 +513,8 @@ post</a> for a real use case). Observe:</p>
 <span>     <span class="co">## do something</span></span>
 <span>     <span class="va">x</span></span>
 <span><span class="op">}</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="co">#&gt;    user  system elapsed</span></span>
-<span><span class="co">#&gt;  67.482  55.057 123.033</span></span>
-<span></span>
+<span><span class="co">#&gt;    user  system elapsed </span></span>
+<span><span class="co">#&gt;  25.500  11.630  37.131</span></span>
 <span></span>
 <span><span class="co">## Enter parallel</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va">parallel</span><span class="op">)</span></span>
@@ -525,8 +523,8 @@ post</a> for a real use case). Observe:</p>
 <span>     <span class="co">## do something</span></span>
 <span>     <span class="va">x</span></span>
 <span><span class="op">}</span>, mc.cores <span class="op">=</span> <span class="fl">6</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="co">#&gt;    user  system elapsed</span></span>
-<span><span class="co">#&gt;  63.994  59.189  31.574</span></span></code></pre></div>
+<span><span class="co">#&gt;    user  system elapsed </span></span>
+<span><span class="co">#&gt;  11.219   6.130   9.580</span></span></code></pre></div>
 </div>
 </div>
 <div class="section level2">
@@ -548,8 +546,8 @@ number of results is large:</p>
 <span><span class="fu"><a href="https://rdrr.io/r/base/system.time.html" class="external-link">system.time</a></span><span class="op">(</span><span class="va">b</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/combinatoricsGeneral.html">comboGeneral</a></span><span class="op">(</span><span class="va">myVec</span>, <span class="fl">50</span>, <span class="cn">TRUE</span>,</span>
 <span>                              lower <span class="op">=</span> <span class="fl">1e15</span> <span class="op">+</span> <span class="fl">1</span>,</span>
 <span>                              upper <span class="op">=</span> <span class="fl">1e15</span> <span class="op">+</span> <span class="fl">1e5</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="co">#&gt;    user  system elapsed</span></span>
-<span><span class="co">#&gt;   0.009   0.000   0.010</span></span>
+<span><span class="co">#&gt;    user  system elapsed </span></span>
+<span><span class="co">#&gt;   0.002   0.002   0.005</span></span>
 <span></span>
 <span><span class="va">b</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">5</span>, <span class="fl">45</span><span class="op">:</span><span class="fl">50</span><span class="op">]</span></span>
 <span><span class="co">#&gt;           [,1]      [,2]      [,3]     [,4]      [,5]       [,6]</span></span>
@@ -580,20 +578,19 @@ no effect when <code>FUN</code> is employed).</p>
 <span><span class="fu"><a href="https://rdrr.io/pkg/microbenchmark/man/microbenchmark.html" class="external-link">microbenchmark</a></span><span class="op">(</span>f1 <span class="op">=</span> <span class="fu">funCustomComb</span><span class="op">(</span><span class="fl">15</span>, <span class="fl">8</span><span class="op">)</span>,</span>
 <span>               f2 <span class="op">=</span> <span class="fu"><a href="../reference/combinatoricsGeneral.html">comboGeneral</a></span><span class="op">(</span><span class="fl">15</span>, <span class="fl">8</span>, FUN <span class="op">=</span> <span class="va">cumprod</span><span class="op">)</span>, unit <span class="op">=</span> <span class="st">"relative"</span><span class="op">)</span></span>
 <span><span class="co">#&gt; Unit: relative</span></span>
-<span><span class="co">#&gt;  expr      min       lq     mean   median       uq      max neval cld</span></span>
-<span><span class="co">#&gt;    f1 5.884807 5.602342 4.886637 5.574073 5.327725 1.780681   100   b</span></span>
-<span><span class="co">#&gt;    f2 1.000000 1.000000 1.000000 1.000000 1.000000 1.000000   100  a</span></span>
+<span><span class="co">#&gt;  expr      min       lq     mean   median       uq      max neval</span></span>
+<span><span class="co">#&gt;    f1 5.200418 5.145328 5.167506 5.155442 5.224701 2.535692   100</span></span>
+<span><span class="co">#&gt;    f2 1.000000 1.000000 1.000000 1.000000 1.000000 1.000000   100</span></span>
 <span></span>
 <span><span class="fu"><a href="../reference/combinatoricsGeneral.html">comboGeneral</a></span><span class="op">(</span><span class="fl">15</span>, <span class="fl">8</span>, FUN <span class="op">=</span> <span class="va">cumprod</span>, upper <span class="op">=</span> <span class="fl">3</span><span class="op">)</span></span>
 <span><span class="co">#&gt; [[1]]</span></span>
 <span><span class="co">#&gt; [1]     1     2     6    24   120   720  5040 40320</span></span>
-<span><span class="co">#&gt;</span></span>
+<span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; [[2]]</span></span>
 <span><span class="co">#&gt; [1]     1     2     6    24   120   720  5040 45360</span></span>
-<span><span class="co">#&gt;</span></span>
+<span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; [[3]]</span></span>
 <span><span class="co">#&gt; [1]     1     2     6    24   120   720  5040 50400</span></span>
-<span></span>
 <span></span>
 <span><span class="co">## An example involving the powerset... Note, we could</span></span>
 <span><span class="co">## have used the FUN.VALUE parameter here instead of</span></span>
@@ -617,13 +614,11 @@ from <code>FUN</code>. The behavior is nearly identical to
 <span>             FUN.VALUE <span class="op">=</span> <span class="st">"a"</span><span class="op">)</span></span>
 <span><span class="co">#&gt; [1] "a"   "b"   "c"   "ab"  "ac"  "bc"  "abc"</span></span>
 <span></span>
-<span></span>
 <span><span class="fu"><a href="../reference/combinatoricsGeneral.html">comboGeneral</a></span><span class="op">(</span><span class="fl">15</span>, <span class="fl">8</span>, FUN <span class="op">=</span> <span class="va">cumprod</span>, upper <span class="op">=</span> <span class="fl">3</span>, FUN.VALUE <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/numeric.html" class="external-link">as.numeric</a></span><span class="op">(</span><span class="fl">1</span><span class="op">:</span><span class="fl">8</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="co">#&gt;      [,1] [,2] [,3] [,4] [,5] [,6] [,7]  [,8]</span></span>
 <span><span class="co">#&gt; [1,]    1    2    6   24  120  720 5040 40320</span></span>
 <span><span class="co">#&gt; [2,]    1    2    6   24  120  720 5040 45360</span></span>
 <span><span class="co">#&gt; [3,]    1    2    6   24  120  720 5040 50400</span></span>
-<span></span>
 <span></span>
 <span><span class="co">## Fun example with binary representations... consider the following:</span></span>
 <span><span class="fu"><a href="../reference/combinatoricsGeneral.html">permuteGeneral</a></span><span class="op">(</span><span class="fl">0</span><span class="op">:</span><span class="fl">1</span>, <span class="fl">3</span>, <span class="cn">TRUE</span><span class="op">)</span></span>
@@ -636,7 +631,6 @@ from <code>FUN</code>. The behavior is nearly identical to
 <span><span class="co">#&gt; [6,]    1    0    1</span></span>
 <span><span class="co">#&gt; [7,]    1    1    0</span></span>
 <span><span class="co">#&gt; [8,]    1    1    1</span></span>
-<span></span>
 <span></span>
 <span><span class="fu"><a href="../reference/combinatoricsGeneral.html">permuteGeneral</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="cn">FALSE</span>, <span class="cn">TRUE</span><span class="op">)</span>, <span class="fl">3</span>, <span class="cn">TRUE</span>, FUN.VALUE <span class="op">=</span> <span class="fl">1</span>,</span>
 <span>               FUN <span class="op">=</span> <span class="kw">function</span><span class="op">(</span><span class="va">x</span><span class="op">)</span> <span class="fu"><a href="https://rdrr.io/r/base/sum.html" class="external-link">sum</a></span><span class="op">(</span><span class="fl">2</span><span class="op">^</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/which.html" class="external-link">which</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/rev.html" class="external-link">rev</a></span><span class="op">(</span><span class="va">x</span><span class="op">)</span><span class="op">)</span> <span class="op">-</span> <span class="fl">1</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>

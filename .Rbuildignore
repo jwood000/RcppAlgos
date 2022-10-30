@@ -6,3 +6,5 @@ remove_whitespace.sh
 ^\.github$
 ^docs$
 ^vignettes/*.html
+scripts/*
+create_md.R

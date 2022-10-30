@@ -1,5 +1,4 @@
-#ifndef COMBINATIONS_REP_H
-#define COMBINATIONS_REP_H
+#pragma once
 
 #include "NextComboSection.h"
 
@@ -47,5 +46,3 @@ void CombinationsRep(SEXP mat, SEXP v, std::vector<int> &z,
         nextCombSecRep(z, m1, n1);
     }
 }
-
-#endif

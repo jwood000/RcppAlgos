@@ -1,5 +1,4 @@
 #include "GetCombPermApply.h"
-#include "Cpp14MakeUnique.h"
 #include "ComputedCount.h"
 #include "SetUpUtils.h"
 
@@ -20,8 +19,8 @@ SEXP CombinatoricsApply(SEXP Rv, SEXP Rm, SEXP RisRep,
     std::vector<int> myReps;
     std::vector<int> freqs;
 
-    bool IsRep = CleanConvert::convertFlag(RisRep, "repetition");
-    const bool IsComb = CleanConvert::convertFlag(RIsComb, "IsComb");
+    bool IsRep = CppConvert::convertFlag(RisRep, "repetition");
+    const bool IsComb = CppConvert::convertFlag(RIsComb, "IsComb");
 
     SetType(myType, Rv);
     SetValues(myType, myReps, freqs, vInt, vNum,
@@ -31,36 +30,34 @@ SEXP CombinatoricsApply(SEXP Rv, SEXP Rm, SEXP RisRep,
                                                 n, m, Rm, freqs, myReps);
     const bool IsGmp = (computedRows > Significand53);
 
-    mpz_t computedRowsMpz;
-    mpz_init(computedRowsMpz);
+    mpz_class computedRowsMpz;
 
     if (IsGmp) {
         GetComputedRowMpz(computedRowsMpz, IsMult, IsComb,
                           IsRep, n, m, Rm, freqs, myReps);
     }
 
-    double lower = 0, upper = 0;
-    bool bLower = false, bUpper = false;
+    double lower = 0;
+    double upper = 0;
 
-    auto lowerMpz = FromCpp14::make_unique<mpz_t[]>(1);
-    auto upperMpz = FromCpp14::make_unique<mpz_t[]>(1);
+    bool bLower = false;
+    bool bUpper = false;
 
-    mpz_init(lowerMpz[0]);
-    mpz_init(upperMpz[0]);
+    mpz_class lowerMpz;
+    mpz_class upperMpz;
 
     SetBounds(Rlow, Rhigh, IsGmp, bLower, bUpper, lower, upper,
-              lowerMpz.get(), upperMpz.get(), computedRowsMpz, computedRows);
+              lowerMpz, upperMpz, computedRowsMpz, computedRows);
 
     std::vector<int> startZ(m);
     SetStartZ(myReps, freqs, startZ, IsComb, n, m,
-              lower, lowerMpz[0], IsRep, IsMult, IsGmp);
+              lower, lowerMpz, IsRep, IsMult, IsGmp);
 
     double userNumRows = 0;   // IsGenCnstrd = false
-    SetNumResults(IsGmp, bLower, bUpper, true, upperMpz[0],
-                  lowerMpz[0], lower, upper, computedRows,
+    SetNumResults(IsGmp, bLower, bUpper, true, upperMpz,
+                  lowerMpz, lower, upper, computedRows,
                   computedRowsMpz, nRows, userNumRows);
 
-    mpz_clear(computedRowsMpz);
     return GetCombPermApply(Rv, vNum, vInt, n, m, IsComb, IsRep,
                             IsMult, freqs, startZ, myReps, myType,
                             nRows, stdFun, myEnv, RFunVal);

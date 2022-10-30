@@ -29,28 +29,28 @@ SEXP CombClassNew(SEXP RVals, SEXP RboolVec, SEXP freqInfo, SEXP Rparallel,
                   SEXP Rtolerance, SEXP RmIsNull, SEXP RretVal) {
 
     const int ReturnValue = Rf_asInteger(RretVal);
-    const std::vector<int> bVec   = CleanConvert::GetNumVec<int>(RboolVec);
-    const std::vector<int> myReps = CleanConvert::GetNumVec<int>(
+    const std::vector<int> bVec   = CppConvert::GetNumVec<int>(RboolVec);
+    const std::vector<int> myReps = CppConvert::GetNumVec<int>(
         VECTOR_ELT(freqInfo, 0)
     );
 
-    const std::vector<int> freqs = CleanConvert::GetNumVec<int>(
+    const std::vector<int> freqs = CppConvert::GetNumVec<int>(
         VECTOR_ELT(freqInfo, 1)
     );
 
     const int m = Rf_asInteger(VECTOR_ELT(RVals, 3));
     const int maxThreads = Rf_asInteger(VECTOR_ELT(RVals, 5));
 
-    const std::vector<double> vNum = CleanConvert::GetNumVec<double>(
+    const std::vector<double> vNum = CppConvert::GetNumVec<double>(
         VECTOR_ELT(RVals, 1)
     );
-    std::vector<int> vInt = CleanConvert::GetNumVec<int>(
+    std::vector<int> vInt = CppConvert::GetNumVec<int>(
         VECTOR_ELT(RVals, 2)
     );
 
     VecType myType;
     SetType(myType, VECTOR_ELT(RVals, 0));
-    const bool Parallel = CleanConvert::convertFlag(Rparallel, "Parallel");
+    const bool Parallel = CppConvert::convertFlag(Rparallel, "Parallel");
 
     if (ReturnValue == 1) {
         class Combo* ptr = new Combo(
@@ -75,7 +75,7 @@ SEXP CombClassNew(SEXP RVals, SEXP RboolVec, SEXP freqInfo, SEXP Rparallel,
 
         return ext;
     } else {
-        const bool KeepRes = CleanConvert::convertFlag(RKeepRes, "keepResults");
+        const bool KeepRes = CppConvert::convertFlag(RKeepRes, "keepResults");
         const bool IsConstrained = CheckConstrnd(RmainFun, RcompFun, Rtarget);
         const int n = vNum.size();
 
@@ -122,12 +122,12 @@ SEXP CombClassNew(SEXP RVals, SEXP RboolVec, SEXP freqInfo, SEXP Rparallel,
                             Rtolerance, R_NilValue, true);
         }
 
-        auto computedRowsMpz = FromCpp14::make_unique<mpz_t[]>(1);
-        mpz_init(computedRowsMpz[0]);
+        mpz_class computedRowsMpz;
 
         if (IsStdGmp) {
-            createMPZArray(VECTOR_ELT(RVals, 4), computedRowsMpz.get(),
-                           1, "computedRowsMpz");
+            CppConvert::convertMpzClass(
+                VECTOR_ELT(RVals, 4), computedRowsMpz, "computedRowsMpz"
+            );
         }
 
         const bool usePartCount = part.isPart &&
@@ -135,12 +135,12 @@ SEXP CombClassNew(SEXP RVals, SEXP RboolVec, SEXP freqInfo, SEXP Rparallel,
                                   !part.numUnknown;
 
         const double computedRows = usePartCount ? part.count :
-            (IsStdGmp ? mpz_get_d(computedRowsMpz[0]) :
+            (IsStdGmp ? computedRowsMpz.get_d() :
                  Rf_asReal(VECTOR_ELT(RVals, 4)));
         const bool IsGmp = (computedRows > Significand53);
 
         if (IsGmp && part.isPart) {
-            mpz_set(computedRowsMpz[0], part.bigCount);
+            computedRowsMpz = part.bigCount;
         }
 
         // See comments in ConstraintsMain.cpp
@@ -156,11 +156,9 @@ SEXP CombClassNew(SEXP RVals, SEXP RboolVec, SEXP freqInfo, SEXP Rparallel,
                                           [](int i){return i > 0;});
 
         if (ctype < ConstraintType::PartMapping) {
-            mpz_t zero;
-            mpz_init(zero);
+            mpz_class zero(0);
             SetStartZ(myReps, freqs, startZ, IsComb, n, m,
                       0, zero, IsRep, IsMult, IsGmp);
-            mpz_clear(zero);
         } else {
             startZ = part.startZ;
         }
@@ -182,7 +180,7 @@ SEXP CombClassNew(SEXP RVals, SEXP RboolVec, SEXP freqInfo, SEXP Rparallel,
                 freqs, vInt, vNum, myType, maxThreads, VECTOR_ELT(RVals, 6),
                 Parallel, part, compVec, tarVals, tarIntVals, startZ, funTest,
                 funTest, funDbl, ctype, strtLen, cap, true, numUnknown,
-                computedRows, computedRowsMpz[0]
+                computedRows, computedRowsMpz
             );
 
             cpp11::sexp ext = R_MakeExternalPtr(ptr, R_NilValue, R_NilValue);
@@ -197,7 +195,7 @@ SEXP CombClassNew(SEXP RVals, SEXP RboolVec, SEXP freqInfo, SEXP Rparallel,
                 freqs, vInt, vNum, myType, maxThreads, VECTOR_ELT(RVals, 6),
                 Parallel, part, compVec, tarVals, tarIntVals, startZ, mainFun,
                 funTest, funDbl, ctype, strtLen, cap, KeepRes, numUnknown,
-                computedRows, computedRowsMpz[0]
+                computedRows, computedRowsMpz
             );
 
             cpp11::sexp ext = R_MakeExternalPtr(ptr, R_NilValue, R_NilValue);
@@ -217,7 +215,7 @@ SEXP CombClassNew(SEXP RVals, SEXP RboolVec, SEXP freqInfo, SEXP Rparallel,
                 freqs, vInt, vNum, myType, maxThreads, Rf_ScalarInteger(1),
                 Parallel, part, compVec, tarVals, tarIntVals, startZ, mainFun,
                 funTest, funDbl, ctype, strtLen, cap, KeepRes, numUnknown,
-                computedRows, computedRowsMpz[0]
+                computedRows, computedRowsMpz
             );
 
             cpp11::sexp ext = R_MakeExternalPtr(ptr, R_NilValue, R_NilValue);
@@ -230,7 +228,7 @@ SEXP CombClassNew(SEXP RVals, SEXP RboolVec, SEXP freqInfo, SEXP Rparallel,
                 freqs, vInt, vNum, myType, maxThreads, VECTOR_ELT(RVals, 6),
                 Parallel, part, compVec, tarVals, tarIntVals, startZ, mainFun,
                 funTest, funDbl, ctype, strtLen, cap, KeepRes, numUnknown,
-                computedRows, computedRowsMpz[0]
+                computedRows, computedRowsMpz
             );
 
             cpp11::sexp ext = R_MakeExternalPtr(ptr, R_NilValue, R_NilValue);

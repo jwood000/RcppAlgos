@@ -1,5 +1,4 @@
-#ifndef POLLARD_RHO_DEPENDS_H
-#define POLLARD_RHO_DEPENDS_H
+#pragma once
 
 #include <vector>
 #include <cmath>
@@ -20,5 +19,3 @@ void FactorList(std::size_t m, std::size_t n,
 void IsPrimeVec(std::size_t m, std::size_t n,
                 const std::vector<double> &myNums,
                 int* primeTest);
-
-#endif

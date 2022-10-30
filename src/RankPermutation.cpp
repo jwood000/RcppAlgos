@@ -5,7 +5,7 @@
 #include <cmath>
 
 using rankPermPtr = void (*const)(std::vector<int>::iterator iter, int n,
-                          int m, double &dblIdx, mpz_t mpzIdx,
+                          int m, double &dblIdx, mpz_class &mpzIdx,
                           const std::vector<int> &Reps);
 
 int which(const std::vector<int> &idx, int j) {
@@ -14,7 +14,7 @@ int which(const std::vector<int> &idx, int j) {
 }
 
 void rankPerm(std::vector<int>::iterator iter, int n, int m, double &dblIdx,
-              mpz_t mpzIdx, const std::vector<int> &Reps) {
+              mpz_class &mpzIdx, const std::vector<int> &Reps) {
 
     dblIdx = 0;
     double temp = NumPermsNoRep(n, m);
@@ -31,7 +31,7 @@ void rankPerm(std::vector<int>::iterator iter, int n, int m, double &dblIdx,
 }
 
 void rankPermRep(std::vector<int>::iterator iter, int n,
-                 int m, double &dblIdx, mpz_t mpzIdx,
+                 int m, double &dblIdx, mpz_class &mpzIdx,
                  const std::vector<int> &Repss) {
 
     dblIdx = 0;
@@ -45,7 +45,7 @@ void rankPermRep(std::vector<int>::iterator iter, int n,
 }
 
 void rankPermMult(std::vector<int>::iterator iter, int n,
-                  int m, double &dblIdx, mpz_t mpzIdx,
+                  int m, double &dblIdx, mpz_class &mpzIdx,
                   const std::vector<int> &Reps) {
 
     dblIdx = 0;
@@ -82,58 +82,49 @@ void rankPermMult(std::vector<int>::iterator iter, int n,
 }
 
 void rankPermGmp(std::vector<int>::iterator iter, int n,
-                 int m, double &dblIdx, mpz_t mpzIdx,
+                 int m, double &dblIdx, mpz_class &mpzIdx,
                  const std::vector<int> &Reps) {
 
-    mpz_t temp;
-    mpz_init(temp);
-
-    mpz_set_ui(mpzIdx, 0u);
+    mpz_class temp;
+    mpzIdx = 0;
     NumPermsNoRepGmp(temp, n, m);
 
     std::vector<int> indexVec(n);
     std::iota(indexVec.begin(), indexVec.end(), 0);
 
     for (int k = 0, n1 = n; k < m; ++k, --n1, ++iter) {
-        mpz_divexact_ui(temp, temp, n1);
+        mpz_divexact_ui(temp.get_mpz_t(), temp.get_mpz_t(), n1);
         int j = which(indexVec, *iter);
-        mpz_addmul_ui(mpzIdx, temp, j);
+        mpzIdx += (temp * j);
         indexVec.erase(indexVec.begin() + j);
     }
-
-    mpz_clear(temp);
 }
 
 void rankPermRepGmp(std::vector<int>::iterator iter, int n,
-                    int m, double &dblIdx, mpz_t mpzIdx,
+                    int m, double &dblIdx, mpz_class &mpzIdx,
                     const std::vector<int> &Reps) {
 
-    mpz_t temp;
-    mpz_init(temp);
-    mpz_set_ui(mpzIdx, 0u);
-    mpz_ui_pow_ui(temp, n, m);
+    mpz_class temp;
+    mpzIdx = 0;
+    mpz_ui_pow_ui(temp.get_mpz_t(), n, m);
 
     for (int k = 0; k < m; ++k, ++iter) {
-        mpz_divexact_ui(temp, temp, n);
-        mpz_addmul_ui(mpzIdx, temp, *iter);
+        mpz_divexact_ui(temp.get_mpz_t(), temp.get_mpz_t(), n);
+        mpzIdx += (temp * (*iter));
     }
-
-    mpz_clear(temp);
 }
 
 void rankPermMultGmp(std::vector<int>::iterator iter, int n,
-                     int m, double &dblIdx, mpz_t mpzIdx,
+                     int m, double &dblIdx, mpz_class &mpzIdx,
                      const std::vector<int> &Reps) {
 
-    mpz_t temp;
-    mpz_init(temp);
-    mpz_set_ui(mpzIdx, 0u);
+    mpz_class temp;
+    mpzIdx = 0;
 
     std::vector<int> Counts;
     std::vector<int> TempReps = Reps;
 
-    mpz_t test;
-    mpz_init(test);
+    mpz_class test;
 
     for (int k = 0, r1 = m - 1; k < m; ++k, --r1, ++iter) {
 
@@ -145,11 +136,12 @@ void rankPermMultGmp(std::vector<int>::iterator iter, int n,
 
         --TempReps[j];
         Counts = nonZeroVec(TempReps);
-        MultisetPermRowNumGmp(temp, static_cast<int>(Counts.size()), r1, Counts);
-        mpz_set(test, temp);
+        MultisetPermRowNumGmp(temp, static_cast<int>(Counts.size()),
+                              r1, Counts);
+        test = temp;
 
         for (int idx = *iter; j < idx;) {
-            mpz_add(mpzIdx, mpzIdx, temp);
+            mpzIdx += temp;
             ++TempReps[j];
             ++j;
 
@@ -159,13 +151,11 @@ void rankPermMultGmp(std::vector<int>::iterator iter, int n,
 
             --TempReps[j];
             Counts = nonZeroVec(TempReps);
-            MultisetPermRowNumGmp(temp, static_cast<int>(Counts.size()), r1, Counts);
-            mpz_add(test, test, temp);
+            MultisetPermRowNumGmp(temp, static_cast<int>(Counts.size()),
+                                  r1, Counts);
+            test += temp;
         }
     }
-
-    mpz_clear(test);
-    mpz_clear(temp);
 }
 
 rankPermPtr GetRankPermFunc(bool IsMult, bool IsRep, bool IsGmp) {

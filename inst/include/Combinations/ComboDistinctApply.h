@@ -1,5 +1,4 @@
-#ifndef COMBO_DISTINCT_APPLY_H
-#define COMBO_DISTINCT_APPLY_H
+#pragma once
 
 #include "NextComboSection.h"
 #include "FunAssign.h"
@@ -46,5 +45,3 @@ void ComboDistinctApplyFun(SEXP res, SEXP v, SEXP vectorPass,
         nextCombSec(z, m1, nMinusM);
     }
 }
-
-#endif

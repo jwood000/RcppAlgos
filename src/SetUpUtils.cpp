@@ -1,14 +1,13 @@
+#include "cpp11/strings.hpp"
+
 #include "Combinations/NthCombination.h"
 #include "Permutations/NthPermutation.h"
 #include "Permutations/PermuteCount.h"
-#include "Cpp14MakeUnique.h"
-#include "ImportExportMPZ.h"
-#include "CleanConvert.h"
+#include "CppConvert.h"
 #include <algorithm> // std:: sort, std::minmax
 #include <numeric>   // std::iota
 #include <cmath>
 
-constexpr int maxVecSize = std::numeric_limits<int>::max() / 2;
 static gmp_randstate_t seed_state;
 static int seed_init = 0;
 
@@ -81,7 +80,7 @@ int GetLength(SEXP Rv, VecType myType) {
         int seqEnd = 0;
 
         // numOnly = true, checkWhole = true, negPoss = true
-        CleanConvert::convertPrimitive(Rv, seqEnd, myType,
+        CppConvert::convertPrimitive(Rv, seqEnd, myType,
                                        "v, if v is not a character"
                                        " and of length 1,",
                                        true, true, true);
@@ -113,7 +112,7 @@ void SetFreqsAndM(std::vector<int> &Reps,
         // preference to freqs as user may assume that since multisets includes
         // replication of certain elements, then repetition must be set to TRUE.
         IsRep = false;
-        CleanConvert::convertVector(RFreqs, Reps, VecType::Integer, "freqs");
+        CppConvert::convertVector(RFreqs, Reps, VecType::Integer, "freqs");
         const bool allOne = std::all_of(Reps.cbegin(), Reps.cend(),
                                         [](int v_i) {return v_i == 1;});
         if (allOne) {
@@ -136,7 +135,7 @@ void SetFreqsAndM(std::vector<int> &Reps,
     } else if (Rf_length(Rm) > 1) {
         cpp11::stop("length of m must be 1");
     } else {
-        CleanConvert::convertPrimitive(Rm, m, VecType::Integer, "m");
+        CppConvert::convertPrimitive(Rm, m, VecType::Integer, "m");
     }
 }
 
@@ -152,7 +151,7 @@ void SetFinalValues(VecType &myType, std::vector<int> &Reps,
         bool any_na = false;
 
         for (int i = (vNum.size() - 1); i >= 0; --i) {
-            if (CleanConvert::CheckNA(vNum[i], myType)) {
+            if (CppConvert::CheckNA(vNum[i], myType)) {
                 any_na = true;
                 vNum.erase(vNum.begin() + i);
 
@@ -237,7 +236,7 @@ void SetBasic(SEXP Rv, std::vector<double> &vNum,
         myType = VecType::Integer;
 
         // numOnly = true, checkWhole = true, negPoss = true
-        CleanConvert::convertPrimitive(Rv, seqEnd, myType,
+        CppConvert::convertPrimitive(Rv, seqEnd, myType,
                                        "v, if v is not a character"
                                        " and of length 1,",
                                        true, true, true);
@@ -255,7 +254,7 @@ void SetBasic(SEXP Rv, std::vector<double> &vNum,
         vNum.resize(n);
         std::iota(vNum.begin(), vNum.end(), static_cast<double>(mnmx.first));
     } else {
-        vNum = CleanConvert::GetNumVec<double>(Rv);
+        vNum = CppConvert::GetNumVec<double>(Rv);
         n = vNum.size();
     }
 }
@@ -286,7 +285,7 @@ void SetThreads(bool &Parallel, int maxThreads, int nRows,
         int userThreads = 1;
 
         if (!Rf_isNull(RNumThreads)) {
-            CleanConvert::convertPrimitive(RNumThreads, userThreads,
+            CppConvert::convertPrimitive(RNumThreads, userThreads,
                                            VecType::Integer, "nThreads");
         }
 
@@ -318,44 +317,38 @@ void SetThreads(bool &Parallel, int maxThreads, int nRows,
 }
 
 void SetNumResults(bool IsGmp, bool bLower, bool bUpper, bool bSetNum,
-                   mpz_t upperMpz, mpz_t lowerMpz,
+                   const mpz_class &upperMpz, const mpz_class &lowerMpz,
                    double lower, double upper, double computedRows,
-                   mpz_t computedRowsMpz, int &nRows, double &userNumRows) {
+                   const mpz_class &computedRowsMpz, int &nRows,
+                   double &userNumRows) {
 
     if (IsGmp) {
-        mpz_t testBound;
-        mpz_init(testBound);
+        mpz_class testBound;
 
         if (bLower && bUpper) {
-            mpz_sub(testBound, upperMpz, lowerMpz);
-            mpz_t absTestBound;
-            mpz_init(absTestBound);
-            mpz_abs(absTestBound, testBound);
+            testBound = upperMpz - lowerMpz;
+            mpz_class absTestBound(abs(testBound));
 
-            if (mpz_cmp_si(absTestBound, std::numeric_limits<int>::max()) > 0) {
+            if (cmp(absTestBound, std::numeric_limits<int>::max()) > 0) {
                 cpp11::stop("The number of rows cannot exceed 2^31 - 1.");
             }
 
-            userNumRows = mpz_get_d(testBound);
-            mpz_clear(absTestBound);
+            userNumRows = testBound.get_d();
         } else if (bUpper) {
-            if (mpz_cmp_si(upperMpz, std::numeric_limits<int>::max()) > 0) {
+            if (cmp(upperMpz, std::numeric_limits<int>::max()) > 0) {
                 cpp11::stop("The number of rows cannot exceed 2^31 - 1.");
             }
 
-            userNumRows = mpz_get_d(upperMpz);
+            userNumRows = upperMpz.get_d();
         } else if (bLower) {
-            mpz_sub(testBound, computedRowsMpz, lowerMpz);
-            mpz_abs(testBound, testBound);
+            testBound = abs(computedRowsMpz - lowerMpz);
 
-            if (mpz_cmp_si(testBound, std::numeric_limits<int>::max()) > 0) {
+            if (cmp(testBound, std::numeric_limits<int>::max()) > 0) {
                 cpp11::stop("The number of rows cannot exceed 2^31 - 1.");
             }
 
-            userNumRows = mpz_get_d(testBound);
+            userNumRows = testBound.get_d();
         }
-
-        mpz_clear(testBound);
     } else {
         if (bLower && bUpper) {
             userNumRows = upper - lower;
@@ -403,24 +396,24 @@ void SetNumResults(bool IsGmp, bool bLower, bool bUpper, bool bSetNum,
 
 void SetBounds(SEXP Rlow, SEXP Rhigh, bool IsGmp, bool &bLower,
                bool &bUpper, double &lower, double &upper,
-               mpz_t *const lowerMpz, mpz_t *const upperMpz,
-               mpz_t computedRowsMpz, double computedRows) {
+               mpz_class &lowerMpz, mpz_class &upperMpz,
+               const mpz_class &computedRowsMpz, double computedRows) {
 
     if (!Rf_isNull(Rlow)) {
         if (IsGmp) {
-            createMPZArray(Rlow, lowerMpz, 1, "lower");
-            bLower = mpz_cmp_si(lowerMpz[0], 1) > 0;
-            lower = (bLower) ? 1 : 0;
+            CppConvert::convertMpzClass(Rlow, lowerMpz, "lower");
+            bLower = cmp(lowerMpz, 1) > 0;
+            lower = bLower ? 1 : 0;
 
-            if (mpz_cmp(lowerMpz[0], computedRowsMpz) > 0) {
+            if (cmp(lowerMpz, computedRowsMpz) > 0) {
                 cpp11::stop("bounds cannot exceed the maximum "
                              "number of possible results");
             }
 
-            mpz_sub_ui(lowerMpz[0], lowerMpz[0], 1);
+            --lowerMpz;
         } else {                                    // numOnly = false
-            CleanConvert::convertPrimitive(Rlow, lower,
-                                           VecType::Numeric, "lower", false);
+            CppConvert::convertPrimitive(Rlow, lower, VecType::Numeric,
+                                         "lower", false);
             bLower = lower > 1;
 
             if (lower > computedRows) {
@@ -436,15 +429,15 @@ void SetBounds(SEXP Rlow, SEXP Rhigh, bool IsGmp, bool &bLower,
         bUpper = true;
 
         if (IsGmp) {
-            createMPZArray(Rhigh, upperMpz, 1, "upper");
+            CppConvert::convertMpzClass(Rhigh, upperMpz, "upper");
 
-            if (mpz_cmp(upperMpz[0], computedRowsMpz) > 0) {
+            if (cmp(upperMpz, computedRowsMpz) > 0) {
                 cpp11::stop("bounds cannot exceed the maximum "
                              "number of possible results");
             }
         } else {
-            CleanConvert::convertPrimitive(Rhigh, upper,   // numOnly = false
-                                           VecType::Numeric, "upper", false);
+            CppConvert::convertPrimitive(Rhigh, upper,   // numOnly = false
+                                         VecType::Numeric, "upper", false);
 
             if (upper > computedRows) {
                 cpp11::stop("bounds cannot exceed the maximum "
@@ -509,8 +502,9 @@ void PermuteSpecific(int &phaseOne, bool &generalRet, int n, int m,
 
 void SetStartZ(const std::vector<int> &myReps,
                const std::vector<int> &freqs, std::vector<int> &z,
-               bool IsComb, int n, int m, double lower, mpz_t lowerMpz,
-               bool IsRep, bool IsMult, bool IsGmp) {
+               bool IsComb, int n, int m, double lower,
+               const mpz_class &lowerMpz, bool IsRep,
+               bool IsMult, bool IsGmp) {
 
     if (lower > 0) {
         if (IsComb) {
@@ -550,7 +544,7 @@ void SetRandomSample(SEXP RindexVec, SEXP RNumSamp, int &sampSize,
                      SEXP baseSample, SEXP rho) {
 
     // We must treat gmp case special. We first have to get the size of our sample
-    // vector, as we have to declare a mpz_t array with known size. You will note
+    // vector, as we have to declare a mpz_class array with known size. You will note
     // that in the base case below, we simply populate mySample, otherwise we just
     // get the size. This size var will be used in the next block (If (IsGmp)...)
     if (Rf_isNull(RindexVec)) {
@@ -563,7 +557,7 @@ void SetRandomSample(SEXP RindexVec, SEXP RNumSamp, int &sampSize,
                         "combinations, use sampleVec.");
         }
 
-        CleanConvert::convertPrimitive(RNumSamp, sampSize,
+        CppConvert::convertPrimitive(RNumSamp, sampSize,
                                        VecType::Integer, "n");
 
         if (!IsGmp) {
@@ -604,7 +598,7 @@ void SetRandomSample(SEXP RindexVec, SEXP RNumSamp, int &sampSize,
                 }
             }
         } else {
-            CleanConvert::convertVector(RindexVec, mySample,
+            CppConvert::convertVector(RindexVec, mySample,
                                         VecType::Numeric,
                                         "sampleVec", false);
             sampSize = mySample.size();
@@ -628,25 +622,18 @@ void SetRandomSample(SEXP RindexVec, SEXP RNumSamp, int &sampSize,
     }
 }
 
-void MpzClearVec(mpz_t *const myVec, int size, bool cond) {
-    if (cond) {
-        for (int i = 0; i < size; ++i) {
-            mpz_clear(myVec[i]);
-        }
-    }
-}
-
 void SetRandomSampleMpz(SEXP RindexVec, SEXP RmySeed, int sampSize,
-                        bool IsGmp, mpz_t computedRowsMpz,
-                        mpz_t *const myVec) {
+                        bool IsGmp, const mpz_class &computedRowsMpz,
+                        std::vector<mpz_class> &myVec) {
 
     if (IsGmp) {
         if (!Rf_isNull(RindexVec)) {
-            createMPZArray(RindexVec, myVec, sampSize, "sampleVec");
+            CppConvert::convertMPZVector(RindexVec, myVec,
+                                         sampSize, "sampleVec");
 
             // get zero base
             for (int i = 0; i < sampSize; ++i) {
-                mpz_sub_ui(myVec[i], myVec[i], 1);
+                --myVec[i];
             }
         } else {
             // The following code is very similar to the source
@@ -659,58 +646,48 @@ void SetRandomSampleMpz(SEXP RindexVec, SEXP RmySeed, int sampSize,
             seed_init = 1;
 
             if (!Rf_isNull(RmySeed)) {
-                mpz_t mpzSeed[1];
-                mpz_init(mpzSeed[0]);
-                createMPZArray(RmySeed, mpzSeed, 1, "seed");
-                gmp_randseed(seed_state, mpzSeed[0]);
-                mpz_clear(mpzSeed[0]);
+                mpz_class mpzSeed;
+                CppConvert::convertMpzClass(RmySeed, mpzSeed, "seed");
+                gmp_randseed(seed_state, mpzSeed.get_mpz_t());
             }
 
             // random number is between 0 and gmpRows[0] - 1
             // so we need to add 1 to each element
             for (int i = 0; i < sampSize; ++i) {
-                mpz_urandomm(myVec[i], seed_state, computedRowsMpz);
+                mpz_urandomm(myVec[i].get_mpz_t(), seed_state,
+                             computedRowsMpz.get_mpz_t());
             }
         }
 
-        mpz_t maxGmp;
-        mpz_init(maxGmp);
-        mpz_set(maxGmp, myVec[0]);
+        mpz_class maxGmp(myVec.front());
 
         for (int i = 1; i < sampSize; ++i) {
-            if (mpz_cmp(myVec[i], maxGmp) > 0) {
-                mpz_set(maxGmp, myVec[i]);
+            if (cmp(myVec[i], maxGmp) > 0) {
+                maxGmp = myVec[i];
             }
         }
 
-        if (mpz_cmp(maxGmp, computedRowsMpz) >= 0) {
-            mpz_clear(maxGmp);
-            MpzClearVec(myVec, sampSize, true);
+        if (cmp(maxGmp, computedRowsMpz) >= 0) {
             cpp11::stop("One or more of the requested values in sampleVec "
                      "exceeds the maximum number of possible results");
         }
-
-        mpz_clear(maxGmp);
     }
 }
 
 void SetSampleNames(SEXP object, bool IsGmp, int sampSize,
                     const std::vector<double> &mySample,
-                    mpz_t *const myBigSamp, bool IsNamed,
-                    SEXP colNames, int xtraDims) {
+                    const std::vector<mpz_class> &myBigSamp,
+                    bool IsNamed, SEXP colNames, int xtraDims) {
 
     if (IsNamed) {
-        cpp11::sexp myNames = Rf_allocVector(STRSXP, sampSize);
+        cpp11::writable::strings myNames(sampSize);
 
         if (IsGmp) {
-            for (int i = 0; i < sampSize; ++i) {
-                mpz_add_ui(myBigSamp[i], myBigSamp[i], 1);
-                auto buffer = FromCpp14::make_unique<char[]>(
-                    mpz_sizeinbase(myBigSamp[i], 10) + 2
-                );
+            mpz_class temp;
 
-                mpz_get_str(buffer.get(), 10, myBigSamp[i]);
-                SET_STRING_ELT(myNames, i, Rf_mkChar(buffer.get()));
+            for (int i = 0; i < sampSize; ++i) {
+                temp = myBigSamp[i] + 1;
+                myNames[i] = temp.get_str();
             }
         } else {
             for (int i = 0; i < sampSize; ++i) {
@@ -718,7 +695,7 @@ void SetSampleNames(SEXP object, bool IsGmp, int sampSize,
                     static_cast<int64_t>(mySample[i] + 1)
                 );
 
-                SET_STRING_ELT(myNames, i, Rf_mkChar(name.c_str()));
+                myNames[i] = name.c_str();
             }
         }
 
@@ -733,30 +710,6 @@ void SetSampleNames(SEXP object, bool IsGmp, int sampSize,
     }
 }
 
-SEXP GetIntVec(const std::vector<int> &v) {
-    const int size = v.size();
-    cpp11::sexp res = Rf_allocVector(INTSXP, size);
-    int* ptrRes = INTEGER(res);
-
-    for (int i = 0; i < size; ++i) {
-        ptrRes[i] = v[i];
-    }
-
-    return res;
-}
-
-SEXP GetDblVec(const std::vector<double> &v) {
-    const int size = v.size();
-    cpp11::sexp res = Rf_allocVector(REALSXP, size);
-    double* ptrRes = REAL(res);
-
-    for (int i = 0; i < size; ++i) {
-        ptrRes[i] = v[i];
-    }
-
-    return res;
-}
-
 SEXP GetInt64Vec(const std::vector<std::int64_t> &v) {
     const int size = v.size();
     cpp11::sexp res = Rf_allocVector(REALSXP, size);
@@ -767,43 +720,4 @@ SEXP GetInt64Vec(const std::vector<std::int64_t> &v) {
     }
 
     return res;
-}
-
-void SetIntNames(SEXP res, std::size_t myRange, int myMin, int myMax) {
-
-    cpp11::sexp myNames  = Rf_allocVector(INTSXP, myRange);
-    int* ptrNames = INTEGER(myNames);
-
-    for (int k = 0, retM = myMin; retM <= myMax; ++retM, ++k) {
-        ptrNames[k] = retM;
-    }
-
-    Rf_setAttrib(res, R_NamesSymbol, myNames);
-}
-
-void SetDblNames(SEXP res, std::size_t myRange,
-                 double myMin, double myMax) {
-
-    double retM = myMin;
-    cpp11::sexp myNames  = Rf_allocVector(REALSXP, myRange);
-    double* ptrNames = REAL(myNames);
-
-    for (int k = 0; retM <= myMax; ++retM, ++k) {
-        ptrNames[k] = retM;
-    }
-
-    Rf_setAttrib(res, R_NamesSymbol, myNames);
-}
-
-void SetDblNames(SEXP res, const std::vector<double> &myNums) {
-
-    const int size = myNums.size();
-    cpp11::sexp myNames  = Rf_allocVector(REALSXP, size);
-    double* ptrNames = REAL(myNames);
-
-    for (int k = 0; k < size; ++k) {
-        ptrNames[k] = myNums[k];
-    }
-
-    Rf_setAttrib(res, R_NamesSymbol, myNames);
 }

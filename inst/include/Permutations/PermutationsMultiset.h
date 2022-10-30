@@ -1,5 +1,4 @@
-#ifndef PERMUTATIONS_MULTISET_H
-#define PERMUTATIONS_MULTISET_H
+#pragma once
 
 #include "PermuteHelper.h"
 #include "RMatrix.h"
@@ -124,5 +123,3 @@ void PermuteMultiset(SEXP mat, SEXP v, std::vector<int> &z, int n,
                        STRING_ELT(v, arrPerm[j]));
     }
 }
-
-#endif

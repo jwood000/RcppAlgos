@@ -1,12 +1,9 @@
-#ifndef BIG_COMINATION_COUNT_H
-#define BIG_COMINATION_COUNT_H
+#pragma once
 
-#include <gmp.h>
+#include <gmpxx.h>
 #include <deque>
 
-void nChooseKGmp(mpz_t result, int n, int m);
-void NumCombsWithRepGmp(mpz_t result, int n, int m);
-void MultisetCombRowNumGmp(mpz_t result, int n, int m,
+void nChooseKGmp(mpz_class &result, int n, int m);
+void NumCombsWithRepGmp(mpz_class &result, int n, int m);
+void MultisetCombRowNumGmp(mpz_class &result, int n, int m,
                            const std::deque<int> &Reps);
-
-#endif

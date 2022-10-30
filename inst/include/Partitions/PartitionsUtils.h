@@ -1,10 +1,7 @@
-#ifndef PARTITION_UTILS_H
-#define PARTITION_UTILS_H
+#pragma once
 
 #include "Constraints/ConstraintsTypes.h"
 #include "Partitions/PartitionsCount.h"
-#include "Cpp14MakeUnique.h"
-#include "ImportExportMPZ.h"
 #include <algorithm>
 #include <numeric>
 #include <cmath>
@@ -19,5 +16,3 @@ void SetPartitionDesign(const std::vector<int> &Reps,
                         const std::vector<double> &v,
                         PartDesign &part, ConstraintType &ctype,
                         int lenV, int &m, bool bIsCount);
-
-#endif

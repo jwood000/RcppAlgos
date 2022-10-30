@@ -1,5 +1,4 @@
-#ifndef NEXT_COMBINATORICS_H
-#define NEXT_COMBINATORICS_H
+#pragma once
 
 #include <vector>
 
@@ -8,5 +7,3 @@ using nextIterPtr = bool (*const)(const std::vector<int> &freqs,
 
 nextIterPtr GetNextIterPtr(bool IsComb, bool IsMult,
                            bool IsRep, bool IsFull);
-
-#endif

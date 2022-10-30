@@ -1,5 +1,4 @@
-#ifndef COMBO_APPLY_CLASS_H
-#define COMBO_APPLY_CLASS_H
+#pragma once
 
 #include "ClassUtils/GetPrevCombPermApply.h"
 #include "ClassUtils/ComboClass.h"
@@ -37,5 +36,3 @@ public:
     SEXP front();
     SEXP back();
 };
-
-#endif

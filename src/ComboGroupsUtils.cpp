@@ -3,11 +3,11 @@
 #include "Combinations/ComboCount.h"
 #include <algorithm> // std::sort
 #include <numeric>   // std::iota
+#include <gmpxx.h>
 #include <cstdint>
 #include <limits>
 #include <vector>
 #include <cmath>
-#include <gmp.h>
 
 // ******* Overview of the Crucial Part of the Algorithm *******
 // -------------------------------------------------------------
@@ -51,12 +51,14 @@
 bool nextComboGroup(std::vector<int> &z, int nGrps,
                     int grpSize, int idx1, int idx2, int last1) {
 
-    while (idx2 > idx1 && z[idx2] > z[idx1])
+    while (idx2 > idx1 && z[idx2] > z[idx1]) {
         --idx2;
+    }
 
     if ((idx2 + 1) < static_cast<int>(z.size())) {
-        if (z[idx2 + 1] > z[idx1])
+        if (z[idx2 + 1] > z[idx1]) {
             std::swap(z[idx1], z[idx2 + 1]);
+        }
 
         return true;
     } else {
@@ -113,24 +115,21 @@ double numGroupCombs(int n, int numGroups, int grpSize) {
     }
 }
 
-void numGroupCombsGmp(mpz_t result, int n,
+void numGroupCombsGmp(mpz_class &result, int n,
                       int numGroups, int grpSize) {
 
     for (int i = n; i > numGroups; --i) {
-        mpz_mul_ui(result, result, i);
+        result *= i;
     }
 
-    mpz_t myDiv;
-    mpz_init(myDiv);
-    mpz_set_ui(myDiv, 1);
+    mpz_class myDiv(1);
 
     for (int i = 2; i <= grpSize; ++i) {
-        mpz_mul_ui(myDiv, myDiv, i);
+        myDiv *= i;
     }
 
-    mpz_pow_ui(myDiv, myDiv, numGroups);
-    mpz_divexact(result, result, myDiv);
-    mpz_clear(myDiv);
+    mpz_pow_ui(myDiv.get_mpz_t(), myDiv.get_mpz_t(), numGroups);
+    mpz_divexact(result.get_mpz_t(), result.get_mpz_t(), myDiv.get_mpz_t());
 }
 
 std::vector<int> nthComboGroup(int n, int gSize, int r,
@@ -150,8 +149,7 @@ std::vector<int> nthComboGroup(int n, int gSize, int r,
     std::int64_t ind1 = myIndex;
     std::int64_t ind2 = myIndex;
 
-    mpz_t mpzDefault;
-    mpz_init(mpzDefault);
+    mpz_class mpzDefault;
 
     for (int j = 0; j < (r - 1); ++j) {
         ind2 = ind2 / secLen;
@@ -189,29 +187,24 @@ std::vector<int> nthComboGroup(int n, int gSize, int r,
         res[k] = v[i];
     }
 
-    mpz_clear(mpzDefault);
     return res;
 }
 
 std::vector<int> nthComboGroupGmp(int n, int gSize, int r,
-                                  mpz_t lowerMpz, mpz_t computedRowMpz) {
-    mpz_t ind1;
-    mpz_t ind2;
-
-    mpz_init_set(ind1, lowerMpz);
-    mpz_init_set(ind2, lowerMpz);
+                                  const mpz_class &lowerMpz,
+                                  const mpz_class &computedRowMpz) {
+    mpz_class ind1(lowerMpz);
+    mpz_class ind2(lowerMpz);
 
     int s = n - 1;
     const int g = gSize - 1;
 
-    mpz_t temp;
-    mpz_t secLen;
-
-    mpz_init(temp);
-    mpz_init(secLen);
+    mpz_class temp(1);
+    mpz_class secLen(1);
 
     nChooseKGmp(temp, s, g);
-    mpz_divexact(secLen, computedRowMpz, temp);
+    mpz_divexact(secLen.get_mpz_t(), computedRowMpz.get_mpz_t(),
+                 temp.get_mpz_t());
 
     std::vector<int>  res(n, 0);
     std::vector<char> idx_used(n, 0);
@@ -222,12 +215,12 @@ std::vector<int> nthComboGroupGmp(int n, int gSize, int r,
     constexpr double dblDefault = 0;
 
     for (int j = 0; j < (r - 1); ++j) {
-        mpz_tdiv_q(ind2, ind2, secLen);
+        ind2 /= secLen;
         res[j * gSize] = myMin;
         idx_used[myMin] = 1;
 
         const std::vector<int> comb = (g == 1) ?
-            std::vector<int>(1, mpz_get_si(ind2)) :
+            std::vector<int>(1, ind2.get_si()) :
             nthCombGmp(s, g, dblDefault, ind2, v);
 
         for (int k = j * gSize + 1, i = 0; i < g; ++k, ++i) {
@@ -245,13 +238,13 @@ std::vector<int> nthComboGroupGmp(int n, int gSize, int r,
 
         myMin = v.front();
         v.erase(v.begin());
-        mpz_mul(temp, ind2, secLen);
-        mpz_sub(ind1, ind1, temp);
-        mpz_set(ind2, ind1);
+        temp = ind2 * secLen;
+        ind1 -= temp;
+        ind2 = ind1;
 
         s -= gSize;
         nChooseKGmp(temp, s, g);
-        mpz_divexact(secLen, secLen, temp);
+        mpz_divexact(secLen.get_mpz_t(), secLen.get_mpz_t(), temp.get_mpz_t());
     }
 
     res[(r - 1) * gSize] = myMin;
@@ -260,9 +253,5 @@ std::vector<int> nthComboGroupGmp(int n, int gSize, int r,
         res[k] = v[i];
     }
 
-    mpz_clear(ind1);
-    mpz_clear(ind2);
-    mpz_clear(temp);
-    mpz_clear(secLen);
     return res;
 }

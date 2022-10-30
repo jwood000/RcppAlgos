@@ -1,6 +1,5 @@
 #include "Constraints/GetContraints.h"
 #include "Partitions/NthPartition.h"
-#include "Cpp14MakeUnique.h"
 #include "ComputedCount.h"
 #include "CheckReturn.h"
 
@@ -23,11 +22,11 @@ SEXP CombinatoricsCnstrt(SEXP Rv, SEXP Rm, SEXP RisRep, SEXP RFreqs,
     std::vector<int> myReps;
     std::vector<int> freqs;
 
-    bool KeepRes  = CleanConvert::convertFlag(RKeepRes, "keepResults");
-    bool Parallel = CleanConvert::convertFlag(Rparallel, "Parallel");
-    bool IsRep    = CleanConvert::convertFlag(RisRep, "repetition");
+    bool KeepRes  = CppConvert::convertFlag(RKeepRes, "keepResults");
+    bool Parallel = CppConvert::convertFlag(Rparallel, "Parallel");
+    bool IsRep    = CppConvert::convertFlag(RisRep, "repetition");
 
-    const bool IsComb = CleanConvert::convertFlag(RIsComb, "IsComb");
+    const bool IsComb = CppConvert::convertFlag(RIsComb, "IsComb");
     const bool IsConstrained = CheckConstrnd(RmainFun, RcompFun, Rtarget);
 
     SetType(myType, Rv);
@@ -62,8 +61,8 @@ SEXP CombinatoricsCnstrt(SEXP Rv, SEXP Rm, SEXP RisRep, SEXP RFreqs,
     part.isRep   = IsRep;
     part.isMult  = IsMult;
     part.mIsNull = Rf_isNull(Rm);
-    part.isWeak  = CleanConvert::convertFlag(RIsWeak, "weak");
-    part.isComp  = CleanConvert::convertFlag(RIsComposition,
+    part.isWeak  = CppConvert::convertFlag(RIsWeak, "weak");
+    part.isComp  = CppConvert::convertFlag(RIsComposition,
                                              "IsComposition");
     part.isComb = IsComb;
 
@@ -82,11 +81,10 @@ SEXP CombinatoricsCnstrt(SEXP Rv, SEXP Rm, SEXP RisRep, SEXP RFreqs,
         GetComputedRows(IsMult, IsComb, IsRep, n, m, Rm, freqs, myReps);
 
     const bool IsGmp = (computedRows > Significand53);
-    mpz_t computedRowsMpz;
-    mpz_init(computedRowsMpz);
+    mpz_class computedRowsMpz;
 
     if (IsGmp && part.isPart) {
-        mpz_set(computedRowsMpz, part.bigCount);
+        computedRowsMpz = part.bigCount;
     } else if (IsGmp) {
         GetComputedRowMpz(computedRowsMpz, IsMult,
                           IsComb, IsRep, n, m, Rm, freqs, myReps);
@@ -109,15 +107,11 @@ SEXP CombinatoricsCnstrt(SEXP Rv, SEXP Rm, SEXP RisRep, SEXP RFreqs,
     bool bLower = false;
     bool bUpper = false;
 
-    auto lowerMpz = FromCpp14::make_unique<mpz_t[]>(1);
-    auto upperMpz = FromCpp14::make_unique<mpz_t[]>(1);
-
-    mpz_init(lowerMpz[0]);
-    mpz_init(upperMpz[0]);
+    mpz_class lowerMpz;
+    mpz_class upperMpz;
 
     SetBounds(Rlow, Rhigh, IsGmp, bLower, bUpper, lower, upper,
-              lowerMpz.get(), upperMpz.get(), computedRowsMpz,
-              computedRows);
+              lowerMpz, upperMpz, computedRowsMpz, computedRows);
 
     std::vector<int> startZ(m);
     const int cap     = n - part.includeZero;
@@ -127,14 +121,14 @@ SEXP CombinatoricsCnstrt(SEXP Rv, SEXP Rm, SEXP RisRep, SEXP RFreqs,
 
     if (ctype < ConstraintType::PartMapping) {
         SetStartZ(myReps, freqs, startZ, IsComb, n, m,
-                  lower, lowerMpz[0], IsRep, IsMult, IsGmp);
+                  lower, lowerMpz, IsRep, IsMult, IsGmp);
     } else {
         if (bLower) {
             const nthPartsPtr nthPartFun = GetNthPartsFunc(
                 part.ptype, IsGmp, part.isComp
             );
             startZ = nthPartFun(part.mapTar, part.width, cap,
-                                strtLen, lower, lowerMpz[0]);
+                                strtLen, lower, lowerMpz);
 
             if (ctype == ConstraintType::PartStandard && !part.includeZero) {
                 for (auto &z_i: startZ) {
@@ -153,14 +147,13 @@ SEXP CombinatoricsCnstrt(SEXP Rv, SEXP Rm, SEXP RisRep, SEXP RFreqs,
     const bool bSetNum = !numUnknown ||
         ctype == ConstraintType::SpecialCnstrnt;
 
-    SetNumResults(IsGmp, bLower, bUpper, bSetNum, upperMpz[0],
-                  lowerMpz[0], lower, upper, computedRows,
+    SetNumResults(IsGmp, bLower, bUpper, bSetNum, upperMpz,
+                  lowerMpz, lower, upper, computedRows,
                   computedRowsMpz, nRows, userNum);
-    mpz_clear(computedRowsMpz);
 
-    int nThreads = 1;
+    int nThreads   = 1;
     int maxThreads = 1;
-    CleanConvert::convertPrimitive(RmaxThreads, maxThreads,
+    CppConvert::convertPrimitive(RmaxThreads, maxThreads,
                                    VecType::Integer, "maxThreads");
 
     const int limit = (part.isPart) ?
@@ -173,12 +166,10 @@ SEXP CombinatoricsCnstrt(SEXP Rv, SEXP Rm, SEXP RisRep, SEXP RFreqs,
 
     cpp11::sexp res = GetConstraints(
       part, compVec, freqs, myReps, vNum, vInt, tarVals, tarIntVals,
-      startZ, mainFun, funTest, funDbl, lower, lowerMpz[0], userNum,
+      startZ, mainFun, funTest, funDbl, lower, lowerMpz, userNum,
       ctype, myType, nThreads, nRows, n, strtLen, cap, m, IsComb,
       Parallel, IsGmp, IsRep, IsMult, bUpper, KeepRes, numUnknown
     );
 
-    mpz_clear(lowerMpz[0]);
-    mpz_clear(upperMpz[0]);
     return res;
 }

@@ -1,6 +1,6 @@
-#ifndef PERMUTE_MULTISET_APPLY_H
-#define PERMUTE_MULTISET_APPLY_H
+#pragma once
 
+#include "CppConvert/Cpp14MakeUnique.h"
 #include "PermuteHelper.h"
 #include "FunAssign.h"
 
@@ -102,5 +102,3 @@ void MultisetPermuteApplyFun(SEXP res, SEXP v, SEXP vectorPass,
     FunAssign(res, vectorPass, sexpFun, rho,
               commonType, commonLen, nRows - 1, nRows, retType);
 }
-
-#endif

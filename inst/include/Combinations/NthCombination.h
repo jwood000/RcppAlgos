@@ -1,18 +1,18 @@
-#ifndef NTH_COMBINATION_H
-#define NTH_COMBINATION_H
+#pragma once
 
 #include <vector>
-#include <gmp.h>
+#include <gmpxx.h>
 
 using nthCombPtr = std::vector<int> (*const)(int n, int m, double dblIdx,
-                                     mpz_t mpzIdx, const std::vector<int> &Reps);
+                                     const mpz_class &mpzIdx,
+                                     const std::vector<int> &Reps);
 
 nthCombPtr GetNthCombFunc(bool IsMult, bool IsRep, bool IsGmp);
 
 std::vector<int> nthComb(int n, int m, double dblIdx,
-                         mpz_t mpzIdx, const std::vector<int> &Reps);
+                         const mpz_class &mpzIdx,
+                         const std::vector<int> &Reps);
 
 std::vector<int> nthCombGmp(int n, int m, double dblIdx,
-                            mpz_t mpzIdx, const std::vector<int> &Reps);
-
-#endif
+                            const mpz_class &mpzIdx,
+                            const std::vector<int> &Reps);

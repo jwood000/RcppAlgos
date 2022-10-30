@@ -1,5 +1,5 @@
 #include "Constraints/ConstraintsUtils.h"
-#include "CleanConvert.h"
+#include "CppConvert.h"
 
 template <typename T>
 void AddResultToParts(T* mat, std::int64_t result,
@@ -203,7 +203,7 @@ void SetTolerance(const std::vector<double> &vNum,
         tolerance = (IsWhole && mainFun != "mean") ? 0 : defaultTolerance;
     } else {
         // numOnly = true, checkWhole = false, negPoss = false, decimalFraction = true
-        CleanConvert::convertPrimitive(Rtolerance, tolerance, VecType::Numeric,
+        CppConvert::convertPrimitive(Rtolerance, tolerance, VecType::Numeric,
                                        "tolerance", true, false, false, true);
     }
 }
@@ -339,7 +339,7 @@ void ConstraintSetup(const std::vector<double> &vNum,
                      SEXP Rtolerance, SEXP Rlow, bool bIsCount) {
 
     // numOnly = true, checkWhole = false, negPoss = true
-    CleanConvert::convertVector(Rtarget, targetVals,
+    CppConvert::convertVector(Rtarget, targetVals,
                                 VecType::Numeric,
                                 "limitConstraints/target",
                                 true, false, true);
@@ -386,12 +386,9 @@ void ConstraintSetup(const std::vector<double> &vNum,
     // lexicographical partition for some cases. Thus, if lower is
     // non-trivial, we must use the most general algo.
     if (!Rf_isNull(Rlow)) {
-        auto tempLower = FromCpp14::make_unique<mpz_t[]>(1);
-        mpz_init(tempLower[0]);
-
-        createMPZArray(Rlow, tempLower.get(), 1, "lower");
-        bLower = mpz_cmp_si(tempLower[0], 1) > 0;
-        mpz_clear(tempLower[0]);
+        mpz_class tempLower;
+        CppConvert::convertMpzClass(Rlow, tempLower, "lower");
+        bLower = cmp(tempLower, 1) > 0;
     }
 
     if (part.isPart) {

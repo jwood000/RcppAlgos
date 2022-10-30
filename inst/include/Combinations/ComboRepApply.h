@@ -1,5 +1,4 @@
-#ifndef COMBO_REP_APPLY_H
-#define COMBO_REP_APPLY_H
+#pragma once
 
 #include "NextComboSection.h"
 #include "FunAssign.h"
@@ -46,5 +45,3 @@ void ComboRepApplyFun(SEXP res, SEXP v, SEXP vectorPass,
         nextCombSecRep(z, m1, n1);
     }
 }
-
-#endif

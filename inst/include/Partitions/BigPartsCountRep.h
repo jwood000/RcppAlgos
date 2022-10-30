@@ -1,14 +1,14 @@
-#ifndef BIG_PARTS_COUNT_REP_H
-#define BIG_PARTS_COUNT_REP_H
+#pragma once
 
-#include <gmp.h>
+#include <gmpxx.h>
+#include <vector>
 
-void CountPartsRepLenCap(mpz_t res, mpz_t* p1, mpz_t* p2,
-                         int n, int m, int cap, int strtLen);
-void CountPartsRepLen(mpz_t res, mpz_t* p1, mpz_t* p2,
-                      int n, int m, int cap, int strtLen);
-void CountPartsRep(mpz_t res, int n, int m, int cap, int strtLen);
-void CountCompsRepLen(mpz_t res, int n, int m, int cap, int strtLen);
-void CountCompsRepZero(mpz_t res, int n, int m, int cap, int strtLen);
-
-#endif
+void CountPartsRepLenCap(mpz_class &res, std::vector<mpz_class> &p1,
+                         std::vector<mpz_class> &p2, int n, int m,
+                         int cap, int strtLen);
+void CountPartsRepLen(mpz_class &res, std::vector<mpz_class> &p1,
+                      std::vector<mpz_class> &p2, int n, int m,
+                      int cap, int strtLen);
+void CountPartsRep(mpz_class &res, int n, int m, int cap, int strtLen);
+void CountCompsRepLen(mpz_class &res, int n, int m, int cap, int strtLen);
+void CountCompsRepZero(mpz_class &res, int n, int m, int cap, int strtLen);

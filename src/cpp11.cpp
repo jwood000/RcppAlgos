@@ -201,7 +201,7 @@ extern "C" SEXP _RcppAlgos_cpp11GetNumThreads() {
     return cpp11::as_sexp(cpp11GetNumThreads());
   END_CPP11
 }
-// PollardRho.cpp
+// PollardRhoContainer.cpp
 SEXP PollardRhoContainer(SEXP Rv, SEXP RNamed, SEXP RbPrimeFacs, SEXP RbAllFacs, SEXP RNumThreads, SEXP RmaxThreads);
 extern "C" SEXP _RcppAlgos_PollardRhoContainer(SEXP Rv, SEXP RNamed, SEXP RbPrimeFacs, SEXP RbAllFacs, SEXP RNumThreads, SEXP RmaxThreads) {
   BEGIN_CPP11

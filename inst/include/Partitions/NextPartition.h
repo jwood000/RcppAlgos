@@ -1,5 +1,4 @@
-#ifndef NEXT_PARTITION_H
-#define NEXT_PARTITION_H
+#pragma once
 
 #include "Partitions/PartitionsTypes.h"
 
@@ -36,5 +35,3 @@ using nextPartsPtr = void (*const)(std::vector<int> &rpsCnt,
 
 nextPartsPtr GetNextPartsPtr(PartitionType ptype, bool IsGen,
                              bool IsComp);
-
-#endif

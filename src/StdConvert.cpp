@@ -1,59 +1,7 @@
-#include "CleanConvert.h"
-#include "Cpp14MakeUnique.h"
-#include "ImportExportMPZ.h"
-#include <string>
-#include <cmath>
+#include "CppConvert/StdConvert.h"
+#include "CppConvert/GmpConvert.h"
 
-namespace CleanConvert {
-
-    bool CheckNA(double val, VecType myType) {
-        if (myType == VecType::Integer) {
-            return (ISNAN(val) || val == NA_INTEGER);
-        } else {
-            return ISNAN(val);
-        }
-    }
-
-    template <typename T>
-    std::vector<T> GetNumVec(SEXP Rv) {
-        std::vector<T> v;
-        const int len = Rf_length(Rv);
-
-        if (TYPEOF(Rv) == REALSXP && len) {
-            double* dblRv = REAL(Rv);
-            v.assign(dblRv, dblRv + len);
-        } else if (len) {
-            int* intRv = INTEGER(Rv);
-            v.assign(intRv, intRv + len);
-        }
-
-        return v;
-    }
-
-    SEXP GetCount(bool IsGmp, const mpz_t numMpz, double numDbl) {
-
-        if (IsGmp) {
-            constexpr std::size_t numb = 8 * intSize;
-            const std::size_t sizeNum = intSize *
-                (2 + (mpz_sizeinbase(numMpz, 2) + numb - 1) / numb);
-            const std::size_t size = intSize + sizeNum;
-
-            cpp11::sexp ans = Rf_allocVector(RAWSXP, size);
-            char* rPos = (char*) RAW(ans);
-            ((int*) rPos)[0] = 1; // first int is vector-size-header
-
-            // current position in rPos[] (starting after vector-size-header)
-            myRaw(&rPos[intSize], numMpz, sizeNum);
-            Rf_setAttrib(ans, R_ClassSymbol, Rf_mkString("bigz"));
-            return(ans);
-        } else {
-            if (numDbl > std::numeric_limits<int>::max()) {
-                return Rf_ScalarReal(numDbl);
-            } else {
-                return Rf_ScalarInteger(static_cast<int>(numDbl));
-            }
-        }
-    }
+namespace CppConvert {
 
     bool convertFlag(SEXP boolInput, const std::string &nameOfBool) {
         bool result = false;
@@ -86,13 +34,13 @@ namespace CleanConvert {
         }
 
         return result;
-    }
+    };
 
     template <typename T>
     void convertPrimitive(SEXP input, T &result, VecType myType,
-                          const std::string &nameOfObject,
-                          bool numOnly, bool checkWhole,
-                          bool negPoss, bool decimalFraction) {
+                          const std::string &nameOfObject, bool numOnly,
+                          bool checkWhole, bool negPoss,
+                          bool decimalFraction) {
 
         const T maxType = std::numeric_limits<T>::max();
 
@@ -145,10 +93,10 @@ namespace CleanConvert {
                                 nameOfObject.c_str());
                 }
 
-                mpz_t temp[1];
-                mpz_init(temp[0]);
-                createMPZArray(input, temp, 1, nameOfObject, negPoss);
-                const double dblTemp = mpz_get_d(temp[0]);
+                mpz_class temp;
+                CppConvert::convertMpzClass(input, temp, nameOfObject,
+                                            negPoss);
+                const double dblTemp = temp.get_d();
                 const double posDblTemp = std::abs(dblTemp);
 
                 if (CheckNA(dblTemp, myType)) {
@@ -184,7 +132,6 @@ namespace CleanConvert {
                 }
 
                 result = dblTemp;
-                mpz_clear(temp[0]);
                 break;
             } default: {
                 cpp11::stop(
@@ -193,12 +140,12 @@ namespace CleanConvert {
                 );
             }
         }
-    }
+    };
 
     template <typename T>
-    void convertVector(SEXP input, std::vector<T> &result,
-                       VecType myType, const std::string &nameOfObject,
-                       bool numOnly, bool checkWhole, bool negPoss) {
+    void convertVector(SEXP input, std::vector<T> &result, VecType myType,
+                       const std::string &nameOfObject, bool numOnly,
+                       bool checkWhole, bool negPoss) {
 
         int total = Rf_length(input);
         const T maxType = std::numeric_limits<T>::max();
@@ -227,7 +174,7 @@ namespace CleanConvert {
 
                     if (posDblInp > maxType) {
                         std::string msg = "The abs value of each element "
-                            "in " + nameOfObject + " must be less than " +
+                        "in " + nameOfObject + " must be less than " +
                             std::to_string(maxType);
                         cpp11::stop(msg.c_str());
                     }
@@ -266,19 +213,15 @@ namespace CleanConvert {
                                 nameOfObject.c_str());
                 }
 
-                auto temp = FromCpp14::make_unique<mpz_t[]>(total);
+                std::vector<mpz_class> temp(total);
+                CppConvert::convertMPZVector(input, temp, total,
+                                             nameOfObject, negPoss);
 
-                for (int i = 0; i < total; ++i) {
-                    mpz_init(temp[i]);
-                }
-
-                createMPZArray(input, temp.get(), total,
-                               nameOfObject, negPoss);
                 std::vector<double> dblTemp(total);
                 result.resize(total);
 
                 for (int i = 0; i < total; ++i) {
-                    dblTemp[i] = mpz_get_d(temp[i]);
+                    dblTemp[i] = temp[i].get_d();
                     const double posDblInp = std::abs(dblTemp[i]);
 
                     if (CheckNA(dblTemp[i], myType)) {
@@ -295,14 +238,14 @@ namespace CleanConvert {
 
                     if (posDblInp > maxType) {
                         std::string msg = "The abs value of each element "
-                            "in " + nameOfObject + " must be less than " +
+                        "in " + nameOfObject + " must be less than " +
                             std::to_string(maxType);
                         cpp11::stop(msg.c_str());
                     }
 
                     if (posDblInp > Significand53) {
                         std::string msg = "The abs value of each element "
-                            "in " + nameOfObject + " must be less than 2^53";
+                        "in " + nameOfObject + " must be less than 2^53";
                         cpp11::stop(msg.c_str());
                     }
 
@@ -317,35 +260,27 @@ namespace CleanConvert {
                     result[i] = static_cast<T>(dblTemp[i]);
                 }
 
-                for (int i = 0; i < total; ++i) {
-                    mpz_clear(temp[i]);
-                }
-
                 break;
             } default: {
                 std::string msg = "This type is not supported! No "
-                                  "conversion possible for " + nameOfObject;
+                "conversion possible for " + nameOfObject;
                 cpp11::stop(msg.c_str());
             }
         }
     }
 }
-
-template void CleanConvert::convertPrimitive(
+template void CppConvert::convertPrimitive(
     SEXP, int&, VecType, const std::string&, bool, bool, bool, bool
 );
 
-template void CleanConvert::convertPrimitive(
+template void CppConvert::convertPrimitive(
     SEXP, double&, VecType, const std::string&, bool, bool, bool, bool
 );
 
-template void CleanConvert::convertVector(
+template void CppConvert::convertVector(
     SEXP, std::vector<int>&, VecType, const std::string&, bool, bool, bool
 );
 
-template void CleanConvert::convertVector(
+template void CppConvert::convertVector(
     SEXP, std::vector<double>&, VecType, const std::string&, bool, bool, bool
 );
-
-template std::vector<int> CleanConvert::GetNumVec(SEXP);
-template std::vector<double> CleanConvert::GetNumVec(SEXP);
