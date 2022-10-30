@@ -41,7 +41,7 @@ void FinalTouch(SEXP res, bool IsArray, int grpSize, int r, int n,
 
         for (int i = 0, k = 0; i < r; ++i) {
             for (int j = 0; j < grpSize; ++j, ++k) {
-                myNames[i] = myColNames[i].c_str();
+                myNames[k] = myColNames[i].c_str();
             }
         }
 
@@ -59,7 +59,7 @@ void FinalTouch(SEXP res, bool IsArray, int grpSize, int r, int n,
 void SampleResults(SEXP GroupsMat, SEXP v,
                    const std::vector<double> &mySample,
                    const std::vector<mpz_class> &myBigSamp,
-                   mpz_class computedRowMpz, double computedRows,
+                   const mpz_class &computedRowMpz, double computedRows,
                    int sampSize, int n, int r, int grpSize, bool IsGmp) {
 
     if (IsGmp) {
@@ -91,7 +91,7 @@ template <typename T>
 void SampleResults(T* GroupsMat, const std::vector<T> &v,
                    const std::vector<double> &mySample,
                    const std::vector<mpz_class> &myBigSamp,
-                   mpz_class computedRowMpz, double computedRows,
+                   const mpz_class &computedRowMpz, double computedRows,
                    int sampSize, int n, int r, int grpSize, bool IsGmp) {
 
     if (IsGmp) {
@@ -122,7 +122,7 @@ void SampleResults(RcppParallel::RMatrix<T> GroupsMat,
                    const std::vector<T> &v,
                    const std::vector<double> &mySample,
                    const std::vector<mpz_class> &myBigSamp,
-                   mpz_class computedRowMpz, double computedRows, int n,
+                   const mpz_class &computedRowMpz, double computedRows, int n,
                    int r, int grpSize, bool IsGmp, int strtIdx, int endIdx) {
 
     if (IsGmp) {
@@ -222,7 +222,7 @@ template <typename T>
 void SerialGlue(T* GroupsMat, SEXP res, const std::vector<T> &v,
                 const std::vector<double> &mySamp,
                 const std::vector<mpz_class> &myBigSamp, std::vector<int> z,
-                mpz_class computedRowMpz, double computedRows, int n,
+                const mpz_class &computedRowMpz, double computedRows, int n,
                 int r, int grpSize, int nRows, bool IsArray,
                 bool IsGmp, bool IsSample, bool IsNamed) {
 
@@ -240,7 +240,7 @@ void SerialGlue(T* GroupsMat, SEXP res, const std::vector<T> &v,
 void CharacterGlue(SEXP res, SEXP v,
                    const std::vector<double> &mySamp,
                    const std::vector<mpz_class> &myBigSamp, std::vector<int> z,
-                   mpz_class computedRowMpz, double computedRows, int n,
+                   const mpz_class &computedRowMpz, double computedRows, int n,
                    int r, int grpSize, int nRows, bool IsArray,
                    bool IsGmp, bool IsSample, bool IsNamed) {
 
@@ -259,7 +259,7 @@ template <typename T>
 void ParallelGlue(RcppParallel::RMatrix<T> &GroupsMat,
                   const std::vector<T> &v, const std::vector<double> &mySamp,
                   const std::vector<mpz_class> &myBigSamp, std::vector<int> z,
-                  mpz_class computedRowMpz, double computedRows, int n,
+                  const mpz_class &computedRowMpz, double computedRows, int n,
                   int r, int grpSize, int strtIdx, int endIdx,
                   bool IsGmp, bool IsSample) {
 
@@ -271,7 +271,8 @@ void ParallelGlue(RcppParallel::RMatrix<T> &GroupsMat,
     }
 }
 
-void GetStartGrp(std::vector<int> &z, mpz_class computedRowMpz, mpz_class lowerMpz,
+void GetStartGrp(std::vector<int> &z,
+                 const mpz_class &computedRowMpz, mpz_class &lowerMpz,
                  double computedRows, double &lower, int n, int grpSize,
                  int r, int stepSize, bool IsGmp) {
 
@@ -287,7 +288,8 @@ void GetStartGrp(std::vector<int> &z, mpz_class computedRowMpz, mpz_class lowerM
 template <typename T>
 void GroupsMain(T* GroupsMat, SEXP res, const std::vector<T> &v,
                 std::vector<int> z, const std::vector<double> &mySample,
-                const std::vector<mpz_class> &myBigSamp, mpz_class computedRowMpz,
+                const std::vector<mpz_class> &myBigSamp,
+                const mpz_class &computedRowMpz,
                 double computedRows, mpz_class lowerMpz, double lower,
                 int n, int r, int grpSize, int nRows, int nThreads,
                 bool IsArray, bool IsNamed, bool Parallel,
@@ -305,9 +307,10 @@ void GroupsMain(T* GroupsMat, SEXP res, const std::vector<T> &v,
              nextStep += stepSize) {
 
             threads.emplace_back(
-                std::cref(ParallelGlue<T>), std::ref(parMat), std::cref(v),
-                std::cref(mySample), std::cref(myBigSamp), z, computedRowMpz,
-                computedRows, n, r, grpSize, step, nextStep, IsGmp, IsSample
+                std::cref(ParallelGlue<T>), std::ref(parMat),
+                std::cref(v), std::cref(mySample), std::cref(myBigSamp),
+                z, std::cref(computedRowMpz), computedRows, n, r,
+                grpSize, step, nextStep, IsGmp, IsSample
             );
 
             GetStartGrp(z, computedRowMpz, lowerMpz, computedRows,
@@ -316,7 +319,7 @@ void GroupsMain(T* GroupsMat, SEXP res, const std::vector<T> &v,
 
         threads.emplace_back(std::cref(ParallelGlue<T>), std::ref(parMat),
                              std::cref(v), std::cref(mySample),
-                             std::cref(myBigSamp), z, computedRowMpz,
+                             std::cref(myBigSamp), z, std::cref(computedRowMpz),
                              computedRows, n, r, grpSize, step, nRows,
                              IsGmp, IsSample);
 

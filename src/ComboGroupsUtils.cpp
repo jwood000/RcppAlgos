@@ -122,8 +122,7 @@ void numGroupCombsGmp(mpz_class &result, int n,
         result *= i;
     }
 
-    mpz_class myDiv;
-    myDiv = 1;
+    mpz_class myDiv(1);
 
     for (int i = 2; i <= grpSize; ++i) {
         myDiv *= i;
@@ -200,8 +199,8 @@ std::vector<int> nthComboGroupGmp(int n, int gSize, int r,
     int s = n - 1;
     const int g = gSize - 1;
 
-    mpz_class temp;
-    mpz_class secLen;
+    mpz_class temp(1);
+    mpz_class secLen(1);
 
     nChooseKGmp(temp, s, g);
     mpz_divexact(secLen.get_mpz_t(), computedRowMpz.get_mpz_t(),
