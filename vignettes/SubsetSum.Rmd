@@ -1,7 +1,7 @@
 ---
 title: "Attacking Problems Related to the Subset Sum Problem"
 author: "Joseph Wood"
-date: "03/13/2022"
+date: "10/30/2022"
 output:
   rmarkdown::html_vignette:
     toc: true
@@ -14,18 +14,28 @@ vignette: >
 
 This document covers the topic of solving problems related to the [subset sum problem](<https://en.wikipedia.org/wiki/Subset_sum_problem>) with `RcppAlgos`. We have already covered integer partitions, which is a special case of the subset sum problem, in [Constraints and Integer Partitions](<https://jwood000.github.io/RcppAlgos/articles/CombPermConstraints.html#integer-partitions>) and it is highly encouraged to read that vignette first.
 
-***
+------------------------------------------------------------------------
 
 ## Building on Integer Partitions
 
-The [integer partition problem](https://en.wikipedia.org/wiki/Partition_(number_theory)) presents the question _"how can we write n as a sum of positive integers?"_ There are well-known algorithms for enumerating _all_ partitions of an integer _n_. We even have algorithms for generating partitions of a specific length or with distinct parts only. But how do we enumerate partitions of _n_ with a specific set of numbers? What about enumerating partitions of a specific length _m_ of _n_ given a specific set of numbers?
+The [integer partition problem](<https://en.wikipedia.org/wiki/Partition_\(number_theory\)>) presents the question *“how can we write n as a sum of positive integers?”* There are well-known algorithms for enumerating *all* partitions of an integer *n*. We even have algorithms for generating partitions of a specific length or with distinct parts only. But how do we enumerate partitions of *n* with a specific set of numbers? What about enumerating partitions of a specific length *m* of *n* given a specific set of numbers?
 
 For example, using only the numbers `3:18`, find all partitions of `50` of length `5`.
 
 With `RcppAlgos`, this is easily achieved. We simply use the same template as we did in [Constraints and Integer Partitions](<https://jwood000.github.io/RcppAlgos/articles/CombPermConstraints.html#integer-partitions>). Observe (We continue to use the `ht` function defined in the [Combination and Permutation Basics](<https://jwood000.github.io/RcppAlgos/articles/GeneralCombinatorics.html>) vignette):
 
-```r
+``` r
 library(RcppAlgos)
+options(width = 90)
+
+ht <- function(d, m = 5, n = m) {
+    ## print the head and tail together
+    cat("head -->\n")
+    print(head(d, m))
+    cat("--------\n")
+    cat("tail -->\n")
+    print(tail(d, n))
+}
 
 ## Each element can only occur once
 ht(partitionsGeneral(3:18, 5, target = 50))
@@ -82,13 +92,16 @@ ht(partitionsGeneral(3:18, 5, freqs = rep(1:4, 4), target = 50))
 #> [405,]    9   10   10   10   11
 ```
 
-In fact, these optimized algorithms can be applied when the vector passed has the quality that if you were to sort them, the difference of each element with it's neighbor is constant (E.g. `c(121, 126, 131, 136, ..., 221)`).
+In fact, these optimized algorithms can be applied when the vector passed has the quality that if you were to sort them, the difference of each element with it’s neighbor is constant (E.g. `c(121, 126, 131, 136, ..., 221)`).
 
-```r
-system.time(genParts <- partitionsGeneral(seq(121, 221, 5), 13,
-                                          TRUE, target = 2613))
-#>  user  system elapsed
-#> 0.006   0.002   0.008    ## over 100 thousand results out of a possible 573 million
+``` r
+even_time <- system.time({
+    genParts <- partitionsGeneral(seq(121, 221, 5), 13,
+                                  TRUE, target = 2613)
+})
+even_time
+#>    user  system elapsed 
+#>   0.002   0.000   0.002
 
 ht(genParts)
 #> head -->
@@ -113,8 +126,8 @@ prettyNum(comboCount(seq(121, 221, 5), 13, TRUE), big.mark = ",")
 system.time(genMultiParts <- partitionsGeneral(seq(121, 221, 5), 13,
                                                freqs = rep(1:7, 3),
                                                targe = 2613))
-#>  user  system elapsed
-#> 0.007   0.003   0.011    ## over 70 thousand results out of a possible 256 million!
+#>    user  system elapsed 
+#>   0.003   0.001   0.004
 
 ht(genMultiParts)
 #> head -->
@@ -136,15 +149,18 @@ ht(genMultiParts)
 prettyNum(comboCount(seq(121, 221, 5), 13, freqs = rep(1:7, 3)), big.mark = ",")
 #> [1] "256,047,675"
 ```
+
 ### Working with Negative Numbers
 
-Generally, integer partition algorithms are restricted to positive integers. However, with the generalized partition algorithms in `RcppAlgos`, we can make light work of vectors with negative numbers (again, the sorted vector has to have the property that the difference of each element with it's neighbor is constant).
+Generally, integer partition algorithms are restricted to positive integers. However, with the generalized partition algorithms in `RcppAlgos`, we can make light work of vectors with negative numbers (again, the sorted vector has to have the property that the difference of each element with it’s neighbor is constant).
 
-```r
-system.time(genDistParts <- partitionsGeneral(seq(-173L, 204L, 13L),
-                                              11, target = -460))
-#>  user  system elapsed
-#> 0.003   0.000   0.003
+``` r
+system.time({
+    genDistParts <- partitionsGeneral(seq(-173L, 204L, 13L),
+                                      11, target = -460)
+})
+#>    user  system elapsed 
+#>   0.001   0.000   0.001
 
 all(rowSums(genDistParts) == -460L)
 #> [1] TRUE
@@ -169,22 +185,23 @@ ht(genDistParts)
 
 ## Partitions with no Restrictions
 
-With the examples illustrated above, we had the restriction that the sorted input vector had to have the property that the difference of each element with it's neighbor is constant. If this requirement is broken, it only means that we cannot use a particular algorithm and we must fall back to a more general algorithm. _Fret not!!_ These general algorithms are extremely efficient and very flexible. We can use them with random input vectors, random targets, as well as over ranges.
+With the examples illustrated above, we had the restriction that the sorted input vector had to have the property that the difference of each element with it’s neighbor is constant. If this requirement is broken, it only means that we cannot use a particular algorithm and we must fall back to a more general algorithm. *Fret not!!* These general algorithms are extremely efficient and very flexible. We can use them with random input vectors, random targets, as well as over ranges.
 
 Let us revisit the example above but with a slight variation that breaks the requirement.
 
-```r
+``` r
 inpVec <- c(116, seq(126, 221, 5))
 
 ## Non-constant difference... The specialized algo can't be used
 diff(inpVec)
-#> [1] 10  5  5  5  5  5  5  5  5  5  5  5  5  5  5  5  5  5  5  5
+#>  [1] 10  5  5  5  5  5  5  5  5  5  5  5  5  5  5  5  5  5  5  5
 
-system.time(genParts2 <- partitionsGeneral(inpVec, 13, TRUE, target = 2613))
-#>  user  system elapsed
-#> 0.096   0.005   0.101  ##  We still find over 100 thousand results out of
-                          ##  a possible 573 million in under a second
-
+uneven_time <- system.time({
+    genParts2 <- partitionsGeneral(inpVec, 13, TRUE, target = 2613)
+})
+uneven_time    ## out of a possible 573 million in under a second
+#>    user  system elapsed 
+#>   0.051   0.003   0.054
 
 ht(genParts2)
 #> head -->
@@ -204,23 +221,23 @@ ht(genParts2)
 #> [118560,]  201  201  201  201  201  201  201  201  201   201   201   201   201
 ```
 
-Although the above was about 13 times slower than the first example dealing with 573 million combinations (101 milliseconds vs. 8 milliseconds), we are still dealing in milliseconds!!! For reference, version `2.3.4` takes about 18 seconds to find all 118,560 solutions.
+Although the above was about 27 times slower than the first example dealing with 573 million combinations (0.054 milliseconds vs. 0.002 milliseconds), we are still dealing in milliseconds!!! For reference, version `2.3.4` takes about 18 seconds to find all 118,560 solutions.
 
 Here are some more exotic examples demonstrating the power of these algorithms.
 
-```r
+``` r
 set.seed(42)
 mySamp <- sample(-100:100, 50)
 
 sort(mySamp)
-#>  [1] -98 -97 -96 -95 -81 -77 -74 -65 -60 -59 -58 -54 -52 -43 -36 -33 -30
-#> [18] -27 -12  -9  -2  -1   3   8   9  10  13  21  27  30  33  35  42  45
-#> [35]  49  52  53  57  61  63  64  70  73  76  83  84  88  91  96 100
+#>  [1] -98 -97 -96 -95 -81 -77 -74 -65 -60 -59 -58 -54 -52 -43 -36 -33 -30 -27 -12  -9  -2
+#> [22]  -1   3   8   9  10  13  21  27  30  33  35  42  45  49  52  53  57  61  63  64  70
+#> [43]  73  76  83  84  88  91  96 100
 
 system.time(exotic <- partitionsGeneral(mySamp, 8, freqs = rep(1:5, 10),
                                         target = 496))
-#>  user  system elapsed
-#> 0.226   0.001   0.228
+#>    user  system elapsed 
+#>   0.119   0.002   0.121
 
 dim(exotic)
 #> [1] 102241      8
@@ -232,23 +249,23 @@ prettyNum(comboCount(mySamp, 8, freqs = rep(1:5, 10)), big.mark = ",")
 ## Only getting a few (a thousand in this case) is much faster
 system.time(partitionsGeneral(mySamp, 8, freqs = rep(1:5, 10),
                               target = 496, upper = 1e3))
-#>  user  system elapsed
-#> 0.004   0.000   0.004
+#>    user  system elapsed 
+#>   0.002   0.000   0.002
 ```
 
 The function `permuteGeneral` benefits from these optimized algorithms as well. However, just as we discussed in [Output Order with `permuteGeneral`](<https://jwood000.github.io/RcppAlgos/articles/CombPermConstraints.html#output-order-with-permutegeneral>), the output will not be in lexicographical order.
 
 ## Taming Floating Point Numbers
 
-Oftentimes when working with numerical vectors, it can be hard to find combinations that sum to a particular number because of floating point errors (See [Using `tolerance`](<https://jwood000.github.io/RcppAlgos/articles/CombPermConstraints.html#using-tolerance>)). In practice, we may not need an exact match and a close approximation will suffice. For example, let's say we have a football team of 100 players (including practice squad) and we are interested in a trade involving 6 players and a total salary of 20 million dollars. We may not be able to find 6 players whose sum of salaries is exactly 20 million, but we can find many 6 player combinations whose sum of salaries is within a tolerance of 20 million.
+Oftentimes when working with numerical vectors, it can be hard to find combinations that sum to a particular number because of floating point errors (See [Using `tolerance`](<https://jwood000.github.io/RcppAlgos/articles/CombPermConstraints.html#using-tolerance>)). In practice, we may not need an exact match and a close approximation will suffice. For example, let’s say we have a football team of 100 players (including practice squad) and we are interested in a trade involving 6 players and a total salary of 20 million dollars. We may not be able to find 6 players whose sum of salaries is exactly 20 million, but we can find many 6 player combinations whose sum of salaries is within a tolerance of 20 million.
 
-```r
+``` r
 set.seed(22213)
 football_player_salaries <- 2e7 * rbeta(100, 2, 25)
 
 summary(football_player_salaries)
-#>   Min.  1st Qu.   Median     Mean  3rd Qu.     Max.
-#> 115308   768338  1261683  1612271  1950565 10895883
+#>     Min.  1st Qu.   Median     Mean  3rd Qu.     Max. 
+#>   115308   768338  1261683  1612271  1950565 10895883
 
 ## Over 1 billion combinations...
 ## An exhaustive search will not be feasible
@@ -257,28 +274,28 @@ prettyNum(comboCount(football_player_salaries, 6), big.mark = ",")
 
 system.time(exactly20 <- partitionsGeneral(football_player_salaries, 6,
                                            target = 2e7, tolerance = 0))
-#>  user  system elapsed
-#> 2.841   0.017   2.874
+#>    user  system elapsed 
+#>   1.534   0.008   1.542
 
 ## No results that equal exactly 2e7
 dim(exactly20)
 #> [1] 0 6
 ```
 
-What if we increase the tolerance to `$`1000 (Honestly... what's `$`1000 when we are talking about 20 million dollars)? Our intent is to explore these options, so we take advantage of the `upper` argument in anticipation that we obtain many results that meet the criteria. If we obtain the upper bound, we decrease the tolerance (if needed) and repeat.
+What if we increase the tolerance to `$`1000 (Honestly… what’s `$`1000 when we are talking about 20 million dollars)? Our intent is to explore these options, so we take advantage of the `upper` argument in anticipation that we obtain many results that meet the criteria. If we obtain the upper bound, we decrease the tolerance (if needed) and repeat.
 
-```r
+``` r
 ## N.B. This is much more efficient. Also, we set keepResults
 ## to TRUE so we can see the total sum of salaries.
 system.time(almost20 <- comboGeneral(football_player_salaries, 6,
                                      constraintFun = "sum", comparisonFun = "==",
                                      limitConstraints = 2e7, tolerance = 1000,
                                      upper = 1000, keepResults = TRUE))
-#>  user  system elapsed
-#> 0.130   0.000   0.131
+#>    user  system elapsed 
+#>   0.067   0.001   0.067
 
 dim(almost20)
-#> [1] 1000    6
+#> [1] 1000    7
 
 ht(almost20)
 #> head -->
@@ -302,8 +319,8 @@ system.time(superClose20 <- comboGeneral(football_player_salaries, 6,
                                          constraintFun = "sum", comparisonFun = "==",
                                          limitConstraints = 2e7, tolerance = 10,
                                          upper = 1000, keepResults = TRUE))
-#>  user  system elapsed
-#> 2.734   0.009   2.747
+#>    user  system elapsed 
+#>   1.521   0.004   1.527
 
 ht(superClose20)
 #> head -->
@@ -327,7 +344,7 @@ ht(superClose20)
 
 These optimized algorithms are also employed when `constraintFun` is `"prod"` or `"mean"`.
 
-```r
+``` r
 getAllThenFilter <- function(n, m, lim) {
     t <- comboGeneral(n, m, constraintFun = "prod")
     t[t[, m + 1] == lim, -(m+1)]
@@ -339,10 +356,12 @@ microbenchmark(optimized = comboGeneral(25, 10, constraintFun = "prod",
                                         limitConstraints = 1037836800),
                brute = getAllThenFilter(25, 10, 1037836800), times = 20,
                unit = "relative", check = "equal")
+#> Warning in microbenchmark(optimized = comboGeneral(25, 10, constraintFun = "prod", : less
+#> accurate nanosecond times to avoid potential integer overflows
 #> Unit: relative
-#>       expr      min       lq    mean   median       uq      max neval  cld
-#>  optimized  1.00000  1.00000  1.0000  1.00000  1.00000  1.00000    20  a
-#>      brute 46.86513 46.87535 49.3752 47.36287 47.81427 60.11692    20   b
+#>       expr     min       lq     mean   median       uq      max neval
+#>  optimized  1.0000  1.00000  1.00000  1.00000  1.00000  1.00000    20
+#>      brute 20.9011 20.98235 21.40627 20.87723 20.98037 25.39596    20
 
 ## What about cases when brute force isn't feasible
 set.seed(101)
@@ -355,40 +374,41 @@ system.time(prodAlmost100 <- comboGeneral(v, 100, constraintFun = "prod",
                                           comparisonFun = "==",
                                           limitConstraints = 100,
                                           tolerance = 0.0001, upper = 20))
-#>  user  system elapsed
-#> 0.027   0.000   0.027
+#>    user  system elapsed 
+#>   0.016   0.000   0.015
 
 dim(prodAlmost100)
 #> [1]  20 100
 
 apply(prodAlmost100, 1, prod)
-#>  [1] 100.00008 100.00003 100.00003 100.00006 100.00010 100.00000  99.99993  99.99995 100.00002
-#> [10]  99.99992 100.00004  99.99994 100.00002 100.00005  99.99992  99.99996 100.00006 100.00003
-#> [19] 100.00006 100.00002
+#>  [1] 100.00008 100.00003 100.00003 100.00006 100.00010 100.00000  99.99993  99.99995
+#>  [9] 100.00002  99.99992 100.00004  99.99994 100.00002 100.00005  99.99992  99.99996
+#> [17] 100.00006 100.00003 100.00006 100.00002
 
 ## Showcasing mean
 system.time(meanAlmost1.5 <- comboGeneral(v, 100, constraintFun = "mean",
                                           comparisonFun = "==",
                                           limitConstraints = 1.5,
                                           tolerance = 0.0001, upper = 20))
-#>  user  system elapsed
-#> 0.001   0.000   0.000
+#>    user  system elapsed 
+#>       0       0       0
 
 dim(meanAlmost1.5)
 #> [1]  20 100
 
 rowMeans(meanAlmost1.5)
-#>  [1] 1.500000 1.499999 1.500001 1.500000 1.500000 1.500001 1.500000 1.500000 1.500000 1.500000
-#> [11] 1.499999 1.500000 1.500001 1.500001 1.499999 1.499999 1.500001 1.500000 1.500001 1.500000
+#>  [1] 1.500000 1.499999 1.500001 1.500000 1.500000 1.500001 1.500000 1.500000 1.500000
+#> [10] 1.500000 1.499999 1.500000 1.500001 1.500001 1.499999 1.499999 1.500001 1.500000
+#> [19] 1.500001 1.500000
 ```
 
 ## Using Iterators
 
-As of version `2.5.0` all of the above cases can be attacked with iterators (See [Combinatorial Iterators in RcppAlgos](<https://jwood000.github.io/RcppAlgos/articles/CombinatoricsIterators.html#iterating-over-constrained-combinations/permutations>)). As mentioned in the suggested reading, iterators are very flexible and just as efficient as their "general" counterparts. They have the added benefit of allowing one to save the current state, allowing one to generate _n_ results at a time.
+As of version `2.5.0` all of the above cases can be attacked with iterators (See [Combinatorial Iterators in RcppAlgos](<https://jwood000.github.io/RcppAlgos/articles/CombinatoricsIterators.html#iterating-over-constrained-combinations/permutations>)). As mentioned in the suggested reading, iterators are very flexible and just as efficient as their “general” counterparts. They have the added benefit of allowing one to save the current state, allowing one to generate *n* results at a time.
 
 Below are a few demonstrations using some of the examples in earlier sections.
 
-```r
+``` r
 ## The football salary example
 salary <- partitionsIter(football_player_salaries, 6,
                          target = 2e7, tolerance = 1000)
@@ -400,8 +420,8 @@ salary <- partitionsIter(football_player_salaries, 6,
 ##           tolerance = 1000, upper = 1000, keepResults = TRUE))
 
 system.time(almost20withIter <- salary@nextNIter(1e3))
-#>  user  system elapsed
-#> 0.126   0.000   0.127
+#>    user  system elapsed 
+#>   0.067   0.000   0.067
 
 ## almost20 was generated above with comboGeneral
 all.equal(almost20[, 1:6], almost20withIter)
@@ -411,8 +431,8 @@ all.equal(almost20[, 1:6], almost20withIter)
 ## functions if we wanted the next 1000 results, we would have to
 ## generate the first 1000 along with the next 1000
 system.time(nextAlmost20withIter <- salary@nextNIter(1e3))
-#>  user  system elapsed
-#> 0.124   0.001   0.125
+#>    user  system elapsed 
+#>   0.064   0.000   0.065
 
 ht(nextAlmost20withIter)
 #> head -->
@@ -434,13 +454,13 @@ ht(nextAlmost20withIter)
 salary@summary()
 #> $description
 #> [1] "Combinations of 100 choose 6 where the sum is between 19999000 and 20001000"
-#>
+#> 
 #> $currentIndex
 #> [1] 2000
-#>
+#> 
 #> $totalResults
 #> [1] NA
-#>
+#> 
 #> $totalRemaining
 #> [1] NA
 
@@ -451,8 +471,8 @@ prodIter <- comboIter(v, 100,
                       limitConstraints = 100, tolerance = 0.0001)
 
 system.time(prodAlmost100WithIter <- prodIter@nextNIter(20))
-#>  user  system elapsed
-#> 0.024   0.000   0.024
+#>    user  system elapsed 
+#>   0.016   0.000   0.016
 
 all.equal(prodAlmost100, prodAlmost100WithIter)
 #> [1] TRUE
@@ -460,8 +480,8 @@ all.equal(prodAlmost100, prodAlmost100WithIter)
 ## Again, with iterators, we can continue iterating from
 ## where we left off
 system.time(nextAlmost100WithIter <- prodIter@nextNIter(20))
-#>  user  system elapsed
-#> 0.018   0.000   0.018
+#>    user  system elapsed 
+#>   0.012   0.000   0.012
 
 dim(nextAlmost100WithIter)
 #> [1]  20 100
@@ -472,13 +492,13 @@ dim(nextAlmost100WithIter)
 prodIter$summary()
 #> $description
 #> [1] "Combinations of 1000 choose 100 where the prod is between 99.999899999999997 and 100.0001"
-#>
+#> 
 #> $currentIndex
 #> [1] 40
-#>
+#> 
 #> $totalResults
 #> [1] NA
-#>
+#> 
 #> $totalRemaining
 #> [1] NA
 ```

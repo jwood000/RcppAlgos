@@ -1,7 +1,7 @@
 ---
 title: "Constraints, Partitions, and Compositions"
 author: "Joseph Wood"
-date: "08/14/2022"
+date: "10/30/2022"
 output:
   rmarkdown::html_vignette:
     toc: true
@@ -14,7 +14,7 @@ vignette: >
 
 This document covers the topic of finding combinations or permutations that meet a specific set of criteria. For example, retrieving all combinations of a vector that have a product between two bounds.
 
-***
+------------------------------------------------------------------------
 
 ## Constraint Functions
 
@@ -28,8 +28,18 @@ There are 5 compiled constraint functions that can be utilized efficiently to te
 
 They are passed as strings to the `constraintFun` parameter. When these are employed without any other parameters being set, an additional column is added that represents the result of applying the given function to that combination/permutation. You can also set `keepResults = TRUE` (more on this later).
 
-```r
+``` r
 library(RcppAlgos)
+options(width = 90)
+
+packageVersion("RcppAlgos")
+#> [1] ‘2.7.0’
+
+cat(paste(capture.output(sessionInfo())[1:3], collapse = "\n"))
+#> R version 4.2.1 (2022-06-23)
+#> Platform: aarch64-apple-darwin20 (64-bit)
+#> Running under: macOS Monterey 12.6
+
 ## base R using combn and FUN
 combnSum = combn(20, 10, sum)
 algosSum = comboGeneral(20, 10, constraintFun = "sum")
@@ -56,18 +66,20 @@ library(microbenchmark)
 microbenchmark(serial = comboGeneral(20, 10, constraintFun = "sum"),
              parallel = comboGeneral(20, 10, constraintFun = "sum", Parallel = TRUE),
              combnSum = combn(20, 10, sum), unit = "relative")
+#> Warning in microbenchmark(serial = comboGeneral(20, 10, constraintFun = "sum"), : less
+#> accurate nanosecond times to avoid potential integer overflows
 #> Unit: relative
-#>      expr        min         lq       mean    median         uq        max neval cld
-#>    serial   3.177339   3.173798   3.054257   3.14192   2.948129   2.859115   100  a
-#>  parallel   1.000000   1.000000   1.000000   1.00000   1.000000   1.000000   100  a
-#>  combnSum 234.997953 208.891710 189.269384 201.36549 188.176221 176.208449   100   b
+#>      expr        min         lq       mean     median         uq       max neval
+#>    serial   2.974281   2.706903   2.344922   2.514726   2.406935  1.518758   100
+#>  parallel   1.000000   1.000000   1.000000   1.000000   1.000000  1.000000   100
+#>  combnSum 147.770840 130.213737 110.430530 120.947312 113.300148 57.916672   100
 ```
 
 ### Faster than `rowSums` and `rowMeans`
 
-Finding row sums or row means is even faster than simply applying the highly efficient `rowSums`/`rowMeans` _after_ the combinations have already been generated:
+Finding row sums or row means is even faster than simply applying the highly efficient `rowSums`/`rowMeans` *after* the combinations have already been generated:
 
-```r
+``` r
 ## Pre-generate combinations
 combs = comboGeneral(25, 10)
 
@@ -76,10 +88,10 @@ microbenchmark(serial = comboGeneral(25, 10, constraintFun = "sum"),
              parallel = comboGeneral(25, 10, constraintFun = "sum", Parallel = TRUE),
               rowsums = rowSums(combs), unit = "relative")
 #> Unit: relative
-#>      expr     min       lq     mean   median       uq       max neval cld
-#>    serial 3.18877 3.009145 2.592448 2.556819 2.446044 1.4423210   100   c
-#>  parallel 1.00000 1.000000 1.000000 1.000000 1.000000 1.0000000   100 a
-#>   rowsums 2.90689 2.636867 2.212371 2.069613 2.254097 0.6039177   100  b
+#>      expr      min       lq     mean   median       uq       max neval
+#>    serial 3.318426 2.814649 2.681666 2.702586 2.604239 1.6642068   100
+#>  parallel 1.000000 1.000000 1.000000 1.000000 1.000000 1.0000000   100
+#>   rowsums 1.980012 1.669279 1.600155 1.566228 1.532897 0.8042702   100
 
 all.equal(rowSums(combs),
           comboGeneral(25, 10,
@@ -92,10 +104,10 @@ microbenchmark(serial = comboGeneral(25, 10, constraintFun = "mean"),
              parallel = comboGeneral(25, 10, constraintFun = "mean", Parallel = TRUE),
              rowmeans = rowMeans(combs), unit = "relative")
 #> Unit: relative
-#>      expr      min       lq     mean   median       uq      max neval cld
-#>    serial 3.063023 2.561861 2.411453 2.542078 2.529883 1.553592   100   c
-#>  parallel 1.000000 1.000000 1.000000 1.000000 1.000000 1.000000   100 a
-#>  rowmeans 1.759344 1.443430 1.348248 1.418801 1.404468 0.532154   100  b
+#>      expr      min       lq     mean   median       uq       max neval
+#>    serial 2.543445 2.312172 2.232081 2.242439 2.182972 1.7099576   100
+#>  parallel 1.000000 1.000000 1.000000 1.000000 1.000000 1.0000000   100
+#>  rowmeans 1.464793 1.292659 1.243793 1.251504 1.224597 0.7458984   100
 
 all.equal(rowMeans(combs),
           comboGeneral(25, 10,
@@ -108,19 +120,19 @@ In both cases above, `RcppAlgos` is doing double the work nearly twice as fast!!
 
 ## Comparison Operators and `limitConstraints`
 
-The standard 5 comparison operators (i.e. `"<"`, `">"`, `"<="`, `">="`, & `"=="`) can be used in a variety of ways. In order for them to have any effect, they must be used in conjunction with `constraintFun` as well as `limitConstraints`. The latter is the value(s) that will be used for comparison. It can be passed as a single value or a vector of two numerical values. This is useful when one wants to find results that are between (or outside) of a given range.
+The standard 5 comparison operators (i.e. `"<"`, `">"`, `"<="`, `">="`, & `"=="`) can be used in a variety of ways. In order for them to have any effect, they must be used in conjunction with `constraintFun` as well as `limitConstraints`. The latter is the value(s) that will be used for comparison. It can be passed as a single value or a vector of two numerical values. This is useful when one wants to find results that are between (or outside) of a given range.
 
 ### One Comparison Operator
 
 First we will look at cases with only one comparison and one value for the `limitConstraint`.
 
-```r
+``` r
 ## Generate some random data. N.B. Using R >= 4.0.0
 set.seed(101)
 myNums = sample(500, 20)
 
 myNums
-#> [1] 329 313 430  95 209 442 351 317 444 315 246 355 128 131 288   9 352 489 354 244
+#>  [1] 329 313 430  95 209 442 351 317 444 315 246 355 128 131 288   9 352 489 354 244
 
 ## Find all 5-tuples combinations without repetition of myNums
 ## (defined above) such that the sum is equal to 1176.
@@ -155,7 +167,7 @@ p2 = comboGeneral(v = myNums, m = 5, TRUE,
 ## Again, we authenticate with brute force
 allCombs = comboGeneral(sort(myNums), 5, TRUE)
 identical(p2, allCombs[which(rowMeans(allCombs) <= 150), ])
-#> [1] FALSE  ### <<--- What? They should be the same
+#> [1] FALSE  ### <-- What? They should be the same
 
 ## N.B.
 class(p2[1, ])
@@ -179,7 +191,7 @@ Using two comparisons is easy. The first comparison operator is applied to the f
 
 Note that in the examples below, we have `keepResults = TRUE`. This means an additional column will be added to the output that is the result of applying `constraintFun` to that particular combination.
 
-```r
+``` r
 ## Get combinations such that the product is
 ## strictly between 3600 and 4000
 comboGeneral(5, 7, TRUE, constraintFun = "prod",
@@ -223,11 +235,11 @@ comboCount(5, 7, T)
 
 When the underlying type is `numeric`, [round-off errors](<https://en.wikipedia.org/wiki/Round-off_error>) can occur. As stated in [floating-point error mitigation](<https://en.wikipedia.org/wiki/Floating-point_error_mitigation>):
 
-> _**"By definition, floating-point error cannot be eliminated, and, at best, can only be managed."**_
+> ***“By definition, floating-point error cannot be eliminated, and, at best, can only be managed.”***
 
 Here is a great stackoverflow post that further illuminates this tricky topic:
 
-  - [What is the correct/standard way to check if difference is smaller than machine precision?](<https://stackoverflow.com/q/59229545/4408538>)
+- [What is the correct/standard way to check if difference is smaller than machine precision?](<https://stackoverflow.com/q/59229545/4408538>)
 
 For these reasons, the argument `tolerance` can be utilized to refine a given constraint. It is added to the upper limit and subtracted from the lower limit. The default value is `sqrt(.Machine$double.eps) ~= 0.00000001490116`.
 
@@ -235,7 +247,7 @@ This default value is good and bad.
 
 For the good side:
 
-```r
+``` r
 dim(comboGeneral(seq(0, 0.5, 0.05), 6, TRUE,
                  constraintFun = "sum",
                  comparisonFun = "==",
@@ -251,7 +263,7 @@ sum(allCbs[, 7] == 100L)
 
 If we had a tolerance of zero, we would have obtained an incorrect result:
 
-```r
+``` r
 ## We miss 31 combinations that add up to 1
 dim(comboGeneral(seq(0, 0.5, 0.05), 6, TRUE,
                  constraintFun = "sum",
@@ -260,9 +272,9 @@ dim(comboGeneral(seq(0, 0.5, 0.05), 6, TRUE,
 #> [1] 168   6
 ```
 
-And now for a less desirable result. The example below appears to give incorrect results. That is, we shouldn't return any combination with a mean of 4.1 or 5.1.
+And now for a less desirable result. The example below appears to give incorrect results. That is, we shouldn’t return any combination with a mean of 4.1 or 5.1.
 
-```r
+``` r
 comboGeneral(c(2.1, 3.1, 5.1, 7.1), 3, T,
              constraintFun = "mean", comparisonFun = c("<", ">"),
              limitConstraints = c(5.1, 4.1), keepResults = TRUE)
@@ -280,7 +292,7 @@ In the above example, the range that is actually tested against is `c(4.09999999
 
 If you want to be absolutely sure you are getting the correct results, one must rely on integers as simple changes in arithmetic can throw off precision in floating point operations.
 
-```r
+``` r
 comboGeneral(c(21, 31, 51, 71), 3, T,
              constraintFun = "mean", comparisonFun = c("<", ">"),
              limitConstraints = c(51, 41), keepResults = TRUE) / 10
@@ -292,40 +304,40 @@ comboGeneral(c(21, 31, 51, 71), 3, T,
 
 ### Output Order with `permuteGeneral`
 
-Typically, when we call `permuteGeneral`, the output is in lexicographical order, however when we apply a constraint, the underlying algorithm checks against combinations only, as this is more efficient. If a particular combination meets a constraint, then all permutations of that vector also meet that constraint, so there is no need to check them. For this reason, the output isn't in order. Observe:
+Typically, when we call `permuteGeneral`, the output is in lexicographical order, however when we apply a constraint, the underlying algorithm checks against combinations only, as this is more efficient. If a particular combination meets a constraint, then all permutations of that vector also meet that constraint, so there is no need to check them. For this reason, the output isn’t in order. Observe:
 
-```r
+``` r
 permuteGeneral(c(2, 3, 5, 7), 3, freqs = rep(2, 4),
                constraintFun = "mean", comparisonFun = c(">", "<"),
                limitConstraints = c(4, 5), keepResults = TRUE, tolerance = 0)
 #>       [,1] [,2] [,3]     [,4]
-#>  [1,]    2    5    7 4.666667   <-- First combination that meets the criteria
+#>  [1,]    2    5    7 4.666667   ### <-- First combination that meets the criteria
 #>  [2,]    2    7    5 4.666667
 #>  [3,]    5    2    7 4.666667
 #>  [4,]    5    7    2 4.666667
 #>  [5,]    7    2    5 4.666667
 #>  [6,]    7    5    2 4.666667
-#>  [7,]    3    3    7 4.333333   <-- Second combination that meets the criteria
+#>  [7,]    3    3    7 4.333333   ### <-- Second combination that meets the criteria
 #>  [8,]    3    7    3 4.333333
 #>  [9,]    7    3    3 4.333333
-#> [10,]    3    5    5 4.333333   <-- Third combination that meets the criteria
+#> [10,]    3    5    5 4.333333   ### <-- Third combination that meets the criteria
 #> [11,]    5    3    5 4.333333
 #> [12,]    5    5    3 4.333333
 ```
 
-As you can see, the _2<sup>nd</sup>_ through the _6<sup>th</sup>_ entries are simply permutations of the _1<sup>st</sup>_ entry. Similarly, entries _8_ and _9_ are permutations of the _7<sup>th</sup>_ and entries _11_ and _12_ are permutations of the _10<sup>th</sup>_.
+As you can see, the *2<sup>nd</sup>* through the *6<sup>th</sup>* entries are simply permutations of the *1<sup>st</sup>* entry. Similarly, entries *8* and *9* are permutations of the *7<sup>th</sup>* and entries *11* and *12* are permutations of the *10<sup>th</sup>*.
 
 ## Integer Partitions
 
-Specialized algorithms are employed when it can be determined that we are looking for [integer partitions](<https://en.wikipedia.org/wiki/Partition_(number_theory)>).
+Specialized algorithms are employed when it can be determined that we are looking for [integer partitions](<https://en.wikipedia.org/wiki/Partition_\(number_theory\)>).
 
 As of version `2.5.0`, we now have added `partitionsGeneral` which is similar to `comboGeneral` with `constraintFun = "sum"` and `comparisonFun = "=="`. Instead of using the very general `limitConstraints` parameter, we use `target` with a default of `max(v)` as it seems more fitting for partitions.
 
-### Case 1: All Integer Partitions of _N_
+### Case 1: All Integer Partitions of *N*
 
 We need `v = 0:N`, `repetition = TRUE`. When we leave `m = NULL`, `m` is internally set to the length of the longest non-zero combination (this is true for all cases below).
 
-```r
+``` r
 partitionsGeneral(0:5, repetition = TRUE)
 #>      [,1] [,2] [,3] [,4] [,5]
 #> [1,]    0    0    0    0    5
@@ -344,11 +356,11 @@ partitionsGeneral(0:5, repetition = TRUE)
 ## The same goes for any of the examples below
 ```
 
-### Case 2: Integer Partitions of _N_ of Length _m_
+### Case 2: Integer Partitions of *N* of Length *m*
 
 Everything is the same as above except for explicitly setting the desired length and deciding whether to include zero or not.
 
-```r
+``` r
 ## Including zero
 partitionsGeneral(0:5, 3, repetition = TRUE)
 #>      [,1] [,2] [,3]
@@ -365,11 +377,11 @@ partitionsGeneral(5, 3, repetition = TRUE)
 #> [2,]    1    2    2
 ```
 
-### Case 3: Integer Partitions of _N_ into Distinct Parts
+### Case 3: Integer Partitions of *N* into Distinct Parts
 
 Same as `Case 1 & 2` except now we have `repetition = FALSE`.
 
-```r
+``` r
 partitionsGeneral(0:10)
 #>      [,1] [,2] [,3] [,4]
 #> [1,]    0    1    2    7
@@ -405,21 +417,21 @@ lapply(1:4, function(x) {
 #> [[1]]
 #>      [,1]
 #> [1,]   10
-#>
+#> 
 #> [[2]]
 #>      [,1] [,2]
 #> [1,]    1    9
 #> [2,]    2    8
 #> [3,]    3    7
 #> [4,]    4    6
-#>
+#> 
 #> [[3]]
 #>      [,1] [,2] [,3]
 #> [1,]    1    2    7
 #> [2,]    1    3    6
 #> [3,]    1    4    5
 #> [4,]    2    3    5
-#>
+#> 
 #> [[4]]
 #>      [,1] [,2] [,3] [,4]
 #> [1,]    1    2    3    4
@@ -431,9 +443,9 @@ We can utilize the `freqs` argument to obtain more distinct partitions by allowi
 
 For example, given `v = 0:N` and `J >= 1`, if `freqs = c(J, rep(1, N))`, then the super optimized algorithm will be used, however if `freqs = c(J, 2, rep(1, N - 1))`, the general algorithm will be used. It should be noted that the general algorithms are still highly optimized so one should not fear using it.
 
-A pattern that is guaranteed to retrieve all distinct partitions of _N_ is to set `v = 0:N` and `freqs = c(N, rep(1, N))` (the extra zeros will be left off).
+A pattern that is guaranteed to retrieve all distinct partitions of *N* is to set `v = 0:N` and `freqs = c(N, rep(1, N))` (the extra zeros will be left off).
 
-```r
+``` r
 ## Obtain all distinct partitions of 10
 partitionsGeneral(0:10, freqs = c(10, rep(1, 10)))    ## Same as c(3, rep(1, 10))
 #>       [,1] [,2] [,3] [,4]
@@ -448,41 +460,42 @@ partitionsGeneral(0:10, freqs = c(10, rep(1, 10)))    ## Same as c(3, rep(1, 10)
 #>  [9,]    0    2    3    5
 #> [10,]    1    2    3    4
 ```
+
 #### Caveats Using `freqs`
 
-As noted in `Case 1`, if `m = NULL`, the length of the output will be determined by the longest non-zero combination that sums to _N_.
+As noted in `Case 1`, if `m = NULL`, the length of the output will be determined by the longest non-zero combination that sums to *N*.
 
-```r
+``` r
 ## m is NOT NULL and output has at most 2 zeros
 partitionsGeneral(0:10, 3, freqs = c(2, rep(1, 10)))
-#>      [,1] [,2] [,3]
-#> [1,]    0    0   10
-#> [2,]    0    1    9
-#> [3,]    0    2    8
-#> [4,]    0    3    7
-#> [5,]    0    4    6
-#> [6,]    1    2    7
-#> [7,]    1    3    6
-#> [8,]    1    4    5
-#> [9,]    2    3    5
+#>       [,1] [,2] [,3]
+#>  [1,]    0    0   10
+#>  [2,]    0    1    9
+#>  [3,]    0    2    8
+#>  [4,]    0    3    7
+#>  [5,]    0    4    6
+#>  [6,]    1    2    7
+#>  [7,]    1    3    6
+#>  [8,]    1    4    5
+#>  [9,]    2    3    5
 
 ## m is NULL and output has at most 2 zeros
 partitionsGeneral(0:10, freqs = c(2, rep(1, 10)))
-#>      [,1] [,2] [,3] [,4]
-#> [1,]    0    0    1    9
-#> [2,]    0    0    2    8
-#> [3,]    0    0    3    7
-#> [4,]    0    0    4    6
-#> [5,]    0    1    2    7
-#> [6,]    0    1    3    6
-#> [7,]    0    1    4    5
-#> [8,]    0    2    3    5
-#> [9,]    1    2    3    4
+#>       [,1] [,2] [,3] [,4]
+#>  [1,]    0    0    1    9
+#>  [2,]    0    0    2    8
+#>  [3,]    0    0    3    7
+#>  [4,]    0    0    4    6
+#>  [5,]    0    1    2    7
+#>  [6,]    0    1    3    6
+#>  [7,]    0    1    4    5
+#>  [8,]    0    2    3    5
+#>  [9,]    1    2    3    4
 ```
 
-### Case 4: Integer Partitions of _N_ into Parts of Varying Multiplicity
+### Case 4: Integer Partitions of *N* into Parts of Varying Multiplicity
 
-```r
+``` r
 ## partitions of 12 into 4 parts where each part can
 ## be used a specific number of times (e.g. 2 or 3)
 partitionsGeneral(12, 4, freqs = rep(2:3, 6))
@@ -506,20 +519,20 @@ partitionsGeneral(12, 4, freqs = rep(2:3, 6))
 
 Note, as of version `2.5.0`, one can generate partitions in parallel using the `nThreads` argument.
 
-```r
+``` r
 ## partitions of 60
 partitionsCount(0:60, repetition = TRUE)
 #> [1] 966467
 
 ## Single threaded
 system.time(partitionsGeneral(0:60, repetition = TRUE))
-#>  user  system elapsed
-#> 0.092   0.051   0.143
+#>    user  system elapsed 
+#>   0.025   0.012   0.036
 
 ## Using nThreads
 system.time(partitionsGeneral(0:60, repetition = TRUE, nThreads=4))
-#>  user  system elapsed
-#> 0.116   0.103   0.056
+#>    user  system elapsed 
+#>   0.032   0.023   0.014
 
 
 ## partitions of 120 into distinct parts
@@ -527,12 +540,12 @@ partitionsCount(0:120, freqs = c(120, rep(1, 120)))
 #> [1] 2194432
 
 system.time(partitionsGeneral(0:120, freqs = c(120, rep(1, 120))))
-#>  user  system elapsed
-#>  0.11    0.00    0.11
+#>    user  system elapsed 
+#>   0.020   0.007   0.027
 
 system.time(partitionsGeneral(0:120, freqs = c(120, rep(1, 120)), nThreads=4))
-#>  user  system elapsed
-#> 0.146   0.001   0.038
+#>    user  system elapsed 
+#>   0.023   0.005   0.008
 
 
 ## partitions of 100 into parts of 15 with specific multiplicity
@@ -541,23 +554,23 @@ partitionsCount(100, 15, freqs = rep(4:8, 20))
 
 ## Over 6 million in just over a second!
 system.time(partitionsGeneral(100, 15, freqs = rep(4:8, 20)))
-#>    user  system elapsed
-#>   0.735   0.366   1.100
+#>    user  system elapsed 
+#>   0.300   0.088   0.388
 ```
 
 ## Integer Compositions
 
-[Compositions](<https://en.wikipedia.org/wiki/Composition_(combinatorics)>) are related to integer partitions, however order matters. With `RcppAlgos`, we generate standard compositions with `compositionsGeneral`. Currently, the composition algorithms are limited to a subset of cases of compositions with repetiion.
+[Compositions](<https://en.wikipedia.org/wiki/Composition_\(combinatorics\)>) are related to integer partitions, however order matters. With `RcppAlgos`, we generate standard compositions with `compositionsGeneral`. Currently, the composition algorithms are limited to a subset of cases of compositions with repetiion.
 
-The output with `compositionGeneral` will be in lexicographical order. When we set `weak = TRUE`, we will obtain **_weak compositions_**, which allow for zeros to be a part of the sequence (E.g. `c(0, 0, 5), c(0, 5, 0), c(5, 0, 0)` are weak compositions of 5). As the Wikipedia article points out, we can increase the number of zeros indefinitely when `weak = TRUE`.
+The output with `compositionGeneral` will be in lexicographical order. When we set `weak = TRUE`, we will obtain ***weak compositions***, which allow for zeros to be a part of the sequence (E.g. `c(0, 0, 5), c(0, 5, 0), c(5, 0, 0)` are weak compositions of 5). As the Wikipedia article points out, we can increase the number of zeros indefinitely when `weak = TRUE`.
 
 For more general cases, we can make use of `permuteGeneral`, keeping in mind that the output will not be in lexicographical order. Another consideration with `permuteGeneral` is that when we include zero, we will always obtain weak compositions.
 
 With that in mind, generating compositions with `RcppAlgos` is easy, flexible, and quite efficient.
 
-### Case 5: All Compositions of _N_
+### Case 5: All Compositions of *N*
 
-```r
+``` r
 ## See Case 1
 compositionsGeneral(0:3, repetition = TRUE)
 #>      [,1] [,2] [,3]
@@ -619,9 +632,9 @@ tail(permuteGeneral(0:3, 10, repetition = TRUE,
 #> [220,]    1    1    1    0    0    0    0    0    0     0
 ```
 
-### Case 6: Compositions of _N_ of Length _m_
+### Case 6: Compositions of *N* of Length *m*
 
-```r
+``` r
 ## See Case 2. N.B. weak = TRUE has no effect
 compositionsGeneral(6, 3, repetition = TRUE)
 #>       [,1] [,2] [,3]
@@ -637,11 +650,11 @@ compositionsGeneral(6, 3, repetition = TRUE)
 #> [10,]    4    1    1
 ```
 
-### Case 7: Compositions of _N_ into Distinct Parts
+### Case 7: Compositions of *N* into Distinct Parts
 
 We must use `permuteGeneral` here.
 
-```r
+``` r
 compositionsGeneral(6, 3)
 #> Error: Currently, there is no composition algorithm for this case.
 #>  Use permuteCount, permuteIter, permuteGeneral, permuteSample, or
@@ -660,9 +673,9 @@ permuteGeneral(6, 3,
 #> [6,]    3    2    1
 ```
 
-### Case 8: Integer Compositions of _N_ into Parts of Varying Multiplicity
+### Case 8: Integer Compositions of *N* into Parts of Varying Multiplicity
 
-```r
+``` r
 ## compositions of 5 into 3 parts where each part can
 ## be used a maximum of 2 times.
 permuteGeneral(5, 3, freqs = rep(2, 5),
@@ -682,11 +695,11 @@ permuteGeneral(5, 3, freqs = rep(2, 5),
 
 With `compositionGeneral` we are able to take advantage of parallel computation. With `permuteGeneral`, the parallel options have no effect when generating compositions.
 
-```r
+``` r
 ## compositions of 25
 system.time(compositionsGeneral(0:25, repetition = TRUE))
-#>    user  system elapsed
-#>   1.624   0.384   2.013
+#>    user  system elapsed 
+#>   1.632   0.096   1.729
 
 compositionsCount(0:25, repetition=TRUE)
 #> [1] 16777216
@@ -694,23 +707,23 @@ compositionsCount(0:25, repetition=TRUE)
 ## Use multiple threads for greater efficiency. Generate
 ## over 16 million compositions in under a second!
 system.time(compositionsGeneral(0:25, repetition = TRUE, nThreads = 4))
-#>    user  system elapsed
-#>   1.921   0.465   0.734
+#>    user  system elapsed 
+#>   1.818   0.103   0.509
 
 
 ## weak compositions of 12 usnig nThreads = 4
 system.time(weakComp12 <- compositionsGeneral(0:12, repetition = TRUE,
                                               weak = TRUE, nThreads = 4))
-#>  user  system elapsed 
-#> 0.028   0.000   0.007
+#>    user  system elapsed 
+#>   0.012   0.007   0.005
 
 ## And using permuteGeneral
 system.time(weakPerm12 <- permuteGeneral(0:12, 12, repetition = TRUE,
                                          constraintFun = "sum",
                                          comparisonFun = "==",
                                          limitConstraints = 12))
-#>  user  system elapsed
-#> 0.021   0.000   0.021
+#>    user  system elapsed 
+#>   0.012   0.003   0.015
 
 dim(weakPerm12)
 #> [1] 1352078      12
@@ -725,8 +738,8 @@ system.time(comp25_gen <- permuteGeneral(25, 10, freqs = rep(4:8, 5),
                                          constraintFun = "sum",
                                          comparisonFun = "==",
                                          limitConstraints = 25))
-#>    user  system elapsed
-#>   0.045   0.009   0.054
+#>    user  system elapsed 
+#>   0.025   0.006   0.031
 
 dim(comp25_gen)
 #> [1] 946092     10
@@ -734,11 +747,11 @@ dim(comp25_gen)
 
 ## Safely Interrupt Execution with `cpp11::check_user_interrupt`
 
-Some of these operations can take some time, especially when you are in the exploratory phase and you don't have that much information about what type of solution you will obtain. For this reason, we have added the ability to interrupt execution. Under the hood, we call `cpp11::check_user_interrupt()` once every second to check if the user has requested for the process to be interrupted. Note that we only check for user interruptions when we cannot determine the number of results up front.
+Some of these operations can take some time, especially when you are in the exploratory phase and you don’t have that much information about what type of solution you will obtain. For this reason, we have added the ability to interrupt execution. Under the hood, we call `cpp11::check_user_interrupt()` once every second to check if the user has requested for the process to be interrupted. Note that we only check for user interruptions when we cannot determine the number of results up front.
 
 This means that if we initiate a process that will take a long time or exhaust all of the available memory (e.g. we forget to put an upper limit on the number of results, relax the tolerance, etc.), we can simply hit `Ctrl + c`, or `esc` if using `RStudio`, to stop execution.
 
-```r
+``` r
 set.seed(123)
 s = rnorm(1000)
 
@@ -750,8 +763,10 @@ s = rnorm(1000)
 ## No problem... simply hit Ctrl + c or if in RStudio, hit esc
 ## or hit the "Stop" button
 
-system.time(testInterrupt <- partitionsGeneral(s, 20, TRUE, target = 0))
-#> Timing stopped at: 2.012 0.006 2.023
+##
+## system.time(testInterrupt <- partitionsGeneral(s, 20, TRUE, target = 0))
+## Timing stopped at: 1.029 0.011 1.04
+##
 ```
 
 ### Note about Interrupting Execution
@@ -760,14 +775,14 @@ Generally, we encourage user to use iterators (See [Combinatorial Iterators in R
 
 Here is an example of how to investigate difficult problems due to combinatorial explosion without fear of having to restart R.
 
-```r
+``` r
 ## We use "s" defined above
 iter = partitionsIter(s, 20, TRUE, target = 0)
 
 ## Test one iteration to see if we need to relax the tolerance
 system.time(iter@nextIter())
-#>    user  system elapsed
-#>   7.777   0.005   7.783
+#>    user  system elapsed 
+#>   5.284   0.017   5.301
 
 ## 8 seconds per iteration is a bit much... Let's loosen things
 ## a little by increasing the tolerance from sqrt(.Machine$double.eps)
@@ -775,6 +790,6 @@ system.time(iter@nextIter())
 relaxedIter = partitionsIter(s, 20, TRUE, target = 0, tolerance = 1e-5)
 
 system.time(relaxedIter@nextIter())
-#>    user  system elapsed
-#>   0.001   0.000   0.001
+#>    user  system elapsed 
+#>   0.000   0.000   0.001
 ```

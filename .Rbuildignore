@@ -7,3 +7,4 @@ remove_whitespace.sh
 ^docs$
 ^vignettes/*.html
 scripts/*
+create_md.R

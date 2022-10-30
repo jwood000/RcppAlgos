@@ -150,10 +150,12 @@ reprex::reprex({
     ## RcppAlgos uses the "number of threads available minus one" when Parallel is TRUE
     RcppAlgos::stdThreadMax()
 
+    comboCount(26, 13)
+
     ## Compared to combn using 4 threads
-    microbenchmark(combn = combn(25, 10),
-                   serAlgos = comboGeneral(25, 10),
-                   parAlgos = comboGeneral(25, 10, nThreads = 4),
+    microbenchmark(combn = combn(26, 13),
+                   serAlgos = comboGeneral(26, 13),
+                   parAlgos = comboGeneral(26, 13, nThreads = 4),
                    times = 10,
                    unit = "relative")
 
@@ -176,7 +178,7 @@ reprex::reprex({
     #'
     #' ### Generating Results Beyond `.Machine$integer.max`
     #'
-    #'
+    #' In addition to being useful by avoiding the unnecessary overhead of generating all combination/permutations followed by subsetting just to see a few specific results, lower and upper can be utilized to generate large number of combinations/permutations in parallel (see this [stackoverflow post](<https://stackoverflow.com/a/51595866/4408538>) for a real use case). Observe:
 
     ## Over 3 billion results
     comboCount(35, 15)

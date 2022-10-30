@@ -244,16 +244,17 @@ reprex::reprex({
     Rprof("Version243.out", memory.profiling = TRUE)
     test_nextIter(25, 10)
     Rprof(NULL)
-    summaryRprof("Version243.out", memory = "both")
+    lapply(summaryRprof("Version243.out", memory = "both"), head)
 
     #'
-    #' #### Version `r packageVersion("RcppAlgos")` (No `Rcpp`)
+    #' #### Version ``r packageVersion("RcppAlgos")`` (No `Rcpp`)
     #'
 
     curr_version <- as.integer(gsub("\\.", "", packageVersion("RcppAlgos")))
-    microbenchmark(test_nextIter(15, 8, v = curr_version))
+    curr_version
+    microbenchmark(curr_v = test_nextIter(15, 8, v = curr_version))
 
-    system.time(curr_v = test_nextIter(25, 10, v = curr_version))
+    system.time(test_nextIter(25, 10, v = curr_version))
 
     identical(test_nextIter(15, 8, get_val = TRUE, v = curr_version),
               comboGeneral(15, 8))
@@ -261,7 +262,7 @@ reprex::reprex({
     Rprof("Version250.out", memory.profiling = TRUE)
     test_nextIter(25, 10, v = curr_version)
     Rprof(NULL)
-    summaryRprof("Version250.out", memory = "both")
+    lapply(summaryRprof("Version250.out", memory = "both"), head)
 
     #'
     #' #### Conclusions
@@ -280,7 +281,7 @@ reprex::reprex({
     v250
 
     #'
-    #' With verison `2.5.0` there are only `r v250[[1]][["tot.duplications"]]` `tot.duplications` whereas with version `2.4.3` there are millions of `tot.duplications`. In fact, there are a total of `r format(v243[[1]][["tot.duplications"]], scientific=FALSE)` duplications with version `2.4.3`. This together with `comboCount(25, 10) = 3,268,760` implies that the C funciton, `duplicate`, is called about 3 times per iteration with older versions (i.e. `r format(v243[[1]][["tot.duplications"]], scientific=FALSE)` ` / 3268760 ~= ` `r round(v243[[1]][["tot.duplications"]] / 3268760, 4)`).
+    #' With verison `2.5.0+` there are only `r v250[[1]][["tot.duplications"]]` `tot.duplications` whereas with version `2.4.3` there are millions of `tot.duplications`. In fact, there are a total of `r format(v243[[1]][["tot.duplications"]], scientific=FALSE)` duplications with version `2.4.3`. This together with `comboCount(25, 10) = 3,268,760` implies that the C funciton, `duplicate`, is called about 3 times per iteration with older versions (i.e. `r format(v243[[1]][["tot.duplications"]], scientific=FALSE)` ` / 3268760 ~= ` `r round(v243[[1]][["tot.duplications"]] / 3268760, 4)`).
     #'
     #' ### Iterating over Partitions and Compositions of a Number
     #'

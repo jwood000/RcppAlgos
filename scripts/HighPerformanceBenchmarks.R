@@ -3,7 +3,7 @@ reprex::reprex({
     #'
     #' ## Setup Information
     #'
-    #' For the benchmarks below, we used a `2022 Macbook Air Apple M2 24 GB` machine. We also tested on a Windows and Linux machine with similar specs and obtained similar results.
+    #' For the benchmarks below, we used a `2022 Macbook Air Apple M2 24 GB` machine.
     #'
 
     library(RcppAlgos)
@@ -258,7 +258,6 @@ reprex::reprex({
     microbenchmark(cbRcppAlgos = partitionsGeneral(120, 10, freqs=rep(1:8, 15)),
                    times = 10)
 
-    ### In RcppAlgos 2.3.6 - 2.4.3
     #'
     #'
     #' ## Compositions

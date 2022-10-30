@@ -45,8 +45,10 @@ reprex::reprex({
     system.time(a <- primeSieve(1e15, 1e15 + 1e9))
 
     invisible(gc())
-    ## And nThreads we much faster
+    ## And using nThreads is much much faster
     system.time(b <- primeSieve(1e15, 1e15 + 1e9, nThreads = 8))
+
+    identical(old, a)
 
     identical(a, b)
 
@@ -75,7 +77,10 @@ reprex::reprex({
     underOneHundredTrillion
 
     ## Still not as fast as Kim Walisch's primecount library:
-    system("primecount 1e14 --legendre --time")
+    cat(paste(
+        system("primecount 1e14 --legendre --time", intern = TRUE),
+        collapse = "\n"
+    ))
 
     #'
     #' ## Other Sieving Functions
