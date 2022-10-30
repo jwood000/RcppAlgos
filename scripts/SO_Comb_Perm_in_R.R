@@ -73,8 +73,11 @@ reprex::reprex({
     library(microbenchmark)
     ## print up to 4 digits to keep microbenchmark output tidy
     options(digits = 4)
-    numThreads <- as.integer(RcppAlgos::stdThreadMax() / 2)
-    print(numThreads)
+    options(width = 90)
+
+    numThreads <- min(as.integer(RcppAlgos::stdThreadMax() / 2), 6)
+    numThreads
+
     pkgs <- c("gtools", "combinat", "multicool", "partitions",
               "RcppAlgos", "arrangements", "microbenchmark")
     sapply(pkgs, packageVersion, simplify = FALSE)
