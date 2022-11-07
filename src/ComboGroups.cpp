@@ -151,21 +151,22 @@ void SampleResults(RcppParallel::RMatrix<T> GroupsMat,
 void GroupWorker(SEXP GroupsMat, SEXP v, std::vector<int> &z,
                  int nRows, int n, int r, int grpSize) {
 
-    const int idx1 = (r - 1) * grpSize - 1;
-    const int idx2 = Rf_length(v) - 1;
-    const int last1 = (r - 2) * grpSize + 1;
-    const int lastRow = nRows - 1;
 
-    for (int i = 0; i < nRows; ++i) {
+    for (int i = 0,
+         lastRow = nRows - 1,
+         idx1    = (r - 1) * grpSize - 1,
+         idx2    = z.size() - 1,
+         low_one = (r - 2) * grpSize + 1; i < lastRow; ++i) {
+
         for (int j = 0; j < n; ++j) {
             SET_STRING_ELT(GroupsMat, i + j * nRows, STRING_ELT(v, z[j]));
         }
 
-        nextComboGroup(z, r, grpSize, idx1, idx2, last1);
+        nextComboGroup(z, grpSize, idx1, idx2, low_one);
     }
 
     // Get last combo group
-    for (int j = 0; j < n; ++j) {
+    for (int j = 0, lastRow = nRows - 1; j < n; ++j) {
         SET_STRING_ELT(GroupsMat, lastRow + j * nRows, STRING_ELT(v, z[j]));
     }
 }
@@ -175,21 +176,21 @@ void GroupWorker(T* GroupsMat, const std::vector<T> &v,
                  std::vector<int> &z, int nRows, int n,
                  int r, int grpSize) {
 
-    const int idx1 = (r - 1) * grpSize - 1;
-    const int idx2 = v.size() - 1;
-    const int last1 = (r - 2) * grpSize + 1;
-    const int lastRow = nRows - 1;
+    for (int i = 0,
+         lastRow = nRows - 1,
+         idx1    = (r - 1) * grpSize - 1,
+         idx2    = z.size() - 1,
+         low_one = (r - 2) * grpSize + 1; i < lastRow; ++i) {
 
-    for (int i = 0; i < lastRow; ++i) {
         for (int j = 0; j < n; ++j) {
             GroupsMat[i + j * nRows] = v[z[j]];
         }
 
-        nextComboGroup(z, r, grpSize, idx1, idx2, last1);
+        nextComboGroup(z, grpSize, idx1, idx2, low_one);
     }
 
     // Get last combo group
-    for (int j = 0; j < n; ++j) {
+    for (int j = 0, lastRow = nRows - 1; j < n; ++j) {
         GroupsMat[lastRow + j * nRows] = v[z[j]];
     }
 }
@@ -199,21 +200,22 @@ void GroupWorker(RcppParallel::RMatrix<T> &GroupsMat,
                  const std::vector<T> &v, std::vector<int> &z, int n,
                  int r, int grpSize, int strtIdx, int endIdx) {
 
-    const int idx1 = (r - 1) * grpSize - 1;
-    const int idx2 = v.size() - 1;
-    const int last1 = (r - 2) * grpSize + 1;
-    const int lastRow = endIdx - 1;
 
-    for (int i = strtIdx; i < lastRow; ++i) {
+    for (int i = strtIdx,
+         lastRow = endIdx - 1,
+         idx1    = (r - 1) * grpSize - 1,
+         idx2    = z.size() - 1,
+         low_one = (r - 2) * grpSize + 1; i < lastRow; ++i) {
+
         for (int j = 0; j < n; ++j) {
             GroupsMat(i, j) = v[z[j]];
         }
 
-        nextComboGroup(z, r, grpSize, idx1, idx2, last1);
+        nextComboGroup(z, grpSize, idx1, idx2, low_one);
     }
 
     // Get last combo group
-    for (int j = 0; j < n; ++j) {
+    for (int j = 0, lastRow = endIdx - 1; j < n; ++j) {
         GroupsMat(lastRow, j) = v[z[j]];
     }
 }
