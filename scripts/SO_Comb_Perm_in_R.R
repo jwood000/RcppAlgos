@@ -82,7 +82,7 @@ reprex::reprex({
               "RcppAlgos", "arrangements", "microbenchmark")
     sapply(pkgs, packageVersion, simplify = FALSE)
 
-    #' The listed results were obtained from setup #1 (i.e. MBPro). The results for the other two systems were similar. Also, `gc()` is periodically called to ensure all memory is available (See `?gc`). We will call all functions with the pattern `package::function` so no `library` calls are needed.
+    #' The listed results were obtained from setup #1 (i.e. Macbook Air M2). The results on the Macbook Pro were similar, however with the Windows setup, multi-threading was less effective. In some cases on the Windows setup, the serial execution was faster. We will call all functions with the pattern `package::function` so no `library` calls are needed.
     #'
     #' ## 3. Combinations
     #'
@@ -364,6 +364,7 @@ reprex::reprex({
 
     icomb <- arrangements::icombinations(1000, 7)
     icomb$getnext()
+
     icomb$getnext(d = 5)
 
     #' This feature is really nice when you only want a few combinations/permutations. With traditional methods, you would have to generate all combinations/permutations and then subset. This would render the previous example impossible as there are more than `10^17` results (i.e. `ncombinations(1000, 7, bigz = TRUE)` = 194280608456793000).
@@ -387,14 +388,32 @@ reprex::reprex({
     #' Observe:
 
     iter <- RcppAlgos::comboIter(1000, 7)
-    iter@nextIter()              # first combinations
-    iter@nextNIter(5)            # next 5 combinations
-    iter@prevIter()              # from the current state, the previous combination
-    iter@back()                  # the last combination
-    iter[[5]]                    # the 5th combination
-    iter[[c(1, 3, 5)]]           # you can even pass a vector of indices
-    iter[[gmp::pow.bigz(2, 31)]] # start iterating from any index
-    iter@summary()               # get useful info about the current state
+
+    # first combinations
+    iter@nextIter()
+
+    # next 5 combinations
+    iter@nextNIter(5)
+
+    # from the current state, the previous combination
+    iter@prevIter()
+
+    # the last combination
+    iter@back()
+
+    # the 5th combination
+    iter[[5]]
+
+    # you can even pass a vector of indices
+    iter[[c(1, 3, 5)]]
+
+    # start iterating from any index
+    iter[[gmp::pow.bigz(2, 31)]]
+
+    # get useful info about the current state
+    iter@summary()
+
+    ## get next ieteration
     iter@nextIter()
 
     #' In case you were wondering how each package scales, I will leave you with this final example that measures how fast `RcppAlgos` and the `arrangements` packages can generate over 100 million results. Note, `gtools::combinations` is left out here as it will throw the error: `evaluation nested too deeply...`. We also leave out `combn` as it takes quite some time to execute. Curiously, the differences in memory usage between `utils::combn` and `combinat::combn` is quite bizarre given that they are only marginally different (see `?utils::combn` under the "Authors" section).
