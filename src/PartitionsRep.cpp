@@ -5,7 +5,8 @@
 
 template <typename T>
 void PartsGenRep(T* mat, const std::vector<T> &v, std::vector<int> &z,
-                 int width, int lastElem, int lastCol, int nRows) {
+                 std::size_t width, int lastElem,
+                 int lastCol, std::size_t nRows) {
 
     int edge = 0;
     int pivot = 0;
@@ -13,10 +14,10 @@ void PartsGenRep(T* mat, const std::vector<T> &v, std::vector<int> &z,
 
     PrepareRepPart(z, boundary, pivot, edge, lastElem, lastCol);
 
-    for (int count = 0; count < nRows; ++count,
+    for (std::size_t count = 0; count < nRows; ++count,
          NextRepGenPart(z, boundary, edge, pivot, lastCol, lastElem)) {
 
-        for (int k = 0; k < width; ++k) {
+        for (std::size_t k = 0; k < width; ++k) {
             mat[count + nRows * k] = v[z[k]];
         }
     }
@@ -24,8 +25,8 @@ void PartsGenRep(T* mat, const std::vector<T> &v, std::vector<int> &z,
 
 template <typename T>
 void PartsGenRep(RcppParallel::RMatrix<T> &mat, const std::vector<T> &v,
-                 std::vector<int> &z, int strt, int width, int lastElem,
-                 int lastCol, int nRows) {
+                 std::vector<int> &z, int strt, std::size_t width,
+                 int lastElem, int lastCol, std::size_t nRows) {
 
     int edge = 0;
     int pivot = 0;
@@ -33,10 +34,10 @@ void PartsGenRep(RcppParallel::RMatrix<T> &mat, const std::vector<T> &v,
 
     PrepareRepPart(z, boundary, pivot, edge, lastElem, lastCol);
 
-    for (int count = strt; count < nRows; ++count,
+    for (std::size_t count = strt; count < nRows; ++count,
          NextRepGenPart(z, boundary, edge, pivot, lastCol, lastElem)) {
 
-        for (int k = 0; k < width; ++k) {
+        for (std::size_t k = 0; k < width; ++k) {
             mat(count, k) = v[z[k]];
         }
     }
@@ -44,7 +45,8 @@ void PartsGenRep(RcppParallel::RMatrix<T> &mat, const std::vector<T> &v,
 
 template <typename T>
 void PartsGenPermRep(T* mat, const std::vector<T> &v, std::vector<int> &z,
-                     int width, int lastElem, int lastCol, int nRows) {
+                     std::size_t width, int lastElem,
+                     int lastCol, std::size_t nRows) {
 
     int edge = 0;
     int pivot = 0;
@@ -52,11 +54,11 @@ void PartsGenPermRep(T* mat, const std::vector<T> &v, std::vector<int> &z,
 
     PrepareRepPart(z, boundary, pivot, edge, lastElem, lastCol);
 
-    for (int count = 0; ;
+    for (std::size_t count = 0; ;
          NextRepPart(z, boundary, edge, lastCol)) {
 
         do {
-            for (int k = 0; k < width; ++k) {
+            for (std::size_t k = 0; k < width; ++k) {
                 mat[count + nRows * k] = v[z[k]];
             }
 
@@ -69,7 +71,8 @@ void PartsGenPermRep(T* mat, const std::vector<T> &v, std::vector<int> &z,
 
 template <typename T>
 void PartsGenRep(std::vector<T> &partsVec, const std::vector<T> &v,
-                 std::vector<int> &z, int width, int nRows, bool IsComb) {
+                 std::vector<int> &z, std::size_t width,
+                 std::size_t nRows, bool IsComb) {
 
     int edge = 0;
     int pivot = 0;
@@ -80,22 +83,22 @@ void PartsGenRep(std::vector<T> &partsVec, const std::vector<T> &v,
 
     PrepareRepPart(z, boundary, pivot, edge, lastElem, lastCol);
 
-    for (int count = 0; (edge >= 0) && (z[boundary] - z[edge] >= 2);
+    for (std::size_t count = 0; (edge >= 0) && (z[boundary] - z[edge] >= 2);
          NextRepGenPart(z, boundary, edge, pivot, lastCol, lastElem)) {
 
         PopulateVec(v, partsVec, z, count, width, nRows, IsComb);
         if (count >= nRows) break;
     }
 
-    int count = partsVec.size() / width;
+    std::size_t count = partsVec.size() / width;
 
     if (count < nRows) {
         PopulateVec(v, partsVec, z, count, width, nRows, IsComb);
     }
 }
 
-void PartsRep(int* mat, std::vector<int> &z, int width,
-              int lastElem, int lastCol, int nRows) {
+void PartsRep(int* mat, std::vector<int> &z, std::size_t width,
+              int lastElem, int lastCol, std::size_t nRows) {
 
     int edge = 0;
     int pivot = 0;
@@ -103,17 +106,18 @@ void PartsRep(int* mat, std::vector<int> &z, int width,
 
     PrepareRepPart(z, boundary, pivot, edge, lastElem, lastCol);
 
-    for (int count = 0; count < nRows; ++count,
+    for (std::size_t count = 0; count < nRows; ++count,
          NextRepPart(z, boundary, edge, lastCol)) {
 
-        for (int k = 0; k < width; ++k) {
+        for (std::size_t k = 0; k < width; ++k) {
             mat[count + nRows * k] = z[k];
         }
     }
 }
 
 void PartsRep(RcppParallel::RMatrix<int> &mat, std::vector<int> &z,
-              int strt, int width, int lastElem, int lastCol, int nRows) {
+              int strt, std::size_t width, int lastElem,
+              int lastCol, std::size_t nRows) {
 
     int edge = 0;
     int pivot = 0;
@@ -121,17 +125,17 @@ void PartsRep(RcppParallel::RMatrix<int> &mat, std::vector<int> &z,
 
     PrepareRepPart(z, boundary, pivot, edge, lastElem, lastCol);
 
-    for (int count = strt; count < nRows; ++count,
+    for (std::size_t count = strt; count < nRows; ++count,
          NextRepPart(z, boundary, edge, lastCol)) {
 
-        for (int k = 0; k < width; ++k) {
+        for (std::size_t k = 0; k < width; ++k) {
             mat(count, k) = z[k];
         }
     }
 }
 
-void PartsPermRep(int* mat, std::vector<int> &z, int width,
-                  int lastElem, int lastCol, int nRows) {
+void PartsPermRep(int* mat, std::vector<int> &z, std::size_t width,
+                  int lastElem, int lastCol, std::size_t nRows) {
 
     int edge = 0;
     int pivot = 0;
@@ -139,11 +143,11 @@ void PartsPermRep(int* mat, std::vector<int> &z, int width,
 
     PrepareRepPart(z, boundary, pivot, edge, lastElem, lastCol);
 
-    for (int count = 0; ;
+    for (std::size_t count = 0; ;
          NextRepPart(z, boundary, edge, lastCol)) {
 
         do {
-            for (int k = 0; k < width; ++k) {
+            for (std::size_t k = 0; k < width; ++k) {
                 mat[count + nRows * k] = z[k];
             }
 
@@ -155,23 +159,27 @@ void PartsPermRep(int* mat, std::vector<int> &z, int width,
 }
 
 template void PartsGenRep(int*, const std::vector<int>&,
-                          std::vector<int>&, int, int, int, int);
+                          std::vector<int>&, std::size_t,
+                          int, int, std::size_t);
 template void PartsGenRep(double*, const std::vector<double>&,
-                          std::vector<int>&, int, int, int, int);
+                          std::vector<int>&, std::size_t,
+                          int, int, std::size_t);
 
 template void PartsGenRep(RcppParallel::RMatrix<int>&,
                           const std::vector<int>&, std::vector<int> &z,
-                          int, int, int, int, int);
+                          int, std::size_t, int, int, std::size_t);
 template void PartsGenRep(RcppParallel::RMatrix<double>&,
                           const std::vector<double>&, std::vector<int> &z,
-                          int, int, int, int, int);
+                          int, std::size_t, int, int, std::size_t);
 
 template void PartsGenRep(std::vector<int>&, const std::vector<int>&,
-                          std::vector<int>&, int, int, bool);
+                          std::vector<int>&, std::size_t, std::size_t, bool);
 template void PartsGenRep(std::vector<double>&, const std::vector<double>&,
-                          std::vector<int>&, int, int, bool);
+                          std::vector<int>&, std::size_t, std::size_t, bool);
 
 template void PartsGenPermRep(int*, const std::vector<int>&,
-                              std::vector<int>&, int, int, int, int);
+                              std::vector<int>&, std::size_t,
+                              int, int, std::size_t);
 template void PartsGenPermRep(double*, const std::vector<double>&,
-                              std::vector<int>&, int, int, int, int);
+                              std::vector<int>&, std::size_t,
+                              int, int, std::size_t);

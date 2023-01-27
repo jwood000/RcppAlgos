@@ -6,7 +6,8 @@ SEXP ComboRes::ApplyFun(SEXP mat) {
         return mat;
     }
 
-    const int nRows = Rf_nrows(mat);
+    const std::size_t nRows = Rf_nrows(mat);
+    const std::size_t u_width = width;
     cpp11::sexp res = Rf_allocMatrix(RTYPE, nRows, nCols);
 
     if (RTYPE == INTSXP) {
@@ -14,26 +15,26 @@ SEXP ComboRes::ApplyFun(SEXP mat) {
         int* ptrIn  = INTEGER(mat);
         std::vector<int> vPass(width);
 
-        for (int i = 0; i < nRows; ++i) {
-            for (int j = 0; j < width; ++j) {
+        for (std::size_t i = 0; i < nRows; ++i) {
+            for (std::size_t j = 0; j < u_width; ++j) {
                 vPass[j] = ptrIn[i + nRows * j];
                 ptrOut[i + nRows * j] = vPass[j];
             }
 
-            ptrOut[i + nRows * width] = funInt(vPass, width);
+            ptrOut[i + nRows * u_width] = funInt(vPass, width);
         }
     } else {
         double* ptrOut = REAL(res);
         double* ptrIn  = REAL(mat);
         std::vector<double> vPass(width);
 
-        for (int i = 0; i < nRows; ++i) {
-            for (int j = 0; j < width; ++j) {
+        for (std::size_t i = 0; i < nRows; ++i) {
+            for (std::size_t j = 0; j < u_width; ++j) {
                 vPass[j] = ptrIn[i + nRows * j];
                 ptrOut[i + nRows * j] = vPass[j];
             }
 
-            ptrOut[i + nRows * width] = funDbl(vPass, width);
+            ptrOut[i + nRows * u_width] = funDbl(vPass, width);
         }
     }
 

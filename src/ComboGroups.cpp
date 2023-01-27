@@ -92,25 +92,26 @@ void SampleResults(T* GroupsMat, const std::vector<T> &v,
                    const std::vector<double> &mySample,
                    const std::vector<mpz_class> &myBigSamp,
                    const mpz_class &computedRowMpz, double computedRows,
-                   int sampSize, int n, int r, int grpSize, bool IsGmp) {
+                   std::size_t sampSize, std::size_t n, int r,
+                   int grpSize, bool IsGmp) {
 
     if (IsGmp) {
-        for (int i = 0; i < sampSize; ++i) {
+        for (std::size_t i = 0; i < sampSize; ++i) {
             const std::vector<int> z = nthComboGroupGmp(
                 n, grpSize, r, myBigSamp[i], computedRowMpz
             );
 
-            for (int j = 0; j < n; ++j) {
+            for (std::size_t j = 0; j < n; ++j) {
                 GroupsMat[i + sampSize * j] = v[z[j]];
             }
         }
     } else {
-        for (int i = 0; i < sampSize; ++i) {
+        for (std::size_t i = 0; i < sampSize; ++i) {
             const std::vector<int> z = nthComboGroup(
                 n, grpSize, r, mySample[i], computedRows
             );
 
-            for (int j = 0; j < n; ++j) {
+            for (std::size_t j = 0; j < n; ++j) {
                 GroupsMat[i + sampSize * j] = v[z[j]];
             }
         }
@@ -122,26 +123,27 @@ void SampleResults(RcppParallel::RMatrix<T> GroupsMat,
                    const std::vector<T> &v,
                    const std::vector<double> &mySample,
                    const std::vector<mpz_class> &myBigSamp,
-                   const mpz_class &computedRowMpz, double computedRows, int n,
-                   int r, int grpSize, bool IsGmp, int strtIdx, int endIdx) {
+                   const mpz_class &computedRowMpz, double computedRows,
+                   std::size_t n, int r, int grpSize, bool IsGmp,
+                   std::size_t strtIdx, std::size_t endIdx) {
 
     if (IsGmp) {
-        for (int i = strtIdx; i < endIdx; ++i) {
+        for (std::size_t i = strtIdx; i < endIdx; ++i) {
             const std::vector<int> z = nthComboGroupGmp(
                 n, grpSize, r, myBigSamp[i], computedRowMpz
             );
 
-            for (int j = 0; j < n; ++j) {
+            for (std::size_t j = 0; j < n; ++j) {
                 GroupsMat(i, j) = v[z[j]];
             }
         }
     } else {
-        for (int i = strtIdx; i < endIdx; ++i) {
+        for (std::size_t i = strtIdx; i < endIdx; ++i) {
             const std::vector<int> z = nthComboGroup(
                 n, grpSize, r, mySample[i], computedRows
             );
 
-            for (int j = 0; j < n; ++j) {
+            for (std::size_t j = 0; j < n; ++j) {
                 GroupsMat(i, j) = v[z[j]];
             }
         }
@@ -149,15 +151,15 @@ void SampleResults(RcppParallel::RMatrix<T> GroupsMat,
 }
 
 void GroupWorker(SEXP GroupsMat, SEXP v, std::vector<int> &z,
-                 int nRows, int n, int r, int grpSize) {
+                 std::size_t nRows, std::size_t n, int r, int grpSize) {
 
     const int idx1 = (r - 1) * grpSize - 1;
     const int idx2 = Rf_length(v) - 1;
     const int last1 = (r - 2) * grpSize + 1;
-    const int lastRow = nRows - 1;
+    const std::size_t lastRow = nRows - 1;
 
-    for (int i = 0; i < nRows; ++i) {
-        for (int j = 0; j < n; ++j) {
+    for (std::size_t i = 0; i < lastRow; ++i) {
+        for (std::size_t j = 0; j < n; ++j) {
             SET_STRING_ELT(GroupsMat, i + j * nRows, STRING_ELT(v, z[j]));
         }
 
@@ -165,23 +167,23 @@ void GroupWorker(SEXP GroupsMat, SEXP v, std::vector<int> &z,
     }
 
     // Get last combo group
-    for (int j = 0; j < n; ++j) {
+    for (std::size_t j = 0; j < n; ++j) {
         SET_STRING_ELT(GroupsMat, lastRow + j * nRows, STRING_ELT(v, z[j]));
     }
 }
 
 template <typename T>
 void GroupWorker(T* GroupsMat, const std::vector<T> &v,
-                 std::vector<int> &z, int nRows, int n,
-                 int r, int grpSize) {
+                 std::vector<int> &z, std::size_t nRows,
+                 std::size_t n, int r, int grpSize) {
 
     const int idx1 = (r - 1) * grpSize - 1;
     const int idx2 = v.size() - 1;
     const int last1 = (r - 2) * grpSize + 1;
-    const int lastRow = nRows - 1;
+    const std::size_t lastRow = nRows - 1;
 
-    for (int i = 0; i < lastRow; ++i) {
-        for (int j = 0; j < n; ++j) {
+    for (std::size_t i = 0; i < lastRow; ++i) {
+        for (std::size_t j = 0; j < n; ++j) {
             GroupsMat[i + j * nRows] = v[z[j]];
         }
 
@@ -189,23 +191,23 @@ void GroupWorker(T* GroupsMat, const std::vector<T> &v,
     }
 
     // Get last combo group
-    for (int j = 0; j < n; ++j) {
+    for (std::size_t j = 0; j < n; ++j) {
         GroupsMat[lastRow + j * nRows] = v[z[j]];
     }
 }
 
 template <typename T>
 void GroupWorker(RcppParallel::RMatrix<T> &GroupsMat,
-                 const std::vector<T> &v, std::vector<int> &z, int n,
-                 int r, int grpSize, int strtIdx, int endIdx) {
+                 const std::vector<T> &v, std::vector<int> &z, std::size_t n,
+                 int r, int grpSize, std::size_t strtIdx, std::size_t endIdx) {
 
     const int idx1 = (r - 1) * grpSize - 1;
     const int idx2 = v.size() - 1;
     const int last1 = (r - 2) * grpSize + 1;
-    const int lastRow = endIdx - 1;
+    const std::size_t lastRow = endIdx - 1;
 
-    for (int i = strtIdx; i < lastRow; ++i) {
-        for (int j = 0; j < n; ++j) {
+    for (std::size_t i = strtIdx; i < lastRow; ++i) {
+        for (std::size_t j = 0; j < n; ++j) {
             GroupsMat(i, j) = v[z[j]];
         }
 
@@ -213,7 +215,7 @@ void GroupWorker(RcppParallel::RMatrix<T> &GroupsMat,
     }
 
     // Get last combo group
-    for (int j = 0; j < n; ++j) {
+    for (std::size_t j = 0; j < n; ++j) {
         GroupsMat(lastRow, j) = v[z[j]];
     }
 }

@@ -28,37 +28,39 @@ void Partitions::MoveZToIndex() {
 SEXP Partitions::MultisetMatrix(int nRows) {
 
     cpp11::sexp res = Rf_allocMatrix(RTYPE, nRows, nCols);
-    const int lastRow = nRows - 1;
+    const std::size_t lastRow = nRows - 1;
+    const std::size_t unRows  = nRows;
+    const std::size_t unCols  = nCols;
 
     if (RTYPE == INTSXP) {
         int* ptrOut = INTEGER(res);
 
-        for (int i = 0; i < lastRow; ++i) {
-            for (int j = 0; j < nCols; ++j) {
-                ptrOut[i + j * nRows] = vInt[z[j]];
+        for (std::size_t i = 0; i < lastRow; ++i) {
+            for (std::size_t j = 0; j < unCols; ++j) {
+                ptrOut[i + j * unRows] = vInt[z[j]];
             }
 
             nextParts(rpsCnt, z, edge, boundary, pivot,
                       tarDiff, lastCol, lastElem);
         }
 
-        for (int j = 0; j < nCols; ++j) {
-            ptrOut[lastRow + j * nRows] = vInt[z[j]];
+        for (std::size_t j = 0; j < unCols; ++j) {
+            ptrOut[lastRow + j * unRows] = vInt[z[j]];
         }
     } else {
         double* ptrOut = REAL(res);
 
-        for (int i = 0; i < lastRow; ++i) {
-            for (int j = 0; j < nCols; ++j) {
-                ptrOut[i + j * nRows] = vNum[z[j]];
+        for (std::size_t i = 0; i < lastRow; ++i) {
+            for (std::size_t j = 0; j < unCols; ++j) {
+                ptrOut[i + j * unRows] = vNum[z[j]];
             }
 
             nextParts(rpsCnt, z, edge, boundary, pivot,
                       tarDiff, lastCol, lastElem);
         }
 
-        for (int j = 0; j < nCols; ++j) {
-            ptrOut[lastRow + j * nRows] = vNum[z[j]];
+        for (std::size_t j = 0; j < unCols; ++j) {
+            ptrOut[lastRow + j * unRows] = vNum[z[j]];
         }
     }
 

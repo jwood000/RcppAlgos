@@ -8,4 +8,4 @@ bool keepGoing(const std::vector<int> &rpsCnt, int lastElem,
 template <typename T>
 void PartsGenMultiset(std::vector<T> &partsVec, const std::vector<T> &v,
                       const std::vector<int> &Reps, std::vector<int> &z,
-                      int width, int nRows, bool IsComb);
+                      std::size_t width, std::size_t nRows, bool IsComb);

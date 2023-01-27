@@ -4,18 +4,18 @@
 template <typename T>
 void PopulateVec(const std::vector<T> &v,
                  std::vector<T> &cnstrntVec,
-                 std::vector<int> &z, int &count,
-                 int m, int nRows, bool IsComb) {
+                 std::vector<int> &z, std::size_t &count,
+                 std::size_t m, std::size_t nRows, bool IsComb) {
 
     if (IsComb) {
-        for (int k = 0; k < m; ++k) {
+        for (std::size_t k = 0; k < m; ++k) {
             cnstrntVec.push_back(v[z[k]]);
         }
 
         ++count;
     } else {
         do {
-            for (int k = 0; k < m; ++k) {
+            for (std::size_t k = 0; k < m; ++k) {
                 cnstrntVec.push_back(v[z[k]]);
             }
 
@@ -25,7 +25,9 @@ void PopulateVec(const std::vector<T> &v,
 }
 
 template void PopulateVec(const std::vector<int>&, std::vector<int>&,
-                          std::vector<int>&, int&, int, int, bool);
+                          std::vector<int>&, std::size_t&,
+                          std::size_t, std::size_t, bool);
 
 template void PopulateVec(const std::vector<double>&, std::vector<double>&,
-                          std::vector<int>&, int&, int, int, bool);
+                          std::vector<int>&, std::size_t&,
+                          std::size_t, std::size_t, bool);
