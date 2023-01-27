@@ -105,7 +105,7 @@
     <div id="details">
     <h2>Details</h2>
     <p>This function is useful when many prime factorizations are needed. Instead of generating the prime factorization on the fly, one can reference the indices/names of the generated list.</p>
-<p>This algorithm benefits greatly from the fast integer division library 'libdivide'. The following is from <a href="http://libdivide.com/" class="external-link">http://libdivide.com/</a>:</p><ul><li><p>“<em>libdivide allows you to replace expensive integer divides with comparatively cheap multiplication and bitshifts. Compilers usually do this, but only when the divisor is known at compile time. libdivide allows you to take advantage of it at runtime. The result is that integer division can become faster - a lot faster.</em>”</p></li>
+<p>This algorithm benefits greatly from the fast integer division library 'libdivide'. The following is from <a href="https://libdivide.com/" class="external-link">https://libdivide.com/</a>:</p><ul><li><p>“<em>libdivide allows you to replace expensive integer divides with comparatively cheap multiplication and bitshifts. Compilers usually do this, but only when the divisor is known at compile time. libdivide allows you to take advantage of it at runtime. The result is that integer division can become faster - a lot faster.</em>”</p></li>
 </ul></div>
     <div id="value">
     <h2>Value</h2>
@@ -123,7 +123,7 @@
     <h2>References</h2>
     
 <ul><li><p><a href="https://en.wikipedia.org/wiki/Prime_factor" class="external-link">Prime Factor</a></p></li>
-<li><p><a href="http://ridiculousfish.com/" class="external-link">ridiculousfish (author of libdivide)</a></p></li>
+<li><p><a href="https://ridiculousfish.com/" class="external-link">ridiculousfish (author of libdivide)</a></p></li>
 <li><p><a href="https://github.com/ridiculousfish/libdivide" class="external-link">github.com/ridiculousfish/libdivide</a></p></li>
 <li><p><a href="https://en.wikipedia.org/wiki/Double-precision_floating-point_format" class="external-link">53-bit significand precision</a></p></li>
 </ul></div>
@@ -146,7 +146,7 @@
 <span class="r-in"><span><span class="co">## to 10^5 (max element from mySamp)</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/system.time.html" class="external-link">system.time</a></span><span class="op">(</span><span class="va">allPFacs</span> <span class="op">&lt;-</span> <span class="fu">primeFactorizeSieve</span><span class="op">(</span><span class="fl">10</span><span class="op">^</span><span class="fl">5</span><span class="op">)</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>    user  system elapsed </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   0.022   0.005   0.026 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   0.019   0.004   0.023 </span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co">## Use generated prime factorization for further</span></span></span>
 <span class="r-in"><span><span class="co">## analysis by accessing the index of allPFacs</span></span></span>
@@ -159,7 +159,7 @@
 <span class="r-in"><span><span class="co">## a range is efficient as well</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/system.time.html" class="external-link">system.time</a></span><span class="op">(</span><span class="fu">primeFactorizeSieve</span><span class="op">(</span><span class="fl">10</span><span class="op">^</span><span class="fl">12</span>, <span class="fl">10</span><span class="op">^</span><span class="fl">12</span> <span class="op">+</span> <span class="fl">10</span><span class="op">^</span><span class="fl">5</span><span class="op">)</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>    user  system elapsed </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   0.029   0.005   0.033 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   0.025   0.004   0.030 </span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co">## Set 'namedList' to TRUE to return a named list</span></span></span>
 <span class="r-in"><span><span class="fu">primeFactorizeSieve</span><span class="op">(</span><span class="fl">27</span>, <span class="fl">30</span>, namedList <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></span>
@@ -179,7 +179,7 @@
 <span class="r-in"><span><span class="co">## Using nThreads</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/system.time.html" class="external-link">system.time</a></span><span class="op">(</span><span class="fu">primeFactorizeSieve</span><span class="op">(</span><span class="fl">1e4</span>, <span class="fl">5e4</span>, nThreads <span class="op">=</span> <span class="fl">2</span><span class="op">)</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>    user  system elapsed </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   0.008   0.001   0.009 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   0.007   0.002   0.009 </span>
 </code></pre></div>
     </div>
   </div>

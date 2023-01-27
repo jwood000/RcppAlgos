@@ -1,4 +1,4 @@
-# RcppAlgos 2.6.0
+# RcppAlgos 2.7.0
 
 ## Other:
 
