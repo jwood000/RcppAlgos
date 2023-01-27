@@ -14,7 +14,7 @@ primeCount(n, nThreads = NULL)
     \item{nThreads}{Specific number of threads to be used. The default is \code{NULL}.}
 }
 \details{
-\href{http://mathworld.wolfram.com/LegendresFormula.html}{Legendre's Formula} for counting the number of primes less than \eqn{n} makes use of the \href{https://en.wikipedia.org/wiki/Inclusion-exclusion_principle}{inclusion-exclusion principle} to avoid explicitly counting every prime up to \eqn{n}. It is given by:
+\href{https://mathworld.wolfram.com/LegendresFormula.html}{Legendre's Formula} for counting the number of primes less than \eqn{n} makes use of the \href{https://en.wikipedia.org/wiki/Inclusion-exclusion_principle}{inclusion-exclusion principle} to avoid explicitly counting every prime up to \eqn{n}. It is given by:
 \deqn{\pi(x) = \pi(\sqrt x) + \Phi(x, \sqrt x) - 1}
 Where \eqn{\Phi(x, a)} is the number of positive integers less than or equal to \eqn{x} that are relatively prime to the first \eqn{a} primes (i.e. not divisible by any of the first \eqn{a} primes). It is given by the recurrence relation (\eqn{p_a}{pa} is the \eqn{ath} prime (e.g. \eqn{p_4 = 7}{p4 = 7})):
 \deqn{\Phi(x, a) = \Phi(x, a - 1) + \Phi(x / p_a, a - 1)}{\Phi(x, a) = \Phi(x, a - 1) + \Phi(x / pa, a - 1)}
@@ -37,7 +37,7 @@ The maximum value of \eqn{n} is \eqn{2^{53} - 1}{2^53 - 1}
 }
 \references{
 \itemize{
-\item{\href{http://sweet.ua.pt/tos/bib/5.4.pdf}{Computing \eqn{\pi(x)}: the combinatorial method}\itemize{\item{Tomás Oliveira e Silva, Computing pi(x): the combinatorial method, Revista do DETUA, vol. 4, no. 6, March 2006, p. 761. http://sweet.ua.pt/tos/bib/5.4.pdf}}}
+\item{\href{https://sweet.ua.pt/tos/bib/5.4.pdf}{Computing \eqn{\pi(x)}: the combinatorial method}\itemize{\item{Tomás Oliveira e Silva, Computing pi(x): the combinatorial method, Revista do DETUA, vol. 4, no. 6, March 2006, p. 761. https://sweet.ua.pt/tos/bib/5.4.pdf}}}
 \item{\href{https://en.wikipedia.org/wiki/Double-precision_floating-point_format}{53-bit significand precision}}
 }
 }

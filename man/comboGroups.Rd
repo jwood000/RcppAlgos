@@ -5,7 +5,7 @@ Partition a Vector into Groups of Equal Size
 }
 \description{
     \itemize{
-        \item Generate partitions of a vector into groups of equal size. See \href{https://stackoverflow.com/q/57732672/4408538}{Create Combinations in R by Groups} on http://stackoverflow.com for a direct use case.
+        \item Generate partitions of a vector into groups of equal size. See \href{https://stackoverflow.com/q/57732672/4408538}{Create Combinations in R by Groups} on https://stackoverflow.com for a direct use case.
         \item Produce results in parallel using the \code{Parallel} or \code{nThreads} arguments.
         \item GMP support allows for exploration where the number of results is large.
         \item The output is in lexicographical order by groups.

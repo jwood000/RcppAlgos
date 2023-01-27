@@ -48,13 +48,18 @@ void VapplyAssign(SEXP ans, SEXP vectorPass,
             case VECSXP:  SET_VECTOR_ELT(ans, count, VECTOR_ELT(val, 0)); break;
         }
     } else { // commonLen > 1 (typically, or == 0) :
+
+        const std::size_t unRows = nRows;
+        const std::size_t uCommonLen = commonLen;
+        const std::size_t uCount = count;
+
         switch (commonType) {
             case REALSXP: {
                 double* ans_dbl = REAL(ans);
                 double* val_dbl = REAL(val);
 
-                for (int j = 0; j < commonLen; j++) {
-                    ans_dbl[count + j * nRows] = val_dbl[j];
+                for (std::size_t j = 0; j < uCommonLen; j++) {
+                    ans_dbl[uCount + j * unRows] = val_dbl[j];
                 }
 
                 break;
@@ -62,8 +67,8 @@ void VapplyAssign(SEXP ans, SEXP vectorPass,
                 int* ans_int = INTEGER(ans);
                 int* val_int = INTEGER(val);
 
-                for (int j = 0; j < commonLen; j++) {
-                    ans_int[count + j * nRows] = val_int[j];
+                for (std::size_t j = 0; j < uCommonLen; j++) {
+                    ans_int[uCount + j * unRows] = val_int[j];
                 }
 
                 break;
@@ -71,8 +76,8 @@ void VapplyAssign(SEXP ans, SEXP vectorPass,
                 int* ans_bool = LOGICAL(ans);
                 int* val_bool = LOGICAL(val);
 
-                for (int j = 0; j < commonLen; j++) {
-                    ans_bool[count + j * nRows] = val_bool[j];
+                for (std::size_t j = 0; j < uCommonLen; j++) {
+                    ans_bool[uCount + j * unRows] = val_bool[j];
                 }
 
                 break;
@@ -80,8 +85,8 @@ void VapplyAssign(SEXP ans, SEXP vectorPass,
                 Rbyte* ans_raw = RAW(ans);
                 Rbyte* val_raw = RAW(val);
 
-                for (int j = 0; j < commonLen; j++) {
-                    ans_raw[count + j * nRows] = val_raw[j];
+                for (std::size_t j = 0; j < uCommonLen; j++) {
+                    ans_raw[uCount + j * unRows] = val_raw[j];
                 }
 
                 break;
@@ -89,21 +94,21 @@ void VapplyAssign(SEXP ans, SEXP vectorPass,
                 Rcomplex* ans_cmplx = COMPLEX(ans);
                 Rcomplex* val_cmplx = COMPLEX(val);
 
-                for (int j = 0; j < commonLen; j++) {
-                    ans_cmplx[count + j * nRows] = val_cmplx[j];
+                for (std::size_t j = 0; j < uCommonLen; j++) {
+                    ans_cmplx[uCount + j * unRows] = val_cmplx[j];
                 }
 
                 break;
             } case STRSXP: {
-                for (int j = 0; j < commonLen; j++) {
-                    SET_STRING_ELT(ans, count + j * nRows,
+                for (std::size_t j = 0; j < uCommonLen; j++) {
+                    SET_STRING_ELT(ans, uCount + j * unRows,
                                    STRING_ELT(val, j));
                 }
 
                 break;
             } case VECSXP: {
-                for (int j = 0; j < commonLen; j++) {
-                    SET_VECTOR_ELT(ans, count + j * nRows,
+                for (std::size_t j = 0; j < uCommonLen; j++) {
+                    SET_VECTOR_ELT(ans, uCount + j * unRows,
                                    VECTOR_ELT(val, j));
                 }
 

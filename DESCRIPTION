@@ -21,9 +21,9 @@ Description: Provides optimized functions and flexible combinatorial iterators
     Tomás Oliveira. Finally, there is a prime counting function that implements
     Legendre's formula based on the work of Kim Walisch.
 URL: https://github.com/jwood000/RcppAlgos, https://gmplib.org/,
-        https://github.com/kimwalisch/primesieve, http://libdivide.com,
-        https://github.com/kimwalisch/primecount, http://ridiculousfish.com/,
-        http://sweet.ua.pt/tos/software/prime_sieve.html
+        https://github.com/kimwalisch/primesieve, https://libdivide.com,
+        https://github.com/kimwalisch/primecount, https://ridiculousfish.com/,
+        https://sweet.ua.pt/tos/software/prime_sieve.html
 BugReports: https://github.com/jwood000/RcppAlgos/issues
 LinkingTo: cpp11
 Imports: gmp, methods
