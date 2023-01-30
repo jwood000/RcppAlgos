@@ -36,7 +36,7 @@ Joseph Wood
 The maximum value for each element in \eqn{v} is \eqn{2^{53} - 1}{2^53 - 1}.
 }
 \seealso{
-\code{\link[numbers]{divisors}}, \code{\link{primeFactorize}}
+\code{\link{primeFactorize}}
 }
 \examples{
 ## Get the complete factorization of a single number

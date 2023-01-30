@@ -39,7 +39,7 @@ The maximum value for either of the bounds is \eqn{2^{53} - 1}{2^53 - 1}.
 }
 }
 \seealso{
-\code{\link{divisorsRcpp}}, \code{\link[numbers]{divisors}}, \code{\link{primeFactorizeSieve}}
+\code{\link{divisorsRcpp}}, \code{\link{primeFactorizeSieve}}
 }
 \examples{
 ## Generate some random data

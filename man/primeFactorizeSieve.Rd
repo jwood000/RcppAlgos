@@ -39,7 +39,7 @@ The maximum value for either of the bounds is \eqn{2^{53} - 1}{2^53 - 1}.
 Joseph Wood
 }
 \seealso{
-\code{\link{primeFactorize}}, \code{\link{divisorsSieve}}, \code{\link[gmp]{factorize}}, \code{\link[numbers]{primeFactors}}
+\code{\link{primeFactorize}}, \code{\link{divisorsSieve}}, \code{\link[gmp]{factorize}}
 }
 \examples{
 ## Generate some random data

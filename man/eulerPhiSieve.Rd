@@ -40,9 +40,6 @@ The maximum allowed value is \eqn{2^{53} - 1}{2^53 - 1}.
 \item{\href{https://en.wikipedia.org/wiki/Double-precision_floating-point_format}{53-bit significand precision}}
 }
 }
-\seealso{
-\code{\link[numbers]{eulersPhi}}
-}
 \examples{
 ## Generate some random data
 set.seed(496)

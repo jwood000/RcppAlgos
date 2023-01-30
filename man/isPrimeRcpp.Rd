@@ -43,7 +43,7 @@ Returns a named/unnamed logical vector. If an index is \code{TRUE}, the number a
 \item{\href{https://en.wikipedia.org/wiki/Double-precision_floating-point_format}{53-bit significand precision}}}
 }
 \seealso{
-\code{\link{primeFactorize}}, \code{\link[gmp]{isprime}}, \code{\link[numbers]{isPrime}}
+\code{\link{primeFactorize}}, \code{\link[gmp]{isprime}}
 }
 \examples{
 ## check the primality of a single number

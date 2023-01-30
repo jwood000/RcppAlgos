@@ -47,9 +47,6 @@ Returns an integer vector if \code{max(bound1, bound2)} \eqn{< 2^{31}}{< 2^31}, 
 \author{
 Joseph Wood
 }
-\seealso{
-\code{\link[numbers]{Primes}}
-}
 \examples{
 ## Primes up to a thousand
 primeSieve(100)
