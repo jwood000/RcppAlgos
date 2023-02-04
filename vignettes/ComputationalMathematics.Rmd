@@ -1,7 +1,7 @@
 ---
 title: "Computational Mathematics Overview"
 author: "Joseph Wood"
-date: "10/30/2022"
+date: "02/04/2023"
 output:
   rmarkdown::html_vignette:
     toc: true
@@ -29,25 +29,25 @@ microbenchmark(primeSieve(1e6))
 #> Warning in microbenchmark(primeSieve(1000000)): less accurate nanosecond times to avoid
 #> potential integer overflows
 #> Unit: microseconds
-#>               expr     min       lq     mean  median      uq      max neval
-#>  primeSieve(1e+06) 814.301 838.9625 863.7769 851.488 873.218 1084.122   100
+#>               expr     min      lq     mean  median  uq    max neval
+#>  primeSieve(1e+06) 810.324 821.312 845.3622 835.785 861 1057.8   100
 
 ## Single threaded primes under a billion!!!
 system.time(primeSieve(10^9))
 #>    user  system elapsed 
-#>   0.931   0.047   0.978
+#>   0.911   0.047   0.959
 
 ## Using 8 threads we can get under 0.5 seconds!!!
 system.time(primeSieve(10^9, nThreads = 8))
 #>    user  system elapsed 
-#>   1.401   0.037   0.228
+#>   1.384   0.038   0.227
 
 ## Quickly generate large primes over small interval. N.B. The
 ## order for the bounds does not matter.
 options(scipen = 50)
 system.time(myPs <- primeSieve(10^13 + 10^3, 10^13))
 #>    user  system elapsed 
-#>   0.005   0.000   0.006
+#>   0.005   0.000   0.005
 
 myPs
 #>  [1] 10000000000037 10000000000051 10000000000099 10000000000129 10000000000183
@@ -71,19 +71,19 @@ Since version `2.3.0`, we are implementing the cache-friendly improvements for l
 ## Version <= 2.2.0.. i.e. older versions
 system.time(old <- RcppAlgos220::primeSieve(1e15, 1e15 + 1e9))
 #>    user  system elapsed 
-#>   2.474   0.055   2.578
+#>   2.573   0.061   2.648
 
 invisible(gc())
 ## v2.3.0+ is faster
 system.time(a <- primeSieve(1e15, 1e15 + 1e9))
 #>    user  system elapsed 
-#>   1.204   0.040   1.245
+#>   1.195   0.042   1.244
 
 invisible(gc())
 ## And using nThreads is much much faster
 system.time(b <- primeSieve(1e15, 1e15 + 1e9, nThreads = 8))
 #>    user  system elapsed 
-#>   2.144   0.080   0.370
+#>   2.075   0.075   0.378
 
 identical(old, a)
 #> [1] TRUE
@@ -106,7 +106,7 @@ With this is mind, here are some results:
 ## Enumerate the number of primes below trillion
 system.time(underOneTrillion <- primeCount(10^12))
 #>    user  system elapsed 
-#>   0.127   0.000   0.127
+#>   0.122   0.002   0.124
 
 underOneTrillion
 #> [1] 37607912018
@@ -114,12 +114,12 @@ underOneTrillion
 ## Enumerate the number of primes below ten billion in 2 milliseconds
 microbenchmark(primeCount(10^10))
 #> Unit: milliseconds
-#>               expr      min       lq     mean   median      uq      max neval
-#>  primeCount(10^10) 1.722164 1.726818 1.764917 1.734136 1.75808 2.536793   100
+#>               expr      min       lq     mean   median       uq      max neval
+#>  primeCount(10^10) 1.699655 1.721815 1.762659 1.732004 1.766075 2.369349   100
 
 system.time(underOneHundredTrillion <- primeCount(1e14, nThreads = 8))
 #>    user  system elapsed 
-#>   6.905   0.457   1.239
+#>   6.717   0.449   1.311
 
 underOneHundredTrillion
 #> [1] 3204941750802
@@ -130,7 +130,7 @@ cat(paste(
     collapse = "\n"
 ))
 #> 3204941750802
-#> Seconds: 0.404
+#> Seconds: 0.398
 ```
 
 ## Other Sieving Functions
@@ -192,12 +192,12 @@ eulerPhiSieve(20, namedVector = TRUE)
 
 system.time(a <- eulerPhiSieve(1e12, 1e12 + 1e7))
 #>    user  system elapsed 
-#>   0.322   0.012   0.336
+#>   0.321   0.013   0.334
 
 ## Using nThreads for greater efficiency
 system.time(b <- eulerPhiSieve(1e12, 1e12 + 1e7, nThreads = 8))
 #>    user  system elapsed 
-#>   1.040   0.033   0.154
+#>   0.955   0.031   0.153
 
 identical(a, b)
 #> [1] TRUE
@@ -250,12 +250,12 @@ isPrimeRcpp(995:1000, namedVector = TRUE)
 
 system.time(a <- primeFactorize(1e12:(1e12 + 1e5)))
 #>    user  system elapsed 
-#>   0.679   0.008   0.687
+#>   0.676   0.007   0.684
 
 ## Using nThreads for greater efficiency
 system.time(b <- primeFactorize(1e12:(1e12 + 1e5), nThreads = 8))
 #>    user  system elapsed 
-#>   0.950   0.007   0.157
+#>   0.936   0.008   0.165
 
 identical(a, b)
 #> [1] TRUE
