@@ -6,7 +6,7 @@ void PermuteResDistinct(T* mat, const std::vector<T> &v,
                         std::size_t nRows, const funcPtr<T> myFun) {
 
     std::vector<T> vPass(m);
-    auto arrPerm = FromCpp14::make_unique<int[]>(n);
+    auto arrPerm = std::make_unique<int[]>(n);
 
     for (std::size_t i = 0; i < n; ++i) {
         arrPerm[i] = z[i];
@@ -66,7 +66,7 @@ void PermuteResDistinct(RcppParallel::RMatrix<T> &mat,
                         std::size_t nRows, const funcPtr<T> myFun) {
 
     std::vector<T> vPass(m);
-    auto arrPerm = FromCpp14::make_unique<int[]>(n);
+    auto arrPerm = std::make_unique<int[]>(n);
 
     for (std::size_t i = 0; i < n; ++i) {
         arrPerm[i] = z[i];
@@ -184,7 +184,7 @@ void MultisetPermRes(T* mat, const std::vector<T> &v,
                      const funcPtr<T> myFun) {
 
     const std::size_t lenFreqs = freqs.size();
-    auto arrPerm = FromCpp14::make_unique<int[]>(lenFreqs);
+    auto arrPerm = std::make_unique<int[]>(lenFreqs);
     std::vector<T> vPass(m);
 
     for (std::size_t j = 0; j < lenFreqs; ++j) {
@@ -245,7 +245,7 @@ void MultisetPermRes(RcppParallel::RMatrix<T> &mat, const std::vector<T> &v,
                      const std::vector<int> &freqs, const funcPtr<T> myFun) {
 
     const std::size_t lenFreqs = freqs.size();
-    auto arrPerm = FromCpp14::make_unique<int[]>(lenFreqs);
+    auto arrPerm = std::make_unique<int[]>(lenFreqs);
     std::vector<T> vPass(m);
 
     for (std::size_t j = 0; j < lenFreqs; ++j) {

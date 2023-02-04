@@ -3,7 +3,7 @@
 #include "Permutations/NextPermSectionRep.h"
 #include "Constraints/UserConstraintFuns.h"
 #include "Permutations/NextPermutation.h"
-#include "CppConvert/Cpp14MakeUnique.h"
+#include <memory>
 #include "RMatrix.h"
 
 template <typename T>

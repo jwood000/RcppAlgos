@@ -96,7 +96,7 @@ void PermuteLoadIndex(T* mat, int *const indexMat,
             }
         }
     } else {
-        auto arrPerm = FromCpp14::make_unique<int[]>(n);
+        auto arrPerm = std::make_unique<int[]>(n);
 
         for (std::size_t i = 0; i < n; ++i) {
             arrPerm[i] = z[i];
@@ -138,7 +138,7 @@ void PermuteOptimized(T* mat, const std::vector<T> &v, std::vector<int> &z,
                         NumPermsNoRep(n - 1, m - 1);
 
     const std::size_t indexMatSize = segment * (m - first);
-    auto indexMat = FromCpp14::make_unique<int[]>(indexMatSize);
+    auto indexMat = std::make_unique<int[]>(indexMatSize);
     PermuteLoadIndex(mat, indexMat.get(), v, z, n, m, segment, IsRep, nRows);
 
     std::size_t ind = 1;

@@ -1,4 +1,4 @@
-#include "CppConvert/Cpp14MakeUnique.h"
+#include <memory>
 #include "Permutations/PermuteCount.h"
 #include "Partitions/NextPartition.h"
 #include "PopulateVec.h"
@@ -66,7 +66,7 @@ void PartsGenPermDistinct(T* mat, const std::vector<T> &v,
                         tarDiff, lastElem, lastCol);
 
     const int indexRows = NumPermsNoRep(width, width);
-    auto indexMat = FromCpp14::make_unique<int[]>(indexRows * width);
+    auto indexMat = std::make_unique<int[]>(indexRows * width);
 
     std::vector<int> indexVec(width);
     std::iota(indexVec.begin(), indexVec.end(), 0);
@@ -206,7 +206,7 @@ void PartsPermDistinct(int* mat, std::vector<int> &z, std::size_t width,
                         tarDiff, lastElem, lastCol);
 
     const int indexRows = NumPermsNoRep(width, width);
-    auto indexMat = FromCpp14::make_unique<int[]>(indexRows * width);
+    auto indexMat = std::make_unique<int[]>(indexRows * width);
 
     std::vector<int> indexVec(width);
     std::iota(indexVec.begin(), indexVec.end(), 0);

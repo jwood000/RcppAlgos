@@ -1,3 +1,9 @@
+# RcppAlgos 2.7.1
+
+## Other:
+
+* Updated default C++ specification.
+
 # RcppAlgos 2.7.0
 
 ## Other:

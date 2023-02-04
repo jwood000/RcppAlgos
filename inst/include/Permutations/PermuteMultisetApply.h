@@ -1,6 +1,6 @@
 #pragma once
 
-#include "CppConvert/Cpp14MakeUnique.h"
+#include <memory>
 #include "PermuteHelper.h"
 #include "FunAssign.h"
 
@@ -13,7 +13,7 @@ void MultisetPermuteApplyFun(SEXP res, const std::vector<T> &v,
 
     const int lenFreqs = z.size();
     const int retType = TYPEOF(res);
-    auto arrPerm = FromCpp14::make_unique<int[]>(lenFreqs);
+    auto arrPerm = std::make_unique<int[]>(lenFreqs);
 
     for (int i = 0; i < lenFreqs; ++i) {
         arrPerm[i] = z[i];
@@ -62,7 +62,7 @@ void MultisetPermuteApplyFun(SEXP res, SEXP v, SEXP vectorPass,
 
     const int lenFreqs = z.size();
     const int retType = TYPEOF(res);
-    auto arrPerm = FromCpp14::make_unique<int[]>(lenFreqs);
+    auto arrPerm = std::make_unique<int[]>(lenFreqs);
 
     for (int i = 0; i < lenFreqs; ++i) {
         arrPerm[i] = z[i];

@@ -8,7 +8,7 @@ void PermuteDistinct(T* mat, const std::vector<T> &v,
                      std::vector<int> &z, std::size_t n,
                      std::size_t m, std::size_t nRows) {
 
-    auto arrPerm = FromCpp14::make_unique<int[]>(n);
+    auto arrPerm = std::make_unique<int[]>(n);
 
     for (std::size_t i = 0; i < n; ++i) {
         arrPerm[i] = z[i];
@@ -48,7 +48,7 @@ void PermuteDistinct(RcppParallel::RMatrix<T> &mat,
                      std::size_t n, std::size_t m,
                      std::size_t strt, std::size_t nRows) {
 
-    auto arrPerm = FromCpp14::make_unique<int[]>(n);
+    auto arrPerm = std::make_unique<int[]>(n);
 
     for (std::size_t i = 0; i < n; ++i) {
         arrPerm[i] = z[i];
@@ -86,7 +86,7 @@ void PermuteDistinct(SEXP mat, SEXP v,
                      std::vector<int> &z, std::size_t n,
                      std::size_t m, std::size_t nRows) {
 
-    auto arrPerm = FromCpp14::make_unique<int[]>(n);
+    auto arrPerm = std::make_unique<int[]>(n);
 
     for (std::size_t i = 0; i < n; ++i) {
         arrPerm[i] = z[i];

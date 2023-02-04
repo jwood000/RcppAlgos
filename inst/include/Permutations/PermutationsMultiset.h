@@ -9,7 +9,7 @@ void PermuteMultiset(T* mat, const std::vector<T> &v,
                      std::size_t nRows, const std::vector<int> &freqs) {
 
     const std::size_t lenFreqs = z.size();
-    auto arrPerm = FromCpp14::make_unique<int[]>(lenFreqs);
+    auto arrPerm = std::make_unique<int[]>(lenFreqs);
 
     for (std::size_t i = 0; i < lenFreqs; ++i) {
         arrPerm[i] = z[i];
@@ -50,7 +50,7 @@ void PermuteMultiset(RcppParallel::RMatrix<T> &mat, const std::vector<T> &v,
                      const std::vector<int> &freqs) {
 
     const std::size_t lenFreqs = z.size();
-    auto arrPerm = FromCpp14::make_unique<int[]>(lenFreqs);
+    auto arrPerm = std::make_unique<int[]>(lenFreqs);
 
     for (std::size_t i = 0; i < lenFreqs; ++i) {
         arrPerm[i] = z[i];
@@ -89,7 +89,7 @@ void PermuteMultiset(SEXP mat, SEXP v, std::vector<int> &z,
                      const std::vector<int> &freqs) {
 
     const std::size_t lenFreqs = z.size();
-    auto arrPerm = FromCpp14::make_unique<int[]>(lenFreqs);
+    auto arrPerm = std::make_unique<int[]>(lenFreqs);
 
     for (std::size_t i = 0; i < lenFreqs; ++i) {
         arrPerm[i] = z[i];
