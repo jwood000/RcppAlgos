@@ -29,7 +29,7 @@ LinkingTo: cpp11
 Imports: gmp, methods
 Suggests: testthat, partitions, microbenchmark, knitr, RcppBigIntAlgos, rmarkdown
 License: GPL (>=2)
-SystemRequirements: C++11, gmp (>= 4.2.3)
+SystemRequirements: gmp (>= 4.2.3)
 VignetteBuilder: knitr
 NeedsCompilation: yes
 Author: Joseph Wood
