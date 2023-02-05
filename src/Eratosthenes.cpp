@@ -559,7 +559,7 @@ namespace PrimeSieve {
             ++strt;
         }
 
-        for (std::size_t v = strt; lowerBnd < flrMaxNum; ++v, lowerBnd += segSize) {
+        for (; lowerBnd < flrMaxNum; lowerBnd += segSize) {
             for (std::size_t i = strt30030; i < svPriOneSize; ++i) {
                 int j = nextStrt[i];
 
