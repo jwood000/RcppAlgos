@@ -1,6 +1,6 @@
 #include "cpp11/R.hpp"
 #include <algorithm> // std::min
-#include <gmpxx.h>
+#include "CppConvert/GmpxxCopy.h"
 #include <numeric>   // std::accumulate
 #include <vector>
 #include <cmath>     // std::round

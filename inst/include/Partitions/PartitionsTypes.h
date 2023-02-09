@@ -2,7 +2,7 @@
 
 #include <cstdint>
 #include <vector>
-#include <gmpxx.h>
+#include "CppConvert/GmpxxCopy.h"
 #include <array>
 
 // Here are the corresponding functions that one would use for each example below:

@@ -1,5 +1,5 @@
 #include <unordered_set>
-#include <gmpxx.h>
+#include "CppConvert/GmpxxCopy.h"
 #include <cstdint>
 #include <limits>
 #include <vector>

@@ -1,5 +1,5 @@
 #include <algorithm> // std::min, std::fill_n
-#include <gmpxx.h>
+#include "CppConvert/GmpxxCopy.h"
 #include <numeric>   // std::accumulate
 #include <vector>
 #include <deque>

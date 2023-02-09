@@ -1,6 +1,6 @@
 #include "Combinations/ComboResGlue.h"
 #include "NthResult.h"
-#include <gmpxx.h>
+#include "CppConvert/GmpxxCopy.h"
 #include <thread>
 
 template <typename T>

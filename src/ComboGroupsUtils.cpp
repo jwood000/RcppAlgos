@@ -3,7 +3,7 @@
 #include "Combinations/ComboCount.h"
 #include <algorithm> // std::sort
 #include <numeric>   // std::iota
-#include <gmpxx.h>
+#include "CppConvert/GmpxxCopy.h"
 #include <cstdint>
 #include <limits>
 #include <vector>
