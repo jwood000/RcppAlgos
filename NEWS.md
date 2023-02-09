@@ -1,3 +1,9 @@
+# RcppAlgos 2.7.2
+
+## Other:
+
+* Using a copy of `gmpxx.h` source in order to easily build on all platforms.
+
 # RcppAlgos 2.7.1
 
 ## Other:
@@ -230,7 +236,7 @@
 
 # RcppAlgos 2.0.3
 
-* Corrected clang `UBSAN` error identified by two different unit tests. In both situations, the problem was occurring as a result of populating a vector of integers with values from a vector of doubles that contained a NaN (Not-a-Number). Most information was obtained from Brian J. Knaus's blog titled : "Reproducing a clang-UBSAN issue" (https://knausb.github.io/2017/06/reproducing-a-clang-ubsan-issue/)
+* Corrected clang `UBSAN` error identified by two different unit tests. In both situations, the problem was occurring as a result of populating a vector of integers with values from a vector of doubles that contained a NaN (Not-a-Number). Most information was obtained from Brian J. Knaus's blog titled : "Reproducing a clang-UBSAN issue" (<https://knausb.github.io/2017/06/reproducing-a-clang-ubsan-issue/>)
 
 # RcppAlgos 2.0.2
 

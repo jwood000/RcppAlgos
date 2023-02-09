@@ -1,7 +1,7 @@
 ---
 title: "Constraints, Partitions, and Compositions"
 author: "Joseph Wood"
-date: "02/04/2023"
+date: "02/09/2023"
 output:
   rmarkdown::html_vignette:
     toc: true
@@ -33,7 +33,7 @@ library(RcppAlgos)
 options(width = 90)
 
 packageVersion("RcppAlgos")
-#> [1] ‘2.7.1’
+#> [1] '2.7.2'
 
 cat(paste(capture.output(sessionInfo())[1:3], collapse = "\n"))
 #> R version 4.2.1 (2022-06-23)
@@ -69,10 +69,10 @@ microbenchmark(serial = comboGeneral(20, 10, constraintFun = "sum"),
 #> Warning in microbenchmark(serial = comboGeneral(20, 10, constraintFun = "sum"), : less
 #> accurate nanosecond times to avoid potential integer overflows
 #> Unit: relative
-#>      expr       min         lq       mean     median         uq      max neval
-#>    serial   2.85647   2.596129   2.274646   2.462919   2.269758  1.47776   100
-#>  parallel   1.00000   1.000000   1.000000   1.000000   1.000000  1.00000   100
-#>  combnSum 141.39460 126.747503 106.165544 117.321396 105.572137 52.35709   100
+#>      expr       min         lq       mean     median         uq       max neval
+#>    serial   3.08994   2.714982   2.497636   2.558226   2.544003  1.975066   100
+#>  parallel   1.00000   1.000000   1.000000   1.000000   1.000000  1.000000   100
+#>  combnSum 151.28326 130.700776 114.083490 122.475577 117.684266 61.718663   100
 ```
 
 ### Faster than `rowSums` and `rowMeans`
@@ -89,9 +89,9 @@ microbenchmark(serial = comboGeneral(25, 10, constraintFun = "sum"),
               rowsums = rowSums(combs), unit = "relative")
 #> Unit: relative
 #>      expr      min       lq     mean   median       uq       max neval
-#>    serial 3.296404 2.806014 2.634000 2.670500 2.512724 1.7484462   100
+#>    serial 3.239883 2.822297 2.620524 2.639098 2.507048 1.5990149   100
 #>  parallel 1.000000 1.000000 1.000000 1.000000 1.000000 1.0000000   100
-#>   rowsums 1.988693 1.696716 1.588996 1.563037 1.499136 0.8372406   100
+#>   rowsums 1.917486 1.713127 1.591546 1.544628 1.509913 0.8437866   100
 
 all.equal(rowSums(combs),
           comboGeneral(25, 10,
@@ -104,10 +104,10 @@ microbenchmark(serial = comboGeneral(25, 10, constraintFun = "mean"),
              parallel = comboGeneral(25, 10, constraintFun = "mean", Parallel = TRUE),
              rowmeans = rowMeans(combs), unit = "relative")
 #> Unit: relative
-#>      expr      min       lq     mean   median       uq      max neval
-#>    serial 2.342782 2.277912 2.229839 2.232503 2.148877 2.660739   100
-#>  parallel 1.000000 1.000000 1.000000 1.000000 1.000000 1.000000   100
-#>  rowmeans 1.295473 1.296983 1.254463 1.270345 1.222643 1.084184   100
+#>      expr      min      lq     mean   median       uq       max neval
+#>    serial 2.338629 2.28554 2.187864 2.210667 2.101425 1.6792038   100
+#>  parallel 1.000000 1.00000 1.000000 1.000000 1.000000 1.0000000   100
+#>  rowmeans 1.355344 1.29126 1.225113 1.245550 1.174923 0.6947625   100
 
 all.equal(rowMeans(combs),
           comboGeneral(25, 10,
@@ -527,12 +527,12 @@ partitionsCount(0:60, repetition = TRUE)
 ## Single threaded
 system.time(partitionsGeneral(0:60, repetition = TRUE))
 #>    user  system elapsed 
-#>   0.025   0.012   0.037
+#>   0.025   0.012   0.038
 
 ## Using nThreads
 system.time(partitionsGeneral(0:60, repetition = TRUE, nThreads=4))
 #>    user  system elapsed 
-#>   0.033   0.023   0.015
+#>   0.032   0.022   0.015
 
 
 ## partitions of 120 into distinct parts
@@ -545,7 +545,7 @@ system.time(partitionsGeneral(0:120, freqs = c(120, rep(1, 120))))
 
 system.time(partitionsGeneral(0:120, freqs = c(120, rep(1, 120)), nThreads=4))
 #>    user  system elapsed 
-#>   0.027   0.005   0.011
+#>   0.023   0.005   0.008
 
 
 ## partitions of 100 into parts of 15 with specific multiplicity
@@ -555,7 +555,7 @@ partitionsCount(100, 15, freqs = rep(4:8, 20))
 ## Over 6 million in just over a second!
 system.time(partitionsGeneral(100, 15, freqs = rep(4:8, 20)))
 #>    user  system elapsed 
-#>   0.299   0.085   0.385
+#>   0.304   0.088   0.393
 ```
 
 ## Integer Compositions
@@ -699,7 +699,7 @@ With `compositionGeneral` we are able to take advantage of parallel computation.
 ## compositions of 25
 system.time(compositionsGeneral(0:25, repetition = TRUE))
 #>    user  system elapsed 
-#>   1.650   0.099   1.748
+#>   1.662   0.094   1.756
 
 compositionsCount(0:25, repetition=TRUE)
 #> [1] 16777216
@@ -708,14 +708,14 @@ compositionsCount(0:25, repetition=TRUE)
 ## over 16 million compositions in under a second!
 system.time(compositionsGeneral(0:25, repetition = TRUE, nThreads = 4))
 #>    user  system elapsed 
-#>   1.827   0.102   0.510
+#>   1.831   0.099   0.511
 
 
 ## weak compositions of 12 usnig nThreads = 4
 system.time(weakComp12 <- compositionsGeneral(0:12, repetition = TRUE,
                                               weak = TRUE, nThreads = 4))
 #>    user  system elapsed 
-#>   0.012   0.006   0.005
+#>   0.011   0.006   0.005
 
 ## And using permuteGeneral
 system.time(weakPerm12 <- permuteGeneral(0:12, 12, repetition = TRUE,
@@ -739,7 +739,7 @@ system.time(comp25_gen <- permuteGeneral(25, 10, freqs = rep(4:8, 5),
                                          comparisonFun = "==",
                                          limitConstraints = 25))
 #>    user  system elapsed 
-#>   0.024   0.006   0.031
+#>   0.025   0.006   0.030
 
 dim(comp25_gen)
 #> [1] 946092     10
@@ -749,7 +749,7 @@ dim(comp25_gen)
 
 Some of these operations can take some time, especially when you are in the exploratory phase and you don’t have that much information about what type of solution you will obtain. For this reason, we have added the ability to interrupt execution. Under the hood, we call `cpp11::check_user_interrupt()` once every second to check if the user has requested for the process to be interrupted. Note that we only check for user interruptions when we cannot determine the number of results up front.
 
-This means that if we initiate a process that will take a long time or exhaust all of the available memory (e.g. we forget to put an upper limit on the number of results, relax the tolerance, etc.), we can simply hit `Ctrl + c`, or `esc` if using `RStudio`, to stop execution.
+This means that if we initiate a process that will take a long time or exhaust all of the available memory (e.g. we forget to put an upper limit on the number of results, relax the tolerance, etc.), we can simply hit `Ctrl + c`, or `esc` if using `RStudio`, to stop execution.
 
 ``` r
 set.seed(123)
@@ -782,7 +782,7 @@ iter = partitionsIter(s, 20, TRUE, target = 0)
 ## Test one iteration to see if we need to relax the tolerance
 system.time(iter@nextIter())
 #>    user  system elapsed 
-#>   5.294   0.011   5.306
+#>   5.279   0.016   5.295
 
 ## 8 seconds per iteration is a bit much... Let's loosen things
 ## a little by increasing the tolerance from sqrt(.Machine$double.eps)
@@ -791,5 +791,5 @@ relaxedIter = partitionsIter(s, 20, TRUE, target = 0, tolerance = 1e-5)
 
 system.time(relaxedIter@nextIter())
 #>    user  system elapsed 
-#>   0.000   0.000   0.001
+#>   0.001   0.000   0.001
 ```

@@ -1,7 +1,7 @@
 ---
 title: "Cartesian Products and Partitions of Groups into Equal Size"
 author: "Joseph Wood"
-date: "02/04/2023"
+date: "02/09/2023"
 output:
   rmarkdown::html_vignette:
     toc: true
@@ -105,7 +105,7 @@ prod(lengths(pools))
 ## With comboGrid, this is no problem
 system.time(myCombs <- comboGrid(pools))
 #>    user  system elapsed 
-#>   0.207   0.023   0.230
+#>   0.210   0.026   0.235
 
 print(object.size(myCombs), unit = "Mb")
 #> 92 Mb
@@ -131,7 +131,7 @@ ht(myCombs)
 ## Generating keys, then filtering will take much more time
 system.time(cartProd <- expand.grid(pools))
 #>    user  system elapsed 
-#>   3.521   0.827   4.364
+#>   3.566   0.814   4.380
 
 ## Creates huge object
 print(object.size(cartProd), unit = "Mb")
@@ -141,7 +141,7 @@ print(object.size(cartProd), unit = "Mb")
 ## Simply set repetition = FALSE
 system.time(myCombsNoRep <- comboGrid(pools, repetition = FALSE))
 #>    user  system elapsed 
-#>   0.003   0.000   0.003
+#>   0.002   0.001   0.003
 
 ht(myCombsNoRep)
 #> head -->
@@ -240,7 +240,7 @@ The algorithm in `comboGroups` avoids all of this duplication by implementing a 
 ``` r
 system.time(comboGroups(12, numGroups = 3))
 #>    user  system elapsed 
-#>   0.000   0.000   0.001
+#>       0       0       0
 
 ht(comboGroups(12, numGroups = 3))
 #> head -->
@@ -271,21 +271,21 @@ system.time(a1 <- comboGroups(30, numGroups = 6,
                               lower = "123378675000000000",
                               upper = "123378675005000000"))
 #>    user  system elapsed 
-#>   0.114   0.033   0.146
+#>   0.115   0.031   0.146
 
 ## Use specific number of threads
 system.time(a2 <- comboGroups(30, numGroups = 6,
                               lower = "123378675000000000",
                               upper = "123378675005000000", nThreads = 4))
 #>    user  system elapsed 
-#>   0.129   0.052   0.047
+#>   0.127   0.047   0.046
 
 ## Use n - 1 number of threads (in this case, there are 7)
 system.time(a3 <- comboGroups(30, numGroups = 6,
                               lower = "123378675000000000",
                               upper = "123378675005000000", Parallel = TRUE))
 #>    user  system elapsed 
-#>   0.179   0.073   0.043
+#>   0.184   0.070   0.043
 
 identical(a1, a2)
 #> [1] TRUE

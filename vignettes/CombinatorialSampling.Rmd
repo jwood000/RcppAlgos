@@ -1,7 +1,7 @@
 ---
 title: "Combinatorial Sampling and Ranking"
 author: "Joseph Wood"
-date: "02/04/2023"
+date: "02/09/2023"
 output:
   rmarkdown::html_vignette:
     toc: true
@@ -63,7 +63,7 @@ We could also try calling `sample(100, 20)` a bunch of times and hope we don’t
 - You can pass a vector of specific indices via `sampleVec` or rely on the internal sampling functions. We call `sample` when the total number of results is small and for larger cases, the sampling is done in a very similar fashion to `urand.bigz` from the `gmp` package.
 - Consistent interface to their respective general functions (e.g. `partitionsGeneral`)
 - The `seed` parameter allows for generating reproducible samples.
-- If the gmp library is needed, the `seed` parameter must be set in order to have reproducible results (e.g. `set.seed()`) has no effect in these cases).
+- If the gmp library is needed, the `seed` parameter must be set in order to have reproducible results (*E.g.* `set.seed()`) has no effect in these cases).
 
 ## `comboSample` and `permuteSample`
 
@@ -204,11 +204,11 @@ The algorithms are incredibly efficient and offer tremendous gains over the naiv
 ## the function "naive" is defined above
 system.time(naive(25, 10, 5, 15))
 #>    user  system elapsed 
-#>   1.466   0.020   1.486
+#>   1.510   0.011   1.521
 
 system.time(comboSample(25, 10, n = 5, seed = 15))
 #>    user  system elapsed 
-#>   0.000   0.000   0.001
+#>   0.001   0.000   0.000
 ```
 
 Even when dealing with extremely large numbers, these algorithms are very fast. And using the parallel options have even greater effects than we saw with the general counterparts (typically around \~2-3 times faster with the general functions, whereas with the last example below with sampling we see a nearly 5x improvement).
@@ -217,7 +217,7 @@ Even when dealing with extremely large numbers, these algorithms are very fast. 
 ## Lightning fast even with examples involving many results
 system.time(comboSample(2500, 100, n = 5, seed = 15))
 #>    user  system elapsed 
-#>       0       0       0
+#>   0.001   0.000   0.001
 
 ## The total number of combinations has ~180 digits
 gmp::log10.bigz(comboCount(2500, 100))
@@ -226,12 +226,12 @@ gmp::log10.bigz(comboCount(2500, 100))
 ## Still fast with larger samples
 system.time(comboSample(2500, 100, n = 1e4, seed = 157))
 #>    user  system elapsed 
-#>   0.649   0.003   0.652
+#>    0.66    0.00    0.66
 
 ## Using Parallel/nThreads in these cases has an even greater effect
 system.time(comboSample(2500, 100, n = 1e4, seed = 157, nThreads = 8))
 #>    user  system elapsed 
-#>   0.915   0.004   0.125
+#>   0.910   0.003   0.120
 ```
 
 ### User Defined Functions
@@ -300,13 +300,13 @@ partitionsCount(2500, 10)
 system.time(serial <- partitionsSample(2500, 10, n = 1e3,
                                        seed = 8128))
 #>    user  system elapsed 
-#>   2.864   0.020   2.884
+#>   2.939   0.002   2.941
 
 ## Use nThreads for greater efficiency
 system.time(multi <- partitionsSample(2500, 10, n = 1e3,
                                       seed = 8128, nThreads = 8))
 #>    user  system elapsed 
-#>   4.191   0.020   0.570
+#>   4.203   0.013   0.566
 
 identical(multi, serial)
 #> [1] TRUE
@@ -320,7 +320,7 @@ partitionsSample(17 + (1:10) * 3, 10, TRUE,
 #> [3,]   20   23   23   26   26   35   38   41   44    44
 ```
 
-There are sampling algorithms available for most partition cases, but some cases are not covered. For example, with standard multisets, we are currently unable to *efficiently* generate the *n<sup>th</sup>* lexicographical result. Another example is when the source vector is not uniform (e.g. when the distance between each element is irregular).
+There are sampling algorithms available for most partition cases, but some cases are not covered. For example, with standard multisets, we are currently unable to *efficiently* generate the *n<sup>th</sup>* lexicographical result. Another example is when the source vector is not uniform (*e.g.* when the distance between each element is irregular).
 
 Observe the following:
 
@@ -388,13 +388,13 @@ compositionsCount(2500, 10, TRUE)
 system.time(serial <- compositionsSample(2500, 10, TRUE,
                                          n = 1e4, seed = 8128))
 #>    user  system elapsed 
-#>   0.261   0.003   0.263
+#>   0.261   0.000   0.261
 
 ## Use nThreads for greater efficiency
 system.time(multi <- compositionsSample(2500, 10, TRUE, n = 1e4,
                                         seed = 8128, nThreads = 8))
 #>    user  system elapsed 
-#>   0.360   0.001   0.054
+#>   0.367   0.001   0.049
 
 identical(multi, serial)
 #> [1] TRUE
@@ -506,7 +506,7 @@ comb = comboSample(25, 12, sampleVec = 2e6)[1, ]
 system.time(print(naive_rank(25, 12, comb)))
 #> [1] 2000000
 #>    user  system elapsed 
-#>   5.901   0.109   6.010
+#>   5.958   0.059   6.017
 ```
 
 ## RcppAlgos Solutions
