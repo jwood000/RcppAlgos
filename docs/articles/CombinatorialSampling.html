@@ -33,7 +33,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">RcppAlgos</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">2.7.0</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">2.7.2</span>
       </span>
     </div>
 
@@ -103,7 +103,7 @@
                         <h4 data-toc-skip class="author">Joseph
 Wood</h4>
             
-            <h4 data-toc-skip class="date">10/30/2022</h4>
+            <h4 data-toc-skip class="date">02/09/2023</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/jwood000/RcppAlgos/blob/HEAD/vignettes/CombinatorialSampling.Rmd" class="external-link"><code>vignettes/CombinatorialSampling.Rmd</code></a></small>
       <div class="hidden name"><code>CombinatorialSampling.Rmd</code></div>
@@ -185,8 +185,8 @@ from the <code>gmp</code> package.</li>
 <li>The <code>seed</code> parameter allows for generating reproducible
 samples.</li>
 <li>If the gmp library is needed, the <code>seed</code> parameter must
-be set in order to have reproducible results
-(e.g. <code><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed()</a></code>) has no effect in these cases).</li>
+be set in order to have reproducible results (<em>E.g.</em>
+<code><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed()</a></code>) has no effect in these cases).</li>
 </ul>
 </div>
 <div class="section level3">
@@ -333,11 +333,11 @@ over the naive approach above:</p>
 <code class="sourceCode R"><span><span class="co">## the function "naive" is defined above</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/system.time.html" class="external-link">system.time</a></span><span class="op">(</span><span class="fu">naive</span><span class="op">(</span><span class="fl">25</span>, <span class="fl">10</span>, <span class="fl">5</span>, <span class="fl">15</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="co">#&gt;    user  system elapsed </span></span>
-<span><span class="co">#&gt;   1.470   0.027   1.499</span></span>
+<span><span class="co">#&gt;   1.510   0.011   1.521</span></span>
 <span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/system.time.html" class="external-link">system.time</a></span><span class="op">(</span><span class="fu"><a href="../reference/combinatoricsSample.html">comboSample</a></span><span class="op">(</span><span class="fl">25</span>, <span class="fl">10</span>, n <span class="op">=</span> <span class="fl">5</span>, seed <span class="op">=</span> <span class="fl">15</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="co">#&gt;    user  system elapsed </span></span>
-<span><span class="co">#&gt;   0.000   0.000   0.001</span></span></code></pre></div>
+<span><span class="co">#&gt;   0.001   0.000   0.000</span></span></code></pre></div>
 <p>Even when dealing with extremely large numbers, these algorithms are
 very fast. And using the parallel options have even greater effects than
 we saw with the general counterparts (typically around ~2-3 times faster
@@ -347,7 +347,7 @@ sampling we see a nearly 5x improvement).</p>
 <code class="sourceCode R"><span><span class="co">## Lightning fast even with examples involving many results</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/system.time.html" class="external-link">system.time</a></span><span class="op">(</span><span class="fu"><a href="../reference/combinatoricsSample.html">comboSample</a></span><span class="op">(</span><span class="fl">2500</span>, <span class="fl">100</span>, n <span class="op">=</span> <span class="fl">5</span>, seed <span class="op">=</span> <span class="fl">15</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="co">#&gt;    user  system elapsed </span></span>
-<span><span class="co">#&gt;       0       0       0</span></span>
+<span><span class="co">#&gt;   0.001   0.000   0.001</span></span>
 <span></span>
 <span><span class="co">## The total number of combinations has ~180 digits</span></span>
 <span><span class="fu">gmp</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/gmp/man/add.biginteger.html" class="external-link">log10.bigz</a></span><span class="op">(</span><span class="fu"><a href="../reference/combinatoricsCount.html">comboCount</a></span><span class="op">(</span><span class="fl">2500</span>, <span class="fl">100</span><span class="op">)</span><span class="op">)</span></span>
@@ -356,12 +356,12 @@ sampling we see a nearly 5x improvement).</p>
 <span><span class="co">## Still fast with larger samples</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/system.time.html" class="external-link">system.time</a></span><span class="op">(</span><span class="fu"><a href="../reference/combinatoricsSample.html">comboSample</a></span><span class="op">(</span><span class="fl">2500</span>, <span class="fl">100</span>, n <span class="op">=</span> <span class="fl">1e4</span>, seed <span class="op">=</span> <span class="fl">157</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="co">#&gt;    user  system elapsed </span></span>
-<span><span class="co">#&gt;   0.656   0.004   0.661</span></span>
+<span><span class="co">#&gt;    0.66    0.00    0.66</span></span>
 <span></span>
 <span><span class="co">## Using Parallel/nThreads in these cases has an even greater effect</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/system.time.html" class="external-link">system.time</a></span><span class="op">(</span><span class="fu"><a href="../reference/combinatoricsSample.html">comboSample</a></span><span class="op">(</span><span class="fl">2500</span>, <span class="fl">100</span>, n <span class="op">=</span> <span class="fl">1e4</span>, seed <span class="op">=</span> <span class="fl">157</span>, nThreads <span class="op">=</span> <span class="fl">8</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="co">#&gt;    user  system elapsed </span></span>
-<span><span class="co">#&gt;   0.904   0.004   0.130</span></span></code></pre></div>
+<span><span class="co">#&gt;   0.910   0.003   0.120</span></span></code></pre></div>
 </div>
 <div class="section level4">
 <h4 id="user-defined-functions">User Defined Functions<a class="anchor" aria-label="anchor" href="#user-defined-functions"></a>
@@ -435,13 +435,13 @@ random sample of partitions of a number. Many of the features present in
 <span><span class="fu"><a href="https://rdrr.io/r/base/system.time.html" class="external-link">system.time</a></span><span class="op">(</span><span class="va">serial</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/partitionsSample.html">partitionsSample</a></span><span class="op">(</span><span class="fl">2500</span>, <span class="fl">10</span>, n <span class="op">=</span> <span class="fl">1e3</span>,</span>
 <span>                                       seed <span class="op">=</span> <span class="fl">8128</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="co">#&gt;    user  system elapsed </span></span>
-<span><span class="co">#&gt;   2.868   0.013   2.882</span></span>
+<span><span class="co">#&gt;   2.939   0.002   2.941</span></span>
 <span></span>
 <span><span class="co">## Use nThreads for greater efficiency</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/system.time.html" class="external-link">system.time</a></span><span class="op">(</span><span class="va">multi</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/partitionsSample.html">partitionsSample</a></span><span class="op">(</span><span class="fl">2500</span>, <span class="fl">10</span>, n <span class="op">=</span> <span class="fl">1e3</span>,</span>
 <span>                                      seed <span class="op">=</span> <span class="fl">8128</span>, nThreads <span class="op">=</span> <span class="fl">8</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="co">#&gt;    user  system elapsed </span></span>
-<span><span class="co">#&gt;   4.222   0.014   0.561</span></span>
+<span><span class="co">#&gt;   4.203   0.013   0.566</span></span>
 <span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/identical.html" class="external-link">identical</a></span><span class="op">(</span><span class="va">multi</span>, <span class="va">serial</span><span class="op">)</span></span>
 <span><span class="co">#&gt; [1] TRUE</span></span>
@@ -457,8 +457,8 @@ random sample of partitions of a number. Many of the features present in
 some cases are not covered. For example, with standard multisets, we are
 currently unable to <em>efficiently</em> generate the
 <em>n<sup>th</sup></em> lexicographical result. Another example is when
-the source vector is not uniform (e.g. when the distance between each
-element is irregular).</p>
+the source vector is not uniform (<em>e.g.</em> when the distance
+between each element is irregular).</p>
 <p>Observe the following:</p>
 <div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co">## No sampling algorithm available when the source vector is not uniform</span></span>
@@ -527,13 +527,13 @@ in <code>compositionsSample</code>.</p>
 <span><span class="fu"><a href="https://rdrr.io/r/base/system.time.html" class="external-link">system.time</a></span><span class="op">(</span><span class="va">serial</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/partitionsSample.html">compositionsSample</a></span><span class="op">(</span><span class="fl">2500</span>, <span class="fl">10</span>, <span class="cn">TRUE</span>,</span>
 <span>                                         n <span class="op">=</span> <span class="fl">1e4</span>, seed <span class="op">=</span> <span class="fl">8128</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="co">#&gt;    user  system elapsed </span></span>
-<span><span class="co">#&gt;   0.262   0.001   0.263</span></span>
+<span><span class="co">#&gt;   0.261   0.000   0.261</span></span>
 <span></span>
 <span><span class="co">## Use nThreads for greater efficiency</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/system.time.html" class="external-link">system.time</a></span><span class="op">(</span><span class="va">multi</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/partitionsSample.html">compositionsSample</a></span><span class="op">(</span><span class="fl">2500</span>, <span class="fl">10</span>, <span class="cn">TRUE</span>, n <span class="op">=</span> <span class="fl">1e4</span>,</span>
 <span>                                        seed <span class="op">=</span> <span class="fl">8128</span>, nThreads <span class="op">=</span> <span class="fl">8</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="co">#&gt;    user  system elapsed </span></span>
-<span><span class="co">#&gt;   0.367   0.001   0.051</span></span>
+<span><span class="co">#&gt;   0.367   0.001   0.049</span></span>
 <span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/identical.html" class="external-link">identical</a></span><span class="op">(</span><span class="va">multi</span>, <span class="va">serial</span><span class="op">)</span></span>
 <span><span class="co">#&gt; [1] TRUE</span></span>
@@ -655,7 +655,7 @@ very quickly. For example:</p>
 <span><span class="fu"><a href="https://rdrr.io/r/base/system.time.html" class="external-link">system.time</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="fu">naive_rank</span><span class="op">(</span><span class="fl">25</span>, <span class="fl">12</span>, <span class="va">comb</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="co">#&gt; [1] 2000000</span></span>
 <span><span class="co">#&gt;    user  system elapsed </span></span>
-<span><span class="co">#&gt;   5.959   0.077   6.037</span></span></code></pre></div>
+<span><span class="co">#&gt;   5.958   0.059   6.017</span></span></code></pre></div>
 </div>
 <div class="section level3">
 <h3 id="rcppalgos-solutions-1">RcppAlgos Solutions<a class="anchor" aria-label="anchor" href="#rcppalgos-solutions-1"></a>

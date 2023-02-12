@@ -39,11 +39,11 @@ Returns a named/unnamed logical vector. If an index is \code{TRUE}, the number a
 }
 \references{
 \itemize{
-\item{\href{https://www.math.uconn.edu/~kconrad/blurbs/ugradnumthy/millerrabin.pdf}{THE MILLER-RABIN TEST}\itemize{\item{Conrad, Keith. "THE MILLER-RABIN TEST." http://www.math.uconn.edu/~kconrad/blurbs/ugradnumthy/millerrabin.pdf.}}}
+\item{\href{https://www.math.uconn.edu/~kconrad/blurbs/ugradnumthy/millerrabin.pdf}{THE MILLER-RABIN TEST}\itemize{\item{Conrad, Keith. "THE MILLER-RABIN TEST." https://www.math.uconn.edu/~kconrad/blurbs/ugradnumthy/millerrabin.pdf.}}}
 \item{\href{https://en.wikipedia.org/wiki/Double-precision_floating-point_format}{53-bit significand precision}}}
 }
 \seealso{
-\code{\link{primeFactorize}}, \code{\link[gmp]{isprime}}, \code{\link[numbers]{isPrime}}
+\code{\link{primeFactorize}}, \code{\link[gmp]{isprime}}
 }
 \examples{
 ## check the primality of a single number

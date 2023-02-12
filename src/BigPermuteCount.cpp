@@ -1,7 +1,7 @@
 #include "Permutations/PermuteCount.h"
 #include <algorithm> // std::sort, std::max_element
 #include <numeric>   // std::accumulate, std::iota
-#include <gmpxx.h>
+#include "CppConvert/GmpxxCopy.h"
 
 // All functions below are exactly the same as the functions
 // in StandardCount.cpp. The only difference is that they

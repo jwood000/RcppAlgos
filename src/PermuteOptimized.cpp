@@ -1,12 +1,13 @@
 #include "Permutations/PermuteHelper.h"
 #include <cmath>
 
-constexpr int unrollSize = 8;
+constexpr std::size_t unrollSize = 8;
 
 template <typename T>
-void RepUnroller(T* mat, T val, int strt, int last, int lastUnroll) {
+void RepUnroller(T* mat, T val, std::size_t strt,
+                 std::size_t last, std::size_t lastUnroll) {
 
-    for (int i = strt; i < lastUnroll; i += unrollSize) {
+    for (std::size_t i = strt; i < lastUnroll; i += unrollSize) {
         mat[i] = val;
         mat[i + 1] = val;
         mat[i + 2] = val;
@@ -17,18 +18,20 @@ void RepUnroller(T* mat, T val, int strt, int last, int lastUnroll) {
         mat[i + 7] = val;
     }
 
-    for (int i = lastUnroll; i < last; ++i) {
+    for (std::size_t i = lastUnroll; i < last; ++i) {
         mat[i] = val;
     }
 }
 
 template <typename T>
 void StandardUnroller(T* mat, const int *const indexMat,
-                      const std::vector<T> &v, int m, int strt,
-                      int last, int first, int lastUnroll, int nRows) {
+                      const std::vector<T> &v, std::size_t m, std::size_t strt,
+                      std::size_t last, std::size_t first,
+                      std::size_t lastUnroll, std::size_t nRows) {
 
-    for (int j = first * nRows, k = 0; j < (m * nRows); j += nRows) {
-        for (int i = strt; i < lastUnroll; i += unrollSize, k += unrollSize) {
+    for (std::size_t j = first * nRows, k = 0; j < (m * nRows); j += nRows) {
+        for (std::size_t i = strt; i < lastUnroll;
+             i += unrollSize, k += unrollSize) {
             mat[i + j] = v[indexMat[k]];
             mat[i + 1 + j] = v[indexMat[k + 1]];
             mat[i + 2 + j] = v[indexMat[k + 2]];
@@ -39,7 +42,7 @@ void StandardUnroller(T* mat, const int *const indexMat,
             mat[i + 7 + j] = v[indexMat[k + 7]];
         }
 
-        for (int i = lastUnroll; i < last; ++i, ++k) {
+        for (std::size_t i = lastUnroll; i < last; ++i, ++k) {
             mat[i + j] = v[indexMat[k]];
         }
     }
@@ -67,14 +70,15 @@ void PermuteWorker(T* mat, const int *const indexMat,
 template <typename T>
 void PermuteLoadIndex(T* mat, int *const indexMat,
                       const std::vector<T> &v, std::vector<int> &z,
-                      int n, int m, int segment, bool IsRep, int nRows) {
+                      std::size_t n, std::size_t m, std::size_t segment,
+                      bool IsRep, std::size_t nRows) {
 
     if (IsRep) {
-        for (int count = 0, maxInd = n - 1,
+        for (std::size_t count = 0, maxInd = n - 1,
              lastCol = m - 1; count < segment; ++count) {
 
             // N.B. In PermuteGeneral we start j at 0
-            for (int j = 1, k = count; j < m; ++j, k += segment) {
+            for (std::size_t j = 1, k = count; j < m; ++j, k += segment) {
                 mat[count + j * nRows] = v[z[j]];
                 indexMat[k] = z[j];
             }
@@ -83,7 +87,7 @@ void PermuteLoadIndex(T* mat, int *const indexMat,
 
             // N.B. In PermuteGeneral we decrement i until i == 0
             for (int i = lastCol; i > 0; --i) {
-                if (z[i] != maxInd) {
+                if (z[i] != static_cast<int>(maxInd)) {
                     ++z[i];
                     break;
                 } else {
@@ -92,15 +96,16 @@ void PermuteLoadIndex(T* mat, int *const indexMat,
             }
         }
     } else {
-        auto arrPerm = FromCpp14::make_unique<int[]>(n);
+        auto arrPerm = std::make_unique<int[]>(n);
 
-        for (int i = 0; i < n; ++i) {
+        for (std::size_t i = 0; i < n; ++i) {
             arrPerm[i] = z[i];
         }
 
         if (m == n) {
-            for (int count = 0, maxInd = n - 1; count < segment; ++count) {
-                for (int j = 0, k = count; j < m; ++j, k += segment) {
+            for (std::size_t count = 0, maxInd = n - 1;
+                 count < segment; ++count) {
+                for (std::size_t j = 0, k = count; j < m; ++j, k += segment) {
                     mat[count + j * nRows] = v[arrPerm[j]];
                     indexMat[k] = arrPerm[j];
                 }
@@ -108,10 +113,10 @@ void PermuteLoadIndex(T* mat, int *const indexMat,
                 nextFullPerm(arrPerm.get(), maxInd);
             }
         } else {
-            for (int count = 0, maxInd = n - 1,
+            for (std::size_t count = 0, maxInd = n - 1,
                  lastCol = m - 1; count < segment; ++count) {
 
-                for (int j = 0, k = count; j < m; ++j, k += segment) {
+                for (std::size_t j = 0, k = count; j < m; ++j, k += segment) {
                     mat[count + j * nRows] = v[arrPerm[j]];
                     indexMat[k] = arrPerm[j];
                 }
@@ -124,23 +129,22 @@ void PermuteLoadIndex(T* mat, int *const indexMat,
 
 template <typename T>
 void PermuteOptimized(T* mat, const std::vector<T> &v, std::vector<int> &z,
-                      int n, int m, int nRows, bool IsRep) {
+                      std::size_t n, std::size_t m, std::size_t nRows,
+                      bool IsRep) {
 
-    const int first = (IsRep) ? 1 : 0;
-    const int segment = (IsRep) ? std::pow(static_cast<double>(n),
-                                           static_cast<double>(m - 1)) :
+    const std::size_t first = (IsRep) ? 1 : 0;
+    const std::size_t segment = (IsRep) ? std::pow(static_cast<double>(n),
+                                                   static_cast<double>(m - 1)) :
                         NumPermsNoRep(n - 1, m - 1);
 
-    const std::size_t indexMatSize = static_cast<std::size_t>(segment) *
-                                     static_cast<std::size_t>(m - first);
-
-    auto indexMat = FromCpp14::make_unique<int[]>(indexMatSize);
+    const std::size_t indexMatSize = segment * (m - first);
+    auto indexMat = std::make_unique<int[]>(indexMatSize);
     PermuteLoadIndex(mat, indexMat.get(), v, z, n, m, segment, IsRep, nRows);
 
-    int ind = 1;
-    int strt = segment;
-    int last = strt + segment;
-    int unrollRem = segment % unrollSize;
+    std::size_t ind = 1;
+    std::size_t strt = segment;
+    std::size_t last = strt + segment;
+    std::size_t unrollRem = segment % unrollSize;
     std::vector<T> vCopy(v.cbegin(), v.cend());
 
     for (; last <= nRows; strt += segment, last += segment, ++ind) {
@@ -152,21 +156,21 @@ void PermuteOptimized(T* mat, const std::vector<T> &v, std::vector<int> &z,
                       last, ind, first, unrollRem, IsRep, nRows);
     }
 
-    if (ind < static_cast<int>(vCopy.size()) && strt < nRows) {
-        const int skip = last - nRows;
+    if (ind < vCopy.size() && strt < nRows) {
+        const std::size_t skip = last - nRows;
         unrollRem = nRows % unrollSize;
 
         if (IsRep) {
-            const int lastUnroll = nRows - unrollRem;
+            const std::size_t lastUnroll = nRows - unrollRem;
             RepUnroller(mat, vCopy[ind], strt, nRows, lastUnroll);
         } else {
             std::swap(vCopy.front(), vCopy[ind]);
         }
 
-        for (int j = first * nRows, k = 0; j < (m * nRows); j += nRows,
-             k += skip) {
+        for (std::size_t j = first * nRows, k = 0; j < (m * nRows);
+             j += nRows, k += skip) {
 
-            for (int i = strt; i < nRows; ++i, ++k) {
+            for (std::size_t i = strt; i < nRows; ++i, ++k) {
                 mat[i + j] = vCopy[indexMat[k]];
             }
         }
@@ -174,10 +178,14 @@ void PermuteOptimized(T* mat, const std::vector<T> &v, std::vector<int> &z,
 }
 
 template void PermuteOptimized(int*, const std::vector<int>&,
-                               std::vector<int>&, int, int, int, bool);
+                               std::vector<int>&, std::size_t, std::size_t,
+                               std::size_t, bool);
 template void PermuteOptimized(double*, const std::vector<double>&,
-                               std::vector<int>&, int, int, int, bool);
+                               std::vector<int>&, std::size_t, std::size_t,
+                               std::size_t, bool);
 template void PermuteOptimized(Rbyte*, const std::vector<Rbyte>&,
-                               std::vector<int>&, int, int, int, bool);
+                               std::vector<int>&, std::size_t, std::size_t,
+                               std::size_t, bool);
 template void PermuteOptimized(Rcomplex*, const std::vector<Rcomplex>&,
-                               std::vector<int>&, int, int, int, bool);
+                               std::vector<int>&, std::size_t, std::size_t,
+                               std::size_t, bool);

@@ -18,7 +18,7 @@ divisorsSieve(bound1, bound2 = NULL, namedList = FALSE, nThreads = NULL)
 \details{
 This function is useful when many complete factorizations are needed. Instead of generating the complete factorization on the fly, one can reference the indices/names of the generated list.
 
-This algorithm benefits greatly from the fast integer division library 'libdivide'. The following is from \href{http://libdivide.com/}{http://libdivide.com/}:
+This algorithm benefits greatly from the fast integer division library 'libdivide'. The following is from \href{https://libdivide.com/}{https://libdivide.com/}:
 \itemize{\item{\dQuote{\emph{libdivide allows you to replace expensive integer divides with comparatively cheap multiplication and bitshifts. Compilers usually do this, but only when the divisor is known at compile time. libdivide allows you to take advantage of it at runtime. The result is that integer division can become faster - a lot faster.}}}}
 }
 \value{
@@ -33,13 +33,13 @@ The maximum value for either of the bounds is \eqn{2^{53} - 1}{2^53 - 1}.
 \references{
 \itemize{
 \item{\href{https://en.wikipedia.org/wiki/Divisor}{Divisor}}
-\item{\href{http://ridiculousfish.com/}{ridiculousfish (author of libdivide)}}
+\item{\href{https://ridiculousfish.com/}{ridiculousfish (author of libdivide)}}
 \item{\href{https://github.com/ridiculousfish/libdivide}{github.com/ridiculousfish/libdivide}}
 \item{\href{https://en.wikipedia.org/wiki/Double-precision_floating-point_format}{53-bit significand precision}}
 }
 }
 \seealso{
-\code{\link{divisorsRcpp}}, \code{\link[numbers]{divisors}}, \code{\link{primeFactorizeSieve}}
+\code{\link{divisorsRcpp}}, \code{\link{primeFactorizeSieve}}
 }
 \examples{
 ## Generate some random data

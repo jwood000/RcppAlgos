@@ -7,7 +7,7 @@
 #include "Partitions/PartitionsCount.h"
 #include "Permutations/PermuteCount.h"
 #include "Combinations/ComboCount.h"
-#include "CppConvert/Cpp14MakeUnique.h"
+#include <memory>
 #include "CppConvert/Constants.h"  // Significand53
 #include <algorithm>               // std::count_if, std::find
 
@@ -18,11 +18,11 @@ std::unique_ptr<CountClass> MakeCount(PartitionType ptype, bool isComp) {
     if (isComp) {
         switch (ptype) {
             case PartitionType::RepStdAll: {
-                return FromCpp14::make_unique<CompsRepZero>();
+                return std::make_unique<CompsRepZero>();
             } case PartitionType::RepNoZero: {
-                return FromCpp14::make_unique<CompsRepLen>();
+                return std::make_unique<CompsRepLen>();
             } case PartitionType::RepShort: {
-                return FromCpp14::make_unique<CompsRepZero>();
+                return std::make_unique<CompsRepZero>();
             } default: {
                 return nullptr;
             }
@@ -31,27 +31,27 @@ std::unique_ptr<CountClass> MakeCount(PartitionType ptype, bool isComp) {
 
     switch (ptype) {
         case PartitionType::RepStdAll: {
-            return FromCpp14::make_unique<RepAll>();
+            return std::make_unique<RepAll>();
         } case PartitionType::RepNoZero: {
-            return FromCpp14::make_unique<RepLen>();
+            return std::make_unique<RepLen>();
         } case PartitionType::RepShort: {
-            return FromCpp14::make_unique<RepLen>();
+            return std::make_unique<RepLen>();
         } case PartitionType::RepCapped: {
-            return FromCpp14::make_unique<RepLenCap>();
+            return std::make_unique<RepLenCap>();
         } case PartitionType::DstctStdAll: {
-            return FromCpp14::make_unique<DistinctAll>();
+            return std::make_unique<DistinctAll>();
         } case PartitionType::DstctMultiZero: {
-            return FromCpp14::make_unique<DistinctMZ>();
+            return std::make_unique<DistinctMZ>();
         } case PartitionType::DstctOneZero: {
-            return FromCpp14::make_unique<DistinctLen>();
+            return std::make_unique<DistinctLen>();
         } case PartitionType::DstctNoZero: {
-            return FromCpp14::make_unique<DistinctLen>();
+            return std::make_unique<DistinctLen>();
         } case PartitionType::DstctCapped: {
-            return FromCpp14::make_unique<DistinctLenCap>();
+            return std::make_unique<DistinctLenCap>();
         } case PartitionType::DstctCappedMZ: {
-            return FromCpp14::make_unique<DistinctCapMZ>();
+            return std::make_unique<DistinctCapMZ>();
         } default: {
-            return FromCpp14::make_unique<RepAll>();
+            return std::make_unique<RepAll>();
         }
     }
 }

@@ -40,7 +40,7 @@ Joseph Wood
 The maximum value for each element in \eqn{v} is \eqn{2^{53} - 1}{2^53 - 1}.
 }
 \seealso{
-\code{\link{primeFactorizeSieve}}, \code{\link[gmp]{factorize}}, \code{\link[numbers]{primeFactors}}
+\code{\link{primeFactorizeSieve}}, \code{\link[gmp]{factorize}}
 }
 \examples{
 ## Get the prime factorization of a single number

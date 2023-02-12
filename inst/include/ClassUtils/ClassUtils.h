@@ -26,4 +26,5 @@ bool CheckGrTSi(bool IsGmp, const mpz_class &mpzIndex, double dblIndex, int si);
 
 void zUpdateIndex(const std::vector<double> &vNum,
                   const std::vector<int> &vInt, std::vector<int> &z,
-                  SEXP v, SEXP mat, int m, int nRows, bool bAddOne = false);
+                  SEXP v, SEXP mat, std::size_t m, std::size_t nRows,
+                  bool bAddOne = false);

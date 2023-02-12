@@ -17,7 +17,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">RcppAlgos</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">2.7.0</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">2.7.2</span>
       </span>
     </div>
 
@@ -98,7 +98,7 @@
 </dl></div>
     <div id="details">
     <h2>Details</h2>
-    <p><a href="http://mathworld.wolfram.com/LegendresFormula.html" class="external-link">Legendre's Formula</a> for counting the number of primes less than \(n\) makes use of the <a href="https://en.wikipedia.org/wiki/Inclusion-exclusion_principle" class="external-link">inclusion-exclusion principle</a> to avoid explicitly counting every prime up to \(n\). It is given by:
+    <p><a href="https://mathworld.wolfram.com/LegendresFormula.html" class="external-link">Legendre's Formula</a> for counting the number of primes less than \(n\) makes use of the <a href="https://en.wikipedia.org/wiki/Inclusion-exclusion_principle" class="external-link">inclusion-exclusion principle</a> to avoid explicitly counting every prime up to \(n\). It is given by:
 $$\pi(x) = \pi(\sqrt x) + \Phi(x, \sqrt x) - 1$$
 Where \(\Phi(x, a)\) is the number of positive integers less than or equal to \(x\) that are relatively prime to the first \(a\) primes (i.e. not divisible by any of the first \(a\) primes). It is given by the recurrence relation (\(p_a\) is the \(ath\) prime (e.g. \(p_4 = 7\))):
 $$\Phi(x, a) = \Phi(x, a - 1) + \Phi(x / p_a, a - 1)$$
@@ -118,7 +118,7 @@ This algorithm implements five modifications developed by Kim Walisch for calcul
     <div id="references">
     <h2>References</h2>
     
-<ul><li><p><a href="http://sweet.ua.pt/tos/bib/5.4.pdf" class="external-link">Computing \(\pi(x)\): the combinatorial method</a></p><ul><li><p>Tomás Oliveira e Silva, Computing pi(x): the combinatorial method, Revista do DETUA, vol. 4, no. 6, March 2006, p. 761. http://sweet.ua.pt/tos/bib/5.4.pdf</p></li>
+<ul><li><p><a href="https://sweet.ua.pt/tos/bib/5.4.pdf" class="external-link">Computing \(\pi(x)\): the combinatorial method</a></p><ul><li><p>Tomás Oliveira e Silva, Computing pi(x): the combinatorial method, Revista do DETUA, vol. 4, no. 6, March 2006, p. 761. https://sweet.ua.pt/tos/bib/5.4.pdf</p></li>
 </ul></li>
 <li><p><a href="https://en.wikipedia.org/wiki/Double-precision_floating-point_format" class="external-link">53-bit significand precision</a></p></li>
 </ul></div>

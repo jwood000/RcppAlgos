@@ -1,7 +1,7 @@
 #pragma once
 
 #include <vector>
-#include <gmpxx.h>
+#include "CppConvert/GmpxxCopy.h"
 
 bool nextComboGroup(std::vector<int> &z, int grpSize,
                     int idx1, int idx2, int low_one);

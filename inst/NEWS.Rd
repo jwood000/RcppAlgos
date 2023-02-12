@@ -1,7 +1,25 @@
 \name{NEWS}
 \title{News for Package \pkg{RcppAlgos}}
 
-\section{Changes in RcppAlgos version 2.7.0 (Release date: 2022-11-01)}{
+\section{Changes in RcppAlgos version 2.7.2 (Release date: 2023-02-11)}{
+    \itemize{
+        \item Others:
+        \itemize{
+            \item Using a copy of \code{gmpxx.h} source in order to easily build on all platforms.
+        }
+    }
+}
+
+\section{Changes in RcppAlgos version 2.7.1 (Release date: 2023-02-06)}{
+    \itemize{
+        \item Others:
+        \itemize{
+            \item Updated default C++ specification.
+        }
+    }
+}
+
+\section{Changes in RcppAlgos version 2.7.0 (Release date: Never Released)}{
     \itemize{
         \item Others:
         \itemize{

@@ -30,21 +30,22 @@ void GetPrevious(T* mat, const std::vector<T> &v, std::vector<int> &z,
                  const std::vector<int> &freqs, bool IsComb, bool IsMult) {
 
     const int loc_n1 = IsComb ? n - 1 : (IsMult ? freqs.size() - 1 : n - 1);
-    const int lastRow = nRows - 1;
-    const int loc_m = m;
+    const std::size_t unRows = nRows;
+    const std::size_t lastRow = nRows - 1;
+    const std::size_t loc_m = m;
 
     // We iterater to the pentultimate row to avoid iterating z one too many times
-    for (int count = 0, loc_m1 = m - 1; count < lastRow; ++count) {
-        for (int j = 0; j < loc_m; ++j) {
-            mat[count + j * nRows] = v[z[j]];
+    for (std::size_t count = 0, loc_m1 = m - 1; count < lastRow; ++count) {
+        for (std::size_t j = 0; j < loc_m; ++j) {
+            mat[count + j * unRows] = v[z[j]];
         }
 
         prevIter(freqs, z, loc_n1, loc_m1);
     }
 
     // Get the last result
-    for (int j = 0; j < loc_m; ++j) {
-        mat[lastRow + j * nRows] = v[z[j]];
+    for (std::size_t j = 0; j < loc_m; ++j) {
+        mat[lastRow + j * unRows] = v[z[j]];
     }
 }
 

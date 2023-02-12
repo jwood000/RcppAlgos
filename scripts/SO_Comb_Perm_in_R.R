@@ -33,37 +33,37 @@ reprex::reprex({
     #' #### |--------------------------------------- **OVERVIEW** ----------------------------------------|
     #'
     #'
-    #'     |_________________| gtools | combinat | multicool | partitions |
-    #'     |       comb rep  |  Yes   |          |           |            |
-    #'     |    comb NO rep  |  Yes   |   Yes    |           |            |
-    #'     |       perm rep  |  Yes   |          |           |            |
-    #'     |    perm NO rep  |  Yes   |   Yes    |    Yes    |    Yes     |
-    #'     |  perm multiset  |        |          |    Yes    |    Yes     |
-    #'     |  comb multiset  |        |          |           |            |
-    #'     | accepts factors |        |   Yes    |           |            |
-    #'     |    m at a time  |  Yes   |  Yes/No  |           |            |
-    #'     | general vector  |  Yes   |   Yes    |    Yes    |            |
-    #'     |     iterable    |        |          |    Yes    |            |
-    #'     | parallelizable  |        |          |           |            |
-    #'     | multi-threaded  |        |          |           |            |
-    #'     |   big integer   |        |          |           |            |
+    #' |_________________| gtools | combinat | multicool | partitions |
+    #' |       comb rep  |  Yes   |          |           |            |
+    #' |    comb NO rep  |  Yes   |   Yes    |           |            |
+    #' |       perm rep  |  Yes   |          |           |            |
+    #' |    perm NO rep  |  Yes   |   Yes    |    Yes    |    Yes     |
+    #' |  perm multiset  |        |          |    Yes    |    Yes     |
+    #' |  comb multiset  |        |          |           |            |
+    #' | accepts factors |        |   Yes    |           |            |
+    #' |    m at a time  |  Yes   |  Yes/No  |           |            |
+    #' | general vector  |  Yes   |   Yes    |    Yes    |            |
+    #' |     iterable    |        |          |    Yes    |            |
+    #' | parallelizable  |        |          |           |            |
+    #' | multi-threaded  |        |          |           |            |
+    #' |   big integer   |        |          |           |            |
     #'
-    #'     |_________________| arrangements | RcppAlgos | utils |
-    #'     |       comb rep  |     Yes      |    Yes    |       |
-    #'     |    comb NO rep  |     Yes      |    Yes    |  Yes  |
-    #'     |       perm rep  |     Yes      |    Yes    |       |
-    #'     |    perm NO rep  |     Yes      |    Yes    |       |
-    #'     |  perm multiset  |     Yes      |    Yes    |       |
-    #'     |  comb multiset  |     Yes      |    Yes    |       |
-    #'     | accepts factors |     Yes      |    Yes    |  Yes  |
-    #'     |    m at a time  |     Yes      |    Yes    |  Yes  |
-    #'     | general vector  |     Yes      |    Yes    |  Yes  |
-    #'     |     iterable    |     Yes      |    Yes    |       |
-    #'     | parallelizable  |     Yes      |    Yes    |       |
-    #'     |   big integer   |     Yes      |    Yes    |       |
-    #'     | multi-threaded  |              |    Yes    |       |
+    #' |_________________| arrangements | RcppAlgos | utils |
+    #' |       comb rep  |     Yes      |    Yes    |       |
+    #' |    comb NO rep  |     Yes      |    Yes    |  Yes  |
+    #' |       perm rep  |     Yes      |    Yes    |       |
+    #' |    perm NO rep  |     Yes      |    Yes    |       |
+    #' |  perm multiset  |     Yes      |    Yes    |       |
+    #' |  comb multiset  |     Yes      |    Yes    |       |
+    #' | accepts factors |     Yes      |    Yes    |  Yes  |
+    #' |    m at a time  |     Yes      |    Yes    |  Yes  |
+    #' | general vector  |     Yes      |    Yes    |  Yes  |
+    #' |     iterable    |     Yes      |    Yes    |       |
+    #' | parallelizable  |     Yes      |    Yes    |       |
+    #' |   big integer   |     Yes      |    Yes    |       |
+    #' | multi-threaded  |              |    Yes    |       |
     #'
-    #' The tasks, `m at a time` and `general vector`, refer to the capability of generating results "_m_ at a time" and rearranging a "general vector" as opposed to `1:n`. In practice, we are generally concerned with finding rearrangements of a general vector, therefore all examinations below will reflect this when possible.
+    #' The tasks, `m at a time` and `general vector`, refer to the capability of generating results “*m* at a time” and rearranging a “general vector” as opposed to `1:n`. In practice, we are generally concerned with finding rearrangements of a general vector, therefore all examinations below will reflect this when possible.
     #'
     #' ## 2. Setup
     #'
@@ -85,7 +85,7 @@ reprex::reprex({
               "RcppAlgos", "arrangements", "utils", "microbenchmark")
     sapply(pkgs, packageVersion, simplify = FALSE)
 
-    #' The listed results were obtained from setup #1 (i.e. Macbook Air M2). The results on the Macbook Pro were similar, however with the Windows setup, multi-threading was less effective. In some cases on the Windows setup, the serial execution was faster. We will call all functions with the pattern `package::function` so no `library` calls are needed.
+    #' The listed results were obtained from setup \#1 (i.e. Macbook Air M2). The results on the Macbook Pro were similar, however with the Windows setup, multi-threading was less effective. In some cases on the Windows setup, the serial execution was faster. We will call all functions with the pattern `package::function` so no `library` calls are needed.
     #'
     #' ## 3. Combinations
     #'
@@ -337,6 +337,12 @@ reprex::reprex({
 
     ## for comparison
     t1 <- RcppAlgos::permuteGeneral(tVec6, freqs = rep(2, 5))
+    tVec6 <- (1:5)^3
+    ## For multicool, you must have the elements explicitly repeated
+    tVec6Prime <- rep(tVec6, times = rep(2, 5))
+
+    ## for comparison
+    t1 <- RcppAlgos::permuteGeneral(tVec6, freqs = rep(2, 5))
     t2 <- partitions::multiset(tVec6Prime)
     t3 <- multicool::allPerm(multicool::initMC(tVec6Prime))
     t4 <- arrangements::permutations(tVec6, freq = rep(2, 5))
@@ -372,7 +378,7 @@ reprex::reprex({
     #'   2. Allows the user to specify the format via the `layout` argument ("row : row-major", "colmnn : column-major", and "list : list").
     #'   3. Offers convenient methods such as `collect` & `getnext` when working with iterators.
     #'   4. Allows for the generation of more than `2^31 - 1` combinations/permutations via `getnext`. N.B. `RcppAlgos` (via `nextItem`) and `multicool` (via `nextPerm`) are also capable of doing this.
-    #'   5. GMP support allows for exploration of combinations/permutations of vectors with many results.
+    #'   5.  GMP support allows for exploration of combinations/permutations of vectors with many results.
     #'
     #' Observe:
 
@@ -402,7 +408,6 @@ reprex::reprex({
     #' Observe:
 
     iter <- RcppAlgos::comboIter(1000, 7)
-
     # first combinations
     iter@nextIter()
 
@@ -427,7 +432,7 @@ reprex::reprex({
     # get useful info about the current state
     iter@summary()
 
-    ## get next ieteration
+    # get next iteration
     iter@nextIter()
 
     #' In case you were wondering how each package scales, I will leave you with this final example that measures how fast `RcppAlgos` and the `arrangements` packages can generate over 100 million results. Note, `gtools::combinations` is left out here as it will throw the error: `evaluation nested too deeply...`. We also leave out `combn` as it takes quite some time to execute. Curiously, the differences in memory usage between `utils::combn` and `combinat::combn` is quite bizarre given that they are only marginally different (see `?utils::combn` under the "Authors" section).
@@ -490,7 +495,7 @@ reprex::reprex({
     #'
     #' Still, none can match `RcppAlgos` **OR** `arrangements`. Both only use 51 Mb when ran on the example above.
     #'
-    #' benchmark script: https://github.com/jwood000/RcppAlgos/blob/main/scripts/SO_Comb_Perm_in_R.R
+    #' benchmark script: <https://github.com/jwood000/RcppAlgos/blob/main/scripts/SO_Comb_Perm_in_R.R>
     #'
     #' <sub>\*: An homage to _A Walk through Combinatorics_ by Miklós Bóna </sub>
 }, advertise = FALSE, venue = "r", html_preview = FALSE, wd = ".")

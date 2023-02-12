@@ -4,4 +4,5 @@
 
 template <typename T>
 void PermuteOptimized(T* mat, const std::vector<T> &v, std::vector<int> &z,
-                      int n, int m, int nRows, bool IsRep);
+                      std::size_t n, std::size_t m, std::size_t nRows,
+                      bool IsRep);

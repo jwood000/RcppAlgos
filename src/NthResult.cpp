@@ -1,4 +1,4 @@
-#include <gmpxx.h>
+#include "CppConvert/GmpxxCopy.h"
 #include <vector>
 
 #include "Permutations/NthPermutation.h"

@@ -155,8 +155,9 @@ inline bool PivotDecrementPossible(const std::vector<int> &rpsCnt,
 // ********** End PartitionsMultiset Helper Functions *****************
 
 void GetLastPart(int* mat, std::vector<int> &z, int m, int nRows) {
-    for (int k = 0; k < m; ++k) {
-        mat[nRows - 1 + nRows * k] = z[k];
+    for (std::size_t k = 0; k < static_cast<std::size_t>(m); ++k) {
+        mat[static_cast<std::size_t>(nRows - 1) +
+            static_cast<std::size_t>(nRows) * k] = z[k];
     }
 }
 

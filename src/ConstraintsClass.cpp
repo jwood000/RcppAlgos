@@ -4,7 +4,7 @@
 #include "Constraints/ConstraintsMultiset.h"
 #include "Constraints/ConstraintsDistinct.h"
 #include "Constraints/ConstraintsRep.h"
-#include "CppConvert/Cpp14MakeUnique.h"
+#include <memory>
 #include <chrono>
 
 // Used for checking whether user has interrupted computation
@@ -236,31 +236,31 @@ std::unique_ptr<ConstraintsClass<T>> MakeConstraints(
 
     if (ctype == ConstraintType::PartitionEsque) {
         if (IsMult) {
-            return FromCpp14::make_unique<PartitionsEsqueMultiset<T>>(
+            return std::make_unique<PartitionsEsqueMultiset<T>>(
                 comparison, myFun, myFunTest, n, m,
                 IsComb, xtraCol, targetVals, Reps
             );
         } else if (IsRep) {
-            return FromCpp14::make_unique<PartitionsEsqueRep<T>>(
+            return std::make_unique<PartitionsEsqueRep<T>>(
                 comparison, myFun, myFunTest, n, m,
                 IsComb, xtraCol, targetVals
             );
         } else {
-            return FromCpp14::make_unique<PartitionsEsqueDistinct<T>>(
+            return std::make_unique<PartitionsEsqueDistinct<T>>(
                 comparison, myFun, myFunTest, n, m,
                 IsComb, xtraCol, targetVals
             );
         }
     } else if (IsMult) {
-        return FromCpp14::make_unique<ConstraintsMultiset<T>>(
+        return std::make_unique<ConstraintsMultiset<T>>(
             comparison, myFun, myFunTest, n, m, IsComb, xtraCol, Reps
         );
     } else if (IsRep) {
-        return FromCpp14::make_unique<ConstraintsRep<T>>(
+        return std::make_unique<ConstraintsRep<T>>(
             comparison, myFun, myFunTest, n, m, IsComb, xtraCol
         );
     } else {
-        return FromCpp14::make_unique<ConstraintsDistinct<T>>(
+        return std::make_unique<ConstraintsDistinct<T>>(
             comparison, myFun, myFunTest, n, m, IsComb, xtraCol
         );
     }

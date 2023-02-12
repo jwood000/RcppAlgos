@@ -5,29 +5,30 @@
 
 template <typename T>
 void PermuteDistinct(T* mat, const std::vector<T> &v,
-                     std::vector<int> &z, int n, int m, int nRows) {
+                     std::vector<int> &z, std::size_t n,
+                     std::size_t m, std::size_t nRows) {
 
-    auto arrPerm = FromCpp14::make_unique<int[]>(n);
+    auto arrPerm = std::make_unique<int[]>(n);
 
-    for (int i = 0; i < n; ++i) {
+    for (std::size_t i = 0; i < n; ++i) {
         arrPerm[i] = z[i];
     }
 
     if (m == n) {
-        for (int count = 0, numR1 = nRows - 1,
+        for (std::size_t count = 0, numR1 = nRows - 1,
              maxInd = n - 1; count < numR1; ++count) {
 
-            for (int j = 0; j < m; ++j) {
+            for (std::size_t j = 0; j < m; ++j) {
                 mat[count + j * nRows] = v[arrPerm[j]];
             }
 
             nextFullPerm(arrPerm.get(), maxInd);
         }
     } else {
-        for (int count = 0, numR1 = nRows - 1, lastCol = m - 1,
+        for (std::size_t count = 0, numR1 = nRows - 1, lastCol = m - 1,
              maxInd = n - 1; count < numR1; ++count) {
 
-            for (int j = 0; j < m; ++j) {
+            for (std::size_t j = 0; j < m; ++j) {
                 mat[count + j * nRows] = v[arrPerm[j]];
             }
 
@@ -36,7 +37,7 @@ void PermuteDistinct(T* mat, const std::vector<T> &v,
     }
 
     // Get last permutation
-    for (int j = 0; j < m; ++j) {
+    for (std::size_t j = 0; j < m; ++j) {
         mat[nRows - 1 + j * nRows] = v[arrPerm[j]];
     }
 }
@@ -44,29 +45,30 @@ void PermuteDistinct(T* mat, const std::vector<T> &v,
 template <typename T>
 void PermuteDistinct(RcppParallel::RMatrix<T> &mat,
                      const std::vector<T> &v, std::vector<int> &z,
-                     int n, int m, int strt, int nRows) {
+                     std::size_t n, std::size_t m,
+                     std::size_t strt, std::size_t nRows) {
 
-    auto arrPerm = FromCpp14::make_unique<int[]>(n);
+    auto arrPerm = std::make_unique<int[]>(n);
 
-    for (int i = 0; i < n; ++i) {
+    for (std::size_t i = 0; i < n; ++i) {
         arrPerm[i] = z[i];
     }
 
     if (m == n) {
-        for (int count = strt, numR1 = nRows - 1,
+        for (std::size_t count = strt, numR1 = nRows - 1,
              maxInd = n - 1; count < numR1; ++count) {
 
-            for (int j = 0; j < m; ++j) {
+            for (std::size_t j = 0; j < m; ++j) {
                 mat(count, j) = v[arrPerm[j]];
             }
 
             nextFullPerm(arrPerm.get(), maxInd);
         }
     } else {
-        for (int count = strt, numR1 = nRows - 1, lastCol = m - 1,
+        for (std::size_t count = strt, numR1 = nRows - 1, lastCol = m - 1,
              maxInd = n - 1; count < numR1; ++count) {
 
-            for (int j = 0; j < m; ++j) {
+            for (std::size_t j = 0; j < m; ++j) {
                 mat(count, j) = v[arrPerm[j]];
             }
 
@@ -75,26 +77,26 @@ void PermuteDistinct(RcppParallel::RMatrix<T> &mat,
     }
 
     // Get last permutation
-    for (int j = 0; j < m; ++j) {
+    for (std::size_t j = 0; j < m; ++j) {
         mat(nRows - 1, j) = v[arrPerm[j]];
     }
 }
 
 void PermuteDistinct(SEXP mat, SEXP v,
-                     std::vector<int> &z, int n,
-                     int m, int nRows) {
+                     std::vector<int> &z, std::size_t n,
+                     std::size_t m, std::size_t nRows) {
 
-    auto arrPerm = FromCpp14::make_unique<int[]>(n);
+    auto arrPerm = std::make_unique<int[]>(n);
 
-    for (int i = 0; i < n; ++i) {
+    for (std::size_t i = 0; i < n; ++i) {
         arrPerm[i] = z[i];
     }
 
     if (m == n) {
-        for (int count = 0, numR1 = nRows - 1,
+        for (std::size_t count = 0, numR1 = nRows - 1,
              maxInd = n - 1; count < numR1; ++count) {
 
-            for (int j = 0; j < m; ++j) {
+            for (std::size_t j = 0; j < m; ++j) {
                 SET_STRING_ELT(mat, count + j * nRows,
                                STRING_ELT(v, arrPerm[j]));
             }
@@ -102,10 +104,10 @@ void PermuteDistinct(SEXP mat, SEXP v,
             nextFullPerm(arrPerm.get(), maxInd);
         }
     } else {
-        for (int count = 0, numR1 = nRows - 1, lastCol = m - 1,
+        for (std::size_t count = 0, numR1 = nRows - 1, lastCol = m - 1,
              maxInd = n - 1; count < numR1; ++count) {
 
-            for (int j = 0; j < m; ++j) {
+            for (std::size_t j = 0; j < m; ++j) {
                 SET_STRING_ELT(mat, count + j * nRows,
                                STRING_ELT(v, arrPerm[j]));
             }
@@ -115,7 +117,7 @@ void PermuteDistinct(SEXP mat, SEXP v,
     }
 
     // Get last permutation
-    for (int j = 0; j < m; ++j) {
+    for (std::size_t j = 0; j < m; ++j) {
         SET_STRING_ELT(mat, nRows - 1 + j * nRows,
                        STRING_ELT(v, arrPerm[j]));
     }

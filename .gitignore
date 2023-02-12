@@ -11,4 +11,3 @@ tests/testthat/.DS_Store
 man/.Rapp.history
 remove_whitespace.sh
 vignettes/*.html
-create_md.R

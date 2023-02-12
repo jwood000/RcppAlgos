@@ -151,14 +151,14 @@ bool CheckGrTSi(bool IsGmp, const mpz_class &mpzIndex,
 
 template <typename T>
 void UpdateExact(T* mat, T* yPt, const std::vector<T> &v,
-                 std::vector<int> &z, int lastRow, int nRows,
-                 int m, int n1, int numAdd = 0) {
+                 std::vector<int> &z, std::size_t lastRow,
+                 std::size_t nRows, std::size_t m, int n1, int numAdd = 0) {
 
-    for (int j = 0; j < m; ++j) {
+    for (std::size_t j = 0; j < m; ++j) {
         yPt[j] = mat[lastRow + j * nRows];
     }
 
-    for (int j = 0; j < m; ++j) {
+    for (std::size_t j = 0; j < m; ++j) {
         int ind = 0;
 
         while (ind < n1 && v[ind] != yPt[j]) {
@@ -171,12 +171,13 @@ void UpdateExact(T* mat, T* yPt, const std::vector<T> &v,
 
 void zUpdateIndex(const std::vector<double> &vNum,
                   const std::vector<int> &vInt, std::vector<int> &z,
-                  SEXP v, SEXP mat, int m, int nRows, bool bAddOne) {
+                  SEXP v, SEXP mat, std::size_t m,
+                  std::size_t nRows, bool bAddOne) {
 
     constexpr double myTolerance = 8 * std::numeric_limits<double>::epsilon();
     const int n1 = Rf_length(v) - 1;
-    const int lastRow = nRows - 1;
-    z.assign(m, 0);
+    const std::size_t lastRow = nRows - 1;
+    z.assign(static_cast<int>(m), 0);
 
     switch (TYPEOF(mat)) {
         case LGLSXP: {
@@ -198,11 +199,11 @@ void zUpdateIndex(const std::vector<double> &vNum,
             double* matNum = REAL(mat);
             double* yNumPt = REAL(yNum);
 
-            for (int i = 0; i < m; ++i) {
+            for (std::size_t i = 0; i < m; ++i) {
                 yNumPt[i] = matNum[lastRow + i * nRows];
             }
 
-            for (int j = 0; j < m; ++j) {
+            for (std::size_t j = 0; j < m; ++j) {
                 int ind = 0;
 
                 while (ind < n1 &&
@@ -218,12 +219,12 @@ void zUpdateIndex(const std::vector<double> &vNum,
         } case STRSXP: {
             cpp11::sexp yChar = Rf_allocVector(STRSXP, m);
 
-            for (int i = 0; i < m; ++i) {
+            for (std::size_t i = 0; i < m; ++i) {
                 SET_STRING_ELT(yChar, i,
                                STRING_ELT(mat, lastRow + i * nRows));
             }
 
-            for (int j = 0; j < m; ++j) {
+            for (std::size_t j = 0; j < m; ++j) {
                 int ind = 0;
 
                 while (ind < n1 &&
@@ -241,11 +242,11 @@ void zUpdateIndex(const std::vector<double> &vNum,
             Rcomplex* xCmplxPt = COMPLEX(v);
             Rcomplex* yCmplxPt = COMPLEX(yCmplx);
 
-            for (int i = 0; i < m; ++i) {
+            for (std::size_t i = 0; i < m; ++i) {
                 yCmplxPt[i] = matCmplx[lastRow + i * nRows];
             }
 
-            for (int j = 0; j < m; ++j) {
+            for (std::size_t j = 0; j < m; ++j) {
                 int ind = 0;
                 bool bTestImg  = std::abs(xCmplxPt[ind].i - yCmplxPt[j].i) > myTolerance;
                 bool bTestReal = std::abs(xCmplxPt[ind].r - yCmplxPt[j].r) > myTolerance;

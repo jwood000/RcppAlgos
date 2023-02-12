@@ -2,7 +2,7 @@
 
 #include "Permutations/NextPermutation.h"
 #include "Permutations/PermuteCount.h"
-#include "CppConvert/Cpp14MakeUnique.h"
+#include <memory>
 #include <vector>
 
 #include "cpp11/R.hpp"

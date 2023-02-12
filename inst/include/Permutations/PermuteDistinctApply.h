@@ -1,6 +1,6 @@
 #pragma once
 
-#include "CppConvert/Cpp14MakeUnique.h"
+#include <memory>
 #include "PermuteHelper.h"
 #include "FunAssign.h"
 
@@ -11,7 +11,7 @@ void PermuteDistinctApplyFun(SEXP res, const std::vector<T> &v,
                              int commonLen = 1, int commonType = INTSXP) {
 
     const int retType = TYPEOF(res);
-    auto arrPerm = FromCpp14::make_unique<int[]>(n);
+    auto arrPerm = std::make_unique<int[]>(n);
 
     for (int i = 0; i < n; ++i) {
         arrPerm[i] = z[i];
@@ -58,7 +58,7 @@ void PermuteDistinctApplyFun(SEXP res, SEXP v, SEXP vectorPass,
                              int commonLen = 1, int commonType = INTSXP) {
 
     const int retType = TYPEOF(res);
-    auto arrPerm = FromCpp14::make_unique<int[]>(n);
+    auto arrPerm = std::make_unique<int[]>(n);
 
     for (int i = 0; i < n; ++i) {
         arrPerm[i] = z[i];

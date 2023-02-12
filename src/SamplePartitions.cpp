@@ -9,25 +9,26 @@ void SampleResults(T* sampleMatrix, const std::vector<T> &v,
                    const std::vector<double> &mySample,
                    const std::vector<mpz_class> &myBigSamp,
                    const std::vector<int> &myReps,
-                   nthPartsPtr nthPartFun, int m, int sampSize,
-                   int tar, int strtLen, int cap, bool IsGmp) {
+                   nthPartsPtr nthPartFun, std::size_t m,
+                   std::size_t sampSize, int tar, int strtLen,
+                   int cap, bool IsGmp) {
 
     if (IsGmp) {
-        for (int i = 0; i < sampSize; ++i) {
+        for (std::size_t i = 0; i < sampSize; ++i) {
             const std::vector<int> z = nthPartFun(tar, m, cap, strtLen,
                                                   0.0, myBigSamp[i]);
-            for (int j = 0; j < m; ++j) {
+            for (std::size_t j = 0; j < m; ++j) {
                 sampleMatrix[i + sampSize * j] = v[z[j]];
             }
         }
     } else {
         mpz_class mpzDefault;
 
-        for (int i = 0; i < sampSize; ++i) {
+        for (std::size_t i = 0; i < sampSize; ++i) {
             const std::vector<int> z = nthPartFun(tar, m, cap, strtLen,
                                                   mySample[i], mpzDefault);
 
-            for (int j = 0; j < m; ++j) {
+            for (std::size_t j = 0; j < m; ++j) {
                 sampleMatrix[i + sampSize * j] = v[z[j]];
             }
         }

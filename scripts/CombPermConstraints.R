@@ -20,6 +20,10 @@ reprex::reprex({
     library(RcppAlgos)
     options(width = 90)
 
+    packageVersion("RcppAlgos")
+
+    cat(paste(capture.output(sessionInfo())[1:3], collapse = "\n"))
+
     ## base R using combn and FUN
     combnSum = combn(20, 10, sum)
     algosSum = comboGeneral(20, 10, constraintFun = "sum")
