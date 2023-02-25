@@ -1,6 +1,15 @@
 \name{NEWS}
 \title{News for Package \pkg{RcppAlgos}}
 
+\section{Changes in RcppAlgos version 2.7.2 (Release date: 2023-03-15)}{
+    \itemize{
+        \item New Features:
+        \itemize{
+            \item \code{comboGroups} can now handle groups of different sizes.
+        }
+    }
+}
+
 \section{Changes in RcppAlgos version 2.7.2 (Release date: 2023-02-11)}{
     \itemize{
         \item Others:

@@ -1,7 +1,7 @@
 #include "Constraints/ConstraintsUtils.h"
 #include "Partitions/PartitionsDesign.h"
 #include "Partitions/PartitionsCount.h"
-#include "ComboGroupsUtils.h"
+#include "ComboGroup/ComboGroupClass.h"
 #include "ComputedCount.h"
 #include "SetUpUtils.h"
 
@@ -108,34 +108,17 @@ SEXP PartitionsCount(SEXP Rtarget, SEXP Rv, SEXP Rm,
 }
 
 [[cpp11::register]]
-SEXP ComboGroupsCountCpp(SEXP Rv, SEXP RNumGroups) {
+SEXP ComboGroupsCountCpp(SEXP Rv, SEXP RNumGroups, SEXP RGrpSize) {
 
-    int n, numGroups;
-    VecType myType = VecType::Integer;
-    CppConvert::convertPrimitive(RNumGroups, numGroups,
-                                   VecType::Integer, "numGroups");
-
+    int n;
     std::vector<int> vInt;
     std::vector<double> vNum;
+    VecType myType = VecType::Integer;
 
-    SetType(myType, Rv);
-    SetBasic(Rv, vNum, vInt, n, myType);
+    std::unique_ptr<ComboGroup> CmbGrpCls = GroupPrep(
+        vInt, vNum, n, myType, Rv, RNumGroups, RGrpSize
+    );
 
-    if (n % numGroups != 0) {
-        cpp11::stop("The length of v (if v is a vector) or v (if v"
-                 " is a scalar) must be divisible by numGroups");
-    }
-
-    const int grpSize = n / numGroups;
-    const double computedRows = numGroupCombs(n, numGroups, grpSize);
-    bool IsGmp = (computedRows > Significand53);
-
-    mpz_class computedRowMpz;
-
-    if (IsGmp) {
-        computedRowMpz = 1;
-        numGroupCombsGmp(computedRowMpz, n, numGroups, grpSize);
-    }
-
-    return CppConvert::GetCount(IsGmp, computedRowMpz, computedRows);
+    CmbGrpCls->SetCount();
+    return CmbGrpCls->GetCount();
 }
