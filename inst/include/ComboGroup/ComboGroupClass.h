@@ -63,3 +63,19 @@ std::unique_ptr<ComboGroup> GroupPrep(
     std::vector<int> &vInt, std::vector<double> &vNum, int &n,
     VecType &myType, SEXP Rv, SEXP RNumGroups, SEXP RGrpSize
 );
+
+void CleanV(std::vector<int> &v, const std::vector<int> &idx_used, int n);
+
+void SettleRes(std::vector<int> &v, std::vector<int> &res,
+               std::vector<int> &idx_used, const mpz_class &mpzIdx,
+               int n, int q, int g, int j, int idx);
+
+void SettleResGmp(std::vector<int> &v, std::vector<int> &res,
+                  std::vector<int> &idx_used, const mpz_class &mpzIdx,
+                  int n, int q, int g, int j);
+
+void FinalTouchMisc(SEXP res, bool IsArray, int nRows,
+                    bool IsNamed, const std::vector<int> &vGrpSizes,
+                    const std::vector<double> &mySample,
+                    const std::vector<mpz_class> &myBigSamp,
+                    bool IsSample,  bool IsGmp, int r, int n);

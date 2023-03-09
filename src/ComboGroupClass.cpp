@@ -128,3 +128,81 @@ std::unique_ptr<ComboGroup> GroupPrep(
     return MakeComboGroup(vGrpSize, MyGrp, idx1, idx2,
                           lbound_cnst, grpSize, IsGen, IsUni);
 }
+
+void CleanV(std::vector<int> &v, const std::vector<int> &idx_used, int n) {
+
+    v.clear();
+
+    for (int i = 0; i < n; ++i) {
+        if (!idx_used[i]) {
+            v.push_back(i);
+        }
+    }
+}
+
+void FinishUp(const std::vector<int> &comb, std::vector<int> &v,
+              std::vector<int> &res, std::vector<int> &idx_used,
+              int n, int g, int j) {
+
+    for (int k = j, i = 0; i < g; ++k, ++i) {
+        res[k] = v[comb[i]];
+        idx_used[res[k]] = 1;
+    }
+
+    CleanV(v, idx_used, n);
+}
+
+void SettleRes(std::vector<int> &v, std::vector<int> &res,
+               std::vector<int> &idx_used, const mpz_class &mpzIdx,
+               int n, int q, int g, int j, int idx) {
+
+    const std::vector<int> comb = (g == 1) ?
+                  std::vector<int>(1, idx) :
+                  nthComb(q, g, idx, mpzIdx, v);
+
+    FinishUp(comb, v, res, idx_used, n, g, j);
+}
+
+void SettleResGmp(std::vector<int> &v, std::vector<int> &res,
+                  std::vector<int> &idx_used, const mpz_class &mpzIdx,
+                  int n, int q, int g, int j) {
+
+    constexpr double dblDefault = 0;
+
+    const std::vector<int> comb = (g == 1) ?
+            std::vector<int>(1, mpzIdx.get_si()) :
+            nthCombGmp(q, g, dblDefault, mpzIdx, v);
+
+    FinishUp(comb, v, res, idx_used, n, g, j);
+}
+
+void FinalTouchMisc(SEXP res, bool IsArray, int nRows,
+                    bool IsNamed, const std::vector<int> &vGrpSizes,
+                    const std::vector<double> &mySample,
+                    const std::vector<mpz_class> &myBigSamp,
+                    bool IsSample,  bool IsGmp, int r, int n) {
+
+    std::vector<std::string> myColNames(r, "Grp");
+
+    for (int j = 0; j < r; ++j) {
+        myColNames[j] += std::to_string(j + 1);
+    }
+
+    cpp11::writable::strings myNames(n);
+
+    for (int i = 0, k = 0; i < r; ++i) {
+        for (int j = 0; j < vGrpSizes[i]; ++j, ++k) {
+            myNames[k] = myColNames[i].c_str();
+        }
+    }
+
+    SetSampleNames(res, IsGmp, nRows, mySample,
+                   myBigSamp, IsNamed, myNames, 1);
+
+    if (!IsNamed) {
+        cpp11::writable::list dimNames(2);
+        dimNames[1] = myNames;
+        Rf_setAttrib(res, R_DimNamesSymbol, dimNames);
+    }
+}
+

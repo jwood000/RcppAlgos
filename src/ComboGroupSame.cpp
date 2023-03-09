@@ -124,9 +124,9 @@ std::vector<int> ComboGroupSame::nthComboGroup(double myIndex) {
     std::int64_t temp   = static_cast<std::int64_t>(nChooseK(s, g));
     std::int64_t secLen = static_cast<std::int64_t>(computedRows) / temp;
 
-    std::vector<int>  res(n, 0);
-    std::vector<char> idx_used(n, 0);
-    std::vector<int>  v(s);
+    std::vector<int> res(n, 0);
+    std::vector<int> idx_used(n, 0);
+    std::vector<int> v(s);
     std::iota(v.begin(), v.end(), 1);
 
     int myMin = 0;
@@ -137,23 +137,11 @@ std::vector<int> ComboGroupSame::nthComboGroup(double myIndex) {
 
     for (int j = 0; j < (r - 1); ++j) {
         ind2 = ind2 / secLen;
-        res[j * grpSize]  = myMin;
-        idx_used[myMin] = 1;
-        const std::vector<int> comb = (g == 1) ? std::vector<int>(1, ind2) :
-            nthComb(s, g, ind2, mpzDefault, v);
+        res[j * grpSize] = myMin;
+        idx_used[myMin]  = 1;
 
-        for (int k = j * grpSize + 1, i = 0; i < g; ++k, ++i) {
-            res[k] = v[comb[i]];
-            idx_used[res[k]] = 1;
-        }
-
-        v.clear();
-
-        for (int i = 1; i < n; ++i) {
-            if (!idx_used[i]) {
-                v.push_back(i);
-            }
-        }
+        SettleRes(v, res, idx_used, mpzDefault,
+                  n, s, g, j * grpSize + 1, ind2);
 
         myMin = v.front();
         v.erase(v.begin());
@@ -190,35 +178,20 @@ std::vector<int> ComboGroupSame::nthComboGroupGmp(const mpz_class &lowerMpz) {
         secLen.get_mpz_t(), computedRowsMpz.get_mpz_t(), temp.get_mpz_t()
     );
 
-    std::vector<int>  res(n, 0);
-    std::vector<char> idx_used(n, 0);
+    std::vector<int> res(n, 0);
+    std::vector<int> idx_used(n, 0);
+
     std::vector<int>  v(s);
     std::iota(v.begin(), v.end(), 1);
-
     int myMin = 0;
-    constexpr double dblDefault = 0;
 
     for (int j = 0; j < (r - 1); ++j) {
         ind2 /= secLen;
         res[j * grpSize] = myMin;
-        idx_used[myMin] = 1;
+        idx_used[myMin]  = 1;
 
-        const std::vector<int> comb = (g == 1) ?
-        std::vector<int>(1, ind2.get_si()) :
-            nthCombGmp(s, g, dblDefault, ind2, v);
-
-        for (int k = j * grpSize + 1, i = 0; i < g; ++k, ++i) {
-            res[k] = v[comb[i]];
-            idx_used[res[k]] = 1;
-        }
-
-        v.clear();
-
-        for (int i = 1; i < n; ++i) {
-            if (!idx_used[i]) {
-                v.push_back(i);
-            }
-        }
+        SettleResGmp(v, res, idx_used, ind2,
+                     n, s, g, j * grpSize + 1);
 
         myMin = v.front();
         v.erase(v.begin());
@@ -228,6 +201,7 @@ std::vector<int> ComboGroupSame::nthComboGroupGmp(const mpz_class &lowerMpz) {
 
         s -= grpSize;
         nChooseKGmp(temp, s, g);
+        secLen /= temp;
         mpz_divexact(
             secLen.get_mpz_t(), secLen.get_mpz_t(), temp.get_mpz_t()
         );
