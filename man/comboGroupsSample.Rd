@@ -11,15 +11,17 @@ Sample Partitions of a Vector into Groups of Equal Size
     }
 }
 \usage{
-comboGroupsSample(v, numGroups, retType = "matrix", n = NULL,
-                  sampleVec = NULL, seed = NULL, Parallel = FALSE,
+comboGroupsSample(v, numGroups = NULL, grpSizes = NULL, retType = "matrix",
+                  n = NULL, sampleVec = NULL, seed = NULL, Parallel = FALSE,
                   nThreads = NULL, namedSample = FALSE)
 }
 \arguments{
   \item{v}{Source vector. If \code{v} is a positive integer, it will be converted to the sequence \code{1:v}. If \code{v} is a negative integer, it will be converted to the sequence \code{v:-1}. All atomic types are supported (See \code{\link{is.atomic}}).}
-  \item{numGroups}{An Integer. The number of groups that the vector will be partitioned into. Must divide the length of v (if v is a vector) or v (if v is a scalar).
+  \item{numGroups}{An Integer. The number of groups that the vector will be partitioned into. The default is \code{NULL}. If provided and \code{grpSize} is \code{NULL}, it must divide the length of v (if v is a vector) or v (if v is a scalar).
 }
-  \item{retType}{A string, "3Darray" or "matrix", that determines the shape of the output. The default is "matrix".
+  \item{grpSizes}{A vector of whole numbers representing the size of each group. The default is \code{NULL}. If provided, the sum of the elements must total the length of v (if v is a vector) or v (if v is a scalar).
+}
+  \item{retType}{A string, "3Darray" or "matrix", that determines the shape of the output. The default is "matrix". Note, "3Darray" can only be used when the size of each group are equal. When the size of each group varies, the return output will always be a matrix.
 }
   \item{n}{Number of results to return. The default is \code{NULL}.}
   \item{sampleVec}{A vector of numbers representing the lexicographical partition of groups to return. Accepts vectors of class \code{bigz} as well as vectors of characters}

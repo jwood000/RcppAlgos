@@ -12,16 +12,17 @@ Partition a Vector into Groups of Equal Size
     }
 }
 \usage{
-comboGroups(v, numGroups, retType = "matrix",
-            lower = NULL, upper = NULL, Parallel = FALSE,
-            nThreads = NULL)
+comboGroups(v, numGroups = NULL, grpSizes = NULL,
+            retType = "matrix", lower = NULL, upper = NULL,
+            Parallel = FALSE, nThreads = NULL)
 }
-%- maybe also 'usage' for other objects documented here.
 \arguments{
   \item{v}{Source vector. If \code{v} is a positive integer, it will be converted to the sequence \code{1:v}. If \code{v} is a negative integer, it will be converted to the sequence \code{v:-1}. All atomic types are supported (See \code{\link{is.atomic}}).}
-  \item{numGroups}{An Integer. The number of groups that the vector will be partitioned into. Must divide the length of v (if v is a vector) or v (if v is a scalar).
+  \item{numGroups}{An Integer. The number of groups that the vector will be partitioned into. The default is \code{NULL}. If provided and \code{grpSize} is \code{NULL}, it must divide the length of v (if v is a vector) or v (if v is a scalar).
 }
-  \item{retType}{A string, "3Darray" or "matrix", that determines the shape of the output. The default is "matrix".
+  \item{grpSizes}{A vector of whole numbers representing the size of each group. The default is \code{NULL}. If provided, the sum of the elements must total the length of v (if v is a vector) or v (if v is a scalar).
+}
+  \item{retType}{A string, "3Darray" or "matrix", that determines the shape of the output. The default is "matrix". Note, "3Darray" can only be used when the size of each group are equal. When the size of each group varies, the return output will always be a matrix.
 }
   \item{lower}{The lower bound. Partitions of groups are generated lexicographically, thus utilizing this argument will determine which specific result to start generating from (\emph{e.g.} \code{comboGroups(8, 2, lower = 30)} is equivalent to \code{comboGroups(8, 2)[30:comboGroupsCount(8, 2), ]}). This argument along with \code{upper} is very useful for generating results in chunks allowing for easy parallelization.}
   \item{upper}{The upper bound. Similar to \code{lower}, however this parameter allows the user to \emph{stop} generation at a specific result (\emph{e.g.} \code{comboGroups(8, 2, upper = 5)} is equivalent to \code{comboGroups(8, 2)[1:5, ]})}
@@ -79,14 +80,17 @@ By default, a matrix is returned with column names corresponding to the associat
 Joseph Wood
 }
 \note{
-The maximum number of partitions of groups that can be generated at one time is \eqn{2^{31} - 1}{2^31 - 1}. Utilizing \code{lower} and \code{upper} makes it possible to generate additional combinations/permutations.
+\itemize{
+    \item{The maximum number of partitions of groups that can be generated at one time is \eqn{2^{31} - 1}{2^31 - 1}. Utilizing \code{lower} and \code{upper} makes it possible to generate additional combinations/permutations.}
+    \item{The length of \code{grpSizes} must equal \code{numGroups} if both \code{grpSize} and \code{numGroups} are provided.}
+}
 }
 \examples{
 ## return a matrix
 comboGroups(8, 2)
 
 ## or a 3 dimensional array
-temp = comboGroups(8, 2, "3Darray")
+temp = comboGroups(8, 2, retType = "3Darray")
 
 ## view the first partition
 temp[1, , ]
