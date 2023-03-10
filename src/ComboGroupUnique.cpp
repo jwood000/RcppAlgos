@@ -155,16 +155,19 @@ std::vector<int> ComboGroupUnique::nthComboGroupGmp(
 
     std::vector<int>  v(n);
     std::iota(v.begin(), v.end(), 0);
+
     mpz_class mpzIndex(lowerMpz);
+    mpz_class secLen(1);
+    mpz_class idx(1);
 
     for (int i = 0, j = 0, g = grp.front();
          i < (r - 1); ++i, j += g, g = grp[i]) {
 
         removeFirst(grpCopy, p);
-        const mpz_class secLen = numCmbGrpUniGmp(grpCopy, p);
-        const mpz_class idx = mpzIndex / secLen;
+        secLen = numCmbGrpUniGmp(grpCopy, p);
+        idx = mpzIndex / secLen;
 
-        SettleResGmp(v, res, idx_used, idx, q, n, g, j);
+        SettleResGmp(v, res, idx_used, idx, n, q, g, j);
         q = p;
         mpzIndex -= (idx * secLen);
     }

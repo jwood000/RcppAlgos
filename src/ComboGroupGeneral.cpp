@@ -108,8 +108,6 @@ mpz_class ComboGroupGeneral::numGroupCombsGmp() {
     return numCmbGrpGenGmp(MyGrp.grp, n);
 }
 
-#include <iostream>
-
 void removeFirstSet(std::vector<int> &v, int &p) {
 
     int nSame = 1;
@@ -133,6 +131,24 @@ double intermediate(int nGrps, int grpS, int n) {
     }
 
     if (nGrps > 1) result /= std::tgamma(nGrps + 1);
+    return result;
+}
+
+mpz_class intermediateGmp(int nGrps, int grpS, int n) {
+
+    mpz_class result(1);
+    mpz_class temp(1);
+
+    for (int i = 0; i < nGrps; ++i, n -= grpS) {
+        nChooseKGmp(temp, n, grpS);
+        result *= temp;
+    }
+
+    if (nGrps > 1) {
+        mpz_fac_ui(temp.get_mpz_t(), nGrps);
+        result /= temp;
+    }
+
     return result;
 }
 
@@ -205,12 +221,77 @@ void ResolveSet(std::vector<int> &v, std::vector<int> &res,
     CleanV(v, idx_used, n);
 }
 
-std::vector<int> ComboGroupGeneral::nthComboGroup(double myIndex) {
+void ResolveSetGmp(std::vector<int> &v, std::vector<int> &res,
+                   std::vector<int> &idx_used, const mpz_class &mpzIdx,
+                   int n, int q, int g, int k, int setSize) {
 
-    int p = n;
-    int q = n;
+    mpz_class grp_idx(0);
+    int q_g = q - g;
+    int p   = q - 1;
 
-    std::vector<int> grpCopy(MyGrp.grp.begin(), MyGrp.grp.end());
+    mpz_class idx(mpzIdx);
+    const int g1 = g - 1;
+    int curr_nGrps = setSize - 1;
+
+    mpz_class m(1);
+    mpz_class secLen(1);
+    nChooseKGmp(m, p, g1);
+
+    for (int i = 0; i < (setSize - 1); ++i) {
+
+        secLen = intermediateGmp(curr_nGrps, g, q_g);
+
+        while (cmp(secLen * m, idx) < 0) {
+            idx     -= (secLen * m);
+            grp_idx += m;
+
+            --q_g;
+            --p;
+
+            nChooseKGmp(m, p, g1);
+            secLen = intermediateGmp(curr_nGrps, g, q_g);
+        }
+
+        grp_idx += (idx / secLen);
+        SettleResGmp(v, res, idx_used, grp_idx, n, q, g, k);
+
+        for (int j = 0; j < res[k]; ++j) {
+            idx_used[j] = 1;
+        }
+
+        CleanV(v, idx_used, n);
+
+        q   = v.size();
+        k  += g;
+        q_g = q - g;
+        p   = q - 1;
+        nChooseKGmp(m, p, g1);
+
+        --curr_nGrps;
+        grp_idx = 0;
+        idx -= ((idx / secLen) * secLen);
+    }
+
+    while (p > 0 && cmp(p, idx) < 0) {
+        idx     -= p;
+        grp_idx += p;
+        --p;
+    }
+
+    grp_idx += idx;
+    SettleResGmp(v, res, idx_used, grp_idx, n, q, g, k);
+    k += g;
+
+    std::fill(idx_used.begin(), idx_used.end(), 0);
+
+    for (int i = 0; i < k; ++i) {
+        idx_used[res[i]] = 1;
+    }
+
+    CleanV(v, idx_used, n);
+}
+
+std::vector<int> GenerateGrpSet(const std::vector<int> &v, int r) {
 
     // This vector represents the "group of groups." That is, if:
     //
@@ -223,7 +304,7 @@ std::vector<int> ComboGroupGeneral::nthComboGroup(double myIndex) {
     std::vector<int> grpSets;
 
     for (int i = 0, j = 0; i < r; ++i) {
-        if (i > 0 && MyGrp.grp[i] == MyGrp.grp[i - 1]) {
+        if (i > 0 && v[i] == v[i - 1]) {
             ++grpSets[j - 1];
         } else {
             grpSets.push_back(1);
@@ -231,13 +312,24 @@ std::vector<int> ComboGroupGeneral::nthComboGroup(double myIndex) {
         }
     }
 
+    return grpSets;
+}
+
+std::vector<int> ComboGroupGeneral::nthComboGroup(double myIndex) {
+
+    int p = n;
+    int q = n;
+
+    std::vector<int> grpCopy(MyGrp.grp.begin(), MyGrp.grp.end());
+    std::vector<int> grpSets = GenerateGrpSet(MyGrp.grp, r);
+
     const int nSets = grpSets.size();
     std::int64_t intIdx = myIndex;
     mpz_class mpzDefault;
 
-    std::vector<int>  res(n, 0);
+    std::vector<int> res(n, 0);
     std::vector<int> idx_used(n, 0);
-    std::vector<int>  v(n);
+    std::vector<int> v(n);
     std::iota(v.begin(), v.end(), 0);
 
     for (int i = 0, j = 0, k = 0; i < nSets; j += grpSets[i], ++i) {
@@ -269,64 +361,38 @@ std::vector<int> ComboGroupGeneral::nthComboGroupGmp(
     const mpz_class &lowerMpz
 ) {
 
-    mpz_class ind1(lowerMpz);
-    mpz_class ind2(lowerMpz);
+    int p = n;
+    int q = n;
 
-    int s = n - 1;
-    const int g = MyGrp.grp.front() - 1;
+    std::vector<int> grpCopy(MyGrp.grp.begin(), MyGrp.grp.end());
+    std::vector<int> grpSets = GenerateGrpSet(MyGrp.grp, r);
+    const int nSets = grpSets.size();
 
-    mpz_class temp(1);
+    std::vector<int> res(n, 0);
+    std::vector<int> idx_used(n, 0);
+    std::vector<int> v(n);
+    std::iota(v.begin(), v.end(), 0);
+
+    mpz_class idx(1);
     mpz_class secLen(1);
+    mpz_class mpzIdx(lowerMpz);
 
-    nChooseKGmp(temp, s, g);
-    mpz_divexact(secLen.get_mpz_t(), computedRowsMpz.get_mpz_t(),
-                 temp.get_mpz_t());
+    for (int i = 0, j = 0, k = 0; i < nSets; j += grpSets[i], ++i) {
 
-    std::vector<int>  res(n, 0);
-    std::vector<char> idx_used(n, '0');
-    std::vector<int>  v(s);
-    std::iota(v.begin(), v.end(), 1);
+        removeFirstSet(grpCopy, p);
+        secLen = numCmbGrpGenGmp(grpCopy, p);
+        idx = mpzIdx / secLen;
+        const int g = MyGrp.grp[j];
 
-    int myMin = 0;
-    constexpr double dblDefault = 0;
-
-    for (int j = 0; j < (r - 1); ++j) {
-        ind2 /= secLen;
-        res[j * MyGrp.grp[j]] = myMin;
-        idx_used[myMin] = '1';
-
-        const std::vector<int> comb = (g == 1) ?
-        std::vector<int>(1, ind2.get_si()) :
-            nthCombGmp(s, g, dblDefault, ind2, v);
-
-        for (int k = j * MyGrp.grp[j] + 1, i = 0; i < g; ++k, ++i) {
-            res[k] = v[comb[i]];
-            idx_used[res[k]] = '1';
+        if (grpSets[i] == 1) {
+            SettleResGmp(v, res, idx_used, idx, n, q, g, k);
+        } else {
+            ResolveSetGmp(v, res, idx_used, idx, n, q, g, k, grpSets[i]);
         }
 
-        v.clear();
-
-        for (int i = 1; i < n; ++i) {
-            if (!idx_used[i]) {
-                v.push_back(i);
-            }
-        }
-
-        myMin = v.front();
-        v.erase(v.begin());
-        temp = ind2 * secLen;
-        ind1 -= temp;
-        ind2 = ind1;
-
-        s -= MyGrp.grp[j];
-        nChooseKGmp(temp, s, g);
-        mpz_divexact(secLen.get_mpz_t(), secLen.get_mpz_t(), temp.get_mpz_t());
-    }
-
-    res[(r - 1) * MyGrp.grp.back()] = myMin;
-
-    for (int k = (r - 1) * MyGrp.grp.back() + 1, i = 0; i < g; ++k, ++i) {
-        res[k] = v[i];
+        mpzIdx -= (idx * secLen);
+        k += (g * grpSets[i]);
+        q = p;
     }
 
     return res;

@@ -201,7 +201,6 @@ std::vector<int> ComboGroupSame::nthComboGroupGmp(const mpz_class &lowerMpz) {
 
         s -= grpSize;
         nChooseKGmp(temp, s, g);
-        secLen /= temp;
         mpz_divexact(
             secLen.get_mpz_t(), secLen.get_mpz_t(), temp.get_mpz_t()
         );
