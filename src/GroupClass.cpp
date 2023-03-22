@@ -67,6 +67,7 @@ bool Group::require_external(const std::vector<int> &z, int i) const {
 }
 
 bool Group::flip_external(std::vector<int> &z, int &idx1, int i) const {
+
     int j = i;
 
     while (grp[j] == grp[j + 1L]) {

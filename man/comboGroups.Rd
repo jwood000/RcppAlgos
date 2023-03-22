@@ -1,11 +1,11 @@
 \name{comboGroups}
 \alias{comboGroups}
 \title{
-Partition a Vector into Groups of Equal Size
+Partition a Vector into Groups of Varying Sizes
 }
 \description{
     \itemize{
-        \item Generate partitions of a vector into groups of equal size. See \href{https://stackoverflow.com/q/57732672/4408538}{Create Combinations in R by Groups} on https://stackoverflow.com for a direct use case.
+        \item Generate partitions of a vector into groups of varying sizes. See \href{https://stackoverflow.com/q/57732672/4408538}{Create Combinations in R by Groups} on https://stackoverflow.com for a direct use case of when the groups sizes are equal.
         \item Produce results in parallel using the \code{Parallel} or \code{nThreads} arguments.
         \item GMP support allows for exploration where the number of results is large.
         \item The output is in lexicographical order by groups.
@@ -22,7 +22,7 @@ comboGroups(v, numGroups = NULL, grpSizes = NULL,
 }
   \item{grpSizes}{A vector of whole numbers representing the size of each group. The default is \code{NULL}. If provided, the sum of the elements must total the length of v (if v is a vector) or v (if v is a scalar).
 }
-  \item{retType}{A string, "3Darray" or "matrix", that determines the shape of the output. The default is "matrix". Note, "3Darray" can only be used when the size of each group are equal. When the size of each group varies, the return output will always be a matrix.
+  \item{retType}{A string, "3Darray" or "matrix", that determines the shape of the output. The default is "matrix". Note, "3Darray" can only be used when the size of each group is uniform. When the size of each group varies, the return output will always be a matrix.
 }
   \item{lower}{The lower bound. Partitions of groups are generated lexicographically, thus utilizing this argument will determine which specific result to start generating from (\emph{e.g.} \code{comboGroups(8, 2, lower = 30)} is equivalent to \code{comboGroups(8, 2)[30:comboGroupsCount(8, 2), ]}). This argument along with \code{upper} is very useful for generating results in chunks allowing for easy parallelization.}
   \item{upper}{The upper bound. Similar to \code{lower}, however this parameter allows the user to \emph{stop} generation at a specific result (\emph{e.g.} \code{comboGroups(8, 2, upper = 5)} is equivalent to \code{comboGroups(8, 2)[1:5, ]})}
@@ -94,4 +94,12 @@ temp = comboGroups(8, 2, retType = "3Darray")
 
 ## view the first partition
 temp[1, , ]
+
+## Example with groups of varying size
+comboGroups(8, grpSizes = c(3, 5))
+
+total = comboGroupsCount(11, grpSizes = c(3, 3, 5))
+
+## Start generating from particular index
+comboGroups(11, grpSizes = c(3, 3, 5), lower = total - 20)
 }

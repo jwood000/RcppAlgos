@@ -1,5 +1,9 @@
 #include "ComboGroup/ComboGroupUnique.h"
 
+// This algorithm is for the case where the length of each group is different.
+// The skeleton of the algorithm is exactly the same as the special case. The
+// only difference is that we are aware of what group we are in as well as the
+// size of each group, hence the vector vGrpSize.
 bool nextCmbGrpUni(std::vector<int> &z,
                    const std::vector<int> &vGrpSize,
                    int idx1, int idx2, int lbound) {

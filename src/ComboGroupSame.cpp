@@ -1,7 +1,77 @@
 #include "ComboGroup/ComboGroupSame.h"
 
+// ************** Overview of the Crucial Part of the Algorithm ***************
+// ----------------------------------------------------------------------------
+//
+// Initial Setup:
+//
+// idx1 = (r - 1) * grpSize - 1      Penultimate upper bound (inclusive)
+//
+// idx2 = z.size() - 1               Last upper bound (inclusive)
+//
+// low_one = (r - 2) * grpSize + 1   One plus the lower bound in the section
+//                                   where idx1 is present
+//
+// low_one is one plus the lower bound in the idx1 section, so to obtain
+// the current upper bound, we must first add the size of a section
+// (i.e. grpSize) and subtract one. We can now compute the length we need
+// to reset v by subtracting idx1. E.g.
+//
+// Given a portion of v w/ low_one = 9, grpSize = 4, idx1 = 9, 6 groups
+// (24 subjects) and base 0:
+//
+//              prev sections   lower bound (index = 8)
+//                  /  \        |
+//            ............. 8 | 9 12 23 24 | 10 20 21 22 | 11 ...
+//                                 |
+//                               idx1 (equal to low_one, in this case)
+//
+// Sort v past idx1:
+//                              size of left range (len_rng - 1)
+//                                    /  \
+//                                   |    |
+//                      ... 8 | 9 12 10 11 | 13 14 15 16 | 17...
+//
+// Initially idx3 is set to (idx1 + 1), so for this example idx3 = 10. This
+// together with low_one = 9 and grpSize = 4, we have all of the ingredients to
+// obtain len_rng. We can calculate len_rng = low_one + grpSize - idx3 = 3.
+// Once we set idx3 below, we need to rotate at the index just after idx3, thus
+// the distance (zbeg + idx3 + len_rng) - (zbeg + idx3 + 1) = 2.
+//
+// Determine the index, idx3, such that v[idx3] > v[idx1]
+//
+//                      ... 8 | 9 12 10 11 | 13 14 15 16 | 17 ...
+//                                 |          |
+//                               idx1       idx3
+//
+// Swap idx1 and idx3:
+//                      ... 8 | 9 13 10 11 | 12 14 15 16 | 17...
+//
+// Move enough indices after idx1 to fill that specific group:
+//
+//                      ... 8 | 9 13 __ __ | 10 11 12 14 | 15 16 ...
+//
+// Identify and move indices that are successively incrementing values of
+// v past idx1:
+//                      ... 8 | 9 13 14 15 | 10 11 12 16 | 17 ...
+//
+// The last two steps are accomplished with std::rotate.
+//
+// From https://en.cppreference.com/w/cpp/algorithm/rotate
+//
+// std::rotate (defined in header <algorithm>)
+// template< class ForwardIt >
+// ForwardIt rotate( ForwardIt first, ForwardIt n_first, ForwardIt last );
+//
+// 1) Performs a left rotation on a range of elements.
+//    Specifically, std::rotate swaps the elements in the range [first, last)
+//    in such a way that the element n_first becomes the first element of the
+//    new range and n_first - 1 becomes the last element.
+//
+// This completes the algorithm.
+
 bool nextCmbGrpSame(std::vector<int> &z, int r, int grpSize,
-                    int idx1, int idx2, int curr_bnd, int n) {
+                    int idx1, int idx2, int low_one, int n) {
 
     while (idx2 > idx1 && z[idx2] > z[idx1]) {
         --idx2;
@@ -35,7 +105,7 @@ bool nextCmbGrpSame(std::vector<int> &z, int r, int grpSize,
     while (idx1 > 0) {
         const int tipPnt = z[idx2];
 
-        while (idx1 > curr_bnd && tipPnt < z[idx1]) {
+        while (idx1 > low_one && tipPnt < z[idx1]) {
             --idx1;
         }
 
@@ -45,7 +115,7 @@ bool nextCmbGrpSame(std::vector<int> &z, int r, int grpSize,
 
             // length of left range plus one. The plus one is needed as we are
             // rotating at a pivot just to the right (i.e. plus one).
-            const int len_rng = curr_bnd + grpSize - idx3;
+            const int len_rng = low_one + grpSize - idx3;
 
             while (z[idx3] < z[idx1]) {
                 ++idx3;
@@ -53,12 +123,13 @@ bool nextCmbGrpSame(std::vector<int> &z, int r, int grpSize,
 
             std::swap(z[idx3], z[idx1]);
             std::rotate(zbeg + idx1 + 1,
-                        zbeg + idx3 + 1, zbeg + idx3 + len_rng);
+                        zbeg + idx3 + 1,
+                        zbeg + idx3 + len_rng);
             return true;
         } else {
-            idx1     -= 2;
-            idx2     -= grpSize;
-            curr_bnd -= grpSize;
+            idx1    -= 2;
+            idx2    -= grpSize;
+            low_one -= grpSize;
         }
     }
 

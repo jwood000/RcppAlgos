@@ -4,9 +4,9 @@ reprex::reprex({
     #'
     #' ## Cartesian Product where Order does not Matter
     #'
-    #' Given a list of vectors, _v<sub>1</sub>_, _v<sub>2</sub>_, ... , _v<sub>n</sub>_, where the intersection of two or more vectors in non-empty, find all unique combinations (order does not matter) of elements of the cartesian product of all of the vectors.
+    #' Given a list of vectors, _v<sub>1</sub>_, _v<sub>2</sub>_, ... , _v<sub>n</sub>_, where the intersection of two or more vectors in non-empty, find all unique combinations (order does not matter) of elements of the Cartesian product of all of the vectors.
     #'
-    #' For example, lets say we have: `v1 = 1:4` and `v2 = 2:5`. The cartestion product is given by `expand.grid(v1, v2)` (We continue to use the `ht` function defined in the [Combination and Permutation Basics](<https://jwood000.github.io/RcppAlgos/articles/GeneralCombinatorics.html>) vignette):
+    #' For example, lets say we have: `v1 = 1:4` and `v2 = 2:5`. The Cartesian product is given by `expand.grid(v1, v2)` (We continue to use the `ht` function defined in the [Combination and Permutation Basics](<https://jwood000.github.io/RcppAlgos/articles/GeneralCombinatorics.html>) vignette):
     #'
 
     ht <- function(d, m = 5, n = m) {
@@ -36,7 +36,7 @@ reprex::reprex({
     #'
     #' Note that the order of `expand.grid` and `comboGrid` differ. The order of `comboGrid` is lexicographical meaning that the last column will vary the fastest whereas with `expand.grid`, the first column will vary the fastest.
     #'
-    #' You will also note that the output of `expand.grid` is a `data.frame` whereas with `comboGrid`, we get a `matrix`. With `comboGrid`, we only get a `data.frame` when the classes of each vector are different as generally speaking, working with matrices is preferrable.
+    #' You will also note that the output of `expand.grid` is a `data.frame` whereas with `comboGrid`, we get a `matrix`. With `comboGrid`, we only get a `data.frame` when the classes of each vector are different as generally speaking, working with matrices is preferable.
     #'
     #' With the small example above, we only had to filter out 3 out of 16 total results (less than 20%). That isn't that bad. If this was the general case, we might as well just stick with `expand.grid` as it is very efficient. Unfortunately, this is not the general case and as the number of vectors with overlap increases, filtering will become impractical.
     #'
@@ -92,7 +92,7 @@ reprex::reprex({
     #' * [R - Expand Grid Without Duplicates](<https://stackoverflow.com/q/68047141/4408538>)
     #' * [Non-redundant version of expand.grid](<https://stackoverflow.com/a/68050873/4408538>)
     #'
-    #' ## Partitions of Groups of Equal Size with `comboGroups`
+    #' ## Partitions of Groups of Varying Sizes with `comboGroups`
     #'
     #' Given a vector of length _n_ and _k_ groups, where _k_ divides _n_, each group is comprised of a combination of the vector chosen _g = n / k_ at a time. As is stated in the documentation (see `?comboGroups`), these can be constructed by first generating all permutations of the vector and subsequently removing entries with permuted groups. Let us consider the following example. Given `v = 1:12`, generate all partitions `v` into 3 groups each of size 4.
     #'
@@ -160,7 +160,15 @@ reprex::reprex({
     identical(a1, a3)
 
     #'
-    #' There is one additional argument (i.e. `retType`) not present in the other two general functions that allows the user to specify the type of object returned. The user can select between `"matrix"` (the default) and `"3Darray"`. This structure has a natural connection to 3D space. We have a particular result (_1<sup>st</sup>_ dimension) broken down into groups (_2<sup>nd</sup>_ dimension) of a certain size (_3<sup>rd</sup>_ dimension).
+    #' As of `2.8.+` we can generate partitions of groups of varying sizes. For example, say we want to generate all partitions of the vector `v = 1:14` into 2 groups of 3 and 2 groups of 4:
+    #'
+
+    system.time(a4 <- comboGroups(14, grpSizes = c(3, 3, 4, 4)))
+
+    ht(a4)
+
+    #'
+    #' There is one additional argument (i.e. `retType`) not present in the other two general functions that allows the user to specify the type of object returned. The user can select between `"matrix"` (the default) and `"3Darray"`. This structure has a natural connection to 3D space when the size of each group is uniform. We have a particular result (_1<sup>st</sup>_ dimension) broken down into groups (_2<sup>nd</sup>_ dimension) of a certain size (_3<sup>rd</sup>_ dimension).
     #'
 
     my3D <- comboGroups(factor(month.abb), 4, retType = "3Darray")
@@ -175,6 +183,7 @@ reprex::reprex({
     #' * [Iterating through combinations of groups of 4 within a group of 16](<https://stackoverflow.com/a/51754958/4408538>)
     #' * [Create Combinations in R by Groups](<https://stackoverflow.com/q/57732672/4408538>)
     #' * [Algorithm that can create all combinations and all groups of those combinations](<https://stackoverflow.com/q/39126712/4408538>)
+    #' * [R expand.grid for repeated combinations of a vector in groups](https://stackoverflow.com/q/74160916/4408538)
     #' * https://oeis.org/A025035 (See also sequences A025036-A025042)
 
 }, advertise = FALSE, venue = "r", html_preview = FALSE, wd = ".")

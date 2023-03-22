@@ -93,8 +93,8 @@ mpz_class numCmbGrpGenGmp(const std::vector<int> &grp, int n) {
 }
 
 ComboGroupGeneral::ComboGroupGeneral(
-    int n_, int numGroups, int i1, int i2, int bnd, Group MyGrp_
-) : ComboGroup(n_, numGroups, i1, i2, bnd), MyGrp(MyGrp_) {};
+    int n_, int numGroups, int i1, int i2, int bnd, Group MyGrp_, bool OneGrp_
+) : ComboGroup(n_, numGroups, i1, i2, bnd), MyGrp(MyGrp_), OneGrp(OneGrp_) {};
 
 bool ComboGroupGeneral::nextComboGroup(std::vector<int> &z) {
     return nextCmbGrpGen(z, idx1, idx2, curr_bnd, MyGrp);
@@ -403,6 +403,18 @@ void ComboGroupGeneral::FinalTouch(
     const std::vector<double> &mySample,
     const std::vector<mpz_class> &myBigSamp, bool IsSample
 ) {
-    FinalTouchMisc(res, IsArray, nRows, IsNamed, MyGrp.grp,
-                   mySample, myBigSamp, IsSample, IsGmp, r, n);
+
+    if (OneGrp) {
+        const int numOneGrps = MyGrp.grp.front();
+
+        std::vector<int> realGrps(MyGrp.grp);
+        realGrps.erase(realGrps.begin());
+        realGrps.insert(realGrps.begin(), numOneGrps, 1);
+
+        FinalTouchMisc(res, IsArray, nRows, IsNamed, realGrps, mySample,
+                       myBigSamp, IsSample, IsGmp, realGrps.size(), n);
+    } else {
+        FinalTouchMisc(res, IsArray, nRows, IsNamed, MyGrp.grp,
+                       mySample, myBigSamp, IsSample, IsGmp, r, n);
+    }
 }

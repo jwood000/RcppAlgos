@@ -6,11 +6,12 @@ class ComboGroupGeneral : public ComboGroup {
 private:
 
     const Group MyGrp;
+    const bool OneGrp;
 
 public:
 
     ComboGroupGeneral(int n_, int numGroups, int i1, int i2,
-                      int bnd, Group MyGrp_);
+                      int bnd, Group MyGrp_, bool OneGrp_);
 
     bool nextComboGroup(std::vector<int> &z);
     double numGroupCombs();

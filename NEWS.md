@@ -1,4 +1,4 @@
-# RcppAlgos 2.7.3
+# RcppAlgos 2.8.0
 
 ## New Features:
 

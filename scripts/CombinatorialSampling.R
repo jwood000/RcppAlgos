@@ -245,34 +245,42 @@ reprex::reprex({
     compositionsSample(0:100, 8, repetition = TRUE, weak = TRUE,
                        seed = 245659, n = 3, namedSample = TRUE)
     #'
-    #'
     #' Currently, there are only sampling algorithms for most cases of compositions with repetition. There is ongoing work to expand these algorithms in the future.
     #'
-    #' ## Sampling Partitions of Groups of Equal Size with `comboGroupsSample`
+    #' ## Sampling Partitions of Groups of Varying Sizes with `comboGroupsSample`
     #'
-    #' Just as we can generate random samples of combinations and permutations, we are also able to generate random samples of partitions of groups of equal size. There are many problems that present in this manner. Below, we examine one involving playing cards.
+    #' Just as we can generate random samples of combinations and permutations, we are also able to generate random samples of partitions of groups of varying sizes. There are many problems that present in this manner. Below, we examine one involving playing cards.
     #'
-    #' Let's say we have 4 players and each player is to have 3 cards a piece. Given that the deck is shuffled, the dealer then distrubutes 12 cards.
+    #' Let's say we have 4 players and each player is to have 3 cards a piece. Given that the deck is shuffled, the dealer then distributes 12 cards.
     #'
     #' > What possible hands can each player have?
     #'
-    #' See [Creating A Deck Of Cards In R Without Using While And Double For Loop
-    #' ](https://stackoverflow.com/a/36903806/4408538) (Credit to @MichaelChirico)
+    #' See [Creating A Deck Of Cards In R Without Using While And Double For Loop](https://stackoverflow.com/a/36903806/4408538) (Credit to @MichaelChirico)
     #'
 
     cards <- c(2:10, "J", "Q", "K", "A")
     suits <- c("♠", "♥", "♦", "♣")
-    deck <- paste0(rep(cards, length(suits)),  #card values
-                   rep(suits, each = length(cards))) #suits
+    deck <- paste0(rep(cards, length(suits)),  # card values
+                   rep(suits, each = length(cards))) # suits
 
     set.seed(1738)
     shuffled <- factor(deck[sample(52)], levels = deck)
 
-    ## Here are 3 possibilities
+    ## Here are 2 possibilities
     comboGroupsSample(shuffled[1:12], numGroups = 4, n = 2, seed = 13)
 
 
     comboGroupsSample(shuffled[1:12], numGroups = 4, retType = "3Darray",
+                      n = 2, seed = 13, namedSample = TRUE)
+
+    #'
+    #' What if we add a twist on the problem above. What if instead we want to deal players 1 & 2 two cards, player 3 three cards, and player 4 five cards. How might we do this?
+    #'
+    #' For this, we make use of the `grpSizes` parameter:
+    #'
+
+    ## Again, here are 2 possibilities
+    comboGroupsSample(shuffled[1:12], grpSizes = c(2, 2, 3, 5),
                       n = 2, seed = 13, namedSample = TRUE)
 
     #'

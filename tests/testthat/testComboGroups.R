@@ -1,6 +1,6 @@
 context("testing comboGroup")
 
-test_that("comboGroups produces correct results", {
+test_that("comboGroups produces correct results when groups are uniform", {
 
     ## See the excellent answer by user @Cole here:
     ##       https://stackoverflow.com/a/57847300/4408538
@@ -171,8 +171,196 @@ test_that("comboGroups produces correct results", {
                  c("7162662695786451", "3525427663529072"))
 
     expect_equal(
-        comboGroups(1:4 + 0.1, 2, retType = "3Darray"),
+        comboGroups(1:4 + 0.1,       2, retType = "3Darray"),
         comboGroupsSample(1:4 + 0.1, 2, retType = "3Darray", sampleVec = 1:3)
+    )
+})
+
+test_that("comboGroups produces correct results when groups vary", {
+
+    retIdxMat <- function(x, g) {
+        while (is.list(x[[1]])) {
+            x <- unlist(x, recursive = FALSE)
+        }
+
+        res <- do.call(rbind, x)
+        s <- cumsum(c(0, g[-length(g)])) + 1
+        r <- rle(g)
+
+        g_idx <- 1L
+
+        for (k in r$lengths) {
+            if (k == 1) {
+                g_idx <- g_idx + 1L
+                next
+            }
+
+            for (j in 1:(k - 1L)) {
+                for (q in j:(k - 1L)) {
+                    test <- res
+                    c1 <- s[g_idx + (j - 1L)]
+                    c2 <- s[g_idx + q]
+
+                    idx    <- which(res[, c1] > res[, c2])
+                    g_size <- g[g_idx]
+
+                    rng1 <- c1:(c1 + g_size - 1L)
+                    rng2 <- c2:(c2 + g_size - 1L)
+
+                    for (i in idx) {
+                        temp <- test[i, rng1]
+                        test[i, rng1] <- test[i, rng2]
+                        test[i, rng2] <- temp
+                    }
+
+                    b   <- apply(test, 1, paste, collapse = "_")
+                    res <- res[!duplicated(b), ]
+                }
+            }
+
+            g_idx <- g_idx + k
+        }
+
+        return(res)
+    }
+
+    create_txt_fun <- function(g) {
+        first <- paste("combn(x,", g[1], ", function(a) {")
+
+        lst <- lapply(seq_len(length(g) - 1), function(i) {
+            v <- if (i == 1) letters[1] else paste(letters[1:i],
+                                                   collapse = ", ")
+            paste("combn(setdiff(x, c(", v, ")),", g[i + 1],
+                  ", function(", letters[i + 1] , ") {")
+        })
+
+        eqn <- do.call(paste, append(lst, first, 0))
+        eqn <- paste(eqn, "c(", paste(letters[seq_along(g)], collapse = ", "),
+                     ")}, simplify = FALSE)")
+        return(paste(eqn, paste(rep("}, simplify = FALSE)",
+                                length(g) - 1), collapse = "")))
+    }
+
+    gen_base_R <- function(v, g) {
+        isFactor <- is.factor(v)
+        eqn <- create_txt_fun(g)
+        v   <- RcppAlgos:::GetV(v)
+        x   <- seq_along(v)
+        lst <- eval(parse(text = eqn))
+        res <- v[retIdxMat(lst, g)]
+        dim(res) <- c(length(res) / length(x), length(x))
+        colnames(res) <- paste0("Grp", rep(seq_along(g), times = g))
+        return(res)
+    }
+
+    expect_equal(gen_base_R(10, 1:4), comboGroups(10, grpSizes = 1:4))
+    expect_equal(gen_base_R(letters[1:10], c(2, 2, 3, 3)),
+                 comboGroups(letters[1:10], grpSizes = c(2, 2, 3, 3)))
+    expect_equal(gen_base_R(factor(letters[1:10]), c(1, 3, 3, 3)),
+                 comboGroups(factor(letters[1:10]), grpSizes = c(1, 3, 3, 3)))
+
+    set.seed(42)
+    cmplx_v <- complex(real = runif(10), imaginary = runif(10))
+    expect_equal(gen_base_R(cmplx_v, c(2, 2, 2, 4)),
+                 comboGroups(cmplx_v, grpSizes = c(2, 2, 2, 4)))
+
+    # comboGroupsCount(30, grpSizes = rep(1:4, 3))
+    # Big Integer ('bigz') :
+    # [1] 2141990886858322500000
+    expect_equal(dim(comboGroups(30, grpSizes = rep(1:4, 3),
+                                 lower = "2141990886858322499981")), c(20, 30))
+    expect_equal(comboGroups(10, grpSizes = 1:4, lower = 201, upper = 300),
+                 comboGroups(10, grpSizes = 1:4)[201:300, ])
+
+    expect_equal(comboGroups(3, grpSizes = 1:2),
+                 comboGroupsSample(
+                     3, grpSizes = 1:2,
+                     sampleVec = 1:comboGroupsCount(3, grpSizes = 1:2)
+                 ))
+
+    expect_equal(comboGroups(5, grpSizes = c(1, 2, 2)),
+                 comboGroupsSample(
+                     5, grpSizes = c(1, 2, 2),
+                     sampleVec = 1:comboGroupsCount(5, grpSizes = c(1, 2, 2))
+                 ))
+
+    expect_equal(comboGroups(4, grpSizes = c(1, 1, 2)),
+                 comboGroupsSample(
+                     4, grpSizes = c(1, 1, 2),
+                     sampleVec = 1:comboGroupsCount(4, grpSizes = c(1, 1, 2))
+                 ))
+
+    expect_equal(comboGroups(5, grpSizes = c(1, 2, 2)),
+                 comboGroupsSample(
+                     5, grpSizes = c(1, 2, 2),
+                     sampleVec = 1:comboGroupsCount(5, grpSizes = c(1, 2, 2))
+                 ))
+
+    expect_equal(comboGroups(5, grpSizes = c(1, 1, 1, 2)),
+                 comboGroupsSample(
+                     5, grpSizes = c(1, 1, 1, 2),
+                     sampleVec = 1:comboGroupsCount(5, grpSizes = c(1, 1, 1, 2))
+                 ))
+
+    expect_equal(comboGroups(7, grpSizes = c(1, 2, 2, 2)),
+                 comboGroupsSample(
+                     7, grpSizes = c(1, 2, 2, 2),
+                     sampleVec = 1:comboGroupsCount(7, grpSizes = c(1, 2, 2, 2))
+                 ))
+
+    bigCount <- comboGroupsCount(12, grpSizes = c(1, 1, 1, 1, 2, 2, 2, 2))
+    expect_equal(comboGroups(12, grpSizes = c(1, 1, 1, 1, 2, 2, 2, 2)),
+                 comboGroupsSample(
+                     12, grpSizes = c(1, 1, 1, 1, 2, 2, 2, 2),
+                     sampleVec = 1:bigCount
+                 ))
+
+    expect_equal(
+        comboGroups(12, grpSizes = c(1, 1, 1, 1, 2, 2, 2, 2)),
+        comboGroupsSample(12, grpSizes = c(1, 1, 1, 1, 2, 2, 2, 2),
+                          sampleVec = 1:bigCount, nThreads = 2)
+    )
+
+    expect_equal(dim(comboGroups(200, grpSizes = rep(5:8, times = 6:9),
+                                 upper = 100)),
+                 c(100, 200))
+
+    expect_equal(comboGroups(30, grpSizes = 2 * (4:6),
+                             lower = 5e11, upper = 5e11 + 1e5),
+                 comboGroupsSample(30, grpSizes = 2 * (4:6), nThreads = 2,
+                                   sampleVec = (5e11):(5e11 + 1e5)))
+
+    expect_equal(comboGroups(30, grpSizes = rep(4:6, each = 2),
+                             lower = 5e15, upper = 5e15 + 1e5),
+                 comboGroupsSample(30, grpSizes = rep(4:6, each = 2),
+                                   nThreads = 2,
+                                   sampleVec = (5e15):(5e15 + 1e5)))
+
+    expect_equal(comboGroups(14, grpSizes = c(4, 5, 5), nThreads = 2),
+                 comboGroups(14, grpSizes = c(4, 5, 5)))
+
+    expect_equal(comboGroups(14, grpSizes = c(3, 5, 6), nThreads = 2),
+                 comboGroups(14, grpSizes = c(3, 5, 6)))
+
+    expect_equal(rownames(comboGroupsSample(30, grpSizes = c(5, 10, 15),
+                                            sampleVec = c(337806368805,
+                                                          448334922606,
+                                                          433232041762),
+                                            namedSample = TRUE)),
+                 as.character(c(337806368805,
+                                448334922606,
+                                433232041762)))
+
+    expect_equal(rownames(comboGroupsSample(30, grpSizes = c(5, 10, 15), n = 2,
+                                            seed = 1, namedSample = TRUE)),
+                 c("866248189", "372205330702"))
+
+    expect_equal(rownames(comboGroupsSample(
+            80, grpSizes = c(5, 5, 5, 10, 10, 15, 15, 15), n = 2,
+            seed = 1, namedSample = TRUE
+        )),
+        c("1424186085660521051631145763878676451483834974622463043287356",
+          "17562722460072173386395565529258043289650490250407423764080023")
     )
 })
 

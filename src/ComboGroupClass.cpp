@@ -20,15 +20,17 @@ void ComboGroup::SetCount() {
 }
 
 std::unique_ptr<ComboGroup> MakeComboGroup(
-    const std::vector<int> &vGrpSize, const Group &MyGrp,
-    int i1, int i2, int bnd, int grpSize, bool IsGen, bool IsUni
+    const std::vector<int> &vGrpSize, const Group &MyGrp, int i1,
+    int i2, int bnd, int grpSize, bool IsGen, bool IsUni, bool OneGrp
 ) {
 
     const int n = std::accumulate(vGrpSize.begin(), vGrpSize.end(), 0);
     const int r = vGrpSize.size();
 
     if (IsGen) {
-        return std::make_unique<ComboGroupGeneral>(n, r, i1, i2, bnd, MyGrp);
+        return std::make_unique<ComboGroupGeneral>(
+            n, r, i1, i2, bnd, MyGrp, OneGrp
+        );
     } else if (IsUni) {
         return std::make_unique<ComboGroupUnique>(n, r, i1, i2, bnd, vGrpSize);
     } else {
@@ -46,6 +48,7 @@ std::unique_ptr<ComboGroup> GroupPrep(
     bool IsGen  = false;
     bool IsUni  = false;
     bool IsSame = true;
+    bool OneGrp = false;
 
     int grpSize;
     int numGroups;
@@ -100,6 +103,15 @@ std::unique_ptr<ComboGroup> GroupPrep(
                     "of v (if v is a vector) or v (if v is a scalar)");
     }
 
+    int count_one = std::count(vGrpSize.cbegin(), vGrpSize.cend(), 1);
+
+    if (IsGen && count_one > 1) {
+        OneGrp = true;
+        vGrpSize.erase(vGrpSize.begin(), vGrpSize.begin() + (count_one - 1));
+        vGrpSize.front() = count_one;
+        numGroups -= (count_one - 1);
+    }
+
     std::vector<int> ubound(numGroups);
     std::partial_sum(vGrpSize.begin(), vGrpSize.end(), ubound.begin());
 
@@ -125,8 +137,8 @@ std::unique_ptr<ComboGroup> GroupPrep(
     const int lbound_cnst = (vGrpSize.size() > 2) ?
         std::accumulate(vGrpSize.begin(), vGrpSize.end() - 2, 0) : 0;
 
-    return MakeComboGroup(vGrpSize, MyGrp, idx1, idx2,
-                          lbound_cnst, grpSize, IsGen, IsUni);
+    return MakeComboGroup(vGrpSize, MyGrp, idx1, idx2, lbound_cnst,
+                          grpSize, IsGen, IsUni, OneGrp);
 }
 
 void CleanV(std::vector<int> &v, const std::vector<int> &idx_used, int n) {
@@ -205,4 +217,3 @@ void FinalTouchMisc(SEXP res, bool IsArray, int nRows,
         Rf_setAttrib(res, R_DimNamesSymbol, dimNames);
     }
 }
-
