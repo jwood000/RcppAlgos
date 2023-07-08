@@ -5,13 +5,13 @@
 <meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Cartesian Products and Partitions of Groups into Equal Size • RcppAlgos</title>
+<title>Cartesian Products and Partitions of Groups • RcppAlgos</title>
 <!-- jquery --><script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script><!-- Bootstrap --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.4.1/css/bootstrap.min.css" integrity="sha256-bZLfwXAP04zRMK2BjiO8iu9pf4FbLqX6zitd+tIvLhE=" crossorigin="anonymous">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.4.1/js/bootstrap.min.js" integrity="sha256-nuL8/2cJ5NDSSwnKD8VqreErSWHtnEP9E7AySL+1ev4=" crossorigin="anonymous"></script><!-- bootstrap-toc --><link rel="stylesheet" href="../bootstrap-toc.css">
 <script src="../bootstrap-toc.js"></script><!-- Font Awesome icons --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/all.min.css" integrity="sha256-mmgLkCYLUQbXn0B1SRqzHar6dCnv9oZFPEC1g1cwlkk=" crossorigin="anonymous">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/v4-shims.min.css" integrity="sha256-wZjR52fzng1pJHwx4aV2AO3yyTOXrcDW7jBpJtTwVxw=" crossorigin="anonymous">
 <!-- clipboard.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.6/clipboard.min.js" integrity="sha256-inc5kl9MA1hkeYUt+EC3BhlIgyp/2jDIyBLS6k3UxPI=" crossorigin="anonymous"></script><!-- headroom.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/headroom.min.js" integrity="sha256-AsUX4SJE1+yuDu5+mAVzJbuYNPHj/WroHuZ8Ir/CkE0=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/jQuery.headroom.min.js" integrity="sha256-ZX/yNShbjqsohH1k95liqY9Gd8uOiE1S4vZc+9KQ1K4=" crossorigin="anonymous"></script><!-- pkgdown --><link href="../pkgdown.css" rel="stylesheet">
-<script src="../pkgdown.js"></script><meta property="og:title" content="Cartesian Products and Partitions of Groups into Equal Size">
+<script src="../pkgdown.js"></script><meta property="og:title" content="Cartesian Products and Partitions of Groups">
 <meta property="og:description" content="RcppAlgos">
 <!-- mathjax --><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js" integrity="sha256-nvJJv9wWKEm88qvoQl9ekL2J+k/RWIsaSScxxlsrv8k=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/config/TeX-AMS-MML_HTMLorMML.js" integrity="sha256-84DKXVJXs0/F8OTMzX4UR909+jtl4G7SPypPavF+GfA=" crossorigin="anonymous"></script><!--[if lt IE 9]>
 <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
@@ -33,7 +33,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">RcppAlgos</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">2.7.2</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">2.8.0</span>
       </span>
     </div>
 
@@ -68,7 +68,7 @@
       <a href="../articles/HighPerformanceBenchmarks.html">High Performance Benchmarks</a>
     </li>
     <li>
-      <a href="../articles/OtherCombinatorics.html">Cartesian Products and Partitions of Groups into Equal Size</a>
+      <a href="../articles/OtherCombinatorics.html">Cartesian Products and Partitions of Groups</a>
     </li>
     <li>
       <a href="../articles/SubsetSum.html">Attacking Problems Related to the Subset Sum Problem</a>
@@ -99,12 +99,11 @@
       </header><div class="row">
   <div class="col-md-9 contents">
     <div class="page-header toc-ignore">
-      <h1 data-toc-skip>Cartesian Products and Partitions of Groups into
-Equal Size</h1>
+      <h1 data-toc-skip>Cartesian Products and Partitions of Groups</h1>
                         <h4 data-toc-skip class="author">Joseph
 Wood</h4>
             
-            <h4 data-toc-skip class="date">02/09/2023</h4>
+            <h4 data-toc-skip class="date">07/08/2023</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/jwood000/RcppAlgos/blob/HEAD/vignettes/OtherCombinatorics.Rmd" class="external-link"><code>vignettes/OtherCombinatorics.Rmd</code></a></small>
       <div class="hidden name"><code>OtherCombinatorics.Rmd</code></div>
@@ -128,10 +127,10 @@ below fall into this category.</p>
 <p>Given a list of vectors, <em>v<sub>1</sub></em>,
 <em>v<sub>2</sub></em>, … , <em>v<sub>n</sub></em>, where the
 intersection of two or more vectors in non-empty, find all unique
-combinations (order does not matter) of elements of the cartesian
+combinations (order does not matter) of elements of the Cartesian
 product of all of the vectors.</p>
 <p>For example, lets say we have: <code>v1 = 1:4</code> and
-<code>v2 = 2:5</code>. The cartestion product is given by
+<code>v2 = 2:5</code>. The Cartesian product is given by
 <code>expand.grid(v1, v2)</code> (We continue to use the <code>ht</code>
 function defined in the <a href="https://jwood000.github.io/RcppAlgos/articles/GeneralCombinatorics.html" class="external-link">Combination
 and Permutation Basics</a> vignette):</p>
@@ -197,7 +196,7 @@ fastest.</p>
 <code>data.frame</code> whereas with <code>comboGrid</code>, we get a
 <code>matrix</code>. With <code>comboGrid</code>, we only get a
 <code>data.frame</code> when the classes of each vector are different as
-generally speaking, working with matrices is preferrable.</p>
+generally speaking, working with matrices is preferable.</p>
 <p>With the small example above, we only had to filter out 3 out of 16
 total results (less than 20%). That isn’t that bad. If this was the
 general case, we might as well just stick with <code>expand.grid</code>
@@ -225,7 +224,7 @@ impractical.</p>
 <span><span class="co">## With comboGrid, this is no problem</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/system.time.html" class="external-link">system.time</a></span><span class="op">(</span><span class="va">myCombs</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/comboGrid.html">comboGrid</a></span><span class="op">(</span><span class="va">pools</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="co">#&gt;    user  system elapsed </span></span>
-<span><span class="co">#&gt;   0.210   0.026   0.235</span></span>
+<span><span class="co">#&gt;   0.271   0.023   0.293</span></span>
 <span></span>
 <span><span class="fu"><a href="https://rdrr.io/pkg/partitions/man/print.partition.html" class="external-link">print</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/utils/object.size.html" class="external-link">object.size</a></span><span class="op">(</span><span class="va">myCombs</span><span class="op">)</span>, unit <span class="op">=</span> <span class="st">"Mb"</span><span class="op">)</span></span>
 <span><span class="co">#&gt; 92 Mb</span></span>
@@ -251,7 +250,7 @@ impractical.</p>
 <span><span class="co">## Generating keys, then filtering will take much more time</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/system.time.html" class="external-link">system.time</a></span><span class="op">(</span><span class="va">cartProd</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/expand.grid.html" class="external-link">expand.grid</a></span><span class="op">(</span><span class="va">pools</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="co">#&gt;    user  system elapsed </span></span>
-<span><span class="co">#&gt;   3.566   0.814   4.380</span></span>
+<span><span class="co">#&gt;   3.575   0.810   4.385</span></span>
 <span></span>
 <span><span class="co">## Creates huge object</span></span>
 <span><span class="fu"><a href="https://rdrr.io/pkg/partitions/man/print.partition.html" class="external-link">print</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/utils/object.size.html" class="external-link">object.size</a></span><span class="op">(</span><span class="va">cartProd</span><span class="op">)</span>, unit <span class="op">=</span> <span class="st">"Mb"</span><span class="op">)</span></span>
@@ -261,7 +260,7 @@ impractical.</p>
 <span><span class="co">## Simply set repetition = FALSE</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/system.time.html" class="external-link">system.time</a></span><span class="op">(</span><span class="va">myCombsNoRep</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/comboGrid.html">comboGrid</a></span><span class="op">(</span><span class="va">pools</span>, repetition <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="co">#&gt;    user  system elapsed </span></span>
-<span><span class="co">#&gt;   0.002   0.001   0.003</span></span>
+<span><span class="co">#&gt;   0.003   0.000   0.003</span></span>
 <span></span>
 <span><span class="fu">ht</span><span class="op">(</span><span class="va">myCombsNoRep</span><span class="op">)</span></span>
 <span><span class="co">#&gt; head --&gt;</span></span>
@@ -308,8 +307,7 @@ version of expand.grid</a></li>
 </div>
 </div>
 <div class="section level2">
-<h2 id="partitions-of-groups-of-equal-size-with-combogroups">Partitions of Groups of Equal Size with
-<code>comboGroups</code><a class="anchor" aria-label="anchor" href="#partitions-of-groups-of-equal-size-with-combogroups"></a>
+<h2 id="partitions-of-groups-with-combogroups">Partitions of Groups with <code>comboGroups</code><a class="anchor" aria-label="anchor" href="#partitions-of-groups-with-combogroups"></a>
 </h2>
 <p>Given a vector of length <em>n</em> and <em>k</em> groups, where
 <em>k</em> divides <em>n</em>, each group is comprised of a combination
@@ -413,36 +411,83 @@ and <code>nThreads</code>.</p>
 <span>                              lower <span class="op">=</span> <span class="st">"123378675000000000"</span>,</span>
 <span>                              upper <span class="op">=</span> <span class="st">"123378675005000000"</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="co">#&gt;    user  system elapsed </span></span>
-<span><span class="co">#&gt;   0.115   0.031   0.146</span></span>
+<span><span class="co">#&gt;   0.115   0.034   0.149</span></span>
 <span></span>
 <span><span class="co">## Use specific number of threads</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/system.time.html" class="external-link">system.time</a></span><span class="op">(</span><span class="va">a2</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/comboGroups.html">comboGroups</a></span><span class="op">(</span><span class="fl">30</span>, numGroups <span class="op">=</span> <span class="fl">6</span>,</span>
 <span>                              lower <span class="op">=</span> <span class="st">"123378675000000000"</span>,</span>
 <span>                              upper <span class="op">=</span> <span class="st">"123378675005000000"</span>, nThreads <span class="op">=</span> <span class="fl">4</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="co">#&gt;    user  system elapsed </span></span>
-<span><span class="co">#&gt;   0.127   0.047   0.046</span></span>
+<span><span class="co">#&gt;   0.126   0.048   0.047</span></span>
 <span></span>
 <span><span class="co">## Use n - 1 number of threads (in this case, there are 7)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/system.time.html" class="external-link">system.time</a></span><span class="op">(</span><span class="va">a3</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/comboGroups.html">comboGroups</a></span><span class="op">(</span><span class="fl">30</span>, numGroups <span class="op">=</span> <span class="fl">6</span>,</span>
 <span>                              lower <span class="op">=</span> <span class="st">"123378675000000000"</span>,</span>
 <span>                              upper <span class="op">=</span> <span class="st">"123378675005000000"</span>, Parallel <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="co">#&gt;    user  system elapsed </span></span>
-<span><span class="co">#&gt;   0.184   0.070   0.043</span></span>
+<span><span class="co">#&gt;   0.183   0.073   0.044</span></span>
 <span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/identical.html" class="external-link">identical</a></span><span class="op">(</span><span class="va">a1</span>, <span class="va">a2</span><span class="op">)</span></span>
 <span><span class="co">#&gt; [1] TRUE</span></span>
 <span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/identical.html" class="external-link">identical</a></span><span class="op">(</span><span class="va">a1</span>, <span class="va">a3</span><span class="op">)</span></span>
 <span><span class="co">#&gt; [1] TRUE</span></span></code></pre></div>
+<div class="section level3">
+<h3 id="partitions-of-groups-of-varying-sizes">Partitions of Groups of Varying Sizes<a class="anchor" aria-label="anchor" href="#partitions-of-groups-of-varying-sizes"></a>
+</h3>
+<p>As of <code>2.8.+</code> we can generate partitions of groups of
+varying sizes. For example, say we want to generate all partitions of
+the vector <code>v = 1:15</code> into 2 groups of 3, 1 groups of 4, and
+1 group of 5:</p>
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/system.time.html" class="external-link">system.time</a></span><span class="op">(</span><span class="va">a4</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/comboGroups.html">comboGroups</a></span><span class="op">(</span><span class="fl">15</span>, grpSizes <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">3</span>, <span class="fl">3</span>, <span class="fl">4</span>, <span class="fl">5</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="co">#&gt;    user  system elapsed </span></span>
+<span><span class="co">#&gt;   0.119   0.021   0.140</span></span>
+<span></span>
+<span><span class="fu">ht</span><span class="op">(</span><span class="va">a4</span><span class="op">)</span></span>
+<span><span class="co">#&gt; head --&gt;</span></span>
+<span><span class="co">#&gt;      Grp1 Grp1 Grp1 Grp2 Grp2 Grp2 Grp3 Grp3 Grp3 Grp3 Grp4 Grp4 Grp4 Grp4 Grp4</span></span>
+<span><span class="co">#&gt; [1,]    1    2    3    4    5    6    7    8    9   10   11   12   13   14   15</span></span>
+<span><span class="co">#&gt; [2,]    1    2    3    4    5    6    7    8    9   11   10   12   13   14   15</span></span>
+<span><span class="co">#&gt; [3,]    1    2    3    4    5    6    7    8    9   12   10   11   13   14   15</span></span>
+<span><span class="co">#&gt; [4,]    1    2    3    4    5    6    7    8    9   13   10   11   12   14   15</span></span>
+<span><span class="co">#&gt; [5,]    1    2    3    4    5    6    7    8    9   14   10   11   12   13   15</span></span>
+<span><span class="co">#&gt; --------</span></span>
+<span><span class="co">#&gt; tail --&gt;</span></span>
+<span><span class="co">#&gt;            Grp1 Grp1 Grp1 Grp2 Grp2 Grp2 Grp3 Grp3 Grp3 Grp3 Grp4 Grp4 Grp4</span></span>
+<span><span class="co">#&gt; [6306296,]   10   14   15   11   12   13    5    6    7    8    1    2    3</span></span>
+<span><span class="co">#&gt; [6306297,]   10   14   15   11   12   13    5    6    7    9    1    2    3</span></span>
+<span><span class="co">#&gt; [6306298,]   10   14   15   11   12   13    5    6    8    9    1    2    3</span></span>
+<span><span class="co">#&gt; [6306299,]   10   14   15   11   12   13    5    7    8    9    1    2    3</span></span>
+<span><span class="co">#&gt; [6306300,]   10   14   15   11   12   13    6    7    8    9    1    2    3</span></span>
+<span><span class="co">#&gt;            Grp4 Grp4</span></span>
+<span><span class="co">#&gt; [6306296,]    4    9</span></span>
+<span><span class="co">#&gt; [6306297,]    4    8</span></span>
+<span><span class="co">#&gt; [6306298,]    4    7</span></span>
+<span><span class="co">#&gt; [6306299,]    4    6</span></span>
+<span><span class="co">#&gt; [6306300,]    4    5</span></span>
+<span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/dim.html" class="external-link">dim</a></span><span class="op">(</span><span class="va">a4</span><span class="op">)</span></span>
+<span><span class="co">#&gt; [1] 6306300      15</span></span></code></pre></div>
+<p>All of the flexibility offered with groups of equal size are present
+with groups of varying sizes as well. For example, we can generate
+groups of varying sizes in parallel:</p>
+<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/system.time.html" class="external-link">system.time</a></span><span class="op">(</span><span class="va">a5</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/comboGroups.html">comboGroups</a></span><span class="op">(</span><span class="fl">15</span>, grpSizes <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">3</span>, <span class="fl">3</span>, <span class="fl">4</span>, <span class="fl">5</span><span class="op">)</span>, nThreads <span class="op">=</span> <span class="fl">4</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="co">#&gt;    user  system elapsed </span></span>
+<span><span class="co">#&gt;   0.133   0.031   0.042</span></span>
+<span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/identical.html" class="external-link">identical</a></span><span class="op">(</span><span class="va">a4</span>, <span class="va">a5</span><span class="op">)</span></span>
+<span><span class="co">#&gt; [1] TRUE</span></span></code></pre></div>
 <p>There is one additional argument (i.e. <code>retType</code>) not
 present in the other two general functions that allows the user to
 specify the type of object returned. The user can select between
 <code>"matrix"</code> (the default) and <code>"3Darray"</code>. This
-structure has a natural connection to 3D space. We have a particular
-result (<em>1<sup>st</sup></em> dimension) broken down into groups
-(<em>2<sup>nd</sup></em> dimension) of a certain size
-(<em>3<sup>rd</sup></em> dimension).</p>
-<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
+structure has a natural connection to 3D space when the size of each
+group is uniform. We have a particular result (<em>1<sup>st</sup></em>
+dimension) broken down into groups (<em>2<sup>nd</sup></em> dimension)
+of a certain size (<em>3<sup>rd</sup></em> dimension).</p>
+<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">my3D</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/comboGroups.html">comboGroups</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/factor.html" class="external-link">factor</a></span><span class="op">(</span><span class="va">month.abb</span><span class="op">)</span>, <span class="fl">4</span>, retType <span class="op">=</span> <span class="st">"3Darray"</span><span class="op">)</span></span>
 <span><span class="va">my3D</span><span class="op">[</span><span class="fl">1</span>, , <span class="op">]</span></span>
 <span><span class="co">#&gt;      Grp1 Grp2 Grp3 Grp4</span></span>
@@ -460,6 +505,7 @@ result (<em>1<sup>st</sup></em> dimension) broken down into groups
 <span><span class="co">#&gt; [2,] Nov  Sep  Jul  May </span></span>
 <span><span class="co">#&gt; [3,] Dec  Oct  Aug  Jun </span></span>
 <span><span class="co">#&gt; Levels: Apr Aug Dec Feb Jan Jul Jun Mar May Nov Oct Sep</span></span></code></pre></div>
+</div>
 <div class="section level3">
 <h3 id="relevant-posts-on-stackoverflow-as-well-as-oeis-">Relevant Posts on Stackoverflow as well as OEIS.<a class="anchor" aria-label="anchor" href="#relevant-posts-on-stackoverflow-as-well-as-oeis-"></a>
 </h3>
@@ -471,6 +517,10 @@ Combinations in R by Groups</a></li>
 <li><a href="https://stackoverflow.com/q/39126712/4408538" class="external-link">Algorithm
 that can create all combinations and all groups of those
 combinations</a></li>
+<li><a href="https://stackoverflow.com/q/74160916/4408538" class="external-link">R expand.grid
+for repeated combinations of a vector in groups</a></li>
+<li><a href="https://stackoverflow.com/q/76064565/4408538" class="external-link">Find all
+possible teams in R</a></li>
 <li>
 <a href="https://oeis.org/A025035" class="external-link uri">https://oeis.org/A025035</a> (See also sequences
 A025036-A025042)</li>
@@ -496,7 +546,7 @@ A025036-A025042)</li>
 
 <div class="pkgdown">
   <p></p>
-<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.6.</p>
+<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.7.</p>
 </div>
 
       </footer>

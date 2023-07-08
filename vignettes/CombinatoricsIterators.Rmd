@@ -1,7 +1,7 @@
 ---
 title: "Combinatorial Iterators in RcppAlgos"
 author: "Joseph Wood"
-date: "02/09/2023"
+date: "07/08/2023"
 output:
   rmarkdown::html_vignette:
     toc: true
@@ -433,8 +433,8 @@ microbenchmark(v243 = test_nextIter(15, 8))
 #> Warning in microbenchmark(v243 = test_nextIter(15, 8)): less accurate nanosecond times to
 #> avoid potential integer overflows
 #> Unit: milliseconds
-#>  expr      min       lq     mean  median       uq      max neval
-#>  v243 20.76474 21.68808 23.38909 21.8569 22.70314 135.6952   100
+#>  expr      min      lq    mean   median      uq     max neval
+#>  v243 20.81242 21.8859 23.3109 22.13436 22.4927 132.881   100
 
 identical(test_nextIter(15, 8, get_val = TRUE),
           comboGeneral(15, 8))
@@ -445,7 +445,7 @@ comboCount(25, 10)
 
 system.time(test_nextIter(25, 10))
 #>    user  system elapsed 
-#>  11.259   0.026  11.285
+#>  11.255   0.054  11.310
 
 Rprof("Version243.out", memory.profiling = TRUE)
 test_nextIter(25, 10)
@@ -453,43 +453,43 @@ Rprof(NULL)
 lapply(summaryRprof("Version243.out", memory = "both"), head)
 #> $by.self
 #>                  self.time self.pct total.time total.pct mem.total
-#> "as.environment"      3.38    35.96       3.38     35.96     579.2
-#> "$"                   2.92    31.06       7.34     78.09    1384.6
-#> "test_nextIter"       0.88     9.36       9.38     99.79    1904.9
-#> ".External"           0.74     7.87       0.74      7.87     141.6
-#> "get"                 0.58     6.17       0.58      6.17     145.3
-#> "exists"              0.46     4.89       0.46      4.89      71.4
+#> "as.environment"      3.46    32.58       3.46     32.58    3649.2
+#> "$"                   3.18    29.94       8.04     75.71    8233.1
+#> "test_nextIter"       1.28    12.05      10.62    100.00   10692.3
+#> ".External"           0.96     9.04       0.96      9.04     936.2
+#> "exists"              0.70     6.59       0.70      6.59     706.1
+#> "get"                 0.66     6.21       0.66      6.21     709.6
 #> 
 #> $by.total
-#>               total.time total.pct mem.total self.time self.pct
-#> "<Anonymous>"        9.4       100    1909.1         0        0
-#> "block_exec"         9.4       100    1909.1         0        0
-#> "call_block"         9.4       100    1909.1         0        0
-#> "do.call"            9.4       100    1909.1         0        0
-#> "doTryCatch"         9.4       100    1909.1         0        0
-#> "eng_r"              9.4       100    1909.1         0        0
+#>                 total.time total.pct mem.total self.time self.pct
+#> "test_nextIter"      10.62       100   10692.3      1.28    12.05
+#> "<Anonymous>"        10.62       100   10692.3      0.00     0.00
+#> "block_exec"         10.62       100   10692.3      0.00     0.00
+#> "call_block"         10.62       100   10692.3      0.00     0.00
+#> "do.call"            10.62       100   10692.3      0.00     0.00
+#> "doTryCatch"         10.62       100   10692.3      0.00     0.00
 #> 
 #> $sample.interval
 #> [1] 0.02
 #> 
 #> $sampling.time
-#> [1] 9.4
+#> [1] 10.62
 ```
 
-#### Version `2.7.2` (No `Rcpp`)
+#### Version `2.8.0` (No `Rcpp`)
 
 ``` r
 curr_version <- as.integer(gsub("\\.", "", packageVersion("RcppAlgos")))
 curr_version
-#> [1] 271
+#> [1] 280
 microbenchmark(curr_v = test_nextIter(15, 8, v = curr_version))
 #> Unit: milliseconds
-#>    expr      min      lq     mean   median       uq      max neval
-#>  curr_v 2.495711 2.60883 2.701066 2.658153 2.705139 3.707753   100
+#>    expr      min       lq     mean  median       uq      max neval
+#>  curr_v 2.511906 2.652577 2.712456 2.68304 2.727792 4.522013   100
 
 system.time(test_nextIter(25, 10, v = curr_version))
 #>    user  system elapsed 
-#>   1.315   0.001   1.316
+#>   1.349   0.010   1.358
 
 identical(test_nextIter(15, 8, get_val = TRUE, v = curr_version),
           comboGeneral(15, 8))
@@ -501,24 +501,25 @@ Rprof(NULL)
 lapply(summaryRprof("Version250.out", memory = "both"), head)
 #> $by.self
 #>                 self.time self.pct total.time total.pct mem.total
-#> ".Call"              0.48    48.98       0.48     48.98     252.5
-#> "<Anonymous>"        0.44    44.90       0.98    100.00     427.4
-#> "test_nextIter"      0.06     6.12       0.98    100.00     427.4
+#> "<Anonymous>"        0.46    44.23       1.04    100.00     890.5
+#> ".Call"              0.40    38.46       0.40     38.46     326.7
+#> "test_nextIter"      0.16    15.38       1.02     98.08     870.6
+#> "grepl"              0.02     1.92       0.02      1.92      19.9
 #> 
 #> $by.total
-#>                 total.time total.pct mem.total self.time self.pct
-#> "<Anonymous>"         0.98       100     427.4      0.44    44.90
-#> "test_nextIter"       0.98       100     427.4      0.06     6.12
-#> "block_exec"          0.98       100     427.4      0.00     0.00
-#> "call_block"          0.98       100     427.4      0.00     0.00
-#> "do.call"             0.98       100     427.4      0.00     0.00
-#> "doTryCatch"          0.98       100     427.4      0.00     0.00
+#>               total.time total.pct mem.total self.time self.pct
+#> "<Anonymous>"       1.04       100     890.5      0.46    44.23
+#> "block_exec"        1.04       100     890.5      0.00     0.00
+#> "call_block"        1.04       100     890.5      0.00     0.00
+#> "do.call"           1.04       100     890.5      0.00     0.00
+#> "doTryCatch"        1.04       100     890.5      0.00     0.00
+#> "eng_r"             1.04       100     890.5      0.00     0.00
 #> 
 #> $sample.interval
 #> [1] 0.02
 #> 
 #> $sampling.time
-#> [1] 0.98
+#> [1] 1.04
 ```
 
 #### Conclusions
@@ -533,21 +534,21 @@ v243 <- summaryRprof("Version243.out", memory = "stats", index = 1)
 v243
 #> index: "tryCatch"
 #>      vsize.small  max.vsize.small      vsize.large  max.vsize.large            nodes 
-#>           218505          6008992            15078          7086688          4196855 
+#>          1053412         17831624            28517         15142312         20461211 
 #>        max.nodes     duplications tot.duplications          samples 
-#>         67387488            20865          9806460              470
+#>        194732384            18465          9805000              531
 
 ## Version 2.5.0
 v250 <- summaryRprof("Version250.out", memory = "stats", index = 1)
 v250
 #> index: "tryCatch"
 #>      vsize.small  max.vsize.small      vsize.large  max.vsize.large            nodes 
-#>          1895032          9479800           157311          7708248          8881286 
+#>          3881681         28135720           302085         15672416         18269064 
 #>        max.nodes     duplications tot.duplications          samples 
-#>         70409976                3              142               49
+#>        189968240                3              140               52
 ```
 
-With verison `2.5.0+` there are only 142 `tot.duplications` whereas with version `2.4.3` there are millions of `tot.duplications`. In fact, there are a total of 9806460 duplications with version `2.4.3`. This together with `comboCount(25, 10) = 3,268,760` implies that the C funciton, `duplicate`, is called about 3 times per iteration with older versions (i.e. 9806460 `/ 3268760 ~=` 3.0001).
+With verison `2.5.0+` there are only 140 `tot.duplications` whereas with version `2.4.3` there are millions of `tot.duplications`. In fact, there are a total of 9805000 duplications with version `2.4.3`. This together with `comboCount(25, 10) = 3,268,760` implies that the C funciton, `duplicate`, is called about 3 times per iteration with older versions (i.e. 9805000 `/ 3268760 ~=` 2.9996).
 
 ### Iterating over Partitions and Compositions of a Number
 
@@ -794,7 +795,7 @@ time_all <- system.time({
 #> [1] 38935252
 time_all
 #>    user  system elapsed 
-#>   1.959   1.275   3.241
+#>   1.958   1.191   3.150
 
 ## Over 4 GBs of results
 (38935252 * 15 * 8) / 2^30
@@ -830,14 +831,14 @@ time_iter <- system.time({
 #> [1] NA
 time_iter
 #>    user  system elapsed 
-#>   1.643   0.318   1.961
+#>   1.645   0.308   1.954
 
 ## Only 1 MBs per iteration
 (1e4 * 15 * 8) / 2^20
 #> [1] 1.144409
 ```
 
-Wow! Using the iterator approach is not only easier on your RAM, but faster as well (3.241 `/` 1.961 `~=` 1.6527)! Our gains came strictly from memory efficiency (From over 4 GBs to just over 1 MB) as the underlying algorithm is exactly the same.
+Wow! Using the iterator approach is not only easier on your RAM, but faster as well (3.15 `/` 1.954 `~=` 1.6121)! Our gains came strictly from memory efficiency (From over 4 GBs to just over 1 MB) as the underlying algorithm is exactly the same.
 
 Lastly, using iterators make some problems possible that would otherwise be intractable because of hardware. For instance, using the example above, if we changed the `limitConstraints` from 83 to 81 and tried the first approach your computer will most certainly become unusable (at least mine did). My memory usage shot up to over 30 GB and R became unresponsive. After a restart, I tried the second approach and obtained my result in just over 10 seconds barely noticing any jumps in memory:
 
@@ -878,5 +879,5 @@ system.time({
 #> $totalRemaining
 #> [1] NA
 #>    user  system elapsed 
-#>  11.497   2.332  13.829
+#>  11.506   2.217  13.725
 ```

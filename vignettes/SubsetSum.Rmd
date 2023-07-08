@@ -1,7 +1,7 @@
 ---
 title: "Attacking Problems Related to the Subset Sum Problem"
 author: "Joseph Wood"
-date: "02/09/2023"
+date: "07/08/2023"
 output:
   rmarkdown::html_vignette:
     toc: true
@@ -101,7 +101,7 @@ even_time <- system.time({
 })
 even_time
 #>    user  system elapsed 
-#>   0.002   0.001   0.002
+#>   0.002   0.001   0.003
 
 ht(genParts)
 #> head -->
@@ -201,7 +201,7 @@ uneven_time <- system.time({
 })
 uneven_time    ## out of a possible 573 million in under a second
 #>    user  system elapsed 
-#>   0.051   0.003   0.054
+#>   0.050   0.002   0.053
 
 ht(genParts2)
 #> head -->
@@ -221,7 +221,7 @@ ht(genParts2)
 #> [118560,]  201  201  201  201  201  201  201  201  201   201   201   201   201
 ```
 
-Although the above was about 27 times slower than the first example dealing with 573 million combinations (0.054 milliseconds vs. 0.002 milliseconds), we are still dealing in milliseconds!!! For reference, version `2.3.4` takes about 18 seconds to find all 118,560 solutions.
+Although the above was about 18 times slower than the first example dealing with 573 million combinations (0.053 milliseconds vs. 0.003 milliseconds), we are still dealing in milliseconds!!! For reference, version `2.3.4` takes about 18 seconds to find all 118,560 solutions.
 
 Here are some more exotic examples demonstrating the power of these algorithms.
 
@@ -237,7 +237,7 @@ sort(mySamp)
 system.time(exotic <- partitionsGeneral(mySamp, 8, freqs = rep(1:5, 10),
                                         target = 496))
 #>    user  system elapsed 
-#>   0.119   0.002   0.121
+#>   0.129   0.001   0.131
 
 dim(exotic)
 #> [1] 102241      8
@@ -250,7 +250,7 @@ prettyNum(comboCount(mySamp, 8, freqs = rep(1:5, 10)), big.mark = ",")
 system.time(partitionsGeneral(mySamp, 8, freqs = rep(1:5, 10),
                               target = 496, upper = 1e3))
 #>    user  system elapsed 
-#>   0.001   0.000   0.002
+#>   0.002   0.000   0.002
 ```
 
 The function `permuteGeneral` benefits from these optimized algorithms as well. However, just as we discussed in [Output Order with `permuteGeneral`](<https://jwood000.github.io/RcppAlgos/articles/CombPermConstraints.html#output-order-with-permutegeneral>), the output will not be in lexicographical order.
@@ -275,7 +275,7 @@ prettyNum(comboCount(football_player_salaries, 6), big.mark = ",")
 system.time(exactly20 <- partitionsGeneral(football_player_salaries, 6,
                                            target = 2e7, tolerance = 0))
 #>    user  system elapsed 
-#>   1.528   0.007   1.534
+#>   1.410   0.005   1.415
 
 ## No results that equal exactly 2e7
 dim(exactly20)
@@ -292,7 +292,7 @@ system.time(almost20 <- comboGeneral(football_player_salaries, 6,
                                      limitConstraints = 2e7, tolerance = 1000,
                                      upper = 1000, keepResults = TRUE))
 #>    user  system elapsed 
-#>   0.066   0.000   0.066
+#>   0.061   0.001   0.063
 
 dim(almost20)
 #> [1] 1000    7
@@ -320,7 +320,7 @@ system.time(superClose20 <- comboGeneral(football_player_salaries, 6,
                                          limitConstraints = 2e7, tolerance = 10,
                                          upper = 1000, keepResults = TRUE))
 #>    user  system elapsed 
-#>   1.519   0.007   1.525
+#>   1.402   0.005   1.408
 
 ht(superClose20)
 #> head -->
@@ -359,9 +359,9 @@ microbenchmark(optimized = comboGeneral(25, 10, constraintFun = "prod",
 #> Warning in microbenchmark(optimized = comboGeneral(25, 10, constraintFun = "prod", : less
 #> accurate nanosecond times to avoid potential integer overflows
 #> Unit: relative
-#>       expr      min      lq    mean   median       uq      max neval
-#>  optimized  1.00000  1.0000  1.0000  1.00000  1.00000  1.00000    20
-#>      brute 20.75611 20.6496 21.2139 20.69723 20.53798 26.26401    20
+#>       expr      min       lq     mean  median       uq      max neval cld
+#>  optimized  1.00000  1.00000  1.00000  1.0000  1.00000  1.00000    20  a 
+#>      brute 21.95439 22.01804 22.57929 21.9659 21.95902 27.83343    20   b
 
 ## What about cases when brute force isn't feasible
 set.seed(101)
@@ -391,7 +391,7 @@ system.time(meanAlmost1.5 <- comboGeneral(v, 100, constraintFun = "mean",
                                           limitConstraints = 1.5,
                                           tolerance = 0.0001, upper = 20))
 #>    user  system elapsed 
-#>   0.001   0.000   0.000
+#>   0.000   0.000   0.001
 
 dim(meanAlmost1.5)
 #> [1]  20 100
@@ -421,7 +421,7 @@ salary <- partitionsIter(football_player_salaries, 6,
 
 system.time(almost20withIter <- salary@nextNIter(1e3))
 #>    user  system elapsed 
-#>   0.067   0.000   0.068
+#>   0.063   0.000   0.063
 
 ## almost20 was generated above with comboGeneral
 all.equal(almost20[, 1:6], almost20withIter)
@@ -432,7 +432,7 @@ all.equal(almost20[, 1:6], almost20withIter)
 ## generate the first 1000 along with the next 1000
 system.time(nextAlmost20withIter <- salary@nextNIter(1e3))
 #>    user  system elapsed 
-#>   0.064   0.000   0.064
+#>   0.059   0.000   0.060
 
 ht(nextAlmost20withIter)
 #> head -->
@@ -472,7 +472,7 @@ prodIter <- comboIter(v, 100,
 
 system.time(prodAlmost100WithIter <- prodIter@nextNIter(20))
 #>    user  system elapsed 
-#>   0.016   0.000   0.016
+#>   0.016   0.000   0.017
 
 all.equal(prodAlmost100, prodAlmost100WithIter)
 #> [1] TRUE
@@ -481,7 +481,7 @@ all.equal(prodAlmost100, prodAlmost100WithIter)
 ## where we left off
 system.time(nextAlmost100WithIter <- prodIter@nextNIter(20))
 #>    user  system elapsed 
-#>   0.012   0.000   0.011
+#>   0.011   0.000   0.011
 
 dim(nextAlmost100WithIter)
 #> [1]  20 100

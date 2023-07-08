@@ -17,7 +17,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">RcppAlgos</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">2.7.2</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">2.8.0</span>
       </span>
     </div>
 
@@ -50,7 +50,7 @@
       <a href="../articles/HighPerformanceBenchmarks.html">High Performance Benchmarks</a>
     </li>
     <li>
-      <a href="../articles/OtherCombinatorics.html">Cartesian Products and Partitions of Groups into Equal Size</a>
+      <a href="../articles/OtherCombinatorics.html">Cartesian Products and Partitions of Groups</a>
     </li>
     <li>
       <a href="../articles/SubsetSum.html">Attacking Problems Related to the Subset Sum Problem</a>
@@ -95,7 +95,7 @@
 <li><p>Easily explore combinations/permutations/partitions that would otherwise be inaccessible due to time of execution/memory constraints:
                     </p><ul><li><p></p><div class="sourceCode"><pre><code><span><span class="va">c_iter</span> <span class="op">=</span> <span class="fu"><a href="../reference/combinatoricsIterator.html">comboIter</a></span><span class="op">(</span><span class="fl">10000</span>, <span class="fl">100</span><span class="op">)</span></span>
 <span><span class="va">bigSamp</span> <span class="op">=</span> <span class="fu">gmp</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/gmp/man/biginteger.rand.html" class="external-link">urand.bigz</a></span><span class="op">(</span><span class="fl">3</span>, <span class="fu">gmp</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/gmp/man/add.biginteger.html" class="external-link">log2.bigz</a></span><span class="op">(</span><span class="fu"><a href="../reference/combinatoricsCount.html">comboCount</a></span><span class="op">(</span><span class="fl">10000</span>, <span class="fl">100</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="va">iter</span><span class="op">[[</span><span class="va">bigSamp</span><span class="op">]</span><span class="op">]</span></span></code></pre></div></li>
+<span><span class="va">c_iter</span><span class="op">[[</span><span class="va">bigSamp</span><span class="op">]</span><span class="op">]</span> <span class="co">## flexible iterator allows random sampling</span></span></code></pre></div></li>
 <li><p></p><div class="sourceCode"><pre><code><span><span class="va">p_iter</span> <span class="op">=</span> <span class="fu"><a href="../reference/partitionsIterator.html">partitionsIter</a></span><span class="op">(</span><span class="fl">5000</span>, <span class="fl">100</span>, target <span class="op">=</span> <span class="fl">6000</span><span class="op">)</span></span>
 <span><span class="va">p_iter</span><span class="op">[[</span><span class="fl">1e9</span><span class="op">]</span><span class="op">]</span> <span class="co">## start iterating from index = 1e9</span></span>
 <span><span class="va">p_iter</span><span class="op">@</span><span class="va">nextIter</span><span class="op">(</span><span class="op">)</span></span>
@@ -134,7 +134,7 @@
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.6.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.7.</p>
 </div>
 
       </footer></div>

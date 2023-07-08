@@ -1,7 +1,7 @@
 ---
 title: "Computational Mathematics Overview"
 author: "Joseph Wood"
-date: "02/09/2023"
+date: "07/08/2023"
 output:
   rmarkdown::html_vignette:
     toc: true
@@ -29,25 +29,25 @@ microbenchmark(primeSieve(1e6))
 #> Warning in microbenchmark(primeSieve(1000000)): less accurate nanosecond times to avoid
 #> potential integer overflows
 #> Unit: microseconds
-#>               expr     min      lq     mean  median       uq     max neval
-#>  primeSieve(1e+06) 835.703 844.108 864.1234 853.743 866.8425 991.216   100
+#>               expr     min      lq     mean   median      uq      max neval
+#>  primeSieve(1e+06) 835.949 844.231 861.7253 854.7065 869.979 1138.078   100
 
 ## Single threaded primes under a billion!!!
 system.time(primeSieve(10^9))
 #>    user  system elapsed 
-#>   0.932   0.045   0.978
+#>   0.961   0.044   1.005
 
 ## Using 8 threads we can get under 0.5 seconds!!!
 system.time(primeSieve(10^9, nThreads = 8))
 #>    user  system elapsed 
-#>   1.428   0.034   0.226
+#>   1.396   0.034   0.208
 
 ## Quickly generate large primes over small interval. N.B. The
 ## order for the bounds does not matter.
 options(scipen = 50)
 system.time(myPs <- primeSieve(10^13 + 10^3, 10^13))
 #>    user  system elapsed 
-#>   0.005   0.000   0.005
+#>   0.005   0.000   0.006
 
 myPs
 #>  [1] 10000000000037 10000000000051 10000000000099 10000000000129 10000000000183
@@ -77,13 +77,13 @@ invisible(gc())
 ## v2.3.0+ is faster
 system.time(a <- primeSieve(1e15, 1e15 + 1e9))
 #>    user  system elapsed 
-#>   1.189   0.037   1.225
+#>   1.216   0.040   1.257
 
 invisible(gc())
 ## And using nThreads is much much faster
 system.time(b <- primeSieve(1e15, 1e15 + 1e9, nThreads = 8))
 #>    user  system elapsed 
-#>   2.154   0.078   0.375
+#>   2.157   0.079   0.400
 
 identical(old, a)
 #> [1] TRUE
@@ -106,7 +106,7 @@ With this is mind, here are some results:
 ## Enumerate the number of primes below trillion
 system.time(underOneTrillion <- primeCount(10^12))
 #>    user  system elapsed 
-#>   0.125   0.001   0.126
+#>   0.121   0.001   0.122
 
 underOneTrillion
 #> [1] 37607912018
@@ -114,12 +114,12 @@ underOneTrillion
 ## Enumerate the number of primes below ten billion in 2 milliseconds
 microbenchmark(primeCount(10^10))
 #> Unit: milliseconds
-#>               expr      min       lq     mean   median       uq      max neval
-#>  primeCount(10^10) 1.716916 1.723517 1.750479 1.728191 1.741229 2.446142   100
+#>               expr      min      lq     mean   median     uq      max neval
+#>  primeCount(10^10) 1.720401 1.72489 1.748236 1.731225 1.7433 2.575989   100
 
 system.time(underOneHundredTrillion <- primeCount(1e14, nThreads = 8))
 #>    user  system elapsed 
-#>   6.893   0.490   1.238
+#>   6.863   0.469   1.242
 
 underOneHundredTrillion
 #> [1] 3204941750802
@@ -147,7 +147,7 @@ numDivisorSieve(20)
 ## If you want the complete factorization from 1 to n, use divisorsList
 system.time(allFacs <- divisorsSieve(10^5, namedList = TRUE))
 #>    user  system elapsed 
-#>   0.020   0.005   0.026
+#>   0.024   0.005   0.029
 
 allFacs[c(4339, 15613, 22080)]
 #> $`4339`
@@ -192,12 +192,12 @@ eulerPhiSieve(20, namedVector = TRUE)
 
 system.time(a <- eulerPhiSieve(1e12, 1e12 + 1e7))
 #>    user  system elapsed 
-#>   0.321   0.012   0.333
+#>   0.316   0.014   0.330
 
 ## Using nThreads for greater efficiency
 system.time(b <- eulerPhiSieve(1e12, 1e12 + 1e7, nThreads = 8))
 #>    user  system elapsed 
-#>   1.048   0.034   0.153
+#>   1.025   0.029   0.150
 
 identical(a, b)
 #> [1] TRUE
@@ -217,7 +217,7 @@ primeFactorize(123456789)
 ## N.B. The R Version you are using... random sampling
 ## has changed throughout the years
 R.version[["version.string"]]
-#> [1] "R version 4.2.1 (2022-06-23)"
+#> [1] "R version 4.3.1 (2023-06-16)"
 set.seed(100)
 
 myVec <- sample(-100000000:100000000, 5)
@@ -250,12 +250,12 @@ isPrimeRcpp(995:1000, namedVector = TRUE)
 
 system.time(a <- primeFactorize(1e12:(1e12 + 1e5)))
 #>    user  system elapsed 
-#>   0.676   0.008   0.685
+#>   0.702   0.009   0.711
 
 ## Using nThreads for greater efficiency
 system.time(b <- primeFactorize(1e12:(1e12 + 1e5), nThreads = 8))
 #>    user  system elapsed 
-#>   0.965   0.007   0.145
+#>   0.994   0.007   0.155
 
 identical(a, b)
 #> [1] TRUE
