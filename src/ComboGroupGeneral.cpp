@@ -116,7 +116,7 @@ void removeFirstSet(std::vector<int> &v, int &p) {
         ++nSame;
     }
 
-    if (v.size() >= nSame) {
+    if (static_cast<int>(v.size()) >= nSame) {
         p -= (v.front() * nSame);
         v.erase(v.begin(), v.begin() + nSame);
     }

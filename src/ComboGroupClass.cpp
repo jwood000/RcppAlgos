@@ -71,7 +71,8 @@ std::unique_ptr<ComboGroup> GroupPrep(
         CppConvert::convertVector(RGrpSize, vGrpSize,
                                   VecType::Integer, "grpSizes");
 
-        if (!Rf_isNull(RNumGroups) && vGrpSize.size() != numGroups) {
+        if (!Rf_isNull(RNumGroups) &&
+            static_cast<int>(vGrpSize.size()) != numGroups) {
             cpp11::stop("numGroups and grpSizes are incompatible");
         } else {
             numGroups = vGrpSize.size();

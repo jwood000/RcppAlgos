@@ -21,14 +21,14 @@
 // (24 subjects) and base 0:
 //
 //              prev sections   lower bound (index = 8)
-//                  /  \        |
+//                              |
 //            ............. 8 | 9 12 23 24 | 10 20 21 22 | 11 ...
 //                                 |
 //                               idx1 (equal to low_one, in this case)
 //
 // Sort v past idx1:
 //                              size of left range (len_rng - 1)
-//                                    /  \
+//
 //                                   |    |
 //                      ... 8 | 9 12 10 11 | 13 14 15 16 | 17...
 //
@@ -69,6 +69,7 @@
 //    new range and n_first - 1 becomes the last element.
 //
 // This completes the algorithm.
+//
 
 bool nextCmbGrpSame(std::vector<int> &z, int r, int grpSize,
                     int idx1, int idx2, int low_one, int n) {
