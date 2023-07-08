@@ -24,7 +24,7 @@ void SetThreads(bool &Parallel, int maxThreads, int nRows,
 
 void SetNumResults(bool IsGmp, bool bLower, bool bUpper, bool bSetNum,
                    const mpz_class &upperMpz, const mpz_class &lowerMpz,
-                   double lower, double upper,double computedRows,
+                   double lower, double upper, double computedRows,
                    const mpz_class &computedRowsMpz, int &nRows,
                    double &userNumRows);
 

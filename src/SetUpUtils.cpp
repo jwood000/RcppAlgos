@@ -34,12 +34,13 @@ void SetType(VecType &myType, SEXP Rv) {
             myType = VecType::Complex;
             break;
         } case RAWSXP: {
-            // Vectors of class bigZ and mpfr cause a lot of headaches, and for this
-            // we simply exclude all raw vectors that have any attributes. If you
-            // think there is a clean solution for including these cases, please
-            // contact me @ jwood000@gmail.com. N.B., see commit 655 which includes
-            // a function for returning a matrix of class bigz. I observed terrible
-            // performance compared to simply converting to a character vector.
+            // Vectors of class bigZ and mpfr cause a lot of headaches, and for
+            // this we simply exclude all raw vectors that have any attributes.
+            // If you think there is a clean solution for including these
+            // cases, please contact me @ jwood000@gmail.com. N.B., see commit
+            // 655 which includes a function for returning a matrix of class
+            // bigz. I observed terrible performance compared to simply
+            // converting to a character vector.
             if (ATTRIB(Rv) == R_NilValue) {
                 myType = VecType::Raw;
                 break;

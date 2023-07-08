@@ -17,6 +17,8 @@ reprex::reprex({
     #'
     #' ## 1. Introduction
     #'
+    #' ### Packages:
+    #'
     #'   1. `gtools`
     #'   2. `combinat`
     #'   3. `multicool`
@@ -61,7 +63,7 @@ reprex::reprex({
     #' |   big integer   |     Yes      |    Yes    |       |
     #' | multi-threaded  |              |    Yes    |       |
     #'
-    #' The tasks, `m at a time` and `general vector`, refer to the capability of generating results “*m* at a time” and rearranging a “general vector” as opposed to `1:n`. In practice, we are generally concerned with finding rearrangements of a general vector, therefore all examinations below will reflect this when possible.
+    #' The tasks, `m at a time` and `general vector`, refer to the capability of generating results "_m_ at a time" and rearranging a "general vector" as opposed to `1:n`. In practice, we are generally concerned with finding rearrangements of a general vector, therefore all examinations below will reflect this when possible.
     #'
     #' ## 2. Setup
     #'
@@ -83,7 +85,7 @@ reprex::reprex({
               "RcppAlgos", "arrangements", "utils", "microbenchmark")
     sapply(pkgs, packageVersion, simplify = FALSE)
 
-    #' The listed results were obtained from setup \#1 (i.e. Macbook Air M2). The results on the Macbook Pro were similar, however with the Windows setup, multi-threading was less effective. In some cases on the Windows setup, the serial execution was faster. We will call all functions with the pattern `package::function` so no `library` calls are needed.
+    #' The listed results were obtained from setup \#1 (i.e. Macbook Air M2). The results on the Macbook Pro were similar, however with the Windows setup, multi-threading was less effective. In some cases on the Windows setup, the serial execution was faster. We will call all functions with the pattern `package::function` so no `library` calls are needed.
     #'
     #' ## 3. Combinations
     #'
@@ -251,6 +253,9 @@ reprex::reprex({
     t3 <- gtools::permutations(10, 5, tVec3, repeats.allowed = TRUE)
     t4 <- arrangements::permutations(x = tVec3, k = 5, replace = TRUE)
 
+    identical(t1, t3)
+    identical(t1, t4)
+
     #' This next benchmark is a little surprising given the results up until now.
 
     microbenchmark(
@@ -329,13 +334,6 @@ reprex::reprex({
     tVec6 <- (1:5)^3
     ## For multicool, you must have the elements explicitly repeated
     tVec6Prime <- rep(tVec6, times = rep(2, 5))
-    t3 <- multicool::allPerm(multicool::initMC(tVec6Prime))
-
-    ## for comparison
-    t1 <- RcppAlgos::permuteGeneral(tVec6, freqs = rep(2, 5))
-    tVec6 <- (1:5)^3
-    ## For multicool, you must have the elements explicitly repeated
-    tVec6Prime <- rep(tVec6, times = rep(2, 5))
 
     ## for comparison
     t1 <- RcppAlgos::permuteGeneral(tVec6, freqs = rep(2, 5))
@@ -374,12 +372,13 @@ reprex::reprex({
     #'   2. Allows the user to specify the format via the `layout` argument ("row : row-major", "colmnn : column-major", and "list : list").
     #'   3. Offers convenient methods such as `collect` & `getnext` when working with iterators.
     #'   4. Allows for the generation of more than `2^31 - 1` combinations/permutations via `getnext`. N.B. `RcppAlgos` (via `nextItem`) and `multicool` (via `nextPerm`) are also capable of doing this.
-    #'   5.  GMP support allows for exploration of combinations/permutations of vectors with many results.
+    #'   5. GMP support allows for exploration of combinations/permutations of vectors with many results.
     #'
     #' Observe:
 
     icomb <- arrangements::icombinations(1000, 7)
     icomb$getnext()
+
     icomb$getnext(d = 5)
 
     #' This feature is really nice when you only want a few combinations/permutations. With traditional methods, you would have to generate all combinations/permutations and then subset. This would render the previous example impossible as there are more than `10^17` results (i.e. `ncombinations(1000, 7, bigz = TRUE)` = 194280608456793000).

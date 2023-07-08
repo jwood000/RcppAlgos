@@ -1,7 +1,7 @@
 ---
 title: "Combinatorial Sampling and Ranking"
 author: "Joseph Wood"
-date: "02/09/2023"
+date: "07/08/2023"
 output:
   rmarkdown::html_vignette:
     toc: true
@@ -204,11 +204,11 @@ The algorithms are incredibly efficient and offer tremendous gains over the naiv
 ## the function "naive" is defined above
 system.time(naive(25, 10, 5, 15))
 #>    user  system elapsed 
-#>   1.510   0.011   1.521
+#>   1.492   0.017   1.508
 
 system.time(comboSample(25, 10, n = 5, seed = 15))
 #>    user  system elapsed 
-#>   0.001   0.000   0.000
+#>       0       0       0
 ```
 
 Even when dealing with extremely large numbers, these algorithms are very fast. And using the parallel options have even greater effects than we saw with the general counterparts (typically around \~2-3 times faster with the general functions, whereas with the last example below with sampling we see a nearly 5x improvement).
@@ -217,7 +217,7 @@ Even when dealing with extremely large numbers, these algorithms are very fast. 
 ## Lightning fast even with examples involving many results
 system.time(comboSample(2500, 100, n = 5, seed = 15))
 #>    user  system elapsed 
-#>   0.001   0.000   0.001
+#>       0       0       0
 
 ## The total number of combinations has ~180 digits
 gmp::log10.bigz(comboCount(2500, 100))
@@ -226,12 +226,12 @@ gmp::log10.bigz(comboCount(2500, 100))
 ## Still fast with larger samples
 system.time(comboSample(2500, 100, n = 1e4, seed = 157))
 #>    user  system elapsed 
-#>    0.66    0.00    0.66
+#>   0.651   0.003   0.654
 
 ## Using Parallel/nThreads in these cases has an even greater effect
 system.time(comboSample(2500, 100, n = 1e4, seed = 157, nThreads = 8))
 #>    user  system elapsed 
-#>   0.910   0.003   0.120
+#>   0.902   0.004   0.122
 ```
 
 ### User Defined Functions
@@ -300,13 +300,13 @@ partitionsCount(2500, 10)
 system.time(serial <- partitionsSample(2500, 10, n = 1e3,
                                        seed = 8128))
 #>    user  system elapsed 
-#>   2.939   0.002   2.941
+#>   3.009   0.014   3.023
 
 ## Use nThreads for greater efficiency
 system.time(multi <- partitionsSample(2500, 10, n = 1e3,
                                       seed = 8128, nThreads = 8))
 #>    user  system elapsed 
-#>   4.203   0.013   0.566
+#>   4.230   0.025   0.606
 
 identical(multi, serial)
 #> [1] TRUE
@@ -388,13 +388,13 @@ compositionsCount(2500, 10, TRUE)
 system.time(serial <- compositionsSample(2500, 10, TRUE,
                                          n = 1e4, seed = 8128))
 #>    user  system elapsed 
-#>   0.261   0.000   0.261
+#>   0.266   0.001   0.266
 
 ## Use nThreads for greater efficiency
 system.time(multi <- compositionsSample(2500, 10, TRUE, n = 1e4,
                                         seed = 8128, nThreads = 8))
 #>    user  system elapsed 
-#>   0.367   0.001   0.049
+#>   0.367   0.001   0.050
 
 identical(multi, serial)
 #> [1] TRUE
@@ -410,11 +410,11 @@ compositionsSample(0:100, 8, repetition = TRUE, weak = TRUE,
 
 Currently, there are only sampling algorithms for most cases of compositions with repetition. There is ongoing work to expand these algorithms in the future.
 
-## Sampling Partitions of Groups of Equal Size with `comboGroupsSample`
+## Sampling Partitions of Groups with `comboGroupsSample`
 
-Just as we can generate random samples of combinations and permutations, we are also able to generate random samples of partitions of groups of equal size. There are many problems that present in this manner. Below, we examine one involving playing cards.
+Just as we can generate random samples of combinations and permutations, we are also able to generate random samples of partitions of groups as well. There are many problems that present in this manner. Below, we examine one involving playing cards.
 
-Let’s say we have 4 players and each player is to have 3 cards a piece. Given that the deck is shuffled, the dealer then distrubutes 12 cards.
+Let’s say we have 4 players and each player is to have 3 cards a piece. Given that the deck is shuffled, the dealer then distributes 12 cards.
 
 > What possible hands can each player have?
 
@@ -423,13 +423,13 @@ See [Creating A Deck Of Cards In R Without Using While And Double For Loop](<htt
 ``` r
 cards <- c(2:10, "J", "Q", "K", "A")
 suits <- c("♠", "♥", "♦", "♣")
-deck <- paste0(rep(cards, length(suits)),  #card values
-               rep(suits, each = length(cards))) #suits
+deck <- paste0(rep(cards, length(suits)),  # card values
+               rep(suits, each = length(cards))) # suits
 
 set.seed(1738)
 shuffled <- factor(deck[sample(52)], levels = deck)
 
-## Here are 3 possibilities
+## Here are 2 possibilities
 comboGroupsSample(shuffled[1:12], numGroups = 4, n = 2, seed = 13)
 #>      Grp1 Grp1 Grp1 Grp2 Grp2 Grp2 Grp3 Grp3 Grp3 Grp4 Grp4 Grp4
 #> [1,] 8♦   3♥   5♦   9♦   J♠   7♥   8♠   K♦   10♦  A♦   J♥   3♦  
@@ -466,6 +466,20 @@ comboGroupsSample(shuffled[1:12], numGroups = 4, retType = "3Darray",
 #> 52 Levels: 2♠ 3♠ 4♠ 5♠ 6♠ 7♠ 8♠ 9♠ 10♠ J♠ Q♠ K♠ A♠ 2♥ 3♥ 4♥ 5♥ 6♥ 7♥ 8♥ 9♥ 10♥ J♥ ... A♣
 ```
 
+What if we add a twist on the problem above. What if instead we want to deal players 1 & 2 two cards, player 3 three cards, and player 4 five cards. How might we do this?
+
+For this, we make use of the `grpSizes` parameter:
+
+``` r
+## Again, here are 2 possibilities
+comboGroupsSample(shuffled[1:12], grpSizes = c(2, 2, 3, 5),
+                  n = 2, seed = 13, namedSample = TRUE)
+#>       Grp1 Grp1 Grp2 Grp2 Grp3 Grp3 Grp3 Grp4 Grp4 Grp4 Grp4 Grp4
+#> 81667 J♥   10♦  3♦   3♥   8♦   A♦   5♦   9♦   J♠   8♠   K♦   7♥  
+#> 71525 K♦   A♦   J♥   5♦   8♦   8♠   3♥   9♦   J♠   3♦   10♦  7♥  
+#> 52 Levels: 2♠ 3♠ 4♠ 5♠ 6♠ 7♠ 8♠ 9♠ 10♠ J♠ Q♠ K♠ A♠ 2♥ 3♥ 4♥ 5♥ 6♥ 7♥ 8♥ 9♥ 10♥ J♥ ... A♣
+```
+
 # Ranking
 
 Ranking is the complement of sampling. That is, given a combination (or permutation/partition), determine which lexicographical result it is. As an example, consider all of the combinations of 5 choose 3:
@@ -489,7 +503,7 @@ We can see that the rank of the combination: `c(2, 3, 4)` is 7. That is, `c(2, 3
 
 ## Base R
 
-Just as we saw before, we could easily produce a brute force approach that would work well with small cases, but would become unmanagemable very quickly. For example:
+Just as we saw before, we could easily produce a brute force approach that would work well with small cases, but would become unmanageable very quickly. For example:
 
 ``` r
 naive_rank <- function(v, m, comb) {
@@ -506,7 +520,7 @@ comb = comboSample(25, 12, sampleVec = 2e6)[1, ]
 system.time(print(naive_rank(25, 12, comb)))
 #> [1] 2000000
 #>    user  system elapsed 
-#>   5.958   0.059   6.017
+#>   6.090   0.069   6.159
 ```
 
 ## RcppAlgos Solutions

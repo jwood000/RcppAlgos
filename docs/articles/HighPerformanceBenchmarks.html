@@ -33,7 +33,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">RcppAlgos</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">2.7.2</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">2.8.0</span>
       </span>
     </div>
 
@@ -68,7 +68,7 @@
       <a href="../articles/HighPerformanceBenchmarks.html">High Performance Benchmarks</a>
     </li>
     <li>
-      <a href="../articles/OtherCombinatorics.html">Cartesian Products and Partitions of Groups into Equal Size</a>
+      <a href="../articles/OtherCombinatorics.html">Cartesian Products and Partitions of Groups</a>
     </li>
     <li>
       <a href="../articles/SubsetSum.html">Attacking Problems Related to the Subset Sum Problem</a>
@@ -103,7 +103,7 @@
                         <h4 data-toc-skip class="author">Joseph
 Wood</h4>
             
-            <h4 data-toc-skip class="date">02/09/2023</h4>
+            <h4 data-toc-skip class="date">07/08/2023</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/jwood000/RcppAlgos/blob/HEAD/vignettes/HighPerformanceBenchmarks.Rmd" class="external-link"><code>vignettes/HighPerformanceBenchmarks.Rmd</code></a></small>
       <div class="hidden name"><code>HighPerformanceBenchmarks.Rmd</code></div>
@@ -142,14 +142,14 @@ and <a href="https://cran.r-project.org/package=RcppAlgos" class="external-link"
 <span></span>
 <span><span class="va">pertinent_output</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/utils/capture.output.html" class="external-link">capture.output</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/utils/sessionInfo.html" class="external-link">sessionInfo</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/cat.html" class="external-link">cat</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste</a></span><span class="op">(</span><span class="va">pertinent_output</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">3</span><span class="op">]</span>, collapse <span class="op">=</span> <span class="st">"\n"</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="co">#&gt; R version 4.2.1 (2022-06-23)</span></span>
+<span><span class="co">#&gt; R version 4.3.1 (2023-06-16)</span></span>
 <span><span class="co">#&gt; Platform: aarch64-apple-darwin20 (64-bit)</span></span>
-<span><span class="co">#&gt; Running under: macOS Monterey 12.6</span></span>
+<span><span class="co">#&gt; Running under: macOS Ventura 13.4.1</span></span>
 <span></span>
 <span><span class="va">pkgs</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"RcppAlgos"</span>, <span class="st">"arrangements"</span>, <span class="st">"partitions"</span>, <span class="st">"microbenchmark"</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/lapply.html" class="external-link">sapply</a></span><span class="op">(</span><span class="va">pkgs</span>, <span class="va">packageVersion</span>, simplify <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
 <span><span class="co">#&gt; $RcppAlgos</span></span>
-<span><span class="co">#&gt; [1] '2.7.2'</span></span>
+<span><span class="co">#&gt; [1] '2.8.0'</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; $arrangements</span></span>
 <span><span class="co">#&gt; [1] '1.1.9'</span></span>
@@ -158,7 +158,7 @@ and <a href="https://cran.r-project.org/package=RcppAlgos" class="external-link"
 <span><span class="co">#&gt; [1] '1.10.7'</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; $microbenchmark</span></span>
-<span><span class="co">#&gt; [1] '1.4.7'</span></span>
+<span><span class="co">#&gt; [1] '1.4.10'</span></span>
 <span></span>
 <span><span class="va">numThreads</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/Extremes.html" class="external-link">min</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/integer.html" class="external-link">as.integer</a></span><span class="op">(</span><span class="fu">RcppAlgos</span><span class="fu">::</span><span class="fu"><a href="../reference/stdThreadMax.html">stdThreadMax</a></span><span class="op">(</span><span class="op">)</span> <span class="op">/</span> <span class="fl">2</span><span class="op">)</span>, <span class="fl">6</span><span class="op">)</span></span>
 <span><span class="va">numThreads</span></span>
@@ -188,10 +188,10 @@ and <a href="https://cran.r-project.org/package=RcppAlgos" class="external-link"
 <span><span class="co">#&gt; Warning in microbenchmark(cbRcppAlgosPar = comboGeneral(v1, m, nThreads = numThreads), :</span></span>
 <span><span class="co">#&gt; less accurate nanosecond times to avoid potential integer overflows</span></span>
 <span><span class="co">#&gt; Unit: relative</span></span>
-<span><span class="co">#&gt;            expr   min    lq  mean median    uq   max neval</span></span>
-<span><span class="co">#&gt;  cbRcppAlgosPar 1.000 1.000 1.000  1.000 1.000 1.000    15</span></span>
-<span><span class="co">#&gt;  cbRcppAlgosSer 3.017 2.990 2.941  2.954 2.877 2.919    15</span></span>
-<span><span class="co">#&gt;  cbArrangements 3.052 3.025 2.975  2.991 2.915 2.931    15</span></span></code></pre></div>
+<span><span class="co">#&gt;            expr   min    lq  mean median    uq   max neval cld</span></span>
+<span><span class="co">#&gt;  cbRcppAlgosPar 1.000 1.000 1.000  1.000 1.000 1.000    15 a  </span></span>
+<span><span class="co">#&gt;  cbRcppAlgosSer 3.440 3.091 3.099  3.089 3.077 2.982    15  b </span></span>
+<span><span class="co">#&gt;  cbArrangements 3.493 3.141 3.163  3.134 3.147 3.117    15   c</span></span></code></pre></div>
 </div>
 <div class="section level3">
 <h3 id="combinations---repetition">Combinations - Repetition<a class="anchor" aria-label="anchor" href="#combinations---repetition"></a>
@@ -211,10 +211,10 @@ and <a href="https://cran.r-project.org/package=RcppAlgos" class="external-link"
 <span>               cbArrangements <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/pkg/arrangements/man/combinations.html" class="external-link">combinations</a></span><span class="op">(</span><span class="va">v2</span>, <span class="va">m</span>, replace <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>,</span>
 <span>               times <span class="op">=</span> <span class="fl">15</span>, unit <span class="op">=</span> <span class="st">"relative"</span><span class="op">)</span></span>
 <span><span class="co">#&gt; Unit: relative</span></span>
-<span><span class="co">#&gt;            expr   min    lq  mean median    uq   max neval</span></span>
-<span><span class="co">#&gt;  cbRcppAlgosPar 1.000 1.000 1.000  1.000 1.000 1.000    15</span></span>
-<span><span class="co">#&gt;  cbRcppAlgosSer 2.960 2.848 2.790  2.776 2.739 2.661    15</span></span>
-<span><span class="co">#&gt;  cbArrangements 2.861 2.842 2.774  2.767 2.722 2.656    15</span></span></code></pre></div>
+<span><span class="co">#&gt;            expr   min    lq  mean median    uq   max neval cld</span></span>
+<span><span class="co">#&gt;  cbRcppAlgosPar 1.000 1.000 1.000   1.00 1.000 1.000    15  a </span></span>
+<span><span class="co">#&gt;  cbRcppAlgosSer 2.925 3.018 3.059   3.01 3.000 3.873    15   b</span></span>
+<span><span class="co">#&gt;  cbArrangements 3.055 3.052 3.018   3.04 3.012 2.883    15   b</span></span></code></pre></div>
 </div>
 <div class="section level3">
 <h3 id="combinations---multisets">Combinations - Multisets<a class="anchor" aria-label="anchor" href="#combinations---multisets"></a>
@@ -234,10 +234,10 @@ and <a href="https://cran.r-project.org/package=RcppAlgos" class="external-link"
 <span>               cbArrangements <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/pkg/arrangements/man/combinations.html" class="external-link">combinations</a></span><span class="op">(</span>freq <span class="op">=</span> <span class="va">myFreqs</span>, k <span class="op">=</span> <span class="fl">20</span>, x <span class="op">=</span> <span class="va">v3</span><span class="op">)</span>,</span>
 <span>               times <span class="op">=</span> <span class="fl">10</span>, unit <span class="op">=</span> <span class="st">"relative"</span><span class="op">)</span></span>
 <span><span class="co">#&gt; Unit: relative</span></span>
-<span><span class="co">#&gt;            expr   min    lq  mean median    uq   max neval</span></span>
-<span><span class="co">#&gt;  cbRcppAlgosPar 1.000 1.000 1.000  1.000 1.000 1.000    10</span></span>
-<span><span class="co">#&gt;  cbRcppAlgosSer 3.096 3.001 2.960  2.951 2.899 2.832    10</span></span>
-<span><span class="co">#&gt;  cbArrangements 5.729 5.663 5.562  5.571 5.475 5.220    10</span></span></code></pre></div>
+<span><span class="co">#&gt;            expr   min    lq  mean median    uq   max neval cld</span></span>
+<span><span class="co">#&gt;  cbRcppAlgosPar 1.000 1.000 1.000  1.000 1.000 1.000    10 a  </span></span>
+<span><span class="co">#&gt;  cbRcppAlgosSer 3.184 3.156 3.148  3.162 3.114 3.121    10  b </span></span>
+<span><span class="co">#&gt;  cbArrangements 6.014 6.059 6.030  6.044 5.947 6.173    10   c</span></span></code></pre></div>
 </div>
 </div>
 <div class="section level2">
@@ -260,10 +260,10 @@ and <a href="https://cran.r-project.org/package=RcppAlgos" class="external-link"
 <span>               cbArrangements <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/pkg/arrangements/man/permutations.html" class="external-link">permutations</a></span><span class="op">(</span><span class="va">v4</span>, <span class="fl">6</span><span class="op">)</span>,</span>
 <span>               times <span class="op">=</span> <span class="fl">15</span>, unit <span class="op">=</span> <span class="st">"relative"</span><span class="op">)</span></span>
 <span><span class="co">#&gt; Unit: relative</span></span>
-<span><span class="co">#&gt;            expr   min    lq  mean median    uq   max neval</span></span>
-<span><span class="co">#&gt;  cbRcppAlgosPar 1.000 1.000 1.000  1.000 1.000 1.000    15</span></span>
-<span><span class="co">#&gt;  cbRcppAlgosSer 1.462 1.458 1.314  1.461 1.358 1.136    15</span></span>
-<span><span class="co">#&gt;  cbArrangements 2.510 2.502 2.316  2.504 2.564 1.744    15</span></span>
+<span><span class="co">#&gt;            expr   min    lq  mean median    uq   max neval cld</span></span>
+<span><span class="co">#&gt;  cbRcppAlgosPar 1.000 1.000 1.000  1.000 1.000 1.000    15 a  </span></span>
+<span><span class="co">#&gt;  cbRcppAlgosSer 1.491 1.494 1.428  1.500 1.283 1.350    15  b </span></span>
+<span><span class="co">#&gt;  cbArrangements 2.563 2.583 2.421  2.583 2.310 2.117    15   c</span></span>
 <span></span>
 <span></span>
 <span><span class="co">## Indexing permutation example with the partitions package</span></span>
@@ -284,11 +284,11 @@ and <a href="https://cran.r-project.org/package=RcppAlgos" class="external-link"
 <span>               cbPartitions   <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/pkg/partitions/man/perms.html" class="external-link">perms</a></span><span class="op">(</span><span class="fl">11</span><span class="op">)</span>,</span>
 <span>               times <span class="op">=</span> <span class="fl">5</span>, unit <span class="op">=</span> <span class="st">"relative"</span><span class="op">)</span></span>
 <span><span class="co">#&gt; Unit: relative</span></span>
-<span><span class="co">#&gt;            expr   min    lq  mean median    uq   max neval</span></span>
-<span><span class="co">#&gt;  cbRcppAlgosPar 1.000 1.000 1.000  1.000 1.000 1.000     5</span></span>
-<span><span class="co">#&gt;  cbRcppAlgosSer 2.564 2.851 2.864  2.845 2.837 3.210     5</span></span>
-<span><span class="co">#&gt;  cbArrangements 4.314 4.294 4.385  4.264 4.540 4.503     5</span></span>
-<span><span class="co">#&gt;    cbPartitions 7.928 8.161 8.605  8.818 8.888 9.194     5</span></span></code></pre></div>
+<span><span class="co">#&gt;            expr   min    lq  mean median    uq   max neval  cld</span></span>
+<span><span class="co">#&gt;  cbRcppAlgosPar 1.000 1.000 1.000  1.000 1.000 1.000     5 a   </span></span>
+<span><span class="co">#&gt;  cbRcppAlgosSer 2.502 2.493 2.173  2.498 1.756 1.921     5  b  </span></span>
+<span><span class="co">#&gt;  cbArrangements 4.091 4.094 3.545  4.092 2.990 2.973     5   c </span></span>
+<span><span class="co">#&gt;    cbPartitions 7.997 8.175 7.188  8.288 6.004 6.380     5    d</span></span></code></pre></div>
 </div>
 <div class="section level3">
 <h3 id="permutations---repetition">Permutations - Repetition<a class="anchor" aria-label="anchor" href="#permutations---repetition"></a>
@@ -307,10 +307,10 @@ and <a href="https://cran.r-project.org/package=RcppAlgos" class="external-link"
 <span>               cbArrangements <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/pkg/arrangements/man/permutations.html" class="external-link">permutations</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">v5</span>, k <span class="op">=</span> <span class="fl">10</span>, replace <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>,</span>
 <span>               times <span class="op">=</span> <span class="fl">10</span>, unit <span class="op">=</span> <span class="st">"relative"</span><span class="op">)</span></span>
 <span><span class="co">#&gt; Unit: relative</span></span>
-<span><span class="co">#&gt;            expr   min    lq  mean median    uq    max neval</span></span>
-<span><span class="co">#&gt;  cbRcppAlgosPar 1.000 1.000 1.000  1.000 1.000 1.0000    10</span></span>
-<span><span class="co">#&gt;  cbRcppAlgosSer 2.856 2.751 2.117  2.573 2.382 0.7991    10</span></span>
-<span><span class="co">#&gt;  cbArrangements 3.456 3.304 2.728  3.092 2.900 1.5888    10</span></span></code></pre></div>
+<span><span class="co">#&gt;            expr   min    lq  mean median    uq   max neval cld</span></span>
+<span><span class="co">#&gt;  cbRcppAlgosPar 1.000 1.000 1.000  1.000 1.000 1.000    10 a  </span></span>
+<span><span class="co">#&gt;  cbRcppAlgosSer 2.867 2.836 2.956  2.785 2.766 4.196    10  b </span></span>
+<span><span class="co">#&gt;  cbArrangements 3.567 3.508 3.629  3.464 3.448 4.836    10   c</span></span></code></pre></div>
 </div>
 <div class="section level3">
 <h3 id="permutations---multisets">Permutations - Multisets<a class="anchor" aria-label="anchor" href="#permutations---multisets"></a>
@@ -329,10 +329,10 @@ and <a href="https://cran.r-project.org/package=RcppAlgos" class="external-link"
 <span>               cbArrangements <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/pkg/arrangements/man/permutations.html" class="external-link">permutations</a></span><span class="op">(</span>freq <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fl">1</span><span class="op">:</span><span class="fl">3</span>, <span class="fl">4</span><span class="op">)</span>, k <span class="op">=</span> <span class="fl">7</span>, x <span class="op">=</span> <span class="va">v6</span><span class="op">)</span>,</span>
 <span>               times <span class="op">=</span> <span class="fl">10</span>, unit <span class="op">=</span> <span class="st">"relative"</span><span class="op">)</span></span>
 <span><span class="co">#&gt; Unit: relative</span></span>
-<span><span class="co">#&gt;            expr   min    lq  mean median    uq   max neval</span></span>
-<span><span class="co">#&gt;  cbRcppAlgosPar 1.000 1.000 1.000  1.000 1.000 1.000    10</span></span>
-<span><span class="co">#&gt;  cbRcppAlgosSer 3.579 3.519 3.117  3.432 2.386 2.618    10</span></span>
-<span><span class="co">#&gt;  cbArrangements 3.893 3.853 3.476  3.745 2.906 2.858    10</span></span></code></pre></div>
+<span><span class="co">#&gt;            expr   min   lq  mean median    uq   max neval cld</span></span>
+<span><span class="co">#&gt;  cbRcppAlgosPar 1.000 1.00 1.000  1.000 1.000 1.000    10 a  </span></span>
+<span><span class="co">#&gt;  cbRcppAlgosSer 3.157 3.22 3.000  3.214 3.210 1.906    10  b </span></span>
+<span><span class="co">#&gt;  cbArrangements 3.601 3.58 3.339  3.572 3.564 2.109    10   c</span></span></code></pre></div>
 </div>
 </div>
 <div class="section level2">
@@ -366,11 +366,11 @@ and <a href="https://cran.r-project.org/package=RcppAlgos" class="external-link"
 <span>               cbPartitions   <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/pkg/partitions/man/parts.html" class="external-link">diffparts</a></span><span class="op">(</span><span class="fl">140</span><span class="op">)</span>,</span>
 <span>               times <span class="op">=</span> <span class="fl">10</span>, unit <span class="op">=</span> <span class="st">"relative"</span><span class="op">)</span></span>
 <span><span class="co">#&gt; Unit: relative</span></span>
-<span><span class="co">#&gt;            expr    min     lq   mean median     uq    max neval</span></span>
-<span><span class="co">#&gt;  cbRcppAlgosPar  1.000  1.000  1.000  1.000  1.000  1.000    10</span></span>
-<span><span class="co">#&gt;  cbRcppAlgosSer  3.355  3.322  2.797  2.613  2.614  2.469    10</span></span>
-<span><span class="co">#&gt;  cbArrangements  2.680  2.638  2.213  1.997  2.123  1.973    10</span></span>
-<span><span class="co">#&gt;    cbPartitions 18.605 18.942 15.279 14.298 13.860 13.067    10</span></span></code></pre></div>
+<span><span class="co">#&gt;            expr    min    lq   mean median     uq    max neval  cld</span></span>
+<span><span class="co">#&gt;  cbRcppAlgosPar  1.000  1.00  1.000  1.000  1.000  1.000    10 a   </span></span>
+<span><span class="co">#&gt;  cbRcppAlgosSer  3.283  3.30  3.017  3.551  2.602  2.492    10  b  </span></span>
+<span><span class="co">#&gt;  cbArrangements  2.629  2.61  2.355  2.605  2.106  1.984    10   c </span></span>
+<span><span class="co">#&gt;    cbPartitions 17.812 18.44 16.317 19.205 14.092 13.282    10    d</span></span></code></pre></div>
 </div>
 <div class="section level4">
 <h4 id="restricted-distinct-partitions">Restricted Distinct Partitions<a class="anchor" aria-label="anchor" href="#restricted-distinct-partitions"></a>
@@ -390,10 +390,10 @@ and <a href="https://cran.r-project.org/package=RcppAlgos" class="external-link"
 <span>               cbArrangements <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/pkg/arrangements/man/partitions.html" class="external-link">partitions</a></span><span class="op">(</span><span class="fl">160</span>, <span class="fl">10</span>, distinct <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>,</span>
 <span>               times <span class="op">=</span> <span class="fl">10</span>, unit <span class="op">=</span> <span class="st">"relative"</span><span class="op">)</span></span>
 <span><span class="co">#&gt; Unit: relative</span></span>
-<span><span class="co">#&gt;            expr   min    lq  mean median    uq   max neval</span></span>
-<span><span class="co">#&gt;  cbRcppAlgosPar 1.000 1.000 1.000  1.000 1.000 1.000    10</span></span>
-<span><span class="co">#&gt;  cbRcppAlgosSer 3.381 3.358 3.369  3.245 3.538 3.454    10</span></span>
-<span><span class="co">#&gt;  cbArrangements 4.460 4.445 4.347  4.295 4.104 4.368    10</span></span></code></pre></div>
+<span><span class="co">#&gt;            expr   min    lq  mean median    uq   max neval cld</span></span>
+<span><span class="co">#&gt;  cbRcppAlgosPar 1.000 1.000 1.000  1.000 1.000 1.000    10 a  </span></span>
+<span><span class="co">#&gt;  cbRcppAlgosSer 3.348 3.344 2.966  3.260 2.233 2.552    10  b </span></span>
+<span><span class="co">#&gt;  cbArrangements 4.384 4.412 3.785  4.284 2.928 2.927    10   c</span></span></code></pre></div>
 </div>
 </div>
 <div class="section level3">
@@ -424,11 +424,11 @@ and <a href="https://cran.r-project.org/package=RcppAlgos" class="external-link"
 <span>               cbPartitions   <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/pkg/partitions/man/parts.html" class="external-link">parts</a></span><span class="op">(</span><span class="fl">65</span><span class="op">)</span>,</span>
 <span>               times <span class="op">=</span> <span class="fl">20</span>, unit <span class="op">=</span> <span class="st">"relative"</span><span class="op">)</span></span>
 <span><span class="co">#&gt; Unit: relative</span></span>
-<span><span class="co">#&gt;            expr   min    lq  mean median    uq   max neval</span></span>
-<span><span class="co">#&gt;  cbRcppAlgosPar 1.000 1.000 1.000  1.000 1.000 1.000    20</span></span>
-<span><span class="co">#&gt;  cbRcppAlgosSer 2.879 2.813 2.238  2.349 2.082 1.730    20</span></span>
-<span><span class="co">#&gt;  cbArrangements 2.147 2.119 1.682  1.812 1.643 1.115    20</span></span>
-<span><span class="co">#&gt;    cbPartitions 9.218 9.255 6.911  7.789 6.319 4.357    20</span></span></code></pre></div>
+<span><span class="co">#&gt;            expr   min    lq  mean median     uq    max neval cld</span></span>
+<span><span class="co">#&gt;  cbRcppAlgosPar 1.000 1.000 1.000  1.000  1.000 1.0000    20 a  </span></span>
+<span><span class="co">#&gt;  cbRcppAlgosSer 2.890 2.635 2.317  2.584  2.441 0.8822    20  b </span></span>
+<span><span class="co">#&gt;  cbArrangements 2.330 2.046 1.897  2.008  1.912 1.2706    20  b </span></span>
+<span><span class="co">#&gt;    cbPartitions 9.132 9.167 9.273 11.193 10.536 3.7732    20   c</span></span></code></pre></div>
 </div>
 <div class="section level4">
 <h4 id="restricted-partitions">Restricted Partitions<a class="anchor" aria-label="anchor" href="#restricted-partitions"></a>
@@ -459,11 +459,11 @@ and <a href="https://cran.r-project.org/package=RcppAlgos" class="external-link"
 <span>                                                include.zero <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span>,</span>
 <span>               times <span class="op">=</span> <span class="fl">10</span>, unit <span class="op">=</span> <span class="st">"relative"</span><span class="op">)</span></span>
 <span><span class="co">#&gt; Unit: relative</span></span>
-<span><span class="co">#&gt;            expr    min     lq   mean median     uq    max neval</span></span>
-<span><span class="co">#&gt;  cbRcppAlgosPar  1.000  1.000  1.000  1.000  1.000  1.000    10</span></span>
-<span><span class="co">#&gt;  cbRcppAlgosSer  3.427  3.311  2.961  3.051  2.697  2.614    10</span></span>
-<span><span class="co">#&gt;  cbArrangements  4.257  4.116  3.752  4.037  3.343  3.284    10</span></span>
-<span><span class="co">#&gt;    cbPartitions 15.389 14.998 13.315 14.072 11.701 11.467    10</span></span></code></pre></div>
+<span><span class="co">#&gt;            expr    min     lq   mean median     uq   max neval  cld</span></span>
+<span><span class="co">#&gt;  cbRcppAlgosPar  1.000  1.000  1.000  1.000  1.000 1.000    10 a   </span></span>
+<span><span class="co">#&gt;  cbRcppAlgosSer  3.359  3.304  2.546  2.735  2.779 1.227    10  b  </span></span>
+<span><span class="co">#&gt;  cbArrangements  4.201  4.138  3.153  3.405  3.343 1.504    10   c </span></span>
+<span><span class="co">#&gt;    cbPartitions 15.543 15.511 11.818 12.758 12.242 6.145    10    d</span></span></code></pre></div>
 </div>
 </div>
 <div class="section level3">
@@ -483,8 +483,8 @@ improvements.</p>
 <span><span class="fu"><a href="https://rdrr.io/pkg/microbenchmark/man/microbenchmark.html" class="external-link">microbenchmark</a></span><span class="op">(</span>cbRcppAlgos <span class="op">=</span> <span class="fu"><a href="../reference/partitionsGeneral.html">partitionsGeneral</a></span><span class="op">(</span><span class="fl">120</span>, <span class="fl">10</span>, freqs<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fl">1</span><span class="op">:</span><span class="fl">8</span>, <span class="fl">15</span><span class="op">)</span><span class="op">)</span>,</span>
 <span>               times <span class="op">=</span> <span class="fl">10</span><span class="op">)</span></span>
 <span><span class="co">#&gt; Unit: milliseconds</span></span>
-<span><span class="co">#&gt;         expr   min    lq mean median    uq   max neval</span></span>
-<span><span class="co">#&gt;  cbRcppAlgos 285.7 287.8  294    290 291.5 326.7    10</span></span></code></pre></div>
+<span><span class="co">#&gt;         expr   min    lq  mean median    uq   max neval</span></span>
+<span><span class="co">#&gt;  cbRcppAlgos 281.7 282.6 287.2  284.2 292.5 295.8    10</span></span></code></pre></div>
 </div>
 </div>
 <div class="section level2">
@@ -515,10 +515,10 @@ improvements.</p>
 <span>               cbPartitions   <span class="op">=</span> <span class="fu">partitions</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/partitions/man/parts.html" class="external-link">compositions</a></span><span class="op">(</span><span class="fl">15</span><span class="op">)</span>,</span>
 <span>               times <span class="op">=</span> <span class="fl">20</span>, unit <span class="op">=</span> <span class="st">"relative"</span><span class="op">)</span></span>
 <span><span class="co">#&gt; Unit: relative</span></span>
-<span><span class="co">#&gt;            expr     min      lq    mean  median      uq     max neval</span></span>
-<span><span class="co">#&gt;  cbRcppAlgosSer   1.000   1.000   1.000   1.000   1.000   1.000    20</span></span>
-<span><span class="co">#&gt;  cbArrangements   1.196   1.229   1.204   1.212   1.197   1.209    20</span></span>
-<span><span class="co">#&gt;    cbPartitions 132.342 139.562 183.336 182.645 213.096 252.348    20</span></span></code></pre></div>
+<span><span class="co">#&gt;            expr    min      lq    mean  median      uq     max neval cld</span></span>
+<span><span class="co">#&gt;  cbRcppAlgosSer   1.00   1.000   1.000   1.000   1.000   1.000    20  a </span></span>
+<span><span class="co">#&gt;  cbArrangements   1.23   1.221   1.199   1.199   1.188   1.108    20  a </span></span>
+<span><span class="co">#&gt;    cbPartitions 133.80 148.531 172.109 175.967 192.882 222.542    20   b</span></span></code></pre></div>
 <p>For the next two examples, we will exclude the
 <code>partitions</code> package for efficiency reasons.</p>
 </div>
@@ -543,10 +543,10 @@ improvements.</p>
 <span>               cbArrangements <span class="op">=</span> <span class="fu">arrangements</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/arrangements/man/compositions.html" class="external-link">compositions</a></span><span class="op">(</span><span class="fl">23</span><span class="op">)</span>,</span>
 <span>               times <span class="op">=</span> <span class="fl">20</span>, unit <span class="op">=</span> <span class="st">"relative"</span><span class="op">)</span></span>
 <span><span class="co">#&gt; Unit: relative</span></span>
-<span><span class="co">#&gt;            expr   min    lq  mean median    uq   max neval</span></span>
-<span><span class="co">#&gt;  cbRcppAlgosPar 1.000 1.000 1.000  1.000 1.000 1.000    20</span></span>
-<span><span class="co">#&gt;  cbRcppAlgosSer 3.486 3.377 3.368  3.369 3.349 3.344    20</span></span>
-<span><span class="co">#&gt;  cbArrangements 3.903 3.781 3.772  3.773 3.752 3.744    20</span></span></code></pre></div>
+<span><span class="co">#&gt;            expr   min    lq  mean median    uq   max neval cld</span></span>
+<span><span class="co">#&gt;  cbRcppAlgosPar 1.000 1.000 1.000  1.000 1.000 1.000    20 a  </span></span>
+<span><span class="co">#&gt;  cbRcppAlgosSer 3.337 3.374 3.365  3.383 3.379 3.175    20  b </span></span>
+<span><span class="co">#&gt;  cbArrangements 3.730 3.760 3.779  3.776 3.775 4.014    20   c</span></span></code></pre></div>
 </div>
 <div class="section level4">
 <h4 id="restricted-compositions">Restricted Compositions<a class="anchor" aria-label="anchor" href="#restricted-compositions"></a>
@@ -566,10 +566,10 @@ improvements.</p>
 <span>               cbArrangements <span class="op">=</span> <span class="fu">arrangements</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/arrangements/man/compositions.html" class="external-link">compositions</a></span><span class="op">(</span><span class="fl">30</span>, <span class="fl">10</span><span class="op">)</span>,</span>
 <span>               times <span class="op">=</span> <span class="fl">20</span>, unit <span class="op">=</span> <span class="st">"relative"</span><span class="op">)</span></span>
 <span><span class="co">#&gt; Unit: relative</span></span>
-<span><span class="co">#&gt;            expr   min    lq  mean median    uq   max neval</span></span>
-<span><span class="co">#&gt;  cbRcppAlgosPar 1.000 1.000 1.000  1.000 1.000 1.000    20</span></span>
-<span><span class="co">#&gt;  cbRcppAlgosSer 3.043 3.107 3.043  3.076 2.986 3.184    20</span></span>
-<span><span class="co">#&gt;  cbArrangements 3.174 3.128 3.039  3.097 3.006 2.681    20</span></span></code></pre></div>
+<span><span class="co">#&gt;            expr   min    lq  mean median    uq   max neval cld</span></span>
+<span><span class="co">#&gt;  cbRcppAlgosPar 1.000 1.000 1.000  1.000 1.000 1.000    20 a  </span></span>
+<span><span class="co">#&gt;  cbRcppAlgosSer 3.005 3.089 3.078  3.094 3.081 3.046    20  b </span></span>
+<span><span class="co">#&gt;  cbArrangements 3.153 3.129 3.127  3.132 3.119 3.128    20   c</span></span></code></pre></div>
 </div>
 </div>
 </div>
@@ -601,9 +601,9 @@ similar for the rest of the cases not shown.</p>
 <span>               cbArrangements <span class="op">=</span> <span class="fu">pkg_arrangements</span><span class="op">(</span><span class="fl">18</span>, <span class="va">total</span><span class="op">)</span>,</span>
 <span>               times <span class="op">=</span> <span class="fl">15</span>, unit <span class="op">=</span> <span class="st">"relative"</span><span class="op">)</span></span>
 <span><span class="co">#&gt; Unit: relative</span></span>
-<span><span class="co">#&gt;            expr   min    lq  mean median    uq   max neval</span></span>
-<span><span class="co">#&gt;     cbRcppAlgos  1.00  1.00  1.00   1.00  1.00  1.00    15</span></span>
-<span><span class="co">#&gt;  cbArrangements 19.51 19.08 18.56  18.77 18.15 17.38    15</span></span></code></pre></div>
+<span><span class="co">#&gt;            expr   min    lq  mean median    uq   max neval cld</span></span>
+<span><span class="co">#&gt;     cbRcppAlgos  1.00  1.00  1.00   1.00  1.00  1.00    15  a </span></span>
+<span><span class="co">#&gt;  cbArrangements 19.57 19.36 18.79  19.15 19.06 15.26    15   b</span></span></code></pre></div>
 </div>
 <div class="section level3">
 <h3 id="permutations-1">Permutations<a class="anchor" aria-label="anchor" href="#permutations-1"></a>
@@ -627,9 +627,9 @@ similar for the rest of the cases not shown.</p>
 <span>               cbArrangements <span class="op">=</span> <span class="fu">pkg_arrangements</span><span class="op">(</span><span class="fl">8</span>, <span class="va">total</span><span class="op">)</span>,</span>
 <span>               times <span class="op">=</span> <span class="fl">15</span>, unit <span class="op">=</span> <span class="st">"relative"</span><span class="op">)</span></span>
 <span><span class="co">#&gt; Unit: relative</span></span>
-<span><span class="co">#&gt;            expr   min    lq mean median    uq   max neval</span></span>
-<span><span class="co">#&gt;     cbRcppAlgos  1.00  1.00  1.0   1.00  1.00  1.00    15</span></span>
-<span><span class="co">#&gt;  cbArrangements 19.11 18.87 18.5  18.45 18.09 18.56    15</span></span></code></pre></div>
+<span><span class="co">#&gt;            expr   min    lq  mean median    uq   max neval cld</span></span>
+<span><span class="co">#&gt;     cbRcppAlgos  1.00  1.00  1.00   1.00  1.00  1.00    15  a </span></span>
+<span><span class="co">#&gt;  cbArrangements 19.56 19.44 19.18  19.41 19.13 18.18    15   b</span></span></code></pre></div>
 </div>
 <div class="section level3">
 <h3 id="partitions-1">Partitions<a class="anchor" aria-label="anchor" href="#partitions-1"></a>
@@ -659,10 +659,10 @@ similar for the rest of the cases not shown.</p>
 <span>               cbPartitions   <span class="op">=</span> <span class="fu">pkg_partitions</span><span class="op">(</span><span class="fl">40</span>, <span class="va">total</span><span class="op">)</span>,</span>
 <span>               times <span class="op">=</span> <span class="fl">15</span>, unit <span class="op">=</span> <span class="st">"relative"</span><span class="op">)</span></span>
 <span><span class="co">#&gt; Unit: relative</span></span>
-<span><span class="co">#&gt;            expr   min    lq  mean median    uq   max neval</span></span>
-<span><span class="co">#&gt;     cbRcppAlgos  1.00  1.00  1.00   1.00  1.00  1.00    15</span></span>
-<span><span class="co">#&gt;  cbArrangements 15.49 15.43 14.74  15.25 14.06 13.35    15</span></span>
-<span><span class="co">#&gt;    cbPartitions 25.08 24.90 23.98  24.61 22.64 22.54    15</span></span></code></pre></div>
+<span><span class="co">#&gt;            expr   min    lq  mean median    uq   max neval cld</span></span>
+<span><span class="co">#&gt;     cbRcppAlgos  1.00  1.00  1.00   1.00  1.00  1.00    15 a  </span></span>
+<span><span class="co">#&gt;  cbArrangements 15.55 15.56 14.85  15.64 14.13 14.34    15  b </span></span>
+<span><span class="co">#&gt;    cbPartitions 25.36 25.54 24.22  25.60 23.23 22.02    15   c</span></span></code></pre></div>
 </div>
 <div class="section level3">
 <h3 id="compositions-1">Compositions<a class="anchor" aria-label="anchor" href="#compositions-1"></a>
@@ -692,10 +692,10 @@ similar for the rest of the cases not shown.</p>
 <span>               cbPartitions   <span class="op">=</span> <span class="fu">pkg_partitions</span><span class="op">(</span><span class="fl">15</span>, <span class="va">total</span><span class="op">)</span>,</span>
 <span>               times <span class="op">=</span> <span class="fl">15</span>, unit <span class="op">=</span> <span class="st">"relative"</span><span class="op">)</span></span>
 <span><span class="co">#&gt; Unit: relative</span></span>
-<span><span class="co">#&gt;            expr   min    lq  mean median    uq   max neval</span></span>
-<span><span class="co">#&gt;     cbRcppAlgos  1.00  1.00  1.00   1.00  1.00  1.00    15</span></span>
-<span><span class="co">#&gt;  cbArrangements 13.81 13.65 13.34  13.65 13.32 11.82    15</span></span>
-<span><span class="co">#&gt;    cbPartitions 44.86 44.59 44.09  44.89 43.89 40.62    15</span></span></code></pre></div>
+<span><span class="co">#&gt;            expr   min    lq  mean median    uq   max neval cld</span></span>
+<span><span class="co">#&gt;     cbRcppAlgos  1.00  1.00  1.00   1.00  1.00  1.00    15 a  </span></span>
+<span><span class="co">#&gt;  cbArrangements 14.21 14.10 13.56  14.20 13.84 11.64    15  b </span></span>
+<span><span class="co">#&gt;    cbPartitions 46.54 46.16 44.64  46.03 44.68 44.44    15   c</span></span></code></pre></div>
 </div>
 </div>
   </div>
@@ -717,7 +717,7 @@ similar for the rest of the cases not shown.</p>
 
 <div class="pkgdown">
   <p></p>
-<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.6.</p>
+<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.7.</p>
 </div>
 
       </footer>

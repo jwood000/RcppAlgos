@@ -1,3 +1,9 @@
+# RcppAlgos 2.8.0
+
+## New Features:
+
+* `comboGroups` can now handle groups of different sizes.
+
 # RcppAlgos 2.7.2
 
 ## Other:

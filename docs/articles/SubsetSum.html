@@ -33,7 +33,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">RcppAlgos</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">2.7.2</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">2.8.0</span>
       </span>
     </div>
 
@@ -68,7 +68,7 @@
       <a href="../articles/HighPerformanceBenchmarks.html">High Performance Benchmarks</a>
     </li>
     <li>
-      <a href="../articles/OtherCombinatorics.html">Cartesian Products and Partitions of Groups into Equal Size</a>
+      <a href="../articles/OtherCombinatorics.html">Cartesian Products and Partitions of Groups</a>
     </li>
     <li>
       <a href="../articles/SubsetSum.html">Attacking Problems Related to the Subset Sum Problem</a>
@@ -104,7 +104,7 @@ Problem</h1>
                         <h4 data-toc-skip class="author">Joseph
 Wood</h4>
             
-            <h4 data-toc-skip class="date">02/09/2023</h4>
+            <h4 data-toc-skip class="date">07/08/2023</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/jwood000/RcppAlgos/blob/HEAD/vignettes/SubsetSum.Rmd" class="external-link"><code>vignettes/SubsetSum.Rmd</code></a></small>
       <div class="hidden name"><code>SubsetSum.Rmd</code></div>
@@ -215,7 +215,7 @@ each element with it’s neighbor is constant (E.g.
 <span><span class="op">}</span><span class="op">)</span></span>
 <span><span class="va">even_time</span></span>
 <span><span class="co">#&gt;    user  system elapsed </span></span>
-<span><span class="co">#&gt;   0.002   0.001   0.002</span></span>
+<span><span class="co">#&gt;   0.002   0.001   0.003</span></span>
 <span></span>
 <span><span class="fu">ht</span><span class="op">(</span><span class="va">genParts</span><span class="op">)</span></span>
 <span><span class="co">#&gt; head --&gt;</span></span>
@@ -323,7 +323,7 @@ breaks the requirement.</p>
 <span><span class="op">}</span><span class="op">)</span></span>
 <span><span class="va">uneven_time</span>    <span class="co">## out of a possible 573 million in under a second</span></span>
 <span><span class="co">#&gt;    user  system elapsed </span></span>
-<span><span class="co">#&gt;   0.051   0.003   0.054</span></span>
+<span><span class="co">#&gt;   0.050   0.002   0.053</span></span>
 <span></span>
 <span><span class="fu">ht</span><span class="op">(</span><span class="va">genParts2</span><span class="op">)</span></span>
 <span><span class="co">#&gt; head --&gt;</span></span>
@@ -341,8 +341,8 @@ breaks the requirement.</p>
 <span><span class="co">#&gt; [118558,]  196  196  201  201  201  201  201  201  201   201   201   206   206</span></span>
 <span><span class="co">#&gt; [118559,]  196  201  201  201  201  201  201  201  201   201   201   201   206</span></span>
 <span><span class="co">#&gt; [118560,]  201  201  201  201  201  201  201  201  201   201   201   201   201</span></span></code></pre></div>
-<p>Although the above was about 27 times slower than the first example
-dealing with 573 million combinations (0.054 milliseconds vs. 0.002
+<p>Although the above was about 18 times slower than the first example
+dealing with 573 million combinations (0.053 milliseconds vs. 0.003
 milliseconds), we are still dealing in milliseconds!!! For reference,
 version <code>2.3.4</code> takes about 18 seconds to find all 118,560
 solutions.</p>
@@ -360,7 +360,7 @@ algorithms.</p>
 <span><span class="fu"><a href="https://rdrr.io/r/base/system.time.html" class="external-link">system.time</a></span><span class="op">(</span><span class="va">exotic</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/partitionsGeneral.html">partitionsGeneral</a></span><span class="op">(</span><span class="va">mySamp</span>, <span class="fl">8</span>, freqs <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fl">1</span><span class="op">:</span><span class="fl">5</span>, <span class="fl">10</span><span class="op">)</span>,</span>
 <span>                                        target <span class="op">=</span> <span class="fl">496</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="co">#&gt;    user  system elapsed </span></span>
-<span><span class="co">#&gt;   0.119   0.002   0.121</span></span>
+<span><span class="co">#&gt;   0.129   0.001   0.131</span></span>
 <span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/dim.html" class="external-link">dim</a></span><span class="op">(</span><span class="va">exotic</span><span class="op">)</span></span>
 <span><span class="co">#&gt; [1] 102241      8</span></span>
@@ -373,7 +373,7 @@ algorithms.</p>
 <span><span class="fu"><a href="https://rdrr.io/r/base/system.time.html" class="external-link">system.time</a></span><span class="op">(</span><span class="fu"><a href="../reference/partitionsGeneral.html">partitionsGeneral</a></span><span class="op">(</span><span class="va">mySamp</span>, <span class="fl">8</span>, freqs <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fl">1</span><span class="op">:</span><span class="fl">5</span>, <span class="fl">10</span><span class="op">)</span>,</span>
 <span>                              target <span class="op">=</span> <span class="fl">496</span>, upper <span class="op">=</span> <span class="fl">1e3</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="co">#&gt;    user  system elapsed </span></span>
-<span><span class="co">#&gt;   0.001   0.000   0.002</span></span></code></pre></div>
+<span><span class="co">#&gt;   0.002   0.000   0.002</span></span></code></pre></div>
 <p>The function <code>permuteGeneral</code> benefits from these
 optimized algorithms as well. However, just as we discussed in <a href="https://jwood000.github.io/RcppAlgos/articles/CombPermConstraints.html#output-order-with-permutegeneral" class="external-link">Output
 Order with <code>permuteGeneral</code></a>, the output will not be in
@@ -409,7 +409,7 @@ million.</p>
 <span><span class="fu"><a href="https://rdrr.io/r/base/system.time.html" class="external-link">system.time</a></span><span class="op">(</span><span class="va">exactly20</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/partitionsGeneral.html">partitionsGeneral</a></span><span class="op">(</span><span class="va">football_player_salaries</span>, <span class="fl">6</span>,</span>
 <span>                                           target <span class="op">=</span> <span class="fl">2e7</span>, tolerance <span class="op">=</span> <span class="fl">0</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="co">#&gt;    user  system elapsed </span></span>
-<span><span class="co">#&gt;   1.528   0.007   1.534</span></span>
+<span><span class="co">#&gt;   1.410   0.005   1.415</span></span>
 <span></span>
 <span><span class="co">## No results that equal exactly 2e7</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/dim.html" class="external-link">dim</a></span><span class="op">(</span><span class="va">exactly20</span><span class="op">)</span></span>
@@ -428,7 +428,7 @@ tolerance (if needed) and repeat.</p>
 <span>                                     limitConstraints <span class="op">=</span> <span class="fl">2e7</span>, tolerance <span class="op">=</span> <span class="fl">1000</span>,</span>
 <span>                                     upper <span class="op">=</span> <span class="fl">1000</span>, keepResults <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="co">#&gt;    user  system elapsed </span></span>
-<span><span class="co">#&gt;   0.066   0.000   0.066</span></span>
+<span><span class="co">#&gt;   0.061   0.001   0.063</span></span>
 <span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/dim.html" class="external-link">dim</a></span><span class="op">(</span><span class="va">almost20</span><span class="op">)</span></span>
 <span><span class="co">#&gt; [1] 1000    7</span></span>
@@ -456,7 +456,7 @@ tolerance (if needed) and repeat.</p>
 <span>                                         limitConstraints <span class="op">=</span> <span class="fl">2e7</span>, tolerance <span class="op">=</span> <span class="fl">10</span>,</span>
 <span>                                         upper <span class="op">=</span> <span class="fl">1000</span>, keepResults <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="co">#&gt;    user  system elapsed </span></span>
-<span><span class="co">#&gt;   1.519   0.007   1.525</span></span>
+<span><span class="co">#&gt;   1.402   0.005   1.408</span></span>
 <span></span>
 <span><span class="fu">ht</span><span class="op">(</span><span class="va">superClose20</span><span class="op">)</span></span>
 <span><span class="co">#&gt; head --&gt;</span></span>
@@ -497,9 +497,9 @@ tolerance (if needed) and repeat.</p>
 <span><span class="co">#&gt; Warning in microbenchmark(optimized = comboGeneral(25, 10, constraintFun = "prod", : less</span></span>
 <span><span class="co">#&gt; accurate nanosecond times to avoid potential integer overflows</span></span>
 <span><span class="co">#&gt; Unit: relative</span></span>
-<span><span class="co">#&gt;       expr      min      lq    mean   median       uq      max neval</span></span>
-<span><span class="co">#&gt;  optimized  1.00000  1.0000  1.0000  1.00000  1.00000  1.00000    20</span></span>
-<span><span class="co">#&gt;      brute 20.75611 20.6496 21.2139 20.69723 20.53798 26.26401    20</span></span>
+<span><span class="co">#&gt;       expr      min       lq     mean  median       uq      max neval cld</span></span>
+<span><span class="co">#&gt;  optimized  1.00000  1.00000  1.00000  1.0000  1.00000  1.00000    20  a </span></span>
+<span><span class="co">#&gt;      brute 21.95439 22.01804 22.57929 21.9659 21.95902 27.83343    20   b</span></span>
 <span></span>
 <span><span class="co">## What about cases when brute force isn't feasible</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="fl">101</span><span class="op">)</span></span>
@@ -529,7 +529,7 @@ tolerance (if needed) and repeat.</p>
 <span>                                          limitConstraints <span class="op">=</span> <span class="fl">1.5</span>,</span>
 <span>                                          tolerance <span class="op">=</span> <span class="fl">0.0001</span>, upper <span class="op">=</span> <span class="fl">20</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="co">#&gt;    user  system elapsed </span></span>
-<span><span class="co">#&gt;   0.001   0.000   0.000</span></span>
+<span><span class="co">#&gt;   0.000   0.000   0.001</span></span>
 <span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/dim.html" class="external-link">dim</a></span><span class="op">(</span><span class="va">meanAlmost1.5</span><span class="op">)</span></span>
 <span><span class="co">#&gt; [1]  20 100</span></span>
@@ -564,7 +564,7 @@ sections.</p>
 <span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/system.time.html" class="external-link">system.time</a></span><span class="op">(</span><span class="va">almost20withIter</span> <span class="op">&lt;-</span> <span class="va">salary</span><span class="op">@</span><span class="va">nextNIter</span><span class="op">(</span><span class="fl">1e3</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="co">#&gt;    user  system elapsed </span></span>
-<span><span class="co">#&gt;   0.067   0.000   0.068</span></span>
+<span><span class="co">#&gt;   0.063   0.000   0.063</span></span>
 <span></span>
 <span><span class="co">## almost20 was generated above with comboGeneral</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/all.equal.html" class="external-link">all.equal</a></span><span class="op">(</span><span class="va">almost20</span><span class="op">[</span>, <span class="fl">1</span><span class="op">:</span><span class="fl">6</span><span class="op">]</span>, <span class="va">almost20withIter</span><span class="op">)</span></span>
@@ -575,7 +575,7 @@ sections.</p>
 <span><span class="co">## generate the first 1000 along with the next 1000</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/system.time.html" class="external-link">system.time</a></span><span class="op">(</span><span class="va">nextAlmost20withIter</span> <span class="op">&lt;-</span> <span class="va">salary</span><span class="op">@</span><span class="va">nextNIter</span><span class="op">(</span><span class="fl">1e3</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="co">#&gt;    user  system elapsed </span></span>
-<span><span class="co">#&gt;   0.064   0.000   0.064</span></span>
+<span><span class="co">#&gt;   0.059   0.000   0.060</span></span>
 <span></span>
 <span><span class="fu">ht</span><span class="op">(</span><span class="va">nextAlmost20withIter</span><span class="op">)</span></span>
 <span><span class="co">#&gt; head --&gt;</span></span>
@@ -615,7 +615,7 @@ sections.</p>
 <span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/system.time.html" class="external-link">system.time</a></span><span class="op">(</span><span class="va">prodAlmost100WithIter</span> <span class="op">&lt;-</span> <span class="va">prodIter</span><span class="op">@</span><span class="va">nextNIter</span><span class="op">(</span><span class="fl">20</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="co">#&gt;    user  system elapsed </span></span>
-<span><span class="co">#&gt;   0.016   0.000   0.016</span></span>
+<span><span class="co">#&gt;   0.016   0.000   0.017</span></span>
 <span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/all.equal.html" class="external-link">all.equal</a></span><span class="op">(</span><span class="va">prodAlmost100</span>, <span class="va">prodAlmost100WithIter</span><span class="op">)</span></span>
 <span><span class="co">#&gt; [1] TRUE</span></span>
@@ -624,7 +624,7 @@ sections.</p>
 <span><span class="co">## where we left off</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/system.time.html" class="external-link">system.time</a></span><span class="op">(</span><span class="va">nextAlmost100WithIter</span> <span class="op">&lt;-</span> <span class="va">prodIter</span><span class="op">@</span><span class="va">nextNIter</span><span class="op">(</span><span class="fl">20</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="co">#&gt;    user  system elapsed </span></span>
-<span><span class="co">#&gt;   0.012   0.000   0.011</span></span>
+<span><span class="co">#&gt;   0.011   0.000   0.011</span></span>
 <span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/dim.html" class="external-link">dim</a></span><span class="op">(</span><span class="va">nextAlmost100WithIter</span><span class="op">)</span></span>
 <span><span class="co">#&gt; [1]  20 100</span></span>
@@ -664,7 +664,7 @@ sections.</p>
 
 <div class="pkgdown">
   <p></p>
-<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.6.</p>
+<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.7.</p>
 </div>
 
       </footer>

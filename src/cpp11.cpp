@@ -48,10 +48,10 @@ extern "C" SEXP _RcppAlgos_PartitionsCount(SEXP Rtarget, SEXP Rv, SEXP Rm, SEXP 
   END_CPP11
 }
 // CombinatoricsCount.cpp
-SEXP ComboGroupsCountCpp(SEXP Rv, SEXP RNumGroups);
-extern "C" SEXP _RcppAlgos_ComboGroupsCountCpp(SEXP Rv, SEXP RNumGroups) {
+SEXP ComboGroupsCountCpp(SEXP Rv, SEXP RNumGroups, SEXP RGrpSize);
+extern "C" SEXP _RcppAlgos_ComboGroupsCountCpp(SEXP Rv, SEXP RNumGroups, SEXP RGrpSize) {
   BEGIN_CPP11
-    return cpp11::as_sexp(ComboGroupsCountCpp(cpp11::as_cpp<cpp11::decay_t<SEXP>>(Rv), cpp11::as_cpp<cpp11::decay_t<SEXP>>(RNumGroups)));
+    return cpp11::as_sexp(ComboGroupsCountCpp(cpp11::as_cpp<cpp11::decay_t<SEXP>>(Rv), cpp11::as_cpp<cpp11::decay_t<SEXP>>(RNumGroups), cpp11::as_cpp<cpp11::decay_t<SEXP>>(RGrpSize)));
   END_CPP11
 }
 // CombinatoricsMain.cpp
@@ -62,10 +62,10 @@ extern "C" SEXP _RcppAlgos_CombinatoricsStndrd(SEXP Rv, SEXP Rm, SEXP RisRep, SE
   END_CPP11
 }
 // ComboGroups.cpp
-SEXP ComboGroupsCpp(SEXP Rv, SEXP RNumGroups, SEXP RRetType, SEXP Rlow, SEXP Rhigh, SEXP Rparallel, SEXP RNumThreads, SEXP RmaxThreads, SEXP RIsSample, SEXP RindexVec, SEXP RmySeed, SEXP RNumSamp, SEXP baseSample, SEXP RNamed, SEXP myEnv);
-extern "C" SEXP _RcppAlgos_ComboGroupsCpp(SEXP Rv, SEXP RNumGroups, SEXP RRetType, SEXP Rlow, SEXP Rhigh, SEXP Rparallel, SEXP RNumThreads, SEXP RmaxThreads, SEXP RIsSample, SEXP RindexVec, SEXP RmySeed, SEXP RNumSamp, SEXP baseSample, SEXP RNamed, SEXP myEnv) {
+SEXP ComboGroupsCpp(SEXP Rv, SEXP RNumGroups, SEXP RGrpSize, SEXP RRetType, SEXP Rlow, SEXP Rhigh, SEXP Rparallel, SEXP RNumThreads, SEXP RmaxThreads, SEXP RIsSample, SEXP RindexVec, SEXP RmySeed, SEXP RNumSamp, SEXP baseSample, SEXP RNamed, SEXP myEnv);
+extern "C" SEXP _RcppAlgos_ComboGroupsCpp(SEXP Rv, SEXP RNumGroups, SEXP RGrpSize, SEXP RRetType, SEXP Rlow, SEXP Rhigh, SEXP Rparallel, SEXP RNumThreads, SEXP RmaxThreads, SEXP RIsSample, SEXP RindexVec, SEXP RmySeed, SEXP RNumSamp, SEXP baseSample, SEXP RNamed, SEXP myEnv) {
   BEGIN_CPP11
-    return cpp11::as_sexp(ComboGroupsCpp(cpp11::as_cpp<cpp11::decay_t<SEXP>>(Rv), cpp11::as_cpp<cpp11::decay_t<SEXP>>(RNumGroups), cpp11::as_cpp<cpp11::decay_t<SEXP>>(RRetType), cpp11::as_cpp<cpp11::decay_t<SEXP>>(Rlow), cpp11::as_cpp<cpp11::decay_t<SEXP>>(Rhigh), cpp11::as_cpp<cpp11::decay_t<SEXP>>(Rparallel), cpp11::as_cpp<cpp11::decay_t<SEXP>>(RNumThreads), cpp11::as_cpp<cpp11::decay_t<SEXP>>(RmaxThreads), cpp11::as_cpp<cpp11::decay_t<SEXP>>(RIsSample), cpp11::as_cpp<cpp11::decay_t<SEXP>>(RindexVec), cpp11::as_cpp<cpp11::decay_t<SEXP>>(RmySeed), cpp11::as_cpp<cpp11::decay_t<SEXP>>(RNumSamp), cpp11::as_cpp<cpp11::decay_t<SEXP>>(baseSample), cpp11::as_cpp<cpp11::decay_t<SEXP>>(RNamed), cpp11::as_cpp<cpp11::decay_t<SEXP>>(myEnv)));
+    return cpp11::as_sexp(ComboGroupsCpp(cpp11::as_cpp<cpp11::decay_t<SEXP>>(Rv), cpp11::as_cpp<cpp11::decay_t<SEXP>>(RNumGroups), cpp11::as_cpp<cpp11::decay_t<SEXP>>(RGrpSize), cpp11::as_cpp<cpp11::decay_t<SEXP>>(RRetType), cpp11::as_cpp<cpp11::decay_t<SEXP>>(Rlow), cpp11::as_cpp<cpp11::decay_t<SEXP>>(Rhigh), cpp11::as_cpp<cpp11::decay_t<SEXP>>(Rparallel), cpp11::as_cpp<cpp11::decay_t<SEXP>>(RNumThreads), cpp11::as_cpp<cpp11::decay_t<SEXP>>(RmaxThreads), cpp11::as_cpp<cpp11::decay_t<SEXP>>(RIsSample), cpp11::as_cpp<cpp11::decay_t<SEXP>>(RindexVec), cpp11::as_cpp<cpp11::decay_t<SEXP>>(RmySeed), cpp11::as_cpp<cpp11::decay_t<SEXP>>(RNumSamp), cpp11::as_cpp<cpp11::decay_t<SEXP>>(baseSample), cpp11::as_cpp<cpp11::decay_t<SEXP>>(RNamed), cpp11::as_cpp<cpp11::decay_t<SEXP>>(myEnv)));
   END_CPP11
 }
 // ConstraintsMain.cpp
@@ -262,8 +262,8 @@ static const R_CallMethodDef CallEntries[] = {
     {"_RcppAlgos_CombinatoricsCount",  (DL_FUNC) &_RcppAlgos_CombinatoricsCount,   5},
     {"_RcppAlgos_CombinatoricsStndrd", (DL_FUNC) &_RcppAlgos_CombinatoricsStndrd, 10},
     {"_RcppAlgos_ComboGridCpp",        (DL_FUNC) &_RcppAlgos_ComboGridCpp,         2},
-    {"_RcppAlgos_ComboGroupsCountCpp", (DL_FUNC) &_RcppAlgos_ComboGroupsCountCpp,  2},
-    {"_RcppAlgos_ComboGroupsCpp",      (DL_FUNC) &_RcppAlgos_ComboGroupsCpp,      15},
+    {"_RcppAlgos_ComboGroupsCountCpp", (DL_FUNC) &_RcppAlgos_ComboGroupsCountCpp,  3},
+    {"_RcppAlgos_ComboGroupsCpp",      (DL_FUNC) &_RcppAlgos_ComboGroupsCpp,      16},
     {"_RcppAlgos_CurrCombGlue",        (DL_FUNC) &_RcppAlgos_CurrCombGlue,         1},
     {"_RcppAlgos_DivNumSieveCpp",      (DL_FUNC) &_RcppAlgos_DivNumSieveCpp,       6},
     {"_RcppAlgos_FrontGlue",           (DL_FUNC) &_RcppAlgos_FrontGlue,            1},

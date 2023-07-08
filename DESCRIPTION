@@ -1,5 +1,5 @@
 Package: RcppAlgos
-Version: 2.7.2
+Version: 2.8.0
 Title: High Performance Tools for Combinatorics and Computational Mathematics
 Description: Provides optimized functions and flexible combinatorial iterators
     implemented in C++ for solving problems in combinatorics and

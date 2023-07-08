@@ -19,3 +19,6 @@ PackageUseDevtools: Yes
 PackageCleanBeforeInstall: No
 PackageInstallArgs: --no-multiarch --with-keep.source
 PackageCheckArgs: --as-cran
+
+MarkdownWrap: Column
+MarkdownWrapAtColumn: 80

@@ -147,7 +147,7 @@ comboGeneral(5, 7, TRUE, constraintFun = "prod",
 * [Constraints, Partitions, and Compositions](<https://jwood000.github.io/RcppAlgos/articles/CombPermConstraints.html>)
 * [Attacking Problems Related to the Subset Sum Problem](<https://jwood000.github.io/RcppAlgos/articles/SubsetSum.html>)
 * [Combinatorial Iterators in RcppAlgos](<https://jwood000.github.io/RcppAlgos/articles/CombinatoricsIterators.html>)
-* [Cartesian Products and Partitions of Groups into Equal Size](<https://jwood000.github.io/RcppAlgos/articles/OtherCombinatorics.html>)
+* [Cartesian Products and Partitions of Groups](<https://jwood000.github.io/RcppAlgos/articles/OtherCombinatorics.html>)
 
 ## Why **`RcppAlgos`** but no **`Rcpp`**?
 
