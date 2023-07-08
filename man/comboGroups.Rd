@@ -1,11 +1,11 @@
 \name{comboGroups}
 \alias{comboGroups}
 \title{
-Partition a Vector into Groups of Varying Sizes
+Partition a Vector into Groups
 }
 \description{
     \itemize{
-        \item Generate partitions of a vector into groups of varying sizes. See \href{https://stackoverflow.com/q/57732672/4408538}{Create Combinations in R by Groups} on https://stackoverflow.com for a direct use case of when the groups sizes are equal.
+        \item Generate partitions of a vector into groups. See \href{https://stackoverflow.com/q/57732672/4408538}{Create Combinations in R by Groups} on https://stackoverflow.com for a direct use case of when the groups sizes are equal.
         \item Produce results in parallel using the \code{Parallel} or \code{nThreads} arguments.
         \item GMP support allows for exploration where the number of results is large.
         \item The output is in lexicographical order by groups.
@@ -30,7 +30,7 @@ comboGroups(v, numGroups = NULL, grpSizes = NULL,
   \item{nThreads}{Specific number of threads to be used. The default is \code{NULL}. See \code{Parallel}.}
 }
 \details{
-Conceptually, this problem can be viewed as generating all permutations of the vector \code{v} and removing the within group permutations. To illustrate this, let us consider the case of generating partitions of \code{1:8} into 2 groups of size 4.
+Conceptually, this problem can be viewed as generating all permutations of the vector \code{v} and removing the within group permutations. To illustrate this, let us consider the case of generating partitions of \code{1:8} into 2 groups each of size 4.
   \itemize{
     \item{To begin, generate the permutations of \code{1:8} and group the first/last four elements of each row.
       \tabular{ccccccccc}{

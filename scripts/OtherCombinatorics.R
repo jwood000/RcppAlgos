@@ -92,7 +92,7 @@ reprex::reprex({
     #' * [R - Expand Grid Without Duplicates](<https://stackoverflow.com/q/68047141/4408538>)
     #' * [Non-redundant version of expand.grid](<https://stackoverflow.com/a/68050873/4408538>)
     #'
-    #' ## Partitions of Groups of Varying Sizes with `comboGroups`
+    #' ## Partitions of Groups with `comboGroups`
     #'
     #' Given a vector of length _n_ and _k_ groups, where _k_ divides _n_, each group is comprised of a combination of the vector chosen _g = n / k_ at a time. As is stated in the documentation (see `?comboGroups`), these can be constructed by first generating all permutations of the vector and subsequently removing entries with permuted groups. Let us consider the following example. Given `v = 1:12`, generate all partitions `v` into 3 groups each of size 4.
     #'
@@ -160,14 +160,25 @@ reprex::reprex({
     identical(a1, a3)
 
     #'
-    #' As of `2.8.+` we can generate partitions of groups of varying sizes. For example, say we want to generate all partitions of the vector `v = 1:14` into 2 groups of 3 and 2 groups of 4:
+    #' ### Partitions of Groups of Varying Sizes
+    #'
+    #' As of `2.8.+` we can generate partitions of groups of varying sizes. For example, say we want to generate all partitions of the vector `v = 1:15` into 2 groups of 3, 1 groups of 4, and 1 group of 5:
     #'
 
-    system.time(a4 <- comboGroups(14, grpSizes = c(3, 3, 4, 4)))
+    system.time(a4 <- comboGroups(15, grpSizes = c(3, 3, 4, 5)))
 
     ht(a4)
 
+    dim(a4)
+
     #'
+    #' All of the flexibility offered with groups of equal size are present with groups of varying sizes as well. For example, we can generate groups of varying sizes in parallel:
+    #'
+
+    system.time(a5 <- comboGroups(15, grpSizes = c(3, 3, 4, 5), nThreads = 4))
+
+    identical(a4, a5)
+
     #' There is one additional argument (i.e. `retType`) not present in the other two general functions that allows the user to specify the type of object returned. The user can select between `"matrix"` (the default) and `"3Darray"`. This structure has a natural connection to 3D space when the size of each group is uniform. We have a particular result (_1<sup>st</sup>_ dimension) broken down into groups (_2<sup>nd</sup>_ dimension) of a certain size (_3<sup>rd</sup>_ dimension).
     #'
 
@@ -184,6 +195,7 @@ reprex::reprex({
     #' * [Create Combinations in R by Groups](<https://stackoverflow.com/q/57732672/4408538>)
     #' * [Algorithm that can create all combinations and all groups of those combinations](<https://stackoverflow.com/q/39126712/4408538>)
     #' * [R expand.grid for repeated combinations of a vector in groups](https://stackoverflow.com/q/74160916/4408538)
+    #' * [Find all possible teams in R](<https://stackoverflow.com/q/76064565/4408538>)
     #' * https://oeis.org/A025035 (See also sequences A025036-A025042)
 
 }, advertise = FALSE, venue = "r", html_preview = FALSE, wd = ".")

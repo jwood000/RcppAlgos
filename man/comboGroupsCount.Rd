@@ -1,10 +1,10 @@
 \name{comboGroupsCount}
 \alias{comboGroupsCount}
 \title{
-Number of Partitions of a Vector into Groups of Varying Sizes
+Number of Partitions of a Vector into Groups
 }
 \description{
-Calculate the number of partitions of a vector into groups of varying sizes. See the related integer sequences A025035-A025042 at \href{https://oeis.org}{OEIS} (E.g. \href{https://oeis.org/A025036}{A025036} for Number of partitions of { 1, 2, ..., 4n } into sets of size 4.)
+Calculate the number of partitions of a vector into groups. See the related integer sequences A025035-A025042 at \href{https://oeis.org}{OEIS} (E.g. \href{https://oeis.org/A025036}{A025036} for Number of partitions of { 1, 2, ..., 4n } into sets of size 4.)
 }
 \usage{
 comboGroupsCount(v, numGroups = NULL, grpSizes = NULL)
@@ -17,7 +17,7 @@ comboGroupsCount(v, numGroups = NULL, grpSizes = NULL)
 }
 }
 \value{
-A numerical value representing the total number of partitions of groups of varying sizes.
+A numerical value representing the total number of partitions of groups.
 }
 \references{
 \href{https://oeis.org/A025036}{OEIS Integer Sequence A025036}

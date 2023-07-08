@@ -209,7 +209,7 @@ reprex::reprex({
     ## Even works when the vector is restricted in regards to the target
     partitionsSample(0:50, 6, freqs = c(50, rep(1, 50)),
                      n = 3, seed = 222, target = 100)
-    #'
+
     #'
     #' There is ongoing research in this area and our goal is to eventually be able to cover the standard multiset case.
     #'
@@ -244,12 +244,13 @@ reprex::reprex({
     ## Sample weak compositions
     compositionsSample(0:100, 8, repetition = TRUE, weak = TRUE,
                        seed = 245659, n = 3, namedSample = TRUE)
+
     #'
     #' Currently, there are only sampling algorithms for most cases of compositions with repetition. There is ongoing work to expand these algorithms in the future.
     #'
-    #' ## Sampling Partitions of Groups of Varying Sizes with `comboGroupsSample`
+    #' ## Sampling Partitions of Groups with `comboGroupsSample`
     #'
-    #' Just as we can generate random samples of combinations and permutations, we are also able to generate random samples of partitions of groups of varying sizes. There are many problems that present in this manner. Below, we examine one involving playing cards.
+    #' Just as we can generate random samples of combinations and permutations, we are also able to generate random samples of partitions of groups as well. There are many problems that present in this manner. Below, we examine one involving playing cards.
     #'
     #' Let's say we have 4 players and each player is to have 3 cards a piece. Given that the deck is shuffled, the dealer then distributes 12 cards.
     #'
@@ -296,7 +297,7 @@ reprex::reprex({
     #'
     #' ## Base R
     #'
-    #' Just as we saw before, we could easily produce a brute force approach that would work well with small cases, but would become unmanagemable very quickly. For example:
+    #' Just as we saw before, we could easily produce a brute force approach that would work well with small cases, but would become unmanageable very quickly. For example:
     #'
 
     naive_rank <- function(v, m, comb) {
@@ -310,7 +311,7 @@ reprex::reprex({
     comb = comboSample(25, 12, sampleVec = 2e6)[1, ]
 
     system.time(print(naive_rank(25, 12, comb)))
-    #'
+
     #'
     #' ## RcppAlgos Solutions
     #'
@@ -326,7 +327,7 @@ reprex::reprex({
 
     ## comb was provided above
     system.time(print(comboRank(comb, v = 25)))
-    #'
+
     #'
     #' All that is needed is the original vector that was used to produce the results and whether or not repetition is used via the `repetition` or `freqs` arguments. The width is determined automatically by the input.
     #'
@@ -341,7 +342,7 @@ reprex::reprex({
     combs
 
     comboRank(combs, v = 50)
-    #'
+
     #'
     #' ## `permuteRank`
     #'
@@ -357,7 +358,7 @@ reprex::reprex({
     ## Note you can name the inputs
     permuteRank(p5 = perms_len_5, p8 = perms_len_8,
                 v = 100, freqs = rep(1:5, 20))
-    #'
+
     #'
     #' ## `partitionsRank`
     #'
@@ -367,7 +368,7 @@ reprex::reprex({
     parts
 
     partitionsRank(parts, v = 50, target = 100, repetition = TRUE)
-    #'
+
     #'
     #' ## `compositionsRank`
     #'

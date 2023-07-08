@@ -1,11 +1,11 @@
 \name{comboGroupsSample}
 \alias{comboGroupsSample}
 \title{
-Sample Partitions of a Vector into Groups of Varying Sizes
+Sample Partitions of a Vector into Groups
 }
 \description{
     \itemize{
-        \item Generate a specific (lexicographically) or random sample of partitions of groups  of varying sizes.
+        \item Generate a specific (lexicographically) or random sample of partitions of groups.
         \item Produce results in parallel using the \code{Parallel} or \code{nThreads} arguments.
         \item GMP support allows for exploration where the number of results is large.
     }
