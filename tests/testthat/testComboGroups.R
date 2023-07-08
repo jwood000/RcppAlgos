@@ -272,6 +272,22 @@ test_that("comboGroups produces correct results when groups vary", {
     expect_equal(comboGroups(10, grpSizes = 1:4, lower = 201, upper = 300),
                  comboGroups(10, grpSizes = 1:4)[201:300, ])
 
+    # comboGroupsCount(v = sum(2:8), grpSizes = 2:8)
+    # Big Integer ('bigz') :
+    #     [1] 2043503369875369321920000
+    v <- seq_len(sum(2:8))
+    r <- c()
+
+    for (i in 8:2) {
+        r <- c(v[1:i], r)
+        v <- setdiff(v, v[1:i])
+    }
+
+    t <- comboGroups(v = sum(2:8), grpSizes = 2:8,
+                     lower = "2043503369875369321920000")[1, ]
+
+    expect_equal(unname(t), r)
+
     expect_equal(comboGroups(3, grpSizes = 1:2),
                  comboGroupsSample(
                      3, grpSizes = 1:2,

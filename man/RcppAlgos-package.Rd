@@ -26,7 +26,7 @@ The \strong{RcppAlgos} package attacks age-old problems in combinatorics and com
                     \itemize{
                         \item{\preformatted{c_iter = comboIter(10000, 100)
 bigSamp = gmp::urand.bigz(3, gmp::log2.bigz(comboCount(10000, 100)))
-iter[[bigSamp]]}}
+c_iter[[bigSamp]] ## flexible iterator allows random sampling}}
                         \item{\preformatted{p_iter = partitionsIter(5000, 100, target = 6000)
 p_iter[[1e9]] ## start iterating from index = 1e9
 p_iter@nextIter()
