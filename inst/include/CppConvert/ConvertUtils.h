@@ -5,7 +5,7 @@
 #include "cpp11/sexp.hpp"
 
 #include "Constants.h"
-#include "GmpxxCopy.h"
+#include <gmpxx.h>
 #include <vector>
 #include <string>
 #include <cmath>

@@ -1,4 +1,4 @@
-#include "CppConvert/GmpxxCopy.h"
+#include <gmpxx.h>
 
 void SumSection(const mpz_class &n, mpz_class &res) {
     mpz_class nIter(n / 3);

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "CppConvert/GmpxxCopy.h"
+#include <gmpxx.h>
 #include <vector>
 
 void CountPartsRepLenCap(mpz_class &res, std::vector<mpz_class> &p1,

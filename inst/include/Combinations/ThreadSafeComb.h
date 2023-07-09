@@ -1,7 +1,7 @@
 #pragma once
 
 #include <vector>
-#include "CppConvert/GmpxxCopy.h"
+#include <gmpxx.h>
 
 template <typename T>
 void ThreadSafeCombinations(T* mat, const std::vector<T> &v, int n, int m,

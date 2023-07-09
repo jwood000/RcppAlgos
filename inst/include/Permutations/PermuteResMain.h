@@ -1,7 +1,7 @@
 #pragma once
 
 #include "Constraints/UserConstraintFuns.h"
-#include "CppConvert/GmpxxCopy.h"
+#include <gmpxx.h>
 
 template <typename T>
 void PermuteResMain(T* mat, const std::vector<T> &v, const funcPtr<T> myFun,

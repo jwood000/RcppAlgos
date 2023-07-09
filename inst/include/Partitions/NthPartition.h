@@ -1,7 +1,7 @@
 #pragma once
 
 #include "Partitions/PartitionsTypes.h"
-#include "CppConvert/GmpxxCopy.h"
+#include <gmpxx.h>
 
 using nthPartsPtr = std::vector<int> (*const)(int n, int m, int cap, int k,
                                       double dblIdx, const mpz_class &mpzIdx);

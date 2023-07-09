@@ -1,7 +1,7 @@
 #pragma once
 
 #include <vector>
-#include "CppConvert/GmpxxCopy.h"
+#include <gmpxx.h>
 
 template <typename T>
 void ConstraintsSpecial(const std::vector<T> &v,

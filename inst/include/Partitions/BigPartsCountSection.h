@@ -1,6 +1,6 @@
 #pragma once
 
-#include "CppConvert/GmpxxCopy.h"
+#include <gmpxx.h>
 
 // This is the maximum n such that SumSection(n) < 2^53 - 1.
 // After this, we must use void SumSection(mpz_class n, mpz_class res)

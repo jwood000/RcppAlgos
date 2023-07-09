@@ -1,6 +1,6 @@
 #pragma once
 
-#include "CppConvert/GmpxxCopy.h"
+#include <gmpxx.h>
 #include <deque>
 
 void nChooseKGmp(mpz_class &result, int n, int m);

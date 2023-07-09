@@ -1,7 +1,7 @@
 #pragma once
 
 #include <vector>
-#include "CppConvert/GmpxxCopy.h"
+#include <gmpxx.h>
 
 using nthCombPtr = std::vector<int> (*const)(int n, int m, double dblIdx,
                                      const mpz_class &mpzIdx,

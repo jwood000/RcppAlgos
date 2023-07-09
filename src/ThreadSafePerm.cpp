@@ -1,6 +1,6 @@
 #include "Permutations/PermuteManager.h"
 #include "NthResult.h"
-#include "CppConvert/GmpxxCopy.h"
+#include <gmpxx.h>
 #include <thread>
 
 template <typename T>

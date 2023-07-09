@@ -3,7 +3,7 @@
 #include "PrimesPolRho.h"
 #include <algorithm>
 #include <vector>
-#include "CppConvert/GmpxxCopy.h"
+#include <gmpxx.h>
 
 template <typename typeReturn>
 void GetPrimeFactors(std::int64_t &t, std::vector<typeReturn> &factors);

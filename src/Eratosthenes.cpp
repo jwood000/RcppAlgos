@@ -503,7 +503,6 @@ namespace PrimeSieve {
 
         // vector used for sieving
         std::vector<bool> sieve(segSize, true);
-        std::size_t strt = 0u;
 
         if (minNum != lowerBnd) {
             for (std::size_t i = strt30030; i < svPriOneSize; ++i) {
@@ -556,7 +555,6 @@ namespace PrimeSieve {
 
             std::fill(sieve.begin(), sieve.end(), true);
             lowerBnd += segSize;
-            ++strt;
         }
 
         for (; lowerBnd < flrMaxNum; lowerBnd += segSize) {
