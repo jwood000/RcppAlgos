@@ -50,8 +50,8 @@ std::unique_ptr<ComboGroup> GroupPrep(
     bool IsSame = true;
     bool OneGrp = false;
 
-    int grpSize;
-    int numGroups;
+    int grpSize = 0;
+    int numGroups = 0;
     std::vector<int> vGrpSize;
 
     SetType(myType, Rv);
