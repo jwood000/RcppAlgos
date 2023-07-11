@@ -1,3 +1,11 @@
+# RcppAlgos 2.8.1
+
+## Bug Fixes:
+
+* Fixed integer overflow bug when converting vector size to number of rows in a matrix. See [Issue #45](<https://github.com/jwood000/RcppAlgos/issues/45>).
+
+* Fixed constraint permutation iterator. Before this fix, if a user requested a certain number of results such that the `std::next_permutation` algorithm was not exhausted, the next iteration requested would be nonsensical.
+
 # RcppAlgos 2.8.0
 
 ## New Features:

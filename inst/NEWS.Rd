@@ -1,7 +1,17 @@
 \name{NEWS}
 \title{News for Package \pkg{RcppAlgos}}
 
-\section{Changes in RcppAlgos version 2.8.0 (Release date: 2023-07-09)}{
+\section{Changes in RcppAlgos version 2.8.1 (Release date: 2023-07-18)}{
+    \itemize{
+        \item Bug Fixes:
+        \itemize{
+            \item Fixed integer overflow bug when converting vector size to number of rows in a matrix. See \href{https://github.com/jwood000/RcppAlgos/issues/45}{Issue #45}.
+            \item Fixed constraint permutation iterator. Before this fix, if a user requested a certain number of results such that the \code{std::next_permutation} algorithm was not exhausted, the next iteration requested would be nonsensical.
+        }
+    }
+}
+
+\section{Changes in RcppAlgos version 2.8.0 (Release date: 2023-07-10)}{
     \itemize{
         \item New Features:
         \itemize{
