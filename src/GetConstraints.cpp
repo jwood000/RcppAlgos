@@ -74,8 +74,8 @@ SEXP ConstraintsReturn(
                           nThreads, IsComb, IsRep, IsMult, bUpper,
                           xtraCol, IsGmp);
 
-        const int vecLen = cnstrntVec.size();
-        const int numResult = vecLen / width;
+        const std::size_t vecLen = cnstrntVec.size();
+        const std::size_t numResult = vecLen / width;
 
         cpp11::sexp res = Rf_allocMatrix(INTSXP, numResult, nCols);
         int* matInt = INTEGER(res);
@@ -87,6 +87,7 @@ SEXP ConstraintsReturn(
     } else if (IsVecRet) {
         std::vector<double> cnstrntVec;
         std::vector<double> resVec;
+
         const double vecMax = std::floor(cnstrntVec.max_size() / width);
         const double upperBound = std::min(vecMax, dblIntMax);
         const int maxRows = std::min(upperBound, userNum);
@@ -97,11 +98,12 @@ SEXP ConstraintsReturn(
                           nThreads, IsComb, IsRep, IsMult, bUpper,
                           xtraCol, IsGmp);
 
-        const int vecLen = cnstrntVec.size();
-        const int numResult = vecLen / width;
+        const std::size_t vecLen = cnstrntVec.size();
+        const std::size_t numResult = vecLen / width;
 
         cpp11::sexp res = Rf_allocMatrix(REALSXP, numResult, nCols);
         double* matDbl = REAL(res);
+
         VectorToMatrix(cnstrntVec, resVec, matDbl,
                        part.target, numResult, width,
                        upperBound, xtraCol, part.isPart);

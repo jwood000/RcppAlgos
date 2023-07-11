@@ -90,12 +90,15 @@ SEXP CnstrntsToR::GetNextN(int n) {
     if (RTYPE == INTSXP) {
         std::vector<int> resVec;
         std::vector<int> cnstrntVec;
-        GetNSolutions(compVec, CnstrtInt, cnstrntVec, resVec, vInt, tarIntVals, n);
+
+        GetNSolutions(
+            compVec, CnstrtInt, cnstrntVec, resVec, vInt, tarIntVals, n
+        );
 
         if (cnstrntVec.size()) {
             SetCurrVec(cnstrntVec, resVec, currIntVec, width, KeepRes);
-            const int vecLen = cnstrntVec.size();
-            const int numResult = vecLen / m;
+            const std::size_t vecLen = cnstrntVec.size();
+            const std::size_t numResult = vecLen / m;
 
             cpp11::sexp res = Rf_allocMatrix(INTSXP, numResult, nCols);
             int* matInt = INTEGER(res);
@@ -111,8 +114,8 @@ SEXP CnstrntsToR::GetNextN(int n) {
 
         if (cnstrntVec.size()) {
             SetCurrVec(cnstrntVec, resVec, currDblVec, width, KeepRes);
-            const int vecLen = cnstrntVec.size();
-            const int numResult = vecLen / m;
+            const std::size_t vecLen = cnstrntVec.size();
+            const std::size_t numResult = vecLen / m;
 
             cpp11::sexp res = Rf_allocMatrix(REALSXP, numResult, nCols);
             double* matNum = REAL(res);

@@ -22,6 +22,7 @@ static void Finalizer(SEXP ext) {
 //                    IsGmp, IsFull, IsComp, & IsWeak
 //
 // freqInfo contains: myReps & freqs
+
 [[cpp11::register]]
 SEXP CombClassNew(SEXP RVals, SEXP RboolVec, SEXP freqInfo, SEXP Rparallel,
                   SEXP RstdFun, SEXP Rrho, SEXP R_RFunVal, SEXP RmainFun,

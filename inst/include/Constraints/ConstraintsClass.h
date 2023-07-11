@@ -26,6 +26,7 @@ protected:
 
     bool check_0;
     bool check_1;
+    bool more_perms;
 
     std::vector<int> z;
     std::vector<T> testVec;

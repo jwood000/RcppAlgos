@@ -217,6 +217,8 @@ void PollardRhoMpzT(mpz_class &n, unsigned long int a,
             for (std::size_t i = 0; i < k; ++i) {
                 x = (x * x) % n + a;
             }
+
+            y = x;
         }
 
         factor_found:

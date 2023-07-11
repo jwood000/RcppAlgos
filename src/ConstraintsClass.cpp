@@ -41,9 +41,9 @@ double ConstraintsClass<T>::GetBound(double tarMin, double partVal) {
 
 template <typename T>
 bool ConstraintsClass<T>::LowerBound(
-        const std::vector<T> &v, T tarMin,
-        T partVal, int &idx, int low
-    ) {
+    const std::vector<T> &v, T tarMin,
+    T partVal, int &idx, int low
+) {
 
     const double bound = GetBound(tarMin, partVal);
 
@@ -65,9 +65,9 @@ bool ConstraintsClass<T>::LowerBound(
 
 template <typename T>
 void ConstraintsClass<T>::LowerBoundLast(
-        const std::vector<T> &v, T tarMin,
-        T partVal, int &idx, int low
-    ) {
+    const std::vector<T> &v, T tarMin,
+    T partVal, int &idx, int low
+) {
 
     const double bound = GetBound(tarMin, partVal);
 
@@ -100,8 +100,8 @@ void ConstraintsClass<T>::SetComparison(const std::string &currComp) {
 
 template <typename T>
 void ConstraintsClass<T>::PopulateVec(
-        const std::vector<T> &v, std::vector<T> &cnstrntVec, int limit
-    ) {
+    const std::vector<T> &v, std::vector<T> &cnstrntVec, int limit
+) {
 
     if (IsComb) {
         for (int k = 0; k < m; ++k) {
@@ -116,18 +116,21 @@ void ConstraintsClass<T>::PopulateVec(
             }
 
             ++count;
-        } while (count < limit && std::next_permutation(z.begin(), z.end()));
+            more_perms = std::next_permutation(z.begin(), z.end());
+        } while (more_perms && count < limit);
     }
 }
 
 template <typename T>
 void ConstraintsClass<T>::FilterProspects(
-        const std::vector<T> &v, const std::vector<T> &targetVals,
-        std::vector<T> &cnstrntVec, std::vector<T> &resVec, int limit
-    ) {
+    const std::vector<T> &v, const std::vector<T> &targetVals,
+    std::vector<T> &cnstrntVec, std::vector<T> &resVec, int limit
+) {
 
-    for (int i = 0; i < m; ++i) {
-        testVec[i] = v[z[i]];
+    if (!more_perms) {
+        for (int i = 0; i < m; ++i) {
+            testVec[i] = v[z[i]];
+        }
     }
 
     const T partialVal = fun(testVec, m1);
@@ -148,6 +151,7 @@ void ConstraintsClass<T>::FilterProspects(
             }
 
             check_1 = count < limit;
+            if (more_perms) break;
         }
 
         check_0 = z[m1] != maxZ;
@@ -163,9 +167,9 @@ void ConstraintsClass<T>::FilterProspects(
 
 template <typename T>
 void ConstraintsClass<T>::GetSolutions(
-        const std::vector<T> &v, const std::vector<T> &targetVals,
-        std::vector<T> &cnstrntVec, std::vector<T> &resVec, int limit
-    ) {
+    const std::vector<T> &v, const std::vector<T> &targetVals,
+    std::vector<T> &cnstrntVec, std::vector<T> &resVec, int limit
+) {
 
     check_1 = count < limit;
 
@@ -198,8 +202,11 @@ void ConstraintsClass<T>::GetSolutions(
 
         while (check_0 && check_1) {
             FilterProspects(v, targetVals, cnstrntVec, resVec, limit);
-            NextSection(v, targetVals, testVec, z,
-                        fun, compTwo, m, m1, m2);
+
+            if (!more_perms) {
+                NextSection(v, targetVals, testVec, z,
+                            fun, compTwo, m, m1, m2);
+            }
 
             const auto check_point_2 = std::chrono::steady_clock::now();
 
@@ -221,6 +228,7 @@ ConstraintsClass<T>::ConstraintsClass(
     ftype(GetFunType(myFun)), ftesttype(GetFunType(myFunTest)),
     fun(GetFuncPtr<T>(myFun)), partial(GetPartialPtr<T>(myFun)) {
 
+    more_perms = false;
     z.assign(m, 0);
     testVec.assign(m, 0);
     count = 0;
@@ -228,11 +236,11 @@ ConstraintsClass<T>::ConstraintsClass(
 
 template <typename T>
 std::unique_ptr<ConstraintsClass<T>> MakeConstraints(
-        const std::vector<std::string> &comparison, const std::string &myFun,
-        const std::string &myFunTest, std::vector<int> &Reps,
-        const std::vector<T> &targetVals, ConstraintType ctype, int n,
-        int m, bool IsComb, bool xtraCol, bool IsMult, bool IsRep
-    ) {
+    const std::vector<std::string> &comparison, const std::string &myFun,
+    const std::string &myFunTest, std::vector<int> &Reps,
+    const std::vector<T> &targetVals, ConstraintType ctype, int n,
+    int m, bool IsComb, bool xtraCol, bool IsMult, bool IsRep
+) {
 
     if (ctype == ConstraintType::PartitionEsque) {
         if (IsMult) {
@@ -270,13 +278,13 @@ template class ConstraintsClass<int>;
 template class ConstraintsClass<double>;
 
 template std::unique_ptr<ConstraintsClass<int>> MakeConstraints(
-        const std::vector<std::string>&, const std::string&,
-        const std::string&, std::vector<int>&, const std::vector<int>&,
-        ConstraintType, int, int, bool, bool, bool, bool
-    );
+    const std::vector<std::string>&, const std::string&,
+    const std::string&, std::vector<int>&, const std::vector<int>&,
+    ConstraintType, int, int, bool, bool, bool, bool
+);
 
 template std::unique_ptr<ConstraintsClass<double>> MakeConstraints(
-        const std::vector<std::string>&, const std::string&,
-        const std::string&, std::vector<int>&, const std::vector<double>&,
-        ConstraintType, int, int, bool, bool, bool, bool
-    );
+    const std::vector<std::string>&, const std::string&,
+    const std::string&, std::vector<int>&, const std::vector<double>&,
+    ConstraintType, int, int, bool, bool, bool, bool
+);
