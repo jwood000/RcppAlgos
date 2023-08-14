@@ -34,7 +34,7 @@ namespace CppConvert {
         }
 
         return result;
-    };
+    }
 
     template <typename T>
     void convertPrimitive(SEXP input, T &result, VecType myType,
@@ -140,7 +140,7 @@ namespace CppConvert {
                 );
             }
         }
-    };
+    }
 
     template <typename T>
     void convertVector(SEXP input, std::vector<T> &result, VecType myType,

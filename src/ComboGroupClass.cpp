@@ -6,7 +6,7 @@
 #include <memory>
 
 ComboGroup::ComboGroup(int n_, int numGroups, int i1, int i2, int bnd) :
-    n(n_), r(numGroups), idx1(i1), idx2(i2), curr_bnd(bnd) {};
+    n(n_), r(numGroups), idx1(i1), idx2(i2), curr_bnd(bnd) {}
 
 void ComboGroup::SetCount() {
     computedRows = numGroupCombs();

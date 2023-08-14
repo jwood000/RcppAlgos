@@ -22,7 +22,7 @@ namespace CppConvert {
         } else {
             return ISNAN(val);
         }
-    };
+    }
 
     template <typename T>
     std::vector<T> GetNumVec(SEXP Rv) {
@@ -38,7 +38,7 @@ namespace CppConvert {
         }
 
         return v;
-    };
+    }
 
     int rawExport(char* raw, mpz_class value, std::size_t totals) {
 
@@ -51,7 +51,7 @@ namespace CppConvert {
         mpz_export(&r[2], 0, 1, intSize, 0, 0, value.get_mpz_t());
 
         return totals;
-    };
+    }
 
     void QuickSort(std::vector<mpz_class> &arr, int left,
                    int right, std::vector<std::size_t> &lens) {
@@ -82,7 +82,7 @@ namespace CppConvert {
         /* recursion */
         if (left < j) QuickSort(arr, left, j, lens);
         if (i < right) QuickSort(arr, i, right, lens);
-    };
+    }
 
     SEXP GetCount(bool IsGmp, mpz_class numMpz, double numDbl) {
 

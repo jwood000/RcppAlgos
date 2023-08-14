@@ -144,7 +144,7 @@ namespace CppConvert {
         }
 
         if (foundError) cpp11::stop(myError.c_str());
-    };
+    }
 
     void convertMpzClass(SEXP input, mpz_class &result,
                          const std::string &nameOfObject, bool negPoss) {
@@ -265,5 +265,5 @@ namespace CppConvert {
         }
 
         if (foundError) cpp11::stop(myError.c_str());
-    };
+    }
 }

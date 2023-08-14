@@ -32,7 +32,7 @@ Group::Group(const std::vector<int> &_grp,
              const std::vector<int> &_ubound,
              const std::vector<int> &_lbound,
              const std::vector<bool> &_same) :
-    ubound(_ubound), lbound(_lbound), same(_same), grp(_grp) {};
+    ubound(_ubound), lbound(_lbound), same(_same), grp(_grp) {}
 
 void Group::balance(std::vector<int> &z, int idx1,
                     int curr_bnd, int i) const {

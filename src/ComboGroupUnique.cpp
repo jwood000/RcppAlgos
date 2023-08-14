@@ -89,7 +89,7 @@ mpz_class numCmbGrpUniGmp(const std::vector<int> &grp, int n) {
 ComboGroupUnique::ComboGroupUnique(
     int n_, int numGroups, int i1, int i2,
     int bnd, const std::vector<int> &grp_
-) : ComboGroup(n_, numGroups, i1, i2, bnd), grp(grp_) {};
+) : ComboGroup(n_, numGroups, i1, i2, bnd), grp(grp_) {}
 
 bool ComboGroupUnique::nextComboGroup(std::vector<int> &z) {
     return nextCmbGrpUni(z, grp, idx1, idx2, curr_bnd);

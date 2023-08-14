@@ -94,7 +94,7 @@ mpz_class numCmbGrpGenGmp(const std::vector<int> &grp, int n) {
 
 ComboGroupGeneral::ComboGroupGeneral(
     int n_, int numGroups, int i1, int i2, int bnd, Group MyGrp_, bool OneGrp_
-) : ComboGroup(n_, numGroups, i1, i2, bnd), MyGrp(MyGrp_), OneGrp(OneGrp_) {};
+) : ComboGroup(n_, numGroups, i1, i2, bnd), MyGrp(MyGrp_), OneGrp(OneGrp_) {}
 
 bool ComboGroupGeneral::nextComboGroup(std::vector<int> &z) {
     return nextCmbGrpGen(z, idx1, idx2, curr_bnd, MyGrp);

@@ -9,7 +9,7 @@ int PartitionsEsqueRep<T>::GetLowerBound(
 ) {
 
     const int lastElem = n - 1;
-    const int lastCol = m - 1;
+    const int lastCol  = m - 1;
 
     std::vector<T> vPass(m);
     std::fill(vPass.begin(), vPass.end(), v.back());
