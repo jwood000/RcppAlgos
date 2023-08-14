@@ -75,7 +75,11 @@ public:
     );
 
     int GetCount() const {return count;}
-    void Reset() {count = 0;}
+
+    void Reset() {
+        more_perms = false;
+        count = 0;
+    }
 };
 
 template <typename T>
