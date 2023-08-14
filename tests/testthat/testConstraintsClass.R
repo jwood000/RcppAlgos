@@ -5,16 +5,25 @@ test_that("ConstraintsClass produces correct results", {
     constraintsClassTest <- function(v_pass, m_pass = NULL, rep = FALSE,
                                      fr = NULL, tar, fun, comp,
                                      keep = FALSE, tol = NULL,
-                                     expect_zero_res = FALSE) {
+                                     expect_zero_res = FALSE, IsComb = TRUE) {
 
         myResults <- vector(mode = "logical")
 
-        a <- comboIter(v_pass, m_pass, rep, fr, constraintFun = fun,
-                       comparisonFun = comp, limitConstraints = tar,
-                       keepResults = keep, tolerance = tol)
-        b <- comboGeneral(v_pass, m_pass, rep, fr,constraintFun = fun,
-                          comparisonFun = comp, limitConstraints = tar,
-                          keepResults = keep, tolerance = tol)
+        if (IsComb) {
+            a <- comboIter(v_pass, m_pass, rep, fr, constraintFun = fun,
+                           comparisonFun = comp, limitConstraints = tar,
+                           keepResults = keep, tolerance = tol)
+            b <- comboGeneral(v_pass, m_pass, rep, fr,constraintFun = fun,
+                              comparisonFun = comp, limitConstraints = tar,
+                              keepResults = keep, tolerance = tol)
+        } else {
+            a <- permuteIter(v_pass, m_pass, rep, fr, constraintFun = fun,
+                             comparisonFun = comp, limitConstraints = tar,
+                             keepResults = keep, tolerance = tol)
+            b <- permuteGeneral(v_pass, m_pass, rep, fr,constraintFun = fun,
+                                comparisonFun = comp, limitConstraints = tar,
+                                keepResults = keep, tolerance = tol)
+        }
 
         myRows <- nrow(b)
         myResults <- c(myResults,
@@ -116,13 +125,26 @@ test_that("ConstraintsClass produces correct results", {
                                      comp = c("<=",">="),
                                      tar = c(20.05669, 60.93901), keep = TRUE))
 
+    ## This test fails for version prior to 2.8.1
+    expect_true(constraintsClassTest(rSet, 7, TRUE, fun = "sum",
+                                     comp = c("<=",">="),
+                                     tar = c(20.05669, 60.93901), keep = TRUE,
+                                     IsComb = FALSE))
+
     ## no viable results 1st
     expect_true(constraintsClassTest(10, 7, fr = rep(2:3, 5), fun = "sum",
                                      comp = ">", tar = 100,
                                      expect_zero_res = TRUE))
+
     expect_true(constraintsClassTest(10, 7, fr = rep(3, 10), fun = "sum",
                                      comp = c("<=",">"),
                                      tar = c(50, 47), keep = TRUE))
+
+    ## This test fails for version prior to 2.8.1
+    expect_true(constraintsClassTest(10, 7, fr = rep(3, 10), fun = "sum",
+                                     comp = c("<=",">"),
+                                     tar = c(50, 47), keep = TRUE,
+                                     IsComb = FALSE))
 
     expect_true(constraintsClassTest(10, 7, fr = rep(3, 10), fun = "max",
                                      comp = c("<=",">"), tar = c(9, 7)))
@@ -146,26 +168,33 @@ test_that("ConstraintsClass produces correct results", {
                                      comp = c("<=",">="),
                                      tar = c(-2000, -5000),
                                      keep = TRUE))
+
     set.seed(42)
     s <- runif(10, -5, 5)
-    expect_true(constraintsClassTest(s, 5, fr = rep(2:3, 5),
-                                     fun = "prod",
-                                     comp = ">",
-                                     tar = 1000,
-                                     keep = TRUE))
+    expect_true(constraintsClassTest(
+        s, 5, fr = rep(2:3, 5), fun = "prod",
+        comp = ">", tar = 1000, keep = TRUE
+    ))
 
-    expect_true(constraintsClassTest(s, 5,
-                                     fun = "prod",
-                                     comp = "==",
-                                     tar = 100,
-                                     tol = 10,
-                                     keep = TRUE))
+    expect_true(constraintsClassTest(
+        s, 5, fun = "prod", comp = "==", tar = 100, tol = 10, keep = TRUE
+    ))
 
     ## Testing sums in a range
-    expect_true(constraintsClassTest(c(NA, 1:10), 8, TRUE,
-                                     fun = "sum",
-                                     comp = c("=>","=<"),
-                                     tar = c(72, 78)))
+    expect_true(constraintsClassTest(
+        c(NA, 1:10), 8, TRUE, fun = "sum", comp = c("=>","=<"), tar = c(72, 78)
+    ))
+
+    ## This test fails for version prior to 2.8.1
+    expect_true(constraintsClassTest(
+        c(NA, 1:10), 8, TRUE, fun = "sum",
+        comp = c("=>","=<"), tar = c(72, 78), IsComb = FALSE
+    ))
+
+    ## This test fails for version prior to 2.8.1
+    expect_true(constraintsClassTest(0:10, 8, TRUE, fun = "sum",
+                                     comp = c(">","<"), tar = c(9, 11),
+                                     IsComb = FALSE))
 
     comp1 = c("<", "<=")
     comp2 = c(">", ">=")
