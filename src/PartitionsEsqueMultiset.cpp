@@ -2,11 +2,11 @@
 
 template <typename T>
 int PartitionsEsqueMultiset<T>::GetLowerBound(
-        const std::vector<T> &v, std::vector<int> &z,
-        const funcPtr<T> fun, const reducePtr<T> reduce,
-        const partialPtr<T> partial, T currPartial,
-        int n, int m, int strt
-    ) {
+    const std::vector<T> &v, std::vector<int> &z,
+    const funcPtr<T> fun, const reducePtr<T> reduce,
+    const partialPtr<T> partial, T currPartial,
+    int n, int m, int strt
+) {
 
     const int lastCol = m - 1;
     const int lenMinusM = freqs.size() - m;
@@ -122,11 +122,11 @@ int PartitionsEsqueMultiset<T>::GetLowerBound(
 
 template <typename T>
 void PartitionsEsqueMultiset<T>::NextSection(
-        const std::vector<T> &v, const std::vector<T> &targetVals,
-        std::vector<T> &testVec, std::vector<int> &z,
-        const funcPtr<T> f, const compPtr<T> comp,
-        int m, int m1, int m2
-    ) {
+    const std::vector<T> &v, const std::vector<T> &targetVals,
+    std::vector<T> &testVec, std::vector<int> &z,
+    const funcPtr<T> f, const compPtr<T> comp,
+    int m, int m1, int m2
+) {
 
     for (int i = m2; i >= 0 && !this->check_0; --i) {
         if (z[i] != freqs[pentExtreme + i]) {
