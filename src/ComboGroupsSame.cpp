@@ -1,4 +1,4 @@
-#include "ComboGroup/ComboGroupsSame.h"
+#include "ComboGroups/ComboGroupsSame.h"
 
 // ************** Overview of the Crucial Part of the Algorithm ***************
 // ----------------------------------------------------------------------------

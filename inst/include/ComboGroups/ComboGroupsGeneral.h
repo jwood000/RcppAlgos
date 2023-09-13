@@ -1,6 +1,6 @@
 #pragma once
 
-#include "ComboGroup/ComboGroupsTemplate.h"
+#include "ComboGroups/ComboGroupsTemplate.h"
 
 class ComboGroupsGeneral : public ComboGroupsTemplate {
 private:

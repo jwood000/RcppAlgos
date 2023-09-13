@@ -1,4 +1,4 @@
-#include "ComboGroup/GroupHelperClass.h"
+#include "ComboGroups/GroupHelperClass.h"
 
 void GroupHelper::situate(std::vector<int> &z, int idx1, int offset) const {
     int idx3 = idx1 + 1;

@@ -1,6 +1,6 @@
-#include "ComboGroup/ComboGroupsGeneral.h"
-#include "ComboGroup/ComboGroupsUnique.h"
-#include "ComboGroup/ComboGroupsSame.h"
+#include "ComboGroups/ComboGroupsGeneral.h"
+#include "ComboGroups/ComboGroupsUnique.h"
+#include "ComboGroups/ComboGroupsSame.h"
 #include <algorithm>
 #include <numeric>
 #include <memory>

@@ -1,7 +1,7 @@
+#include "ComboGroups/ComboGroupsTemplate.h"
 #include "Constraints/ConstraintsUtils.h"
 #include "Partitions/PartitionsDesign.h"
 #include "Partitions/PartitionsCount.h"
-#include "ComboGroup/ComboGroupClass.h"
 #include "ComputedCount.h"
 #include "SetUpUtils.h"
 
@@ -115,9 +115,11 @@ SEXP ComboGroupsCountCpp(SEXP Rv, SEXP RNumGroups, SEXP RGrpSize) {
     std::vector<double> vNum;
     VecType myType = VecType::Integer;
 
-    std::unique_ptr<ComboGroup> CmbGrpCls = GroupPrep(
-        vInt, vNum, n, myType, Rv, RNumGroups, RGrpSize
-    );
+    SetType(myType, Rv);
+    SetBasic(Rv, vNum, vInt, n, myType);
+
+    std::unique_ptr<ComboGroupsTemplate> CmbGrpCls =
+        GroupPrep(Rv, RNumGroups, RGrpSize, n);
 
     CmbGrpCls->SetCount();
     return CmbGrpCls->GetCount();

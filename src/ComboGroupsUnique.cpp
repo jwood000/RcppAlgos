@@ -1,4 +1,4 @@
-#include "ComboGroup/ComboGroupsUnique.h"
+#include "ComboGroups/ComboGroupsUnique.h"
 
 // This algorithm is for the case where the length of each group is different.
 // The skeleton of the algorithm is exactly the same as the special case. The

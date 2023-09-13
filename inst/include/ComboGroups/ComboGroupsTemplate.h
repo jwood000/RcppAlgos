@@ -3,7 +3,7 @@
 #include "cpp11/strings.hpp"
 #include "cpp11/list.hpp"
 
-#include "ComboGroup/GroupHelperClass.h"
+#include "ComboGroups/GroupHelperClass.h"
 #include "Combinations/NthCombination.h"
 #include "Combinations/BigComboCount.h"
 #include "Combinations/ComboCount.h"
