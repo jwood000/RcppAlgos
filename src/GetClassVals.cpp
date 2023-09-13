@@ -15,10 +15,10 @@ SEXP CopyRv(SEXP Rv, const std::vector<int> &vInt,
 }
 
 [[cpp11::register]]
-SEXP GetClassVals(SEXP Rv, SEXP Rm, SEXP RisRep, SEXP RFreqs,
-                  SEXP RIsComb, SEXP stdFun, SEXP RThreads,
-                  SEXP RmaxThreads, SEXP RIsCnstrd,
-                  SEXP RIsComposition, SEXP RIsWeak) {
+SEXP GetClassVals(SEXP Rv, SEXP Rm, SEXP RisRep, SEXP RFreqs, SEXP RIsComb,
+                  SEXP stdFun, SEXP RThreads, SEXP RmaxThreads, SEXP RIsCnstrd,
+                  SEXP RIsComposition, SEXP RIsWeak, SEXP RNumGroups,
+                  SEXP RGrpSize, SEXP RRetType) {
 
     int n = 0;
     int m = 0;
@@ -80,9 +80,9 @@ SEXP GetClassVals(SEXP Rv, SEXP Rm, SEXP RisRep, SEXP RFreqs,
         cpp11::stop("FUN must be a function!");
     }
 
-    // RVals is a list containing: v, vNum, vInt, m,
-    // RcompRows, nThreads, maxThreads
-    cpp11::sexp RVals = Rf_allocVector(VECSXP, 7);
+    // RVals is a list containing: v, vNum, vInt, m, RcompRows, nThreads,
+    // maxThreads, nGrps, grpSizes, retType (last 3 for comboGroups)
+    cpp11::sexp RVals = Rf_allocVector(VECSXP, 10);
     SET_VECTOR_ELT(RVals, 0, sexpVec);
     SET_VECTOR_ELT(RVals, 1, cpp11::writable::doubles(vNum));
     SET_VECTOR_ELT(RVals, 2, cpp11::writable::integers(vInt));
@@ -90,6 +90,9 @@ SEXP GetClassVals(SEXP Rv, SEXP Rm, SEXP RisRep, SEXP RFreqs,
     SET_VECTOR_ELT(RVals, 4, sexpNumRows);
     SET_VECTOR_ELT(RVals, 5, RmaxThreads);
     SET_VECTOR_ELT(RVals, 6, RThreads);
+    SET_VECTOR_ELT(RVals, 7, RNumGroups);
+    SET_VECTOR_ELT(RVals, 8, RGrpSize);
+    SET_VECTOR_ELT(RVals, 9, RRetType);
 
     const char *names[] = {
         "RVals", "bVec", "FreqsInfo", "applyFun", ""

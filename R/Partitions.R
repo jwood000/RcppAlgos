@@ -59,7 +59,7 @@ partitionsIter <- function(v, m = NULL, repetition = FALSE,
     stopifnot(is.numeric(v))
     InitVals <- .Call(`_RcppAlgos_GetClassVals`, v, m, repetition,
                       freqs, TRUE, NULL, nThreads, pkgEnv$nThreads,
-                      TRUE, FALSE, FALSE)
+                      TRUE, FALSE, FALSE, NULL, NULL, NULL)
 
     new("Partitions", InitVals, FALSE, "sum", "==",
         GetTarget(v, target), FALSE, tolerance, is.null(m))
