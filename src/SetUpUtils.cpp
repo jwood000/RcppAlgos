@@ -237,10 +237,10 @@ void SetBasic(SEXP Rv, std::vector<double> &vNum,
         myType = VecType::Integer;
 
         // numOnly = true, checkWhole = true, negPoss = true
-        CppConvert::convertPrimitive(Rv, seqEnd, myType,
-                                       "v, if v is not a character"
-                                       " and of length 1,",
-                                       true, true, true);
+        CppConvert::convertPrimitive(
+            Rv, seqEnd, myType, "v, if v is not a character"
+            " and of length 1,", true, true, true
+        );
 
         const int first = (seqEnd < 0) ? -1 : ((seqEnd == 0) ? 0 : 1);
         std::pair<int, int> mnmx = std::minmax(first, seqEnd);
@@ -248,8 +248,8 @@ void SetBasic(SEXP Rv, std::vector<double> &vNum,
 
         if (n >= maxVecSize) {
             cpp11::stop("Not enough memory! The vector you have"
-                         " requested is larger than %s",
-                         std::to_string(maxVecSize).c_str());
+                        " requested is larger than %s",
+                        std::to_string(maxVecSize).c_str());
         }
 
         vNum.resize(n);

@@ -16,6 +16,7 @@ private:
     SEXP ApplyReverse(int nRows);
 
 public:
+
     ComboApply(
         SEXP Rv, int Rm, SEXP RcompRows, const std::vector<int> &bVec,
         const std::vector<int> &Rreps, const std::vector<int> &Rfreqs,

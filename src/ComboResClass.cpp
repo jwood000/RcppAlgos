@@ -99,9 +99,11 @@ SEXP ComboRes::MatrixReturn(int nRows) {
     int nThreads = 1;
     bool LocalPar = Parallel;
     const int limit = (part.isPart) ?
-    ((part.ptype == PartitionType::RepCapped   ||
-      part.ptype == PartitionType::DstctCapped ||
-      part.ptype == PartitionType::DstctCappedMZ) ? 150000 : 40000) : 20000;
+        (
+            (part.ptype == PartitionType::RepCapped   ||
+             part.ptype == PartitionType::DstctCapped ||
+             part.ptype == PartitionType::DstctCappedMZ) ? 150000 : 40000
+        ) : 20000;
 
     SetThreads(LocalPar, maxThreads, nRows,
                myType, nThreads, sexpNThreads, limit);

@@ -11,11 +11,12 @@
 
 class Combo {
 private:
-    SEXP VecReturn();
+
     SEXP MatForward(int nRows);
     SEXP MatReverse(int nRows);
 
 protected:
+
     const int n;
     const int m;
     const int m1;
@@ -34,7 +35,7 @@ protected:
     const bool Parallel;
 
     double computedRows;
-    const VecType myType;
+    VecType myType;
     mpz_class computedRowsMpz;
 
     double dblTemp;
@@ -64,6 +65,7 @@ protected:
     bool prevIterAvailable;
     SEXP ToSeeLast(bool AdjustIdx = true);
     SEXP ToSeeFirst(bool AdjustIdx = true);
+    SEXP BasicVecReturn();
 
 public:
 
