@@ -1,16 +1,17 @@
 #pragma once
 
-#include "ComboGroup/ComboGroupClass.h"
+#include "ComboGroup/ComboGroupsTemplate.h"
 
-class ComboGroupUnique : public ComboGroup {
+class ComboGroupsGeneral : public ComboGroupsTemplate {
 private:
 
-    const std::vector<int> grp;
+    const GroupHelper MyGrp;
+    const bool OneGrp;
 
 public:
 
-    ComboGroupUnique(int n_, int numGroups, int i1, int i2,
-                     int bnd, const std::vector<int> &grp_);
+    ComboGroupsGeneral(int n_, int numGroups, int i1, int i2,
+                       int bnd, GroupHelper MyGrp_, bool OneGrp_);
 
     bool nextComboGroup(std::vector<int> &z);
     double numGroupCombs();

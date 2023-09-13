@@ -3,16 +3,25 @@
 #include "cpp11/strings.hpp"
 #include "cpp11/list.hpp"
 
+#include "ComboGroup/GroupHelperClass.h"
 #include "Combinations/NthCombination.h"
 #include "Combinations/BigComboCount.h"
 #include "Combinations/ComboCount.h"
-#include "ComboGroup/GroupClass.h"
 #include "SetUpUtils.h"
 #include <numeric>
 #include <memory>
 #include <cmath>
 
-class ComboGroup {
+typedef std::function<std::vector<int>(const mpz_class &)> nthFuncGmp;
+typedef std::function<std::vector<int>(double)>            nthFuncDbl;
+typedef std::function<bool(std::vector<int>&)>             nextGrpFunc;
+
+typedef std::function<void(
+    SEXP, bool, int, bool, const std::vector<double>&,
+    const std::vector<mpz_class>&, bool
+)> finalTouchFunc;
+
+class ComboGroupsTemplate {
 protected:
 
     const int n; // Size of vector which is also the size of z (i.e. z.size())
@@ -28,8 +37,8 @@ protected:
 
 public:
 
-    virtual ~ComboGroup() = default;
-    ComboGroup(int n_, int numGroups, int i1, int i2, int bnd);
+    virtual ~ComboGroupsTemplate() = default;
+    ComboGroupsTemplate(int n_, int numGroups, int i1, int i2, int bnd);
 
     virtual bool nextComboGroup(std::vector<int> &z) = 0;
     virtual double numGroupCombs() = 0;
@@ -54,15 +63,13 @@ public:
     };
 };
 
-std::unique_ptr<ComboGroup> MakeComboGroup(
-    const std::vector<int> &vGrpSize, Group *const MyGrp,
+std::unique_ptr<ComboGroupsTemplate> MakeComboGroup(
+    const std::vector<int> &vGrpSize, GroupHelper *const MyGrp,
     int i1, int i2, int bnd, int grpSize, bool IsGen, bool IsUni
 );
 
-std::unique_ptr<ComboGroup> GroupPrep(
-    std::vector<int> &vInt, std::vector<double> &vNum, int &n,
-    VecType &myType, SEXP Rv, SEXP RNumGroups, SEXP RGrpSize
-);
+std::unique_ptr<ComboGroupsTemplate> GroupPrep(SEXP Rv, SEXP RNumGroups,
+                                               SEXP RGrpSize, int n);
 
 void CleanV(std::vector<int> &v, const std::vector<int> &idx_used, int n);
 
