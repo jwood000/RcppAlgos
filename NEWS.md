@@ -1,3 +1,9 @@
+# RcppAlgos 2.8.2
+
+## New Features:
+
+* We have added `comboGroupsIter`. This a flexible iterator for iterating over partitions of groups. Offers random access, the ability to retrieve the next group or the next `n` groups at a time while keeping memory low. 
+
 # RcppAlgos 2.8.1
 
 ## Bug Fixes:

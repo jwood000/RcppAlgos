@@ -21,7 +21,7 @@ SEXP Combo::ToSeeFirst(bool AdjustIdx) {
     return R_NilValue;
 }
 
-SEXP Combo::VecReturn() {
+SEXP Combo::BasicVecReturn() {
 
     cpp11::sexp res = Rf_allocVector(RTYPE, m);
 
@@ -149,12 +149,12 @@ SEXP Combo::nextComb() {
         CheckIndLT(IsGmp, mpzIndex, dblIndex,
                    computedRowsMpz, computedRows)) {
         increment(IsGmp, mpzIndex, dblIndex);
-        return VecReturn();
+        return BasicVecReturn();
     } else if (CheckIndLT(IsGmp, mpzIndex, dblIndex,
                           computedRowsMpz, computedRows)) {
         increment(IsGmp, mpzIndex, dblIndex);
         nextIter(freqs, z, n1, m1);
-        return VecReturn();
+        return BasicVecReturn();
     } else if (CheckEqInd(IsGmp, mpzIndex, dblIndex,
                           computedRowsMpz, computedRows)) {
         return ToSeeLast();
@@ -168,11 +168,11 @@ SEXP Combo::prevComb() {
     if (CheckIndGrT(IsGmp, mpzIndex, dblIndex,
                     computedRowsMpz, computedRows)) {
         decrement(IsGmp, mpzIndex, dblIndex);
-        return VecReturn();
+        return BasicVecReturn();
     } else if (CheckGrTSi(IsGmp, mpzIndex, dblIndex, 1)) {
         decrement(IsGmp, mpzIndex, dblIndex);
         prevIter(freqs, z, n1, m1);
-        return VecReturn();
+        return BasicVecReturn();
     } else if (CheckEqSi(IsGmp, mpzIndex, dblIndex, 1)) {
         return ToSeeFirst();
     } else {
@@ -340,7 +340,7 @@ SEXP Combo::currComb() {
                     computedRowsMpz, computedRows)) {
         return ToSeeLast(false);
     } else if (CheckGrTSi(IsGmp, mpzIndex, dblIndex, 0)) {
-        return VecReturn();
+        return BasicVecReturn();
     } else {
         return ToSeeFirst(false);
     }
@@ -381,7 +381,7 @@ SEXP Combo::randomAccess(SEXP RindexVec) {
 
         z = nthResFun(n, m, dblTemp, mpzTemp, myReps);
         if (!IsComb) TopOffPerm(z, myReps, n, m, IsRep, IsMult);
-        return VecReturn();
+        return BasicVecReturn();
     }
 }
 
@@ -397,7 +397,7 @@ SEXP Combo::front() {
 
     z = nthResFun(n, m, dblTemp, mpzTemp, myReps);
     if (!IsComb) TopOffPerm(z, myReps, n, m, IsRep, IsMult);
-    return VecReturn();
+    return BasicVecReturn();
 }
 
 SEXP Combo::back() {
@@ -412,7 +412,7 @@ SEXP Combo::back() {
 
     z = nthResFun(n, m, dblTemp, mpzTemp, myReps);
     if (!IsComb) TopOffPerm(z, myReps, n, m, IsRep, IsMult);
-    return VecReturn();
+    return BasicVecReturn();
 }
 
 SEXP Combo::sourceVector() const {

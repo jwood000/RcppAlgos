@@ -181,10 +181,10 @@ extern "C" SEXP _RcppAlgos_SummaryGlue(SEXP ext) {
   END_CPP11
 }
 // GetClassVals.cpp
-SEXP GetClassVals(SEXP Rv, SEXP Rm, SEXP RisRep, SEXP RFreqs, SEXP RIsComb, SEXP stdFun, SEXP RThreads, SEXP RmaxThreads, SEXP RIsCnstrd, SEXP RIsComposition, SEXP RIsWeak);
-extern "C" SEXP _RcppAlgos_GetClassVals(SEXP Rv, SEXP Rm, SEXP RisRep, SEXP RFreqs, SEXP RIsComb, SEXP stdFun, SEXP RThreads, SEXP RmaxThreads, SEXP RIsCnstrd, SEXP RIsComposition, SEXP RIsWeak) {
+SEXP GetClassVals(SEXP Rv, SEXP Rm, SEXP RisRep, SEXP RFreqs, SEXP RIsComb, SEXP stdFun, SEXP RThreads, SEXP RmaxThreads, SEXP RIsCnstrd, SEXP RIsComposition, SEXP RIsWeak, SEXP RNumGroups, SEXP RGrpSize, SEXP RRetType);
+extern "C" SEXP _RcppAlgos_GetClassVals(SEXP Rv, SEXP Rm, SEXP RisRep, SEXP RFreqs, SEXP RIsComb, SEXP stdFun, SEXP RThreads, SEXP RmaxThreads, SEXP RIsCnstrd, SEXP RIsComposition, SEXP RIsWeak, SEXP RNumGroups, SEXP RGrpSize, SEXP RRetType) {
   BEGIN_CPP11
-    return cpp11::as_sexp(GetClassVals(cpp11::as_cpp<cpp11::decay_t<SEXP>>(Rv), cpp11::as_cpp<cpp11::decay_t<SEXP>>(Rm), cpp11::as_cpp<cpp11::decay_t<SEXP>>(RisRep), cpp11::as_cpp<cpp11::decay_t<SEXP>>(RFreqs), cpp11::as_cpp<cpp11::decay_t<SEXP>>(RIsComb), cpp11::as_cpp<cpp11::decay_t<SEXP>>(stdFun), cpp11::as_cpp<cpp11::decay_t<SEXP>>(RThreads), cpp11::as_cpp<cpp11::decay_t<SEXP>>(RmaxThreads), cpp11::as_cpp<cpp11::decay_t<SEXP>>(RIsCnstrd), cpp11::as_cpp<cpp11::decay_t<SEXP>>(RIsComposition), cpp11::as_cpp<cpp11::decay_t<SEXP>>(RIsWeak)));
+    return cpp11::as_sexp(GetClassVals(cpp11::as_cpp<cpp11::decay_t<SEXP>>(Rv), cpp11::as_cpp<cpp11::decay_t<SEXP>>(Rm), cpp11::as_cpp<cpp11::decay_t<SEXP>>(RisRep), cpp11::as_cpp<cpp11::decay_t<SEXP>>(RFreqs), cpp11::as_cpp<cpp11::decay_t<SEXP>>(RIsComb), cpp11::as_cpp<cpp11::decay_t<SEXP>>(stdFun), cpp11::as_cpp<cpp11::decay_t<SEXP>>(RThreads), cpp11::as_cpp<cpp11::decay_t<SEXP>>(RmaxThreads), cpp11::as_cpp<cpp11::decay_t<SEXP>>(RIsCnstrd), cpp11::as_cpp<cpp11::decay_t<SEXP>>(RIsComposition), cpp11::as_cpp<cpp11::decay_t<SEXP>>(RIsWeak), cpp11::as_cpp<cpp11::decay_t<SEXP>>(RNumGroups), cpp11::as_cpp<cpp11::decay_t<SEXP>>(RGrpSize), cpp11::as_cpp<cpp11::decay_t<SEXP>>(RRetType)));
   END_CPP11
 }
 // MotleyPrimes.cpp
@@ -267,7 +267,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_RcppAlgos_CurrCombGlue",        (DL_FUNC) &_RcppAlgos_CurrCombGlue,         1},
     {"_RcppAlgos_DivNumSieveCpp",      (DL_FUNC) &_RcppAlgos_DivNumSieveCpp,       6},
     {"_RcppAlgos_FrontGlue",           (DL_FUNC) &_RcppAlgos_FrontGlue,            1},
-    {"_RcppAlgos_GetClassVals",        (DL_FUNC) &_RcppAlgos_GetClassVals,        11},
+    {"_RcppAlgos_GetClassVals",        (DL_FUNC) &_RcppAlgos_GetClassVals,        14},
     {"_RcppAlgos_MotleyContainer",     (DL_FUNC) &_RcppAlgos_MotleyContainer,      6},
     {"_RcppAlgos_NextCombGlue",        (DL_FUNC) &_RcppAlgos_NextCombGlue,         1},
     {"_RcppAlgos_NextGatherGlue",      (DL_FUNC) &_RcppAlgos_NextGatherGlue,       1},

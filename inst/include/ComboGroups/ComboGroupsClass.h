@@ -1,0 +1,49 @@
+#pragma once
+
+#include "ComboGroups/ComboGroupsTemplate.h"
+#include "ComboGroups/GetComboGroups.h"
+#include "ClassUtils/ComboClass.h"
+
+class ComboGroupsClass : public Combo {
+private:
+
+    cpp11::integers dim;
+    cpp11::writable::list dimNames;
+    cpp11::writable::strings myNames;
+
+    std::unique_ptr<ComboGroupsTemplate> CmbGrp;
+
+    bool IsArray;
+    int r; // Number of groups
+
+    nextGrpFunc nextCmbGrp;
+    nthFuncDbl nthCmbGrp;
+    nthFuncGmp nthCmbGrpGmp;
+    finalTouchFunc FinalTouch;
+
+    std::vector<double> mySample;
+    std::vector<mpz_class> myBigSamp;
+
+    SEXP SingleReturn();
+    SEXP GeneralReturn(int numResults, bool IsSample = false);
+
+public:
+
+    ComboGroupsClass(
+        SEXP Rv, int Rm, SEXP RcompRows, const std::vector<int> &bVec,
+        const std::vector<int> &Rreps, const std::vector<int> &Rfreqs,
+        const std::vector<int> &RvInt, const std::vector<double> &RvNum,
+        VecType typePass, int RmaxThreads, SEXP RnumThreads, bool Rparallel,
+        SEXP RNumGroups, SEXP RGrpSize, SEXP RRetType
+    );
+
+    void startOver();
+    SEXP nextComb();
+    SEXP nextNumCombs(SEXP RNum);
+    SEXP nextGather();
+    SEXP currComb();
+    SEXP randomAccess(SEXP RindexVec);
+    SEXP front();
+    SEXP back();
+    SEXP summary();
+};

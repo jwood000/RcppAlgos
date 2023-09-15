@@ -11,11 +11,12 @@
 
 class Combo {
 private:
-    SEXP VecReturn();
+
     SEXP MatForward(int nRows);
     SEXP MatReverse(int nRows);
 
 protected:
+
     const int n;
     const int m;
     const int m1;
@@ -62,6 +63,8 @@ protected:
     const prevIterPtr prevIter;
 
     bool prevIterAvailable;
+
+    SEXP BasicVecReturn();
     SEXP ToSeeLast(bool AdjustIdx = true);
     SEXP ToSeeFirst(bool AdjustIdx = true);
 
