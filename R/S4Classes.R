@@ -178,7 +178,7 @@ setMethod(
 setMethod(
     "initialize",
     "ComboGroups",
-    function(.Object, init, Parallel, numGroups, grpSizes, retType) {
+    function(.Object, init, Parallel) {
         .Object@ptr <- .Call(`_RcppAlgos_CombClassNew`, init$RVals, init$bVec,
                              init$FreqsInfo, Parallel, NULL, NULL, NULL,
                              NULL, NULL, NULL, NULL, NULL, NULL, 4)

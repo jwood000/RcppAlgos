@@ -139,7 +139,10 @@ bool nextCmbGrpSame(std::vector<int> &z, int r, int grpSize,
 
 ComboGroupsSame::ComboGroupsSame(
     int n_, int numGroups, int i1, int i2, int bnd, int size
-) : ComboGroupsTemplate(n_, numGroups, i1, i2, bnd), grpSize(size) {}
+) : ComboGroupsTemplate(n_, numGroups, i1, i2, bnd), grpSize(size) {
+
+    GroupType = "Uniform";
+}
 
 bool ComboGroupsSame::nextComboGroup(std::vector<int> &z) {
     return nextCmbGrpSame(z, r, grpSize, idx1, idx2, curr_bnd, n);

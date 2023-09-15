@@ -70,10 +70,16 @@ SEXP ComboGroupsCpp(SEXP Rv, SEXP RNumGroups, SEXP RGrpSize, SEXP RRetType,
                       CmbGrp->GetMpzCount(), nRows, userNumRows);
     }
 
-    const std::string retType(CHAR(STRING_ELT(RRetType, 0)));
+    std::string retType(CHAR(STRING_ELT(RRetType, 0)));
 
     if (retType != "3Darray" && retType != "matrix") {
         cpp11::stop("retType must be '3Darray' or 'matrix'");
+    }
+
+    if (retType == "3Darray" && CmbGrp->GetType() != "Uniform") {
+        std::string msg = "3Darray output is not possible! Using matrix instead.";
+        cpp11::message(msg.c_str());
+        retType = "matrix";
     }
 
     const bool IsArray = (retType == "3Darray");

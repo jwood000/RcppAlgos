@@ -33,5 +33,5 @@ comboGroupsIter <- function(v, numGroups = NULL, grpSizes = NULL,
                       FALSE, NULL, TRUE, NULL, nThreads, pkgEnv$nThreads,
                       FALSE, FALSE, FALSE, numGroups, grpSizes, retType)
 
-    new("ComboGroups", InitVals, Parallel, numGroups, grpSizes, retType)
+    new("ComboGroups", InitVals, Parallel)
 }

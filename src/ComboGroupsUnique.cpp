@@ -89,7 +89,10 @@ mpz_class numCmbGrpUniGmp(const std::vector<int> &grp, int n) {
 ComboGroupsUnique::ComboGroupsUnique(
     int n_, int numGroups, int i1, int i2,
     int bnd, const std::vector<int> &grp_
-) : ComboGroupsTemplate(n_, numGroups, i1, i2, bnd), grp(grp_) {}
+) : ComboGroupsTemplate(n_, numGroups, i1, i2, bnd), grp(grp_) {
+
+    GroupType = "Distinct";
+}
 
 bool ComboGroupsUnique::nextComboGroup(std::vector<int> &z) {
     return nextCmbGrpUni(z, grp, idx1, idx2, curr_bnd);

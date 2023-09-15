@@ -21,11 +21,8 @@ private:
     nthFuncGmp nthCmbGrpGmp;
     finalTouchFunc FinalTouch;
 
-    std::vector<double> mySample;
-    std::vector<mpz_class> myBigSamp;
-
     SEXP SingleReturn();
-    SEXP GeneralReturn(int numResults, bool IsSample = false);
+    SEXP GeneralReturn(int numResults);
 
 public:
 

@@ -24,6 +24,8 @@ typedef std::function<void(
 class ComboGroupsTemplate {
 protected:
 
+    std::string GroupType;
+
     const int n; // Size of vector which is also the size of z (i.e. z.size())
     const int r; // Number of groups
 
@@ -45,6 +47,7 @@ public:
     virtual mpz_class numGroupCombsGmp() = 0;
     virtual std::vector<int> nthComboGroup(double myIndex) = 0;
     virtual std::vector<int> nthComboGroupGmp(const mpz_class &lowerMpz) = 0;
+    virtual std::vector<int> GetGroupSizes() = 0;
 
     virtual void FinalTouch(
         SEXP res, bool IsArray, int nRows, bool IsNamed,
@@ -57,6 +60,7 @@ public:
     mpz_class GetMpzCount() const {return computedRowsMpz;}
     bool GetIsGmp() const {return IsGmp;}
     int GetNumGrps() const {return r;}
+    std::string GetType() const {return GroupType;}
 
     SEXP GetCount() const {
         return CppConvert::GetCount(IsGmp, computedRowsMpz, computedRows);

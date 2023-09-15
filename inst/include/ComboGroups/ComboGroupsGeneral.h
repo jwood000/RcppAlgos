@@ -18,6 +18,7 @@ public:
     mpz_class numGroupCombsGmp();
     std::vector<int> nthComboGroup(double myIndex);
     std::vector<int> nthComboGroupGmp(const mpz_class &lowerMpz);
+    std::vector<int> GetGroupSizes() {return MyGrp.grp;}
 
     void FinalTouch(
         SEXP res, bool IsArray, int nRows, bool IsNamed,

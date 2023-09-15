@@ -96,7 +96,10 @@ ComboGroupsGeneral::ComboGroupsGeneral(
     int n_, int numGroups, int i1, int i2,
     int bnd, GroupHelper MyGrp_, bool OneGrp_
 ) : ComboGroupsTemplate(n_, numGroups, i1, i2, bnd),
-    MyGrp(MyGrp_), OneGrp(OneGrp_) {}
+    MyGrp(MyGrp_), OneGrp(OneGrp_) {
+
+    GroupType = "General";
+}
 
 bool ComboGroupsGeneral::nextComboGroup(std::vector<int> &z) {
     return nextCmbGrpGen(z, idx1, idx2, curr_bnd, MyGrp);

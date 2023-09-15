@@ -14,19 +14,21 @@ SEXP ComboGroupsClass::SingleReturn() {
     return res;
 }
 
-SEXP ComboGroupsClass::GeneralReturn(int numResults, bool IsSample) {
+SEXP ComboGroupsClass::GeneralReturn(int numResults) {
 
     int nThreads = 1;
     bool LocalPar = Parallel;
     const int limit = 20000;
+    std::vector<double> tempSample;
+    std::vector<mpz_class> tempBigSamp;
 
     SetThreads(LocalPar, maxThreads, numResults,
                myType, nThreads, sexpNThreads, limit);
 
     cpp11::sexp res = GetComboGroups(
-        sexpVec, nextCmbGrp, nthCmbGrp, nthCmbGrpGmp, FinalTouch, vNum, vInt,
-        z, myType, mySample, myBigSamp, mpzIndex, dblIndex, n, numResults,
-        nThreads, IsArray, false, LocalPar, IsSample, IsGmp
+        sexpVec, nextCmbGrp, nthCmbGrp, nthCmbGrpGmp, FinalTouch, vNum,
+        vInt, z, myType, tempSample, tempBigSamp, mpzIndex, dblIndex, n,
+        numResults, nThreads, IsArray, false, LocalPar, false, IsGmp
     );
 
     return res;
@@ -65,10 +67,16 @@ ComboGroupsClass::ComboGroupsClass(
     z.resize(n);
     std::iota(z.begin(), z.end(), 0);
 
-    const std::string retType(CHAR(STRING_ELT(RRetType, 0)));
+    std::string retType(CHAR(STRING_ELT(RRetType, 0)));
 
     if (retType != "3Darray" && retType != "matrix") {
         cpp11::stop("retType must be '3Darray' or 'matrix'");
+    }
+
+    if (retType == "3Darray" && CmbGrp->GetType() != "Uniform") {
+        std::string msg = "3Darray output is not possible! Using matrix instead.";
+        cpp11::message(msg.c_str());
+        retType = "matrix";
     }
 
     IsArray = (retType == "3Darray");
@@ -93,11 +101,20 @@ ComboGroupsClass::ComboGroupsClass(
 
         cpp11::integers temp_dim({grpSize, r});
         dim = temp_dim;
-    } else {
+    } else if (CmbGrp->GetType() == "Uniform") {
         myNames.resize(n);
 
         for (int i = 0, k = 0; i < r; ++i) {
             for (int j = 0; j < grpSize; ++j, ++k) {
+                myNames[k] = myColNames[i].c_str();
+            }
+        }
+    } else {
+        myNames.resize(n);
+        std::vector<int> vGrpSizes(CmbGrp->GetGroupSizes());
+
+        for (int i = 0, k = 0; i < r; ++i) {
+            for (int j = 0; j < vGrpSizes[i]; ++j, ++k) {
                 myNames[k] = myColNames[i].c_str();
             }
         }
@@ -226,124 +243,110 @@ SEXP ComboGroupsClass::currComb() {
 
 SEXP ComboGroupsClass::randomAccess(SEXP RindexVec) {
 
-    // if (nthParts == nullptr) {
-    //     cpp11::stop("No random access available for this scenario");
-    // }
-    //
-    // std::size_t sampSize;
-    // std::vector<double> mySample;
-    // const bool SampIsGmp = (computedRows > SampleLimit);
-    // SetIndexVec(RindexVec, mySample, sampSize, SampIsGmp, computedRows);
-    //
-    // const std::size_t bigSampSize = SampIsGmp ? sampSize : 1;
-    // std::vector<mpz_class> mpzVec(bigSampSize);
-    //
-    // if (SampIsGmp) {
-    //     SetIndexVecMpz(RindexVec, mpzVec, sampSize, computedRowsMpz);
-    // }
-    //
-    // if (sampSize > 1) {
-    //     int nThreads = 1;
-    //     bool LocalPar = Parallel;
-    //     const int limit = 2;
-    //
-    //     SetThreads(LocalPar, maxThreads, sampSize,
-    //                myType, nThreads, sexpNThreads, limit);
-    //
-    //     if (myType == VecType::Integer) {
-    //         cpp11::sexp res = Rf_allocMatrix(INTSXP, sampSize, part.width);
-    //         int* matInt = INTEGER(res);
-    //
-    //         ThreadSafeSample(matInt, res, vInt, mySample, mpzVec,
-    //                          myReps, nthParts, part.width, sampSize,
-    //                          nThreads, Parallel, false, part.mapTar,
-    //                          strtLen, cap, IsGmp);
-    //
-    //         zUpdateIndex(vNum, vInt, z, sexpVec, res, width, sampSize, bAddOne);
-    //         SetPartValues();
-    //         return res;
-    //     } else {
-    //         cpp11::sexp res = Rf_allocMatrix(REALSXP, sampSize, part.width);
-    //         double* matNum = REAL(res);
-    //
-    //         ThreadSafeSample(matNum, res, vNum, mySample, mpzVec,
-    //                          myReps, nthParts, part.width, sampSize,
-    //                          nThreads, Parallel, false, part.mapTar,
-    //                          strtLen, cap, IsGmp);
-    //
-    //         zUpdateIndex(vNum, vInt, z, sexpVec, res, width, sampSize, bAddOne);
-    //         SetPartValues();
-    //         return res;
-    //     }
-    // } else {
-    //     if (IsGmp) {
-    //         mpzIndex = mpzVec.front() + 1;
-    //         mpzTemp  = mpzVec.front();
-    //     } else {
-    //         dblIndex = mySample.front() + 1;
-    //         dblTemp  = mySample.front();
-    //     }
-    //
-    //     MoveZToIndex();
-    //     return VecReturn();
-    // }
-    return Rf_ScalarInteger(1);
+    std::size_t sampSize;
+    std::vector<double> mySample;
+    const bool SampIsGmp = (computedRows > SampleLimit);
+    SetIndexVec(RindexVec, mySample, sampSize, SampIsGmp, computedRows);
+
+    const std::size_t bigSampSize = SampIsGmp ? sampSize : 1;
+    std::vector<mpz_class> mpzVec(bigSampSize);
+
+    if (SampIsGmp) {
+        SetIndexVecMpz(RindexVec, mpzVec, sampSize, computedRowsMpz);
+    }
+
+    if (sampSize > 1) {
+        int nThreads = 1;
+        bool LocalPar = Parallel;
+        const int limit = 2;
+
+        SetThreads(LocalPar, maxThreads, sampSize,
+                   myType, nThreads, sexpNThreads, limit);
+
+        const std::vector<int> before(z);
+
+        cpp11::sexp res = GetComboGroups(
+            sexpVec, nextCmbGrp, nthCmbGrp, nthCmbGrpGmp, FinalTouch, vNum,
+            vInt, z, myType, mySample, mpzVec, mpzIndex, dblIndex, n,
+            sampSize, nThreads, IsArray, false, LocalPar, true, IsGmp
+        );
+
+        z = before;
+        return res;
+    } else {
+        if (IsGmp) {
+            mpzIndex = mpzVec.front() + 1;
+            mpzTemp  = mpzVec.front();
+            z = nthCmbGrpGmp(mpzTemp);
+        } else {
+            dblIndex = mySample.front() + 1;
+            dblTemp  = mySample.front();
+            z = nthCmbGrp(dblTemp);
+        }
+
+        return SingleReturn();
+    }
 }
 
 SEXP ComboGroupsClass::front() {
 
-    // if (nthParts == nullptr) {
-    //     cpp11::stop("No random access available for this scenario");
-    // }
-    //
-    // if (IsGmp) {
-    //     mpzIndex = 1;
-    //     mpzTemp  = 0;
-    // } else {
-    //     dblIndex = 1;
-    //     dblTemp  = 0;
-    // }
-    //
-    // MoveZToIndex();
-    // return VecReturn();
-    return Rf_ScalarInteger(1);
+    if (IsGmp) {
+        mpzIndex = 1;
+        mpzTemp  = 0;
+        nthCmbGrpGmp(mpzTemp);
+    } else {
+        dblIndex = 1;
+        dblTemp  = 0;
+        nthCmbGrp(dblTemp);
+    }
+
+    return SingleReturn();
 }
 
 SEXP ComboGroupsClass::back() {
 
-    // if (nthParts == nullptr) {
-    //     cpp11::stop("No random access available for this scenario");
-    // }
-    //
-    // if (IsGmp) {
-    //     mpzIndex = computedRowsMpz;
-    //     mpzTemp  = computedRowsMpz - 1;
-    // } else {
-    //     dblIndex = computedRows;
-    //     dblTemp  = computedRows - 1;
-    // }
-    //
-    // MoveZToIndex();
-    // return VecReturn();
-    return Rf_ScalarInteger(1);
+    if (IsGmp) {
+        mpzIndex = computedRowsMpz;
+        mpzTemp  = computedRowsMpz - 1;
+        nthCmbGrpGmp(mpzTemp);
+    } else {
+        dblIndex = computedRows;
+        dblTemp  = computedRows - 1;
+        nthCmbGrp(dblTemp);
+    }
+
+    return SingleReturn();
 }
 
 SEXP ComboGroupsClass::summary() {
-    // const std::string strDesc = "Partition ")
-    //       + RepStr + MultiStr + "of " + std::to_string(part.target) +
-    //           " into " + std::to_string(width) + " parts";
-    // const double dblDiff = IsGmp ? 0 : computedRows - dblIndex;
-    //
-    // if (IsGmp) mpzTemp = computedRowsMpz - mpzIndex;
-    // const char *names[] = {"description", "currentIndex",
-    //                        "totalResults", "totalRemaining", ""};
-    //
-    // cpp11::sexp res = Rf_mkNamed(VECSXP, names);
-    //
-    // SET_VECTOR_ELT(res, 0, Rf_mkString(strDesc.c_str()));
-    // SET_VECTOR_ELT(res, 1, CppConvert::GetCount(IsGmp, mpzIndex, dblIndex));
-    // SET_VECTOR_ELT(res, 2, CppConvert::GetCount(IsGmp, computedRowsMpz, computedRows));
-    // SET_VECTOR_ELT(res, 3, CppConvert::GetCount(IsGmp, mpzTemp, dblDiff));
-    // return res;
-    return Rf_ScalarInteger(1);
+
+    std::string grpSizeDesc;
+
+    for (auto g: CmbGrp->GetGroupSizes()) {
+        grpSizeDesc += (std::to_string(g) + ", ");
+    }
+
+    // Remove the last space and comma
+    grpSizeDesc.pop_back();
+    grpSizeDesc.pop_back();
+
+    const std::string gtype = CmbGrp->GetType();
+    std::string prefix = "Partition of v into " + std::to_string(r);
+    std::string suffix = (gtype == "Uniform") ? " uniform groups" :
+        " groups of sizes: " + grpSizeDesc;
+
+    const std::string strDesc = prefix + suffix;
+    const double dblDiff = IsGmp ? 0 : computedRows - dblIndex;
+
+    if (IsGmp) mpzTemp = computedRowsMpz - mpzIndex;
+    const char *names[] = {"description", "currentIndex",
+                           "totalResults", "totalRemaining", ""};
+
+    cpp11::sexp res = Rf_mkNamed(VECSXP, names);
+
+    SET_VECTOR_ELT(res, 0, Rf_mkString(strDesc.c_str()));
+    SET_VECTOR_ELT(res, 1, CppConvert::GetCount(IsGmp, mpzIndex, dblIndex));
+    SET_VECTOR_ELT(res, 2, CppConvert::GetCount(IsGmp, computedRowsMpz, computedRows));
+    SET_VECTOR_ELT(res, 3, CppConvert::GetCount(IsGmp, mpzTemp, dblDiff));
+    return res;
 }
