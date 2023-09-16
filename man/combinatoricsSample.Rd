@@ -113,6 +113,8 @@ permuteSample(10000, 50, n = 80, seed = 10, Parallel = TRUE)
 }
 \keyword{random}
 \keyword{sample}
+\keyword{rank}
+\keyword{unrank}
 \keyword{combinations}
 \keyword{permutations}
 \keyword{combinatorics}

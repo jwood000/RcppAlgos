@@ -57,3 +57,8 @@ pFacsWithNames <- primeFactorize(myVec, namedList = TRUE)
 ## Using nThreads
 system.time(primeFactorize(myVec, nThreads = 2))
 }
+\keyword{prime}
+\keyword{factor}
+\keyword{divisor}
+\keyword{number theory}
+\keyword{factorization}

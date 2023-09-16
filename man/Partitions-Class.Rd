@@ -28,5 +28,6 @@
   showClass("Partitions")
 }
 \keyword{classes}
+\keyword{integer}
 \keyword{partitions}
 \keyword{combinatorics}

@@ -109,3 +109,6 @@ b@summary()
 b@nextIter()
 b@currIter()
 }
+\keyword{integer}
+\keyword{partitions}
+\keyword{combinatorics}

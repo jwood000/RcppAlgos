@@ -63,3 +63,7 @@ numDivisorSieve(10, namedVector = TRUE)
 ## Using nThreads
 system.time(numDivisorSieve(1e5, 2e5, nThreads = 2))
 }
+\keyword{tau}
+\keyword{factor}
+\keyword{divisor}
+\keyword{number theory}

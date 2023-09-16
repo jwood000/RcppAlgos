@@ -68,3 +68,8 @@ eulerPhiSieve(10, namedVector = TRUE)
 ## Using nThreads
 system.time(eulerPhiSieve(1e5, 2e5, nThreads = 2))
 }
+\keyword{phi}
+\keyword{prime}
+\keyword{euler}
+\keyword{totient}
+\keyword{number theory}

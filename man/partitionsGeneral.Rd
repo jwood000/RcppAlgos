@@ -88,3 +88,6 @@ system.time(one_thread  <- partitionsGeneral(80, 10, TRUE))
 system.time(two_threads <- partitionsGeneral(80, 10, TRUE, nThreads = 2))
 identical(one_thread, two_threads)
 }
+\keyword{integer}
+\keyword{partitions}
+\keyword{combinatorics}

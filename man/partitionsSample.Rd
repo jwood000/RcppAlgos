@@ -70,3 +70,10 @@ partitionsCount(100, 10, TRUE, target = 500)
 partitionsSample(100, 10, TRUE, target = 500,
                  sampleVec = c(1, 1000, 175591757896))
 }
+\keyword{random}
+\keyword{sample}
+\keyword{rank}
+\keyword{integer}
+\keyword{unrank}
+\keyword{partitions}
+\keyword{combinatorics}

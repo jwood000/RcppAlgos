@@ -45,6 +45,7 @@ all.equal(as.integer(rownames(mySamp)), myRank)
 \keyword{random}
 \keyword{sample}
 \keyword{rank}
+\keyword{unrank}
 \keyword{combinations}
 \keyword{permutations}
 \keyword{combinatorics}

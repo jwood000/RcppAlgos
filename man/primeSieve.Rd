@@ -69,3 +69,7 @@ object.size(myPs)
 ## Using nThreads
 system.time(primeSieve(1e7, nThreads = 2))
 }
+\keyword{prime}
+\keyword{sieve}
+\keyword{eratosthenes}
+\keyword{number theory}

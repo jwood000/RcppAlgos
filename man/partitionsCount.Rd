@@ -42,3 +42,6 @@ partitionsCount(25, 5, freqs = rep(2, 25))
 partitionsCount(2500, 15, TRUE)
 compositionsCount(2500, 15, TRUE)
 }
+\keyword{integer}
+\keyword{partitions}
+\keyword{combinatorics}

@@ -11,10 +11,8 @@ comboGroupsCount(v, numGroups = NULL, grpSizes = NULL)
 }
 \arguments{
   \item{v}{Source vector. If \code{v} is a positive integer, it will be converted to the sequence \code{1:v}. If \code{v} is a negative integer, it will be converted to the sequence \code{v:-1}. All atomic types are supported (See \code{\link{is.atomic}}).}
-  \item{numGroups}{An Integer. The number of groups that the vector will be partitioned into. The default is \code{NULL}. If provided and \code{grpSize} is \code{NULL}, it must divide the length of v (if v is a vector) or v (if v is a scalar).
-}
-  \item{grpSizes}{A vector of whole numbers representing the size of each group. The default is \code{NULL}. If provided, the sum of the elements must total the length of v (if v is a vector) or v (if v is a scalar).
-}
+  \item{numGroups}{An Integer. The number of groups that the vector will be partitioned into. The default is \code{NULL}. If provided and \code{grpSize} is \code{NULL}, it must divide the length of v (if v is a vector) or v (if v is a scalar).}
+  \item{grpSizes}{A vector of whole numbers representing the size of each group. The default is \code{NULL}. If provided, the sum of the elements must total the length of v (if v is a vector) or v (if v is a scalar).}
 }
 \value{
 A numerical value representing the total number of partitions of groups.
@@ -33,3 +31,6 @@ comboGroupsCount(16, 4)
 comboGroupsCount(16, grpSizes = c(1:4, 6))
 comboGroupsCount(28, grpSizes = rep(2:5, each = 2))
 }
+\keyword{partitions}
+\keyword{comboGroups}
+\keyword{combinatorics}
