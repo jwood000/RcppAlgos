@@ -293,11 +293,11 @@ SEXP ComboGroupsClass::front() {
     if (IsGmp) {
         mpzIndex = 1;
         mpzTemp  = 0;
-        nthCmbGrpGmp(mpzTemp);
+        z = nthCmbGrpGmp(mpzTemp);
     } else {
         dblIndex = 1;
         dblTemp  = 0;
-        nthCmbGrp(dblTemp);
+        z = nthCmbGrp(dblTemp);
     }
 
     return SingleReturn();
@@ -308,11 +308,11 @@ SEXP ComboGroupsClass::back() {
     if (IsGmp) {
         mpzIndex = computedRowsMpz;
         mpzTemp  = computedRowsMpz - 1;
-        nthCmbGrpGmp(mpzTemp);
+        z = nthCmbGrpGmp(mpzTemp);
     } else {
         dblIndex = computedRows;
         dblTemp  = computedRows - 1;
-        nthCmbGrp(dblTemp);
+        z = nthCmbGrp(dblTemp);
     }
 
     return SingleReturn();
@@ -331,8 +331,9 @@ SEXP ComboGroupsClass::summary() {
     grpSizeDesc.pop_back();
 
     const std::string gtype = CmbGrp->GetType();
-    std::string prefix = "Partition of v into " + std::to_string(r);
-    std::string suffix = (gtype == "Uniform") ? " uniform groups" :
+    const std::string prefix = "Partition of v of length " +
+        std::to_string(n) + " into " + std::to_string(r);
+    const std::string suffix = (gtype == "Uniform") ? " uniform groups" :
         " groups of sizes: " + grpSizeDesc;
 
     const std::string strDesc = prefix + suffix;
