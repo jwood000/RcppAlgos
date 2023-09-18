@@ -71,7 +71,7 @@ Conceptually, this problem can be viewed as generating all permutations of the v
   }
 }
 \value{
-By default, a matrix is returned with column names corresponding to the associated group. If \code{retType = "3Darray"}, a 3D array is returned.
+By default, a matrix is returned with column names corresponding to the associated group. If \code{retType = "3Darray"}, a named 3D array is returned.
 }
 \author{
 Joseph Wood

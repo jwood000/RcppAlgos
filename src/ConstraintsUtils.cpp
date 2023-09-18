@@ -382,9 +382,9 @@ void ConstraintSetup(const std::vector<double> &vNum,
 
     bool bLower = false;
 
-    // Currently, we are not able to generate the nth
-    // lexicographical partition for some cases. Thus, if lower is
-    // non-trivial, we must use the most general algo.
+    // Currently, we are not able to generate the nth lexicographical
+    // partition for some cases. Thus, if lower is non-trivial, we must
+    // use the most general algorithm.
     if (!Rf_isNull(Rlow)) {
         mpz_class tempLower;
         CppConvert::convertMpzClass(Rlow, tempLower, "lower");
