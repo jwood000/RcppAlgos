@@ -79,11 +79,41 @@ SEXP CombClassNew(SEXP RVals, SEXP RboolVec, SEXP freqInfo, SEXP Rparallel,
 
         return ext;
     } else if (ReturnValue == 4) {
+
+        std::string retType(CHAR(STRING_ELT(VECTOR_ELT(RVals, 9), 0)));
+
+        std::unique_ptr<ComboGroupsTemplate> CmbGrp =
+            GroupPrep(
+                VECTOR_ELT(RVals, 0), VECTOR_ELT(RVals, 7),
+                VECTOR_ELT(RVals, 8), Rf_length(VECTOR_ELT(RVals, 0))
+            );
+
+        const nextGrpFunc nextCmbGrp = std::bind(
+            &ComboGroupsTemplate::nextComboGroup,
+            CmbGrp.get(), std::placeholders::_1
+        );
+
+        const nthFuncDbl nthCmbGrp = std::bind(
+            &ComboGroupsTemplate::nthComboGroup,
+            CmbGrp.get(), std::placeholders::_1
+        );
+
+        const nthFuncGmp nthCmbGrpGmp = std::bind(
+            &ComboGroupsTemplate::nthComboGroupGmp,
+            CmbGrp.get(), std::placeholders::_1
+        );
+
+        const finalTouchFunc FinalTouch = std::bind(
+            &ComboGroupsTemplate::FinalTouch, CmbGrp.get(), std::placeholders::_1,
+            std::placeholders::_2, std::placeholders::_3, std::placeholders::_4,
+            std::placeholders::_5, std::placeholders::_6, std::placeholders::_7
+        );
+
         class ComboGroupsClass* ptr = new ComboGroupsClass(
-            VECTOR_ELT(RVals, 0), m, VECTOR_ELT(RVals, 4), bVec, myReps,
-            freqs, vInt, vNum, myType, maxThreads, VECTOR_ELT(RVals, 6),
-            Parallel, VECTOR_ELT(RVals, 7), VECTOR_ELT(RVals, 8),
-            VECTOR_ELT(RVals, 9)
+            VECTOR_ELT(RVals, 0), m, VECTOR_ELT(RVals, 4), bVec,
+            myReps, freqs, vInt, vNum, myType, maxThreads,
+            VECTOR_ELT(RVals, 6), Parallel, CmbGrp, nextCmbGrp,
+            nthCmbGrp, nthCmbGrpGmp, FinalTouch, retType
         );
 
         cpp11::sexp ext = R_MakeExternalPtr(ptr, R_NilValue, R_NilValue);

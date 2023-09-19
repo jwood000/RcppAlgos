@@ -1,4 +1,5 @@
 #include "ComboGroups/ComboGroupsClass.h"
+#include <utility>
 
 SEXP ComboGroupsClass::SingleReturn() {
 
@@ -39,25 +40,13 @@ ComboGroupsClass::ComboGroupsClass(
     const std::vector<int> &Rreps, const std::vector<int> &Rfreqs,
     const std::vector<int> &RvInt, const std::vector<double> &RvNum,
     VecType typePass, int RmaxThreads, SEXP RnumThreads, bool Rparallel,
-    SEXP RNumGroups, SEXP RGrpSize, SEXP RRetType
+    std::unique_ptr<ComboGroupsTemplate> &CmbGrp_, nextGrpFunc nextCmbGrp_,
+    nthFuncDbl nthCmbGrp_, nthFuncGmp nthCmbGrpGmp_,
+    finalTouchFunc FinalTouch_, const std::string retType_
 ) : Combo(Rv, Rm, RcompRows, bVec, Rreps, Rfreqs, RvInt, RvNum, typePass,
-          RmaxThreads, RnumThreads, Rparallel),
-          CmbGrp(GroupPrep(Rv, RNumGroups, RGrpSize, n)) {
-
-    nextCmbGrp = std::bind(&ComboGroupsTemplate::nextComboGroup,
-                           CmbGrp.get(), std::placeholders::_1);
-
-    nthCmbGrp = std::bind(&ComboGroupsTemplate::nthComboGroup,
-                          CmbGrp.get(), std::placeholders::_1);
-
-    nthCmbGrpGmp = std::bind(&ComboGroupsTemplate::nthComboGroupGmp,
-                             CmbGrp.get(), std::placeholders::_1);
-
-    FinalTouch = std::bind(
-        &ComboGroupsTemplate::FinalTouch, CmbGrp.get(), std::placeholders::_1,
-        std::placeholders::_2, std::placeholders::_3, std::placeholders::_4,
-        std::placeholders::_5, std::placeholders::_6, std::placeholders::_7
-    );
+          RmaxThreads, RnumThreads, Rparallel), CmbGrp(std::move(CmbGrp_)),
+          nextCmbGrp(nextCmbGrp_), nthCmbGrp(nthCmbGrp_),
+          nthCmbGrpGmp(nthCmbGrpGmp_), FinalTouch(FinalTouch_) {
 
     IsGmp = CmbGrp->GetIsGmp();
     CmbGrp->SetCount();
@@ -67,7 +56,7 @@ ComboGroupsClass::ComboGroupsClass(
     z.resize(n);
     std::iota(z.begin(), z.end(), 0);
 
-    std::string retType(CHAR(STRING_ELT(RRetType, 0)));
+    std::string retType = retType_;
 
     if (retType != "3Darray" && retType != "matrix") {
         cpp11::stop("retType must be '3Darray' or 'matrix'");

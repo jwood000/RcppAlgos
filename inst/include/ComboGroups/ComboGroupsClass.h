@@ -11,10 +11,10 @@ private:
     cpp11::writable::list dimNames;
     cpp11::writable::strings myNames;
 
-    std::unique_ptr<ComboGroupsTemplate> CmbGrp;
-
     bool IsArray;
     int r; // Number of groups
+
+    std::unique_ptr<ComboGroupsTemplate> CmbGrp;
 
     nextGrpFunc nextCmbGrp;
     nthFuncDbl nthCmbGrp;
@@ -31,7 +31,9 @@ public:
         const std::vector<int> &Rreps, const std::vector<int> &Rfreqs,
         const std::vector<int> &RvInt, const std::vector<double> &RvNum,
         VecType typePass, int RmaxThreads, SEXP RnumThreads, bool Rparallel,
-        SEXP RNumGroups, SEXP RGrpSize, SEXP RRetType
+        std::unique_ptr<ComboGroupsTemplate> &CmbGrp_, nextGrpFunc nextCmbGrp_,
+        nthFuncDbl nthCmbGrp_, nthFuncGmp nthCmbGrpGmp_,
+        finalTouchFunc FinalTouch_, const std::string retType_
     );
 
     void startOver();
