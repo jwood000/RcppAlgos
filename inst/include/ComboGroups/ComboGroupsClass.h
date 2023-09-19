@@ -13,13 +13,7 @@ private:
 
     bool IsArray;
     int r; // Number of groups
-
     std::unique_ptr<ComboGroupsTemplate> CmbGrp;
-
-    nextGrpFunc nextCmbGrp;
-    nthFuncDbl nthCmbGrp;
-    nthFuncGmp nthCmbGrpGmp;
-    finalTouchFunc FinalTouch;
 
     SEXP SingleReturn();
     SEXP GeneralReturn(int numResults);
@@ -31,9 +25,7 @@ public:
         const std::vector<int> &Rreps, const std::vector<int> &Rfreqs,
         const std::vector<int> &RvInt, const std::vector<double> &RvNum,
         VecType typePass, int RmaxThreads, SEXP RnumThreads, bool Rparallel,
-        std::unique_ptr<ComboGroupsTemplate> &CmbGrp_, nextGrpFunc nextCmbGrp_,
-        nthFuncDbl nthCmbGrp_, nthFuncGmp nthCmbGrpGmp_,
-        finalTouchFunc FinalTouch_, const std::string retType_
+        SEXP RNumGroups, SEXP RGrpSize, SEXP RRetType
     );
 
     void startOver();

@@ -1,5 +1,4 @@
 #include "ComboGroups/ComboGroupsClass.h"
-#include <utility>
 
 SEXP ComboGroupsClass::SingleReturn() {
 
@@ -26,6 +25,29 @@ SEXP ComboGroupsClass::GeneralReturn(int numResults) {
     SetThreads(LocalPar, maxThreads, numResults,
                myType, nThreads, sexpNThreads, limit);
 
+    const nextGrpFunc nextCmbGrp = std::bind(
+        &ComboGroupsTemplate::nextComboGroup,
+        CmbGrp.get(), std::placeholders::_1
+    );
+
+    const nthFuncDbl nthCmbGrp = std::bind(
+        &ComboGroupsTemplate::nthComboGroup,
+        CmbGrp.get(), std::placeholders::_1
+    );
+
+    const nthFuncGmp nthCmbGrpGmp = std::bind(
+        &ComboGroupsTemplate::nthComboGroupGmp,
+        CmbGrp.get(), std::placeholders::_1
+    );
+
+    const finalTouchFunc FinalTouch = std::bind(
+        &ComboGroupsTemplate::FinalTouch, CmbGrp.get(),
+        std::placeholders::_1, std::placeholders::_2,
+        std::placeholders::_3, std::placeholders::_4,
+        std::placeholders::_5, std::placeholders::_6,
+        std::placeholders::_7
+    );
+
     cpp11::sexp res = GetComboGroups(
         sexpVec, nextCmbGrp, nthCmbGrp, nthCmbGrpGmp, FinalTouch, vNum,
         vInt, z, myType, tempSample, tempBigSamp, mpzIndex, dblIndex, n,
@@ -40,13 +62,10 @@ ComboGroupsClass::ComboGroupsClass(
     const std::vector<int> &Rreps, const std::vector<int> &Rfreqs,
     const std::vector<int> &RvInt, const std::vector<double> &RvNum,
     VecType typePass, int RmaxThreads, SEXP RnumThreads, bool Rparallel,
-    std::unique_ptr<ComboGroupsTemplate> &CmbGrp_, nextGrpFunc nextCmbGrp_,
-    nthFuncDbl nthCmbGrp_, nthFuncGmp nthCmbGrpGmp_,
-    finalTouchFunc FinalTouch_, const std::string retType_
+    SEXP RNumGroups, SEXP RGrpSize, SEXP RRetType
 ) : Combo(Rv, Rm, RcompRows, bVec, Rreps, Rfreqs, RvInt, RvNum, typePass,
-          RmaxThreads, RnumThreads, Rparallel), CmbGrp(std::move(CmbGrp_)),
-          nextCmbGrp(nextCmbGrp_), nthCmbGrp(nthCmbGrp_),
-          nthCmbGrpGmp(nthCmbGrpGmp_), FinalTouch(FinalTouch_) {
+          RmaxThreads, RnumThreads, Rparallel),
+          CmbGrp(GroupPrep(Rv, RNumGroups, RGrpSize, n)) {
 
     IsGmp = CmbGrp->GetIsGmp();
     CmbGrp->SetCount();
@@ -56,7 +75,7 @@ ComboGroupsClass::ComboGroupsClass(
     z.resize(n);
     std::iota(z.begin(), z.end(), 0);
 
-    std::string retType = retType_;
+    std::string retType(CHAR(STRING_ELT(RRetType, 0)));
 
     if (retType != "3Darray" && retType != "matrix") {
         cpp11::stop("retType must be '3Darray' or 'matrix'");
@@ -126,7 +145,7 @@ SEXP ComboGroupsClass::nextComb() {
     } else if (CheckIndLT(IsGmp, mpzIndex, dblIndex,
                           computedRowsMpz, computedRows)) {
         increment(IsGmp, mpzIndex, dblIndex);
-        nextCmbGrp(z);
+        CmbGrp->nextComboGroup(z);
         return SingleReturn();
     } else if (CheckEqInd(IsGmp, mpzIndex, dblIndex,
                           computedRowsMpz, computedRows)) {
@@ -159,7 +178,7 @@ SEXP ComboGroupsClass::nextNumCombs(SEXP RNum) {
         }
 
         if (CheckGrTSi(IsGmp, mpzIndex, dblIndex, 0)) {
-            nextCmbGrp(z);
+            CmbGrp->nextComboGroup(z);
         }
 
         increment(IsGmp, mpzIndex, dblIndex, numIncrement);
@@ -254,6 +273,29 @@ SEXP ComboGroupsClass::randomAccess(SEXP RindexVec) {
 
         const std::vector<int> before(z);
 
+        const nextGrpFunc nextCmbGrp = std::bind(
+            &ComboGroupsTemplate::nextComboGroup,
+            CmbGrp.get(), std::placeholders::_1
+        );
+
+        const nthFuncDbl nthCmbGrp = std::bind(
+            &ComboGroupsTemplate::nthComboGroup,
+            CmbGrp.get(), std::placeholders::_1
+        );
+
+        const nthFuncGmp nthCmbGrpGmp = std::bind(
+            &ComboGroupsTemplate::nthComboGroupGmp,
+            CmbGrp.get(), std::placeholders::_1
+        );
+
+        const finalTouchFunc FinalTouch = std::bind(
+            &ComboGroupsTemplate::FinalTouch, CmbGrp.get(),
+            std::placeholders::_1, std::placeholders::_2,
+            std::placeholders::_3, std::placeholders::_4,
+            std::placeholders::_5, std::placeholders::_6,
+            std::placeholders::_7
+        );
+
         cpp11::sexp res = GetComboGroups(
             sexpVec, nextCmbGrp, nthCmbGrp, nthCmbGrpGmp, FinalTouch, vNum,
             vInt, z, myType, mySample, mpzVec, mpzIndex, dblIndex, n,
@@ -266,11 +308,11 @@ SEXP ComboGroupsClass::randomAccess(SEXP RindexVec) {
         if (IsGmp) {
             mpzIndex = mpzVec.front() + 1;
             mpzTemp  = mpzVec.front();
-            z = nthCmbGrpGmp(mpzTemp);
+            z = CmbGrp->nthComboGroupGmp(mpzTemp);
         } else {
             dblIndex = mySample.front() + 1;
             dblTemp  = mySample.front();
-            z = nthCmbGrp(dblTemp);
+            z = CmbGrp->nthComboGroup(dblTemp);
         }
 
         return SingleReturn();
@@ -282,11 +324,11 @@ SEXP ComboGroupsClass::front() {
     if (IsGmp) {
         mpzIndex = 1;
         mpzTemp  = 0;
-        z = nthCmbGrpGmp(mpzTemp);
+        z = CmbGrp->nthComboGroupGmp(mpzTemp);
     } else {
         dblIndex = 1;
         dblTemp  = 0;
-        z = nthCmbGrp(dblTemp);
+        z = CmbGrp->nthComboGroup(dblTemp);
     }
 
     return SingleReturn();
@@ -297,11 +339,11 @@ SEXP ComboGroupsClass::back() {
     if (IsGmp) {
         mpzIndex = computedRowsMpz;
         mpzTemp  = computedRowsMpz - 1;
-        z = nthCmbGrpGmp(mpzTemp);
+        z = CmbGrp->nthComboGroupGmp(mpzTemp);
     } else {
         dblIndex = computedRows;
         dblTemp  = computedRows - 1;
-        z = nthCmbGrp(dblTemp);
+        z = CmbGrp->nthComboGroup(dblTemp);
     }
 
     return SingleReturn();
