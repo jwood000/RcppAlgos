@@ -66,8 +66,8 @@ ComboGroupsClass::ComboGroupsClass(
           RmaxThreads, RnumThreads, Rparallel),
           CmbGrp(GroupPrep(Rv, RNumGroups, RGrpSize, n)) {
 
-    IsGmp = CmbGrp->GetIsGmp();
     CmbGrp->SetCount();
+    IsGmp = CmbGrp->GetIsGmp();
     computedRows = CmbGrp->GetDblCount();
     if (IsGmp) computedRowsMpz = CmbGrp->GetMpzCount();
 
