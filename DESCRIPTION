@@ -35,4 +35,4 @@ NeedsCompilation: yes
 Author: Joseph Wood
 Maintainer: Joseph Wood <jwood000@gmail.com>
 Encoding: UTF-8
-RoxygenNote: 7.1.2
+RoxygenNote: 7.2.3
