@@ -1,5 +1,41 @@
 #include "ComboGroups/GetComboGroups.h"
 
+CmbGrpClsFuncs GetClassFuncs(
+    std::unique_ptr<ComboGroupsTemplate> const &CmbGrp
+) {
+
+    const nextGrpFunc nextCmbGrp = std::bind(
+        &ComboGroupsTemplate::nextComboGroup,
+        std::cref(CmbGrp), std::placeholders::_1
+    );
+
+    const nthFuncDbl nthCmbGrp = std::bind(
+        &ComboGroupsTemplate::nthComboGroup,
+        std::cref(CmbGrp), std::placeholders::_1
+    );
+
+    const nthFuncGmp nthCmbGrpGmp = std::bind(
+        &ComboGroupsTemplate::nthComboGroupGmp,
+        std::cref(CmbGrp), std::placeholders::_1
+    );
+
+    const finalTouchFunc FinalTouch = std::bind(
+        &ComboGroupsTemplate::FinalTouch, std::cref(CmbGrp),
+        std::placeholders::_1, std::placeholders::_2, std::placeholders::_3,
+        std::placeholders::_4, std::placeholders::_5, std::placeholders::_6,
+        std::placeholders::_7
+    );
+
+    CmbGrpClsFuncs myFuncs = {
+        nthCmbGrp,
+        nthCmbGrpGmp,
+        nextCmbGrp,
+        FinalTouch
+    };
+
+    return myFuncs;
+}
+
 void SampleResults(SEXP GroupsMat, SEXP v,
                    nthFuncDbl nthCmbGrp, nthFuncGmp nthCmbGrpGmp,
                    const std::vector<double> &mySample,

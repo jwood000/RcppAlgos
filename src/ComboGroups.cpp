@@ -105,30 +105,10 @@ SEXP ComboGroupsCpp(SEXP Rv, SEXP RNumGroups, SEXP RGrpSize, SEXP RRetType,
     SetThreads(Parallel, maxThreads, numResults,
                myType, nThreads, RNumThreads, limit);
 
-    const nextGrpFunc nextCmbGrp = std::bind(
-        &ComboGroupsTemplate::nextComboGroup,
-        std::cref(CmbGrp), std::placeholders::_1
-    );
-
-    const nthFuncDbl nthCmbGrp = std::bind(
-        &ComboGroupsTemplate::nthComboGroup,
-        std::cref(CmbGrp), std::placeholders::_1
-    );
-
-    const nthFuncGmp nthCmbGrpGmp = std::bind(
-        &ComboGroupsTemplate::nthComboGroupGmp,
-        std::cref(CmbGrp), std::placeholders::_1
-    );
-
-    const finalTouchFunc FinalTouch = std::bind(
-        &ComboGroupsTemplate::FinalTouch, std::cref(CmbGrp),
-        std::placeholders::_1, std::placeholders::_2, std::placeholders::_3,
-        std::placeholders::_4, std::placeholders::_5, std::placeholders::_6,
-        std::placeholders::_7
-    );
+    CmbGrpClsFuncs f = GetClassFuncs(CmbGrp);
 
     cpp11::sexp res = GetComboGroups(
-        Rv, nextCmbGrp, nthCmbGrp, nthCmbGrpGmp, FinalTouch, vNum, vInt,
+        Rv, f.next, f.nthDbl, f.nthGmp, f.finishing, vNum, vInt,
         startZ, myType, mySample, myBigSamp, lowerMpz, lower, n, numResults,
         nThreads, IsArray, IsNamed, Parallel, IsSample, IsGmp
     );

@@ -21,6 +21,13 @@ typedef std::function<void(
     const std::vector<mpz_class>&, bool
 )> finalTouchFunc;
 
+struct CmbGrpClsFuncs {
+    const nthFuncDbl nthDbl;
+    const nthFuncGmp nthGmp;
+    const nextGrpFunc next;
+    const finalTouchFunc finishing;
+};
+
 class ComboGroupsTemplate {
 protected:
 

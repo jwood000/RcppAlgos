@@ -12,6 +12,10 @@
 #include <numeric>
 #include <thread>
 
+CmbGrpClsFuncs GetClassFuncs(
+    std::unique_ptr<ComboGroupsTemplate> const &CmbGrp
+);
+
 SEXP GetComboGroups(
     SEXP Rv, nextGrpFunc nextCmbGrp, nthFuncDbl nthCmbGrp,
     nthFuncGmp nthCmbGrpGmp, finalTouchFunc FinalTouch,
