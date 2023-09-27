@@ -26,7 +26,7 @@ SEXP ComboGroupsCpp(SEXP Rv, SEXP RNumGroups, SEXP RGrpSize, SEXP RRetType,
     SetType(myType, Rv);
     SetBasic(Rv, vNum, vInt, n, myType);
 
-    std::unique_ptr<ComboGroupsTemplate> CmbGrp =
+    const std::unique_ptr<ComboGroupsTemplate> CmbGrp =
         GroupPrep(Rv, RNumGroups, RGrpSize, n);
 
     CmbGrp->SetCount();
@@ -107,23 +107,24 @@ SEXP ComboGroupsCpp(SEXP Rv, SEXP RNumGroups, SEXP RGrpSize, SEXP RRetType,
 
     const nextGrpFunc nextCmbGrp = std::bind(
         &ComboGroupsTemplate::nextComboGroup,
-        CmbGrp.get(), std::placeholders::_1
+        std::cref(CmbGrp), std::placeholders::_1
     );
 
     const nthFuncDbl nthCmbGrp = std::bind(
         &ComboGroupsTemplate::nthComboGroup,
-        CmbGrp.get(), std::placeholders::_1
+        std::cref(CmbGrp), std::placeholders::_1
     );
 
     const nthFuncGmp nthCmbGrpGmp = std::bind(
         &ComboGroupsTemplate::nthComboGroupGmp,
-        CmbGrp.get(), std::placeholders::_1
+        std::cref(CmbGrp), std::placeholders::_1
     );
 
     const finalTouchFunc FinalTouch = std::bind(
-        &ComboGroupsTemplate::FinalTouch, CmbGrp.get(), std::placeholders::_1,
-        std::placeholders::_2, std::placeholders::_3, std::placeholders::_4,
-        std::placeholders::_5, std::placeholders::_6, std::placeholders::_7
+        &ComboGroupsTemplate::FinalTouch, std::cref(CmbGrp),
+        std::placeholders::_1, std::placeholders::_2, std::placeholders::_3,
+        std::placeholders::_4, std::placeholders::_5, std::placeholders::_6,
+        std::placeholders::_7
     );
 
     cpp11::sexp res = GetComboGroups(
