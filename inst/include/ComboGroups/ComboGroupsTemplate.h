@@ -12,9 +12,9 @@
 #include <memory>
 #include <cmath>
 
-typedef const std::function<std::vector<int>(const mpz_class &)> nthFuncGmp;
-typedef const std::function<std::vector<int>(double)>            nthFuncDbl;
-typedef const std::function<bool(std::vector<int>&)>             nextGrpFunc;
+typedef std::function<std::vector<int>(const mpz_class &)> nthFuncGmp;
+typedef std::function<std::vector<int>(double)>            nthFuncDbl;
+typedef std::function<bool(std::vector<int>&)>             nextGrpFunc;
 
 typedef std::function<void(
     SEXP, bool, int, bool, const std::vector<double>&,

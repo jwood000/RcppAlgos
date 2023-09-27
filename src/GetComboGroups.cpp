@@ -1,36 +1,5 @@
 #include "ComboGroups/GetComboGroups.h"
 
-std::list<std::variant<nextGrpFunc, nthFuncDbl, nthFuncGmp, finalTouchFunc>> GetClassFuncs(
-    std::unique_ptr<ComboGroupsTemplate> const &CmbGrp
-) {
-    const nextGrpFunc nextCmbGrp = std::bind(
-        &ComboGroupsTemplate::nextComboGroup,
-        CmbGrp.get(), std::placeholders::_1
-    );
-
-    const nthFuncDbl nthCmbGrp = std::bind(
-        &ComboGroupsTemplate::nthComboGroup,
-        CmbGrp.get(), std::placeholders::_1
-    );
-
-    const nthFuncGmp nthCmbGrpGmp = std::bind(
-        &ComboGroupsTemplate::nthComboGroupGmp,
-        CmbGrp.get(), std::placeholders::_1
-    );
-
-    const finalTouchFunc FinalTouch = std::bind(
-        &ComboGroupsTemplate::FinalTouch, CmbGrp.get(), std::placeholders::_1,
-        std::placeholders::_2, std::placeholders::_3, std::placeholders::_4,
-        std::placeholders::_5, std::placeholders::_6, std::placeholders::_7
-    );
-
-    std::list<std::variant<nextGrpFunc, nthFuncDbl, nthFuncGmp, finalTouchFunc>> funcs = {
-        nextCmbGrp, nthCmbGrp, nthCmbGrpGmp, FinalTouch
-    };
-
-    return funcs;
-}
-
 void SampleResults(SEXP GroupsMat, SEXP v,
                    nthFuncDbl nthCmbGrp, nthFuncGmp nthCmbGrpGmp,
                    const std::vector<double> &mySample,

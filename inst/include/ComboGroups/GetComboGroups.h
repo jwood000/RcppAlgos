@@ -9,10 +9,8 @@
 #include "SetUpUtils.h"
 #include "RMatrix.h"
 #include <functional>
-#include <variant>
 #include <numeric>
 #include <thread>
-#include <list>
 
 SEXP GetComboGroups(
     SEXP Rv, nextGrpFunc nextCmbGrp, nthFuncDbl nthCmbGrp,
