@@ -13,7 +13,7 @@ private:
 
     bool IsArray;
     int r; // Number of groups
-    std::unique_ptr<ComboGroupsTemplate> CmbGrp;
+    const std::unique_ptr<ComboGroupsTemplate> CmbGrp;
 
     SEXP SingleReturn();
     SEXP GeneralReturn(int numResults);
