@@ -24,7 +24,6 @@ SEXP ComboGroupsClass::GeneralReturn(int numResults) {
 
     SetThreads(LocalPar, maxThreads, numResults,
                myType, nThreads, sexpNThreads, limit);
-
     CmbGrpClsFuncs f = GetClassFuncs(CmbGrp);
 
     cpp11::sexp res = GetComboGroups(
@@ -33,6 +32,7 @@ SEXP ComboGroupsClass::GeneralReturn(int numResults) {
         numResults, nThreads, IsArray, false, LocalPar, false, IsGmp
     );
 
+    zUpdateIndex(vNum, vInt, z, sexpVec, res, m, numResults);
     return res;
 }
 
@@ -46,6 +46,7 @@ ComboGroupsClass::ComboGroupsClass(
           RmaxThreads, RnumThreads, Rparallel),
           CmbGrp(GroupPrep(Rv, RNumGroups, RGrpSize, n)) {
 
+    prevIterAvailable = false;
     CmbGrp->SetCount();
     IsGmp = CmbGrp->GetIsGmp();
     computedRows = CmbGrp->GetDblCount();
@@ -68,12 +69,17 @@ ComboGroupsClass::ComboGroupsClass(
 
     IsArray = (retType == "3Darray");
     r = CmbGrp->GetNumGrps();
+    rDisp = r;
     const int grpSize = n / r;
 
     std::vector<std::string> myColNames(r, "Grp");
 
     for (int j = 0; j < r; ++j) {
         myColNames[j] += std::to_string(j + 1);
+    }
+
+    for (auto g: CmbGrp->GetGroupSizes()) {
+        grpSizeDesc += (std::to_string(g) + ", ");
     }
 
     if (IsArray) {
@@ -96,6 +102,33 @@ ComboGroupsClass::ComboGroupsClass(
                 myNames[k] = myColNames[i].c_str();
             }
         }
+    } else if (CmbGrp->GetOneGrp()) {
+        myNames.resize(n);
+        std::vector<int> vGrpSizes(CmbGrp->GetGroupSizes());
+
+        const int numOneGrps = vGrpSizes.front();
+        std::vector<int> realGrps(vGrpSizes);
+        realGrps.erase(realGrps.begin());
+        realGrps.insert(realGrps.begin(), numOneGrps, 1);
+
+        rDisp = realGrps.size();
+        std::vector<std::string> myColNamesOne(rDisp, "Grp");
+
+        for (int j = 0; j < rDisp; ++j) {
+            myColNamesOne[j] += std::to_string(j + 1);
+        }
+
+        for (int i = 0, k = 0; i < rDisp; ++i) {
+            for (int j = 0; j < realGrps[i]; ++j, ++k) {
+                myNames[k] = myColNamesOne[i].c_str();
+            }
+        }
+
+        grpSizeDesc.clear();
+
+        for (auto g: realGrps) {
+            grpSizeDesc += (std::to_string(g) + ", ");
+        }
     } else {
         myNames.resize(n);
         std::vector<int> vGrpSizes(CmbGrp->GetGroupSizes());
@@ -106,6 +139,10 @@ ComboGroupsClass::ComboGroupsClass(
             }
         }
     }
+
+    // Remove the last space and comma
+    grpSizeDesc.pop_back();
+    grpSizeDesc.pop_back();
 }
 
 void ComboGroupsClass::startOver() {
@@ -308,19 +345,9 @@ SEXP ComboGroupsClass::back() {
 
 SEXP ComboGroupsClass::summary() {
 
-    std::string grpSizeDesc;
-
-    for (auto g: CmbGrp->GetGroupSizes()) {
-        grpSizeDesc += (std::to_string(g) + ", ");
-    }
-
-    // Remove the last space and comma
-    grpSizeDesc.pop_back();
-    grpSizeDesc.pop_back();
-
     const std::string gtype = CmbGrp->GetType();
     const std::string prefix = "Partition of v of length " +
-        std::to_string(n) + " into " + std::to_string(r);
+        std::to_string(n) + " into " + std::to_string(rDisp);
     const std::string suffix = (gtype == "Uniform") ? " uniform groups" :
         " groups of sizes: " + grpSizeDesc;
 

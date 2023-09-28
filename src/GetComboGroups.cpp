@@ -293,7 +293,7 @@ SEXP GetComboGroups(
     SEXP Rv, nextGrpFunc nextCmbGrp, nthFuncDbl nthCmbGrp,
     nthFuncGmp nthCmbGrpGmp, finalTouchFunc FinalTouch,
     const std::vector<double> &vNum, const std::vector<int> &vInt,
-    std::vector<int> &startZ, const VecType &myType,
+    std::vector<int> startZ, const VecType &myType,
     const std::vector<double> &mySample,
     const std::vector<mpz_class> &myBigSamp,
     mpz_class lowerMpz, double lower, int n, int numResults, int nThreads,

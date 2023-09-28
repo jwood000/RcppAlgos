@@ -11,8 +11,11 @@ private:
     cpp11::writable::list dimNames;
     cpp11::writable::strings myNames;
 
+    std::string grpSizeDesc;
+
     bool IsArray;
-    int r; // Number of groups
+    int rDisp; // This will differ in the General case when OneGrp = true
+    int r;     // Number of groups
     const std::unique_ptr<ComboGroupsTemplate> CmbGrp;
 
     SEXP SingleReturn();

@@ -6,7 +6,6 @@ class ComboGroupsGeneral : public ComboGroupsTemplate {
 private:
 
     const GroupHelper MyGrp;
-    const bool OneGrp;
 
 public:
 

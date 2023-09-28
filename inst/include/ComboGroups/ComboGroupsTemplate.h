@@ -33,6 +33,9 @@ protected:
 
     std::string GroupType;
 
+    bool OneGrp; // Used only for General case, but we need to be able to
+                 // to access it, so that we can properly name the output
+                 // when using iterables (e.g. nextIter method)
     const int n; // Size of vector which is also the size of z (i.e. z.size())
     const int r; // Number of groups
 
@@ -68,6 +71,7 @@ public:
     bool GetIsGmp() const {return IsGmp;}
     int GetNumGrps() const {return r;}
     std::string GetType() const {return GroupType;}
+    bool GetOneGrp() const {return OneGrp;}
 
     SEXP GetCount() const {
         return CppConvert::GetCount(IsGmp, computedRowsMpz, computedRows);
