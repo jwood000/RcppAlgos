@@ -371,7 +371,8 @@ test_that("comboGroups produces correct results when groups vary", {
                                             seed = 1, namedSample = TRUE)),
                  c("866248189", "372205330702"))
 
-    expect_equal(rownames(comboGroupsSample(
+    expect_equal(
+        rownames(comboGroupsSample(
             80, grpSizes = c(5, 5, 5, 10, 10, 15, 15, 15), n = 2,
             seed = 1, namedSample = TRUE
         )),
