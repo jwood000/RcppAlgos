@@ -1,7 +1,7 @@
 ---
 title: "Combinatorial Iterators in RcppAlgos"
 author: "Joseph Wood"
-date: "07/08/2023"
+date: "10/02/2023"
 output:
   rmarkdown::html_vignette:
     toc: true
@@ -12,7 +12,7 @@ vignette: >
   \usepackage[utf8]{inputenc}
 ---
 
-This document covers working with combinatorial iterators in `RcppAlgos`. Combinatorial iterators in `RcppAlgos` are memory efficient like traditional iterator objects. They allow traversal of combinations/permutations/partitions/compositions one by one without the necessity for storing all results in memory.
+This document covers working with combinatorial iterators in `RcppAlgos`. Combinatorial iterators in `RcppAlgos` are memory efficient like traditional iterator objects. They allow traversal of combinations/permutations/partitions/compositions/comboGroups one by one without the necessity for storing all results in memory.
 
 Unlike traditional combinatorial iterators, the iterators in `RcppAlgos` offers random access via the `[[` operator. This means, we can access the *n<sup>th</sup>* [lexicographical order](<https://en.wikipedia.org/wiki/Lexicographical_order>) result on demand without having to first iterate over the previous *n - 1* results.
 
@@ -433,8 +433,8 @@ microbenchmark(v243 = test_nextIter(15, 8))
 #> Warning in microbenchmark(v243 = test_nextIter(15, 8)): less accurate nanosecond times to
 #> avoid potential integer overflows
 #> Unit: milliseconds
-#>  expr      min      lq    mean   median      uq     max neval
-#>  v243 20.81242 21.8859 23.3109 22.13436 22.4927 132.881   100
+#>  expr      min       lq     mean   median       uq      max neval
+#>  v243 20.81299 21.83592 24.21892 21.99418 22.36261 230.2301   100
 
 identical(test_nextIter(15, 8, get_val = TRUE),
           comboGeneral(15, 8))
@@ -445,7 +445,7 @@ comboCount(25, 10)
 
 system.time(test_nextIter(25, 10))
 #>    user  system elapsed 
-#>  11.255   0.054  11.310
+#>  11.180   0.056  11.237
 
 Rprof("Version243.out", memory.profiling = TRUE)
 test_nextIter(25, 10)
@@ -453,43 +453,43 @@ Rprof(NULL)
 lapply(summaryRprof("Version243.out", memory = "both"), head)
 #> $by.self
 #>                  self.time self.pct total.time total.pct mem.total
-#> "as.environment"      3.46    32.58       3.46     32.58    3649.2
-#> "$"                   3.18    29.94       8.04     75.71    8233.1
-#> "test_nextIter"       1.28    12.05      10.62    100.00   10692.3
-#> ".External"           0.96     9.04       0.96      9.04     936.2
-#> "exists"              0.70     6.59       0.70      6.59     706.1
-#> "get"                 0.66     6.21       0.66      6.21     709.6
+#> "$"                   3.30    32.10       7.84     76.26    8162.1
+#> "as.environment"      2.94    28.60       2.94     28.60    3105.6
+#> "test_nextIter"       1.24    12.06      10.28    100.00   10553.0
+#> ".External"           0.86     8.37       0.86      8.37     813.3
+#> "exists"              0.76     7.39       0.76      7.39     790.3
+#> "get"                 0.76     7.39       0.76      7.39     778.5
 #> 
 #> $by.total
 #>                 total.time total.pct mem.total self.time self.pct
-#> "test_nextIter"      10.62       100   10692.3      1.28    12.05
-#> "<Anonymous>"        10.62       100   10692.3      0.00     0.00
-#> "block_exec"         10.62       100   10692.3      0.00     0.00
-#> "call_block"         10.62       100   10692.3      0.00     0.00
-#> "do.call"            10.62       100   10692.3      0.00     0.00
-#> "doTryCatch"         10.62       100   10692.3      0.00     0.00
+#> "test_nextIter"      10.28       100     10553      1.24    12.06
+#> "<Anonymous>"        10.28       100     10553      0.00     0.00
+#> "block_exec"         10.28       100     10553      0.00     0.00
+#> "call_block"         10.28       100     10553      0.00     0.00
+#> "do.call"            10.28       100     10553      0.00     0.00
+#> "doTryCatch"         10.28       100     10553      0.00     0.00
 #> 
 #> $sample.interval
 #> [1] 0.02
 #> 
 #> $sampling.time
-#> [1] 10.62
+#> [1] 10.28
 ```
 
-#### Version `2.8.0` (No `Rcpp`)
+#### Version `2.8.2` (No `Rcpp`)
 
 ``` r
 curr_version <- as.integer(gsub("\\.", "", packageVersion("RcppAlgos")))
 curr_version
-#> [1] 280
+#> [1] 282
 microbenchmark(curr_v = test_nextIter(15, 8, v = curr_version))
 #> Unit: milliseconds
-#>    expr      min       lq     mean  median       uq      max neval
-#>  curr_v 2.511906 2.652577 2.712456 2.68304 2.727792 4.522013   100
+#>    expr      min      lq     mean   median       uq      max neval
+#>  curr_v 2.592881 2.66582 2.725664 2.697021 2.740502 4.556002   100
 
 system.time(test_nextIter(25, 10, v = curr_version))
 #>    user  system elapsed 
-#>   1.349   0.010   1.358
+#>   1.352   0.007   1.359
 
 identical(test_nextIter(15, 8, get_val = TRUE, v = curr_version),
           comboGeneral(15, 8))
@@ -501,25 +501,24 @@ Rprof(NULL)
 lapply(summaryRprof("Version250.out", memory = "both"), head)
 #> $by.self
 #>                 self.time self.pct total.time total.pct mem.total
-#> "<Anonymous>"        0.46    44.23       1.04    100.00     890.5
-#> ".Call"              0.40    38.46       0.40     38.46     326.7
-#> "test_nextIter"      0.16    15.38       1.02     98.08     870.6
-#> "grepl"              0.02     1.92       0.02      1.92      19.9
+#> ".Call"              0.44    37.93       0.44     37.93     342.1
+#> "<Anonymous>"        0.40    34.48       1.16    100.00     893.2
+#> "test_nextIter"      0.32    27.59       1.16    100.00     893.2
 #> 
 #> $by.total
-#>               total.time total.pct mem.total self.time self.pct
-#> "<Anonymous>"       1.04       100     890.5      0.46    44.23
-#> "block_exec"        1.04       100     890.5      0.00     0.00
-#> "call_block"        1.04       100     890.5      0.00     0.00
-#> "do.call"           1.04       100     890.5      0.00     0.00
-#> "doTryCatch"        1.04       100     890.5      0.00     0.00
-#> "eng_r"             1.04       100     890.5      0.00     0.00
+#>                 total.time total.pct mem.total self.time self.pct
+#> "<Anonymous>"         1.16       100     893.2      0.40    34.48
+#> "test_nextIter"       1.16       100     893.2      0.32    27.59
+#> "block_exec"          1.16       100     893.2      0.00     0.00
+#> "call_block"          1.16       100     893.2      0.00     0.00
+#> "do.call"             1.16       100     893.2      0.00     0.00
+#> "doTryCatch"          1.16       100     893.2      0.00     0.00
 #> 
 #> $sample.interval
 #> [1] 0.02
 #> 
 #> $sampling.time
-#> [1] 1.04
+#> [1] 1.16
 ```
 
 #### Conclusions
@@ -534,21 +533,21 @@ v243 <- summaryRprof("Version243.out", memory = "stats", index = 1)
 v243
 #> index: "tryCatch"
 #>      vsize.small  max.vsize.small      vsize.large  max.vsize.large            nodes 
-#>          1053412         17831624            28517         15142312         20461211 
+#>          1073652         17383752            29464         15144240         20850022 
 #>        max.nodes     duplications tot.duplications          samples 
-#>        194732384            18465          9805000              531
+#>        185810240            19044          9788589              514
 
 ## Version 2.5.0
 v250 <- summaryRprof("Version250.out", memory = "stats", index = 1)
 v250
 #> index: "tryCatch"
 #>      vsize.small  max.vsize.small      vsize.large  max.vsize.large            nodes 
-#>          3881681         28135720           302085         15672416         18269064 
+#>          3484924         27881344           270247         15674344         16400051 
 #>        max.nodes     duplications tot.duplications          samples 
-#>        189968240                3              140               52
+#>        188884920                2              124               58
 ```
 
-With verison `2.5.0+` there are only 140 `tot.duplications` whereas with version `2.4.3` there are millions of `tot.duplications`. In fact, there are a total of 9805000 duplications with version `2.4.3`. This together with `comboCount(25, 10) = 3,268,760` implies that the C funciton, `duplicate`, is called about 3 times per iteration with older versions (i.e. 9805000 `/ 3268760 ~=` 2.9996).
+With verison `2.5.0+` there are only 124 `tot.duplications` whereas with version `2.4.3` there are millions of `tot.duplications`. In fact, there are a total of 9788589 duplications with version `2.4.3`. This together with `comboCount(25, 10) = 3,268,760` implies that the C funciton, `duplicate`, is called about 3 times per iteration with older versions (i.e. 9788589 `/ 3268760 ~=` 2.9946).
 
 ### Iterating over Partitions and Compositions of a Number
 
@@ -795,14 +794,14 @@ time_all <- system.time({
 #> [1] 38935252
 time_all
 #>    user  system elapsed 
-#>   1.958   1.191   3.150
+#>   2.087   2.156   5.338
 
 ## Over 4 GBs of results
 (38935252 * 15 * 8) / 2^30
 #> [1] 4.351353
 ```
 
-Just over 3 seconds isn’t bad, however 4 GBs could put a strain on your computer.
+Just over 5 seconds isn’t bad, however 4 GBs could put a strain on your computer.
 
 Let’s use iterators instead and only generate ten thousand at a time to keep memory low. We should mention here that the iterators are “smart” in that there is no fear in requesting more results than what is actually left. For example, if in the problem above, we had iterated to the 38<sup>th</sup> million result and requested 10 million more, we would only obtain 935,252 results.
 
@@ -831,14 +830,14 @@ time_iter <- system.time({
 #> [1] NA
 time_iter
 #>    user  system elapsed 
-#>   1.645   0.308   1.954
+#>   1.652   0.327   1.979
 
 ## Only 1 MBs per iteration
 (1e4 * 15 * 8) / 2^20
 #> [1] 1.144409
 ```
 
-Wow! Using the iterator approach is not only easier on your RAM, but faster as well (3.15 `/` 1.954 `~=` 1.6121)! Our gains came strictly from memory efficiency (From over 4 GBs to just over 1 MB) as the underlying algorithm is exactly the same.
+Wow! Using the iterator approach is not only easier on your RAM, but faster as well (5.338 `/` 1.979 `~=` 2.6973)! Our gains came strictly from memory efficiency (From over 4 GBs to just over 1 MB) as the underlying algorithm is exactly the same.
 
 Lastly, using iterators make some problems possible that would otherwise be intractable because of hardware. For instance, using the example above, if we changed the `limitConstraints` from 83 to 81 and tried the first approach your computer will most certainly become unusable (at least mine did). My memory usage shot up to over 30 GB and R became unresponsive. After a restart, I tried the second approach and obtained my result in just over 10 seconds barely noticing any jumps in memory:
 
@@ -879,5 +878,143 @@ system.time({
 #> $totalRemaining
 #> [1] NA
 #>    user  system elapsed 
-#>  11.506   2.217  13.725
+#>  11.461   2.372  13.834
+```
+
+### Iterating over Partitions of Groups
+
+As of version `2.8.2`, we can iterate over partitions of groups with `comboGroupsIter`.
+
+Just as with `partitionsIter`, we have all of the capabilities of the standard `comboIter` and `permuteIter` except for bidirectionality (i.e. the `prevIter` methods).
+
+``` r
+## Similar illustration of comboIter(5, 3) at the top
+cg = comboGroupsIter(6, 2, retType = "3Darray")
+cg@nextIter()
+#>      Grp1 Grp2
+#> [1,]    1    4
+#> [2,]    2    5
+#> [3,]    3    6
+
+cg@nextIter()
+#>      Grp1 Grp2
+#> [1,]    1    3
+#> [2,]    2    5
+#> [3,]    4    6
+
+iter = cg@currIter()
+i = 1
+
+while (!is.null(iter)) {
+    cat("\n ", i, "-------------\n")
+    print(iter)
+    iter = cg@nextIter()
+    i = i + 1
+}
+#> 
+#>   1 -------------
+#>      Grp1 Grp2
+#> [1,]    1    3
+#> [2,]    2    5
+#> [3,]    4    6
+#> 
+#>   2 -------------
+#>      Grp1 Grp2
+#> [1,]    1    3
+#> [2,]    2    4
+#> [3,]    5    6
+#> 
+#>   3 -------------
+#>      Grp1 Grp2
+#> [1,]    1    3
+#> [2,]    2    4
+#> [3,]    6    5
+#> 
+#>   4 -------------
+#>      Grp1 Grp2
+#> [1,]    1    2
+#> [2,]    3    5
+#> [3,]    4    6
+#> 
+#>   5 -------------
+#>      Grp1 Grp2
+#> [1,]    1    2
+#> [2,]    3    4
+#> [3,]    5    6
+#> 
+#>   6 -------------
+#>      Grp1 Grp2
+#> [1,]    1    2
+#> [2,]    3    4
+#> [3,]    6    5
+#> 
+#>   7 -------------
+#>      Grp1 Grp2
+#> [1,]    1    2
+#> [2,]    4    3
+#> [3,]    5    6
+#> 
+#>   8 -------------
+#>      Grp1 Grp2
+#> [1,]    1    2
+#> [2,]    4    3
+#> [3,]    6    5
+#> 
+#>   9 -------------
+#>      Grp1 Grp2
+#> [1,]    1    2
+#> [2,]    5    3
+#> [3,]    6    4
+#> No more results.
+
+comboGroups(6, 2, retType = "3Darray", lower = 2)
+#> , , Grp1
+#> 
+#>       [,1] [,2] [,3]
+#>  [1,]    1    2    4
+#>  [2,]    1    2    5
+#>  [3,]    1    2    6
+#>  [4,]    1    3    4
+#>  [5,]    1    3    5
+#>  [6,]    1    3    6
+#>  [7,]    1    4    5
+#>  [8,]    1    4    6
+#>  [9,]    1    5    6
+#> 
+#> , , Grp2
+#> 
+#>       [,1] [,2] [,3]
+#>  [1,]    3    5    6
+#>  [2,]    3    4    6
+#>  [3,]    3    4    5
+#>  [4,]    2    5    6
+#>  [5,]    2    4    6
+#>  [6,]    2    4    5
+#>  [7,]    2    3    6
+#>  [8,]    2    3    5
+#>  [9,]    2    3    4
+
+cg@summary()
+#> $description
+#> [1] "Partition of v of length 6 into 2 uniform groups"
+#> 
+#> $currentIndex
+#> [1] 11
+#> 
+#> $totalResults
+#> [1] 10
+#> 
+#> $totalRemaining
+#> [1] -1
+
+## Using random access
+cg[[7]]
+#>      Grp1 Grp2
+#> [1,]    1    2
+#> [2,]    3    4
+#> [3,]    6    5
+
+## No previous iterators
+cg@prevIter()
+#> Error in eval(expr, envir, enclos): no slot of name "prevIter" for this object of class "ComboGroups"
 ```
