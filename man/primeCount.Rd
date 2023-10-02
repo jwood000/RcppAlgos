@@ -57,3 +57,7 @@ primeCount(10^9)
 ## Using nThreads
 system.time(primeCount(10^10, nThreads = 2))
 }
+\keyword{prime}
+\keyword{pi}
+\keyword{primecount}
+\keyword{number theory}

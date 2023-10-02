@@ -1,22 +1,26 @@
 #pragma once
 
-#include "ComboGroup/ComboGroupClass.h"
+#include "ComboGroups/ComboGroupsTemplate.h"
 
-class ComboGroupUnique : public ComboGroup {
+class ComboGroupsSame : public ComboGroupsTemplate {
 private:
 
-    const std::vector<int> grp;
+    const int grpSize;
 
 public:
 
-    ComboGroupUnique(int n_, int numGroups, int i1, int i2,
-                     int bnd, const std::vector<int> &grp_);
+    ComboGroupsSame(int n_, int numGroups, int i1, int i2, int bnd, int size);
 
     bool nextComboGroup(std::vector<int> &z);
     double numGroupCombs();
     mpz_class numGroupCombsGmp();
     std::vector<int> nthComboGroup(double myIndex);
     std::vector<int> nthComboGroupGmp(const mpz_class &lowerMpz);
+
+    std::vector<int> GetGroupSizes() {
+        std::vector<int> grp(1, grpSize);
+        return grp;
+    }
 
     void FinalTouch(
         SEXP res, bool IsArray, int nRows, bool IsNamed,

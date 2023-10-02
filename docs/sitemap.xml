@@ -46,6 +46,9 @@
     <loc>/reference/Combo-Class.html</loc>
   </url>
   <url>
+    <loc>/reference/ComboGroups-Class.html</loc>
+  </url>
+  <url>
     <loc>/reference/Constraints-Class.html</loc>
   </url>
   <url>
@@ -77,6 +80,9 @@
   </url>
   <url>
     <loc>/reference/comboGroupsCount.html</loc>
+  </url>
+  <url>
+    <loc>/reference/comboGroupsIterator.html</loc>
   </url>
   <url>
     <loc>/reference/comboGroupsSample.html</loc>

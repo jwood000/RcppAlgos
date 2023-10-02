@@ -1,7 +1,7 @@
 ---
 title: "High Performance Benchmarks"
 author: "Joseph Wood"
-date: "07/08/2023"
+date: "10/02/2023"
 output:
   rmarkdown::html_vignette:
     toc: true
@@ -41,7 +41,7 @@ cat(paste(pertinent_output[1:3], collapse = "\n"))
 pkgs <- c("RcppAlgos", "arrangements", "partitions", "microbenchmark")
 sapply(pkgs, packageVersion, simplify = FALSE)
 #> $RcppAlgos
-#> [1] '2.8.0'
+#> [1] '2.8.2'
 #> 
 #> $arrangements
 #> [1] '1.1.9'
@@ -81,8 +81,8 @@ microbenchmark(cbRcppAlgosPar = comboGeneral(v1, m, nThreads = numThreads),
 #> Unit: relative
 #>            expr   min    lq  mean median    uq   max neval cld
 #>  cbRcppAlgosPar 1.000 1.000 1.000  1.000 1.000 1.000    15 a  
-#>  cbRcppAlgosSer 3.440 3.091 3.099  3.089 3.077 2.982    15  b 
-#>  cbArrangements 3.493 3.141 3.163  3.134 3.147 3.117    15   c
+#>  cbRcppAlgosSer 3.466 3.197 3.134  3.131 3.057 2.995    15  b 
+#>  cbArrangements 3.388 3.124 3.058  3.059 2.988 2.867    15   c
 ```
 
 ### Combinations - Repetition
@@ -103,9 +103,9 @@ microbenchmark(cbRcppAlgosPar = comboGeneral(v2, m, TRUE, nThreads = numThreads)
                times = 15, unit = "relative")
 #> Unit: relative
 #>            expr   min    lq  mean median    uq   max neval cld
-#>  cbRcppAlgosPar 1.000 1.000 1.000   1.00 1.000 1.000    15  a 
-#>  cbRcppAlgosSer 2.925 3.018 3.059   3.01 3.000 3.873    15   b
-#>  cbArrangements 3.055 3.052 3.018   3.04 3.012 2.883    15   b
+#>  cbRcppAlgosPar 1.000 1.000 1.000  1.000 1.000 1.000    15  a 
+#>  cbRcppAlgosSer 2.902 3.015 3.052  2.992 2.983 3.915    15   b
+#>  cbArrangements 3.067 3.049 3.012  3.016 2.980 2.934    15   b
 ```
 
 ### Combinations - Multisets
@@ -127,8 +127,8 @@ microbenchmark(cbRcppAlgosPar = comboGeneral(v3, 20, freqs = myFreqs, nThreads =
 #> Unit: relative
 #>            expr   min    lq  mean median    uq   max neval cld
 #>  cbRcppAlgosPar 1.000 1.000 1.000  1.000 1.000 1.000    10 a  
-#>  cbRcppAlgosSer 3.184 3.156 3.148  3.162 3.114 3.121    10  b 
-#>  cbArrangements 6.014 6.059 6.030  6.044 5.947 6.173    10   c
+#>  cbRcppAlgosSer 3.117 3.128 3.086  3.087 3.089 2.954    10  b 
+#>  cbArrangements 5.863 5.976 5.857  5.872 5.839 5.578    10   c
 ```
 
 ## Permutations
@@ -151,8 +151,8 @@ microbenchmark(cbRcppAlgosPar = permuteGeneral(v4, 6, nThreads = numThreads),
 #> Unit: relative
 #>            expr   min    lq  mean median    uq   max neval cld
 #>  cbRcppAlgosPar 1.000 1.000 1.000  1.000 1.000 1.000    15 a  
-#>  cbRcppAlgosSer 1.491 1.494 1.428  1.500 1.283 1.350    15  b 
-#>  cbArrangements 2.563 2.583 2.421  2.583 2.310 2.117    15   c
+#>  cbRcppAlgosSer 1.523 1.522 1.442  1.517 1.233 1.371    15  b 
+#>  cbArrangements 2.540 2.535 2.353  2.499 2.123 2.084    15   c
 
 
 ## Indexing permutation example with the partitions package
@@ -175,9 +175,9 @@ microbenchmark(cbRcppAlgosPar = permuteGeneral(11, nThreads = 4),
 #> Unit: relative
 #>            expr   min    lq  mean median    uq   max neval  cld
 #>  cbRcppAlgosPar 1.000 1.000 1.000  1.000 1.000 1.000     5 a   
-#>  cbRcppAlgosSer 2.502 2.493 2.173  2.498 1.756 1.921     5  b  
-#>  cbArrangements 4.091 4.094 3.545  4.092 2.990 2.973     5   c 
-#>    cbPartitions 7.997 8.175 7.188  8.288 6.004 6.380     5    d
+#>  cbRcppAlgosSer 2.499 2.534 2.185  2.497 1.765 1.937     5  b  
+#>  cbArrangements 4.110 4.090 3.678  4.219 3.144 3.260     5   c 
+#>    cbPartitions 8.056 8.104 7.204  8.316 6.046 6.397     5    d
 ```
 
 ### Permutations - Repetition
@@ -198,8 +198,8 @@ microbenchmark(cbRcppAlgosPar = permuteGeneral(v5, 10, TRUE, nThreads = numThrea
 #> Unit: relative
 #>            expr   min    lq  mean median    uq   max neval cld
 #>  cbRcppAlgosPar 1.000 1.000 1.000  1.000 1.000 1.000    10 a  
-#>  cbRcppAlgosSer 2.867 2.836 2.956  2.785 2.766 4.196    10  b 
-#>  cbArrangements 3.567 3.508 3.629  3.464 3.448 4.836    10   c
+#>  cbRcppAlgosSer 2.814 2.816 2.983  2.801 2.774 4.459    10  b 
+#>  cbArrangements 3.486 3.443 3.604  3.431 3.410 5.059    10   c
 ```
 
 ### Permutations - Multisets
@@ -218,10 +218,10 @@ microbenchmark(cbRcppAlgosPar = permuteGeneral(v6, 7, freqs = rep(1:3, 4), nThre
                cbArrangements = permutations(freq = rep(1:3, 4), k = 7, x = v6),
                times = 10, unit = "relative")
 #> Unit: relative
-#>            expr   min   lq  mean median    uq   max neval cld
-#>  cbRcppAlgosPar 1.000 1.00 1.000  1.000 1.000 1.000    10 a  
-#>  cbRcppAlgosSer 3.157 3.22 3.000  3.214 3.210 1.906    10  b 
-#>  cbArrangements 3.601 3.58 3.339  3.572 3.564 2.109    10   c
+#>            expr   min    lq  mean median    uq   max neval cld
+#>  cbRcppAlgosPar 1.000 1.000 1.000  1.000 1.000 1.000    10 a  
+#>  cbRcppAlgosSer 3.101 3.223 2.994  3.213 3.195 1.907    10  b 
+#>  cbArrangements 3.547 3.547 3.319  3.549 3.541 2.122    10   c
 ```
 
 ## Partitions
@@ -252,11 +252,11 @@ microbenchmark(cbRcppAlgosPar = partitionsGeneral(0:140, freqs=c(140, rep(1, 140
                cbPartitions   = diffparts(140),
                times = 10, unit = "relative")
 #> Unit: relative
-#>            expr    min    lq   mean median     uq    max neval  cld
-#>  cbRcppAlgosPar  1.000  1.00  1.000  1.000  1.000  1.000    10 a   
-#>  cbRcppAlgosSer  3.283  3.30  3.017  3.551  2.602  2.492    10  b  
-#>  cbArrangements  2.629  2.61  2.355  2.605  2.106  1.984    10   c 
-#>    cbPartitions 17.812 18.44 16.317 19.205 14.092 13.282    10    d
+#>            expr    min     lq   mean median     uq    max neval  cld
+#>  cbRcppAlgosPar  1.000  1.000  1.000  1.000  1.000  1.000    10 a   
+#>  cbRcppAlgosSer  3.291  3.284  3.027  3.530  2.663  2.485    10  b  
+#>  cbArrangements  2.617  2.591  2.351  2.565  2.133  1.989    10   c 
+#>    cbPartitions 17.788 18.491 16.415 19.044 14.459 13.510    10    d
 ```
 
 #### Restricted Distinct Partitions
@@ -278,8 +278,8 @@ microbenchmark(cbRcppAlgosPar = partitionsGeneral(160, 10, nThreads = numThreads
 #> Unit: relative
 #>            expr   min    lq  mean median    uq   max neval cld
 #>  cbRcppAlgosPar 1.000 1.000 1.000  1.000 1.000 1.000    10 a  
-#>  cbRcppAlgosSer 3.348 3.344 2.966  3.260 2.233 2.552    10  b 
-#>  cbArrangements 4.384 4.412 3.785  4.284 2.928 2.927    10   c
+#>  cbRcppAlgosSer 3.368 3.365 2.944  3.286 2.236 2.378    10  b 
+#>  cbArrangements 4.418 4.389 3.737  4.285 2.910 2.736    10   c
 ```
 
 ### Partitions - Repetition
@@ -310,9 +310,9 @@ microbenchmark(cbRcppAlgosPar = partitionsGeneral(0:65, repetition = TRUE,
 #> Unit: relative
 #>            expr   min    lq  mean median     uq    max neval cld
 #>  cbRcppAlgosPar 1.000 1.000 1.000  1.000  1.000 1.0000    20 a  
-#>  cbRcppAlgosSer 2.890 2.635 2.317  2.584  2.441 0.8822    20  b 
-#>  cbArrangements 2.330 2.046 1.897  2.008  1.912 1.2706    20  b 
-#>    cbPartitions 9.132 9.167 9.273 11.193 10.536 3.7732    20   c
+#>  cbRcppAlgosSer 2.869 2.544 2.285  2.464  2.402 0.8894    20  b 
+#>  cbArrangements 2.337 1.986 1.872  1.929  1.877 1.2701    20  b 
+#>    cbPartitions 9.119 8.959 9.232 10.740 10.446 3.8642    20   c
 ```
 
 #### Restricted Partitions
@@ -345,9 +345,9 @@ microbenchmark(cbRcppAlgosPar = partitionsGeneral(100, 15, TRUE,
 #> Unit: relative
 #>            expr    min     lq   mean median     uq   max neval  cld
 #>  cbRcppAlgosPar  1.000  1.000  1.000  1.000  1.000 1.000    10 a   
-#>  cbRcppAlgosSer  3.359  3.304  2.546  2.735  2.779 1.227    10  b  
-#>  cbArrangements  4.201  4.138  3.153  3.405  3.343 1.504    10   c 
-#>    cbPartitions 15.543 15.511 11.818 12.758 12.242 6.145    10    d
+#>  cbRcppAlgosSer  3.352  3.366  2.525  2.645  2.764 1.246    10  b  
+#>  cbArrangements  4.207  4.216  3.126  3.326  3.305 1.513    10   c 
+#>    cbPartitions 15.888 16.140 11.928 12.606 12.364 6.303    10    d
 ```
 
 ### Partitions - Multisets
@@ -364,8 +364,8 @@ stopifnot(all(rowSums(t1) == 120))
 microbenchmark(cbRcppAlgos = partitionsGeneral(120, 10, freqs=rep(1:8, 15)),
                times = 10)
 #> Unit: milliseconds
-#>         expr   min    lq  mean median    uq   max neval
-#>  cbRcppAlgos 281.7 282.6 287.2  284.2 292.5 295.8    10
+#>         expr   min    lq mean median    uq   max neval
+#>  cbRcppAlgos 284.7 287.6  291  289.6 295.2 298.2    10
 ```
 
 ## Compositions
@@ -393,10 +393,10 @@ microbenchmark(cbRcppAlgosSer = compositionsGeneral(0:15, repetition = TRUE),
                cbPartitions   = partitions::compositions(15),
                times = 20, unit = "relative")
 #> Unit: relative
-#>            expr    min      lq    mean  median      uq     max neval cld
-#>  cbRcppAlgosSer   1.00   1.000   1.000   1.000   1.000   1.000    20  a 
-#>  cbArrangements   1.23   1.221   1.199   1.199   1.188   1.108    20  a 
-#>    cbPartitions 133.80 148.531 172.109 175.967 192.882 222.542    20   b
+#>            expr     min      lq    mean  median      uq     max neval cld
+#>  cbRcppAlgosSer   1.000   1.000   1.000   1.000   1.000   1.000    20  a 
+#>  cbArrangements   1.237   1.237   1.234   1.229   1.233   1.234    20  a 
+#>    cbPartitions 130.273 148.479 179.197 178.491 203.364 262.383    20   b
 ```
 
 For the next two examples, we will exclude the `partitions` package for efficiency reasons.
@@ -423,8 +423,8 @@ microbenchmark(cbRcppAlgosPar = compositionsGeneral(0:23, repetition = TRUE,
 #> Unit: relative
 #>            expr   min    lq  mean median    uq   max neval cld
 #>  cbRcppAlgosPar 1.000 1.000 1.000  1.000 1.000 1.000    20 a  
-#>  cbRcppAlgosSer 3.337 3.374 3.365  3.383 3.379 3.175    20  b 
-#>  cbArrangements 3.730 3.760 3.779  3.776 3.775 4.014    20   c
+#>  cbRcppAlgosSer 3.361 3.383 3.293  3.381 3.378 2.250    20  b 
+#>  cbArrangements 3.707 3.740 3.657  3.763 3.761 2.506    20   c
 ```
 
 #### Restricted Compositions
@@ -446,8 +446,8 @@ microbenchmark(cbRcppAlgosPar = compositionsGeneral(30, 10, repetition = TRUE,
 #> Unit: relative
 #>            expr   min    lq  mean median    uq   max neval cld
 #>  cbRcppAlgosPar 1.000 1.000 1.000  1.000 1.000 1.000    20 a  
-#>  cbRcppAlgosSer 3.005 3.089 3.078  3.094 3.081 3.046    20  b 
-#>  cbArrangements 3.153 3.129 3.127  3.132 3.119 3.128    20   c
+#>  cbRcppAlgosSer 3.042 3.075 3.069  3.071 3.065 3.059    20  b 
+#>  cbArrangements 3.132 3.129 3.109  3.115 3.100 3.070    20   c
 ```
 
 ## Iterators
@@ -475,9 +475,9 @@ microbenchmark(cbRcppAlgos    = pkg_RcppAlgos(18, total),
                cbArrangements = pkg_arrangements(18, total),
                times = 15, unit = "relative")
 #> Unit: relative
-#>            expr   min    lq  mean median    uq   max neval cld
-#>     cbRcppAlgos  1.00  1.00  1.00   1.00  1.00  1.00    15  a 
-#>  cbArrangements 19.57 19.36 18.79  19.15 19.06 15.26    15   b
+#>            expr   min    lq  mean median    uq  max neval cld
+#>     cbRcppAlgos  1.00  1.00  1.00   1.00  1.00  1.0    15  a 
+#>  cbArrangements 19.39 18.95 18.49  18.68 18.63 15.6    15   b
 ```
 
 ### Permutations
@@ -503,7 +503,7 @@ microbenchmark(cbRcppAlgos    = pkg_RcppAlgos(8, total),
 #> Unit: relative
 #>            expr   min    lq  mean median    uq   max neval cld
 #>     cbRcppAlgos  1.00  1.00  1.00   1.00  1.00  1.00    15  a 
-#>  cbArrangements 19.56 19.44 19.18  19.41 19.13 18.18    15   b
+#>  cbArrangements 19.11 18.85 18.62  18.67 17.92 20.89    15   b
 ```
 
 ### Partitions
@@ -533,10 +533,10 @@ microbenchmark(cbRcppAlgos    = pkg_RcppAlgos(40, total),
                cbPartitions   = pkg_partitions(40, total),
                times = 15, unit = "relative")
 #> Unit: relative
-#>            expr   min    lq  mean median    uq   max neval cld
-#>     cbRcppAlgos  1.00  1.00  1.00   1.00  1.00  1.00    15 a  
-#>  cbArrangements 15.55 15.56 14.85  15.64 14.13 14.34    15  b 
-#>    cbPartitions 25.36 25.54 24.22  25.60 23.23 22.02    15   c
+#>            expr   min    lq  mean median   uq   max neval cld
+#>     cbRcppAlgos  1.00  1.00  1.00   1.00  1.0  1.00    15 a  
+#>  cbArrangements 15.30 15.36 14.95  15.27 14.9 13.63    15  b 
+#>    cbPartitions 24.85 24.97 24.02  24.93 24.3 18.44    15   c
 ```
 
 ### Compositions
@@ -568,6 +568,6 @@ microbenchmark(cbRcppAlgos    = pkg_RcppAlgos(15, total),
 #> Unit: relative
 #>            expr   min    lq  mean median    uq   max neval cld
 #>     cbRcppAlgos  1.00  1.00  1.00   1.00  1.00  1.00    15 a  
-#>  cbArrangements 14.21 14.10 13.56  14.20 13.84 11.64    15  b 
-#>    cbPartitions 46.54 46.16 44.64  46.03 44.68 44.44    15   c
+#>  cbArrangements 14.06 13.84 13.56  13.83 13.72 12.00    15  b 
+#>    cbPartitions 46.04 45.00 44.88  44.40 44.14 45.76    15   c
 ```

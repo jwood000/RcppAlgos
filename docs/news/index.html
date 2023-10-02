@@ -17,7 +17,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">RcppAlgos</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">2.8.0</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">2.8.2</span>
       </span>
     </div>
 
@@ -79,7 +79,22 @@
     </div>
 
     <div class="section level2">
-<h2 class="page-header" data-toc-text="2.8.0" id="rcppalgos-280">RcppAlgos 2.8.0<a class="anchor" aria-label="anchor" href="#rcppalgos-280"></a></h2>
+<h2 class="page-header" data-toc-text="2.8.2" id="rcppalgos-282">RcppAlgos 2.8.2<a class="anchor" aria-label="anchor" href="#rcppalgos-282"></a></h2>
+<div class="section level3">
+<h3 id="new-features-2-8-2">New Features:<a class="anchor" aria-label="anchor" href="#new-features-2-8-2"></a></h3>
+<ul><li>We have added <code>comboGroupsIter</code>. This a flexible iterator for iterating over partitions of groups. Offers random access, the ability to retrieve the next group or the next <code>n</code> groups at a time while keeping memory low.</li>
+</ul></div>
+</div>
+    <div class="section level2">
+<h2 class="page-header" data-toc-text="2.8.1" id="rcppalgos-281">RcppAlgos 2.8.1<small>2023-08-14</small><a class="anchor" aria-label="anchor" href="#rcppalgos-281"></a></h2>
+<div class="section level3">
+<h3 id="bug-fixes-2-8-1">Bug Fixes:<a class="anchor" aria-label="anchor" href="#bug-fixes-2-8-1"></a></h3>
+<ul><li><p>Fixed integer overflow bug when converting vector size to number of rows in a matrix. See <a href="https://github.com/jwood000/RcppAlgos/issues/45" class="external-link">Issue </a><a href="https://github.com/jwood000/RcppAlgos/issues/45" class="external-link">#45</a>.</p></li>
+<li><p>Fixed constraint permutation iterator. Before this fix, if a user requested a certain number of results such that the <code>std::next_permutation</code> algorithm was not exhausted, the next iteration requested would be nonsensical.</p></li>
+</ul></div>
+</div>
+    <div class="section level2">
+<h2 class="page-header" data-toc-text="2.8.0" id="rcppalgos-280">RcppAlgos 2.8.0<small>2023-07-10</small><a class="anchor" aria-label="anchor" href="#rcppalgos-280"></a></h2>
 <div class="section level3">
 <h3 id="new-features-2-8-0">New Features:<a class="anchor" aria-label="anchor" href="#new-features-2-8-0"></a></h3>
 <ul><li>

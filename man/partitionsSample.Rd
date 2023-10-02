@@ -34,7 +34,7 @@ compositionsSample(v, m = NULL, repetition = FALSE, freqs = NULL,
   \item{namedSample}{Logical flag. If \code{TRUE}, \code{rownames} corresponding to the lexicographical partition, will be added to the returned matrix. The default is \code{FALSE}.}
  }
 \details{
-These algorithms rely on efficiently generating the \eqn{n^{th}}{nth} lexicographical partition. This is the process of \href{https://rosettacode.org/wiki/Permutations/Rank_of_a_permutation}{unranking}.
+These algorithms rely on efficiently generating the \eqn{n^{th}}{nth} lexicographical partition. This is the process of \href{https://www.rosettacode.org/wiki/Permutations/Rank_of_a_permutation}{unranking}.
 }
 \value{
 A matrix is returned with each row containing a vector of length \eqn{m}.
@@ -70,3 +70,10 @@ partitionsCount(100, 10, TRUE, target = 500)
 partitionsSample(100, 10, TRUE, target = 500,
                  sampleVec = c(1, 1000, 175591757896))
 }
+\keyword{random}
+\keyword{sample}
+\keyword{rank}
+\keyword{integer}
+\keyword{unrank}
+\keyword{partitions}
+\keyword{combinatorics}

@@ -1,6 +1,6 @@
 reprex::reprex({
     #'
-    #' This document covers working with combinatorial iterators in `RcppAlgos`. Combinatorial iterators in `RcppAlgos` are memory efficient like traditional iterator objects. They allow traversal of combinations/permutations/partitions/compositions one by one without the necessity for storing all results in memory.
+    #' This document covers working with combinatorial iterators in `RcppAlgos`. Combinatorial iterators in `RcppAlgos` are memory efficient like traditional iterator objects. They allow traversal of combinations/permutations/partitions/compositions/comboGroups one by one without the necessity for storing all results in memory.
     #'
     #' Unlike traditional combinatorial iterators, the iterators in `RcppAlgos` offers random access via the `[[` operator. This means, we can access the _n<sup>th</sup>_ [lexicographical order](<https://en.wikipedia.org/wiki/Lexicographical_order>) result on demand without having to first iterate over the previous _n - 1_ results.
     #'
@@ -461,5 +461,39 @@ reprex::reprex({
         while (!is.null(a@nextNIter(1e4))) {}
         print(a@summary())
     })
+
+    #'
+    #' ### Iterating over Partitions of Groups
+    #'
+    #' As of version `2.8.2`, we can iterate over partitions of groups with `comboGroupsIter`.
+    #'
+    #' Just as with `partitionsIter`, we have all of the capabilities of the standard `comboIter` and `permuteIter` except for bidirectionality (i.e. the `prevIter` methods).
+    #'
+
+    ## Similar illustration of comboIter(5, 3) at the top
+    cg = comboGroupsIter(6, 2, retType = "3Darray")
+    cg@nextIter()
+
+    cg@nextIter()
+
+    iter = cg@currIter()
+    i = 1
+
+    while (!is.null(iter)) {
+        cat("\n ", i, "-------------\n")
+        print(iter)
+        iter = cg@nextIter()
+        i = i + 1
+    }
+
+    comboGroups(6, 2, retType = "3Darray", lower = 2)
+
+    cg@summary()
+
+    ## Using random access
+    cg[[7]]
+
+    ## No previous iterators
+    cg@prevIter()
 
 }, advertise = FALSE, venue = "r", html_preview = FALSE, wd = ".")

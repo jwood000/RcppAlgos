@@ -35,7 +35,7 @@ permuteSample(v, m = NULL, repetition = FALSE, freqs = NULL, n = NULL,
   \item{FUN.VALUE}{A template for the return value from \code{FUN}. See 'Details' of \code{\link[base]{vapply}} for more information.}
  }
 \details{
-These algorithms rely on efficiently generating the \eqn{n^{th}}{nth} lexicographical combination/permutation. This is the process of \href{https://rosettacode.org/wiki/Permutations/Rank_of_a_permutation}{unranking}.
+These algorithms rely on efficiently generating the \eqn{n^{th}}{nth} lexicographical combination/permutation. This is the process of \href{https://www.rosettacode.org/wiki/Permutations/Rank_of_a_permutation}{unranking}.
 }
 \value{
     \itemize{
@@ -113,6 +113,8 @@ permuteSample(10000, 50, n = 80, seed = 10, Parallel = TRUE)
 }
 \keyword{random}
 \keyword{sample}
+\keyword{rank}
+\keyword{unrank}
 \keyword{combinations}
 \keyword{permutations}
 \keyword{combinatorics}

@@ -1,7 +1,16 @@
 \name{NEWS}
 \title{News for Package \pkg{RcppAlgos}}
 
-\section{Changes in RcppAlgos version 2.8.1 (Release date: 2023-07-18)}{
+\section{Changes in RcppAlgos version 2.8.2 (Release date: 2023-10-04)}{
+    \itemize{
+        \item New Features:
+        \itemize{
+            \item We have added \code{comboGroupsIter}. This a flexible iterator for iterating over partitions of groups. Offers random access, the ability to retrieve the next group or the next \eqn{n} groups at a time while keeping memory low.
+        }
+    }
+}
+
+\section{Changes in RcppAlgos version 2.8.1 (Release date: 2023-08-14)}{
     \itemize{
         \item Bug Fixes:
         \itemize{

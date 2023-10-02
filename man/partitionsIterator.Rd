@@ -34,7 +34,7 @@ compositionsIter(v, m = NULL, repetition = FALSE, freqs = NULL,
 
 \value{
     \itemize{
-        \item If \code{nextIter} or \code{prevIter} is called, a vector is returned
+        \item If \code{nextIter} is called, a vector is returned
         \item Otherwise, a matrix with \eqn{m} columns
     }
 }
@@ -109,3 +109,6 @@ b@summary()
 b@nextIter()
 b@currIter()
 }
+\keyword{integer}
+\keyword{partitions}
+\keyword{combinatorics}

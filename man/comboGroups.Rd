@@ -18,12 +18,9 @@ comboGroups(v, numGroups = NULL, grpSizes = NULL,
 }
 \arguments{
   \item{v}{Source vector. If \code{v} is a positive integer, it will be converted to the sequence \code{1:v}. If \code{v} is a negative integer, it will be converted to the sequence \code{v:-1}. All atomic types are supported (See \code{\link{is.atomic}}).}
-  \item{numGroups}{An Integer. The number of groups that the vector will be partitioned into. The default is \code{NULL}. If provided and \code{grpSize} is \code{NULL}, it must divide the length of v (if v is a vector) or v (if v is a scalar).
-}
-  \item{grpSizes}{A vector of whole numbers representing the size of each group. The default is \code{NULL}. If provided, the sum of the elements must total the length of v (if v is a vector) or v (if v is a scalar).
-}
-  \item{retType}{A string, "3Darray" or "matrix", that determines the shape of the output. The default is "matrix". Note, "3Darray" can only be used when the size of each group is uniform. When the size of each group varies, the return output will always be a matrix.
-}
+  \item{numGroups}{An Integer. The number of groups that the vector will be partitioned into. The default is \code{NULL}. If provided and \code{grpSize} is \code{NULL}, it must divide the length of v (if v is a vector) or v (if v is a scalar).}
+  \item{grpSizes}{A vector of whole numbers representing the size of each group. The default is \code{NULL}. If provided, the sum of the elements must total the length of v (if v is a vector) or v (if v is a scalar).}
+  \item{retType}{A string, "3Darray" or "matrix", that determines the shape of the output. The default is "matrix". Note, "3Darray" can only be used when the size of each group is uniform. When the size of each group varies, the return output will always be a matrix.}
   \item{lower}{The lower bound. Partitions of groups are generated lexicographically, thus utilizing this argument will determine which specific result to start generating from (\emph{e.g.} \code{comboGroups(8, 2, lower = 30)} is equivalent to \code{comboGroups(8, 2)[30:comboGroupsCount(8, 2), ]}). This argument along with \code{upper} is very useful for generating results in chunks allowing for easy parallelization.}
   \item{upper}{The upper bound. Similar to \code{lower}, however this parameter allows the user to \emph{stop} generation at a specific result (\emph{e.g.} \code{comboGroups(8, 2, upper = 5)} is equivalent to \code{comboGroups(8, 2)[1:5, ]})}
   \item{Parallel}{Logical value indicating whether results should be generated in parallel using \eqn{n - 1} threads, where \eqn{n} is the maximum number of threads. The default is \code{FALSE}. If \code{nThreads} is not \code{NULL}, it will be given preference (\emph{e.g.} if user has 8 threads with \code{Parallel = TRUE} and \code{nThreads = 4}, only 4 threads will be spawned). If your system is single-threaded, the arguments \code{Parallel} and \code{nThreads} are ignored.}
@@ -74,7 +71,7 @@ Conceptually, this problem can be viewed as generating all permutations of the v
   }
 }
 \value{
-By default, a matrix is returned with column names corresponding to the associated group. If \code{retType = "3Darray"}, a 3D array is returned.
+By default, a matrix is returned with column names corresponding to the associated group. If \code{retType = "3Darray"}, a named 3D array is returned.
 }
 \author{
 Joseph Wood
@@ -103,3 +100,6 @@ total = comboGroupsCount(11, grpSizes = c(3, 3, 5))
 ## Start generating from particular index
 comboGroups(11, grpSizes = c(3, 3, 5), lower = total - 20)
 }
+\keyword{partitions}
+\keyword{comboGroups}
+\keyword{combinatorics}

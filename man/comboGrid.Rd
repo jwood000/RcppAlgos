@@ -38,3 +38,8 @@ expGridNoOrderNoRep = comboGrid(1:5, 3:9, letters[1:5],
 head(expGridNoOrderNoRep)
 tail(expGridNoOrderNoRep)
 }
+\keyword{expand}
+\keyword{comboGrid}
+\keyword{cartesian}
+\keyword{expand.grid}
+\keyword{combinatorics}

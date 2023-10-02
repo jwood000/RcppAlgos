@@ -62,7 +62,7 @@ permuteIter <- function(v, m = NULL, repetition = FALSE, freqs = NULL,
                       comparisonFun, limitConstraints)
     InitVals <- .Call(`_RcppAlgos_GetClassVals`, v, m, repetition,
                       freqs, FALSE, FUN, nThreads, pkgEnv$nThreads,
-                      IsCnstrd, FALSE, FALSE)
+                      IsCnstrd, FALSE, FALSE, NULL, NULL, NULL)
 
     if (RetValue == 1) {
         new("Combo", InitVals, Parallel)

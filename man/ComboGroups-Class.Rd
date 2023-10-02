@@ -1,12 +1,12 @@
-\name{Partitions-class}
+\name{ComboGroups-class}
 \docType{class}
-\title{S4-class for Exposing C++ Partitions Class}
-\alias{Partitions-class}
+\title{S4-class for Exposing C++ ComboGroups Class}
+\alias{ComboGroups-class}
 %
-\alias{$,Partitions-method}
+\alias{$,ComboGroups-method}
 %
 \description{
-  The \code{Partitions} class is an S4-class that exposes C++ classes that provide access to iterators and other useful methods.
+  The \code{ComboGroups} class is an S4-class that exposes C++ classes that provide access to iterators and other useful methods.
 }
 \section{Slots}{
   \describe{
@@ -23,11 +23,12 @@
   }
 }
 \author{Joseph Wood}
-\seealso{\code{\link{Combo-class}}, \code{\link{Constraints-class}}}
+\seealso{
+\code{\link{Combo-class}}, \code{\link{Constraints-class}}, \code{\link{Partitions-class}}}
 \examples{
-  showClass("Partitions")
+  showClass("ComboGroups")
 }
 \keyword{classes}
-\keyword{integer}
 \keyword{partitions}
+\keyword{comboGroups}
 \keyword{combinatorics}

@@ -1,9 +1,9 @@
-#include "ComboGroup/ComboGroupGeneral.h"
+#include "ComboGroups/ComboGroupsGeneral.h"
 #include <unordered_map>
 #include <algorithm>
 
 bool nextCmbGrpGen(std::vector<int> &z, int idx1, int idx2,
-                   int curr_bnd, const Group &MyGrp) {
+                   int curr_bnd, const GroupHelper &MyGrp) {
 
     while (idx2 > idx1 && z[idx2] > z[idx1]) {
         --idx2;
@@ -92,19 +92,25 @@ mpz_class numCmbGrpGenGmp(const std::vector<int> &grp, int n) {
     return result;
 }
 
-ComboGroupGeneral::ComboGroupGeneral(
-    int n_, int numGroups, int i1, int i2, int bnd, Group MyGrp_, bool OneGrp_
-) : ComboGroup(n_, numGroups, i1, i2, bnd), MyGrp(MyGrp_), OneGrp(OneGrp_) {}
+ComboGroupsGeneral::ComboGroupsGeneral(
+    int n_, int numGroups, int i1, int i2,
+    int bnd, GroupHelper MyGrp_, bool OneGrp_
+) : ComboGroupsTemplate(n_, numGroups, i1, i2, bnd),
+    MyGrp(MyGrp_) {
 
-bool ComboGroupGeneral::nextComboGroup(std::vector<int> &z) {
+    OneGrp = OneGrp_;
+    GroupType = "General";
+}
+
+bool ComboGroupsGeneral::nextComboGroup(std::vector<int> &z) {
     return nextCmbGrpGen(z, idx1, idx2, curr_bnd, MyGrp);
 }
 
-double ComboGroupGeneral::numGroupCombs() {
+double ComboGroupsGeneral::numGroupCombs() {
     return numCmbGrpGen(MyGrp.grp, n);
 }
 
-mpz_class ComboGroupGeneral::numGroupCombsGmp() {
+mpz_class ComboGroupsGeneral::numGroupCombsGmp() {
     return numCmbGrpGenGmp(MyGrp.grp, n);
 }
 
@@ -315,7 +321,7 @@ std::vector<int> GenerateGrpSet(const std::vector<int> &v, int r) {
     return grpSets;
 }
 
-std::vector<int> ComboGroupGeneral::nthComboGroup(double myIndex) {
+std::vector<int> ComboGroupsGeneral::nthComboGroup(double myIndex) {
 
     int p = n;
     int q = n;
@@ -357,7 +363,7 @@ std::vector<int> ComboGroupGeneral::nthComboGroup(double myIndex) {
     return res;
 }
 
-std::vector<int> ComboGroupGeneral::nthComboGroupGmp(
+std::vector<int> ComboGroupsGeneral::nthComboGroupGmp(
     const mpz_class &lowerMpz
 ) {
 
@@ -398,7 +404,7 @@ std::vector<int> ComboGroupGeneral::nthComboGroupGmp(
     return res;
 }
 
-void ComboGroupGeneral::FinalTouch(
+void ComboGroupsGeneral::FinalTouch(
     SEXP res, bool IsArray, int nRows, bool IsNamed,
     const std::vector<double> &mySample,
     const std::vector<mpz_class> &myBigSamp, bool IsSample

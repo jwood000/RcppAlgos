@@ -70,3 +70,9 @@ divisorsSieve(27, 30, namedList = TRUE)
 ## Using nThreads
 system.time(divisorsSieve(1e5, 2e5, nThreads = 2))
 }
+\keyword{prime}
+\keyword{sieve}
+\keyword{factor}
+\keyword{divisor}
+\keyword{number theory}
+\keyword{factorization}

@@ -1,4 +1,4 @@
-#include "ComboGroup/ComboGroupUnique.h"
+#include "ComboGroups/ComboGroupsUnique.h"
 
 // This algorithm is for the case where the length of each group is different.
 // The skeleton of the algorithm is exactly the same as the special case. The
@@ -86,20 +86,23 @@ mpz_class numCmbGrpUniGmp(const std::vector<int> &grp, int n) {
     return result;
 }
 
-ComboGroupUnique::ComboGroupUnique(
+ComboGroupsUnique::ComboGroupsUnique(
     int n_, int numGroups, int i1, int i2,
     int bnd, const std::vector<int> &grp_
-) : ComboGroup(n_, numGroups, i1, i2, bnd), grp(grp_) {}
+) : ComboGroupsTemplate(n_, numGroups, i1, i2, bnd), grp(grp_) {
 
-bool ComboGroupUnique::nextComboGroup(std::vector<int> &z) {
+    GroupType = "Distinct";
+}
+
+bool ComboGroupsUnique::nextComboGroup(std::vector<int> &z) {
     return nextCmbGrpUni(z, grp, idx1, idx2, curr_bnd);
 }
 
-double ComboGroupUnique::numGroupCombs() {
+double ComboGroupsUnique::numGroupCombs() {
     return numCmbGrpUni(grp, n);
 }
 
-mpz_class ComboGroupUnique::numGroupCombsGmp() {
+mpz_class ComboGroupsUnique::numGroupCombsGmp() {
     return numCmbGrpUniGmp(grp, n);
 }
 
@@ -110,7 +113,7 @@ void removeFirst(std::vector<int> &v, int &a) {
     }
 }
 
-std::vector<int> ComboGroupUnique::nthComboGroup(double myIndex) {
+std::vector<int> ComboGroupsUnique::nthComboGroup(double myIndex) {
 
     int p = n;
     int q = n;
@@ -146,7 +149,7 @@ std::vector<int> ComboGroupUnique::nthComboGroup(double myIndex) {
     return res;
 }
 
-std::vector<int> ComboGroupUnique::nthComboGroupGmp(
+std::vector<int> ComboGroupsUnique::nthComboGroupGmp(
     const mpz_class &lowerMpz
 ) {
 
@@ -184,7 +187,7 @@ std::vector<int> ComboGroupUnique::nthComboGroupGmp(
     return res;
 }
 
-void ComboGroupUnique::FinalTouch(
+void ComboGroupsUnique::FinalTouch(
     SEXP res, bool IsArray, int nRows, bool IsNamed,
     const std::vector<double> &mySample,
     const std::vector<mpz_class> &myBigSamp, bool IsSample

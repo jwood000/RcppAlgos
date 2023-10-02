@@ -5,6 +5,7 @@ S3method("[[", "Combo")
 S3method("[[", "ComboApply")
 S3method("[[", "ComboRes")
 S3method("[[", "Partitions")
+S3method("[[", "ComboGroups")
 
 export(
   comboGeneral,
@@ -31,6 +32,7 @@ export(
   permuteIter,
   partitionsIter,
   compositionsIter,
+  comboGroupsIter,
   primeSieve,
   eulerPhiSieve,
   primeFactorizeSieve,

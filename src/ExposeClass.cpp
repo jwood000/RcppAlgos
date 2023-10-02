@@ -1,4 +1,5 @@
 #include "Constraints/CnstrntsSpecialClass.h"
+#include "ComboGroups/ComboGroupsClass.h"
 #include "Constraints/CnstrntsToRClass.h"
 #include "Partitions/PartitionsClass.h"
 #include "ClassUtils/ComboApplyClass.h"
@@ -17,7 +18,9 @@ static void Finalizer(SEXP ext) {
     if (ptr) delete ptr;
 }
 
-// RVals contains: v, vNum, vInt, m, RcompRows, maxThreads, & nThreads
+// RVals contains: v, vNum, vInt, m, RcompRows, maxThreads, nThreads,
+//                 nGrps, grpSizes, & retType
+//
 // RboolVec contains: IsFac, IsComb, IsMult, IsRep,
 //                    IsGmp, IsFull, IsComp, & IsWeak
 //
@@ -69,6 +72,18 @@ SEXP CombClassNew(SEXP RVals, SEXP RboolVec, SEXP freqInfo, SEXP Rparallel,
             VECTOR_ELT(RVals, 0), m, VECTOR_ELT(RVals, 4), bVec, myReps,
             freqs, vInt, vNum, myType, maxThreads, VECTOR_ELT(RVals, 6),
             Parallel, RstdFun, Rrho, R_RFunVal
+        );
+
+        cpp11::sexp ext = R_MakeExternalPtr(ptr, R_NilValue, R_NilValue);
+        R_RegisterCFinalizerEx(ext, Finalizer, TRUE);
+
+        return ext;
+    } else if (ReturnValue == 4) {
+        class ComboGroupsClass* ptr = new ComboGroupsClass(
+            VECTOR_ELT(RVals, 0), m, VECTOR_ELT(RVals, 4), bVec,
+            myReps, freqs, vInt, vNum, myType, maxThreads,
+            VECTOR_ELT(RVals, 6), Parallel, VECTOR_ELT(RVals, 7),
+            VECTOR_ELT(RVals, 8), VECTOR_ELT(RVals, 9)
         );
 
         cpp11::sexp ext = R_MakeExternalPtr(ptr, R_NilValue, R_NilValue);

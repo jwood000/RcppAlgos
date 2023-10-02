@@ -1,4 +1,4 @@
-#include "ComboGroup/ComboGroupSame.h"
+#include "ComboGroups/ComboGroupsSame.h"
 
 // ************** Overview of the Crucial Part of the Algorithm ***************
 // ----------------------------------------------------------------------------
@@ -137,15 +137,18 @@ bool nextCmbGrpSame(std::vector<int> &z, int r, int grpSize,
     return false;
 }
 
-ComboGroupSame::ComboGroupSame(
+ComboGroupsSame::ComboGroupsSame(
     int n_, int numGroups, int i1, int i2, int bnd, int size
-) : ComboGroup(n_, numGroups, i1, i2, bnd), grpSize(size) {}
+) : ComboGroupsTemplate(n_, numGroups, i1, i2, bnd), grpSize(size) {
 
-bool ComboGroupSame::nextComboGroup(std::vector<int> &z) {
+    GroupType = "Uniform";
+}
+
+bool ComboGroupsSame::nextComboGroup(std::vector<int> &z) {
     return nextCmbGrpSame(z, r, grpSize, idx1, idx2, curr_bnd, n);
 }
 
-double ComboGroupSame::numGroupCombs() {
+double ComboGroupsSame::numGroupCombs() {
 
     double result = 1;
 
@@ -167,7 +170,7 @@ double ComboGroupSame::numGroupCombs() {
     }
 }
 
-mpz_class ComboGroupSame::numGroupCombsGmp() {
+mpz_class ComboGroupsSame::numGroupCombsGmp() {
 
     mpz_class result(1);
 
@@ -189,7 +192,7 @@ mpz_class ComboGroupSame::numGroupCombsGmp() {
     return result;
 }
 
-std::vector<int> ComboGroupSame::nthComboGroup(double myIndex) {
+std::vector<int> ComboGroupsSame::nthComboGroup(double myIndex) {
 
     int s = n - 1;
     const int g = grpSize - 1;
@@ -234,7 +237,7 @@ std::vector<int> ComboGroupSame::nthComboGroup(double myIndex) {
     return res;
 }
 
-std::vector<int> ComboGroupSame::nthComboGroupGmp(const mpz_class &lowerMpz) {
+std::vector<int> ComboGroupsSame::nthComboGroupGmp(const mpz_class &lowerMpz) {
 
     mpz_class ind1(lowerMpz);
     mpz_class ind2(lowerMpz);
@@ -287,7 +290,7 @@ std::vector<int> ComboGroupSame::nthComboGroupGmp(const mpz_class &lowerMpz) {
     return res;
 }
 
-void ComboGroupSame::FinalTouch(
+void ComboGroupsSame::FinalTouch(
     SEXP res, bool IsArray, int nRows, bool IsNamed,
     const std::vector<double> &mySample,
     const std::vector<mpz_class> &myBigSamp, bool IsSample

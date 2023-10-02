@@ -1,7 +1,7 @@
 ---
 title: "Cartesian Products and Partitions of Groups"
 author: "Joseph Wood"
-date: "07/08/2023"
+date: "10/02/2023"
 output:
   rmarkdown::html_vignette:
     toc: true
@@ -105,7 +105,7 @@ prod(lengths(pools))
 ## With comboGrid, this is no problem
 system.time(myCombs <- comboGrid(pools))
 #>    user  system elapsed 
-#>   0.271   0.023   0.293
+#>   0.259   0.024   0.283
 
 print(object.size(myCombs), unit = "Mb")
 #> 92 Mb
@@ -131,7 +131,7 @@ ht(myCombs)
 ## Generating keys, then filtering will take much more time
 system.time(cartProd <- expand.grid(pools))
 #>    user  system elapsed 
-#>   3.575   0.810   4.385
+#>   3.575   0.817   4.393
 
 ## Creates huge object
 print(object.size(cartProd), unit = "Mb")
@@ -278,14 +278,14 @@ system.time(a2 <- comboGroups(30, numGroups = 6,
                               lower = "123378675000000000",
                               upper = "123378675005000000", nThreads = 4))
 #>    user  system elapsed 
-#>   0.126   0.048   0.047
+#>   0.125   0.044   0.044
 
 ## Use n - 1 number of threads (in this case, there are 7)
 system.time(a3 <- comboGroups(30, numGroups = 6,
                               lower = "123378675000000000",
                               upper = "123378675005000000", Parallel = TRUE))
 #>    user  system elapsed 
-#>   0.183   0.073   0.044
+#>   0.179   0.071   0.043
 
 identical(a1, a2)
 #> [1] TRUE
@@ -301,7 +301,7 @@ As of `2.8.+` we can generate partitions of groups of varying sizes. For example
 ``` r
 system.time(a4 <- comboGroups(15, grpSizes = c(3, 3, 4, 5)))
 #>    user  system elapsed 
-#>   0.119   0.021   0.140
+#>   0.119   0.020   0.138
 
 ht(a4)
 #> head -->
@@ -335,7 +335,7 @@ All of the flexibility offered with groups of equal size are present with groups
 ``` r
 system.time(a5 <- comboGroups(15, grpSizes = c(3, 3, 4, 5), nThreads = 4))
 #>    user  system elapsed 
-#>   0.133   0.031   0.042
+#>   0.128   0.030   0.040
 
 identical(a4, a5)
 #> [1] TRUE

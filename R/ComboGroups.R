@@ -24,3 +24,14 @@ comboGroupsSample <- function(v, numGroups = NULL, grpSizes = NULL,
 comboGroupsCount <- function(v, numGroups = NULL, grpSizes = NULL) {
     return(.Call(`_RcppAlgos_ComboGroupsCountCpp`, v, numGroups, grpSizes))
 }
+
+comboGroupsIter <- function(v, numGroups = NULL, grpSizes = NULL,
+                            retType = "matrix", Parallel = FALSE,
+                            nThreads = NULL) {
+
+    InitVals <- .Call(`_RcppAlgos_GetClassVals`, v, length(GetV(v)),
+                      FALSE, NULL, TRUE, NULL, nThreads, pkgEnv$nThreads,
+                      FALSE, FALSE, FALSE, numGroups, grpSizes, retType)
+
+    new("ComboGroups", InitVals, Parallel)
+}

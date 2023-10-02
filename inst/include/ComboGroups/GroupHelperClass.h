@@ -5,7 +5,7 @@
 #include <vector>
 #include <cstddef>
 
-class Group {
+class GroupHelper {
 private:
     const std::vector<int> ubound;
     const std::vector<int> lbound;
@@ -18,10 +18,10 @@ public:
 
     const std::vector<int> grp;
 
-    Group(const std::vector<int> &_grp,
-          const std::vector<int> &_ubound,
-          const std::vector<int> &_lbound,
-          const std::vector<bool> &_same);
+    GroupHelper(const std::vector<int> &_grp,
+                const std::vector<int> &_ubound,
+                const std::vector<int> &_lbound,
+                const std::vector<bool> &_same);
 
     void balance(std::vector<int> &z, int idx1,
                  int curr_bnd, int i) const;

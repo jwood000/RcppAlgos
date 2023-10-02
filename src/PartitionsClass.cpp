@@ -103,8 +103,9 @@ Partitions::Partitions(
                                         part.isComp)) {
 
     bAddOne = paragon && !part.includeZero;
-    rpsCnt = myReps;
-    IsGmp  = part.isGmp;
+    rpsCnt  = myReps;
+    IsGmp   = part.isGmp;
+
     SetPartValues();
     prevIterAvailable = false;
 }

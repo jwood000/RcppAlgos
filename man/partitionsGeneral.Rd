@@ -5,6 +5,8 @@
 Generate Partitions/Compositions
 }
 \description{
+The algorithms in \code{RcppAlgos} go beyond the traditional integer partition algorithms and can tackle a wide variety of cases.
+
     \itemize{
         \item Efficient algorithms for partitioning numbers under various constraints:
         \itemize{
@@ -88,3 +90,6 @@ system.time(one_thread  <- partitionsGeneral(80, 10, TRUE))
 system.time(two_threads <- partitionsGeneral(80, 10, TRUE, nThreads = 2))
 identical(one_thread, two_threads)
 }
+\keyword{integer}
+\keyword{partitions}
+\keyword{combinatorics}

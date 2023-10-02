@@ -90,6 +90,23 @@ setClass(
     )
 )
 
+setClass(
+    "ComboGroups",
+    slots = c(
+        ptr           = "externalptr",
+        startOver     = "function",
+        nextIter      = "function",
+        nextNIter     = "function",
+        nextRemaining = "function",
+        currIter      = "function",
+        randomAccess  = "function",
+        sourceVector  = "function",
+        front         = "function",
+        back          = "function",
+        summary       = "function"
+    )
+)
+
 setMethod(
     "initialize",
     "Combo",
@@ -158,6 +175,20 @@ setMethod(
     }
 )
 
+setMethod(
+    "initialize",
+    "ComboGroups",
+    function(.Object, init, Parallel) {
+        .Object@ptr <- .Call(`_RcppAlgos_CombClassNew`, init$RVals, init$bVec,
+                             init$FreqsInfo, Parallel, NULL, NULL, NULL,
+                             NULL, NULL, NULL, NULL, NULL, NULL, 4)
+        eval(str2expression(text = ALGOS_METHODS[c(
+            "startOver", "nextIter", "nextNIter", "nextRemaining",
+            "currIter", "randomAccess", "sourceVector", "front",
+            "back", "summary", "object")]))
+    }
+)
+
 "[[.Combo" <- function(x, ...) {
     x@randomAccess(...)
 }
@@ -171,6 +202,10 @@ setMethod(
 }
 
 "[[.Partitions" <- function(x, ...) {
+    x@randomAccess(...)
+}
+
+"[[.ComboGroups" <- function(x, ...) {
     x@randomAccess(...)
 }
 
@@ -195,5 +230,9 @@ setMethod("$", "Constraints", function(x, name) {
 })
 
 setMethod("$", "Partitions", function(x, name) {
+    function(...) slot(x, name)(...)
+})
+
+setMethod("$", "ComboGroups", function(x, name) {
     function(...) slot(x, name)(...)
 })

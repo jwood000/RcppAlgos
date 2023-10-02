@@ -1,14 +1,18 @@
-#include "ComboGroup/ComboGroupGeneral.h"
-#include "ComboGroup/ComboGroupUnique.h"
-#include "ComboGroup/ComboGroupSame.h"
+#include "ComboGroups/ComboGroupsGeneral.h"
+#include "ComboGroups/ComboGroupsUnique.h"
+#include "ComboGroups/ComboGroupsSame.h"
 #include <algorithm>
 #include <numeric>
 #include <memory>
 
-ComboGroup::ComboGroup(int n_, int numGroups, int i1, int i2, int bnd) :
-    n(n_), r(numGroups), idx1(i1), idx2(i2), curr_bnd(bnd) {}
+ComboGroupsTemplate::ComboGroupsTemplate(
+    int n_, int numGroups, int i1, int i2, int bnd
+) : n(n_), r(numGroups), idx1(i1), idx2(i2), curr_bnd(bnd) {
 
-void ComboGroup::SetCount() {
+    OneGrp = false;
+}
+
+void ComboGroupsTemplate::SetCount() {
     computedRows = numGroupCombs();
     IsGmp = computedRows > Significand53;
 
@@ -19,8 +23,8 @@ void ComboGroup::SetCount() {
     }
 }
 
-std::unique_ptr<ComboGroup> MakeComboGroup(
-    const std::vector<int> &vGrpSize, const Group &MyGrp, int i1,
+std::unique_ptr<ComboGroupsTemplate> MakeComboGroup(
+    const std::vector<int> &vGrpSize, const GroupHelper &MyGrp, int i1,
     int i2, int bnd, int grpSize, bool IsGen, bool IsUni, bool OneGrp
 ) {
 
@@ -28,22 +32,20 @@ std::unique_ptr<ComboGroup> MakeComboGroup(
     const int r = vGrpSize.size();
 
     if (IsGen) {
-        return std::make_unique<ComboGroupGeneral>(
+        return std::make_unique<ComboGroupsGeneral>(
             n, r, i1, i2, bnd, MyGrp, OneGrp
         );
     } else if (IsUni) {
-        return std::make_unique<ComboGroupUnique>(n, r, i1, i2, bnd, vGrpSize);
+        return std::make_unique<ComboGroupsUnique>(n, r, i1, i2, bnd, vGrpSize);
     } else {
-        return std::make_unique<ComboGroupSame>(
+        return std::make_unique<ComboGroupsSame>(
             n, r, i1, i2, bnd + 1, grpSize
         );
     }
 }
 
-std::unique_ptr<ComboGroup> GroupPrep(
-    std::vector<int> &vInt, std::vector<double> &vNum, int &n,
-    VecType &myType, SEXP Rv, SEXP RNumGroups, SEXP RGrpSize
-) {
+std::unique_ptr<ComboGroupsTemplate> GroupPrep(SEXP Rv, SEXP RNumGroups,
+                                               SEXP RGrpSize, int n) {
 
     bool IsGen  = false;
     bool IsUni  = false;
@@ -53,9 +55,6 @@ std::unique_ptr<ComboGroup> GroupPrep(
     int grpSize = 0;
     int numGroups = 0;
     std::vector<int> vGrpSize;
-
-    SetType(myType, Rv);
-    SetBasic(Rv, vNum, vInt, n, myType);
 
     if (Rf_isNull(RNumGroups) && Rf_isNull(RGrpSize)) {
         cpp11::stop("numGroups and grpSize cannot both be NULL");
@@ -129,7 +128,7 @@ std::unique_ptr<ComboGroup> GroupPrep(
         same[i] = vGrpSize[i] == vGrpSize[i + 1L];
     }
 
-    Group MyGrp(vGrpSize, ubound, lbound, same);
+    GroupHelper MyGrp(vGrpSize, ubound, lbound, same);
 
     const int idx1 = (vGrpSize.size() > 1) ?
         std::accumulate(vGrpSize.begin(), vGrpSize.end() - 1, 0) - 1 : 0;

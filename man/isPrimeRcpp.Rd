@@ -61,3 +61,6 @@ isPrimeRcpp(mySamp, namedVector = TRUE)
 ## Using nThreads
 system.time(isPrimeRcpp(mySamp, nThreads = 2))
 }
+\keyword{prime}
+\keyword{miller rabin}
+\keyword{number theory}
