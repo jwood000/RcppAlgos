@@ -49,14 +49,14 @@ Once you initialize a new iterator, the following methods are available:
 \note{
     \itemize{
         \item{If \code{nThreads} is utilized, it will only take effect if the number of elements requested is greater than some threshold (determined internally). \emph{E.g}:
-            \preformatted{serial   <- comboGroupsIter(1000, 10)
-multi    <- comboGroupsIter(1000, 10, nThreads = 4)
+            \preformatted{serial   <- comboGroupsIter(50, 10)
+multi    <- comboGroupsIter(50, 10, nThreads = 4)
 fetch1e6 <- multi@nextNIter(1e6)  ## much faster than serial@nextNIter(1e6)
 fetch1e3 <- multi@nextNIter(1e3)  ## only one thread used... same as serial@nextNIter(1e3)
 
 library(microbenchmark)
-microbenchmark(multi@nextNIter(1e6), serial@nextNIter(1e6))
-microbenchmark(multi@nextNIter(1e3), serial@nextNIter(1e3))}
+microbenchmark(multi@nextNIter(1e6), serial@nextNIter(1e6), times = 20)
+microbenchmark(multi@nextNIter(1e3), serial@nextNIter(1e3), times = 20)}
         }
         \item{The maximum number of comboGroups that can be generated at one time is \eqn{2^{31} - 1}{2^31 - 1}.}
     }
