@@ -24,10 +24,9 @@ SEXP ComboGroupsClass::GeneralReturn(int numResults) {
 
     SetThreads(LocalPar, maxThreads, numResults,
                myType, nThreads, sexpNThreads, limit);
-    CmbGrpClsFuncs f = GetClassFuncs(CmbGrp);
 
     cpp11::sexp res = GetComboGroups(
-        sexpVec, f.next, f.nthDbl, f.nthGmp, f.finishing, vNum,
+        sexpVec, nextCmbGrp, nthCmbGrp, nthCmbGrpGmp, FinalTouch, vNum,
         vInt, z, myType, tempSample, tempBigSamp, mpzIndex, dblIndex, n,
         numResults, nThreads, IsArray, false, LocalPar, false, IsGmp
     );
@@ -48,6 +47,13 @@ ComboGroupsClass::ComboGroupsClass(
 
     prevIterAvailable = false;
     CmbGrp->SetCount();
+    CmbGrpClsFuncs f = GetClassFuncs(CmbGrp);
+
+    nthCmbGrp = f.nthDbl;
+    nthCmbGrpGmp = f.nthGmp;
+    nextCmbGrp = f.next;
+    FinalTouch = f.finishing;
+
     IsGmp = CmbGrp->GetIsGmp();
     computedRows = CmbGrp->GetDblCount();
     if (IsGmp) computedRowsMpz = CmbGrp->GetMpzCount();
@@ -161,7 +167,7 @@ SEXP ComboGroupsClass::nextComb() {
     } else if (CheckIndLT(IsGmp, mpzIndex, dblIndex,
                           computedRowsMpz, computedRows)) {
         increment(IsGmp, mpzIndex, dblIndex);
-        CmbGrp->nextComboGroup(z);
+        nextCmbGrp(z);
         return SingleReturn();
     } else if (CheckEqInd(IsGmp, mpzIndex, dblIndex,
                           computedRowsMpz, computedRows)) {
@@ -194,7 +200,7 @@ SEXP ComboGroupsClass::nextNumCombs(SEXP RNum) {
         }
 
         if (CheckGrTSi(IsGmp, mpzIndex, dblIndex, 0)) {
-            CmbGrp->nextComboGroup(z);
+            nextCmbGrp(z);
         }
 
         increment(IsGmp, mpzIndex, dblIndex, numIncrement);
@@ -238,7 +244,7 @@ SEXP ComboGroupsClass::nextGather() {
 
     if (nRows > 0) {
         if (CheckGrTSi(IsGmp, mpzIndex, dblIndex, 0)) {
-            nextIter(freqs, z, n1, m1);
+            nextCmbGrp(z);
         }
 
         if (IsGmp) {
@@ -288,10 +294,9 @@ SEXP ComboGroupsClass::randomAccess(SEXP RindexVec) {
                    myType, nThreads, sexpNThreads, limit);
 
         const std::vector<int> before(z);
-        CmbGrpClsFuncs f = GetClassFuncs(CmbGrp);
 
         cpp11::sexp res = GetComboGroups(
-            sexpVec, f.next, f.nthDbl, f.nthGmp, f.finishing, vNum,
+            sexpVec, nextCmbGrp, nthCmbGrp, nthCmbGrpGmp, FinalTouch, vNum,
             vInt, z, myType, mySample, mpzVec, mpzIndex, dblIndex, n,
             sampSize, nThreads, IsArray, false, LocalPar, true, IsGmp
         );
@@ -302,11 +307,11 @@ SEXP ComboGroupsClass::randomAccess(SEXP RindexVec) {
         if (IsGmp) {
             mpzIndex = mpzVec.front() + 1;
             mpzTemp  = mpzVec.front();
-            z = CmbGrp->nthComboGroupGmp(mpzTemp);
+            z = nthCmbGrpGmp(mpzTemp);
         } else {
             dblIndex = mySample.front() + 1;
             dblTemp  = mySample.front();
-            z = CmbGrp->nthComboGroup(dblTemp);
+            z = nthCmbGrp(dblTemp);
         }
 
         return SingleReturn();
@@ -318,11 +323,11 @@ SEXP ComboGroupsClass::front() {
     if (IsGmp) {
         mpzIndex = 1;
         mpzTemp  = 0;
-        z = CmbGrp->nthComboGroupGmp(mpzTemp);
+        z = nthCmbGrpGmp(mpzTemp);
     } else {
         dblIndex = 1;
         dblTemp  = 0;
-        z = CmbGrp->nthComboGroup(dblTemp);
+        z = nthCmbGrp(dblTemp);
     }
 
     return SingleReturn();
@@ -333,11 +338,11 @@ SEXP ComboGroupsClass::back() {
     if (IsGmp) {
         mpzIndex = computedRowsMpz;
         mpzTemp  = computedRowsMpz - 1;
-        z = CmbGrp->nthComboGroupGmp(mpzTemp);
+        z = nthCmbGrpGmp(mpzTemp);
     } else {
         dblIndex = computedRows;
         dblTemp  = computedRows - 1;
-        z = CmbGrp->nthComboGroup(dblTemp);
+        z = nthCmbGrp(dblTemp);
     }
 
     return SingleReturn();

@@ -11,12 +11,17 @@ private:
     cpp11::writable::list dimNames;
     cpp11::writable::strings myNames;
 
-    std::string grpSizeDesc;
+    const std::unique_ptr<ComboGroupsTemplate> CmbGrp;
 
+    nextGrpFunc nextCmbGrp;
+    nthFuncDbl nthCmbGrp;
+    nthFuncGmp nthCmbGrpGmp;
+    finalTouchFunc FinalTouch;
+
+    std::string grpSizeDesc;
     bool IsArray;
     int rDisp; // This will differ in the General case when OneGrp = true
     int r;     // Number of groups
-    const std::unique_ptr<ComboGroupsTemplate> CmbGrp;
 
     SEXP SingleReturn();
     SEXP GeneralReturn(int numResults);
