@@ -7,6 +7,32 @@ S3method("[[", "ComboRes")
 S3method("[[", "Partitions")
 S3method("[[", "ComboGroups")
 
+S3method(comboGeneral, default)
+S3method(comboGeneral, table)
+S3method(comboGeneral, list)
+S3method(comboSample, default)
+S3method(comboSample, table)
+S3method(comboSample, list)
+S3method(comboIter, default)
+S3method(comboIter, table)
+S3method(comboIter, list)
+S3method(comboCount, default)
+S3method(comboCount, table)
+S3method(comboCount, list)
+
+S3method(permuteGeneral, default)
+S3method(permuteGeneral, table)
+S3method(permuteGeneral, list)
+S3method(permuteSample, default)
+S3method(permuteSample, table)
+S3method(permuteSample, list)
+S3method(permuteIter, default)
+S3method(permuteIter, table)
+S3method(permuteIter, list)
+S3method(permuteCount, default)
+S3method(permuteCount, table)
+S3method(permuteCount, list)
+
 export(
   comboGeneral,
   permuteGeneral,

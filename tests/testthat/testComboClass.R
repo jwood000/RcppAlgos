@@ -39,9 +39,9 @@ test_that("comboIter & permuteIter produces correct results", {
         myResults <- c(myResults, isTRUE(all.equal(a@summary()$totalResults, myRows)))
 
         # .method("sourceVector", &Combo::sourceVector)
-        if (length(v1) == 1) {
+        if (length(v1) == 1 && is.atomic(v1) && class(v1) != "table") {
             myResults <- c(myResults, isTRUE(all.equal(v1, length(a@sourceVector()))))
-        } else {
+        } else if (is.atomic(v1) && class(v1) != "table") {
             myResults <- c(myResults, isTRUE(all.equal(v1, a@sourceVector())))
         }
 
@@ -232,6 +232,14 @@ test_that("comboIter & permuteIter produces correct results", {
     expect_true(comboClassTest(as.raw(1:5), 3))
     expect_true(comboClassTest(factor(1:5), 3))
 
+    ## S3 table mehtod
+    set.seed(32)
+    s <- sample(letters[1:5], 10, TRUE)
+    expect_true(comboClassTest(table(s), 3))
+
+    ## S3 list method
+    expect_true(comboClassTest(as.list(1:5), 3))
+
     expect_true(comboClassTest(as.complex(1:5), 3, TRUE))
     expect_true(comboClassTest(c(TRUE, FALSE), 20, TRUE))
     expect_true(comboClassTest(letters[1:5], 6, freqs1 = 1:5))
@@ -244,6 +252,12 @@ test_that("comboIter & permuteIter produces correct results", {
     expect_true(comboClassTest(5, 3, IsComb = FALSE))
     expect_true(comboClassTest(as.raw(1:5), 3, IsComb = FALSE))
     expect_true(comboClassTest(factor(1:5), 3, IsComb = FALSE))
+
+    ## S3 table mehtod
+    expect_true(comboClassTest(table(s), 3, IsComb = FALSE))
+
+    ## S3 list method
+    expect_true(comboClassTest(as.list(1:5), 3, IsComb = FALSE))
 
     expect_true(comboClassTest(as.complex(1:5), 3, TRUE, IsComb = FALSE))
     expect_true(comboClassTest(c(TRUE, FALSE), 3, TRUE, IsComb = FALSE))

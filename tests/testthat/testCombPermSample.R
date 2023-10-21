@@ -76,6 +76,42 @@ test_that("comboSample produces correct results", {
                              seed = 17, Parallel = TRUE))
 })
 
+test_that("test combo/permuteSample S3 methods", {
+    ## table method
+    set.seed(123)
+    s <- sample(letters[1:5], 10, TRUE)
+    expect_equal(
+        comboSample(table(s), 3, n = 3, seed = 2),
+        comboSample(sort(unique(s)), 3, freqs = table(s), n = 3, seed = 2)
+    )
+
+    expect_equal(
+        permuteSample(table(s), 3, n = 3, seed = 22),
+        permuteSample(sort(unique(s)), 3, freqs = table(s),
+                      n = 3, seed = 22)
+    )
+
+    ## list method
+    lst <- lapply(1:5, function(x) {
+        replicate(3, {
+            i <- sample(15, 1)
+            sample(letters[1:5], i, TRUE)
+        })
+    })
+
+    idx_combo <- comboSample(length(lst), 3, TRUE, n = 5, seed = 101)
+    res_combo <- lapply(seq_len(nrow(idx_combo)), function(i) {
+        lst[idx_combo[i, ]]
+    })
+
+    idx_perm <- permuteSample(length(lst), 3, TRUE, n = 5, seed = 101)
+    res_perm <- lapply(seq_len(nrow(idx_perm)), function(i) {
+        lst[idx_perm[i, ]]
+    })
+    expect_equal(comboSample(lst, 3, TRUE, n = 5, seed = 101), res_combo)
+    expect_equal(permuteSample(lst, 3, TRUE, n = 5, seed = 101), res_perm)
+})
+
 test_that("permuteSample produces correct results", {
     expect_equal(permuteSample(5, 3, sampleVec = 1:(permuteCount(5, 3))),
                  permuteGeneral(5, 3))

@@ -1,7 +1,16 @@
 \name{NEWS}
 \title{News for Package \pkg{RcppAlgos}}
 
-\section{Changes in RcppAlgos version 2.8.2 (Release date: 2023-10-04)}{
+\section{Changes in RcppAlgos version 2.8.3 (Release date: 2023-10-26)}{
+    \itemize{
+        \item New Features:
+        \itemize{
+            \item Now the combination and permutation functions are more flexible with S3 methods. We only added a \code{table} and \code{list} method so that one can easily pass these objects conveniently without further alterations.
+        }
+    }
+}
+
+\section{Changes in RcppAlgos version 2.8.2 (Release date: 2023-10-02)}{
     \itemize{
         \item New Features:
         \itemize{
@@ -20,7 +29,7 @@
     }
 }
 
-\section{Changes in RcppAlgos version 2.8.0 (Release date: 2023-07-10)}{
+\section{Changes in RcppAlgos version 2.8.0 (Release date: 2023-07-11)}{
     \itemize{
         \item New Features:
         \itemize{

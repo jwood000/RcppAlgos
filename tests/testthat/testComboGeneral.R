@@ -102,6 +102,53 @@ test_that("comboGeneral produces correct results with no constraints", {
                  rep(997:1000, times = 1:4))
 })
 
+test_that("test combo/permuteGeneral S3 methods", {
+    ## table method
+    set.seed(12)
+    s <- sample(letters[1:5], 10, TRUE)
+    expect_equal(
+        comboGeneral(table(s), 3),
+        comboGeneral(sort(unique(s)), 3, freqs = table(s))
+    )
+
+    expect_equal(
+        comboCount(table(s), 3),
+        comboCount(sort(unique(s)), 3, freqs = table(s))
+    )
+
+    expect_equal(
+        permuteGeneral(table(s), 3),
+        permuteGeneral(sort(unique(s)), 3, freqs = table(s))
+    )
+
+    expect_equal(
+        permuteCount(table(s), 3),
+        permuteCount(sort(unique(s)), 3, freqs = table(s))
+    )
+
+    ## list method
+    lst <- lapply(1:5, function(x) {
+        replicate(3, {
+            i <- sample(15, 1)
+            sample(letters[1:5], i, TRUE)
+        })
+    })
+
+    idx_combo <- comboGeneral(length(lst), 3, TRUE)
+    res_combo <- lapply(seq_len(nrow(idx_combo)), function(i) {
+        lst[idx_combo[i, ]]
+    })
+
+    idx_perm <- permuteGeneral(length(lst), 3, TRUE)
+    res_perm <- lapply(seq_len(nrow(idx_perm)), function(i) {
+        lst[idx_perm[i, ]]
+    })
+    expect_equal(comboGeneral(lst, 3, TRUE), res_combo)
+    expect_equal(comboCount(lst, 3, TRUE), length(res_combo))
+    expect_equal(permuteGeneral(lst, 3, TRUE), res_perm)
+    expect_equal(permuteCount(lst, 3, TRUE), length(res_perm))
+})
+
 test_that("comboGeneral produces correct results with constraints", {
     tinyTol = nrow(comboGeneral(1:5 + 0.00000000001, 3,
                       constraintFun = "mean",
