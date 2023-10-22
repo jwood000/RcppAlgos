@@ -104,6 +104,7 @@ test_that("comboGeneral produces correct results with no constraints", {
 
 test_that("test combo/permuteGeneral S3 methods", {
     ## table method
+    ## type character
     set.seed(12)
     s <- sample(letters[1:5], 10, TRUE)
     expect_equal(
@@ -112,18 +113,63 @@ test_that("test combo/permuteGeneral S3 methods", {
     )
 
     expect_equal(
-        comboCount(table(s), 3),
-        comboCount(sort(unique(s)), 3, freqs = table(s))
+        comboCount(table(s), 5),
+        comboCount(sort(unique(s)), 5, freqs = table(s))
+    )
+
+    ## table method
+    ## type integer
+    t <- sample(5, 10, TRUE)
+    expect_equal(
+        comboGeneral(table(t), 5),
+        comboGeneral(sort(unique(t)), 5, freqs = table(t))
     )
 
     expect_equal(
-        permuteGeneral(table(s), 3),
-        permuteGeneral(sort(unique(s)), 3, freqs = table(s))
+        comboCount(table(t), 5),
+        comboCount(sort(unique(t)), 5, freqs = table(t))
+    )
+
+    ## table method
+    ## type numeric
+    num <- rnorm(5)
+    c_n <- sample(num, 18, TRUE)
+    expect_equal(
+        comboGeneral(table(c_n), 9),
+        comboGeneral(sort(unique(c_n)), 9, freqs = table(c_n))
     )
 
     expect_equal(
-        permuteCount(table(s), 3),
-        permuteCount(sort(unique(s)), 3, freqs = table(s))
+        comboCount(table(c_n), 8),
+        comboCount(sort(unique(c_n)), 8, freqs = table(c_n))
+    )
+
+    ## table method
+    ## type complex
+    cmplx <- 1:5 + (1:5) * 1i
+    c_v   <- sample(cmplx, 20, TRUE)
+    expect_equal(
+        permuteGeneral(table(c_v), 6),
+        permuteGeneral(sort(unique(c_v)), 6, freqs = table(c_v))
+    )
+
+    expect_equal(
+        permuteCount(table(c_v), 8),
+        permuteCount(sort(unique(c_v)), 8, freqs = table(c_v))
+    )
+
+    ## table method
+    ## type logical
+    bool <- c(TRUE, FALSE)
+    c_b  <- sample(bool, 17, TRUE)
+    expect_equal(
+        permuteGeneral(table(c_b), 11),
+        permuteGeneral(sort(unique(c_b)), 11, freqs = table(c_b))
+    )
+
+    expect_equal(
+        permuteCount(table(c_b), 100),
+        permuteCount(sort(unique(c_b)), 100, freqs = table(c_b))
     )
 
     ## list method
