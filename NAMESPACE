@@ -33,6 +33,24 @@ S3method(permuteCount, default)
 S3method(permuteCount, table)
 S3method(permuteCount, list)
 
+S3method(partitionsGeneral, default)
+S3method(partitionsGeneral, table)
+S3method(partitionsSample, default)
+S3method(partitionsSample, table)
+S3method(partitionsIter, default)
+S3method(partitionsIter, table)
+S3method(partitionsCount, default)
+S3method(partitionsCount, table)
+
+S3method(compositionsGeneral, default)
+S3method(compositionsGeneral, table)
+S3method(compositionsSample, default)
+S3method(compositionsSample, table)
+S3method(compositionsIter, default)
+S3method(compositionsIter, table)
+S3method(compositionsCount, default)
+S3method(compositionsCount, table)
+
 export(
   comboGeneral,
   permuteGeneral,
