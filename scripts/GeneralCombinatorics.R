@@ -160,9 +160,11 @@ reprex::reprex({
                    unit = "relative")
 
     ## Using 7 cores w/ Parallel = TRUE
-    microbenchmark(serial = comboGeneral(20, 10, freqs = rep(1:4, 5)),
-                 parallel = comboGeneral(20, 10, freqs = rep(1:4, 5), Parallel = TRUE),
-                 unit = "relative")
+    microbenchmark(
+        serial = comboGeneral(20, 10, freqs = rep(1:4, 5)),
+        parallel = comboGeneral(20, 10, freqs = rep(1:4, 5), Parallel = TRUE),
+        unit = "relative"
+    )
 
     #'
     #' ### Using arguments `lower` and `upper`
@@ -265,5 +267,10 @@ reprex::reprex({
 
     permuteGeneral(c(FALSE, TRUE), 3, TRUE, FUN.VALUE = 1,
                    FUN = function(x) sum(2^(which(rev(x)) - 1)))
+
+    #'
+    #' ## S3 methods
+    #'
+    #' As of version `2.8.3`, we
 
 }, advertise = FALSE, venue = "r", html_preview = FALSE, wd = ".")

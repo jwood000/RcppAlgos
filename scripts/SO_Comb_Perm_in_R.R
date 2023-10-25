@@ -371,7 +371,7 @@ reprex::reprex({
     #'   1. The output is in lexicographical order.
     #'   2. Allows the user to specify the format via the `layout` argument ("row : row-major", "colmnn : column-major", and "list : list").
     #'   3. Offers convenient methods such as `collect` & `getnext` when working with iterators.
-    #'   4. Allows for the generation of more than `2^31 - 1` combinations/permutations via `getnext`. N.B. `RcppAlgos` (via `nextItem`) and `multicool` (via `nextPerm`) are also capable of doing this.
+    #'   4. Allows for the generation of more than `2^31 - 1` combinations/permutations via `getnext`. N.B. `RcppAlgos` (via `nextIter`) and `multicool` (via `nextPerm`) are also capable of doing this.
     #'   5. GMP support allows for exploration of combinations/permutations of vectors with many results.
     #'
     #' Observe:
@@ -394,8 +394,8 @@ reprex::reprex({
     #'   4. Produce results in parallel using the `Parallel` or `nThreads` arguments.
     #'   5. Similar to `combn`, there is a `FUN` argument for applying a function to each result (See also `FUN.VALUE`).
     #'   6. Provides flexible and merory efficient iterators that allow for bidirectional iteration as well as random access.
-    #'      - `nextItem`|`nextNIter`|`nextRemaining`: Retrieve the _next_ lexicographical result(s)
-    #'      - `prevItem`|`prevNIter`|`prevRemaining`: Retrieve the _previous_ lexicographical result(s)
+    #'      - `nextIter`|`nextNIter`|`nextRemaining`: Retrieve the _next_ lexicographical result(s)
+    #'      - `prevIter`|`prevNIter`|`prevRemaining`: Retrieve the _previous_ lexicographical result(s)
     #'      - `front`|`back`|`[[`: Random access methods
     #'      - Allows for easy generation of more than `2^31 - 1` results from any starting place.
     #'
