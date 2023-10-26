@@ -289,6 +289,28 @@ test_that("primeCount produces appropriate error messages", {
     expect_error(primeCount("100000"), "must be of type numeric or integer")
 })
 
+test_that("errors with table S3 method", {
+    s <- sample(10, 100, TRUE)
+    err_string <- paste(
+        "Currently, there is no composition algorithm",
+        "for this case.\n Use permuteCount, permuteIter, permuteGeneral,",
+        "permuteSample, or\n permuteRank instead."
+    )
+    expect_error(compositionsCount(table(s), 5), err_string)
+    expect_error(compositionsGeneral(table(s), 5), err_string)
+    expect_error(compositionsSample(table(s), 5, n = 10), err_string)
+    expect_error(compositionsIter(table(s), 5, n = 10), err_string)
+
+    expect_error(
+        partitionsCount(table(s), 5),
+        paste("The count is unknown for this case.\n",
+              "To get the total number, generate all results!")
+    )
+
+    expect_error(partitionsSample(table(s), 5, n = 4),
+                 "Partition sampling not available for this case.")
+})
+
 test_that("primeFactorize produces appropriate error messages", {
     expect_error(primeFactorize(2^53),
                  "The abs value of each element in v must be less than")
