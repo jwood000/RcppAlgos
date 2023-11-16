@@ -244,10 +244,10 @@ extern "C" SEXP _RcppAlgos_SampleCombPerm(SEXP Rv, SEXP Rm, SEXP RisRep, SEXP RF
   END_CPP11
 }
 // SamplePartitions.cpp
-SEXP SamplePartitions(SEXP Rv, SEXP Rm, SEXP RisRep, SEXP RFreqs, SEXP RindexVec, SEXP RmySeed, SEXP RNumSamp, SEXP baseSample, SEXP Rparallel, SEXP RNumThreads, SEXP RmaxThreads, SEXP RNamed, SEXP RcompFun, SEXP Rtarget, SEXP Rtolerance, SEXP myEnv, SEXP RIsComposition, SEXP RIsWeak);
-extern "C" SEXP _RcppAlgos_SamplePartitions(SEXP Rv, SEXP Rm, SEXP RisRep, SEXP RFreqs, SEXP RindexVec, SEXP RmySeed, SEXP RNumSamp, SEXP baseSample, SEXP Rparallel, SEXP RNumThreads, SEXP RmaxThreads, SEXP RNamed, SEXP RcompFun, SEXP Rtarget, SEXP Rtolerance, SEXP myEnv, SEXP RIsComposition, SEXP RIsWeak) {
+SEXP SamplePartitions(SEXP Rv, SEXP Rm, SEXP RisRep, SEXP RFreqs, SEXP RindexVec, SEXP RmySeed, SEXP RNumSamp, SEXP baseSample, SEXP RNumThreads, SEXP RmaxThreads, SEXP RNamed, SEXP RcompFun, SEXP Rtarget, SEXP myEnv, SEXP RIsComposition, SEXP RIsWeak);
+extern "C" SEXP _RcppAlgos_SamplePartitions(SEXP Rv, SEXP Rm, SEXP RisRep, SEXP RFreqs, SEXP RindexVec, SEXP RmySeed, SEXP RNumSamp, SEXP baseSample, SEXP RNumThreads, SEXP RmaxThreads, SEXP RNamed, SEXP RcompFun, SEXP Rtarget, SEXP myEnv, SEXP RIsComposition, SEXP RIsWeak) {
   BEGIN_CPP11
-    return cpp11::as_sexp(SamplePartitions(cpp11::as_cpp<cpp11::decay_t<SEXP>>(Rv), cpp11::as_cpp<cpp11::decay_t<SEXP>>(Rm), cpp11::as_cpp<cpp11::decay_t<SEXP>>(RisRep), cpp11::as_cpp<cpp11::decay_t<SEXP>>(RFreqs), cpp11::as_cpp<cpp11::decay_t<SEXP>>(RindexVec), cpp11::as_cpp<cpp11::decay_t<SEXP>>(RmySeed), cpp11::as_cpp<cpp11::decay_t<SEXP>>(RNumSamp), cpp11::as_cpp<cpp11::decay_t<SEXP>>(baseSample), cpp11::as_cpp<cpp11::decay_t<SEXP>>(Rparallel), cpp11::as_cpp<cpp11::decay_t<SEXP>>(RNumThreads), cpp11::as_cpp<cpp11::decay_t<SEXP>>(RmaxThreads), cpp11::as_cpp<cpp11::decay_t<SEXP>>(RNamed), cpp11::as_cpp<cpp11::decay_t<SEXP>>(RcompFun), cpp11::as_cpp<cpp11::decay_t<SEXP>>(Rtarget), cpp11::as_cpp<cpp11::decay_t<SEXP>>(Rtolerance), cpp11::as_cpp<cpp11::decay_t<SEXP>>(myEnv), cpp11::as_cpp<cpp11::decay_t<SEXP>>(RIsComposition), cpp11::as_cpp<cpp11::decay_t<SEXP>>(RIsWeak)));
+    return cpp11::as_sexp(SamplePartitions(cpp11::as_cpp<cpp11::decay_t<SEXP>>(Rv), cpp11::as_cpp<cpp11::decay_t<SEXP>>(Rm), cpp11::as_cpp<cpp11::decay_t<SEXP>>(RisRep), cpp11::as_cpp<cpp11::decay_t<SEXP>>(RFreqs), cpp11::as_cpp<cpp11::decay_t<SEXP>>(RindexVec), cpp11::as_cpp<cpp11::decay_t<SEXP>>(RmySeed), cpp11::as_cpp<cpp11::decay_t<SEXP>>(RNumSamp), cpp11::as_cpp<cpp11::decay_t<SEXP>>(baseSample), cpp11::as_cpp<cpp11::decay_t<SEXP>>(RNumThreads), cpp11::as_cpp<cpp11::decay_t<SEXP>>(RmaxThreads), cpp11::as_cpp<cpp11::decay_t<SEXP>>(RNamed), cpp11::as_cpp<cpp11::decay_t<SEXP>>(RcompFun), cpp11::as_cpp<cpp11::decay_t<SEXP>>(Rtarget), cpp11::as_cpp<cpp11::decay_t<SEXP>>(myEnv), cpp11::as_cpp<cpp11::decay_t<SEXP>>(RIsComposition), cpp11::as_cpp<cpp11::decay_t<SEXP>>(RIsWeak)));
   END_CPP11
 }
 
@@ -283,7 +283,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_RcppAlgos_RankCombPerm",        (DL_FUNC) &_RcppAlgos_RankCombPerm,         6},
     {"_RcppAlgos_RankPartitionMain",   (DL_FUNC) &_RcppAlgos_RankPartitionMain,   10},
     {"_RcppAlgos_SampleCombPerm",      (DL_FUNC) &_RcppAlgos_SampleCombPerm,      16},
-    {"_RcppAlgos_SamplePartitions",    (DL_FUNC) &_RcppAlgos_SamplePartitions,    18},
+    {"_RcppAlgos_SamplePartitions",    (DL_FUNC) &_RcppAlgos_SamplePartitions,    16},
     {"_RcppAlgos_SourceVectorGlue",    (DL_FUNC) &_RcppAlgos_SourceVectorGlue,     1},
     {"_RcppAlgos_StartOverGlue",       (DL_FUNC) &_RcppAlgos_StartOverGlue,        1},
     {"_RcppAlgos_SummaryGlue",         (DL_FUNC) &_RcppAlgos_SummaryGlue,          1},

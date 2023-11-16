@@ -1,6 +1,20 @@
 \name{comboGeneral}
 \alias{comboGeneral}
+\alias{comboGeneral.integer}
+\alias{comboGeneral.numeric}
+\alias{comboGeneral.factor}
+\alias{comboGeneral.logical}
+\alias{comboGeneral.default}
+\alias{comboGeneral.table}
+\alias{comboGeneral.list}
 \alias{permuteGeneral}
+\alias{permuteGeneral.integer}
+\alias{permuteGeneral.numeric}
+\alias{permuteGeneral.factor}
+\alias{permuteGeneral.logical}
+\alias{permuteGeneral.default}
+\alias{permuteGeneral.table}
+\alias{permuteGeneral.list}
 \title{
 Generate Combinations and Permutations of a Vector with/without Constraints
 }
@@ -15,21 +29,59 @@ Generate Combinations and Permutations of a Vector with/without Constraints
     }
 }
 \usage{
-comboGeneral(v, m = NULL, repetition = FALSE, freqs = NULL,
+comboGeneral(v, m = NULL, ...)
+permuteGeneral(v, m = NULL, ...)
+
+\method{comboGeneral}{numeric}(v, m = NULL, repetition = FALSE, freqs = NULL,
              lower = NULL, upper = NULL, constraintFun = NULL,
              comparisonFun = NULL, limitConstraints = NULL,
              keepResults = NULL, FUN = NULL, Parallel = FALSE,
-             nThreads = NULL, tolerance = NULL, FUN.VALUE = NULL)
+             nThreads = NULL, tolerance = NULL, FUN.VALUE = NULL, ...)
 
-permuteGeneral(v, m = NULL, repetition = FALSE, freqs = NULL,
+\method{permuteGeneral}{numeric}(v, m = NULL, repetition = FALSE, freqs = NULL,
                lower = NULL, upper = NULL, constraintFun = NULL,
                comparisonFun = NULL, limitConstraints = NULL,
                keepResults = NULL, FUN = NULL, Parallel = FALSE,
-               nThreads = NULL, tolerance = NULL, FUN.VALUE = NULL)
+               nThreads = NULL, tolerance = NULL, FUN.VALUE = NULL, ...)
+
+\method{comboGeneral}{factor}(
+    v, m = NULL, repetition = FALSE, freqs = NULL, lower = NULL, upper = NULL,
+    FUN = NULL, Parallel = FALSE, nThreads = NULL, FUN.VALUE = NULL, ...
+)
+\method{permuteGeneral}{factor}(
+    v, m = NULL, repetition = FALSE, freqs = NULL, lower = NULL, upper = NULL,
+    FUN = NULL, Parallel = FALSE, nThreads = NULL, FUN.VALUE = NULL, ...
+)
+
+\method{comboGeneral}{default}(v, m = NULL, repetition = FALSE,
+             freqs = NULL, lower = NULL, upper = NULL,
+             FUN = NULL, FUN.VALUE = NULL, ...)
+\method{permuteGeneral}{default}(v, m = NULL, repetition = FALSE,
+               freqs = NULL, lower = NULL, upper = NULL,
+               FUN = NULL, FUN.VALUE = NULL, ...)
+
+\method{comboGeneral}{table}(
+    v, m = NULL, lower = NULL, upper = NULL, constraintFun = NULL,
+    comparisonFun = NULL, limitConstraints = NULL, keepResults = NULL,
+    FUN = NULL, Parallel = FALSE, nThreads = NULL, tolerance = NULL,
+    FUN.VALUE = NULL, ...
+)
+\method{permuteGeneral}{table}(
+    v, m = NULL, lower = NULL, upper = NULL, constraintFun = NULL,
+    comparisonFun = NULL, limitConstraints = NULL, keepResults = NULL,
+    FUN = NULL, Parallel = FALSE, nThreads = NULL, tolerance = NULL,
+    FUN.VALUE = NULL, ...
+)
+
+\method{comboGeneral}{list}(v, m = NULL, repetition = FALSE,
+             freqs = NULL, lower = NULL, upper = NULL, ...)
+\method{permuteGeneral}{list}(v, m = NULL, repetition = FALSE,
+               freqs = NULL, lower = NULL, upper = NULL, ...)
 }
 \arguments{
   \item{v}{Source vector. If \code{v} is a positive integer, it will be converted to the sequence \code{1:v}. If \code{v} is a negative integer, it will be converted to the sequence \code{v:-1}. All atomic types are supported (See \code{\link{is.atomic}}).}
   \item{m}{Number of elements to choose.  If \code{repetition = TRUE} or \code{freqs} is utilized, \code{m} can exceed the length of \code{v}. If \code{m = NULL}, the length will default to \code{length(v)} or \code{sum(freqs)}.}
+  \item{\dots}{Further arguments passed to methods.}
   \item{repetition}{Logical value indicating whether combinations/permutations should be with or without repetition. The default is \code{FALSE}.}
   \item{freqs}{A vector of frequencies used for producing all combinations/permutations of a multiset of \code{v}. Each element of \code{freqs} represents how many times each element of the source vector, \code{v}, is repeated. It is analogous to the \code{times} argument in \code{\link[base]{rep}}. The default value is \code{NULL}.}
   \item{lower}{The lower bound. Combinations/permutations are generated lexicographically, thus utilizing this argument will determine which specific combination/permutation to start generating from (\emph{e.g.} \code{comboGeneral(5, 3, lower = 6)} is equivalent to \code{comboGeneral(5, 3)[6:choose(5, 3), ]}). This argument along with \code{upper} is very useful for generating combinations/permutations in chunks allowing for easy parallelization.}
@@ -107,37 +159,41 @@ Joseph Wood
     }
 }
 \examples{
-system.time(comboGeneral(17, 8))
-system.time(permuteGeneral(13, 6))
+comboGeneral(4, 3)
+permuteGeneral(3)
 
-system.time(comboGeneral(13,10,repetition = TRUE))
-system.time(permuteGeneral(factor(letters[1:9]),6,TRUE))
+permuteGeneral(factor(letters[1:3]), repetition = TRUE)
 
-## permutations of the multiset (with or w/o setting m) :
-## c(1,1,1,1,2,2,2,3,3,4)
-system.time(permuteGeneral(4, freqs = c(4,3,2,1)))
+## permutations of the multiset :
+## c(1,1,1,2,2,3)
+permuteGeneral(table(c(1,1,1,2,2,3)))
+
+## Example with list
+comboGeneral(
+    v = list(
+        p1 = matrix(1:10, ncol = 2),
+        p2 = data.frame(a = letters, b = 1:26),
+        p3 = as.complex(1:10)
+    ),
+    m = 2
+)
 
 #### Examples using "upper" and "lower":
-## Generate some random data
-set.seed(1009)
-mySamp = sort(rnorm(75, 997, 23))
-
-permuteCount(75, 10, freqs = rep(1:3, 25))
-# >Big Integer ('bigz') :
-# >[1] 4606842576291495952
-
 ## See specific range of permutations
 permuteGeneral(75, 10, freqs = rep(1:3, 25),
                lower = 1e12, upper = 1e12 + 10)
 
-## Researcher only needs 1000 7-tuples of mySamp
+## Researcher only needs 10 7-tuples of mySamp
 ## such that the sum is greater than 7200.
-system.time(comboGeneral(mySamp, 7, FALSE, constraintFun = "sum",
-             comparisonFun = ">", limitConstraints = 7200, upper = 1000))
+## Generate some random data
+set.seed(1009)
+mySamp = rnorm(75, 997, 23)
+comboGeneral(mySamp, 7, constraintFun = "sum",
+             comparisonFun = ">", limitConstraints = 7200, upper = 10)
 
 ## Similarly, you can use "lower" to obtain the last rows.
 ## Generate the last 10 rows
-system.time(comboGeneral(mySamp, 7, lower = choose(75, 7) - 9))
+comboGeneral(mySamp, 7, lower = choose(75, 7) - 9)
 
 ## Or if you would like to generate a specific chunk,
 ## use both "lower" and "upper". E.g. Generate one
@@ -153,13 +209,11 @@ class(comboGeneral(c(1,2:5),3)[1,]) == class(c(1,2:5))
 class(comboGeneral(factor(month.name),3)[1,]) == class(factor(month.name))
 
 ## Using keepResults will add a column of results
-t2 = permuteGeneral(-3,6,TRUE,constraintFun = "prod",
-                         keepResults = TRUE)
-
-t3 = comboGeneral(-3,6,TRUE,constraintFun = "sum",
-                        comparisonFun = "==",
-                        limitConstraints = -8,
-                        keepResults = TRUE)
+comboGeneral(-3, 6, TRUE,
+             constraintFun = "sum",
+             comparisonFun = "==",
+             limitConstraints = -8,
+             keepResults = TRUE)
 
 ## Using multiple constraints:
 
@@ -229,29 +283,17 @@ system.time(myComb2 <- combn(25, 13)[,combn(25, 13, mean) < 10])
 ## Test equality with myComb above
 all.equal(myComb, t(myComb2))
 
-
-## much faster using Parallel = TRUE
-system.time(permuteGeneral(15, 8, lower = 250000000, Parallel = TRUE))
-system.time(permuteGeneral(15, 8, lower = 250000000))
-
-system.time(comboGeneral(30, 10, Parallel = TRUE))
-system.time(comboGeneral(30, 10))
-
-## Parallel also works when applying constraintFun solely
-system.time(comboGeneral(30, 10, Parallel = TRUE, constraintFun = "sum"))
-system.time(comboGeneral(30, 10, constraintFun = "sum"))
-
-## Depending on # of cores available, using Parallel with
-## constraintFun is faster than rowSums or rowMeans alone
-combs = comboGeneral(30, 10)
-system.time(rowSums(combs))
-
 ## Fun example... see stackoverflow:
 ## https://stackoverflow.com/q/22218640/4408538
-system.time(permuteGeneral(seq(0L,100L,10L),8,TRUE,
-                                constraintFun = "sum",
-                                comparisonFun = "==",
-                                limitConstraints = 100))
+system.time(permuteGeneral(seq(0L,100L,10L), 8, TRUE,
+                           constraintFun = "sum",
+                           comparisonFun = "==",
+                           limitConstraints = 100))
+
+## These are called weak integer compositions. Below, we call
+## compositionsGeneral which gives the same output except it
+## in lexicographical order. See 'Note' above
+system.time(compositionsGeneral(seq(0L,100L,10L), 8, TRUE, weak = TRUE))
 }
 }
 \keyword{combinations}

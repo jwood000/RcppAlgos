@@ -123,12 +123,12 @@ void ThreadSafeSample(T* mat, SEXP res, const std::vector<T> &v,
 }
 
 [[cpp11::register]]
-SEXP SamplePartitions(SEXP Rv, SEXP Rm, SEXP RisRep, SEXP RFreqs,
-                      SEXP RindexVec, SEXP RmySeed, SEXP RNumSamp,
-                      SEXP baseSample, SEXP Rparallel, SEXP RNumThreads,
-                      SEXP RmaxThreads, SEXP RNamed, SEXP RcompFun,
-                      SEXP Rtarget, SEXP Rtolerance, SEXP myEnv,
-                      SEXP RIsComposition, SEXP RIsWeak) {
+SEXP SamplePartitions(
+    SEXP Rv, SEXP Rm, SEXP RisRep, SEXP RFreqs, SEXP RindexVec,
+    SEXP RmySeed, SEXP RNumSamp, SEXP baseSample, SEXP RNumThreads,
+    SEXP RmaxThreads, SEXP RNamed, SEXP RcompFun, SEXP Rtarget,
+    SEXP myEnv, SEXP RIsComposition, SEXP RIsWeak
+) {
 
     int n = 0;
     int m = 0;
@@ -138,14 +138,16 @@ SEXP SamplePartitions(SEXP Rv, SEXP Rm, SEXP RisRep, SEXP RFreqs,
     bool IsMult = false;
     VecType myType = VecType::Integer;
     CppConvert::convertPrimitive(RmaxThreads, maxThreads,
-                                   VecType::Integer, "maxThreads");
+                                 VecType::Integer, "maxThreads");
 
     std::vector<double> vNum;
     std::vector<int> vInt;
     std::vector<int> myReps;
     std::vector<int> freqs;
 
-    bool Parallel = CppConvert::convertFlag(Rparallel, "Parallel");
+    bool Parallel = false; // This will be set in SetThreads below. For the
+          // partition and composition functions we don't have a Parallel
+          // argument. The goal is to eventually phase out this argument.
     bool IsRep    = CppConvert::convertFlag(RisRep, "repetition");
     bool IsNamed  = CppConvert::convertFlag(RNamed, "namedSample");
 
@@ -177,7 +179,7 @@ SEXP SamplePartitions(SEXP Rv, SEXP Rm, SEXP RisRep, SEXP RFreqs,
     cpp11::sexp Rlow = R_NilValue;
     ConstraintSetup(vNum, myReps, targetVals, vInt, targetIntVals, funDbl,
                     part, ctype, n, m, compVec, mainFun, mainFun, myType,
-                    Rtarget, RcompFun, Rtolerance, Rlow);
+                    Rtarget, RcompFun, R_NilValue, Rlow);
 
     if (part.ptype == PartitionType::Multiset ||
         part.ptype == PartitionType::CoarseGrained ||

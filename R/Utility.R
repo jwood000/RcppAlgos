@@ -17,7 +17,7 @@ GetV <- function(v) {
 }
 
 ## Currently only used when an object of class table is passed
-ResolveVFreqs <- function(v, freqs) {
+ResolveVFreqs <- function(v) {
 
     nms <- names(v)
 
@@ -43,13 +43,7 @@ ResolveVFreqs <- function(v, freqs) {
 
     ## Get the tabulated frequencies
     attributes(v) <- NULL
-
-    return(
-        list(
-            v     = conv_v,
-            freqs = if (is.null(freqs)) v else freqs
-        )
-    )
+    return(list(v = conv_v, freqs = v))
 }
 
 GetTarget <- function(v, target) {

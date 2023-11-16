@@ -25,7 +25,7 @@ The output is in lexicographical order.
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">RcppAlgos</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">2.8.2</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">2.8.3</span>
       </span>
     </div>
 
@@ -97,17 +97,64 @@ The output is in lexicographical order.
 </ul></div>
 
     <div id="ref-usage">
-    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">comboGeneral</span><span class="op">(</span><span class="va">v</span>, m <span class="op">=</span> <span class="cn">NULL</span>, repetition <span class="op">=</span> <span class="cn">FALSE</span>, freqs <span class="op">=</span> <span class="cn">NULL</span>,</span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">comboGeneral</span><span class="op">(</span><span class="va">v</span>, m <span class="op">=</span> <span class="cn">NULL</span>, <span class="va">...</span><span class="op">)</span></span>
+<span><span class="fu">permuteGeneral</span><span class="op">(</span><span class="va">v</span>, m <span class="op">=</span> <span class="cn">NULL</span>, <span class="va">...</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># S3 method for numeric</span></span>
+<span><span class="fu">comboGeneral</span><span class="op">(</span><span class="va">v</span>, m <span class="op">=</span> <span class="cn">NULL</span>, repetition <span class="op">=</span> <span class="cn">FALSE</span>, freqs <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>             lower <span class="op">=</span> <span class="cn">NULL</span>, upper <span class="op">=</span> <span class="cn">NULL</span>, constraintFun <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>             comparisonFun <span class="op">=</span> <span class="cn">NULL</span>, limitConstraints <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>             keepResults <span class="op">=</span> <span class="cn">NULL</span>, FUN <span class="op">=</span> <span class="cn">NULL</span>, Parallel <span class="op">=</span> <span class="cn">FALSE</span>,</span>
-<span>             nThreads <span class="op">=</span> <span class="cn">NULL</span>, tolerance <span class="op">=</span> <span class="cn">NULL</span>, FUN.VALUE <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span></span>
+<span>             nThreads <span class="op">=</span> <span class="cn">NULL</span>, tolerance <span class="op">=</span> <span class="cn">NULL</span>, FUN.VALUE <span class="op">=</span> <span class="cn">NULL</span>, <span class="va">...</span><span class="op">)</span></span>
 <span></span>
+<span><span class="co"># S3 method for numeric</span></span>
 <span><span class="fu">permuteGeneral</span><span class="op">(</span><span class="va">v</span>, m <span class="op">=</span> <span class="cn">NULL</span>, repetition <span class="op">=</span> <span class="cn">FALSE</span>, freqs <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>               lower <span class="op">=</span> <span class="cn">NULL</span>, upper <span class="op">=</span> <span class="cn">NULL</span>, constraintFun <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>               comparisonFun <span class="op">=</span> <span class="cn">NULL</span>, limitConstraints <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>               keepResults <span class="op">=</span> <span class="cn">NULL</span>, FUN <span class="op">=</span> <span class="cn">NULL</span>, Parallel <span class="op">=</span> <span class="cn">FALSE</span>,</span>
-<span>               nThreads <span class="op">=</span> <span class="cn">NULL</span>, tolerance <span class="op">=</span> <span class="cn">NULL</span>, FUN.VALUE <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span></span></code></pre></div>
+<span>               nThreads <span class="op">=</span> <span class="cn">NULL</span>, tolerance <span class="op">=</span> <span class="cn">NULL</span>, FUN.VALUE <span class="op">=</span> <span class="cn">NULL</span>, <span class="va">...</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># S3 method for factor</span></span>
+<span><span class="fu">comboGeneral</span><span class="op">(</span></span>
+<span>    <span class="va">v</span>, m <span class="op">=</span> <span class="cn">NULL</span>, repetition <span class="op">=</span> <span class="cn">FALSE</span>, freqs <span class="op">=</span> <span class="cn">NULL</span>, lower <span class="op">=</span> <span class="cn">NULL</span>, upper <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>    FUN <span class="op">=</span> <span class="cn">NULL</span>, Parallel <span class="op">=</span> <span class="cn">FALSE</span>, nThreads <span class="op">=</span> <span class="cn">NULL</span>, FUN.VALUE <span class="op">=</span> <span class="cn">NULL</span>, <span class="va">...</span></span>
+<span><span class="op">)</span></span>
+<span><span class="co"># S3 method for factor</span></span>
+<span><span class="fu">permuteGeneral</span><span class="op">(</span></span>
+<span>    <span class="va">v</span>, m <span class="op">=</span> <span class="cn">NULL</span>, repetition <span class="op">=</span> <span class="cn">FALSE</span>, freqs <span class="op">=</span> <span class="cn">NULL</span>, lower <span class="op">=</span> <span class="cn">NULL</span>, upper <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>    FUN <span class="op">=</span> <span class="cn">NULL</span>, Parallel <span class="op">=</span> <span class="cn">FALSE</span>, nThreads <span class="op">=</span> <span class="cn">NULL</span>, FUN.VALUE <span class="op">=</span> <span class="cn">NULL</span>, <span class="va">...</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># S3 method for default</span></span>
+<span><span class="fu">comboGeneral</span><span class="op">(</span><span class="va">v</span>, m <span class="op">=</span> <span class="cn">NULL</span>, repetition <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>             freqs <span class="op">=</span> <span class="cn">NULL</span>, lower <span class="op">=</span> <span class="cn">NULL</span>, upper <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>             FUN <span class="op">=</span> <span class="cn">NULL</span>, FUN.VALUE <span class="op">=</span> <span class="cn">NULL</span>, <span class="va">...</span><span class="op">)</span></span>
+<span><span class="co"># S3 method for default</span></span>
+<span><span class="fu">permuteGeneral</span><span class="op">(</span><span class="va">v</span>, m <span class="op">=</span> <span class="cn">NULL</span>, repetition <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>               freqs <span class="op">=</span> <span class="cn">NULL</span>, lower <span class="op">=</span> <span class="cn">NULL</span>, upper <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>               FUN <span class="op">=</span> <span class="cn">NULL</span>, FUN.VALUE <span class="op">=</span> <span class="cn">NULL</span>, <span class="va">...</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># S3 method for table</span></span>
+<span><span class="fu">comboGeneral</span><span class="op">(</span></span>
+<span>    <span class="va">v</span>, m <span class="op">=</span> <span class="cn">NULL</span>, lower <span class="op">=</span> <span class="cn">NULL</span>, upper <span class="op">=</span> <span class="cn">NULL</span>, constraintFun <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>    comparisonFun <span class="op">=</span> <span class="cn">NULL</span>, limitConstraints <span class="op">=</span> <span class="cn">NULL</span>, keepResults <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>    FUN <span class="op">=</span> <span class="cn">NULL</span>, Parallel <span class="op">=</span> <span class="cn">FALSE</span>, nThreads <span class="op">=</span> <span class="cn">NULL</span>, tolerance <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>    FUN.VALUE <span class="op">=</span> <span class="cn">NULL</span>, <span class="va">...</span></span>
+<span><span class="op">)</span></span>
+<span><span class="co"># S3 method for table</span></span>
+<span><span class="fu">permuteGeneral</span><span class="op">(</span></span>
+<span>    <span class="va">v</span>, m <span class="op">=</span> <span class="cn">NULL</span>, lower <span class="op">=</span> <span class="cn">NULL</span>, upper <span class="op">=</span> <span class="cn">NULL</span>, constraintFun <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>    comparisonFun <span class="op">=</span> <span class="cn">NULL</span>, limitConstraints <span class="op">=</span> <span class="cn">NULL</span>, keepResults <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>    FUN <span class="op">=</span> <span class="cn">NULL</span>, Parallel <span class="op">=</span> <span class="cn">FALSE</span>, nThreads <span class="op">=</span> <span class="cn">NULL</span>, tolerance <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>    FUN.VALUE <span class="op">=</span> <span class="cn">NULL</span>, <span class="va">...</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># S3 method for list</span></span>
+<span><span class="fu">comboGeneral</span><span class="op">(</span><span class="va">v</span>, m <span class="op">=</span> <span class="cn">NULL</span>, repetition <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>             freqs <span class="op">=</span> <span class="cn">NULL</span>, lower <span class="op">=</span> <span class="cn">NULL</span>, upper <span class="op">=</span> <span class="cn">NULL</span>, <span class="va">...</span><span class="op">)</span></span>
+<span><span class="co"># S3 method for list</span></span>
+<span><span class="fu">permuteGeneral</span><span class="op">(</span><span class="va">v</span>, m <span class="op">=</span> <span class="cn">NULL</span>, repetition <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>               freqs <span class="op">=</span> <span class="cn">NULL</span>, lower <span class="op">=</span> <span class="cn">NULL</span>, upper <span class="op">=</span> <span class="cn">NULL</span>, <span class="va">...</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div id="arguments">
@@ -117,6 +164,9 @@ The output is in lexicographical order.
 
   <dt>m</dt>
 <dd><p>Number of elements to choose.  If <code>repetition = TRUE</code> or <code>freqs</code> is utilized, <code>m</code> can exceed the length of <code>v</code>. If <code>m = NULL</code>, the length will default to <code>length(v)</code> or <code>sum(freqs)</code>.</p></dd>
+
+  <dt>...</dt>
+<dd><p>Further arguments passed to methods.</p></dd>
 
   <dt>repetition</dt>
 <dd><p>Logical value indicating whether combinations/permutations should be with or without repetition. The default is <code>FALSE</code>.</p></dd>
@@ -209,37 +259,214 @@ The output is in lexicographical order.
 
     <div id="ref-examples">
     <h2>Examples</h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/system.time.html" class="external-link">system.time</a></span><span class="op">(</span><span class="fu">comboGeneral</span><span class="op">(</span><span class="fl">17</span>, <span class="fl">8</span><span class="op">)</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    user  system elapsed </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   0.001   0.000   0.000 </span>
-<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/system.time.html" class="external-link">system.time</a></span><span class="op">(</span><span class="fu">permuteGeneral</span><span class="op">(</span><span class="fl">13</span>, <span class="fl">6</span><span class="op">)</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    user  system elapsed </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   0.003   0.002   0.005 </span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="fu">comboGeneral</span><span class="op">(</span><span class="fl">4</span>, <span class="fl">3</span><span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>      [,1] [,2] [,3]</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1,]    1    2    3</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [2,]    1    2    4</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [3,]    1    3    4</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [4,]    2    3    4</span>
+<span class="r-in"><span><span class="fu">permuteGeneral</span><span class="op">(</span><span class="fl">3</span><span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>      [,1] [,2] [,3]</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1,]    1    2    3</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [2,]    1    3    2</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [3,]    2    1    3</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [4,]    2    3    1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [5,]    3    1    2</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [6,]    3    2    1</span>
 <span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/system.time.html" class="external-link">system.time</a></span><span class="op">(</span><span class="fu">comboGeneral</span><span class="op">(</span><span class="fl">13</span>,<span class="fl">10</span>,repetition <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    user  system elapsed </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   0.003   0.000   0.004 </span>
-<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/system.time.html" class="external-link">system.time</a></span><span class="op">(</span><span class="fu">permuteGeneral</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/factor.html" class="external-link">factor</a></span><span class="op">(</span><span class="va">letters</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">9</span><span class="op">]</span><span class="op">)</span>,<span class="fl">6</span>,<span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    user  system elapsed </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   0.001   0.001   0.002 </span>
+<span class="r-in"><span><span class="fu">permuteGeneral</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/factor.html" class="external-link">factor</a></span><span class="op">(</span><span class="va">letters</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">3</span><span class="op">]</span><span class="op">)</span>, repetition <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>       [,1] [,2] [,3]</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [1,] a    a    a   </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [2,] a    a    b   </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [3,] a    a    c   </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [4,] a    b    a   </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [5,] a    b    b   </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [6,] a    b    c   </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [7,] a    c    a   </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [8,] a    c    b   </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [9,] a    c    c   </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [10,] b    a    a   </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [11,] b    a    b   </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [12,] b    a    c   </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [13,] b    b    a   </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [14,] b    b    b   </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [15,] b    b    c   </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [16,] b    c    a   </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [17,] b    c    b   </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [18,] b    c    c   </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [19,] c    a    a   </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [20,] c    a    b   </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [21,] c    a    c   </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [22,] c    b    a   </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [23,] c    b    b   </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [24,] c    b    c   </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [25,] c    c    a   </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [26,] c    c    b   </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [27,] c    c    c   </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Levels: a b c</span>
 <span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="co">## permutations of the multiset (with or w/o setting m) :</span></span></span>
-<span class="r-in"><span><span class="co">## c(1,1,1,1,2,2,2,3,3,4)</span></span></span>
-<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/system.time.html" class="external-link">system.time</a></span><span class="op">(</span><span class="fu">permuteGeneral</span><span class="op">(</span><span class="fl">4</span>, freqs <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">4</span>,<span class="fl">3</span>,<span class="fl">2</span>,<span class="fl">1</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    user  system elapsed </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>       0       0       0 </span>
+<span class="r-in"><span><span class="co">## permutations of the multiset :</span></span></span>
+<span class="r-in"><span><span class="co">## c(1,1,1,2,2,3)</span></span></span>
+<span class="r-in"><span><span class="fu">permuteGeneral</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/table.html" class="external-link">table</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>,<span class="fl">1</span>,<span class="fl">1</span>,<span class="fl">2</span>,<span class="fl">2</span>,<span class="fl">3</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>       [,1] [,2] [,3] [,4] [,5] [,6]</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [1,]    1    1    1    2    2    3</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [2,]    1    1    1    2    3    2</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [3,]    1    1    1    3    2    2</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [4,]    1    1    2    1    2    3</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [5,]    1    1    2    1    3    2</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [6,]    1    1    2    2    1    3</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [7,]    1    1    2    2    3    1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [8,]    1    1    2    3    1    2</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [9,]    1    1    2    3    2    1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [10,]    1    1    3    1    2    2</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [11,]    1    1    3    2    1    2</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [12,]    1    1    3    2    2    1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [13,]    1    2    1    1    2    3</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [14,]    1    2    1    1    3    2</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [15,]    1    2    1    2    1    3</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [16,]    1    2    1    2    3    1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [17,]    1    2    1    3    1    2</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [18,]    1    2    1    3    2    1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [19,]    1    2    2    1    1    3</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [20,]    1    2    2    1    3    1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [21,]    1    2    2    3    1    1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [22,]    1    2    3    1    1    2</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [23,]    1    2    3    1    2    1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [24,]    1    2    3    2    1    1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [25,]    1    3    1    1    2    2</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [26,]    1    3    1    2    1    2</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [27,]    1    3    1    2    2    1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [28,]    1    3    2    1    1    2</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [29,]    1    3    2    1    2    1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [30,]    1    3    2    2    1    1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [31,]    2    1    1    1    2    3</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [32,]    2    1    1    1    3    2</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [33,]    2    1    1    2    1    3</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [34,]    2    1    1    2    3    1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [35,]    2    1    1    3    1    2</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [36,]    2    1    1    3    2    1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [37,]    2    1    2    1    1    3</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [38,]    2    1    2    1    3    1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [39,]    2    1    2    3    1    1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [40,]    2    1    3    1    1    2</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [41,]    2    1    3    1    2    1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [42,]    2    1    3    2    1    1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [43,]    2    2    1    1    1    3</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [44,]    2    2    1    1    3    1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [45,]    2    2    1    3    1    1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [46,]    2    2    3    1    1    1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [47,]    2    3    1    1    1    2</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [48,]    2    3    1    1    2    1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [49,]    2    3    1    2    1    1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [50,]    2    3    2    1    1    1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [51,]    3    1    1    1    2    2</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [52,]    3    1    1    2    1    2</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [53,]    3    1    1    2    2    1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [54,]    3    1    2    1    1    2</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [55,]    3    1    2    1    2    1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [56,]    3    1    2    2    1    1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [57,]    3    2    1    1    1    2</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [58,]    3    2    1    1    2    1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [59,]    3    2    1    2    1    1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [60,]    3    2    2    1    1    1</span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co">## Example with list</span></span></span>
+<span class="r-in"><span><span class="fu">comboGeneral</span><span class="op">(</span></span></span>
+<span class="r-in"><span>    v <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span></span>
+<span class="r-in"><span>        p1 <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">matrix</a></span><span class="op">(</span><span class="fl">1</span><span class="op">:</span><span class="fl">10</span>, ncol <span class="op">=</span> <span class="fl">2</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>        p2 <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span>a <span class="op">=</span> <span class="va">letters</span>, b <span class="op">=</span> <span class="fl">1</span><span class="op">:</span><span class="fl">26</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>        p3 <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/complex.html" class="external-link">as.complex</a></span><span class="op">(</span><span class="fl">1</span><span class="op">:</span><span class="fl">10</span><span class="op">)</span></span></span>
+<span class="r-in"><span>    <span class="op">)</span>,</span></span>
+<span class="r-in"><span>    m <span class="op">=</span> <span class="fl">2</span></span></span>
+<span class="r-in"><span><span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [[1]]</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [[1]]$p1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>      [,1] [,2]</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1,]    1    6</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [2,]    2    7</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [3,]    3    8</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [4,]    4    9</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [5,]    5   10</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [[1]]$p2</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    a  b</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1  a  1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2  b  2</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 3  c  3</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 4  d  4</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 5  e  5</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 6  f  6</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 7  g  7</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 8  h  8</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 9  i  9</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 10 j 10</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 11 k 11</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 12 l 12</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 13 m 13</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 14 n 14</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 15 o 15</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 16 p 16</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 17 q 17</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 18 r 18</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 19 s 19</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 20 t 20</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 21 u 21</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 22 v 22</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 23 w 23</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 24 x 24</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 25 y 25</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 26 z 26</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [[2]]</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [[2]]$p1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>      [,1] [,2]</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1,]    1    6</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [2,]    2    7</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [3,]    3    8</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [4,]    4    9</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [5,]    5   10</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [[2]]$p3</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [1]  1+0i  2+0i  3+0i  4+0i  5+0i  6+0i  7+0i  8+0i  9+0i 10+0i</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [[3]]</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [[3]]$p2</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    a  b</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1  a  1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2  b  2</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 3  c  3</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 4  d  4</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 5  e  5</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 6  f  6</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 7  g  7</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 8  h  8</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 9  i  9</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 10 j 10</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 11 k 11</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 12 l 12</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 13 m 13</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 14 n 14</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 15 o 15</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 16 p 16</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 17 q 17</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 18 r 18</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 19 s 19</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 20 t 20</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 21 u 21</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 22 v 22</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 23 w 23</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 24 x 24</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 25 y 25</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 26 z 26</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [[3]]$p3</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [1]  1+0i  2+0i  3+0i  4+0i  5+0i  6+0i  7+0i  8+0i  9+0i 10+0i</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co">#### Examples using "upper" and "lower":</span></span></span>
-<span class="r-in"><span><span class="co">## Generate some random data</span></span></span>
-<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="fl">1009</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="va">mySamp</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sort.html" class="external-link">sort</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/stats/Normal.html" class="external-link">rnorm</a></span><span class="op">(</span><span class="fl">75</span>, <span class="fl">997</span>, <span class="fl">23</span><span class="op">)</span><span class="op">)</span></span></span>
-<span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="fu"><a href="combinatoricsCount.html">permuteCount</a></span><span class="op">(</span><span class="fl">75</span>, <span class="fl">10</span>, freqs <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fl">1</span><span class="op">:</span><span class="fl">3</span>, <span class="fl">25</span><span class="op">)</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Big Integer ('bigz') :</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 4606842579278688000</span>
-<span class="r-in"><span><span class="co"># &gt;Big Integer ('bigz') :</span></span></span>
-<span class="r-in"><span><span class="co"># &gt;[1] 4606842576291495952</span></span></span>
-<span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co">## See specific range of permutations</span></span></span>
 <span class="r-in"><span><span class="fu">permuteGeneral</span><span class="op">(</span><span class="fl">75</span>, <span class="fl">10</span>, freqs <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fl">1</span><span class="op">:</span><span class="fl">3</span>, <span class="fl">25</span><span class="op">)</span>,</span></span>
 <span class="r-in"><span>               lower <span class="op">=</span> <span class="fl">1e12</span>, upper <span class="op">=</span> <span class="fl">1e12</span> <span class="op">+</span> <span class="fl">10</span><span class="op">)</span></span></span>
@@ -256,18 +483,39 @@ The output is in lexicographical order.
 <span class="r-out co"><span class="r-pr">#&gt;</span> [10,]    1    2    2   10   22   18   69   57   47    34</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [11,]    1    2    2   10   22   18   69   57   47    35</span>
 <span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="co">## Researcher only needs 1000 7-tuples of mySamp</span></span></span>
+<span class="r-in"><span><span class="co">## Researcher only needs 10 7-tuples of mySamp</span></span></span>
 <span class="r-in"><span><span class="co">## such that the sum is greater than 7200.</span></span></span>
-<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/system.time.html" class="external-link">system.time</a></span><span class="op">(</span><span class="fu">comboGeneral</span><span class="op">(</span><span class="va">mySamp</span>, <span class="fl">7</span>, <span class="cn">FALSE</span>, constraintFun <span class="op">=</span> <span class="st">"sum"</span>,</span></span>
-<span class="r-in"><span>             comparisonFun <span class="op">=</span> <span class="st">"&gt;"</span>, limitConstraints <span class="op">=</span> <span class="fl">7200</span>, upper <span class="op">=</span> <span class="fl">1000</span><span class="op">)</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    user  system elapsed </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>       0       0       0 </span>
+<span class="r-in"><span><span class="co">## Generate some random data</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="fl">1009</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">mySamp</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/Normal.html" class="external-link">rnorm</a></span><span class="op">(</span><span class="fl">75</span>, <span class="fl">997</span>, <span class="fl">23</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu">comboGeneral</span><span class="op">(</span><span class="va">mySamp</span>, <span class="fl">7</span>, constraintFun <span class="op">=</span> <span class="st">"sum"</span>,</span></span>
+<span class="r-in"><span>             comparisonFun <span class="op">=</span> <span class="st">"&gt;"</span>, limitConstraints <span class="op">=</span> <span class="fl">7200</span>, upper <span class="op">=</span> <span class="fl">10</span><span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>           [,1]     [,2]     [,3]     [,4]     [,5]     [,6]     [,7]</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [1,] 1056.087 1038.314 1036.531 1035.189 1029.416 1026.804 1025.575</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [2,] 1056.087 1038.314 1036.531 1035.189 1029.416 1026.804 1024.763</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [3,] 1056.087 1038.314 1036.531 1035.189 1029.416 1026.804 1021.563</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [4,] 1056.087 1038.314 1036.531 1035.189 1029.416 1026.804 1019.610</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [5,] 1056.087 1038.314 1036.531 1035.189 1029.416 1026.804 1019.538</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [6,] 1056.087 1038.314 1036.531 1035.189 1029.416 1026.804 1018.049</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [7,] 1056.087 1038.314 1036.531 1035.189 1029.416 1026.804 1017.300</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [8,] 1056.087 1038.314 1036.531 1035.189 1029.416 1026.804 1014.765</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [9,] 1056.087 1038.314 1036.531 1035.189 1029.416 1026.804 1013.674</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [10,] 1056.087 1038.314 1036.531 1035.189 1029.416 1026.804 1012.299</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co">## Similarly, you can use "lower" to obtain the last rows.</span></span></span>
 <span class="r-in"><span><span class="co">## Generate the last 10 rows</span></span></span>
-<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/system.time.html" class="external-link">system.time</a></span><span class="op">(</span><span class="fu">comboGeneral</span><span class="op">(</span><span class="va">mySamp</span>, <span class="fl">7</span>, lower <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Special.html" class="external-link">choose</a></span><span class="op">(</span><span class="fl">75</span>, <span class="fl">7</span><span class="op">)</span> <span class="op">-</span> <span class="fl">9</span><span class="op">)</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    user  system elapsed </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>       0       0       0 </span>
+<span class="r-in"><span><span class="fu">comboGeneral</span><span class="op">(</span><span class="va">mySamp</span>, <span class="fl">7</span>, lower <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Special.html" class="external-link">choose</a></span><span class="op">(</span><span class="fl">75</span>, <span class="fl">7</span><span class="op">)</span> <span class="op">-</span> <span class="fl">9</span><span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>            [,1]     [,2]     [,3]     [,4]     [,5]     [,6]     [,7]</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [1,]  982.8377 1001.800 976.6742 981.6386 980.9146 963.3604 985.2435</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [2,]  982.8377  985.326 976.6742 981.6386 980.9146 963.3604 985.2435</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [3,]  992.2474 1001.800 985.3260 976.6742 981.6386 980.9146 963.3604</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [4,]  992.2474 1001.800 985.3260 976.6742 981.6386 980.9146 985.2435</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [5,]  992.2474 1001.800 985.3260 976.6742 981.6386 963.3604 985.2435</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [6,]  992.2474 1001.800 985.3260 976.6742 980.9146 963.3604 985.2435</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [7,]  992.2474 1001.800 985.3260 981.6386 980.9146 963.3604 985.2435</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [8,]  992.2474 1001.800 976.6742 981.6386 980.9146 963.3604 985.2435</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [9,]  992.2474  985.326 976.6742 981.6386 980.9146 963.3604 985.2435</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [10,] 1001.7997  985.326 976.6742 981.6386 980.9146 963.3604 985.2435</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co">## Or if you would like to generate a specific chunk,</span></span></span>
 <span class="r-in"><span><span class="co">## use both "lower" and "upper". E.g. Generate one</span></span></span>
@@ -286,13 +534,14 @@ The output is in lexicographical order.
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] TRUE</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co">## Using keepResults will add a column of results</span></span></span>
-<span class="r-in"><span><span class="va">t2</span> <span class="op">=</span> <span class="fu">permuteGeneral</span><span class="op">(</span><span class="op">-</span><span class="fl">3</span>,<span class="fl">6</span>,<span class="cn">TRUE</span>,constraintFun <span class="op">=</span> <span class="st">"prod"</span>,</span></span>
-<span class="r-in"><span>                         keepResults <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></span>
-<span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="va">t3</span> <span class="op">=</span> <span class="fu">comboGeneral</span><span class="op">(</span><span class="op">-</span><span class="fl">3</span>,<span class="fl">6</span>,<span class="cn">TRUE</span>,constraintFun <span class="op">=</span> <span class="st">"sum"</span>,</span></span>
-<span class="r-in"><span>                        comparisonFun <span class="op">=</span> <span class="st">"=="</span>,</span></span>
-<span class="r-in"><span>                        limitConstraints <span class="op">=</span> <span class="op">-</span><span class="fl">8</span>,</span></span>
-<span class="r-in"><span>                        keepResults <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu">comboGeneral</span><span class="op">(</span><span class="op">-</span><span class="fl">3</span>, <span class="fl">6</span>, <span class="cn">TRUE</span>,</span></span>
+<span class="r-in"><span>             constraintFun <span class="op">=</span> <span class="st">"sum"</span>,</span></span>
+<span class="r-in"><span>             comparisonFun <span class="op">=</span> <span class="st">"=="</span>,</span></span>
+<span class="r-in"><span>             limitConstraints <span class="op">=</span> <span class="op">-</span><span class="fl">8</span>,</span></span>
+<span class="r-in"><span>             keepResults <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>      [,1] [,2] [,3] [,4] [,5] [,6] [,7]</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1,]   -3   -1   -1   -1   -1   -1   -8</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [2,]   -2   -2   -1   -1   -1   -1   -8</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co">## Using multiple constraints:</span></span></span>
 <span class="r-in"><span></span></span>
@@ -418,29 +667,17 @@ The output is in lexicographical order.
 <span class="r-in"><span><span class="co">## Test equality with myComb above</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/all.equal.html" class="external-link">all.equal</a></span><span class="op">(</span><span class="va">myComb</span>, <span class="fu"><a href="https://rdrr.io/r/base/t.html" class="external-link">t</a></span><span class="op">(</span><span class="va">myComb2</span><span class="op">)</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
-<span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="co">## much faster using Parallel = TRUE</span></span></span>
-<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/system.time.html" class="external-link">system.time</a></span><span class="op">(</span><span class="fu">permuteGeneral</span><span class="op">(</span><span class="fl">15</span>, <span class="fl">8</span>, lower <span class="op">=</span> <span class="fl">250000000</span>, Parallel <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/system.time.html" class="external-link">system.time</a></span><span class="op">(</span><span class="fu">permuteGeneral</span><span class="op">(</span><span class="fl">15</span>, <span class="fl">8</span>, lower <span class="op">=</span> <span class="fl">250000000</span><span class="op">)</span><span class="op">)</span></span></span>
-<span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/system.time.html" class="external-link">system.time</a></span><span class="op">(</span><span class="fu">comboGeneral</span><span class="op">(</span><span class="fl">30</span>, <span class="fl">10</span>, Parallel <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/system.time.html" class="external-link">system.time</a></span><span class="op">(</span><span class="fu">comboGeneral</span><span class="op">(</span><span class="fl">30</span>, <span class="fl">10</span><span class="op">)</span><span class="op">)</span></span></span>
-<span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="co">## Parallel also works when applying constraintFun solely</span></span></span>
-<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/system.time.html" class="external-link">system.time</a></span><span class="op">(</span><span class="fu">comboGeneral</span><span class="op">(</span><span class="fl">30</span>, <span class="fl">10</span>, Parallel <span class="op">=</span> <span class="cn">TRUE</span>, constraintFun <span class="op">=</span> <span class="st">"sum"</span><span class="op">)</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/system.time.html" class="external-link">system.time</a></span><span class="op">(</span><span class="fu">comboGeneral</span><span class="op">(</span><span class="fl">30</span>, <span class="fl">10</span>, constraintFun <span class="op">=</span> <span class="st">"sum"</span><span class="op">)</span><span class="op">)</span></span></span>
-<span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="co">## Depending on # of cores available, using Parallel with</span></span></span>
-<span class="r-in"><span><span class="co">## constraintFun is faster than rowSums or rowMeans alone</span></span></span>
-<span class="r-in"><span><span class="va">combs</span> <span class="op">=</span> <span class="fu">comboGeneral</span><span class="op">(</span><span class="fl">30</span>, <span class="fl">10</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/system.time.html" class="external-link">system.time</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/colSums.html" class="external-link">rowSums</a></span><span class="op">(</span><span class="va">combs</span><span class="op">)</span><span class="op">)</span></span></span>
-<span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co">## Fun example... see stackoverflow:</span></span></span>
 <span class="r-in"><span><span class="co">## https://stackoverflow.com/q/22218640/4408538</span></span></span>
-<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/system.time.html" class="external-link">system.time</a></span><span class="op">(</span><span class="fu">permuteGeneral</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq</a></span><span class="op">(</span><span class="fl">0L</span>,<span class="fl">100L</span>,<span class="fl">10L</span><span class="op">)</span>,<span class="fl">8</span>,<span class="cn">TRUE</span>,</span></span>
-<span class="r-in"><span>                                constraintFun <span class="op">=</span> <span class="st">"sum"</span>,</span></span>
-<span class="r-in"><span>                                comparisonFun <span class="op">=</span> <span class="st">"=="</span>,</span></span>
-<span class="r-in"><span>                                limitConstraints <span class="op">=</span> <span class="fl">100</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/system.time.html" class="external-link">system.time</a></span><span class="op">(</span><span class="fu">permuteGeneral</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq</a></span><span class="op">(</span><span class="fl">0L</span>,<span class="fl">100L</span>,<span class="fl">10L</span><span class="op">)</span>, <span class="fl">8</span>, <span class="cn">TRUE</span>,</span></span>
+<span class="r-in"><span>                           constraintFun <span class="op">=</span> <span class="st">"sum"</span>,</span></span>
+<span class="r-in"><span>                           comparisonFun <span class="op">=</span> <span class="st">"=="</span>,</span></span>
+<span class="r-in"><span>                           limitConstraints <span class="op">=</span> <span class="fl">100</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co">## These are called weak integer compositions. Below, we call</span></span></span>
+<span class="r-in"><span><span class="co">## compositionsGeneral which gives the same output except it</span></span></span>
+<span class="r-in"><span><span class="co">## in lexicographical order. See 'Note' above</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/system.time.html" class="external-link">system.time</a></span><span class="op">(</span><span class="fu"><a href="partitionsGeneral.html">compositionsGeneral</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq</a></span><span class="op">(</span><span class="fl">0L</span>,<span class="fl">100L</span>,<span class="fl">10L</span><span class="op">)</span>, <span class="fl">8</span>, <span class="cn">TRUE</span>, weak <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="op">}</span></span></span>
 </code></pre></div>
     </div>

@@ -1,6 +1,20 @@
 \name{comboSample}
 \alias{comboSample}
+\alias{comboSample.integer}
+\alias{comboSample.numeric}
+\alias{comboSample.factor}
+\alias{comboSample.logical}
+\alias{comboSample.default}
+\alias{comboSample.table}
+\alias{comboSample.list}
 \alias{permuteSample}
+\alias{permuteSample.integer}
+\alias{permuteSample.numeric}
+\alias{permuteSample.factor}
+\alias{permuteSample.logical}
+\alias{permuteSample.default}
+\alias{permuteSample.table}
+\alias{permuteSample.list}
 \title{
 Sample Combinations and Permutations
 }
@@ -12,17 +26,59 @@ Sample Combinations and Permutations
     }
 }
 \usage{
-comboSample(v, m = NULL, repetition = FALSE, freqs = NULL, n = NULL,
-            sampleVec = NULL, seed = NULL, FUN = NULL, Parallel = FALSE,
-            nThreads = NULL, namedSample = FALSE, FUN.VALUE = NULL)
+comboSample(v, m = NULL, ...)
+permuteSample(v, m = NULL, ...)
 
-permuteSample(v, m = NULL, repetition = FALSE, freqs = NULL, n = NULL,
+\method{comboSample}{numeric}(v, m = NULL, repetition = FALSE, freqs = NULL, n = NULL,
+            sampleVec = NULL, seed = NULL, FUN = NULL, Parallel = FALSE,
+            nThreads = NULL, namedSample = FALSE, FUN.VALUE = NULL, ...)
+
+\method{permuteSample}{numeric}(v, m = NULL, repetition = FALSE, freqs = NULL, n = NULL,
               sampleVec = NULL, seed = NULL, FUN = NULL, Parallel = FALSE,
-              nThreads = NULL, namedSample = FALSE, FUN.VALUE = NULL)
+              nThreads = NULL, namedSample = FALSE, FUN.VALUE = NULL, ...)
+
+\method{comboSample}{factor}(
+    v, m = NULL, repetition = FALSE, freqs = NULL, n = NULL,
+    sampleVec = NULL, seed = NULL, FUN = NULL, Parallel = FALSE,
+    nThreads = NULL, namedSample = FALSE, FUN.VALUE = NULL, ...
+)
+\method{permuteSample}{factor}(
+    v, m = NULL, repetition = FALSE, freqs = NULL, n = NULL,
+    sampleVec = NULL, seed = NULL, FUN = NULL, Parallel = FALSE,
+    nThreads = NULL, namedSample = FALSE, FUN.VALUE = NULL, ...
+)
+
+\method{comboSample}{default}(
+    v, m = NULL, repetition = FALSE, freqs = NULL, n = NULL, sampleVec = NULL,
+    seed = NULL, FUN = NULL, namedSample = FALSE, FUN.VALUE = NULL, ...
+)
+\method{permuteSample}{default}(
+    v, m = NULL, repetition = FALSE, freqs = NULL, n = NULL, sampleVec = NULL,
+    seed = NULL, FUN = NULL, namedSample = FALSE, FUN.VALUE = NULL, ...
+)
+
+\method{comboSample}{table}(
+    v, m = NULL, n = NULL, sampleVec = NULL, seed = NULL, FUN = NULL,
+    Parallel = FALSE, nThreads = NULL, namedSample = FALSE, FUN.VALUE = NULL, ...
+)
+\method{permuteSample}{table}(
+    v, m = NULL, n = NULL, sampleVec = NULL, seed = NULL, FUN = NULL,
+    Parallel = FALSE, nThreads = NULL, namedSample = FALSE, FUN.VALUE = NULL, ...
+)
+
+\method{comboSample}{list}(
+    v, m = NULL, repetition = FALSE, freqs = NULL, n = NULL,
+    sampleVec = NULL, seed = NULL, namedSample = FALSE, ...
+)
+\method{permuteSample}{list}(
+    v, m = NULL, repetition = FALSE, freqs = NULL, n = NULL,
+    sampleVec = NULL, seed = NULL, namedSample = FALSE, ...
+)
 }
 \arguments{
   \item{v}{Source vector. If \code{v} is a positive integer, it will be converted to the sequence \code{1:v}. If \code{v} is a negative integer, it will be converted to the sequence \code{v:-1}. All atomic types are supported (See \code{\link{is.atomic}}).}
   \item{m}{Number of elements to choose.  If \code{repetition = TRUE} or \code{freqs} is utilized, \code{m} can exceed the length of \code{v}. If \code{m = NULL}, the length will default to \code{length(v)} or \code{sum(freqs)}.}
+  \item{\dots}{Further arguments passed to methods.}
   \item{repetition}{Logical value indicating whether combinations/permutations should be with or without repetition. The default is \code{FALSE}.}
   \item{freqs}{A vector of frequencies used for producing all combinations/permutations of a multiset of \code{v}. Each element of \code{freqs} represents how many times each element of the source vector, \code{v}, is repeated. It is analogous to the \code{times} argument in \code{\link[base]{rep}}. The default value is \code{NULL}.}
   \item{n}{Number of combinations/permutations to return. The default is \code{NULL}.}
@@ -70,24 +126,28 @@ Joseph Wood
 ## generate 10 random combinations
 comboSample(30, 8, TRUE, n = 5, seed = 10)
 
-## using sampleVec to generate specific permutations
-permuteSample(15, 10, freqs = c(1,2,2,1,2,2,1,2,1,2,2,1,2,1,1),
-              sampleVec = c(1, 10^2, 10^5, 10^8, 10^11))
+## Using sampleVec to generate specific permutations
+fqs   = c(1,2,2,1,2,2,1,2,1,2,2,1,2,1,1)
+s_idx = c(1, 10^2, 10^5, 10^8, 10^11)
 
-all.equal(comboSample(10, 5,
-            sampleVec = 1:comboCount(10, 5)),
-         comboGeneral(10, 5))
+permuteSample(15, 10, freqs = fqs, sampleVec = s_idx)
+
+## Same example using 'table' method
+permuteSample(table(rep(1:15, times = fqs)), 10, sampleVec = s_idx)
+
+## Generate each result one by one...
+## Same, but not as efficient as generating iteratively
+all.equal(comboSample(10, 5, sampleVec = 1:comboCount(10, 5)),
+          comboGeneral(10, 5))
 
 ## Examples with enormous number of total permutations
 num = permuteCount(10000, 20)
 gmp::log2.bigz(num)
-## [1] 265.7268
 
-first = gmp::urand.bigz(n = 1, size = 265, seed = 123)
+first  = gmp::urand.bigz(n = 1, size = 265, seed = 123)
 mySamp = do.call(c, lapply(0:10, function(x) gmp::add.bigz(first, x)))
 
 class(mySamp)
-## [1] "bigz"
 
 ## using permuteSample
 pSamp = permuteSample(10000, 20, sampleVec = mySamp)
@@ -98,7 +158,6 @@ pGeneral = permuteGeneral(10000, 20,
                           upper = gmp::add.bigz(first, 10))
 
 identical(pSamp, pGeneral)
-## [1] TRUE
 
 ## Using nThreads
 permPar = permuteSample(10000, 50, n = 8, seed = 10, nThreads = 2)

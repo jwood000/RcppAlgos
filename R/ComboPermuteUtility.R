@@ -1,9 +1,13 @@
-ComboPermGen <- function(
+ComboPermuteGen <- function(
     v, m = NULL, repetition = FALSE, freqs = NULL, lower = NULL, upper = NULL,
     constraintFun = NULL, comparisonFun = NULL, limitConstraints = NULL,
     keepResults = NULL, FUN = NULL, Parallel = FALSE, nThreads = NULL,
     tolerance = NULL, FUN.VALUE = NULL, IsComb = TRUE
 ) {
+
+    if (!is.null(FUN)) {
+        FUN <- match.fun(FUN)
+    }
 
     RetValue <- .Call(`_RcppAlgos_CheckReturn`, v, constraintFun,
                       comparisonFun, limitConstraints,
@@ -25,7 +29,7 @@ ComboPermGen <- function(
     }
 }
 
-ComboPermSample <- function(
+ComboPermuteSample <- function(
     v, m = NULL, repetition = FALSE, freqs = NULL, n = NULL, sampleVec = NULL,
     seed = NULL, FUN = NULL, Parallel = FALSE, nThreads = NULL,
     namedSample = FALSE, FUN.VALUE = NULL, IsComb = TRUE
@@ -35,6 +39,10 @@ ComboPermSample <- function(
         set.seed(seed)
     }
 
+    if (!is.null(FUN)) {
+        FUN <- match.fun(FUN)
+    }
+
     return(.Call(
         `_RcppAlgos_SampleCombPerm`, v, m, repetition, freqs, sampleVec,
         IsComb, seed, n, sample, FUN, new.env(), Parallel, nThreads,
@@ -42,18 +50,22 @@ ComboPermSample <- function(
     ))
 }
 
-ComboPermCount <-  function(v, m = NULL, repetition = FALSE,
+ComboPermuteCount <-  function(v, m = NULL, repetition = FALSE,
                             freqs = NULL, IsComb = TRUE) {
     .Call(`_RcppAlgos_CombinatoricsCount`, v, m,
           repetition, freqs, IsComb);
 }
 
-ComboPermIter <- function(
+ComboPermuteIter <- function(
     v, m = NULL, repetition = FALSE, freqs = NULL, constraintFun = NULL,
     comparisonFun = NULL, limitConstraints = NULL, keepResults = NULL,
     FUN = NULL, Parallel = FALSE, nThreads = NULL, tolerance = NULL,
     FUN.VALUE = NULL, IsComb = TRUE
 ) {
+
+    if (!is.null(FUN)) {
+        FUN <- match.fun(FUN)
+    }
 
     RetValue <- .Call(`_RcppAlgos_CheckReturn`, v, constraintFun,
                       comparisonFun, limitConstraints,

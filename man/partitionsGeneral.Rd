@@ -1,6 +1,10 @@
 \name{partitionsGeneral}
 \alias{partitionsGeneral}
+\alias{partitionsGeneral.default}
+\alias{partitionsGeneral.table}
 \alias{compositionsGeneral}
+\alias{compositionsGeneral.default}
+\alias{compositionsGeneral.table}
 \title{
 Generate Partitions/Compositions
 }
@@ -23,19 +27,31 @@ The algorithms in \code{RcppAlgos} go beyond the traditional integer partition a
     }
 }
 \usage{
-partitionsGeneral(v, m = NULL, repetition = FALSE,
-                  freqs = NULL, target = NULL, lower = NULL,
-                  upper = NULL, nThreads = NULL,
-                  tolerance = NULL)
+partitionsGeneral(v, m = NULL, ...)
+compositionsGeneral(v, m = NULL, ...)
 
-compositionsGeneral(v, m = NULL, repetition = FALSE,
-                    freqs = NULL, target = NULL, weak = FALSE,
-                    lower = NULL, upper = NULL, nThreads = NULL,
-                    tolerance = NULL)
+\method{partitionsGeneral}{default}(
+    v, m = NULL, repetition = FALSE, freqs = NULL, target = NULL,
+    lower = NULL, upper = NULL, nThreads = NULL, tolerance = NULL, ...
+)
+\method{compositionsGeneral}{default}(
+    v, m = NULL, repetition = FALSE, freqs = NULL, target = NULL, weak = FALSE,
+    lower = NULL, upper = NULL, nThreads = NULL, tolerance = NULL, ...
+)
+
+\method{partitionsGeneral}{table}(
+    v, m = NULL, target = NULL, lower = NULL,
+    upper = NULL, nThreads = NULL, tolerance = NULL, ...
+)
+\method{compositionsGeneral}{table}(
+    v, m = NULL, target = NULL, weak = FALSE, lower = NULL,
+    upper = NULL, nThreads = NULL, tolerance = NULL, ...
+)
 }
 \arguments{
   \item{v}{Source vector. If \code{v} is a positive integer, it will be converted to the sequence \code{1:v}. If \code{v} is a negative integer, it will be converted to the sequence \code{v:-1}. Only integer and numeric vectors are accepted.}
   \item{m}{Width of the partition. If \code{m = NULL}, the length will be determined by the partitioning case (\emph{e.g.} When we are generating distinct partitions of \eqn{n}, the width will be equal to the smallest \eqn{m} such that \code{sum(1:m) >= n}).}
+  \item{\dots}{Further arguments passed to methods.}
   \item{repetition}{Logical value indicating whether partitions/compositions should be with or without repetition. The default is \code{FALSE}.}
   \item{freqs}{A vector of frequencies used for producing all partitions of a multiset of \code{v}. Each element of \code{freqs} represents how many times each element of the source vector, \code{v}, is repeated. It is analogous to the \code{times} argument in \code{\link[base]{rep}}. The default value is \code{NULL}.}
   \item{lower}{The lower bound. Partitions/compositions are generated lexicographically, thus utilizing this argument will determine which specific partition to start generating from (\emph{e.g.} \code{partitionsGeneral(15, 3, lower = 6)} is equivalent to \code{partitionsGeneral(15, 3)[6:partitionsCount(15, 3), ]}). This argument along with \code{upper} is very useful for generating partitions/compositions in chunks allowing for easy parallelization.}

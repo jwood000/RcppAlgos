@@ -236,6 +236,7 @@ SEXP ApplyFunction(const std::vector<T> &v, SEXP vectorPass,
     } else {
         cpp11::sexp myList = Rf_allocVector(VECSXP, nRows);
         cpp11::sexp sexpFun = Rf_lang2(stdFun, R_NilValue);
+        MARK_NOT_MUTABLE(sexpFun);
 
         if (IsComb) {
             if (IsMult) {

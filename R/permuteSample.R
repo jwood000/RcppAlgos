@@ -1,42 +1,59 @@
-permuteSample <- function(
-    v, m = NULL, repetition = FALSE, freqs = NULL, n = NULL,
-    sampleVec = NULL, seed = NULL, FUN = NULL, Parallel = FALSE,
-    nThreads = NULL, namedSample = FALSE, FUN.VALUE = NULL
-) {
+permuteSample <- function(v, m = NULL, ...) {
     UseMethod("permuteSample")
 }
 
-permuteSample.default <- function(
+permuteSample.integer <-
+permuteSample.numeric <- function(
     v, m = NULL, repetition = FALSE, freqs = NULL, n = NULL,
     sampleVec = NULL, seed = NULL, FUN = NULL, Parallel = FALSE,
-    nThreads = NULL, namedSample = FALSE, FUN.VALUE = NULL
+    nThreads = NULL, namedSample = FALSE, FUN.VALUE = NULL, ...
 ) {
-    ComboPermSample(
+    ComboPermuteSample(
         v, m, repetition, freqs, n, sampleVec, seed, FUN,
         Parallel, nThreads, namedSample, FUN.VALUE, FALSE
     )
 }
 
-permuteSample.table <- function(
+permuteSample.factor <-
+permuteSample.logical <- function(
     v, m = NULL, repetition = FALSE, freqs = NULL, n = NULL,
     sampleVec = NULL, seed = NULL, FUN = NULL, Parallel = FALSE,
-    nThreads = NULL, namedSample = FALSE, FUN.VALUE = NULL
+    nThreads = NULL, namedSample = FALSE, FUN.VALUE = NULL, ...
 ) {
-    clean <- ResolveVFreqs(v, freqs)
-    ComboPermSample(
-        clean$v, m, repetition, clean$freqs, n, sampleVec, seed, FUN,
+    ComboPermuteSample(
+        v, m, repetition, freqs, n, sampleVec, seed, FUN,
+        Parallel, nThreads, namedSample, FUN.VALUE, FALSE
+    )
+}
+
+permuteSample.default <- function(
+    v, m = NULL, repetition = FALSE, freqs = NULL, n = NULL, sampleVec = NULL,
+    seed = NULL, FUN = NULL, namedSample = FALSE, FUN.VALUE = NULL, ...
+) {
+    ComboPermuteSample(
+        v, m, repetition, freqs, n, sampleVec, seed, FUN,
+        FALSE, NULL, namedSample, FUN.VALUE, FALSE
+    )
+}
+
+permuteSample.table <- function(
+    v, m = NULL, n = NULL, sampleVec = NULL, seed = NULL,
+    FUN = NULL, Parallel = FALSE, nThreads = NULL,
+    namedSample = FALSE, FUN.VALUE = NULL, ...
+) {
+    clean <- ResolveVFreqs(v)
+    ComboPermuteSample(
+        clean$v, m, FALSE, clean$freqs, n, sampleVec, seed, FUN,
         Parallel, nThreads, namedSample, FUN.VALUE, FALSE
     )
 }
 
 permuteSample.list <- function(
     v, m = NULL, repetition = FALSE, freqs = NULL, n = NULL,
-    sampleVec = NULL, seed = NULL, FUN = NULL, Parallel = FALSE,
-    nThreads = NULL, namedSample = FALSE, FUN.VALUE = NULL
+    sampleVec = NULL, seed = NULL, namedSample = FALSE, ...
 ) {
-    ComboPermSample(
+    ComboPermuteSample(
         seq_along(v), m, repetition, freqs, n, sampleVec, seed,
-        FUN = function(x) v[x], Parallel, nThreads, namedSample,
-        FUN.VALUE = NULL, FALSE
+        FUN = function(x) v[x], FALSE, NULL, namedSample, NULL, FALSE
     )
 }
