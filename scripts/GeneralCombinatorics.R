@@ -304,11 +304,11 @@ reprex::reprex({
     #'
     #' There are other S3 methods defined that simplify the interface. Take for example the case when we want to pass a character vector. We know underneath the hood, character vectors are not thread safe so the `Parallel` and `nThreads` argument are ignored. We also know that the constraints parameters are only applicable to numeric vectors. For these reason, our default method's interface is greatly simplified:
     #'
-    #' <p align="center"> <img src='man/figures/default_method.png' width="400px" /> </p>
+    #' <p align="center"> <img src='default_method.png' width="400px" /> </p>
     #'
     #' We see only the necessary options. With numeric types, the options are more numerous:
     #'
-    #' <p align="center"> <img src='man/figures/numeric_method.png' width="400px" /> </p>
+    #' <p align="center"> <img src='numeric_method.png' width="400px" /> </p>
     #'
     #' There is also a `list` method that allows one to find combinations or permutations of lists:
     #'
