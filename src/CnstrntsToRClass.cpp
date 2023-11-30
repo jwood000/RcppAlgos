@@ -69,7 +69,7 @@ SEXP GetNextCnstrt(const std::vector<std::string> &compVec,
     } else {
         keepGoing = false;
         const std::string message = "No more results.\n\n";
-        Rprintf(message.c_str());
+        Rprintf("%s", message.c_str());
         return R_NilValue;
     }
 }
@@ -128,7 +128,7 @@ SEXP CnstrntsToR::GetNextN(int n) {
 
     keepGoing = false;
     const std::string message = "No more results.\n\n";
-    Rprintf(message.c_str());
+    Rprintf("%s", message.c_str());
     return R_NilValue;
 }
 
