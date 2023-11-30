@@ -1,11 +1,16 @@
 \name{NEWS}
 \title{News for Package \pkg{RcppAlgos}}
 
-\section{Changes in RcppAlgos version 2.8.3 (Release date: 2023-10-26)}{
+\section{Changes in RcppAlgos version 2.8.3 (Release date: 2023-12-02)}{
     \itemize{
         \item New Features:
         \itemize{
-            \item Now the combination and permutation functions are more flexible with S3 methods. We only added a \code{table} and \code{list} method so that one can easily pass these objects conveniently without further alterations.
+            \item Now the combination and permutation functions are more flexible with S3 methods.
+            \item Added \code{...} to allow for passing additional arguments to \code{FUN}. For example: \code{comboGeneral(letters, 3, FUN = paste, collapse = ", ")}.
+        }
+        \item Bug Fixes:
+        \itemize{
+            \item Added explicit type conversion to \code{Rprintf}.
         }
     }
 }
@@ -223,7 +228,7 @@
     \itemize{
         \item New Features:
         \itemize{
-            \item Added \code{comboGroups}, \code{comboGroupsCount}, and \code{comboGroupsSample}. These functions deal with partitioning a vector/set into groups of equal size. See \href{https://stackoverflow.com/q/57732672/4408538}{Create Combinations in R by Groups}. See the related integer sequences A025035-A025042 at \href{https://oeis.org}{OEIS} (E.g. \href{https://oeis.org/A025036}{A025036} for Number of partitions of { 1, 2, ..., 4n } into sets of size 4.)
+            \item Added \code{comboGroups}, \code{comboGroupsCount}, and \code{comboGroupsSample}. These functions deal with partitioning a vector/set into groups of equal size. See \href{https://stackoverflow.com/q/57732672/4408538}{Create Combinations in R by Groups}. See the related integer sequences A025035-A025042 at \href{https://oeis.org}{OEIS} (E.g. \href{https://oeis.org/A025036}{A025036} for Number of partitions of \eqn{ 1, 2, ..., 4n } into sets of size 4.)
             \item Added vignettes (First version with vignettes)
             \item Added website via the excellent package pkgdown
             \item Now using C++11 instead of C++14. See \href{https://github.com/jwood000/RcppAlgos/issues/10}{Issue #10} for more information.

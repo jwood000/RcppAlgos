@@ -2,7 +2,12 @@
 
 ## New Features:
 
-* Now the combination and permutation functions are more flexible with S3 methods. We only added a `table` and `list` method so that one can easily pass these objects conveniently without further alterations.
+* Now the combination and permutation functions are more flexible with S3 methods.
+* Added `...` to allow for passing additional arguments to `FUN`. For example: `comboGeneral(letters, 3, FUN = paste, collapse = ", ")`.
+
+## Bug Fixes:
+
+* Added explicit type conversion to `Rprintf`.
 
 # RcppAlgos 2.8.2
 
