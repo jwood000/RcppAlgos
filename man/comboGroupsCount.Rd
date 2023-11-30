@@ -4,7 +4,7 @@
 Number of Partitions of a Vector into Groups
 }
 \description{
-Calculate the number of partitions of a vector into groups. See the related integer sequences A025035-A025042 at \href{https://oeis.org}{OEIS} (E.g. \href{https://oeis.org/A025036}{A025036} for Number of partitions of { 1, 2, ..., 4n } into sets of size 4.)
+Calculate the number of partitions of a vector into groups. See the related integer sequences A025035-A025042 at \href{https://oeis.org}{OEIS} (E.g. \href{https://oeis.org/A025036}{A025036} for Number of partitions of \eqn{ 1, 2, ..., 4n } into sets of size 4.)
 }
 \usage{
 comboGroupsCount(v, numGroups = NULL, grpSizes = NULL)
