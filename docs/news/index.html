@@ -82,7 +82,12 @@
 <h2 class="page-header" data-toc-text="2.8.3" id="rcppalgos-283">RcppAlgos 2.8.3<a class="anchor" aria-label="anchor" href="#rcppalgos-283"></a></h2>
 <div class="section level3">
 <h3 id="new-features-2-8-3">New Features:<a class="anchor" aria-label="anchor" href="#new-features-2-8-3"></a></h3>
-<ul><li>Now the combination and permutation functions are more flexible with S3 methods. We only added a <code>table</code> and <code>list</code> method so that one can easily pass these objects conveniently without further alterations.</li>
+<ul><li>Now the combination and permutation functions are more flexible with S3 methods.</li>
+<li>Added <code>...</code> to allow for passing additional arguments to <code>FUN</code>. For example: <code>comboGeneral(letters, 3, FUN = paste, collapse = ", ")</code>.</li>
+</ul></div>
+<div class="section level3">
+<h3 id="bug-fixes-2-8-3">Bug Fixes:<a class="anchor" aria-label="anchor" href="#bug-fixes-2-8-3"></a></h3>
+<ul><li>Added explicit type conversion to <code>Rprintf</code>.</li>
 </ul></div>
 </div>
     <div class="section level2">

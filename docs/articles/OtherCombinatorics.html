@@ -103,7 +103,7 @@
                         <h4 data-toc-skip class="author">Joseph
 Wood</h4>
             
-            <h4 data-toc-skip class="date">10/02/2023</h4>
+            <h4 data-toc-skip class="date">11/30/2023</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/jwood000/RcppAlgos/blob/HEAD/vignettes/OtherCombinatorics.Rmd" class="external-link"><code>vignettes/OtherCombinatorics.Rmd</code></a></small>
       <div class="hidden name"><code>OtherCombinatorics.Rmd</code></div>
@@ -224,7 +224,7 @@ impractical.</p>
 <span><span class="co">## With comboGrid, this is no problem</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/system.time.html" class="external-link">system.time</a></span><span class="op">(</span><span class="va">myCombs</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/comboGrid.html">comboGrid</a></span><span class="op">(</span><span class="va">pools</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="co">#&gt;    user  system elapsed </span></span>
-<span><span class="co">#&gt;   0.259   0.024   0.283</span></span>
+<span><span class="co">#&gt;   0.257   0.020   0.278</span></span>
 <span></span>
 <span><span class="fu"><a href="https://rdrr.io/pkg/partitions/man/print.partition.html" class="external-link">print</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/utils/object.size.html" class="external-link">object.size</a></span><span class="op">(</span><span class="va">myCombs</span><span class="op">)</span>, unit <span class="op">=</span> <span class="st">"Mb"</span><span class="op">)</span></span>
 <span><span class="co">#&gt; 92 Mb</span></span>
@@ -250,7 +250,7 @@ impractical.</p>
 <span><span class="co">## Generating keys, then filtering will take much more time</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/system.time.html" class="external-link">system.time</a></span><span class="op">(</span><span class="va">cartProd</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/expand.grid.html" class="external-link">expand.grid</a></span><span class="op">(</span><span class="va">pools</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="co">#&gt;    user  system elapsed </span></span>
-<span><span class="co">#&gt;   3.575   0.817   4.393</span></span>
+<span><span class="co">#&gt;   3.641   0.825   4.466</span></span>
 <span></span>
 <span><span class="co">## Creates huge object</span></span>
 <span><span class="fu"><a href="https://rdrr.io/pkg/partitions/man/print.partition.html" class="external-link">print</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/utils/object.size.html" class="external-link">object.size</a></span><span class="op">(</span><span class="va">cartProd</span><span class="op">)</span>, unit <span class="op">=</span> <span class="st">"Mb"</span><span class="op">)</span></span>
@@ -260,7 +260,7 @@ impractical.</p>
 <span><span class="co">## Simply set repetition = FALSE</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/system.time.html" class="external-link">system.time</a></span><span class="op">(</span><span class="va">myCombsNoRep</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/comboGrid.html">comboGrid</a></span><span class="op">(</span><span class="va">pools</span>, repetition <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="co">#&gt;    user  system elapsed </span></span>
-<span><span class="co">#&gt;   0.003   0.000   0.003</span></span>
+<span><span class="co">#&gt;   0.003   0.001   0.003</span></span>
 <span></span>
 <span><span class="fu">ht</span><span class="op">(</span><span class="va">myCombsNoRep</span><span class="op">)</span></span>
 <span><span class="co">#&gt; head --&gt;</span></span>
@@ -319,12 +319,16 @@ example. Given <code>v = 1:12</code>, generate all partitions
 <code>v</code> into 3 groups each of size 4.</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">funBruteGrp</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">myLow</span> <span class="op">=</span> <span class="fl">1</span>, <span class="va">myUp</span><span class="op">)</span> <span class="op">{</span></span>
-<span>    <span class="va">mat</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/do.call.html" class="external-link">do.call</a></span><span class="op">(</span><span class="va">rbind</span>, <span class="fu"><a href="../reference/combinatoricsGeneral.html">permuteGeneral</a></span><span class="op">(</span><span class="fl">12</span>, lower <span class="op">=</span> <span class="va">myLow</span>, upper <span class="op">=</span> <span class="va">myUp</span>,</span>
-<span>        FUN <span class="op">=</span> <span class="kw">function</span><span class="op">(</span><span class="va">x</span><span class="op">)</span> <span class="op">{</span></span>
-<span>        <span class="fu"><a href="https://rdrr.io/r/base/lapply.html" class="external-link">sapply</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">8</span>, <span class="fl">4</span><span class="op">)</span>, <span class="kw">function</span><span class="op">(</span><span class="va">y</span><span class="op">)</span> <span class="op">{</span></span>
-<span>             <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"("</span>, <span class="va">x</span><span class="op">[</span><span class="op">(</span><span class="va">y</span> <span class="op">+</span> <span class="fl">1</span><span class="op">)</span><span class="op">:</span><span class="op">(</span><span class="va">y</span> <span class="op">+</span> <span class="fl">4</span><span class="op">)</span><span class="op">]</span>, <span class="st">")"</span><span class="op">)</span>, collapse <span class="op">=</span> <span class="st">" "</span><span class="op">)</span></span>
-<span>        <span class="op">}</span><span class="op">)</span></span>
-<span>    <span class="op">}</span><span class="op">)</span><span class="op">)</span></span>
+<span>    <span class="va">mat</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/do.call.html" class="external-link">do.call</a></span><span class="op">(</span></span>
+<span>        <span class="va">rbind</span>,</span>
+<span>        <span class="fu"><a href="../reference/combinatoricsGeneral.html">permuteGeneral</a></span><span class="op">(</span><span class="fl">12</span>, lower <span class="op">=</span> <span class="va">myLow</span>, upper <span class="op">=</span> <span class="va">myUp</span>,</span>
+<span>            FUN <span class="op">=</span> \<span class="op">(</span><span class="va">x</span><span class="op">)</span> <span class="op">{</span></span>
+<span>                <span class="fu"><a href="https://rdrr.io/r/base/lapply.html" class="external-link">sapply</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">8</span>, <span class="fl">4</span><span class="op">)</span>, \<span class="op">(</span><span class="va">y</span><span class="op">)</span> <span class="op">{</span></span>
+<span>                     <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"("</span>, <span class="va">x</span><span class="op">[</span><span class="op">(</span><span class="va">y</span> <span class="op">+</span> <span class="fl">1</span><span class="op">)</span><span class="op">:</span><span class="op">(</span><span class="va">y</span> <span class="op">+</span> <span class="fl">4</span><span class="op">)</span><span class="op">]</span>, <span class="st">")"</span><span class="op">)</span>, collapse <span class="op">=</span> <span class="st">" "</span><span class="op">)</span></span>
+<span>                <span class="op">}</span><span class="op">)</span></span>
+<span>            <span class="op">}</span></span>
+<span>        <span class="op">)</span></span>
+<span>    <span class="op">)</span></span>
 <span>    <span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">colnames</a></span><span class="op">(</span><span class="va">mat</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="st">"Grp"</span>, <span class="fl">1</span><span class="op">:</span><span class="fl">3</span><span class="op">)</span></span>
 <span>    <span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">rownames</a></span><span class="op">(</span><span class="va">mat</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="va">myLow</span><span class="op">:</span><span class="va">myUp</span></span>
 <span>    <span class="va">mat</span></span>
@@ -411,21 +415,21 @@ and <code>nThreads</code>.</p>
 <span>                              lower <span class="op">=</span> <span class="st">"123378675000000000"</span>,</span>
 <span>                              upper <span class="op">=</span> <span class="st">"123378675005000000"</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="co">#&gt;    user  system elapsed </span></span>
-<span><span class="co">#&gt;   0.115   0.034   0.149</span></span>
+<span><span class="co">#&gt;   0.115   0.031   0.147</span></span>
 <span></span>
 <span><span class="co">## Use specific number of threads</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/system.time.html" class="external-link">system.time</a></span><span class="op">(</span><span class="va">a2</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/comboGroups.html">comboGroups</a></span><span class="op">(</span><span class="fl">30</span>, numGroups <span class="op">=</span> <span class="fl">6</span>,</span>
 <span>                              lower <span class="op">=</span> <span class="st">"123378675000000000"</span>,</span>
 <span>                              upper <span class="op">=</span> <span class="st">"123378675005000000"</span>, nThreads <span class="op">=</span> <span class="fl">4</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="co">#&gt;    user  system elapsed </span></span>
-<span><span class="co">#&gt;   0.125   0.044   0.044</span></span>
+<span><span class="co">#&gt;   0.134   0.056   0.075</span></span>
 <span></span>
 <span><span class="co">## Use n - 1 number of threads (in this case, there are 7)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/system.time.html" class="external-link">system.time</a></span><span class="op">(</span><span class="va">a3</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/comboGroups.html">comboGroups</a></span><span class="op">(</span><span class="fl">30</span>, numGroups <span class="op">=</span> <span class="fl">6</span>,</span>
 <span>                              lower <span class="op">=</span> <span class="st">"123378675000000000"</span>,</span>
 <span>                              upper <span class="op">=</span> <span class="st">"123378675005000000"</span>, Parallel <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="co">#&gt;    user  system elapsed </span></span>
-<span><span class="co">#&gt;   0.179   0.071   0.043</span></span>
+<span><span class="co">#&gt;   0.160   0.081   0.077</span></span>
 <span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/identical.html" class="external-link">identical</a></span><span class="op">(</span><span class="va">a1</span>, <span class="va">a2</span><span class="op">)</span></span>
 <span><span class="co">#&gt; [1] TRUE</span></span>
@@ -442,7 +446,7 @@ the vector <code>v = 1:15</code> into 2 groups of 3, 1 groups of 4, and
 <div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/system.time.html" class="external-link">system.time</a></span><span class="op">(</span><span class="va">a4</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/comboGroups.html">comboGroups</a></span><span class="op">(</span><span class="fl">15</span>, grpSizes <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">3</span>, <span class="fl">3</span>, <span class="fl">4</span>, <span class="fl">5</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="co">#&gt;    user  system elapsed </span></span>
-<span><span class="co">#&gt;   0.119   0.020   0.138</span></span>
+<span><span class="co">#&gt;   0.120   0.025   0.147</span></span>
 <span></span>
 <span><span class="fu">ht</span><span class="op">(</span><span class="va">a4</span><span class="op">)</span></span>
 <span><span class="co">#&gt; head --&gt;</span></span>
@@ -475,7 +479,7 @@ groups of varying sizes in parallel:</p>
 <div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/system.time.html" class="external-link">system.time</a></span><span class="op">(</span><span class="va">a5</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/comboGroups.html">comboGroups</a></span><span class="op">(</span><span class="fl">15</span>, grpSizes <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">3</span>, <span class="fl">3</span>, <span class="fl">4</span>, <span class="fl">5</span><span class="op">)</span>, nThreads <span class="op">=</span> <span class="fl">4</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="co">#&gt;    user  system elapsed </span></span>
-<span><span class="co">#&gt;   0.128   0.030   0.040</span></span>
+<span><span class="co">#&gt;   0.140   0.037   0.057</span></span>
 <span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/identical.html" class="external-link">identical</a></span><span class="op">(</span><span class="va">a4</span>, <span class="va">a5</span><span class="op">)</span></span>
 <span><span class="co">#&gt; [1] TRUE</span></span></code></pre></div>
