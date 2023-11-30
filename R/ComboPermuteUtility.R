@@ -2,16 +2,25 @@ ComboPermuteGen <- function(
     v, m = NULL, repetition = FALSE, freqs = NULL, lower = NULL, upper = NULL,
     constraintFun = NULL, comparisonFun = NULL, limitConstraints = NULL,
     keepResults = NULL, FUN = NULL, Parallel = FALSE, nThreads = NULL,
-    tolerance = NULL, FUN.VALUE = NULL, IsComb = TRUE
+    tolerance = NULL, FUN.VALUE = NULL, IsComb = TRUE, ...
 ) {
 
-    if (!is.null(FUN)) {
+    ## Credit to user2554330:
+    ##      https://stackoverflow.com/a/77573995/4408538
+    fun_pass <- if (!is.null(FUN)) {
         FUN <- match.fun(FUN)
+
+        if (as.character(quote(FUN)) != "function" && length(list(...))) {
+            force(FUN)
+            function(x) FUN(x, ...)
+        } else {
+            FUN
+        }
     }
 
     RetValue <- .Call(`_RcppAlgos_CheckReturn`, v, constraintFun,
                       comparisonFun, limitConstraints,
-                      keepResults, FUN)
+                      keepResults, fun_pass)
 
     if (RetValue == 1) {
         return(.Call(`_RcppAlgos_CombinatoricsStndrd`, v, m, repetition,
@@ -20,7 +29,7 @@ ComboPermuteGen <- function(
     } else if (RetValue == 2) {
         return(.Call(`_RcppAlgos_CombinatoricsApply`, v, m,
                      repetition, freqs, lower, upper,
-                     FUN, new.env(), FUN.VALUE, IsComb))
+                     fun_pass, new.env(), FUN.VALUE, IsComb))
     } else {
         return(.Call(`_RcppAlgos_CombinatoricsCnstrt`, v, m, repetition,
                      freqs, lower, upper, constraintFun, comparisonFun,

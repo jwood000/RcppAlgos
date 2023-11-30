@@ -4,15 +4,15 @@ permuteGeneral <- function(v, m = NULL, ...) {
 
 permuteGeneral.integer <-
 permuteGeneral.numeric <-function(
-    v, m = NULL, repetition = FALSE, freqs = NULL, lower = NULL,
-    upper = NULL, constraintFun = NULL, comparisonFun = NULL,
-    limitConstraints = NULL, keepResults = NULL, FUN = NULL,
-    Parallel = FALSE, nThreads = NULL, tolerance = NULL, FUN.VALUE = NULL, ...
+    v, m = NULL, repetition = FALSE, freqs = NULL, lower = NULL, upper = NULL,
+    constraintFun = NULL, comparisonFun = NULL, limitConstraints = NULL,
+    keepResults = NULL, FUN = NULL, Parallel = FALSE, nThreads = NULL,
+    tolerance = NULL, FUN.VALUE = NULL, ...
 ) {
     ComboPermuteGen(
         v, m, repetition, freqs, lower, upper, constraintFun,
         comparisonFun, limitConstraints, keepResults, FUN, Parallel,
-        nThreads, tolerance, FUN.VALUE, FALSE
+        nThreads, tolerance, FUN.VALUE, FALSE, ...
     )
 }
 
@@ -22,14 +22,14 @@ permuteGeneral.logical <- function(
     FUN = NULL, Parallel = FALSE, nThreads = NULL, FUN.VALUE = NULL, ...
 ) {
     ComboPermuteGen(v, m, repetition, freqs, lower, upper, NULL, NULL, NULL,
-                    NULL, FUN, Parallel, nThreads, NULL, FUN.VALUE, FALSE)
+                    NULL, FUN, Parallel, nThreads, NULL, FUN.VALUE, FALSE, ...)
 }
 
 permuteGeneral.default <- function(v, m = NULL, repetition = FALSE,
                                    freqs = NULL, lower = NULL, upper = NULL,
                                    FUN = NULL, FUN.VALUE = NULL, ...) {
     ComboPermuteGen(v, m, repetition, freqs, lower, upper, NULL, NULL,
-                    NULL, NULL, FUN, FALSE, NULL, NULL, FUN.VALUE, FALSE)
+                    NULL, NULL, FUN, FALSE, NULL, NULL, FUN.VALUE, FALSE, ...)
 }
 
 permuteGeneral.table <- function(
@@ -42,14 +42,14 @@ permuteGeneral.table <- function(
     ComboPermuteGen(
         clean$v, m, FALSE, clean$freqs, lower, upper, constraintFun,
         comparisonFun, limitConstraints, keepResults, FUN, Parallel,
-        nThreads, tolerance, FUN.VALUE, FALSE
+        nThreads, tolerance, FUN.VALUE, FALSE, ...
     )
 }
 
 permuteGeneral.list <- function(v, m = NULL, repetition = FALSE, freqs = NULL,
                                 lower = NULL, upper = NULL, ...) {
     ComboPermuteGen(
-        seq_along(v), m, repetition, freqs, lower, upper, NULL, NULL,
-        NULL, NULL, FUN = function(x) v[x], FALSE, NULL, NULL, NULL, FALSE
+        seq_along(v), m, repetition, freqs, lower, upper, NULL, NULL, NULL,
+        NULL, FUN = function(x) v[x], FALSE, NULL, NULL, NULL, FALSE, ...
     )
 }
