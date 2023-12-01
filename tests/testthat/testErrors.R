@@ -296,9 +296,9 @@ test_that("errors with table S3 method", {
         "permuteSample, or\n permuteRank instead."
     )
     expect_error(compositionsCount(table(s), 5), err_string)
-    expect_error(compositionsCount(table(s), 5, seed = 42), err_string)
     expect_error(compositionsGeneral(table(s), 5), err_string)
-    expect_error(compositionsSample(table(s), 5, n = 10), err_string)
+    expect_error(compositionsSample(table(s), 5, n = 10, seed = 42),
+                 err_string)
     expect_error(compositionsIter(table(s), 5, n = 10), err_string)
 
     expect_error(partitionsSample(table(s), 5, n = 4),
