@@ -1,7 +1,7 @@
 ---
 title: "Cartesian Products and Partitions of Groups"
 author: "Joseph Wood"
-date: "10/02/2023"
+date: "11/30/2023"
 output:
   rmarkdown::html_vignette:
     toc: true
@@ -105,7 +105,7 @@ prod(lengths(pools))
 ## With comboGrid, this is no problem
 system.time(myCombs <- comboGrid(pools))
 #>    user  system elapsed 
-#>   0.259   0.024   0.283
+#>   0.257   0.020   0.278
 
 print(object.size(myCombs), unit = "Mb")
 #> 92 Mb
@@ -131,7 +131,7 @@ ht(myCombs)
 ## Generating keys, then filtering will take much more time
 system.time(cartProd <- expand.grid(pools))
 #>    user  system elapsed 
-#>   3.575   0.817   4.393
+#>   3.641   0.825   4.466
 
 ## Creates huge object
 print(object.size(cartProd), unit = "Mb")
@@ -141,7 +141,7 @@ print(object.size(cartProd), unit = "Mb")
 ## Simply set repetition = FALSE
 system.time(myCombsNoRep <- comboGrid(pools, repetition = FALSE))
 #>    user  system elapsed 
-#>   0.003   0.000   0.003
+#>   0.003   0.001   0.003
 
 ht(myCombsNoRep)
 #> head -->
@@ -180,12 +180,16 @@ Given a vector of length *n* and *k* groups, where *k* divides *n*, each group i
 
 ``` r
 funBruteGrp <- function(myLow = 1, myUp) {
-    mat <- do.call(rbind, permuteGeneral(12, lower = myLow, upper = myUp,
-        FUN = function(x) {
-        sapply(seq(0, 8, 4), function(y) {
-             paste0(c("(", x[(y + 1):(y + 4)], ")"), collapse = " ")
-        })
-    }))
+    mat <- do.call(
+        rbind,
+        permuteGeneral(12, lower = myLow, upper = myUp,
+            FUN = \(x) {
+                sapply(seq(0, 8, 4), \(y) {
+                     paste(c("(", x[(y + 1):(y + 4)], ")"), collapse = " ")
+                })
+            }
+        )
+    )
     colnames(mat) <- paste0("Grp", 1:3)
     rownames(mat) <- myLow:myUp
     mat
@@ -271,21 +275,21 @@ system.time(a1 <- comboGroups(30, numGroups = 6,
                               lower = "123378675000000000",
                               upper = "123378675005000000"))
 #>    user  system elapsed 
-#>   0.115   0.034   0.149
+#>   0.115   0.031   0.147
 
 ## Use specific number of threads
 system.time(a2 <- comboGroups(30, numGroups = 6,
                               lower = "123378675000000000",
                               upper = "123378675005000000", nThreads = 4))
 #>    user  system elapsed 
-#>   0.125   0.044   0.044
+#>   0.134   0.056   0.075
 
 ## Use n - 1 number of threads (in this case, there are 7)
 system.time(a3 <- comboGroups(30, numGroups = 6,
                               lower = "123378675000000000",
                               upper = "123378675005000000", Parallel = TRUE))
 #>    user  system elapsed 
-#>   0.179   0.071   0.043
+#>   0.160   0.081   0.077
 
 identical(a1, a2)
 #> [1] TRUE
@@ -301,7 +305,7 @@ As of `2.8.+` we can generate partitions of groups of varying sizes. For example
 ``` r
 system.time(a4 <- comboGroups(15, grpSizes = c(3, 3, 4, 5)))
 #>    user  system elapsed 
-#>   0.119   0.020   0.138
+#>   0.120   0.025   0.147
 
 ht(a4)
 #> head -->
@@ -335,7 +339,7 @@ All of the flexibility offered with groups of equal size are present with groups
 ``` r
 system.time(a5 <- comboGroups(15, grpSizes = c(3, 3, 4, 5), nThreads = 4))
 #>    user  system elapsed 
-#>   0.128   0.030   0.040
+#>   0.140   0.037   0.057
 
 identical(a4, a5)
 #> [1] TRUE

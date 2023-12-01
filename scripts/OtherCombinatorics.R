@@ -98,12 +98,16 @@ reprex::reprex({
     #'
 
     funBruteGrp <- function(myLow = 1, myUp) {
-        mat <- do.call(rbind, permuteGeneral(12, lower = myLow, upper = myUp,
-            FUN = function(x) {
-            sapply(seq(0, 8, 4), function(y) {
-                 paste0(c("(", x[(y + 1):(y + 4)], ")"), collapse = " ")
-            })
-        }))
+        mat <- do.call(
+            rbind,
+            permuteGeneral(12, lower = myLow, upper = myUp,
+                FUN = \(x) {
+                    sapply(seq(0, 8, 4), \(y) {
+                         paste(c("(", x[(y + 1):(y + 4)], ")"), collapse = " ")
+                    })
+                }
+            )
+        )
         colnames(mat) <- paste0("Grp", 1:3)
         rownames(mat) <- myLow:myUp
         mat

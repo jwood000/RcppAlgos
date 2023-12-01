@@ -17,7 +17,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">RcppAlgos</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">2.8.2</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">2.8.3</span>
       </span>
     </div>
 
@@ -146,7 +146,7 @@
 <span class="r-in"><span><span class="co">## to 10^5 (max element from mySamp)</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/system.time.html" class="external-link">system.time</a></span><span class="op">(</span><span class="va">allFacs</span> <span class="op">&lt;-</span> <span class="fu">divisorsSieve</span><span class="op">(</span><span class="fl">10</span><span class="op">^</span><span class="fl">5</span><span class="op">)</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>    user  system elapsed </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   0.024   0.005   0.030 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   0.023   0.005   0.029 </span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co">## Use generated complete factorization for further</span></span></span>
 <span class="r-in"><span><span class="co">## analysis by accessing the index of allFacs</span></span></span>
@@ -164,7 +164,7 @@
 <span class="r-in"><span><span class="co">## Use nThreads for improved efficiency</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/system.time.html" class="external-link">system.time</a></span><span class="op">(</span><span class="fu">divisorsSieve</span><span class="op">(</span><span class="fl">10</span><span class="op">^</span><span class="fl">12</span>, <span class="fl">10</span><span class="op">^</span><span class="fl">12</span> <span class="op">+</span> <span class="fl">10</span><span class="op">^</span><span class="fl">5</span>, nThreads <span class="op">=</span> <span class="fl">2</span><span class="op">)</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>    user  system elapsed </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   0.057   0.007   0.046 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   0.056   0.008   0.046 </span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co">## Set 'namedList' to TRUE to return a named list</span></span></span>
 <span class="r-in"><span><span class="fu">divisorsSieve</span><span class="op">(</span><span class="fl">27</span>, <span class="fl">30</span>, namedList <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></span>
@@ -184,7 +184,7 @@
 <span class="r-in"><span><span class="co">## Using nThreads</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/system.time.html" class="external-link">system.time</a></span><span class="op">(</span><span class="fu">divisorsSieve</span><span class="op">(</span><span class="fl">1e5</span>, <span class="fl">2e5</span>, nThreads <span class="op">=</span> <span class="fl">2</span><span class="op">)</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>    user  system elapsed </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   0.025   0.006   0.027 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   0.025   0.005   0.027 </span>
 </code></pre></div>
     </div>
   </div>

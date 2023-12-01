@@ -1,8 +1,19 @@
+# RcppAlgos 2.8.3
+
+## New Features:
+
+* Now the combination and permutation functions are more flexible with S3 methods.
+* Added `...` to allow for passing additional arguments to `FUN`. For example: `comboGeneral(letters, 3, FUN = paste, collapse = ", ")`.
+
+## Bug Fixes:
+
+* Added explicit type conversion to `Rprintf`.
+
 # RcppAlgos 2.8.2
 
 ## New Features:
 
-* We have added `comboGroupsIter`. This a flexible iterator for iterating over partitions of groups. Offers random access, the ability to retrieve the next group or the next `n` groups at a time while keeping memory low. 
+* We have added `comboGroupsIter`. This a flexible iterator for iterating over partitions of groups. Offers random access, the ability to retrieve the next group or the next `n` groups at a time while keeping memory low.
 
 # RcppAlgos 2.8.1
 

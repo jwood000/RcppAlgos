@@ -1,7 +1,7 @@
 ---
 title: "Combinatorial Sampling and Ranking"
 author: "Joseph Wood"
-date: "10/02/2023"
+date: "11/30/2023"
 output:
   rmarkdown::html_vignette:
     toc: true
@@ -204,7 +204,7 @@ The algorithms are incredibly efficient and offer tremendous gains over the naiv
 ## the function "naive" is defined above
 system.time(naive(25, 10, 5, 15))
 #>    user  system elapsed 
-#>   1.462   0.019   1.482
+#>   1.497   0.011   1.509
 
 system.time(comboSample(25, 10, n = 5, seed = 15))
 #>    user  system elapsed 
@@ -226,12 +226,12 @@ gmp::log10.bigz(comboCount(2500, 100))
 ## Still fast with larger samples
 system.time(comboSample(2500, 100, n = 1e4, seed = 157))
 #>    user  system elapsed 
-#>   0.648   0.005   0.653
+#>   1.252   0.001   1.253
 
 ## Using Parallel/nThreads in these cases has an even greater effect
 system.time(comboSample(2500, 100, n = 1e4, seed = 157, nThreads = 8))
 #>    user  system elapsed 
-#>   0.899   0.004   0.122
+#>   1.935   0.004   0.265
 ```
 
 ### User Defined Functions
@@ -300,13 +300,13 @@ partitionsCount(2500, 10)
 system.time(serial <- partitionsSample(2500, 10, n = 1e3,
                                        seed = 8128))
 #>    user  system elapsed 
-#>   2.993   0.016   3.010
+#>   2.986   0.006   2.992
 
 ## Use nThreads for greater efficiency
 system.time(multi <- partitionsSample(2500, 10, n = 1e3,
                                       seed = 8128, nThreads = 8))
 #>    user  system elapsed 
-#>   4.289   0.029   0.591
+#>   4.304   0.027   0.582
 
 identical(multi, serial)
 #> [1] TRUE
@@ -388,13 +388,13 @@ compositionsCount(2500, 10, TRUE)
 system.time(serial <- compositionsSample(2500, 10, TRUE,
                                          n = 1e4, seed = 8128))
 #>    user  system elapsed 
-#>   0.263   0.002   0.265
+#>   0.262   0.000   0.263
 
 ## Use nThreads for greater efficiency
 system.time(multi <- compositionsSample(2500, 10, TRUE, n = 1e4,
                                         seed = 8128, nThreads = 8))
 #>    user  system elapsed 
-#>   0.361   0.002   0.053
+#>   0.367   0.001   0.050
 
 identical(multi, serial)
 #> [1] TRUE
@@ -520,7 +520,7 @@ comb = comboSample(25, 12, sampleVec = 2e6)[1, ]
 system.time(print(naive_rank(25, 12, comb)))
 #> [1] 2000000
 #>    user  system elapsed 
-#>   6.045   0.088   6.134
+#>   6.048   0.061   6.110
 ```
 
 ## RcppAlgos Solutions
@@ -541,7 +541,7 @@ comboRank(4:2, v = 5)
 system.time(print(comboRank(comb, v = 25)))
 #> [1] 2000000
 #>    user  system elapsed 
-#>       0       0       0
+#>   0.001   0.000   0.000
 ```
 
 All that is needed is the original vector that was used to produce the results and whether or not repetition is used via the `repetition` or `freqs` arguments. The width is determined automatically by the input.

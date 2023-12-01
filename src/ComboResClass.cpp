@@ -214,7 +214,7 @@ SEXP ComboRes::nextNumCombs(SEXP RNum) {
                 }
 
                 const std::string message = "No more results.\n\n";
-                Rprintf(message.c_str());
+                Rprintf("%s", message.c_str());
                 return R_NilValue;
             }
         }
@@ -284,7 +284,7 @@ SEXP ComboRes::nextGather() {
                 }
 
                 const std::string message = "No more results.\n\n";
-                Rprintf(message.c_str());
+                Rprintf("%s", message.c_str());
                 return R_NilValue;
             }
         }

@@ -9,39 +9,67 @@ test_that("comboIter & permuteIter produces correct results", {
 
         myResults <- vector(mode = "logical")
 
-        if (IsComb) {
-            myRows <- comboCount(v1, m1, rep1, freqs1)
+        myRows <- if (IsComb && class(v1) == "table") {
+            comboCount(v1, m1)
+        } else if (IsComb) {
+            comboCount(v1, m1, rep1, freqs1)
+        } else if (class(v1) == "table") {
+            permuteCount(v1, m1)
         } else {
-            myRows <- permuteCount(v1, m1, rep1, freqs1)
+            permuteCount(v1, m1, rep1, freqs1)
         }
 
-        if (IsComb) {
-            a <- comboIter(v1, m1, rep1, freqs1, constr1, compar1,
-                           limit1, NULL, FUN1, FALSE, tol1,
-                           FUN.VALUE = FUN.VALUE1)
-
-            b <- comboGeneral(v = v1, m = m1, repetition = rep1, freqs = freqs1,
-                              constraintFun = constr1, comparisonFun = compar1,
-                              limitConstraints = limit1, FUN = FUN1, tolerance = tol1,
-                              FUN.VALUE = FUN.VALUE1)
+        a <- if (IsComb && class(v1) == "table") {
+            comboIter(v1, m1, constr1, compar1, limit1, NULL,
+                      FUN1, FALSE, NULL, tol1, FUN.VALUE1)
+        } else if (IsComb && is.numeric(v1)) {
+            comboIter(v1, m1, rep1, freqs1, constr1, compar1, limit1,
+                      NULL, FUN1, FALSE, NULL, tol1, FUN.VALUE1)
+        } else if (IsComb && is.list(v1)) {
+            comboIter(v1, m1, rep1, freqs1)
+        } else if (IsComb) {
+            comboIter(v1, m1, rep1, freqs1, FUN1, FUN.VALUE1)
+        } else if (class(v1) == "table") {
+            permuteIter(v1, m1, constr1, compar1, limit1,
+                        NULL, FUN1, FALSE, NULL, tol1, FUN.VALUE1)
+        } else if (is.numeric(v1)) {
+            permuteIter(v1, m1, rep1, freqs1, constr1, compar1, limit1,
+                        NULL, FUN1, FALSE, NULL, tol1, FUN.VALUE1)
+        } else if (is.list(v1)) {
+            permuteIter(v1, m1, rep1, freqs1)
         } else {
-            a <- permuteIter(v1, m1, rep1, freqs1, constr1, compar1,
-                             limit1, NULL, FUN1, FALSE, tol1,
-                             FUN.VALUE = FUN.VALUE1)
+            permuteIter(v1, m1, rep1, freqs1, FUN1, FUN.VALUE1)
+        }
 
-            b <- permuteGeneral(v = v1, m = m1, repetition = rep1, freqs = freqs1,
-                                constraintFun = constr1, comparisonFun = compar1,
-                                limitConstraints = limit1, FUN = FUN1, tolerance = tol1,
-                                FUN.VALUE = FUN.VALUE1)
+        b <- if (IsComb && class(v1) == "table") {
+            comboGeneral(v1, m1, NULL, NULL, constr1, compar1, limit1,
+                         NULL, FUN1, FALSE, NULL, tol1, FUN.VALUE1)
+        } else if (IsComb && is.numeric(v1)) {
+            comboGeneral(v1, m1, rep1, freqs1, NULL, NULL, constr1, compar1,
+                         limit1, NULL, FUN1, FALSE, NULL, tol1, FUN.VALUE1)
+        } else if (IsComb && is.list(v1)) {
+            comboGeneral(v1, m1, rep1, freqs1)
+        } else if (IsComb) {
+            comboGeneral(v1, m1, rep1, freqs1, NULL, NULL, FUN1, FUN.VALUE1)
+        } else if (class(v1) == "table") {
+            permuteGeneral(v1, m1, NULL, NULL, constr1, compar1, limit1,
+                           NULL, FUN1, FALSE, NULL, tol1, FUN.VALUE1)
+        } else if (is.numeric(v1)) {
+            permuteGeneral(v1, m1, rep1, freqs1, NULL, NULL, constr1, compar1,
+                           limit1, NULL, FUN1, FALSE, NULL, tol1, FUN.VALUE1)
+        } else if (is.list(v1)) {
+            permuteGeneral(v1, m1, rep1, freqs1)
+        } else {
+            permuteGeneral(v1, m1, rep1, freqs1, NULL, NULL, FUN1, FUN.VALUE1)
         }
 
         # .method("summary", &Combo::summary)
         myResults <- c(myResults, isTRUE(all.equal(a@summary()$totalResults, myRows)))
 
         # .method("sourceVector", &Combo::sourceVector)
-        if (length(v1) == 1) {
+        if (length(v1) == 1 && is.atomic(v1) && class(v1) != "table") {
             myResults <- c(myResults, isTRUE(all.equal(v1, length(a@sourceVector()))))
-        } else {
+        } else if (is.atomic(v1) && class(v1) != "table") {
             myResults <- c(myResults, isTRUE(all.equal(v1, a@sourceVector())))
         }
 
@@ -232,6 +260,14 @@ test_that("comboIter & permuteIter produces correct results", {
     expect_true(comboClassTest(as.raw(1:5), 3))
     expect_true(comboClassTest(factor(1:5), 3))
 
+    ## S3 table mehtod
+    set.seed(32)
+    s <- sample(letters[1:5], 10, TRUE)
+    expect_true(comboClassTest(table(s), 3))
+
+    ## S3 list method
+    expect_true(comboClassTest(as.list(1:5), 3))
+
     expect_true(comboClassTest(as.complex(1:5), 3, TRUE))
     expect_true(comboClassTest(c(TRUE, FALSE), 20, TRUE))
     expect_true(comboClassTest(letters[1:5], 6, freqs1 = 1:5))
@@ -244,6 +280,12 @@ test_that("comboIter & permuteIter produces correct results", {
     expect_true(comboClassTest(5, 3, IsComb = FALSE))
     expect_true(comboClassTest(as.raw(1:5), 3, IsComb = FALSE))
     expect_true(comboClassTest(factor(1:5), 3, IsComb = FALSE))
+
+    ## S3 table mehtod
+    expect_true(comboClassTest(table(s), 3, IsComb = FALSE))
+
+    ## S3 list method
+    expect_true(comboClassTest(as.list(1:5), 3, IsComb = FALSE))
 
     expect_true(comboClassTest(as.complex(1:5), 3, TRUE, IsComb = FALSE))
     expect_true(comboClassTest(c(TRUE, FALSE), 3, TRUE, IsComb = FALSE))
@@ -351,44 +393,103 @@ test_that("comboIter & permuteIter produces correct results", {
     expect_true(comboClassTest(sample(5), constr1 = "min", IsComb = FALSE))
 
     ##******** BIG TESTS *********##
-    comboClassBigZTest <- function(v1, m1 = NULL, rep1 = FALSE, freqs1 = NULL,
-                                   constr1 = NULL, compar1 = NULL, limit1 = NULL,
-                                   FUN1 = NULL, tol1 = NULL, IsComb = TRUE, lenCheck = 500) {
+    comboClassBigZTest <- function(
+        v1, m1 = NULL, rep1 = FALSE, freqs1 = NULL, constr1 = NULL,
+        compar1 = NULL, limit1 = NULL, FUN1 = NULL, tol1 = NULL,
+        IsComb = TRUE, lenCheck = 500
+    ) {
 
         myResults <- vector(mode = "logical")
 
-        if (IsComb) {
-            myRows <- comboCount(v1, m1, rep1, freqs1)
+        myRows <- if (IsComb && class(v1) == "table") {
+            comboCount(v1, m1)
+        } else if (IsComb) {
+            comboCount(v1, m1, rep1, freqs1)
+        } else if (class(v1) == "table") {
+            permuteCount(v1, m1)
         } else {
-            myRows <- permuteCount(v1, m1, rep1, freqs1)
+            permuteCount(v1, m1, rep1, freqs1)
         }
 
-        if (IsComb) {
-            a <- comboIter(v1, m1, rep1, freqs1, constr1, compar1,
-                           limit1, NULL, FUN1, FALSE, tol1)
-
-            b1 <- comboGeneral(v = v1, m = m1, repetition = rep1, freqs = freqs1,
-                               constraintFun = constr1, comparisonFun = compar1,
-                               limitConstraints = limit1, FUN = FUN1, tolerance = tol1,
-                               upper = lenCheck)
-
-            b2 <- comboGeneral(v = v1, m = m1, repetition = rep1, freqs = freqs1,
-                               constraintFun = constr1, comparisonFun = compar1,
-                               limitConstraints = limit1, FUN = FUN1, tolerance = tol1,
-                               lower = gmp::sub.bigz(myRows, lenCheck - 1))
+        a <- if (IsComb && class(v1) == "table") {
+            comboIter(v1, m1, constr1, compar1, limit1, NULL,
+                      FUN1, FALSE, NULL, tol1, NULL)
+        } else if (IsComb && is.numeric(v1)) {
+            comboIter(v1, m1, rep1, freqs1, constr1, compar1, limit1,
+                      NULL, FUN1, FALSE, NULL, tol1, NULL)
+        } else if (IsComb && is.list(v1)) {
+            comboIter(v1, m1, rep1, freqs1)
+        } else if (IsComb) {
+            comboIter(v1, m1, rep1, freqs1, FUN1, NULL)
+        } else if (class(v1) == "table") {
+            permuteIter(v1, m1, constr1, compar1, limit1, NULL,
+                        FUN1, FALSE, NULL, tol1, NULL)
+        } else if (is.numeric(v1)) {
+            permuteIter(v1, m1, rep1, freqs1, constr1, compar1, limit1,
+                        NULL, FUN1, FALSE, NULL, tol1, NULL)
+        } else if (is.list(v1)) {
+            permuteIter(v1, m1, rep1, freqs1)
         } else {
-            a <- permuteIter(v1, m1, rep1, freqs1, constr1, compar1,
-                             limit1, NULL, FUN1, FALSE, tol1)
+            permuteIter(v1, m1, rep1, freqs1, FUN1, NULL)
+        }
 
-            b1 <- permuteGeneral(v = v1, m = m1, repetition = rep1, freqs = freqs1,
-                                 constraintFun = constr1, comparisonFun = compar1,
-                                 limitConstraints = limit1, FUN = FUN1, tolerance = tol1,
-                                 upper = lenCheck)
+        b1 <- if (IsComb && class(v1) == "table") {
+            comboGeneral(v1, m1, NULL, lenCheck, constr1, compar1, limit1,
+                         NULL, FUN1, FALSE, NULL, tol1, NULL)
+        } else if (IsComb && is.numeric(v1)) {
+            comboGeneral(v1, m1, rep1, freqs1, NULL, lenCheck, constr1, compar1,
+                         limit1, NULL, FUN1, FALSE, NULL, tol1, NULL)
+        } else if (IsComb && is.list(v1)) {
+            comboGeneral(v1, m1, rep1, freqs1, NULL, lenCheck)
+        } else if (IsComb) {
+            comboGeneral(v1, m1, rep1, freqs1, NULL, lenCheck, FUN1, NULL)
+        } else if (class(v1) == "table") {
+            permuteGeneral(v1, m1, NULL, lenCheck, constr1, compar1,
+                           limit1, NULL, FUN1, FALSE, NULL, tol1, NULL)
+        } else if (is.numeric(v1)) {
+            permuteGeneral(v1, m1, rep1, freqs1, NULL, lenCheck,
+                           constr1, compar1, limit1, NULL, FUN1,
+                           FALSE, NULL, tol1, NULL)
+        } else if (is.list(v1)) {
+            permuteGeneral(v1, m1, rep1, freqs1, NULL, lenCheck)
+        } else {
+            permuteGeneral(v1, m1, rep1, freqs1, NULL,
+                           lenCheck, FUN1, NULL)
+        }
 
-            b2 <- permuteGeneral(v = v1, m = m1, repetition = rep1, freqs = freqs1,
-                                 constraintFun = constr1, comparisonFun = compar1,
-                                 limitConstraints = limit1, FUN = FUN1, tolerance = tol1,
-                                 lower = gmp::sub.bigz(myRows, lenCheck - 1))
+        b2 <- if (IsComb && class(v1) == "table") {
+            comboGeneral(v1, m1, gmp::sub.bigz(myRows, lenCheck - 1), NULL,
+                         constr1, compar1, limit1, NULL, FUN1, FALSE, NULL,
+                         tol1, NULL)
+        } else if (IsComb && is.numeric(v1)) {
+            comboGeneral(v1, m1, rep1, freqs1,
+                         gmp::sub.bigz(myRows, lenCheck - 1), NULL, constr1,
+                         compar1, limit1, NULL, FUN1, FALSE, NULL,
+                         tol1, NULL)
+        } else if (IsComb && is.list(v1)) {
+            comboGeneral(v1, m1, rep1, freqs1,
+                         gmp::sub.bigz(myRows, lenCheck - 1), NULL)
+        } else if (IsComb) {
+            comboGeneral(v1, m1, rep1, freqs1,
+                         gmp::sub.bigz(myRows, lenCheck - 1),
+                         NULL, FUN1, NULL)
+        } else if (class(v1) == "table") {
+            permuteGeneral(v1, m1,
+                           gmp::sub.bigz(myRows, lenCheck - 1), NULL, constr1,
+                           compar1, limit1, NULL, FUN1, FALSE, NULL,
+                           tol1, NULL)
+        } else if (is.numeric(v1)) {
+            permuteGeneral(v1, m1, rep1, freqs1,
+                           gmp::sub.bigz(myRows, lenCheck - 1), NULL, constr1,
+                           compar1, limit1, NULL, FUN1, FALSE, NULL,
+                           tol1, NULL)
+        } else if (is.list(v1)) {
+            permuteGeneral(v1, m1, rep1, freqs1,
+                           gmp::sub.bigz(myRows, lenCheck - 1), NULL)
+        } else {
+            permuteGeneral(v1, m1, rep1, freqs1,
+                           gmp::sub.bigz(myRows, lenCheck - 1),
+                           NULL, FUN1, NULL)
         }
 
         # .method("summary", &Combo::summary)

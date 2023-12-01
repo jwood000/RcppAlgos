@@ -287,7 +287,7 @@ void SetThreads(bool &Parallel, int maxThreads, int nRows,
 
         if (!Rf_isNull(RNumThreads)) {
             CppConvert::convertPrimitive(RNumThreads, userThreads,
-                                           VecType::Integer, "nThreads");
+                                         VecType::Integer, "nThreads");
         }
 
         if (userThreads > maxThreads) {

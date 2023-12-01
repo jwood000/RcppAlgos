@@ -13,6 +13,7 @@ void VecApply(SEXP res, const std::vector<T> &v, SEXP vectorPass,
               SEXP stdFun, SEXP rho, int commonLen, int commonType) {
 
     cpp11::sexp sexpFun = Rf_lang2(stdFun, R_NilValue);
+    MARK_NOT_MUTABLE(sexpFun);
 
     if (IsComb) {
         if (IsMult) {
@@ -48,6 +49,7 @@ void VecApply(SEXP res, SEXP v, SEXP vectorPass,
               SEXP stdFun, SEXP rho, int commonLen, int commonType) {
 
     cpp11::sexp sexpFun = Rf_lang2(stdFun, R_NilValue);
+    MARK_NOT_MUTABLE(sexpFun);
 
     if (IsComb) {
         if (IsMult) {
@@ -141,6 +143,7 @@ SEXP ApplyFunction(SEXP v, SEXP vectorPass, int n, int m, bool IsComb,
     } else {
         cpp11::sexp myList = Rf_allocVector(VECSXP, nRows);
         cpp11::sexp sexpFun = Rf_lang2(stdFun, R_NilValue);
+        MARK_NOT_MUTABLE(sexpFun);
 
         if (IsComb) {
             if (IsMult) {
@@ -236,6 +239,7 @@ SEXP ApplyFunction(const std::vector<T> &v, SEXP vectorPass,
     } else {
         cpp11::sexp myList = Rf_allocVector(VECSXP, nRows);
         cpp11::sexp sexpFun = Rf_lang2(stdFun, R_NilValue);
+        MARK_NOT_MUTABLE(sexpFun);
 
         if (IsComb) {
             if (IsMult) {

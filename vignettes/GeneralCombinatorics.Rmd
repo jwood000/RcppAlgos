@@ -1,7 +1,7 @@
 ---
 title: "Combination and Permutation Basics"
 author: "Joseph Wood"
-date: "10/02/2023"
+date: "11/30/2023"
 output:
   rmarkdown::html_vignette:
     toc: true
@@ -91,7 +91,7 @@ head(permuteGeneral(v))
 ## They are very efficient...
 system.time(comboGeneral(25, 12))
 #>    user  system elapsed 
-#>   0.058   0.014   0.071
+#>   0.054   0.013   0.067
 
 comboCount(25, 12)
 #> [1] 5200300
@@ -116,7 +116,7 @@ ht(comboGeneral(25, 12))
 ## And for permutations... over 8 million instantly
 system.time(permuteGeneral(13, 7))
 #>    user  system elapsed 
-#>   0.024   0.014   0.039
+#>   0.023   0.014   0.037
 
 permuteCount(13, 7)
 #> [1] 8648640
@@ -255,11 +255,11 @@ getPermsWithSpecificRepetition <- function(z, n) {
     b[!myDupes, ]
 }
 
-a <- c(1,1,1,1,2,2,2,7,7,7,7,7)
+a <- as.integer(c(1, 1, 1, 1, 2, 2, 2, 7, 7, 7, 7, 7))
 
 system.time(test <- getPermsWithSpecificRepetition(a, 6))
 #>    user  system elapsed 
-#>   1.315   0.028   1.343
+#>   1.261   0.022   1.283
 ```
 
 ### Enter `freqs`
@@ -268,9 +268,10 @@ Situations like this call for the use of the `freqs` argument. Simply, enter the
 of times each unique element is repeated and Voila!
 
 ``` r
-system.time(test2 <- permuteGeneral(unique(a), 6, freqs = rle(a)$lengths))
+## Using the S3 method for class 'table'
+system.time(test2 <- permuteGeneral(table(a), 6))
 #>    user  system elapsed 
-#>       0       0       0
+#>   0.000   0.000   0.001
 
 identical(test, test2)
 #> [1] TRUE
@@ -331,19 +332,21 @@ microbenchmark(combn = combn(26, 13),
 #> Warning in microbenchmark(combn = combn(26, 13), serAlgos = comboGeneral(26, : less
 #> accurate nanosecond times to avoid potential integer overflows
 #> Unit: relative
-#>      expr        min         lq       mean     median        uq       max neval cld
-#>     combn 134.192376 127.815390 102.909802 121.349553 78.018617 69.949422    10 a  
-#>  serAlgos   3.051947   2.900128   2.540474   2.765844  2.191404  1.975699    10  b 
-#>  parAlgos   1.000000   1.000000   1.000000   1.000000  1.000000  1.000000    10   c
+#>      expr        min         lq       mean    median        uq       max neval cld
+#>     combn 134.471317 133.255350 100.725417 131.10378 73.933281 66.475301    10 a  
+#>  serAlgos   2.968905   2.973074   2.462118   2.94302  2.117913  1.987334    10  b 
+#>  parAlgos   1.000000   1.000000   1.000000   1.00000  1.000000  1.000000    10   c
 
 ## Using 7 cores w/ Parallel = TRUE
-microbenchmark(serial = comboGeneral(20, 10, freqs = rep(1:4, 5)),
-             parallel = comboGeneral(20, 10, freqs = rep(1:4, 5), Parallel = TRUE),
-             unit = "relative")
+microbenchmark(
+    serial = comboGeneral(20, 10, freqs = rep(1:4, 5)),
+    parallel = comboGeneral(20, 10, freqs = rep(1:4, 5), Parallel = TRUE),
+    unit = "relative"
+)
 #> Unit: relative
-#>      expr      min       lq     mean   median       uq       max neval cld
-#>    serial 2.663975 2.743404 2.576231 2.724643 2.671937 0.8020282   100  a 
-#>  parallel 1.000000 1.000000 1.000000 1.000000 1.000000 1.0000000   100   b
+#>      expr      min       lq     mean   median      uq      max neval cld
+#>    serial 3.236333 2.853772 2.763475 2.823088 2.77055 1.491217   100  a 
+#>  parallel 1.000000 1.000000 1.000000 1.000000 1.00000 1.000000   100   b
 ```
 
 ### Using arguments `lower` and `upper`
@@ -385,7 +388,7 @@ system.time(lapply(seq(1, 3247943160, 10086780), function(x) {
      x
 }))
 #>    user  system elapsed 
-#>  27.400  11.634  39.202
+#>  26.438  11.890  38.333
 
 ## Enter parallel
 library(parallel)
@@ -395,7 +398,7 @@ system.time(mclapply(seq(1, 3247943160, 10086780), function(x) {
      x
 }, mc.cores = 6))
 #>    user  system elapsed 
-#>  29.822  15.263   9.434
+#>  30.185  15.874   9.810
 ```
 
 ## GMP Support
@@ -416,7 +419,7 @@ system.time(b <- comboGeneral(myVec, 50, TRUE,
                               lower = 1e15 + 1,
                               upper = 1e15 + 1e5))
 #>    user  system elapsed 
-#>   0.003   0.002   0.005
+#>   0.003   0.002   0.004
 
 b[1:5, 45:50]
 #>           [,1]      [,2]      [,3]     [,4]      [,5]       [,6]
@@ -443,9 +446,9 @@ identical(funCustomComb(15, 8), comboGeneral(15, 8, FUN = cumprod))
 microbenchmark(f1 = funCustomComb(15, 8),
                f2 = comboGeneral(15, 8, FUN = cumprod), unit = "relative")
 #> Unit: relative
-#>  expr      min      lq     mean   median       uq     max neval cld
-#>    f1 5.268624 5.10024 4.902631 5.061321 5.212928 2.12402   100  a 
-#>    f2 1.000000 1.00000 1.000000 1.000000 1.000000 1.00000   100   b
+#>  expr     min      lq     mean   median       uq      max neval cld
+#>    f1 5.21106 4.97984 4.616931 4.989338 5.036799 2.015578   100  a 
+#>    f2 1.00000 1.00000 1.000000 1.000000 1.000000 1.000000   100   b
 
 comboGeneral(15, 8, FUN = cumprod, upper = 3)
 #> [[1]]
@@ -462,7 +465,7 @@ comboGeneral(15, 8, FUN = cumprod, upper = 3)
 ## calling unlist. See the next section.
 unlist(comboGeneral(c("", letters[1:3]), 3,
                     freqs = c(2, rep(1, 3)),
-                    FUN = function(x) paste0(x, collapse = "")))
+                    FUN = function(x) paste(x, collapse = "")))
 #> [1] "a"   "b"   "c"   "ab"  "ac"  "bc"  "abc"
 ```
 
@@ -471,11 +474,9 @@ unlist(comboGeneral(c("", letters[1:3]), 3,
 As of version `2.5.0`, we can make use of `FUN.VALUE` which serves as a template for the return value from `FUN`. The behavior is nearly identical to `vapply`:
 
 ``` r
-## Example from earlier involving the powerset
-comboGeneral(c("", letters[1:3]), 3,
-             freqs = c(2, rep(1, 3)),
-             FUN = function(x) paste0(x, collapse = ""),
-             FUN.VALUE = "a")
+## Example from earlier involving the power set
+comboGeneral(c("", letters[1:3]), 3, freqs = c(2, rep(1, 3)),
+             FUN = function(x) paste(x, collapse = ""), FUN.VALUE = "a")
 #> [1] "a"   "b"   "c"   "ab"  "ac"  "bc"  "abc"
 
 comboGeneral(15, 8, FUN = cumprod, upper = 3, FUN.VALUE = as.numeric(1:8))
@@ -500,3 +501,92 @@ permuteGeneral(c(FALSE, TRUE), 3, TRUE, FUN.VALUE = 1,
                FUN = function(x) sum(2^(which(rev(x)) - 1)))
 #> [1] 0 1 2 3 4 5 6 7
 ```
+
+### Passing additional arguments with `...`
+
+As of version `2.8.3`, we have added the ability to pass further arguments to `FUN` via `...`.
+
+``` r
+## Again, same example with the power set only this time we
+## conveniently pass the additional arguments to paste via '...'
+comboGeneral(c("", letters[1:3]), 3, freqs = c(2, rep(1, 3)),
+             FUN = paste, collapse = "", FUN.VALUE = "a")
+#> [1] "a"   "b"   "c"   "ab"  "ac"  "bc"  "abc"
+```
+
+This concludes our discussion around user defined functions. There are several nice features that allow the user to more easily get the desired output with fewer function calls as well as fewer keystrokes. This was most clearly seen in our example above with the power set.
+
+We started with wrapping our call to `comboGeneral` with `unlist`, which was alleviated by the parameter `FUN.VALUE`. We then further simplified our usage of `FUN` by allowing additional arguments to be passed via `...`.
+
+## S3 methods
+
+As of version `2.8.3`, we have added several S3 methods for convenience.
+
+Take our earlier example where we were talking about multisets.
+
+``` r
+a <- as.integer(c(1, 1, 1, 1, 2, 2, 2, 7, 7, 7, 7, 7))
+
+## Explicitly utilizing the freqs argument and determining the unique
+## values for v... Still works, but clunky
+t1 <- permuteGeneral(rle(a)$values, 6, freqs = rle(a)$lengths)
+
+## Now using the table method... much cleaner
+t2 <- permuteGeneral(table(a), 6)
+
+identical(t1, t2)
+#> [1] TRUE
+```
+
+There are other S3 methods defined that simplify the interface. Take for example the case when we want to pass a character vector. We know underneath the hood, character vectors are not thread safe so the `Parallel` and `nThreads` argument are ignored. We also know that the constraints parameters are only applicable to numeric vectors. For these reason, our default method’s interface is greatly simplified:
+
+<p align="center">
+<img src='default_method.png' width="400px" />
+</p>
+
+We see only the necessary options. With numeric types, the options are more numerous:
+
+<p align="center">
+<img src='numeric_method.png' width="400px" />
+</p>
+
+There is also a `list` method that allows one to find combinations or permutations of lists:
+
+``` r
+comboGeneral(
+    list(
+        numbers   = rnorm(4),
+        states    = state.abb[1:5],
+        some_data = data.frame(a = c('a', 'b'), b = c(10, 100))
+    ),
+    m = 2
+)
+#> [[1]]
+#> [[1]]$numbers
+#> [1] -1.9376332  0.2583997 -0.7198657 -0.8985872
+#> 
+#> [[1]]$states
+#> [1] "AL" "AK" "AZ" "AR" "CA"
+#> 
+#> 
+#> [[2]]
+#> [[2]]$numbers
+#> [1] -1.9376332  0.2583997 -0.7198657 -0.8985872
+#> 
+#> [[2]]$some_data
+#>   a   b
+#> 1 a  10
+#> 2 b 100
+#> 
+#> 
+#> [[3]]
+#> [[3]]$states
+#> [1] "AL" "AK" "AZ" "AR" "CA"
+#> 
+#> [[3]]$some_data
+#>   a   b
+#> 1 a  10
+#> 2 b 100
+```
+
+This feature was inspired by [ggrothendieck](<https://github.com/ggrothendieck>) here: [Issue 20](<https://github.com/jwood000/RcppAlgos/issues/20>).

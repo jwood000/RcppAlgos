@@ -1,6 +1,20 @@
 \name{comboIter}
 \alias{comboIter}
+\alias{comboIter.integer}
+\alias{comboIter.numeric}
+\alias{comboIter.factor}
+\alias{comboIter.logical}
+\alias{comboIter.default}
+\alias{comboIter.table}
+\alias{comboIter.list}
 \alias{permuteIter}
+\alias{permuteIter.integer}
+\alias{permuteIter.numeric}
+\alias{permuteIter.factor}
+\alias{permuteIter.logical}
+\alias{permuteIter.default}
+\alias{permuteIter.table}
+\alias{permuteIter.list}
 \title{
 Combination and Permutation Iterator
 }
@@ -10,24 +24,61 @@ Combination and Permutation Iterator
         \item Supports random access via the \code{[[} method.
         \item GMP support allows for exploration of combinations/permutations of vectors with many elements.
         \item The output is in lexicographical order for the \code{next} methods and reverse lexicographical order for the \code{prev} methods.
+        \item Learn more in \code{vignette("iterators")}.
     }
 }
 \usage{
-comboIter(v, m = NULL, repetition = FALSE, freqs = NULL,
+comboIter(v, m = NULL, ...)
+permuteIter(v, m = NULL, ...)
+
+\method{comboIter}{numeric}(v, m = NULL, repetition = FALSE, freqs = NULL,
           constraintFun = NULL, comparisonFun = NULL,
           limitConstraints = NULL, keepResults = NULL,
           FUN = NULL, Parallel = FALSE, nThreads = NULL,
-          tolerance = NULL, FUN.VALUE = NULL)
+          tolerance = NULL, FUN.VALUE = NULL, ...)
 
-permuteIter(v, m = NULL, repetition = FALSE, freqs = NULL,
+\method{permuteIter}{numeric}(v, m = NULL, repetition = FALSE, freqs = NULL,
             constraintFun = NULL, comparisonFun = NULL,
             limitConstraints = NULL, keepResults = NULL,
             FUN = NULL, Parallel = FALSE, nThreads = NULL,
-            tolerance = NULL, FUN.VALUE = NULL)
+            tolerance = NULL, FUN.VALUE = NULL, ...)
+
+\method{comboIter}{factor}(
+    v, m = NULL, repetition = FALSE, freqs = NULL, FUN = NULL,
+    Parallel = FALSE, nThreads = NULL, FUN.VALUE = NULL, ...
+)
+\method{permuteIter}{factor}(
+    v, m = NULL, repetition = FALSE, freqs = NULL, FUN = NULL,
+    Parallel = FALSE, nThreads = NULL, FUN.VALUE = NULL, ...
+)
+
+\method{comboIter}{default}(
+    v, m = NULL, repetition = FALSE, freqs = NULL,
+    FUN = NULL, FUN.VALUE = NULL, ...
+)
+\method{permuteIter}{default}(
+    v, m = NULL, repetition = FALSE, freqs = NULL,
+    FUN = NULL, FUN.VALUE = NULL, ...
+)
+
+\method{comboIter}{table}(
+    v, m = NULL, constraintFun = NULL, comparisonFun = NULL,
+    limitConstraints = NULL, keepResults = NULL, FUN = NULL,
+    Parallel = FALSE, nThreads = NULL, tolerance = NULL, FUN.VALUE = NULL, ...
+)
+\method{permuteIter}{table}(
+    v, m = NULL, constraintFun = NULL, comparisonFun = NULL,
+    limitConstraints = NULL, keepResults = NULL, FUN = NULL,
+    Parallel = FALSE, nThreads = NULL, tolerance = NULL, FUN.VALUE = NULL, ...
+)
+
+\method{comboIter}{list}(v, m = NULL, repetition = FALSE, freqs = NULL, ...)
+\method{permuteIter}{list}(v, m = NULL, repetition = FALSE, freqs = NULL, ...)
 }
 \arguments{
   \item{v}{Source vector. If \code{v} is a positive integer, it will be converted to the sequence \code{1:v}. If \code{v} is a negative integer, it will be converted to the sequence \code{v:-1}. All atomic types are supported (See \code{\link{is.atomic}}).}
   \item{m}{Number of elements to choose.  If \code{repetition = TRUE} or \code{freqs} is utilized, \code{m} can exceed the length of \code{v}. If \code{m = NULL}, the length will default to \code{length(v)} or \code{sum(freqs)}.}
+  \item{\dots}{Further arguments passed to methods.}
   \item{repetition}{Logical value indicating whether combinations/permutations should be with or without repetition. The default is \code{FALSE}.}
   \item{freqs}{A vector of frequencies used for producing all combinations/permutations of a multiset of \code{v}. Each element of \code{freqs} represents how many times each element of the source vector, \code{v}, is repeated. It is analogous to the \code{times} argument in \code{\link[base]{rep}}. The default value is \code{NULL}.}
   \item{constraintFun}{Function to be applied to the elements of \code{v} that should be passed as a string (\emph{e.g.} \code{constraintFun = "sum"}). The possible constraint functions are: \code{"sum"}, \code{"prod"}, \code{"mean"}, \code{"max"}, & \code{"min"}. The default is \code{NULL}, meaning no function is applied.}
@@ -135,9 +186,9 @@ b@currIter()
 \dontrun{
 ## We don't have random access or previous methods
 b@back()
-## Error: no slot of name "back" for this object of class "Constraints"
+#> Error: no slot of name "back" for this object of class "Constraints"
 b@prevIter()
-## Error: no slot of name "prevIter" for this object of class "Constraints"
+#> Error: no slot of name "prevIter" for this object of class "Constraints"
 }
 }
 \keyword{combinations}

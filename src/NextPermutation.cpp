@@ -2,6 +2,8 @@
 // standard algorithm library. Also, this and the following
 // algo are used in functions found in Permutations.h as well
 // as PermuteResults.h
+#include <cstdlib>
+
 void nextFullPerm(int *const myArray, int maxInd) {
 
     int p1 = maxInd - 1;

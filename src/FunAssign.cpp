@@ -31,9 +31,12 @@ void VapplyAssign(SEXP ans, SEXP vectorPass,
             case REALSXP: okay = (valType == INTSXP) || (valType == LGLSXP); break;
             case INTSXP:  okay = (valType == LGLSXP); break;
         }
-        if (!okay)
+
+        if (!okay) {
             cpp11::stop("values must be type '%s',\n but FUN(X[[%d]]) result is type '%s'",
                   Rf_type2char(commonType), count + 1, Rf_type2char(valType));
+        }
+
         REPROTECT(val = Rf_coerceVector(val, commonType), indx);
     }
 

@@ -22,7 +22,7 @@ GMP support allows for exploration of cases where the number of partitions/compo
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">RcppAlgos</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">2.8.2</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">2.8.3</span>
       </span>
     </div>
 
@@ -91,13 +91,32 @@ GMP support allows for exploration of cases where the number of partitions/compo
 </ul></div>
 
     <div id="ref-usage">
-    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">partitionsSample</span><span class="op">(</span><span class="va">v</span>, m <span class="op">=</span> <span class="cn">NULL</span>, repetition <span class="op">=</span> <span class="cn">FALSE</span>, freqs <span class="op">=</span> <span class="cn">NULL</span>,</span>
-<span>                 target <span class="op">=</span> <span class="cn">NULL</span>, n <span class="op">=</span> <span class="cn">NULL</span>, sampleVec <span class="op">=</span> <span class="cn">NULL</span>,</span>
-<span>                 seed <span class="op">=</span> <span class="cn">NULL</span>, nThreads <span class="op">=</span> <span class="cn">NULL</span>, namedSample <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">partitionsSample</span><span class="op">(</span><span class="va">v</span>, m <span class="op">=</span> <span class="cn">NULL</span>, <span class="va">...</span><span class="op">)</span></span>
+<span><span class="fu">compositionsSample</span><span class="op">(</span><span class="va">v</span>, m <span class="op">=</span> <span class="cn">NULL</span>, <span class="va">...</span><span class="op">)</span></span>
 <span></span>
-<span><span class="fu">compositionsSample</span><span class="op">(</span><span class="va">v</span>, m <span class="op">=</span> <span class="cn">NULL</span>, repetition <span class="op">=</span> <span class="cn">FALSE</span>, freqs <span class="op">=</span> <span class="cn">NULL</span>,</span>
-<span>                   target <span class="op">=</span> <span class="cn">NULL</span>, weak <span class="op">=</span> <span class="cn">FALSE</span>, n <span class="op">=</span> <span class="cn">NULL</span>, sampleVec <span class="op">=</span> <span class="cn">NULL</span>,</span>
-<span>                   seed <span class="op">=</span> <span class="cn">NULL</span>, nThreads <span class="op">=</span> <span class="cn">NULL</span>, namedSample <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></code></pre></div>
+<span><span class="co"># S3 method for default</span></span>
+<span><span class="fu">partitionsSample</span><span class="op">(</span></span>
+<span>    <span class="va">v</span>, m <span class="op">=</span> <span class="cn">NULL</span>, repetition <span class="op">=</span> <span class="cn">FALSE</span>, freqs <span class="op">=</span> <span class="cn">NULL</span>, target <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>    n <span class="op">=</span> <span class="cn">NULL</span>, sampleVec <span class="op">=</span> <span class="cn">NULL</span>, seed <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>    nThreads <span class="op">=</span> <span class="cn">NULL</span>, namedSample <span class="op">=</span> <span class="cn">FALSE</span>, <span class="va">...</span></span>
+<span><span class="op">)</span></span>
+<span><span class="co"># S3 method for default</span></span>
+<span><span class="fu">compositionsSample</span><span class="op">(</span></span>
+<span>    <span class="va">v</span>, m <span class="op">=</span> <span class="cn">NULL</span>, repetition <span class="op">=</span> <span class="cn">FALSE</span>, freqs <span class="op">=</span> <span class="cn">NULL</span>, target <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>    weak <span class="op">=</span> <span class="cn">FALSE</span>, n <span class="op">=</span> <span class="cn">NULL</span>, sampleVec <span class="op">=</span> <span class="cn">NULL</span>, seed <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>    nThreads <span class="op">=</span> <span class="cn">NULL</span>, namedSample <span class="op">=</span> <span class="cn">FALSE</span>, <span class="va">...</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># S3 method for table</span></span>
+<span><span class="fu">partitionsSample</span><span class="op">(</span></span>
+<span>    <span class="va">v</span>, m <span class="op">=</span> <span class="cn">NULL</span>, target <span class="op">=</span> <span class="cn">NULL</span>, n <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>    sampleVec <span class="op">=</span> <span class="cn">NULL</span>, seed <span class="op">=</span> <span class="cn">NULL</span>, nThreads <span class="op">=</span> <span class="cn">NULL</span>, namedSample <span class="op">=</span> <span class="cn">FALSE</span>, <span class="va">...</span></span>
+<span><span class="op">)</span></span>
+<span><span class="co"># S3 method for table</span></span>
+<span><span class="fu">compositionsSample</span><span class="op">(</span></span>
+<span>    <span class="va">v</span>, m <span class="op">=</span> <span class="cn">NULL</span>, target <span class="op">=</span> <span class="cn">NULL</span>, weak <span class="op">=</span> <span class="cn">FALSE</span>, n <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>    sampleVec <span class="op">=</span> <span class="cn">NULL</span>, seed <span class="op">=</span> <span class="cn">NULL</span>, nThreads <span class="op">=</span> <span class="cn">NULL</span>, namedSample <span class="op">=</span> <span class="cn">FALSE</span>, <span class="va">...</span></span>
+<span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div id="arguments">
@@ -107,6 +126,9 @@ GMP support allows for exploration of cases where the number of partitions/compo
 
   <dt>m</dt>
 <dd><p>Width of the partition. If <code>m = NULL</code>, the length will be determined by the partitioning case (<em>e.g.</em> When we are generating distinct partitions of \(n\), the width will be equal to the smallest \(m\) such that <code>sum(1:m) &gt;= n</code>).</p></dd>
+
+  <dt>...</dt>
+<dd><p>Further arguments passed to methods.</p></dd>
 
   <dt>repetition</dt>
 <dd><p>Logical value indicating whether partitions/compositions should be with or without repetition. The default is <code>FALSE</code>.</p></dd>

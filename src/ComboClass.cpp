@@ -8,7 +8,7 @@ SEXP Combo::ToSeeLast(bool AdjustIdx) {
         message += "\n\n";
     }
 
-    Rprintf(message.c_str());
+    Rprintf("%s", message.c_str());
     if (AdjustIdx) increment(IsGmp, mpzIndex, dblIndex);
     return R_NilValue;
 }
@@ -16,7 +16,7 @@ SEXP Combo::ToSeeLast(bool AdjustIdx) {
 SEXP Combo::ToSeeFirst(bool AdjustIdx) {
     const std::string message = "Iterator Initialized. To see the first"
                                 " result, use the nextIter method(s)\n\n";
-    Rprintf(message.c_str());
+    Rprintf("%s", message.c_str());
     if (AdjustIdx) decrement(IsGmp, mpzIndex, dblIndex);
     return R_NilValue;
 }

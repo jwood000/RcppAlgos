@@ -113,7 +113,7 @@ reprex::reprex({
         b[!myDupes, ]
     }
 
-    a <- c(1,1,1,1,2,2,2,7,7,7,7,7)
+    a <- as.integer(c(1, 1, 1, 1, 2, 2, 2, 7, 7, 7, 7, 7))
 
     system.time(test <- getPermsWithSpecificRepetition(a, 6))
 
@@ -124,7 +124,8 @@ reprex::reprex({
     #' of times each unique element is repeated and Voila!
     #'
 
-    system.time(test2 <- permuteGeneral(unique(a), 6, freqs = rle(a)$lengths))
+    ## Using the S3 method for class 'table'
+    system.time(test2 <- permuteGeneral(table(a), 6))
 
     identical(test, test2)
 
@@ -160,9 +161,11 @@ reprex::reprex({
                    unit = "relative")
 
     ## Using 7 cores w/ Parallel = TRUE
-    microbenchmark(serial = comboGeneral(20, 10, freqs = rep(1:4, 5)),
-                 parallel = comboGeneral(20, 10, freqs = rep(1:4, 5), Parallel = TRUE),
-                 unit = "relative")
+    microbenchmark(
+        serial = comboGeneral(20, 10, freqs = rep(1:4, 5)),
+        parallel = comboGeneral(20, 10, freqs = rep(1:4, 5), Parallel = TRUE),
+        unit = "relative"
+    )
 
     #'
     #' ### Using arguments `lower` and `upper`
@@ -244,7 +247,7 @@ reprex::reprex({
     ## calling unlist. See the next section.
     unlist(comboGeneral(c("", letters[1:3]), 3,
                         freqs = c(2, rep(1, 3)),
-                        FUN = function(x) paste0(x, collapse = "")))
+                        FUN = function(x) paste(x, collapse = "")))
 
     #'
     #' ### Using `FUN.VALUE`
@@ -252,11 +255,9 @@ reprex::reprex({
     #' As of version `2.5.0`, we can make use of `FUN.VALUE` which serves as a template for the return value from `FUN`. The behavior is nearly identical to `vapply`:
     #'
 
-    ## Example from earlier involving the powerset
-    comboGeneral(c("", letters[1:3]), 3,
-                 freqs = c(2, rep(1, 3)),
-                 FUN = function(x) paste0(x, collapse = ""),
-                 FUN.VALUE = "a")
+    ## Example from earlier involving the power set
+    comboGeneral(c("", letters[1:3]), 3, freqs = c(2, rep(1, 3)),
+                 FUN = function(x) paste(x, collapse = ""), FUN.VALUE = "a")
 
     comboGeneral(15, 8, FUN = cumprod, upper = 3, FUN.VALUE = as.numeric(1:8))
 
@@ -266,4 +267,64 @@ reprex::reprex({
     permuteGeneral(c(FALSE, TRUE), 3, TRUE, FUN.VALUE = 1,
                    FUN = function(x) sum(2^(which(rev(x)) - 1)))
 
+    #'
+    #' ### Passing additional arguments with `...`
+    #'
+    #' As of version `2.8.3`, we have added the ability to pass further arguments to `FUN` via `...`.
+    #'
+
+    ## Again, same example with the power set only this time we
+    ## conveniently pass the additional arguments to paste via '...'
+    comboGeneral(c("", letters[1:3]), 3, freqs = c(2, rep(1, 3)),
+                 FUN = paste, collapse = "", FUN.VALUE = "a")
+
+    #'
+    #' This concludes our discussion around user defined functions. There are several nice features that allow the user to more easily get the desired output with fewer function calls as well as fewer keystrokes. This was most clearly seen in our example above with the power set.
+    #'
+    #' We started with wrapping our call to `comboGeneral` with `unlist`, which was alleviated by the parameter `FUN.VALUE`. We then further simplified our usage of `FUN` by allowing additional arguments to be passed via `...`.
+    #'
+    #' ## S3 methods
+    #'
+    #' As of version `2.8.3`, we have added several S3 methods for convenience.
+    #'
+    #' Take our earlier example where we were talking about multisets.
+    #'
+
+    a <- as.integer(c(1, 1, 1, 1, 2, 2, 2, 7, 7, 7, 7, 7))
+
+    ## Explicitly utilizing the freqs argument and determining the unique
+    ## values for v... Still works, but clunky
+    t1 <- permuteGeneral(rle(a)$values, 6, freqs = rle(a)$lengths)
+
+    ## Now using the table method... much cleaner
+    t2 <- permuteGeneral(table(a), 6)
+
+    identical(t1, t2)
+
+    #'
+    #' There are other S3 methods defined that simplify the interface. Take for example the case when we want to pass a character vector. We know underneath the hood, character vectors are not thread safe so the `Parallel` and `nThreads` argument are ignored. We also know that the constraints parameters are only applicable to numeric vectors. For these reason, our default method's interface is greatly simplified:
+    #'
+    #' <p align="center"> <img src='default_method.png' width="400px" /> </p>
+    #'
+    #' We see only the necessary options. With numeric types, the options are more numerous:
+    #'
+    #' <p align="center"> <img src='numeric_method.png' width="400px" /> </p>
+    #'
+    #' There is also a `list` method that allows one to find combinations or permutations of lists:
+    #'
+
+    comboGeneral(
+        list(
+            numbers   = rnorm(4),
+            states    = state.abb[1:5],
+            some_data = data.frame(a = c('a', 'b'), b = c(10, 100))
+        ),
+        m = 2
+    )
+
+    #'
+    #' This feature was inspired by [ggrothendieck](<https://github.com/ggrothendieck>) here: [Issue 20](<https://github.com/jwood000/RcppAlgos/issues/20>).
+    #'
+
 }, advertise = FALSE, venue = "r", html_preview = FALSE, wd = ".")
+

@@ -65,9 +65,15 @@ test_that("partitionsIter produces correct results", {
             a <- compositionsIter(v_pass, m_pass, rep, fr, tar, IsWeak)
             b <- compositionsGeneral(v_pass, m_pass, rep, fr, tar, IsWeak)
         } else {
-            myRows <- partitionsCount(v_pass, m_pass, rep, fr, tar)
-            a <- partitionsIter(v_pass, m_pass, rep, fr, tar)
-            b <- partitionsGeneral(v_pass, m_pass, rep, fr, tar)
+            if (class(v_pass) != "table") {
+                a <- partitionsIter(v_pass, m_pass, rep, fr, tar)
+                b <- partitionsGeneral(v_pass, m_pass, rep, fr, tar)
+                myRows <- partitionsCount(v_pass, m_pass, rep, fr, tar)
+            } else {
+                a <- partitionsIter(v_pass, m_pass, tar)
+                b <- partitionsGeneral(v_pass, m_pass, tar)
+                myRows <- partitionsCount(v_pass, m_pass, tar)
+            }
         }
 
         myResults <- c(myResults, isTRUE(all.equal(
@@ -80,7 +86,7 @@ test_that("partitionsIter produces correct results", {
             myResults <- c(myResults, isTRUE(
                 all.equal(abs(v_pass), length(a@sourceVector()))
             ))
-        } else {
+        } else if (class(v_pass) != "table") {
             myResults <- c(myResults, isTRUE(
                 all.equal(sort(v_pass), a@sourceVector())
             ))
@@ -323,7 +329,11 @@ test_that("partitionsIter produces correct results", {
     #### Repetition; Specific Length; No Zeros; Specific Target;
     expect_true(partitionClassTest(20, 10, rep = TRUE, tar = 45))
 
-    #### Multiset; Specific Length;
+    #### Multiset; class table;
+    expect_true(partitionClassTest(table(sample(10, 100, TRUE)),
+                                   15, tar = 55, testRand = FALSE))
+
+    #### Multiset: Specific Length;
     expect_true(partitionClassTest(50, 6, fr = rep(4, 50),
                                    testRand = FALSE))
 

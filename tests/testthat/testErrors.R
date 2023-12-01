@@ -78,7 +78,8 @@ test_that("comboGeneral produces appropriate error messages", {
     expect_error(comboGeneral(1000, 10, freqs = rep(1:4, 250)),
                  "number of rows cannot exceed")
 
-    expect_error(comboGeneral(5, 3, FUN = 2), "FUN must be a function")
+    expect_error(comboGeneral(5, 3, FUN = 2),
+                 "object 'FUN' of mode 'function' was not found")
     expect_error(comboGeneral(5, 3, FUN = cumsum, FUN.VALUE = 1L),
                  "values must be length 1")
 
@@ -278,8 +279,6 @@ test_that("permuteGeneral produces appropriate error messages", {
                  "The number of rows must be positive")
     expect_error(permuteGeneral(1000, 10, freqs = rep(1:4, 250)),
                  "number of rows cannot exceed")
-
-    expect_error(permuteGeneral(5, 3, FUN = 2), "FUN must be a function")
 })
 
 test_that("primeCount produces appropriate error messages", {
@@ -287,6 +286,25 @@ test_that("primeCount produces appropriate error messages", {
     expect_error(primeCount(-1), "must be a positive")
     expect_error(primeCount(2^53), "n must be less than")
     expect_error(primeCount("100000"), "must be of type numeric or integer")
+})
+
+test_that("errors with table S3 method", {
+    s <- sample(10, 100, TRUE)
+    err_string <- paste(
+        "Currently, there is no composition algorithm",
+        "for this case.\n Use permuteCount, permuteIter, permuteGeneral,",
+        "permuteSample, or\n permuteRank instead."
+    )
+    expect_error(compositionsCount(table(s), 5), err_string)
+    expect_error(compositionsGeneral(table(s), 5), err_string)
+    expect_error(compositionsSample(table(s), 5, n = 10, seed = 42),
+                 err_string)
+    expect_error(compositionsIter(table(s), 5, n = 10), err_string)
+
+    expect_error(partitionsSample(table(s), 5, n = 4),
+                 "Partition sampling not available for this case.")
+    expect_error(partitionsSample(table(s), 5, n = 4, seed = 42),
+                 "Partition sampling not available for this case.")
 })
 
 test_that("primeFactorize produces appropriate error messages", {
@@ -335,8 +353,6 @@ test_that("comboSample produces appropriate error messages", {
                  "exceeds the maximum number of possible results")
     expect_error(comboSample(5,freqs = rep(1,6)),
                  "m must be less than or equal to the length of v")
-    expect_error(comboSample(5,3, n = 5, FUN = "sum"),
-                 "FUN must be a function!")
     expect_error(comboSample(5,3, n = "5"),
                  "n must be of type numeric or integer")
     expect_error(comboSample(5,3, n = 1:5), "length of n must be 1")

@@ -16,6 +16,36 @@ GetV <- function(v) {
     return(v)
 }
 
+## Currently only used when an object of class table is passed
+ResolveVFreqs <- function(v) {
+
+    nms <- names(v)
+
+    suppressWarnings({
+        ## round-trip conversion methodology.
+        ##
+        ## N.B. We are unable to get back factors.
+        ##
+        ## N.B. We don't test for raws as table doesn't support raws
+        ## Error in order(y) : unimplemented type 'raw' in 'orderVector1'
+        conv_v <- if (identical(nms, as.character(as.integer(nms)))) {
+            as.integer(nms)
+        } else if (identical(nms, as.character(as.logical(nms)))) {
+            as.logical(nms)
+        } else if (isTRUE(all.equal(nms, as.character(as.numeric(nms))))) {
+            as.numeric(nms)
+        } else if (isTRUE(all.equal(nms, as.character(as.complex(nms))))) {
+            as.complex(nms)
+        } else {
+            nms
+        }
+    })
+
+    ## Get the tabulated frequencies
+    attributes(v) <- NULL
+    return(list(v = conv_v, freqs = v))
+}
+
 GetTarget <- function(v, target) {
     if (is.null(target)) {target <- max(v, na.rm = TRUE)}
     return(target)
