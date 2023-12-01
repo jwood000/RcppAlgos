@@ -65,12 +65,14 @@ test_that("partitionsIter produces correct results", {
             a <- compositionsIter(v_pass, m_pass, rep, fr, tar, IsWeak)
             b <- compositionsGeneral(v_pass, m_pass, rep, fr, tar, IsWeak)
         } else {
-            a <- partitionsIter(v_pass, m_pass, rep, fr, tar)
-            b <- partitionsGeneral(v_pass, m_pass, rep, fr, tar)
-            myRows <- if (class(v_pass) != "table") {
-                partitionsCount(v_pass, m_pass, rep, fr, tar)
+            if (class(v_pass) != "table") {
+                a <- partitionsIter(v_pass, m_pass, rep, fr, tar)
+                b <- partitionsGeneral(v_pass, m_pass, rep, fr, tar)
+                myRows <- partitionsCount(v_pass, m_pass, rep, fr, tar)
             } else {
-                nrow(b)
+                a <- partitionsIter(v_pass, m_pass, tar)
+                b <- partitionsGeneral(v_pass, m_pass, tar)
+                myRows <- partitionsCount(v_pass, m_pass, tar)
             }
         }
 

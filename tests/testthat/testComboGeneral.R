@@ -337,9 +337,10 @@ test_that("comboGeneral produces correct results with use of FUN", {
     expect_equal(comboGeneral(as.raw(1:5), 3, FUN = rawToChar),
                  combn(as.raw(1:5), 3, rawToChar, simplify = FALSE))
 
-    expect_equal(unlist(comboGeneral(letters[1:5], 3, FUN = function(x) {
-        paste0(x, collapse = "")
-    })), apply(comboGeneral(letters[1:5], 3), 1, paste0, collapse = ""))
+    expect_equal(
+        comboGeneral(letters[1:5], 3, FUN = paste0,
+                     collapse = "", FUN.VALUE = "a"),
+        apply(comboGeneral(letters[1:5], 3), 1, paste0, collapse = ""))
 })
 
 test_that("comboGeneral produces correct results with exotic constraints", {
