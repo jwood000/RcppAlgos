@@ -26,7 +26,7 @@ These algorithms rely on efficiently ranking the \eqn{n^{th}}{nth} lexicographic
 \value{A vector of class \code{integer}, \code{numeric}, or \code{bigz} determined by the total number of combinations/permutations}
 \references{
 \href{https://en.wikipedia.org/wiki/Lexicographical_order}{Lexicographical order}
-\href{https://www.rosettacode.org/wiki/Permutations/Rank_of_a_permutation}{ranking/unranking}
+\href{https://rosettacode.org/wiki/Permutations/Rank_of_a_permutation}{ranking/unranking}
 }
 \seealso{
 \code{\link{comboSample}}, \code{\link{permuteSample}}
