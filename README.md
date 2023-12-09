@@ -7,7 +7,7 @@
 ![](<http://cranlogs.r-pkg.org/badges/RcppAlgos?color=orange>)
 ![](<http://cranlogs.r-pkg.org/badges/grand-total/RcppAlgos?color=brightgreen>)
 [![Coverage status](<https://codecov.io/gh/jwood000/RcppAlgos/branch/main/graph/badge.svg>)](<https://app.codecov.io/gh/jwood000/RcppAlgos/branch/main>)
-[![Codacy Badge](<https://app.codacy.com/project/badge/Grade/e7fef773f6514aa4a2decda9adf57ae8>)](<https://app.codacy.com/gh/jwood000/RcppAlgos/dashboard?utm_source=github.com&utm_medium=referral&utm_content=jwood000/RcppAlgos&utm_campaign=Badge_Grade>)
+[![Codacy Badge](<https://app.codacy.com/project/badge/Grade/e7fef773f6514aa4a2decda9adf57ae8>)](<https://app.codacy.com/gh/jwood000/RcppAlgos/dashboard?utm_source=gh&utm_medium=referral&utm_content=&utm_campaign=Badge_grade>)
 [![Dependencies](<https://tinyverse.netlify.com/badge/RcppAlgos>)](<https://cran.r-project.org/package=RcppAlgos>)
 <!-- badges: end -->
 
