@@ -28,6 +28,7 @@ BugReports: https://github.com/jwood000/RcppAlgos/issues
 LinkingTo: cpp11
 Imports: gmp, methods
 Suggests: testthat, partitions, microbenchmark, knitr, RcppBigIntAlgos, rmarkdown
+Config/Needs/website: pkgdown
 License: GPL (>=2)
 SystemRequirements: gmp (>= 4.2.3)
 VignetteBuilder: knitr
