@@ -133,8 +133,6 @@ void SetFreqsAndM(std::vector<int> &Reps,
 
     if (Rf_isNull(Rm)) {
         m = freqs.empty() ? n : freqs.size();
-    } else if (Rf_length(Rm) > 1) {
-        cpp11::stop("length of m must be 1");
     } else {
         CppConvert::convertPrimitive(Rm, m, VecType::Integer, "m");
     }
@@ -553,13 +551,8 @@ void SetRandomSample(SEXP RindexVec, SEXP RNumSamp, int &sampSize,
             cpp11::stop("n and sampleVec cannot both be NULL");
         }
 
-        if (Rf_length(RNumSamp) > 1) {
-            cpp11::stop("length of n must be 1. For specific "
-                        "combinations, use sampleVec.");
-        }
-
         CppConvert::convertPrimitive(RNumSamp, sampSize,
-                                       VecType::Integer, "n");
+                                     VecType::Integer, "n", false);
 
         if (!IsGmp) {
             if (sampSize > computedRows) {
@@ -568,7 +561,7 @@ void SetRandomSample(SEXP RindexVec, SEXP RNumSamp, int &sampSize,
 
             cpp11::sexp sample = Rf_lang3(baseSample,
                                           Rf_ScalarReal(computedRows),
-                                          RNumSamp);
+                                          Rf_ScalarInteger(sampSize));
             cpp11::sexp val = Rf_eval(sample, rho);
             mySample.resize(sampSize);
 
@@ -585,7 +578,6 @@ void SetRandomSample(SEXP RindexVec, SEXP RNumSamp, int &sampSize,
                     mySample[j] = dblSamp[j];
                 }
             }
-
         }
     } else {
         if (IsGmp) {
@@ -600,8 +592,8 @@ void SetRandomSample(SEXP RindexVec, SEXP RNumSamp, int &sampSize,
             }
         } else {
             CppConvert::convertVector(RindexVec, mySample,
-                                        VecType::Numeric,
-                                        "sampleVec", false);
+                                      VecType::Numeric,
+                                      "sampleVec", false);
             sampSize = mySample.size();
             const double myMax = *std::max_element(mySample.cbegin(),
                                                    mySample.cend());

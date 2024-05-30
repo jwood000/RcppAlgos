@@ -2,13 +2,13 @@
 # RcppAlgos <img src='man/figures/RcppAlgos-logo.png' width="150px" align="right" />
 
 <!-- badges: start -->
-[![R build status](<https://github.com/jwood000/RcppAlgos/workflows/R-CMD-check/badge.svg>)](<https://github.com/jwood000/RcppAlgos/actions>)
 [![CRAN status](<https://www.r-pkg.org/badges/version/RcppAlgos>)](<https://cran.r-project.org/package=RcppAlgos>)
 ![](<http://cranlogs.r-pkg.org/badges/RcppAlgos?color=orange>)
 ![](<http://cranlogs.r-pkg.org/badges/grand-total/RcppAlgos?color=brightgreen>)
-[![Coverage status](<https://codecov.io/gh/jwood000/RcppAlgos/branch/main/graph/badge.svg>)](<https://app.codecov.io/gh/jwood000/RcppAlgos/branch/main>)
 [![Codacy Badge](<https://app.codacy.com/project/badge/Grade/e7fef773f6514aa4a2decda9adf57ae8>)](<https://app.codacy.com/gh/jwood000/RcppAlgos/dashboard?utm_source=gh&utm_medium=referral&utm_content=&utm_campaign=Badge_grade>)
 [![Dependencies](<https://tinyverse.netlify.com/badge/RcppAlgos>)](<https://cran.r-project.org/package=RcppAlgos>)
+[![R-CMD-check](https://github.com/jwood000/RcppAlgos/actions/workflows/R-CMD-check.yml/badge.svg)](https://github.com/jwood000/RcppAlgos/actions/workflows/R-CMD-check.yml)
+[![Codecov test coverage](https://codecov.io/gh/jwood000/RcppAlgos/branch/main/graph/badge.svg)](https://app.codecov.io/gh/jwood000/RcppAlgos?branch=main)
 <!-- badges: end -->
 
 A collection of high performance functions and iterators implemented in C++ for solving problems in combinatorics and computational mathematics.

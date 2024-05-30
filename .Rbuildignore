@@ -8,3 +8,5 @@ remove_whitespace.sh
 ^vignettes/*.html
 scripts/*
 create_md.R
+SO_Answers/*.R
+^codecov\.yml$

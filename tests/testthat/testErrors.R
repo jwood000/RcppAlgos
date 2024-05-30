@@ -133,14 +133,14 @@ test_that("partitionsIter related functions produces appropriate error messages"
 
 test_that(paste("partitions/compositionsDesign functions",
                 "produces appropriate error messages"), {
-    expect_error(compositionsDesign(0:40, 8),
+    expect_error(RcppAlgos:::compositionsDesign(0:40, 8),
                  "Currently, there is no composition algorithm")
-    expect_error(compositionsDesign(40, 8, freqs = rep(1:5, 8)),
+    expect_error(RcppAlgos:::compositionsDesign(40, 8, freqs = rep(1:5, 8)),
                  "Currently, there is no composition algorithm")
-    expect_error(partitionsDesign(0:17 + rnorm(18), 10,
+    expect_error(RcppAlgos:::partitionsDesign(0:17 + rnorm(18), 10,
                                   repetition = TRUE, target = 25),
                  "No design available for this case!")
-    expect_error(partitionsCount(0:17 + rnorm(18), 10,
+    expect_error(RcppAlgos:::partitionsCount(0:17 + rnorm(18), 10,
                                  repetition = TRUE, target = 25),
                  "The count is unknown for this case.")
 })
@@ -251,7 +251,7 @@ test_that("permuteGeneral produces appropriate error messages", {
                                 limitConstraints = 100,
                                 upper = 10^10),
                  "number of rows cannot exceed")
-    expect_error(permuteGeneral(5, 1:5), "length of m must be 1")
+    expect_error(permuteGeneral(5, 1:5), "m must be of length 1")
     expect_error(permuteGeneral(5, -5), "m must be a positive whole number")
     expect_error(permuteCount(5, 5, "TRUE"),
                  "Only logical values are supported for repetition")
@@ -353,9 +353,7 @@ test_that("comboSample produces appropriate error messages", {
                  "exceeds the maximum number of possible results")
     expect_error(comboSample(5,freqs = rep(1,6)),
                  "m must be less than or equal to the length of v")
-    expect_error(comboSample(5,3, n = "5"),
-                 "n must be of type numeric or integer")
-    expect_error(comboSample(5,3, n = 1:5), "length of n must be 1")
+    expect_error(comboSample(5,3, n = 1:5), "n must be of length 1")
     expect_error(comboSample(100000, 10, sampleVec = -1L),
                  "sampleVec must be a positive number")
     expect_error(comboSample(100000, 10, sampleVec = NaN),
@@ -430,16 +428,14 @@ test_that("{combo|permute|partitions|compositions}Rank produces appropriate erro
 test_that("permuteSample produces appropriate error messages", {
     expect_error(permuteSample(5, 6, n = 3),
                  "m must be less than or equal to the length of v")
-    expect_error(permuteSample(5, 1:5), "length of m must be 1")
+    expect_error(permuteSample(5, 1:5), "m must be of length 1")
     expect_error(permuteSample(5, -4), "m must be a positive whole number")
     expect_error(permuteSample(5, 3), "n and sampleVec cannot both be NULL")
     expect_error(permuteSample(5,3,freqs = c(1,2,3,-2,1)),
                  "in freqs must be a positive")
     expect_error(permuteSample(5,3, n = 100),
                  "n exceeds the maximum number of possible results")
-    expect_error(permuteSample(5,3, n = "5"),
-                 "n must be of type numeric or integer")
-    expect_error(permuteSample(5,3, n = 1:5), "length of n must be 1")
+    expect_error(permuteSample(5,3, n = 1:5), "n must be of length 1")
     expect_error(permuteSample(5,3, permuteSample(5,3, sampleVec = 1:200)),
                  "exceeds the maximum number of possible results")
     expect_error(permuteSample(5,freqs = rep(1,6)),

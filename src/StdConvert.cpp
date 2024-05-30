@@ -48,6 +48,11 @@ namespace CppConvert {
             case REALSXP:
             case LGLSXP:
             case INTSXP: {
+                if (Rf_length(input) > 1) {
+                    cpp11::stop(" %s must be of length 1",
+                                nameOfObject.c_str());
+                }
+
                 const double dblInp = Rf_asReal(input);
                 const double posDblInp = std::abs(dblInp);
 
@@ -94,8 +99,9 @@ namespace CppConvert {
                 }
 
                 mpz_class temp;
-                CppConvert::convertMpzClass(input, temp, nameOfObject,
-                                            negPoss);
+                CppConvert::convertMpzClass(
+                    input, temp, nameOfObject, negPoss
+                );
                 const double dblTemp = temp.get_d();
                 const double posDblTemp = std::abs(dblTemp);
 
@@ -131,7 +137,7 @@ namespace CppConvert {
                                 nameOfObject.c_str());
                 }
 
-                result = dblTemp;
+                result = static_cast<T>(dblTemp);
                 break;
             } default: {
                 cpp11::stop(
