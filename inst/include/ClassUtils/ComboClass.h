@@ -12,7 +12,7 @@
 class Combo {
 private:
 
-    SEXP MatForward(int nRows);
+    SEXP MatForward(int nRows, int numIncrement);
     SEXP MatReverse(int nRows);
 
 protected:

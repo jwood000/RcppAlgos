@@ -78,7 +78,7 @@ SEXP Combo::BasicVecReturn() {
     return res;
 }
 
-SEXP Combo::MatForward(int nRows) {
+SEXP Combo::MatForward(int nRows, int numIncrement) {
 
     int nThreads = 1;
     bool LocalPar = Parallel;
@@ -93,6 +93,7 @@ SEXP Combo::MatForward(int nRows) {
     );
 
     zUpdateIndex(vNum, vInt, z, sexpVec, res, m, nRows);
+    increment(IsGmp, mpzIndex, dblIndex, numIncrement);
     if (!IsComb) TopOffPerm(z, myReps, n, m, IsRep, IsMult);
     return res;
 }
@@ -184,7 +185,7 @@ SEXP Combo::nextNumCombs(SEXP RNum) {
 
     int num;
     CppConvert::convertPrimitive(RNum, num, VecType::Integer,
-                                   "The number of results");
+                                 "The number of results");
 
     if (CheckIndLT(IsGmp, mpzIndex, dblIndex,
                    computedRowsMpz, computedRows)) {
@@ -206,8 +207,7 @@ SEXP Combo::nextNumCombs(SEXP RNum) {
             nextIter(freqs, z, n1, m1);
         }
 
-        increment(IsGmp, mpzIndex, dblIndex, numIncrement);
-        return MatForward(nRows);
+        return MatForward(nRows, numIncrement);
     } else if (CheckEqInd(IsGmp, mpzIndex, dblIndex,
                           computedRowsMpz, computedRows)) {
         return ToSeeLast();
@@ -220,7 +220,7 @@ SEXP Combo::prevNumCombs(SEXP RNum) {
 
     int num;
     CppConvert::convertPrimitive(RNum, num, VecType::Integer,
-                                   "The number of results");
+                                 "The number of results");
 
     if (CheckGrTSi(IsGmp, mpzIndex, dblIndex, 1)) {
         int nRows = 0;
@@ -286,7 +286,7 @@ SEXP Combo::nextGather() {
             dblIndex = computedRows + 1;
         }
 
-        return MatForward(nRows);
+        return MatForward(nRows, 0);
     } else {
         return R_NilValue;
     }
