@@ -1,0 +1,14 @@
+pandoc: 3.1.11
+pkgdown: 2.0.9
+pkgdown_sha: ~
+articles:
+  CombinatorialSampling: CombinatorialSampling.html
+  CombinatoricsIterators: CombinatoricsIterators.html
+  CombPermConstraints: CombPermConstraints.html
+  ComputationalMathematics: ComputationalMathematics.html
+  GeneralCombinatorics: GeneralCombinatorics.html
+  HighPerformanceBenchmarks: HighPerformanceBenchmarks.html
+  OtherCombinatorics: OtherCombinatorics.html
+  SubsetSum: SubsetSum.html
+last_built: 2024-05-30T01:59Z
+
