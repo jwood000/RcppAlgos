@@ -8,4 +8,4 @@ remove_whitespace.sh
 ^vignettes/*.html
 scripts/*
 create_md.R
-SO_Answers/*
+SO_Answers/*.R

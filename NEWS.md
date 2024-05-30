@@ -1,3 +1,14 @@
+# RcppAlgos 2.8.
+
+## New Features:
+
+* Can now pass integer convertible results to the sample functions for the `n` parameter.
+
+## Bug Fixes:
+
+* Fixed bug with iterator when multithreading and exhausting the iterator.
+* Enforced values being converted to a primitive to be of length 1.
+
 # RcppAlgos 2.8.3
 
 ## New Features:
