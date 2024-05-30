@@ -154,9 +154,16 @@ namespace CppConvert {
 
         switch (TYPEOF(input)) {
             case RAWSXP: {
-                // deserialise the vector. first int is the size.
+                // de-serialize the vector. first int is the size.
                 const char* raw = (char*) RAW(input);
                 const int* r = (int*) (&raw[intSize]);
+                const int len = ((int*) raw)[0];
+
+                if (len > 1) {
+                    myError = nameOfObject + " must be of length 1";
+                    foundError = true;
+                    break;
+                }
 
                 if (r[0] > 0) {
                     mpz_import(result.get_mpz_t(), r[0], 1,
@@ -179,6 +186,12 @@ namespace CppConvert {
 
                 break;
             } case REALSXP: {
+                if (Rf_length(input) > 1) {
+                    myError = nameOfObject + " must be of length 1";
+                    foundError = true;
+                    break;
+                }
+
                 const double dblInput = Rf_asReal(input);
 
                 if (ISNAN(dblInput)) {
@@ -222,6 +235,12 @@ namespace CppConvert {
             }
             case INTSXP:
             case LGLSXP: {
+                if (Rf_length(input) > 1) {
+                    myError = nameOfObject + " must be of length 1";
+                    foundError = true;
+                    break;
+                }
+
                 const int intInput = Rf_asInteger(input);
                 const int dblInput = Rf_asReal(input);
 
@@ -240,6 +259,12 @@ namespace CppConvert {
                 result = intInput;
                 break;
             } case STRSXP: {
+                if (Rf_length(input) > 1) {
+                    myError = nameOfObject + " must be of length 1";
+                    foundError = true;
+                    break;
+                }
+
                 if (STRING_ELT(input, 0) == NA_STRING) {
                     myError = nameOfObject + " cannot be NA or NaN";
                     foundError = true;
