@@ -9,3 +9,4 @@ remove_whitespace.sh
 scripts/*
 create_md.R
 SO_Answers/*.R
+^codecov\.yml$
