@@ -23,11 +23,8 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        - os: macos-latest
-          INSTALL_DEPS: brew install gmp
-
         config:
-          - {os: macos-latest,   r: 'release'}
+          - {os: macos-latest, INSTALL_DEPS: brew install gmp, r: 'release'}
 
           - {os: windows-latest, r: 'devel'}
           - {os: windows-latest, r: 'release'}
