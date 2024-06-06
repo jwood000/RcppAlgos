@@ -146,7 +146,7 @@
 <span class="r-in"><span><span class="co">## to 10^5 (max element from mySamp)</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/system.time.html" class="external-link">system.time</a></span><span class="op">(</span><span class="va">allFacs</span> <span class="op">&lt;-</span> <span class="fu">divisorsSieve</span><span class="op">(</span><span class="fl">10</span><span class="op">^</span><span class="fl">5</span><span class="op">)</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>    user  system elapsed </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   0.025   0.000   0.024 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   0.025   0.000   0.026 </span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co">## Use generated complete factorization for further</span></span></span>
 <span class="r-in"><span><span class="co">## analysis by accessing the index of allFacs</span></span></span>
@@ -159,12 +159,12 @@
 <span class="r-in"><span><span class="co">## a range is efficient as well</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/system.time.html" class="external-link">system.time</a></span><span class="op">(</span><span class="fu">divisorsSieve</span><span class="op">(</span><span class="fl">10</span><span class="op">^</span><span class="fl">12</span>, <span class="fl">10</span><span class="op">^</span><span class="fl">12</span> <span class="op">+</span> <span class="fl">10</span><span class="op">^</span><span class="fl">5</span><span class="op">)</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>    user  system elapsed </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   0.066   0.000   0.066 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   0.062   0.007   0.069 </span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co">## Use nThreads for improved efficiency</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/system.time.html" class="external-link">system.time</a></span><span class="op">(</span><span class="fu">divisorsSieve</span><span class="op">(</span><span class="fl">10</span><span class="op">^</span><span class="fl">12</span>, <span class="fl">10</span><span class="op">^</span><span class="fl">12</span> <span class="op">+</span> <span class="fl">10</span><span class="op">^</span><span class="fl">5</span>, nThreads <span class="op">=</span> <span class="fl">2</span><span class="op">)</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>    user  system elapsed </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   0.074   0.019   0.062 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   0.069   0.024   0.061 </span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co">## Set 'namedList' to TRUE to return a named list</span></span></span>
 <span class="r-in"><span><span class="fu">divisorsSieve</span><span class="op">(</span><span class="fl">27</span>, <span class="fl">30</span>, namedList <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></span>
@@ -184,7 +184,7 @@
 <span class="r-in"><span><span class="co">## Using nThreads</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/system.time.html" class="external-link">system.time</a></span><span class="op">(</span><span class="fu">divisorsSieve</span><span class="op">(</span><span class="fl">1e5</span>, <span class="fl">2e5</span>, nThreads <span class="op">=</span> <span class="fl">2</span><span class="op">)</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>    user  system elapsed </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   0.022   0.000   0.021 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   0.029   0.000   0.027 </span>
 </code></pre></div>
     </div>
   </div>
