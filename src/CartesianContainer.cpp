@@ -7,7 +7,6 @@
 
 #include "NumbersUtils/Eratosthenes.h"
 #include "ComboCartesian.h"
-#include "CppConvert.h"
 #include "SetUpUtils.h"
 #include <unordered_map>
 #include <numeric>  // std::accumulate
@@ -29,11 +28,21 @@ void convertToString(std::vector<std::string> &tempVec,
         case INTSXP: {
             if (bFac) {
                 cpp11::integers facVec(ListElement);
+                std::vector<int> facIntVec =
+                    CppConvert::GetNumVec<int>(ListElement);
                 cpp11::strings myLevels(facVec.attr("levels"));
                 std::vector<std::string> strVec;
 
-                for (int i = 0, faclen = Rf_length(myLevels); i < faclen; ++i) {
-                    strVec.push_back(myLevels[i]);
+
+                for (int i = 0, faclen = Rf_length(myLevels);
+                     i < faclen; ++i) {
+                    auto it = std::find(
+                        facIntVec.begin(), facIntVec.end(), i + 1
+                    );
+
+                    if (it != facIntVec.end()) {
+                        strVec.push_back(myLevels[i]);
+                    }
                 }
 
                 typePass = tFac;
@@ -293,7 +302,7 @@ SEXP GlueComboCart(const std::vector<int> &cartCombs,
         } else if (typeCheck[tFac]) {
             cpp11::writable::integers_matrix<> intMat(nRows, nCols);
             GetPureOutput(intMat, cartCombs, lastCol,
-                          lenGrps, intVec, nCols, nRows);
+                          lenGrps, facList.front(), nCols, nRows);
             SetFactorClass(intMat, RList[0]);
             return intMat;
         } else if (typeCheck[tLog]) {
@@ -354,8 +363,9 @@ SEXP ComboGridCpp(cpp11::list RList, bool IsRep) {
     std::vector<int> primes;
     getAtLeastNPrimes(primes, sumLength);
 
-    int numFactorVec = std::accumulate(IsFactor.cbegin(),
-                                       IsFactor.cend(), 0);
+    const int numFactorVec = std::accumulate(
+        IsFactor.cbegin(), IsFactor.cend(), 0
+    );
 
     // All duplicates have been removed from RList via
     // lapply(RList, function(x) sort(unique(x)))
@@ -459,8 +469,9 @@ SEXP ComboGridCpp(cpp11::list RList, bool IsRep) {
     comboGrid(cartCombs, lastCol, lenGrps, myVec, primes, IsRep);
 
     const int nRows = lastCol.size();
-    cpp11::sexp res = GlueComboCart(cartCombs, lastCol, lenGrps, facList,
-                                    typeCheck, IsFactor, RList, intVec,
-                                    dblVec, boolVec, charVec, nRows, nCols, IsDF);
+    cpp11::sexp res = GlueComboCart(
+        cartCombs, lastCol, lenGrps, facList, typeCheck, IsFactor,
+        RList, intVec, dblVec, boolVec, charVec, nRows, nCols, IsDF
+    );
     return res;
 }

@@ -76,4 +76,13 @@ test_that("comboGrid generates correct output", {
     ## If NA is an input, we tack on a column of NA's
     df <- comboGrid(NA, 1:10)
     expect_equal(df$Var1, rep(NA, 10))
+
+    ## Test factors where there are more levels than elements
+    df <- comboGrid(factor(letters[1:5], levels = letters),
+                    factor(letters[c(16, 22)]),
+                    c(7, 17))
+
+    expect_equal(levels(df$Var1), letters)
+    expect_equal(levels(df$Var2), letters[c(16, 22)])
+    expect_false(is.factor(df$Var3))
 })
