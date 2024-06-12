@@ -11,14 +11,6 @@
 #include <unordered_map>
 #include <numeric>  // std::accumulate
 
-enum rcppType {
-    tInt = 0,
-    tDbl = 1,
-    tStr = 2,
-    tLog = 3,
-    tFac = 4
-};
-
 void convertToString(std::vector<std::string> &tempVec,
                      SEXP ListElement, rcppType &typePass, bool bFac) {
 
@@ -211,18 +203,15 @@ void PoulateColumn(const std::vector<int> &cartCombs,
     }
 }
 
-SEXP GlueComboCart(const std::vector<int> &cartCombs,
-                   const std::vector<int> &lastCol,
-                   const std::vector<int> &lenGrps,
-                   const std::vector<std::vector<int>> &facList,
-                   const std::vector<int> &typeCheck,
-                   const std::vector<int> &IsFactor,
-                   const cpp11::list &RList,
-                   const std::vector<int> &intVec,
-                   const std::vector<double> &dblVec,
-                   const std::vector<int> &boolVec,
-                   const cpp11::strings &charVec,
-                   int nRows, int nCols, bool IsDF) {
+SEXP GlueComboCart(
+    const std::vector<int> &cartCombs, const std::vector<int> &lastCol,
+    const std::vector<int> &lenGrps,
+    const std::vector<std::vector<int>> &facList,
+    const std::vector<int> &typeCheck, const std::vector<int> &IsFactor,
+    const cpp11::list &RList, const std::vector<int> &intVec,
+    const std::vector<double> &dblVec, const std::vector<int> &boolVec,
+    const cpp11::strings &charVec, int nRows, int nCols, bool IsDF
+) {
 
     if (IsDF) {
         cpp11::writable::list DataFrame(nCols);
@@ -265,9 +254,11 @@ SEXP GlueComboCart(const std::vector<int> &cartCombs,
 
                     if (i < (nCols - 1)) {
                         for (int j = 0, n1 = nCols - 1, row = i, idx = 0,
-                             baseSize = lenGrps.size(); j < baseSize;
+                             baseSize = lenGrps.size(); idx < baseSize;
                              ++idx, row += n1) {
 
+                            // Benchmarks show that this set up is about 30%
+                            // faster than using cpp11::sexp
                             SEXP comb = PROTECT(STRING_ELT(charVec, cartCombs[row]));
 
                             for (int k = 0; k < lenGrps[idx]; ++k, ++j) {
@@ -300,11 +291,11 @@ SEXP GlueComboCart(const std::vector<int> &cartCombs,
                           lenGrps, intVec, nCols, nRows);
             return intMat;
         } else if (typeCheck[tFac]) {
-            cpp11::writable::integers_matrix<> intMat(nRows, nCols);
-            GetPureOutput(intMat, cartCombs, lastCol,
+            cpp11::writable::integers_matrix<> facMat(nRows, nCols);
+            GetPureOutput(facMat, cartCombs, lastCol,
                           lenGrps, facList.front(), nCols, nRows);
-            SetFactorClass(intMat, RList[0]);
-            return intMat;
+            SetFactorClass(facMat, RList[0]);
+            return facMat;
         } else if (typeCheck[tLog]) {
             cpp11::writable::logicals_matrix<> boolMat(nRows, nCols);
             GetPureOutput(boolMat, cartCombs, lastCol,
@@ -316,10 +307,10 @@ SEXP GlueComboCart(const std::vector<int> &cartCombs,
                           lenGrps, dblVec, nCols, nRows);
             return dblMat;
         } else {
-            cpp11::writable::strings_matrix<> res(nRows, nCols);
-            GetCharOutput(res, cartCombs, lastCol,
+            cpp11::writable::strings_matrix<> charMat(nRows, nCols);
+            GetCharOutput(charMat, cartCombs, lastCol,
                           lenGrps, charVec, nCols, nRows);
-            return res;
+            return charMat;
         }
     }
 }
