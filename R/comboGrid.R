@@ -41,17 +41,8 @@ comboGrid <- function(..., repetition = TRUE) {
         pools <- pools[-idx_nas]
     }
 
-    numChars <- sum(sapply(pools, is.character))
-    convertCharToFac <- numChars < length(pools) && length(pools) > 1
-
     pools <- lapply(pools, function(x) {
-        t <- sort(unique(x), na.last = FALSE)
-
-        if (convertCharToFac && is.character(t)) {
-            return(factor(t, levels = t))
-        } else {
-            return(t)
-        }
+        sort(unique(x), na.last = FALSE)
     })
 
     res <- .Call(`_RcppAlgos_ComboGridCpp`, pools, repetition)
