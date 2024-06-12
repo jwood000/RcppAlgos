@@ -2,6 +2,14 @@
 
 #include "CppConvert.h"
 
+enum rcppType {
+    tInt = 0,
+    tDbl = 1,
+    tStr = 2,
+    tLog = 3,
+    tFac = 4
+};
+
 void SetType(VecType &myType, SEXP Rv);
 void SetFactorClass(SEXP res, SEXP Rv);
 int GetLength(SEXP Rv, VecType myType);

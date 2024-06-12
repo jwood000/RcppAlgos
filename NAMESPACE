@@ -102,6 +102,7 @@ export(
   comboGroupsCount,
   comboGroupsSample,
   comboGrid,
+  expandGrid,
   comboIter,
   permuteIter,
   partitionsIter,
