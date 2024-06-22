@@ -33,24 +33,20 @@ SEXP CombClassNew(SEXP RVals, SEXP RboolVec, SEXP freqInfo, SEXP Rparallel,
                   SEXP Rtolerance, SEXP RmIsNull, SEXP RretVal) {
 
     const int ReturnValue = Rf_asInteger(RretVal);
-    const std::vector<int> bVec   = CppConvert::GetNumVec<int>(RboolVec);
-    const std::vector<int> myReps = CppConvert::GetNumVec<int>(
-        VECTOR_ELT(freqInfo, 0)
-    );
-
-    const std::vector<int> freqs = CppConvert::GetNumVec<int>(
-        VECTOR_ELT(freqInfo, 1)
-    );
+    const std::vector<int> bVec   =
+        CppConvert::GetVec<int>(RboolVec);
+    const std::vector<int> myReps =
+        CppConvert::GetVec<int>(VECTOR_ELT(freqInfo, 0));
+    const std::vector<int> freqs =
+        CppConvert::GetVec<int>(VECTOR_ELT(freqInfo, 1));
 
     const int m = Rf_asInteger(VECTOR_ELT(RVals, 3));
     const int maxThreads = Rf_asInteger(VECTOR_ELT(RVals, 5));
 
-    const std::vector<double> vNum = CppConvert::GetNumVec<double>(
-        VECTOR_ELT(RVals, 1)
-    );
-    std::vector<int> vInt = CppConvert::GetNumVec<int>(
-        VECTOR_ELT(RVals, 2)
-    );
+    const std::vector<double> vNum =
+        CppConvert::GetVec<double>(VECTOR_ELT(RVals, 1));
+    std::vector<int> vInt =
+        CppConvert::GetVec<int>(VECTOR_ELT(RVals, 2));
 
     VecType myType;
     SetType(myType, VECTOR_ELT(RVals, 0));

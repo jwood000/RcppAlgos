@@ -190,13 +190,8 @@ SEXP SampCombPermMain(SEXP Rv, const std::vector<int> &vInt,
 
             return res;
         } case VecType::Complex : {
-            std::vector<Rcomplex> stlCmplxVec(n);
-            Rcomplex* vecCmplx = COMPLEX(Rv);
-
-            for (int i = 0; i < n; ++i) {
-                stlCmplxVec[i] = vecCmplx[i];
-            }
-
+            std::vector<Rcomplex> stlCmplxVec =
+                CppConvert::GetVec<Rcomplex>(Rv);
             cpp11::sexp res = Rf_allocMatrix(CPLXSXP, sampSize, m);
             Rcomplex* matCmplx = COMPLEX(res);
 
@@ -206,13 +201,7 @@ SEXP SampCombPermMain(SEXP Rv, const std::vector<int> &vInt,
 
             return res;
         } case VecType::Raw : {
-            std::vector<Rbyte> stlRawVec(n);
-            Rbyte* rawVec = RAW(Rv);
-
-            for (int i = 0; i < n; ++i) {
-                stlRawVec[i] = rawVec[i];
-            }
-
+            std::vector<Rbyte> stlRawVec = CppConvert::GetVec<Rbyte>(Rv);
             cpp11::sexp res = Rf_allocMatrix(RAWSXP, sampSize, m);
             Rbyte* rawMat = RAW(res);
 
@@ -222,13 +211,7 @@ SEXP SampCombPermMain(SEXP Rv, const std::vector<int> &vInt,
 
             return res;
         } case VecType::Logical : {
-            std::vector<int> vBool(n, 0);
-            int* vecBool = LOGICAL(Rv);
-
-            for (int i = 0; i < n; ++i) {
-                vBool[i] = vecBool[i];
-            }
-
+            std::vector<int> vBool = CppConvert::GetVec<int>(Rv);
             cpp11::sexp res = Rf_allocMatrix(LGLSXP, sampSize, m);
             int* matBool = LOGICAL(res);
 

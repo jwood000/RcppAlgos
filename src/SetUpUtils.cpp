@@ -253,7 +253,7 @@ void SetBasic(SEXP Rv, std::vector<double> &vNum,
         vNum.resize(n);
         std::iota(vNum.begin(), vNum.end(), static_cast<double>(mnmx.first));
     } else {
-        vNum = CppConvert::GetNumVec<double>(Rv);
+        vNum = CppConvert::GetVec<double>(Rv);
         n = vNum.size();
     }
 }

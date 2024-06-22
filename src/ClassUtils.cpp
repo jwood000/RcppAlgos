@@ -248,13 +248,17 @@ void zUpdateIndex(const std::vector<double> &vNum,
 
             for (std::size_t j = 0; j < m; ++j) {
                 int ind = 0;
-                bool bTestImg  = std::abs(xCmplxPt[ind].i - yCmplxPt[j].i) > myTolerance;
-                bool bTestReal = std::abs(xCmplxPt[ind].r - yCmplxPt[j].r) > myTolerance;
+                bool bTestImg  =
+                    std::abs(xCmplxPt[ind].i - yCmplxPt[j].i) > myTolerance;
+                bool bTestReal =
+                    std::abs(xCmplxPt[ind].r - yCmplxPt[j].r) > myTolerance;
 
                 while (ind < n1 && (bTestImg || bTestReal)) {
                     ++ind;
-                    bTestImg  = std::abs(xCmplxPt[ind].i - yCmplxPt[j].i) > myTolerance;
-                    bTestReal = std::abs(xCmplxPt[ind].r - yCmplxPt[j].r) > myTolerance;
+                    bTestImg =
+                        std::abs(xCmplxPt[ind].i - yCmplxPt[j].i) > myTolerance;
+                    bTestReal =
+                        std::abs(xCmplxPt[ind].r - yCmplxPt[j].r) > myTolerance;
                 }
 
                 z[j] = ind;
@@ -262,16 +266,11 @@ void zUpdateIndex(const std::vector<double> &vNum,
 
             break;
         } case RAWSXP: {
-            cpp11::sexp yRaw = Rf_allocVector(RAWSXP, m);
             Rbyte* matRaw = RAW(mat);
-            Rbyte* xRawPt = RAW(v);
-            std::vector<Rbyte> stlRawVec(n1 + 1);
-
-            for (int i = 0; i <= n1; ++i) {
-                stlRawVec[i] = xRawPt[i];
-            }
+            cpp11::sexp yRaw = Rf_allocVector(RAWSXP, m);
 
             Rbyte* yRawPt = RAW(yRaw);
+            std::vector<Rbyte> stlRawVec = CppConvert::GetVec<Rbyte>(v);
             UpdateExact(matRaw, yRawPt, stlRawVec, z, lastRow, nRows, m, n1);
             break;
         } default:{

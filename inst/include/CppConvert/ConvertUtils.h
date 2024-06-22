@@ -21,7 +21,7 @@ namespace CppConvert {
     bool CheckNA(double val, VecType myType);
 
     template <typename T>
-    std::vector<T> GetNumVec(SEXP Rv);
+    std::vector<T> GetVec(SEXP Rv);
 
     int rawExport(char* raw, mpz_class value, std::size_t totals);
     void QuickSort(std::vector<mpz_class> &arr, int left,

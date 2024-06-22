@@ -288,9 +288,7 @@ SEXP GetCombPermApply(SEXP Rv, const std::vector<double> &vNum,
         } case VecType::Complex : {
             cpp11::sexp vectorPass = Rf_allocVector(CPLXSXP, m);
             Rcomplex* ptr_vec = COMPLEX(vectorPass);
-
-            Rcomplex* cmplxVec = COMPLEX(Rv);
-            std::vector<Rcomplex> vCmplx(cmplxVec, cmplxVec + n);
+            std::vector<Rcomplex> vCmplx = CppConvert::GetVec<Rcomplex>(Rv);
             cpp11::sexp res = ApplyFunction(vCmplx, vectorPass, ptr_vec,
                                             n, m, IsComb, IsRep, nRows,
                                             freqs, z, IsMult, stdFun,
@@ -299,9 +297,7 @@ SEXP GetCombPermApply(SEXP Rv, const std::vector<double> &vNum,
         } case VecType::Raw : {
             cpp11::sexp vectorPass = Rf_allocVector(RAWSXP, m);
             Rbyte* ptr_vec = RAW(vectorPass);
-
-            Rbyte* rawVec = RAW(Rv);
-            std::vector<Rbyte> vByte(rawVec, rawVec + n);
+            std::vector<Rbyte> vByte = CppConvert::GetVec<Rbyte>(Rv);
             cpp11::sexp res = ApplyFunction(vByte, vectorPass, ptr_vec,
                                             n, m, IsComb, IsRep, nRows,
                                             freqs, z, IsMult, stdFun,

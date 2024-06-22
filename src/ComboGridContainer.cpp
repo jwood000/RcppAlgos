@@ -21,7 +21,7 @@ void convertToString(std::vector<std::string> &tempVec,
             if (bFac) {
                 cpp11::integers facVec(ListElement);
                 std::vector<int> facIntVec =
-                    CppConvert::GetNumVec<int>(ListElement);
+                    CppConvert::GetVec<int>(ListElement);
                 cpp11::strings myLevels(facVec.attr("levels"));
                 std::vector<std::string> strVec;
 
@@ -89,6 +89,42 @@ void convertToString(std::vector<std::string> &tempVec,
             }
 
             break;
+        } case CPLXSXP : {
+            std::vector<Rcomplex> cmplxVec =
+                CppConvert::GetVec<Rcomplex>(ListElement);
+            typePass = tCpx;
+
+            for (auto v: cmplxVec) {
+                std::string r_r = std::to_string(v.r);
+                std::string r_i = std::to_string(v.i);
+
+                // Get the real part first
+                while (r_r.back() == '0') {
+                    r_r.pop_back();
+                }
+
+                if (std::floor(v.r) != v.r) r_r += "dbl";
+
+                // Now we get the imaginary part
+                while (r_i.back() == '0') {
+                    r_i.pop_back();
+                }
+
+                if (std::floor(v.i) != v.i) r_i += "dbl";
+                tempVec.push_back(r_r + "_" + r_i);
+            }
+
+            break;
+        } case RAWSXP: {
+            std::vector<Rbyte> rawVec = CppConvert::GetVec<Rbyte>(ListElement);
+            typePass = tRaw;
+
+            for (auto v: rawVec) {
+                std::string r = std::to_string(v);
+                tempVec.push_back(r);
+            }
+
+            break;
         } case STRSXP: {
             std::vector<std::string> strVec;
             typePass = tStr;
@@ -149,8 +185,8 @@ void GetCharOutput(cpp11::writable::strings_matrix<> &res,
     }
 }
 
-template <typename matType, typename T>
-void GetPureOutput(matType &mat,
+template <typename T>
+void GetPureOutput(T* mat,
                    const std::vector<int> &cartCombs,
                    const std::vector<int> &lastCol,
                    const std::vector<int> &lenGrps,
@@ -165,25 +201,26 @@ void GetPureOutput(matType &mat,
 
             auto&& comb = standardVec[cartCombs[c_idx]];
 
-            for (int k = 0; k < grpSize; ++k) {
-                mat(m_idx + k, j) = comb;
+            for (int k = 0, i_idx = j * nRows + m_idx; k < grpSize; ++k) {
+                mat[i_idx + k] = comb;
             }
         }
 
-        for (int k = 0; k < lenGrps[i]; ++k, ++row) {
-            mat(m_idx + k, n1) = standardVec[lastCol[row]];
+        for (int k = 0, i_idx = n1 * nRows + m_idx;
+             k < lenGrps[i]; ++k, ++row) {
+            mat[i_idx + k] = standardVec[lastCol[row]];
         }
 
         m_idx += lenGrps[i];
     }
 }
 
-template <typename cpp11Type, typename T>
+template <typename T>
 void PoulateColumn(const std::vector<int> &cartCombs,
                    const std::vector<int> &lastCol,
                    const std::vector<int> &lenGrps,
                    const std::vector<T> &poolVec,
-                   cpp11Type &res, int nCols, int nRows, int i) {
+                   T* res, int nCols, int nRows, int i) {
 
     if (i < (nCols - 1)) {
         for (int j = 0, n1 = nCols - 1, row = i, idx = 0,
@@ -210,6 +247,7 @@ SEXP GlueComboCart(
     const std::vector<int> &typeCheck, const std::vector<int> &IsFactor,
     const cpp11::list &RList, const std::vector<int> &intVec,
     const std::vector<double> &dblVec, const std::vector<int> &boolVec,
+    const std::vector<Rcomplex> &cmplxVec, const std::vector<Rbyte> &rawVec,
     const cpp11::strings &charVec, int nRows, int nCols, bool IsDF
 ) {
 
@@ -219,7 +257,8 @@ SEXP GlueComboCart(
         for (int i = 0, facInd = 0; i < nCols; ++i) {
             switch (TYPEOF(RList[i])) {
                 case INTSXP: {
-                    cpp11::writable::integers intSexpVec(nRows);
+                    cpp11::sexp res = Rf_allocVector(INTSXP, nRows);
+                    int* intSexpVec = INTEGER(res);
 
                     if (IsFactor[i]) {
                         const std::vector<int> facVec(
@@ -228,26 +267,42 @@ SEXP GlueComboCart(
 
                         PoulateColumn(cartCombs, lastCol, lenGrps,
                                       facVec, intSexpVec, nCols, nRows, i);
-                        SetFactorClass(intSexpVec, RList[i]);
+                        SetFactorClass(res, RList[i]);
                         ++facInd;
                     } else {
                         PoulateColumn(cartCombs, lastCol, lenGrps,
                                       intVec, intSexpVec, nCols, nRows, i);
                     }
 
-                    DataFrame[i] = intSexpVec;
+                    DataFrame[i] = res;
                     break;
                 } case LGLSXP: {
-                    cpp11::writable::logicals boolSexpVec(nRows);
+                    cpp11::sexp res = Rf_allocVector(LGLSXP, nRows);
+                    int* boolSexpVec = LOGICAL(res);
                     PoulateColumn(cartCombs, lastCol, lenGrps,
                                   boolVec, boolSexpVec, nCols, nRows, i);
-                    DataFrame[i] = boolSexpVec;
+                    DataFrame[i] = res;
                     break;
                 } case REALSXP: {
-                    cpp11::writable::doubles dblSexpVec(nRows);
+                    cpp11::sexp res = Rf_allocVector(REALSXP, nRows);
+                    double* dblSexpVec = REAL(res);
                     PoulateColumn(cartCombs, lastCol, lenGrps,
                                   dblVec, dblSexpVec, nCols, nRows, i);
-                    DataFrame[i] = dblSexpVec;
+                    DataFrame[i] = res;
+                    break;
+                } case CPLXSXP : {
+                    cpp11::sexp res = Rf_allocVector(CPLXSXP, nRows);
+                    Rcomplex* cmplxSexpVec = COMPLEX(res);
+                    PoulateColumn(cartCombs, lastCol, lenGrps, cmplxVec,
+                                  cmplxSexpVec, nCols, nRows, i);
+                    DataFrame[i] = res;
+                    break;
+                } case RAWSXP : {
+                    cpp11::sexp res = Rf_allocVector(RAWSXP, nRows);
+                    Rbyte* rawSexpVec = RAW(res);
+                    PoulateColumn(cartCombs, lastCol, lenGrps,
+                                  rawVec, rawSexpVec, nCols, nRows, i);
+                    DataFrame[i] = res;
                     break;
                 } case STRSXP: {
                     cpp11::writable::strings sexpVec(nRows);
@@ -285,32 +340,46 @@ SEXP GlueComboCart(
         DataFrame.attr("class") = "data.frame";
         return DataFrame;
     } else {
-        if (typeCheck[tInt]) {
-            cpp11::writable::integers_matrix<> intMat(nRows, nCols);
-            GetPureOutput(intMat, cartCombs, lastCol,
-                          lenGrps, intVec, nCols, nRows);
-            return intMat;
-        } else if (typeCheck[tFac]) {
-            cpp11::writable::integers_matrix<> facMat(nRows, nCols);
-            GetPureOutput(facMat, cartCombs, lastCol,
-                          lenGrps, facList.front(), nCols, nRows);
-            SetFactorClass(facMat, RList[0]);
-            return facMat;
-        } else if (typeCheck[tLog]) {
-            cpp11::writable::logicals_matrix<> boolMat(nRows, nCols);
-            GetPureOutput(boolMat, cartCombs, lastCol,
-                          lenGrps, boolVec, nCols, nRows);
-            return boolMat;
-        } else if (typeCheck[tDbl]) {
-            cpp11::writable::doubles_matrix<> dblMat(nRows, nCols);
-            GetPureOutput(dblMat, cartCombs, lastCol,
-                          lenGrps, dblVec, nCols, nRows);
-            return dblMat;
-        } else {
-            cpp11::writable::strings_matrix<> charMat(nRows, nCols);
-            GetCharOutput(charMat, cartCombs, lastCol,
-                          lenGrps, charVec, nCols, nRows);
-            return charMat;
+        switch (TYPEOF(RList[0])) {
+            case INTSXP : {
+                cpp11::sexp res = Rf_allocMatrix(INTSXP, nRows, nCols);
+                int* intMat = INTEGER(res);
+                GetPureOutput(intMat, cartCombs, lastCol,
+                              lenGrps, intVec, nCols, nRows);
+                if (typeCheck[tFac]) SetFactorClass(res, RList[0]);
+                return res;
+            } case LGLSXP : {
+                cpp11::sexp res = Rf_allocMatrix(LGLSXP, nRows, nCols);
+                int* boolMat = LOGICAL(res);
+                GetPureOutput(boolMat, cartCombs, lastCol,
+                              lenGrps, boolVec, nCols, nRows);
+                return res;
+            } case RAWSXP : {
+                cpp11::sexp res = Rf_allocMatrix(RAWSXP, nRows, nCols);
+                Rbyte* rawMat = RAW(res);
+                GetPureOutput(rawMat, cartCombs, lastCol,
+                              lenGrps, rawVec, nCols, nRows);
+                return res;
+            } case CPLXSXP : {
+                cpp11::sexp res = Rf_allocMatrix(CPLXSXP, nRows, nCols);
+                Rcomplex* cmplxMat = COMPLEX(res);
+                GetPureOutput(cmplxMat, cartCombs, lastCol,
+                              lenGrps, cmplxVec, nCols, nRows);
+                return res;
+            } case REALSXP : {
+                cpp11::sexp res = Rf_allocMatrix(REALSXP, nRows, nCols);
+                double* dblMat = REAL(res);
+                GetPureOutput(dblMat, cartCombs, lastCol,
+                              lenGrps, dblVec, nCols, nRows);
+                return res;
+            } case STRSXP : {
+                cpp11::writable::strings_matrix<> charMat(nRows, nCols);
+                GetCharOutput(charMat, cartCombs, lastCol,
+                              lenGrps, charVec, nCols, nRows);
+                return charMat;
+            } default : {
+                cpp11::stop("Only atomic types are supported for v");
+            }
         }
     }
 }
@@ -362,9 +431,11 @@ SEXP ComboGridCpp(cpp11::list RList, bool IsRep) {
     // lapply(RList, function(x) sort(unique(x)))
     std::vector<std::vector<int>> myVec(nCols);
     std::unordered_map<std::string, int> mapIndex;
-    std::vector<int> typeCheck(5, 0);
+    std::vector<int> typeCheck(N_TYPES, 0);
 
     cpp11::writable::strings charVec(sumLength);
+    std::vector<Rcomplex> cmplxVec(sumLength);
+    std::vector<Rbyte> rawVec(sumLength);
     std::vector<double> dblVec(sumLength);
     std::vector<int> intVec(sumLength);
     std::vector<int> boolVec(sumLength);
@@ -408,6 +479,14 @@ SEXP ComboGridCpp(cpp11::list RList, bool IsRep) {
                     dblVec[myIndex] = REAL(RList[i])[j];
                     typeCheck[tDbl] = 1;
                     break;
+                } case tCpx: {
+                    cmplxVec[myIndex] = COMPLEX(RList[i])[j];
+                    typeCheck[tCpx] = 1;
+                    break;
+                } case tRaw: {
+                    rawVec[myIndex] = RAW(RList[i])[j];
+                    typeCheck[tRaw] = 1;
+                    break;
                 } case tStr: {
                     SET_STRING_ELT(charVec, myIndex, STRING_ELT(RList[i], j));
                     typeCheck[tStr] = 1;
@@ -416,6 +495,8 @@ SEXP ComboGridCpp(cpp11::list RList, bool IsRep) {
                     boolVec[myIndex] = LOGICAL(RList[i])[j];
                     typeCheck[tLog] = 1;
                     break;
+                } default : {
+                    cpp11::stop("Only atomic types are supported for v");
                 }
             }
 
@@ -461,8 +542,8 @@ SEXP ComboGridCpp(cpp11::list RList, bool IsRep) {
 
     const int nRows = lastCol.size();
     cpp11::sexp res = GlueComboCart(
-        cartCombs, lastCol, lenGrps, facList, typeCheck, IsFactor,
-        RList, intVec, dblVec, boolVec, charVec, nRows, nCols, IsDF
+        cartCombs, lastCol, lenGrps, facList, typeCheck, IsFactor, RList,
+        intVec, dblVec, boolVec, cmplxVec, rawVec, charVec, nRows, nCols, IsDF
     );
     return res;
 }

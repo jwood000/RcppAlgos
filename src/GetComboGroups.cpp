@@ -311,13 +311,7 @@ SEXP GetComboGroups(
 
             return res;
         } case VecType::Complex: {
-            std::vector<Rcomplex> stlCpxVec(n);
-            Rcomplex* vecCmplx = COMPLEX(Rv);
-
-            for (int i = 0; i < n; ++i) {
-                stlCpxVec[i] = vecCmplx[i];
-            }
-
+            std::vector<Rcomplex> stlCpxVec = CppConvert::GetVec<Rcomplex>(Rv);
             cpp11::sexp res = Rf_allocMatrix(CPLXSXP, numResults, n);
             Rcomplex* matCmplx = COMPLEX(res);
 
@@ -327,13 +321,7 @@ SEXP GetComboGroups(
 
             return res;
         } case VecType::Raw : {
-            std::vector<Rbyte> stlRawVec(n);
-            Rbyte* vecRaw = RAW(Rv);
-
-            for (int i = 0; i < n; ++i) {
-                stlRawVec[i] = vecRaw[i];
-            }
-
+            std::vector<Rbyte> stlRawVec = CppConvert::GetVec<Rbyte>(Rv);
             cpp11::sexp res = Rf_allocMatrix(RAWSXP, numResults, n);
             Rbyte* matRaw = RAW(res);
 
