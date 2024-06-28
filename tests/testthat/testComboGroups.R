@@ -266,9 +266,9 @@ test_that("comboGroups produces correct results when groups vary", {
 
     # comboGroupsCount(30, grpSizes = rep(1:4, 3))
     # Big Integer ('bigz') :
-    # [1] 2141990886858322500000
+    # [1] 8567963547433290000000
     expect_equal(dim(comboGroups(30, grpSizes = rep(1:4, 3),
-                                 lower = "2141990886858322499981")), c(20, 30))
+                                 lower = "8567963547433289999981")), c(20, 30))
     expect_equal(comboGroups(10, grpSizes = 1:4, lower = 201, upper = 300),
                  comboGroups(10, grpSizes = 1:4)[201:300, ])
 
@@ -287,6 +287,15 @@ test_that("comboGroups produces correct results when groups vary", {
                      lower = "2043503369875369321920000")[1, ]
 
     expect_equal(unname(t), r)
+
+    ## See issue 53
+    ##  ComboGroups for various group size seems missing some combination
+    sol <- matrix(c("a", "a", "a", "b", "b", "c",
+                    "b", "c", "d", "c", "d", "d",
+                    "c", "b", "b", "a", "a", "a",
+                    "d", "d", "c", "d", "c", "b"), ncol = 4)
+    expect_equal(unname(comboGroups(letters[1:4], grpSizes = c(1, 1, 2))),
+                 sol)
 
     expect_equal(comboGroups(3, grpSizes = 1:2),
                  comboGroupsSample(

@@ -40,16 +40,16 @@ bool nextCmbGrpGen(std::vector<int> &z, int idx1, int idx2,
     return false;
 }
 
-double numCmbGrpGen(const std::vector<int> &grp, int n) {
+double numCmbGrpGen(const std::vector<int> &grp, int n, bool OneGrp) {
 
     double result = 1;
     int curr_size = n;
     std::unordered_map<int, int> table;
 
-    for (auto g: grp) {
-        result    *= nChooseK(curr_size, g);
-        curr_size -= g;
-        ++table[g];
+    for (int i = OneGrp; i < static_cast<int>(grp.size()); ++i) {
+        result    *= nChooseK(curr_size, grp[i]);
+        curr_size -= grp[i];
+        ++table[grp[i]];
     }
 
     if (result < std::numeric_limits<double>::max()) {
@@ -66,7 +66,7 @@ double numCmbGrpGen(const std::vector<int> &grp, int n) {
     }
 }
 
-mpz_class numCmbGrpGenGmp(const std::vector<int> &grp, int n) {
+mpz_class numCmbGrpGenGmp(const std::vector<int> &grp, int n, bool OneGrp) {
 
     mpz_class result(1);
     mpz_class temp(1);
@@ -74,11 +74,11 @@ mpz_class numCmbGrpGenGmp(const std::vector<int> &grp, int n) {
     int curr_size = n;
     std::unordered_map<int, int> table;
 
-    for (auto g: grp) {
-        nChooseKGmp(temp, curr_size, g);
+    for (int i = OneGrp; i < static_cast<int>(grp.size()); ++i) {
+        nChooseKGmp(temp, curr_size, grp[i]);
         result    *= temp;
-        curr_size -= g;
-        ++table[g];
+        curr_size -= grp[i];
+        ++table[grp[i]];
     }
 
     mpz_class myDiv(1);
@@ -96,10 +96,17 @@ ComboGroupsGeneral::ComboGroupsGeneral(
     int n_, int numGroups, int i1, int i2,
     int bnd, GroupHelper MyGrp_, bool OneGrp_
 ) : ComboGroupsTemplate(n_, numGroups, i1, i2, bnd),
-    MyGrp(MyGrp_) {
+    genGrps(r), MyGrp(MyGrp_), realGrps(MyGrp_.grp) {
 
     OneGrp = OneGrp_;
     GroupType = "General";
+
+    if (OneGrp) {
+        const int numOneGrps = realGrps.front();
+        genGrps += (numOneGrps - 1);
+        realGrps.erase(realGrps.begin());
+        realGrps.insert(realGrps.begin(), numOneGrps, 1);
+    }
 }
 
 bool ComboGroupsGeneral::nextComboGroup(std::vector<int> &z) {
@@ -107,11 +114,11 @@ bool ComboGroupsGeneral::nextComboGroup(std::vector<int> &z) {
 }
 
 double ComboGroupsGeneral::numGroupCombs() {
-    return numCmbGrpGen(MyGrp.grp, n);
+    return numCmbGrpGen(MyGrp.grp, n, OneGrp);
 }
 
 mpz_class ComboGroupsGeneral::numGroupCombsGmp() {
-    return numCmbGrpGenGmp(MyGrp.grp, n);
+    return numCmbGrpGenGmp(MyGrp.grp, n, OneGrp);
 }
 
 void removeFirstSet(std::vector<int> &v, int &p) {
@@ -326,8 +333,8 @@ std::vector<int> ComboGroupsGeneral::nthComboGroup(double myIndex) {
     int p = n;
     int q = n;
 
-    std::vector<int> grpCopy(MyGrp.grp.begin(), MyGrp.grp.end());
-    std::vector<int> grpSets = GenerateGrpSet(MyGrp.grp, r);
+    std::vector<int> grpCopy(realGrps);
+    std::vector<int> grpSets = GenerateGrpSet(realGrps, genGrps);
 
     const int nSets = grpSets.size();
     std::int64_t intIdx = myIndex;
@@ -342,11 +349,11 @@ std::vector<int> ComboGroupsGeneral::nthComboGroup(double myIndex) {
 
         removeFirstSet(grpCopy, p);
         const std::int64_t secLen = static_cast<std::int64_t>(
-            numCmbGrpGen(grpCopy, p)
+            numCmbGrpGen(grpCopy, p, grpCopy.front() == 1)
         );
 
         const std::int64_t idx = intIdx / secLen;
-        const int g = MyGrp.grp[j];
+        const int g = realGrps[j];
 
         if (grpSets[i] == 1) {
             SettleRes(v, res, idx_used, mpzDefault, n, q, g, k, idx);
@@ -370,8 +377,8 @@ std::vector<int> ComboGroupsGeneral::nthComboGroupGmp(
     int p = n;
     int q = n;
 
-    std::vector<int> grpCopy(MyGrp.grp.begin(), MyGrp.grp.end());
-    std::vector<int> grpSets = GenerateGrpSet(MyGrp.grp, r);
+    std::vector<int> grpCopy(realGrps);
+    std::vector<int> grpSets = GenerateGrpSet(realGrps, genGrps);
     const int nSets = grpSets.size();
 
     std::vector<int> res(n, 0);
@@ -386,9 +393,9 @@ std::vector<int> ComboGroupsGeneral::nthComboGroupGmp(
     for (int i = 0, j = 0, k = 0; i < nSets; j += grpSets[i], ++i) {
 
         removeFirstSet(grpCopy, p);
-        secLen = numCmbGrpGenGmp(grpCopy, p);
+        secLen = numCmbGrpGenGmp(grpCopy, p, grpCopy.front() == 1);
         idx = mpzIdx / secLen;
-        const int g = MyGrp.grp[j];
+        const int g = realGrps[j];
 
         if (grpSets[i] == 1) {
             SettleResGmp(v, res, idx_used, idx, n, q, g, k);
@@ -410,17 +417,6 @@ void ComboGroupsGeneral::FinalTouch(
     const std::vector<mpz_class> &myBigSamp, bool IsSample
 ) {
 
-    if (OneGrp) {
-        const int numOneGrps = MyGrp.grp.front();
-
-        std::vector<int> realGrps(MyGrp.grp);
-        realGrps.erase(realGrps.begin());
-        realGrps.insert(realGrps.begin(), numOneGrps, 1);
-
-        FinalTouchMisc(res, IsArray, nRows, IsNamed, realGrps, mySample,
-                       myBigSamp, IsSample, IsGmp, realGrps.size(), n);
-    } else {
-        FinalTouchMisc(res, IsArray, nRows, IsNamed, MyGrp.grp,
-                       mySample, myBigSamp, IsSample, IsGmp, r, n);
-    }
+    FinalTouchMisc(res, IsArray, nRows, IsNamed, realGrps,
+                   mySample, myBigSamp, IsSample, IsGmp, genGrps, n);
 }
