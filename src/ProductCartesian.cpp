@@ -301,6 +301,8 @@ SEXP GlueProdCart(
                 GetCharOutput(charMat, idx, lenGrps,
                               charVec, z, nCols, nRows);
                 return charMat;
+            } default : {
+                cpp11::stop("Only atomic types are supported for v");
             }
         }
     }
