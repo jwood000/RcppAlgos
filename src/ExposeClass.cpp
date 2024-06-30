@@ -13,7 +13,7 @@ static void Finalizer(SEXP ext) {
         return;
     }
 
-    class Combo* ptr = (class Combo*) R_ExternalPtrAddr(ext);
+    class Iterator* ptr = (class Iterator*) R_ExternalPtrAddr(ext);
     R_ClearExternalPtr(ext);
     if (ptr) delete ptr;
 }
@@ -33,7 +33,7 @@ SEXP CombClassNew(SEXP RVals, SEXP RboolVec, SEXP freqInfo, SEXP Rparallel,
                   SEXP Rtolerance, SEXP RmIsNull, SEXP RretVal) {
 
     const int ReturnValue = Rf_asInteger(RretVal);
-    const std::vector<int> bVec   =
+    const std::vector<int> bVec =
         CppConvert::GetVec<int>(RboolVec);
     const std::vector<int> myReps =
         CppConvert::GetVec<int>(VECTOR_ELT(freqInfo, 0));
@@ -253,79 +253,79 @@ SEXP CombClassNew(SEXP RVals, SEXP RboolVec, SEXP freqInfo, SEXP Rparallel,
 
 [[cpp11::register]]
 SEXP StartOverGlue(SEXP ext) {
-    class Combo* ptr = (class Combo*) R_ExternalPtrAddr(ext);
+    class Iterator* ptr = (class Iterator*) R_ExternalPtrAddr(ext);
     ptr->startOver();
     return R_NilValue;
 }
 
 [[cpp11::register]]
 SEXP NextCombGlue(SEXP ext) {
-    class Combo* ptr = (class Combo*) R_ExternalPtrAddr(ext);
+    class Iterator* ptr = (class Iterator*) R_ExternalPtrAddr(ext);
     return ptr->nextComb();
 }
 
 [[cpp11::register]]
 SEXP NextNumCombGlue(SEXP ext, SEXP Rnum) {
-    class Combo* ptr = (class Combo*) R_ExternalPtrAddr(ext);
+    class Iterator* ptr = (class Iterator*) R_ExternalPtrAddr(ext);
     return ptr->nextNumCombs(Rnum);
 }
 
 [[cpp11::register]]
 SEXP NextGatherGlue(SEXP ext) {
-    class Combo* ptr = (class Combo*) R_ExternalPtrAddr(ext);
+    class Iterator* ptr = (class Iterator*) R_ExternalPtrAddr(ext);
     return ptr->nextGather();
 }
 
 [[cpp11::register]]
 SEXP PrevCombGlue(SEXP ext) {
-    class Combo* ptr = (class Combo*) R_ExternalPtrAddr(ext);
+    class Iterator* ptr = (class Iterator*) R_ExternalPtrAddr(ext);
     return ptr->prevComb();
 }
 
 [[cpp11::register]]
 SEXP PrevNumCombGlue(SEXP ext, SEXP Rnum) {
-    class Combo* ptr = (class Combo*) R_ExternalPtrAddr(ext);
+    class Iterator* ptr = (class Iterator*) R_ExternalPtrAddr(ext);
     return ptr->prevNumCombs(Rnum);
 }
 
 [[cpp11::register]]
 SEXP PrevGatherGlue(SEXP ext) {
-    class Combo* ptr = (class Combo*) R_ExternalPtrAddr(ext);
+    class Iterator* ptr = (class Iterator*) R_ExternalPtrAddr(ext);
     return ptr->prevGather();
 }
 
 [[cpp11::register]]
 SEXP CurrCombGlue(SEXP ext) {
-    class Combo* ptr = (class Combo*) R_ExternalPtrAddr(ext);
+    class Iterator* ptr = (class Iterator*) R_ExternalPtrAddr(ext);
     return ptr->currComb();
 }
 
 [[cpp11::register]]
 SEXP RandomAccessGlue(SEXP ext, SEXP RIndexVec) {
-    class Combo* ptr = (class Combo*) R_ExternalPtrAddr(ext);
+    class Iterator* ptr = (class Iterator*) R_ExternalPtrAddr(ext);
     return ptr->randomAccess(RIndexVec);
 }
 
 [[cpp11::register]]
 SEXP SourceVectorGlue(SEXP ext) {
-    class Combo* ptr = (class Combo*) R_ExternalPtrAddr(ext);
+    class Iterator* ptr = (class Iterator*) R_ExternalPtrAddr(ext);
     return ptr->sourceVector();
 }
 
 [[cpp11::register]]
 SEXP FrontGlue(SEXP ext) {
-    class Combo* ptr = (class Combo*) R_ExternalPtrAddr(ext);
+    class Iterator* ptr = (class Iterator*) R_ExternalPtrAddr(ext);
     return ptr->front();
 }
 
 [[cpp11::register]]
 SEXP BackGlue(SEXP ext) {
-    class Combo* ptr = (class Combo*) R_ExternalPtrAddr(ext);
+    class Iterator* ptr = (class Iterator*) R_ExternalPtrAddr(ext);
     return ptr->back();
 }
 
 [[cpp11::register]]
 SEXP SummaryGlue(SEXP ext) {
-    class Combo* ptr = (class Combo*) R_ExternalPtrAddr(ext);
+    class Iterator* ptr = (class Iterator*) R_ExternalPtrAddr(ext);
     return ptr->summary();
 }

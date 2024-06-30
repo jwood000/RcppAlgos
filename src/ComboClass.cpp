@@ -109,12 +109,10 @@ Combo::Combo(
     const std::vector<int> &Rreps, const std::vector<int> &Rfreqs,
     const std::vector<int> &RvInt, const std::vector<double> &RvNum,
     VecType typePass, int RmaxThreads, SEXP RnThreads, bool Rparallel
-) : n(Rf_length(Rv)), m(Rm), m1(Rm - 1), RTYPE(TYPEOF(Rv)),
-    maxThreads(RmaxThreads), sexpVec(Rv), sexpNThreads(RnThreads),
-    IsGmp(bVec[4]), IsFactor(bVec[0]), IsComb(bVec[1] && !bVec[6]),
-    IsMult(bVec[2]), IsRep(bVec[3]), Parallel(Rparallel),
-    computedRows(IsGmp ? 0 : Rf_asReal(RcompRow)), myType(typePass),
-    vInt(RvInt), vNum(RvNum), freqs(Rfreqs), myReps(Rreps),
+) : Iterator(Rv, RcompRow, RmaxThreads, RnThreads, Rparallel, bVec[4]),
+    m(Rm), m1(Rm - 1), IsFactor(bVec[0]), IsComb(bVec[1] && !bVec[6]),
+    IsMult(bVec[2]), IsRep(bVec[3]), myType(typePass), vInt(RvInt),
+    vNum(RvNum), freqs(Rfreqs), myReps(Rreps),
     n1(IsComb ? n - 1 : (IsMult ? freqs.size() - 1 : n - 1)),
     myClass(bVec[0] ? Rf_getAttrib(Rv, R_ClassSymbol) :
                 Rf_allocVector(STRSXP, 0)),
@@ -124,12 +122,6 @@ Combo::Combo(
     prevIter(GetPrevIterPtr(bVec[1], bVec[2], bVec[3], bVec[5])) {
 
     z.resize(Rm);
-
-    if (IsGmp) {
-        CppConvert::convertMpzClass(RcompRow, computedRowsMpz,
-                                    "computedRowsMpz");
-    }
-
     dblIndex = 0;
     mpzIndex = 0;
     SetStartZ(myReps, freqs, z, IsComb, n, m, dblIndex,
@@ -413,10 +405,6 @@ SEXP Combo::back() {
     z = nthResFun(n, m, dblTemp, mpzTemp, myReps);
     if (!IsComb) TopOffPerm(z, myReps, n, m, IsRep, IsMult);
     return BasicVecReturn();
-}
-
-SEXP Combo::sourceVector() const {
-    return sexpVec;
 }
 
 SEXP Combo::summary() {
