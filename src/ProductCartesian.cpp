@@ -6,9 +6,12 @@
 #include "cpp11/list.hpp"
 
 #include "SetUpUtils.h"
+#include "RMatrix.h"
+#include <functional>
 #include <algorithm>
 #include <cstdint>
 #include <numeric>
+#include <thread>
 
 double CartesianCount(const std::vector<int> &lenGrps) {
     return std::accumulate(lenGrps.begin(), lenGrps.end(),
@@ -39,21 +42,25 @@ std::vector<int> nthProduct(double dblIdx, const std::vector<int> &lenGrp) {
         index1 -= (temp * j);
     }
 
+    for (auto &v_i: res) {
+        v_i *= m;
+    }
+
     return res;
 }
 
 bool nextProduct(const std::vector<int> &lenGrps,
                  std::vector<int> &z, int m) {
 
-    if (z.back() < (lenGrps.back() - 1)) {
-        ++z.back();
+    if (z.back() < lenGrps.back()) {
+        z.back() += m;
         return true;
     } else {
         z.back() = 0;
 
         for (int i = m - 2; i >= 0; --i) {
-            if (z[i] < (lenGrps[i] - 1)) {
-                ++z[i];
+            if (z[i] < lenGrps[i]) {
+                z[i] += m;
                 return true;
             } else {
                 z[i] = 0;
@@ -65,15 +72,30 @@ bool nextProduct(const std::vector<int> &lenGrps,
 }
 
 template <typename T>
-void GetPureOutput(T* mat,
-                   const std::vector<int> &mat_idx,
+void GetPureOutput(T* mat, const std::vector<int> &idx,
                    const std::vector<int> &lenGrps,
                    const std::vector<T> &standardVec,
-                   std::vector<int> z, int nCols, int nRows) {
+                   std::vector<int> &z, int nCols, int nRows) {
 
     for (int i = 0; i < nRows; ++i) {
         for (int j = 0; j < nCols; ++j) {
-            mat[i + j * nRows] = standardVec[mat_idx[j + z[j] * nCols]];
+            mat[i + j * nRows] = standardVec[idx[j + z[j]]];
+        }
+
+        nextProduct(lenGrps, z, nCols);
+    }
+}
+
+template <typename T>
+void ParallelProduct(
+    RcppParallel::RMatrix<T> &mat, const std::vector<int> &idx,
+    const std::vector<int> &lenGrps, const std::vector<T> &standardVec,
+    std::vector<int> z, int nCols, int strt, int nRows
+) {
+
+    for (int i = strt; i < nRows; ++i) {
+        for (int j = 0; j < nCols; ++j) {
+            mat(i, j) = standardVec[idx[j + z[j]]];
         }
 
         nextProduct(lenGrps, z, nCols);
@@ -81,140 +103,48 @@ void GetPureOutput(T* mat,
 }
 
 void GetCharOutput(cpp11::writable::strings_matrix<> &mat,
-                   const std::vector<std::vector<int>> &idx,
-                   const cpp11::strings &charVec,
-                   int nCols, int nRows) {
-
-    const int lastCol = nCols - 1;
-
-    for (int i = 0, preSecLen = nRows; i < lastCol; ++i) {
-        const int grpSize = idx[i].size();
-        const int secLen = preSecLen / grpSize;
-        int strt = 0;
-
-        for (auto v_i: idx[i]) {
-            SEXP val = PROTECT(STRING_ELT(charVec, v_i));
-
-            for (int j = 0; j < nRows; j += preSecLen) {
-                for (int k = 0, q = strt, m_idx = i * nRows + j;
-                     k < secLen; ++k, ++q) {
-                    SET_STRING_ELT(mat, m_idx + q, val);
-                }
-            }
-
-            UNPROTECT(1);
-            strt += secLen;
-        }
-
-        preSecLen /= grpSize;
-    }
-
-    const int lastGrpSize = idx.back().size();
-    int strt = 0;
-
-    for (auto v_i: idx.back()) {
-        SEXP val = PROTECT(STRING_ELT(charVec, v_i));
-
-        for (int k = strt, m_idx = lastCol * nRows;
-             k < nRows; k += lastGrpSize) {
-            SET_STRING_ELT(mat, m_idx + k, val);
-        }
-
-        UNPROTECT(1);
-        ++strt;
-    }
-}
-
-template <typename T>
-void GetPureOutput(T* mat, const std::vector<std::vector<int>> &idx,
-                   const std::vector<T> &standardVec, int nCols, int nRows) {
-
-    const int lastCol = nCols - 1;
-
-    for (int i = 0, preSecLen = nRows; i < lastCol; ++i) {
-        const int grpSize = idx[i].size();
-        const int secLen = preSecLen / grpSize;
-        int strt = 0;
-
-        for (auto v_i: idx[i]) {
-            auto&& val = standardVec[v_i];
-
-            for (int j = 0; j < nRows; j += preSecLen) {
-                for (int k = 0, q = strt, m_idx = i * nRows + j;
-                     k < secLen; ++k, ++q) {
-                    mat[m_idx + q] = val;
-                }
-            }
-
-            strt += secLen;
-        }
-
-        preSecLen /= grpSize;
-    }
-
-    const int lastGrpSize = idx.back().size();
-    int strt = 0;
-
-    for (auto v_i: idx.back()) {
-        auto&& val = standardVec[v_i];
-
-        for (int k = strt, m_idx = lastCol * nRows;
-             k < nRows; k += lastGrpSize) {
-            mat[m_idx + k] = val;
-        }
-
-        ++strt;
-    }
-}
-
-template <typename T>
-void PoulateColumn(T* vec,
                    const std::vector<int> &idx,
-                   const std::vector<T> &poolVec,
-                   int nCols, int nRows, int preSecLen, int i) {
+                   const std::vector<int> &lenGrps,
+                   const cpp11::strings &charVec,
+                   std::vector<int> &z, int nCols, int nRows) {
 
-    const int grpSize = idx.size();
-    int strt = 0;
-
-    if (i < (nCols - 1)) {
-        const int secLen = preSecLen / grpSize;
-
-        for (auto v_i: idx) {
-            auto&& val = poolVec[v_i];
-
-            for (int j = 0; j < nRows; j += preSecLen) {
-                for (int k = 0, q = strt; k < secLen; ++k, ++q) {
-                    vec[j + q] = val;
-                }
-            }
-
-            strt += secLen;
+    for (int i = 0; i < nRows; ++i) {
+        for (int j = 0; j < nCols; ++j) {
+            SET_STRING_ELT(mat, i + j * nRows,
+                           STRING_ELT(charVec, idx[j + z[j]]));
         }
-    } else {
-        for (auto v_i: idx) {
-            auto&& val = poolVec[v_i];
 
-            for (int k = strt; k < nRows; k += grpSize) {
-                vec[k] = val;
-            }
-
-            ++strt;
-        }
+        nextProduct(lenGrps, z, nCols);
     }
 }
 
+template <typename T>
+void PopulateColumn(T* vec,
+                    const std::vector<int> &idx,
+                    const std::vector<int> &all_idx,
+                    const std::vector<T> &poolVec,
+                    int nCols, int nRows, int col_idx) {
+
+    for (int i = 0; i < nRows; ++i) {
+        vec[i] = poolVec[idx[col_idx + all_idx[i * nCols + col_idx]]];
+    }
+}
 
 template <typename T>
-void GroupsMain(T* GroupsMat, SEXP res, nextGrpFunc nextCmbGrp,
-                nthFuncDbl nthCmbGrp, nthFuncGmp nthCmbGrpGmp,
-                finalTouchFunc FinalTouch, const std::vector<T> &v,
-                std::vector<int> z, const std::vector<double> &mySample,
-                const std::vector<mpz_class> &myBigSamp, mpz_class lowerMpz,
-                double lower, int n, int nRows, int nThreads, bool IsArray,
-                bool IsNamed, bool Parallel, bool IsSample, bool IsGmp) {
+void PureOutputMain(
+    T* mat, const std::vector<int> &idx,
+    const std::vector<int> &lenGrps, const std::vector<T> &standardVec,
+    std::vector<int> &z, int nCols, int nRows, int nThreads, bool Parallel
+) {
 
     if (Parallel) {
-        RcppParallel::RMatrix<T> parMat(GroupsMat, nRows, n);
+        std::vector<int> lenNxtPr(lenGrps);
+
+        for (auto &v_i: lenNxtPr) {
+            v_i = (v_i / nCols) + 1;
+        }
+
+        RcppParallel::RMatrix<T> parMat(mat, nRows, nCols);
         std::vector<std::thread> threads;
 
         int step = 0;
@@ -225,132 +155,109 @@ void GroupsMain(T* GroupsMat, SEXP res, nextGrpFunc nextCmbGrp,
              nextStep += stepSize) {
 
             threads.emplace_back(
-                std::cref(ParallelGlue<T>), std::ref(parMat), std::cref(v),
-                nextCmbGrp, nthCmbGrp, nthCmbGrpGmp, std::cref(mySample),
-                std::cref(myBigSamp), z, n, step, nextStep, IsSample, IsGmp
+                std::cref(ParallelProduct<T>), std::ref(parMat),
+                std::cref(idx), std::cref(lenGrps), std::cref(standardVec),
+                z, nCols, step, nextStep
             );
 
-            GetStartGrp(nthCmbGrp, nthCmbGrpGmp, z,
-                        lowerMpz, lower, stepSize, IsGmp);
+            z = nthProduct(nextStep, lenNxtPr);
         }
 
         threads.emplace_back(
-            std::cref(ParallelGlue<T>), std::ref(parMat), std::cref(v),
-            nextCmbGrp, nthCmbGrp, nthCmbGrpGmp, std::cref(mySample),
-            std::cref(myBigSamp), z, n, step, nRows, IsSample, IsGmp
+            std::cref(ParallelProduct<T>), std::ref(parMat),
+            std::cref(idx), std::cref(lenGrps), std::cref(standardVec),
+            z, nCols, step, nRows
         );
 
         for (auto& thr: threads) {
             thr.join();
         }
-
-        FinalTouch(res, IsArray, nRows, IsNamed,
-                   mySample, myBigSamp, IsSample);
     } else {
-        SerialGlue(GroupsMat, res, v, nextCmbGrp, nthCmbGrp, nthCmbGrpGmp,
-                   FinalTouch, mySample, myBigSamp, z, n, nRows, IsArray,
-                   IsSample, IsNamed, IsGmp);
+        GetPureOutput(mat, idx, lenGrps, standardVec, z, nCols, nRows);
     }
 }
 
 SEXP GlueProdCart(
-    const std::vector<std::vector<int>> &idx, const std::vector<int> &mat_idx,
-    const std::vector<int> &typeCheck, const std::vector<int> &IsFactor,
-    const cpp11::list &RList, const std::vector<int> &intVec,
-    const std::vector<double> &dblVec, const std::vector<int> &boolVec,
-    const std::vector<Rcomplex> &cmplxVec, const std::vector<Rbyte> &rawVec,
-    const cpp11::strings &charVec, const std::vector<int> &lenGrps,
-    std::vector<int> &z, int nRows, int nCols, bool IsDF
+    const std::vector<int> &idx, const std::vector<int> &typeCheck,
+    const std::vector<int> &IsFactor, const cpp11::list &RList,
+    const std::vector<int> &intVec, const std::vector<double> &dblVec,
+    const std::vector<int> &boolVec, const std::vector<Rcomplex> &cmplxVec,
+    const std::vector<Rbyte> &rawVec, const cpp11::strings &charVec,
+    const std::vector<int> &lenGrps, std::vector<int> &z,
+    int nRows, int nCols, bool IsDF, int nThreads, bool Parallel
 ) {
 
     if (IsDF) {
         cpp11::writable::list DataFrame(nCols);
+        std::vector<int> all_idx(nRows * nCols);
 
-        for (int i = 0, preSecLen = nRows; i < nCols; ++i) {
-            switch (TYPEOF(RList[i])) {
+        for (int i = 0; i < nRows; ++i) {
+            std::copy(z.begin(), z.end(), all_idx.begin() + i * nCols);
+            nextProduct(lenGrps, z, nCols);
+        }
+
+        for (int j = 0; j < nCols; ++j) {
+            switch (TYPEOF(RList[j])) {
                 case INTSXP: {
                     cpp11::sexp res = Rf_allocVector(INTSXP, nRows);
                     int* intSexpVec = INTEGER(res);
 
-                    if (IsFactor[i]) {
-                        PoulateColumn(intSexpVec, idx[i], intVec,
-                                      nCols, nRows, preSecLen, i);
-                        SetFactorClass(res, RList[i]);
-                    } else {
-                        PoulateColumn(intSexpVec, idx[i], intVec,
-                                      nCols, nRows, preSecLen, i);
-                    }
+                    PopulateColumn(intSexpVec, idx, all_idx,
+                                   intVec, nCols, nRows, j);
 
-                    DataFrame[i] = res;
+                    if (IsFactor[j]) SetFactorClass(res, RList[j]);
+                    DataFrame[j] = res;
                     break;
                 } case LGLSXP: {
                     cpp11::sexp res = Rf_allocVector(LGLSXP, nRows);
                     int* boolSexpVec = LOGICAL(res);
-                    PoulateColumn(boolSexpVec, idx[i], boolVec,
-                                  nCols, nRows, preSecLen, i);
-                    DataFrame[i] = res;
+
+                    PopulateColumn(boolSexpVec, idx, all_idx,
+                                   boolVec, nCols, nRows, j);
+
+                    DataFrame[j] = res;
                     break;
                 } case REALSXP: {
                     cpp11::sexp res = Rf_allocVector(REALSXP, nRows);
                     double* dblSexpVec = REAL(res);
-                    PoulateColumn(dblSexpVec, idx[i], dblVec,
-                                  nCols, nRows, preSecLen, i);
-                    DataFrame[i] = res;
+
+                    PopulateColumn(dblSexpVec, idx, all_idx,
+                                   dblVec, nCols, nRows, j);
+
+                    DataFrame[j] = res;
                     break;
                 } case CPLXSXP : {
                     cpp11::sexp res = Rf_allocVector(CPLXSXP, nRows);
                     Rcomplex* cmplxSexpVec = COMPLEX(res);
-                    PoulateColumn(cmplxSexpVec, idx[i], cmplxVec,
-                                  nCols, nRows, preSecLen, i);
-                    DataFrame[i] = res;
+
+                    PopulateColumn(cmplxSexpVec, idx, all_idx,
+                                   cmplxVec, nCols, nRows, j);
+
+                    DataFrame[j] = res;
                     break;
                 } case RAWSXP : {
                     cpp11::sexp res = Rf_allocVector(RAWSXP, nRows);
                     Rbyte* rawSexpVec = RAW(res);
-                    PoulateColumn(rawSexpVec, idx[i], rawVec,
-                                  nCols, nRows, preSecLen, i);
-                    DataFrame[i] = res;
+
+                    PopulateColumn(rawSexpVec, idx, all_idx,
+                                   rawVec, nCols, nRows, j);
+
+                    DataFrame[j] = res;
                     break;
                 } case STRSXP: {
                     cpp11::writable::strings sexpVec(nRows);
-                    const int grpSize = idx[i].size();
-                    int strt = 0;
 
-                    if (i < (nCols - 1)) {
-                        const int secLen = preSecLen / grpSize;
-
-                        for (auto v_i: idx[i]) {
-                            SEXP val = PROTECT(STRING_ELT(charVec, v_i));
-
-                            for (int j = 0; j < nRows; j += preSecLen) {
-                                for (int k = 0, q = strt;
-                                     k < secLen; ++k, ++q) {
-                                    SET_STRING_ELT(sexpVec, j + q, val);
-                                }
-                            }
-
-                            UNPROTECT(1);
-                            strt += secLen;
-                        }
-                    } else {
-                        for (auto v_i: idx[i]) {
-                            SEXP val = PROTECT(STRING_ELT(charVec, v_i));
-
-                            for (int k = strt; k < nRows; k += grpSize) {
-                                SET_STRING_ELT(sexpVec, k, val);
-                            }
-
-                            UNPROTECT(1);
-                            ++strt;
-                        }
+                    for (int i = 0; i < nRows; ++i) {
+                        SET_STRING_ELT(
+                            sexpVec, i,
+                            STRING_ELT(charVec, idx[j + all_idx[i * nCols + j]])
+                        );
                     }
 
-                    DataFrame[i] = sexpVec;
+                    DataFrame[j] = sexpVec;
                     break;
                 }
             }
-
-            preSecLen /= idx[i].size();
         }
 
         DataFrame.attr("row.names") = {NA_INTEGER, -nRows};
@@ -362,33 +269,37 @@ SEXP GlueProdCart(
             case INTSXP : {
                 cpp11::sexp res = Rf_allocMatrix(INTSXP, nRows, nCols);
                 int* intMat = INTEGER(res);
-                // GetPureOutput(intMat, idx, intVec, nCols, nRows);
-                GetPureOutput(intMat, mat_idx, lenGrps, intVec, z, nCols, nRows);
+                PureOutputMain(intMat, idx, lenGrps, intVec,
+                               z, nCols, nRows, nThreads, Parallel);
                 if (typeCheck[tFac]) SetFactorClass(res, RList[0]);
                 return res;
             } case LGLSXP : {
                 cpp11::sexp res = Rf_allocMatrix(LGLSXP, nRows, nCols);
                 int* boolMat = LOGICAL(res);
-                GetPureOutput(boolMat, idx, boolVec, nCols, nRows);
+                PureOutputMain(boolMat, idx, lenGrps, boolVec,
+                               z, nCols, nRows, nThreads, Parallel);
                 return res;
             } case RAWSXP : {
                 cpp11::sexp res = Rf_allocMatrix(RAWSXP, nRows, nCols);
                 Rbyte* rawMat = RAW(res);
-                GetPureOutput(rawMat, idx, rawVec, nCols, nRows);
+                GetPureOutput(rawMat, idx, lenGrps, rawVec, z, nCols, nRows);
                 return res;
             } case CPLXSXP : {
                 cpp11::sexp res = Rf_allocMatrix(CPLXSXP, nRows, nCols);
                 Rcomplex* cmplxMat = COMPLEX(res);
-                GetPureOutput(cmplxMat, idx, cmplxVec, nCols, nRows);
+                GetPureOutput(cmplxMat, idx, lenGrps,
+                              cmplxVec, z, nCols, nRows);
                 return res;
             } case REALSXP : {
                 cpp11::sexp res = Rf_allocMatrix(REALSXP, nRows, nCols);
                 double* dblMat = REAL(res);
-                GetPureOutput(dblMat, idx, dblVec, nCols, nRows);
+                PureOutputMain(dblMat, idx, lenGrps, dblVec,
+                               z, nCols, nRows, nThreads, Parallel);
                 return res;
             } case STRSXP : {
                 cpp11::writable::strings_matrix<> charMat(nRows, nCols);
-                GetCharOutput(charMat, idx, charVec, nCols, nRows);
+                GetCharOutput(charMat, idx, lenGrps,
+                              charVec, z, nCols, nRows);
                 return charMat;
             }
         }
@@ -519,6 +430,9 @@ SEXP ExpandGridCpp(cpp11::list RList, SEXP Rlow, SEXP Rhigh,
     int nThreads = 1;
     int maxThreads = 1;
 
+    CppConvert::convertPrimitive(RmaxThreads, maxThreads,
+                                 VecType::Integer, "maxThreads");
+
     const double computedRows = CartesianCount(lenGrps);
     const bool IsGmp = (computedRows > Significand53);
 
@@ -562,9 +476,15 @@ SEXP ExpandGridCpp(cpp11::list RList, SEXP Rlow, SEXP Rhigh,
         }
     }
 
+    // Transform lenGrps to be used in nextProduct
+    for (auto &v_i: lenGrps) {
+        v_i = nCols * (v_i - 1);
+    }
+
     cpp11::sexp res = GlueProdCart(
-        myVec, mat_idx, typeCheck, IsFactor, RList, intVec, dblVec, boolVec,
-        cmplxVec, rawVec, charVec, lenGrps, startZ, nRows, nCols, IsDF
+        mat_idx, typeCheck, IsFactor, RList, intVec, dblVec,
+        boolVec, cmplxVec, rawVec, charVec, lenGrps, startZ,
+        nRows, nCols, IsDF, nThreads, Parallel
     );
 
     return res;

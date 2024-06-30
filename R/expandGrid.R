@@ -1,4 +1,4 @@
-expandGrid <- function(...) {
+expandGrid <- function(..., lower = NULL, upper = NULL, nThreads = NULL) {
     ## This is from expand.grid
     n_args <- length(arg_s <- list(...))
 
@@ -37,7 +37,10 @@ expandGrid <- function(...) {
         return(as.data.frame(pools))
     }
 
-    res <- .Call(`_RcppAlgos_ExpandGridCpp`, pools)
+    res <- .Call(
+        `_RcppAlgos_ExpandGridCpp`, pools, lower,
+        upper, nThreads, pkgEnv$nThreads
+    )
 
     if (is.matrix(res)) {
         colnames(res) <- nmc
