@@ -1,3 +1,13 @@
+# RcppAlgos 2.9.0
+
+## New Features:
+
+* Added Cartesian product functions: `expandGrid`, `expandGridCount`, `expandGridSample`, `expandGridIter`, and `expandGridRank`.
+
+## Bug Fixes:
+
+* Fixed LLVM-19 error occurring in libdivide header. See [PR #113](<https://github.com/ridiculousfish/libdivide/pull/113>).
+
 # RcppAlgos 2.8.4
 
 ## New Features:

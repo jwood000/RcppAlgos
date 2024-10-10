@@ -1,7 +1,20 @@
 \name{NEWS}
 \title{News for Package \pkg{RcppAlgos}}
 
-\section{Changes in RcppAlgos version 2.8.4 (Release date: 2024-06-07)}{
+\section{Changes in RcppAlgos version 2.9.0 (Release date: 2024-09-10)}{
+    \itemize{
+        \item New Features:
+        \itemize{
+            \item Added Cartesian product functions: \code{expandGridCount}, \code{expandGrid}, \code{expandGridSample}, \code{expandGridIter}, and \code{expandGridRank}.
+        }
+        \item Bug Fixes:
+        \itemize{
+            \item Fixed LLVM-19 error occurring in libdivide header. See \href{https://github.com/ridiculousfish/libdivide/pull/113}{PR #113}
+        }
+    }
+}
+
+\section{Changes in RcppAlgos version 2.8.4 (Release date: Never Released)}{
     \itemize{
         \item New Features:
         \itemize{

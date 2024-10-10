@@ -3,8 +3,8 @@
 
 <!-- badges: start -->
 [![CRAN status](<https://www.r-pkg.org/badges/version/RcppAlgos>)](<https://cran.r-project.org/package=RcppAlgos>)
-![](<http://cranlogs.r-pkg.org/badges/RcppAlgos?color=orange>)
-![](<http://cranlogs.r-pkg.org/badges/grand-total/RcppAlgos?color=brightgreen>)
+![](<https://cranlogs.r-pkg.org/badges/RcppAlgos?color=orange>)
+![](<https://cranlogs.r-pkg.org/badges/grand-total/RcppAlgos?color=brightgreen>)
 [![Codacy Badge](<https://app.codacy.com/project/badge/Grade/e7fef773f6514aa4a2decda9adf57ae8>)](<https://app.codacy.com/gh/jwood000/RcppAlgos/dashboard?utm_source=gh&utm_medium=referral&utm_content=&utm_campaign=Badge_grade>)
 [![Dependencies](<https://tinyverse.netlify.app/badge/RcppAlgos>)](<https://cran.r-project.org/package=RcppAlgos>)
 [![R-CMD-check](https://github.com/jwood000/RcppAlgos/actions/workflows/R-CMD-check.yml/badge.svg)](https://github.com/jwood000/RcppAlgos/actions/workflows/R-CMD-check.yml)
@@ -17,8 +17,9 @@ A collection of high performance functions and iterators implemented in C++ for 
 
   - **`{combo|permute}General`**: Generate all combinations/permutations of a vector (including [multisets](<https://en.wikipedia.org/wiki/Multiset>)) meeting specific criteria.
   - **`{partitions|compositions}General`**: Efficient algorithms for partitioning numbers under various constraints
-  - **`{combo|permute|partitions|compositions}Sample`**: Generate reproducible random samples
-  - **`{combo|permute|partitions|compositions}Iter`**: Flexible iterators allow for bidirectional iteration as well as random access.
+  - **`{expandGrid|comboGrid}`**: Generate traditional Cartesian product as well as the product where order does not matter.
+  - **`{combo|permute|partitions|compositions|expandGrid}Sample`**: Generate reproducible random samples
+  - **`{combo|permute|partitions|compositions|expandGrid}Iter`**: Flexible iterators allow for bidirectional iteration as well as random access.
   - **`primeSieve`**: Fast prime number generator
   - **`primeCount`**: Prime counting function using [Legendre's formula](<http://mathworld.wolfram.com/LegendresFormula.html>)
 
@@ -39,9 +40,9 @@ install.packages("RcppAlgos")
 devtools::install_github("jwood000/RcppAlgos")
 ```
 
-## Basic Usage
+## Usage
 
-### Combinatorics
+### Combinatorics Basics
 
 ``` r
 ## Find all 3-tuples combinations of 1:4
@@ -74,6 +75,19 @@ permuteGeneral(letters, 3, upper = 4)
 #> [4,] "a"  "b"  "f"
 
 
+## Generate a reproducible sample
+comboSample(10, 8, TRUE, n = 5, seed = 84)
+#>      [,1] [,2] [,3] [,4] [,5] [,6] [,7] [,8]
+#> [1,]    3    3    3    6    6   10   10   10
+#> [2,]    1    3    3    4    4    7    9   10
+#> [3,]    3    7    7    7    9   10   10   10
+#> [4,]    3    3    3    9   10   10   10   10
+#> [5,]    1    2    2    3    3    4    4    7
+```
+
+### Integer Partitions and Constraints
+
+``` r
 ## Flexible partitioning algorithms
 partitionsGeneral(0:5, 3, freqs = rep(1:2, 3), target = 6)
 #>      [,1] [,2] [,3]
@@ -91,16 +105,6 @@ compositionsGeneral(0:3, repetition = TRUE)
 #> [2,]    0    1    2
 #> [3,]    0    2    1
 #> [4,]    1    1    1
-
-
-## Generate a reproducible sample
-comboSample(10, 8, TRUE, n = 5, seed = 84)
-#>      [,1] [,2] [,3] [,4] [,5] [,6] [,7] [,8]
-#> [1,]    3    3    3    6    6   10   10   10
-#> [2,]    1    3    3    4    4    7    9   10
-#> [3,]    3    7    7    7    9   10   10   10
-#> [4,]    3    3    3    9   10   10   10   10
-#> [5,]    1    2    2    3    3    4    4    7
 
 
 ## Get combinations such that the product is between
@@ -128,7 +132,7 @@ p = permuteIter(5, 7, TRUE, constraintFun = "prod",
                 keepResults = TRUE)
 
 ## Get the next n results
-t <- p@nextNIter(1048)
+t = p@nextNIter(1048)
 
 ## N.B. keepResults = TRUE adds the 8th column
 tail(t)
@@ -166,9 +170,96 @@ p@summary()
 #> [1] NA
 ```
 
+### Cartesian Products
+
+``` r
+## Base R expand.grid returns a data.frame by default
+## and varies the first column the fastest
+bR = expand.grid(rep(list(1:3), 3))
+head(bR, n = 3)
+#>   Var1 Var2 Var3
+#> 1    1    1    1
+#> 2    2    1    1
+#> 3    3    1    1
+
+tail(bR, n = 3)
+#>    Var1 Var2 Var3
+#> 25    1    3    3
+#> 26    2    3    3
+#> 27    3    3    3
+
+
+## RcppAlgos::expandGrid returns a matrix if the input is of
+## the same class, otherwise it returns a data.frame. Also
+## varies the first column the slowest.
+algos = expandGrid(rep(list(1:3), 3))
+head(algos, n = 3)
+#>      Var1 Var2 Var3
+#> [1,]    1    1    1
+#> [2,]    1    1    2
+#> [3,]    1    1    3
+
+tail(algos, n = 3)
+#>       Var1 Var2 Var3
+#> [25,]    3    3    1
+#> [26,]    3    3    2
+#> [27,]    3    3    3
+
+
+## N.B. Since we are passing more than one type, a data.frame is returned
+head(expand.grid(
+    c(rep(list(letters[1:3]), 3), list(1:3))
+), n = 3)
+#>   Var1 Var2 Var3 Var4
+#> 1    a    a    a    1
+#> 2    b    a    a    1
+#> 3    c    a    a    1
+
+
+## With RcppAlgos::comboGrid order doesn't matter, so c(1, 1, 2),
+## c(1, 2, 1), and c(2, 1, 1) are the same.
+comboGrid(rep(list(1:3), 3))
+#>       Var1 Var2 Var3
+#>  [1,]    1    1    1
+#>  [2,]    1    1    2
+#>  [3,]    1    1    3
+#>  [4,]    1    2    2
+#>  [5,]    1    2    3
+#>  [6,]    1    3    3
+#>  [7,]    2    2    2
+#>  [8,]    2    2    3
+#>  [9,]    2    3    3
+#> [10,]    3    3    3
+
+
+## If you don't want any repeats, set repetition = FALSE
+comboGrid(rep(list(1:3), 3), repetition = FALSE)
+#>      Var1 Var2 Var3
+#> [1,]    1    2    3
+```
+
+### Partitions of Groups
+
+Efficiently partition a vector into groups with `comboGroups`. For example, the code below finds all possible pairings of groups of size 3 vs groups of size 2 (See this stackoverflow post: [Find all possible team pairing schemes](<https://stackoverflow.com/a/76068476/4408538>)). 
+``` r
+players <- c("Ross", "Bobby", "Max", "Casper", "Jake")
+comboGroups(players, grpSizes = c(2, 3))
+#>       Grp1     Grp1     Grp2    Grp2     Grp2    
+#>  [1,] "Ross"   "Bobby"  "Max"   "Casper" "Jake"  
+#>  [2,] "Ross"   "Max"    "Bobby" "Casper" "Jake"  
+#>  [3,] "Ross"   "Casper" "Bobby" "Max"    "Jake"  
+#>  [4,] "Ross"   "Jake"   "Bobby" "Max"    "Casper"
+#>  [5,] "Bobby"  "Max"    "Ross"  "Casper" "Jake"  
+#>  [6,] "Bobby"  "Casper" "Ross"  "Max"    "Jake"  
+#>  [7,] "Bobby"  "Jake"   "Ross"  "Max"    "Casper"
+#>  [8,] "Max"    "Casper" "Ross"  "Bobby"  "Jake"  
+#>  [9,] "Max"    "Jake"   "Ross"  "Bobby"  "Casper"
+#> [10,] "Casper" "Jake"   "Ross"  "Bobby"  "Max"
+```
+
 ### Computational Mathematics
 
-```r
+``` r
 ## Generate prime numbers
 primeSieve(50)
 #> [1]  2  3  5  7 11 13 17 19 23 29 31 37 41 43 47
