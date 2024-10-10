@@ -8,6 +8,7 @@
 
 * Fixed bug with iterator when multithreading and exhausting the iterator.
 * Enforced values being converted to a primitive to be of length 1.
+* Fixed clang19 error in libdivide.
 
 # RcppAlgos 2.8.3
 

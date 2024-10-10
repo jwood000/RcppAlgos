@@ -1,7 +1,7 @@
 \name{NEWS}
 \title{News for Package \pkg{RcppAlgos}}
 
-\section{Changes in RcppAlgos version 2.8.4 (Release date: 2024-06-07)}{
+\section{Changes in RcppAlgos version 2.8.4 (Release date: 2024-10-11)}{
     \itemize{
         \item New Features:
         \itemize{
@@ -12,6 +12,7 @@
         \itemize{
             \item Fixed bug with iterator when multithreading and exhausting the iterator.
             \item Enforced values being converted to a primitive to be of length 1.
+            \item Fixed clang19 error in libdivide.
         }
     }
 }
