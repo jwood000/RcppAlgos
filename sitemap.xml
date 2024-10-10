@@ -1,138 +1,48 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-  <url>
-    <loc>/404.html</loc>
-  </url>
-  <url>
-    <loc>/LICENSE-text.html</loc>
-  </url>
-  <url>
-    <loc>/articles/CombPermConstraints.html</loc>
-  </url>
-  <url>
-    <loc>/articles/CombinatorialSampling.html</loc>
-  </url>
-  <url>
-    <loc>/articles/CombinatoricsIterators.html</loc>
-  </url>
-  <url>
-    <loc>/articles/ComputationalMathematics.html</loc>
-  </url>
-  <url>
-    <loc>/articles/GeneralCombinatorics.html</loc>
-  </url>
-  <url>
-    <loc>/articles/HighPerformanceBenchmarks.html</loc>
-  </url>
-  <url>
-    <loc>/articles/OtherCombinatorics.html</loc>
-  </url>
-  <url>
-    <loc>/articles/SubsetSum.html</loc>
-  </url>
-  <url>
-    <loc>/articles/index.html</loc>
-  </url>
-  <url>
-    <loc>/authors.html</loc>
-  </url>
-  <url>
-    <loc>/index.html</loc>
-  </url>
-  <url>
-    <loc>/news/index.html</loc>
-  </url>
-  <url>
-    <loc>/reference/Combo-Class.html</loc>
-  </url>
-  <url>
-    <loc>/reference/ComboGroups-Class.html</loc>
-  </url>
-  <url>
-    <loc>/reference/Constraints-Class.html</loc>
-  </url>
-  <url>
-    <loc>/reference/Partitions-Class.html</loc>
-  </url>
-  <url>
-    <loc>/reference/RcppAlgos-package.html</loc>
-  </url>
-  <url>
-    <loc>/reference/combinatoricsCount.html</loc>
-  </url>
-  <url>
-    <loc>/reference/combinatoricsGeneral.html</loc>
-  </url>
-  <url>
-    <loc>/reference/combinatoricsIterator.html</loc>
-  </url>
-  <url>
-    <loc>/reference/combinatoricsRank.html</loc>
-  </url>
-  <url>
-    <loc>/reference/combinatoricsSample.html</loc>
-  </url>
-  <url>
-    <loc>/reference/comboGrid.html</loc>
-  </url>
-  <url>
-    <loc>/reference/comboGroups.html</loc>
-  </url>
-  <url>
-    <loc>/reference/comboGroupsCount.html</loc>
-  </url>
-  <url>
-    <loc>/reference/comboGroupsIterator.html</loc>
-  </url>
-  <url>
-    <loc>/reference/comboGroupsSample.html</loc>
-  </url>
-  <url>
-    <loc>/reference/divisorsRcpp.html</loc>
-  </url>
-  <url>
-    <loc>/reference/divisorsSieve.html</loc>
-  </url>
-  <url>
-    <loc>/reference/eulerPhiSieve.html</loc>
-  </url>
-  <url>
-    <loc>/reference/index.html</loc>
-  </url>
-  <url>
-    <loc>/reference/isPrimeRcpp.html</loc>
-  </url>
-  <url>
-    <loc>/reference/numDivisorSieve.html</loc>
-  </url>
-  <url>
-    <loc>/reference/partitionsCount.html</loc>
-  </url>
-  <url>
-    <loc>/reference/partitionsGeneral.html</loc>
-  </url>
-  <url>
-    <loc>/reference/partitionsIterator.html</loc>
-  </url>
-  <url>
-    <loc>/reference/partitionsRank.html</loc>
-  </url>
-  <url>
-    <loc>/reference/partitionsSample.html</loc>
-  </url>
-  <url>
-    <loc>/reference/primeCount.html</loc>
-  </url>
-  <url>
-    <loc>/reference/primeFactorize.html</loc>
-  </url>
-  <url>
-    <loc>/reference/primeFactorizeSieve.html</loc>
-  </url>
-  <url>
-    <loc>/reference/primeSieve.html</loc>
-  </url>
-  <url>
-    <loc>/reference/stdThreadMax.html</loc>
-  </url>
+<urlset xmlns = 'http://www.sitemaps.org/schemas/sitemap/0.9'>
+<url><loc>/404.html</loc></url>
+<url><loc>/LICENSE-text.html</loc></url>
+<url><loc>/articles/CombPermConstraints.html</loc></url>
+<url><loc>/articles/CombinatorialSampling.html</loc></url>
+<url><loc>/articles/CombinatoricsIterators.html</loc></url>
+<url><loc>/articles/ComputationalMathematics.html</loc></url>
+<url><loc>/articles/GeneralCombinatorics.html</loc></url>
+<url><loc>/articles/HighPerformanceBenchmarks.html</loc></url>
+<url><loc>/articles/OtherCombinatorics.html</loc></url>
+<url><loc>/articles/SubsetSum.html</loc></url>
+<url><loc>/articles/index.html</loc></url>
+<url><loc>/authors.html</loc></url>
+<url><loc>/index.html</loc></url>
+<url><loc>/news/index.html</loc></url>
+<url><loc>/reference/Combo-Class.html</loc></url>
+<url><loc>/reference/ComboGroups-Class.html</loc></url>
+<url><loc>/reference/Constraints-Class.html</loc></url>
+<url><loc>/reference/Partitions-Class.html</loc></url>
+<url><loc>/reference/RcppAlgos-package.html</loc></url>
+<url><loc>/reference/combinatoricsCount.html</loc></url>
+<url><loc>/reference/combinatoricsGeneral.html</loc></url>
+<url><loc>/reference/combinatoricsIterator.html</loc></url>
+<url><loc>/reference/combinatoricsRank.html</loc></url>
+<url><loc>/reference/combinatoricsSample.html</loc></url>
+<url><loc>/reference/comboGrid.html</loc></url>
+<url><loc>/reference/comboGroups.html</loc></url>
+<url><loc>/reference/comboGroupsCount.html</loc></url>
+<url><loc>/reference/comboGroupsIterator.html</loc></url>
+<url><loc>/reference/comboGroupsSample.html</loc></url>
+<url><loc>/reference/divisorsRcpp.html</loc></url>
+<url><loc>/reference/divisorsSieve.html</loc></url>
+<url><loc>/reference/eulerPhiSieve.html</loc></url>
+<url><loc>/reference/index.html</loc></url>
+<url><loc>/reference/isPrimeRcpp.html</loc></url>
+<url><loc>/reference/numDivisorSieve.html</loc></url>
+<url><loc>/reference/partitionsCount.html</loc></url>
+<url><loc>/reference/partitionsGeneral.html</loc></url>
+<url><loc>/reference/partitionsIterator.html</loc></url>
+<url><loc>/reference/partitionsRank.html</loc></url>
+<url><loc>/reference/partitionsSample.html</loc></url>
+<url><loc>/reference/primeCount.html</loc></url>
+<url><loc>/reference/primeFactorize.html</loc></url>
+<url><loc>/reference/primeFactorizeSieve.html</loc></url>
+<url><loc>/reference/primeSieve.html</loc></url>
+<url><loc>/reference/stdThreadMax.html</loc></url>
 </urlset>
+
