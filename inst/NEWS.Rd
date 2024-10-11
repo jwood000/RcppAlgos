@@ -1,7 +1,16 @@
 \name{NEWS}
 \title{News for Package \pkg{RcppAlgos}}
 
-\section{Changes in RcppAlgos version 2.8.4 (Release date: 2024-10-11)}{
+\section{Changes in RcppAlgos version 2.8.5 (Release date: 2024-10-11)}{
+    \itemize{
+        \item Other:
+        \itemize{
+            \item Updated Author field and removed Maintainer field in DESCRIPTION file per W.R.E.
+        }
+    }
+}
+
+\section{Changes in RcppAlgos version 2.8.4 (Release date: Never Released)}{
     \itemize{
         \item New Features:
         \itemize{

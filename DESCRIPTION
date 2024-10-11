@@ -1,5 +1,5 @@
 Package: RcppAlgos
-Version: 2.8.4
+Version: 2.8.5
 Title: High Performance Tools for Combinatorics and Computational Mathematics
 Description: Provides optimized functions and flexible combinatorial iterators
     implemented in C++ for solving problems in combinatorics and
@@ -33,7 +33,10 @@ License: GPL (>=2)
 SystemRequirements: gmp (>= 4.2.3)
 VignetteBuilder: knitr
 NeedsCompilation: yes
-Author: Joseph Wood
-Maintainer: Joseph Wood <jwood000@gmail.com>
+Authors@R: person(
+    given = "Joseph", family = "Wood",
+    role = c("aut", "cre"),
+    email = "jwood000@gmail.com"
+)
 Encoding: UTF-8
 RoxygenNote: 7.2.3

@@ -1,3 +1,9 @@
+# RcppAlgos 2.8.5
+
+## Other
+
+* Updated Author field and removed Maintainer field in DESCRIPTION file per W.R.E.
+
 # RcppAlgos 2.8.4
 
 ## New Features:
