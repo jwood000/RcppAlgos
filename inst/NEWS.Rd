@@ -7,6 +7,15 @@
         \itemize{
             \item Added Cartesian product functions: \code{expandGridCount}, \code{expandGrid}, \code{expandGridSample}, \code{expandGridIter}, and \code{expandGridRank}.
         }
+    }
+}
+
+\section{Changes in RcppAlgos version 2.8.5 (Release date: 2024-10-11)}{
+    \itemize{
+        \item Other:
+        \itemize{
+            \item Updated Author field and removed Maintainer field in DESCRIPTION file per W.R.E.
+        }
         \item Bug Fixes:
         \itemize{
             \item Fixed LLVM-19 error occurring in libdivide header. See \href{https://github.com/ridiculousfish/libdivide/pull/113}{PR #113}
@@ -25,6 +34,7 @@
         \itemize{
             \item Fixed bug with iterator when multithreading and exhausting the iterator.
             \item Enforced values being converted to a primitive to be of length 1.
+            \item Fixed clang19 error in libdivide.
         }
     }
 }

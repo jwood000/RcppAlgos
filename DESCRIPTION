@@ -33,7 +33,12 @@ License: GPL (>=2)
 SystemRequirements: gmp (>= 4.2.3)
 VignetteBuilder: knitr
 NeedsCompilation: yes
-Author: Joseph Wood
-Maintainer: Joseph Wood <jwood000@gmail.com>
+Authors@R: c(
+        person(
+            given = "Joseph", family = "Wood",
+            role = c("aut", "cre"),
+            email = "jwood000@gmail.com"
+        )
+    )
 Encoding: UTF-8
 RoxygenNote: 7.2.3
