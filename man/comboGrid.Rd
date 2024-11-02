@@ -1,19 +1,19 @@
 \name{comboGrid}
 \alias{comboGrid}
 \title{
-Efficient Version of \code{expand.grid} Where order Does Not Matter
+    Unordered Cartesian Product
 }
 \description{
-    This function efficiently generates Cartesian-product-like output where order does not matter. It is loosely equivalent to the following:
+    Efficient version of \code{expand.grid} where order does not matter. This is a combinatorial variant where groups of elements are treated as equivalent regardless of order. For example, given: \code{{1, 2}, {1, 2}}, the unordered Cartesian product is \code{{1, 1}, {1, 2}, {2, 2}}. It is loosely equivalent to the following:
     \itemize{
-        \item{\code{t = expand.grid(list)}}
+        \item{\code{t = expand.grid(lst)}}
         \item{\code{t = t[do.call(order, t), ]}}
         \item{\code{key = apply(t, 1, function(x) paste0(sort(x), collapse = ""))}}
         \item{\code{t[!duplicated(key), ]}}
       }
 }
 \usage{
-comboGrid(..., repetition = TRUE)
+    comboGrid(..., repetition = TRUE)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
@@ -26,7 +26,21 @@ If items with different classes are passed, a data frame will be returned, other
 \author{
 Joseph Wood
 }
+\seealso{
+\code{\link{expandGrid}}
+}
 \examples{
+## description example
+lst = list(1:2, 1:2)
+
+t = expand.grid(lst)
+t = t[do.call(order, t), ]
+key = apply(t, 1, function(x) paste0(sort(x), collapse = ""))
+t[!duplicated(key), ]
+
+## vs using comboGrid
+comboGrid(lst)
+
 ## return a matrix
 expGridNoOrder = comboGrid(1:5, 3:9, letters[1:5], letters[c(1,4,5,8)])
 head(expGridNoOrder)
@@ -40,6 +54,7 @@ tail(expGridNoOrderNoRep)
 }
 \keyword{expand}
 \keyword{comboGrid}
+\keyword{expandGrid}
 \keyword{cartesian}
 \keyword{expand.grid}
 \keyword{combinatorics}
