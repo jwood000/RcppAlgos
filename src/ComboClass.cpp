@@ -78,6 +78,7 @@ SEXP Combo::BasicVecReturn() {
     return res;
 }
 
+
 SEXP Combo::MatForward(int nRows, int numIncrement) {
 
     int nThreads = 1;
@@ -109,9 +110,10 @@ Combo::Combo(
     const std::vector<int> &Rreps, const std::vector<int> &Rfreqs,
     const std::vector<int> &RvInt, const std::vector<double> &RvNum,
     VecType typePass, int RmaxThreads, SEXP RnThreads, bool Rparallel
-) : Iterator(Rv, RcompRow, RmaxThreads, RnThreads, Rparallel, bVec[4]),
+) : Iterator(Rv, typePass, RcompRow, RmaxThreads,
+             RnThreads, Rparallel, bVec[4]),
     m(Rm), m1(Rm - 1), IsFactor(bVec[0]), IsComb(bVec[1] && !bVec[6]),
-    IsMult(bVec[2]), IsRep(bVec[3]), myType(typePass), vInt(RvInt),
+    IsMult(bVec[2]), IsRep(bVec[3]), vInt(RvInt),
     vNum(RvNum), freqs(Rfreqs), myReps(Rreps),
     n1(IsComb ? n - 1 : (IsMult ? freqs.size() - 1 : n - 1)),
     myClass(bVec[0] ? Rf_getAttrib(Rv, R_ClassSymbol) :

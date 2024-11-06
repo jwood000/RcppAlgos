@@ -24,12 +24,7 @@ protected:
     const bool IsComb;
     const bool IsMult;
     const bool IsRep;
-    const VecType myType;
 
-    double dblTemp;
-    mpz_class mpzTemp;
-
-    std::vector<int> z;
     std::vector<int> vInt;
     std::vector<double> vNum;
 
@@ -40,9 +35,6 @@ protected:
     // depends on freqs.size, IsMult, and n
     const int n1;
 
-    double dblIndex;
-    mpz_class mpzIndex;
-
     SEXP myClass;
     SEXP myLevels;
 
@@ -52,9 +44,9 @@ protected:
 
     bool prevIterAvailable;
 
-    SEXP BasicVecReturn();
     SEXP ToSeeLast(bool AdjustIdx = true);
     SEXP ToSeeFirst(bool AdjustIdx = true);
+    SEXP BasicVecReturn();
 
 public:
 

@@ -1,8 +1,8 @@
 #include "ClassUtils/Iterator.h"
 
-Iterator::Iterator(SEXP Rv, SEXP RcompRow, int RmaxThreads,
+Iterator::Iterator(SEXP Rv, VecType typePass, SEXP RcompRow, int RmaxThreads,
                    SEXP RnThreads, bool Rparallel, bool IsGmp) :
-    sexpVec(Rv), n(Rf_length(Rv)), RTYPE(TYPEOF(Rv)),
+    n(Rf_length(Rv)), sexpVec(Rv), RTYPE(TYPEOF(Rv)), myType(typePass),
     maxThreads(RmaxThreads), sexpNThreads(RnThreads), Parallel(Rparallel),
     IsGmp(IsGmp), computedRows(IsGmp ? 0 : Rf_asReal(RcompRow)) {
 

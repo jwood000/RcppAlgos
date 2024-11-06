@@ -5,22 +5,33 @@
 class Iterator {
 protected:
 
-    const SEXP sexpVec;
     const int n;
+    const SEXP sexpVec;
     int RTYPE;
+    const VecType myType;
 
     const int maxThreads;
     const SEXP sexpNThreads;
+
     const bool Parallel;
 
     // IsGmp may change depending on whether we have partitions
     bool IsGmp;
+
     double computedRows;
     mpz_class computedRowsMpz;
 
+    std::vector<int> z;
+
+    double dblTemp;
+    mpz_class mpzTemp;
+
+    double dblIndex;
+    mpz_class mpzIndex;
+
 public:
 
-    Iterator(SEXP Rv, SEXP RcompRow, int RmaxThreads,
+    Iterator(SEXP Rv, VecType typePass, SEXP RcompRow, int RmaxThreads,
              SEXP RnThreads, bool Rparallel, bool IsGmp);
 
     virtual ~Iterator() = default;
