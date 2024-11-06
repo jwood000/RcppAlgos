@@ -697,6 +697,8 @@ void SetSampleNames(SEXP object, bool IsGmp, int sampSize,
             SET_VECTOR_ELT(dimNames, 0, myNames);
             if (xtraDims) SET_VECTOR_ELT(dimNames, xtraDims, colNames);
             Rf_setAttrib(object, R_DimNamesSymbol, dimNames);
+        } else if (Rf_inherits(object, "data.frame")) {
+            Rf_setAttrib(object, R_RowNamesSymbol, myNames);
         } else if (Rf_isList(object) || Rf_isVector(object)) {
             Rf_setAttrib(object, R_NamesSymbol, myNames);
         }

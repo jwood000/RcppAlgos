@@ -6,7 +6,7 @@
 #include "cpp11/list.hpp"
 
 #include "NumbersUtils/Eratosthenes.h"
-#include "ComboCartesian.h"
+#include "Cartesian/ComboCartesian.h"
 #include "SetUpUtils.h"
 #include <unordered_map>
 #include <numeric>  // std::accumulate
@@ -24,7 +24,6 @@ void convertToString(std::vector<std::string> &tempVec,
                     CppConvert::GetVec<int>(ListElement);
                 cpp11::strings myLevels(facVec.attr("levels"));
                 std::vector<std::string> strVec;
-
 
                 for (int i = 0, faclen = Rf_length(myLevels);
                      i < faclen; ++i) {

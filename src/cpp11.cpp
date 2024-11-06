@@ -47,6 +47,13 @@ extern "C" SEXP _RcppAlgos_ComboGroupsCountCpp(SEXP Rv, SEXP RNumGroups, SEXP RG
     return cpp11::as_sexp(ComboGroupsCountCpp(cpp11::as_cpp<cpp11::decay_t<SEXP>>(Rv), cpp11::as_cpp<cpp11::decay_t<SEXP>>(RNumGroups), cpp11::as_cpp<cpp11::decay_t<SEXP>>(RGrpSize)));
   END_CPP11
 }
+// CombinatoricsCount.cpp
+SEXP ExpandGridCountCpp(cpp11::list RList);
+extern "C" SEXP _RcppAlgos_ExpandGridCountCpp(SEXP RList) {
+  BEGIN_CPP11
+    return cpp11::as_sexp(ExpandGridCountCpp(cpp11::as_cpp<cpp11::decay_t<cpp11::list>>(RList)));
+  END_CPP11
+}
 // CombinatoricsMain.cpp
 SEXP CombinatoricsStndrd(SEXP Rv, SEXP Rm, SEXP RisRep, SEXP RFreqs, SEXP Rlow, SEXP Rhigh, SEXP Rparallel, SEXP RNumThreads, SEXP RmaxThreads, SEXP RIsComb);
 extern "C" SEXP _RcppAlgos_CombinatoricsStndrd(SEXP Rv, SEXP Rm, SEXP RisRep, SEXP RFreqs, SEXP Rlow, SEXP Rhigh, SEXP Rparallel, SEXP RNumThreads, SEXP RmaxThreads, SEXP RIsComb) {
@@ -223,10 +230,10 @@ extern "C" SEXP _RcppAlgos_PrimeSieveCpp(SEXP Rb1, SEXP Rb2, SEXP RNumThreads, S
   END_CPP11
 }
 // ProductCartesian.cpp
-SEXP ExpandGridCpp(cpp11::list RList, SEXP Rlow, SEXP Rhigh, SEXP RNumThreads, SEXP RmaxThreads);
-extern "C" SEXP _RcppAlgos_ExpandGridCpp(SEXP RList, SEXP Rlow, SEXP Rhigh, SEXP RNumThreads, SEXP RmaxThreads) {
+SEXP ExpandGridCpp(cpp11::list RList, SEXP Rlow, SEXP Rhigh, SEXP RNumThreads, SEXP RmaxThreads, SEXP RIsSample, SEXP RindexVec, SEXP RmySeed, SEXP RNumSamp, SEXP baseSample, SEXP RNamed, SEXP myEnv);
+extern "C" SEXP _RcppAlgos_ExpandGridCpp(SEXP RList, SEXP Rlow, SEXP Rhigh, SEXP RNumThreads, SEXP RmaxThreads, SEXP RIsSample, SEXP RindexVec, SEXP RmySeed, SEXP RNumSamp, SEXP baseSample, SEXP RNamed, SEXP myEnv) {
   BEGIN_CPP11
-    return cpp11::as_sexp(ExpandGridCpp(cpp11::as_cpp<cpp11::decay_t<cpp11::list>>(RList), cpp11::as_cpp<cpp11::decay_t<SEXP>>(Rlow), cpp11::as_cpp<cpp11::decay_t<SEXP>>(Rhigh), cpp11::as_cpp<cpp11::decay_t<SEXP>>(RNumThreads), cpp11::as_cpp<cpp11::decay_t<SEXP>>(RmaxThreads)));
+    return cpp11::as_sexp(ExpandGridCpp(cpp11::as_cpp<cpp11::decay_t<cpp11::list>>(RList), cpp11::as_cpp<cpp11::decay_t<SEXP>>(Rlow), cpp11::as_cpp<cpp11::decay_t<SEXP>>(Rhigh), cpp11::as_cpp<cpp11::decay_t<SEXP>>(RNumThreads), cpp11::as_cpp<cpp11::decay_t<SEXP>>(RmaxThreads), cpp11::as_cpp<cpp11::decay_t<SEXP>>(RIsSample), cpp11::as_cpp<cpp11::decay_t<SEXP>>(RindexVec), cpp11::as_cpp<cpp11::decay_t<SEXP>>(RmySeed), cpp11::as_cpp<cpp11::decay_t<SEXP>>(RNumSamp), cpp11::as_cpp<cpp11::decay_t<SEXP>>(baseSample), cpp11::as_cpp<cpp11::decay_t<SEXP>>(RNamed), cpp11::as_cpp<cpp11::decay_t<SEXP>>(myEnv)));
   END_CPP11
 }
 // RankCombPermMain.cpp
@@ -273,7 +280,8 @@ static const R_CallMethodDef CallEntries[] = {
     {"_RcppAlgos_ComboGroupsCpp",      (DL_FUNC) &_RcppAlgos_ComboGroupsCpp,      16},
     {"_RcppAlgos_CurrCombGlue",        (DL_FUNC) &_RcppAlgos_CurrCombGlue,         1},
     {"_RcppAlgos_DivNumSieveCpp",      (DL_FUNC) &_RcppAlgos_DivNumSieveCpp,       6},
-    {"_RcppAlgos_ExpandGridCpp",       (DL_FUNC) &_RcppAlgos_ExpandGridCpp,        5},
+    {"_RcppAlgos_ExpandGridCountCpp",  (DL_FUNC) &_RcppAlgos_ExpandGridCountCpp,   1},
+    {"_RcppAlgos_ExpandGridCpp",       (DL_FUNC) &_RcppAlgos_ExpandGridCpp,       12},
     {"_RcppAlgos_FrontGlue",           (DL_FUNC) &_RcppAlgos_FrontGlue,            1},
     {"_RcppAlgos_GetClassVals",        (DL_FUNC) &_RcppAlgos_GetClassVals,        14},
     {"_RcppAlgos_MotleyContainer",     (DL_FUNC) &_RcppAlgos_MotleyContainer,      6},

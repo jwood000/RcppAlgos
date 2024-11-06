@@ -1,25 +1,19 @@
-#include "cpp11/logicals.hpp"
-#include "cpp11/integers.hpp"
-#include "cpp11/doubles.hpp"
-#include "cpp11/strings.hpp"
-#include "cpp11/matrix.hpp"
-#include "cpp11/list.hpp"
-
-#include "SetUpUtils.h"
-#include "RMatrix.h"
-#include <functional>
-#include <algorithm>
-#include <cstdint>
-#include <numeric>
-#include <thread>
+#include "Cartesian/GetProduct.h"
 
 [[cpp11::register]]
-SEXP ExpandGridCpp(cpp11::list RList, SEXP Rlow, SEXP Rhigh,
-                   SEXP RNumThreads, SEXP RmaxThreads) {
+SEXP ExpandGridCpp(
+    cpp11::list RList, SEXP Rlow, SEXP Rhigh, SEXP RNumThreads,
+    SEXP RmaxThreads, SEXP RIsSample, SEXP RindexVec, SEXP RmySeed,
+    SEXP RNumSamp, SEXP baseSample, SEXP RNamed, SEXP myEnv
+) {
 
     const int nCols = Rf_length(RList);
     std::vector<int> IsFactor(nCols);
     std::vector<int> lenGrps(nCols);
+
+    bool IsSample = CppConvert::convertFlag(RIsSample, "IsSample");
+    bool IsNamed  = (IsSample) ?
+        CppConvert::convertFlag(RNamed, "namedSample") : false;
 
     for (int i = 0; i < nCols; ++i) {
         if (Rf_isFactor(RList[i])) {
@@ -159,16 +153,36 @@ SEXP ExpandGridCpp(cpp11::list RList, SEXP Rlow, SEXP Rhigh,
     mpz_class lowerMpz;
     mpz_class upperMpz;
 
-    SetBounds(Rlow, Rhigh, IsGmp, bLower, bUpper, lower, upper,
-              lowerMpz, upperMpz, computedRowsMpz, computedRows);
+    if (!IsSample) {
+        SetBounds(Rlow, Rhigh, IsGmp, bLower, bUpper, lower, upper,
+                  lowerMpz, upperMpz, computedRowsMpz, computedRows);
 
-    double userNumRows = 0;
-    SetNumResults(IsGmp, bLower, bUpper, true, upperMpz,
-                  lowerMpz, lower, upper, computedRows,
-                  computedRowsMpz, nRows, userNumRows);
+        double userNumRows = 0;
+        SetNumResults(IsGmp, bLower, bUpper, true, upperMpz,
+                      lowerMpz, lower, upper, computedRows,
+                      computedRowsMpz, nRows, userNumRows);
+    }
 
-    const int limit = 20000;
-    SetThreads(Parallel, maxThreads, nRows,
+    int sampSize;
+    std::vector<double> mySample;
+
+    if (IsSample) {
+        SetRandomSample(RindexVec, RNumSamp, sampSize, IsGmp,
+                        computedRows, mySample, baseSample, myEnv);
+    }
+
+    const int bigSampSize = (IsSample && IsGmp) ? sampSize : 1;
+    std::vector<mpz_class> myBigSamp(bigSampSize);
+
+    if (IsSample) {
+        SetRandomSampleMpz(RindexVec, RmySeed, sampSize,
+                           IsGmp, computedRowsMpz, myBigSamp);
+    }
+
+    const int numResults = (IsSample) ? sampSize : nRows;
+    const int limit = (IsSample) ? 2 : 20000;
+
+    SetThreads(Parallel, maxThreads, numResults,
                myType, nThreads, RNumThreads, limit);
     std::vector<int> startZ = nthProduct(lower, lenGrps);
 
@@ -188,11 +202,15 @@ SEXP ExpandGridCpp(cpp11::list RList, SEXP Rlow, SEXP Rhigh,
         v_i = nCols * (v_i - 1);
     }
 
-    cpp11::sexp res = GlueProdCart(
-        mat_idx, typeCheck, IsFactor, RList, intVec, dblVec,
-        boolVec, cmplxVec, rawVec, charVec, lenGrps, startZ,
-        nRows, nCols, IsDF, nThreads, Parallel
+    cpp11::sexp res = GetProduct(
+        mat_idx, typeCheck, IsFactor, RList, intVec, dblVec, boolVec, cmplxVec,
+        rawVec, charVec, lenGrps, startZ, mySample, myBigSamp, lower, lowerMpz,
+        numResults, nCols, IsDF, nThreads, Parallel, IsGmp, IsSample
     );
+
+    if (IsSample) {
+        SetSampleNames(res, IsGmp, numResults, mySample, myBigSamp, IsNamed);
+    }
 
     return res;
 }
