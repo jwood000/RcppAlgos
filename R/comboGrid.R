@@ -1,7 +1,14 @@
 comboGrid <- function(..., repetition = TRUE) {
 
-    lst   <- GridInputs(...)
+    lst <- GridInputs(...)
+
+    if (lst$early_return) {
+        return(lst$res)
+    }
+
     pools <- lst$p
+    nmc   <- lst$nmc
+    iArgs <- lst$iArgs
 
     if (length(lst$i)) {
         if (length(lst$i) == lst$n) {

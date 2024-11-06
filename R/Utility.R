@@ -152,11 +152,17 @@ GridInputs <- function(...) {
     n_args <- length(arg_s <- list(...))
 
     if (any(sapply(arg_s, is.null))) {
-        return(expand.grid(arg_s))
+        return(list(
+            early_return = TRUE,
+            res = expand.grid(arg_s)
+        ))
     }
 
     if (!n_args) {
-        return(as.data.frame(list()))
+        return(list(
+            early_return = TRUE,
+            res = as.data.frame(list())
+        ))
     }
 
     if (n_args == 1L && is.list(a1 <- arg_s[[1L]])) {
@@ -164,7 +170,10 @@ GridInputs <- function(...) {
     }
 
     if (n_args == 0L) {
-        return(as.data.frame(list()))
+        return(list(
+            early_return = TRUE,
+            res = as.data.frame(list())
+        ))
     }
 
     iArgs <- seq_len(n_args)
@@ -181,12 +190,17 @@ GridInputs <- function(...) {
 
     pools <- arg_s
     names(pools) <- nmc
+    early_return <- length(idx_nas) == n_args
 
     return(
         list(
+            early_return = early_return,
             n = n_args,
             i = idx_nas,
-            p = pools
+            p = pools,
+            nmc = nmc,
+            iArgs = iArgs,
+            res = if (early_return) as.data.frame(pools) else NULL
         )
     )
 }
