@@ -4,14 +4,14 @@ Title: High Performance Tools for Combinatorics and Computational Mathematics
 Description: Provides optimized functions and flexible iterators implemented in
     C++ for solving problems in combinatorics and computational mathematics.
     Handles various combinatorial objects including combinations, permutations,
-    integer partitions and compositions, subset-sum, Cartestion products,
-    unordered Cartesian products, and partition of groups. Utilizes the RMatrix
-    class from 'RcppParallel' for thread safety. The combination and
-    permutation functions contain constraint parameters that allow for
-    generation of all results of a vector meeting specific criteria (e.g.
-    finding all combinations such that the sum is between two bounds). Capable
-    of ranking/unranking combinatorial objects efficiently (e.g. retrieve only
-    the nth lexicographical result) which sets up nicely for parallelization as
+    integer partitions and compositions, Cartestion products, unordered
+    Cartesian products, and partition of groups. Utilizes the RMatrix class
+    from 'RcppParallel' for thread safety. The combination and permutation
+    functions contain constraint parameters that allow for generation of all
+    results of a vector meeting specific criteria (e.g. finding all
+    combinations such that the sum is between two bounds). Capable of
+    ranking/unranking combinatorial objects efficiently (e.g. retrieve only the
+    nth lexicographical result) which sets up nicely for parallelization as
     well as random sampling. Gmp support permits exploration where the total
     number of results is large (e.g. comboSample(10000, 500, n = 4)).
     Additionally, there are several high performance number theoretic
