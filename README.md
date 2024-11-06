@@ -18,8 +18,8 @@ A collection of high performance functions and iterators implemented in C++ for 
   - **`{combo|permute}General`**: Generate all combinations/permutations of a vector (including [multisets](<https://en.wikipedia.org/wiki/Multiset>)) meeting specific criteria.
   - **`{partitions|compositions}General`**: Efficient algorithms for partitioning numbers under various constraints
   - **`{expandGrid|comboGrid}`**: Generate traditional Cartesian product as well as the product where order does not matter.
-  - **`{combo|permute|partitions|compositions|expandGrid}Sample`**: Generate reproducible random samples
-  - **`{combo|permute|partitions|compositions|expandGrid}Iter`**: Flexible iterators allow for bidirectional iteration as well as random access.
+  - **`{combo|permute|partitions|compositions|expandGrid|comboGroups}Sample`**: Generate reproducible random samples
+  - **`{combo|permute|partitions|compositions|expandGrid|comboGroups}Iter`**: Flexible iterators allow for bidirectional iteration as well as random access.
   - **`primeSieve`**: Fast prime number generator
   - **`primeCount`**: Prime counting function using [Legendre's formula](<http://mathworld.wolfram.com/LegendresFormula.html>)
 
