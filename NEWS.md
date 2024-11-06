@@ -2,7 +2,11 @@
 
 ## New Features:
 
-* Added Cartesian product functions: `expandGrid`, `expandGridCount`, `expandGridSample`, `expandGridIter`, and `expandGridRank`.
+* Added Cartesian product functions: `expandGrid`, `expandGridCount`, `expandGridSample`, and `expandGridIter`.
+
+## Bug Fixes:
+
+* Fixed issue in `comboGroup` when groups of size 1 are passed. See [Issue #53](<https://github.com/jwood000/RcppAlgos/issues/53>).
 
 # RcppAlgos 2.8.5
 

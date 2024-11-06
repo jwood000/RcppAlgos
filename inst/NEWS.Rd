@@ -5,7 +5,11 @@
     \itemize{
         \item New Features:
         \itemize{
-            \item Added Cartesian product functions: \code{expandGridCount}, \code{expandGrid}, \code{expandGridSample}, \code{expandGridIter}, and \code{expandGridRank}.
+            \item Added Cartesian product functions: \code{expandGridCount}, \code{expandGrid}, \code{expandGridSample}, and \code{expandGridIter}.
+        }
+        \item Bug Fixes:
+        \itemize{
+            \item Fixed issue in \code{comboGroup} when groups of size 1 are passed. See \href{https://github.com/jwood000/RcppAlgos/issues/53}{Issue #53}.
         }
     }
 }
