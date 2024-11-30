@@ -376,13 +376,14 @@ SEXP GetProduct(
             } case RAWSXP : {
                 cpp11::sexp res = Rf_allocMatrix(RAWSXP, nRows, nCols);
                 Rbyte* rawMat = RAW(res);
-                GetPureOutput(rawMat, idx, lenGrps, rawVec, z, nCols, nRows);
+                SerialGlue(rawMat, idx, lenGrps, rawVec, lenNxtPr, mySamp,
+                           myBigSamp, z, nCols, nRows, IsSample, IsGmp);
                 return res;
             } case CPLXSXP : {
                 cpp11::sexp res = Rf_allocMatrix(CPLXSXP, nRows, nCols);
                 Rcomplex* cmplxMat = COMPLEX(res);
-                GetPureOutput(cmplxMat, idx, lenGrps,
-                              cmplxVec, z, nCols, nRows);
+                SerialGlue(cmplxMat, idx, lenGrps, cmplxVec, lenNxtPr, mySamp,
+                           myBigSamp, z, nCols, nRows, IsSample, IsGmp);
                 return res;
             } case REALSXP : {
                 cpp11::sexp res = Rf_allocMatrix(REALSXP, nRows, nCols);
@@ -395,8 +396,8 @@ SEXP GetProduct(
                 return res;
             } case STRSXP : {
                 cpp11::writable::strings_matrix<> charMat(nRows, nCols);
-                GetCharOutput(charMat, idx, lenGrps,
-                              charVec, z, nCols, nRows);
+                CharacterGlue(charMat, charVec, idx, lenGrps, lenNxtPr, mySamp,
+                              myBigSamp, z, nCols, nRows, IsSample, IsGmp);
                 return charMat;
             } default : {
                 cpp11::stop("Only atomic types are supported for v");
