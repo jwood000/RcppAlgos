@@ -4,8 +4,8 @@ test_that("comboGrid generates correct output", {
     bruteCheck <- function(myList, rep = TRUE) {
         testOut <- comboGrid(myList, repetition = rep)
 
-        t <- expand.grid(myList, stringsAsFactors = FALSE)
-        t <- t[do.call(order, t), ]
+        t  <- expand.grid(myList, stringsAsFactors = FALSE)
+        t  <- t[do.call(order, t), ]
         t1 <- apply(t, 1, function(x) paste0(sort(x), collapse = ""))
         t2 <- t[!duplicated(t1), ]
 
