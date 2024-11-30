@@ -69,3 +69,6 @@ void SetSampleNames(SEXP objRcpp, bool IsGmp, int sampSize,
                     SEXP colNames = R_NilValue, int xtraDims = 0);
 
 SEXP GetInt64Vec(const std::vector<std::int64_t> &v);
+
+int HomoFactors(const std::vector<int> &IsFactor,
+                cpp11::list RList, int nCols);

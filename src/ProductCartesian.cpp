@@ -102,28 +102,7 @@ SEXP ExpandGridCpp(
 
     // We need to check to see if there is overlap in factor levels
     if (typeCheck[tFac] && mySum == 1) {
-        std::vector<std::string> testLevels;
-
-        for (int i = 0; i < nCols; ++i) {
-            if (IsFactor[i]) {
-                cpp11::strings facVec(Rf_getAttrib(RList[i], R_LevelsSymbol));
-                std::vector<std::string> strVec;
-
-                for (auto f: facVec) {
-                    const std::string temp(CHAR(f));
-                    strVec.push_back(temp);
-                }
-
-                if (testLevels.size()) {
-                    if (strVec != testLevels) {
-                        ++mySum;
-                        break;
-                    }
-                } else {
-                    testLevels = strVec;
-                }
-            }
-        }
+        mySum += HomoFactors(IsFactor, RList, nCols);
     }
 
     bool IsDF = (mySum > 1) ? true : false;
@@ -135,7 +114,8 @@ SEXP ExpandGridCpp(
                                  VecType::Integer, "maxThreads");
 
     const double computedRows = CartesianCount(lenGrps);
-    const bool IsGmp = (computedRows > Significand53);
+    const bool IsGmp = IsSample ? computedRows > SampleLimit :
+        computedRows > Significand53;
 
     mpz_class computedRowsMpz;
 
@@ -184,7 +164,9 @@ SEXP ExpandGridCpp(
 
     SetThreads(Parallel, maxThreads, numResults,
                myType, nThreads, RNumThreads, limit);
-    std::vector<int> startZ = nthProduct(lower, lenGrps);
+
+    std::vector<int> startZ;
+    GetStartProd(lenGrps, startZ, lowerMpz, lower, 0, IsGmp);
 
     const int maxLen = *std::max_element(lenGrps.begin(), lenGrps.end());
     std::vector<int> mat_idx(maxLen * nCols);

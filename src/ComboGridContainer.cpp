@@ -1,9 +1,6 @@
 #include "cpp11/logicals.hpp"
-#include "cpp11/integers.hpp"
-#include "cpp11/doubles.hpp"
 #include "cpp11/strings.hpp"
 #include "cpp11/matrix.hpp"
-#include "cpp11/list.hpp"
 
 #include "NumbersUtils/Eratosthenes.h"
 #include "Cartesian/ComboCartesian.h"
@@ -509,28 +506,7 @@ SEXP ComboGridCpp(cpp11::list RList, bool IsRep) {
 
     // We need to check to see if there is overlap in factor levels
     if (typeCheck[tFac] && mySum == 1) {
-        std::vector<std::string> testLevels;
-
-        for (int i = 0; i < nCols; ++i) {
-            if (IsFactor[i]) {
-                cpp11::strings facVec(Rf_getAttrib(RList[i], R_LevelsSymbol));
-                std::vector<std::string> strVec;
-
-                for (auto f: facVec) {
-                    const std::string temp(CHAR(f));
-                    strVec.push_back(temp);
-                }
-
-                if (testLevels.size()) {
-                    if (strVec != testLevels) {
-                        ++mySum;
-                        break;
-                    }
-                } else {
-                    testLevels = strVec;
-                }
-            }
-        }
+        mySum += HomoFactors(IsFactor, RList, nCols);
     }
 
     bool IsDF = (mySum > 1) ? true : false;

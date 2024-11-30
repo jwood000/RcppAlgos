@@ -716,3 +716,31 @@ SEXP GetInt64Vec(const std::vector<std::int64_t> &v) {
 
     return res;
 }
+
+int HomoFactors(const std::vector<int> &IsFactor,
+                cpp11::list RList, int nCols) {
+
+    std::vector<std::string> testLevels;
+
+    for (int i = 0; i < nCols; ++i) {
+        if (IsFactor[i]) {
+            cpp11::strings facVec(Rf_getAttrib(RList[i], R_LevelsSymbol));
+            std::vector<std::string> strVec;
+
+            for (auto f: facVec) {
+                const std::string temp(CHAR(f));
+                strVec.push_back(temp);
+            }
+
+            if (testLevels.size()) {
+                if (strVec != testLevels) {
+                    return 1;
+                }
+            } else {
+                testLevels = strVec;
+            }
+        }
+    }
+
+    return 0;
+}
