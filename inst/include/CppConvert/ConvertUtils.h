@@ -3,6 +3,7 @@
 #include "cpp11/integers.hpp"
 #include "cpp11/doubles.hpp"
 #include "cpp11/sexp.hpp"
+#include "cpp11/list.hpp"
 
 #include "Constants.h"
 #include <gmpxx.h>

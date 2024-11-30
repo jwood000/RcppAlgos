@@ -89,8 +89,8 @@ bool nextProduct(const std::vector<int> &lenGrps,
 
 void GetStartProd(
     const std::vector<int> &lenNxtPr, std::vector<int> &z,
-    mpz_class &lowerMpz, double &lower, int stepSize, bool IsGmp)
-{
+    mpz_class &lowerMpz, double &lower, int stepSize, bool IsGmp
+) {
 
     if (IsGmp) {
         lowerMpz += stepSize;
