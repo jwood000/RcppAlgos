@@ -36,13 +36,13 @@ public:
 
     virtual ~Iterator() = default;
     virtual void startOver() = 0;
-    virtual SEXP nextComb() = 0;
-    virtual SEXP prevComb() = 0;
-    virtual SEXP nextNumCombs(SEXP RNum) = 0;
-    virtual SEXP prevNumCombs(SEXP RNum) = 0;
+    virtual SEXP nextIter() = 0;
+    virtual SEXP prevIter() = 0;
+    virtual SEXP nextNumIters(SEXP RNum) = 0;
+    virtual SEXP prevNumIters(SEXP RNum) = 0;
     virtual SEXP nextGather() = 0;
     virtual SEXP prevGather() = 0;
-    virtual SEXP currComb() = 0;
+    virtual SEXP currIter() = 0;
     virtual SEXP randomAccess(SEXP RindexVec) = 0;
     virtual SEXP front() = 0;
     virtual SEXP back() = 0;

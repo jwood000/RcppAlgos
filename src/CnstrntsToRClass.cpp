@@ -187,7 +187,7 @@ void CnstrntsToR::startOver() {
     }
 }
 
-SEXP CnstrntsToR::nextComb() {
+SEXP CnstrntsToR::nextIter() {
 
     if (keepGoing) {
         return GetNext();
@@ -196,7 +196,7 @@ SEXP CnstrntsToR::nextComb() {
     }
 }
 
-SEXP CnstrntsToR::nextNumCombs(SEXP RNum) {
+SEXP CnstrntsToR::nextNumIters(SEXP RNum) {
 
     int num;
     CppConvert::convertPrimitive(RNum, num, VecType::Integer,
@@ -220,7 +220,7 @@ SEXP CnstrntsToR::nextGather() {
     }
 }
 
-SEXP CnstrntsToR::currComb() {
+SEXP CnstrntsToR::currIter() {
 
     if (!keepGoing) {
         return R_NilValue;

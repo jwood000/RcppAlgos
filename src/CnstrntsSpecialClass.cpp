@@ -27,9 +27,9 @@ void CnstrntsSpecial::startOver() {
     Combo::startOver();
 }
 
-SEXP CnstrntsSpecial::nextComb() {
+SEXP CnstrntsSpecial::nextIter() {
     if (keepGoing) {
-        cpp11::sexp res = ComboRes::nextNumCombs(Rf_ScalarInteger(1));
+        cpp11::sexp res = ComboRes::nextNumIters(Rf_ScalarInteger(1));
 
         if (Rf_isNull(res)) {
             keepGoing = false;
@@ -50,10 +50,10 @@ SEXP CnstrntsSpecial::nextComb() {
     }
 }
 
-SEXP CnstrntsSpecial::nextNumCombs(SEXP RNum) {
+SEXP CnstrntsSpecial::nextNumIters(SEXP RNum) {
 
     if (keepGoing) {
-        cpp11::sexp res = ComboRes::nextNumCombs(RNum);
+        cpp11::sexp res = ComboRes::nextNumIters(RNum);
 
         if (Rf_isNull(res)) {
             keepGoing = false;
@@ -101,8 +101,8 @@ SEXP CnstrntsSpecial::nextGather() {
     }
 }
 
-SEXP CnstrntsSpecial::currComb() {
-    return ComboRes::currComb();
+SEXP CnstrntsSpecial::currIter() {
+    return ComboRes::currIter();
 }
 
 SEXP CnstrntsSpecial::summary() {

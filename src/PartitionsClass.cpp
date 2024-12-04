@@ -118,7 +118,7 @@ void Partitions::startOver() {
     SetPartValues();
 }
 
-SEXP Partitions::nextComb() {
+SEXP Partitions::nextIter() {
 
     if (CheckEqSi(IsGmp, mpzIndex, dblIndex, 0) &&
         CheckIndLT(IsGmp, mpzIndex, dblIndex,
@@ -139,7 +139,7 @@ SEXP Partitions::nextComb() {
     }
 }
 
-SEXP Partitions::nextNumCombs(SEXP RNum) {
+SEXP Partitions::nextNumIters(SEXP RNum) {
 
     int num;
     CppConvert::convertPrimitive(RNum, num, VecType::Integer,
@@ -236,7 +236,7 @@ SEXP Partitions::nextGather() {
     }
 }
 
-SEXP Partitions::currComb() {
+SEXP Partitions::currIter() {
 
     if (CheckIndGrT(IsGmp, mpzIndex, dblIndex,
                     cnstrtCountMpz, cnstrtCount)) {
