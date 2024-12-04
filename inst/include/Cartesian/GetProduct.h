@@ -1,10 +1,8 @@
 #pragma once
 
 #include "cpp11/logicals.hpp"
-#include "cpp11/strings.hpp"
 #include "cpp11/matrix.hpp"
 
-#include "SetUpUtils.h"
 #include "RMatrix.h"
 #include <functional>
 #include <algorithm>

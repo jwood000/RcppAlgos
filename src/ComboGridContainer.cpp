@@ -403,7 +403,7 @@ void getAtLeastNPrimes(std::vector<int> &primes,
 SEXP ComboGridCpp(cpp11::list RList, bool IsRep) {
 
     int sumLength = 0;
-    const int nCols = Rf_length(RList);
+    const int nCols = RList.size();
     std::vector<int> IsFactor(nCols);
 
     for (int i = 0; i < nCols; ++i) {

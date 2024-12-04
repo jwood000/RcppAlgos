@@ -15,10 +15,11 @@ SEXP CopyRv(SEXP Rv, const std::vector<int> &vInt,
 }
 
 [[cpp11::register]]
-SEXP GetClassVals(SEXP Rv, SEXP Rm, SEXP RisRep, SEXP RFreqs, SEXP RIsComb,
-                  SEXP stdFun, SEXP RThreads, SEXP RmaxThreads, SEXP RIsCnstrd,
-                  SEXP RIsComposition, SEXP RIsWeak, SEXP RNumGroups,
-                  SEXP RGrpSize, SEXP RRetType) {
+SEXP GetClassVals(
+    SEXP Rv, SEXP Rm, SEXP RisRep, SEXP RFreqs, SEXP RIsComb, SEXP stdFun,
+    SEXP RThreads, SEXP RmaxThreads, SEXP RIsCnstrd, SEXP RIsComposition,
+    SEXP RIsWeak, SEXP RNumGroups, SEXP RGrpSize, SEXP RRetType
+) {
 
     int n = 0;
     int m = 0;
