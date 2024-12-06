@@ -329,7 +329,8 @@ test_that("expandGrid and expandGridSample generates
     )
 })
 
-test_that("expandGrid and expandGridSample generates correct output with multiple threads and IsGmp", {
+test_that("expandGrid and expandGridSample generates correct
+          output with multiple threads and IsGmp", {
 
     set.seed(591827364)
 
@@ -345,7 +346,11 @@ test_that("expandGrid and expandGridSample generates correct output with multipl
         ))
     )
 
-    rand100 <- gmp::urand.bigz(100, size = gmp::log2.bigz(total), seed = 11111)
+    capture.output(
+        rand100 <- gmp::urand.bigz(
+            100, size = gmp::log2.bigz(total), seed = 11111
+        )
+    )
 
     expect_equal(
         expandGridSample(myList, sampleVec = rand100),
@@ -364,7 +369,11 @@ test_that("expandGrid and expandGridSample generates correct output with multipl
         ))
     )
 
-    rand100 <- gmp::urand.bigz(100, size = gmp::log2.bigz(total), seed = 22222)
+    capture.output(
+        rand100 <- gmp::urand.bigz(
+            100, size = gmp::log2.bigz(total), seed = 22222
+        )
+    )
 
     expect_equal(
         expandGridSample(myList, sampleVec = rand100),
