@@ -4,7 +4,6 @@
 #include "Permutations/NthPermutation.h"
 #include "ClassUtils/GetPrevCombPerm.h"
 #include "Sample/SampCombPermStd.h"
-#include "ClassUtils/ClassUtils.h"
 #include "ClassUtils/Iterator.h"
 #include "GetCombPerm.h"
 #include "NthResult.h"
@@ -42,10 +41,6 @@ protected:
     const nextIterPtr nextComb;
     const prevIterPtr prevComb;
 
-    bool prevIterAvailable;
-
-    SEXP ToSeeLast(bool AdjustIdx = true);
-    SEXP ToSeeFirst(bool AdjustIdx = true);
     SEXP BasicVecReturn();
 
 public:

@@ -1,26 +1,5 @@
 #include "ClassUtils/ComboClass.h"
 
-SEXP Combo::ToSeeLast(bool AdjustIdx) {
-    std::string message = "No more results.";
-    if (prevIterAvailable) {
-        message += " To see the last result, use the prevIter method(s)\n\n";
-    } else {
-        message += "\n\n";
-    }
-
-    Rprintf("%s", message.c_str());
-    if (AdjustIdx) increment(IsGmp, mpzIndex, dblIndex);
-    return R_NilValue;
-}
-
-SEXP Combo::ToSeeFirst(bool AdjustIdx) {
-    const std::string message = "Iterator Initialized. To see the first"
-                                " result, use the nextIter method(s)\n\n";
-    Rprintf("%s", message.c_str());
-    if (AdjustIdx) decrement(IsGmp, mpzIndex, dblIndex);
-    return R_NilValue;
-}
-
 SEXP Combo::BasicVecReturn() {
 
     cpp11::sexp res = Rf_allocVector(RTYPE, m);
@@ -78,7 +57,6 @@ SEXP Combo::BasicVecReturn() {
     return res;
 }
 
-
 SEXP Combo::MatForward(int nRows, int numIncrement) {
 
     int nThreads = 1;
@@ -128,7 +106,6 @@ Combo::Combo(
     mpzIndex = 0;
     SetStartZ(myReps, freqs, z, IsComb, n, m, dblIndex,
               mpzIndex, IsRep, IsMult, IsGmp);
-    prevIterAvailable = true;
 }
 
 void Combo::startOver() {

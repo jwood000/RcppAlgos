@@ -1,5 +1,6 @@
 #pragma once
 
+#include "ClassUtils/ClassUtils.h"
 #include "SetUpUtils.h"
 
 class Iterator {
@@ -28,6 +29,10 @@ protected:
 
     double dblIndex;
     mpz_class mpzIndex;
+
+    bool prevIterAvailable;
+    SEXP ToSeeLast(bool AdjustIdx = true);
+    SEXP ToSeeFirst(bool AdjustIdx = true);
 
 public:
 
