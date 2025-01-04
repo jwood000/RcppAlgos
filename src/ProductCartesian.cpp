@@ -7,30 +7,21 @@ SEXP ExpandGridCpp(
     SEXP RNumSamp, SEXP baseSample, SEXP RNamed, SEXP myEnv
 ) {
 
-    const int nCols = Rf_length(RList);
-    std::vector<int> IsFactor(nCols);
-    std::vector<int> lenGrps(nCols);
-
     bool IsSample = CppConvert::convertFlag(RIsSample, "IsSample");
     bool IsNamed  = (IsSample) ?
         CppConvert::convertFlag(RNamed, "namedSample") : false;
 
-    for (int i = 0; i < nCols; ++i) {
-        if (Rf_isFactor(RList[i])) {
-            IsFactor[i] = 1;
-        } else {
-            IsFactor[i] = 0;
-        }
+    const int nCols = RList.size();
+    std::vector<std::vector<int>> myVec(nCols);
+    std::vector<int> typeCheck(N_TYPES, 0);
 
-        lenGrps[i] = Rf_length(RList[i]);
-    }
+    std::vector<int> IsFactor(nCols);
+    std::vector<int> lenGrps(nCols);
+    CartesianInitialPrep(RList, IsFactor, lenGrps, nCols);
 
     const int sumLength = std::accumulate(
         lenGrps.begin(), lenGrps.end(), 0
     );
-
-    std::vector<std::vector<int>> myVec(nCols);
-    std::vector<int> typeCheck(N_TYPES, 0);
 
     cpp11::writable::strings charVec(sumLength);
     std::vector<Rcomplex> cmplxVec(sumLength);
@@ -40,72 +31,13 @@ SEXP ExpandGridCpp(
     std::vector<int> boolVec(sumLength);
 
     VecType myType = VecType::Integer;
+    bool IsDF = true;
 
-    for (int i = 0, strt = 0; i < nCols; ++i) {
-        switch(TYPEOF(RList[i])) {
-            case INTSXP : {
-                if (IsFactor[i]) {
-                    typeCheck[tFac] = 1;
-                } else {
-                    typeCheck[tInt] = 1;
-                }
+    ProductPrepare(
+        RList, IsFactor, lenGrps, myVec, charVec, cmplxVec, rawVec,
+        dblVec, intVec, boolVec, typeCheck, myType, nCols, IsDF
+    );
 
-                std::vector<int> temp = CppConvert::GetVec<int>(RList[i]);
-                std::copy(temp.begin(), temp.end(), intVec.begin() + strt);
-                myType = VecType::Integer;
-                break;
-            } case LGLSXP : {
-                std::vector<int> temp = CppConvert::GetVec<int>(RList[i]);
-                std::copy(temp.begin(), temp.end(), boolVec.begin() + strt);
-                typeCheck[tLog] = 1;
-                myType = VecType::Logical;
-                break;
-            } case CPLXSXP : {
-                std::vector<Rcomplex> temp =
-                    CppConvert::GetVec<Rcomplex>(RList[i]);
-                std::copy(temp.begin(), temp.end(), cmplxVec.begin() + strt);
-                typeCheck[tCpx] = 1;
-                myType = VecType::Complex;
-                break;
-            } case RAWSXP : {
-                std::vector<Rbyte> temp = CppConvert::GetVec<Rbyte>(RList[i]);
-                std::copy(temp.begin(), temp.end(), rawVec.begin() + strt);
-                typeCheck[tRaw] = 1;
-                myType = VecType::Raw;
-                break;
-            } case REALSXP : {
-                std::vector<double> temp =
-                    CppConvert::GetVec<double>(RList[i]);
-                std::copy(temp.begin(), temp.end(), dblVec.begin() + strt);
-                typeCheck[tDbl] = 1;
-                myType = VecType::Numeric;
-                break;
-            } case STRSXP : {
-                for (int j = 0; j < lenGrps[i]; ++j) {
-                    charVec[strt + j] = STRING_ELT(RList[i], j);
-                }
-
-                typeCheck[tStr] = 1;
-                myType = VecType::Character;
-                break;
-            }
-        }
-
-        std::vector<int> idx(lenGrps[i]);
-        std::iota(idx.begin(), idx.end(), strt);
-
-        myVec[i] = idx;
-        strt += lenGrps[i];
-    }
-
-    int mySum = std::accumulate(typeCheck.cbegin(), typeCheck.cend(), 0);
-
-    // We need to check to see if there is overlap in factor levels
-    if (typeCheck[tFac] && mySum == 1) {
-        mySum += HomoFactors(IsFactor, RList, nCols);
-    }
-
-    bool IsDF = (mySum > 1) ? true : false;
     int nRows = 0;
     int nThreads = 1;
     int maxThreads = 1;

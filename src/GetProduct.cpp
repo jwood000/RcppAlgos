@@ -357,47 +357,59 @@ SEXP GetProduct(
             case INTSXP : {
                 cpp11::sexp res = Rf_allocMatrix(INTSXP, nRows, nCols);
                 int* intMat = INTEGER(res);
+
                 PureOutputMain(
                     intMat, idx, lenGrps, intVec, lenNxtPr, mySamp,
                     myBigSamp, z, nCols, nRows, nThreads, Parallel,
                     lowerMpz, lower, IsSample, IsGmp
                 );
+
                 if (typeCheck[tFac]) SetFactorClass(res, RList[0]);
                 return res;
             } case LGLSXP : {
                 cpp11::sexp res = Rf_allocMatrix(LGLSXP, nRows, nCols);
                 int* boolMat = LOGICAL(res);
+
                 PureOutputMain(
                     boolMat, idx, lenGrps, boolVec, lenNxtPr, mySamp,
                     myBigSamp, z, nCols, nRows, nThreads, Parallel,
                     lowerMpz, lower, IsSample, IsGmp
                 );
+
                 return res;
             } case RAWSXP : {
                 cpp11::sexp res = Rf_allocMatrix(RAWSXP, nRows, nCols);
                 Rbyte* rawMat = RAW(res);
+
                 SerialGlue(rawMat, idx, lenGrps, rawVec, lenNxtPr, mySamp,
                            myBigSamp, z, nCols, nRows, IsSample, IsGmp);
+
                 return res;
             } case CPLXSXP : {
                 cpp11::sexp res = Rf_allocMatrix(CPLXSXP, nRows, nCols);
                 Rcomplex* cmplxMat = COMPLEX(res);
+
                 SerialGlue(cmplxMat, idx, lenGrps, cmplxVec, lenNxtPr, mySamp,
                            myBigSamp, z, nCols, nRows, IsSample, IsGmp);
+
                 return res;
             } case REALSXP : {
                 cpp11::sexp res = Rf_allocMatrix(REALSXP, nRows, nCols);
                 double* dblMat = REAL(res);
+
                 PureOutputMain(
                     dblMat, idx, lenGrps, dblVec, lenNxtPr, mySamp,
                     myBigSamp, z, nCols, nRows, nThreads, Parallel,
                     lowerMpz, lower, IsSample, IsGmp
                 );
+
                 return res;
             } case STRSXP : {
                 cpp11::writable::strings_matrix<> charMat(nRows, nCols);
+
                 CharacterGlue(charMat, charVec, idx, lenGrps, lenNxtPr, mySamp,
                               myBigSamp, z, nCols, nRows, IsSample, IsGmp);
+
                 return charMat;
             } default : {
                 cpp11::stop("Only atomic types are supported for v");
