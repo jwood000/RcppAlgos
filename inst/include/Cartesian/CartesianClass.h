@@ -1,48 +1,59 @@
 #pragma once
 
-#include "ComboGroups/ComboGroupsTemplate.h"
-#include "ComboGroups/GetComboGroups.h"
+#include "Cartesian/GetProduct.h"
 #include "ClassUtils/Iterator.h"
 
-class ComboGroupsClass : public Iterator {
+class CartesianClass : public Iterator {
 private:
 
-    cpp11::integers dim;
-    cpp11::writable::list dimNames;
-    cpp11::writable::strings myNames;
+    const cpp11::list RList;
 
-    const std::unique_ptr<ComboGroupsTemplate> CmbGrp;
+    const std::vector<int> idx;
+    const std::vector<int> lenGrps;
+    const std::vector<int> typeCheck;
+    const std::vector<int> IsFactor;
 
-    nextGrpFunc nextCmbGrp;
-    nthFuncDbl nthCmbGrp;
-    nthFuncGmp nthCmbGrpGmp;
-    finalTouchFunc FinalTouch;
+    const std::vector<int> intVec;
+    const std::vector<double> dblVec;
+    const std::vector<int> boolVec;
+    const std::vector<Rcomplex> cmplxVec;
+    const std::vector<Rbyte> rawVec;
+    const cpp11::strings charVec;
 
-    std::string grpSizeDesc;
-    bool IsArray;
-    int rDisp; // This will differ in the General case when OneGrp = true
-    int r;     // Number of groups
+    const bool IsDF;
+    const int nCols;
+
+    std::vector<int> z;
+    const VecType myType;
 
     SEXP SingleReturn();
     SEXP GeneralReturn(int numResults);
 
 public:
 
-    ComboGroupsClass(
-        SEXP Rv, int Rm, SEXP RcompRows, const std::vector<int> &bVec,
-        const std::vector<int> &Rreps, const std::vector<int> &Rfreqs,
-        const std::vector<int> &RvInt, const std::vector<double> &RvNum,
-        VecType typePass, int RmaxThreads, SEXP RnumThreads, bool Rparallel,
-        SEXP RNumGroups, SEXP RGrpSize, SEXP RRetType
+    CartesianClass(
+        SEXP Rv_RList, SEXP RcompRows, int RmaxThreads, SEXP RnumThreads,
+        bool Rparallel, bool RIsGmp, const std::vector<int> &Ridx,
+        const std::vector<int> &RtypeCheck, const std::vector<int> &RIsFactor,
+        const std::vector<int> &RintVec, const std::vector<double> &RdblVec,
+        const std::vector<int> &RlglVec, const std::vector<Rcomplex> &RcplxVec,
+        const std::vector<Rbyte> &RrawVec, const cpp11::strings &RcharVec,
+        const std::vector<int> &RlenGrps,
+        bool RisDF, int RnCols, VecType RmyType
     );
 
     void startOver();
-    SEXP nextComb();
-    SEXP nextNumCombs(SEXP RNum);
+    SEXP nextIter();
+    SEXP nextNumIters(SEXP RNum);
     SEXP nextGather();
-    SEXP currComb();
+    SEXP currIter();
     SEXP randomAccess(SEXP RindexVec);
     SEXP front();
     SEXP back();
     SEXP summary();
+
+    // Not currently implemented for this class.
+    SEXP prevIter();
+    SEXP prevNumIters(SEXP RNum);
+    SEXP prevGather();
 };
