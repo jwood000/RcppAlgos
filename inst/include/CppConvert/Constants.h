@@ -42,5 +42,6 @@ enum class VecType {
     Logical   = 3,
     Character = 4,
     Complex   = 5,
-    Raw       = 6
+    Raw       = 6,
+    List      = 7
 };
