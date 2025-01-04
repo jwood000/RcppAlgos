@@ -185,7 +185,7 @@ void zUpdateIndex(const std::vector<double> &vNum,
             int* matBool = INTEGER(mat);
             int* yBoolPt = INTEGER(yBool);
             UpdateExact(matBool, yBoolPt, vInt, z, lastRow, nRows, m, n1);
-            break;
+            return;
         } case INTSXP: {
             const int numAdd = static_cast<int>(bAddOne);
             cpp11::sexp yInt = Rf_allocVector(INTSXP, m);
@@ -193,7 +193,7 @@ void zUpdateIndex(const std::vector<double> &vNum,
             int* yIntPt = INTEGER(yInt);
             UpdateExact(matInt, yIntPt, vInt, z,
                         lastRow, nRows, m, n1, numAdd);
-            break;
+            return;
         } case REALSXP: {
             cpp11::sexp yNum = Rf_allocVector(REALSXP, m);
             double* matNum = REAL(mat);
@@ -215,7 +215,7 @@ void zUpdateIndex(const std::vector<double> &vNum,
                 z[j] = ind;
             }
 
-            break;
+            return;
         } case STRSXP: {
             cpp11::sexp yChar = Rf_allocVector(STRSXP, m);
 
@@ -235,7 +235,7 @@ void zUpdateIndex(const std::vector<double> &vNum,
                 z[j] = ind;
             }
 
-            break;
+            return;
         } case CPLXSXP: {
             cpp11::sexp yCmplx = Rf_allocVector(CPLXSXP, m);
             Rcomplex* matCmplx = COMPLEX(mat);
@@ -264,7 +264,7 @@ void zUpdateIndex(const std::vector<double> &vNum,
                 z[j] = ind;
             }
 
-            break;
+            return;
         } case RAWSXP: {
             Rbyte* matRaw = RAW(mat);
             cpp11::sexp yRaw = Rf_allocVector(RAWSXP, m);
@@ -272,7 +272,7 @@ void zUpdateIndex(const std::vector<double> &vNum,
             Rbyte* yRawPt = RAW(yRaw);
             std::vector<Rbyte> stlRawVec = CppConvert::GetVec<Rbyte>(v);
             UpdateExact(matRaw, yRawPt, stlRawVec, z, lastRow, nRows, m, n1);
-            break;
+            return;
         } default:{
             cpp11::stop("Only atomic types are supported for v");
         }
