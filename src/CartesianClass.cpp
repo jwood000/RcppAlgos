@@ -51,7 +51,9 @@ SEXP CartesianClass::SingleReturn() {
                     DataFrame[j] = res;
                     break;
                 } case STRSXP: {
-                    DataFrame[j] = charVec[idx[j + z[j]]];
+                    cpp11::sexp res = Rf_allocVector(STRSXP, 1);
+                    SET_STRING_ELT(res, 0, STRING_ELT(charVec, idx[j + z[j]]));
+                    DataFrame[j] = res;
                     break;
                 } default : {
                     cpp11::stop("Only atomic types are supported for v");
@@ -71,7 +73,7 @@ SEXP CartesianClass::SingleReturn() {
                 int* ptrOut = LOGICAL(res);
 
                 for (int j = 0; j < nCols; ++j) {
-                    ptrOut[j] = boolVec[z[j]];
+                    ptrOut[j] = boolVec[idx[j + z[j]]];
                 }
 
                 return res;
@@ -80,7 +82,7 @@ SEXP CartesianClass::SingleReturn() {
                 int* ptrOut = INTEGER(res);
 
                 for (int j = 0; j < nCols; ++j) {
-                    ptrOut[j] = intVec[z[j]];
+                    ptrOut[j] = intVec[idx[j + z[j]]];
                 }
 
                 if (typeCheck[tFac]) SetFactorClass(res, RList[0]);
@@ -89,7 +91,7 @@ SEXP CartesianClass::SingleReturn() {
                 cpp11::sexp res = Rf_allocVector(STRSXP, nCols);
 
                 for (int j = 0; j < nCols; ++j) {
-                    SET_STRING_ELT(res, j, STRING_ELT(charVec, z[j]));
+                    SET_STRING_ELT(res, j, STRING_ELT(charVec, idx[j + z[j]]));
                 }
 
                 return res;
@@ -98,7 +100,7 @@ SEXP CartesianClass::SingleReturn() {
                 Rcomplex* ptrOut = COMPLEX(res);
 
                 for (int j = 0; j < nCols; ++j) {
-                    ptrOut[j] = cmplxVec[z[j]];
+                    ptrOut[j] = cmplxVec[idx[j + z[j]]];
                 }
 
                 return res;
@@ -107,7 +109,7 @@ SEXP CartesianClass::SingleReturn() {
                 Rbyte* ptrOut = RAW(res);
 
                 for (int j = 0; j < nCols; ++j) {
-                    ptrOut[j] = rawVec[z[j]];
+                    ptrOut[j] = rawVec[idx[j + z[j]]];
                 }
 
                 return res;
@@ -116,7 +118,7 @@ SEXP CartesianClass::SingleReturn() {
                 double* ptrOut = REAL(res);
 
                 for (int j = 0; j < nCols; ++j) {
-                    ptrOut[j] = dblVec[z[j]];
+                    ptrOut[j] = dblVec[idx[j + z[j]]];
                 }
 
                 return res;
@@ -145,8 +147,9 @@ SEXP CartesianClass::GeneralReturn(int numResults) {
         nCols, IsDF, nThreads, LocalPar, IsGmp, false
     );
 
-    // zUpdateIndex(vNum, vInt, z, sexpVec, res, m, numResults);
-    prevProduct(lenGrps, z, nCols);
+    mpzTemp = mpzIndex - 1;
+    dblTemp = dblIndex - 1;
+    GetStartProd(lenNxtPr, z, mpzTemp, dblTemp, 0, IsGmp);
     return res;
 }
 
@@ -165,10 +168,15 @@ CartesianClass::CartesianClass(
     rawVec(RrawVec), charVec(RcharVec), IsDF(RisDF),
     nCols(RnCols), myType(RmyType) {
 
-    Rf_PrintValue(RcompRows);
     dblIndex = 0;
     mpzIndex = 0;
-    std::fill(z.begin(), z.end(), 0);
+
+    z.assign(nCols, 0);
+    lenNxtPr = lenGrps;
+
+    for (auto &v_i: lenNxtPr) {
+        v_i = (v_i / nCols) + 1;
+    }
 }
 
 void CartesianClass::startOver() {

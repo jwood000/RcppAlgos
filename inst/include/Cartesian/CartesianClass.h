@@ -24,6 +24,7 @@ private:
     const int nCols;
 
     std::vector<int> z;
+    std::vector<int> lenNxtPr;
     const VecType myType;
 
     SEXP SingleReturn();

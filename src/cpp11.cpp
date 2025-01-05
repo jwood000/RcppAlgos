@@ -90,6 +90,13 @@ extern "C" SEXP _RcppAlgos_DivNumSieveCpp(SEXP Rb1, SEXP Rb2, SEXP RbDivSieve, S
   END_CPP11
 }
 // ExposeClass.cpp
+SEXP CartClassNew(SEXP Rv_RList, SEXP RNumThreads, SEXP RmaxThreads);
+extern "C" SEXP _RcppAlgos_CartClassNew(SEXP Rv_RList, SEXP RNumThreads, SEXP RmaxThreads) {
+  BEGIN_CPP11
+    return cpp11::as_sexp(CartClassNew(cpp11::as_cpp<cpp11::decay_t<SEXP>>(Rv_RList), cpp11::as_cpp<cpp11::decay_t<SEXP>>(RNumThreads), cpp11::as_cpp<cpp11::decay_t<SEXP>>(RmaxThreads)));
+  END_CPP11
+}
+// ExposeClass.cpp
 SEXP CombClassNew(SEXP RVals, SEXP RboolVec, SEXP freqInfo, SEXP Rparallel, SEXP RstdFun, SEXP Rrho, SEXP R_RFunVal, SEXP RmainFun, SEXP RcompFun, SEXP Rtarget, SEXP RKeepRes, SEXP Rtolerance, SEXP RmIsNull, SEXP RretVal);
 extern "C" SEXP _RcppAlgos_CombClassNew(SEXP RVals, SEXP RboolVec, SEXP freqInfo, SEXP Rparallel, SEXP RstdFun, SEXP Rrho, SEXP R_RFunVal, SEXP RmainFun, SEXP RcompFun, SEXP Rtarget, SEXP RKeepRes, SEXP Rtolerance, SEXP RmIsNull, SEXP RretVal) {
   BEGIN_CPP11
@@ -268,6 +275,7 @@ extern "C" SEXP _RcppAlgos_SamplePartitions(SEXP Rv, SEXP Rm, SEXP RisRep, SEXP 
 extern "C" {
 static const R_CallMethodDef CallEntries[] = {
     {"_RcppAlgos_BackGlue",            (DL_FUNC) &_RcppAlgos_BackGlue,             1},
+    {"_RcppAlgos_CartClassNew",        (DL_FUNC) &_RcppAlgos_CartClassNew,         3},
     {"_RcppAlgos_CheckConstrndCpp",    (DL_FUNC) &_RcppAlgos_CheckConstrndCpp,     3},
     {"_RcppAlgos_CheckReturn",         (DL_FUNC) &_RcppAlgos_CheckReturn,          6},
     {"_RcppAlgos_CombClassNew",        (DL_FUNC) &_RcppAlgos_CombClassNew,        14},

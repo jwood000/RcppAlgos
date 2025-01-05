@@ -19,7 +19,7 @@ static void Finalizer(SEXP ext) {
     if (ptr) delete ptr;
 }
 
-// [[cpp11::register]]
+[[cpp11::register]]
 SEXP CartClassNew(SEXP Rv_RList, SEXP RNumThreads, SEXP RmaxThreads) {
 
     cpp11::list RList(Rv_RList);
