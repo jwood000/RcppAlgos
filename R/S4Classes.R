@@ -60,6 +60,11 @@ setClass(
 )
 
 setClass(
+    "Cartesian",
+    contains = "Combo"
+)
+
+setClass(
     "Constraints",
     slots = c(
         ptr           = "externalptr",
@@ -151,9 +156,12 @@ setMethod(
                              init$FreqsInfo, Parallel, NULL, NULL, NULL,
                              constraintFun, comparisonFun, limitConstraints,
                              keepResults, tolerance, mIsNull, 3)
-        eval(str2expression(text = ALGOS_METHODS[c(
-            "startOver", "nextIter", "nextNIter", "nextRemaining",
-            "currIter", "sourceVector", "summary", "object")])
+        eval(
+            str2expression(
+                text = ALGOS_METHODS[c(
+                    "startOver", "nextIter", "nextNIter", "nextRemaining",
+                    "currIter", "sourceVector", "summary", "object")]
+            )
         )
     }
 )
@@ -167,10 +175,13 @@ setMethod(
                              init$FreqsInfo, Parallel, NULL, NULL, NULL,
                              constraintFun, comparisonFun, limitConstraints,
                              keepResults, tolerance, mIsNull, 3)
-        eval(str2expression(text = ALGOS_METHODS[c(
-            "startOver", "nextIter", "nextNIter", "nextRemaining",
-            "currIter", "randomAccess", "sourceVector", "front",
-            "back", "summary", "object")])
+        eval(
+            str2expression(
+                text = ALGOS_METHODS[c(
+                    "startOver", "nextIter", "nextNIter", "nextRemaining",
+                    "currIter", "randomAccess", "sourceVector", "front",
+                    "back", "summary", "object")]
+            )
         )
     }
 )
@@ -182,10 +193,25 @@ setMethod(
         .Object@ptr <- .Call(`_RcppAlgos_CombClassNew`, init$RVals, init$bVec,
                              init$FreqsInfo, Parallel, NULL, NULL, NULL,
                              NULL, NULL, NULL, NULL, NULL, NULL, 4)
-        eval(str2expression(text = ALGOS_METHODS[c(
-            "startOver", "nextIter", "nextNIter", "nextRemaining",
-            "currIter", "randomAccess", "sourceVector", "front",
-            "back", "summary", "object")]))
+        eval(
+            str2expression(
+                text = ALGOS_METHODS[c(
+                    "startOver", "nextIter", "nextNIter", "nextRemaining",
+                    "currIter", "randomAccess", "sourceVector", "front",
+                    "back", "summary", "object")]
+            )
+        )
+    }
+)
+
+setMethod(
+    "initialize",
+    "Cartesian",
+    function(.Object, Rlist, nThreads) {
+        .Object@ptr <- .Call(
+            `_RcppAlgos_CartClassNew`, Rlist, nThreads, pkgEnv$nThreads
+        )
+        eval(str2expression(text = ALGOS_METHODS))
     }
 )
 
@@ -206,6 +232,10 @@ setMethod(
 }
 
 "[[.ComboGroups" <- function(x, ...) {
+    x@randomAccess(...)
+}
+
+"[[.Cartesian" <- function(x, ...) {
     x@randomAccess(...)
 }
 
@@ -234,5 +264,9 @@ setMethod("$", "Partitions", function(x, name) {
 })
 
 setMethod("$", "ComboGroups", function(x, name) {
+    function(...) slot(x, name)(...)
+})
+
+setMethod("$", "Cartesian", function(x, name) {
     function(...) slot(x, name)(...)
 })

@@ -55,13 +55,13 @@ expandGridCount <- function(...) {
     return(.Call(`_RcppAlgos_ExpandGridCountCpp`, lst$p))
 }
 
-# expandGridIter <- function(v, numGroups = NULL, grpSizes = NULL,
-#                             retType = "matrix", Parallel = FALSE,
-#                             nThreads = NULL) {
-#
-#     InitVals <- .Call(`_RcppAlgos_GetClassVals`, v, length(GetV(v)),
-#                       FALSE, NULL, TRUE, NULL, nThreads, pkgEnv$nThreads,
-#                       FALSE, FALSE, FALSE, numGroups, grpSizes, retType)
-#
-#     new("ComboGroups", InitVals, Parallel)
-# }
+expandGridIter <- function(..., nThreads = NULL) {
+
+    lst <- GridInputs(...)
+
+    if (lst$early_return) {
+        return(nrow(lst$res))
+    }
+
+    new("Cartesian", lst$p, nThreads)
+}
