@@ -29,6 +29,12 @@ ALGOS_METHODS <- c(
     object        = ".Object"
 )
 
+ALGOS_METHODS_SAN_PREV <- ALGOS_METHODS[c(
+    "startOver", "nextIter", "nextNIter", "nextRemaining",
+    "currIter", "randomAccess", "sourceVector", "front",
+    "back", "summary", "object")
+]
+
 setClass(
     "Combo",
     slots = c(
@@ -61,7 +67,19 @@ setClass(
 
 setClass(
     "Cartesian",
-    contains = "Combo"
+    slots = c(
+        ptr           = "externalptr",
+        startOver     = "function",
+        nextIter      = "function",
+        nextNIter     = "function",
+        nextRemaining = "function",
+        currIter      = "function",
+        randomAccess  = "function",
+        sourceVector  = "function",
+        front         = "function",
+        back          = "function",
+        summary       = "function"
+    )
 )
 
 setClass(
@@ -175,14 +193,7 @@ setMethod(
                              init$FreqsInfo, Parallel, NULL, NULL, NULL,
                              constraintFun, comparisonFun, limitConstraints,
                              keepResults, tolerance, mIsNull, 3)
-        eval(
-            str2expression(
-                text = ALGOS_METHODS[c(
-                    "startOver", "nextIter", "nextNIter", "nextRemaining",
-                    "currIter", "randomAccess", "sourceVector", "front",
-                    "back", "summary", "object")]
-            )
-        )
+        eval(str2expression(text = ALGOS_METHODS_SAN_PREV))
     }
 )
 
@@ -193,14 +204,7 @@ setMethod(
         .Object@ptr <- .Call(`_RcppAlgos_CombClassNew`, init$RVals, init$bVec,
                              init$FreqsInfo, Parallel, NULL, NULL, NULL,
                              NULL, NULL, NULL, NULL, NULL, NULL, 4)
-        eval(
-            str2expression(
-                text = ALGOS_METHODS[c(
-                    "startOver", "nextIter", "nextNIter", "nextRemaining",
-                    "currIter", "randomAccess", "sourceVector", "front",
-                    "back", "summary", "object")]
-            )
-        )
+        eval(str2expression(text = ALGOS_METHODS_SAN_PREV))
     }
 )
 
@@ -211,7 +215,7 @@ setMethod(
         .Object@ptr <- .Call(
             `_RcppAlgos_CartClassNew`, Rlist, nThreads, pkgEnv$nThreads
         )
-        eval(str2expression(text = ALGOS_METHODS))
+        eval(str2expression(text = ALGOS_METHODS_SAN_PREV))
     }
 )
 
