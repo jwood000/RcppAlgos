@@ -437,7 +437,7 @@ test_that("expandGrid and expandGridSample generates correct
     )
 
     ## DATA.FRAME
-    myList  <- myList <- rep(
+    myList <- rep(
         list(LETTERS, unique(state.region), c(TRUE, FALSE),
         as.raw(1:10), as.complex(10:1 + 1i), 1:100), 4
     )
