@@ -1,5 +1,9 @@
 #include "Cartesian/CartesianClass.h"
 
+// These 3 previous iterators methods are here because we are because we
+// are inheriting from the parent Iterator class, the class that is utilized
+// in ExposeClass.cpp to connect the S4 class methods on the R side to C++.
+// ****************************************************************************
 SEXP CartesianClass::prevIter() {
     cpp11::stop("No prevIter available yet for Cartesian Class");
 }
@@ -10,6 +14,69 @@ SEXP CartesianClass::prevNumIters(SEXP RNum) {
 
 SEXP CartesianClass::prevGather() {
     cpp11::stop("No prevGather available yet for Cartesian Class");
+}
+// ****************************************************************************
+
+SEXP CartesianClass::VectorReturn() {
+    switch (myType) {
+        case VecType::Logical : {
+            cpp11::sexp res = Rf_allocVector(LGLSXP, nCols);
+            int* ptrOut = LOGICAL(res);
+
+            for (int j = 0; j < nCols; ++j) {
+                ptrOut[j] = boolVec[idx[j + z[j]]];
+            }
+
+            return res;
+        } case VecType::Integer : {
+            cpp11::sexp res = Rf_allocVector(INTSXP, nCols);
+            int* ptrOut = INTEGER(res);
+
+            for (int j = 0; j < nCols; ++j) {
+                ptrOut[j] = intVec[idx[j + z[j]]];
+            }
+
+            if (typeCheck[tFac]) SetFactorClass(res, RList[0]);
+            return res;
+        } case VecType::Character : {
+            cpp11::sexp res = Rf_allocVector(STRSXP, nCols);
+
+            for (int j = 0; j < nCols; ++j) {
+                SET_STRING_ELT(res, j, STRING_ELT(charVec, idx[j + z[j]]));
+            }
+
+            return res;
+        } case VecType::Complex : {
+            cpp11::sexp res = Rf_allocVector(CPLXSXP, nCols);
+            Rcomplex* ptrOut = COMPLEX(res);
+
+            for (int j = 0; j < nCols; ++j) {
+                ptrOut[j] = cmplxVec[idx[j + z[j]]];
+            }
+
+            return res;
+        } case VecType::Raw : {
+            cpp11::sexp res = Rf_allocVector(RAWSXP, nCols);
+            Rbyte* ptrOut = RAW(res);
+
+            for (int j = 0; j < nCols; ++j) {
+                ptrOut[j] = rawVec[idx[j + z[j]]];
+            }
+
+            return res;
+        } case VecType::Numeric : {
+            cpp11::sexp res = Rf_allocVector(REALSXP, nCols);
+            double* ptrOut = REAL(res);
+
+            for (int j = 0; j < nCols; ++j) {
+                ptrOut[j] = dblVec[idx[j + z[j]]];
+            }
+
+            return res;
+        } default : {
+            cpp11::stop("Only atomic types are supported for v");
+        }
+    }
 }
 
 SEXP CartesianClass::SingleReturn() {
@@ -61,71 +128,14 @@ SEXP CartesianClass::SingleReturn() {
             }
         }
 
-        int nRows = 1;
-        DataFrame.attr("row.names") = {NA_INTEGER, -nRows};
+        DataFrame.attr("row.names") = {1};
         DataFrame.names() = RList.names();
         DataFrame.attr("class") = "data.frame";
         return DataFrame;
     } else {
-        switch (myType) {
-            case VecType::Logical : {
-                cpp11::sexp res = Rf_allocVector(LGLSXP, nCols);
-                int* ptrOut = LOGICAL(res);
-
-                for (int j = 0; j < nCols; ++j) {
-                    ptrOut[j] = boolVec[idx[j + z[j]]];
-                }
-
-                return res;
-            } case VecType::Integer : {
-                cpp11::sexp res = Rf_allocVector(INTSXP, nCols);
-                int* ptrOut = INTEGER(res);
-
-                for (int j = 0; j < nCols; ++j) {
-                    ptrOut[j] = intVec[idx[j + z[j]]];
-                }
-
-                if (typeCheck[tFac]) SetFactorClass(res, RList[0]);
-                return res;
-            } case VecType::Character : {
-                cpp11::sexp res = Rf_allocVector(STRSXP, nCols);
-
-                for (int j = 0; j < nCols; ++j) {
-                    SET_STRING_ELT(res, j, STRING_ELT(charVec, idx[j + z[j]]));
-                }
-
-                return res;
-            } case VecType::Complex : {
-                cpp11::sexp res = Rf_allocVector(STRSXP, nCols);
-                Rcomplex* ptrOut = COMPLEX(res);
-
-                for (int j = 0; j < nCols; ++j) {
-                    ptrOut[j] = cmplxVec[idx[j + z[j]]];
-                }
-
-                return res;
-            } case VecType::Raw : {
-                cpp11::sexp res = Rf_allocVector(RAWSXP, nCols);
-                Rbyte* ptrOut = RAW(res);
-
-                for (int j = 0; j < nCols; ++j) {
-                    ptrOut[j] = rawVec[idx[j + z[j]]];
-                }
-
-                return res;
-            } case VecType::Numeric : {
-                cpp11::sexp res = Rf_allocVector(REALSXP, nCols);
-                double* ptrOut = REAL(res);
-
-                for (int j = 0; j < nCols; ++j) {
-                    ptrOut[j] = dblVec[idx[j + z[j]]];
-                }
-
-                return res;
-            } default : {
-                cpp11::stop("Only atomic types are supported for v");
-            }
-        }
+        cpp11::sexp res = VectorReturn();
+        res.names() = RList.names();
+        return res;
     }
 }
 
@@ -150,6 +160,8 @@ SEXP CartesianClass::GeneralReturn(int numResults) {
     mpzTemp = mpzIndex - 1;
     dblTemp = dblIndex - 1;
     GetStartProd(lenNxtPr, z, mpzTemp, dblTemp, 0, IsGmp);
+
+    SetMatrixColnames(res, RList.names());
     return res;
 }
 
@@ -303,7 +315,7 @@ SEXP CartesianClass::randomAccess(SEXP RindexVec) {
 
     std::size_t sampSize;
     std::vector<double> mySample;
-    const bool SampIsGmp = (computedRows > SampleLimit);
+    const bool SampIsGmp = IsGmp || computedRows > SampleLimit;
     SetIndexVec(RindexVec, mySample, sampSize, SampIsGmp, computedRows);
 
     const std::size_t bigSampSize = SampIsGmp ? sampSize : 1;
@@ -331,16 +343,18 @@ SEXP CartesianClass::randomAccess(SEXP RindexVec) {
         );
 
         z = before;
+
+        SetMatrixColnames(res, RList.names());
         return res;
     } else {
         if (IsGmp) {
             mpzIndex = mpzVec.front() + 1;
             mpzTemp  = mpzVec.front();
-            z = nthProductGmp(mpzTemp, lenGrps);
+            z = nthProductGmp(mpzTemp, lenNxtPr);
         } else {
             dblIndex = mySample.front() + 1;
             dblTemp  = mySample.front();
-            z = nthProduct(dblTemp, lenGrps);
+            z = nthProduct(dblTemp, lenNxtPr);
         }
 
         return SingleReturn();
@@ -371,18 +385,15 @@ SEXP CartesianClass::back() {
         dblTemp  = computedRows - 1;
     }
 
-    for (int i = 0; i < nCols; ++i) {
-        z[i] = lenGrps[i] - 1;
-    }
-
+    GetStartProd(lenNxtPr, z, mpzTemp, dblTemp, 0, IsGmp);
     return SingleReturn();
 }
 
 SEXP CartesianClass::summary() {
 
-    const std::string strDesc = "Cartesian Product of length " +
-        std::to_string(nCols);
-
+    std::string basic = "Cartesian Product of the source";
+    std::string mInfo = "see the sourceVector method for more info";
+    const std::string strDesc = basic + " (" + mInfo + ")";
     const double dblDiff = IsGmp ? 0 : computedRows - dblIndex;
 
     if (IsGmp) mpzTemp = computedRowsMpz - mpzIndex;

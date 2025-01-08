@@ -27,6 +27,7 @@ private:
     std::vector<int> lenNxtPr;
     const VecType myType;
 
+    SEXP VectorReturn();
     SEXP SingleReturn();
     SEXP GeneralReturn(int numResults);
 
