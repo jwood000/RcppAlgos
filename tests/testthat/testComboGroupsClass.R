@@ -56,7 +56,10 @@ test_that("comboGroupsIter produces correct results", {
         a@startOver()
         msg <- capture.output(noMore <- a@currIter())
         myResults <- c(myResults, is.null(noMore))
-        myResults <- c(myResults, grepl("Iterator Initialized. To see the first", msg[1]))
+        myResults <- c(
+            myResults,
+            grepl("Iterator Initialized. To see the first", msg[1])
+        )
         a1 <- b
 
         if (myRows) {
