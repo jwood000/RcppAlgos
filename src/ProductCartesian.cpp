@@ -126,5 +126,6 @@ SEXP ExpandGridCpp(
         SetSampleNames(res, IsGmp, numResults, mySample, myBigSamp, IsNamed);
     }
 
+    SetMatrixColnames(res, RList.names());
     return res;
 }

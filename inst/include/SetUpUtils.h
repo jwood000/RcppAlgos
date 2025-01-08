@@ -68,6 +68,8 @@ void SetSampleNames(SEXP objRcpp, bool IsGmp, int sampSize,
                     const std::vector<mpz_class> &myBigSamp, bool IsNamed,
                     SEXP colNames = R_NilValue, int xtraDims = 0);
 
+void SetMatrixColnames(SEXP res, SEXP myNames);
+
 SEXP GetInt64Vec(const std::vector<std::int64_t> &v);
 
 int HomoFactors(const std::vector<int> &IsFactor,

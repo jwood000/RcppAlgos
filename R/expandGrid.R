@@ -11,10 +11,6 @@ expandGrid <- function(..., lower = NULL, upper = NULL, nThreads = NULL) {
         pkgEnv$nThreads, FALSE, NULL, NULL, NULL, sample, FALSE, NULL
     )
 
-    if (is.matrix(res)) {
-        colnames(res) <- lst$nmc
-    }
-
     return(res)
 }
 
@@ -36,10 +32,6 @@ expandGridSample <- function(..., n = NULL, sampleVec = NULL, seed = NULL,
         pkgEnv$nThreads, TRUE, sampleVec, seed, n, sample,
         namedSample, new.env()
     )
-
-    if (is.matrix(res)) {
-        colnames(res) <- lst$nmc
-    }
 
     return(res)
 }

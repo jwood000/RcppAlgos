@@ -705,6 +705,14 @@ void SetSampleNames(SEXP object, bool IsGmp, int sampSize,
     }
 }
 
+void SetMatrixColnames(SEXP res, SEXP myNames) {
+    if (Rf_isMatrix(res)) {
+        cpp11::sexp dimNames = Rf_allocVector(VECSXP, 2);
+        SET_VECTOR_ELT(dimNames, 1, myNames);
+        Rf_setAttrib(res, R_DimNamesSymbol, dimNames);
+    }
+}
+
 SEXP GetInt64Vec(const std::vector<std::int64_t> &v) {
     const int size = v.size();
     cpp11::sexp res = Rf_allocVector(REALSXP, size);
