@@ -20,7 +20,8 @@ static void Finalizer(SEXP ext) {
 }
 
 [[cpp11::register]]
-SEXP CartClassNew(SEXP Rv_RList, SEXP RNumThreads, SEXP RmaxThreads) {
+SEXP CartClassNew(SEXP Rv_RList, SEXP RNumThreads,
+                  SEXP RmaxThreads, SEXP RForce_DF) {
 
     cpp11::list RList(Rv_RList);
     const int nCols = RList.size();;
@@ -43,6 +44,7 @@ SEXP CartClassNew(SEXP Rv_RList, SEXP RNumThreads, SEXP RmaxThreads) {
     std::vector<int> boolVec(sumLength);
 
     VecType myType = VecType::Integer;
+    bool Force_DF = CppConvert::convertFlag(RForce_DF, "Return_DF");
     bool IsDF = true;
 
     ProductPrepare(
@@ -50,6 +52,7 @@ SEXP CartClassNew(SEXP Rv_RList, SEXP RNumThreads, SEXP RmaxThreads) {
         dblVec, intVec, boolVec, typeCheck, myType, nCols, IsDF
     );
 
+    IsDF = IsDF || Force_DF;
     int maxThreads = 1;
     CppConvert::convertPrimitive(RmaxThreads, maxThreads,
                                  VecType::Integer, "maxThreads");

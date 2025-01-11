@@ -216,7 +216,23 @@ test_that("expandGrid and expandGridSample generates
     myList <- list("v1" = factor(1:5, levels = 1:10),
                    "v2" = factor(2:6, levels = 1:10))
     expect_true(is.matrix(expandGrid(myList)))
+    expect_true(is.data.frame(expandGrid(myList, return_df = TRUE)))
+
     expect_equal(levels(expandGrid(myList)), levels(myList$v1))
+    expect_true(
+        Reduce(
+            identical,
+            lapply(expandGrid(myList, return_df = TRUE), levels)
+        )
+    )
+
+    expect_equal(
+        Reduce(
+            union,
+            lapply(expandGrid(myList, return_df = TRUE), levels)
+        ),
+        levels(myList$v1)
+    )
 
     ## DATA.FRAME w/ integers and factors
     myList <- list(1:5, factor(2:6), as.raw(sample(10, 4)), c(TRUE, FALSE))

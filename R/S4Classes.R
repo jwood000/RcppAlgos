@@ -211,9 +211,10 @@ setMethod(
 setMethod(
     "initialize",
     "Cartesian",
-    function(.Object, Rlist, nThreads) {
+    function(.Object, Rlist, nThreads, Return_DF) {
         .Object@ptr <- .Call(
-            `_RcppAlgos_CartClassNew`, Rlist, nThreads, pkgEnv$nThreads
+            `_RcppAlgos_CartClassNew`, Rlist, nThreads,
+            pkgEnv$nThreads, Return_DF
         )
         eval(str2expression(text = ALGOS_METHODS_SAN_PREV))
     }
