@@ -4,11 +4,9 @@
 \alias{Combo-class}
 \alias{ComboApply-class}
 \alias{ComboRes-class}
-%
 \alias{$,Combo-method}
 \alias{$,ComboApply-method}
 \alias{$,ComboRes-method}
-%
 \description{
   The \code{Combo} class family are S4-classes that expose C++ classes that provide access to iterators and other useful methods.
 }
@@ -37,6 +35,7 @@
   showClass("Combo")
 }
 \keyword{classes}
+\keyword{iterator}
 \keyword{combinations}
 \keyword{permutations}
 \keyword{combinatorics}
