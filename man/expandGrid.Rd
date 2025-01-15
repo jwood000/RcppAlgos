@@ -16,7 +16,6 @@
     expandGrid(..., lower = NULL, upper = NULL,
                nThreads = NULL, return_df = FALSE)
 }
-%- maybe also 'usage' for other objects documented here.
 \arguments{
   \item{...}{vectors, factors or a list containing these. (See \code{?expand.grid}).}
   \item{lower}{The lower bound. Cartesian products are generated lexicographically, thus utilizing this argument will determine which specific product to start generating from (\emph{e.g.} \code{expandGrid(1:5, 3:11, lower = 6)} is equivalent to \code{expandGrid(1:5, 3:11)[6:expandGridCount(1:5, 3:11), ]}). This argument along with \code{upper} is very useful for generating products in chunks allowing for easy parallelization.}
@@ -25,7 +24,7 @@
   \item{return_df}{Logical flag to force the output to be a \code{data.frame}. The default is \code{FALSE}.}
 }
 \value{
-When all of the input is of the same type, by default \code{expandGrid} produce a \code{matrix} (a \code{data.frame} otherwise). This can be ignored by setting the argument \code{return_df = TRUE}.
+When all of the input is of the same type, by default \code{expandGrid} produces a \code{matrix} (a \code{data.frame} otherwise). This can be ignored by setting the argument \code{return_df = TRUE}.
 }
 \author{
 Joseph Wood
@@ -52,8 +51,8 @@ lst = Map(function(x, y) x:y, 8:14, 15:21)
 system.time(expandGrid(lst, nThreads = 2))
 }
 \keyword{expand}
-\keyword{expandGrid}
-\keyword{expandGrid}
+\keyword{product}
 \keyword{cartesian}
+\keyword{expandGrid}
 \keyword{expand.grid}
 \keyword{combinatorics}

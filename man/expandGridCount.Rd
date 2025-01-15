@@ -1,7 +1,7 @@
 \name{expandGridCount}
 \alias{expandGridCount}
 \title{
-    Cartesian Product
+    Count of the Cartesian Product
 }
 \description{
     Calculate the number of Cartesian products of the input vectors.
@@ -44,8 +44,8 @@ lst = Map(function(x, y) x:y, 8:33, 15:40)
 expandGridCount(lst)
 }
 \keyword{expand}
-\keyword{expandGrid}
-\keyword{expandGrid}
+\keyword{product}
 \keyword{cartesian}
+\keyword{expandGrid}
 \keyword{expand.grid}
 \keyword{combinatorics}
