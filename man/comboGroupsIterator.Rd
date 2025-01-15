@@ -80,5 +80,6 @@ a[[c(1, 17, 3)]]
 a@summary()
 }
 \keyword{integer}
+\keyword{iterator}
 \keyword{comboGroups}
 \keyword{combinatorics}

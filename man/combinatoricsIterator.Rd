@@ -191,6 +191,7 @@ b@prevIter()
 #> Error: no slot of name "prevIter" for this object of class "Constraints"
 }
 }
+\keyword{iterator}
 \keyword{combinations}
 \keyword{permutations}
 \keyword{combinatorics}

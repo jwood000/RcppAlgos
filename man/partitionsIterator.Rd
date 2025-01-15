@@ -125,5 +125,6 @@ b@nextIter()
 b@currIter()
 }
 \keyword{integer}
+\keyword{iterator}
 \keyword{partitions}
 \keyword{combinatorics}
