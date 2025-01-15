@@ -3,14 +3,12 @@
 [[cpp11::register]]
 SEXP ExpandGridCpp(
     cpp11::list RList, SEXP Rlow, SEXP Rhigh, SEXP RNumThreads,
-    SEXP RmaxThreads, SEXP RIsSample, SEXP RindexVec, SEXP RmySeed,
-    SEXP RNumSamp, SEXP baseSample, SEXP RNamed, SEXP myEnv, SEXP RForce_DF
+    SEXP RmaxThreads, bool IsSample, SEXP RindexVec, SEXP RmySeed,
+    SEXP RNumSamp, SEXP baseSample, SEXP RNamed, SEXP myEnv, bool Force_DF
 ) {
 
-    bool IsSample = CppConvert::convertFlag(RIsSample, "IsSample");
     bool IsNamed  = (IsSample) ?
         CppConvert::convertFlag(RNamed, "namedSample") : false;
-    bool Force_DF = CppConvert::convertFlag(RForce_DF, "Return_DF");
 
     const int nCols = RList.size();
     std::vector<std::vector<int>> myVec(nCols);
