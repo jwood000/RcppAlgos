@@ -13,15 +13,16 @@
       }
 }
 \usage{
-    comboGrid(..., repetition = TRUE)
+    comboGrid(..., repetition = TRUE, return_df = FALSE)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
   \item{...}{vectors, factors or a list containing these. (See \code{?expand.grid}).}
   \item{repetition}{Logical value indicating whether results should be with or without repetition. The default is \code{TRUE}.}
+  \item{return_df}{Logical flag to force the output to be a \code{data.frame}. The default is \code{FALSE}.}
 }
 \value{
-If items with different classes are passed, a data frame will be returned, otherwise a matrix will be returned.
+When all of the input is of the same type, by default \code{comboGrid} produce a \code{matrix} (a \code{data.frame} otherwise). This can be ignored by setting the argument \code{return_df = TRUE}.
 }
 \author{
 Joseph Wood
@@ -38,10 +39,13 @@ t = t[do.call(order, t), ]
 key = apply(t, 1, function(x) paste0(sort(x), collapse = ""))
 t[!duplicated(key), ]
 
-## vs using comboGrid
+## vs using comboGrid. N.B. Output is a matrix
 comboGrid(lst)
 
-## return a matrix
+## Force a data.frame to be returned
+comboGrid(lst, return_df = TRUE)
+
+## Input vectors are of different type, so a data.frame is returned
 expGridNoOrder = comboGrid(1:5, 3:9, letters[1:5], letters[c(1,4,5,8)])
 head(expGridNoOrder)
 tail(expGridNoOrder)

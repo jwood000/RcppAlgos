@@ -1,4 +1,4 @@
-comboGrid <- function(..., repetition = TRUE) {
+comboGrid <- function(..., repetition = TRUE, return_df = FALSE) {
 
     lst <- GridInputs(...)
 
@@ -22,7 +22,7 @@ comboGrid <- function(..., repetition = TRUE) {
         sort(unique(x), na.last = FALSE)
     })
 
-    res <- .Call(`_RcppAlgos_ComboGridCpp`, pools, repetition)
+    res <- .Call(`_RcppAlgos_ComboGridCpp`, pools, repetition, return_df)
 
     if (length(lst$i)) {
         res <- as.data.frame(res)

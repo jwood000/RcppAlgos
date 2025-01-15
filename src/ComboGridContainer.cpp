@@ -400,7 +400,7 @@ void getAtLeastNPrimes(std::vector<int> &primes,
 }
 
 [[cpp11::register]]
-SEXP ComboGridCpp(cpp11::list RList, bool IsRep) {
+SEXP ComboGridCpp(cpp11::list RList, bool IsRep, bool Force_DF) {
 
     int sumLength = 0;
     const int nCols = RList.size();
@@ -509,7 +509,7 @@ SEXP ComboGridCpp(cpp11::list RList, bool IsRep) {
         mySum += HomoFactors(IsFactor, RList, nCols);
     }
 
-    bool IsDF = (mySum > 1) ? true : false;
+    bool IsDF = (mySum > 1 || Force_DF) ? true : false;
     std::vector<int> lenGrps;
     std::vector<int> lastCol;
     std::vector<int> cartCombs;
