@@ -197,7 +197,7 @@ reprex::reprex({
     #'
     #' ### Access Efficiency in `2.5.0+`
     #'
-    #' Our tests show that accessing methods is much more efficient in `2.5.0+` compared to prior versions. In the below tests, we measure excecution time of calling `nextIter` multiple times in different versions. We will use the function `test_nextIter` for our testing. If one needs to reproduce, simply download the `2.4.3` tar here: https://cran.r-project.org/src/contrib/Archive/RcppAlgos/, change `RcppAlgos` to `RcppAlgos243` in a few place (e.g. `DESCRIPTION`, `NAMESPACE`, etc.), and rebuild.
+    #' Our tests show that accessing methods is much more efficient in `2.5.0+` compared to prior versions. In the below tests, we measure execution time of calling `nextIter` multiple times in different versions. We will use the function `test_nextIter` for our testing. If one needs to reproduce, simply download the `2.4.3` tar here: https://cran.r-project.org/src/contrib/Archive/RcppAlgos/, change `RcppAlgos` to `RcppAlgos243` in a few place (e.g. `DESCRIPTION`, `NAMESPACE`, etc.), and rebuild.
     #'
 
     test_nextIter <- function(n, m, get_val = FALSE, v = 243) {

@@ -1,6 +1,127 @@
 reprex::reprex({
     #'
-    #' In combinatorics, sometimes it can be difficult to figure out exactly which tool/method we need to attack our problem. Do we need combinations? permutations? Cartesian product? partitions? compositions? What about repetition or multiplicity? The list goes on. Oftentimes the solution ends up being overly complicated and prone to error, or more commonly, a simple brute force solution is employed. The latter is okay in some situations, but in many real world problems, this approach becomes untenable very quickly. The two types of problems addressed below fall into this category.
+    #' In combinatorics, sometimes it can be difficult to figure out exactly which tool/method we need to attack our problem. Do we need combinations? permutations? Cartesian product? partitions? compositions? What about repetition or multiplicity? The list goes on. Oftentimes the solution ends up being overly complicated and prone to error, or more commonly, a simple brute force solution is employed. The latter is okay in some situations, but in many real world problems, this approach becomes untenable very quickly. We address two such problems in this article.
+    #'
+    #' Before we dive into the details, we will first introduce `expandGrid`, which generates the Cartesian product of its inputs.
+    #'
+    #' ## `expandGrid`
+    #'
+    #' Just like its base R counterpart `expand.grid`, we can generate the Cartesian product using `expandGrid`. There are a few caveats that are discussed in detail in the docs (see `?expandGrid`). The main difference is that `expandGrid` varies the first column the slowest and if all of the inputs are of the same type, a `matrix` will be returned.
+    #'
+
+    library(RcppAlgos)
+
+    ht <- function(d, m = 5, n = m) {
+        ## print the head and tail together
+        cat("head -->\n")
+        print(head(d, m))
+        cat("--------\n")
+        cat("tail -->\n")
+        print(tail(d, n))
+    }
+
+    ## Base R first. Example inspired by expand.grid docs.
+    expand.grid(height = seq(60, 80, 10), weight = seq(100, 200, 50),
+                sex = c("Male","Female"))
+
+    ## Now RcppAlgos::expandGrid
+    expandGrid(height = seq(60, 80, 10), weight = seq(100, 200, 50),
+               sex = c("Male","Female"))
+
+    #'
+    #' ### Matrix vs Data.Frame Output
+    #'
+
+    lst = Map(\(x, y) x:y, 8:12, 13:17)
+
+    class(expand.grid(lst))
+
+    ## ht defined above
+    ht(expand.grid(lst))
+
+    class(expandGrid(lst))
+
+    ht(expandGrid(lst))
+
+    #'
+    #' ### Always Return `data.frame`
+    #'
+    #' If you really need to always return a `data.frame`, we can utilize the argument `return_df`:
+    #'
+
+    class(expandGrid(lst, return_df = TRUE))
+
+    ht(expandGrid(lst, return_df = TRUE))
+
+    #'
+    #' ### Familiar `RcppAlgos` API Components
+    #'
+    #' Just as in other `RcppAlgos` functions, we can take advantage of the arguments `lower`, `upper`, and `nThreads`. For example, we can see a decrease in execution time by using `nThreads`:
+    #'
+
+    library(microbenchmark)
+    options(digits = 4)
+    stdThreadMax()
+
+    numThreads = as.integer(stdThreadMax() / 2)
+    lst_med = Map(\(x, y) x:y, 8:17, 11:20)
+    expandGridCount(lst_med)
+
+    microbenchmark(
+        baseR = expand.grid(lst_med),
+        RcppAlgos_Ser = expandGrid(lst_med),
+        RcppAlgos_Par = expandGrid(lst_med, nThreads = numThreads),
+        unit = "relative"
+    )
+
+    #'
+    #' ### `expandGridSample`
+    #'
+    #' If we want a random sample of the Cartesian product, we can call upon `expandGridSample`. Just as in other `RcppAlgos` sampling functions, we can utlize the `n`, `sampleVec`, `nThreads`, and `namedSample` arguments.
+    #'
+
+    ## lst_med is defined above
+    all_carts = expandGrid(lst_med)
+
+    cart_samp = expandGridSample(lst_med, n = 5, seed = 42, namedSample = TRUE)
+    cart_samp
+
+    as.numeric(rownames(cart_samp))
+
+    ## cart_samp has same output as subsetting all_carts
+    all_carts[as.numeric(rownames(cart_samp)), ]
+
+    #'
+    #' ### Powerful Iterators with expandGridIter
+    #'
+    #' As with many other functions in `RcppAlgos`, there is an iterator offering for the Cartesian product with `expandGridIter`. These iterators are both memory efficient and computationally efficient. They are flexible as well allowing users to grab only the next iteration, the next _n_ iterations, random access, and more.
+    #'
+    #'  The example below is from the docs (see `?expandGridIter`):
+
+    a = expandGridIter(factor(state.abb), euro, islands)
+    a@nextIter()
+
+    a@nextNIter(3)
+
+    a@front()
+
+    all_remaining = a@nextRemaining()
+    dim(all_remaining)
+
+    a@summary()
+
+    a@back()
+
+    a[[5]]
+
+    a@summary()
+
+    a[[c(1, 17, 3)]]
+
+    a@summary()
+
+    #'
+    #' Now we will discuss two problems that can get unwieldy very quickly.
     #'
     #' ## Cartesian Product where Order does not Matter
     #'
@@ -8,15 +129,6 @@ reprex::reprex({
     #'
     #' For example, lets say we have: `v1 = 1:4` and `v2 = 2:5`. The Cartesian product is given by `expand.grid(v1, v2)` (We continue to use the `ht` function defined in the [Combination and Permutation Basics](<https://jwood000.github.io/RcppAlgos/articles/GeneralCombinatorics.html>) vignette):
     #'
-
-    ht <- function(d, m = 5, n = m) {
-      ## print the head and tail together
-      cat("head -->\n")
-      print(head(d, m))
-      cat("--------\n")
-      cat("tail -->\n")
-      print(tail(d, n))
-    }
 
     expand.grid(1:4, 2:5)
 
@@ -30,7 +142,6 @@ reprex::reprex({
     #' With `comboGrid` no duplicates are generated:
     #'
 
-    library(RcppAlgos)
     comboGrid(1:4, 2:5)
 
     #'
