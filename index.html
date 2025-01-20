@@ -312,13 +312,14 @@
 <span></span>
 <span></span>
 <span><span class="co">## N.B. Since we are passing more than one type, a data.frame is returned</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/expand.grid.html" class="external-link">expand.grid</a></span><span class="op">(</span></span>
-<span>    <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="va">letters</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">3</span><span class="op">]</span><span class="op">)</span>, <span class="fl">3</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="fl">1</span><span class="op">:</span><span class="fl">3</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="op">)</span>, n <span class="op">=</span> <span class="fl">3</span><span class="op">)</span></span>
+<span><span class="fu"><a href="reference/expandGrid.html">expandGrid</a></span><span class="op">(</span></span>
+<span>    <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="va">letters</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">3</span><span class="op">]</span><span class="op">)</span>, <span class="fl">3</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="fl">1</span><span class="op">:</span><span class="fl">3</span><span class="op">)</span><span class="op">)</span>,</span>
+<span>    upper <span class="op">=</span> <span class="fl">3</span></span>
+<span><span class="op">)</span></span>
 <span><span class="co">#&gt;   Var1 Var2 Var3 Var4</span></span>
 <span><span class="co">#&gt; 1    a    a    a    1</span></span>
-<span><span class="co">#&gt; 2    b    a    a    1</span></span>
-<span><span class="co">#&gt; 3    c    a    a    1</span></span>
+<span><span class="co">#&gt; 2    a    a    a    2</span></span>
+<span><span class="co">#&gt; 3    a    a    a    3</span></span>
 <span></span>
 <span></span>
 <span><span class="co">## With RcppAlgos::comboGrid order doesn't matter, so c(1, 1, 2),</span></span>
@@ -429,7 +430,6 @@
     <div class="links">
 <h2 data-toc-skip>Links</h2>
 <ul class="list-unstyled">
-<li><a href="https://cloud.r-project.org/package=RcppAlgos" class="external-link">View on CRAN</a></li>
 <li><a href="https://github.com/jwood000/RcppAlgos/" class="external-link">Browse source code</a></li>
 <li><a href="https://github.com/jwood000/RcppAlgos/issues" class="external-link">Report a bug</a></li>
 </ul>

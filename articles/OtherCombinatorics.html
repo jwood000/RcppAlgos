@@ -102,7 +102,7 @@
                         <h4 data-toc-skip class="author">Joseph
 Wood</h4>
             
-            <h4 data-toc-skip class="date">11/30/2023</h4>
+            <h4 data-toc-skip class="date">01/20/2025</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/jwood000/RcppAlgos/blob/main/vignettes/OtherCombinatorics.Rmd" class="external-link"><code>vignettes/OtherCombinatorics.Rmd</code></a></small>
       <div class="hidden name"><code>OtherCombinatorics.Rmd</code></div>
@@ -124,9 +124,10 @@ article.</p>
 <code>expandGrid</code>, which generates the Cartesian product of its
 inputs.</p>
 <div class="section level2">
-<h2 id="expandgrid">expandGrid<a class="anchor" aria-label="anchor" href="#expandgrid"></a>
+<h2 id="expandgrid">
+<code>expandGrid</code><a class="anchor" aria-label="anchor" href="#expandgrid"></a>
 </h2>
-<p>Just like it’s base R counterpart <code>expand.grid</code>, we can
+<p>Just like its base R counterpart <code>expand.grid</code>, we can
 generate the Cartesian product using <code>expandGrid</code>. There are
 a few caveats that are discussed in detail in the docs (see
 <code><a href="../reference/expandGrid.html">?expandGrid</a></code>). The main difference is that
@@ -193,76 +194,78 @@ returned.</p>
 <div class="section level3">
 <h3 id="matrix-vs-data-frame-output">Matrix vs Data.Frame Output<a class="anchor" aria-label="anchor" href="#matrix-vs-data-frame-output"></a>
 </h3>
-<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" tabindex="-1"></a>lst <span class="ot">=</span> <span class="fu">Map</span>(\(x, y), <span class="dv">8</span><span class="sc">:</span><span class="dv">12</span>, <span class="dv">13</span><span class="sc">:</span><span class="dv">17</span>)</span>
-<span id="cb2-2"><a href="#cb2-2" tabindex="-1"></a></span>
-<span id="cb2-3"><a href="#cb2-3" tabindex="-1"></a><span class="fu">class</span>(<span class="fu">expand.grid</span>(lst))</span>
-<span id="cb2-4"><a href="#cb2-4" tabindex="-1"></a><span class="co">#&gt; [1] "data.frame"</span></span>
-<span id="cb2-5"><a href="#cb2-5" tabindex="-1"></a></span>
-<span id="cb2-6"><a href="#cb2-6" tabindex="-1"></a><span class="do">## ht defined above</span></span>
-<span id="cb2-7"><a href="#cb2-7" tabindex="-1"></a><span class="fu">ht</span>(<span class="fu">expand.grid</span>(lst))</span>
-<span id="cb2-8"><a href="#cb2-8" tabindex="-1"></a><span class="co">#&gt; head --&gt;</span></span>
-<span id="cb2-9"><a href="#cb2-9" tabindex="-1"></a><span class="co">#&gt;   Var1 Var2 Var3 Var4 Var5</span></span>
-<span id="cb2-10"><a href="#cb2-10" tabindex="-1"></a><span class="co">#&gt; 1    8    9   10   11   12</span></span>
-<span id="cb2-11"><a href="#cb2-11" tabindex="-1"></a><span class="co">#&gt; 2    9    9   10   11   12</span></span>
-<span id="cb2-12"><a href="#cb2-12" tabindex="-1"></a><span class="co">#&gt; 3   10    9   10   11   12</span></span>
-<span id="cb2-13"><a href="#cb2-13" tabindex="-1"></a><span class="co">#&gt; 4   11    9   10   11   12</span></span>
-<span id="cb2-14"><a href="#cb2-14" tabindex="-1"></a><span class="co">#&gt; 5   12    9   10   11   12</span></span>
-<span id="cb2-15"><a href="#cb2-15" tabindex="-1"></a><span class="co">#&gt; --------</span></span>
-<span id="cb2-16"><a href="#cb2-16" tabindex="-1"></a><span class="co">#&gt; tail --&gt;</span></span>
-<span id="cb2-17"><a href="#cb2-17" tabindex="-1"></a><span class="co">#&gt;      Var1 Var2 Var3 Var4 Var5</span></span>
-<span id="cb2-18"><a href="#cb2-18" tabindex="-1"></a><span class="co">#&gt; 7772    9   14   15   16   17</span></span>
-<span id="cb2-19"><a href="#cb2-19" tabindex="-1"></a><span class="co">#&gt; 7773   10   14   15   16   17</span></span>
-<span id="cb2-20"><a href="#cb2-20" tabindex="-1"></a><span class="co">#&gt; 7774   11   14   15   16   17</span></span>
-<span id="cb2-21"><a href="#cb2-21" tabindex="-1"></a><span class="co">#&gt; 7775   12   14   15   16   17</span></span>
-<span id="cb2-22"><a href="#cb2-22" tabindex="-1"></a><span class="co">#&gt; 7776   13   14   15   16   17</span></span>
-<span id="cb2-23"><a href="#cb2-23" tabindex="-1"></a></span>
-<span id="cb2-24"><a href="#cb2-24" tabindex="-1"></a><span class="fu">class</span>(<span class="fu">expandGrid</span>(lst))</span>
-<span id="cb2-25"><a href="#cb2-25" tabindex="-1"></a><span class="co">#&gt; [1] "matrix" "array" </span></span>
-<span id="cb2-26"><a href="#cb2-26" tabindex="-1"></a></span>
-<span id="cb2-27"><a href="#cb2-27" tabindex="-1"></a><span class="fu">ht</span>(<span class="fu">expandGrid</span>(lst))</span>
-<span id="cb2-28"><a href="#cb2-28" tabindex="-1"></a><span class="co">#&gt; head --&gt;</span></span>
-<span id="cb2-29"><a href="#cb2-29" tabindex="-1"></a><span class="co">#&gt;      Var1 Var2 Var3 Var4 Var5</span></span>
-<span id="cb2-30"><a href="#cb2-30" tabindex="-1"></a><span class="co">#&gt; [1,]    8    9   10   11   12</span></span>
-<span id="cb2-31"><a href="#cb2-31" tabindex="-1"></a><span class="co">#&gt; [2,]    8    9   10   11   13</span></span>
-<span id="cb2-32"><a href="#cb2-32" tabindex="-1"></a><span class="co">#&gt; [3,]    8    9   10   11   14</span></span>
-<span id="cb2-33"><a href="#cb2-33" tabindex="-1"></a><span class="co">#&gt; [4,]    8    9   10   11   15</span></span>
-<span id="cb2-34"><a href="#cb2-34" tabindex="-1"></a><span class="co">#&gt; [5,]    8    9   10   11   16</span></span>
-<span id="cb2-35"><a href="#cb2-35" tabindex="-1"></a><span class="co">#&gt; --------</span></span>
-<span id="cb2-36"><a href="#cb2-36" tabindex="-1"></a><span class="co">#&gt; tail --&gt;</span></span>
-<span id="cb2-37"><a href="#cb2-37" tabindex="-1"></a><span class="co">#&gt;         Var1 Var2 Var3 Var4 Var5</span></span>
-<span id="cb2-38"><a href="#cb2-38" tabindex="-1"></a><span class="co">#&gt; [7772,]   13   14   15   16   13</span></span>
-<span id="cb2-39"><a href="#cb2-39" tabindex="-1"></a><span class="co">#&gt; [7773,]   13   14   15   16   14</span></span>
-<span id="cb2-40"><a href="#cb2-40" tabindex="-1"></a><span class="co">#&gt; [7774,]   13   14   15   16   15</span></span>
-<span id="cb2-41"><a href="#cb2-41" tabindex="-1"></a><span class="co">#&gt; [7775,]   13   14   15   16   16</span></span>
-<span id="cb2-42"><a href="#cb2-42" tabindex="-1"></a><span class="co">#&gt; [7776,]   13   14   15   16   17</span></span></code></pre></div>
+<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">lst</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/funprog.html" class="external-link">Map</a></span><span class="op">(</span>\<span class="op">(</span><span class="va">x</span>, <span class="va">y</span><span class="op">)</span> <span class="va">x</span><span class="op">:</span><span class="va">y</span>, <span class="fl">8</span><span class="op">:</span><span class="fl">12</span>, <span class="fl">13</span><span class="op">:</span><span class="fl">17</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/class.html" class="external-link">class</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/expand.grid.html" class="external-link">expand.grid</a></span><span class="op">(</span><span class="va">lst</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="co">#&gt; [1] "data.frame"</span></span>
+<span></span>
+<span><span class="co">## ht defined above</span></span>
+<span><span class="fu">ht</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/expand.grid.html" class="external-link">expand.grid</a></span><span class="op">(</span><span class="va">lst</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="co">#&gt; head --&gt;</span></span>
+<span><span class="co">#&gt;   Var1 Var2 Var3 Var4 Var5</span></span>
+<span><span class="co">#&gt; 1    8    9   10   11   12</span></span>
+<span><span class="co">#&gt; 2    9    9   10   11   12</span></span>
+<span><span class="co">#&gt; 3   10    9   10   11   12</span></span>
+<span><span class="co">#&gt; 4   11    9   10   11   12</span></span>
+<span><span class="co">#&gt; 5   12    9   10   11   12</span></span>
+<span><span class="co">#&gt; --------</span></span>
+<span><span class="co">#&gt; tail --&gt;</span></span>
+<span><span class="co">#&gt;      Var1 Var2 Var3 Var4 Var5</span></span>
+<span><span class="co">#&gt; 7772    9   14   15   16   17</span></span>
+<span><span class="co">#&gt; 7773   10   14   15   16   17</span></span>
+<span><span class="co">#&gt; 7774   11   14   15   16   17</span></span>
+<span><span class="co">#&gt; 7775   12   14   15   16   17</span></span>
+<span><span class="co">#&gt; 7776   13   14   15   16   17</span></span>
+<span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/class.html" class="external-link">class</a></span><span class="op">(</span><span class="fu"><a href="../reference/expandGrid.html">expandGrid</a></span><span class="op">(</span><span class="va">lst</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="co">#&gt; [1] "matrix" "array"</span></span>
+<span></span>
+<span><span class="fu">ht</span><span class="op">(</span><span class="fu"><a href="../reference/expandGrid.html">expandGrid</a></span><span class="op">(</span><span class="va">lst</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="co">#&gt; head --&gt;</span></span>
+<span><span class="co">#&gt;      Var1 Var2 Var3 Var4 Var5</span></span>
+<span><span class="co">#&gt; [1,]    8    9   10   11   12</span></span>
+<span><span class="co">#&gt; [2,]    8    9   10   11   13</span></span>
+<span><span class="co">#&gt; [3,]    8    9   10   11   14</span></span>
+<span><span class="co">#&gt; [4,]    8    9   10   11   15</span></span>
+<span><span class="co">#&gt; [5,]    8    9   10   11   16</span></span>
+<span><span class="co">#&gt; --------</span></span>
+<span><span class="co">#&gt; tail --&gt;</span></span>
+<span><span class="co">#&gt;         Var1 Var2 Var3 Var4 Var5</span></span>
+<span><span class="co">#&gt; [7772,]   13   14   15   16   13</span></span>
+<span><span class="co">#&gt; [7773,]   13   14   15   16   14</span></span>
+<span><span class="co">#&gt; [7774,]   13   14   15   16   15</span></span>
+<span><span class="co">#&gt; [7775,]   13   14   15   16   16</span></span>
+<span><span class="co">#&gt; [7776,]   13   14   15   16   17</span></span></code></pre></div>
 </div>
 <div class="section level3">
-<h3 id="always-return-data-frame">Always Return Data.Frame<a class="anchor" aria-label="anchor" href="#always-return-data-frame"></a>
+<h3 id="always-return-data-frame">Always Return <code>data.frame</code><a class="anchor" aria-label="anchor" href="#always-return-data-frame"></a>
 </h3>
 <p>If you really need to always return a <code>data.frame</code>, we can
 utilize the argument <code>return_df</code>:</p>
-<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" tabindex="-1"></a><span class="fu">class</span>(<span class="fu">expandGrid</span>(lst, <span class="at">return_df =</span> <span class="cn">TRUE</span>))</span>
-<span id="cb3-2"><a href="#cb3-2" tabindex="-1"></a><span class="co">#&gt; [1] "data.frame"</span></span>
-<span id="cb3-3"><a href="#cb3-3" tabindex="-1"></a></span>
-<span id="cb3-4"><a href="#cb3-4" tabindex="-1"></a><span class="fu">ht</span>(<span class="fu">expandGrid</span>(lst, <span class="at">return_df =</span> <span class="cn">TRUE</span>))</span>
-<span id="cb3-5"><a href="#cb3-5" tabindex="-1"></a>head <span class="sc">-</span><span class="ot">-&gt;</span></span>
-<span id="cb3-6"><a href="#cb3-6" tabindex="-1"></a><span class="co">#&gt;   Var1 Var2 Var3 Var4 Var5</span></span>
-<span id="cb3-7"><a href="#cb3-7" tabindex="-1"></a><span class="co">#&gt; 1    8    9   10   11   12</span></span>
-<span id="cb3-8"><a href="#cb3-8" tabindex="-1"></a><span class="co">#&gt; 2    8    9   10   11   13</span></span>
-<span id="cb3-9"><a href="#cb3-9" tabindex="-1"></a><span class="co">#&gt; 3    8    9   10   11   14</span></span>
-<span id="cb3-10"><a href="#cb3-10" tabindex="-1"></a><span class="co">#&gt; 4    8    9   10   11   15</span></span>
-<span id="cb3-11"><a href="#cb3-11" tabindex="-1"></a><span class="co">#&gt; 5    8    9   10   11   16</span></span>
-<span id="cb3-12"><a href="#cb3-12" tabindex="-1"></a><span class="co">#&gt; --------</span></span>
-<span id="cb3-13"><a href="#cb3-13" tabindex="-1"></a><span class="co">#&gt; tail --&gt;</span></span>
-<span id="cb3-14"><a href="#cb3-14" tabindex="-1"></a><span class="co">#&gt;      Var1 Var2 Var3 Var4 Var5</span></span>
-<span id="cb3-15"><a href="#cb3-15" tabindex="-1"></a><span class="co">#&gt; 7772   13   14   15   16   13</span></span>
-<span id="cb3-16"><a href="#cb3-16" tabindex="-1"></a><span class="co">#&gt; 7773   13   14   15   16   14</span></span>
-<span id="cb3-17"><a href="#cb3-17" tabindex="-1"></a><span class="co">#&gt; 7774   13   14   15   16   15</span></span>
-<span id="cb3-18"><a href="#cb3-18" tabindex="-1"></a><span class="co">#&gt; 7775   13   14   15   16   16</span></span>
-<span id="cb3-19"><a href="#cb3-19" tabindex="-1"></a><span class="co">#&gt; 7776   13   14   15   16   17</span></span></code></pre></div>
+<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/class.html" class="external-link">class</a></span><span class="op">(</span><span class="fu"><a href="../reference/expandGrid.html">expandGrid</a></span><span class="op">(</span><span class="va">lst</span>, return_df <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="co">#&gt; [1] "data.frame"</span></span>
+<span></span>
+<span><span class="fu">ht</span><span class="op">(</span><span class="fu"><a href="../reference/expandGrid.html">expandGrid</a></span><span class="op">(</span><span class="va">lst</span>, return_df <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="co">#&gt; head --&gt;</span></span>
+<span><span class="co">#&gt;   Var1 Var2 Var3 Var4 Var5</span></span>
+<span><span class="co">#&gt; 1    8    9   10   11   12</span></span>
+<span><span class="co">#&gt; 2    8    9   10   11   13</span></span>
+<span><span class="co">#&gt; 3    8    9   10   11   14</span></span>
+<span><span class="co">#&gt; 4    8    9   10   11   15</span></span>
+<span><span class="co">#&gt; 5    8    9   10   11   16</span></span>
+<span><span class="co">#&gt; --------</span></span>
+<span><span class="co">#&gt; tail --&gt;</span></span>
+<span><span class="co">#&gt;      Var1 Var2 Var3 Var4 Var5</span></span>
+<span><span class="co">#&gt; 7772   13   14   15   16   13</span></span>
+<span><span class="co">#&gt; 7773   13   14   15   16   14</span></span>
+<span><span class="co">#&gt; 7774   13   14   15   16   15</span></span>
+<span><span class="co">#&gt; 7775   13   14   15   16   16</span></span>
+<span><span class="co">#&gt; 7776   13   14   15   16   17</span></span></code></pre></div>
 </div>
 <div class="section level3">
-<h3 id="familiar-rcppalgos-api-components">Familiar RcppAlgos API Components<a class="anchor" aria-label="anchor" href="#familiar-rcppalgos-api-components"></a>
+<h3 id="familiar-rcppalgos-api-components">Familiar <code>RcppAlgos</code> API Components<a class="anchor" aria-label="anchor" href="#familiar-rcppalgos-api-components"></a>
 </h3>
 <p>Just as in other <code>RcppAlgos</code> functions, we can take
 advantage of the arguments <code>lower</code>, <code>upper</code>, and
@@ -285,14 +288,18 @@ time by using <code>nThreads</code>:</p>
 <span>    RcppAlgos_Par <span class="op">=</span> <span class="fu"><a href="../reference/expandGrid.html">expandGrid</a></span><span class="op">(</span><span class="va">lst_med</span>, nThreads <span class="op">=</span> <span class="va">numThreads</span><span class="op">)</span>,</span>
 <span>    unit <span class="op">=</span> <span class="st">"relative"</span></span>
 <span><span class="op">)</span></span>
+<span><span class="co">#&gt; Warning in microbenchmark(baseR = expand.grid(lst_med), RcppAlgos_Ser =</span></span>
+<span><span class="co">#&gt; expandGrid(lst_med), : less accurate nanosecond times to avoid potential</span></span>
+<span><span class="co">#&gt; integer overflows</span></span>
 <span><span class="co">#&gt; Unit: relative</span></span>
-<span><span class="co">#&gt;           expr    min     lq   mean median    uq   max neval</span></span>
-<span><span class="co">#&gt;          baseR 13.133 12.935 12.864 12.800 11.83 19.41   100</span></span>
-<span><span class="co">#&gt;  RcppAlgos_Ser  3.461  3.437  3.589  3.408  3.25 10.37   100</span></span>
-<span><span class="co">#&gt;  RcppAlgos_Par  1.000  1.000  1.000  1.000  1.00  1.00   100</span></span></code></pre></div>
+<span><span class="co">#&gt;           expr    min     lq  mean median    uq   max neval</span></span>
+<span><span class="co">#&gt;          baseR 12.945 13.192 8.344 10.215 8.576 3.176   100</span></span>
+<span><span class="co">#&gt;  RcppAlgos_Ser  3.389  3.538 2.307  2.802 2.447 1.314   100</span></span>
+<span><span class="co">#&gt;  RcppAlgos_Par  1.000  1.000 1.000  1.000 1.000 1.000   100</span></span></code></pre></div>
 </div>
 <div class="section level3">
-<h3 id="expandgridsample">expandGridSample<a class="anchor" aria-label="anchor" href="#expandgridsample"></a>
+<h3 id="expandgridsample">
+<code>expandGridSample</code><a class="anchor" aria-label="anchor" href="#expandgridsample"></a>
 </h3>
 <p>If we want a random sample of the Cartesian product, we can call upon
 <code>expandGridSample</code>. Just as in other <code>RcppAlgos</code>
@@ -338,18 +345,18 @@ access, and more.</p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">a</span> <span class="op">=</span> <span class="fu"><a href="../reference/expandGridIterator.html">expandGridIter</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/factor.html" class="external-link">factor</a></span><span class="op">(</span><span class="va">state.abb</span><span class="op">)</span>, <span class="va">euro</span>, <span class="va">islands</span><span class="op">)</span></span>
 <span><span class="va">a</span><span class="op">@</span><span class="va">nextIter</span><span class="op">(</span><span class="op">)</span></span>
-<span><span class="co">#&gt;   Var1    Var2  Var3</span></span>
-<span><span class="co">#&gt; 1   AL 13.7603 11506</span></span>
+<span><span class="co">#&gt;   Var1  Var2  Var3</span></span>
+<span><span class="co">#&gt; 1   AL 13.76 11506</span></span>
 <span></span>
 <span><span class="va">a</span><span class="op">@</span><span class="va">nextNIter</span><span class="op">(</span><span class="fl">3</span><span class="op">)</span></span>
-<span><span class="co">#&gt;   Var1    Var2  Var3</span></span>
-<span><span class="co">#&gt; 1   AL 13.7603  5500</span></span>
-<span><span class="co">#&gt; 2   AL 13.7603 16988</span></span>
-<span><span class="co">#&gt; 3   AL 13.7603  2968</span></span>
+<span><span class="co">#&gt;   Var1  Var2  Var3</span></span>
+<span><span class="co">#&gt; 1   AL 13.76  5500</span></span>
+<span><span class="co">#&gt; 2   AL 13.76 16988</span></span>
+<span><span class="co">#&gt; 3   AL 13.76  2968</span></span>
 <span></span>
 <span><span class="va">a</span><span class="op">@</span><span class="va">front</span><span class="op">(</span><span class="op">)</span></span>
-<span><span class="co">#&gt;   Var1    Var2  Var3</span></span>
-<span><span class="co">#&gt; 1   AL 13.7603 11506</span></span>
+<span><span class="co">#&gt;   Var1  Var2  Var3</span></span>
+<span><span class="co">#&gt; 1   AL 13.76 11506</span></span>
 <span></span>
 <span><span class="va">all_remaining</span> <span class="op">=</span> <span class="va">a</span><span class="op">@</span><span class="va">nextRemaining</span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/dim.html" class="external-link">dim</a></span><span class="op">(</span><span class="va">all_remaining</span><span class="op">)</span></span>
@@ -369,12 +376,12 @@ access, and more.</p>
 <span><span class="co">#&gt; [1] -1</span></span>
 <span></span>
 <span><span class="va">a</span><span class="op">@</span><span class="va">back</span><span class="op">(</span><span class="op">)</span></span>
-<span><span class="co">#&gt;   Var1    Var2 Var3</span></span>
-<span><span class="co">#&gt; 1   WY 200.482   82</span></span>
+<span><span class="co">#&gt;   Var1  Var2 Var3</span></span>
+<span><span class="co">#&gt; 1   WY 200.5   82</span></span>
 <span></span>
 <span><span class="va">a</span><span class="op">[[</span><span class="fl">5</span><span class="op">]</span><span class="op">]</span></span>
-<span><span class="co">#&gt;   Var1    Var2 Var3</span></span>
-<span><span class="co">#&gt; 1   AL 13.7603   16</span></span>
+<span><span class="co">#&gt;   Var1  Var2 Var3</span></span>
+<span><span class="co">#&gt; 1   AL 13.76   16</span></span>
 <span></span>
 <span><span class="va">a</span><span class="op">@</span><span class="va">summary</span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="co">#&gt; $description</span></span>
@@ -390,10 +397,10 @@ access, and more.</p>
 <span><span class="co">#&gt; [1] 26395</span></span>
 <span></span>
 <span><span class="va">a</span><span class="op">[[</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">17</span>, <span class="fl">3</span><span class="op">)</span><span class="op">]</span><span class="op">]</span></span>
-<span><span class="co">#&gt;   Var1    Var2  Var3</span></span>
-<span><span class="co">#&gt; 1   AL 13.7603 11506</span></span>
-<span><span class="co">#&gt; 2   AL 13.7603    13</span></span>
-<span><span class="co">#&gt; 3   AL 13.7603 16988</span></span>
+<span><span class="co">#&gt;   Var1  Var2  Var3</span></span>
+<span><span class="co">#&gt; 1   AL 13.76 11506</span></span>
+<span><span class="co">#&gt; 2   AL 13.76    13</span></span>
+<span><span class="co">#&gt; 3   AL 13.76 16988</span></span>
 <span></span>
 <span><span class="va">a</span><span class="op">@</span><span class="va">summary</span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="co">#&gt; $description</span></span>
@@ -504,7 +511,7 @@ impractical.</p>
 <span><span class="co">## With comboGrid, this is no problem</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/system.time.html" class="external-link">system.time</a></span><span class="op">(</span><span class="va">myCombs</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/comboGrid.html">comboGrid</a></span><span class="op">(</span><span class="va">pools</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="co">#&gt;    user  system elapsed </span></span>
-<span><span class="co">#&gt;   0.257   0.020   0.278</span></span>
+<span><span class="co">#&gt;   0.263   0.026   0.290</span></span>
 <span></span>
 <span><span class="fu"><a href="https://rdrr.io/pkg/partitions/man/print.partition.html" class="external-link">print</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/utils/object.size.html" class="external-link">object.size</a></span><span class="op">(</span><span class="va">myCombs</span><span class="op">)</span>, unit <span class="op">=</span> <span class="st">"Mb"</span><span class="op">)</span></span>
 <span><span class="co">#&gt; 92 Mb</span></span>
@@ -530,7 +537,7 @@ impractical.</p>
 <span><span class="co">## Generating keys, then filtering will take much more time</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/system.time.html" class="external-link">system.time</a></span><span class="op">(</span><span class="va">cartProd</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/expand.grid.html" class="external-link">expand.grid</a></span><span class="op">(</span><span class="va">pools</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="co">#&gt;    user  system elapsed </span></span>
-<span><span class="co">#&gt;   3.641   0.825   4.466</span></span>
+<span><span class="co">#&gt;   3.655   0.779   4.646</span></span>
 <span></span>
 <span><span class="co">## Creates huge object</span></span>
 <span><span class="fu"><a href="https://rdrr.io/pkg/partitions/man/print.partition.html" class="external-link">print</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/utils/object.size.html" class="external-link">object.size</a></span><span class="op">(</span><span class="va">cartProd</span><span class="op">)</span>, unit <span class="op">=</span> <span class="st">"Mb"</span><span class="op">)</span></span>
@@ -540,7 +547,7 @@ impractical.</p>
 <span><span class="co">## Simply set repetition = FALSE</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/system.time.html" class="external-link">system.time</a></span><span class="op">(</span><span class="va">myCombsNoRep</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/comboGrid.html">comboGrid</a></span><span class="op">(</span><span class="va">pools</span>, repetition <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="co">#&gt;    user  system elapsed </span></span>
-<span><span class="co">#&gt;   0.003   0.001   0.003</span></span>
+<span><span class="co">#&gt;   0.003   0.000   0.004</span></span>
 <span></span>
 <span><span class="fu">ht</span><span class="op">(</span><span class="va">myCombsNoRep</span><span class="op">)</span></span>
 <span><span class="co">#&gt; head --&gt;</span></span>
@@ -695,21 +702,21 @@ and <code>nThreads</code>.</p>
 <span>                              lower <span class="op">=</span> <span class="st">"123378675000000000"</span>,</span>
 <span>                              upper <span class="op">=</span> <span class="st">"123378675005000000"</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="co">#&gt;    user  system elapsed </span></span>
-<span><span class="co">#&gt;   0.115   0.031   0.147</span></span>
+<span><span class="co">#&gt;   0.119   0.030   0.149</span></span>
 <span></span>
 <span><span class="co">## Use specific number of threads</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/system.time.html" class="external-link">system.time</a></span><span class="op">(</span><span class="va">a2</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/comboGroups.html">comboGroups</a></span><span class="op">(</span><span class="fl">30</span>, numGroups <span class="op">=</span> <span class="fl">6</span>,</span>
 <span>                              lower <span class="op">=</span> <span class="st">"123378675000000000"</span>,</span>
 <span>                              upper <span class="op">=</span> <span class="st">"123378675005000000"</span>, nThreads <span class="op">=</span> <span class="fl">4</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="co">#&gt;    user  system elapsed </span></span>
-<span><span class="co">#&gt;   0.134   0.056   0.075</span></span>
+<span><span class="co">#&gt;   0.139   0.055   0.080</span></span>
 <span></span>
 <span><span class="co">## Use n - 1 number of threads (in this case, there are 7)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/system.time.html" class="external-link">system.time</a></span><span class="op">(</span><span class="va">a3</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/comboGroups.html">comboGroups</a></span><span class="op">(</span><span class="fl">30</span>, numGroups <span class="op">=</span> <span class="fl">6</span>,</span>
 <span>                              lower <span class="op">=</span> <span class="st">"123378675000000000"</span>,</span>
 <span>                              upper <span class="op">=</span> <span class="st">"123378675005000000"</span>, Parallel <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="co">#&gt;    user  system elapsed </span></span>
-<span><span class="co">#&gt;   0.160   0.081   0.077</span></span>
+<span><span class="co">#&gt;   0.173   0.076   0.116</span></span>
 <span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/identical.html" class="external-link">identical</a></span><span class="op">(</span><span class="va">a1</span>, <span class="va">a2</span><span class="op">)</span></span>
 <span><span class="co">#&gt; [1] TRUE</span></span>
@@ -726,7 +733,7 @@ the vector <code>v = 1:15</code> into 2 groups of 3, 1 groups of 4, and
 <div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/system.time.html" class="external-link">system.time</a></span><span class="op">(</span><span class="va">a4</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/comboGroups.html">comboGroups</a></span><span class="op">(</span><span class="fl">15</span>, grpSizes <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">3</span>, <span class="fl">3</span>, <span class="fl">4</span>, <span class="fl">5</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="co">#&gt;    user  system elapsed </span></span>
-<span><span class="co">#&gt;   0.120   0.025   0.147</span></span>
+<span><span class="co">#&gt;   0.124   0.026   0.159</span></span>
 <span></span>
 <span><span class="fu">ht</span><span class="op">(</span><span class="va">a4</span><span class="op">)</span></span>
 <span><span class="co">#&gt; head --&gt;</span></span>
@@ -759,7 +766,7 @@ groups of varying sizes in parallel:</p>
 <div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/system.time.html" class="external-link">system.time</a></span><span class="op">(</span><span class="va">a5</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/comboGroups.html">comboGroups</a></span><span class="op">(</span><span class="fl">15</span>, grpSizes <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">3</span>, <span class="fl">3</span>, <span class="fl">4</span>, <span class="fl">5</span><span class="op">)</span>, nThreads <span class="op">=</span> <span class="fl">4</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="co">#&gt;    user  system elapsed </span></span>
-<span><span class="co">#&gt;   0.140   0.037   0.057</span></span>
+<span><span class="co">#&gt;   0.144   0.037   0.057</span></span>
 <span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/identical.html" class="external-link">identical</a></span><span class="op">(</span><span class="va">a4</span>, <span class="va">a5</span><span class="op">)</span></span>
 <span><span class="co">#&gt; [1] TRUE</span></span></code></pre></div>
