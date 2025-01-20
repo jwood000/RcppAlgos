@@ -559,9 +559,9 @@ void SetRandomSample(SEXP RindexVec, SEXP RNumSamp, int &sampSize,
                 cpp11::stop("n exceeds the maximum number of possible results");
             }
 
-            cpp11::sexp sample = Rf_lang3(baseSample,
-                                          Rf_ScalarReal(computedRows),
-                                          Rf_ScalarInteger(sampSize));
+            cpp11::sexp sexpNRows = Rf_ScalarReal(computedRows);
+            cpp11::sexp sexpNSize = Rf_ScalarInteger(sampSize);
+            cpp11::sexp sample = Rf_lang3(baseSample, sexpNRows, sexpNSize);
             cpp11::sexp val = Rf_eval(sample, rho);
             mySample.resize(sampSize);
 
