@@ -160,7 +160,7 @@ namespace CppConvert {
             case REALSXP:
             case LGLSXP:
             case INTSXP: {
-                std::vector<double> vecCheck = GetNumVec<double>(input);
+                std::vector<double> vecCheck = GetVec<double>(input);
                 result.resize(vecCheck.size());
 
                 for (std::size_t i = 0; i < vecCheck.size(); ++i) {

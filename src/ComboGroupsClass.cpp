@@ -157,7 +157,7 @@ void ComboGroupsClass::startOver() {
     std::iota(z.begin(), z.end(), 0);
 }
 
-SEXP ComboGroupsClass::nextComb() {
+SEXP ComboGroupsClass::nextIter() {
 
     if (CheckEqSi(IsGmp, mpzIndex, dblIndex, 0) &&
         CheckIndLT(IsGmp, mpzIndex, dblIndex,
@@ -177,7 +177,7 @@ SEXP ComboGroupsClass::nextComb() {
     }
 }
 
-SEXP ComboGroupsClass::nextNumCombs(SEXP RNum) {
+SEXP ComboGroupsClass::nextNumIters(SEXP RNum) {
 
     int num;
     CppConvert::convertPrimitive(RNum, num, VecType::Integer,
@@ -259,7 +259,7 @@ SEXP ComboGroupsClass::nextGather() {
     }
 }
 
-SEXP ComboGroupsClass::currComb() {
+SEXP ComboGroupsClass::currIter() {
 
     if (CheckIndGrT(IsGmp, mpzIndex, dblIndex,
                     computedRowsMpz, computedRows)) {

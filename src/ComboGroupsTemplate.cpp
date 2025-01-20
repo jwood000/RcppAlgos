@@ -124,7 +124,7 @@ std::unique_ptr<ComboGroupsTemplate> GroupPrep(SEXP Rv, SEXP RNumGroups,
     std::for_each(ubound.begin(), ubound.end(), [](int& u) {--u;});
     std::vector<bool> same(numGroups, false);
 
-    for (int i = numGroups - 2; i >= 0; --i) {
+    for (int i = numGroups - 2; i >= OneGrp; --i) {
         same[i] = vGrpSize[i] == vGrpSize[i + 1L];
     }
 

@@ -5,13 +5,6 @@
 #include "cpp11/declarations.hpp"
 #include <R_ext/Visibility.h>
 
-// CartesianContainer.cpp
-SEXP ComboGridCpp(cpp11::list RList, bool IsRep);
-extern "C" SEXP _RcppAlgos_ComboGridCpp(SEXP RList, SEXP IsRep) {
-  BEGIN_CPP11
-    return cpp11::as_sexp(ComboGridCpp(cpp11::as_cpp<cpp11::decay_t<cpp11::list>>(RList), cpp11::as_cpp<cpp11::decay_t<bool>>(IsRep)));
-  END_CPP11
-}
 // CheckReturn.cpp
 SEXP CheckConstrndCpp(SEXP RCnstrntFun, SEXP RCompFun, SEXP Rtarget);
 extern "C" SEXP _RcppAlgos_CheckConstrndCpp(SEXP RCnstrntFun, SEXP RCompFun, SEXP Rtarget) {
@@ -54,11 +47,25 @@ extern "C" SEXP _RcppAlgos_ComboGroupsCountCpp(SEXP Rv, SEXP RNumGroups, SEXP RG
     return cpp11::as_sexp(ComboGroupsCountCpp(cpp11::as_cpp<cpp11::decay_t<SEXP>>(Rv), cpp11::as_cpp<cpp11::decay_t<SEXP>>(RNumGroups), cpp11::as_cpp<cpp11::decay_t<SEXP>>(RGrpSize)));
   END_CPP11
 }
+// CombinatoricsCount.cpp
+SEXP ExpandGridCountCpp(cpp11::list RList);
+extern "C" SEXP _RcppAlgos_ExpandGridCountCpp(SEXP RList) {
+  BEGIN_CPP11
+    return cpp11::as_sexp(ExpandGridCountCpp(cpp11::as_cpp<cpp11::decay_t<cpp11::list>>(RList)));
+  END_CPP11
+}
 // CombinatoricsMain.cpp
 SEXP CombinatoricsStndrd(SEXP Rv, SEXP Rm, SEXP RisRep, SEXP RFreqs, SEXP Rlow, SEXP Rhigh, SEXP Rparallel, SEXP RNumThreads, SEXP RmaxThreads, SEXP RIsComb);
 extern "C" SEXP _RcppAlgos_CombinatoricsStndrd(SEXP Rv, SEXP Rm, SEXP RisRep, SEXP RFreqs, SEXP Rlow, SEXP Rhigh, SEXP Rparallel, SEXP RNumThreads, SEXP RmaxThreads, SEXP RIsComb) {
   BEGIN_CPP11
     return cpp11::as_sexp(CombinatoricsStndrd(cpp11::as_cpp<cpp11::decay_t<SEXP>>(Rv), cpp11::as_cpp<cpp11::decay_t<SEXP>>(Rm), cpp11::as_cpp<cpp11::decay_t<SEXP>>(RisRep), cpp11::as_cpp<cpp11::decay_t<SEXP>>(RFreqs), cpp11::as_cpp<cpp11::decay_t<SEXP>>(Rlow), cpp11::as_cpp<cpp11::decay_t<SEXP>>(Rhigh), cpp11::as_cpp<cpp11::decay_t<SEXP>>(Rparallel), cpp11::as_cpp<cpp11::decay_t<SEXP>>(RNumThreads), cpp11::as_cpp<cpp11::decay_t<SEXP>>(RmaxThreads), cpp11::as_cpp<cpp11::decay_t<SEXP>>(RIsComb)));
+  END_CPP11
+}
+// ComboGridContainer.cpp
+SEXP ComboGridCpp(cpp11::list RList, bool IsRep, bool Force_DF);
+extern "C" SEXP _RcppAlgos_ComboGridCpp(SEXP RList, SEXP IsRep, SEXP Force_DF) {
+  BEGIN_CPP11
+    return cpp11::as_sexp(ComboGridCpp(cpp11::as_cpp<cpp11::decay_t<cpp11::list>>(RList), cpp11::as_cpp<cpp11::decay_t<bool>>(IsRep), cpp11::as_cpp<cpp11::decay_t<bool>>(Force_DF)));
   END_CPP11
 }
 // ComboGroups.cpp
@@ -83,6 +90,13 @@ extern "C" SEXP _RcppAlgos_DivNumSieveCpp(SEXP Rb1, SEXP Rb2, SEXP RbDivSieve, S
   END_CPP11
 }
 // ExposeClass.cpp
+SEXP CartClassNew(SEXP Rv_RList, SEXP RNumThreads, SEXP RmaxThreads, SEXP RForce_DF);
+extern "C" SEXP _RcppAlgos_CartClassNew(SEXP Rv_RList, SEXP RNumThreads, SEXP RmaxThreads, SEXP RForce_DF) {
+  BEGIN_CPP11
+    return cpp11::as_sexp(CartClassNew(cpp11::as_cpp<cpp11::decay_t<SEXP>>(Rv_RList), cpp11::as_cpp<cpp11::decay_t<SEXP>>(RNumThreads), cpp11::as_cpp<cpp11::decay_t<SEXP>>(RmaxThreads), cpp11::as_cpp<cpp11::decay_t<SEXP>>(RForce_DF)));
+  END_CPP11
+}
+// ExposeClass.cpp
 SEXP CombClassNew(SEXP RVals, SEXP RboolVec, SEXP freqInfo, SEXP Rparallel, SEXP RstdFun, SEXP Rrho, SEXP R_RFunVal, SEXP RmainFun, SEXP RcompFun, SEXP Rtarget, SEXP RKeepRes, SEXP Rtolerance, SEXP RmIsNull, SEXP RretVal);
 extern "C" SEXP _RcppAlgos_CombClassNew(SEXP RVals, SEXP RboolVec, SEXP freqInfo, SEXP Rparallel, SEXP RstdFun, SEXP Rrho, SEXP R_RFunVal, SEXP RmainFun, SEXP RcompFun, SEXP Rtarget, SEXP RKeepRes, SEXP Rtolerance, SEXP RmIsNull, SEXP RretVal) {
   BEGIN_CPP11
@@ -97,17 +111,17 @@ extern "C" SEXP _RcppAlgos_StartOverGlue(SEXP ext) {
   END_CPP11
 }
 // ExposeClass.cpp
-SEXP NextCombGlue(SEXP ext);
-extern "C" SEXP _RcppAlgos_NextCombGlue(SEXP ext) {
+SEXP NextIterGlue(SEXP ext);
+extern "C" SEXP _RcppAlgos_NextIterGlue(SEXP ext) {
   BEGIN_CPP11
-    return cpp11::as_sexp(NextCombGlue(cpp11::as_cpp<cpp11::decay_t<SEXP>>(ext)));
+    return cpp11::as_sexp(NextIterGlue(cpp11::as_cpp<cpp11::decay_t<SEXP>>(ext)));
   END_CPP11
 }
 // ExposeClass.cpp
-SEXP NextNumCombGlue(SEXP ext, SEXP Rnum);
-extern "C" SEXP _RcppAlgos_NextNumCombGlue(SEXP ext, SEXP Rnum) {
+SEXP NextNumIterGlue(SEXP ext, SEXP Rnum);
+extern "C" SEXP _RcppAlgos_NextNumIterGlue(SEXP ext, SEXP Rnum) {
   BEGIN_CPP11
-    return cpp11::as_sexp(NextNumCombGlue(cpp11::as_cpp<cpp11::decay_t<SEXP>>(ext), cpp11::as_cpp<cpp11::decay_t<SEXP>>(Rnum)));
+    return cpp11::as_sexp(NextNumIterGlue(cpp11::as_cpp<cpp11::decay_t<SEXP>>(ext), cpp11::as_cpp<cpp11::decay_t<SEXP>>(Rnum)));
   END_CPP11
 }
 // ExposeClass.cpp
@@ -118,17 +132,17 @@ extern "C" SEXP _RcppAlgos_NextGatherGlue(SEXP ext) {
   END_CPP11
 }
 // ExposeClass.cpp
-SEXP PrevCombGlue(SEXP ext);
-extern "C" SEXP _RcppAlgos_PrevCombGlue(SEXP ext) {
+SEXP PrevIterGlue(SEXP ext);
+extern "C" SEXP _RcppAlgos_PrevIterGlue(SEXP ext) {
   BEGIN_CPP11
-    return cpp11::as_sexp(PrevCombGlue(cpp11::as_cpp<cpp11::decay_t<SEXP>>(ext)));
+    return cpp11::as_sexp(PrevIterGlue(cpp11::as_cpp<cpp11::decay_t<SEXP>>(ext)));
   END_CPP11
 }
 // ExposeClass.cpp
-SEXP PrevNumCombGlue(SEXP ext, SEXP Rnum);
-extern "C" SEXP _RcppAlgos_PrevNumCombGlue(SEXP ext, SEXP Rnum) {
+SEXP PrevNumIterGlue(SEXP ext, SEXP Rnum);
+extern "C" SEXP _RcppAlgos_PrevNumIterGlue(SEXP ext, SEXP Rnum) {
   BEGIN_CPP11
-    return cpp11::as_sexp(PrevNumCombGlue(cpp11::as_cpp<cpp11::decay_t<SEXP>>(ext), cpp11::as_cpp<cpp11::decay_t<SEXP>>(Rnum)));
+    return cpp11::as_sexp(PrevNumIterGlue(cpp11::as_cpp<cpp11::decay_t<SEXP>>(ext), cpp11::as_cpp<cpp11::decay_t<SEXP>>(Rnum)));
   END_CPP11
 }
 // ExposeClass.cpp
@@ -139,10 +153,10 @@ extern "C" SEXP _RcppAlgos_PrevGatherGlue(SEXP ext) {
   END_CPP11
 }
 // ExposeClass.cpp
-SEXP CurrCombGlue(SEXP ext);
-extern "C" SEXP _RcppAlgos_CurrCombGlue(SEXP ext) {
+SEXP CurrIterGlue(SEXP ext);
+extern "C" SEXP _RcppAlgos_CurrIterGlue(SEXP ext) {
   BEGIN_CPP11
-    return cpp11::as_sexp(CurrCombGlue(cpp11::as_cpp<cpp11::decay_t<SEXP>>(ext)));
+    return cpp11::as_sexp(CurrIterGlue(cpp11::as_cpp<cpp11::decay_t<SEXP>>(ext)));
   END_CPP11
 }
 // ExposeClass.cpp
@@ -222,6 +236,13 @@ extern "C" SEXP _RcppAlgos_PrimeSieveCpp(SEXP Rb1, SEXP Rb2, SEXP RNumThreads, S
     return cpp11::as_sexp(PrimeSieveCpp(cpp11::as_cpp<cpp11::decay_t<SEXP>>(Rb1), cpp11::as_cpp<cpp11::decay_t<SEXP>>(Rb2), cpp11::as_cpp<cpp11::decay_t<SEXP>>(RNumThreads), cpp11::as_cpp<cpp11::decay_t<SEXP>>(RmaxCores), cpp11::as_cpp<cpp11::decay_t<SEXP>>(RmaxThreads)));
   END_CPP11
 }
+// ProductCartesian.cpp
+SEXP ExpandGridCpp(cpp11::list RList, SEXP Rlow, SEXP Rhigh, SEXP RNumThreads, SEXP RmaxThreads, bool IsSample, SEXP RindexVec, SEXP RmySeed, SEXP RNumSamp, SEXP baseSample, SEXP RNamed, SEXP myEnv, bool Force_DF);
+extern "C" SEXP _RcppAlgos_ExpandGridCpp(SEXP RList, SEXP Rlow, SEXP Rhigh, SEXP RNumThreads, SEXP RmaxThreads, SEXP IsSample, SEXP RindexVec, SEXP RmySeed, SEXP RNumSamp, SEXP baseSample, SEXP RNamed, SEXP myEnv, SEXP Force_DF) {
+  BEGIN_CPP11
+    return cpp11::as_sexp(ExpandGridCpp(cpp11::as_cpp<cpp11::decay_t<cpp11::list>>(RList), cpp11::as_cpp<cpp11::decay_t<SEXP>>(Rlow), cpp11::as_cpp<cpp11::decay_t<SEXP>>(Rhigh), cpp11::as_cpp<cpp11::decay_t<SEXP>>(RNumThreads), cpp11::as_cpp<cpp11::decay_t<SEXP>>(RmaxThreads), cpp11::as_cpp<cpp11::decay_t<bool>>(IsSample), cpp11::as_cpp<cpp11::decay_t<SEXP>>(RindexVec), cpp11::as_cpp<cpp11::decay_t<SEXP>>(RmySeed), cpp11::as_cpp<cpp11::decay_t<SEXP>>(RNumSamp), cpp11::as_cpp<cpp11::decay_t<SEXP>>(baseSample), cpp11::as_cpp<cpp11::decay_t<SEXP>>(RNamed), cpp11::as_cpp<cpp11::decay_t<SEXP>>(myEnv), cpp11::as_cpp<cpp11::decay_t<bool>>(Force_DF)));
+  END_CPP11
+}
 // RankCombPermMain.cpp
 SEXP RankCombPerm(SEXP RIdx, SEXP Rv, SEXP RisRep, SEXP RFreqs, SEXP Rm, SEXP RIsComb);
 extern "C" SEXP _RcppAlgos_RankCombPerm(SEXP RIdx, SEXP Rv, SEXP RisRep, SEXP RFreqs, SEXP Rm, SEXP RIsComb) {
@@ -254,6 +275,7 @@ extern "C" SEXP _RcppAlgos_SamplePartitions(SEXP Rv, SEXP Rm, SEXP RisRep, SEXP 
 extern "C" {
 static const R_CallMethodDef CallEntries[] = {
     {"_RcppAlgos_BackGlue",            (DL_FUNC) &_RcppAlgos_BackGlue,             1},
+    {"_RcppAlgos_CartClassNew",        (DL_FUNC) &_RcppAlgos_CartClassNew,         4},
     {"_RcppAlgos_CheckConstrndCpp",    (DL_FUNC) &_RcppAlgos_CheckConstrndCpp,     3},
     {"_RcppAlgos_CheckReturn",         (DL_FUNC) &_RcppAlgos_CheckReturn,          6},
     {"_RcppAlgos_CombClassNew",        (DL_FUNC) &_RcppAlgos_CombClassNew,        14},
@@ -261,22 +283,24 @@ static const R_CallMethodDef CallEntries[] = {
     {"_RcppAlgos_CombinatoricsCnstrt", (DL_FUNC) &_RcppAlgos_CombinatoricsCnstrt, 17},
     {"_RcppAlgos_CombinatoricsCount",  (DL_FUNC) &_RcppAlgos_CombinatoricsCount,   5},
     {"_RcppAlgos_CombinatoricsStndrd", (DL_FUNC) &_RcppAlgos_CombinatoricsStndrd, 10},
-    {"_RcppAlgos_ComboGridCpp",        (DL_FUNC) &_RcppAlgos_ComboGridCpp,         2},
+    {"_RcppAlgos_ComboGridCpp",        (DL_FUNC) &_RcppAlgos_ComboGridCpp,         3},
     {"_RcppAlgos_ComboGroupsCountCpp", (DL_FUNC) &_RcppAlgos_ComboGroupsCountCpp,  3},
     {"_RcppAlgos_ComboGroupsCpp",      (DL_FUNC) &_RcppAlgos_ComboGroupsCpp,      16},
-    {"_RcppAlgos_CurrCombGlue",        (DL_FUNC) &_RcppAlgos_CurrCombGlue,         1},
+    {"_RcppAlgos_CurrIterGlue",        (DL_FUNC) &_RcppAlgos_CurrIterGlue,         1},
     {"_RcppAlgos_DivNumSieveCpp",      (DL_FUNC) &_RcppAlgos_DivNumSieveCpp,       6},
+    {"_RcppAlgos_ExpandGridCountCpp",  (DL_FUNC) &_RcppAlgos_ExpandGridCountCpp,   1},
+    {"_RcppAlgos_ExpandGridCpp",       (DL_FUNC) &_RcppAlgos_ExpandGridCpp,       13},
     {"_RcppAlgos_FrontGlue",           (DL_FUNC) &_RcppAlgos_FrontGlue,            1},
     {"_RcppAlgos_GetClassVals",        (DL_FUNC) &_RcppAlgos_GetClassVals,        14},
     {"_RcppAlgos_MotleyContainer",     (DL_FUNC) &_RcppAlgos_MotleyContainer,      6},
-    {"_RcppAlgos_NextCombGlue",        (DL_FUNC) &_RcppAlgos_NextCombGlue,         1},
     {"_RcppAlgos_NextGatherGlue",      (DL_FUNC) &_RcppAlgos_NextGatherGlue,       1},
-    {"_RcppAlgos_NextNumCombGlue",     (DL_FUNC) &_RcppAlgos_NextNumCombGlue,      2},
+    {"_RcppAlgos_NextIterGlue",        (DL_FUNC) &_RcppAlgos_NextIterGlue,         1},
+    {"_RcppAlgos_NextNumIterGlue",     (DL_FUNC) &_RcppAlgos_NextNumIterGlue,      2},
     {"_RcppAlgos_PartitionsCount",     (DL_FUNC) &_RcppAlgos_PartitionsCount,     12},
     {"_RcppAlgos_PollardRhoContainer", (DL_FUNC) &_RcppAlgos_PollardRhoContainer,  6},
-    {"_RcppAlgos_PrevCombGlue",        (DL_FUNC) &_RcppAlgos_PrevCombGlue,         1},
     {"_RcppAlgos_PrevGatherGlue",      (DL_FUNC) &_RcppAlgos_PrevGatherGlue,       1},
-    {"_RcppAlgos_PrevNumCombGlue",     (DL_FUNC) &_RcppAlgos_PrevNumCombGlue,      2},
+    {"_RcppAlgos_PrevIterGlue",        (DL_FUNC) &_RcppAlgos_PrevIterGlue,         1},
+    {"_RcppAlgos_PrevNumIterGlue",     (DL_FUNC) &_RcppAlgos_PrevNumIterGlue,      2},
     {"_RcppAlgos_PrimeCountCpp",       (DL_FUNC) &_RcppAlgos_PrimeCountCpp,        3},
     {"_RcppAlgos_PrimeSieveCpp",       (DL_FUNC) &_RcppAlgos_PrimeSieveCpp,        5},
     {"_RcppAlgos_RandomAccessGlue",    (DL_FUNC) &_RcppAlgos_RandomAccessGlue,     2},

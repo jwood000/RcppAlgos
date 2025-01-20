@@ -24,17 +24,41 @@ namespace CppConvert {
         }
     }
 
+    template <>
+    std::vector<Rcomplex> GetVec(SEXP Rv) {
+        Rcomplex* cmplxRv = COMPLEX(Rv);
+        std::vector<Rcomplex> v(cmplxRv, cmplxRv + Rf_length(Rv));
+        return v;
+    }
+
+    template <>
+    std::vector<Rbyte> GetVec(SEXP Rv) {
+        Rbyte* rawRv = RAW(Rv);
+        std::vector<Rbyte> v(rawRv, rawRv + Rf_length(Rv));
+        return v;
+    }
+
     template <typename T>
-    std::vector<T> GetNumVec(SEXP Rv) {
+    std::vector<T> GetVec(SEXP Rv) {
         std::vector<T> v;
         const int len = Rf_length(Rv);
 
-        if (TYPEOF(Rv) == REALSXP && len) {
-            double* dblRv = REAL(Rv);
-            v.assign(dblRv, dblRv + len);
-        } else if (len) {
-            int* intRv = INTEGER(Rv);
-            v.assign(intRv, intRv + len);
+        if (len) {
+            switch(TYPEOF(Rv)) {
+                case LGLSXP : {
+                    int* boolRv = LOGICAL(Rv);
+                    v.assign(boolRv, boolRv + len);
+                    break;
+                } case REALSXP : {
+                    double* dblRv = REAL(Rv);
+                    v.assign(dblRv, dblRv + len);
+                    break;
+                } case INTSXP : {
+                    int* intRv = INTEGER(Rv);
+                    v.assign(intRv, intRv + len);
+                    break;
+                }
+            }
         }
 
         return v;
@@ -115,5 +139,5 @@ template void CppConvert::SetNames(SEXP, int, int);
 template void CppConvert::SetNames(SEXP, const std::vector<double>&);
 template void CppConvert::SetNames(SEXP, const std::vector<int>&);
 
-template std::vector<double> CppConvert::GetNumVec(SEXP);
-template std::vector<int> CppConvert::GetNumVec(SEXP);
+template std::vector<double> CppConvert::GetVec(SEXP);
+template std::vector<int> CppConvert::GetVec(SEXP);

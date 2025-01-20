@@ -12,7 +12,7 @@ void VecApplyPrev(SEXP res, SEXP v, SEXP vectorPass,
     const int lastRow = nRows - 1;
     const int retType = TYPEOF(res);
 
-    // We iterater to the pentultimate row to avoid iterating z one too many times
+    // We iterator to the penultimate row to avoid iterating z one too many times
     for (int count = 0, m1 = m - 1; count < lastRow; ++count,
          prevIter(freqs, z, n1, m1)) {
 
@@ -256,9 +256,7 @@ SEXP GetPrevCombPermApply(SEXP Rv, const std::vector<double> &vNum,
         } case VecType::Complex : {
             cpp11::sexp vectorPass = Rf_allocVector(CPLXSXP, m);
             Rcomplex* ptr_vec = COMPLEX(vectorPass);
-
-            Rcomplex* cmplxVec = COMPLEX(Rv);
-            std::vector<Rcomplex> vCmplx(cmplxVec, cmplxVec + n);
+            std::vector<Rcomplex> vCmplx = CppConvert::GetVec<Rcomplex>(Rv);
             cpp11::sexp res = ApplyFunPrev(vCmplx, vectorPass, ptr_vec,
                                            freqs, z, stdFun, myEnv,
                                            RFunVal, prevIter, n, m,
@@ -267,9 +265,7 @@ SEXP GetPrevCombPermApply(SEXP Rv, const std::vector<double> &vNum,
         } case VecType::Raw : {
             cpp11::sexp vectorPass = Rf_allocVector(RAWSXP, m);
             Rbyte* ptr_vec = RAW(vectorPass);
-
-            Rbyte* rawVec = RAW(Rv);
-            std::vector<Rbyte> vByte(rawVec, rawVec + n);
+            std::vector<Rbyte> vByte = CppConvert::GetVec<Rbyte>(Rv);
             cpp11::sexp res = ApplyFunPrev(vByte, vectorPass, ptr_vec,
                                            freqs, z, stdFun, myEnv,
                                            RFunVal, prevIter, n, m,

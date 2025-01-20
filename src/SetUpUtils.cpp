@@ -253,7 +253,7 @@ void SetBasic(SEXP Rv, std::vector<double> &vNum,
         vNum.resize(n);
         std::iota(vNum.begin(), vNum.end(), static_cast<double>(mnmx.first));
     } else {
-        vNum = CppConvert::GetNumVec<double>(Rv);
+        vNum = CppConvert::GetVec<double>(Rv);
         n = vNum.size();
     }
 }
@@ -697,9 +697,19 @@ void SetSampleNames(SEXP object, bool IsGmp, int sampSize,
             SET_VECTOR_ELT(dimNames, 0, myNames);
             if (xtraDims) SET_VECTOR_ELT(dimNames, xtraDims, colNames);
             Rf_setAttrib(object, R_DimNamesSymbol, dimNames);
+        } else if (Rf_inherits(object, "data.frame")) {
+            Rf_setAttrib(object, R_RowNamesSymbol, myNames);
         } else if (Rf_isList(object) || Rf_isVector(object)) {
             Rf_setAttrib(object, R_NamesSymbol, myNames);
         }
+    }
+}
+
+void SetMatrixColnames(SEXP res, SEXP myNames) {
+    if (Rf_isMatrix(res)) {
+        cpp11::sexp dimNames = Rf_allocVector(VECSXP, 2);
+        SET_VECTOR_ELT(dimNames, 1, myNames);
+        Rf_setAttrib(res, R_DimNamesSymbol, dimNames);
     }
 }
 
@@ -713,4 +723,32 @@ SEXP GetInt64Vec(const std::vector<std::int64_t> &v) {
     }
 
     return res;
+}
+
+int HomoFactors(const std::vector<int> &IsFactor,
+                cpp11::list RList, int nCols) {
+
+    std::vector<std::string> testLevels;
+
+    for (int i = 0; i < nCols; ++i) {
+        if (IsFactor[i]) {
+            cpp11::strings facVec(Rf_getAttrib(RList[i], R_LevelsSymbol));
+            std::vector<std::string> strVec;
+
+            for (auto f: facVec) {
+                const std::string temp(CHAR(f));
+                strVec.push_back(temp);
+            }
+
+            if (testLevels.size()) {
+                if (strVec != testLevels) {
+                    return 1;
+                }
+            } else {
+                testLevels = strVec;
+            }
+        }
+    }
+
+    return 0;
 }

@@ -2,9 +2,7 @@
 \docType{class}
 \title{S4-class for Exposing C++ Partitions Class}
 \alias{Partitions-class}
-%
 \alias{$,Partitions-method}
-%
 \description{
   The \code{Partitions} class is an S4-class that exposes C++ classes that provide access to iterators and other useful methods.
 }
@@ -29,5 +27,6 @@
 }
 \keyword{classes}
 \keyword{integer}
+\keyword{iterator}
 \keyword{partitions}
 \keyword{combinatorics}

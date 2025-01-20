@@ -2,6 +2,17 @@
 
 #include "CppConvert.h"
 
+enum rcppType {
+    tInt = 0,
+    tDbl = 1,
+    tStr = 2,
+    tLog = 3,
+    tFac = 4,
+    tCpx = 5,
+    tRaw = 6,
+    N_TYPES = 7
+};
+
 void SetType(VecType &myType, SEXP Rv);
 void SetFactorClass(SEXP res, SEXP Rv);
 int GetLength(SEXP Rv, VecType myType);
@@ -57,4 +68,9 @@ void SetSampleNames(SEXP objRcpp, bool IsGmp, int sampSize,
                     const std::vector<mpz_class> &myBigSamp, bool IsNamed,
                     SEXP colNames = R_NilValue, int xtraDims = 0);
 
+void SetMatrixColnames(SEXP res, SEXP myNames);
+
 SEXP GetInt64Vec(const std::vector<std::int64_t> &v);
+
+int HomoFactors(const std::vector<int> &IsFactor,
+                cpp11::list RList, int nCols);

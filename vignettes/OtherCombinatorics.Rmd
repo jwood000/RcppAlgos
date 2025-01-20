@@ -12,7 +12,285 @@ vignette: >
    \usepackage[utf8]{inputenc}
 ---
 
-In combinatorics, sometimes it can be difficult to figure out exactly which tool/method we need to attack our problem. Do we need combinations? permutations? Cartesian product? partitions? compositions? What about repetition or multiplicity? The list goes on. Oftentimes the solution ends up being overly complicated and prone to error, or more commonly, a simple brute force solution is employed. The latter is okay in some situations, but in many real world problems, this approach becomes untenable very quickly. The two types of problems addressed below fall into this category.
+In combinatorics, sometimes it can be difficult to figure out exactly which tool/method we need to attack our problem. Do we need combinations? permutations? Cartesian product? partitions? compositions? What about repetition or multiplicity? The list goes on. Oftentimes the solution ends up being overly complicated and prone to error, or more commonly, a simple brute force solution is employed. The latter is okay in some situations, but in many real world problems, this approach becomes untenable very quickly. We address two such problems in this article.
+
+Before we dive into the details, we will first introduce `expandGrid`, which generates the Cartesian product of its inputs.
+
+## expandGrid
+
+Just like it's base R counterpart `expand.grid`, we can generate the Cartesian product using `expandGrid`. There are a few caveats that are discussed in detail in the docs (see `?expandGrid`). The main difference is that `expandGrid` varies the first column the slowest and if all of the inputs are of the same type, a `matrix` will be returned.
+
+``` r
+library(RcppAlgos)
+
+ht <- function(d, m = 5, n = m) {
+    ## print the head and tail together
+    cat("head -->\n")
+    print(head(d, m))
+    cat("--------\n")
+    cat("tail -->\n")
+    print(tail(d, n))
+}
+
+## Base R first. Example inspired by expand.grid docs.
+expand.grid(height = seq(60, 80, 10), weight = seq(100, 200, 50),
+            sex = c("Male","Female"))
+#>    height weight    sex
+#> 1      60    100   Male
+#> 2      70    100   Male
+#> 3      80    100   Male
+#> 4      60    150   Male
+#> 5      70    150   Male
+#> 6      80    150   Male
+#> 7      60    200   Male
+#> 8      70    200   Male
+#> 9      80    200   Male
+#> 10     60    100 Female
+#> 11     70    100 Female
+#> 12     80    100 Female
+#> 13     60    150 Female
+#> 14     70    150 Female
+#> 15     80    150 Female
+#> 16     60    200 Female
+#> 17     70    200 Female
+#> 18     80    200 Female
+
+## Now RcppAlgos::expandGrid
+expandGrid(height = seq(60, 80, 10), weight = seq(100, 200, 50),
+           sex = c("Male","Female"))
+#>    height weight    sex
+#> 1      60    100   Male
+#> 2      60    100 Female
+#> 3      60    150   Male
+#> 4      60    150 Female
+#> 5      60    200   Male
+#> 6      60    200 Female
+#> 7      70    100   Male
+#> 8      70    100 Female
+#> 9      70    150   Male
+#> 10     70    150 Female
+#> 11     70    200   Male
+#> 12     70    200 Female
+#> 13     80    100   Male
+#> 14     80    100 Female
+#> 15     80    150   Male
+#> 16     80    150 Female
+#> 17     80    200   Male
+#> 18     80    200 Female
+```
+
+### Matrix vs Data.Frame Output
+
+``` r
+lst = Map(\(x, y), 8:12, 13:17)
+
+class(expand.grid(lst))
+#> [1] "data.frame"
+
+## ht defined above
+ht(expand.grid(lst))
+#> head -->
+#>   Var1 Var2 Var3 Var4 Var5
+#> 1    8    9   10   11   12
+#> 2    9    9   10   11   12
+#> 3   10    9   10   11   12
+#> 4   11    9   10   11   12
+#> 5   12    9   10   11   12
+#> --------
+#> tail -->
+#>      Var1 Var2 Var3 Var4 Var5
+#> 7772    9   14   15   16   17
+#> 7773   10   14   15   16   17
+#> 7774   11   14   15   16   17
+#> 7775   12   14   15   16   17
+#> 7776   13   14   15   16   17
+
+class(expandGrid(lst))
+#> [1] "matrix" "array" 
+
+ht(expandGrid(lst))
+#> head -->
+#>      Var1 Var2 Var3 Var4 Var5
+#> [1,]    8    9   10   11   12
+#> [2,]    8    9   10   11   13
+#> [3,]    8    9   10   11   14
+#> [4,]    8    9   10   11   15
+#> [5,]    8    9   10   11   16
+#> --------
+#> tail -->
+#>         Var1 Var2 Var3 Var4 Var5
+#> [7772,]   13   14   15   16   13
+#> [7773,]   13   14   15   16   14
+#> [7774,]   13   14   15   16   15
+#> [7775,]   13   14   15   16   16
+#> [7776,]   13   14   15   16   17
+```
+
+### Always Return Data.Frame
+
+If you really need to always return a `data.frame`, we can utilize the argument `return_df`:
+
+``` r
+class(expandGrid(lst, return_df = TRUE))
+#> [1] "data.frame"
+
+ht(expandGrid(lst, return_df = TRUE))
+head -->
+#>   Var1 Var2 Var3 Var4 Var5
+#> 1    8    9   10   11   12
+#> 2    8    9   10   11   13
+#> 3    8    9   10   11   14
+#> 4    8    9   10   11   15
+#> 5    8    9   10   11   16
+#> --------
+#> tail -->
+#>      Var1 Var2 Var3 Var4 Var5
+#> 7772   13   14   15   16   13
+#> 7773   13   14   15   16   14
+#> 7774   13   14   15   16   15
+#> 7775   13   14   15   16   16
+#> 7776   13   14   15   16   17
+```
+
+### Familiar RcppAlgos API Components
+
+Just as in other `RcppAlgos` functions, we can take advantage of the arguments `lower`, `upper`, and `nThreads`. For example, we can see a decrease in execution time by using `nThreads`:
+
+``` r
+library(microbenchmark)
+options(digits = 4)
+stdThreadMax()
+#> [1] 8
+
+numThreads = as.integer(stdThreadMax() / 2)
+lst_med = Map(\(x, y) x:y, 8:17, 11:20)
+expandGridCount(lst_med)
+#> [1] 1048576
+
+microbenchmark(
+    baseR = expand.grid(lst_med),
+    RcppAlgos_Ser = expandGrid(lst_med),
+    RcppAlgos_Par = expandGrid(lst_med, nThreads = numThreads),
+    unit = "relative"
+)
+#> Unit: relative
+#>           expr    min     lq   mean median    uq   max neval
+#>          baseR 13.133 12.935 12.864 12.800 11.83 19.41   100
+#>  RcppAlgos_Ser  3.461  3.437  3.589  3.408  3.25 10.37   100
+#>  RcppAlgos_Par  1.000  1.000  1.000  1.000  1.00  1.00   100
+```
+
+### expandGridSample
+
+If we want a random sample of the Cartesian product, we can call upon `expandGridSample`. Just as in other `RcppAlgos` sampling functions, we can utlize the `n`, `sampleVec`, `nThreads`, and `namedSample` arguments.
+
+``` r
+## lst_med is defined above
+all_carts = expandGrid(lst_med)
+
+cart_samp = expandGridSample(lst_med, n = 5, seed = 42, namedSample = TRUE)
+cart_samp
+#>        Var1 Var2 Var3 Var4 Var5 Var6 Var7 Var8 Var9 Var10
+#> 61413     8    9   13   13   15   16   17   17   17    17
+#> 54425     8    9   13   12   13   13   16   16   18    17
+#> 623844   10   10   12   11   13   13   17   17   16    20
+#> 74362     8   10   10   13   12   15   15   18   18    18
+#> 46208     8    9   12   14   13   13   15   18   19    20
+
+as.numeric(rownames(cart_samp))
+#> [1]  61413  54425 623844  74362  46208
+
+## cart_samp has same output as subsetting all_carts
+all_carts[as.numeric(rownames(cart_samp)), ]
+#>      Var1 Var2 Var3 Var4 Var5 Var6 Var7 Var8 Var9 Var10
+#> [1,]    8    9   13   13   15   16   17   17   17    17
+#> [2,]    8    9   13   12   13   13   16   16   18    17
+#> [3,]   10   10   12   11   13   13   17   17   16    20
+#> [4,]    8   10   10   13   12   15   15   18   18    18
+#> [5,]    8    9   12   14   13   13   15   18   19    20
+```
+
+### Powerful Iterators with expandGridIter
+
+As with many other functions in `RcppAlgos`, there is an iterator offering for the Cartesian product with `expandGridIter`. These iterators are both memory efficient and computationally efficient. They are flexible as well allowing users to grab only the next iteration, the next _n_ iterations, random access, and more.
+
+The example below is from the docs (see `?expandGridIter`):
+
+``` r
+a = expandGridIter(factor(state.abb), euro, islands)
+a@nextIter()
+#>   Var1    Var2  Var3
+#> 1   AL 13.7603 11506
+
+a@nextNIter(3)
+#>   Var1    Var2  Var3
+#> 1   AL 13.7603  5500
+#> 2   AL 13.7603 16988
+#> 3   AL 13.7603  2968
+
+a@front()
+#>   Var1    Var2  Var3
+#> 1   AL 13.7603 11506
+
+all_remaining = a@nextRemaining()
+dim(all_remaining)
+#> [1] 26399     3
+
+a@summary()
+#> $description
+#> [1] "Cartesian Product of the source (see the sourceVector method for more info)"
+#> 
+#> $currentIndex
+#> [1] 26401
+#> 
+#> $totalResults
+#> [1] 26400
+#> 
+#> $totalRemaining
+#> [1] -1
+
+a@back()
+#>   Var1    Var2 Var3
+#> 1   WY 200.482   82
+
+a[[5]]
+#>   Var1    Var2 Var3
+#> 1   AL 13.7603   16
+
+a@summary()
+#> $description
+#> [1] "Cartesian Product of the source (see the sourceVector method for more info)"
+#> 
+#> $currentIndex
+#> [1] 5
+#> 
+#> $totalResults
+#> [1] 26400
+#> 
+#> $totalRemaining
+#> [1] 26395
+
+a[[c(1, 17, 3)]]
+#>   Var1    Var2  Var3
+#> 1   AL 13.7603 11506
+#> 2   AL 13.7603    13
+#> 3   AL 13.7603 16988
+
+a@summary()
+#> $description
+#> [1] "Cartesian Product of the source (see the sourceVector method for more info)"
+#> 
+#> $currentIndex
+#> [1] 5
+#> 
+#> $totalResults
+#> [1] 26400
+#> 
+#> $totalRemaining
+#> [1] 26395
+```
+
+Now we will discuss two problems that can get unwieldy very quickly.
 
 ## Cartesian Product where Order does not Matter
 
@@ -21,15 +299,6 @@ Given a list of vectors, *v<sub>1</sub>*, *v<sub>2</sub>*, … , *v<sub>n</sub>*
 For example, lets say we have: `v1 = 1:4` and `v2 = 2:5`. The Cartesian product is given by `expand.grid(v1, v2)` (We continue to use the `ht` function defined in the [Combination and Permutation Basics](<https://jwood000.github.io/RcppAlgos/articles/GeneralCombinatorics.html>) vignette):
 
 ``` r
-ht <- function(d, m = 5, n = m) {
-  ## print the head and tail together
-  cat("head -->\n")
-  print(head(d, m))
-  cat("--------\n")
-  cat("tail -->\n")
-  print(tail(d, n))
-}
-
 expand.grid(1:4, 2:5)
 #>    Var1 Var2
 #> 1     1    2
@@ -59,7 +328,6 @@ If we don’t care about order, the following row pairs are considered equal and
 With `comboGrid` no duplicates are generated:
 
 ``` r
-library(RcppAlgos)
 comboGrid(1:4, 2:5)
 #>       Var1 Var2
 #>  [1,]    1    2

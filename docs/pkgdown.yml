@@ -1,14 +1,14 @@
-pandoc: 3.1.1
-pkgdown: 2.0.7
+pandoc: '3.2'
+pkgdown: 2.0.9
 pkgdown_sha: ~
 articles:
-  CombPermConstraints: CombPermConstraints.html
   CombinatorialSampling: CombinatorialSampling.html
   CombinatoricsIterators: CombinatoricsIterators.html
+  CombPermConstraints: CombPermConstraints.html
   ComputationalMathematics: ComputationalMathematics.html
   GeneralCombinatorics: GeneralCombinatorics.html
   HighPerformanceBenchmarks: HighPerformanceBenchmarks.html
   OtherCombinatorics: OtherCombinatorics.html
   SubsetSum: SubsetSum.html
-last_built: 2023-12-09T23:38Z
+last_built: 2025-01-20T04:13Z
 

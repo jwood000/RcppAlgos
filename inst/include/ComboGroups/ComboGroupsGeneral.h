@@ -5,7 +5,10 @@
 class ComboGroupsGeneral : public ComboGroupsTemplate {
 private:
 
+    int genGrps; // Could be different than r defined in the template
+                 // class when there are groups of size 1.
     const GroupHelper MyGrp;
+    std::vector<int> realGrps;
 
 public:
 

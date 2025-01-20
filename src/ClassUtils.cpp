@@ -185,7 +185,7 @@ void zUpdateIndex(const std::vector<double> &vNum,
             int* matBool = INTEGER(mat);
             int* yBoolPt = INTEGER(yBool);
             UpdateExact(matBool, yBoolPt, vInt, z, lastRow, nRows, m, n1);
-            break;
+            return;
         } case INTSXP: {
             const int numAdd = static_cast<int>(bAddOne);
             cpp11::sexp yInt = Rf_allocVector(INTSXP, m);
@@ -193,7 +193,7 @@ void zUpdateIndex(const std::vector<double> &vNum,
             int* yIntPt = INTEGER(yInt);
             UpdateExact(matInt, yIntPt, vInt, z,
                         lastRow, nRows, m, n1, numAdd);
-            break;
+            return;
         } case REALSXP: {
             cpp11::sexp yNum = Rf_allocVector(REALSXP, m);
             double* matNum = REAL(mat);
@@ -215,7 +215,7 @@ void zUpdateIndex(const std::vector<double> &vNum,
                 z[j] = ind;
             }
 
-            break;
+            return;
         } case STRSXP: {
             cpp11::sexp yChar = Rf_allocVector(STRSXP, m);
 
@@ -235,7 +235,7 @@ void zUpdateIndex(const std::vector<double> &vNum,
                 z[j] = ind;
             }
 
-            break;
+            return;
         } case CPLXSXP: {
             cpp11::sexp yCmplx = Rf_allocVector(CPLXSXP, m);
             Rcomplex* matCmplx = COMPLEX(mat);
@@ -248,32 +248,31 @@ void zUpdateIndex(const std::vector<double> &vNum,
 
             for (std::size_t j = 0; j < m; ++j) {
                 int ind = 0;
-                bool bTestImg  = std::abs(xCmplxPt[ind].i - yCmplxPt[j].i) > myTolerance;
-                bool bTestReal = std::abs(xCmplxPt[ind].r - yCmplxPt[j].r) > myTolerance;
+                bool bTestImg  =
+                    std::abs(xCmplxPt[ind].i - yCmplxPt[j].i) > myTolerance;
+                bool bTestReal =
+                    std::abs(xCmplxPt[ind].r - yCmplxPt[j].r) > myTolerance;
 
                 while (ind < n1 && (bTestImg || bTestReal)) {
                     ++ind;
-                    bTestImg  = std::abs(xCmplxPt[ind].i - yCmplxPt[j].i) > myTolerance;
-                    bTestReal = std::abs(xCmplxPt[ind].r - yCmplxPt[j].r) > myTolerance;
+                    bTestImg =
+                        std::abs(xCmplxPt[ind].i - yCmplxPt[j].i) > myTolerance;
+                    bTestReal =
+                        std::abs(xCmplxPt[ind].r - yCmplxPt[j].r) > myTolerance;
                 }
 
                 z[j] = ind;
             }
 
-            break;
+            return;
         } case RAWSXP: {
-            cpp11::sexp yRaw = Rf_allocVector(RAWSXP, m);
             Rbyte* matRaw = RAW(mat);
-            Rbyte* xRawPt = RAW(v);
-            std::vector<Rbyte> stlRawVec(n1 + 1);
-
-            for (int i = 0; i <= n1; ++i) {
-                stlRawVec[i] = xRawPt[i];
-            }
+            cpp11::sexp yRaw = Rf_allocVector(RAWSXP, m);
 
             Rbyte* yRawPt = RAW(yRaw);
+            std::vector<Rbyte> stlRawVec = CppConvert::GetVec<Rbyte>(v);
             UpdateExact(matRaw, yRawPt, stlRawVec, z, lastRow, nRows, m, n1);
-            break;
+            return;
         } default:{
             cpp11::stop("Only atomic types are supported for v");
         }

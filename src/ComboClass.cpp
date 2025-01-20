@@ -1,26 +1,5 @@
 #include "ClassUtils/ComboClass.h"
 
-SEXP Combo::ToSeeLast(bool AdjustIdx) {
-    std::string message = "No more results.";
-    if (prevIterAvailable) {
-        message += " To see the last result, use the prevIter method(s)\n\n";
-    } else {
-        message += "\n\n";
-    }
-
-    Rprintf("%s", message.c_str());
-    if (AdjustIdx) increment(IsGmp, mpzIndex, dblIndex);
-    return R_NilValue;
-}
-
-SEXP Combo::ToSeeFirst(bool AdjustIdx) {
-    const std::string message = "Iterator Initialized. To see the first"
-                                " result, use the nextIter method(s)\n\n";
-    Rprintf("%s", message.c_str());
-    if (AdjustIdx) decrement(IsGmp, mpzIndex, dblIndex);
-    return R_NilValue;
-}
-
 SEXP Combo::BasicVecReturn() {
 
     cpp11::sexp res = Rf_allocVector(RTYPE, m);
@@ -100,7 +79,7 @@ SEXP Combo::MatForward(int nRows, int numIncrement) {
 
 SEXP Combo::MatReverse(int nRows) {
     return GetPrevCombPerms(sexpVec, vNum, vInt, myReps, freqs, z,
-                            prevIter, n, m, IsComb, IsMult, nRows, myType);
+                            prevComb, n, m, IsComb, IsMult, nRows, myType);
 }
 
 // The bVec Vector represents IsFac, IsComb, IsMult, IsRep, IsGmp, & IsFull
@@ -109,32 +88,24 @@ Combo::Combo(
     const std::vector<int> &Rreps, const std::vector<int> &Rfreqs,
     const std::vector<int> &RvInt, const std::vector<double> &RvNum,
     VecType typePass, int RmaxThreads, SEXP RnThreads, bool Rparallel
-) : n(Rf_length(Rv)), m(Rm), m1(Rm - 1), RTYPE(TYPEOF(Rv)),
-    maxThreads(RmaxThreads), sexpVec(Rv), sexpNThreads(RnThreads),
-    IsGmp(bVec[4]), IsFactor(bVec[0]), IsComb(bVec[1] && !bVec[6]),
-    IsMult(bVec[2]), IsRep(bVec[3]), Parallel(Rparallel),
-    computedRows(IsGmp ? 0 : Rf_asReal(RcompRow)), myType(typePass),
-    vInt(RvInt), vNum(RvNum), freqs(Rfreqs), myReps(Rreps),
+) : Iterator(Rv, typePass, RcompRow, RmaxThreads,
+             RnThreads, Rparallel, bVec[4]),
+    m(Rm), m1(Rm - 1), IsFactor(bVec[0]), IsComb(bVec[1] && !bVec[6]),
+    IsMult(bVec[2]), IsRep(bVec[3]), vInt(RvInt),
+    vNum(RvNum), freqs(Rfreqs), myReps(Rreps),
     n1(IsComb ? n - 1 : (IsMult ? freqs.size() - 1 : n - 1)),
     myClass(bVec[0] ? Rf_getAttrib(Rv, R_ClassSymbol) :
                 Rf_allocVector(STRSXP, 0)),
     myLevels(bVec[0] ? Rf_getAttrib(Rv, R_LevelsSymbol) : R_NilValue),
     nthResFun(GetNthResultFunc(bVec[1], bVec[2], bVec[3], bVec[4])),
-    nextIter(GetNextIterPtr(bVec[1], bVec[2], bVec[3], bVec[5])),
-    prevIter(GetPrevIterPtr(bVec[1], bVec[2], bVec[3], bVec[5])) {
+    nextComb(GetNextIterPtr(bVec[1], bVec[2], bVec[3], bVec[5])),
+    prevComb(GetPrevIterPtr(bVec[1], bVec[2], bVec[3], bVec[5])) {
 
     z.resize(Rm);
-
-    if (IsGmp) {
-        CppConvert::convertMpzClass(RcompRow, computedRowsMpz,
-                                    "computedRowsMpz");
-    }
-
     dblIndex = 0;
     mpzIndex = 0;
     SetStartZ(myReps, freqs, z, IsComb, n, m, dblIndex,
               mpzIndex, IsRep, IsMult, IsGmp);
-    prevIterAvailable = true;
 }
 
 void Combo::startOver() {
@@ -144,7 +115,7 @@ void Combo::startOver() {
               mpzIndex, IsRep, IsMult, IsGmp);
 }
 
-SEXP Combo::nextComb() {
+SEXP Combo::nextIter() {
 
     if (CheckEqSi(IsGmp, mpzIndex, dblIndex, 0) &&
         CheckIndLT(IsGmp, mpzIndex, dblIndex,
@@ -154,7 +125,7 @@ SEXP Combo::nextComb() {
     } else if (CheckIndLT(IsGmp, mpzIndex, dblIndex,
                           computedRowsMpz, computedRows)) {
         increment(IsGmp, mpzIndex, dblIndex);
-        nextIter(freqs, z, n1, m1);
+        nextComb(freqs, z, n1, m1);
         return BasicVecReturn();
     } else if (CheckEqInd(IsGmp, mpzIndex, dblIndex,
                           computedRowsMpz, computedRows)) {
@@ -164,7 +135,7 @@ SEXP Combo::nextComb() {
     }
 }
 
-SEXP Combo::prevComb() {
+SEXP Combo::prevIter() {
 
     if (CheckIndGrT(IsGmp, mpzIndex, dblIndex,
                     computedRowsMpz, computedRows)) {
@@ -172,7 +143,7 @@ SEXP Combo::prevComb() {
         return BasicVecReturn();
     } else if (CheckGrTSi(IsGmp, mpzIndex, dblIndex, 1)) {
         decrement(IsGmp, mpzIndex, dblIndex);
-        prevIter(freqs, z, n1, m1);
+        prevComb(freqs, z, n1, m1);
         return BasicVecReturn();
     } else if (CheckEqSi(IsGmp, mpzIndex, dblIndex, 1)) {
         return ToSeeFirst();
@@ -181,7 +152,7 @@ SEXP Combo::prevComb() {
     }
 }
 
-SEXP Combo::nextNumCombs(SEXP RNum) {
+SEXP Combo::nextNumIters(SEXP RNum) {
 
     int num;
     CppConvert::convertPrimitive(RNum, num, VecType::Integer,
@@ -204,7 +175,7 @@ SEXP Combo::nextNumCombs(SEXP RNum) {
         }
 
         if (CheckGrTSi(IsGmp, mpzIndex, dblIndex, 0)) {
-            nextIter(freqs, z, n1, m1);
+            nextComb(freqs, z, n1, m1);
         }
 
         return MatForward(nRows, numIncrement);
@@ -216,7 +187,7 @@ SEXP Combo::nextNumCombs(SEXP RNum) {
     }
 }
 
-SEXP Combo::prevNumCombs(SEXP RNum) {
+SEXP Combo::prevNumIters(SEXP RNum) {
 
     int num;
     CppConvert::convertPrimitive(RNum, num, VecType::Integer,
@@ -238,7 +209,7 @@ SEXP Combo::prevNumCombs(SEXP RNum) {
 
         if (CheckIndLT(IsGmp, mpzIndex, dblIndex,
                        computedRowsMpz, computedRows, true)) {
-            prevIter(freqs, z, n1, m1);
+            prevComb(freqs, z, n1, m1);
         }
 
         decrement(IsGmp, mpzIndex, dblIndex, numDecrement);
@@ -277,7 +248,7 @@ SEXP Combo::nextGather() {
 
     if (nRows > 0) {
         if (CheckGrTSi(IsGmp, mpzIndex, dblIndex, 0)) {
-            nextIter(freqs, z, n1, m1);
+            nextComb(freqs, z, n1, m1);
         }
 
         if (IsGmp) {
@@ -319,7 +290,7 @@ SEXP Combo::prevGather() {
     if (nRows > 0) {
         if (CheckIndLT(IsGmp, mpzIndex, dblIndex,
                        computedRowsMpz, computedRows, true)) {
-            prevIter(freqs, z, n1, m1);
+            prevComb(freqs, z, n1, m1);
         }
 
         if (IsGmp) {
@@ -334,7 +305,7 @@ SEXP Combo::prevGather() {
     }
 }
 
-SEXP Combo::currComb() {
+SEXP Combo::currIter() {
 
     if (CheckIndGrT(IsGmp, mpzIndex, dblIndex,
                     computedRowsMpz, computedRows)) {
@@ -413,10 +384,6 @@ SEXP Combo::back() {
     z = nthResFun(n, m, dblTemp, mpzTemp, myReps);
     if (!IsComb) TopOffPerm(z, myReps, n, m, IsRep, IsMult);
     return BasicVecReturn();
-}
-
-SEXP Combo::sourceVector() const {
-    return sexpVec;
 }
 
 SEXP Combo::summary() {

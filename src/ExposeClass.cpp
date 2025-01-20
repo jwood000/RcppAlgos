@@ -3,6 +3,7 @@
 #include "Constraints/CnstrntsToRClass.h"
 #include "Partitions/PartitionsClass.h"
 #include "ClassUtils/ComboApplyClass.h"
+#include "Cartesian/CartesianClass.h"
 #include "ClassUtils/ComboResClass.h"
 #include "ClassUtils/ComboClass.h"
 #include "CheckReturn.h"
@@ -13,9 +14,88 @@ static void Finalizer(SEXP ext) {
         return;
     }
 
-    class Combo* ptr = (class Combo*) R_ExternalPtrAddr(ext);
+    class Iterator* ptr = (class Iterator*) R_ExternalPtrAddr(ext);
     R_ClearExternalPtr(ext);
     if (ptr) delete ptr;
+}
+
+[[cpp11::register]]
+SEXP CartClassNew(SEXP Rv_RList, SEXP RNumThreads,
+                  SEXP RmaxThreads, SEXP RForce_DF) {
+
+    cpp11::list RList(Rv_RList);
+    const int nCols = RList.size();;
+    std::vector<std::vector<int>> myVec(nCols);
+    std::vector<int> typeCheck(N_TYPES, 0);
+
+    std::vector<int> IsFactor(nCols);
+    std::vector<int> lenGrps(nCols);
+    CartesianInitialPrep(RList, IsFactor, lenGrps, nCols);
+
+    const int sumLength = std::accumulate(
+        lenGrps.begin(), lenGrps.end(), 0
+    );
+
+    cpp11::writable::strings charVec(sumLength);
+    std::vector<Rcomplex> cmplxVec(sumLength);
+    std::vector<Rbyte> rawVec(sumLength);
+    std::vector<double> dblVec(sumLength);
+    std::vector<int> intVec(sumLength);
+    std::vector<int> boolVec(sumLength);
+
+    VecType myType = VecType::Integer;
+    bool Force_DF = CppConvert::convertFlag(RForce_DF, "Return_DF");
+    bool IsDF = true;
+
+    ProductPrepare(
+        RList, IsFactor, lenGrps, myVec, charVec, cmplxVec, rawVec,
+        dblVec, intVec, boolVec, typeCheck, myType, nCols, IsDF
+    );
+
+    IsDF = IsDF || Force_DF;
+    int maxThreads = 1;
+    CppConvert::convertPrimitive(RmaxThreads, maxThreads,
+                                 VecType::Integer, "maxThreads");
+
+    const double computedRows = CartesianCount(lenGrps);
+    const bool IsGmp = computedRows > Significand53;
+
+    mpz_class computedRowsMpz;
+
+    if (IsGmp) {
+        CartesianCountGmp(computedRowsMpz, lenGrps);
+    }
+
+    const int maxLen = *std::max_element(lenGrps.begin(), lenGrps.end());
+    std::vector<int> mat_idx(maxLen * nCols);
+
+    // transposing myVec so that each row represents
+    // each element of the given list
+    for (int i = 0; i < nCols; ++i) {
+        for (int j = 0; j < lenGrps[i]; ++j) {
+            mat_idx[i + j * nCols] = myVec[i][j];
+        }
+    }
+
+    // Transform lenGrps to be used in nextProduct
+    for (auto &v_i: lenGrps) {
+        v_i = nCols * (v_i - 1);
+    }
+
+    cpp11::sexp compRows = CppConvert::GetCount(
+        IsGmp, computedRowsMpz, computedRows
+    );
+
+    class CartesianClass* ptr = new CartesianClass(
+        Rv_RList, compRows, maxThreads, RNumThreads, false, IsGmp,
+        mat_idx, typeCheck, IsFactor, intVec, dblVec, boolVec,
+        cmplxVec, rawVec, charVec, lenGrps, IsDF, nCols, myType
+    );
+
+    cpp11::sexp ext = R_MakeExternalPtr(ptr, R_NilValue, R_NilValue);
+    R_RegisterCFinalizerEx(ext, Finalizer, TRUE);
+
+    return ext;
 }
 
 // RVals contains: v, vNum, vInt, m, RcompRows, maxThreads, nThreads,
@@ -33,24 +113,20 @@ SEXP CombClassNew(SEXP RVals, SEXP RboolVec, SEXP freqInfo, SEXP Rparallel,
                   SEXP Rtolerance, SEXP RmIsNull, SEXP RretVal) {
 
     const int ReturnValue = Rf_asInteger(RretVal);
-    const std::vector<int> bVec   = CppConvert::GetNumVec<int>(RboolVec);
-    const std::vector<int> myReps = CppConvert::GetNumVec<int>(
-        VECTOR_ELT(freqInfo, 0)
-    );
-
-    const std::vector<int> freqs = CppConvert::GetNumVec<int>(
-        VECTOR_ELT(freqInfo, 1)
-    );
+    const std::vector<int> bVec =
+        CppConvert::GetVec<int>(RboolVec);
+    const std::vector<int> myReps =
+        CppConvert::GetVec<int>(VECTOR_ELT(freqInfo, 0));
+    const std::vector<int> freqs =
+        CppConvert::GetVec<int>(VECTOR_ELT(freqInfo, 1));
 
     const int m = Rf_asInteger(VECTOR_ELT(RVals, 3));
     const int maxThreads = Rf_asInteger(VECTOR_ELT(RVals, 5));
 
-    const std::vector<double> vNum = CppConvert::GetNumVec<double>(
-        VECTOR_ELT(RVals, 1)
-    );
-    std::vector<int> vInt = CppConvert::GetNumVec<int>(
-        VECTOR_ELT(RVals, 2)
-    );
+    const std::vector<double> vNum =
+        CppConvert::GetVec<double>(VECTOR_ELT(RVals, 1));
+    std::vector<int> vInt =
+        CppConvert::GetVec<int>(VECTOR_ELT(RVals, 2));
 
     VecType myType;
     SetType(myType, VECTOR_ELT(RVals, 0));
@@ -257,79 +333,79 @@ SEXP CombClassNew(SEXP RVals, SEXP RboolVec, SEXP freqInfo, SEXP Rparallel,
 
 [[cpp11::register]]
 SEXP StartOverGlue(SEXP ext) {
-    class Combo* ptr = (class Combo*) R_ExternalPtrAddr(ext);
+    class Iterator* ptr = (class Iterator*) R_ExternalPtrAddr(ext);
     ptr->startOver();
     return R_NilValue;
 }
 
 [[cpp11::register]]
-SEXP NextCombGlue(SEXP ext) {
-    class Combo* ptr = (class Combo*) R_ExternalPtrAddr(ext);
-    return ptr->nextComb();
+SEXP NextIterGlue(SEXP ext) {
+    class Iterator* ptr = (class Iterator*) R_ExternalPtrAddr(ext);
+    return ptr->nextIter();
 }
 
 [[cpp11::register]]
-SEXP NextNumCombGlue(SEXP ext, SEXP Rnum) {
-    class Combo* ptr = (class Combo*) R_ExternalPtrAddr(ext);
-    return ptr->nextNumCombs(Rnum);
+SEXP NextNumIterGlue(SEXP ext, SEXP Rnum) {
+    class Iterator* ptr = (class Iterator*) R_ExternalPtrAddr(ext);
+    return ptr->nextNumIters(Rnum);
 }
 
 [[cpp11::register]]
 SEXP NextGatherGlue(SEXP ext) {
-    class Combo* ptr = (class Combo*) R_ExternalPtrAddr(ext);
+    class Iterator* ptr = (class Iterator*) R_ExternalPtrAddr(ext);
     return ptr->nextGather();
 }
 
 [[cpp11::register]]
-SEXP PrevCombGlue(SEXP ext) {
-    class Combo* ptr = (class Combo*) R_ExternalPtrAddr(ext);
-    return ptr->prevComb();
+SEXP PrevIterGlue(SEXP ext) {
+    class Iterator* ptr = (class Iterator*) R_ExternalPtrAddr(ext);
+    return ptr->prevIter();
 }
 
 [[cpp11::register]]
-SEXP PrevNumCombGlue(SEXP ext, SEXP Rnum) {
-    class Combo* ptr = (class Combo*) R_ExternalPtrAddr(ext);
-    return ptr->prevNumCombs(Rnum);
+SEXP PrevNumIterGlue(SEXP ext, SEXP Rnum) {
+    class Iterator* ptr = (class Iterator*) R_ExternalPtrAddr(ext);
+    return ptr->prevNumIters(Rnum);
 }
 
 [[cpp11::register]]
 SEXP PrevGatherGlue(SEXP ext) {
-    class Combo* ptr = (class Combo*) R_ExternalPtrAddr(ext);
+    class Iterator* ptr = (class Iterator*) R_ExternalPtrAddr(ext);
     return ptr->prevGather();
 }
 
 [[cpp11::register]]
-SEXP CurrCombGlue(SEXP ext) {
-    class Combo* ptr = (class Combo*) R_ExternalPtrAddr(ext);
-    return ptr->currComb();
+SEXP CurrIterGlue(SEXP ext) {
+    class Iterator* ptr = (class Iterator*) R_ExternalPtrAddr(ext);
+    return ptr->currIter();
 }
 
 [[cpp11::register]]
 SEXP RandomAccessGlue(SEXP ext, SEXP RIndexVec) {
-    class Combo* ptr = (class Combo*) R_ExternalPtrAddr(ext);
+    class Iterator* ptr = (class Iterator*) R_ExternalPtrAddr(ext);
     return ptr->randomAccess(RIndexVec);
 }
 
 [[cpp11::register]]
 SEXP SourceVectorGlue(SEXP ext) {
-    class Combo* ptr = (class Combo*) R_ExternalPtrAddr(ext);
+    class Iterator* ptr = (class Iterator*) R_ExternalPtrAddr(ext);
     return ptr->sourceVector();
 }
 
 [[cpp11::register]]
 SEXP FrontGlue(SEXP ext) {
-    class Combo* ptr = (class Combo*) R_ExternalPtrAddr(ext);
+    class Iterator* ptr = (class Iterator*) R_ExternalPtrAddr(ext);
     return ptr->front();
 }
 
 [[cpp11::register]]
 SEXP BackGlue(SEXP ext) {
-    class Combo* ptr = (class Combo*) R_ExternalPtrAddr(ext);
+    class Iterator* ptr = (class Iterator*) R_ExternalPtrAddr(ext);
     return ptr->back();
 }
 
 [[cpp11::register]]
 SEXP SummaryGlue(SEXP ext) {
-    class Combo* ptr = (class Combo*) R_ExternalPtrAddr(ext);
+    class Iterator* ptr = (class Iterator*) R_ExternalPtrAddr(ext);
     return ptr->summary();
 }

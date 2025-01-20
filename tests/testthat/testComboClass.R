@@ -74,9 +74,9 @@ test_that("comboIter & permuteIter produces correct results", {
         }
 
         # .method("front", &Combo::front)
-        # .method("currIter", &Combo::currComb)
+        # .method("currIter", &Combo::currIter)
         # .method("back", &Combo::back)
-        # .method("currIter", &Combo::currComb)
+        # .method("currIter", &Combo::currIter)
         if (is.atomic(b) && !is.matrix(b)) {
             myResults <- c(myResults, isTRUE(all.equal(a@front(), b[1])))
             myResults <- c(myResults, isTRUE(all.equal(a@currIter(), b[1])))
@@ -146,7 +146,7 @@ test_that("comboIter & permuteIter produces correct results", {
             }
         }
 
-        # .method("nextIter", &Combo::nextComb)
+        # .method("nextIter", &Combo::nextIter)
         myResults <- c(myResults, isTRUE(all.equal(a1, b)))
 
         # .method("startOver", &Combo::startOver)
@@ -156,14 +156,20 @@ test_that("comboIter & permuteIter produces correct results", {
         s <- 1L
         e <- numTest
 
-        # .method("nextNIter", &Combo::nextNumCombs)
+        # .method("nextNIter", &Combo::nextNumIters)
         for (i in 1:3) {
             if (is.atomic(b) && !is.matrix(b)) {
-                myResults <- c(myResults, isTRUE(all.equal(a@nextNIter(numTest), b[s:e])))
+                myResults <- c(
+                    myResults, isTRUE(all.equal(a@nextNIter(numTest), b[s:e]))
+                )
             } else if (is.list(b)) {
-                myResults <- c(myResults, isTRUE(all.equal(a@nextNIter(numTest), b[s:e])))
+                myResults <- c(
+                    myResults, isTRUE(all.equal(a@nextNIter(numTest), b[s:e]))
+                )
             } else {
-                myResults <- c(myResults, isTRUE(all.equal(a@nextNIter(numTest), b[s:e, ])))
+                myResults <- c(
+                    myResults, isTRUE(all.equal(a@nextNIter(numTest), b[s:e, ]))
+                )
             }
 
             s <- e + 1L
@@ -194,7 +200,7 @@ test_that("comboIter & permuteIter produces correct results", {
             }
         }
 
-        # .method("prevIter", &Combo::prevComb)
+        # .method("prevIter", &Combo::prevIter)
         myResults <- c(myResults, isTRUE(all.equal(a2, b)))
         a@startOver()
 
@@ -206,7 +212,7 @@ test_that("comboIter & permuteIter produces correct results", {
         t <- capture.output(a@nextIter())
         myResults <- c(myResults, is.null(a@nextNIter()))
 
-        # .method("prevNIter", &Combo::prevNumCombs)
+        # .method("prevNIter", &Combo::prevNumIters)
         for (i in 1:3) {
             if (is.atomic(b) && !is.matrix(b)) {
                 myResults <- c(myResults, isTRUE(all.equal(a@prevNIter(numTest), b[s:e])))
@@ -503,9 +509,9 @@ test_that("comboIter & permuteIter produces correct results", {
         }
 
         # .method("front", &Combo::front)
-        # .method("currIter", &Combo::currComb)
+        # .method("currIter", &Combo::currIter)
         # .method("back", &Combo::back)
-        # .method("currIter", &Combo::currComb)
+        # .method("currIter", &Combo::currIter)
         if (is.list(b1)) {
             myResults <- c(myResults, isTRUE(all.equal(a@front(), b1[[1]])))
             myResults <- c(myResults, isTRUE(all.equal(a@currIter(), b1[[1]])))
@@ -532,7 +538,7 @@ test_that("comboIter & permuteIter produces correct results", {
             }
         }
 
-        # .method("nextIter", &Combo::nextComb)
+        # .method("nextIter", &Combo::nextIter)
         myResults <- c(myResults, isTRUE(all.equal(a1, b1)))
 
         # .method("startOver", &Combo::startOver)
@@ -542,7 +548,7 @@ test_that("comboIter & permuteIter produces correct results", {
         s <- 1L
         e <- numTest
 
-        # .method("nextNIter", &Combo::nextNumCombs)
+        # .method("nextNIter", &Combo::nextNumIters)
         for (i in 1:3) {
             if (is.list(b1)) {
                 myResults <- c(myResults, isTRUE(all.equal(a@nextNIter(numTest), b1[s:e])))
@@ -575,7 +581,7 @@ test_that("comboIter & permuteIter produces correct results", {
             }
         }
 
-        # .method("prevIter", &Combo::prevComb)
+        # .method("prevIter", &Combo::prevIter)
         myResults <- c(myResults, isTRUE(all.equal(a2, b2)))
         a@startOver()
 
@@ -586,7 +592,7 @@ test_that("comboIter & permuteIter produces correct results", {
         temp <- a@back()
         t <- capture.output(a@nextIter())
 
-        # .method("prevNIter", &Combo::prevNumCombs)
+        # .method("prevNIter", &Combo::prevNumIters)
         for (i in 1:3) {
             if (is.list(b1)) {
                 myResults <- c(myResults, isTRUE(all.equal(a@prevNIter(numTest), b2[s:e])))

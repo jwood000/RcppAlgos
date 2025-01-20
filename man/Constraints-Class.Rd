@@ -2,9 +2,7 @@
 \docType{class}
 \title{S4-class for Exposing C++ Constraints Class}
 \alias{Constraints-class}
-%
 \alias{$,Constraints-method}
-%
 \description{
   The \code{Constraints} class is an S4-class that exposes C++ classes that provide access to iterators and other useful methods.
 }
@@ -25,6 +23,7 @@
   showClass("Constraints")
 }
 \keyword{classes}
+\keyword{iterator}
 \keyword{combinations}
 \keyword{permutations}
 \keyword{combinatorics}

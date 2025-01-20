@@ -2,9 +2,7 @@
 \docType{class}
 \title{S4-class for Exposing C++ ComboGroups Class}
 \alias{ComboGroups-class}
-%
 \alias{$,ComboGroups-method}
-%
 \description{
   The \code{ComboGroups} class is an S4-class that exposes C++ classes that provide access to iterators and other useful methods.
 }
@@ -29,6 +27,8 @@
   showClass("ComboGroups")
 }
 \keyword{classes}
+\keyword{integer}
+\keyword{iterator}
 \keyword{partitions}
 \keyword{comboGroups}
 \keyword{combinatorics}

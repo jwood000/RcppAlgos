@@ -1,7 +1,6 @@
 #pragma once
 
 #include "cpp11/strings.hpp"
-#include "cpp11/list.hpp"
 
 #include "ComboGroups/GroupHelperClass.h"
 #include "Combinations/NthCombination.h"

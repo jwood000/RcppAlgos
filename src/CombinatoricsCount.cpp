@@ -2,6 +2,7 @@
 #include "Constraints/ConstraintsUtils.h"
 #include "Partitions/PartitionsDesign.h"
 #include "Partitions/PartitionsCount.h"
+#include "Cartesian/CartesianUtils.h"
 #include "ComputedCount.h"
 #include "SetUpUtils.h"
 
@@ -123,4 +124,26 @@ SEXP ComboGroupsCountCpp(SEXP Rv, SEXP RNumGroups, SEXP RGrpSize) {
 
     CmbGrpCls->SetCount();
     return CmbGrpCls->GetCount();
+}
+
+[[cpp11::register]]
+SEXP ExpandGridCountCpp(cpp11::list RList) {
+
+    const int nCols = Rf_length(RList);
+    std::vector<int> lenGrps(nCols);
+
+    for (int i = 0; i < nCols; ++i) {
+        lenGrps[i] = Rf_length(RList[i]);
+    }
+
+    const double computedRows = CartesianCount(lenGrps);
+    const bool IsGmp = (computedRows > Significand53);
+
+    mpz_class computedRowsMpz;
+
+    if (IsGmp) {
+        CartesianCountGmp(computedRowsMpz, lenGrps);
+    }
+
+    return CppConvert::GetCount(IsGmp, computedRowsMpz, computedRows);
 }

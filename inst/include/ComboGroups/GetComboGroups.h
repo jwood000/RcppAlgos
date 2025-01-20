@@ -2,7 +2,6 @@
 
 #include "cpp11/function.hpp"
 #include "cpp11/strings.hpp"
-#include "cpp11/list.hpp"
 
 #include "ComboGroups/ComboGroupsTemplate.h"
 #include "CppConvert.h"

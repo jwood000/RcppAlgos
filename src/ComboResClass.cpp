@@ -146,7 +146,7 @@ void ComboRes::startOver() {
     Combo::startOver();
 }
 
-SEXP ComboRes::nextComb() {
+SEXP ComboRes::nextIter() {
 
     if (CheckEqSi(IsGmp, mpzIndex, dblIndex, 0) &&
         CheckIndLT(IsGmp, mpzIndex, dblIndex,
@@ -156,7 +156,7 @@ SEXP ComboRes::nextComb() {
     } else if (CheckIndLT(IsGmp, mpzIndex, dblIndex,
                           cnstrtCountMpz, cnstrtCount)) {
         increment(IsGmp, mpzIndex, dblIndex);
-        nextIter(freqs, z, n1, m1);
+        nextComb(freqs, z, n1, m1);
         return VecReturn();
     } else if (CheckEqInd(IsGmp, mpzIndex, dblIndex,
                           cnstrtCountMpz, cnstrtCount)) {
@@ -166,7 +166,7 @@ SEXP ComboRes::nextComb() {
     }
 }
 
-SEXP ComboRes::prevComb() {
+SEXP ComboRes::prevIter() {
 
     if (CheckIndGrT(IsGmp, mpzIndex, dblIndex,
                     cnstrtCountMpz, cnstrtCount)) {
@@ -174,7 +174,7 @@ SEXP ComboRes::prevComb() {
         return VecReturn();
     } else if (CheckGrTSi(IsGmp, mpzIndex, dblIndex, 1)) {
         decrement(IsGmp, mpzIndex, dblIndex);
-        prevIter(freqs, z, n1, m1);
+        prevComb(freqs, z, n1, m1);
         return VecReturn();
     } else if (CheckEqSi(IsGmp, mpzIndex, dblIndex, 1)) {
         return ToSeeFirst();
@@ -183,7 +183,7 @@ SEXP ComboRes::prevComb() {
     }
 }
 
-SEXP ComboRes::nextNumCombs(SEXP RNum) {
+SEXP ComboRes::nextNumIters(SEXP RNum) {
 
     int num;
     CppConvert::convertPrimitive(RNum, num, VecType::Integer,
@@ -206,7 +206,7 @@ SEXP ComboRes::nextNumCombs(SEXP RNum) {
         }
 
         if (CheckGrTSi(IsGmp, mpzIndex, dblIndex, 0)) {
-            if (!nextIter(freqs, z, n1, m1)) {
+            if (!nextComb(freqs, z, n1, m1)) {
                 if (IsGmp) {
                     mpzIndex = cnstrtCountMpz + 1;
                 } else {
@@ -238,8 +238,8 @@ SEXP ComboRes::nextNumCombs(SEXP RNum) {
     }
 }
 
-SEXP ComboRes::prevNumCombs(SEXP RNum) {
-    cpp11::sexp mat = Combo::prevNumCombs(RNum);
+SEXP ComboRes::prevNumIters(SEXP RNum) {
+    cpp11::sexp mat = Combo::prevNumIters(RNum);
 
     if (Rf_isNull(mat)) {
         return R_NilValue;
@@ -276,7 +276,7 @@ SEXP ComboRes::nextGather() {
 
     if (nRows > 0) {
         if (CheckGrTSi(IsGmp, mpzIndex, dblIndex, 0)) {
-            if (!nextIter(freqs, z, n1, m1)) {
+            if (!nextComb(freqs, z, n1, m1)) {
                 if (IsGmp) {
                     mpzIndex = cnstrtCountMpz + 1;
                 } else {
@@ -321,7 +321,7 @@ SEXP ComboRes::prevGather() {
     }
 }
 
-SEXP ComboRes::currComb() {
+SEXP ComboRes::currIter() {
 
     if (CheckIndGrT(IsGmp, mpzIndex, dblIndex,
                     cnstrtCountMpz, cnstrtCount)) {

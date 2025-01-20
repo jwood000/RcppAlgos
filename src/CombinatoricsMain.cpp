@@ -14,7 +14,7 @@ SEXP CombinatoricsStndrd(SEXP Rv, SEXP Rm, SEXP RisRep, SEXP RFreqs,
 
     VecType myType = VecType::Integer;
     CppConvert::convertPrimitive(RmaxThreads, maxThreads,
-                                   VecType::Integer, "maxThreads");
+                                 VecType::Integer, "maxThreads");
 
     std::vector<int> vInt;
     std::vector<int> myReps;

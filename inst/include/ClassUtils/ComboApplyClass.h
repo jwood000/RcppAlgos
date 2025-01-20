@@ -26,13 +26,13 @@ public:
     );
 
     void startOver();
-    SEXP nextComb();
-    SEXP prevComb();
-    SEXP nextNumCombs(SEXP RNum);
-    SEXP prevNumCombs(SEXP RNum);
+    SEXP nextIter();
+    SEXP prevIter();
+    SEXP nextNumIters(SEXP RNum);
+    SEXP prevNumIters(SEXP RNum);
     SEXP nextGather();
     SEXP prevGather();
-    SEXP currComb();
+    SEXP currIter();
     SEXP randomAccess(SEXP RindexVec);
     SEXP front();
     SEXP back();

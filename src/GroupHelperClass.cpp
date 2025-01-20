@@ -34,8 +34,9 @@ GroupHelper::GroupHelper(const std::vector<int> &_grp,
                          const std::vector<bool> &_same) :
     ubound(_ubound), lbound(_lbound), same(_same), grp(_grp) {}
 
-void GroupHelper::balance(std::vector<int> &z, int idx1,
-                    int curr_bnd, int i) const {
+void GroupHelper::balance(
+    std::vector<int> &z, int idx1, int curr_bnd, int i
+) const {
 
     situate(z, idx1, curr_bnd + grp[i]);
 

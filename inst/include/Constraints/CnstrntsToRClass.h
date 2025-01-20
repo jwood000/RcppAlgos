@@ -39,9 +39,9 @@ public:
     );
 
     void startOver();
-    SEXP nextComb();
-    SEXP nextNumCombs(SEXP RNum);
+    SEXP nextIter();
+    SEXP nextNumIters(SEXP RNum);
     SEXP nextGather();
-    SEXP currComb();
+    SEXP currIter();
     SEXP summary();
 };
