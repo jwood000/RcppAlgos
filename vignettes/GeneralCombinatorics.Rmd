@@ -1,7 +1,7 @@
 ---
 title: "Combination and Permutation Basics"
 author: "Joseph Wood"
-date: "11/30/2023"
+date: "01/20/2025"
 output:
   rmarkdown::html_vignette:
     toc: true
@@ -91,7 +91,7 @@ head(permuteGeneral(v))
 ## They are very efficient...
 system.time(comboGeneral(25, 12))
 #>    user  system elapsed 
-#>   0.054   0.013   0.067
+#>   0.058   0.012   0.071
 
 comboCount(25, 12)
 #> [1] 5200300
@@ -116,7 +116,7 @@ ht(comboGeneral(25, 12))
 ## And for permutations... over 8 million instantly
 system.time(permuteGeneral(13, 7))
 #>    user  system elapsed 
-#>   0.023   0.014   0.037
+#>   0.024   0.014   0.039
 
 permuteCount(13, 7)
 #> [1] 8648640
@@ -259,7 +259,7 @@ a <- as.integer(c(1, 1, 1, 1, 2, 2, 2, 7, 7, 7, 7, 7))
 
 system.time(test <- getPermsWithSpecificRepetition(a, 6))
 #>    user  system elapsed 
-#>   1.261   0.022   1.283
+#>   1.370   0.015   1.393
 ```
 
 ### Enter `freqs`
@@ -271,7 +271,7 @@ of times each unique element is repeated and Voila!
 ## Using the S3 method for class 'table'
 system.time(test2 <- permuteGeneral(table(a), 6))
 #>    user  system elapsed 
-#>   0.000   0.000   0.001
+#>       0       0       0
 
 identical(test, test2)
 #> [1] TRUE
@@ -332,10 +332,10 @@ microbenchmark(combn = combn(26, 13),
 #> Warning in microbenchmark(combn = combn(26, 13), serAlgos = comboGeneral(26, : less
 #> accurate nanosecond times to avoid potential integer overflows
 #> Unit: relative
-#>      expr        min         lq       mean    median        uq       max neval cld
-#>     combn 134.471317 133.255350 100.725417 131.10378 73.933281 66.475301    10 a  
-#>  serAlgos   2.968905   2.973074   2.462118   2.94302  2.117913  1.987334    10  b 
-#>  parAlgos   1.000000   1.000000   1.000000   1.00000  1.000000  1.000000    10   c
+#>      expr        min         lq      mean    median        uq       max neval
+#>     combn 133.009342 121.520714 94.635959 97.500418 77.346589 73.359767    10
+#>  serAlgos   2.906581   2.725883  2.324866  2.197092  2.146598  2.073784    10
+#>  parAlgos   1.000000   1.000000  1.000000  1.000000  1.000000  1.000000    10
 
 ## Using 7 cores w/ Parallel = TRUE
 microbenchmark(
@@ -344,9 +344,9 @@ microbenchmark(
     unit = "relative"
 )
 #> Unit: relative
-#>      expr      min       lq     mean   median      uq      max neval cld
-#>    serial 3.236333 2.853772 2.763475 2.823088 2.77055 1.491217   100  a 
-#>  parallel 1.000000 1.000000 1.000000 1.000000 1.00000 1.000000   100   b
+#>      expr      min       lq     mean   median       uq      max neval
+#>    serial 3.073785 2.937222 2.649805 2.566759 2.506753 1.582399   100
+#>  parallel 1.000000 1.000000 1.000000 1.000000 1.000000 1.000000   100
 ```
 
 ### Using arguments `lower` and `upper`
@@ -388,7 +388,7 @@ system.time(lapply(seq(1, 3247943160, 10086780), function(x) {
      x
 }))
 #>    user  system elapsed 
-#>  26.438  11.890  38.333
+#>  29.335  10.130  41.086
 
 ## Enter parallel
 library(parallel)
@@ -398,7 +398,7 @@ system.time(mclapply(seq(1, 3247943160, 10086780), function(x) {
      x
 }, mc.cores = 6))
 #>    user  system elapsed 
-#>  30.185  15.874   9.810
+#>  13.468   5.851  11.278
 ```
 
 ## GMP Support
@@ -419,7 +419,7 @@ system.time(b <- comboGeneral(myVec, 50, TRUE,
                               lower = 1e15 + 1,
                               upper = 1e15 + 1e5))
 #>    user  system elapsed 
-#>   0.003   0.002   0.004
+#>   0.003   0.002   0.005
 
 b[1:5, 45:50]
 #>           [,1]      [,2]      [,3]     [,4]      [,5]       [,6]
@@ -446,9 +446,9 @@ identical(funCustomComb(15, 8), comboGeneral(15, 8, FUN = cumprod))
 microbenchmark(f1 = funCustomComb(15, 8),
                f2 = comboGeneral(15, 8, FUN = cumprod), unit = "relative")
 #> Unit: relative
-#>  expr     min      lq     mean   median       uq      max neval cld
-#>    f1 5.21106 4.97984 4.616931 4.989338 5.036799 2.015578   100  a 
-#>    f2 1.00000 1.00000 1.000000 1.000000 1.000000 1.000000   100   b
+#>  expr      min       lq     mean   median       uq      max neval
+#>    f1 5.504075 5.489978 5.799018 5.416441 5.299669 15.70882   100
+#>    f2 1.000000 1.000000 1.000000 1.000000 1.000000  1.00000   100
 
 comboGeneral(15, 8, FUN = cumprod, upper = 3)
 #> [[1]]

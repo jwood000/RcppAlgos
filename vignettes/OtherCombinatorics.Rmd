@@ -1,7 +1,7 @@
 ---
 title: "Cartesian Products and Partitions of Groups"
 author: "Joseph Wood"
-date: "11/30/2023"
+date: "01/20/2025"
 output:
   rmarkdown::html_vignette:
     toc: true
@@ -16,9 +16,9 @@ In combinatorics, sometimes it can be difficult to figure out exactly which tool
 
 Before we dive into the details, we will first introduce `expandGrid`, which generates the Cartesian product of its inputs.
 
-## expandGrid
+## `expandGrid`
 
-Just like it's base R counterpart `expand.grid`, we can generate the Cartesian product using `expandGrid`. There are a few caveats that are discussed in detail in the docs (see `?expandGrid`). The main difference is that `expandGrid` varies the first column the slowest and if all of the inputs are of the same type, a `matrix` will be returned.
+Just like its base R counterpart `expand.grid`, we can generate the Cartesian product using `expandGrid`. There are a few caveats that are discussed in detail in the docs (see `?expandGrid`). The main difference is that `expandGrid` varies the first column the slowest and if all of the inputs are of the same type, a `matrix` will be returned.
 
 ``` r
 library(RcppAlgos)
@@ -82,7 +82,7 @@ expandGrid(height = seq(60, 80, 10), weight = seq(100, 200, 50),
 ### Matrix vs Data.Frame Output
 
 ``` r
-lst = Map(\(x, y), 8:12, 13:17)
+lst = Map(\(x, y) x:y, 8:12, 13:17)
 
 class(expand.grid(lst))
 #> [1] "data.frame"
@@ -106,7 +106,7 @@ ht(expand.grid(lst))
 #> 7776   13   14   15   16   17
 
 class(expandGrid(lst))
-#> [1] "matrix" "array" 
+#> [1] "matrix" "array"
 
 ht(expandGrid(lst))
 #> head -->
@@ -126,7 +126,7 @@ ht(expandGrid(lst))
 #> [7776,]   13   14   15   16   17
 ```
 
-### Always Return Data.Frame
+### Always Return `data.frame`
 
 If you really need to always return a `data.frame`, we can utilize the argument `return_df`:
 
@@ -135,7 +135,7 @@ class(expandGrid(lst, return_df = TRUE))
 #> [1] "data.frame"
 
 ht(expandGrid(lst, return_df = TRUE))
-head -->
+#> head -->
 #>   Var1 Var2 Var3 Var4 Var5
 #> 1    8    9   10   11   12
 #> 2    8    9   10   11   13
@@ -152,7 +152,7 @@ head -->
 #> 7776   13   14   15   16   17
 ```
 
-### Familiar RcppAlgos API Components
+### Familiar `RcppAlgos` API Components
 
 Just as in other `RcppAlgos` functions, we can take advantage of the arguments `lower`, `upper`, and `nThreads`. For example, we can see a decrease in execution time by using `nThreads`:
 
@@ -173,14 +173,17 @@ microbenchmark(
     RcppAlgos_Par = expandGrid(lst_med, nThreads = numThreads),
     unit = "relative"
 )
+#> Warning in microbenchmark(baseR = expand.grid(lst_med), RcppAlgos_Ser =
+#> expandGrid(lst_med), : less accurate nanosecond times to avoid potential
+#> integer overflows
 #> Unit: relative
-#>           expr    min     lq   mean median    uq   max neval
-#>          baseR 13.133 12.935 12.864 12.800 11.83 19.41   100
-#>  RcppAlgos_Ser  3.461  3.437  3.589  3.408  3.25 10.37   100
-#>  RcppAlgos_Par  1.000  1.000  1.000  1.000  1.00  1.00   100
+#>           expr    min     lq  mean median    uq   max neval
+#>          baseR 12.945 13.192 8.344 10.215 8.576 3.176   100
+#>  RcppAlgos_Ser  3.389  3.538 2.307  2.802 2.447 1.314   100
+#>  RcppAlgos_Par  1.000  1.000 1.000  1.000 1.000 1.000   100
 ```
 
-### expandGridSample
+### `expandGridSample`
 
 If we want a random sample of the Cartesian product, we can call upon `expandGridSample`. Just as in other `RcppAlgos` sampling functions, we can utlize the `n`, `sampleVec`, `nThreads`, and `namedSample` arguments.
 
@@ -212,25 +215,25 @@ all_carts[as.numeric(rownames(cart_samp)), ]
 
 ### Powerful Iterators with expandGridIter
 
-As with many other functions in `RcppAlgos`, there is an iterator offering for the Cartesian product with `expandGridIter`. These iterators are both memory efficient and computationally efficient. They are flexible as well allowing users to grab only the next iteration, the next _n_ iterations, random access, and more.
+As with many other functions in `RcppAlgos`, there is an iterator offering for the Cartesian product with `expandGridIter`. These iterators are both memory efficient and computationally efficient. They are flexible as well allowing users to grab only the next iteration, the next *n* iterations, random access, and more.
 
 The example below is from the docs (see `?expandGridIter`):
 
 ``` r
 a = expandGridIter(factor(state.abb), euro, islands)
 a@nextIter()
-#>   Var1    Var2  Var3
-#> 1   AL 13.7603 11506
+#>   Var1  Var2  Var3
+#> 1   AL 13.76 11506
 
 a@nextNIter(3)
-#>   Var1    Var2  Var3
-#> 1   AL 13.7603  5500
-#> 2   AL 13.7603 16988
-#> 3   AL 13.7603  2968
+#>   Var1  Var2  Var3
+#> 1   AL 13.76  5500
+#> 2   AL 13.76 16988
+#> 3   AL 13.76  2968
 
 a@front()
-#>   Var1    Var2  Var3
-#> 1   AL 13.7603 11506
+#>   Var1  Var2  Var3
+#> 1   AL 13.76 11506
 
 all_remaining = a@nextRemaining()
 dim(all_remaining)
@@ -250,12 +253,12 @@ a@summary()
 #> [1] -1
 
 a@back()
-#>   Var1    Var2 Var3
-#> 1   WY 200.482   82
+#>   Var1  Var2 Var3
+#> 1   WY 200.5   82
 
 a[[5]]
-#>   Var1    Var2 Var3
-#> 1   AL 13.7603   16
+#>   Var1  Var2 Var3
+#> 1   AL 13.76   16
 
 a@summary()
 #> $description
@@ -271,10 +274,10 @@ a@summary()
 #> [1] 26395
 
 a[[c(1, 17, 3)]]
-#>   Var1    Var2  Var3
-#> 1   AL 13.7603 11506
-#> 2   AL 13.7603    13
-#> 3   AL 13.7603 16988
+#>   Var1  Var2  Var3
+#> 1   AL 13.76 11506
+#> 2   AL 13.76    13
+#> 3   AL 13.76 16988
 
 a@summary()
 #> $description
@@ -373,7 +376,7 @@ prod(lengths(pools))
 ## With comboGrid, this is no problem
 system.time(myCombs <- comboGrid(pools))
 #>    user  system elapsed 
-#>   0.257   0.020   0.278
+#>   0.263   0.026   0.290
 
 print(object.size(myCombs), unit = "Mb")
 #> 92 Mb
@@ -399,7 +402,7 @@ ht(myCombs)
 ## Generating keys, then filtering will take much more time
 system.time(cartProd <- expand.grid(pools))
 #>    user  system elapsed 
-#>   3.641   0.825   4.466
+#>   3.655   0.779   4.646
 
 ## Creates huge object
 print(object.size(cartProd), unit = "Mb")
@@ -409,7 +412,7 @@ print(object.size(cartProd), unit = "Mb")
 ## Simply set repetition = FALSE
 system.time(myCombsNoRep <- comboGrid(pools, repetition = FALSE))
 #>    user  system elapsed 
-#>   0.003   0.001   0.003
+#>   0.003   0.000   0.004
 
 ht(myCombsNoRep)
 #> head -->
@@ -543,21 +546,21 @@ system.time(a1 <- comboGroups(30, numGroups = 6,
                               lower = "123378675000000000",
                               upper = "123378675005000000"))
 #>    user  system elapsed 
-#>   0.115   0.031   0.147
+#>   0.119   0.030   0.149
 
 ## Use specific number of threads
 system.time(a2 <- comboGroups(30, numGroups = 6,
                               lower = "123378675000000000",
                               upper = "123378675005000000", nThreads = 4))
 #>    user  system elapsed 
-#>   0.134   0.056   0.075
+#>   0.139   0.055   0.080
 
 ## Use n - 1 number of threads (in this case, there are 7)
 system.time(a3 <- comboGroups(30, numGroups = 6,
                               lower = "123378675000000000",
                               upper = "123378675005000000", Parallel = TRUE))
 #>    user  system elapsed 
-#>   0.160   0.081   0.077
+#>   0.173   0.076   0.116
 
 identical(a1, a2)
 #> [1] TRUE
@@ -573,7 +576,7 @@ As of `2.8.+` we can generate partitions of groups of varying sizes. For example
 ``` r
 system.time(a4 <- comboGroups(15, grpSizes = c(3, 3, 4, 5)))
 #>    user  system elapsed 
-#>   0.120   0.025   0.147
+#>   0.124   0.026   0.159
 
 ht(a4)
 #> head -->
@@ -607,7 +610,7 @@ All of the flexibility offered with groups of equal size are present with groups
 ``` r
 system.time(a5 <- comboGroups(15, grpSizes = c(3, 3, 4, 5), nThreads = 4))
 #>    user  system elapsed 
-#>   0.140   0.037   0.057
+#>   0.144   0.037   0.057
 
 identical(a4, a5)
 #> [1] TRUE

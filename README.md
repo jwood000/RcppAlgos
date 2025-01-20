@@ -7,8 +7,8 @@
 ![](<https://cranlogs.r-pkg.org/badges/grand-total/RcppAlgos?color=brightgreen>)
 [![Codacy Badge](<https://app.codacy.com/project/badge/Grade/e7fef773f6514aa4a2decda9adf57ae8>)](<https://app.codacy.com/gh/jwood000/RcppAlgos/dashboard?utm_source=gh&utm_medium=referral&utm_content=&utm_campaign=Badge_grade>)
 [![Dependencies](<https://tinyverse.netlify.app/badge/RcppAlgos>)](<https://cran.r-project.org/package=RcppAlgos>)
-[![R-CMD-check](https://github.com/jwood000/RcppAlgos/actions/workflows/R-CMD-check.yml/badge.svg)](https://github.com/jwood000/RcppAlgos/actions/workflows/R-CMD-check.yml)
-[![Codecov test coverage](https://codecov.io/gh/jwood000/RcppAlgos/branch/main/graph/badge.svg)](https://app.codecov.io/gh/jwood000/RcppAlgos?branch=main)
+[![R-CMD-check](<https://github.com/jwood000/RcppAlgos/actions/workflows/R-CMD-check.yml/badge.svg>)](<https://github.com/jwood000/RcppAlgos/actions/workflows/R-CMD-check.yml>)
+[![Codecov test coverage](<https://codecov.io/gh/jwood000/RcppAlgos/branch/main/graph/badge.svg>)](<https://app.codecov.io/gh/jwood000/RcppAlgos?branch=main>)
 <!-- badges: end -->
 
 A collection of high performance functions and iterators implemented in C++ for solving problems in combinatorics and computational mathematics.
@@ -207,13 +207,14 @@ tail(algos, n = 3)
 
 
 ## N.B. Since we are passing more than one type, a data.frame is returned
-head(expand.grid(
-    c(rep(list(letters[1:3]), 3), list(1:3))
-), n = 3)
+expandGrid(
+    c(rep(list(letters[1:3]), 3), list(1:3)),
+    upper = 3
+)
 #>   Var1 Var2 Var3 Var4
 #> 1    a    a    a    1
-#> 2    b    a    a    1
-#> 3    c    a    a    1
+#> 2    a    a    a    2
+#> 3    a    a    a    3
 
 
 ## With RcppAlgos::comboGrid order doesn't matter, so c(1, 1, 2),
