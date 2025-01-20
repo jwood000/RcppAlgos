@@ -43,6 +43,9 @@
     <loc>/news/index.html</loc>
   </url>
   <url>
+    <loc>/reference/Cartesian-Class.html</loc>
+  </url>
+  <url>
     <loc>/reference/Combo-Class.html</loc>
   </url>
   <url>
@@ -95,6 +98,18 @@
   </url>
   <url>
     <loc>/reference/eulerPhiSieve.html</loc>
+  </url>
+  <url>
+    <loc>/reference/expandGrid.html</loc>
+  </url>
+  <url>
+    <loc>/reference/expandGridCount.html</loc>
+  </url>
+  <url>
+    <loc>/reference/expandGridIterator.html</loc>
+  </url>
+  <url>
+    <loc>/reference/expandGridSample.html</loc>
   </url>
   <url>
     <loc>/reference/index.html</loc>
