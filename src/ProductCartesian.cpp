@@ -123,10 +123,12 @@ SEXP ExpandGridCpp(
         numResults, nCols, IsDF, nThreads, Parallel, IsGmp, IsSample
     );
 
-    if (IsSample) {
-        SetSampleNames(res, IsGmp, numResults, mySample, myBigSamp, IsNamed);
+    if (IsSample && IsNamed) {
+        SetSampleNames(res, IsGmp, numResults, mySample,
+                       myBigSamp, IsNamed, RList.names(), 1);
+    } else {
+        SetMatrixColnames(res, RList.names());
     }
 
-    SetMatrixColnames(res, RList.names());
     return res;
 }
