@@ -17,7 +17,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">RcppAlgos</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">2.8.5</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">2.9.0</span>
       </span>
     </div>
 
@@ -79,10 +79,25 @@
     </div>
 
     <div class="section level2">
-<h2 class="page-header" data-toc-text="2.8.5" id="rcppalgos-285">RcppAlgos 2.8.5<a class="anchor" aria-label="anchor" href="#rcppalgos-285"></a></h2>
+<h2 class="page-header" data-toc-text="2.9.0" id="rcppalgos-290">RcppAlgos 2.9.0<a class="anchor" aria-label="anchor" href="#rcppalgos-290"></a></h2>
+<div class="section level3">
+<h3 id="new-features-2-9-0">New Features:<a class="anchor" aria-label="anchor" href="#new-features-2-9-0"></a></h3>
+<ul><li>Added Cartesian product functions: <code>expandGrid</code>, <code>expandGridCount</code>, <code>expandGridSample</code>, and <code>expandGridIter</code>.</li>
+</ul></div>
+<div class="section level3">
+<h3 id="bug-fixes-2-9-0">Bug Fixes:<a class="anchor" aria-label="anchor" href="#bug-fixes-2-9-0"></a></h3>
+<ul><li>Fixed issue in <code>comboGroup</code> when groups of size 1 are passed. See <a href="https://github.com/jwood000/RcppAlgos/issues/53" class="external-link">Issue </a><a href="https://github.com/jwood000/RcppAlgos/issues/53" class="external-link">#53</a>.</li>
+</ul></div>
+</div>
+    <div class="section level2">
+<h2 class="page-header" data-toc-text="2.8.5" id="rcppalgos-285">RcppAlgos 2.8.5<small>2024-10-11</small><a class="anchor" aria-label="anchor" href="#rcppalgos-285"></a></h2>
 <div class="section level3">
 <h3 id="other-2-8-5">Other<a class="anchor" aria-label="anchor" href="#other-2-8-5"></a></h3>
 <ul><li>Updated Author field and removed Maintainer field in DESCRIPTION file per W.R.E.</li>
+</ul></div>
+<div class="section level3">
+<h3 id="bug-fixes-2-8-5">Bug Fixes:<a class="anchor" aria-label="anchor" href="#bug-fixes-2-8-5"></a></h3>
+<ul><li>Fixed LLVM-19 error occurring in libdivide header. See <a href="https://github.com/ridiculousfish/libdivide/pull/113" class="external-link">PR </a><a href="https://github.com/jwood000/RcppAlgos/issues/113" class="external-link">#113</a>.</li>
 </ul></div>
 </div>
     <div class="section level2">
@@ -95,7 +110,6 @@
 <h3 id="bug-fixes-2-8-4">Bug Fixes:<a class="anchor" aria-label="anchor" href="#bug-fixes-2-8-4"></a></h3>
 <ul><li>Fixed bug with iterator when multithreading and exhausting the iterator.</li>
 <li>Enforced values being converted to a primitive to be of length 1.</li>
-<li>Fixed clang19 error in libdivide.</li>
 </ul></div>
 </div>
     <div class="section level2">
