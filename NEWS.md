@@ -1,3 +1,9 @@
+# RcppAlgos 2.9.1
+
+## Other:
+
+* Fixed urls
+
 # RcppAlgos 2.9.0
 
 ## New Features:
@@ -160,7 +166,7 @@
 
 ## Other:
 
-* Fixed old urls
+* Fixed urls
 
 # RcppAlgos 2.4.2
 
@@ -178,9 +184,9 @@
 
 # RcppAlgos 2.4.1
 
-## Bug Fixes:
+## Other:
 
-* Removed broken URL in NEWS.Rd
+* Fixed urls
 
 # RcppAlgos 2.4.0
 

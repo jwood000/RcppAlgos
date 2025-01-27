@@ -1,7 +1,16 @@
 \name{NEWS}
 \title{News for Package \pkg{RcppAlgos}}
 
-\section{Changes in RcppAlgos version 2.9.0 (Release date: 2024-09-10)}{
+\section{Changes in RcppAlgos version 2.9.1 (Release date: 2025-01-27)}{
+    \itemize{
+        \item Other:
+        \itemize{
+            \item Fixed urls
+        }
+    }
+}
+
+\section{Changes in RcppAlgos version 2.9.0 (Release date: Never Released)}{
     \itemize{
         \item New Features:
         \itemize{
@@ -207,7 +216,7 @@
     \itemize{
         \item Other:
         \itemize{
-            \item Fixed old urls
+            \item Fixed urls
         }
     }
 }
@@ -231,9 +240,9 @@
 
 \section{Changes in RcppAlgos version 2.4.1 (Release date: 2020-03-24)}{
     \itemize{
-        \item Bug Fixes:
+        \item Other:
         \itemize{
-            \item Removed broken URL in NEWS.Rd
+            \item Fixed urls
         }
     }
 }
