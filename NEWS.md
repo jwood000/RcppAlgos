@@ -1,3 +1,9 @@
+# RcppAlgos 2.9.2
+
+## Bug Fixes:
+
+* Fixed clang-ASAN issue arising from calling vector::front on empty container.
+
 # RcppAlgos 2.9.1
 
 ## Other:

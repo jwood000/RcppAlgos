@@ -348,9 +348,11 @@ std::vector<int> ComboGroupsGeneral::nthComboGroup(double myIndex) {
     for (int i = 0, j = 0, k = 0; i < nSets; j += grpSets[i], ++i) {
 
         removeFirstSet(grpCopy, p);
-        const std::int64_t secLen = static_cast<std::int64_t>(
-            numCmbGrpGen(grpCopy, p, grpCopy.front() == 1)
-        );
+
+        const std::int64_t secLen = grpCopy.empty() ? 1 :
+            static_cast<std::int64_t>(
+                numCmbGrpGen(grpCopy, p, grpCopy.front() == 1)
+            );
 
         const std::int64_t idx = intIdx / secLen;
         const int g = realGrps[j];
@@ -393,7 +395,10 @@ std::vector<int> ComboGroupsGeneral::nthComboGroupGmp(
     for (int i = 0, j = 0, k = 0; i < nSets; j += grpSets[i], ++i) {
 
         removeFirstSet(grpCopy, p);
-        secLen = numCmbGrpGenGmp(grpCopy, p, grpCopy.front() == 1);
+
+        secLen = grpCopy.empty() ? 1 :
+            numCmbGrpGenGmp(grpCopy, p, grpCopy.front() == 1);
+
         idx = mpzIdx / secLen;
         const int g = realGrps[j];
 

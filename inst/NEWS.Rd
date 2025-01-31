@@ -1,6 +1,15 @@
 \name{NEWS}
 \title{News for Package \pkg{RcppAlgos}}
 
+\section{Changes in RcppAlgos version 2.9.2 (Release date: 2025-01-31)}{
+    \itemize{
+        \item Bug Fixes:
+        \itemize{
+            \item Fixed clang-ASAN issue arising from calling vector::front on empty container.
+        }
+    }
+}
+
 \section{Changes in RcppAlgos version 2.9.1 (Release date: 2025-01-27)}{
     \itemize{
         \item Other:
