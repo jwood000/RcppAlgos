@@ -17,7 +17,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">RcppAlgos</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">2.9.1</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">2.9.2</span>
       </span>
     </div>
 
@@ -140,7 +140,7 @@
 <span class="r-in"><span><span class="co">## every number less than a million</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/system.time.html" class="external-link">system.time</a></span><span class="op">(</span><span class="va">mySigmas</span> <span class="op">&lt;-</span> <span class="fu">numDivisorSieve</span><span class="op">(</span><span class="fl">10</span><span class="op">^</span><span class="fl">6</span><span class="op">)</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>    user  system elapsed </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   0.004   0.001   0.004 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   0.005   0.000   0.005 </span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co">## Now use result in algorithm</span></span></span>
 <span class="r-in"><span><span class="kw">for</span> <span class="op">(</span><span class="va">s</span> <span class="kw">in</span> <span class="va">mySamp</span><span class="op">)</span> <span class="op">{</span></span></span>
@@ -152,7 +152,7 @@
 <span class="r-in"><span><span class="co">## number in a range is no problem</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/system.time.html" class="external-link">system.time</a></span><span class="op">(</span><span class="va">sigmaRange</span> <span class="op">&lt;-</span> <span class="fu">numDivisorSieve</span><span class="op">(</span><span class="fl">10</span><span class="op">^</span><span class="fl">13</span>, <span class="fl">10</span><span class="op">^</span><span class="fl">13</span> <span class="op">+</span> <span class="fl">10</span><span class="op">^</span><span class="fl">6</span><span class="op">)</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>    user  system elapsed </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   0.014   0.001   0.014 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   0.013   0.001   0.014 </span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co">## Returning a named vector</span></span></span>
 <span class="r-in"><span><span class="fu">numDivisorSieve</span><span class="op">(</span><span class="fl">10</span>, <span class="fl">20</span>, namedVector <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></span>
@@ -165,7 +165,7 @@
 <span class="r-in"><span><span class="co">## Using nThreads</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/system.time.html" class="external-link">system.time</a></span><span class="op">(</span><span class="fu">numDivisorSieve</span><span class="op">(</span><span class="fl">1e5</span>, <span class="fl">2e5</span>, nThreads <span class="op">=</span> <span class="fl">2</span><span class="op">)</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>    user  system elapsed </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>       0       0       0 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   0.000   0.000   0.001 </span>
 </code></pre></div>
     </div>
   </div>
