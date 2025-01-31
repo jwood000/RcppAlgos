@@ -55,12 +55,7 @@ void rankCombMult(std::vector<int>::iterator iter, int n, int m,
 
     for (int k = 0, j = 0, n1 = n, r1 = m - 1; k < m; ++k, --r1, ++iter) {
 
-        --Counts.front();
-        if (Counts.front() == 0 && Counts.size() > 1) {
-            --n1;
-            Counts.erase(Counts.begin());
-        }
-
+        ManageCountsVector(Counts, n1);
         double temp = MultisetCombRowNumFast(n1, r1, Counts);
 
         for (int idx = *iter; j < idx; ++j) {
@@ -72,12 +67,7 @@ void rankCombMult(std::vector<int>::iterator iter, int n, int m,
                 Counts.erase(Counts.begin());
             }
 
-            --Counts.front();
-            if (Counts.front() == 0 && Counts.size() > 1) {
-                --n1;
-                Counts.erase(Counts.begin());
-            }
-
+            ManageCountsVector(Counts, n1);
             temp = MultisetCombRowNumFast(n1, r1, Counts);
         }
 
@@ -145,12 +135,7 @@ void rankCombMultGmp(std::vector<int>::iterator iter, int n, int m,
 
     for (int k = 0, n1 = n, j = 0, r1 = m - 1; k < m; ++k, --r1, ++iter) {
 
-        --Counts.front();
-        if (Counts.size() > 1 && Counts.front() == 0) {
-            --n1;
-            Counts.pop_front();
-        }
-
+        ManageCountsDeque(Counts, n1);
         MultisetCombRowNumGmp(temp, n1, r1, Counts);
 
         for (int idx = *iter; j < idx; ++j) {
@@ -162,12 +147,7 @@ void rankCombMultGmp(std::vector<int>::iterator iter, int n, int m,
                 Counts.pop_front();
             }
 
-            --Counts.front();
-            if (Counts.size() > 1 && Counts.front() == 0) {
-                --n1;
-                Counts.pop_front();
-            }
-
+            ManageCountsDeque(Counts, n1);
             MultisetCombRowNumGmp(temp, n1, r1, Counts);
         }
 

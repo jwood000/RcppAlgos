@@ -3,6 +3,7 @@
 #include <gmpxx.h>
 #include <numeric>   // std::accumulate
 #include <vector>
+#include <deque>
 #include <cmath>     // std::round
 
 // Returns number of k-combinations from n elements.
@@ -40,24 +41,18 @@ double MultisetCombRowNumFast(int n, int m, const std::vector<int> &Reps) {
         return 1.0;
     }
 
-    if (m == n) {
-        if (std::accumulate(Reps.cbegin(), Reps.cend(), 0) == n) {
-            return 1.0;
-        }
+    if (m == n && std::accumulate(Reps.begin(), Reps.end(), 0) == n) {
+        return 1.0;
     }
 
     const int m1 = m + 1;
     std::vector<double> triangleVec(m1);
     std::vector<double> temp(m1);
 
-    int myMax = m1;
-
-    if (myMax > Reps[0] + 1) {
-        myMax = Reps[0] + 1;
-    }
+    int myMax = std::min(m1, Reps[0] + 1);
 
     for (int i = 0; i < myMax; ++i) {
-        triangleVec[i] = temp[i] = 1;
+        triangleVec[i] = temp[i] = 1.0;
     }
 
     --myMax;
@@ -165,4 +160,26 @@ double MultisetCombRowNum(int n, int m, const std::vector<int> &Reps) {
     }
 
     return triangleVec[m];
+}
+
+void ManageCountsVector(std::vector<int> &Counts, int &n1) {
+    if (!Counts.empty()) {
+        --Counts.front();
+
+        if (Counts.front() == 0 && Counts.size() > 1) {
+            --n1;
+            Counts.erase(Counts.begin());
+        }
+    }
+}
+
+void ManageCountsDeque(std::deque<int> &Counts, int &n1) {
+    if (!Counts.empty()) {
+        --Counts.front();
+
+        if (Counts.size() > 1 && Counts.front() == 0) {
+            --n1;
+            Counts.pop_front();
+        }
+    }
 }
