@@ -32,7 +32,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">RcppAlgos</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">2.9.2</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">2.9.3</span>
       </span>
     </div>
 
@@ -102,7 +102,7 @@
                         <h4 data-toc-skip class="author">Joseph
 Wood</h4>
             
-            <h4 data-toc-skip class="date">01/20/2025</h4>
+            <h4 data-toc-skip class="date">01/31/2025</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/jwood000/RcppAlgos/blob/main/vignettes/OtherCombinatorics.Rmd" class="external-link"><code>vignettes/OtherCombinatorics.Rmd</code></a></small>
       <div class="hidden name"><code>OtherCombinatorics.Rmd</code></div>
@@ -293,8 +293,8 @@ time by using <code>nThreads</code>:</p>
 <span><span class="co">#&gt; integer overflows</span></span>
 <span><span class="co">#&gt; Unit: relative</span></span>
 <span><span class="co">#&gt;           expr    min     lq  mean median    uq   max neval</span></span>
-<span><span class="co">#&gt;          baseR 12.945 13.192 8.344 10.215 8.576 3.176   100</span></span>
-<span><span class="co">#&gt;  RcppAlgos_Ser  3.389  3.538 2.307  2.802 2.447 1.314   100</span></span>
+<span><span class="co">#&gt;          baseR 13.911 11.572 7.035 10.306 8.829 2.589   100</span></span>
+<span><span class="co">#&gt;  RcppAlgos_Ser  3.516  2.999 1.962  2.762 2.324 1.415   100</span></span>
 <span><span class="co">#&gt;  RcppAlgos_Par  1.000  1.000 1.000  1.000 1.000 1.000   100</span></span></code></pre></div>
 </div>
 <div class="section level3">
@@ -511,7 +511,7 @@ impractical.</p>
 <span><span class="co">## With comboGrid, this is no problem</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/system.time.html" class="external-link">system.time</a></span><span class="op">(</span><span class="va">myCombs</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/comboGrid.html">comboGrid</a></span><span class="op">(</span><span class="va">pools</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="co">#&gt;    user  system elapsed </span></span>
-<span><span class="co">#&gt;   0.263   0.026   0.290</span></span>
+<span><span class="co">#&gt;   0.256   0.022   0.279</span></span>
 <span></span>
 <span><span class="fu"><a href="https://rdrr.io/pkg/partitions/man/print.partition.html" class="external-link">print</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/utils/object.size.html" class="external-link">object.size</a></span><span class="op">(</span><span class="va">myCombs</span><span class="op">)</span>, unit <span class="op">=</span> <span class="st">"Mb"</span><span class="op">)</span></span>
 <span><span class="co">#&gt; 92 Mb</span></span>
@@ -537,7 +537,7 @@ impractical.</p>
 <span><span class="co">## Generating keys, then filtering will take much more time</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/system.time.html" class="external-link">system.time</a></span><span class="op">(</span><span class="va">cartProd</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/expand.grid.html" class="external-link">expand.grid</a></span><span class="op">(</span><span class="va">pools</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="co">#&gt;    user  system elapsed </span></span>
-<span><span class="co">#&gt;   3.655   0.779   4.646</span></span>
+<span><span class="co">#&gt;   3.565   0.755   4.358</span></span>
 <span></span>
 <span><span class="co">## Creates huge object</span></span>
 <span><span class="fu"><a href="https://rdrr.io/pkg/partitions/man/print.partition.html" class="external-link">print</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/utils/object.size.html" class="external-link">object.size</a></span><span class="op">(</span><span class="va">cartProd</span><span class="op">)</span>, unit <span class="op">=</span> <span class="st">"Mb"</span><span class="op">)</span></span>
@@ -547,7 +547,7 @@ impractical.</p>
 <span><span class="co">## Simply set repetition = FALSE</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/system.time.html" class="external-link">system.time</a></span><span class="op">(</span><span class="va">myCombsNoRep</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/comboGrid.html">comboGrid</a></span><span class="op">(</span><span class="va">pools</span>, repetition <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="co">#&gt;    user  system elapsed </span></span>
-<span><span class="co">#&gt;   0.003   0.000   0.004</span></span>
+<span><span class="co">#&gt;   0.004   0.000   0.004</span></span>
 <span></span>
 <span><span class="fu">ht</span><span class="op">(</span><span class="va">myCombsNoRep</span><span class="op">)</span></span>
 <span><span class="co">#&gt; head --&gt;</span></span>
@@ -702,21 +702,21 @@ and <code>nThreads</code>.</p>
 <span>                              lower <span class="op">=</span> <span class="st">"123378675000000000"</span>,</span>
 <span>                              upper <span class="op">=</span> <span class="st">"123378675005000000"</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="co">#&gt;    user  system elapsed </span></span>
-<span><span class="co">#&gt;   0.119   0.030   0.149</span></span>
+<span><span class="co">#&gt;   0.121   0.034   0.164</span></span>
 <span></span>
 <span><span class="co">## Use specific number of threads</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/system.time.html" class="external-link">system.time</a></span><span class="op">(</span><span class="va">a2</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/comboGroups.html">comboGroups</a></span><span class="op">(</span><span class="fl">30</span>, numGroups <span class="op">=</span> <span class="fl">6</span>,</span>
 <span>                              lower <span class="op">=</span> <span class="st">"123378675000000000"</span>,</span>
 <span>                              upper <span class="op">=</span> <span class="st">"123378675005000000"</span>, nThreads <span class="op">=</span> <span class="fl">4</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="co">#&gt;    user  system elapsed </span></span>
-<span><span class="co">#&gt;   0.139   0.055   0.080</span></span>
+<span><span class="co">#&gt;   0.144   0.060   0.109</span></span>
 <span></span>
 <span><span class="co">## Use n - 1 number of threads (in this case, there are 7)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/system.time.html" class="external-link">system.time</a></span><span class="op">(</span><span class="va">a3</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/comboGroups.html">comboGroups</a></span><span class="op">(</span><span class="fl">30</span>, numGroups <span class="op">=</span> <span class="fl">6</span>,</span>
 <span>                              lower <span class="op">=</span> <span class="st">"123378675000000000"</span>,</span>
 <span>                              upper <span class="op">=</span> <span class="st">"123378675005000000"</span>, Parallel <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="co">#&gt;    user  system elapsed </span></span>
-<span><span class="co">#&gt;   0.173   0.076   0.116</span></span>
+<span><span class="co">#&gt;   0.161   0.074   0.078</span></span>
 <span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/identical.html" class="external-link">identical</a></span><span class="op">(</span><span class="va">a1</span>, <span class="va">a2</span><span class="op">)</span></span>
 <span><span class="co">#&gt; [1] TRUE</span></span>
@@ -733,7 +733,7 @@ the vector <code>v = 1:15</code> into 2 groups of 3, 1 groups of 4, and
 <div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/system.time.html" class="external-link">system.time</a></span><span class="op">(</span><span class="va">a4</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/comboGroups.html">comboGroups</a></span><span class="op">(</span><span class="fl">15</span>, grpSizes <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">3</span>, <span class="fl">3</span>, <span class="fl">4</span>, <span class="fl">5</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="co">#&gt;    user  system elapsed </span></span>
-<span><span class="co">#&gt;   0.124   0.026   0.159</span></span>
+<span><span class="co">#&gt;   0.125   0.030   0.164</span></span>
 <span></span>
 <span><span class="fu">ht</span><span class="op">(</span><span class="va">a4</span><span class="op">)</span></span>
 <span><span class="co">#&gt; head --&gt;</span></span>
@@ -766,7 +766,7 @@ groups of varying sizes in parallel:</p>
 <div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/system.time.html" class="external-link">system.time</a></span><span class="op">(</span><span class="va">a5</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/comboGroups.html">comboGroups</a></span><span class="op">(</span><span class="fl">15</span>, grpSizes <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">3</span>, <span class="fl">3</span>, <span class="fl">4</span>, <span class="fl">5</span><span class="op">)</span>, nThreads <span class="op">=</span> <span class="fl">4</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="co">#&gt;    user  system elapsed </span></span>
-<span><span class="co">#&gt;   0.144   0.037   0.057</span></span>
+<span><span class="co">#&gt;   0.143   0.034   0.058</span></span>
 <span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/identical.html" class="external-link">identical</a></span><span class="op">(</span><span class="va">a4</span>, <span class="va">a5</span><span class="op">)</span></span>
 <span><span class="co">#&gt; [1] TRUE</span></span></code></pre></div>
