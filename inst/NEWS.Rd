@@ -1,7 +1,17 @@
 \name{NEWS}
 \title{News for Package \pkg{RcppAlgos}}
 
-\section{Changes in RcppAlgos version 2.9.2 (Release date: 2025-01-31)}{
+\section{Changes in RcppAlgos version 2.9.2 (Release date: 2025-02-02)}{
+    \itemize{
+        \item Other:
+        \itemize{
+            \item Corrected spelling in DESCRIPTION.
+            \item Added DOI reference.
+        }
+    }
+}
+
+\section{Changes in RcppAlgos version 2.9.2 (Release date: Never Released)}{
     \itemize{
         \item Bug Fixes:
         \itemize{

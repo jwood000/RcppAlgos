@@ -1,7 +1,7 @@
 ---
 title: "Constraints, Partitions, and Compositions"
 author: "Joseph Wood"
-date: "01/20/2025"
+date: "01/31/2025"
 output:
   rmarkdown::html_vignette:
     toc: true
@@ -33,7 +33,7 @@ library(RcppAlgos)
 options(width = 90)
 
 packageVersion("RcppAlgos")
-#> [1] '2.9.0'
+#> [1] '2.9.2'
 
 cat(paste(capture.output(sessionInfo())[1:3], collapse = "\n"))
 #> R version 4.4.2 (2024-10-31)
@@ -70,9 +70,9 @@ microbenchmark(serial = comboGeneral(20, 10, constraintFun = "sum"),
 #> accurate nanosecond times to avoid potential integer overflows
 #> Unit: relative
 #>      expr        min         lq       mean     median         uq       max neval
-#>    serial   4.145248   3.782371   3.294882   3.592784   3.154921  3.602166   100
+#>    serial   3.485355   3.291729   2.914214   3.197378   3.010128  1.716721   100
 #>  parallel   1.000000   1.000000   1.000000   1.000000   1.000000  1.000000   100
-#>  combnSum 170.741555 153.660997 126.405156 143.939951 123.111893 63.698778   100
+#>  combnSum 171.180306 157.361966 133.895925 151.336700 139.596890 64.992480   100
 ```
 
 ### Faster than `rowSums` and `rowMeans`
@@ -88,10 +88,10 @@ microbenchmark(serial = comboGeneral(25, 10, constraintFun = "sum"),
              parallel = comboGeneral(25, 10, constraintFun = "sum", Parallel = TRUE),
               rowsums = rowSums(combs), unit = "relative")
 #> Unit: relative
-#>      expr      min       lq     mean   median       uq       max neval
-#>    serial 3.889420 3.536072 3.247171 3.272439 3.110751 1.8558892   100
-#>  parallel 1.000000 1.000000 1.000000 1.000000 1.000000 1.0000000   100
-#>   rowsums 1.876163 1.759807 1.646288 1.621581 1.584892 0.8795957   100
+#>      expr      min       lq     mean   median       uq      max neval
+#>    serial 3.282834 3.118272 2.961110 2.873113 2.805536 3.622693   100
+#>  parallel 1.000000 1.000000 1.000000 1.000000 1.000000 1.000000   100
+#>   rowsums 1.882470 1.857191 1.762444 1.684538 1.678611 1.722250   100
 
 all.equal(rowSums(combs),
           comboGeneral(25, 10,
@@ -105,9 +105,9 @@ microbenchmark(serial = comboGeneral(25, 10, constraintFun = "mean"),
              rowmeans = rowMeans(combs), unit = "relative")
 #> Unit: relative
 #>      expr      min       lq     mean   median       uq      max neval
-#>    serial 2.222264 2.176998 2.113384 2.155096 2.079569 1.594838   100
+#>    serial 2.540918 2.273344 2.198220 2.233083 2.172085 1.593756   100
 #>  parallel 1.000000 1.000000 1.000000 1.000000 1.000000 1.000000   100
-#>  rowmeans 1.254928 1.253794 1.233740 1.245993 1.203838 1.587552   100
+#>  rowmeans 1.520303 1.303887 1.271082 1.282142 1.248715 1.201293   100
 
 all.equal(rowMeans(combs),
           comboGeneral(25, 10,
@@ -527,12 +527,12 @@ partitionsCount(0:60, repetition = TRUE)
 ## Single threaded
 system.time(partitionsGeneral(0:60, repetition = TRUE))
 #>    user  system elapsed 
-#>   0.027   0.011   0.039
+#>   0.030   0.013   0.056
 
 ## Using nThreads
 system.time(partitionsGeneral(0:60, repetition = TRUE, nThreads=4))
 #>    user  system elapsed 
-#>   0.040   0.023   0.018
+#>   0.032   0.021   0.014
 
 
 ## partitions of 120 into distinct parts
@@ -541,11 +541,11 @@ partitionsCount(0:120, freqs = c(120, rep(1, 120)))
 
 system.time(partitionsGeneral(0:120, freqs = c(120, rep(1, 120))))
 #>    user  system elapsed 
-#>   0.020   0.007   0.027
+#>   0.020   0.006   0.026
 
 system.time(partitionsGeneral(0:120, freqs = c(120, rep(1, 120)), nThreads=4))
 #>    user  system elapsed 
-#>   0.028   0.006   0.010
+#>   0.022   0.005   0.008
 
 
 ## partitions of 100 into parts of 15 with specific multiplicity
@@ -555,7 +555,7 @@ partitionsCount(100, 15, freqs = rep(4:8, 20))
 ## Over 6 million in just over a second!
 system.time(partitionsGeneral(100, 15, freqs = rep(4:8, 20)))
 #>    user  system elapsed 
-#>   0.253   0.079   0.349
+#>   0.246   0.082   0.329
 ```
 
 ## Integer Compositions
@@ -699,7 +699,7 @@ With `compositionGeneral` we are able to take advantage of parallel computation.
 ## compositions of 25
 system.time(compositionsGeneral(0:25, repetition = TRUE))
 #>    user  system elapsed 
-#>   1.691   0.091   1.788
+#>   1.649   0.085   1.738
 
 compositionsCount(0:25, repetition=TRUE)
 #> [1] 16777216
@@ -708,14 +708,14 @@ compositionsCount(0:25, repetition=TRUE)
 ## over 16 million compositions in under a second!
 system.time(compositionsGeneral(0:25, repetition = TRUE, nThreads = 4))
 #>    user  system elapsed 
-#>   1.865   0.115   0.534
+#>   1.819   0.099   0.514
 
 
 ## weak compositions of 12 usnig nThreads = 4
 system.time(weakComp12 <- compositionsGeneral(0:12, repetition = TRUE,
                                               weak = TRUE, nThreads = 4))
 #>    user  system elapsed 
-#>   0.012   0.007   0.006
+#>   0.011   0.006   0.005
 
 ## And using permuteGeneral
 system.time(weakPerm12 <- permuteGeneral(0:12, 12, repetition = TRUE,
@@ -723,7 +723,7 @@ system.time(weakPerm12 <- permuteGeneral(0:12, 12, repetition = TRUE,
                                          comparisonFun = "==",
                                          limitConstraints = 12))
 #>    user  system elapsed 
-#>   0.011   0.004   0.015
+#>   0.010   0.003   0.014
 
 dim(weakPerm12)
 #> [1] 1352078      12
@@ -739,7 +739,7 @@ system.time(comp25_gen <- permuteGeneral(25, 10, freqs = rep(4:8, 5),
                                          comparisonFun = "==",
                                          limitConstraints = 25))
 #>    user  system elapsed 
-#>   0.017   0.006   0.023
+#>   0.016   0.006   0.022
 
 dim(comp25_gen)
 #> [1] 946092     10
@@ -782,7 +782,7 @@ iter = partitionsIter(s, 20, TRUE, target = 0)
 ## Test one iteration to see if we need to relax the tolerance
 system.time(iter@nextIter())
 #>    user  system elapsed 
-#>   5.242   0.005   5.281
+#>   5.166   0.001   5.182
 
 ## 8 seconds per iteration is a bit much... Let's loosen things
 ## a little by increasing the tolerance from sqrt(.Machine$double.eps)
@@ -791,5 +791,5 @@ relaxedIter = partitionsIter(s, 20, TRUE, target = 0, tolerance = 1e-5)
 
 system.time(relaxedIter@nextIter())
 #>    user  system elapsed 
-#>   0.000   0.000   0.001
+#>       0       0       0
 ```

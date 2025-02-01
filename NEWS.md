@@ -1,3 +1,10 @@
+# RcppAlgos 2.9.3
+
+## Other:
+
+* Corrected spelling in DESCRIPTION
+* Added DOI reference
+
 # RcppAlgos 2.9.2
 
 ## Bug Fixes:

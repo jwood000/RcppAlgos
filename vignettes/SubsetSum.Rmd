@@ -1,7 +1,7 @@
 ---
 title: "Attacking Problems Related to the Subset Sum Problem"
 author: "Joseph Wood"
-date: "01/20/2025"
+date: "01/31/2025"
 output:
   rmarkdown::html_vignette:
     toc: true
@@ -101,7 +101,7 @@ even_time <- system.time({
 })
 even_time
 #>    user  system elapsed 
-#>   0.002   0.001   0.003
+#>   0.002   0.000   0.002
 
 ht(genParts)
 #> head -->
@@ -127,7 +127,7 @@ system.time(genMultiParts <- partitionsGeneral(seq(121, 221, 5), 13,
                                                freqs = rep(1:7, 3),
                                                targe = 2613))
 #>    user  system elapsed 
-#>   0.003   0.001   0.004
+#>   0.003   0.002   0.005
 
 ht(genMultiParts)
 #> head -->
@@ -160,7 +160,7 @@ system.time({
                                       11, target = -460)
 })
 #>    user  system elapsed 
-#>   0.001   0.000   0.001
+#>   0.001   0.000   0.002
 
 all(rowSums(genDistParts) == -460L)
 #> [1] TRUE
@@ -201,7 +201,7 @@ uneven_time <- system.time({
 })
 uneven_time    ## out of a possible 573 million in under a second
 #>    user  system elapsed 
-#>   0.052   0.003   0.055
+#>   0.051   0.002   0.053
 
 ht(genParts2)
 #> head -->
@@ -221,7 +221,7 @@ ht(genParts2)
 #> [118560,]  201  201  201  201  201  201  201  201  201   201   201   201   201
 ```
 
-Although the above was about 18 times slower than the first example dealing with 573 million combinations (0.055 milliseconds vs. 0.003 milliseconds), we are still dealing in milliseconds!!! For reference, version `2.3.4` takes about 18 seconds to find all 118,560 solutions.
+Although the above was about 26 times slower than the first example dealing with 573 million combinations (0.053 milliseconds vs. 0.002 milliseconds), we are still dealing in milliseconds!!! For reference, version `2.3.4` takes about 18 seconds to find all 118,560 solutions.
 
 Here are some more exotic examples demonstrating the power of these algorithms.
 
@@ -237,7 +237,7 @@ sort(mySamp)
 system.time(exotic <- partitionsGeneral(mySamp, 8, freqs = rep(1:5, 10),
                                         target = 496))
 #>    user  system elapsed 
-#>   0.131   0.001   0.133
+#>   0.133   0.001   0.135
 
 dim(exotic)
 #> [1] 102241      8
@@ -275,7 +275,7 @@ prettyNum(comboCount(football_player_salaries, 6), big.mark = ",")
 system.time(exactly20 <- partitionsGeneral(football_player_salaries, 6,
                                            target = 2e7, tolerance = 0))
 #>    user  system elapsed 
-#>   1.518   0.002   1.530
+#>   1.523   0.001   1.529
 
 ## No results that equal exactly 2e7
 dim(exactly20)
@@ -292,7 +292,7 @@ system.time(almost20 <- comboGeneral(football_player_salaries, 6,
                                      limitConstraints = 2e7, tolerance = 1000,
                                      upper = 1000, keepResults = TRUE))
 #>    user  system elapsed 
-#>   0.066   0.000   0.067
+#>   0.067   0.000   0.066
 
 dim(almost20)
 #> [1] 1000    7
@@ -320,7 +320,7 @@ system.time(superClose20 <- comboGeneral(football_player_salaries, 6,
                                          limitConstraints = 2e7, tolerance = 10,
                                          upper = 1000, keepResults = TRUE))
 #>    user  system elapsed 
-#>   1.524   0.002   1.538
+#>   1.518   0.001   1.522
 
 ht(superClose20)
 #> head -->
@@ -359,9 +359,9 @@ microbenchmark(optimized = comboGeneral(25, 10, constraintFun = "prod",
 #> Warning in microbenchmark(optimized = comboGeneral(25, 10, constraintFun = "prod", : less
 #> accurate nanosecond times to avoid potential integer overflows
 #> Unit: relative
-#>       expr      min       lq     mean   median       uq      max neval
-#>  optimized  1.00000  1.00000  1.00000  1.00000  1.00000  1.00000    20
-#>      brute 21.58235 21.82347 22.04105 21.35346 21.26203 26.41443    20
+#>       expr      min       lq    mean   median       uq      max neval
+#>  optimized  1.00000  1.00000  1.0000  1.00000  1.00000  1.00000    20
+#>      brute 21.05821 21.11253 21.5206 21.17071 20.90307 25.66376    20
 
 ## What about cases when brute force isn't feasible
 set.seed(101)
@@ -375,7 +375,7 @@ system.time(prodAlmost100 <- comboGeneral(v, 100, constraintFun = "prod",
                                           limitConstraints = 100,
                                           tolerance = 0.0001, upper = 20))
 #>    user  system elapsed 
-#>   0.015   0.000   0.016
+#>   0.016   0.000   0.016
 
 dim(prodAlmost100)
 #> [1]  20 100
@@ -391,7 +391,7 @@ system.time(meanAlmost1.5 <- comboGeneral(v, 100, constraintFun = "mean",
                                           limitConstraints = 1.5,
                                           tolerance = 0.0001, upper = 20))
 #>    user  system elapsed 
-#>   0.001   0.000   0.000
+#>       0       0       0
 
 dim(meanAlmost1.5)
 #> [1]  20 100
@@ -481,7 +481,7 @@ all.equal(prodAlmost100, prodAlmost100WithIter)
 ## where we left off
 system.time(nextAlmost100WithIter <- prodIter@nextNIter(20))
 #>    user  system elapsed 
-#>   0.011   0.000   0.012
+#>   0.011   0.000   0.011
 
 dim(nextAlmost100WithIter)
 #> [1]  20 100

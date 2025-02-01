@@ -1,7 +1,7 @@
 ---
 title: "Combinatorial Sampling and Ranking"
 author: "Joseph Wood"
-date: "01/20/2025"
+date: "01/31/2025"
 output:
   rmarkdown::html_vignette:
     toc: true
@@ -204,7 +204,7 @@ The algorithms are incredibly efficient and offer tremendous gains over the naiv
 ## the function "naive" is defined above
 system.time(naive(25, 10, 5, 15))
 #>    user  system elapsed 
-#>   1.507   0.012   1.527
+#>   1.523   0.019   1.547
 
 system.time(comboSample(25, 10, n = 5, seed = 15))
 #>    user  system elapsed 
@@ -217,7 +217,7 @@ Even when dealing with extremely large numbers, these algorithms are very fast. 
 ## Lightning fast even with examples involving many results
 system.time(comboSample(2500, 100, n = 5, seed = 15))
 #>    user  system elapsed 
-#>   0.001   0.000   0.001
+#>   0.001   0.000   0.000
 
 ## The total number of combinations has ~180 digits
 gmp::log10.bigz(comboCount(2500, 100))
@@ -226,12 +226,12 @@ gmp::log10.bigz(comboCount(2500, 100))
 ## Still fast with larger samples
 system.time(comboSample(2500, 100, n = 1e4, seed = 157))
 #>    user  system elapsed 
-#>   0.647   0.001   0.650
+#>   0.647   0.001   0.648
 
 ## Using Parallel/nThreads in these cases has an even greater effect
 system.time(comboSample(2500, 100, n = 1e4, seed = 157, nThreads = 8))
 #>    user  system elapsed 
-#>   0.890   0.002   0.131
+#>   0.915   0.001   0.124
 ```
 
 ### User Defined Functions
@@ -300,13 +300,13 @@ partitionsCount(2500, 10)
 system.time(serial <- partitionsSample(2500, 10, n = 1e3,
                                        seed = 8128))
 #>    user  system elapsed 
-#>   2.955   0.002   2.966
+#>   2.997   0.002   3.007
 
 ## Use nThreads for greater efficiency
 system.time(multi <- partitionsSample(2500, 10, n = 1e3,
                                       seed = 8128, nThreads = 8))
 #>    user  system elapsed 
-#>   4.254   0.017   0.615
+#>   4.374   0.020   0.576
 
 identical(multi, serial)
 #> [1] TRUE
@@ -388,13 +388,13 @@ compositionsCount(2500, 10, TRUE)
 system.time(serial <- compositionsSample(2500, 10, TRUE,
                                          n = 1e4, seed = 8128))
 #>    user  system elapsed 
-#>   0.261   0.000   0.262
+#>   0.262   0.000   0.263
 
 ## Use nThreads for greater efficiency
 system.time(multi <- compositionsSample(2500, 10, TRUE, n = 1e4,
                                         seed = 8128, nThreads = 8))
 #>    user  system elapsed 
-#>   0.338   0.001   0.060
+#>   0.364   0.001   0.053
 
 identical(multi, serial)
 #> [1] TRUE
@@ -520,7 +520,7 @@ comb = comboSample(25, 12, sampleVec = 2e6)[1, ]
 system.time(print(naive_rank(25, 12, comb)))
 #> [1] 2000000
 #>    user  system elapsed 
-#>   6.287   0.042   6.340
+#>   6.194   0.083   6.290
 ```
 
 ## RcppAlgos Solutions

@@ -1,10 +1,10 @@
 Package: RcppAlgos
-Version: 2.9.2
+Version: 2.9.3
 Title: High Performance Tools for Combinatorics and Computational Mathematics
 Description: Provides optimized functions and flexible iterators implemented in
     C++ for solving problems in combinatorics and computational mathematics.
     Handles various combinatorial objects including combinations, permutations,
-    integer partitions and compositions, Cartestian products, unordered
+    integer partitions and compositions, Cartesian products, unordered
     Cartesian products, and partition of groups. Utilizes the RMatrix class
     from 'RcppParallel' for thread safety. The combination and permutation
     functions contain constraint parameters that allow for generation of all
