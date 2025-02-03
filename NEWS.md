@@ -3,7 +3,6 @@
 ## Other:
 
 * Corrected spelling in DESCRIPTION
-* Added DOI reference
 
 # RcppAlgos 2.9.2
 
