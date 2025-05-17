@@ -19,7 +19,7 @@ void BinaryNextElem(int &uppBnd, int &lowBnd, int &ind, int lastElem,
         }
     }
 
-    // Check last index. N.B. There are some cases when ind == lowBnd and dist < 0.
+    // Check last index. There are some cases when ind == lowBnd and dist < 0.
     // This will not matter as we simply reassign ind and recompute dist
     if (dist < 0) {
         ind = lowBnd;
@@ -28,18 +28,22 @@ void BinaryNextElem(int &uppBnd, int &lowBnd, int &ind, int lastElem,
 
     // We must have dist <= 0. Below is an informal proof.
     // The sub-sequences are defined as below:
+    //
     //                  A_max = a_(i + 1), a_(i + 2), ..., a_m
     //                  A_set = a_1, a_2, ..., a_(i - 1)
-    // A_set are those elements that have already been determined by the algorithm.
-    // A_max is maximal (i.e. constructed of the the (m - i) largest elements). We
-    // seek to determine the i_th element given the following contraints:
+    //
+    // A_set are those elements that have already been determined by the algo.
+    // A_max is maximal (i.e. constructed of the the (m - i) largest elements).
+    // We seek to determine the i_th element given the following constraints:
+    //
     //                      A_sum = A_set + a_i + A_max
     //                       dist = target - A_sum
-    // With the goal of finding the minimum lexicographic combination such that the
-    // dist = 0 (i.e. target = A_sum). If we have dist > 0 for any i, then it will
-    // be impossible to obtain dist = 0. dist > 0 implies that the target > A_sum,
-    // and since A_max is already maximal, we are not able to increase A_sum in
-    // later iterations, thus we must have dist <= 0 for all i.
+    //
+    // With the goal of finding the minimum lexicographic combination such that
+    // the dist = 0 (i.e. target = A_sum). If we have dist > 0 for any i, then
+    // it will be impossible to obtain dist = 0. dist > 0 implies that the
+    // target > A_sum, and since A_max is already maximal, we are not able to
+    // increase A_sum in later iters, thus we must have dist <= 0 for all i.
 
     if (dist > 0 && ind < lastElem) {
         ++ind;
@@ -54,7 +58,7 @@ void BinaryNextElem(int &uppBnd, int &lowBnd, int &ind, int lastElem,
 int GetFirstPartition(const std::vector<std::int64_t> &v,
                       const std::vector<int> &freqs, std::vector<int> &z,
                       std::vector<int> repsCounter, std::int64_t target,
-                      int m, int lastCol, int lenV, bool IsRep, bool IsMult) {
+                      int m, int lenV, bool IsRep, bool IsMult) {
 
     std::int64_t testMax = 0;
     const int lastElem = lenV - 1;
@@ -78,7 +82,8 @@ int GetFirstPartition(const std::vector<std::int64_t> &v,
     }
 
     int zExpCurrPos = IsMult ? freqs.size() - m : 0;
-    int currPos = IsMult ? freqs[zExpCurrPos] : (IsRep ? lastElem : (v.size() - m));
+    int currPos = IsMult ? freqs[zExpCurrPos] :
+        (IsRep ? lastElem : (lenV - m));
 
     std::int64_t partial = testMax;
     partial -= v[currPos];
@@ -106,7 +111,7 @@ int GetFirstPartition(const std::vector<std::int64_t> &v,
     int uppBnd = (dist > 0) ? currPos : mid;
     int ind = mid;
 
-    for (int i = 0; i < lastCol; ++i) {
+    for (int i = 0, lastCol = m - 1; i < lastCol; ++i) {
         BinaryNextElem(uppBnd, lowBnd, ind, lastElem, target, partial, v);
         z[i] = ind;
         partial += v[ind];
@@ -134,7 +139,7 @@ int GetFirstPartition(const std::vector<std::int64_t> &v,
     }
 
     BinaryNextElem(uppBnd, lowBnd, ind, lastElem, target, partial, v);
-    z[lastCol] = ind;
+    z[m - 1] = ind;
 
     // The algorithm above finds the first possible sum that equals
     // target. If there is no combination of elements from v that sum
@@ -160,9 +165,7 @@ void GetTarget(const std::vector<double> &v,
     part.width = m;
     std::vector<int> z(m, 0);
     std::vector<int> zExpanded;
-
     std::vector<std::int64_t> v64(v.cbegin(), v.cend());
-    const int lastCol = m - 1;
 
     for (std::size_t i = 0; i < Reps.size(); ++i) {
         for (int j = 0; j < Reps[i]; ++j) {
@@ -170,9 +173,9 @@ void GetTarget(const std::vector<double> &v,
         }
     }
 
-    const int res = GetFirstPartition(v64, zExpanded, z, Reps,
-                                      part.target, m, lastCol, lenV,
-                                      part.isRep, part.isMult);
+    const int res = GetFirstPartition(
+        v64, zExpanded, z, Reps, part.target, m, lenV, part.isRep, part.isMult
+    );
 
     if (res == 1) {
         part.startZ    = z;
@@ -565,9 +568,9 @@ void CheckPartition(const std::vector<std::string> &compFunVec,
         if (static_cast<std::int64_t>(v[0]) == v[0]) {
 
             IsPartition = true;
-            const double tarDiff = (v.size() > 1) ? v[1] - v[0] : 1;
+            const double tarDiff = (lenV > 1) ? v[1] - v[0] : 1;
 
-            for (std::size_t i = 1; i < v.size(); ++i) {
+            for (int i = 1; i < lenV; ++i) {
                 const double testDiff = v[i] - v[i - 1];
 
                 // We must multiply by m (the length of our partitions) as
@@ -627,7 +630,7 @@ void SetPartitionDesign(const std::vector<int> &Reps,
     // mIsNull = TRUE) when the user doesn't supply it. For right
     // now, since we require that the elements be spaced evenly
     // (i.e cases such as 0, 3:14 will not be considered), these
-    // extra checks are superfulous.
+    // extra checks are superfluous.
     //
     // *****
     // For point 2, we need to check the difference between two
@@ -639,10 +642,10 @@ void SetPartitionDesign(const std::vector<int> &Reps,
     // *****
     //
     // Note, we have already ensured above that if we have
-    // negative values and the differenece between every value
+    // negative values and the difference between every value
     // isn't the same, then we don't meet the partition scenario.
 
-    part.slope = (v.size() > 1) ? v[1] - v[0] : 1;
+    part.slope = (lenV > 1) ? v[1] - v[0] : 1;
 
     // When allOne = true with isMult = true, we can apply optimized
     // algorithms for counting distinct partitions of varying lengths.
