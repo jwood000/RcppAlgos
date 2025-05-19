@@ -235,14 +235,14 @@ void NextCompositionDistinct(
             while (res == 0) {
                 // We first check to see if there is an element in complement
                 // that is larger than z[j]
-                auto lower = std::lower_bound(
+                auto upper = std::upper_bound(
                     complement.begin(), complement.end(), z[j]
                 );
 
-                if (lower != complement.end()) {
+                if (upper != complement.end()) {
                     // We found one! Now, we swap and calculate the partial sum
                     // that we need to find in the current complement.
-                    std::swap(*lower, z[j]);
+                    std::swap(*upper, z[j]);
                     int partial = target -
                         std::accumulate(z.cbegin(), z.cend() - m, 0);
                     res = NextDistinctBlock(complement, idx, partial, m);
