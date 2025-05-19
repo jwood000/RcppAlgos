@@ -84,3 +84,9 @@ class CompsRepZero : public CountClass {
     void GetCount(mpz_class &res, int n, int m, int cap,
                   int strtLen, bool bLiteral = true);
 };
+
+class CompsDistinctLen : public CountClass {
+    double GetCount(int n, int m, int cap, int strtLen);
+    void GetCount(mpz_class &res, int n, int m, int cap,
+                  int strtLen, bool bLiteral = true);
+};

@@ -12,3 +12,4 @@ double CountPartsPermDistinct(const std::vector<int> &z,
                              int tar, int width, bool includeZero = false);
 double CountPartsPermDistinctCap(const std::vector<int> &z, int cap,
                                 int tar, int width, bool includeZero);
+double CountCompsDistinctLen(int n, int m, int cap, int strtLen);

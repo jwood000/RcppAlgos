@@ -1,6 +1,8 @@
 #include "Partitions/PartitionsCountSection.h"
 #include "Partitions/BigPartsCountSection.h"
-#include <vector>
+#include "Permutations/BigPermuteCount.h"
+#include <algorithm>  // std::count_if
+#include <numeric>    // std::iota
 
 void CountPartsDistinctLenCap(mpz_class &res, std::vector<mpz_class> &p1,
                               std::vector<mpz_class> &p2, int n, int m,
@@ -212,4 +214,52 @@ void CountPartsDistinctCapMZ(mpz_class &res, std::vector<mpz_class> &p1,
         CountPartsDistinctLenCap(temp, p1, p2, n, i, cap, strtLen);
         res += temp;
     }
+}
+
+void CountPartsPermDistinct(
+    mpz_class &res, std::vector<mpz_class> &p1, std::vector<mpz_class> &p2,
+    const std::vector<int> &z, int n, int m, bool includeZero
+) {
+
+    res = 0;
+    mpz_class partsCnt = 0;
+    mpz_class permsCnt = 0;
+
+    if (includeZero) {
+        const int strtLen = std::count_if(z.cbegin(), z.cend(),
+                                          [](int i){return i > 0;});
+
+        if (strtLen == 0) {
+            // This means that z contains only zeros
+            res = 1;
+        } else {
+            std::vector<int> count(m);
+            std::iota(count.begin(), count.begin() + strtLen, 1);
+
+            for (int i = strtLen; i <= m; ++i) {
+                count[i - 1] = i;
+                CountPartsDistinctLen(partsCnt, p1, p2, n, i, n, n);
+                NumPermsWithRepGmp(permsCnt, count);
+                res += (partsCnt * permsCnt);
+            }
+        }
+    } else {
+        CountPartsDistinctLen(partsCnt, p1, p2, n, m, n, n);
+        NumPermsNoRepGmp(permsCnt, m, m);
+        res = (partsCnt * permsCnt);
+    }
+}
+
+void CountCompsDistinctLen(
+    mpz_class &res, std::vector<mpz_class> &p1, std::vector<mpz_class> &p2,
+    int n, int m, int cap, int strtLen
+) {
+
+    mpz_class partsCnt = 0;
+    mpz_class permsCnt = 0;
+
+    CountPartsDistinctLen(partsCnt, p1, p2, n, m, n, n);
+    NumPermsNoRepGmp(permsCnt, m, m);
+
+    res = (partsCnt * permsCnt);
 }

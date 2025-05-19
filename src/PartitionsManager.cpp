@@ -1,9 +1,11 @@
+#include "Partitions/CompositionsDistinct.h"
 #include "Partitions/PartitionsMultiset.h"
 #include "Partitions/PartitionsDistinct.h"
 #include "Partitions/PartitionsTypes.h"
 #include "Partitions/CompositionsRep.h"
 #include "Partitions/PartitionsRep.h"
 #include <algorithm> // std::find
+#include <numeric>
 #include "RMatrix.h"
 
 void PartsStdManager(int* mat, std::vector<int> &z, int width,
@@ -18,6 +20,19 @@ void PartsStdManager(int* mat, std::vector<int> &z, int width,
         CompsRep<1>(mat, z, width, nRows);
     } else if (IsRep && IsComp) {
         CompsRep<0>(mat, z, width, nRows);
+    } else if (IsComp) {
+        std::vector<int> myRange(z.back());
+        std::iota(myRange.begin(), myRange.end(), 1);
+
+        std::vector<int> complement;
+        std::set_difference(myRange.begin(), myRange.end(), z.begin(), z.end(),
+                            std::inserter(complement, complement.begin()));
+
+        int lastIdx = complement.size() - 1;
+        int target = std::accumulate(z.begin(), z.end(), 0);
+
+        CompsDistinct(mat, z, complement, 0, lastIdx,
+                      z.back(), target, width, nRows);
     } else if (IsRep) {
         PartsPermRep(mat, z, width, lastElem, lastCol, nRows);
     } else if (IsComb) {

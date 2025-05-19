@@ -1,8 +1,7 @@
 #include "Partitions/PartitionsCountSection.h"
 #include "Permutations/PermuteCount.h"
 #include <algorithm>  // std::count_if
-#include <numeric>
-#include <cmath>
+#include <numeric>    // std::iota
 
 double CountPartsDistinctLenCap(int n, int m, int cap, int strtLen) {
 
@@ -209,12 +208,12 @@ double CountPartsPermDistinct(const std::vector<int> &z,
             for (int i = strtLen; i <= width; ++i) {
                 count[i - 1] = i;
                 res += (CountPartsDistinctLen(tar, i, tar, tar) *
-                        NumPermsWithRep(count));
+                            NumPermsWithRep(count));
             }
         }
     } else {
         res = CountPartsDistinctLen(tar, width, tar, tar) *
-              NumPermsNoRep(width, width);
+                NumPermsNoRep(width, width);
     }
 
     return res;
@@ -238,13 +237,18 @@ double CountPartsPermDistinctCap(const std::vector<int> &z, int cap,
             for (int i = strtLen; i <= width; ++i) {
                 count[i - 1] = i;
                 res += (CountPartsDistinctLenCap(tar, i, cap, tar) *
-                        NumPermsWithRep(count));
+                            NumPermsWithRep(count));
             }
         }
     } else {
         res = CountPartsDistinctLenCap(tar, width, cap, tar) *
-              NumPermsNoRep(width, width);
+                NumPermsNoRep(width, width);
     }
 
     return res;
+}
+
+double CountCompsDistinctLen(int n, int m, int cap, int strtLen) {
+    return CountPartsDistinctLenCap(n, m, cap, n) *
+        NumPermsNoRep(m, m);
 }

@@ -1,6 +1,5 @@
 #include "Partitions/NextComposition.h"
 #include "RMatrix.h"
-#include <algorithm>  // std::next_permutation
 
 template <int one_or_zero, typename T>
 void CompsGenRep(T* mat, const std::vector<T> &v, std::vector<int> &z,

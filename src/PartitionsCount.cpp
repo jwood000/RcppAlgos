@@ -7,9 +7,9 @@
 #include "Partitions/PartitionsCount.h"
 #include "Permutations/PermuteCount.h"
 #include "Combinations/ComboCount.h"
-#include <memory>
 #include "CppConvert/Constants.h"  // Significand53
 #include <algorithm>               // std::count_if, std::find
+#include <memory>
 
 constexpr double cutOff = 3.0;
 
@@ -23,6 +23,8 @@ std::unique_ptr<CountClass> MakeCount(PartitionType ptype, bool isComp) {
                 return std::make_unique<CompsRepLen>();
             } case PartitionType::RepShort: {
                 return std::make_unique<CompsRepZero>();
+            } case PartitionType::DstctNoZero: {
+                return std::make_unique<CompsDistinctLen>();
             } default: {
                 return nullptr;
             }
@@ -183,6 +185,11 @@ void CompsRepZero::GetCount(mpz_class &res, int n, int m, int cap,
     }
 }
 
+void CompsDistinctLen::GetCount(mpz_class &res, int n, int m, int cap,
+                                int strtLen, bool bLiteral) {
+    CountCompsDistinctLen(res, p1, p2, n, m, cap, strtLen);
+}
+
 double DistinctAll::GetCount(int n, int m, int cap, int strtLen) {
     return CountPartsDistinct(n, m, cap, strtLen);
 }
@@ -221,6 +228,10 @@ double CompsRepLen::GetCount(int n, int m, int cap, int strtLen) {
 
 double CompsRepZero::GetCount(int n, int m, int cap, int strtLen) {
     return CountCompsRepZero(n, m, cap, strtLen);
+}
+
+double CompsDistinctLen::GetCount(int n, int m, int cap, int strtLen) {
+    return CountCompsDistinctLen(n, m, cap, strtLen);
 }
 
 bool OverTheBar(PartitionType ptype, double capNumIters, int n, int m) {
