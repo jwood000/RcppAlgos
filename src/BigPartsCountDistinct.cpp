@@ -258,8 +258,45 @@ void CountCompsDistinctLen(
     mpz_class partsCnt = 0;
     mpz_class permsCnt = 0;
 
-    CountPartsDistinctLen(partsCnt, p1, p2, n, m, n, n);
     NumPermsNoRepGmp(permsCnt, m, m);
+    CountPartsDistinctLen(partsCnt, p1, p2, n, m, n, n);
 
     res = (partsCnt * permsCnt);
+}
+
+
+void CountCompsDistinctMultiZero(
+    mpz_class &res, std::vector<mpz_class> &p1, std::vector<mpz_class> &p2,
+    int n, int m, int cap, int strtLen
+) {
+
+    mpz_class partsCnt = 0;
+    mpz_class permsCnt = 0;
+    res = 0;
+
+    for (int i = strtLen; i <= m; ++i) {
+        NumPermsNoRepGmp(permsCnt, i, i);
+        CountPartsDistinctLen(partsCnt, p1, p2, n, i, cap, strtLen);
+        res += (permsCnt * partsCnt);
+    }
+}
+
+void CountCompsDistinctMZWeak(
+    mpz_class &res, std::vector<mpz_class> &p1, std::vector<mpz_class> &p2,
+    int n, int m, int cap, int strtLen
+) {
+
+    std::vector<int> v(m);
+    std::iota(v.begin(), v.begin() + strtLen, 1);
+
+    mpz_class partsCnt = 0;
+    mpz_class permsCnt = 0;
+    res = 0;
+
+    for (int i = strtLen; i <= m; ++i) {
+        v[i - 1] = i;
+        NumPermsWithRepGmp(permsCnt, v);
+        CountPartsDistinctLen(partsCnt, p1, p2, n, i, cap, strtLen);
+        res += (permsCnt * partsCnt);
+    }
 }

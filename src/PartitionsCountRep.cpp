@@ -158,6 +158,29 @@ double CountCompsRepLen(int n, int m, int cap, int strtLen) {
     return nChooseK(n - 1, m - 1);
 }
 
+// The name of this function is a bit confusing. One may be lead to think that
+// since it has "Zero" in the name, that we are dealing with weak compositions.
+// That is not correct. The "Zero" means that zero is in the output but not
+// considered.
+//
+// For weak compositions, in SetPartitionDesign in PartitionsUtils.cpp, if we
+// are dealing with weak compositions, we simply map 0 to 1. Of course we must
+// adjust the target to reflect this. Counting now is trivial as we don't have
+// to treat zero special... we simply take advantage of the mapping:
+//
+//                                      j zeros
+// Original first partition: part = c(0, 0, ..., 0, x_(j + 1), ..., x_n)
+//
+// sum(part) = x_(j + 1) + ... + x_n = P
+//
+// New mapping: part' = c(1, 1, ..., 1, x_(j + 1) + 1, ..., x_n + 1)
+//
+//                j 1's          (n - j) terms incremented by 1
+// sum(part') = 1 + 1 + ... + 1 + x_(j + 1) + 1 + ... + x_n + 1 =
+//
+// Since we have incremented each term we have:
+//
+// sum(part') = n + P
 double CountCompsRepZero(int n, int m, int cap, int strtLen) {
 
     if (n == m) return std::pow(2.0, static_cast<double>(n - 1));

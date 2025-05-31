@@ -1,9 +1,10 @@
 #include "Partitions/PartitionsMultiset.h"
+#include "Permutations/PermuteCount.h"
 #include "Partitions/NextPartition.h"
 
 // The current approach is not ideal. We must iterate
 int CountPartsMultiset(const std::vector<int> &Reps,
-                       const std::vector<int> &pz) {
+                       const std::vector<int> &pz, bool IsComp) {
 
     std::vector<int> z(pz.cbegin(), pz.cend());
     std::vector<int> rpsCnt(Reps.cbegin(), Reps.cend());
@@ -20,12 +21,21 @@ int CountPartsMultiset(const std::vector<int> &Reps,
     // is that it terminates when it can no longer generate
     // new partitions. The current partition still counts
     // hence why we start count at 1.
-    int count = 1;
     PrepareMultisetPart(rpsCnt, z, b, p, e, lastCol, lastElem);
+    int count = IsComp ? 0 : 1;
 
-    for (; keepGoing(rpsCnt, lastElem, z, e, b);
-         NextMultisetGenPart(rpsCnt, z, e, b, p, lastCol, lastElem)) {
-        ++count;
+    if (IsComp) {
+        for (; keepGoing(rpsCnt, lastElem, z, e, b);
+             NextMultisetGenPart(rpsCnt, z, e, b, p, lastCol, lastElem)) {
+            count += NumPermsWithRep(z);
+        }
+
+        count += NumPermsWithRep(z);
+    } else {
+        for (; keepGoing(rpsCnt, lastElem, z, e, b);
+            NextMultisetGenPart(rpsCnt, z, e, b, p, lastCol, lastElem)) {
+            ++count;
+        }
     }
 
     return count;

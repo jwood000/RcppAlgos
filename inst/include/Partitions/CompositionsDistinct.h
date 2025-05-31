@@ -18,8 +18,9 @@ void CompsGenDistinct(
 );
 
 void CompsDistinct(
-    int* mat, std::vector<int> &z, std::vector<int> &complement, int i1,
-    int i2, int myMax, int tar, std::size_t width, std::size_t nRows
+    int* mat, std::vector<int> &z, std::vector<int> &complement,
+    int i1, int i2, int myMax, int tar, std::size_t strt,
+    std::size_t width, std::size_t nRows, std::size_t totalRows
 );
 
 void CompsDistinct(

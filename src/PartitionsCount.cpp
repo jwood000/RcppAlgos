@@ -13,23 +13,7 @@
 
 constexpr double cutOff = 3.0;
 
-std::unique_ptr<CountClass> MakeCount(PartitionType ptype, bool isComp) {
-
-    if (isComp) {
-        switch (ptype) {
-            case PartitionType::RepStdAll: {
-                return std::make_unique<CompsRepZero>();
-            } case PartitionType::RepNoZero: {
-                return std::make_unique<CompsRepLen>();
-            } case PartitionType::RepShort: {
-                return std::make_unique<CompsRepZero>();
-            } case PartitionType::DstctNoZero: {
-                return std::make_unique<CompsDistinctLen>();
-            } default: {
-                return nullptr;
-            }
-        }
-    }
+std::unique_ptr<CountClass> MakeCount(PartitionType ptype) {
 
     switch (ptype) {
         case PartitionType::RepStdAll: {
@@ -52,12 +36,23 @@ std::unique_ptr<CountClass> MakeCount(PartitionType ptype, bool isComp) {
             return std::make_unique<DistinctLenCap>();
         } case PartitionType::DstctCappedMZ: {
             return std::make_unique<DistinctCapMZ>();
+        } case PartitionType::CompRepNoZero: {
+            return std::make_unique<CompsRepLen>();
+        } case PartitionType::CompRepWeak: {
+            return std::make_unique<CompsRepLen>();
+        } case PartitionType::CmpRpZroNotWk: {
+            return std::make_unique<CompsRepZero>();
+        } case PartitionType::CmpDstctNoZero: {
+            return std::make_unique<CompsDistinctLen>();
+        } case PartitionType::CmpDstctZNotWk: {
+            return std::make_unique<CompsDistLenMZ>();
+        } case PartitionType::CmpDstctMZWeak: {
+            return std::make_unique<CompsDistLenMZWeak>();
         } default: {
             return std::make_unique<RepAll>();
         }
     }
 }
-
 
 void CountClass::InitializeMpz() {
     if (size) {
@@ -190,6 +185,16 @@ void CompsDistinctLen::GetCount(mpz_class &res, int n, int m, int cap,
     CountCompsDistinctLen(res, p1, p2, n, m, cap, strtLen);
 }
 
+void CompsDistLenMZ::GetCount(mpz_class &res, int n, int m, int cap,
+                                int strtLen, bool bLiteral) {
+    CountCompsDistinctMultiZero(res, p1, p2, n, m, cap, strtLen);
+}
+
+void CompsDistLenMZWeak::GetCount(mpz_class &res, int n, int m, int cap,
+                              int strtLen, bool bLiteral) {
+    CountCompsDistinctMZWeak(res, p1, p2, n, m, cap, strtLen);
+}
+
 double DistinctAll::GetCount(int n, int m, int cap, int strtLen) {
     return CountPartsDistinct(n, m, cap, strtLen);
 }
@@ -232,6 +237,14 @@ double CompsRepZero::GetCount(int n, int m, int cap, int strtLen) {
 
 double CompsDistinctLen::GetCount(int n, int m, int cap, int strtLen) {
     return CountCompsDistinctLen(n, m, cap, strtLen);
+}
+
+double CompsDistLenMZ::GetCount(int n, int m, int cap, int strtLen) {
+    return CountCompsDistinctMultiZero(n, m, cap, strtLen);
+}
+
+double CompsDistLenMZWeak::GetCount(int n, int m, int cap, int strtLen) {
+    return CountCompsDistinctMZWeak(n, m, cap, strtLen);
 }
 
 bool OverTheBar(PartitionType ptype, double capNumIters, int n, int m) {
@@ -334,20 +347,25 @@ void PartitionsCount(const std::vector<int> &Reps,
                     myClass->SetArrSize(part.ptype, part.mapTar,
                                         part.width, part.cap);
                     myClass->InitializeMpz();
-                    myClass->GetCount(part.bigCount, part.mapTar,
-                                      part.width, part.cap, strtLen);
-                } else {
-                    myClass->GetCount(part.bigCount, part.mapTar,
-                                      part.width, part.cap, strtLen);
                 }
+
+                myClass->GetCount(part.bigCount, part.mapTar,
+                                  part.width, part.cap, strtLen);
             }
         } else {
             part.numUnknown = true;
         }
-    } else if (part.isComb) {
+    } else if (part.isComb && part.ptype == PartitionType::Multiset) {
         if (bIsCount) {
             part.count = (part.solnExist) ?
-                         CountPartsMultiset(Reps, part.startZ) : 0;
+                CountPartsMultiset(Reps, part.startZ) : 0;
+        } else {
+            part.numUnknown = true;
+        }
+    } else if (part.ptype == PartitionType::CompMultiset) {
+        if (bIsCount) {
+            part.count = (part.solnExist) ?
+                CountPartsMultiset(Reps, part.startZ, true) : 0;
         } else {
             part.numUnknown = true;
         }
@@ -356,7 +374,7 @@ void PartitionsCount(const std::vector<int> &Reps,
                                   DistPTypeArr.cend(), part.ptype);
 
         if (part.isComp) {
-            std::unique_ptr<CountClass> myClass = MakeCount(part.ptype, true);
+            std::unique_ptr<CountClass> myClass = MakeCount(part.ptype);
 
             if (myClass) {
                 part.count = myClass->GetCount(part.mapTar, part.width,
@@ -364,6 +382,16 @@ void PartitionsCount(const std::vector<int> &Reps,
 
                 if (part.count > Significand53) {
                     part.isGmp = true;
+
+                    if (part.ptype != PartitionType::RepStdAll &&
+                        part.ptype != PartitionType::RepNoZero &&
+                        part.ptype != PartitionType::RepShort) {
+
+                        myClass->SetArrSize(part.ptype, part.mapTar,
+                                            part.width, part.cap);
+                        myClass->InitializeMpz();
+                    }
+
                     myClass->GetCount(part.bigCount, part.mapTar,
                                       part.width, part.cap, strtLen);
                 }

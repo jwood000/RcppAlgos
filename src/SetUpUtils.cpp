@@ -114,8 +114,11 @@ void SetFreqsAndM(std::vector<int> &Reps,
         // replication of certain elements, then repetition must be set to TRUE.
         IsRep = false;
         CppConvert::convertVector(RFreqs, Reps, VecType::Integer, "freqs");
-        const bool allOne = std::all_of(Reps.cbegin(), Reps.cend(),
-                                        [](int v_i) {return v_i == 1;});
+
+        const bool allOne = std::all_of(
+            Reps.cbegin(), Reps.cend(), [](int v_i) {return v_i == 1;}
+        );
+
         if (allOne) {
             IsMult = false;
             freqs.assign(Reps.size(), 1);

@@ -16,14 +16,13 @@ public:
     virtual ~CountClass() = default;
     void SetArrSize(PartitionType ptype, int n, int m, int cap);
 
-    virtual double GetCount(int n, int m, int cap, int strtLen)  = 0;
+    virtual double GetCount(int n, int m, int cap, int strtLen) = 0;
     virtual void GetCount(mpz_class &res, int n, int m, int cap,
                           int strtLen, bool bLiteral = true) = 0;
     void InitializeMpz();
 };
 
-std::unique_ptr<CountClass> MakeCount(PartitionType ptype,
-                                      bool IsComp = false);
+std::unique_ptr<CountClass> MakeCount(PartitionType ptype);
 
 class DistinctAll : public CountClass {
     double GetCount(int n, int m, int cap, int strtLen);
@@ -86,6 +85,18 @@ class CompsRepZero : public CountClass {
 };
 
 class CompsDistinctLen : public CountClass {
+    double GetCount(int n, int m, int cap, int strtLen);
+    void GetCount(mpz_class &res, int n, int m, int cap,
+                  int strtLen, bool bLiteral = true);
+};
+
+class CompsDistLenMZ : public CountClass {
+    double GetCount(int n, int m, int cap, int strtLen);
+    void GetCount(mpz_class &res, int n, int m, int cap,
+                  int strtLen, bool bLiteral = true);
+};
+
+class CompsDistLenMZWeak : public CountClass {
     double GetCount(int n, int m, int cap, int strtLen);
     void GetCount(mpz_class &res, int n, int m, int cap,
                   int strtLen, bool bLiteral = true);

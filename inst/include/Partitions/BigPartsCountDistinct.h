@@ -20,3 +20,11 @@ void CountCompsDistinctLen(
     mpz_class &res, std::vector<mpz_class> &p1, std::vector<mpz_class> &p2,
     int n, int m, int cap, int strtLen
 );
+void CountCompsDistinctMultiZero(
+    mpz_class &res, std::vector<mpz_class> &p1, std::vector<mpz_class> &p2,
+    int n, int m, int cap, int strtLen
+);
+void CountCompsDistinctMZWeak(
+    mpz_class &res, std::vector<mpz_class> &p1, std::vector<mpz_class> &p2,
+    int n, int m, int cap, int strtLen
+);

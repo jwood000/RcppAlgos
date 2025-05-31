@@ -202,13 +202,13 @@ double CountPartsPermDistinct(const std::vector<int> &z,
             // This means that z contains only zeros
             res = 1;
         } else {
-            std::vector<int> count(width);
-            std::iota(count.begin(), count.begin() + strtLen, 1);
+            std::vector<int> v(width);
+            std::iota(v.begin(), v.begin() + strtLen, 1);
 
             for (int i = strtLen; i <= width; ++i) {
-                count[i - 1] = i;
+                v[i - 1] = i;
                 res += (CountPartsDistinctLen(tar, i, tar, tar) *
-                            NumPermsWithRep(count));
+                            NumPermsWithRep(v));
             }
         }
     } else {
@@ -231,13 +231,13 @@ double CountPartsPermDistinctCap(const std::vector<int> &z, int cap,
             // This means that z contains only zeros
             res = 1;
         } else {
-            std::vector<int> count(width);
-            std::iota(count.begin(), count.begin() + strtLen, 1);
+            std::vector<int> v(width);
+            std::iota(v.begin(), v.begin() + strtLen, 1);
 
             for (int i = strtLen; i <= width; ++i) {
-                count[i - 1] = i;
+                v[i - 1] = i;
                 res += (CountPartsDistinctLenCap(tar, i, cap, tar) *
-                            NumPermsWithRep(count));
+                            NumPermsWithRep(v));
             }
         }
     } else {
@@ -249,6 +249,33 @@ double CountPartsPermDistinctCap(const std::vector<int> &z, int cap,
 }
 
 double CountCompsDistinctLen(int n, int m, int cap, int strtLen) {
-    return CountPartsDistinctLenCap(n, m, cap, n) *
+    return CountPartsDistinctLen(n, m, cap, n) *
         NumPermsNoRep(m, m);
+}
+
+double CountCompsDistinctMultiZero(int n, int m, int cap, int strtLen) {
+
+    double count = 0;
+
+    for (int i = strtLen; i <= m; ++i) {
+        count += CountPartsDistinctLen(n, i, cap, strtLen) *
+            NumPermsNoRep(i, i);
+    }
+
+    return count;
+}
+
+double CountCompsDistinctMZWeak(int n, int m, int cap, int strtLen) {
+
+    double count = 0;
+    std::vector<int> v(m);
+    std::iota(v.begin(), v.begin() + strtLen, 1);
+
+    for (int i = strtLen; i <= m; ++i) {
+        v[i - 1] = i;
+        count += CountPartsDistinctLen(n, i, cap, strtLen) *
+            NumPermsWithRep(v);
+    }
+
+    return count;
 }

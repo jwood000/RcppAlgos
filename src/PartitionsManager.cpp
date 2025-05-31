@@ -1,3 +1,4 @@
+#include "Partitions/PartitionsCountDistinct.h"
 #include "Partitions/CompositionsDistinct.h"
 #include "Partitions/PartitionsMultiset.h"
 #include "Partitions/PartitionsDistinct.h"
@@ -7,6 +8,7 @@
 #include <algorithm> // std::find
 #include <numeric>
 #include "RMatrix.h"
+
 
 void PartsStdManager(int* mat, std::vector<int> &z, int width,
                      int lastElem, int lastCol, int nRows, bool IsComb,
@@ -29,10 +31,31 @@ void PartsStdManager(int* mat, std::vector<int> &z, int width,
                             std::inserter(complement, complement.begin()));
 
         int lastIdx = complement.size() - 1;
-        int target = std::accumulate(z.begin(), z.end(), 0);
+        const int target = std::accumulate(z.cbegin(), z.cend(), 0);
+        const int numZeros = std::count(z.cbegin(), z.cend(), 0);
+        int strt = 0;
 
-        CompsDistinct(mat, z, complement, 0, lastIdx,
-                      z.back(), target, width, nRows);
+        for (int i = width - numZeros, j = numZeros,
+             nextStep = 0; i < width; ++i, --j) {
+            nextStep += CountCompsDistinctLen(target, i);
+            CompsDistinct(mat, z, complement, 0, lastIdx, z.back(),
+                          target, strt, width, nextStep, nRows);
+            strt = nextStep;
+
+            for (int k = j - 1, val = 1; k < width; ++k, ++val) {
+                z[k] = val;
+            }
+
+            z.back() = target - static_cast<int>((i * (i + 1)) / 2);
+            complement.clear();
+            std::set_difference(
+                myRange.begin(), myRange.end(), z.begin(), z.end(),
+                std::inserter(complement, complement.begin())
+            );
+        }
+
+        CompsDistinct(mat, z, complement, 0, lastIdx, z.back(),
+                      target, strt, width, nRows, nRows);
     } else if (IsRep) {
         PartsPermRep(mat, z, width, lastElem, lastCol, nRows);
     } else if (IsComb) {
