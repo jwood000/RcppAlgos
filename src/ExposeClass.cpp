@@ -196,12 +196,10 @@ SEXP CombClassNew(SEXP RVals, SEXP RboolVec, SEXP freqInfo, SEXP Rparallel,
         ConstraintType ctype = ConstraintType::NoConstraint;
         PartDesign part;
 
-        part.isRep   = IsRep;
-        part.isMult  = IsMult;
-        part.mIsNull = static_cast<bool>(Rf_asLogical(RmIsNull));
-        part.isComp  = IsComp;
-        part.isComb  = IsComb;
-        part.isWeak  = static_cast<bool>(bVec[7]);
+        InitialSetupPartDesign(
+            part, Rf_ScalarLogical(bVec[7]), Rf_ScalarLogical(IsComp),
+            IsRep, IsMult, Rf_asLogical(RmIsNull), IsComb
+        );
 
         std::vector<std::string> compVec;
         std::vector<double> tarVals;

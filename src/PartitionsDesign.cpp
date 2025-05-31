@@ -3,63 +3,18 @@
 #include "CppConvert.h"
 #include <numeric>
 
-std::string GetPartitionType(const PartDesign &part) {
-
-    std::string res;
-
-    switch (part.ptype) {
-        case PartitionType::NotPartition: {
-            res = "NotPartition";
-            break;
-        } case PartitionType::LengthOne: {
-            res = "LengthOne";
-            break;
-        } case PartitionType::DstctCapped: {
-            res = "DistCapped";
-            break;
-        } case PartitionType::DstctCappedMZ: {
-            res = "DstctCappedMZ";
-            break;
-        } case PartitionType::DstctNoZero : {
-            res = "DstctNoZero";
-            break;
-        } case PartitionType::DstctOneZero: {
-            res = "DstctOneZero";
-            break;
-        } case PartitionType::DstctMultiZero : {
-            res = "DstctMultiZero";
-            break;
-        } case PartitionType::DstctStdAll: {
-            res = "DstctStdAll";
-            break;
-        } case PartitionType::Multiset: {
-            res = "Multiset";
-            break;
-        } case PartitionType::RepCapped : {
-            res = "RepCapped";
-            break;
-        } case PartitionType::RepNoZero: {
-            res = "RepNoZero";
-            break;
-        } case PartitionType::RepShort : {
-            res = "RepShort";
-            break;
-        } default: {
-            res = "RepStdAll";
-            break;
-        }
-    }
-
-    return res;
-}
-
 SEXP GetDesign(const PartDesign &part, ConstraintType ctype,
                int lenV, bool verbose) {
 
     std::vector<int> vMap(lenV);
     const int strt = part.includeZero ? 0 : 1;
     std::iota(vMap.begin(), vMap.end(), strt);
-    const std::string ptype = GetPartitionType(part);
+
+    int ptype_idx = static_cast<std::underlying_type<PartitionType>::type>(
+        part.ptype
+    );
+
+    const std::string ptype = PrintPTypes[ptype_idx];
 
     if (verbose) {
         Rprintf("          Partition Design Overview\n");

@@ -229,14 +229,15 @@ void rankCompsRepGmp(std::vector<int>::iterator iter, int n, int m,
                      int cap, int k, double &dblIdx, mpz_class &mpzIdx) {
 
     const int width = m;
+    mpz_class temp;
     mpzIdx = 0;
 
     --n;
     --m;
 
-    mpz_class temp;
-    const PartitionType ptype = PartitionType::RepNoZero;
-    std::unique_ptr<CountClass> myClass = MakeCount(ptype, true);
+    std::unique_ptr<CountClass> myClass = MakeCount(
+        PartitionType::CompRepNoZero
+    );
 
     for (int i = 0, j = 0; i < (width - 1); ++i, --n, --m, j = 0, ++iter) {
         myClass->GetCount(temp, n, m, cap, k);
@@ -259,8 +260,9 @@ void rankCompsRepZeroGmp(std::vector<int>::iterator iter, int n, int m,
     --m;
 
     mpz_class temp;
-    const PartitionType ptype = PartitionType::RepShort;
-    std::unique_ptr<CountClass> myClass = MakeCount(ptype, true);
+    std::unique_ptr<CountClass> myClass = MakeCount(
+        PartitionType::CmpRpZroNotWk
+    );
 
     for (int i = 0, j = 0; i < (width - 1); ++i, --m, j = incr_j, ++iter) {
         myClass->GetCount(temp, n, m, cap, k, !incr_j);
@@ -481,33 +483,9 @@ void rankPartsDistinctCapMZGmp(std::vector<int>::iterator iter,
     }
 }
 
-rankPartsPtr GetRankPartsFunc(PartitionType ptype, bool IsGmp, bool IsComp) {
+rankPartsPtr GetRankPartsFunc(PartitionType ptype, bool IsGmp) {
 
-    if (IsComp && IsGmp) {
-        switch (ptype) {
-            case PartitionType::RepNoZero : {
-                return(rankPartsPtr(rankCompsRepGmp));
-            } case PartitionType::RepShort : {
-                return(rankPartsPtr(rankCompsRepZeroGmp));
-            } case PartitionType::RepStdAll : {
-                return(rankPartsPtr(rankCompsRepZeroGmp));
-            }default : {
-                cpp11::stop("No algorithm available");
-            }
-        }
-    } else if (IsComp) {
-        switch (ptype) {
-            case PartitionType::RepNoZero : {
-                return(rankPartsPtr(rankCompsRep));
-            } case PartitionType::RepShort : {
-                return(rankPartsPtr(rankCompsRepZero));
-            } case PartitionType::RepStdAll : {
-                return(rankPartsPtr(rankCompsRepZero));
-            } default : {
-                cpp11::stop("No algorithm available");
-            }
-        }
-    } else if (IsGmp) {
+    if (IsGmp) {
         switch (ptype) {
             case PartitionType::DstctCapped: {
                 return(rankPartsPtr(rankPartsDistinctCapGmp));
@@ -529,6 +507,12 @@ rankPartsPtr GetRankPartsFunc(PartitionType ptype, bool IsGmp, bool IsComp) {
                 return(rankPartsPtr(rankPartsRepShortGmp));
             } case PartitionType::RepStdAll : {
                 return(rankPartsPtr(rankPartsRepGmp));
+            } case PartitionType::CompRepNoZero : {
+                return(rankPartsPtr(rankCompsRepGmp));
+            } case PartitionType::CompRepWeak : {
+                return(rankPartsPtr(rankCompsRepGmp));
+            } case PartitionType::CmpRpZroNotWk : {
+                return(rankPartsPtr(rankCompsRepZeroGmp));
             } default : {
                 cpp11::stop("No algorithm available");
             }
@@ -555,6 +539,12 @@ rankPartsPtr GetRankPartsFunc(PartitionType ptype, bool IsGmp, bool IsComp) {
                 return(rankPartsPtr(rankPartsRepShort));
             } case PartitionType::RepStdAll: {
                 return(rankPartsPtr(rankPartsRep));
+            } case PartitionType::CompRepNoZero : {
+                return(rankPartsPtr(rankCompsRep));
+            } case PartitionType::CompRepWeak : {
+                return(rankPartsPtr(rankCompsRep));
+            } case PartitionType::CmpRpZroNotWk : {
+                return(rankPartsPtr(rankCompsRepZero));
             } default : {
                 cpp11::stop("No algorithm available");
             }

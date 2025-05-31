@@ -62,8 +62,8 @@ SEXP PartitionsCount(SEXP Rtarget, SEXP Rv, SEXP Rm,
     const bool IsConstrained = true;
     const std::string mainFun = "sum";
     bool IsRep = CppConvert::convertFlag(RisRep, "repetition");
-    const bool bDesign = CppConvert::convertFlag(RPartDesign,
-                                                   "PartitionsDesign");
+    bool bDesign = CppConvert::convertFlag(RPartDesign, "PartitionsDesign");
+    bool IsComp = CppConvert::convertFlag(RIsComposition, "IsComposition");
 
     SetType(myType, Rv);
     SetValues(myType, myReps, freqs, vInt, vNum, Rv,
@@ -79,13 +79,8 @@ SEXP PartitionsCount(SEXP Rtarget, SEXP Rv, SEXP Rm,
 
     ConstraintType ctype;
     PartDesign part;
-
-    part.isRep   = IsRep;
-    part.isMult  = IsMult;
-    part.mIsNull = Rf_isNull(Rm);
-    part.isWeak  = CppConvert::convertFlag(RIsWeak, "weak");
-    part.isComp  = CppConvert::convertFlag(RIsComposition, "composition");
-    part.isComb  = !part.isComp;
+    InitialSetupPartDesign(part, RIsWeak, RIsComposition, IsRep,
+                           IsMult, Rf_isNull(Rm), !IsComp);
 
     ConstraintSetup(vNum, myReps, targetVals, vInt, targetIntVals,
                     funDbl, part, ctype, n, m, compVec, mainFun,

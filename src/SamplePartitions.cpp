@@ -150,6 +150,7 @@ SEXP SamplePartitions(
           // argument. The goal is to eventually phase out this argument.
     bool IsRep    = CppConvert::convertFlag(RisRep, "repetition");
     bool IsNamed  = CppConvert::convertFlag(RNamed, "namedSample");
+    bool IsComp   = CppConvert::convertFlag(RIsComposition, "IsComposition");
 
     SetType(myType, Rv);
     SetValues(myType, myReps, freqs, vInt, vNum, Rv,
@@ -167,14 +168,8 @@ SEXP SamplePartitions(
 
     ConstraintType ctype = ConstraintType::NoConstraint;
     PartDesign part;
-
-    part.isRep   = IsRep;
-    part.isMult  = IsMult;
-    part.mIsNull = Rf_isNull(Rm);
-    part.isWeak  = CppConvert::convertFlag(RIsWeak, "weak");
-    part.isComp  = CppConvert::convertFlag(RIsComposition,
-                                             "IsComposition");
-    part.isComb = !part.isComp;
+    InitialSetupPartDesign(part, RIsWeak, RIsComposition, IsRep,
+                           IsMult, Rf_isNull(Rm), !IsComp);
 
     cpp11::sexp Rlow = R_NilValue;
     ConstraintSetup(vNum, myReps, targetVals, vInt, targetIntVals, funDbl,
@@ -236,7 +231,7 @@ SEXP SamplePartitions(
                            mySample, myVec, IsNamed);
         } else {
             const nthPartsPtr nthPartFun = GetNthPartsFunc(
-                part.ptype, part.isGmp, part.isComp
+                part.ptype, part.isGmp
             );
 
             ThreadSafeSample(matInt, res, vInt, mySample, myVec,
@@ -256,7 +251,7 @@ SEXP SamplePartitions(
                            mySample, myVec, IsNamed);
         } else {
             const nthPartsPtr nthPartFun = GetNthPartsFunc(
-                part.ptype, part.isGmp, part.isComp
+                part.ptype, part.isGmp
             );
 
             ThreadSafeSample(matNum, res, vNum, mySample, myVec,

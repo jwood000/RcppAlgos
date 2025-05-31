@@ -1,6 +1,20 @@
 #include "Constraints/ConstraintsUtils.h"
 #include "CppConvert.h"
 
+void InitialSetupPartDesign(
+    PartDesign &part, SEXP RIsWeak, SEXP RIsComposition,
+    bool IsRep, bool IsMult, bool mIsNull, bool IsComb
+) {
+
+    part.isRep   = IsRep;
+    part.isMult  = IsMult;
+    part.isDist  = !IsMult && !IsRep;
+    part.mIsNull = mIsNull;
+    part.isWeak  = CppConvert::convertFlag(RIsWeak, "weak");
+    part.isComp  = CppConvert::convertFlag(RIsComposition, "IsComposition");
+    part.isComb  = IsComb;
+}
+
 template <typename T>
 void AddResultToParts(T* mat, std::int64_t result,
                       std::size_t numResult,

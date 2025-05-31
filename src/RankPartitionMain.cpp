@@ -47,11 +47,10 @@ SEXP RankPartitionMain(SEXP RIdx, SEXP Rv, SEXP RisRep,
     std::vector<double> vNum;
 
     const std::string mainFun = "sum";
-    const bool IsComposition  = CppConvert::convertFlag(RIsComposition,
-                                                          "IsComposition");
+    bool IsComp = CppConvert::convertFlag(RIsComposition, "IsComposition");
 
     SetUpRank(RIdx, Rv, RisRep, RFreqs, Rm, idx, freqs, myReps,
-              myType, n, m, !IsComposition, IsMult, IsRep);
+              myType, n, m, !IsComp, IsMult, IsRep);
     SetBasic(Rv, vNum, vInt, n, myType);
 
     // Must be defined inside IsInteger check as targetVals could be
@@ -64,13 +63,8 @@ SEXP RankPartitionMain(SEXP RIdx, SEXP Rv, SEXP RisRep,
 
     ConstraintType ctype = ConstraintType::NoConstraint;
     PartDesign part;
-
-    part.isRep   = IsRep;
-    part.isMult  = IsMult;
-    part.mIsNull = Rf_isNull(Rm);
-    part.isComp  = IsComposition;
-    part.isComb  = !part.isComp;
-    part.isWeak  = CppConvert::convertFlag(RIsWeak, "weak");
+    InitialSetupPartDesign(part, RIsWeak, RIsComposition, IsRep,
+                           IsMult, Rf_isNull(Rm), !IsComp);
 
     cpp11::sexp Rlow = R_NilValue;
     ConstraintSetup(vNum, myReps, targetVals, vInt, targetIntVals, funDbl,
@@ -123,9 +117,7 @@ SEXP RankPartitionMain(SEXP RIdx, SEXP Rv, SEXP RisRep,
     double* res_dbl = REAL(res_std_dbl);
 
     if (m == 1) return Rf_ScalarInteger(1);
-    const rankPartsPtr rankFun = GetRankPartsFunc(
-        part.ptype, part.isGmp, part.isComp
-    );
+    const rankPartsPtr rankFun = GetRankPartsFunc(part.ptype, part.isGmp);
 
     RankPartsResults(myVec, res_int, res_dbl, idx,
                      rankFun, part.mapTar, m, cap, strtLen,

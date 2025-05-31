@@ -57,20 +57,13 @@ SEXP CombinatoricsCnstrt(SEXP Rv, SEXP Rm, SEXP RisRep, SEXP RFreqs,
 
     ConstraintType ctype = ConstraintType::NoConstraint;
     PartDesign part;
-
-    part.isRep   = IsRep;
-    part.isMult  = IsMult;
-    part.mIsNull = Rf_isNull(Rm);
-    part.isWeak  = CppConvert::convertFlag(RIsWeak, "weak");
-    part.isComp  = CppConvert::convertFlag(RIsComposition,
-                                             "IsComposition");
-    part.isComb = IsComb;
+    InitialSetupPartDesign(part, RIsWeak, RIsComposition,
+                           IsRep, IsMult, Rf_isNull(Rm), IsComb);
 
     if (IsConstrained) {
-        ConstraintSetup(vNum, myReps, tarVals, vInt, tarIntVals,
-                        funDbl, part, ctype, n, m, compVec, mainFun,
-                        funTest, myType, Rtarget, RcompFun,
-                        Rtolerance, Rlow);
+        ConstraintSetup(vNum, myReps, tarVals, vInt, tarIntVals, funDbl, part,
+                        ctype, n, m, compVec, mainFun, funTest, myType,
+                        Rtarget, RcompFun, Rtolerance, Rlow);
     }
 
     const bool usePartCount = part.isPart &&
@@ -124,9 +117,7 @@ SEXP CombinatoricsCnstrt(SEXP Rv, SEXP Rm, SEXP RisRep, SEXP RFreqs,
                   lower, lowerMpz, IsRep, IsMult, IsGmp);
     } else {
         if (bLower) {
-            const nthPartsPtr nthPartFun = GetNthPartsFunc(
-                part.ptype, IsGmp, part.isComp
-            );
+            const nthPartsPtr nthPartFun = GetNthPartsFunc(part.ptype, IsGmp);
             startZ = nthPartFun(part.mapTar, part.width, cap,
                                 strtLen, lower, lowerMpz);
 

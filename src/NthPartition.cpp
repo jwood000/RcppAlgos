@@ -281,8 +281,9 @@ std::vector<int> nthCompsRepGmp(int n, int m, int cap, int k,
     mpz_class temp;
     mpz_class index(mpzIdx);
 
-    const PartitionType ptype = PartitionType::RepNoZero;
-    std::unique_ptr<CountClass> myClass = MakeCount(ptype, true);
+    std::unique_ptr<CountClass> myClass = MakeCount(
+        PartitionType::CompRepNoZero
+    );
 
     for (int i = 0, j = 0; i < (width - 1); ++i, --n, --m, j = 0) {
         myClass->GetCount(temp, n, m, cap, k);
@@ -312,9 +313,9 @@ std::vector<int> nthCompsRepZeroGmp(int n, int m, int cap, int k,
 
     mpz_class temp;
     mpz_class index(mpzIdx);
-
-    const PartitionType ptype = PartitionType::RepShort;
-    std::unique_ptr<CountClass> myClass = MakeCount(ptype, true);
+    std::unique_ptr<CountClass> myClass = MakeCount(
+        PartitionType::CmpRpZroNotWk
+    );
 
     for (int i = 0, j = 0; i < (width - 1); ++i, --m, j = incr_j) {
         myClass->GetCount(temp, n, m, cap, k, !incr_j);
@@ -587,33 +588,9 @@ std::vector<int> nthPartsDistinctCapMZGmp(
     return res;
 }
 
-nthPartsPtr GetNthPartsFunc(PartitionType ptype, bool IsGmp, bool IsComp) {
+nthPartsPtr GetNthPartsFunc(PartitionType ptype, bool IsGmp) {
 
-    if (IsComp && IsGmp) {
-        switch (ptype) {
-            case PartitionType::RepNoZero : {
-                return(nthPartsPtr(nthCompsRepGmp));
-            } case PartitionType::RepShort : {
-                return(nthPartsPtr(nthCompsRepZeroGmp));
-            } case PartitionType::RepStdAll : {
-                return(nthPartsPtr(nthCompsRepZeroGmp));
-            }default : {
-                cpp11::stop("No algorithm available");
-            }
-        }
-    } else if (IsComp) {
-        switch (ptype) {
-            case PartitionType::RepNoZero : {
-                return(nthPartsPtr(nthCompsRep));
-            } case PartitionType::RepShort : {
-                return(nthPartsPtr(nthCompsRepZero));
-            } case PartitionType::RepStdAll : {
-                return(nthPartsPtr(nthCompsRepZero));
-            }default : {
-                cpp11::stop("No algorithm available");
-            }
-        }
-    } else if (IsGmp) {
+    if (IsGmp) {
         switch (ptype) {
             case PartitionType::DstctCapped : {
                 return(nthPartsPtr(nthPartsDistinctCapGmp));
@@ -635,6 +612,12 @@ nthPartsPtr GetNthPartsFunc(PartitionType ptype, bool IsGmp, bool IsComp) {
                 return(nthPartsPtr(nthPartsRepShortGmp));
             } case PartitionType::RepStdAll : {
                 return(nthPartsPtr(nthPartsRepGmp));
+            } case PartitionType::CompRepNoZero : {
+                return(nthPartsPtr(nthCompsRepGmp));
+            } case PartitionType::CompRepWeak : {
+                return(nthPartsPtr(nthCompsRepGmp));
+            } case PartitionType::CmpRpZroNotWk : {
+                return(nthPartsPtr(nthCompsRepZeroGmp));
             } default : {
                 cpp11::stop("No algorithm available");
             }
@@ -661,6 +644,12 @@ nthPartsPtr GetNthPartsFunc(PartitionType ptype, bool IsGmp, bool IsComp) {
                 return(nthPartsPtr(nthPartsRepShort));
             } case PartitionType::RepStdAll : {
                 return(nthPartsPtr(nthPartsRep));
+            } case PartitionType::CompRepNoZero : {
+                return(nthPartsPtr(nthCompsRep));
+            } case PartitionType::CompRepWeak : {
+                return(nthPartsPtr(nthCompsRep));
+            } case PartitionType::CmpRpZroNotWk : {
+                return(nthPartsPtr(nthCompsRepZero));
             } default : {
                 cpp11::stop("No algorithm available");
             }
