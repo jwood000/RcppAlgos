@@ -1,5 +1,5 @@
 #include "Constraints/ConstraintsTypes.h"
-#include "Partitions/PartitionsTypes.h"
+#include "Partitions/PartitionsUtils.h"
 #include "CppConvert.h"
 #include <numeric>
 
@@ -8,13 +8,9 @@ SEXP GetDesign(const PartDesign &part, ConstraintType ctype,
 
     std::vector<int> vMap(lenV);
     const int strt = part.includeZero ? 0 : 1;
+
     std::iota(vMap.begin(), vMap.end(), strt);
-
-    int ptype_idx = static_cast<std::underlying_type<PartitionType>::type>(
-        part.ptype
-    );
-
-    const std::string ptype = PrintPTypes[ptype_idx];
+    const std::string ptype = GetPTypeName(part.ptype);
 
     if (verbose) {
         Rprintf("          Partition Design Overview\n");

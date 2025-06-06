@@ -1,6 +1,15 @@
 #include "cpp11/protect.hpp"
 #include "Partitions/PartitionsUtils.h"
 
+std::string GetPTypeName(PartitionType ptype) {
+
+    int ptype_idx = static_cast<std::underlying_type<PartitionType>::type>(
+        ptype
+    );
+
+    return PTypeNames[ptype_idx];
+}
+
 void BinaryNextElem(int &uppBnd, int &lowBnd, int &ind, int lastElem,
                     std::int64_t target, std::int64_t partial,
                     const std::vector<std::int64_t> &v) {
@@ -246,6 +255,31 @@ void SetStartPartitionZ(const std::vector<int> &Reps,
             break;
         } case PartitionType::CmpRpZroNotWk: {
             part.startZ.back() = part.target;
+            break;
+        } case PartitionType::CmpDstctNoZero: {
+            std::iota(part.startZ.begin(), part.startZ.end(), 1);
+            part.startZ.back() = part.target - (part.width *
+                (part.width - 1)) / 2;
+            break;
+        } case PartitionType::CmpDstctZNotWk: {
+            if (Reps.front() >= (part.width - 1)) {
+                part.startZ.back() = part.target;
+            } else {
+                std::iota(part.startZ.begin() + Reps.front(),
+                          part.startZ.end(), 1);
+                part.startZ.back() = part.target - (part.width -
+                    Reps.front()) * (part.width - (Reps.front() + 1)) / 2;
+            }
+            break;
+        } case PartitionType::CmpDstctMZWeak: {
+            if (Reps.front() >= (part.width - 1)) {
+                part.startZ.back() = part.target;
+            } else {
+                std::iota(part.startZ.begin() + Reps.front(),
+                          part.startZ.end(), 1);
+                part.startZ.back() = part.target - (part.width -
+                    Reps.front()) * (part.width - (Reps.front() + 1)) / 2;
+            }
             break;
         } default: {
             part.startZ.back() = part.target;

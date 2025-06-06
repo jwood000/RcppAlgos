@@ -10,7 +10,6 @@
 // Here are the corresponding count functions that one would use for each
 // example below:
 //
-// NotPartition   :
 // RepStdAll      :  CountPartRep(20)
 // RepNoZero      :  CountPartRepLen(20, 5)
 // RepShort       :  CountPartRepLen(23, 3)
@@ -28,7 +27,27 @@
 // DstctCappedMZ  :  CountPartsDistinctMultiZeroCap(c(0, 0, 9, 11), 20, 4, 11)
 // LengthOne      :  1 or 0
 // Multiset       :  CountPartsMultiset(rep(1:3, 5), c(1, 2, 2, 15))
+//
+// CoarseGrained  : Currently, we utilize std::vector and push_back until we
+//                   reach a terminating situation.
+//
+// CompRepNoZero  : compositionsCount(20, 5, TRUE) -->> CountCompsRepLen(20, 5)
+// CompRepWeak    : compositionsCount(0:20, 5, TRUE, weak = TRUE) -->>
+//                   CountCompsRepLen(25, 5) We add the length to the target
+//
+// CmpRpZroNotWk  : compositionsCount(0:20, 5, TRUE) -- >>
+//                   CountCompsRepZero(20, 5)
+//
+// CmpDstctNoZero : compositionsCount(20, 5) -->> CountCompsDistinctLen(20, 5)
+// CmpDstctZNotWk : compositionsCount(0:20, 5, freqs = c(3, rep(1, 20))) -->>
+//                   CountCompsDistinctMultiZero(20, 5, 0, 2)
+//
+// CmpDstctMZWeak : compositionsCount(0:20, 5, freqs = c(3, rep(1, 20)),
+//                                    weak = TRUE) -->>
+//                   CountCompsDistinctMZWeak(20, 5, 0, 2)
+//
 // CompMultiset   :  CountPartsMultiset(rep(1:3, 5), c(1, 2, 2, 15), true)
+// NotPartition   :
 //
 // ****************************************************************************
 //
@@ -117,7 +136,7 @@ enum class PartitionType {
     NotPartition   = 20
 };
 
-constexpr const char* PrintPTypes[] = {
+constexpr const char* PTypeNames[] = {
     "RepStdAll",
     "RepNoZero",
     "RepShort",
@@ -141,15 +160,19 @@ constexpr const char* PrintPTypes[] = {
     "NotPartition"
 };
 
-const std::array<PartitionType, 4> RepPTypeArr{{
+const std::array<PartitionType, 7> RepPTypeArr{{
     PartitionType::RepStdAll, PartitionType::RepNoZero,
-    PartitionType::RepShort, PartitionType::RepCapped
+    PartitionType::RepShort, PartitionType::RepCapped,
+    PartitionType::CompRepNoZero, PartitionType::CompRepWeak,
+    PartitionType::CmpRpZroNotWk
 }};
 
-const std::array<PartitionType, 6> DistPTypeArr{{
+const std::array<PartitionType, 9> DistPTypeArr{{
     PartitionType::DstctStdAll,  PartitionType::DstctMultiZero,
     PartitionType::DstctOneZero, PartitionType::DstctNoZero,
-    PartitionType::DstctCapped, PartitionType::DstctCappedMZ
+    PartitionType::DstctCapped, PartitionType::DstctCappedMZ,
+    PartitionType::CmpDstctNoZero, PartitionType::CmpDstctZNotWk,
+    PartitionType::CmpDstctMZWeak
 }};
 
 struct PartDesign {
@@ -162,6 +185,12 @@ struct PartDesign {
     bool isMult = false;
     bool isDist = false;
     bool isComb = false;
+    bool isPerm = false;      // This is to distinguish between true
+                              // integer compositions and permutations of
+                              // integer partitions. The latter occurs when we
+                              // have an algorithm for generating a particular
+                              // type of partition but no known algorithm for
+                              // generating compositions.
     bool isPart = false;
     bool isComp = false;      // Are we dealing with compositions?
     bool isWeak = false;      // Do we allow terms of the sequence to be zero?
