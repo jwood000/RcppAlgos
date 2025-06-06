@@ -3,13 +3,16 @@
 #include <gmpxx.h>
 #include <vector>
 
-void CountPartsDistinctLenCap(mpz_class &res, std::vector<mpz_class> &p1,
-                              std::vector<mpz_class> &p2, int n, int m,
-                              int cap, int strtLen);
+void CountPartsDistinctLenCap(
+    mpz_class &res, std::vector<mpz_class> &p1,
+    std::vector<mpz_class> &p2, int n, int m, int cap, int strtLen = 0
+);
+
 void CountPartsDistinctLen(mpz_class &res, std::vector<mpz_class> &p1,
                            std::vector<mpz_class> &p2, int n, int m,
-                           int cap, int strtLen);
-void CountPartsDistinct(mpz_class &res, int n, int m, int cap, int strtLen);
+                           int cap = 0, int strtLen = 0);
+void CountPartsDistinct(mpz_class &res, int n, int m,
+                        int cap = 0, int strtLen = 0);
 void CountPartsDistinctMultiZero(mpz_class &res, std::vector<mpz_class> &p1,
                                  std::vector<mpz_class> &p2, int n, int m,
                                  int cap, int strtLen);
@@ -18,7 +21,7 @@ void CountPartsDistinctCapMZ(mpz_class &res, std::vector<mpz_class> &p1,
                              int cap, int strtLen);
 void CountCompsDistinctLen(
     mpz_class &res, std::vector<mpz_class> &p1, std::vector<mpz_class> &p2,
-    int n, int m, int cap, int strtLen
+    int n, int m, int cap = 0, int strtLen = 0
 );
 void CountCompsDistinctMultiZero(
     mpz_class &res, std::vector<mpz_class> &p1, std::vector<mpz_class> &p2,

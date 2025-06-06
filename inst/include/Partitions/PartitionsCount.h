@@ -16,88 +16,88 @@ public:
     virtual ~CountClass() = default;
     void SetArrSize(PartitionType ptype, int n, int m, int cap);
 
-    virtual double GetCount(int n, int m, int cap, int strtLen) = 0;
-    virtual void GetCount(mpz_class &res, int n, int m, int cap,
-                          int strtLen, bool bLiteral = true) = 0;
+    virtual double GetCount(int n, int m, int cap = 0, int strtLen = 0) = 0;
+    virtual void GetCount(mpz_class &res, int n, int m, int cap = 0,
+                          int strtLen = 0, bool bLiteral = true) = 0;
     void InitializeMpz();
 };
 
 std::unique_ptr<CountClass> MakeCount(PartitionType ptype);
 
 class DistinctAll : public CountClass {
-    double GetCount(int n, int m, int cap, int strtLen);
-    void GetCount(mpz_class &res, int n, int m, int cap,
-                  int strtLen, bool bLiteral = true);
+    double GetCount(int n, int m, int cap = 0, int strtLen = 0);
+    void GetCount(mpz_class &res, int n, int m, int cap = 0,
+                  int strtLen = 0, bool bLiteral = true);
 };
 
 class DistinctLen : public CountClass {
-    double GetCount(int n, int m, int cap, int strtLen);
-    void GetCount(mpz_class &res, int n, int m, int cap,
-                  int strtLen, bool bLiteral = true);
+    double GetCount(int n, int m, int cap = 0, int strtLen = 0);
+    void GetCount(mpz_class &res, int n, int m, int cap = 0,
+                  int strtLen = 0, bool bLiteral = true);
 };
 
 class DistinctLenCap : public CountClass {
-    double GetCount(int n, int m, int cap, int strtLen);
-    void GetCount(mpz_class &res, int n, int m, int cap,
-                  int strtLen, bool bLiteral = true);
+    double GetCount(int n, int m, int cap = 0, int strtLen = 0);
+    void GetCount(mpz_class &res, int n, int m, int cap = 0,
+                  int strtLen = 0, bool bLiteral = true);
 };
 
 class DistinctMZ : public CountClass {
-    double GetCount(int n, int m, int cap, int strtLen);
-    void GetCount(mpz_class &res, int n, int m, int cap,
-                  int strtLen, bool bLiteral = true);
+    double GetCount(int n, int m, int cap = 0, int strtLen = 0);
+    void GetCount(mpz_class &res, int n, int m, int cap = 0,
+                  int strtLen = 0, bool bLiteral = true);
 };
 
 class DistinctCapMZ : public CountClass {
-    double GetCount(int n, int m, int cap, int strtLen);
-    void GetCount(mpz_class &res, int n, int m, int cap,
-                  int strtLen, bool bLiteral = true);
+    double GetCount(int n, int m, int cap = 0, int strtLen = 0);
+    void GetCount(mpz_class &res, int n, int m, int cap = 0,
+                  int strtLen = 0, bool bLiteral = true);
 };
 
 class RepAll : public CountClass {
-    double GetCount(int n, int m, int cap, int strtLen);
-    void GetCount(mpz_class &res, int n, int m, int cap,
-                  int strtLen, bool bLiteral = true);
+    double GetCount(int n, int m, int cap = 0, int strtLen = 0);
+    void GetCount(mpz_class &res, int n, int m, int cap = 0,
+                  int strtLen = 0, bool bLiteral = true);
 };
 
 class RepLen : public CountClass {
-    double GetCount(int n, int m, int cap, int strtLen);
-    void GetCount(mpz_class &res, int n, int m, int cap,
-                  int strtLen, bool bLiteral = true);
+    double GetCount(int n, int m, int cap = 0, int strtLen = 0);
+    void GetCount(mpz_class &res, int n, int m, int cap = 0,
+                  int strtLen = 0, bool bLiteral = true);
 };
 
 class RepLenCap : public CountClass {
-    double GetCount(int n, int m, int cap, int strtLen);
-    void GetCount(mpz_class &res, int n, int m, int cap,
-                  int strtLen, bool bLiteral = true);
+    double GetCount(int n, int m, int cap = 0, int strtLen = 0);
+    void GetCount(mpz_class &res, int n, int m, int cap = 0,
+                  int strtLen = 0, bool bLiteral = true);
 };
 
 class CompsRepLen : public CountClass {
-    double GetCount(int n, int m, int cap, int strtLen);
-    void GetCount(mpz_class &res, int n, int m, int cap,
-                  int strtLen, bool bLiteral = true);
+    double GetCount(int n, int m, int cap = 0, int strtLen = 0);
+    void GetCount(mpz_class &res, int n, int m, int cap = 0,
+                  int strtLen = 0, bool bLiteral = true);
 };
 
 class CompsRepZero : public CountClass {
-    double GetCount(int n, int m, int cap, int strtLen);
-    void GetCount(mpz_class &res, int n, int m, int cap,
-                  int strtLen, bool bLiteral = true);
+    double GetCount(int n, int m, int cap = 0, int strtLen = 0);
+    void GetCount(mpz_class &res, int n, int m, int cap = 0,
+                  int strtLen = 0, bool bLiteral = true);
 };
 
 class CompsDistinctLen : public CountClass {
-    double GetCount(int n, int m, int cap, int strtLen);
-    void GetCount(mpz_class &res, int n, int m, int cap,
-                  int strtLen, bool bLiteral = true);
+    double GetCount(int n, int m, int cap = 0, int strtLen = 0);
+    void GetCount(mpz_class &res, int n, int m, int cap = 0,
+                  int strtLen = 0, bool bLiteral = true);
 };
 
 class CompsDistLenMZ : public CountClass {
-    double GetCount(int n, int m, int cap, int strtLen);
-    void GetCount(mpz_class &res, int n, int m, int cap,
-                  int strtLen, bool bLiteral = true);
+    double GetCount(int n, int m, int cap = 0, int strtLen = 0);
+    void GetCount(mpz_class &res, int n, int m, int cap = 0,
+                  int strtLen = 0, bool bLiteral = true);
 };
 
 class CompsDistLenMZWeak : public CountClass {
-    double GetCount(int n, int m, int cap, int strtLen);
-    void GetCount(mpz_class &res, int n, int m, int cap,
-                  int strtLen, bool bLiteral = true);
+    double GetCount(int n, int m, int cap = 0, int strtLen = 0);
+    void GetCount(mpz_class &res, int n, int m, int cap = 0,
+                  int strtLen = 0, bool bLiteral = true);
 };

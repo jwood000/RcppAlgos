@@ -181,6 +181,7 @@ double CountCompsRepLen(int n, int m, int cap, int strtLen) {
 // Since we have incremented each term we have:
 //
 // sum(part') = n + P
+
 double CountCompsRepZero(int n, int m, int cap, int strtLen) {
 
     if (n == m) return std::pow(2.0, static_cast<double>(n - 1));

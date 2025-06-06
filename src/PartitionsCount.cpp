@@ -65,9 +65,9 @@ void DistinctLen::GetCount(mpz_class &res, int n, int m, int cap,
                            int strtLen, bool bLiteral) {
 
     if (cmp(res, 0) == 0 || cmp(res, Significand53) > 0) {
-        CountPartsDistinctLen(res, p1, p2, n, m, cap, strtLen);
+        CountPartsDistinctLen(res, p1, p2, n, m);
     } else {
-        const double dblRes = CountPartsDistinctLen(n, m, cap, strtLen);
+        const double dblRes = CountPartsDistinctLen(n, m);
         res = dblRes;
     }
 }
@@ -76,10 +76,9 @@ void DistinctLenCap::GetCount(mpz_class &res, int n, int m, int cap,
                               int strtLen, bool bLiteral) {
 
     if (cmp(res, 0) == 0 || cmp(res, Significand53) > 0) {
-        CountPartsDistinctLenCap(res, p1, p2,
-                                 n, m, cap, strtLen);
+        CountPartsDistinctLenCap(res, p1, p2, n, m, cap);
     } else {
-        const double dblRes = CountPartsDistinctLenCap(n, m, cap, strtLen);
+        const double dblRes = CountPartsDistinctLenCap(n, m, cap);
         res = dblRes;
     }
 }
@@ -92,13 +91,12 @@ void DistinctMZ::GetCount(mpz_class &res, int n, int m, int cap,
             CountPartsDistinctMultiZero(res, p1, p2,
                                         n, m, cap, strtLen);
         } else {
-            CountPartsDistinctLen(res, p1, p2,
-                                  n, m, cap, strtLen);
+            CountPartsDistinctLen(res, p1, p2, n, m);
         }
     } else {
         const double dblRes = bLiteral ?
             CountPartsDistinctMultiZero(n, m, cap, strtLen) :
-            CountPartsDistinctLen(n, m, cap, strtLen);
+            CountPartsDistinctLen(n, m);
         res = dblRes;
     }
 }
@@ -111,13 +109,12 @@ void DistinctCapMZ::GetCount(mpz_class &res, int n, int m, int cap,
             CountPartsDistinctCapMZ(res, p1, p2,
                                     n, m, cap, strtLen);
         } else {
-            CountPartsDistinctLenCap(res, p1, p2,
-                                     n, m, cap, strtLen);
+            CountPartsDistinctLenCap(res, p1, p2, n, m, cap);
         }
     } else {
         const double dblRes = bLiteral ?
             CountPartsDistinctCapMZ(n, m, cap, strtLen) :
-            CountPartsDistinctLenCap(n, m, cap, strtLen);
+            CountPartsDistinctLenCap(n, m, cap);
         res = dblRes;
     }
 }
@@ -126,9 +123,9 @@ void RepLen::GetCount(mpz_class &res, int n, int m, int cap,
                       int strtLen, bool bLiteral) {
 
     if (cmp(res, 0) == 0 || cmp(res, Significand53) > 0) {
-        CountPartsRepLen(res, p1, p2, n, m, cap, strtLen);
+        CountPartsRepLen(res, p1, p2, n, m);
     } else {
-        const double dblRes = CountPartsRepLen(n, m, cap, strtLen);
+        const double dblRes = CountPartsRepLen(n, m);
         res = dblRes;
     }
 }
@@ -137,9 +134,9 @@ void RepLenCap::GetCount(mpz_class &res, int n, int m, int cap,
                          int strtLen, bool bLiteral) {
 
     if (cmp(res, 0) == 0 || cmp(res, Significand53) > 0) {
-        CountPartsRepLenCap(res, p1, p2, n, m, cap, strtLen);
+        CountPartsRepLenCap(res, p1, p2, n, m, cap);
     } else {
-        const double dblRes = CountPartsRepLenCap(n, m, cap, strtLen);
+        const double dblRes = CountPartsRepLenCap(n, m, cap);
         res = dblRes;
     }
 }
@@ -148,9 +145,9 @@ void DistinctAll::GetCount(mpz_class &res, int n, int m, int cap,
                            int strtLen, bool bLiteral) {
 
     if (cmp(res, 0) == 0 || cmp(res, Significand53) > 0) {
-        CountPartsDistinct(res, n, m, cap, strtLen);
+        CountPartsDistinct(res, n, m);
     } else {
-        const double dblRes = CountPartsDistinct(n, m, cap, strtLen);
+        const double dblRes = CountPartsDistinct(n, m);
         res = dblRes;
     }
 }
@@ -159,30 +156,30 @@ void RepAll::GetCount(mpz_class &res, int n, int m, int cap,
                       int strtLen, bool bLiteral) {
 
     if (cmp(res, 0) == 0 || cmp(res, Significand53) > 0) {
-        CountPartsRep(res, n, m, cap, strtLen);
+        CountPartsRep(res, n, m);
     } else {
-        const double dblRes = CountPartsRep(n, m, cap, strtLen);
+        const double dblRes = CountPartsRep(n, m);
         res = dblRes;
     }
 }
 
 void CompsRepLen::GetCount(mpz_class &res, int n, int m, int cap,
                            int strtLen, bool bLiteral) {
-    CountCompsRepLen(res, n, m, cap, strtLen);
+    CountCompsRepLen(res, n, m);
 }
 
 void CompsRepZero::GetCount(mpz_class &res, int n, int m, int cap,
                             int strtLen, bool bLiteral) {
     if (bLiteral) {
-        CountCompsRepZero(res, n, m, cap, strtLen);
+        CountCompsRepZero(res, n, m);
     } else {
-        CountCompsRepLen(res, n, m, cap, strtLen);
+        CountCompsRepLen(res, n, m);
     }
 }
 
 void CompsDistinctLen::GetCount(mpz_class &res, int n, int m, int cap,
                                 int strtLen, bool bLiteral) {
-    CountCompsDistinctLen(res, p1, p2, n, m, cap, strtLen);
+    CountCompsDistinctLen(res, p1, p2, n, m);
 }
 
 void CompsDistLenMZ::GetCount(mpz_class &res, int n, int m, int cap,
@@ -196,15 +193,15 @@ void CompsDistLenMZWeak::GetCount(mpz_class &res, int n, int m, int cap,
 }
 
 double DistinctAll::GetCount(int n, int m, int cap, int strtLen) {
-    return CountPartsDistinct(n, m, cap, strtLen);
+    return CountPartsDistinct(n, m);
 }
 
 double DistinctLen::GetCount(int n, int m, int cap, int strtLen) {
-    return CountPartsDistinctLen(n, m, cap, strtLen);
+    return CountPartsDistinctLen(n, m);
 }
 
 double DistinctLenCap::GetCount(int n, int m, int cap, int strtLen) {
-    return CountPartsDistinctLenCap(n, m, cap, strtLen);
+    return CountPartsDistinctLenCap(n, m, cap);
 }
 
 double DistinctMZ::GetCount(int n, int m, int cap, int strtLen) {
@@ -216,27 +213,27 @@ double DistinctCapMZ::GetCount(int n, int m, int cap, int strtLen) {
 }
 
 double RepAll::GetCount(int n, int m, int cap, int strtLen) {
-    return CountPartsRep(n, m, cap, strtLen);
+    return CountPartsRep(n, m);
 }
 
 double RepLen::GetCount(int n, int m, int cap, int strtLen) {
-    return CountPartsRepLen(n, m, cap, strtLen);
+    return CountPartsRepLen(n, m);
 }
 
 double RepLenCap::GetCount(int n, int m, int cap, int strtLen) {
-    return CountPartsRepLenCap(n, m, cap, strtLen);
+    return CountPartsRepLenCap(n, m, cap);
 }
 
 double CompsRepLen::GetCount(int n, int m, int cap, int strtLen) {
-    return CountCompsRepLen(n, m, cap, strtLen);
+    return CountCompsRepLen(n, m);
 }
 
 double CompsRepZero::GetCount(int n, int m, int cap, int strtLen) {
-    return CountCompsRepZero(n, m, cap, strtLen);
+    return CountCompsRepZero(n, m);
 }
 
 double CompsDistinctLen::GetCount(int n, int m, int cap, int strtLen) {
-    return CountCompsDistinctLen(n, m, cap, strtLen);
+    return CountCompsDistinctLen(n, m);
 }
 
 double CompsDistLenMZ::GetCount(int n, int m, int cap, int strtLen) {
@@ -304,6 +301,18 @@ void CountClass::SetArrSize(PartitionType ptype, int n, int m, int cap) {
         } case PartitionType::DstctCappedMZ: {
             CheckMultIsInt(cap + 1, n + 1);
             size = (cap + 1) * (n + 1);
+            break;
+        } case PartitionType::CmpDstctNoZero: {
+            CheckMultIsInt(1, n + 1);
+            size = (n + 1);
+            break;
+        } case PartitionType::CmpDstctMZWeak: {
+            CheckMultIsInt(1, n + 1);
+            size = (n + 1);
+            break;
+        } case PartitionType::CmpDstctZNotWk: {
+            CheckMultIsInt(1, n + 1);
+            size = (n + 1);
             break;
         } default: {
             size = 0;
@@ -383,10 +392,7 @@ void PartitionsCount(const std::vector<int> &Reps,
                 if (part.count > Significand53) {
                     part.isGmp = true;
 
-                    if (part.ptype != PartitionType::RepStdAll &&
-                        part.ptype != PartitionType::RepNoZero &&
-                        part.ptype != PartitionType::RepShort) {
-
+                    if (it != DistPTypeArr.cend()) {
                         myClass->SetArrSize(part.ptype, part.mapTar,
                                             part.width, part.cap);
                         myClass->InitializeMpz();
