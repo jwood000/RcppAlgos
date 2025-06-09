@@ -133,10 +133,6 @@ test_that("partitionsIter related functions produces appropriate error messages"
 
 test_that(paste("partitions/compositionsDesign functions",
                 "produces appropriate error messages"), {
-    expect_error(RcppAlgos:::compositionsDesign(0:40, 8),
-                 "Currently, there is no composition algorithm")
-    expect_error(RcppAlgos:::compositionsDesign(40, 8, freqs = rep(1:5, 8)),
-                 "Currently, there is no composition algorithm")
     expect_error(RcppAlgos:::partitionsDesign(0:17 + rnorm(18), 10,
                                   repetition = TRUE, target = 25),
                  "No design available for this case!")
@@ -295,11 +291,11 @@ test_that("errors with table S3 method", {
         "for this case.\n Use permuteCount, permuteIter, permuteGeneral,",
         "permuteSample, or\n permuteRank instead."
     )
-    expect_error(compositionsCount(table(s), 5), err_string)
-    expect_error(compositionsGeneral(table(s), 5), err_string)
-    expect_error(compositionsSample(table(s), 5, n = 10, seed = 42),
-                 err_string)
-    expect_error(compositionsIter(table(s), 5, n = 10), err_string)
+    # expect_error(compositionsCount(table(s), 5), err_string)
+    # expect_error(compositionsGeneral(table(s), 5), err_string)
+    # expect_error(compositionsSample(table(s), 5, n = 10, seed = 42),
+    #              err_string)
+    # expect_error(compositionsIter(table(s), 5, n = 10), err_string)
 
     expect_error(partitionsSample(table(s), 5, n = 4),
                  "Partition sampling not available for this case.")

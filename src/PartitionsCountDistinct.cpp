@@ -8,20 +8,16 @@ double CountPartsDistinctLenCap(int n, int m, int cap, int strtLen = 0) {
     if (cap > n) cap = n;
     if (m > n || cap < m) return 0;
 
-    if (m == n) {
-        if (n == 1 && cap >= 1) {
-            return 1;
-        } else {
-            return 0;
-        }
+    if (m == n && n == 1 && cap >= 1) {
+        return 1;
+    } else if (m == n) {
+        return 0;
     }
 
-    if (m == 1) {
-        if (cap >= n) {
-            return 1;
-        } else {
-            return 0;
-        }
+    if (m == 1 && cap >= n) {
+        return 1;
+    } else if (m == 1) {
+        return 0;
     }
 
     // Ensure max is large enough given the width
@@ -40,12 +36,10 @@ double CountPartsDistinctLenCap(int n, int m, int cap, int strtLen = 0) {
     CheckMultIsInt(m - 1, m);
     const int limit = (cap * m) - ((m - 1) * m) / 2;
 
-    if (limit <= n) {
-        if (limit == n) {
-            return 1.0;
-        } else {
-            return 0.0;
-        }
+    if (limit == n) {
+        return 1.0;
+    } else if (limit < n) {
+        return 0.0;
     }
 
     const int width = n + 1;

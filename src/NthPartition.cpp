@@ -53,7 +53,7 @@ std::vector<int> nthCompsRepZero(int n, int m, int cap, int k,
 
     for (int i = 0, j = 0; i < (width - 1); ++i, --m, j = incr_j) {
         double temp = incr_j ? CountCompsRepLen(n, m, cap, k) :
-                               CountCompsRepZero(n, m, cap, k);
+            CountCompsRepZNotWk(n, m, cap, k);
 
         for (; temp <= dblIdx; ++j) {
             incr_j = true;

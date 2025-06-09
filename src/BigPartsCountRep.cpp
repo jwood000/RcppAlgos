@@ -15,13 +15,11 @@ void CountPartsRepLenCap(mpz_class &res, std::vector<mpz_class> &p1,
         res = 1;
     } else if (m < 2) {
         res = m;
+    } else if (m == 2 && cap * 2 >= n) {
+        cap = std::min(cap, n - 1);
+        res = n / m - (n - 1 - cap);
     } else if (m == 2) {
-        if (cap * 2 >= n) {
-            cap = std::min(cap, n - 1);
-            res = n / m - (n - 1 - cap);
-        } else {
-            res = 0;
-        }
+        res = 0;
     } else {
         const int width = n + 1;
         const int maxSize = (cap + 1) * width;
@@ -172,7 +170,7 @@ void CountCompsRepLen(mpz_class &res, int n, int m, int cap, int strtLen) {
     nChooseKGmp(res, n - 1, m - 1);
 }
 
-void CountCompsRepZero(mpz_class &res, int n, int m, int cap, int strtLen) {
+void CountCompsRepZNotWk(mpz_class &res, int n, int m, int cap, int strtLen) {
 
     if (n == m) {
         res = 1;

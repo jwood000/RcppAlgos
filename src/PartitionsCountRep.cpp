@@ -13,6 +13,7 @@ double CountPartsRepLenCap(int n, int m, int cap, int strtLen) {
 
     if (m == 2) {
         CheckMultIsInt(2, cap);
+
         if (cap * 2 >= n) {
             cap = std::min(cap, n - 1);
             return n / m - (n - 1 - cap);
@@ -132,10 +133,7 @@ double CountPartsRepLen(int n, int m, int cap, int strtLen) {
 // Similar to CountPartsDistinct
 double CountPartsRep(int n, int m, int cap, int strtLen) {
 
-    if (n < 2) {
-        return 1.0;
-    }
-
+    if (n < 2) return 1.0;
     std::vector<double> qq(n + 1);
 
     qq[0] = 1;
@@ -158,10 +156,7 @@ double CountCompsRepLen(int n, int m, int cap, int strtLen) {
     return nChooseK(n - 1, m - 1);
 }
 
-// The name of this function is a bit confusing. One may be lead to think that
-// since it has "Zero" in the name, that we are dealing with weak compositions.
-// That is not correct. The "Zero" means that zero is in the output but not
-// considered.
+// The "Z" means that zero is in the output but not considered.
 //
 // For weak compositions, in SetPartitionDesign in PartitionsUtils.cpp, if we
 // are dealing with weak compositions, we simply map 0 to 1. Of course we must
@@ -182,7 +177,7 @@ double CountCompsRepLen(int n, int m, int cap, int strtLen) {
 //
 // sum(part') = n + P
 
-double CountCompsRepZero(int n, int m, int cap, int strtLen) {
+double CountCompsRepZNotWk(int n, int m, int cap, int strtLen) {
 
     if (n == m) return std::pow(2.0, static_cast<double>(n - 1));
 

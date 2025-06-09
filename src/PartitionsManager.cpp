@@ -9,10 +9,72 @@
 #include <numeric>
 #include "RMatrix.h"
 
-
 void PartsStdManager(int* mat, std::vector<int> &z, int width,
                      int lastElem, int lastCol, int nRows, bool IsComb,
                      bool IsRep, bool IsComp, bool zero_spesh) {
+
+    // switch (ptype) {. PartitionType ptype
+    //     case PartitionType::LengthOne: {
+    //         if (nRows) mat[0] = z.front();
+    //         break;
+    //     } case PartitionType::RepStdAll: {
+    //         PartsRep(mat, z, width, lastElem, lastCol, nRows);
+    //         break;
+    //     } case PartitionType::RepNoZero: {
+    //         PartsRep(mat, z, width, lastElem, lastCol, nRows);
+    //         break;
+    //     } case PartitionType::RepShort: {
+    //         PartsRep(mat, z, width, lastElem, lastCol, nRows);
+    //         break;
+    //     } case PartitionType::RepCapped: {
+    //         PartsRep(mat, z, width, lastElem, lastCol, nRows);
+    //         break;
+    //     } case PartitionType::DstctStdAll: {
+    //
+    //         break;
+    //     } case PartitionType::DstctMultiZero: {
+    //
+    //         break;
+    //     } case PartitionType::DstctOneZero: {
+    //
+    //         break;
+    //     } case PartitionType::DstctNoZero: {
+    //
+    //         break;
+    //     } case PartitionType::DstctCapped: {
+    //
+    //         break;
+    //     } case PartitionType::DstctCappedMZ: {
+    //
+    //         break;
+    //     } case PartitionType::Multiset: {
+    //
+    //         break;
+    //     } case PartitionType::CoarseGrained: {
+    //
+    //         break;
+    //     } case PartitionType::CompRepNoZero: {
+    //
+    //         break;
+    //     } case PartitionType::CompRepWeak: {
+    //
+    //         break;
+    //     } case PartitionType::CmpRpZroNotWk: {
+    //
+    //         break;
+    //     } case PartitionType::CmpDstctNoZero: {
+    //         CompsRep<0>(mat, z, width, nRows);
+    //         break;
+    //     } case PartitionType::CmpDstctZNotWk: {
+    //         CompsRep<1>(mat, z, width, nRows);
+    //         break;
+    //     } case PartitionType::CmpDstctMZWeak: {
+    //         CompsRep<0>(mat, z, width, nRows);
+    //         break;
+    //     } default: {
+    //
+    //     }
+    // }
 
     if (width == 1) {
         if (nRows) mat[0] = z.front();

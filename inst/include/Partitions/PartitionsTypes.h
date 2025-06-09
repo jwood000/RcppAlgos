@@ -10,23 +10,23 @@
 // Here are the corresponding count functions that one would use for each
 // example below:
 //
-// RepStdAll      :  CountPartRep(20)
-// RepNoZero      :  CountPartRepLen(20, 5)
-// RepShort       :  CountPartRepLen(23, 3)
-// RepCapped      :  CountPartRepLenCap(14, 3, 10) N.B. Get first part:
-//                    (3, 5, 12); Map to match(c(3, 5, 12), 3:12) -->>
-//                    (1, 3, 10) -->> sum(c(1, 3, 10)) = 14
+// RepStdAll      : CountPartRep(20)
+// RepNoZero      : CountPartRepLen(20, 5)
+// RepShort       : CountPartRepLen(23, 3)
+// RepCapped      : CountPartRepLenCap(14, 3, 10) N.B. Get first part:
+//                   (3, 5, 12); Map to match(c(3, 5, 12), 3:12) -->>
+//                   (1, 3, 10) -->> sum(c(1, 3, 10)) = 14
 //
-// DstctStdAll    :  CountPartDistinct(20)
-// DstctMultiZero :  CountPartsDistinctMultiZero(c(0, 0, 1, 2, 17), 20, 5)
-// DstctOneZero   :  CountPartDistinctLen(25, 5) N.B. Add 1 to each element to
-//                     obtain new target = 25
+// DstctStdAll    : CountPartDistinct(20)
+// DstctMultiZero : CountPartsDistinctMultiZero(c(0, 0, 1, 2, 17), 20, 5)
+// DstctOneZero   : CountPartDistinctLen(25, 5) N.B. Add 1 to each element to
+//                   obtain new target = 25
 //
-// DstctNoZero    :  CountPartDistinctLen(20, 5)
-// DstctCapped    :  CountPartDistinctLenCap(20, 4, 9)
-// DstctCappedMZ  :  CountPartsDistinctMultiZeroCap(c(0, 0, 9, 11), 20, 4, 11)
-// LengthOne      :  1 or 0
-// Multiset       :  CountPartsMultiset(rep(1:3, 5), c(1, 2, 2, 15))
+// DstctNoZero    : CountPartDistinctLen(20, 5)
+// DstctCapped    : CountPartDistinctLenCap(20, 4, 9)
+// DstctCappedMZ  : CountPartsDistinctMultiZeroCap(c(0, 0, 9, 11), 20, 4, 11)
+// LengthOne      : 1 or 0
+// Multiset       : CountPartsMultiset(rep(1:3, 5), c(1, 2, 2, 15))
 //
 // CoarseGrained  : Currently, we utilize std::vector and push_back until we
 //                   reach a terminating situation.
@@ -36,7 +36,7 @@
 //                   CountCompsRepLen(25, 5) We add the length to the target
 //
 // CmpRpZroNotWk  : compositionsCount(0:20, 5, TRUE) -- >>
-//                   CountCompsRepZero(20, 5)
+//                   CountCompsRepZNotWk(20, 5)
 //
 // CmpDstctNoZero : compositionsCount(20, 5) -->> CountCompsDistinctLen(20, 5)
 // CmpDstctZNotWk : compositionsCount(0:20, 5, freqs = c(3, rep(1, 20))) -->>
@@ -46,7 +46,90 @@
 //                                    weak = TRUE) -->>
 //                   CountCompsDistinctMZWeak(20, 5, 0, 2)
 //
-// CompMultiset   :  CountPartsMultiset(rep(1:3, 5), c(1, 2, 2, 15), true)
+// CompMultiset   : CountPartsMultiset(rep(1:3, 5), c(1, 2, 2, 15), true)
+//
+// PrmRepPart     : permuteGeneral(
+//                      1:20, 5, TRUE,
+//                      constraintFun = "sum",
+//                      comparisonFun = "==",
+//                      limitConstraints = 20
+//                  ) -->> CountCompsRepLen(20, 5)
+//
+//                  ## When zero is involved, we call the same compiled
+//                  ## function just translated by the width
+//                  permuteGeneral(
+//                      0:20, 5, TRUE,
+//                      constraintFun = "sum",
+//                      comparisonFun = "==",
+//                      limitConstraints = 20
+//                  ) -->> CountCompsRepLen(25, 5)
+//
+// double CountPartsPermDistinct(const std::vector<int> &z,
+//                               int tar, int width, bool includeZero)
+//
+// PrmDstPart     : permuteGeneral(
+//                      1:20, 4,
+//                      constraintFun = "sum",
+//                      comparisonFun = "==",
+//                      limitConstraints = 20
+//                  ) -->> CountPartsPermDistinct(c(1, 2, 3, 14), 20, 4, 0)
+//
+//                  ## When zero is involved, we call the same compiled
+//                  ## function just translated by the width. Note in this
+//                  ## case, we are passing includeZero = FALSE b/c there
+//                  ## is only one zero and hence isomorphic to 1:24
+//                  permuteGeneral(
+//                      0:20, 4,
+//                      constraintFun = "sum",
+//                      comparisonFun = "==",
+//                      limitConstraints = 20
+//                  ) -->> CountPartsPermDistinct(c(0, 1, 2, 17), 24, 4, 0)
+//
+// PrmDstPartMZ   : permuteGeneral(
+//                      0:20, 4,
+//                      freqs = c(2, rep(1, 20)),
+//                      constraintFun = "sum",
+//                      comparisonFun = "==",
+//                      limitConstraints = 20
+//                  ) -->> CountPartsPermDistinct(c(0, 0, 1, 19), 20, 4, 1)
+//
+// double CountPartsPermDistinctCap(const std::vector<int> &z, int cap,
+//                                  int tar, int width, bool includeZero)
+//
+// For the cases below, we point out that the sum(z) will not be equal to the
+// target as z in these cases is being utilized as the index vector. These
+// cases are under the "general" case and require a vector, v, that is used
+// for output. E.g. in all of the generating functions, you will see v[z[i]].
+//
+// PrmDstPrtCap   : permuteGeneral(
+//                      55, 4,
+//                      constraintFun = "sum",
+//                      comparisonFun = "==",
+//                      limitConstraints = 80
+//                  ) -->> CountPartsPermDistinctCap(c(0, 1, 21, 54),
+//                                                   55, 80, 4, 0)
+//
+//                  ## When zero is involved, we call the same compiled
+//                  ## function just translated by the width. Note in this
+//                  ## case, we are passing includeZero = FALSE b/c there
+//                  ## is only one zero and hence isomorphic to 1:84
+//                  permuteGeneral(
+//                      0:55, 4,
+//                      constraintFun = "sum",
+//                      comparisonFun = "==",
+//                      limitConstraints = 80
+//                  ) -->> CountPartsPermDistinctCap(c(0, 1, 24, 55),
+//                                                   55, 84, 4, 0)
+//
+// PrmDstPrtCapMZ : permuteGeneral(
+//                      0:55, 4,
+//                      freqs = c(2, rep(1, 55)),
+//                      constraintFun = "sum",
+//                      comparisonFun = "==",
+//                      limitConstraints = 80
+//                  ) -->> CountPartsPermDistinctCap(c(0, 0, 25, 55),
+//                                                   55, 80, 4, 1)
+//
 // NotPartition   :
 //
 // ****************************************************************************
@@ -108,6 +191,32 @@
 // CompMultiset   : Compositions of non-trivial multisets. Non-trivial here
 //                   means elements other than 0 have multiplicity > 1
 //
+// The cases below are technically compositions, however we don't have a
+// composition algorithm for them. We do have a partition algorithm available
+// for these cases. Remember, in order for us to have a partition/composition
+// algorithm, it must satisfy the requirement of producing the next
+// lexicographical result. These cases rely on generating the next partition
+// and subsequently generating all possible permutations of such partition.
+// This will not produce the results in lexicographical order, but it will
+// produce all results.
+//
+// Note, if zero is included, it will be considered when generating perms,
+// thus all cases below will produce weak compositions.
+//
+// Also note that all of the cases below will stem from permuteGeneral
+//
+// PrmRepPart     : Permutations of partitions with repetition
+// PrmDstPart     : Permutations of partitions with distinct parts
+// PrmDstPartMZ   : Permutations of partitions with distinct parts and more
+//                   than one zero
+//
+// PrmDstPrtCap   : Permutations of partitions with distinct restricted parts
+// PrmDstPrtCapMZ : Permutations of partitions with distinct restricted parts
+//                   and more than one zero
+//
+// PrmMultiset    : Permutations of partitions of non-trivial multisets.
+//                   Non-trivial here means elements other than 0 have
+//                   multiplicity > 1
 // NotPartition
 //
 // ****************************************************************************
@@ -133,7 +242,13 @@ enum class PartitionType {
     CmpDstctZNotWk = 17,
     CmpDstctMZWeak = 18,
     CompMultiset   = 19,
-    NotPartition   = 20
+    PrmRepPart     = 20,
+    PrmDstPart     = 21,
+    PrmDstPartMZ   = 22,
+    PrmDstPrtCap   = 23,
+    PrmDstPrtCapMZ = 24,
+    PrmMultiset    = 25,
+    NotPartition   = 26
 };
 
 constexpr const char* PTypeNames[] = {
@@ -157,6 +272,12 @@ constexpr const char* PTypeNames[] = {
     "CmpDstctZNotWk",
     "CmpDstctMZWeak",
     "CompMultiset",
+    "PrmRepPart",
+    "PrmDstPart",
+    "PrmDstPartMZ",
+    "PrmDstPrtCap",
+    "PrmDstPrtCapMZ",
+    "PrmMultiset",
     "NotPartition"
 };
 

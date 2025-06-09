@@ -13,5 +13,5 @@ void CountPartsRep(mpz_class &res, int n, int m,
                    int cap = 0, int strtLen = 0);
 void CountCompsRepLen(mpz_class &res, int n, int m,
                       int cap = 0, int strtLen = 0);
-void CountCompsRepZero(mpz_class &res, int n, int m,
-                       int cap = 0, int strtLen = 0);
+void CountCompsRepZNotWk(mpz_class &res, int n, int m,
+                         int cap = 0, int strtLen = 0);

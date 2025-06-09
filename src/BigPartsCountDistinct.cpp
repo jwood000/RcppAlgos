@@ -13,24 +13,18 @@ void CountPartsDistinctLenCap(mpz_class &res, std::vector<mpz_class> &p1,
 
     if (m > n || cap < m) {
         res = 0;
+    } else if (m == n && n == 1 && cap >= 1) {
+        res = 1;
     } else if (m == n) {
-        if (n == 1 && cap >= 1) {
-            res = 1;
-        } else {
-            res = 0;
-        }
+        res = 0;
+    } else if (m == 1 && cap >= n) {
+        res = 1;
     } else if (m == 1) {
-        if (cap >= n) {
-            res = 1;
-        } else {
-            res = 0;
-        }
-    } else if (limit <= n) {
-        if (limit == n) {
-            res = 1;
-        } else {
-            res = 0;
-        }
+        res = 0;
+    } else if (limit == n) {
+        res = 1;
+    } else if (limit < n) {
+        res = 0;
     } else {
         const int width = n + 1;
         const int maxSize = (cap + 1) * width;

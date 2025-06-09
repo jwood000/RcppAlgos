@@ -48,7 +48,7 @@ void rankCompsRepZero(std::vector<int>::iterator iter, int n, int m,
 
     for (int i = 0, j = 0; i < (width - 1); ++i, --m, j = incr_j, ++iter) {
         double temp = incr_j ? CountCompsRepLen(n, m, cap, k) :
-                               CountCompsRepZero(n, m, cap, k);
+            CountCompsRepZNotWk(n, m, cap, k);
 
         for (int idx = *iter; j < idx; ++j) {
             incr_j = true;

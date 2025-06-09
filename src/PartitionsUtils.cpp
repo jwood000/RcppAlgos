@@ -10,6 +10,8 @@ std::string GetPTypeName(PartitionType ptype) {
     return PTypeNames[ptype_idx];
 }
 
+#include <iostream>
+
 void BinaryNextElem(int &uppBnd, int &lowBnd, int &ind, int lastElem,
                     std::int64_t target, std::int64_t partial,
                     const std::vector<std::int64_t> &v) {
@@ -290,7 +292,7 @@ void SetStartPartitionZ(const std::vector<int> &Reps,
 int DiscoverPType(const std::vector<int> &Reps,
                   PartDesign &part, int lenV) {
 
-    if (part.ptype == PartitionType::RepCapped) {
+    if (part.isRep) {
         std::vector<int> isoz(part.width, 0);
         isoz.back() = part.mapTar -
             static_cast<int>(!part.includeZero) * part.width;
@@ -305,11 +307,23 @@ int DiscoverPType(const std::vector<int> &Reps,
             part.ptype = PartitionType::CompRepNoZero;
             return 1;
         } else if (isoz == part.startZ) {
-            part.ptype = PartitionType::RepNoZero;
+            part.ptype = part.isPerm ? PartitionType::PrmRepPart :
+                PartitionType::RepNoZero;
             return 1;
+        } else if (part.isComb) {
+            part.ptype = PartitionType::RepCapped;
+        } else {
+            // This should not happen
+            part.solnExist = false;
         }
     } else {
-        for (auto ptype: DistPTypeArr) {
+
+        for (auto ptype: {
+            PartitionType::DstctMultiZero,
+            PartitionType::DstctNoZero,
+            PartitionType::DstctCappedMZ
+        }) {
+
             std::vector<int> isoz(part.width, 0);
 
             switch (ptype) {
@@ -372,7 +386,7 @@ int DiscoverPType(const std::vector<int> &Reps,
                 }
             }
 
-            if (isoz == part.startZ && ptype != PartitionType::DstctCapped) {
+            if (isoz == part.startZ) {
                 if (part.isMult && part.allOne && part.isComp) {
                     part.ptype = part.isWeak ? PartitionType::CmpDstctMZWeak :
                         PartitionType::CmpDstctZNotWk;
@@ -393,6 +407,12 @@ int DiscoverPType(const std::vector<int> &Reps,
                 }
             }
         }
+    }
+
+    if (part.isPerm && part.isDist) {
+        part.ptype = PartitionType::PrmDstPrtCap;
+    } else if (part.isDist) {
+        part.ptype = PartitionType::DstctCapped;
     }
 
     return 0;
@@ -498,17 +518,20 @@ void StandardDesign(const std::vector<int> &Reps,
         if (width == max_width && (Reps.front() >= (max_width - 1))) {
             // partitionsCount(0:20, freqs = c(4, rep(1, 20)))
             // partitionsCount(0:20, freqs = c(40, rep(1, 20))) gives same res
-            part.ptype = PartitionType::DstctStdAll;
+            part.ptype = part.isPerm ? PartitionType::PrmDstPartMZ :
+                PartitionType::DstctStdAll;
         } else if (width <= (max_width + Reps.front())) {
             // partitionsCount(0:20, freqs = c(3, rep(1, 20)))
             // partitionsCount(0:20, freqs = c(2, rep(1, 20)))
             // partitionsCount(0:20, 5, freqs = c(2, rep(1, 20)))
             // partitionsCount(0:20, 4, freqs = c(3, rep(1, 20)))
-            part.ptype = PartitionType::DstctMultiZero;
+            part.ptype = part.isPerm ? PartitionType::PrmDstPartMZ :
+                PartitionType::DstctMultiZero;
         } else {
             // I don't think it is possible to get here.
-            part.ptype = part.isComp ? PartitionType::CompMultiset :
-                PartitionType::Multiset;
+            part.ptype = part.isPerm ? PartitionType::PrmMultiset :
+                (part.isComp ? PartitionType::CompMultiset :
+                    PartitionType::Multiset);
             part.solnExist = false;
         }
 
@@ -539,22 +562,32 @@ void StandardDesign(const std::vector<int> &Reps,
             // compositionsCount(0:20, repetition = TRUE)
             width      = part.target; // i.e. 1 * target = target
             part.ptype = part.isComp ? PartitionType::CmpRpZroNotWk :
-                PartitionType::RepStdAll;
+                (part.isPerm ? PartitionType::PrmRepPart :
+                     PartitionType::RepStdAll);
         } else if (part.mIsNull) {
             // partitionsCount(20, repetition = TRUE);
             // compositionsCount(20, repetition = TRUE)
             width      = part.target; // i.e. 1 * target = target
             part.ptype = part.isComp ? PartitionType::CompRepNoZero :
-                PartitionType::RepNoZero;
+                (part.isPerm ? PartitionType::PrmRepPart :
+                     PartitionType::RepNoZero);
         } else if (part.isComp && part.includeZero && width < part.target) {
             // compositionsCount(0:20, 5, repetition = TRUE)
             part.ptype = PartitionType::CmpRpZroNotWk;
         } else if (part.includeZero && width < part.target) {
             // partitionsCount(0:20, 5, TRUE)
-            part.ptype      = PartitionType::RepShort;
-            part.mapTar    += width;
+            part.ptype = part.isPerm ? PartitionType::PrmRepPart :
+                PartitionType::RepShort;
+            part.mapTar += width;
             part.mapIncZero = false;
-        } else if (!part.isComp && !part.isComb && part.includeZero) {
+        }else if (part.includeZero) {
+            // partitionsCount(0:20, 20, TRUE)
+            // partitionsCount(0:20, 2000, TRUE) -->> same result
+            //
+            // ## Same with compositions
+            // compositionsCount(0:20, 20, repetition = TRUE)
+            // compositionsCount(0:20, 200, repetition = TRUE) -->> same result
+            //
             // permuteGeneral(
             //     0:10,
             //     m = 10,
@@ -563,25 +596,20 @@ void StandardDesign(const std::vector<int> &Reps,
             //     comparisonFun = "==",
             //     limitConstraints = 10
             // )
-            part.ptype = PartitionType::RepStdAll;
-        }else if (part.includeZero) {
-            // partitionsCount(0:20, 20, TRUE)
-            // partitionsCount(0:20, 2000, TRUE) -->> same result
-            //
-            // ## Same with compositions
-            // compositionsCount(0:20, 20, repetition = TRUE)
-            // compositionsCount(0:20, 200, repetition = TRUE) -->> same result
             width      = part.target;
             part.ptype = part.isComp ? PartitionType::CmpRpZroNotWk :
-                PartitionType::RepStdAll;
+                (part.isPerm ? PartitionType::PrmRepPart :
+                    PartitionType::RepStdAll);
         } else if (width <= part.target) {
             // partitionsCount(20, 20, TRUE); partitionsCount(20, 5, TRUE)
             part.ptype = part.isComp ? PartitionType::CompRepNoZero :
-                PartitionType::RepNoZero;
+                (part.isPerm ? PartitionType::PrmRepPart :
+                     PartitionType::RepNoZero);
         } else {
             // partitionsCount(20, 21, TRUE)
             part.ptype = part.isComp ? PartitionType::CompRepNoZero :
-                PartitionType::RepNoZero;
+                (part.isPerm ? PartitionType::PrmRepPart :
+                     PartitionType::RepNoZero);
             part.solnExist = false;
         }
     } else if (part.isDist) {
@@ -594,16 +622,19 @@ void StandardDesign(const std::vector<int> &Reps,
         } else if (part.includeZero) {
             // partitionsCount(0:20)
             // partitionsCount(0:20, 3)
-            part.ptype = PartitionType::DstctOneZero;
-             // We need to add m in target in order to
-             // correctly count the number of partitions
+            part.ptype = part.isPerm ? PartitionType::PrmDstPart :
+                PartitionType::DstctOneZero;
+
+            // We need to add m in target in order to
+            // correctly count the number of partitions
             part.mapTar += width;
             part.mapIncZero = false;
         } else {
             // partitionsCount(20, 3)
             // compositionsCount(20, 3)
-            part.ptype = part.isComp ? PartitionType::CmpDstctNoZero :
-                PartitionType::DstctNoZero;
+            part.ptype = part.isPerm ? PartitionType::PrmDstPart :
+                (part.isComp ? PartitionType::CmpDstctNoZero :
+                    PartitionType::DstctNoZero);
         }
     }
 
@@ -777,12 +808,12 @@ void SetPartitionDesign(const std::vector<int> &Reps,
             part.ptype = PartitionType::LengthOne;
         } else if (part.isMult && part.isComp) {
             part.ptype = PartitionType::CompMultiset;
+        } else if (part.isMult && part.isPerm) {
+            part.ptype = PartitionType::PrmMultiset;
         } else if (part.isMult) {
             part.ptype = PartitionType::Multiset;
-        } else if (part.isRep) {
-            part.ptype = PartitionType::RepCapped;
         } else {
-            part.ptype = PartitionType::DstctCapped;
+            // All other cases are handled in DiscoverPType
         }
 
         ctype = ConstraintType::PartMapping;
@@ -792,6 +823,9 @@ void SetPartitionDesign(const std::vector<int> &Reps,
             DiscoverPType(Reps, part, lenV);
         }
     }
+
+    std::cout << GetPTypeName(part.ptype) << ", " << m << ", " << part.isDist << ", " << part.isPerm << ", " << part.isPart << ", " << part.solnExist << std::endl;
+    // cpp11::stop("dawg");
 
     PartitionsCount(Reps, part, lenV, bIsCount);
 }

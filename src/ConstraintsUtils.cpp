@@ -6,13 +6,16 @@ void InitialSetupPartDesign(
     bool IsRep, bool IsMult, bool mIsNull, bool IsComb
 ) {
 
+    bool IsComp = CppConvert::convertFlag(RIsComposition, "IsComposition");
+
     part.isRep   = IsRep;
     part.isMult  = IsMult;
     part.isDist  = !IsMult && !IsRep;
     part.mIsNull = mIsNull;
     part.isWeak  = CppConvert::convertFlag(RIsWeak, "weak");
-    part.isComp  = CppConvert::convertFlag(RIsComposition, "IsComposition");
+    part.isComp  = IsComp;
     part.isComb  = IsComb;
+    part.isPerm  = !IsComb && !IsComp;
 }
 
 template <typename T>

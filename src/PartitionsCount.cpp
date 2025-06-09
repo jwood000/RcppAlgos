@@ -13,6 +13,8 @@
 
 constexpr double cutOff = 3.0;
 
+#include <iostream>
+
 std::unique_ptr<CountClass> MakeCount(PartitionType ptype) {
 
     switch (ptype) {
@@ -171,7 +173,7 @@ void CompsRepLen::GetCount(mpz_class &res, int n, int m, int cap,
 void CompsRepZero::GetCount(mpz_class &res, int n, int m, int cap,
                             int strtLen, bool bLiteral) {
     if (bLiteral) {
-        CountCompsRepZero(res, n, m);
+        CountCompsRepZNotWk(res, n, m);
     } else {
         CountCompsRepLen(res, n, m);
     }
@@ -229,7 +231,7 @@ double CompsRepLen::GetCount(int n, int m, int cap, int strtLen) {
 }
 
 double CompsRepZero::GetCount(int n, int m, int cap, int strtLen) {
-    return CountCompsRepZero(n, m);
+    return CountCompsRepZNotWk(n, m);
 }
 
 double CompsDistinctLen::GetCount(int n, int m, int cap, int strtLen) {
@@ -254,6 +256,7 @@ bool OverTheBar(PartitionType ptype, double capNumIters, int n, int m) {
             return (theBar / capNumIters) > cutOff;
         } case PartitionType::DstctCappedMZ: {
             const double theBar = nChooseK(n, m);
+            // std::cout<< theBar << ", " << capNumIters << std::endl;
             return (theBar / capNumIters) > cutOff;
         } default: {
             return true;
@@ -412,6 +415,7 @@ void PartitionsCount(const std::vector<int> &Reps,
         } else if (part.ptype == PartitionType::DstctCappedMZ ||
                    part.ptype == PartitionType::DstctCapped) {
 
+            // std::cout << bIsCount << ", " << bWorthIt << std::endl;
             if (bIsCount || bWorthIt) {
                 part.count = CountPartsPermDistinctCap(part.startZ, part.cap,
                                                        part.mapTar, part.width,
