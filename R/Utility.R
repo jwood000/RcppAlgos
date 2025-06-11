@@ -26,7 +26,7 @@ ResolveVFreqs <- function(v) {
         ##
         ## N.B. We are unable to get back factors.
         ##
-        ## N.B. We don't test for raws as table doesn't support raws
+        ## N.B. We don't test for class raw as table doesn't support them
         ## Error in order(y) : unimplemented type 'raw' in 'orderVector1'
         conv_v <- if (identical(nms, as.character(as.integer(nms)))) {
             as.integer(nms)
