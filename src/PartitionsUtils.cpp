@@ -10,8 +10,6 @@ std::string GetPTypeName(PartitionType ptype) {
     return PTypeNames[ptype_idx];
 }
 
-#include <iostream>
-
 void BinaryNextElem(int &uppBnd, int &lowBnd, int &ind, int lastElem,
                     std::int64_t target, std::int64_t partial,
                     const std::vector<std::int64_t> &v) {
@@ -171,9 +169,8 @@ int GetFirstPartition(const std::vector<std::int64_t> &v,
 
 void GetTarget(const std::vector<double> &v,
                const std::vector<int> &Reps,
-               PartDesign &part, int m, int lenV) {
+               PartDesign &part, int &m, int lenV) {
 
-    part.width = m;
     std::vector<int> z(m, 0);
     std::vector<int> zExpanded;
     std::vector<std::int64_t> v64(v.cbegin(), v.cend());
@@ -184,15 +181,28 @@ void GetTarget(const std::vector<double> &v,
         }
     }
 
-    const int res = GetFirstPartition(
-        v64, zExpanded, z, Reps, part.target, m, lenV, part.isRep, part.isMult
-    );
+    int res = 0;
+
+    while (res != 1) {
+        res =  GetFirstPartition(
+            v64, zExpanded, z, Reps, part.target, m, lenV, part.isRep, part.isMult
+        );
+
+        if (part.mIsNull && res != 1 && m > 1) {
+            --m;
+            z.assign(m, 0);
+        } else if (!part.mIsNull || (res != 1 && m == 1)) {
+            break;
+        }
+    }
+
+    part.width = m;
 
     if (res == 1) {
         part.startZ    = z;
         part.solnExist = true;
         part.mapTar    = std::accumulate(z.cbegin(), z.cend(), 0) +
-                         static_cast<int>(!part.includeZero) * part.width;
+                            static_cast<int>(!part.includeZero) * part.width;
 
         // If the equation yields a non-zero remainder, something isn't right
         if ((part.mapTar * part.slope - part.target) % (part.width)) {
@@ -239,6 +249,7 @@ void SetStartPartitionZ(const std::vector<int> &Reps,
                                             (part.width - 2)) / 2;
             break;
         } case PartitionType::DstctMultiZero: {
+
             if (Reps.front() >= (part.width - 1)) {
                 part.startZ.back() = part.target;
             } else {
@@ -247,6 +258,7 @@ void SetStartPartitionZ(const std::vector<int> &Reps,
                 part.startZ.back() = part.target - (part.width -
                     Reps.front()) * (part.width - (Reps.front() + 1)) / 2;
             }
+
             break;
         } case PartitionType::CompRepNoZero: {
             std::fill(part.startZ.begin(), part.startZ.end(), 1);
@@ -264,6 +276,7 @@ void SetStartPartitionZ(const std::vector<int> &Reps,
                 (part.width - 1)) / 2;
             break;
         } case PartitionType::CmpDstctZNotWk: {
+
             if (Reps.front() >= (part.width - 1)) {
                 part.startZ.back() = part.target;
             } else {
@@ -272,8 +285,10 @@ void SetStartPartitionZ(const std::vector<int> &Reps,
                 part.startZ.back() = part.target - (part.width -
                     Reps.front()) * (part.width - (Reps.front() + 1)) / 2;
             }
+
             break;
         } case PartitionType::CmpDstctMZWeak: {
+
             if (Reps.front() >= (part.width - 1)) {
                 part.startZ.back() = part.target;
             } else {
@@ -282,8 +297,38 @@ void SetStartPartitionZ(const std::vector<int> &Reps,
                 part.startZ.back() = part.target - (part.width -
                     Reps.front()) * (part.width - (Reps.front() + 1)) / 2;
             }
+
             break;
-        } default: {
+        } case PartitionType::PrmRepPartNoZ: {
+            std::fill(part.startZ.begin(), part.startZ.end(), 1);
+            part.startZ.back() = part.target - part.width + 1;
+            break;
+        } case PartitionType::PrmRepPart: {
+            part.startZ.back() = part.target;
+            break;
+        } case PartitionType::PrmDstPartNoZ: {
+            std::iota(part.startZ.begin(), part.startZ.end(), 1);
+            part.startZ.back() = part.target - (part.width *
+                (part.width - 1)) / 2;
+            break;
+        } case PartitionType::PrmDstPrtOneZ: {
+            std::iota(part.startZ.begin(), part.startZ.end(), 0);
+            part.startZ.back() = part.target - ((part.width - 1) *
+                (part.width - 2)) / 2;
+            break;
+        } case PartitionType::PrmDstPartMZ: {
+
+            if (Reps.front() >= (part.width - 1)) {
+                part.startZ.back() = part.target;
+            } else {
+                std::iota(part.startZ.begin() + Reps.front(),
+                          part.startZ.end(), 1);
+                part.startZ.back() = part.target - (part.width -
+                    Reps.front()) * (part.width - (Reps.front() + 1)) / 2;
+            }
+
+            break;
+        }  default: {
             part.startZ.back() = part.target;
         }
     }
@@ -292,7 +337,10 @@ void SetStartPartitionZ(const std::vector<int> &Reps,
 int DiscoverPType(const std::vector<int> &Reps,
                   PartDesign &part, int lenV) {
 
-    if (part.isRep) {
+    if (part.width == 1) {
+        part.ptype = PartitionType::LengthOne;
+        return 1;
+    } else if (part.isRep) {
         std::vector<int> isoz(part.width, 0);
         isoz.back() = part.mapTar -
             static_cast<int>(!part.includeZero) * part.width;
@@ -307,14 +355,15 @@ int DiscoverPType(const std::vector<int> &Reps,
             part.ptype = PartitionType::CompRepNoZero;
             return 1;
         } else if (isoz == part.startZ) {
-            part.ptype = part.isPerm ? PartitionType::PrmRepPart :
+            part.ptype = part.isPerm ? PartitionType::PrmRepPartNoZ :
                 PartitionType::RepNoZero;
             return 1;
         } else if (part.isComb) {
             part.ptype = PartitionType::RepCapped;
-        } else {
-            // This should not happen
-            part.solnExist = false;
+            return 1;
+        } else if (part.isPerm) {
+            part.ptype = PartitionType::PrmRepCapped;
+            return 1;
         }
     } else {
 
@@ -325,6 +374,7 @@ int DiscoverPType(const std::vector<int> &Reps,
         }) {
 
             std::vector<int> isoz(part.width, 0);
+            bool IsCapped = false;
 
             switch (ptype) {
                 case PartitionType::DstctNoZero: {
@@ -347,6 +397,7 @@ int DiscoverPType(const std::vector<int> &Reps,
                     break;
                 } case PartitionType::DstctCappedMZ: {
                     if (!Reps.empty()) {
+                        IsCapped = true;
                         int testSum = 0;
                         int max_rep = part.width;
 
@@ -391,14 +442,23 @@ int DiscoverPType(const std::vector<int> &Reps,
                     part.ptype = part.isWeak ? PartitionType::CmpDstctMZWeak :
                         PartitionType::CmpDstctZNotWk;
                     return 1;
+                } else if (part.isMult && part.allOne && IsCapped) {
+                    // In practice we typically see:
+                    //        PartitionType::DstctCappedMZ
+                    part.ptype = part.isPerm ?
+                        PartitionType::PrmDstPrtCapMZ : ptype;
+                    return 1;
                 } else if (part.isMult && part.allOne) {
                     // In practice we typically see:
                     //        PartitionType::DstctMultiZero
-                    //        PartitionType::DstctCappedMZ
-                    part.ptype = ptype;
+                    part.ptype = part.isPerm ?
+                        PartitionType::PrmDstPartMZ : ptype;
                     return 1;
                 } else if (part.isDist && part.isComp) {
                     part.ptype = PartitionType::CmpDstctNoZero;
+                    return 1;
+                } else if (part.isDist && part.isPerm) {
+                    part.ptype = PartitionType::PrmDstPartNoZ;
                     return 1;
                 } else if (part.isDist) {
                     // In practice we typically see: PartitionType::DstctNoZero
@@ -407,12 +467,6 @@ int DiscoverPType(const std::vector<int> &Reps,
                 }
             }
         }
-    }
-
-    if (part.isPerm && part.isDist) {
-        part.ptype = PartitionType::PrmDstPrtCap;
-    } else if (part.isDist) {
-        part.ptype = PartitionType::DstctCapped;
     }
 
     return 0;
@@ -540,7 +594,8 @@ void StandardDesign(const std::vector<int> &Reps,
                 PartitionType::CmpDstctZNotWk;
         }
     } else if (part.isRep) {
-        if (part.isComp && part.isWeak && part.includeZero) {
+        if (((part.isComp && part.isWeak) || part.isPerm) &&
+            part.includeZero) {
             // compositionsCount(0:20, repetition = TRUE, weak = TRUE)
             // [1] 68923264410
             //
@@ -554,7 +609,8 @@ void StandardDesign(const std::vector<int> &Reps,
             //
             // compositionsCount(0:20, 5, repetition = TRUE, weak = TRUE)
             if (part.mIsNull) width = part.target;
-            part.ptype      = PartitionType::CompRepWeak;
+            part.ptype      = part.isPerm ? PartitionType::PrmRepPart :
+                PartitionType::CompRepWeak;
             part.mapTar    += width;
             part.mapIncZero = false;
         } else if (part.mIsNull && part.includeZero) {
@@ -562,14 +618,13 @@ void StandardDesign(const std::vector<int> &Reps,
             // compositionsCount(0:20, repetition = TRUE)
             width      = part.target; // i.e. 1 * target = target
             part.ptype = part.isComp ? PartitionType::CmpRpZroNotWk :
-                (part.isPerm ? PartitionType::PrmRepPart :
-                     PartitionType::RepStdAll);
+                PartitionType::RepStdAll;
         } else if (part.mIsNull) {
             // partitionsCount(20, repetition = TRUE);
             // compositionsCount(20, repetition = TRUE)
             width      = part.target; // i.e. 1 * target = target
             part.ptype = part.isComp ? PartitionType::CompRepNoZero :
-                (part.isPerm ? PartitionType::PrmRepPart :
+                (part.isPerm ? PartitionType::PrmRepPartNoZ :
                      PartitionType::RepNoZero);
         } else if (part.isComp && part.includeZero && width < part.target) {
             // compositionsCount(0:20, 5, repetition = TRUE)
@@ -603,12 +658,12 @@ void StandardDesign(const std::vector<int> &Reps,
         } else if (width <= part.target) {
             // partitionsCount(20, 20, TRUE); partitionsCount(20, 5, TRUE)
             part.ptype = part.isComp ? PartitionType::CompRepNoZero :
-                (part.isPerm ? PartitionType::PrmRepPart :
+                (part.isPerm ? PartitionType::PrmRepPartNoZ :
                      PartitionType::RepNoZero);
         } else {
             // partitionsCount(20, 21, TRUE)
             part.ptype = part.isComp ? PartitionType::CompRepNoZero :
-                (part.isPerm ? PartitionType::PrmRepPart :
+                (part.isPerm ? PartitionType::PrmRepPartNoZ :
                      PartitionType::RepNoZero);
             part.solnExist = false;
         }
@@ -622,7 +677,7 @@ void StandardDesign(const std::vector<int> &Reps,
         } else if (part.includeZero) {
             // partitionsCount(0:20)
             // partitionsCount(0:20, 3)
-            part.ptype = part.isPerm ? PartitionType::PrmDstPart :
+            part.ptype = part.isPerm ? PartitionType::PrmDstPrtOneZ :
                 PartitionType::DstctOneZero;
 
             // We need to add m in target in order to
@@ -632,7 +687,7 @@ void StandardDesign(const std::vector<int> &Reps,
         } else {
             // partitionsCount(20, 3)
             // compositionsCount(20, 3)
-            part.ptype = part.isPerm ? PartitionType::PrmDstPart :
+            part.ptype = part.isPerm ? PartitionType::PrmDstPartNoZ :
                 (part.isComp ? PartitionType::CmpDstctNoZero :
                     PartitionType::DstctNoZero);
         }
@@ -708,15 +763,15 @@ void CheckPartition(const std::vector<std::string> &compFunVec,
 
 // Right now, we have no fast method for calculating the number of partitions
 // of multisets, so the variable bIsCount, is used only when we call
-// partitionsCount from R. If we are actually generating results, this will
-// be set to false.
-void SetPartitionDesign(const std::vector<int> &Reps,
-                        const std::vector<double> &v,
-                        PartDesign &part, ConstraintType &ctype,
-                        int lenV, int &m, bool bIsCount) {
+// partitionsCount/Design from R. If we are actually generating results, this
+// will be set to false.
+void SetPartitionDesign(
+    const std::vector<int> &Reps, const std::vector<double> &v,
+    PartDesign &part, ConstraintType &ctype, int lenV, int &m, bool bIsCount
+) {
 
     // Now that we know we have partitions, we need to determine if we are in a
-    // mapping case. There are a few of ways this can happen.
+    // mapping case. There are a few ways this can happen.
     //
     // 1. If the first element isn't zero or one.
     // 2. If the distance between elements is greater than 1.
@@ -786,10 +841,8 @@ void SetPartitionDesign(const std::vector<int> &Reps,
         StandardDesign(Reps, part, m, lenV);
         SetStartPartitionZ(Reps, part);
     } else {
-        // For right now, if m is not provided (i.e. mIsNull = true),
-        // we don't try to figure out the appropriate length. Note,
-        // this only applies to non-canonical partitions.
-        part.mIsNull = false;
+        // We are now figuring out the length of m when mIsNull = true.
+        // In the function GetTarget we are iteratively determing m/width.
 
         // We can only have weak compositions when zero is included. We
         // can't use part.includeZero for the reasons in the below comment
@@ -804,28 +857,30 @@ void SetPartitionDesign(const std::vector<int> &Reps,
         part.mapIncZero  = part.includeZero;
         part.cap         = lenV - part.mapIncZero;
 
-        if (m == 1) {
-            part.ptype = PartitionType::LengthOne;
-        } else if (part.isMult && part.isComp) {
+        ctype = ConstraintType::PartMapping;
+        GetTarget(v, Reps, part, m, lenV);
+
+        if (part.isMult && part.isComp) {
             part.ptype = PartitionType::CompMultiset;
         } else if (part.isMult && part.isPerm) {
             part.ptype = PartitionType::PrmMultiset;
         } else if (part.isMult) {
             part.ptype = PartitionType::Multiset;
+        } else if (part.isPerm && part.isDist) {
+            part.ptype = PartitionType::PrmDstPrtCap;
+        } else if (part.isDist) {
+            part.ptype = PartitionType::DstctCapped;
+        } else if (part.solnExist) {
+            part.ptype = PartitionType::NotMapped;
         } else {
-            // All other cases are handled in DiscoverPType
+            part.ptype = PartitionType::NotPartition;
         }
 
-        ctype = ConstraintType::PartMapping;
-        GetTarget(v, Reps, part, m, lenV);
-
-        if (part.solnExist && part.ptype != PartitionType::LengthOne) {
-            DiscoverPType(Reps, part, lenV);
-        }
+        if (part.solnExist) DiscoverPType(Reps, part, lenV);
     }
 
-    std::cout << GetPTypeName(part.ptype) << ", " << m << ", " << part.isDist << ", " << part.isPerm << ", " << part.isPart << ", " << part.solnExist << std::endl;
-    // cpp11::stop("dawg");
-
-    PartitionsCount(Reps, part, lenV, bIsCount);
+    if (PartitionsCount(Reps, part, lenV, bIsCount) == -1) {
+        cpp11::stop("This should not happen. Please open an issue here:\n\t"
+                    "https://github.com/jwood000/RcppAlgos/issues");
+    }
 }
