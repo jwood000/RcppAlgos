@@ -29,9 +29,9 @@ template <typename T>
 double ConstraintsClass<T>::GetBound(double tarMin, double partVal) {
 
     switch (ftype) {
-        case FunType::Sum : {
+        case FunType::Sum: {
             return tarMin - partVal;
-        } case FunType::Prod : {
+        } case FunType::Prod: {
             return tarMin / partVal;
         } default : {
             return (tarMin * m) - (partVal * (m - 1));

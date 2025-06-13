@@ -491,27 +491,27 @@ rankPartsPtr GetRankPartsFunc(PartitionType ptype, bool IsGmp) {
                 return(rankPartsPtr(rankPartsDistinctCapGmp));
             } case PartitionType::DstctCappedMZ: {
                 return(rankPartsPtr(rankPartsDistinctCapMZGmp));
-            } case PartitionType::DstctNoZero : {
+            } case PartitionType::DstctNoZero: {
                 return(rankPartsPtr(rankPartsDistinctLenGmp));
             } case PartitionType::DstctOneZero: {
                 return(rankPartsPtr(rankPartsDistinctOneZeroGmp));
-            } case PartitionType::DstctMultiZero : {
+            } case PartitionType::DstctMultiZero: {
                 return(rankPartsPtr(rankPartsDistinctMultiZeroGmp));
             } case PartitionType::DstctStdAll: {
                 return(rankPartsPtr(rankPartsDistinctMultiZeroGmp));
-            } case PartitionType::RepCapped : {
+            } case PartitionType::RepCapped: {
                 return(rankPartsPtr(rankPartsRepCapGmp));
             } case PartitionType::RepNoZero: {
                 return(rankPartsPtr(rankPartsRepLenGmp));
-            } case PartitionType::RepShort : {
+            } case PartitionType::RepShort: {
                 return(rankPartsPtr(rankPartsRepShortGmp));
-            } case PartitionType::RepStdAll : {
+            } case PartitionType::RepStdAll: {
                 return(rankPartsPtr(rankPartsRepGmp));
-            } case PartitionType::CompRepNoZero : {
+            } case PartitionType::CompRepNoZero: {
                 return(rankPartsPtr(rankCompsRepGmp));
-            } case PartitionType::CompRepWeak : {
+            } case PartitionType::CompRepWeak: {
                 return(rankPartsPtr(rankCompsRepGmp));
-            } case PartitionType::CmpRpZroNotWk : {
+            } case PartitionType::CmpRpZroNotWk: {
                 return(rankPartsPtr(rankCompsRepZeroGmp));
             } default : {
                 cpp11::stop("No algorithm available");
@@ -523,11 +523,11 @@ rankPartsPtr GetRankPartsFunc(PartitionType ptype, bool IsGmp) {
                 return(rankPartsPtr(rankPartsDistinctCap));
             } case PartitionType::DstctCappedMZ: {
                 return(rankPartsPtr(rankPartsDistinctCapMZ));
-            } case PartitionType::DstctNoZero : {
+            } case PartitionType::DstctNoZero: {
                 return(rankPartsPtr(rankPartsDistinctLen));
             } case PartitionType::DstctOneZero: {
                 return(rankPartsPtr(rankPartsDistinctOneZero));
-            } case PartitionType::DstctMultiZero : {
+            } case PartitionType::DstctMultiZero: {
                 return(rankPartsPtr(rankPartsDistinctMultiZero));
             } case PartitionType::DstctStdAll: {
                 return(rankPartsPtr(rankPartsDistinctMultiZero));
@@ -539,11 +539,11 @@ rankPartsPtr GetRankPartsFunc(PartitionType ptype, bool IsGmp) {
                 return(rankPartsPtr(rankPartsRepShort));
             } case PartitionType::RepStdAll: {
                 return(rankPartsPtr(rankPartsRep));
-            } case PartitionType::CompRepNoZero : {
+            } case PartitionType::CompRepNoZero: {
                 return(rankPartsPtr(rankCompsRep));
-            } case PartitionType::CompRepWeak : {
+            } case PartitionType::CompRepWeak: {
                 return(rankPartsPtr(rankCompsRep));
-            } case PartitionType::CmpRpZroNotWk : {
+            } case PartitionType::CmpRpZroNotWk: {
                 return(rankPartsPtr(rankCompsRepZero));
             } default : {
                 cpp11::stop("No algorithm available");

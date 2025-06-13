@@ -312,7 +312,7 @@ SEXP GetProduct(
 
                     DataFrame[j] = res;
                     break;
-                } case CPLXSXP : {
+                } case CPLXSXP: {
                     cpp11::sexp res = Rf_allocVector(CPLXSXP, nRows);
                     Rcomplex* cmplxSexpVec = COMPLEX(res);
 
@@ -321,7 +321,7 @@ SEXP GetProduct(
 
                     DataFrame[j] = res;
                     break;
-                } case RAWSXP : {
+                } case RAWSXP: {
                     cpp11::sexp res = Rf_allocVector(RAWSXP, nRows);
                     Rbyte* rawSexpVec = RAW(res);
 
@@ -354,7 +354,7 @@ SEXP GetProduct(
         return DataFrame;
     } else {
         switch (TYPEOF(RList[0])) {
-            case INTSXP : {
+            case INTSXP: {
                 cpp11::sexp res = Rf_allocMatrix(INTSXP, nRows, nCols);
                 int* intMat = INTEGER(res);
 
@@ -366,7 +366,7 @@ SEXP GetProduct(
 
                 if (typeCheck[tFac]) SetFactorClass(res, RList[0]);
                 return res;
-            } case LGLSXP : {
+            } case LGLSXP: {
                 cpp11::sexp res = Rf_allocMatrix(LGLSXP, nRows, nCols);
                 int* boolMat = LOGICAL(res);
 
@@ -377,7 +377,7 @@ SEXP GetProduct(
                 );
 
                 return res;
-            } case RAWSXP : {
+            } case RAWSXP: {
                 cpp11::sexp res = Rf_allocMatrix(RAWSXP, nRows, nCols);
                 Rbyte* rawMat = RAW(res);
 
@@ -385,7 +385,7 @@ SEXP GetProduct(
                            myBigSamp, z, nCols, nRows, IsSample, IsGmp);
 
                 return res;
-            } case CPLXSXP : {
+            } case CPLXSXP: {
                 cpp11::sexp res = Rf_allocMatrix(CPLXSXP, nRows, nCols);
                 Rcomplex* cmplxMat = COMPLEX(res);
 
@@ -393,7 +393,7 @@ SEXP GetProduct(
                            myBigSamp, z, nCols, nRows, IsSample, IsGmp);
 
                 return res;
-            } case REALSXP : {
+            } case REALSXP: {
                 cpp11::sexp res = Rf_allocMatrix(REALSXP, nRows, nCols);
                 double* dblMat = REAL(res);
 
@@ -404,7 +404,7 @@ SEXP GetProduct(
                 );
 
                 return res;
-            } case STRSXP : {
+            } case STRSXP: {
                 cpp11::writable::strings_matrix<> charMat(nRows, nCols);
 
                 CharacterGlue(charMat, charVec, idx, lenGrps, lenNxtPr, mySamp,

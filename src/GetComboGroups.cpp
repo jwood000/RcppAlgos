@@ -320,7 +320,7 @@ SEXP GetComboGroups(
                        n, numResults, IsArray, IsSample, IsNamed, IsGmp);
 
             return res;
-        } case VecType::Raw : {
+        } case VecType::Raw: {
             std::vector<Rbyte> stlRawVec = CppConvert::GetVec<Rbyte>(Rv);
             cpp11::sexp res = Rf_allocMatrix(RAWSXP, numResults, n);
             Rbyte* matRaw = RAW(res);
@@ -330,7 +330,7 @@ SEXP GetComboGroups(
                        n, numResults, IsArray, IsSample, IsNamed, IsGmp);
 
             return res;
-        } case VecType::Logical : {
+        } case VecType::Logical: {
             std::vector<int> vIntBool(n);
             int* vecBool = LOGICAL(Rv);
 
@@ -346,7 +346,7 @@ SEXP GetComboGroups(
                        n, numResults, IsArray, IsSample, IsNamed, IsGmp);
 
             return res;
-        } case VecType::Integer : {
+        } case VecType::Integer: {
             cpp11::sexp res = Rf_allocMatrix(INTSXP, numResults, n);
             int* matInt = INTEGER(res);
 

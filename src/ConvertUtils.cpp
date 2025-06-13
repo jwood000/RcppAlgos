@@ -45,15 +45,15 @@ namespace CppConvert {
 
         if (len) {
             switch(TYPEOF(Rv)) {
-                case LGLSXP : {
+                case LGLSXP: {
                     int* boolRv = LOGICAL(Rv);
                     v.assign(boolRv, boolRv + len);
                     break;
-                } case REALSXP : {
+                } case REALSXP: {
                     double* dblRv = REAL(Rv);
                     v.assign(dblRv, dblRv + len);
                     break;
-                } case INTSXP : {
+                } case INTSXP: {
                     int* intRv = INTEGER(Rv);
                     v.assign(intRv, intRv + len);
                     break;

@@ -592,31 +592,31 @@ nthPartsPtr GetNthPartsFunc(PartitionType ptype, bool IsGmp) {
 
     if (IsGmp) {
         switch (ptype) {
-            case PartitionType::DstctCapped : {
+            case PartitionType::DstctCapped: {
                 return(nthPartsPtr(nthPartsDistinctCapGmp));
-            } case PartitionType::DstctCappedMZ : {
+            } case PartitionType::DstctCappedMZ: {
                 return(nthPartsPtr(nthPartsDistinctCapMZGmp));
-            } case PartitionType::DstctNoZero : {
+            } case PartitionType::DstctNoZero: {
                 return(nthPartsPtr(nthPartsDistinctLenGmp));
-            } case PartitionType::DstctOneZero : {
+            } case PartitionType::DstctOneZero: {
                 return(nthPartsPtr(nthPartsDistinctOneZeroGmp));
-            } case PartitionType::DstctMultiZero : {
+            } case PartitionType::DstctMultiZero: {
                 return(nthPartsPtr(nthPartsDistinctMultiZeroGmp));
-            } case PartitionType::DstctStdAll : {
+            } case PartitionType::DstctStdAll: {
                 return(nthPartsPtr(nthPartsDistinctMultiZeroGmp));
-            } case PartitionType::RepCapped : {
+            } case PartitionType::RepCapped: {
                 return(nthPartsPtr(nthPartsRepCapGmp));
-            } case PartitionType::RepNoZero : {
+            } case PartitionType::RepNoZero: {
                 return(nthPartsPtr(nthPartsRepLenGmp));
-            } case PartitionType::RepShort : {
+            } case PartitionType::RepShort: {
                 return(nthPartsPtr(nthPartsRepShortGmp));
-            } case PartitionType::RepStdAll : {
+            } case PartitionType::RepStdAll: {
                 return(nthPartsPtr(nthPartsRepGmp));
-            } case PartitionType::CompRepNoZero : {
+            } case PartitionType::CompRepNoZero: {
                 return(nthPartsPtr(nthCompsRepGmp));
-            } case PartitionType::CompRepWeak : {
+            } case PartitionType::CompRepWeak: {
                 return(nthPartsPtr(nthCompsRepGmp));
-            } case PartitionType::CmpRpZroNotWk : {
+            } case PartitionType::CmpRpZroNotWk: {
                 return(nthPartsPtr(nthCompsRepZeroGmp));
             } default : {
                 cpp11::stop("No algorithm available");
@@ -624,31 +624,31 @@ nthPartsPtr GetNthPartsFunc(PartitionType ptype, bool IsGmp) {
         }
     } else {
         switch (ptype) {
-            case PartitionType::DstctCapped : {
+            case PartitionType::DstctCapped: {
                 return(nthPartsPtr(nthPartsDistinctCap));
-            } case PartitionType::DstctCappedMZ : {
+            } case PartitionType::DstctCappedMZ: {
                 return(nthPartsPtr(nthPartsDistinctCapMZ));
-            } case PartitionType::DstctNoZero : {
+            } case PartitionType::DstctNoZero: {
                 return(nthPartsPtr(nthPartsDistinctLen));
-            } case PartitionType::DstctOneZero : {
+            } case PartitionType::DstctOneZero: {
                 return(nthPartsPtr(nthPartsDistinctOneZero));
-            } case PartitionType::DstctMultiZero : {
+            } case PartitionType::DstctMultiZero: {
                 return(nthPartsPtr(nthPartsDistinctMultiZero));
-            } case PartitionType::DstctStdAll : {
+            } case PartitionType::DstctStdAll: {
                 return(nthPartsPtr(nthPartsDistinctMultiZero));
-            } case PartitionType::RepCapped : {
+            } case PartitionType::RepCapped: {
                 return(nthPartsPtr(nthPartsRepCap));
-            } case PartitionType::RepNoZero : {
+            } case PartitionType::RepNoZero: {
                 return(nthPartsPtr(nthPartsRepLen));
-            } case PartitionType::RepShort : {
+            } case PartitionType::RepShort: {
                 return(nthPartsPtr(nthPartsRepShort));
-            } case PartitionType::RepStdAll : {
+            } case PartitionType::RepStdAll: {
                 return(nthPartsPtr(nthPartsRep));
-            } case PartitionType::CompRepNoZero : {
+            } case PartitionType::CompRepNoZero: {
                 return(nthPartsPtr(nthCompsRep));
-            } case PartitionType::CompRepWeak : {
+            } case PartitionType::CompRepWeak: {
                 return(nthPartsPtr(nthCompsRep));
-            } case PartitionType::CmpRpZroNotWk : {
+            } case PartitionType::CmpRpZroNotWk: {
                 return(nthPartsPtr(nthCompsRepZero));
             } default : {
                 cpp11::stop("No algorithm available");

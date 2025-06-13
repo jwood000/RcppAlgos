@@ -101,7 +101,7 @@ SEXP ApplyFunction(const std::vector<T> &v, SEXP vectorPass,
         const int commonLen = Rf_length(RFunVal);
 
         switch (TYPEOF(RFunVal)) {
-            case STRSXP : {
+            case STRSXP: {
                 cpp11::sexp res = Rf_allocVector(STRSXP, n_samp * commonLen);
 
                 SampleApplyFun(res, v, vectorPass, ptr_vec, mySample,
@@ -111,7 +111,7 @@ SEXP ApplyFunction(const std::vector<T> &v, SEXP vectorPass,
 
                 SetDims(RFunVal, res, commonLen, n_samp);
                 return res;
-            } case CPLXSXP : {
+            } case CPLXSXP: {
                 cpp11::sexp res = Rf_allocVector(CPLXSXP, n_samp * commonLen);
 
                 SampleApplyFun(res, v, vectorPass, ptr_vec, mySample,
@@ -121,7 +121,7 @@ SEXP ApplyFunction(const std::vector<T> &v, SEXP vectorPass,
 
                 SetDims(RFunVal, res, commonLen, n_samp);
                 return res;
-            } case RAWSXP : {
+            } case RAWSXP: {
                 cpp11::sexp res = Rf_allocVector(RAWSXP, n_samp * commonLen);
 
                 SampleApplyFun(res, v, vectorPass, ptr_vec, mySample,
@@ -131,7 +131,7 @@ SEXP ApplyFunction(const std::vector<T> &v, SEXP vectorPass,
 
                 SetDims(RFunVal, res, commonLen, n_samp);
                 return res;
-            } case LGLSXP : {
+            } case LGLSXP: {
                 cpp11::sexp res = Rf_allocVector(LGLSXP, n_samp * commonLen);
 
                 SampleApplyFun(res, v, vectorPass, ptr_vec, mySample,
@@ -141,7 +141,7 @@ SEXP ApplyFunction(const std::vector<T> &v, SEXP vectorPass,
 
                 SetDims(RFunVal, res, commonLen, n_samp);
                 return res;
-            } case INTSXP : {
+            } case INTSXP: {
                 cpp11::sexp res = Rf_allocVector(INTSXP, n_samp * commonLen);
 
                 SampleApplyFun(res, v, vectorPass, ptr_vec, mySample,
@@ -151,7 +151,7 @@ SEXP ApplyFunction(const std::vector<T> &v, SEXP vectorPass,
 
                 SetDims(RFunVal, res, commonLen, n_samp);
                 return res;
-            } case REALSXP : {
+            } case REALSXP: {
                 cpp11::sexp res = Rf_allocVector(REALSXP, n_samp * commonLen);
 
                 SampleApplyFun(res, v, vectorPass, ptr_vec, mySample,
@@ -195,7 +195,7 @@ SEXP ApplyFunction(SEXP v, SEXP vectorPass,
         const int commonLen = Rf_length(RFunVal);
 
         switch (TYPEOF(RFunVal)) {
-            case STRSXP : {
+            case STRSXP: {
                 cpp11::sexp res = Rf_allocVector(STRSXP, n_samp * commonLen);
 
                 SampleApplyFun(res, v, vectorPass, mySample, myBigSamp,
@@ -204,7 +204,7 @@ SEXP ApplyFunction(SEXP v, SEXP vectorPass,
 
                 SetDims(RFunVal, res, commonLen, n_samp);
                 return res;
-            } case CPLXSXP : {
+            } case CPLXSXP: {
                 cpp11::sexp res = Rf_allocVector(CPLXSXP, n_samp * commonLen);
 
                 SampleApplyFun(res, v, vectorPass, mySample, myBigSamp,
@@ -213,7 +213,7 @@ SEXP ApplyFunction(SEXP v, SEXP vectorPass,
 
                 SetDims(RFunVal, res, commonLen, n_samp);
                 return res;
-            } case RAWSXP : {
+            } case RAWSXP: {
                 cpp11::sexp res = Rf_allocVector(RAWSXP, n_samp * commonLen);
 
                 SampleApplyFun(res, v, vectorPass, mySample, myBigSamp,
@@ -222,7 +222,7 @@ SEXP ApplyFunction(SEXP v, SEXP vectorPass,
 
                 SetDims(RFunVal, res, commonLen, n_samp);
                 return res;
-            } case LGLSXP : {
+            } case LGLSXP: {
                 cpp11::sexp res = Rf_allocVector(LGLSXP, n_samp * commonLen);
 
                 SampleApplyFun(res, v, vectorPass, mySample, myBigSamp,
@@ -231,7 +231,7 @@ SEXP ApplyFunction(SEXP v, SEXP vectorPass,
 
                 SetDims(RFunVal, res, commonLen, n_samp);
                 return res;
-            } case INTSXP : {
+            } case INTSXP: {
                 cpp11::sexp res = Rf_allocVector(INTSXP, n_samp * commonLen);
 
                 SampleApplyFun(res, v, vectorPass, mySample, myBigSamp,
@@ -240,7 +240,7 @@ SEXP ApplyFunction(SEXP v, SEXP vectorPass,
 
                 SetDims(RFunVal, res, commonLen, n_samp);
                 return res;
-            } case REALSXP : {
+            } case REALSXP: {
                 cpp11::sexp res = Rf_allocVector(REALSXP, n_samp * commonLen);
 
                 SampleApplyFun(res, v, vectorPass, mySample, myBigSamp,
@@ -279,7 +279,7 @@ SEXP SampleCombPermApply(SEXP Rv, const std::vector<int> &vInt,
                          bool IsNamed, bool IsGmp) {
 
     switch (myType) {
-        case VecType::Character : {
+        case VecType::Character: {
             cpp11::sexp charVec = Rf_duplicate(Rv);
             cpp11::sexp vectorPass = Rf_allocVector(STRSXP, m);
 
@@ -289,7 +289,7 @@ SEXP SampleCombPermApply(SEXP Rv, const std::vector<int> &vInt,
             );
 
             return res;
-        } case VecType::Complex : {
+        } case VecType::Complex: {
             cpp11::sexp vectorPass = Rf_allocVector(CPLXSXP, m);
             Rcomplex* ptr_vec = COMPLEX(vectorPass);
             std::vector<Rcomplex> vCmplx = CppConvert::GetVec<Rcomplex>(Rv);
@@ -301,7 +301,7 @@ SEXP SampleCombPermApply(SEXP Rv, const std::vector<int> &vInt,
             );
 
             return res;
-        } case VecType::Raw : {
+        } case VecType::Raw: {
             cpp11::sexp vectorPass = Rf_allocVector(RAWSXP, m);
             Rbyte* ptr_vec = RAW(vectorPass);
             std::vector<Rbyte> vByte = CppConvert::GetVec<Rbyte>(Rv);
@@ -313,7 +313,7 @@ SEXP SampleCombPermApply(SEXP Rv, const std::vector<int> &vInt,
             );
 
             return res;
-        } case VecType::Logical : {
+        } case VecType::Logical: {
             cpp11::sexp vectorPass = Rf_allocVector(LGLSXP, m);
             int* ptr_vec = LOGICAL(vectorPass);
 
@@ -324,7 +324,7 @@ SEXP SampleCombPermApply(SEXP Rv, const std::vector<int> &vInt,
             );
 
             return res;
-        } case VecType::Integer : {
+        } case VecType::Integer: {
             cpp11::sexp vectorPass = Rf_allocVector(INTSXP, m);
             int* ptr_vec = INTEGER(vectorPass);
 

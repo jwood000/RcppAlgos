@@ -78,7 +78,7 @@ SEXP ApplyFunPrev(SEXP v, SEXP vectorPass, const std::vector<int> &freqs,
         const int commonLen = Rf_length(RFunVal);
 
         switch (TYPEOF(RFunVal)) {
-            case STRSXP : {
+            case STRSXP: {
                 cpp11::sexp res = Rf_allocVector(STRSXP, nRows * commonLen);
 
                 VecApplyPrev(res, v, vectorPass, z, prevIter, n, m,
@@ -87,7 +87,7 @@ SEXP ApplyFunPrev(SEXP v, SEXP vectorPass, const std::vector<int> &freqs,
 
                 SetDims(RFunVal, res, commonLen, nRows);
                 return res;
-            } case CPLXSXP : {
+            } case CPLXSXP: {
                 cpp11::sexp res = Rf_allocVector(CPLXSXP, nRows * commonLen);
 
                 VecApplyPrev(res, v, vectorPass, z, prevIter, n, m,
@@ -96,7 +96,7 @@ SEXP ApplyFunPrev(SEXP v, SEXP vectorPass, const std::vector<int> &freqs,
 
                 SetDims(RFunVal, res, commonLen, nRows);
                 return res;
-            } case RAWSXP : {
+            } case RAWSXP: {
                 cpp11::sexp res = Rf_allocVector(RAWSXP, nRows * commonLen);
 
                 VecApplyPrev(res, v, vectorPass, z, prevIter, n, m,
@@ -105,7 +105,7 @@ SEXP ApplyFunPrev(SEXP v, SEXP vectorPass, const std::vector<int> &freqs,
 
                 SetDims(RFunVal, res, commonLen, nRows);
                 return res;
-            } case LGLSXP : {
+            } case LGLSXP: {
                 cpp11::sexp res = Rf_allocVector(LGLSXP, nRows * commonLen);
 
                 VecApplyPrev(res, v, vectorPass, z, prevIter, n, m,
@@ -114,7 +114,7 @@ SEXP ApplyFunPrev(SEXP v, SEXP vectorPass, const std::vector<int> &freqs,
 
                 SetDims(RFunVal, res, commonLen, nRows);
                 return res;
-            } case INTSXP : {
+            } case INTSXP: {
                 cpp11::sexp res = Rf_allocVector(INTSXP, nRows * commonLen);
 
                 VecApplyPrev(res, v, vectorPass, z, prevIter, n, m,
@@ -123,7 +123,7 @@ SEXP ApplyFunPrev(SEXP v, SEXP vectorPass, const std::vector<int> &freqs,
 
                 SetDims(RFunVal, res, commonLen, nRows);
                 return res;
-            } case REALSXP : {
+            } case REALSXP: {
                 cpp11::sexp res = Rf_allocVector(REALSXP, nRows * commonLen);
 
                 VecApplyPrev(res, v, vectorPass, z, prevIter, n, m,
@@ -164,7 +164,7 @@ SEXP ApplyFunPrev(const std::vector<T> &v, SEXP vectorPass, T* ptr_vec,
         const int commonLen = Rf_length(RFunVal);
 
         switch (TYPEOF(RFunVal)) {
-            case STRSXP : {
+            case STRSXP: {
                 cpp11::sexp res = Rf_allocVector(STRSXP, nRows * commonLen);
 
                 VecApplyPrev(res, v, vectorPass, ptr_vec, z, prevIter,
@@ -173,7 +173,7 @@ SEXP ApplyFunPrev(const std::vector<T> &v, SEXP vectorPass, T* ptr_vec,
 
                 SetDims(RFunVal, res, commonLen, nRows);
                 return res;
-            } case CPLXSXP : {
+            } case CPLXSXP: {
                 cpp11::sexp res = Rf_allocVector(CPLXSXP, nRows * commonLen);
 
                 VecApplyPrev(res, v, vectorPass, ptr_vec, z, prevIter,
@@ -182,7 +182,7 @@ SEXP ApplyFunPrev(const std::vector<T> &v, SEXP vectorPass, T* ptr_vec,
 
                 SetDims(RFunVal, res, commonLen, nRows);
                 return res;
-            } case RAWSXP : {
+            } case RAWSXP: {
                 cpp11::sexp res = Rf_allocVector(RAWSXP, nRows * commonLen);
 
                 VecApplyPrev(res, v, vectorPass, ptr_vec, z, prevIter,
@@ -191,7 +191,7 @@ SEXP ApplyFunPrev(const std::vector<T> &v, SEXP vectorPass, T* ptr_vec,
 
                 SetDims(RFunVal, res, commonLen, nRows);
                 return res;
-            } case LGLSXP : {
+            } case LGLSXP: {
                 cpp11::sexp res = Rf_allocVector(LGLSXP, nRows * commonLen);
 
                 VecApplyPrev(res, v, vectorPass, ptr_vec, z, prevIter,
@@ -200,7 +200,7 @@ SEXP ApplyFunPrev(const std::vector<T> &v, SEXP vectorPass, T* ptr_vec,
 
                 SetDims(RFunVal, res, commonLen, nRows);
                 return res;
-            } case INTSXP : {
+            } case INTSXP: {
                 cpp11::sexp res = Rf_allocVector(INTSXP, nRows * commonLen);
 
                 VecApplyPrev(res, v, vectorPass, ptr_vec, z, prevIter,
@@ -209,7 +209,7 @@ SEXP ApplyFunPrev(const std::vector<T> &v, SEXP vectorPass, T* ptr_vec,
 
                 SetDims(RFunVal, res, commonLen, nRows);
                 return res;
-            } case REALSXP : {
+            } case REALSXP: {
                 cpp11::sexp res = Rf_allocVector(REALSXP, nRows * commonLen);
 
                 VecApplyPrev(res, v, vectorPass, ptr_vec, z, prevIter,
@@ -246,14 +246,14 @@ SEXP GetPrevCombPermApply(SEXP Rv, const std::vector<double> &vNum,
                           SEXP stdFun, SEXP myEnv, SEXP RFunVal) {
 
     switch (myType) {
-        case VecType::Character : {
+        case VecType::Character: {
             cpp11::sexp charVec = Rf_duplicate(Rv);
             cpp11::sexp vectorPass = Rf_allocVector(STRSXP, m);
             cpp11::sexp res = ApplyFunPrev(charVec, vectorPass, freqs, z,
                                            stdFun, myEnv, RFunVal, prevIter,
                                            n, m, nRows, IsComb, IsMult);
             return res;
-        } case VecType::Complex : {
+        } case VecType::Complex: {
             cpp11::sexp vectorPass = Rf_allocVector(CPLXSXP, m);
             Rcomplex* ptr_vec = COMPLEX(vectorPass);
             std::vector<Rcomplex> vCmplx = CppConvert::GetVec<Rcomplex>(Rv);
@@ -262,7 +262,7 @@ SEXP GetPrevCombPermApply(SEXP Rv, const std::vector<double> &vNum,
                                            RFunVal, prevIter, n, m,
                                            nRows, IsComb, IsMult);
             return res;
-        } case VecType::Raw : {
+        } case VecType::Raw: {
             cpp11::sexp vectorPass = Rf_allocVector(RAWSXP, m);
             Rbyte* ptr_vec = RAW(vectorPass);
             std::vector<Rbyte> vByte = CppConvert::GetVec<Rbyte>(Rv);
@@ -271,7 +271,7 @@ SEXP GetPrevCombPermApply(SEXP Rv, const std::vector<double> &vNum,
                                            RFunVal, prevIter, n, m,
                                            nRows, IsComb, IsMult);
             return res;
-        } case VecType::Logical : {
+        } case VecType::Logical: {
             cpp11::sexp vectorPass = Rf_allocVector(LGLSXP, m);
             int* ptr_vec = LOGICAL(vectorPass);
             cpp11::sexp res = ApplyFunPrev(vInt, vectorPass, ptr_vec,
@@ -279,7 +279,7 @@ SEXP GetPrevCombPermApply(SEXP Rv, const std::vector<double> &vNum,
                                            RFunVal, prevIter, n, m,
                                            nRows, IsComb, IsMult);
             return res;
-        } case VecType::Integer : {
+        } case VecType::Integer: {
             cpp11::sexp vectorPass = Rf_allocVector(INTSXP, m);
             int* ptr_vec = INTEGER(vectorPass);
             cpp11::sexp res = ApplyFunPrev(vInt, vectorPass, ptr_vec,
