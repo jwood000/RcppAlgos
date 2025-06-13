@@ -34,10 +34,10 @@ extern "C" SEXP _RcppAlgos_CombinatoricsCount(SEXP Rv, SEXP Rm, SEXP RisRep, SEX
   END_CPP11
 }
 // CombinatoricsCount.cpp
-SEXP PartitionsCount(SEXP Rtarget, SEXP Rv, SEXP Rm, SEXP RisRep, SEXP RFreqs, SEXP RcompFun, SEXP Rlow, SEXP Rtolerance, SEXP RPartDesign, SEXP Rshow, SEXP RIsComposition, SEXP RIsWeak);
-extern "C" SEXP _RcppAlgos_PartitionsCount(SEXP Rtarget, SEXP Rv, SEXP Rm, SEXP RisRep, SEXP RFreqs, SEXP RcompFun, SEXP Rlow, SEXP Rtolerance, SEXP RPartDesign, SEXP Rshow, SEXP RIsComposition, SEXP RIsWeak) {
+SEXP PartitionsCount(SEXP Rtarget, SEXP Rv, SEXP Rm, SEXP RisRep, SEXP RFreqs, SEXP RIsComb, SEXP RcompFun, SEXP Rlow, SEXP Rtolerance, SEXP RPartDesign, SEXP Rshow, SEXP RIsComposition, SEXP RIsWeak);
+extern "C" SEXP _RcppAlgos_PartitionsCount(SEXP Rtarget, SEXP Rv, SEXP Rm, SEXP RisRep, SEXP RFreqs, SEXP RIsComb, SEXP RcompFun, SEXP Rlow, SEXP Rtolerance, SEXP RPartDesign, SEXP Rshow, SEXP RIsComposition, SEXP RIsWeak) {
   BEGIN_CPP11
-    return cpp11::as_sexp(PartitionsCount(cpp11::as_cpp<cpp11::decay_t<SEXP>>(Rtarget), cpp11::as_cpp<cpp11::decay_t<SEXP>>(Rv), cpp11::as_cpp<cpp11::decay_t<SEXP>>(Rm), cpp11::as_cpp<cpp11::decay_t<SEXP>>(RisRep), cpp11::as_cpp<cpp11::decay_t<SEXP>>(RFreqs), cpp11::as_cpp<cpp11::decay_t<SEXP>>(RcompFun), cpp11::as_cpp<cpp11::decay_t<SEXP>>(Rlow), cpp11::as_cpp<cpp11::decay_t<SEXP>>(Rtolerance), cpp11::as_cpp<cpp11::decay_t<SEXP>>(RPartDesign), cpp11::as_cpp<cpp11::decay_t<SEXP>>(Rshow), cpp11::as_cpp<cpp11::decay_t<SEXP>>(RIsComposition), cpp11::as_cpp<cpp11::decay_t<SEXP>>(RIsWeak)));
+    return cpp11::as_sexp(PartitionsCount(cpp11::as_cpp<cpp11::decay_t<SEXP>>(Rtarget), cpp11::as_cpp<cpp11::decay_t<SEXP>>(Rv), cpp11::as_cpp<cpp11::decay_t<SEXP>>(Rm), cpp11::as_cpp<cpp11::decay_t<SEXP>>(RisRep), cpp11::as_cpp<cpp11::decay_t<SEXP>>(RFreqs), cpp11::as_cpp<cpp11::decay_t<SEXP>>(RIsComb), cpp11::as_cpp<cpp11::decay_t<SEXP>>(RcompFun), cpp11::as_cpp<cpp11::decay_t<SEXP>>(Rlow), cpp11::as_cpp<cpp11::decay_t<SEXP>>(Rtolerance), cpp11::as_cpp<cpp11::decay_t<SEXP>>(RPartDesign), cpp11::as_cpp<cpp11::decay_t<SEXP>>(Rshow), cpp11::as_cpp<cpp11::decay_t<SEXP>>(RIsComposition), cpp11::as_cpp<cpp11::decay_t<SEXP>>(RIsWeak)));
   END_CPP11
 }
 // CombinatoricsCount.cpp
@@ -296,7 +296,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_RcppAlgos_NextGatherGlue",      (DL_FUNC) &_RcppAlgos_NextGatherGlue,       1},
     {"_RcppAlgos_NextIterGlue",        (DL_FUNC) &_RcppAlgos_NextIterGlue,         1},
     {"_RcppAlgos_NextNumIterGlue",     (DL_FUNC) &_RcppAlgos_NextNumIterGlue,      2},
-    {"_RcppAlgos_PartitionsCount",     (DL_FUNC) &_RcppAlgos_PartitionsCount,     12},
+    {"_RcppAlgos_PartitionsCount",     (DL_FUNC) &_RcppAlgos_PartitionsCount,     13},
     {"_RcppAlgos_PollardRhoContainer", (DL_FUNC) &_RcppAlgos_PollardRhoContainer,  6},
     {"_RcppAlgos_PrevGatherGlue",      (DL_FUNC) &_RcppAlgos_PrevGatherGlue,       1},
     {"_RcppAlgos_PrevIterGlue",        (DL_FUNC) &_RcppAlgos_PrevIterGlue,         1},

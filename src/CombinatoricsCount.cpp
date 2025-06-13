@@ -43,11 +43,12 @@ SEXP CombinatoricsCount(SEXP Rv, SEXP Rm, SEXP RisRep,
 }
 
 [[cpp11::register]]
-SEXP PartitionsCount(SEXP Rtarget, SEXP Rv, SEXP Rm,
-                     SEXP RisRep, SEXP RFreqs, SEXP RcompFun,
-                     SEXP Rlow, SEXP Rtolerance,
-                     SEXP RPartDesign, SEXP Rshow,
-                     SEXP RIsComposition, SEXP RIsWeak) {
+SEXP PartitionsCount(
+    SEXP Rtarget, SEXP Rv, SEXP Rm, SEXP RisRep, SEXP RFreqs, SEXP RIsComb,
+    SEXP RcompFun, SEXP Rlow, SEXP Rtolerance, SEXP RPartDesign, SEXP Rshow,
+    SEXP RIsComposition, SEXP RIsWeak
+) {
+
     int n = 0;
     int m = 0;
 
@@ -63,7 +64,7 @@ SEXP PartitionsCount(SEXP Rtarget, SEXP Rv, SEXP Rm,
     const std::string mainFun = "sum";
     bool IsRep = CppConvert::convertFlag(RisRep, "repetition");
     bool bDesign = CppConvert::convertFlag(RPartDesign, "PartitionsDesign");
-    bool IsComp = CppConvert::convertFlag(RIsComposition, "IsComposition");
+    const bool IsComb = CppConvert::convertFlag(RIsComb, "IsComb");
 
     SetType(myType, Rv);
     SetValues(myType, myReps, freqs, vInt, vNum, Rv,
@@ -80,7 +81,7 @@ SEXP PartitionsCount(SEXP Rtarget, SEXP Rv, SEXP Rm,
     ConstraintType ctype;
     PartDesign part;
     InitialSetupPartDesign(part, RIsWeak, RIsComposition, IsRep,
-                           IsMult, Rf_isNull(Rm), !IsComp);
+                           IsMult, Rf_isNull(Rm), IsComb);
 
     ConstraintSetup(vNum, myReps, targetVals, vInt, targetIntVals,
                     funDbl, part, ctype, n, m, compVec, mainFun,
