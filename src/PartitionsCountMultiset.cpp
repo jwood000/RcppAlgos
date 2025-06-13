@@ -4,7 +4,7 @@
 
 // The current approach is not ideal. We must iterate
 int CountPartsMultiset(const std::vector<int> &Reps,
-                       const std::vector<int> &pz, bool IsComp) {
+                       const std::vector<int> &pz, bool IsComp, bool IsWeak) {
 
     std::vector<int> z(pz.cbegin(), pz.cend());
     std::vector<int> rpsCnt(Reps.cbegin(), Reps.cend());
@@ -17,17 +17,23 @@ int CountPartsMultiset(const std::vector<int> &Reps,
     int b = 0;
 
     // If we have made it here, we know a solution exists
-    // (i.e. part.solnExists = true). The way keepGoing works
-    // is that it terminates when it can no longer generate
-    // new partitions. The current partition still counts
-    // hence why we start count at 1.
+    // (i.e. part.solnExists = true). The function keepGoing works by
+    // terminating when it can no longer generate new partitions. The
+    // current partition still counts hence why we start count at 1.
     PrepareMultisetPart(rpsCnt, z, b, p, e, lastCol, lastElem);
     int count = IsComp ? 0 : 1;
 
-    if (IsComp) {
+    if (IsComp && IsWeak) {
         for (; keepGoing(rpsCnt, lastElem, z, e, b);
              NextMultisetGenPart(rpsCnt, z, e, b, p, lastCol, lastElem)) {
             count += NumPermsWithRep(z);
+        }
+
+        count += NumPermsWithRep(z);
+    } else if (IsComp) {
+        for (; keepGoing(rpsCnt, lastElem, z, e, b);
+        NextMultisetGenPart(rpsCnt, z, e, b, p, lastCol, lastElem)) {
+            count += NumPermsWithRep(z, false);
         }
 
         count += NumPermsWithRep(z);
