@@ -3,8 +3,8 @@
 #include "Partitions/PartitionsTypes.h"
 #include <memory>
 
-void PartitionsCount(const std::vector<int> &Reps,
-                     PartDesign &part, int lenV, bool bIsCount);
+int PartitionsCount(const std::vector<int> &Reps,
+                    PartDesign &part, int lenV, bool bIsCount);
 
 class CountClass {
 protected:
@@ -67,6 +67,18 @@ class RepLen : public CountClass {
 };
 
 class RepLenCap : public CountClass {
+    double GetCount(int n, int m, int cap = 0, int strtLen = 0);
+    void GetCount(mpz_class &res, int n, int m, int cap = 0,
+                  int strtLen = 0, bool bLiteral = true);
+};
+
+class PermDstnctCap : public CountClass {
+    double GetCount(int n, int m, int cap = 0, int strtLen = 0);
+    void GetCount(mpz_class &res, int n, int m, int cap = 0,
+                  int strtLen = 0, bool bLiteral = true);
+};
+
+class PermDstnctCapMZ : public CountClass {
     double GetCount(int n, int m, int cap = 0, int strtLen = 0);
     void GetCount(mpz_class &res, int n, int m, int cap = 0,
                   int strtLen = 0, bool bLiteral = true);

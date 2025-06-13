@@ -13,8 +13,6 @@
 
 constexpr double cutOff = 3.0;
 
-#include <iostream>
-
 std::unique_ptr<CountClass> MakeCount(PartitionType ptype) {
 
     switch (ptype) {
@@ -50,8 +48,22 @@ std::unique_ptr<CountClass> MakeCount(PartitionType ptype) {
             return std::make_unique<CompsDistLenMZ>();
         } case PartitionType::CmpDstctMZWeak: {
             return std::make_unique<CompsDistLenMZWeak>();
+        } case PartitionType::PrmRepPart: {
+            return std::make_unique<CompsRepLen>();
+        } case PartitionType::PrmRepPartNoZ: {
+            return std::make_unique<CompsRepLen>();
+        } case PartitionType::PrmDstPartNoZ: {
+            return std::make_unique<CompsDistinctLen>();
+        } case PartitionType::PrmDstPrtOneZ: {
+            return std::make_unique<CompsDistinctLen>();
+        } case PartitionType::PrmDstPartMZ: {
+            return std::make_unique<CompsDistLenMZWeak>();
+        } case PartitionType::PrmDstPrtCap: {
+            return std::make_unique<PermDstnctCap>();
+        } case PartitionType::PrmDstPrtCapMZ: {
+            return std::make_unique<PermDstnctCapMZ>();
         } default: {
-            return std::make_unique<RepAll>();
+            return nullptr;
         }
     }
 }
@@ -80,44 +92,49 @@ void DistinctLenCap::GetCount(mpz_class &res, int n, int m, int cap,
     if (cmp(res, 0) == 0 || cmp(res, Significand53) > 0) {
         CountPartsDistinctLenCap(res, p1, p2, n, m, cap);
     } else {
-        const double dblRes = CountPartsDistinctLenCap(n, m, cap);
-        res = dblRes;
+        res = CountPartsDistinctLenCap(n, m, cap);
     }
 }
 
 void DistinctMZ::GetCount(mpz_class &res, int n, int m, int cap,
                           int strtLen, bool bLiteral) {
 
-    if (cmp(res, 0) == 0 || cmp(res, Significand53) > 0) {
-        if (bLiteral) {
-            CountPartsDistinctMultiZero(res, p1, p2,
-                                        n, m, cap, strtLen);
-        } else {
-            CountPartsDistinctLen(res, p1, p2, n, m);
-        }
+    if ((cmp(res, 0) == 0 || cmp(res, Significand53) > 0) && bLiteral) {
+        CountPartsDistinctMultiZero(res, p1, p2, n, m, cap, strtLen);
+    } else if (cmp(res, 0) == 0 || cmp(res, Significand53) > 0) {
+        CountPartsDistinctLen(res, p1, p2, n, m);
+    } else if (bLiteral) {
+        res = CountPartsDistinctMultiZero(n, m, cap, strtLen);
     } else {
-        const double dblRes = bLiteral ?
-            CountPartsDistinctMultiZero(n, m, cap, strtLen) :
-            CountPartsDistinctLen(n, m);
-        res = dblRes;
+        res = CountPartsDistinctLen(n, m);
     }
 }
 
 void DistinctCapMZ::GetCount(mpz_class &res, int n, int m, int cap,
                              int strtLen, bool bLiteral) {
 
-    if (cmp(res, 0) == 0 || cmp(res, Significand53) > 0) {
-        if (bLiteral) {
-            CountPartsDistinctCapMZ(res, p1, p2,
-                                    n, m, cap, strtLen);
-        } else {
-            CountPartsDistinctLenCap(res, p1, p2, n, m, cap);
-        }
+    if ((cmp(res, 0) == 0 || cmp(res, Significand53) > 0) && bLiteral) {
+        CountPartsDistinctCapMZ(res, p1, p2, n, m, cap, strtLen);
+    } else if (cmp(res, 0) == 0 || cmp(res, Significand53) > 0) {
+        CountPartsDistinctLenCap(res, p1, p2, n, m, cap);
+    } else if (bLiteral) {
+        res = CountPartsDistinctCapMZ(n, m, cap, strtLen);
     } else {
-        const double dblRes = bLiteral ?
-            CountPartsDistinctCapMZ(n, m, cap, strtLen) :
-            CountPartsDistinctLenCap(n, m, cap);
-        res = dblRes;
+        res = CountPartsDistinctLenCap(n, m, cap);
+    }
+}
+
+void PermDstnctCapMZ::GetCount(mpz_class &res, int n, int m, int cap,
+                               int strtLen, bool bLiteral) {
+
+    if ((cmp(res, 0) == 0 || cmp(res, Significand53) > 0) && bLiteral) {
+        CountPartsPermDistinctCapMZ(res, p1, p2, n, m, cap, strtLen);
+    } else if (cmp(res, 0) == 0 || cmp(res, Significand53) > 0) {
+        CountPartsPermDistinctCap(res, p1, p2, n, m, cap);
+    } else if (bLiteral) {
+        res = CountPartsPermDistinctCapMZ(n, m, cap, strtLen);
+    } else {
+        res = CountPartsPermDistinctCap(n, m, cap);
     }
 }
 
@@ -161,6 +178,17 @@ void RepAll::GetCount(mpz_class &res, int n, int m, int cap,
         CountPartsRep(res, n, m);
     } else {
         const double dblRes = CountPartsRep(n, m);
+        res = dblRes;
+    }
+}
+
+void PermDstnctCap::GetCount(mpz_class &res, int n, int m, int cap,
+                             int strtLen, bool bLiteral) {
+
+    if (cmp(res, 0) == 0 || cmp(res, Significand53) > 0) {
+        CountPartsPermDistinctCap(res, p1, p2, n, m, cap);
+    } else {
+        const double dblRes = CountPartsPermDistinctCap(n, m, cap);
         res = dblRes;
     }
 }
@@ -226,6 +254,14 @@ double RepLenCap::GetCount(int n, int m, int cap, int strtLen) {
     return CountPartsRepLenCap(n, m, cap);
 }
 
+double PermDstnctCap::GetCount(int n, int m, int cap, int strtLen) {
+    return CountPartsPermDistinctCap(n, m, cap);
+}
+
+double PermDstnctCapMZ::GetCount(int n, int m, int cap, int strtLen) {
+    return CountPartsPermDistinctCapMZ(n, m, cap, strtLen);
+}
+
 double CompsRepLen::GetCount(int n, int m, int cap, int strtLen) {
     return CountCompsRepLen(n, m);
 }
@@ -247,6 +283,9 @@ double CompsDistLenMZWeak::GetCount(int n, int m, int cap, int strtLen) {
 }
 
 bool OverTheBar(PartitionType ptype, double capNumIters, int n, int m) {
+
+    // N.B. We currently don't have a PrmRepCapped count function
+
     switch(ptype) {
         case PartitionType::RepCapped: {
             const double theBar = NumCombsWithRep(n, m);
@@ -256,8 +295,19 @@ bool OverTheBar(PartitionType ptype, double capNumIters, int n, int m) {
             return (theBar / capNumIters) > cutOff;
         } case PartitionType::DstctCappedMZ: {
             const double theBar = nChooseK(n, m);
-            // std::cout<< theBar << ", " << capNumIters << std::endl;
             return (theBar / capNumIters) > cutOff;
+        } case PartitionType::PrmDstPrtCap: {
+            const double theBar = nChooseK(n, m);
+            return (theBar / capNumIters) > cutOff;
+        } case PartitionType::PrmDstPrtCapMZ: {
+            const double theBar = nChooseK(n, m);
+            return (theBar / capNumIters) > cutOff;
+        } case PartitionType::Multiset: {
+            return false;
+        } case PartitionType::CompMultiset: {
+            return false;
+        } case PartitionType::PrmMultiset: {
+            return false;
         } default: {
             return true;
         }
@@ -265,6 +315,8 @@ bool OverTheBar(PartitionType ptype, double capNumIters, int n, int m) {
 }
 
 void CountClass::SetArrSize(PartitionType ptype, int n, int m, int cap) {
+
+    // N.B. We currently don't have a PrmRepCapped count function
 
     switch (ptype) {
         case PartitionType::RepNoZero: {
@@ -305,6 +357,14 @@ void CountClass::SetArrSize(PartitionType ptype, int n, int m, int cap) {
             CheckMultIsInt(cap + 1, n + 1);
             size = (cap + 1) * (n + 1);
             break;
+        } case PartitionType::PrmDstPrtCap: {
+            CheckMultIsInt(cap + 1, n + 1);
+            size = (cap + 1) * (n + 1);
+            break;
+        } case PartitionType::PrmDstPrtCapMZ: {
+            CheckMultIsInt(cap + 1, n + 1);
+            size = (cap + 1) * (n + 1);
+            break;
         } case PartitionType::CmpDstctNoZero: {
             CheckMultIsInt(1, n + 1);
             size = (n + 1);
@@ -324,8 +384,8 @@ void CountClass::SetArrSize(PartitionType ptype, int n, int m, int cap) {
     }
 }
 
-void PartitionsCount(const std::vector<int> &Reps,
-                     PartDesign &part, int lenV, bool bIsCount) {
+int PartitionsCount(const std::vector<int> &Reps,
+                    PartDesign &part, int lenV, bool bIsCount) {
 
     part.count = 0.0;
     part.numUnknown = false;
@@ -335,100 +395,72 @@ void PartitionsCount(const std::vector<int> &Reps,
                                static_cast<double>(part.width - 1) *
                                static_cast<double>(lenV + 1);
 
-    const int strtLen = std::count_if(part.startZ.cbegin(),
-                                      part.startZ.cend(),
-                                      [](int i){return i > 0;});
+    const int strtLen = std::count_if(
+        part.startZ.cbegin(), part.startZ.cend(), [](int i){return i > 0;}
+    );
 
-    const bool bWorthIt = OverTheBar(part.ptype, capNumIters,
-                                     lenV, part.width);
+    // Returns false for all multiset cases and true for all non-capped cases
+    const bool bWorthIt = OverTheBar(
+        part.ptype, capNumIters, lenV, part.width
+    );
+
+    const auto no_algo_it = std::find(
+        NoCountAlgoPTypeArr.cbegin(), NoCountAlgoPTypeArr.cend(), part.ptype
+    );
+
+    const bool forceCnt = (bIsCount || bWorthIt);
+
+    if (!forceCnt || no_algo_it != NoCountAlgoPTypeArr.end()) {
+        part.numUnknown = true;
+        return 0;
+    }
 
     if (part.ptype == PartitionType::LengthOne) {
         part.count = static_cast<int>(part.solnExist);
-    } else if (part.isComb && part.ptype != PartitionType::Multiset) {
-        if (bIsCount || bWorthIt) {
-            std::unique_ptr<CountClass> myClass = MakeCount(part.ptype);
-            part.count = myClass->GetCount(part.mapTar, part.width,
-                                           part.cap, strtLen);
-
-            if (part.count > Significand53) {
-                part.isGmp = true;
-
-                if (part.ptype != PartitionType::RepStdAll &&
-                    part.ptype != PartitionType::DstctStdAll) {
-
-                    myClass->SetArrSize(part.ptype, part.mapTar,
-                                        part.width, part.cap);
-                    myClass->InitializeMpz();
-                }
-
-                myClass->GetCount(part.bigCount, part.mapTar,
-                                  part.width, part.cap, strtLen);
-            }
-        } else {
-            part.numUnknown = true;
-        }
-    } else if (part.isComb && part.ptype == PartitionType::Multiset) {
-        if (bIsCount) {
-            part.count = (part.solnExist) ?
-                CountPartsMultiset(Reps, part.startZ) : 0;
-        } else {
-            part.numUnknown = true;
-        }
+        return 1;
+    } else if (part.ptype == PartitionType::Multiset) {
+        part.count = part.solnExist ?
+            CountPartsMultiset(Reps, part.startZ) : 0;
+        return 1;
     } else if (part.ptype == PartitionType::CompMultiset) {
-        if (bIsCount) {
-            part.count = (part.solnExist) ?
-                CountPartsMultiset(Reps, part.startZ, true) : 0;
-        } else {
-            part.numUnknown = true;
-        }
-    } else {
-        const auto it = std::find(DistPTypeArr.cbegin(),
-                                  DistPTypeArr.cend(), part.ptype);
-
-        if (part.isComp) {
-            std::unique_ptr<CountClass> myClass = MakeCount(part.ptype);
-
-            if (myClass) {
-                part.count = myClass->GetCount(part.mapTar, part.width,
-                                               part.cap, strtLen);
-
-                if (part.count > Significand53) {
-                    part.isGmp = true;
-
-                    if (it != DistPTypeArr.cend()) {
-                        myClass->SetArrSize(part.ptype, part.mapTar,
-                                            part.width, part.cap);
-                        myClass->InitializeMpz();
-                    }
-
-                    myClass->GetCount(part.bigCount, part.mapTar,
-                                      part.width, part.cap, strtLen);
-                }
-            } else {
-                part.numUnknown = true;
-            }
-        } else if (part.isRep && part.ptype != PartitionType::RepCapped) {
-            part.count = CountCompsRepLen(
-                part.mapTar + static_cast<int>(part.mapIncZero) * part.width,
-                part.width, part.cap, strtLen
-            );
-        } else if (part.ptype == PartitionType::DstctCappedMZ ||
-                   part.ptype == PartitionType::DstctCapped) {
-
-            // std::cout << bIsCount << ", " << bWorthIt << std::endl;
-            if (bIsCount || bWorthIt) {
-                part.count = CountPartsPermDistinctCap(part.startZ, part.cap,
-                                                       part.mapTar, part.width,
-                                                       part.mapIncZero);
-            } else {
-                part.numUnknown = true;
-            }
-        } else if (it != DistPTypeArr.cend()) {
-            part.count = CountPartsPermDistinct(part.startZ,
-                                                part.mapTar, part.width,
-                                                part.mapIncZero);
-        } else {
-            part.numUnknown = true;
-        }
+        // N.B. With PartitionType::Multiset we use the default
+        // IsComp = false. Below, we set IsComp = true
+        part.count = part.solnExist ?
+            CountPartsMultiset(Reps, part.startZ, true, part.isWeak) : 0;
+        return 1;
+    } else if (part.ptype == PartitionType::PrmMultiset) {
+        // See note above under CompMultiset
+        part.count = (part.solnExist) ?
+            CountPartsMultiset(Reps, part.startZ, true, true) : 0;
+        return 1;
     }
+
+    const auto cap_it = std::find(
+        CappedPTypeArr.cbegin(), CappedPTypeArr.cend(), part.ptype
+    );
+
+    std::unique_ptr<CountClass> myClass = MakeCount(part.ptype);
+
+    if (myClass) {
+        part.count = myClass->GetCount(part.mapTar, part.width,
+                                       part.cap, strtLen);
+
+        if (part.count > Significand53) {
+            part.isGmp = true;
+
+            if (cap_it != DistPTypeArr.cend()) {
+                myClass->SetArrSize(part.ptype, part.mapTar,
+                                    part.width, part.cap);
+                myClass->InitializeMpz();
+            }
+
+            myClass->GetCount(part.bigCount, part.mapTar,
+                              part.width, part.cap, strtLen);
+        }
+
+        return 1;
+    }
+
+    // This shouldn't happen
+    return -1;
 }
