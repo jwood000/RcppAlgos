@@ -147,19 +147,21 @@ SEXP CombinatoricsCnstrt(SEXP Rv, SEXP Rm, SEXP RisRep, SEXP RFreqs,
     CppConvert::convertPrimitive(RmaxThreads, maxThreads,
                                    VecType::Integer, "maxThreads");
 
-    const int limit = (part.isPart) ?
-    ((part.ptype == PartitionType::RepCapped   ||
-      part.ptype == PartitionType::DstctCapped ||
-      part.ptype == PartitionType::DstctCappedMZ) ? 150000 : 40000) : 20000;
+    const bool IsCapped = (part.ptype == PartitionType::RepCapped   ||
+                           part.ptype == PartitionType::DstctCapped ||
+                           part.ptype == PartitionType::DstctCappedMZ);
+
+    const int limit = (part.isPart && IsCapped) ? 150000 :
+        (part.isPart ? 40000 : 20000);
 
     SetThreads(Parallel, maxThreads, nRows,
                myType, nThreads, RnThreads, limit);
 
     cpp11::sexp res = GetConstraints(
-      part, compVec, freqs, myReps, vNum, vInt, tarVals, tarIntVals,
-      startZ, mainFun, funTest, funDbl, lower, lowerMpz, userNum,
-      ctype, myType, nThreads, nRows, n, strtLen, cap, m, IsComb,
-      Parallel, IsGmp, IsRep, IsMult, bUpper, KeepRes, numUnknown
+        part, compVec, freqs, myReps, vNum, vInt, tarVals, tarIntVals,
+        startZ, mainFun, funTest, funDbl, lower, lowerMpz, userNum,
+        ctype, myType, nThreads, nRows, n, strtLen, cap, m, IsComb,
+        Parallel, IsGmp, IsRep, IsMult, bUpper, KeepRes, numUnknown
     );
 
     return res;

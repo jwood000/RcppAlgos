@@ -367,9 +367,9 @@ void SetNumResults(bool IsGmp, bool bLower, bool bUpper, bool bSetNum,
             // which means that lower is one larger than upper as put in by the user
 
             cpp11::stop("The number of rows must be positive. Either the"
-                     "lowerBound exceeds the maximum number of possible"
-                     " results or the lowerBound is greater "
-                     "than the upperBound.");
+                        "lowerBound exceeds the maximum number of possible"
+                        " results or the lowerBound is greater "
+                        "than the upperBound.");
         } else {
             // See comment in ConstraintsMain.cpp. Basically, we don't want to
             // throw an error when we don't really know how many constrained

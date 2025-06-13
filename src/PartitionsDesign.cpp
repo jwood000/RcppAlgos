@@ -69,9 +69,8 @@ SEXP GetDesign(const PartDesign &part, ConstraintType ctype,
         Rprintf("%s\n\n", eqn_check_str.c_str());
     }
 
-    bool eqn_check_val = part.mapTar == (part.target +
-                                         part.width * part.shift) /
-                                         part.slope;
+    bool eqn_check_val = part.mapTar ==
+        (part.target + part.width * part.shift) / part.slope;
 
     cpp11::sexp sexp_vec = Rf_allocVector(INTSXP, lenV);
     cpp11::sexp sexp_index = Rf_allocVector(INTSXP, part.startZ.size());
