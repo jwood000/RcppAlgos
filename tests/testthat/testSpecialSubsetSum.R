@@ -345,8 +345,9 @@ test_that("permuteGeneral produces correct results for special subset sum", {
             }
         })
 
-        if (verbose)
+        if (verbose) {
             print(t)
+        }
 
         all(t)
     }

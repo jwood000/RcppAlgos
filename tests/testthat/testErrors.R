@@ -210,12 +210,12 @@ test_that("numDivisorSieve produces appropriate error messages", {
                  "Only logical values are supported for namedVector")
 })
 
-test_that("combo/permuteGeneral produces correct error messages with Parallel", {
+test_that("partitionsSample produces correct error messages", {
     expect_error(partitionsSample(3.3, 1),
                  "Partition sampling not available for this case")
 })
 
-test_that("partitionsSample produces correct error messages", {
+test_that("combo/permuteGeneral produces correct error messages with Parallel", {
     expect_error(permuteGeneral(10, 5, Parallel = "TRUE"),
                  "Only logical values are supported for Parallel")
 })
