@@ -204,3 +204,32 @@ GridInputs <- function(...) {
         )
     )
 }
+
+PermuteArgs <- function(...) {
+    n_args <- length(arg_s <- list(...))
+
+    if (n_args > 0) {
+        nm <- names(arg_s)
+        tar_nm <- c("constraintFun", "comparisonFun", "limitConstraints")
+
+        if (all(tar_nm %in% nm) &&
+            arg_s[["constraintFun"]] == "sum" &&
+            arg_s[["comparisonFun"]] == "==" &&
+            is.numeric(arg_s[["limitConstraints"]])) {
+
+            return(
+                list(
+                    is_part = TRUE,
+                    target = arg_s[["limitConstraints"]]
+                )
+            )
+        }
+    }
+
+    return(
+        list(
+            is_part = FALSE,
+            target = NULL
+        )
+    )
+}
