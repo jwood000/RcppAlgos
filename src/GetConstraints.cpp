@@ -29,8 +29,7 @@ void ConstraintsVector(const std::vector<int> &freqs,
                            maxRows, nThreads, IsRep, xtraCol, IsComb,
                            IsMult, IsGmp);
     } else {
-        PartsGenManager(cnstrntVec, v, Reps, z,
-                        ptype, width, maxRows, IsComb);
+        PartsGenManager(cnstrntVec, v, Reps, z, ptype, width, maxRows);
     }
 }
 
@@ -51,7 +50,6 @@ SEXP ConstraintsReturn(
     const int nCols     = (xtraCol) ? width + 1 : width;
     const int lastElem  = n - 1;
     const int lastCol   = width - 1;
-    const bool IsVecRet = (numUnknown || part.ptype == PartitionType::Multiset);
 
     if (part.isPart && !part.solnExist) {
         if (myType == VecType::Integer) {
@@ -61,7 +59,7 @@ SEXP ConstraintsReturn(
             cpp11::sexp res = Rf_allocMatrix(REALSXP, 0, width);
             return res;
         }
-    } else if (myType == VecType::Integer && IsVecRet) {
+    } else if (myType == VecType::Integer && numUnknown) {
         std::vector<int> cnstrntVec;
         std::vector<int> resVec;
         const double vecMax = std::floor(cnstrntVec.max_size() / width);
@@ -84,7 +82,7 @@ SEXP ConstraintsReturn(
                        part.target, numResult, width,
                        upperBound, xtraCol, part.isPart);
         return res;
-    } else if (IsVecRet) {
+    } else if (numUnknown) {
         std::vector<double> cnstrntVec;
         std::vector<double> resVec;
 
