@@ -183,61 +183,27 @@ double CountPartsDistinctCapMZ(int n, int m, int cap, int strtLen) {
     return count;
 }
 
-double CountPartsPermDistinct(const std::vector<int> &z,
-                              int tar, int width, bool includeZero) {
-
-    double res = 0;
-
-    if (includeZero) {
-        const int strtLen = std::count_if(z.cbegin(), z.cend(),
-                                          [](int i){return i > 0;});
-
-        if (strtLen == 0) {
-            // This means that z contains only zeros
-            res = 1;
-        } else {
-            std::vector<int> v(width);
-            std::iota(v.begin(), v.begin() + strtLen, 1);
-
-            for (int i = strtLen; i <= width; ++i) {
-                v[i - 1] = i;
-                res += (CountPartsDistinctLen(tar, i) * NumPermsWithRep(v));
-            }
-        }
-    } else {
-        res = CountPartsDistinctLen(tar, width) * NumPermsNoRep(width, width);
-    }
-
-    return res;
+double CountPartsPermDistinctCap(int n, int m, int cap, int strtLen) {
+    return CountPartsDistinctLenCap(n, m, cap) * NumPermsNoRep(m, m);
 }
 
-double CountPartsPermDistinctCap(const std::vector<int> &z, int cap,
-                                 int tar, int width, bool includeZero) {
+double CountPartsPermDistinctCapMZ(int n, int m, int cap, int strtLen) {
 
-    double res = 0;
-
-    if (includeZero) {
-        const int strtLen = std::count_if(z.cbegin(), z.cend(),
-                                           [](int i){return i > 0;});
-        if (strtLen == 0) {
-            // This means that z contains only zeros
-            res = 1;
-        } else {
-            std::vector<int> v(width);
-            std::iota(v.begin(), v.begin() + strtLen, 1);
-
-            for (int i = strtLen; i <= width; ++i) {
-                v[i - 1] = i;
-                res += (CountPartsDistinctLenCap(tar, i, cap) *
-                            NumPermsWithRep(v));
-            }
-        }
+    if (strtLen == 0) {
+        // This means that z contains only zeros
+        return 1;
     } else {
-        res = CountPartsDistinctLenCap(tar, width, cap) *
-                NumPermsNoRep(width, width);
-    }
+        double res = 0;
+        std::vector<int> v(m);
+        std::iota(v.begin(), v.begin() + strtLen, 1);
 
-    return res;
+        for (int i = strtLen; i <= m; ++i) {
+            v[i - 1] = i;
+            res += (CountPartsDistinctLenCap(n, i, cap) * NumPermsWithRep(v));
+        }
+
+        return res;
+    }
 }
 
 double CountCompsDistinctLen(int n, int m, int cap, int strtLen) {
@@ -246,27 +212,37 @@ double CountCompsDistinctLen(int n, int m, int cap, int strtLen) {
 
 double CountCompsDistinctMultiZero(int n, int m, int cap, int strtLen) {
 
-    double count = 0;
-    double nPerm = NumPermsNoRep(strtLen, strtLen);
+    if (strtLen == 0) {
+        // This means that z contains only zeros
+        return 1;
+    } else {
+        double res = 0;
+        double nPerm = NumPermsNoRep(strtLen, strtLen);
 
-    for (int i = strtLen; i <= m; ++i) {
-        count += CountPartsDistinctLen(n, i) * nPerm;
-        nPerm *= (i + 1);
+        for (int i = strtLen; i <= m; ++i) {
+            res += CountPartsDistinctLen(n, i) * nPerm;
+            nPerm *= (i + 1);
+        }
+
+        return res;
     }
-
-    return count;
 }
 
 double CountCompsDistinctMZWeak(int n, int m, int cap, int strtLen) {
 
-    double count = 0;
-    double nPerm = NumPermsNoRep(m, m) /
-        NumPermsNoRep(m - strtLen, m - strtLen);
+    if (strtLen == 0) {
+        // This means that z contains only zeros
+        return 1;
+    } else {
+        double res = 0;
+        double nPerm = NumPermsNoRep(m, m) /
+            NumPermsNoRep(m - strtLen, m - strtLen);
 
-    for (int i = strtLen; i <= m; ++i) {
-        count += CountPartsDistinctLen(n, i) * nPerm;
-        nPerm *= (m - i);
+        for (int i = strtLen; i <= m; ++i) {
+            res += CountPartsDistinctLen(n, i) * nPerm;
+            nPerm *= (m - i);
+        }
+
+        return res;
     }
-
-    return count;
 }
