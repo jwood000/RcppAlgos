@@ -281,17 +281,17 @@ std::vector<int> nthCompsRepGmp(int n, int m, int cap, int k,
     mpz_class temp;
     mpz_class index(mpzIdx);
 
-    std::unique_ptr<CountClass> myClass = MakeCount(
+    std::unique_ptr<CountClass> Counter = MakeCount(
         PartitionType::CompRepNoZero
     );
 
     for (int i = 0, j = 0; i < (width - 1); ++i, --n, --m, j = 0) {
-        myClass->GetCount(temp, n, m, cap, k);
+        Counter->GetCount(temp, n, m, cap, k);
 
         for (; cmp(temp, index) <= 0; ++j) {
             --n;
             index -= temp;
-            myClass->GetCount(temp, n, m, cap, k);
+            Counter->GetCount(temp, n, m, cap, k);
         }
 
         res[i] = j;
@@ -313,18 +313,18 @@ std::vector<int> nthCompsRepZeroGmp(int n, int m, int cap, int k,
 
     mpz_class temp;
     mpz_class index(mpzIdx);
-    std::unique_ptr<CountClass> myClass = MakeCount(
+    std::unique_ptr<CountClass> Counter = MakeCount(
         PartitionType::CmpRpZroNotWk
     );
 
     for (int i = 0, j = 0; i < (width - 1); ++i, --m, j = incr_j) {
-        myClass->GetCount(temp, n, m, cap, k, !incr_j);
+        Counter->GetCount(temp, n, m, cap, k, !incr_j);
 
         for (; cmp(temp, index) <= 0; ++j) {
             incr_j = true;
             --n;
             index -= temp;
-            myClass->GetCount(temp, n, m, cap, k, false);
+            Counter->GetCount(temp, n, m, cap, k, false);
         }
 
         temp = 0;
@@ -350,18 +350,18 @@ std::vector<int> nthPartsRepLenGmp(int n, int m, int cap, int k,
     mpz_class index(mpzIdx);
 
     const PartitionType ptype = PartitionType::RepShort;
-    std::unique_ptr<CountClass> myClass = MakeCount(ptype);
+    std::unique_ptr<CountClass> Counter = MakeCount(ptype);
 
-    myClass->SetArrSize(ptype, n, m, cap);
-    myClass->InitializeMpz();
+    Counter->SetArrSize(ptype, n, m, cap);
+    Counter->InitializeMpz();
 
     for (int i = 0, j = 0; i < (width - 1); ++i, --n, --m) {
-        myClass->GetCount(temp, n, m, cap, k);
+        Counter->GetCount(temp, n, m, cap, k);
 
         for (; cmp(temp, index) <= 0; ++j) {
             n -= (m + 1);
             index -= temp;
-            myClass->GetCount(temp, n, m, cap, k);
+            Counter->GetCount(temp, n, m, cap, k);
         }
 
         res[i] = j;
@@ -397,19 +397,19 @@ std::vector<int> nthPartsRepCapGmp(int n, int m, int cap, int k,
     mpz_class index(mpzIdx);
 
     const PartitionType ptype = PartitionType::RepCapped;
-    std::unique_ptr<CountClass> myClass = MakeCount(ptype);
+    std::unique_ptr<CountClass> Counter = MakeCount(ptype);
 
-    myClass->SetArrSize(ptype, n, m, cap);
-    myClass->InitializeMpz();
+    Counter->SetArrSize(ptype, n, m, cap);
+    Counter->InitializeMpz();
 
     for (int i = 0, j = 0; i < (width - 1); ++i, --n, --m) {
-        myClass->GetCount(temp, n, m, cap, k);
+        Counter->GetCount(temp, n, m, cap, k);
 
         for (; cmp(temp, index) <= 0; ++j) {
             n -= (m + 1);
             --cap;
             index -= temp;
-            myClass->GetCount(temp, n, m, cap, k);
+            Counter->GetCount(temp, n, m, cap, k);
         }
 
         res[i] = j;
@@ -434,18 +434,18 @@ std::vector<int> nthPartsDistinctLenGmp(
     mpz_class index(mpzIdx);
 
     const PartitionType ptype = PartitionType::DstctNoZero;
-    std::unique_ptr<CountClass> myClass = MakeCount(ptype);
+    std::unique_ptr<CountClass> Counter = MakeCount(ptype);
 
-    myClass->SetArrSize(ptype, n, m, cap);
-    myClass->InitializeMpz();
+    Counter->SetArrSize(ptype, n, m, cap);
+    Counter->InitializeMpz();
 
     for (int i = 0, j = 0; i < (width - 1); ++i, n -= m, --m, ++j) {
-        myClass->GetCount(temp, n, m, cap, k);
+        Counter->GetCount(temp, n, m, cap, k);
 
         for (; cmp(temp, index) <= 0; ++j) {
             n -= (m + 1);
             index -= temp;
-            myClass->GetCount(temp, n, m, cap, k);
+            Counter->GetCount(temp, n, m, cap, k);
         }
 
         res[i] = j;
@@ -477,20 +477,20 @@ std::vector<int> nthPartsDistinctMultiZeroGmp(
     mpz_class index(mpzIdx);
 
     const PartitionType ptype = PartitionType::DstctMultiZero;
-    std::unique_ptr<CountClass> myClass = MakeCount(ptype);
+    std::unique_ptr<CountClass> Counter = MakeCount(ptype);
 
-    myClass->SetArrSize(ptype, n, m, cap);
-    myClass->InitializeMpz();
+    Counter->SetArrSize(ptype, n, m, cap);
+    Counter->InitializeMpz();
 
     for (int i = 0, j = 0; i < (width - 1); ++i, --m) {
         const bool bLiteral = !(incr_j || i >= (width - k));
-        myClass->GetCount(temp, n, m, cap, k, bLiteral);
+        Counter->GetCount(temp, n, m, cap, k, bLiteral);
 
         for (; cmp(temp, index) <= 0; ++j) {
             incr_j = true;
             n -= (m + 1);
             index -= temp;
-            myClass->GetCount(temp, n, m, cap, k, false);
+            Counter->GetCount(temp, n, m, cap, k, false);
         }
 
         res[i] = j;
@@ -521,19 +521,19 @@ std::vector<int> nthPartsDistinctCapGmp(
     mpz_class index(mpzIdx);
 
     const PartitionType ptype = PartitionType::DstctCapped;
-    std::unique_ptr<CountClass> myClass = MakeCount(ptype);
+    std::unique_ptr<CountClass> Counter = MakeCount(ptype);
 
-    myClass->SetArrSize(ptype, n, m, cap);
-    myClass->InitializeMpz();
+    Counter->SetArrSize(ptype, n, m, cap);
+    Counter->InitializeMpz();
 
     for (int i = 0, j = 0; i < (width - 1); ++i, n -= m, --m, ++j, --cap) {
-        myClass->GetCount(temp, n, m, cap, k);
+        Counter->GetCount(temp, n, m, cap, k);
 
         for (; cmp(temp, index) <= 0; ++j) {
             n -= (m + 1);
             --cap;
             index -= temp;
-            myClass->GetCount(temp, n, m, cap, k);
+            Counter->GetCount(temp, n, m, cap, k);
         }
 
         res[i] = j;
@@ -558,21 +558,21 @@ std::vector<int> nthPartsDistinctCapMZGmp(
     mpz_class index(mpzIdx);
 
     const PartitionType ptype = PartitionType::DstctCappedMZ;
-    std::unique_ptr<CountClass> myClass = MakeCount(ptype);
+    std::unique_ptr<CountClass> Counter = MakeCount(ptype);
 
-    myClass->SetArrSize(ptype, n, m, cap);
-    myClass->InitializeMpz();
+    Counter->SetArrSize(ptype, n, m, cap);
+    Counter->InitializeMpz();
 
     for (int i = 0, j = 0; i < (width - 1); ++i, --m) {
         const bool bLiteral = !(incr_j || i >= (width - k));
-        myClass->GetCount(temp, n, m, cap, k, bLiteral);
+        Counter->GetCount(temp, n, m, cap, k, bLiteral);
 
         for (; cmp(temp, index) <= 0; ++j) {
             incr_j = true;
             n -= (m + 1);
             --cap;
             index -= temp;
-            myClass->GetCount(temp, n, m, cap, k, false);
+            Counter->GetCount(temp, n, m, cap, k, false);
         }
 
         res[i] = j;
