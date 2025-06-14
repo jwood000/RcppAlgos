@@ -147,9 +147,11 @@ SEXP CombinatoricsCnstrt(SEXP Rv, SEXP Rm, SEXP RisRep, SEXP RFreqs,
     CppConvert::convertPrimitive(RmaxThreads, maxThreads,
                                    VecType::Integer, "maxThreads");
 
-    const bool IsCapped = (part.ptype == PartitionType::RepCapped   ||
-                           part.ptype == PartitionType::DstctCapped ||
-                           part.ptype == PartitionType::DstctCappedMZ);
+    const auto cap_it = std::find(
+        CappedPTypeArr.cbegin(), CappedPTypeArr.cend(), part.ptype
+    );
+
+    const bool IsCapped = cap_it != CappedPTypeArr.cend();
 
     const int limit = (part.isPart && IsCapped) ? 150000 :
         (part.isPart ? 40000 : 20000);
