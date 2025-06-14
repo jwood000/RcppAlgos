@@ -4,9 +4,10 @@
 #include <algorithm>  // std::count_if
 #include <numeric>    // std::iota
 
-void CountPartsDistinctLenCap(mpz_class &res, std::vector<mpz_class> &p1,
-                              std::vector<mpz_class> &p2, int n, int m,
-                              int cap, int strtLen = 0) {
+void CountPartsDistinctLenCap(
+    mpz_class &res, std::vector<mpz_class> &p1, std::vector<mpz_class> &p2,
+    int n, int m, int cap, int strtLen = 0
+) {
 
     if (cap > n) cap = n;
     const int limit = (cap * m) - ((m - 1) * m) / 2;
@@ -65,9 +66,10 @@ void CountPartsDistinctLenCap(mpz_class &res, std::vector<mpz_class> &p1,
     }
 }
 
-void CountPartsDistinctLen(mpz_class &res, std::vector<mpz_class> &p1,
-                           std::vector<mpz_class> &p2, int n, int m,
-                           int cap = 0, int strtLen = 0) {
+void CountPartsDistinctLen(
+    mpz_class &res, std::vector<mpz_class> &p1, std::vector<mpz_class> &p2,
+    int n, int m, int cap = 0, int strtLen = 0
+) {
 
     const int max_width = GetMaxWidth(n);
 
@@ -185,9 +187,10 @@ void CountPartsDistinct(mpz_class &res, int n, int m,
     res = qq[n];
 }
 
-void CountPartsDistinctMultiZero(mpz_class &res, std::vector<mpz_class> &p1,
-                                 std::vector<mpz_class> &p2, int n, int m,
-                                 int cap, int strtLen) {
+void CountPartsDistinctMultiZero(
+    mpz_class &res, std::vector<mpz_class> &p1, std::vector<mpz_class> &p2,
+    int n, int m, int cap, int strtLen
+) {
 
     mpz_class temp;
     res = 0;
@@ -198,9 +201,10 @@ void CountPartsDistinctMultiZero(mpz_class &res, std::vector<mpz_class> &p1,
     }
 }
 
-void CountPartsDistinctCapMZ(mpz_class &res, std::vector<mpz_class> &p1,
-                             std::vector<mpz_class> &p2, int n, int m,
-                             int cap, int strtLen) {
+void CountPartsDistinctCapMZ(
+    mpz_class &res, std::vector<mpz_class> &p1, std::vector<mpz_class> &p2,
+    int n, int m, int cap, int strtLen
+) {
 
     mpz_class temp;
     res = 0;

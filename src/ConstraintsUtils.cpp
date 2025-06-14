@@ -19,9 +19,9 @@ void InitialSetupPartDesign(
 }
 
 template <typename T>
-void AddResultToParts(T* mat, std::int64_t result,
-                      std::size_t numResult,
-                      std::size_t width) {
+void AddResultToParts(
+    T* mat, std::int64_t result, std::size_t numResult, std::size_t width
+) {
 
     const T t_result = result;
     const std::size_t limit = static_cast<std::size_t>(numResult) *
@@ -422,13 +422,8 @@ void ConstraintSetup(const std::vector<double> &vNum,
     SetConstraintType(vNum, funTest, part, ctype, bLower);
 }
 
-template void AddResultToParts(int* mat, std::int64_t result,
-                               std::size_t numResult,
-                               std::size_t width);
-
-template void AddResultToParts(double* mat, std::int64_t result,
-                               std::size_t numResult,
-                               std::size_t width);
+template void AddResultToParts(int*, std::int64_t, std::size_t, std::size_t);
+template void AddResultToParts(double*, std::int64_t, std::size_t, std::size_t);
 
 template void VectorToMatrix(const std::vector<int> &cnstrntVec,
                              const std::vector<int> &resVec, int* mat,
