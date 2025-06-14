@@ -324,14 +324,14 @@ void CountClass::SetArrSize(PartitionType ptype, int n, int m, int cap) {
             CheckMultIsInt(2, m);
             CheckMultIsInt(2, limit);
             n = (n < 2 * m) ? 2 * limit : n;
-            size = (n + 1);
+            size = n + 1;
             break;
         } case PartitionType::RepShort: {
             const int limit = std::min(n - m, m);
             CheckMultIsInt(2, m);
             CheckMultIsInt(2, limit);
             n = (n < 2 * m) ? 2 * limit : n;
-            size = (n + 1);
+            size = n + 1;
             break;
         } case PartitionType::RepCapped: {
             CheckMultIsInt(cap + 1, n + 1);
@@ -339,15 +339,15 @@ void CountClass::SetArrSize(PartitionType ptype, int n, int m, int cap) {
             break;
         } case PartitionType::DstctMultiZero: {
             CheckMultIsInt(1, n + 1);
-            size = (n + 1);
+            size = n + 1;
             break;
         } case PartitionType::DstctOneZero: {
             CheckMultIsInt(1, n + 1);
-            size = (n + 1);
+            size = n + 1;
             break;
         } case PartitionType::DstctNoZero: {
             CheckMultIsInt(1, n + 1);
-            size = (n + 1);
+            size = n + 1;
             break;
         } case PartitionType::DstctCapped: {
             CheckMultIsInt(cap + 1, n + 1);
@@ -367,15 +367,15 @@ void CountClass::SetArrSize(PartitionType ptype, int n, int m, int cap) {
             break;
         } case PartitionType::CmpDstctNoZero: {
             CheckMultIsInt(1, n + 1);
-            size = (n + 1);
+            size = n + 1;
             break;
         } case PartitionType::CmpDstctMZWeak: {
             CheckMultIsInt(1, n + 1);
-            size = (n + 1);
+            size = n + 1;
             break;
         } case PartitionType::CmpDstctZNotWk: {
             CheckMultIsInt(1, n + 1);
-            size = (n + 1);
+            size = n + 1;
             break;
         } default: {
             size = 0;
@@ -435,27 +435,21 @@ int PartitionsCount(const std::vector<int> &Reps,
         return 1;
     }
 
-    const auto cap_it = std::find(
-        CappedPTypeArr.cbegin(), CappedPTypeArr.cend(), part.ptype
-    );
+    std::unique_ptr<CountClass> Counter = MakeCount(part.ptype);
 
-    std::unique_ptr<CountClass> myClass = MakeCount(part.ptype);
-
-    if (myClass) {
-        part.count = myClass->GetCount(part.mapTar, part.width,
+    if (Counter) {
+        part.count = Counter->GetCount(part.mapTar, part.width,
                                        part.cap, strtLen);
 
         if (part.count > Significand53) {
             part.isGmp = true;
-
-            if (cap_it != DistPTypeArr.cend()) {
-                myClass->SetArrSize(part.ptype, part.mapTar,
-                                    part.width, part.cap);
-                myClass->InitializeMpz();
-            }
-
-            myClass->GetCount(part.bigCount, part.mapTar,
-                              part.width, part.cap, strtLen);
+            Counter->SetArrSize(
+                part.ptype, part.mapTar, part.width, part.cap
+            );
+            Counter->InitializeMpz();
+            Counter->GetCount(
+                part.bigCount, part.mapTar, part.width, part.cap, strtLen
+            );
         }
 
         return 1;
