@@ -48,7 +48,7 @@
 //
 // CompMultiset   : CountPartsMultiset(rep(1:3, 5), c(1, 2, 2, 15), true)
 //
-// PrmRepPart     : permuteGeneral(
+// PrmRepPartNoZ  : permuteCount(
 //                      1:20, 5, TRUE,
 //                      constraintFun = "sum",
 //                      comparisonFun = "==",
@@ -57,41 +57,46 @@
 //
 //                  ## When zero is involved, we call the same compiled
 //                  ## function just translated by the width
-//                  permuteGeneral(
+// PrmRepPart     : permuteCount(
 //                      0:20, 5, TRUE,
 //                      constraintFun = "sum",
 //                      comparisonFun = "==",
 //                      limitConstraints = 20
 //                  ) -->> CountCompsRepLen(25, 5)
 //
-// double CountPartsPermDistinct(const std::vector<int> &z,
-//                               int tar, int width, bool includeZero)
+// PrmRepCapped   : permuteCount(
+//                      1:7, 5, TRUE,
+//                      constraintFun = "sum",
+//                      comparisonFun = "==",
+//                      limitConstraints = 12
+//                  ) -->> Currently no function for this case. We do the same
+//                   thing as we do for the CoarseGrained case
 //
-// PrmDstPart     : permuteGeneral(
+// PrmDstPartNoZ  : permuteCount(
 //                      1:20, 4,
 //                      constraintFun = "sum",
 //                      comparisonFun = "==",
 //                      limitConstraints = 20
-//                  ) -->> CountPartsPermDistinct(c(1, 2, 3, 14), 20, 4, 0)
+//                  ) -->> CountCompsDistinctLen(20, 4)
 //
 //                  ## When zero is involved, we call the same compiled
 //                  ## function just translated by the width. Note in this
 //                  ## case, we are passing includeZero = FALSE b/c there
 //                  ## is only one zero and hence isomorphic to 1:24
-//                  permuteGeneral(
+// PrmDstPrtOneZ  : permuteCount(
 //                      0:20, 4,
 //                      constraintFun = "sum",
 //                      comparisonFun = "==",
 //                      limitConstraints = 20
-//                  ) -->> CountPartsPermDistinct(c(0, 1, 2, 17), 24, 4, 0)
+//                  ) -->> CountCompsDistinctLen(24, 4)
 //
-// PrmDstPartMZ   : permuteGeneral(
+// PrmDstPartMZ   : permuteCount(
 //                      0:20, 4,
 //                      freqs = c(2, rep(1, 20)),
 //                      constraintFun = "sum",
 //                      comparisonFun = "==",
 //                      limitConstraints = 20
-//                  ) -->> CountPartsPermDistinct(c(0, 0, 1, 19), 20, 4, 1)
+//                  ) -->> CountCompsDistinctMZWeak(20, 4, 20, 2)
 //
 // double CountPartsPermDistinctCap(const std::vector<int> &z, int cap,
 //                                  int tar, int width, bool includeZero)
@@ -101,34 +106,31 @@
 // cases are under the "general" case and require a vector, v, that is used
 // for output. E.g. in all of the generating functions, you will see v[z[i]].
 //
-// PrmDstPrtCap   : permuteGeneral(
+// PrmDstPrtCap   : permuteCount(
 //                      55, 4,
 //                      constraintFun = "sum",
 //                      comparisonFun = "==",
 //                      limitConstraints = 80
-//                  ) -->> CountPartsPermDistinctCap(c(0, 1, 21, 54),
-//                                                   55, 80, 4, 0)
+//                  ) -->> CountPartsPermDistinctCap(80, 4, 55)
 //
 //                  ## When zero is involved, we call the same compiled
 //                  ## function just translated by the width. Note in this
 //                  ## case, we are passing includeZero = FALSE b/c there
 //                  ## is only one zero and hence isomorphic to 1:84
-//                  permuteGeneral(
+//                  permuteCount(
 //                      0:55, 4,
 //                      constraintFun = "sum",
 //                      comparisonFun = "==",
 //                      limitConstraints = 80
-//                  ) -->> CountPartsPermDistinctCap(c(0, 1, 24, 55),
-//                                                   55, 84, 4, 0)
+//                  ) -->> CountPartsPermDistinctCap(84, 4, 56)
 //
-// PrmDstPrtCapMZ : permuteGeneral(
+// PrmDstPrtCapMZ : permuteCount(
 //                      0:55, 4,
 //                      freqs = c(2, rep(1, 55)),
 //                      constraintFun = "sum",
 //                      comparisonFun = "==",
 //                      limitConstraints = 80
-//                  ) -->> CountPartsPermDistinctCap(c(0, 0, 25, 55),
-//                                                   55, 80, 4, 1)
+//                  ) -->> CountPartsPermDistinctCap(80, 4, 55, 2)
 //
 // NotPartition   :
 //
@@ -203,21 +205,26 @@
 // Note, if zero is included, it will be considered when generating perms,
 // thus all cases below will produce weak compositions.
 //
-// Also note that all of the cases below will stem from permuteGeneral
+// Also note that all of the cases below will stem from permuteCount/General
 //
+// PrmRepPartNoZ  : Permutations of partitions with repetition & no zeros
 // PrmRepPart     : Permutations of partitions with repetition
-// PrmDstPart     : Permutations of partitions with distinct parts
-// PrmDstPartMZ   : Permutations of partitions with distinct parts and more
+// PrmRepCapped   : Perms of partitions with repetition & restricted parts
+// PrmDstPartNoZ  : Permutations of partitions with distinct parts & no zeros
+// PrmDstPrtOneZ  : Permutations of partitions with distinct parts & one zero
+// PrmDstPartMZ   : Permutations of partitions with distinct parts & more
 //                   than one zero
 //
-// PrmDstPrtCap   : Permutations of partitions with distinct restricted parts
-// PrmDstPrtCapMZ : Permutations of partitions with distinct restricted parts
+// PrmDstPrtCap   : Permutations of partitions with distinct & restricted parts
+// PrmDstPrtCapMZ : Permutations of partitions with distinct & restricted parts
 //                   and more than one zero
 //
 // PrmMultiset    : Permutations of partitions of non-trivial multisets.
 //                   Non-trivial here means elements other than 0 have
 //                   multiplicity > 1
-// NotPartition
+//
+// NotMapped      : These are partitions, however they are not mapped
+// NotPartition   : Does not pass the CheckPartition function
 //
 // ****************************************************************************
 
@@ -242,13 +249,17 @@ enum class PartitionType {
     CmpDstctZNotWk = 17,
     CmpDstctMZWeak = 18,
     CompMultiset   = 19,
-    PrmRepPart     = 20,
-    PrmDstPart     = 21,
-    PrmDstPartMZ   = 22,
-    PrmDstPrtCap   = 23,
-    PrmDstPrtCapMZ = 24,
-    PrmMultiset    = 25,
-    NotPartition   = 26
+    PrmRepPartNoZ  = 20,
+    PrmRepPart     = 21,
+    PrmRepCapped   = 22,
+    PrmDstPartNoZ  = 23,
+    PrmDstPrtOneZ  = 24,
+    PrmDstPartMZ   = 25,
+    PrmDstPrtCap   = 26,
+    PrmDstPrtCapMZ = 27,
+    PrmMultiset    = 28,
+    NotMapped      = 29,
+    NotPartition   = 30
 };
 
 constexpr const char* PTypeNames[] = {
@@ -272,14 +283,29 @@ constexpr const char* PTypeNames[] = {
     "CmpDstctZNotWk",
     "CmpDstctMZWeak",
     "CompMultiset",
+    "PrmRepPartNoZ",
     "PrmRepPart",
-    "PrmDstPart",
+    "PrmRepCapped",
+    "PrmDstPartNoZ",
+    "PrmDstPrtOneZ",
     "PrmDstPartMZ",
     "PrmDstPrtCap",
     "PrmDstPrtCapMZ",
     "PrmMultiset",
+    "NotMapped",
     "NotPartition"
 };
+
+const std::array<PartitionType, 4> NoCountAlgoPTypeArr{{
+    PartitionType::NotMapped, PartitionType::PrmRepCapped,
+    PartitionType::NotPartition, PartitionType::CoarseGrained
+}};
+
+const std::array<PartitionType, 6> CappedPTypeArr{{
+    PartitionType::RepCapped, PartitionType::DstctCapped,
+    PartitionType::DstctCappedMZ, PartitionType::PrmRepCapped,
+    PartitionType::PrmDstPrtCap, PartitionType::PrmDstPrtCapMZ
+}};
 
 const std::array<PartitionType, 7> RepPTypeArr{{
     PartitionType::RepStdAll, PartitionType::RepNoZero,
