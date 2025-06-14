@@ -3,9 +3,10 @@
 #include "Combinations/BigComboCount.h"
 #include <vector>
 
-void CountPartsRepLenCap(mpz_class &res, std::vector<mpz_class> &p1,
-                         std::vector<mpz_class> &p2, int n, int m,
-                         int cap, int strtLen) {
+void CountPartsRepLenCap(
+    mpz_class &res, std::vector<mpz_class> &p1, std::vector<mpz_class> &p2,
+    int n, int m, int cap, int strtLen
+) {
 
     if (cap > n) cap = n;
 
@@ -60,9 +61,10 @@ void CountPartsRepLenCap(mpz_class &res, std::vector<mpz_class> &p1,
     }
 }
 
-void CountPartsRepLen(mpz_class &res, std::vector<mpz_class> &p1,
-                      std::vector<mpz_class> &p2, int n, int m,
-                      int cap, int strtLen) {
+void CountPartsRepLen(
+    mpz_class &res, std::vector<mpz_class> &p1, std::vector<mpz_class> &p2,
+    int n, int m, int cap, int strtLen
+) {
 
     if (m == 0 && n == 0) {
         res = 1;
