@@ -26,8 +26,8 @@ protected:
     std::vector<int> tarIntVals;
     std::vector<double> tarVals;
 
-    const ConstraintType ctype;
     const PartDesign part;
+    const ConstraintType ctype;
 
     const std::string mainFun;
     const std::string funTest;
