@@ -1,22 +1,24 @@
 #include "Partitions/PartitionsClass.h"
 
 void Partitions::SetPartValues() {
+
     if (part.ptype == PartitionType::Multiset) {
-        PrepareMultisetPart(rpsCnt, z, boundary, pivot,
-                            edge, lastCol, lastElem);
-    } else if (std::find(RepPTypeArr.cbegin(), RepPTypeArr.cend(),
-                         part.ptype) != RepPTypeArr.cend()) {
+        PrepareMultisetPart(
+            rpsCnt, z, boundary, pivot, edge, lastCol, lastElem
+        );
+    } else if (part.isRep) {
         PrepareRepPart(z, boundary, pivot, edge, lastElem, lastCol);
     } else {
-        PrepareDistinctPart(z, boundary, pivot, edge,
-                            tarDiff, lastElem, lastCol);
+        PrepareDistinctPart(
+            z, boundary, pivot, edge, tarDiff, lastElem, lastCol
+        );
     }
 }
 
 void Partitions::MoveZToIndex() {
     z = nthParts(part.mapTar, width, cap, strtLen, dblTemp, mpzTemp);
 
-    if (paragon) {
+    if (ctype == ConstraintType::PartStandard) {
         for (auto &z_i: z) {
             z_i = vInt[z_i];
         }
@@ -83,25 +85,14 @@ Partitions::Partitions(
              RtarIntVals, RstartZ, RmainFun, RFunTest, RfunDbl, Rctype,
              RstrtLen, Rcap, RKeepRes, RnumUnknown, RcnstrtRows,
              RcnstrtRowsMpz),
-    paragon(ctype == ConstraintType::PartStandard),
-    stdPartNext(paragon && !part.isComp),
-    stdCompZeroSpesh(paragon && part.isComp && !part.isWeak),
-    genCompZeroSpesh(!paragon && part.isComp && !part.isWeak &&
-        part.includeZero),
     lastCol(part.width - 1), lastElem(n - 1),
-    nextParts(
-        GetNextPartsPtr(
-            part.ptype,
-            !(stdPartNext || stdCompZeroSpesh || genCompZeroSpesh),
-            part.isComp
-        )
-    ),
+    nextParts(GetNextPartsPtr(part.ptype,ctype)),
     nthParts((part.ptype == PartitionType::LengthOne ||
               part.ptype == PartitionType::Multiset  ||
               CheckEqSi(part.isGmp, cnstrtCountMpz, cnstrtCount, 0)) ?
               nullptr : GetNthPartsFunc(part.ptype, part.isGmp)) {
 
-    bAddOne = paragon && !part.includeZero;
+    bAddOne = (ctype == ConstraintType::PartStandard) && !part.includeZero;
     rpsCnt  = myReps;
     IsGmp   = part.isGmp;
 

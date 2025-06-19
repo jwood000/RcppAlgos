@@ -1,3 +1,6 @@
+#include "cpp11/protect.hpp"
+
+#include "Constraints/ConstraintsTypes.h"
 #include "Partitions/NextComposition.h"
 #include "Partitions/PartitionsTypes.h"
 #include <algorithm>  // std::find
@@ -507,25 +510,69 @@ void NextRepCompOne(std::vector<int> &rpsCnt,
     NextCompositionRep<1>(z, lastCol);
 }
 
-nextPartsPtr GetNextPartsPtr(PartitionType ptype, bool IsGen, bool IsComp) {
+nextPartsPtr GetNextPartsPtr(PartitionType ptype, ConstraintType ctype) {
 
-    if (IsComp && IsGen) {
-        return(nextPartsPtr(NextRepCompZero));
-    } else if (IsComp) {
-        return(nextPartsPtr(NextRepCompOne));
-    } else if (IsGen) {
-        if (ptype == PartitionType::Multiset) {
-            return(nextPartsPtr(NextMultisetGen));
-        } else if (std::find(RepPTypeArr.cbegin(), RepPTypeArr.cend(),
-                             ptype) != RepPTypeArr.cend()) {
-            return(nextPartsPtr(NextRepGen));
-        } else {
-            return(nextPartsPtr(NextDistinctGen));
+    if (ctype == ConstraintType::PartStandard) {
+        switch (ptype) {
+            case PartitionType::LengthOne: {
+                return(nextPartsPtr(NextDistinct));
+            } case PartitionType::RepStdAll: {
+                return(nextPartsPtr(NextRep));
+            } case PartitionType::RepNoZero: {
+                return(nextPartsPtr(NextRep));
+            } case PartitionType::RepShort: {
+                return(nextPartsPtr(NextRep));
+            } case PartitionType::DstctStdAll: {
+                return(nextPartsPtr(NextDistinct));
+            } case PartitionType::DstctMultiZero: {
+                return(nextPartsPtr(NextDistinct));
+            } case PartitionType::DstctOneZero: {
+                return(nextPartsPtr(NextDistinct));
+            } case PartitionType::DstctNoZero: {
+                return(nextPartsPtr(NextDistinct));
+            } case PartitionType::CompRepNoZero: {
+                return(nextPartsPtr(NextRepCompOne));
+            } case PartitionType::CompRepWeak: {
+                return(nextPartsPtr(NextRepCompZero));
+            } case PartitionType::CmpRpZroNotWk: {
+                return(nextPartsPtr(NextRepCompOne));
+            } default: {
+                // This should not happen
+                cpp11::stop(
+                    "This should not happen. Please open an issue here:\n\t"
+                    "https://github.com/jwood000/RcppAlgos/issues"
+                );
+            }
         }
-    } else if (std::find(RepPTypeArr.cbegin(), RepPTypeArr.cend(),
-                         ptype) != RepPTypeArr.cend()) {
-        return(nextPartsPtr(NextRep));
     } else {
-        return(nextPartsPtr(NextDistinct));
+        switch (ptype) {
+            case PartitionType::LengthOne: {
+                return(nextPartsPtr(NextDistinctGen));
+            } case PartitionType::RepNoZero: {
+                return(nextPartsPtr(NextRepGen));
+            } case PartitionType::RepCapped: {
+                return(nextPartsPtr(NextRepGen));
+            } case PartitionType::DstctMultiZero: {
+                return(nextPartsPtr(NextDistinctGen));
+            } case PartitionType::DstctNoZero: {
+                return(nextPartsPtr(NextDistinctGen));
+            } case PartitionType::DstctCapped: {
+                return(nextPartsPtr(NextDistinctGen));
+            } case PartitionType::DstctCappedMZ: {
+                return(nextPartsPtr(NextDistinctGen));
+            } case PartitionType::Multiset: {
+                return(nextPartsPtr(NextMultisetGen));
+            } case PartitionType::CompRepNoZero: {
+                return(nextPartsPtr(NextRepCompZero));
+            } case PartitionType::CmpRpZroNotWk: {
+                return(nextPartsPtr(NextRepCompOne));
+            } default: {
+                // This should not happen
+                cpp11::stop(
+                    "This should not happen. Please open an issue here:\n\t"
+                    "https://github.com/jwood000/RcppAlgos/issues"
+                );
+            }
+        }
     }
 }
