@@ -6,7 +6,7 @@
 // are present. When the latter occurs, it is non-trivial to produce a loose
 // monotonic sequence of results.
 
-// ConstraintType - General: Cannot be reduced to a specific partiion case.
+// ConstraintType - General: Cannot be reduced to a specific partition case.
 // The most general algorithm is used in this case.
 
 // PartitionEsque = 3: Can't be reduced to an integer partition but still
