@@ -307,21 +307,6 @@ const std::array<PartitionType, 6> CappedPTypeArr{{
     PartitionType::PrmDstPrtCap, PartitionType::PrmDstPrtCapMZ
 }};
 
-const std::array<PartitionType, 7> RepPTypeArr{{
-    PartitionType::RepStdAll, PartitionType::RepNoZero,
-    PartitionType::RepShort, PartitionType::RepCapped,
-    PartitionType::CompRepNoZero, PartitionType::CompRepWeak,
-    PartitionType::CmpRpZroNotWk
-}};
-
-const std::array<PartitionType, 9> DistPTypeArr{{
-    PartitionType::DstctStdAll,  PartitionType::DstctMultiZero,
-    PartitionType::DstctOneZero, PartitionType::DstctNoZero,
-    PartitionType::DstctCapped, PartitionType::DstctCappedMZ,
-    PartitionType::CmpDstctNoZero, PartitionType::CmpDstctZNotWk,
-    PartitionType::CmpDstctMZWeak
-}};
-
 struct PartDesign {
     int width = 0;
     int mapTar = 0; // mapped target value
