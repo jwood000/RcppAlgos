@@ -55,8 +55,7 @@ void StandardPartitions(int* mat, std::vector<int> &z, PartitionType ptype,
             thr.join();
         }
     } else {
-        PartsStdManager(mat, z, width, lastElem, lastCol, nRows,
-                        IsComb, IsRep, IsComp, zero_spesh);
+        PartsStdManager(mat, z, width, lastElem, lastCol, nRows, ptype);
     }
 }
 

@@ -1,4 +1,5 @@
-#include "Partitions/PartitionsCountDistinct.h"
+#include "cpp11/protect.hpp"
+
 #include "Partitions/CompositionsDistinct.h"
 #include "Partitions/PartitionsMultiset.h"
 #include "Partitions/PartitionsDistinct.h"
@@ -9,127 +10,70 @@
 #include <numeric>
 #include "RMatrix.h"
 
-void PartsStdManager(int* mat, std::vector<int> &z, int width,
-                     int lastElem, int lastCol, int nRows, bool IsComb,
-                     bool IsRep, bool IsComp, bool zero_spesh) {
+int PartsStdManager(int* mat, std::vector<int> &z, int width, int lastElem,
+                    int lastCol, int nRows, PartitionType ptype) {
 
-    // switch (ptype) {. PartitionType ptype
-    //     case PartitionType::LengthOne: {
-    //         if (nRows) mat[0] = z.front();
-    //         break;
-    //     } case PartitionType::RepStdAll: {
-    //         PartsRep(mat, z, width, lastElem, lastCol, nRows);
-    //         break;
-    //     } case PartitionType::RepNoZero: {
-    //         PartsRep(mat, z, width, lastElem, lastCol, nRows);
-    //         break;
-    //     } case PartitionType::RepShort: {
-    //         PartsRep(mat, z, width, lastElem, lastCol, nRows);
-    //         break;
-    //     } case PartitionType::RepCapped: {
-    //         PartsRep(mat, z, width, lastElem, lastCol, nRows);
-    //         break;
-    //     } case PartitionType::DstctStdAll: {
-    //
-    //         break;
-    //     } case PartitionType::DstctMultiZero: {
-    //
-    //         break;
-    //     } case PartitionType::DstctOneZero: {
-    //
-    //         break;
-    //     } case PartitionType::DstctNoZero: {
-    //
-    //         break;
-    //     } case PartitionType::DstctCapped: {
-    //
-    //         break;
-    //     } case PartitionType::DstctCappedMZ: {
-    //
-    //         break;
-    //     } case PartitionType::Multiset: {
-    //
-    //         break;
-    //     } case PartitionType::CoarseGrained: {
-    //
-    //         break;
-    //     } case PartitionType::CompRepNoZero: {
-    //
-    //         break;
-    //     } case PartitionType::CompRepWeak: {
-    //
-    //         break;
-    //     } case PartitionType::CmpRpZroNotWk: {
-    //
-    //         break;
-    //     } case PartitionType::CmpDstctNoZero: {
-    //         CompsRep<0>(mat, z, width, nRows);
-    //         break;
-    //     } case PartitionType::CmpDstctZNotWk: {
-    //         CompsRep<1>(mat, z, width, nRows);
-    //         break;
-    //     } case PartitionType::CmpDstctMZWeak: {
-    //         CompsRep<0>(mat, z, width, nRows);
-    //         break;
-    //     } default: {
-    //
-    //     }
-    // }
-
-    if (width == 1) {
-        if (nRows) mat[0] = z.front();
-    } else if (IsRep && IsComb) {
-        PartsRep(mat, z, width, lastElem, lastCol, nRows);
-    } else if (IsRep && IsComp && zero_spesh) {
-        CompsRep<1>(mat, z, width, nRows);
-    } else if (IsRep && IsComp) {
-        CompsRep<0>(mat, z, width, nRows);
-    } else if (IsComp) {
-        std::vector<int> myRange(z.back());
-        std::iota(myRange.begin(), myRange.end(), 1);
-
-        std::vector<int> complement;
-        std::set_difference(myRange.begin(), myRange.end(), z.begin(), z.end(),
-                            std::inserter(complement, complement.begin()));
-
-        int lastIdx = complement.size() - 1;
-        const int target = std::accumulate(z.cbegin(), z.cend(), 0);
-        const int numZeros = std::count(z.cbegin(), z.cend(), 0);
-        int strt = 0;
-
-        for (int i = width - numZeros, j = numZeros,
-             nextStep = 0; i < width; ++i, --j) {
-            nextStep += CountCompsDistinctLen(target, i);
-            CompsDistinct(mat, z, complement, 0, lastIdx, z.back(),
-                          target, strt, width, nextStep, nRows);
-            strt = nextStep;
-
-            for (int k = j - 1, val = 1; k < width; ++k, ++val) {
-                z[k] = val;
-            }
-
-            z.back() = target - static_cast<int>((i * (i + 1)) / 2);
-            complement.clear();
-            std::set_difference(
-                myRange.begin(), myRange.end(), z.begin(), z.end(),
-                std::inserter(complement, complement.begin())
-            );
-        }
-
-        CompsDistinct(mat, z, complement, 0, lastIdx, z.back(),
-                      target, strt, width, nRows, nRows);
-    } else if (IsRep) {
-        PartsPermRep(mat, z, width, lastElem, lastCol, nRows);
-    } else if (IsComb) {
-        PartsDistinct(mat, z, width, lastElem, lastCol, nRows);
-    } else {
-        const auto it = std::find(z.rbegin(), z.rend(), 0);
-        const int dist = std::distance(it, z.rend());
-
-        if (dist > 1) {
-            PartsPermZeroDistinct(mat, z, width, lastElem, lastCol, nRows);
-        } else {
+    switch (ptype) {
+        case PartitionType::LengthOne: {
+            if (nRows) mat[0] = z.front();
+            return 1;
+        } case PartitionType::RepStdAll: {
+            PartsRep(mat, z, width, lastElem, lastCol, nRows);
+            return 1;
+        } case PartitionType::RepNoZero: {
+            PartsRep(mat, z, width, lastElem, lastCol, nRows);
+            return 1;
+        } case PartitionType::RepShort: {
+            PartsRep(mat, z, width, lastElem, lastCol, nRows);
+            return 1;
+        } case PartitionType::DstctStdAll: {
+            PartsDistinct(mat, z, width, lastElem, lastCol, nRows);
+            return 1;
+        } case PartitionType::DstctMultiZero: {
+            PartsDistinct(mat, z, width, lastElem, lastCol, nRows);
+            return 1;
+        } case PartitionType::DstctOneZero: {
+            PartsDistinct(mat, z, width, lastElem, lastCol, nRows);
+            return 1;
+        } case PartitionType::DstctNoZero: {
+            PartsDistinct(mat, z, width, lastElem, lastCol, nRows);
+            return 1;
+        } case PartitionType::CompRepNoZero: {
+            CompsRep<1>(mat, z, width, nRows);
+            return 1;
+        } case PartitionType::CompRepWeak: {
+            CompsRep<0>(mat, z, width, nRows);
+            return 1;
+        } case PartitionType::CmpRpZroNotWk: {
+            CompsRep<1>(mat, z, width, nRows);
+            return 1;
+        } case PartitionType::PrmRepPartNoZ: {
+            PartsPermRep(mat, z, width, lastElem, lastCol, nRows);
+            return 1;
+        } case PartitionType::PrmRepPart: {
+            PartsPermRep(mat, z, width, lastElem, lastCol, nRows);
+            return 1;
+        } case PartitionType::PrmDstPartNoZ: {
             PartsPermDistinct(mat, z, width, lastElem, lastCol, nRows);
+            return 1;
+        } case PartitionType::PrmDstPrtOneZ: {
+            PartsPermDistinct(mat, z, width, lastElem, lastCol, nRows);
+            return 1;
+        } case PartitionType::PrmDstPartMZ: {
+            PartsPermZeroDistinct(mat, z, width, lastElem, lastCol, nRows);
+            return 1;
+        } case PartitionType::CmpDstctNoZero: {
+            CompsDistinct(mat, z, width, nRows);
+            return 1;
+        } case PartitionType::CmpDstctZNotWk: {
+            CompsDistinct(mat, z, width, nRows);
+            return 1;
+        } case PartitionType::CmpDstctMZWeak: {
+            CompsDistinct(mat, z, width, nRows);
+            return 1;
+        } default: {
+            // This should not happen
+            cpp11::stop("Casse not supported");
         }
     }
 }
@@ -168,17 +112,22 @@ void PartsGenManager(T* mat, const std::vector<T> &v, std::vector<int> &z,
 template <typename T>
 void PartsGenManager(std::vector<T> &partsVec, const std::vector<T> &v,
                      const std::vector<int> &Reps, std::vector<int> &z,
-                     PartitionType ptype, int width, int nRows,
-                     bool IsComb) {
+                     PartitionType ptype, int width, int nRows) {
 
     if (width == 1) {
         if (nRows) partsVec.push_back(v[z.front()]);
     } else if (ptype == PartitionType::Multiset) {
-        PartsGenMultiset(partsVec, v, Reps, z, width, nRows, IsComb);
+        PartsGenMultiset(partsVec, v, Reps, z, width, nRows, true);
+    } else if (ptype == PartitionType::PrmMultiset) {
+        PartsGenMultiset(partsVec, v, Reps, z, width, nRows, false);
     } else if (ptype == PartitionType::RepCapped) {
-        PartsGenRep(partsVec, v, z, width, nRows, IsComb);
+        PartsGenRep(partsVec, v, z, width, nRows, true);
+    } else if (ptype == PartitionType::PrmRepCapped) {
+        PartsGenRep(partsVec, v, z, width, nRows, false);
+    } else if (ptype == PartitionType::DstctCapped) {
+        PartsGenDistinct(partsVec, v, z, width, nRows, true);
     } else {
-        PartsGenDistinct(partsVec, v, z, width, nRows, IsComb);
+        PartsGenDistinct(partsVec, v, z, width, nRows, false);
     }
 }
 
@@ -223,10 +172,10 @@ template void PartsGenManager(double*, const std::vector<double>&,
 
 template void PartsGenManager(std::vector<int>&, const std::vector<int>&,
                               const std::vector<int>&, std::vector<int>&,
-                              PartitionType, int, int, bool);
+                              PartitionType, int, int);
 template void PartsGenManager(std::vector<double>&, const std::vector<double>&,
                               const std::vector<int>&, std::vector<int>&,
-                              PartitionType, int, int, bool);
+                              PartitionType, int, int);
 
 template void PartsGenParallel(RcppParallel::RMatrix<int>&,
                                const std::vector<int>&, std::vector<int>&,
