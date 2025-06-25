@@ -1,5 +1,18 @@
+#include "Partitions/PartitionsCountDistinct.h"
 #include "Partitions/NextComposition.h"
 #include "RMatrix.h"
+#include <algorithm> // std::set_difference
+#include <numeric>
+
+std::vector<int> PrepareComplement(const std::vector<int> &z) {
+
+    std::vector<int> complement;
+    std::vector<int> myRange(z.back());
+    std::iota(myRange.begin(), myRange.end(), 1);
+    std::set_difference(myRange.begin(), myRange.end(), z.begin(), z.end(),
+                        std::inserter(complement, complement.begin()));
+    return complement;
+}
 
 template <typename T>
 void CompsGenDistinct(
@@ -35,24 +48,59 @@ void CompsGenDistinct(
     // }
 }
 
-void CompsDistinct(
+void CompsDistinctWorker(
     int* mat, std::vector<int> &z, std::vector<int> &complement,
     int i1, int i2, int myMax, int tar, std::size_t strt,
     std::size_t width, std::size_t nRows, std::size_t totalRows
 ) {
 
     for (std::size_t count = strt, m = width - 1, q = complement.size() - 1,
-         lastRow = nRows - 1; count < lastRow; ++count,
-         NextCompositionDistinct(z, complement, i1, i2, myMax, m, q, tar)) {
+         lastRow = nRows - 1; count < lastRow; ++count) {
 
         for (std::size_t k = 0; k < width; ++k) {
             mat[count + totalRows * k] = z[k];
         }
+
+        NextCompositionDistinct(z, complement, i1, i2, myMax, m, q, tar);
     }
 
     for (std::size_t k = 0; k < width; ++k) {
         mat[nRows - 1 + totalRows * k] = z[k];
     }
+}
+
+void CompsDistinct(int* mat, std::vector<int> &z,
+                   std::size_t width, std::size_t nRows) {
+
+    std::vector<int> complement = PrepareComplement(z);
+
+    int strt = 0;
+    int lastIdx = complement.size() - 1;
+
+    const int tar = std::accumulate(z.cbegin(), z.cend(), 0);
+    const int nz  = std::count(z.cbegin(), z.cend(), 0);
+
+    for (int i = width - nz, j = nz, nextStep = 0; i < width; ++i, --j) {
+
+        nextStep += CountCompsDistinctLen(tar, i);
+
+        CompsDistinctWorker(
+            mat, z, complement, 0, lastIdx, z.back(),
+            tar, strt, width, nextStep, nRows
+        );
+
+        strt = nextStep;
+
+        // std::fill(z.begin(), z.end(), 0);
+        std::iota(z.begin() + j, z.end(), 1);
+        z.back() = tar - static_cast<int>((i * (i + 1)) / 2);
+        complement = PrepareComplement(z);
+    }
+
+    CompsDistinctWorker(
+        mat, z, complement, 0, lastIdx, z.back(),
+        tar, strt, width, nRows, nRows
+    );
 }
 
 void CompsDistinct(
