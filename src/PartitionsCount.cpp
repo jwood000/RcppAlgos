@@ -11,8 +11,6 @@
 #include <algorithm>               // std::count_if, std::find
 #include <memory>
 
-constexpr double cutOff = 3.0;
-
 std::unique_ptr<CountClass> MakeCount(PartitionType ptype) {
 
     switch (ptype) {
@@ -285,6 +283,7 @@ double CompsDistLenMZWeak::GetCount(int n, int m, int cap, int strtLen) {
 bool OverTheBar(PartitionType ptype, double capNumIters, int n, int m) {
 
     // N.B. We currently don't have a PrmRepCapped count function
+    constexpr double cutOff = 3.0;
 
     switch(ptype) {
         case PartitionType::RepCapped: {
