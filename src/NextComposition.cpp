@@ -23,11 +23,21 @@ void NextCompositionRep(std::vector<int> &z, int lastCol) {
     }
 }
 
+int GetSum(const std::vector<int>& v, const std::vector<int>& idx, int m) {
+    int sum = 0;
+
+    for (int i = 0; i < m; ++i) {
+        sum += v[idx[i]];
+    }
+
+    return sum;
+}
+
 int NextDistinctBlock(
     const std::vector<int> &v, std::vector<int> &idx, int target, int m
 ) {
 
-    const int lenV = v.size();
+    const int n = v.size();
     const int testMax = std::accumulate(v.cend() - m, v.cend(), 0);
 
     // The length is too small
@@ -44,16 +54,7 @@ int NextDistinctBlock(
 
     std::iota(idx.begin(), idx.end(), 0);
 
-    auto GetSum = [](const std::vector<int> &_v,
-                     const std::vector<int> &_idx) {
-        return std::accumulate(
-            _idx.begin(), _idx.end(), 0, [&](int sum, int i) {
-                return sum + _v[i];
-            }
-        );
-    };
-
-    int tempSum = GetSum(v, idx);
+    int tempSum = GetSum(v, idx, m);
     bool keepGoing = tempSum != target;
     int partial = target - (tempSum - v[idx.back()]);
     int j = m - 1;
@@ -67,14 +68,14 @@ int NextDistinctBlock(
         }
 
         int k = m - 2;
-        int g = lenV - 2;
+        int g = n - 2;
 
         while (k > 0 && idx[k] == g) {
             --k;
             --g;
         }
 
-        if (k == 0 && idx.front() == (lenV - m)) {
+        if (k == 0 && idx.front() == (n - m)) {
             return 0;
         }
 
@@ -87,16 +88,15 @@ int NextDistinctBlock(
                 idx[i] = idx[i - 1] + 1;
             }
 
-            tempSum = GetSum(v, idx);
+            tempSum = GetSum(v, idx, m);
             int maxSum = tempSum;
 
             for (int i = k; i < m; ++i) {
                 maxSum -= v[idx[i]];
-                maxSum += v[lenV - (m - i)];
+                maxSum += v[n - (m - i)];
             }
 
-            impossible = (tempSum > target) ||
-                (maxSum < target);
+            impossible = (tempSum > target) || (maxSum < target);
             --k;
         }
 
@@ -158,7 +158,13 @@ bool NextRoutine(
 
     std::swap(ref_one, complement[i1]);
     std::swap(ref_two, complement[i2]);
-    std::sort(complement.begin(), complement.end());
+
+    // Sort the small affected region [i1, i2 + 1]
+    if (i1 > i2) {
+        std::sort(complement.begin() + i2, complement.begin() + i1 + 1);
+    } else {
+        std::sort(complement.begin() + i1, complement.begin() + i2 + 1);
+    }
 
     if (i1 < lastIdx) ++i1; else return false;
     if (i2 > 0) --i2; else return false;
@@ -214,8 +220,8 @@ bool NextRoutine(
 // to 14. These are just a few cases, but hopefully the point is made.
 
 void NextCompositionDistinct(
-    std::vector<int> &z, std::vector<int> &complement, int &i1,
-    int &i2, int &myMax, int lastCol, int lastIdx, int target
+    std::vector<int> &z, std::vector<int> &complement, std::vector<int> &idx,
+    int &i1, int &i2, int &myMax, int lastCol, int lastIdx, int target
 ) {
 
     if (z[lastCol - 1] < myMax) {
@@ -224,13 +230,23 @@ void NextCompositionDistinct(
         int m = 2;
         int j = lastCol - m;
 
-        complement.insert(complement.end(), z.end() - m, z.end());
-        std::sort(complement.begin(), complement.end());
+        complement.insert(
+            std::lower_bound(
+                complement.begin(), complement.end(), z[lastCol]
+            ),
+            z[lastCol]
+        );
+        complement.insert(
+            std::lower_bound(
+                complement.begin(), complement.end(), z[lastCol - 1]
+            ),
+            z[lastCol - 1]
+        );
+
         bool keepGoing = true;
 
         while (j >= 0 && keepGoing) {
             int res = 0;
-            std::vector<int> idx(m);
 
             while (res == 0) {
                 // We first check to see if there is an element in complement
@@ -245,6 +261,7 @@ void NextCompositionDistinct(
                     std::swap(*upper, z[j]);
                     int partial = target -
                         std::accumulate(z.cbegin(), z.cend() - m, 0);
+                    idx.resize(m);
                     res = NextDistinctBlock(complement, idx, partial, m);
                 } else {
                     res = 100;
