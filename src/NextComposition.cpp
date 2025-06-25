@@ -27,7 +27,7 @@ int NextDistinctBlock(
     const std::vector<int> &v, std::vector<int> &idx, int target, int m
 ) {
 
-    int lenV = v.size();
+    const int lenV = v.size();
     const int testMax = std::accumulate(v.cend() - m, v.cend(), 0);
 
     // The length is too small
