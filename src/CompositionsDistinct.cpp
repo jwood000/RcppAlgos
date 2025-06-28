@@ -55,6 +55,7 @@ void CompsDistinctWorker(
 ) {
 
     std::vector<int> idx;
+    std::vector<int> tailSum;
 
     for (std::size_t count = strt, m = width - 1, q = complement.size() - 1,
          lastRow = nRows - 1; count < lastRow; ++count) {
@@ -63,7 +64,9 @@ void CompsDistinctWorker(
             mat[count + totalRows * k] = z[k];
         }
 
-        NextCompositionDistinct(z, complement, idx, i1, i2, myMax, m, q, tar);
+        NextCompositionDistinct(
+            z, complement, idx, tailSum, i1, i2, myMax, m, q, tar
+        );
     }
 
     for (std::size_t k = 0; k < width; ++k) {

@@ -7,5 +7,6 @@ void NextCompositionRep(std::vector<int> &z, int lastCol);
 
 void NextCompositionDistinct(
     std::vector<int> &z, std::vector<int> &complement, std::vector<int> &idx,
-    int &i1, int &i2, int &myMax, int lastCol, int lastIdx, int target
+    std::vector<int> &tailSum, int &i1, int &i2, int &myMax, int lastCol,
+    int lastIdx, int target
 );
