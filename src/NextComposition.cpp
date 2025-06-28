@@ -24,6 +24,7 @@ void NextCompositionRep(std::vector<int> &z, int lastCol) {
 }
 
 int GetSum(const std::vector<int>& v, const std::vector<int>& idx, int m) {
+
     int sum = 0;
 
     for (int i = 0; i < m; ++i) {
@@ -33,83 +34,178 @@ int GetSum(const std::vector<int>& v, const std::vector<int>& idx, int m) {
     return sum;
 }
 
+bool LowerBound(const std::vector<int> &v, int target,
+                int partVal, int &idx, int low) {
+
+    const int bound = target - partVal;
+
+    if (v[idx] <= bound) {
+        return false;
+    } else if (v[low] < bound) {
+        auto lower = std::find_if(
+            v.cbegin() + low, v.cbegin() + idx, [=](int v_i) {
+                return v_i >= bound;
+            }
+        );
+
+        idx = std::distance(v.cbegin(), lower);
+        return v[idx] > bound;
+    } else {
+        idx = low;
+        return false;
+    }
+}
+
+void LowerBoundLast(const std::vector<int> &v, int target,
+                    int partVal, int &idx, int low) {
+
+    const int bound = target - partVal;
+
+    if (v[idx] > bound && v[low] < bound) {
+        while (idx > low && v[idx] > bound) {
+            --idx;
+        }
+    } else {
+        idx = low;
+    }
+}
+
+int GetLowerBound(const std::vector<int> &v, std::vector<int> &z,
+                  int n, int m, int strt, int target) {
+
+    int currPartial = 0;
+    const int lastCol = m - 1;
+    std::vector<int> vPass(m);
+    vPass.assign(v.crbegin(), v.crbegin() + m);
+    int partVal = std::accumulate(vPass.cbegin(), vPass.cbegin() + m - 1, 0);
+
+    if (strt == 0) {
+        const int testMax = partVal + vPass.back();
+
+        if (testMax < target) {
+            return 0;
+        }
+    }
+
+    int currPos = n - m;
+
+    if (strt) {
+        for (int i = 0; i < strt; ++i) {
+            vPass[i] = v[z[i]];
+            partVal = partVal + vPass[i];
+            ++currPos;
+            partVal -= v[currPos];
+        }
+
+        currPartial = std::accumulate(
+            vPass.cbegin(), vPass.cbegin() + strt, 0
+        );
+
+        for (int i = strt, j = 1; i < m; ++i, ++j) {
+            vPass[i] = v[z[strt - 1] + j];
+        }
+    } else {
+        vPass.assign(v.cbegin(), v.cbegin() + m);
+    }
+
+    const int testMin = std::accumulate(vPass.cbegin(), vPass.cbegin() + m, 0);
+
+    if (testMin > target) {
+        return 0;
+    }
+
+    int idx = n - m + strt;
+    int lowBnd = (strt) ? z[strt - 1] + 1 : 0;
+
+    for (int i = strt; i < lastCol; ++i) {
+        if (LowerBound(v, target, partVal, idx, lowBnd)) {
+            if (idx > lowBnd) {
+                const int numIterLeft = m - i;
+
+                for (int j = 0, k = idx; j < numIterLeft; ++j, ++k) {
+                    vPass[j] = v[k];
+                }
+
+                const int minRemaining = std::accumulate(
+                    vPass.cbegin(), vPass.cbegin() + numIterLeft, 0
+                );
+                const int currMin = minRemaining + currPartial;
+
+                if (currMin > target) {
+                    --idx;
+                }
+            }
+        }
+
+        z[i] = idx;
+        partVal += v[idx];
+        currPartial += v[idx];
+
+        ++idx;
+        ++currPos;
+
+        lowBnd = idx;
+        idx = currPos;
+        partVal -= v[currPos];
+    }
+
+    LowerBoundLast(v, target, partVal, idx, lowBnd);
+    z[lastCol] = idx;
+    return 1;
+}
+
+void NextSection(const std::vector<int> &v, std::vector<int> &z,
+                 bool &check, int &test, int m, int n, int target) {
+
+    for (int i = m - 2, nMinusM = n - m; i >= 0 && !check; --i) {
+        if (z[i] != (nMinusM + i)) {
+            ++z[i];
+            GetLowerBound(v, z, n, m, i + 1, target);
+            test  = GetSum(v, z, m);
+            check = test <= target;
+        }
+    }
+}
+
+int FilterProspects(const std::vector<int> &v, std::vector<int> &z,
+                    bool &check, int &test, int m, int m1, int n, int target) {
+
+    while (check) {
+        if (test == target) {
+            return 1;
+        }
+
+        check = z[m1] != (n - 1);
+
+        if (check) {
+            ++z[m1];
+            test  = GetSum(v, z, m);
+            check = test <= target;
+        }
+    }
+
+    return 0;
+}
+
 int NextDistinctBlock(
     const std::vector<int> &v, std::vector<int> &idx, int target, int m
 ) {
 
     const int n = v.size();
-    const int testMax = std::accumulate(v.cend() - m, v.cend(), 0);
-
-    // The length is too small
-    if (testMax < target) {
-        return -2;
-    }
-
-    const int testMin = std::accumulate(v.cbegin(), v.cbegin() + m, 0);
-
-    // The length is too long
-    if (testMin > target) {
-        return -1;
-    }
 
     std::iota(idx.begin(), idx.end(), 0);
+    GetLowerBound(v, idx, n, m, 0, target);
 
-    int tempSum = GetSum(v, idx, m);
-    bool keepGoing = tempSum != target;
-    int partial = target - (tempSum - v[idx.back()]);
-    int j = m - 1;
+    int test   = GetSum(v, idx, m);
+    int res    = test == target;
+    bool check = test <= target;
 
-    while (keepGoing) {
-        auto lower = std::lower_bound(v.begin() + j, v.end(), partial);
-
-        if (lower != v.end() && *lower == partial) {
-            idx[m - 1] = std::distance(v.begin(), lower);
-            return 1;
-        }
-
-        int k = m - 2;
-        int g = n - 2;
-
-        while (k > 0 && idx[k] == g) {
-            --k;
-            --g;
-        }
-
-        if (k == 0 && idx.front() == (n - m)) {
-            return 0;
-        }
-
-        bool impossible = true;
-
-        while (impossible && k >= 0) {
-            ++idx[k];
-
-            for (int i = k + 1; i < m; ++i) {
-                idx[i] = idx[i - 1] + 1;
-            }
-
-            tempSum = GetSum(v, idx, m);
-            int maxSum = tempSum;
-
-            for (int i = k; i < m; ++i) {
-                maxSum -= v[idx[i]];
-                maxSum += v[n - (m - i)];
-            }
-
-            impossible = (tempSum > target) || (maxSum < target);
-            --k;
-        }
-
-        if (impossible) {
-            return 0;
-        }
-
-        keepGoing = tempSum != target;
-        partial = target - (tempSum - v[idx.back()]);
-        j = idx.back();
+    while (res == 0 && check) {
+        res = FilterProspects(v, idx, check, test, m, m - 1, n, target);
+        NextSection(v, idx, check, test, m, n, target);
     }
 
-    return 1;
+    return res;
 }
 
 bool NextRoutine(
@@ -159,12 +255,17 @@ bool NextRoutine(
     std::swap(ref_one, complement[i1]);
     std::swap(ref_two, complement[i2]);
 
-    // Sort the small affected region [i1, i2 + 1]
-    if (i1 > i2) {
-        std::sort(complement.begin() + i2, complement.begin() + i1 + 1);
-    } else {
-        std::sort(complement.begin() + i1, complement.begin() + i2 + 1);
-    }
+    // We need a proof that complement is guaranteed to be sorted after
+    // the swaps. Intuitively, it makes sense, however rigor is required.
+    // Sorting is expensive based off of empirical tests. If we end up
+    // proving that we need to sort, we can do something like the below:
+    //
+    // sort the small affected region [i1, i2 + 1]
+    // if (i1 > i2) {
+    //     std::sort(complement.begin() + i2, complement.begin() + i1 + 1);
+    // } else {
+    //     std::sort(complement.begin() + i1, complement.begin() + i2 + 1);
+    // }
 
     if (i1 < lastIdx) ++i1; else return false;
     if (i2 > 0) --i2; else return false;
