@@ -13,23 +13,23 @@ T prod(const std::vector<T> &v, int mySize) {
 
 template <typename T>
 T sum(const std::vector<T> &v, int mySize) {
-    return (std::accumulate(v.cbegin(), v.cbegin() + mySize, static_cast<T>(0)));
+    return std::accumulate(v.cbegin(), v.cbegin() + mySize, static_cast<T>(0));
 }
 
 template <typename T>
 T mean(const std::vector<T> &v, int mySize) {
     const T mySum = sum(v, mySize);
-    return (mySum / static_cast<double>(mySize));
+    return mySum / static_cast<double>(mySize);
 }
 
 template <typename T>
 T max(const std::vector<T> &v, int mySize) {
-    return (*std::max_element(v.cbegin(), v.cbegin() + mySize));
+    return *std::max_element(v.cbegin(), v.cbegin() + mySize);
 }
 
 template <typename T>
 T min(const std::vector<T> &v, int mySize) {
-    return (*std::min_element(v.cbegin(), v.cbegin() + mySize));
+    return *std::min_element(v.cbegin(), v.cbegin() + mySize);
 }
 
 // Helper functions to the above. They achieve the same result when
@@ -166,8 +166,9 @@ void ReduceSum(int m, T &partial, T w) {
 }
 
 template <typename T>
-void ReduceMean(int m, T& partial, T w) {
-    partial = (partial * static_cast<double>(m) - w) / static_cast<double>(m - 1);
+void ReduceMean(int m, T &partial, T w) {
+    partial = (partial * static_cast<double>(m) - w) /
+        static_cast<double>(m - 1);
 }
 
 template <typename T>
