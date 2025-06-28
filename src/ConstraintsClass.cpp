@@ -50,9 +50,14 @@ bool ConstraintsClass<T>::LowerBound(
     if (v[idx] <= bound) {
         return false;
     } else if (v[low] < bound) {
+        // Based off of empirical tests, find_if is as fast or faster than
+        // lower_bound for most cases. We had to use input vectors that were
+        // extremely large to see lower_bound have a very slight edge
+        // (e.g. length(v) > 1e5). My guess is that caching is at play here.
         auto lower = std::find_if(
-            v.cbegin() + low, v.cbegin() + idx,
-            [=](T v_i) {return v_i >= bound;}
+            v.cbegin() + low, v.cbegin() + idx, [=](T v_i) {
+                return v_i >= bound;
+            }
         );
 
         idx = std::distance(v.cbegin(), lower);
