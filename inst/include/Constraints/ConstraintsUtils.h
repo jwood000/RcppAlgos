@@ -7,7 +7,7 @@
 #include <limits>
 #include <map>
 
-// This fixes inequalites where the symbols are swapped. That is: "=>" amd "=<"
+// This fixes inequalities where the symbols are swapped. That is: "=>" and "=<"
 static const std::map<std::string, std::string> compForms = {
     {"<",   "<"}, {">",   ">"},
     {"<=", "<="}, {">=", ">="},
