@@ -54,6 +54,25 @@ void CompsDistinctWorker(
     std::size_t width, std::size_t nRows, std::size_t totalRows
 ) {
 
+    // If the size of complement is 0 then we know we are simply taking
+    // permutations of z. Same thing with size 1 but a little reasoning is
+    // needed. In NextCompositionDistinct, we are swapping the last two
+    // elements in z with elements in complement. If complement only has one
+    // element, we are reduced to the case of taking permutations of z.
+    if (complement.size() < 2) {
+        std::size_t count = strt;
+
+        do {
+            for (std::size_t k = 0; k < width; ++k) {
+                mat[count + totalRows * k] = z[k];
+            }
+
+            ++count;
+        } while (std::next_permutation(z.begin(), z.end()) && count < nRows);
+
+        return;
+    }
+
     std::vector<int> idx;
     std::vector<int> tailSum;
 
@@ -80,8 +99,6 @@ void CompsDistinct(int* mat, std::vector<int> &z,
     std::vector<int> complement = PrepareComplement(z);
 
     int strt = 0;
-    int lastIdx = complement.size() - 1;
-
     const int tar = std::accumulate(z.cbegin(), z.cend(), 0);
     const int nz  = std::count(z.cbegin(), z.cend(), 0);
 
@@ -90,21 +107,20 @@ void CompsDistinct(int* mat, std::vector<int> &z,
         nextStep += CountCompsDistinctLen(tar, i);
 
         CompsDistinctWorker(
-            mat, z, complement, 0, lastIdx, z.back(),
-            tar, strt, width, nextStep, nRows
+            mat, z, complement, 0, complement.size() - 1,
+            z.back(), tar, strt, width, nextStep, nRows
         );
 
         strt = nextStep;
 
-        // std::fill(z.begin(), z.end(), 0);
-        std::iota(z.begin() + j, z.end(), 1);
+        std::iota(z.begin() + j - 1, z.end(), 1);
         z.back() = tar - static_cast<int>((i * (i + 1)) / 2);
         complement = PrepareComplement(z);
     }
 
     CompsDistinctWorker(
-        mat, z, complement, 0, lastIdx, z.back(),
-        tar, strt, width, nRows, nRows
+        mat, z, complement, 0, complement.size() - 1,
+        z.back(), tar, strt, width, nRows, nRows
     );
 }
 
