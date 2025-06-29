@@ -68,31 +68,25 @@ int NextDistinctBlock(const std::vector<int> &v, std::vector<int> &idx,
     }
 
     std::iota(idx.begin(), idx.end(), 0);
-
     int tempSum = GetSum(v, idx, m);
-    bool keepGoing = tempSum != target;
     int partial = target - (tempSum - v[idx.back()]);
-    int j = m - 1;
 
     // This is the cumulative sum of the tail of v. It is used for tail
     // pruning to cut off impossible branches.
     tailSum.resize(m);
     std::partial_sum(v.crbegin(), v.crbegin() + m, tailSum.begin());
 
-    while (keepGoing) {
-        auto lower = std::lower_bound(v.begin() + j, v.end(), partial);
+    while (tempSum != target) {
+        auto lower = std::lower_bound(
+            v.cbegin() + idx.back(), v.cend(), partial
+        );
 
-        if (lower != v.end() && *lower == partial) {
-            idx.back() = std::distance(v.begin(), lower);
+        if (lower != v.cend() && *lower == partial) {
+            idx.back() = std::distance(v.cbegin(), lower);
             return 1;
         }
 
         int k = FindBacktrackIndex(idx, m - 2, n - 2);
-
-        if (k == 0 && idx.front() == (n - m)) {
-            return 0;
-        }
-
         bool impossible = true;
         int front_partial = GetSum(v, idx, k);
 
@@ -103,7 +97,9 @@ int NextDistinctBlock(const std::vector<int> &v, std::vector<int> &idx,
             impossible = (tempSum > target) ||
                 ((front_partial + tailSum[m - k - 1]) < target);
 
-            if (k > 0) front_partial -= v[idx[k - 1]];
+            if (k > 0) {
+                front_partial -= v[idx[k - 1]];
+            }
         }
 
         if (impossible) {
@@ -111,9 +107,7 @@ int NextDistinctBlock(const std::vector<int> &v, std::vector<int> &idx,
         }
 
         std::iota(idx.begin() + k + 1, idx.end(), idx[k + 1] + 1);
-        keepGoing = tempSum != target;
         partial = target - (tempSum - v[idx.back()]);
-        j = idx.back();
     }
 
     return 1;
@@ -243,18 +237,12 @@ void NextCompositionDistinct(
         int m = 2;
         int j = lastCol - m;
 
-        complement.insert(
-            std::lower_bound(
-                complement.begin(), complement.end(), z[lastCol]
-            ),
-            z[lastCol]
-        );
-        complement.insert(
-            std::lower_bound(
-                complement.begin(), complement.end(), z[lastCol - 1]
-            ),
-            z[lastCol - 1]
-        );
+        for (int i = lastCol - 1; i <= lastCol; ++i) {
+            complement.insert(
+                std::lower_bound(complement.begin(), complement.end(), z[i]),
+                z[i]
+            );
+        }
 
         bool keepGoing = true;
 
@@ -330,9 +318,9 @@ void NextCompositionDistinct(
                 } else {
                     // This means that there are no further solutions in
                     // complement. The next iteration we simply will swap the
-                    // last two elements. By doing this, we will also ensure
-                    // that z[lastCol - 1] will be equal to myMax which will
-                    // force a new block calculation.
+                    // last two elements of z. By doing this, we will also
+                    // ensure that z[lastCol - 1] will be equal to myMax which
+                    // will force a new block calculation.
                     i1 = -1;
                 }
             } else if (res == 100) {
