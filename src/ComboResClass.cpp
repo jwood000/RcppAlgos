@@ -133,7 +133,7 @@ ComboRes::ComboRes(
                 width), strtLen(RstrtLen),
           KeepRes(RKeepRes), numUnknown(RnumUnknown), cnstrtCount(RcnstrtRows),
           cnstrtCountMpz(RcnstrtRowsMpz), tarIntVals(RtarIntVals),
-          tarVals(RtarVals), ctype(Rctype), part(Rpart), mainFun(RmainFun),
+          tarVals(RtarVals), part(Rpart), ctype(Rctype), mainFun(RmainFun),
           funTest(RFunTest), compVec(RcompVec), funDbl(RfunDbl),
           funInt(GetFuncPtr<int>(mainFun)) {
 
