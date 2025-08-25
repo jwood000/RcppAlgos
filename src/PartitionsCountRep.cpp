@@ -3,62 +3,27 @@
 #include <algorithm>  // std::fill; std::min
 #include <cmath>      // std::floor
 
-double CountPartsRepLenCap(int n, int m, int cap, int strtLen) {
+double CountPartsRepLenRstrctd(
+    int n, int m, const std::vector<int> &allowed, int strtLen
+) {
 
-    if (cap > n) cap = n;
-    CheckMultIsInt(cap, m);
-    if (cap * m < n || n < m) return 0;
-    if (cap * m == n || n <= m + 1) return 1;
-    if (m < 2) return m;
+    std::vector<std::vector<double>> p(m + 1, std::vector<double>(n + 1, 0));
+    p[0][0] = 1; // one way to make 0 with 0 parts
 
-    if (m == 2) {
-        CheckMultIsInt(2, cap);
-
-        if (cap * 2 >= n) {
-            cap = std::min(cap, n - 1);
-            return n / m - (n - 1 - cap);
-        } else {
-            return 0;
-        }
-    }
-
-    const int width = n + 1;
-    CheckMultIsInt(cap + 1, width);
-    const int maxSize = (cap + 1) * width;
-
-    std::vector<double> p1(maxSize);
-    std::vector<double> p2(maxSize);
-
-    for (int i = 1; i < width; ++i) {
-        for (int j = i; j <= cap; ++j) {
-            p1[j * width + i] = 1;
-        }
-    }
-
-    for (int i = 2; i <= m; ++i) {
-        if (i % 2) {
-            std::fill(p1.begin(), p1.end(), 0);
-
-            for (int j = width; j < maxSize; j += width) {
-                for (int k = i, j1 = j - width; k < width; ++k) {
-                    p1[j + k] = p2[j + k - 1] + p1[j1 + k - i];
-                }
-            }
-        } else {
-            std::fill(p2.begin(), p2.end(), 0);
-
-            for (int j = width; j < maxSize; j += width) {
-                for (int k = i, j1 = j - width; k < width; ++k) {
-                    p2[j + k] = p1[j + k - 1] + p2[j1 + k - i];
-                }
+    for (int num : allowed) {
+        for (int j = 1; j <= m; ++j) {
+            for (int s = num; s <= n; ++s) {
+                p[j][s] += p[j - 1][s - num];
             }
         }
     }
 
-    return (m % 2) ? p1.back() : p2.back();
+    return p[m][n];
 }
 
-double CountPartsRepLen(int n, int m, int cap, int strtLen) {
+double CountPartsRepLen(
+    int n, int m, const std::vector<int> &allowed, int strtLen
+) {
 
     if (m == 0) {
         return (n == 0) ? 1.0 : 0.0;
@@ -87,51 +52,53 @@ double CountPartsRepLen(int n, int m, int cap, int strtLen) {
     if (m == 3) {
         const double res = SumSection(n);
         return(res);
-    } else {
-        const int limit = std::min(n - m, m);
-        CheckMultIsInt(2, m);
-        CheckMultIsInt(2, limit);
-        n = (n < 2 * m) ? 2 * limit : n;
+    }
 
-        std::vector<double> p1(n + 1);
-        std::vector<double> p2(n + 1);
+    const int limit = std::min(n - m, m);
+    CheckMultIsInt(2, m);
+    CheckMultIsInt(2, limit);
+    n = (n < 2 * m) ? 2 * limit : n;
 
-        for (int i = 3; i <= n; ++i) {
-            p1[i] = SumSection(i);
-        }
+    std::vector<double> p1(n + 1);
+    std::vector<double> p2(n + 1);
 
-        for (int i = 4; i <= limit; ++i) {
-            const int m2 = i * 2;
+    for (int i = 3; i <= n; ++i) {
+        p1[i] = SumSection(i);
+    }
 
-            if (i % 2) {
-                p1[i] = 1;
+    for (int i = 4; i <= limit; ++i) {
+        const int m2 = i * 2;
 
-                for (int j = i + 1; j < m2; ++j) {
-                    p1[j] = p2[j - 1];
-                }
+        if (i % 2) {
+            p1[i] = 1;
 
-                for (int j = m2; j <= n; ++j) {
-                    p1[j] = p2[j - 1] + p1[j - i];
-                }
-            } else {
-                p2[i] = 1;
+            for (int j = i + 1; j < m2; ++j) {
+                p1[j] = p2[j - 1];
+            }
 
-                for (int j = i + 1; j < m2; ++j) {
-                    p2[j] = p1[j - 1];
-                }
+            for (int j = m2; j <= n; ++j) {
+                p1[j] = p2[j - 1] + p1[j - i];
+            }
+        } else {
+            p2[i] = 1;
 
-                for (int j = m2; j <= n; ++j) {
-                    p2[j] = p1[j - 1] + p2[j - i];
-                }
+            for (int j = i + 1; j < m2; ++j) {
+                p2[j] = p1[j - 1];
+            }
+
+            for (int j = m2; j <= n; ++j) {
+                p2[j] = p1[j - 1] + p2[j - i];
             }
         }
-
-        return (limit % 2) ? p1.back() : p2.back();
     }
+
+    return (limit % 2) ? p1.back() : p2.back();
 }
 
 // Similar to CountPartsDistinct
-double CountPartsRep(int n, int m, int cap, int strtLen) {
+double CountPartsRep(
+    int n, int m, const std::vector<int> &allowed, int strtLen
+) {
 
     if (n < 2) return 1.0;
     std::vector<double> qq(n + 1);
@@ -152,7 +119,9 @@ double CountPartsRep(int n, int m, int cap, int strtLen) {
     return qq.back();
 }
 
-double CountCompsRepLen(int n, int m, int cap, int strtLen) {
+double CountCompsRepLen(
+    int n, int m, const std::vector<int> &allowed, int strtLen
+) {
     return nChooseK(n - 1, m - 1);
 }
 
@@ -177,7 +146,9 @@ double CountCompsRepLen(int n, int m, int cap, int strtLen) {
 //
 // sum(part') = n + P
 
-double CountCompsRepZNotWk(int n, int m, int cap, int strtLen) {
+double CountCompsRepZNotWk(
+    int n, int m, const std::vector<int> &allowed, int strtLen
+) {
 
     if (n == m) return std::pow(2.0, static_cast<double>(n - 1));
 

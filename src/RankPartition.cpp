@@ -15,7 +15,7 @@ using rankPartsPtr = void (*const)(std::vector<int>::iterator iter,
                            int n, int m, int cap, int k,
                            double &dblIdx, mpz_class &mpzIdx);
 
-//*********************** Compositions Funcitons **************************//
+//*********************** Compositions Functions **************************//
 
 void rankCompsRep(std::vector<int>::iterator iter, int n, int m,
                   int cap, int k, double &dblIdx, mpz_class &mpzIdx) {
@@ -27,12 +27,12 @@ void rankCompsRep(std::vector<int>::iterator iter, int n, int m,
     --m;
 
     for (int i = 0, j = 0; i < (width - 1); ++i, --n, --m, j = 0, ++iter) {
-        double temp = CountCompsRepLen(n, m, cap, k);
+        double temp = CountCompsRepLen(n, m);
 
         for (int idx = *iter; j < idx; ++j) {
             --n;
             dblIdx += temp;
-            temp = CountCompsRepLen(n, m, cap, k);
+            temp = CountCompsRepLen(n, m);
         }
     }
 }
@@ -47,21 +47,21 @@ void rankCompsRepZero(std::vector<int>::iterator iter, int n, int m,
     --m;
 
     for (int i = 0, j = 0; i < (width - 1); ++i, --m, j = incr_j, ++iter) {
-        double temp = incr_j ? CountCompsRepLen(n, m, cap, k) :
-            CountCompsRepZNotWk(n, m, cap, k);
+        double temp = incr_j ? CountCompsRepLen(n, m) :
+            CountCompsRepZNotWk(n, m);
 
         for (int idx = *iter; j < idx; ++j) {
             incr_j = true;
             --n;
             dblIdx += temp;
-            temp = CountCompsRepLen(n, m, cap, k);
+            temp = CountCompsRepLen(n, m);
         }
 
         if (incr_j) --n;
     }
 }
 
-//************************* Paritions Funcitons ***************************//
+//************************* Partitons Funcitons ***************************//
 
 void rankPartsRepLen(std::vector<int>::iterator iter, int n, int m,
                      int cap, int k, double &dblIdx, mpz_class &mpzIdx) {
@@ -73,12 +73,12 @@ void rankPartsRepLen(std::vector<int>::iterator iter, int n, int m,
     --m;
 
     for (int i = 0, j = 0; i < (width - 1); ++i, --n, --m, ++iter) {
-        double temp = CountPartsRepLen(n, m, cap, k);
+        double temp = CountPartsRepLen(n, m);
 
         for (int idx = *iter; j < idx; ++j) {
             n -= (m + 1);
             dblIdx += temp;
-            temp = CountPartsRepLen(n, m, cap, k);
+            temp = CountPartsRepLen(n, m);
         }
     }
 }
@@ -104,14 +104,17 @@ void rankPartsRepCap(std::vector<int>::iterator iter, int n, int m,
     --n;
     --m;
 
+    std::vector<int> allowed(cap);
+    std::iota(allowed.begin(), allowed.end(), 1);
+
     for (int i = 0, j = 0; i < (width - 1); ++i, --n, --m, ++iter) {
-        double temp = CountPartsRepLenCap(n, m, cap, k);
+        double temp = CountPartsRepLenRstrctd(n, m, allowed);
 
         for (int idx = *iter; j < idx; ++j) {
             n -= (m + 1);
-            --cap;
+            allowed.pop_back();
             dblIdx += temp;
-            temp = CountPartsRepLenCap(n, m, cap, k);
+            temp = CountPartsRepLenRstrctd(n, m, allowed);
         }
     }
 }
@@ -126,24 +129,28 @@ void rankPartsDistinctLen(std::vector<int>::iterator iter, int n, int m,
     --m;
 
     for (int i = 0, j = 0; i < (width - 1); ++i, n -= m, --m, ++j, ++iter) {
-        double temp = CountPartsDistinctLen(n, m, cap, k);
+        double temp = CountPartsDistinctLen(n, m);
 
         for (int idx = *iter; j < idx; ++j) {
             n -= (m + 1);
             dblIdx += temp;
-            temp = CountPartsDistinctLen(n, m, cap, k);
+            temp = CountPartsDistinctLen(n, m);
         }
     }
 }
 
-void rankPartsDistinctOneZero(std::vector<int>::iterator iter, int n, int m,
-                              int cap, int k, double &dblIdx, mpz_class &mpzIdx) {
+void rankPartsDistinctOneZero(
+    std::vector<int>::iterator iter, int n, int m,
+    int cap, int k, double &dblIdx, mpz_class &mpzIdx
+) {
 
     rankPartsDistinctLen(iter, n, m, cap, k, dblIdx, mpzIdx);
 }
 
-void rankPartsDistinctMultiZero(std::vector<int>::iterator iter, int n, int m,
-                                int cap, int k, double &dblIdx, mpz_class &mpzIdx) {
+void rankPartsDistinctMultiZero(
+    std::vector<int>::iterator iter, int n, int m,
+    int cap, int k, double &dblIdx, mpz_class &mpzIdx
+) {
 
     const int width = m;
     dblIdx = 0;
@@ -151,16 +158,18 @@ void rankPartsDistinctMultiZero(std::vector<int>::iterator iter, int n, int m,
     bool incr_j = false;
     --m;
 
+    std::vector<int> empty_allowed;
+
     for (int i = 0, j = 0; i < (width - 1); ++i, --m, ++iter) {
         double temp = (incr_j || i >= (width - k)) ?
-                      CountPartsDistinctLen(n, m, cap, k) :
-                      CountPartsDistinctMultiZero(n, m, cap, k);
+                      CountPartsDistinctLen(n, m) :
+                      CountPartsDistinctMultiZero(n, m, empty_allowed, k);
 
         for (int idx = *iter; j < idx; ++j) {
             incr_j = true;
             n -= (m + 1);
             dblIdx += temp;
-            temp = CountPartsDistinctLen(n, m, cap, k);
+            temp = CountPartsDistinctLen(n, m);
         }
 
         if (incr_j || (i + 1) >= (width - k)) {
@@ -180,16 +189,20 @@ void rankPartsDistinctCap(std::vector<int>::iterator iter, int n, int m,
     --cap;
     --m;
 
-    for (int i = 0, j = 0; i < (width - 1);
-         ++i, n -= m, --m, ++j, --cap, ++iter) {
-        double temp = CountPartsDistinctLenCap(n, m, cap, k);
+    std::vector<int> allowed(cap);
+    std::iota(allowed.begin(), allowed.end(), 1);
+
+    for (int i = 0, j = 0; i < (width - 1); ++i, n -= m, --m, ++j, ++iter) {
+        double temp = CountPartsDistLenRstrctd(n, m, allowed, k);
 
         for (int idx = *iter; j < idx; ++j) {
             n -= (m + 1);
-            --cap;
+            allowed.pop_back();
             dblIdx += temp;
-            temp = CountPartsDistinctLenCap(n, m, cap, k);
+            temp = CountPartsDistLenRstrctd(n, m, allowed, k);
         }
+
+        allowed.pop_back();
     }
 }
 
@@ -202,23 +215,26 @@ void rankPartsDistinctCapMZ(std::vector<int>::iterator iter, int n, int m,
     bool incr_j = false;
     --m;
 
+    std::vector<int> allowed(cap);
+    std::iota(allowed.begin(), allowed.end(), 1);
+
     for (int i = 0, j = 0; i < (width - 1); ++i, --m, ++iter) {
         double temp = (incr_j || i >= (width - k)) ?
-                      CountPartsDistinctLenCap(n, m, cap, k) :
-                      CountPartsDistinctCapMZ(n, m, cap, k);
+                    CountPartsDistLenRstrctd(n, m, allowed, k) :
+                    CountPartsDistinctRstrctdMZ(n, m, allowed, k);
 
         for (int idx = *iter; j < idx; ++j) {
             incr_j = true;
             n -= (m + 1);
-            --cap;
+            allowed.pop_back();
             dblIdx += temp;
-            temp = CountPartsDistinctLenCap(n, m, cap, k);
+            temp = CountPartsDistLenRstrctd(n, m, allowed, k);
         }
 
         if (incr_j || (i + 1) >= (width - k)) {
             ++j;
             n -= m;
-            --cap;
+            allowed.pop_back();
         }
     }
 }
@@ -240,12 +256,12 @@ void rankCompsRepGmp(std::vector<int>::iterator iter, int n, int m,
     );
 
     for (int i = 0, j = 0; i < (width - 1); ++i, --n, --m, j = 0, ++iter) {
-        Counter->GetCount(temp, n, m, cap, k);
+        Counter->GetCount(temp, n, m);
 
         for (int idx = *iter; j < idx; ++j) {
             --n;
             mpzIdx += temp;
-            Counter->GetCount(temp, n, m, cap, k);
+            Counter->GetCount(temp, n, m);
         }
     }
 }
@@ -264,14 +280,16 @@ void rankCompsRepZeroGmp(std::vector<int>::iterator iter, int n, int m,
         PartitionType::CmpRpZroNotWk
     );
 
+    std::vector<int> empty_allowed;
+
     for (int i = 0, j = 0; i < (width - 1); ++i, --m, j = incr_j, ++iter) {
-        Counter->GetCount(temp, n, m, cap, k, !incr_j);
+        Counter->GetCount(temp, n, m, empty_allowed, k, !incr_j);
 
         for (int idx = *iter; j < idx; ++j) {
             incr_j = true;
             --n;
             mpzIdx += temp;
-            Counter->GetCount(temp, n, m, cap, k, false);
+            Counter->GetCount(temp, n, m, empty_allowed, k, false);
         }
 
         temp = 0;
@@ -292,16 +310,16 @@ void rankPartsRepLenGmp(std::vector<int>::iterator iter, int n, int m,
     const PartitionType ptype = PartitionType::RepShort;
     std::unique_ptr<CountClass> Counter = MakeCount(ptype);
 
-    Counter->SetArrSize(ptype, n, m, cap);
+    Counter->SetArrSize(ptype, n, m);
     Counter->InitializeMpz();
 
     for (int i = 0, j = 0; i < (width - 1); ++i, --n, --m, ++iter) {
-        Counter->GetCount(temp, n, m, cap, k);
+        Counter->GetCount(temp, n, m);
 
         for (int idx = *iter; j < idx; ++j) {
             n -= (m + 1);
             mpzIdx += temp;
-            Counter->GetCount(temp, n, m, cap, k);
+            Counter->GetCount(temp, n, m);
         }
     }
 }
@@ -331,17 +349,20 @@ void rankPartsRepCapGmp(std::vector<int>::iterator iter, int n, int m,
     const PartitionType ptype = PartitionType::RepCapped;
     std::unique_ptr<CountClass> Counter = MakeCount(ptype);
 
-    Counter->SetArrSize(ptype, n, m, cap);
+    Counter->SetArrSize(ptype, n, m);
     Counter->InitializeMpz();
 
+    std::vector<int> allowed(cap);
+    std::iota(allowed.begin(), allowed.end(), 1);
+
     for (int i = 0, j = 0; i < (width - 1); ++i, --n, --m, ++iter) {
-        Counter->GetCount(temp, n, m, cap, k);
+        Counter->GetCount(temp, n, m, allowed, k);
 
         for (int idx = *iter; j < idx; ++j) {
             n -= (m + 1);
-            --cap;
+            allowed.pop_back();
             mpzIdx += temp;
-            Counter->GetCount(temp, n, m, cap, k);
+            Counter->GetCount(temp, n, m, allowed, k);
         }
     }
 }
@@ -359,16 +380,16 @@ void rankPartsDistinctLenGmp(std::vector<int>::iterator iter, int n, int m,
     const PartitionType ptype = PartitionType::DstctNoZero;
     std::unique_ptr<CountClass> Counter = MakeCount(ptype);
 
-    Counter->SetArrSize(ptype, n, m, cap);
+    Counter->SetArrSize(ptype, n, m);
     Counter->InitializeMpz();
 
     for (int i = 0, j = 0; i < (width - 1); ++i, n -= m, --m, ++j, ++iter) {
-        Counter->GetCount(temp, n, m, cap, k);
+        Counter->GetCount(temp, n, m);
 
         for (int idx = *iter; j < idx; ++j) {
             n -= (m + 1);
             mpzIdx += temp;
-            Counter->GetCount(temp, n, m, cap, k);
+            Counter->GetCount(temp, n, m);
         }
     }
 }
@@ -394,18 +415,20 @@ void rankPartsDistinctMultiZeroGmp(std::vector<int>::iterator iter,
     const PartitionType ptype = PartitionType::DstctMultiZero;
     std::unique_ptr<CountClass> Counter = MakeCount(ptype);
 
-    Counter->SetArrSize(ptype, n, m, cap);
+    Counter->SetArrSize(ptype, n, m);
     Counter->InitializeMpz();
+
+    std::vector<int> empty_allowed;
 
     for (int i = 0, j = 0; i < (width - 1); ++i, --m, ++iter) {
         const bool bLiteral = !(incr_j || i >= (width - k));
-        Counter->GetCount(temp, n, m, cap, k, bLiteral);
+        Counter->GetCount(temp, n, m, empty_allowed, k, bLiteral);
 
         for (int idx = *iter; j < idx; ++j) {
             incr_j = true;
             n -= (m + 1);
             mpzIdx += temp;
-            Counter->GetCount(temp, n, m, cap, k, false);
+            Counter->GetCount(temp, n, m, empty_allowed, k, false);
         }
 
         if (incr_j || (i + 1) >= (width - k)) {
@@ -430,19 +453,23 @@ void rankPartsDistinctCapGmp(std::vector<int>::iterator iter,
     const PartitionType ptype = PartitionType::DstctCapped;
     std::unique_ptr<CountClass> Counter = MakeCount(ptype);
 
-    Counter->SetArrSize(ptype, n, m, cap);
+    Counter->SetArrSize(ptype, n, m);
     Counter->InitializeMpz();
 
-    for (int i = 0, j = 0; i < (width - 1);
-         ++i, n -= m, --m, ++j, --cap, ++iter) {
-        Counter->GetCount(temp, n, m, cap, k);
+    std::vector<int> allowed(cap);
+    std::iota(allowed.begin(), allowed.end(), 1);
+
+    for (int i = 0, j = 0; i < (width - 1); ++i, n -= m, --m, ++j, ++iter) {
+        Counter->GetCount(temp, n, m, allowed, k);
 
         for (int idx = *iter; j < idx; ++j) {
             n -= (m + 1);
-            --cap;
+            allowed.pop_back();
             mpzIdx += temp;
-            Counter->GetCount(temp, n, m, cap, k);
+            Counter->GetCount(temp, n, m, allowed, k);
         }
+
+        allowed.pop_back();
     }
 }
 
@@ -460,25 +487,28 @@ void rankPartsDistinctCapMZGmp(std::vector<int>::iterator iter,
     const PartitionType ptype = PartitionType::DstctCappedMZ;
     std::unique_ptr<CountClass> Counter = MakeCount(ptype);
 
-    Counter->SetArrSize(ptype, n, m, cap);
+    Counter->SetArrSize(ptype, n, m);
     Counter->InitializeMpz();
+
+    std::vector<int> allowed(cap);
+    std::iota(allowed.begin(), allowed.end(), 1);
 
     for (int i = 0, j = 0; i < (width - 1); ++i, --m, ++iter) {
         const bool bLiteral = !(incr_j || i >= (width - k));
-        Counter->GetCount(temp, n, m, cap, k, bLiteral);
+        Counter->GetCount(temp, n, m, allowed, k, bLiteral);
 
         for (int idx = *iter; j < idx; ++j) {
             incr_j = true;
             n -= (m + 1);
-            --cap;
+            allowed.pop_back();
             mpzIdx += temp;
-            Counter->GetCount(temp, n, m, cap, k, false);
+            Counter->GetCount(temp, n, m, allowed, k, false);
         }
 
         if (incr_j || (i + 1) >= (width - k)) {
             ++j;
             n -= m;
-            --cap;
+            allowed.pop_back();
         }
     }
 }

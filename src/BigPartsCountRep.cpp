@@ -3,67 +3,27 @@
 #include "Combinations/BigComboCount.h"
 #include <vector>
 
-void CountPartsRepLenCap(
-    mpz_class &res, std::vector<mpz_class> &p1, std::vector<mpz_class> &p2,
-    int n, int m, int cap, int strtLen
+void CountPartsRepLenRstrctd(
+    mpz_class &res, std::vector<std::vector<mpz_class>> &p2d,
+    int n, int m, const std::vector<int> &allowed, int strtLen
 ) {
 
-    if (cap > n) cap = n;
+    p2d[0][0] = 1; // one way to make 0 with 0 parts
 
-    if (cap * m < n || n < m) {
-        res = 0;
-    } else if (cap * m == n || n <= m + 1) {
-        res = 1;
-    } else if (m < 2) {
-        res = m;
-    } else if (m == 2 && cap * 2 >= n) {
-        cap = std::min(cap, n - 1);
-        res = n / m - (n - 1 - cap);
-    } else if (m == 2) {
-        res = 0;
-    } else {
-        const int width = n + 1;
-        const int maxSize = (cap + 1) * width;
-
-        std::fill_n(p1.begin(), maxSize, 0);
-
-        for (int i = 1; i < width; ++i) {
-            for (int j = i; j <= cap; ++j) {
-                p1[j * width + i] = 1;
+    for (int num : allowed) {
+        for (int j = 1; j <= m; ++j) {
+            for (int s = num; s <= n; ++s) {
+                p2d[j][s] += p2d[j - 1][s - num];
             }
-        }
-
-        for (int i = 2; i <= m; ++i) {
-            if (i % 2) {
-                std::fill_n(p1.begin(), maxSize, 0);
-
-                for (int j = width; j < maxSize; j += width) {
-                    for (int k = i, j1 = j - width; k < width; ++k) {
-                        p1[j + k] = p2[j + k - 1] + p1[j1 + k - i];
-                    }
-                }
-            } else {
-                std::fill_n(p2.begin(), maxSize, 0);
-
-                for (int j = width; j < maxSize; j += width) {
-                    for (int k = i, j1 = j - width; k < width; ++k) {
-                        p2[j + k] = p1[j + k - 1] + p2[j1 + k - i];
-                    }
-                }
-            }
-        }
-
-        if (m % 2) {
-            res = p1[maxSize - 1];
-        } else {
-            res = p2[maxSize - 1];
         }
     }
+
+    res = p2d[m][n];
 }
 
 void CountPartsRepLen(
     mpz_class &res, std::vector<mpz_class> &p1, std::vector<mpz_class> &p2,
-    int n, int m, int cap, int strtLen
+    int n, int m, const std::vector<int> &allowed, int strtLen
 ) {
 
     if (m == 0 && n == 0) {
@@ -140,7 +100,8 @@ void CountPartsRepLen(
     }
 }
 
-void CountPartsRep(mpz_class &res, int n, int m, int cap, int strtLen) {
+void CountPartsRep(mpz_class &res, int n, int m,
+                   const std::vector<int> &allowed, int strtLen) {
 
     std::vector<mpz_class> qq(n + 1, 0);
 
@@ -168,11 +129,13 @@ void CountPartsRep(mpz_class &res, int n, int m, int cap, int strtLen) {
     res = qq[n];
 }
 
-void CountCompsRepLen(mpz_class &res, int n, int m, int cap, int strtLen) {
+void CountCompsRepLen(mpz_class &res, int n, int m,
+                      const std::vector<int> &allowed, int strtLen) {
     nChooseKGmp(res, n - 1, m - 1);
 }
 
-void CountCompsRepZNotWk(mpz_class &res, int n, int m, int cap, int strtLen) {
+void CountCompsRepZNotWk(mpz_class &res, int n, int m,
+                         const std::vector<int> &allowed, int strtLen) {
 
     if (n == m) {
         res = 1;

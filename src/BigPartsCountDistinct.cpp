@@ -4,71 +4,28 @@
 #include <algorithm>  // std::count_if
 #include <numeric>    // std::iota
 
-void CountPartsDistinctLenCap(
-    mpz_class &res, std::vector<mpz_class> &p1, std::vector<mpz_class> &p2,
-    int n, int m, int cap, int strtLen = 0
+void CountPartsDistLenRstrctd(
+    mpz_class &res, std::vector<std::vector<mpz_class>> &p2d,
+    int n, int m, const std::vector<int> &allowed, int strtLen = 0
 ) {
 
-    if (cap > n) cap = n;
-    const int limit = (cap * m) - ((m - 1) * m) / 2;
+    p2d[0][0] = 1; // one way to make 0 with 0 parts
 
-    if (m > n || cap < m) {
-        res = 0;
-    } else if (m == n && n == 1 && cap >= 1) {
-        res = 1;
-    } else if (m == n) {
-        res = 0;
-    } else if (m == 1 && cap >= n) {
-        res = 1;
-    } else if (m == 1) {
-        res = 0;
-    } else if (limit == n) {
-        res = 1;
-    } else if (limit < n) {
-        res = 0;
-    } else {
-        const int width = n + 1;
-        const int maxSize = (cap + 1) * width;
-
-        std::fill_n(p1.begin(), maxSize, 0u);
-
-        for (int i = 1; i < width; ++i) {
-            for (int j = i; j <= cap; ++j) {
-                p1[j * width + i] = 1;
+    for (int num: allowed) {
+        for (int j = m; j >= 1; --j) {
+            for (int s = n; s >= num; --s) {
+                p2d[j][s] += p2d[j - 1][s - num];
             }
-        }
-
-        for (int i = 2; i <= m; ++i) {
-            if (i % 2) {
-                std::fill_n(p1.begin(), maxSize, 0);
-
-                for (int j = width; j < maxSize; j += width) {
-                    for (int k = i, j1 = j - width; k < width; ++k) {
-                        p1[j + k] = p2[j1 + k - i] + p1[j1 + k - i];
-                    }
-                }
-            } else {
-                std::fill_n(p2.begin(), maxSize, 0);
-
-                for (int j = width; j < maxSize; j += width) {
-                    for (int k = i, j1 = j - width; k < width; ++k) {
-                        p2[j + k] = p1[j1 + k - i] + p2[j1 + k - i];
-                    }
-                }
-            }
-        }
-
-        if (m % 2) {
-            res = p1[maxSize - 1];
-        } else {
-            res = p2[maxSize - 1];
         }
     }
+
+    res = p2d[m][n];
 }
 
 void CountPartsDistinctLen(
     mpz_class &res, std::vector<mpz_class> &p1, std::vector<mpz_class> &p2,
-    int n, int m, int cap = 0, int strtLen = 0
+    int n, int m, const std::vector<int> &allowed = std::vector<int>(),
+    int strtLen = 0
 ) {
 
     const int max_width = GetMaxWidth(n);
@@ -142,8 +99,10 @@ void CountPartsDistinctLen(
     }
 }
 
-void CountPartsDistinct(mpz_class &res, int n, int m,
-                        int cap = 0, int strtLen = 0) {
+void CountPartsDistinct(
+    mpz_class &res, int n, int m, const std::vector<int> &allowed,
+    int strtLen
+) {
 
     std::vector<mpz_class> qq(n + 1);
 
@@ -189,7 +148,7 @@ void CountPartsDistinct(mpz_class &res, int n, int m,
 
 void CountPartsDistinctMultiZero(
     mpz_class &res, std::vector<mpz_class> &p1, std::vector<mpz_class> &p2,
-    int n, int m, int cap, int strtLen
+    int n, int m, const std::vector<int> &allowed, int strtLen
 ) {
 
     mpz_class temp;
@@ -201,37 +160,38 @@ void CountPartsDistinctMultiZero(
     }
 }
 
-void CountPartsDistinctCapMZ(
-    mpz_class &res, std::vector<mpz_class> &p1, std::vector<mpz_class> &p2,
-    int n, int m, int cap, int strtLen
+void CountPartsDistinctRstrctdMZ(
+    mpz_class &res, std::vector<std::vector<mpz_class>> &p2d,
+    int n, int m, const std::vector<int> &allowed, int strtLen
 ) {
 
     mpz_class temp;
     res = 0;
 
     for (int i = strtLen; i <= m; ++i) {
-        CountPartsDistinctLenCap(temp, p1, p2, n, i, cap);
+        CountPartsDistLenRstrctd(temp, p2d, n, i, allowed);
         res += temp;
+        ResetP2D(p2d);
     }
 }
 
-void CountPartsPermDistinctCap(
-    mpz_class &res, std::vector<mpz_class> &p1, std::vector<mpz_class> &p2,
-    int n, int m, int cap, int strtLen
+void CountPartsPermDistinctRstrctd(
+    mpz_class &res, std::vector<std::vector<mpz_class>> &p2d,
+    int n, int m, const std::vector<int> &allowed, int strtLen
 ) {
 
     mpz_class partsCnt = 0;
     mpz_class permsCnt = 0;
 
     NumPermsNoRepGmp(permsCnt, m, m);
-    CountPartsDistinctLenCap(partsCnt, p1, p2, n, m, cap);
+    CountPartsDistLenRstrctd(partsCnt, p2d, n, m, allowed);
 
     res = (partsCnt * permsCnt);
 }
 
-void CountPartsPermDistinctCapMZ(
-    mpz_class &res, std::vector<mpz_class> &p1, std::vector<mpz_class> &p2,
-    int n, int m, int cap, int strtLen
+void CountPartsPermDistinctRstrctdMZ(
+    mpz_class &res, std::vector<std::vector<mpz_class>> &p2d,
+    int n, int m, const std::vector<int> &allowed, int strtLen
 ) {
 
     if (strtLen == 0) {
@@ -244,16 +204,17 @@ void CountPartsPermDistinctCapMZ(
         NumPermsNoRepGmp(permsCnt, strtLen, strtLen);
 
         for (int i = strtLen; i <= m; ++i) {
-            CountPartsDistinctLenCap(partsCnt, p1, p2, n, i, cap);
+            CountPartsDistLenRstrctd(partsCnt, p2d, n, i, allowed);
             res += (permsCnt * partsCnt);
             permsCnt *= (i + 1);
+            ResetP2D(p2d);
         }
     }
 }
 
 void CountCompsDistinctLen(
     mpz_class &res, std::vector<mpz_class> &p1, std::vector<mpz_class> &p2,
-    int n, int m, int cap, int strtLen
+    int n, int m, const std::vector<int> &allowed, int strtLen
 ) {
 
     mpz_class partsCnt = 0;
@@ -268,7 +229,7 @@ void CountCompsDistinctLen(
 
 void CountCompsDistinctMultiZero(
     mpz_class &res, std::vector<mpz_class> &p1, std::vector<mpz_class> &p2,
-    int n, int m, int cap, int strtLen
+    int n, int m, const std::vector<int> &allowed, int strtLen
 ) {
 
     if (strtLen == 0) {
@@ -290,7 +251,7 @@ void CountCompsDistinctMultiZero(
 
 void CountCompsDistinctMZWeak(
     mpz_class &res, std::vector<mpz_class> &p1, std::vector<mpz_class> &p2,
-    int n, int m, int cap, int strtLen
+    int n, int m, const std::vector<int> &allowed, int strtLen
 ) {
 
     if (strtLen == 0) {

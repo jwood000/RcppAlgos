@@ -3,82 +3,31 @@
 #include <algorithm>  // std::count_if
 #include <numeric>    // std::iota
 
-double CountPartsDistinctLenCap(int n, int m, int cap, int strtLen = 0) {
+// Through extensive testing, this 2D approach is much more efficient.
+// This is probably due to allocating a huge, mostly empty and unused,
+// vector for the 3D case.
+double CountPartsDistLenRstrctd(
+    int n, int m, const std::vector<int> &allowed, int strtLen = 0
+) {
 
-    if (cap > n) cap = n;
-    if (m > n || cap < m) return 0;
+    std::vector<std::vector<double>> dp(m + 1, std::vector<double>(n + 1, 0));
+    dp[0][0] = 1; // one way to make 0 with 0 parts
 
-    if (m == n && n == 1 && cap >= 1) {
-        return 1;
-    } else if (m == n) {
-        return 0;
-    }
-
-    if (m == 1 && cap >= n) {
-        return 1;
-    } else if (m == 1) {
-        return 0;
-    }
-
-    // Ensure max is large enough given the width
-    //
-    // Below, we have an expression that represents the
-    // absolute maximum value we could obtain with a
-    // given max and width:
-    //
-    // max + (max - 1) + (max - 2) + ... + (max - (m - 1))
-    //
-    // (max * m) - (0 + 1 + 2 + ... + (m - 1))
-    //
-    // (max * m) - ((m - 1) * m) / 2
-
-    CheckMultIsInt(cap, m);
-    CheckMultIsInt(m - 1, m);
-    const int limit = (cap * m) - ((m - 1) * m) / 2;
-
-    if (limit == n) {
-        return 1.0;
-    } else if (limit < n) {
-        return 0.0;
-    }
-
-    const int width = n + 1;
-    CheckMultIsInt(cap + 1, width);
-    const int maxSize = (cap + 1) * width;
-
-    std::vector<double> p1(maxSize);
-    std::vector<double> p2(maxSize);
-
-    for (int i = 1; i < width; ++i) {
-        for (int j = i; j <= cap; ++j) {
-            p1[j * width + i] = 1;
-        }
-    }
-
-    for (int i = 2; i <= m; ++i) {
-        if (i % 2) {
-            std::fill(p1.begin(), p1.end(), 0);
-
-            for (int j = width; j < maxSize; j += width) {
-                for (int k = i, j1 = j - width; k < width; ++k) {
-                    p1[j + k] = p2[j1 + k - i] + p1[j1 + k - i];
-                }
-            }
-        } else {
-            std::fill(p2.begin(), p2.end(), 0);
-
-            for (int j = width; j < maxSize; j += width) {
-                for (int k = i, j1 = j - width; k < width; ++k) {
-                    p2[j + k] = p1[j1 + k - i] + p2[j1 + k - i];
-                }
+    for (int num: allowed) {
+        for (int j = m; j >= 1; --j) {
+            for (int s = n; s >= num; --s) {
+                dp[j][s] += dp[j - 1][s - num];
             }
         }
     }
 
-    return (m % 2) ? p1.back() : p2.back();
+    return dp[m][n];
 }
 
-double CountPartsDistinctLen(int n, int m, int cap = 0, int strtLen = 0) {
+double CountPartsDistinctLen(
+    int n, int m, const std::vector<int> &allowed = std::vector<int>(),
+    int strtLen = 0
+) {
 
     const int max_width = GetMaxWidth(n);
 
@@ -93,54 +42,57 @@ double CountPartsDistinctLen(int n, int m, int cap = 0, int strtLen = 0) {
     } else if (m == 3) {
         const double res = SumSection(n - 3);
         return(res);
-    } else {
-        const int limit = (m == GetMaxWidth(n + 1)) ? m - 1 : m;
-        std::vector<double> p1(n + 1);
-        std::vector<double> p2(n + 1);
+    }
 
-        for (int i = 6; i <= n; ++i) {
-            p1[i] = SumSection(i - 3);
-        }
+    const int limit = (m == GetMaxWidth(n + 1)) ? m - 1 : m;
+    std::vector<double> p1(n + 1);
+    std::vector<double> p2(n + 1);
 
-        for (int i = 4; i <= limit; ++i) {
-            const int m1 = ((i + 1) * i) / 2;
-            const int m2 = m1 + i;
+    for (int i = 6; i <= n; ++i) {
+        p1[i] = SumSection(i - 3);
+    }
 
-            if (i % 2) {
-                for (int j = m1; j < m2; ++j) {
-                    p1[j] = p2[j - i];
-                }
+    for (int i = 4; i <= limit; ++i) {
+        const int m1 = ((i + 1) * i) / 2;
+        const int m2 = m1 + i;
 
-                for (int j = m2; j <= n; ++j) {
-                    p1[j] = p2[j - i] + p1[j - i];
-                }
-            } else {
-                for (int j = m1; j < m2; ++j) {
-                    p2[j] = p1[j - i];
-                }
+        if (i % 2) {
+            for (int j = m1; j < m2; ++j) {
+                p1[j] = p2[j - i];
+            }
 
-                for (int j = m2; j <= n; ++j) {
-                    p2[j] = p2[j - i] + p1[j - i];
-                }
+            for (int j = m2; j <= n; ++j) {
+                p1[j] = p2[j - i] + p1[j - i];
+            }
+        } else {
+            for (int j = m1; j < m2; ++j) {
+                p2[j] = p1[j - i];
+            }
+
+            for (int j = m2; j <= n; ++j) {
+                p2[j] = p2[j - i] + p1[j - i];
             }
         }
+    }
 
-        if (m > limit && m % 2) {
-            return p2[n - m];
-        } else if (m > limit) {
-            return p1[n - m];
-        } else if (m % 2) {
-            return p1.back();
-        } else {
-            return p2.back();
-        }
+    if (m > limit && m % 2) {
+        return p2[n - m];
+    } else if (m > limit) {
+        return p1[n - m];
+    } else if (m % 2) {
+        return p1.back();
+    } else {
+        return p2.back();
     }
 }
 
 // Credit to Robin K. S. Hankin, author of the excellent partitions package.
 // From the partitions.c, here are Hankin's comments for c_numbdiffparts:
 //      "the recursion on p826 of Abramowitz and Stegun"
-double CountPartsDistinct(int n, int m, int cap = 0, int strtLen = 0) {
+double CountPartsDistinct(
+    int n, int m, const std::vector<int> &allowed = std::vector<int>(),
+    int strtLen = 0
+) {
 
     std::vector<double> qq(n + 1);
     qq[0] = 1;
@@ -149,19 +101,27 @@ double CountPartsDistinct(int n, int m, int cap = 0, int strtLen = 0) {
     for(int i = 2 ; i <= n; ++i) {
         for (int s = 1, f = 5, r = 2; i >= r; r += f, f += 3, s *= -1) {
             qq[i] += s * qq[i - r];
-            if(i == r * 2) {qq[i] -= s;}
+
+            if (i == r * 2) {
+                qq[i] -= s;
+            }
         }
 
         for (int s = 1, f = 4, r = 1; i >= r; r += f, f += 3, s *= -1) {
             qq[i] += s * qq[i - r];
-            if(i == r * 2) {qq[i] -= s;}
+
+            if (i == r * 2) {
+                qq[i] -= s;
+            }
         }
     }
 
     return qq.back();
 }
 
-double CountPartsDistinctMultiZero(int n, int m, int cap, int strtLen) {
+double CountPartsDistinctMultiZero(
+    int n, int m, const std::vector<int> &allowed, int strtLen
+) {
 
     double count = 0;
 
@@ -172,22 +132,28 @@ double CountPartsDistinctMultiZero(int n, int m, int cap, int strtLen) {
     return count;
 }
 
-double CountPartsDistinctCapMZ(int n, int m, int cap, int strtLen) {
+double CountPartsDistinctRstrctdMZ(
+    int n, int m, const std::vector<int> &allowed, int strtLen
+) {
 
     double count = 0;
 
     for (int i = strtLen; i <= m; ++i) {
-        count += CountPartsDistinctLenCap(n, i, cap);
+        count += CountPartsDistLenRstrctd(n, i, allowed);
     }
 
     return count;
 }
 
-double CountPartsPermDistinctCap(int n, int m, int cap, int strtLen) {
-    return CountPartsDistinctLenCap(n, m, cap) * NumPermsNoRep(m, m);
+double CountPartsPermDistinctRstrctd(
+    int n, int m, const std::vector<int> &allowed, int strtLen
+) {
+    return CountPartsDistLenRstrctd(n, m, allowed) * NumPermsNoRep(m, m);
 }
 
-double CountPartsPermDistinctCapMZ(int n, int m, int cap, int strtLen) {
+double CountPartsPermDistinctRstrctdMZ(
+    int n, int m, const std::vector<int> &allowed, int strtLen
+) {
 
     if (strtLen == 0) {
         // This means that z contains only zeros
@@ -199,18 +165,23 @@ double CountPartsPermDistinctCapMZ(int n, int m, int cap, int strtLen) {
 
         for (int i = strtLen; i <= m; ++i) {
             v[i - 1] = i;
-            res += (CountPartsDistinctLenCap(n, i, cap) * NumPermsWithRep(v));
+            res += (CountPartsDistLenRstrctd(n, i, allowed) *
+                NumPermsWithRep(v));
         }
 
         return res;
     }
 }
 
-double CountCompsDistinctLen(int n, int m, int cap, int strtLen) {
+double CountCompsDistinctLen(
+    int n, int m, const std::vector<int> &allowed, int strtLen
+) {
     return CountPartsDistinctLen(n, m) * NumPermsNoRep(m, m);
 }
 
-double CountCompsDistinctMultiZero(int n, int m, int cap, int strtLen) {
+double CountCompsDistinctMultiZero(
+    int n, int m, const std::vector<int> &allowed, int strtLen
+) {
 
     if (strtLen == 0) {
         // This means that z contains only zeros
@@ -228,7 +199,9 @@ double CountCompsDistinctMultiZero(int n, int m, int cap, int strtLen) {
     }
 }
 
-double CountCompsDistinctMZWeak(int n, int m, int cap, int strtLen) {
+double CountCompsDistinctMZWeak(
+    int n, int m, const std::vector<int> &allowed, int strtLen
+) {
 
     if (strtLen == 0) {
         // This means that z contains only zeros

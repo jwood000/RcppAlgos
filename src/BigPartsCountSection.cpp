@@ -1,4 +1,5 @@
 #include <gmpxx.h>
+#include <vector>
 
 void SumSection(const mpz_class &n, mpz_class &res) {
     mpz_class nIter(n / 3);
@@ -14,4 +15,10 @@ void SumSection(const mpz_class &n, mpz_class &res) {
     res += sumTwo;
     res = sumOne - res;
     mpz_div_2exp(res.get_mpz_t(), res.get_mpz_t(), 1);
+}
+
+void ResetP2D(std::vector<std::vector<mpz_class>> &p2d) {
+    for (auto& v : p2d) {
+        std::fill(v.begin(), v.end(), 0);
+    }
 }
