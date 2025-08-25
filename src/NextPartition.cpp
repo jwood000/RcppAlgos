@@ -250,10 +250,12 @@ void NextMultisetGenPart(std::vector<int> &rpsCnt,
     // vertex is the smallest index greater than edge that can be decremented
     int v = e + 1;
 
+    // Find next vertex v that can't be decremented
     while (VtxDecrementPossible(rpsCnt, z, lastCol, v, e)) {
         ++v;
     }
 
+    // Perform transfer between edge and vertex
     ++rpsCnt[z[e]];
     ++z[e];
     --rpsCnt[z[e]];
@@ -262,6 +264,7 @@ void NextMultisetGenPart(std::vector<int> &rpsCnt,
     --z[v];
     --rpsCnt[z[v]];
 
+    // Update boundary and pivot if vertex hits boundary
     if (v == b) {
         if (b < lastCol) {
             ++b;
@@ -275,6 +278,7 @@ void NextMultisetGenPart(std::vector<int> &rpsCnt,
             GetPivotExtr(rpsCnt, z, lastCol, lastElem);
     }
 
+    // Skip vertex forward over zones that are equal to previous
     while (
         (v < lastCol) &&
         (
@@ -289,6 +293,7 @@ void NextMultisetGenPart(std::vector<int> &rpsCnt,
         ++v;
     }
 
+    // Balance values between vertex and pivot where possible
     while (v < p && rpsCnt[z[v] - 1] && rpsCnt[z[p] + 1]) {
         ++rpsCnt[z[v]];
         --z[v];
@@ -310,6 +315,7 @@ void NextMultisetGenPart(std::vector<int> &rpsCnt,
 
     b = p;
 
+    // Move boundary right over zones that are equal or "close and movable"
     while (
         (b < lastCol) &&
         (
@@ -326,12 +332,14 @@ void NextMultisetGenPart(std::vector<int> &rpsCnt,
         ++b;
     }
 
+    // Refine boundary
     while (BndDecrementPossible(rpsCnt, z, b)) {
         --b;
     }
 
     e = b - 1;
 
+    // Move edge left as long as it's incrementable
     while (EdgeIncrementPossible(rpsCnt, z, e, b)) {
         --e;
     }
@@ -345,27 +353,30 @@ void NextRepGenPart(std::vector<int> &z, int &boundary, int &edge,
     ++z[edge];
     --z[vertex];
 
+    // If vertex == boundary, handle boundary update and pivot assignment
     if (vertex == boundary) {
         if (boundary < lastCol) {
             ++boundary;
         }
 
-        const int currMax = z[boundary];
+        int currMax = z[boundary];
 
+        // Move boundary left as long as values equal currMax
         while (boundary > 1 && z[boundary - 1] == currMax) {
             --boundary;
         }
 
         pivot = (z[boundary] < lastElem) ? lastCol : boundary - 1;
-
     } else if (z[vertex] == z[edge]) {
         ++vertex;
     }
 
+    // Main loop: balance values between vertex and pivot
     while (vertex < pivot) {
-        const int distVert = z[vertex] - z[edge];
-        const int distPivot = lastElem - z[pivot];
+        int distVert = z[vertex] - z[edge];
+        int distPivot = lastElem - z[pivot];
 
+        // Adjust indices
         if (distVert == distPivot) {
             z[vertex] -= distVert;
             z[pivot] += distVert;
@@ -387,20 +398,22 @@ void NextRepGenPart(std::vector<int> &z, int &boundary, int &edge,
 
     boundary = pivot;
 
-    if (boundary < lastCol &&
-        z[boundary] < z[boundary + 1]) {
-
+    // Recheck and adjust boundary
+    if (boundary < lastCol && z[boundary] < z[boundary + 1]) {
         ++boundary;
     }
 
-    const int currMax = z[boundary];
+    int currMax = z[boundary];
 
-    while (boundary > 1 && z[boundary - 1] == currMax)
+    while (boundary > 1 && z[boundary - 1] == currMax) {
         --boundary;
+    }
 
+    // Compute edge from boundary
     edge = boundary - 1;
     int edgeTest = z[boundary] - 2;
 
+    // Move edge left while condition holds
     while (edge > 0 && edgeTest < z[edge]) {
         --edge;
     }
@@ -413,6 +426,7 @@ void NextDistinctGenPart(std::vector<int> &z, int &boundary,
     int vertex = edge + 1;
     tarDiff = 3;
 
+    // Find the vertex where the difference from z[edge] is >= tarDiff
     while (vertex < lastCol && (z[vertex] - z[edge]) < tarDiff) {
         ++vertex;
         ++tarDiff;
@@ -426,6 +440,8 @@ void NextDistinctGenPart(std::vector<int> &z, int &boundary,
             ++boundary;
         }
 
+        // Move boundary left until the difference between adjacent values
+        // is at least 2
         while (boundary > 1 && (z[boundary] - z[boundary - 1]) < 2) {
             --boundary;
         }
@@ -433,17 +449,21 @@ void NextDistinctGenPart(std::vector<int> &z, int &boundary,
         pivot = (z[lastCol] < lastElem) ? lastCol : boundary - 1;
     }
 
+    // Redistribution logic if vertex is before boundary
     if (vertex < boundary) {
-        if (z[vertex] - z[vertex - 1] == 1)
+        if (z[vertex] - z[vertex - 1] == 1) {
             ++vertex;
+        }
 
         while (vertex < pivot) {
             --z[vertex];
             ++z[pivot];
 
-            if (z[vertex] - z[vertex - 1] == 1)
+            if (z[vertex] - z[vertex - 1] == 1) {
                 ++vertex;
+            }
 
+            // Move pivot left if maxed out or next is too close
             if (z[pivot] == lastElem ||
                 (pivot < lastCol && z[pivot + 1] - z[pivot] == 1)) {
 
@@ -458,9 +478,11 @@ void NextDistinctGenPart(std::vector<int> &z, int &boundary,
         }
     }
 
+    // Update edge based on new boundary
     edge = boundary - 1;
     tarDiff = 3;
 
+    // Find new edge where the difference with boundary is >= tarDiff
     while (edge > 0 && (z[boundary] - z[edge]) < tarDiff) {
         --edge;
         ++tarDiff;

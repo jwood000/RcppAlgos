@@ -21,7 +21,7 @@
 //
 // Including the first result (i.e. 1 46), we have n + 1 = 23.
 // In general, it can be show that when we are presented with
-// a situaiton of the form: 1 1 ... 1 m, then the number of
+// a situation of the form: 1 1 ... 1 m, then the number of
 // results for the "1st" group (i.e. while the 2nd to the last
 // column stays the same), is given by floor((1 + m) / 2).
 //
