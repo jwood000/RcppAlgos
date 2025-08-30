@@ -68,75 +68,110 @@ std::vector<int> nthCompsRepZero(int n, int m, int cap, int k,
     res[width - 1] = max_n - std::accumulate(res.begin(), res.end(), 0);
     return res;
 }
+
 #include <iostream>
-void PrintVec(const std::vector<int> &z) {
-    for (auto i: z) {
+
+template <typename T>
+void PrintVec(const std::vector<T> &v) {
+    for (auto i: v) {
         std::cout << i << ", ";
     }
 
     std::cout << std::endl;
 }
-std::vector<int> nthCompsDistinct(int n, int m, int cap, int k,
-                                  double dblIdx, const mpz_class &mpzIdx) {
+
+void OrientCandidate(
+    std::vector<int> &mask, std::vector<int> &allowed, int i,
+    int new_val, int width, int max_n, int cur_val, int running_total
+) {
+
+    mask[cur_val] = 0;
+    mask[new_val] = 1;
+
+    for (int j = i + 1, k = 1; j < (width - 1); ++j, ++k) {
+        while (mask[k]) {
+            ++k;
+        }
+
+        running_total += k;
+    }
+
+    int j = 0;
+
+    for (int v = 1, last_val = max_n - running_total; v <= last_val; ++v) {
+        if (!mask[v]) {
+            allowed[j] = v;
+            ++j;
+        }
+    }
+
+    std::fill(allowed.begin() + j, allowed.end(), 0);
+}
+
+std::vector<int> nthCompsDistinct(int n, int m, int k, double dblIdx) {
 
     const int width = m;
     const int max_n = n;
+    const int max_val = max_n - (width * (width - 1)) / 2;
 
-    // const int width = m;
-    // const int max_n = n;
-    //
-    // std::vector<int> res(width);
-    // n -= m;
-    // --m;
-    //
-    // for (int i = 0, j = 0; i < (width - 1); ++i, n -= m, --m, ++j) {
-    //     for (double temp = CountPartsDistinctLen(n, m);
-    //          temp <= dblIdx; ++j) {
-    //         n -= (m + 1);
-    //         dblIdx -= temp;
-    //         temp = CountPartsDistinctLen(n, m);
-    //     }
-    //
-    //     res[i] = j;
-    // }
-    //
-    // res[width - 1] = max_n - std::accumulate(res.begin(), res.end(), width);
-    // return res;
-    std::cout << "dblIdx: " << dblIdx << ", n: " << n << ", m: " << m << std::endl;
-    std::cout << "CountCompsDistinctLen(n, m): " << CountCompsDistinctLen(n, m) << std::endl;
-
-    std::vector<int> res(width);
-    n -= m;
+    std::vector<int> mask(max_n + 1, 0);
+    std::vector<int> res(width, 0);
     --m;
 
-    std::cout << "dblIdx: " << dblIdx << ", n: " << n << ", m: " << m << std::endl;
-    std::cout << "CountCompsDistinctLen(n, m): " << CountCompsDistinctLen(n, m) << std::endl;
+    mask[1] = 1;
+    std::vector<int> allowed(max_val - 1);
+    std::iota(allowed.begin(), allowed.end(), 2);
 
-    for (int i = 0, j = 0; i < (width - 2); ++i, n -= m, --m, ++j) {
-        for (double temp = CountCompsDistinctLen(n, m); temp <= dblIdx; ++j) {
-            std::cout << "dblIdx: " << dblIdx << ", temp: " << temp << ", n: " << n << std::endl;
-            n -= m;
-            if (n < 0) {
-                PrintVec(res);
-                cpp11::stop("dawg");
+    int running_total = 1;
+    int cur_val = 1;
+
+    for (int i = 0, j = 0; i < (width - 1); ++i, --m) {
+
+        double temp = CountCompsDistLenRstrctd(
+            max_n - running_total, m, allowed
+        );
+
+        while (temp <= dblIdx) {
+            while (mask[j + 1]) {
+                ++j;
             }
+
+            running_total += (j + 1 - cur_val);
+            OrientCandidate(
+                mask, allowed, i, j + 1, width, max_n, cur_val, running_total
+            );
+
             dblIdx -= temp;
-            temp = CountCompsDistinctLen(n, m);
-            std::cout << "dblIdx: " << dblIdx << ", temp: " << temp << ", n: " << n << std::endl;
+            temp = CountCompsDistLenRstrctd(
+                max_n - running_total, m, allowed, running_total
+            );
+
+            if (temp <= dblIdx) {
+                ++j;
+            }
+
+            cur_val = j;
         }
 
-        std::cout << "dblIdx: " << dblIdx << ", CountCompsDistinctLen(n, m): " << CountCompsDistinctLen(n, m) << ", n: " << n << ", m: " << m << std::endl;
         res[i] = j;
-        PrintVec(res);
+        j = 0;
+
+        while (mask[j + 1]) {
+            ++j;
+        }
+
+        running_total += (j + 1);
+        cur_val = j + 1;
+        OrientCandidate(
+            mask, allowed, i + 1, j + 1, width, max_n, cur_val, running_total
+        );
     }
 
-    std::cout << "dblIdx: " << dblIdx << ", CountCompsDistinctLen(n, m): " << CountCompsDistinctLen(n, m) << ", n: " << n << ", m: " << m << std::endl;
     res[width - 1] = max_n - std::accumulate(res.begin(), res.end(), width);
-    PrintVec(res);
     return res;
 }
 
-//************************* Paritions Funcitons ***************************//
+//************************* Partitions Functions ***************************//
 
 std::vector<int> nthPartsRepLen(int n, int m, int cap, int k,
                                 double dblIdx, const mpz_class &mpzIdx) {
