@@ -140,11 +140,11 @@ void PermDstnctRstrctdMZ::GetCount(
     if ((cmp(res, 0) == 0 || cmp(res, Significand53) > 0) && bLiteral) {
         CountPartsPermDistinctRstrctdMZ(res, p2d, n, m, allowed, strtLen);
     } else if (cmp(res, 0) == 0 || cmp(res, Significand53) > 0) {
-        CountPartsPermDistinctRstrctd(res, p2d, n, m, allowed);
+        CountCompDistLenRstrctd(res, p2d, n, m, allowed);
     } else if (bLiteral) {
         res = CountPartsPermDistinctRstrctdMZ(n, m, allowed, strtLen);
     } else {
-        res = CountPartsPermDistinctRstrctd(n, m, allowed);
+        res = CountCompDistLenRstrctd(n, m, allowed);
     }
 }
 
@@ -206,9 +206,9 @@ void PermDstnctRstrctd::GetCount(
 ) {
 
     if (cmp(res, 0) == 0 || cmp(res, Significand53) > 0) {
-        CountPartsPermDistinctRstrctd(res, p2d, n, m, allowed);
+        CountCompDistLenRstrctd(res, p2d, n, m, allowed);
     } else {
-        const double dblRes = CountPartsPermDistinctRstrctd(n, m, allowed);
+        const double dblRes = CountCompDistLenRstrctd(n, m, allowed);
         res = dblRes;
     }
 }
@@ -304,7 +304,7 @@ double RepLenRstrctd::GetCount(
 double PermDstnctRstrctd::GetCount(
     int n, int m, const std::vector<int> &allowed, int strtLen
 ) {
-    return CountPartsPermDistinctRstrctd(n, m, allowed);
+    return CountCompDistLenRstrctd(n, m, allowed);
 }
 
 double PermDstnctRstrctdMZ::GetCount(

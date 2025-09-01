@@ -30,7 +30,7 @@ void CountPartsDistinctRstrctdMZ(
     int n, int m, const std::vector<int> &allowed, int strtLen
 );
 
-void CountPartsPermDistinctRstrctd(
+void CountCompDistLenRstrctd(
     mpz_class &res, std::vector<std::vector<mpz_class>> &p2d,
     int n, int m, const std::vector<int> &allowed, int strtLen = 0
 );
