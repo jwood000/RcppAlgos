@@ -69,20 +69,9 @@ std::vector<int> nthCompsRepZero(int n, int m, int cap, int k,
     return res;
 }
 
-#include <iostream>
-
-template <typename T>
-void PrintVec(const std::vector<T> &v) {
-    for (auto i: v) {
-        std::cout << i << ", ";
-    }
-
-    std::cout << std::endl;
-}
-
-void OrientCandidate(
-    std::vector<int> &mask, std::vector<int> &allowed, int i,
-    int new_val, int width, int max_n, int cur_val, int running_total
+void UpdateAllowed(
+    std::vector<char> &mask, std::vector<int> &allowed, int i,
+    int new_val, int width, int n, int cur_val, int partial_sum
 ) {
 
     mask[cur_val] = 0;
@@ -93,12 +82,12 @@ void OrientCandidate(
             ++k;
         }
 
-        running_total += k;
+        partial_sum += k;
     }
 
     int j = 0;
 
-    for (int v = 1, last_val = max_n - running_total; v <= last_val; ++v) {
+    for (int v = 1, last_val = n - partial_sum; v <= last_val; ++v) {
         if (!mask[v]) {
             allowed[j] = v;
             ++j;
@@ -108,13 +97,13 @@ void OrientCandidate(
     std::fill(allowed.begin() + j, allowed.end(), 0);
 }
 
-std::vector<int> nthCompsDistinct(int n, int m, int k, double dblIdx) {
+std::vector<int> nthCompsDistinct(int n, int m, int cap, int k,
+                                  double dblIdx, const mpz_class &mpzIdx) {
 
     const int width = m;
-    const int max_n = n;
-    const int max_val = max_n - (width * (width - 1)) / 2;
+    const int max_val = n - (width * (width - 1)) / 2;
 
-    std::vector<int> mask(max_n + 1, 0);
+    std::vector<char> mask(n + 1, 0);
     std::vector<int> res(width, 0);
     --m;
 
@@ -122,35 +111,27 @@ std::vector<int> nthCompsDistinct(int n, int m, int k, double dblIdx) {
     std::vector<int> allowed(max_val - 1);
     std::iota(allowed.begin(), allowed.end(), 2);
 
-    int running_total = 1;
+    int partial_sum = 1;
     int cur_val = 1;
 
     for (int i = 0, j = 0; i < (width - 1); ++i, --m) {
+        double temp = CountCompDistLenRstrctd(n - partial_sum, m, allowed);
 
-        double temp = CountCompsDistLenRstrctd(
-            max_n - running_total, m, allowed
-        );
-
-        while (temp <= dblIdx) {
+        for (; temp <= dblIdx; cur_val = j) {
             while (mask[j + 1]) {
                 ++j;
             }
 
-            running_total += (j + 1 - cur_val);
-            OrientCandidate(
-                mask, allowed, i, j + 1, width, max_n, cur_val, running_total
-            );
+            partial_sum += (j + 1 - cur_val);
+            UpdateAllowed(mask, allowed, i, j + 1, width,
+                          n, cur_val, partial_sum);
 
             dblIdx -= temp;
-            temp = CountCompsDistLenRstrctd(
-                max_n - running_total, m, allowed, running_total
-            );
+            temp = CountCompDistLenRstrctd(n - partial_sum, m, allowed);
 
             if (temp <= dblIdx) {
                 ++j;
             }
-
-            cur_val = j;
         }
 
         res[i] = j;
@@ -160,18 +141,18 @@ std::vector<int> nthCompsDistinct(int n, int m, int k, double dblIdx) {
             ++j;
         }
 
-        running_total += (j + 1);
         cur_val = j + 1;
-        OrientCandidate(
-            mask, allowed, i + 1, j + 1, width, max_n, cur_val, running_total
-        );
+        partial_sum += (j + 1);
+
+        UpdateAllowed(mask, allowed, i + 1, j + 1, width,
+                      n, cur_val, partial_sum);
     }
 
-    res[width - 1] = max_n - std::accumulate(res.begin(), res.end(), width);
+    res[width - 1] = n - std::accumulate(res.begin(), res.end(), width);
     return res;
 }
 
-//************************* Partitions Functions ***************************//
+//************************* Partition Functions ***************************//
 
 std::vector<int> nthPartsRepLen(int n, int m, int cap, int k,
                                 double dblIdx, const mpz_class &mpzIdx) {
@@ -377,7 +358,7 @@ std::vector<int> nthPartsDistinctCapMZ(
     return res;
 }
 
-//*********************** Starting Gmp Funcitons **************************//
+//*********************** Starting Gmp Functions **************************//
 
 std::vector<int> nthCompsRepGmp(int n, int m, int cap, int k,
                                 double dblIdx, const mpz_class &mpzIdx) {
@@ -446,6 +427,70 @@ std::vector<int> nthCompsRepZeroGmp(int n, int m, int cap, int k,
     }
 
     res[width - 1] = max_n - std::accumulate(res.begin(), res.end(), 0);
+    return res;
+}
+
+std::vector<int> nthCompsDistinctGmp(int n, int m, int cap, int k,
+                                     double dblIdx, const mpz_class &mpzIdx) {
+
+    const int width = m;
+    const int max_val = n - (width * (width - 1)) / 2;
+
+    std::vector<char> mask(n + 1, 0);
+    std::vector<int> res(width, 0);
+    --m;
+
+    mask[1] = 1;
+    std::vector<int> allowed(max_val - 1);
+    std::iota(allowed.begin(), allowed.end(), 2);
+
+    mpz_class temp;
+    mpz_class index(mpzIdx);
+
+    const PartitionType ptype = PartitionType::PrmDstPrtCap;
+    std::unique_ptr<CountClass> Counter = MakeCount(ptype);
+
+    Counter->SetArrSize(ptype, n, m);
+    Counter->InitializeMpz();
+
+    int partial_sum = 1;
+    int cur_val = 1;
+
+    for (int i = 0, j = 0; i < (width - 1); ++i, --m) {
+        Counter->GetCount(temp, n - partial_sum, m, allowed);
+
+        for (; cmp(temp, index) <= 0; cur_val = j) {
+            while (mask[j + 1]) {
+                ++j;
+            }
+
+            partial_sum += (j + 1 - cur_val);
+            UpdateAllowed(mask, allowed, i, j + 1, width,
+                          n, cur_val, partial_sum);
+
+            index -= temp;
+            Counter->GetCount(temp, n - partial_sum, m, allowed);
+
+            if (cmp(temp, index) <= 0) {
+                ++j;
+            }
+        }
+
+        res[i] = j;
+        j = 0;
+
+        while (mask[j + 1]) {
+            ++j;
+        }
+
+        cur_val = j + 1;
+        partial_sum += (j + 1);
+
+        UpdateAllowed(mask, allowed, i + 1, j + 1, width,
+                      n, cur_val, partial_sum);
+    }
+
+    res[width - 1] = n - std::accumulate(res.begin(), res.end(), width);
     return res;
 }
 
@@ -743,6 +788,8 @@ nthPartsPtr GetNthPartsFunc(PartitionType ptype, bool IsGmp) {
                 return(nthPartsPtr(nthCompsRepGmp));
             } case PartitionType::CmpRpZroNotWk: {
                 return(nthPartsPtr(nthCompsRepZeroGmp));
+            } case PartitionType::CmpDstctNoZero: {
+                return(nthPartsPtr(nthCompsDistinctGmp));
             } default : {
                 cpp11::stop("No algorithm available");
             }
