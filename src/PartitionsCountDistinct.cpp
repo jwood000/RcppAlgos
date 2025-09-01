@@ -14,9 +14,11 @@ double CountPartsDistLenRstrctd(
     dp[0][0] = 1; // one way to make 0 with 0 parts
 
     for (int num: allowed) {
-        for (int j = m; j >= 1; --j) {
-            for (int s = n; s >= num; --s) {
-                dp[j][s] += dp[j - 1][s - num];
+        if (num) {
+            for (int j = m; j >= 1; --j) {
+                for (int s = n; s >= num; --s) {
+                    dp[j][s] += dp[j - 1][s - num];
+                }
             }
         }
     }
@@ -145,7 +147,7 @@ double CountPartsDistinctRstrctdMZ(
     return count;
 }
 
-double CountPartsPermDistinctRstrctd(
+double CountCompDistLenRstrctd(
     int n, int m, const std::vector<int> &allowed, int strtLen
 ) {
     return CountPartsDistLenRstrctd(n, m, allowed) * NumPermsNoRep(m, m);

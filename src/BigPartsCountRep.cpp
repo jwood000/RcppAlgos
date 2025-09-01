@@ -11,9 +11,11 @@ void CountPartsRepLenRstrctd(
     p2d[0][0] = 1; // one way to make 0 with 0 parts
 
     for (int num : allowed) {
-        for (int j = 1; j <= m; ++j) {
-            for (int s = num; s <= n; ++s) {
-                p2d[j][s] += p2d[j - 1][s - num];
+        if (num) {
+            for (int j = 1; j <= m; ++j) {
+                for (int s = num; s <= n; ++s) {
+                    p2d[j][s] += p2d[j - 1][s - num];
+                }
             }
         }
     }
