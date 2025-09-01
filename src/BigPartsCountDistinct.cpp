@@ -9,12 +9,15 @@ void CountPartsDistLenRstrctd(
     int n, int m, const std::vector<int> &allowed, int strtLen = 0
 ) {
 
+    ResetP2D(p2d);
     p2d[0][0] = 1; // one way to make 0 with 0 parts
 
     for (int num: allowed) {
-        for (int j = m; j >= 1; --j) {
-            for (int s = n; s >= num; --s) {
-                p2d[j][s] += p2d[j - 1][s - num];
+        if (num) {
+            for (int j = m; j >= 1; --j) {
+                for (int s = n; s >= num; --s) {
+                    p2d[j][s] += p2d[j - 1][s - num];
+                }
             }
         }
     }
@@ -171,11 +174,10 @@ void CountPartsDistinctRstrctdMZ(
     for (int i = strtLen; i <= m; ++i) {
         CountPartsDistLenRstrctd(temp, p2d, n, i, allowed);
         res += temp;
-        ResetP2D(p2d);
     }
 }
 
-void CountPartsPermDistinctRstrctd(
+void CountCompDistLenRstrctd(
     mpz_class &res, std::vector<std::vector<mpz_class>> &p2d,
     int n, int m, const std::vector<int> &allowed, int strtLen
 ) {
@@ -207,7 +209,6 @@ void CountPartsPermDistinctRstrctdMZ(
             CountPartsDistLenRstrctd(partsCnt, p2d, n, i, allowed);
             res += (permsCnt * partsCnt);
             permsCnt *= (i + 1);
-            ResetP2D(p2d);
         }
     }
 }
