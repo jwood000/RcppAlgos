@@ -116,7 +116,7 @@
 
 ## Bug Fixes:
 
-* Now checking class of input vector for partition funcitons.
+* Now checking class of input vector for partition functions.
 
 * Now when `partitionsCount` returns 0, the number of results is zero. Before, we were checking for count of partitions to be greater than zero, otherwise we would use the standard combinatorial counting functions to determine the number of results. This lead to strange results with elements not present in the original vector.
 
