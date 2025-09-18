@@ -69,34 +69,6 @@ std::vector<int> nthCompsRepZero(int n, int m, int cap, int k,
     return res;
 }
 
-void UpdateAllowed(
-    std::vector<char> &mask, std::vector<int> &allowed, int i,
-    int new_val, int width, int n, int cur_val, int partial_sum
-) {
-
-    mask[cur_val] = 0;
-    mask[new_val] = 1;
-
-    for (int j = i + 1, k = 1; j < (width - 1); ++j, ++k) {
-        while (mask[k]) {
-            ++k;
-        }
-
-        partial_sum += k;
-    }
-
-    int j = 0;
-
-    for (int v = 1, last_val = n - partial_sum; v <= last_val; ++v) {
-        if (!mask[v]) {
-            allowed[j] = v;
-            ++j;
-        }
-    }
-
-    std::fill(allowed.begin() + j, allowed.end(), 0);
-}
-
 std::vector<int> nthCompsDistinct(int n, int m, int cap, int k,
                                   double dblIdx, const mpz_class &mpzIdx) {
 
@@ -143,7 +115,6 @@ std::vector<int> nthCompsDistinct(int n, int m, int cap, int k,
 
         cur_val = j + 1;
         partial_sum += (j + 1);
-
         UpdateAllowed(mask, allowed, i + 1, j + 1, width,
                       n, cur_val, partial_sum);
     }

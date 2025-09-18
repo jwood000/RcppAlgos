@@ -2,6 +2,11 @@
 
 #include <vector>
 
+void UpdateAllowed(
+    std::vector<char> &mask, std::vector<int> &allowed, int i,
+    int new_val, int width, int n, int cur_val, int partial_sum
+);
+
 double CountPartsDistLenRstrctd(
     int n, int m, const std::vector<int> &allowed, int strtLen = 0
 );

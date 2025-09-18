@@ -3,6 +3,34 @@
 #include <algorithm>  // std::count_if
 #include <numeric>    // std::iota
 
+void UpdateAllowed(
+    std::vector<char> &mask, std::vector<int> &allowed, int i,
+    int new_val, int width, int n, int cur_val, int partial_sum
+) {
+
+    mask[cur_val] = 0;
+    mask[new_val] = 1;
+
+    for (int j = i + 1, k = 1; j < (width - 1); ++j, ++k) {
+        while (mask[k]) {
+            ++k;
+        }
+
+        partial_sum += k;
+    }
+
+    int j = 0;
+
+    for (int v = 1, last_val = n - partial_sum; v <= last_val; ++v) {
+        if (!mask[v]) {
+            allowed[j] = v;
+            ++j;
+        }
+    }
+
+    std::fill(allowed.begin() + j, allowed.end(), 0);
+}
+
 // Through extensive testing, this 2D approach is much more efficient.
 // This is probably due to allocating a huge, mostly empty and unused,
 // vector for the 3D case.
