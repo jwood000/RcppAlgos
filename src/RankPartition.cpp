@@ -61,7 +61,57 @@ void rankCompsRepZero(std::vector<int>::iterator iter, int n, int m,
     }
 }
 
-//************************* Partitons Funcitons ***************************//
+void rankCompsDistinct(std::vector<int>::iterator iter, int n, int m,
+                       int cap, int k, double &dblIdx, mpz_class &mpzIdx) {
+
+    const int width = m;
+    const int max_val = n - (width * (width - 1)) / 2;
+    dblIdx = 0;
+
+    std::vector<char> mask(n + 1, 0);
+    --m;
+
+    mask[1] = 1;
+    std::vector<int> allowed(max_val - 1);
+    std::iota(allowed.begin(), allowed.end(), 2);
+
+    int partial_sum = 1;
+    int cur_val = 1;
+
+    for (int i = 0, j = 0; i < (width - 1); ++i, --m, ++iter) {
+        double temp = CountCompDistLenRstrctd(n - partial_sum, m, allowed);
+        bool keepGoing = false;
+
+        for (int idx = *iter; j < idx || keepGoing; cur_val = j) {
+            while (mask[j + 1]) {
+                ++j;
+            }
+
+            partial_sum += (j + 1 - cur_val);
+            UpdateAllowed(mask, allowed, i, j + 1, width,
+                          n, cur_val, partial_sum);
+
+            dblIdx += temp;
+            temp = CountCompDistLenRstrctd(n - partial_sum, m, allowed);
+
+            ++j;
+            keepGoing = j <= idx;
+        }
+
+        j = 0;
+
+        while (mask[j + 1]) {
+            ++j;
+        }
+
+        cur_val = j + 1;
+        partial_sum += (j + 1);
+        UpdateAllowed(mask, allowed, i + 1, j + 1, width,
+                      n, cur_val, partial_sum);
+    }
+}
+
+//************************* Partition Functions ***************************//
 
 void rankPartsRepLen(std::vector<int>::iterator iter, int n, int m,
                      int cap, int k, double &dblIdx, mpz_class &mpzIdx) {
@@ -239,7 +289,7 @@ void rankPartsDistinctCapMZ(std::vector<int>::iterator iter, int n, int m,
     }
 }
 
-//*********************** Starting Gmp Funcitons **************************//
+//*********************** Starting Gmp Functions **************************//
 
 void rankCompsRepGmp(std::vector<int>::iterator iter, int n, int m,
                      int cap, int k, double &dblIdx, mpz_class &mpzIdx) {
@@ -294,6 +344,63 @@ void rankCompsRepZeroGmp(std::vector<int>::iterator iter, int n, int m,
 
         temp = 0;
         if (incr_j) --n;
+    }
+}
+
+void rankCompsDistinctGmp(std::vector<int>::iterator iter, int n, int m,
+                          int cap, int k, double &dblIdx, mpz_class &mpzIdx) {
+
+    const int width = m;
+    const int max_val = n - (width * (width - 1)) / 2;
+    mpzIdx = 0;
+
+    std::vector<char> mask(n + 1, 0);
+    --m;
+
+    mask[1] = 1;
+    std::vector<int> allowed(max_val - 1);
+    std::iota(allowed.begin(), allowed.end(), 2);
+
+    mpz_class temp;
+    const PartitionType ptype = PartitionType::PrmDstPrtCap;
+    std::unique_ptr<CountClass> Counter = MakeCount(ptype);
+
+    Counter->SetArrSize(ptype, n, m);
+    Counter->InitializeMpz();
+
+    int partial_sum = 1;
+    int cur_val = 1;
+
+    for (int i = 0, j = 0; i < (width - 1); ++i, --m, ++iter) {
+        Counter->GetCount(temp, n - partial_sum, m, allowed);
+        bool keepGoing = false;
+
+        for (int idx = *iter; j < idx || keepGoing; cur_val = j) {
+            while (mask[j + 1]) {
+                ++j;
+            }
+
+            partial_sum += (j + 1 - cur_val);
+            UpdateAllowed(mask, allowed, i, j + 1, width,
+                          n, cur_val, partial_sum);
+
+            mpzIdx += temp;
+            temp = CountCompDistLenRstrctd(n - partial_sum, m, allowed);
+
+            ++j;
+            keepGoing = j <= idx;
+        }
+
+        j = 0;
+
+        while (mask[j + 1]) {
+            ++j;
+        }
+
+        cur_val = j + 1;
+        partial_sum += (j + 1);
+        UpdateAllowed(mask, allowed, i + 1, j + 1, width,
+                      n, cur_val, partial_sum);
     }
 }
 
@@ -543,6 +650,8 @@ rankPartsPtr GetRankPartsFunc(PartitionType ptype, bool IsGmp) {
                 return(rankPartsPtr(rankCompsRepGmp));
             } case PartitionType::CmpRpZroNotWk: {
                 return(rankPartsPtr(rankCompsRepZeroGmp));
+            } case PartitionType::CmpDstctNoZero: {
+                return(rankPartsPtr(rankCompsDistinctGmp));
             } default : {
                 cpp11::stop("No algorithm available");
             }
@@ -575,6 +684,8 @@ rankPartsPtr GetRankPartsFunc(PartitionType ptype, bool IsGmp) {
                 return(rankPartsPtr(rankCompsRep));
             } case PartitionType::CmpRpZroNotWk: {
                 return(rankPartsPtr(rankCompsRepZero));
+            } case PartitionType::CmpDstctNoZero: {
+                return(rankPartsPtr(rankCompsDistinct));
             } default : {
                 cpp11::stop("No algorithm available");
             }
