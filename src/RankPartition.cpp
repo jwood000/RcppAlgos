@@ -15,6 +15,13 @@ using rankPartsPtr = void (*const)(std::vector<int>::iterator iter,
                            int n, int m, int cap, int k,
                            double &dblIdx, mpz_class &mpzIdx);
 
+//*********************** Trivial Length One Case **************************//
+
+void rankLengthOne(std::vector<int>::iterator iter, int n, int m,
+                   int cap, int k, double &dblIdx, mpz_class &mpzIdx) {
+    dblIdx = 0;
+}
+
 //*********************** Compositions Functions **************************//
 
 void rankCompsRep(std::vector<int>::iterator iter, int n, int m,
@@ -624,7 +631,9 @@ rankPartsPtr GetRankPartsFunc(PartitionType ptype, bool IsGmp) {
 
     if (IsGmp) {
         switch (ptype) {
-            case PartitionType::DstctCapped: {
+            case PartitionType::LengthOne: {
+                return(rankPartsPtr(rankLengthOne));
+            } case PartitionType::DstctCapped: {
                 return(rankPartsPtr(rankPartsDistinctCapGmp));
             } case PartitionType::DstctCappedMZ: {
                 return(rankPartsPtr(rankPartsDistinctCapMZGmp));
@@ -658,7 +667,9 @@ rankPartsPtr GetRankPartsFunc(PartitionType ptype, bool IsGmp) {
         }
     } else {
         switch (ptype) {
-            case PartitionType::DstctCapped: {
+            case PartitionType::LengthOne: {
+                return(rankPartsPtr(rankLengthOne));
+            } case PartitionType::DstctCapped: {
                 return(rankPartsPtr(rankPartsDistinctCap));
             } case PartitionType::DstctCappedMZ: {
                 return(rankPartsPtr(rankPartsDistinctCapMZ));
