@@ -438,10 +438,6 @@ int PartitionsCount(const std::vector<int> &Reps,
     part.numUnknown = false;
     part.bigCount = 0;
 
-    const double capNumIters = static_cast<double>(part.mapTar + 1) *
-                               static_cast<double>(part.width - 1) *
-                               static_cast<double>(lenV + 1);
-
     const int strtLen = std::count_if(
         part.startZ.cbegin(), part.startZ.cend(), [](int i){return i > 0;}
     );
