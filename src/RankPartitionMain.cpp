@@ -5,32 +5,6 @@
 #include <thread>
 
 template <typename T>
-struct RankResultTraits;
-
-// int and double: same formula
-template <>
-struct RankResultTraits<int> {
-    static int convert(double dblIdx, const mpz_class&) {
-        return static_cast<int>(dblIdx + 1);
-    }
-};
-
-template <>
-struct RankResultTraits<double> {
-    static double convert(double dblIdx, const mpz_class&) {
-        return dblIdx + 1;
-    }
-};
-
-// mpz_class: use the mpz_class result
-template <>
-struct RankResultTraits<mpz_class> {
-    static mpz_class convert(double, const mpz_class& mpzIdx) {
-        return mpzIdx + 1;
-    }
-};
-
-template <typename T>
 void RankPartsResultsGeneric(
     std::vector<T>& res, std::vector<int>& idx, rankPartsPtr rankFun,
     int tar, int m, int cap, int strtLen, int numResults
@@ -58,22 +32,6 @@ void RankPartsResults(
         rankFun(idx.begin() + j, tar, m, cap, strtLen, dblIdx, mpzIdx);
         res[i] = (dblIdx + 1);
     }
-}
-
-template <typename T>
-void Create2D(const std::vector<int> &idx,
-              std::vector<std::vector<T>> &v, int stepSize,
-              int m, int nThreads) {
-
-    int strt = 0;
-    const int sectionWidth = stepSize * m;
-
-    for (int i = 0; i < (nThreads - 1); ++i) {
-        v[i].assign(idx.begin() + strt, idx.begin() + strt + sectionWidth);
-        strt += sectionWidth;
-    }
-
-    v.back().assign(idx.begin() + strt, idx.end());
 }
 
 template <typename T>
@@ -206,10 +164,6 @@ SEXP RankPartitionMain(SEXP RIdx, SEXP Rv, SEXP RisRep,
               myType, n, m, !IsComp, IsMult, IsRep);
     SetBasic(Rv, vNum, vInt, n, myType);
 
-    bool Parallel = false; // This will be set in SetThreads below. For the
-    // partition and composition functions we don't have a Parallel
-    // argument. The goal is to eventually phase out this argument.
-
     // Must be defined inside IsInteger check as targetVals could be
     // outside integer data type range which causes undefined behavior
     std::vector<int> targetIntVals;
@@ -263,7 +217,8 @@ SEXP RankPartitionMain(SEXP RIdx, SEXP Rv, SEXP RisRep,
                                       [](int i){return i > 0;});
 
     const int limit = 2;
-    SetThreads(Parallel, maxThreads, numResults,
+    bool DummyPar = false; // Not used. See notes in SamplePartitions.cpp
+    SetThreads(DummyPar, maxThreads, numResults,
                myType, nThreads, RNumThreads, limit);
 
     const rankPartsPtr rankFun = GetRankPartsFunc(part.ptype, part.isGmp);
