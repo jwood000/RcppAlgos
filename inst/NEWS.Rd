@@ -1,7 +1,23 @@
 \name{NEWS}
 \title{News for Package \pkg{RcppAlgos}}
 
-\section{Changes in RcppAlgos version 2.9.2 (Release date: 2025-02-03)}{
+\section{Changes in RcppAlgos version 2.10.0 (Release date: 2025-10-05)}{
+    \itemize{
+        \item New Features:
+        \itemize{
+            \item Added parallel capabilities to all ranking functions (e.g. \code{partitionsRank(..., nThreads = 4)}).
+            \item Introduced a new algorithm for generating the next lexicographical integer composition — the first of its kind to our knowledge. This enables efficient generation of large-scale compositions such as \code{compositionsGeneral(50, 8)}.
+            \item Added accompanying algorithms (also firsts of their kind) for the distinct integer composition case, exposed through: \code{compositionsSample}, \code{compositionsRank}, and \code{compositionsIter}.
+            \item Added the ability to count permutations of partitions when \code{permuteCount} is called with \code{constraintsFun = "sum"} and \code{comparisonFun = "=="}, and the problem reduces internally to an optimized partition case.
+        }
+        \item Other:
+        \itemize{
+            \item General performance improvements in ranking and composition-related algorithms.
+        }
+    }
+}
+
+\section{Changes in RcppAlgos version 2.9.3 (Release date: 2025-02-03)}{
     \itemize{
         \item Other:
         \itemize{

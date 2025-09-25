@@ -1,3 +1,19 @@
+# RcppAlgos 2.10.0
+
+## New Features:
+
+* Added parallel capabilities to all ranking functions (e.g. `partitionsRank(..., nThreads = 4)`).
+
+* Introduced a new algorithm for generating the next lexicographical integer composition — the first of its kind to our knowledge. This enables efficient generation of large-scale compositions such as `compositionsGeneral(50, 8)`.
+
+* Added accompanying algorithms (also firsts of their kind) for the distinct integer composition case, exposed through: `compositionsSample`, `compositionsRank`, and `compositionsIter`.
+
+* Added the ability to count permutations of partitions when `permuteCount` is called with `constraintsFun = "sum"` and `comparisonFun = "=="`, and the problem reduces internally to an optimized partition case.
+
+## Other:
+
+* General performance improvements in ranking and composition-related algorithms.
+
 # RcppAlgos 2.9.3
 
 ## Other:
