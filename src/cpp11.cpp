@@ -244,10 +244,10 @@ extern "C" SEXP _RcppAlgos_ExpandGridCpp(SEXP RList, SEXP Rlow, SEXP Rhigh, SEXP
   END_CPP11
 }
 // RankCombPermMain.cpp
-SEXP RankCombPerm(SEXP RIdx, SEXP Rv, SEXP RisRep, SEXP RFreqs, SEXP Rm, SEXP RIsComb);
-extern "C" SEXP _RcppAlgos_RankCombPerm(SEXP RIdx, SEXP Rv, SEXP RisRep, SEXP RFreqs, SEXP Rm, SEXP RIsComb) {
+SEXP RankCombPerm(SEXP RIdx, SEXP Rv, SEXP RisRep, SEXP RFreqs, SEXP Rm, SEXP RIsComb, SEXP RNumThreads, SEXP RmaxThreads);
+extern "C" SEXP _RcppAlgos_RankCombPerm(SEXP RIdx, SEXP Rv, SEXP RisRep, SEXP RFreqs, SEXP Rm, SEXP RIsComb, SEXP RNumThreads, SEXP RmaxThreads) {
   BEGIN_CPP11
-    return cpp11::as_sexp(RankCombPerm(cpp11::as_cpp<cpp11::decay_t<SEXP>>(RIdx), cpp11::as_cpp<cpp11::decay_t<SEXP>>(Rv), cpp11::as_cpp<cpp11::decay_t<SEXP>>(RisRep), cpp11::as_cpp<cpp11::decay_t<SEXP>>(RFreqs), cpp11::as_cpp<cpp11::decay_t<SEXP>>(Rm), cpp11::as_cpp<cpp11::decay_t<SEXP>>(RIsComb)));
+    return cpp11::as_sexp(RankCombPerm(cpp11::as_cpp<cpp11::decay_t<SEXP>>(RIdx), cpp11::as_cpp<cpp11::decay_t<SEXP>>(Rv), cpp11::as_cpp<cpp11::decay_t<SEXP>>(RisRep), cpp11::as_cpp<cpp11::decay_t<SEXP>>(RFreqs), cpp11::as_cpp<cpp11::decay_t<SEXP>>(Rm), cpp11::as_cpp<cpp11::decay_t<SEXP>>(RIsComb), cpp11::as_cpp<cpp11::decay_t<SEXP>>(RNumThreads), cpp11::as_cpp<cpp11::decay_t<SEXP>>(RmaxThreads)));
   END_CPP11
 }
 // RankPartitionMain.cpp
@@ -304,7 +304,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_RcppAlgos_PrimeCountCpp",       (DL_FUNC) &_RcppAlgos_PrimeCountCpp,        3},
     {"_RcppAlgos_PrimeSieveCpp",       (DL_FUNC) &_RcppAlgos_PrimeSieveCpp,        5},
     {"_RcppAlgos_RandomAccessGlue",    (DL_FUNC) &_RcppAlgos_RandomAccessGlue,     2},
-    {"_RcppAlgos_RankCombPerm",        (DL_FUNC) &_RcppAlgos_RankCombPerm,         6},
+    {"_RcppAlgos_RankCombPerm",        (DL_FUNC) &_RcppAlgos_RankCombPerm,         8},
     {"_RcppAlgos_RankPartitionMain",   (DL_FUNC) &_RcppAlgos_RankPartitionMain,   12},
     {"_RcppAlgos_SampleCombPerm",      (DL_FUNC) &_RcppAlgos_SampleCombPerm,      16},
     {"_RcppAlgos_SamplePartitions",    (DL_FUNC) &_RcppAlgos_SamplePartitions,    16},
