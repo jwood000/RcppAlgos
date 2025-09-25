@@ -51,8 +51,8 @@ GetTarget <- function(v, target) {
     return(target)
 }
 
-GetRank <- function(..., v, repetition = FALSE,
-                    freqs = NULL, IsComb = TRUE) {
+GetRank <- function(..., v, repetition = FALSE, freqs = NULL,
+                    IsComb = TRUE, nThreads = NULL) {
 
     n_args <- length(arg_s <- list(...))
 
@@ -75,19 +75,22 @@ GetRank <- function(..., v, repetition = FALSE,
                 idx <- match(if (is.matrix(obj)) t(obj) else obj, v)
                 if (any(is.na(idx))) stop(msg)
                 .Call(`_RcppAlgos_RankCombPerm`, idx, v, repetition, freqs,
-                      if (is.matrix(obj)) ncol(obj) else length(obj), IsComb)
+                      if (is.matrix(obj)) ncol(obj) else length(obj), IsComb,
+                      nThreads, pkgEnv$nThreads)
             }, input)
         )
     } else if (is.matrix(input)) {
         idx <- match(t(input), v)
         if (any(is.na(idx))) stop(msg)
         return(.Call(`_RcppAlgos_RankCombPerm`, idx, v,
-                     repetition, freqs, ncol(input), IsComb));
+                     repetition, freqs, ncol(input), IsComb,
+                     nThreads, pkgEnv$nThreads));
     } else {
         idx <- match(input, v)
         if (any(is.na(idx))) stop(msg)
         return(.Call(`_RcppAlgos_RankCombPerm`, idx, v,
-                     repetition, freqs, length(input), IsComb));
+                     repetition, freqs, length(input), IsComb,
+                     nThreads, pkgEnv$nThreads));
     }
 }
 

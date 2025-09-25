@@ -23,7 +23,7 @@ permuteCount.table <- function(v, m = NULL, ...) {
 
     if (lst$is_part) {
         return(.Call(`_RcppAlgos_PartitionsCount`, lst$target,
-                     clean$v, m, repetition, clean$freqs, FALSE,
+                     clean$v, m, FALSE, clean$freqs, FALSE,
                      "==", NULL, NULL, FALSE, FALSE, FALSE, FALSE))
     } else {
         ComboPermuteCount(clean$v, m, FALSE, clean$freqs, FALSE)
