@@ -14,6 +14,13 @@
 using nthPartsPtr = std::vector<int> (*const)(int n, int m, int cap, int k,
                                       double dblIdx, const mpz_class &mpzIdx);
 
+std::vector<int> nthLengthOne(int n, int m, int cap, int k,
+                              double dblIdx, const mpz_class &mpzIdx) {
+
+    std::vector<int> res(m, n - 1);
+    return res;
+}
+
 //*********************** Compositions Functions **************************//
 
 std::vector<int> nthCompsRep(int n, int m, int cap, int k,
@@ -733,7 +740,9 @@ nthPartsPtr GetNthPartsFunc(PartitionType ptype, bool IsGmp) {
 
     if (IsGmp) {
         switch (ptype) {
-            case PartitionType::DstctCapped: {
+            case PartitionType::LengthOne: {
+                return(nthPartsPtr(nthLengthOne));
+            } case PartitionType::DstctCapped: {
                 return(nthPartsPtr(nthPartsDistinctCapGmp));
             } case PartitionType::DstctCappedMZ: {
                 return(nthPartsPtr(nthPartsDistinctCapMZGmp));
@@ -767,7 +776,9 @@ nthPartsPtr GetNthPartsFunc(PartitionType ptype, bool IsGmp) {
         }
     } else {
         switch (ptype) {
-            case PartitionType::DstctCapped: {
+            case PartitionType::LengthOne: {
+                return(nthPartsPtr(nthLengthOne));
+            } case PartitionType::DstctCapped: {
                 return(nthPartsPtr(nthPartsDistinctCap));
             } case PartitionType::DstctCappedMZ: {
                 return(nthPartsPtr(nthPartsDistinctCapMZ));

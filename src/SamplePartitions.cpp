@@ -225,41 +225,27 @@ SEXP SamplePartitions(
         cpp11::sexp res = Rf_allocMatrix(INTSXP, sampSize, part.width);
         int* matInt = INTEGER(res);
 
-        if (part.width == 1) {
-            matInt[0] = Rf_asInteger(Rtarget);
-            SetSampleNames(res, false, sampSize,
-                           mySample, myVec, IsNamed);
-        } else {
-            const nthPartsPtr nthPartFun = GetNthPartsFunc(
-                part.ptype, part.isGmp
-            );
+        const nthPartsPtr nthPartFun = GetNthPartsFunc(
+            part.ptype, part.isGmp
+        );
 
-            ThreadSafeSample(matInt, res, vInt, mySample, myVec,
-                             myReps, nthPartFun, part.width, sampSize,
-                             nThreads, Parallel, IsNamed, part.mapTar,
-                             strtLen, cap, part.isGmp);
-        }
-
+        ThreadSafeSample(matInt, res, vInt, mySample, myVec,
+                         myReps, nthPartFun, part.width, sampSize,
+                         nThreads, Parallel, IsNamed, part.mapTar,
+                         strtLen, cap, part.isGmp);
         return res;
     } else {
         cpp11::sexp res = Rf_allocMatrix(REALSXP, sampSize, part.width);
         double* matNum = REAL(res);
 
-        if (part.width == 1) {
-            matNum[0] = Rf_asReal(Rtarget);
-            SetSampleNames(res, false, sampSize,
-                           mySample, myVec, IsNamed);
-        } else {
-            const nthPartsPtr nthPartFun = GetNthPartsFunc(
-                part.ptype, part.isGmp
-            );
+        const nthPartsPtr nthPartFun = GetNthPartsFunc(
+            part.ptype, part.isGmp
+        );
 
-            ThreadSafeSample(matNum, res, vNum, mySample, myVec,
-                             myReps, nthPartFun, part.width, sampSize,
-                             nThreads, Parallel, IsNamed, part.mapTar,
-                             strtLen, cap, part.isGmp);
-        }
-
+        ThreadSafeSample(matNum, res, vNum, mySample, myVec,
+                         myReps, nthPartFun, part.width, sampSize,
+                         nThreads, Parallel, IsNamed, part.mapTar,
+                         strtLen, cap, part.isGmp);
         return res;
     }
 }
