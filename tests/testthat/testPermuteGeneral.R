@@ -115,9 +115,15 @@ test_that("permuteGeneral produces correct results with constraints", {
     comps <- compositionsGeneral(0:10, 5, TRUE, weak = TRUE)
     expect_equal(comps, perms[do.call(order, as.data.frame(perms)), ])
 
-    expect_equal(nrow(permuteGeneral(15, 7,
-                                     comparisonFun = "==", constraintFun = "sum",
-                                     limitConstraints = 80, upper = 100)), 100)
+    expect_equal(
+        nrow(
+            permuteGeneral(
+                15, 7, comparisonFun = "==", constraintFun = "sum",
+                limitConstraints = 80, upper = 100
+            )
+        ),
+        100
+    )
 
     expect_equal(nrow(permuteGeneral(15, 7, TRUE,
                                      comparisonFun = "==", constraintFun = "sum",

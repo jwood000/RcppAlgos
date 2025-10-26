@@ -255,7 +255,7 @@ test_that("partitionsIter produces correct results", {
     #### Distinct; Specific Length; No Zeros; Specific Target;
     expect_true(partitionClassTest(30, 8, tar = 75))
 
-    #### Distinct; Specific Length; Multi Zeros; Specific Target;
+    #### Distinct; Specific Length; Multi-Zeros; Specific Target;
     expect_true(partitionClassTest(0:30, 6, tar = 75, fr = c(3, rep(1, 30))))
 
     #### Repetition; Length determined internally; Multiple Zero;
