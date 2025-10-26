@@ -401,7 +401,7 @@ test_that("partitionGeneral Distinct Parallel Lower", {
                                        target = 21314))
 })
 
-test_that("partitionGeneral Repetition Parallel", {
+test_that("partition/compositionsGeneral Repetition Parallel", {
 
     ## N.B. Parallel has no effect when number of results is less than 40000
     ## partitionsCount(0:20, repetition = TRUE)
@@ -479,7 +479,7 @@ test_that("partitionGeneral Repetition Parallel", {
     ## [1] 65536
     ##
     ## $partition_type
-    ## [1] "RepStdAll"
+    ## [1] "CmpRpZroNotWk"
     expect_identical(compositionsGeneral(0:17, repetition = TRUE,
                                        nThreads = 2),
                      compositionsGeneral(0:17, repetition = TRUE))
@@ -498,7 +498,7 @@ test_that("partitionGeneral Repetition Parallel", {
     ## [1] 17
     ##
     ## $partition_type
-    ## [1] "RepShort"
+    ## [1] "CmpRpZroNotWk"
     expect_identical(compositionsGeneral((0:17) * 17L, repetition = TRUE,
                                          nThreads = 2),
                      compositionsGeneral((0:17) * 17L, repetition = TRUE))
@@ -548,7 +548,7 @@ test_that("partitionGeneral Repetition Parallel", {
     ## [1] 80730
     ##
     ## $partition_type
-    ## [1] "RepNoZero"
+    ## [1] "CompRepNoZero"
     myComps = compositionsGeneral(28, 6, TRUE, nThreads = 2)
     expect_identical(compositionsGeneral(28, 6, TRUE), myComps)
     expect_identical(compositionsRank(myComps[c(1L, 12345L, 80730L), ],
@@ -569,7 +569,7 @@ test_that("partitionGeneral Repetition Parallel", {
     ## [1] 28
     ##
     ## $partition_type
-    ## [1] "RepNoZero"
+    ## [1] "CompRepNoZero"
     myComps = compositionsGeneral(6 + (1:28) * 3, 10, TRUE,
                                   target = 120, nThreads = 2)
     expect_identical(compositionsGeneral(6 + (1:28) * 3, 10,
@@ -624,7 +624,7 @@ test_that("partitionGeneral Repetition Parallel", {
     ## [1] 101584
     ##
     ## $partition_type
-    ## [1] "RepShort"
+    ## [1] "CmpRpZroNotWk"
     myComps = compositionsGeneral(0:28, 6, TRUE, nThreads = 2)
     expect_identical(myComps, compositionsGeneral(0:28, 6, TRUE))
     expect_identical(compositionsRank(myComps[c(1L, 12345L, 101584L), ],
@@ -645,7 +645,7 @@ test_that("partitionGeneral Repetition Parallel", {
     ## [1] 28
     ##
     ## $partition_type
-    ## [1] "RepShort"
+    ## [1] "CmpRpZroNotWk"
     myComps = compositionsGeneral((0:28) * 3, 6, TRUE, nThreads = 2)
     expect_identical(myComps, compositionsGeneral((0:28) * 3, 6, TRUE))
     expect_identical(compositionsRank(myComps[c(1L, 12345L, 101584L), ],
@@ -695,6 +695,52 @@ test_that("partitionGeneral Repetition Parallel", {
                                     v = 1001 + (1:18) * 107,
                                     target = 20710, repetition = TRUE),
                      c(1L, 10000L, 161073L))
+
+    #### Repetition; Specific Length; Zero included; Weak Composition
+    ##
+    ## compositionsDesign(0:10, repetition = TRUE, weak = TRUE)[
+    ##     c("num_partitions", "partition_type")
+    ## ]
+    ## $num_partitions
+    ## [1] 92378
+    ##
+    ## $partition_type
+    ## [1] "CompRepWeak"
+    myComps = compositionsGeneral(
+        0:10, repetition = TRUE, weak = TRUE, nThreads = 2
+    )
+    expect_identical(
+        myComps, compositionsGeneral(0:10, repetition = TRUE, weak = TRUE)
+    )
+    expect_identical(compositionsRank(myComps[c(1L, 12345L, 92378L), ],
+                                      v = 0:10, repetition = TRUE, weak = TRUE),
+                     c(1L, 12345L, 92378L))
+
+    #### Mapped version
+    ##
+    ## 10 * 3 = 30  // No need to supply below. See GetTarget.R
+    ##
+    ## compositionsDesign((0:10) * 3, repetition = TRUE, weak = TRUE)[
+    ##     c("num_partitions", "partition_type")
+    ## ]
+    ## $num_partitions
+    ## [1] 92378
+    ##
+    ## $partition_type
+    ## [1] "CompRepNoZero"
+    myComps = compositionsGeneral(
+        (0:10) * 3, repetition = TRUE, weak = TRUE, nThreads = 2
+    )
+    expect_identical(
+        myComps, compositionsGeneral((0:10) * 3, repetition = TRUE, weak = TRUE)
+    )
+    expect_identical(compositionsRank(myComps[c(1L, 12345L, 92378L), ],
+                                      v = (0:10) * 3, repetition = TRUE,
+                                      weak = TRUE),
+                     c(1L, 12345L, 92378L))
+
+
+    a <- compositionsGeneral(0:10, repetition = TRUE, weak = TRUE, nThreads = 2)
 })
 
 test_that("partitionGeneral Repetition Parallel Lower", {
