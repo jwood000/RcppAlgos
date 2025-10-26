@@ -29,7 +29,7 @@ void ConstraintsVector(const std::vector<int> &freqs,
                            maxRows, nThreads, IsRep, xtraCol, IsComb,
                            IsMult, IsGmp);
     } else {
-        PartsGenManager(cnstrntVec, v, Reps, z, ptype, width, maxRows);
+        PartsGenManager(cnstrntVec, v, Reps, z, width, maxRows, ptype);
     }
 }
 
@@ -46,10 +46,10 @@ SEXP ConstraintsReturn(
     int strtLen, int cap, bool IsGmp
 ) {
 
-    const int width     = (part.isPart) ? part.width : m;
-    const int nCols     = (xtraCol) ? width + 1 : width;
-    const int lastElem  = n - 1;
-    const int lastCol   = width - 1;
+    const int lastElem = n - 1;
+    const int width    = (part.isPart) ? part.width : m;
+    const int lastCol  = width - 1;
+    const int nCols    = (xtraCol) ? width + 1 : width;
 
     if (part.isPart && !part.solnExist) {
         if (myType == VecType::Integer) {
@@ -111,11 +111,11 @@ SEXP ConstraintsReturn(
         int* matInt = INTEGER(res);
 
         if (ctype == ConstraintType::PartStandard) {
-            StandardPartitions(matInt, z, part.ptype, lower, lowerMpz,
-                               nCols, width, nRows, nThreads, lastCol,
-                               lastElem, part.mapTar, strtLen, cap, IsRep,
-                               IsMult, IsGmp, IsComb, part.includeZero,
-                               part.isComp, !part.isWeak);
+            StandardPartitions(
+                matInt, z, part.ptype, lower, lowerMpz, nCols, width, nRows,
+                nThreads, lastCol, lastElem, part.mapTar, strtLen, cap,
+                IsGmp, IsComb, part.includeZero, part.isComp
+            );
         } else {
             GeneralPartitions(matInt, vInt, z, part, lower, lowerMpz,
                               nCols, nRows, nThreads, lastCol, lastElem,

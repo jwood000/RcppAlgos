@@ -20,9 +20,9 @@ bool keepGoing(const std::vector<int> &rpsCnt, int lastElem,
 }
 
 template <typename T>
-void PartsGenMultiset(std::vector<T> &partsVec, const std::vector<T> &v,
-                      const std::vector<int> &Reps, std::vector<int> &z,
-                      std::size_t width, std::size_t nRows, bool IsComb) {
+int PartsGenMultiset(std::vector<T> &partsVec, const std::vector<T> &v,
+                     const std::vector<int> &Reps, std::vector<int> &z,
+                     std::size_t width, std::size_t nRows, bool IsComb) {
 
     int b = 0;
     int p = 0;
@@ -45,12 +45,14 @@ void PartsGenMultiset(std::vector<T> &partsVec, const std::vector<T> &v,
     if (count < nRows) {
         PopulateVec(v, partsVec, z, count, width, nRows, IsComb);
     }
+
+    return 1;
 }
 
-template void PartsGenMultiset(std::vector<int>&, const std::vector<int>&,
-                               const std::vector<int>&, std::vector<int>&,
-                               std::size_t, std::size_t, bool);
-template void PartsGenMultiset(std::vector<double>&,
-                               const std::vector<double>&,
-                               const std::vector<int>&, std::vector<int>&,
+template int PartsGenMultiset(std::vector<int>&, const std::vector<int>&,
+                              const std::vector<int>&, std::vector<int>&,
+                              std::size_t, std::size_t, bool);
+template int PartsGenMultiset(std::vector<double>&,
+                              const std::vector<double>&,
+                              const std::vector<int>&, std::vector<int>&,
                                std::size_t, std::size_t, bool);

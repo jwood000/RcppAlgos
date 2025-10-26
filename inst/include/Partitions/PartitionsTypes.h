@@ -259,7 +259,8 @@ enum class PartitionType {
     PrmDstPrtCapMZ = 27,
     PrmMultiset    = 28,
     NotMapped      = 29,
-    NotPartition   = 30
+    NotPartition   = 30,
+    NumTypes       = 31
 };
 
 constexpr const char* PTypeNames[] = {
