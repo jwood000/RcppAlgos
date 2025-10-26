@@ -97,16 +97,17 @@ test_that("parttionsSample and compositionsSample produces correct results", {
 
     mySamp = partitionsSample(500, 20, n = 10, seed = 42, namedSample = TRUE)
     expect_equal(unname(mySamp), partitionsSample(500, 20, n = 10, seed = 42, nThreads = 2))
-    expect_equal(as.character(partitionsRank(mySamp, v = 500)), rownames(mySamp))
+    expect_equal(as.character(partitionsRank(mySamp, v = 500, nThreads = 2)), rownames(mySamp))
 
     mySamp = partitionsSample(500, 20, TRUE, n = 10, seed = 97, namedSample = TRUE)
     expect_equal(unname(mySamp), partitionsSample(500, 20, TRUE, n = 10, seed = 97, nThreads = 2))
-    expect_equal(as.character(partitionsRank(mySamp, v = 500, repetition = TRUE)), rownames(mySamp))
+    expect_equal(as.character(partitionsRank(mySamp, v = 500, repetition = TRUE, nThreads = 2)),
+                 rownames(mySamp))
 
     ## Compositions
     mySamp = compositionsSample(500, 20, TRUE, n = 10, seed = 97, namedSample = TRUE)
     expect_equal(unname(mySamp), compositionsSample(500, 20, TRUE, n = 10, seed = 97, nThreads = 2))
-    expect_equal(as.character(compositionsRank(mySamp, v = 500, repetition = TRUE)), rownames(mySamp))
+    expect_equal(as.character(compositionsRank(mySamp, v = 500, repetition = TRUE, nThreads = 2)), rownames(mySamp))
 
     ## N.B. Weak = TRUE
     mySamp = compositionsSample(0:500, 20, TRUE, n = 10, weak = TRUE,
@@ -114,25 +115,27 @@ test_that("parttionsSample and compositionsSample produces correct results", {
     expect_equal(unname(mySamp), compositionsSample(0:500, 20, TRUE, n = 10, weak = TRUE,
                                                     seed = 97, nThreads = 2))
     expect_equal(as.character(compositionsRank(mySamp, v = 0:500, weak = TRUE,
-                                               repetition = TRUE)), rownames(mySamp))
+                                               repetition = TRUE, nThreads = 2)), rownames(mySamp))
 
     mySamp = partitionsSample(1e9 * (1:100), 10, n = 20, seed = 123, namedSample = TRUE)
     expect_equal(unname(mySamp), partitionsSample(1e9 * (1:100), 10, n = 20,
                                                   seed = 123, nThreads = 2))
-    expect_equal(as.character(partitionsRank(mySamp, v = 1e9 * (1:100))),
+    expect_equal(as.character(partitionsRank(mySamp, v = 1e9 * (1:100), nThreads = 2)),
                  rownames(mySamp))
 
     mySamp = partitionsSample(1e9 * (1:1000), 11, TRUE,
                               n = 20, seed = 8128, namedSample = TRUE)
     expect_equal(unname(mySamp), partitionsSample(1e9 * (1:1000), 11, TRUE,
                                                   n = 20, seed = 8128, nThreads = 2))
-    expect_equal(as.character(partitionsRank(mySamp, v = 1e9 * (1:1000), repetition = TRUE)),
+    expect_equal(as.character(partitionsRank(mySamp, v = 1e9 * (1:1000),
+                                             repetition = TRUE, nThreads = 2)),
                  rownames(mySamp))
     mySamp = compositionsSample(1e9 * (1:1000), 11, TRUE,
                                 n = 20, seed = 8128, namedSample = TRUE)
     expect_equal(unname(mySamp), compositionsSample(1e9 * (1:1000), 11, TRUE,
                                                     n = 20, seed = 8128, nThreads = 2))
-    expect_equal(as.character(compositionsRank(mySamp, v = 1e9 * (1:1000), repetition = TRUE)),
+    expect_equal(as.character(compositionsRank(mySamp, v = 1e9 * (1:1000),
+                                               repetition = TRUE, nThreads = 2)),
                  rownames(mySamp))
 
     mySamp = partitionsSample(100, 10, sampleVec = seq(1, 10000, 1000),
