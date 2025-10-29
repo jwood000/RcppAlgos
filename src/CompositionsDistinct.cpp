@@ -4,61 +4,6 @@
 #include <algorithm> // std::set_difference
 #include <numeric>
 
-std::vector<int> PrepareComplement(std::vector<int> z, int target) {
-
-    const int z_size = z.size();
-    int myMax = target - static_cast<int>((z_size * (z_size - 1)) / 2);
-
-    std::sort(z.begin(), z.end());
-    std::vector<int> complement;
-    std::vector<int> myRange(myMax);
-    std::iota(myRange.begin(), myRange.end(), 1);
-    std::set_difference(myRange.begin(), myRange.end(), z.begin(), z.end(),
-                        std::inserter(complement, complement.begin()));
-    return complement;
-}
-
-int GetMax(const std::vector<int> &z, const std::vector<int> &complement) {
-
-    int res = z.back() > z[z.size() - 2] ? z.back() : z[z.size() - 2];
-    const int last_two = std::accumulate(z.end() - 2, z.end(), 0);
-
-    int target = last_two - complement.front();
-
-    auto lower = std::lower_bound(
-        complement.cbegin(), complement.cend(), target
-    );
-
-    bool foundTar = lower != complement.end() && *lower == target;
-    const int comp_size = complement.size();
-
-    // We've already checked the first element above with front()
-    int j = 1;
-
-    while (!foundTar && j < comp_size && target > res) {
-        target = last_two - complement[j];
-
-        lower = std::lower_bound(
-            complement.cbegin(), complement.cend(), target
-        );
-
-        foundTar = lower != complement.end() && *lower == target;
-        ++j;
-    }
-
-    if (foundTar) {
-        --j;
-
-        if (complement[j] > target && complement[j] > res) {
-            res = complement[j];
-        } else if (target > res) {
-            res = target;
-        }
-    }
-
-    return res;
-}
-
 void CompsDistinctWorker(
     int* mat, std::vector<int> &z, std::vector<int> &complement,
     int i1, int i2, int myMax, int tar, std::size_t strt,
@@ -203,35 +148,6 @@ void CompsDistinctWorker(
     for (std::size_t k = 0; k < width; ++k) {
         mat(nRows - 1, k) = z[k];
     }
-}
-
-void CompsDistinctSetup(
-    const std::vector<int> &z, std::vector<int> &complement,
-    int &tar, int &idx_1, int &idx_2, int &nz, int &myMax
-) {
-
-    tar = std::accumulate(z.cbegin(), z.cend(), 0);
-    complement = PrepareComplement(z, tar);
-
-    // penultimate iterator
-    auto it_pent = std::upper_bound(
-        complement.cbegin(), complement.cend(), z[z.size() - 2]
-    );
-
-    idx_1 = (it_pent != complement.cend()) ?
-    std::distance(complement.cbegin(), it_pent) :
-        z.size() - 1;
-
-    auto it_last = std::lower_bound(
-        complement.cbegin(), complement.cend(), z.back()
-    );
-
-    idx_2 = (it_last != complement.cend()) ?
-    std::distance(complement.cbegin(), --it_last) :
-        complement.size() - 1;
-
-    nz    = std::count(z.cbegin(), z.cend(), 0);
-    myMax = GetMax(z, complement);
 }
 
 template <typename T>

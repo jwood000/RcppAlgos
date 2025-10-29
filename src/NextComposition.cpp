@@ -2,6 +2,77 @@
 #include <numeric>
 #include <vector>
 
+std::vector<int> PrepareComplement(std::vector<int> z, int target) {
+
+    const int z_size = z.size();
+
+    // Here we are trying to find the maximum possible value of z. We do this
+    // by assuming that the first n - 1 elements are minimized (n is the size
+    // of z). That is, the first n - 1 elements are 1, 2, ..., n - 1. This
+    // will give us a sum of (n * (n - 1) / 2). Finally, we take the target
+    // and subtract the triangle number from it. E.g. if the size of z is 5
+    // and the target is 30, the absolute maximal element will be:
+    //
+    //   30 - (1 + 2 + 3 + 4) = 30 - (5 * 4 / 2) = 30 - 10 = 20.
+    //
+    // This will be the starter for determining the elements that could make
+    // up the complement.
+
+    int myMax = target - static_cast<int>((z_size * (z_size - 1)) / 2);
+    std::vector<int> complement;
+
+    if (myMax > z_size) {
+        std::sort(z.begin(), z.end());
+        std::vector<int> myRange(myMax);
+        std::iota(myRange.begin(), myRange.end(), 1);
+        std::set_difference(myRange.begin(), myRange.end(), z.begin(), z.end(),
+                            std::inserter(complement, complement.begin()));
+    }
+
+    return complement;
+}
+
+int GetMax(const std::vector<int> &z, const std::vector<int> &complement) {
+
+    int res = z.back() > z[z.size() - 2] ? z.back() : z[z.size() - 2];
+    const int last_two = std::accumulate(z.end() - 2, z.end(), 0);
+
+    int target = last_two - complement.front();
+
+    auto lower = std::lower_bound(
+        complement.cbegin(), complement.cend(), target
+    );
+
+    bool foundTar = lower != complement.end() && *lower == target;
+    const int comp_size = complement.size();
+
+    // We've already checked the first element above with front()
+    int j = 1;
+
+    while (!foundTar && j < comp_size && target > res) {
+        target = last_two - complement[j];
+
+        lower = std::lower_bound(
+            complement.cbegin(), complement.cend(), target
+        );
+
+        foundTar = lower != complement.end() && *lower == target;
+        ++j;
+    }
+
+    if (foundTar) {
+        --j;
+
+        if (complement[j] > target && complement[j] > res) {
+            res = complement[j];
+        } else if (target > res) {
+            res = target;
+        }
+    }
+
+    return res;
+}
+
 template <int one_or_zero>
 void NextCompositionRep(std::vector<int> &z, int lastCol) {
 
@@ -109,6 +180,52 @@ int NextDistinctBlock(const std::vector<int> &v, std::vector<int> &idx,
         std::iota(idx.begin() + k + 1, idx.end(), idx[k + 1] + 1);
         partial = target - (tempSum - v[idx.back()]);
     }
+
+    return 1;
+}
+
+int CompsDistinctSetup(
+    const std::vector<int> &z, std::vector<int> &complement,
+    int &tar, int &idx_1, int &idx_2, int &nz, int &myMax
+) {
+
+    tar = std::accumulate(z.cbegin(), z.cend(), 0);
+    complement = PrepareComplement(z, tar);
+
+    if (complement.empty()) {
+        return 0;
+    }
+
+    int lastTwo = std::accumulate(z.rbegin(), z.rbegin() + 2, 0);
+    std::vector<int> idx(2);
+    std::vector<int> tailSum;
+
+    int init_sol = NextDistinctBlock(
+        complement, idx, tailSum, lastTwo, 2
+    );
+
+    if (init_sol == 1) {
+        idx_1 = idx.front();
+        idx_2 = idx.back();
+    } else {
+        // This means that there are no further solutions in
+        // complement. The next iteration we simply will swap the
+        // last two elements of z. By doing this, we will also
+        // ensure that z[lastCol - 1] will be equal to myMax which
+        // will force a new block calculation.
+        idx_1 = -1;
+
+        auto it_last = std::lower_bound(
+            complement.cbegin(), complement.cend(), z.back()
+        );
+
+        idx_2 = (it_last != complement.cend()) ?
+        std::distance(complement.cbegin(), --it_last) :
+            complement.size() - 1;
+    }
+
+    nz    = std::count(z.cbegin(), z.cend(), 0);
+    myMax = GetMax(z, complement);
 
     return 1;
 }
