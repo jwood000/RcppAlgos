@@ -2,7 +2,9 @@
 
 void Partitions::SetPartValues() {
 
-    if (part.ptype == PartitionType::Multiset) {
+    if (part.isComp && part.isDist) {
+        CompsDistinctSetup(z, rpsCnt, tarDiff, edge, boundary, nz, pivot);
+    } else if (part.ptype == PartitionType::Multiset) {
         PrepareMultisetPart(
             rpsCnt, z, boundary, pivot, edge, lastCol, lastElem
         );

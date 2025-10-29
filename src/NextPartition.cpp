@@ -489,9 +489,10 @@ void NextDistinctGenPart(std::vector<int> &z, int &boundary,
     }
 }
 
-using nextPartsPtr = void (*const)(std::vector<int> &rpsCnt,
-                           std::vector<int> &z, int &e, int &b, int &p,
-                           int &tarDiff, int lastCol, int lastElem);
+using nextPartsPtr = void (*const)(
+    std::vector<int>&, std::vector<int>&, int &e, int &b,
+    int &p, int &tarDiff, int lastCol, int lastElem
+);
 
 void NextDistinct(std::vector<int> &rpsCnt, std::vector<int> &z, int &e,
                   int &b, int &p, int &tarDiff, int lastCol, int lastElem) {
@@ -532,69 +533,86 @@ void NextRepCompOne(std::vector<int> &rpsCnt,
     NextCompositionRep<1>(z, lastCol);
 }
 
+void NextDistinctComp(std::vector<int> &complement,
+                      std::vector<int> &z, int &i1, int &i2, int &myMax,
+                      int &target, int lastCol, int lastIdx) {
+
+    std::vector<int> idx;
+    std::vector<int> tailSum;
+
+    NextCompositionDistinct(
+        z, complement, idx, tailSum, i1, i2, myMax, lastCol, lastIdx, target
+    );
+}
+
 nextPartsPtr GetNextPartsPtr(PartitionType ptype, ConstraintType ctype) {
 
     if (ctype == ConstraintType::PartStandard) {
         switch (ptype) {
-            case PartitionType::LengthOne: {
+            case PartitionType::LengthOne:
+            case PartitionType::DstctStdAll:
+            case PartitionType::DstctMultiZero:
+            case PartitionType::DstctOneZero:
+            case PartitionType::DstctNoZero:
                 return(nextPartsPtr(NextDistinct));
-            } case PartitionType::RepStdAll: {
+
+            case PartitionType::RepStdAll:
+            case PartitionType::RepNoZero:
+            case PartitionType::RepShort:
                 return(nextPartsPtr(NextRep));
-            } case PartitionType::RepNoZero: {
-                return(nextPartsPtr(NextRep));
-            } case PartitionType::RepShort: {
-                return(nextPartsPtr(NextRep));
-            } case PartitionType::DstctStdAll: {
-                return(nextPartsPtr(NextDistinct));
-            } case PartitionType::DstctMultiZero: {
-                return(nextPartsPtr(NextDistinct));
-            } case PartitionType::DstctOneZero: {
-                return(nextPartsPtr(NextDistinct));
-            } case PartitionType::DstctNoZero: {
-                return(nextPartsPtr(NextDistinct));
-            } case PartitionType::CompRepNoZero: {
+
+            case PartitionType::CompRepNoZero:
+            case PartitionType::CmpRpZroNotWk:
                 return(nextPartsPtr(NextRepCompOne));
-            } case PartitionType::CompRepWeak: {
+
+            case PartitionType::CompRepWeak:
                 return(nextPartsPtr(NextRepCompZero));
-            } case PartitionType::CmpRpZroNotWk: {
-                return(nextPartsPtr(NextRepCompOne));
-            } default: {
+
+            case PartitionType::CmpDstctMZWeak:
+            case PartitionType::CmpDstctNoZero:
+            case PartitionType::CmpDstctZNotWk:
+                return(nextPartsPtr(NextDistinctComp));
+
+            default:
                 // This should not happen
                 cpp11::stop(
                     "This should not happen. Please open an issue here:\n\t"
                     "https://github.com/jwood000/RcppAlgos/issues"
                 );
-            }
         }
     } else {
         switch (ptype) {
-            case PartitionType::LengthOne: {
+            case PartitionType::LengthOne:
+            case PartitionType::DstctMultiZero:
+            case PartitionType::DstctNoZero:
+            case PartitionType::DstctCapped:
+            case PartitionType::DstctCappedMZ:
                 return(nextPartsPtr(NextDistinctGen));
-            } case PartitionType::RepNoZero: {
+
+            case PartitionType::RepNoZero:
+            case PartitionType::RepCapped:
                 return(nextPartsPtr(NextRepGen));
-            } case PartitionType::RepCapped: {
-                return(nextPartsPtr(NextRepGen));
-            } case PartitionType::DstctMultiZero: {
-                return(nextPartsPtr(NextDistinctGen));
-            } case PartitionType::DstctNoZero: {
-                return(nextPartsPtr(NextDistinctGen));
-            } case PartitionType::DstctCapped: {
-                return(nextPartsPtr(NextDistinctGen));
-            } case PartitionType::DstctCappedMZ: {
-                return(nextPartsPtr(NextDistinctGen));
-            } case PartitionType::Multiset: {
+
+            case PartitionType::Multiset:
                 return(nextPartsPtr(NextMultisetGen));
-            } case PartitionType::CompRepNoZero: {
+
+            case PartitionType::CompRepNoZero:
                 return(nextPartsPtr(NextRepCompZero));
-            } case PartitionType::CmpRpZroNotWk: {
+
+            case PartitionType::CmpRpZroNotWk:
                 return(nextPartsPtr(NextRepCompOne));
-            } default: {
+
+            case PartitionType::CmpDstctMZWeak:
+            case PartitionType::CmpDstctNoZero:
+            case PartitionType::CmpDstctZNotWk:
+                return(nextPartsPtr(NextDistinctComp));
+
+            default:
                 // This should not happen
                 cpp11::stop(
                     "This should not happen. Please open an issue here:\n\t"
                     "https://github.com/jwood000/RcppAlgos/issues"
                 );
-            }
         }
     }
 }
