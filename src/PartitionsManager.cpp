@@ -14,6 +14,10 @@ int PartsStdManager(int* mat, std::vector<int> &z, int width, int lastElem,
                     int lastCol, int nRows, PartitionType ptype) {
 
     switch (ptype) {
+        case PartitionType::NoSolution:
+            // Do Nothing
+            return 1;
+
         case PartitionType::LengthOne:
             if (nRows) mat[0] = z.front();
             return 1;
@@ -76,6 +80,10 @@ int PartsGenManager(T* mat, const std::vector<T> &v, std::vector<int> &z,
     // non-zero integer.
 
     switch (ptype) {
+        case PartitionType::NoSolution:
+            // Do Nothing
+            return 1;
+
         case PartitionType::LengthOne:
             if (nRows) mat[0] = v[z.front()];
             return 1;
@@ -145,7 +153,10 @@ int PartsGenManager(std::vector<T> &partsVec, const std::vector<T> &v,
     // data structure that should make these cases impossible.
 
     switch (ptype) {
-        case PartitionType::LengthOne: {
+        case PartitionType::NoSolution: {
+            // Do Nothing
+            return 1;
+        } case PartitionType::LengthOne: {
             if (nRows) partsVec.push_back(v[z.front()]);
             return 1;
         } case PartitionType::DstctCapped: {
@@ -171,6 +182,10 @@ int PartsStdParallel(RcppParallel::RMatrix<int> &mat, std::vector<int> &z,
                      int nRows, PartitionType ptype) {
 
     switch (ptype) {
+        case PartitionType::NoSolution:
+            // Do Nothing
+            return 1;
+
             // ----- PartsRep -----
         case PartitionType::RepStdAll:
         case PartitionType::RepNoZero:
@@ -215,6 +230,10 @@ int PartsGenParallel(RcppParallel::RMatrix<T> &mat,
     // non-zero integer.
 
     switch (ptype) {
+        case PartitionType::NoSolution:
+            // Do Nothing
+            return 1;
+
             // ----- PartsGenRep -----
         // case PartitionType::RepStdAll:
         // case PartitionType::RepShort:

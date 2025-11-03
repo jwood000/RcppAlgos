@@ -182,9 +182,10 @@ SEXP RankPartitionMain(SEXP RIdx, SEXP Rv, SEXP RisRep,
                     part, ctype, n, m, compVec, mainFun, mainFun, myType,
                     Rtarget, RcompFun, Rtolerance, Rlow);
 
-    if (part.ptype == PartitionType::Multiset ||
-        part.ptype == PartitionType::CoarseGrained ||
-        part.ptype == PartitionType::NotPartition) {
+    if (part.ptype == PartitionType::CoarseGrained ||
+        part.ptype == PartitionType::NotPartition  ||
+        part.ptype == PartitionType::NoSolution    ||
+        part.ptype == PartitionType::Multiset) {
 
         cpp11::stop("Partition ranking not available for this case.");
     }

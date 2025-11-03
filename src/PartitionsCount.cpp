@@ -438,6 +438,10 @@ int PartitionsCount(const std::vector<int> &Reps,
     part.numUnknown = false;
     part.bigCount = 0;
 
+    if (part.ptype == PartitionType::NoSolution) {
+        return 1;
+    }
+
     const int strtLen = std::count_if(
         part.startZ.cbegin(), part.startZ.cend(), [](int i){return i > 0;}
     );
@@ -472,7 +476,7 @@ int PartitionsCount(const std::vector<int> &Reps,
         return 1;
     } else if (part.ptype == PartitionType::PrmMultiset) {
         // See note above under CompMultiset
-        part.count = (part.solnExist) ?
+        part.count = part.solnExist ?
             CountPartsMultiset(Reps, part.startZ, true, true) : 0;
         return 1;
     }

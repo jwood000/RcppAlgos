@@ -545,6 +545,11 @@ void NextDistinctComp(std::vector<int> &complement,
     );
 }
 
+void EmptyReturn(std::vector<int> &rpsCnt, std::vector<int> &z, int &e,
+             int &b, int &p, int &tarDiff, int lastCol, int lastElem) {
+    // Do nothing
+}
+
 nextPartsPtr GetNextPartsPtr(PartitionType ptype, ConstraintType ctype) {
 
     if (ctype == ConstraintType::PartStandard) {
@@ -572,6 +577,9 @@ nextPartsPtr GetNextPartsPtr(PartitionType ptype, ConstraintType ctype) {
             case PartitionType::CmpDstctNoZero:
             case PartitionType::CmpDstctZNotWk:
                 return(nextPartsPtr(NextDistinctComp));
+
+            case PartitionType::NoSolution:
+                return(nextPartsPtr(EmptyReturn));
 
             default:
                 // This should not happen
@@ -606,6 +614,9 @@ nextPartsPtr GetNextPartsPtr(PartitionType ptype, ConstraintType ctype) {
             case PartitionType::CmpDstctNoZero:
             case PartitionType::CmpDstctZNotWk:
                 return(nextPartsPtr(NextDistinctComp));
+
+            case PartitionType::NoSolution:
+                return(nextPartsPtr(EmptyReturn));
 
             default:
                 // This should not happen

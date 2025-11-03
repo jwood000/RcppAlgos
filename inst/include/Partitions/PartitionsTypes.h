@@ -224,6 +224,8 @@
 //                   multiplicity > 1
 //
 // NotMapped      : These are partitions, however they are not mapped
+// NoSolution     : This passes the CheckPartition function, but there is no
+//                   solution given the target, width, or constraints
 // NotPartition   : Does not pass the CheckPartition function
 //
 // ****************************************************************************
@@ -259,8 +261,9 @@ enum class PartitionType {
     PrmDstPrtCapMZ = 27,
     PrmMultiset    = 28,
     NotMapped      = 29,
-    NotPartition   = 30,
-    NumTypes       = 31
+    NoSolution     = 30,
+    NotPartition   = 31,
+    NumTypes       = 32
 };
 
 constexpr const char* PTypeNames[] = {
@@ -294,12 +297,15 @@ constexpr const char* PTypeNames[] = {
     "PrmDstPrtCapMZ",
     "PrmMultiset",
     "NotMapped",
-    "NotPartition"
+    "NoSolution",
+    "NotPartition",
+    "NumTypes"
 };
 
-const std::array<PartitionType, 4> NoCountAlgoPTypeArr{{
+const std::array<PartitionType, 5> NoCountAlgoPTypeArr{{
     PartitionType::NotMapped, PartitionType::PrmRepCapped,
-    PartitionType::NotPartition, PartitionType::CoarseGrained
+    PartitionType::NotPartition, PartitionType::NoSolution,
+    PartitionType::CoarseGrained
 }};
 
 const std::array<PartitionType, 6> CappedPTypeArr{{

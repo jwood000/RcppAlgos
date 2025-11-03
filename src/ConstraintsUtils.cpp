@@ -80,6 +80,7 @@ bool CheckSpecialCase(const std::vector<double> &vNum,
 
     const bool NonStdPart = ptype == PartitionType::CoarseGrained ||
                             ptype == PartitionType::NotPartition  ||
+                            ptype == PartitionType::NoSolution    ||
                             ptype == PartitionType::Multiset;
 
     if (bLower && NonStdPart) {

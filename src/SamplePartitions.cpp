@@ -176,9 +176,10 @@ SEXP SamplePartitions(
                     part, ctype, n, m, compVec, mainFun, mainFun, myType,
                     Rtarget, RcompFun, R_NilValue, Rlow);
 
-    if (part.ptype == PartitionType::Multiset ||
-        part.ptype == PartitionType::CoarseGrained ||
-        part.ptype == PartitionType::NotPartition) {
+    if (part.ptype == PartitionType::CoarseGrained ||
+        part.ptype == PartitionType::NotPartition  ||
+        part.ptype == PartitionType::NoSolution    ||
+        part.ptype == PartitionType::Multiset) {
 
         cpp11::stop("Partition sampling not available for this case.");
     }

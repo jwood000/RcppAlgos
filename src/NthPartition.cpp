@@ -736,6 +736,13 @@ std::vector<int> nthPartsDistinctCapMZGmp(
     return res;
 }
 
+std::vector<int> EmptyReturn(
+    int n, int m, int cap, int k, double dblIdx, const mpz_class &mpzIdx
+) {
+    std::vector<int> res(m);
+    return(res);
+}
+
 nthPartsPtr GetNthPartsFunc(PartitionType ptype, bool IsGmp) {
 
     if (IsGmp) {
@@ -770,6 +777,8 @@ nthPartsPtr GetNthPartsFunc(PartitionType ptype, bool IsGmp) {
                 return(nthPartsPtr(nthCompsRepZeroGmp));
             } case PartitionType::CmpDstctNoZero: {
                 return(nthPartsPtr(nthCompsDistinctGmp));
+            } case PartitionType::NoSolution: {
+                return(nthPartsPtr(EmptyReturn));
             } default : {
                 cpp11::stop("No algorithm available");
             }
@@ -806,6 +815,8 @@ nthPartsPtr GetNthPartsFunc(PartitionType ptype, bool IsGmp) {
                 return(nthPartsPtr(nthCompsRepZero));
             } case PartitionType::CmpDstctNoZero: {
                 return(nthPartsPtr(nthCompsDistinct));
+            } case PartitionType::NoSolution: {
+                return(nthPartsPtr(EmptyReturn));
             } default : {
                 cpp11::stop("No algorithm available");
             }
