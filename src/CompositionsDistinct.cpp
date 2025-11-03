@@ -156,18 +156,18 @@ int CompsGenDistinct(
     std::size_t width, std::size_t nRows
 ) {
 
-    int nz;
-    int tar;
-    int idx_1;
-    int idx_2;
-    int myMax;
+    int tar = 0;
+    int idx_1 = 0;
+    int idx_2 = 0;
+    int myMax = 0;
     int strt = 0;
 
     std::vector<int> complement;
-    CompsDistinctSetup(z, complement, tar, idx_1, idx_2, nz, myMax);
+    const int nz = std::count(z.cbegin(), z.cend(), 0);
 
     for (int i = width - nz, j = nz, nextStep = 0; i < width; ++i, --j) {
 
+        CompsDistinctSetup(z, complement, tar, idx_1, idx_2, myMax);
         nextStep += CountCompsDistinctLen(tar, i);
 
         CompsDistinctWorker(
@@ -179,9 +179,9 @@ int CompsGenDistinct(
 
         std::iota(z.begin() + j - 1, z.end(), 1);
         z.back() = tar - static_cast<int>((i * (i + 1)) / 2);
-        complement = PrepareComplement(z, tar);
     }
 
+    CompsDistinctSetup(z, complement, tar, idx_1, idx_2, myMax);
     CompsDistinctWorker(
         mat, v, z, complement, idx_1, idx_2,
         myMax, tar, strt, width, nRows, nRows
@@ -197,17 +197,17 @@ int CompsGenDistinct(
     std::size_t width, std::size_t nRows
 ) {
 
-    int nz;
-    int tar;
-    int idx_1;
-    int idx_2;
-    int myMax;
+    int tar = 0;
+    int idx_1 = 0;
+    int idx_2 = 0;
+    int myMax = 0;
 
     std::vector<int> complement;
-    CompsDistinctSetup(z, complement, tar, idx_1, idx_2, nz, myMax);
+    const int nz = std::count(z.cbegin(), z.cend(), 0);
 
     for (int i = width - nz, j = nz, nextStep = 0; i < width; ++i, --j) {
 
+        CompsDistinctSetup(z, complement, tar, idx_1, idx_2, myMax);
         nextStep += CountCompsDistinctLen(tar, i);
 
         CompsDistinctWorker(
@@ -219,9 +219,9 @@ int CompsGenDistinct(
 
         std::iota(z.begin() + j - 1, z.end(), 1);
         z.back() = tar - static_cast<int>((i * (i + 1)) / 2);
-        complement = PrepareComplement(z, tar);
     }
 
+    CompsDistinctSetup(z, complement, tar, idx_1, idx_2, myMax);
     CompsDistinctWorker(
         mat, v, z, complement, idx_1, idx_2,
         myMax, tar, strt, width, nRows
@@ -233,18 +233,18 @@ int CompsGenDistinct(
 int CompsDistinct(int* mat, std::vector<int> &z,
                   std::size_t width, std::size_t nRows) {
 
-    int nz;
-    int tar;
-    int idx_1;
-    int idx_2;
-    int myMax;
+    int tar = 0;
+    int idx_1 = 0;
+    int idx_2 = 0;
+    int myMax = 0;
     int strt = 0;
 
     std::vector<int> complement;
-    CompsDistinctSetup(z, complement, tar, idx_1, idx_2, nz, myMax);
+    const int nz = std::count(z.cbegin(), z.cend(), 0);
 
     for (int i = width - nz, j = nz, nextStep = 0; i < width; ++i, --j) {
 
+        CompsDistinctSetup(z, complement, tar, idx_1, idx_2, myMax);
         nextStep += CountCompsDistinctLen(tar, i);
 
         CompsDistinctWorker(
@@ -256,9 +256,9 @@ int CompsDistinct(int* mat, std::vector<int> &z,
 
         std::iota(z.begin() + j - 1, z.end(), 1);
         z.back() = tar - static_cast<int>((i * (i + 1)) / 2);
-        complement = PrepareComplement(z, tar);
     }
 
+    CompsDistinctSetup(z, complement, tar, idx_1, idx_2, myMax);
     CompsDistinctWorker(
         mat, z, complement, idx_1, idx_2,
         myMax, tar, strt, width, nRows, nRows
@@ -272,17 +272,17 @@ int CompsDistinct(
     std::size_t strt, std::size_t width, std::size_t nRows
 ) {
 
-    int nz;
-    int tar;
-    int idx_1;
-    int idx_2;
-    int myMax;
+    int tar = 0;
+    int idx_1 = 0;
+    int idx_2 = 0;
+    int myMax = 0;
 
     std::vector<int> complement;
-    CompsDistinctSetup(z, complement, tar, idx_1, idx_2, nz, myMax);
+    const int nz = std::count(z.cbegin(), z.cend(), 0);
 
     for (int i = width - nz, j = nz, nextStep = 0; i < width; ++i, --j) {
 
+        CompsDistinctSetup(z, complement, tar, idx_1, idx_2, myMax);
         nextStep += CountCompsDistinctLen(tar, i);
 
         CompsDistinctWorker(
@@ -294,9 +294,9 @@ int CompsDistinct(
 
         std::iota(z.begin() + j - 1, z.end(), 1);
         z.back() = tar - static_cast<int>((i * (i + 1)) / 2);
-        complement = PrepareComplement(z, tar);
     }
 
+    CompsDistinctSetup(z, complement, tar, idx_1, idx_2, myMax);
     CompsDistinctWorker(
         mat, z, complement, idx_1, idx_2,
         myMax, tar, strt, width, nRows

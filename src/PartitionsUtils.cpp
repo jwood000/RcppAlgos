@@ -185,7 +185,8 @@ void GetTarget(const std::vector<double> &v,
 
     while (res != 1) {
         res =  GetFirstPartition(
-            v64, zExpanded, z, Reps, part.target, m, lenV, part.isRep, part.isMult
+            v64, zExpanded, z, Reps, part.target,
+            m, lenV, part.isRep, part.isMult
         );
 
         if (part.mIsNull && res != 1 && m > 1) {
@@ -277,7 +278,16 @@ void SetStartPartitionZ(const std::vector<int> &Reps,
             break;
         } case PartitionType::CmpDstctZNotWk: {
 
-            if (Reps.front() >= (part.width - 1)) {
+            // This happens when we don't specific freqs and includeZero = TRUE
+            // E.g. compositionsGeneral(0:10, 5)
+            //
+            // Any place we see Reps.front() in the last block we simply
+            // replace with 1.
+            if (Reps.empty()) {
+                std::iota(part.startZ.begin() + 1, part.startZ.end(), 1);
+                part.startZ.back() = part.target -
+                    (part.width - 1) * (part.width - 2) / 2;
+            } else if (Reps.front() >= (part.width - 1)) {
                 part.startZ.back() = part.target;
             } else {
                 std::iota(part.startZ.begin() + Reps.front(),
@@ -668,17 +678,24 @@ void StandardDesign(const std::vector<int> &Reps,
             part.solnExist = false;
         }
     } else if (part.isDist) {
-        if (part.includeZero && part.isComp && part.isWeak) {
-            // compositionsCount(0:20, 3, weak = TRUE)
-            part.ptype = PartitionType::CmpDstctMZWeak;
-        } else if (part.includeZero && part.isComp) {
+        if (part.includeZero && part.isComp && !part.isWeak) {
             // compositionsCount(0:20, 3)
             part.ptype = PartitionType::CmpDstctZNotWk;
         } else if (part.includeZero) {
             // partitionsCount(0:20)
             // partitionsCount(0:20, 3)
-            part.ptype = part.isPerm ? PartitionType::PrmDstPrtOneZ :
-                PartitionType::DstctOneZero;
+            //
+            // ## N.B. in the weak case since there is only 1 zero, we are
+            // ## mapping it to 1 so it is equal to the case with no zeros
+            //
+            // compositionsCount(0:20, 3, weak = TRUE)
+            part.ptype = part.isPerm ?
+                PartitionType::PrmDstPrtOneZ :
+                (
+                    part.isComp ?
+                        PartitionType::CmpDstctNoZero :
+                        PartitionType::DstctOneZero
+                );
 
             // We need to add m in target in order to
             // correctly count the number of partitions
@@ -841,8 +858,8 @@ void SetPartitionDesign(
         StandardDesign(Reps, part, m, lenV);
         SetStartPartitionZ(Reps, part);
     } else {
-        // We are now figuring out the length of m when mIsNull = true.
-        // In the function GetTarget we are iteratively determing m/width.
+        // We are now figuring out the length of m when mIsNull = true. In
+        // the function GetTarget we are iteratively determining m/width.
 
         // We can only have weak compositions when zero is included. We
         // can't use part.includeZero for the reasons in the below comment
@@ -873,14 +890,20 @@ void SetPartitionDesign(
         } else if (part.solnExist) {
             part.ptype = PartitionType::NotMapped;
         } else {
-            part.ptype = PartitionType::NotPartition;
+            part.ptype = PartitionType::NoSolution;
         }
 
-        if (part.solnExist) DiscoverPType(Reps, part, lenV);
+        if (part.solnExist) {
+            DiscoverPType(Reps, part, lenV);
+        }
     }
 
-    if (PartitionsCount(Reps, part, lenV, bIsCount) == -1) {
+    int res = PartitionsCount(Reps, part, lenV, bIsCount);
+
+    if (res == -1) {
         cpp11::stop("This should not happen. Please open an issue here:\n\t"
                     "https://github.com/jwood000/RcppAlgos/issues");
+    } else if (res == 1 && part.count == 0) {
+        part.ptype = PartitionType::NoSolution;
     }
 }

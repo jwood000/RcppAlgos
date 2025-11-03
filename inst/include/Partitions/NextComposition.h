@@ -15,5 +15,5 @@ void NextCompositionDistinct(
 
 int CompsDistinctSetup(
     const std::vector<int> &z, std::vector<int> &complement,
-    int &tar, int &idx_1, int &idx_2, int &nz, int &myMax
+    int &tar, int &idx_1, int &idx_2, int &myMax
 );

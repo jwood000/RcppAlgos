@@ -4,7 +4,7 @@
 
 std::vector<int> PrepareComplement(std::vector<int> z, int target) {
 
-    const int z_size = z.size();
+    const int z_size = z.size() - std::count(z.cbegin(), z.cend(), 0);
 
     // Here we are trying to find the maximum possible value of z. We do this
     // by assuming that the first n - 1 elements are minimized (n is the size
@@ -186,7 +186,7 @@ int NextDistinctBlock(const std::vector<int> &v, std::vector<int> &idx,
 
 int CompsDistinctSetup(
     const std::vector<int> &z, std::vector<int> &complement,
-    int &tar, int &idx_1, int &idx_2, int &nz, int &myMax
+    int &tar, int &idx_1, int &idx_2, int &myMax
 ) {
 
     tar = std::accumulate(z.cbegin(), z.cend(), 0);
@@ -224,9 +224,7 @@ int CompsDistinctSetup(
             complement.size() - 1;
     }
 
-    nz    = std::count(z.cbegin(), z.cend(), 0);
     myMax = GetMax(z, complement);
-
     return 1;
 }
 

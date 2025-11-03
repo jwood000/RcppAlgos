@@ -3,7 +3,7 @@
 void Partitions::SetPartValues() {
 
     if (part.isComp && part.isDist) {
-        CompsDistinctSetup(z, rpsCnt, tarDiff, edge, boundary, nz, pivot);
+        CompsDistinctSetup(z, rpsCnt, tarDiff, edge, boundary, pivot);
     } else if (part.ptype == PartitionType::Multiset) {
         PrepareMultisetPart(
             rpsCnt, z, boundary, pivot, edge, lastCol, lastElem
@@ -87,6 +87,7 @@ Partitions::Partitions(
              RtarIntVals, RstartZ, RmainFun, RFunTest, RfunDbl, Rctype,
              RstrtLen, Rcap, RKeepRes, RnumUnknown, RcnstrtRows,
              RcnstrtRowsMpz),
+    nz(std::count(z.cbegin(), z.cend(), 0)),
     lastCol(part.width - 1), lastElem(n - 1),
     nextParts(GetNextPartsPtr(part.ptype,ctype)),
     nthParts((part.ptype == PartitionType::LengthOne ||
