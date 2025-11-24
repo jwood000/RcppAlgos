@@ -120,68 +120,210 @@ int FindBacktrackIndex(const std::vector<int>& idx, int k, int g) {
     return k;
 }
 
+/* ---------------------------------------------------------------------------
+ Overview of How These Routines Work Together
+ ---------------------------------------------------------------------------
+
+ These routines cooperate to find pairs of indices in the sorted vector "v"
+ (the complement) whose values sum to a required target. For m = 2 this
+ means finding distinct indices i < j with v[i] + v[j] == target.
+
+ ---------------------------------------------------------------------------
+ 1. NextDistinctBlock(v, idx, tailSum, target, m)
+ ---------------------------------------------------------------------------
+
+ Purpose:
+ Find the FIRST valid m-tuple of indices whose values sum to "target".
+ The search is lexicographic, so for m = 2 this yields the pair with the
+ smallest possible idx[0], and among those the smallest idx[1].
+
+ Behavior:
+ * Initializes idx to {0,1,...}, the smallest lexicographic combination.
+ * Iteratively advances indices without ever decreasing them.
+ * Uses pruning (via tailSum and partial sums) to eliminate branches that
+ cannot contain ANY valid solution.
+ * Because pruning only removes globally impossible branches, earlier
+ possible pairs are never skipped.  Thus the first discovered solution
+ is the lexicographically smallest valid one.
+ * Returns 1 with idx filled on success, or 0/-1/-2 when impossible.
+
+ Role:
+ "Find the lexicographically earliest valid pair, or report none."
+
+ ---------------------------------------------------------------------------
+ 2. NextDistinctBlock2(v, idx, target, maxLast)
+ ---------------------------------------------------------------------------
+
+ Purpose:
+ Search for the FIRST valid pair satisfying BOTH:
+ - v[idx[0]] + v[idx[1]] == target
+ - v[idx[k]] < maxLast for both k = 0,1.
+
+ Behavior:
+ * Scans idx[0] upward and performs lower_bound on the remaining tail.
+ * Returns the earliest lexicographic pair satisfying the maxLast filter.
+
+ Role:
+ "Find the earliest valid pair under the added maxLast constraint."
+
+ ---------------------------------------------------------------------------
+ 3. CompsDistinctSetup(...)
+ ---------------------------------------------------------------------------
+
+ Purpose:
+ High-level driver that coordinates all steps needed to choose the pair
+ that interacts correctly with the current composition z.
+
+ Workflow:
+ 1. Build complement of z and compute lastTwo = z[last] + z[last-1].
+ 2. Call NextDistinctBlock to obtain the FIRST possible pair.  If none
+ exists, report idx_1 = -1 so the caller can restructure z.
+ 3. If a solution exists, call NextDistinctBlock2 to find the FIRST pair
+ that also satisfies v[i] < z.back().  If found, use it.
+ 4. If the restricted search fails, fall back to a manual sweep:
+ - Begin at the first v[idx_1] > z.back().
+ - For each idx_1, try idx_2 from 0 upward.
+ - Because a solution is guaranteed, this finds the FIRST pair with
+ idx_1 > z.back().
+ 5. Compute myMax for later steps.
+
+ Role:
+ "Select the correct next complementary pair, preferring restricted
+ lexicographically minimal pairs when possible."
+ --------------------------------------------------------------------------- */
+
+int NextDistinctBlock2(
+    const std::vector<int> &v, std::vector<int> &idx, int target, int maxLast
+) {
+
+    const int n = v.size();
+    if (n < 2) return 0;
+
+    // Quick bounding check: smallest possible 2-sum is too large
+    const int minSum = v[0] + v[1];
+    if (minSum > target) return -1;
+
+    // Largest possible 2-sum is too small → no solution
+    const int maxSum = v[n - 2] + v[n - 1];
+    if (maxSum < target) return -2;
+
+    int i = 0;
+    // For each v[i], we search for v[j] = target - v[i]
+    int partial = target - v.front();
+
+    // Scan i until v[i] hits the cutoff maxLast
+    while (i < (n - 1) && v[i] < maxLast) {
+        // Search in the strictly larger index range [i+1, end)
+        auto lower = std::lower_bound(
+            v.cbegin() + (i + 1), v.cend(), partial
+        );
+
+        // Check if we found exact match and the second term respects < maxLast
+        if (lower != v.cend() && *lower == partial && partial < maxLast) {
+            idx[0] = i;
+            idx[1] = std::distance(v.cbegin(), lower);
+            return 1; // Found valid pair
+        }
+
+        // Otherwise advance i and recompute the needed complement
+        ++i;
+        partial = target - v[i];
+    }
+
+    return 0; // No valid pair satisfying the maxLast constraint
+}
+
 int NextDistinctBlock(const std::vector<int> &v, std::vector<int> &idx,
                       std::vector<int> &tailSum, int target, int m) {
 
     int n = v.size();
+    // Largest m-sum available from v (rightmost m values)
     const int testMax = std::accumulate(v.cend() - m, v.cend(), 0);
 
-    // The length is too small
+    // If even the largest m elements can't reach target → impossible
     if (testMax < target) {
         return -2;
     }
 
+    // Smallest possible m-sum from v (first m values)
     const int testMin = std::accumulate(v.cbegin(), v.cbegin() + m, 0);
 
-    // The length is too long
+    // If minimum m-sum exceeds target → impossible
     if (testMin > target) {
         return -1;
     }
 
+    // Initialize idx = {0,1,...,m-1}
     std::iota(idx.begin(), idx.end(), 0);
+
+    // Sum of v[idx[0]] + ... + v[idx[m-1]]
     int tempSum = GetSum(v, idx, m);
+
+    // partial = required value for the last index position
     int partial = target - (tempSum - v[idx.back()]);
 
-    // This is the cumulative sum of the tail of v. It is used for tail
-    // pruning to cut off impossible branches.
+    // tailSum[k] = sum of the last (k+1) values of v
+    // Used to prune: if even the largest possible tail can't reach target
     tailSum.resize(m);
     std::partial_sum(v.crbegin(), v.crbegin() + m, tailSum.begin());
 
+    // Main search loop: increment idx lexicographically until sum == target
     while (tempSum != target) {
+
+        // Try to place the last index via binary search
         auto lower = std::lower_bound(
             v.cbegin() + idx.back(), v.cend(), partial
         );
 
         if (lower != v.cend() && *lower == partial) {
+            // Found correct last component → full solution
             idx.back() = std::distance(v.cbegin(), lower);
             return 1;
         }
 
+        // Need to backtrack to an earlier index position k
+        // Find the earliest index we can increment
         int k = FindBacktrackIndex(idx, m - 2, n - 2);
+
         bool impossible = true;
+
+        // front_partial = sum of v[idx[0..k]]
         int front_partial = GetSum(v, idx, k);
 
+        // Attempt to find a valid backtracking point
         for (; impossible && k >= 0; --k) {
+
+            // tempSum is the total constructed using:
+            // - fixed prefix idx[0..k]
+            // - the next (m - k) values chosen as the smallest possible after idx[k]
             tempSum = front_partial +
                 RangeSum(v, idx[k] + 1, idx[k] + m - k + 1);
 
+            // Pruning conditions:
+            // 1) tempSum > target → overshoot
+            // 2) even using the largest tail (tailSum) we cannot reach target
             impossible = (tempSum > target) ||
                 ((front_partial + tailSum[m - k - 1]) < target);
 
+            // Prepare next prefix sum for k-1
             if (k > 0) {
                 front_partial -= v[idx[k - 1]];
             }
         }
 
         if (impossible) {
+            // No valid backtracking point → no solution in this block
             return 0;
         }
 
+        // Rebuild the tail of the index vector lexicographically
         std::iota(idx.begin() + k + 1, idx.end(), idx[k + 1] + 1);
+
+        // Recompute new required last value
         partial = target - (tempSum - v[idx.back()]);
     }
 
-    return 1;
+    return 1; // Found exact m-sum
 }
 
 int CompsDistinctSetup(
@@ -189,32 +331,76 @@ int CompsDistinctSetup(
     int &tar, int &idx_1, int &idx_2, int &myMax
 ) {
 
+    // tar = total sum of z
     tar = std::accumulate(z.cbegin(), z.cend(), 0);
+
+    // Build complement = {0..tar} \ z, sorted
     complement = PrepareComplement(z, tar);
 
     if (complement.empty()) {
         return 0;
     }
 
+    // Sum of last two elements of z; target for 2-sum search
     int lastTwo = std::accumulate(z.rbegin(), z.rbegin() + 2, 0);
+
     std::vector<int> idx(2);
     std::vector<int> tailSum;
 
-    int init_sol = NextDistinctBlock(
+    // First: check if ANY 2-sum exists in complement equal to lastTwo
+    int sol_exist = NextDistinctBlock(
         complement, idx, tailSum, lastTwo, 2
     );
 
-    if (init_sol == 1) {
-        idx_1 = idx.front();
-        idx_2 = idx.back();
+    if (sol_exist == 1) {
+
+        // Try finding the *best* solution — one respecting maxLast = z.back()
+        int best_sol = NextDistinctBlock2(
+            complement, idx, lastTwo, z.back()
+        );
+
+        if (best_sol == 1) {
+            // Found an optimal pair directly
+            idx_1 = idx.front();
+            idx_2 = idx.back();
+        } else {
+            // Need fallback: manually find first idx1 > z.back()
+
+            auto it = std::upper_bound(
+                complement.cbegin(), complement.cend(), z.back()
+            );
+
+            idx_1 = std::distance(complement.cbegin(), it);
+            idx_2 = 0;
+
+            int testSum = complement[idx_1] + complement[idx_2];
+
+            // Monotone two-pointer search with guaranteed existence of solution
+            while (testSum != lastTwo) {
+
+                // Increase idx_2 while sum is too small
+                while (testSum <= lastTwo && idx_2 < idx_1) {
+                    ++idx_2;
+                    testSum = complement[idx_1] + complement[idx_2];
+                }
+
+                // If not solved, advance idx_1 and reset idx_2
+                if (testSum != lastTwo) {
+                    ++idx_1;
+                    idx_2 = 0;
+                    testSum = complement[idx_1] + complement[idx_2];
+                }
+            }
+        }
+
     } else {
-        // This means that there are no further solutions in
-        // complement. The next iteration we simply will swap the
-        // last two elements of z. By doing this, we will also
-        // ensure that z[lastCol - 1] will be equal to myMax which
-        // will force a new block calculation.
+        // No further 2-sum solutions exist in complement.
+        // Next iteration will swap last two entries of z,
+        // causing a new block to be computed on next call.
+
         idx_1 = -1;
 
+        // For idx_2 choose the largest complement value < z.back()
         auto it_last = std::lower_bound(
             complement.cbegin(), complement.cend(), z.back()
         );
@@ -224,6 +410,7 @@ int CompsDistinctSetup(
             complement.size() - 1;
     }
 
+    // myMax = maximum allowed value for next step (z-dependent)
     myMax = GetMax(z, complement);
     return 1;
 }
@@ -423,8 +610,9 @@ void NextCompositionDistinct(
                 // Ensure that the current complement affords new solutions
                 idx.resize(2);
                 int lastTwo = z[lastCol - 1] + z[lastCol];
-                int res2 = NextDistinctBlock(
-                    complement, idx, tailSum, lastTwo, 2
+
+                int res2 = NextDistinctBlock2(
+                    complement, idx, lastTwo, z.back()
                 );
 
                 if (res2 == 1) {
