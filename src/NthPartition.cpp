@@ -137,7 +137,7 @@ std::vector<int> nthCompsDistinctMZ(int n, int m, int cap, int k,
 
     double temp = CountCompsDistinctLen(n, k);
 
-    while (dblIdx > temp && k < m) {
+    while (dblIdx >= temp && k < m) {
         dblIdx -= temp;
         ++k;
         temp = CountCompsDistinctLen(n, k);
@@ -502,7 +502,7 @@ std::vector<int> nthCompsDistinctMZGmp(
     mpz_class index(mpzIdx);
     Counter->GetCount(temp, n, k);
 
-    while (cmp(index, temp) > 0 && k < m) {
+    while (cmp(index, temp) >= 0 && k < m) {
         index -= temp;
         ++k;
         Counter->GetCount(temp, n, k);
