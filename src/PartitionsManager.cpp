@@ -10,8 +10,10 @@
 #include <numeric>
 #include "RMatrix.h"
 
-int PartsStdManager(int* mat, std::vector<int> &z, int width, int lastElem,
-                    int lastCol, int nRows, PartitionType ptype) {
+int PartsStdManager(
+    int* mat, std::vector<int> &z, int width, int lastElem,
+    int lastCol, int nRows, PartitionType ptype
+) {
 
     switch (ptype) {
         case PartitionType::NoSolution:
@@ -61,8 +63,10 @@ int PartsStdManager(int* mat, std::vector<int> &z, int width, int lastElem,
             // ----- CompsDistinct -----
         case PartitionType::CmpDstctNoZero:
         case PartitionType::CmpDstctZNotWk:
+            return CompsDistinct(mat, z, width, nRows, false);
+
         case PartitionType::CmpDstctMZWeak:
-            return CompsDistinct(mat, z, width, nRows);
+            return CompsDistinct(mat, z, width, nRows, true);
 
         default:
             cpp11::stop("Case not supported");
@@ -133,8 +137,13 @@ int PartsGenManager(T* mat, const std::vector<T> &v, std::vector<int> &z,
             // ----- CompsGenDistinct -----
         case PartitionType::CmpDstctNoZero:
         case PartitionType::CmpDstctZNotWk:
+        case PartitionType::CmpDstctCapped:
+        case PartitionType::CmpDstCapMZNotWk:
+            return CompsGenDistinct(mat, v, z, width, nRows, false);
+
         case PartitionType::CmpDstctMZWeak:
-            return CompsGenDistinct(mat, v, z, width, nRows);
+        case PartitionType::CmpDstCapMZWeak:
+            return CompsGenDistinct(mat, v, z, width, nRows, true);
 
         default:
             cpp11::stop("Case not supported");
@@ -178,8 +187,8 @@ int PartsGenManager(std::vector<T> &partsVec, const std::vector<T> &v,
 }
 
 int PartsStdParallel(RcppParallel::RMatrix<int> &mat, std::vector<int> &z,
-                     int strt, int width, int lastElem, int lastCol,
-                     int nRows, PartitionType ptype) {
+                     int strt, int width, int lastElem, int lastCol, int nRows,
+                     PartitionType ptype) {
 
     switch (ptype) {
         case PartitionType::NoSolution:
@@ -210,8 +219,14 @@ int PartsStdParallel(RcppParallel::RMatrix<int> &mat, std::vector<int> &z,
             // ----- CompsDistinct -----
         case PartitionType::CmpDstctNoZero:
         case PartitionType::CmpDstctZNotWk:
+            return CompsDistinct(
+                mat, z, strt, width, nRows, false
+            );
+
         case PartitionType::CmpDstctMZWeak:
-            return CompsDistinct(mat, z, strt, width, nRows);
+            return CompsDistinct(
+                mat, z, strt, width, nRows, true
+            );
 
         default:
             cpp11::stop("Case not supported");
@@ -220,9 +235,9 @@ int PartsStdParallel(RcppParallel::RMatrix<int> &mat, std::vector<int> &z,
 
 template <typename T>
 int PartsGenParallel(RcppParallel::RMatrix<T> &mat,
-                     const std::vector<T> &v, std::vector<int> &z,
-                     int strt, int width, int lastElem, int lastCol,
-                     int nRows, PartitionType ptype) {
+                     const std::vector<T> &v, std::vector<int> &z, int strt,
+                     int width, int lastElem, int lastCol, int nRows,
+                     PartitionType ptype) {
 
     // DstctStdAll, DstctOneZero, RepStdAll, RepShort and CompRepWeak
     // shouldn't happen just as in the non-Parallel case. In any mapped case
@@ -266,8 +281,13 @@ int PartsGenParallel(RcppParallel::RMatrix<T> &mat,
             // ----- CompsGenDistinct -----
         case PartitionType::CmpDstctNoZero:
         case PartitionType::CmpDstctZNotWk:
+        case PartitionType::CmpDstctCapped:
+        case PartitionType::CmpDstCapMZNotWk:
+            return CompsGenDistinct(mat, v, z, strt, width, nRows, false);
+
         case PartitionType::CmpDstctMZWeak:
-            return CompsGenDistinct(mat, v, z, strt, width, nRows);
+        case PartitionType::CmpDstCapMZWeak:
+            return CompsGenDistinct(mat, v, z, strt, width, nRows, true);
 
         default:
             cpp11::stop("Case not supported");
@@ -288,9 +308,11 @@ template int PartsGenManager(std::vector<double>&, const std::vector<double>&,
                               const std::vector<int>&, std::vector<int>&,
                               int, int, PartitionType);
 
-template int PartsGenParallel(RcppParallel::RMatrix<int>&,
-                              const std::vector<int>&, std::vector<int>&,
-                              int, int, int, int, int, PartitionType);
-template int PartsGenParallel(RcppParallel::RMatrix<double>&,
-                              const std::vector<double>&, std::vector<int>&,
-                              int, int, int, int, int, PartitionType);
+template int PartsGenParallel(
+    RcppParallel::RMatrix<int>&, const std::vector<int>&,
+    std::vector<int>&, int, int, int, int, int, PartitionType
+);
+template int PartsGenParallel(
+    RcppParallel::RMatrix<double>&, const std::vector<double>&,
+    std::vector<int>&, int, int, int, int, int, PartitionType
+);
