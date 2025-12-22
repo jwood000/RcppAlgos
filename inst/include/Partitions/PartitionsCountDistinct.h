@@ -48,3 +48,7 @@ double CountCompsDistinctMultiZero(
 double CountCompsDistinctMZWeak(
     int n, int m, const std::vector<int> &allowed, int strtLen
 );
+
+double CountCompsDistinctRstrctdMZ(
+    int n, int m, const std::vector<int> &allowed, int strtLen
+);

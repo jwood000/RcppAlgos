@@ -55,3 +55,8 @@ void CountCompsDistinctMZWeak(
     mpz_class &res, std::vector<mpz_class> &p1, std::vector<mpz_class> &p2,
     int n, int m, const std::vector<int> &allowed, int strtLen
 );
+
+void CountCompsDistinctRstrctdMZ(
+    mpz_class &res, std::vector<std::vector<mpz_class>> &p2d,
+    int n, int m, const std::vector<int> &allowed, int strtLen
+);

@@ -47,6 +47,12 @@ std::unique_ptr<CountClass> MakeCount(PartitionType ptype) {
             return std::make_unique<CompsDistLenMZ>();
         } case PartitionType::CmpDstctMZWeak: {
             return std::make_unique<CompsDistLenMZWeak>();
+        } case PartitionType::CmpDstctCapped: {
+            return std::make_unique<PermDstnctRstrctd>();
+        } case PartitionType::CmpDstCapMZWeak: {
+            return std::make_unique<PermDstnctRstrctdMZ>();
+        } case PartitionType::CmpDstCapMZNotWk: {
+            return std::make_unique<CompsDstnctRstrctdMZ>();
         } case PartitionType::PrmRepPart: {
             return std::make_unique<CompsRepLen>();
         } case PartitionType::PrmRepPartNoZ: {
@@ -253,6 +259,22 @@ void CompsDistLenMZWeak::GetCount(
     CountCompsDistinctMZWeak(res, p1, p2, n, m, allowed, strtLen);
 }
 
+void CompsDstnctRstrctdMZ::GetCount(
+    mpz_class &res, int n, int m, const std::vector<int> &allowed,
+    int strtLen, bool bLiteral
+) {
+
+    if ((cmp(res, 0) == 0 || cmp(res, Significand53) > 0) && bLiteral) {
+        CountCompsDistinctRstrctdMZ(res, p2d, n, m, allowed, strtLen);
+    } else if (cmp(res, 0) == 0 || cmp(res, Significand53) > 0) {
+        CountCompDistLenRstrctd(res, p2d, n, m, allowed);
+    } else if (bLiteral) {
+        res = CountCompsDistinctRstrctdMZ(n, m, allowed, strtLen);
+    } else {
+        res = CountCompDistLenRstrctd(n, m, allowed);
+    }
+}
+
 double DistinctAll::GetCount(
     int n, int m, const std::vector<int> &allowed, int strtLen
 ) {
@@ -343,6 +365,12 @@ double CompsDistLenMZWeak::GetCount(
     return CountCompsDistinctMZWeak(n, m, allowed, strtLen);
 }
 
+double CompsDstnctRstrctdMZ::GetCount(
+    int n, int m, const std::vector<int> &allowed, int strtLen
+) {
+    return CountCompsDistinctRstrctdMZ(n, m, allowed, strtLen);
+}
+
 bool IsTrueMultiset(PartitionType ptype) {
 
     switch(ptype) {
@@ -365,68 +393,49 @@ void CountClass::SetArrSize(PartitionType ptype, int n, int m) {
     size  = 0;
 
     switch (ptype) {
-        case PartitionType::RepNoZero: {
+        case PartitionType::RepNoZero:
+        case PartitionType::RepShort: {
             const int limit = std::min(n - m, m);
             CheckMultIsInt(2, m);
             CheckMultIsInt(2, limit);
             n = (n < 2 * m) ? 2 * limit : n;
             size = n + 1;
-            break;
-        } case PartitionType::RepShort: {
-            const int limit = std::min(n - m, m);
-            CheckMultIsInt(2, m);
-            CheckMultIsInt(2, limit);
-            n = (n < 2 * m) ? 2 * limit : n;
+            return;
+        }
+
+        case PartitionType::DstctMultiZero:
+        case PartitionType::DstctOneZero:
+        case PartitionType::DstctNoZero: {
+            CheckMultIsInt(1, n + 1);
             size = n + 1;
-            break;
-        } case PartitionType::RepCapped: {
+            return;
+        }
+
+        case PartitionType::RepCapped:
+        case PartitionType::DstctCapped:
+        case PartitionType::DstctCappedMZ:
+        case PartitionType::CmpDstctCapped:
+        case PartitionType::CmpDstCapMZWeak:
+        case PartitionType::CmpDstCapMZNotWk:
+        case PartitionType::PrmDstPrtCap:
+        case PartitionType::PrmDstPrtCapMZ: {
             size  = n + 1;
             width = m + 1;
-            break;
-        } case PartitionType::DstctMultiZero: {
+            return;
+        }
+
+        case PartitionType::CmpDstctNoZero:
+        case PartitionType::CmpDstctMZWeak:
+        case PartitionType::CmpDstctZNotWk: {
             CheckMultIsInt(1, n + 1);
             size = n + 1;
-            break;
-        } case PartitionType::DstctOneZero: {
-            CheckMultIsInt(1, n + 1);
-            size = n + 1;
-            break;
-        } case PartitionType::DstctNoZero: {
-            CheckMultIsInt(1, n + 1);
-            size = n + 1;
-            break;
-        } case PartitionType::DstctCapped: {
-            size  = n + 1;
-            width = m + 1;
-            break;
-        } case PartitionType::DstctCappedMZ: {
-            size  = n + 1;
-            width = m + 1;
-            break;
-        } case PartitionType::PrmDstPrtCap: {
-            size  = n + 1;
-            width = m + 1;
-            break;
-        } case PartitionType::PrmDstPrtCapMZ: {
-            size  = n + 1;
-            width = m + 1;
-            break;
-        } case PartitionType::CmpDstctNoZero: {
-            CheckMultIsInt(1, n + 1);
-            size = n + 1;
-            break;
-        } case PartitionType::CmpDstctMZWeak: {
-            CheckMultIsInt(1, n + 1);
-            size = n + 1;
-            break;
-        } case PartitionType::CmpDstctZNotWk: {
-            CheckMultIsInt(1, n + 1);
-            size = n + 1;
-            break;
-        } default: {
+            return;
+        }
+
+        default: {
             width = 0;
             size  = 0;
-            break;
+            return;
         }
     }
 }
