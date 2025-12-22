@@ -139,58 +139,65 @@
 //
 // ************************** Definitions w/ Examples *************************
 //
-// RepStdAll      : Get all partitions. E.g. tar = 20;
+// RepStdAll       : Get all partitions. E.g. tar = 20;
 //                   startZ = c(0, 0, 0, 0, 20): CountPartRep(20)
 //
-// RepNoZero      : E.g. tar = 20; startZ = c(1, 1, 1, 1, 15):
+// RepNoZero       : E.g. tar = 20; startZ = c(1, 1, 1, 1, 15):
 //                   CountPartRepLen(20, 5)
 //
-// RepShort       : Case where width isn't maximized E.g. tar = 20;
+// RepShort        : Case where width isn't maximized E.g. tar = 20;
 //                   startZ = c(0, 0, 20)
 //
-// RepCapped      : E.g. tar = 20 of width = 3 from the integers 3:12:
+// RepCapped       : E.g. tar = 20 of width = 3 from the integers 3:12:
 //                   CountPartRepCap(14, 3, 10)
 //
-// DstctStdAll    : Get all distinct partitions (0 can repeat) E.g. tar = 20;
+// DstctStdAll     : Get all distinct partitions (0 can repeat) E.g. tar = 20;
 //                   startZ = c(0, 0, 0, 0, 20)
 //
-// DstctMultiZero : Case where startZ doesn't maximize 0's. E.g.
+// DstctMultiZero  : Case where startZ doesn't maximize 0's. E.g.
 //                   tar = 20 startZ = c(0, 0, 1, 2, 17)
 //
-// DstctOneZero   : Similar to above but can occur when IsMult = FALSE.
+// DstctOneZero    : Similar to above but can occur when IsMult = FALSE.
 //                   E.g. tar = 20 startZ = c(0, 1, 2, 3, 14)
 //
-// DstctNoZero    : E.g. tar = 20 startZ = c(1, 2, 3, 4, 10)
+// DstctNoZero     : E.g. tar = 20 startZ = c(1, 2, 3, 4, 10)
 //
-// DstctCapped    : E.g. tar = 20, m = 4, from 1:9 gives startZ = c(1, 2, 8, 9)
+// DstctCapped     : E.g. tar = 20, m = 4, from 1:9 gives startZ = c(1, 2, 8, 9)
 //
-// DstctCappedMZ. : E.g. tar = 20, m = 4, from 0:11, freqs = c(2, rep(1, 11))
+// DstctCappedMZ   : E.g. tar = 20, m = 4, from 0:11, freqs = c(2, rep(1, 11))
 //                   gives startZ = c(0, 0, 9, 11)
 //
-// LengthOne      : Any partition/composition when m = 1
+// LengthOne       : Any partition/composition when m = 1
 //
-// Multiset       : Partitions of non-trivial multisets. Non-trivial here means
+// Multiset        : Partitions of non-trivial multisets. Non-trivial here means
 //                   elements other than 0 have multiplicity > 1
 //
-// CoarseGrained  : This is equal to ConstraintType::PartitionEsque
+// CoarseGrained   : This is equal to ConstraintType::PartitionEsque
 //
-// CompRepNoZero  : These are standard compositions with repetition.
+// CompRepNoZero   : These are standard compositions with repetition.
 //
-// CompRepWeak    : Same as above but we allow terms of the seq to be zero.
+// CompRepWeak     : Same as above but we allow terms of the seq to be zero.
 //
-// CmpRpZroNotWk  : This one is a little tricky. We have compositions, however
+// CmpRpZroNotWk   : This one is a little tricky. We have compositions, however
 //                   we only want to see permutations of non-zero values.
 //
-// CmpDstctNoZero : Standard compositions with distinct parts:
+// CmpDstctNoZero  : Standard compositions with distinct parts:
 //                   E.g. tar = 20; m = 5; startZ = c(1, 2, 3, 4, 10)
 //
-// CmpDstctZNotWk : Standard compositions with distinct parts and one or more
+// CmpDstctZNotWk  : Standard compositions with distinct parts and one or more
 //                   zeros. Only non-zero values are considered when
 //                   determining the next iteration.
 //
-// CmpDstctMZWeak : Same as above however we allow terms to be zero.
+// CmpDstctMZWeak  : Same as above however we allow terms to be zero.
 //
-// CompMultiset   : Compositions of non-trivial multisets. Non-trivial here
+// CmpDstctCapped  : E.g. tar = 20, m = 4, from 1:9 gives startZ = c(1, 2, 8, 9)
+//
+// CmpDstCapMZNotWk: E.g. tar = 20, m = 4, from 0:11, freqs = c(2, rep(1, 11))
+//                   gives startZ = c(0, 0, 9, 11)
+//
+// CmpDstCapMZWeak : Same as above, but we allow terms of the seq to be zero.
+//
+// CompMultiset    : Compositions of non-trivial multisets. Non-trivial here
 //                   means elements other than 0 have multiplicity > 1
 //
 // The cases below are technically compositions, however we don't have a
@@ -207,63 +214,66 @@
 //
 // Also note that all of the cases below will stem from permuteCount/General
 //
-// PrmRepPartNoZ  : Permutations of partitions with repetition & no zeros
-// PrmRepPart     : Permutations of partitions with repetition
-// PrmRepCapped   : Perms of partitions with repetition & restricted parts
-// PrmDstPartNoZ  : Permutations of partitions with distinct parts & no zeros
-// PrmDstPrtOneZ  : Permutations of partitions with distinct parts & one zero
-// PrmDstPartMZ   : Permutations of partitions with distinct parts & more
+// PrmRepPartNoZ   : Permutations of partitions with repetition & no zeros
+// PrmRepPart      : Permutations of partitions with repetition
+// PrmRepCapped    : Perms of partitions with repetition & restricted parts
+// PrmDstPartNoZ   : Permutations of partitions with distinct parts & no zeros
+// PrmDstPrtOneZ   : Permutations of partitions with distinct parts & one zero
+// PrmDstPartMZ    : Permutations of partitions with distinct parts & more
 //                   than one zero
 //
-// PrmDstPrtCap   : Permutations of partitions with distinct & restricted parts
-// PrmDstPrtCapMZ : Permutations of partitions with distinct & restricted parts
+// PrmDstPrtCap    : Permutations of partitions with distinct & restricted parts
+// PrmDstPrtCapMZ  : Permutations of partitions with distinct & restricted parts
 //                   and more than one zero
 //
-// PrmMultiset    : Permutations of partitions of non-trivial multisets.
+// PrmMultiset     : Permutations of partitions of non-trivial multisets.
 //                   Non-trivial here means elements other than 0 have
 //                   multiplicity > 1
 //
-// NotMapped      : These are partitions, however they are not mapped
-// NoSolution     : This passes the CheckPartition function, but there is no
+// NotMapped       : These are partitions, however they are not mapped
+// NoSolution      : This passes the CheckPartition function, but there is no
 //                   solution given the target, width, or constraints
-// NotPartition   : Does not pass the CheckPartition function
+// NotPartition    : Does not pass the CheckPartition function
 //
 // ****************************************************************************
 
 enum class PartitionType {
-    RepStdAll      = 0,
-    RepNoZero      = 1,
-    RepShort       = 2,
-    RepCapped      = 3,
-    DstctStdAll    = 4,
-    DstctMultiZero = 5,
-    DstctOneZero   = 6,
-    DstctNoZero    = 7,
-    DstctCapped    = 8,
-    DstctCappedMZ  = 9,
-    LengthOne      = 10,
-    Multiset       = 11,
-    CoarseGrained  = 12,
-    CompRepNoZero  = 13,
-    CompRepWeak    = 14,
-    CmpRpZroNotWk  = 15,
-    CmpDstctNoZero = 16,
-    CmpDstctZNotWk = 17,
-    CmpDstctMZWeak = 18,
-    CompMultiset   = 19,
-    PrmRepPartNoZ  = 20,
-    PrmRepPart     = 21,
-    PrmRepCapped   = 22,
-    PrmDstPartNoZ  = 23,
-    PrmDstPrtOneZ  = 24,
-    PrmDstPartMZ   = 25,
-    PrmDstPrtCap   = 26,
-    PrmDstPrtCapMZ = 27,
-    PrmMultiset    = 28,
-    NotMapped      = 29,
-    NoSolution     = 30,
-    NotPartition   = 31,
-    NumTypes       = 32
+    RepStdAll        = 0,
+    RepNoZero        = 1,
+    RepShort         = 2,
+    RepCapped        = 3,
+    DstctStdAll      = 4,
+    DstctMultiZero   = 5,
+    DstctOneZero     = 6,
+    DstctNoZero      = 7,
+    DstctCapped      = 8,
+    DstctCappedMZ    = 9,
+    LengthOne        = 10,
+    Multiset         = 11,
+    CoarseGrained    = 12,
+    CompRepNoZero    = 13,
+    CompRepWeak      = 14,
+    CmpRpZroNotWk    = 15,
+    CmpDstctNoZero   = 16,
+    CmpDstctZNotWk   = 17,
+    CmpDstctMZWeak   = 18,
+    CmpDstctCapped   = 19,
+    CmpDstCapMZNotWk = 20,
+    CmpDstCapMZWeak  = 21,
+    CompMultiset     = 22,
+    PrmRepPartNoZ    = 23,
+    PrmRepPart       = 24,
+    PrmRepCapped     = 25,
+    PrmDstPartNoZ    = 26,
+    PrmDstPrtOneZ    = 27,
+    PrmDstPartMZ     = 28,
+    PrmDstPrtCap     = 29,
+    PrmDstPrtCapMZ   = 30,
+    PrmMultiset      = 31,
+    NotMapped        = 32,
+    NoSolution       = 33,
+    NotPartition     = 34,
+    NumTypes         = 35
 };
 
 constexpr const char* PTypeNames[] = {
@@ -286,6 +296,9 @@ constexpr const char* PTypeNames[] = {
     "CmpDstctNoZero",
     "CmpDstctZNotWk",
     "CmpDstctMZWeak",
+    "CmpDstctCapped",
+    "CmpDstCapMZNotWk",
+    "CmpDstCapMZWeak",
     "CompMultiset",
     "PrmRepPartNoZ",
     "PrmRepPart",
@@ -308,10 +321,12 @@ const std::array<PartitionType, 5> NoCountAlgoPTypeArr{{
     PartitionType::CoarseGrained
 }};
 
-const std::array<PartitionType, 6> CappedPTypeArr{{
+const std::array<PartitionType, 9> CappedPTypeArr{{
     PartitionType::RepCapped, PartitionType::DstctCapped,
     PartitionType::DstctCappedMZ, PartitionType::PrmRepCapped,
-    PartitionType::PrmDstPrtCap, PartitionType::PrmDstPrtCapMZ
+    PartitionType::PrmDstPrtCap, PartitionType::PrmDstPrtCapMZ,
+    PartitionType::CmpDstctCapped, PartitionType::CmpDstCapMZWeak,
+    PartitionType::CmpDstCapMZNotWk
 }};
 
 struct PartDesign {
@@ -353,6 +368,7 @@ struct PartDesign {
                               // however after mapping, we don't have any
                               // zeros. E.g. tar = 20; startZ = c(0, 0, 0, 20);
                               // repetition = TRUE -->> mapTar = 24
+
     bool numUnknown = true;
     std::vector<int> startZ;
     std::int64_t cap = 0;
