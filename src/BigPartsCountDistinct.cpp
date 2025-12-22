@@ -203,12 +203,15 @@ void CountPartsPermDistinctRstrctdMZ(
         res = 0;
         mpz_class partsCnt = 0;
         mpz_class permsCnt = 0;
-        NumPermsNoRepGmp(permsCnt, strtLen, strtLen);
+
+        std::vector<int> v(m);
+        std::iota(v.begin(), v.begin() + strtLen, 1);
 
         for (int i = strtLen; i <= m; ++i) {
+            v[i - 1] = i;
+            NumPermsWithRepGmp(permsCnt, v);
             CountPartsDistLenRstrctd(partsCnt, p2d, n, i, allowed);
             res += (permsCnt * partsCnt);
-            permsCnt *= (i + 1);
         }
     }
 }
@@ -272,6 +275,28 @@ void CountCompsDistinctMZWeak(
             CountPartsDistinctLen(partsCnt, p1, p2, n, i);
             res += (permsCnt * partsCnt);
             permsCnt *= (m - i);
+        }
+    }
+}
+
+void CountCompsDistinctRstrctdMZ(
+    mpz_class &res, std::vector<std::vector<mpz_class>> &p2d,
+    int n, int m, const std::vector<int> &allowed, int strtLen
+) {
+
+    if (strtLen == 0) {
+        // This means that z contains only zeros
+        res = 1;
+    } else {
+        res = 0;
+        mpz_class partsCnt = 0;
+        mpz_class permsCnt = 0;
+        NumPermsNoRepGmp(permsCnt, strtLen, strtLen);
+
+        for (int i = strtLen; i <= m; ++i) {
+            CountPartsDistLenRstrctd(partsCnt, p2d, n, i, allowed);
+            res += (permsCnt * partsCnt);
+            permsCnt *= (i + 1);
         }
     }
 }

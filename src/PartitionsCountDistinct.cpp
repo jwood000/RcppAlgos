@@ -249,3 +249,23 @@ double CountCompsDistinctMZWeak(
         return res;
     }
 }
+
+double CountCompsDistinctRstrctdMZ(
+    int n, int m, const std::vector<int> &allowed, int strtLen
+) {
+
+    if (strtLen == 0) {
+        // This means that z contains only zeros
+        return 1;
+    } else {
+        double res = 0;
+        double nPerm = NumPermsNoRep(strtLen, strtLen);
+
+        for (int i = strtLen; i <= m; ++i) {
+            res += CountPartsDistLenRstrctd(n, i, allowed) * nPerm;
+            nPerm *= (i + 1);
+        }
+
+        return res;
+    }
+}
