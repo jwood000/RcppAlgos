@@ -4,6 +4,7 @@
 #include "Partitions/NextComposition.h"
 #include "Partitions/PartitionsTypes.h"
 #include <algorithm>  // std::find
+#include <numeric>
 
 void NextDistinctPart(std::vector<int> &z, int &boundary,
                       int &edge, int &tarDiff, int lastCol) {
@@ -182,6 +183,7 @@ void PrepareMultisetPart(std::vector<int> &rpsCnt,
         GetPivotExtr(rpsCnt, z, lastCol, lastElem);
 
     e = b - 1;
+    e = b > 0 ? b - 1 : 0;
 
     while (EdgeIncrementPossible(rpsCnt, z, e, b)) {
         --e;
@@ -205,7 +207,7 @@ void PrepareRepPart(const std::vector<int> &z, int &boundary,
     // edge is the greatest index such that z[boundary] - z[edge] >= 2
     // This is the index that will be be used as a starting point
     // to determine the next combination that meets the criteria
-    edge = boundary - 1;
+    edge = boundary > 0 ? boundary - 1 : 0;
     int edgeTest = z[boundary] - 2;
 
     while (edge > 0 && edgeTest < z[edge]) {
@@ -234,7 +236,7 @@ void PrepareDistinctPart(const std::vector<int> &z, int &boundary,
     // edge is the greatest index such that when incremented
     // the result will be at least one less than its neighbor
     // even if its neighbor is decremented
-    edge = boundary - 1;
+    edge = boundary > 0 ? boundary - 1 : 0;
     tarDiff = 3;
 
     while (edge > 0 && (z[boundary] - z[edge]) < tarDiff) {
@@ -539,6 +541,61 @@ void NextDistinctComp(std::vector<int> &complement,
 
     std::vector<int> idx;
     std::vector<int> tailSum;
+    lastIdx = complement.size() - 1;
+
+    NextCompositionDistinct(
+        z, complement, idx, tailSum, i1, i2, myMax, lastCol, lastIdx, target
+    );
+}
+
+void NextDistMZNotWeakComp(std::vector<int> &complement,
+                           std::vector<int> &z, int &i1, int &i2, int &myMax,
+                           int &target, int lastCol, int lastIdx) {
+
+    std::vector<int> idx;
+    std::vector<int> tailSum;
+    lastIdx = complement.size() - 1;
+
+    int j = 0;
+
+    while (z[j] == 0) {
+        ++j;
+    }
+
+    int k = j + 1;
+    const int z_size = z.size();
+    const int non_zero_size = z_size - j;
+
+    int max_possval = target - static_cast<int>(
+        (non_zero_size * (non_zero_size - 1)) / 2
+    );
+
+    if (z[j] == max_possval) {
+        for (; k < z_size; ++k) {
+            if (z[k] > z[k - 1]) {
+                break;
+            }
+        }
+
+        // means descending
+        if (k == z_size) {
+            int z_max = *std::max_element(z.cbegin(), z.cend());
+            int cmp_max = *std::max_element(
+                complement.cbegin(), complement.cend()
+            );
+            int cap = std::max(cmp_max, z_max);
+
+            std::iota(z.begin() + j - 1, z.end(), 1);
+            z.back() = target - static_cast<int>(
+                (non_zero_size * (non_zero_size + 1)) / 2
+            );
+
+            CompsDistinctSetup(
+                z, complement, target, i1, i2, myMax, cap, false
+            );
+            return;
+        }
+    }
 
     NextCompositionDistinct(
         z, complement, idx, tailSum, i1, i2, myMax, lastCol, lastIdx, target
@@ -575,8 +632,10 @@ nextPartsPtr GetNextPartsPtr(PartitionType ptype, ConstraintType ctype) {
 
             case PartitionType::CmpDstctMZWeak:
             case PartitionType::CmpDstctNoZero:
-            case PartitionType::CmpDstctZNotWk:
                 return(nextPartsPtr(NextDistinctComp));
+
+            case PartitionType::CmpDstctZNotWk:
+                return(nextPartsPtr(NextDistMZNotWeakComp));
 
             case PartitionType::NoSolution:
                 return(nextPartsPtr(EmptyReturn));
@@ -612,8 +671,10 @@ nextPartsPtr GetNextPartsPtr(PartitionType ptype, ConstraintType ctype) {
 
             case PartitionType::CmpDstctMZWeak:
             case PartitionType::CmpDstctNoZero:
-            case PartitionType::CmpDstctZNotWk:
                 return(nextPartsPtr(NextDistinctComp));
+
+            case PartitionType::CmpDstctZNotWk:
+                return(nextPartsPtr(NextDistMZNotWeakComp));
 
             case PartitionType::NoSolution:
                 return(nextPartsPtr(EmptyReturn));
