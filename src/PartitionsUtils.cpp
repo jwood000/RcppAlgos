@@ -223,60 +223,42 @@ void SetStartPartitionZ(const std::vector<int> &Reps,
     part.startZ.assign(part.width, 0);
 
     switch (part.ptype) {
-        case PartitionType::LengthOne: {
+        case PartitionType::RepShort:
+        case PartitionType::LengthOne:
+        case PartitionType::RepStdAll:
+        case PartitionType::PrmRepPart:
+        case PartitionType::DstctStdAll:
+        case PartitionType::CompRepWeak:
+        case PartitionType::CmpRpZroNotWk:
             part.startZ.back() = part.target;
             break;
-        } case PartitionType::RepStdAll: {
-            part.startZ.back() = part.target;
-            break;
-        } case PartitionType::RepNoZero: {
+
+        case PartitionType::RepNoZero:
+        case PartitionType::CompRepNoZero:
+        case PartitionType::PrmRepPartNoZ:
             std::fill(part.startZ.begin(), part.startZ.end(), 1);
             part.startZ.back() = part.target - part.width + 1;
             break;
-        } case PartitionType::RepShort: {
-            part.startZ.back() = part.target;
-            break;
-        } case PartitionType::DstctStdAll: {
-            part.startZ.back() = part.target;
-            break;
-        } case PartitionType::DstctNoZero: {
+
+        case PartitionType::DstctNoZero:
+        case PartitionType::CmpDstctNoZero:
+        case PartitionType::PrmDstPartNoZ:
             std::iota(part.startZ.begin(), part.startZ.end(), 1);
             part.startZ.back() = part.target - (part.width *
                                             (part.width - 1)) / 2;
             break;
-        } case PartitionType::DstctOneZero: {
+
+        case PartitionType::DstctOneZero:
+        case PartitionType::PrmDstPrtOneZ:
             std::iota(part.startZ.begin(), part.startZ.end(), 0);
             part.startZ.back() = part.target - ((part.width - 1) *
                                             (part.width - 2)) / 2;
             break;
-        } case PartitionType::DstctMultiZero: {
 
-            if (Reps.front() >= (part.width - 1)) {
-                part.startZ.back() = part.target;
-            } else {
-                std::iota(part.startZ.begin() + Reps.front(),
-                          part.startZ.end(), 1);
-                part.startZ.back() = part.target - (part.width -
-                    Reps.front()) * (part.width - (Reps.front() + 1)) / 2;
-            }
-
-            break;
-        } case PartitionType::CompRepNoZero: {
-            std::fill(part.startZ.begin(), part.startZ.end(), 1);
-            part.startZ.back() = part.target - part.width + 1;
-            break;
-        } case PartitionType::CompRepWeak: {
-            part.startZ.back() = part.target;
-            break;
-        } case PartitionType::CmpRpZroNotWk: {
-            part.startZ.back() = part.target;
-            break;
-        } case PartitionType::CmpDstctNoZero: {
-            std::iota(part.startZ.begin(), part.startZ.end(), 1);
-            part.startZ.back() = part.target - (part.width *
-                (part.width - 1)) / 2;
-            break;
-        } case PartitionType::CmpDstctZNotWk: {
+        case PartitionType::PrmDstPartMZ:
+        case PartitionType::CmpDstctZNotWk:
+        case PartitionType::DstctMultiZero:
+        case PartitionType::CmpDstctMZWeak:
 
             // This happens when we don't specific freqs and includeZero = TRUE
             // E.g. compositionsGeneral(0:10, 5)
@@ -297,50 +279,9 @@ void SetStartPartitionZ(const std::vector<int> &Reps,
             }
 
             break;
-        } case PartitionType::CmpDstctMZWeak: {
 
-            if (Reps.front() >= (part.width - 1)) {
-                part.startZ.back() = part.target;
-            } else {
-                std::iota(part.startZ.begin() + Reps.front(),
-                          part.startZ.end(), 1);
-                part.startZ.back() = part.target - (part.width -
-                    Reps.front()) * (part.width - (Reps.front() + 1)) / 2;
-            }
-
-            break;
-        } case PartitionType::PrmRepPartNoZ: {
-            std::fill(part.startZ.begin(), part.startZ.end(), 1);
-            part.startZ.back() = part.target - part.width + 1;
-            break;
-        } case PartitionType::PrmRepPart: {
+        default:
             part.startZ.back() = part.target;
-            break;
-        } case PartitionType::PrmDstPartNoZ: {
-            std::iota(part.startZ.begin(), part.startZ.end(), 1);
-            part.startZ.back() = part.target - (part.width *
-                (part.width - 1)) / 2;
-            break;
-        } case PartitionType::PrmDstPrtOneZ: {
-            std::iota(part.startZ.begin(), part.startZ.end(), 0);
-            part.startZ.back() = part.target - ((part.width - 1) *
-                (part.width - 2)) / 2;
-            break;
-        } case PartitionType::PrmDstPartMZ: {
-
-            if (Reps.front() >= (part.width - 1)) {
-                part.startZ.back() = part.target;
-            } else {
-                std::iota(part.startZ.begin() + Reps.front(),
-                          part.startZ.end(), 1);
-                part.startZ.back() = part.target - (part.width -
-                    Reps.front()) * (part.width - (Reps.front() + 1)) / 2;
-            }
-
-            break;
-        }  default: {
-            part.startZ.back() = part.target;
-        }
     }
 }
 
@@ -448,7 +389,12 @@ int DiscoverPType(const std::vector<int> &Reps,
             }
 
             if (isoz == part.startZ) {
-                if (part.isMult && part.allOne && part.isComp) {
+                if (part.isMult && part.allOne && part.isComp && IsCapped) {
+                    part.ptype = part.isWeak ? PartitionType::CmpDstCapMZWeak :
+                        PartitionType::CmpDstCapMZNotWk;
+                    return 1;
+
+                } else if (part.isMult && part.allOne && part.isComp) {
                     part.ptype = part.isWeak ? PartitionType::CmpDstctMZWeak :
                         PartitionType::CmpDstctZNotWk;
                     return 1;
@@ -678,24 +624,22 @@ void StandardDesign(const std::vector<int> &Reps,
             part.solnExist = false;
         }
     } else if (part.isDist) {
-        if (part.includeZero && part.isComp && !part.isWeak) {
+        if (part.includeZero && part.isComp) {
             // compositionsCount(0:20, 3)
-            part.ptype = PartitionType::CmpDstctZNotWk;
+            //
+            // ## N.B. We could map the weak case to a non-zero situation,
+            // ## but would require some code handling down the line.
+            //
+            // compositionsCount(0:20, 3, weak = TRUE)
+            part.ptype = part.isWeak ?
+                PartitionType::CmpDstctMZWeak :
+                PartitionType::CmpDstctZNotWk;
         } else if (part.includeZero) {
             // partitionsCount(0:20)
             // partitionsCount(0:20, 3)
-            //
-            // ## N.B. in the weak case since there is only 1 zero, we are
-            // ## mapping it to 1 so it is equal to the case with no zeros
-            //
-            // compositionsCount(0:20, 3, weak = TRUE)
             part.ptype = part.isPerm ?
                 PartitionType::PrmDstPrtOneZ :
-                (
-                    part.isComp ?
-                        PartitionType::CmpDstctNoZero :
-                        PartitionType::DstctOneZero
-                );
+                PartitionType::DstctOneZero;
 
             // We need to add m in target in order to
             // correctly count the number of partitions
@@ -885,6 +829,8 @@ void SetPartitionDesign(
             part.ptype = PartitionType::Multiset;
         } else if (part.isPerm && part.isDist) {
             part.ptype = PartitionType::PrmDstPrtCap;
+        } else if (part.isComp && part.isDist) {
+            part.ptype = PartitionType::CmpDstctCapped;
         } else if (part.isDist) {
             part.ptype = PartitionType::DstctCapped;
         } else if (part.solnExist) {
@@ -896,6 +842,12 @@ void SetPartitionDesign(
         if (part.solnExist) {
             DiscoverPType(Reps, part, lenV);
         }
+    }
+
+    if (part.width == 1) {
+        // Note: LengthOne may be skipped here since the width begins > 1
+        // and is only identified as 1 after additional validation.
+        part.ptype = PartitionType::LengthOne;
     }
 
     int res = PartitionsCount(Reps, part, lenV, bIsCount);
