@@ -2,7 +2,7 @@
 
 #include <vector>
 
-std::vector<int> PrepareComplement(std::vector<int> z, int target);
+bool IsComplementZeroBased(bool firstZero, bool isWeak, bool IsGen);
 
 template <int one_or_zero>
 void NextCompositionRep(std::vector<int> &z, int lastCol);
@@ -15,5 +15,5 @@ void NextCompositionDistinct(
 
 int CompsDistinctSetup(
     const std::vector<int> &z, std::vector<int> &complement,
-    int &tar, int &idx_1, int &idx_2, int &myMax
+    int &tar, int &idx_1, int &idx_2, int &myMax, int cap, bool startAtZero
 );

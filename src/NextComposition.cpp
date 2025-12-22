@@ -2,9 +2,60 @@
 #include <numeric>
 #include <vector>
 
-std::vector<int> PrepareComplement(std::vector<int> z, int target) {
+bool IsComplementZeroBased(bool firstZero, bool isWeak, bool IsGen) {
 
-    const int z_size = z.size() - std::count(z.cbegin(), z.cend(), 0);
+    // N.B. Only mapped cases with `v[0] == 0` are considered.
+    // If zero appears elsewhere in `v` (e.g., due to a shift placing zero in
+    // the interior), the intended semantics are unclear and such cases are
+    // deliberately excluded.
+
+    if (isWeak) {
+        return true;
+    }
+
+    if (firstZero && !isWeak) {
+        // Non-weak case with v containing a leading zero.
+        //
+        // When execution reaches this point, z already contains exactly the
+        // elements needed for the remainder of the algorithm. There are two
+        // possibilities:
+        //
+        // 1) z contains zeros:
+        //    Those zeros map to leading zeros in every result. In the non-weak
+        //    setting, we do not allow zero to appear in the composition, so
+        //    zero must not appear in the complement.
+        //
+        // 2) z contains no zeros:
+        //    We have reached the region where no mapped zeros appear in any
+        //    composition. To preserve this in the non-weak case, zero must
+        //    again be excluded from the complement.
+        //
+        // In both cases, zeros in the complement are disallowed.
+        return false;
+    }
+
+    if (!isWeak && IsGen) {
+        // In the non-weak setting, once zeros are excluded from v, we must
+        // allow zero in the complement even if the current indexing vector z
+        // does not contain it. Although some intermediate results may be
+        // formed without zero (i.e. z may omit zero at this stage), later
+        // lexicographic results may require it. For example, the final
+        // lexicographic result corresponds to a reversal of the initial
+        // indexing, implying z.back() -> 0.
+        return true;
+    }
+
+    return false;
+}
+
+std::vector<int> PrepareComplement(
+    std::vector<int> z, int target, int cap, bool startAtZero
+) {
+
+    const int nz = std::count(z.cbegin(), z.cend(), 0);
+
+    int z_size = z.size() - nz;
+    if (startAtZero) --z_size;
 
     // Here we are trying to find the maximum possible value of z. We do this
     // by assuming that the first n - 1 elements are minimized (n is the size
@@ -19,14 +70,19 @@ std::vector<int> PrepareComplement(std::vector<int> z, int target) {
     // up the complement.
 
     int myMax = target - static_cast<int>((z_size * (z_size - 1)) / 2);
+    myMax = std::min(myMax, cap);
     std::vector<int> complement;
 
     if (myMax > z_size) {
         std::sort(z.begin(), z.end());
-        std::vector<int> myRange(myMax);
-        std::iota(myRange.begin(), myRange.end(), 1);
-        std::set_difference(myRange.begin(), myRange.end(), z.begin(), z.end(),
-                            std::inserter(complement, complement.begin()));
+        std::vector<int> myRange(myMax + static_cast<int>(startAtZero));
+        std::iota(myRange.begin(), myRange.end(),
+                  startAtZero ? 0 : 1);
+
+        std::set_difference(
+            myRange.begin(), myRange.end(), z.begin(), z.end(),
+            std::inserter(complement, complement.begin())
+        );
     }
 
     return complement;
@@ -120,81 +176,84 @@ int FindBacktrackIndex(const std::vector<int>& idx, int k, int g) {
     return k;
 }
 
-/* ---------------------------------------------------------------------------
- Overview of How These Routines Work Together
- ---------------------------------------------------------------------------
+//  ---------------------------------------------------------------------------
+//  Overview of How These Routines Work Together
+//  ---------------------------------------------------------------------------
+//
+//  These routines cooperate to find pairs of indices in the sorted vector "v"
+//  (the complement) whose values sum to a required target. For m = 2 this
+//  means finding distinct indices i < j with v[i] + v[j] == target.
+//
+//  ---------------------------------------------------------------------------
+//  1. NextDistinctBlock(v, idx, tailSum, target, m)
+//  ---------------------------------------------------------------------------
+//
+//  Purpose:
+//  Find the FIRST valid m-tuple of indices whose values sum to "target".
+//  The search is lexicographic, so for m = 2 this yields the pair with the
+//  smallest possible idx[0], and among those the smallest idx[1].
+//
+//  Behavior:
+//  * Initializes idx to {0,1,...}, the smallest lexicographic combination.
+//  * Iteratively advances indices without ever decreasing them.
+//  * Uses pruning (via tailSum and partial sums) to eliminate branches that
+//  cannot contain ANY valid solution.
+//  * Because pruning only removes globally impossible branches, earlier
+//  possible pairs are never skipped.  Thus the first discovered solution
+//  is the lexicographically smallest valid one.
+//  * Returns 1 with idx filled on success, or 0/-1/-2 when impossible.
+//
+//  Role:
+//  "Find the lexicographically earliest valid pair, or report none."
+//
+//  ---------------------------------------------------------------------------
+//  2. NextDistinctBlock2(v, idx, target, maxLast)
+//  ---------------------------------------------------------------------------
+//
+//  Purpose:
+//  Search for the FIRST valid pair satisfying BOTH:
+//  - v[idx[0]] + v[idx[1]] == target
+//  - v[idx[k]] < maxLast for both k = 0,1.
+//
+//  Behavior:
+//  * Scans idx[0] upward and performs lower_bound on the remaining tail.
+//  * Returns the earliest lexicographic pair satisfying the maxLast filter.
+//
+//  Role:
+//  "Find the earliest valid pair under the added maxLast constraint."
+//
+//  ---------------------------------------------------------------------------
+//  3. CompsDistinctSetup(...)
+//  ---------------------------------------------------------------------------
+//
+//  Purpose:
+//  High-level driver that coordinates all steps needed to choose the pair
+//  that interacts correctly with the current composition z.
+//
+//  Workflow:
+//  1. Build complement of z and compute lastTwo = z[last] + z[last-1].
+//
+//  2. Call NextDistinctBlock to obtain the FIRST possible pair.  If none
+//     exists, report idx_1 = -1 so the caller can restructure z.
+//
+//  3. If a solution exists, call NextDistinctBlock2 to find the FIRST pair
+//     that also satisfies v[i] < z.back().  If found, use it.
+//
+//  4. If the restricted search fails, fall back to a manual sweep:
+//      - Begin at the first v[idx_1] > z.back().
+//      - For each idx_1, try idx_2 from 0 upward.
+//      - Because a solution is guaranteed, this finds the FIRST pair with
+//        idx_1 > z.back().
+//
+//  5. Compute myMax for later steps.
+//
+//  Role:
+//  "Select the correct next complementary pair, preferring restricted
+//  lexicographically minimal pairs when possible."
+//  ---------------------------------------------------------------------------
 
- These routines cooperate to find pairs of indices in the sorted vector "v"
- (the complement) whose values sum to a required target. For m = 2 this
- means finding distinct indices i < j with v[i] + v[j] == target.
-
- ---------------------------------------------------------------------------
- 1. NextDistinctBlock(v, idx, tailSum, target, m)
- ---------------------------------------------------------------------------
-
- Purpose:
- Find the FIRST valid m-tuple of indices whose values sum to "target".
- The search is lexicographic, so for m = 2 this yields the pair with the
- smallest possible idx[0], and among those the smallest idx[1].
-
- Behavior:
- * Initializes idx to {0,1,...}, the smallest lexicographic combination.
- * Iteratively advances indices without ever decreasing them.
- * Uses pruning (via tailSum and partial sums) to eliminate branches that
- cannot contain ANY valid solution.
- * Because pruning only removes globally impossible branches, earlier
- possible pairs are never skipped.  Thus the first discovered solution
- is the lexicographically smallest valid one.
- * Returns 1 with idx filled on success, or 0/-1/-2 when impossible.
-
- Role:
- "Find the lexicographically earliest valid pair, or report none."
-
- ---------------------------------------------------------------------------
- 2. NextDistinctBlock2(v, idx, target, maxLast)
- ---------------------------------------------------------------------------
-
- Purpose:
- Search for the FIRST valid pair satisfying BOTH:
- - v[idx[0]] + v[idx[1]] == target
- - v[idx[k]] < maxLast for both k = 0,1.
-
- Behavior:
- * Scans idx[0] upward and performs lower_bound on the remaining tail.
- * Returns the earliest lexicographic pair satisfying the maxLast filter.
-
- Role:
- "Find the earliest valid pair under the added maxLast constraint."
-
- ---------------------------------------------------------------------------
- 3. CompsDistinctSetup(...)
- ---------------------------------------------------------------------------
-
- Purpose:
- High-level driver that coordinates all steps needed to choose the pair
- that interacts correctly with the current composition z.
-
- Workflow:
- 1. Build complement of z and compute lastTwo = z[last] + z[last-1].
- 2. Call NextDistinctBlock to obtain the FIRST possible pair.  If none
- exists, report idx_1 = -1 so the caller can restructure z.
- 3. If a solution exists, call NextDistinctBlock2 to find the FIRST pair
- that also satisfies v[i] < z.back().  If found, use it.
- 4. If the restricted search fails, fall back to a manual sweep:
- - Begin at the first v[idx_1] > z.back().
- - For each idx_1, try idx_2 from 0 upward.
- - Because a solution is guaranteed, this finds the FIRST pair with
- idx_1 > z.back().
- 5. Compute myMax for later steps.
-
- Role:
- "Select the correct next complementary pair, preferring restricted
- lexicographically minimal pairs when possible."
- --------------------------------------------------------------------------- */
-
-int NextDistinctBlock2(
-    const std::vector<int> &v, std::vector<int> &idx, int target, int maxLast
-) {
+int NextDistinctBlock2(const std::vector<int> &v, std::vector<int> &idx,
+                       int target, int maxLast) {
 
     const int n = v.size();
     if (n < 2) return 0;
@@ -207,27 +266,24 @@ int NextDistinctBlock2(
     const int maxSum = v[n - 2] + v[n - 1];
     if (maxSum < target) return -2;
 
-    int i = 0;
-    // For each v[i], we search for v[j] = target - v[i]
-    int partial = target - v.front();
+    // Get first index, idx, such that v[idx] < maxLast
+    auto upper = std::lower_bound(v.cbegin(), v.cend(), maxLast);
 
-    // Scan i until v[i] hits the cutoff maxLast
-    while (i < (n - 1) && v[i] < maxLast) {
-        // Search in the strictly larger index range [i+1, end)
-        auto lower = std::lower_bound(
-            v.cbegin() + (i + 1), v.cend(), partial
-        );
+    while (upper != v.cbegin()) {
+        --upper;
 
-        // Check if we found exact match and the second term respects < maxLast
-        if (lower != v.cend() && *lower == partial && partial < maxLast) {
-            idx[0] = i;
-            idx[1] = std::distance(v.cbegin(), lower);
+        int partial = target - *upper;
+
+        // ---- Early exit: partial too large to find ----
+        if (partial > v[n - 1]) break;
+
+        auto lower = std::lower_bound(v.cbegin(), v.cend(), partial);
+
+        if (lower != v.cend() && *lower == partial && lower != upper) {
+            idx[0] = std::distance(v.cbegin(), lower);
+            idx[1] = std::distance(v.cbegin(), upper);
             return 1; // Found valid pair
         }
-
-        // Otherwise advance i and recompute the needed complement
-        ++i;
-        partial = target - v[i];
     }
 
     return 0; // No valid pair satisfying the maxLast constraint
@@ -328,14 +384,14 @@ int NextDistinctBlock(const std::vector<int> &v, std::vector<int> &idx,
 
 int CompsDistinctSetup(
     const std::vector<int> &z, std::vector<int> &complement,
-    int &tar, int &idx_1, int &idx_2, int &myMax
+    int &tar, int &idx_1, int &idx_2, int &myMax, int cap, bool startAtZero
 ) {
 
     // tar = total sum of z
     tar = std::accumulate(z.cbegin(), z.cend(), 0);
 
     // Build complement = {0..tar} \ z, sorted
-    complement = PrepareComplement(z, tar);
+    complement = PrepareComplement(z, tar, cap, startAtZero);
 
     if (complement.empty()) {
         return 0;
@@ -353,8 +409,7 @@ int CompsDistinctSetup(
     );
 
     if (sol_exist == 1) {
-
-        // Try finding the *best* solution — one respecting maxLast = z.back()
+        // Try finding the best solution — one respecting maxLast = z.back()
         int best_sol = NextDistinctBlock2(
             complement, idx, lastTwo, z.back()
         );
@@ -364,7 +419,7 @@ int CompsDistinctSetup(
             idx_1 = idx.front();
             idx_2 = idx.back();
         } else {
-            // Need fallback: manually find first idx1 > z.back()
+            // Need fallback: manually find first idx_1 > z.back()
 
             auto it = std::upper_bound(
                 complement.cbegin(), complement.cend(), z.back()
@@ -379,7 +434,7 @@ int CompsDistinctSetup(
             while (testSum != lastTwo) {
 
                 // Increase idx_2 while sum is too small
-                while (testSum <= lastTwo && idx_2 < idx_1) {
+                while (testSum < lastTwo && idx_2 < idx_1) {
                     ++idx_2;
                     testSum = complement[idx_1] + complement[idx_2];
                 }
@@ -552,6 +607,7 @@ void NextCompositionDistinct(
             int res = 0;
 
             while (res == 0) {
+
                 // We first check to see if there is an element in complement
                 // that is larger than z[j]
                 auto upper = std::upper_bound(
@@ -564,6 +620,7 @@ void NextCompositionDistinct(
                     std::swap(*upper, z[j]);
                     int partial = target -
                         std::accumulate(z.cbegin(), z.cend() - m, 0);
+
                     idx.resize(m);
                     res = NextDistinctBlock(
                         complement, idx, tailSum, partial, m
