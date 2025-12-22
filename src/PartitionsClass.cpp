@@ -2,8 +2,22 @@
 
 void Partitions::SetPartValues() {
 
-    if (part.isComp && part.isDist) {
-        CompsDistinctSetup(z, rpsCnt, tarDiff, edge, boundary, pivot);
+    bool IsCompDist = (
+        part.ptype == PartitionType::CmpDstctMZWeak  ||
+        part.ptype == PartitionType::CmpDstctNoZero  ||
+        part.ptype == PartitionType::CmpDstctZNotWk  ||
+        part.ptype == PartitionType::CmpDstctCapped  ||
+        part.ptype == PartitionType::CmpDstCapMZWeak ||
+        part.ptype == PartitionType::CmpDstCapMZNotWk
+    );
+
+    if (IsCompDist) {
+        bool compZero = IsComplementZeroBased(
+            part.includeZero, part.isWeak, ctype == ConstraintType::PartMapping
+        );
+
+        CompsDistinctSetup(z, rpsCnt, tarDiff, edge, boundary,
+                           pivot, n - 1, compZero);
     } else if (part.ptype == PartitionType::Multiset) {
         PrepareMultisetPart(
             rpsCnt, z, boundary, pivot, edge, lastCol, lastElem
@@ -87,7 +101,6 @@ Partitions::Partitions(
              RtarIntVals, RstartZ, RmainFun, RFunTest, RfunDbl, Rctype,
              RstrtLen, Rcap, RKeepRes, RnumUnknown, RcnstrtRows,
              RcnstrtRowsMpz),
-    nz(std::count(z.cbegin(), z.cend(), 0)),
     lastCol(part.width - 1), lastElem(n - 1),
     nextParts(GetNextPartsPtr(part.ptype,ctype)),
     nthParts((part.ptype == PartitionType::LengthOne ||

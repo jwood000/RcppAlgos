@@ -14,7 +14,6 @@ private:
     int pivot;         // -->> myMax
     int tarDiff;       // -->> tar
     int boundary;      // -->> idx_2
-    const int nz;      // Utilized exclusively in the distinct composition case
     bool bAddOne;
 
     const int lastCol;
