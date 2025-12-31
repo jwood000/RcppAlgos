@@ -82,7 +82,8 @@ SEXP Combo::MatReverse(int nRows) {
                             prevComb, n, m, IsComb, IsMult, nRows, myType);
 }
 
-// The bVec Vector represents IsFac, IsComb, IsMult, IsRep, IsGmp, & IsFull
+// The bVec Vector represents IsFac, IsComb,
+// IsMult, IsRep, IsGmp, IsFull, IsComp, & IsWeak
 Combo::Combo(
     SEXP Rv, int Rm, SEXP RcompRow, const std::vector<int> &bVec,
     const std::vector<int> &Rreps, const std::vector<int> &Rfreqs,
