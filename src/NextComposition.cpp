@@ -49,7 +49,7 @@ bool IsComplementZeroBased(bool firstZero, bool isWeak, bool IsGen) {
 }
 
 std::vector<int> PrepareComplement(
-    std::vector<int> z, int target, int cap, bool startAtZero
+    std::vector<int> z, int target, int idx_max, bool startAtZero
 ) {
 
     const int nz = std::count(z.cbegin(), z.cend(), 0);
@@ -70,7 +70,7 @@ std::vector<int> PrepareComplement(
     // up the complement.
 
     int myMax = target - static_cast<int>((z_size * (z_size - 1)) / 2);
-    myMax = std::min(myMax, cap);
+    myMax = std::min(myMax, idx_max);
     std::vector<int> complement;
 
     if (myMax > z_size) {
@@ -383,15 +383,15 @@ int NextDistinctBlock(const std::vector<int> &v, std::vector<int> &idx,
 }
 
 int CompsDistinctSetup(
-    const std::vector<int> &z, std::vector<int> &complement,
-    int &tar, int &idx_1, int &idx_2, int &myMax, int cap, bool startAtZero
+    const std::vector<int> &z, std::vector<int> &complement, int &tar,
+    int &idx_1, int &idx_2, int &myMax, int idx_max, bool startAtZero
 ) {
 
     // tar = total sum of z
     tar = std::accumulate(z.cbegin(), z.cend(), 0);
 
     // Build complement = {0..tar} \ z, sorted
-    complement = PrepareComplement(z, tar, cap, startAtZero);
+    complement = PrepareComplement(z, tar, idx_max, startAtZero);
 
     if (complement.empty()) {
         return 0;
