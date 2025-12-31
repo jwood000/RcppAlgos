@@ -630,11 +630,14 @@ nextPartsPtr GetNextPartsPtr(PartitionType ptype, ConstraintType ctype) {
             case PartitionType::CompRepWeak:
                 return(nextPartsPtr(NextRepCompZero));
 
+            case PartitionType::CmpDstCapMZWeak:
             case PartitionType::CmpDstctMZWeak:
             case PartitionType::CmpDstctNoZero:
+            case PartitionType::CmpDstctCapped:
                 return(nextPartsPtr(NextDistinctComp));
 
             case PartitionType::CmpDstctZNotWk:
+            case PartitionType::CmpDstCapMZNotWk:
                 return(nextPartsPtr(NextDistMZNotWeakComp));
 
             case PartitionType::NoSolution:
@@ -669,11 +672,14 @@ nextPartsPtr GetNextPartsPtr(PartitionType ptype, ConstraintType ctype) {
             case PartitionType::CmpRpZroNotWk:
                 return(nextPartsPtr(NextRepCompOne));
 
+            case PartitionType::CmpDstCapMZWeak:
             case PartitionType::CmpDstctMZWeak:
             case PartitionType::CmpDstctNoZero:
+            case PartitionType::CmpDstctCapped:
                 return(nextPartsPtr(NextDistinctComp));
 
             case PartitionType::CmpDstctZNotWk:
+            case PartitionType::CmpDstCapMZNotWk:
                 return(nextPartsPtr(NextDistMZNotWeakComp));
 
             case PartitionType::NoSolution:

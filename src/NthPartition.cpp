@@ -82,9 +82,9 @@ std::vector<int> nthCompsDistinct(int n, int m, int cap, int k,
                                   double dblIdx, const mpz_class &mpzIdx) {
 
     const int width = m;
-    const int max_val = n - (width * (width - 1)) / 2;
+    const int max_val = std::min(cap, n - (width * (width - 1)) / 2);
 
-    std::vector<char> mask(n + 1, 0);
+    std::vector<char> mask(cap + 1, 0);
     std::vector<int> res(width, 0);
     --m;
 
@@ -135,12 +135,19 @@ std::vector<int> nthCompsDistinct(int n, int m, int cap, int k,
 std::vector<int> nthCompsDistinctMZ(int n, int m, int cap, int k,
                                     double dblIdx, const mpz_class &mpzIdx) {
 
-    double temp = CountCompsDistinctLen(n, k);
+    std::vector<int> allowed(cap);
+    std::iota(allowed.begin(), allowed.end(), 1);
+
+    double temp = (cap == n) ?
+        CountCompsDistinctLen(n, k) :
+        CountCompDistLenRstrctd(n, k, allowed);
 
     while (dblIdx >= temp && k < m) {
         dblIdx -= temp;
         ++k;
-        temp = CountCompsDistinctLen(n, k);
+        temp = (cap == n) ?
+            CountCompsDistinctLen(n, k) :
+            CountCompDistLenRstrctd(n, k, allowed);
     }
 
     std::vector<int> res = nthCompsDistinct(n, k, cap, k, dblIdx, mpzIdx);
@@ -151,6 +158,13 @@ std::vector<int> nthCompsDistinctMZ(int n, int m, int cap, int k,
 
     if (m > k) res.insert(res.begin(), m - k, 0);
     return res;
+}
+
+std::vector<int> nthCompsDistinctWeak(int n, int m, int cap, int k,
+                                      double dblIdx, const mpz_class &mpzIdx) {
+    n += m;
+    cap += m;
+    return nthCompsDistinct(n, m, cap, k, dblIdx, mpzIdx);
 }
 
 //************************* Partition Functions ***************************//
@@ -428,9 +442,9 @@ std::vector<int> nthCompsDistinctGmp(int n, int m, int cap, int k,
                                      double dblIdx, const mpz_class &mpzIdx) {
 
     const int width = m;
-    const int max_val = n - (width * (width - 1)) / 2;
+    const int max_val = std::min(cap, n - (width * (width - 1)) / 2);
 
-    std::vector<char> mask(n + 1, 0);
+    std::vector<char> mask(cap + 1, 0);
     std::vector<int> res(width, 0);
     --m;
 
@@ -492,20 +506,38 @@ std::vector<int> nthCompsDistinctMZGmp(
     int n, int m, int cap, int k, double dblIdx, const mpz_class &mpzIdx
 ) {
 
-    const PartitionType ptype = PartitionType::CmpDstctNoZero;
-    std::unique_ptr<CountClass> Counter = MakeCount(ptype);
-
-    Counter->SetArrSize(ptype, n, m);
-    Counter->InitializeMpz();
-
     mpz_class temp;
     mpz_class index(mpzIdx);
-    Counter->GetCount(temp, n, k);
 
-    while (cmp(index, temp) >= 0 && k < m) {
-        index -= temp;
-        ++k;
+    if (cap == n) {
+        const PartitionType ptype = PartitionType::CmpDstctNoZero;
+        std::unique_ptr<CountClass> Counter = MakeCount(ptype);
+
+        Counter->SetArrSize(ptype, n, m);
+        Counter->InitializeMpz();
         Counter->GetCount(temp, n, k);
+
+        while (cmp(index, temp) >= 0 && k < m) {
+            index -= temp;
+            ++k;
+            Counter->GetCount(temp, n, k);
+        }
+    } else {
+        std::vector<int> allowed(cap);
+        std::iota(allowed.begin(), allowed.end(), 1);
+
+        const PartitionType ptype = PartitionType::CmpDstctCapped;
+        std::unique_ptr<CountClass> Counter = MakeCount(ptype);
+
+        Counter->SetArrSize(ptype, n, m);
+        Counter->InitializeMpz();
+        Counter->GetCount(temp, n, k, allowed);
+
+        while (cmp(index, temp) >= 0 && k < m) {
+            index -= temp;
+            ++k;
+            Counter->GetCount(temp, n, k, allowed);
+        }
     }
 
     std::vector<int> res;
@@ -523,6 +555,15 @@ std::vector<int> nthCompsDistinctMZGmp(
 
     if (m > k) res.insert(res.begin(), m - k, 0);
     return res;
+}
+
+std::vector<int> nthCompsDistinctWeakGmp(
+    int n, int m, int cap, int k, double dblIdx, const mpz_class &mpzIdx
+) {
+
+    n += m;
+    cap += m;
+    return nthCompsDistinctGmp(n, m, cap, k, dblIdx, mpzIdx);
 }
 
 std::vector<int> nthPartsRepLenGmp(int n, int m, int cap, int k,
@@ -823,7 +864,13 @@ nthPartsPtr GetNthPartsFunc(PartitionType ptype, bool IsGmp) {
                 return(nthPartsPtr(nthCompsRepZeroGmp));
             } case PartitionType::CmpDstctNoZero: {
                 return(nthPartsPtr(nthCompsDistinctGmp));
+            } case PartitionType::CmpDstctCapped: {
+                return(nthPartsPtr(nthCompsDistinctGmp));
+            } case PartitionType::CmpDstctMZWeak: {
+                return(nthPartsPtr(nthCompsDistinctWeakGmp));
             } case PartitionType::CmpDstctZNotWk: {
+                return(nthPartsPtr(nthCompsDistinctMZGmp));
+            } case PartitionType::CmpDstCapMZNotWk: {
                 return(nthPartsPtr(nthCompsDistinctMZGmp));
             } case PartitionType::NoSolution: {
                 return(nthPartsPtr(EmptyReturn));
@@ -863,7 +910,13 @@ nthPartsPtr GetNthPartsFunc(PartitionType ptype, bool IsGmp) {
                 return(nthPartsPtr(nthCompsRepZero));
             } case PartitionType::CmpDstctNoZero: {
                 return(nthPartsPtr(nthCompsDistinct));
+            } case PartitionType::CmpDstctCapped: {
+                return(nthPartsPtr(nthCompsDistinct));
+            } case PartitionType::CmpDstctMZWeak: {
+                return(nthPartsPtr(nthCompsDistinctWeak));
             } case PartitionType::CmpDstctZNotWk: {
+                return(nthPartsPtr(nthCompsDistinctMZ));
+            } case PartitionType::CmpDstCapMZNotWk: {
                 return(nthPartsPtr(nthCompsDistinctMZ));
             } case PartitionType::NoSolution: {
                 return(nthPartsPtr(EmptyReturn));

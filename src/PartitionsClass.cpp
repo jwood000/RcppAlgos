@@ -103,8 +103,11 @@ Partitions::Partitions(
              RcnstrtRowsMpz),
     lastCol(part.width - 1), lastElem(n - 1),
     nextParts(GetNextPartsPtr(part.ptype,ctype)),
-    nthParts((part.ptype == PartitionType::LengthOne ||
-              part.ptype == PartitionType::Multiset  ||
+    nthParts((part.ptype == PartitionType::CmpDstCapMZNotWk ||
+              part.ptype == PartitionType::CmpDstCapMZWeak  ||
+              part.ptype == PartitionType::CmpDstctCapped   ||
+              part.ptype == PartitionType::LengthOne        ||
+              part.ptype == PartitionType::Multiset         ||
               CheckEqSi(part.isGmp, cnstrtCountMpz, cnstrtCount, 0)) ?
               nullptr : GetNthPartsFunc(part.ptype, part.isGmp)) {
 
