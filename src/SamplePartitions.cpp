@@ -178,10 +178,14 @@ SEXP SamplePartitions(
 
     if (part.ptype == PartitionType::CoarseGrained ||
         part.ptype == PartitionType::NotPartition  ||
-        part.ptype == PartitionType::NoSolution    ||
+        part.ptype == PartitionType::NotMapped     ||
         part.ptype == PartitionType::Multiset) {
 
         cpp11::stop("Partition sampling not available for this case.");
+    }
+
+    if (part.ptype == PartitionType::NoSolution) {
+        cpp11::stop("There is no solution for the requested case");
     }
 
     int sampSize;
