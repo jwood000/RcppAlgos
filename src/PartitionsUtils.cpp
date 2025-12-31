@@ -807,6 +807,7 @@ void SetPartitionDesign(
 
         // We can only have weak compositions when zero is included. We
         // can't use part.includeZero for the reasons in the below comment
+        bool original_weak_val = part.isWeak;
         part.isWeak = part.isWeak && (v.front() == 0);
 
         // When we are mapping cases, it is easy to calculate the number of
@@ -841,6 +842,11 @@ void SetPartitionDesign(
 
         if (part.solnExist) {
             DiscoverPType(Reps, part, lenV);
+        }
+
+        if (part.ptype == PartitionType::CmpDstctZNotWk && v.front() != 0) {
+            part.ptype = original_weak_val ?
+                PartitionType::CmpDstctMZWeak : PartitionType::NotMapped;
         }
     }
 
