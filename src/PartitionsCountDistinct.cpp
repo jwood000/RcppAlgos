@@ -20,8 +20,12 @@ void UpdateAllowed(
     }
 
     int j = 0;
+    const int last_val = std::min(
+        n - partial_sum,
+        static_cast<int>(mask.size()) - 1
+    );
 
-    for (int v = 1, last_val = n - partial_sum; v <= last_val; ++v) {
+    for (int v = 1; v <= last_val; ++v) {
         if (!mask[v]) {
             allowed[j] = v;
             ++j;
