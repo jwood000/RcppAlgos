@@ -230,7 +230,7 @@ SEXP SamplePartitions(
         cpp11::sexp res = Rf_allocMatrix(INTSXP, sampSize, part.width);
         int* matInt = INTEGER(res);
 
-        const nthPartsPtr nthPartFun = GetNthPartsFunc(
+        const nthPartsPtr nthPartFun = GetNthPartsFuncOrStop(
             part.ptype, part.isGmp
         );
 
@@ -243,7 +243,7 @@ SEXP SamplePartitions(
         cpp11::sexp res = Rf_allocMatrix(REALSXP, sampSize, part.width);
         double* matNum = REAL(res);
 
-        const nthPartsPtr nthPartFun = GetNthPartsFunc(
+        const nthPartsPtr nthPartFun = GetNthPartsFuncOrStop(
             part.ptype, part.isGmp
         );
 

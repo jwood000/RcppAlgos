@@ -117,7 +117,8 @@ SEXP CombinatoricsCnstrt(SEXP Rv, SEXP Rm, SEXP RisRep, SEXP RFreqs,
                   lower, lowerMpz, IsRep, IsMult, IsGmp);
     } else {
         if (bLower) {
-            const nthPartsPtr nthPartFun = GetNthPartsFunc(part.ptype, IsGmp);
+            const nthPartsPtr nthPartFun =
+                GetNthPartsFuncOrStop(part.ptype, IsGmp);
             startZ = nthPartFun(part.mapTar, part.width, cap,
                                 strtLen, lower, lowerMpz);
 

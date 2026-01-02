@@ -5,8 +5,7 @@
 #include "Partitions/BigPartsCountDistinct.h"
 #include "Partitions/PartitionsCountRep.h"
 #include "Partitions/BigPartsCountRep.h"
-#include "Partitions/PartitionsTypes.h"
-#include "Partitions/PartitionsCount.h"
+#include "Partitions/PartitionsUtils.h"
 #include <numeric>  // std::accumulate
 
 #include "cpp11/R.hpp"
@@ -875,7 +874,7 @@ nthPartsPtr GetNthPartsFunc(PartitionType ptype, bool IsGmp) {
             } case PartitionType::NoSolution: {
                 return(nthPartsPtr(EmptyReturn));
             } default : {
-                cpp11::stop("No algorithm available");
+                return nullptr;
             }
         }
     } else {
@@ -921,8 +920,20 @@ nthPartsPtr GetNthPartsFunc(PartitionType ptype, bool IsGmp) {
             } case PartitionType::NoSolution: {
                 return(nthPartsPtr(EmptyReturn));
             } default : {
-                cpp11::stop("No algorithm available");
+                return nullptr;
             }
         }
     }
+}
+
+nthPartsPtr GetNthPartsFuncOrStop(PartitionType ptype, bool IsGmp) {
+    if (auto res = GetNthPartsFunc(ptype, IsGmp)) {
+        return res;
+    }
+
+    cpp11::stop(
+        "No algorithm available for PartitionType = " + GetPTypeName(ptype)
+    );
+
+    return nullptr;
 }

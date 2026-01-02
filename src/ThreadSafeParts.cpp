@@ -17,7 +17,7 @@ void StandardPartitions(
         int nextStep = stepSize;
         int step = 0;
 
-        const nthPartsPtr nthPartFun = GetNthPartsFunc(ptype, IsGmp);
+        const nthPartsPtr nthPartFun = GetNthPartsFuncOrStop(ptype, IsGmp);
         std::vector<std::vector<int>> zs(nThreads, z);
 
         for (int j = 0; j < (nThreads - 1);
@@ -72,7 +72,8 @@ void GeneralPartitions(
         int nextStep = stepSize;
         int step = 0;
 
-        const nthPartsPtr nthPartFun = GetNthPartsFunc(part.ptype, part.isGmp);
+        const nthPartsPtr nthPartFun =
+            GetNthPartsFuncOrStop(part.ptype, part.isGmp);
         std::vector<std::vector<int>> zs(nThreads, z);
 
         for (int j = 0; j < (nThreads - 1);
