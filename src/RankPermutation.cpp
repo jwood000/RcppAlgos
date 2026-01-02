@@ -1,12 +1,9 @@
+#include "Permutations/RankPermutation.h"
 #include "Permutations/BigPermuteCount.h"
 #include "Permutations/PermuteCount.h"
 #include <algorithm> // std::find
 #include <numeric>
 #include <cmath>
-
-using rankPermPtr = void (*const)(std::vector<int>::iterator iter, int n,
-                          int m, double &dblIdx, mpz_class &mpzIdx,
-                          const std::vector<int> &Reps);
 
 int which(const std::vector<int> &idx, int j) {
     auto it = std::find(idx.cbegin(), idx.cend(), j);

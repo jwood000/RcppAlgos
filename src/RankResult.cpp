@@ -1,9 +1,6 @@
 #include "Permutations/RankPermutation.h"
 #include "Combinations/RankCombination.h"
-
-using rankResultPtr = void (*const)(std::vector<int>::iterator iter, int n,
-                            int m, double &dblIdx, mpz_class &mpzIdx,
-                            const std::vector<int> &Reps);
+#include "RankResult.h"
 
 rankResultPtr GetRankResultFunc(bool IsComb, bool IsMult,
                                bool IsRep, bool IsGmp) {

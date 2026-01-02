@@ -3,17 +3,12 @@
 #include "Partitions/BigPartsCountDistinct.h"
 #include "Partitions/PartitionsCountRep.h"
 #include "Partitions/BigPartsCountRep.h"
-#include "Partitions/PartitionsTypes.h"
 #include "Partitions/PartitionsCount.h"
+#include "Partitions/RankPartition.h"
 #include <numeric>  // std::accumulate
 
 #include "cpp11/R.hpp"
 #include "cpp11/protect.hpp"
-
-// The variable k is strtLen
-using rankPartsPtr = void (*const)(std::vector<int>::iterator iter,
-                           int n, int m, int cap, int k,
-                           double &dblIdx, mpz_class &mpzIdx);
 
 //*********************** Trivial Length One Case **************************//
 

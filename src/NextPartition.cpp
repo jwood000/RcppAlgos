@@ -1,8 +1,7 @@
 #include "cpp11/protect.hpp"
 
-#include "Constraints/ConstraintsTypes.h"
 #include "Partitions/NextComposition.h"
-#include "Partitions/PartitionsTypes.h"
+#include "Partitions/NextPartition.h"
 #include <algorithm>  // std::find
 #include <numeric>
 
@@ -490,11 +489,6 @@ void NextDistinctGenPart(std::vector<int> &z, int &boundary,
         ++tarDiff;
     }
 }
-
-using nextPartsPtr = void (*const)(
-    std::vector<int>&, std::vector<int>&, int &e, int &b,
-    int &p, int &tarDiff, int lastCol, int lastElem
-);
 
 void NextDistinct(std::vector<int> &rpsCnt, std::vector<int> &z, int &e,
                   int &b, int &p, int &tarDiff, int lastCol, int lastElem) {

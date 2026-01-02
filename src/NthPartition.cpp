@@ -6,14 +6,11 @@
 #include "Partitions/PartitionsCountRep.h"
 #include "Partitions/BigPartsCountRep.h"
 #include "Partitions/PartitionsUtils.h"
+#include "Partitions/NthPartition.h"
 #include <numeric>  // std::accumulate
 
 #include "cpp11/R.hpp"
 #include "cpp11/protect.hpp"
-
-// The variable k is strtLen
-using nthPartsPtr = std::vector<int> (*const)(int n, int m, int cap, int k,
-                                      double dblIdx, const mpz_class &mpzIdx);
 
 std::vector<int> nthLengthOne(int n, int m, int cap, int k,
                               double dblIdx, const mpz_class &mpzIdx) {

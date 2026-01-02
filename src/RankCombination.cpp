@@ -1,9 +1,6 @@
+#include "Combinations/RankCombination.h"
 #include "Combinations/BigComboCount.h"
 #include "Combinations/ComboCount.h"
-
-using rankCombPtr = void (*const)(std::vector<int>::iterator iter, int n,
-                          int m, double &dblIdx, mpz_class &mpzIdx,
-                          const std::vector<int> &Reps);
 
 void rankComb(std::vector<int>::iterator iter, int n, int m,
               double &dblIdx, mpz_class &mpzIdx,

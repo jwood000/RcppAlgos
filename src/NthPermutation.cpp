@@ -1,12 +1,9 @@
 #include "Permutations/BigPermuteCount.h"
+#include "Permutations/NthPermutation.h"
 #include "Permutations/PermuteCount.h"
 #include <algorithm> // std::find
 #include <numeric>
 #include <cmath>
-
-using nthPermPtr = std::vector<int> (*const)(int n, int m, double dblIdx,
-                                     const mpz_class &mpzIdx,
-                                     const std::vector<int> &Reps);
 
 std::vector<int> nthPerm(int n, int m, double dblIdx, const mpz_class &mpzIdx,
                          const std::vector<int> &Reps) {
