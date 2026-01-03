@@ -10,7 +10,8 @@ from pathlib import Path
 from openai import OpenAI
 from typing import Optional
 
-
+MAX_FILE_BYTES = 200_000
+MAX_DIFF_BYTES_TOTAL = 400_000
 MODEL = os.getenv("AI_REVIEW_MODEL", "gpt-4o-mini")
 MAX_OUTPUT_TOKENS = 800
 TEMPERATURE = 0.2
@@ -59,7 +60,6 @@ ANSI = {
     "cyan": "\033[36m",
     "underline": "\033[4m"
 }
-
 
 def color(s: str, *styles: str) -> str:
     if not USE_COLOR:
@@ -144,6 +144,48 @@ def get_repo_root() -> Path:
         return Path.cwd()
 
 
+def run_cmd_limited(cmd: list[str], max_bytes: int, timeout_s: int = 10) -> str:
+    p = None
+    try:
+        p = subprocess.Popen(
+            cmd,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.DEVNULL,
+        )
+        out, _ = p.communicate(timeout=timeout_s)
+
+        truncated = len(out) > max_bytes
+        out = out[:max_bytes]
+
+        text = out.decode("utf-8", errors="replace")
+        if truncated:
+            text += "\n\n[...output truncated...]\n"
+        return text
+
+    except subprocess.TimeoutExpired:
+        if p is not None:
+            p.kill()
+            p.communicate()
+        return f"[Command timed out: {' '.join(cmd)}]"
+
+    except Exception as e:
+        if p is not None:
+            try:
+                p.kill()
+                p.communicate()
+            except Exception:
+                pass
+        return f"[Error running command: {e}]"
+
+
+def git_diff_file(path: str, ref: str, max_bytes: int = MAX_FILE_BYTES) -> str:
+    return run_cmd_limited(
+        ["git", "diff", "--no-color", "--no-ext-diff", "-U0", ref, "--", path],
+        max_bytes=max_bytes,
+        timeout_s=10,
+    )
+
+
 def safe_resolve_path(repo_root: Path, rel_path: str) -> Optional[Path]:
     # Normalize diff paths like "a/foo" or "b/foo" already stripped earlier
     candidate = (repo_root / rel_path).resolve()
@@ -174,7 +216,7 @@ def is_denied(rel_path: str) -> bool:
     return False
 
 
-def read_file_safely(path: str, max_bytes: int = 200_000) -> str:
+def read_file_safely(path: str, max_bytes: int=200_000) -> str:
     try:
         p = Path(path)
         if not p.exists() or not p.is_file():
@@ -224,7 +266,8 @@ def main():
 
     parser.description = (
         "AI-assisted code review tool.\n"
-        "Default: diff-only. Use --with-context to include full files."
+        "Default: diff-only. Use --with-context to include full files.\n"
+        "If no diff is provided, review the file(s) holistically."
     )
 
     parser.add_argument(
@@ -239,60 +282,163 @@ def main():
         help="Review only the diff (default).",
     )
 
+    parser.add_argument(
+        "--file",
+        action="append",
+        default=[],
+        help="Review this file (can be provided multiple times).",
+    )
+
+    parser.add_argument(
+        "--diff-ref",
+        metavar="REF",
+        help="With --file, include git diff against this ref (e.g. HEAD, main).",
+    )
+
     args = parser.parse_args()
 
-    diff = sys.stdin.read()
-    print(f">>> diff chars: {len(diff)}", file=sys.stderr)
-
-    if not diff.strip():
-        print("No diff provided.", file=sys.stderr)
+    if args.diff_ref and not args.file:
+        print(
+            "Use: ai-review --file <path> --diff-ref REF",
+            file=sys.stderr
+        )
         return 1
 
-    # Collect file paths from diff
-    files = collect_paths_from_diff(diff)
+    stdin_text = sys.stdin.read()
+    use_file_mode = bool(args.file)
+    use_stdin_mode = bool(stdin_text.strip()) and not use_file_mode
+
+    if not (use_stdin_mode or use_file_mode):
+        print("No input provided.", file=sys.stderr)
+        return 1
+
+    if use_file_mode:
+        print(
+            f">>> stdin chars (ignored due to --file): {len(stdin_text)}",
+            file=sys.stderr
+        )
+    else:
+        print(f">>> diff chars: {len(stdin_text)}", file=sys.stderr)
 
     file_contexts = []
-    use_context = args.with_context and not args.diff_only
+    files_for_context = []
+    repo_root = get_repo_root()
+    user_content = ""
 
-    # Only include full file context if explicitly requested
-    if use_context:
-        print(
-            ">>> WARNING: --with-context will upload full file contents to the API. "
-            "Use with care.",
-            file=sys.stderr,
-        )
-
-        repo_root = get_repo_root()
-        files_for_context = set()
-
-        for rel_path in sorted(files):
+    if use_file_mode:
+        for rel_path in dict.fromkeys(args.file):
             if is_denied(rel_path):
                 continue
 
             abs_path = safe_resolve_path(repo_root, rel_path)
             if abs_path is None:
-                # Path traversal / outside-repo path; skip
                 continue
 
+            rel_path_norm = abs_path.relative_to(repo_root).as_posix()
             file_contexts.append(
-                f"\n===== FILE: {rel_path} =====\n"
-                f"{read_file_safely(str(abs_path))}"
+                f"\n===== FILE: {rel_path_norm} =====\n{read_file_safely(str(abs_path))}"
+            )
+            files_for_context.append(rel_path_norm)
+
+        diff_text = ""
+
+        if args.diff_ref:
+            # Include diffs for focus
+            diffs = []
+            remaining = MAX_DIFF_BYTES_TOTAL
+
+            for rel_path_norm in files_for_context:
+                if remaining <= 0:
+                    diffs.append("\n[...additional diffs omitted due to size limit...]\n")
+                    break
+
+                d = git_diff_file(
+                    rel_path_norm, args.diff_ref,
+                    max_bytes=min(remaining, MAX_FILE_BYTES)
+                )
+
+                # Budget is approximate (post-decode + truncation markers),
+                # but keeps requests bounded.
+                remaining -= len(d.encode("utf-8", errors="replace"))
+
+                if d.strip():
+                    diffs.append(d)
+
+            diff_text = "\n".join(diffs)
+
+        if diff_text.strip():
+            user_content = (
+                "FULL FILE CONTEXT:\n"
+                + "\n".join(file_contexts)
+                + "\n\nDIFF (for focus):\n"
+                + diff_text
+            )
+        else:
+            user_content = "FULL FILE CONTEXT:\n" + "\n".join(file_contexts)
+
+    else:
+        # Collect file paths from diff
+        files = collect_paths_from_diff(stdin_text)
+        use_context = args.with_context and not args.diff_only
+
+        # Only include full file context if explicitly requested
+        if use_context:
+            print(
+                ">>> WARNING: --with-context will upload full file contents to the API. "
+                "Use with care.",
+                file=sys.stderr,
             )
 
-            files_for_context.add(rel_path)
+            for rel_path in sorted(files):
+                if is_denied(rel_path):
+                    continue
 
-        count = len(files_for_context)
+                abs_path = safe_resolve_path(repo_root, rel_path)
+                if abs_path is None:
+                    continue
+
+                rel_path_norm = abs_path.relative_to(repo_root).as_posix()
+                file_contexts.append(
+                    f"\n===== FILE: {rel_path_norm} =====\n"
+                    f"{read_file_safely(str(abs_path))}"
+                )
+                files_for_context.append(rel_path_norm)
+
+            unique_files = sorted(set(files_for_context))
+            count = len(unique_files)
+
+            print(
+                f">>> Including context for {count} file"
+                f"{'' if count == 1 else 's'}:",
+                file=sys.stderr,
+            )
+
+            for f in unique_files:
+                print(f">>>   {f}", file=sys.stderr)
+
+        if use_context:
+            full_context = "\n".join(file_contexts)
+            print(f">>> full_context chars: {len(full_context)}", file=sys.stderr)
+            user_content = f"FULL FILE CONTEXT:\n{full_context}\n\nDIFF:\n{stdin_text}"
+        else:
+            user_content = f"DIFF:\n{stdin_text}"
+
+
+    # File mode: explicit, precise failure
+    if use_file_mode and not file_contexts:
         print(
-            f">>> Including context for {count} file"
-            f"{'' if count == 1 else 's'}:",
+            "No readable files provided (denied/missing/outside repo).",
             file=sys.stderr,
         )
+        return 1
 
-        for f in sorted(files_for_context):
-            print(f">>>   {f}", file=sys.stderr)
-
-    full_context = "\n".join(file_contexts)
-    print(f">>> full_context chars: {len(full_context)}", file=sys.stderr)
+    # Generic final guard (covers all paths)
+    if not user_content.strip():
+        print(
+            "No input provided. Pipe a diff or pass --file <path>.",
+            file=sys.stderr,
+        )
+        return 1
 
     api_key = os.getenv("RCPPALGOS_OPENAI_KEY")
 
@@ -301,11 +447,6 @@ def main():
         return 1
 
     client = OpenAI(api_key=api_key)
-
-    if use_context:
-        user_content = f"FULL FILE CONTEXT:\n{full_context}\n\nDIFF:\n{diff}"
-    else:
-        user_content = f"DIFF:\n{diff}"
 
     response = client.responses.create(
         model=MODEL,
