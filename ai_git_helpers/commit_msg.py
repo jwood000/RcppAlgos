@@ -6,13 +6,9 @@ import re
 import textwrap
 from openai import OpenAI
 
-# -----------------------------
-# Configuration
-# -----------------------------
-
-MODEL = "gpt-5.2"
+MODEL = os.getenv("AI_REVIEW_MODEL", "gpt-4o-mini")
 MAX_OUTPUT_TOKENS = 200
-
+TEMPERATURE = 0.2
 SUBJECT_MAX = 72
 BODY_WIDTH = 72
 
@@ -57,36 +53,78 @@ Diff:
 {diff}
 """
 
-ALLOWED_PREFIXES = (
-    "fix:", "feat:", "refactor:", "perf:",
-    "docs:", "test:", "chore:", "build:", "ci:"
-)
-
-def _ensure_prefix(subject: str) -> str:
-
-    if any(subject.startswith(p) for p in ALLOWED_PREFIXES):
-        return subject
-
-    return f"chore: {subject}"
-
-
 _BULLET_RE = re.compile(r'^(\s*)([-*]|\d+\.)\s+')
+
+ALLOWED_PREFIXES = {
+    "feat",
+    "fix",
+    "docs",
+    "style",
+    "refactor",
+    "perf",
+    "test",
+    "chore",
+    "build",
+    "ci"
+}
+
+def _ensure_prefix(subject: str, default_prefix: str = "chore") -> str:
+    """
+    Ensure the subject starts with a Conventional Commits prefix.
+    Accepts existing prefixes case-insensitively, but does not rewrite case.
+    """
+    if not subject:
+        return f"{default_prefix}:"
+
+    # Extract candidate prefix before first colon
+    head, sep, tail = subject.partition(":")
+    if sep:
+        if head.strip().lower() in ALLOWED_PREFIXES:
+            # Valid prefix already present (Fix:, FIX:, fix:, etc.)
+            return subject
+
+    # No valid prefix → prepend default
+    return f"{default_prefix}: {subject}"
+
+
+def _truncate(text: str, max_len: int) -> str:
+    """
+    Truncate text to at most max_len characters.
+    Prefer truncating at a word boundary. If no boundary is found,
+    perform a hard truncation.
+    """
+    if len(text) <= max_len:
+        return text
+
+    # Cut to max_len first
+    truncated = text[:max_len]
+
+    # If there's a space, truncate back to the last full word
+    last_space = truncated.rfind(" ")
+    if last_space > 0:
+        truncated = truncated[:last_space]
+
+    return truncated.rstrip()
 
 
 def _format_commit_message(raw: str,
                            subject_max: int = SUBJECT_MAX,
                            body_width: int = BODY_WIDTH) -> str:
-    raw = raw.strip()
+
+    raw = (raw or "").strip()
     if not raw:
         return ""
 
     lines = raw.splitlines()
-
-    # Subject = first non-empty line
     i = 0
+
     while i < len(lines) and not lines[i].strip():
         i += 1
-    subject = lines[i].strip() if i < len(lines) else ""
+
+    if i >= len(lines):
+        return ""
+
+    subject = lines[i].strip()
     i += 1
 
     # Rest = body
@@ -100,6 +138,7 @@ def _format_commit_message(raw: str,
         subject = subject[:subject_max].rstrip()
 
     subject = _ensure_prefix(subject)
+    subject = _truncate(subject, subject_max)
 
     if not body_text:
         return subject + "\n"
@@ -164,19 +203,26 @@ def main():
 
     client = OpenAI(api_key=api_key)
 
-    response = client.chat.completions.create(
+    response = client.responses.create(
         model=MODEL,
-        messages=[
+        input=[
             {"role": "system", "content": SYSTEM_PROMPT},
             {"role": "user", "content": USER_PROMPT_TEMPLATE.format(diff=diff)},
         ],
-        max_completion_tokens=MAX_OUTPUT_TOKENS,
-        temperature=0.2,
+        max_output_tokens=MAX_OUTPUT_TOKENS,
+        temperature=TEMPERATURE,
     )
 
-    message = response.choices[0].message.content or ""
-    print(_format_commit_message(message))
+    message = (response.output_text or "").strip()
+
+    if not message:
+        # Helpful debug if the model produced no text output
+        print(">>> Empty output_text from model.", file=sys.stderr)
+        print(">>> Raw response id:", getattr(response, "id", None), file=sys.stderr)
+    else:
+        print(_format_commit_message(message))
 
 
 if __name__ == "__main__":
     main()
+
