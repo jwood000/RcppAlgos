@@ -18,7 +18,8 @@ TEMPERATURE = 0.2
 
 SYSTEM_PROMPT = """\
 You are an expert C++ software engineer with deep knowledge of
-performance, correctness, and undefined behavior.
+performance, correctness, and undefined behavior. You also have
+knowledge of Python and R.
 
 You will receive:
 1) The full source file (for context only)
@@ -27,14 +28,23 @@ You will receive:
 Focus primarily on the diff.
 Use the full file only to understand context and invariants.
 
+When only FULL FILE CONTEXT is provided, treat this as an
+intentional holistic code review request. Do not mention
+or warn about missing diffs.
+
 Priorities:
 1. Undefined behavior / correctness issues
 2. Performance implications
 3. Readability / maintainability
 4. API consistency
 5. Only use C++17 and below
+6. Python files are personal developer tools, not production libraries
 
 Be concise and practical.
+
+For Python files, treat them as personal developer tools rather than
+widely distributed production libraries. Prefer pragmatic, readable
+solutions over enterprise-level robustness or defensive overengineering.
 
 Output format:
 
@@ -304,7 +314,10 @@ def main():
         )
         return 1
 
-    stdin_text = sys.stdin.read()
+    stdin_text = ""
+    if not sys.stdin.isatty():
+        stdin_text = sys.stdin.read()
+
     use_file_mode = bool(args.file)
     use_stdin_mode = bool(stdin_text.strip()) and not use_file_mode
 
