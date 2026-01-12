@@ -1,124 +1,11 @@
+#include "Partitions/CompositionsDistinctUtils.h"
 #include "Partitions/PartitionsCountDistinct.h"
 #include "Partitions/NextComposition.h"
 #include "RMatrix.h"
-#include <algorithm> // std::set_difference
 #include <numeric>
 #include <limits>
 
 constexpr int max_int = std::numeric_limits<int>::max();
-
-void BinaryNextElem(
-    int &uppBnd, int &lowBnd, int &ind, int lastElem,
-    int target, int partial, const std::vector<int> &v
-) {
-
-    int dist = target - (partial + v[ind]);
-
-    while ((uppBnd - lowBnd) > 1 && dist != 0) {
-        const int mid = (uppBnd - lowBnd) / 2;
-        ind = lowBnd + mid;
-        dist = target - (partial + v[ind]);
-
-        if (dist > 0) {
-            lowBnd = ind;
-        } else {
-            uppBnd = ind;
-        }
-    }
-
-    if (dist < 0) {
-        ind = lowBnd;
-        dist = target - (partial + v[ind]);
-    }
-
-    if (dist > 0 && ind < lastElem) {
-        ++ind;
-    }
-}
-
-int GetFirstPartitionDistinct(
-    const std::vector<int> &v, std::vector<int> &z,
-    int target, int m, int lenV
-) {
-
-    // Compute maximum possible sum: largest m elements
-    int testMax = 0;
-
-    for (int i = lenV - m; i < lenV; ++i) {
-        testMax += v[i];
-    }
-
-    if (testMax < target) {
-        return -2; // length too small
-    }
-
-    // Compute minimum possible sum: smallest m elements
-    int testMin = 0;
-
-    for (int i = 0; i < m; ++i) {
-        testMin += v[i];
-    }
-
-    if (testMin > target) {
-        return -1; // length too large
-    }
-
-    const int lastElem = lenV - 1;
-
-    // Initial positions for the first element
-    int currPos = lenV - m;
-    int mid = currPos / 2;
-
-    int partial = testMax - v[currPos];
-    int dist = target - (partial + v[mid]);
-
-    int lowBnd = (dist > 0) ? mid : 0;
-    int uppBnd = (dist > 0) ? currPos : mid;
-    int ind = mid;
-
-    // Fill first m-1 columns
-    for (int i = 0; i < m - 1; ++i) {
-
-        BinaryNextElem(uppBnd, lowBnd, ind,
-                       lastElem, target, partial, v);
-
-        z[i] = ind;
-        partial += v[ind];
-
-        // Distinct-case advancement
-        ++ind;
-        ++currPos;
-
-        lowBnd = ind;
-        uppBnd = currPos;
-
-        int span = uppBnd - lowBnd;
-        mid = span / 2;
-
-        ind = lowBnd + mid;
-        partial -= v[currPos];
-    }
-
-    // Last column
-    BinaryNextElem(uppBnd, lowBnd, ind,
-                   lastElem, target, partial, v);
-
-    z[m - 1] = ind;
-
-    // Final verification
-    int finalCheck = 0;
-
-    for (int i = 0; i < m; ++i) {
-        finalCheck += v[z[i]];
-    }
-
-    if (finalCheck != target) {
-        return 0;
-    }
-
-    return 1;
-}
-
 
 // If the size of complement is 0 then we know we are simply taking
 // permutations of z. Same thing with size 1 but a little reasoning is
@@ -425,7 +312,7 @@ int CompsDistinct(int* mat, std::vector<int> &z, std::size_t width,
     const int nz = std::count(z.cbegin(), z.cend(), 0);
 
     if (!isWeak && nz) {
-        z.erase(z.begin(), z.begin() + (nz - 1));
+        if (nz > 1) z.erase(z.begin(), z.begin() + (nz - 1));
 
         for (int i = width - nz, j = nz, nextStep = 0; i < width; ++i, --j) {
 
@@ -483,7 +370,7 @@ int CompsGenDistinct(
     const int idx_max = static_cast<int>(v.size()) - 1;
 
     if (!isWeak && nz > 1) {
-        z.erase(z.begin(), z.begin() + (nz - 1));
+        if (nz > 1) z.erase(z.begin(), z.begin() + (nz - 1));
         std::vector<int> allowed(idx_max);
         std::iota(allowed.begin(), allowed.end(), 1);
 
@@ -549,7 +436,7 @@ int CompsDistinct(
     const int nz = std::count(z.cbegin(), z.cend(), 0);
 
     if (!isWeak && nz) {
-        z.erase(z.begin(), z.begin() + (nz - 1));
+        if (nz > 1) z.erase(z.begin(), z.begin() + (nz - 1));
 
         for (int i = width - nz, j = nz, nextStep = 0; i < width; ++i, --j) {
 
@@ -606,7 +493,7 @@ int CompsGenDistinct(
     const int idx_max = static_cast<int>(v.size()) - 1;
 
     if (!isWeak && nz) {
-        z.erase(z.begin(), z.begin() + (nz - 1));
+        if (nz > 1) z.erase(z.begin(), z.begin() + (nz - 1));
         std::vector<int> allowed(idx_max);
         std::iota(allowed.begin(), allowed.end(), 1);
 

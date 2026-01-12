@@ -1,5 +1,6 @@
 #include "cpp11/protect.hpp"
 
+#include "Partitions/CompositionsDistinctUtils.h"
 #include "Partitions/NextComposition.h"
 #include "Partitions/NextPartition.h"
 #include <algorithm>  // std::find
@@ -550,43 +551,58 @@ void NextDistMZNotWeakComp(std::vector<int> &complement,
     std::vector<int> tailSum;
     lastIdx = complement.size() - 1;
 
-    int j = 0;
+    int nz = 0;
+    const int z_size = z.size();
 
-    while (z[j] == 0) {
-        ++j;
+    while (nz < z_size && z[nz] == 0) {
+        ++nz;
     }
 
-    int k = j + 1;
-    const int z_size = z.size();
-    const int non_zero_size = z_size - j;
+    if (nz == z_size) {
+        cpp11::stop("This should not happen!");
+    }
 
-    int max_possval = target - static_cast<int>(
-        (non_zero_size * (non_zero_size - 1)) / 2
-    );
+    int k = nz + 1;
 
-    if (z[j] == max_possval) {
-        for (; k < z_size; ++k) {
-            if (z[k] > z[k - 1]) {
-                break;
-            }
+    for (; k < z_size; ++k) {
+        if (z[k] > z[k - 1]) {
+            break;
         }
+    }
 
-        // means descending
-        if (k == z_size) {
-            int z_max = *std::max_element(z.cbegin(), z.cend());
-            int cmp_max = *std::max_element(
-                complement.cbegin(), complement.cend()
-            );
-            int cap = std::max(cmp_max, z_max);
+    // means descending
+    if (k == z_size && nz) {
+        const int non_zero_size = z_size - nz;
 
-            std::iota(z.begin() + j - 1, z.end(), 1);
-            z.back() = target - static_cast<int>(
-                (non_zero_size * (non_zero_size + 1)) / 2
-            );
+        // theoretical maximum if there are no constraints
+        int max_possval = target - static_cast<int>(
+            (non_zero_size * (non_zero_size - 1)) / 2
+        );
+
+        int z_max = *std::max_element(z.begin(), z.end());
+        int cmp_max = *std::max_element(complement.begin(), complement.end());
+        int cap = std::max(cmp_max, z_max);
+        cap = std::min(max_possval, cap);
+
+        if (z[nz] == cap && IsMaximizedGreedySuffix(z, target, nz)) {
+            if (nz > 1) z.erase(z.begin(), z.begin() + (nz - 1));
+
+            if (cap == target) {
+                std::iota(z.begin(), z.end(), 1);
+                z.back() = target - std::accumulate(z.begin(), z.end() - 1, 0);
+            } else {
+                std::vector<int> allowed(cap);
+                std::iota(allowed.begin(), allowed.end(), 1);
+                GetFirstPartitionDistinct(allowed, z, target, z.size(), cap);
+                for (auto &z_i: z) ++z_i;
+            }
+
+            z.insert(z.begin(), nz - 1, 0);
 
             CompsDistinctSetup(
                 z, complement, target, i1, i2, myMax, cap, false
             );
+
             return;
         }
     }
