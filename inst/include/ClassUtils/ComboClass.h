@@ -30,7 +30,7 @@ protected:
     const std::vector<int> freqs;
     std::vector<int> myReps;
 
-    // This has to be initialized later becuase it
+    // This has to be initialized later because it
     // depends on freqs.size, IsMult, and n
     const int n1;
 

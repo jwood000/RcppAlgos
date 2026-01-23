@@ -65,6 +65,7 @@ int PartsStdManager(
         case PartitionType::CmpDstctZNotWk:
             return CompsDistinct(mat, z, width, nRows, false);
 
+        case PartitionType::CmpDstctWeak:
         case PartitionType::CmpDstctMZWeak:
             return CompsDistinct(mat, z, width, nRows, true);
 
@@ -141,6 +142,7 @@ int PartsGenManager(T* mat, const std::vector<T> &v, std::vector<int> &z,
         case PartitionType::CmpDstCapMZNotWk:
             return CompsGenDistinct(mat, v, z, width, nRows, false);
 
+        case PartitionType::CmpDstctWeak:
         case PartitionType::CmpDstctMZWeak:
         case PartitionType::CmpDstCapMZWeak:
             return CompsGenDistinct(mat, v, z, width, nRows, true);
@@ -223,6 +225,7 @@ int PartsStdParallel(RcppParallel::RMatrix<int> &mat, std::vector<int> &z,
                 mat, z, strt, width, nRows, false
             );
 
+        case PartitionType::CmpDstctWeak:
         case PartitionType::CmpDstctMZWeak:
             return CompsDistinct(
                 mat, z, strt, width, nRows, true
@@ -285,6 +288,7 @@ int PartsGenParallel(RcppParallel::RMatrix<T> &mat,
         case PartitionType::CmpDstCapMZNotWk:
             return CompsGenDistinct(mat, v, z, strt, width, nRows, false);
 
+        case PartitionType::CmpDstctWeak:
         case PartitionType::CmpDstctMZWeak:
         case PartitionType::CmpDstCapMZWeak:
             return CompsGenDistinct(mat, v, z, strt, width, nRows, true);

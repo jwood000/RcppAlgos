@@ -42,6 +42,8 @@
 // CmpDstctZNotWk : compositionsCount(0:20, 5, freqs = c(3, rep(1, 20))) -->>
 //                   CountCompsDistinctMultiZero(20, 5, 0, 2)
 //
+// CmpDstctWeak   : compositionsCount(0:20, 5, weak = TRUE)
+//
 // CmpDstctMZWeak : compositionsCount(0:20, 5, freqs = c(3, rep(1, 20)),
 //                                    weak = TRUE) -->>
 //                   CountCompsDistinctMZWeak(20, 5, 0, 2)
@@ -188,6 +190,7 @@
 //                   zeros. Only non-zero values are considered when
 //                   determining the next iteration.
 //
+// CmpDstctWeak    : Same as above however we allow one term to be zero.
 // CmpDstctMZWeak  : Same as above however we allow terms to be zero.
 //
 // CmpDstctCapped  : E.g. tar = 20, m = 4, from 1:9 gives startZ = c(1, 2, 8, 9)
@@ -256,24 +259,25 @@ enum class PartitionType {
     CmpRpZroNotWk    = 15,
     CmpDstctNoZero   = 16,
     CmpDstctZNotWk   = 17,
-    CmpDstctMZWeak   = 18,
-    CmpDstctCapped   = 19,
-    CmpDstCapMZNotWk = 20,
-    CmpDstCapMZWeak  = 21,
-    CompMultiset     = 22,
-    PrmRepPartNoZ    = 23,
-    PrmRepPart       = 24,
-    PrmRepCapped     = 25,
-    PrmDstPartNoZ    = 26,
-    PrmDstPrtOneZ    = 27,
-    PrmDstPartMZ     = 28,
-    PrmDstPrtCap     = 29,
-    PrmDstPrtCapMZ   = 30,
-    PrmMultiset      = 31,
-    NotMapped        = 32,
-    NoSolution       = 33,
-    NotPartition     = 34,
-    NumTypes         = 35
+    CmpDstctWeak     = 18,
+    CmpDstctMZWeak   = 19,
+    CmpDstctCapped   = 20,
+    CmpDstCapMZNotWk = 21,
+    CmpDstCapMZWeak  = 22,
+    CompMultiset     = 23,
+    PrmRepPartNoZ    = 24,
+    PrmRepPart       = 25,
+    PrmRepCapped     = 26,
+    PrmDstPartNoZ    = 27,
+    PrmDstPrtOneZ    = 28,
+    PrmDstPartMZ     = 29,
+    PrmDstPrtCap     = 30,
+    PrmDstPrtCapMZ   = 31,
+    PrmMultiset      = 32,
+    NotMapped        = 33,
+    NoSolution       = 34,
+    NotPartition     = 35,
+    NumTypes         = 36
 };
 
 constexpr const char* PTypeNames[] = {
@@ -295,6 +299,7 @@ constexpr const char* PTypeNames[] = {
     "CmpRpZroNotWk",
     "CmpDstctNoZero",
     "CmpDstctZNotWk",
+    "CmpDstctWeak",
     "CmpDstctMZWeak",
     "CmpDstctCapped",
     "CmpDstCapMZNotWk",

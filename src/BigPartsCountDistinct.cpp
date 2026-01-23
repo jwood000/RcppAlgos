@@ -300,3 +300,28 @@ void CountCompsDistinctRstrctdMZ(
         }
     }
 }
+
+void CountCompsDistinctRstrctdMZWeak(
+    mpz_class &res, std::vector<std::vector<mpz_class>> &p2d,
+    int n, int m, const std::vector<int> &allowed, int strtLen
+) {
+
+    if (strtLen == 0) {
+        // This means that z contains only zeros
+        res = 1;
+    } else {
+        res = 0;
+        mpz_class partsCnt = 1;
+        mpz_class permsCnt = 1;
+
+        for (int i = m; i > m - strtLen; --i) {
+            permsCnt *= i;
+        }
+
+        for (int i = strtLen; i <= m; ++i) {
+            CountPartsDistLenRstrctd(partsCnt, p2d, n, i, allowed);
+            res += (permsCnt * partsCnt);
+            permsCnt *= (m - i);
+        }
+    }
+}

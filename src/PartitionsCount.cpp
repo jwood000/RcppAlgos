@@ -45,6 +45,8 @@ std::unique_ptr<CountClass> MakeCount(PartitionType ptype) {
             return std::make_unique<CompsDistinctLen>();
         } case PartitionType::CmpDstctZNotWk: {
             return std::make_unique<CompsDistLenMZ>();
+        } case PartitionType::CmpDstctWeak: {
+            return std::make_unique<CompsDistinctLen>();
         } case PartitionType::CmpDstctMZWeak: {
             return std::make_unique<CompsDistLenMZWeak>();
         } case PartitionType::CmpDstctCapped: {

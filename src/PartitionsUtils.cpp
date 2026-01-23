@@ -249,6 +249,7 @@ void SetStartPartitionZ(const std::vector<int> &Reps,
             break;
 
         case PartitionType::DstctOneZero:
+        case PartitionType::CmpDstctWeak:
         case PartitionType::PrmDstPrtOneZ:
             std::iota(part.startZ.begin(), part.startZ.end(), 0);
             part.startZ.back() = part.target - ((part.width - 1) *
@@ -266,6 +267,12 @@ void SetStartPartitionZ(const std::vector<int> &Reps,
             // Any place we see Reps.front() in the last block we simply
             // replace with 1.
             if (Reps.empty()) {
+                // The below statement is equivalent to:
+                //
+                //    std::iota(part.startZ.begin(), part.startZ.end(), 0)
+                //
+                // We leave the '+ 1' and starter at 1 to mimic the else block
+                // for consistency
                 std::iota(part.startZ.begin() + 1, part.startZ.end(), 1);
                 part.startZ.back() = part.target -
                     (part.width - 1) * (part.width - 2) / 2;
@@ -409,6 +416,11 @@ int DiscoverPType(const std::vector<int> &Reps,
                     //        PartitionType::DstctMultiZero
                     part.ptype = part.isPerm ?
                         PartitionType::PrmDstPartMZ : ptype;
+                    return 1;
+                } else if (part.isDist && part.isComp && part.includeZero) {
+                    part.ptype = part.isWeak ?
+                        PartitionType::CmpDstctWeak :
+                        PartitionType::CmpDstctZNotWk;
                     return 1;
                 } else if (part.isDist && part.isComp) {
                     part.ptype = PartitionType::CmpDstctNoZero;
@@ -624,16 +636,17 @@ void StandardDesign(const std::vector<int> &Reps,
             part.solnExist = false;
         }
     } else if (part.isDist) {
-        if (part.includeZero && part.isComp) {
-            // compositionsCount(0:20, 3)
-            //
-            // ## N.B. We could map the weak case to a non-zero situation,
-            // ## but would require some code handling down the line.
-            //
+        if (part.includeZero && part.isComp && part.isWeak) {
             // compositionsCount(0:20, 3, weak = TRUE)
-            part.ptype = part.isWeak ?
-                PartitionType::CmpDstctMZWeak :
-                PartitionType::CmpDstctZNotWk;
+            part.ptype = PartitionType::CmpDstctWeak;
+
+            // We need to add m in target in order to
+            // correctly count the number of partitions
+            part.mapTar += width;
+            part.mapIncZero = false;
+        } else if (part.includeZero && part.isComp) {
+            // compositionsCount(0:20, 3)
+            part.ptype = PartitionType::CmpDstctZNotWk;
         } else if (part.includeZero) {
             // partitionsCount(0:20)
             // partitionsCount(0:20, 3)
@@ -846,7 +859,13 @@ void SetPartitionDesign(
 
         if (part.ptype == PartitionType::CmpDstctZNotWk && v.front() != 0) {
             part.ptype = original_weak_val ?
-                PartitionType::CmpDstctMZWeak : PartitionType::NotMapped;
+                (part.isDist ?
+                    PartitionType::CmpDstctWeak :
+                        (part.isMult && part.allOne ?
+                            PartitionType::CmpDstctMZWeak :
+                                PartitionType::NotMapped
+                        )
+                ) : PartitionType::NotMapped;
         }
     }
 

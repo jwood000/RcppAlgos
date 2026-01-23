@@ -3,6 +3,7 @@
 void Partitions::SetPartValues() {
 
     bool IsCompDist = (
+        part.ptype == PartitionType::CmpDstctWeak    ||
         part.ptype == PartitionType::CmpDstctMZWeak  ||
         part.ptype == PartitionType::CmpDstctNoZero  ||
         part.ptype == PartitionType::CmpDstctZNotWk  ||

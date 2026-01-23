@@ -1,6 +1,7 @@
 #include "Partitions/CompositionsDistinctUtils.h"
 #include "Partitions/PartitionsCountDistinct.h"
 #include "Partitions/NextComposition.h"
+#include <algorithm>
 #include "RMatrix.h"
 #include <numeric>
 #include <limits>
@@ -369,7 +370,7 @@ int CompsGenDistinct(
     const int nz = std::count(z.cbegin(), z.cend(), 0);
     const int idx_max = static_cast<int>(v.size()) - 1;
 
-    if (!isWeak && nz > 1) {
+    if (!isWeak && nz && v.front() == 0) {
         if (nz > 1) z.erase(z.begin(), z.begin() + (nz - 1));
         std::vector<int> allowed(idx_max);
         std::iota(allowed.begin(), allowed.end(), 1);
@@ -492,7 +493,7 @@ int CompsGenDistinct(
     const int nz = std::count(z.cbegin(), z.cend(), 0);
     const int idx_max = static_cast<int>(v.size()) - 1;
 
-    if (!isWeak && nz) {
+    if (!isWeak && nz && v.front() == 0) {
         if (nz > 1) z.erase(z.begin(), z.begin() + (nz - 1));
         std::vector<int> allowed(idx_max);
         std::iota(allowed.begin(), allowed.end(), 1);
