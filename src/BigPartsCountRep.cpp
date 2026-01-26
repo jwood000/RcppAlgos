@@ -8,6 +8,7 @@ void CountPartsRepLenRstrctd(
     int n, int m, const std::vector<int> &allowed, int strtLen
 ) {
 
+    ResetP2D(p2d);
     p2d[0][0] = 1; // one way to make 0 with 0 parts
 
     for (int num : allowed) {
