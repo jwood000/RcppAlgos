@@ -6,7 +6,7 @@ void StandardPartitions(
     int* mat, std::vector<int> &z, PartitionType ptype, double lower,
     mpz_class &lowerMpz, int nCols, int width, int nRows, int nThreads,
     int lastCol, int lastElem, int tar, int strtLen, int cap, bool IsGmp,
-    bool IsComb, bool includeZero, bool IsComp
+    bool IsComb, bool includeZero, bool IsComp, int zeroBudget
 );
 
 template <typename T>

@@ -2,23 +2,20 @@
 
 void Partitions::SetPartValues() {
 
-    bool IsCompDist = (
-        part.ptype == PartitionType::CmpDstctWeak    ||
-        part.ptype == PartitionType::CmpDstctMZWeak  ||
-        part.ptype == PartitionType::CmpDstctNoZero  ||
-        part.ptype == PartitionType::CmpDstctZNotWk  ||
-        part.ptype == PartitionType::CmpDstctCapped  ||
-        part.ptype == PartitionType::CmpDstCapMZWeak ||
-        part.ptype == PartitionType::CmpDstCapMZNotWk
-    );
+    bool IsCompDist = std::find(
+        CmpDstPTypeArr.cbegin(), CmpDstPTypeArr.cend(), part.ptype
+    ) != CmpDstPTypeArr.cend();
 
     if (IsCompDist) {
         bool compZero = IsComplementZeroBased(
             part.includeZero, part.isWeak, ctype == ConstraintType::PartMapping
         );
 
+        int zeroBudget = part.isWeak ? part.maxZeros :
+            std::count(z.cbegin(), z.cend(), 0);
+
         CompsDistinctSetup(z, rpsCnt, tarDiff, edge, boundary,
-                           pivot, n - 1, compZero);
+                           pivot, n - 1, compZero, zeroBudget);
     } else if (part.ptype == PartitionType::Multiset) {
         PrepareMultisetPart(
             rpsCnt, z, boundary, pivot, edge, lastCol, lastElem
@@ -287,7 +284,7 @@ SEXP Partitions::randomAccess(SEXP RindexVec) {
 
             ThreadSafeSample(matInt, res, vInt, mySample, mpzVec,
                              myReps, nthParts, part.width, sampSize,
-                             nThreads, Parallel, false, part.mapTar,
+                             nThreads, LocalPar, false, part.mapTar,
                              strtLen, cap, IsGmp);
 
             zUpdateIndex(vNum, vInt, z, sexpVec, res, width, sampSize, bAddOne);
@@ -299,7 +296,7 @@ SEXP Partitions::randomAccess(SEXP RindexVec) {
 
             ThreadSafeSample(matNum, res, vNum, mySample, mpzVec,
                              myReps, nthParts, part.width, sampSize,
-                             nThreads, Parallel, false, part.mapTar,
+                             nThreads, LocalPar, false, part.mapTar,
                              strtLen, cap, IsGmp);
 
             zUpdateIndex(vNum, vInt, z, sexpVec, res, width, sampSize, bAddOne);

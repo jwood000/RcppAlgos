@@ -301,7 +301,7 @@ void CompsDistMZWorker(
 }
 
 int CompsDistinct(int* mat, std::vector<int> &z, std::size_t width,
-                  std::size_t nRows, bool isWeak) {
+                  std::size_t nRows, bool isWeak, int zeroBudget) {
 
     int tar = 0;
     int idx_1 = 0;
@@ -318,9 +318,17 @@ int CompsDistinct(int* mat, std::vector<int> &z, std::size_t width,
         for (int i = width - nz, j = nz, nextStep = 0; i < width; ++i, --j) {
 
             CompsDistinctSetup(
-                z, complement, tar, idx_1, idx_2, myMax, max_int, false
+                z, complement, tar, idx_1, idx_2, myMax, max_int, false, 1
             );
-            nextStep += CountCompsDistinctLen(tar, i);
+
+            double safe_count = CountCompsDistinctLen(tar, i);
+
+            if ((safe_count + nextStep) < max_int) {
+                nextStep += safe_count;
+            } else {
+                nextStep = max_int;
+            }
+
             nextStep = std::min(nextStep, static_cast<int>(nRows));
 
             CompsDistMZWorker(
@@ -344,8 +352,9 @@ int CompsDistinct(int* mat, std::vector<int> &z, std::size_t width,
         }
     }
 
+    zeroBudget = isWeak ? zeroBudget : std::count(z.cbegin(), z.cend(), 0);
     CompsDistinctSetup(
-        z, complement, tar, idx_1, idx_2, myMax, max_int, isWeak
+        z, complement, tar, idx_1, idx_2, myMax, max_int, isWeak, zeroBudget
     );
     CompsDistStdWorker(
         mat, z, complement, idx_1, idx_2, myMax, tar, strt, width, nRows
@@ -357,7 +366,7 @@ int CompsDistinct(int* mat, std::vector<int> &z, std::size_t width,
 template <typename T>
 int CompsGenDistinct(
     T* mat, const std::vector<T> &v, std::vector<int> &z,
-    std::size_t width, std::size_t nRows, bool isWeak
+    std::size_t width, std::size_t nRows, bool isWeak, int zeroBudget
 ) {
 
     int tar = 0;
@@ -378,10 +387,17 @@ int CompsGenDistinct(
         for (int i = width - nz, j = nz, nextStep = 0; i < width; ++i, --j) {
 
             CompsDistinctSetup(
-                z, complement, tar, idx_1, idx_2, myMax, idx_max, false
+                z, complement, tar, idx_1, idx_2, myMax, idx_max, false, 1
             );
 
-            nextStep += CountCompDistLenRstrctd(tar, i, allowed);
+            double safe_count = CountCompDistLenRstrctd(tar, i, allowed);
+
+            if ((safe_count + nextStep) < max_int) {
+                nextStep += safe_count;
+            } else {
+                nextStep = max_int;
+            }
+
             nextStep = std::min(nextStep, static_cast<int>(nRows));
 
             CompsDistMZWorker(
@@ -412,9 +428,10 @@ int CompsGenDistinct(
     }
 
     bool compZero = IsComplementZeroBased(v.front() == 0, isWeak, true);
+    zeroBudget = isWeak ? zeroBudget : std::count(z.cbegin(), z.cend(), 0);
 
     CompsDistinctSetup(
-        z, complement, tar, idx_1, idx_2, myMax, idx_max, compZero
+        z, complement, tar, idx_1, idx_2, myMax, idx_max, compZero, zeroBudget
     );
     CompsDistStdWorker(
         mat, v, z, complement, idx_1, idx_2, myMax, tar, strt, width, nRows
@@ -425,7 +442,8 @@ int CompsGenDistinct(
 
 int CompsDistinct(
     RcppParallel::RMatrix<int> &mat, std::vector<int> &z,
-    std::size_t strt, std::size_t width, std::size_t nRows, bool isWeak
+    std::size_t strt, std::size_t width, std::size_t nRows,
+    bool isWeak, int zeroBudget
 ) {
 
     int tar = 0;
@@ -442,9 +460,17 @@ int CompsDistinct(
         for (int i = width - nz, j = nz, nextStep = 0; i < width; ++i, --j) {
 
             CompsDistinctSetup(
-                z, complement, tar, idx_1, idx_2, myMax, max_int, false
+                z, complement, tar, idx_1, idx_2, myMax, max_int, false, 1
             );
-            nextStep += CountCompsDistinctLen(tar, i);
+
+            double safe_count = CountCompsDistinctLen(tar, i);
+
+            if ((safe_count + nextStep) < max_int) {
+                nextStep += safe_count;
+            } else {
+                nextStep = max_int;
+            }
+
             nextStep = std::min(nextStep, static_cast<int>(nRows));
 
             CompsDistMZWorker(
@@ -467,8 +493,9 @@ int CompsDistinct(
         }
     }
 
+    zeroBudget = isWeak ? zeroBudget : std::count(z.cbegin(), z.cend(), 0);
     CompsDistinctSetup(
-        z, complement, tar, idx_1, idx_2, myMax, max_int, isWeak
+        z, complement, tar, idx_1, idx_2, myMax, max_int, isWeak, zeroBudget
     );
     CompsDistStdWorker(
         mat, z, complement, idx_1, idx_2, myMax, tar, strt, width, nRows
@@ -481,7 +508,7 @@ template <typename T>
 int CompsGenDistinct(
     RcppParallel::RMatrix<T> &mat, const std::vector<T> &v,
     std::vector<int> &z, std::size_t strt, std::size_t width,
-    std::size_t nRows, bool isWeak
+    std::size_t nRows, bool isWeak, int zeroBudget
 ) {
 
     int tar = 0;
@@ -501,9 +528,17 @@ int CompsGenDistinct(
         for (int i = width - nz, j = nz, nextStep = 0; i < width; ++i, --j) {
 
             CompsDistinctSetup(
-                z, complement, tar, idx_1, idx_2, myMax, idx_max, false
+                z, complement, tar, idx_1, idx_2, myMax, idx_max, false, 1
             );
-            nextStep += CountCompDistLenRstrctd(tar, i, allowed);
+
+            double safe_count = CountCompDistLenRstrctd(tar, i, allowed);
+
+            if ((safe_count + nextStep) < max_int) {
+                nextStep += safe_count;
+            } else {
+                nextStep = max_int;
+            }
+
             nextStep = std::min(nextStep, static_cast<int>(nRows));
 
             CompsDistMZWorker(
@@ -534,9 +569,10 @@ int CompsGenDistinct(
     }
 
     bool compZero = IsComplementZeroBased(v.front() == 0, isWeak, true);
+    zeroBudget = isWeak ? zeroBudget : std::count(z.cbegin(), z.cend(), 0);
 
     CompsDistinctSetup(
-        z, complement, tar, idx_1, idx_2, myMax, idx_max, compZero
+        z, complement, tar, idx_1, idx_2, myMax, idx_max, compZero, zeroBudget
     );
     CompsDistStdWorker(
         mat, v, z, complement, idx_1, idx_2, myMax, tar, strt, width, nRows
@@ -546,18 +582,18 @@ int CompsGenDistinct(
 }
 
 template int CompsGenDistinct(int*, const std::vector<int>&, std::vector<int>&,
-                              std::size_t, std::size_t, bool);
+                              std::size_t, std::size_t, bool, int);
 template int CompsGenDistinct(
     double*, const std::vector<double>&, std::vector<int>&,
-    std::size_t, std::size_t, bool
+    std::size_t, std::size_t, bool, int
 );
 
 template int CompsGenDistinct(
     RcppParallel::RMatrix<int>&, const std::vector<int>&,
-    std::vector<int>&, std::size_t, std::size_t, std::size_t, bool
+    std::vector<int>&, std::size_t, std::size_t, std::size_t, bool, int
 );
 
 template int CompsGenDistinct(
     RcppParallel::RMatrix<double>&, const std::vector<double>&,
-    std::vector<int>&, std::size_t, std::size_t, std::size_t, bool
+    std::vector<int>&, std::size_t, std::size_t, std::size_t, bool, int
 );

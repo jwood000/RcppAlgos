@@ -114,7 +114,7 @@ SEXP ConstraintsReturn(
             StandardPartitions(
                 matInt, z, part.ptype, lower, lowerMpz, nCols, width, nRows,
                 nThreads, lastCol, lastElem, part.mapTar, strtLen, cap,
-                IsGmp, IsComb, part.includeZero, part.isComp
+                IsGmp, IsComb, part.includeZero, part.isComp, part.maxZeros
             );
         } else {
             GeneralPartitions(matInt, vInt, z, part, lower, lowerMpz,

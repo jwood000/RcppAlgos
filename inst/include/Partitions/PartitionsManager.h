@@ -5,23 +5,23 @@
 
 int PartsStdManager(
     int* mat, std::vector<int> &z, int width, int lastElem,
-    int lastCol, int nRows, PartitionType ptype
+    int lastCol, int nRows, PartitionType ptype, int zeroBudget
 );
 
 int PartsStdParallel(RcppParallel::RMatrix<int> &mat, std::vector<int> &z,
                      int strt, int width, int lastElem, int lastCol,
-                     int nRows, PartitionType ptype);
+                     int nRows, PartitionType ptype, int zeroBudget);
 
 template <typename T>
 int PartsGenParallel(RcppParallel::RMatrix<T> &mat,
                      const std::vector<T> &v, std::vector<int> &z, int strt,
                      int width, int lastElem, int lastCol, int nRows,
-                     PartitionType ptype);
+                     PartitionType ptype, int zeroBudget);
 
 template <typename T>
 int PartsGenManager(T* mat, const std::vector<T> &v, std::vector<int> &z,
                     int width, int lastElem, int lastCol, int nRows,
-                    PartitionType ptype);
+                    PartitionType ptype, int zeroBudget);
 
 template <typename T>
 int PartsGenManager(std::vector<T> &partsVec, const std::vector<T> &v,

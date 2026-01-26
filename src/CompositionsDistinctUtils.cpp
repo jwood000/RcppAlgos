@@ -195,13 +195,10 @@ bool IsComplementZeroBased(bool firstZero, bool isWeak, bool IsGen) {
     return false;
 }
 
-std::vector<int> PrepareComplement(
-    std::vector<int> z, int target, int idx_max, bool startAtZero
-) {
+std::vector<int> PrepareComplement(std::vector<int> z, int target, int idx_max,
+                                   bool startAtZero, int zeroBudget) {
 
-    const int nz = std::count(z.cbegin(), z.cend(), 0);
-
-    int z_size = static_cast<int>(z.size()) - nz;
+    int z_size = static_cast<int>(z.size()) - zeroBudget;
     if (startAtZero) z_size = std::max(0, z_size - 1);
 
     // Here we are trying to find the maximum possible value of z. We do this
@@ -230,6 +227,16 @@ std::vector<int> PrepareComplement(
             myRange.begin(), myRange.end(), z.begin(), z.end(),
             std::inserter(complement, complement.begin())
         );
+
+        const int z_zeros = std::count(z.cbegin(), z.cend(), 0);
+        const int cmp_zeros = std::count(
+            complement.cbegin(), complement.cend(), 0
+        );
+        const int num_zeros_needed = zeroBudget - cmp_zeros - z_zeros;
+
+        if (num_zeros_needed > 0) {
+            complement.insert(complement.begin(), num_zeros_needed, 0);
+        }
     }
 
     return complement;
@@ -241,7 +248,6 @@ std::vector<int> PrepareComplement(
 // These invariants are guaranteed by the calling code.
 int GetMax(const std::vector<int> &z, const std::vector<int> &complement) {
 
-    // This code
     int res = z.back() > z[z.size() - 2] ? z.back() : z[z.size() - 2];
     const int last_two = std::accumulate(z.end() - 2, z.end(), 0);
 
@@ -388,17 +394,6 @@ int RangeSum(const std::vector<int>& v, int low, int high) {
     return std::accumulate(v.cbegin() + low, v.cbegin() + high, 0);
 }
 
-int FindBacktrackIndex(const std::vector<int>& idx, int k, int g) {
-
-    // We are finding the first index that isn't maximized
-    while (k > 0 && idx[k] == g) {
-        --k;
-        --g;
-    }
-
-    return k;
-}
-
 int NextDistinctBlock(const std::vector<int> &v, std::vector<int> &idx,
                       std::vector<int> &tailSum, int target, int m) {
 
@@ -447,9 +442,13 @@ int NextDistinctBlock(const std::vector<int> &v, std::vector<int> &idx,
             return 1;
         }
 
-        // Need to backtrack to an earlier index position k
-        // Find the earliest index we can increment
-        int k = FindBacktrackIndex(idx, m - 2, n - 2);
+        // Start backtracking from the rightmost pivot position (m - 2).
+        // The last index (m - 1) is handled separately via binary search,
+        // so the earliest position that can be incremented is m - 2.
+        // Earlier versions attempted to skip already-maximized suffixes,
+        // but in practice the pruning logic below handles those cases,
+        // so starting from m - 2 is always correct and simpler.
+        int k = m - 2;
 
         bool impossible = true;
 
@@ -518,15 +517,16 @@ int NextDistinctBlock(const std::vector<int> &v, std::vector<int> &idx,
 }
 
 int CompsDistinctSetup(
-    const std::vector<int> &z, std::vector<int> &complement, int &tar,
-    int &idx_1, int &idx_2, int &myMax, int idx_max, bool startAtZero
+    const std::vector<int> &z, std::vector<int> &complement,
+    int &tar, int &idx_1, int &idx_2, int &myMax, int idx_max,
+    bool startAtZero, int zeroBudget
 ) {
 
     // tar = total sum of z
     tar = std::accumulate(z.cbegin(), z.cend(), 0);
 
     // Build complement = {0..tar} \ z, sorted
-    complement = PrepareComplement(z, tar, idx_max, startAtZero);
+    complement = PrepareComplement(z, tar, idx_max, startAtZero, zeroBudget);
 
     if (complement.empty()) {
         return 0;

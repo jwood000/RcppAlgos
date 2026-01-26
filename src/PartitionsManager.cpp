@@ -12,7 +12,7 @@
 
 int PartsStdManager(
     int* mat, std::vector<int> &z, int width, int lastElem,
-    int lastCol, int nRows, PartitionType ptype
+    int lastCol, int nRows, PartitionType ptype, int zeroBudget
 ) {
 
     switch (ptype) {
@@ -63,11 +63,11 @@ int PartsStdManager(
             // ----- CompsDistinct -----
         case PartitionType::CmpDstctNoZero:
         case PartitionType::CmpDstctZNotWk:
-            return CompsDistinct(mat, z, width, nRows, false);
+            return CompsDistinct(mat, z, width, nRows, false, zeroBudget);
 
         case PartitionType::CmpDstctWeak:
         case PartitionType::CmpDstctMZWeak:
-            return CompsDistinct(mat, z, width, nRows, true);
+            return CompsDistinct(mat, z, width, nRows, true, zeroBudget);
 
         default:
             cpp11::stop("Case not supported");
@@ -77,7 +77,7 @@ int PartsStdManager(
 template <typename T>
 int PartsGenManager(T* mat, const std::vector<T> &v, std::vector<int> &z,
                     int width, int lastElem, int lastCol, int nRows,
-                    PartitionType ptype) {
+                    PartitionType ptype, int zeroBudget) {
 
     // PrmRepPart, PrmDstPrtOneZ, DstctStdAll, DstctOneZero, RepStdAll,
     // RepShort and CompRepWeak shouldn't happen. In any mapped case that
@@ -140,12 +140,13 @@ int PartsGenManager(T* mat, const std::vector<T> &v, std::vector<int> &z,
         case PartitionType::CmpDstctZNotWk:
         case PartitionType::CmpDstctCapped:
         case PartitionType::CmpDstCapMZNotWk:
-            return CompsGenDistinct(mat, v, z, width, nRows, false);
+            return CompsGenDistinct(mat, v, z, width, nRows, false, zeroBudget);
 
         case PartitionType::CmpDstctWeak:
+        case PartitionType::CmpDstCapWeak:
         case PartitionType::CmpDstctMZWeak:
         case PartitionType::CmpDstCapMZWeak:
-            return CompsGenDistinct(mat, v, z, width, nRows, true);
+            return CompsGenDistinct(mat, v, z, width, nRows, true, zeroBudget);
 
         default:
             cpp11::stop("Case not supported");
@@ -190,7 +191,7 @@ int PartsGenManager(std::vector<T> &partsVec, const std::vector<T> &v,
 
 int PartsStdParallel(RcppParallel::RMatrix<int> &mat, std::vector<int> &z,
                      int strt, int width, int lastElem, int lastCol, int nRows,
-                     PartitionType ptype) {
+                     PartitionType ptype, int zeroBudget) {
 
     switch (ptype) {
         case PartitionType::NoSolution:
@@ -222,13 +223,13 @@ int PartsStdParallel(RcppParallel::RMatrix<int> &mat, std::vector<int> &z,
         case PartitionType::CmpDstctNoZero:
         case PartitionType::CmpDstctZNotWk:
             return CompsDistinct(
-                mat, z, strt, width, nRows, false
+                mat, z, strt, width, nRows, false, zeroBudget
             );
 
         case PartitionType::CmpDstctWeak:
         case PartitionType::CmpDstctMZWeak:
             return CompsDistinct(
-                mat, z, strt, width, nRows, true
+                mat, z, strt, width, nRows, true, zeroBudget
             );
 
         default:
@@ -240,7 +241,7 @@ template <typename T>
 int PartsGenParallel(RcppParallel::RMatrix<T> &mat,
                      const std::vector<T> &v, std::vector<int> &z, int strt,
                      int width, int lastElem, int lastCol, int nRows,
-                     PartitionType ptype) {
+                     PartitionType ptype, int zeroBudget) {
 
     // DstctStdAll, DstctOneZero, RepStdAll, RepShort and CompRepWeak
     // shouldn't happen just as in the non-Parallel case. In any mapped case
@@ -286,12 +287,17 @@ int PartsGenParallel(RcppParallel::RMatrix<T> &mat,
         case PartitionType::CmpDstctZNotWk:
         case PartitionType::CmpDstctCapped:
         case PartitionType::CmpDstCapMZNotWk:
-            return CompsGenDistinct(mat, v, z, strt, width, nRows, false);
+            return CompsGenDistinct(
+                mat, v, z, strt, width, nRows, false, zeroBudget
+            );
 
         case PartitionType::CmpDstctWeak:
+        case PartitionType::CmpDstCapWeak:
         case PartitionType::CmpDstctMZWeak:
         case PartitionType::CmpDstCapMZWeak:
-            return CompsGenDistinct(mat, v, z, strt, width, nRows, true);
+            return CompsGenDistinct(
+                mat, v, z, strt, width, nRows, true, zeroBudget
+            );
 
         default:
             cpp11::stop("Case not supported");
@@ -300,10 +306,10 @@ int PartsGenParallel(RcppParallel::RMatrix<T> &mat,
 
 template int PartsGenManager(int*, const std::vector<int>&,
                              std::vector<int>&, int, int, int,
-                             int, PartitionType);
+                             int, PartitionType, int);
 template int PartsGenManager(double*, const std::vector<double>&,
                              std::vector<int>&, int, int, int,
-                             int, PartitionType);
+                             int, PartitionType, int);
 
 template int PartsGenManager(std::vector<int>&, const std::vector<int>&,
                               const std::vector<int>&, std::vector<int>&,
@@ -314,9 +320,9 @@ template int PartsGenManager(std::vector<double>&, const std::vector<double>&,
 
 template int PartsGenParallel(
     RcppParallel::RMatrix<int>&, const std::vector<int>&,
-    std::vector<int>&, int, int, int, int, int, PartitionType
+    std::vector<int>&, int, int, int, int, int, PartitionType, int
 );
 template int PartsGenParallel(
     RcppParallel::RMatrix<double>&, const std::vector<double>&,
-    std::vector<int>&, int, int, int, int, int, PartitionType
+    std::vector<int>&, int, int, int, int, int, PartitionType, int
 );

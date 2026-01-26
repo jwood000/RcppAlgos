@@ -6,7 +6,7 @@ void StandardPartitions(
     int* mat, std::vector<int> &z, PartitionType ptype, double lower,
     mpz_class &lowerMpz, int nCols, int width, int nRows, int nThreads,
     int lastCol, int lastElem, int tar, int strtLen, int cap, bool IsGmp,
-    bool IsComb, bool includeZero, bool IsComp
+    bool IsComb, bool includeZero, bool IsComp, int zeroBudget
 ) {
 
     if (nThreads > 1 && (IsComb || IsComp)) {
@@ -25,7 +25,7 @@ void StandardPartitions(
 
             threads.emplace_back(
                 std::cref(PartsStdParallel), std::ref(parMat), std::ref(zs[j]),
-                step, width, lastElem, lastCol, nextStep, ptype
+                step, width, lastElem, lastCol, nextStep, ptype, zeroBudget
             );
 
             if (IsGmp) {
@@ -45,14 +45,16 @@ void StandardPartitions(
 
         threads.emplace_back(
             std::cref(PartsStdParallel), std::ref(parMat), std::ref(zs.back()),
-            step, width, lastElem, lastCol, nRows, ptype
+            step, width, lastElem, lastCol, nRows, ptype, zeroBudget
         );
 
         for (auto& thr: threads) {
             thr.join();
         }
     } else {
-        PartsStdManager(mat, z, width, lastElem, lastCol, nRows, ptype);
+        PartsStdManager(
+            mat, z, width, lastElem, lastCol, nRows, ptype, zeroBudget
+        );
     }
 }
 
@@ -82,7 +84,7 @@ void GeneralPartitions(
             threads.emplace_back(
                 std::cref(PartsGenParallel<T>), std::ref(parMat),
                 std::cref(v), std::ref(zs[j]), step, part.width, lastElem,
-                lastCol, nextStep, part.ptype
+                lastCol, nextStep, part.ptype, part.maxZeros
             );
 
             if (part.isGmp) {
@@ -98,16 +100,15 @@ void GeneralPartitions(
         threads.emplace_back(
             std::cref(PartsGenParallel<T>), std::ref(parMat), std::cref(v),
             std::ref(zs.back()), step, part.width, lastElem, lastCol, nRows,
-            part.ptype
+            part.ptype, part.maxZeros
         );
 
         for (auto& thr: threads) {
             thr.join();
         }
     } else {
-        PartsGenManager(
-            mat, v, z, part.width, lastElem, lastCol, nRows, part.ptype
-        );
+        PartsGenManager(mat, v, z, part.width, lastElem, lastCol,
+                        nRows, part.ptype, part.maxZeros);
     }
 }
 
