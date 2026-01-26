@@ -341,7 +341,7 @@ SEXP Combo::randomAccess(SEXP RindexVec) {
 
         return SampCombPermMain(sexpVec, vInt, vNum, mySample, mpzVec,
                                 myReps, nthResFun, myType, n, m, sampSize,
-                                nThreads, false, IsGmp, Parallel);
+                                nThreads, false, IsGmp, LocalPar);
     } else {
         if (IsGmp) {
             mpzIndex = mpzVec.front() + 1;
