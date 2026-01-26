@@ -6,6 +6,60 @@ import re
 import textwrap
 from openai import OpenAI
 
+_FENCE_RE = re.compile(r"^\s*```")
+_SUBJECT_RE = re.compile(
+    r"^(feat|fix|docs|style|refactor|perf|test|chore|build|ci)"
+    r"(\([^)]+\))?:\s+\S",
+    re.IGNORECASE,
+)
+
+
+def _strip_code_fences(raw: str) -> str:
+    """Remove surrounding markdown code fences if present."""
+    s = (raw or "").strip()
+
+    # If the whole output is fenced, remove first/last fence lines.
+    lines = s.splitlines()
+    if lines and _FENCE_RE.match(lines[0].strip()):
+        lines = lines[1:]
+        # Drop trailing fence if present (allow whitespace before it)
+        while lines and _FENCE_RE.match(lines[-1].strip()):
+            lines = lines[:-1]
+        s = "\n".join(lines).strip()
+
+    return s
+
+
+def _first_subject_and_rest(raw: str):
+    """
+    Return (subject_line, body_text) by choosing the first line that looks like a
+    conventional-commit subject. If none match, fall back to first meaningful line.
+    """
+    lines = [ln.rstrip() for ln in (raw or "").splitlines()]
+    # Remove empty lines and standalone fences
+    cleaned = [ln.strip() for ln in lines if ln.strip() and ln.strip() != "```"]
+
+    if not cleaned:
+        return "", ""
+
+    # Prefer the first line that *already* looks like a conventional subject
+    subj_idx = None
+    for i, ln in enumerate(cleaned):
+        if _SUBJECT_RE.match(ln):
+            subj_idx = i
+            break
+
+    if subj_idx is None:
+        # Fallback: first meaningful line
+        subject = cleaned[0]
+        body = "\n".join(cleaned[1:]).strip()
+        return subject, body
+
+    subject = cleaned[subj_idx]
+    body = "\n".join(cleaned[subj_idx + 1:]).strip()
+    return subject, body
+
+
 MODEL = os.getenv("AI_REVIEW_MODEL", "gpt-4o-mini")
 MAX_OUTPUT_TOKENS = 200
 TEMPERATURE = 0.2
@@ -111,24 +165,14 @@ def _format_commit_message(raw: str,
                            subject_max: int = SUBJECT_MAX,
                            body_width: int = BODY_WIDTH) -> str:
 
+    raw = _strip_code_fences(raw)
     raw = (raw or "").strip()
     if not raw:
         return ""
 
-    lines = raw.splitlines()
-    i = 0
-
-    while i < len(lines) and not lines[i].strip():
-        i += 1
-
-    if i >= len(lines):
+    subject, body_text = _first_subject_and_rest(raw)
+    if not subject:
         return ""
-
-    subject = lines[i].strip()
-    i += 1
-
-    # Rest = body
-    body_text = "\n".join(lines[i:]).strip()
 
     # Normalize subject spacing, remove trailing period, enforce max length
     subject = re.sub(r"\s+", " ", subject).strip()
