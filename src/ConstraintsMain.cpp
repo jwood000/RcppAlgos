@@ -67,7 +67,6 @@ SEXP CombinatoricsCnstrt(SEXP Rv, SEXP Rm, SEXP RisRep, SEXP RFreqs,
     }
 
     const bool usePartCount = part.isPart &&
-                              !part.isGmp &&
                               !part.numUnknown;
 
     const double computedRows = usePartCount ? part.count :

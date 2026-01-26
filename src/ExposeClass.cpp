@@ -221,7 +221,6 @@ SEXP CombClassNew(SEXP RVals, SEXP RboolVec, SEXP freqInfo, SEXP Rparallel,
         }
 
         const bool usePartCount = part.isPart &&
-                                  !part.isGmp &&
                                   !part.numUnknown;
 
         const double computedRows = usePartCount ? part.count :
