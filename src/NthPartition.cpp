@@ -1,3 +1,4 @@
+#include "cpp11/protect.hpp"
 #include "CppConvert/Constants.h"
 
 #include "Partitions/PartitionsCountMultiset.h"
@@ -8,9 +9,6 @@
 #include "Partitions/PartitionsUtils.h"
 #include "Partitions/NthPartition.h"
 #include <numeric>  // std::accumulate
-
-#include "cpp11/R.hpp"
-#include "cpp11/protect.hpp"
 
 std::vector<int> nthLengthOne(int n, int m, int cap, int k,
                               double dblIdx, const mpz_class &mpzIdx) {
@@ -753,13 +751,13 @@ std::vector<int> nthPartsRepCapGmp(int n, int m, int cap, int k,
     std::iota(allowed.begin(), allowed.end(), 1);
 
     for (int i = 0, j = 0; i < (width - 1); ++i, --n, --m) {
-        Counter->GetCount(temp, n, m, allowed, k);
+        Counter->GetCount(temp, n, m, allowed);
 
         for (; cmp(temp, index) <= 0; ++j) {
             n -= (m + 1);
             allowed.pop_back();
             index -= temp;
-            Counter->GetCount(temp, n, m, allowed, k);
+            Counter->GetCount(temp, n, m, allowed);
         }
 
         res[i] = j;
@@ -985,6 +983,8 @@ nthPartsPtr GetNthPartsFunc(PartitionType ptype, bool IsGmp) {
                 return(nthPartsPtr(nthCompsDistinctGmp));
             } case PartitionType::CmpDstctWeak: {
                 return(nthPartsPtr(nthCompsDistinctGmp));
+            } case PartitionType::CmpDstCapWeak: {
+                return(nthPartsPtr(nthCompsDistinctGmp));
             } case PartitionType::CmpDstctZNotWk: {
                 return(nthPartsPtr(nthCompsDistinctMZGmp));
             } case PartitionType::CmpDstCapMZNotWk: {
@@ -1030,6 +1030,8 @@ nthPartsPtr GetNthPartsFunc(PartitionType ptype, bool IsGmp) {
             } case PartitionType::CmpDstctCapped: {
                 return(nthPartsPtr(nthCompsDistinct));
             } case PartitionType::CmpDstctWeak: {
+                return(nthPartsPtr(nthCompsDistinct));
+            } case PartitionType::CmpDstCapWeak: {
                 return(nthPartsPtr(nthCompsDistinct));
             } case PartitionType::CmpDstctZNotWk: {
                 return(nthPartsPtr(nthCompsDistinctMZ));

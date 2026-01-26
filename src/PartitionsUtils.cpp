@@ -328,6 +328,7 @@ int DiscoverPType(const std::vector<int> &Reps,
         for (auto ptype: {
             PartitionType::DstctMultiZero,
             PartitionType::DstctNoZero,
+            PartitionType::DstctCapped,
             PartitionType::DstctCappedMZ
         }) {
 
@@ -335,7 +336,39 @@ int DiscoverPType(const std::vector<int> &Reps,
             bool IsCapped = false;
 
             switch (ptype) {
-                case PartitionType::DstctNoZero: {
+                case PartitionType::DstctCapped: {
+                    IsCapped = true;
+                    std::iota(isoz.begin(), isoz.end(), 0);
+
+                    int curr_max = part.cap - 1;
+                    int test_sum = curr_max +
+                        (part.width * (part.width - 1)) / 2;
+
+                    if (test_sum < part.mapTar) {
+                        isoz.back() = curr_max;
+
+                        for (int i = part.width - 2,
+                             residual = part.mapTar - test_sum - 1;
+                             i >= 0 && test_sum < part.mapTar; --i) {
+
+                            --curr_max;
+
+                            if (residual <= (curr_max - isoz[i])) {
+                                isoz[i] += residual;
+                                break;
+                            } else {
+                                residual += isoz[i];
+                                isoz[i] = curr_max;
+                                residual -= curr_max;
+                            }
+                        }
+                    } else {
+                        isoz.back() = part.mapTar - 1 -
+                            (part.width * (part.width - 1)) / 2;
+                    }
+
+                    break;
+                } case PartitionType::DstctNoZero: {
                     std::iota(isoz.begin(), isoz.end(), 0);
                     isoz.back() = part.mapTar - 1 - (part.width *
                         (part.width - 1)) / 2;
@@ -395,21 +428,39 @@ int DiscoverPType(const std::vector<int> &Reps,
                 }
             }
 
-            if (isoz == part.startZ) {
-                if (part.isMult && part.allOne && part.isComp && IsCapped) {
+            if (isoz == part.startZ && IsCapped) {
+                if (part.isMult && part.allOne && part.isComp) {
                     part.ptype = part.isWeak ? PartitionType::CmpDstCapMZWeak :
                         PartitionType::CmpDstCapMZNotWk;
                     return 1;
-
-                } else if (part.isMult && part.allOne && part.isComp) {
-                    part.ptype = part.isWeak ? PartitionType::CmpDstctMZWeak :
-                        PartitionType::CmpDstctZNotWk;
-                    return 1;
-                } else if (part.isMult && part.allOne && IsCapped) {
+                } else if (part.isMult && part.allOne) {
                     // In practice we typically see:
                     //        PartitionType::DstctCappedMZ
                     part.ptype = part.isPerm ?
                         PartitionType::PrmDstPrtCapMZ : ptype;
+                    return 1;
+                } else if (part.isDist && part.isComp && part.includeZero) {
+                    part.ptype = part.isWeak ?
+                        PartitionType::CmpDstCapWeak :
+                        PartitionType::CmpDstCapMZNotWk;
+                    return 1;
+                } else if (part.isDist && part.isComp) {
+                    part.ptype = part.isWeak ?
+                        PartitionType::CmpDstCapWeak :
+                        PartitionType::CmpDstctCapped;
+                    return 1;
+                } else if (part.isDist && part.isPerm) {
+                    part.ptype = PartitionType::PrmDstPrtCap;
+                    return 1;
+                } else if (part.isDist) {
+                    // In practice we typically see: PartitionType::DstctCapped
+                    part.ptype = ptype;
+                    return 1;
+                }
+            } else if (isoz == part.startZ) {
+                if (part.isMult && part.allOne && part.isComp) {
+                    part.ptype = part.isWeak ? PartitionType::CmpDstctMZWeak :
+                        PartitionType::CmpDstctZNotWk;
                     return 1;
                 } else if (part.isMult && part.allOne) {
                     // In practice we typically see:
@@ -423,7 +474,8 @@ int DiscoverPType(const std::vector<int> &Reps,
                         PartitionType::CmpDstctZNotWk;
                     return 1;
                 } else if (part.isDist && part.isComp) {
-                    part.ptype = PartitionType::CmpDstctNoZero;
+                    part.ptype = part.isWeak ? PartitionType::CmpDstctWeak :
+                        PartitionType::CmpDstctNoZero;
                     return 1;
                 } else if (part.isDist && part.isPerm) {
                     part.ptype = PartitionType::PrmDstPartNoZ;
@@ -562,8 +614,7 @@ void StandardDesign(const std::vector<int> &Reps,
                 PartitionType::CmpDstctZNotWk;
         }
     } else if (part.isRep) {
-        if (((part.isComp && part.isWeak) || part.isPerm) &&
-            part.includeZero) {
+        if (((part.isComp && part.isWeak) || part.isPerm) && part.includeZero) {
             // compositionsCount(0:20, repetition = TRUE, weak = TRUE)
             // [1] 68923264410
             //
@@ -820,15 +871,16 @@ void SetPartitionDesign(
 
         // We can only have weak compositions when zero is included. We
         // can't use part.includeZero for the reasons in the below comment
-        bool original_weak_val = part.isWeak;
-        part.isWeak = part.isWeak && (v.front() == 0);
+        const bool vHasZero          = (v.front() == 0);
+        const bool original_weak_val = part.isWeak;
 
-        // When we are mapping cases, it is easy to calculate the number of
-        // results when we map zero to one, since the mapped value will
-        // count zero as one when weak = TRUE.
-        part.includeZero = part.allOne ||
-            (part.isComp && v.front() == 0 && !part.isWeak);
+        part.isWeak = part.isWeak && vHasZero;
 
+        const bool weakAllowed     = part.isComp && part.isWeak;
+        const bool mappedZeroBased = part.allOne ||
+            (part.isComp && vHasZero && !weakAllowed);
+
+        part.includeZero = mappedZeroBased;
         part.mapIncZero  = part.includeZero;
         part.cap         = lenV - part.mapIncZero;
 
@@ -843,6 +895,8 @@ void SetPartitionDesign(
             part.ptype = PartitionType::Multiset;
         } else if (part.isPerm && part.isDist) {
             part.ptype = PartitionType::PrmDstPrtCap;
+        } else if (part.isComp && part.isDist && part.includeZero) {
+            part.ptype = PartitionType::CmpDstCapMZNotWk;
         } else if (part.isComp && part.isDist) {
             part.ptype = PartitionType::CmpDstctCapped;
         } else if (part.isDist) {
@@ -875,6 +929,7 @@ void SetPartitionDesign(
         part.ptype = PartitionType::LengthOne;
     }
 
+    part.maxZeros = std::count(part.startZ.cbegin(), part.startZ.cend(), 0);
     int res = PartitionsCount(Reps, part, lenV, bIsCount);
 
     if (res == -1) {

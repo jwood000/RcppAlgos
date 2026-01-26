@@ -51,6 +51,8 @@ std::unique_ptr<CountClass> MakeCount(PartitionType ptype) {
             return std::make_unique<CompsDistLenMZWeak>();
         } case PartitionType::CmpDstctCapped: {
             return std::make_unique<PermDstnctRstrctd>();
+        } case PartitionType::CmpDstCapWeak: {
+            return std::make_unique<PermDstnctRstrctd>();
         } case PartitionType::CmpDstCapMZWeak: {
             return std::make_unique<PermDstnctRstrctdMZ>();
         } case PartitionType::CmpDstCapMZNotWk: {
@@ -417,6 +419,7 @@ void CountClass::SetArrSize(PartitionType ptype, int n, int m) {
         case PartitionType::DstctCapped:
         case PartitionType::DstctCappedMZ:
         case PartitionType::CmpDstctCapped:
+        case PartitionType::CmpDstCapWeak:
         case PartitionType::CmpDstCapMZWeak:
         case PartitionType::CmpDstCapMZNotWk:
         case PartitionType::PrmDstPrtCap:
@@ -426,6 +429,7 @@ void CountClass::SetArrSize(PartitionType ptype, int n, int m) {
             return;
         }
 
+        case PartitionType::CmpDstctWeak:
         case PartitionType::CmpDstctNoZero:
         case PartitionType::CmpDstctMZWeak:
         case PartitionType::CmpDstctZNotWk: {

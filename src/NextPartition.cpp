@@ -597,10 +597,11 @@ void NextDistMZNotWeakComp(std::vector<int> &complement,
                 for (auto &z_i: z) ++z_i;
             }
 
-            z.insert(z.begin(), nz - 1, 0);
+            if (nz > 1) z.insert(z.begin(), nz - 1, 0);
+            int zeroBudget = std::count(z.cbegin(), z.cend(), 0);
 
             CompsDistinctSetup(
-                z, complement, target, i1, i2, myMax, cap, false
+                z, complement, target, i1, i2, myMax, cap, false, zeroBudget
             );
 
             return;
@@ -641,6 +642,7 @@ nextPartsPtr GetNextPartsPtr(PartitionType ptype, ConstraintType ctype) {
                 return(nextPartsPtr(NextRepCompZero));
 
             case PartitionType::CmpDstctWeak:
+            case PartitionType::CmpDstCapWeak:
             case PartitionType::CmpDstctMZWeak:
             case PartitionType::CmpDstctNoZero:
             case PartitionType::CmpDstctCapped:
@@ -683,8 +685,8 @@ nextPartsPtr GetNextPartsPtr(PartitionType ptype, ConstraintType ctype) {
             case PartitionType::CmpRpZroNotWk:
                 return(nextPartsPtr(NextRepCompOne));
 
-
             case PartitionType::CmpDstctWeak:
+            case PartitionType::CmpDstCapWeak:
             case PartitionType::CmpDstctMZWeak:
             case PartitionType::CmpDstctNoZero:
             case PartitionType::CmpDstctCapped:
