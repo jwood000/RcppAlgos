@@ -8,11 +8,12 @@
 
 constexpr int max_int = std::numeric_limits<int>::max();
 
-// If the size of complement is 0 then we know we are simply taking
-// permutations of z. Same thing with size 1 but a little reasoning is
-// needed. In NextCompositionDistinct, we are swapping the last two
-// elements in z with elements in complement. If complement only has one
-// element, we are reduced to the case of taking permutations of z.
+// If complement has fewer than 2 elements, there is no distinct "outside"
+// element-pair available to swap into z. Since NextCompositionDistinct only
+// advances by swapping the last two positions of z with values drawn from
+// complement, complement.size() < 2 implies there is no valid swap step.
+// In that case, the remaining results in this block are exactly the
+// permutations of the current z, so we enumerate via next_permutation.
 void PermutationsOnlyBranch(
     int* mat, std::vector<int> &z, std::size_t strt,
     std::size_t width, std::size_t rowLimit, std::size_t nRows
@@ -40,6 +41,40 @@ void PermutationsOnlyBranch(
     do {
         for (std::size_t k = 0; k < width; ++k) {
             mat[count + nRows * k] = v[z[k]];
+        }
+
+        ++count;
+    } while (std::next_permutation(z.begin(), z.end()) && count < rowLimit);
+}
+
+void PermutationsOnlyBranch(
+    RcppParallel::RMatrix<int> &mat, std::vector<int> &z,
+    std::size_t strt, std::size_t width, std::size_t rowLimit
+) {
+
+    std::size_t count = strt;
+
+    do {
+        for (std::size_t k = 0; k < width; ++k) {
+            mat(count, k) = z[k];
+        }
+
+        ++count;
+    } while (std::next_permutation(z.begin(), z.end()) && count < rowLimit);
+}
+
+template <typename T>
+void PermutationsOnlyBranch(
+    RcppParallel::RMatrix<T> &mat, const std::vector<T> &v,
+    std::vector<int> &z, std::size_t strt, std::size_t width,
+    std::size_t rowLimit
+) {
+
+    std::size_t count = strt;
+
+    do {
+        for (std::size_t k = 0; k < width; ++k) {
+            mat(count, k) = v[z[k]];
         }
 
         ++count;
@@ -115,6 +150,11 @@ void CompsDistStdWorker(
     std::size_t strt, std::size_t width, std::size_t nRows
 ) {
 
+    if (complement.size() < 2) {
+        PermutationsOnlyBranch(mat, z, strt, width, nRows);
+        return;
+    }
+
     std::vector<int> idx;
     std::vector<int> tailSum;
 
@@ -142,6 +182,11 @@ void CompsDistStdWorker(
     int i1, int i2, int myMax, int tar, std::size_t strt,
     std::size_t width, std::size_t nRows
 ) {
+
+    if (complement.size() < 2) {
+        PermutationsOnlyBranch(mat, v, z, strt, width, nRows);
+        return;
+    }
 
     std::vector<int> idx;
     std::vector<int> tailSum;
@@ -242,6 +287,11 @@ void CompsDistMZWorker(
     int nz, std::size_t strt, std::size_t width, int &nRows
 ) {
 
+    if (complement.size() < 2) {
+        PermutationsOnlyBranch(mat, z, strt, width, nRows);
+        return;
+    }
+
     std::vector<int> idx;
     std::vector<int> tailSum;
     std::size_t count = strt;
@@ -274,6 +324,11 @@ void CompsDistMZWorker(
     int i1, int i2, int myMax, int tar, int nz, std::size_t strt,
     std::size_t width, int &nRows
 ) {
+
+    if (complement.size() < 2) {
+        PermutationsOnlyBranch(mat, v, z, strt, width, nRows);
+        return;
+    }
 
     std::vector<int> idx;
     std::vector<int> tailSum;
