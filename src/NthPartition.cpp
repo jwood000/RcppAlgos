@@ -1,5 +1,5 @@
+#include "cpp11/R.hpp"
 #include "cpp11/protect.hpp"
-#include "CppConvert/Constants.h"
 
 #include "Partitions/PartitionsCountMultiset.h"
 #include "Partitions/PartitionsCountDistinct.h"
@@ -8,6 +8,7 @@
 #include "Partitions/BigPartsCountRep.h"
 #include "Partitions/PartitionsUtils.h"
 #include "Partitions/NthPartition.h"
+#include "CppConvert/Constants.h"
 #include <numeric>  // std::accumulate
 
 std::vector<int> nthLengthOne(int n, int m, int cap, int k,
