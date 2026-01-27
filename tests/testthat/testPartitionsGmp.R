@@ -1,10 +1,30 @@
 context("testing partitionGeneral GMP")
 
-test_that("partitionGeneral Distinct Parallel Lower GMP", {
+test_that("partitions/compostionsGeneral Distinct Parallel Lower GMP", {
 
     #######################################################################
-    ## See commentary above
     ########********************** Lower Only *******************##########
+    ## partitionsDesign(0:600, freqs = c(600, rep(1, 600)))[
+    ##     c("num_partitions", "partition_type")
+    ## ]
+    ## $num_partitions
+    ## Big Integer ('bigz') :
+    ## [1] 30703043607660730
+    ##
+    ## $partition_type
+    ## [1] "DstctStdAll"
+    bench <- partitionsGeneral(0:600, freqs = c(600, rep(1, 600)),
+                               lower = "30703043607560730")
+    expect_identical(partitionsGeneral(0:600, freqs = c(600, rep(1, 600)),
+                                       lower = "30703043607560730",
+                                       nThreads = 2), bench)
+    expect_identical(partitionsRank(bench[1, ], v = 0:600,
+                                    freqs = c(600, rep(1, 600))),
+                     gmp::as.bigz("30703043607560730"))
+    expect_equal(gmp::sub.bigz("30703043607660730",
+                               "30703043607560730") + 1, nrow(bench))
+    expect_true(all(rowSums(bench) == 600))
+
     ## partitionsDesign(1000, 15)[c("num_partitions", "partition_type")]
     ## $num_partitions
     ## Big Integer ('bigz') :
@@ -258,6 +278,385 @@ test_that("partitionGeneral Distinct Parallel Lower GMP", {
     expect_equal(gmp::sub.bigz("10236925075643716",
                                "10236925075443716") + 1, nrow(bench))
     expect_true(all(rowSums(bench) == 1380))
+
+    ######************************* Compositions *************************#####
+    ## compositionsDesign(300, 10)[c("num_partitions",
+    ##                               "mapped_target",
+    ##                               "partition_type")]
+    ## $num_partitions
+    ## Big Integer ('bigz') :
+    ## [1] 22478140825862400
+    ##
+    ## $mapped_target
+    ## [1] 300
+    ##
+    ## $partition_type
+    ## [1] "CmpDstctNoZero"
+    bench <- compositionsGeneral(300, 10, lower = "22478140825762400")
+    expect_identical(compositionsGeneral(300, 10, nThreads = 2,
+                                         lower = "22478140825762400"),
+                     bench)
+    expect_identical(compositionsRank(bench[1, ], v = 300),
+                     gmp::as.bigz("22478140825762400"))
+    expect_equal(gmp::sub.bigz("22478140825862400",
+                               "22478140825762400") + 1, nrow(bench))
+    expect_true(all(rowSums(bench) == 300))
+
+    ## compositionsDesign(200, 10, target = 300)[c("num_partitions",
+    ##                                             "mapped_target",
+    ##                                             "partition_type")]
+    ## $num_partitions
+    ## Big Integer ('bigz') :
+    ## [1] 22475881190246400
+    ##
+    ## $mapped_target
+    ## [1] 300
+    ##
+    ## $partition_type
+    ## [1] "CmpDstctCapped"
+    bench <- compositionsGeneral(200, 10, target = 300,
+                                 lower = "22475881190146400")
+    expect_identical(compositionsGeneral(200, 10, target = 300, nThreads = 2,
+                                         lower = "22475881190146400"),
+                     bench)
+    expect_identical(compositionsRank(bench[1, ], v = 200, target = 300),
+                     gmp::as.bigz("22475881190146400"))
+    expect_equal(gmp::sub.bigz("22475881190246400",
+                               "22475881190146400") + 1, nrow(bench))
+    expect_true(all(rowSums(bench) == 300))
+
+    ## compositionsDesign(0:200, 12, weak = TRUE)[c("num_partitions",
+    ##                                              "mapped_target",
+    ##                                              "partition_type")]
+    ## $num_partitions
+    ## Big Integer ('bigz') :
+    ## [1] 94068392477875200
+    ##
+    ## $mapped_target
+    ## [1] 212
+    ##
+    ## $partition_type
+    ## [1] "CmpDstctWeak"
+    bench <- compositionsGeneral(0:200, 12, weak = TRUE,
+                                 lower = "94068392477775200")
+    expect_identical(compositionsGeneral(0:200, 12, weak = TRUE, nThreads = 2,
+                                         lower = "94068392477775200"),
+                     bench)
+    expect_identical(compositionsRank(bench[1, ], v = 0:200, weak = TRUE),
+                     gmp::as.bigz("94068392477775200"))
+    expect_equal(gmp::sub.bigz("94068392477875200",
+                               "94068392477775200") + 1, nrow(bench))
+    expect_true(all(rowSums(bench) == 200))
+
+    ## compositionsDesign(0:100, 12, weak = TRUE, target = 200)[
+    ##    c("num_partitions",
+    ##      "mapped_target",
+    ##      "partition_type")
+    ## ]
+    ##
+    ## $num_partitions
+    ## Big Integer ('bigz') :
+    ## [1] 93947774605977600
+    ##
+    ## $mapped_target
+    ## [1] 212
+    ##
+    ## $partition_type
+    ## [1] "CmpDstCapWeak"
+    bench <- compositionsGeneral(0:100, 12, weak = TRUE, target = 200,
+                                 lower = "93947774605877600")
+    expect_identical(compositionsGeneral(0:100, 12, weak = TRUE, target = 200, nThreads = 2,
+                                         lower = "93947774605877600"),
+                     bench)
+    expect_identical(compositionsRank(bench[1, ], v = 0:100,
+                                      weak = TRUE, target = 200),
+                     gmp::as.bigz("93947774605877600"))
+    expect_equal(gmp::sub.bigz("93947774605977600",
+                               "93947774605877600") + 1, nrow(bench))
+    expect_true(all(rowSums(bench) == 200))
+
+    ## compositionsDesign(0:200, 15, freqs = c(4, rep(1, 200)))[
+    ##    c("num_partitions",
+    ##      "mapped_target",
+    ##      "partition_type")
+    ## ]
+    ##
+    ## $num_partitions
+    ## Big Integer ('bigz') :
+    ## [1] 9847835447429548800
+    ##
+    ## $mapped_target
+    ## [1] 200
+    ##
+    ## $partition_type
+    ## [1] "CmpDstctZNotWk"
+    bench <- compositionsGeneral(0:200, 15, freqs = c(4, rep(1, 200)),
+                                 lower = "9847835447429448800")
+    expect_identical(compositionsGeneral(0:200, 15, freqs = c(4, rep(1, 200)),
+                                         nThreads = 2,
+                                         lower = "9847835447429448800"),
+                     bench)
+    expect_identical(compositionsRank(bench[1, ], v = 0:200,
+                                      freqs = c(4, rep(1, 200))),
+                     gmp::as.bigz("9847835447429448800"))
+    expect_equal(gmp::sub.bigz("9847835447429548800",
+                               "9847835447429448800") + 1, nrow(bench))
+    expect_true(all(rowSums(bench) == 200))
+
+    ## Testing the above as it moves from compositions of width 12 to 13.
+    mid_point <- sum(
+        do.call(
+            c,
+            lapply(
+                11:13, \(x) gmp::as.bigz(compositionsCount(200, m = x))
+            )
+        )
+    )
+
+    myLower <- gmp::sub.bigz(mid_point, 40000)
+    myUpper <- gmp::add.bigz(mid_point, 60000)
+    bench <- compositionsGeneral(0:200, 15, freqs = c(4, rep(1, 200)),
+                                 lower = myLower, upper = myUpper)
+    expect_identical(compositionsGeneral(0:200, 15, freqs = c(4, rep(1, 200)),
+                                         nThreads = 2,
+                                         lower = myLower, upper = myUpper),
+                     bench)
+    expect_identical(compositionsRank(bench[1, ], v = 0:200,
+                                      freqs = c(4, rep(1, 200))), myLower)
+    expect_equal(100001, nrow(bench))
+    expect_true(all(rowSums(bench) == 200))
+
+    ## compositionsDesign(0:100, 12, target = 200)[
+    ##    c("num_partitions",
+    ##      "mapped_target",
+    ##      "partition_type")
+    ## ]
+    ##
+    ## $num_partitions
+    ## Big Integer ('bigz') :
+    ## [1] 46298981912198400
+    ##
+    ## $mapped_target
+    ## [1] 200
+    ##
+    ## $partition_type
+    ## [1] "CmpDstCapMZNotWk"
+    bench <- compositionsGeneral(0:100, 12, target = 200,
+                                 lower = "46298981912098400")
+    expect_identical(compositionsGeneral(0:100, 12, target = 200, nThreads = 2,
+                                         lower = "46298981912098400"),
+                     bench)
+    expect_identical(compositionsRank(bench[1, ], v = 0:100, target = 200),
+                     gmp::as.bigz("46298981912098400"))
+    expect_equal(gmp::sub.bigz("46298981912198400",
+                               "46298981912098400") + 1, nrow(bench))
+    expect_true(all(rowSums(bench) == 200))
+
+    ## Testing the above as it moves from compositions of width 11 to 12.
+    mid_point <- gmp::as.bigz(compositionsCount(100, 11, target = 200))
+
+    myLower <- gmp::sub.bigz(mid_point, 90000)
+    myUpper <- gmp::add.bigz(mid_point, 110000)
+    bench <- compositionsGeneral(0:100, 12, target = 200,
+                                 lower = myLower, upper = myUpper)
+    expect_identical(compositionsGeneral(0:100, 12, target = 200,
+                                         nThreads = 2,
+                                         lower = myLower, upper = myUpper),
+                     bench)
+    expect_identical(compositionsRank(bench[1, ], v = 0:100, target = 200),
+                     myLower)
+    expect_equal(200001, nrow(bench))
+    expect_true(all(rowSums(bench) == 200))
+
+    ######********************* Compositions Mapped **********************#####
+    ## compositionsDesign((1:300) * 7, 10)[c("num_partitions",
+    ##                                       "mapped_target",
+    ##                                       "partition_type")]
+    ## $num_partitions
+    ## Big Integer ('bigz') :
+    ## [1] 22478140825862400
+    ##
+    ## $mapped_target
+    ## [1] 300
+    ##
+    ## $partition_type
+    ## [1] "CmpDstctNoZero"
+    bench <- compositionsGeneral((1:300) * 7, 10, lower = "22478140825762400")
+    expect_identical(compositionsGeneral((1:300) * 7, 10, nThreads = 2,
+                                         lower = "22478140825762400"),
+                     bench)
+    expect_identical(compositionsRank(bench[1, ], v = (1:300) * 7),
+                     gmp::as.bigz("22478140825762400"))
+    expect_equal(gmp::sub.bigz("22478140825862400",
+                               "22478140825762400") + 1, nrow(bench))
+    expect_true(all(rowSums(bench) == 300 * 7))
+
+    ## 300 * 7 + 3 * 10 = 2310
+    ##
+    ## compositionsDesign(3L + (1:200) * 7, 10, target = 2130L)[
+    ##     c("num_partitions",
+    ##       "mapped_target",
+    ##       "partition_type")
+    ## ]
+    ##
+    ## $num_partitions
+    ## Big Integer ('bigz') :
+    ## [1] 22475881190246400
+    ##
+    ## $mapped_target
+    ## [1] 300
+    ##
+    ## $partition_type
+    ## [1] "CmpDstctCapped"
+    bench <- compositionsGeneral(3L + (1:200) * 7, 10, target = 2130L,
+                                 lower = "22475881190146400")
+    expect_identical(compositionsGeneral(3L + (1:200) * 7, 10, target = 2130L,
+                                         nThreads = 2,
+                                         lower = "22475881190146400"),
+                     bench)
+    expect_identical(compositionsRank(bench[1, ], v = 3L + (1:200) * 7,
+                                      target = 2130L),
+                     gmp::as.bigz("22475881190146400"))
+    expect_equal(gmp::sub.bigz("22475881190246400",
+                               "22475881190146400") + 1, nrow(bench))
+    expect_true(all(rowSums(bench) == 2130L))
+
+    ## compositionsDesign((0:200) * 3e9, 12, weak = TRUE)[c("num_partitions",
+    ##                                                      "mapped_target",
+    ##.                                                     "partition_type")]
+    ## $num_partitions
+    ## Big Integer ('bigz') :
+    ## [1] 94068392477875200
+    ##
+    ## $mapped_target
+    ## [1] 212
+    ##
+    ## $partition_type
+    ## [1] "CmpDstctWeak"
+    bench <- compositionsGeneral((0:200) * 3e9, 12, weak = TRUE,
+                                 lower = "94068392477775200")
+    expect_identical(compositionsGeneral((0:200) * 3e9, 12, weak = TRUE,
+                                         nThreads = 2,
+                                         lower = "94068392477775200"),
+                     bench)
+    expect_identical(compositionsRank(bench[1, ],
+                                      v = (0:200) * 3e9, weak = TRUE),
+                     gmp::as.bigz("94068392477775200"))
+    expect_equal(gmp::sub.bigz("94068392477875200",
+                               "94068392477775200") + 1, nrow(bench))
+    expect_true(all(rowSums(bench) == 200 * 3e9))
+
+    ## compositionsDesign((0:100) * 47, 12, weak = TRUE, target = 200 * 47)[
+    ##    c("num_partitions",
+    ##      "mapped_target",
+    ##      "partition_type")
+    ## ]
+    ##
+    ## $num_partitions
+    ## Big Integer ('bigz') :
+    ## [1] 93947774605977600
+    ##
+    ## $mapped_target
+    ## [1] 212
+    ##
+    ## $partition_type
+    ## [1] "CmpDstCapWeak"
+    bench <- compositionsGeneral((0:100) * 47, 12,
+                                 weak = TRUE, target = 200 * 47,
+                                 lower = "93947774605877600")
+    expect_identical(compositionsGeneral((0:100) * 47, 12, weak = TRUE,
+                                         target = 200 * 47, nThreads = 2,
+                                         lower = "93947774605877600"),
+                     bench)
+    expect_identical(compositionsRank(bench[1, ], v = (0:100) * 47,
+                                      weak = TRUE, target = 200 * 47),
+                     gmp::as.bigz("93947774605877600"))
+    expect_equal(gmp::sub.bigz("93947774605977600",
+                               "93947774605877600") + 1, nrow(bench))
+    expect_true(all(rowSums(bench) == 200 * 47))
+
+    ## compositionsDesign((0:200) * 97, 15, freqs = c(4, rep(1, 200)))[
+    ##    c("num_partitions",
+    ##      "mapped_target",
+    ##      "partition_type")
+    ## ]
+    ##
+    ## $num_partitions
+    ## Big Integer ('bigz') :
+    ## [1] 9847835447429548800
+    ##
+    ## $mapped_target
+    ## [1] 200
+    ##
+    ## $partition_type
+    ## [1] "CmpDstctZNotWk"
+    bench <- compositionsGeneral((0:200) * 97, 15, freqs = c(4, rep(1, 200)),
+                                 lower = "9847835447429448800")
+    expect_identical(compositionsGeneral((0:200) * 97, 15, freqs = c(4, rep(1, 200)),
+                                         nThreads = 2,
+                                         lower = "9847835447429448800"),
+                     bench)
+    expect_identical(compositionsRank(bench[1, ], v = (0:200) * 97,
+                                      freqs = c(4, rep(1, 200))),
+                     gmp::as.bigz("9847835447429448800"))
+    expect_equal(gmp::sub.bigz("9847835447429548800",
+                               "9847835447429448800") + 1, nrow(bench))
+    expect_true(all(rowSums(bench) == 200 * 97))
+
+    ## Testing the above as it moves from compositions of width 12 to 13.
+    mid_point <- sum(
+        do.call(
+            c,
+            lapply(
+                11:13, \(x) gmp::as.bigz(
+                    compositionsCount((1:200) * 97, m = x)
+                )
+            )
+        )
+    )
+
+    myLower <- gmp::sub.bigz(mid_point, 40000)
+    myUpper <- gmp::add.bigz(mid_point, 60000)
+    bench <- compositionsGeneral((0:200) * 97, 15, freqs = c(4, rep(1, 200)),
+                                 lower = myLower, upper = myUpper)
+    expect_identical(compositionsGeneral((0:200) * 97, 15, freqs = c(4, rep(1, 200)),
+                                         nThreads = 2,
+                                         lower = myLower, upper = myUpper),
+                     bench)
+    expect_identical(compositionsRank(bench[1, ], v = (0:200) * 97,
+                                      freqs = c(4, rep(1, 200))), myLower)
+    expect_equal(100001, nrow(bench))
+    expect_true(all(rowSums(bench) == 200 * 97))
+
+    ## compositionsDesign((0:100) * 3000000019, 12, target = 200 * 3000000019)[
+    ##    c("num_partitions",
+    ##      "mapped_target",
+    ##      "partition_type")
+    ## ]
+    ##
+    ## $num_partitions
+    ## Big Integer ('bigz') :
+    ## [1] 46298981912198400
+    ##
+    ## $mapped_target
+    ## [1] 200
+    ##
+    ## $partition_type
+    ## [1] "CmpDstCapMZNotWk"
+    bench <- compositionsGeneral((0:100) * 3000000019, 12,
+                                 target = 200 * 3000000019,
+                                 lower = "46298981912098400")
+    expect_identical(compositionsGeneral((0:100) * 3000000019, 12,
+                                         target = 200 * 3000000019,
+                                         nThreads = 2,
+                                         lower = "46298981912098400"),
+                     bench)
+    expect_identical(compositionsRank(bench[1, ], v = (0:100) * 3000000019,
+                                      target = 200 * 3000000019),
+                     gmp::as.bigz("46298981912098400"))
+    expect_equal(gmp::sub.bigz("46298981912198400",
+                               "46298981912098400") + 1, nrow(bench))
+    expect_true(all(rowSums(bench) == 200 * 3000000019))
 })
 
 test_that("partition/compositionsGeneral and Repetition Parallel Lower GMP", {
@@ -330,7 +729,7 @@ test_that("partition/compositionsGeneral and Repetition Parallel Lower GMP", {
     ## [1] 60
     ##
     ## $partition_type
-    ## [1] "RepStdAll"
+    ## [1] "CmpRpZroNotWk"
     bench <- compositionsGeneral(0:60, repetition = TRUE,
                                  lower = "576460752303223488")
     expect_identical(compositionsGeneral(0:60, repetition = TRUE,
@@ -356,7 +755,7 @@ test_that("partition/compositionsGeneral and Repetition Parallel Lower GMP", {
     ## [1] 60
     ##
     ## $partition_type
-    ## [1] "RepShort"
+    ## [1] "CmpRpZroNotWk"
     bench <- compositionsGeneral((0:60) * 19, repetition = TRUE,
                                  lower = "576460752303223488")
     expect_identical(compositionsGeneral((0:60) * 19, repetition = TRUE,
@@ -382,7 +781,7 @@ test_that("partition/compositionsGeneral and Repetition Parallel Lower GMP", {
     ## [1] 120
     ##
     ## $partition_type
-    ## [1] "RepNoZero"
+    ## [1] "CompRepWeak"
     bench <- compositionsGeneral(0:60, repetition = TRUE, weak = TRUE,
                                  lower = "48307454420181661301946569760486328")
     expect_identical(compositionsGeneral(0:60, repetition = TRUE, weak = TRUE,
@@ -408,7 +807,7 @@ test_that("partition/compositionsGeneral and Repetition Parallel Lower GMP", {
     ## [1] 120
     ##
     ## $partition_type
-    ## [1] "RepNoZero"
+    ## [1] "CompRepNoZero"
     bench <- compositionsGeneral((0:60) * 19, 60, repetition = TRUE, weak = TRUE,
                                  lower = "48307454420181661301946569760486328")
     expect_identical(compositionsGeneral((0:60) * 19, 60, repetition = TRUE, weak = TRUE,
@@ -481,7 +880,7 @@ test_that("partition/compositionsGeneral and Repetition Parallel Lower GMP", {
     ## [1] 1000
     ##
     ## $partition_type
-    ## [1] "RepNoZero"
+    ## [1] "CompRepNoZero"
     bench <- compositionsGeneral(1000, 10, TRUE, lower = "2634095604619701928324")
     expect_identical(compositionsGeneral(1000, 10, TRUE,
                                        lower = "2634095604619701928324",
@@ -495,7 +894,7 @@ test_that("partition/compositionsGeneral and Repetition Parallel Lower GMP", {
 
     #### Mapped version
     ##
-    ## compositionsDesign(23 + (1:1000) * 123e8, 10, TRUE
+    ## compositionsDesign(23 + (1:1000) * 123e8, 10, TRUE,
     ##                    target = 12300000000230)[c("num_partitions",
     ##                                               "mapped_target",
     ##                                               "partition_type")]
@@ -507,7 +906,7 @@ test_that("partition/compositionsGeneral and Repetition Parallel Lower GMP", {
     ## [1] 1000
     ##
     ## $partition_type
-    ## [1] "RepNoZero"
+    ## [1] "CompRepNoZero"
     bench <- compositionsGeneral(23 + (1:1000) * 123e8, 10, TRUE,
                                  lower = "2634095604619701928324",
                                  target = 12300000000230)
