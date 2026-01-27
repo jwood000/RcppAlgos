@@ -458,6 +458,8 @@ test_that("partitionsIter produces correct results", {
     #### Distinct; Length determined internally; No zero;
     expect_true(partitionClassTest(189))
     expect_true(partitionClassTest(35, IsComposition = TRUE))
+    expect_true(partitionClassTest(0:10, fr = c(2, rep(1, 10)),
+                                   IsComposition = TRUE))
 
     #### Distinct; Length determined internally; One zero;
     expect_true(partitionClassTest(0:50))
