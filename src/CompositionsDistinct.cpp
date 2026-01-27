@@ -259,7 +259,7 @@ void CompsDistMZWorker(
     }
 
     if (z[1]) {
-        for (std::size_t k = 0; k < width && z[1]; ++k) {
+        for (std::size_t k = 1; k < width && z[1]; ++k) {
             mat(nRows - 1, k + nz - 1) = z[k];
         }
     } else {
@@ -292,7 +292,7 @@ void CompsDistMZWorker(
     }
 
     if (z[1]) {
-        for (std::size_t k = 0; k < width && z[1]; ++k) {
+        for (std::size_t k = 1; k < width && z[1]; ++k) {
             mat(nRows - 1, k + nz - 1) = v[z[k]];
         }
     } else {
@@ -479,17 +479,17 @@ int CompsDistinct(
             );
 
             for (std::size_t k = 0; k < j; ++k) {
-                for (std::size_t count = strt,
-                     offSet = nRows * k; count < nextStep; ++count) {
-                    mat[count + offSet] = 0;
+                for (std::size_t count = strt; count < nextStep; ++count) {
+                    mat(count, k) = 0;
                 }
             }
 
             if (nextStep >= static_cast<int>(nRows)) return 1;
             strt = nextStep;
 
-            std::iota(z.begin() + j - 1, z.end(), 1);
+            std::iota(z.begin(), z.end(), 1);
             z.back() = tar - static_cast<int>((i * (i + 1)) / 2);
+            if (j > 1) z.insert(z.begin(), 0);
         }
     }
 
@@ -547,9 +547,8 @@ int CompsGenDistinct(
             );
 
             for (std::size_t k = 0; k < j; ++k) {
-                for (std::size_t count = strt,
-                     offSet = nRows * k; count < nextStep; ++count) {
-                    mat[count + offSet] = v[0];
+                for (std::size_t count = strt; count < nextStep; ++count) {
+                    mat(count, k) = v[0];
                 }
             }
 
