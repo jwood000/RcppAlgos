@@ -181,7 +181,7 @@ The output is in lexicographical order.
   <dt id="arg-upper">upper<a class="anchor" aria-label="anchor" href="#arg-upper"></a></dt>
 <dd><p>The upper bound. Similar to <code>lower</code>, however this parameter allows the user to <em>stop</em> generation at a specific combination/permutation (<em>e.g.</em> <code>comboGeneral(5, 3, upper = 5)</code> is equivalent to <code>comboGeneral(5, 3)[1:5, ]</code>)</p>
 <p>If the output is constrained and <code>lower</code> isn't supplied, <code>upper</code> serves as a cap for how many results will be returned that meet the criteria (<em>e.g.</em> setting <code>upper = 100</code> alone will return the first 100 results that meet the criteria, while setting <code>lower = 1</code> and <code>upper = 100</code> will test the first 100 results against the criteria).</p>
-<p>In addition to the benefits listed for <code>lower</code>, this parameter is useful when the total number of combinations/permutations without constraint is large and you expect/need a small number of combinations/permutations that meet a certain criteria. Using <code>upper</code> can improve run time if used judiciously as we call the member function <a href="https://en.cppreference.com/w/cpp/container/vector/reserve" class="external-link">reserve</a> of <a href="https://en.cppreference.com/w/cpp/container/vector" class="external-link">std::vector</a>. See examples below.</p></dd>
+<p>In addition to the benefits listed for <code>lower</code>, this parameter is useful when the total number of combinations/permutations without constraint is large and you expect/need a small number of combinations/permutations that meet a certain criteria. Using <code>upper</code> can improve run time if used judiciously as we call the member function <a href="https://en.cppreference.com/w/cpp/container/vector.html/reserve" class="external-link">reserve</a> of <a href="https://en.cppreference.com/w/cpp/container/vector.html" class="external-link">std::vector</a>. See examples below.</p></dd>
 
   <dt id="arg-constraintfun">constraintFun<a class="anchor" aria-label="anchor" href="#arg-constraintfun"></a></dt>
 <dd><p>Function to be applied to the elements of <code>v</code> that should be passed as a string (<em>e.g.</em> <code>constraintFun = "sum"</code>). The possible constraint functions are: <code>"sum"</code>, <code>"prod"</code>, <code>"mean"</code>, <code>"max"</code>, &amp; <code>"min"</code>. The default is <code>NULL</code>, meaning no function is applied.</p></dd>
@@ -693,7 +693,7 @@ The output is in lexicographical order.
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.1.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.0.</p>
 </div>
 
       </footer></div>

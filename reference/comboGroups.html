@@ -135,7 +135,7 @@ The output is in lexicographical order by groups.
 <li><p>Continuing on, we will reach the \(3,457^{th}\) lexicographical permutation, which represents the last result:
       </p><table class="table table"><tr><td></td><td></td><td></td><td>Grp1</td><td></td><td></td><td>Grp2</td><td></td><td></td></tr><tr><td></td><td>C1</td><td>C2</td><td>C3</td><td>C4</td><td>C5</td><td>C6</td><td>C7</td><td>C8</td></tr><tr><td>R3454</td><td>| 1</td><td>6</td><td>7</td><td>5 |</td><td>|8</td><td>3</td><td>4</td><td>2 |</td></tr><tr><td>R3455</td><td>| 1</td><td>6</td><td>7</td><td>5 |</td><td>|8</td><td>4</td><td>2</td><td>3 |</td></tr><tr><td>R3456</td><td>| 1</td><td>6</td><td>7</td><td>5 |</td><td>|8</td><td>4</td><td>3</td><td>2 |</td></tr><tr><td><strong>R3457</strong></td><td><strong>| 1</strong></td><td><strong>6</strong></td><td><strong>7</strong></td><td><strong>8 |</strong></td><td><strong>| 2</strong></td><td><strong>3</strong></td><td><strong>4</strong></td><td><strong>5 |</strong></td></tr><tr><td>R3458</td><td>| 1</td><td>6</td><td>7</td><td>8 |</td><td>|2</td><td>3</td><td>5</td><td>4 |</td></tr></table></li>
 <li><p>For this small example, the method above will not be that computationally expensive. In fact, there are only 35 total partitions of <code>1:8</code> into 2 groups of size 4 out of a possible <code>factorial(8) = 40320</code> permutations. However, just doubling the size of the vector will make this approach infeasible as there are over 10 trillion permutations of <code>1:16</code>.</p></li>
-<li><p>The algorithm in <code>comboGroups</code> avoids these duplicate partitions of groups by utilizing an efficient algorithm analogous to the <a href="https://en.cppreference.com/w/cpp/algorithm/next_permutation" class="external-link">std::next_permutation</a> found in the standard algorithm library in C++.</p></li>
+<li><p>The algorithm in <code>comboGroups</code> avoids these duplicate partitions of groups by utilizing an efficient algorithm analogous to the <a href="https://en.cppreference.com/w/cpp/algorithm/next_permutation.html" class="external-link">std::next_permutation</a> found in the standard algorithm library in C++.</p></li>
 </ul></div>
     <div id="value">
     <h2>Value</h2>
@@ -304,7 +304,7 @@ The output is in lexicographical order by groups.
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.1.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.0.</p>
 </div>
 
       </footer></div>
