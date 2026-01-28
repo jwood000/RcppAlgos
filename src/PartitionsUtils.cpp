@@ -839,87 +839,107 @@ void SetPartitionDesign(
     // be false as well as part.allOne will be false. When part.isMult is
     // true, the only way we are in the standard case is when part.allOne
     // is also true. Thus the expression below.
-    const bool standard_freq =
-        part.isMult ? v.front() == 0 && part.allOne : true;
     const bool zero_or_one   = v.front() == 0 || v.front() == 1;
     const bool standard_dist = part.slope == 1;
     const bool standard_tar  = v.back() == part.target;
+    const bool requestedWeak = part.isWeak;
 
-    // N.B. There will be no cases for multiset partitions as we don't have
-    // a closed form solution for counting among other things.
-    if (zero_or_one && standard_dist && standard_tar && standard_freq) {
-        // Remember, lenV is the length of the vector v, so we could have a
-        // situation where v = c(0, 2, 3, 4, 5) -->> length(v) = 5. This would
-        // cause a problem if we were to allow this. We have already ensured
-        // that the distance between each element is the same. This means for
-        // the example we gave, we would have length(unique(diff(v))) > 1,
-        // which means PartitionCase would be false, and thus the general
-        // algorithm would be executed.
+    bool retry = true;
 
-        part.includeZero = (v.front() == 0);
-        part.mapIncZero  = part.includeZero;
-        part.isWeak      = part.isWeak && part.includeZero;
-        part.mapTar      = part.target;
-        part.cap         = v.back();
+    for (int i = 0; i < 2 && retry; ++i) {
 
-        ctype = ConstraintType::PartStandard;
-        StandardDesign(Reps, part, m, lenV);
-        SetStartPartitionZ(Reps, part);
-    } else {
-        // We are now figuring out the length of m when mIsNull = true. In
-        // the function GetTarget we are iteratively determining m/width.
+        part.isWeak = requestedWeak;
+        const bool standard_freq =
+            part.isMult ? v.front() == 0 && part.allOne : true;
 
-        // We can only have weak compositions when zero is included. We
-        // can't use part.includeZero for the reasons in the below comment
-        const bool vHasZero          = (v.front() == 0);
-        const bool original_weak_val = part.isWeak;
+        // N.B. There will be no cases for multiset partitions as we don't
+        // have a closed form solution for counting among other things.
+        if (zero_or_one && standard_dist && standard_tar && standard_freq) {
+            // Remember, lenV is the length of the vector v, so we could have a
+            // situation where v = c(0, 2, 3, 4, 5) -->> length(v) = 5. This
+            // would cause a problem if we were to allow this. We have already
+            // ensured that the distance between each element is the same. This
+            // means for the example we gave, we would have
+            // length(unique(diff(v))) > 1, which means PartitionCase would be
+            // false, and thus the general algorithm would be executed.
 
-        part.isWeak = part.isWeak && vHasZero;
+            part.includeZero = (v.front() == 0);
+            part.mapIncZero  = part.includeZero;
+            part.isWeak      = part.isWeak && part.includeZero;
+            part.mapTar      = part.target;
+            part.cap         = v.back();
 
-        const bool weakAllowed     = part.isComp && part.isWeak;
-        const bool mappedZeroBased = part.allOne ||
-            (part.isComp && vHasZero && !weakAllowed);
-
-        part.includeZero = mappedZeroBased;
-        part.mapIncZero  = part.includeZero;
-        part.cap         = lenV - part.mapIncZero;
-
-        ctype = ConstraintType::PartMapping;
-        GetTarget(v, Reps, part, m, lenV);
-
-        if (part.isMult && part.isComp) {
-            part.ptype = PartitionType::CompMultiset;
-        } else if (part.isMult && part.isPerm) {
-            part.ptype = PartitionType::PrmMultiset;
-        } else if (part.isMult) {
-            part.ptype = PartitionType::Multiset;
-        } else if (part.isPerm && part.isDist) {
-            part.ptype = PartitionType::PrmDstPrtCap;
-        } else if (part.isComp && part.isDist && part.includeZero) {
-            part.ptype = PartitionType::CmpDstCapMZNotWk;
-        } else if (part.isComp && part.isDist) {
-            part.ptype = PartitionType::CmpDstctCapped;
-        } else if (part.isDist) {
-            part.ptype = PartitionType::DstctCapped;
-        } else if (part.solnExist) {
-            part.ptype = PartitionType::NotMapped;
+            ctype = ConstraintType::PartStandard;
+            StandardDesign(Reps, part, m, lenV);
+            SetStartPartitionZ(Reps, part);
         } else {
-            part.ptype = PartitionType::NoSolution;
+            // We are now figuring out the length of m when mIsNull = true. In
+            // the function GetTarget we are iteratively determining m/width.
+
+            // We can only have weak compositions when zero is included. We
+            // can't use part.includeZero for the reasons in the below comment
+            const bool vHasZero          = (v.front() == 0);
+            const bool original_weak_val = part.isWeak;
+
+            part.isWeak = part.isWeak && vHasZero;
+
+            const bool weakAllowed     = part.isComp && part.isWeak;
+            const bool mappedZeroBased = part.allOne ||
+                (part.isComp && vHasZero && !weakAllowed);
+
+            part.includeZero = mappedZeroBased;
+            part.mapIncZero  = part.includeZero;
+            part.cap         = lenV - part.mapIncZero;
+
+            ctype = ConstraintType::PartMapping;
+            GetTarget(v, Reps, part, m, lenV);
+
+            if (part.isMult && part.isComp) {
+                part.ptype = PartitionType::CompMultiset;
+            } else if (part.isMult && part.isPerm) {
+                part.ptype = PartitionType::PrmMultiset;
+            } else if (part.isMult) {
+                part.ptype = PartitionType::Multiset;
+            } else if (part.isPerm && part.isDist) {
+                part.ptype = PartitionType::PrmDstPrtCap;
+            } else if (part.isComp && part.isDist && part.includeZero) {
+                part.ptype = PartitionType::CmpDstCapMZNotWk;
+            } else if (part.isComp && part.isDist) {
+                part.ptype = PartitionType::CmpDstctCapped;
+            } else if (part.isDist) {
+                part.ptype = PartitionType::DstctCapped;
+            } else if (part.solnExist) {
+                part.ptype = PartitionType::NotMapped;
+            } else {
+                part.ptype = PartitionType::NoSolution;
+            }
+
+            if (part.solnExist) {
+                DiscoverPType(Reps, part, lenV);
+            }
+
+            if (part.ptype == PartitionType::CmpDstctZNotWk && v.front() != 0) {
+                part.ptype = original_weak_val ?
+                    (part.isDist ?
+                        PartitionType::CmpDstctWeak :
+                            (part.isMult && part.allOne ?
+                                PartitionType::CmpDstctMZWeak :
+                                    PartitionType::NotMapped
+                            )
+                    ) : PartitionType::NotMapped;
+            }
         }
 
-        if (part.solnExist) {
-            DiscoverPType(Reps, part, lenV);
-        }
+        part.maxZeros = std::count(
+            part.startZ.cbegin(), part.startZ.cend(), 0
+        );
 
-        if (part.ptype == PartitionType::CmpDstctZNotWk && v.front() != 0) {
-            part.ptype = original_weak_val ?
-                (part.isDist ?
-                    PartitionType::CmpDstctWeak :
-                        (part.isMult && part.allOne ?
-                            PartitionType::CmpDstctMZWeak :
-                                PartitionType::NotMapped
-                        )
-                ) : PartitionType::NotMapped;
+        if (part.isMult && part.allOne && part.maxZeros == 1) {
+            part.isDist = true;
+            part.isMult = false;
+            part.allOne = false;
+        } else {
+            retry = false;
         }
     }
 
@@ -929,7 +949,6 @@ void SetPartitionDesign(
         part.ptype = PartitionType::LengthOne;
     }
 
-    part.maxZeros = std::count(part.startZ.cbegin(), part.startZ.cend(), 0);
     int res = PartitionsCount(Reps, part, lenV, bIsCount);
 
     if (res == -1) {
