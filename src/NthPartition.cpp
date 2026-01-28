@@ -618,7 +618,6 @@ std::vector<int> nthCompsDistinctGmp(int n, int m, int cap, int k,
 
         cur_val = j + 1;
         partial_sum += (j + 1);
-
         UpdateAllowed(mask, allowed, i + 1, j + 1, width,
                       n, cur_val, partial_sum);
     }
