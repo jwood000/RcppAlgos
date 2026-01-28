@@ -66,7 +66,7 @@ Conceptually, this problem can be viewed as generating all permutations of the v
     \item{
     For this small example, the method above will not be that computationally expensive. In fact, there are only 35 total partitions of \code{1:8} into 2 groups of size 4 out of a possible \code{factorial(8) = 40320} permutations. However, just doubling the size of the vector will make this approach infeasible as there are over 10 trillion permutations of \code{1:16}.
     }
-    \item{The algorithm in \code{comboGroups} avoids these duplicate partitions of groups by utilizing an efficient algorithm analogous to the \href{https://en.cppreference.com/w/cpp/algorithm/next_permutation}{std::next_permutation} found in the standard algorithm library in C++.
+    \item{The algorithm in \code{comboGroups} avoids these duplicate partitions of groups by utilizing an efficient algorithm analogous to the \href{https://en.cppreference.com/w/cpp/algorithm/next_permutation.html}{std::next_permutation} found in the standard algorithm library in C++.
     }
   }
 }
