@@ -534,6 +534,11 @@ void NextDistinctComp(std::vector<int> &complement,
                       std::vector<int> &z, int &i1, int &i2, int &myMax,
                       int &target, int lastCol, int lastIdx) {
 
+    if (complement.size() < 2) {
+        std::next_permutation(z.begin(), z.end());
+        return;
+    }
+
     std::vector<int> idx;
     std::vector<int> tailSum;
     lastIdx = complement.size() - 1;
@@ -546,6 +551,11 @@ void NextDistinctComp(std::vector<int> &complement,
 void NextDistMZNotWeakComp(std::vector<int> &complement,
                            std::vector<int> &z, int &i1, int &i2, int &myMax,
                            int &target, int lastCol, int lastIdx) {
+
+    if (complement.size() < 2) {
+        std::next_permutation(z.begin(), z.end());
+        return;
+    }
 
     std::vector<int> idx;
     std::vector<int> tailSum;
