@@ -11,10 +11,12 @@ void RankPartsResultsGeneric(
 ) {
 
     mpz_class mpzIdx(0);
+    const auto idx_strt = idx.begin();
 
     for (int i = 0, j = 0; i < numResults; ++i, j += m) {
         double dblIdx = 0;
-        rankFun(idx.begin() + j, tar, m, cap, strtLen, dblIdx, mpzIdx);
+        mpzIdx = 0;
+        rankFun(idx_strt + j, tar, m, cap, strtLen, dblIdx, mpzIdx);
         res[i] = RankResultTraits<T>::convert(dblIdx, mpzIdx);
     }
 }
@@ -26,10 +28,12 @@ void RankPartsResults(
 ) {
 
     mpz_class mpzIdx(0);
+    const auto idx_strt = idx.begin();
 
     for (int i = 0, j = 0; i < numResults; ++i, j += m) {
         double dblIdx = 0;
-        rankFun(idx.begin() + j, tar, m, cap, strtLen, dblIdx, mpzIdx);
+        mpzIdx = 0;
+        rankFun(idx_strt + j, tar, m, cap, strtLen, dblIdx, mpzIdx);
         res[i] = (dblIdx + 1);
     }
 }
