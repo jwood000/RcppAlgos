@@ -1,5 +1,5 @@
 
-# RcppAlgos <img src='man/figures/RcppAlgos-logo.png' width="150px" align="right" />
+# RcppAlgos <img alt="RcppAlgos logo" src='man/figures/RcppAlgos-logo.png' width="150px" align="right" />
 
 <!-- badges: start -->
 [![CRAN status](<https://www.r-pkg.org/badges/version/RcppAlgos>)](<https://cran.r-project.org/package=RcppAlgos>)
