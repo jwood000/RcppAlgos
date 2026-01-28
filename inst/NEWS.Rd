@@ -1,7 +1,18 @@
 \name{NEWS}
 \title{News for Package \pkg{RcppAlgos}}
 
-\section{Changes in RcppAlgos version 2.9.2 (Release date: 2025-02-03)}{
+\section{Changes in RcppAlgos version 2.9.4 (Release date: 2026-01-30)}{
+    \itemize{
+        \item Other:
+        \itemize{
+            \item Replaced non-API use of \code{ATTRIB} in C++ internals to satisfy CRAN checks.
+            \item Improved handling and diagnostics for classed raw-vector inputs (e.g. bigz/mpfr).
+            \item Refreshed documentation URLs to current canonical links.
+        }
+    }
+}
+
+\section{Changes in RcppAlgos version 2.9.3 (Release date: 2025-02-03)}{
     \itemize{
         \item Other:
         \itemize{

@@ -1,3 +1,11 @@
+# RcppAlgos 2.9.4
+
+## Other:
+
+* Replaced non-API use of `ATTRIB` in C++ internals to satisfy CRAN checks.
+* Improved handling and diagnostics for classed raw-vector inputs (e.g. bigz/mpfr).
+* Refreshed documentation URLs to current canonical links.
+
 # RcppAlgos 2.9.3
 
 ## Other:
