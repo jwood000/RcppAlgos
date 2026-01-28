@@ -587,7 +587,7 @@ void NextDistMZNotWeakComp(std::vector<int> &complement,
         if (z[nz] == cap && IsMaximizedGreedySuffix(z, target, nz)) {
             if (nz > 1) z.erase(z.begin(), z.begin() + (nz - 1));
 
-            if (cap == target) {
+            if (cap == max_possval) {
                 std::iota(z.begin(), z.end(), 1);
                 z.back() = target - std::accumulate(z.begin(), z.end() - 1, 0);
             } else {
