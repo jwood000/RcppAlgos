@@ -529,6 +529,14 @@ int CompsDistinctSetup(
     complement = PrepareComplement(z, tar, idx_max, startAtZero, zeroBudget);
 
     if (complement.empty()) {
+        const int n = z.size();
+
+        if (n > 1) {
+            myMax = std::max(z[n - 1], z[n - 2]);
+        } else if (n == 1) {
+            myMax = z.front();
+        }
+
         return 0;
     }
 
