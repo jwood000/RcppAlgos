@@ -91,7 +91,7 @@ set.seed(29)
 myVec <- sample(-1000000:1000000, 1000)
 system.time(pFacs <- primeFactorize(myVec))
 #>    user  system elapsed 
-#>   0.001   0.000   0.000 
+#>   0.001   0.000   0.001 
 
 ## Return named list
 pFacsWithNames <- primeFactorize(myVec, namedList = TRUE)
@@ -99,5 +99,5 @@ pFacsWithNames <- primeFactorize(myVec, namedList = TRUE)
 ## Using nThreads
 system.time(primeFactorize(myVec, nThreads = 2))
 #>    user  system elapsed 
-#>   0.001   0.000   0.000 
+#>   0.000   0.001   0.001 
 ```
