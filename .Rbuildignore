@@ -10,3 +10,4 @@ scripts/*
 create_md.R
 SO_Answers/*
 ^codecov\.yml$
+^_pkgdown\.yml$
