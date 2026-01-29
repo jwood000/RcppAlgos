@@ -4,13 +4,9 @@ citEntry(
   entry  = "Manual",
   title  = "RcppAlgos: High Performance Tools for Combinatorics and Computational Mathematics",
   author = person("Joseph", "Wood"),
-  year   = format(Sys.Date(), "%Y"),
-  note   = paste("RcppAlgos package version", packageVersion("RcppAlgos")),
-  url    = "https://jwood000.github.io/RcppAlgos",
-  textVersion = paste0(
-    "Wood J (", format(Sys.Date(), "%Y"),
-    "). RcppAlgos: High Performance Tools for Combinatorics and Computational Mathematics. ",
-    "RcppAlgos package version ", packageVersion("RcppAlgos"),
-    ". https://jwood000.github.io/RcppAlgos"
-  )
+  year   = "2026",
+  note   = "RcppAlgos package version 2.9.5",
+  url    = "https://jwood000.github.io/RcppAlgos/",
+  textVersion =
+    "Wood J (2026). RcppAlgos: High Performance Tools for Combinatorics and Computational Mathematics. RcppAlgos package version 2.9.5. https://jwood000.github.io/RcppAlgos/"
 )
