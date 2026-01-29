@@ -91,5 +91,5 @@ myFacsWithNames <- divisorsRcpp(myVec, namedList = TRUE)
 ## Using nThreads
 system.time(divisorsRcpp(myVec, nThreads = 2))
 #>    user  system elapsed 
-#>   0.001   0.001   0.001 
+#>   0.002   0.000   0.000 
 ```
