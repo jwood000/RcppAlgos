@@ -112,7 +112,7 @@ primeSieve(17, 42)
 ## Primes up to one hundred million in no time
 system.time(primeSieve(10^8))
 #>    user  system elapsed 
-#>   0.106   0.008   0.114 
+#>   0.109   0.007   0.116 
 
 ## options(scipen = 50)
 ## Generate large primes over interval

@@ -143,7 +143,7 @@ permuteGeneral(v, m = NULL, repetition = FALSE,
   combinations/permutations that meet a certain criteria. Using `upper`
   can improve run time if used judiciously as we call the member
   function
-  [reserve](https://en.cppreference.com/w/cpp/container/vector.html/reserve)
+  [reserve](https://en.cppreference.com/w/cpp/container/vector/reserve.html)
   of
   [std::vector](https://en.cppreference.com/w/cpp/container/vector.html).
   See examples below.

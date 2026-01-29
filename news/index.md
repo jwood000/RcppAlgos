@@ -1,5 +1,13 @@
 # Changelog
 
+## RcppAlgos 2.9.5
+
+### Other:
+
+- Fixed CITATION metadata so it can be read during CRAN incoming checks.
+- Corrected a malformed GitHub issue URL and updated redirected/broken
+  links.
+
 ## RcppAlgos 2.9.4
 
 ### Other:
@@ -339,8 +347,7 @@ CRAN release: 2020-01-29
 ### Bug Fixes:
 
 - Fixed bug associated with integer vectors, multisets, and constraints.
-  See
-  [Issue](https://github.com/jwood000/RcppAlgos/issues/12#issue-467908452)
+  See [Issue](https://github.com/jwood000/RcppAlgos/issues/12)
   [\#12](https://github.com/jwood000/RcppAlgos/issues/12) for more
   information.
 
@@ -386,8 +393,7 @@ CRAN release: 2020-01-26
 
 - Corrected checks for total number of partitions and assignment of
   number of rows when `upper` is applied in `{combo|permute}General`.
-  See
-  [Issue](https://github.com/jwood000/RcppAlgos/issues/9#issue-467908452Issue%20#9)
+  See [Issue](https://github.com/jwood000/RcppAlgos/issues/9)
   [\#9](https://github.com/jwood000/RcppAlgos/issues/9) for more
   information.
 
