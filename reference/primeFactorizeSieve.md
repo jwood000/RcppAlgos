@@ -117,5 +117,5 @@ primeFactorizeSieve(27, 30, namedList = TRUE)
 ## Using nThreads
 system.time(primeFactorizeSieve(1e4, 5e4, nThreads = 2))
 #>    user  system elapsed 
-#>   0.007   0.000   0.006 
+#>   0.008   0.000   0.006 
 ```
