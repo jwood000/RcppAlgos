@@ -1,5 +1,5 @@
 Package: RcppAlgos
-Version: 2.9.4
+Version: 2.9.5
 Title: High Performance Tools for Combinatorics and Computational Mathematics
 Description: Provides optimized functions and flexible iterators implemented in
     C++ for solving problems in combinatorics and computational mathematics.
@@ -22,7 +22,7 @@ Description: Provides optimized functions and flexible iterators implemented in
     numbers by using the cache friendly improvements originally developed by
     Tomás Oliveira. Finally, there is a prime counting function that implements
     Legendre's formula based on the work of Kim Walisch.
-URL: https://jwood000.github.io/RcppAlgos,
+URL: https://jwood000.github.io/RcppAlgos/,
         https://github.com/jwood000/RcppAlgos, https://gmplib.org/,
         https://github.com/kimwalisch/primesieve, https://libdivide.com,
         https://github.com/kimwalisch/primecount, https://ridiculousfish.com/,
