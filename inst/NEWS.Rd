@@ -1,7 +1,7 @@
 \name{NEWS}
 \title{News for Package \pkg{RcppAlgos}}
 
-\section{Changes in RcppAlgos version 2.10.0 (Release date: 2025-10-05)}{
+\section{Changes in RcppAlgos version 2.10.0 (Release date: 2026-02-21)}{
     \itemize{
         \item New Features:
         \itemize{
@@ -13,6 +13,27 @@
         \item Other:
         \itemize{
             \item General performance improvements in ranking and composition-related algorithms.
+        }
+    }
+}
+
+\section{Changes in RcppAlgos version 2.9.5 (Release date: 2026-01-29)}{
+    \itemize{
+        \item Other:
+        \itemize{
+            \item Fixed CITATION metadata so it can be read during CRAN incoming checks.
+            \item Corrected a malformed GitHub issue URL and updated redirected/broken links.
+        }
+    }
+}
+
+\section{Changes in RcppAlgos version 2.9.4 (Release date: Never Released)}{
+    \itemize{
+        \item Other:
+        \itemize{
+            \item Replaced non-API use of \code{ATTRIB} in C++ internals to satisfy CRAN checks.
+            \item Improved handling and diagnostics for classed raw-vector inputs (e.g. bigz/mpfr).
+            \item Refreshed documentation URLs to current canonical links.
         }
     }
 }
@@ -328,7 +349,7 @@
         }
         \item Bug Fixes:
         \itemize{
-            \item Corrected checks for total number of partitions and assignment of number of rows when \code{upper} is applied in \code{{combo|permute}General}. See \href{https://github.com/jwood000/RcppAlgos/issues/9#issue-467908452}{Issue #9} for more information.
+            \item Corrected checks for total number of partitions and assignment of number of rows when \code{upper} is applied in \code{{combo|permute}General}. See \href{https://github.com/jwood000/RcppAlgos/issues/9}{Issue #9} for more information.
             \item \code{permuteGeneral} no longer alters source vector. See \href{https://github.com/jwood000/RcppAlgos/issues/11}{Issue #11} for more information.
         }
     }

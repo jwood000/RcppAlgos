@@ -14,6 +14,21 @@
 
 * General performance improvements in ranking and composition-related algorithms.
 
+# RcppAlgos 2.9.5
+
+## Other:
+
+* Fixed CITATION metadata so it can be read during CRAN incoming checks.
+* Corrected a malformed GitHub issue URL and updated redirected/broken links.
+
+# RcppAlgos 2.9.4
+
+## Other:
+
+* Replaced non-API use of `ATTRIB` in C++ internals to satisfy CRAN checks.
+* Improved handling and diagnostics for classed raw-vector inputs (e.g. bigz/mpfr).
+* Refreshed documentation URLs to current canonical links.
+
 # RcppAlgos 2.9.3
 
 ## Other:
@@ -238,7 +253,7 @@
 
 ## Bug Fixes:
 
-* Fixed bug associated with integer vectors, multisets, and constraints. See [Issue #12](<https://github.com/jwood000/RcppAlgos/issues/12#issue-467908452>) for more information.
+* Fixed bug associated with integer vectors, multisets, and constraints. See [Issue #12](<https://github.com/jwood000/RcppAlgos/issues/12>) for more information.
 
 # RcppAlgos 2.3.5
 
@@ -266,7 +281,7 @@
 
 ## Bug Fixes:
 
-* Corrected checks for total number of partitions and assignment of number of rows when `upper` is applied in `{combo|permute}General`. See [Issue #9](<https://github.com/jwood000/RcppAlgos/issues/9#issue-467908452Issue%20#9>) for more information.
+* Corrected checks for total number of partitions and assignment of number of rows when `upper` is applied in `{combo|permute}General`. See [Issue #9](<https://github.com/jwood000/RcppAlgos/issues/9>) for more information.
 
 * `permuteGeneral` no longer alters source vector. See [Issue #11](<https://github.com/jwood000/RcppAlgos/issues/11>) for more information.
 

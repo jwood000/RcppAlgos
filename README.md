@@ -1,5 +1,5 @@
 
-# RcppAlgos <img src='man/figures/RcppAlgos-logo.png' width="150px" align="right" />
+# RcppAlgos <img alt="RcppAlgos logo" src='man/figures/RcppAlgos-logo.png' width="150px" align="right" />
 
 <!-- badges: start -->
 [![CRAN status](<https://www.r-pkg.org/badges/version/RcppAlgos>)](<https://cran.r-project.org/package=RcppAlgos>)
@@ -21,7 +21,7 @@ A collection of high performance functions and iterators implemented in C++ for 
   - **`{combo|permute|partitions|compositions|expandGrid|comboGroups}Sample`**: Generate reproducible random samples
   - **`{combo|permute|partitions|compositions|expandGrid|comboGroups}Iter`**: Flexible iterators allow for bidirectional iteration as well as random access.
   - **`primeSieve`**: Fast prime number generator
-  - **`primeCount`**: Prime counting function using [Legendre's formula](<http://mathworld.wolfram.com/LegendresFormula.html>)
+  - **`primeCount`**: Prime counting function using [Legendre's formula](<https://mathworld.wolfram.com/LegendresFormula.html>)
 
 The `primeSieve` function and the `primeCount` function are both based off of the excellent work by [Kim Walisch](<https://github.com/kimwalisch>). The respective repos can be found here: [kimwalisch/primesieve](<https://github.com/kimwalisch/primesieve>); [kimwalisch/primecount](<https://github.com/kimwalisch/primecount>)
 

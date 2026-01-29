@@ -84,7 +84,8 @@ test_that("comboGeneral produces appropriate error messages", {
                  "values must be length 1")
 
     expect_error(comboGeneral(5, 3.3), "must be a whole number")
-    expect_error(comboGeneral(gmp::as.bigz(1:5), 3), "Only atomic types are supported for v")
+    expect_error(comboGeneral(gmp::as.bigz(1:5), 3),
+                 "Class 'bigz' is not supported for raw input v")
 })
 
 test_that("comboGroups related functions produces appropriate error messages", {

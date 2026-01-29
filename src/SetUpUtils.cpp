@@ -41,10 +41,19 @@ void SetType(VecType &myType, SEXP Rv) {
             // 655 which includes a function for returning a matrix of class
             // bigz. I observed terrible performance compared to simply
             // converting to a character vector.
-            if (ATTRIB(Rv) == R_NilValue) {
+            if (!Rf_isObject(Rv)) {
                 myType = VecType::Raw;
                 break;
             }
+
+            if (Rf_inherits(Rv, "bigz") || Rf_inherits(Rv, "bigZ")) {
+                cpp11::stop("Class 'bigz' is not supported for raw input v");
+            }
+            if (Rf_inherits(Rv, "mpfr")) {
+                cpp11::stop("Class 'mpfr' is not supported for raw input v");
+            }
+
+            cpp11::stop("Raw vectors with class/attributes are not supported for v");
         } default: {
             cpp11::stop("Only atomic types are supported for v");
         }
