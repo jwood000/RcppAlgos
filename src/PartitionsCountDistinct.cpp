@@ -35,11 +35,13 @@ void UpdateAllowed(
     int new_val, int width, int n, int cur_val, int partial_sum
 ) {
 
+    const int mask_size = static_cast<int>(mask.size());
+
     // "Move" the used marker from cur_val -> new_val.
     // This allows the caller to sweep through potential candidates and
     // cheaply update feasibility.
-    mask[cur_val] = 0;
-    mask[new_val] = 1;
+    if (cur_val > 0) mask[cur_val] = 0;
+    if (new_val > 0) mask[new_val] = 1;
 
     // Add the minimum possible contribution of the remaining suffix
     // (excluding the final slot, which will be forced at the very end).
@@ -49,14 +51,21 @@ void UpdateAllowed(
     // exceed n, then no completion is possible.
     //
     // Loop structure:
-    //   - j indexes future positions
-    //   - k is the current candidate value, advanced until unused.
-    for (int j = i + 1, k = 1; j < (width - 1); ++j, ++k) {
-        while (mask[k]) {
-            ++k;
+    //   - p indexes future positions
+    //   - q is the current candidate value, advanced until unused.
+    for (int p = i + 1, q = 1; p < (width - 1); ++p, ++q) {
+        while (q < mask_size && mask[q]) {
+            ++q;
         }
 
-        partial_sum += k;
+        if (q >= mask_size) {
+            // no feasible completion: force last_val < 1
+            // so allowed becomes all zeros
+            std::fill(allowed.begin(), allowed.end(), 0);
+            return;
+        }
+
+        partial_sum += q;
     }
 
     // Given the minimal tail contribution computed above, the next selected
@@ -65,7 +74,7 @@ void UpdateAllowed(
     int j = 0;
     const int last_val = std::min(
         n - partial_sum,
-        static_cast<int>(mask.size()) - 1
+        mask_size - 1
     );
 
     // Build the compact allowed list = all unused values in [1..last_val].
