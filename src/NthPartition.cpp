@@ -143,7 +143,7 @@ std::vector<int> nthCompsDistinct(int n, int m, int cap, int k,
     const int max_val = std::min(cap, n - (width * (width - 1)) / 2);
 
     // mask[v] == 1 means v is already used in the prefix.
-    std::vector<char> mask(cap + 1, 0);
+    std::vector<char> mask(max_val + 1, 0);
 
     // result vector (composition)
     std::vector<int> res(width, 0);
@@ -289,6 +289,78 @@ std::vector<int> nthCompsDistinctMZ(int n, int m, int cap, int k,
     }
 
     if (m > k) res.insert(res.begin(), m - k, 0);
+    return res;
+}
+
+std::vector<int> nthCompsDistinctMZWeak(
+    int n, int m, int cap, int k, double dblIdx, const mpz_class &mpzIdx
+) {
+
+    const int width = m;
+    const int max_val = std::min(cap, n - (k * (k - 1)) / 2);
+    int zeros_remaining = width - k;
+
+    std::vector<char> mask(max_val + 1, 0);
+    std::vector<int> res(width, 0);
+
+    --zeros_remaining;
+    --m;
+
+    mask[0] = 1;
+    std::vector<int> allowed(max_val);
+    std::iota(allowed.begin(), allowed.end(), 1);
+
+    int partial_sum = 0;
+    int cur_val = 0;
+
+    bool anyZeros = true;
+    const int mask_size = mask.size();
+
+    for (int i = 0, j = 0; i < (width - 1); ++i, --m) {
+        int strtLen = std::max(1, m - zeros_remaining);
+        if (anyZeros) ++zeros_remaining;
+
+        double temp = CountCompsDistinctRstrctdMZWeak(
+            n - partial_sum, m, allowed, strtLen
+        );
+
+        for (; temp <= dblIdx && n > partial_sum; cur_val = j) {
+            ++j;
+
+            while (j < mask_size && mask[j]) {
+                ++j;
+            }
+
+            partial_sum += (j - cur_val);
+            UpdateAllowed(mask, allowed, i, j, width - zeros_remaining,
+                          n, cur_val, partial_sum);
+
+            dblIdx -= temp;
+            strtLen = std::max(1, m - zeros_remaining);
+            temp = CountCompsDistinctRstrctdMZWeak(
+                n - partial_sum, m, allowed, strtLen
+            );
+        }
+
+        if (j == 0) --zeros_remaining;
+        res[i] = j;
+
+        anyZeros = zeros_remaining > 0;
+        j = anyZeros ? 0 : 1;
+
+        while (!anyZeros && j < mask_size && mask[j]) {
+            ++j;
+        }
+
+        if (anyZeros) --zeros_remaining;
+        cur_val = j;
+        partial_sum += j;
+
+        UpdateAllowed(mask, allowed, i + 1, j, width - zeros_remaining,
+                      n, cur_val, partial_sum);
+    }
+
+    res[width - 1] = n - std::accumulate(res.begin(), res.end(), 0);
     return res;
 }
 
@@ -569,7 +641,7 @@ std::vector<int> nthCompsDistinctGmp(int n, int m, int cap, int k,
     const int width = m;
     const int max_val = std::min(cap, n - (width * (width - 1)) / 2);
 
-    std::vector<char> mask(cap + 1, 0);
+    std::vector<char> mask(max_val + 1, 0);
     std::vector<int> res(width, 0);
     --m;
 
@@ -678,6 +750,87 @@ std::vector<int> nthCompsDistinctMZGmp(
     }
 
     if (m > k) res.insert(res.begin(), m - k, 0);
+    return res;
+}
+
+std::vector<int> nthCompsDistinctMZWeakGmp(
+    int n, int m, int cap, int k, double dblIdx, const mpz_class &mpzIdx
+) {
+
+    const int width = m;
+    const int max_val = std::min(cap, n - (k * (k - 1)) / 2);
+    int zeros_remaining = width - k;
+
+    std::vector<char> mask(max_val + 1, 0);
+    std::vector<int> res(width, 0);
+
+    --zeros_remaining;
+    --m;
+
+    mpz_class temp;
+    mpz_class index(mpzIdx);
+
+    mask[0] = 1;
+    std::vector<int> allowed(max_val);
+    std::iota(allowed.begin(), allowed.end(), 1);
+
+    int partial_sum = 0;
+    int cur_val = 0;
+
+    bool anyZeros = true;
+    const int mask_size = mask.size();
+
+    const PartitionType ptype = PartitionType::CmpDstCapMZWeak;
+    std::unique_ptr<CountClass> Counter = MakeCount(ptype);
+
+    Counter->SetArrSize(ptype, n, m);
+    Counter->InitializeMpz();
+
+    for (int i = 0, j = 0; i < (width - 1); ++i, --m) {
+        int strtLen = std::max(1, m - zeros_remaining);
+        if (anyZeros) ++zeros_remaining;
+
+        Counter->GetCount(
+            temp, n - partial_sum, m, allowed, strtLen, true
+        );
+
+        for (; cmp(temp, index) <= 0 && n > partial_sum; cur_val = j) {
+            ++j;
+
+            while (j < mask_size && mask[j]) {
+                ++j;
+            }
+
+            partial_sum += (j - cur_val);
+            UpdateAllowed(mask, allowed, i, j, width - zeros_remaining,
+                          n, cur_val, partial_sum);
+
+            index -= temp;
+            strtLen = std::max(1, m - zeros_remaining);
+            Counter->GetCount(
+                temp, n - partial_sum, m, allowed, strtLen, true
+            );
+        }
+
+        if (j == 0) --zeros_remaining;
+        res[i] = j;
+
+        anyZeros = zeros_remaining > 0;
+        j = anyZeros ? 0 : 1;
+
+        while (!anyZeros && j < mask_size && mask[j]) {
+            ++j;
+        }
+
+        if (anyZeros) --zeros_remaining;
+        cur_val = j;
+        partial_sum += j;
+
+        UpdateAllowed(mask, allowed, i + 1, j, width - zeros_remaining,
+                      n, cur_val, partial_sum);
+    }
+
+    res[width - 1] = n - std::accumulate(res.begin(), res.end(), 0);
     return res;
 }
 
@@ -989,6 +1142,10 @@ nthPartsPtr GetNthPartsFunc(PartitionType ptype, bool IsGmp) {
                 return(nthPartsPtr(nthCompsDistinctMZGmp));
             } case PartitionType::CmpDstCapMZNotWk: {
                 return(nthPartsPtr(nthCompsDistinctMZGmp));
+            } case PartitionType::CmpDstctMZWeak: {
+                return(nthPartsPtr(nthCompsDistinctMZWeakGmp));
+            } case PartitionType::CmpDstCapMZWeak: {
+                return(nthPartsPtr(nthCompsDistinctMZWeakGmp));
             } case PartitionType::NoSolution: {
                 return(nthPartsPtr(EmptyReturn));
             } default : {
@@ -1037,6 +1194,10 @@ nthPartsPtr GetNthPartsFunc(PartitionType ptype, bool IsGmp) {
                 return(nthPartsPtr(nthCompsDistinctMZ));
             } case PartitionType::CmpDstCapMZNotWk: {
                 return(nthPartsPtr(nthCompsDistinctMZ));
+            } case PartitionType::CmpDstctMZWeak: {
+                return(nthPartsPtr(nthCompsDistinctMZWeak));
+            } case PartitionType::CmpDstCapMZWeak: {
+                return(nthPartsPtr(nthCompsDistinctMZWeak));
             } case PartitionType::NoSolution: {
                 return(nthPartsPtr(EmptyReturn));
             } default : {
