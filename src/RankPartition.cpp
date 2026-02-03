@@ -70,7 +70,8 @@ void rankCompsDistinct(std::vector<int>::iterator iter, int n, int m,
     const int width = m;
     const int max_val = std::min(cap, n - (width * (width - 1)) / 2);
 
-    std::vector<char> mask(cap + 1, 0);
+    std::vector<char> mask(max_val + 1, 0);
+    const int mask_size = mask.size();
     --m;
 
     mask[1] = 1;
@@ -85,7 +86,7 @@ void rankCompsDistinct(std::vector<int>::iterator iter, int n, int m,
         bool keepGoing = false;
 
         for (int idx = *iter; j < idx || keepGoing; cur_val = j) {
-            while (mask[j + 1]) {
+            while ((j + 1) < mask_size && mask[j + 1]) {
                 ++j;
             }
 
@@ -102,7 +103,7 @@ void rankCompsDistinct(std::vector<int>::iterator iter, int n, int m,
 
         j = 0;
 
-        while (mask[j + 1]) {
+        while ((j + 1) < mask_size && mask[j + 1]) {
             ++j;
         }
 
@@ -146,6 +147,71 @@ void rankCompsDistinctMZ(std::vector<int>::iterator iter, int n, int m,
     }
 
     rankCompsDistinct(z_it, n, k, cap, k, dblIdx, mpzIdx);
+}
+
+void rankCompsDistinctMZWeak(
+    std::vector<int>::iterator iter, int n, int m, int cap, int k,
+    double &dblIdx, mpz_class &mpzIdx
+) {
+
+    const int width = m;
+    const int max_val = std::min(cap, n - (k * (k - 1)) / 2);
+    int zeros_remaining = width - k;
+
+    std::vector<char> mask(max_val + 1, 0);
+    --zeros_remaining;
+    --m;
+
+    mask[0] = 1;
+    std::vector<int> allowed(max_val);
+    std::iota(allowed.begin(), allowed.end(), 1);
+
+    int partial_sum = 0;
+    int cur_val = 0;
+
+    bool anyZeros = true;
+    const int mask_size = mask.size();
+
+    for (int i = 0, j = 0; i < (width - 1); ++i, --m, ++iter) {
+        int strtLen = std::max(1, m - zeros_remaining);
+        if (anyZeros) ++zeros_remaining;
+
+        double temp = CountCompsDistinctRstrctdMZWeak(
+            n - partial_sum, m, allowed, strtLen
+        );
+
+        for (int idx = *iter; j < idx && n > partial_sum; cur_val = j) {
+            ++j;
+
+            while (j < mask_size && mask[j]) {
+                ++j;
+            }
+
+            partial_sum += (j - cur_val);
+            UpdateAllowed(mask, allowed, i, j, width - zeros_remaining,
+                          n, cur_val, partial_sum);
+
+            dblIdx += temp;
+            strtLen = std::max(1, m - zeros_remaining);
+            temp = CountCompsDistinctRstrctdMZWeak(
+                n - partial_sum, m, allowed, strtLen
+            );
+        }
+
+        if (j == 0) --zeros_remaining;
+        anyZeros = zeros_remaining > 0;
+        j = anyZeros ? 0 : 1;
+
+        while (!anyZeros && j < mask_size && mask[j]) {
+            ++j;
+        }
+
+        if (anyZeros) --zeros_remaining;
+        cur_val = j;
+        partial_sum += j;
+        UpdateAllowed(mask, allowed, i + 1, j, width - zeros_remaining,
+                      n, cur_val, partial_sum);
+    }
 }
 
 //************************* Partition Functions ***************************//
@@ -390,7 +456,8 @@ void rankCompsDistinctGmp(std::vector<int>::iterator iter, int n, int m,
     const int width = m;
     const int max_val = std::min(cap, n - (width * (width - 1)) / 2);
 
-    std::vector<char> mask(cap + 1, 0);
+    std::vector<char> mask(max_val + 1, 0);
+    const int mask_size = mask.size();
     --m;
 
     mask[1] = 1;
@@ -412,7 +479,7 @@ void rankCompsDistinctGmp(std::vector<int>::iterator iter, int n, int m,
         bool keepGoing = false;
 
         for (int idx = *iter; j < idx || keepGoing; cur_val = j) {
-            while (mask[j + 1]) {
+            while ((j + 1) < mask_size && mask[j + 1]) {
                 ++j;
             }
 
@@ -429,7 +496,7 @@ void rankCompsDistinctGmp(std::vector<int>::iterator iter, int n, int m,
 
         j = 0;
 
-        while (mask[j + 1]) {
+        while ((j + 1) < mask_size && mask[j + 1]) {
             ++j;
         }
 
@@ -490,6 +557,78 @@ void rankCompsDistinctMZGmp(std::vector<int>::iterator iter, int n, int m,
     }
 
     rankCompsDistinctGmp(z_it, n, k, cap, k, dblIdx, mpzIdx);
+}
+
+void rankCompsDistinctMZWeakGmp(
+    std::vector<int>::iterator iter, int n, int m, int cap, int k,
+    double &dblIdx, mpz_class &mpzIdx
+) {
+
+    const int width = m;
+    const int max_val = std::min(cap, n - (k * (k - 1)) / 2);
+    int zeros_remaining = width - k;
+
+    std::vector<char> mask(max_val + 1, 0);
+    --zeros_remaining;
+    --m;
+
+    mask[0] = 1;
+    std::vector<int> allowed(max_val);
+    std::iota(allowed.begin(), allowed.end(), 1);
+
+    int partial_sum = 0;
+    int cur_val = 0;
+
+    bool anyZeros = true;
+    const int mask_size = mask.size();
+
+    mpz_class temp;
+    const PartitionType ptype = PartitionType::CmpDstCapMZWeak;
+    std::unique_ptr<CountClass> Counter = MakeCount(ptype);
+
+    Counter->SetArrSize(ptype, n, m);
+    Counter->InitializeMpz();
+
+    for (int i = 0, j = 0; i < (width - 1); ++i, --m, ++iter) {
+        int strtLen = std::max(1, m - zeros_remaining);
+        if (anyZeros) ++zeros_remaining;
+
+        Counter->GetCount(
+            temp, n - partial_sum, m, allowed, strtLen, true
+        );
+
+        for (int idx = *iter; j < idx && n > partial_sum; cur_val = j) {
+            ++j;
+
+            while (j < mask_size && mask[j]) {
+                ++j;
+            }
+
+            partial_sum += (j - cur_val);
+            UpdateAllowed(mask, allowed, i, j, width - zeros_remaining,
+                          n, cur_val, partial_sum);
+
+            mpzIdx += temp;
+            strtLen = std::max(1, m - zeros_remaining);
+            Counter->GetCount(
+                temp, n - partial_sum, m, allowed, strtLen, true
+            );
+        }
+
+        if (j == 0) --zeros_remaining;
+        anyZeros = zeros_remaining > 0;
+        j = anyZeros ? 0 : 1;
+
+        while (!anyZeros && j < mask_size && mask[j]) {
+            ++j;
+        }
+
+        if (anyZeros) --zeros_remaining;
+        cur_val = j;
+        partial_sum += j;
+        UpdateAllowed(mask, allowed, i + 1, j, width - zeros_remaining,
+                      n, cur_val, partial_sum);
+    }
 }
 
 void rankPartsRepLenGmp(std::vector<int>::iterator iter, int n, int m,
@@ -752,6 +891,10 @@ rankPartsPtr GetRankPartsFunc(PartitionType ptype, bool IsGmp) {
                 return(rankPartsPtr(rankCompsDistinctMZGmp));
             } case PartitionType::CmpDstCapMZNotWk: {
                 return(rankPartsPtr(rankCompsDistinctMZGmp));
+            } case PartitionType::CmpDstctMZWeak: {
+                return(rankPartsPtr(rankCompsDistinctMZWeakGmp));
+            } case PartitionType::CmpDstCapMZWeak: {
+                return(rankPartsPtr(rankCompsDistinctMZWeakGmp));
             } default : {
                 cpp11::stop("No algorithm available");
             }
@@ -798,6 +941,10 @@ rankPartsPtr GetRankPartsFunc(PartitionType ptype, bool IsGmp) {
                 return(rankPartsPtr(rankCompsDistinctMZ));
             } case PartitionType::CmpDstCapMZNotWk: {
                 return(rankPartsPtr(rankCompsDistinctMZ));
+            } case PartitionType::CmpDstctMZWeak: {
+                return(rankPartsPtr(rankCompsDistinctMZWeak));
+            } case PartitionType::CmpDstCapMZWeak: {
+                return(rankPartsPtr(rankCompsDistinctMZWeak));
             } default : {
                 cpp11::stop("No algorithm available");
             }
