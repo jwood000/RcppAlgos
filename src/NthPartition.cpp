@@ -118,7 +118,7 @@ std::vector<int> nthCompsRepZero(int n, int m, int cap, int k,
 // Important feasibility bound:
 //
 //   The smallest possible sum of width distinct positive integers is
-//     1 + 2 + ... + width = width*(width+1)/2.
+//     1 + 2 + ... + width = width * (width + 1) / 2.
 //   If we fix a prefix, the minimal possible suffix is the sum of the smallest
 //   unused values. UpdateAllowed uses this to restrict candidate values.
 //
@@ -129,138 +129,55 @@ std::vector<int> nthCompsRepZero(int n, int m, int cap, int k,
 std::vector<int> nthCompsDistinct(int n, int m, int cap, int k,
                                   double dblIdx, const mpz_class &mpzIdx) {
 
-    // width is the full requested length.
     const int width = m;
-
-    // Maximum first value we could ever take while still allowing a strictly
-    // increasing set of width distinct positives to sum to n.
-    //
-    // The minimal sum of (width-1) additional distinct positives is:
-    //   1 + 2 + ... + (width-1) = width*(width-1)/2
-    // So the first chosen value cannot exceed n - that minimal tail.
-    //
-    // We also cap by cap.
     const int max_val = std::min(cap, n - (width * (width - 1)) / 2);
 
-    // mask[v] == 1 means v is already used in the prefix.
     std::vector<char> mask(max_val + 1, 0);
-
-    // result vector (composition)
+    const int mask_size = mask.size();
     std::vector<int> res(width, 0);
-
-    // After we set the first element, there will be (width-1) remaining parts.
-    // This function reuses m to mean "remaining parts after current position",
-    // so decrement once up front and then once per loop iteration.
     --m;
 
-    // This impl seeds the prefix with 1 as the smallest possible start.
-    // We effectively begin by assuming the current value is 1, then "walk" it
-    // upward (by swapping used markers) until the correct block is found.
     mask[1] = 1;
-
-    // Candidate pool for the suffix initially: {2, 3, ..., max_val}.
-    // (Value 1 is already used; values > max_val cannot be used in position 0
-    //  under the minimal-tail feasibility bound.)
     std::vector<int> allowed(max_val - 1);
     std::iota(allowed.begin(), allowed.end(), 2);
 
-    // Running sum of the fixed prefix.
-    // Since we start with value 1 being used, the initial partial sum is 1.
     int partial_sum = 1;
-
-    // cur_val tracks the "currently used" value at this position within the
-    // inner candidate-advancing loop.
-    //
-    // In other words, as we attempt larger candidates for the curr position,
-    // we update partial_sum by the diff between new candidate and cur_val,
-    // and we update the mask by freeing cur_val and using new candidate.
     int cur_val = 1;
 
-    // Outer loop fixes positions 0..width-2.
-    // The last element is determined uniquely by the remaining sum.
     for (int i = 0, j = 0; i < (width - 1); ++i, --m) {
-
-        // temp = number of completions (full compositions) if we keep the curr
-        // candidate value at position i and fill the remaining m pos. using
-        // distinct values from allowed summing to (n - partial_sum).
-        //
-        // This is exactly the "block size" for the current prefix.
         double temp = CountCompDistLenRstrctd(n - partial_sum, m, allowed);
 
-        // Inner loop: advance candidate value at position i until dblIdx falls
-        // inside the current block.
-        //
-        // Condition temp <= dblIdx means:
-        //   dblIdx lies *after* all comps that start with the curr prefix.
-        // So we subtract this block and move to the next candidate.
         for (; temp <= dblIdx; cur_val = j) {
-
-            // Find the next unused value (j + 1) for this position.
-            // j is used as an index so that candidate values are tried in
-            // increasing order: 1,2,3,... skipping values already in mask.
-            while (mask[j + 1]) {
+            while ((j + 1) < mask_size && mask[j + 1]) {
                 ++j;
             }
 
-            // We are moving the chosen value at this position from cur_val to
-            // (j + 1). Update the running prefix sum by the delta.
             partial_sum += (j + 1 - cur_val);
-
-            // Update mask and recompute the allowed list bounded by
-            // feasibility for the remaining suffix.
-            //
-            // - Frees cur_val (so it can appear later) and uses (j + 1) now.
-            // - Truncates allowed to values that can still fit given minimal
-            //   suffix.
             UpdateAllowed(mask, allowed, i, j + 1, width,
                           n, cur_val, partial_sum);
 
-            // Skip past the entire block for this candidate prefix.
             dblIdx -= temp;
-
-            // Recompute the block size for the new candidate prefix.
             temp = CountCompDistLenRstrctd(n - partial_sum, m, allowed);
 
-            // Minor optimization: if the next block is also too small, adv j
-            // immediately so the next iteration starts from a fresh candidate.
             if (temp <= dblIdx) {
                 ++j;
             }
         }
 
-        // At this point, (j) corresponds to the chosen value for this position.
-        // NOTE: In this imple res[i] stores j, while the candidate used
-        // in mask/partial_sum is (j + 1) during the stepping logic. The post-
-        // step normalization below sets up the next position consistently.
         res[i] = j;
-
-        // Reset j to begin searching from the smallest available value for the
-        // next position.
         j = 0;
-        while (mask[j + 1]) {
+
+        while ((j + 1) < mask_size && mask[j + 1]) {
             ++j;
         }
 
-        // Commit the smallest unused value for the *next* position as the new
-        // baseline. This maintains the invariant that before entering the
-        // inner loop for the next i, cur_val is already marked used and
-        // partial_sum includes it.
         cur_val = j + 1;
         partial_sum += (j + 1);
-
-        // Update allowed based on committing this baseline value for position
-        // (i + 1).
         UpdateAllowed(mask, allowed, i + 1, j + 1, width,
                       n, cur_val, partial_sum);
     }
 
-    // Final element is forced: whatever remains to reach n.
-    // (The code uses an accumulate seeded with width, which appears to be an
-    // intentional offset consistent with how earlier entries are stored.
-    // If res[i] holds "index-like" values rather than the actual part values,
-    // this is where that convention is reconciled.)
     res[width - 1] = n - std::accumulate(res.begin(), res.end(), width);
-
     return res;
 }
 
@@ -642,6 +559,7 @@ std::vector<int> nthCompsDistinctGmp(int n, int m, int cap, int k,
     const int max_val = std::min(cap, n - (width * (width - 1)) / 2);
 
     std::vector<char> mask(max_val + 1, 0);
+    const int mask_size = mask.size();
     std::vector<int> res(width, 0);
     --m;
 
@@ -665,7 +583,7 @@ std::vector<int> nthCompsDistinctGmp(int n, int m, int cap, int k,
         Counter->GetCount(temp, n - partial_sum, m, allowed);
 
         for (; cmp(temp, index) <= 0; cur_val = j) {
-            while (mask[j + 1]) {
+            while ((j + 1) < mask_size && mask[j + 1]) {
                 ++j;
             }
 
@@ -684,7 +602,7 @@ std::vector<int> nthCompsDistinctGmp(int n, int m, int cap, int k,
         res[i] = j;
         j = 0;
 
-        while (mask[j + 1]) {
+        while ((j + 1) < mask_size && mask[j + 1]) {
             ++j;
         }
 
