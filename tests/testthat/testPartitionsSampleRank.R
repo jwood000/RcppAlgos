@@ -276,6 +276,26 @@ test_that("parttionsSample and compositionsSample produces correct results", {
     expect_identical(compositionsRank(bench, v = 0:30,nThreads = 2),
                      seq_len(nrow(bench)))
 
+    ## "CmpDstctMZWeak"
+    bench = compositionsGeneral(0:25, 5, weak = TRUE, freqs = c(3, rep(1, 25)))
+    expect_identical(compositionsSample(0:25, 5, freqs = c(3, rep(1, 25)),
+                                        nThreads = 2, weak = TRUE,
+                                        sampleVec = seq_len(nrow(bench))), bench)
+    expect_identical(compositionsRank(bench, v = 0:25, weak = TRUE,
+                                      freqs = c(3, rep(1, 25)), nThreads = 2),
+                     seq_len(nrow(bench)))
+
+    ## "CmpDstCapMZWeak"
+    bench = compositionsGeneral(0:15, 5, freqs = c(3, rep(1, 15)),
+                                weak = TRUE, target = 40)
+    expect_identical(compositionsSample(0:15, 5, target = 40, nThreads = 2,
+                                        freqs = c(3, rep(1, 15)), weak = TRUE,
+                                        sampleVec = seq_len(nrow(bench))),
+                     bench)
+    expect_identical(compositionsRank(bench, v = 0:15, target = 40, nThreads = 2,
+                                      weak = TRUE, freqs = c(3, rep(1, 15))),
+                     seq_len(nrow(bench)))
+
     ##### *********** Torture Test > 2^.Machine$double.digits *********** #####
 
     mySamp = partitionsSample(400, 20, target = 1000,
@@ -369,9 +389,23 @@ test_that("parttionsSample and compositionsSample produces correct results", {
                  rownames(mySamp))
 
     mySamp = compositionsSample(0:180, 12, freqs = c(8, rep(1, 180)),
+                                weak = TRUE, n = 4,
+                                namedSample = TRUE, nThreads = 2)
+    expect_equal(compositionsRank(mySamp, v = 0:180, freqs = c(8, rep(1, 180)),
+                                  nThreads = 2, weak = TRUE),
+                 rownames(mySamp))
+
+    mySamp = compositionsSample(0:180, 12, freqs = c(8, rep(1, 180)),
                                 n = 4, namedSample = TRUE,
                                 nThreads = 2, target = 300)
     expect_equal(compositionsRank(mySamp, v = 0:180, freqs = c(8, rep(1, 180)),
                                   nThreads = 2, target = 300),
+                 rownames(mySamp))
+
+    mySamp = compositionsSample(0:180, 12, freqs = c(8, rep(1, 180)),
+                                n = 4, namedSample = TRUE, weak = TRUE,
+                                nThreads = 2, target = 300)
+    expect_equal(compositionsRank(mySamp, v = 0:180, freqs = c(8, rep(1, 180)),
+                                  nThreads = 2, target = 300, weak = TRUE),
                  rownames(mySamp))
 })

@@ -468,6 +468,63 @@ test_that("partitions/compostionsGeneral Distinct Parallel Lower GMP", {
     expect_equal(200001, nrow(bench))
     expect_true(all(rowSums(bench) == 200))
 
+    ## compositionsDesign(0:200, 12, freqs = c(8, rep(1, 200)), weak = TRUE)[
+    ##    c("num_partitions",
+    ##      "mapped_target",
+    ##      "partition_type")
+    ## ]
+    ##
+    ## $num_partitions
+    ## Big Integer ('bigz') :
+    ## [1] 123675593191381440
+    ##
+    ## $mapped_target
+    ## [1] 200
+    ##
+    ## $partition_type
+    ## [1] "CmpDstctMZWeak"
+    bench <- compositionsGeneral(0:200, 12, freqs = c(8, rep(1, 200)),
+                                 weak = TRUE, lower = "123675593191181440")
+    expect_identical(compositionsGeneral(0:200, 12, freqs = c(8, rep(1, 200)),
+                                         weak = TRUE, nThreads = 2,
+                                         lower = "123675593191181440"), bench)
+    expect_identical(compositionsRank(bench[1, ], v = 0:200, weak = TRUE,
+                                      freqs = c(8, rep(1, 200))),
+                     gmp::as.bigz("123675593191181440"))
+    expect_equal(gmp::sub.bigz("123675593191381440",
+                               "123675593191181440") + 1, nrow(bench))
+    expect_true(all(rowSums(bench) == 200))
+
+    ## compositionsDesign(0:150, 12, freqs = c(8, rep(1, 150)),
+    ##                    weak = TRUE, target = 250)[
+    ##    c("num_partitions",
+    ##      "mapped_target",
+    ##      "partition_type")
+    ## ]
+    ##
+    ## $num_partitions
+    ## Big Integer ('bigz') :
+    ## [1] 1878764044241252520
+    ##
+    ## $mapped_target
+    ## [1] 250
+    ##
+    ## $partition_type
+    ## [1] "CmpDstCapMZWeak"
+    bench <- compositionsGeneral(0:150, 12, freqs = c(8, rep(1, 150)),
+                                 weak = TRUE, target = 250,
+                                 lower = "1878764044241052520")
+    expect_identical(compositionsGeneral(0:150, 12, freqs = c(8, rep(1, 150)),
+                                         weak = TRUE, target = 250, nThreads = 2,
+                                         lower = "1878764044241052520"), bench)
+    expect_identical(compositionsRank(bench[1, ], v =0:150,
+                                      freqs = c(8, rep(1, 150)),
+                                      weak = TRUE, target = 250),
+                     gmp::as.bigz("1878764044241052520"))
+    expect_equal(gmp::sub.bigz("1878764044241252520",
+                               "1878764044241052520") + 1, nrow(bench))
+    expect_true(all(rowSums(bench) == 250))
+
     ######********************* Compositions Mapped **********************#####
     ## compositionsDesign((1:300) * 7, 10)[c("num_partitions",
     ##                                       "mapped_target",
@@ -657,6 +714,68 @@ test_that("partitions/compostionsGeneral Distinct Parallel Lower GMP", {
     expect_equal(gmp::sub.bigz("46298981912198400",
                                "46298981912000000") + 1, nrow(bench))
     expect_true(all(rowSums(bench) == 200 * 3000000019))
+
+    ## compositionsDesign((0:200) * 97, 12, freqs = c(8, rep(1, 200)),
+    ##                    weak = TRUE)[
+    ##    c("num_partitions",
+    ##      "mapped_target",
+    ##      "partition_type")
+    ## ]
+    ##
+    ## $num_partitions
+    ## Big Integer ('bigz') :
+    ## [1] 123675593191381440
+    ##
+    ## $mapped_target
+    ## [1] 200
+    ##
+    ## $partition_type
+    ## [1] "CmpDstctMZWeak"
+    bench <- compositionsGeneral((0:200) * 97, 12, freqs = c(8, rep(1, 200)),
+                                 weak = TRUE, lower = "123675593191181440")
+    expect_identical(compositionsGeneral((0:200) * 97, 12, freqs = c(8, rep(1, 200)),
+                                         weak = TRUE, nThreads = 2,
+                                         lower = "123675593191181440"), bench)
+    expect_identical(compositionsRank(bench[1, ], v = (0:200) * 97, weak = TRUE,
+                                      freqs = c(8, rep(1, 200))),
+                     gmp::as.bigz("123675593191181440"))
+    expect_equal(gmp::sub.bigz("123675593191381440",
+                               "123675593191181440") + 1, nrow(bench))
+    expect_true(all(rowSums(bench) == 200 * 97))
+
+    ## compositionsDesign((0:150) * 907041845093, 12,
+    ##                    freqs = c(8, rep(1, 150)),
+    ##                    weak = TRUE, target = 250 * 907041845093)[
+    ##    c("num_partitions",
+    ##      "mapped_target",
+    ##      "partition_type")
+    ## ]
+    ##
+    ## $num_partitions
+    ## Big Integer ('bigz') :
+    ## [1] 1878764044241252520
+    ##
+    ## $mapped_target
+    ## [1] 250
+    ##
+    ## $partition_type
+    ## [1] "CmpDstCapMZWeak"
+    bench <- compositionsGeneral((0:150) * 907041845093, 12,
+                                 freqs = c(8, rep(1, 150)),
+                                 weak = TRUE, target = 250 * 907041845093,
+                                 lower = "1878764044241052520")
+    expect_identical(compositionsGeneral((0:150) * 907041845093, 12,
+                                         freqs = c(8, rep(1, 150)),
+                                         weak = TRUE,  nThreads = 2,
+                                         target = 250 * 907041845093,
+                                         lower = "1878764044241052520"), bench)
+    expect_identical(compositionsRank(bench[1, ], v = (0:150) * 907041845093,
+                                      freqs = c(8, rep(1, 150)),
+                                      weak = TRUE, target = 250 * 907041845093),
+                     gmp::as.bigz("1878764044241052520"))
+    expect_equal(gmp::sub.bigz("1878764044241252520",
+                               "1878764044241052520") + 1, nrow(bench))
+    expect_true(all(rowSums(bench) == 250 * 907041845093))
 })
 
 test_that("partition/compositionsGeneral and Repetition Parallel Lower GMP", {

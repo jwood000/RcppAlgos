@@ -509,8 +509,7 @@ test_that("partitionsIter produces correct results", {
                                    IsComposition = TRUE,
                                    requiresWidthRebuild = TRUE))
     expect_true(partitionClassTest(0:25, 6, fr = c(4, rep(1, 25)),
-                                   IsComposition = TRUE, IsWeak = TRUE,
-                                   testRand = FALSE))
+                                   IsComposition = TRUE, IsWeak = TRUE))
 
     #### Mapped version
     ## 50 * 13 + 7 * 9 = 713
@@ -540,8 +539,7 @@ test_that("partitionsIter produces correct results", {
                                    IsComposition = TRUE,
                                    requiresWidthRebuild = TRUE))
     expect_true(partitionClassTest((0:25) * 13, 6, fr = c(4, rep(1, 25)),
-                                   IsComposition = TRUE, IsWeak = TRUE,
-                                   testRand = FALSE))
+                                   IsComposition = TRUE, IsWeak = TRUE))
 
     #### Distinct; Specific Length; Multiple Zeros; Enough to maximize;
     #### Length is restrictive
@@ -550,8 +548,7 @@ test_that("partitionsIter produces correct results", {
                                    IsComposition = TRUE,
                                    requiresWidthRebuild = TRUE))
     expect_true(partitionClassTest(0:30, 5, fr = c(7, rep(1, 30)),
-                                   IsComposition = TRUE, IsWeak = TRUE,
-                                   testRand = FALSE))
+                                   IsComposition = TRUE, IsWeak = TRUE))
 
     #### Mapped version
     ## 50 * 13 + 7 * 5 = 713
@@ -572,8 +569,7 @@ test_that("partitionsIter produces correct results", {
                                    IsComposition = TRUE,
                                    requiresWidthRebuild = TRUE))
     expect_true(partitionClassTest((0:30) * 13, 5, fr = c(7, rep(1, 30)),
-                                   IsComposition = TRUE, IsWeak = TRUE,
-                                   testRand = FALSE))
+                                   IsComposition = TRUE, IsWeak = TRUE))
 
     #### Distinct; Length determined internally; Multiple Zeros;
     #### Enough to maximize;
@@ -582,8 +578,7 @@ test_that("partitionsIter produces correct results", {
                                    IsComposition = TRUE,
                                    requiresWidthRebuild = TRUE))
     expect_true(partitionClassTest(0:25, fr = c(25, rep(1, 25)),
-                                   IsComposition = TRUE, IsWeak = TRUE,
-                                   testRand = FALSE))
+                                   IsComposition = TRUE, IsWeak = TRUE))
 
     #### Mapped Versions
     ## N.B. We don't shift
@@ -597,8 +592,7 @@ test_that("partitionsIter produces correct results", {
                                    IsComposition = TRUE,
                                    requiresWidthRebuild = TRUE))
     expect_true(partitionClassTest((0:25) * 17, 6, fr = c(25, rep(1, 25)),
-                                   IsComposition = TRUE, IsWeak = TRUE,
-                                   testRand = FALSE))
+                                   IsComposition = TRUE, IsWeak = TRUE))
 
     #### Distinct; Specific Length; No Zeros; Specific Target;
     expect_true(partitionClassTest(30, 8, tar = 75))
@@ -627,14 +621,12 @@ test_that("partitionsIter produces correct results", {
                                    IsComposition = TRUE,
                                    requiresWidthRebuild = TRUE))
     expect_true(partitionClassTest(0:10, 6, tar = 33, fr = c(3, rep(1, 10)),
-                                   IsComposition = TRUE, IsWeak = TRUE,
-                                   testRand = FALSE))
+                                   IsComposition = TRUE, IsWeak = TRUE))
     expect_true(partitionClassTest(0:15, 7, fr = c(4, rep(1, 15)), tar = 32,
                                    IsComposition = TRUE, testRand = FALSE,
                                    requiresWidthRebuild = TRUE))
     expect_true(partitionClassTest(0:15, 7, fr = c(4, rep(1, 15)), tar = 32,
-                                   IsComposition = TRUE, IsWeak = TRUE,
-                                   testRand = FALSE))
+                                   IsComposition = TRUE, IsWeak = TRUE))
 
     #### Mapped Versions
     ## 13 * 75 = 975
@@ -650,8 +642,7 @@ test_that("partitionsIter produces correct results", {
     )
     expect_true(
         partitionClassTest((0:10) * 13L, 6, tar = 429L, fr = c(3, rep(1, 10)),
-                           IsComposition = TRUE, IsWeak = TRUE,
-                           testRand = FALSE)
+                           IsComposition = TRUE, IsWeak = TRUE)
     )
 
     #### Repetition; Length determined internally; Multiple Zero;

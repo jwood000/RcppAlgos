@@ -510,6 +510,72 @@ test_that("partitions/compositionsGeneral Distinct Parallel", {
                                       nThreads = 2),
                      c(1L, 74097L, 148194L, 222290L))
 
+
+    ## compositionsDesign(0:28, 7, freqs = c(4, rep(1, 28)), weak = TRUE)[
+    ##     c("num_partitions", "mapped_target", "partition_type")
+    ## ]
+    ## $num_partitions
+    ## [1] 300720
+    ##
+    ## $mapped_target
+    ## [1] 28
+    ##
+    ## $partition_type
+    ## [1] "CmpDstctMZWeak"
+    bench = compositionsGeneral(
+        0:28, 7, freqs = c(4, rep(1, 28)), weak = TRUE, nThreads = 2
+    )
+    expect_identical(compositionsGeneral(0:28, 7, freqs = c(4, rep(1, 28)),
+                                         weak = TRUE), bench)
+    expect_identical(compositionsRank(bench[c(1L, 100240L, 200480L, 300720L), ],
+                                      v = 0:28, freqs = c(4, rep(1, 28)),
+                                      weak = TRUE, nThreads = 2),
+                     c(1L, 100240L, 200480L, 300720L))
+
+    #### Mapped version
+    ##
+    ## compositionsDesign((0:28) * 17, 7, freqs = c(4, rep(1, 28)), weak = TRUE)[
+    ##     c("num_partitions", "mapped_target", "partition_type")
+    ## ]
+    ## $num_partitions
+    ## [1] 300720
+    ##
+    ## $mapped_target
+    ## [1] 28
+    ##
+    ## $partition_type
+    ## [1] "CmpDstctMZWeak"
+    bench = compositionsGeneral(
+        (0:28) * 17, 7, freqs = c(4, rep(1, 28)), weak = TRUE, nThreads = 2
+    )
+    expect_identical(compositionsGeneral((0:28) * 17, 7, freqs = c(4, rep(1, 28)),
+                                         weak = TRUE), bench)
+    expect_identical(compositionsRank(bench[c(1L, 100240L, 200480L, 300720L), ],
+                                      v = (0:28) * 17, freqs = c(4, rep(1, 28)),
+                                      weak = TRUE, nThreads = 2),
+                     c(1L, 100240L, 200480L, 300720L))
+
+    ## compositionsDesign(0:20, 6, freqs = c(4, rep(1, 20)), weak = TRUE, target = 35)[
+    ##     c("num_partitions", "mapped_target", "partition_type")
+    ## ]
+    ## $num_partitions
+    ## [1] 251490
+    ##
+    ## $mapped_target
+    ## [1] 35
+    ##
+    ## $partition_type
+    ## [1] "CmpDstCapMZWeak"
+    bench = compositionsGeneral(
+        0:20, 6, freqs = c(4, rep(1, 20)), weak = TRUE, target = 35, nThreads = 2
+    )
+    expect_identical(compositionsGeneral(0:20, 6, freqs = c(4, rep(1, 20)),
+                                         weak = TRUE, target = 35), bench)
+    expect_identical(compositionsRank(bench[c(1L, 83830L, 167660L, 251490L), ],
+                                      v = 0:20, freqs = c(4, rep(1, 20)),
+                                      weak = TRUE, target = 35, nThreads = 2),
+                     c(1L, 83830L, 167660L, 251490L))
+
     ## compositionsDesign(0:20, 6, freqs = c(4, rep(1, 20)), target = 40)[
     ##     c("num_partitions", "mapped_target", "partition_type")
     ## ]
