@@ -13,7 +13,7 @@ from typing import Optional
 MAX_FILE_BYTES = 200_000
 MAX_DIFF_BYTES_TOTAL = 400_000
 MODEL = os.getenv("AI_REVIEW_MODEL", "gpt-4o-mini")
-MAX_OUTPUT_TOKENS = 800
+MAX_OUTPUT_TOKENS = 4000
 TEMPERATURE = 0.2
 
 SYSTEM_PROMPT = """\
@@ -190,7 +190,7 @@ def run_cmd_limited(cmd: list[str], max_bytes: int, timeout_s: int = 10) -> str:
 
 def git_diff_file(path: str, ref: str, max_bytes: int = MAX_FILE_BYTES) -> str:
     return run_cmd_limited(
-        ["git", "diff", "--no-color", "--no-ext-diff", "-U0", ref, "--", path],
+        ["git", "diff", "--no-color", "--no-ext-diff", "-U5", ref, "--", path],
         max_bytes=max_bytes,
         timeout_s=10,
     )
