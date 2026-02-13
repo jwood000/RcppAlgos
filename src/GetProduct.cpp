@@ -204,8 +204,7 @@ void PureOutputMain(
         for (int j = 0; j < (nThreads - 1); ++j, step += stepSize,
              nextStep += stepSize) {
 
-            threads.emplace_back(
-                std::cref(ParallelGlue<T>), std::ref(parMat),
+            threads.emplace_back(ParallelGlue<T>, std::ref(parMat),
                 std::cref(idx), std::cref(lenGrps), std::cref(v),
                 std::cref(lenNxtPr), std::cref(mySamp), std::cref(myBigSamp),
                 z, nCols, step, nextStep, IsSample, IsGmp
@@ -214,8 +213,7 @@ void PureOutputMain(
             GetStartProd(lenNxtPr, z, lowerMpz, lower, stepSize, IsGmp);
         }
 
-        threads.emplace_back(
-            std::cref(ParallelGlue<T>), std::ref(parMat),
+        threads.emplace_back(ParallelGlue<T>, std::ref(parMat),
             std::cref(idx), std::cref(lenGrps), std::cref(v),
             std::cref(lenNxtPr), std::cref(mySamp), std::cref(myBigSamp),
             z, nCols, step, nRows, IsSample, IsGmp

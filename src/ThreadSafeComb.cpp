@@ -25,7 +25,7 @@ void ThreadSafeCombinations(T* mat, const std::vector<T> &v, int n, int m,
         for (int j = 0; j < (nThreads - 1);
              ++j, step += stepSize, nextStep += stepSize) {
 
-            threads.emplace_back(std::cref(ComboParallel<T>),
+            threads.emplace_back(ComboParallel<T>,
                                  std::ref(parMat), std::cref(v),
                                  std::ref(zs[j]), n, m, step, nextStep,
                                  std::cref(freqs), IsMult, IsRep);
@@ -34,7 +34,7 @@ void ThreadSafeCombinations(T* mat, const std::vector<T> &v, int n, int m,
                         stepSize, n, m, IsGmp, true, IsRep, IsMult);
         }
 
-        threads.emplace_back(std::cref(ComboParallel<T>), std::ref(parMat),
+        threads.emplace_back(ComboParallel<T>, std::ref(parMat),
                              std::cref(v), std::ref(zs.back()), n, m, step,
                              nRows, std::cref(freqs), IsMult, IsRep);
 

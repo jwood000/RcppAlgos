@@ -51,15 +51,13 @@ void RankPartsParallel(
     Create2D(idx, idx_section, stepSize, m, nThreads);
 
     for (int j = 0; j < (nThreads - 1); ++j) {
-        threads.emplace_back(
-            std::cref(RankPartsResultsGeneric<T>), std::ref(res_sec[j]),
+        threads.emplace_back(RankPartsResultsGeneric<T>, std::ref(res_sec[j]),
             std::ref(idx_section[j]), rankFun, tar,
             m, cap, strtLen, stepSize
         );
     }
 
-    threads.emplace_back(
-        std::cref(RankPartsResultsGeneric<T>), std::ref(last_res),
+    threads.emplace_back(RankPartsResultsGeneric<T>, std::ref(last_res),
         std::ref(idx_section.back()), rankFun, tar, m, cap,
         strtLen, last_sec
     );

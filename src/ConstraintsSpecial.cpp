@@ -151,7 +151,7 @@ void ConstraintsSpecial(
         for (int j = 0; j < (nThreads - 1);
              ++j, step += stepSize, nextStep += stepSize) {
 
-            threads.emplace_back(std::cref(CnstrntLowerWorker<T>),
+            threads.emplace_back(CnstrntLowerWorker<T>,
                                  std::cref(v), std::cref(targetVals),
                                  std::cref(freqs), std::cref(compVec),
                                  std::ref(cnstrThrd[j]),
@@ -166,7 +166,7 @@ void ConstraintsSpecial(
 
         const int leftOver = maxRows - ((nThreads - 1) * stepSize);
 
-        threads.emplace_back(std::cref(CnstrntLowerWorker<T>),
+        threads.emplace_back(CnstrntLowerWorker<T>,
                              std::cref(v), std::cref(targetVals),
                              std::cref(freqs), std::cref(compVec),
                              std::ref(cnstrThrd.back()),

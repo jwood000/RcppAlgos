@@ -23,8 +23,7 @@ void StandardPartitions(
         for (int j = 0; j < (nThreads - 1);
              ++j, step += stepSize, nextStep += stepSize) {
 
-            threads.emplace_back(
-                std::cref(PartsStdParallel), std::ref(parMat), std::ref(zs[j]),
+            threads.emplace_back(PartsStdParallel, std::ref(parMat), std::ref(zs[j]),
                 step, width, lastElem, lastCol, nextStep, ptype, zeroBudget
             );
 
@@ -43,8 +42,7 @@ void StandardPartitions(
             }
         }
 
-        threads.emplace_back(
-            std::cref(PartsStdParallel), std::ref(parMat), std::ref(zs.back()),
+        threads.emplace_back(PartsStdParallel, std::ref(parMat), std::ref(zs.back()),
             step, width, lastElem, lastCol, nRows, ptype, zeroBudget
         );
 
@@ -81,8 +79,7 @@ void GeneralPartitions(
         for (int j = 0; j < (nThreads - 1);
              ++j, step += stepSize, nextStep += stepSize) {
 
-            threads.emplace_back(
-                std::cref(PartsGenParallel<T>), std::ref(parMat),
+            threads.emplace_back(PartsGenParallel<T>, std::ref(parMat),
                 std::cref(v), std::ref(zs[j]), step, part.width, lastElem,
                 lastCol, nextStep, part.ptype, part.maxZeros
             );
@@ -97,8 +94,7 @@ void GeneralPartitions(
                                    cap, strtLen, lower, lowerMpz);
         }
 
-        threads.emplace_back(
-            std::cref(PartsGenParallel<T>), std::ref(parMat), std::cref(v),
+        threads.emplace_back(PartsGenParallel<T>, std::ref(parMat), std::cref(v),
             std::ref(zs.back()), step, part.width, lastElem, lastCol, nRows,
             part.ptype, part.maxZeros
         );

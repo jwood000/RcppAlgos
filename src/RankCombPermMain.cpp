@@ -48,15 +48,13 @@ void RankCPParallel(
     Create2D(idx, idx_section, stepSize, m, nThreads);
 
     for (int j = 0; j < (nThreads - 1); ++j) {
-        threads.emplace_back(
-            std::cref(RankCPResultsGeneric<T>), std::ref(res_sec[j]),
+        threads.emplace_back(RankCPResultsGeneric<T>, std::ref(res_sec[j]),
             std::ref(idx_section[j]), std::cref(myReps),
             rankFun, m, lenV, stepSize
         );
     }
 
-    threads.emplace_back(
-        std::cref(RankCPResultsGeneric<T>), std::ref(last_res),
+    threads.emplace_back(RankCPResultsGeneric<T>, std::ref(last_res),
         std::ref(idx_section.back()), std::cref(myReps),
         rankFun, m, lenV, last_sec
     );

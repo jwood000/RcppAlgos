@@ -98,15 +98,14 @@ void ThreadSafeSample(T* mat, SEXP res, const std::vector<T> &v,
         for (int j = 0; j < (nThreads - 1);
              ++j, step += stepSize, nextStep += stepSize) {
 
-            threads.emplace_back(std::cref(ParallelGlue<T>),
+            threads.emplace_back(ParallelGlue<T>,
                                  std::ref(parMat), std::cref(v),
                                  std::cref(mySample), std::cref(myBigSamp),
                                  std::cref(myReps), nthPartFun, m,
                                  step, nextStep, tar, strtLen, cap, IsGmp);
         }
 
-        threads.emplace_back(
-            std::cref(ParallelGlue<T>), std::ref(parMat), std::cref(v),
+        threads.emplace_back(ParallelGlue<T>, std::ref(parMat), std::cref(v),
             std::cref(mySample), std::cref(myBigSamp), std::cref(myReps),
             nthPartFun, m, step, sampSize, tar, strtLen, cap, IsGmp
         );

@@ -28,25 +28,25 @@ void PollardRhoMain(const std::vector<double> &myNums, T myMax,
 
         for (int j = 0; j < (nThreads - 1); m = n, n += chunkSize, ++j) {
             if (bPrimeFacs) {
-                threads.emplace_back(std::cref(PrimeFacList<T>), m, n,
+                threads.emplace_back(PrimeFacList<T>, m, n,
                                      std::cref(myNums), std::ref(MyList));
             } else if (bAllFacs) {
-                threads.emplace_back(std::cref(FactorList<T>), m, n,
+                threads.emplace_back(FactorList<T>, m, n,
                                      std::cref(myNums), std::ref(MyList));
             } else {
-                threads.emplace_back(std::cref(IsPrimeVec), m, n,
+                threads.emplace_back(IsPrimeVec, m, n,
                                      std::cref(myNums), std::ref(primeTest));
             }
         }
 
         if (bPrimeFacs) {
-            threads.emplace_back(std::cref(PrimeFacList<T>), m, myRange,
+            threads.emplace_back(PrimeFacList<T>, m, myRange,
                                  std::cref(myNums), std::ref(MyList));
         } else if (bAllFacs) {
-            threads.emplace_back(std::cref(FactorList<T>), m, myRange,
+            threads.emplace_back(FactorList<T>, m, myRange,
                                  std::cref(myNums), std::ref(MyList));
         } else {
-            threads.emplace_back(std::cref(IsPrimeVec), m, myRange,
+            threads.emplace_back(IsPrimeVec, m, myRange,
                                  std::cref(myNums), std::ref(primeTest));
         }
 

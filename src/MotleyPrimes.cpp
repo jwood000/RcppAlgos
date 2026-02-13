@@ -37,22 +37,22 @@ void MotleyMain(T myMin, U myMax, bool IsEuler,
         for (int ind = 0; ind < (nThreads - 1); offsetStrt += chunkSize,
              lower = (upper + 1), upper += chunkSize, ++ind) {
             if (IsEuler) {
-                threads.emplace_back(std::cref(MotleyPrimes::EulerPhiSieve<T, U>),
+                threads.emplace_back(MotleyPrimes::EulerPhiSieve<T, U>,
                                      lower, upper, offsetStrt, std::ref(primes),
                                      std::ref(numSeq), EulerPhis);
             } else {
-                threads.emplace_back(std::cref(MotleyPrimes::PrimeFactorizationSieve<T>),
+                threads.emplace_back(MotleyPrimes::PrimeFactorizationSieve<T>,
                                      lower, static_cast<T>(upper), offsetStrt,
                                      std::cref(primes), std::ref(primeList));
             }
         }
 
         if (IsEuler) {
-            threads.emplace_back(std::cref(MotleyPrimes::EulerPhiSieve<T, U>),
+            threads.emplace_back(MotleyPrimes::EulerPhiSieve<T, U>,
                                  lower, myMax, offsetStrt, std::ref(primes),
                                  std::ref(numSeq), EulerPhis);
         } else {
-            threads.emplace_back(std::cref(MotleyPrimes::PrimeFactorizationSieve<T>),
+            threads.emplace_back(MotleyPrimes::PrimeFactorizationSieve<T>,
                                  lower, static_cast<T>(myMax), offsetStrt,
                                  std::cref(primes), std::ref(primeList));
         }

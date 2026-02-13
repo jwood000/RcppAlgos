@@ -148,22 +148,22 @@ void DivisorMain(T myMin, U myMax, bool bDivSieve,
         for (int ind = 0; ind < (nThreads - 1); offsetStrt += chunkSize,
                     lowerBnd = (upperBnd + 1), upperBnd += chunkSize, ++ind) {
             if (bDivSieve) {
-                threads.emplace_back(std::cref(DivisorsSieve<T, U>),
+                threads.emplace_back(DivisorsSieve<T, U>,
                                      lowerBnd, static_cast<U>(upperBnd),
                                      offsetStrt, std::ref(MyDivList));
             } else {
-                threads.emplace_back(std::cref(NumDivisorsSieve<T, V>),
+                threads.emplace_back(NumDivisorsSieve<T, V>,
                                      lowerBnd, upperBnd,
                                      offsetStrt, DivCountV);
             }
         }
 
         if (bDivSieve) {
-            threads.emplace_back(std::cref(DivisorsSieve<T, U>),
+            threads.emplace_back(DivisorsSieve<T, U>,
                                  lowerBnd, myMax, offsetStrt,
                                  std::ref(MyDivList));
         } else {
-            threads.emplace_back(std::cref(NumDivisorsSieve<T, V>),
+            threads.emplace_back(NumDivisorsSieve<T, V>,
                                  lowerBnd, intMax, offsetStrt, DivCountV);
         }
 
