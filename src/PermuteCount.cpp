@@ -9,6 +9,7 @@
 // article titled "High Performance functions with Rcpp" found:
 //             http://adv-r.had.co.nz/Rcpp.html
 std::vector<int> rleCpp(const std::vector<int> &x, int first_idx) {
+
     std::vector<int> lengths;
     int prev = x[first_idx];
     std::size_t i = 0;
@@ -33,6 +34,9 @@ double NumPermsWithRep(const std::vector<int> &v, bool includeZero) {
         v.cbegin(),
         std::find_if(v.cbegin(), v.cend(), [](int i) {return i != 0;})
     );
+
+    // If all entries are zero. This shouldn't happen, but here for safety.
+    if (first_idx == v.size()) return 1;
 
     std::vector<int> myLens = rleCpp(v, first_idx);
     std::sort(myLens.begin(), myLens.end(), std::greater<int>());
