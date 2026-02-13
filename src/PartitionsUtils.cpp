@@ -2,13 +2,17 @@
 #include "Partitions/PartitionsUtils.h"
 
 std::string GetPTypeName(PartitionType ptype) {
+    using U = std::underlying_type_t<PartitionType>;
+    const int idx = static_cast<int>(static_cast<U>(ptype));
 
-    int ptype_idx = static_cast<std::underlying_type<PartitionType>::type>(
-        ptype
-    );
+    if (idx >= 0 && idx < static_cast<int>(PartitionType::NumTypes)) {
+        return PTypeNames[idx];
+    }
 
-    return PTypeNames[ptype_idx];
+    cpp11::stop("Unknown PartitionType index: %d", idx);
+    return "Unknown"; // unreachable, but silences some compilers
 }
+
 
 void BinaryNextElem(int &uppBnd, int &lowBnd, int &ind, int lastElem,
                     std::int64_t target, std::int64_t partial,
