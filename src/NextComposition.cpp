@@ -24,13 +24,22 @@ void NextCompositionRep(std::vector<int> &z, int lastCol) {
     }
 }
 
+// Sentinel contract for (i1, i2):
+// - i1 < 0:
+//     No valid pair exists in complement for the current last-two sum.
+//     NextRoutine must simply swap the last two elements of z and return true.
+// - i1 >= 0:
+//     (i1, i2) were produced by NextDistinctBlock2 and a valid pair is
+//     guaranteed to exist. A two-pointer search must find it without
+//     leaving [0, lastIdx]. Any bounds violation here indicates an internal
+//     invariant failure.
 bool NextRoutine(
     std::vector<int> &z, std::vector<int> &complement,
     int &i1, int &i2, int lastCol, int lastIdx
 ) {
 
-    auto&& ref_one = z[lastCol - 1];
-    auto&& ref_two = z[lastCol];
+    int& ref_one = z[lastCol - 1];
+    int& ref_two = z[lastCol];
 
     // See commentary in else block of res2 == 1 conditional.
     if (i1 < 0) {
@@ -38,23 +47,22 @@ bool NextRoutine(
         return true;
     }
 
-    // This will be used to see if we need to swap the last two elements of z
-    bool less_flag = ref_one < ref_two;
-
     const int target = ref_one + ref_two;
-    int check = complement[i1] + complement[i2];
 
-    while (check != target) {
+    while (true) {
+        const int check = complement[i1] + complement[i2];
+        if (check == target) break;
+
         if (check < target) {
+            if (i1 == lastIdx) return false;
             ++i1;
         } else {
+            if (i2 == 0) return false;
             --i2;
         }
-
-        check = complement[i1] + complement[i2];
     }
 
-    if (less_flag) {
+    if (ref_one < ref_two) {
         if (i1 == i2) {
             std::swap(ref_one, ref_two);
             ++i1;
@@ -68,15 +76,12 @@ bool NextRoutine(
         }
     }
 
+    std::vector<int> comp_before(complement);
+
     std::swap(ref_one, complement[i1]);
     std::swap(ref_two, complement[i2]);
 
-    // We need a proof that complement is guaranteed to be sorted after
-    // the swaps. Intuitively, it makes sense, however rigor is required.
-    // Sorting is expensive based off of empirical tests. Until we have
-    // a proof, we will sort the affected area.
-    //
-    // Sort the small affected region [i1, i2 + 1]
+    // Sort the small affected region [i2, i1 + 1] or [i1, i2 + 1]
     if (i1 > i2) {
         std::sort(complement.begin() + i2, complement.begin() + i1 + 1);
     } else {
@@ -90,7 +95,7 @@ bool NextRoutine(
 
 // The algorithm for NextCompositionDistinct is similar in principle to the
 // traditional NextCompositionRep algorithm, however the details are far more
-// complicated. For example, in the traditional algo, the idea for each
+// complicated. For example, in the traditional algorithm, the idea for each
 // iteration is to first check if the last two elements can be altered to
 // produce another composition. This is fairly straightforward when repetition
 // is allowed. We simply check to see if the last element is minimal. If it
