@@ -13,7 +13,6 @@ std::string GetPTypeName(PartitionType ptype) {
     return "Unknown"; // unreachable, but silences some compilers
 }
 
-
 void BinaryNextElem(int &uppBnd, int &lowBnd, int &ind, int lastElem,
                     std::int64_t target, std::int64_t partial,
                     const std::vector<std::int64_t> &v) {

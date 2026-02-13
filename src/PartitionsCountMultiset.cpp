@@ -32,11 +32,11 @@ int CountPartsMultiset(const std::vector<int> &Reps,
         count += NumPermsWithRep(z);
     } else if (IsComp) {
         for (; keepGoing(rpsCnt, lastElem, z, e, b);
-        NextMultisetGenPart(rpsCnt, z, e, b, p, lastCol, lastElem)) {
+            NextMultisetGenPart(rpsCnt, z, e, b, p, lastCol, lastElem)) {
             count += NumPermsWithRep(z, false);
         }
 
-        count += NumPermsWithRep(z);
+        count += NumPermsWithRep(z, false);
     } else {
         for (; keepGoing(rpsCnt, lastElem, z, e, b);
             NextMultisetGenPart(rpsCnt, z, e, b, p, lastCol, lastElem)) {

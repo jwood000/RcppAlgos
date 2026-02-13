@@ -409,3 +409,24 @@ test_that("parttionsSample and compositionsSample produces correct results", {
                                   nThreads = 2, target = 300, weak = TRUE),
                  rownames(mySamp))
 })
+
+test_that("compositionsCount produces correct results with multisets non weak case.", {
+    set.seed(42)
+    samps <- lapply(1:10, \(x) sample(1:6, 31, TRUE))
+
+    brute <- function(s) {
+        parts <- partitionsGeneral(0:30, 7, freqs = s)
+
+        sum(
+            apply(parts, 1, \(r) {
+                x <- r[r != 0]
+                permuteCount(table(x))
+            })
+        )
+    }
+
+    bench <- sapply(samps, brute)
+    expect_equal(
+        sapply(samps, \(s) compositionsCount(0:30, 7, freqs = s)), bench
+    )
+})
