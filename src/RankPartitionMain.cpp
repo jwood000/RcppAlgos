@@ -164,7 +164,7 @@ SEXP RankPartitionMain(SEXP RIdx, SEXP Rv, SEXP RisRep,
 
     SetUpRank(RIdx, Rv, RisRep, RFreqs, Rm, idx, freqs, myReps,
               myType, n, m, !IsComp, IsMult, IsRep);
-    SetBasic(Rv, vNum, vInt, n, myType);
+    SetBasic(Rv, RFreqs, vNum, vInt, n, myType);
 
     // Must be defined inside IsInteger check as targetVals could be
     // outside integer data type range which causes undefined behavior

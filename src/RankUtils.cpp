@@ -108,7 +108,6 @@ void Create2D(const std::vector<int> &idx,
     v.back().assign(idx.begin() + strt, idx.end());
 }
 
-
 template void Create2D(
     const std::vector<int>&, std::vector<std::vector<int>>&, int, int, int
 );

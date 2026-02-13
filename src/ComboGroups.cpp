@@ -24,7 +24,7 @@ SEXP ComboGroupsCpp(SEXP Rv, SEXP RNumGroups, SEXP RGrpSize, SEXP RRetType,
     std::vector<double> vNum;
 
     SetType(myType, Rv);
-    SetBasic(Rv, vNum, vInt, n, myType);
+    SetBasic(Rv, R_NilValue, vNum, vInt, n, myType);
 
     const std::unique_ptr<ComboGroupsTemplate> CmbGrp =
         GroupPrep(Rv, RNumGroups, RGrpSize, n);

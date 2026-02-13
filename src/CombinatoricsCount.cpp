@@ -113,7 +113,7 @@ SEXP ComboGroupsCountCpp(SEXP Rv, SEXP RNumGroups, SEXP RGrpSize) {
     VecType myType = VecType::Integer;
 
     SetType(myType, Rv);
-    SetBasic(Rv, vNum, vInt, n, myType);
+    SetBasic(Rv, R_NilValue, vNum, vInt, n, myType);
 
     std::unique_ptr<ComboGroupsTemplate> CmbGrpCls =
         GroupPrep(Rv, RNumGroups, RGrpSize, n);

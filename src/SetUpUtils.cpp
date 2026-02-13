@@ -229,7 +229,9 @@ void SetFinalValues(VecType &myType, std::vector<int> &Reps,
     }
 }
 
-void SetBasic(SEXP Rv, std::vector<double> &vNum,
+// Note, when user passes a singleton along with freqs with one value. We
+// need after the check for logical as a user could pass a single logical.
+void SetBasic(SEXP Rv, SEXP RFreqs, std::vector<double> &vNum,
               std::vector<int> &vInt, int &n, VecType &myType) {
 
     if (myType > VecType::Logical) {
@@ -242,6 +244,10 @@ void SetBasic(SEXP Rv, std::vector<double> &vNum,
         int* intVec = INTEGER(Rv);
         n = Rf_length(Rv);
         vInt.assign(intVec, intVec + n);
+    } else if (Rf_length(Rv) == 1 && Rf_length(RFreqs) == 1) {
+        vNum.resize(1);
+        vNum[0] = static_cast<double>(Rf_asReal(Rv));
+        n = 1;
     } else if (Rf_length(Rv) == 1) {
         int seqEnd = 0;
         myType = VecType::Integer;
@@ -276,7 +282,7 @@ void SetValues(VecType &myType, std::vector<int> &Reps,
                SEXP Rm, int &n, int &m, bool &IsMult,
                bool &IsRep, bool IsConstrained) {
 
-    SetBasic(Rv, vNum, vInt, n, myType);
+    SetBasic(Rv, RFreqs, vNum, vInt, n, myType);
     SetFreqsAndM(Reps, freqs, RFreqs, Rm, n, m, IsMult, IsRep);
     SetFinalValues(myType, Reps, freqs, vInt, vNum,
                    n, m, IsMult, IsRep, IsConstrained);
@@ -323,6 +329,18 @@ void SetThreads(bool &Parallel, int maxThreads, int nRows,
         // Ensure that each thread has at least halfLimit
         if ((nRows / nThreads) < halfLimit) {
             nThreads = nRows / halfLimit;
+        }
+    }
+
+    // Post-condition:
+    // If Parallel == true, then nThreads >= 2 and
+    // nThreads <= nRows / halfLimit, hence nThreads <= nRows.
+    if (Parallel) {
+        if (nThreads <= 0 || nThreads > nRows) {
+            cpp11::stop(
+                "Internal error: SetThreads produced invalid nThreads=%d for nRows=%d",
+                nThreads, nRows
+            );
         }
     }
 }
