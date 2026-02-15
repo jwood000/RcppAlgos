@@ -76,8 +76,6 @@ bool NextRoutine(
         }
     }
 
-    std::vector<int> comp_before(complement);
-
     std::swap(ref_one, complement[i1]);
     std::swap(ref_two, complement[i2]);
 
