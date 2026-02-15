@@ -14,6 +14,13 @@ constexpr int max_int = std::numeric_limits<int>::max();
 // complement, complement.size() < 2 implies there is no valid swap step.
 // In that case, the remaining results in this block are exactly the
 // permutations of the current z, so we enumerate via next_permutation.
+//
+// NOTE: This branch enumerates permutations starting from the current ordering
+// using std::next_permutation. We intentionally DO NOT sort `z` here.
+// In parallel mode, each thread is seeded with the first permutation of its
+// assigned lexicographic rank interval (via unrank), so starting
+// "in the middle" is required to avoid overlap/duplication.
+
 void PermutationsOnlyBranch(
     int* mat, std::vector<int> &z, std::size_t strt,
     std::size_t width, std::size_t rowLimit, std::size_t nRows
