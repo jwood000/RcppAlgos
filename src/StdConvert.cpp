@@ -88,7 +88,7 @@ namespace CppConvert {
                                 nameOfObject.c_str());
                 }
 
-                result = static_cast<T>(Rf_asReal(input));
+                result = static_cast<T>(dblInp);
                 break;
             }
             case RAWSXP:
