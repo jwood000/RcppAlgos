@@ -3,6 +3,59 @@
 #include <algorithm>  // std::fill; std::min
 #include <cmath>      // std::floor
 
+// CountPartsRepLenRstrctd
+//
+// Counts the number of partitions of length `m` that sum to `n`
+// where:
+//
+//   • Parts are drawn from the set `allowed`.
+//   • Repetition of values IS allowed.
+//   • Order does NOT matter (i.e. partitions, not compositions).
+//
+// IMPORTANT: Semantics of `allowed`
+// ----------------------------------
+// `allowed` represents the set of admissible *values*, not a multiset
+// of consumable elements. Each value in `allowed` may be used multiple
+// times in the partition (subject only to the length constraint `m`).
+//
+// This is therefore the classic fixed-length coin-change / combinations-
+// with-repetition problem.
+//
+// DP Recurrence
+// -------------
+// Let dp[j][s] denote the number of ways to form sum `s` using exactly
+// `j` parts from `allowed`, with repetition allowed and order ignored.
+//
+// The recurrence:
+//
+//   dp[j][s] += dp[j - 1][s - num]
+//
+// for each `num ∈ allowed`
+//
+// is correct because:
+//
+//   • We build partitions by appending `num` as the final part.
+//   • dp[j - 1][s - num] already counts all partitions of length j-1
+//     summing to s-num.
+//   • Since order does not matter and we iterate values consistently,
+//     each unordered partition is counted exactly once.
+//   • Repetition is allowed because the same `num` may be reused in
+//     subsequent transitions; values are not “consumed”.
+//
+// This is NOT a 0/1 subset-sum recurrence. Values are reusable.
+//
+// Validation
+// ----------
+// Verified against brute-force enumeration:
+//
+//   comboGeneral(cap, m, repetition = TRUE, constraintFun = "sum")
+//
+// bucketed by sum, and compared to:
+//
+//   partitionsCount(cap, m, repetition = TRUE, target = s)
+//
+// across all feasible target sums. Results match exactly.
+//
 double CountPartsRepLenRstrctd(
     int n, int m, const std::vector<int> &allowed, int strtLen
 ) {

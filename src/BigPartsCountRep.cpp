@@ -3,6 +3,7 @@
 #include "Combinations/BigComboCount.h"
 #include <vector>
 
+// See commentary in PartitionsCountRep.cpp
 void CountPartsRepLenRstrctd(
     mpz_class &res, std::vector<std::vector<mpz_class>> &p2d,
     int n, int m, const std::vector<int> &allowed, int strtLen
