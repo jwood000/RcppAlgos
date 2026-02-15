@@ -1,3 +1,5 @@
+#include "cpp11/protect.hpp"
+
 #include <algorithm> // std::set_difference; std::count; std::min; std::sort;
                      // std::accumulate; std::lower_bound; std::partial_sum
 #include <iterator>  // std::inserter; std::distance
@@ -344,6 +346,11 @@ int GetMax(const std::vector<int> &z, const std::vector<int> &complement) {
 int NextDistinctBlock2(const std::vector<int> &v, std::vector<int> &idx,
                        int target, int maxLast) {
 
+    // This shouldn't happen, but here for future users
+    if (idx.size() != 2) {
+        cpp11::stop("idx must have size == 2 in NextDistinctBlock2");
+    }
+
     const int n = v.size();
     if (n < 2) return 0;
 
@@ -507,7 +514,6 @@ int NextDistinctBlock(const std::vector<int> &v, std::vector<int> &idx,
         // Rebuild the tail lexicographically by advancing idx[pivot] and
         // resetting idx[pivot+1..] to the minimal increasing continuation.
         std::iota(idx.begin() + pivot, idx.end(), idx[pivot] + 1);
-
 
         // Recompute new required last value
         partial = target - (tempSum - v[idx.back()]);
