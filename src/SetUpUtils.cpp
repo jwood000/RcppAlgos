@@ -245,8 +245,11 @@ void SetBasic(SEXP Rv, SEXP RFreqs, std::vector<double> &vNum,
         n = Rf_length(Rv);
         vInt.assign(intVec, intVec + n);
     } else if (Rf_length(Rv) == 1 && Rf_length(RFreqs) == 1) {
-        vNum.resize(1);
-        vNum[0] = static_cast<double>(Rf_asReal(Rv));
+        double tmp = 0.0;
+        // numOnly=true so strings error here,
+        // checkWhole=false, negPoss=true
+        CppConvert::convertPrimitive(Rv, tmp, myType, "v", true, false, true);
+        vNum.assign(1, tmp);
         n = 1;
     } else if (Rf_length(Rv) == 1) {
         int seqEnd = 0;
