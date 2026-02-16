@@ -229,8 +229,8 @@ void SetFinalValues(VecType &myType, std::vector<int> &Reps,
     }
 }
 
-// Note, when user passes a singleton along with freqs with one value. We
-// need after the check for logical as a user could pass a single logical.
+// Note, when user passes a singleton along with freqs with one value, we
+// need to check after we have already confirmed Rv is NOT a Boolean.
 void SetBasic(SEXP Rv, SEXP RFreqs, std::vector<double> &vNum,
               std::vector<int> &vInt, int &n, VecType &myType) {
 
