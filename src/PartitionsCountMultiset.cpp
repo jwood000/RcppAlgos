@@ -23,6 +23,12 @@ int CountPartsMultiset(const std::vector<int> &Reps,
     PrepareMultisetPart(rpsCnt, z, b, p, e, lastCol, lastElem);
     int count = IsComp ? 0 : 1;
 
+    // NOTE: z is always a partition produced by:
+    //
+    //     PrepareMultisetPart/NextMultisetGenPart
+    //
+    // i.e. non decreasing (lex-order generator). No need to sort before
+    // calling NumPermsWithRep().
     if (IsComp && IsWeak) {
         for (; keepGoing(rpsCnt, lastElem, z, e, b);
              NextMultisetGenPart(rpsCnt, z, e, b, p, lastCol, lastElem)) {
