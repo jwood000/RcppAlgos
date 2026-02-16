@@ -65,3 +65,28 @@ void CheckMultIsInt(double x, double y) {
         cpp11::stop("Sorry, this case is too large!");
     }
 }
+
+// Verify invariant required by repetition DP:
+// allowed encodes distinct part values (coin types).
+// Positive values must be strictly increasing; zeros are ignored padding.
+// Duplicate or unsorted positives would produce incorrect counts.
+void CheckAllowedInvariant(const std::vector<int>& allowed) {
+    int prev_pos = -1; // previous positive value
+
+    for (int x : allowed) {
+        if (x == 0) continue;
+
+        if (x < 0) {
+            cpp11::stop("Internal error: `allowed` must be non-negative");
+        }
+
+        // strictly increasing positives only
+        if (prev_pos >= 0 && x <= prev_pos) {
+            cpp11::stop(
+                "Internal error: positive values in `allowed` must be strictly increasing"
+            );
+        }
+
+        prev_pos = x;
+    }
+}

@@ -5,6 +5,9 @@
 
 // CountPartsRepLenRstrctd
 //
+// PRECONDITION: `allowed` encodes coin types as strictly increasing positive
+// values, optionally followed by trailing zeros as padding. Zeros are ignored.
+//
 // Counts the number of partitions of length `m` that sum to `n`
 // where:
 //
@@ -60,6 +63,7 @@ double CountPartsRepLenRstrctd(
     int n, int m, const std::vector<int> &allowed, int strtLen
 ) {
 
+    CheckAllowedInvariant(allowed);
     std::vector<std::vector<double>> p(m + 1, std::vector<double>(n + 1, 0));
     p[0][0] = 1; // one way to make 0 with 0 parts
 
