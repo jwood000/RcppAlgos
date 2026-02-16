@@ -1,4 +1,4 @@
-permuteDesign <- function(
+permutePartsDesign <- function(
     v, m = NULL, repetition = FALSE, freqs = NULL,
     target = NULL, showDesign = FALSE
 ) {
