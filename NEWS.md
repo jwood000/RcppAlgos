@@ -8,7 +8,7 @@
 
 * Added accompanying algorithms (also firsts of their kind) for the distinct integer composition case, exposed through: `compositionsSample`, `compositionsRank`, and `compositionsIter`.
 
-* Added the ability to count permutations of partitions when `permuteCount` is called with `constraintsFun = "sum"` and `comparisonFun = "=="`, and the problem reduces internally to an optimized partition case.
+* Added the ability to count permutations of partitions when `permuteCount` is called with `constraintFun = "sum"` and `comparisonFun = "=="`, and the problem reduces internally to an optimized partition case.
 
 ## Other:
 
