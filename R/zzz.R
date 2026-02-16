@@ -56,6 +56,7 @@ physicalCoreCount <- function() {
 ## and number of threads on a given machine
 ## when the package is loaded
 .onLoad <- function(libname, pkgname) {
+    CheckLinkedVersion(pkgname)
     pkgEnv$nCores <- physicalCoreCount()
     tempThreads <- stdThreadMax()
 
