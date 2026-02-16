@@ -10,6 +10,10 @@
 //             http://adv-r.had.co.nz/Rcpp.html
 std::vector<int> rleCpp(const std::vector<int> &x, int first_idx) {
 
+    if (first_idx < 0 || first_idx >= static_cast<int>(x.size())) {
+        cpp11::stop("Internal error: rleCpp first_idx out of range");
+    }
+
     std::vector<int> lengths;
     int prev = x[first_idx];
     std::size_t i = 0;
