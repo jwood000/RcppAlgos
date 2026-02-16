@@ -5,14 +5,33 @@
 #include <numeric>    // std::accumulate, std::partial_sum, std::iota
 #include <limits>     // std::numeric_limits
 
+// rleCpp
+//
 // Most of the code for rleCpp was obtained from Hadley Wickham's
 // article titled "High Performance functions with Rcpp" found:
 //             http://adv-r.had.co.nz/Rcpp.html
+//
+// Computes run-length encoding lengths of the sorted vector x,
+// starting at first_idx.
+//
+// PRECONDITIONS:
+// -------------
+// • x must be non-empty.
+// • first_idx must satisfy: 0 <= first_idx < x.size().
+// • The range [first_idx, x.size()) must be sorted in non-decreasing order.
+//
+// These invariants are guaranteed by all callers (e.g. NumPermsWithRep,
+// partition/composition generators).
+//
+// An empty vector or invalid first_idx indicates an internal logic error,
+// not a recoverable run time condition.
+//
+// PERFORMANCE NOTE:
+// -----------------
+// No bounds checks are performed here because this function is on a hot path.
+// Defensive checks would add measurable overhead.
+//
 std::vector<int> rleCpp(const std::vector<int> &x, int first_idx) {
-
-    if (first_idx < 0 || first_idx >= static_cast<int>(x.size())) {
-        cpp11::stop("Internal error: rleCpp first_idx out of range");
-    }
 
     std::vector<int> lengths;
     int prev = x[first_idx];
