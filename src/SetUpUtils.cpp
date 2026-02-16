@@ -244,7 +244,9 @@ void SetBasic(SEXP Rv, SEXP RFreqs, std::vector<double> &vNum,
         int* intVec = INTEGER(Rv);
         n = Rf_length(Rv);
         vInt.assign(intVec, intVec + n);
-    } else if (Rf_length(Rv) == 1 && Rf_length(RFreqs) == 1) {
+    } else if (!Rf_isNull(RFreqs) &&
+               Rf_length(Rv) == 1 &&
+               Rf_length(RFreqs) == 1) {
         double tmp = 0.0;
         // numOnly=true so strings error here,
         // checkWhole=false, negPoss=true
@@ -296,55 +298,77 @@ void SetThreads(bool &Parallel, int maxThreads, int nRows,
 
     const int halfLimit = limit / 2;
 
+    // Defensive: sanitize inputs (should not happen, but prevents weirdness)
+    if (nRows < 0) {
+        cpp11::stop("Internal error: nRows must be non-negative");
+    }
+
+    if (maxThreads < 1) maxThreads = 1;
+    if (nThreads < 1) nThreads = 1;
+
     // Determined empirically. Setting up threads can be expensive,
     // so we set the cutoff below to ensure threads aren't spawned
     // unnecessarily. We also protect users with fewer than 2 threads
     if ((nRows < limit) || (maxThreads < 2) || myType > VecType::Logical) {
         Parallel = false;
-    } else if (!Rf_isNull(RNumThreads)) {
+        nThreads = 1;
+        return;
+    }
+
+    auto clamp_to_work = [&](int t) -> int {
+        // Never exceed hardware cap
+        if (t > maxThreads) t = maxThreads;
+
+        // Never exceed available work units
+        if (nRows > 0 && t > nRows) t = nRows;
+
+        // Ensure each thread gets at least halfLimit rows when possible
+        if (halfLimit > 0 && t > 1 && (nRows / t) < halfLimit) {
+            t = nRows / halfLimit;  // may become 0 if nRows < halfLimit
+        }
+
+        // Final guard
+        if (t < 1) t = 1;
+        if (t > maxThreads) t = maxThreads;
+        if (nRows > 0 && t > nRows) t = nRows;
+
+        return t;
+    };
+
+    if (!Rf_isNull(RNumThreads)) {
         int userThreads = 1;
 
-        if (!Rf_isNull(RNumThreads)) {
-            CppConvert::convertPrimitive(RNumThreads, userThreads,
-                                         VecType::Integer, "nThreads");
-        }
+        CppConvert::convertPrimitive(
+            RNumThreads, userThreads, VecType::Integer, "nThreads"
+        );
 
-        if (userThreads > maxThreads) {
-            userThreads = maxThreads;
-        }
-
-        // Ensure that each thread has at least halfLimit
-        if ((nRows / userThreads) < halfLimit) {
-            userThreads = nRows / halfLimit;
-        }
+        userThreads = clamp_to_work(userThreads);
 
         if (userThreads > 1) {
             Parallel = true;
             nThreads = userThreads;
         } else {
             Parallel = false;
+            nThreads = 1;
         }
-    } else if (Parallel) {
-        // We have already ruled out cases when the user has fewer than 2
-        // threads. So if user has exactly 2 threads, we enable them both.
-        nThreads = (maxThreads > 2) ? (maxThreads - 1) : maxThreads;
 
-        // Ensure that each thread has at least halfLimit
-        if ((nRows / nThreads) < halfLimit) {
-            nThreads = nRows / halfLimit;
-        }
+        return;
     }
 
-    // Post-condition:
-    // If Parallel == true, then nThreads >= 2 and
-    // nThreads <= nRows / halfLimit, hence nThreads <= nRows.
+    // If Parallel requested (logical flag upstream), choose a default
     if (Parallel) {
-        if (nThreads <= 0 || nThreads > nRows) {
-            cpp11::stop(
-                "Internal error: SetThreads produced invalid nThreads=%d for nRows=%d",
-                nThreads, nRows
-            );
+        int t = (maxThreads > 2) ? (maxThreads - 1) : maxThreads;
+        t = clamp_to_work(t);
+
+        if (t > 1) {
+            nThreads = t;
+            Parallel = true;
+        } else {
+            nThreads = 1;
+            Parallel = false;
         }
+    } else {
+        nThreads = 1;
     }
 }
 
