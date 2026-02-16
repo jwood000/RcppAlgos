@@ -24,15 +24,48 @@ void NextCompositionRep(std::vector<int> &z, int lastCol) {
     }
 }
 
-// Sentinel contract for (i1, i2):
-// - i1 < 0:
-//     No valid pair exists in complement for the current last-two sum.
-//     NextRoutine must simply swap the last two elements of z and return true.
-// - i1 >= 0:
-//     (i1, i2) were produced by NextDistinctBlock2 and a valid pair is
-//     guaranteed to exist. A two-pointer search must find it without
-//     leaving [0, lastIdx]. Any bounds violation here indicates an internal
-//     invariant failure.
+// NextRoutine
+//
+// Advances the current distinct composition by replacing the last two elements
+// of z with the next valid pair from complement that preserves the target sum.
+//
+// INVARIANT AND SAFETY CONTRACT
+// -----------------------------
+// This function relies on invariants established by CompsDistinctSetup() and
+// NextDistinctBlock2(). When entering this function:
+//
+//   • complement is sorted in ascending order in the active search window:
+//         [min(i1, i2), max(i1, i2)].
+//
+//   • lastIdx == complement.size() - 1.
+//
+//   • Sentinel meaning:
+//         i1 < 0  →  no valid pair exists in complement for the current sum.
+//                    In this case, the correct next state is obtained by
+//                    swapping the last two elements of z and returning true.
+//         i1 >= 0 →  both indices are valid and satisfy:
+//                        0 <= i1 <= lastIdx
+//                        0 <= i2 <= lastIdx
+//                    and a valid pair exists at indices reachable by advancing
+//                    i1 forward and/or i2 backward.
+//
+//   • complement[i1] + complement[i2] == z[lastCol - 1] + z[lastCol]
+//     OR a valid pair exists within the reachable search window.
+//
+// These invariants guarantee that all accesses to complement[i1] and
+// complement[i2] remain in-bounds and that the two-pointer search cannot
+// walk outside the valid range.
+//
+// Any violation of these conditions indicates an internal logic error in the
+// block-construction routines and is not a recoverable runtime condition.
+//
+// PERFORMANCE NOTE
+// ----------------
+// No defensive bounds checks are performed inside the search loop. This
+// function is executed once per generated composition and lies on a critical
+// hot path. Adding runtime checks would impose measurable overhead on very
+// large enumerations and is unnecessary when the invariant contract is upheld.
+//
 bool NextRoutine(
     std::vector<int> &z, std::vector<int> &complement,
     int &i1, int &i2, int lastCol, int lastIdx
