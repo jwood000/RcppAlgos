@@ -26,12 +26,11 @@
 // An empty vector or invalid first_idx indicates an internal logic error,
 // not a recoverable run time condition.
 //
-// PERFORMANCE NOTE:
-// -----------------
-// No bounds checks are performed here because this function is on a hot path.
-// Defensive checks would add measurable overhead.
-//
 std::vector<int> rleCpp(const std::vector<int> &x, int first_idx) {
+
+    if (first_idx < 0 || static_cast<std::size_t>(first_idx) >= x.size()) {
+        return {};
+    }
 
     std::vector<int> lengths;
     int prev = x[first_idx];
