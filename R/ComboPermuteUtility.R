@@ -25,7 +25,7 @@ ComboPermuteGen <- function(
     if (RetValue == 1) {
         return(.Call(`_RcppAlgos_CombinatoricsStndrd`, v, m, repetition,
                      freqs, lower, upper, Parallel, nThreads,
-                     pkgEnv$nThreads, IsComb))
+                     pkgEnv$maxThreads, IsComb))
     } else if (RetValue == 2) {
         return(.Call(`_RcppAlgos_CombinatoricsApply`, v, m,
                      repetition, freqs, lower, upper,
@@ -34,7 +34,7 @@ ComboPermuteGen <- function(
         return(.Call(`_RcppAlgos_CombinatoricsCnstrt`, v, m, repetition,
                      freqs, lower, upper, constraintFun, comparisonFun,
                      limitConstraints, IsComb, keepResults, Parallel,
-                     nThreads, pkgEnv$nThreads, tolerance, FALSE, FALSE))
+                     nThreads, pkgEnv$maxThreads, tolerance, FALSE, FALSE))
     }
 }
 
@@ -55,7 +55,7 @@ ComboPermuteSample <- function(
     return(.Call(
         `_RcppAlgos_SampleCombPerm`, v, m, repetition, freqs, sampleVec,
         IsComb, seed, n, sample, FUN, new.env(), Parallel, nThreads,
-        pkgEnv$nThreads, namedSample, FUN.VALUE
+        pkgEnv$maxThreads, namedSample, FUN.VALUE
     ))
 }
 
@@ -82,7 +82,7 @@ ComboPermuteIter <- function(
     IsCnstrd <- .Call(`_RcppAlgos_CheckConstrndCpp`, constraintFun,
                       comparisonFun, limitConstraints)
     InitVals <- .Call(`_RcppAlgos_GetClassVals`, v, m, repetition,
-                      freqs, IsComb, FUN, nThreads, pkgEnv$nThreads,
+                      freqs, IsComb, FUN, nThreads, pkgEnv$maxThreads,
                       IsCnstrd, FALSE, FALSE, NULL, NULL, NULL)
 
     if (RetValue == 1) {

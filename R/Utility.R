@@ -76,7 +76,7 @@ GetRank <- function(..., v, repetition = FALSE, freqs = NULL,
                 if (any(is.na(idx))) stop(msg)
                 .Call(`_RcppAlgos_RankCombPerm`, idx, v, repetition, freqs,
                       if (is.matrix(obj)) ncol(obj) else length(obj), IsComb,
-                      nThreads, pkgEnv$nThreads)
+                      nThreads, pkgEnv$maxThreads)
             }, input)
         )
     } else if (is.matrix(input)) {
@@ -84,13 +84,13 @@ GetRank <- function(..., v, repetition = FALSE, freqs = NULL,
         if (any(is.na(idx))) stop(msg)
         return(.Call(`_RcppAlgos_RankCombPerm`, idx, v,
                      repetition, freqs, ncol(input), IsComb,
-                     nThreads, pkgEnv$nThreads));
+                     nThreads, pkgEnv$maxThreads));
     } else {
         idx <- match(input, v)
         if (any(is.na(idx))) stop(msg)
         return(.Call(`_RcppAlgos_RankCombPerm`, idx, v,
                      repetition, freqs, length(input), IsComb,
-                     nThreads, pkgEnv$nThreads));
+                     nThreads, pkgEnv$maxThreads));
     }
 }
 
@@ -131,7 +131,7 @@ GetRankPart <- function(
                 .Call(`_RcppAlgos_RankPartitionMain`, idx, v, repetition, freqs,
                       if (is.matrix(obj)) ncol(obj) else length(obj),
                       "==", target, NULL, IsComposition, weak,
-                      nThreads, pkgEnv$nThreads)
+                      nThreads, pkgEnv$maxThreads)
             }, input)
         )
     } else if (!is.numeric(input)) {
@@ -142,14 +142,14 @@ GetRankPart <- function(
         if (any(is.na(idx))) stop(msg_sub)
         return(.Call(`_RcppAlgos_RankPartitionMain`, idx, v,
                      repetition, freqs, ncol(input), "==", target,
-                     NULL, IsComposition, weak, nThreads, pkgEnv$nThreads));
+                     NULL, IsComposition, weak, nThreads, pkgEnv$maxThreads));
     } else {
         if (sum(input) != target) stop(msg_part)
         idx <- match(input, v)
         if (any(is.na(idx))) stop(msg_sub)
         return(.Call(`_RcppAlgos_RankPartitionMain`, idx, v,
                      repetition, freqs, length(input), "==", target,
-                     NULL, IsComposition, weak, nThreads, pkgEnv$nThreads));
+                     NULL, IsComposition, weak, nThreads, pkgEnv$maxThreads));
     }
 }
 

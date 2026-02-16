@@ -9,7 +9,7 @@ expandGrid <- function(..., lower = NULL, upper = NULL,
 
     res <- .Call(
         `_RcppAlgos_ExpandGridCpp`, lst$p, lower, upper,
-        nThreads, pkgEnv$nThreads, FALSE, NULL, NULL, NULL,
+        nThreads, pkgEnv$maxThreads, FALSE, NULL, NULL, NULL,
         sample, FALSE, NULL, return_df
     )
 
@@ -33,7 +33,7 @@ expandGridSample <- function(
 
     res <- .Call(
         `_RcppAlgos_ExpandGridCpp`, lst$p, NULL, NULL, nThreads,
-        pkgEnv$nThreads, TRUE, sampleVec, seed, n, sample,
+        pkgEnv$maxThreads, TRUE, sampleVec, seed, n, sample,
         namedSample, new.env(), return_df
     )
 

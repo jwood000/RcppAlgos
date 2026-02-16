@@ -9,7 +9,7 @@ compositionsIter.default <- function(
 ) {
 
     InitVals <- .Call(`_RcppAlgos_GetClassVals`, v, m, repetition,
-                      freqs, FALSE, NULL, nThreads, pkgEnv$nThreads,
+                      freqs, FALSE, NULL, nThreads, pkgEnv$maxThreads,
                       TRUE, TRUE, weak, NULL, NULL, NULL)
 
     new("Partitions", InitVals, FALSE, "sum", "==",
@@ -23,7 +23,7 @@ compositionsIter.table <- function(
 
     clean <- ResolveVFreqs(v)
     InitVals <- .Call(`_RcppAlgos_GetClassVals`, clean$v, m, FALSE,
-                      clean$freqs, FALSE, NULL, nThreads, pkgEnv$nThreads,
+                      clean$freqs, FALSE, NULL, nThreads, pkgEnv$maxThreads,
                       TRUE, TRUE, weak, NULL, NULL, NULL)
 
     new("Partitions", InitVals, FALSE, "sum", "==",

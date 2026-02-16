@@ -1,6 +1,6 @@
 pkgEnv <- new.env(parent = emptyenv())
 pkgEnv$nCores <- NULL
-pkgEnv$nThreads <- NULL
+pkgEnv$maxThreads <- NULL
 
 physicalCoreCount <- function() {
 
@@ -61,9 +61,9 @@ physicalCoreCount <- function() {
     tempThreads <- stdThreadMax()
 
     if (is.na(tempThreads)) {
-        pkgEnv$nThreads <- 1L
+        pkgEnv$maxThreads <- 1L
     } else {
-        pkgEnv$nThreads <- tempThreads
+        pkgEnv$maxThreads <- tempThreads
     }
 
     invisible()

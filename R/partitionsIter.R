@@ -9,7 +9,7 @@ partitionsIter.default <- function(
 ) {
 
     InitVals <- .Call(`_RcppAlgos_GetClassVals`, v, m, repetition,
-                      freqs, TRUE, NULL, nThreads, pkgEnv$nThreads,
+                      freqs, TRUE, NULL, nThreads, pkgEnv$maxThreads,
                       TRUE, FALSE, FALSE, NULL, NULL, NULL)
 
     new("Partitions", InitVals, FALSE, "sum", "==",
@@ -22,7 +22,7 @@ partitionsIter.table <- function(
 
     clean <- ResolveVFreqs(v)
     InitVals <- .Call(`_RcppAlgos_GetClassVals`, clean$v, m, FALSE,
-                      clean$freqs, TRUE, NULL, nThreads, pkgEnv$nThreads,
+                      clean$freqs, TRUE, NULL, nThreads, pkgEnv$maxThreads,
                       TRUE, FALSE, FALSE, NULL, NULL, NULL)
 
     new("Partitions", InitVals, FALSE, "sum", "==",

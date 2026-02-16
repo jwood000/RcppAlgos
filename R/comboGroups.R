@@ -3,7 +3,7 @@ comboGroups <- function(v, numGroups = NULL, grpSizes = NULL,
                         Parallel = FALSE, nThreads = NULL) {
 
     return(.Call(`_RcppAlgos_ComboGroupsCpp`, v, numGroups, grpSizes, retType,
-                 lower, upper, Parallel, nThreads, pkgEnv$nThreads, FALSE,
+                 lower, upper, Parallel, nThreads, pkgEnv$maxThreads, FALSE,
                  NULL, NULL, NULL, sample, FALSE, NULL))
 }
 
@@ -17,7 +17,7 @@ comboGroupsSample <- function(v, numGroups = NULL, grpSizes = NULL,
     }
 
     return(.Call(`_RcppAlgos_ComboGroupsCpp`, v, numGroups, grpSizes, retType,
-                 NULL, NULL, Parallel, nThreads, pkgEnv$nThreads, TRUE,
+                 NULL, NULL, Parallel, nThreads, pkgEnv$maxThreads, TRUE,
                  sampleVec, seed, n, sample, namedSample, new.env()))
 }
 
@@ -30,7 +30,7 @@ comboGroupsIter <- function(v, numGroups = NULL, grpSizes = NULL,
                             nThreads = NULL) {
 
     InitVals <- .Call(`_RcppAlgos_GetClassVals`, v, length(GetV(v)),
-                      FALSE, NULL, TRUE, NULL, nThreads, pkgEnv$nThreads,
+                      FALSE, NULL, TRUE, NULL, nThreads, pkgEnv$maxThreads,
                       FALSE, FALSE, FALSE, numGroups, grpSizes, retType)
 
     new("ComboGroups", InitVals, Parallel)
