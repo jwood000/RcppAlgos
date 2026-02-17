@@ -219,8 +219,8 @@ PermuteArgs <- function(...) {
         tar_nm <- c("constraintFun", "comparisonFun", "limitConstraints")
 
         if (all(tar_nm %in% nm) &&
-            arg_s[["constraintFun"]] == "sum" &&
-            arg_s[["comparisonFun"]] == "==" &&
+            identical(as.character(arg_s[["constraintFun"]]), "sum") &&
+            identical(as.character(arg_s[["comparisonFun"]]), "==")  &&
             is.numeric(arg_s[["limitConstraints"]])) {
 
             return(
