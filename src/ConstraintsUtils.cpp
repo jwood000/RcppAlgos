@@ -357,10 +357,12 @@ void ConstraintSetup(const std::vector<double> &vNum,
                      SEXP Rtolerance, SEXP Rlow, bool bIsCount) {
 
     // numOnly = true, checkWhole = false, negPoss = true
-    CppConvert::convertVector(Rtarget, targetVals,
-                                VecType::Numeric,
-                                "limitConstraints/target",
-                                true, false, true);
+    CppConvert::convertVector(Rtarget, targetVals, VecType::Numeric,
+                              "limitConstraints/target", true, false, true);
+
+    if (!Rf_isString(RcompFun)) {
+        cpp11::stop("comparisonFun must be a character vector");
+    }
 
     int len_comp = Rf_length(RcompFun);
 
