@@ -29,7 +29,7 @@
 std::vector<int> rleCpp(const std::vector<int> &x, int first_idx) {
 
     if (first_idx < 0 || static_cast<std::size_t>(first_idx) >= x.size()) {
-        return {};
+        cpp11::stop("Internal error: rleCpp first_idx out of range");
     }
 
     std::vector<int> lengths;
