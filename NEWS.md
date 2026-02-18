@@ -2,17 +2,29 @@
 
 ## New Features:
 
-* Added parallel capabilities to all ranking functions (e.g. `partitionsRank(..., nThreads = 4)`).
+* Added parallel capabilities to all ranking functions via the new `nThreads` argument (e.g. `partitionsRank(..., nThreads = 4)`, `comboRank(..., nThreads = 4)`).
+* Implemented a next-lexicographical algorithm for generating distinct integer compositions, enabling efficient large-scale generation such as `compositionsGeneral(50, 8)`.
+* Added accompanying algorithms for the distinct integer composition case, exposed through: `compositionsSample`, `compositionsRank`, and `compositionsIter`.
+* Enhanced `permuteCount()` to count permutations of partitions when called with `constraintFun = "sum"` and `comparisonFun = "=="`, allowing optimized counting in cases that reduce to partition/composition counting.
 
-* Introduced a new algorithm for generating the next lexicographical integer composition — the first of its kind to our knowledge. This enables efficient generation of large-scale compositions such as `compositionsGeneral(50, 8)`.
+## Bug Fixes:
 
-* Added accompanying algorithms (also firsts of their kind) for the distinct integer composition case, exposed through: `compositionsSample`, `compositionsRank`, and `compositionsIter`.
+* Improved input validation for constraint-based calls by requiring `comparisonFun` to be a character vector (now errors early with a clearer message).
+* Fixed edge-case handling in partition iteration logic where boundary-derived indices could become negative, preventing incorrect behavior in some partition/multiset scenarios.
 
-* Added the ability to count permutations of partitions when `permuteCount` is called with `constraintFun = "sum"` and `comparisonFun = "=="`, and the problem reduces internally to an optimized partition case.
+## Improvements:
 
-## Other:
+* Added a package load-time check that validates the loaded shared library matches the installed package version, producing a clear reinstall/restart error instead of potential crashes from stale binaries.
+* Improved handling of singleton `v` with singleton `freqs` so that numeric values are interpreted correctly in some constrained/ranking paths.
+* Added nonexported `permutePartsDesign()` to inspect the partition-design/counting setup used by `permuteCount()` when it reduces to a partition/composition counting problem.
 
-* General performance improvements in ranking and composition-related algorithms.
+## Performance:
+
+* General performance improvements for ranking and composition-related algorithms, including multi-threaded ranking support.
+
+## Internal:
+
+* Added developer tooling and expanded internal type/class infrastructure to support the new composition and counting paths.
 
 # RcppAlgos 2.9.5
 

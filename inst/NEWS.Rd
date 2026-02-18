@@ -5,14 +5,33 @@
     \itemize{
         \item New Features:
         \itemize{
-            \item Added parallel capabilities to all ranking functions (e.g. \code{partitionsRank(..., nThreads = 4)}).
-            \item Introduced a new algorithm for generating the next lexicographical integer composition — the first of its kind to our knowledge. This enables efficient generation of large-scale compositions such as \code{compositionsGeneral(50, 8)}.
-            \item Added accompanying algorithms (also firsts of their kind) for the distinct integer composition case, exposed through: \code{compositionsSample}, \code{compositionsRank}, and \code{compositionsIter}.
-            \item Added the ability to count permutations of partitions when \code{permuteCount} is called with \code{constraintFun = "sum"} and \code{comparisonFun = "=="}, and the problem reduces internally to an optimized partition case.
+            \item Added parallel capabilities to all ranking functions via the new \code{nThreads} argument (e.g. \code{partitionsRank(..., nThreads = 4)}, \code{comboRank(..., nThreads = 4)}).
+            \item Implemented a next-lexicographical algorithm for generating distinct integer compositions, enabling efficient large-scale generation such as \code{compositionsGeneral(50, 8)}.
+            \item Added accompanying algorithms for the distinct integer composition case, exposed through: \code{compositionsSample}, \code{compositionsRank}, and \code{compositionsIter}.
+            \item Enhanced \code{permuteCount()} to count permutations of partitions when called with \code{constraintFun = "sum"} and \code{comparisonFun = "=="}, allowing optimized counting in cases that reduce to partition/composition counting.
         }
-        \item Other:
+
+        \item Bug Fixes:
         \itemize{
-            \item General performance improvements in ranking and composition-related algorithms.
+            \item Improved input validation for constraint-based calls by requiring \code{comparisonFun} to be a character vector (now errors early with a clearer message).
+            \item Fixed edge-case handling in partition iteration logic where boundary-derived indices could become negative, preventing incorrect behavior in some partition/multiset scenarios.
+        }
+
+        \item Improvements:
+        \itemize{
+            \item Added a package load-time check that validates the loaded shared library matches the installed package version, producing a clear reinstall/restart error instead of potential crashes from stale binaries.
+            \item Improved handling of singleton \code{v} with singleton \code{freqs} so that numeric values are interpreted correctly in some constrained/ranking paths.
+            \item Added nonexported \code{permutePartsDesign()} to inspect the partition-design/counting setup used by \code{permuteCount()} when it reduces to a partition/composition counting problem.
+        }
+
+        \item Performance:
+        \itemize{
+            \item General performance improvements for ranking and composition-related algorithms, including multi-threaded ranking support.
+        }
+
+        \item Internal:
+        \itemize{
+            \item Added developer tooling and expanded internal type/class infrastructure to support the new composition and counting paths.
         }
     }
 }
