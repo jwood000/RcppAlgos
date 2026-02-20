@@ -57,16 +57,16 @@ SEXP ExpandGridCpp(
     }
 
     double lower = 0;
-    double upper = 0;
     bool Parallel = false;
-
-    bool bLower = false;
-    bool bUpper = false;
 
     mpz_class lowerMpz;
     mpz_class upperMpz;
 
     if (!IsSample) {
+        double upper = 0;
+        bool bLower = false;
+        bool bUpper = false;
+
         SetBounds(Rlow, Rhigh, IsGmp, bLower, bUpper, lower, upper,
                   lowerMpz, upperMpz, computedRowsMpz, computedRows);
 
