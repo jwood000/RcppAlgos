@@ -74,22 +74,14 @@ int GetFirstPartitionDistinct(const std::vector<int> &v, std::vector<int> &z,
                               int target, int m, int lenV) {
 
     // Compute maximum possible sum: largest m elements
-    int testMax = 0;
-
-    for (int i = lenV - m; i < lenV; ++i) {
-        testMax += v[i];
-    }
+    const int testMax = std::accumulate(v.end() - m, v.end(), 0);
 
     if (testMax < target) {
         return -2; // length too small
     }
 
     // Compute minimum possible sum: smallest m elements
-    int testMin = 0;
-
-    for (int i = 0; i < m; ++i) {
-        testMin += v[i];
-    }
+    const int testMin = std::accumulate(v.begin(), v.begin() + m, 0);
 
     if (testMin > target) {
         return -1; // length too large
