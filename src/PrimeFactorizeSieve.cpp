@@ -99,7 +99,6 @@ namespace MotleyPrimes {
             }
         } else { // edge case where m,n = 2 or 3
             int strt = 0;
-            myNum = m;
 
             if (m == 1) {
                 ++strt;
