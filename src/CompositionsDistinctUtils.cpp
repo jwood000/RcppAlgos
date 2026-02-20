@@ -154,7 +154,7 @@ bool IsComplementZeroBased(bool firstZero, bool isWeak, bool IsGen) {
         return true;
     }
 
-    if (firstZero && !isWeak) {
+    if (firstZero) {
         // Non-weak case with v containing a leading zero.
         //
         // When execution reaches this point, z already contains exactly the
@@ -175,7 +175,7 @@ bool IsComplementZeroBased(bool firstZero, bool isWeak, bool IsGen) {
         return false;
     }
 
-    if (!isWeak && IsGen) {
+    if (IsGen) {
         // In the non-weak setting, once zeros are excluded from v, we must
         // allow zero in the complement even if the current indexing vector z
         // does not contain it. Although some intermediate results may be
@@ -540,9 +540,7 @@ int CompsDistinctSetup(
 
     // Sum of last two elements of z; target for 2-sum search
     int lastTwo = std::accumulate(z.rbegin(), z.rbegin() + 2, 0);
-
     std::vector<int> idx(2);
-    std::vector<int> tailSum;
 
     int best_sol = NextDistinctBlock2(
         complement, idx, lastTwo, z.back()

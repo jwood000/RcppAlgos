@@ -344,7 +344,7 @@ int DiscoverPType(const std::vector<int> &Reps,
                     std::iota(isoz.begin(), isoz.end(), 0);
 
                     int curr_max = part.cap - 1;
-                    int test_sum = curr_max +
+                    const int test_sum = curr_max +
                         (part.width * (part.width - 1)) / 2;
 
                     if (test_sum < part.mapTar) {
@@ -352,11 +352,15 @@ int DiscoverPType(const std::vector<int> &Reps,
 
                         for (int i = part.width - 2,
                              residual = part.mapTar - test_sum - 1;
-                             i >= 0 && test_sum < part.mapTar; --i) {
+                             i >= 0 && residual > 0;
+                             --i) {
 
                             --curr_max;
 
-                            if (residual <= (curr_max - isoz[i])) {
+                            // how much we can add without breaking order
+                            const int room = curr_max - isoz[i];
+
+                            if (residual <= room) {
                                 isoz[i] += residual;
                                 break;
                             } else {

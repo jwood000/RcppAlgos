@@ -243,7 +243,7 @@ void CompsDistMZWorker(
     }
 
     if (z[1]) {
-        for (std::size_t k = 1; k < width && z[1]; ++k) {
+        for (std::size_t k = 1; k < width; ++k) {
             mat[rowLimit - 1 + nRows * (k + nz - 1)] = z[k];
         }
     } else {
@@ -280,7 +280,7 @@ void CompsDistMZWorker(
     }
 
     if (z[1]) {
-        for (std::size_t k = 1; k < width && z[1]; ++k) {
+        for (std::size_t k = 1; k < width; ++k) {
             mat[rowLimit - 1 + nRows * (k + nz - 1)] = v[z[k]];
         }
     } else {
@@ -316,7 +316,7 @@ void CompsDistMZWorker(
     }
 
     if (z[1]) {
-        for (std::size_t k = 1; k < width && z[1]; ++k) {
+        for (std::size_t k = 1; k < width; ++k) {
             mat(nRows - 1, k + nz - 1) = z[k];
         }
     } else {
@@ -354,7 +354,7 @@ void CompsDistMZWorker(
     }
 
     if (z[1]) {
-        for (std::size_t k = 1; k < width && z[1]; ++k) {
+        for (std::size_t k = 1; k < width; ++k) {
             mat(nRows - 1, k + nz - 1) = v[z[k]];
         }
     } else {
