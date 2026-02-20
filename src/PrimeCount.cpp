@@ -387,7 +387,7 @@ namespace PrimeCounting {
         if (nThreads > 1 && maxThreads > 1) {
             Parallel = true;
             if (nThreads > maxThreads) nThreads = maxThreads;
-            if ((maxThreads < 2) || (n < 1e7)) Parallel = false;
+            if (n < 1e7) Parallel = false;
         }
 
         const std::int64_t piSqrt = PiPrime(sqrtBound);
