@@ -169,7 +169,7 @@ void ParallelGlue(
     RcppParallel::RMatrix<T> &ProdMat, const std::vector<int> &idx,
     const std::vector<int> &lenGrps, const std::vector<T> &v,
     const std::vector<int> &lenNxtPr, const std::vector<double> &mySamp,
-    const std::vector<mpz_class> &myBigSamp, std::vector<int> z,
+    const std::vector<mpz_class> &myBigSamp, const std::vector<int> &z,
     int nCols, int strt, int nRows, bool IsSample, bool IsGmp
 ) {
 
