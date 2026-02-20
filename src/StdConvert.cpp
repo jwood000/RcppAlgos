@@ -209,7 +209,7 @@ namespace CppConvert {
                                 nameOfObject.c_str());
                 }
 
-                const char* raw = (char*) RAW(input);
+                const char* raw = reinterpret_cast<const char*>(RAW(input));
                 total = ((int*) raw)[0];
                 // do not put a break here. Fall to
                 // the next case for complete conversion

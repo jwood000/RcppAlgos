@@ -78,7 +78,7 @@ SEXP MpzReturn(const std::vector<mpz_class> &myVec, int numResults) {
 
     cpp11::sexp res_bigz = Rf_allocVector(RAWSXP, size);
 
-    char* rPos = (char*) (RAW(res_bigz));
+    char* rPos = reinterpret_cast<char*>(RAW(res_bigz));
     ((int*) (rPos))[0] = numResults; // first int is vector-size-header
 
     // current position in rPos[] (starting after vector-size-header)

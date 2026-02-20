@@ -9,7 +9,7 @@ void SetIndexVec(SEXP RindexVec, std::vector<double> &mySample,
     if (IsGmp) {
         switch (TYPEOF(RindexVec)) {
             case RAWSXP: {
-                const char* raw = (char*) RAW(RindexVec);
+                const char* raw = reinterpret_cast<const char*>(RAW(RindexVec));
                 sampSize = ((int*) raw)[0];
                 break;
             } default: {

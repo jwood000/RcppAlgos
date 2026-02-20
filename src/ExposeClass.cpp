@@ -9,14 +9,15 @@
 #include "CheckReturn.h"
 
 static void Finalizer(SEXP ext) {
+    if (TYPEOF(ext) != EXTPTRSXP) return;
 
-    if (NULL == R_ExternalPtrAddr(ext)) {
-        return;
-    }
+    auto* ptr =
+        reinterpret_cast<Iterator*>(R_ExternalPtrAddr(ext));
 
-    class Iterator* ptr = (class Iterator*) R_ExternalPtrAddr(ext);
+    if (!ptr) return;
+
     R_ClearExternalPtr(ext);
-    if (ptr) delete ptr;
+    delete ptr;
 }
 
 [[cpp11::register]]
