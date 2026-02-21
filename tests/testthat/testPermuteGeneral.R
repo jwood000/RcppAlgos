@@ -115,9 +115,15 @@ test_that("permuteGeneral produces correct results with constraints", {
     comps <- compositionsGeneral(0:10, 5, TRUE, weak = TRUE)
     expect_equal(comps, perms[do.call(order, as.data.frame(perms)), ])
 
-    expect_equal(nrow(permuteGeneral(15, 7,
-                                     comparisonFun = "==", constraintFun = "sum",
-                                     limitConstraints = 80, upper = 100)), 100)
+    expect_equal(
+        nrow(
+            permuteGeneral(
+                15, 7, comparisonFun = "==", constraintFun = "sum",
+                limitConstraints = 80, upper = 100
+            )
+        ),
+        100
+    )
 
     expect_equal(nrow(permuteGeneral(15, 7, TRUE,
                                      comparisonFun = "==", constraintFun = "sum",
@@ -392,4 +398,55 @@ test_that("permuteGeneral produces correct results with very large results", {
     expect_equal(nrow(permuteGeneral(100, 10, freqs = rep(1:4, 25), lower = as.character(n1))), 100)
     expect_equal(as.vector(permuteGeneral(100, 10, freqs = rep(1:4, 25), lower = numR)),
                  rep(100:97, times = 4:1))
+})
+
+test_that("permuteCount produces correct results under partition constraints", {
+    expect_equal(
+        permuteCount(
+            10, 5, TRUE, constraintFun = "sum",
+            comparisonFun = "==", limitConstraints = 10
+        ),
+        compositionsCount(10, 5, TRUE)
+    )
+
+    expect_equal(
+        permuteCount(
+            100, 15, TRUE, constraintFun = "sum",
+            comparisonFun = "==", limitConstraints = 100
+        ),
+        compositionsCount(100, 15, TRUE)
+    )
+
+    expect_equal(
+        permuteCount(
+            0:100, 10, constraintFun = "sum",
+            comparisonFun = "==", limitConstraints = 100
+        ),
+        compositionsCount(0:100, 10, weak = TRUE)
+    )
+
+    expect_equal(
+        permuteCount(
+            0:100, 10, freqs = c(4, rep(1, 100)),
+            constraintFun = "sum", comparisonFun = "==",
+            limitConstraints = 100
+        ),
+        compositionsCount(0:100, 10, freqs = c(4, rep(1, 100)), weak = TRUE)
+    )
+
+    expect_equal(
+        permuteCount(
+            100, 10, constraintFun = "sum",
+            comparisonFun = "==", limitConstraints = 100
+        ),
+        compositionsCount(100, 10)
+    )
+
+    expect_equal(
+        permuteCount(
+            table(c(rep(0L, 5), 1:100)), constraintFun = "sum",
+            comparisonFun = "==", limitConstraints = 100
+        ),
+        compositionsCount(table(c(rep(0L, 5), 1:100)), weak = TRUE)
+    )
 })

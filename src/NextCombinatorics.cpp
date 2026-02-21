@@ -1,8 +1,6 @@
 #include "Combinations/NextComboSection.h"
+#include "ClassUtils/NextCombinatorics.h"
 #include <algorithm>
-
-using nextIterPtr = bool (*const)(const std::vector<int> &freqs,
-                          std::vector<int> &z, int n1, int m1);
 
 bool nextCombDistinct(const std::vector<int> &freqs,
                       std::vector<int> &z, int n1, int m1) {

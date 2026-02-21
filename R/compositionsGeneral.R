@@ -9,7 +9,7 @@ compositionsGeneral.default <- function(
 ) {
     return(.Call(`_RcppAlgos_CombinatoricsCnstrt`, v, m, repetition,
                  freqs, lower, upper, "sum", "==", GetTarget(v, target),
-                 FALSE, FALSE, FALSE, nThreads, pkgEnv$nThreads, tolerance,
+                 FALSE, FALSE, FALSE, nThreads, pkgEnv$maxThreads, tolerance,
                  TRUE, weak))
 }
 
@@ -21,6 +21,6 @@ compositionsGeneral.table <- function(
     return(.Call(
         `_RcppAlgos_CombinatoricsCnstrt`, clean$v, m, FALSE, clean$freqs,
         lower, upper, "sum", "==", GetTarget(clean$v, target), FALSE, FALSE,
-        FALSE, nThreads, pkgEnv$nThreads, tolerance, TRUE, weak
+        FALSE, nThreads, pkgEnv$maxThreads, tolerance, TRUE, weak
     ))
 }

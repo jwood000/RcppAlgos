@@ -28,6 +28,7 @@ test_that("expandGrid generates correct output", {
 
     set.seed(123456789)
     expect_equal(expandGrid(), expand.grid())
+    expect_equal(expandGrid(list()), expand.grid(list()))
 
     myList <- list(1:5, 2:6, 3:7)
     expect_true(baseRCheck(myList))

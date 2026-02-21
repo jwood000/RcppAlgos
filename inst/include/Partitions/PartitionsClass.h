@@ -1,28 +1,26 @@
 #pragma once
 
+#include "Partitions/CompositionsDistinctUtils.h"
+#include "Partitions/NextComposition.h"
 #include "ClassUtils/ComboResClass.h"
 #include "Partitions/NextPartition.h"
 #include "Partitions/NthPartition.h"
 #include "Sample/SamplePartitions.h"
 
 class Partitions : public ComboRes {
+                       // For the distinct composition case, the first 4 vars
+                       // and rpsCnt will be used for the mappings below
 private:
-    int edge;
-    int pivot;
-    int tarDiff;
-    int boundary;
-
+    int edge;          // -->> idx_1
+    int pivot;         // -->> myMax
+    int tarDiff;       // -->> tar
+    int boundary;      // -->> idx_2
     bool bAddOne;
-
-    const bool paragon;
-    const bool stdPartNext;
-    const bool stdCompZeroSpesh;
-    const bool genCompZeroSpesh;
 
     const int lastCol;
     const int lastElem;
 
-    std::vector<int> rpsCnt;
+    std::vector<int> rpsCnt;      // -->> complement
     const nextPartsPtr nextParts;
     const nthPartsPtr nthParts;
 

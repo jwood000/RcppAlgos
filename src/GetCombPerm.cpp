@@ -56,7 +56,7 @@ SEXP GetCombPerms(SEXP Rv, const std::vector<double> &vNum,
                   int nThreads, VecType myType) {
 
     switch (myType) {
-        case VecType::Character : {
+        case VecType::Character: {
             cpp11::sexp charVec = Rf_duplicate(Rv);
             cpp11::sexp res = Rf_allocMatrix(STRSXP, nRows, m);
 
@@ -64,7 +64,7 @@ SEXP GetCombPerms(SEXP Rv, const std::vector<double> &vNum,
                           nRows, freqs, IsMult, IsRep);
 
             return res;
-        } case VecType::Complex : {
+        } case VecType::Complex: {
             std::vector<Rcomplex> stlCmplxVec =
                 CppConvert::GetVec<Rcomplex>(Rv);
             cpp11::sexp res = Rf_allocMatrix(CPLXSXP, nRows, m);
@@ -74,7 +74,7 @@ SEXP GetCombPerms(SEXP Rv, const std::vector<double> &vNum,
                         phaseOne, generalRet, freqs, IsMult, IsRep);
 
             return res;
-        } case VecType::Raw : {
+        } case VecType::Raw: {
             std::vector<Rbyte> stlRawVec =
                 CppConvert::GetVec<Rbyte>(Rv);
             cpp11::sexp res = Rf_allocMatrix(RAWSXP, nRows, m);
@@ -84,7 +84,7 @@ SEXP GetCombPerms(SEXP Rv, const std::vector<double> &vNum,
                         phaseOne, generalRet, freqs, IsMult, IsRep);
 
             return res;
-        } case VecType::Logical : {
+        } case VecType::Logical: {
             std::vector<int> vBool = CppConvert::GetVec<int>(Rv);
             cpp11::sexp res = Rf_allocMatrix(LGLSXP, nRows, m);
             int* matBool = LOGICAL(res);
@@ -93,7 +93,7 @@ SEXP GetCombPerms(SEXP Rv, const std::vector<double> &vNum,
                         phaseOne, generalRet, freqs, IsMult, IsRep);
 
             return res;
-        } case VecType::Integer : {
+        } case VecType::Integer: {
             cpp11::sexp res = Rf_allocMatrix(INTSXP, nRows, m);
             int* matInt = INTEGER(res);
 

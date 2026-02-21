@@ -4,6 +4,6 @@ partitionsDesign <- function(v, m = NULL, repetition = FALSE,
 
     stopifnot(is.numeric(v))
     return(.Call(`_RcppAlgos_PartitionsCount`, GetTarget(v, target),
-                 v, m, repetition, freqs, "==", NULL, NULL, TRUE,
-                 showDesign, FALSE, FALSE))
+                 v, m, repetition, freqs, TRUE, "==", NULL, NULL,
+                 TRUE, showDesign, FALSE, FALSE))
 }

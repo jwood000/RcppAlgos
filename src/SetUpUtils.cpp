@@ -123,8 +123,11 @@ void SetFreqsAndM(std::vector<int> &Reps,
         // replication of certain elements, then repetition must be set to TRUE.
         IsRep = false;
         CppConvert::convertVector(RFreqs, Reps, VecType::Integer, "freqs");
-        const bool allOne = std::all_of(Reps.cbegin(), Reps.cend(),
-                                        [](int v_i) {return v_i == 1;});
+
+        const bool allOne = std::all_of(
+            Reps.cbegin(), Reps.cend(), [](int v_i) {return v_i == 1;}
+        );
+
         if (allOne) {
             IsMult = false;
             freqs.assign(Reps.size(), 1);
@@ -226,7 +229,9 @@ void SetFinalValues(VecType &myType, std::vector<int> &Reps,
     }
 }
 
-void SetBasic(SEXP Rv, std::vector<double> &vNum,
+// Note, when user passes a singleton along with freqs with one value, we
+// need to check after we have already confirmed Rv is NOT a Boolean.
+void SetBasic(SEXP Rv, SEXP RFreqs, std::vector<double> &vNum,
               std::vector<int> &vInt, int &n, VecType &myType) {
 
     if (myType > VecType::Logical) {
@@ -239,6 +244,15 @@ void SetBasic(SEXP Rv, std::vector<double> &vNum,
         int* intVec = INTEGER(Rv);
         n = Rf_length(Rv);
         vInt.assign(intVec, intVec + n);
+    } else if (!Rf_isNull(RFreqs) &&
+               Rf_length(Rv) == 1 &&
+               Rf_length(RFreqs) == 1) {
+        double tmp = 0.0;
+        // numOnly=true so strings error here,
+        // checkWhole=false, negPoss=true
+        CppConvert::convertPrimitive(Rv, tmp, myType, "v", true, false, true);
+        vNum.assign(1, tmp);
+        n = 1;
     } else if (Rf_length(Rv) == 1) {
         int seqEnd = 0;
         myType = VecType::Integer;
@@ -273,7 +287,7 @@ void SetValues(VecType &myType, std::vector<int> &Reps,
                SEXP Rm, int &n, int &m, bool &IsMult,
                bool &IsRep, bool IsConstrained) {
 
-    SetBasic(Rv, vNum, vInt, n, myType);
+    SetBasic(Rv, RFreqs, vNum, vInt, n, myType);
     SetFreqsAndM(Reps, freqs, RFreqs, Rm, n, m, IsMult, IsRep);
     SetFinalValues(myType, Reps, freqs, vInt, vNum,
                    n, m, IsMult, IsRep, IsConstrained);
@@ -284,43 +298,77 @@ void SetThreads(bool &Parallel, int maxThreads, int nRows,
 
     const int halfLimit = limit / 2;
 
+    // Defensive: sanitize inputs (should not happen, but prevents weirdness)
+    if (nRows < 0) {
+        cpp11::stop("Internal error: nRows must be non-negative");
+    }
+
+    if (maxThreads < 1) maxThreads = 1;
+    if (nThreads < 1) nThreads = 1;
+
     // Determined empirically. Setting up threads can be expensive,
     // so we set the cutoff below to ensure threads aren't spawned
     // unnecessarily. We also protect users with fewer than 2 threads
     if ((nRows < limit) || (maxThreads < 2) || myType > VecType::Logical) {
         Parallel = false;
-    } else if (!Rf_isNull(RNumThreads)) {
+        nThreads = 1;
+        return;
+    }
+
+    auto clamp_to_work = [&](int t) -> int {
+        // Never exceed hardware cap
+        if (t > maxThreads) t = maxThreads;
+
+        // Never exceed available work units
+        if (nRows > 0 && t > nRows) t = nRows;
+
+        // Ensure each thread gets at least halfLimit rows when possible
+        if (halfLimit > 0 && t > 1 && (nRows / t) < halfLimit) {
+            t = nRows / halfLimit;  // may become 0 if nRows < halfLimit
+        }
+
+        // Final guard
+        if (t < 1) t = 1;
+        if (t > maxThreads) t = maxThreads;
+        if (nRows > 0 && t > nRows) t = nRows;
+
+        return t;
+    };
+
+    if (!Rf_isNull(RNumThreads)) {
         int userThreads = 1;
 
-        if (!Rf_isNull(RNumThreads)) {
-            CppConvert::convertPrimitive(RNumThreads, userThreads,
-                                         VecType::Integer, "nThreads");
-        }
+        CppConvert::convertPrimitive(
+            RNumThreads, userThreads, VecType::Integer, "nThreads"
+        );
 
-        if (userThreads > maxThreads) {
-            userThreads = maxThreads;
-        }
-
-        // Ensure that each thread has at least halfLimit
-        if ((nRows / userThreads) < halfLimit) {
-            userThreads = nRows / halfLimit;
-        }
+        userThreads = clamp_to_work(userThreads);
 
         if (userThreads > 1) {
             Parallel = true;
             nThreads = userThreads;
         } else {
             Parallel = false;
+            nThreads = 1;
         }
-    } else if (Parallel) {
-        // We have already ruled out cases when the user has fewer than 2
-        // threads. So if user has exactly 2 threads, we enable them both.
-        nThreads = (maxThreads > 2) ? (maxThreads - 1) : maxThreads;
 
-        // Ensure that each thread has at least halfLimit
-        if ((nRows / nThreads) < halfLimit) {
-            nThreads = nRows / halfLimit;
+        return;
+    }
+
+    // If Parallel requested (logical flag upstream), choose a default
+    if (Parallel) {
+        int t = (maxThreads > 2) ? (maxThreads - 1) : maxThreads;
+        t = clamp_to_work(t);
+
+        if (t > 1) {
+            nThreads = t;
+            Parallel = true;
+        } else {
+            nThreads = 1;
+            Parallel = false;
         }
+    } else {
+        nThreads = 1;
     }
 }
 
@@ -373,9 +421,9 @@ void SetNumResults(bool IsGmp, bool bLower, bool bUpper, bool bSetNum,
             // which means that lower is one larger than upper as put in by the user
 
             cpp11::stop("The number of rows must be positive. Either the"
-                     "lowerBound exceeds the maximum number of possible"
-                     " results or the lowerBound is greater "
-                     "than the upperBound.");
+                        "lowerBound exceeds the maximum number of possible"
+                        " results or the lowerBound is greater "
+                        "than the upperBound.");
         } else {
             // See comment in ConstraintsMain.cpp. Basically, we don't want to
             // throw an error when we don't really know how many constrained
@@ -592,7 +640,9 @@ void SetRandomSample(SEXP RindexVec, SEXP RNumSamp, int &sampSize,
         if (IsGmp) {
             switch (TYPEOF(RindexVec)) {
                 case RAWSXP: {
-                    const char* raw = (char*) RAW(RindexVec);
+                    const char* raw = reinterpret_cast<const char*>(
+                        RAW(RindexVec)
+                    );
                     sampSize = ((int*) raw)[0];
                     break;
                 } default: {

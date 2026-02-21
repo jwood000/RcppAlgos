@@ -793,13 +793,13 @@ namespace PrimeSieve {
             upperBnd = segSize * std::floor(minNum / segSize) + chunkSize;
 
             for (int idx = 0; idx < (nThreads - 1); lowerBnd = upperBnd, upperBnd += chunkSize, ++idx) {
-                threads.emplace_back(std::cref(PrimeWorker<T>), std::cref(svPriMain),
+                threads.emplace_back(PrimeWorker<T>, std::cref(svPriMain),
                                      std::cref(svPriOne), std::cref(svPriTwo),
                                      std::cref(check30030), std::ref(primeList[idx]),
                                      lowerBnd, upperBnd, smallCut, medCut, nBigSegs);
             }
 
-            threads.emplace_back(std::cref(PrimeWorker<T>), std::cref(svPriMain),
+            threads.emplace_back(PrimeWorker<T>, std::cref(svPriMain),
                                  std::cref(svPriOne), std::cref(svPriTwo),
                                  std::cref(check30030), std::ref(primeList.back()),
                                  lowerBnd, maxNum, smallCut, medCut, nBigSegs);

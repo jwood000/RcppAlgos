@@ -2,12 +2,12 @@
 #include "Partitions/NthPartition.h"
 #include <thread>
 
-void StandardPartitions(int* mat, std::vector<int> &z, PartitionType ptype,
-                        double lower, mpz_class &lowerMpz, int nCols,
-                        int width, int nRows, int nThreads, int lastCol,
-                        int lastElem, int tar, int strtLen, int cap,
-                        bool IsRep, bool IsMult, bool IsGmp, bool IsComb,
-                        bool includeZero, bool IsComp, bool zero_spesh) {
+void StandardPartitions(
+    int* mat, std::vector<int> &z, PartitionType ptype, double lower,
+    mpz_class &lowerMpz, int nCols, int width, int nRows, int nThreads,
+    int lastCol, int lastElem, int tar, int strtLen, int cap, bool IsGmp,
+    bool IsComb, bool includeZero, bool IsComp, int zeroBudget
+) {
 
     if (nThreads > 1 && (IsComb || IsComp)) {
         RcppParallel::RMatrix<int> parMat(mat, nRows, nCols);
@@ -17,26 +17,23 @@ void StandardPartitions(int* mat, std::vector<int> &z, PartitionType ptype,
         int nextStep = stepSize;
         int step = 0;
 
-        const nthPartsPtr nthPartFun = GetNthPartsFunc(ptype, IsGmp, IsComp);
+        const nthPartsPtr nthPartFun = GetNthPartsFuncOrStop(ptype, IsGmp);
         std::vector<std::vector<int>> zs(nThreads, z);
 
         for (int j = 0; j < (nThreads - 1);
              ++j, step += stepSize, nextStep += stepSize) {
 
-            threads.emplace_back(
-                std::cref(PartsStdParallel), std::ref(parMat),
-                std::ref(zs[j]), step, width, lastElem, lastCol,
-                nextStep, IsRep, IsComp, zero_spesh
+            threads.emplace_back(PartsStdParallel, std::ref(parMat), std::ref(zs[j]),
+                step, width, lastElem, lastCol, nextStep, ptype, zeroBudget
             );
 
             if (IsGmp) {
                 lowerMpz += stepSize;
             } else {
-                lower    += stepSize;
+                lower += stepSize;
             }
 
-            zs[j + 1] = nthPartFun(tar, width, cap,
-                                   strtLen, lower, lowerMpz);
+            zs[j + 1] = nthPartFun(tar, width, cap, strtLen, lower, lowerMpz);
 
             if (!includeZero) {
                 for (auto &z_i: zs[j + 1]) {
@@ -45,29 +42,27 @@ void StandardPartitions(int* mat, std::vector<int> &z, PartitionType ptype,
             }
         }
 
-        threads.emplace_back(
-            std::cref(PartsStdParallel), std::ref(parMat),
-            std::ref(zs.back()), step, width, lastElem,
-            lastCol, nRows, IsRep, IsComp, zero_spesh
+        threads.emplace_back(PartsStdParallel, std::ref(parMat), std::ref(zs.back()),
+            step, width, lastElem, lastCol, nRows, ptype, zeroBudget
         );
 
         for (auto& thr: threads) {
             thr.join();
         }
     } else {
-        PartsStdManager(mat, z, width, lastElem, lastCol, nRows,
-                        IsComb, IsRep, IsComp, zero_spesh);
+        PartsStdManager(
+            mat, z, width, lastElem, lastCol, nRows, ptype, zeroBudget
+        );
     }
 }
 
 template <typename T>
-void GeneralPartitions(T* mat, const std::vector<T> &v, std::vector<int> &z,
-                       const PartDesign &part, double lower,
-                       mpz_class &lowerMpz, int nCols, int nRows,
-                       int nThreads, int lastCol, int lastElem, int strtLen,
-                       int cap, bool IsComb) {
-
-    const bool zero_spesh = part.includeZero && !part.isWeak;
+void GeneralPartitions(
+    T* mat, const std::vector<T> &v, std::vector<int> &z,
+    const PartDesign &part, double lower, mpz_class &lowerMpz,
+    int nCols, int nRows, int nThreads, int lastCol, int lastElem,
+    int strtLen, int cap, bool IsComb
+) {
 
     if (nThreads > 1 && (IsComb || part.isComp)) {
         RcppParallel::RMatrix<T> parMat(mat, nRows, nCols);
@@ -77,18 +72,16 @@ void GeneralPartitions(T* mat, const std::vector<T> &v, std::vector<int> &z,
         int nextStep = stepSize;
         int step = 0;
 
-        const nthPartsPtr nthPartFun = GetNthPartsFunc(
-            part.ptype, part.isGmp, part.isComp
-        );
+        const nthPartsPtr nthPartFun =
+            GetNthPartsFuncOrStop(part.ptype, part.isGmp);
         std::vector<std::vector<int>> zs(nThreads, z);
 
         for (int j = 0; j < (nThreads - 1);
              ++j, step += stepSize, nextStep += stepSize) {
 
-            threads.emplace_back(
-                std::cref(PartsGenParallel<T>), std::ref(parMat),
+            threads.emplace_back(PartsGenParallel<T>, std::ref(parMat),
                 std::cref(v), std::ref(zs[j]), step, part.width, lastElem,
-                lastCol, nextStep, part.isRep, part.isComp, zero_spesh
+                lastCol, nextStep, part.ptype, part.maxZeros
             );
 
             if (part.isGmp) {
@@ -101,18 +94,17 @@ void GeneralPartitions(T* mat, const std::vector<T> &v, std::vector<int> &z,
                                    cap, strtLen, lower, lowerMpz);
         }
 
-        threads.emplace_back(
-            std::cref(PartsGenParallel<T>), std::ref(parMat), std::cref(v),
+        threads.emplace_back(PartsGenParallel<T>, std::ref(parMat), std::cref(v),
             std::ref(zs.back()), step, part.width, lastElem, lastCol, nRows,
-            part.isRep, part.isComp, zero_spesh
+            part.ptype, part.maxZeros
         );
 
         for (auto& thr: threads) {
             thr.join();
         }
     } else {
-        PartsGenManager(mat, v, z, part.width, lastElem, lastCol, nRows,
-                        IsComb, part.isRep, part.isComp, zero_spesh);
+        PartsGenManager(mat, v, z, part.width, lastElem, lastCol,
+                        nRows, part.ptype, part.maxZeros);
     }
 }
 

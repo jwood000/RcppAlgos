@@ -169,7 +169,7 @@ void ParallelGlue(
     RcppParallel::RMatrix<T> &ProdMat, const std::vector<int> &idx,
     const std::vector<int> &lenGrps, const std::vector<T> &v,
     const std::vector<int> &lenNxtPr, const std::vector<double> &mySamp,
-    const std::vector<mpz_class> &myBigSamp, std::vector<int> z,
+    const std::vector<mpz_class> &myBigSamp, const std::vector<int> &z,
     int nCols, int strt, int nRows, bool IsSample, bool IsGmp
 ) {
 
@@ -204,8 +204,7 @@ void PureOutputMain(
         for (int j = 0; j < (nThreads - 1); ++j, step += stepSize,
              nextStep += stepSize) {
 
-            threads.emplace_back(
-                std::cref(ParallelGlue<T>), std::ref(parMat),
+            threads.emplace_back(ParallelGlue<T>, std::ref(parMat),
                 std::cref(idx), std::cref(lenGrps), std::cref(v),
                 std::cref(lenNxtPr), std::cref(mySamp), std::cref(myBigSamp),
                 z, nCols, step, nextStep, IsSample, IsGmp
@@ -214,8 +213,7 @@ void PureOutputMain(
             GetStartProd(lenNxtPr, z, lowerMpz, lower, stepSize, IsGmp);
         }
 
-        threads.emplace_back(
-            std::cref(ParallelGlue<T>), std::ref(parMat),
+        threads.emplace_back(ParallelGlue<T>, std::ref(parMat),
             std::cref(idx), std::cref(lenGrps), std::cref(v),
             std::cref(lenNxtPr), std::cref(mySamp), std::cref(myBigSamp),
             z, nCols, step, nRows, IsSample, IsGmp
@@ -312,7 +310,7 @@ SEXP GetProduct(
 
                     DataFrame[j] = res;
                     break;
-                } case CPLXSXP : {
+                } case CPLXSXP: {
                     cpp11::sexp res = Rf_allocVector(CPLXSXP, nRows);
                     Rcomplex* cmplxSexpVec = COMPLEX(res);
 
@@ -321,7 +319,7 @@ SEXP GetProduct(
 
                     DataFrame[j] = res;
                     break;
-                } case RAWSXP : {
+                } case RAWSXP: {
                     cpp11::sexp res = Rf_allocVector(RAWSXP, nRows);
                     Rbyte* rawSexpVec = RAW(res);
 
@@ -354,7 +352,7 @@ SEXP GetProduct(
         return DataFrame;
     } else {
         switch (TYPEOF(RList[0])) {
-            case INTSXP : {
+            case INTSXP: {
                 cpp11::sexp res = Rf_allocMatrix(INTSXP, nRows, nCols);
                 int* intMat = INTEGER(res);
 
@@ -366,7 +364,7 @@ SEXP GetProduct(
 
                 if (typeCheck[tFac]) SetFactorClass(res, RList[0]);
                 return res;
-            } case LGLSXP : {
+            } case LGLSXP: {
                 cpp11::sexp res = Rf_allocMatrix(LGLSXP, nRows, nCols);
                 int* boolMat = LOGICAL(res);
 
@@ -377,7 +375,7 @@ SEXP GetProduct(
                 );
 
                 return res;
-            } case RAWSXP : {
+            } case RAWSXP: {
                 cpp11::sexp res = Rf_allocMatrix(RAWSXP, nRows, nCols);
                 Rbyte* rawMat = RAW(res);
 
@@ -385,7 +383,7 @@ SEXP GetProduct(
                            myBigSamp, z, nCols, nRows, IsSample, IsGmp);
 
                 return res;
-            } case CPLXSXP : {
+            } case CPLXSXP: {
                 cpp11::sexp res = Rf_allocMatrix(CPLXSXP, nRows, nCols);
                 Rcomplex* cmplxMat = COMPLEX(res);
 
@@ -393,7 +391,7 @@ SEXP GetProduct(
                            myBigSamp, z, nCols, nRows, IsSample, IsGmp);
 
                 return res;
-            } case REALSXP : {
+            } case REALSXP: {
                 cpp11::sexp res = Rf_allocMatrix(REALSXP, nRows, nCols);
                 double* dblMat = REAL(res);
 
@@ -404,7 +402,7 @@ SEXP GetProduct(
                 );
 
                 return res;
-            } case STRSXP : {
+            } case STRSXP: {
                 cpp11::writable::strings_matrix<> charMat(nRows, nCols);
 
                 CharacterGlue(charMat, charVec, idx, lenGrps, lenNxtPr, mySamp,

@@ -1,9 +1,10 @@
 #include "Partitions/PartitionsMultiset.h"
+#include "Permutations/PermuteCount.h"
 #include "Partitions/NextPartition.h"
 
 // The current approach is not ideal. We must iterate
 int CountPartsMultiset(const std::vector<int> &Reps,
-                       const std::vector<int> &pz) {
+                       const std::vector<int> &pz, bool IsComp, bool IsWeak) {
 
     std::vector<int> z(pz.cbegin(), pz.cend());
     std::vector<int> rpsCnt(Reps.cbegin(), Reps.cend());
@@ -16,16 +17,37 @@ int CountPartsMultiset(const std::vector<int> &Reps,
     int b = 0;
 
     // If we have made it here, we know a solution exists
-    // (i.e. part.solnExists = true). The way keepGoing works
-    // is that it terminates when it can no longer generate
-    // new partitions. The current partition still counts
-    // hence why we start count at 1.
-    int count = 1;
+    // (i.e. part.solnExists = true). The function keepGoing works by
+    // terminating when it can no longer generate new partitions. The
+    // current partition still counts hence why we start count at 1.
     PrepareMultisetPart(rpsCnt, z, b, p, e, lastCol, lastElem);
+    int count = IsComp ? 0 : 1;
 
-    for (; keepGoing(rpsCnt, lastElem, z, e, b);
-         NextMultisetGenPart(rpsCnt, z, e, b, p, lastCol, lastElem)) {
-        ++count;
+    // NOTE: z is always a partition produced by:
+    //
+    //     PrepareMultisetPart/NextMultisetGenPart
+    //
+    // i.e. non decreasing (lex-order generator). No need to sort before
+    // calling NumPermsWithRep().
+    if (IsComp && IsWeak) {
+        for (; keepGoing(rpsCnt, lastElem, z, e, b);
+             NextMultisetGenPart(rpsCnt, z, e, b, p, lastCol, lastElem)) {
+            count += NumPermsWithRep(z);
+        }
+
+        count += NumPermsWithRep(z);
+    } else if (IsComp) {
+        for (; keepGoing(rpsCnt, lastElem, z, e, b);
+            NextMultisetGenPart(rpsCnt, z, e, b, p, lastCol, lastElem)) {
+            count += NumPermsWithRep(z, false);
+        }
+
+        count += NumPermsWithRep(z, false);
+    } else {
+        for (; keepGoing(rpsCnt, lastElem, z, e, b);
+            NextMultisetGenPart(rpsCnt, z, e, b, p, lastCol, lastElem)) {
+            ++count;
+        }
     }
 
     return count;

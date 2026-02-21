@@ -26,7 +26,7 @@ void PermuteResMain(T* mat, const std::vector<T> &v, const funcPtr<T> myFun,
         for (int j = 0; j < (nThreads - 1);
              ++j, step += stepSize, nextStep += stepSize) {
 
-            threads.emplace_back(std::cref(PermuteResPar<T>),
+            threads.emplace_back(PermuteResPar<T>,
                                  std::ref(parMat), std::cref(v),
                                  std::ref(zs[j]), n, m, step, nextStep,
                                  std::cref(freqs), std::cref(myFun),
@@ -36,7 +36,7 @@ void PermuteResMain(T* mat, const std::vector<T> &v, const funcPtr<T> myFun,
                         stepSize, n, m, IsGmp, false, IsRep, IsMult);
         }
 
-        threads.emplace_back(std::cref(PermuteResPar<T>), std::ref(parMat),
+        threads.emplace_back(PermuteResPar<T>, std::ref(parMat),
                              std::cref(v), std::ref(zs.back()), n, m, step,
                              nRows, std::cref(freqs), std::cref(myFun),
                              IsMult, IsRep);

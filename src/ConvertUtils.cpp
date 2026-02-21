@@ -45,15 +45,15 @@ namespace CppConvert {
 
         if (len) {
             switch(TYPEOF(Rv)) {
-                case LGLSXP : {
+                case LGLSXP: {
                     int* boolRv = LOGICAL(Rv);
                     v.assign(boolRv, boolRv + len);
                     break;
-                } case REALSXP : {
+                } case REALSXP: {
                     double* dblRv = REAL(Rv);
                     v.assign(dblRv, dblRv + len);
                     break;
-                } case INTSXP : {
+                } case INTSXP: {
                     int* intRv = INTEGER(Rv);
                     v.assign(intRv, intRv + len);
                     break;
@@ -116,7 +116,8 @@ namespace CppConvert {
             const std::size_t size = intSize + sizeNum;
 
             cpp11::sexp ans = Rf_allocVector(RAWSXP, size);
-            char* rPos = (char*) RAW(ans);
+
+            char* rPos = reinterpret_cast<char*>(RAW(ans));
             ((int*) rPos)[0] = 1; // first int is vector-size-header
 
             // current position in rPos[] (starting after vector-size-header)

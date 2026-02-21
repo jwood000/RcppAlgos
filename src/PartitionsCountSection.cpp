@@ -21,7 +21,7 @@
 //
 // Including the first result (i.e. 1 46), we have n + 1 = 23.
 // In general, it can be show that when we are presented with
-// a situaiton of the form: 1 1 ... 1 m, then the number of
+// a situation of the form: 1 1 ... 1 m, then the number of
 // results for the "1st" group (i.e. while the 2nd to the last
 // column stays the same), is given by floor((1 + m) / 2).
 //
@@ -63,5 +63,30 @@ int GetMaxWidth(double target) {
 void CheckMultIsInt(double x, double y) {
     if ((x * y) > dblIntMax) {
         cpp11::stop("Sorry, this case is too large!");
+    }
+}
+
+// Verify invariant required by repetition DP:
+// allowed encodes distinct part values (coin types).
+// Positive values must be strictly increasing; zeros are ignored padding.
+// Duplicate or unsorted positives would produce incorrect counts.
+void CheckAllowedInvariant(const std::vector<int>& allowed) {
+    int prev_pos = -1; // previous positive value
+
+    for (int x : allowed) {
+        if (x == 0) continue;
+
+        if (x < 0) {
+            cpp11::stop("Internal error: `allowed` must be non-negative");
+        }
+
+        // strictly increasing positives only
+        if (prev_pos >= 0 && x <= prev_pos) {
+            cpp11::stop(
+                "Internal error: positive values in `allowed` must be strictly increasing"
+            );
+        }
+
+        prev_pos = x;
     }
 }

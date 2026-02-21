@@ -7,14 +7,14 @@ namespace CppConvert {
                           bool negPoss) {
 
         const std::string suffix = (vecSize > 1) ?
-        "Each element in " + nameOfObject : nameOfObject;
+            "Each element in " + nameOfObject : nameOfObject;
         std::string myError;
         bool foundError = false;
 
         switch (TYPEOF(input)) {
             case RAWSXP: {
                 // deserialise the vector. first int is the size.
-                const char* raw = (char*) RAW(input);
+                const char* raw = reinterpret_cast<const char*>(RAW(input));
                 const std::size_t numb = 8 * intSize;
                 int pos = intSize; // position in raw[]. Starting after header.
 
@@ -22,13 +22,16 @@ namespace CppConvert {
                     const int* r = (int*) (&raw[pos]);
 
                     if (r[0] > 0) {
-                        mpz_import(myVec[i].get_mpz_t(), r[0], 1,
-                                   intSize, 0, 0, (void*) & (r[2]));
+                        const void* src = &(r[2]);
+                        mpz_import(
+                            myVec[i].get_mpz_t(), r[0], 1, intSize, 0, 0, src
+                        );
 
                         if(r[1] == -1) {
                             if (negPoss) {
-                                mpz_neg(myVec[i].get_mpz_t(),
-                                        myVec[i].get_mpz_t());
+                                mpz_neg(
+                                    myVec[i].get_mpz_t(), myVec[i].get_mpz_t()
+                                );
                             } else {
                                 myError = suffix + " must be a positive number";
                                 foundError = true;

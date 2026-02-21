@@ -57,24 +57,16 @@ SEXP CombinatoricsCnstrt(SEXP Rv, SEXP Rm, SEXP RisRep, SEXP RFreqs,
 
     ConstraintType ctype = ConstraintType::NoConstraint;
     PartDesign part;
-
-    part.isRep   = IsRep;
-    part.isMult  = IsMult;
-    part.mIsNull = Rf_isNull(Rm);
-    part.isWeak  = CppConvert::convertFlag(RIsWeak, "weak");
-    part.isComp  = CppConvert::convertFlag(RIsComposition,
-                                             "IsComposition");
-    part.isComb = IsComb;
+    InitialSetupPartDesign(part, RIsWeak, RIsComposition,
+                           IsRep, IsMult, Rf_isNull(Rm), IsComb);
 
     if (IsConstrained) {
-        ConstraintSetup(vNum, myReps, tarVals, vInt, tarIntVals,
-                        funDbl, part, ctype, n, m, compVec, mainFun,
-                        funTest, myType, Rtarget, RcompFun,
-                        Rtolerance, Rlow);
+        ConstraintSetup(vNum, myReps, tarVals, vInt, tarIntVals, funDbl, part,
+                        ctype, n, m, compVec, mainFun, funTest, myType,
+                        Rtarget, RcompFun, Rtolerance, Rlow);
     }
 
     const bool usePartCount = part.isPart &&
-                              !part.isGmp &&
                               !part.numUnknown;
 
     const double computedRows = usePartCount ? part.count :
@@ -124,9 +116,8 @@ SEXP CombinatoricsCnstrt(SEXP Rv, SEXP Rm, SEXP RisRep, SEXP RFreqs,
                   lower, lowerMpz, IsRep, IsMult, IsGmp);
     } else {
         if (bLower) {
-            const nthPartsPtr nthPartFun = GetNthPartsFunc(
-                part.ptype, IsGmp, part.isComp
-            );
+            const nthPartsPtr nthPartFun =
+                GetNthPartsFuncOrStop(part.ptype, IsGmp);
             startZ = nthPartFun(part.mapTar, part.width, cap,
                                 strtLen, lower, lowerMpz);
 
@@ -156,19 +147,23 @@ SEXP CombinatoricsCnstrt(SEXP Rv, SEXP Rm, SEXP RisRep, SEXP RFreqs,
     CppConvert::convertPrimitive(RmaxThreads, maxThreads,
                                    VecType::Integer, "maxThreads");
 
-    const int limit = (part.isPart) ?
-    ((part.ptype == PartitionType::RepCapped   ||
-      part.ptype == PartitionType::DstctCapped ||
-      part.ptype == PartitionType::DstctCappedMZ) ? 150000 : 40000) : 20000;
+    const auto cap_it = std::find(
+        CappedPTypeArr.cbegin(), CappedPTypeArr.cend(), part.ptype
+    );
+
+    const bool IsCapped = cap_it != CappedPTypeArr.cend();
+
+    const int limit = (part.isPart && IsCapped) ? 150000 :
+        (part.isPart ? 40000 : 20000);
 
     SetThreads(Parallel, maxThreads, nRows,
                myType, nThreads, RnThreads, limit);
 
     cpp11::sexp res = GetConstraints(
-      part, compVec, freqs, myReps, vNum, vInt, tarVals, tarIntVals,
-      startZ, mainFun, funTest, funDbl, lower, lowerMpz, userNum,
-      ctype, myType, nThreads, nRows, n, strtLen, cap, m, IsComb,
-      Parallel, IsGmp, IsRep, IsMult, bUpper, KeepRes, numUnknown
+        part, compVec, freqs, myReps, vNum, vInt, tarVals, tarIntVals,
+        startZ, mainFun, funTest, funDbl, lower, lowerMpz, userNum,
+        ctype, myType, nThreads, nRows, n, strtLen, cap, m, IsComb,
+        Parallel, IsGmp, IsRep, IsMult, bUpper, KeepRes, numUnknown
     );
 
     return res;

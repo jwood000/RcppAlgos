@@ -19,7 +19,7 @@ SEXP CartesianClass::prevGather() {
 
 SEXP CartesianClass::VectorReturn() {
     switch (myType) {
-        case VecType::Logical : {
+        case VecType::Logical: {
             cpp11::sexp res = Rf_allocVector(LGLSXP, nCols);
             int* ptrOut = LOGICAL(res);
 
@@ -28,7 +28,7 @@ SEXP CartesianClass::VectorReturn() {
             }
 
             return res;
-        } case VecType::Integer : {
+        } case VecType::Integer: {
             cpp11::sexp res = Rf_allocVector(INTSXP, nCols);
             int* ptrOut = INTEGER(res);
 
@@ -38,7 +38,7 @@ SEXP CartesianClass::VectorReturn() {
 
             if (typeCheck[tFac]) SetFactorClass(res, RList[0]);
             return res;
-        } case VecType::Character : {
+        } case VecType::Character: {
             cpp11::sexp res = Rf_allocVector(STRSXP, nCols);
 
             for (int j = 0; j < nCols; ++j) {
@@ -46,7 +46,7 @@ SEXP CartesianClass::VectorReturn() {
             }
 
             return res;
-        } case VecType::Complex : {
+        } case VecType::Complex: {
             cpp11::sexp res = Rf_allocVector(CPLXSXP, nCols);
             Rcomplex* ptrOut = COMPLEX(res);
 
@@ -55,7 +55,7 @@ SEXP CartesianClass::VectorReturn() {
             }
 
             return res;
-        } case VecType::Raw : {
+        } case VecType::Raw: {
             cpp11::sexp res = Rf_allocVector(RAWSXP, nCols);
             Rbyte* ptrOut = RAW(res);
 
@@ -64,7 +64,7 @@ SEXP CartesianClass::VectorReturn() {
             }
 
             return res;
-        } case VecType::Numeric : {
+        } case VecType::Numeric: {
             cpp11::sexp res = Rf_allocVector(REALSXP, nCols);
             double* ptrOut = REAL(res);
 
@@ -105,13 +105,13 @@ SEXP CartesianClass::SingleReturn() {
                     dblSexpVec[0] = dblVec[idx[j + z[j]]];
                     DataFrame[j] = res;
                     break;
-                } case CPLXSXP : {
+                } case CPLXSXP: {
                     cpp11::sexp res = Rf_allocVector(CPLXSXP, 1);
                     Rcomplex* cmplxSexpVec = COMPLEX(res);
                     cmplxSexpVec[0] = cmplxVec[idx[j + z[j]]];
                     DataFrame[j] = res;
                     break;
-                } case RAWSXP : {
+                } case RAWSXP: {
                     cpp11::sexp res = Rf_allocVector(RAWSXP, 1);
                     Rbyte* rawSexpVec = RAW(res);
                     rawSexpVec[0] = rawVec[idx[j + z[j]]];

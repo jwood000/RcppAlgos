@@ -260,8 +260,7 @@ void GroupsMain(T* GroupsMat, SEXP res, nextGrpFunc nextCmbGrp,
         for (int j = 0; j < (nThreads - 1); ++j, step += stepSize,
              nextStep += stepSize) {
 
-            threads.emplace_back(
-                std::cref(ParallelGlue<T>), std::ref(parMat), std::cref(v),
+            threads.emplace_back(ParallelGlue<T>, std::ref(parMat), std::cref(v),
                 nextCmbGrp, nthCmbGrp, nthCmbGrpGmp, std::cref(mySample),
                 std::cref(myBigSamp), z, n, step, nextStep, IsSample, IsGmp
             );
@@ -270,8 +269,7 @@ void GroupsMain(T* GroupsMat, SEXP res, nextGrpFunc nextCmbGrp,
                         lowerMpz, lower, stepSize, IsGmp);
         }
 
-        threads.emplace_back(
-            std::cref(ParallelGlue<T>), std::ref(parMat), std::cref(v),
+        threads.emplace_back(ParallelGlue<T>, std::ref(parMat), std::cref(v),
             nextCmbGrp, nthCmbGrp, nthCmbGrpGmp, std::cref(mySample),
             std::cref(myBigSamp), z, n, step, nRows, IsSample, IsGmp
         );
@@ -320,7 +318,7 @@ SEXP GetComboGroups(
                        n, numResults, IsArray, IsSample, IsNamed, IsGmp);
 
             return res;
-        } case VecType::Raw : {
+        } case VecType::Raw: {
             std::vector<Rbyte> stlRawVec = CppConvert::GetVec<Rbyte>(Rv);
             cpp11::sexp res = Rf_allocMatrix(RAWSXP, numResults, n);
             Rbyte* matRaw = RAW(res);
@@ -330,7 +328,7 @@ SEXP GetComboGroups(
                        n, numResults, IsArray, IsSample, IsNamed, IsGmp);
 
             return res;
-        } case VecType::Logical : {
+        } case VecType::Logical: {
             std::vector<int> vIntBool(n);
             int* vecBool = LOGICAL(Rv);
 
@@ -346,7 +344,7 @@ SEXP GetComboGroups(
                        n, numResults, IsArray, IsSample, IsNamed, IsGmp);
 
             return res;
-        } case VecType::Integer : {
+        } case VecType::Integer: {
             cpp11::sexp res = Rf_allocMatrix(INTSXP, numResults, n);
             int* matInt = INTEGER(res);
 

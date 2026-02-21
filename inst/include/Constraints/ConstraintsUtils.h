@@ -7,7 +7,7 @@
 #include <limits>
 #include <map>
 
-// This fixes inequalites where the symbols are swapped. That is: "=>" amd "=<"
+// This fixes inequalities where the symbols are swapped. That is: "=>" and "=<"
 static const std::map<std::string, std::string> compForms = {
     {"<",   "<"}, {">",   ">"},
     {"<=", "<="}, {">=", ">="},
@@ -26,7 +26,13 @@ static const std::array<std::string, 5> compHelper = {
 // in R console: print(sqrt(.Machine$double.eps), digits = 16)
 // [1] 0.00000001490116119384766
 // Which is also 2^(-26)
-constexpr double defaultTolerance = std::numeric_limits<float>::epsilon() / 8.0;
+constexpr double defaultTolerance =
+    std::numeric_limits<float>::epsilon() / 8.0;
+
+void InitialSetupPartDesign(
+    PartDesign &part, SEXP RIsWeak, SEXP RIsComposition,
+    bool IsRep, bool IsMult, bool mIsNull, bool IsComb
+);
 
 template <typename T>
 void AddResultToParts(T* mat, std::int64_t result,

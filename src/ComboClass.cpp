@@ -82,7 +82,8 @@ SEXP Combo::MatReverse(int nRows) {
                             prevComb, n, m, IsComb, IsMult, nRows, myType);
 }
 
-// The bVec Vector represents IsFac, IsComb, IsMult, IsRep, IsGmp, & IsFull
+// The bVec Vector represents IsFac, IsComb,
+// IsMult, IsRep, IsGmp, IsFull, IsComp, & IsWeak
 Combo::Combo(
     SEXP Rv, int Rm, SEXP RcompRow, const std::vector<int> &bVec,
     const std::vector<int> &Rreps, const std::vector<int> &Rfreqs,
@@ -340,7 +341,7 @@ SEXP Combo::randomAccess(SEXP RindexVec) {
 
         return SampCombPermMain(sexpVec, vInt, vNum, mySample, mpzVec,
                                 myReps, nthResFun, myType, n, m, sampSize,
-                                nThreads, false, IsGmp, Parallel);
+                                nThreads, false, IsGmp, LocalPar);
     } else {
         if (IsGmp) {
             mpzIndex = mpzVec.front() + 1;

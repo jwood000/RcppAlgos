@@ -1,65 +1,16 @@
 #include "Constraints/ConstraintsTypes.h"
-#include "Partitions/PartitionsTypes.h"
+#include "Partitions/PartitionsUtils.h"
 #include "CppConvert.h"
 #include <numeric>
-
-std::string GetPartitionType(const PartDesign &part) {
-
-    std::string res;
-
-    switch (part.ptype) {
-        case PartitionType::NotPartition: {
-            res = "NotPartition";
-            break;
-        } case PartitionType::LengthOne: {
-            res = "LengthOne";
-            break;
-        } case PartitionType::DstctCapped: {
-            res = "DistCapped";
-            break;
-        } case PartitionType::DstctCappedMZ: {
-            res = "DstctCappedMZ";
-            break;
-        } case PartitionType::DstctNoZero : {
-            res = "DstctNoZero";
-            break;
-        } case PartitionType::DstctOneZero: {
-            res = "DstctOneZero";
-            break;
-        } case PartitionType::DstctMultiZero : {
-            res = "DstctMultiZero";
-            break;
-        } case PartitionType::DstctStdAll: {
-            res = "DstctStdAll";
-            break;
-        } case PartitionType::Multiset: {
-            res = "Multiset";
-            break;
-        } case PartitionType::RepCapped : {
-            res = "RepCapped";
-            break;
-        } case PartitionType::RepNoZero: {
-            res = "RepNoZero";
-            break;
-        } case PartitionType::RepShort : {
-            res = "RepShort";
-            break;
-        } default: {
-            res = "RepStdAll";
-            break;
-        }
-    }
-
-    return res;
-}
 
 SEXP GetDesign(const PartDesign &part, ConstraintType ctype,
                int lenV, bool verbose) {
 
     std::vector<int> vMap(lenV);
     const int strt = part.includeZero ? 0 : 1;
+
     std::iota(vMap.begin(), vMap.end(), strt);
-    const std::string ptype = GetPartitionType(part);
+    const std::string ptype = GetPTypeName(part.ptype);
 
     if (verbose) {
         Rprintf("          Partition Design Overview\n");
@@ -118,9 +69,8 @@ SEXP GetDesign(const PartDesign &part, ConstraintType ctype,
         Rprintf("%s\n\n", eqn_check_str.c_str());
     }
 
-    bool eqn_check_val = part.mapTar == (part.target +
-                                         part.width * part.shift) /
-                                         part.slope;
+    bool eqn_check_val = part.mapTar ==
+        (part.target + part.width * part.shift) / part.slope;
 
     cpp11::sexp sexp_vec = Rf_allocVector(INTSXP, lenV);
     cpp11::sexp sexp_index = Rf_allocVector(INTSXP, part.startZ.size());

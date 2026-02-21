@@ -134,10 +134,6 @@ test_that("partitionsIter related functions produces appropriate error messages"
 
 test_that(paste("partitions/compositionsDesign functions",
                 "produces appropriate error messages"), {
-    expect_error(RcppAlgos:::compositionsDesign(0:40, 8),
-                 "Currently, there is no composition algorithm")
-    expect_error(RcppAlgos:::compositionsDesign(40, 8, freqs = rep(1:5, 8)),
-                 "Currently, there is no composition algorithm")
     expect_error(RcppAlgos:::partitionsDesign(0:17 + rnorm(18), 10,
                                   repetition = TRUE, target = 25),
                  "No design available for this case!")
@@ -215,12 +211,12 @@ test_that("numDivisorSieve produces appropriate error messages", {
                  "Only logical values are supported for namedVector")
 })
 
-test_that("combo/permuteGeneral produces correct error messages with Parallel", {
+test_that("partitionsSample produces correct error messages", {
     expect_error(partitionsSample(3.3, 1),
                  "Partition sampling not available for this case")
 })
 
-test_that("partitionsSample produces correct error messages", {
+test_that("combo/permuteGeneral produces correct error messages with Parallel", {
     expect_error(permuteGeneral(10, 5, Parallel = "TRUE"),
                  "Only logical values are supported for Parallel")
 })
@@ -296,11 +292,11 @@ test_that("errors with table S3 method", {
         "for this case.\n Use permuteCount, permuteIter, permuteGeneral,",
         "permuteSample, or\n permuteRank instead."
     )
-    expect_error(compositionsCount(table(s), 5), err_string)
-    expect_error(compositionsGeneral(table(s), 5), err_string)
-    expect_error(compositionsSample(table(s), 5, n = 10, seed = 42),
-                 err_string)
-    expect_error(compositionsIter(table(s), 5, n = 10), err_string)
+    # expect_error(compositionsCount(table(s), 5), err_string)
+    # expect_error(compositionsGeneral(table(s), 5), err_string)
+    # expect_error(compositionsSample(table(s), 5, n = 10, seed = 42),
+    #              err_string)
+    # expect_error(compositionsIter(table(s), 5, n = 10), err_string)
 
     expect_error(partitionsSample(table(s), 5, n = 4),
                  "Partition sampling not available for this case.")
@@ -418,6 +414,12 @@ test_that("{combo|permute|partitions|compositions}Rank produces appropriate erro
                  "Inputs must be a partition of 100")
     expect_error(partitionsRank(c(-5:14, 10), v = 100),
                  "Inputs must be a subset of v")
+    expect_error(partitionsRank(1:10, v = LETTERS),
+                 "v must be of class numeric or integer")
+    expect_error(
+        partitionsRank(list(c(1:4, 10L), LETTERS), v = 10, target = 20),
+        "Inputs must be of class numeric or integer"
+    )
 
     expect_error(compositionsRank(c(0, 10, 0, 0), v = 0:10),
                  "No duplicates allowed when repetition = FALSE and freqs = NULL")
@@ -476,6 +478,8 @@ test_that("permuteSample produces appropriate error messages", {
                  "v, if v is not a character and of length 1, cannot be NA or NaN")
     expect_error(permuteSample(1000, 20, sampleVec = c(NA, "1234567890")),
                  "Each element in sampleVec cannot be NA or NaN")
+    expect_error(compositionsSample(10000, 15, sampleVec = as.integer(NA)),
+                 "sampleVec cannot be NA or NaN")
 })
 
 test_that("combo/permuteGeneral produces appropriate error messages for subset sum", {

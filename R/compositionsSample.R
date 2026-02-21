@@ -14,7 +14,7 @@ compositionsSample.default <- function(
 
     return(.Call(
         `_RcppAlgos_SamplePartitions`, v, m, repetition, freqs, sampleVec,
-        seed, n, sample, nThreads, pkgEnv$nThreads, namedSample, "==",
+        seed, n, sample, nThreads, pkgEnv$maxThreads, namedSample, "==",
         GetTarget(v, target), new.env(), TRUE, weak
     ))
 }
@@ -30,7 +30,7 @@ compositionsSample.table <- function(
     clean <- ResolveVFreqs(v)
     return(.Call(
         `_RcppAlgos_SamplePartitions`, clean$v, m, FALSE, clean$freqs,
-        sampleVec, seed, n, sample, nThreads, pkgEnv$nThreads, namedSample,
+        sampleVec, seed, n, sample, nThreads, pkgEnv$maxThreads, namedSample,
         "==", GetTarget(clean$v, target), new.env(), TRUE, weak
     ))
 }

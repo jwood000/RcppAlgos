@@ -1,6 +1,41 @@
 \name{NEWS}
 \title{News for Package \pkg{RcppAlgos}}
 
+\section{Changes in RcppAlgos version 2.10.0 (Release date: 2026-02-21)}{
+    \itemize{
+        \item New Features:
+        \itemize{
+            \item Added parallel capabilities to all ranking functions via the new \code{nThreads} argument (e.g. \code{partitionsRank(..., nThreads = 4)}, \code{comboRank(..., nThreads = 4)}).
+            \item Implemented a next-lexicographical algorithm for generating distinct integer compositions, enabling efficient large-scale generation such as \code{compositionsGeneral(50, 8)}.
+            \item Added accompanying algorithms for the distinct integer composition case, exposed through: \code{compositionsSample}, \code{compositionsRank}, and \code{compositionsIter}.
+            \item Enhanced \code{permuteCount()} to count permutations of partitions when called with \code{constraintFun = "sum"} and \code{comparisonFun = "=="}, allowing optimized counting in cases that reduce to partition/composition counting.
+        }
+
+        \item Bug Fixes:
+        \itemize{
+            \item Improved input validation for constraint-based calls by requiring \code{comparisonFun} to be a character vector (now errors early with a clearer message).
+            \item Fixed edge-case handling in partition iteration logic where boundary-derived indices could become negative, preventing incorrect behavior in some partition/multiset scenarios.
+        }
+
+        \item Improvements:
+        \itemize{
+            \item Added a package load-time check that validates the loaded shared library matches the installed package version, producing a clear reinstall/restart error instead of potential crashes from stale binaries.
+            \item Improved handling of singleton \code{v} with singleton \code{freqs} so that numeric values are interpreted correctly in some constrained/ranking paths.
+            \item Added nonexported \code{permutePartsDesign()} to inspect the partition-design/counting setup used by \code{permuteCount()} when it reduces to a partition/composition counting problem.
+        }
+
+        \item Performance:
+        \itemize{
+            \item General performance improvements for ranking and composition-related algorithms, including multi-threaded ranking support.
+        }
+
+        \item Internal:
+        \itemize{
+            \item Added developer tooling and expanded internal type/class infrastructure to support the new composition and counting paths.
+        }
+    }
+}
+
 \section{Changes in RcppAlgos version 2.9.5 (Release date: 2026-01-29)}{
     \itemize{
         \item Other:
@@ -182,7 +217,7 @@
         }
         \item Bug Fixes:
         \itemize{
-            \item Now checking class of input vector for partition funcitons.
+            \item Now checking class of input vector for partition functions.
             \item Now when \code{partitionsCount} returns 0, the number of results is zero. Before, we were checking for the count of partitions to be greater than zero, otherwise we would use the standard combinatorial counting functions to determine the number of results. This lead to strange results with elements not present in the original vector.
             \item For \code{partitionsSample}, in cases when we would rely on generating the partitions one at a time until there are no more (e.g. with \code{partitionsGeneral}), the number of partitions isn't calculated. This leads to the error: "n exceeds the maximum number of possible results". This is now fixed.
         }

@@ -4,9 +4,9 @@
 #include <algorithm>  // std::next_permutation
 
 template <typename T>
-void PartsGenRep(T* mat, const std::vector<T> &v, std::vector<int> &z,
-                 std::size_t width, int lastElem,
-                 int lastCol, std::size_t nRows) {
+int PartsGenRep(T* mat, const std::vector<T> &v, std::vector<int> &z,
+                std::size_t width, int lastElem,
+                int lastCol, std::size_t nRows) {
 
     int edge = 0;
     int pivot = 0;
@@ -21,12 +21,14 @@ void PartsGenRep(T* mat, const std::vector<T> &v, std::vector<int> &z,
             mat[count + nRows * k] = v[z[k]];
         }
     }
+
+    return 1;
 }
 
 template <typename T>
-void PartsGenRep(RcppParallel::RMatrix<T> &mat, const std::vector<T> &v,
-                 std::vector<int> &z, int strt, std::size_t width,
-                 int lastElem, int lastCol, std::size_t nRows) {
+int PartsGenRep(RcppParallel::RMatrix<T> &mat, const std::vector<T> &v,
+                std::vector<int> &z, int strt, std::size_t width,
+                int lastElem, int lastCol, std::size_t nRows) {
 
     int edge = 0;
     int pivot = 0;
@@ -41,12 +43,14 @@ void PartsGenRep(RcppParallel::RMatrix<T> &mat, const std::vector<T> &v,
             mat(count, k) = v[z[k]];
         }
     }
+
+    return 1;
 }
 
 template <typename T>
-void PartsGenPermRep(T* mat, const std::vector<T> &v, std::vector<int> &z,
-                     std::size_t width, int lastElem,
-                     int lastCol, std::size_t nRows) {
+int PartsGenPermRep(T* mat, const std::vector<T> &v, std::vector<int> &z,
+                    std::size_t width, int lastElem,
+                    int lastCol, std::size_t nRows) {
 
     int edge = 0;
     int pivot = 0;
@@ -67,12 +71,14 @@ void PartsGenPermRep(T* mat, const std::vector<T> &v, std::vector<int> &z,
 
         if (count >= nRows) {break;}
     }
+
+    return 1;
 }
 
 template <typename T>
-void PartsGenRep(std::vector<T> &partsVec, const std::vector<T> &v,
-                 std::vector<int> &z, std::size_t width,
-                 std::size_t nRows, bool IsComb) {
+int PartsGenRep(std::vector<T> &partsVec, const std::vector<T> &v,
+                std::vector<int> &z, std::size_t width,
+                std::size_t nRows, bool IsComb) {
 
     int edge = 0;
     int pivot = 0;
@@ -95,10 +101,12 @@ void PartsGenRep(std::vector<T> &partsVec, const std::vector<T> &v,
     if (count < nRows) {
         PopulateVec(v, partsVec, z, count, width, nRows, IsComb);
     }
+
+    return 1;
 }
 
-void PartsRep(int* mat, std::vector<int> &z, std::size_t width,
-              int lastElem, int lastCol, std::size_t nRows) {
+int PartsRep(int* mat, std::vector<int> &z, std::size_t width,
+             int lastElem, int lastCol, std::size_t nRows) {
 
     int edge = 0;
     int pivot = 0;
@@ -113,11 +121,13 @@ void PartsRep(int* mat, std::vector<int> &z, std::size_t width,
             mat[count + nRows * k] = z[k];
         }
     }
+
+    return 1;
 }
 
-void PartsRep(RcppParallel::RMatrix<int> &mat, std::vector<int> &z,
-              int strt, std::size_t width, int lastElem,
-              int lastCol, std::size_t nRows) {
+int PartsRep(RcppParallel::RMatrix<int> &mat, std::vector<int> &z,
+             int strt, std::size_t width, int lastElem,
+             int lastCol, std::size_t nRows) {
 
     int edge = 0;
     int pivot = 0;
@@ -132,10 +142,12 @@ void PartsRep(RcppParallel::RMatrix<int> &mat, std::vector<int> &z,
             mat(count, k) = z[k];
         }
     }
+
+    return 1;
 }
 
-void PartsPermRep(int* mat, std::vector<int> &z, std::size_t width,
-                  int lastElem, int lastCol, std::size_t nRows) {
+int PartsPermRep(int* mat, std::vector<int> &z, std::size_t width,
+                 int lastElem, int lastCol, std::size_t nRows) {
 
     int edge = 0;
     int pivot = 0;
@@ -156,30 +168,32 @@ void PartsPermRep(int* mat, std::vector<int> &z, std::size_t width,
 
         if (count >= nRows) {break;}
     }
+
+    return 1;
 }
 
-template void PartsGenRep(int*, const std::vector<int>&,
-                          std::vector<int>&, std::size_t,
-                          int, int, std::size_t);
-template void PartsGenRep(double*, const std::vector<double>&,
-                          std::vector<int>&, std::size_t,
-                          int, int, std::size_t);
+template int PartsGenRep(int*, const std::vector<int>&,
+                         std::vector<int>&, std::size_t,
+                         int, int, std::size_t);
+template int PartsGenRep(double*, const std::vector<double>&,
+                         std::vector<int>&, std::size_t,
+                         int, int, std::size_t);
 
-template void PartsGenRep(RcppParallel::RMatrix<int>&,
-                          const std::vector<int>&, std::vector<int> &z,
-                          int, std::size_t, int, int, std::size_t);
-template void PartsGenRep(RcppParallel::RMatrix<double>&,
-                          const std::vector<double>&, std::vector<int> &z,
-                          int, std::size_t, int, int, std::size_t);
+template int PartsGenRep(RcppParallel::RMatrix<int>&,
+                         const std::vector<int>&, std::vector<int> &z,
+                         int, std::size_t, int, int, std::size_t);
+template int PartsGenRep(RcppParallel::RMatrix<double>&,
+                         const std::vector<double>&, std::vector<int> &z,
+                         int, std::size_t, int, int, std::size_t);
 
-template void PartsGenRep(std::vector<int>&, const std::vector<int>&,
-                          std::vector<int>&, std::size_t, std::size_t, bool);
-template void PartsGenRep(std::vector<double>&, const std::vector<double>&,
-                          std::vector<int>&, std::size_t, std::size_t, bool);
+template int PartsGenRep(std::vector<int>&, const std::vector<int>&,
+                         std::vector<int>&, std::size_t, std::size_t, bool);
+template int PartsGenRep(std::vector<double>&, const std::vector<double>&,
+                         std::vector<int>&, std::size_t, std::size_t, bool);
 
-template void PartsGenPermRep(int*, const std::vector<int>&,
-                              std::vector<int>&, std::size_t,
-                              int, int, std::size_t);
-template void PartsGenPermRep(double*, const std::vector<double>&,
-                              std::vector<int>&, std::size_t,
-                              int, int, std::size_t);
+template int PartsGenPermRep(int*, const std::vector<int>&,
+                             std::vector<int>&, std::size_t,
+                             int, int, std::size_t);
+template int PartsGenPermRep(double*, const std::vector<double>&,
+                             std::vector<int>&, std::size_t,
+                             int, int, std::size_t);

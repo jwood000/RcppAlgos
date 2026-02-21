@@ -9,7 +9,7 @@ partitionsGeneral.default <- function(
 ) {
     return(.Call(`_RcppAlgos_CombinatoricsCnstrt`, v, m, repetition,
                  freqs, lower, upper, "sum", "==", GetTarget(v, target),
-                 TRUE, FALSE, FALSE, nThreads, pkgEnv$nThreads, tolerance,
+                 TRUE, FALSE, FALSE, nThreads, pkgEnv$maxThreads, tolerance,
                  FALSE, FALSE))
 }
 
@@ -21,6 +21,6 @@ partitionsGeneral.table <- function(
     return(.Call(
         `_RcppAlgos_CombinatoricsCnstrt`, clean$v, m, FALSE, clean$freqs,
         lower, upper, "sum", "==", GetTarget(clean$v, target), TRUE, FALSE,
-        FALSE, nThreads, pkgEnv$nThreads, tolerance, FALSE, FALSE
+        FALSE, nThreads, pkgEnv$maxThreads, tolerance, FALSE, FALSE
     ))
 }

@@ -2,28 +2,135 @@
 #include "Partitions/PartitionsUtils.h"
 #include "Partitions/RankPartition.h"
 #include "RankUtils.h"
+#include <thread>
 
-void RankPartsResults(std::vector<mpz_class> &bigRes, int* intRes, double* dblRes,
-                      std::vector<int> &idx, rankPartsPtr rankFun,
-                      int tar, int m, int cap, int strtLen,
-                      int numResults, bool IsGmp, bool IsInteger) {
+template <typename T>
+void RankPartsResultsGeneric(
+    std::vector<T>& res, std::vector<int>& idx, rankPartsPtr rankFun,
+    int tar, int m, int cap, int strtLen, int numResults
+) {
 
     mpz_class mpzIdx(0);
+    const auto idx_strt = idx.begin();
 
-    if (IsGmp) {
-        for (int i = 0, j = 0; i < numResults; ++i, j += m) {
-            double dblIdx = 0;
-            rankFun(idx.begin() + j, tar, m, cap, strtLen, dblIdx, mpzIdx);
-            ++mpzIdx;
-            bigRes[i] = mpzIdx;
+    for (int i = 0, j = 0; i < numResults; ++i, j += m) {
+        double dblIdx = 0;
+        mpzIdx = 0;
+        rankFun(idx_strt + j, tar, m, cap, strtLen, dblIdx, mpzIdx);
+        res[i] = RankResultTraits<T>::convert(dblIdx, mpzIdx);
+    }
+}
+
+template <typename T>
+void RankPartsResults(
+    T* res, std::vector<int> &idx, rankPartsPtr rankFun,
+    int tar, int m, int cap, int strtLen, int numResults
+) {
+
+    mpz_class mpzIdx(0);
+    const auto idx_strt = idx.begin();
+
+    for (int i = 0, j = 0; i < numResults; ++i, j += m) {
+        double dblIdx = 0;
+        mpzIdx = 0;
+        rankFun(idx_strt + j, tar, m, cap, strtLen, dblIdx, mpzIdx);
+        res[i] = (dblIdx + 1);
+    }
+}
+
+template <typename T>
+void RankPartsParallel(
+    std::vector<std::vector<T>> &res_sec, std::vector<T> &last_res,
+    std::vector<int> &idx, rankPartsPtr rankFun, int tar, int m, int cap,
+    int strtLen, int numResults, int nThreads, int stepSize, int last_sec
+) {
+
+    std::vector<std::thread> threads;
+
+    std::vector<std::vector<int>> idx_section(nThreads);
+    Create2D(idx, idx_section, stepSize, m, nThreads);
+
+    for (int j = 0; j < (nThreads - 1); ++j) {
+        threads.emplace_back(RankPartsResultsGeneric<T>, std::ref(res_sec[j]),
+            std::ref(idx_section[j]), rankFun, tar,
+            m, cap, strtLen, stepSize
+        );
+    }
+
+    threads.emplace_back(RankPartsResultsGeneric<T>, std::ref(last_res),
+        std::ref(idx_section.back()), rankFun, tar, m, cap,
+        strtLen, last_sec
+    );
+
+    for (auto& thr: threads) {
+        thr.join();
+    }
+}
+
+template <typename T>
+void RankPartsStd(
+    T* res, std::vector<int> &idx, rankPartsPtr rankFun, int tar,
+    int m, int cap, int strtLen, int numResults, int nThreads
+) {
+
+    if (nThreads > 1) {
+        const int stepSize = numResults / nThreads;
+
+        std::vector<std::vector<T>> res_sec(
+            (nThreads - 1), std::vector<T>(stepSize)
+        );
+
+        const int last_sec = numResults - ((nThreads - 1) * stepSize);
+        std::vector<T> last_res(last_sec);
+
+        RankPartsParallel(res_sec, last_res, idx, rankFun, tar, m, cap,
+                          strtLen, numResults, nThreads, stepSize, last_sec);
+
+        int offset = 0;
+
+        for (int j = 0; j < (nThreads - 1); ++j) {
+            std::copy(res_sec[j].begin(), res_sec[j].end(), res + offset);
+            offset += stepSize;
         }
+
+        std::copy(last_res.begin(), last_res.end(), res + offset);
     } else {
-        for (int i = 0, j = 0; i < numResults; ++i, j += m) {
-            double dblIdx = 0;
-            rankFun(idx.begin() + j, tar, m, cap, strtLen, dblIdx, mpzIdx);
-            ++dblIdx;
-            if (IsInteger) intRes[i] = dblIdx; else dblRes[i] = dblIdx;
+        RankPartsResults(res, idx, rankFun, tar,
+                         m, cap, strtLen, numResults);
+    }
+}
+
+void RankPartsGmp(
+    std::vector<mpz_class> &res, std::vector<int> &idx,
+    rankPartsPtr rankFun, int tar, int m, int cap,
+    int strtLen, int numResults, int nThreads
+) {
+
+    if (nThreads > 1) {
+        const int stepSize = numResults / nThreads;
+
+        std::vector<std::vector<mpz_class>> res_sec(
+            (nThreads - 1), std::vector<mpz_class>(stepSize)
+        );
+
+        const int last_sec = numResults - ((nThreads - 1) * stepSize);
+        std::vector<mpz_class> last_res(last_sec);
+
+        RankPartsParallel(res_sec, last_res, idx, rankFun, tar, m, cap,
+                          strtLen, numResults, nThreads, stepSize, last_sec);
+
+        int offset = 0;
+
+        for (int j = 0; j < (nThreads - 1); ++j) {
+            std::copy(res_sec[j].begin(), res_sec[j].end(),
+                      res.begin() + offset);
+            offset += stepSize;
         }
+
+        std::copy(last_res.begin(), last_res.end(), res.begin() + offset);
+    } else {
+        RankPartsResultsGeneric(res, idx, rankFun, tar,
+                                m, cap, strtLen, numResults);
     }
 }
 
@@ -31,11 +138,17 @@ void RankPartsResults(std::vector<mpz_class> &bigRes, int* intRes, double* dblRe
 SEXP RankPartitionMain(SEXP RIdx, SEXP Rv, SEXP RisRep,
                        SEXP RFreqs, SEXP Rm, SEXP RcompFun,
                        SEXP Rtarget, SEXP Rtolerance,
-                       SEXP RIsComposition, SEXP RIsWeak) {
+                       SEXP RIsComposition, SEXP RIsWeak,
+                       SEXP RNumThreads, SEXP RmaxThreads) {
 
     int n = 0;
     int m = 0;
+    int nThreads = 1;
+    int maxThreads = 1;
+
     VecType myType = VecType::Integer;
+    CppConvert::convertPrimitive(RmaxThreads, maxThreads,
+                                 VecType::Integer, "maxThreads");
 
     bool IsRep  = CppConvert::convertFlag(RisRep, "repetition");
     bool IsMult = false;
@@ -47,12 +160,11 @@ SEXP RankPartitionMain(SEXP RIdx, SEXP Rv, SEXP RisRep,
     std::vector<double> vNum;
 
     const std::string mainFun = "sum";
-    const bool IsComposition  = CppConvert::convertFlag(RIsComposition,
-                                                          "IsComposition");
+    bool IsComp = CppConvert::convertFlag(RIsComposition, "IsComposition");
 
     SetUpRank(RIdx, Rv, RisRep, RFreqs, Rm, idx, freqs, myReps,
-              myType, n, m, !IsComposition, IsMult, IsRep);
-    SetBasic(Rv, vNum, vInt, n, myType);
+              myType, n, m, !IsComp, IsMult, IsRep);
+    SetBasic(Rv, RFreqs, vNum, vInt, n, myType);
 
     // Must be defined inside IsInteger check as targetVals could be
     // outside integer data type range which causes undefined behavior
@@ -64,22 +176,18 @@ SEXP RankPartitionMain(SEXP RIdx, SEXP Rv, SEXP RisRep,
 
     ConstraintType ctype = ConstraintType::NoConstraint;
     PartDesign part;
-
-    part.isRep   = IsRep;
-    part.isMult  = IsMult;
-    part.mIsNull = Rf_isNull(Rm);
-    part.isComp  = IsComposition;
-    part.isComb  = !part.isComp;
-    part.isWeak  = CppConvert::convertFlag(RIsWeak, "weak");
+    InitialSetupPartDesign(part, RIsWeak, RIsComposition, IsRep,
+                           IsMult, Rf_isNull(Rm), !IsComp);
 
     cpp11::sexp Rlow = R_NilValue;
     ConstraintSetup(vNum, myReps, targetVals, vInt, targetIntVals, funDbl,
                     part, ctype, n, m, compVec, mainFun, mainFun, myType,
                     Rtarget, RcompFun, Rtolerance, Rlow);
 
-    if (part.ptype == PartitionType::Multiset ||
-        part.ptype == PartitionType::CoarseGrained ||
-        part.ptype == PartitionType::NotPartition) {
+    if (part.ptype == PartitionType::CoarseGrained ||
+        part.ptype == PartitionType::NotPartition  ||
+        part.ptype == PartitionType::NoSolution    ||
+        part.ptype == PartitionType::Multiset) {
 
         cpp11::stop("Partition ranking not available for this case.");
     }
@@ -105,37 +213,39 @@ SEXP RankPartitionMain(SEXP RIdx, SEXP Rv, SEXP RisRep,
     // See comment in SamplePartitions.cpp
     if (part.numUnknown) PartitionsCount(myReps, part, n, true);
     const int numResults  = Rf_length(RIdx) / m;
-    const int bigSampSize = (part.isGmp) ? numResults : 1;
-    std::vector<mpz_class> myVec(bigSampSize);
 
     const int cap     = n - static_cast<int>(part.includeZero);
     const int strtLen = std::count_if(part.startZ.cbegin(),
                                       part.startZ.cend(),
                                       [](int i){return i > 0;});
 
-    const bool IsInt = (part.count <= std::numeric_limits<int>::max());
-    cpp11::sexp res_std_int = Rf_allocVector(INTSXP, IsInt ? numResults : 0);
-    int* res_int = INTEGER(res_std_int);
+    const int limit = 2;
+    bool DummyPar = false; // Not used. See notes in SamplePartitions.cpp
+    SetThreads(DummyPar, maxThreads, numResults,
+               myType, nThreads, RNumThreads, limit);
 
-    cpp11::sexp res_std_dbl = Rf_allocVector(
-        REALSXP, (!IsInt && !part.isGmp) ? numResults : 0
-    );
-    double* res_dbl = REAL(res_std_dbl);
+    const rankPartsPtr rankFun = GetRankPartsFunc(part.ptype, part.isGmp);
 
-    if (m == 1) return Rf_ScalarInteger(1);
-    const rankPartsPtr rankFun = GetRankPartsFunc(
-        part.ptype, part.isGmp, part.isComp
-    );
-
-    RankPartsResults(myVec, res_int, res_dbl, idx,
-                     rankFun, part.mapTar, m, cap, strtLen,
-                     numResults, part.isGmp, IsInt);
-
-    if (IsInt) {
-        return res_std_int;
-    } else if (part.isGmp) {
+    if (part.isGmp) {
+        std::vector<mpz_class> myVec(numResults);
+        RankPartsGmp(myVec, idx, rankFun, part.mapTar, m,
+                     cap, strtLen, numResults, nThreads);
         return MpzReturn(myVec, numResults);
+    } else if (part.count <= std::numeric_limits<int>::max()) {
+        cpp11::sexp res_std_int = Rf_allocVector(INTSXP, numResults);
+        int* res_int = INTEGER(res_std_int);
+
+        RankPartsStd(res_int, idx, rankFun, part.mapTar,
+                     m, cap, strtLen, numResults, nThreads);
+
+        return res_std_int;
     } else {
+        cpp11::sexp res_std_dbl = Rf_allocVector(REALSXP, numResults);
+        double* res_dbl = REAL(res_std_dbl);
+
+        RankPartsStd(res_dbl, idx, rankFun, part.mapTar,
+                     m, cap, strtLen, numResults, nThreads);
+
         return res_std_dbl;
     }
 }

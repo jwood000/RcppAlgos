@@ -44,7 +44,7 @@ void ProductPrepare(
 
     for (int i = 0, strt = 0; i < nCols; ++i) {
         switch(TYPEOF(RList[i])) {
-            case INTSXP : {
+            case INTSXP: {
                     if (IsFactor[i]) {
                     typeCheck[tFac] = 1;
                 } else {
@@ -55,33 +55,33 @@ void ProductPrepare(
                 std::copy(temp.begin(), temp.end(), intVec.begin() + strt);
                 myType = VecType::Integer;
                 break;
-            } case LGLSXP : {
+            } case LGLSXP: {
                 std::vector<int> temp = CppConvert::GetVec<int>(RList[i]);
                 std::copy(temp.begin(), temp.end(), boolVec.begin() + strt);
                 typeCheck[tLog] = 1;
                 myType = VecType::Logical;
                 break;
-            } case CPLXSXP : {
+            } case CPLXSXP: {
                 std::vector<Rcomplex> temp =
                     CppConvert::GetVec<Rcomplex>(RList[i]);
                 std::copy(temp.begin(), temp.end(), cmplxVec.begin() + strt);
                 typeCheck[tCpx] = 1;
                 myType = VecType::Complex;
                 break;
-            } case RAWSXP : {
+            } case RAWSXP: {
                 std::vector<Rbyte> temp = CppConvert::GetVec<Rbyte>(RList[i]);
                 std::copy(temp.begin(), temp.end(), rawVec.begin() + strt);
                 typeCheck[tRaw] = 1;
                 myType = VecType::Raw;
                 break;
-            } case REALSXP : {
+            } case REALSXP: {
                 std::vector<double> temp =
                     CppConvert::GetVec<double>(RList[i]);
                 std::copy(temp.begin(), temp.end(), dblVec.begin() + strt);
                 typeCheck[tDbl] = 1;
                 myType = VecType::Numeric;
                 break;
-            } case STRSXP : {
+            } case STRSXP: {
                 for (int j = 0; j < lenGrps[i]; ++j) {
                     charVec[strt + j] = STRING_ELT(RList[i], j);
                 }

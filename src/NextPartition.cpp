@@ -1,6 +1,10 @@
+#include "cpp11/protect.hpp"
+
+#include "Partitions/CompositionsDistinctUtils.h"
 #include "Partitions/NextComposition.h"
-#include "Partitions/PartitionsTypes.h"
+#include "Partitions/NextPartition.h"
 #include <algorithm>  // std::find
+#include <numeric>
 
 void NextDistinctPart(std::vector<int> &z, int &boundary,
                       int &edge, int &tarDiff, int lastCol) {
@@ -179,6 +183,7 @@ void PrepareMultisetPart(std::vector<int> &rpsCnt,
         GetPivotExtr(rpsCnt, z, lastCol, lastElem);
 
     e = b - 1;
+    e = b > 0 ? b - 1 : 0;
 
     while (EdgeIncrementPossible(rpsCnt, z, e, b)) {
         --e;
@@ -202,7 +207,7 @@ void PrepareRepPart(const std::vector<int> &z, int &boundary,
     // edge is the greatest index such that z[boundary] - z[edge] >= 2
     // This is the index that will be be used as a starting point
     // to determine the next combination that meets the criteria
-    edge = boundary - 1;
+    edge = boundary > 0 ? boundary - 1 : 0;
     int edgeTest = z[boundary] - 2;
 
     while (edge > 0 && edgeTest < z[edge]) {
@@ -231,7 +236,7 @@ void PrepareDistinctPart(const std::vector<int> &z, int &boundary,
     // edge is the greatest index such that when incremented
     // the result will be at least one less than its neighbor
     // even if its neighbor is decremented
-    edge = boundary - 1;
+    edge = boundary > 0 ? boundary - 1 : 0;
     tarDiff = 3;
 
     while (edge > 0 && (z[boundary] - z[edge]) < tarDiff) {
@@ -247,10 +252,12 @@ void NextMultisetGenPart(std::vector<int> &rpsCnt,
     // vertex is the smallest index greater than edge that can be decremented
     int v = e + 1;
 
+    // Find next vertex v that can't be decremented
     while (VtxDecrementPossible(rpsCnt, z, lastCol, v, e)) {
         ++v;
     }
 
+    // Perform transfer between edge and vertex
     ++rpsCnt[z[e]];
     ++z[e];
     --rpsCnt[z[e]];
@@ -259,6 +266,7 @@ void NextMultisetGenPart(std::vector<int> &rpsCnt,
     --z[v];
     --rpsCnt[z[v]];
 
+    // Update boundary and pivot if vertex hits boundary
     if (v == b) {
         if (b < lastCol) {
             ++b;
@@ -272,6 +280,7 @@ void NextMultisetGenPart(std::vector<int> &rpsCnt,
             GetPivotExtr(rpsCnt, z, lastCol, lastElem);
     }
 
+    // Skip vertex forward over zones that are equal to previous
     while (
         (v < lastCol) &&
         (
@@ -286,6 +295,7 @@ void NextMultisetGenPart(std::vector<int> &rpsCnt,
         ++v;
     }
 
+    // Balance values between vertex and pivot where possible
     while (v < p && rpsCnt[z[v] - 1] && rpsCnt[z[p] + 1]) {
         ++rpsCnt[z[v]];
         --z[v];
@@ -307,6 +317,7 @@ void NextMultisetGenPart(std::vector<int> &rpsCnt,
 
     b = p;
 
+    // Move boundary right over zones that are equal or "close and movable"
     while (
         (b < lastCol) &&
         (
@@ -323,12 +334,14 @@ void NextMultisetGenPart(std::vector<int> &rpsCnt,
         ++b;
     }
 
+    // Refine boundary
     while (BndDecrementPossible(rpsCnt, z, b)) {
         --b;
     }
 
     e = b - 1;
 
+    // Move edge left as long as it's incrementable
     while (EdgeIncrementPossible(rpsCnt, z, e, b)) {
         --e;
     }
@@ -342,27 +355,30 @@ void NextRepGenPart(std::vector<int> &z, int &boundary, int &edge,
     ++z[edge];
     --z[vertex];
 
+    // If vertex == boundary, handle boundary update and pivot assignment
     if (vertex == boundary) {
         if (boundary < lastCol) {
             ++boundary;
         }
 
-        const int currMax = z[boundary];
+        int currMax = z[boundary];
 
+        // Move boundary left as long as values equal currMax
         while (boundary > 1 && z[boundary - 1] == currMax) {
             --boundary;
         }
 
         pivot = (z[boundary] < lastElem) ? lastCol : boundary - 1;
-
     } else if (z[vertex] == z[edge]) {
         ++vertex;
     }
 
+    // Main loop: balance values between vertex and pivot
     while (vertex < pivot) {
-        const int distVert = z[vertex] - z[edge];
-        const int distPivot = lastElem - z[pivot];
+        int distVert = z[vertex] - z[edge];
+        int distPivot = lastElem - z[pivot];
 
+        // Adjust indices
         if (distVert == distPivot) {
             z[vertex] -= distVert;
             z[pivot] += distVert;
@@ -384,20 +400,22 @@ void NextRepGenPart(std::vector<int> &z, int &boundary, int &edge,
 
     boundary = pivot;
 
-    if (boundary < lastCol &&
-        z[boundary] < z[boundary + 1]) {
-
+    // Recheck and adjust boundary
+    if (boundary < lastCol && z[boundary] < z[boundary + 1]) {
         ++boundary;
     }
 
-    const int currMax = z[boundary];
+    int currMax = z[boundary];
 
-    while (boundary > 1 && z[boundary - 1] == currMax)
+    while (boundary > 1 && z[boundary - 1] == currMax) {
         --boundary;
+    }
 
+    // Compute edge from boundary
     edge = boundary - 1;
     int edgeTest = z[boundary] - 2;
 
+    // Move edge left while condition holds
     while (edge > 0 && edgeTest < z[edge]) {
         --edge;
     }
@@ -410,6 +428,7 @@ void NextDistinctGenPart(std::vector<int> &z, int &boundary,
     int vertex = edge + 1;
     tarDiff = 3;
 
+    // Find the vertex where the difference from z[edge] is >= tarDiff
     while (vertex < lastCol && (z[vertex] - z[edge]) < tarDiff) {
         ++vertex;
         ++tarDiff;
@@ -423,6 +442,8 @@ void NextDistinctGenPart(std::vector<int> &z, int &boundary,
             ++boundary;
         }
 
+        // Move boundary left until the difference between adjacent values
+        // is at least 2
         while (boundary > 1 && (z[boundary] - z[boundary - 1]) < 2) {
             --boundary;
         }
@@ -430,17 +451,21 @@ void NextDistinctGenPart(std::vector<int> &z, int &boundary,
         pivot = (z[lastCol] < lastElem) ? lastCol : boundary - 1;
     }
 
+    // Redistribution logic if vertex is before boundary
     if (vertex < boundary) {
-        if (z[vertex] - z[vertex - 1] == 1)
+        if (z[vertex] - z[vertex - 1] == 1) {
             ++vertex;
+        }
 
         while (vertex < pivot) {
             --z[vertex];
             ++z[pivot];
 
-            if (z[vertex] - z[vertex - 1] == 1)
+            if (z[vertex] - z[vertex - 1] == 1) {
                 ++vertex;
+            }
 
+            // Move pivot left if maxed out or next is too close
             if (z[pivot] == lastElem ||
                 (pivot < lastCol && z[pivot + 1] - z[pivot] == 1)) {
 
@@ -455,18 +480,16 @@ void NextDistinctGenPart(std::vector<int> &z, int &boundary,
         }
     }
 
+    // Update edge based on new boundary
     edge = boundary - 1;
     tarDiff = 3;
 
+    // Find new edge where the difference with boundary is >= tarDiff
     while (edge > 0 && (z[boundary] - z[edge]) < tarDiff) {
         --edge;
         ++tarDiff;
     }
 }
-
-using nextPartsPtr = void (*const)(std::vector<int> &rpsCnt,
-                           std::vector<int> &z, int &e, int &b, int &p,
-                           int &tarDiff, int lastCol, int lastElem);
 
 void NextDistinct(std::vector<int> &rpsCnt, std::vector<int> &z, int &e,
                   int &b, int &p, int &tarDiff, int lastCol, int lastElem) {
@@ -507,25 +530,192 @@ void NextRepCompOne(std::vector<int> &rpsCnt,
     NextCompositionRep<1>(z, lastCol);
 }
 
-nextPartsPtr GetNextPartsPtr(PartitionType ptype, bool IsGen, bool IsComp) {
+void NextDistinctComp(std::vector<int> &complement,
+                      std::vector<int> &z, int &i1, int &i2, int &myMax,
+                      int &target, int lastCol, int lastIdx) {
 
-    if (IsComp && IsGen) {
-        return(nextPartsPtr(NextRepCompZero));
-    } else if (IsComp) {
-        return(nextPartsPtr(NextRepCompOne));
-    } else if (IsGen) {
-        if (ptype == PartitionType::Multiset) {
-            return(nextPartsPtr(NextMultisetGen));
-        } else if (std::find(RepPTypeArr.cbegin(), RepPTypeArr.cend(),
-                             ptype) != RepPTypeArr.cend()) {
-            return(nextPartsPtr(NextRepGen));
-        } else {
-            return(nextPartsPtr(NextDistinctGen));
+    if (complement.size() < 2) {
+        std::next_permutation(z.begin(), z.end());
+        return;
+    }
+
+    std::vector<int> idx;
+    std::vector<int> tailSum;
+    lastIdx = complement.size() - 1;
+
+    NextCompositionDistinct(
+        z, complement, idx, tailSum, i1, i2, myMax, lastCol, lastIdx, target
+    );
+}
+
+void NextDistMZNotWeakComp(std::vector<int> &complement,
+                           std::vector<int> &z, int &i1, int &i2, int &myMax,
+                           int &target, int lastCol, int lastIdx) {
+
+    if (complement.size() < 2) {
+        std::next_permutation(z.begin(), z.end());
+        return;
+    }
+
+    std::vector<int> idx;
+    std::vector<int> tailSum;
+    lastIdx = complement.size() - 1;
+
+    int nz = 0;
+    const int z_size = z.size();
+
+    while (nz < z_size && z[nz] == 0) {
+        ++nz;
+    }
+
+    if (nz == z_size) {
+        cpp11::stop("This should not happen!");
+    }
+
+    int k = nz + 1;
+
+    for (; k < z_size; ++k) {
+        if (z[k] > z[k - 1]) {
+            break;
         }
-    } else if (std::find(RepPTypeArr.cbegin(), RepPTypeArr.cend(),
-                         ptype) != RepPTypeArr.cend()) {
-        return(nextPartsPtr(NextRep));
+    }
+
+    // means descending
+    if (k == z_size && nz) {
+        const int non_zero_size = z_size - nz;
+
+        // theoretical maximum if there are no constraints
+        int max_possval = target - static_cast<int>(
+            (non_zero_size * (non_zero_size - 1)) / 2
+        );
+
+        int z_max = *std::max_element(z.begin(), z.end());
+        int cmp_max = *std::max_element(complement.begin(), complement.end());
+        int cap = std::max(cmp_max, z_max);
+        cap = std::min(max_possval, cap);
+
+        if (z[nz] == cap && IsMaximizedGreedySuffix(z, target, nz)) {
+            if (nz > 1) z.erase(z.begin(), z.begin() + (nz - 1));
+
+            if (cap == max_possval) {
+                std::iota(z.begin(), z.end(), 1);
+                z.back() = target - std::accumulate(z.begin(), z.end() - 1, 0);
+            } else {
+                std::vector<int> allowed(cap);
+                std::iota(allowed.begin(), allowed.end(), 1);
+                GetFirstPartitionDistinct(allowed, z, target, z.size(), cap);
+                for (auto &z_i: z) ++z_i;
+            }
+
+            if (nz > 1) z.insert(z.begin(), nz - 1, 0);
+            int zeroBudget = std::count(z.cbegin(), z.cend(), 0);
+
+            CompsDistinctSetup(
+                z, complement, target, i1, i2, myMax, cap, false, zeroBudget
+            );
+
+            return;
+        }
+    }
+
+    NextCompositionDistinct(
+        z, complement, idx, tailSum, i1, i2, myMax, lastCol, lastIdx, target
+    );
+}
+
+void EmptyReturn(std::vector<int> &rpsCnt, std::vector<int> &z, int &e,
+             int &b, int &p, int &tarDiff, int lastCol, int lastElem) {
+    // Do nothing
+}
+
+nextPartsPtr GetNextPartsPtr(PartitionType ptype, ConstraintType ctype) {
+
+    if (ctype == ConstraintType::PartStandard) {
+        switch (ptype) {
+            case PartitionType::LengthOne:
+            case PartitionType::DstctStdAll:
+            case PartitionType::DstctMultiZero:
+            case PartitionType::DstctOneZero:
+            case PartitionType::DstctNoZero:
+                return(nextPartsPtr(NextDistinct));
+
+            case PartitionType::RepStdAll:
+            case PartitionType::RepNoZero:
+            case PartitionType::RepShort:
+                return(nextPartsPtr(NextRep));
+
+            case PartitionType::CompRepNoZero:
+            case PartitionType::CmpRpZroNotWk:
+                return(nextPartsPtr(NextRepCompOne));
+
+            case PartitionType::CompRepWeak:
+                return(nextPartsPtr(NextRepCompZero));
+
+            case PartitionType::CmpDstctWeak:
+            case PartitionType::CmpDstCapWeak:
+            case PartitionType::CmpDstctMZWeak:
+            case PartitionType::CmpDstctNoZero:
+            case PartitionType::CmpDstctCapped:
+            case PartitionType::CmpDstCapMZWeak:
+                return(nextPartsPtr(NextDistinctComp));
+
+            case PartitionType::CmpDstctZNotWk:
+            case PartitionType::CmpDstCapMZNotWk:
+                return(nextPartsPtr(NextDistMZNotWeakComp));
+
+            case PartitionType::NoSolution:
+                return(nextPartsPtr(EmptyReturn));
+
+            default:
+                // This should not happen
+                cpp11::stop(
+                    "This should not happen. Please open an issue here:\n\t"
+                    "https://github.com/jwood000/RcppAlgos/issues"
+                );
+        }
     } else {
-        return(nextPartsPtr(NextDistinct));
+        switch (ptype) {
+            case PartitionType::LengthOne:
+            case PartitionType::DstctMultiZero:
+            case PartitionType::DstctNoZero:
+            case PartitionType::DstctCapped:
+            case PartitionType::DstctCappedMZ:
+                return(nextPartsPtr(NextDistinctGen));
+
+            case PartitionType::RepNoZero:
+            case PartitionType::RepCapped:
+                return(nextPartsPtr(NextRepGen));
+
+            case PartitionType::Multiset:
+                return(nextPartsPtr(NextMultisetGen));
+
+            case PartitionType::CompRepNoZero:
+                return(nextPartsPtr(NextRepCompZero));
+
+            case PartitionType::CmpRpZroNotWk:
+                return(nextPartsPtr(NextRepCompOne));
+
+            case PartitionType::CmpDstctWeak:
+            case PartitionType::CmpDstCapWeak:
+            case PartitionType::CmpDstctMZWeak:
+            case PartitionType::CmpDstctNoZero:
+            case PartitionType::CmpDstctCapped:
+            case PartitionType::CmpDstCapMZWeak:
+                return(nextPartsPtr(NextDistinctComp));
+
+            case PartitionType::CmpDstctZNotWk:
+            case PartitionType::CmpDstCapMZNotWk:
+                return(nextPartsPtr(NextDistMZNotWeakComp));
+
+            case PartitionType::NoSolution:
+                return(nextPartsPtr(EmptyReturn));
+
+            default:
+                // This should not happen
+                cpp11::stop(
+                    "This should not happen. Please open an issue here:\n\t"
+                    "https://github.com/jwood000/RcppAlgos/issues"
+                );
+        }
     }
 }

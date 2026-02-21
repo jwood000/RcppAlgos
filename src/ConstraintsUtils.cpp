@@ -1,10 +1,27 @@
 #include "Constraints/ConstraintsUtils.h"
 #include "CppConvert.h"
 
+void InitialSetupPartDesign(
+    PartDesign &part, SEXP RIsWeak, SEXP RIsComposition,
+    bool IsRep, bool IsMult, bool mIsNull, bool IsComb
+) {
+
+    bool IsComp = CppConvert::convertFlag(RIsComposition, "IsComposition");
+
+    part.isRep   = IsRep;
+    part.isMult  = IsMult;
+    part.isDist  = !IsMult && !IsRep;
+    part.mIsNull = mIsNull;
+    part.isWeak  = CppConvert::convertFlag(RIsWeak, "weak");
+    part.isComp  = IsComp;
+    part.isComb  = IsComb;
+    part.isPerm  = !IsComb && !IsComp;
+}
+
 template <typename T>
-void AddResultToParts(T* mat, std::int64_t result,
-                      std::size_t numResult,
-                      std::size_t width) {
+void AddResultToParts(
+    T* mat, std::int64_t result, std::size_t numResult, std::size_t width
+) {
 
     const T t_result = result;
     const std::size_t limit = static_cast<std::size_t>(numResult) *
@@ -63,6 +80,7 @@ bool CheckSpecialCase(const std::vector<double> &vNum,
 
     const bool NonStdPart = ptype == PartitionType::CoarseGrained ||
                             ptype == PartitionType::NotPartition  ||
+                            ptype == PartitionType::NoSolution    ||
                             ptype == PartitionType::Multiset;
 
     if (bLower && NonStdPart) {
@@ -339,10 +357,12 @@ void ConstraintSetup(const std::vector<double> &vNum,
                      SEXP Rtolerance, SEXP Rlow, bool bIsCount) {
 
     // numOnly = true, checkWhole = false, negPoss = true
-    CppConvert::convertVector(Rtarget, targetVals,
-                                VecType::Numeric,
-                                "limitConstraints/target",
-                                true, false, true);
+    CppConvert::convertVector(Rtarget, targetVals, VecType::Numeric,
+                              "limitConstraints/target", true, false, true);
+
+    if (!Rf_isString(RcompFun)) {
+        cpp11::stop("comparisonFun must be a character vector");
+    }
 
     int len_comp = Rf_length(RcompFun);
 
@@ -405,13 +425,8 @@ void ConstraintSetup(const std::vector<double> &vNum,
     SetConstraintType(vNum, funTest, part, ctype, bLower);
 }
 
-template void AddResultToParts(int* mat, std::int64_t result,
-                               std::size_t numResult,
-                               std::size_t width);
-
-template void AddResultToParts(double* mat, std::int64_t result,
-                               std::size_t numResult,
-                               std::size_t width);
+template void AddResultToParts(int*, std::int64_t, std::size_t, std::size_t);
+template void AddResultToParts(double*, std::int64_t, std::size_t, std::size_t);
 
 template void VectorToMatrix(const std::vector<int> &cnstrntVec,
                              const std::vector<int> &resVec, int* mat,

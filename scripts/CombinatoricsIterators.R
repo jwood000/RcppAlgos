@@ -267,7 +267,7 @@ reprex::reprex({
     #'
     #' #### Conclusions
     #'
-    #' It appears that memory is the issue in previous versions. Indeed, if we look at [Memory statistics from Rprof](<https://cran.r-project.org/doc/manuals/r-release/R-exts.html#Memory-statistics-from-Rprof>), and view both files with `memory = "stats"` we see that the C funciton, `duplicate`, appears to be the main culprit.
+    #' It appears that memory is the issue in previous versions. Indeed, if we look at [Memory statistics from Rprof](<https://cran.r-project.org/doc/manuals/r-release/R-exts.html#Memory-statistics-from-Rprof>), and view both files with `memory = "stats"` we see that the C function, `duplicate`, appears to be the main culprit.
     #'
 
     ## We set index = 1 to ensure we get the very bottom of the stack
@@ -281,7 +281,7 @@ reprex::reprex({
     v250
 
     #'
-    #' With verison `2.5.0+` there are only `r v250[[1]][["tot.duplications"]]` `tot.duplications` whereas with version `2.4.3` there are millions of `tot.duplications`. In fact, there are a total of `r format(v243[[1]][["tot.duplications"]], scientific=FALSE)` duplications with version `2.4.3`. This together with `comboCount(25, 10) = 3,268,760` implies that the C funciton, `duplicate`, is called about 3 times per iteration with older versions (i.e. `r format(v243[[1]][["tot.duplications"]], scientific=FALSE)` ` / 3268760 ~= ` `r round(v243[[1]][["tot.duplications"]] / 3268760, 4)`).
+    #' With verison `2.5.0+` there are only `r v250[[1]][["tot.duplications"]]` `tot.duplications` whereas with version `2.4.3` there are millions of `tot.duplications`. In fact, there are a total of `r format(v243[[1]][["tot.duplications"]], scientific=FALSE)` duplications with version `2.4.3`. This together with `comboCount(25, 10) = 3,268,760` implies that the C function, `duplicate`, is called about 3 times per iteration with older versions (i.e. `r format(v243[[1]][["tot.duplications"]], scientific=FALSE)` ` / 3268760 ~= ` `r round(v243[[1]][["tot.duplications"]] / 3268760, 4)`).
     #'
     #' ### Iterating over Partitions and Compositions of a Number
     #'

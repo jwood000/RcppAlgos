@@ -1,9 +1,6 @@
+#include "Combinations/NthCombination.h"
 #include "Combinations/BigComboCount.h"
 #include "Combinations/ComboCount.h"
-
-using nthCombPtr = std::vector<int> (*const)(int n, int m, double dblIdx,
-                                     const mpz_class &mpzIdx,
-                                     const std::vector<int> &Reps);
 
 std::vector<int> nthComb(int n, int m, double dblIdx,
                          const mpz_class &mpzIdx,

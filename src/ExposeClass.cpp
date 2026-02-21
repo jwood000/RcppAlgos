@@ -9,14 +9,15 @@
 #include "CheckReturn.h"
 
 static void Finalizer(SEXP ext) {
+    if (TYPEOF(ext) != EXTPTRSXP) return;
 
-    if (NULL == R_ExternalPtrAddr(ext)) {
-        return;
-    }
+    auto* ptr =
+        reinterpret_cast<Iterator*>(R_ExternalPtrAddr(ext));
 
-    class Iterator* ptr = (class Iterator*) R_ExternalPtrAddr(ext);
+    if (!ptr) return;
+
     R_ClearExternalPtr(ext);
-    if (ptr) delete ptr;
+    delete ptr;
 }
 
 [[cpp11::register]]
@@ -196,12 +197,10 @@ SEXP CombClassNew(SEXP RVals, SEXP RboolVec, SEXP freqInfo, SEXP Rparallel,
         ConstraintType ctype = ConstraintType::NoConstraint;
         PartDesign part;
 
-        part.isRep   = IsRep;
-        part.isMult  = IsMult;
-        part.mIsNull = static_cast<bool>(Rf_asLogical(RmIsNull));
-        part.isComp  = IsComp;
-        part.isComb  = IsComb;
-        part.isWeak  = static_cast<bool>(bVec[7]);
+        InitialSetupPartDesign(
+            part, Rf_ScalarLogical(bVec[7]), Rf_ScalarLogical(IsComp),
+            IsRep, IsMult, Rf_asLogical(RmIsNull), IsComb
+        );
 
         std::vector<std::string> compVec;
         std::vector<double> tarVals;
@@ -223,7 +222,6 @@ SEXP CombClassNew(SEXP RVals, SEXP RboolVec, SEXP freqInfo, SEXP Rparallel,
         }
 
         const bool usePartCount = part.isPart &&
-                                  !part.isGmp &&
                                   !part.numUnknown;
 
         const double computedRows = usePartCount ? part.count :

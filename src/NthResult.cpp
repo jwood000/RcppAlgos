@@ -1,12 +1,6 @@
-#include <gmpxx.h>
-#include <vector>
-
 #include "Permutations/NthPermutation.h"
 #include "Combinations/NthCombination.h"
-
-using nthResultPtr = std::vector<int> (*const)(int n, int m,
-                                       double dblIdx, const mpz_class &mpzIdx,
-                                       const std::vector<int> &Reps);
+#include "NthResult.h"
 
 nthResultPtr GetNthResultFunc(bool IsComb, bool IsMult,
                               bool IsRep, bool IsGmp) {

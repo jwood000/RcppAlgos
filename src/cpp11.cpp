@@ -34,10 +34,10 @@ extern "C" SEXP _RcppAlgos_CombinatoricsCount(SEXP Rv, SEXP Rm, SEXP RisRep, SEX
   END_CPP11
 }
 // CombinatoricsCount.cpp
-SEXP PartitionsCount(SEXP Rtarget, SEXP Rv, SEXP Rm, SEXP RisRep, SEXP RFreqs, SEXP RcompFun, SEXP Rlow, SEXP Rtolerance, SEXP RPartDesign, SEXP Rshow, SEXP RIsComposition, SEXP RIsWeak);
-extern "C" SEXP _RcppAlgos_PartitionsCount(SEXP Rtarget, SEXP Rv, SEXP Rm, SEXP RisRep, SEXP RFreqs, SEXP RcompFun, SEXP Rlow, SEXP Rtolerance, SEXP RPartDesign, SEXP Rshow, SEXP RIsComposition, SEXP RIsWeak) {
+SEXP PartitionsCount(SEXP Rtarget, SEXP Rv, SEXP Rm, SEXP RisRep, SEXP RFreqs, SEXP RIsComb, SEXP RcompFun, SEXP Rlow, SEXP Rtolerance, SEXP RPartDesign, SEXP Rshow, SEXP RIsComposition, SEXP RIsWeak);
+extern "C" SEXP _RcppAlgos_PartitionsCount(SEXP Rtarget, SEXP Rv, SEXP Rm, SEXP RisRep, SEXP RFreqs, SEXP RIsComb, SEXP RcompFun, SEXP Rlow, SEXP Rtolerance, SEXP RPartDesign, SEXP Rshow, SEXP RIsComposition, SEXP RIsWeak) {
   BEGIN_CPP11
-    return cpp11::as_sexp(PartitionsCount(cpp11::as_cpp<cpp11::decay_t<SEXP>>(Rtarget), cpp11::as_cpp<cpp11::decay_t<SEXP>>(Rv), cpp11::as_cpp<cpp11::decay_t<SEXP>>(Rm), cpp11::as_cpp<cpp11::decay_t<SEXP>>(RisRep), cpp11::as_cpp<cpp11::decay_t<SEXP>>(RFreqs), cpp11::as_cpp<cpp11::decay_t<SEXP>>(RcompFun), cpp11::as_cpp<cpp11::decay_t<SEXP>>(Rlow), cpp11::as_cpp<cpp11::decay_t<SEXP>>(Rtolerance), cpp11::as_cpp<cpp11::decay_t<SEXP>>(RPartDesign), cpp11::as_cpp<cpp11::decay_t<SEXP>>(Rshow), cpp11::as_cpp<cpp11::decay_t<SEXP>>(RIsComposition), cpp11::as_cpp<cpp11::decay_t<SEXP>>(RIsWeak)));
+    return cpp11::as_sexp(PartitionsCount(cpp11::as_cpp<cpp11::decay_t<SEXP>>(Rtarget), cpp11::as_cpp<cpp11::decay_t<SEXP>>(Rv), cpp11::as_cpp<cpp11::decay_t<SEXP>>(Rm), cpp11::as_cpp<cpp11::decay_t<SEXP>>(RisRep), cpp11::as_cpp<cpp11::decay_t<SEXP>>(RFreqs), cpp11::as_cpp<cpp11::decay_t<SEXP>>(RIsComb), cpp11::as_cpp<cpp11::decay_t<SEXP>>(RcompFun), cpp11::as_cpp<cpp11::decay_t<SEXP>>(Rlow), cpp11::as_cpp<cpp11::decay_t<SEXP>>(Rtolerance), cpp11::as_cpp<cpp11::decay_t<SEXP>>(RPartDesign), cpp11::as_cpp<cpp11::decay_t<SEXP>>(Rshow), cpp11::as_cpp<cpp11::decay_t<SEXP>>(RIsComposition), cpp11::as_cpp<cpp11::decay_t<SEXP>>(RIsWeak)));
   END_CPP11
 }
 // CombinatoricsCount.cpp
@@ -244,17 +244,17 @@ extern "C" SEXP _RcppAlgos_ExpandGridCpp(SEXP RList, SEXP Rlow, SEXP Rhigh, SEXP
   END_CPP11
 }
 // RankCombPermMain.cpp
-SEXP RankCombPerm(SEXP RIdx, SEXP Rv, SEXP RisRep, SEXP RFreqs, SEXP Rm, SEXP RIsComb);
-extern "C" SEXP _RcppAlgos_RankCombPerm(SEXP RIdx, SEXP Rv, SEXP RisRep, SEXP RFreqs, SEXP Rm, SEXP RIsComb) {
+SEXP RankCombPerm(SEXP RIdx, SEXP Rv, SEXP RisRep, SEXP RFreqs, SEXP Rm, SEXP RIsComb, SEXP RNumThreads, SEXP RmaxThreads);
+extern "C" SEXP _RcppAlgos_RankCombPerm(SEXP RIdx, SEXP Rv, SEXP RisRep, SEXP RFreqs, SEXP Rm, SEXP RIsComb, SEXP RNumThreads, SEXP RmaxThreads) {
   BEGIN_CPP11
-    return cpp11::as_sexp(RankCombPerm(cpp11::as_cpp<cpp11::decay_t<SEXP>>(RIdx), cpp11::as_cpp<cpp11::decay_t<SEXP>>(Rv), cpp11::as_cpp<cpp11::decay_t<SEXP>>(RisRep), cpp11::as_cpp<cpp11::decay_t<SEXP>>(RFreqs), cpp11::as_cpp<cpp11::decay_t<SEXP>>(Rm), cpp11::as_cpp<cpp11::decay_t<SEXP>>(RIsComb)));
+    return cpp11::as_sexp(RankCombPerm(cpp11::as_cpp<cpp11::decay_t<SEXP>>(RIdx), cpp11::as_cpp<cpp11::decay_t<SEXP>>(Rv), cpp11::as_cpp<cpp11::decay_t<SEXP>>(RisRep), cpp11::as_cpp<cpp11::decay_t<SEXP>>(RFreqs), cpp11::as_cpp<cpp11::decay_t<SEXP>>(Rm), cpp11::as_cpp<cpp11::decay_t<SEXP>>(RIsComb), cpp11::as_cpp<cpp11::decay_t<SEXP>>(RNumThreads), cpp11::as_cpp<cpp11::decay_t<SEXP>>(RmaxThreads)));
   END_CPP11
 }
 // RankPartitionMain.cpp
-SEXP RankPartitionMain(SEXP RIdx, SEXP Rv, SEXP RisRep, SEXP RFreqs, SEXP Rm, SEXP RcompFun, SEXP Rtarget, SEXP Rtolerance, SEXP RIsComposition, SEXP RIsWeak);
-extern "C" SEXP _RcppAlgos_RankPartitionMain(SEXP RIdx, SEXP Rv, SEXP RisRep, SEXP RFreqs, SEXP Rm, SEXP RcompFun, SEXP Rtarget, SEXP Rtolerance, SEXP RIsComposition, SEXP RIsWeak) {
+SEXP RankPartitionMain(SEXP RIdx, SEXP Rv, SEXP RisRep, SEXP RFreqs, SEXP Rm, SEXP RcompFun, SEXP Rtarget, SEXP Rtolerance, SEXP RIsComposition, SEXP RIsWeak, SEXP RNumThreads, SEXP RmaxThreads);
+extern "C" SEXP _RcppAlgos_RankPartitionMain(SEXP RIdx, SEXP Rv, SEXP RisRep, SEXP RFreqs, SEXP Rm, SEXP RcompFun, SEXP Rtarget, SEXP Rtolerance, SEXP RIsComposition, SEXP RIsWeak, SEXP RNumThreads, SEXP RmaxThreads) {
   BEGIN_CPP11
-    return cpp11::as_sexp(RankPartitionMain(cpp11::as_cpp<cpp11::decay_t<SEXP>>(RIdx), cpp11::as_cpp<cpp11::decay_t<SEXP>>(Rv), cpp11::as_cpp<cpp11::decay_t<SEXP>>(RisRep), cpp11::as_cpp<cpp11::decay_t<SEXP>>(RFreqs), cpp11::as_cpp<cpp11::decay_t<SEXP>>(Rm), cpp11::as_cpp<cpp11::decay_t<SEXP>>(RcompFun), cpp11::as_cpp<cpp11::decay_t<SEXP>>(Rtarget), cpp11::as_cpp<cpp11::decay_t<SEXP>>(Rtolerance), cpp11::as_cpp<cpp11::decay_t<SEXP>>(RIsComposition), cpp11::as_cpp<cpp11::decay_t<SEXP>>(RIsWeak)));
+    return cpp11::as_sexp(RankPartitionMain(cpp11::as_cpp<cpp11::decay_t<SEXP>>(RIdx), cpp11::as_cpp<cpp11::decay_t<SEXP>>(Rv), cpp11::as_cpp<cpp11::decay_t<SEXP>>(RisRep), cpp11::as_cpp<cpp11::decay_t<SEXP>>(RFreqs), cpp11::as_cpp<cpp11::decay_t<SEXP>>(Rm), cpp11::as_cpp<cpp11::decay_t<SEXP>>(RcompFun), cpp11::as_cpp<cpp11::decay_t<SEXP>>(Rtarget), cpp11::as_cpp<cpp11::decay_t<SEXP>>(Rtolerance), cpp11::as_cpp<cpp11::decay_t<SEXP>>(RIsComposition), cpp11::as_cpp<cpp11::decay_t<SEXP>>(RIsWeak), cpp11::as_cpp<cpp11::decay_t<SEXP>>(RNumThreads), cpp11::as_cpp<cpp11::decay_t<SEXP>>(RmaxThreads)));
   END_CPP11
 }
 // SampleCombPerm.cpp
@@ -269,6 +269,13 @@ SEXP SamplePartitions(SEXP Rv, SEXP Rm, SEXP RisRep, SEXP RFreqs, SEXP RindexVec
 extern "C" SEXP _RcppAlgos_SamplePartitions(SEXP Rv, SEXP Rm, SEXP RisRep, SEXP RFreqs, SEXP RindexVec, SEXP RmySeed, SEXP RNumSamp, SEXP baseSample, SEXP RNumThreads, SEXP RmaxThreads, SEXP RNamed, SEXP RcompFun, SEXP Rtarget, SEXP myEnv, SEXP RIsComposition, SEXP RIsWeak) {
   BEGIN_CPP11
     return cpp11::as_sexp(SamplePartitions(cpp11::as_cpp<cpp11::decay_t<SEXP>>(Rv), cpp11::as_cpp<cpp11::decay_t<SEXP>>(Rm), cpp11::as_cpp<cpp11::decay_t<SEXP>>(RisRep), cpp11::as_cpp<cpp11::decay_t<SEXP>>(RFreqs), cpp11::as_cpp<cpp11::decay_t<SEXP>>(RindexVec), cpp11::as_cpp<cpp11::decay_t<SEXP>>(RmySeed), cpp11::as_cpp<cpp11::decay_t<SEXP>>(RNumSamp), cpp11::as_cpp<cpp11::decay_t<SEXP>>(baseSample), cpp11::as_cpp<cpp11::decay_t<SEXP>>(RNumThreads), cpp11::as_cpp<cpp11::decay_t<SEXP>>(RmaxThreads), cpp11::as_cpp<cpp11::decay_t<SEXP>>(RNamed), cpp11::as_cpp<cpp11::decay_t<SEXP>>(RcompFun), cpp11::as_cpp<cpp11::decay_t<SEXP>>(Rtarget), cpp11::as_cpp<cpp11::decay_t<SEXP>>(myEnv), cpp11::as_cpp<cpp11::decay_t<SEXP>>(RIsComposition), cpp11::as_cpp<cpp11::decay_t<SEXP>>(RIsWeak)));
+  END_CPP11
+}
+// version.cpp
+SEXP linked_version();
+extern "C" SEXP _RcppAlgos_linked_version() {
+  BEGIN_CPP11
+    return cpp11::as_sexp(linked_version());
   END_CPP11
 }
 
@@ -296,7 +303,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_RcppAlgos_NextGatherGlue",      (DL_FUNC) &_RcppAlgos_NextGatherGlue,       1},
     {"_RcppAlgos_NextIterGlue",        (DL_FUNC) &_RcppAlgos_NextIterGlue,         1},
     {"_RcppAlgos_NextNumIterGlue",     (DL_FUNC) &_RcppAlgos_NextNumIterGlue,      2},
-    {"_RcppAlgos_PartitionsCount",     (DL_FUNC) &_RcppAlgos_PartitionsCount,     12},
+    {"_RcppAlgos_PartitionsCount",     (DL_FUNC) &_RcppAlgos_PartitionsCount,     13},
     {"_RcppAlgos_PollardRhoContainer", (DL_FUNC) &_RcppAlgos_PollardRhoContainer,  6},
     {"_RcppAlgos_PrevGatherGlue",      (DL_FUNC) &_RcppAlgos_PrevGatherGlue,       1},
     {"_RcppAlgos_PrevIterGlue",        (DL_FUNC) &_RcppAlgos_PrevIterGlue,         1},
@@ -304,14 +311,15 @@ static const R_CallMethodDef CallEntries[] = {
     {"_RcppAlgos_PrimeCountCpp",       (DL_FUNC) &_RcppAlgos_PrimeCountCpp,        3},
     {"_RcppAlgos_PrimeSieveCpp",       (DL_FUNC) &_RcppAlgos_PrimeSieveCpp,        5},
     {"_RcppAlgos_RandomAccessGlue",    (DL_FUNC) &_RcppAlgos_RandomAccessGlue,     2},
-    {"_RcppAlgos_RankCombPerm",        (DL_FUNC) &_RcppAlgos_RankCombPerm,         6},
-    {"_RcppAlgos_RankPartitionMain",   (DL_FUNC) &_RcppAlgos_RankPartitionMain,   10},
+    {"_RcppAlgos_RankCombPerm",        (DL_FUNC) &_RcppAlgos_RankCombPerm,         8},
+    {"_RcppAlgos_RankPartitionMain",   (DL_FUNC) &_RcppAlgos_RankPartitionMain,   12},
     {"_RcppAlgos_SampleCombPerm",      (DL_FUNC) &_RcppAlgos_SampleCombPerm,      16},
     {"_RcppAlgos_SamplePartitions",    (DL_FUNC) &_RcppAlgos_SamplePartitions,    16},
     {"_RcppAlgos_SourceVectorGlue",    (DL_FUNC) &_RcppAlgos_SourceVectorGlue,     1},
     {"_RcppAlgos_StartOverGlue",       (DL_FUNC) &_RcppAlgos_StartOverGlue,        1},
     {"_RcppAlgos_SummaryGlue",         (DL_FUNC) &_RcppAlgos_SummaryGlue,          1},
     {"_RcppAlgos_cpp11GetNumThreads",  (DL_FUNC) &_RcppAlgos_cpp11GetNumThreads,   0},
+    {"_RcppAlgos_linked_version",      (DL_FUNC) &_RcppAlgos_linked_version,       0},
     {NULL, NULL, 0}
 };
 }

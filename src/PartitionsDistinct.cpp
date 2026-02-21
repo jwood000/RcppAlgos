@@ -7,9 +7,9 @@
 #include <numeric>    // std::iota
 
 template <typename T>
-void PartsGenDistinct(T* mat, const std::vector<T> &v,
-                      std::vector<int> &z, std::size_t width,
-                      int lastElem, int lastCol, std::size_t nRows) {
+int PartsGenDistinct(T* mat, const std::vector<T> &v,
+                     std::vector<int> &z, std::size_t width,
+                     int lastElem, int lastCol, std::size_t nRows) {
 
     int edge = 0;
     int pivot = 0;
@@ -27,13 +27,15 @@ void PartsGenDistinct(T* mat, const std::vector<T> &v,
             mat[count + nRows * k] = v[z[k]];
         }
     }
+
+    return 1;
 }
 
 template <typename T>
-void PartsGenDistinct(RcppParallel::RMatrix<T> &mat,
-                      const std::vector<T> &v, std::vector<int> &z,
-                      int strt, std::size_t width, int lastElem,
-                      int lastCol, std::size_t nRows) {
+int PartsGenDistinct(RcppParallel::RMatrix<T> &mat,
+                     const std::vector<T> &v, std::vector<int> &z,
+                     int strt, std::size_t width, int lastElem,
+                     int lastCol, std::size_t nRows) {
 
     int edge = 0;
     int pivot = 0;
@@ -51,12 +53,14 @@ void PartsGenDistinct(RcppParallel::RMatrix<T> &mat,
             mat(count, k) = v[z[k]];
         }
     }
+
+    return 1;
 }
 
 template <typename T>
-void PartsGenPermDistinct(T* mat, const std::vector<T> &v,
-                          std::vector<int> &z, std::size_t width,
-                          int lastElem, int lastCol, std::size_t nRows) {
+int PartsGenPermDistinct(T* mat, const std::vector<T> &v,
+                         std::vector<int> &z, std::size_t width,
+                         int lastElem, int lastCol, std::size_t nRows) {
     int edge = 0;
     int pivot = 0;
     int boundary = 0;
@@ -91,12 +95,14 @@ void PartsGenPermDistinct(T* mat, const std::vector<T> &v,
         NextDistinctGenPart(z, boundary, edge, pivot,
                             tarDiff, lastCol, lastElem);
     }
+
+    return 1;
 }
 
 template <typename T>
-void PartsGenDistinct(std::vector<T> &partsVec, const std::vector<T> &v,
-                      std::vector<int> &z, std::size_t width,
-                      std::size_t nRows, bool IsComb) {
+int PartsGenDistinct(std::vector<T> &partsVec, const std::vector<T> &v,
+                     std::vector<int> &z, std::size_t width,
+                     std::size_t nRows, bool IsComb) {
 
     int edge = 0;
     int pivot = 0;
@@ -123,12 +129,14 @@ void PartsGenDistinct(std::vector<T> &partsVec, const std::vector<T> &v,
     if (count < nRows) {
         PopulateVec(v, partsVec, z, count, width, nRows, IsComb);
     }
+
+    return 1;
 }
 
 template <typename T>
-void PartsGenPermZeroDistinct(T* mat, const std::vector<T> &v,
-                              std::vector<int> &z, std::size_t width,
-                              int lastElem, int lastCol, std::size_t nRows) {
+int PartsGenPermZeroDistinct(T* mat, const std::vector<T> &v,
+                             std::vector<int> &z, std::size_t width,
+                             int lastElem, int lastCol, std::size_t nRows) {
 
     int edge = 0;
     int pivot = 0;
@@ -151,10 +159,12 @@ void PartsGenPermZeroDistinct(T* mat, const std::vector<T> &v,
 
         if (count >= nRows) {break;}
     }
+
+    return 1;
 }
 
-void PartsDistinct(int* mat, std::vector<int> &z, std::size_t width,
-                   int lastElem, int lastCol, std::size_t nRows) {
+int PartsDistinct(int* mat, std::vector<int> &z, std::size_t width,
+                  int lastElem, int lastCol, std::size_t nRows) {
 
     int edge = 0;
     int pivot = 0;
@@ -171,11 +181,13 @@ void PartsDistinct(int* mat, std::vector<int> &z, std::size_t width,
             mat[count + nRows * k] = z[k];
         }
     }
+
+    return 1;
 }
 
-void PartsDistinct(RcppParallel::RMatrix<int> &mat, std::vector<int> &z,
-                   int strt, std::size_t width, int lastElem,
-                   int lastCol, std::size_t nRows) {
+int PartsDistinct(RcppParallel::RMatrix<int> &mat, std::vector<int> &z,
+                  int strt, std::size_t width, int lastElem,
+                  int lastCol, std::size_t nRows) {
 
     int edge = 0;
     int pivot = 0;
@@ -192,10 +204,12 @@ void PartsDistinct(RcppParallel::RMatrix<int> &mat, std::vector<int> &z,
             mat(count, k) = z[k];
         }
     }
+
+    return 1;
 }
 
-void PartsPermDistinct(int* mat, std::vector<int> &z, std::size_t width,
-                       int lastElem, int lastCol, std::size_t nRows) {
+int PartsPermDistinct(int* mat, std::vector<int> &z, std::size_t width,
+                      int lastElem, int lastCol, std::size_t nRows) {
 
     int edge = 0;
     int pivot = 0;
@@ -230,10 +244,12 @@ void PartsPermDistinct(int* mat, std::vector<int> &z, std::size_t width,
 
         if (count >= nRows) {break;}
     }
+
+    return 1;
 }
 
-void PartsPermZeroDistinct(int* mat, std::vector<int> &z, std::size_t width,
-                           int lastElem, int lastCol, std::size_t nRows) {
+int PartsPermZeroDistinct(int* mat, std::vector<int> &z, std::size_t width,
+                          int lastElem, int lastCol, std::size_t nRows) {
 
     int edge = 0;
     int pivot = 0;
@@ -256,40 +272,42 @@ void PartsPermZeroDistinct(int* mat, std::vector<int> &z, std::size_t width,
 
         if (count >= nRows) {break;}
     }
+
+    return 1;
 }
 
-template void PartsGenDistinct(int*, const std::vector<int>&,
-                               std::vector<int>&, std::size_t,
-                               int, int, std::size_t);
-template void PartsGenDistinct(double*, const std::vector<double>&,
-                               std::vector<int>&, std::size_t,
-                               int, int, std::size_t);
+template int PartsGenDistinct(int*, const std::vector<int>&,
+                              std::vector<int>&, std::size_t,
+                              int, int, std::size_t);
+template int PartsGenDistinct(double*, const std::vector<double>&,
+                              std::vector<int>&, std::size_t,
+                              int, int, std::size_t);
 
-template void PartsGenDistinct(RcppParallel::RMatrix<int> &mat,
-                               const std::vector<int>&, std::vector<int>&,
-                               int, std::size_t, int, int, std::size_t);
-template void PartsGenDistinct(RcppParallel::RMatrix<double> &mat,
-                               const std::vector<double>&, std::vector<int>&,
-                               int, std::size_t, int, int, std::size_t);
+template int PartsGenDistinct(RcppParallel::RMatrix<int> &mat,
+                              const std::vector<int>&, std::vector<int>&,
+                              int, std::size_t, int, int, std::size_t);
+template int PartsGenDistinct(RcppParallel::RMatrix<double> &mat,
+                              const std::vector<double>&, std::vector<int>&,
+                              int, std::size_t, int, int, std::size_t);
 
-template void PartsGenDistinct(std::vector<int>&, const std::vector<int>&,
-                               std::vector<int>&, std::size_t,
-                               std::size_t, bool);
-template void PartsGenDistinct(std::vector<double>&,
-                               const std::vector<double>&,
-                               std::vector<int>&, std::size_t,
-                               std::size_t, bool);
+template int PartsGenDistinct(std::vector<int>&, const std::vector<int>&,
+                              std::vector<int>&, std::size_t,
+                              std::size_t, bool);
+template int PartsGenDistinct(std::vector<double>&,
+                              const std::vector<double>&,
+                              std::vector<int>&, std::size_t,
+                              std::size_t, bool);
 
-template void PartsGenPermDistinct(int*, const std::vector<int>&,
-                                   std::vector<int>&, std::size_t,
-                                   int, int, std::size_t);
-template void PartsGenPermDistinct(double*, const std::vector<double>&,
-                                   std::vector<int>&, std::size_t,
-                                   int, int, std::size_t);
+template int PartsGenPermDistinct(int*, const std::vector<int>&,
+                                  std::vector<int>&, std::size_t,
+                                  int, int, std::size_t);
+template int PartsGenPermDistinct(double*, const std::vector<double>&,
+                                  std::vector<int>&, std::size_t,
+                                  int, int, std::size_t);
 
-template void PartsGenPermZeroDistinct(int*, const std::vector<int>&,
-                                       std::vector<int>&, std::size_t,
-                                       int, int, std::size_t);
-template void PartsGenPermZeroDistinct(double*, const std::vector<double>&,
-                                       std::vector<int>&, std::size_t,
-                                       int, int, std::size_t);
+template int PartsGenPermZeroDistinct(int*, const std::vector<int>&,
+                                      std::vector<int>&, std::size_t,
+                                      int, int, std::size_t);
+template int PartsGenPermZeroDistinct(double*, const std::vector<double>&,
+                                      std::vector<int>&, std::size_t,
+                                      int, int, std::size_t);

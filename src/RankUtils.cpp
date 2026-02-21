@@ -78,7 +78,7 @@ SEXP MpzReturn(const std::vector<mpz_class> &myVec, int numResults) {
 
     cpp11::sexp res_bigz = Rf_allocVector(RAWSXP, size);
 
-    char* rPos = (char*) (RAW(res_bigz));
+    char* rPos = reinterpret_cast<char*>(RAW(res_bigz));
     ((int*) (rPos))[0] = numResults; // first int is vector-size-header
 
     // current position in rPos[] (starting after vector-size-header)
@@ -91,3 +91,30 @@ SEXP MpzReturn(const std::vector<mpz_class> &myVec, int numResults) {
     res_bigz.attr("class") = "bigz";
     return res_bigz;
 }
+
+template <typename T>
+void Create2D(const std::vector<int> &idx,
+              std::vector<std::vector<T>> &v, int stepSize,
+              int m, int nThreads) {
+
+    int strt = 0;
+    const int sectionWidth = stepSize * m;
+
+    for (int i = 0; i < (nThreads - 1); ++i) {
+        v[i].assign(idx.begin() + strt, idx.begin() + strt + sectionWidth);
+        strt += sectionWidth;
+    }
+
+    v.back().assign(idx.begin() + strt, idx.end());
+}
+
+template void Create2D(
+    const std::vector<int>&, std::vector<std::vector<int>>&, int, int, int
+);
+
+template void Create2D(
+    const std::vector<int>&, std::vector<std::vector<double>>&, int, int, int
+);
+
+template void Create2D(const std::vector<int>&,
+                       std::vector<std::vector<mpz_class>>&, int, int, int);

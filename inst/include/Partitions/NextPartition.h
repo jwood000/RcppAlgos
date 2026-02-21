@@ -1,5 +1,6 @@
 #pragma once
 
+#include "Constraints/ConstraintsTypes.h"
 #include "Partitions/PartitionsTypes.h"
 
 void GetLastPart(int* mat, std::vector<int> &z, int m, int nRows);
@@ -33,5 +34,4 @@ using nextPartsPtr = void (*const)(std::vector<int> &rpsCnt,
                            std::vector<int> &z, int &e, int &b, int &p,
                            int &tarDiff, int lastCol, int lastElem);
 
-nextPartsPtr GetNextPartsPtr(PartitionType ptype, bool IsGen,
-                             bool IsComp);
+nextPartsPtr GetNextPartsPtr(PartitionType ptype, ConstraintType ctype);

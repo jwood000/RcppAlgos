@@ -43,11 +43,12 @@ SEXP CombinatoricsCount(SEXP Rv, SEXP Rm, SEXP RisRep,
 }
 
 [[cpp11::register]]
-SEXP PartitionsCount(SEXP Rtarget, SEXP Rv, SEXP Rm,
-                     SEXP RisRep, SEXP RFreqs, SEXP RcompFun,
-                     SEXP Rlow, SEXP Rtolerance,
-                     SEXP RPartDesign, SEXP Rshow,
-                     SEXP RIsComposition, SEXP RIsWeak) {
+SEXP PartitionsCount(
+    SEXP Rtarget, SEXP Rv, SEXP Rm, SEXP RisRep, SEXP RFreqs, SEXP RIsComb,
+    SEXP RcompFun, SEXP Rlow, SEXP Rtolerance, SEXP RPartDesign, SEXP Rshow,
+    SEXP RIsComposition, SEXP RIsWeak
+) {
+
     int n = 0;
     int m = 0;
 
@@ -62,8 +63,8 @@ SEXP PartitionsCount(SEXP Rtarget, SEXP Rv, SEXP Rm,
     const bool IsConstrained = true;
     const std::string mainFun = "sum";
     bool IsRep = CppConvert::convertFlag(RisRep, "repetition");
-    const bool bDesign = CppConvert::convertFlag(RPartDesign,
-                                                   "PartitionsDesign");
+    bool bDesign = CppConvert::convertFlag(RPartDesign, "PartitionsDesign");
+    const bool IsComb = CppConvert::convertFlag(RIsComb, "IsComb");
 
     SetType(myType, Rv);
     SetValues(myType, myReps, freqs, vInt, vNum, Rv,
@@ -79,13 +80,8 @@ SEXP PartitionsCount(SEXP Rtarget, SEXP Rv, SEXP Rm,
 
     ConstraintType ctype;
     PartDesign part;
-
-    part.isRep   = IsRep;
-    part.isMult  = IsMult;
-    part.mIsNull = Rf_isNull(Rm);
-    part.isWeak  = CppConvert::convertFlag(RIsWeak, "weak");
-    part.isComp  = CppConvert::convertFlag(RIsComposition, "composition");
-    part.isComb  = !part.isComp;
+    InitialSetupPartDesign(part, RIsWeak, RIsComposition, IsRep,
+                           IsMult, Rf_isNull(Rm), IsComb);
 
     ConstraintSetup(vNum, myReps, targetVals, vInt, targetIntVals,
                     funDbl, part, ctype, n, m, compVec, mainFun,
@@ -117,7 +113,7 @@ SEXP ComboGroupsCountCpp(SEXP Rv, SEXP RNumGroups, SEXP RGrpSize) {
     VecType myType = VecType::Integer;
 
     SetType(myType, Rv);
-    SetBasic(Rv, vNum, vInt, n, myType);
+    SetBasic(Rv, R_NilValue, vNum, vInt, n, myType);
 
     std::unique_ptr<ComboGroupsTemplate> CmbGrpCls =
         GroupPrep(Rv, RNumGroups, RGrpSize, n);

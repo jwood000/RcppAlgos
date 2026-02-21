@@ -10,5 +10,7 @@ scripts/*
 create_md.R
 SO_Answers/*
 ^codecov\.yml$
+^ai_git_helpers$
 ^_pkgdown\.yml$
-^CRAN_RELEASE_CHECKLIST.md$
+^CRAN_RELEASE_CHECKLIST\.md$
+

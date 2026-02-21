@@ -98,15 +98,14 @@ void ThreadSafeSample(T* mat, SEXP res, const std::vector<T> &v,
         for (int j = 0; j < (nThreads - 1);
              ++j, step += stepSize, nextStep += stepSize) {
 
-            threads.emplace_back(std::cref(ParallelGlue<T>),
+            threads.emplace_back(ParallelGlue<T>,
                                  std::ref(parMat), std::cref(v),
                                  std::cref(mySample), std::cref(myBigSamp),
                                  std::cref(myReps), nthPartFun, m,
                                  step, nextStep, tar, strtLen, cap, IsGmp);
         }
 
-        threads.emplace_back(
-            std::cref(ParallelGlue<T>), std::ref(parMat), std::cref(v),
+        threads.emplace_back(ParallelGlue<T>, std::ref(parMat), std::cref(v),
             std::cref(mySample), std::cref(myBigSamp), std::cref(myReps),
             nthPartFun, m, step, sampSize, tar, strtLen, cap, IsGmp
         );
@@ -150,6 +149,7 @@ SEXP SamplePartitions(
           // argument. The goal is to eventually phase out this argument.
     bool IsRep    = CppConvert::convertFlag(RisRep, "repetition");
     bool IsNamed  = CppConvert::convertFlag(RNamed, "namedSample");
+    bool IsComp   = CppConvert::convertFlag(RIsComposition, "IsComposition");
 
     SetType(myType, Rv);
     SetValues(myType, myReps, freqs, vInt, vNum, Rv,
@@ -167,25 +167,24 @@ SEXP SamplePartitions(
 
     ConstraintType ctype = ConstraintType::NoConstraint;
     PartDesign part;
-
-    part.isRep   = IsRep;
-    part.isMult  = IsMult;
-    part.mIsNull = Rf_isNull(Rm);
-    part.isWeak  = CppConvert::convertFlag(RIsWeak, "weak");
-    part.isComp  = CppConvert::convertFlag(RIsComposition,
-                                             "IsComposition");
-    part.isComb = !part.isComp;
+    InitialSetupPartDesign(part, RIsWeak, RIsComposition, IsRep,
+                           IsMult, Rf_isNull(Rm), !IsComp);
 
     cpp11::sexp Rlow = R_NilValue;
     ConstraintSetup(vNum, myReps, targetVals, vInt, targetIntVals, funDbl,
                     part, ctype, n, m, compVec, mainFun, mainFun, myType,
                     Rtarget, RcompFun, R_NilValue, Rlow);
 
-    if (part.ptype == PartitionType::Multiset ||
-        part.ptype == PartitionType::CoarseGrained ||
-        part.ptype == PartitionType::NotPartition) {
+    if (part.ptype == PartitionType::CoarseGrained ||
+        part.ptype == PartitionType::NotPartition  ||
+        part.ptype == PartitionType::NotMapped     ||
+        part.ptype == PartitionType::Multiset) {
 
         cpp11::stop("Partition sampling not available for this case.");
+    }
+
+    if (part.ptype == PartitionType::NoSolution) {
+        cpp11::stop("There is no solution for the requested case");
     }
 
     int sampSize;
@@ -230,41 +229,27 @@ SEXP SamplePartitions(
         cpp11::sexp res = Rf_allocMatrix(INTSXP, sampSize, part.width);
         int* matInt = INTEGER(res);
 
-        if (part.width == 1) {
-            matInt[0] = Rf_asInteger(Rtarget);
-            SetSampleNames(res, false, sampSize,
-                           mySample, myVec, IsNamed);
-        } else {
-            const nthPartsPtr nthPartFun = GetNthPartsFunc(
-                part.ptype, part.isGmp, part.isComp
-            );
+        const nthPartsPtr nthPartFun = GetNthPartsFuncOrStop(
+            part.ptype, part.isGmp
+        );
 
-            ThreadSafeSample(matInt, res, vInt, mySample, myVec,
-                             myReps, nthPartFun, part.width, sampSize,
-                             nThreads, Parallel, IsNamed, part.mapTar,
-                             strtLen, cap, part.isGmp);
-        }
-
+        ThreadSafeSample(matInt, res, vInt, mySample, myVec,
+                         myReps, nthPartFun, part.width, sampSize,
+                         nThreads, Parallel, IsNamed, part.mapTar,
+                         strtLen, cap, part.isGmp);
         return res;
     } else {
         cpp11::sexp res = Rf_allocMatrix(REALSXP, sampSize, part.width);
         double* matNum = REAL(res);
 
-        if (part.width == 1) {
-            matNum[0] = Rf_asReal(Rtarget);
-            SetSampleNames(res, false, sampSize,
-                           mySample, myVec, IsNamed);
-        } else {
-            const nthPartsPtr nthPartFun = GetNthPartsFunc(
-                part.ptype, part.isGmp, part.isComp
-            );
+        const nthPartsPtr nthPartFun = GetNthPartsFuncOrStop(
+            part.ptype, part.isGmp
+        );
 
-            ThreadSafeSample(matNum, res, vNum, mySample, myVec,
-                             myReps, nthPartFun, part.width, sampSize,
-                             nThreads, Parallel, IsNamed, part.mapTar,
-                             strtLen, cap, part.isGmp);
-        }
-
+        ThreadSafeSample(matNum, res, vNum, mySample, myVec,
+                         myReps, nthPartFun, part.width, sampSize,
+                         nThreads, Parallel, IsNamed, part.mapTar,
+                         strtLen, cap, part.isGmp);
         return res;
     }
 }

@@ -1,12 +1,9 @@
+#include "Permutations/RankPermutation.h"
 #include "Permutations/BigPermuteCount.h"
 #include "Permutations/PermuteCount.h"
 #include <algorithm> // std::find
 #include <numeric>
 #include <cmath>
-
-using rankPermPtr = void (*const)(std::vector<int>::iterator iter, int n,
-                          int m, double &dblIdx, mpz_class &mpzIdx,
-                          const std::vector<int> &Reps);
 
 int which(const std::vector<int> &idx, int j) {
     auto it = std::find(idx.cbegin(), idx.cend(), j);
@@ -49,7 +46,6 @@ void rankPermMult(std::vector<int>::iterator iter, int n,
                   const std::vector<int> &Reps) {
 
     dblIdx = 0;
-    std::vector<int> Counts;
     std::vector<int> TempReps = Reps;
 
     for (int k = 0, r1 = m - 1; k < m; ++k, --r1, ++iter) {
@@ -61,7 +57,7 @@ void rankPermMult(std::vector<int>::iterator iter, int n,
         }
 
         --TempReps[j];
-        Counts = nonZeroVec(TempReps);
+        std::vector<int> Counts = nonZeroVec(TempReps);
         double test = MultisetPermRowNum(Counts.size(), r1, Counts);
         double temp = test;
 
@@ -118,13 +114,11 @@ void rankPermMultGmp(std::vector<int>::iterator iter, int n,
                      int m, double &dblIdx, mpz_class &mpzIdx,
                      const std::vector<int> &Reps) {
 
-    mpz_class temp;
-    mpzIdx = 0;
-
-    std::vector<int> Counts;
-    std::vector<int> TempReps = Reps;
-
     mpz_class test;
+    mpz_class temp;
+
+    mpzIdx = 0;
+    std::vector<int> TempReps = Reps;
 
     for (int k = 0, r1 = m - 1; k < m; ++k, --r1, ++iter) {
 
@@ -135,7 +129,7 @@ void rankPermMultGmp(std::vector<int>::iterator iter, int n,
         }
 
         --TempReps[j];
-        Counts = nonZeroVec(TempReps);
+        std::vector<int> Counts = nonZeroVec(TempReps);
         MultisetPermRowNumGmp(temp, static_cast<int>(Counts.size()),
                               r1, Counts);
         test = temp;

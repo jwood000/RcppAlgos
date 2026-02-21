@@ -9,7 +9,7 @@ void SetIndexVec(SEXP RindexVec, std::vector<double> &mySample,
     if (IsGmp) {
         switch (TYPEOF(RindexVec)) {
             case RAWSXP: {
-                const char* raw = (char*) RAW(RindexVec);
+                const char* raw = reinterpret_cast<const char*>(RAW(RindexVec));
                 sampSize = ((int*) raw)[0];
                 break;
             } default: {
@@ -150,9 +150,11 @@ bool CheckGrTSi(bool IsGmp, const mpz_class &mpzIndex,
 }
 
 template <typename T>
-void UpdateExact(T* mat, T* yPt, const std::vector<T> &v,
-                 std::vector<int> &z, std::size_t lastRow,
-                 std::size_t nRows, std::size_t m, int n1, int numAdd = 0) {
+void UpdateExact(
+    T* mat, T* yPt, const std::vector<T> &v, std::vector<int> &z,
+    std::size_t lastRow, std::size_t nRows, std::size_t m,
+    int n1, int numAdd = 0
+) {
 
     for (std::size_t j = 0; j < m; ++j) {
         yPt[j] = mat[lastRow + j * nRows];

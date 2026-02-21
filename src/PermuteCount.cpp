@@ -1,19 +1,43 @@
 #include "Permutations/BigPermuteCount.h"
 #include "CppConvert.h"
 #include <algorithm>  // std::min, std::max, std::sort
+#include <iterator>   // std::distance
 #include <numeric>    // std::accumulate, std::partial_sum, std::iota
 #include <limits>     // std::numeric_limits
 
+// rleCpp
+//
 // Most of the code for rleCpp was obtained from Hadley Wickham's
 // article titled "High Performance functions with Rcpp" found:
 //             http://adv-r.had.co.nz/Rcpp.html
-std::vector<int> rleCpp(const std::vector<int> &x) {
+//
+// Computes run-length encoding lengths of the sorted vector x,
+// starting at first_idx.
+//
+// PRECONDITIONS:
+// -------------
+// • x must be non-empty.
+// • first_idx must satisfy: 0 <= first_idx < x.size().
+// • The range [first_idx, x.size()) must be sorted in non-decreasing order.
+//
+// These invariants are guaranteed by all callers (e.g. NumPermsWithRep,
+// partition/composition generators).
+//
+// An empty vector or invalid first_idx indicates an internal logic error,
+// not a recoverable run time condition.
+//
+std::vector<int> rleCpp(const std::vector<int> &x, int first_idx) {
+
+    if (first_idx < 0 || static_cast<std::size_t>(first_idx) >= x.size()) {
+        cpp11::stop("Internal error: rleCpp first_idx out of range");
+    }
+
     std::vector<int> lengths;
-    int prev = x[0];
+    int prev = x[first_idx];
     std::size_t i = 0;
     lengths.push_back(1);
 
-    for(auto it = x.cbegin() + 1; it != x.cend(); ++it) {
+    for(auto it = x.cbegin() + first_idx + 1; it != x.cend(); ++it) {
         if (prev == *it) {
             ++lengths[i];
         } else {
@@ -26,15 +50,24 @@ std::vector<int> rleCpp(const std::vector<int> &x) {
     return lengths;
 }
 
-double NumPermsWithRep(const std::vector<int> &v) {
-    std::vector<int> myLens = rleCpp(v);
+double NumPermsWithRep(const std::vector<int> &v, bool includeZero) {
+
+    int first_idx = includeZero ? 0 : std::distance(
+        v.cbegin(),
+        std::find_if(v.cbegin(), v.cend(), [](int i) {return i != 0;})
+    );
+
+    // If all entries are zero. This shouldn't happen, but here for safety.
+    if (first_idx == v.size()) return 1;
+
+    std::vector<int> myLens = rleCpp(v, first_idx);
     std::sort(myLens.begin(), myLens.end(), std::greater<int>());
 
     const int myMax = myLens[0];
     const int numUni = myLens.size();
     double result = 1;
 
-    for (int i = v.size(); i > myMax; --i) {
+    for (int i = v.size() - first_idx; i > myMax; --i) {
         result *= i;
     }
 
@@ -65,7 +98,7 @@ double NumPermsNoRep(int n, int k) {
 
 // The algorithm below is credited to Randy Lai, author of arrangements
 // and iterpc. It is much faster than the original naive approach whereby
-// we create all combinations of the multiset, thensubsequently count the
+// we create all combinations of the multiset, then subsequently count the
 // number of permutations of each of those combinations.
 double MultisetPermRowNum(int n, int m, const std::vector<int> &Reps) {
 
@@ -83,7 +116,7 @@ double MultisetPermRowNum(int n, int m, const std::vector<int> &Reps) {
             }
         }
 
-        return NumPermsWithRep(freqs);
+        return NumPermsWithRep(freqs, true);
     }
 
     if (m > sumFreqs)

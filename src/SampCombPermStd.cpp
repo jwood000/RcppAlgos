@@ -110,15 +110,14 @@ void ThreadSafeSample(T* mat, SEXP res, const std::vector<T> &v,
 
         for (int j = 0; j < (nThreads - 1);
              ++j, step += stepSize, nextStep += stepSize) {
-            threads.emplace_back(std::cref(ParallelGlue<T>),
+            threads.emplace_back(ParallelGlue<T>,
                                  std::ref(parMat), std::cref(v),
                                  std::cref(mySample), std::cref(myBigSamp),
                                  std::cref(myReps), nthResFun,
                                  m, step, nextStep, lenV, IsGmp);
         }
 
-        threads.emplace_back(
-            std::cref(ParallelGlue<T>), std::ref(parMat), std::cref(v),
+        threads.emplace_back(ParallelGlue<T>, std::ref(parMat), std::cref(v),
             std::cref(mySample),std::cref(myBigSamp), std::cref(myReps),
             nthResFun, m, step, sampSize, lenV, IsGmp
         );
@@ -181,7 +180,7 @@ SEXP SampCombPermMain(SEXP Rv, const std::vector<int> &vInt,
                       bool IsGmp, bool Parallel) {
 
     switch (myType) {
-        case VecType::Character : {
+        case VecType::Character: {
             cpp11::sexp charVec = Rf_duplicate(Rv);
             cpp11::sexp res = Rf_allocMatrix(STRSXP, sampSize, m);
 
@@ -189,7 +188,7 @@ SEXP SampCombPermMain(SEXP Rv, const std::vector<int> &vInt,
                           nthResFun, m, sampSize, n, IsGmp, IsNamed);
 
             return res;
-        } case VecType::Complex : {
+        } case VecType::Complex: {
             std::vector<Rcomplex> stlCmplxVec =
                 CppConvert::GetVec<Rcomplex>(Rv);
             cpp11::sexp res = Rf_allocMatrix(CPLXSXP, sampSize, m);
@@ -200,7 +199,7 @@ SEXP SampCombPermMain(SEXP Rv, const std::vector<int> &vInt,
                            n, IsGmp, IsNamed);
 
             return res;
-        } case VecType::Raw : {
+        } case VecType::Raw: {
             std::vector<Rbyte> stlRawVec = CppConvert::GetVec<Rbyte>(Rv);
             cpp11::sexp res = Rf_allocMatrix(RAWSXP, sampSize, m);
             Rbyte* rawMat = RAW(res);
@@ -210,7 +209,7 @@ SEXP SampCombPermMain(SEXP Rv, const std::vector<int> &vInt,
                            n, IsGmp, IsNamed);
 
             return res;
-        } case VecType::Logical : {
+        } case VecType::Logical: {
             std::vector<int> vBool = CppConvert::GetVec<int>(Rv);
             cpp11::sexp res = Rf_allocMatrix(LGLSXP, sampSize, m);
             int* matBool = LOGICAL(res);
@@ -219,7 +218,7 @@ SEXP SampCombPermMain(SEXP Rv, const std::vector<int> &vInt,
                            nthResFun, m, sampSize, n, IsGmp, IsNamed);
 
             return res;
-        } case VecType::Integer : {
+        } case VecType::Integer: {
             cpp11::sexp res = Rf_allocMatrix(INTSXP, sampSize, m);
             int* matInt = INTEGER(res);
 

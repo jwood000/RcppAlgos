@@ -26,7 +26,7 @@ ResolveVFreqs <- function(v) {
         ##
         ## N.B. We are unable to get back factors.
         ##
-        ## N.B. We don't test for raws as table doesn't support raws
+        ## N.B. We don't test for class raw as table doesn't support them
         ## Error in order(y) : unimplemented type 'raw' in 'orderVector1'
         conv_v <- if (identical(nms, as.character(as.integer(nms)))) {
             as.integer(nms)
@@ -51,8 +51,8 @@ GetTarget <- function(v, target) {
     return(target)
 }
 
-GetRank <- function(..., v, repetition = FALSE,
-                    freqs = NULL, IsComb = TRUE) {
+GetRank <- function(..., v, repetition = FALSE, freqs = NULL,
+                    IsComb = TRUE, nThreads = NULL) {
 
     n_args <- length(arg_s <- list(...))
 
@@ -75,24 +75,29 @@ GetRank <- function(..., v, repetition = FALSE,
                 idx <- match(if (is.matrix(obj)) t(obj) else obj, v)
                 if (any(is.na(idx))) stop(msg)
                 .Call(`_RcppAlgos_RankCombPerm`, idx, v, repetition, freqs,
-                      if (is.matrix(obj)) ncol(obj) else length(obj), IsComb)
+                      if (is.matrix(obj)) ncol(obj) else length(obj), IsComb,
+                      nThreads, pkgEnv$maxThreads)
             }, input)
         )
     } else if (is.matrix(input)) {
         idx <- match(t(input), v)
         if (any(is.na(idx))) stop(msg)
         return(.Call(`_RcppAlgos_RankCombPerm`, idx, v,
-                     repetition, freqs, ncol(input), IsComb));
+                     repetition, freqs, ncol(input), IsComb,
+                     nThreads, pkgEnv$maxThreads));
     } else {
         idx <- match(input, v)
         if (any(is.na(idx))) stop(msg)
         return(.Call(`_RcppAlgos_RankCombPerm`, idx, v,
-                     repetition, freqs, length(input), IsComb));
+                     repetition, freqs, length(input), IsComb,
+                     nThreads, pkgEnv$maxThreads));
     }
 }
 
-GetRankPart <- function(..., v, repetition = FALSE, freqs = NULL,
-                        target = NULL, IsComposition = FALSE, weak = FALSE) {
+GetRankPart <- function(
+    ..., v, repetition = FALSE, freqs = NULL, target = NULL,
+    IsComposition = FALSE, weak = FALSE, nThreads = NULL
+) {
 
     n_args   <- length(arg_s <- list(...))
     target   <- GetTarget(v, target)
@@ -119,13 +124,20 @@ GetRankPart <- function(..., v, repetition = FALSE, freqs = NULL,
         return(
             Map(function(obj) {
                 if (!is.numeric(obj)) stop(msg_cls)
-                if ((is.matrix(obj) && any(rowSums(obj) != target)) ||
-                    sum(obj) != target) stop(msg_part)
+
+                if (is.matrix(obj)) {
+                    if (any(rowSums(obj) != target)) stop(msg_part)
+                } else {
+                    if (sum(obj) != target) stop(msg_part)
+                }
+
                 idx <- match(if (is.matrix(obj)) t(obj) else obj, v)
                 if (any(is.na(idx))) stop(msg_sub)
+
                 .Call(`_RcppAlgos_RankPartitionMain`, idx, v, repetition, freqs,
                       if (is.matrix(obj)) ncol(obj) else length(obj),
-                      "==", target, NULL, IsComposition, weak)
+                      "==", target, NULL, IsComposition, weak,
+                      nThreads, pkgEnv$maxThreads)
             }, input)
         )
     } else if (!is.numeric(input)) {
@@ -136,14 +148,14 @@ GetRankPart <- function(..., v, repetition = FALSE, freqs = NULL,
         if (any(is.na(idx))) stop(msg_sub)
         return(.Call(`_RcppAlgos_RankPartitionMain`, idx, v,
                      repetition, freqs, ncol(input), "==", target,
-                     NULL, IsComposition, weak));
+                     NULL, IsComposition, weak, nThreads, pkgEnv$maxThreads));
     } else {
         if (sum(input) != target) stop(msg_part)
         idx <- match(input, v)
         if (any(is.na(idx))) stop(msg_sub)
         return(.Call(`_RcppAlgos_RankPartitionMain`, idx, v,
                      repetition, freqs, length(input), "==", target,
-                     NULL, IsComposition, weak));
+                     NULL, IsComposition, weak, nThreads, pkgEnv$maxThreads));
     }
 }
 
@@ -201,6 +213,35 @@ GridInputs <- function(...) {
             nmc = nmc,
             iArgs = iArgs,
             res = if (early_return) as.data.frame(pools) else NULL
+        )
+    )
+}
+
+PermuteArgs <- function(...) {
+    n_args <- length(arg_s <- list(...))
+
+    if (n_args > 0) {
+        nm <- names(arg_s)
+        tar_nm <- c("constraintFun", "comparisonFun", "limitConstraints")
+
+        if (all(tar_nm %in% nm) &&
+            identical(as.character(arg_s[["constraintFun"]]), "sum") &&
+            identical(as.character(arg_s[["comparisonFun"]]), "==")  &&
+            is.numeric(arg_s[["limitConstraints"]])) {
+
+            return(
+                list(
+                    is_part = TRUE,
+                    target = arg_s[["limitConstraints"]]
+                )
+            )
+        }
+    }
+
+    return(
+        list(
+            is_part = FALSE,
+            target = NULL
         )
     )
 }

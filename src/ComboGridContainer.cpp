@@ -85,7 +85,7 @@ void convertToString(std::vector<std::string> &tempVec,
             }
 
             break;
-        } case CPLXSXP : {
+        } case CPLXSXP: {
             std::vector<Rcomplex> cmplxVec =
                 CppConvert::GetVec<Rcomplex>(ListElement);
             typePass = tCpx;
@@ -286,14 +286,14 @@ SEXP GlueComboCart(
                                   dblVec, dblSexpVec, nCols, nRows, i);
                     DataFrame[i] = res;
                     break;
-                } case CPLXSXP : {
+                } case CPLXSXP: {
                     cpp11::sexp res = Rf_allocVector(CPLXSXP, nRows);
                     Rcomplex* cmplxSexpVec = COMPLEX(res);
                     PoulateColumn(cartCombs, lastCol, lenGrps, cmplxVec,
                                   cmplxSexpVec, nCols, nRows, i);
                     DataFrame[i] = res;
                     break;
-                } case RAWSXP : {
+                } case RAWSXP: {
                     cpp11::sexp res = Rf_allocVector(RAWSXP, nRows);
                     Rbyte* rawSexpVec = RAW(res);
                     PoulateColumn(cartCombs, lastCol, lenGrps,
@@ -337,38 +337,38 @@ SEXP GlueComboCart(
         return DataFrame;
     } else {
         switch (TYPEOF(RList[0])) {
-            case INTSXP : {
+            case INTSXP: {
                 cpp11::sexp res = Rf_allocMatrix(INTSXP, nRows, nCols);
                 int* intMat = INTEGER(res);
                 GetPureOutput(intMat, cartCombs, lastCol,
                               lenGrps, intVec, nCols, nRows);
                 if (typeCheck[tFac]) SetFactorClass(res, RList[0]);
                 return res;
-            } case LGLSXP : {
+            } case LGLSXP: {
                 cpp11::sexp res = Rf_allocMatrix(LGLSXP, nRows, nCols);
                 int* boolMat = LOGICAL(res);
                 GetPureOutput(boolMat, cartCombs, lastCol,
                               lenGrps, boolVec, nCols, nRows);
                 return res;
-            } case RAWSXP : {
+            } case RAWSXP: {
                 cpp11::sexp res = Rf_allocMatrix(RAWSXP, nRows, nCols);
                 Rbyte* rawMat = RAW(res);
                 GetPureOutput(rawMat, cartCombs, lastCol,
                               lenGrps, rawVec, nCols, nRows);
                 return res;
-            } case CPLXSXP : {
+            } case CPLXSXP: {
                 cpp11::sexp res = Rf_allocMatrix(CPLXSXP, nRows, nCols);
                 Rcomplex* cmplxMat = COMPLEX(res);
                 GetPureOutput(cmplxMat, cartCombs, lastCol,
                               lenGrps, cmplxVec, nCols, nRows);
                 return res;
-            } case REALSXP : {
+            } case REALSXP: {
                 cpp11::sexp res = Rf_allocMatrix(REALSXP, nRows, nCols);
                 double* dblMat = REAL(res);
                 GetPureOutput(dblMat, cartCombs, lastCol,
                               lenGrps, dblVec, nCols, nRows);
                 return res;
-            } case STRSXP : {
+            } case STRSXP: {
                 cpp11::writable::strings_matrix<> charMat(nRows, nCols);
                 GetCharOutput(charMat, cartCombs, lastCol,
                               lenGrps, charVec, nCols, nRows);

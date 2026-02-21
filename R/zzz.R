@@ -1,6 +1,8 @@
+# nocov start
+
 pkgEnv <- new.env(parent = emptyenv())
 pkgEnv$nCores <- NULL
-pkgEnv$nThreads <- NULL
+pkgEnv$maxThreads <- NULL
 
 physicalCoreCount <- function() {
 
@@ -56,15 +58,17 @@ physicalCoreCount <- function() {
 ## and number of threads on a given machine
 ## when the package is loaded
 .onLoad <- function(libname, pkgname) {
+    CheckLinkedVersion(pkgname)
     pkgEnv$nCores <- physicalCoreCount()
     tempThreads <- stdThreadMax()
 
     if (is.na(tempThreads)) {
-        pkgEnv$nThreads <- 1L
+        pkgEnv$maxThreads <- 1L
     } else {
-        pkgEnv$nThreads <- tempThreads
+        pkgEnv$maxThreads <- tempThreads
     }
 
     invisible()
 }
 
+# nocov end
