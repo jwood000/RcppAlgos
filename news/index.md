@@ -1,6 +1,60 @@
 # Changelog
 
+## RcppAlgos 2.10.0
+
+### New Features:
+
+- Added parallel capabilities to all ranking functions via the new
+  `nThreads` argument (e.g. `partitionsRank(..., nThreads = 4)`,
+  `comboRank(..., nThreads = 4)`).
+- Implemented a next-lexicographical algorithm for generating distinct
+  integer compositions, enabling efficient large-scale generation such
+  as `compositionsGeneral(50, 8)`.
+- Added accompanying algorithms for the distinct integer composition
+  case, exposed through: `compositionsSample`, `compositionsRank`, and
+  `compositionsIter`.
+- Enhanced
+  [`permuteCount()`](https://jwood000.github.io/RcppAlgos/reference/combinatoricsCount.md)
+  to count permutations of partitions when called with
+  `constraintFun = "sum"` and `comparisonFun = "=="`, allowing optimized
+  counting in cases that reduce to partition/composition counting.
+
+### Bug Fixes:
+
+- Improved input validation for constraint-based calls by requiring
+  `comparisonFun` to be a character vector (now errors early with a
+  clearer message).
+- Fixed edge-case handling in partition iteration logic where
+  boundary-derived indices could become negative, preventing incorrect
+  behavior in some partition/multiset scenarios.
+
+### Improvements:
+
+- Added a package load-time check that validates the loaded shared
+  library matches the installed package version, producing a clear
+  reinstall/restart error instead of potential crashes from stale
+  binaries.
+- Improved handling of singleton `v` with singleton `freqs` so that
+  numeric values are interpreted correctly in some constrained/ranking
+  paths.
+- Added nonexported `permutePartsDesign()` to inspect the
+  partition-design/counting setup used by
+  [`permuteCount()`](https://jwood000.github.io/RcppAlgos/reference/combinatoricsCount.md)
+  when it reduces to a partition/composition counting problem.
+
+### Performance:
+
+- General performance improvements for ranking and composition-related
+  algorithms, including multi-threaded ranking support.
+
+### Internal:
+
+- Added developer tooling and expanded internal type/class
+  infrastructure to support the new composition and counting paths.
+
 ## RcppAlgos 2.9.5
+
+CRAN release: 2026-01-29
 
 ### Other:
 
@@ -183,7 +237,7 @@ CRAN release: 2022-08-15
 
 ### Bug Fixes:
 
-- Now checking class of input vector for partition funcitons.
+- Now checking class of input vector for partition functions.
 
 - Now when `partitionsCount` returns 0, the number of results is zero.
   Before, we were checking for count of partitions to be greater than

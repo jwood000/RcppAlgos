@@ -15,7 +15,7 @@ GMP support allows for exploration of partitions/compositions of vectors with ma
 
     <a class="navbar-brand me-2" href="../index.html">RcppAlgos</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">2.9.5</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">2.10.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -59,10 +59,11 @@ GMP support allows for exploration of partitions/compositions of vectors with ma
 
     <div class="section level2">
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">partitionsRank</span><span class="op">(</span><span class="va">...</span>, <span class="va">v</span>, repetition <span class="op">=</span> <span class="cn">FALSE</span>, freqs <span class="op">=</span> <span class="cn">NULL</span>, target <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">partitionsRank</span><span class="op">(</span><span class="va">...</span>, <span class="va">v</span>, repetition <span class="op">=</span> <span class="cn">FALSE</span>, freqs <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>               target <span class="op">=</span> <span class="cn">NULL</span>, nThreads <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span></span>
 <span></span>
 <span><span class="fu">compositionsRank</span><span class="op">(</span><span class="va">...</span>, <span class="va">v</span>, repetition <span class="op">=</span> <span class="cn">FALSE</span>, freqs <span class="op">=</span> <span class="cn">NULL</span>,</span>
-<span>                 target <span class="op">=</span> <span class="cn">NULL</span>, weak <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></code></pre></div>
+<span>                 target <span class="op">=</span> <span class="cn">NULL</span>, weak <span class="op">=</span> <span class="cn">FALSE</span>, nThreads <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div class="section level2">
@@ -85,6 +86,9 @@ GMP support allows for exploration of partitions/compositions of vectors with ma
 
   <dt id="arg-weak">weak<a class="anchor" aria-label="anchor" href="#arg-weak"></a></dt>
 <dd><p>(Compositions only) Logical flag indicating whether to allow terms of the sequence to be zero.</p></dd>
+
+  <dt id="arg-nthreads">nThreads<a class="anchor" aria-label="anchor" href="#arg-nthreads"></a></dt>
+<dd><p>Specific number of threads to be used. The default is <code>NULL</code>.</p></dd>
 
  </dl></div>
     <div class="section level2">

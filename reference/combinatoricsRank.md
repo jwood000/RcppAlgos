@@ -10,8 +10,8 @@
 ## Usage
 
 ``` r
-comboRank(..., v, repetition = FALSE, freqs = NULL)
-permuteRank(..., v, repetition = FALSE, freqs = NULL)
+comboRank(..., v, repetition = FALSE, freqs = NULL, nThreads = NULL)
+permuteRank(..., v, repetition = FALSE, freqs = NULL, nThreads = NULL)
 ```
 
 ## Arguments
@@ -39,6 +39,10 @@ permuteRank(..., v, repetition = FALSE, freqs = NULL)
   `freqs` represents how many times each element of the source vector,
   `v`, is repeated. It is analogous to the `times` argument in
   [`rep`](https://rdrr.io/r/base/rep.html). The default value is `NULL`.
+
+- nThreads:
+
+  Specific number of threads to be used. The default is `NULL`.
 
 ## Details
 

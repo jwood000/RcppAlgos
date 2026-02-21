@@ -10,10 +10,11 @@
 ## Usage
 
 ``` r
-partitionsRank(..., v, repetition = FALSE, freqs = NULL, target = NULL)
+partitionsRank(..., v, repetition = FALSE, freqs = NULL,
+               target = NULL, nThreads = NULL)
 
 compositionsRank(..., v, repetition = FALSE, freqs = NULL,
-                 target = NULL, weak = FALSE)
+                 target = NULL, weak = FALSE, nThreads = NULL)
 ```
 
 ## Arguments
@@ -50,6 +51,10 @@ compositionsRank(..., v, repetition = FALSE, freqs = NULL,
 
   (Compositions only) Logical flag indicating whether to allow terms of
   the sequence to be zero.
+
+- nThreads:
+
+  Specific number of threads to be used. The default is `NULL`.
 
 ## Details
 
