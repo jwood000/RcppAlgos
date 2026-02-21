@@ -243,23 +243,42 @@ test_that("partitionsIter produces correct results", {
         myResults <- vector(mode = "logical")
 
         if (IsComposition) {
-            myRows <- compositionsCount(v_pass, m_pass, rep, fr, tar, IsWeak)
-            a <- compositionsIter(v_pass, m_pass, rep, fr, tar, IsWeak)
-            b <- compositionsGeneral(v_pass, m_pass, rep, fr, tar, IsWeak)
+            if (class(v_pass) != "table") {
+                myRows <- compositionsCount(
+                    v_pass, m_pass, rep, fr, tar, IsWeak
+                )
+                a <- compositionsIter(v_pass, m_pass, rep, fr, tar, IsWeak)
+                b <- compositionsGeneral(v_pass, m_pass, rep, fr, tar, IsWeak)
+            } else {
+                a <- compositionsIter(v_pass, m_pass, tar, weak = IsWeak)
+                b <- compositionsGeneral(v_pass, m_pass, tar, weak = IsWeak)
+                myRows <- compositionsCount(v_pass, m_pass, tar, weak = IsWeak)
+            }
 
             if (sanity) {
                 perm_tar <- sum(b[1, ])
 
                 b1 <- if (!requiresWidthRebuild) {
-                    permuteGeneral(
-                        v = v_pass, m = ncol(b), repetition = rep, freqs = fr,
-                        constraintFun = "sum", comparisonFun = "==",
-                        limitConstraints = perm_tar
-                    )
+                    if (class(v_pass) != "table") {
+                        permuteGeneral(
+                            v = v_pass, m = ncol(b), repetition = rep, freqs = fr,
+                            constraintFun = "sum", comparisonFun = "==",
+                            limitConstraints = perm_tar
+                        )
+                    } else {
+                        permuteGeneral(
+                            v = v_pass, m = ncol(b),
+                            constraintFun = "sum", comparisonFun = "==",
+                            limitConstraints = perm_tar
+                        )
+                    }
                 } else {
                     min_m <- max(1, ncol(b) - sum(0 == b[1, ]))
                     max_m <- ncol(b)
-                    new_v <- if (is.null(fr)) {
+                    new_v <- if (class(v_pass) == "table") {
+                        temp <- as.integer(names(v_pass))
+                        temp[-which(temp == 0)]
+                    } else if (is.null(fr)) {
                         v_pass[-which(v_pass == 0)]
                     } else {
                         v_pass[-which(fr == max(fr))]
@@ -492,6 +511,14 @@ test_that("partitionsIter produces correct results", {
                                    IsComposition = TRUE,
                                    requiresWidthRebuild = TRUE))
 
+    ## Using class table
+    expect_true(partitionClassTest(table(c(0L, 0L, 1:10)),
+                                   IsComposition = TRUE,
+                                   requiresWidthRebuild = TRUE))
+    expect_true(partitionClassTest(table(c(0L, 0L, 0L, 1:10)),
+                                   IsComposition = TRUE,
+                                   requiresWidthRebuild = TRUE))
+
     #### Distinct; Length determined internally; One zero;
     expect_true(partitionClassTest(0:50))
     expect_true(partitionClassTest(0:30, IsComposition = TRUE,
@@ -574,6 +601,13 @@ test_that("partitionsIter produces correct results", {
     expect_true(partitionClassTest(0:30, 5, fr = c(7, rep(1, 30)),
                                    IsComposition = TRUE, IsWeak = TRUE))
 
+    ## Using class table
+    expect_true(partitionClassTest(table(c(rep(0L, 7), 1:30)), 5,
+                                   IsComposition = TRUE,
+                                   requiresWidthRebuild = TRUE))
+    expect_true(partitionClassTest(table(c(rep(0L, 7), 1:30)), 5,
+                                   IsComposition = TRUE, IsWeak = TRUE))
+
     #### Mapped version
     ## 50 * 13 + 7 * 5 = 713
     ##
@@ -593,6 +627,13 @@ test_that("partitionsIter produces correct results", {
                                    IsComposition = TRUE,
                                    requiresWidthRebuild = TRUE))
     expect_true(partitionClassTest((0:30) * 13, 5, fr = c(7, rep(1, 30)),
+                                   IsComposition = TRUE, IsWeak = TRUE))
+
+    ## Using class table
+    expect_true(partitionClassTest(table(c(rep(0L, 7), (1:30) * 13)), 5,
+                                   IsComposition = TRUE,
+                                   requiresWidthRebuild = TRUE))
+    expect_true(partitionClassTest(table(c(rep(0L, 7), (1:30) * 13)), 5,
                                    IsComposition = TRUE, IsWeak = TRUE))
 
     #### Distinct; Length determined internally; Multiple Zeros;

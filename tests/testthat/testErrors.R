@@ -414,6 +414,12 @@ test_that("{combo|permute|partitions|compositions}Rank produces appropriate erro
                  "Inputs must be a partition of 100")
     expect_error(partitionsRank(c(-5:14, 10), v = 100),
                  "Inputs must be a subset of v")
+    expect_error(partitionsRank(1:10, v = LETTERS),
+                 "v must be of class numeric or integer")
+    expect_error(
+        partitionsRank(list(c(1:4, 10L), LETTERS), v = 10, target = 20),
+        "Inputs must be of class numeric or integer"
+    )
 
     expect_error(compositionsRank(c(0, 10, 0, 0), v = 0:10),
                  "No duplicates allowed when repetition = FALSE and freqs = NULL")
@@ -472,6 +478,8 @@ test_that("permuteSample produces appropriate error messages", {
                  "v, if v is not a character and of length 1, cannot be NA or NaN")
     expect_error(permuteSample(1000, 20, sampleVec = c(NA, "1234567890")),
                  "Each element in sampleVec cannot be NA or NaN")
+    expect_error(compositionsSample(10000, 15, sampleVec = as.integer(NA)),
+                 "sampleVec cannot be NA or NaN")
 })
 
 test_that("combo/permuteGeneral produces appropriate error messages for subset sum", {

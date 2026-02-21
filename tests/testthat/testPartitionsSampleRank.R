@@ -405,9 +405,16 @@ test_that("parttionsSample and compositionsSample produces correct results", {
     mySamp = compositionsSample(0:180, 12, freqs = c(8, rep(1, 180)),
                                 n = 4, namedSample = TRUE, weak = TRUE,
                                 nThreads = 2, target = 300)
-    expect_equal(compositionsRank(mySamp, v = 0:180, freqs = c(8, rep(1, 180)),
-                                  nThreads = 2, target = 300, weak = TRUE),
-                 rownames(mySamp))
+    myRank = compositionsRank(mySamp, v = 0:180, freqs = c(8, rep(1, 180)),
+                              nThreads = 2, target = 300, weak = TRUE)
+    expect_equal(myRank, rownames(mySamp))
+    expect_equal(myRank, rownames(
+        compositionsSample(table(c(rep(0L, 8), 1:180)), 12,
+                           sampleVec = rownames(mySamp),
+                           namedSample = TRUE, weak = TRUE,
+                           nThreads = 2, target = 300)
+        )
+    )
 })
 
 test_that("compositionsCount produces correct results with multisets non weak case.", {
