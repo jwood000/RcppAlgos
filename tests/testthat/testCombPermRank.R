@@ -74,6 +74,17 @@ test_that("comboRank produces correct results", {
     expect_true(all(mapply(function(x, y) {
         identical(as.character(x), rownames(y))
     }, myRank, list(mat1, mat2, mat3))))
+
+    ## Multiple Threads
+    mySamp = comboSample(30, 15, TRUE, n = 1000, namedSample = TRUE)
+    expect_equal(as.character(comboRank(mySamp, v = 30,
+                                        repetition = TRUE, nThreads = 2)),
+                 rownames(mySamp))
+
+    ## Multiple Threads GMP
+    mySamp = comboSample(1000, 10, n = 1000, namedSample = TRUE)
+    expect_equal(as.character(comboRank(mySamp, v = 1000, nThreads = 2)),
+                 rownames(mySamp))
 })
 
 test_that("permuteRank produces correct results", {
@@ -142,5 +153,16 @@ test_that("permuteRank produces correct results", {
                            seed = 97, n = 5, namedSample = TRUE)
     expect_equal(as.character(permuteRank(mySamp, v = c(TRUE, FALSE),
                                           freqs = c(10, 15))),
+                 rownames(mySamp))
+
+    ## Multiple Threads
+    mySamp = permuteSample(11, 14, TRUE, n = 1000, namedSample = TRUE)
+    expect_equal(as.character(permuteRank(mySamp, v = 11,
+                                          repetition = TRUE, nThreads = 2)),
+                 rownames(mySamp))
+
+    ## Multiple Threads GMP
+    mySamp = permuteSample(1000, 10, n = 1000, namedSample = TRUE)
+    expect_equal(as.character(permuteRank(mySamp, v = 1000, nThreads = 2)),
                  rownames(mySamp))
 })
