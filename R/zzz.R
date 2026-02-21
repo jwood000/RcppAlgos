@@ -1,3 +1,5 @@
+# nocov start
+
 pkgEnv <- new.env(parent = emptyenv())
 pkgEnv$nCores <- NULL
 pkgEnv$maxThreads <- NULL
@@ -69,3 +71,4 @@ physicalCoreCount <- function() {
     invisible()
 }
 
+# nocov end
