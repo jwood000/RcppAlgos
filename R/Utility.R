@@ -124,10 +124,16 @@ GetRankPart <- function(
         return(
             Map(function(obj) {
                 if (!is.numeric(obj)) stop(msg_cls)
-                if ((is.matrix(obj) && any(rowSums(obj) != target)) ||
-                    sum(obj) != target) stop(msg_part)
+
+                if (is.matrix(obj)) {
+                    if (any(rowSums(obj) != target)) stop(msg_part)
+                } else {
+                    if (sum(obj) != target) stop(msg_part)
+                }
+
                 idx <- match(if (is.matrix(obj)) t(obj) else obj, v)
                 if (any(is.na(idx))) stop(msg_sub)
+
                 .Call(`_RcppAlgos_RankPartitionMain`, idx, v, repetition, freqs,
                       if (is.matrix(obj)) ncol(obj) else length(obj),
                       "==", target, NULL, IsComposition, weak,
