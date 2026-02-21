@@ -301,27 +301,17 @@ void CountCompsDistinctRstrctdMZ(
     }
 }
 
-void CountCompsDistinctRstrctdMZWeak(
-    mpz_class &res, std::vector<std::vector<mpz_class>> &p2d,
-    int n, int m, const std::vector<int> &allowed, int strtLen
-) {
-
-    if (strtLen == 0) {
-        // This means that z contains only zeros
-        res = 1;
-    } else {
-        res = 0;
-        mpz_class partsCnt = 1;
-        mpz_class permsCnt = 1;
-
-        for (int i = m; i > m - strtLen; --i) {
-            permsCnt *= i;
-        }
-
-        for (int i = strtLen; i <= m; ++i) {
-            CountPartsDistLenRstrctd(partsCnt, p2d, n, i, allowed);
-            res += (permsCnt * partsCnt);
-            permsCnt *= (m - i);
-        }
-    }
-}
+// NOTE: A GMP (mpz_class) version of CountCompsDistinctRstrctdMZWeak is
+// intentionally omitted.
+//
+// This function exists primarily for pedagogical purposes using the double
+// data type to illustrate the counting logic for weak distinct compositions
+// under multi-zero constraints.
+//
+// Arbitrary-precision support is already provided through the CountClass
+// infrastructure (see PermDstnctRstrctdMZ), which ultimately dispatches to
+// CountPartsPermDistinctRstrctdMZ. That pathway serves as the authoritative
+// GMP-backed implementation.
+//
+// Duplicating the logic here would introduce unnecessary redundancy and
+// increase the risk of divergence between equivalent counting routines.

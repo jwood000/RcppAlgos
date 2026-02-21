@@ -369,8 +369,11 @@ double CountCompsDistinctRstrctdMZWeak(
         return 1;
     } else {
         double res = 0;
-        double nPerm = NumPermsNoRep(m, m) /
-            NumPermsNoRep(m - strtLen, m - strtLen);
+        double nPerm = 1;
+
+        for (int i = m; i > m - strtLen; --i) {
+            nPerm *= i;
+        }
 
         for (int i = strtLen; i <= m; ++i) {
             res += CountPartsDistLenRstrctd(n, i, allowed) * nPerm;
