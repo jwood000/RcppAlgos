@@ -415,6 +415,27 @@ test_that("parttionsSample and compositionsSample produces correct results", {
                            nThreads = 2, target = 300)
         )
     )
+
+    ## Multiple inputs
+    mat_int = partitionsSample(
+        1850, 3, TRUE, n = 10, seed = 1234, namedSample = TRUE
+    )
+    mat_dbl = partitionsSample(
+        1850, 6, TRUE, n = 10, seed = 4321, namedSample = TRUE
+    )
+    mat_gmp = partitionsSample(
+        1850, 15, TRUE, n = 10, seed = 9876, namedSample = TRUE
+    )
+
+    myRank = partitionsRank(
+        int = mat_int, dbl = mat_dbl, gmp = mat_gmp,
+        v = 1850, repetition = TRUE
+    )
+    expect_named(myRank, c("int", "dbl", "gmp"))
+    expect_equal(unname(sapply(myRank, class)), c("integer", "numeric", "bigz"))
+    expect_true(all(mapply(function(x, y) {
+        identical(as.character(x), rownames(y))
+    }, myRank, list(mat_int, mat_dbl, mat_gmp))))
 })
 
 test_that("compositionsCount produces correct results with multisets non weak case.", {
