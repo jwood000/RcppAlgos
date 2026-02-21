@@ -7,7 +7,7 @@ namespace CppConvert {
                           bool negPoss) {
 
         const std::string suffix = (vecSize > 1) ?
-        "Each element in " + nameOfObject : nameOfObject;
+            "Each element in " + nameOfObject : nameOfObject;
         std::string myError;
         bool foundError = false;
 
@@ -29,8 +29,9 @@ namespace CppConvert {
 
                         if(r[1] == -1) {
                             if (negPoss) {
-                                mpz_neg(myVec[i].get_mpz_t(),
-                                        myVec[i].get_mpz_t());
+                                mpz_neg(
+                                    myVec[i].get_mpz_t(), myVec[i].get_mpz_t()
+                                );
                             } else {
                                 myError = suffix + " must be a positive number";
                                 foundError = true;
