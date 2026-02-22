@@ -217,8 +217,8 @@ void CompsDistStdWorker(
 
 void CompsDistMZWorker(
     int* mat, std::vector<int> &z, std::vector<int> &complement,
-    int i1, int i2, int myMax, int tar, int nz, std::size_t strt,
-    std::size_t width, int &rowLimit, std::size_t nRows
+    int i1, int i2, int myMax, int tar, std::size_t nz, std::size_t strt,
+    std::size_t width, std::size_t &rowLimit, std::size_t nRows
 ) {
 
     if (complement.size() < 2) {
@@ -254,8 +254,9 @@ void CompsDistMZWorker(
 template <typename T>
 void CompsDistMZWorker(
     T* mat, const std::vector<T> &v, std::vector<int> &z,
-    std::vector<int> &complement, int i1, int i2, int myMax, int tar, int nz,
-    std::size_t strt, std::size_t width, int &rowLimit, std::size_t nRows
+    std::vector<int> &complement, int i1, int i2, int myMax,
+    int tar, std::size_t nz, std::size_t strt, std::size_t width,
+    std::size_t &rowLimit, std::size_t nRows
 ) {
 
     if (complement.size() < 2) {
@@ -291,7 +292,7 @@ void CompsDistMZWorker(
 void CompsDistMZWorker(
     RcppParallel::RMatrix<int> &mat, std::vector<int> &z,
     std::vector<int> &complement, int i1, int i2, int myMax, int tar,
-    int nz, std::size_t strt, std::size_t width, int &nRows
+    std::size_t nz, std::size_t strt, std::size_t width, std::size_t &nRows
 ) {
 
     if (complement.size() < 2) {
@@ -328,8 +329,8 @@ template <typename T>
 void CompsDistMZWorker(
     RcppParallel::RMatrix<T> &mat, const std::vector<T> &v,
     std::vector<int> &z, std::vector<int> &complement,
-    int i1, int i2, int myMax, int tar, int nz, std::size_t strt,
-    std::size_t width, int &nRows
+    int i1, int i2, int myMax, int tar, std::size_t nz,
+    std::size_t strt, std::size_t width, std::size_t &nRows
 ) {
 
     if (complement.size() < 2) {
@@ -377,7 +378,8 @@ int CompsDistinct(int* mat, std::vector<int> &z, std::size_t width,
     if (!isWeak && nz) {
         if (nz > 1) z.erase(z.begin(), z.begin() + (nz - 1));
 
-        for (int i = width - nz, j = nz, nextStep = 0; i < width; ++i, --j) {
+        for (std::size_t i = width - nz, j = nz, nextStep = 0;
+             i < width; ++i, --j) {
 
             CompsDistinctSetup(
                 z, complement, tar, idx_1, idx_2, myMax, max_int, false, 1
@@ -391,7 +393,7 @@ int CompsDistinct(int* mat, std::vector<int> &z, std::size_t width,
                 nextStep = max_int;
             }
 
-            nextStep = std::min(nextStep, static_cast<int>(nRows));
+            nextStep = std::min(nextStep, nRows);
 
             CompsDistMZWorker(
                 mat, z, complement, idx_1, idx_2, myMax,
@@ -446,7 +448,8 @@ int CompsGenDistinct(
         std::vector<int> allowed(idx_max);
         std::iota(allowed.begin(), allowed.end(), 1);
 
-        for (int i = width - nz, j = nz, nextStep = 0; i < width; ++i, --j) {
+        for (std::size_t i = width - nz, j = nz, nextStep = 0;
+             i < width; ++i, --j) {
 
             CompsDistinctSetup(
                 z, complement, tar, idx_1, idx_2, myMax, idx_max, false, 1
@@ -460,7 +463,7 @@ int CompsGenDistinct(
                 nextStep = max_int;
             }
 
-            nextStep = std::min(nextStep, static_cast<int>(nRows));
+            nextStep = std::min(nextStep, nRows);
 
             CompsDistMZWorker(
                 mat, v, z, complement, idx_1, idx_2,
@@ -519,7 +522,8 @@ int CompsDistinct(
     if (!isWeak && nz) {
         if (nz > 1) z.erase(z.begin(), z.begin() + (nz - 1));
 
-        for (int i = width - nz, j = nz, nextStep = 0; i < width; ++i, --j) {
+        for (std::size_t i = width - nz, j = nz, nextStep = 0;
+             i < width; ++i, --j) {
 
             CompsDistinctSetup(
                 z, complement, tar, idx_1, idx_2, myMax, max_int, false, 1
@@ -533,7 +537,7 @@ int CompsDistinct(
                 nextStep = max_int;
             }
 
-            nextStep = std::min(nextStep, static_cast<int>(nRows));
+            nextStep = std::min(nextStep, nRows);
 
             CompsDistMZWorker(
                 mat, z, complement, idx_1, idx_2,
@@ -587,7 +591,8 @@ int CompsGenDistinct(
         std::vector<int> allowed(idx_max);
         std::iota(allowed.begin(), allowed.end(), 1);
 
-        for (int i = width - nz, j = nz, nextStep = 0; i < width; ++i, --j) {
+        for (std::size_t i = width - nz, j = nz, nextStep = 0;
+             i < width; ++i, --j) {
 
             CompsDistinctSetup(
                 z, complement, tar, idx_1, idx_2, myMax, idx_max, false, 1
@@ -601,7 +606,7 @@ int CompsGenDistinct(
                 nextStep = max_int;
             }
 
-            nextStep = std::min(nextStep, static_cast<int>(nRows));
+            nextStep = std::min(nextStep, nRows);
 
             CompsDistMZWorker(
                 mat, v, z, complement, idx_1, idx_2,
