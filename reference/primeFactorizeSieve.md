@@ -84,7 +84,7 @@ mySamp <- sample(10^5, 5*10^4)
 ## to 10^5 (max element from mySamp)
 system.time(allPFacs <- primeFactorizeSieve(10^5))
 #>    user  system elapsed 
-#>    0.02    0.00    0.02 
+#>   0.021   0.000   0.021 
 
 ## Use generated prime factorization for further
 ## analysis by accessing the index of allPFacs
@@ -117,5 +117,5 @@ primeFactorizeSieve(27, 30, namedList = TRUE)
 ## Using nThreads
 system.time(primeFactorizeSieve(1e4, 5e4, nThreads = 2))
 #>    user  system elapsed 
-#>   0.006   0.001   0.006 
+#>   0.008   0.000   0.007 
 ```

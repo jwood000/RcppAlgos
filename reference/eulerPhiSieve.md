@@ -100,13 +100,13 @@ for (s in mySamp) {
 ## See https://projecteuler.net
 system.time(which.max((1:10^6)/eulerPhiSieve(10^6)))
 #>    user  system elapsed 
-#>   0.013   0.000   0.013 
+#>   0.011   0.002   0.013 
 
 ## Generating number of coprime elements
 ## for every number in a range is no problem
 system.time(myPhiRange <- eulerPhiSieve(10^13, 10^13 + 10^6))
 #>    user  system elapsed 
-#>   0.048   0.000   0.048 
+#>   0.027   0.002   0.029 
 
 ## Returning a named vector
 eulerPhiSieve(10, 20, namedVector = TRUE)
