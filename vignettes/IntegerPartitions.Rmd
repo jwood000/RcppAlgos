@@ -1,7 +1,7 @@
 ---
 title: "Integer Partitions in RcppAlgos"
 author: "Joseph Wood"
-date: "02/02/2026"
+date: "2026-02-24"
 output:
   rmarkdown::html_vignette:
     toc: true
@@ -12,7 +12,7 @@ vignette: >
   \usepackage[utf8]{inputenc}
 ---
 
-This document introduces integer partitions in `RcppAlgos`. An integer partition is a way of writing a number as a sum of positive integers where order does not matter. Although partitions can be expressed as constrained combinations, their additional structure allows us to employ dedicated algorithms that are far more efficient than the more general algorithms discussed in [Constraints in RcppAlgos: Constraint-Driven Combinatorial Enumeration](https://jwood000.github.io/RcppAlgos/articles/CombPermConstraints.html)
+This document introduces integer partitions in `RcppAlgos`. An integer partition is a way of writing a number as a sum of positive integers where order does not matter. Although partitions can be expressed as constrained combinations, their additional structure allows us to employ dedicated algorithms that are far more efficient than the more general algorithms discussed in [Constraints in RcppAlgos: Constraint-Driven Combinatorial Enumeration](<https://jwood000.github.io/RcppAlgos/articles/CombPermConstraints.html>)
 
 The focus here is on partition-specific functionality, including classic integer partitions with repetition, distinct partitions, restricted lengths, specific multiplicities, and parallel performance. Notably, `RcppAlgos` includes a specialized algorithm for generating partitions of multisets, a case that appears to be largely absent from existing software and published literature.
 
@@ -20,7 +20,7 @@ The focus here is on partition-specific functionality, including classic integer
 
 # Integer Partitions
 
-Specialized algorithms are employed when it can be determined that we are looking for [integer partitions](https://en.wikipedia.org/wiki/Partition_(number_theory)).
+Specialized algorithms are employed when it can be determined that we are looking for [integer partitions](<https://en.wikipedia.org/wiki/Partition_(number_theory)>).
 
 As of version `2.5.0`, we now have added `partitionsGeneral` which is similar to `comboGeneral` with `constraintFun = "sum"` and `comparisonFun = "=="`. Instead of using the very general `limitConstraints` parameter, we use `target` with a default of `max(v)` as it seems more fitting for partitions.
 
@@ -87,7 +87,7 @@ partitionsGeneral(5, 3, repetition = TRUE)
 
 ## Distinct Partitions
 
-Partitions where the parts are distinct have many interesting properties. Of note, Leonhard Euler proved that the number of partitions with distinct parts is equivalent to the number of partitions with only odd parts (See [Odd parts and distinct parts](https://en.wikipedia.org/wiki/Integer_partition#Odd_parts_and_distinct_parts)). We will see this in action in the section discussing [`freqs`](#using-freqs-to-refine-length).
+Partitions where the parts are distinct have many interesting properties. Of note, Leonhard Euler proved that the number of partitions with distinct parts is equivalent to the number of partitions with only odd parts (See [Odd parts and distinct parts](<https://en.wikipedia.org/wiki/Integer_partition#Odd_parts_and_distinct_parts>)). We will see this in action in the section discussing [`freqs`](#using-freqs-to-refine-length).
 
 In this section, we will look at partitions where each non-zero part cannot occur more than one time.
 
