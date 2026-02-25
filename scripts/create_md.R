@@ -20,7 +20,7 @@ system("mv *.md ../")
 setwd("../")
 system("rm -r temp_md")
 ## Run on command line... the escapes are killing me!
-## perl -p -i -e 's/\(http(.*?)\)/\(<http$1>\)/g' *.md
+## perl -p -i -e 's{\((https?://.*?)\)}{(<$1>)}g' *.md
 ##
 ## This command removes the additional coding blocks:
 ##
@@ -38,3 +38,7 @@ system("rm -r temp_md")
 ## more code
 ##
 ## perl -0777p -i -e 's/```\n\n``` r\n//g' *.md
+##
+## Update the date! Change to the vignette dir and run the following:
+## perl -pi -e 's/^date:\s*".*"/date: "'"$(date +%Y-%m-%d)"'"/' *.Rmd
+
