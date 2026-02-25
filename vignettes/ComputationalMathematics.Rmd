@@ -3,13 +3,14 @@ title: "Computational Mathematics Overview"
 author: "Joseph Wood"
 date: "01/31/2025"
 output:
-  rmarkdown::html_vignette:
+  prettydoc::html_pretty:
+    theme: architect
     toc: true
     number_sections: false
 vignette: >
   %\VignetteIndexEntry{Computational Mathematics Overview}
   %\VignetteEngine{knitr::rmarkdown}
-  \usepackage[utf8]{inputenc}
+  %\VignetteEncoding{UTF-8}
 ---
 
 This document serves as an overview for solving problems common in [Computational Mathematics](<https://en.wikipedia.org/wiki/Computational_mathematics>). Of note, `primeSieve` and `primeCount` are based on the excellent work by [Kim Walisch](<https://github.com/kimwalisch>).

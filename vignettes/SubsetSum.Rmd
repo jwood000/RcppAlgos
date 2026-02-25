@@ -3,13 +3,14 @@ title: "Attacking Problems Related to the Subset Sum Problem"
 author: "Joseph Wood"
 date: "01/31/2025"
 output:
-  rmarkdown::html_vignette:
+  prettydoc::html_pretty:
+    theme: architect
     toc: true
     number_sections: false
 vignette: >
   %\VignetteIndexEntry{Attacking Problems Related to the Subset Sum Problem}
   %\VignetteEngine{knitr::rmarkdown}
-  \usepackage[utf8]{inputenc}
+  %\VignetteEncoding{UTF-8}
 ---
 
 This document covers the topic of solving problems related to the [subset sum problem](<https://en.wikipedia.org/wiki/Subset_sum_problem>) with `RcppAlgos`. We have already covered integer partitions, which is a special case of the subset sum problem, in [Constraints and Integer Partitions](<https://jwood000.github.io/RcppAlgos/articles/CombPermConstraints.html#integer-partitions>) and it is highly encouraged to read that vignette first.

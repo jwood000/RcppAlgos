@@ -3,13 +3,14 @@ title: "High Performance Benchmarks"
 author: "Joseph Wood"
 date: "01/31/2025"
 output:
-  rmarkdown::html_vignette:
+  prettydoc::html_pretty:
+    theme: architect
     toc: true
     number_sections: false
 vignette: >
   %\VignetteIndexEntry{High Performance Benchmarks}
   %\VignetteEngine{knitr::rmarkdown}
-  \usepackage[utf8]{inputenc}
+  %\VignetteEncoding{UTF-8}
 ---
 
 This document serves as an overview for measuring the performance of `RcppAlgos` against other tools for generating combinations, permutations, and partitions. This stackoverflow post: [How to generate permutations or combinations of object in R?](<https://stackoverflow.com/a/47983855/4408538>) has some benchmarks. You will note that the examples in that post are relatively small. The benchmarks below will focus on larger examples where performance really matters and for this reason we only consider the packages [arrangements](<https://cran.r-project.org/package=arrangements>), [partitions](<https://cran.r-project.org/package=partitions>), and [RcppAlgos](<https://cran.r-project.org/package=RcppAlgos>).

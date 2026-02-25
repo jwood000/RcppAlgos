@@ -3,13 +3,14 @@ title: "Combination and Permutation Basics"
 author: "Joseph Wood"
 date: "01/31/2025"
 output:
-  rmarkdown::html_vignette:
+  prettydoc::html_pretty:
+    theme: architect
     toc: true
     number_sections: false
 vignette: >
   %\VignetteIndexEntry{Combination and Permutation Basics}
   %\VignetteEngine{knitr::rmarkdown}
-  \usepackage[utf8]{inputenc}
+  %\VignetteEncoding{UTF-8}
 ---
 
 This document serves as an overview for attacking *common* combinatorial problems in `R`. One of the goals of `RcppAlgos` is to provide a comprehensive and accessible suite of functionality so that users can easily get to the heart of their problem. As a bonus, the functions in `RcppAlgos` are extremely efficient and are constantly being improved with every release.
@@ -17,7 +18,7 @@ This document serves as an overview for attacking *common* combinatorial problem
 It should be noted that this document only covers common problems. For more information on other combinatorial problems addressed by `RcppAlgos`, see the following vignettes:
 
 - [Combinatorial Sampling](<https://jwood000.github.io/RcppAlgos/articles/CombinatorialSampling.html>)
-- [Constraints, Partitions, and Compositions](<https://jwood000.github.io/RcppAlgos/articles/CombPermConstraints.html>)
+- [Constraints in RcppAlgos: Constraint-Driven Combinatorial Enumeration](<https://jwood000.github.io/RcppAlgos/articles/CombPermConstraints.html>)
 - [Attacking Problems Related to the Subset Sum Problem](<https://jwood000.github.io/RcppAlgos/articles/SubsetSum.html>)
 - [Combinatorial Iterators in RcppAlgos](<https://jwood000.github.io/RcppAlgos/articles/CombinatoricsIterators.html>)
 

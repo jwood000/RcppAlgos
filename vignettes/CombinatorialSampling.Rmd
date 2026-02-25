@@ -3,13 +3,14 @@ title: "Combinatorial Sampling and Ranking"
 author: "Joseph Wood"
 date: "01/31/2025"
 output:
-  rmarkdown::html_vignette:
+  prettydoc::html_pretty:
+    theme: architect
     toc: true
     number_sections: false
 vignette: >
   %\VignetteIndexEntry{Combinatorial Sampling and Ranking}
   %\VignetteEngine{knitr::rmarkdown}
-  \usepackage[utf8]{inputenc}
+  %\VignetteEncoding{UTF-8}
 ---
 
 This document covers topics in generating random samples of combinations, permutations, partitions, compositions and partition of groups. It is encouraged to read [General Combinatorics](<https://jwood000.github.io/RcppAlgos/articles/GeneralCombinatorics.html>) first.

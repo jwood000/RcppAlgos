@@ -3,13 +3,14 @@ title: "Integer Partitions in RcppAlgos"
 author: "Joseph Wood"
 date: "2026-02-24"
 output:
-  rmarkdown::html_vignette:
+  prettydoc::html_pretty:
+    theme: architect
     toc: true
     number_sections: false
 vignette: >
   %\VignetteIndexEntry{Integer Partitions}
   %\VignetteEngine{knitr::rmarkdown}
-  \usepackage[utf8]{inputenc}
+  %\VignetteEncoding{UTF-8}
 ---
 
 This document introduces integer partitions in `RcppAlgos`. An integer partition is a way of writing a number as a sum of positive integers where order does not matter. Although partitions can be expressed as constrained combinations, their additional structure allows us to employ dedicated algorithms that are far more efficient than the more general algorithms discussed in [Constraints in RcppAlgos: Constraint-Driven Combinatorial Enumeration](<https://jwood000.github.io/RcppAlgos/articles/CombPermConstraints.html>)

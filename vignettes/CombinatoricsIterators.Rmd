@@ -3,13 +3,14 @@ title: "Combinatorial Iterators in RcppAlgos"
 author: "Joseph Wood"
 date: "01/31/2025"
 output:
-  rmarkdown::html_vignette:
+  prettydoc::html_pretty:
+    theme: architect
     toc: true
     number_sections: false
 vignette: >
   %\VignetteIndexEntry{Combinatorial Iterators in RcppAlgos}
   %\VignetteEngine{knitr::rmarkdown}
-  \usepackage[utf8]{inputenc}
+  %\VignetteEncoding{UTF-8}
 ---
 
 This document covers working with combinatorial iterators in `RcppAlgos`. Combinatorial iterators in `RcppAlgos` are memory efficient like traditional iterator objects. They allow traversal of combinations/permutations/partitions/compositions/comboGroups one by one without the necessity for storing all results in memory.

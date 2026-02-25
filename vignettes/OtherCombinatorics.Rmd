@@ -3,13 +3,14 @@ title: "Cartesian Products and Partitions of Groups"
 author: "Joseph Wood"
 date: "01/31/2025"
 output:
-  rmarkdown::html_vignette:
+  prettydoc::html_pretty:
+    theme: architect
     toc: true
     number_sections: false
 vignette: >
   %\VignetteIndexEntry{Cartesian Products and Partitions of Groups}
   %\VignetteEngine{knitr::rmarkdown}
-   \usepackage[utf8]{inputenc}
+   %\VignetteEncoding{UTF-8}
 ---
 
 In combinatorics, sometimes it can be difficult to figure out exactly which tool/method we need to attack our problem. Do we need combinations? permutations? Cartesian product? partitions? compositions? What about repetition or multiplicity? The list goes on. Oftentimes the solution ends up being overly complicated and prone to error, or more commonly, a simple brute force solution is employed. The latter is okay in some situations, but in many real world problems, this approach becomes untenable very quickly. We address two such problems in this article.
