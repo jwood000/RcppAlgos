@@ -5,7 +5,7 @@ reprex::reprex({
     #' It should be noted that this document only covers common problems. For more information on other combinatorial problems addressed by `RcppAlgos`, see the following vignettes:
     #'
     #' * [Combinatorial Sampling](<https://jwood000.github.io/RcppAlgos/articles/CombinatorialSampling.html>)
-    #' * [Constraints, Partitions, and Compositions](<https://jwood000.github.io/RcppAlgos/articles/CombPermConstraints.html>)
+    #' * [Constraints in RcppAlgos: Constraint-Driven Combinatorial Enumeration](<https://jwood000.github.io/RcppAlgos/articles/CombPermConstraints.html>)
     #' * [Attacking Problems Related to the Subset Sum Problem](<https://jwood000.github.io/RcppAlgos/articles/SubsetSum.html>)
     #' * [Combinatorial Iterators in RcppAlgos](<https://jwood000.github.io/RcppAlgos/articles/CombinatoricsIterators.html>)
     #'
