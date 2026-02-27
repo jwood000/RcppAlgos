@@ -3,12 +3,12 @@
 #include <vector>
 
 template <typename T>
-void PopulateVec(const std::vector<T> &v,
-                 std::vector<T> &cnstrntVec,
-                 std::vector<int> &z, std::size_t &count,
-                 std::size_t m, std::size_t nRows, bool IsComb);
+void PopulateVector(const std::vector<T> &v,
+                    std::vector<T> &cnstrntVec,
+                    std::vector<int> &z, std::size_t &count,
+                    std::size_t m, std::size_t nRows, bool IsComb);
 
 template <typename T>
-void PopulateMat(T* mat, const std::vector<T> &v,
-                 std::vector<int> &z, std::size_t &count,
-                 std::size_t m, std::size_t nRows, bool IsComb);
+void PopulateMatrix(T* mat, const std::vector<T> &v,
+                    std::vector<int> &z, std::size_t &count,
+                    std::size_t m, std::size_t nRows, bool IsComb);

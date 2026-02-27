@@ -2,10 +2,10 @@
 #include <vector>
 
 template <typename T>
-void PopulateVec(const std::vector<T> &v,
-                 std::vector<T> &cnstrntVec,
-                 std::vector<int> &z, std::size_t &count,
-                 std::size_t m, std::size_t nRows, bool IsComb) {
+void PopulateVector(const std::vector<T> &v,
+                    std::vector<T> &cnstrntVec,
+                    std::vector<int> &z, std::size_t &count,
+                    std::size_t m, std::size_t nRows, bool IsComb) {
 
     if (IsComb) {
         for (std::size_t k = 0; k < m; ++k) {
@@ -25,9 +25,9 @@ void PopulateVec(const std::vector<T> &v,
 }
 
 template <typename T>
-void PopulateMat(T* mat, const std::vector<T> &v,
-                 std::vector<int> &z, std::size_t &count,
-                 std::size_t m, std::size_t nRows, bool IsComb) {
+void PopulateMatrix(T* mat, const std::vector<T> &v,
+                    std::vector<int> &z, std::size_t &count,
+                    std::size_t m, std::size_t nRows, bool IsComb) {
 
     if (IsComb) {
         for (std::size_t k = 0; k < m; ++k) {
@@ -46,18 +46,18 @@ void PopulateMat(T* mat, const std::vector<T> &v,
     }
 }
 
-template void PopulateVec(const std::vector<int>&, std::vector<int>&,
-                          std::vector<int>&, std::size_t&,
-                          std::size_t, std::size_t, bool);
+template void PopulateVector(const std::vector<int>&, std::vector<int>&,
+                             std::vector<int>&, std::size_t&,
+                             std::size_t, std::size_t, bool);
 
-template void PopulateVec(const std::vector<double>&, std::vector<double>&,
-                          std::vector<int>&, std::size_t&,
-                          std::size_t, std::size_t, bool);
+template void PopulateVector(const std::vector<double>&, std::vector<double>&,
+                             std::vector<int>&, std::size_t&,
+                             std::size_t, std::size_t, bool);
 
-template void PopulateMat(int*, const std::vector<int>&,
-                          std::vector<int>&, std::size_t&,
-                          std::size_t, std::size_t, bool);
+template void PopulateMatrix(int*, const std::vector<int>&,
+                             std::vector<int>&, std::size_t&,
+                             std::size_t, std::size_t, bool);
 
-template void PopulateMat(double*, const std::vector<double>&,
-                          std::vector<int>&, std::size_t&,
-                          std::size_t, std::size_t, bool);
+template void PopulateMatrix(double*, const std::vector<double>&,
+                             std::vector<int>&, std::size_t&,
+                             std::size_t, std::size_t, bool);
