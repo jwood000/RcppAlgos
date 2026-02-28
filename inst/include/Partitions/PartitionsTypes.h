@@ -35,6 +35,9 @@
 // CompRepWeak     : compositionsCount(0:20, 5, TRUE, weak = TRUE) -->>
 //                    CountCompsRepLen(25, 5) We add the length to the target
 //
+// CompRepCapped   : compositionsCount(3, 6, repetition = TRUE, target = 10)
+//                    -->> CountCompsRepLenCap(10, 6, 1:3)
+//
 // CmpRpZroNotWk   : compositionsCount(0:20, 5, TRUE) -- >>
 //                    CountCompsRepZNotWk(20, 5)
 //
@@ -229,6 +232,9 @@
 // CompRepWeak     : Repetition compositions where zeros are allowed (weak).
 //                   E.g. tar = 20, m = 5; startZ = c(0, 0, 0, 0, 20)
 //
+// CompRepCapped   : Repetition compositions with restricted parts (cap/window).
+//                   E.g. tar = 10, m = 5; cap = 3; startZ = c(1, 1, 2, 3, 3)
+//
 // CmpRpZroNotWk   : Compositions where 0 is in v, but we only want permutations
 //                   of non-zero values (non-weak output). Internally behaves
 //                   like repetition comps with a "zero slot" used for mapping.
@@ -329,7 +335,9 @@ enum class PartitionType {
     NotMapped        = 34,
     NoSolution       = 35,
     NotPartition     = 36,
-    NumTypes         = 37
+    // NEW type CompRepCapped: appended to keep numeric values stable
+    CompRepCapped    = 37,
+    NumTypes         = 38
 };
 
 constexpr std::array<const char*, static_cast<size_t>(PartitionType::NumTypes)>
@@ -370,21 +378,22 @@ constexpr std::array<const char*, static_cast<size_t>(PartitionType::NumTypes)>
         "PrmMultiset",
         "NotMapped",
         "NoSolution",
-        "NotPartition"
+        "NotPartition",
+        "CompRepCapped"
     }};
 
-const std::array<PartitionType, 5> NoCountAlgoPTypeArr{{
-    PartitionType::NotMapped, PartitionType::PrmRepCapped,
-    PartitionType::NotPartition, PartitionType::NoSolution,
-    PartitionType::CoarseGrained
+const std::array<PartitionType, 4> NoCountAlgoPTypeArr{{
+    PartitionType::NotMapped, PartitionType::NotPartition,
+    PartitionType::NoSolution, PartitionType::CoarseGrained
 }};
 
-const std::array<PartitionType, 10> CappedPTypeArr{{
+const std::array<PartitionType, 11> CappedPTypeArr{{
     PartitionType::RepCapped, PartitionType::DstctCapped,
     PartitionType::DstctCappedMZ, PartitionType::PrmRepCapped,
     PartitionType::PrmDstPrtCap, PartitionType::PrmDstPrtCapMZ,
     PartitionType::CmpDstctCapped, PartitionType::CmpDstCapWeak,
-    PartitionType::CmpDstCapMZWeak, PartitionType::CmpDstCapMZNotWk
+    PartitionType::CmpDstCapMZWeak, PartitionType::CompRepCapped,
+    PartitionType::CmpDstCapMZNotWk
 }};
 
 const std::array<PartitionType, 8> CmpDstPTypeArr{{
