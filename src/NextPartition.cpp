@@ -1,6 +1,6 @@
 #include "cpp11/protect.hpp"
 
-#include "Partitions/CompositionsDistinctUtils.h"
+#include "Partitions/CompositionsUtils.h"
 #include "Partitions/NextComposition.h"
 #include "Partitions/NextPartition.h"
 #include <algorithm>  // std::find
@@ -667,7 +667,6 @@ nextPartsPtr GetNextPartsPtr(PartitionType ptype, ConstraintType ctype) {
                 return(nextPartsPtr(EmptyReturn));
 
             default:
-                // This should not happen
                 cpp11::stop(
                     "This should not happen. Please open an issue here:\n\t"
                     "https://github.com/jwood000/RcppAlgos/issues"
@@ -711,7 +710,6 @@ nextPartsPtr GetNextPartsPtr(PartitionType ptype, ConstraintType ctype) {
                 return(nextPartsPtr(EmptyReturn));
 
             default:
-                // This should not happen
                 cpp11::stop(
                     "This should not happen. Please open an issue here:\n\t"
                     "https://github.com/jwood000/RcppAlgos/issues"

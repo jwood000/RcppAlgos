@@ -1,4 +1,4 @@
-#include "Partitions/CompositionsDistinctUtils.h"
+#include "Partitions/CompositionsUtils.h"
 #include "Partitions/PartitionsCountDistinct.h"
 #include "Partitions/NextComposition.h"
 #include <algorithm>
