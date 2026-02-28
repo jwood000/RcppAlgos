@@ -188,6 +188,20 @@ class CompsRepLen : public CountClass {
     );
 };
 
+class CompsRepLenCap : public CountClass {
+    double GetCount(
+        int n, int m,
+        const std::vector<int> &allowed = std::vector<int>(),
+        int strtLen = 0
+    );
+
+    void GetCount(
+        mpz_class &res, int n, int m,
+        const std::vector<int> &allowed = std::vector<int>(),
+        int strtLen = 0, bool bLiteral = true
+    );
+};
+
 class CompsRepZero : public CountClass {
     double GetCount(
         int n, int m,

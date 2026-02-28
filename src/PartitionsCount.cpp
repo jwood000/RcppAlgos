@@ -39,6 +39,8 @@ std::unique_ptr<CountClass> MakeCount(PartitionType ptype) {
             return std::make_unique<CompsRepLen>();
         } case PartitionType::CompRepWeak: {
             return std::make_unique<CompsRepLen>();
+        } case PartitionType::CompRepCapped: {
+            return std::make_unique<CompsRepLenCap>();
         } case PartitionType::CmpRpZroNotWk: {
             return std::make_unique<CompsRepZero>();
         } case PartitionType::CmpDstctNoZero: {
@@ -61,6 +63,8 @@ std::unique_ptr<CountClass> MakeCount(PartitionType ptype) {
             return std::make_unique<CompsRepLen>();
         } case PartitionType::PrmRepPartNoZ: {
             return std::make_unique<CompsRepLen>();
+        } case PartitionType::PrmRepCapped: {
+            return std::make_unique<CompsRepLenCap>();
         } case PartitionType::PrmDstPartNoZ: {
             return std::make_unique<CompsDistinctLen>();
         } case PartitionType::PrmDstPrtOneZ: {
@@ -242,6 +246,19 @@ void CompsRepZero::GetCount(
     }
 }
 
+void CompsRepLenCap::GetCount(
+    mpz_class &res, int n, int m, const std::vector<int> &allowed,
+    int strtLen, bool bLiteral
+) {
+
+    if (cmp(res, 0) == 0 || cmp(res, Significand53) > 0) {
+        CountCompsRepLenCap(res, n, m, allowed);
+    } else {
+        const double dblRes = CountCompsRepLenCap(n, m, allowed);
+        res = dblRes;
+    }
+}
+
 void CompsDistinctLen::GetCount(
     mpz_class &res, int n, int m, const std::vector<int> &allowed,
     int strtLen, bool bLiteral
@@ -351,6 +368,12 @@ double CompsRepZero::GetCount(
     return CountCompsRepZNotWk(n, m);
 }
 
+double CompsRepLenCap::GetCount(
+    int n, int m, const std::vector<int> &allowed, int strtLen
+) {
+    return CountCompsRepLenCap(n, m, allowed);
+}
+
 double CompsDistinctLen::GetCount(
     int n, int m, const std::vector<int> &allowed, int strtLen
 ) {
@@ -392,7 +415,6 @@ bool IsTrueMultiset(PartitionType ptype) {
 
 void CountClass::SetArrSize(PartitionType ptype, int n, int m) {
 
-    // N.B. We currently don't have a PrmRepCapped count function
     width = 0;
     size  = 0;
 
@@ -420,9 +442,11 @@ void CountClass::SetArrSize(PartitionType ptype, int n, int m) {
         case PartitionType::DstctCappedMZ:
         case PartitionType::CmpDstctCapped:
         case PartitionType::CmpDstCapWeak:
+        case PartitionType::CompRepCapped:
         case PartitionType::CmpDstCapMZWeak:
         case PartitionType::CmpDstCapMZNotWk:
         case PartitionType::PrmDstPrtCap:
+        case PartitionType::PrmRepCapped:
         case PartitionType::PrmDstPrtCapMZ: {
             size  = n + 1;
             width = m + 1;

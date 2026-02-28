@@ -139,6 +139,26 @@ void CountCompsRepLen(mpz_class &res, int n, int m,
     nChooseKGmp(res, n - 1, m - 1);
 }
 
+// See commentary in PartitionsCountRep.cpp
+void CountCompsRepLenCap(mpz_class &res, int n, int m,
+                         const std::vector<int> &allowed, int strtLen) {
+
+    static_cast<void>(strtLen); // intentionally unused
+
+    const int cap = *std::max_element(allowed.cbegin(), allowed.cend());
+    const int maxViolations = (n - m) >= 0 ? (n - m) / cap : -1;
+
+    mpz_class nSlots;
+    mpz_class badParts;
+    nChooseKGmp(res, n - 1, m - 1);
+
+    for (int i = 1, sign = -1; i <= maxViolations; ++i, sign *= -1) {
+        nChooseKGmp(nSlots, m, i);
+        nChooseKGmp(badParts, n - i * cap - 1, m - 1);
+        res += (sign * nSlots * badParts);
+    }
+}
+
 void CountCompsRepZNotWk(mpz_class &res, int n, int m,
                          const std::vector<int> &allowed, int strtLen) {
 

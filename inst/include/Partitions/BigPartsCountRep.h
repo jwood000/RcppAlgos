@@ -24,6 +24,9 @@ void CountCompsRepLen(
     const std::vector<int> &allowed = std::vector<int>(), int strtLen = 0
 );
 
+void CountCompsRepLenCap(mpz_class &res, int n, int m,
+                         const std::vector<int> &allowed, int strtLen = 0);
+
 void CountCompsRepZNotWk(
     mpz_class &res, int n, int m,
     const std::vector<int> &allowed = std::vector<int>(), int strtLen = 0
