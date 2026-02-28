@@ -9,6 +9,8 @@ bool IsComplementZeroBased(bool firstZero, bool isWeak, bool IsGen);
 int GetFirstPartitionDistinct(const std::vector<int> &v, std::vector<int> &z,
                               int target, int m, int lenV);
 
+void FillTailRep(std::vector<int> &z, int strt, int cap, int lastCol);
+
 int NextDistinctBlock(const std::vector<int> &v, std::vector<int> &idx,
                       std::vector<int> &tailSum, int target, int m);
 

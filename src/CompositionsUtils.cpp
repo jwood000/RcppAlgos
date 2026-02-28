@@ -143,6 +143,30 @@ int GetFirstPartitionDistinct(const std::vector<int> &v, std::vector<int> &z,
     return 1;
 }
 
+void FillTailRep(std::vector<int> &z, int strt, int cap, int lastCol) {
+
+    // The element at position strt-1 was just increased by 1. To preserve the
+    // overall sum, the tail must decrease by 1. Starting partial at -1 ensures
+    // that after accumulating the original tail values, partial equals the
+    // required replacement sum for the tail.
+    int partial = -1;
+
+    for (int i = strt; i <= lastCol; ++i) {
+        partial += z[i];
+        z[i] = 0;
+    }
+
+    for (int i = lastCol; partial > 0 && i >= strt; --i) {
+        if (partial >= cap) {
+            z[i] = cap;
+        } else {
+            z[i] = partial;
+        }
+
+        partial -= z[i];
+    }
+}
+
 bool IsComplementZeroBased(bool firstZero, bool isWeak, bool IsGen) {
 
     // N.B. Only mapped cases with `v[0] == 0` are considered.

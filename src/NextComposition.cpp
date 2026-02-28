@@ -1,4 +1,4 @@
-#include "Partitions/CompositionsDistinctUtils.h"
+#include "Partitions/CompositionsUtils.h"
 #include <algorithm>
 #include <numeric>
 #include <vector>
@@ -21,6 +21,25 @@ void NextCompositionRep(std::vector<int> &z, int lastCol) {
             std::reverse(z.begin() + j, z.end());
             --z[lastCol];
         }
+    }
+}
+
+void NextCompositionRep(std::vector<int> &z, int lastCol, int cap) {
+
+    if (z[lastCol - 1] < cap && z[lastCol] != 0) {
+        --z[lastCol];
+        ++z[lastCol - 1];
+    } else {
+        int cumsum = z[lastCol] + z[lastCol - 1];
+        int j = lastCol - 2;
+
+        while (j > 0 && (z[j] == cap || cumsum == 0)) {
+            cumsum += z[j];
+            --j;
+        }
+
+        ++z[j];
+        FillTailRep(z, j + 1, cap, lastCol);
     }
 }
 
