@@ -1,6 +1,23 @@
 #include "Partitions/NextComposition.h"
 #include "RMatrix.h"
 
+template <typename T>
+int CompsGenRepCapped(T* mat, const std::vector<T> &v, std::vector<int> &z,
+                      std::size_t width, std::size_t nRows) {
+
+    const int cap = v.size() - 1;
+
+    for (std::size_t count = 0, lastCol = width - 1; count < nRows; ++count,
+         NextCompositionRep(z, lastCol, cap)) {
+
+        for (std::size_t k = 0; k < width; ++k) {
+            mat[count + nRows * k] = v[z[k]];
+        }
+    }
+
+    return 1;
+}
+
 template <int one_or_zero, typename T>
 int CompsGenRep(T* mat, const std::vector<T> &v, std::vector<int> &z,
                 std::size_t width, std::size_t nRows) {
@@ -10,6 +27,24 @@ int CompsGenRep(T* mat, const std::vector<T> &v, std::vector<int> &z,
 
         for (std::size_t k = 0; k < width; ++k) {
             mat[count + nRows * k] = v[z[k]];
+        }
+    }
+
+    return 1;
+}
+
+template <typename T>
+int CompsGenRepCapped(RcppParallel::RMatrix<T> &mat, const std::vector<T> &v,
+                      std::vector<int> &z, std::size_t strt,
+                      std::size_t width, std::size_t nRows) {
+
+    const int cap = v.size() - 1;
+
+    for (std::size_t count = strt, lastCol = width - 1; count < nRows; ++count,
+         NextCompositionRep(z, lastCol, cap)) {
+
+        for (std::size_t k = 0; k < width; ++k) {
+            mat(count, k) = v[z[k]];
         }
     }
 
@@ -62,6 +97,11 @@ int CompsRep(RcppParallel::RMatrix<int> &mat, std::vector<int> &z,
     return 1;
 }
 
+template int CompsGenRepCapped(int*, const std::vector<int>&,
+                               std::vector<int>&, std::size_t, std::size_t);
+template int CompsGenRepCapped(double*, const std::vector<double>&,
+                               std::vector<int>&, std::size_t, std::size_t);
+
 template int CompsGenRep<0>(int*, const std::vector<int>&,
                             std::vector<int>&, std::size_t, std::size_t);
 template int CompsGenRep<0>(double*, const std::vector<double>&,
@@ -70,6 +110,13 @@ template int CompsGenRep<1>(int*, const std::vector<int>&,
                             std::vector<int>&, std::size_t, std::size_t);
 template int CompsGenRep<1>(double*, const std::vector<double>&,
                             std::vector<int>&, std::size_t, std::size_t);
+
+template int CompsGenRepCapped(RcppParallel::RMatrix<int>&,
+                               const std::vector<int>&, std::vector<int>&,
+                               std::size_t, std::size_t, std::size_t);
+template int CompsGenRepCapped(RcppParallel::RMatrix<double>&,
+                               const std::vector<double>&, std::vector<int>&,
+                               std::size_t, std::size_t, std::size_t);
 
 template int CompsGenRep<0>(RcppParallel::RMatrix<int>&,
                             const std::vector<int>&, std::vector<int>&,
