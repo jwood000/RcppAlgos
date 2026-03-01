@@ -785,6 +785,32 @@ test_that("partitionsIter produces correct results", {
     #### Repetition; Specific Length; No Zeros; Specific Target;
     expect_true(partitionClassTest(20, 10, rep = TRUE, tar = 45))
 
+    #### Repetition; Compositions; No Zeros; Capped (i.e. Specific Target)
+    expect_true(
+        partitionClassTest(10, 6, rep = TRUE, tar = 25, IsComposition = TRUE)
+    )
+
+    #### Mapped version
+    ## 25 * 1234 + 6 * 17 = 30952
+    expect_true(
+        partitionClassTest(
+            17 + (1:10) * 1234, 6, rep = TRUE, tar = 30952, IsComposition = TRUE
+        )
+    )
+
+    #### Repetition; Compositions; No Zeros; Capped (i.e. Specific Target)
+    expect_true(
+        partitionClassTest(5, 8, rep = TRUE, tar = 25, IsComposition = TRUE)
+    )
+
+    #### Mapped version
+    ## 25 * 1234 + 8 * 17 = 30952
+    expect_true(
+        partitionClassTest(
+            17 + (1:5) * 1234, 8, rep = TRUE, tar = 30986, IsComposition = TRUE
+        )
+    )
+
     #### Multiset; class table;
     expect_true(partitionClassTest(table(sample(10, 100, TRUE)),
                                    15, tar = 55, testRand = FALSE))
@@ -996,6 +1022,24 @@ test_that("partitionsIter produces correct results", {
     expect_true(partitionClassBigZTest((1:2000) * 123456789, 10, TRUE,
                                        IsComposition = TRUE,
                                        tar = 246913578000))
+
+    ## "CompRepCapped"
+    expect_true(partitionClassBigZTest(200, 10, TRUE, tar = 1000,
+                                       IsComposition = TRUE))
+    #### Mapped version
+    ## 1000 * 123456789 = 246913578000
+    expect_true(partitionClassBigZTest((1:200) * 123456789, 10, TRUE,
+                                       IsComposition = TRUE,
+                                       tar = 123456789000))
+
+    ## "CompRepCapped"
+    expect_true(partitionClassBigZTest(20, 40, TRUE, tar = 200,
+                                       IsComposition = TRUE))
+    #### Mapped version
+    ## 200 * 123456789 = 246913578000
+    expect_true(partitionClassBigZTest((1:20) * 123456789, 40, TRUE,
+                                       IsComposition = TRUE,
+                                       tar = 24691357800))
 
     expect_true(partitionClassBigZTest(0:150, rep = TRUE, IsComposition = TRUE))
     #### Mapped version

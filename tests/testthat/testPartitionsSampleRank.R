@@ -296,6 +296,16 @@ test_that("parttionsSample and compositionsSample produces correct results", {
                                       weak = TRUE, freqs = c(3, rep(1, 15))),
                      seq_len(nrow(bench)))
 
+    ## "CompRepCapped"
+    bench = compositionsGeneral(12, 6, TRUE, target = 25)
+    expect_identical(compositionsSample(12, 6, TRUE, target = 25,
+                                        sampleVec = seq_len(nrow(bench)),
+                                        nThreads = 2),
+                     bench)
+    expect_identical(compositionsRank(bench, v = 12, target = 25, nThreads = 2,
+                                      repetition = TRUE),
+                     seq_len(nrow(bench)))
+
     ##### *********** Torture Test > 2^.Machine$double.digits *********** #####
 
     mySamp = partitionsSample(400, 20, target = 1000,
@@ -415,6 +425,14 @@ test_that("parttionsSample and compositionsSample produces correct results", {
                            nThreads = 2, target = 300)
         )
     )
+
+    ## CompRepCapped
+    mySamp = compositionsSample(20, 50, TRUE, target = 200,
+                                n = 4, namedSample = TRUE,
+                                nThreads = 2)
+    expect_equal(compositionsRank(mySamp, v = 20, repetition = TRUE,
+                                  nThreads = 2, target = 200),
+                 rownames(mySamp))
 
     ## Multiple inputs
     mat_int = partitionsSample(

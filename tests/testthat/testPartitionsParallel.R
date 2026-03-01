@@ -16,7 +16,7 @@ test_that("partitions/compositionsGeneral Distinct Parallel", {
                      partitionsGeneral(0:100, repetition = TRUE,
                                        nThreads = 8, upper = 50000))
 
-    ######****************** All Results Distinct **************#########
+    ###### ****************** All Results Distinct ****************** #########
     #### Distinct; Length determined internally; No zero;
     ##
     ## sum(1:41)
@@ -315,7 +315,7 @@ test_that("partitions/compositionsGeneral Distinct Parallel", {
                                     target = 21314),
                      c(1L, 123456L, 284705L))
 
-    ######************************* Compositions *************************#####
+    ###### *********************** Compositions *********************** ######
     ## compositionsDesign(40, 6)[c("num_partitions", "partition_type")]
     ## $num_partitions
     ## [1] 169200
@@ -893,6 +893,46 @@ test_that("partition/compositionsGeneral Repetition Parallel", {
                                       v = 6 + (1:28) * 3,
                                       target = 120, repetition = TRUE),
                      c(1L, 12345L, 80730L))
+
+    #### Repetition; Specific Length; No zero; Composition; Specific Target
+    ##
+    ## compositionsDesign(15, 6, TRUE, target = 30)[
+    ##     c("num_partitions", "partition_type")
+    ## ]
+    ## $num_partitions
+    ## [1] 106743
+    ##
+    ## $partition_type
+    ## [1] "CompRepCapped"
+    myComps = compositionsGeneral(15, 6, TRUE, target = 30, nThreads = 2)
+    expect_identical(compositionsGeneral(15, 6, TRUE, target = 30), myComps)
+    expect_identical(compositionsRank(myComps[c(1L, 35581L, 71162L, 106743L), ],
+                                      v = 15, repetition = TRUE, target = 30),
+                     c(1L, 35581L, 71162L, 106743L))
+
+    #### Mapped version
+    ##
+    ## 30 * 23 + 7 * 6 = 732
+    ##
+    ## compositionsDesign(7L + (1:15) * 23L, 6, TRUE, target = 732L)[
+    ##     c("num_partitions", "partition_type")
+    ## ]
+    ## $num_partitions
+    ## [1] 106743
+    ##
+    ## $partition_type
+    ## [1] "CompRepCapped"
+    myComps = compositionsGeneral(
+        7L + (1:15) * 23L, 6, TRUE, target = 732L, nThreads = 2
+    )
+    expect_identical(
+        compositionsGeneral(7L + (1:15) * 23L, 6, TRUE, target = 732L),
+        myComps
+    )
+    expect_identical(compositionsRank(myComps[c(1L, 35581L, 71162L, 106743L), ],
+                                      v = 7L + (1:15) * 23L, repetition = TRUE,
+                                      target = 732L),
+                     c(1L, 35581L, 71162L, 106743L))
 
     #### Repetition; Specific Length; Zero included
     ##
