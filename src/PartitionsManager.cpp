@@ -118,6 +118,7 @@ int PartsGenManager(T* mat, const std::vector<T> &v, std::vector<int> &z,
             return CompsGenRep<0>(mat, v, z, width, nRows);
 
         case PartitionType::CompRepCapped:
+        case PartitionType::CompRepWeakCap:
             return CompsGenRepCapped<0>(mat, v, z, width, nRows);
 
         case PartitionType::CmpRpCapZNotWk:
@@ -292,6 +293,7 @@ int PartsGenParallel(RcppParallel::RMatrix<T> &mat,
             return CompsGenRep<0>(mat, v, z, strt, width, nRows);
 
         case PartitionType::CompRepCapped:
+        case PartitionType::CompRepWeakCap:
             return CompsGenRepCapped<0>(mat, v, z, strt, width, nRows);
 
         case PartitionType::CmpRpCapZNotWk:

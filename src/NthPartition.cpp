@@ -165,6 +165,37 @@ std::vector<int> nthCompsRepZero(int n, int m, int cap, int k,
     return res;
 }
 
+std::vector<int> nthCompsRepZeroCap(int n, int m, int cap, int k,
+                                    double dblIdx, const mpz_class &mpzIdx) {
+
+    const int width = m;
+    const int max_n = n;
+
+    // All we are doing in CountCompsRepLenCap is getting the max of allowed
+    std::vector<int> allowed(1, cap);
+    std::vector<int> res(width, 0);
+    bool incr_j = false;
+    --m;
+
+    for (int i = 0, j = 0; i < (width - 1); ++i, --m, j = incr_j) {
+        double temp = incr_j ? CountCompsRepLenCap(n, m, allowed) :
+            CountCompsRepCapZNotWk(n, m, allowed);
+
+        for (; temp <= dblIdx; ++j) {
+            incr_j = true;
+            --n;
+            dblIdx -= temp;
+            temp = CountCompsRepLenCap(n, m, allowed);
+        }
+
+        if (incr_j) --n;
+        res[i] = j;
+    }
+
+    res.back() = max_n - std::accumulate(res.begin(), res.end(), 0);
+    return res;
+}
+
 // nthCompsDistinct
 // ----------------
 // Unranks the dblIdx-th distinct composition of n into width parts,
@@ -687,6 +718,43 @@ std::vector<int> nthCompsRepZeroGmp(int n, int m, int cap, int k,
     return res;
 }
 
+std::vector<int> nthCompsRepZeroCapGmp(
+    int n, int m, int cap, int k, double dblIdx, const mpz_class &mpzIdx
+) {
+
+    const int width = m;
+    const int max_n = n;
+
+    std::vector<int> allowed(1, cap);
+    std::vector<int> res(width);
+    bool incr_j = false;
+    --m;
+
+    mpz_class temp;
+    mpz_class index(mpzIdx);
+    std::unique_ptr<CountClass> Counter = MakeCount(
+        PartitionType::CmpRpCapZNotWk
+    );
+
+    for (int i = 0, j = 0; i < (width - 1); ++i, --m, j = incr_j) {
+        Counter->GetCount(temp, n, m, allowed, k, !incr_j);
+
+        for (; cmp(temp, index) <= 0; ++j) {
+            incr_j = true;
+            --n;
+            index -= temp;
+            Counter->GetCount(temp, n, m, allowed, k, false);
+        }
+
+        temp = 0;
+        if (incr_j) --n;
+        res[i] = j;
+    }
+
+    res.back() = max_n - std::accumulate(res.begin(), res.end(), 0);
+    return res;
+}
+
 std::vector<int> nthCompsDistinctGmp(int n, int m, int cap, int k,
                                      double dblIdx, const mpz_class &mpzIdx) {
 
@@ -1189,8 +1257,12 @@ nthPartsPtr GetNthPartsFunc(PartitionType ptype, bool IsGmp) {
                 return(nthPartsPtr(nthCompsRepCappedGmp));
             } case PartitionType::CompRepWeak: {
                 return(nthPartsPtr(nthCompsRepGmp));
+            } case PartitionType::CompRepWeakCap: {
+                return(nthPartsPtr(nthCompsRepCappedGmp));
             } case PartitionType::CmpRpZroNotWk: {
                 return(nthPartsPtr(nthCompsRepZeroGmp));
+            } case PartitionType::CmpRpCapZNotWk: {
+                return(nthPartsPtr(nthCompsRepZeroCapGmp));
             } case PartitionType::CmpDstctNoZero: {
                 return(nthPartsPtr(nthCompsDistinctGmp));
             } case PartitionType::CmpDstctCapped: {
@@ -1243,8 +1315,12 @@ nthPartsPtr GetNthPartsFunc(PartitionType ptype, bool IsGmp) {
                 return(nthPartsPtr(nthCompsRepCapped));
             } case PartitionType::CompRepWeak: {
                 return(nthPartsPtr(nthCompsRep));
+            } case PartitionType::CompRepWeakCap: {
+                return(nthPartsPtr(nthCompsRepCapped));
             } case PartitionType::CmpRpZroNotWk: {
                 return(nthPartsPtr(nthCompsRepZero));
+            } case PartitionType::CmpRpCapZNotWk: {
+                return(nthPartsPtr(nthCompsRepZeroCap));
             } case PartitionType::CmpDstctNoZero: {
                 return(nthPartsPtr(nthCompsDistinct));
             } case PartitionType::CmpDstctCapped: {

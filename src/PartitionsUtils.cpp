@@ -381,7 +381,7 @@ int DiscoverPType(const std::vector<int> &Reps,
             part.ptype = PartitionType::PrmRepCapped;
             return 1;
         } else if (part.isComp && part.isWeak && iso_cap_z == part.startZ) {
-            part.ptype = PartitionType::CompRepCapped;
+            part.ptype = PartitionType::CompRepWeakCap;
             return 1;
         } else if (part.isComp && iso_cap_z == part.startZ && part.includeZero) {
             part.ptype = PartitionType::CmpRpCapZNotWk;
