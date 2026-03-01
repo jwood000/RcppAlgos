@@ -533,7 +533,7 @@ void NextRepCompOne(std::vector<int> &rpsCnt,
 void NextRepCompCapped(std::vector<int> &rpsCnt,
                        std::vector<int> &z, int &e, int &b, int &myMax,
                        int &tarDiff, int lastCol, int lastElem) {
-    NextCompositionRep(z, lastCol, myMax);
+    NextCompositionRep<0>(z, lastCol, myMax);
 }
 
 void NextDistinctComp(std::vector<int> &complement,

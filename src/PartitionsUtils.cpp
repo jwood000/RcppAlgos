@@ -355,8 +355,9 @@ int DiscoverPType(const std::vector<int> &Reps,
 
         std::vector<int> iso_cap_z(part.width, 0);
         int partial = last_val;
+        const int cap = part.cap - static_cast<int>(!part.includeZero);
 
-        if (part.cap < 2) {
+        if (cap < 1) {
             cpp11::stop(
                 "The maximum value is malformed. Please open an issue here:\n\t"
                 "https://github.com/jwood000/RcppAlgos/issues"
@@ -364,8 +365,8 @@ int DiscoverPType(const std::vector<int> &Reps,
         }
 
         for (int i = part.width - 1; partial > 0 && i >= 0; --i) {
-            if (partial >= (part.cap - 1)) {
-                iso_cap_z[i] = (part.cap - 1);
+            if (partial >= cap) {
+                iso_cap_z[i] = cap;
             } else {
                 iso_cap_z[i] = partial;
             }
@@ -378,6 +379,12 @@ int DiscoverPType(const std::vector<int> &Reps,
             return 1;
         } else if (part.isPerm && iso_cap_z == part.startZ) {
             part.ptype = PartitionType::PrmRepCapped;
+            return 1;
+        } else if (part.isComp && part.isWeak && iso_cap_z == part.startZ) {
+            part.ptype = PartitionType::CompRepCapped;
+            return 1;
+        } else if (part.isComp && iso_cap_z == part.startZ && part.includeZero) {
+            part.ptype = PartitionType::CmpRpCapZNotWk;
             return 1;
         } else if (part.isComp && iso_cap_z == part.startZ) {
             part.ptype = PartitionType::CompRepCapped;
