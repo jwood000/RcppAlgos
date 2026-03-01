@@ -29,7 +29,7 @@ double CountPartsDistinctRstrctdMZ(
     int n, int m, const std::vector<int> &allowed, int strtLen
 );
 
-double CountCompDistLenRstrctd(
+double CountCompsDistLenRstrctd(
     int n, int m, const std::vector<int> &allowed, int strtLen = 0
 );
 

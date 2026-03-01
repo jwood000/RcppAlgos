@@ -455,7 +455,7 @@ int CompsGenDistinct(
                 z, complement, tar, idx_1, idx_2, myMax, idx_max, false, 1
             );
 
-            double safe_count = CountCompDistLenRstrctd(tar, i, allowed);
+            double safe_count = CountCompsDistLenRstrctd(tar, i, allowed);
 
             if ((safe_count + nextStep) < max_int) {
                 nextStep += safe_count;
@@ -598,7 +598,7 @@ int CompsGenDistinct(
                 z, complement, tar, idx_1, idx_2, myMax, idx_max, false, 1
             );
 
-            double safe_count = CountCompDistLenRstrctd(tar, i, allowed);
+            double safe_count = CountCompsDistLenRstrctd(tar, i, allowed);
 
             if ((safe_count + nextStep) < max_int) {
                 nextStep += safe_count;

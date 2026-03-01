@@ -238,7 +238,7 @@ std::vector<int> nthCompsDistinct(int n, int m, int cap, int k,
     int cur_val = 1;
 
     for (int i = 0, j = 0; i < (width - 1); ++i, --m) {
-        double temp = CountCompDistLenRstrctd(n - partial_sum, m, allowed);
+        double temp = CountCompsDistLenRstrctd(n - partial_sum, m, allowed);
 
         for (; temp <= dblIdx; cur_val = j) {
             while ((j + 1) < mask_size && mask[j + 1]) {
@@ -250,7 +250,7 @@ std::vector<int> nthCompsDistinct(int n, int m, int cap, int k,
                           n, cur_val, partial_sum);
 
             dblIdx -= temp;
-            temp = CountCompDistLenRstrctd(n - partial_sum, m, allowed);
+            temp = CountCompsDistLenRstrctd(n - partial_sum, m, allowed);
 
             if (temp <= dblIdx) {
                 ++j;
@@ -283,14 +283,14 @@ std::vector<int> nthCompsDistinctMZ(int n, int m, int cap, int k,
 
     double temp = (cap == n) ?
         CountCompsDistinctLen(n, k) :
-        CountCompDistLenRstrctd(n, k, allowed);
+        CountCompsDistLenRstrctd(n, k, allowed);
 
     while (dblIdx >= temp && k < m) {
         dblIdx -= temp;
         ++k;
         temp = (cap == n) ?
             CountCompsDistinctLen(n, k) :
-            CountCompDistLenRstrctd(n, k, allowed);
+            CountCompsDistLenRstrctd(n, k, allowed);
     }
 
     std::vector<int> res = nthCompsDistinct(n, k, cap, k, dblIdx, mpzIdx);

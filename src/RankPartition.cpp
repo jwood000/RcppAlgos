@@ -104,7 +104,7 @@ void rankCompsDistinct(std::vector<int>::iterator iter, int n, int m,
     int cur_val = 1;
 
     for (int i = 0, j = 0; i < (width - 1); ++i, --m, ++iter) {
-        double temp = CountCompDistLenRstrctd(n - partial_sum, m, allowed);
+        double temp = CountCompsDistLenRstrctd(n - partial_sum, m, allowed);
         bool keepGoing = false;
 
         for (int idx = *iter; j < idx || keepGoing; cur_val = j) {
@@ -117,7 +117,7 @@ void rankCompsDistinct(std::vector<int>::iterator iter, int n, int m,
                           n, cur_val, partial_sum);
 
             dblIdx += temp;
-            temp = CountCompDistLenRstrctd(n - partial_sum, m, allowed);
+            temp = CountCompsDistLenRstrctd(n - partial_sum, m, allowed);
 
             ++j;
             keepGoing = j <= idx;
@@ -145,7 +145,7 @@ void rankCompsDistinctMZ(std::vector<int>::iterator iter, int n, int m,
 
     double temp = (cap == n) ?
         CountCompsDistinctLen(n, k) :
-            CountCompDistLenRstrctd(n, k, allowed);
+            CountCompsDistLenRstrctd(n, k, allowed);
 
     // NOTE: iter is guaranteed by the calling rank dispatcher to reference
     // a contiguous buffer of at least m elements representing the index vector.
@@ -165,7 +165,7 @@ void rankCompsDistinctMZ(std::vector<int>::iterator iter, int n, int m,
         ++k;
         temp = (cap == n) ?
             CountCompsDistinctLen(n, k) :
-                CountCompDistLenRstrctd(n, k, allowed);
+                CountCompsDistLenRstrctd(n, k, allowed);
     }
 
     rankCompsDistinct(z_it, n, k, cap, k, dblIdx, mpzIdx);
