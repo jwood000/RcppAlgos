@@ -35,11 +35,14 @@
 // CompRepWeak     : compositionsCount(0:20, 5, TRUE, weak = TRUE) -->>
 //                    CountCompsRepLen(25, 5) We add the length to the target
 //
+// CompRepWeakCap  : compositionsCount(0:20, 5, TRUE, weak = TRUE, target = 40) -->>
+//                    CountCompsRepLenCap(45, 5, 1:20) We add the length to the target
+//
 // CompRepCapped   : compositionsCount(3, 6, repetition = TRUE, target = 10)
 //                    -->> CountCompsRepLenCap(10, 6, 1:3)
 //
 // CmpRpCapZNotWk  : compositionsCount(0:3, 6, repetition = TRUE, target = 10)
-//                    -->> CountCompsRepLenCap(10, 6, 1:3)
+//                    -->> CountCompsRepCapZNotWk(10, 6, 1:3)
 //
 // CmpRpZroNotWk   : compositionsCount(0:20, 5, TRUE) -- >>
 //                    CountCompsRepZNotWk(20, 5)
@@ -235,6 +238,10 @@
 // CompRepWeak     : Repetition compositions where zeros are allowed (weak).
 //                   E.g. tar = 20, m = 5; startZ = c(0, 0, 0, 0, 20)
 //
+// CompRepWeakCap  : Repetition compositions with restricted parts (cap/window)
+//                    and where zeros are allowed (weak).
+//                   E.g. tar = 40, m = 5; cap = 20 startZ = c(0, 0, 0, 20, 20)
+//
 // CompRepCapped   : Repetition compositions with restricted parts (cap/window).
 //                   E.g. tar = 10, m = 5; cap = 3; startZ = c(1, 1, 2, 3, 3)
 //
@@ -344,10 +351,12 @@ enum class PartitionType {
     NotMapped        = 34,
     NoSolution       = 35,
     NotPartition     = 36,
-    // NEW type CompRepCapped & CmpRpCapZNotWk: appended to keep values stable
+    // NEW types CompRepCapped, CmpRpCapZNotWk, CompRepWeakCap:
+    // appended to keep numeric values stable
     CompRepCapped    = 37,
     CmpRpCapZNotWk   = 38,
-    NumTypes         = 39
+    CompRepWeakCap   = 39,
+    NumTypes         = 40
 };
 
 constexpr std::array<const char*, static_cast<size_t>(PartitionType::NumTypes)>
@@ -390,7 +399,8 @@ constexpr std::array<const char*, static_cast<size_t>(PartitionType::NumTypes)>
         "NoSolution",
         "NotPartition",
         "CompRepCapped",
-        "CmpRpCapZNotWk"
+        "CmpRpCapZNotWk",
+        "CompRepWeakCap"
     }};
 
 const std::array<PartitionType, 4> NoCountAlgoPTypeArr{{
@@ -398,13 +408,14 @@ const std::array<PartitionType, 4> NoCountAlgoPTypeArr{{
     PartitionType::NoSolution, PartitionType::CoarseGrained
 }};
 
-const std::array<PartitionType, 12> CappedPTypeArr{{
+const std::array<PartitionType, 13> CappedPTypeArr{{
     PartitionType::RepCapped, PartitionType::DstctCapped,
     PartitionType::DstctCappedMZ, PartitionType::PrmRepCapped,
     PartitionType::PrmDstPrtCap, PartitionType::PrmDstPrtCapMZ,
     PartitionType::CmpDstctCapped, PartitionType::CmpDstCapWeak,
     PartitionType::CmpDstCapMZWeak, PartitionType::CompRepCapped,
     PartitionType::CmpDstCapMZNotWk, PartitionType::CmpRpCapZNotWk,
+    PartitionType::CompRepWeakCap
 }};
 
 const std::array<PartitionType, 8> CmpDstPTypeArr{{
