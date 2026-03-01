@@ -531,9 +531,15 @@ void NextRepCompOne(std::vector<int> &rpsCnt,
 }
 
 void NextRepCompCapped(std::vector<int> &rpsCnt,
-                       std::vector<int> &z, int &e, int &b, int &myMax,
+                       std::vector<int> &z, int &e, int &b, int &cap,
                        int &tarDiff, int lastCol, int lastElem) {
-    NextCompositionRep<0>(z, lastCol, myMax);
+    NextCompositionRep<0>(z, lastCol, cap);
+}
+
+void NextRepCompNotWkCap(std::vector<int> &rpsCnt,
+                         std::vector<int> &z, int &e, int &b, int &cap,
+                         int &tarDiff, int lastCol, int lastElem) {
+    NextCompositionRep<1>(z, lastCol, cap);
 }
 
 void NextDistinctComp(std::vector<int> &complement,
@@ -698,7 +704,11 @@ nextPartsPtr GetNextPartsPtr(PartitionType ptype, ConstraintType ctype) {
                 return(nextPartsPtr(NextRepCompZero));
 
             case PartitionType::CompRepCapped:
+            case PartitionType::CompRepWeakCap:
                 return(nextPartsPtr(NextRepCompCapped));
+
+            case PartitionType::CmpRpCapZNotWk:
+                return(nextPartsPtr(NextRepCompNotWkCap));
 
             case PartitionType::CmpRpZroNotWk:
                 return(nextPartsPtr(NextRepCompOne));
