@@ -1,4 +1,5 @@
 #include "Partitions/PartitionsCountSection.h"
+#include "Partitions/BigPartsCountRep.h"
 #include "Combinations/ComboCount.h"
 #include <algorithm>  // std::fill; std::min
 #include <cmath>      // std::floor
@@ -184,84 +185,27 @@ double CountCompsRepLen(
     return nChooseK(n - 1, m - 1);
 }
 
-// ******* CountCompsRepLenCap Details ******
+// Returns the count as a double. Internally, we compute the result using the
+// GMP (mpz_class) routine and convert at the end.
 //
-// This uses the inclusion–exclusion principle to count the number of positive
-// compositions of length m that sum to n, with each part bounded above by cap.
+// Rationale:
+// This count is based on an inclusion–exclusion formula. Individual terms
+// (e.g. choose(n - 1, m - 1)) can exceed 2^53 - 1 even when the final result
+// is smaller due to cancellation. If we performed the inclusion–exclusion
+// arithmetic directly in double, those large intermediate values would lose
+// integer precision and the final result could be off by one or more.
 //
-// First, count all positive compositions without the cap:
-//
-//     x_1 + x_2 + ... + x_m = n,    x_i >= 1
-//
-// This is:
-//
-//     choose(n - 1, m - 1)
-//
-// Next, subtract compositions where at least one part exceeds the cap.
-// Suppose exactly one part violates the cap. Without loss of generality:
-//
-//     x_1 >= cap + 1
-//
-// Write:
-//
-//     x_1 = cap + z_1
-//     x_i = z_i   for i >= 2
-//
-// Then:
-//
-//     z_1 + z_2 + ... + z_m = n - cap
-//
-// The number of such compositions is:
-//
-//     choose(n - cap - 1, m - 1)
-//
-// and there are choose(m, 1) choices for which part violates the cap.
-//
-// However, this subtracts too much, because compositions where two parts
-// exceed the cap were subtracted twice. To correct this, add back the number
-// of compositions where two parts exceed the cap:
-//
-//     z_1 + ... + z_m = n - 2*cap
-//
-// giving:
-//
-//     choose(n - 2*cap - 1, m - 1)
-//
-// and choose(m, 2) ways to select the violating parts.
-//
-// Continuing in this way, alternating subtraction and addition, yields:
-//
-//     sum_{i=0}^{floor((n - m)/cap)}
-//         (-1)^i * choose(m, i) * choose(n - i*cap - 1, m - 1)
-//
-// The upper limit floor((n - m)/cap) arises because each violating part must
-// contribute at least cap extra beyond the minimum value of 1.
-//
-// Count capped positive compositions with repetition.
-// PRECONDITIONS (enforced by caller / dispatch):
-//   - n >= m >= 1
-//   - cap >= 2
-//   - n <= cap * m
-//   - allowed is a single-element vector containing cap (allowed.size() == 1),
-//     or the set [1..cap] defined in PartitionsCount
-//
-// NOTE: This function does NOT support arbitrary allowed-sets. It counts
-//       parts in the standard range [1..cap].
+// By computing the sum exactly with mpz_class first and only converting the
+// final value to double, we ensure correctness whenever the true result is
+// representable exactly in double (<= 2^53 - 1). This preserves the double
+// interface while avoiding floating-point drift in razor-edge cases.
 double CountCompsRepLenCap(
     int n, int m, const std::vector<int> &allowed, int strtLen
 ) {
 
-    static_cast<void>(strtLen); // intentionally unused
-
-    const int cap = *std::max_element(allowed.cbegin(), allowed.cend());
-    const int maxViolations = (n - m) >= 0 ? (n - m) / cap : -1;
-    double res = nChooseK(n - 1, m - 1);
-
-    for (int i = 1, sign = -1; i <= maxViolations; ++i, sign *= -1) {
-        res += (sign * nChooseK(m, i) * nChooseK(n - i * cap - 1, m - 1));
-    }
-
-    return res;
+    mpz_class res;
+    CountCompsRepLenCap(res, n, m, allowed);
+    return res.get_d();
 }
 
 // The "Z" means that zero is in the output but not considered.
