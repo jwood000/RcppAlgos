@@ -40,6 +40,28 @@ void rankCompsRep(std::vector<int>::iterator iter, int n, int m,
     }
 }
 
+void rankCompsRepCapped(std::vector<int>::iterator iter, int n, int m,
+                        int cap, int k, double &dblIdx, mpz_class &mpzIdx) {
+
+    // All we are doing in CountCompsRepLenCap is getting the max of allowed
+    std::vector<int> allowed(1, cap);
+    const int width = m;
+    dblIdx = 0;
+
+    --n;
+    --m;
+
+    for (int i = 0, j = 0; i < (width - 1); ++i, --n, --m, j = 0, ++iter) {
+        double temp = CountCompsRepLenCap(n, m, allowed);
+
+        for (int idx = *iter; j < idx; ++j) {
+            --n;
+            dblIdx += temp;
+            temp = CountCompsRepLenCap(n, m, allowed);
+        }
+    }
+}
+
 void rankCompsRepZero(std::vector<int>::iterator iter, int n, int m,
                       int cap, int k, double &dblIdx, mpz_class &mpzIdx) {
 
@@ -415,6 +437,32 @@ void rankCompsRepGmp(std::vector<int>::iterator iter, int n, int m,
             --n;
             mpzIdx += temp;
             Counter->GetCount(temp, n, m);
+        }
+    }
+}
+
+void rankCompsRepCappedGmp(std::vector<int>::iterator iter, int n, int m,
+                           int cap, int k, double &dblIdx, mpz_class &mpzIdx) {
+
+    std::vector<int> allowed(1, cap);
+    const int width = m;
+    mpz_class temp;
+    mpzIdx = 0;
+
+    --n;
+    --m;
+
+    std::unique_ptr<CountClass> Counter = MakeCount(
+        PartitionType::CompRepCapped
+    );
+
+    for (int i = 0, j = 0; i < (width - 1); ++i, --n, --m, j = 0, ++iter) {
+        Counter->GetCount(temp, n, m, allowed);
+
+        for (int idx = *iter; j < idx; ++j) {
+            --n;
+            mpzIdx += temp;
+            Counter->GetCount(temp, n, m, allowed);
         }
     }
 }
@@ -875,6 +923,8 @@ rankPartsPtr GetRankPartsFunc(PartitionType ptype, bool IsGmp) {
                 return(rankPartsPtr(rankPartsRepGmp));
             } case PartitionType::CompRepNoZero: {
                 return(rankPartsPtr(rankCompsRepGmp));
+            } case PartitionType::CompRepCapped: {
+                return(rankPartsPtr(rankCompsRepCappedGmp));
             } case PartitionType::CompRepWeak: {
                 return(rankPartsPtr(rankCompsRepGmp));
             } case PartitionType::CmpRpZroNotWk: {
@@ -925,6 +975,8 @@ rankPartsPtr GetRankPartsFunc(PartitionType ptype, bool IsGmp) {
                 return(rankPartsPtr(rankPartsRep));
             } case PartitionType::CompRepNoZero: {
                 return(rankPartsPtr(rankCompsRep));
+            } case PartitionType::CompRepCapped: {
+                return(rankPartsPtr(rankCompsRepCapped));
             } case PartitionType::CompRepWeak: {
                 return(rankPartsPtr(rankCompsRep));
             } case PartitionType::CmpRpZroNotWk: {
