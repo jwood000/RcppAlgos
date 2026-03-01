@@ -42,6 +42,8 @@ std::unique_ptr<CountClass> MakeCount(PartitionType ptype) {
             return std::make_unique<CompsRepLen>();
         } case PartitionType::CompRepCapped: {
             return std::make_unique<CompsRepLenCap>();
+        } case PartitionType::CmpRpCapZNotWk: {
+            return std::make_unique<CompsRepZeroCap>();
         } case PartitionType::CmpRpZroNotWk: {
             return std::make_unique<CompsRepZero>();
         } case PartitionType::CmpDstctNoZero: {
@@ -200,7 +202,7 @@ void PermDstnctRstrctdMZ::GetCount(
         if (bLiteral) {
             dblRes = CountPartsPermDistinctRstrctdMZ(n, m, allowed, strtLen);
         } else {
-            dblRes = CountCompDistLenRstrctd(n, m, allowed);
+            dblRes = CountCompsDistLenRstrctd(n, m, allowed);
         }
 
         computedDouble = true;
@@ -210,7 +212,7 @@ void PermDstnctRstrctdMZ::GetCount(
         if (bLiteral) {
             CountPartsPermDistinctRstrctdMZ(res, p2d, n, m, allowed, strtLen);
         } else {
-            CountCompDistLenRstrctd(res, p2d, n, m, allowed);
+            CountCompsDistLenRstrctd(res, p2d, n, m, allowed);
         }
     } else {
         res = dblRes;
@@ -306,12 +308,12 @@ void PermDstnctRstrctd::GetCount(
     bool computedDouble = false;
 
     if (cmp(res, Significand53) < 0) {
-        dblRes = CountCompDistLenRstrctd(n, m, allowed);
+        dblRes = CountCompsDistLenRstrctd(n, m, allowed);
         computedDouble = true;
     }
 
     if (!computedDouble || !std::isfinite(dblRes) || dblRes > Significand53) {
-        CountCompDistLenRstrctd(res, p2d, n, m, allowed);
+        CountCompsDistLenRstrctd(res, p2d, n, m, allowed);
     } else {
         res = dblRes;
     }
@@ -322,6 +324,13 @@ void CompsRepLen::GetCount(
     int strtLen, bool bLiteral
 ) {
     CountCompsRepLen(res, n, m);
+}
+
+void CompsRepLenCap::GetCount(
+    mpz_class &res, int n, int m, const std::vector<int> &allowed,
+    int strtLen, bool bLiteral
+) {
+    CountCompsRepLenCap(res, n, m, allowed);
 }
 
 void CompsRepZero::GetCount(
@@ -336,12 +345,16 @@ void CompsRepZero::GetCount(
     }
 }
 
-void CompsRepLenCap::GetCount(
+void CompsRepZeroCap::GetCount(
     mpz_class &res, int n, int m, const std::vector<int> &allowed,
     int strtLen, bool bLiteral
 ) {
 
-    CountCompsRepLenCap(res, n, m, allowed);
+    if (bLiteral) {
+        CountCompsRepCapZNotWk(res, n, m, allowed);
+    } else {
+        CountCompsRepLenCap(res, n, m, allowed);
+    }
 }
 
 void CompsDistinctLen::GetCount(
@@ -377,7 +390,7 @@ void CompsDstnctRstrctdMZ::GetCount(
         if (bLiteral) {
             dblRes = CountCompsDistinctRstrctdMZ(n, m, allowed, strtLen);
         } else {
-            dblRes = CountCompDistLenRstrctd(n, m, allowed);
+            dblRes = CountCompsDistLenRstrctd(n, m, allowed);
         }
         computedDouble = true;
     }
@@ -386,7 +399,7 @@ void CompsDstnctRstrctdMZ::GetCount(
         if (bLiteral) {
             CountCompsDistinctRstrctdMZ(res, p2d, n, m, allowed, strtLen);
         } else {
-            CountCompDistLenRstrctd(res, p2d, n, m, allowed);
+            CountCompsDistLenRstrctd(res, p2d, n, m, allowed);
         }
     } else {
         res = dblRes;
@@ -444,7 +457,7 @@ double RepLenRstrctd::GetCount(
 double PermDstnctRstrctd::GetCount(
     int n, int m, const std::vector<int> &allowed, int strtLen
 ) {
-    return CountCompDistLenRstrctd(n, m, allowed);
+    return CountCompsDistLenRstrctd(n, m, allowed);
 }
 
 double PermDstnctRstrctdMZ::GetCount(
@@ -459,16 +472,22 @@ double CompsRepLen::GetCount(
     return CountCompsRepLen(n, m);
 }
 
+double CompsRepLenCap::GetCount(
+    int n, int m, const std::vector<int> &allowed, int strtLen
+) {
+    return CountCompsRepLenCap(n, m, allowed);
+}
+
 double CompsRepZero::GetCount(
     int n, int m, const std::vector<int> &allowed, int strtLen
 ) {
     return CountCompsRepZNotWk(n, m);
 }
 
-double CompsRepLenCap::GetCount(
+double CompsRepZeroCap::GetCount(
     int n, int m, const std::vector<int> &allowed, int strtLen
 ) {
-    return CountCompsRepLenCap(n, m, allowed);
+    return CountCompsRepCapZNotWk(n, m, allowed);
 }
 
 double CompsDistinctLen::GetCount(

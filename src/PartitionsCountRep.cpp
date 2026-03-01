@@ -208,6 +208,15 @@ double CountCompsRepLenCap(
     return res.get_d();
 }
 
+double CountCompsRepCapZNotWk(
+    int n, int m, const std::vector<int> &allowed, int strtLen
+) {
+
+    mpz_class res;
+    CountCompsRepCapZNotWk(res, n, m, allowed);
+    return res.get_d();
+}
+
 // The "Z" means that zero is in the output but not considered.
 //
 // For weak compositions, in SetPartitionDesign in PartitionsUtils.cpp, if we

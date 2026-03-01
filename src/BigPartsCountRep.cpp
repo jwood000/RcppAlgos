@@ -203,7 +203,7 @@ void CountCompsRepLen(mpz_class &res, int n, int m,
 // NOTE: This function does NOT support arbitrary allowed-sets. It counts
 //       parts in the standard range [1..cap].
 void CountCompsRepLenCap(mpz_class &res, int n, int m,
-                         const std::vector<int> &allowed, int strtLen) {
+                         const std::vector<int> &allowed, int strtLen = 0) {
 
     static_cast<void>(strtLen); // intentionally unused
 
@@ -221,8 +221,30 @@ void CountCompsRepLenCap(mpz_class &res, int n, int m,
     }
 }
 
+void CountCompsRepCapZNotWk(mpz_class &res, int n, int m,
+                            const std::vector<int> &allowed, int strtLen) {
+
+    static_cast<void>(strtLen);
+
+    res = 0;
+    mpz_class temp;
+
+    const int cap = *std::max_element(allowed.cbegin(), allowed.cend());
+    const int minWidth = ((n - 1) / cap) + 1;  // ceil(n / cap)
+
+    for (int i = minWidth; i <= m; ++i) {
+        temp = 0; // defensive: avoid accumulation if the callee doesn't reset
+        CountCompsRepLenCap(temp, n, i, allowed);
+        res += temp;
+    }
+}
+
 void CountCompsRepZNotWk(mpz_class &res, int n, int m,
                          const std::vector<int> &allowed, int strtLen) {
+
+    static_cast<void>(allowed);
+    static_cast<void>(strtLen);
+    res = 0;
 
     if (n == m) {
         res = 1;
