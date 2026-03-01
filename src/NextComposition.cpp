@@ -24,22 +24,25 @@ void NextCompositionRep(std::vector<int> &z, int lastCol) {
     }
 }
 
+template <int one_or_zero>
 void NextCompositionRep(std::vector<int> &z, int lastCol, int cap) {
 
-    if (z[lastCol - 1] < cap && z[lastCol] != 0) {
+    if (z[lastCol - 1] < cap && z[lastCol] != one_or_zero) {
         --z[lastCol];
         ++z[lastCol - 1];
     } else {
+        int threshold = one_or_zero * 2;
         int cumsum = z[lastCol] + z[lastCol - 1];
         int j = lastCol - 2;
 
-        while (j > 0 && (z[j] == cap || cumsum == 0)) {
+        while (j > 0 && (z[j] == cap || cumsum == threshold)) {
+            threshold += one_or_zero;
             cumsum += z[j];
             --j;
         }
 
         ++z[j];
-        FillTailRep(z, j + 1, cap, lastCol);
+        FillTailRep<one_or_zero>(z, j + 1, cap, lastCol);
     }
 }
 
@@ -306,3 +309,6 @@ void NextCompositionDistinct(
 
 template void NextCompositionRep<0>(std::vector<int>&, int);
 template void NextCompositionRep<1>(std::vector<int>&, int);
+
+template void NextCompositionRep<0>(std::vector<int>&, int, int);
+template void NextCompositionRep<1>(std::vector<int>&, int, int);

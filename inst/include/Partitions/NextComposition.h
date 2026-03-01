@@ -5,6 +5,7 @@
 template <int one_or_zero>
 void NextCompositionRep(std::vector<int> &z, int lastCol);
 
+template <int one_or_zero>
 void NextCompositionRep(std::vector<int> &z, int lastCol, int cap);
 
 void NextCompositionDistinct(
