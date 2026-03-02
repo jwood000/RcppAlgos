@@ -219,6 +219,22 @@ test_that("parttionsSample and compositionsSample produces correct results", {
                                       nThreads = 2),
                      seq_len(nrow(bench)))
 
+    ## "CmpRpZroNotWk"
+    bench = compositionsGeneral(0:20, 7, TRUE)
+    expect_identical(compositionsSample(0:20, 7, TRUE, nThreads = 2,
+                                        sampleVec = seq_len(nrow(bench))), bench)
+    expect_identical(compositionsRank(bench, v = 0:20, repetition = TRUE,
+                                      nThreads = 2),
+                     seq_len(nrow(bench)))
+
+    ## "CompRepWeak"
+    bench = compositionsGeneral(0:15, 6, TRUE, weak = TRUE)
+    expect_identical(compositionsSample(0:15, 6, TRUE, weak = TRUE, nThreads = 2,
+                                        sampleVec = seq_len(nrow(bench))), bench)
+    expect_identical(compositionsRank(bench, v = 0:15, repetition = TRUE,
+                                      nThreads = 2, weak = TRUE),
+                     seq_len(nrow(bench)))
+
     ## "CmpDstctNoZero"
     bench = compositionsGeneral(28, 5)
     expect_identical(compositionsSample(28, 5, nThreads = 2,
@@ -300,9 +316,26 @@ test_that("parttionsSample and compositionsSample produces correct results", {
     bench = compositionsGeneral(12, 6, TRUE, target = 25)
     expect_identical(compositionsSample(12, 6, TRUE, target = 25,
                                         sampleVec = seq_len(nrow(bench)),
-                                        nThreads = 2),
-                     bench)
+                                        nThreads = 2), bench)
     expect_identical(compositionsRank(bench, v = 12, target = 25, nThreads = 2,
+                                      repetition = TRUE),
+                     seq_len(nrow(bench)))
+
+    ## "CompRepWeakCap"
+    bench = compositionsGeneral(0:12, 6, TRUE, weak = TRUE, target = 20)
+    expect_identical(compositionsSample(0:12, 6, TRUE, weak = TRUE, target = 20,
+                                        sampleVec = seq_len(nrow(bench)),
+                                        nThreads = 2), bench)
+    expect_identical(compositionsRank(bench, v = 0:12, target = 20, nThreads = 2,
+                                      repetition = TRUE, weak = TRUE),
+                     seq_len(nrow(bench)))
+
+    ## "CmpRpCapZNotWk"
+    bench = compositionsGeneral(0:12, 6, TRUE, target = 25)
+    expect_identical(compositionsSample(0:12, 6, TRUE, target = 25,
+                                        sampleVec = seq_len(nrow(bench)),
+                                        nThreads = 2), bench)
+    expect_identical(compositionsRank(bench, v = 0:12, target = 25, nThreads = 2,
                                       repetition = TRUE),
                      seq_len(nrow(bench)))
 
@@ -426,12 +459,28 @@ test_that("parttionsSample and compositionsSample produces correct results", {
         )
     )
 
-    ## CompRepCapped
+    ## "CompRepCapped"
     mySamp = compositionsSample(20, 50, TRUE, target = 200,
                                 n = 4, namedSample = TRUE,
                                 nThreads = 2)
     expect_equal(compositionsRank(mySamp, v = 20, repetition = TRUE,
                                   nThreads = 2, target = 200),
+                 rownames(mySamp))
+
+    ## "CmpRpCapZNotWk"
+    mySamp = compositionsSample(0:20, 50, TRUE, target = 200,
+                                n = 4, namedSample = TRUE,
+                                nThreads = 2)
+    expect_equal(compositionsRank(mySamp, v = 0:20, repetition = TRUE,
+                                  nThreads = 2, target = 200),
+                 rownames(mySamp))
+
+    ## "CompRepWeakCap"
+    mySamp = compositionsSample(0:20, 50, TRUE, target = 200, weak = TRUE,
+                                n = 4, namedSample = TRUE,
+                                nThreads = 2)
+    expect_equal(compositionsRank(mySamp, v = 0:20, repetition = TRUE,
+                                  nThreads = 2, target = 200, weak = TRUE),
                  rownames(mySamp))
 
     ## Multiple inputs

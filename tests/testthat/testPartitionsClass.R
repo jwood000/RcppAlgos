@@ -786,6 +786,7 @@ test_that("partitionsIter produces correct results", {
     expect_true(partitionClassTest(20, 10, rep = TRUE, tar = 45))
 
     #### Repetition; Compositions; No Zeros; Capped (i.e. Specific Target)
+    ## "CompRepCapped"
     expect_true(
         partitionClassTest(10, 6, rep = TRUE, tar = 25, IsComposition = TRUE)
     )
@@ -799,6 +800,7 @@ test_that("partitionsIter produces correct results", {
     )
 
     #### Repetition; Compositions; No Zeros; Capped (i.e. Specific Target)
+    ## "CompRepCapped"
     expect_true(
         partitionClassTest(5, 8, rep = TRUE, tar = 25, IsComposition = TRUE)
     )
@@ -809,6 +811,43 @@ test_that("partitionsIter produces correct results", {
         partitionClassTest(
             17 + (1:5) * 1234, 8, rep = TRUE, tar = 30986, IsComposition = TRUE
         )
+    )
+
+    #### Repetition; Compositions; Zero inc.; Capped (i.e. Specific Target)
+    ## "CmpRpCapZNotWk"
+    expect_true(
+        partitionClassTest(0:10, 6, rep = TRUE, tar = 25, IsComposition = TRUE,
+                           requiresWidthRebuild = TRUE)
+    )
+
+    #### Mapped version
+    ## 25 * 1234 = 30850
+    expect_true(
+        partitionClassTest(
+            (0:10) * 1234, 6, rep = TRUE, tar = 30850, IsComposition = TRUE,
+            requiresWidthRebuild = TRUE
+        )
+    )
+
+    #### Repetition; Compositions; Zero inc.; Capped (i.e. Specific Target)
+    ## "CmpRpCapZNotWk"
+    expect_true(
+        partitionClassTest(0:5, 8, rep = TRUE, tar = 20, IsComposition = TRUE,
+                           requiresWidthRebuild = TRUE)
+    )
+
+    #### Repetition; Weak Compositions; Zero inc.; Capped (i.e. Specific Target)
+    ## "CompRepWeakCap"
+    expect_true(
+        partitionClassTest(0:5, 7, rep = TRUE, tar = 20,
+                           IsComposition = TRUE, IsWeak = TRUE)
+    )
+
+    #### Repetition; Weak Compositions; Zero inc.; Capped (i.e. Specific Target)
+    ## "CompRepWeakCap"
+    expect_true(
+        partitionClassTest(0:10, 6, rep = TRUE, tar = 20,
+                           IsComposition = TRUE, IsWeak = TRUE)
     )
 
     #### Multiset; class table;
@@ -1035,6 +1074,14 @@ test_that("partitionsIter produces correct results", {
     ## "CompRepCapped"
     expect_true(partitionClassBigZTest(20, 40, TRUE, tar = 200,
                                        IsComposition = TRUE))
+
+    ## "CmpRpCapZNotWk"
+    expect_true(partitionClassBigZTest(0:200, 10, TRUE, tar = 1000,
+                                       IsComposition = TRUE))
+
+    ## "CompRepWeakCap"
+    expect_true(partitionClassBigZTest(0:200, 10, TRUE, tar = 1000,
+                                       IsComposition = TRUE, IsWeak = TRUE))
     #### Mapped version
     ## 200 * 123456789 = 246913578000
     expect_true(partitionClassBigZTest((1:20) * 123456789, 40, TRUE,

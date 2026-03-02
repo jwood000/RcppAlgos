@@ -934,6 +934,91 @@ test_that("partition/compositionsGeneral Repetition Parallel", {
                                       target = 732L),
                      c(1L, 35581L, 71162L, 106743L))
 
+    #### Repetition; Specific Length; Zero included; Composition; Specific Target
+    ##
+    ## compositionsDesign(0:15, 6, TRUE, target = 30)[
+    ##     c("num_partitions", "partition_type")
+    ## ]
+    ## $num_partitions
+    ## [1] 127821
+    ##
+    ## $partition_type
+    ## [1] "CmpRpCapZNotWk"
+    myComps = compositionsGeneral(0:15, 6, TRUE, target = 30, nThreads = 2)
+    expect_identical(compositionsGeneral(0:15, 6, TRUE, target = 30), myComps)
+    expect_identical(compositionsRank(myComps[c(1L, 42607L, 85214L, 127821L), ],
+                                      v = 0:15, repetition = TRUE, target = 30),
+                     c(1L, 42607L, 85214L, 127821L))
+
+    #### Mapped version
+    ##
+    ## 30 * 23 = 690
+    ##
+    ## compositionsDesign((0:15) * 23, 6, TRUE, target = 690)[
+    ##     c("num_partitions", "partition_type")
+    ## ]
+    ## $num_partitions
+    ## [1] 127821
+    ##
+    ## $partition_type
+    ## [1] "CmpRpCapZNotWk"
+    myComps = compositionsGeneral(
+        (0:15) * 23, 6, TRUE, target = 690, nThreads = 2
+    )
+    expect_identical(
+        compositionsGeneral((0:15) * 23, 6, TRUE, target = 690), myComps
+    )
+    expect_identical(
+        compositionsRank(myComps[c(1L, 42607L, 85214L, 127821L), ],
+                         v = (0:15) * 23, repetition = TRUE, target = 690),
+                     c(1L, 42607L, 85214L, 127821L)
+    )
+
+    #### Repetition; Spec Length; Zero inc; Composition; Specific Target; Weak
+    ##
+    ## compositionsDesign(0:12, 6, TRUE, target = 25, weak = TRUE)[
+    ##     c("num_partitions", "partition_type")
+    ## ]
+    ## $num_partitions
+    ## [1] 105378
+    ##
+    ## $partition_type
+    ## [1] "CompRepWeakCap"
+    myComps = compositionsGeneral(
+        0:12, 6, TRUE, target = 25, weak = TRUE, nThreads = 2
+    )
+    expect_identical(
+        compositionsGeneral(0:12, 6, TRUE, target = 25, weak = TRUE), myComps
+    )
+    expect_identical(compositionsRank(myComps[c(1L, 35126L, 70252L, 105378L), ],
+                                      v = 0:12, repetition = TRUE,
+                                      target = 25, weak = TRUE),
+                     c(1L, 35126L, 70252L, 105378L))
+
+    #### Mapped version
+    ##
+    ## 17 * 25 = 425
+    ##
+    ## compositionsDesign((0:12) * 17, 6, TRUE, target = 425, weak = TRUE)[
+    ##     c("num_partitions", "partition_type")
+    ## ]
+    ## $num_partitions
+    ## [1] 105378
+    ##
+    ## $partition_type
+    ## [1] "CompRepWeakCap"
+    myComps = compositionsGeneral(
+        (0:12) * 17, 6, TRUE, target = 425, weak = TRUE, nThreads = 2
+    )
+    expect_identical(
+        compositionsGeneral((0:12) * 17, 6, TRUE, target = 425, weak = TRUE),
+        myComps
+    )
+    expect_identical(compositionsRank(myComps[c(1L, 35126L, 70252L, 105378L), ],
+                                      v = (0:12) * 17, repetition = TRUE,
+                                      target = 425, weak = TRUE),
+                     c(1L, 35126L, 70252L, 105378L))
+
     #### Repetition; Specific Length; Zero included
     ##
     ## partitionsDesign(0:60, 10, TRUE)[c("num_partitions", "partition_type")]
