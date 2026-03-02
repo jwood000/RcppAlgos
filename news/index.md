@@ -2,55 +2,75 @@
 
 ## RcppAlgos 2.10.0
 
+This release introduces major enhancements to the compositions
+framework, including support for distinct and repetition-restricted
+compositions, parallel ranking, and performance improvements across
+several combinatorial algorithms.
+
+These enhancements integrate fully with the existing counting, ranking,
+sampling, and iterator infrastructure, and have been validated for
+correctness and consistency across supported combinatorial families.
+
 ### New Features:
 
-- Added parallel capabilities to all ranking functions via the new
-  `nThreads` argument (e.g. `partitionsRank(..., nThreads = 4)`,
-  `comboRank(..., nThreads = 4)`).
-- Implemented a next-lexicographical algorithm for generating distinct
-  integer compositions, enabling efficient large-scale generation such
-  as `compositionsGeneral(50, 8)`.
-- Added accompanying algorithms for the distinct integer composition
-  case, exposed through: `compositionsSample`, `compositionsRank`, and
-  `compositionsIter`.
+- Added parallel capabilities to all ranking functions via a new
+  `nThreads` argument
+  (e.g. [`comboRank()`](https://jwood000.github.io/RcppAlgos/reference/combinatoricsRank.md),
+  [`partitionsRank()`](https://jwood000.github.io/RcppAlgos/reference/partitionsRank.md),
+  [`compositionsRank()`](https://jwood000.github.io/RcppAlgos/reference/partitionsRank.md)),
+  enabling faster ranking of large combinatorial results.
+
+- Implemented a next-lexicographical algorithm for generating **distinct
+  integer compositions**, enabling efficient generation of large
+  problems such as `compositionsGeneral(50, 8)`.
+
+- Added full support for distinct compositions across the compositional
+  framework, including:
+
+  - [`compositionsGeneral()`](https://jwood000.github.io/RcppAlgos/reference/partitionsGeneral.md)
+  - [`compositionsSample()`](https://jwood000.github.io/RcppAlgos/reference/partitionsSample.md)
+  - [`compositionsRank()`](https://jwood000.github.io/RcppAlgos/reference/partitionsRank.md)
+  - [`compositionsIter()`](https://jwood000.github.io/RcppAlgos/reference/partitionsIterator.md)
+
+- Added support for **compositions with repetition subject to a maximum
+  part constraint** (“capped compositions”), including weak and non-weak
+  cases, with full support for counting, ranking, sampling, and
+  iteration.
+
 - Enhanced
   [`permuteCount()`](https://jwood000.github.io/RcppAlgos/reference/combinatoricsCount.md)
   to count permutations of partitions when called with
-  `constraintFun = "sum"` and `comparisonFun = "=="`, allowing optimized
-  counting in cases that reduce to partition/composition counting.
-
-### Bug Fixes:
-
-- Improved input validation for constraint-based calls by requiring
-  `comparisonFun` to be a character vector (now errors early with a
-  clearer message).
-- Fixed edge-case handling in partition iteration logic where
-  boundary-derived indices could become negative, preventing incorrect
-  behavior in some partition/multiset scenarios.
+  `constraintFun = "sum"` and `comparisonFun = "=="`, enabling faster
+  counting when problems reduce to partition/composition counting.
 
 ### Improvements:
 
-- Added a package load-time check that validates the loaded shared
-  library matches the installed package version, producing a clear
-  reinstall/restart error instead of potential crashes from stale
-  binaries.
-- Improved handling of singleton `v` with singleton `freqs` so that
-  numeric values are interpreted correctly in some constrained/ranking
-  paths.
-- Added nonexported `permutePartsDesign()` to inspect the
-  partition-design/counting setup used by
-  [`permuteCount()`](https://jwood000.github.io/RcppAlgos/reference/combinatoricsCount.md)
-  when it reduces to a partition/composition counting problem.
+- Added validation at package load time to ensure the loaded shared
+  library matches the installed package version, producing a clear error
+  message instead of potential crashes caused by stale compiled code.
+- Improved handling of certain constrained and ranking cases involving
+  singleton inputs.
+- Added internal tooling to support partition and composition counting
+  workflows.
 
 ### Performance:
 
-- General performance improvements for ranking and composition-related
-  algorithms, including multi-threaded ranking support.
+- Improved performance of ranking and generation algorithms, including
+  support for parallel ranking.
+- Improved performance and scalability of composition-related
+  algorithms, particularly for constrained and distinct composition
+  problems.
 
-### Internal:
+### Bug Fixes:
 
-- Added developer tooling and expanded internal type/class
-  infrastructure to support the new composition and counting paths.
+- Fixed an issue in
+  [`permuteIter()`](https://jwood000.github.io/RcppAlgos/reference/combinatoricsIterator.md)
+  affecting cases that reduce to permutations of partitions, which could
+  previously produce incorrect iteration results.
+- Improved input validation for constraint-based calls, producing
+  clearer error messages for invalid inputs.
+- Fixed edge-case issues affecting certain partition and composition
+  iteration scenarios.
 
 ## RcppAlgos 2.9.5
 
