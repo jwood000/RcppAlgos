@@ -11,9 +11,7 @@
 static void Finalizer(SEXP ext) {
     if (TYPEOF(ext) != EXTPTRSXP) return;
 
-    auto* ptr =
-        reinterpret_cast<Iterator*>(R_ExternalPtrAddr(ext));
-
+    auto* ptr = reinterpret_cast<Iterator*>(R_ExternalPtrAddr(ext));
     if (!ptr) return;
 
     R_ClearExternalPtr(ext);

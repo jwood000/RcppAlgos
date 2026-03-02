@@ -30,7 +30,15 @@ URL: https://jwood000.github.io/RcppAlgos/,
 BugReports: https://github.com/jwood000/RcppAlgos/issues
 LinkingTo: cpp11
 Imports: gmp, methods
-Suggests: testthat, partitions, microbenchmark, knitr, RcppBigIntAlgos, rmarkdown
+Suggests:
+    testthat,
+    partitions,
+    microbenchmark,
+    knitr,
+    RcppBigIntAlgos,
+    rmarkdown,
+    covr,
+    xml2
 Config/Needs/website: pkgdown
 License: GPL (>=2)
 SystemRequirements: gmp (>= 4.2.3)
