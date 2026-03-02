@@ -1,4 +1,5 @@
 #include "Partitions/PartitionsCountSection.h"
+#include "Partitions/BigPartsCountRep.h"
 #include "Combinations/ComboCount.h"
 #include <algorithm>  // std::fill; std::min
 #include <cmath>      // std::floor
@@ -182,6 +183,38 @@ double CountCompsRepLen(
     int n, int m, const std::vector<int> &allowed, int strtLen
 ) {
     return nChooseK(n - 1, m - 1);
+}
+
+// Returns the count as a double. Internally, we compute the result using the
+// GMP (mpz_class) routine and convert at the end.
+//
+// Rationale:
+// This count is based on an inclusion–exclusion formula. Individual terms
+// (e.g. choose(n - 1, m - 1)) can exceed 2^53 - 1 even when the final result
+// is smaller due to cancellation. If we performed the inclusion–exclusion
+// arithmetic directly in double, those large intermediate values would lose
+// integer precision and the final result could be off by one or more.
+//
+// By computing the sum exactly with mpz_class first and only converting the
+// final value to double, we ensure correctness whenever the true result is
+// representable exactly in double (<= 2^53 - 1). This preserves the double
+// interface while avoiding floating-point drift in razor-edge cases.
+double CountCompsRepLenCap(
+    int n, int m, const std::vector<int> &allowed, int strtLen
+) {
+
+    mpz_class res;
+    CountCompsRepLenCap(res, n, m, allowed);
+    return res.get_d();
+}
+
+double CountCompsRepCapZNotWk(
+    int n, int m, const std::vector<int> &allowed, int strtLen
+) {
+
+    mpz_class res;
+    CountCompsRepCapZNotWk(res, n, m, allowed);
+    return res.get_d();
 }
 
 // The "Z" means that zero is in the output but not considered.

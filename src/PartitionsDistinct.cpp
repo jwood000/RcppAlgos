@@ -1,10 +1,10 @@
-#include <memory>
 #include "Permutations/PermuteCount.h"
 #include "Partitions/NextPartition.h"
-#include "PopulateVec.h"
+#include "PopulateUtils.h"
 #include "RMatrix.h"
 #include <algorithm>  // std::next_permutation
 #include <numeric>    // std::iota
+#include <memory>
 
 template <typename T>
 int PartsGenDistinct(T* mat, const std::vector<T> &v,
@@ -120,14 +120,14 @@ int PartsGenDistinct(std::vector<T> &partsVec, const std::vector<T> &v,
          NextDistinctGenPart(z, boundary, edge, pivot,
                              tarDiff, lastCol, lastElem)) {
 
-        PopulateVec(v, partsVec, z, count, width, nRows, IsComb);
+        PopulateVector(v, partsVec, z, count, width, nRows, IsComb);
         if (count >= nRows) break;
     }
 
     std::size_t count = partsVec.size() / width;
 
     if (count < nRows) {
-        PopulateVec(v, partsVec, z, count, width, nRows, IsComb);
+        PopulateVector(v, partsVec, z, count, width, nRows, IsComb);
     }
 
     return 1;
@@ -149,14 +149,8 @@ int PartsGenPermZeroDistinct(T* mat, const std::vector<T> &v,
     for (std::size_t count = 0;;
          NextDistinctGenPart(z, boundary, edge, pivot,
                              tarDiff, lastCol, lastElem)) {
-        do {
-            for (std::size_t k = 0; k < width; ++k) {
-                mat[count + nRows * k] = v[z[k]];
-            }
 
-            ++count;
-        } while (std::next_permutation(z.begin(), z.end()) && count < nRows);
-
+        PopulateMatrix(mat, v, z, count, width, nRows, false);
         if (count >= nRows) {break;}
     }
 

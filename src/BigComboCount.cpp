@@ -8,8 +8,30 @@
 // in StdCombinationCount.cpp. The only difference is that they
 // utilize the gmp library and deal mostly with mpz_class types
 
+// Computes the binomial coefficient "n choose m" exactly into `result`.
+//
+// Notes:
+// * This wrapper guards against negative inputs before calling mpz_bin_uiui.
+//   mpz_bin_uiui takes unsigned arguments; passing a negative `int` would
+//   otherwise convert to a huge unsigned value and potentially trigger
+//   extremely expensive computation.
+// * For invalid inputs (n < 0, m < 0, or m > n) we set result = 0.
+// * For base cases (m == 0 or m == n) we set result = 1.
 void nChooseKGmp(mpz_class &result, int n, int m) {
-    mpz_bin_uiui(result.get_mpz_t(), n, m);
+
+    if (n < 0 || m < 0 || m > n) {
+        result = 0;
+        return;
+    }
+
+    if (m == n || m == 0) {
+        result = 1;
+        return;
+    }
+
+    mpz_bin_uiui(result.get_mpz_t(),
+                 static_cast<unsigned long>(n),
+                 static_cast<unsigned long>(m));
 }
 
 void NumCombsWithRepGmp(mpz_class &result, int n, int m) {

@@ -295,6 +295,33 @@ void SetStartPartitionZ(const std::vector<int> &Reps,
     }
 }
 
+// Invariant note (mapped design space):
+//
+// DiscoverPType operates on the mapped/standard problem representation used by
+// the next-lex engines. In any mapped case that would route to PartsGenManager
+// (i.e. any case where we have a dedicated mapped algorithm), we do NOT keep a
+// literal zero in the mapped value space. If the user supplied v containing 0,
+// that 0 is mapped to a positive integer (via shifting / mapping heuristics).
+//
+// Consequence:
+//   - The canonical "isoz" vector here is an index/result vector in the mapped
+//     space, not the user's original value space.
+//   - Therefore, the weak repetition composition type CompRepWeak (which
+//     conceptually corresponds to allowing literal zeros in the *user* value
+//     space) should not appear as a mapped type that triggers PartsGenManager.
+//   - When part.isComp && part.isWeak is true in this mapped context and
+//     startZ equals the canonical isoz starter, the correct mapped type is
+//     CompRepNoZero (not CompRepWeak), because the mapped domain contains no
+//     literal zeros.
+//
+// This is the same invariant documented in PartitionsManager.cpp:
+//   "PrmRepPart, ... and CompRepWeak shouldn't happen. In any mapped case that
+//    would trigger PartsGenManager, the zero would be mapped to some non-zero
+//    integer."
+//
+// If a future refactor allows literal zeros to persist into the mapped space,
+// this classification logic must be revisited (and CompRepWeak may become
+// reachable here).
 int DiscoverPType(const std::vector<int> &Reps,
                   PartDesign &part, int lenV) {
 
@@ -302,10 +329,15 @@ int DiscoverPType(const std::vector<int> &Reps,
         part.ptype = PartitionType::LengthOne;
         return 1;
     } else if (part.isRep) {
-        std::vector<int> isoz(part.width, 0);
-        isoz.back() = part.mapTar -
+        const int last_val = part.mapTar -
             static_cast<int>(!part.includeZero) * part.width;
 
+        std::vector<int> isoz(part.width, 0);
+        isoz.back() = last_val;
+
+        // Note: part.isWeak here means "weak in the user's domain"; mapped
+        // startZ/isoz lives in a zero-free domain by design, so this still
+        // classifies as CompRepNoZero.
         if (part.isComp && part.isWeak && isoz == part.startZ) {
             part.ptype = PartitionType::CompRepNoZero;
             return 1;
@@ -319,11 +351,43 @@ int DiscoverPType(const std::vector<int> &Reps,
             part.ptype = part.isPerm ? PartitionType::PrmRepPartNoZ :
                 PartitionType::RepNoZero;
             return 1;
-        } else if (part.isComb) {
+        }
+
+        std::vector<int> iso_cap_z(part.width, 0);
+        int partial = last_val;
+        const int cap = part.cap - static_cast<int>(!part.includeZero);
+
+        if (cap < 1) {
+            cpp11::stop(
+                "The maximum value is malformed. Please open an issue here:\n\t"
+                "https://github.com/jwood000/RcppAlgos/issues"
+            );
+        }
+
+        for (int i = part.width - 1; partial > 0 && i >= 0; --i) {
+            if (partial >= cap) {
+                iso_cap_z[i] = cap;
+            } else {
+                iso_cap_z[i] = partial;
+            }
+
+            partial -= iso_cap_z[i];
+        }
+
+        if (part.isComb && iso_cap_z == part.startZ) {
             part.ptype = PartitionType::RepCapped;
             return 1;
-        } else if (part.isPerm) {
+        } else if (part.isPerm && iso_cap_z == part.startZ) {
             part.ptype = PartitionType::PrmRepCapped;
+            return 1;
+        } else if (part.isComp && part.isWeak && iso_cap_z == part.startZ) {
+            part.ptype = PartitionType::CompRepWeakCap;
+            return 1;
+        } else if (part.isComp && iso_cap_z == part.startZ && part.includeZero) {
+            part.ptype = PartitionType::CmpRpCapZNotWk;
+            return 1;
+        } else if (part.isComp && iso_cap_z == part.startZ) {
+            part.ptype = PartitionType::CompRepCapped;
             return 1;
         }
     } else {

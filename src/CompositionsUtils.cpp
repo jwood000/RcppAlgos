@@ -143,6 +143,34 @@ int GetFirstPartitionDistinct(const std::vector<int> &v, std::vector<int> &z,
     return 1;
 }
 
+template <int one_or_zero>
+void FillTailRep(std::vector<int> &z, int strt, int cap, int lastCol) {
+
+    // The element at position strt-1 was just increased by 1. To preserve the
+    // overall sum, the tail must decrease by 1. Starting partial at -1 ensures
+    // that after accumulating the original tail values, partial equals the
+    // required replacement sum for the tail.
+    int partial = -1;
+
+    for (int i = strt; i <= lastCol; ++i) {
+        partial += (z[i] - one_or_zero);
+        z[i] = one_or_zero;
+    }
+
+    for (int i = lastCol; partial > 0 && i >= strt; --i) {
+
+        partial += one_or_zero;
+
+        if (partial >= cap) {
+            z[i] = cap;
+        } else {
+            z[i] = partial;
+        }
+
+        partial -= z[i];
+    }
+}
+
 bool IsComplementZeroBased(bool firstZero, bool isWeak, bool IsGen) {
 
     // N.B. Only mapped cases with `v[0] == 0` are considered.
@@ -571,3 +599,6 @@ int CompsDistinctSetup(
     myMax = GetMax(z, complement);
     return 1;
 }
+
+template void FillTailRep<0>(std::vector<int>&, int, int, int);
+template void FillTailRep<1>(std::vector<int>&, int, int, int);

@@ -253,7 +253,7 @@ double CountPartsDistinctRstrctdMZ(
     return count;
 }
 
-// CountCompDistLenRstrctd
+// CountCompsDistLenRstrctd
 // -----------------------
 // Counts the number of compositions (order matters) of length m whose parts
 // are distinct values chosen from allowed and sum to n.
@@ -265,7 +265,7 @@ double CountPartsDistinctRstrctdMZ(
 //   - Because all chosen values are distinct, the number of orderings is m!.
 //     (NumPermsNoRep(m, m) is assumed to be m!.)
 //
-double CountCompDistLenRstrctd(
+double CountCompsDistLenRstrctd(
     int n, int m, const std::vector<int> &allowed, int strtLen
 ) {
     return CountPartsDistLenRstrctd(n, m, allowed) * NumPermsNoRep(m, m);

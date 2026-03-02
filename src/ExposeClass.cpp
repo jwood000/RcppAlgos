@@ -11,9 +11,7 @@
 static void Finalizer(SEXP ext) {
     if (TYPEOF(ext) != EXTPTRSXP) return;
 
-    auto* ptr =
-        reinterpret_cast<Iterator*>(R_ExternalPtrAddr(ext));
-
+    auto* ptr = reinterpret_cast<Iterator*>(R_ExternalPtrAddr(ext));
     if (!ptr) return;
 
     R_ClearExternalPtr(ext);
@@ -277,8 +275,38 @@ SEXP CombClassNew(SEXP RVals, SEXP RboolVec, SEXP freqInfo, SEXP Rparallel,
             R_RegisterCFinalizerEx(ext, Finalizer, TRUE);
 
             return ext;
-        } else if (ctype == ConstraintType::General ||
-                   ctype == ConstraintType::PartitionEsque) {
+        }
+
+        // Permutation-partition ("Prm*") cases are technically mappable to a
+        // PartitionType, as they enumerate partitions and then generate every
+        // permutation of each partition. However, they do not have a
+        // corresponding NextPartition-based iterator implementation.
+        // Historically, these cases were designed for matrix population (using
+        // precomputed counts) rather than true partition iteration.
+        //
+        // Attempting to dispatch these to the PartitionType iterator would
+        // result in invalid state, as there is no NextPartition setup capable
+        // of advancing both the partition and its permutation stream.
+        //
+        // Instead, we intentionally route part.isPerm cases to the general
+        // constraint iterator machinery. This produces the correct sequence
+        // (and matches permuteGeneral output), although the ordering is not
+        // lexicographic and performance may be slightly lower than a dedicated
+        // implementation.
+        //
+        // This is a correctness safeguard. Dedicated iterator support could be
+        // added in the future if needed.
+
+        const bool isPermPartition = part.isPerm &&
+            (
+                ctype == ConstraintType::PartMapping ||
+                ctype == ConstraintType::PartStandard
+            );
+
+
+        if (isPermPartition ||
+            ctype == ConstraintType::General ||
+            ctype == ConstraintType::PartitionEsque) {
 
             class CnstrntsToR* ptr = new CnstrntsToR(
                 VECTOR_ELT(RVals, 0), m, VECTOR_ELT(RVals, 4), bVec, myReps,
@@ -292,14 +320,16 @@ SEXP CombClassNew(SEXP RVals, SEXP RboolVec, SEXP freqInfo, SEXP Rparallel,
             R_RegisterCFinalizerEx(ext, Finalizer, TRUE);
 
             return ext;
-        } else if (ctype == ConstraintType::SpecialCnstrnt) {
-            // We must use a single thread to ensure the proper constraint
-            // algorithm is called here: ConstraintsSpecial.cpp. Note that
-            // the multithreaded algo is constrained by the maximum number
-            // of results (i.e. count is incremented in the main body and
-            // is checked in the do while. In the single threaded case,
-            // count is incremented when the condition is met and isn't
-            // relied on in the do while).
+        }
+
+        // We must use a single thread to ensure the proper constraint algorithm
+        // is called here: ConstraintsSpecial.cpp. Note that the multithreaded
+        // algo is constrained by the maximum number of results (i.e. count is
+        // incremented in the main body and is checked in the do while. In the
+        // single threaded case, count is incremented when the condition is met
+        // and isn't relied on in the do while).
+        if (ctype == ConstraintType::SpecialCnstrnt) {
+
             class CnstrntsSpecial* ptr = new CnstrntsSpecial(
                 VECTOR_ELT(RVals, 0), m, VECTOR_ELT(RVals, 4), bVec, myReps,
                 freqs, vInt, vNum, myType, maxThreads, Rf_ScalarInteger(1),
@@ -312,20 +342,21 @@ SEXP CombClassNew(SEXP RVals, SEXP RboolVec, SEXP freqInfo, SEXP Rparallel,
             R_RegisterCFinalizerEx(ext, Finalizer, TRUE);
 
             return ext;
-        } else {
-            class Partitions* ptr = new Partitions(
-                VECTOR_ELT(RVals, 0), m, VECTOR_ELT(RVals, 4), bVec, myReps,
-                freqs, vInt, vNum, myType, maxThreads, VECTOR_ELT(RVals, 6),
-                Parallel, part, compVec, tarVals, tarIntVals, startZ, mainFun,
-                funTest, funDbl, ctype, strtLen, cap, KeepRes, numUnknown,
-                computedRows, computedRowsMpz
-            );
-
-            cpp11::sexp ext = R_MakeExternalPtr(ptr, R_NilValue, R_NilValue);
-            R_RegisterCFinalizerEx(ext, Finalizer, TRUE);
-
-            return ext;
         }
+
+        // All other cases are mapped to some PartitionType
+        class Partitions* ptr = new Partitions(
+            VECTOR_ELT(RVals, 0), m, VECTOR_ELT(RVals, 4), bVec, myReps,
+            freqs, vInt, vNum, myType, maxThreads, VECTOR_ELT(RVals, 6),
+            Parallel, part, compVec, tarVals, tarIntVals, startZ, mainFun,
+            funTest, funDbl, ctype, strtLen, cap, KeepRes, numUnknown,
+            computedRows, computedRowsMpz
+        );
+
+        cpp11::sexp ext = R_MakeExternalPtr(ptr, R_NilValue, R_NilValue);
+        R_RegisterCFinalizerEx(ext, Finalizer, TRUE);
+
+        return ext;
     }
 }
 

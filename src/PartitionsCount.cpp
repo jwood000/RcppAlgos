@@ -11,6 +11,7 @@
 #include <algorithm>               // std::count_if, std::find
 #include <numeric>
 #include <memory>
+#include <cmath>                  // std::isfinite
 
 std::unique_ptr<CountClass> MakeCount(PartitionType ptype) {
 
@@ -39,6 +40,12 @@ std::unique_ptr<CountClass> MakeCount(PartitionType ptype) {
             return std::make_unique<CompsRepLen>();
         } case PartitionType::CompRepWeak: {
             return std::make_unique<CompsRepLen>();
+        } case PartitionType::CompRepCapped: {
+            return std::make_unique<CompsRepLenCap>();
+        } case PartitionType::CompRepWeakCap: {
+            return std::make_unique<CompsRepLenCap>();
+        } case PartitionType::CmpRpCapZNotWk: {
+            return std::make_unique<CompsRepZeroCap>();
         } case PartitionType::CmpRpZroNotWk: {
             return std::make_unique<CompsRepZero>();
         } case PartitionType::CmpDstctNoZero: {
@@ -61,6 +68,8 @@ std::unique_ptr<CountClass> MakeCount(PartitionType ptype) {
             return std::make_unique<CompsRepLen>();
         } case PartitionType::PrmRepPartNoZ: {
             return std::make_unique<CompsRepLen>();
+        } case PartitionType::PrmRepCapped: {
+            return std::make_unique<CompsRepLenCap>();
         } case PartitionType::PrmDstPartNoZ: {
             return std::make_unique<CompsDistinctLen>();
         } case PartitionType::PrmDstPrtOneZ: {
@@ -90,10 +99,17 @@ void DistinctLen::GetCount(mpz_class &res, int n, int m,
                            const std::vector<int> &allowed,
                            int strtLen, bool bLiteral) {
 
-    if (cmp(res, 0) == 0 || cmp(res, Significand53) > 0) {
+    double dblRes = 0;
+    bool computedDouble = false;
+
+    if (cmp(res, Significand53) < 0) {
+        dblRes = CountPartsDistinctLen(n, m);
+        computedDouble = true;
+    }
+
+    if (!computedDouble || !std::isfinite(dblRes) || dblRes > Significand53) {
         CountPartsDistinctLen(res, p1, p2, n, m);
     } else {
-        const double dblRes = CountPartsDistinctLen(n, m);
         res = dblRes;
     }
 }
@@ -103,10 +119,18 @@ void DistinctLenRstrctd::GetCount(
     int strtLen, bool bLiteral
 ) {
 
-    if (cmp(res, 0) == 0 || cmp(res, Significand53) > 0) {
+    double dblRes = 0;
+    bool computedDouble = false;
+
+    if (cmp(res, Significand53) < 0) {
+        dblRes = CountPartsDistLenRstrctd(n, m, allowed);
+        computedDouble = true;
+    }
+
+    if (!computedDouble || !std::isfinite(dblRes) || dblRes > Significand53) {
         CountPartsDistLenRstrctd(res, p2d, n, m, allowed);
     } else {
-        res = CountPartsDistLenRstrctd(n, m, allowed);
+        res = dblRes;
     }
 }
 
@@ -115,14 +139,27 @@ void DistinctMZ::GetCount(
     int strtLen, bool bLiteral
 ) {
 
-    if ((cmp(res, 0) == 0 || cmp(res, Significand53) > 0) && bLiteral) {
-        CountPartsDistinctMultiZero(res, p1, p2, n, m, allowed, strtLen);
-    } else if (cmp(res, 0) == 0 || cmp(res, Significand53) > 0) {
-        CountPartsDistinctLen(res, p1, p2, n, m);
-    } else if (bLiteral) {
-        res = CountPartsDistinctMultiZero(n, m, allowed, strtLen);
+    double dblRes = 0;
+    bool computedDouble = false;
+
+    if (cmp(res, Significand53) < 0) {
+        if (bLiteral) {
+            dblRes = CountPartsDistinctMultiZero(n, m, allowed, strtLen);
+        } else {
+            dblRes = CountPartsDistinctLen(n, m);
+        }
+
+        computedDouble = true;
+    }
+
+    if (!computedDouble || !std::isfinite(dblRes) || dblRes > Significand53) {
+        if (bLiteral) {
+            CountPartsDistinctMultiZero(res, p1, p2, n, m, allowed, strtLen);
+        } else {
+            CountPartsDistinctLen(res, p1, p2, n, m);
+        }
     } else {
-        res = CountPartsDistinctLen(n, m);
+        res = dblRes;
     }
 }
 
@@ -131,14 +168,27 @@ void DistinctRstrctdMZ::GetCount(
     int strtLen, bool bLiteral
 ) {
 
-    if ((cmp(res, 0) == 0 || cmp(res, Significand53) > 0) && bLiteral) {
-        CountPartsDistinctRstrctdMZ(res, p2d, n, m, allowed, strtLen);
-    } else if (cmp(res, 0) == 0 || cmp(res, Significand53) > 0) {
-        CountPartsDistLenRstrctd(res, p2d, n, m, allowed);
-    } else if (bLiteral) {
-        res = CountPartsDistinctRstrctdMZ(n, m, allowed, strtLen);
+    double dblRes = 0;
+    bool computedDouble = false;
+
+    if (cmp(res, Significand53) < 0) {
+        if (bLiteral) {
+            dblRes = CountPartsDistinctRstrctdMZ(n, m, allowed, strtLen);
+        } else {
+            dblRes = CountPartsDistLenRstrctd(n, m, allowed);
+        }
+
+        computedDouble = true;
+    }
+
+    if (!computedDouble || !std::isfinite(dblRes) || dblRes > Significand53) {
+        if (bLiteral) {
+            CountPartsDistinctRstrctdMZ(res, p2d, n, m, allowed, strtLen);
+        } else {
+            CountPartsDistLenRstrctd(res, p2d, n, m, allowed);
+        }
     } else {
-        res = CountPartsDistLenRstrctd(n, m, allowed);
+        res = dblRes;
     }
 }
 
@@ -147,14 +197,27 @@ void PermDstnctRstrctdMZ::GetCount(
     int strtLen, bool bLiteral
 ) {
 
-    if ((cmp(res, 0) == 0 || cmp(res, Significand53) > 0) && bLiteral) {
-        CountPartsPermDistinctRstrctdMZ(res, p2d, n, m, allowed, strtLen);
-    } else if (cmp(res, 0) == 0 || cmp(res, Significand53) > 0) {
-        CountCompDistLenRstrctd(res, p2d, n, m, allowed);
-    } else if (bLiteral) {
-        res = CountPartsPermDistinctRstrctdMZ(n, m, allowed, strtLen);
+    double dblRes = 0;
+    bool computedDouble = false;
+
+    if (cmp(res, Significand53) < 0) {
+        if (bLiteral) {
+            dblRes = CountPartsPermDistinctRstrctdMZ(n, m, allowed, strtLen);
+        } else {
+            dblRes = CountCompsDistLenRstrctd(n, m, allowed);
+        }
+
+        computedDouble = true;
+    }
+
+    if (!computedDouble || !std::isfinite(dblRes) || dblRes > Significand53) {
+        if (bLiteral) {
+            CountPartsPermDistinctRstrctdMZ(res, p2d, n, m, allowed, strtLen);
+        } else {
+            CountCompsDistLenRstrctd(res, p2d, n, m, allowed);
+        }
     } else {
-        res = CountCompDistLenRstrctd(n, m, allowed);
+        res = dblRes;
     }
 }
 
@@ -163,10 +226,17 @@ void RepLen::GetCount(
     int strtLen, bool bLiteral
 ) {
 
-    if (cmp(res, 0) == 0 || cmp(res, Significand53) > 0) {
+    double dblRes = 0;
+    bool computedDouble = false;
+
+    if (cmp(res, Significand53) < 0) {
+        dblRes = CountPartsRepLen(n, m);
+        computedDouble = true;
+    }
+
+    if (!computedDouble || !std::isfinite(dblRes) || dblRes > Significand53) {
         CountPartsRepLen(res, p1, p2, n, m);
     } else {
-        const double dblRes = CountPartsRepLen(n, m);
         res = dblRes;
     }
 }
@@ -176,10 +246,17 @@ void RepLenRstrctd::GetCount(
     int strtLen, bool bLiteral
 ) {
 
-    if (cmp(res, 0) == 0 || cmp(res, Significand53) > 0) {
+    double dblRes = 0;
+    bool computedDouble = false;
+
+    if (cmp(res, Significand53) < 0) {
+        dblRes = CountPartsRepLenRstrctd(n, m, allowed);
+        computedDouble = true;
+    }
+
+    if (!computedDouble || !std::isfinite(dblRes) || dblRes > Significand53) {
         CountPartsRepLenRstrctd(res, p2d, n, m, allowed);
     } else {
-        const double dblRes = CountPartsRepLenRstrctd(n, m, allowed);
         res = dblRes;
     }
 }
@@ -189,10 +266,17 @@ void DistinctAll::GetCount(
     int strtLen, bool bLiteral
 ) {
 
-    if (cmp(res, 0) == 0 || cmp(res, Significand53) > 0) {
+    double dblRes = 0;
+    bool computedDouble = false;
+
+    if (cmp(res, Significand53) < 0) {
+        dblRes = CountPartsDistinct(n, m);
+        computedDouble = true;
+    }
+
+    if (!computedDouble || !std::isfinite(dblRes) || dblRes > Significand53) {
         CountPartsDistinct(res, n, m);
     } else {
-        const double dblRes = CountPartsDistinct(n, m);
         res = dblRes;
     }
 }
@@ -202,10 +286,17 @@ void RepAll::GetCount(
     int strtLen, bool bLiteral
 ) {
 
-    if (cmp(res, 0) == 0 || cmp(res, Significand53) > 0) {
+    double dblRes = 0;
+    bool computedDouble = false;
+
+    if (cmp(res, Significand53) < 0) {
+        dblRes = CountPartsRep(n, m);
+        computedDouble = true;
+    }
+
+    if (!computedDouble || !std::isfinite(dblRes) || dblRes > Significand53) {
         CountPartsRep(res, n, m);
     } else {
-        const double dblRes = CountPartsRep(n, m);
         res = dblRes;
     }
 }
@@ -215,10 +306,17 @@ void PermDstnctRstrctd::GetCount(
     int strtLen, bool bLiteral
 ) {
 
-    if (cmp(res, 0) == 0 || cmp(res, Significand53) > 0) {
-        CountCompDistLenRstrctd(res, p2d, n, m, allowed);
+    double dblRes = 0;
+    bool computedDouble = false;
+
+    if (cmp(res, Significand53) < 0) {
+        dblRes = CountCompsDistLenRstrctd(n, m, allowed);
+        computedDouble = true;
+    }
+
+    if (!computedDouble || !std::isfinite(dblRes) || dblRes > Significand53) {
+        CountCompsDistLenRstrctd(res, p2d, n, m, allowed);
     } else {
-        const double dblRes = CountCompDistLenRstrctd(n, m, allowed);
         res = dblRes;
     }
 }
@@ -230,6 +328,13 @@ void CompsRepLen::GetCount(
     CountCompsRepLen(res, n, m);
 }
 
+void CompsRepLenCap::GetCount(
+    mpz_class &res, int n, int m, const std::vector<int> &allowed,
+    int strtLen, bool bLiteral
+) {
+    CountCompsRepLenCap(res, n, m, allowed);
+}
+
 void CompsRepZero::GetCount(
     mpz_class &res, int n, int m, const std::vector<int> &allowed,
     int strtLen, bool bLiteral
@@ -239,6 +344,18 @@ void CompsRepZero::GetCount(
         CountCompsRepZNotWk(res, n, m);
     } else {
         CountCompsRepLen(res, n, m);
+    }
+}
+
+void CompsRepZeroCap::GetCount(
+    mpz_class &res, int n, int m, const std::vector<int> &allowed,
+    int strtLen, bool bLiteral
+) {
+
+    if (bLiteral) {
+        CountCompsRepCapZNotWk(res, n, m, allowed);
+    } else {
+        CountCompsRepLenCap(res, n, m, allowed);
     }
 }
 
@@ -268,14 +385,26 @@ void CompsDstnctRstrctdMZ::GetCount(
     int strtLen, bool bLiteral
 ) {
 
-    if ((cmp(res, 0) == 0 || cmp(res, Significand53) > 0) && bLiteral) {
-        CountCompsDistinctRstrctdMZ(res, p2d, n, m, allowed, strtLen);
-    } else if (cmp(res, 0) == 0 || cmp(res, Significand53) > 0) {
-        CountCompDistLenRstrctd(res, p2d, n, m, allowed);
-    } else if (bLiteral) {
-        res = CountCompsDistinctRstrctdMZ(n, m, allowed, strtLen);
+    double dblRes = 0;
+    bool computedDouble = false;
+
+    if (cmp(res, Significand53) < 0) {
+        if (bLiteral) {
+            dblRes = CountCompsDistinctRstrctdMZ(n, m, allowed, strtLen);
+        } else {
+            dblRes = CountCompsDistLenRstrctd(n, m, allowed);
+        }
+        computedDouble = true;
+    }
+
+    if (!computedDouble || !std::isfinite(dblRes) || dblRes > Significand53) {
+        if (bLiteral) {
+            CountCompsDistinctRstrctdMZ(res, p2d, n, m, allowed, strtLen);
+        } else {
+            CountCompsDistLenRstrctd(res, p2d, n, m, allowed);
+        }
     } else {
-        res = CountCompDistLenRstrctd(n, m, allowed);
+        res = dblRes;
     }
 }
 
@@ -330,7 +459,7 @@ double RepLenRstrctd::GetCount(
 double PermDstnctRstrctd::GetCount(
     int n, int m, const std::vector<int> &allowed, int strtLen
 ) {
-    return CountCompDistLenRstrctd(n, m, allowed);
+    return CountCompsDistLenRstrctd(n, m, allowed);
 }
 
 double PermDstnctRstrctdMZ::GetCount(
@@ -345,10 +474,22 @@ double CompsRepLen::GetCount(
     return CountCompsRepLen(n, m);
 }
 
+double CompsRepLenCap::GetCount(
+    int n, int m, const std::vector<int> &allowed, int strtLen
+) {
+    return CountCompsRepLenCap(n, m, allowed);
+}
+
 double CompsRepZero::GetCount(
     int n, int m, const std::vector<int> &allowed, int strtLen
 ) {
     return CountCompsRepZNotWk(n, m);
+}
+
+double CompsRepZeroCap::GetCount(
+    int n, int m, const std::vector<int> &allowed, int strtLen
+) {
+    return CountCompsRepCapZNotWk(n, m, allowed);
 }
 
 double CompsDistinctLen::GetCount(
@@ -392,7 +533,6 @@ bool IsTrueMultiset(PartitionType ptype) {
 
 void CountClass::SetArrSize(PartitionType ptype, int n, int m) {
 
-    // N.B. We currently don't have a PrmRepCapped count function
     width = 0;
     size  = 0;
 
@@ -420,9 +560,11 @@ void CountClass::SetArrSize(PartitionType ptype, int n, int m) {
         case PartitionType::DstctCappedMZ:
         case PartitionType::CmpDstctCapped:
         case PartitionType::CmpDstCapWeak:
+        case PartitionType::CompRepCapped:
         case PartitionType::CmpDstCapMZWeak:
         case PartitionType::CmpDstCapMZNotWk:
         case PartitionType::PrmDstPrtCap:
+        case PartitionType::PrmRepCapped:
         case PartitionType::PrmDstPrtCapMZ: {
             size  = n + 1;
             width = m + 1;

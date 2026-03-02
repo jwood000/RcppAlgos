@@ -1,6 +1,6 @@
 #include "cpp11/protect.hpp"
 
-#include "Partitions/CompositionsDistinctUtils.h"
+#include "Partitions/CompositionsUtils.h"
 #include "Partitions/NextComposition.h"
 #include "Partitions/NextPartition.h"
 #include <algorithm>  // std::find
@@ -530,6 +530,18 @@ void NextRepCompOne(std::vector<int> &rpsCnt,
     NextCompositionRep<1>(z, lastCol);
 }
 
+void NextRepCompCapped(std::vector<int> &rpsCnt,
+                       std::vector<int> &z, int &e, int &b, int &cap,
+                       int &tarDiff, int lastCol, int lastElem) {
+    NextCompositionRep<0>(z, lastCol, cap);
+}
+
+void NextRepCompNotWkCap(std::vector<int> &rpsCnt,
+                         std::vector<int> &z, int &e, int &b, int &cap,
+                         int &tarDiff, int lastCol, int lastElem) {
+    NextCompositionRep<1>(z, lastCol, cap);
+}
+
 void NextDistinctComp(std::vector<int> &complement,
                       std::vector<int> &z, int &i1, int &i2, int &myMax,
                       int &target, int lastCol, int lastIdx) {
@@ -667,7 +679,6 @@ nextPartsPtr GetNextPartsPtr(PartitionType ptype, ConstraintType ctype) {
                 return(nextPartsPtr(EmptyReturn));
 
             default:
-                // This should not happen
                 cpp11::stop(
                     "This should not happen. Please open an issue here:\n\t"
                     "https://github.com/jwood000/RcppAlgos/issues"
@@ -692,6 +703,13 @@ nextPartsPtr GetNextPartsPtr(PartitionType ptype, ConstraintType ctype) {
             case PartitionType::CompRepNoZero:
                 return(nextPartsPtr(NextRepCompZero));
 
+            case PartitionType::CompRepCapped:
+            case PartitionType::CompRepWeakCap:
+                return(nextPartsPtr(NextRepCompCapped));
+
+            case PartitionType::CmpRpCapZNotWk:
+                return(nextPartsPtr(NextRepCompNotWkCap));
+
             case PartitionType::CmpRpZroNotWk:
                 return(nextPartsPtr(NextRepCompOne));
 
@@ -711,7 +729,6 @@ nextPartsPtr GetNextPartsPtr(PartitionType ptype, ConstraintType ctype) {
                 return(nextPartsPtr(EmptyReturn));
 
             default:
-                // This should not happen
                 cpp11::stop(
                     "This should not happen. Please open an issue here:\n\t"
                     "https://github.com/jwood000/RcppAlgos/issues"
