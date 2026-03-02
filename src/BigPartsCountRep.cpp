@@ -1,6 +1,7 @@
 #include "Partitions/PartitionsCountSection.h"
 #include "Partitions/BigPartsCountSection.h"
 #include "Combinations/BigComboCount.h"
+#include <algorithm>
 #include <vector>
 
 // See commentary in PartitionsCountRep.cpp
