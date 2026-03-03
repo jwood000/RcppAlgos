@@ -1,37 +1,36 @@
 \name{NEWS}
 \title{News for Package \pkg{RcppAlgos}}
 
-\section{Changes in RcppAlgos version 2.10.0 (Release date: 2026-02-21)}{
+\section{Changes in RcppAlgos version 2.10.0 (Release date: 2026-03-05)}{
     \itemize{
+
         \item New Features:
         \itemize{
-            \item Added parallel capabilities to all ranking functions via the new \code{nThreads} argument (e.g. \code{partitionsRank(..., nThreads = 4)}, \code{comboRank(..., nThreads = 4)}).
-            \item Implemented a next-lexicographical algorithm for generating distinct integer compositions, enabling efficient large-scale generation such as \code{compositionsGeneral(50, 8)}.
-            \item Added accompanying algorithms for the distinct integer composition case, exposed through: \code{compositionsSample}, \code{compositionsRank}, and \code{compositionsIter}.
-            \item Enhanced \code{permuteCount()} to count permutations of partitions when called with \code{constraintFun = "sum"} and \code{comparisonFun = "=="}, allowing optimized counting in cases that reduce to partition/composition counting.
-        }
-
-        \item Bug Fixes:
-        \itemize{
-            \item Improved input validation for constraint-based calls by requiring \code{comparisonFun} to be a character vector (now errors early with a clearer message).
-            \item Fixed edge-case handling in partition iteration logic where boundary-derived indices could become negative, preventing incorrect behavior in some partition/multiset scenarios.
+            \item Added parallel capabilities to all ranking functions via the new \code{nThreads} argument (e.g. \code{comboRank()}, \code{partitionsRank()}, \code{compositionsRank()}), enabling faster ranking of large combinatorial results.
+            \item Implemented a next-lexicographical algorithm for generating distinct integer compositions, enabling efficient generation of large problems such as \code{compositionsGeneral(50, 8)}.
+            \item Added full support for distinct compositions across the compositional framework, including \code{compositionsGeneral()}, \code{compositionsSample()}, \code{compositionsRank()}, and \code{compositionsIter()}.
+            \item Added support for compositions with repetition subject to a maximum part constraint ("capped compositions"), including weak and non-weak cases, with full support for counting, ranking, sampling, and iteration.
+            \item Enhanced \code{permuteCount()} to count permutations of partitions when called with \code{constraintFun = "sum"} and \code{comparisonFun = "=="}, enabling faster counting when problems reduce to partition/composition counting.
         }
 
         \item Improvements:
         \itemize{
-            \item Added a package load-time check that validates the loaded shared library matches the installed package version, producing a clear reinstall/restart error instead of potential crashes from stale binaries.
-            \item Improved handling of singleton \code{v} with singleton \code{freqs} so that numeric values are interpreted correctly in some constrained/ranking paths.
-            \item Added nonexported \code{permutePartsDesign()} to inspect the partition-design/counting setup used by \code{permuteCount()} when it reduces to a partition/composition counting problem.
+            \item Added validation at package load time to ensure the loaded shared library matches the installed package version, producing a clear error message instead of potential crashes caused by stale compiled code.
+            \item Improved handling of certain constrained and ranking cases involving singleton inputs.
+            \item Added internal tooling to support partition and composition counting workflows.
         }
 
         \item Performance:
         \itemize{
-            \item General performance improvements for ranking and composition-related algorithms, including multi-threaded ranking support.
+            \item Improved performance of ranking and generation algorithms, including support for parallel ranking.
+            \item Improved performance and scalability of composition-related algorithms, particularly for constrained and distinct composition problems.
         }
 
-        \item Internal:
+        \item Bug Fixes:
         \itemize{
-            \item Added developer tooling and expanded internal type/class infrastructure to support the new composition and counting paths.
+            \item Fixed an issue in \code{permuteIter()} affecting cases that reduce to permutations of partitions, which could previously produce incorrect iteration results.
+            \item Improved input validation for constraint-based calls, producing clearer error messages for invalid inputs.
+            \item Fixed edge-case issues affecting certain partition and composition iteration scenarios.
         }
     }
 }

@@ -38,7 +38,10 @@ Suggests:
     RcppBigIntAlgos,
     rmarkdown,
     prettydoc
-Config/Needs/website: pkgdown
+    covr,
+    xml2
+Config/Needs/website:
+    pkgdown
 License: GPL (>=2)
 SystemRequirements: gmp (>= 4.2.3)
 VignetteBuilder: knitr

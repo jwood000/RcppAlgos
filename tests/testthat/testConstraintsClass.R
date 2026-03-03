@@ -13,16 +13,33 @@ test_that("ConstraintsClass produces correct results", {
             a <- comboIter(v_pass, m_pass, rep, fr, constraintFun = fun,
                            comparisonFun = comp, limitConstraints = tar,
                            keepResults = keep, tolerance = tol)
-            b <- comboGeneral(v_pass, m_pass, rep, fr,constraintFun = fun,
+            b <- comboGeneral(v_pass, m_pass, rep, fr, constraintFun = fun,
                               comparisonFun = comp, limitConstraints = tar,
                               keepResults = keep, tolerance = tol)
         } else {
             a <- permuteIter(v_pass, m_pass, rep, fr, constraintFun = fun,
                              comparisonFun = comp, limitConstraints = tar,
                              keepResults = keep, tolerance = tol)
-            b <- permuteGeneral(v_pass, m_pass, rep, fr,constraintFun = fun,
+            b <- permuteGeneral(v_pass, m_pass, rep, fr, constraintFun = fun,
                                 comparisonFun = comp, limitConstraints = tar,
                                 keepResults = keep, tolerance = tol)
+
+            if (fun == "sum" && length(comp) == 1 && comp == "==") {
+                parts <- partitionsGeneral(
+                    v_pass, m_pass, rep, freqs = fr, target = tar
+                )
+
+                res <- do.call(
+                    rbind,
+                    lapply(
+                        seq_len(nrow(parts)), function(i) {
+                            permuteGeneral(table(parts[i, ]))
+                        }
+                    )
+                )
+
+                myResults <- c(myResults, identical(res, b))
+            }
         }
 
         myRows <- nrow(b)
@@ -195,6 +212,122 @@ test_that("ConstraintsClass produces correct results", {
     expect_true(constraintsClassTest(0:10, 8, TRUE, fun = "sum",
                                      comp = c(">","<"), tar = c(9, 11),
                                      IsComb = FALSE))
+
+    ## Permutation Partition tests
+    ## "PrmRepPartNoZ"
+    expect_true(
+        constraintsClassTest(
+            20, 5, TRUE, fun = "sum", comp = "==", tar = 20, IsComb = FALSE
+        )
+    )
+
+    ## "PrmRepPart"
+    expect_true(
+        constraintsClassTest(
+            0:20, 5, TRUE, fun = "sum", comp = "==", tar = 20, IsComb = FALSE
+        )
+    )
+
+    ## "PrmRepPartNoZ"
+    expect_true(
+        constraintsClassTest(
+            12, 5, TRUE, fun = "sum", comp = "==", tar = 30, IsComb = FALSE
+        )
+    )
+
+    ## "PrmDstPrtOneZ"
+    expect_true(
+        constraintsClassTest(
+            0:25, 5, fun = "sum", comp = "==", tar = 25, IsComb = FALSE
+        )
+    )
+
+    ## "PrmDstPartMZ"
+    expect_true(
+        constraintsClassTest(
+            0:25, 5, fr = c(3, rep(1, 25)),
+            fun = "sum", comp = "==", tar = 25, IsComb = FALSE
+        )
+    )
+
+    ## Test table method
+    expect_identical(
+        permuteGeneral(0:25, 5, freqs = c(3, rep(1, 25)),
+                       constraintFun = "sum", comparisonFun = "==",
+                       limitConstraints = 25),
+        permuteGeneral(table(c(0L, 0L, 0L, 1:25)), 5,
+                       constraintFun = "sum", comparisonFun = "==",
+                       limitConstraints = 25)
+    )
+
+    ## "PrmDstPrtCap"
+    expect_true(
+        constraintsClassTest(
+            0:15, 5, fun = "sum", comp = "==", tar = 35, IsComb = FALSE
+        )
+    )
+
+    ## "PrmDstPrtCap"
+    expect_true(
+        constraintsClassTest(
+            15, 5, fun = "sum", comp = "==", tar = 35, IsComb = FALSE
+        )
+    )
+
+    ## "PrmDstPrtCapMZ"
+    expect_true(
+        constraintsClassTest(
+            0:15, 5, fr = c(3, rep(1, 15)),
+            fun = "sum", comp = "==", tar = 35, IsComb = FALSE
+        )
+    )
+
+    ## Test table method
+    expect_identical(
+        permuteGeneral(0:15, 5, freqs = c(3, rep(1, 15)),
+                       constraintFun = "sum", comparisonFun = "==",
+                       limitConstraints = 35),
+        permuteGeneral(table(c(0L, 0L, 0L, 1:15)), 5,
+                       constraintFun = "sum", comparisonFun = "==",
+                       limitConstraints = 35)
+    )
+
+    ## "PrmMultiset"
+    expect_true(
+        constraintsClassTest(
+            0:20, 6, fr = c(5, rep(1:4, 5)),
+            fun = "sum", comp = "==", tar = 20, IsComb = FALSE
+        )
+    )
+
+    ## "PrmMultiset"
+    expect_true(
+        constraintsClassTest(
+            20, 6, fr = rep(1:4, 5),
+            fun = "sum", comp = "==", tar = 20, IsComb = FALSE
+        )
+    )
+
+    ## "PrmMultiset"
+    expect_true(
+        constraintsClassTest(
+            12, 5, fr = rep(1:4, 3),
+            fun = "sum", comp = "==", tar = 30, IsComb = FALSE
+        )
+    )
+
+    ## "PrmMultiset"
+    expect_true(
+        constraintsClassTest(
+            0:12, 5, fr = c(4, rep(1:4, 3)),
+            fun = "sum", comp = "==", tar = 30, IsComb = FALSE
+        )
+    )
+
+    expect_true(constraintsClassTest(0:10, 8, TRUE, fun = "sum",
+                                     comp = c(">","<"), tar = c(9, 11),
+                                     IsComb = FALSE))
+
 
     comp1 = c("<", "<=")
     comp2 = c(">", ">=")

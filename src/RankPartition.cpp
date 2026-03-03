@@ -40,6 +40,28 @@ void rankCompsRep(std::vector<int>::iterator iter, int n, int m,
     }
 }
 
+void rankCompsRepCapped(std::vector<int>::iterator iter, int n, int m,
+                        int cap, int k, double &dblIdx, mpz_class &mpzIdx) {
+
+    // All we are doing in CountCompsRepLenCap is getting the max of allowed
+    std::vector<int> allowed(1, cap);
+    const int width = m;
+    dblIdx = 0;
+
+    --n;
+    --m;
+
+    for (int i = 0, j = 0; i < (width - 1); ++i, --n, --m, j = 0, ++iter) {
+        double temp = CountCompsRepLenCap(n, m, allowed);
+
+        for (int idx = *iter; j < idx; ++j) {
+            --n;
+            dblIdx += temp;
+            temp = CountCompsRepLenCap(n, m, allowed);
+        }
+    }
+}
+
 void rankCompsRepZero(std::vector<int>::iterator iter, int n, int m,
                       int cap, int k, double &dblIdx, mpz_class &mpzIdx) {
 
@@ -64,6 +86,32 @@ void rankCompsRepZero(std::vector<int>::iterator iter, int n, int m,
     }
 }
 
+void rankCompsRepZeroCap(std::vector<int>::iterator iter, int n, int m,
+                         int cap, int k, double &dblIdx, mpz_class &mpzIdx) {
+
+    // All we are doing in CountCompsRepLenCap is getting the max of allowed
+    std::vector<int> allowed(1, cap);
+    const int width = m;
+    dblIdx = 0;
+
+    bool incr_j = false;
+    --m;
+
+    for (int i = 0, j = 0; i < (width - 1); ++i, --m, j = incr_j, ++iter) {
+        double temp = incr_j ? CountCompsRepLenCap(n, m, allowed) :
+            CountCompsRepCapZNotWk(n, m, allowed);
+
+        for (int idx = *iter; j < idx; ++j) {
+            incr_j = true;
+            --n;
+            dblIdx += temp;
+            temp = CountCompsRepLenCap(n, m, allowed);
+        }
+
+        if (incr_j) --n;
+    }
+}
+
 void rankCompsDistinct(std::vector<int>::iterator iter, int n, int m,
                        int cap, int k, double &dblIdx, mpz_class &mpzIdx) {
 
@@ -82,7 +130,7 @@ void rankCompsDistinct(std::vector<int>::iterator iter, int n, int m,
     int cur_val = 1;
 
     for (int i = 0, j = 0; i < (width - 1); ++i, --m, ++iter) {
-        double temp = CountCompDistLenRstrctd(n - partial_sum, m, allowed);
+        double temp = CountCompsDistLenRstrctd(n - partial_sum, m, allowed);
         bool keepGoing = false;
 
         for (int idx = *iter; j < idx || keepGoing; cur_val = j) {
@@ -95,7 +143,7 @@ void rankCompsDistinct(std::vector<int>::iterator iter, int n, int m,
                           n, cur_val, partial_sum);
 
             dblIdx += temp;
-            temp = CountCompDistLenRstrctd(n - partial_sum, m, allowed);
+            temp = CountCompsDistLenRstrctd(n - partial_sum, m, allowed);
 
             ++j;
             keepGoing = j <= idx;
@@ -123,7 +171,7 @@ void rankCompsDistinctMZ(std::vector<int>::iterator iter, int n, int m,
 
     double temp = (cap == n) ?
         CountCompsDistinctLen(n, k) :
-            CountCompDistLenRstrctd(n, k, allowed);
+            CountCompsDistLenRstrctd(n, k, allowed);
 
     // NOTE: iter is guaranteed by the calling rank dispatcher to reference
     // a contiguous buffer of at least m elements representing the index vector.
@@ -143,7 +191,7 @@ void rankCompsDistinctMZ(std::vector<int>::iterator iter, int n, int m,
         ++k;
         temp = (cap == n) ?
             CountCompsDistinctLen(n, k) :
-                CountCompDistLenRstrctd(n, k, allowed);
+                CountCompsDistLenRstrctd(n, k, allowed);
     }
 
     rankCompsDistinct(z_it, n, k, cap, k, dblIdx, mpzIdx);
@@ -419,6 +467,32 @@ void rankCompsRepGmp(std::vector<int>::iterator iter, int n, int m,
     }
 }
 
+void rankCompsRepCappedGmp(std::vector<int>::iterator iter, int n, int m,
+                           int cap, int k, double &dblIdx, mpz_class &mpzIdx) {
+
+    std::vector<int> allowed(1, cap);
+    const int width = m;
+    mpz_class temp;
+    mpzIdx = 0;
+
+    --n;
+    --m;
+
+    std::unique_ptr<CountClass> Counter = MakeCount(
+        PartitionType::CompRepCapped
+    );
+
+    for (int i = 0, j = 0; i < (width - 1); ++i, --n, --m, j = 0, ++iter) {
+        Counter->GetCount(temp, n, m, allowed);
+
+        for (int idx = *iter; j < idx; ++j) {
+            --n;
+            mpzIdx += temp;
+            Counter->GetCount(temp, n, m, allowed);
+        }
+    }
+}
+
 void rankCompsRepZeroGmp(std::vector<int>::iterator iter, int n, int m,
                          int cap, int k, double &dblIdx, mpz_class &mpzIdx) {
 
@@ -443,6 +517,38 @@ void rankCompsRepZeroGmp(std::vector<int>::iterator iter, int n, int m,
             --n;
             mpzIdx += temp;
             Counter->GetCount(temp, n, m, empty_allowed, k, false);
+        }
+
+        temp = 0;
+        if (incr_j) --n;
+    }
+}
+
+void rankCompsRepZeroCapGmp(
+    std::vector<int>::iterator iter, int n, int m,
+    int cap, int k, double &dblIdx, mpz_class &mpzIdx
+) {
+
+    std::vector<int> allowed(1, cap);
+    const int width = m;
+    mpzIdx = 0;
+
+    bool incr_j = false;
+    --m;
+
+    mpz_class temp;
+    std::unique_ptr<CountClass> Counter = MakeCount(
+        PartitionType::CmpRpCapZNotWk
+    );
+
+    for (int i = 0, j = 0; i < (width - 1); ++i, --m, j = incr_j, ++iter) {
+        Counter->GetCount(temp, n, m, allowed, k, !incr_j);
+
+        for (int idx = *iter; j < idx; ++j) {
+            incr_j = true;
+            --n;
+            mpzIdx += temp;
+            Counter->GetCount(temp, n, m, allowed, k, false);
         }
 
         temp = 0;
@@ -875,10 +981,16 @@ rankPartsPtr GetRankPartsFunc(PartitionType ptype, bool IsGmp) {
                 return(rankPartsPtr(rankPartsRepGmp));
             } case PartitionType::CompRepNoZero: {
                 return(rankPartsPtr(rankCompsRepGmp));
+            } case PartitionType::CompRepCapped: {
+                return(rankPartsPtr(rankCompsRepCappedGmp));
             } case PartitionType::CompRepWeak: {
                 return(rankPartsPtr(rankCompsRepGmp));
+            } case PartitionType::CompRepWeakCap: {
+                return(rankPartsPtr(rankCompsRepCappedGmp));
             } case PartitionType::CmpRpZroNotWk: {
                 return(rankPartsPtr(rankCompsRepZeroGmp));
+            } case PartitionType::CmpRpCapZNotWk: {
+                return(rankPartsPtr(rankCompsRepZeroCapGmp));
             } case PartitionType::CmpDstctNoZero: {
                 return(rankPartsPtr(rankCompsDistinctGmp));
             } case PartitionType::CmpDstctCapped: {
@@ -925,10 +1037,16 @@ rankPartsPtr GetRankPartsFunc(PartitionType ptype, bool IsGmp) {
                 return(rankPartsPtr(rankPartsRep));
             } case PartitionType::CompRepNoZero: {
                 return(rankPartsPtr(rankCompsRep));
+            } case PartitionType::CompRepCapped: {
+                return(rankPartsPtr(rankCompsRepCapped));
             } case PartitionType::CompRepWeak: {
                 return(rankPartsPtr(rankCompsRep));
+            } case PartitionType::CompRepWeakCap: {
+                return(rankPartsPtr(rankCompsRepCapped));
             } case PartitionType::CmpRpZroNotWk: {
                 return(rankPartsPtr(rankCompsRepZero));
+            } case PartitionType::CmpRpCapZNotWk: {
+                return(rankPartsPtr(rankCompsRepZeroCap));
             } case PartitionType::CmpDstctNoZero: {
                 return(rankPartsPtr(rankCompsDistinct));
             } case PartitionType::CmpDstctCapped: {

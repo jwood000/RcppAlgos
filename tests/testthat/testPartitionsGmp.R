@@ -1041,6 +1041,140 @@ test_that("partition/compositionsGeneral and Repetition Parallel Lower GMP", {
                                "2634095604619701928324") + 1, nrow(bench))
     expect_true(all(rowSums(bench) == 12300000000230))
 
+    ## compositionsDesign(300, 10, TRUE, target = 1000)[
+    ##     c("num_partitions",
+    ##       "mapped_target",
+    ##       "partition_type")
+    ## ]
+    ## $num_partitions
+    ## Big Integer ('bigz') :
+    ## [1] 1620625022683448734459
+    ##
+    ## $mapped_target
+    ## [1] 1000
+    ##
+    ## $partition_type
+    ## [1] "CompRepCapped"
+    bench <- compositionsGeneral(300, 10, TRUE, target = 1000,
+                                 lower = "1620625022683448534459")
+    expect_identical(compositionsGeneral(300, 10, TRUE, target = 1000,
+                                         lower = "1620625022683448534459",
+                                         nThreads = 2), bench)
+    expect_identical(compositionsRank(bench[1:11, ], v = 300, target = 1000,
+                                      repetition = TRUE),
+                     gmp::as.bigz("1620625022683448534459") + 0:10)
+    expect_equal(gmp::sub.bigz("1620625022683448734459",
+                               "1620625022683448534459") + 1, nrow(bench))
+    expect_true(all(rowSums(bench) == 1000L))
+
+    #### Mapped version
+    ##
+    ## compositionsDesign(23 + (1:300) * 123e8, 10, TRUE,
+    ##                    target = 12300000000230)[c("num_partitions",
+    ##                                               "mapped_target",
+    ##                                               "partition_type")]
+    ## $num_partitions
+    ## Big Integer ('bigz') :
+    ## [1] 1620625022683448734459
+    ##
+    ## $mapped_target
+    ## [1] 1000
+    ##
+    ## $partition_type
+    ## [1] "CompRepCapped"
+    bench <- compositionsGeneral(23 + (1:300) * 123e8, 10, TRUE,
+                                 target = 12300000000230,
+                                 lower = "1620625022683448534459")
+    expect_identical(compositionsGeneral(23 + (1:300) * 123e8, 10,
+                                         TRUE, target = 12300000000230,
+                                         lower = "1620625022683448534459",
+                                         nThreads = 2), bench)
+    expect_identical(compositionsRank(bench[1:11, ], v = 23 + (1:300) * 123e8,
+                                      target = 12300000000230,
+                                      repetition = TRUE),
+                     gmp::as.bigz("1620625022683448534459") + 0:10)
+    expect_equal(gmp::sub.bigz("1620625022683448734459",
+                               "1620625022683448534459") + 1, nrow(bench))
+    expect_true(all(rowSums(bench) == 12300000000230))
+
+    ## compositionsDesign(15, 40, TRUE, target = 70)[
+    ##     c("num_partitions",
+    ##       "mapped_target",
+    ##       "partition_type")
+    ## ]
+    ## $num_partitions
+    ## Big Integer ('bigz') :
+    ## [1] 31626933860118657196
+    ##
+    ## $mapped_target
+    ## [1] 70
+    ##
+    ## $partition_type
+    ## [1] "CompRepCapped"
+    bench <- compositionsGeneral(15, 40, TRUE, target = 70,
+                                 lower = "31626933860118457196")
+    expect_identical(compositionsGeneral(15, 40, TRUE, target = 70,
+                                         lower = "31626933860118457196",
+                                         nThreads = 2), bench)
+    expect_identical(compositionsRank(bench[1:11, ], v = 15, target = 70,
+                                      repetition = TRUE),
+                     gmp::as.bigz("31626933860118457196") + 0:10)
+    expect_equal(gmp::sub.bigz("31626933860118657196",
+                               "31626933860118457196") + 1, nrow(bench))
+    expect_true(all(rowSums(bench) == 70L))
+
+    ## compositionsDesign(0:300, 10, TRUE, target = 1000)[
+    ##     c("num_partitions",
+    ##       "mapped_target",
+    ##       "partition_type")
+    ## ]
+    ## $num_partitions
+    ## Big Integer ('bigz') :
+    ## [1] 1632937540829860491445
+    ##
+    ## $mapped_target
+    ## [1] 1000
+    ##
+    ## $partition_type
+    ## [1] "CmpRpCapZNotWk"
+    bench <- compositionsGeneral(0:300, 10, TRUE, target = 1000,
+                                 lower = "1632937540829860291445")
+    expect_identical(compositionsGeneral(0:300, 10, TRUE, target = 1000,
+                                         lower = "1632937540829860291445",
+                                         nThreads = 2), bench)
+    expect_identical(compositionsRank(bench[1:11, ], v = 0:300, target = 1000,
+                                      repetition = TRUE),
+                     gmp::as.bigz("1632937540829860291445") + 0:10)
+    expect_equal(gmp::sub.bigz("1632937540829860491445",
+                               "1632937540829860291445") + 1, nrow(bench))
+    expect_true(all(rowSums(bench) == 1000L))
+
+    ## compositionsDesign(0:300, 10, TRUE, target = 1000, weak = TRUE)[
+    ##     c("num_partitions",
+    ##       "mapped_target",
+    ##       "partition_type")
+    ## ]
+    ## $num_partitions
+    ## Big Integer ('bigz') :
+    ## [1] 1746444308278095001576
+    ##
+    ## $mapped_target
+    ## [1] 1010
+    ##
+    ## $partition_type
+    ## [1] "CompRepWeakCap"
+    bench <- compositionsGeneral(0:300, 10, TRUE, target = 1000, weak = TRUE,
+                                 lower = "1746444308278094801576")
+    expect_identical(compositionsGeneral(0:300, 10, TRUE, target = 1000,
+                                         lower = "1746444308278094801576",
+                                         nThreads = 2, weak = TRUE), bench)
+    expect_identical(compositionsRank(bench[1:11, ], v = 0:300, target = 1000,
+                                      repetition = TRUE, weak = TRUE),
+                     gmp::as.bigz("1746444308278094801576") + 0:10)
+    expect_equal(gmp::sub.bigz("1746444308278095001576",
+                               "1746444308278094801576") + 1, nrow(bench))
+    expect_true(all(rowSums(bench) == 1000L))
+
     ## partitionsDesign(0:6000, 10, TRUE)[c("num_partitions",
     ##                                      "mapped_target",
     ##                                      "partition_type")]

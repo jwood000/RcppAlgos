@@ -35,6 +35,15 @@
 // CompRepWeak     : compositionsCount(0:20, 5, TRUE, weak = TRUE) -->>
 //                    CountCompsRepLen(25, 5) We add the length to the target
 //
+// CompRepWeakCap  : compositionsCount(0:20, 5, TRUE, weak = TRUE, target = 40) -->>
+//                    CountCompsRepLenCap(45, 5, 1:20) We add the length to the target
+//
+// CompRepCapped   : compositionsCount(3, 6, repetition = TRUE, target = 10)
+//                    -->> CountCompsRepLenCap(10, 6, 1:3)
+//
+// CmpRpCapZNotWk  : compositionsCount(0:3, 6, repetition = TRUE, target = 10)
+//                    -->> CountCompsRepCapZNotWk(10, 6, 1:3)
+//
 // CmpRpZroNotWk   : compositionsCount(0:20, 5, TRUE) -- >>
 //                    CountCompsRepZNotWk(20, 5)
 //
@@ -50,10 +59,10 @@
 //                    CountCompsDistinctMZWeak(20, 5, 0, 2)
 //
 // CmpDstctCapped  : compositionsCount(10, 4, target = 25) -->>
-//                    CountCompDistLenRstrctd(25, 4, {1, 2, ..., 10})
+//                    CountCompsDistLenRstrctd(25, 4, {1, 2, ..., 10})
 //
 // CmpDstCapWeak   : compositionsCount(0:10, 4, target = 25, weak = TRUE) -->>
-//                    CountCompDistLenRstrctd(25, 4, {1, 2, ..., 10})
+//                    CountCompsDistLenRstrctd(25, 4, {1, 2, ..., 10})
 //
 // CmpDstCapMZNotWk: compositionsCount(0:10, 4, target = 25) -->>
 //                    CountCompsDistinctRstrctdMZ(25, 4, {1, 2, ..., 10}, 3)
@@ -229,10 +238,23 @@
 // CompRepWeak     : Repetition compositions where zeros are allowed (weak).
 //                   E.g. tar = 20, m = 5; startZ = c(0, 0, 0, 0, 20)
 //
-// CmpRpZroNotWk   : Compositions where 0 is in v, but we only want permutations
+// CompRepWeakCap  : Repetition compositions with restricted parts (cap/window)
+//                    and where zeros are allowed (weak).
+//                   E.g. tar = 40, m = 5; cap = 20 startZ = c(0, 0, 0, 20, 20)
+//
+// CompRepCapped   : Repetition compositions with restricted parts (cap/window).
+//                   E.g. tar = 10, m = 5; cap = 3; startZ = c(1, 1, 2, 3, 3)
+//
+// CmpRpCapZNotWk  : Compositions where 0 is in v, but we only want permutations
 //                   of non-zero values (non-weak output). Internally behaves
 //                   like repetition comps with a "zero slot" used for mapping.
 //                   E.g. tar = 20, m = 5; startZ = c(0, 0, 0, 0, 20)
+//
+// CmpRpZroNotWk   : Compositions where 0 is in v, but we only want permutations
+//                   of non-zero values (non-weak output). Internally behaves
+//                   like repetition comps with a "zero slot" used for mapping.
+//                   Note, these are compositions with restricted parts.
+//                   E.g. tar = 20, m = 5; v = 1:10 startZ = c(0, 0, 0, 10, 10)
 //
 // CmpDstctNoZero  : Standard compositions with distinct parts and no zeros.
 //                   E.g. tar = 20; m = 5; startZ = c(1, 2, 3, 4, 10)
@@ -329,7 +351,12 @@ enum class PartitionType {
     NotMapped        = 34,
     NoSolution       = 35,
     NotPartition     = 36,
-    NumTypes         = 37
+    // NEW types CompRepCapped, CmpRpCapZNotWk, CompRepWeakCap:
+    // appended to keep numeric values stable
+    CompRepCapped    = 37,
+    CmpRpCapZNotWk   = 38,
+    CompRepWeakCap   = 39,
+    NumTypes         = 40
 };
 
 constexpr std::array<const char*, static_cast<size_t>(PartitionType::NumTypes)>
@@ -370,21 +397,25 @@ constexpr std::array<const char*, static_cast<size_t>(PartitionType::NumTypes)>
         "PrmMultiset",
         "NotMapped",
         "NoSolution",
-        "NotPartition"
+        "NotPartition",
+        "CompRepCapped",
+        "CmpRpCapZNotWk",
+        "CompRepWeakCap"
     }};
 
-const std::array<PartitionType, 5> NoCountAlgoPTypeArr{{
-    PartitionType::NotMapped, PartitionType::PrmRepCapped,
-    PartitionType::NotPartition, PartitionType::NoSolution,
-    PartitionType::CoarseGrained
+const std::array<PartitionType, 4> NoCountAlgoPTypeArr{{
+    PartitionType::NotMapped, PartitionType::NotPartition,
+    PartitionType::NoSolution, PartitionType::CoarseGrained
 }};
 
-const std::array<PartitionType, 10> CappedPTypeArr{{
+const std::array<PartitionType, 13> CappedPTypeArr{{
     PartitionType::RepCapped, PartitionType::DstctCapped,
     PartitionType::DstctCappedMZ, PartitionType::PrmRepCapped,
     PartitionType::PrmDstPrtCap, PartitionType::PrmDstPrtCapMZ,
     PartitionType::CmpDstctCapped, PartitionType::CmpDstCapWeak,
-    PartitionType::CmpDstCapMZWeak, PartitionType::CmpDstCapMZNotWk
+    PartitionType::CmpDstCapMZWeak, PartitionType::CompRepCapped,
+    PartitionType::CmpDstCapMZNotWk, PartitionType::CmpRpCapZNotWk,
+    PartitionType::CompRepWeakCap
 }};
 
 const std::array<PartitionType, 8> CmpDstPTypeArr{{

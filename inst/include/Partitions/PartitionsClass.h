@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Partitions/CompositionsDistinctUtils.h"
+#include "Partitions/CompositionsUtils.h"
 #include "Partitions/NextComposition.h"
 #include "ClassUtils/ComboResClass.h"
 #include "Partitions/NextPartition.h"

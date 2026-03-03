@@ -1,5 +1,5 @@
 #include "Partitions/NextPartition.h"
-#include "PopulateVec.h"
+#include "PopulateUtils.h"
 #include "RMatrix.h"
 #include <algorithm>  // std::next_permutation
 
@@ -48,7 +48,7 @@ int PartsGenRep(RcppParallel::RMatrix<T> &mat, const std::vector<T> &v,
 }
 
 template <typename T>
-int PartsGenPermRep(T* mat, const std::vector<T> &v, std::vector<int> &z,
+int PartsStdPermRep(T* mat, const std::vector<T> &v, std::vector<int> &z,
                     std::size_t width, int lastElem,
                     int lastCol, std::size_t nRows) {
 
@@ -61,15 +61,36 @@ int PartsGenPermRep(T* mat, const std::vector<T> &v, std::vector<int> &z,
     for (std::size_t count = 0; ;
          NextRepPart(z, boundary, edge, lastCol)) {
 
-        do {
-            for (std::size_t k = 0; k < width; ++k) {
-                mat[count + nRows * k] = v[z[k]];
-            }
+        PopulateMatrix(mat, v, z, count, width, nRows, false);
+        if (count >= nRows) break;
+    }
 
-            ++count;
-        } while (std::next_permutation(z.begin(), z.end()) && count < nRows);
+    return 1;
+}
 
-        if (count >= nRows) {break;}
+template <typename T>
+int PartsGenPermRep(T* mat, const std::vector<T> &v, std::vector<int> &z,
+                    std::size_t width, std::size_t nRows) {
+
+    int edge = 0;
+    int pivot = 0;
+    int boundary = 0;
+
+    const int lastCol = width - 1;
+    const int lastElem = v.size() - 1;
+
+    PrepareRepPart(z, boundary, pivot, edge, lastElem, lastCol);
+    std::size_t count = 0;
+
+    for (; (edge >= 0) && (z[boundary] - z[edge] >= 2);
+         NextRepGenPart(z, boundary, edge, pivot, lastCol, lastElem)) {
+
+        PopulateMatrix(mat, v, z, count, width, nRows, false);
+        if (count >= nRows) break;
+    }
+
+    if (count < nRows) {
+        PopulateMatrix(mat, v, z, count, width, nRows, false);
     }
 
     return 1;
@@ -92,14 +113,14 @@ int PartsGenRep(std::vector<T> &partsVec, const std::vector<T> &v,
     for (std::size_t count = 0; (edge >= 0) && (z[boundary] - z[edge] >= 2);
          NextRepGenPart(z, boundary, edge, pivot, lastCol, lastElem)) {
 
-        PopulateVec(v, partsVec, z, count, width, nRows, IsComb);
+        PopulateVector(v, partsVec, z, count, width, nRows, IsComb);
         if (count >= nRows) break;
     }
 
     std::size_t count = partsVec.size() / width;
 
     if (count < nRows) {
-        PopulateVec(v, partsVec, z, count, width, nRows, IsComb);
+        PopulateVector(v, partsVec, z, count, width, nRows, IsComb);
     }
 
     return 1;
@@ -166,7 +187,7 @@ int PartsPermRep(int* mat, std::vector<int> &z, std::size_t width,
             ++count;
         } while (std::next_permutation(z.begin(), z.end()) && count < nRows);
 
-        if (count >= nRows) {break;}
+        if (count >= nRows) break;
     }
 
     return 1;
@@ -192,8 +213,13 @@ template int PartsGenRep(std::vector<double>&, const std::vector<double>&,
                          std::vector<int>&, std::size_t, std::size_t, bool);
 
 template int PartsGenPermRep(int*, const std::vector<int>&,
+                             std::vector<int>&, std::size_t, std::size_t);
+template int PartsGenPermRep(double*, const std::vector<double>&,
+                             std::vector<int>&, std::size_t, std::size_t);
+
+template int PartsStdPermRep(int*, const std::vector<int>&,
                              std::vector<int>&, std::size_t,
                              int, int, std::size_t);
-template int PartsGenPermRep(double*, const std::vector<double>&,
+template int PartsStdPermRep(double*, const std::vector<double>&,
                              std::vector<int>&, std::size_t,
                              int, int, std::size_t);

@@ -11,6 +11,68 @@
 #include "CppConvert/Constants.h"
 #include <numeric>  // std::accumulate
 
+// ****************************************************************************
+// OFFSET (POSITIVE) REPRESENTATION NOTE
+//
+// Many nth/unranking routines in this file operate in the "positive/mapped"
+// domain where parts are conceptually >= 1, even if the user-facing problem
+// may have included 0 before mapping.
+//
+// In these paths we often store results in an OFFSET form:
+//
+//     res[i] = part_i - 1        (so part_i = res[i] + 1)
+//
+// This avoids repeatedly adding/subtracting 1 during counting/unranking.
+//
+// Consequence:
+//   The sum of the actual parts is:
+//
+//       sum(parts) = width + sum(res)
+//
+//   Therefore, when we compute the final element in OFFSET form we use:
+//
+//       res[last] = (target - width) - sum(res)
+//
+//   (equivalently: res[last] = target - (width + sum(res)) ).
+//
+// IMPORTANT:
+//   This is not specific to compositions vs partitions. Any routine in this file
+//   that is working in the positive/mapped domain and stores res as (part-1)
+//   should use the width-shift logic above.
+//
+// ****************************************************************************
+//
+// ****************************************************************************
+// BLOCK-SCAN UNRANKING INVARIANT
+//
+// All unranking routines in this file use the standard block-scan method:
+//
+//     temp = Count*(current state)
+//
+//     while (temp <= idx) {
+//         advance state;
+//         idx -= temp;
+//         temp = Count*(new state);
+//     }
+//
+// It is NORMAL for temp == 0 during this scan.
+//
+// Zero counts occur when the current state lies outside the feasible region.
+// These correspond to empty lexicographic blocks and are skipped.
+//
+// Termination is guaranteed because:
+//
+//   • the state progresses monotonically toward the feasible region, and
+//   • idx is validated upstream to lie in [0, total_count - 1]
+//
+// Therefore temp == 0 MUST NOT terminate the loop and does not cause
+// runaway execution.
+//
+// This invariant applies to ALL partition and composition unranking routines
+// in this file (capped, uncapped, distinct, repetition, etc.).
+//
+// ****************************************************************************
+
 std::vector<int> nthLengthOne(int n, int m, int cap, int k,
                               double dblIdx, const mpz_class &mpzIdx) {
 
@@ -40,7 +102,37 @@ std::vector<int> nthCompsRep(int n, int m, int cap, int k,
         res[i] = j;
     }
 
-    res[width - 1] = max_n - std::accumulate(res.begin(), res.end(), width);
+    // See OFFSET (POSITIVE) REPRESENTATION NOTE
+    res.back() = (max_n - width) - std::accumulate(res.begin(), res.end(), 0);
+    return res;
+}
+
+std::vector<int> nthCompsRepCapped(int n, int m, int cap, int k,
+                                   double dblIdx, const mpz_class &mpzIdx) {
+
+    const int width = m;
+    const int max_n = n;
+
+    // All we are doing in CountCompsRepLenCap is getting the max of allowed
+    std::vector<int> allowed(1, cap);
+    std::vector<int> res(width);
+
+    --n;
+    --m;
+
+    for (int i = 0, j = 0; i < (width - 1); ++i, --n, --m, j = 0) {
+        for (double temp = CountCompsRepLenCap(n, m, allowed);
+             temp <= dblIdx; ++j) {
+            --n;
+            dblIdx -= temp;
+            temp = CountCompsRepLenCap(n, m, allowed);
+        }
+
+        res[i] = j;
+    }
+
+    // See OFFSET (POSITIVE) REPRESENTATION NOTE
+    res.back() = (max_n - width) - std::accumulate(res.begin(), res.end(), 0);
     return res;
 }
 
@@ -69,7 +161,38 @@ std::vector<int> nthCompsRepZero(int n, int m, int cap, int k,
         res[i] = j;
     }
 
-    res[width - 1] = max_n - std::accumulate(res.begin(), res.end(), 0);
+    res.back() = max_n - std::accumulate(res.begin(), res.end(), 0);
+    return res;
+}
+
+std::vector<int> nthCompsRepZeroCap(int n, int m, int cap, int k,
+                                    double dblIdx, const mpz_class &mpzIdx) {
+
+    const int width = m;
+    const int max_n = n;
+
+    // All we are doing in CountCompsRepLenCap is getting the max of allowed
+    std::vector<int> allowed(1, cap);
+    std::vector<int> res(width, 0);
+    bool incr_j = false;
+    --m;
+
+    for (int i = 0, j = 0; i < (width - 1); ++i, --m, j = incr_j) {
+        double temp = incr_j ? CountCompsRepLenCap(n, m, allowed) :
+            CountCompsRepCapZNotWk(n, m, allowed);
+
+        for (; temp <= dblIdx; ++j) {
+            incr_j = true;
+            --n;
+            dblIdx -= temp;
+            temp = CountCompsRepLenCap(n, m, allowed);
+        }
+
+        if (incr_j) --n;
+        res[i] = j;
+    }
+
+    res.back() = max_n - std::accumulate(res.begin(), res.end(), 0);
     return res;
 }
 
@@ -129,6 +252,7 @@ std::vector<int> nthCompsRepZero(int n, int m, int cap, int k,
 std::vector<int> nthCompsDistinct(int n, int m, int cap, int k,
                                   double dblIdx, const mpz_class &mpzIdx) {
 
+    const int max_n = n;
     const int width = m;
     const int max_val = std::min(cap, n - (width * (width - 1)) / 2);
 
@@ -145,7 +269,7 @@ std::vector<int> nthCompsDistinct(int n, int m, int cap, int k,
     int cur_val = 1;
 
     for (int i = 0, j = 0; i < (width - 1); ++i, --m) {
-        double temp = CountCompDistLenRstrctd(n - partial_sum, m, allowed);
+        double temp = CountCompsDistLenRstrctd(n - partial_sum, m, allowed);
 
         for (; temp <= dblIdx; cur_val = j) {
             while ((j + 1) < mask_size && mask[j + 1]) {
@@ -157,7 +281,7 @@ std::vector<int> nthCompsDistinct(int n, int m, int cap, int k,
                           n, cur_val, partial_sum);
 
             dblIdx -= temp;
-            temp = CountCompDistLenRstrctd(n - partial_sum, m, allowed);
+            temp = CountCompsDistLenRstrctd(n - partial_sum, m, allowed);
 
             if (temp <= dblIdx) {
                 ++j;
@@ -177,7 +301,8 @@ std::vector<int> nthCompsDistinct(int n, int m, int cap, int k,
                       n, cur_val, partial_sum);
     }
 
-    res[width - 1] = n - std::accumulate(res.begin(), res.end(), width);
+    // See OFFSET (POSITIVE) REPRESENTATION NOTE
+    res.back() = (max_n - width) - std::accumulate(res.begin(), res.end(), 0);
     return res;
 }
 
@@ -189,14 +314,14 @@ std::vector<int> nthCompsDistinctMZ(int n, int m, int cap, int k,
 
     double temp = (cap == n) ?
         CountCompsDistinctLen(n, k) :
-        CountCompDistLenRstrctd(n, k, allowed);
+        CountCompsDistLenRstrctd(n, k, allowed);
 
     while (dblIdx >= temp && k < m) {
         dblIdx -= temp;
         ++k;
         temp = (cap == n) ?
             CountCompsDistinctLen(n, k) :
-            CountCompDistLenRstrctd(n, k, allowed);
+            CountCompsDistLenRstrctd(n, k, allowed);
     }
 
     std::vector<int> res = nthCompsDistinct(n, k, cap, k, dblIdx, mpzIdx);
@@ -277,7 +402,7 @@ std::vector<int> nthCompsDistinctMZWeak(
                       n, cur_val, partial_sum);
     }
 
-    res[width - 1] = n - std::accumulate(res.begin(), res.end(), 0);
+    res.back() = n - std::accumulate(res.begin(), res.end(), 0);
     return res;
 }
 
@@ -303,7 +428,8 @@ std::vector<int> nthPartsRepLen(int n, int m, int cap, int k,
         res[i] = j;
     }
 
-    res[width - 1] = max_n - std::accumulate(res.begin(), res.end(), width);
+    // See OFFSET (POSITIVE) REPRESENTATION NOTE
+    res.back() = (max_n - width) - std::accumulate(res.begin(), res.end(), 0);
     return res;
 }
 
@@ -344,7 +470,8 @@ std::vector<int> nthPartsRepCap(int n, int m, int cap, int k,
         res[i] = j;
     }
 
-    res[width - 1] = max_n - std::accumulate(res.begin(), res.end(), width);
+    // See OFFSET (POSITIVE) REPRESENTATION NOTE
+    res.back() = (max_n - width) - std::accumulate(res.begin(), res.end(), 0);
     return res;
 }
 
@@ -368,7 +495,8 @@ std::vector<int> nthPartsDistinctLen(int n, int m, int cap, int k,
         res[i] = j;
     }
 
-    res[width - 1] = max_n - std::accumulate(res.begin(), res.end(), width);
+    // See OFFSET (POSITIVE) REPRESENTATION NOTE
+    res.back() = (max_n - width) - std::accumulate(res.begin(), res.end(), 0);
     return res;
 }
 
@@ -405,7 +533,7 @@ std::vector<int> nthPartsDistinctMultiZero(
         }
     }
 
-    res[width - 1] = max_n - std::accumulate(res.begin(), res.end(), 0);
+    res.back() = max_n - std::accumulate(res.begin(), res.end(), 0);
     return res;
 }
 
@@ -436,7 +564,8 @@ std::vector<int> nthPartsDistinctCap(int n, int m, int cap, int k,
         allowed.pop_back();
     }
 
-    res[width - 1] = max_n - std::accumulate(res.begin(), res.end(), width);
+    // See OFFSET (POSITIVE) REPRESENTATION NOTE
+    res.back() = (max_n - width) - std::accumulate(res.begin(), res.end(), 0);
     return res;
 }
 
@@ -476,7 +605,7 @@ std::vector<int> nthPartsDistinctCapMZ(
         }
     }
 
-    res[width - 1] = max_n - std::accumulate(res.begin(), res.end(), 0);
+    res.back() = max_n - std::accumulate(res.begin(), res.end(), 0);
     return res;
 }
 
@@ -511,7 +640,44 @@ std::vector<int> nthCompsRepGmp(int n, int m, int cap, int k,
         res[i] = j;
     }
 
-    res[width - 1] = max_n - std::accumulate(res.begin(), res.end(), width);
+    // See OFFSET (POSITIVE) REPRESENTATION NOTE
+    res.back() = (max_n - width) - std::accumulate(res.begin(), res.end(), 0);
+    return res;
+}
+
+std::vector<int> nthCompsRepCappedGmp(int n, int m, int cap, int k,
+                                      double dblIdx, const mpz_class &mpzIdx) {
+
+    const int width = m;
+    const int max_n = n;
+
+    std::vector<int> allowed(1, cap);
+    std::vector<int> res(width);
+
+    --n;
+    --m;
+
+    mpz_class temp;
+    mpz_class index(mpzIdx);
+
+    std::unique_ptr<CountClass> Counter = MakeCount(
+        PartitionType::CompRepCapped
+    );
+
+    for (int i = 0, j = 0; i < (width - 1); ++i, --n, --m, j = 0) {
+        Counter->GetCount(temp, n, m, allowed);
+
+        for (; cmp(temp, index) <= 0; ++j) {
+            --n;
+            index -= temp;
+            Counter->GetCount(temp, n, m, allowed);
+        }
+
+        res[i] = j;
+    }
+
+    // See OFFSET (POSITIVE) REPRESENTATION NOTE
+    res.back() = (max_n - width) - std::accumulate(res.begin(), res.end(), 0);
     return res;
 }
 
@@ -548,13 +714,51 @@ std::vector<int> nthCompsRepZeroGmp(int n, int m, int cap, int k,
         res[i] = j;
     }
 
-    res[width - 1] = max_n - std::accumulate(res.begin(), res.end(), 0);
+    res.back() = max_n - std::accumulate(res.begin(), res.end(), 0);
+    return res;
+}
+
+std::vector<int> nthCompsRepZeroCapGmp(
+    int n, int m, int cap, int k, double dblIdx, const mpz_class &mpzIdx
+) {
+
+    const int width = m;
+    const int max_n = n;
+
+    std::vector<int> allowed(1, cap);
+    std::vector<int> res(width);
+    bool incr_j = false;
+    --m;
+
+    mpz_class temp;
+    mpz_class index(mpzIdx);
+    std::unique_ptr<CountClass> Counter = MakeCount(
+        PartitionType::CmpRpCapZNotWk
+    );
+
+    for (int i = 0, j = 0; i < (width - 1); ++i, --m, j = incr_j) {
+        Counter->GetCount(temp, n, m, allowed, k, !incr_j);
+
+        for (; cmp(temp, index) <= 0; ++j) {
+            incr_j = true;
+            --n;
+            index -= temp;
+            Counter->GetCount(temp, n, m, allowed, k, false);
+        }
+
+        temp = 0;
+        if (incr_j) --n;
+        res[i] = j;
+    }
+
+    res.back() = max_n - std::accumulate(res.begin(), res.end(), 0);
     return res;
 }
 
 std::vector<int> nthCompsDistinctGmp(int n, int m, int cap, int k,
                                      double dblIdx, const mpz_class &mpzIdx) {
 
+    const int max_n = n;
     const int width = m;
     const int max_val = std::min(cap, n - (width * (width - 1)) / 2);
 
@@ -612,7 +816,8 @@ std::vector<int> nthCompsDistinctGmp(int n, int m, int cap, int k,
                       n, cur_val, partial_sum);
     }
 
-    res[width - 1] = n - std::accumulate(res.begin(), res.end(), width);
+    // See OFFSET (POSITIVE) REPRESENTATION NOTE
+    res.back() = (max_n - width) - std::accumulate(res.begin(), res.end(), 0);
     return res;
 }
 
@@ -748,7 +953,7 @@ std::vector<int> nthCompsDistinctMZWeakGmp(
                       n, cur_val, partial_sum);
     }
 
-    res[width - 1] = n - std::accumulate(res.begin(), res.end(), 0);
+    res.back() = n - std::accumulate(res.begin(), res.end(), 0);
     return res;
 }
 
@@ -783,7 +988,8 @@ std::vector<int> nthPartsRepLenGmp(int n, int m, int cap, int k,
         res[i] = j;
     }
 
-    res[width - 1] = max_n - std::accumulate(res.begin(), res.end(), width);
+    // See OFFSET (POSITIVE) REPRESENTATION NOTE
+    res.back() = (max_n - width) - std::accumulate(res.begin(), res.end(), 0);
     return res;
 }
 
@@ -834,7 +1040,8 @@ std::vector<int> nthPartsRepCapGmp(int n, int m, int cap, int k,
         res[i] = j;
     }
 
-    res[width - 1] = max_n - std::accumulate(res.begin(), res.end(), width);
+    // See OFFSET (POSITIVE) REPRESENTATION NOTE
+    res.back() = (max_n - width) - std::accumulate(res.begin(), res.end(), 0);
     return res;
 }
 
@@ -870,7 +1077,8 @@ std::vector<int> nthPartsDistinctLenGmp(
         res[i] = j;
     }
 
-    res[width - 1] = max_n - std::accumulate(res.begin(), res.end(), width);
+    // See OFFSET (POSITIVE) REPRESENTATION NOTE
+    res.back() = (max_n - width) - std::accumulate(res.begin(), res.end(), 0);
     return res;
 }
 
@@ -915,7 +1123,7 @@ std::vector<int> nthPartsDistinctMultiZeroGmp(
         }
     }
 
-    res[width - 1] = max_n - std::accumulate(res.begin(), res.end(), 0);
+    res.back() = max_n - std::accumulate(res.begin(), res.end(), 0);
     return res;
 }
 
@@ -957,7 +1165,8 @@ std::vector<int> nthPartsDistinctCapGmp(
         allowed.pop_back();
     }
 
-    res[width - 1] = max_n - std::accumulate(res.begin(), res.end(), width);
+    // See OFFSET (POSITIVE) REPRESENTATION NOTE
+    res.back() = (max_n - width) - std::accumulate(res.begin(), res.end(), 0);
     return res;
 }
 
@@ -1005,7 +1214,7 @@ std::vector<int> nthPartsDistinctCapMZGmp(
         }
     }
 
-    res[width - 1] = max_n - std::accumulate(res.begin(), res.end(), 0);
+    res.back() = max_n - std::accumulate(res.begin(), res.end(), 0);
     return res;
 }
 
@@ -1044,10 +1253,16 @@ nthPartsPtr GetNthPartsFunc(PartitionType ptype, bool IsGmp) {
                 return(nthPartsPtr(nthPartsRepGmp));
             } case PartitionType::CompRepNoZero: {
                 return(nthPartsPtr(nthCompsRepGmp));
+            } case PartitionType::CompRepCapped: {
+                return(nthPartsPtr(nthCompsRepCappedGmp));
             } case PartitionType::CompRepWeak: {
                 return(nthPartsPtr(nthCompsRepGmp));
+            } case PartitionType::CompRepWeakCap: {
+                return(nthPartsPtr(nthCompsRepCappedGmp));
             } case PartitionType::CmpRpZroNotWk: {
                 return(nthPartsPtr(nthCompsRepZeroGmp));
+            } case PartitionType::CmpRpCapZNotWk: {
+                return(nthPartsPtr(nthCompsRepZeroCapGmp));
             } case PartitionType::CmpDstctNoZero: {
                 return(nthPartsPtr(nthCompsDistinctGmp));
             } case PartitionType::CmpDstctCapped: {
@@ -1096,10 +1311,16 @@ nthPartsPtr GetNthPartsFunc(PartitionType ptype, bool IsGmp) {
                 return(nthPartsPtr(nthPartsRep));
             } case PartitionType::CompRepNoZero: {
                 return(nthPartsPtr(nthCompsRep));
+            } case PartitionType::CompRepCapped: {
+                return(nthPartsPtr(nthCompsRepCapped));
             } case PartitionType::CompRepWeak: {
                 return(nthPartsPtr(nthCompsRep));
+            } case PartitionType::CompRepWeakCap: {
+                return(nthPartsPtr(nthCompsRepCapped));
             } case PartitionType::CmpRpZroNotWk: {
                 return(nthPartsPtr(nthCompsRepZero));
+            } case PartitionType::CmpRpCapZNotWk: {
+                return(nthPartsPtr(nthCompsRepZeroCap));
             } case PartitionType::CmpDstctNoZero: {
                 return(nthPartsPtr(nthCompsDistinct));
             } case PartitionType::CmpDstctCapped: {

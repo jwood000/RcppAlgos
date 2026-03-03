@@ -12,17 +12,35 @@
 // Using gmp function to get rid of floating point errors.
 // E.g. choose(92, 13) = 2232785266876081
 // shoule be gmp::chooseZ(92, 13) = 2232785266876080
+//
+// Returns the binomial coefficient "n choose m" as a double.
+//
+// Notes:
+// * For counting routines that operate in double, we still compute the
+//   coefficient with GMP (mpz_bin_uiui) to avoid floating-point drift in
+//   intermediate calculations (e.g., R's choose()).
+// * The returned double is only guaranteed to represent the integer exactly
+//   when the true value is <= 2^53 - 1 (the largest consecutive integer
+//   representable in IEEE-754 double). Callers must enforce this when exact
+//   integer semantics are required.
+// * For invalid inputs (n < 0, m < 0, or m > n) we return 0, which matches
+//   the combinatorial convention used in inclusion-exclusion sums.
 double nChooseK(int n, int m) {
+
+    if (n < 0 || m < 0 || m > n) {
+        return 0.0;
+    }
 
     if (m == n || m == 0) {
         return 1.0;
     }
 
     mpz_class temp;
-    mpz_bin_uiui(temp.get_mpz_t(), n, m);
+    mpz_bin_uiui(temp.get_mpz_t(),
+                 static_cast<unsigned long>(n),
+                 static_cast<unsigned long>(m));
 
-    double res = temp.get_d();
-    return res;
+    return temp.get_d();
 }
 
 double NumCombsWithRep(int n, int m) {

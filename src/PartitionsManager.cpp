@@ -117,10 +117,20 @@ int PartsGenManager(T* mat, const std::vector<T> &v, std::vector<int> &z,
         case PartitionType::CompRepNoZero:
             return CompsGenRep<0>(mat, v, z, width, nRows);
 
+        case PartitionType::CompRepCapped:
+        case PartitionType::CompRepWeakCap:
+            return CompsGenRepCapped<0>(mat, v, z, width, nRows);
+
+        case PartitionType::CmpRpCapZNotWk:
+            return CompsGenRepCapped<1>(mat, v, z, width, nRows);
+
             // ----- PartsGenPerm -----
         // case PartitionType::PrmRepPart:
         case PartitionType::PrmRepPartNoZ:
-            return PartsGenPermRep(mat, v, z, width, lastElem, lastCol, nRows);
+            return PartsStdPermRep(mat, v, z, width, lastElem, lastCol, nRows);
+
+        case PartitionType::PrmRepCapped:
+            return PartsGenPermRep(mat, v, z, width, nRows);
 
         // case PartitionType::PrmDstPrtOneZ:
         case PartitionType::PrmDstPartNoZ:
@@ -281,6 +291,13 @@ int PartsGenParallel(RcppParallel::RMatrix<T> &mat,
         // case PartitionType::CompRepWeak:
         case PartitionType::CompRepNoZero:
             return CompsGenRep<0>(mat, v, z, strt, width, nRows);
+
+        case PartitionType::CompRepCapped:
+        case PartitionType::CompRepWeakCap:
+            return CompsGenRepCapped<0>(mat, v, z, strt, width, nRows);
+
+        case PartitionType::CmpRpCapZNotWk:
+            return CompsGenRepCapped<1>(mat, v, z, strt, width, nRows);
 
             // ----- CompsGenDistinct -----
         case PartitionType::CmpDstctNoZero:

@@ -6,7 +6,25 @@ void Partitions::SetPartValues() {
         CmpDstPTypeArr.cbegin(), CmpDstPTypeArr.cend(), part.ptype
     ) != CmpDstPTypeArr.cend();
 
-    if (IsCompDist) {
+    // CompRepCapped, CompRepWeakCap, and CmpRpCapZNotWk advances using the
+    // composition-next routine (NextCompositionRep), not the general
+    // PartitionType next-partition logic.
+    //
+    // Only the cap value is required for this mode. It is passed as `myMax`
+    // (stored in `pivot`). Other PartitionType iterator fields (edge, boundary,
+    // tarDiff, rpsCnt mappings, etc.) are intentionally unused and do not need
+    // initialization here.
+    //
+    // This is safe because dispatch routes these PartitionTypes to
+    // NextRepCompCapped and NextRepCompNotWkCap which ignores the unused state.
+    //
+    // Note: n is the size of v so the largest value the index can be is n - 1.
+
+    if (part.ptype == PartitionType::CompRepCapped ||
+        part.ptype == PartitionType::CompRepWeakCap ||
+        part.ptype == PartitionType::CmpRpCapZNotWk) {
+        pivot = n - 1;  // myMax/cap for NextCompositionRep
+    } else if (IsCompDist) {
         bool compZero = IsComplementZeroBased(
             part.includeZero, part.isWeak, ctype == ConstraintType::PartMapping
         );
