@@ -1,10 +1,11 @@
-dir.create("/Users/josephwood/RcppAlgos/temp_md")
-setwd("/Users/josephwood/RcppAlgos/temp_md")
+dir.create("/Users/owacasa/RcppAlgos/temp_md",
+           showWarnings = FALSE, recursive = TRUE)
+setwd("/Users/owacasa/RcppAlgos/temp_md")
 
-my_scripts <- list.files("../scripts", full.names = TRUE)
-my_scripts <- my_scripts[which(!grepl("create_md", my_scripts))]
+scripts <- list.files("../scripts", pattern = "\\.R$", full.names = TRUE)
+scripts <- scripts[!grepl("create_md\\b", basename(scripts))]
 
-for (f in my_scripts) {
+for (f in scripts) {
     if (!dir.exists(f)) {
         source(f)
         print(f)

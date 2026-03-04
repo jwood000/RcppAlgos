@@ -3,7 +3,7 @@ reprex::reprex({
     #'
     #' ## Setup Information
     #'
-    #' For the benchmarks below, we used a `2022 Macbook Air Apple M2 24 GB` machine.
+    #' For the benchmarks below, we used a `2025 Macbook Air Apple M4 24 GB` machine.
     #'
 
     library(RcppAlgos)
@@ -244,21 +244,19 @@ reprex::reprex({
     		                                        include.zero = FALSE),
     		       times = 10, unit = "relative")
     #'
-    #'
     #' ### Partitions - Multisets
     #'
-    #' Currenlty, `RcppAlgos` is the only package capable of efficiently generating partitions of multisets. Therefore, we will only time `RcppAlgos` and use this as a reference for future improvements.
+    #' Currently, `RcppAlgos` is the only package capable of efficiently generating partitions of multisets. Therefore, we will only time `RcppAlgos` and use this as a reference for future improvements.
     #'
 
-    t1 <- comboGeneral(120, 10, freqs=rep(1:8, 15),
+    t1 <- comboGeneral(120, 10, freqs = rep(1:8, 15),
     				   constraintFun = "sum", comparisonFun = "==",
     				   limitConstraints = 120)
     dim(t1)
     stopifnot(all(rowSums(t1) == 120))
-    microbenchmark(cbRcppAlgos = partitionsGeneral(120, 10, freqs=rep(1:8, 15)),
+    microbenchmark(cbRcppAlgos = partitionsGeneral(120, 10, freqs = rep(1:8, 15)),
                    times = 10)
 
-    #'
     #'
     #' ## Compositions
     #'
@@ -284,7 +282,6 @@ reprex::reprex({
      			   cbPartitions   = partitions::compositions(15),
      			   times = 20, unit = "relative")
     #'
-    #'
     #' For the next two examples, we will exclude the `partitions` package for efficiency reasons.
     #'
     #' #### All Compositions (Larger case)
@@ -306,8 +303,7 @@ reprex::reprex({
      			   cbArrangements = arrangements::compositions(23),
      			   times = 20, unit = "relative")
     #'
-    #'
-    #' #### Restricted Compositions
+    #' #### Compositions of Specific Length
     #'
 
     t1 <- compositionsGeneral(30, 10, repetition = TRUE)
@@ -322,7 +318,57 @@ reprex::reprex({
                    cbRcppAlgosSer = compositionsGeneral(30, 10, repetition = TRUE),
      			   cbArrangements = arrangements::compositions(30, 10),
      			   times = 20, unit = "relative")
+
     #'
+    #' ### Specialized Composition Benchmarks
+    #'
+    #' Similar to partitions of multisets, several composition variants supported in `RcppAlgos` (e.g., distinct parts, capped cases, etc.) are not currently available in other R packages or combinatorics libraries. In such cases, benchmarks will only report timings for `RcppAlgos`, which can serve as a reference point for future implementations and improvements.
+    #'
+    #' #### Compositions with Specific `target`
+    #'
+
+    t1 <- compositionsGeneral(10, 10, repetition = TRUE, target = 30)
+    dim(t1)
+
+    stopifnot(all(rowSums(t1) == 30))
+    microbenchmark(
+        cbRcppAlgosSer = compositionsGeneral(10, 10, repetition = TRUE, target = 30),
+        cbRcppAlgosPar = compositionsGeneral(10, 10, repetition = TRUE,
+                                             target = 30, nThreads = numThreads),
+        times = 10,
+        check = "identical"
+    )
+
+    #'
+    #' #### Compositions with Distinct Parts
+    #'
+
+    t1 <- compositionsGeneral(50, 8)
+    dim(t1)
+
+    stopifnot(all(rowSums(t1) == 50))
+    microbenchmark(
+        cbRcppAlgosSer = compositionsGeneral(50, 8),
+        cbRcppAlgosPar = compositionsGeneral(50, 8, nThreads = numThreads),
+        times = 10,
+        check = "identical"
+    )
+
+    #'
+    #' #### Compositions with Distinct Parts & Specific `target`
+    #'
+
+    t1 <- compositionsGeneral(30, 7, target = 60)
+    dim(t1)
+
+    stopifnot(all(rowSums(t1) == 60))
+    microbenchmark(
+        cbRcppAlgosSer = compositionsGeneral(30, 7, target = 60),
+        cbRcppAlgosPar = compositionsGeneral(30, 7, target = 60, nThreads = numThreads),
+        times = 10,
+        check = "identical"
+    )
+
     #'
     #' ## Iterators
     #'
@@ -422,4 +468,5 @@ reprex::reprex({
                    cbArrangements = pkg_arrangements(15, total),
                    cbPartitions   = pkg_partitions(15, total),
                    times = 15, unit = "relative")
+
 }, advertise = FALSE, venue = "r", html_preview = FALSE, wd = ".")

@@ -191,7 +191,7 @@ reprex::reprex({
     b$sourceVector()
 
     #'
-    #' ## New in Verison `2.5.0`
+    #' ## New in Version `2.5.0`
     #'
     #' As of version `2.5.0`, we no longer rely on `Rcpp` as a dependency, which means that we do not utilize `Rcpp` modules for exposing C++ classes. This is now carried out using external pointers (See [External pointers and weak references](<https://cran.r-project.org/doc/manuals/r-release/R-exts.html#External-pointers-and-weak-references>)) along with [S4 Classes](<http://adv-r.had.co.nz/S4.html>). We use the slots of `S4` classes for exposing each method so access is carried out with the "at sign", `@`. We have also added the ability to access each method with the "dollar sign", `$`, for backwards compatibility.
     #'
@@ -314,7 +314,7 @@ reprex::reprex({
     p@prevIter()
 
     #'
-    #' For compositions, the options are limited to a subset of compositions with repetition.
+    #' For compositions, we have the same functionality as with `partitionsIter`.
     #'
 
     ## Similar illustration of comboIter(5, 3) at the top

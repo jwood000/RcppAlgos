@@ -181,6 +181,28 @@ reprex::reprex({
     partitionsGeneral(table(c(0L, 0L, 0L, 1:10)))
 
     #'
+    #' ## The Role of `target`
+    #'
+    #' The `target` argument specifies the integer being partitioned. That is, we are finding all ways to write `target` as a sum of elements from `v`, subject to the specified multiplicity rules.
+    #'
+    #' When `v` is of the standard form `0:N` or `1:N`, `target` defaults to `max(v)`, which corresponds to the classical problem of partitioning _N_. However, `target` may be set independently of `v`, allowing for more general capped or restricted partition problems.
+    #'
+    #' Observe:
+    #'
+
+    ## Here we partition 30 using only distinct parts up to 10
+    partitionsGeneral(10, 5, target = 30)
+
+    ## Here we partition 15 using only parts up to 4 with zero included
+    partitionsGeneral(0:4, 5, repetition = TRUE, target = 15)
+
+    ## Here we partition 22 using only parts up to 8 with zero(s) included
+    partitionsGeneral(0:8, 6, freqs = c(4, rep(1, 8)), target = 22)
+
+    ## Same as above, just making use of the table method
+    partitionsGeneral(table(c(rep(0L, 4), 1:8)), 6, target = 22)
+
+    #'
     #' ## Efficiency Generating Partitions
     #'
     #' Note, as of version `2.5.0`, one can generate partitions in parallel using the `nThreads` argument.
