@@ -1,7 +1,7 @@
 ---
 title: "Integer Compositions in RcppAlgos"
 author: "Joseph Wood"
-date: "01/31/2025"
+date: "2026-03-04"
 output:
   prettydoc::html_pretty:
     theme: architect
@@ -13,7 +13,7 @@ vignette: >
   %\VignetteEncoding{UTF-8}
 ---
 
-This document covers the topic of [integer compositions](https://en.wikipedia.org/wiki/Composition_(combinatorics)) in `RcppAlgos`. Integer compositions are closely related to integer partitions; however, order matters. While standard compositions are well studied and widely implemented, compositions with distinct parts present additional structural constraints that require specialized treatment. To our knowledge, `RcppAlgos` is the first combinatorics library to provide a dedicated next-lexicographical algorithm for efficiently generating distinct integer compositions, enabling fast enumeration, ranking, and sampling even for large problems.
+This document covers the topic of [integer compositions](<https://en.wikipedia.org/wiki/Composition_(combinatorics)>) in `RcppAlgos`. Integer compositions are closely related to integer partitions; however, order matters. While standard compositions are well studied and widely implemented, compositions with distinct parts present additional structural constraints that require specialized treatment. To our knowledge, `RcppAlgos` is the first combinatorics library to provide a dedicated next-lexicographical algorithm for efficiently generating distinct integer compositions, enabling fast enumeration, ranking, and sampling even for large problems.
 
 ------------------------------------------------------------------------
 
@@ -33,7 +33,7 @@ For more general cases, we can make use of `permuteGeneral`, keeping in mind tha
 
 With that in mind, generating compositions with `RcppAlgos` is easy, flexible, and quite efficient.
 
-We continue to use the `ht` function defined in the [Combination and Permutation Basics](https://jwood000.github.io/RcppAlgos/articles/GeneralCombinatorics.html) vignette):
+We continue to use the `ht` function defined in the [Combination and Permutation Basics](<https://jwood000.github.io/RcppAlgos/articles/GeneralCombinatorics.html>) vignette):
 
 ``` r
 ht <- function(d, m = 5, n = m) {
@@ -194,7 +194,7 @@ ht(compositionsGeneral(40, 7))
 #> [327599,]   19    6    5    4    3    1    2
 #> [327600,]   19    6    5    4    3    2    1
 
-## Note the subtlety here. When zero is NOT included the last result is
+## Note the subtlety here. When zero is NOT included, the last result is
 ## simply the reverse of the first result. Below, this is not the case.
 ht(compositionsGeneral(0:40, 7))
 #> head -->
@@ -345,7 +345,7 @@ permuteGeneral(0:3, 3, repetition = FALSE,
 
 Just as with integer partitions, we can make use of the `target` parameter to specify the integer being partitioned.
 
-Below, we replicate the examples from the [Integer Partitions](https://jwood000.github.io/RcppAlgos/articles/IntegerPartitions.html#the-role-of-target) vignette, this time generating compositions. Because compositions yield substantially more results, we use `ht()` to limit the displayed output.
+Below, we replicate the examples from the [Integer Partitions](<https://jwood000.github.io/RcppAlgos/articles/IntegerPartitions.html#the-role-of-target>) vignette, this time generating compositions. Because compositions yield substantially more results, we use `ht()` to limit the displayed output.
 
 ``` r
 ## Here we partition 30 using only distinct parts up to 10
@@ -429,7 +429,7 @@ With `compositionGeneral` we are able to take advantage of parallel computation.
 ## compositions of 25
 system.time(compositionsGeneral(0:25, repetition = TRUE))
 #>    user  system elapsed 
-#>   1.292   0.074   1.367
+#>   1.284   0.053   1.338
 
 compositionsCount(0:25, repetition = TRUE)
 #> [1] 16777216
@@ -438,14 +438,14 @@ compositionsCount(0:25, repetition = TRUE)
 ## over 16 million compositions instantly
 system.time(compositionsGeneral(0:25, repetition = TRUE, nThreads = 4))
 #>    user  system elapsed 
-#>   1.485   0.074   0.420
+#>   1.471   0.061   0.410
 
 
 ## weak compositions of 12 using nThreads = 4
 system.time(weakComp12 <- compositionsGeneral(0:12, repetition = TRUE,
                                               weak = TRUE, nThreads = 4))
 #>    user  system elapsed 
-#>   0.009   0.005   0.004
+#>   0.008   0.004   0.003
 
 ## And using permuteGeneral
 system.time(weakPerm12 <- permuteGeneral(0:12, 12, repetition = TRUE,
@@ -465,7 +465,7 @@ identical(weakPerm12[do.call(order, as.data.frame(weakPerm12)), ],
 ## Distinct Parts
 system.time(compositionsGeneral(55, 8))
 #>    user  system elapsed 
-#>   0.602   0.018   0.621
+#>   0.626   0.017   0.642
 
 compositionsCount(55, 8)
 #> [1] 14192640
@@ -473,7 +473,7 @@ compositionsCount(55, 8)
 ## Similar to above... using 4 threads gets us the result instantly
 system.time(compositionsGeneral(55, 8, nThreads = 4))
 #>    user  system elapsed 
-#>   0.666   0.020   0.190
+#>   0.645   0.017   0.189
 
 ## General compositions with varying multiplicities
 system.time(comp25_gen <- permuteGeneral(25, 10, freqs = rep(4:8, 5),
@@ -481,7 +481,7 @@ system.time(comp25_gen <- permuteGeneral(25, 10, freqs = rep(4:8, 5),
                                          comparisonFun = "==",
                                          limitConstraints = 25))
 #>    user  system elapsed 
-#>   0.012   0.005   0.017
+#>   0.013   0.004   0.018
 
 dim(comp25_gen)
 #> [1] 946092     10

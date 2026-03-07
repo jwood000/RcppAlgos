@@ -1,7 +1,7 @@
 ---
 title: "Integer Partitions in RcppAlgos"
 author: "Joseph Wood"
-date: "2026-02-24"
+date: "2026-03-04"
 output:
   prettydoc::html_pretty:
     theme: architect
@@ -393,6 +393,80 @@ partitionsGeneral(table(c(0L, 0L, 0L, 1:10)))
 #> [10,]    1    2    3    4
 ```
 
+## The Role of `target`
+
+The `target` argument specifies the integer being partitioned. That is, we are finding all ways to write `target` as a sum of elements from `v`, subject to the specified multiplicity rules.
+
+When `v` is of the standard form `0:N` or `1:N`, `target` defaults to `max(v)`, which corresponds to the classical problem of partitioning *N*. However, `target` may be set independently of `v`, allowing for more general capped or restricted partition problems.
+
+Observe:
+
+``` r
+## Here we partition 30 using only distinct parts up to 10
+partitionsGeneral(10, 5, target = 30)
+#>       [,1] [,2] [,3] [,4] [,5]
+#>  [1,]    1    2    8    9   10
+#>  [2,]    1    3    7    9   10
+#>  [3,]    1    4    6    9   10
+#>  [4,]    1    4    7    8   10
+#>  [5,]    1    5    6    8   10
+#>  [6,]    1    5    7    8    9
+#>  [7,]    2    3    6    9   10
+#>  [8,]    2    3    7    8   10
+#>  [9,]    2    4    5    9   10
+#> [10,]    2    4    6    8   10
+#> [11,]    2    4    7    8    9
+#> [12,]    2    5    6    7   10
+#> [13,]    2    5    6    8    9
+#> [14,]    3    4    5    8   10
+#> [15,]    3    4    6    7   10
+#> [16,]    3    4    6    8    9
+#> [17,]    3    5    6    7    9
+#> [18,]    4    5    6    7    8
+
+## Here we partition 15 using only parts up to 4 with zero included
+partitionsGeneral(0:4, 5, repetition = TRUE, target = 15)
+#>      [,1] [,2] [,3] [,4] [,5]
+#> [1,]    0    3    4    4    4
+#> [2,]    1    2    4    4    4
+#> [3,]    1    3    3    4    4
+#> [4,]    2    2    3    4    4
+#> [5,]    2    3    3    3    4
+#> [6,]    3    3    3    3    3
+
+## Here we partition 22 using only parts up to 8 with zero(s) included
+partitionsGeneral(0:8, 6, freqs = c(4, rep(1, 8)), target = 22)
+#>       [,1] [,2] [,3] [,4] [,5] [,6]
+#>  [1,]    0    0    1    6    7    8
+#>  [2,]    0    0    2    5    7    8
+#>  [3,]    0    0    3    4    7    8
+#>  [4,]    0    0    3    5    6    8
+#>  [5,]    0    0    4    5    6    7
+#>  [6,]    0    1    2    4    7    8
+#>  [7,]    0    1    2    5    6    8
+#>  [8,]    0    1    3    4    6    8
+#>  [9,]    0    1    3    5    6    7
+#> [10,]    0    2    3    4    5    8
+#> [11,]    0    2    3    4    6    7
+#> [12,]    1    2    3    4    5    7
+
+## Same as above, just making use of the table method
+partitionsGeneral(table(c(rep(0L, 4), 1:8)), 6, target = 22)
+#>       [,1] [,2] [,3] [,4] [,5] [,6]
+#>  [1,]    0    0    1    6    7    8
+#>  [2,]    0    0    2    5    7    8
+#>  [3,]    0    0    3    4    7    8
+#>  [4,]    0    0    3    5    6    8
+#>  [5,]    0    0    4    5    6    7
+#>  [6,]    0    1    2    4    7    8
+#>  [7,]    0    1    2    5    6    8
+#>  [8,]    0    1    3    4    6    8
+#>  [9,]    0    1    3    5    6    7
+#> [10,]    0    2    3    4    5    8
+#> [11,]    0    2    3    4    6    7
+#> [12,]    1    2    3    4    5    7
+```
+
 ## Efficiency Generating Partitions
 
 Note, as of version `2.5.0`, one can generate partitions in parallel using the `nThreads` argument.
@@ -405,12 +479,12 @@ partitionsCount(0:60, repetition = TRUE)
 ## Single threaded
 system.time(partitionsGeneral(0:60, repetition = TRUE))
 #>    user  system elapsed 
-#>   0.039   0.011   0.050
+#>   0.039   0.007   0.046
 
 ## Using nThreads
 system.time(partitionsGeneral(0:60, repetition = TRUE, nThreads = 4))
 #>    user  system elapsed 
-#>   0.026   0.021   0.012
+#>   0.023   0.013   0.011
 
 ## partitions of 120 into distinct parts
 partitionsCount(0:120, freqs = c(120, rep(1, 120)))
@@ -418,11 +492,11 @@ partitionsCount(0:120, freqs = c(120, rep(1, 120)))
 
 system.time(partitionsGeneral(0:120, freqs = c(120, rep(1, 120))))
 #>    user  system elapsed 
-#>   0.015   0.005   0.020
+#>   0.017   0.004   0.020
 
 system.time(partitionsGeneral(0:120, freqs = c(120, rep(1, 120)), nThreads = 4))
 #>    user  system elapsed 
-#>   0.018   0.007   0.007
+#>   0.020   0.007   0.009
 
 ## partitions of 100 into parts of 15 with specific multiplicity
 partitionsCount(100, 15, freqs = rep(4:8, 20))
@@ -431,5 +505,5 @@ partitionsCount(100, 15, freqs = rep(4:8, 20))
 ## Over 6 million almost instantly!
 system.time(partitionsGeneral(100, 15, freqs = rep(4:8, 20)))
 #>    user  system elapsed 
-#>   0.193   0.095   0.302
+#>   0.193   0.050   0.243
 ```
