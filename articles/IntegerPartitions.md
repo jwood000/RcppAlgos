@@ -211,8 +211,8 @@ partitionsGeneral(0:10, freqs = c(10, rep(1, 10)))    ## Same as c(3, rep(1, 10)
 
 ##### Euler’s Theorem in Action (Odd Parts and Distinct Parts)
 
-Consider \$\`N = 100\`\$. The number of partitions with odd parts only
-is given by:
+Consider $N = 100$. The number of partitions with odd parts only is
+given by:
 
 ``` r
 sum(
@@ -364,9 +364,9 @@ In `RcppAlgos`, we’ve covered combinations and permutations of multisets
 thoroughly. This is not surprising, as these structures are well known
 in both academia and industry alike. The same can be said for standard
 and distinct partitions, which we covered above. To our knowledge,
-algorithms for generating partitions where each part, \$\`p_i\`\$, may
-repeat up to \$\`r_i\`\$ times are not readily available in
-combinatorics software/literature.
+algorithms for generating partitions where each part, $p_{i}$, may
+repeat up to $r_{i}$ times are not readily available in combinatorics
+software/literature.
 
 Put simply, finding all partitions of *N* under part-specific
 multiplicity constraints has proven elusive. In `RcppAlgos`, however,
@@ -402,9 +402,9 @@ we can take advantage of the
 natural fit for multisets, since problems are often framed in terms of
 multiplicities:
 
-> *Given the multiset \$\`\[p_0^{r_0}, p_1^{r_1}, \ldots,
-> p_k^{r_k}\]\`\$, where each \$\`p_i\`\$ repeats \$\`r_i\`\$ times,
-> find …*
+> *Given the multiset
+> $\left\lbrack p_{0}^{r_{0}},p_{1}^{r_{1}},\ldots,p_{k}^{r_{k}} \right\rbrack$,
+> where each $p_{i}$ repeats $r_{i}$ times, find …*
 
 Without a dedicated interface, setting up `v` and `freqs` can be
 cumbersome, often requiring some combination of
