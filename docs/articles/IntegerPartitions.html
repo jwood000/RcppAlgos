@@ -282,8 +282,9 @@ the maximum width is 4 in this case.</p>
 <div class="section level5">
 <h5 id="eulers-theorem-in-action-odd-parts-and-distinct-parts">Euler’s Theorem in Action (Odd Parts and Distinct Parts)<a class="anchor" aria-label="anchor" href="#eulers-theorem-in-action-odd-parts-and-distinct-parts"></a>
 </h5>
-<p>Consider <span class="math inline">$`N = 100`$</span>. The number of
-partitions with odd parts only is given by:</p>
+<p>Consider
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>N</mi><mo>=</mo><mn>100</mn></mrow><annotation encoding="application/x-tex">N = 100</annotation></semantics></math>.
+The number of partitions with odd parts only is given by:</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/sum.html" class="external-link">sum</a></span><span class="op">(</span></span>
 <span>    <span class="fu"><a href="https://rdrr.io/r/base/lapply.html" class="external-link">sapply</a></span><span class="op">(</span><span class="fl">1</span><span class="op">:</span><span class="fl">100</span>, <span class="kw">function</span><span class="op">(</span><span class="va">width</span><span class="op">)</span> <span class="op">{</span></span>
@@ -431,8 +432,12 @@ permutations of multisets thoroughly. This is not surprising, as these
 structures are well known in both academia and industry alike. The same
 can be said for standard and distinct partitions, which we covered
 above. To our knowledge, algorithms for generating partitions where each
-part, <span class="math inline">$`p_i`$</span>, may repeat up to <span class="math inline">$`r_i`$</span> times are not readily available in
-combinatorics software/literature.</p>
+part,
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>p</mi><mi>i</mi></msub><annotation encoding="application/x-tex">p_i</annotation></semantics></math>,
+may repeat up to
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>r</mi><mi>i</mi></msub><annotation encoding="application/x-tex">r_i</annotation></semantics></math>
+times are not readily available in combinatorics
+software/literature.</p>
 <p>Put simply, finding all partitions of <em>N</em> under part-specific
 multiplicity constraints has proven elusive. In <code>RcppAlgos</code>,
 however, this is no problem.</p>
@@ -468,8 +473,13 @@ zeros, we can take advantage of the <code><a href="https://rdrr.io/r/base/table.
 is a natural fit for multisets, since problems are often framed in terms
 of multiplicities:</p>
 <blockquote>
-<p><em>Given the multiset <span class="math inline">$`[p_0^{r_0},
-p_1^{r_1}, \ldots, p_k^{r_k}]`$</span>, where each <span class="math inline">$`p_i`$</span> repeats <span class="math inline">$`r_i`$</span> times, find …</em></p>
+<p><em>Given the multiset
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo stretchy="true" form="prefix">[</mo><msubsup><mi>p</mi><mn>0</mn><msub><mi>r</mi><mn>0</mn></msub></msubsup><mo>,</mo><msubsup><mi>p</mi><mn>1</mn><msub><mi>r</mi><mn>1</mn></msub></msubsup><mo>,</mo><mi>…</mi><mo>,</mo><msubsup><mi>p</mi><mi>k</mi><msub><mi>r</mi><mi>k</mi></msub></msubsup><mo stretchy="true" form="postfix">]</mo></mrow><annotation encoding="application/x-tex">[p_0^{r_0}, p_1^{r_1}, \ldots, p_k^{r_k}]</annotation></semantics></math>,
+where each
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>p</mi><mi>i</mi></msub><annotation encoding="application/x-tex">p_i</annotation></semantics></math>
+repeats
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>r</mi><mi>i</mi></msub><annotation encoding="application/x-tex">r_i</annotation></semantics></math>
+times, find …</em></p>
 </blockquote>
 <p>Without a dedicated interface, setting up <code>v</code> and
 <code>freqs</code> can be cumbersome, often requiring some combination
