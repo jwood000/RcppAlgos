@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">RcppAlgos</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">2.9.5</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">2.10.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -20,10 +20,12 @@
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-articles" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Articles</button>
   <ul class="dropdown-menu" aria-labelledby="dropdown-articles"><li><a class="dropdown-item" href="../articles/CombinatorialSampling.html">Combinatorial Sampling and Ranking</a></li>
     <li><a class="dropdown-item" href="../articles/CombinatoricsIterators.html">Combinatorial Iterators in RcppAlgos</a></li>
-    <li><a class="dropdown-item" href="../articles/CombPermConstraints.html">Constraints, Partitions, and Compositions</a></li>
+    <li><a class="dropdown-item" href="../articles/CombPermConstraints.html">Constraints in RcppAlgos: Constraint-Driven Combinatorial Enumeration</a></li>
     <li><a class="dropdown-item" href="../articles/ComputationalMathematics.html">Computational Mathematics Overview</a></li>
     <li><a class="dropdown-item" href="../articles/GeneralCombinatorics.html">Combination and Permutation Basics</a></li>
     <li><a class="dropdown-item" href="../articles/HighPerformanceBenchmarks.html">High Performance Benchmarks</a></li>
+    <li><a class="dropdown-item" href="../articles/IntegerCompositions.html">Integer Compositions in RcppAlgos</a></li>
+    <li><a class="dropdown-item" href="../articles/IntegerPartitions.html">Integer Partitions in RcppAlgos</a></li>
     <li><a class="dropdown-item" href="../articles/OtherCombinatorics.html">Cartesian Products and Partitions of Groups</a></li>
     <li><a class="dropdown-item" href="../articles/SubsetSum.html">Attacking Problems Related to the Subset Sum Problem</a></li>
   </ul></li>
@@ -44,7 +46,43 @@
     </div>
 
     <div class="section level2">
-<h2 class="pkg-version" data-toc-text="2.9.5" id="rcppalgos-295">RcppAlgos 2.9.5<a class="anchor" aria-label="anchor" href="#rcppalgos-295"></a></h2>
+<h2 class="pkg-version" data-toc-text="2.10.0" id="rcppalgos-2100">RcppAlgos 2.10.0<a class="anchor" aria-label="anchor" href="#rcppalgos-2100"></a></h2>
+<p>This release introduces major enhancements to the compositions framework, including support for distinct and repetition-restricted compositions, parallel ranking, and performance improvements across several combinatorial algorithms.</p>
+<p>These enhancements integrate fully with the existing counting, ranking, sampling, and iterator infrastructure, and have been validated for correctness and consistency across supported combinatorial families.</p>
+<div class="section level3">
+<h3 id="new-features-2-10-0">New Features:<a class="anchor" aria-label="anchor" href="#new-features-2-10-0"></a></h3>
+<ul><li><p>Added parallel capabilities to all ranking functions via a new <code>nThreads</code> argument (e.g. <code><a href="../reference/combinatoricsRank.html">comboRank()</a></code>, <code><a href="../reference/partitionsRank.html">partitionsRank()</a></code>, <code><a href="../reference/partitionsRank.html">compositionsRank()</a></code>), enabling faster ranking of large combinatorial results.</p></li>
+<li><p>Implemented a next-lexicographical algorithm for generating <strong>distinct integer compositions</strong>, enabling efficient generation of large problems such as <code>compositionsGeneral(50, 8)</code>.</p></li>
+<li>
+<p>Added full support for distinct compositions across the compositional framework, including:</p>
+<ul><li><code><a href="../reference/partitionsGeneral.html">compositionsGeneral()</a></code></li>
+<li><code><a href="../reference/partitionsSample.html">compositionsSample()</a></code></li>
+<li><code><a href="../reference/partitionsRank.html">compositionsRank()</a></code></li>
+<li><code><a href="../reference/partitionsIterator.html">compositionsIter()</a></code></li>
+</ul></li>
+<li><p>Added support for <strong>compositions with repetition subject to a maximum part constraint</strong> (“capped compositions”), including weak and non-weak cases, with full support for counting, ranking, sampling, and iteration.</p></li>
+<li><p>Enhanced <code><a href="../reference/combinatoricsCount.html">permuteCount()</a></code> to count permutations of partitions when called with <code>constraintFun = "sum"</code> and <code>comparisonFun = "=="</code>, enabling faster counting when problems reduce to partition/composition counting.</p></li>
+</ul></div>
+<div class="section level3">
+<h3 id="improvements-2-10-0">Improvements:<a class="anchor" aria-label="anchor" href="#improvements-2-10-0"></a></h3>
+<ul><li>Added validation at package load time to ensure the loaded shared library matches the installed package version, producing a clear error message instead of potential crashes caused by stale compiled code.</li>
+<li>Improved handling of certain constrained and ranking cases involving singleton inputs.</li>
+<li>Added internal tooling to support partition and composition counting workflows.</li>
+</ul></div>
+<div class="section level3">
+<h3 id="performance-2-10-0">Performance:<a class="anchor" aria-label="anchor" href="#performance-2-10-0"></a></h3>
+<ul><li>Improved performance of ranking and generation algorithms, including support for parallel ranking.</li>
+<li>Improved performance and scalability of composition-related algorithms, particularly for constrained and distinct composition problems.</li>
+</ul></div>
+<div class="section level3">
+<h3 id="bug-fixes-2-10-0">Bug Fixes:<a class="anchor" aria-label="anchor" href="#bug-fixes-2-10-0"></a></h3>
+<ul><li>Fixed an issue in <code><a href="../reference/combinatoricsIterator.html">permuteIter()</a></code> affecting cases that reduce to permutations of partitions, which could previously produce incorrect iteration results.</li>
+<li>Improved input validation for constraint-based calls, producing clearer error messages for invalid inputs.</li>
+<li>Fixed edge-case issues affecting certain partition and composition iteration scenarios.</li>
+</ul></div>
+</div>
+    <div class="section level2">
+<h2 class="pkg-version" data-toc-text="2.9.5" id="rcppalgos-295">RcppAlgos 2.9.5<a class="anchor" aria-label="anchor" href="#rcppalgos-295"></a></h2><p class="text-muted">CRAN release: 2026-01-29</p>
 <div class="section level3">
 <h3 id="other-2-9-5">Other:<a class="anchor" aria-label="anchor" href="#other-2-9-5"></a></h3>
 <ul><li>Fixed CITATION metadata so it can be read during CRAN incoming checks.</li>
@@ -191,7 +229,7 @@
 </ul></div>
 <div class="section level3">
 <h3 id="bug-fixes-2-5-5">Bug Fixes:<a class="anchor" aria-label="anchor" href="#bug-fixes-2-5-5"></a></h3>
-<ul><li><p>Now checking class of input vector for partition funcitons.</p></li>
+<ul><li><p>Now checking class of input vector for partition functions.</p></li>
 <li><p>Now when <code>partitionsCount</code> returns 0, the number of results is zero. Before, we were checking for count of partitions to be greater than zero, otherwise we would use the standard combinatorial counting functions to determine the number of results. This lead to strange results with elements not present in the original vector.</p></li>
 <li><p>For <code>partitionsSample</code>, in cases when we would rely on generating the partitions one at a time until there are no more (e.g. with <code>partitionsGeneral</code>), the number of partitions isn’t calculated. This leads to the error: “n exceeds the maximum number of possible results”. This is now fixed.</p></li>
 </ul></div>
