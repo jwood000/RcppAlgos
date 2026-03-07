@@ -191,16 +191,20 @@ reprex::reprex({
     b$sourceVector()
 
     #'
-    #' ## New in Version `2.5.0`
+    #' ## Transition from `Rcpp` Modules to `S4` + External Pointers
     #'
     #' As of version `2.5.0`, we no longer rely on `Rcpp` as a dependency, which means that we do not utilize `Rcpp` modules for exposing C++ classes. This is now carried out using external pointers (See [External pointers and weak references](<https://cran.r-project.org/doc/manuals/r-release/R-exts.html#External-pointers-and-weak-references>)) along with [S4 Classes](<http://adv-r.had.co.nz/S4.html>). We use the slots of `S4` classes for exposing each method so access is carried out with the "at sign", `@`. We have also added the ability to access each method with the "dollar sign", `$`, for backwards compatibility.
     #'
-    #' ### Access Efficiency in `2.5.0+`
+    #' ## Access Efficiency in `2.5.0+`
     #'
-    #' Our tests show that accessing methods is much more efficient in `2.5.0+` compared to prior versions. In the below tests, we measure execution time of calling `nextIter` multiple times in different versions. We will use the function `test_nextIter` for our testing. If one needs to reproduce, simply download the `2.4.3` tar here: https://cran.r-project.org/src/contrib/Archive/RcppAlgos/, change `RcppAlgos` to `RcppAlgos243` in a few place (e.g. `DESCRIPTION`, `NAMESPACE`, etc.), and rebuild.
+    #' Our tests show that accessing iterator methods is much more efficient in `2.5.0+` compared to prior versions. In earlier versions, repeated calls such as `a$nextIter()` inside tight loops incurred noticeable overhead due to method lookup and dispatch. Profiling reveals that a significant portion of execution time was spent resolving the accessor itself (e.g., through `$`, `get`, and `exists`) rather than executing the underlying combinatorial routine.
+    #'
+    #' With the current implementation, methods are exposed directly through `S4` slots backed by external pointers, which greatly reduces the cost of repeated method access. As a result, the majority of the per-iteration cost is now associated with the `.Call` boundary and the creation of the returned R object rather than repeated accessor resolution.
+    #'
+    #' In the tests below, we measure execution time of calling `nextIter` multiple times in different versions. We will use the function `test_nextIter` for our testing. If one needs to reproduce these results, simply download the `2.4.3` tar here: [https://cran.r-project.org/src/contrib/Archive/RcppAlgos/](<https://cran.r-project.org/src/contrib/Archive/RcppAlgos/>), change `RcppAlgos` to `RcppAlgos243` in a few places (e.g., `DESCRIPTION`, `NAMESPACE`, etc.), and rebuild.
     #'
 
-    test_nextIter <- function(n, m, get_val = FALSE, v = 243) {
+    test_nextIter <- function(n, m, get_val = FALSE, v = 243, caching = FALSE) {
         a <- if (v == 243) {
             RcppAlgos243::comboIter(n, m)
         } else {
@@ -211,21 +215,49 @@ reprex::reprex({
 
         if (get_val) {
             mat <- matrix(0L, nrow = total, ncol = m)
-            for (i in 1:total) mat[i, ] <- a$nextIter()
-            return(mat)
-        } else {
-            if (v == 243) {
-                for (i in 1:total) a$nextIter()
+
+            if (caching) {
+                if (v == 243) {
+                    f <- a$nextIter
+                    for (i in seq_len(total)) mat[i, ] <- f()
+                } else {
+                    g <- a@nextIter
+                    for (i in seq_len(total)) mat[i, ] <- g()
+                }
             } else {
-                for (i in 1:total) a@nextIter()
+                if (v == 243) {
+                    for (i in seq_len(total)) mat[i, ] <- a$nextIter()
+                } else {
+                    for (i in seq_len(total)) mat[i, ] <- a@nextIter()
+                }
             }
 
-            invisible(NULL)
+            return(mat)
         }
+
+        if (caching) {
+            if (v == 243) {
+                f <- a$nextIter
+                for (i in seq_len(total)) f()
+            } else {
+                g <- a@nextIter
+                for (i in seq_len(total)) g()
+            }
+
+            return(invisible(NULL))
+        }
+
+        if (v == 243) {
+            for (i in seq_len(total)) a$nextIter()
+        } else {
+            for (i in seq_len(total)) a@nextIter()
+        }
+
+        invisible(NULL)
     }
 
     #'
-    #' #### Version `2.4.3` Using `Rcpp`
+    #' ### Version `2.4.3` Using `Rcpp`
     #'
 
     library(microbenchmark)
@@ -247,7 +279,7 @@ reprex::reprex({
     lapply(summaryRprof("Version243.out", memory = "both"), head)
 
     #'
-    #' #### Version ``r packageVersion("RcppAlgos")`` (No `Rcpp`)
+    #' ### Version ``r packageVersion("RcppAlgos")`` (No `Rcpp`)
     #'
 
     curr_version <- as.integer(gsub("\\.", "", packageVersion("RcppAlgos")))
@@ -259,31 +291,83 @@ reprex::reprex({
     identical(test_nextIter(15, 8, get_val = TRUE, v = curr_version),
               comboGeneral(15, 8))
 
-    Rprof("Version250.out", memory.profiling = TRUE)
+    curr_file_out <- paste0("Version", curr_version, ".out")
+    Rprof(curr_file_out, memory.profiling = TRUE)
     test_nextIter(25, 10, v = curr_version)
     Rprof(NULL)
-    lapply(summaryRprof("Version250.out", memory = "both"), head)
+    lapply(summaryRprof(curr_file_out, memory = "both"), head)
 
     #'
-    #' #### Conclusions
+    #' ### Caching Results w/ 2.4.3
     #'
-    #' It appears that memory is the issue in previous versions. Indeed, if we look at [Memory statistics from Rprof](<https://cran.r-project.org/doc/manuals/r-release/R-exts.html#Memory-statistics-from-Rprof>), and view both files with `memory = "stats"` we see that the C function, `duplicate`, appears to be the main culprit.
+
+    microbenchmark(v243cache = test_nextIter(15, 8, caching = TRUE))
+    system.time(test_nextIter(25, 10, caching = TRUE))
+
+    identical(test_nextIter(15, 8, get_val = TRUE, caching = TRUE),
+              comboGeneral(15, 8))
+
+    Rprof("Version243cache.out", memory.profiling = TRUE)
+    test_nextIter(25, 10, caching = TRUE)
+    Rprof(NULL)
+    lapply(summaryRprof("Version243cache.out", memory = "both"), head)
+
+    #'
+    #' ### Caching Results w/ ``r packageVersion("RcppAlgos")``
+    #'
+
+    microbenchmark(curr_v = test_nextIter(15, 8, v = curr_version,
+                                          caching = TRUE))
+    system.time(test_nextIter(25, 10, v = curr_version, caching = TRUE))
+
+    identical(test_nextIter(15, 8, get_val = TRUE,
+                            v = curr_version, caching = TRUE),
+              comboGeneral(15, 8))
+
+    curr_file_cache_out <- paste0("Version", curr_version, "cache.out")
+    Rprof(curr_file_cache_out, memory.profiling = TRUE)
+    test_nextIter(25, 10, v = curr_version, caching = TRUE)
+    Rprof(NULL)
+    lapply(summaryRprof(curr_file_cache_out, memory = "both"), head)
+
+    #'
+    #' ### Access Efficiency Conclusions
+    #'
+    #' To better understand where the performance difference comes from, we inspect the memory statistics reported by `Rprof`. In particular, we examine the counts associated with the internal C function `duplicate`, which is used by R when objects must be copied. Large numbers of calls to `duplicate` can be an indication that additional work is being performed during each iteration.
+    #'
+    #' Using the memory statistics described in [Memory statistics from Rprof](<https://cran.r-project.org/doc/manuals/r-release/R-exts.html#Memory-statistics-from-Rprof>), we compare the profiling output from version `2.4.3` with the current implementation.
     #'
 
     ## We set index = 1 to ensure we get the very bottom of the stack
 
-    ### Verison 2.4.3
+    ## Version 2.4.3
     v243 <- summaryRprof("Version243.out", memory = "stats", index = 1)
     v243
 
-    ## Version 2.5.0
-    v250 <- summaryRprof("Version250.out", memory = "stats", index = 1)
-    v250
+    ## Current version
+    vCurr <- summaryRprof(curr_file_out, memory = "stats", index = 1)
+    vCurr
+
+    ## Version 2.4.3 with caching
+    v243Cache <- summaryRprof("Version243cache.out", memory = "stats", index = 1)
+    v243Cache
+
+    ## Current version with caching
+    vCurrCache <- summaryRprof(curr_file_cache_out, memory = "stats", index = 1)
+    vCurrCache
 
     #'
-    #' With verison `2.5.0+` there are only `r v250[[1]][["tot.duplications"]]` `tot.duplications` whereas with version `2.4.3` there are millions of `tot.duplications`. In fact, there are a total of `r format(v243[[1]][["tot.duplications"]], scientific=FALSE)` duplications with version `2.4.3`. This together with `comboCount(25, 10) = 3,268,760` implies that the C function, `duplicate`, is called about 3 times per iteration with older versions (i.e. `r format(v243[[1]][["tot.duplications"]], scientific=FALSE)` ` / 3268760 ~= ` `r round(v243[[1]][["tot.duplications"]] / 3268760, 4)`).
+    #' The duplication statistics reveal a clear pattern across the four cases. In version `2.4.3` without caching, the profiler records ``r format(v243[[1]][["tot.duplications"]], scientific = FALSE)`` total duplications. By comparison, the current version records only ``r vCurr[[1]][["tot.duplications"]]`` duplications.
     #'
-    #' ### Iterating over Partitions and Compositions of a Number
+    #' To better isolate the source of this difference, we repeat the experiment while caching the accessor. Instead of repeatedly resolving `a$nextIter()` inside the loop, we bind the method once (e.g. `f <- a$nextIter`) and call `f()` repeatedly.
+    #'
+    #' With caching enabled, the duplication count for version `2.4.3` drops to ``r format(v243Cache[[1]][["tot.duplications"]], scientific = FALSE)``. This substantial reduction indicates that a large portion of the work in earlier versions was associated with repeatedly resolving the accessor rather than executing the underlying combinatorial routine itself.
+    #'
+    #' In contrast, caching has little effect on the current implementation: the duplication counts remain essentially unchanged (``r vCurrCache[[1]][["tot.duplications"]]`` versus ``r vCurr[[1]][["tot.duplications"]]``). This suggests that the accessor overhead has largely been eliminated in `2.5.0+`, where iterator methods are exposed through `S4` slots backed by external pointers.
+    #'
+    #' For reference, `comboCount(25, 10) = 3,268,760`. The duplication counts observed in version `2.4.3` therefore imply that multiple internal copies were being triggered per iteration in the original benchmark.
+    #'
+    #' ## Iterating over Partitions and Compositions of a Number
     #'
     #' For most partition cases, we have all of the capabilities of the standard `comboIter` and `permuteIter` except for bidirectionality (i.e. the `prevIter` methods). For cases involving standard multisets we also don't have random access methods.
     #'
@@ -343,7 +427,7 @@ reprex::reprex({
     p@prevIter()
 
     #'
-    #' ### Iterating over Constrained Combinations/Permutations
+    #' ## Iterating over Constrained Combinations/Permutations
     #'
     #' Now, the combinatorial iterators have all of the features of their "general" analogs (I.e. `{combo|permute|partitions|compositions}General`), which includes constrained results.
     #'
@@ -415,7 +499,7 @@ reprex::reprex({
     (38935252 * 15 * 8) / 2^30
 
     #'
-    #' Just over `r trunc(time_all[["elapsed"]])` seconds isn't bad, however 4 GBs could put a strain on your computer.
+    #' Just over ``r trunc(time_all[["elapsed"]])`` seconds isn't bad, however 4 GBs could put a strain on your computer.
     #'
     #' Let's use iterators instead and only generate ten thousand at a time to keep memory low. We should mention here that the iterators are "smart" in that there is no fear in requesting more results than what is actually left. For example, if in the problem above, we had iterated to the 38<sup>th</sup> million result and requested 10 million more, we would only obtain 935,252 results.
     #'
@@ -434,7 +518,7 @@ reprex::reprex({
     ## Only 1 MBs per iteration
     (1e4 * 15 * 8) / 2^20
 
-    #' Wow! Using the iterator approach is not only easier on your RAM, but faster as well (`r time_all[["elapsed"]]` ` / ` `r time_iter[["elapsed"]]` ` ~= ` `r round(time_all[["elapsed"]] / time_iter[["elapsed"]], 4)`)! Our gains came strictly from memory efficiency (From over 4 GBs to just over 1 MB) as the underlying algorithm is exactly the same.
+    #' Wow! Using the iterator approach is not only easier on your RAM, but faster as well (``r time_all[["elapsed"]]` / `r time_iter[["elapsed"]]` ~= `r round(time_all[["elapsed"]] / time_iter[["elapsed"]], 4)``)! Our gains came strictly from memory efficiency (From over 4 GBs to just over 1 MB) as the underlying algorithm is exactly the same.
     #'
     #' Lastly, using iterators make some problems possible that would otherwise be intractable because of hardware. For instance, using the example above, if we changed the `limitConstraints` from 83 to 81 and tried the first approach your computer will most certainly become unusable (at least mine did). My memory usage shot up to over 30 GB and R became unresponsive. After a restart, I tried the second approach and obtained my result in just over 10 seconds barely noticing any jumps in memory:
     #'
@@ -463,7 +547,7 @@ reprex::reprex({
     })
 
     #'
-    #' ### Iterating over Partitions of Groups
+    #' ## Iterating over Partitions of Groups
     #'
     #' As of version `2.8.2`, we can iterate over partitions of groups with `comboGroupsIter`.
     #'
