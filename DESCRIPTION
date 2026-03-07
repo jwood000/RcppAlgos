@@ -37,7 +37,7 @@ Suggests:
     knitr,
     RcppBigIntAlgos,
     rmarkdown,
-    prettydoc
+    prettydoc,
     covr,
     xml2
 Config/Needs/website:
