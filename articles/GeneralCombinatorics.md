@@ -13,8 +13,8 @@ more information on other combinatorial problems addressed by
 
 - [Combinatorial
   Sampling](https://jwood000.github.io/RcppAlgos/articles/CombinatorialSampling.html)
-- [Constraints, Partitions, and
-  Compositions](https://jwood000.github.io/RcppAlgos/articles/CombPermConstraints.html)
+- [Constraints in RcppAlgos: Constraint-Driven Combinatorial
+  Enumeration](https://jwood000.github.io/RcppAlgos/articles/CombPermConstraints.html)
 - [Attacking Problems Related to the Subset Sum
   Problem](https://jwood000.github.io/RcppAlgos/articles/SubsetSum.html)
 - [Combinatorial Iterators in
@@ -98,7 +98,7 @@ head(permuteGeneral(v))
 ## They are very efficient...
 system.time(comboGeneral(25, 12))
 #>    user  system elapsed 
-#>   0.055   0.011   0.067
+#>   0.046   0.007   0.052
 
 comboCount(25, 12)
 #> [1] 5200300
@@ -123,7 +123,7 @@ ht(comboGeneral(25, 12))
 ## And for permutations... over 8 million instantly
 system.time(permuteGeneral(13, 7))
 #>    user  system elapsed 
-#>   0.023   0.011   0.034
+#>   0.018   0.007   0.024
 
 permuteCount(13, 7)
 #> [1] 8648640
@@ -271,7 +271,7 @@ a <- as.integer(c(1, 1, 1, 1, 2, 2, 2, 7, 7, 7, 7, 7))
 
 system.time(test <- getPermsWithSpecificRepetition(a, 6))
 #>    user  system elapsed 
-#>   1.299   0.013   1.319
+#>   0.039   0.003   0.043
 ```
 
 ### Enter `freqs`
@@ -283,7 +283,7 @@ enter the number of times each unique element is repeated and Voila!
 ## Using the S3 method for class 'table'
 system.time(test2 <- permuteGeneral(table(a), 6))
 #>    user  system elapsed 
-#>   0.000   0.000   0.001
+#>       0       0       0
 
 identical(test, test2)
 #> [1] TRUE
@@ -331,7 +331,7 @@ library(microbenchmark)
 
 ## RcppAlgos uses the "number of threads available minus one" when Parallel is TRUE
 RcppAlgos::stdThreadMax()
-#> [1] 8
+#> [1] 10
 
 comboCount(26, 13)
 #> [1] 10400600
@@ -345,10 +345,10 @@ microbenchmark(combn = combn(26, 13),
 #> Warning in microbenchmark(combn = combn(26, 13), serAlgos = comboGeneral(26, : less
 #> accurate nanosecond times to avoid potential integer overflows
 #> Unit: relative
-#>      expr        min         lq      mean     median        uq      max neval
-#>     combn 108.112753 106.224065 87.063350 104.034130 66.360069 65.92955    10
-#>  serAlgos   2.396141   2.609698  2.256676   2.808838  1.832159  1.81923    10
-#>  parAlgos   1.000000   1.000000  1.000000   1.000000  1.000000  1.00000    10
+#>      expr        min         lq     mean    median        uq       max neval
+#>     combn 136.390693 133.598983 98.46741 104.65877 77.056960 74.743036    10
+#>  serAlgos   3.168793   3.101219  2.39158   2.43135  1.788647  2.144273    10
+#>  parAlgos   1.000000   1.000000  1.00000   1.00000  1.000000  1.000000    10
 
 ## Using 7 cores w/ Parallel = TRUE
 microbenchmark(
@@ -358,7 +358,7 @@ microbenchmark(
 )
 #> Unit: relative
 #>      expr      min       lq     mean   median       uq      max neval
-#>    serial 3.235211 3.201248 2.829496 2.633776 2.720016 1.538897   100
+#>    serial 3.367341 3.255987 2.957451 2.718289 2.782202 2.391709   100
 #>  parallel 1.000000 1.000000 1.000000 1.000000 1.000000 1.000000   100
 ```
 
@@ -416,7 +416,7 @@ system.time(lapply(seq(1, 3247943160, 10086780), function(x) {
      x
 }))
 #>    user  system elapsed 
-#>  28.963  10.352  39.844
+#>  22.492   6.126  28.635
 
 ## Enter parallel
 library(parallel)
@@ -426,7 +426,7 @@ system.time(mclapply(seq(1, 3247943160, 10086780), function(x) {
      x
 }, mc.cores = 6))
 #>    user  system elapsed 
-#>  31.877  13.658   9.939
+#>  24.251   9.117   6.975
 ```
 
 ## GMP Support
@@ -448,7 +448,7 @@ system.time(b <- comboGeneral(myVec, 50, TRUE,
                               lower = 1e15 + 1,
                               upper = 1e15 + 1e5))
 #>    user  system elapsed 
-#>   0.003   0.002   0.004
+#>   0.002   0.001   0.003
 
 b[1:5, 45:50]
 #>           [,1]      [,2]      [,3]     [,4]      [,5]       [,6]
@@ -480,7 +480,7 @@ microbenchmark(f1 = funCustomComb(15, 8),
                f2 = comboGeneral(15, 8, FUN = cumprod), unit = "relative")
 #> Unit: relative
 #>  expr      min       lq     mean   median       uq      max neval
-#>    f1 5.468995 5.458721 5.785135 5.416062 5.425471 15.54943   100
+#>    f1 5.235565 5.189387 5.615276 5.172509 5.101059 20.59012   100
 #>    f2 1.000000 1.000000 1.000000 1.000000 1.000000  1.00000   100
 
 comboGeneral(15, 8, FUN = cumprod, upper = 3)
@@ -587,12 +587,14 @@ underneath the hood, character vectors are not thread safe so the
 constraints parameters are only applicable to numeric vectors. For these
 reason, our default method’s interface is greatly simplified:
 
-![default_method](default_method.png)
+![R console autocomplete showing parameters for the default S3
+combinatorics method.](default_method.png)
 
 We see only the necessary options. With numeric types, the options are
 more numerous:
 
-![numeric_method](numeric_method.png)
+![R console autocomplete showing parameters for the numeric S3
+combinatorics method.](numeric_method.png)
 
 There is also a `list` method that allows one to find combinations or
 permutations of lists:

@@ -8,9 +8,11 @@ articles:
   ComputationalMathematics: ComputationalMathematics.html
   GeneralCombinatorics: GeneralCombinatorics.html
   HighPerformanceBenchmarks: HighPerformanceBenchmarks.html
+  IntegerCompositions: IntegerCompositions.html
+  IntegerPartitions: IntegerPartitions.html
   OtherCombinatorics: OtherCombinatorics.html
   SubsetSum: SubsetSum.html
-last_built: 2026-03-02T16:00Z
+last_built: 2026-03-07T22:30Z
 urls:
   reference: https://jwood000.github.io/RcppAlgos/reference
   article: https://jwood000.github.io/RcppAlgos/articles
