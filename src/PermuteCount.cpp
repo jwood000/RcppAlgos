@@ -58,7 +58,7 @@ double NumPermsWithRep(const std::vector<int> &v, bool includeZero) {
     );
 
     // If all entries are zero. This shouldn't happen, but here for safety.
-    if (first_idx == v.size()) return 1;
+    if (first_idx == static_cast<int>(v.size())) return 1;
 
     std::vector<int> myLens = rleCpp(v, first_idx);
     std::sort(myLens.begin(), myLens.end(), std::greater<int>());
