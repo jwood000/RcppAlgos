@@ -12,7 +12,7 @@ from typing import Optional
 
 MAX_FILE_BYTES = 200_000
 MAX_DIFF_BYTES_TOTAL = 400_000
-MODEL = os.getenv("AI_REVIEW_MODEL", "gpt-4o-mini")
+MODEL = os.getenv("AI_REVIEW_MODEL", "gpt-5.2")
 MAX_OUTPUT_TOKENS = 4000
 TEMPERATURE = 0.2
 

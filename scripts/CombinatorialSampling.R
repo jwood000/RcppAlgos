@@ -246,7 +246,43 @@ reprex::reprex({
                        seed = 245659, n = 3, namedSample = TRUE)
 
     #'
-    #' Currently, there are only sampling algorithms for most cases of compositions with repetition. There is ongoing work to expand these algorithms in the future.
+    #' As of version `2.10.0`, we can now unrank compositions with distinct parts as well as the full suite of compositions with repetition (e.g. restricted cases where `target` is specified)
+    #'
+    #' ### `compositionSample` with Specific `target`
+    #'
+
+    compositionsSample(50, 8, TRUE, target = 100, n = 3, seed = 28,
+                       namedSample = TRUE)
+
+    compositionsSample(50, 8, TRUE, target = 100,
+                       sampleVec = c(379550065, 393265634, 8025575563))
+
+    ## Still very fast!
+    system.time(compositionsSample(1500, 10, TRUE, target = 2500,
+                                   n = 1e4, seed = 28, nThreads = 8))
+
+    #'
+    #' ### `compositionSample` with Distinct Parts
+    #'
+
+    compositionsSample(50, 8, target = 100, n = 3, seed = 496,
+                       namedSample = TRUE)
+
+    compositionsSample(50, 8, target = 100,
+                       sampleVec = c(2965352353, 1410626810, 65651109))
+
+    #'
+    #' #### Unranking Distinct Parts
+    #'
+    #' The algorithm for unranking compositions with distinct parts is considerably more complex than the corresponding algorithms for standard compositions. While the implementation remains efficient, users should not expect the same level of performance as in the unrestricted case.
+    #'
+
+    compositionsCount(150, 10, target = 300)
+
+    ## Still very fast!
+    system.time(compositionsSample(150, 10, target = 300, n = 1e3,
+                                   seed = 496, nThreads = 8))
+
     #'
     #' ## Sampling Partitions of Groups with `comboGroupsSample`
     #'

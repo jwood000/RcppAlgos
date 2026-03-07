@@ -2,6 +2,12 @@ reprex::reprex({
     #'
     #' This document covers the topic of finding combinations or permutations that meet a specific set of criteria. For example, retrieving all combinations of a vector that have a product between two bounds.
     #'
+    #' ### Related articles
+    #'
+    #' * [Integer Partitions in RcppAlgos](<https://jwood000.github.io/RcppAlgos/articles/IntegerPartitions.html>)
+    #' * [Integer Compositions in RcppAlgos](<https://jwood000.github.io/RcppAlgos/articles/IntegerCompositions.html>)
+    #' * [Attacking Problems Related to the Subset Sum Problem](<https://jwood000.github.io/RcppAlgos/articles/SubsetSum.html>)
+    #'
     #' ***
     #'
     #' ## Constraint Functions
@@ -233,223 +239,14 @@ reprex::reprex({
     #'
     #' As you can see, the _2<sup>nd</sup>_ through the _6<sup>th</sup>_ entries are simply permutations of the _1<sup>st</sup>_ entry. Similarly, entries _8_ and _9_ are permutations of the _7<sup>th</sup>_ and entries _11_ and _12_ are permutations of the _10<sup>th</sup>_.
     #'
-    #' ## Integer Partitions
+    #' ## Integer Partitions & Compositions
     #'
-    #' Specialized algorithms are employed when it can be determined that we are looking for [integer partitions](<https://en.wikipedia.org/wiki/Partition_(number_theory)>).
+    #' Integer partitions and compositions are natural examples of constraint-driven combinatorial enumeration. In both cases, the goal is to find results whose elements sum to a fixed target. As with combinations versus permutations, **order does not matter for partitions**, whereas **order matters for compositions**. These differences give rise to rich combinatorial structures and highly specialized algorithms for each.
     #'
-    #' As of version `2.5.0`, we now have added `partitionsGeneral` which is similar to `comboGeneral` with `constraintFun = "sum"` and `comparisonFun = "=="`. Instead of using the very general `limitConstraints` parameter, we use `target` with a default of `max(v)` as it seems more fitting for partitions.
+    #' For this reason, they are mentioned here only briefly. For a detailed treatment of these topics, see:
     #'
-    #' ### Case 1: All Integer Partitions of _N_
-    #'
-    #' We need `v = 0:N`, `repetition = TRUE`. When we leave `m = NULL`, `m` is internally set to the length of the longest non-zero combination (this is true for all cases below).
-    #'
-
-    partitionsGeneral(0:5, repetition = TRUE)
-
-    ## Note that we could also use comboGeneral:
-    ## comboGeneral(0:5, repetition = TRUE,
-    ##              constraintFun = "sum",
-    ##              comparisonFun = "==", limitConstraints = 5)
-    ##
-    ## The same goes for any of the examples below
-
-    #'
-    #' ### Case 2: Integer Partitions of _N_ of Length _m_
-    #'
-    #' Everything is the same as above except for explicitly setting the desired length and deciding whether to include zero or not.
-    #'
-
-    ## Including zero
-    partitionsGeneral(0:5, 3, repetition = TRUE)
-
-    ## Zero not included
-    partitionsGeneral(5, 3, repetition = TRUE)
-
-    #'
-    #' ### Case 3: Integer Partitions of _N_ into Distinct Parts
-    #'
-    #' Same as `Case 1 & 2` except now we have `repetition = FALSE`.
-    #'
-
-    partitionsGeneral(0:10)
-
-    ## Zero not included and restrict the length
-    partitionsGeneral(10, 3)
-
-    ## Include zero and restrict the length
-    partitionsGeneral(0:10, 3)
-
-    ## partitions of 10 into distinct parts of every length
-    lapply(1:4, function(x) {
-        partitionsGeneral(10, x)
-    })
-
-    #'
-    #' #### Using `freqs` to Refine Length
-    #'
-    #' We can utilize the `freqs` argument to obtain more distinct partitions by allowing for repeated zeros. The super optimized algorithm will only be carried out if zero is included and the number of repetitions for every number except zero is one.
-    #'
-    #' For example, given `v = 0:N` and `J >= 1`, if `freqs = c(J, rep(1, N))`, then the super optimized algorithm will be used, however if `freqs = c(J, 2, rep(1, N - 1))`, the general algorithm will be used. It should be noted that the general algorithms are still highly optimized so one should not fear using it.
-    #'
-    #' A pattern that is guaranteed to retrieve all distinct partitions of _N_ is to set `v = 0:N` and `freqs = c(N, rep(1, N))` (the extra zeros will be left off).
-    #'
-
-    ## Obtain all distinct partitions of 10
-    partitionsGeneral(0:10, freqs = c(10, rep(1, 10)))    ## Same as c(3, rep(1, 10))
-
-    #' #### Caveats Using `freqs`
-    #'
-    #' As noted in `Case 1`, if `m = NULL`, the length of the output will be determined by the longest non-zero combination that sums to _N_.
-    #'
-
-    ## m is NOT NULL and output has at most 2 zeros
-    partitionsGeneral(0:10, 3, freqs = c(2, rep(1, 10)))
-
-    ## m is NULL and output has at most 2 zeros
-    partitionsGeneral(0:10, freqs = c(2, rep(1, 10)))
-
-    #'
-    #' ### Case 4: Integer Partitions of _N_ into Parts of Varying Multiplicity
-    #'
-
-    ## partitions of 12 into 4 parts where each part can
-    ## be used a specific number of times (e.g. 2 or 3)
-    partitionsGeneral(12, 4, freqs = rep(2:3, 6))
-
-    #'
-    #' ## Efficiency Generating Partitions
-    #'
-    #' Note, as of version `2.5.0`, one can generate partitions in parallel using the `nThreads` argument.
-    #'
-
-    ## partitions of 60
-    partitionsCount(0:60, repetition = TRUE)
-
-    ## Single threaded
-    system.time(partitionsGeneral(0:60, repetition = TRUE))
-
-    ## Using nThreads
-    system.time(partitionsGeneral(0:60, repetition = TRUE, nThreads=4))
-
-
-    ## partitions of 120 into distinct parts
-    partitionsCount(0:120, freqs = c(120, rep(1, 120)))
-
-    system.time(partitionsGeneral(0:120, freqs = c(120, rep(1, 120))))
-
-    system.time(partitionsGeneral(0:120, freqs = c(120, rep(1, 120)), nThreads=4))
-
-
-    ## partitions of 100 into parts of 15 with specific multiplicity
-    partitionsCount(100, 15, freqs = rep(4:8, 20))
-
-    ## Over 6 million in just over a second!
-    system.time(partitionsGeneral(100, 15, freqs = rep(4:8, 20)))
-
-    #'
-    #' ## Integer Compositions
-    #'
-    #' [Compositions](<https://en.wikipedia.org/wiki/Composition_(combinatorics)>) are related to integer partitions, however order matters. With `RcppAlgos`, we generate standard compositions with `compositionsGeneral`. Currently, the composition algorithms are limited to a subset of cases of compositions with repetiion.
-    #'
-    #' The output with `compositionGeneral` will be in lexicographical order. When we set `weak = TRUE`, we will obtain **_weak compositions_**, which allow for zeros to be a part of the sequence (E.g. `c(0, 0, 5), c(0, 5, 0), c(5, 0, 0)` are weak compositions of 5). As the Wikipedia article points out, we can increase the number of zeros indefinitely when `weak = TRUE`.
-    #'
-    #' For more general cases, we can make use of `permuteGeneral`, keeping in mind that the output will not be in lexicographical order. Another consideration with `permuteGeneral` is that when we include zero, we will always obtain weak compositions.
-    #'
-    #' With that in mind, generating compositions with `RcppAlgos` is easy, flexible, and quite efficient.
-    #'
-    #' ### Case 5: All Compositions of _N_
-    #'
-
-    ## See Case 1
-    compositionsGeneral(0:3, repetition = TRUE)
-
-    ## Get weak compositions
-    compositionsGeneral(0:3, repetition = TRUE, weak = TRUE)
-
-    ## Get weak compositions with width > than target
-    tail(compositionsGeneral(0:3, 10, repetition = TRUE, weak = TRUE))
-
-    ## With permuteGeneral, we always get weak compositions, just
-    ## not in lexicographical order
-    permuteGeneral(0:3, repetition = TRUE,
-                   constraintFun = "sum",
-                   comparisonFun = "==", limitConstraints = 3)
-
-    tail(permuteGeneral(0:3, 10, repetition = TRUE,
-                        constraintFun = "sum",
-                        comparisonFun = "==", limitConstraints = 3))
-
-    #'
-    #' ### Case 6: Compositions of _N_ of Length _m_
-    #'
-
-    ## See Case 2. N.B. weak = TRUE has no effect
-    compositionsGeneral(6, 3, repetition = TRUE)
-
-    #'
-    #' ### Case 7: Compositions of _N_ into Distinct Parts
-    #'
-    #' We must use `permuteGeneral` here.
-    #'
-
-    compositionsGeneral(6, 3)
-
-    ## See Case 3
-    permuteGeneral(6, 3,
-                   constraintFun = "sum",
-                   comparisonFun = "==", limitConstraints = 6)
-
-    #'
-    #' ### Case 8: Integer Compositions of _N_ into Parts of Varying Multiplicity
-    #'
-
-    ## compositions of 5 into 3 parts where each part can
-    ## be used a maximum of 2 times.
-    permuteGeneral(5, 3, freqs = rep(2, 5),
-                   constraintFun = "sum",
-                   comparisonFun = "==",
-                   limitConstraints = 5)
-
-    #'
-    #' ## Efficiency Generating Partitions and Compositions
-    #'
-    #' With `compositionGeneral` we are able to take advantage of parallel computation. With `permuteGeneral`, the parallel options have no effect when generating compositions.
-    #'
-
-    ## compositions of 25
-    system.time(compositionsGeneral(0:25, repetition = TRUE))
-
-    compositionsCount(0:25, repetition=TRUE)
-
-    ## Use multiple threads for greater efficiency. Generate
-    ## over 16 million compositions in under a second!
-    system.time(compositionsGeneral(0:25, repetition = TRUE, nThreads = 4))
-
-
-    ## weak compositions of 12 usnig nThreads = 4
-    system.time(weakComp12 <- compositionsGeneral(0:12, repetition = TRUE,
-                                                  weak = TRUE, nThreads = 4))
-
-    ## And using permuteGeneral
-    system.time(weakPerm12 <- permuteGeneral(0:12, 12, repetition = TRUE,
-                                             constraintFun = "sum",
-                                             comparisonFun = "==",
-                                             limitConstraints = 12))
-
-    dim(weakPerm12)
-
-    identical(weakPerm12[do.call(order, as.data.frame(weakPerm12)), ],
-              weakComp12)
-
-
-    ## General compositions with varying multiplicities
-    system.time(comp25_gen <- permuteGeneral(25, 10, freqs = rep(4:8, 5),
-                                             constraintFun = "sum",
-                                             comparisonFun = "==",
-                                             limitConstraints = 25))
-
-    dim(comp25_gen)
-
+    #' * [Integer Partitions in RcppAlgos](<https://jwood000.github.io/RcppAlgos/articles/IntegerPartitions.html>)
+    #' * [Integer Compositions in RcppAlgos](<https://jwood000.github.io/RcppAlgos/articles/IntegerCompositions.html>)
     #'
     #' ## Safely Interrupt Execution with `cpp11::check_user_interrupt`
     #'
@@ -470,8 +267,11 @@ reprex::reprex({
     ## or hit the "Stop" button
 
     ##
-    ## system.time(testInterrupt <- partitionsGeneral(s, 20, TRUE, target = 0))
-    ## Timing stopped at: 1.029 0.011 1.04
+    ## system.time(testInterrupt <- comboGeneral(
+    ##     s, 20, TRUE, constraintFun = "mean", comparisonFun = "==",
+    ##     limitConstraints = 0, keepResults = TRUE
+    ## ))
+    ## Timing stopped at: 1.993 0.008 2
     ##
 
     #'
@@ -483,15 +283,18 @@ reprex::reprex({
     #'
 
     ## We use "s" defined above
-    iter = partitionsIter(s, 20, TRUE, target = 0)
+    iter = comboIter(s, 20, TRUE, constraintFun = "mean",
+                     comparisonFun = "==", limitConstraints = 0)
 
     ## Test one iteration to see if we need to relax the tolerance
     system.time(iter@nextIter())
 
-    ## 8 seconds per iteration is a bit much... Let's loosen things
-    ## a little by increasing the tolerance from sqrt(.Machine$double.eps)
-    ## ~= 1.49e-8 to 1e-5.
-    relaxedIter = partitionsIter(s, 20, TRUE, target = 0, tolerance = 1e-5)
+    ## That's a bit much per iteration... Let's loosen things a little by
+    ## increasing the tolerance from sqrt(.Machine$double.eps) ~= 1.49e-8
+    ## to 1e-5.
+    relaxedIter = comboIter(s, 20, TRUE, constraintFun = "mean",
+                            comparisonFun = "==", limitConstraints = 0,
+                            tolerance = 1e-5)
 
     system.time(relaxedIter@nextIter())
 

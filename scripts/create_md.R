@@ -1,10 +1,11 @@
-dir.create("/Users/josephwood/RcppAlgos/temp_md")
-setwd("/Users/josephwood/RcppAlgos/temp_md")
+dir.create("/Users/owacasa/RcppAlgos/temp_md",
+           showWarnings = FALSE, recursive = TRUE)
+setwd("/Users/owacasa/RcppAlgos/temp_md")
 
-my_scripts <- list.files("../scripts", full.names = TRUE)
-my_scripts <- my_scripts[which(!grepl("create_md", my_scripts))]
+scripts <- list.files("../scripts", pattern = "\\.R$", full.names = TRUE)
+scripts <- scripts[!grepl("create_md\\b", basename(scripts))]
 
-for (f in my_scripts) {
+for (f in scripts) {
     if (!dir.exists(f)) {
         source(f)
         print(f)
@@ -20,7 +21,7 @@ system("mv *.md ../")
 setwd("../")
 system("rm -r temp_md")
 ## Run on command line... the escapes are killing me!
-## perl -p -i -e 's/\(http(.*?)\)/\(<http$1>\)/g' *.md
+## perl -p -i -e 's{\((https?://.*?)\)}{(<$1>)}g' *.md
 ##
 ## This command removes the additional coding blocks:
 ##
@@ -38,3 +39,7 @@ system("rm -r temp_md")
 ## more code
 ##
 ## perl -0777p -i -e 's/```\n\n``` r\n//g' *.md
+##
+## Update the date! Change to the vignette dir and run the following:
+## perl -pi -e 's/^date:\s*".*"/date: "'"$(date +%Y-%m-%d)"'"/' *.Rmd
+

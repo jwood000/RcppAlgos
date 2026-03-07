@@ -407,7 +407,7 @@ int CompsDistinct(int* mat, std::vector<int> &z, std::size_t width,
                 }
             }
 
-            if (nextStep >= static_cast<int>(nRows)) return 1;
+            if (nextStep >= nRows) return 1;
             strt = nextStep;
 
             std::iota(z.begin(), z.end(), 1);
@@ -477,7 +477,7 @@ int CompsGenDistinct(
                 }
             }
 
-            if (nextStep >= static_cast<int>(nRows)) return 1;
+            if (nextStep >= nRows) return 1;
             strt = nextStep;
 
             if (idx_max == tar) {
@@ -550,7 +550,7 @@ int CompsDistinct(
                 }
             }
 
-            if (nextStep >= static_cast<int>(nRows)) return 1;
+            if (nextStep >= nRows) return 1;
             strt = nextStep;
 
             std::iota(z.begin(), z.end(), 1);
@@ -619,7 +619,7 @@ int CompsGenDistinct(
                 }
             }
 
-            if (nextStep >= static_cast<int>(nRows)) return 1;
+            if (nextStep >= nRows) return 1;
             strt = nextStep;
 
             if (idx_max == tar) {

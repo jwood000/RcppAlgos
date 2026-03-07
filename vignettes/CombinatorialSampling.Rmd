@@ -1,15 +1,16 @@
 ---
 title: "Combinatorial Sampling and Ranking"
 author: "Joseph Wood"
-date: "01/31/2025"
+date: "2026-03-04"
 output:
-  rmarkdown::html_vignette:
+  prettydoc::html_pretty:
+    theme: architect
     toc: true
     number_sections: false
 vignette: >
   %\VignetteIndexEntry{Combinatorial Sampling and Ranking}
   %\VignetteEngine{knitr::rmarkdown}
-  \usepackage[utf8]{inputenc}
+  %\VignetteEncoding{UTF-8}
 ---
 
 This document covers topics in generating random samples of combinations, permutations, partitions, compositions and partition of groups. It is encouraged to read [General Combinatorics](<https://jwood000.github.io/RcppAlgos/articles/GeneralCombinatorics.html>) first.
@@ -204,11 +205,11 @@ The algorithms are incredibly efficient and offer tremendous gains over the naiv
 ## the function "naive" is defined above
 system.time(naive(25, 10, 5, 15))
 #>    user  system elapsed 
-#>   1.523   0.019   1.547
+#>   1.001   0.012   1.014
 
 system.time(comboSample(25, 10, n = 5, seed = 15))
 #>    user  system elapsed 
-#>       0       0       0
+#>   0.001   0.000   0.001
 ```
 
 Even when dealing with extremely large numbers, these algorithms are very fast. And using the parallel options have even greater effects than we saw with the general counterparts (typically around \~2-3 times faster with the general functions, whereas with the last example below with sampling we see a nearly 5x improvement).
@@ -217,7 +218,7 @@ Even when dealing with extremely large numbers, these algorithms are very fast. 
 ## Lightning fast even with examples involving many results
 system.time(comboSample(2500, 100, n = 5, seed = 15))
 #>    user  system elapsed 
-#>   0.001   0.000   0.000
+#>       0       0       0
 
 ## The total number of combinations has ~180 digits
 gmp::log10.bigz(comboCount(2500, 100))
@@ -226,12 +227,12 @@ gmp::log10.bigz(comboCount(2500, 100))
 ## Still fast with larger samples
 system.time(comboSample(2500, 100, n = 1e4, seed = 157))
 #>    user  system elapsed 
-#>   0.647   0.001   0.648
+#>   0.401   0.001   0.402
 
 ## Using Parallel/nThreads in these cases has an even greater effect
 system.time(comboSample(2500, 100, n = 1e4, seed = 157, nThreads = 8))
 #>    user  system elapsed 
-#>   0.915   0.001   0.124
+#>   0.591   0.003   0.085
 ```
 
 ### User Defined Functions
@@ -300,13 +301,13 @@ partitionsCount(2500, 10)
 system.time(serial <- partitionsSample(2500, 10, n = 1e3,
                                        seed = 8128))
 #>    user  system elapsed 
-#>   2.997   0.002   3.007
+#>   2.325   0.005   2.331
 
 ## Use nThreads for greater efficiency
 system.time(multi <- partitionsSample(2500, 10, n = 1e3,
                                       seed = 8128, nThreads = 8))
 #>    user  system elapsed 
-#>   4.374   0.020   0.576
+#>   3.401   0.016   0.442
 
 identical(multi, serial)
 #> [1] TRUE
@@ -388,13 +389,13 @@ compositionsCount(2500, 10, TRUE)
 system.time(serial <- compositionsSample(2500, 10, TRUE,
                                          n = 1e4, seed = 8128))
 #>    user  system elapsed 
-#>   0.262   0.000   0.263
+#>   0.204   0.001   0.204
 
 ## Use nThreads for greater efficiency
 system.time(multi <- compositionsSample(2500, 10, TRUE, n = 1e4,
                                         seed = 8128, nThreads = 8))
 #>    user  system elapsed 
-#>   0.364   0.001   0.053
+#>   0.297   0.001   0.044
 
 identical(multi, serial)
 #> [1] TRUE
@@ -408,7 +409,65 @@ compositionsSample(0:100, 8, repetition = TRUE, weak = TRUE,
 #> 7598223523     4   54   21    4    6    0    8    3
 ```
 
-Currently, there are only sampling algorithms for most cases of compositions with repetition. There is ongoing work to expand these algorithms in the future.
+As of version `2.10.0`, we can now unrank compositions with distinct parts as well as the full suite of compositions with repetition (e.g. restricted cases where `target` is specified)
+
+### `compositionSample` with Specific `target`
+
+``` r
+compositionsSample(50, 8, TRUE, target = 100, n = 3, seed = 28,
+                   namedSample = TRUE)
+#>            [,1] [,2] [,3] [,4] [,5] [,6] [,7] [,8]
+#> 379550065     1    9    1    2   45   28   11    3
+#> 393265634     1    9    9    1    3    4   50   23
+#> 8025575563   11   50    8    5    5   10    2    9
+
+compositionsSample(50, 8, TRUE, target = 100,
+                   sampleVec = c(379550065, 393265634, 8025575563))
+#>      [,1] [,2] [,3] [,4] [,5] [,6] [,7] [,8]
+#> [1,]    1    9    1    2   45   28   11    3
+#> [2,]    1    9    9    1    3    4   50   23
+#> [3,]   11   50    8    5    5   10    2    9
+
+## Still very fast!
+system.time(compositionsSample(1500, 10, TRUE, target = 2500,
+                               n = 1e4, seed = 28, nThreads = 8))
+#>    user  system elapsed 
+#>   1.702   0.005   0.236
+```
+
+### `compositionSample` with Distinct Parts
+
+``` r
+compositionsSample(50, 8, target = 100, n = 3, seed = 496,
+                   namedSample = TRUE)
+#>            [,1] [,2] [,3] [,4] [,5] [,6] [,7] [,8]
+#> 2965352353   14   16    9    1    3   37    2   18
+#> 1410626810    6    7    5   23   10    4   13   32
+#> 65651109      1    5   34    7   15   26    4    8
+
+compositionsSample(50, 8, target = 100,
+                   sampleVec = c(2965352353, 1410626810, 65651109))
+#>      [,1] [,2] [,3] [,4] [,5] [,6] [,7] [,8]
+#> [1,]   14   16    9    1    3   37    2   18
+#> [2,]    6    7    5   23   10    4   13   32
+#> [3,]    1    5   34    7   15   26    4    8
+```
+
+#### Unranking Distinct Parts
+
+The algorithm for unranking compositions with distinct parts is considerably more complex than the corresponding algorithms for standard compositions. While the implementation remains efficient, users should not expect the same level of performance as in the unrestricted case.
+
+``` r
+compositionsCount(150, 10, target = 300)
+#> Big Integer ('bigz') :
+#> [1] 22253682846124800
+
+## Still very fast!
+system.time(compositionsSample(150, 10, target = 300, n = 1e3,
+                               seed = 496, nThreads = 8))
+#>    user  system elapsed 
+#>   4.939   0.023   0.653
+```
 
 ## Sampling Partitions of Groups with `comboGroupsSample`
 
@@ -520,7 +579,7 @@ comb = comboSample(25, 12, sampleVec = 2e6)[1, ]
 system.time(print(naive_rank(25, 12, comb)))
 #> [1] 2000000
 #>    user  system elapsed 
-#>   6.194   0.083   6.290
+#>   4.504   0.044   4.550
 ```
 
 ## RcppAlgos Solutions

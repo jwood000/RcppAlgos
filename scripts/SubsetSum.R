@@ -1,6 +1,6 @@
 reprex::reprex({
     #'
-    #' This document covers the topic of solving problems related to the [subset sum problem](<https://en.wikipedia.org/wiki/Subset_sum_problem>) with `RcppAlgos`. We have already covered integer partitions, which is a special case of the subset sum problem, in [Constraints and Integer Partitions](<https://jwood000.github.io/RcppAlgos/articles/CombPermConstraints.html#integer-partitions>) and it is highly encouraged to read that vignette first.
+    #' This document covers the topic of solving problems related to the [subset sum problem](<https://en.wikipedia.org/wiki/Subset_sum_problem>) with `RcppAlgos`. We have already covered integer partitions, which is a special case of the subset sum problem, in [Integer Partitions in RcppAlgos](<https://jwood000.github.io/RcppAlgos/articles/IntegerPartitions.html>) and it is highly encouraged to read that vignette first.
     #'
     #' ***
     #'
@@ -10,7 +10,7 @@ reprex::reprex({
     #'
     #' For example, using only the numbers `3:18`, find all partitions of `50` of length `5`.
     #'
-    #' With `RcppAlgos`, this is easily achieved. We simply use the same template as we did in [Constraints and Integer Partitions](<https://jwood000.github.io/RcppAlgos/articles/CombPermConstraints.html#integer-partitions>). Observe (We continue to use the `ht` function defined in the [Combination and Permutation Basics](<https://jwood000.github.io/RcppAlgos/articles/GeneralCombinatorics.html>) vignette):
+    #' With `RcppAlgos`, this is easily achieved. We simply use the same template as we did in [Integer Partitions in RcppAlgos](<https://jwood000.github.io/RcppAlgos/articles/IntegerPartitions.html>). Observe (We continue to use the `ht` function defined in the [Combination and Permutation Basics](<https://jwood000.github.io/RcppAlgos/articles/GeneralCombinatorics.html>) vignette):
     #'
 
     library(RcppAlgos)

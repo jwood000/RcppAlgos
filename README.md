@@ -11,25 +11,39 @@
 [![Codecov test coverage](<https://codecov.io/gh/jwood000/RcppAlgos/branch/main/graph/badge.svg>)](<https://app.codecov.io/gh/jwood000/RcppAlgos?branch=main>)
 <!-- badges: end -->
 
-A collection of high performance functions and iterators implemented in C++ for solving problems in combinatorics and computational mathematics.
+`RcppAlgos` provides high-performance algorithms for working with combinatorial objects in R. It includes efficient implementations for combinations, permutations, integer partitions, and compositions, with support for multisets, constraints, and extremely large search spaces through memory-efficient iterators.
 
-## Featured Functions
+The package also implements specialized algorithms for problems rarely supported by other combinatorics libraries, including partitions of multisets, partitions of groups, and order-invariant Cartesian products. Many routines support ranking and unranking, parallel computation, and reproducible sampling. The package also includes fast prime number utilities built on the excellent work of [Kim Walisch](https://github.com/kimwalisch).
 
-  - **`{combo|permute}General`**: Generate all combinations/permutations of a vector (including [multisets](<https://en.wikipedia.org/wiki/Multiset>)) meeting specific criteria.
-  - **`{partitions|compositions}General`**: Efficient algorithms for partitioning numbers under various constraints
-  - **`{expandGrid|comboGrid}`**: Generate traditional Cartesian product as well as the product where order does not matter.
-  - **`{combo|permute|partitions|compositions|expandGrid|comboGroups}Sample`**: Generate reproducible random samples
-  - **`{combo|permute|partitions|compositions|expandGrid|comboGroups}Iter`**: Flexible iterators allow for bidirectional iteration as well as random access.
-  - **`primeSieve`**: Fast prime number generator
-  - **`primeCount`**: Prime counting function using [Legendre's formula](<https://mathworld.wolfram.com/LegendresFormula.html>)
+## Key Features
 
-The `primeSieve` function and the `primeCount` function are both based off of the excellent work by [Kim Walisch](<https://github.com/kimwalisch>). The respective repos can be found here: [kimwalisch/primesieve](<https://github.com/kimwalisch/primesieve>); [kimwalisch/primecount](<https://github.com/kimwalisch/primecount>)
+- High-performance generation of combinations and permutations
+- Integer partitions and compositions under flexible constraints
+- Support for multisets and restricted combinatorial structures
+- Memory-efficient iterators for exploring very large combinatorial spaces
+- Ranking and unranking algorithms
+- Parallel computation support
+- Fast prime number utilities:
+  - `primeSieve` for generating primes
+  - `primeCount` for counting primes using Legendre’s formula
+  - `primeFactorize` for prime factorization
+  
+RcppAlgos is designed to handle combinatorial problems ranging from small enumerations to extremely large search spaces where generating all results at once would be impractical.
 
-Additionally, many of the sieving functions make use of the fast integer division library [libdivide](<https://github.com/ridiculousfish/libdivide>) by [ridiculousfish](<https://github.com/ridiculousfish>).
+## What Makes `RcppAlgos` Unique
 
-## Benchmarks
+RcppAlgos implements several combinatorial algorithms that are uncommon or unavailable in most R libraries, including:
 
-* [High Performance Benchmarks](<https://jwood000.github.io/RcppAlgos/articles/HighPerformanceBenchmarks.html>)
+- partitions of multisets
+- partitions of groups (`comboGroups`)
+- order-invariant Cartesian products (`comboGrid`)
+- compositions with distinct parts
+
+## Performance
+
+Detailed benchmarks can be found here:
+
+[High Performance Benchmarks](<https://jwood000.github.io/RcppAlgos/articles/HighPerformanceBenchmarks.html>)
 
 ## Installation
 
@@ -55,7 +69,7 @@ comboGeneral(4, 3)
 
 
 ## Alternatively, iterate over combinations
-a = comboIter(4, 3)
+a <- comboIter(4, 3)
 a@nextIter()
 #> [1] 1 2 3
 
@@ -85,7 +99,7 @@ comboSample(10, 8, TRUE, n = 5, seed = 84)
 #> [5,]    1    2    2    3    3    4    4    7
 ```
 
-### Integer Partitions and Constraints
+### Integer Partitions and Compositions
 
 ``` r
 ## Flexible partitioning algorithms
@@ -123,51 +137,18 @@ comboGeneral(5, 7, TRUE, constraintFun = "prod",
 #> [7,]    3    3    3    3    3    4    4 3888
 
 
-## We can even iterate over constrained cases. These are
-## great when we don't know how many results there are upfront.
-## Save on memory and still at the speed of C++!!
-p = permuteIter(5, 7, TRUE, constraintFun = "prod",
-                comparisonFun = c(">=","<"),
-                limitConstraints = c(3600, 4000),
-                keepResults = TRUE)
-
-## Get the next n results
-t = p@nextNIter(1048)
-
-## N.B. keepResults = TRUE adds the 8th column
-tail(t)
-#>         [,1] [,2] [,3] [,4] [,5] [,6] [,7] [,8]
-#> [1043,]    5    4    4    3    4    1    4 3840
-#> [1044,]    5    4    4    3    4    4    1 3840
-#> [1045,]    5    4    4    4    1    3    4 3840
-#> [1046,]    5    4    4    4    1    4    3 3840
-#> [1047,]    5    4    4    4    3    1    4 3840
-#> [1048,]    5    4    4    4    3    4    1 3840
-
-## Continue iterating from where we left off
-p@nextIter()
-#> [1]    5    4    4    4    4    1    3 3840
+## We can also iterate over constrained cases. This is useful when we do not
+## know the total number of results upfront, while still avoiding the cost of
+## generating the full result set in memory.
+p <- permuteIter(
+  5, 7, TRUE,
+  constraintFun = "prod",
+  comparisonFun = c(">=", "<"),
+  limitConstraints = c(3600, 4000)
+)
 
 p@nextIter()
-#> [1]    5    4    4    4    4    3    1 3840
-
-p@nextIter()
-#> [1]    2    2    3    3    4    5    5 3600
-
-## N.B. totalResults and totalRemaining are NA because there is no
-## closed form solution for determining this.
-p@summary()
-#> $description
-#> [1] "Permutations with repetition of 5 choose 7 where the prod is between 3600 and 4000"
-#> 
-#> $currentIndex
-#> [1] 1051
-#> 
-#> $totalResults
-#> [1] NA
-#> 
-#> $totalRemaining
-#> [1] NA
+#> [1] 1 2 3 5 5 5 5
 ```
 
 ### Cartesian Products
@@ -175,46 +156,22 @@ p@summary()
 ``` r
 ## Base R expand.grid returns a data.frame by default
 ## and varies the first column the fastest
-bR = expand.grid(rep(list(1:3), 3))
+bR <- expand.grid(rep(list(1:3), 3))
 head(bR, n = 3)
 #>   Var1 Var2 Var3
 #> 1    1    1    1
 #> 2    2    1    1
 #> 3    3    1    1
 
-tail(bR, n = 3)
-#>    Var1 Var2 Var3
-#> 25    1    3    3
-#> 26    2    3    3
-#> 27    3    3    3
 
-
-## RcppAlgos::expandGrid returns a matrix if the input is of
-## the same class, otherwise it returns a data.frame. Also
-## varies the first column the slowest.
-algos = expandGrid(rep(list(1:3), 3))
+## RcppAlgos::expandGrid returns a matrix if the input is of the same class,
+## otherwise it returns a data.frame. Also varies the first column the slowest.
+algos <- expandGrid(rep(list(1:3), 3))
 head(algos, n = 3)
 #>      Var1 Var2 Var3
 #> [1,]    1    1    1
 #> [2,]    1    1    2
 #> [3,]    1    1    3
-
-tail(algos, n = 3)
-#>       Var1 Var2 Var3
-#> [25,]    3    3    1
-#> [26,]    3    3    2
-#> [27,]    3    3    3
-
-
-## N.B. Since we are passing more than one type, a data.frame is returned
-expandGrid(
-    c(rep(list(letters[1:3]), 3), list(1:3)),
-    upper = 3
-)
-#>   Var1 Var2 Var3 Var4
-#> 1    a    a    a    1
-#> 2    a    a    a    2
-#> 3    a    a    a    3
 
 
 ## With RcppAlgos::comboGrid order doesn't matter, so c(1, 1, 2),
@@ -231,17 +188,14 @@ comboGrid(rep(list(1:3), 3))
 #>  [8,]    2    2    3
 #>  [9,]    2    3    3
 #> [10,]    3    3    3
-
-
-## If you don't want any repeats, set repetition = FALSE
-comboGrid(rep(list(1:3), 3), repetition = FALSE)
-#>      Var1 Var2 Var3
-#> [1,]    1    2    3
 ```
 
 ### Partitions of Groups
 
-Efficiently partition a vector into groups with `comboGroups`. For example, the code below finds all possible pairings of groups of size 3 vs groups of size 2 (See this stackoverflow post: [Find all possible team pairing schemes](<https://stackoverflow.com/a/76068476/4408538>)). 
+Efficiently partition a vector into groups with `comboGroups`. For example, the code below finds all possible partitions into groups of size 2 and 3. See this Stack Overflow post:
+
+[Find all possible team pairing schemes](<https://stackoverflow.com/a/76068476/4408538>)
+
 ``` r
 players <- c("Ross", "Bobby", "Max", "Casper", "Jake")
 comboGroups(players, grpSizes = c(2, 3))
@@ -267,7 +221,7 @@ primeSieve(50)
 
 ## Many of the functions can produce results in
 ## parallel for even greater performance
-p = primeSieve(1e15, 1e15 + 1e8, nThreads = 4)
+p <- primeSieve(1e15, 1e15 + 1e8, nThreads = 4)
 
 head(p)
 #> [1] 1000000000000037 1000000000000091 1000000000000159
@@ -299,15 +253,17 @@ primeFactorize(sample(1e15, 3), namedList = TRUE)
 * [Function Documentation](<https://jwood000.github.io/RcppAlgos/reference/index.html>)
 * [Computational Mathematics Overview](<https://jwood000.github.io/RcppAlgos/articles/ComputationalMathematics.html>)
 * [Combination and Permutation Basics](<https://jwood000.github.io/RcppAlgos/articles/GeneralCombinatorics.html>)
+* [Integer Partitions in RcppAlgos](<https://jwood000.github.io/RcppAlgos/articles/IntegerPartitions.html>)
+* [Integer Compositions in RcppAlgos](<https://jwood000.github.io/RcppAlgos/articles/IntegerCompositions.html>)
 * [Combinatorial Sampling](<https://jwood000.github.io/RcppAlgos/articles/CombinatorialSampling.html>)
-* [Constraints, Partitions, and Compositions](<https://jwood000.github.io/RcppAlgos/articles/CombPermConstraints.html>)
+* [Constraints in RcppAlgos: Constraint-Driven Combinatorial Enumeration](<https://jwood000.github.io/RcppAlgos/articles/CombPermConstraints.html>)
 * [Attacking Problems Related to the Subset Sum Problem](<https://jwood000.github.io/RcppAlgos/articles/SubsetSum.html>)
 * [Combinatorial Iterators in RcppAlgos](<https://jwood000.github.io/RcppAlgos/articles/CombinatoricsIterators.html>)
 * [Cartesian Products and Partitions of Groups](<https://jwood000.github.io/RcppAlgos/articles/OtherCombinatorics.html>)
 
 ## Why **`RcppAlgos`** but no **`Rcpp`**?
 
-Previous versions of `RcppAlgos` relied on [Rcpp](<https://github.com/RcppCore/Rcpp>) to ease the burden of exposing C++ to R. While the current version of `RcppAlgos` does not utilize `Rcpp`, it would not be possible without the myriad of excellent contributions to `Rcpp`.
+Earlier versions of `RcppAlgos` relied on [Rcpp](<https://github.com/RcppCore/Rcpp>) to interface C++ with R. The current implementation uses [cpp11](<https://github.com/r-lib/cpp11>), which provides a lightweight interface to R’s C API. While the package no longer depends on `Rcpp`, the project owes much to the excellent work of the `Rcpp` community.
 
 ## Contact
 

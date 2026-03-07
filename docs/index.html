@@ -22,7 +22,7 @@
 
     <a class="navbar-brand me-2" href="index.html">RcppAlgos</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">2.9.5</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">2.10.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -37,10 +37,12 @@
   <ul class="dropdown-menu" aria-labelledby="dropdown-articles">
 <li><a class="dropdown-item" href="articles/CombinatorialSampling.html">Combinatorial Sampling and Ranking</a></li>
     <li><a class="dropdown-item" href="articles/CombinatoricsIterators.html">Combinatorial Iterators in RcppAlgos</a></li>
-    <li><a class="dropdown-item" href="articles/CombPermConstraints.html">Constraints, Partitions, and Compositions</a></li>
+    <li><a class="dropdown-item" href="articles/CombPermConstraints.html">Constraints in RcppAlgos: Constraint-Driven Combinatorial Enumeration</a></li>
     <li><a class="dropdown-item" href="articles/ComputationalMathematics.html">Computational Mathematics Overview</a></li>
     <li><a class="dropdown-item" href="articles/GeneralCombinatorics.html">Combination and Permutation Basics</a></li>
     <li><a class="dropdown-item" href="articles/HighPerformanceBenchmarks.html">High Performance Benchmarks</a></li>
+    <li><a class="dropdown-item" href="articles/IntegerCompositions.html">Integer Compositions in RcppAlgos</a></li>
+    <li><a class="dropdown-item" href="articles/IntegerPartitions.html">Integer Partitions in RcppAlgos</a></li>
     <li><a class="dropdown-item" href="articles/OtherCombinatorics.html">Cartesian Products and Partitions of Groups</a></li>
     <li><a class="dropdown-item" href="articles/SubsetSum.html">Attacking Problems Related to the Subset Sum Problem</a></li>
   </ul>
@@ -64,36 +66,47 @@
 </h1></div>
 <!-- badges: start -->
 
-<p>A collection of high performance functions and iterators implemented in C++ for solving problems in combinatorics and computational mathematics.</p>
+<p><code>RcppAlgos</code> provides high-performance algorithms for working with combinatorial objects in R. It includes efficient implementations for combinations, permutations, integer partitions, and compositions, with support for multisets, constraints, and extremely large search spaces through memory-efficient iterators.</p>
+<p>The package also implements specialized algorithms for problems rarely supported by other combinatorics libraries, including partitions of multisets, partitions of groups, and order-invariant Cartesian products. Many routines support ranking and unranking, parallel computation, and reproducible sampling. The package also includes fast prime number utilities built on the excellent work of <a href="https://github.com/kimwalisch" class="external-link">Kim Walisch</a>.</p>
 <div class="section level2">
-<h2 id="featured-functions">Featured Functions<a class="anchor" aria-label="anchor" href="#featured-functions"></a>
+<h2 id="key-features">Key Features<a class="anchor" aria-label="anchor" href="#key-features"></a>
 </h2>
 <ul>
+<li>High-performance generation of combinations and permutations</li>
+<li>Integer partitions and compositions under flexible constraints</li>
+<li>Support for multisets and restricted combinatorial structures</li>
+<li>Memory-efficient iterators for exploring very large combinatorial spaces</li>
+<li>Ranking and unranking algorithms</li>
+<li>Parallel computation support</li>
+<li>Fast prime number utilities:
+<ul>
 <li>
-<strong><code>{combo|permute}General</code></strong>: Generate all combinations/permutations of a vector (including <a href="https://en.wikipedia.org/wiki/Multiset" class="external-link">multisets</a>) meeting specific criteria.</li>
+<code>primeSieve</code> for generating primes</li>
 <li>
-<strong><code>{partitions|compositions}General</code></strong>: Efficient algorithms for partitioning numbers under various constraints</li>
+<code>primeCount</code> for counting primes using Legendre’s formula</li>
 <li>
-<strong><code>{expandGrid|comboGrid}</code></strong>: Generate traditional Cartesian product as well as the product where order does not matter.</li>
-<li>
-<strong><code>{combo|permute|partitions|compositions|expandGrid|comboGroups}Sample</code></strong>: Generate reproducible random samples</li>
-<li>
-<strong><code>{combo|permute|partitions|compositions|expandGrid|comboGroups}Iter</code></strong>: Flexible iterators allow for bidirectional iteration as well as random access.</li>
-<li>
-<strong><code>primeSieve</code></strong>: Fast prime number generator</li>
-<li>
-<strong><code>primeCount</code></strong>: Prime counting function using <a href="https://mathworld.wolfram.com/LegendresFormula.html" class="external-link">Legendre’s formula</a>
+<code>primeFactorize</code> for prime factorization</li>
+</ul>
 </li>
 </ul>
-<p>The <code>primeSieve</code> function and the <code>primeCount</code> function are both based off of the excellent work by <a href="https://github.com/kimwalisch" class="external-link">Kim Walisch</a>. The respective repos can be found here: <a href="https://github.com/kimwalisch/primesieve" class="external-link">kimwalisch/primesieve</a>; <a href="https://github.com/kimwalisch/primecount" class="external-link">kimwalisch/primecount</a></p>
-<p>Additionally, many of the sieving functions make use of the fast integer division library <a href="https://github.com/ridiculousfish/libdivide" class="external-link">libdivide</a> by <a href="https://github.com/ridiculousfish" class="external-link">ridiculousfish</a>.</p>
+<p>RcppAlgos is designed to handle combinatorial problems ranging from small enumerations to extremely large search spaces where generating all results at once would be impractical.</p>
 </div>
 <div class="section level2">
-<h2 id="benchmarks">Benchmarks<a class="anchor" aria-label="anchor" href="#benchmarks"></a>
+<h2 id="what-makes-rcppalgos-unique">What Makes <code>RcppAlgos</code> Unique<a class="anchor" aria-label="anchor" href="#what-makes-rcppalgos-unique"></a>
 </h2>
+<p>RcppAlgos implements several combinatorial algorithms that are uncommon or unavailable in most R libraries, including:</p>
 <ul>
-<li><a href="https://jwood000.github.io/RcppAlgos/articles/HighPerformanceBenchmarks.html">High Performance Benchmarks</a></li>
+<li>partitions of multisets</li>
+<li>partitions of groups (<code>comboGroups</code>)</li>
+<li>order-invariant Cartesian products (<code>comboGrid</code>)</li>
+<li>compositions with distinct parts</li>
 </ul>
+</div>
+<div class="section level2">
+<h2 id="performance">Performance<a class="anchor" aria-label="anchor" href="#performance"></a>
+</h2>
+<p>Detailed benchmarks can be found here:</p>
+<p><a href="https://jwood000.github.io/RcppAlgos/articles/HighPerformanceBenchmarks.html">High Performance Benchmarks</a></p>
 </div>
 <div class="section level2">
 <h2 id="installation">Installation<a class="anchor" aria-label="anchor" href="#installation"></a>
@@ -121,7 +134,7 @@
 <span></span>
 <span></span>
 <span><span class="co">## Alternatively, iterate over combinations</span></span>
-<span><span class="va">a</span> <span class="op">=</span> <span class="fu"><a href="reference/combinatoricsIterator.html">comboIter</a></span><span class="op">(</span><span class="fl">4</span>, <span class="fl">3</span><span class="op">)</span></span>
+<span><span class="va">a</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/combinatoricsIterator.html">comboIter</a></span><span class="op">(</span><span class="fl">4</span>, <span class="fl">3</span><span class="op">)</span></span>
 <span><span class="va">a</span><span class="op">@</span><span class="va">nextIter</span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="co">#&gt; [1] 1 2 3</span></span>
 <span></span>
@@ -151,7 +164,7 @@
 <span><span class="co">#&gt; [5,]    1    2    2    3    3    4    4    7</span></span></code></pre></div>
 </div>
 <div class="section level3">
-<h3 id="integer-partitions-and-constraints">Integer Partitions and Constraints<a class="anchor" aria-label="anchor" href="#integer-partitions-and-constraints"></a>
+<h3 id="integer-partitions-and-compositions">Integer Partitions and Compositions<a class="anchor" aria-label="anchor" href="#integer-partitions-and-compositions"></a>
 </h3>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co">## Flexible partitioning algorithms</span></span>
@@ -189,51 +202,18 @@
 <span><span class="co">#&gt; [7,]    3    3    3    3    3    4    4 3888</span></span>
 <span></span>
 <span></span>
-<span><span class="co">## We can even iterate over constrained cases. These are</span></span>
-<span><span class="co">## great when we don't know how many results there are upfront.</span></span>
-<span><span class="co">## Save on memory and still at the speed of C++!!</span></span>
-<span><span class="va">p</span> <span class="op">=</span> <span class="fu"><a href="reference/combinatoricsIterator.html">permuteIter</a></span><span class="op">(</span><span class="fl">5</span>, <span class="fl">7</span>, <span class="cn">TRUE</span>, constraintFun <span class="op">=</span> <span class="st">"prod"</span>,</span>
-<span>                comparisonFun <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"&gt;="</span>,<span class="st">"&lt;"</span><span class="op">)</span>,</span>
-<span>                limitConstraints <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">3600</span>, <span class="fl">4000</span><span class="op">)</span>,</span>
-<span>                keepResults <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
-<span></span>
-<span><span class="co">## Get the next n results</span></span>
-<span><span class="va">t</span> <span class="op">=</span> <span class="va">p</span><span class="op">@</span><span class="va">nextNIter</span><span class="op">(</span><span class="fl">1048</span><span class="op">)</span></span>
-<span></span>
-<span><span class="co">## N.B. keepResults = TRUE adds the 8th column</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">tail</a></span><span class="op">(</span><span class="va">t</span><span class="op">)</span></span>
-<span><span class="co">#&gt;         [,1] [,2] [,3] [,4] [,5] [,6] [,7] [,8]</span></span>
-<span><span class="co">#&gt; [1043,]    5    4    4    3    4    1    4 3840</span></span>
-<span><span class="co">#&gt; [1044,]    5    4    4    3    4    4    1 3840</span></span>
-<span><span class="co">#&gt; [1045,]    5    4    4    4    1    3    4 3840</span></span>
-<span><span class="co">#&gt; [1046,]    5    4    4    4    1    4    3 3840</span></span>
-<span><span class="co">#&gt; [1047,]    5    4    4    4    3    1    4 3840</span></span>
-<span><span class="co">#&gt; [1048,]    5    4    4    4    3    4    1 3840</span></span>
-<span></span>
-<span><span class="co">## Continue iterating from where we left off</span></span>
-<span><span class="va">p</span><span class="op">@</span><span class="va">nextIter</span><span class="op">(</span><span class="op">)</span></span>
-<span><span class="co">#&gt; [1]    5    4    4    4    4    1    3 3840</span></span>
+<span><span class="co">## We can also iterate over constrained cases. This is useful when we do not</span></span>
+<span><span class="co">## know the total number of results upfront, while still avoiding the cost of</span></span>
+<span><span class="co">## generating the full result set in memory.</span></span>
+<span><span class="va">p</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/combinatoricsIterator.html">permuteIter</a></span><span class="op">(</span></span>
+<span>  <span class="fl">5</span>, <span class="fl">7</span>, <span class="cn">TRUE</span>,</span>
+<span>  constraintFun <span class="op">=</span> <span class="st">"prod"</span>,</span>
+<span>  comparisonFun <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"&gt;="</span>, <span class="st">"&lt;"</span><span class="op">)</span>,</span>
+<span>  limitConstraints <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">3600</span>, <span class="fl">4000</span><span class="op">)</span></span>
+<span><span class="op">)</span></span>
 <span></span>
 <span><span class="va">p</span><span class="op">@</span><span class="va">nextIter</span><span class="op">(</span><span class="op">)</span></span>
-<span><span class="co">#&gt; [1]    5    4    4    4    4    3    1 3840</span></span>
-<span></span>
-<span><span class="va">p</span><span class="op">@</span><span class="va">nextIter</span><span class="op">(</span><span class="op">)</span></span>
-<span><span class="co">#&gt; [1]    2    2    3    3    4    5    5 3600</span></span>
-<span></span>
-<span><span class="co">## N.B. totalResults and totalRemaining are NA because there is no</span></span>
-<span><span class="co">## closed form solution for determining this.</span></span>
-<span><span class="va">p</span><span class="op">@</span><span class="va">summary</span><span class="op">(</span><span class="op">)</span></span>
-<span><span class="co">#&gt; $description</span></span>
-<span><span class="co">#&gt; [1] "Permutations with repetition of 5 choose 7 where the prod is between 3600 and 4000"</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; $currentIndex</span></span>
-<span><span class="co">#&gt; [1] 1051</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; $totalResults</span></span>
-<span><span class="co">#&gt; [1] NA</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; $totalRemaining</span></span>
-<span><span class="co">#&gt; [1] NA</span></span></code></pre></div>
+<span><span class="co">#&gt; [1] 1 2 3 5 5 5 5</span></span></code></pre></div>
 </div>
 <div class="section level3">
 <h3 id="cartesian-products">Cartesian Products<a class="anchor" aria-label="anchor" href="#cartesian-products"></a>
@@ -241,46 +221,22 @@
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co">## Base R expand.grid returns a data.frame by default</span></span>
 <span><span class="co">## and varies the first column the fastest</span></span>
-<span><span class="va">bR</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/expand.grid.html" class="external-link">expand.grid</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="fl">1</span><span class="op">:</span><span class="fl">3</span><span class="op">)</span>, <span class="fl">3</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="va">bR</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/expand.grid.html" class="external-link">expand.grid</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="fl">1</span><span class="op">:</span><span class="fl">3</span><span class="op">)</span>, <span class="fl">3</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">bR</span>, n <span class="op">=</span> <span class="fl">3</span><span class="op">)</span></span>
 <span><span class="co">#&gt;   Var1 Var2 Var3</span></span>
 <span><span class="co">#&gt; 1    1    1    1</span></span>
 <span><span class="co">#&gt; 2    2    1    1</span></span>
 <span><span class="co">#&gt; 3    3    1    1</span></span>
 <span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">tail</a></span><span class="op">(</span><span class="va">bR</span>, n <span class="op">=</span> <span class="fl">3</span><span class="op">)</span></span>
-<span><span class="co">#&gt;    Var1 Var2 Var3</span></span>
-<span><span class="co">#&gt; 25    1    3    3</span></span>
-<span><span class="co">#&gt; 26    2    3    3</span></span>
-<span><span class="co">#&gt; 27    3    3    3</span></span>
 <span></span>
-<span></span>
-<span><span class="co">## RcppAlgos::expandGrid returns a matrix if the input is of</span></span>
-<span><span class="co">## the same class, otherwise it returns a data.frame. Also</span></span>
-<span><span class="co">## varies the first column the slowest.</span></span>
-<span><span class="va">algos</span> <span class="op">=</span> <span class="fu"><a href="reference/expandGrid.html">expandGrid</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="fl">1</span><span class="op">:</span><span class="fl">3</span><span class="op">)</span>, <span class="fl">3</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="co">## RcppAlgos::expandGrid returns a matrix if the input is of the same class,</span></span>
+<span><span class="co">## otherwise it returns a data.frame. Also varies the first column the slowest.</span></span>
+<span><span class="va">algos</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/expandGrid.html">expandGrid</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="fl">1</span><span class="op">:</span><span class="fl">3</span><span class="op">)</span>, <span class="fl">3</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">algos</span>, n <span class="op">=</span> <span class="fl">3</span><span class="op">)</span></span>
 <span><span class="co">#&gt;      Var1 Var2 Var3</span></span>
 <span><span class="co">#&gt; [1,]    1    1    1</span></span>
 <span><span class="co">#&gt; [2,]    1    1    2</span></span>
 <span><span class="co">#&gt; [3,]    1    1    3</span></span>
-<span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">tail</a></span><span class="op">(</span><span class="va">algos</span>, n <span class="op">=</span> <span class="fl">3</span><span class="op">)</span></span>
-<span><span class="co">#&gt;       Var1 Var2 Var3</span></span>
-<span><span class="co">#&gt; [25,]    3    3    1</span></span>
-<span><span class="co">#&gt; [26,]    3    3    2</span></span>
-<span><span class="co">#&gt; [27,]    3    3    3</span></span>
-<span></span>
-<span></span>
-<span><span class="co">## N.B. Since we are passing more than one type, a data.frame is returned</span></span>
-<span><span class="fu"><a href="reference/expandGrid.html">expandGrid</a></span><span class="op">(</span></span>
-<span>    <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="va">letters</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">3</span><span class="op">]</span><span class="op">)</span>, <span class="fl">3</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="fl">1</span><span class="op">:</span><span class="fl">3</span><span class="op">)</span><span class="op">)</span>,</span>
-<span>    upper <span class="op">=</span> <span class="fl">3</span></span>
-<span><span class="op">)</span></span>
-<span><span class="co">#&gt;   Var1 Var2 Var3 Var4</span></span>
-<span><span class="co">#&gt; 1    a    a    a    1</span></span>
-<span><span class="co">#&gt; 2    a    a    a    2</span></span>
-<span><span class="co">#&gt; 3    a    a    a    3</span></span>
 <span></span>
 <span></span>
 <span><span class="co">## With RcppAlgos::comboGrid order doesn't matter, so c(1, 1, 2),</span></span>
@@ -296,18 +252,13 @@
 <span><span class="co">#&gt;  [7,]    2    2    2</span></span>
 <span><span class="co">#&gt;  [8,]    2    2    3</span></span>
 <span><span class="co">#&gt;  [9,]    2    3    3</span></span>
-<span><span class="co">#&gt; [10,]    3    3    3</span></span>
-<span></span>
-<span></span>
-<span><span class="co">## If you don't want any repeats, set repetition = FALSE</span></span>
-<span><span class="fu"><a href="reference/comboGrid.html">comboGrid</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="fl">1</span><span class="op">:</span><span class="fl">3</span><span class="op">)</span>, <span class="fl">3</span><span class="op">)</span>, repetition <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
-<span><span class="co">#&gt;      Var1 Var2 Var3</span></span>
-<span><span class="co">#&gt; [1,]    1    2    3</span></span></code></pre></div>
+<span><span class="co">#&gt; [10,]    3    3    3</span></span></code></pre></div>
 </div>
 <div class="section level3">
 <h3 id="partitions-of-groups">Partitions of Groups<a class="anchor" aria-label="anchor" href="#partitions-of-groups"></a>
 </h3>
-<p>Efficiently partition a vector into groups with <code>comboGroups</code>. For example, the code below finds all possible pairings of groups of size 3 vs groups of size 2 (See this stackoverflow post: <a href="https://stackoverflow.com/a/76068476/4408538" class="external-link">Find all possible team pairing schemes</a>).</p>
+<p>Efficiently partition a vector into groups with <code>comboGroups</code>. For example, the code below finds all possible partitions into groups of size 2 and 3. See this Stack Overflow post:</p>
+<p><a href="https://stackoverflow.com/a/76068476/4408538" class="external-link">Find all possible team pairing schemes</a></p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">players</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Ross"</span>, <span class="st">"Bobby"</span>, <span class="st">"Max"</span>, <span class="st">"Casper"</span>, <span class="st">"Jake"</span><span class="op">)</span></span>
 <span><span class="fu"><a href="reference/comboGroups.html">comboGroups</a></span><span class="op">(</span><span class="va">players</span>, grpSizes <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">2</span>, <span class="fl">3</span><span class="op">)</span><span class="op">)</span></span>
@@ -333,7 +284,7 @@
 <span></span>
 <span><span class="co">## Many of the functions can produce results in</span></span>
 <span><span class="co">## parallel for even greater performance</span></span>
-<span><span class="va">p</span> <span class="op">=</span> <span class="fu"><a href="reference/primeSieve.html">primeSieve</a></span><span class="op">(</span><span class="fl">1e15</span>, <span class="fl">1e15</span> <span class="op">+</span> <span class="fl">1e8</span>, nThreads <span class="op">=</span> <span class="fl">4</span><span class="op">)</span></span>
+<span><span class="va">p</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/primeSieve.html">primeSieve</a></span><span class="op">(</span><span class="fl">1e15</span>, <span class="fl">1e15</span> <span class="op">+</span> <span class="fl">1e8</span>, nThreads <span class="op">=</span> <span class="fl">4</span><span class="op">)</span></span>
 <span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">p</span><span class="op">)</span></span>
 <span><span class="co">#&gt; [1] 1000000000000037 1000000000000091 1000000000000159</span></span>
@@ -367,8 +318,10 @@
 <li><a href="https://jwood000.github.io/RcppAlgos/reference/index.html">Function Documentation</a></li>
 <li><a href="https://jwood000.github.io/RcppAlgos/articles/ComputationalMathematics.html">Computational Mathematics Overview</a></li>
 <li><a href="https://jwood000.github.io/RcppAlgos/articles/GeneralCombinatorics.html">Combination and Permutation Basics</a></li>
+<li><a href="https://jwood000.github.io/RcppAlgos/articles/IntegerPartitions.html">Integer Partitions in RcppAlgos</a></li>
+<li><a href="https://jwood000.github.io/RcppAlgos/articles/IntegerCompositions.html">Integer Compositions in RcppAlgos</a></li>
 <li><a href="https://jwood000.github.io/RcppAlgos/articles/CombinatorialSampling.html">Combinatorial Sampling</a></li>
-<li><a href="https://jwood000.github.io/RcppAlgos/articles/CombPermConstraints.html">Constraints, Partitions, and Compositions</a></li>
+<li><a href="https://jwood000.github.io/RcppAlgos/articles/CombPermConstraints.html">Constraints in RcppAlgos: Constraint-Driven Combinatorial Enumeration</a></li>
 <li><a href="https://jwood000.github.io/RcppAlgos/articles/SubsetSum.html">Attacking Problems Related to the Subset Sum Problem</a></li>
 <li><a href="https://jwood000.github.io/RcppAlgos/articles/CombinatoricsIterators.html">Combinatorial Iterators in RcppAlgos</a></li>
 <li><a href="https://jwood000.github.io/RcppAlgos/articles/OtherCombinatorics.html">Cartesian Products and Partitions of Groups</a></li>
@@ -377,7 +330,7 @@
 <div class="section level2">
 <h2 id="why-rcppalgos-but-no-rcpp">Why <strong><code>RcppAlgos</code></strong> but no <strong><code>Rcpp</code></strong>?<a class="anchor" aria-label="anchor" href="#why-rcppalgos-but-no-rcpp"></a>
 </h2>
-<p>Previous versions of <code>RcppAlgos</code> relied on <a href="https://github.com/RcppCore/Rcpp" class="external-link">Rcpp</a> to ease the burden of exposing C++ to R. While the current version of <code>RcppAlgos</code> does not utilize <code>Rcpp</code>, it would not be possible without the myriad of excellent contributions to <code>Rcpp</code>.</p>
+<p>Earlier versions of <code>RcppAlgos</code> relied on <a href="https://github.com/RcppCore/Rcpp" class="external-link">Rcpp</a> to interface C++ with R. The current implementation uses <a href="https://github.com/r-lib/cpp11" class="external-link">cpp11</a>, which provides a lightweight interface to R’s C API. While the package no longer depends on <code>Rcpp</code>, the project owes much to the excellent work of the <code>Rcpp</code> community.</p>
 </div>
 <div class="section level2">
 <h2 id="contact">Contact<a class="anchor" aria-label="anchor" href="#contact"></a>

@@ -29,7 +29,7 @@ ALLOWED_PREFIXES = {
     "ci"
 }
 
-MODEL = os.getenv("AI_REVIEW_MODEL", "gpt-4o-mini")
+MODEL = os.getenv("AI_REVIEW_MODEL", "gpt-5.2")
 MAX_OUTPUT_TOKENS = 200
 TEMPERATURE = 0.2
 SUBJECT_MAX = 72
