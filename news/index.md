@@ -2,6 +2,8 @@
 
 ## RcppAlgos 2.10.0
 
+CRAN release: 2026-03-08
+
 This release introduces major enhancements to the compositions
 framework, including support for distinct and repetition-restricted
 compositions, parallel ranking, and performance improvements across
