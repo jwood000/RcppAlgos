@@ -5,8 +5,10 @@ pkgEnv$nCores <- NULL
 pkgEnv$maxThreads <- NULL
 
 physicalCoreCount <- function() {
-    ## Use R's default core-detection path only. This is a conservative
-    ## package fallback, not an attempt to determine exact CPU topology.
+    ## Estimate physical cores using R's default detection path. This value is
+    ## used for cache-size heuristics, not as the authoritative thread limit.
+    ## If physical core detection is unavailable, fall back to logical cores
+    ## and finally to 1.
     n <- parallel::detectCores(logical = FALSE)
 
     if (is.na(n) || n < 1L) {

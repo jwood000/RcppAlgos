@@ -1,7 +1,11 @@
 stdThreadMax <- function() {
     nThreads <- .Call(`_RcppAlgos_cpp11GetNumThreads`)
-    if (nThreads < 1L || is.na(nThreads) || is.null(nThreads)) nThreads = 1L
-    return(nThreads)
+
+    if (is.null(nThreads) || is.na(nThreads) || nThreads < 1L) {
+        nThreads <- 1L
+    }
+
+    as.integer(nThreads)
 }
 
 GetV <- function(v) {
