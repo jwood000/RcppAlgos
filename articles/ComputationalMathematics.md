@@ -19,6 +19,7 @@ sieving small sections at a time, which greatly facilitates use of the
 cache.
 
 ``` r
+
 library(RcppAlgos)
 library(microbenchmark)
 options(width = 90)
@@ -68,6 +69,7 @@ improvements for larger primes originally developed by [Tomás
 Oliveira](https://sweet.ua.pt/tos/software/prime_sieve.html).
 
 ``` r
+
 ## Version <= 2.2.0.. i.e. older versions
 system.time(old <- RcppAlgos220::primeSieve(1e15, 1e15 + 1e9))
 #>    user  system elapsed 
@@ -127,6 +129,7 @@ threads.
 With this is mind, here are some results:
 
 ``` r
+
 ## Enumerate the number of primes below trillion
 system.time(underOneTrillion <- primeCount(10^12))
 #>    user  system elapsed 
@@ -169,6 +172,7 @@ The following sieving functions (`primeFactorizeSieve`, `divisorsSieve`,
 Generate components up to a number or between two bounds.
 
 ``` r
+
 ## get the number of divisors for every number from 1 to n
 numDivisorSieve(20)
 #>  [1] 1 2 2 3 2 4 2 4 3 4 2 6 2 4 4 5 2 6 2 6
@@ -239,6 +243,7 @@ There are three very fast vectorized functions for general factoring
 factoring (`divisorsRcpp`, `isPrimeRcpp`, `primeFactorize`).
 
 ``` r
+
 ## get result for individual numbers
 primeFactorize(123456789)
 #> [1]    3    3 3607 3803

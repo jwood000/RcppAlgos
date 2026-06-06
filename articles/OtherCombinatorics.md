@@ -24,6 +24,7 @@ slowest and if all of the inputs are of the same type, a `matrix` will
 be returned.
 
 ``` r
+
 library(RcppAlgos)
 
 ht <- function(d, m = 5, n = m) {
@@ -85,6 +86,7 @@ expandGrid(height = seq(60, 80, 10), weight = seq(100, 200, 50),
 ### Matrix vs Data.Frame Output
 
 ``` r
+
 lst = Map(\(x, y) x:y, 8:12, 13:17)
 
 class(expand.grid(lst))
@@ -135,6 +137,7 @@ If you really need to always return a `data.frame`, we can utilize the
 argument `return_df`:
 
 ``` r
+
 class(expandGrid(lst, return_df = TRUE))
 #> [1] "data.frame"
 
@@ -163,6 +166,7 @@ arguments `lower`, `upper`, and `nThreads`. For example, we can see a
 decrease in execution time by using `nThreads`:
 
 ``` r
+
 library(microbenchmark)
 options(digits = 4)
 stdThreadMax()
@@ -197,6 +201,7 @@ can utlize the `n`, `sampleVec`, `nThreads`, and `namedSample`
 arguments.
 
 ``` r
+
 ## lst_med is defined above
 all_carts = expandGrid(lst_med)
 
@@ -234,6 +239,7 @@ The example below is from the docs (see
 [`?expandGridIter`](https://jwood000.github.io/RcppAlgos/reference/expandGridIterator.md)):
 
 ``` r
+
 a = expandGridIter(factor(state.abb), euro, islands)
 a@nextIter()
 #>   Var1  Var2  Var3
@@ -323,6 +329,7 @@ Basics](https://jwood000.github.io/RcppAlgos/articles/GeneralCombinatorics.html)
 vignette):
 
 ``` r
+
 expand.grid(1:4, 2:5)
 #>    Var1 Var2
 #> 1     1    2
@@ -353,6 +360,7 @@ equal and can therefore be pruned to obtain our desired results:
 With `comboGrid` no duplicates are generated:
 
 ``` r
+
 comboGrid(1:4, 2:5)
 #>       Var1 Var2
 #>  [1,]    1    2
@@ -390,6 +398,7 @@ impractical.
 Consider the following example:
 
 ``` r
+
 pools = list(c(1, 10, 14, 6),
              c(7, 2, 4, 8, 3, 11, 12),
              c(11, 3, 13, 4, 15, 8, 6, 5),
@@ -503,6 +512,7 @@ consider the following example. Given `v = 1:12`, generate all
 partitions `v` into 3 groups each of size 4.
 
 ``` r
+
 funBruteGrp <- function(myLow = 1, myUp) {
     mat <- do.call(
         rbind,
@@ -551,6 +561,7 @@ every *24^(th)* permutation, we will still get duplication as they start
 to carry over to the other groups. Observe:
 
 ``` r
+
 do.call(rbind, lapply(seq(1, 169, 24), function(x) {
     funBruteGrp(myLow = x, myUp = x)
 }))
@@ -575,6 +586,7 @@ implementing a novel algorithm akin to
 from the algorithm library in `C++`.
 
 ``` r
+
 system.time(comboGroups(12, numGroups = 3))
 #>    user  system elapsed 
 #>       0       0       0
@@ -601,6 +613,7 @@ Just as in `{combo|permute}General`, we can utilize the arguments
 `lower`, `upper`, `Parallel`, and `nThreads`.
 
 ``` r
+
 comboGroupsCount(30, 6)
 #> Big Integer ('bigz') :
 #> [1] 123378675083039376
@@ -639,6 +652,7 @@ example, say we want to generate all partitions of the vector `v = 1:15`
 into 2 groups of 3, 1 groups of 4, and 1 group of 5:
 
 ``` r
+
 system.time(a4 <- comboGroups(15, grpSizes = c(3, 3, 4, 5)))
 #>    user  system elapsed 
 #>   0.097   0.016   0.113
@@ -675,6 +689,7 @@ with groups of varying sizes as well. For example, we can generate
 groups of varying sizes in parallel:
 
 ``` r
+
 system.time(a5 <- comboGroups(15, grpSizes = c(3, 3, 4, 5), nThreads = 4))
 #>    user  system elapsed 
 #>   0.103   0.027   0.046
@@ -692,6 +707,7 @@ when the size of each group is uniform. We have a particular result
 certain size (*3^(rd)* dimension).
 
 ``` r
+
 my3D <- comboGroups(factor(month.abb), 4, retType = "3Darray")
 my3D[1, , ]
 #>      Grp1 Grp2 Grp3 Grp4

@@ -50,6 +50,7 @@ internally set to the length of the longest non-zero combination (this
 is true for all cases below).
 
 ``` r
+
 library(RcppAlgos)
 options(width = 90)
 
@@ -85,6 +86,7 @@ Everything is the same as above except for explicitly setting the
 desired length and deciding whether to include zero or not.
 
 ``` r
+
 ## Including zero
 partitionsGeneral(0:5, 3, repetition = TRUE)
 #>      [,1] [,2] [,3]
@@ -119,6 +121,7 @@ cannot occur more than one time.
 Same as `Case 1 & 2` except now we have `repetition = FALSE`.
 
 ``` r
+
 partitionsGeneral(0:10)
 #>      [,1] [,2] [,3] [,4]
 #> [1,]    0    1    2    7
@@ -194,6 +197,7 @@ beyond the maximum partition width will be omitted). For example, when
 `0 0 0 0 0 0 0 0 0 0 10`, because the maximum width is 4 in this case.
 
 ``` r
+
 ## Obtain all distinct partitions of 10
 partitionsGeneral(0:10, freqs = c(10, rep(1, 10)))    ## Same as c(3, rep(1, 10))
 #>       [,1] [,2] [,3] [,4]
@@ -211,10 +215,11 @@ partitionsGeneral(0:10, freqs = c(10, rep(1, 10)))    ## Same as c(3, rep(1, 10)
 
 ##### Euler’s Theorem in Action (Odd Parts and Distinct Parts)
 
-Consider $N = 100$. The number of partitions with odd parts only is
+Consider $`N = 100`$. The number of partitions with odd parts only is
 given by:
 
 ``` r
+
 sum(
     sapply(1:100, function(width) {
         partitionsCount(
@@ -229,6 +234,7 @@ sum(
 And now, the number of distinct parts of 100:
 
 ``` r
+
 partitionsCount(0:100, freqs = c(100, rep(1, 100)))
 #> [1] 444793
 ```
@@ -243,6 +249,7 @@ can be used to inspect the isomorphic standard representation used
 internally.
 
 ``` r
+
 ## Inspecting the partitions of 100 into odd parts of length 10
 RcppAlgos:::partitionsDesign(
     seq.int(1L, 99L, by = 2L), 10, TRUE, target = 100, showDesign = TRUE
@@ -298,6 +305,7 @@ other hand, if the user provides `m`, that value determines the output
 length.
 
 ``` r
+
 ## m is NOT NULL and output has at most 2 zeros
 partitionsGeneral(0:10, 3, freqs = c(2, rep(1, 10)))
 #>       [,1] [,2] [,3]
@@ -364,8 +372,8 @@ In `RcppAlgos`, we’ve covered combinations and permutations of multisets
 thoroughly. This is not surprising, as these structures are well known
 in both academia and industry alike. The same can be said for standard
 and distinct partitions, which we covered above. To our knowledge,
-algorithms for generating partitions where each part, $p_{i}$, may
-repeat up to $r_{i}$ times are not readily available in combinatorics
+algorithms for generating partitions where each part, $`p_i`$, may
+repeat up to $`r_i`$ times are not readily available in combinatorics
 software/literature.
 
 Put simply, finding all partitions of *N* under part-specific
@@ -375,6 +383,7 @@ this is no problem.
 #### Case 4: Integer Partitions of *N* into Parts of Varying Multiplicity
 
 ``` r
+
 ## partitions of 12 into 4 parts where each part can
 ## be used a specific number of times (e.g. 2 or 3)
 partitionsGeneral(12, 4, freqs = rep(2:3, 6))
@@ -402,9 +411,8 @@ we can take advantage of the
 natural fit for multisets, since problems are often framed in terms of
 multiplicities:
 
-> *Given the multiset
-> $\left\lbrack p_{0}^{r_{0}},p_{1}^{r_{1}},\ldots,p_{k}^{r_{k}} \right\rbrack$,
-> where each $p_{i}$ repeats $r_{i}$ times, find …*
+> *Given the multiset $`[p_0^{r_0}, p_1^{r_1}, \ldots, p_k^{r_k}]`$,
+> where each $`p_i`$ repeats $`r_i`$ times, find …*
 
 Without a dedicated interface, setting up `v` and `freqs` can be
 cumbersome, often requiring some combination of
@@ -418,6 +426,7 @@ As of version `2.8.3`, `RcppAlgos` provides an S3 method for
 can be passed directly.
 
 ``` r
+
 ms = c(1,1,1,2,2,2,2,3,3,3,4,4,4,4,5,5,5,6)
 tab = table(ms)
 tab
@@ -472,6 +481,7 @@ more general capped or restricted partition problems.
 Observe:
 
 ``` r
+
 ## Here we partition 30 using only distinct parts up to 10
 partitionsGeneral(10, 5, target = 30)
 #>       [,1] [,2] [,3] [,4] [,5]
@@ -543,6 +553,7 @@ Note, as of version `2.5.0`, one can generate partitions in parallel
 using the `nThreads` argument.
 
 ``` r
+
 ## partitions of 60
 partitionsCount(0:60, repetition = TRUE)
 #> [1] 966467

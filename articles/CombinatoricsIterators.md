@@ -22,6 +22,7 @@ In order to iterate, we must initialize an iterator via `comboIter` or
 `permuteGeneral`.
 
 ``` r
+
 library(RcppAlgos)
 options(width = 90)
 
@@ -95,6 +96,7 @@ Order](https://oeis.org/wiki/Orderings#Reverse_lexicographic_order)) via
 the `prevIter` method(s).
 
 ``` r
+
 ## Using the same iterable from the previous section
 a$currIter()
 #> No more results. To see the last result, use the prevIter method(s)
@@ -154,6 +156,7 @@ There are four methods which allow for obtaining more than one result at
 a time: `nextNIter`, `prevNIter`, `nextRemaining`, and `prevRemaining`.
 
 ``` r
+
 ## Reset the iterator
 a$startOver()
 
@@ -210,6 +213,7 @@ a$summary()
 Now, we look at the opposite direction.
 
 ``` r
+
 ## Get the previous 4 combinations
 a$prevNIter(4)
 #>      [,1] [,2] [,3]
@@ -267,6 +271,7 @@ iterators in `RcppAlgos`, we can jump to the *n^(th)* result without the
 need for iterating over the first *n - 1* results.
 
 ``` r
+
 ## Reset the iterator
 a$startOver()
 
@@ -326,6 +331,7 @@ operator by passing a vector of indices. In these cases, it should be
 noted that the current index will not be updated.
 
 ``` r
+
 ## Set the current index to the second combination
 a[[2]]
 #> [1] 1 2 4
@@ -364,6 +370,7 @@ Just as with `comboGeneral` and `permuteGeneral`, we can pass a user
 defined function to `comboIter` and `permuteIter`.
 
 ``` r
+
 ## Initialize the iterator
 b = permuteIter(LETTERS[1:4], 3, FUN = function(p) paste(p, collapse = ""),
                 FUN.VALUE = "a")
@@ -435,6 +442,7 @@ results, simply download the `2.4.3` tar here:
 `NAMESPACE`, etc.), and rebuild.
 
 ``` r
+
 test_nextIter <- function(n, m, get_val = FALSE, v = 243, caching = FALSE) {
     a <- if (v == 243) {
         RcppAlgos243::comboIter(n, m)
@@ -491,6 +499,7 @@ test_nextIter <- function(n, m, get_val = FALSE, v = 243, caching = FALSE) {
 ### Version `2.4.3` Using `Rcpp`
 
 ``` r
+
 library(microbenchmark)
 ## Using R version 4.1.3
 comboCount(15, 8)
@@ -546,6 +555,7 @@ lapply(summaryRprof("Version243.out", memory = "both"), head)
 ### Version `2.10.0` (No `Rcpp`)
 
 ``` r
+
 curr_version <- as.integer(gsub("\\.", "", packageVersion("RcppAlgos")))
 curr_version
 #> [1] 2100
@@ -592,6 +602,7 @@ lapply(summaryRprof(curr_file_out, memory = "both"), head)
 ### Caching Results w/ 2.4.3
 
 ``` r
+
 microbenchmark(v243cache = test_nextIter(15, 8, caching = TRUE))
 #> Unit: milliseconds
 #>       expr      min      lq     mean   median       uq      max neval
@@ -633,6 +644,7 @@ lapply(summaryRprof("Version243cache.out", memory = "both"), head)
 ### Caching Results w/ `2.10.0`
 
 ``` r
+
 microbenchmark(curr_v = test_nextIter(15, 8, v = curr_version,
                                       caching = TRUE))
 #> Unit: milliseconds
@@ -689,6 +701,7 @@ we compare the profiling output from version `2.4.3` with the current
 implementation.
 
 ``` r
+
 ## We set index = 1 to ensure we get the very bottom of the stack
 
 ## Version 2.4.3
@@ -762,6 +775,7 @@ standard `comboIter` and `permuteIter` except for bidirectionality
 also don’t have random access methods.
 
 ``` r
+
 ## Similar illustration of comboIter(5, 3) at the top
 p = partitionsIter(16, 4)
 p@nextIter()
@@ -825,6 +839,7 @@ For compositions, we have the same functionality as with
 `partitionsIter`.
 
 ``` r
+
 ## Similar illustration of comboIter(5, 3) at the top
 p = compositionsIter(6, 3, TRUE)
 p@nextIter()
@@ -925,6 +940,7 @@ the *(n + 1)^(th)* result and beyond (if there are any results left).
 This allows us to keep memory low without sacrificing our current state.
 
 ``` r
+
 set.seed(55)
 s = runif(10, -5, 5)
 
@@ -1009,6 +1025,7 @@ Again, we are in a situation where we don’t know *a priori* how many
 results we will obtain.
 
 ``` r
+
 set.seed(77)
 s = runif(50, 20, 100)
 
@@ -1047,6 +1064,7 @@ the 38^(th) million result and requested 10 million more, we would only
 obtain 935,252 results.
 
 ``` r
+
 invisible(gc())
 time_iter <- system.time({
     a = comboIter(s, 15,
@@ -1092,6 +1110,7 @@ unresponsive. After a restart, I tried the second approach and obtained
 my result in just over 10 seconds barely noticing any jumps in memory:
 
 ``` r
+
 ## Don't run... consumes a huge chunk of memory
 # time_all <- system.time({
 #     print(
@@ -1141,6 +1160,7 @@ standard `comboIter` and `permuteIter` except for bidirectionality
 (i.e. the `prevIter` methods).
 
 ``` r
+
 ## Similar illustration of comboIter(5, 3) at the top
 cg = comboGroupsIter(6, 2, retType = "3Darray")
 cg@nextIter()

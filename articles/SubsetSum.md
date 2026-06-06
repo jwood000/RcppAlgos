@@ -33,6 +33,7 @@ Basics](https://jwood000.github.io/RcppAlgos/articles/GeneralCombinatorics.html)
 vignette):
 
 ``` r
+
 library(RcppAlgos)
 options(width = 90)
 
@@ -106,6 +107,7 @@ each element with it’s neighbor is constant (E.g.
 `c(121, 126, 131, 136, ..., 221)`).
 
 ``` r
+
 even_time <- system.time({
     genParts <- partitionsGeneral(seq(121, 221, 5), 13,
                                   TRUE, target = 2613)
@@ -170,6 +172,7 @@ integers. However, with the generalized partition algorithms in
 of each element with it’s neighbor is constant).
 
 ``` r
+
 system.time({
     genDistParts <- partitionsGeneral(seq(-173L, 204L, 13L),
                                       11, target = -460)
@@ -212,6 +215,7 @@ Let us revisit the example above but with a slight variation that breaks
 the requirement.
 
 ``` r
+
 inpVec <- c(116, seq(126, 221, 5))
 
 ## Non-constant difference... The specialized algo can't be used
@@ -252,6 +256,7 @@ Here are some more exotic examples demonstrating the power of these
 algorithms.
 
 ``` r
+
 set.seed(42)
 mySamp <- sample(-100:100, 50)
 
@@ -299,6 +304,7 @@ but we can find many 6 player combinations whose sum of salaries is
 within a tolerance of 20 million.
 
 ``` r
+
 set.seed(22213)
 football_player_salaries <- 2e7 * rbeta(100, 2, 25)
 
@@ -329,6 +335,7 @@ obtain the upper bound, we decrease the tolerance (if needed) and
 repeat.
 
 ``` r
+
 ## N.B. This is much more efficient. Also, we set keepResults
 ## to TRUE so we can see the total sum of salaries.
 system.time(almost20 <- comboGeneral(football_player_salaries, 6,
@@ -390,6 +397,7 @@ These optimized algorithms are also employed when `constraintFun` is
 `"prod"` or `"mean"`.
 
 ``` r
+
 getAllThenFilter <- function(n, m, lim) {
     t <- comboGeneral(n, m, constraintFun = "prod")
     t[t[, m + 1] == lim, -(m+1)]
@@ -461,6 +469,7 @@ Below are a few demonstrations using some of the examples in earlier
 sections.
 
 ``` r
+
 ## The football salary example
 salary <- partitionsIter(football_player_salaries, 6,
                          target = 2e7, tolerance = 1000)

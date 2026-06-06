@@ -25,6 +25,7 @@ A naive approach would be to generate all of the combinations using
 `combn` and then call `sample`:
 
 ``` r
+
 options(width = 90)
 naive <- function(v, m, n, s) {
     allCombs <- combn(v, m)
@@ -51,6 +52,7 @@ Furthermore, there are internal limitations on `sample`. If we try to
 pass `choose(100, 20)`, we will get an error:
 
 ``` r
+
 sample(choose(100, 20), 5)
 #> Error in sample.int(x, size, replace, prob): invalid first argument
 ```
@@ -87,6 +89,7 @@ Let’s first look at the first problem above (i.e. getting 5 random
 combinations of the vector `1:20` of length 10):
 
 ``` r
+
 library(RcppAlgos)
 set.seed(42)
 comboSample(20, 10, n = 5)
@@ -118,6 +121,7 @@ Just like with `comboGeneral` and `permuteGeneral`, we can explore
 results with repetition.
 
 ``` r
+
 comboSample(10, 8, TRUE, n = 3, seed = 84)
 #>      [,1] [,2] [,3] [,4] [,5] [,6] [,7] [,8]
 #> [1,]    2    5    5    7    9    9    9    9
@@ -148,6 +152,7 @@ permuteSample(10, 12, freqs = 1:10, n = 3, seed = 123)
 We can also utilize `sampleVec` to generate specific results.
 
 ``` r
+
 ## E.g. the below generates the 1st, 5th, 25th, 125th, and
 ## 625th lexicographical combinations
 comboSample(10, 8, TRUE, sampleVec = c(1, 5, 25, 125, 625))
@@ -174,6 +179,7 @@ Have you ever wondered which lexicographical combinations/permutations
 are returned when sampling? No worries, simply set `namedSample = TRUE`:
 
 ``` r
+
 testInd <- permuteSample(30, 10, n = 3, seed = 100, namedSample = TRUE)
 testInd
 #>                [,1] [,2] [,3] [,4] [,5] [,6] [,7] [,8] [,9] [,10]
@@ -197,6 +203,7 @@ where the total number of results is enormous. They also offer parallel
 options using `Parallel` or `nThreads`.
 
 ``` r
+
 ## Uses min(stdThreadMax() - 1, 5) threads (in this case)
 permuteSample(500, 10, TRUE, n = 5, seed = 123, Parallel = TRUE)
 #>      [,1] [,2] [,3] [,4] [,5] [,6] [,7] [,8] [,9] [,10]
@@ -224,6 +231,7 @@ The algorithms are incredibly efficient and offer tremendous gains over
 the naive approach above:
 
 ``` r
+
 ## the function "naive" is defined above
 system.time(naive(25, 10, 5, 15))
 #>    user  system elapsed 
@@ -241,6 +249,7 @@ with the general functions, whereas with the last example below with
 sampling we see a nearly 5x improvement).
 
 ``` r
+
 ## Lightning fast even with examples involving many results
 system.time(comboSample(2500, 100, n = 5, seed = 15))
 #>    user  system elapsed 
@@ -267,6 +276,7 @@ Again, just as with the general functions, you can pass a custom
 function to `{combo|permute}Sample` using the `FUN` argument.
 
 ``` r
+
 permuteSample(5000, 1000, n = 3, seed = 101, FUN = sd)
 #> [[1]]
 #> [1] 1431.949
@@ -301,6 +311,7 @@ partitions of a number. Many of the features present in `comboSample`
 and `permuteSample` are available in `partitionsSample`.
 
 ``` r
+
 ## Use the seed parameter to obtain reproducible results
 partitionsSample(100, 8, TRUE, n = 3, seed = 42)
 #>      [,1] [,2] [,3] [,4] [,5] [,6] [,7] [,8]
@@ -359,6 +370,7 @@ when the distance between each element is irregular).
 Observe the following:
 
 ``` r
+
 ## No sampling algorithm available when the source vector is not uniform
 partitionsSample(c(1, 4, 6, 7, 10, seq(11, 100, 7)), 10, n = 1, target = 340)
 #> Error: Partition sampling not available for this case.
@@ -394,6 +406,7 @@ compositions of a number. Many of the features present in `comboSample`
 and `permuteSample` are available in `compositionsSample`.
 
 ``` r
+
 ## Use the seed parameter to obtain reproducible results
 compositionsSample(100, 8, TRUE, n = 3, seed = 42)
 #>      [,1] [,2] [,3] [,4] [,5] [,6] [,7] [,8]
@@ -452,6 +465,7 @@ parts as well as the full suite of compositions with repetition
 #### `compositionSample` with Specific `target`
 
 ``` r
+
 compositionsSample(50, 8, TRUE, target = 100, n = 3, seed = 28,
                    namedSample = TRUE)
 #>            [,1] [,2] [,3] [,4] [,5] [,6] [,7] [,8]
@@ -476,6 +490,7 @@ system.time(compositionsSample(1500, 10, TRUE, target = 2500,
 #### `compositionSample` with Distinct Parts
 
 ``` r
+
 compositionsSample(50, 8, target = 100, n = 3, seed = 496,
                    namedSample = TRUE)
 #>            [,1] [,2] [,3] [,4] [,5] [,6] [,7] [,8]
@@ -499,6 +514,7 @@ compositions. While the implementation remains efficient, users should
 not expect the same level of performance as in the unrestricted case.
 
 ``` r
+
 compositionsCount(150, 10, target = 300)
 #> Big Integer ('bigz') :
 #> [1] 22253682846124800
@@ -527,6 +543,7 @@ Loop](https://stackoverflow.com/a/36903806/4408538) (Credit to
 @MichaelChirico)
 
 ``` r
+
 cards <- c(2:10, "J", "Q", "K", "A")
 suits <- c("♠", "♥", "♦", "♣")
 deck <- paste0(rep(cards, length(suits)),  # card values
@@ -579,6 +596,7 @@ cards. How might we do this?
 For this, we make use of the `grpSizes` parameter:
 
 ``` r
+
 ## Again, here are 2 possibilities
 comboGroupsSample(shuffled[1:12], grpSizes = c(2, 2, 3, 5),
                   n = 2, seed = 13, namedSample = TRUE)
@@ -595,6 +613,7 @@ permutation/partition), determine which lexicographical result it is. As
 an example, consider all of the combinations of 5 choose 3:
 
 ``` r
+
 comboGeneral(5, 3)
 #>       [,1] [,2] [,3]
 #>  [1,]    1    2    3
@@ -619,6 +638,7 @@ that would work well with small cases, but would become unmanageable
 very quickly. For example:
 
 ``` r
+
 naive_rank <- function(v, m, comb) {
     comb <- as.integer(comb)
     which(apply(combn(v, m), 2, function(x) identical(x, comb)))
@@ -647,6 +667,7 @@ For both problems presented above, here is how you would attack them
 with `comboRank`:
 
 ``` r
+
 comboRank(2:4, v = 5)
 #> [1] 7
 
@@ -674,6 +695,7 @@ and we can even pass matrices.
 ### `comboRank`
 
 ``` r
+
 combs = comboSample(50, 8, n = 10, seed = 123, namedSample = TRUE)
 combs
 #>           [,1] [,2] [,3] [,4] [,5] [,6] [,7] [,8]
@@ -696,6 +718,7 @@ comboRank(combs, v = 50)
 ### `permuteRank`
 
 ``` r
+
 perms_len_5 = permuteSample(100, 5, freqs = rep(1:5, 20),
                             n = 3, seed = 987, namedSample = TRUE)
 perms_len_5
@@ -726,6 +749,7 @@ permuteRank(p5 = perms_len_5, p8 = perms_len_8,
 ### `partitionsRank`
 
 ``` r
+
 parts = partitionsSample(50, 8, target = 100, repetition = TRUE,
                          n = 3, seed = 42, namedSample = TRUE)
 parts
@@ -741,6 +765,7 @@ partitionsRank(parts, v = 50, target = 100, repetition = TRUE)
 ### `compositionsRank`
 
 ``` r
+
 comps = compositionsSample(50, 8, repetition = TRUE,
                            n = 3, seed = 42, namedSample = TRUE)
 comps

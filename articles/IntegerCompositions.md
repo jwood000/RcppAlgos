@@ -50,6 +50,7 @@ Basics](https://jwood000.github.io/RcppAlgos/articles/GeneralCombinatorics.html)
 vignette):
 
 ``` r
+
 ht <- function(d, m = 5, n = m) {
     ## print the head and tail together
     cat("head -->\n")
@@ -70,6 +71,7 @@ In this section we will explore compositions of this form.
 #### Case 1: All Compositions of *N*
 
 ``` r
+
 library(RcppAlgos)
 options(width = 90)
 
@@ -124,6 +126,7 @@ ht(compositionsGeneral(0:3, 10, repetition = TRUE, weak = TRUE))
 #### Case 2: Compositions of *N* of Length *m*
 
 ``` r
+
 compositionsGeneral(6, 3, repetition = TRUE)
 #>       [,1] [,2] [,3]
 #>  [1,]    1    1    4
@@ -191,6 +194,7 @@ open-source combinatorics library.
 #### Case 3: Compositions of *N* into Distinct Parts
 
 ``` r
+
 compositionsGeneral(6)
 #>      [,1] [,2] [,3]
 #> [1,]    1    2    3
@@ -256,6 +260,7 @@ an ordinary part. To account for zero-padding, we proceed as follows:
 - Combine and lexicographically sort the results.
 
 ``` r
+
 ## Helper: permute each partition to obtain all corresponding compositions
 get_perms_of_parts <- function(parts) {
     do.call(
@@ -285,6 +290,7 @@ identical(compositionsGeneral(0:40, 7), brute_lex)
 Currently, we must use `permuteGeneral`.
 
 ``` r
+
 ## Generates error
 compositionsGeneral(5, 3, freqs = rep(2, 5))
 #> Error: Currently, there is no composition algorithm for this case.
@@ -325,6 +331,7 @@ For example, the following generates all weak compositions of 3 using
 elements from `0:3` and NOT in lex-order:
 
 ``` r
+
 ## With repetition
 permuteGeneral(0:3, repetition = TRUE,
                constraintFun = "sum",
@@ -389,6 +396,7 @@ vignette, this time generating compositions. Because compositions yield
 substantially more results, we use `ht()` to limit the displayed output.
 
 ``` r
+
 ## Here we partition 30 using only distinct parts up to 10
 ht(compositionsGeneral(10, 5, target = 30))
 #> head -->
@@ -469,6 +477,7 @@ computation. With `permuteGeneral`, the parallel options have no effect
 when generating compositions.
 
 ``` r
+
 ## compositions of 25
 system.time(compositionsGeneral(0:25, repetition = TRUE))
 #>    user  system elapsed 

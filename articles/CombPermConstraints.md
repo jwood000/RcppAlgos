@@ -33,6 +33,7 @@ function to that combination/permutation. You can also set
 `keepResults = TRUE` (more on this later).
 
 ``` r
+
 library(RcppAlgos)
 options(width = 90)
 
@@ -86,6 +87,7 @@ highly efficient `rowSums`/`rowMeans` *after* the combinations have
 already been generated:
 
 ``` r
+
 ## Pre-generate combinations
 combs = comboGeneral(25, 10)
 
@@ -141,6 +143,7 @@ First we will look at cases with only one comparison and one value for
 the `limitConstraint`.
 
 ``` r
+
 ## Generate some random data. N.B. Using R >= 4.0.0
 set.seed(101)
 myNums = sample(500, 20)
@@ -216,6 +219,7 @@ means an additional column will be added to the output that is the
 result of applying `constraintFun` to that particular combination.
 
 ``` r
+
 ## Get combinations such that the product is
 ## strictly between 3600 and 4000
 comboGeneral(5, 7, TRUE, constraintFun = "prod",
@@ -281,6 +285,7 @@ This default value is good and bad.
 For the good side:
 
 ``` r
+
 dim(comboGeneral(seq(0, 0.5, 0.05), 6, TRUE,
                  constraintFun = "sum",
                  comparisonFun = "==",
@@ -298,6 +303,7 @@ If we had a tolerance of zero, we would have obtained an incorrect
 result:
 
 ``` r
+
 ## We miss 31 combinations that add up to 1
 dim(comboGeneral(seq(0, 0.5, 0.05), 6, TRUE,
                  constraintFun = "sum",
@@ -311,6 +317,7 @@ incorrect results. That is, we shouldn’t return any combination with a
 mean of 4.1 or 5.1.
 
 ``` r
+
 comboGeneral(c(2.1, 3.1, 5.1, 7.1), 3, T,
              constraintFun = "mean", comparisonFun = c("<", ">"),
              limitConstraints = c(5.1, 4.1), keepResults = TRUE)
@@ -332,6 +339,7 @@ one must rely on integers as simple changes in arithmetic can throw off
 precision in floating point operations.
 
 ``` r
+
 comboGeneral(c(21, 31, 51, 71), 3, T,
              constraintFun = "mean", comparisonFun = c("<", ">"),
              limitConstraints = c(51, 41), keepResults = TRUE) / 10
@@ -351,6 +359,7 @@ permutations of that vector also meet that constraint, so there is no
 need to check them. For this reason, the output isn’t in order. Observe:
 
 ``` r
+
 permuteGeneral(c(2, 3, 5, 7), 3, freqs = rep(2, 4),
                constraintFun = "mean", comparisonFun = c(">", "<"),
                limitConstraints = c(4, 5), keepResults = TRUE, tolerance = 0)
@@ -409,6 +418,7 @@ limit on the number of results, relax the tolerance, etc.), we can
 simply hit `Ctrl + c`, or `esc` if using `RStudio`, to stop execution.
 
 ``` r
+
 set.seed(123)
 s = rnorm(1000)
 
@@ -442,6 +452,7 @@ Here is an example of how to investigate difficult problems due to
 combinatorial explosion without fear of having to restart R.
 
 ``` r
+
 ## We use "s" defined above
 iter = comboIter(s, 20, TRUE, constraintFun = "mean",
                  comparisonFun = "==", limitConstraints = 0)

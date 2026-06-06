@@ -26,6 +26,7 @@ R](https://stackoverflow.com/a/11601162/4408538) (credit to user
 @flodel)
 
 ``` r
+
 ht <- function(d, m = 5, n = m) {
   ## print the head and tail together
   cat("head -->\n")
@@ -50,6 +51,7 @@ pass any vector with an atomic type (i.e. `logical`, `integer`,
 `numeric`, `complex`, `character`, and `raw`).
 
 ``` r
+
 library(RcppAlgos)
 options(width = 90)
 
@@ -166,6 +168,7 @@ combinations/permutations with repetition. This is easily achieved by
 setting `repetition` to `TRUE`.
 
 ``` r
+
 fourDays <- weekdays(as.Date("2019-10-09") + 0:3, TRUE)
 ht(comboGeneral(fourDays, repetition = TRUE))
 #> head -->
@@ -261,6 +264,7 @@ considering that `permuteGeneral` is very efficient, this approach is
 clunky and not as fast as it could be. Observe:
 
 ``` r
+
 getPermsWithSpecificRepetition <- function(z, n) {
     b <- permuteGeneral(z, n)
     myDupes <- duplicated(b)
@@ -280,6 +284,7 @@ Situations like this call for the use of the `freqs` argument. Simply,
 enter the number of times each unique element is repeated and Voila!
 
 ``` r
+
 ## Using the S3 method for class 'table'
 system.time(test2 <- permuteGeneral(table(a), 6))
 #>    user  system elapsed 
@@ -292,6 +297,7 @@ identical(test, test2)
 Here are some more general examples with multisets:
 
 ``` r
+
 ## Generate all permutations of a vector with specific
 ## length of repetition for each element (i.e. multiset)
 ht(permuteGeneral(3, freqs = c(1,2,2)))
@@ -327,6 +333,7 @@ Using the parameter `Parallel` or `nThreads`, we can generate
 combinations/permutations with greater efficiency.
 
 ``` r
+
 library(microbenchmark)
 
 ## RcppAlgos uses the "number of threads available minus one" when Parallel is TRUE
@@ -377,6 +384,7 @@ example, setting `lower` to 4 and `upper` to 6 only produces the
 *4^(th)*, *5^(th)*, and *6^(th)* lexicographical combinations. Observe:
 
 ``` r
+
 comboGeneral(5, 3, lower = 4, upper = 6)
 #>      [,1] [,2] [,3]
 #> [1,]    1    3    4
@@ -401,6 +409,7 @@ large number of combinations/permutations in parallel (see this
 real use case). Observe:
 
 ``` r
+
 ## Over 3 billion results
 comboCount(35, 15)
 #> [1] 3247943160
@@ -435,6 +444,7 @@ The arguments `lower` and `upper` are also useful when one needs to
 explore combinations/permutations where the number of results is large:
 
 ``` r
+
 set.seed(222)
 myVec <- rnorm(1000)
 
@@ -468,6 +478,7 @@ and then using a function from the `apply` family (N.B. the argument
 `Parallel` has no effect when `FUN` is employed).
 
 ``` r
+
 funCustomComb = function(n, r) {
     combs = comboGeneral(n, r)
     lapply(1:nrow(combs), function(x) cumprod(combs[x,]))
@@ -509,6 +520,7 @@ template for the return value from `FUN`. The behavior is nearly
 identical to `vapply`:
 
 ``` r
+
 ## Example from earlier involving the power set
 comboGeneral(c("", letters[1:3]), 3, freqs = c(2, rep(1, 3)),
              FUN = function(x) paste(x, collapse = ""), FUN.VALUE = "a")
@@ -543,6 +555,7 @@ As of version `2.8.3`, we have added the ability to pass further
 arguments to `FUN` via `...`.
 
 ``` r
+
 ## Again, same example with the power set only this time we
 ## conveniently pass the additional arguments to paste via '...'
 comboGeneral(c("", letters[1:3]), 3, freqs = c(2, rep(1, 3)),
@@ -567,6 +580,7 @@ As of version `2.8.3`, we have added several S3 methods for convenience.
 Take our earlier example where we were talking about multisets.
 
 ``` r
+
 a <- as.integer(c(1, 1, 1, 1, 2, 2, 2, 7, 7, 7, 7, 7))
 
 ## Explicitly utilizing the freqs argument and determining the unique
@@ -600,6 +614,7 @@ There is also a `list` method that allows one to find combinations or
 permutations of lists:
 
 ``` r
+
 comboGeneral(
     list(
         numbers   = rnorm(4),

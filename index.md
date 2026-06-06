@@ -52,6 +52,7 @@ Benchmarks](https://jwood000.github.io/RcppAlgos/articles/HighPerformanceBenchma
 ## Installation
 
 ``` r
+
 install.packages("RcppAlgos")
 
 ## install the development version
@@ -63,6 +64,7 @@ devtools::install_github("jwood000/RcppAlgos")
 ### Combinatorics Basics
 
 ``` r
+
 ## Find all 3-tuples combinations of 1:4
 comboGeneral(4, 3)
 #>      [,1] [,2] [,3]
@@ -106,6 +108,7 @@ comboSample(10, 8, TRUE, n = 5, seed = 84)
 ### Integer Partitions and Compositions
 
 ``` r
+
 ## Flexible partitioning algorithms
 partitionsGeneral(0:5, 3, freqs = rep(1:2, 3), target = 6)
 #>      [,1] [,2] [,3]
@@ -158,6 +161,7 @@ p@nextIter()
 ### Cartesian Products
 
 ``` r
+
 ## Base R expand.grid returns a data.frame by default
 ## and varies the first column the fastest
 bR <- expand.grid(rep(list(1:3), 3))
@@ -204,6 +208,7 @@ size 2 and 3. See this Stack Overflow post:
 schemes](https://stackoverflow.com/a/76068476/4408538)
 
 ``` r
+
 players <- c("Ross", "Bobby", "Max", "Casper", "Jake")
 comboGroups(players, grpSizes = c(2, 3))
 #>       Grp1     Grp1     Grp2    Grp2     Grp2    
@@ -222,6 +227,7 @@ comboGroups(players, grpSizes = c(2, 3))
 ### Computational Mathematics
 
 ``` r
+
 ## Generate prime numbers
 primeSieve(50)
 #> [1]  2  3  5  7 11 13 17 19 23 29 31 37 41 43 47

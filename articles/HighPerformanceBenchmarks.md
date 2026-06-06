@@ -18,6 +18,7 @@ For the benchmarks below, we used a `2025 Macbook Air Apple M4 24 GB`
 machine.
 
 ``` r
+
 library(RcppAlgos)
 library(partitions)
 library(arrangements)
@@ -61,6 +62,7 @@ numThreads
 ### Combinations - Distinct
 
 ``` r
+
 set.seed(13)
 v1 <- sort(sample(100, 30))
 m <- 21
@@ -87,6 +89,7 @@ microbenchmark(cbRcppAlgosPar = comboGeneral(v1, m, nThreads = numThreads),
 ### Combinations - Repetition
 
 ``` r
+
 v2 <- v1[1:10]
 m <- 20
 t1 <- comboGeneral(v2, m, repetition = TRUE, nThreads = numThreads)
@@ -110,6 +113,7 @@ microbenchmark(cbRcppAlgosPar = comboGeneral(v2, m, TRUE, nThreads = numThreads)
 ### Combinations - Multisets
 
 ``` r
+
 myFreqs <- c(2, 4, 4, 5, 3, 2, 2, 2, 3, 4, 1, 4, 2, 5)
 v3 <- as.integer(c(1, 2, 3, 5, 8, 13, 21, 34, 55, 89, 144, 233, 377, 610))
 t1 <- comboGeneral(v3, 20, freqs = myFreqs, nThreads = numThreads)
@@ -135,6 +139,7 @@ microbenchmark(cbRcppAlgosPar = comboGeneral(v3, 20, freqs = myFreqs, nThreads =
 ### Permutations - Distinct
 
 ``` r
+
 v4 <- as.integer(c(2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47, 53, 59))
 t1 <- permuteGeneral(v4, 6, nThreads = numThreads)
 t2 <- permutations(v4, 6)
@@ -182,6 +187,7 @@ microbenchmark(cbRcppAlgosPar = permuteGeneral(11, nThreads = 4),
 ### Permutations - Repetition
 
 ``` r
+
 v5 <- v3[1:5]
 t1 <- permuteGeneral(v5, 10, repetition = TRUE, nThreads = numThreads)
 t2 <- permutations(v5, 10, replace = TRUE)
@@ -204,6 +210,7 @@ microbenchmark(cbRcppAlgosPar = permuteGeneral(v5, 10, TRUE, nThreads = numThrea
 ### Permutations - Multisets
 
 ``` r
+
 v6 <- sort(runif(12))
 t1 <- permuteGeneral(v6, 7, freqs = rep(1:3, 4), nThreads = numThreads)
 t2 <- permutations(freq = rep(1:3, 4), k = 7, x = v6)
@@ -230,6 +237,7 @@ microbenchmark(cbRcppAlgosPar = permuteGeneral(v6, 7, freqs = rep(1:3, 4), nThre
 #### All Distinct Partitions
 
 ``` r
+
 t1 <- comboGeneral(0:140, freqs=c(140, rep(1, 140)),
                    constraintFun = "sum", comparisonFun = "==",
                    limitConstraints = 140)
@@ -261,6 +269,7 @@ microbenchmark(cbRcppAlgosPar = partitionsGeneral(0:140, freqs=c(140, rep(1, 140
 #### Restricted Distinct Partitions
 
 ``` r
+
 t1 <- comboGeneral(160, 10,
                    constraintFun = "sum", comparisonFun = "==",
                    limitConstraints = 160)
@@ -286,6 +295,7 @@ microbenchmark(cbRcppAlgosPar = partitionsGeneral(160, 10, nThreads = numThreads
 #### All Partitions
 
 ``` r
+
 t1 <- comboGeneral(0:65, repetition = TRUE, constraintFun = "sum",
                    comparisonFun = "==", limitConstraints = 65)
 t2 <- partitions(65)
@@ -317,6 +327,7 @@ microbenchmark(cbRcppAlgosPar = partitionsGeneral(0:65, repetition = TRUE,
 #### Restricted Partitions
 
 ``` r
+
 t1 <- comboGeneral(100, 15, TRUE, constraintFun = "sum",
                    comparisonFun = "==", limitConstraints = 100)
 t2 <- partitions(100, 15)
@@ -356,6 +367,7 @@ generating partitions of multisets. Therefore, we will only time
 `RcppAlgos` and use this as a reference for future improvements.
 
 ``` r
+
 t1 <- comboGeneral(120, 10, freqs = rep(1:8, 15),
                    constraintFun = "sum", comparisonFun = "==",
                    limitConstraints = 120)
@@ -376,6 +388,7 @@ microbenchmark(cbRcppAlgos = partitionsGeneral(120, 10, freqs = rep(1:8, 15)),
 #### All Compositions (Small case)
 
 ``` r
+
 t1 <- compositionsGeneral(0:15, repetition = TRUE)
 t2 <- arrangements::compositions(15)
 t3 <- partitions::compositions(15)
@@ -406,6 +419,7 @@ efficiency reasons.
 #### All Compositions (Larger case)
 
 ``` r
+
 t1 <- compositionsGeneral(0:23, repetition = TRUE)
 t2 <- arrangements::compositions(23)
 
@@ -432,6 +446,7 @@ microbenchmark(cbRcppAlgosPar = compositionsGeneral(0:23, repetition = TRUE,
 #### Compositions of Specific Length
 
 ``` r
+
 t1 <- compositionsGeneral(30, 10, repetition = TRUE)
 t2 <- arrangements::compositions(30, 10)
 
@@ -464,6 +479,7 @@ improvements.
 #### Compositions with Specific `target`
 
 ``` r
+
 t1 <- compositionsGeneral(10, 10, repetition = TRUE, target = 30)
 dim(t1)
 #> [1] 9091270      10
@@ -485,6 +501,7 @@ microbenchmark(
 #### Compositions with Distinct Parts
 
 ``` r
+
 t1 <- compositionsGeneral(50, 8)
 dim(t1)
 #> [1] 4677120       8
@@ -505,6 +522,7 @@ microbenchmark(
 #### Compositions with Distinct Parts & Specific `target`
 
 ``` r
+
 t1 <- compositionsGeneral(30, 7, target = 60)
 dim(t1)
 #> [1] 11773440        7
@@ -531,6 +549,7 @@ the rest of the cases not shown.
 ### Combinations
 
 ``` r
+
 pkg_arrangements <- function(n, total) {
     a <- icombinations(n, as.integer(n / 2))
     for (i in 1:total) a$getnext()
@@ -557,6 +576,7 @@ microbenchmark(cbRcppAlgos    = pkg_RcppAlgos(18, total),
 ### Permutations
 
 ``` r
+
 pkg_arrangements <- function(n, total) {
     a <- ipermutations(n)
     for (i in 1:total) a$getnext()
@@ -583,6 +603,7 @@ microbenchmark(cbRcppAlgos    = pkg_RcppAlgos(8, total),
 ### Partitions
 
 ``` r
+
 pkg_partitions <- function(n, total) {
     a <- firstpart(n)
     for (i in 1:(total - 1)) a <- nextpart(a)
@@ -616,6 +637,7 @@ microbenchmark(cbRcppAlgos    = pkg_RcppAlgos(40, total),
 ### Compositions
 
 ``` r
+
 pkg_partitions <- function(n, total) {
     a <- firstcomposition(n)
     for (i in 1:(total - 1)) a <- nextcomposition(a, FALSE)
