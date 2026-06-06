@@ -12,9 +12,8 @@ from typing import Optional
 
 MAX_FILE_BYTES = 200_000
 MAX_DIFF_BYTES_TOTAL = 400_000
-MODEL = os.getenv("AI_REVIEW_MODEL", "gpt-5.2")
+MODEL = os.getenv("AI_REVIEW_MODEL", "gpt-5.5")
 MAX_OUTPUT_TOKENS = 4000
-TEMPERATURE = 0.2
 
 SYSTEM_PROMPT = """\
 You are an expert C++ software engineer with deep knowledge of
@@ -467,8 +466,7 @@ def main():
             {"role": "system", "content": SYSTEM_PROMPT},
             {"role": "user", "content": user_content},
         ],
-        max_output_tokens=MAX_OUTPUT_TOKENS,
-        temperature=TEMPERATURE,
+        max_output_tokens=MAX_OUTPUT_TOKENS
     )
 
     text = (response.output_text or "").strip()

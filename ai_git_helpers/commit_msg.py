@@ -29,7 +29,7 @@ ALLOWED_PREFIXES = {
     "ci"
 }
 
-MODEL = os.getenv("AI_REVIEW_MODEL", "gpt-5.2")
+MODEL = os.getenv("AI_REVIEW_MODEL", "gpt-5.5")
 MAX_OUTPUT_TOKENS = 200
 TEMPERATURE = 0.2
 SUBJECT_MAX = 72
@@ -294,8 +294,7 @@ def main():
                 context=context
             )},
         ],
-        max_output_tokens=MAX_OUTPUT_TOKENS,
-        temperature=TEMPERATURE,
+        max_output_tokens=MAX_OUTPUT_TOKENS
     )
 
     message = (response.output_text or "").strip()
