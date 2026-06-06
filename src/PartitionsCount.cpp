@@ -629,7 +629,9 @@ int PartitionsCount(const std::vector<int> &Reps,
         // N.B. With PartitionType::Multiset we use the default
         // IsComp = false. Below, we set IsComp = true
         part.count = part.solnExist ?
-            CountPartsMultiset(Reps, part.startZ, true, part.isWeak) : 0;
+            CountPartsMultiset(
+                Reps, part.startZ, true, !part.includeZero || part.isWeak
+            ) : 0;
         return 1;
     } else if (part.ptype == PartitionType::PrmMultiset) {
         // See note above under CompMultiset
