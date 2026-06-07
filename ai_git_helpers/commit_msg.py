@@ -30,15 +30,36 @@ ALLOWED_PREFIXES = {
 }
 
 MODEL = os.getenv("AI_REVIEW_MODEL", "gpt-5.5")
-MAX_OUTPUT_TOKENS = 200
-TEMPERATURE = 0.2
+MAX_OUTPUT_TOKENS = int(os.getenv("AI_MAX_OUTPUT_TOKENS", "800"))
 SUBJECT_MAX = 72
 BODY_WIDTH = 72
-
 
 # -----------------------------
 # Formatting helpers
 # -----------------------------
+
+def _get_response_text(response) -> str:
+    """
+    Extract text from an OpenAI Responses API response.
+
+    response.output_text is the normal path, but keep a fallback for cases
+    where the SDK/model returns text inside response.output items.
+    """
+    text = getattr(response, "output_text", None)
+    if text and text.strip():
+        return text.strip()
+
+    parts = []
+
+    for item in getattr(response, "output", []) or []:
+        for content in getattr(item, "content", []) or []:
+            value = getattr(content, "text", None)
+
+            if value and isinstance(value, str):
+                parts.append(value)
+
+    return "\n".join(parts).strip()
+
 
 def _strip_code_fences(raw: str) -> str:
     """Remove surrounding markdown code fences if present."""
@@ -297,14 +318,17 @@ def main():
         max_output_tokens=MAX_OUTPUT_TOKENS
     )
 
-    message = (response.output_text or "").strip()
+    message = _get_response_text(response)
+    formatted = _format_commit_message(message)
 
-    if not message:
-        print(">>> Empty output_text from model.", file=sys.stderr)
+    if not formatted:
+        print(">>> Empty response text from model.", file=sys.stderr)
         print(">>> Raw response id:", getattr(response, "id", None), file=sys.stderr)
-    else:
-        print(_format_commit_message(message))
+        return 1
+
+    print(formatted)
+    return 0
 
 
 if __name__ == "__main__":
-    main()
+    raise SystemExit(main())

@@ -18,8 +18,8 @@ void NextCompositionRep(std::vector<int> &z, int lastCol) {
 
         if (j > 0) {
             ++z[j - 1];
-            std::reverse(z.begin() + j, z.end());
-            --z[lastCol];
+            z[lastCol] = z[j] - 1;
+            z[j] = one_or_zero;
         }
     }
 }
