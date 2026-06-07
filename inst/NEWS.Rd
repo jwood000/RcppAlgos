@@ -7,23 +7,14 @@
 
     \subsection{Bug Fixes}{
         \itemize{
-          \item Fixed \code{compositionsCount()} for multiset inputs using both
-          \code{freqs} and \code{target} when zero is not included in the input.
-          Affected cases could return counts that were too small.
-
-          \item Fixed the corresponding constrained \code{permuteCount()} counting path
-          for repeated-frequency inputs with sum constraints.
+          \item Fixed \code{compositionsCount()} for multiset inputs using both \code{freqs} and \code{target} when zero is not included in the input.
         }
     }
 
     \subsection{Improvements}{
         \itemize{
-          \item Improved startup-time core detection by removing platform-specific
-          shell-command fallbacks and using safer fallbacks when physical core
-          information is unavailable.
-
-          \item Simplified repeated-composition successor logic by replacing a suffix
-          reversal with direct assignment of the affected entries.
+          \item Improved startup-time core detection by removing platform-specific shell-command fallbacks and using safer fallbacks when physical core information is unavailable.
+          \item Simplified repeated-composition successor logic by replacing a suffix reversal with direct assignment of the affected entries.
         }
     }
 

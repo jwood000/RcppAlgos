@@ -4,8 +4,7 @@ This is a maintenance release with targeted correctness and portability fixes.
 
 ## Bug Fixes:
 
-* Fixed `compositionsCount()` for multiset inputs using both `freqs` and `target` when zero is not included in the input. Affected cases could return counts that were too small.
-* Fixed the corresponding constrained `permuteCount()` counting path for repeated-frequency inputs with sum constraints.
+* Fixed `compositionsCount()` for multiset inputs using both `freqs` and `target` when zero is not included in the input.
 
 ## Improvements:
 
