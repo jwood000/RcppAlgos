@@ -96,12 +96,12 @@ for (s in mySamp) {
 ## a range is efficient as well
 system.time(divisorsSieve(10^12, 10^12 + 10^5))
 #>    user  system elapsed 
-#>   0.059   0.009   0.068 
+#>   0.065   0.006   0.071 
 
 ## Use nThreads for improved efficiency
 system.time(divisorsSieve(10^12, 10^12 + 10^5, nThreads = 2))
 #>    user  system elapsed 
-#>   0.073   0.020   0.059 
+#>   0.081   0.014   0.061 
 
 ## Set 'namedList' to TRUE to return a named list
 divisorsSieve(27, 30, namedList = TRUE)
@@ -121,5 +121,5 @@ divisorsSieve(27, 30, namedList = TRUE)
 ## Using nThreads
 system.time(divisorsSieve(1e5, 2e5, nThreads = 2))
 #>    user  system elapsed 
-#>   0.028   0.000   0.021 
+#>   0.026   0.000   0.021 
 ```

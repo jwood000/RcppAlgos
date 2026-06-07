@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">RcppAlgos</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">2.10.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">2.10.1</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -45,6 +45,24 @@
       <small>Source: <a href="https://github.com/jwood000/RcppAlgos/blob/main/NEWS.md" class="external-link"><code>NEWS.md</code></a></small>
     </div>
 
+    <div class="section level2">
+<h2 class="pkg-version" data-toc-text="2.10.1" id="rcppalgos-2101">RcppAlgos 2.10.1<a class="anchor" aria-label="anchor" href="#rcppalgos-2101"></a></h2>
+<p>This is a maintenance release with targeted correctness and portability fixes.</p>
+<div class="section level3">
+<h3 id="bug-fixes-2-10-1">Bug Fixes:<a class="anchor" aria-label="anchor" href="#bug-fixes-2-10-1"></a></h3>
+<ul><li>Fixed <code><a href="../reference/partitionsCount.html">compositionsCount()</a></code> for multiset inputs using both <code>freqs</code> and <code>target</code> when zero is not included in the input. Affected cases could return counts that were too small.</li>
+<li>Fixed the corresponding constrained <code><a href="../reference/combinatoricsCount.html">permuteCount()</a></code> counting path for repeated-frequency inputs with sum constraints.</li>
+</ul></div>
+<div class="section level3">
+<h3 id="improvements-2-10-1">Improvements:<a class="anchor" aria-label="anchor" href="#improvements-2-10-1"></a></h3>
+<ul><li>Improved startup-time core detection by removing platform-specific shell-command fallbacks and using safer fallbacks when physical core information is unavailable.</li>
+<li>Simplified repeated-composition successor logic by replacing a suffix reversal with direct assignment of the affected entries.</li>
+</ul></div>
+<div class="section level3">
+<h3 id="other-2-10-1">Other:<a class="anchor" aria-label="anchor" href="#other-2-10-1"></a></h3>
+<ul><li>Added linux-arm64 continuous-integration coverage.</li>
+</ul></div>
+</div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="2.10.0" id="rcppalgos-2100">RcppAlgos 2.10.0<a class="anchor" aria-label="anchor" href="#rcppalgos-2100"></a></h2><p class="text-muted">CRAN release: 2026-03-08</p>
 <p>This release introduces major enhancements to the compositions framework, including support for distinct and repetition-restricted compositions, parallel ranking, and performance improvements across several combinatorial algorithms.</p>
