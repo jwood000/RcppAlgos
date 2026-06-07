@@ -13,7 +13,7 @@
 
 `RcppAlgos` provides high-performance algorithms for working with combinatorial objects in R. It includes efficient implementations for combinations, permutations, integer partitions, and compositions, with support for multisets, constraints, and extremely large search spaces through memory-efficient iterators.
 
-The package also implements specialized algorithms for problems rarely supported by other combinatorics libraries, including partitions of multisets, partitions of groups, and order-invariant Cartesian products. Many routines support ranking and unranking, parallel computation, and reproducible sampling. The package also includes fast prime number utilities built on the excellent work of [Kim Walisch](https://github.com/kimwalisch).
+The package also implements specialized algorithms for problems rarely supported by other combinatorics libraries, including partitions of multisets, partitions of groups, and order-invariant Cartesian products. Many routines support ranking and unranking, parallel computation, and reproducible sampling. The package also includes fast prime number utilities built on the excellent work of [Kim Walisch](<https://github.com/kimwalisch>).
 
 ## Key Features
 

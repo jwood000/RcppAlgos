@@ -5,8 +5,8 @@ bibentry(
   title = "RcppAlgos: High Performance Tools for Combinatorics and Computational Mathematics",
   author = person("Joseph", "Wood"),
   year = "2026",
-  note = "RcppAlgos package version 2.9.5",
+  note = "RcppAlgos package version 2.10.1",
   url = "https://jwood000.github.io/RcppAlgos/",
   textVersion =
-    "Wood J (2026). RcppAlgos: High Performance Tools for Combinatorics and Computational Mathematics. RcppAlgos package version 2.9.5. https://jwood000.github.io/RcppAlgos/"
+    "Wood J (2026). RcppAlgos: High Performance Tools for Combinatorics and Computational Mathematics. RcppAlgos package version 2.10.1. https://jwood000.github.io/RcppAlgos/"
 )

@@ -1,3 +1,21 @@
+# RcppAlgos 2.10.1
+
+This is a maintenance release with targeted correctness and portability fixes.
+
+## Bug Fixes:
+
+* Fixed `compositionsCount()` for multiset inputs using both `freqs` and `target` when zero is not included in the input. Affected cases could return counts that were too small.
+* Fixed the corresponding constrained `permuteCount()` counting path for repeated-frequency inputs with sum constraints.
+
+## Improvements:
+
+* Improved startup-time core detection by removing platform-specific shell-command fallbacks and using safer fallbacks when physical core information is unavailable.
+* Simplified repeated-composition successor logic by replacing a suffix reversal with direct assignment of the affected entries.
+
+## Other:
+
+* Added linux-arm64 continuous-integration coverage.
+
 # RcppAlgos 2.10.0
 
 This release introduces major enhancements to the compositions framework, including support for distinct and repetition-restricted compositions, parallel ranking, and performance improvements across several combinatorial algorithms.
