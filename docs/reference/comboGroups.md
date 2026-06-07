@@ -139,7 +139,7 @@ illustrate this, let us consider the case of generating partitions of
 
 - The algorithm in `comboGroups` avoids these duplicate partitions of
   groups by utilizing an efficient algorithm analogous to the
-  [std::next_permutation](https://en.cppreference.com/w/cpp/algorithm/next_permutation.html)
+  [std::next_permutation](https://en.cppreference.com/cpp/algorithm/next_permutation)
   found in the standard algorithm library in C++.
 
 ## Value
