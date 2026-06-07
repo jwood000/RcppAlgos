@@ -1,7 +1,7 @@
 ---
 title: "Constraints in RcppAlgos: Constraint-Driven Combinatorial Enumeration"
 author: "Joseph Wood"
-date: "2026-03-04"
+date: "2026-06-07"
 output:
   prettydoc::html_pretty:
     theme: architect
@@ -40,7 +40,7 @@ library(RcppAlgos)
 options(width = 90)
 
 packageVersion("RcppAlgos")
-#> [1] '2.10.0'
+#> [1] '2.10.1'
 
 cat(paste(capture.output(sessionInfo())[1:3], collapse = "\n"))
 #> R version 4.5.2 (2025-10-31)
@@ -76,10 +76,10 @@ microbenchmark(serial = comboGeneral(20, 10, constraintFun = "sum"),
 #> Warning in microbenchmark(serial = comboGeneral(20, 10, constraintFun = "sum"), : less
 #> accurate nanosecond times to avoid potential integer overflows
 #> Unit: relative
-#>      expr        min         lq       mean     median         uq       max neval
-#>    serial   3.622962   3.609644   3.249072   3.497137   3.418335  2.047686   100
-#>  parallel   1.000000   1.000000   1.000000   1.000000   1.000000  1.000000   100
-#>  combnSum 162.354728 154.733496 135.879799 147.380454 139.765227 81.747219   100
+#>      expr        min        lq       mean     median         uq      max neval
+#>    serial   3.542768   3.48085   3.251672   3.406957   3.247254  3.51177   100
+#>  parallel   1.000000   1.00000   1.000000   1.000000   1.000000  1.00000   100
+#>  combnSum 155.965362 141.89691 129.608023 135.862919 128.748292 81.17968   100
 ```
 
 ### Faster than `rowSums` and `rowMeans`
@@ -95,10 +95,10 @@ microbenchmark(serial = comboGeneral(25, 10, constraintFun = "sum"),
              parallel = comboGeneral(25, 10, constraintFun = "sum", Parallel = TRUE),
               rowsums = rowSums(combs), unit = "relative")
 #> Unit: relative
-#>      expr      min       lq     mean   median       uq       max neval
-#>    serial 3.056881 3.046962 2.933234 2.923419 2.935968 1.7093846   100
-#>  parallel 1.000000 1.000000 1.000000 1.000000 1.000000 1.0000000   100
-#>   rowsums 1.880790 1.769377 1.706053 1.678751 1.682200 0.7454853   100
+#>      expr      min       lq     mean   median       uq      max neval
+#>    serial 3.190936 3.283718 3.088564 3.108382 3.048749 1.619936   100
+#>  parallel 1.000000 1.000000 1.000000 1.000000 1.000000 1.000000   100
+#>   rowsums 1.952849 1.888419 1.780427 1.757660 1.730818 0.794224   100
 
 all.equal(rowSums(combs),
           comboGeneral(25, 10,
@@ -112,9 +112,9 @@ microbenchmark(serial = comboGeneral(25, 10, constraintFun = "mean"),
              rowmeans = rowMeans(combs), unit = "relative")
 #> Unit: relative
 #>      expr      min       lq     mean   median       uq       max neval
-#>    serial 2.187500 2.022548 2.007876 2.006638 1.983600 1.4600007   100
+#>    serial 2.164665 2.065280 2.031263 2.049757 2.031336 1.4541584   100
 #>  parallel 1.000000 1.000000 1.000000 1.000000 1.000000 1.0000000   100
-#>  rowmeans 1.414046 1.290121 1.259851 1.271784 1.259696 0.6008413   100
+#>  rowmeans 1.414335 1.323572 1.287891 1.309698 1.299570 0.6268718   100
 
 all.equal(rowMeans(combs),
           comboGeneral(25, 10,
@@ -384,7 +384,7 @@ iter = comboIter(s, 20, TRUE, constraintFun = "mean",
 ## Test one iteration to see if we need to relax the tolerance
 system.time(iter@nextIter())
 #>    user  system elapsed 
-#>   2.408   0.004   2.413
+#>   2.397   0.006   2.402
 
 ## That's a bit much per iteration... Let's loosen things a little by
 ## increasing the tolerance from sqrt(.Machine$double.eps) ~= 1.49e-8
@@ -395,5 +395,5 @@ relaxedIter = comboIter(s, 20, TRUE, constraintFun = "mean",
 
 system.time(relaxedIter@nextIter())
 #>    user  system elapsed 
-#>   0.001   0.000   0.000
+#>       0       0       0
 ```

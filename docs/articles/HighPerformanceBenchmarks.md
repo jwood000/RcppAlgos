@@ -1,0 +1,669 @@
+# High Performance Benchmarks
+
+This document serves as an overview for measuring the performance of
+`RcppAlgos` against other tools for generating combinations,
+permutations, and partitions. This stackoverflow post: [How to generate
+permutations or combinations of object in
+R?](https://stackoverflow.com/a/47983855/4408538) has some benchmarks.
+You will note that the examples in that post are relatively small. The
+benchmarks below will focus on larger examples where performance really
+matters and for this reason we only consider the packages
+[arrangements](https://cran.r-project.org/package=arrangements),
+[partitions](https://cran.r-project.org/package=partitions), and
+[RcppAlgos](https://cran.r-project.org/package=RcppAlgos).
+
+## Setup Information
+
+For the benchmarks below, we used a `2025 Macbook Air Apple M4 24 GB`
+machine.
+
+``` r
+
+library(RcppAlgos)
+library(partitions)
+library(arrangements)
+#> 
+#> Attaching package: 'arrangements'
+#> The following object is masked from 'package:partitions':
+#> 
+#>     compositions
+library(microbenchmark)
+
+options(digits = 4)
+options(width = 90)
+
+pertinent_output <- capture.output(sessionInfo())
+cat(paste(pertinent_output[1:3], collapse = "\n"))
+#> R version 4.5.2 (2025-10-31)
+#> Platform: aarch64-apple-darwin20
+#> Running under: macOS Sequoia 15.7.4
+
+pkgs <- c("RcppAlgos", "arrangements", "partitions", "microbenchmark")
+sapply(pkgs, packageVersion, simplify = FALSE)
+#> $RcppAlgos
+#> [1] '2.10.1'
+#> 
+#> $arrangements
+#> [1] '1.1.10'
+#> 
+#> $partitions
+#> [1] '1.10.9'
+#> 
+#> $microbenchmark
+#> [1] '1.5.0'
+
+numThreads <- min(as.integer(RcppAlgos::stdThreadMax() / 2), 6)
+numThreads
+#> [1] 5
+```
+
+## Combinations
+
+### Combinations - Distinct
+
+``` r
+
+set.seed(13)
+v1 <- sort(sample(100, 30))
+m <- 21
+t1 <- comboGeneral(v1, m, Parallel = T)
+t2 <- combinations(v1, m)
+stopifnot(identical(t1, t2))
+dim(t1)
+#> [1] 14307150       21
+rm(t1, t2)
+invisible(gc())
+microbenchmark(cbRcppAlgosPar = comboGeneral(v1, m, nThreads = numThreads),
+               cbRcppAlgosSer = comboGeneral(v1, m),
+               cbArrangements = combinations(v1, m),
+               times = 15, unit = "relative")
+#> Warning in microbenchmark(cbRcppAlgosPar = comboGeneral(v1, m, nThreads = numThreads), :
+#> less accurate nanosecond times to avoid potential integer overflows
+#> Unit: relative
+#>            expr   min    lq  mean median    uq   max neval
+#>  cbRcppAlgosPar 1.000 1.000 1.000  1.000 1.000 1.000    15
+#>  cbRcppAlgosSer 3.242 3.003 2.886  2.957 2.791 2.487    15
+#>  cbArrangements 3.301 3.055 2.914  2.965 2.814 2.476    15
+```
+
+### Combinations - Repetition
+
+``` r
+
+v2 <- v1[1:10]
+m <- 20
+t1 <- comboGeneral(v2, m, repetition = TRUE, nThreads = numThreads)
+t2 <- combinations(v2, m, replace = TRUE)
+stopifnot(identical(t1, t2))
+dim(t1)
+#> [1] 10015005       20
+rm(t1, t2)
+invisible(gc())
+microbenchmark(cbRcppAlgosPar = comboGeneral(v2, m, TRUE, nThreads = numThreads),
+               cbRcppAlgosSer = comboGeneral(v2, m, TRUE),
+               cbArrangements = combinations(v2, m, replace = TRUE),
+               times = 15, unit = "relative")
+#> Unit: relative
+#>            expr   min    lq  mean median    uq   max neval
+#>  cbRcppAlgosPar 1.000 1.000 1.000  1.000 1.000 1.000    15
+#>  cbRcppAlgosSer 3.072 2.942 2.911  2.919 2.853 2.791    15
+#>  cbArrangements 2.859 2.794 2.749  2.767 2.683 2.675    15
+```
+
+### Combinations - Multisets
+
+``` r
+
+myFreqs <- c(2, 4, 4, 5, 3, 2, 2, 2, 3, 4, 1, 4, 2, 5)
+v3 <- as.integer(c(1, 2, 3, 5, 8, 13, 21, 34, 55, 89, 144, 233, 377, 610))
+t1 <- comboGeneral(v3, 20, freqs = myFreqs, nThreads = numThreads)
+t2 <- combinations(freq = myFreqs, k = 20, x = v3)
+stopifnot(identical(t1, t2))
+dim(t1)
+#> [1] 14594082       20
+rm(t1, t2)
+invisible(gc())
+microbenchmark(cbRcppAlgosPar = comboGeneral(v3, 20, freqs = myFreqs, nThreads = numThreads),
+               cbRcppAlgosSer = comboGeneral(v3, 20, freqs = myFreqs),
+               cbArrangements = combinations(freq = myFreqs, k = 20, x = v3),
+               times = 10, unit = "relative")
+#> Unit: relative
+#>            expr   min    lq  mean median    uq   max neval
+#>  cbRcppAlgosPar 1.000 1.000 1.000  1.000 1.000 1.000    10
+#>  cbRcppAlgosSer 3.206 3.135 2.942  2.980 2.786 2.643    10
+#>  cbArrangements 6.311 6.236 5.945  6.038 5.702 5.484    10
+```
+
+## Permutations
+
+### Permutations - Distinct
+
+``` r
+
+v4 <- as.integer(c(2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47, 53, 59))
+t1 <- permuteGeneral(v4, 6, nThreads = numThreads)
+t2 <- permutations(v4, 6)
+stopifnot(identical(t1, t2))
+dim(t1)
+#> [1] 8910720       6
+rm(t1, t2)
+invisible(gc())
+microbenchmark(cbRcppAlgosPar = permuteGeneral(v4, 6, nThreads = numThreads),
+               cbRcppAlgosSer = permuteGeneral(v4, 6),
+               cbArrangements = permutations(v4, 6),
+               times = 15, unit = "relative")
+#> Unit: relative
+#>            expr   min    lq  mean median    uq   max neval
+#>  cbRcppAlgosPar 1.000 1.000 1.000  1.000 1.000 1.000    15
+#>  cbRcppAlgosSer 1.469 1.469 1.355  1.451 1.338 1.216    15
+#>  cbArrangements 2.198 2.186 2.065  2.152 2.158 1.670    15
+
+
+## Indexing permutation example with the partitions package
+t1 <- permuteGeneral(11, nThreads = 4)
+t2 <- permutations(11)
+t3 <- perms(11)
+
+dim(t1)
+#> [1] 39916800       11
+
+stopifnot(identical(t1, t2), identical(t1, t(as.matrix(t3))))
+rm(t1, t2, t3)
+invisible(gc())
+
+microbenchmark(cbRcppAlgosPar = permuteGeneral(11, nThreads = 4),
+               cbRcppAlgosSer = permuteGeneral(11),
+               cbArrangements = permutations(11),
+               cbPartitions   = perms(11),
+               times = 5, unit = "relative")
+#> Unit: relative
+#>            expr   min    lq  mean median    uq   max neval
+#>  cbRcppAlgosPar 1.000 1.000 1.000  1.000 1.000 1.000     5
+#>  cbRcppAlgosSer 2.401 2.421 2.271  2.700 2.483 1.716     5
+#>  cbArrangements 3.887 3.878 3.441  3.901 3.554 2.576     5
+#>    cbPartitions 9.653 9.680 8.667  9.746 9.587 6.256     5
+```
+
+### Permutations - Repetition
+
+``` r
+
+v5 <- v3[1:5]
+t1 <- permuteGeneral(v5, 10, repetition = TRUE, nThreads = numThreads)
+t2 <- permutations(v5, 10, replace = TRUE)
+stopifnot(identical(t1, t2))
+dim(t1)
+#> [1] 9765625      10
+rm(t1, t2)
+invisible(gc())
+microbenchmark(cbRcppAlgosPar = permuteGeneral(v5, 10, TRUE, nThreads = numThreads),
+               cbRcppAlgosSer = permuteGeneral(v5, 10, TRUE),
+               cbArrangements = permutations(x = v5, k = 10, replace = TRUE),
+               times = 10, unit = "relative")
+#> Unit: relative
+#>            expr   min    lq  mean median    uq    max neval
+#>  cbRcppAlgosPar 1.000 1.000 1.000  1.000 1.000 1.0000    10
+#>  cbRcppAlgosSer 2.519 2.484 2.056  2.418 2.336 0.9112    10
+#>  cbArrangements 2.871 2.847 2.494  2.760 2.688 1.6493    10
+```
+
+### Permutations - Multisets
+
+``` r
+
+v6 <- sort(runif(12))
+t1 <- permuteGeneral(v6, 7, freqs = rep(1:3, 4), nThreads = numThreads)
+t2 <- permutations(freq = rep(1:3, 4), k = 7, x = v6)
+stopifnot(identical(t1, t2))
+dim(t1)
+#> [1] 19520760        7
+rm(t1, t2)
+invisible(gc())
+microbenchmark(cbRcppAlgosPar = permuteGeneral(v6, 7, freqs = rep(1:3, 4), nThreads = numThreads),
+               cbRcppAlgosSer = permuteGeneral(v6, 7, freqs = rep(1:3, 4)),
+               cbArrangements = permutations(freq = rep(1:3, 4), k = 7, x = v6),
+               times = 10, unit = "relative")
+#> Unit: relative
+#>            expr   min    lq  mean median    uq   max neval
+#>  cbRcppAlgosPar 1.000 1.000 1.000  1.000 1.000 1.000    10
+#>  cbRcppAlgosSer 3.675 3.392 3.154  3.159 2.688 2.819    10
+#>  cbArrangements 3.991 3.670 3.482  3.479 3.171 3.034    10
+```
+
+## Partitions
+
+### Partitions - Distinct
+
+#### All Distinct Partitions
+
+``` r
+
+t1 <- comboGeneral(0:140, freqs=c(140, rep(1, 140)),
+                   constraintFun = "sum", comparisonFun = "==",
+                   limitConstraints = 140)
+t2 <- partitions(140, distinct = TRUE)
+t3 <- diffparts(140)
+
+# Each package has different output formats... we only examine dimensions
+# and that each result is a partition of 140
+stopifnot(identical(dim(t1), dim(t2)), identical(dim(t1), dim(t(t3))),
+                    all(rowSums(t1) == 140), all(rowSums(t2) == 140),
+                    all(colSums(t3) == 140))
+dim(t1)
+#> [1] 9617150      16
+rm(t1, t2, t3)
+invisible(gc())
+microbenchmark(cbRcppAlgosPar = partitionsGeneral(0:140, freqs=c(140, rep(1, 140)), nThreads = numThreads),
+               cbRcppAlgosSer = partitionsGeneral(0:140, freqs=c(140, rep(1, 140))),
+               cbArrangements = partitions(140, distinct = TRUE),
+               cbPartitions   = diffparts(140),
+               times = 10, unit = "relative")
+#> Unit: relative
+#>            expr    min     lq   mean median     uq    max neval
+#>  cbRcppAlgosPar  1.000  1.000  1.000  1.000  1.000  1.000    10
+#>  cbRcppAlgosSer  3.272  2.959  2.743  2.760  2.453  2.603    10
+#>  cbArrangements  2.550  2.314  2.131  2.155  1.933  2.052    10
+#>    cbPartitions 17.555 16.315 14.936 15.873 12.990 13.169    10
+```
+
+#### Restricted Distinct Partitions
+
+``` r
+
+t1 <- comboGeneral(160, 10,
+                   constraintFun = "sum", comparisonFun = "==",
+                   limitConstraints = 160)
+t2 <- partitions(160, 10, distinct = TRUE)
+stopifnot(identical(t1, t2))
+dim(t1)
+#> [1] 8942920      10
+rm(t1, t2)
+invisible(gc())
+microbenchmark(cbRcppAlgosPar = partitionsGeneral(160, 10, nThreads = numThreads),
+               cbRcppAlgosSer = partitionsGeneral(160, 10),
+               cbArrangements = partitions(160, 10, distinct = TRUE),
+               times = 10, unit = "relative")
+#> Unit: relative
+#>            expr   min    lq  mean median    uq   max neval
+#>  cbRcppAlgosPar 1.000 1.000 1.000  1.000 1.000 1.000    10
+#>  cbRcppAlgosSer 3.119 3.004 2.661  2.825 2.755 2.000    10
+#>  cbArrangements 4.190 4.044 3.500  3.824 3.809 2.369    10
+```
+
+### Partitions - Repetition
+
+#### All Partitions
+
+``` r
+
+t1 <- comboGeneral(0:65, repetition = TRUE, constraintFun = "sum",
+                   comparisonFun = "==", limitConstraints = 65)
+t2 <- partitions(65)
+t3 <- parts(65)
+
+# Each package has different output formats... we only examine dimensions
+# and that each result is a partition of 65
+stopifnot(identical(dim(t1), dim(t2)), identical(dim(t1), dim(t(t3))),
+          all(rowSums(t1) == 65), all(rowSums(t2) == 65),
+          all(colSums(t3) == 65))
+dim(t1)
+#> [1] 2012558      65
+rm(t1, t2, t3)
+invisible(gc())
+microbenchmark(cbRcppAlgosPar = partitionsGeneral(0:65, repetition = TRUE,
+                                                  nThreads = numThreads),
+               cbRcppAlgosSer = partitionsGeneral(0:65, repetition = TRUE),
+               cbArrangements = partitions(65),
+               cbPartitions   = parts(65),
+               times = 20, unit = "relative")
+#> Unit: relative
+#>            expr   min    lq  mean median    uq   max neval
+#>  cbRcppAlgosPar 1.000 1.000 1.000  1.000 1.000 1.000    20
+#>  cbRcppAlgosSer 2.902 2.810 2.325  2.476 2.307 1.752    20
+#>  cbArrangements 2.048 1.995 1.644  1.764 1.716 1.028    20
+#>    cbPartitions 9.963 9.694 7.748  8.635 7.692 4.775    20
+```
+
+#### Restricted Partitions
+
+``` r
+
+t1 <- comboGeneral(100, 15, TRUE, constraintFun = "sum",
+                   comparisonFun = "==", limitConstraints = 100)
+t2 <- partitions(100, 15)
+stopifnot(identical(t1, t2))
+dim(t1)
+#> [1] 9921212      15
+rm(t1, t2)
+
+# This takes a really long time... not because of restrictedparts,
+# but because apply is not that fast. This transformation is
+# needed for proper comparisons. As a result, we will compare
+# a smaller example
+# t3 <- t(apply(as.matrix(restrictedparts(100, 15, include.zero = F)), 2, sort))
+t3 <- t(apply(as.matrix(restrictedparts(50, 15, include.zero = F)), 2, sort))
+stopifnot(identical(partitions(50, 15), t3))
+rm(t3)
+invisible(gc())
+microbenchmark(cbRcppAlgosPar = partitionsGeneral(100, 15, TRUE,
+                                                  nThreads = numThreads),
+               cbRcppAlgosSer = partitionsGeneral(100, 15, TRUE),
+               cbArrangements = partitions(100, 15),
+               cbPartitions   = restrictedparts(100, 15,
+                                                include.zero = FALSE),
+               times = 10, unit = "relative")
+#> Unit: relative
+#>            expr    min     lq   mean median     uq    max neval
+#>  cbRcppAlgosPar  1.000  1.000  1.000  1.000  1.000  1.000    10
+#>  cbRcppAlgosSer  3.368  3.094  2.950  2.915  2.870  2.716    10
+#>  cbArrangements  4.449  4.201  4.009  3.968  3.763  4.049    10
+#>    cbPartitions 14.727 13.968 13.096 13.172 12.370 11.975    10
+```
+
+### Partitions - Multisets
+
+Currently, `RcppAlgos` is the only package capable of efficiently
+generating partitions of multisets. Therefore, we will only time
+`RcppAlgos` and use this as a reference for future improvements.
+
+``` r
+
+t1 <- comboGeneral(120, 10, freqs = rep(1:8, 15),
+                   constraintFun = "sum", comparisonFun = "==",
+                   limitConstraints = 120)
+dim(t1)
+#> [1] 7340225      10
+stopifnot(all(rowSums(t1) == 120))
+microbenchmark(cbRcppAlgos = partitionsGeneral(120, 10, freqs = rep(1:8, 15)),
+               times = 10)
+#> Unit: milliseconds
+#>         expr min    lq  mean median  uq   max neval
+#>  cbRcppAlgos 170 174.9 177.4  176.4 180 185.6    10
+```
+
+## Compositions
+
+### Compositions - Repetition
+
+#### All Compositions (Small case)
+
+``` r
+
+t1 <- compositionsGeneral(0:15, repetition = TRUE)
+t2 <- arrangements::compositions(15)
+t3 <- partitions::compositions(15)
+
+# Each package has different output formats... we only examine dimensions
+# and that each result is a partition of 15
+stopifnot(identical(dim(t1), dim(t2)), identical(dim(t1), dim(t(t3))),
+          all(rowSums(t1) == 15), all(rowSums(t2) == 15),
+          all(colSums(t3) == 15))
+dim(t1)
+#> [1] 16384    15
+rm(t1, t2, t3)
+invisible(gc())
+microbenchmark(cbRcppAlgosSer = compositionsGeneral(0:15, repetition = TRUE),
+               cbArrangements = arrangements::compositions(15),
+               cbPartitions   = partitions::compositions(15),
+               times = 20, unit = "relative")
+#> Unit: relative
+#>            expr      min      lq    mean  median      uq     max neval
+#>  cbRcppAlgosSer   0.9999   1.015   1.026   1.027   1.032   1.051    20
+#>  cbArrangements   1.0000   1.000   1.000   1.000   1.000   1.000    20
+#>    cbPartitions 103.5264 109.348 136.364 137.013 152.376 194.847    20
+```
+
+For the next two examples, we will exclude the `partitions` package for
+efficiency reasons.
+
+#### All Compositions (Larger case)
+
+``` r
+
+t1 <- compositionsGeneral(0:23, repetition = TRUE)
+t2 <- arrangements::compositions(23)
+
+# Each package has different output formats... we only examine dimensions
+# and that each result is a partition of 23
+stopifnot(identical(dim(t1), dim(t2)), all(rowSums(t1) == 23),
+          all(rowSums(t2) == 23))
+dim(t1)
+#> [1] 4194304      23
+rm(t1, t2)
+invisible(gc())
+microbenchmark(cbRcppAlgosPar = compositionsGeneral(0:23, repetition = TRUE,
+                                                    nThreads = numThreads),
+               cbRcppAlgosSer = compositionsGeneral(0:23, repetition = TRUE),
+               cbArrangements = arrangements::compositions(23),
+               times = 20, unit = "relative")
+#> Unit: relative
+#>            expr   min    lq  mean median    uq   max neval
+#>  cbRcppAlgosPar 1.000 1.000 1.000  1.000 1.000 1.000    20
+#>  cbRcppAlgosSer 3.830 3.906 3.949  3.979 3.978 4.033    20
+#>  cbArrangements 3.818 3.764 3.777  3.757 3.784 3.797    20
+```
+
+#### Compositions of Specific Length
+
+``` r
+
+t1 <- compositionsGeneral(30, 10, repetition = TRUE)
+t2 <- arrangements::compositions(30, 10)
+
+stopifnot(identical(t1, t2), all(rowSums(t1) == 30))
+dim(t1)
+#> [1] 10015005       10
+rm(t1, t2)
+invisible(gc())
+microbenchmark(cbRcppAlgosPar = compositionsGeneral(30, 10, repetition = TRUE,
+                                                    nThreads = numThreads),
+               cbRcppAlgosSer = compositionsGeneral(30, 10, repetition = TRUE),
+               cbArrangements = arrangements::compositions(30, 10),
+               times = 20, unit = "relative")
+#> Unit: relative
+#>            expr   min    lq  mean median    uq   max neval
+#>  cbRcppAlgosPar 1.000 1.000 1.000  1.000 1.000 1.000    20
+#>  cbRcppAlgosSer 2.874 2.768 2.737  2.690 2.626 3.307    20
+#>  cbArrangements 3.045 2.849 2.778  2.773 2.693 2.631    20
+```
+
+### Specialized Composition Benchmarks
+
+Similar to partitions of multisets, several composition variants
+supported in `RcppAlgos` (e.g., distinct parts, capped cases, etc.) are
+not currently available in other R packages or combinatorics libraries.
+In such cases, benchmarks will only report timings for `RcppAlgos`,
+which can serve as a reference point for future implementations and
+improvements.
+
+#### Compositions with Specific `target`
+
+``` r
+
+t1 <- compositionsGeneral(10, 10, repetition = TRUE, target = 30)
+dim(t1)
+#> [1] 9091270      10
+
+stopifnot(all(rowSums(t1) == 30))
+microbenchmark(
+    cbRcppAlgosSer = compositionsGeneral(10, 10, repetition = TRUE, target = 30),
+    cbRcppAlgosPar = compositionsGeneral(10, 10, repetition = TRUE,
+                                         target = 30, nThreads = numThreads),
+    times = 10,
+    check = "identical"
+)
+#> Unit: milliseconds
+#>            expr   min    lq  mean median    uq   max neval
+#>  cbRcppAlgosSer 57.12 58.23 59.77  58.72 62.57 63.04    10
+#>  cbRcppAlgosPar 17.15 19.48 23.83  23.89 24.51 38.62    10
+```
+
+#### Compositions with Distinct Parts
+
+``` r
+
+t1 <- compositionsGeneral(50, 8)
+dim(t1)
+#> [1] 4677120       8
+
+stopifnot(all(rowSums(t1) == 50))
+microbenchmark(
+    cbRcppAlgosSer = compositionsGeneral(50, 8),
+    cbRcppAlgosPar = compositionsGeneral(50, 8, nThreads = numThreads),
+    times = 10,
+    check = "identical"
+)
+#> Unit: milliseconds
+#>            expr    min     lq   mean median     uq    max neval
+#>  cbRcppAlgosSer 213.36 213.99 215.14 214.95 215.53 219.26    10
+#>  cbRcppAlgosPar  50.85  52.57  57.72  56.74  61.32  66.83    10
+```
+
+#### Compositions with Distinct Parts & Specific `target`
+
+``` r
+
+t1 <- compositionsGeneral(30, 7, target = 60)
+dim(t1)
+#> [1] 11773440        7
+
+stopifnot(all(rowSums(t1) == 60))
+microbenchmark(
+    cbRcppAlgosSer = compositionsGeneral(30, 7, target = 60),
+    cbRcppAlgosPar = compositionsGeneral(30, 7, target = 60, nThreads = numThreads),
+    times = 10,
+    check = "identical"
+)
+#> Unit: milliseconds
+#>            expr    min     lq  mean median    uq   max neval
+#>  cbRcppAlgosSer 356.66 358.07 360.2  359.9 363.0 363.4    10
+#>  cbRcppAlgosPar  90.03  94.71 105.2  101.2 118.7 124.8    10
+```
+
+## Iterators
+
+We will show one example from each category to demonstrate the
+efficiency of the iterators in `RcppAlgos`. The results are similar for
+the rest of the cases not shown.
+
+### Combinations
+
+``` r
+
+pkg_arrangements <- function(n, total) {
+    a <- icombinations(n, as.integer(n / 2))
+    for (i in 1:total) a$getnext()
+}
+
+pkg_RcppAlgos <- function(n, total) {
+    a <- comboIter(n, as.integer(n / 2))
+    for (i in 1:total) a@nextIter()
+}
+
+total <- comboCount(18, 9)
+total
+#> [1] 48620
+
+microbenchmark(cbRcppAlgos    = pkg_RcppAlgos(18, total),
+               cbArrangements = pkg_arrangements(18, total),
+               times = 15, unit = "relative")
+#> Unit: relative
+#>            expr   min    lq  mean median    uq   max neval
+#>     cbRcppAlgos  1.00  1.00  1.00   1.00  1.00  1.00    15
+#>  cbArrangements 19.42 18.96 18.87  18.71 18.69 18.41    15
+```
+
+### Permutations
+
+``` r
+
+pkg_arrangements <- function(n, total) {
+    a <- ipermutations(n)
+    for (i in 1:total) a$getnext()
+}
+
+pkg_RcppAlgos <- function(n, total) {
+    a <- permuteIter(n)
+    for (i in 1:total) a@nextIter()
+}
+
+total <- permuteCount(8)
+total
+#> [1] 40320
+
+microbenchmark(cbRcppAlgos    = pkg_RcppAlgos(8, total),
+               cbArrangements = pkg_arrangements(8, total),
+               times = 15, unit = "relative")
+#> Unit: relative
+#>            expr   min    lq  mean median    uq   max neval
+#>     cbRcppAlgos  1.00  1.00  1.00   1.00  1.00  1.00    15
+#>  cbArrangements 19.26 18.92 18.61  18.85 18.16 18.11    15
+```
+
+### Partitions
+
+``` r
+
+pkg_partitions <- function(n, total) {
+    a <- firstpart(n)
+    for (i in 1:(total - 1)) a <- nextpart(a)
+}
+
+pkg_arrangements <- function(n, total) {
+    a <- ipartitions(n)
+    for (i in 1:total) a$getnext()
+}
+
+pkg_RcppAlgos <- function(n, total) {
+    a <- partitionsIter(0:n, repetition = TRUE)
+    for (i in 1:total) a@nextIter()
+}
+
+total <- partitionsCount(0:40, repetition = TRUE)
+total
+#> [1] 37338
+
+microbenchmark(cbRcppAlgos    = pkg_RcppAlgos(40, total),
+               cbArrangements = pkg_arrangements(40, total),
+               cbPartitions   = pkg_partitions(40, total),
+               times = 15, unit = "relative")
+#> Unit: relative
+#>            expr   min    lq  mean median    uq   max neval
+#>     cbRcppAlgos  1.00  1.00  1.00   1.00  1.00  1.00    15
+#>  cbArrangements 15.35 15.45 14.39  15.40 13.68 12.31    15
+#>    cbPartitions 24.65 24.62 23.02  24.49 21.84 19.32    15
+```
+
+### Compositions
+
+``` r
+
+pkg_partitions <- function(n, total) {
+    a <- firstcomposition(n)
+    for (i in 1:(total - 1)) a <- nextcomposition(a, FALSE)
+}
+
+pkg_arrangements <- function(n, total) {
+    a <- icompositions(n)
+    for (i in 1:total) a$getnext()
+}
+
+pkg_RcppAlgos <- function(n, total) {
+    a <- compositionsIter(0:n, repetition = TRUE)
+    for (i in 1:total) a@nextIter()
+}
+
+total <- compositionsCount(0:15, repetition = TRUE)
+total
+#> [1] 16384
+
+microbenchmark(cbRcppAlgos    = pkg_RcppAlgos(15, total),
+               cbArrangements = pkg_arrangements(15, total),
+               cbPartitions   = pkg_partitions(15, total),
+               times = 15, unit = "relative")
+#> Unit: relative
+#>            expr   min    lq  mean median   uq   max neval
+#>     cbRcppAlgos  1.00  1.00  1.00   1.00  1.0  1.00    15
+#>  cbArrangements 13.86 13.73 13.42  13.52 13.4 12.27    15
+#>    cbPartitions 43.41 43.47 42.81  42.95 42.3 41.25    15
+```

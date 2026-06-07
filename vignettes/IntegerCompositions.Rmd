@@ -1,7 +1,7 @@
 ---
 title: "Integer Compositions in RcppAlgos"
 author: "Joseph Wood"
-date: "2026-03-04"
+date: "2026-06-07"
 output:
   prettydoc::html_pretty:
     theme: architect
@@ -59,7 +59,7 @@ library(RcppAlgos)
 options(width = 90)
 
 packageVersion("RcppAlgos")
-#> [1] '2.10.0'
+#> [1] '2.10.1'
 
 cat(paste(capture.output(sessionInfo())[1:3], collapse = "\n"))
 #> R version 4.5.2 (2025-10-31)
@@ -429,7 +429,7 @@ With `compositionGeneral` we are able to take advantage of parallel computation.
 ## compositions of 25
 system.time(compositionsGeneral(0:25, repetition = TRUE))
 #>    user  system elapsed 
-#>   1.284   0.053   1.338
+#>   1.245   0.051   1.296
 
 compositionsCount(0:25, repetition = TRUE)
 #> [1] 16777216
@@ -438,14 +438,14 @@ compositionsCount(0:25, repetition = TRUE)
 ## over 16 million compositions instantly
 system.time(compositionsGeneral(0:25, repetition = TRUE, nThreads = 4))
 #>    user  system elapsed 
-#>   1.471   0.061   0.410
+#>   1.370   0.055   0.378
 
 
 ## weak compositions of 12 using nThreads = 4
 system.time(weakComp12 <- compositionsGeneral(0:12, repetition = TRUE,
                                               weak = TRUE, nThreads = 4))
 #>    user  system elapsed 
-#>   0.008   0.004   0.003
+#>   0.008   0.003   0.003
 
 ## And using permuteGeneral
 system.time(weakPerm12 <- permuteGeneral(0:12, 12, repetition = TRUE,
@@ -453,7 +453,7 @@ system.time(weakPerm12 <- permuteGeneral(0:12, 12, repetition = TRUE,
                                          comparisonFun = "==",
                                          limitConstraints = 12))
 #>    user  system elapsed 
-#>   0.009   0.002   0.011
+#>   0.009   0.002   0.010
 
 dim(weakPerm12)
 #> [1] 1352078      12
@@ -465,7 +465,7 @@ identical(weakPerm12[do.call(order, as.data.frame(weakPerm12)), ],
 ## Distinct Parts
 system.time(compositionsGeneral(55, 8))
 #>    user  system elapsed 
-#>   0.626   0.017   0.642
+#>   0.664   0.015   0.678
 
 compositionsCount(55, 8)
 #> [1] 14192640
@@ -473,7 +473,7 @@ compositionsCount(55, 8)
 ## Similar to above... using 4 threads gets us the result instantly
 system.time(compositionsGeneral(55, 8, nThreads = 4))
 #>    user  system elapsed 
-#>   0.645   0.017   0.189
+#>   0.646   0.015   0.188
 
 ## General compositions with varying multiplicities
 system.time(comp25_gen <- permuteGeneral(25, 10, freqs = rep(4:8, 5),
@@ -481,7 +481,7 @@ system.time(comp25_gen <- permuteGeneral(25, 10, freqs = rep(4:8, 5),
                                          comparisonFun = "==",
                                          limitConstraints = 25))
 #>    user  system elapsed 
-#>   0.013   0.004   0.018
+#>   0.012   0.005   0.017
 
 dim(comp25_gen)
 #> [1] 946092     10

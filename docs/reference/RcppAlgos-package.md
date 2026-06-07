@@ -1,0 +1,57 @@
+# High Performance Tools for Combinatorics and Computational Mathematics
+
+The **RcppAlgos** package attacks age-old problems in combinatorics and
+computational mathematics.
+
+## Goals
+
+1.  The main goal is to encourage fresh and creative approaches to
+    foundational problems. The question that most appropriately
+    summarizes `RcppAlgos` is: ***"Can we do better?"***.
+
+2.  Provide highly optimized functions that facilitates a broader
+    spectrum of researchable cases. *E.g*
+
+    - Investigating the structure of large numbers over wide ranges:
+
+      - `primeFactorizeSieve(10^13 - 10^7, 10^13 + 10^7)`
+
+      - `primeSieve(2^53 - 10^10, 2^53 - 1, nThreads = 32)`
+
+    - Easily explore combinations/permutations/partitions that would
+      otherwise be inaccessible due to time of execution/memory
+      constraints:
+
+      - c_iter = comboIter(10000, 100)
+            bigSamp = gmp::urand.bigz(3, gmp::log2.bigz(comboCount(10000, 100)))
+            c_iter[[bigSamp]] ## flexible iterator allows random sampling
+
+      - p_iter = partitionsIter(5000, 100, target = 6000)
+            p_iter[[1e9]] ## start iterating from index = 1e9
+            p_iter@nextIter()
+            p_iter@nextNIter(1e3)
+
+      - `comboGeneral(150, 5, constraintFun = "sum", Parallel = TRUE)`
+
+      - parallel::mclapply(seq(...), function(x) {
+                        temp = permuteGeneral(15, 10, lower = x, upper = y)
+                        ## analyze permutations
+                        ## output results
+                }, mc.cores = detectCores() - 1))
+
+      - partitionsGeneral(0:80, repetition = TRUE)
+
+      - `permuteSample(rnorm(100), 10, freqs = rep(1:4, 25), n = 15, seed = 123)`
+
+      - set.seed(123)
+            comboGeneral(runif(42, 0, 50), 10,
+                         constraintFun = "mean",
+                         comparisonFun = c(">","<"),
+                         limitConstraints = c(39.876, 42.123))
+
+3.  *Speed!!!...*. You will find that the functions in `RcppAlgos` are
+    some of the fastest of their type available in `R`.
+
+## Author
+
+Joseph Wood
