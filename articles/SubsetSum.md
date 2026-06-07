@@ -114,7 +114,7 @@ even_time <- system.time({
 })
 even_time
 #>    user  system elapsed 
-#>   0.001   0.001   0.002
+#>   0.001   0.000   0.002
 
 ht(genParts)
 #> head -->
@@ -140,7 +140,7 @@ system.time(genMultiParts <- partitionsGeneral(seq(121, 221, 5), 13,
                                                freqs = rep(1:7, 3),
                                                targe = 2613))
 #>    user  system elapsed 
-#>   0.002   0.001   0.003
+#>   0.002   0.000   0.003
 
 ht(genMultiParts)
 #> head -->
@@ -178,7 +178,7 @@ system.time({
                                       11, target = -460)
 })
 #>    user  system elapsed 
-#>   0.001   0.000   0.001
+#>   0.001   0.000   0.002
 
 all(rowSums(genDistParts) == -460L)
 #> [1] TRUE
@@ -227,7 +227,7 @@ uneven_time <- system.time({
 })
 uneven_time    ## out of a possible 573 million in under a second
 #>    user  system elapsed 
-#>   0.026   0.001   0.027
+#>   0.025   0.002   0.027
 
 ht(genParts2)
 #> head -->
@@ -281,7 +281,7 @@ prettyNum(comboCount(mySamp, 8, freqs = rep(1:5, 10)), big.mark = ",")
 system.time(partitionsGeneral(mySamp, 8, freqs = rep(1:5, 10),
                               target = 496, upper = 1e3))
 #>    user  system elapsed 
-#>   0.002   0.000   0.001
+#>   0.001   0.000   0.002
 ```
 
 The function `permuteGeneral` benefits from these optimized algorithms
@@ -320,7 +320,7 @@ prettyNum(comboCount(football_player_salaries, 6), big.mark = ",")
 system.time(exactly20 <- partitionsGeneral(football_player_salaries, 6,
                                            target = 2e7, tolerance = 0))
 #>    user  system elapsed 
-#>   0.986   0.002   0.989
+#>   0.945   0.003   0.948
 
 ## No results that equal exactly 2e7
 dim(exactly20)
@@ -343,7 +343,7 @@ system.time(almost20 <- comboGeneral(football_player_salaries, 6,
                                      limitConstraints = 2e7, tolerance = 1000,
                                      upper = 1000, keepResults = TRUE))
 #>    user  system elapsed 
-#>   0.044   0.000   0.044
+#>   0.051   0.000   0.051
 
 dim(almost20)
 #> [1] 1000    7
@@ -371,7 +371,7 @@ system.time(superClose20 <- comboGeneral(football_player_salaries, 6,
                                          limitConstraints = 2e7, tolerance = 10,
                                          upper = 1000, keepResults = TRUE))
 #>    user  system elapsed 
-#>   0.981   0.001   0.983
+#>   0.968   0.002   0.969
 
 ht(superClose20)
 #> head -->
@@ -412,9 +412,9 @@ microbenchmark(optimized = comboGeneral(25, 10, constraintFun = "prod",
 #> Warning in microbenchmark(optimized = comboGeneral(25, 10, constraintFun = "prod", : less
 #> accurate nanosecond times to avoid potential integer overflows
 #> Unit: relative
-#>       expr     min       lq     mean   median       uq      max neval
-#>  optimized  1.0000  1.00000  1.00000  1.00000  1.00000  1.00000    20
-#>      brute 25.1472 22.16052 22.80618 21.55278 21.51976 28.96319    20
+#>       expr      min      lq     mean   median       uq      max neval
+#>  optimized  1.00000  1.0000  1.00000  1.00000  1.00000  1.00000    20
+#>      brute 25.43467 22.9671 24.01213 23.09049 23.18818 30.83721    20
 
 ## What about cases when brute force isn't feasible
 set.seed(101)
@@ -428,7 +428,7 @@ system.time(prodAlmost100 <- comboGeneral(v, 100, constraintFun = "prod",
                                           limitConstraints = 100,
                                           tolerance = 0.0001, upper = 20))
 #>    user  system elapsed 
-#>    0.01    0.00    0.01
+#>   0.013   0.000   0.013
 
 dim(prodAlmost100)
 #> [1]  20 100
@@ -493,7 +493,7 @@ all.equal(almost20[, 1:6], almost20withIter)
 ## generate the first 1000 along with the next 1000
 system.time(nextAlmost20withIter <- salary@nextNIter(1e3))
 #>    user  system elapsed 
-#>   0.043   0.000   0.043
+#>   0.042   0.000   0.042
 
 ht(nextAlmost20withIter)
 #> head -->
@@ -533,7 +533,7 @@ prodIter <- comboIter(v, 100,
 
 system.time(prodAlmost100WithIter <- prodIter@nextNIter(20))
 #>    user  system elapsed 
-#>    0.01    0.00    0.01
+#>   0.010   0.000   0.011
 
 all.equal(prodAlmost100, prodAlmost100WithIter)
 #> [1] TRUE
@@ -542,7 +542,7 @@ all.equal(prodAlmost100, prodAlmost100WithIter)
 ## where we left off
 system.time(nextAlmost100WithIter <- prodIter@nextNIter(20))
 #>    user  system elapsed 
-#>   0.007   0.000   0.007
+#>   0.008   0.000   0.008
 
 dim(nextAlmost100WithIter)
 #> [1]  20 100

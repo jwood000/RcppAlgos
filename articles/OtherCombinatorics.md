@@ -188,8 +188,8 @@ microbenchmark(
 #> integer overflows
 #> Unit: relative
 #>           expr   min    lq  mean median    uq   max neval
-#>          baseR 9.415 8.634 6.053  7.937 6.927 2.827   100
-#>  RcppAlgos_Ser 3.325 3.213 2.443  3.087 2.778 1.597   100
+#>          baseR 8.999 8.639 6.818  7.868 7.220 2.597   100
+#>  RcppAlgos_Ser 3.306 3.052 2.760  2.843 2.838 1.447   100
 #>  RcppAlgos_Par 1.000 1.000 1.000  1.000 1.000 1.000   100
 ```
 
@@ -418,7 +418,7 @@ prod(lengths(pools))
 ## With comboGrid, this is no problem
 system.time(myCombs <- comboGrid(pools))
 #>    user  system elapsed 
-#>   0.207   0.015   0.222
+#>   0.204   0.015   0.220
 
 print(object.size(myCombs), unit = "Mb")
 #> 92 Mb
@@ -444,7 +444,7 @@ ht(myCombs)
 ## Generating keys, then filtering will take much more time
 system.time(cartProd <- expand.grid(pools))
 #>    user  system elapsed 
-#>   2.451   0.480   2.936
+#>   2.460   0.489   2.954
 
 ## Creates huge object
 print(object.size(cartProd), unit = "Mb")
@@ -454,7 +454,7 @@ print(object.size(cartProd), unit = "Mb")
 ## Simply set repetition = FALSE
 system.time(myCombsNoRep <- comboGrid(pools, repetition = FALSE))
 #>    user  system elapsed 
-#>   0.003   0.000   0.003
+#>   0.003   0.000   0.002
 
 ht(myCombsNoRep)
 #> head -->
@@ -589,7 +589,7 @@ from the algorithm library in `C++`.
 
 system.time(comboGroups(12, numGroups = 3))
 #>    user  system elapsed 
-#>       0       0       0
+#>   0.001   0.000   0.000
 
 ht(comboGroups(12, numGroups = 3))
 #> head -->
@@ -622,21 +622,21 @@ system.time(a1 <- comboGroups(30, numGroups = 6,
                               lower = "123378675000000000",
                               upper = "123378675005000000"))
 #>    user  system elapsed 
-#>   0.097   0.018   0.115
+#>   0.097   0.019   0.116
 
 ## Use specific number of threads
 system.time(a2 <- comboGroups(30, numGroups = 6,
                               lower = "123378675000000000",
                               upper = "123378675005000000", nThreads = 4))
 #>    user  system elapsed 
-#>   0.101   0.027   0.032
+#>   0.109   0.040   0.070
 
 ## Use n - 1 number of threads (in this case, there are 7)
 system.time(a3 <- comboGroups(30, numGroups = 6,
                               lower = "123378675000000000",
                               upper = "123378675005000000", Parallel = TRUE))
 #>    user  system elapsed 
-#>   0.151   0.078   0.030
+#>   0.122   0.081   0.087
 
 identical(a1, a2)
 #> [1] TRUE
@@ -655,7 +655,7 @@ into 2 groups of 3, 1 groups of 4, and 1 group of 5:
 
 system.time(a4 <- comboGroups(15, grpSizes = c(3, 3, 4, 5)))
 #>    user  system elapsed 
-#>   0.097   0.016   0.113
+#>   0.097   0.016   0.114
 
 ht(a4)
 #> head -->
@@ -692,7 +692,7 @@ groups of varying sizes in parallel:
 
 system.time(a5 <- comboGroups(15, grpSizes = c(3, 3, 4, 5), nThreads = 4))
 #>    user  system elapsed 
-#>   0.103   0.027   0.046
+#>   0.105   0.024   0.045
 
 identical(a4, a5)
 #> [1] TRUE

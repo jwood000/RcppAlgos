@@ -235,11 +235,11 @@ the naive approach above:
 ## the function "naive" is defined above
 system.time(naive(25, 10, 5, 15))
 #>    user  system elapsed 
-#>   1.001   0.012   1.014
+#>   1.022   0.012   1.036
 
 system.time(comboSample(25, 10, n = 5, seed = 15))
 #>    user  system elapsed 
-#>   0.001   0.000   0.001
+#>       0       0       0
 ```
 
 Even when dealing with extremely large numbers, these algorithms are
@@ -262,12 +262,12 @@ gmp::log10.bigz(comboCount(2500, 100))
 ## Still fast with larger samples
 system.time(comboSample(2500, 100, n = 1e4, seed = 157))
 #>    user  system elapsed 
-#>   0.401   0.001   0.402
+#>   0.403   0.001   0.404
 
 ## Using Parallel/nThreads in these cases has an even greater effect
 system.time(comboSample(2500, 100, n = 1e4, seed = 157, nThreads = 8))
 #>    user  system elapsed 
-#>   0.591   0.003   0.085
+#>   0.604   0.001   0.080
 ```
 
 #### User Defined Functions
@@ -341,13 +341,13 @@ partitionsCount(2500, 10)
 system.time(serial <- partitionsSample(2500, 10, n = 1e3,
                                        seed = 8128))
 #>    user  system elapsed 
-#>   2.325   0.005   2.331
+#>   2.317   0.007   2.324
 
 ## Use nThreads for greater efficiency
 system.time(multi <- partitionsSample(2500, 10, n = 1e3,
                                       seed = 8128, nThreads = 8))
 #>    user  system elapsed 
-#>   3.401   0.016   0.442
+#>   3.353   0.018   0.438
 
 identical(multi, serial)
 #> [1] TRUE
@@ -438,13 +438,13 @@ compositionsCount(2500, 10, TRUE)
 system.time(serial <- compositionsSample(2500, 10, TRUE,
                                          n = 1e4, seed = 8128))
 #>    user  system elapsed 
-#>   0.204   0.001   0.204
+#>   0.202   0.000   0.203
 
 ## Use nThreads for greater efficiency
 system.time(multi <- compositionsSample(2500, 10, TRUE, n = 1e4,
                                         seed = 8128, nThreads = 8))
 #>    user  system elapsed 
-#>   0.297   0.001   0.044
+#>   0.299   0.001   0.041
 
 identical(multi, serial)
 #> [1] TRUE
@@ -484,7 +484,7 @@ compositionsSample(50, 8, TRUE, target = 100,
 system.time(compositionsSample(1500, 10, TRUE, target = 2500,
                                n = 1e4, seed = 28, nThreads = 8))
 #>    user  system elapsed 
-#>   1.702   0.005   0.236
+#>   1.749   0.005   0.237
 ```
 
 #### `compositionSample` with Distinct Parts
@@ -523,7 +523,7 @@ compositionsCount(150, 10, target = 300)
 system.time(compositionsSample(150, 10, target = 300, n = 1e3,
                                seed = 496, nThreads = 8))
 #>    user  system elapsed 
-#>   4.939   0.023   0.653
+#>   4.823   0.018   0.650
 ```
 
 ### Sampling Partitions of Groups with `comboGroupsSample`
@@ -653,7 +653,7 @@ comb = comboSample(25, 12, sampleVec = 2e6)[1, ]
 system.time(print(naive_rank(25, 12, comb)))
 #> [1] 2000000
 #>    user  system elapsed 
-#>   4.504   0.044   4.550
+#>   4.541   0.075   4.627
 ```
 
 ### RcppAlgos Solutions

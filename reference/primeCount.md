@@ -95,5 +95,5 @@ primeCount(10^9)
 ## Using nThreads
 system.time(primeCount(10^10, nThreads = 2))
 #>    user  system elapsed 
-#>   0.021   0.001   0.016 
+#>   0.019   0.003   0.016 
 ```

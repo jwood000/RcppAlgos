@@ -69,7 +69,7 @@
                         <h4 data-toc-skip class="author">Joseph
 Wood</h4>
             
-            <h4 data-toc-skip class="date">2026-03-06</h4>
+            <h4 data-toc-skip class="date">2026-06-07</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/jwood000/RcppAlgos/blob/main/vignettes/CombinatoricsIterators.Rmd" class="external-link"><code>vignettes/CombinatoricsIterators.Rmd</code></a></small>
       <div class="d-none name"><code>CombinatoricsIterators.Rmd</code></div>
@@ -567,8 +567,8 @@ and rebuild.</p>
 <span><span class="co">#&gt; Warning in microbenchmark(v243 = test_nextIter(15, 8)): less accurate nanosecond times to</span></span>
 <span><span class="co">#&gt; avoid potential integer overflows</span></span>
 <span><span class="co">#&gt; Unit: milliseconds</span></span>
-<span><span class="co">#&gt;  expr      min       lq    mean   median       uq      max neval</span></span>
-<span><span class="co">#&gt;  v243 15.85146 16.63909 17.8254 17.06299 17.35157 95.52065   100</span></span>
+<span><span class="co">#&gt;  expr      min       lq     mean   median       uq      max neval</span></span>
+<span><span class="co">#&gt;  v243 16.58975 17.05336 18.67597 17.12195 17.33861 160.6705   100</span></span>
 <span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/identical.html" class="external-link">identical</a></span><span class="op">(</span><span class="fu">test_nextIter</span><span class="op">(</span><span class="fl">15</span>, <span class="fl">8</span>, get_val <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>,</span>
 <span>          <span class="fu"><a href="../reference/combinatoricsGeneral.html">comboGeneral</a></span><span class="op">(</span><span class="fl">15</span>, <span class="fl">8</span><span class="op">)</span><span class="op">)</span></span>
@@ -579,7 +579,7 @@ and rebuild.</p>
 <span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/system.time.html" class="external-link">system.time</a></span><span class="op">(</span><span class="fu">test_nextIter</span><span class="op">(</span><span class="fl">25</span>, <span class="fl">10</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="co">#&gt;    user  system elapsed </span></span>
-<span><span class="co">#&gt;   8.792   0.020   8.830</span></span>
+<span><span class="co">#&gt;   8.772   0.026   8.858</span></span>
 <span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/Rprof.html" class="external-link">Rprof</a></span><span class="op">(</span><span class="st">"Version243.out"</span>, memory.profiling <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
 <span><span class="fu">test_nextIter</span><span class="op">(</span><span class="fl">25</span>, <span class="fl">10</span><span class="op">)</span></span>
@@ -587,43 +587,43 @@ and rebuild.</p>
 <span><span class="fu"><a href="https://rdrr.io/r/base/lapply.html" class="external-link">lapply</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/utils/summaryRprof.html" class="external-link">summaryRprof</a></span><span class="op">(</span><span class="st">"Version243.out"</span>, memory <span class="op">=</span> <span class="st">"both"</span><span class="op">)</span>, <span class="va">head</span><span class="op">)</span></span>
 <span><span class="co">#&gt; $by.self</span></span>
 <span><span class="co">#&gt;                  self.time self.pct total.time total.pct mem.total</span></span>
-<span><span class="co">#&gt; "as.environment"      2.52    33.25       2.52     33.25     410.3</span></span>
-<span><span class="co">#&gt; "$"                   2.20    29.02       6.00     79.16    1054.2</span></span>
-<span><span class="co">#&gt; "test_nextIter"       0.68     8.97       7.58    100.00    1393.3</span></span>
-<span><span class="co">#&gt; "get"                 0.62     8.18       0.62      8.18      77.2</span></span>
-<span><span class="co">#&gt; "exists"              0.58     7.65       0.58      7.65     128.3</span></span>
-<span><span class="co">#&gt; ".External"           0.52     6.86       0.52      6.86     120.8</span></span>
+<span><span class="co">#&gt; "as.environment"      2.58    32.49       2.58     32.49     390.7</span></span>
+<span><span class="co">#&gt; "$"                   2.40    30.23       6.16     77.58     855.9</span></span>
+<span><span class="co">#&gt; "test_nextIter"       0.88    11.08       7.94    100.00    1233.1</span></span>
+<span><span class="co">#&gt; "exists"              0.62     7.81       0.62      7.81      73.4</span></span>
+<span><span class="co">#&gt; "get"                 0.56     7.05       0.56      7.05      74.4</span></span>
+<span><span class="co">#&gt; ".External"           0.54     6.80       0.54      6.80     106.3</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; $by.total</span></span>
 <span><span class="co">#&gt;                             total.time total.pct mem.total self.time self.pct</span></span>
-<span><span class="co">#&gt; "test_nextIter"                   7.58       100    1393.3      0.68     8.97</span></span>
-<span><span class="co">#&gt; "&lt;Anonymous&gt;"                     7.58       100    1393.3      0.00     0.00</span></span>
-<span><span class="co">#&gt; "base::do.call"                   7.58       100    1393.3      0.00     0.00</span></span>
-<span><span class="co">#&gt; "base::saveRDS"                   7.58       100    1393.3      0.00     0.00</span></span>
-<span><span class="co">#&gt; "base::tryCatch"                  7.58       100    1393.3      0.00     0.00</span></span>
-<span><span class="co">#&gt; "base::withCallingHandlers"       7.58       100    1393.3      0.00     0.00</span></span>
+<span><span class="co">#&gt; "test_nextIter"                   7.94       100    1233.1      0.88    11.08</span></span>
+<span><span class="co">#&gt; "&lt;Anonymous&gt;"                     7.94       100    1233.1      0.00     0.00</span></span>
+<span><span class="co">#&gt; "base::do.call"                   7.94       100    1233.1      0.00     0.00</span></span>
+<span><span class="co">#&gt; "base::saveRDS"                   7.94       100    1233.1      0.00     0.00</span></span>
+<span><span class="co">#&gt; "base::tryCatch"                  7.94       100    1233.1      0.00     0.00</span></span>
+<span><span class="co">#&gt; "base::withCallingHandlers"       7.94       100    1233.1      0.00     0.00</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; $sample.interval</span></span>
 <span><span class="co">#&gt; [1] 0.02</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; $sampling.time</span></span>
-<span><span class="co">#&gt; [1] 7.58</span></span></code></pre></div>
+<span><span class="co">#&gt; [1] 7.94</span></span></code></pre></div>
 </div>
 <div class="section level3">
-<h3 id="version-2-10-0-no-rcpp">Version <code>2.10.0</code> (No <code>Rcpp</code>)<a class="anchor" aria-label="anchor" href="#version-2-10-0-no-rcpp"></a>
+<h3 id="version-2-10-1-no-rcpp">Version <code>2.10.1</code> (No <code>Rcpp</code>)<a class="anchor" aria-label="anchor" href="#version-2-10-1-no-rcpp"></a>
 </h3>
 <div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">curr_version</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/integer.html" class="external-link">as.integer</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/grep.html" class="external-link">gsub</a></span><span class="op">(</span><span class="st">"\\."</span>, <span class="st">""</span>, <span class="fu"><a href="https://rdrr.io/r/utils/packageDescription.html" class="external-link">packageVersion</a></span><span class="op">(</span><span class="st">"RcppAlgos"</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="va">curr_version</span></span>
-<span><span class="co">#&gt; [1] 2100</span></span>
+<span><span class="co">#&gt; [1] 2101</span></span>
 <span><span class="fu"><a href="https://rdrr.io/pkg/microbenchmark/man/microbenchmark.html" class="external-link">microbenchmark</a></span><span class="op">(</span>curr_v <span class="op">=</span> <span class="fu">test_nextIter</span><span class="op">(</span><span class="fl">15</span>, <span class="fl">8</span>, v <span class="op">=</span> <span class="va">curr_version</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="co">#&gt; Unit: milliseconds</span></span>
-<span><span class="co">#&gt;    expr      min       lq     mean  median       uq      max neval</span></span>
-<span><span class="co">#&gt;  curr_v 1.883376 1.960046 2.010785 1.99299 2.011481 2.722359   100</span></span>
+<span><span class="co">#&gt;    expr      min       lq     mean   median       uq      max neval</span></span>
+<span><span class="co">#&gt;  curr_v 1.959308 1.999344 2.065847 2.024129 2.046412 3.122929   100</span></span>
 <span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/system.time.html" class="external-link">system.time</a></span><span class="op">(</span><span class="fu">test_nextIter</span><span class="op">(</span><span class="fl">25</span>, <span class="fl">10</span>, v <span class="op">=</span> <span class="va">curr_version</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="co">#&gt;    user  system elapsed </span></span>
-<span><span class="co">#&gt;   1.013   0.003   1.019</span></span>
+<span><span class="co">#&gt;   0.959   0.007   0.965</span></span>
 <span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/identical.html" class="external-link">identical</a></span><span class="op">(</span><span class="fu">test_nextIter</span><span class="op">(</span><span class="fl">15</span>, <span class="fl">8</span>, get_val <span class="op">=</span> <span class="cn">TRUE</span>, v <span class="op">=</span> <span class="va">curr_version</span><span class="op">)</span>,</span>
 <span>          <span class="fu"><a href="../reference/combinatoricsGeneral.html">comboGeneral</a></span><span class="op">(</span><span class="fl">15</span>, <span class="fl">8</span><span class="op">)</span><span class="op">)</span></span>
@@ -636,24 +636,24 @@ and rebuild.</p>
 <span><span class="fu"><a href="https://rdrr.io/r/base/lapply.html" class="external-link">lapply</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/utils/summaryRprof.html" class="external-link">summaryRprof</a></span><span class="op">(</span><span class="va">curr_file_out</span>, memory <span class="op">=</span> <span class="st">"both"</span><span class="op">)</span>, <span class="va">head</span><span class="op">)</span></span>
 <span><span class="co">#&gt; $by.self</span></span>
 <span><span class="co">#&gt;                 self.time self.pct total.time total.pct mem.total</span></span>
-<span><span class="co">#&gt; "&lt;Anonymous&gt;"        0.32    37.21       0.86    100.00     358.9</span></span>
-<span><span class="co">#&gt; ".Call"              0.32    37.21       0.32     37.21     114.0</span></span>
-<span><span class="co">#&gt; "test_nextIter"      0.22    25.58       0.86    100.00     358.9</span></span>
+<span><span class="co">#&gt; ".Call"              0.36    39.13       0.36     39.13     109.8</span></span>
+<span><span class="co">#&gt; "&lt;Anonymous&gt;"        0.34    36.96       0.92    100.00     411.5</span></span>
+<span><span class="co">#&gt; "test_nextIter"      0.22    23.91       0.92    100.00     411.5</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; $by.total</span></span>
 <span><span class="co">#&gt;                             total.time total.pct mem.total self.time self.pct</span></span>
-<span><span class="co">#&gt; "&lt;Anonymous&gt;"                     0.86       100     358.9      0.32    37.21</span></span>
-<span><span class="co">#&gt; "test_nextIter"                   0.86       100     358.9      0.22    25.58</span></span>
-<span><span class="co">#&gt; "base::do.call"                   0.86       100     358.9      0.00     0.00</span></span>
-<span><span class="co">#&gt; "base::saveRDS"                   0.86       100     358.9      0.00     0.00</span></span>
-<span><span class="co">#&gt; "base::tryCatch"                  0.86       100     358.9      0.00     0.00</span></span>
-<span><span class="co">#&gt; "base::withCallingHandlers"       0.86       100     358.9      0.00     0.00</span></span>
+<span><span class="co">#&gt; "&lt;Anonymous&gt;"                     0.92       100     411.5      0.34    36.96</span></span>
+<span><span class="co">#&gt; "test_nextIter"                   0.92       100     411.5      0.22    23.91</span></span>
+<span><span class="co">#&gt; "base::do.call"                   0.92       100     411.5      0.00     0.00</span></span>
+<span><span class="co">#&gt; "base::saveRDS"                   0.92       100     411.5      0.00     0.00</span></span>
+<span><span class="co">#&gt; "base::tryCatch"                  0.92       100     411.5      0.00     0.00</span></span>
+<span><span class="co">#&gt; "base::withCallingHandlers"       0.92       100     411.5      0.00     0.00</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; $sample.interval</span></span>
 <span><span class="co">#&gt; [1] 0.02</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; $sampling.time</span></span>
-<span><span class="co">#&gt; [1] 0.86</span></span></code></pre></div>
+<span><span class="co">#&gt; [1] 0.92</span></span></code></pre></div>
 </div>
 <div class="section level3">
 <h3 id="caching-results-w-2-4-3">Caching Results w/ 2.4.3<a class="anchor" aria-label="anchor" href="#caching-results-w-2-4-3"></a>
@@ -662,10 +662,10 @@ and rebuild.</p>
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/pkg/microbenchmark/man/microbenchmark.html" class="external-link">microbenchmark</a></span><span class="op">(</span>v243cache <span class="op">=</span> <span class="fu">test_nextIter</span><span class="op">(</span><span class="fl">15</span>, <span class="fl">8</span>, caching <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="co">#&gt; Unit: milliseconds</span></span>
 <span><span class="co">#&gt;       expr      min      lq     mean   median       uq      max neval</span></span>
-<span><span class="co">#&gt;  v243cache 2.133107 2.22792 2.339486 2.274496 2.315332 3.341951   100</span></span>
+<span><span class="co">#&gt;  v243cache 2.152869 2.20498 2.308451 2.239338 2.295406 3.294637   100</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/system.time.html" class="external-link">system.time</a></span><span class="op">(</span><span class="fu">test_nextIter</span><span class="op">(</span><span class="fl">25</span>, <span class="fl">10</span>, caching <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="co">#&gt;    user  system elapsed </span></span>
-<span><span class="co">#&gt;   1.130   0.003   1.134</span></span>
+<span><span class="co">#&gt;   1.099   0.005   1.103</span></span>
 <span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/identical.html" class="external-link">identical</a></span><span class="op">(</span><span class="fu">test_nextIter</span><span class="op">(</span><span class="fl">15</span>, <span class="fl">8</span>, get_val <span class="op">=</span> <span class="cn">TRUE</span>, caching <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>,</span>
 <span>          <span class="fu"><a href="../reference/combinatoricsGeneral.html">comboGeneral</a></span><span class="op">(</span><span class="fl">15</span>, <span class="fl">8</span><span class="op">)</span><span class="op">)</span></span>
@@ -677,37 +677,37 @@ and rebuild.</p>
 <span><span class="fu"><a href="https://rdrr.io/r/base/lapply.html" class="external-link">lapply</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/utils/summaryRprof.html" class="external-link">summaryRprof</a></span><span class="op">(</span><span class="st">"Version243cache.out"</span>, memory <span class="op">=</span> <span class="st">"both"</span><span class="op">)</span>, <span class="va">head</span><span class="op">)</span></span>
 <span><span class="co">#&gt; $by.self</span></span>
 <span><span class="co">#&gt;                 self.time self.pct total.time total.pct mem.total</span></span>
-<span><span class="co">#&gt; ".External"          0.72    70.59       0.72     70.59     259.0</span></span>
-<span><span class="co">#&gt; "f"                  0.24    23.53       0.96     94.12     323.6</span></span>
-<span><span class="co">#&gt; "test_nextIter"      0.06     5.88       1.02    100.00     328.1</span></span>
+<span><span class="co">#&gt; ".External"          0.62    63.27       0.62     63.27     134.9</span></span>
+<span><span class="co">#&gt; "f"                  0.28    28.57       0.90     91.84     246.6</span></span>
+<span><span class="co">#&gt; "test_nextIter"      0.08     8.16       0.98    100.00     307.7</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; $by.total</span></span>
 <span><span class="co">#&gt;                             total.time total.pct mem.total self.time self.pct</span></span>
-<span><span class="co">#&gt; "test_nextIter"                   1.02       100     328.1      0.06     5.88</span></span>
-<span><span class="co">#&gt; "&lt;Anonymous&gt;"                     1.02       100     328.1      0.00     0.00</span></span>
-<span><span class="co">#&gt; "base::do.call"                   1.02       100     328.1      0.00     0.00</span></span>
-<span><span class="co">#&gt; "base::saveRDS"                   1.02       100     328.1      0.00     0.00</span></span>
-<span><span class="co">#&gt; "base::tryCatch"                  1.02       100     328.1      0.00     0.00</span></span>
-<span><span class="co">#&gt; "base::withCallingHandlers"       1.02       100     328.1      0.00     0.00</span></span>
+<span><span class="co">#&gt; "test_nextIter"                   0.98       100     307.7      0.08     8.16</span></span>
+<span><span class="co">#&gt; "&lt;Anonymous&gt;"                     0.98       100     307.7      0.00     0.00</span></span>
+<span><span class="co">#&gt; "base::do.call"                   0.98       100     307.7      0.00     0.00</span></span>
+<span><span class="co">#&gt; "base::saveRDS"                   0.98       100     307.7      0.00     0.00</span></span>
+<span><span class="co">#&gt; "base::tryCatch"                  0.98       100     307.7      0.00     0.00</span></span>
+<span><span class="co">#&gt; "base::withCallingHandlers"       0.98       100     307.7      0.00     0.00</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; $sample.interval</span></span>
 <span><span class="co">#&gt; [1] 0.02</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; $sampling.time</span></span>
-<span><span class="co">#&gt; [1] 1.02</span></span></code></pre></div>
+<span><span class="co">#&gt; [1] 0.98</span></span></code></pre></div>
 </div>
 <div class="section level3">
-<h3 id="caching-results-w-2-10-0">Caching Results w/ <code>2.10.0</code><a class="anchor" aria-label="anchor" href="#caching-results-w-2-10-0"></a>
+<h3 id="caching-results-w-2-10-1">Caching Results w/ <code>2.10.1</code><a class="anchor" aria-label="anchor" href="#caching-results-w-2-10-1"></a>
 </h3>
 <div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/pkg/microbenchmark/man/microbenchmark.html" class="external-link">microbenchmark</a></span><span class="op">(</span>curr_v <span class="op">=</span> <span class="fu">test_nextIter</span><span class="op">(</span><span class="fl">15</span>, <span class="fl">8</span>, v <span class="op">=</span> <span class="va">curr_version</span>,</span>
 <span>                                      caching <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="co">#&gt; Unit: milliseconds</span></span>
-<span><span class="co">#&gt;    expr      min      lq     mean  median       uq      max neval</span></span>
-<span><span class="co">#&gt;  curr_v 1.833479 1.89504 2.094672 1.92003 1.975052 7.138141   100</span></span>
+<span><span class="co">#&gt;    expr      min       lq     mean   median       uq      max neval</span></span>
+<span><span class="co">#&gt;  curr_v 1.782639 1.816095 1.876918 1.839322 1.895655 2.562459   100</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/system.time.html" class="external-link">system.time</a></span><span class="op">(</span><span class="fu">test_nextIter</span><span class="op">(</span><span class="fl">25</span>, <span class="fl">10</span>, v <span class="op">=</span> <span class="va">curr_version</span>, caching <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="co">#&gt;    user  system elapsed </span></span>
-<span><span class="co">#&gt;   0.969   0.006   0.975</span></span>
+<span><span class="co">#&gt;   0.906   0.003   0.909</span></span>
 <span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/identical.html" class="external-link">identical</a></span><span class="op">(</span><span class="fu">test_nextIter</span><span class="op">(</span><span class="fl">15</span>, <span class="fl">8</span>, get_val <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>                        v <span class="op">=</span> <span class="va">curr_version</span>, caching <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>,</span>
@@ -721,24 +721,24 @@ and rebuild.</p>
 <span><span class="fu"><a href="https://rdrr.io/r/base/lapply.html" class="external-link">lapply</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/utils/summaryRprof.html" class="external-link">summaryRprof</a></span><span class="op">(</span><span class="va">curr_file_cache_out</span>, memory <span class="op">=</span> <span class="st">"both"</span><span class="op">)</span>, <span class="va">head</span><span class="op">)</span></span>
 <span><span class="co">#&gt; $by.self</span></span>
 <span><span class="co">#&gt;                 self.time self.pct total.time total.pct mem.total</span></span>
-<span><span class="co">#&gt; ".Call"              0.42    53.85       0.42     53.85     131.5</span></span>
-<span><span class="co">#&gt; "g"                  0.26    33.33       0.68     87.18     235.7</span></span>
-<span><span class="co">#&gt; "test_nextIter"      0.10    12.82       0.78    100.00     286.3</span></span>
+<span><span class="co">#&gt; "g"                  0.42     50.0       0.74      88.1     289.5</span></span>
+<span><span class="co">#&gt; ".Call"              0.32     38.1       0.32      38.1      96.0</span></span>
+<span><span class="co">#&gt; "test_nextIter"      0.10     11.9       0.84     100.0     340.6</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; $by.total</span></span>
 <span><span class="co">#&gt;                             total.time total.pct mem.total self.time self.pct</span></span>
-<span><span class="co">#&gt; "test_nextIter"                   0.78       100     286.3       0.1    12.82</span></span>
-<span><span class="co">#&gt; "&lt;Anonymous&gt;"                     0.78       100     286.3       0.0     0.00</span></span>
-<span><span class="co">#&gt; "base::do.call"                   0.78       100     286.3       0.0     0.00</span></span>
-<span><span class="co">#&gt; "base::saveRDS"                   0.78       100     286.3       0.0     0.00</span></span>
-<span><span class="co">#&gt; "base::tryCatch"                  0.78       100     286.3       0.0     0.00</span></span>
-<span><span class="co">#&gt; "base::withCallingHandlers"       0.78       100     286.3       0.0     0.00</span></span>
+<span><span class="co">#&gt; "test_nextIter"                   0.84       100     340.6       0.1     11.9</span></span>
+<span><span class="co">#&gt; "&lt;Anonymous&gt;"                     0.84       100     340.6       0.0      0.0</span></span>
+<span><span class="co">#&gt; "base::do.call"                   0.84       100     340.6       0.0      0.0</span></span>
+<span><span class="co">#&gt; "base::saveRDS"                   0.84       100     340.6       0.0      0.0</span></span>
+<span><span class="co">#&gt; "base::tryCatch"                  0.84       100     340.6       0.0      0.0</span></span>
+<span><span class="co">#&gt; "base::withCallingHandlers"       0.84       100     340.6       0.0      0.0</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; $sample.interval</span></span>
 <span><span class="co">#&gt; [1] 0.02</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; $sampling.time</span></span>
-<span><span class="co">#&gt; [1] 0.78</span></span></code></pre></div>
+<span><span class="co">#&gt; [1] 0.84</span></span></code></pre></div>
 </div>
 <div class="section level3">
 <h3 id="access-efficiency-conclusions">Access Efficiency Conclusions<a class="anchor" aria-label="anchor" href="#access-efficiency-conclusions"></a>
@@ -761,39 +761,39 @@ statistics from Rprof</a>, we compare the profiling output from version
 <span><span class="va">v243</span></span>
 <span><span class="co">#&gt; index: "base::tryCatch"</span></span>
 <span><span class="co">#&gt;      vsize.small  max.vsize.small      vsize.large  max.vsize.large            nodes </span></span>
-<span><span class="co">#&gt;           199736          5136688            19137          7252856          3802850 </span></span>
+<span><span class="co">#&gt;           170393          5193152            18262          7249928          3230896 </span></span>
 <span><span class="co">#&gt;        max.nodes     duplications tot.duplications          samples </span></span>
-<span><span class="co">#&gt;         50883504            25831          9790135              379</span></span>
+<span><span class="co">#&gt;         52086272            24687          9800665              397</span></span>
 <span></span>
 <span><span class="co">## Current version</span></span>
 <span><span class="va">vCurr</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/utils/summaryRprof.html" class="external-link">summaryRprof</a></span><span class="op">(</span><span class="va">curr_file_out</span>, memory <span class="op">=</span> <span class="st">"stats"</span>, index <span class="op">=</span> <span class="fl">1</span><span class="op">)</span></span>
 <span><span class="va">vCurr</span></span>
 <span><span class="co">#&gt; index: "base::tryCatch"</span></span>
 <span><span class="co">#&gt;      vsize.small  max.vsize.small      vsize.large  max.vsize.large            nodes </span></span>
-<span><span class="co">#&gt;          1870967         10438984           170416          7327904          8770526 </span></span>
+<span><span class="co">#&gt;          1926877          8364160           159239          7324984          8975174 </span></span>
 <span><span class="co">#&gt;        max.nodes     duplications tot.duplications          samples </span></span>
-<span><span class="co">#&gt;         70827064                2               84               43</span></span>
+<span><span class="co">#&gt;         61668096                2               84               46</span></span>
 <span></span>
 <span><span class="co">## Version 2.4.3 with caching</span></span>
 <span><span class="va">v243Cache</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/utils/summaryRprof.html" class="external-link">summaryRprof</a></span><span class="op">(</span><span class="st">"Version243cache.out"</span>, memory <span class="op">=</span> <span class="st">"stats"</span>, index <span class="op">=</span> <span class="fl">1</span><span class="op">)</span></span>
 <span><span class="va">v243Cache</span></span>
 <span><span class="co">#&gt; index: "base::tryCatch"</span></span>
 <span><span class="co">#&gt;      vsize.small  max.vsize.small      vsize.large  max.vsize.large            nodes </span></span>
-<span><span class="co">#&gt;          1734405          6697288           143778          7332696          6170061 </span></span>
+<span><span class="co">#&gt;          1745175          8831840           149587          7329784          6229210 </span></span>
 <span><span class="co">#&gt;        max.nodes     duplications tot.duplications          samples </span></span>
-<span><span class="co">#&gt;         52376352            63649          3246121               51</span></span>
+<span><span class="co">#&gt;         59218544            66501          3258546               49</span></span>
 <span></span>
 <span><span class="co">## Current version with caching</span></span>
 <span><span class="va">vCurrCache</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/utils/summaryRprof.html" class="external-link">summaryRprof</a></span><span class="op">(</span><span class="va">curr_file_cache_out</span>, memory <span class="op">=</span> <span class="st">"stats"</span>, index <span class="op">=</span> <span class="fl">1</span><span class="op">)</span></span>
 <span><span class="va">vCurrCache</span></span>
 <span><span class="co">#&gt; index: "base::tryCatch"</span></span>
 <span><span class="co">#&gt;      vsize.small  max.vsize.small      vsize.large  max.vsize.large            nodes </span></span>
-<span><span class="co">#&gt;          1683735          9811384           187983          7331328          8011199 </span></span>
+<span><span class="co">#&gt;          1798149          9086400           174486          7328424          8463863 </span></span>
 <span><span class="co">#&gt;        max.nodes     duplications tot.duplications          samples </span></span>
-<span><span class="co">#&gt;         68074664                2               84               39</span></span></code></pre></div>
+<span><span class="co">#&gt;         64825432                2               84               42</span></span></code></pre></div>
 <p>The duplication statistics reveal a clear pattern across the four
 cases. In version <code>2.4.3</code> without caching, the profiler
-records <code>9790135</code> total duplications. By comparison, the
+records <code>9800665</code> total duplications. By comparison, the
 current version records only <code>84</code> duplications.</p>
 <p>To better isolate the source of this difference, we repeat the
 experiment while caching the accessor. Instead of repeatedly resolving
@@ -801,7 +801,7 @@ experiment while caching the accessor. Instead of repeatedly resolving
 (e.g. <code>f &lt;- a$nextIter</code>) and call <code>f()</code>
 repeatedly.</p>
 <p>With caching enabled, the duplication count for version
-<code>2.4.3</code> drops to <code>3246121</code>. This substantial
+<code>2.4.3</code> drops to <code>3258546</code>. This substantial
 reduction indicates that a large portion of the work in earlier versions
 was associated with repeatedly resolving the accessor rather than
 executing the underlying combinatorial routine itself.</p>
@@ -1087,12 +1087,12 @@ priori</em> how many results we will obtain.</p>
 <span><span class="co">#&gt; [1] 38935252</span></span>
 <span><span class="va">time_all</span></span>
 <span><span class="co">#&gt;    user  system elapsed </span></span>
-<span><span class="co">#&gt;   1.276   1.370   3.526</span></span>
+<span><span class="co">#&gt;   1.244   1.191   2.972</span></span>
 <span></span>
 <span><span class="co">## Over 4 GBs of results</span></span>
 <span><span class="op">(</span><span class="fl">38935252</span> <span class="op">*</span> <span class="fl">15</span> <span class="op">*</span> <span class="fl">8</span><span class="op">)</span> <span class="op">/</span> <span class="fl">2</span><span class="op">^</span><span class="fl">30</span></span>
 <span><span class="co">#&gt; [1] 4.351353</span></span></code></pre></div>
-<p>Just over <code>3</code> seconds isn’t bad, however 4 GBs could put a
+<p>Just over <code>2</code> seconds isn’t bad, however 4 GBs could put a
 strain on your computer.</p>
 <p>Let’s use iterators instead and only generate ten thousand at a time
 to keep memory low. We should mention here that the iterators are
@@ -1125,13 +1125,13 @@ would only obtain 935,252 results.</p>
 <span><span class="co">#&gt; [1] NA</span></span>
 <span><span class="va">time_iter</span></span>
 <span><span class="co">#&gt;    user  system elapsed </span></span>
-<span><span class="co">#&gt;   0.949   0.212   1.161</span></span>
+<span><span class="co">#&gt;   0.950   0.184   1.134</span></span>
 <span></span>
 <span><span class="co">## Only 1 MBs per iteration</span></span>
 <span><span class="op">(</span><span class="fl">1e4</span> <span class="op">*</span> <span class="fl">15</span> <span class="op">*</span> <span class="fl">8</span><span class="op">)</span> <span class="op">/</span> <span class="fl">2</span><span class="op">^</span><span class="fl">20</span></span>
 <span><span class="co">#&gt; [1] 1.144409</span></span></code></pre></div>
 <p>Wow! Using the iterator approach is not only easier on your RAM, but
-faster as well (<code>3.526 / 1.161 ~= 3.037</code>)! Our gains came
+faster as well (<code>2.972 / 1.134 ~= 2.6208</code>)! Our gains came
 strictly from memory efficiency (From over 4 GBs to just over 1 MB) as
 the underlying algorithm is exactly the same.</p>
 <p>Lastly, using iterators make some problems possible that would
@@ -1179,7 +1179,7 @@ any jumps in memory:</p>
 <span><span class="co">#&gt; $totalRemaining</span></span>
 <span><span class="co">#&gt; [1] NA</span></span>
 <span><span class="co">#&gt;    user  system elapsed </span></span>
-<span><span class="co">#&gt;   6.625   1.634   8.281</span></span></code></pre></div>
+<span><span class="co">#&gt;   6.441   1.332   7.772</span></span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="iterating-over-partitions-of-groups">Iterating over Partitions of Groups<a class="anchor" aria-label="anchor" href="#iterating-over-partitions-of-groups"></a>
