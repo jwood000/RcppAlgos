@@ -10,11 +10,7 @@ fixes.
 - Fixed
   [`compositionsCount()`](https://jwood000.github.io/RcppAlgos/reference/partitionsCount.md)
   for multiset inputs using both `freqs` and `target` when zero is not
-  included in the input. Affected cases could return counts that were
-  too small.
-- Fixed the corresponding constrained
-  [`permuteCount()`](https://jwood000.github.io/RcppAlgos/reference/combinatoricsCount.md)
-  counting path for repeated-frequency inputs with sum constraints.
+  included in the input.
 
 ### Improvements:
 
