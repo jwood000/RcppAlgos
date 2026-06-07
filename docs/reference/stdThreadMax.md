@@ -1,9 +1,9 @@
 # Max Number of Concurrent Threads
 
 Wrapper of
-[std::thread::hardware_concurrency()](https://en.cppreference.com/w/cpp/thread/thread/hardware_concurrency.html).
-As stated by [cppreference](https://en.cppreference.com/w/), the
-returned value should be considered only a hint.
+[std::thread::hardware_concurrency()](https://en.cppreference.com/cpp/thread/thread/hardware_concurrency).
+As stated by [cppreference](https://en.cppreference.com/), the returned
+value should be considered only a hint.
 
 ## Usage
 

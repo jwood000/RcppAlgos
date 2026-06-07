@@ -582,7 +582,7 @@ illustrate these structures.
 
 The algorithm in `comboGroups` avoids all of this duplication by
 implementing a novel algorithm akin to
-[std::next_permutation](https://en.cppreference.com/w/cpp/algorithm/next_permutation.html)
+[std::next_permutation](https://en.cppreference.com/cpp/algorithm/next_permutation)
 from the algorithm library in `C++`.
 
 ``` r
