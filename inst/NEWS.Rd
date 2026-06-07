@@ -1,10 +1,45 @@
 \name{NEWS}
 \title{News for Package \pkg{RcppAlgos}}
 
-\section{Changes in RcppAlgos version 2.10.0 (Release date: 2026-03-09)}{
-    \itemize{
+\section{Changes in RcppAlgos version 2.10.1 (Release date: 2026-06-10)}{
 
-        \item New Features:
+    This is a maintenance release with targeted correctness and portability fixes.
+
+    \subsection{Bug Fixes}{
+        \itemize{
+          \item Fixed \code{compositionsCount()} for multiset inputs using both
+          \code{freqs} and \code{target} when zero is not included in the input.
+          Affected cases could return counts that were too small.
+
+          \item Fixed the corresponding constrained \code{permuteCount()} counting path
+          for repeated-frequency inputs with sum constraints.
+        }
+    }
+
+    \subsection{Improvements}{
+        \itemize{
+          \item Improved startup-time core detection by removing platform-specific
+          shell-command fallbacks and using safer fallbacks when physical core
+          information is unavailable.
+
+          \item Simplified repeated-composition successor logic by replacing a suffix
+          reversal with direct assignment of the affected entries.
+        }
+    }
+
+    \subsection{Other}{
+        \itemize{
+          \item Added linux-arm64 continuous-integration coverage.
+        }
+    }
+}
+
+\section{Changes in RcppAlgos version 2.10.0 (Release date: 2026-03-08)}{
+    This release introduces major enhancements to the compositions framework, including support for distinct and repetition-restricted compositions, parallel ranking, and performance improvements across several combinatorial algorithms.
+
+    These enhancements integrate fully with the existing counting, ranking, sampling, and iterator infrastructure, and have been validated for correctness and consistency across supported combinatorial families.
+
+    \subsection{New Features}{
         \itemize{
             \item Added parallel capabilities to all ranking functions via the new \code{nThreads} argument (e.g. \code{comboRank()}, \code{partitionsRank()}, \code{compositionsRank()}), enabling faster ranking of large combinatorial results.
             \item Implemented a next-lexicographical algorithm for generating distinct integer compositions, enabling efficient generation of large problems such as \code{compositionsGeneral(50, 8)}.
@@ -12,21 +47,24 @@
             \item Added support for compositions with repetition subject to a maximum part constraint ("capped compositions"), including weak and non-weak cases, with full support for counting, ranking, sampling, and iteration.
             \item Enhanced \code{permuteCount()} to count permutations of partitions when called with \code{constraintFun = "sum"} and \code{comparisonFun = "=="}, enabling faster counting when problems reduce to partition/composition counting.
         }
+    }
 
-        \item Improvements:
+    \subsection{Improvements}{
         \itemize{
             \item Added validation at package load time to ensure the loaded shared library matches the installed package version, producing a clear error message instead of potential crashes caused by stale compiled code.
             \item Improved handling of certain constrained and ranking cases involving singleton inputs.
             \item Added internal tooling to support partition and composition counting workflows.
         }
+    }
 
-        \item Performance:
+    \subsection{Performance}{
         \itemize{
             \item Improved performance of ranking and generation algorithms, including support for parallel ranking.
             \item Improved performance and scalability of composition-related algorithms, particularly for constrained and distinct composition problems.
         }
+    }
 
-        \item Bug Fixes:
+    \subsection{Bug Fixes}{
         \itemize{
             \item Fixed an issue in \code{permuteIter()} affecting cases that reduce to permutations of partitions, which could previously produce incorrect iteration results.
             \item Improved input validation for constraint-based calls, producing clearer error messages for invalid inputs.
@@ -36,8 +74,7 @@
 }
 
 \section{Changes in RcppAlgos version 2.9.5 (Release date: 2026-01-29)}{
-    \itemize{
-        \item Other:
+    \subsection{Other}{
         \itemize{
             \item Fixed CITATION metadata so it can be read during CRAN incoming checks.
             \item Corrected a malformed GitHub issue URL and updated redirected/broken links.
@@ -46,8 +83,7 @@
 }
 
 \section{Changes in RcppAlgos version 2.9.4 (Release date: Never Released)}{
-    \itemize{
-        \item Other:
+    \subsection{Other}{
         \itemize{
             \item Replaced non-API use of \code{ATTRIB} in C++ internals to satisfy CRAN checks.
             \item Improved handling and diagnostics for classed raw-vector inputs (e.g. bigz/mpfr).
@@ -57,8 +93,7 @@
 }
 
 \section{Changes in RcppAlgos version 2.9.3 (Release date: 2025-02-03)}{
-    \itemize{
-        \item Other:
+    \subsection{Other}{
         \itemize{
             \item Corrected spelling in DESCRIPTION
         }
@@ -66,8 +101,7 @@
 }
 
 \section{Changes in RcppAlgos version 2.9.2 (Release date: Never Released)}{
-    \itemize{
-        \item Bug Fixes:
+    \subsection{Bug Fixes}{
         \itemize{
             \item Fixed clang-ASAN issue arising from calling vector::front on empty container.
         }
@@ -75,8 +109,7 @@
 }
 
 \section{Changes in RcppAlgos version 2.9.1 (Release date: 2025-01-27)}{
-    \itemize{
-        \item Other:
+    \subsection{Other}{
         \itemize{
             \item Fixed urls
         }
@@ -84,12 +117,12 @@
 }
 
 \section{Changes in RcppAlgos version 2.9.0 (Release date: Never Released)}{
-    \itemize{
-        \item New Features:
+    \subsection{New Features}{
         \itemize{
             \item Added Cartesian product functions: \code{expandGridCount}, \code{expandGrid}, \code{expandGridSample}, and \code{expandGridIter}.
         }
-        \item Bug Fixes:
+    }
+    \subsection{Bug Fixes}{
         \itemize{
             \item Fixed issue in \code{comboGroup} when groups of size 1 are passed. See \href{https://github.com/jwood000/RcppAlgos/issues/53}{Issue #53}.
         }
@@ -97,12 +130,12 @@
 }
 
 \section{Changes in RcppAlgos version 2.8.5 (Release date: 2024-10-11)}{
-    \itemize{
-        \item Other:
+    \subsection{Other}{
         \itemize{
             \item Updated Author field and removed Maintainer field in DESCRIPTION file per W.R.E.
         }
-        \item Bug Fixes:
+    }
+    \subsection{Bug Fixes}{
         \itemize{
             \item Fixed LLVM-19 error occurring in libdivide header. See \href{https://github.com/ridiculousfish/libdivide/pull/113}{PR #113}
         }
@@ -110,13 +143,13 @@
 }
 
 \section{Changes in RcppAlgos version 2.8.4 (Release date: Never Released)}{
-    \itemize{
-        \item New Features:
+    \subsection{New Features}{
         \itemize{
             \item Can now pass integer convertible results to the sample functions for the \code{n} parameter.
             \item Added \code{...} to allow for passing additional arguments to \code{FUN}. For example: \code{comboGeneral(letters, 3, FUN = paste, collapse = ", ")}.
         }
-        \item Bug Fixes:
+    }
+    \subsection{Bug Fixes}{
         \itemize{
             \item Fixed bug with iterator when multithreading and exhausting the iterator.
             \item Enforced values being converted to a primitive to be of length 1.
@@ -126,13 +159,13 @@
 }
 
 \section{Changes in RcppAlgos version 2.8.3 (Release date: 2023-12-10)}{
-    \itemize{
-        \item New Features:
+    \subsection{New Features}{
         \itemize{
             \item Now the combination and permutation functions are more flexible with S3 methods.
             \item Added \code{...} to allow for passing additional arguments to \code{FUN}. For example: \code{comboGeneral(letters, 3, FUN = paste, collapse = ", ")}.
         }
-        \item Bug Fixes:
+    }
+    \subsection{Bug Fixes}{
         \itemize{
             \item Added explicit type conversion to \code{Rprintf}.
         }
@@ -140,8 +173,7 @@
 }
 
 \section{Changes in RcppAlgos version 2.8.2 (Release date: 2023-10-02)}{
-    \itemize{
-        \item New Features:
+    \subsection{New Features}{
         \itemize{
             \item We have added \code{comboGroupsIter}. This a flexible iterator for iterating over partitions of groups. Offers random access, the ability to retrieve the next group or the next \eqn{n} groups at a time while keeping memory low.
         }
@@ -149,8 +181,7 @@
 }
 
 \section{Changes in RcppAlgos version 2.8.1 (Release date: 2023-08-14)}{
-    \itemize{
-        \item Bug Fixes:
+    \subsection{Bug Fixes}{
         \itemize{
             \item Fixed integer overflow bug when converting vector size to number of rows in a matrix. See \href{https://github.com/jwood000/RcppAlgos/issues/45}{Issue #45}.
             \item Fixed constraint permutation iterator. Before this fix, if a user requested a certain number of results such that the \code{std::next_permutation} algorithm was not exhausted, the next iteration requested would be nonsensical.
@@ -159,8 +190,7 @@
 }
 
 \section{Changes in RcppAlgos version 2.8.0 (Release date: 2023-07-11)}{
-    \itemize{
-        \item New Features:
+    \subsection{New Features}{
         \itemize{
             \item \code{comboGroups} can now handle groups of different sizes.
         }
@@ -168,8 +198,7 @@
 }
 
 \section{Changes in RcppAlgos version 2.7.2 (Release date: 2023-02-11)}{
-    \itemize{
-        \item Others:
+    \subsection{Other}{
         \itemize{
             \item Using a copy of \code{gmpxx.h} source in order to easily build on all platforms.
         }
@@ -177,8 +206,7 @@
 }
 
 \section{Changes in RcppAlgos version 2.7.1 (Release date: 2023-02-06)}{
-    \itemize{
-        \item Others:
+    \subsection{Other}{
         \itemize{
             \item Updated default C++ specification.
         }
@@ -186,8 +214,7 @@
 }
 
 \section{Changes in RcppAlgos version 2.7.0 (Release date: Never Released)}{
-    \itemize{
-        \item Others:
+    \subsection{Other}{
         \itemize{
             \item Now using \code{gmpxx.h} instead of \code{gmp.h}.
         }
@@ -195,8 +222,7 @@
 }
 
 \section{Changes in RcppAlgos version 2.6.0 (Release date: 2022-08-15)}{
-    \itemize{
-        \item New Features:
+    \subsection{New Features}{
         \itemize{
             \item Added integer composition functions: \code{compositionsCount}, \code{compositionsGeneral}, \code{compositionsSample}, \code{compositionsIter}, and \code{compositionsRank}.
         }
@@ -204,17 +230,18 @@
 }
 
 \section{Changes in RcppAlgos version 2.5.5 (Release date: Never Released)}{
-    \itemize{
-        \item New Features:
+    \subsection{New Features}{
         \itemize{
             \item Added ranking functions: \code{comboRank}, \code{permuteRank}, and \code{partitionsRank}
             \item Added back the ability to interrupt general constraint problems via \code{cpp11::check_user_interrupt()}.
         }
-        \item Other:
+    }
+    \subsection{Other}{
         \itemize{
             \item Corrected \code{if()} conditions comparing \code{class()} to string. Changed to \code{is.character}.
         }
-        \item Bug Fixes:
+    }
+    \subsection{Bug Fixes}{
         \itemize{
             \item Now checking class of input vector for partition functions.
             \item Now when \code{partitionsCount} returns 0, the number of results is zero. Before, we were checking for the count of partitions to be greater than zero, otherwise we would use the standard combinatorial counting functions to determine the number of results. This lead to strange results with elements not present in the original vector.
@@ -224,8 +251,7 @@
 }
 
 \section{Changes in RcppAlgos version 2.5.4 (Release date: Never Released)}{
-    \itemize{
-        \item Other:
+    \subsection{Other}{
         \itemize{
             \item Added missing includes
         }
@@ -233,8 +259,7 @@
 }
 
 \section{Changes in RcppAlgos version 2.5.3 (Release date: 2022-03-31)}{
-    \itemize{
-        \item Other:
+    \subsection{Other}{
         \itemize{
             \item Fixed urls
         }
@@ -242,8 +267,7 @@
 }
 
 \section{Changes in RcppAlgos version 2.5.2 (Release date: Never Released)}{
-    \itemize{
-        \item Bug Fixes:
+    \subsection{Bug Fixes}{
         \itemize{
             \item Fixed valgrind memory issue with package cpp11. Now using \code{cpp11::stop} instead of \code{Rf_error} so as to avoid \code{longjmp} (the root cause of the memory issues).
         }
@@ -251,8 +275,7 @@
 }
 
 \section{Changes in RcppAlgos version 2.5.1 (Release date: Never Released)}{
-    \itemize{
-        \item Bug Fixes:
+    \subsection{Bug Fixes}{
         \itemize{
             \item Fixed memory issue when the number of results under contraint is less than the requested number.
         }
@@ -260,25 +283,27 @@
 }
 
 \section{Changes in RcppAlgos version 2.5.0 (Release date: 2022-03-16)}{
-    \itemize{
-        \item New Features:
+    \subsection{New Features}{
         \itemize{
             \item Added partition specific functions: \code{partionsGeneral}, \code{partitionsCount}, \code{partitionsIter}, and \code{partitionsSample}
             \item \code{comboIter} and \code{permuteIter} now work with constraints.
             \item Dropped Rcpp and RcppThread as a dependency to reduce compile time and binary size. As a result, there is no longer the ability to interrupt long running processes. Will investigate in next release.
             \item We have added the parameter \code{FUN.VALUE} to \code{comboGeneral} and \code{permuteGeneral}. It acts as a template for the return value of \code{FUN}. The implementation is modeled after \code{vapply}.
         }
-        \item Enhancements:
+    }
+    \subsection{Enhancements}{
         \itemize{
             \item Improved underlying algorithm for \code{comboGrid} to be more memory efficient.
             \item Made minor changes to make data types more consistent in \code{primeCount} and \code{primeSieve}.
         }
-        \item Bug Fixes:
+    }
+    \subsection{Bug Fixes}{
         \itemize{
             \item When \code{permuteGeneral} is used with multisets and the width is maximized, multithreading would fail. This is fixed in 2.5.0.
             \item Fixed bug in retreiving the \eqn{n^{th}}{nth} result in \code{comboGroup} and \code{comboGroupSample} when the number of results was greater than \eqn{2^{31} - 1}{2^31 - 1} and less than \eqn{2^{53} - 1}{2^53 - 1}. \emph{E.g.} \code{comboGroupsSample(27, 9, seed = 4, sampleVec = 1606990240475839)} gives incorrect results in the \eqn{5^{th}}{5th} group in prior versions. Now fixed!.
         }
-        \item Other:
+    }
+    \subsection{Other}{
         \itemize{
             \item In this version we no longer output lexicographical composititions in very special circumstances outlined in older documentation using \code{permuteGeneral}. This was done for consistency as we felt that the output diverged too much from the general constrained output of \code{permuteGeneral} (See \href{https://jwood000.github.io/RcppAlgos/articles/CombPermConstraints.html#output-order-with-permutegeneral}{Output Order with permuteGeneral}). Research is in the initial stage that is focused on implementing a new family of functions similar to the partition family of functions, but for compositions.
         }
@@ -286,8 +311,7 @@
 }
 
 \section{Changes in RcppAlgos version 2.4.3 (Release date: 2021-05-30)}{
-    \itemize{
-        \item Other:
+    \subsection{Other}{
         \itemize{
             \item Fixed urls
         }
@@ -295,16 +319,17 @@
 }
 
 \section{Changes in RcppAlgos version 2.4.2 (Release date: Never Released)}{
-    \itemize{
-        \item New Features:
+    \subsection{New Features}{
         \itemize{
             \item Added function \code{comboGrid} for efficiently generating the Cartesian product where order does not matter.
         }
-        \item Enhancements:
+    }
+    \subsection{Enhancements}{
         \itemize{
             \item Refactored code base to reduce binary size
         }
-        \item Other:
+    }
+    \subsection{Other}{
         \itemize{
             \item Removed LazyData from DESCRIPTION. Also added \code{rmarkdown} to Suggests.
         }
@@ -312,8 +337,7 @@
 }
 
 \section{Changes in RcppAlgos version 2.4.1 (Release date: 2020-03-24)}{
-    \itemize{
-        \item Other:
+    \subsection{Other}{
         \itemize{
             \item Fixed urls
         }
@@ -321,17 +345,18 @@
 }
 
 \section{Changes in RcppAlgos version 2.4.0 (Release date: Never Released)}{
-    \itemize{
-        \item New Features:
+    \subsection{New Features}{
         \itemize{
             \item Added \code{comboIter} and \code{permuteIter}. These functions return iterators for iterating over combinations and permutations. They have a similar interface to \code{comboGeneral} and \code{permuteGeneral} and currently only work with standard combinations and permutations. They do not yet work with constraints (This will be the focus of the next release).
             \item Added "High Performance Benchmarks" and "Combinatorial Iterators in RcppAlgos" vignettes
         }
-        \item Enhancements:
+    }
+    \subsection{Enhancements}{
         \itemize{
             \item Now able to interrupt general constraint problems
         }
-        \item Bug Fixes:
+    }
+    \subsection{Bug Fixes}{
         \itemize{
             \item In 2.3.5 and 2.3.6, we mistakingly allowed a \code{constraintFun} to be applied to a logical vector which was crashing R. We have corrected this in 2.4.0+.
             \item Changed the data type for sizing the index matrix in \code{permuteGeneral}. Originally, we were using \code{int} and when the output was large enough, it was causing an integer overflow thus causing the index matrix to be improperly sized. We have since changed the data type to the recommended \code{std::size_t}.
@@ -340,8 +365,7 @@
 }
 
 \section{Changes in RcppAlgos version 2.3.6 (Release date: 2020-01-29)}{
-    \itemize{
-        \item Bug Fixes:
+    \subsection{Bug Fixes}{
         \itemize{
             \item Fixed bug associated with integer vectors, multisets, and constraints. See \href{https://github.com/jwood000/RcppAlgos/issues/12}{Issue #12} for more information.
         }
@@ -349,15 +373,15 @@
 }
 
 \section{Changes in RcppAlgos version 2.3.5 (Release date: 2020-01-27)}{
-    \itemize{
-        \item New Features:
+    \subsection{New Features}{
         \itemize{
             \item Added \code{comboGroups}, \code{comboGroupsCount}, and \code{comboGroupsSample}. These functions deal with partitioning a vector/set into groups of equal size. See \href{https://stackoverflow.com/q/57732672/4408538}{Create Combinations in R by Groups}. See the related integer sequences A025035-A025042 at \href{https://oeis.org}{OEIS} (E.g. \href{https://oeis.org/A025036}{A025036} for Number of partitions of \eqn{ 1, 2, ..., 4n } into sets of size 4.)
             \item Added vignettes (First version with vignettes)
             \item Added website via the excellent package pkgdown
             \item Now using C++11 instead of C++14. See \href{https://github.com/jwood000/RcppAlgos/issues/10}{Issue #10} for more information.
         }
-        \item Enhancements:
+    }
+    \subsection{Enhancements}{
         \itemize{
             \item Extended general partitions algorithm to multisets. E.g. \code{comboGeneral(10, 8, freqs = rep(1:5, 2), constraintFun = "sum", comparisonFun = "==", limitConstraints = 55)}
             \item Improved constraint algorithm for the general case.
@@ -365,7 +389,8 @@
             \item Improved permutation algorithm for all cases (I.e. no rep, with rep, and with multisets).
             \item Added loop unrolling to prime sieve algorithm for improved efficiency.
         }
-        \item Bug Fixes:
+    }
+    \subsection{Bug Fixes}{
         \itemize{
             \item Corrected checks for total number of partitions and assignment of number of rows when \code{upper} is applied in \code{{combo|permute}General}. See \href{https://github.com/jwood000/RcppAlgos/issues/9}{Issue #9} for more information.
             \item \code{permuteGeneral} no longer alters source vector. See \href{https://github.com/jwood000/RcppAlgos/issues/11}{Issue #11} for more information.
@@ -426,14 +451,14 @@
                 \item \code{permuteGeneral(12, 7, TRUE, constraintFun = "sum", Parallel = TRUE)}
             }
         \item Logical class is now preserved in combinatorial functions
-        \item {Added gmp support to combinatorial functions. Now, one can accurately and quickly work with combinations/permutations of large vectors \emph{E.g.}:
-            \itemize{
-                \item \code{comboSample(runif(10000), 100, n = 10, seed = 42, Parallel = TRUE)}
-                \item \code{permuteGeneral(factor(state.name), 20,
-                            lower = 1e15, upper = 1e15 + 1000)}
-            }
+        \item Added gmp support to combinatorial functions. Now, one can accurately and quickly work with combinations/permutations of large vectors. \emph{E.g.}:
+
+        \itemize{
+            \item \code{comboSample(runif(10000), 100, n = 10, seed = 42, Parallel = TRUE)}
+            \item \code{permuteGeneral(factor(state.name), 20,
+                        lower = 1e15, upper = 1e15 + 1000)}
         }
-        \item {Added \code{FUN} argument to all combinatorial functions. Allows user to pass custom functions to be applied to combinations/permutations.}
+        \item Added \code{FUN} argument to all combinatorial functions. Allows user to pass custom functions to be applied to combinations/permutations.
     }
 }
 
