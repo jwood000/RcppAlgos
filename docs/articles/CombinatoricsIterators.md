@@ -1,0 +1,1293 @@
+# Combinatorial Iterators in RcppAlgos
+
+This document covers working with combinatorial iterators in
+`RcppAlgos`. Combinatorial iterators in `RcppAlgos` are memory efficient
+like traditional iterator objects. They allow traversal of
+combinations/permutations/partitions/compositions/comboGroups one by one
+without the necessity for storing all results in memory.
+
+Unlike traditional combinatorial iterators, the iterators in `RcppAlgos`
+offers random access via the `[[` operator. This means, we can access
+the *n^(th)* [lexicographical
+order](https://en.wikipedia.org/wiki/Lexicographical_order) result on
+demand without having to first iterate over the previous *n - 1*
+results.
+
+------------------------------------------------------------------------
+
+## Iterating over Combinations and Permutations
+
+In order to iterate, we must initialize an iterator via `comboIter` or
+`permuteIter`. The interface is very similar to `comboGeneral` and
+`permuteGeneral`.
+
+``` r
+
+library(RcppAlgos)
+options(width = 90)
+
+## Initialize the iterator
+a = comboIter(5, 3)
+
+## Get the first combination
+a$nextIter()
+#> [1] 1 2 3
+
+## And the next
+a$nextIter()
+#> [1] 1 2 4
+
+## Set the current iterator to a variable
+iter = a$currIter()
+i = 1
+
+## Iterate until there are no more
+while (!is.null(iter)) {
+    cat(i, " ", iter, "\n")
+    iter = a$nextIter()
+    i = i + 1
+}
+#> 1   1 2 4 
+#> 2   1 2 5 
+#> 3   1 3 4 
+#> 4   1 3 5 
+#> 5   1 4 5 
+#> 6   2 3 4 
+#> 7   2 3 5 
+#> 8   2 4 5 
+#> 9   3 4 5 
+#> No more results. To see the last result, use the prevIter method(s)
+
+## See the output of comboGeneral for comparison
+comboGeneral(5, 3, lower = 2)
+#>       [,1] [,2] [,3]
+#>  [1,]    1    2    4
+#>  [2,]    1    2    5
+#>  [3,]    1    3    4
+#>  [4,]    1    3    5
+#>  [5,]    1    4    5
+#>  [6,]    2    3    4
+#>  [7,]    2    3    5
+#>  [8,]    2    4    5
+#>  [9,]    3    4    5
+
+## Call the summary method to see information about our iterator
+a$summary()
+#> $description
+#> [1] "Combinations of 5 choose 3"
+#> 
+#> $currentIndex
+#> [1] 11
+#> 
+#> $totalResults
+#> [1] 10
+#> 
+#> $totalRemaining
+#> [1] -1
+```
+
+### Bidirectional Iterators
+
+Some of the combinatorial iterators in `RcppAlgos` are bidirectional
+iterators. This means that not only can we iterate in a forward manner
+(i.e. lexicographically), but we can also iterate backwards
+(i.e. [Reverse Lexicographical
+Order](https://oeis.org/wiki/Orderings#Reverse_lexicographic_order)) via
+the `prevIter` method(s).
+
+``` r
+
+## Using the same iterable from the previous section
+a$currIter()
+#> No more results. To see the last result, use the prevIter method(s)
+#> NULL
+
+## As the comment says, we call the prevIter method to see the last result
+a$prevIter()
+#> [1] 3 4 5
+
+## Get the previous result
+a$prevIter()
+#> [1] 2 4 5
+
+## As in the previous example, we set the current iterator to a variable
+iter = a$currIter()
+
+## Defined above
+print(i)
+#> [1] 10
+
+## Iterate until we are at the very beginning. Note that the
+## output is exactly the same as above, but in reverse order
+while (!is.null(iter)) {
+    i = i - 1
+    cat(i, " ", iter, "\n")
+    iter = a$prevIter()
+}
+#> 9   2 4 5 
+#> 8   2 3 5 
+#> 7   2 3 4 
+#> 6   1 4 5 
+#> 5   1 3 5 
+#> 4   1 3 4 
+#> 3   1 2 5 
+#> 2   1 2 4 
+#> 1   1 2 3 
+#> Iterator Initialized. To see the first result, use the nextIter method(s)
+
+## Call the summary method to see information about our iterator
+a$summary()
+#> $description
+#> [1] "Combinations of 5 choose 3"
+#> 
+#> $currentIndex
+#> [1] 0
+#> 
+#> $totalResults
+#> [1] 10
+#> 
+#> $totalRemaining
+#> [1] 10
+```
+
+### Retrieving More than One Result at a Time
+
+There are four methods which allow for obtaining more than one result at
+a time: `nextNIter`, `prevNIter`, `nextRemaining`, and `prevRemaining`.
+
+``` r
+
+## Reset the iterator
+a$startOver()
+
+## Get the next 4 combinations
+a$nextNIter(4)
+#>      [,1] [,2] [,3]
+#> [1,]    1    2    3
+#> [2,]    1    2    4
+#> [3,]    1    2    5
+#> [4,]    1    3    4
+
+## Get the summary. Note that the index has been updated
+a$summary()
+#> $description
+#> [1] "Combinations of 5 choose 3"
+#> 
+#> $currentIndex
+#> [1] 4
+#> 
+#> $totalResults
+#> [1] 10
+#> 
+#> $totalRemaining
+#> [1] 6
+
+## View the current combination
+a$currIter()
+#> [1] 1 3 4
+
+## Get the remaining combinations with nextRemaining
+a$nextRemaining()
+#>      [,1] [,2] [,3]
+#> [1,]    1    3    5
+#> [2,]    1    4    5
+#> [3,]    2    3    4
+#> [4,]    2    3    5
+#> [5,]    2    4    5
+#> [6,]    3    4    5
+
+a$summary()
+#> $description
+#> [1] "Combinations of 5 choose 3"
+#> 
+#> $currentIndex
+#> [1] 11
+#> 
+#> $totalResults
+#> [1] 10
+#> 
+#> $totalRemaining
+#> [1] -1
+```
+
+Now, we look at the opposite direction.
+
+``` r
+
+## Get the previous 4 combinations
+a$prevNIter(4)
+#>      [,1] [,2] [,3]
+#> [1,]    3    4    5
+#> [2,]    2    4    5
+#> [3,]    2    3    5
+#> [4,]    2    3    4
+
+## Get the summary. Note that the index has been updated
+a$summary()
+#> $description
+#> [1] "Combinations of 5 choose 3"
+#> 
+#> $currentIndex
+#> [1] 7
+#> 
+#> $totalResults
+#> [1] 10
+#> 
+#> $totalRemaining
+#> [1] 3
+
+## View the current combination
+a$currIter()
+#> [1] 2 3 4
+
+## Get the remaining previous combinations with prevRemaining
+a$prevRemaining()
+#>      [,1] [,2] [,3]
+#> [1,]    1    4    5
+#> [2,]    1    3    5
+#> [3,]    1    3    4
+#> [4,]    1    2    5
+#> [5,]    1    2    4
+#> [6,]    1    2    3
+
+a$summary()
+#> $description
+#> [1] "Combinations of 5 choose 3"
+#> 
+#> $currentIndex
+#> [1] 0
+#> 
+#> $totalResults
+#> [1] 10
+#> 
+#> $totalRemaining
+#> [1] 10
+```
+
+### Random Access Iterator
+
+As with the bidirectional iterators, with some of the combinatorial
+iterators in `RcppAlgos`, we can jump to the *n^(th)* result without the
+need for iterating over the first *n - 1* results.
+
+``` r
+
+## Reset the iterator
+a$startOver()
+
+## How many total combinations do we have?
+a$summary()$totalResults
+#> [1] 10
+
+## Let's get the 3rd combination
+a[[3]]
+#> [1] 1 2 5
+
+## See the summary. Note that the index has been updated
+a$summary()
+#> $description
+#> [1] "Combinations of 5 choose 3"
+#> 
+#> $currentIndex
+#> [1] 3
+#> 
+#> $totalResults
+#> [1] 10
+#> 
+#> $totalRemaining
+#> [1] 7
+
+## Let's see the 9th combination
+a[[9]]
+#> [1] 2 4 5
+
+## What about the first and last combination?
+a$front()
+#> [1] 1 2 3
+
+a$back()
+#> [1] 3 4 5
+
+## Again the index has been updated
+a$summary()
+#> $description
+#> [1] "Combinations of 5 choose 3"
+#> 
+#> $currentIndex
+#> [1] 10
+#> 
+#> $totalResults
+#> [1] 10
+#> 
+#> $totalRemaining
+#> [1] 0
+
+a$currIter()
+#> [1] 3 4 5
+```
+
+We can also easily return a random sample of combinations with the `[[`
+operator by passing a vector of indices. In these cases, it should be
+noted that the current index will not be updated.
+
+``` r
+
+## Set the current index to the second combination
+a[[2]]
+#> [1] 1 2 4
+
+set.seed(121)
+samp = sample(a$summary()$totalResults, 4)
+
+samp
+#> [1]  4  7 10  1
+
+a[[samp]]
+#>      [,1] [,2] [,3]
+#> [1,]    1    3    4
+#> [2,]    2    3    4
+#> [3,]    3    4    5
+#> [4,]    1    2    3
+
+## Note that the current index remains unchanged
+a$summary()
+#> $description
+#> [1] "Combinations of 5 choose 3"
+#> 
+#> $currentIndex
+#> [1] 2
+#> 
+#> $totalResults
+#> [1] 10
+#> 
+#> $totalRemaining
+#> [1] 8
+```
+
+### User Defined Functions
+
+Just as with `comboGeneral` and `permuteGeneral`, we can pass a user
+defined function to `comboIter` and `permuteIter`.
+
+``` r
+
+## Initialize the iterator
+b = permuteIter(LETTERS[1:4], 3, FUN = function(p) paste(p, collapse = ""),
+                FUN.VALUE = "a")
+b$nextIter()
+#> [1] "ABC"
+
+b$nextNIter(5)
+#> [1] "ABD" "ACB" "ACD" "ADB" "ADC"
+
+b$back()
+#> [1] "DCB"
+
+b$prevIter()
+#> [1] "DCA"
+
+b$prevNIter(5)
+#> [1] "DBC" "DBA" "DAC" "DAB" "CDB"
+
+b$nextRemaining()
+#> [1] "DAB" "DAC" "DBA" "DBC" "DCA" "DCB"
+
+## Random access
+b[[5]]
+#> [1] "ADB"
+
+b$prevRemaining()
+#> [1] "ACD" "ACB" "ABD" "ABC"
+
+## View the source vector
+b$sourceVector()
+#> [1] "A" "B" "C" "D"
+```
+
+## Transition from `Rcpp` Modules to `S4` + External Pointers
+
+As of version `2.5.0`, we no longer rely on `Rcpp` as a dependency,
+which means that we do not utilize `Rcpp` modules for exposing C++
+classes. This is now carried out using external pointers (See [External
+pointers and weak
+references](https://cran.r-project.org/doc/manuals/r-release/R-exts.html#External-pointers-and-weak-references))
+along with [S4 Classes](http://adv-r.had.co.nz/S4.md). We use the slots
+of `S4` classes for exposing each method so access is carried out with
+the “at sign”, `@`. We have also added the ability to access each method
+with the “dollar sign”, `$`, for backwards compatibility.
+
+## Access Efficiency in `2.5.0+`
+
+Our tests show that accessing iterator methods is much more efficient in
+`2.5.0+` compared to prior versions. In earlier versions, repeated calls
+such as `a$nextIter()` inside tight loops incurred noticeable overhead
+due to method lookup and dispatch. Profiling reveals that a significant
+portion of execution time was spent resolving the accessor itself (e.g.,
+through `$`, `get`, and `exists`) rather than executing the underlying
+combinatorial routine.
+
+With the current implementation, methods are exposed directly through
+`S4` slots backed by external pointers, which greatly reduces the cost
+of repeated method access. As a result, the majority of the
+per-iteration cost is now associated with the `.Call` boundary and the
+creation of the returned R object rather than repeated accessor
+resolution.
+
+In the tests below, we measure execution time of calling `nextIter`
+multiple times in different versions. We will use the function
+`test_nextIter` for our testing. If one needs to reproduce these
+results, simply download the `2.4.3` tar here:
+<https://cran.r-project.org/src/contrib/Archive/RcppAlgos/>, change
+`RcppAlgos` to `RcppAlgos243` in a few places (e.g., `DESCRIPTION`,
+`NAMESPACE`, etc.), and rebuild.
+
+``` r
+
+test_nextIter <- function(n, m, get_val = FALSE, v = 243, caching = FALSE) {
+    a <- if (v == 243) {
+        RcppAlgos243::comboIter(n, m)
+    } else {
+        comboIter(n, m)
+    }
+
+    total <- comboCount(n, m)
+
+    if (get_val) {
+        mat <- matrix(0L, nrow = total, ncol = m)
+
+        if (caching) {
+            if (v == 243) {
+                f <- a$nextIter
+                for (i in seq_len(total)) mat[i, ] <- f()
+            } else {
+                g <- a@nextIter
+                for (i in seq_len(total)) mat[i, ] <- g()
+            }
+        } else {
+            if (v == 243) {
+                for (i in seq_len(total)) mat[i, ] <- a$nextIter()
+            } else {
+                for (i in seq_len(total)) mat[i, ] <- a@nextIter()
+            }
+        }
+
+        return(mat)
+    }
+
+    if (caching) {
+        if (v == 243) {
+            f <- a$nextIter
+            for (i in seq_len(total)) f()
+        } else {
+            g <- a@nextIter
+            for (i in seq_len(total)) g()
+        }
+
+        return(invisible(NULL))
+    }
+
+    if (v == 243) {
+        for (i in seq_len(total)) a$nextIter()
+    } else {
+        for (i in seq_len(total)) a@nextIter()
+    }
+
+    invisible(NULL)
+}
+```
+
+### Version `2.4.3` Using `Rcpp`
+
+``` r
+
+library(microbenchmark)
+## Using R version 4.1.3
+comboCount(15, 8)
+#> [1] 6435
+
+microbenchmark(v243 = test_nextIter(15, 8))
+#> Warning in microbenchmark(v243 = test_nextIter(15, 8)): less accurate nanosecond times to
+#> avoid potential integer overflows
+#> Unit: milliseconds
+#>  expr      min       lq     mean   median       uq      max neval
+#>  v243 16.58975 17.05336 18.67597 17.12195 17.33861 160.6705   100
+
+identical(test_nextIter(15, 8, get_val = TRUE),
+          comboGeneral(15, 8))
+#> [1] TRUE
+
+comboCount(25, 10)
+#> [1] 3268760
+
+system.time(test_nextIter(25, 10))
+#>    user  system elapsed 
+#>   8.772   0.026   8.858
+
+Rprof("Version243.out", memory.profiling = TRUE)
+test_nextIter(25, 10)
+Rprof(NULL)
+lapply(summaryRprof("Version243.out", memory = "both"), head)
+#> $by.self
+#>                  self.time self.pct total.time total.pct mem.total
+#> "as.environment"      2.58    32.49       2.58     32.49     390.7
+#> "$"                   2.40    30.23       6.16     77.58     855.9
+#> "test_nextIter"       0.88    11.08       7.94    100.00    1233.1
+#> "exists"              0.62     7.81       0.62      7.81      73.4
+#> "get"                 0.56     7.05       0.56      7.05      74.4
+#> ".External"           0.54     6.80       0.54      6.80     106.3
+#> 
+#> $by.total
+#>                             total.time total.pct mem.total self.time self.pct
+#> "test_nextIter"                   7.94       100    1233.1      0.88    11.08
+#> "<Anonymous>"                     7.94       100    1233.1      0.00     0.00
+#> "base::do.call"                   7.94       100    1233.1      0.00     0.00
+#> "base::saveRDS"                   7.94       100    1233.1      0.00     0.00
+#> "base::tryCatch"                  7.94       100    1233.1      0.00     0.00
+#> "base::withCallingHandlers"       7.94       100    1233.1      0.00     0.00
+#> 
+#> $sample.interval
+#> [1] 0.02
+#> 
+#> $sampling.time
+#> [1] 7.94
+```
+
+### Version `2.10.1` (No `Rcpp`)
+
+``` r
+
+curr_version <- as.integer(gsub("\\.", "", packageVersion("RcppAlgos")))
+curr_version
+#> [1] 2101
+microbenchmark(curr_v = test_nextIter(15, 8, v = curr_version))
+#> Unit: milliseconds
+#>    expr      min       lq     mean   median       uq      max neval
+#>  curr_v 1.959308 1.999344 2.065847 2.024129 2.046412 3.122929   100
+
+system.time(test_nextIter(25, 10, v = curr_version))
+#>    user  system elapsed 
+#>   0.959   0.007   0.965
+
+identical(test_nextIter(15, 8, get_val = TRUE, v = curr_version),
+          comboGeneral(15, 8))
+#> [1] TRUE
+
+curr_file_out <- paste0("Version", curr_version, ".out")
+Rprof(curr_file_out, memory.profiling = TRUE)
+test_nextIter(25, 10, v = curr_version)
+Rprof(NULL)
+lapply(summaryRprof(curr_file_out, memory = "both"), head)
+#> $by.self
+#>                 self.time self.pct total.time total.pct mem.total
+#> ".Call"              0.36    39.13       0.36     39.13     109.8
+#> "<Anonymous>"        0.34    36.96       0.92    100.00     411.5
+#> "test_nextIter"      0.22    23.91       0.92    100.00     411.5
+#> 
+#> $by.total
+#>                             total.time total.pct mem.total self.time self.pct
+#> "<Anonymous>"                     0.92       100     411.5      0.34    36.96
+#> "test_nextIter"                   0.92       100     411.5      0.22    23.91
+#> "base::do.call"                   0.92       100     411.5      0.00     0.00
+#> "base::saveRDS"                   0.92       100     411.5      0.00     0.00
+#> "base::tryCatch"                  0.92       100     411.5      0.00     0.00
+#> "base::withCallingHandlers"       0.92       100     411.5      0.00     0.00
+#> 
+#> $sample.interval
+#> [1] 0.02
+#> 
+#> $sampling.time
+#> [1] 0.92
+```
+
+### Caching Results w/ 2.4.3
+
+``` r
+
+microbenchmark(v243cache = test_nextIter(15, 8, caching = TRUE))
+#> Unit: milliseconds
+#>       expr      min      lq     mean   median       uq      max neval
+#>  v243cache 2.152869 2.20498 2.308451 2.239338 2.295406 3.294637   100
+system.time(test_nextIter(25, 10, caching = TRUE))
+#>    user  system elapsed 
+#>   1.099   0.005   1.103
+
+identical(test_nextIter(15, 8, get_val = TRUE, caching = TRUE),
+          comboGeneral(15, 8))
+#> [1] TRUE
+
+Rprof("Version243cache.out", memory.profiling = TRUE)
+test_nextIter(25, 10, caching = TRUE)
+Rprof(NULL)
+lapply(summaryRprof("Version243cache.out", memory = "both"), head)
+#> $by.self
+#>                 self.time self.pct total.time total.pct mem.total
+#> ".External"          0.62    63.27       0.62     63.27     134.9
+#> "f"                  0.28    28.57       0.90     91.84     246.6
+#> "test_nextIter"      0.08     8.16       0.98    100.00     307.7
+#> 
+#> $by.total
+#>                             total.time total.pct mem.total self.time self.pct
+#> "test_nextIter"                   0.98       100     307.7      0.08     8.16
+#> "<Anonymous>"                     0.98       100     307.7      0.00     0.00
+#> "base::do.call"                   0.98       100     307.7      0.00     0.00
+#> "base::saveRDS"                   0.98       100     307.7      0.00     0.00
+#> "base::tryCatch"                  0.98       100     307.7      0.00     0.00
+#> "base::withCallingHandlers"       0.98       100     307.7      0.00     0.00
+#> 
+#> $sample.interval
+#> [1] 0.02
+#> 
+#> $sampling.time
+#> [1] 0.98
+```
+
+### Caching Results w/ `2.10.1`
+
+``` r
+
+microbenchmark(curr_v = test_nextIter(15, 8, v = curr_version,
+                                      caching = TRUE))
+#> Unit: milliseconds
+#>    expr      min       lq     mean   median       uq      max neval
+#>  curr_v 1.782639 1.816095 1.876918 1.839322 1.895655 2.562459   100
+system.time(test_nextIter(25, 10, v = curr_version, caching = TRUE))
+#>    user  system elapsed 
+#>   0.906   0.003   0.909
+
+identical(test_nextIter(15, 8, get_val = TRUE,
+                        v = curr_version, caching = TRUE),
+          comboGeneral(15, 8))
+#> [1] TRUE
+
+curr_file_cache_out <- paste0("Version", curr_version, "cache.out")
+Rprof(curr_file_cache_out, memory.profiling = TRUE)
+test_nextIter(25, 10, v = curr_version, caching = TRUE)
+Rprof(NULL)
+lapply(summaryRprof(curr_file_cache_out, memory = "both"), head)
+#> $by.self
+#>                 self.time self.pct total.time total.pct mem.total
+#> "g"                  0.42     50.0       0.74      88.1     289.5
+#> ".Call"              0.32     38.1       0.32      38.1      96.0
+#> "test_nextIter"      0.10     11.9       0.84     100.0     340.6
+#> 
+#> $by.total
+#>                             total.time total.pct mem.total self.time self.pct
+#> "test_nextIter"                   0.84       100     340.6       0.1     11.9
+#> "<Anonymous>"                     0.84       100     340.6       0.0      0.0
+#> "base::do.call"                   0.84       100     340.6       0.0      0.0
+#> "base::saveRDS"                   0.84       100     340.6       0.0      0.0
+#> "base::tryCatch"                  0.84       100     340.6       0.0      0.0
+#> "base::withCallingHandlers"       0.84       100     340.6       0.0      0.0
+#> 
+#> $sample.interval
+#> [1] 0.02
+#> 
+#> $sampling.time
+#> [1] 0.84
+```
+
+### Access Efficiency Conclusions
+
+To better understand where the performance difference comes from, we
+inspect the memory statistics reported by `Rprof`. In particular, we
+examine the counts associated with the internal C function `duplicate`,
+which is used by R when objects must be copied. Large numbers of calls
+to `duplicate` can be an indication that additional work is being
+performed during each iteration.
+
+Using the memory statistics described in [Memory statistics from
+Rprof](https://cran.r-project.org/doc/manuals/r-release/R-exts.html#Memory-statistics-from-Rprof),
+we compare the profiling output from version `2.4.3` with the current
+implementation.
+
+``` r
+
+## We set index = 1 to ensure we get the very bottom of the stack
+
+## Version 2.4.3
+v243 <- summaryRprof("Version243.out", memory = "stats", index = 1)
+v243
+#> index: "base::tryCatch"
+#>      vsize.small  max.vsize.small      vsize.large  max.vsize.large            nodes 
+#>           170393          5193152            18262          7249928          3230896 
+#>        max.nodes     duplications tot.duplications          samples 
+#>         52086272            24687          9800665              397
+
+## Current version
+vCurr <- summaryRprof(curr_file_out, memory = "stats", index = 1)
+vCurr
+#> index: "base::tryCatch"
+#>      vsize.small  max.vsize.small      vsize.large  max.vsize.large            nodes 
+#>          1926877          8364160           159239          7324984          8975174 
+#>        max.nodes     duplications tot.duplications          samples 
+#>         61668096                2               84               46
+
+## Version 2.4.3 with caching
+v243Cache <- summaryRprof("Version243cache.out", memory = "stats", index = 1)
+v243Cache
+#> index: "base::tryCatch"
+#>      vsize.small  max.vsize.small      vsize.large  max.vsize.large            nodes 
+#>          1745175          8831840           149587          7329784          6229210 
+#>        max.nodes     duplications tot.duplications          samples 
+#>         59218544            66501          3258546               49
+
+## Current version with caching
+vCurrCache <- summaryRprof(curr_file_cache_out, memory = "stats", index = 1)
+vCurrCache
+#> index: "base::tryCatch"
+#>      vsize.small  max.vsize.small      vsize.large  max.vsize.large            nodes 
+#>          1798149          9086400           174486          7328424          8463863 
+#>        max.nodes     duplications tot.duplications          samples 
+#>         64825432                2               84               42
+```
+
+The duplication statistics reveal a clear pattern across the four cases.
+In version `2.4.3` without caching, the profiler records `9800665` total
+duplications. By comparison, the current version records only `84`
+duplications.
+
+To better isolate the source of this difference, we repeat the
+experiment while caching the accessor. Instead of repeatedly resolving
+`a$nextIter()` inside the loop, we bind the method once
+(e.g. `f <- a$nextIter`) and call `f()` repeatedly.
+
+With caching enabled, the duplication count for version `2.4.3` drops to
+`3258546`. This substantial reduction indicates that a large portion of
+the work in earlier versions was associated with repeatedly resolving
+the accessor rather than executing the underlying combinatorial routine
+itself.
+
+In contrast, caching has little effect on the current implementation:
+the duplication counts remain essentially unchanged (`84` versus `84`).
+This suggests that the accessor overhead has largely been eliminated in
+`2.5.0+`, where iterator methods are exposed through `S4` slots backed
+by external pointers.
+
+For reference, `comboCount(25, 10) = 3,268,760`. The duplication counts
+observed in version `2.4.3` therefore imply that multiple internal
+copies were being triggered per iteration in the original benchmark.
+
+## Iterating over Partitions and Compositions of a Number
+
+For most partition cases, we have all of the capabilities of the
+standard `comboIter` and `permuteIter` except for bidirectionality
+(i.e. the `prevIter` methods). For cases involving standard multisets we
+also don’t have random access methods.
+
+``` r
+
+## Similar illustration of comboIter(5, 3) at the top
+p = partitionsIter(16, 4)
+p@nextIter()
+#> [1]  1  2  3 10
+
+p@nextIter()
+#> [1] 1 2 4 9
+
+iter = p@currIter()
+i = 1
+
+while (!is.null(iter)) {
+    cat(i, " ", iter, "\n")
+    iter = p@nextIter()
+    i = i + 1
+}
+#> 1   1 2 4 9 
+#> 2   1 2 5 8 
+#> 3   1 2 6 7 
+#> 4   1 3 4 8 
+#> 5   1 3 5 7 
+#> 6   1 4 5 6 
+#> 7   2 3 4 7 
+#> 8   2 3 5 6 
+#> No more results.
+
+partitionsGeneral(16, 4, lower = 2)
+#>      [,1] [,2] [,3] [,4]
+#> [1,]    1    2    4    9
+#> [2,]    1    2    5    8
+#> [3,]    1    2    6    7
+#> [4,]    1    3    4    8
+#> [5,]    1    3    5    7
+#> [6,]    1    4    5    6
+#> [7,]    2    3    4    7
+#> [8,]    2    3    5    6
+
+p@summary()
+#> $description
+#> [1] "Partitions of 16 into 4 parts"
+#> 
+#> $currentIndex
+#> [1] 10
+#> 
+#> $totalResults
+#> [1] 9
+#> 
+#> $totalRemaining
+#> [1] -1
+
+## Using random access
+p[[7]]
+#> [1] 1 4 5 6
+
+## No previous iterators
+p@prevIter()
+#> Error: no slot of name "prevIter" for this object of class "Partitions"
+```
+
+For compositions, we have the same functionality as with
+`partitionsIter`.
+
+``` r
+
+## Similar illustration of comboIter(5, 3) at the top
+p = compositionsIter(6, 3, TRUE)
+p@nextIter()
+#> [1] 1 1 4
+
+p@nextIter()
+#> [1] 1 2 3
+
+iter = p@currIter()
+i = 1
+
+while (!is.null(iter)) {
+    cat(i, " ", iter, "\n")
+    iter = p@nextIter()
+    i = i + 1
+}
+#> 1   1 2 3 
+#> 2   1 3 2 
+#> 3   1 4 1 
+#> 4   2 1 3 
+#> 5   2 2 2 
+#> 6   2 3 1 
+#> 7   3 1 2 
+#> 8   3 2 1 
+#> 9   4 1 1 
+#> No more results.
+
+compositionsGeneral(6, 3, TRUE, lower = 2)
+#>       [,1] [,2] [,3]
+#>  [1,]    1    2    3
+#>  [2,]    1    3    2
+#>  [3,]    1    4    1
+#>  [4,]    2    1    3
+#>  [5,]    2    2    2
+#>  [6,]    2    3    1
+#>  [7,]    3    1    2
+#>  [8,]    3    2    1
+#>  [9,]    4    1    1
+
+p@summary()
+#> $description
+#> [1] "Compositions with repetition of 6 into 3 parts"
+#> 
+#> $currentIndex
+#> [1] 11
+#> 
+#> $totalResults
+#> [1] 10
+#> 
+#> $totalRemaining
+#> [1] -1
+
+## Using random access
+p[[7]]
+#> [1] 2 3 1
+
+## No previous iterators
+p@prevIter()
+#> Error: no slot of name "prevIter" for this object of class "Partitions"
+```
+
+## Iterating over Constrained Combinations/Permutations
+
+Now, the combinatorial iterators have all of the features of their
+“general” analogs (I.e.
+`{combo|permute|partitions|compositions}General`), which includes
+constrained results.
+
+For general constrained cases, these iterators offer huge advantages
+over their “general” counterparts. Previously, one had to guess how many
+results there would be using the `upper` parameter as executing the
+function with no constraints meant the user could be waiting for a while
+or consume a large amount of resources.
+
+Another drawback is that it difficult to start generating from a
+particular point. With the “general” functions, if the `lower` parameter
+is used, we have to make a decision in order to disambiguate the use.
+Without constraints, using `lower` is easy to understand. It simply
+means to start generating results starting at a particular
+lexicographical result, which we can do efficiently (i.e. no need to
+generate the first `lower - 1` results). With constraints, it could mean
+one of two things:
+
+1.  Start checking from a particular lexicographical result without
+    considering the constraint (as we do normally).
+2.  Start generating results from a particular result with regards to
+    the final constrained output.
+
+In `RcppAlgos` we have always used the first interpretation. A big
+downside for the second point is that we don’t have any fast algorithms
+for enumerating the total number of results, which reduces determining
+the *n^(th)* result to a brute force approach.
+
+With iterators, we can generate *n* results with `nextNIter(n)` or
+calling `nextIter()` *n* times (or some combination of the two). Then,
+if we want to continue iterating, we pick up where we left off fetching
+the *(n + 1)^(th)* result and beyond (if there are any results left).
+This allows us to keep memory low without sacrificing our current state.
+
+``` r
+
+set.seed(55)
+s = runif(10, -5, 5)
+
+print(s)
+#>  [1]  0.478135161 -2.818403214 -4.650360052  2.915492940  0.602420762 -4.257748260
+#>  [7] -3.684770642 -2.058761222  0.007612633 -4.116755421
+
+## Using comboGeneral to retrieve all results
+comboGeneral(s, 5, constraintFun = "mean",
+             comparisonFun = "<", limitConstraints = -3)
+#>            [,1]      [,2]      [,3]      [,4]         [,5]
+#>  [1,] -4.650360 -4.257748 -4.116755 -3.684771 -2.818403214
+#>  [2,] -4.650360 -4.257748 -4.116755 -3.684771 -2.058761222
+#>  [3,] -4.650360 -4.257748 -4.116755 -3.684771  0.007612633
+#>  [4,] -4.650360 -4.257748 -4.116755 -3.684771  0.478135161
+#>  [5,] -4.650360 -4.257748 -4.116755 -3.684771  0.602420762
+#>  [6,] -4.650360 -4.257748 -4.116755 -2.818403 -2.058761222
+#>  [7,] -4.650360 -4.257748 -4.116755 -2.818403  0.007612633
+#>  [8,] -4.650360 -4.257748 -4.116755 -2.818403  0.478135161
+#>  [9,] -4.650360 -4.257748 -4.116755 -2.818403  0.602420762
+#> [10,] -4.650360 -4.257748 -4.116755 -2.058761  0.007612633
+#> [11,] -4.650360 -4.257748 -3.684771 -2.818403 -2.058761222
+#> [12,] -4.650360 -4.257748 -3.684771 -2.818403  0.007612633
+#> [13,] -4.650360 -4.116755 -3.684771 -2.818403 -2.058761222
+#> [14,] -4.650360 -4.116755 -3.684771 -2.818403  0.007612633
+#> [15,] -4.257748 -4.116755 -3.684771 -2.818403 -2.058761222
+
+
+## Using comboIter
+a = comboIter(s, 5, constraintFun = "mean",
+              comparisonFun = "<", limitConstraints = -3)
+
+## See the first result
+a@nextIter()
+#> [1] -4.650360 -4.257748 -4.116755 -3.684771 -2.818403
+
+## Get the next three
+a@nextNIter(3)
+#>          [,1]      [,2]      [,3]      [,4]         [,5]
+#> [1,] -4.65036 -4.257748 -4.116755 -3.684771 -2.058761222
+#> [2,] -4.65036 -4.257748 -4.116755 -3.684771  0.007612633
+#> [3,] -4.65036 -4.257748 -4.116755 -3.684771  0.478135161
+
+## See the summary... Note the totalResults and totalRemaining
+## fields are NA as we are not able to calculate this upfront.
+a@summary()
+#> $description
+#> [1] "Combinations of 10 choose 5 where the mean is < -3"
+#> 
+#> $currentIndex
+#> [1] 4
+#> 
+#> $totalResults
+#> [1] NA
+#> 
+#> $totalRemaining
+#> [1] NA
+
+
+a@nextNIter(3)
+#>          [,1]      [,2]      [,3]      [,4]         [,5]
+#> [1,] -4.65036 -4.257748 -4.116755 -3.684771  0.602420762
+#> [2,] -4.65036 -4.257748 -4.116755 -2.818403 -2.058761222
+#> [3,] -4.65036 -4.257748 -4.116755 -2.818403  0.007612633
+
+## Get the rest
+a@nextRemaining()
+#>           [,1]      [,2]      [,3]      [,4]         [,5]
+#> [1,] -4.650360 -4.257748 -4.116755 -2.818403  0.478135161
+#> [2,] -4.650360 -4.257748 -4.116755 -2.818403  0.602420762
+#> [3,] -4.650360 -4.257748 -4.116755 -2.058761  0.007612633
+#> [4,] -4.650360 -4.257748 -3.684771 -2.818403 -2.058761222
+#> [5,] -4.650360 -4.257748 -3.684771 -2.818403  0.007612633
+#> [6,] -4.650360 -4.116755 -3.684771 -2.818403 -2.058761222
+#> [7,] -4.650360 -4.116755 -3.684771 -2.818403  0.007612633
+#> [8,] -4.257748 -4.116755 -3.684771 -2.818403 -2.058761222
+```
+
+They are very efficient as well. Consider the example below where we use
+`comboGeneral` to generate all results without capping the output.
+Again, we are in a situation where we don’t know *a priori* how many
+results we will obtain.
+
+``` r
+
+set.seed(77)
+s = runif(50, 20, 100)
+
+## Over one trillion results to sift through
+comboCount(s, 15)
+#> [1] 2.25083e+12
+
+time_all <- system.time({
+    print(
+        nrow(
+            comboGeneral(s, 15,
+                         constraintFun = "mean",
+                         comparisonFun = ">",
+                         limitConstraints = 83)
+        )
+    )
+})
+#> [1] 38935252
+time_all
+#>    user  system elapsed 
+#>   1.244   1.191   2.972
+
+## Over 4 GBs of results
+(38935252 * 15 * 8) / 2^30
+#> [1] 4.351353
+```
+
+Just over `2` seconds isn’t bad, however 4 GBs could put a strain on
+your computer.
+
+Let’s use iterators instead and only generate ten thousand at a time to
+keep memory low. We should mention here that the iterators are “smart”
+in that there is no fear in requesting more results than what is
+actually left. For example, if in the problem above, we had iterated to
+the 38^(th) million result and requested 10 million more, we would only
+obtain 935,252 results.
+
+``` r
+
+invisible(gc())
+time_iter <- system.time({
+    a = comboIter(s, 15,
+                  constraintFun = "mean",
+                  comparisonFun = ">",
+                  limitConstraints = 83)
+    while (!is.null(a@nextNIter(1e4))) {}
+    print(a@summary())
+})
+#> No more results.
+#> 
+#> $description
+#> [1] "Combinations of 50 choose 15 where the mean is > 83"
+#> 
+#> $currentIndex
+#> [1] 38935252
+#> 
+#> $totalResults
+#> [1] NA
+#> 
+#> $totalRemaining
+#> [1] NA
+time_iter
+#>    user  system elapsed 
+#>   0.950   0.184   1.134
+
+## Only 1 MBs per iteration
+(1e4 * 15 * 8) / 2^20
+#> [1] 1.144409
+```
+
+Wow! Using the iterator approach is not only easier on your RAM, but
+faster as well (`2.972 / 1.134 ~= 2.6208`)! Our gains came strictly from
+memory efficiency (From over 4 GBs to just over 1 MB) as the underlying
+algorithm is exactly the same.
+
+Lastly, using iterators make some problems possible that would otherwise
+be intractable because of hardware. For instance, using the example
+above, if we changed the `limitConstraints` from 83 to 81 and tried the
+first approach your computer will most certainly become unusable (at
+least mine did). My memory usage shot up to over 30 GB and R became
+unresponsive. After a restart, I tried the second approach and obtained
+my result in just over 10 seconds barely noticing any jumps in memory:
+
+``` r
+
+## Don't run... consumes a huge chunk of memory
+# time_all <- system.time({
+#     print(
+#         nrow(
+#             comboGeneral(s, 15,
+#                          constraintFun = "mean",
+#                          comparisonFun = ">",
+#                          limitConstraints = 81)  ## 83 -->> 81
+#         )
+#     )
+# })
+
+## No problem with iterators
+invisible(gc())
+system.time({
+    a = comboIter(s, 15,
+                  constraintFun = "mean",
+                  comparisonFun = ">",
+                  limitConstraints = 81)   ## 83 -->> 81
+    while (!is.null(a@nextNIter(1e4))) {}
+    print(a@summary())
+})
+#> No more results.
+#> 
+#> $description
+#> [1] "Combinations of 50 choose 15 where the mean is > 81"
+#> 
+#> $currentIndex
+#> [1] 271309888
+#> 
+#> $totalResults
+#> [1] NA
+#> 
+#> $totalRemaining
+#> [1] NA
+#>    user  system elapsed 
+#>   6.441   1.332   7.772
+```
+
+## Iterating over Partitions of Groups
+
+As of version `2.8.2`, we can iterate over partitions of groups with
+`comboGroupsIter`.
+
+Just as with `partitionsIter`, we have all of the capabilities of the
+standard `comboIter` and `permuteIter` except for bidirectionality
+(i.e. the `prevIter` methods).
+
+``` r
+
+## Similar illustration of comboIter(5, 3) at the top
+cg = comboGroupsIter(6, 2, retType = "3Darray")
+cg@nextIter()
+#>      Grp1 Grp2
+#> [1,]    1    4
+#> [2,]    2    5
+#> [3,]    3    6
+
+cg@nextIter()
+#>      Grp1 Grp2
+#> [1,]    1    3
+#> [2,]    2    5
+#> [3,]    4    6
+
+iter = cg@currIter()
+i = 1
+
+while (!is.null(iter)) {
+    cat("\n ", i, "-------------\n")
+    print(iter)
+    iter = cg@nextIter()
+    i = i + 1
+}
+#> 
+#>   1 -------------
+#>      Grp1 Grp2
+#> [1,]    1    3
+#> [2,]    2    5
+#> [3,]    4    6
+#> 
+#>   2 -------------
+#>      Grp1 Grp2
+#> [1,]    1    3
+#> [2,]    2    4
+#> [3,]    5    6
+#> 
+#>   3 -------------
+#>      Grp1 Grp2
+#> [1,]    1    3
+#> [2,]    2    4
+#> [3,]    6    5
+#> 
+#>   4 -------------
+#>      Grp1 Grp2
+#> [1,]    1    2
+#> [2,]    3    5
+#> [3,]    4    6
+#> 
+#>   5 -------------
+#>      Grp1 Grp2
+#> [1,]    1    2
+#> [2,]    3    4
+#> [3,]    5    6
+#> 
+#>   6 -------------
+#>      Grp1 Grp2
+#> [1,]    1    2
+#> [2,]    3    4
+#> [3,]    6    5
+#> 
+#>   7 -------------
+#>      Grp1 Grp2
+#> [1,]    1    2
+#> [2,]    4    3
+#> [3,]    5    6
+#> 
+#>   8 -------------
+#>      Grp1 Grp2
+#> [1,]    1    2
+#> [2,]    4    3
+#> [3,]    6    5
+#> 
+#>   9 -------------
+#>      Grp1 Grp2
+#> [1,]    1    2
+#> [2,]    5    3
+#> [3,]    6    4
+#> No more results.
+
+comboGroups(6, 2, retType = "3Darray", lower = 2)
+#> , , Grp1
+#> 
+#>       [,1] [,2] [,3]
+#>  [1,]    1    2    4
+#>  [2,]    1    2    5
+#>  [3,]    1    2    6
+#>  [4,]    1    3    4
+#>  [5,]    1    3    5
+#>  [6,]    1    3    6
+#>  [7,]    1    4    5
+#>  [8,]    1    4    6
+#>  [9,]    1    5    6
+#> 
+#> , , Grp2
+#> 
+#>       [,1] [,2] [,3]
+#>  [1,]    3    5    6
+#>  [2,]    3    4    6
+#>  [3,]    3    4    5
+#>  [4,]    2    5    6
+#>  [5,]    2    4    6
+#>  [6,]    2    4    5
+#>  [7,]    2    3    6
+#>  [8,]    2    3    5
+#>  [9,]    2    3    4
+
+cg@summary()
+#> $description
+#> [1] "Partition of v of length 6 into 2 uniform groups"
+#> 
+#> $currentIndex
+#> [1] 11
+#> 
+#> $totalResults
+#> [1] 10
+#> 
+#> $totalRemaining
+#> [1] -1
+
+## Using random access
+cg[[7]]
+#>      Grp1 Grp2
+#> [1,]    1    2
+#> [2,]    3    4
+#> [3,]    6    5
+
+## No previous iterators
+cg@prevIter()
+#> Error: no slot of name "prevIter" for this object of class "ComboGroups"
+```
