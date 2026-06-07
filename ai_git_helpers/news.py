@@ -4,7 +4,7 @@ import os
 import sys
 from openai import OpenAI
 
-MODEL = "gpt-5.2"
+MODEL = os.getenv("AI_REVIEW_MODEL", "gpt-5.5")
 
 SYSTEM_PROMPT = """
 You are helping maintain the R package RcppAlgos. You are an expert C++

@@ -449,4 +449,12 @@ test_that("permuteCount produces correct results under partition constraints", {
         ),
         compositionsCount(table(c(rep(0L, 5), 1:100)), weak = TRUE)
     )
+
+    expect_equal(
+        permuteCount(
+            1:15, 8, freqs = rep(5:1, each = 3), constraintFun = "sum",
+            comparisonFun = "==", limitConstraints = 40
+        ),
+        compositionsCount(1:15, 8, freqs = rep(5:1, each = 3), target = 40)
+    )
 })

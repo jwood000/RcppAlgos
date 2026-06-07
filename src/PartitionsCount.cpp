@@ -628,8 +628,19 @@ int PartitionsCount(const std::vector<int> &Reps,
     } else if (part.ptype == PartitionType::CompMultiset) {
         // N.B. With PartitionType::Multiset we use the default
         // IsComp = false. Below, we set IsComp = true
+
+        // CountPartsMultiset() uses the final flag to decide whether zeros
+        // should participate in the permutation count. When the user supplied
+        // zero, this agrees with the usual weak/non-weak distinction. When
+        // zero was not supplied, any zeros in startZ are only internal padding
+        // introduced by the partition counting machinery, and the
+        // corresponding compositions should be counted as fixed-length
+        // arrangements. In that case, use the weak-style permutation count
+        // so NumPermsWithRep() does not drop those padded positions.
+        const bool countZeros = !part.includeZero || part.isWeak;
+
         part.count = part.solnExist ?
-            CountPartsMultiset(Reps, part.startZ, true, part.isWeak) : 0;
+            CountPartsMultiset(Reps, part.startZ, true, countZeros) : 0;
         return 1;
     } else if (part.ptype == PartitionType::PrmMultiset) {
         // See note above under CompMultiset
