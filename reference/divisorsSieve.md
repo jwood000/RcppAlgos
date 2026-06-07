@@ -83,7 +83,7 @@ mySamp <- sample(10^5, 5*10^4)
 ## to 10^5 (max element from mySamp)
 system.time(allFacs <- divisorsSieve(10^5))
 #>    user  system elapsed 
-#>   0.026   0.000   0.026 
+#>   0.027   0.000   0.027 
 
 ## Use generated complete factorization for further
 ## analysis by accessing the index of allFacs
@@ -96,12 +96,12 @@ for (s in mySamp) {
 ## a range is efficient as well
 system.time(divisorsSieve(10^12, 10^12 + 10^5))
 #>    user  system elapsed 
-#>   0.066   0.002   0.068 
+#>   0.059   0.009   0.068 
 
 ## Use nThreads for improved efficiency
 system.time(divisorsSieve(10^12, 10^12 + 10^5, nThreads = 2))
 #>    user  system elapsed 
-#>   0.071   0.020   0.058 
+#>   0.073   0.020   0.059 
 
 ## Set 'namedList' to TRUE to return a named list
 divisorsSieve(27, 30, namedList = TRUE)
@@ -121,5 +121,5 @@ divisorsSieve(27, 30, namedList = TRUE)
 ## Using nThreads
 system.time(divisorsSieve(1e5, 2e5, nThreads = 2))
 #>    user  system elapsed 
-#>   0.024   0.000   0.020 
+#>   0.028   0.000   0.021 
 ```
