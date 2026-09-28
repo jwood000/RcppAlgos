@@ -53,7 +53,7 @@ SEXP ComboGroupsCpp(SEXP Rv, SEXP RNumGroups, SEXP RGrpSize, SEXP RRetType,
     if (!IsGmp) lowerMpz = lower;
     std::vector<int> startZ;
 
-    if (bLower && cmp(lowerMpz, 0) > 0) {
+    if (lower > 0 && cmp(lowerMpz, 0) > 0) {
         startZ = IsGmp ? CmbGrp->nthComboGroupGmp(lowerMpz) :
                          CmbGrp->nthComboGroup(lower);
     } else {
@@ -65,9 +65,11 @@ SEXP ComboGroupsCpp(SEXP Rv, SEXP RNumGroups, SEXP RGrpSize, SEXP RRetType,
 
     if (!IsSample) {
         double userNumRows = 0;
-        SetNumResults(IsGmp, bLower, bUpper, true, upperMpz,
-                      lowerMpz, lower, upper, CmbGrp->GetDblCount(),
-                      CmbGrp->GetMpzCount(), nRows, userNumRows);
+
+        SetNumResults(
+            IsGmp, bUpper, true, upperMpz, lowerMpz, lower, upper,
+            CmbGrp->GetDblCount(), CmbGrp->GetMpzCount(), nRows, userNumRows
+        );
     }
 
     std::string retType(CHAR(STRING_ELT(RRetType, 0)));

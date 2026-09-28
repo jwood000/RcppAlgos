@@ -1,8 +1,8 @@
 #include "Cartesian/CartesianClass.h"
 
-// These 3 previous iterators methods are here because we are because we
-// are inheriting from the parent Iterator class, the class that is utilized
-// in ExposeClass.cpp to connect the S4 class methods on the R side to C++.
+// These 3 previous iterators methods are here because we are inheriting from
+// the parent Iterator class, the class that is utilized in ExposeClass.cpp to
+// connect the S4 class methods on the R side to C++.
 // ****************************************************************************
 SEXP CartesianClass::prevIter() {
     cpp11::stop("No prevIter available yet for Cartesian Class");
@@ -157,10 +157,6 @@ SEXP CartesianClass::GeneralReturn(int numResults) {
         nCols, IsDF, nThreads, LocalPar, IsGmp, false
     );
 
-    mpzTemp = mpzIndex - 1;
-    dblTemp = dblIndex - 1;
-    GetStartProd(lenNxtPr, z, mpzTemp, dblTemp, 0, IsGmp);
-
     SetMatrixColnames(res, RList.names());
     return res;
 }
@@ -243,8 +239,17 @@ SEXP CartesianClass::nextNumIters(SEXP RNum) {
             nextProduct(lenGrps, z, nCols);
         }
 
+        cpp11::sexp res = GeneralReturn(nRows);
+
+        if (IsGmp) {
+            mpzTemp = mpzIndex + nRows - 1;
+        } else {
+            dblTemp = dblIndex + nRows - 1;
+        }
+
         increment(IsGmp, mpzIndex, dblIndex, numIncrement);
-        return GeneralReturn(nRows);
+        GetStartProd(lenNxtPr, z, mpzTemp, dblTemp, 0, IsGmp);
+        return res;
     } else if (CheckEqInd(IsGmp, mpzIndex, dblIndex,
                           computedRowsMpz, computedRows)) {
         return ToSeeLast();
@@ -287,13 +292,18 @@ SEXP CartesianClass::nextGather() {
             nextProduct(lenGrps, z, nCols);
         }
 
+        cpp11::sexp res = GeneralReturn(nRows);
+
         if (IsGmp) {
             mpzIndex = computedRowsMpz + 1;
         } else {
             dblIndex = computedRows + 1;
         }
 
-        return GeneralReturn(nRows);
+        // nextGather exhausts the iterator. Since this iterator is not
+        // bidirectional, the traversal state is not restored to the final
+        // result. No subsequent forward generation can use it.
+        return res;
     } else {
         return R_NilValue;
     }

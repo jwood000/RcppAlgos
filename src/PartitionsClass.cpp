@@ -238,21 +238,25 @@ SEXP Partitions::nextGather() {
                       tarDiff, lastCol, lastElem);
         }
 
+        cpp11::sexp res;
+
+        if (part.ptype == PartitionType::Multiset) {
+            res = MultisetMatrix(nRows);
+        } else {
+            bUpper = false;
+            res = MatrixReturn(nRows);
+        }
+
         if (IsGmp) {
             mpzIndex = cnstrtCountMpz + 1;
         } else {
             dblIndex = cnstrtCount + 1;
         }
 
-        if (part.ptype == PartitionType::Multiset) {
-            return MultisetMatrix(nRows);
-        } else {
-            bUpper = false;
-            cpp11::sexp res = MatrixReturn(nRows);
-            zUpdateIndex(vNum, vInt, z, sexpVec, res, width, nRows, bAddOne);
-            SetPartValues();
-            return res;
-        }
+        // nextGather exhausts the iterator. Since this iterator is not
+        // bidirectional, the traversal state is not restored to the final
+        // result. No subsequent forward generation can use it.
+        return res;
     } else {
         return R_NilValue;
     }
@@ -305,8 +309,6 @@ SEXP Partitions::randomAccess(SEXP RindexVec) {
                              nThreads, LocalPar, false, part.mapTar,
                              strtLen, cap, IsGmp);
 
-            zUpdateIndex(vNum, vInt, z, sexpVec, res, width, sampSize, bAddOne);
-            SetPartValues();
             return res;
         } else {
             cpp11::sexp res = Rf_allocMatrix(REALSXP, sampSize, part.width);
@@ -317,8 +319,6 @@ SEXP Partitions::randomAccess(SEXP RindexVec) {
                              nThreads, LocalPar, false, part.mapTar,
                              strtLen, cap, IsGmp);
 
-            zUpdateIndex(vNum, vInt, z, sexpVec, res, width, sampSize, bAddOne);
-            SetPartValues();
             return res;
         }
     } else {

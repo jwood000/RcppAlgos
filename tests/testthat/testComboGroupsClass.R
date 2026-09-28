@@ -81,8 +81,14 @@ test_that("comboGroupsIter produces correct results", {
             s <- 1L
             e <- numTest
 
-            if (ret == "matrix") {
-                for (i in 1:num_iters) {
+            if (num_iters == 1) {
+                myResults <- c(
+                    myResults, isTRUE(
+                        all.equal(a@nextNIter(numTest), b)
+                    )
+                )
+            } else if (ret == "matrix") {
+                for (i in 1:(num_iters - 1L)) {
                     myResults <- c(
                         myResults, isTRUE(
                             all.equal(a@nextNIter(numTest),
@@ -92,8 +98,15 @@ test_that("comboGroupsIter produces correct results", {
                     s <- e + 1L
                     e <- e + numTest
                 }
+
+                myResults <- c(
+                    myResults, isTRUE(
+                        all.equal(a@nextRemaining(),
+                                  b[s:myRows, , drop = FALSE])
+                    )
+                )
             } else {
-                for (i in 1:num_iters) {
+                for (i in 1:(num_iters - 1L)) {
                     myResults <- c(
                         myResults, isTRUE(
                             all.equal(a@nextNIter(numTest),
@@ -103,6 +116,13 @@ test_that("comboGroupsIter produces correct results", {
                     s <- e + 1L
                     e <- e + numTest
                 }
+
+                myResults <- c(
+                    myResults, isTRUE(
+                        all.equal(a@nextRemaining(),
+                                  b[s:myRows, , ])
+                    )
+                )
             }
 
             a@startOver()
@@ -293,7 +313,8 @@ test_that("comboGroupsIter produces correct results", {
         }
 
         a@startOver()
-        a[[gmp::sub.bigz(myRows, lenCheck)]]
+        a[[gmp::sub.bigz(myRows, lenCheck + numTest)]]
+        a@nextNIter(numTest)
         myResults <- c(myResults, isTRUE(all.equal(a@nextRemaining(), b2)))
 
         t <- capture.output(a@nextIter())

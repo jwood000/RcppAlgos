@@ -129,7 +129,8 @@ Once you initialize a new iterator, the following methods are available via \cod
     \itemize{
         \item {\code{Parallel} and \code{nThreads} will be ignored in the following cases:
             \itemize{
-                \item When the output is constrained (except for most partitions cases)
+                \item When the output is constrained (except for most partitions cases).
+                \item For special constraints (see the Details section of \code{\link{comboGeneral}}), \code{nThreads} is ignored and generation is performed serially. Unlike an explicitly supplied \code{lower} in the general interface, an iterator's current position does not define a range of candidates that can be safely divided among threads.
                 \item If the class of the vector passed is \code{character}, \code{raw}, and \code{complex} (N.B. \code{Rcpp::CharacterMatrix} is not thread safe). Alternatively, you can generate an indexing matrix in parallel.
                 \item If \code{FUN} is utilized.
             }
@@ -139,6 +140,7 @@ Once you initialize a new iterator, the following methods are available via \cod
         \item Factor vectors are accepted. Class and level attributes are preserved except when \code{FUN} is used.
         \item Lexicographical ordering isn't guaranteed for permutations if the output is constrained.
         \item \code{FUN} will be ignored if the constraint check is satisfied.
+        \item If an error occurs while generating results, the iterator's internal state is not guaranteed to remain at its previous position. Call \code{startOver()} before continuing to use the iterator.
     }
 }
 \seealso{

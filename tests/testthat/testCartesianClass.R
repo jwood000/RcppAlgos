@@ -7,8 +7,9 @@ test_that("expandGridIter produces correct results", {
         myResults <- vector(mode = "logical")
         myRows <- expandGridCount(lst)
 
-        a <- expandGridIter(lst)
-        b <- expandGrid(lst)
+        a  <- expandGridIter(lst)
+        a2 <- expandGridIter(lst)
+        b  <- expandGrid(lst)
 
         # .method("summary", &CartesianClass::summary)
         myResults <- c(myResults, isTRUE(
@@ -67,7 +68,7 @@ test_that("expandGridIter produces correct results", {
         e <- numTest
 
         # .method("nextNIter", &CartesianClass::nextNumIters)
-        for (i in 1:3) {
+        for (i in 1:2) {
             temp <- b[s:e, ]
             rownames(temp) <- NULL
             iter_df <- a@nextNIter(numTest)
@@ -80,6 +81,14 @@ test_that("expandGridIter produces correct results", {
             e <- e + numTest
         }
 
+        temp <- b[s:nrow(b), ]
+        rownames(temp) <- NULL
+        iter_df <- a@nextRemaining()
+
+        myResults <- c(
+            myResults, isTRUE(all.equal(iter_df, temp))
+        )
+
         # .method("nextRemaining", &CartesianClass::nextGather)
         a@startOver()
         myResults <- c(myResults, isTRUE(all.equal(a@nextRemaining(), b)))
@@ -90,7 +99,30 @@ test_that("expandGridIter produces correct results", {
         rownames(temp) <- NULL
         myResults <- c(myResults, isTRUE(all.equal(a[[samp]], temp)))
 
-        rm(a, a1,  b, temp, iter_df)
+        ## Now we check Multi-index Cartesian sampling followed by currIter()
+        ## and nextIter(), checking that both position and traversal state
+        ## remain unchanged.
+        a@startOver()
+        a2@startOver()
+
+        a@nextNIter(numTest)
+        a2@nextNIter(numTest)
+        a[[samp]]
+
+        myResults <- c(
+            myResults,
+            isTRUE(
+                all.equal(a@summary()$currentIndex, a2@summary()$currentIndex)
+            )
+        )
+        myResults <- c(
+            myResults, isTRUE(all.equal(a@currIter(), a2@currIter()))
+        )
+        myResults <- c(
+            myResults, isTRUE(all.equal(a@nextIter(), a2@nextIter()))
+        )
+
+        rm(a, a1, a2, b, temp, iter_df)
         gc()
         all(myResults)
     }
@@ -164,6 +196,7 @@ test_that("expandGridIter produces correct results", {
         myRows <- expandGridCount(lst)
 
         a <- expandGridIter(lst)
+        a2 <- expandGridIter(lst)
         b1 <- expandGrid(lst, upper = lenCheck)
         b2 <- expandGrid(lst, lower = gmp::sub.bigz(myRows, lenCheck - 1))
 
@@ -239,7 +272,8 @@ test_that("expandGridIter produces correct results", {
 
         # .method("nextRemaining", &CartesianClass::nextGather)
         a@startOver()
-        a[[gmp::sub.bigz(myRows, lenCheck)]]
+        a[[gmp::sub.bigz(myRows, lenCheck + numTest)]]
+        a@nextNIter(numTest)
         myResults <- c(myResults, isTRUE(all.equal(a@nextRemaining(), b2)))
 
         # .method("[[", &CartesianClass::randomAccess)
@@ -254,7 +288,30 @@ test_that("expandGridIter produces correct results", {
         rownames(temp) <- NULL
         myResults <- c(myResults, isTRUE(all.equal(a[[samp2]], temp)))
 
-        rm(a, a1, b1, b2, temp, iter_df)
+        ## Now we check Multi-index Cartesian sampling followed by currIter()
+        ## and nextIter(), checking that both position and traversal state
+        ## remain unchanged.
+        a@startOver()
+        a2@startOver()
+
+        a@nextNIter(numTest)
+        a2@nextNIter(numTest)
+        a[[samp2]]
+
+        myResults <- c(
+            myResults,
+            isTRUE(
+                all.equal(a@summary()$currentIndex, a2@summary()$currentIndex)
+            )
+        )
+        myResults <- c(
+            myResults, isTRUE(all.equal(a@currIter(), a2@currIter()))
+        )
+        myResults <- c(
+            myResults, isTRUE(all.equal(a@nextIter(), a2@nextIter()))
+        )
+
+        rm(a, a1, a2, b1, b2, temp, iter_df)
         gc()
         all(myResults)
     }

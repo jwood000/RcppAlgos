@@ -45,7 +45,6 @@ SEXP CnstrntsSpecial::nextIter() {
             }
         }
     } else {
-        keepGoing = false;
         return R_NilValue;
     }
 }
@@ -65,7 +64,7 @@ SEXP CnstrntsSpecial::nextNumIters(SEXP RNum) {
 
             if (Rf_nrows(res)) {
                 const int returned_nrows = Rf_nrows(res);
-                keepGoing = num == returned_nrows;
+                keepGoing = (num == returned_nrows);
                 count = dblIndex - (num - returned_nrows);
                 return res;
             } else {
@@ -74,7 +73,6 @@ SEXP CnstrntsSpecial::nextNumIters(SEXP RNum) {
             }
         }
     } else {
-        keepGoing = false;
         return R_NilValue;
     }
 }
@@ -83,20 +81,17 @@ SEXP CnstrntsSpecial::nextGather() {
 
     if (keepGoing) {
         cpp11::sexp res = ComboRes::nextGather();
+        keepGoing = false;
 
         if (Rf_isNull(res)) {
-            keepGoing = false;
             return res;
         } else if (Rf_nrows(res)) {
             count += Rf_nrows(res);
-            keepGoing = false;
             return res;
         } else {
-            keepGoing = false;
             return ToSeeLast();
         }
     } else {
-        keepGoing = false;
         return R_NilValue;
     }
 }

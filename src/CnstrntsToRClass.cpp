@@ -199,8 +199,10 @@ SEXP CnstrntsToR::nextIter() {
 SEXP CnstrntsToR::nextNumIters(SEXP RNum) {
 
     int num;
-    CppConvert::convertPrimitive(RNum, num, VecType::Integer,
-                                   "The number of results");
+
+    CppConvert::convertPrimitive(
+        RNum, num, VecType::Integer, "The number of results"
+    );
 
     if (keepGoing) {
         return GetNextN(num);
@@ -276,7 +278,8 @@ SEXP CnstrntsToR::summary() {
             // val2 comes before val1. From UserConstraintFuns.cpp:
             //
             // template <typename T>
-            // bool greaterEqlLessEql(T x, const std::vector<T> &y) {return x <= y[0] && x >= y[1];}
+            // bool greaterEqlLessEql(T x, const std::vector<T> &y)
+            //    {return x <= y[0] && x >= y[1];}
             //
             // Here we see that the first element is the largest
             desc += "between " + val2 + " and " + val1;

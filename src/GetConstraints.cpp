@@ -7,16 +7,16 @@
 #include "CombinatoricsResGlue.h"
 
 template <typename T>
-void ConstraintsVector(const std::vector<int> &freqs,
-                       std::vector<T> &cnstrntVec, std::vector<T> &resVec,
-                       std::vector<T> &v, std::vector<T> &tarVals,
-                       const std::vector<std::string> &compVec,
-                       std::vector<int> &Reps, const std::string &mainFun,
-                       const std::string &funTest, std::vector<int> &z,
-                       ConstraintType ctype, PartitionType ptype,
-                       double lower, mpz_class &lowerMpz, int n, int maxRows,
-                       int width, int nThreads, bool IsComb, bool IsRep,
-                       bool IsMult, bool bUpper, bool xtraCol, bool IsGmp) {
+void ConstraintsVector(
+    const std::vector<int> &freqs, std::vector<T> &cnstrntVec,
+    std::vector<T> &resVec, std::vector<T> &v, std::vector<T> &tarVals,
+    const std::vector<std::string> &compVec, std::vector<int> &Reps,
+    const std::string &mainFun, const std::string &funTest,
+    std::vector<int> &z, ConstraintType ctype, PartitionType ptype,
+    double lower, mpz_class &lowerMpz, int n, int maxRows, int width,
+    int nThreads, bool IsComb, bool IsRep, bool IsMult, bool bUpper,
+    bool xtraCol, bool IsGmp, bool useRangeSemantics
+) {
 
     if (ctype == ConstraintType::General ||
         ctype == ConstraintType::PartitionEsque) {
@@ -27,7 +27,7 @@ void ConstraintsVector(const std::vector<int> &freqs,
         ConstraintsSpecial(v, tarVals, compVec, Reps, freqs, cnstrntVec,
                            resVec, mainFun, z, lower, lowerMpz, n, width,
                            maxRows, nThreads, IsRep, xtraCol, IsComb,
-                           IsMult, IsGmp);
+                           IsMult, IsGmp, useRangeSemantics);
     } else {
         PartsGenManager(cnstrntVec, v, Reps, z, width, maxRows, ptype);
     }
@@ -43,7 +43,7 @@ SEXP ConstraintsReturn(
     double userNum, double lower, mpz_class &lowerMpz, int n, int m,
     int nRows, int nThreads, double strt, bool IsComb, bool IsRep,
     bool IsMult, bool bUpper, bool xtraCol, bool numUnknown,
-    int strtLen, int cap, bool IsGmp
+    int strtLen, int cap, bool IsGmp, bool useRangeSemantics
 ) {
 
     const int lastElem = n - 1;
@@ -70,7 +70,7 @@ SEXP ConstraintsReturn(
                           compVec, Reps, mainFun, funTest, z, ctype,
                           part.ptype, lower, lowerMpz, n, maxRows, width,
                           nThreads, IsComb, IsRep, IsMult, bUpper,
-                          xtraCol, IsGmp);
+                          xtraCol, IsGmp, useRangeSemantics);
 
         const std::size_t vecLen = cnstrntVec.size();
         const std::size_t numResult = vecLen / width;
@@ -94,7 +94,7 @@ SEXP ConstraintsReturn(
                           compVec, Reps, mainFun, funTest, z, ctype,
                           part.ptype, lower, lowerMpz, n, maxRows, width,
                           nThreads, IsComb, IsRep, IsMult, bUpper,
-                          xtraCol, IsGmp);
+                          xtraCol, IsGmp, useRangeSemantics);
 
         const std::size_t vecLen = cnstrntVec.size();
         const std::size_t numResult = vecLen / width;
@@ -147,7 +147,7 @@ SEXP GetConstraints(
     mpz_class &lowerMpz, double userNum, ConstraintType ctype, VecType myType,
     int nThreads, int nRows, int n, int strtLen, int cap, int m,
     bool IsComb, bool Parallel, bool IsGmp, bool IsRep, bool IsMult,
-    bool bUpper, bool KeepRes, bool numUnknown
+    bool bUpper, bool KeepRes, bool numUnknown, bool useRangeSemantics
 ) {
 
     if (ctype == ConstraintType::NoConstraint) {
@@ -182,11 +182,11 @@ SEXP GetConstraints(
             return res;
         }
     } else {
-        return ConstraintsReturn(freqs, vNum, vInt, myReps, tarVals,
-                                 tarIntVals, startZ, compVec, mainFun,
-                                 funTest, part, myType, ctype, userNum,
-                                 lower, lowerMpz, n, m, nRows, nThreads,
-                                 lower, IsComb, IsRep, IsMult, bUpper,
-                                 KeepRes, numUnknown, strtLen, cap, IsGmp);
+        return ConstraintsReturn(
+            freqs, vNum, vInt, myReps, tarVals, tarIntVals, startZ, compVec,
+            mainFun, funTest, part, myType, ctype, userNum, lower, lowerMpz,
+            n, m, nRows, nThreads, lower, IsComb, IsRep, IsMult, bUpper,
+            KeepRes, numUnknown, strtLen, cap, IsGmp, useRangeSemantics
+        );
     }
 }

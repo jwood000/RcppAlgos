@@ -104,18 +104,19 @@ void CnstrntSpcWorker(
     }
 }
 
-// This is called when we can't easily produce a (loose) monotonic sequence overall,
-// and we must generate and test every possible combination/permutation. This occurs
-// when we are using "prod" and we have negative numbers involved. We also call this
-// when lower is invoked implying that we are testing a specific range.
+// This is called when we can't easily produce a (loose) monotonic sequence
+// overall, and we must generate and test every possible
+// combination/permutation. This occurs when we are using "prod" and we have
+// negative numbers involved. We also call this when lower is invoked
+// implying that we are testing a specific range.
 template <typename T>
 void ConstraintsSpecial(
     const std::vector<T> &v, const std::vector<T> &targetVals,
     const std::vector<std::string> &compVec, const std::vector<int> &myRep,
-    std::vector<int> freqs, std::vector<T> &cnstrntVec,
-    std::vector<T> &resVec, const std::string &mainFun, std::vector<int> &z,
-    double lower, mpz_class &lowerMpz, int n, int m, int maxRows, int nThreads,
-    bool IsRep, bool xtraCol, bool IsComb, bool IsMult, bool IsGmp
+    std::vector<int> freqs, std::vector<T> &cnstrntVec, std::vector<T> &resVec,
+    const std::string &mainFun, std::vector<int> &z, double lower,
+    mpz_class &lowerMpz, int n, int m, int maxRows, int nThreads, bool IsRep,
+    bool xtraCol, bool IsComb, bool IsMult, bool IsGmp, bool useRangeSemantics
 ) {
 
     // Needed to determine if nextFullPerm or nextPerm will be called
@@ -135,29 +136,29 @@ void ConstraintsSpecial(
     const int n1 = IsComb ? n - 1 : (IsMult ? freqs.size() - 1 : n - 1);
     const int m1 = m - 1;
 
-    if (nThreads > 1) {
+    // Without range semantics, nRows is the number of matching results
+    // requested, not the number of candidates to examine. The candidate search
+    // space is therefore unknown and cannot currently be partitioned safely
+    // among threads. TODO: Investigate parallel generation for special
+    // constraints under matching-result semantics.
+    if (useRangeSemantics && nThreads > 1) {
         std::vector<std::thread> threads;
 
         const int stepSize = maxRows / nThreads;
-        int nextStep = stepSize;
-        int step = 0;
-
         const nthResultPtr nthResFun = GetNthResultFunc(IsComb, IsMult,
                                                         IsRep, IsGmp);
         std::vector<std::vector<int>> zs(nThreads, z);
         std::vector<std::vector<T>> resThrd(nThreads);
         std::vector<std::vector<T>> cnstrThrd(nThreads);
 
-        for (int j = 0; j < (nThreads - 1);
-             ++j, step += stepSize, nextStep += stepSize) {
+        for (int j = 0; j < (nThreads - 1); ++j) {
 
-            threads.emplace_back(CnstrntLowerWorker<T>,
-                                 std::cref(v), std::cref(targetVals),
-                                 std::cref(freqs), std::cref(compVec),
-                                 std::ref(cnstrThrd[j]),
-                                 std::ref(resThrd[j]), std::ref(zs[j]),
-                                 nextIter, fun, compOne, m, n1, m1,
-                                 stepSize, xtraCol);
+            threads.emplace_back(
+                CnstrntLowerWorker<T>, std::cref(v), std::cref(targetVals),
+                std::cref(freqs), std::cref(compVec), std::ref(cnstrThrd[j]),
+                std::ref(resThrd[j]), std::ref(zs[j]), nextIter, fun, compOne,
+                m, n1, m1, stepSize, xtraCol
+            );
 
             SetNextIter(myRep, zs[j + 1], nthResFun, lower, lowerMpz,
                         stepSize, n, m, IsGmp, IsComb, IsRep, IsMult);
@@ -166,13 +167,12 @@ void ConstraintsSpecial(
 
         const int leftOver = maxRows - ((nThreads - 1) * stepSize);
 
-        threads.emplace_back(CnstrntLowerWorker<T>,
-                             std::cref(v), std::cref(targetVals),
-                             std::cref(freqs), std::cref(compVec),
-                             std::ref(cnstrThrd.back()),
-                             std::ref(resThrd.back()), std::ref(zs.back()),
-                             nextIter, fun, compOne, m, n1, m1,
-                             leftOver, xtraCol);
+        threads.emplace_back(
+            CnstrntLowerWorker<T>, std::cref(v), std::cref(targetVals),
+            std::cref(freqs), std::cref(compVec), std::ref(cnstrThrd.back()),
+            std::ref(resThrd.back()), std::ref(zs.back()), nextIter, fun,
+            compOne, m, n1, m1, leftOver, xtraCol
+        );
 
         for (auto& thr: threads) {
             thr.join();
@@ -184,16 +184,14 @@ void ConstraintsSpecial(
             resVec.insert(resVec.end(), resThrd[i].begin(),
                           resThrd[i].end());
         }
+    } else if (useRangeSemantics) {
+        CnstrntLowerWorker(v, targetVals, freqs, compVec,
+                           cnstrntVec, resVec, z, nextIter, fun,
+                           compOne, m, n1, m1, maxRows, xtraCol);
     } else {
-        if (lower > 0) {
-            CnstrntLowerWorker(v, targetVals, freqs, compVec,
-                               cnstrntVec, resVec, z, nextIter, fun,
-                               compOne, m, n1, m1, maxRows, xtraCol);
-        } else {
-            CnstrntSpcWorker(v, targetVals, freqs, compVec,
-                             cnstrntVec, resVec, z, nextIter, fun,
-                             compOne, m, n1, m1, maxRows, xtraCol);
-        }
+        CnstrntSpcWorker(v, targetVals, freqs, compVec,
+                         cnstrntVec, resVec, z, nextIter, fun,
+                         compOne, m, n1, m1, maxRows, xtraCol);
     }
 }
 
@@ -202,7 +200,7 @@ template void ConstraintsSpecial(
     const std::vector<std::string>&, const std::vector<int>&,
     std::vector<int>, std::vector<int>&, std::vector<int>&,
     const std::string&, std::vector<int>&, double, mpz_class&,
-    int, int, int, int, bool, bool, bool, bool, bool
+    int, int, int, int, bool, bool, bool, bool, bool, bool
 );
 
 template void ConstraintsSpecial(
@@ -210,5 +208,5 @@ template void ConstraintsSpecial(
     const std::vector<std::string>&, const std::vector<int>&,
     std::vector<int>, std::vector<double>&, std::vector<double>&,
     const std::string&, std::vector<int>&, double, mpz_class&,
-    int, int, int, int, bool, bool, bool, bool, bool
+    int, int, int, int, bool, bool, bool, bool, bool, bool
 );

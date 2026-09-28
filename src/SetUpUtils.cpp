@@ -372,16 +372,16 @@ void SetThreads(bool &Parallel, int maxThreads, int nRows,
     }
 }
 
-void SetNumResults(bool IsGmp, bool bLower, bool bUpper, bool bSetNum,
-                   const mpz_class &upperMpz, const mpz_class &lowerMpz,
-                   double lower, double upper, double computedRows,
-                   const mpz_class &computedRowsMpz, int &nRows,
-                   double &userNumRows) {
+void SetNumResults(
+    bool IsGmp, bool bUpper, bool bSetNum, const mpz_class &upperMpz,
+    const mpz_class &lowerMpz, double lower, double upper, double computedRows,
+    const mpz_class &computedRowsMpz, int &nRows, double &userNumRows
+) {
 
     if (IsGmp) {
         mpz_class testBound;
 
-        if (bLower && bUpper) {
+        if (lower > 0 && bUpper) {
             testBound = upperMpz - lowerMpz;
             mpz_class absTestBound(abs(testBound));
 
@@ -396,7 +396,7 @@ void SetNumResults(bool IsGmp, bool bLower, bool bUpper, bool bSetNum,
             }
 
             userNumRows = upperMpz.get_d();
-        } else if (bLower) {
+        } else if (lower > 0) {
             testBound = abs(computedRowsMpz - lowerMpz);
 
             if (cmp(testBound, std::numeric_limits<int>::max()) > 0) {
@@ -406,43 +406,44 @@ void SetNumResults(bool IsGmp, bool bLower, bool bUpper, bool bSetNum,
             userNumRows = testBound.get_d();
         }
     } else {
-        if (bLower && bUpper) {
+        if (lower > 0 && bUpper) {
             userNumRows = upper - lower;
         } else if (bUpper) {
             userNumRows = upper;
-        } else if (bLower) {
+        } else if (lower > 0) {
             userNumRows = computedRows - lower;
         }
     }
 
-    if (userNumRows == 0) {
-        if (bLower && bUpper) {
-            // Since lower is decremented and upper isn't, this implies that upper - lower = 0
-            // which means that lower is one larger than upper as put in by the user
+    if (userNumRows == 0 && lower > 0 && bUpper) {
+        // Since lower is decremented and upper isn't, this implies that
+        // upper - lower = 0 which means that lower is one larger than
+        // upper as put in by the user
 
-            cpp11::stop("The number of rows must be positive. Either the"
-                        "lowerBound exceeds the maximum number of possible"
-                        " results or the lowerBound is greater "
-                        "than the upperBound.");
-        } else {
-            // See comment in ConstraintsMain.cpp. Basically, we don't want to
-            // throw an error when we don't really know how many constrained
-            // results we have as computedRows is a strict upper bound and not
-            // the least upper bound.
-            if (bSetNum && computedRows > std::numeric_limits<int>::max()) {
-                cpp11::stop("The number of rows cannot exceed 2^31 - 1.");
-            }
+        cpp11::stop("The number of rows must be positive. Either the"
+                    "lowerBound exceeds the maximum number of possible"
+                    " results or the lowerBound is greater "
+                    "than the upperBound.");
+    } else if (userNumRows == 0) {
+        // See comment in ConstraintsMain.cpp. Basically, we don't want to
+        // throw an error when we don't really know how many constrained
+        // results we have as computedRows is a strict upper bound and not
+        // the least upper bound.
+        if (bSetNum && computedRows > std::numeric_limits<int>::max()) {
+            cpp11::stop("The number of rows cannot exceed 2^31 - 1.");
+        }
 
-            userNumRows = computedRows;
+        userNumRows = computedRows;
 
-            if (bSetNum) {
-                nRows = static_cast<int>(computedRows);
-            }
+        if (bSetNum) {
+            nRows = static_cast<int>(computedRows);
         }
     } else if (userNumRows < 0) {
-        cpp11::stop("The number of rows must be positive. Either the lowerBound"
-                 " exceeds the maximum number of possible results or the"
-                 " lowerBound is greater than the upperBound.");
+        cpp11::stop(
+            "The number of rows must be positive. Either the lowerBound"
+            " exceeds the maximum number of possible results or the"
+            " lowerBound is greater than the upperBound."
+        );
     } else if (userNumRows > std::numeric_limits<int>::max()) {
         cpp11::stop("The number of rows cannot exceed 2^31 - 1.");
     } else {
@@ -455,50 +456,46 @@ void SetBounds(SEXP Rlow, SEXP Rhigh, bool IsGmp, bool &bLower,
                mpz_class &lowerMpz, mpz_class &upperMpz,
                const mpz_class &computedRowsMpz, double computedRows) {
 
-    if (!Rf_isNull(Rlow)) {
-        if (IsGmp) {
-            CppConvert::convertMpzClass(Rlow, lowerMpz, "lower");
-            bLower = cmp(lowerMpz, 1) > 0;
-            lower = bLower ? 1 : 0;
+    bLower = !Rf_isNull(Rlow);
+    bUpper = !Rf_isNull(Rhigh);
 
-            if (cmp(lowerMpz, computedRowsMpz) > 0) {
-                cpp11::stop("bounds cannot exceed the maximum "
-                             "number of possible results");
-            }
+    if (bLower && IsGmp) {
+        CppConvert::convertMpzClass(Rlow, lowerMpz, "lower");
+        lower = cmp(lowerMpz, 1) > 0 ? 1 : 0;
 
-            --lowerMpz;
-        } else {                                    // numOnly = false
-            CppConvert::convertPrimitive(Rlow, lower, VecType::Numeric,
-                                         "lower", false);
-            bLower = lower > 1;
-
-            if (lower > computedRows) {
-                cpp11::stop("bounds cannot exceed the maximum "
-                             "number of possible results");
-            }
-
-            --lower;
+        if (cmp(lowerMpz, computedRowsMpz) > 0) {
+            cpp11::stop("bounds cannot exceed the maximum "
+                        "number of possible results");
         }
+
+        --lowerMpz;
+    } else if (bLower) {
+                                       // numOnly = false
+        CppConvert::convertPrimitive(Rlow, lower, VecType::Numeric,
+                                     "lower", false);
+
+        if (lower > computedRows) {
+            cpp11::stop("bounds cannot exceed the maximum "
+                        "number of possible results");
+        }
+
+        --lower;
     }
 
-    if (!Rf_isNull(Rhigh)) {
-        bUpper = true;
+    if (bUpper && IsGmp) {
+        CppConvert::convertMpzClass(Rhigh, upperMpz, "upper");
 
-        if (IsGmp) {
-            CppConvert::convertMpzClass(Rhigh, upperMpz, "upper");
+        if (cmp(upperMpz, computedRowsMpz) > 0) {
+            cpp11::stop("bounds cannot exceed the maximum "
+                         "number of possible results");
+        }
+    } else if (bUpper) {
+        CppConvert::convertPrimitive(Rhigh, upper,   // numOnly = false
+                                     VecType::Numeric, "upper", false);
 
-            if (cmp(upperMpz, computedRowsMpz) > 0) {
-                cpp11::stop("bounds cannot exceed the maximum "
-                             "number of possible results");
-            }
-        } else {
-            CppConvert::convertPrimitive(Rhigh, upper,   // numOnly = false
-                                         VecType::Numeric, "upper", false);
-
-            if (upper > computedRows) {
-                cpp11::stop("bounds cannot exceed the maximum "
-                             "number of possible results");
-            }
+        if (upper > computedRows) {
+            cpp11::stop("bounds cannot exceed the maximum "
+                         "number of possible results");
         }
     }
 }
