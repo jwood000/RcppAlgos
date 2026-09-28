@@ -122,7 +122,16 @@ test_that("expandGridIter produces correct results", {
             myResults, isTRUE(all.equal(a@nextIter(), a2@nextIter()))
         )
 
-        rm(a, a1, a2, b, temp, iter_df)
+        a[[2 * numTest]]
+        exhaust   <- a@nextNIter(n = 3 * numTest)
+        temp <- b[s:myRows, ]
+        rownames(temp) <- NULL
+        myResults <- c(myResults, identical(exhaust, temp))
+        msg       <- capture.output(noMore <- a@currIter())
+        myResults <- c(myResults, is.null(noMore))
+        myResults <- c(myResults, grepl("No more results", msg[1]))
+
+        rm(a, a1, a2, b, temp, iter_df, exhaust)
         gc()
         all(myResults)
     }

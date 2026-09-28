@@ -387,6 +387,14 @@ test_that("partitionsIter produces correct results", {
                 myResults <- c(
                     myResults, isTRUE(all.equal(a@nextNIter(numTest), b))
                 )
+
+                a@startOver()
+                exhaust   <- a@nextNIter(n = 3 * numTest)
+                myResults <- c(myResults, identical(exhaust, b))
+                msg       <- capture.output(noMore <- a@currIter())
+                myResults <- c(myResults, is.null(noMore))
+                myResults <- c(myResults, grepl("No more results", msg[1]))
+                rm(exhaust)
             } else {
                 s <- 1L
                 e <- numTest
@@ -404,6 +412,15 @@ test_that("partitionsIter produces correct results", {
                     myResults, isTRUE(all.equal(a@nextRemaining(),
                                                 b[s:myRows, , drop = FALSE]))
                 )
+
+                a@startOver()
+                stage_one <- a@nextNIter(n = 2 * numTest)
+                exhaust   <- a@nextNIter(n = 3 * numTest)
+                myResults <- c(myResults, identical(exhaust, b[s:myRows, , drop = FALSE]))
+                msg       <- capture.output(noMore <- a@currIter())
+                myResults <- c(myResults, is.null(noMore))
+                myResults <- c(myResults, grepl("No more results", msg[1]))
+                rm(stage_one, exhaust)
             }
 
             a@startOver()

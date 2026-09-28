@@ -196,22 +196,26 @@ test_that("comboIter & permuteIter produces correct results", {
         if (is.atomic(b) && !is.matrix(b)) {
             myResults <- c(
                 myResults, isTRUE(
-                    all.equal(a@nextNIter(numTest * 2), b[s:length(b)])
+                    all.equal(a@nextNIter(numTest * 3), b[s:length(b)])
                 )
             )
         } else if (is.list(b)) {
             myResults <- c(
                 myResults, isTRUE(
-                    all.equal(a@nextNIter(numTest * 2), b[s:length(b)])
+                    all.equal(a@nextNIter(numTest * 3), b[s:length(b)])
                 )
             )
         } else {
             myResults <- c(
                 myResults, isTRUE(
-                    all.equal(a@nextNIter(numTest * 2), b[s:nrow(b), ])
+                    all.equal(a@nextNIter(numTest * 3), b[s:nrow(b), ])
                 )
             )
         }
+
+        msg       <- capture.output(noMore <- a@currIter())
+        myResults <- c(myResults, is.null(noMore))
+        myResults <- c(myResults, grepl("No more results", msg[1]))
 
         # .method("nextRemaining", &Combo::nextGather)
         a@startOver()

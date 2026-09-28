@@ -37,7 +37,7 @@ SEXP CnstrtVecReturn(const std::vector<T> &v) {
 }
 
 template <typename T>
-void GetNSolutions(const std::vector<std::string> &compVec,
+bool GetNSolutions(const std::vector<std::string> &compVec,
                    std::unique_ptr<ConstraintsClass<T>> &Cnstrt,
                    std::vector<T> &cnstrntVec, std::vector<T> &resVec,
                    std::vector<T> &v, std::vector<T> &tar, int nRows) {
@@ -50,6 +50,8 @@ void GetNSolutions(const std::vector<std::string> &compVec,
         Cnstrt->Prepare(compVec.back(), v);
         Cnstrt->GetSolutions(v, tar, cnstrntVec, resVec, limit);
     }
+
+    return Cnstrt->GetCount() >= limit;
 }
 
 template <int sexpType, typename T>
@@ -91,7 +93,7 @@ SEXP CnstrntsToR::GetNextN(int n) {
         std::vector<int> resVec;
         std::vector<int> cnstrntVec;
 
-        GetNSolutions(
+        const bool is_full = GetNSolutions(
             compVec, CnstrtInt, cnstrntVec, resVec, vInt, tarIntVals, n
         );
 
@@ -105,12 +107,21 @@ SEXP CnstrntsToR::GetNextN(int n) {
 
             VectorToMatrix(cnstrntVec, resVec, matInt, 0, numResult,
                            width, upperBoundInt, KeepRes, false);
+
+            if (!is_full) {
+                keepGoing = false;
+                exhaustionPending = true;
+            }
+
             return res;
         }
     } else {
         std::vector<double> resVec;
         std::vector<double> cnstrntVec;
-        GetNSolutions(compVec, CnstrtDbl, cnstrntVec, resVec, vNum, tarVals, n);
+
+        const bool is_full = GetNSolutions(
+            compVec, CnstrtDbl, cnstrntVec, resVec, vNum, tarVals, n
+        );
 
         if (cnstrntVec.size()) {
             SetCurrVec(cnstrntVec, resVec, currDblVec, width, KeepRes);
@@ -122,6 +133,12 @@ SEXP CnstrntsToR::GetNextN(int n) {
 
             VectorToMatrix(cnstrntVec, resVec, matNum, 0, numResult,
                            width, upperBoundDbl, KeepRes, false);
+
+            if (!is_full) {
+                keepGoing = false;
+                exhaustionPending = true;
+            }
+
             return res;
         }
     }
@@ -189,10 +206,10 @@ void CnstrntsToR::startOver() {
 
 SEXP CnstrntsToR::nextIter() {
 
-    if (keepGoing) {
-        return GetNext();
-    } else {
+    if (CheckExhaustion()) {
         return R_NilValue;
+    } else {
+        return GetNext();
     }
 }
 
@@ -204,27 +221,27 @@ SEXP CnstrntsToR::nextNumIters(SEXP RNum) {
         RNum, num, VecType::Integer, "The number of results"
     );
 
-    if (keepGoing) {
-        return GetNextN(num);
-    } else {
+    if (CheckExhaustion()) {
         return R_NilValue;
+    } else {
+        return GetNextN(num);
     }
 }
 
 SEXP CnstrntsToR::nextGather() {
 
-    if (keepGoing) {
-        const int num = (RTYPE == INTSXP) ? maxRows - CnstrtInt->GetCount() :
-                                            maxRows - CnstrtDbl->GetCount();
-        return GetNextN(num);
-    } else {
+    if (CheckExhaustion()) {
         return R_NilValue;
+    } else {
+        const int num = (RTYPE == INTSXP) ? maxRows - CnstrtInt->GetCount() :
+            maxRows - CnstrtDbl->GetCount();
+        return GetNextN(num);
     }
 }
 
 SEXP CnstrntsToR::currIter() {
 
-    if (!keepGoing) {
+    if (CheckExhaustion()) {
         return R_NilValue;
     } else if (RTYPE == INTSXP && CnstrtInt->GetCount()) {
         return CnstrtVecReturn<INTSXP>(currIntVec);

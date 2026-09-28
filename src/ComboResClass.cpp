@@ -151,6 +151,21 @@ void ComboRes::startOver() {
     Combo::startOver();
 }
 
+bool ComboRes::CheckExhaustion() {
+
+    if (!keepGoing) {
+        if (exhaustionPending) {
+            const std::string message = "No more results.\n\n";
+            Rprintf("%s", message.c_str());
+            exhaustionPending = false;
+        }
+
+        return true;
+    }
+
+    return false;
+}
+
 SEXP ComboRes::nextIter() {
 
     if (CheckEqSi(IsGmp, mpzIndex, dblIndex, 0) &&

@@ -8,6 +8,7 @@ protected:
     SEXP ApplyFun(SEXP res);
     SEXP VecReturn();
     SEXP MatrixReturn(int nRows);
+    bool CheckExhaustion();
 
     const int cap;
     const int width;
@@ -16,6 +17,10 @@ protected:
 
     bool bLower;
     bool bUpper;
+
+    // Needed for both CnstrntsSpecialClass and CnstrntsToRClass
+    bool keepGoing = true;
+    bool exhaustionPending = false;
 
     const bool KeepRes;
     const bool numUnknown;
