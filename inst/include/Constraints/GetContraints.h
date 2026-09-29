@@ -13,5 +13,5 @@ SEXP GetConstraints(
     mpz_class &lowerMpz, double userNum, ConstraintType ctype, VecType myType,
     int nThreads, int nRows, int n, int strtLen, int cap, int m,
     bool IsComb, bool Parallel, bool IsGmp, bool IsRep, bool IsMult,
-    bool bUpper, bool KeepRes, bool numUnknown
+    bool bUpper, bool KeepRes, bool numUnknown, bool useRangeSemantics
 );

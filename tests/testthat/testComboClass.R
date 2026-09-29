@@ -157,7 +157,7 @@ test_that("comboIter & permuteIter produces correct results", {
         e <- numTest
 
         # .method("nextNIter", &Combo::nextNumIters)
-        for (i in 1:3) {
+        for (i in 1:2) {
             if (is.atomic(b) && !is.matrix(b)) {
                 myResults <- c(
                     myResults, isTRUE(all.equal(a@nextNIter(numTest), b[s:e]))
@@ -175,6 +175,47 @@ test_that("comboIter & permuteIter produces correct results", {
             s <- e + 1L
             e <- e + numTest
         }
+
+        if (is.atomic(b) && !is.matrix(b)) {
+            myResults <- c(
+                myResults, isTRUE(all.equal(a@nextRemaining(), b[s:length(b)]))
+            )
+        } else if (is.list(b)) {
+            myResults <- c(
+                myResults, isTRUE(all.equal(a@nextRemaining(), b[s:length(b)]))
+            )
+        } else {
+            myResults <- c(
+                myResults, isTRUE(all.equal(a@nextRemaining(), b[s:nrow(b), ]))
+            )
+        }
+
+        a[[numTest * 2]]
+
+        ## nextNIter() requesting more than remain
+        if (is.atomic(b) && !is.matrix(b)) {
+            myResults <- c(
+                myResults, isTRUE(
+                    all.equal(a@nextNIter(numTest * 3), b[s:length(b)])
+                )
+            )
+        } else if (is.list(b)) {
+            myResults <- c(
+                myResults, isTRUE(
+                    all.equal(a@nextNIter(numTest * 3), b[s:length(b)])
+                )
+            )
+        } else {
+            myResults <- c(
+                myResults, isTRUE(
+                    all.equal(a@nextNIter(numTest * 3), b[s:nrow(b), ])
+                )
+            )
+        }
+
+        msg       <- capture.output(noMore <- a@currIter())
+        myResults <- c(myResults, is.null(noMore))
+        myResults <- c(myResults, grepl("No more results", msg[1]))
 
         # .method("nextRemaining", &Combo::nextGather)
         a@startOver()
@@ -213,7 +254,7 @@ test_that("comboIter & permuteIter produces correct results", {
         myResults <- c(myResults, is.null(a@nextNIter()))
 
         # .method("prevNIter", &Combo::prevNumIters)
-        for (i in 1:3) {
+        for (i in 1:2) {
             if (is.atomic(b) && !is.matrix(b)) {
                 myResults <- c(myResults, isTRUE(all.equal(a@prevNIter(numTest), b[s:e])))
             } else if (is.list(b)) {
@@ -224,6 +265,14 @@ test_that("comboIter & permuteIter produces correct results", {
 
             s <- e - 1L
             e <- e - numTest
+        }
+
+        if (is.atomic(b) && !is.matrix(b)) {
+            myResults <- c(myResults, isTRUE(all.equal(a@prevRemaining(), b[s:1])))
+        } else if (is.list(b)) {
+            myResults <- c(myResults, isTRUE(all.equal(a@prevRemaining(), b[s:1])))
+        } else {
+            myResults <- c(myResults, isTRUE(all.equal(a@prevRemaining(), b[s:1, ])))
         }
 
         ## Prepare a for reverse iteration
@@ -257,6 +306,7 @@ test_that("comboIter & permuteIter produces correct results", {
         } else {
             myResults <- c(myResults, isTRUE(all.equal(a[[samp]], b[samp, ])))
         }
+
         rm(a, a1, a2, a3, b)
         gc()
         all(myResults)
@@ -563,6 +613,24 @@ test_that("comboIter & permuteIter produces correct results", {
         # .method("nextRemaining", &Combo::nextGather)
         a@startOver()
         a[[gmp::sub.bigz(myRows, lenCheck)]]
+
+        myResults <- c(myResults, isTRUE(
+            all.equal(a@nextNIter(numTest), head(b2, numTest)))
+        )
+
+        a@nextIter()
+
+        if (is.list(b2)) {
+            myResults <- c(myResults, isTRUE(
+                all.equal(a@prevNIter(numTest), head(b2, numTest)[numTest:1]))
+            )
+        } else {
+            myResults <- c(myResults, isTRUE(
+                all.equal(a@prevNIter(numTest), head(b2, numTest)[numTest:1, ]))
+            )
+        }
+
+        a@prevIter()
         myResults <- c(myResults, isTRUE(all.equal(a@nextRemaining(), b2)))
 
         ## Prepare a for reverse iteration
@@ -692,4 +760,85 @@ test_that("comboIter & permuteIter produces correct results", {
                                    lenCheck = 100, constr1 = "min"))
     expect_true(comboClassBigZTest(myNums, 30, TRUE,
                                    lenCheck = 100, constr1 = "min", IsComb = FALSE))
+})
+
+test_that("startOver restores iterator usability after generation error", {
+
+    shouldThrow <- TRUE
+
+    error_fun <- function(x) {
+        if (shouldThrow && x[2] == 3) {
+            shouldThrow <<- FALSE
+            stop("Nailed it")
+        }
+
+        x
+    }
+
+    a <- comboIter(5, 3, FUN = error_fun)
+    b <- comboIter(5, 3, FUN = \(x) x)
+
+    expect_error(
+        a@nextRemaining(),
+        "Nailed it"
+    )
+
+    a@startOver()
+    b@startOver()
+    expect_identical(a@nextRemaining(), b@nextRemaining())
+
+    ## test with nextNIter
+    shouldThrow <- TRUE
+    a@startOver()
+
+    expect_error(
+        a@nextNIter(5),
+        "Nailed it"
+    )
+
+    a@startOver()
+    b@startOver()
+    expect_identical(a@nextNIter(5), b@nextNIter(5))
+
+    ## test with nextIter
+    shouldThrow <- TRUE
+    a@startOver()
+
+    a@nextIter()
+    a@nextIter()
+    a@nextIter()
+
+    expect_error(
+        a@nextIter(),
+        "Nailed it"
+    )
+
+    a@startOver()
+    b@startOver()
+
+    total = comboCount(5, 3)
+
+    for (i in 1:total) {
+        expect_identical(a@nextIter(), b@nextIter())
+    }
+})
+
+test_that("constraintFun only with Parallel", {
+
+    a <- comboIter(23, 10, constraintFun = "sum", nThreads = 2)
+    b <- comboGeneral(23, 10, constraintFun = "sum")
+
+    gap <- 1e5
+    big_enough_for_parallel <- 3e5
+
+    ## Move away from the beginning
+    a@nextNIter(gap)
+
+    ## Now exercise MatrixReturn from a nonzero iterator index
+    res <- a@nextNIter(big_enough_for_parallel)
+
+    expect_identical(
+        res,
+        b[(gap + 1):(gap + big_enough_for_parallel), ]
+    )
 })

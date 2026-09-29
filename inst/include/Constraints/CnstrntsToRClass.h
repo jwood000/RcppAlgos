@@ -8,7 +8,6 @@ private:
     SEXP GetNext();
     SEXP GetNextN(int n);
 
-    bool keepGoing = true;
     const int maxRows;
 
     int upperBoundInt;

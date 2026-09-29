@@ -28,80 +28,87 @@ void CnstrntsSpecial::startOver() {
 }
 
 SEXP CnstrntsSpecial::nextIter() {
-    if (keepGoing) {
-        cpp11::sexp res = ComboRes::nextNumIters(Rf_ScalarInteger(1));
 
-        if (Rf_isNull(res)) {
-            keepGoing = false;
-            return res;
-        } else {
-            if (Rf_nrows(res)) {
-                count = dblIndex;
-                Rf_setAttrib(res, R_DimSymbol, R_NilValue);
-                return res;
-            } else {
-                keepGoing = false;
-                return ToSeeLast();
-            }
-        }
-    } else {
-        keepGoing = false;
+    if (CheckExhaustion()) {
         return R_NilValue;
     }
-}
 
-SEXP CnstrntsSpecial::nextNumIters(SEXP RNum) {
+    cpp11::sexp res = ComboRes::nextNumIters(Rf_ScalarInteger(1));
 
-    if (keepGoing) {
-        cpp11::sexp res = ComboRes::nextNumIters(RNum);
-
-        if (Rf_isNull(res)) {
-            keepGoing = false;
-            return res;
-        } else {
-            int num;
-            CppConvert::convertPrimitive(RNum, num, VecType::Integer,
-                                           "The number of results");
-
-            if (Rf_nrows(res)) {
-                const int returned_nrows = Rf_nrows(res);
-                keepGoing = num == returned_nrows;
-                count = dblIndex - (num - returned_nrows);
-                return res;
-            } else {
-                keepGoing = false;
-                return ToSeeLast();
-            }
-        }
-    } else {
+    if (Rf_isNull(res)) {
         keepGoing = false;
-        return R_NilValue;
-    }
-}
-
-SEXP CnstrntsSpecial::nextGather() {
-
-    if (keepGoing) {
-        cpp11::sexp res = ComboRes::nextGather();
-
-        if (Rf_isNull(res)) {
-            keepGoing = false;
-            return res;
-        } else if (Rf_nrows(res)) {
-            count += Rf_nrows(res);
-            keepGoing = false;
+        return res;
+    } else {
+        if (Rf_nrows(res)) {
+            count = dblIndex;
+            Rf_setAttrib(res, R_DimSymbol, R_NilValue);
             return res;
         } else {
             keepGoing = false;
             return ToSeeLast();
         }
-    } else {
-        keepGoing = false;
+    }
+}
+
+SEXP CnstrntsSpecial::nextNumIters(SEXP RNum) {
+
+    if (CheckExhaustion()) {
         return R_NilValue;
+    }
+
+    cpp11::sexp res = ComboRes::nextNumIters(RNum);
+
+    if (Rf_isNull(res)) {
+        keepGoing = false;
+        return res;
+    } else {
+        int num;
+        CppConvert::convertPrimitive(RNum, num, VecType::Integer,
+                                       "The number of results");
+
+        const int returned_nrows = Rf_nrows(res);
+
+        if (returned_nrows) {
+            const bool is_full = (num == returned_nrows);
+
+            keepGoing = is_full;
+            exhaustionPending = !is_full;
+
+            count = dblIndex - (num - returned_nrows);
+            return res;
+        } else {
+            keepGoing = false;
+            return ToSeeLast();
+        }
+    }
+}
+
+SEXP CnstrntsSpecial::nextGather() {
+
+    if (CheckExhaustion()) {
+        return R_NilValue;
+    }
+
+    cpp11::sexp res = ComboRes::nextGather();
+    keepGoing = false;
+
+    if (Rf_isNull(res)) {
+        return res;
+    } else if (Rf_nrows(res)) {
+        count += Rf_nrows(res);
+        exhaustionPending = true;
+        return res;
+    } else {
+        return ToSeeLast();
     }
 }
 
 SEXP CnstrntsSpecial::currIter() {
+
+    if (CheckExhaustion()) {
+        return R_NilValue;
+    }
+
     return ComboRes::currIter();
 }
 

@@ -203,8 +203,9 @@ SEXP ComboGroupsClass::nextNumIters(SEXP RNum) {
             nextCmbGrp(z);
         }
 
+        cpp11::sexp res = GeneralReturn(nRows);
         increment(IsGmp, mpzIndex, dblIndex, numIncrement);
-        return GeneralReturn(nRows);
+        return res;
     } else if (CheckEqInd(IsGmp, mpzIndex, dblIndex,
                           computedRowsMpz, computedRows)) {
         return ToSeeLast();
@@ -247,13 +248,15 @@ SEXP ComboGroupsClass::nextGather() {
             nextCmbGrp(z);
         }
 
+        cpp11::sexp res = GeneralReturn(nRows);
+
         if (IsGmp) {
             mpzIndex = computedRowsMpz + 1;
         } else {
             dblIndex = computedRows + 1;
         }
 
-        return GeneralReturn(nRows);
+        return res;
     } else {
         return R_NilValue;
     }

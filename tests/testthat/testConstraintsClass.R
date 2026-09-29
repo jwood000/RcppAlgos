@@ -102,8 +102,23 @@ test_that("ConstraintsClass produces correct results", {
 
         capture.output(noMore <- a@nextNIter(1))
         myResults <- c(myResults, is.null(noMore))
+
+        if (myRows) {
+            a@startOver()
+            stage_one <- a@nextNIter(n = 2 * numTest)
+            exhaust   <- a@nextNIter(n = 3 * numTest)
+            myResults <- c(myResults, identical(exhaust, b[(2 * numTest + 1L):myRows, ]))
+            msg       <- capture.output(noMore <- a@currIter())
+            myResults <- c(myResults, is.null(noMore))
+            myResults <- c(myResults, grepl("No more results", msg[1]))
+            rm(stage_one, exhaust)
+        }
+
         a@startOver()
-        if (myRows) myResults <- c(myResults, isTRUE(all.equal(a@nextRemaining(), b)))
+
+        if (myRows) {
+            myResults <- c(myResults, isTRUE(all.equal(a@nextRemaining(), b)))
+        }
 
         a@startOver()
         if (myRows) tmp <- a@nextNIter(myRows)
@@ -116,6 +131,18 @@ test_that("ConstraintsClass produces correct results", {
         msg <- capture.output(noMore <- a@nextRemaining())
         myResults <- c(myResults, is.null(noMore))
         myResults <- c(myResults, msg[1] == "No more results.")
+
+        a@startOver()
+        if (myRows) tmp <- a@nextNIter(numTest)
+
+        if (myRows) {
+            myResults <- c(
+                myResults,
+                isTRUE(all.equal(a@nextRemaining(), b[(numTest + 1L):myRows, ]))
+            )
+        }
+
+        myResults <- c(myResults, is.null(noMore))
 
         rm(a, a1, b)
         gc()

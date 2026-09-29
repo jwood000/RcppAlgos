@@ -25,6 +25,7 @@ jobs:
       matrix:
         config:
           - {os: macos-latest, r: 'release'}
+          - {os: macos-15,     r: 'release'}
 
           - {os: windows-latest, r: 'devel'}
           - {os: windows-latest, r: 'release'}
@@ -34,7 +35,7 @@ jobs:
           - {os: ubuntu-latest,  r: 'oldrel-1'}
           - {os: ubuntu-latest,  r: 'oldrel-2'}
           - {os: ubuntu-latest,  r: 'oldrel-3'}
-          
+
           - {os: ubuntu-24.04-arm,  r: 'release'}
 
     env:

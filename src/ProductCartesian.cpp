@@ -71,9 +71,11 @@ SEXP ExpandGridCpp(
                   lowerMpz, upperMpz, computedRowsMpz, computedRows);
 
         double userNumRows = 0;
-        SetNumResults(IsGmp, bLower, bUpper, true, upperMpz,
-                      lowerMpz, lower, upper, computedRows,
-                      computedRowsMpz, nRows, userNumRows);
+
+        SetNumResults(
+            IsGmp, bUpper, true, upperMpz, lowerMpz, lower, upper,
+            computedRows, computedRowsMpz, nRows, userNumRows
+        );
     }
 
     int sampSize;

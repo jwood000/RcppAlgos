@@ -33,11 +33,11 @@ void SetValues(VecType &myType, std::vector<int> &Reps,
 void SetThreads(bool &Parallel, int maxThreads, int nRows,
                 VecType myType, int &nThreads, SEXP RNumThreads, int limit);
 
-void SetNumResults(bool IsGmp, bool bLower, bool bUpper, bool bSetNum,
-                   const mpz_class &upperMpz, const mpz_class &lowerMpz,
-                   double lower, double upper, double computedRows,
-                   const mpz_class &computedRowsMpz, int &nRows,
-                   double &userNumRows);
+void SetNumResults(
+    bool IsGmp, bool bUpper, bool bSetNum, const mpz_class &upperMpz,
+    const mpz_class &lowerMpz, double lower, double upper, double computedRows,
+    const mpz_class &computedRowsMpz, int &nRows, double &userNumRows
+);
 
 void SetBounds(SEXP Rlow, SEXP Rhigh, bool IsGmp, bool &bLower,
                bool &bUpper, double &lower, double &upper,

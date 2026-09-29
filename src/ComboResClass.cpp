@@ -92,9 +92,14 @@ SEXP ComboRes::VecReturn() {
 
 SEXP ComboRes::MatrixReturn(int nRows) {
 
-    dblTemp = 0;
-    mpzTemp = 0;
     double userNum = nRows;
+    dblTemp = dblIndex;
+    mpzTemp = mpzIndex;
+
+    // Special constrained iterators request matching results rather than
+    // candidate ranges, so lower/upper range semantics do not apply. This also
+    // prevents parallel candidate-range generation for these requests.
+    const bool useRangeSemantics = false;
 
     int nThreads = 1;
     bool LocalPar = Parallel;
@@ -112,7 +117,7 @@ SEXP ComboRes::MatrixReturn(int nRows) {
         part, compVec, freqs, myReps, vNum, vInt, tarVals, tarIntVals, z,
         mainFun, funTest, funDbl, dblTemp, mpzTemp, userNum, ctype, myType,
         nThreads, nRows, n, strtLen, cap, width, IsComb, LocalPar, IsGmp,
-        IsRep, IsMult, bUpper, KeepRes, numUnknown
+        IsRep, IsMult, bUpper, KeepRes, numUnknown, useRangeSemantics
     );
 }
 
@@ -144,6 +149,21 @@ ComboRes::ComboRes(
 
 void ComboRes::startOver() {
     Combo::startOver();
+}
+
+bool ComboRes::CheckExhaustion() {
+
+    if (!keepGoing) {
+        if (exhaustionPending) {
+            const std::string message = "No more results.\n\n";
+            Rprintf("%s", message.c_str());
+            exhaustionPending = false;
+        }
+
+        return true;
+    }
+
+    return false;
 }
 
 SEXP ComboRes::nextIter() {
@@ -219,7 +239,7 @@ SEXP ComboRes::nextNumIters(SEXP RNum) {
             }
         }
 
-        bUpper   = true;
+        bUpper = true;
         cpp11::sexp res = MatrixReturn(nRows);
         increment(IsGmp, mpzIndex, dblIndex, numIncrement);
 
@@ -298,9 +318,8 @@ SEXP ComboRes::nextGather() {
             dblIndex = cnstrtCount + 1;
         }
 
-        // Since this is called with constraints as well, the
-        // requested number of results may not materialize thus
-        // Rf_nrows(res) may not equal nRows
+        // Since this is also called with constraints, the requested number of
+        // results may not materialize thus Rf_nrows(res) may not equal nRows
         nRows = Rf_nrows(res);
         if (nRows > 0) zUpdateIndex(vNum, vInt, z, sexpVec, res, width, nRows);
         if (!IsComb) TopOffPerm(z, myReps, n, width, IsRep, IsMult);

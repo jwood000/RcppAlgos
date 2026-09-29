@@ -114,21 +114,19 @@ SEXP CombinatoricsCnstrt(SEXP Rv, SEXP Rm, SEXP RisRep, SEXP RFreqs,
     if (ctype < ConstraintType::PartMapping) {
         SetStartZ(myReps, freqs, startZ, IsComb, n, m,
                   lower, lowerMpz, IsRep, IsMult, IsGmp);
-    } else {
-        if (bLower) {
-            const nthPartsPtr nthPartFun =
-                GetNthPartsFuncOrStop(part.ptype, IsGmp);
-            startZ = nthPartFun(part.mapTar, part.width, cap,
-                                strtLen, lower, lowerMpz);
+    } else if (lower > 0) {
+        const nthPartsPtr nthPartFun =
+            GetNthPartsFuncOrStop(part.ptype, IsGmp);
+        startZ = nthPartFun(part.mapTar, part.width, cap,
+                            strtLen, lower, lowerMpz);
 
-            if (ctype == ConstraintType::PartStandard && !part.includeZero) {
-                for (auto &z_i: startZ) {
-                    ++z_i;
-                }
+        if (ctype == ConstraintType::PartStandard && !part.includeZero) {
+            for (auto &z_i: startZ) {
+                ++z_i;
             }
-        } else {
-            startZ = part.startZ;
         }
+    } else {
+        startZ = part.startZ;
     }
 
     // This is used when we are unable to calculate the number of results
@@ -138,9 +136,10 @@ SEXP CombinatoricsCnstrt(SEXP Rv, SEXP Rm, SEXP RisRep, SEXP RFreqs,
     const bool bSetNum = !numUnknown ||
         ctype == ConstraintType::SpecialCnstrnt;
 
-    SetNumResults(IsGmp, bLower, bUpper, bSetNum, upperMpz,
-                  lowerMpz, lower, upper, computedRows,
-                  computedRowsMpz, nRows, userNum);
+    SetNumResults(
+        IsGmp, bUpper, bSetNum, upperMpz, lowerMpz, lower, upper,
+        computedRows, computedRowsMpz, nRows, userNum
+    );
 
     int nThreads   = 1;
     int maxThreads = 1;
@@ -159,11 +158,13 @@ SEXP CombinatoricsCnstrt(SEXP Rv, SEXP Rm, SEXP RisRep, SEXP RFreqs,
     SetThreads(Parallel, maxThreads, nRows,
                myType, nThreads, RnThreads, limit);
 
+    const bool useRangeSemantics = bLower;
+
     cpp11::sexp res = GetConstraints(
-        part, compVec, freqs, myReps, vNum, vInt, tarVals, tarIntVals,
-        startZ, mainFun, funTest, funDbl, lower, lowerMpz, userNum,
-        ctype, myType, nThreads, nRows, n, strtLen, cap, m, IsComb,
-        Parallel, IsGmp, IsRep, IsMult, bUpper, KeepRes, numUnknown
+        part, compVec, freqs, myReps, vNum, vInt, tarVals, tarIntVals, startZ,
+        mainFun, funTest, funDbl, lower, lowerMpz, userNum, ctype, myType,
+        nThreads, nRows, n, strtLen, cap, m, IsComb, Parallel, IsGmp, IsRep,
+        IsMult, bUpper, KeepRes, numUnknown, useRangeSemantics
     );
 
     return res;

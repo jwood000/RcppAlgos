@@ -144,15 +144,15 @@ SEXP ComboApply::nextNumIters(SEXP RNum) {
             nextComb(freqs, z, n1, m1);
         }
 
-        increment(IsGmp, mpzIndex, dblIndex, numIncrement);
         cpp11::sexp res = ApplyForward(nRows);
 
         if (IsGmp) {
-            mpzTemp = mpzIndex - 1;
+            mpzTemp = mpzIndex + nRows - 1;
         } else {
-            dblTemp = dblIndex - 1;
+            dblTemp = dblIndex + nRows - 1;
         }
 
+        increment(IsGmp, mpzIndex, dblIndex, numIncrement);
         z = nthResFun(n, m, dblTemp, mpzTemp, myReps);
         if (!IsComb) TopOffPerm(z, myReps, n, m, IsRep, IsMult);
         return res;
@@ -228,18 +228,14 @@ SEXP ComboApply::nextGather() {
             nextComb(freqs, z, n1, m1);
         }
 
-        if (IsGmp) {
-            mpzIndex = computedRowsMpz + 1;
-        } else {
-            dblIndex = computedRows + 1;
-        }
-
         cpp11::sexp res = ApplyForward(nRows);
 
         if (IsGmp) {
-            mpzTemp = computedRowsMpz - 1;
+            mpzIndex = computedRowsMpz + 1;
+            mpzTemp  = computedRowsMpz - 1;
         } else {
-            dblTemp = computedRows - 1;
+            dblIndex = computedRows + 1;
+            dblTemp  = computedRows - 1;
         }
 
         z = nthResFun(n, m, dblTemp, mpzTemp, myReps);

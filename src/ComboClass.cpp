@@ -252,13 +252,15 @@ SEXP Combo::nextGather() {
             nextComb(freqs, z, n1, m1);
         }
 
+        cpp11::sexp res = MatForward(nRows, 0);
+
         if (IsGmp) {
             mpzIndex = computedRowsMpz + 1;
         } else {
             dblIndex = computedRows + 1;
         }
 
-        return MatForward(nRows, 0);
+        return res;
     } else {
         return R_NilValue;
     }

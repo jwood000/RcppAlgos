@@ -54,6 +54,7 @@ microbenchmark(multi@nextNIter(1e6), serial@nextNIter(1e6), times = 20)
 microbenchmark(multi@nextNIter(1e3), serial@nextNIter(1e3), times = 20)}
         }
         \item{The maximum number of expandGrid that can be generated at one time is \eqn{2^{31} - 1}{2^31 - 1}.}
+        \item If an error occurs while generating results, the iterator's internal state is not guaranteed to remain at its previous position. Call \code{startOver()} before continuing to use the iterator.
     }
 }
 \seealso{\link{expandGrid}}

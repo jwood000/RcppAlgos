@@ -58,9 +58,11 @@ SEXP CombinatoricsStndrd(SEXP Rv, SEXP Rm, SEXP RisRep, SEXP RFreqs,
               lower, lowerMpz, IsRep, IsMult, IsGmp);
 
     double userNumRows = 0;
-    SetNumResults(IsGmp, bLower, bUpper, true, upperMpz,
-                  lowerMpz, lower, upper, computedRows,
-                  computedRowsMpz, nRows, userNumRows);
+
+    SetNumResults(
+        IsGmp, bUpper, true, upperMpz, lowerMpz, lower, upper,
+        computedRows, computedRowsMpz, nRows, userNumRows
+    );
 
     const int limit = 20000;
     SetThreads(Parallel, maxThreads, nRows,
@@ -71,7 +73,7 @@ SEXP CombinatoricsStndrd(SEXP Rv, SEXP Rm, SEXP RisRep, SEXP RFreqs,
     const bool IsCharacter = myType == VecType::Character;
 
     PermuteSpecific(phaseOne, generalRet, n, m, nRows,
-                    IsMult, IsCharacter, IsComb, bLower, IsRep);
+                    IsMult, IsCharacter, IsComb, lower > 0, IsRep);
 
     return GetCombPerms(Rv, vNum, vInt, n, m, phaseOne, generalRet,
                         IsComb, Parallel, IsRep, IsMult, IsGmp, freqs,

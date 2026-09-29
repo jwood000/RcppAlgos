@@ -126,13 +126,13 @@ For the general case, finding all combinations/permutations with constraints is 
 
 There are special cases where more efficient algorithms are dyncamically deployed. These cases center around the subject of integer partitions. See \code{\link{partitionsGeneral}} for more information.
 
-When there are any negative values in \code{v} and \code{constraintFun = "prod"}, producing a monotonic set is non-trivial for the general case. As a result, performance will suffer as all combinations/permutations must be tested against the constraint criteria.
+When there are any negative values in \code{v}, \code{constraintFun = "prod"}, and \code{limitConstraints} is provided, producing a monotonic set is non-trivial for the general case. As a result, performance will suffer as all combinations/permutations must be tested against the constraint criteria. Throughout the documentation, this case is referred to as \emph{special constraints}.
 }
 \note{
     \itemize{
         \item {\code{Parallel} and \code{nThreads} will be ignored in the following cases:
             \itemize{
-                \item When the output is constrained (except for most partitions cases)
+                \item When the output is constrained, except for most partition cases and special constraints when \code{lower} is explicitly supplied (see the last note below).
                 \item If the class of the vector passed is \code{character}, \code{raw}, and \code{complex} (N.B. \code{Rcpp::CharacterMatrix} is not thread safe). Alternatively, you can generate an indexing matrix in parallel.
                 \item If \code{FUN} is utilized.
             }
@@ -143,6 +143,7 @@ When there are any negative values in \code{v} and \code{constraintFun = "prod"}
         \item Lexicographical ordering isn't guaranteed for permutations if \code{lower} isn't supplied and the output is constrained.
         \item If \code{lower} is supplied and the output is constrained, the combinations/permutations that will be tested will be in the lexicographical range \code{lower} to \code{upper} or up to the total possible number of results if \code{upper} is not given. See the second paragraph for the definition of \code{upper}.
         \item \code{FUN} will be ignored if the constraint check is satisfied.
+        \item For special constraints (see the Details section), multithreading is only available when \code{lower} is explicitly supplied. In this case, the search space can be divided among threads beginning at the requested lower bound. When \code{lower} is not supplied, RcppAlgos must continue searching until the requested number of results satisfying the constraints is found. Because the locations of these results are not known in advance, this search is performed serially, even when multiple threads are requested.
     }
 }
 \author{

@@ -58,14 +58,14 @@ test_that("comboGeneral produces correct results with no constraints", {
     expect_equal(ncol(comboGeneral(5, 3, TRUE, constraintFun = "prod", keepResults = TRUE)), 4)
 
     expect_equal(ncol(comboGeneral(5, 3, FALSE,
-                                    constraintFun = "prod", freqs = c(1,2,1,2,4),
-                                     keepResults = TRUE)), 4)
+                                   constraintFun = "prod", freqs = c(1,2,1,2,4),
+                                   keepResults = TRUE)), 4)
 
     expect_equal(nrow(comboGeneral(10, 3, TRUE, upper = 20)), 20)
     expect_equal(nrow(comboGeneral(10, 3, upper = 10)), 10)
 
     expect_equal(nrow(comboGeneral(1:10 + .01, 3, FALSE, constraintFun = "prod",
-                                     keepResults = TRUE, upper = 10)), 10)
+                                   keepResults = TRUE, upper = 10)), 10)
 
     expect_equal(nrow(comboGeneral(5, 5, freqs = 1:5, upper = 10)), 10)
 
@@ -209,7 +209,7 @@ test_that("comboGeneral produces correct results with constraints", {
 
     expect_false(tinyTol == defaultTol)
 
-    ## check that classes behave properly N.B. limitContraint > INT_MAX
+    ## check that classes behave properly N.B. limitConstraint > INT_MAX
     expect_equal(class(comboGeneral(10, 5, constraintFun = "prod",
                                     comparisonFun = "<",
                                     limitConstraints = 2^32)[,1]), "numeric")
@@ -248,12 +248,12 @@ test_that("comboGeneral produces correct results with constraints", {
     expect_true(all(comboGeneral(5, 5, TRUE,
                                  constraintFun = "prod", comparisonFun = ">",
                                  limitConstraints = 100,
-                                   keepResults = TRUE)[,6] > 100))
+                                 keepResults = TRUE)[,6] > 100))
 
     expect_true(all(comboGeneral(5, 3, FALSE,
                                  constraintFun = "max", comparisonFun = "=<",
                                  limitConstraints = 4,
-                                   keepResults = TRUE)[,4] <= 4))
+                                 keepResults = TRUE)[,4] <= 4))
 
     ## N.B. When there are two comparisons (i.e. comparisonFun = c(">=","<"))
     ## and only one limitConstraint, the first comparison is used. Similarly,
@@ -400,6 +400,14 @@ test_that("comboGeneral produces correct results with exotic constraints", {
                               comparisonFun = c("<=",">="),
                               limitConstraints = c(-2000, 5000),
                               keepResults = TRUE)),
+                 nrow(rbind(a[which(b <= -2000),], a[which(b >= 5000), ])))
+
+    a = comboGeneral(-5, 7, TRUE)
+    b = apply(a, 1, prod)
+    expect_equal(nrow(comboGeneral(-5, 7, TRUE, constraintFun = "prod",
+                                   comparisonFun = c("<=",">="),
+                                   limitConstraints = c(-2000, 5000),
+                                   keepResults = TRUE)),
                  nrow(rbind(a[which(b <= -2000),], a[which(b >= 5000), ])))
 
     set.seed(4321)
@@ -616,4 +624,176 @@ test_that("comboGeneral produces correct results with exotic constraints", {
             }
         }
     }
+})
+
+test_that("internal useRangeSemantics with special constraints", {
+    ## This path is hit when the user provide a source vector that contains
+    ## a negative value, the constraintFun = "prod", and they are doing more
+    ## than just producing the product of each row. That is, limitConstraints
+    ## contains a non-trivial value.
+
+    v = c(-11:-1, 1:11)
+    a = comboGeneral(v, 10)
+    b = apply(a, 1, prod)
+    ans = a[b > 200000 & b < 300000, ]
+
+    ## Without lower, the number requested refers to matching results rather
+    ## than a range of candidates, so generation remains serial.
+    expect_equal(comboGeneral(v, 10, constraintFun = "prod",
+                              comparisonFun = c(">","<"),
+                              limitConstraints = c(200000, 300000)), ans)
+
+    ## The request for multiple threads is ignored because range semantics
+    ## are not in use.
+    expect_equal(comboGeneral(v, 10, constraintFun = "prod",
+                              comparisonFun = c(">","<"),
+                              limitConstraints = c(200000, 300000),
+                              nThreads = 2), ans)
+
+    ##### ************************** Enter lower ************************* #####
+
+    ## Ensure lower = 1 genuinely precedes the first qualifying result
+    min_idx = min(which(b > 200000 & b < 300000))
+    expect_true(min_idx > 1)
+
+    ## Supplying lower = 1 enables range semantics while still searching the
+    ## complete candidate space.
+    expect_equal(comboGeneral(v, 10, constraintFun = "prod",
+                              comparisonFun = c(">","<"),
+                              limitConstraints = c(200000, 300000),
+                              lower = 1), ans)
+
+    ## Furthermore, since we are using range semantics, we can safely use
+    ## multithreading as both lower and nThreads are provided. For this
+    ## example when lower = 1, we are searching the entire space.
+    expect_equal(comboGeneral(v, 10, constraintFun = "prod",
+                              comparisonFun = c(">","<"),
+                              limitConstraints = c(200000, 300000),
+                              lower = 1, nThreads = 2), ans)
+
+    ## And here is a general lower argument that actually reduces the
+    ## solution space
+    myLower = 2e5
+    a1 = a[myLower:nrow(a), ]
+    b1 = b[myLower:length(b)]
+
+    ## Again, useRangeSemantics will be used here as lower is supplied
+    expect_equal(comboGeneral(v, 10, constraintFun = "prod",
+                              comparisonFun = c(">","<"),
+                              limitConstraints = c(200000, 300000),
+                              lower = myLower),
+                 a1[b1 > 200000 & b1 < 300000, ])
+
+    ## Again, since we are using range semantics, we can safely use
+    ## multithreading as both lower and nThreads are provided. This means we
+    ## are effectively searching the entire space starting at myLower.
+    expect_equal(comboGeneral(v, 10, constraintFun = "prod",
+                              comparisonFun = c(">","<"),
+                              limitConstraints = c(200000, 300000),
+                              lower = myLower, nThreads = 2),
+                 a1[b1 > 200000 & b1 < 300000, ])
+
+    ##### ************************ Boundary Tests ************************ #####
+    expect_identical(
+        comboGeneral(v, 10, lower = 1, upper = 1),
+        a[1, , drop = FALSE]
+    )
+
+    expect_equal(comboGeneral(v, 10, constraintFun = "prod",
+                              comparisonFun = "==",
+                              limitConstraints = b[1],
+                              lower = 1, upper = 1),
+                 a[1, , drop = FALSE])
+
+    expect_equal(comboGeneral(v, 10, constraintFun = "prod",
+                              comparisonFun = "==",
+                              limitConstraints = b[2],
+                              lower = 1, upper = 1),
+                 a[NULL, , drop = FALSE])
+
+    tar2 = 89210880
+    idx = which(b == tar2)
+    low  = idx[1] + 1L
+    high = idx[2] - 1L
+
+    expect_false(any(b[low:high] == tar2))
+
+    ## The limit for spawning multiple threads
+    expect_true((high - low + 1L) > 20000)
+
+    expect_equal(comboGeneral(v, 10, constraintFun = "prod",
+                              comparisonFun = "==",
+                              limitConstraints = tar2,
+                              lower = low, upper = high),
+                 a[NULL, , drop = FALSE])
+
+    expect_equal(comboGeneral(v, 10, constraintFun = "prod",
+                              comparisonFun = "==",
+                              limitConstraints = tar2,
+                              lower = low, upper = high,
+                              nThreads = 2),
+                 a[NULL, , drop = FALSE])
+
+    ##### ************************** Upper Only ************************* #####
+    target2 = -40320
+    ans2 = a[b == target2, ]
+
+    expect_equal(comboGeneral(v, 10, constraintFun = "prod",
+                              comparisonFun = "==",
+                              limitConstraints = target2), ans2)
+
+    expect_equal(comboGeneral(v, 10, constraintFun = "prod",
+                              comparisonFun = "==",
+                              limitConstraints = target2,
+                              upper = nrow(ans2)), ans2)
+})
+
+test_that("internal useRangeSemantics with special constraints and gmp", {
+    ## Same as above, we now testing the gmp space
+
+    v = c(-11:-1, 1:11)
+    a = permuteGeneral(v, 13, repetition = TRUE, upper = 5e5)
+
+    ## We are indeed in the gmp space
+    expect_true(class(permuteCount(v, 13, repetition = TRUE)) == "bigz")
+
+    b = apply(a, 1, prod)
+    target = -1697722337520
+    ans = a[b == target, ]
+
+    ## Use of upper here controls how many results we get back
+    no_lower = permuteGeneral(v, 13, repetition = TRUE,
+                              constraintFun = "prod",
+                              comparisonFun = "==",
+                              limitConstraints = target,
+                              upper = nrow(ans))
+
+    expect_equal(no_lower, ans)
+    first_rank = permuteRank(no_lower, v = v, repetition = TRUE)
+
+    ## Verify that all matching ranks occur within the portion of the
+    ## candidate space materialized above.
+    expect_true(max(first_rank) <= nrow(a))
+
+    ##### ************************** Enter lower ************************* #####
+
+    ## When we use lower, upper now has a different meaning
+    with_lower = permuteGeneral(v, 13, repetition = TRUE,
+                                constraintFun = "prod",
+                                comparisonFun = "==",
+                                limitConstraints = target,
+                                lower = 1, upper = min(first_rank))
+    expect_equal(with_lower, ans[1, , drop = FALSE])
+
+    with_lower_parallel = permuteGeneral(
+        v, 13, repetition = TRUE,
+        constraintFun = "prod",
+        comparisonFun = "==",
+        limitConstraints = target,
+        lower = 1,
+        upper = max(first_rank),
+        nThreads = 2
+    )
+
+    expect_equal(with_lower_parallel, ans)
 })

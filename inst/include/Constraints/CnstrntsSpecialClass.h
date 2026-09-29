@@ -5,7 +5,6 @@
 class CnstrntsSpecial : public ComboRes {
 private:
     int count;
-    bool keepGoing;
 
 public:
     CnstrntsSpecial(
