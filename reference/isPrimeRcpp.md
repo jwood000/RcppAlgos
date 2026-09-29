@@ -121,5 +121,5 @@ isPrimeRcpp(mySamp, namedVector = TRUE)
 ## Using nThreads
 system.time(isPrimeRcpp(mySamp, nThreads = 2))
 #>    user  system elapsed 
-#>       0       0       0 
+#>   0.001   0.000   0.000 
 ```

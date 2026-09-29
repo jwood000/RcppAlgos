@@ -143,6 +143,7 @@ Use the next methods to obtain results in lexicographical order.
 <span><span class="fu">microbenchmark</span><span class="op">(</span><span class="va">multi</span><span class="op">@</span><span class="va">nextNIter</span><span class="op">(</span><span class="fl">1e6</span><span class="op">)</span>, <span class="va">serial</span><span class="op">@</span><span class="va">nextNIter</span><span class="op">(</span><span class="fl">1e6</span><span class="op">)</span>, times <span class="op">=</span> <span class="fl">20</span><span class="op">)</span></span>
 <span><span class="fu">microbenchmark</span><span class="op">(</span><span class="va">multi</span><span class="op">@</span><span class="va">nextNIter</span><span class="op">(</span><span class="fl">1e3</span><span class="op">)</span>, <span class="va">serial</span><span class="op">@</span><span class="va">nextNIter</span><span class="op">(</span><span class="fl">1e3</span><span class="op">)</span>, times <span class="op">=</span> <span class="fl">20</span><span class="op">)</span></span></code></pre></div></li>
 <li><p>The maximum number of comboGroups that can be generated at one time is \(2^{31} - 1\).</p></li>
+<li><p>If an error occurs while generating results, the iterator's internal state is not guaranteed to remain at its previous position. Call <code>startOver()</code> before continuing to use the iterator.</p></li>
 </ul></div>
     <div class="section level2">
     <h2 id="see-also">See also<a class="anchor" aria-label="anchor" href="#see-also"></a></h2>
@@ -231,7 +232,7 @@ Use the next methods to obtain results in lexicographical order.
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.0.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.1.</p>
 </div>
 
     </footer></div>

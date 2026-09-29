@@ -2,6 +2,8 @@
 
 ## RcppAlgos 2.10.1
 
+CRAN release: 2026-06-08
+
 This is a maintenance release with targeted correctness and portability
 fixes.
 
