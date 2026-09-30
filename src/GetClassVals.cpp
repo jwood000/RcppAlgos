@@ -44,9 +44,7 @@ SEXP GetClassVals(
     const cpp11::sexp sexpVec = CopyRv(Rv, vInt, vNum, myType, IsFactor);
     const double computedRows = GetComputedRows(IsMult, IsComb, IsRep,
                                                 n, m, Rm, freqs, myReps);
-
-    const bool IsGmp = !std::isfinite(computedRows) ||
-        computedRows > SampleLimit;
+    const bool IsGmp = IsBeyondBound(computedRows, SampleLimit);
 
     mpz_class computedRowsMpz;
 

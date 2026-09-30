@@ -278,9 +278,7 @@ SEXP ComboGroupsClass::randomAccess(SEXP RindexVec) {
 
     std::size_t sampSize;
     std::vector<double> mySample;
-
-    const bool SampIsGmp = !std::isfinite(computedRows) ||
-        computedRows > SampleLimit;
+    const bool SampIsGmp = IsBeyondBound(computedRows, SampleLimit);
 
     SetIndexVec(RindexVec, mySample, sampSize, SampIsGmp, computedRows);
 

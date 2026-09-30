@@ -207,8 +207,7 @@ SEXP SamplePartitions(
     // supported partition types. Multiset partition counts do not currently
     // provide this fallback, but multiset partitions are not supported for
     // sampling and therefore cannot reach this path.
-    const bool SampleGmp = part.isGmp ||
-        !std::isfinite(part.count) || part.count > SampleLimit;
+    const bool SampleGmp = part.isGmp || IsBeyondBound(part.count, SampleLimit);
 
     if (SampleGmp && !part.isGmp) {
         part.isGmp    = true;

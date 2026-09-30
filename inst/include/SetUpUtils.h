@@ -13,6 +13,9 @@ enum rcppType {
     N_TYPES = 7
 };
 
+// Non-finite values, including NaN and +/-Inf, are considered beyond the bound.
+bool IsBeyondBound(double value, double bound = Significand53);
+
 void SetType(VecType &myType, SEXP Rv);
 void SetFactorClass(SEXP res, SEXP Rv);
 int GetLength(SEXP Rv, VecType myType);

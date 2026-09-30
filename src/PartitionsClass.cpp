@@ -282,9 +282,7 @@ SEXP Partitions::randomAccess(SEXP RindexVec) {
 
     std::size_t sampSize;
     std::vector<double> mySample;
-
-    const bool SampIsGmp = !std::isfinite(cnstrtCount) ||
-        (cnstrtCount > SampleLimit);
+    const bool SampIsGmp = IsBeyondBound(cnstrtCount, SampleLimit);
 
     SetIndexVec(RindexVec, mySample, sampSize, SampIsGmp, cnstrtCount);
 

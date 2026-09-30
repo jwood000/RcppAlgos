@@ -30,9 +30,7 @@ SEXP CombinatoricsCount(SEXP Rv, SEXP Rm, SEXP RisRep,
 
     const double computedRows = GetComputedRows(IsMult, IsComb, IsRep,
                                                 n, m, Rm, freqs, myReps);
-    const bool IsGmp = !std::isfinite(computedRows) ||
-        computedRows > Significand53;
-
+    const bool IsGmp = IsBeyondBound(computedRows);
     mpz_class computedRowsMpz;
 
     if (IsGmp) {
@@ -133,10 +131,7 @@ SEXP ExpandGridCountCpp(cpp11::list RList) {
     }
 
     const double computedRows = CartesianCount(lenGrps);
-
-    const bool IsGmp = !std::isfinite(computedRows) ||
-        computedRows > Significand53;
-
+    const bool IsGmp = IsBeyondBound(computedRows);
     mpz_class computedRowsMpz;
 
     if (IsGmp) {
