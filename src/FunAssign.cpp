@@ -146,7 +146,7 @@ void SetDims(SEXP RFunVal, SEXP res, int commonLen, int nRows) {
         cpp11::sexp dim = Rf_allocVector(INTSXP, rnk_v + 1);
         INTEGER(dim)[0] = nRows;
 
-        if(array_value) {
+        if (array_value) {
             for(int j = 0; j < rnk_v; j++) {
                 INTEGER(dim)[j + 1] = INTEGER(dim_v)[j];
             }
@@ -156,6 +156,5 @@ void SetDims(SEXP RFunVal, SEXP res, int commonLen, int nRows) {
 
         Rf_setAttrib(res, R_DimSymbol, dim);
     }
-
 }
 

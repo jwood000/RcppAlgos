@@ -340,7 +340,56 @@ test_that("comboGeneral produces correct results with use of FUN", {
     expect_equal(
         comboGeneral(letters[1:5], 3, FUN = paste0,
                      collapse = "", FUN.VALUE = "a"),
-        apply(comboGeneral(letters[1:5], 3), 1, paste0, collapse = ""))
+        apply(comboGeneral(letters[1:5], 3), 1, paste0, collapse = "")
+    )
+
+    v <- factor(c("a", "b", "c"))
+
+    expect_equal(
+        comboGeneral(
+            v, 2,
+            FUN = function(x) paste(as.character(x), collapse = ""),
+            FUN.VALUE = character(1)
+        ),
+        c("ab", "ac", "bc")
+    )
+
+    expect_true(
+        all(
+            sapply(
+                comboGeneral(
+                    v, 2,
+                    FUN = function(x) {
+                        c(
+                            isFactor = is.factor(x),
+                            sameLevels = identical(levels(x), levels(v))
+                        )
+                    }
+                ),
+                all
+            )
+        )
+    )
+
+    v <- factor(c("a", "b", "a"), levels = c("a", "b", "c"), ordered = TRUE)
+
+    expect_true(
+        all(
+            sapply(
+                permuteGeneral(
+                    v, 2,
+                    FUN = function(x) {
+                        c(
+                            isFactor = is.factor(x),
+                            sameLevels = identical(levels(x), levels(v)),
+                            isOrdered = is.ordered(x)
+                        )
+                    }
+                ),
+                all
+            )
+        )
+    )
 })
 
 test_that("comboGeneral produces correct results with exotic constraints", {

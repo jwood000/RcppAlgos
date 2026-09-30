@@ -313,6 +313,21 @@ SEXP GetCombPermApply(SEXP Rv, const std::vector<double> &vNum,
             return res;
         } case VecType::Integer: {
             cpp11::sexp vectorPass = Rf_allocVector(INTSXP, m);
+
+            if (Rf_isFactor(Rv)) {
+                Rf_setAttrib(
+                    vectorPass,
+                    R_LevelsSymbol,
+                    Rf_getAttrib(Rv, R_LevelsSymbol)
+                );
+
+                Rf_setAttrib(
+                    vectorPass,
+                    R_ClassSymbol,
+                    Rf_getAttrib(Rv, R_ClassSymbol)
+                );
+            }
+
             int* ptr_vec = INTEGER(vectorPass);
             cpp11::sexp res = ApplyFunction(vInt, vectorPass, ptr_vec,
                                             n, m, IsComb, IsRep, nRows,

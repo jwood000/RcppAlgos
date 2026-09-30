@@ -93,6 +93,9 @@ test_that("comboGeneral produces appropriate error messages", {
     expect_error(comboGeneral(5, 3, FUN = cumsum, FUN.VALUE = 1L),
                  "values must be length 1")
 
+    expect_error(comboGeneral(factor(letters[1:4]), 2, FUN = 42),
+                 "object 'FUN' of mode 'function' was not found")
+
     expect_error(comboGeneral(5, 3.3), "must be a whole number")
     expect_error(comboGeneral(gmp::as.bigz(1:5), 3),
                  "Class 'bigz' is not supported for raw input v")

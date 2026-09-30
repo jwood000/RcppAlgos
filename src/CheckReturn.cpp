@@ -93,7 +93,7 @@ SEXP CheckReturn(SEXP Rv, SEXP RCnstrntFun, SEXP RCompFun,
 
     // if res isn't constrained (i.e. CheckReturnType::constraintFun)
     if (res) {
-        const bool applyFun = !Rf_isNull(stdFun) && !Rf_isFactor(Rv);
+        const bool applyFun = !Rf_isNull(stdFun);
 
         if (applyFun) {
             if (!Rf_isFunction(stdFun)) {
