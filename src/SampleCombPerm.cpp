@@ -45,7 +45,9 @@ SEXP SampleCombPerm(SEXP Rv, SEXP Rm, SEXP RisRep, SEXP RFreqs,
 
     const double computedRows = GetComputedRows(IsMult, IsComb, IsRep,
                                                 n, m, Rm, freqs, myReps);
-    const bool IsGmp = (computedRows > SampleLimit);
+
+    const bool IsGmp = !std::isfinite(computedRows) ||
+        computedRows > SampleLimit;
 
     mpz_class computedRowsMpz;
 

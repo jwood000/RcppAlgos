@@ -157,7 +157,9 @@ SEXP RankCombPerm(SEXP RIdx, SEXP Rv, SEXP RisRep,
     const double computedRows = GetComputedRows(IsMult, IsComb, IsRep,
                                                 n, m, Rm, freqs, myReps);
 
-    const bool IsGmp     = (computedRows > Significand53);
+    const bool IsGmp = !std::isfinite(computedRows) ||
+        computedRows > Significand53;
+
     const int numResults = Rf_length(RIdx) / m;
 
     const int limit = 2;

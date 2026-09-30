@@ -658,7 +658,7 @@ int PartitionsCount(const std::vector<int> &Reps,
         part.count = Counter->GetCount(part.mapTar, part.width,
                                        allowed, strtLen);
 
-        if (part.count > Significand53) {
+        if (!std::isfinite(part.count) || part.count > Significand53) {
             part.isGmp = true;
             Counter->SetArrSize(part.ptype, part.mapTar, part.width);
             Counter->InitializeMpz();

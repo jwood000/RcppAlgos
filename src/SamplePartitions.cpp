@@ -178,6 +178,8 @@ SEXP SamplePartitions(
     if (part.ptype == PartitionType::CoarseGrained ||
         part.ptype == PartitionType::NotPartition  ||
         part.ptype == PartitionType::NotMapped     ||
+        part.ptype == PartitionType::CompMultiset  ||
+        part.ptype == PartitionType::PrmMultiset   ||
         part.ptype == PartitionType::Multiset) {
 
         cpp11::stop("Partition sampling not available for this case.");
@@ -194,13 +196,19 @@ SEXP SamplePartitions(
     // the number of partitions could take a long time. When this occurs with
     // partitionsGeneral, it is faster to generate partitions and push them
     // to a vector until the next partitions algorithm exhaust, then we can
-    // convert this to an R matrix (instead of preallocating a matrix).
+    // convert this to an R matrix (instead of pre-allocating a matrix).
     //
     // When we are dealing with sampling, we have to know the total number
     // of partitions, thus the following:
 
     if (part.numUnknown) PartitionsCount(myReps, part, n, true);
-    const bool SampleGmp = (part.count > SampleLimit);
+
+    // PartitionsCount() handles non-finite counts by switching to GMP for
+    // supported partition types. Multiset partition counts do not currently
+    // provide this fallback, but multiset partitions are not supported for
+    // sampling and therefore cannot reach this path.
+    const bool SampleGmp = part.isGmp ||
+        !std::isfinite(part.count) || part.count > SampleLimit;
 
     if (SampleGmp && !part.isGmp) {
         part.isGmp    = true;

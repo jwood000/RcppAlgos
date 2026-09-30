@@ -1,22 +1,83 @@
-#include "Permutations/PermuteCount.h"
-#include <algorithm> // std::sort, std::max_element
-#include <numeric>   // std::accumulate, std::iota
+#include "Permutations/BigPermuteCount.h"
+#include "cpp11/protect.hpp"
+#include <functional> // std::greater
+#include <algorithm>  // std::sort, std::max_element
+#include <iterator>   // std::distance
+#include <numeric>    // std::accumulate, std::iota
 #include <gmpxx.h>
 
-// All functions below are exactly the same as the functions
-// in StandardCount.cpp. The only difference is that they
-// utilize the gmp library and deal mostly with mpz_t types
+// NumPermsWithRepGmp and rleCpp are internal implementation helpers and are
+// not part of RcppAlgos' supported C++ API. RcppAlgos does not support
+// downstream compiled consumers of these functions, so preserving their
+// previous symbols is not necessary.
 
-void NumPermsWithRepGmp(mpz_class &result, const std::vector<int> &v) {
+// rleCpp
+//
+// Most of the code for rleCpp was obtained from Hadley Wickham's
+// article titled "High Performance functions with Rcpp" found:
+//             http://adv-r.had.co.nz/Rcpp.html
+//
+// Computes run-length encoding lengths of the sorted vector x,
+// starting at first_idx.
+//
+// PRECONDITIONS:
+// -------------
+// • x must be non-empty.
+// • first_idx must satisfy: 0 <= first_idx < x.size().
+// • The range [first_idx, x.size()) must be sorted in non-decreasing order.
+//
+// These invariants are guaranteed by all callers (e.g. NumPermsWithRep,
+// partition/composition generators).
+//
+// An empty vector or invalid first_idx indicates an internal logic error,
+// not a recoverable run time condition.
+//
+static std::vector<int> rleCpp(const std::vector<int> &x, int first_idx) {
+
+    if (first_idx < 0 || static_cast<std::size_t>(first_idx) >= x.size()) {
+        cpp11::stop("Internal error: rleCpp first_idx out of range");
+    }
+
+    std::vector<int> lengths;
+    int prev = x[first_idx];
+    std::size_t i = 0;
+    lengths.push_back(1);
+
+    for(auto it = x.cbegin() + first_idx + 1; it != x.cend(); ++it) {
+        if (prev == *it) {
+            ++lengths[i];
+        } else {
+            lengths.push_back(1);
+            prev = *it;
+            ++i;
+        }
+    }
+
+    return lengths;
+}
+
+void NumPermsWithRepGmp(
+    mpz_class &result, const std::vector<int> &v, bool includeZero
+) {
 
     result = 1;
-    std::vector<int> myLens = rleCpp(v);
+
+    int first_idx = includeZero ? 0 : std::distance(
+        v.cbegin(),
+        std::find_if(v.cbegin(), v.cend(), [](int i) {return i != 0;})
+    );
+
+    // If all entries are zero or v is empty. This shouldn't happen,
+    // but here for safety.
+    if (first_idx == static_cast<int>(v.size())) return;
+
+    std::vector<int> myLens = rleCpp(v, first_idx);
     std::sort(myLens.begin(), myLens.end(), std::greater<int>());
 
     const int myMax = myLens[0];
     const int numUni = myLens.size();
 
-    for (int i = v.size(); i > myMax; --i) {
+    for (int i = v.size() - first_idx; i > myMax; --i) {
         result *= i;
     }
 
@@ -24,9 +85,7 @@ void NumPermsWithRepGmp(mpz_class &result, const std::vector<int> &v) {
         mpz_class div(1);
 
         for (int i = 1; i < numUni; ++i) {
-            for (int j = 2; j <= myLens[i]; ++j) {
-                div *= j;
-            }
+            div *= mpz_class::factorial(myLens[i]);
         }
 
         mpz_divexact(result.get_mpz_t(), result.get_mpz_t(), div.get_mpz_t());
@@ -60,7 +119,7 @@ void MultisetPermRowNumGmp(mpz_class &result, int n, int m,
             }
         }
 
-        NumPermsWithRepGmp(result, freqs);
+        NumPermsWithRepGmp(result, freqs, true);
     } else {
         const int n1 = n - 1;
         int maxFreq = *std::max_element(myReps.cbegin(), myReps.cend());

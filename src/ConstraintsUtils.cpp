@@ -222,7 +222,7 @@ void SetTolerance(const std::vector<double> &vNum,
     } else {
         // numOnly = true, checkWhole = false, negPoss = false, decimalFraction = true
         CppConvert::convertPrimitive(Rtolerance, tolerance, VecType::Numeric,
-                                       "tolerance", true, false, false, true);
+                                     "tolerance", true, false, false, true);
     }
 }
 

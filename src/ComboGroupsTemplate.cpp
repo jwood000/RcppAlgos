@@ -14,7 +14,9 @@ ComboGroupsTemplate::ComboGroupsTemplate(
 
 void ComboGroupsTemplate::SetCount() {
     computedRows = numGroupCombs();
-    IsGmp = computedRows > Significand53;
+
+    IsGmp = !std::isfinite(computedRows) ||
+        computedRows > Significand53;
 
     if (IsGmp) {
         computedRowsMpz = numGroupCombsGmp();

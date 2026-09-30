@@ -198,8 +198,9 @@ SEXP PollardRhoContainer(SEXP Rv, SEXP RNamed,
     if (std::abs(myMin) > myMax) myMax = std::abs(myMin);
 
     if (!Rf_isNull(RNumThreads)) {
-        CppConvert::convertPrimitive(RNumThreads, nThreads,
-                                       VecType::Integer, "nThreads");
+        CppConvert::convertPrimitive(
+            RNumThreads, nThreads, VecType::Integer, "nThreads"
+        );
     }
 
     if (myMax > std::numeric_limits<int>::max()) {

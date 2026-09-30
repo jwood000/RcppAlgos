@@ -5,85 +5,10 @@
 #include <numeric>    // std::accumulate, std::partial_sum, std::iota
 #include <limits>     // std::numeric_limits
 
-// rleCpp
-//
-// Most of the code for rleCpp was obtained from Hadley Wickham's
-// article titled "High Performance functions with Rcpp" found:
-//             http://adv-r.had.co.nz/Rcpp.html
-//
-// Computes run-length encoding lengths of the sorted vector x,
-// starting at first_idx.
-//
-// PRECONDITIONS:
-// -------------
-// • x must be non-empty.
-// • first_idx must satisfy: 0 <= first_idx < x.size().
-// • The range [first_idx, x.size()) must be sorted in non-decreasing order.
-//
-// These invariants are guaranteed by all callers (e.g. NumPermsWithRep,
-// partition/composition generators).
-//
-// An empty vector or invalid first_idx indicates an internal logic error,
-// not a recoverable run time condition.
-//
-std::vector<int> rleCpp(const std::vector<int> &x, int first_idx) {
-
-    if (first_idx < 0 || static_cast<std::size_t>(first_idx) >= x.size()) {
-        cpp11::stop("Internal error: rleCpp first_idx out of range");
-    }
-
-    std::vector<int> lengths;
-    int prev = x[first_idx];
-    std::size_t i = 0;
-    lengths.push_back(1);
-
-    for(auto it = x.cbegin() + first_idx + 1; it != x.cend(); ++it) {
-        if (prev == *it) {
-            ++lengths[i];
-        } else {
-            lengths.push_back(1);
-            prev = *it;
-            ++i;
-        }
-    }
-
-    return lengths;
-}
-
 double NumPermsWithRep(const std::vector<int> &v, bool includeZero) {
-
-    int first_idx = includeZero ? 0 : std::distance(
-        v.cbegin(),
-        std::find_if(v.cbegin(), v.cend(), [](int i) {return i != 0;})
-    );
-
-    // If all entries are zero. This shouldn't happen, but here for safety.
-    if (first_idx == static_cast<int>(v.size())) return 1;
-
-    std::vector<int> myLens = rleCpp(v, first_idx);
-    std::sort(myLens.begin(), myLens.end(), std::greater<int>());
-
-    const int myMax = myLens[0];
-    const int numUni = myLens.size();
-    double result = 1;
-
-    for (int i = v.size() - first_idx; i > myMax; --i) {
-        result *= i;
-    }
-
-    if (numUni > 1) {
-        double div = 1.0;
-
-        for (int i = 1; i < numUni; ++i) {
-            for (int j = 2; j <= myLens[i]; ++j) {
-                div *= j;
-            }
-        }
-
-        result /= div;
-    }
-
-    return result;
+    mpz_class result;
+    NumPermsWithRepGmp(result, v, includeZero);
+    return result.get_d();
 }
 
 double NumPermsNoRep(int n, int k) {

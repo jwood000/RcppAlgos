@@ -32,7 +32,9 @@ SEXP CombinatoricsStndrd(SEXP Rv, SEXP Rm, SEXP RisRep, SEXP RFreqs,
 
     const double computedRows = GetComputedRows(IsMult, IsComb, IsRep,
                                                 n, m, Rm, freqs, myReps);
-    const bool IsGmp = (computedRows > Significand53);
+
+    const bool IsGmp = !std::isfinite(computedRows) ||
+        computedRows > Significand53;
 
     mpz_class computedRowsMpz;
 

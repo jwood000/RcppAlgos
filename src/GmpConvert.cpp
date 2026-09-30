@@ -1,5 +1,8 @@
 #include "CppConvert/GmpConvert.h"
 
+// negPoss is retained for shared use with conversion code in RcppBigIntAlgos;
+// current RcppAlgos GMP inputs are non-negative.
+
 namespace CppConvert {
 
     void convertMPZVector(SEXP input, std::vector<mpz_class> &myVec,
@@ -61,28 +64,26 @@ namespace CppConvert {
                         break;
                     }
 
-                    if (negPoss) {
-                        if (std::abs(dblVec[j]) > Significand53) {
-                            myError = "Number is too large for double precision."
-                            " Consider using gmp::as.bigz or "
-                            "as.character for " + nameOfObject;
-                            foundError = true;
-                            break;
-                        }
-                    } else {
-                        if (dblVec[j] < 1) {
-                            myError = suffix + " must be a positive number";
-                            foundError = true;
-                            break;
-                        }
-
-                        if (dblVec[j] > Significand53) {
-                            myError = "Number is too large for double precision."
-                            " Consider using gmp::as.bigz or "
-                            "as.character for " + nameOfObject;
-                            foundError = true;
-                            break;
-                        }
+                    if (negPoss &&
+                            (!std::isfinite(dblVec[j]) ||
+                                std::abs(dblVec[j]) > Significand53)) {
+                        myError = "Number is too large for double precision."
+                        " Consider using gmp::as.bigz or "
+                        "as.character for " + nameOfObject;
+                        foundError = true;
+                        break;
+                    } else if (!negPoss && dblVec[j] < 1) {
+                        myError = suffix + " must be a positive number";
+                        foundError = true;
+                        break;
+                    } else if (
+                        !std::isfinite(dblVec[j]) ||dblVec[j] > Significand53
+                    ) {
+                        myError = "Number is too large for double precision."
+                        " Consider using gmp::as.bigz or "
+                        "as.character for " + nameOfObject;
+                        foundError = true;
+                        break;
                     }
 
                     if (static_cast<int64_t>(dblVec[j]) != dblVec[j]) {
@@ -203,28 +204,26 @@ namespace CppConvert {
                     break;
                 }
 
-                if (negPoss) {
-                    if (std::abs(dblInput) > Significand53) {
-                        myError = "Number is too large for double precision."
-                        " Consider using gmp::as.bigz or "
-                        "as.character for " + nameOfObject;
-                        foundError = true;
-                        break;
-                    }
-                } else {
-                    if (dblInput < 1) {
-                        myError = nameOfObject + " must be a positive number";
-                        foundError = true;
-                        break;
-                    }
-
-                    if (dblInput > Significand53) {
-                        myError = "Number is too large for double precision."
-                        " Consider using gmp::as.bigz or "
-                        "as.character for " + nameOfObject;
-                        foundError = true;
-                        break;
-                    }
+                if (negPoss &&
+                        (!std::isfinite(dblInput) ||
+                            std::abs(dblInput) > Significand53)) {
+                    myError = "Number is too large for double precision."
+                    " Consider using gmp::as.bigz or "
+                    "as.character for " + nameOfObject;
+                    foundError = true;
+                    break;
+                } else if (!negPoss && dblInput < 1) {
+                    myError = nameOfObject + " must be a positive number";
+                    foundError = true;
+                    break;
+                } else if (
+                    !std::isfinite(dblInput) || dblInput > Significand53
+                ) {
+                    myError = "Number is too large for double precision."
+                    " Consider using gmp::as.bigz or "
+                    "as.character for " + nameOfObject;
+                    foundError = true;
+                    break;
                 }
 
                 if (static_cast<int64_t>(dblInput) != dblInput) {
@@ -245,7 +244,7 @@ namespace CppConvert {
                 }
 
                 const int intInput = Rf_asInteger(input);
-                const int dblInput = Rf_asReal(input);
+                const double dblInput = Rf_asReal(input);
 
                 if (ISNAN(dblInput)) {
                     myError = nameOfObject + " cannot be NA or NaN";

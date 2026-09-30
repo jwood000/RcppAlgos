@@ -66,16 +66,17 @@ SEXP CombinatoricsCnstrt(SEXP Rv, SEXP Rm, SEXP RisRep, SEXP RFreqs,
                         Rtarget, RcompFun, Rtolerance, Rlow);
     }
 
-    const bool usePartCount = part.isPart &&
-                              !part.numUnknown;
+    const bool usePartCount = part.isPart && !part.numUnknown;
 
     const double computedRows = usePartCount ? part.count :
         GetComputedRows(IsMult, IsComb, IsRep, n, m, Rm, freqs, myReps);
 
-    const bool IsGmp = (computedRows > Significand53);
+    const bool IsGmp = !std::isfinite(computedRows) ||
+        computedRows > Significand53;
+
     mpz_class computedRowsMpz;
 
-    if (IsGmp && part.isPart) {
+    if (IsGmp && usePartCount) {
         computedRowsMpz = part.bigCount;
     } else if (IsGmp) {
         GetComputedRowMpz(computedRowsMpz, IsMult,

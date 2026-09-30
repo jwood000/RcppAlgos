@@ -325,7 +325,10 @@ SEXP CartesianClass::randomAccess(SEXP RindexVec) {
 
     std::size_t sampSize;
     std::vector<double> mySample;
-    const bool SampIsGmp = IsGmp || computedRows > SampleLimit;
+
+    const bool SampIsGmp = IsGmp || !std::isfinite(computedRows) ||
+        computedRows > SampleLimit;
+
     SetIndexVec(RindexVec, mySample, sampSize, SampIsGmp, computedRows);
 
     const std::size_t bigSampSize = SampIsGmp ? sampSize : 1;

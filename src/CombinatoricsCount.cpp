@@ -30,7 +30,8 @@ SEXP CombinatoricsCount(SEXP Rv, SEXP Rm, SEXP RisRep,
 
     const double computedRows = GetComputedRows(IsMult, IsComb, IsRep,
                                                 n, m, Rm, freqs, myReps);
-    const bool IsGmp = (computedRows > Significand53);
+    const bool IsGmp = !std::isfinite(computedRows) ||
+        computedRows > Significand53;
 
     mpz_class computedRowsMpz;
 
@@ -93,8 +94,7 @@ SEXP PartitionsCount(
             bool Verbose = CppConvert::convertFlag(Rshow, "showDetail");
             return GetDesign(part, ctype, n, Verbose);
         } else {
-            return CppConvert::GetCount(part.isGmp, part.bigCount,
-                                          part.count);
+            return CppConvert::GetCount(part.isGmp, part.bigCount, part.count);
         }
     } else if (bDesign) {
         cpp11::stop("No design available for this case!");
@@ -133,7 +133,9 @@ SEXP ExpandGridCountCpp(cpp11::list RList) {
     }
 
     const double computedRows = CartesianCount(lenGrps);
-    const bool IsGmp = (computedRows > Significand53);
+
+    const bool IsGmp = !std::isfinite(computedRows) ||
+        computedRows > Significand53;
 
     mpz_class computedRowsMpz;
 
