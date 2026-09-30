@@ -500,6 +500,10 @@ void SetBounds(SEXP Rlow, SEXP Rhigh, bool IsGmp, bool &bLower,
     }
 }
 
+bool IsBeyondBound(double value, double bound) {
+    return !std::isfinite(value) || value > bound;
+}
+
 void PermuteSpecific(int &phaseOne, bool &generalRet, int n, int m,
                      int nRows, bool IsMult, bool IsCharacter,
                      bool IsComb, bool bLower, bool IsRep) {

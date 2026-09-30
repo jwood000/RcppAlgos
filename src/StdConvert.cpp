@@ -21,7 +21,7 @@ namespace CppConvert {
                                 nameOfBool.c_str());
                 }
 
-                if (std::abs(dblInp) > Significand53) {
+                if (!std::isfinite(dblInp) || std::abs(dblInp) > Significand53) {
                     cpp11::stop("Only logical values are allowed for %s",
                                 nameOfBool.c_str());
                 }
@@ -61,6 +61,11 @@ namespace CppConvert {
                                 nameOfObject.c_str());
                 }
 
+                if (!std::isfinite(posDblInp) || posDblInp > Significand53) {
+                    cpp11::stop("The abs value of %s must be less than 2^53",
+                                nameOfObject.c_str());
+                }
+
                 if (!negPoss) {
                     if (decimalFraction && dblInp < 0) {
                         cpp11::stop("%s must be a positive number",
@@ -71,11 +76,6 @@ namespace CppConvert {
                     }
                 }
 
-                if (checkWhole && static_cast<int64_t>(dblInp) != dblInp) {
-                    cpp11::stop("%s must be a whole number",
-                                nameOfObject.c_str());
-                }
-
                 if (posDblInp > maxType) {
                     std::string msg = "The abs value of " + nameOfObject +
                         " must be less than or equal to " +
@@ -83,8 +83,8 @@ namespace CppConvert {
                     cpp11::stop(msg.c_str());
                 }
 
-                if (posDblInp > Significand53) {
-                    cpp11::stop("The abs value of %s must be less than 2^53",
+                if (checkWhole && static_cast<int64_t>(dblInp) != dblInp) {
+                    cpp11::stop("%s must be a whole number",
                                 nameOfObject.c_str());
                 }
 
@@ -99,15 +99,13 @@ namespace CppConvert {
                 }
 
                 mpz_class temp;
-                CppConvert::convertMpzClass(
-                    input, temp, nameOfObject, negPoss
-                );
+                CppConvert::convertMpzClass(input, temp, nameOfObject, negPoss);
+
                 const double dblTemp = temp.get_d();
                 const double posDblTemp = std::abs(dblTemp);
 
                 if (CheckNA(dblTemp, myType)) {
-                    cpp11::stop("%s cannot be NA or NaN",
-                                nameOfObject.c_str());
+                    cpp11::stop("%s cannot be NA or NaN", nameOfObject.c_str());
                 }
 
                 if (!negPoss) {
@@ -127,7 +125,7 @@ namespace CppConvert {
                     cpp11::stop(msg.c_str());
                 }
 
-                if (posDblTemp > Significand53) {
+                if (!std::isfinite(posDblTemp) || posDblTemp > Significand53) {
                     cpp11::stop("The abs value of %s must be less than 2^53",
                                 nameOfObject.c_str());
                 }
@@ -171,11 +169,10 @@ namespace CppConvert {
                                     nameOfObject.c_str());
                     }
 
-                    if (!negPoss && vecCheck[i] < 1) {
-                        cpp11::stop(
-                            "Each element in %s must be a positive number",
-                            nameOfObject.c_str()
-                        );
+                    if (!std::isfinite(posDblInp) || posDblInp > Significand53) {
+                        std::string msg = "The abs value of each element in " +
+                            nameOfObject + " must be less than 2^53";
+                        cpp11::stop(msg.c_str());
                     }
 
                     if (posDblInp > maxType) {
@@ -185,10 +182,11 @@ namespace CppConvert {
                         cpp11::stop(msg.c_str());
                     }
 
-                    if (posDblInp > Significand53) {
-                        std::string msg = "The abs value of each element in " +
-                            nameOfObject + " must be less than 2^53";
-                        cpp11::stop(msg.c_str());
+                    if (!negPoss && vecCheck[i] < 1) {
+                        cpp11::stop(
+                            "Each element in %s must be a positive number",
+                            nameOfObject.c_str()
+                        );
                     }
 
                     if (checkWhole &&
@@ -249,7 +247,7 @@ namespace CppConvert {
                         cpp11::stop(msg.c_str());
                     }
 
-                    if (posDblInp > Significand53) {
+                    if (!std::isfinite(posDblInp) || posDblInp > Significand53) {
                         std::string msg = "The abs value of each element "
                         "in " + nameOfObject + " must be less than 2^53";
                         cpp11::stop(msg.c_str());

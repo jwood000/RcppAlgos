@@ -57,8 +57,7 @@ SEXP CartClassNew(SEXP Rv_RList, SEXP RNumThreads,
                                  VecType::Integer, "maxThreads");
 
     const double computedRows = CartesianCount(lenGrps);
-    const bool IsGmp = computedRows > Significand53;
-
+    const bool IsGmp = IsBeyondBound(computedRows);
     mpz_class computedRowsMpz;
 
     if (IsGmp) {
@@ -219,15 +218,15 @@ SEXP CombClassNew(SEXP RVals, SEXP RboolVec, SEXP freqInfo, SEXP Rparallel,
             );
         }
 
-        const bool usePartCount = part.isPart &&
-                                  !part.numUnknown;
+        const bool usePartCount = part.isPart && !part.numUnknown;
 
         const double computedRows = usePartCount ? part.count :
             (IsStdGmp ? computedRowsMpz.get_d() :
                  Rf_asReal(VECTOR_ELT(RVals, 4)));
-        const bool IsGmp = (computedRows > Significand53);
 
-        if (IsGmp && part.isPart) {
+        const bool IsGmp = IsBeyondBound(computedRows);
+
+        if (IsGmp && usePartCount) {
             computedRowsMpz = part.bigCount;
         }
 

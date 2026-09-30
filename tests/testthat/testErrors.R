@@ -24,6 +24,16 @@ test_that("comboGeneral produces appropriate error messages", {
     expect_error(comboGeneral(50, 5, upper = -100),
                  "upper must be a positive whole number")
 
+    expect_error(comboGeneral(5, 3, lower = Inf),
+                 "The abs value of lower must be less than 2\\^53")
+    expect_error(comboGeneral(50, 5, upper = -Inf),
+                 "The abs value of upper must be less than 2\\^53")
+
+    expect_error(comboGeneral(5, 3, lower = NaN),
+                 "lower cannot be NA or NaN")
+    expect_error(comboGeneral(50, 5, upper = NA_real_),
+                 "upper cannot be NA or NaN")
+
     expect_error(comboGeneral(5, 50),
                  "m must be less than or equal to the length of v")
     expect_error(comboGeneral(5, 3, upper = 100),
@@ -86,6 +96,8 @@ test_that("comboGeneral produces appropriate error messages", {
     expect_error(comboGeneral(5, 3.3), "must be a whole number")
     expect_error(comboGeneral(gmp::as.bigz(1:5), 3),
                  "Class 'bigz' is not supported for raw input v")
+
+    expect_error(comboGeneral())
 })
 
 test_that("comboGroups related functions produces appropriate error messages", {
@@ -155,6 +167,15 @@ test_that("divisorsRcpp produces appropriate error messages", {
                  "Only logical values are supported for namedList")
     expect_error(divisorsRcpp(100:200, nThreads = "9"),
                  "must be of type numeric or integer")
+
+    expect_error(divisorsRcpp(c(10, 20, NA)),
+                 "v cannot be NA or NaN")
+    expect_error(divisorsRcpp(c(10, 20, NaN)),
+                 "v cannot be NA or NaN")
+    expect_error(divisorsRcpp(c(10, 20, Inf)),
+                 "The abs value of each element in v must be less than 2\\^53")
+    expect_error(divisorsRcpp(c(10, 20, -Inf)),
+                 "The abs value of each element in v must be less than 2\\^53")
 })
 
 test_that("divisorsSieve produces appropriate error messages", {

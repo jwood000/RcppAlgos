@@ -14,7 +14,7 @@ ComboGroupsTemplate::ComboGroupsTemplate(
 
 void ComboGroupsTemplate::SetCount() {
     computedRows = numGroupCombs();
-    IsGmp = computedRows > Significand53;
+    IsGmp = IsBeyondBound(computedRows);
 
     if (IsGmp) {
         computedRowsMpz = numGroupCombsGmp();

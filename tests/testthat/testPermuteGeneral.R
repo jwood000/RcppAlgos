@@ -409,6 +409,19 @@ test_that("permuteCount produces correct results under partition constraints", {
         compositionsCount(10, 5, TRUE)
     )
 
+    ## See issue #72
+    expect_true(
+        class(permuteCount(v = 2, m = 2000, freqs = rep(1000, 2))) == "bigz"
+    )
+
+    expect_identical(
+        permuteCount(v = 2, m = 2000, freqs = rep(1000, 2)),
+        gmp::chooseZ(2000, 1000)
+    )
+
+    expect_equal(compositionsCount(0, 7, freqs = 8), 1)
+    expect_equal(compositionsCount(0, 7, freqs = 8, weak = TRUE), 1)
+
     expect_equal(
         permuteCount(
             100, 15, TRUE, constraintFun = "sum",

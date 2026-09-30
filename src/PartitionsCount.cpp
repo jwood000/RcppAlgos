@@ -7,11 +7,10 @@
 #include "Partitions/PartitionsCount.h"
 #include "Permutations/PermuteCount.h"
 #include "Combinations/ComboCount.h"
-#include "CppConvert/Constants.h"  // Significand53
-#include <algorithm>               // std::count_if, std::find
-#include <numeric>
-#include <memory>
-#include <cmath>                  // std::isfinite
+#include "SetUpUtils.h"  // IsBeyondBound
+#include <algorithm>     // std::count_if, std::find, std::min
+#include <numeric>       // std::iota
+#include <memory>        // std::make_unique, std::unique_ptr
 
 std::unique_ptr<CountClass> MakeCount(PartitionType ptype) {
 
@@ -107,7 +106,7 @@ void DistinctLen::GetCount(mpz_class &res, int n, int m,
         computedDouble = true;
     }
 
-    if (!computedDouble || !std::isfinite(dblRes) || dblRes > Significand53) {
+    if (!computedDouble || IsBeyondBound(dblRes)) {
         CountPartsDistinctLen(res, p1, p2, n, m);
     } else {
         res = dblRes;
@@ -127,7 +126,7 @@ void DistinctLenRstrctd::GetCount(
         computedDouble = true;
     }
 
-    if (!computedDouble || !std::isfinite(dblRes) || dblRes > Significand53) {
+    if (!computedDouble || IsBeyondBound(dblRes)) {
         CountPartsDistLenRstrctd(res, p2d, n, m, allowed);
     } else {
         res = dblRes;
@@ -152,7 +151,7 @@ void DistinctMZ::GetCount(
         computedDouble = true;
     }
 
-    if (!computedDouble || !std::isfinite(dblRes) || dblRes > Significand53) {
+    if (!computedDouble || IsBeyondBound(dblRes)) {
         if (bLiteral) {
             CountPartsDistinctMultiZero(res, p1, p2, n, m, allowed, strtLen);
         } else {
@@ -181,7 +180,7 @@ void DistinctRstrctdMZ::GetCount(
         computedDouble = true;
     }
 
-    if (!computedDouble || !std::isfinite(dblRes) || dblRes > Significand53) {
+    if (!computedDouble || IsBeyondBound(dblRes)) {
         if (bLiteral) {
             CountPartsDistinctRstrctdMZ(res, p2d, n, m, allowed, strtLen);
         } else {
@@ -210,7 +209,7 @@ void PermDstnctRstrctdMZ::GetCount(
         computedDouble = true;
     }
 
-    if (!computedDouble || !std::isfinite(dblRes) || dblRes > Significand53) {
+    if (!computedDouble || IsBeyondBound(dblRes)) {
         if (bLiteral) {
             CountPartsPermDistinctRstrctdMZ(res, p2d, n, m, allowed, strtLen);
         } else {
@@ -234,7 +233,7 @@ void RepLen::GetCount(
         computedDouble = true;
     }
 
-    if (!computedDouble || !std::isfinite(dblRes) || dblRes > Significand53) {
+    if (!computedDouble || IsBeyondBound(dblRes)) {
         CountPartsRepLen(res, p1, p2, n, m);
     } else {
         res = dblRes;
@@ -254,7 +253,7 @@ void RepLenRstrctd::GetCount(
         computedDouble = true;
     }
 
-    if (!computedDouble || !std::isfinite(dblRes) || dblRes > Significand53) {
+    if (!computedDouble || IsBeyondBound(dblRes)) {
         CountPartsRepLenRstrctd(res, p2d, n, m, allowed);
     } else {
         res = dblRes;
@@ -274,7 +273,7 @@ void DistinctAll::GetCount(
         computedDouble = true;
     }
 
-    if (!computedDouble || !std::isfinite(dblRes) || dblRes > Significand53) {
+    if (!computedDouble || IsBeyondBound(dblRes)) {
         CountPartsDistinct(res, n, m);
     } else {
         res = dblRes;
@@ -294,7 +293,7 @@ void RepAll::GetCount(
         computedDouble = true;
     }
 
-    if (!computedDouble || !std::isfinite(dblRes) || dblRes > Significand53) {
+    if (!computedDouble || IsBeyondBound(dblRes)) {
         CountPartsRep(res, n, m);
     } else {
         res = dblRes;
@@ -314,7 +313,7 @@ void PermDstnctRstrctd::GetCount(
         computedDouble = true;
     }
 
-    if (!computedDouble || !std::isfinite(dblRes) || dblRes > Significand53) {
+    if (!computedDouble || IsBeyondBound(dblRes)) {
         CountCompsDistLenRstrctd(res, p2d, n, m, allowed);
     } else {
         res = dblRes;
@@ -397,7 +396,7 @@ void CompsDstnctRstrctdMZ::GetCount(
         computedDouble = true;
     }
 
-    if (!computedDouble || !std::isfinite(dblRes) || dblRes > Significand53) {
+    if (!computedDouble || IsBeyondBound(dblRes)) {
         if (bLiteral) {
             CountCompsDistinctRstrctdMZ(res, p2d, n, m, allowed, strtLen);
         } else {
@@ -658,7 +657,7 @@ int PartitionsCount(const std::vector<int> &Reps,
         part.count = Counter->GetCount(part.mapTar, part.width,
                                        allowed, strtLen);
 
-        if (part.count > Significand53) {
+        if (IsBeyondBound(part.count)) {
             part.isGmp = true;
             Counter->SetArrSize(part.ptype, part.mapTar, part.width);
             Counter->InitializeMpz();
