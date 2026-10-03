@@ -12,7 +12,7 @@ test_that("partitions/compostionsGeneral Distinct Parallel Lower GMP", {
     ## [1] 30703043607660730
     ##
     ## $partition_type
-    ## [1] "DstctStdAll"
+    ## [1] "DistinctStdAll"
     bench <- partitionsGeneral(0:600, freqs = c(600, rep(1, 600)),
                                lower = "30703043607560730")
     expect_identical(partitionsGeneral(0:600, freqs = c(600, rep(1, 600)),
@@ -31,7 +31,7 @@ test_that("partitions/compostionsGeneral Distinct Parallel Lower GMP", {
     ## [1] 3649675516801903698
     ##
     ## $partition_type
-    ## [1] "DstctNoZero"
+    ## [1] "DistinctNoZero"
     bench <- partitionsGeneral(1000, 15, lower = "3649675516801803698")
     expect_identical(partitionsGeneral(1000, 15, lower = "3649675516801803698",
                                        nThreads = 2), bench)
@@ -49,7 +49,7 @@ test_that("partitions/compostionsGeneral Distinct Parallel Lower GMP", {
     ## [1] 3649675516801903698
     ##
     ## $partition_type
-    ## [1] "DstctNoZero"
+    ## [1] "DistinctNoZero"
     ##
     ## $mapped_target
     ## [1] 1000
@@ -72,7 +72,7 @@ test_that("partitions/compostionsGeneral Distinct Parallel Lower GMP", {
     ## [1] 4556757507869210155
     ##
     ## $partition_type
-    ## [1] "DstctOneZero"
+    ## [1] "DistinctOneZero"
     ##
     ## $mapped_target
     ## [1] 1015
@@ -95,7 +95,7 @@ test_that("partitions/compostionsGeneral Distinct Parallel Lower GMP", {
     ## [1] 4556757507869210155
     ##
     ## $partition_type
-    ## [1] "DstctOneZero"
+    ## [1] "DistinctOneZero"
     ##
     ## $mapped_target
     ## [1] 1015
@@ -122,7 +122,7 @@ test_that("partitions/compostionsGeneral Distinct Parallel Lower GMP", {
     ## [1] 1000
     ##
     ## $partition_type
-    ## [1] "DstctMultiZero"
+    ## [1] "DistinctMZ"
     bench <- partitionsGeneral(0:1000, 12,
                                lower = "39228755151943560",
                                freqs = c(3, rep(1, 1000)))
@@ -154,7 +154,7 @@ test_that("partitions/compostionsGeneral Distinct Parallel Lower GMP", {
     ## [1] 1000
     ##
     ## $partition_type
-    ## [1] "DstctMultiZero"
+    ## [1] "DistinctMZ"
     bench <- partitionsGeneral(15 + 0:1000 * 3, 12,
                                lower = "39228755151943560",
                                freqs = c(3, rep(1, 1000)),
@@ -183,7 +183,7 @@ test_that("partitions/compostionsGeneral Distinct Parallel Lower GMP", {
     ## [1] 1000
     ##
     ## $partition_type
-    ## [1] "DstctMultiZero"
+    ## [1] "DistinctMZ"
     bench <- partitionsGeneral(0:1000, 12,
                                lower = "39233351450339724",
                                freqs = c(13, rep(1, 1000)))
@@ -214,7 +214,7 @@ test_that("partitions/compostionsGeneral Distinct Parallel Lower GMP", {
     ## [1] 1000
     ##
     ## $partition_type
-    ## [1] "DstctMultiZero"
+    ## [1] "DistinctMZ"
     bench <- partitionsGeneral(19 + 0:1000 * 2, 12, target = 2228,
                                lower = "39233351450339724",
                                freqs = c(13, rep(1, 1000)))
@@ -265,7 +265,7 @@ test_that("partitions/compostionsGeneral Distinct Parallel Lower GMP", {
     ## [1] 1380
     ##
     ## $partition_type
-    ## [1] "DstctCappedMZ"
+    ## [1] "DistinctCappedMZ"
     bench <- partitionsGeneral(0:500, 10, freqs = c(3, rep(1, 500)),
                                lower = "10236925075443716", target = 1380)
     expect_identical(partitionsGeneral(0:500, 10, freqs = c(3, rep(1, 500)),
@@ -291,7 +291,7 @@ test_that("partitions/compostionsGeneral Distinct Parallel Lower GMP", {
     ## [1] 300
     ##
     ## $partition_type
-    ## [1] "CmpDstctNoZero"
+    ## [1] "CompDistinctNoZero"
     bench <- compositionsGeneral(300, 10, lower = "22478140825762400")
     expect_identical(compositionsGeneral(300, 10, nThreads = 2,
                                          lower = "22478140825762400"),
@@ -313,7 +313,7 @@ test_that("partitions/compostionsGeneral Distinct Parallel Lower GMP", {
     ## [1] 300
     ##
     ## $partition_type
-    ## [1] "CmpDstctCapped"
+    ## [1] "CompDistinctCapped"
     bench <- compositionsGeneral(200, 10, target = 300,
                                  lower = "22475881190046400")
     expect_identical(compositionsGeneral(200, 10, target = 300, nThreads = 2,
@@ -336,7 +336,7 @@ test_that("partitions/compostionsGeneral Distinct Parallel Lower GMP", {
     ## [1] 212
     ##
     ## $partition_type
-    ## [1] "CmpDstctWeak"
+    ## [1] "CompDistinctWeak"
     bench <- compositionsGeneral(0:200, 12, weak = TRUE,
                                  lower = "94068392477775200")
     expect_identical(compositionsGeneral(0:200, 12, weak = TRUE, nThreads = 2,
@@ -362,7 +362,7 @@ test_that("partitions/compostionsGeneral Distinct Parallel Lower GMP", {
     ## [1] 212
     ##
     ## $partition_type
-    ## [1] "CmpDstCapWeak"
+    ## [1] "CompDistinctCapWeak"
     bench <- compositionsGeneral(0:100, 12, weak = TRUE, target = 200,
                                  lower = "93947774605777600")
     expect_identical(compositionsGeneral(0:100, 12, weak = TRUE, target = 200, nThreads = 2,
@@ -389,7 +389,7 @@ test_that("partitions/compostionsGeneral Distinct Parallel Lower GMP", {
     ## [1] 200
     ##
     ## $partition_type
-    ## [1] "CmpDstctZNotWk"
+    ## [1] "CompDistinctZero"
     bench <- compositionsGeneral(0:200, 15, freqs = c(4, rep(1, 200)),
                                  lower = "9847835447429448800")
     expect_identical(compositionsGeneral(0:200, 15, freqs = c(4, rep(1, 200)),
@@ -440,7 +440,7 @@ test_that("partitions/compostionsGeneral Distinct Parallel Lower GMP", {
     ## [1] 200
     ##
     ## $partition_type
-    ## [1] "CmpDstCapMZNotWk"
+    ## [1] "CompDistinctCapMZ"
     bench <- compositionsGeneral(0:100, 12, target = 200,
                                  lower = "46298981912000000")
     expect_identical(compositionsGeneral(0:100, 12, target = 200, nThreads = 2,
@@ -482,7 +482,7 @@ test_that("partitions/compostionsGeneral Distinct Parallel Lower GMP", {
     ## [1] 200
     ##
     ## $partition_type
-    ## [1] "CmpDstctMZWeak"
+    ## [1] "CompDistinctMZWeak"
     bench <- compositionsGeneral(0:200, 12, freqs = c(8, rep(1, 200)),
                                  weak = TRUE, lower = "123675593191181440")
     expect_identical(compositionsGeneral(0:200, 12, freqs = c(8, rep(1, 200)),
@@ -510,7 +510,7 @@ test_that("partitions/compostionsGeneral Distinct Parallel Lower GMP", {
     ## [1] 250
     ##
     ## $partition_type
-    ## [1] "CmpDstCapMZWeak"
+    ## [1] "CompDistinctCapMZWeak"
     bench <- compositionsGeneral(0:150, 12, freqs = c(8, rep(1, 150)),
                                  weak = TRUE, target = 250,
                                  lower = "1878764044241052520")
@@ -537,7 +537,7 @@ test_that("partitions/compostionsGeneral Distinct Parallel Lower GMP", {
     ## [1] 300
     ##
     ## $partition_type
-    ## [1] "CmpDstctNoZero"
+    ## [1] "CompDistinctNoZero"
     bench <- compositionsGeneral((1:300) * 7, 10, lower = "22478140825762400")
     expect_identical(compositionsGeneral((1:300) * 7, 10, nThreads = 2,
                                          lower = "22478140825762400"),
@@ -564,7 +564,7 @@ test_that("partitions/compostionsGeneral Distinct Parallel Lower GMP", {
     ## [1] 300
     ##
     ## $partition_type
-    ## [1] "CmpDstctCapped"
+    ## [1] "CompDistinctCapped"
     bench <- compositionsGeneral(3L + (1:200) * 7, 10, target = 2130L,
                                  lower = "22475881190046400")
     expect_identical(compositionsGeneral(3L + (1:200) * 7, 10, target = 2130L,
@@ -589,7 +589,7 @@ test_that("partitions/compostionsGeneral Distinct Parallel Lower GMP", {
     ## [1] 212
     ##
     ## $partition_type
-    ## [1] "CmpDstctWeak"
+    ## [1] "CompDistinctWeak"
     bench <- compositionsGeneral((0:200) * 3e9, 12, weak = TRUE,
                                  lower = "94068392477775200")
     expect_identical(compositionsGeneral((0:200) * 3e9, 12, weak = TRUE,
@@ -617,7 +617,7 @@ test_that("partitions/compostionsGeneral Distinct Parallel Lower GMP", {
     ## [1] 212
     ##
     ## $partition_type
-    ## [1] "CmpDstCapWeak"
+    ## [1] "CompDistinctCapWeak"
     bench <- compositionsGeneral((0:100) * 47, 12,
                                  weak = TRUE, target = 200 * 47,
                                  lower = "93947774605777600")
@@ -646,7 +646,7 @@ test_that("partitions/compostionsGeneral Distinct Parallel Lower GMP", {
     ## [1] 200
     ##
     ## $partition_type
-    ## [1] "CmpDstctZNotWk"
+    ## [1] "CompDistinctZero"
     bench <- compositionsGeneral((0:200) * 97, 15, freqs = c(4, rep(1, 200)),
                                  lower = "9847835447429448800")
     expect_identical(compositionsGeneral((0:200) * 97, 15, freqs = c(4, rep(1, 200)),
@@ -699,7 +699,7 @@ test_that("partitions/compostionsGeneral Distinct Parallel Lower GMP", {
     ## [1] 200
     ##
     ## $partition_type
-    ## [1] "CmpDstCapMZNotWk"
+    ## [1] "CompDistinctCapMZ"
     bench <- compositionsGeneral((0:100) * 3000000019, 12,
                                  target = 200 * 3000000019,
                                  lower = "46298981912000000")
@@ -730,7 +730,7 @@ test_that("partitions/compostionsGeneral Distinct Parallel Lower GMP", {
     ## [1] 200
     ##
     ## $partition_type
-    ## [1] "CmpDstctMZWeak"
+    ## [1] "CompDistinctMZWeak"
     bench <- compositionsGeneral((0:200) * 97, 12, freqs = c(8, rep(1, 200)),
                                  weak = TRUE, lower = "123675593191181440")
     expect_identical(compositionsGeneral((0:200) * 97, 12, freqs = c(8, rep(1, 200)),
@@ -759,7 +759,7 @@ test_that("partitions/compostionsGeneral Distinct Parallel Lower GMP", {
     ## [1] 250
     ##
     ## $partition_type
-    ## [1] "CmpDstCapMZWeak"
+    ## [1] "CompDistinctCapMZWeak"
     bench <- compositionsGeneral((0:150) * 907041845093, 12,
                                  freqs = c(8, rep(1, 150)),
                                  weak = TRUE, target = 250 * 907041845093,
@@ -848,7 +848,7 @@ test_that("partition/compositionsGeneral and Repetition Parallel Lower GMP", {
     ## [1] 60
     ##
     ## $partition_type
-    ## [1] "CmpRpZroNotWk"
+    ## [1] "CompRepZero"
     bench <- compositionsGeneral(0:60, repetition = TRUE,
                                  lower = "576460752303223488")
     expect_identical(compositionsGeneral(0:60, repetition = TRUE,
@@ -874,7 +874,7 @@ test_that("partition/compositionsGeneral and Repetition Parallel Lower GMP", {
     ## [1] 60
     ##
     ## $partition_type
-    ## [1] "CmpRpZroNotWk"
+    ## [1] "CompRepZero"
     bench <- compositionsGeneral((0:60) * 19, repetition = TRUE,
                                  lower = "576460752303223488")
     expect_identical(compositionsGeneral((0:60) * 19, repetition = TRUE,
@@ -1136,7 +1136,7 @@ test_that("partition/compositionsGeneral and Repetition Parallel Lower GMP", {
     ## [1] 1000
     ##
     ## $partition_type
-    ## [1] "CmpRpCapZNotWk"
+    ## [1] "CompRepCapZero"
     bench <- compositionsGeneral(0:300, 10, TRUE, target = 1000,
                                  lower = "1632937540829860291445")
     expect_identical(compositionsGeneral(0:300, 10, TRUE, target = 1000,

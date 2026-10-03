@@ -4,26 +4,26 @@ test_that("partitionsDesign produces correct results", {
     expect_equal(partitionsDesign(0:10, repetition = TRUE)$partition_type,
                  "RepStdAll")
     expect_equal(compositionsDesign(0:10, repetition = TRUE)$partition_type,
-                 "CmpRpZroNotWk")
+                 "CompRepZero")
     expect_equal(partitionsDesign(
             0:10, freqs = c(10, rep(1, 10))
-        )$partition_type, "DstctStdAll")
+        )$partition_type, "DistinctStdAll")
     expect_equal(partitionsDesign(0:10, 1)$partition_type,
                  "LengthOne")
     expect_equal(compositionsDesign(0:10, 1)$partition_type,
                  "LengthOne")
     expect_equal(partitionsDesign(0:15, 4, target = 20)$partition_type,
-                 "DstctCapped")
+                 "DistinctCapped")
     expect_equal(partitionsDesign(0:15, 4, freqs = c(2, rep(1, 15)),
                                   target = 20)$partition_type,
-                 "DstctCappedMZ")
+                 "DistinctCappedMZ")
     expect_equal(partitionsDesign(15, 4, target = 20)$partition_type,
-                 "DstctNoZero")
+                 "DistinctNoZero")
     expect_equal(partitionsDesign(0:15, 4)$partition_type,
-                 "DstctOneZero")
+                 "DistinctOneZero")
     expect_equal(partitionsDesign(0:15, 4,
                                   freqs = c(3, rep(1, 15)))$partition_type,
-                 "DstctMultiZero")
+                 "DistinctMZ")
     expect_equal(partitionsDesign(40, 8, freqs = rep(1:5, 8))$partition_type,
                  "Multiset")
     expect_equal(partitionsDesign(40, 8, TRUE, target = 70)$partition_type,
@@ -33,7 +33,7 @@ test_that("partitionsDesign produces correct results", {
     expect_equal(partitionsDesign(40, 8, repetition = TRUE)$partition_type,
                  "RepNoZero")
     expect_equal(compositionsDesign(0:40, 8, repetition = TRUE)$partition_type,
-                 "CmpRpZroNotWk")
+                 "CompRepZero")
     expect_equal(compositionsDesign(40, 8, repetition = TRUE)$partition_type,
                  "CompRepNoZero")
 

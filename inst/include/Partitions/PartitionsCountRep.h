@@ -23,11 +23,11 @@ double CountCompsRepLenCap(
     int n, int m, const std::vector<int> &allowed, int strtLen = 0
 );
 
-double CountCompsRepCapZNotWk(
+double CountCompsRepCapZero(
     int n, int m, const std::vector<int> &allowed, int strtLen = 0
 );
 
-double CountCompsRepZNotWk(
+double CountCompsRepZero(
     int n, int m, const std::vector<int> &allowed = std::vector<int>(),
     int strtLen = 0
 );

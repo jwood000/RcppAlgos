@@ -29,7 +29,7 @@ test_that("partitions/compositionsGeneral Distinct Parallel", {
     ## [1] 44583
     ##
     ## $partition_type
-    ## [1] "DstctNoZero"
+    ## [1] "DistinctNoZero"
     myParts = partitionsGeneral(902, nThreads = 2)
     expect_identical(myParts, partitionsGeneral(902))
     expect_identical(10000L, partitionsRank(myParts[10000, ], v = 902))
@@ -48,7 +48,7 @@ test_that("partitions/compositionsGeneral Distinct Parallel", {
     ## [1] 902
     ##
     ## $partition_type
-    ## [1] "DstctNoZero"
+    ## [1] "DistinctNoZero"
     myParts = partitionsGeneral(3 + (1:902) * 17, 41,
                                target = 15457, nThreads = 2)
     expect_identical(myParts,
@@ -64,7 +64,7 @@ test_that("partitions/compositionsGeneral Distinct Parallel", {
     ## [1] 62740
     ##
     ## $partition_type
-    ## [1] "DstctNoZero"
+    ## [1] "DistinctNoZero"
     myParts = partitionsGeneral(105, 10, nThreads = 2)
     expect_identical(myParts, partitionsGeneral(105, 10))
     expect_identical(partitionsRank(myParts[1000, ],
@@ -85,7 +85,7 @@ test_that("partitions/compositionsGeneral Distinct Parallel", {
     ## [1] 105
     ##
     ## $partition_type
-    ## [1] "DstctNoZero"
+    ## [1] "DistinctNoZero"
     myParts = partitionsGeneral(6 + (1:105) * 3, 10, target = 375)
     expect_identical(partitionsGeneral(6 + (1:105) * 3, 10,
                                        target = 375, nThreads = 2),
@@ -101,7 +101,7 @@ test_that("partitions/compositionsGeneral Distinct Parallel", {
     ## [1] 62740
     ##
     ## $partition_type
-    ## [1] "DstctOneZero"
+    ## [1] "DistinctOneZero"
     myParts = partitionsGeneral(0:95, 10, nThreads = 2)
     expect_identical(myParts, partitionsGeneral(0:95, 10))
     expect_identical(partitionsRank(myParts[seq(1, 60000, 10000), ],
@@ -122,7 +122,7 @@ test_that("partitions/compositionsGeneral Distinct Parallel", {
     ## [1] 105
     ##
     ## $partition_type
-    ## [1] "DstctNoZero"
+    ## [1] "DistinctNoZero"
     myParts = partitionsGeneral((0:95) * 7, 10, target = 665)
     expect_identical(partitionsGeneral((0:95) * 7, 10,
                                        target = 665, nThreads = 2), myParts)
@@ -138,7 +138,7 @@ test_that("partitions/compositionsGeneral Distinct Parallel", {
     ## [1] 50349
     ##
     ## $partition_type
-    ## [1] "DstctMultiZero"
+    ## [1] "DistinctMZ"
     myParts = partitionsGeneral(0:77, 8, freqs = c(3, rep(1, 77)))
     expect_identical(partitionsGeneral(0:77, 8, freqs = c(3, rep(1, 77)),
                                        nThreads = 2), myParts)
@@ -160,7 +160,7 @@ test_that("partitions/compositionsGeneral Distinct Parallel", {
     ## [1] 77
     ##
     ## $partition_type
-    ## [1] "DstctMultiZero"
+    ## [1] "DistinctMZ"
     myParts = partitionsGeneral(15 + 0:77 * 3, 8, target = 351,
                                freqs = c(3, rep(1, 77)), nThreads = 2)
     expect_identical(partitionsGeneral(15 + 0:77 * 3, 8, target = 351,
@@ -179,7 +179,7 @@ test_that("partitions/compositionsGeneral Distinct Parallel", {
     ## [1] 47271
     ##
     ## $partition_type
-    ## [1] "DstctMultiZero"
+    ## [1] "DistinctMZ"
     myParts = partitionsGeneral(0:110, 5, freqs = c(8, rep(1, 110)))
     expect_identical(partitionsGeneral(0:110, 5, freqs = c(8, rep(1, 110)),
                                        nThreads = 2), myParts)
@@ -202,7 +202,7 @@ test_that("partitions/compositionsGeneral Distinct Parallel", {
     ## [1] 110
     ##
     ## $partition_type
-    ## [1] "DstctMultiZero"
+    ## [1] "DistinctMZ"
     myParts = partitionsGeneral(19 + (0:110) * 2, 5, target = 315,
                                 freqs = c(8, rep(1, 110)), nThreads = 2)
     expect_identical(partitionsGeneral(19 + (0:110) * 2, 5, target = 315,
@@ -222,7 +222,7 @@ test_that("partitions/compositionsGeneral Distinct Parallel", {
     ## [1] 77312
     ##
     ## $partition_type
-    ## [1] "DstctStdAll"
+    ## [1] "DistinctStdAll"
     myParts = partitionsGeneral(0:80, freqs = c(80, rep(1, 80)))
     expect_identical(partitionsGeneral(0:80, freqs = c(80, rep(1, 80)),
                                        nThreads = 2), myParts)
@@ -282,7 +282,7 @@ test_that("partitions/compositionsGeneral Distinct Parallel", {
     ## [1] 284705
     ##
     ## $partition_type
-    ## [1] "DstctCappedMZ"
+    ## [1] "DistinctCappedMZ"
     myParts = partitionsGeneral(0:30, 9, freqs = c(3, rep(1, 30)),
                                 target = 115, nThreads = 2)
     expect_identical(partitionsGeneral(0:30, 9, freqs = c(3, rep(1, 30)),
@@ -302,7 +302,7 @@ test_that("partitions/compositionsGeneral Distinct Parallel", {
     ## [1] 284705
     ##
     ## $partition_type
-    ## [1] "DstctCappedMZ"
+    ## [1] "DistinctCappedMZ"
     myParts = partitionsGeneral(1001 + (0:30) * 107, 9,
                                 freqs = c(3, rep(1, 30)),
                                 target = 21314, nThreads = 2)
@@ -321,7 +321,7 @@ test_that("partitions/compositionsGeneral Distinct Parallel", {
     ## [1] 169200
     ##
     ## $partition_type
-    ## [1] "CmpDstctNoZero"
+    ## [1] "CompDistinctNoZero"
     bench = compositionsGeneral(40, 6, nThreads = 2)
     expect_identical(compositionsGeneral(40, 6), bench)
     expect_identical(compositionsRank(bench[c(1, 84600, 169200), ],
@@ -339,7 +339,7 @@ test_that("partitions/compositionsGeneral Distinct Parallel", {
     ## [1] 169200
     ##
     ## $partition_type
-    ## [1] "CmpDstctNoZero"
+    ## [1] "CompDistinctNoZero"
     bench = compositionsGeneral(1001 + (1:40) * 107, 6,
                                 target = 10286, nThreads = 2)
     expect_identical(compositionsGeneral(1001 + (1:40) * 107, 6,
@@ -356,7 +356,7 @@ test_that("partitions/compositionsGeneral Distinct Parallel", {
     ## [1] 160560
     ##
     ## $partition_type
-    ## [1] "CmpDstctCapped"
+    ## [1] "CompDistinctCapped"
     bench = compositionsGeneral(20, 6, target = 40, nThreads = 2)
     expect_identical(compositionsGeneral(20, 6, target = 40), bench)
     expect_identical(compositionsRank(bench[c(1L, 80280L, 160560L), ], v = 20,
@@ -374,7 +374,7 @@ test_that("partitions/compositionsGeneral Distinct Parallel", {
     ## [1] 160560
     ##
     ## $partition_type
-    ## [1] "CmpDstctCapped"
+    ## [1] "CompDistinctCapped"
     bench = compositionsGeneral(1001 + (1:20) * 107, 6,
                                 target = 10286, nThreads = 2)
     expect_identical(compositionsGeneral(1001 + (1:20) * 107, 6,
@@ -394,7 +394,7 @@ test_that("partitions/compositionsGeneral Distinct Parallel", {
     ## [1] 41
     ##
     ## $partition_type
-    ## [1] "CmpDstctWeak"
+    ## [1] "CompDistinctWeak"
     bench = compositionsGeneral(0:35, 6, weak = TRUE, nThreads = 2)
     expect_identical(compositionsGeneral(0:35, 6, weak = TRUE), bench)
     expect_identical(compositionsRank(bench[c(1, 67680, 135360, 203040), ],
@@ -415,7 +415,7 @@ test_that("partitions/compositionsGeneral Distinct Parallel", {
     ## [1] 41
     ##
     ## $partition_type
-    ## [1] "CmpDstctWeak"
+    ## [1] "CompDistinctWeak"
     bench = compositionsGeneral((0:35) * 17, 6, weak = TRUE, nThreads = 2)
     expect_identical(compositionsGeneral((0:35) * 17, 6, weak = TRUE), bench)
     expect_identical(compositionsRank(bench[c(1L, 67680L, 135360L, 203040L), ],
@@ -433,7 +433,7 @@ test_that("partitions/compositionsGeneral Distinct Parallel", {
     ## [1] 42
     ##
     ## $partition_type
-    ## [1] "CmpDstCapWeak"
+    ## [1] "CompDistinctCapWeak"
     bench = compositionsGeneral(0:20, 6, weak = TRUE,
                                 target = 36, nThreads = 2)
     expect_identical(compositionsGeneral(0:20, 6, weak = TRUE, target = 36),
@@ -457,7 +457,7 @@ test_that("partitions/compositionsGeneral Distinct Parallel", {
     ## [1] 42
     ##
     ## $partition_type
-    ## [1] "CmpDstCapWeak"
+    ## [1] "CompDistinctCapWeak"
     bench = compositionsGeneral((0:20) * 17, 6, weak = TRUE,
                                 target = 612, nThreads = 2)
     expect_identical(compositionsGeneral((0:20) * 17, 6, weak = TRUE,
@@ -477,7 +477,7 @@ test_that("partitions/compositionsGeneral Distinct Parallel", {
     ## [1] 40
     ##
     ## $partition_type
-    ## [1] "CmpDstctZNotWk"
+    ## [1] "CompDistinctZero"
     bench = compositionsGeneral(0:40, 6, freqs = c(4, rep(1, 40)), nThreads = 2)
     expect_identical(compositionsGeneral(0:40, 6, freqs = c(4, rep(1, 40))),
                      bench)
@@ -500,7 +500,7 @@ test_that("partitions/compositionsGeneral Distinct Parallel", {
     ## [1] 40
     ##
     ## $partition_type
-    ## [1] "CmpDstctZNotWk"
+    ## [1] "CompDistinctZero"
     bench = compositionsGeneral((0:40) * 717, 6, freqs = c(4, rep(1, 40)),
                                 nThreads = 2)
     expect_identical(compositionsGeneral((0:40) * 717, 6,
@@ -521,7 +521,7 @@ test_that("partitions/compositionsGeneral Distinct Parallel", {
     ## [1] 28
     ##
     ## $partition_type
-    ## [1] "CmpDstctMZWeak"
+    ## [1] "CompDistinctMZWeak"
     bench = compositionsGeneral(
         0:28, 7, freqs = c(4, rep(1, 28)), weak = TRUE, nThreads = 2
     )
@@ -544,7 +544,7 @@ test_that("partitions/compositionsGeneral Distinct Parallel", {
     ## [1] 28
     ##
     ## $partition_type
-    ## [1] "CmpDstctMZWeak"
+    ## [1] "CompDistinctMZWeak"
     bench = compositionsGeneral(
         (0:28) * 17, 7, freqs = c(4, rep(1, 28)), weak = TRUE, nThreads = 2
     )
@@ -565,7 +565,7 @@ test_that("partitions/compositionsGeneral Distinct Parallel", {
     ## [1] 35
     ##
     ## $partition_type
-    ## [1] "CmpDstCapMZWeak"
+    ## [1] "CompDistinctCapMZWeak"
     bench = compositionsGeneral(
         0:20, 6, freqs = c(4, rep(1, 20)), weak = TRUE, target = 35, nThreads = 2
     )
@@ -586,7 +586,7 @@ test_that("partitions/compositionsGeneral Distinct Parallel", {
     ## [1] 40
     ##
     ## $partition_type
-    ## [1] "CmpDstCapMZNotWk"
+    ## [1] "CompDistinctCapMZ"
     bench = compositionsGeneral(0:20, 6, freqs = c(4, rep(1, 20)),
                                 target = 40, nThreads = 2)
     expect_identical(compositionsGeneral(0:20, 6, freqs = c(4, rep(1, 20)),
@@ -611,7 +611,7 @@ test_that("partitions/compositionsGeneral Distinct Parallel", {
     ## [1] 40
     ##
     ## $partition_type
-    ## [1] "CmpDstCapMZNotWk"
+    ## [1] "CompDistinctCapMZ"
     bench = compositionsGeneral((0:20) * 717, 6, freqs = c(4, rep(1, 20)),
                                 target = 28680, nThreads = 2)
     expect_identical(compositionsGeneral((0:20) * 717, 6,
@@ -794,7 +794,7 @@ test_that("partition/compositionsGeneral Repetition Parallel", {
     ## [1] 65536
     ##
     ## $partition_type
-    ## [1] "CmpRpZroNotWk"
+    ## [1] "CompRepZero"
     expect_identical(compositionsGeneral(0:17, repetition = TRUE,
                                        nThreads = 2),
                      compositionsGeneral(0:17, repetition = TRUE))
@@ -813,7 +813,7 @@ test_that("partition/compositionsGeneral Repetition Parallel", {
     ## [1] 17
     ##
     ## $partition_type
-    ## [1] "CmpRpZroNotWk"
+    ## [1] "CompRepZero"
     expect_identical(compositionsGeneral((0:17) * 17L, repetition = TRUE,
                                          nThreads = 2),
                      compositionsGeneral((0:17) * 17L, repetition = TRUE))
@@ -943,7 +943,7 @@ test_that("partition/compositionsGeneral Repetition Parallel", {
     ## [1] 127821
     ##
     ## $partition_type
-    ## [1] "CmpRpCapZNotWk"
+    ## [1] "CompRepCapZero"
     myComps = compositionsGeneral(0:15, 6, TRUE, target = 30, nThreads = 2)
     expect_identical(compositionsGeneral(0:15, 6, TRUE, target = 30), myComps)
     expect_identical(compositionsRank(myComps[c(1L, 42607L, 85214L, 127821L), ],
@@ -961,7 +961,7 @@ test_that("partition/compositionsGeneral Repetition Parallel", {
     ## [1] 127821
     ##
     ## $partition_type
-    ## [1] "CmpRpCapZNotWk"
+    ## [1] "CompRepCapZero"
     myComps = compositionsGeneral(
         (0:15) * 23, 6, TRUE, target = 690, nThreads = 2
     )
@@ -1064,7 +1064,7 @@ test_that("partition/compositionsGeneral Repetition Parallel", {
     ## [1] 101584
     ##
     ## $partition_type
-    ## [1] "CmpRpZroNotWk"
+    ## [1] "CompRepZero"
     myComps = compositionsGeneral(0:28, 6, TRUE, nThreads = 2)
     expect_identical(myComps, compositionsGeneral(0:28, 6, TRUE))
     expect_identical(compositionsRank(myComps[c(1L, 12345L, 101584L), ],
@@ -1085,7 +1085,7 @@ test_that("partition/compositionsGeneral Repetition Parallel", {
     ## [1] 28
     ##
     ## $partition_type
-    ## [1] "CmpRpZroNotWk"
+    ## [1] "CompRepZero"
     myComps = compositionsGeneral((0:28) * 3, 6, TRUE, nThreads = 2)
     expect_identical(myComps, compositionsGeneral((0:28) * 3, 6, TRUE))
     expect_identical(compositionsRank(myComps[c(1L, 12345L, 101584L), ],

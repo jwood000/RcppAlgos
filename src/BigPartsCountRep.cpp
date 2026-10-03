@@ -222,8 +222,8 @@ void CountCompsRepLenCap(mpz_class &res, int n, int m,
     }
 }
 
-void CountCompsRepCapZNotWk(mpz_class &res, int n, int m,
-                            const std::vector<int> &allowed, int strtLen) {
+void CountCompsRepCapZero(mpz_class &res, int n, int m,
+                          const std::vector<int> &allowed, int strtLen) {
 
     static_cast<void>(strtLen);
 
@@ -240,8 +240,8 @@ void CountCompsRepCapZNotWk(mpz_class &res, int n, int m,
     }
 }
 
-void CountCompsRepZNotWk(mpz_class &res, int n, int m,
-                         const std::vector<int> &allowed, int strtLen) {
+void CountCompsRepZero(mpz_class &res, int n, int m,
+                       const std::vector<int> &allowed, int strtLen) {
 
     static_cast<void>(allowed);
     static_cast<void>(strtLen);

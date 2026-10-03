@@ -879,7 +879,7 @@ test_that("partitionsIter produces correct results", {
     )
 
     #### Repetition; Compositions; Zero inc.; Capped (i.e. Specific Target)
-    ## "CmpRpCapZNotWk"
+    ## "CompRepCapZero"
     expect_true(
         partitionClassTest(0:10, 6, rep = TRUE, tar = 25, IsComposition = TRUE,
                            requiresWidthRebuild = TRUE)
@@ -895,7 +895,7 @@ test_that("partitionsIter produces correct results", {
     )
 
     #### Repetition; Compositions; Zero inc.; Capped (i.e. Specific Target)
-    ## "CmpRpCapZNotWk"
+    ## "CompRepCapZero"
     expect_true(
         partitionClassTest(0:5, 8, rep = TRUE, tar = 20, IsComposition = TRUE,
                            requiresWidthRebuild = TRUE)
@@ -1171,7 +1171,7 @@ test_that("partitionsIter produces correct results", {
     expect_true(partitionClassBigZTest(20, 40, TRUE, tar = 200,
                                        IsComposition = TRUE))
 
-    ## "CmpRpCapZNotWk"
+    ## "CompRepCapZero"
     expect_true(partitionClassBigZTest(0:200, 10, TRUE, tar = 1000,
                                        IsComposition = TRUE))
 

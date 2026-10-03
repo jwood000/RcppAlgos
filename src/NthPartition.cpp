@@ -148,7 +148,7 @@ std::vector<int> nthCompsRepZero(int n, int m, int cap, int k,
 
     for (int i = 0, j = 0; i < (width - 1); ++i, --m, j = incr_j) {
         double temp = incr_j ? CountCompsRepLen(n, m) :
-                    CountCompsRepZNotWk(n, m);
+                    CountCompsRepZero(n, m);
 
         for (; temp <= dblIdx; ++j) {
             incr_j = true;
@@ -179,7 +179,7 @@ std::vector<int> nthCompsRepZeroCap(int n, int m, int cap, int k,
 
     for (int i = 0, j = 0; i < (width - 1); ++i, --m, j = incr_j) {
         double temp = incr_j ? CountCompsRepLenCap(n, m, allowed) :
-            CountCompsRepCapZNotWk(n, m, allowed);
+            CountCompsRepCapZero(n, m, allowed);
 
         for (; temp <= dblIdx; ++j) {
             incr_j = true;
@@ -500,7 +500,7 @@ std::vector<int> nthPartsDistinctLen(int n, int m, int cap, int k,
     return res;
 }
 
-std::vector<int> nthPartsDistinctMultiZero(
+std::vector<int> nthPartsDistinctMZ(
     int n, int m, int cap, int k, double dblIdx, const mpz_class &mpzIdx
 ) {
 
@@ -516,7 +516,7 @@ std::vector<int> nthPartsDistinctMultiZero(
     for (int i = 0, j = 0; i < (width - 1); ++i, --m) {
         double temp = (incr_j || i >= (width - k)) ?
                       CountPartsDistinctLen(n, m) :
-                      CountPartsDistinctMultiZero(n, m, empty_allowed, k);
+                      CountPartsDistinctMZ(n, m, empty_allowed, k);
 
         for (; temp <= dblIdx; ++j) {
             incr_j = true;
@@ -694,7 +694,7 @@ std::vector<int> nthCompsRepZeroGmp(int n, int m, int cap, int k,
     mpz_class temp;
     mpz_class index(mpzIdx);
     std::unique_ptr<CountClass> Counter = MakeCount(
-        PartitionType::CmpRpZroNotWk
+        PartitionType::CompRepZero
     );
 
     std::vector<int> empty_allowed;
@@ -733,7 +733,7 @@ std::vector<int> nthCompsRepZeroCapGmp(
     mpz_class temp;
     mpz_class index(mpzIdx);
     std::unique_ptr<CountClass> Counter = MakeCount(
-        PartitionType::CmpRpCapZNotWk
+        PartitionType::CompRepCapZero
     );
 
     for (int i = 0, j = 0; i < (width - 1); ++i, --m, j = incr_j) {
@@ -829,7 +829,7 @@ std::vector<int> nthCompsDistinctMZGmp(
     mpz_class index(mpzIdx);
 
     if (cap == n) {
-        const PartitionType ptype = PartitionType::CmpDstctNoZero;
+        const PartitionType ptype = PartitionType::CompDistinctNoZero;
         std::unique_ptr<CountClass> Counter = MakeCount(ptype);
 
         Counter->SetArrSize(ptype, n, m);
@@ -845,7 +845,7 @@ std::vector<int> nthCompsDistinctMZGmp(
         std::vector<int> allowed(cap);
         std::iota(allowed.begin(), allowed.end(), 1);
 
-        const PartitionType ptype = PartitionType::CmpDstctCapped;
+        const PartitionType ptype = PartitionType::CompDistinctCapped;
         std::unique_ptr<CountClass> Counter = MakeCount(ptype);
 
         Counter->SetArrSize(ptype, n, m);
@@ -903,7 +903,7 @@ std::vector<int> nthCompsDistinctMZWeakGmp(
     bool anyZeros = true;
     const int mask_size = mask.size();
 
-    const PartitionType ptype = PartitionType::CmpDstCapMZWeak;
+    const PartitionType ptype = PartitionType::CompDistinctCapMZWeak;
     std::unique_ptr<CountClass> Counter = MakeCount(ptype);
 
     Counter->SetArrSize(ptype, n, m);
@@ -1059,7 +1059,7 @@ std::vector<int> nthPartsDistinctLenGmp(
     mpz_class temp;
     mpz_class index(mpzIdx);
 
-    const PartitionType ptype = PartitionType::DstctNoZero;
+    const PartitionType ptype = PartitionType::DistinctNoZero;
     std::unique_ptr<CountClass> Counter = MakeCount(ptype);
 
     Counter->SetArrSize(ptype, n, m);
@@ -1082,7 +1082,7 @@ std::vector<int> nthPartsDistinctLenGmp(
     return res;
 }
 
-std::vector<int> nthPartsDistinctMultiZeroGmp(
+std::vector<int> nthPartsDistinctMZGmp(
     int n, int m, int cap, int k, double dblIdx, const mpz_class &mpzIdx
 ) {
 
@@ -1096,7 +1096,7 @@ std::vector<int> nthPartsDistinctMultiZeroGmp(
     mpz_class temp;
     mpz_class index(mpzIdx);
 
-    const PartitionType ptype = PartitionType::DstctMultiZero;
+    const PartitionType ptype = PartitionType::DistinctMZ;
     std::unique_ptr<CountClass> Counter = MakeCount(ptype);
 
     Counter->SetArrSize(ptype, n, m);
@@ -1142,7 +1142,7 @@ std::vector<int> nthPartsDistinctCapGmp(
     mpz_class temp;
     mpz_class index(mpzIdx);
 
-    const PartitionType ptype = PartitionType::DstctCapped;
+    const PartitionType ptype = PartitionType::DistinctCapped;
     std::unique_ptr<CountClass> Counter = MakeCount(ptype);
 
     Counter->SetArrSize(ptype, n, m);
@@ -1184,7 +1184,7 @@ std::vector<int> nthPartsDistinctCapMZGmp(
     mpz_class temp;
     mpz_class index(mpzIdx);
 
-    const PartitionType ptype = PartitionType::DstctCappedMZ;
+    const PartitionType ptype = PartitionType::DistinctCappedMZ;
     std::unique_ptr<CountClass> Counter = MakeCount(ptype);
 
     Counter->SetArrSize(ptype, n, m);
@@ -1231,18 +1231,18 @@ nthPartsPtr GetNthPartsFunc(PartitionType ptype, bool IsGmp) {
         switch (ptype) {
             case PartitionType::LengthOne: {
                 return(nthPartsPtr(nthLengthOne));
-            } case PartitionType::DstctCapped: {
+            } case PartitionType::DistinctCapped: {
                 return(nthPartsPtr(nthPartsDistinctCapGmp));
-            } case PartitionType::DstctCappedMZ: {
+            } case PartitionType::DistinctCappedMZ: {
                 return(nthPartsPtr(nthPartsDistinctCapMZGmp));
-            } case PartitionType::DstctNoZero: {
+            } case PartitionType::DistinctNoZero: {
                 return(nthPartsPtr(nthPartsDistinctLenGmp));
-            } case PartitionType::DstctOneZero: {
+            } case PartitionType::DistinctOneZero: {
                 return(nthPartsPtr(nthPartsDistinctLenGmp));
-            } case PartitionType::DstctMultiZero: {
-                return(nthPartsPtr(nthPartsDistinctMultiZeroGmp));
-            } case PartitionType::DstctStdAll: {
-                return(nthPartsPtr(nthPartsDistinctMultiZeroGmp));
+            } case PartitionType::DistinctMZ: {
+                return(nthPartsPtr(nthPartsDistinctMZGmp));
+            } case PartitionType::DistinctStdAll: {
+                return(nthPartsPtr(nthPartsDistinctMZGmp));
             } case PartitionType::RepCapped: {
                 return(nthPartsPtr(nthPartsRepCapGmp));
             } case PartitionType::RepNoZero: {
@@ -1259,25 +1259,25 @@ nthPartsPtr GetNthPartsFunc(PartitionType ptype, bool IsGmp) {
                 return(nthPartsPtr(nthCompsRepGmp));
             } case PartitionType::CompRepWeakCap: {
                 return(nthPartsPtr(nthCompsRepCappedGmp));
-            } case PartitionType::CmpRpZroNotWk: {
+            } case PartitionType::CompRepZero: {
                 return(nthPartsPtr(nthCompsRepZeroGmp));
-            } case PartitionType::CmpRpCapZNotWk: {
+            } case PartitionType::CompRepCapZero: {
                 return(nthPartsPtr(nthCompsRepZeroCapGmp));
-            } case PartitionType::CmpDstctNoZero: {
+            } case PartitionType::CompDistinctNoZero: {
                 return(nthPartsPtr(nthCompsDistinctGmp));
-            } case PartitionType::CmpDstctCapped: {
+            } case PartitionType::CompDistinctCapped: {
                 return(nthPartsPtr(nthCompsDistinctGmp));
-            } case PartitionType::CmpDstctWeak: {
+            } case PartitionType::CompDistinctWeak: {
                 return(nthPartsPtr(nthCompsDistinctGmp));
-            } case PartitionType::CmpDstCapWeak: {
+            } case PartitionType::CompDistinctCapWeak: {
                 return(nthPartsPtr(nthCompsDistinctGmp));
-            } case PartitionType::CmpDstctZNotWk: {
+            } case PartitionType::CompDistinctZero: {
                 return(nthPartsPtr(nthCompsDistinctMZGmp));
-            } case PartitionType::CmpDstCapMZNotWk: {
+            } case PartitionType::CompDistinctCapMZ: {
                 return(nthPartsPtr(nthCompsDistinctMZGmp));
-            } case PartitionType::CmpDstctMZWeak: {
+            } case PartitionType::CompDistinctMZWeak: {
                 return(nthPartsPtr(nthCompsDistinctMZWeakGmp));
-            } case PartitionType::CmpDstCapMZWeak: {
+            } case PartitionType::CompDistinctCapMZWeak: {
                 return(nthPartsPtr(nthCompsDistinctMZWeakGmp));
             } case PartitionType::NoSolution: {
                 return(nthPartsPtr(EmptyReturn));
@@ -1289,18 +1289,18 @@ nthPartsPtr GetNthPartsFunc(PartitionType ptype, bool IsGmp) {
         switch (ptype) {
             case PartitionType::LengthOne: {
                 return(nthPartsPtr(nthLengthOne));
-            } case PartitionType::DstctCapped: {
+            } case PartitionType::DistinctCapped: {
                 return(nthPartsPtr(nthPartsDistinctCap));
-            } case PartitionType::DstctCappedMZ: {
+            } case PartitionType::DistinctCappedMZ: {
                 return(nthPartsPtr(nthPartsDistinctCapMZ));
-            } case PartitionType::DstctNoZero: {
+            } case PartitionType::DistinctNoZero: {
                 return(nthPartsPtr(nthPartsDistinctLen));
-            } case PartitionType::DstctOneZero: {
+            } case PartitionType::DistinctOneZero: {
                 return(nthPartsPtr(nthPartsDistinctLen));
-            } case PartitionType::DstctMultiZero: {
-                return(nthPartsPtr(nthPartsDistinctMultiZero));
-            } case PartitionType::DstctStdAll: {
-                return(nthPartsPtr(nthPartsDistinctMultiZero));
+            } case PartitionType::DistinctMZ: {
+                return(nthPartsPtr(nthPartsDistinctMZ));
+            } case PartitionType::DistinctStdAll: {
+                return(nthPartsPtr(nthPartsDistinctMZ));
             } case PartitionType::RepCapped: {
                 return(nthPartsPtr(nthPartsRepCap));
             } case PartitionType::RepNoZero: {
@@ -1317,25 +1317,25 @@ nthPartsPtr GetNthPartsFunc(PartitionType ptype, bool IsGmp) {
                 return(nthPartsPtr(nthCompsRep));
             } case PartitionType::CompRepWeakCap: {
                 return(nthPartsPtr(nthCompsRepCapped));
-            } case PartitionType::CmpRpZroNotWk: {
+            } case PartitionType::CompRepZero: {
                 return(nthPartsPtr(nthCompsRepZero));
-            } case PartitionType::CmpRpCapZNotWk: {
+            } case PartitionType::CompRepCapZero: {
                 return(nthPartsPtr(nthCompsRepZeroCap));
-            } case PartitionType::CmpDstctNoZero: {
+            } case PartitionType::CompDistinctNoZero: {
                 return(nthPartsPtr(nthCompsDistinct));
-            } case PartitionType::CmpDstctCapped: {
+            } case PartitionType::CompDistinctCapped: {
                 return(nthPartsPtr(nthCompsDistinct));
-            } case PartitionType::CmpDstctWeak: {
+            } case PartitionType::CompDistinctWeak: {
                 return(nthPartsPtr(nthCompsDistinct));
-            } case PartitionType::CmpDstCapWeak: {
+            } case PartitionType::CompDistinctCapWeak: {
                 return(nthPartsPtr(nthCompsDistinct));
-            } case PartitionType::CmpDstctZNotWk: {
+            } case PartitionType::CompDistinctZero: {
                 return(nthPartsPtr(nthCompsDistinctMZ));
-            } case PartitionType::CmpDstCapMZNotWk: {
+            } case PartitionType::CompDistinctCapMZ: {
                 return(nthPartsPtr(nthCompsDistinctMZ));
-            } case PartitionType::CmpDstctMZWeak: {
+            } case PartitionType::CompDistinctMZWeak: {
                 return(nthPartsPtr(nthCompsDistinctMZWeak));
-            } case PartitionType::CmpDstCapMZWeak: {
+            } case PartitionType::CompDistinctCapMZWeak: {
                 return(nthPartsPtr(nthCompsDistinctMZWeak));
             } case PartitionType::NoSolution: {
                 return(nthPartsPtr(EmptyReturn));

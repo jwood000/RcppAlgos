@@ -208,12 +208,12 @@ double CountCompsRepLenCap(
     return res.get_d();
 }
 
-double CountCompsRepCapZNotWk(
+double CountCompsRepCapZero(
     int n, int m, const std::vector<int> &allowed, int strtLen
 ) {
 
     mpz_class res;
-    CountCompsRepCapZNotWk(res, n, m, allowed);
+    CountCompsRepCapZero(res, n, m, allowed);
     return res.get_d();
 }
 
@@ -238,7 +238,7 @@ double CountCompsRepCapZNotWk(
 //
 // sum(part') = n + P
 
-double CountCompsRepZNotWk(
+double CountCompsRepZero(
     int n, int m, const std::vector<int> &allowed, int strtLen
 ) {
 

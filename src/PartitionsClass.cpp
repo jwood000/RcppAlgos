@@ -3,10 +3,10 @@
 void Partitions::SetPartValues() {
 
     bool IsCompDist = std::find(
-        CmpDstPTypeArr.cbegin(), CmpDstPTypeArr.cend(), part.ptype
-    ) != CmpDstPTypeArr.cend();
+        CompDistinctPTypeArr.cbegin(), CompDistinctPTypeArr.cend(), part.ptype
+    ) != CompDistinctPTypeArr.cend();
 
-    // CompRepCapped, CompRepWeakCap, and CmpRpCapZNotWk advances using the
+    // CompRepCapped, CompRepWeakCap, and CompRepCapZero advances using the
     // composition-next routine (NextCompositionRep), not the general
     // PartitionType next-partition logic.
     //
@@ -16,13 +16,13 @@ void Partitions::SetPartValues() {
     // initialization here.
     //
     // This is safe because dispatch routes these PartitionTypes to
-    // NextRepCompCapped and NextRepCompNotWkCap which ignores the unused state.
+    // NextRepCompCapped and NextRepCompCapZero which ignores the unused state.
     //
     // Note: n is the size of v so the largest value the index can be is n - 1.
 
     if (part.ptype == PartitionType::CompRepCapped ||
         part.ptype == PartitionType::CompRepWeakCap ||
-        part.ptype == PartitionType::CmpRpCapZNotWk) {
+        part.ptype == PartitionType::CompRepCapZero) {
         pivot = n - 1;  // myMax/cap for NextCompositionRep
     } else if (IsCompDist) {
         bool compZero = IsComplementZeroBased(
