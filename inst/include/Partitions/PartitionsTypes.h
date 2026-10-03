@@ -7,119 +7,195 @@
 
 // ************************** Count Function Examples *************************
 //
-// Here are the corresponding count functions that one would use for each
-// example below:
+// The examples below show the counting routine associated with each
+// PartitionType. Some cases require a mapped target and/or mapped set of
+// allowed values before calling the underlying count routine.
 //
 // RepStdAll       : CountPartRep(20)
+//
 // RepNoZero       : CountPartRepLen(20, 5)
+//
 // RepShort        : CountPartRepLen(23, 3)
-// RepCapped       : CountPartRepLenCap(14, 3, 10) N.B. Get first part:
-//                    (3, 5, 12); Map to match(c(3, 5, 12), 3:12) -->>
-//                    (1, 3, 10) -->> sum(c(1, 3, 10)) = 14
 //
-// DstctStdAll     : CountPartDistinct(20)
-// DstctMultiZero  : CountPartsDistinctMultiZero(c(0, 0, 1, 2, 17), 20, 5)
-// DstctOneZero    : CountPartDistinctLen(25, 5) N.B. Add 1 to each element to
-//                    obtain new target = 25
+// RepCapped       : CountPartRepLenCap(14, 3, 10)
+//                   N.B. First partition: (3, 5, 12)
+//                   Map with match(c(3, 5, 12), 3:12) -> (1, 3, 10)
+//                   giving mapped target 14.
 //
-// DstctNoZero     : CountPartDistinctLen(20, 5)
-// DstctCapped     : CountPartDistinctLenCap(20, 4, 9)
-// DstctCappedMZ   : CountPartsDistinctMultiZeroCap(c(0, 0, 9, 11), 20, 4, 11)
+// DistinctStdAll  : CountPartDistinct(20)
+//
+// DistinctMZ      : CountPartsDistinctMZ(
+//                       c(0, 0, 1, 2, 17), 20, 5
+//                   )
+//
+// DistinctOneZero : CountPartDistinctLen(25, 5)
+//                   N.B. Add 1 to each part, giving mapped target 25.
+//
+// DistinctNoZero  : CountPartDistinctLen(20, 5)
+//
+// DistinctCapped  : CountPartDistinctLenCap(20, 4, 9)
+//
+// DistinctCappedMZ
+//                 : CountPartsDistinctMZCap(
+//                       c(0, 0, 9, 11), 20, 4, 11
+//                   )
+//
 // LengthOne       : 1 or 0
-// Multiset        : CountPartsMultiset(rep(1:3, 5), c(1, 2, 2, 15))
 //
-// CoarseGrained   : Currently, we utilize std::vector and push_back until we
-//                    reach a terminating situation.
+// Multiset        : CountPartsMultiset(20, 4, rep(1:3, 5))
 //
-// CompRepNoZero   : compositionsCount(20, 5, TRUE) -->> CountCompsRepLen(20, 5)
-// CompRepWeak     : compositionsCount(0:20, 5, TRUE, weak = TRUE) -->>
-//                    CountCompsRepLen(25, 5) We add the length to the target
+// CoarseGrained   : No dedicated count routine. Generation uses a
+//                   std::vector and push_back until the terminating
+//                   condition is reached.
 //
-// CompRepWeakCap  : compositionsCount(0:20, 5, TRUE, weak = TRUE, target = 40) -->>
-//                    CountCompsRepLenCap(45, 5, 1:20) We add the length to the target
+// CompRepNoZero   : compositionsCount(20, 5, TRUE)
+//                   -> CountCompsRepLen(20, 5)
 //
-// CompRepCapped   : compositionsCount(3, 6, repetition = TRUE, target = 10)
-//                    -->> CountCompsRepLenCap(10, 6, 1:3)
+// CompRepWeak     : compositionsCount(0:20, 5, TRUE, weak = TRUE)
+//                   -> CountCompsRepLen(25, 5)
+//                   N.B. Add the width to the target.
 //
-// CmpRpCapZNotWk  : compositionsCount(0:3, 6, repetition = TRUE, target = 10)
-//                    -->> CountCompsRepCapZNotWk(10, 6, 1:3)
+// CompRepWeakCap  : compositionsCount(
+//                       0:20, 5, TRUE, weak = TRUE, target = 40
+//                   )
+//                   -> CountCompsRepLenCap(45, 5, 1:20)
+//                   N.B. Add the width to the target.
 //
-// CmpRpZroNotWk   : compositionsCount(0:20, 5, TRUE) -- >>
-//                    CountCompsRepZNotWk(20, 5)
+// CompRepCapped   : compositionsCount(
+//                       3, 6, repetition = TRUE, target = 10
+//                   )
+//                   -> CountCompsRepLenCap(10, 6, 1:3)
 //
-// CmpDstctNoZero  : compositionsCount(20, 5) -->> CountCompsDistinctLen(20, 5)
-// CmpDstctZNotWk  : compositionsCount(0:20, 5, freqs = c(3, rep(1, 20))) -->>
-//                    CountCompsDistinctMultiZero(20, 5, 0, 2)
+// CompRepCapZero  : compositionsCount(
+//                       0:3, 6, repetition = TRUE, target = 10
+//                   )
+//                   -> CountCompsRepCapZero(10, 6, 1:3)
 //
-// CmpDstctWeak    : compositionsCount(0:20, 5, weak = TRUE) -->>
-//                    CountCompsDistinctLen(25, 5)
+// CompRepZero     : compositionsCount(0:20, 5, TRUE)
+//                   -> CountCompsRepZero(20, 5)
 //
-// CmpDstctMZWeak  : compositionsCount(0:20, 5, freqs = c(3, rep(1, 20)),
-//                                    weak = TRUE) -->>
-//                    CountCompsDistinctMZWeak(20, 5, 0, 2)
+// CompDistinctNoZero
+//                 : compositionsCount(20, 5)
+//                   -> CountCompsDistinctLen(20, 5)
 //
-// CmpDstctCapped  : compositionsCount(10, 4, target = 25) -->>
-//                    CountCompsDistLenRstrctd(25, 4, {1, 2, ..., 10})
+// CompDistinctZero
+//                 : compositionsCount(
+//                       0:20, 5, freqs = c(3, rep(1, 20))
+//                   )
+//                   -> CountCompsDistinctMZ(20, 5, 0, 2)
 //
-// CmpDstCapWeak   : compositionsCount(0:10, 4, target = 25, weak = TRUE) -->>
-//                    CountCompsDistLenRstrctd(25, 4, {1, 2, ..., 10})
+// CompDistinctWeak
+//                 : compositionsCount(0:20, 5, weak = TRUE)
+//                   -> CountCompsDistinctLen(25, 5)
 //
-// CmpDstCapMZNotWk: compositionsCount(0:10, 4, target = 25) -->>
-//                    CountCompsDistinctRstrctdMZ(25, 4, {1, 2, ..., 10}, 3)
+// CompDistinctMZWeak
+//                 : compositionsCount(
+//                       0:20, 5,
+//                       freqs = c(3, rep(1, 20)),
+//                       weak = TRUE
+//                   )
+//                   -> CountCompsDistinctMZWeak(20, 5, 0, 2)
 //
-//                   compositionsCount(0:13, 4, freqs = c(2, rep(1, 13)),
-//                                    target = 25) -->>
-//                    CountCompsDistinctRstrctdMZ(25, 4, {1, 2, ..., 13}, 2)
+// CompDistinctCapped
+//                 : compositionsCount(10, 4, target = 25)
+//                   -> CountCompsDistLenRstrctd(
+//                          25, 4, {1, 2, ..., 10}
+//                      )
 //
-// CmpDstCapMZWeak : compositionsCount(0:20, 5, freqs = c(4, rep(1, 20)),
-//                                     target = 35, weak = TRUE)
-//                    ## N.B. Even though we could have 4 zeros, it is
-//                    ## automatically determined that the shortest len is 2.
-//                    CountPartsPermDistinctRstrctdMZ(35, 5, {1..20}, 2);
+// CompDistinctCapWeak
+//                 : compositionsCount(
+//                       0:10, 4, target = 25, weak = TRUE
+//                   )
+//                   -> CountCompsDistLenRstrctd(
+//                          25, 4, {1, 2, ..., 10}
+//                      )
 //
-// CompMultiset    : CountPartsMultiset(rep(1:3, 5), c(1, 2, 2, 15), true)
+// CompDistinctCapMZ
+//                 : compositionsCount(0:10, 4, target = 25)
+//                   -> CountCompsDistinctRstrctdMZ(
+//                          25, 4, {1, 2, ..., 10}, 3
+//                      )
+//
+//                   compositionsCount(
+//                       0:13, 4,
+//                       freqs = c(2, rep(1, 13)),
+//                       target = 25
+//                   )
+//                   -> CountCompsDistinctRstrctdMZ(
+//                          25, 4, {1, 2, ..., 13}, 2
+//                      )
+//
+// CompDistinctCapMZWeak
+//                 : compositionsCount(
+//                       0:20, 5,
+//                       freqs = c(4, rep(1, 20)),
+//                       target = 35,
+//                       weak = TRUE
+//                   )
+//                   N.B. Although four zeros are available, the shortest
+//                   feasible positive length is determined automatically.
+//                   -> CountPartsPermDistinctRstrctdMZ(
+//                          35, 5, {1, ..., 20}, 2
+//                      )
+//
+// CompMultiset    : CountCompsMultiset(20, 4, rep(1:3, 5))
+//
+// CompMultisetZero
+//                 : Non-weak multiset composition count with at least 1 mapped
+//                   zeros. The count spans the feasible positive composition
+//                   lengths represented by those zero-padding slots.
+//
+// CompMultisetWeak
+//                 : Weak multiset composition count with at least one zero.
+//                   Zero participates as an actual composition part.
 //
 // PrmRepPartNoZ   : permuteCount(
 //                       1:20, 5, TRUE,
 //                       constraintFun = "sum",
 //                       comparisonFun = "==",
 //                       limitConstraints = 20
-//                   ) -->> CountCompsRepLen(20, 5)
+//                   )
+//                   -> CountCompsRepLen(20, 5)
 //
-//                   ## When zero is involved, we call the same compiled
-//                   ## function just translated by the width
+//                   When zero is involved, the same compiled routine is used
+//                   after translating the target by the width.
+//
 // PrmRepPart      : permuteCount(
 //                       0:20, 5, TRUE,
 //                       constraintFun = "sum",
 //                       comparisonFun = "==",
 //                       limitConstraints = 20
-//                   ) -->> CountCompsRepLen(25, 5)
+//                   )
+//                   -> CountCompsRepLen(25, 5)
 //
 // PrmRepCapped    : permuteCount(
 //                       1:7, 5, TRUE,
 //                       constraintFun = "sum",
 //                       comparisonFun = "==",
 //                       limitConstraints = 12
-//                   ) -->> Currently no function for this case. We do the same
-//                    thing as we do for the CoarseGrained case
+//                   )
+//                   No dedicated count routine currently exists. This case
+//                   uses the same dynamic-generation strategy as
+//                   CoarseGrained.
 //
 // PrmDstPartNoZ   : permuteCount(
 //                       1:20, 4,
 //                       constraintFun = "sum",
 //                       comparisonFun = "==",
 //                       limitConstraints = 20
-//                   ) -->> CountCompsDistinctLen(20, 4)
+//                   )
+//                   -> CountCompsDistinctLen(20, 4)
 //
-//                   ## When zero is involved, we call the same compiled
-//                   ## function just translated by the width. Note in this
-//                   ## case, we are passing includeZero = FALSE b/c there
-//                   ## is only one zero and hence isomorphic to 1:24
+//                   When exactly one zero is involved, the problem is
+//                   translated to an isomorphic positive-valued problem.
+//
 // PrmDstPrtOneZ   : permuteCount(
 //                       0:20, 4,
 //                       constraintFun = "sum",
 //                       comparisonFun = "==",
 //                       limitConstraints = 20
-//                   ) -->> CountCompsDistinctLen(24, 4)
+//                   )
+//                   -> CountCompsDistinctLen(24, 4)
 //
 // PrmDstPartMZ    : permuteCount(
 //                       0:20, 4,
@@ -127,33 +203,31 @@
 //                       constraintFun = "sum",
 //                       comparisonFun = "==",
 //                       limitConstraints = 20
-//                   ) -->> CountCompsDistinctMZWeak(20, 4, 20, 2)
+//                   )
+//                   -> CountCompsDistinctMZWeak(20, 4, 20, 2)
 //
-// double CountPartsPermDistinctCap(const std::vector<int> &z, int cap,
-//                                  int tar, int width, bool includeZero)
-//
-// For the cases below, we point out that the sum(z) will not be equal to the
-// target as z in these cases is being utilized as the index vector. These
-// cases are under the "general" case and require a vector, v, that is used
-// for output. E.g. in all of the generating functions, you will see v[z[i]].
+// For the capped permutation cases below, sum(z) need not equal the original
+// target because z is an index vector into v. These are general/mapped cases;
+// generation obtains output values through expressions such as v[z[i]].
 //
 // PrmDstPrtCap    : permuteCount(
 //                       55, 4,
 //                       constraintFun = "sum",
 //                       comparisonFun = "==",
 //                       limitConstraints = 80
-//                   ) -->> CountPartsPermDistinctCap(80, 4, 55)
+//                   )
+//                   -> CountPartsPermDistinctCap(80, 4, 55)
 //
-//                   ## When zero is involved, we call the same compiled
-//                   ## function just translated by the width. Note in this
-//                   ## case, we are passing includeZero = FALSE b/c there
-//                   ## is only one zero and hence isomorphic to 1:84
+//                   With exactly one zero, the problem is translated to an
+//                   isomorphic positive-valued problem:
+//
 //                   permuteCount(
 //                       0:55, 4,
 //                       constraintFun = "sum",
 //                       comparisonFun = "==",
 //                       limitConstraints = 80
-//                   ) -->> CountPartsPermDistinctCap(84, 4, 56)
+//                   )
+//                   -> CountPartsPermDistinctCap(84, 4, 56)
 //
 // PrmDstPrtCapMZ  : permuteCount(
 //                       0:55, 4,
@@ -161,247 +235,350 @@
 //                       constraintFun = "sum",
 //                       comparisonFun = "==",
 //                       limitConstraints = 80
-//                   ) -->> CountPartsPermDistinctCap(80, 4, 55, 2)
+//                   )
+//                   -> CountPartsPermDistinctCap(80, 4, 55, 2)
 //
 // PrmMultiset     : permuteCount(
-//                        1:20, 5, freqs = rep(1:4, 5), limitConstraints = 25,
-//                        constraintFun = "sum", comparisonFun = "=="
-//                   ) -->> CountPartsMultiset(
-//                              rep(1:4, 5), {1, 2, 2, 3, 17}, true, true
-//                          )
+//                       1:20, 5,
+//                       freqs = rep(1:4, 5),
+//                       limitConstraints = 25,
+//                       constraintFun = "sum",
+//                       comparisonFun = "=="
+//                   )
+//                   -> CountPartsMultiset(
+//                          rep(1:4, 5),
+//                          {1, 2, 2, 3, 17},
+//                          true,
+//                          true
+//                      )
 //
-// NotMapped       :
-// NoSolution      :
-// NotPartition    :
+// NotMapped       : No dedicated partition count routine.
+//
+// NoSolution      : Count is zero.
+//
+// NotPartition    : Uses the general constraint machinery rather than the
+//                   partition-specific count routines.
 //
 // ****************************************************************************
-//
 //
 // ************************** Definitions w/ Examples *************************
 //
 // Notes:
-// * startZ is the canonical "first" index/result vector in the mapped/standard
+//
+// * startZ is the canonical first index/result vector in the mapped or standard
 //   problem space used by the core next-lex algorithms.
+//
 // * "Capped" means parts are restricted to a finite window of v (i.e. cap).
-// * "MZ" (MultiZero) refers to cases where 0 may appear multiple times due to
-//   freqs[0] (or equivalent mapping), and startZ may or may not maximize 0s.
 //
-// RepStdAll       : Get all partitions with repetition (0 allowed if present).
-//                   E.g. tar = 20; startZ = c(0, 0, 0, 0, 20):
-//                   CountPartRep(20)
+// * "MZ" (MZ) means multiple zeros may be available through freqs[0]
+//   or an equivalent mapped representation. MZ does not imply weakness.
 //
-// RepNoZero       : Partitions with repetition excluding 0.
-//                   E.g. tar = 20; m = 5; startZ = c(1, 1, 1, 1, 16):
-//                   CountPartRepLen(20, 5)
+// * Composition types are non-weak unless "Weak" is explicitly present in the
+//   PartitionType name.
 //
-// RepShort        : Repetition case where width is not maximized (m fixed,
-//                   m < tar in the include-zero design).
-//                   E.g. tar = 20; m = 3; startZ = c(0, 0, 20)
+// * For non-weak compositions, zeros appearing in startZ are internal padding
+//   used to represent compositions having fewer than width positive parts.
+//   Those zeros are not returned as composition parts.
 //
-// RepCapped       : Repetition partitions with restricted parts.
-//                   E.g. tar = 20, m = 3, v = 3:12:
-//                   (mapped tar = 14 from 0:9) startZ ~ c(0, 0, 14)
+// * For weak compositions, zero is an actual part. It participates in the
+//   result, counting, generation, ranking, and ordering semantics.
 //
-// DstctStdAll     : Get all distinct partitions (0 may repeat via freqs[0]).
-//                   E.g. tar = 20; startZ = c(0, 0, 0, 0, 20)
+// RepStdAll       : All repetition partitions in the standard design. Zero may
+//                   appear when included by the design.
+//                   E.g. tar = 20;
+//                   startZ = c(0, 0, 0, 0, 20)
 //
-// DstctMultiZero  : Distinct parts where multiple zeros are possible; startZ
-//                   does not necessarily maximize the number of zeros.
-//                   E.g. tar = 20; startZ = c(0, 0, 1, 2, 17)
+// RepNoZero       : Fixed-width repetition partitions excluding zero.
+//                   E.g. tar = 20; m = 5;
+//                   startZ = c(1, 1, 1, 1, 16)
 //
-// DstctOneZero    : Distinct parts where exactly one zero is possible.
-//                   Often seen when isMult = FALSE but 0 is included.
-//                   E.g. tar = 20; startZ = c(0, 1, 2, 3, 14)
+// RepShort        : Fixed-width repetition partitions where width is smaller
+//                   than the maximal include-zero design width.
+//                   E.g. tar = 20; m = 3;
+//                   startZ = c(0, 0, 20)
 //
-// DstctNoZero     : Distinct partitions excluding 0.
-//                   E.g. tar = 20; startZ = c(1, 2, 3, 4, 10)
+// RepCapped       : Repetition partitions with parts restricted by cap/window.
+//                   E.g. tar = 20; m = 3; v = 3:12;
+//                   mapped tar = 14;
+//                   startZ ~ c(0, 0, 14)
 //
-// DstctCapped     : Distinct partitions with restricted parts (cap/window).
-//                   E.g. tar = 20, m = 4, v = 1:9 gives startZ = c(1, 2, 8, 9)
+// DistinctStdAll  : Partitions whose non-zero parts are distinct, with zero
+//                   allowed to repeat through freqs[0] when applicable.
+//                   E.g. tar = 20;
+//                   startZ = c(0, 0, 0, 0, 20)
 //
-// DstctCappedMZ   : Distinct + capped + multi-zero (freqs[0] > 1).
-//                   E.g. tar = 20, m = 4, v = 0:11, freqs = c(2, rep(1, 11))
-//                   gives startZ = c(0, 0, 9, 11)
+// DistinctMZ      : Partitions with distinct non-zero parts and multiple zeros
+//                   available. startZ need not maximize the number of zeros.
+//                   E.g. tar = 20;
+//                   startZ = c(0, 0, 1, 2, 17)
 //
-// LengthOne       : Any partition/composition when m = 1.
+// DistinctOneZero : Distinct partitions where at most one zero is available.
+//                   Often encountered when isMult = FALSE and zero is present.
+//                   E.g. tar = 20;
+//                   startZ = c(0, 1, 2, 3, 14)
 //
-// Multiset        : Partitions of non-trivial multisets. Non-trivial here means
-//                   elements other than 0 have multiplicity > 1.
+// DistinctNoZero  : Distinct partitions excluding zero.
+//                   E.g. tar = 20;
+//                   startZ = c(1, 2, 3, 4, 10)
 //
-// CoarseGrained   : Partition-esque constraints that pass CheckPartition but
-//                   do not admit a dedicated next-lex partition algorithm.
-//                   This is equal to ConstraintType::PartitionEsque.
+// DistinctCapped  : Distinct partitions with parts restricted by cap/window.
+//                   E.g. tar = 20; m = 4; v = 1:9;
+//                   startZ = c(1, 2, 8, 9)
 //
-// CompRepNoZero   : Standard compositions with repetition and no zeros.
-//                   E.g. tar = 20, m = 5; startZ = c(1, 1, 1, 1, 16)
+// DistinctCappedMZ
+//                 : Capped partitions with distinct non-zero parts and
+//                   multiple zeros available.
+//                   E.g. tar = 20; m = 4; v = 0:11;
+//                   freqs = c(2, rep(1, 11));
+//                   startZ = c(0, 0, 9, 11)
 //
-// CompRepWeak     : Repetition compositions where zeros are allowed (weak).
-//                   E.g. tar = 20, m = 5; startZ = c(0, 0, 0, 0, 20)
+// LengthOne       : Any partition/composition problem whose width is one.
 //
-// CompRepWeakCap  : Repetition compositions with restricted parts (cap/window)
-//                    and where zeros are allowed (weak).
-//                   E.g. tar = 40, m = 5; cap = 20 startZ = c(0, 0, 0, 20, 20)
+// Multiset        : Partitions of a non-trivial multiset without a multi-zero
+//                   mapped state. "Non-trivial" means at least one non-zero
+//                   value has multiplicity greater than one.
 //
-// CompRepCapped   : Repetition compositions with restricted parts (cap/window).
-//                   E.g. tar = 10, m = 5; cap = 3; startZ = c(1, 1, 2, 3, 3)
+// CoarseGrained   : Partition-like constraints that pass CheckPartition but do
+//                   not admit a dedicated next-lex partition algorithm.
+//                   Corresponds to ConstraintType::PartitionEsque.
 //
-// CmpRpCapZNotWk  : Compositions where 0 is in v, but we only want permutations
-//                   of non-zero values (non-weak output). Internally behaves
-//                   like repetition comps with a "zero slot" used for mapping.
-//                   E.g. tar = 20, m = 5; startZ = c(0, 0, 0, 0, 20)
+// CompRepNoZero   : Standard fixed-width repetition compositions excluding
+//                   zero.
+//                   E.g. tar = 20; m = 5;
+//                   startZ = c(1, 1, 1, 1, 16)
 //
-// CmpRpZroNotWk   : Compositions where 0 is in v, but we only want permutations
-//                   of non-zero values (non-weak output). Internally behaves
-//                   like repetition comps with a "zero slot" used for mapping.
-//                   Note, these are compositions with restricted parts.
-//                   E.g. tar = 20, m = 5; v = 1:10 startZ = c(0, 0, 0, 10, 10)
+// CompRepWeak     : Weak repetition compositions. Zero is an actual part.
+//                   E.g. tar = 20; m = 5;
+//                   startZ = c(0, 0, 0, 0, 20)
 //
-// CmpDstctNoZero  : Standard compositions with distinct parts and no zeros.
-//                   E.g. tar = 20; m = 5; startZ = c(1, 2, 3, 4, 10)
+// CompRepWeakCap  : Capped weak repetition compositions. Zero is an actual
+//                   composition part.
+//                   E.g. tar = 40; m = 5; cap = 20;
+//                   startZ = c(0, 0, 0, 20, 20)
 //
-// CmpDstctZNotWk  : Distinct compositions where 0 exists/may appear, but only
-//                   non-zero values participate in next-iteration mechanics.
-//                   (Conceptually: distinct, non-weak, with a mapped zero slot.)
-//                   E.g. tar = 20; m = 5; startZ = c(0, 1, 2, 3, 14)
+// CompRepCapped   : Capped repetition compositions excluding zero-padding.
+//                   E.g. tar = 10; m = 5; cap = 3;
+//                   startZ = c(1, 1, 2, 3, 3)
 //
-// CmpDstctWeak    : Distinct weak compositions where a single zero is allowed.
-//                   E.g. tar = 20; m = 5; startZ = c(0, 1, 2, 3, 14)
+// CompRepCapZero  : Capped non-weak repetition compositions with zero present
+//                   in the mapped problem. Zero acts only as internal padding
+//                   for shorter positive compositions and is not returned as
+//                   a composition part.
 //
-// CmpDstctMZWeak  : Distinct weak compositions where multiple zeros are allowed
-//                   (freqs[0] > 1 / multi-zero mapping).
-//                   E.g. tar = 20; m = 5; startZ = c(0, 0, 1, 2, 17)
+// CompRepZero     : Non-weak repetition compositions with zero present in the
+//                   mapped problem. Zero acts only as internal padding for
+//                   shorter positive compositions and is not returned as a
+//                   composition part.
+//                   E.g. tar = 20; m = 5;
+//                   startZ = c(0, 0, 0, 0, 20)
 //
-// CmpDstctCapped  : Distinct compositions with restricted parts (cap/window).
-//                   E.g. tar = 20, m = 4, v = 1:9 gives startZ = c(1, 2, 8, 9)
+// CompDistinctNoZero
+//                 : Standard compositions with distinct parts and no zero.
+//                   E.g. tar = 20; m = 5;
+//                   startZ = c(1, 2, 3, 4, 10)
 //
-// CmpDstCapWeak   : Distinct capped weak compositions (0 allowed, capped set).
-//                   E.g. tar = 20, m = 4, v = 0:9 gives startZ = c(0, 1, 8, 11)
-//                   (mapped startZ shown; exact starter depends on cap/target)
+// CompDistinctZero
+//                 : Non-weak compositions with distinct positive parts and a
+//                   mapped zero slot. Zero is internal padding and does not
+//                   participate in the returned composition.
+//                   E.g. tar = 20; m = 5;
+//                   startZ = c(0, 1, 2, 3, 14)
 //
-// CmpDstCapMZNotWk: Distinct capped + multi-zero, non-weak iteration rules.
-//                   E.g. tar = 20, m = 4, v = 0:11, freqs = c(2, rep(1, 11))
-//                   gives startZ = c(0, 0, 9, 11)
+// CompDistinctWeak
+//                 : Weak compositions with distinct positive parts and at most
+//                   one zero. Zero is an actual composition part.
+//                   E.g. tar = 20; m = 5;
+//                   startZ = c(0, 1, 2, 3, 14)
 //
-// CmpDstCapMZWeak : Same as above, but weak (zeros allowed in results).
+// CompDistinctMZWeak
+//                 : Weak compositions with distinct positive parts and
+//                   multiple zeros available. Zeros are actual composition
+//                   parts.
+//                   E.g. tar = 20; m = 5;
+//                   startZ = c(0, 0, 1, 2, 17)
 //
-// CompMultiset    : Compositions of non-trivial multisets. Non-trivial here
-//                   means elements other than 0 have multiplicity > 1.
+// CompDistinctCapped
+//                 : Capped compositions with distinct positive parts and no
+//                   zero-padding.
+//                   E.g. tar = 20; m = 4; v = 1:9;
+//                   startZ = c(1, 2, 8, 9)
 //
-// The cases below are technically compositions, however we do not have a
-// dedicated next-lex composition algorithm for them. We instead generate the
-// next partition and then enumerate its permutations. This produces all
-// results but not in lexicographical order.
+// CompDistinctCapWeak
+//                 : Capped weak compositions with distinct positive parts and
+//                   zero available as an actual composition part.
 //
-// Note: If zero is included, it is considered in permutation generation, so
-// these produce weak compositions when 0 is present.
+// CompDistinctCapMZ
+//                 : Capped non-weak compositions with distinct positive parts
+//                   and multiple mapped zeros available. Zeros act only as
+//                   internal padding and do not participate in the returned
+//                   composition.
+//                   E.g. tar = 20; m = 4; v = 0:11;
+//                   freqs = c(2, rep(1, 11));
+//                   startZ = c(0, 0, 9, 11)
 //
-// PrmRepPartNoZ   : Permutations of repetition partitions with no zeros.
-// PrmRepPart      : Permutations of repetition partitions (0 may appear).
-// PrmRepCapped    : Permutations of repetition partitions with restricted parts.
-// PrmDstPartNoZ   : Permutations of distinct partitions with no zeros.
-// PrmDstPrtOneZ   : Permutations of distinct partitions with exactly one zero.
-// PrmDstPartMZ    : Permutations of distinct partitions with multiple zeros.
-// PrmDstPrtCap    : Permutations of distinct capped partitions.
-// PrmDstPrtCapMZ  : Permutations of distinct capped partitions with multi-zero.
-// PrmMultiset     : Permutations of partitions of non-trivial multisets.
+// CompDistinctCapMZWeak
+//                 : Capped weak compositions with distinct positive parts and
+//                   multiple zeros available. Zeros are actual composition
+//                   parts.
 //
-// NotMapped       : Partition-like input, but mapping heuristics did not
-//                   identify an isomorphic standard/capped case.
-// NoSolution      : Passes CheckPartition, but no solution exists for the
-//                   given target, width, and/or constraints.
-// NotPartition    : Does not pass CheckPartition.
+// CompMultiset    : Compositions of a non-trivial multiset without a
+//                   multi-zero mapped state. At least one non-zero value has
+//                   multiplicity greater than one.
+//
+// CompMultisetZero
+//                 : Non-weak compositions of a non-trivial multiset with
+//                   multiple zeros available in the mapped/design state.
+//                   Zeros are internal padding representing compositions with
+//                   fewer than width positive parts and are not returned.
+//
+// CompMultisetWeak
+//                 : Weak compositions of a non-trivial multiset with multiple
+//                   zeros available. Zero is an actual composition part and
+//                   participates in counting, generation, ranking, and
+//                   ordering.
+//
+// The types below are composition-like results produced through partition
+// generation followed by permutation generation. We do not have dedicated
+// next-lex composition algorithms for these cases.
+//
+// The resulting order is therefore not guaranteed to be lexicographical.
+//
+// If zero is present in the generated partition, it is treated as an ordinary
+// part during permutation generation. Consequently, there is no separate
+// weak/non-weak distinction for these permutation-based types: a result
+// containing zero is inherently weak.
+//
+// PrmRepPartNoZ   : Permutations of repetition partitions containing no zero.
+//
+// PrmRepPart      : Permutations of repetition partitions where zero may be
+//                   present.
+//
+// PrmRepCapped    : Permutations of capped repetition partitions.
+//
+// PrmDstPartNoZ   : Permutations of distinct partitions containing no zero.
+//
+// PrmDstPrtOneZ   : Permutations of distinct partitions containing at most
+//                   one zero.
+//
+// PrmDstPartMZ    : Permutations of partitions with distinct positive parts
+//                   and multiple zeros.
+//
+// PrmDstPrtCap    : Permutations of capped distinct partitions.
+//
+// PrmDstPrtCapMZ  : Permutations of capped partitions with distinct positive
+//                   parts and multiple zeros.
+//
+// PrmMultiset     : Permutations of partitions of non-trivial multisets. Zero
+//                   is always treated as an ordinary part when present. There
+//                   is no non-weak permutation-multiset variant.
+//
+// NotMapped       : Partition-like input for which the mapping heuristics did
+//                   not identify an isomorphic standard/capped case.
+//
+// NoSolution      : Input passes CheckPartition, but no solution exists for
+//                   the target, width, and/or supplied constraints.
+//
+// NotPartition    : Input does not satisfy the dedicated partition criteria
+//                   and is handled by the general constraint machinery.
 //
 // ****************************************************************************
 
 enum class PartitionType {
-    RepStdAll        = 0,
-    RepNoZero        = 1,
-    RepShort         = 2,
-    RepCapped        = 3,
-    DstctStdAll      = 4,
-    DstctMultiZero   = 5,
-    DstctOneZero     = 6,
-    DstctNoZero      = 7,
-    DstctCapped      = 8,
-    DstctCappedMZ    = 9,
-    LengthOne        = 10,
-    Multiset         = 11,
-    CoarseGrained    = 12,
-    CompRepNoZero    = 13,
-    CompRepWeak      = 14,
-    CmpRpZroNotWk    = 15,
-    CmpDstctNoZero   = 16,
-    CmpDstctZNotWk   = 17,
-    CmpDstctWeak     = 18,
-    CmpDstctMZWeak   = 19,
-    CmpDstctCapped   = 20,
-    CmpDstCapWeak    = 21,
-    CmpDstCapMZNotWk = 22,
-    CmpDstCapMZWeak  = 23,
-    CompMultiset     = 24,
-    PrmRepPartNoZ    = 25,
-    PrmRepPart       = 26,
-    PrmRepCapped     = 27,
-    PrmDstPartNoZ    = 28,
-    PrmDstPrtOneZ    = 29,
-    PrmDstPartMZ     = 30,
-    PrmDstPrtCap     = 31,
-    PrmDstPrtCapMZ   = 32,
-    PrmMultiset      = 33,
-    NotMapped        = 34,
-    NoSolution       = 35,
-    NotPartition     = 36,
-    // NEW types CompRepCapped, CmpRpCapZNotWk, CompRepWeakCap:
-    // appended to keep numeric values stable
-    CompRepCapped    = 37,
-    CmpRpCapZNotWk   = 38,
-    CompRepWeakCap   = 39,
-    NumTypes         = 40
+    RepStdAll             = 0,
+    RepNoZero             = 1,
+    RepShort              = 2,
+    RepCapped             = 3,
+    DistinctStdAll        = 4,
+    DistinctMZ            = 5,
+    DistinctOneZero       = 6,
+    DistinctNoZero        = 7,
+    DistinctCapped        = 8,
+    DistinctCappedMZ      = 9,
+    LengthOne             = 10,
+    Multiset              = 11,
+    CoarseGrained         = 12,
+    CompRepNoZero         = 13,
+    CompRepWeak           = 14,
+    CompRepZero           = 15,
+    CompDistinctNoZero    = 16,
+    CompDistinctZero      = 17,
+    CompDistinctWeak      = 18,
+    CompDistinctMZWeak    = 19,
+    CompDistinctCapped    = 20,
+    CompDistinctCapWeak   = 21,
+    CompDistinctCapMZ     = 22,
+    CompDistinctCapMZWeak = 23,
+    CompMultiset          = 24,
+    PrmRepPartNoZ         = 25,
+    PrmRepPart            = 26,
+    PrmRepCapped          = 27,
+    PrmDstPartNoZ         = 28,
+    PrmDstPrtOneZ         = 29,
+    PrmDstPartMZ          = 30,
+    PrmDstPrtCap          = 31,
+    PrmDstPrtCapMZ        = 32,
+    PrmMultiset           = 33,
+    NotMapped             = 34,
+    NoSolution            = 35,
+    NotPartition          = 36,
+
+    // Appended to keep existing numeric values stable
+    CompRepCapped         = 37,
+    CompRepCapZero        = 38,
+    CompRepWeakCap        = 39,
+    CompMultisetZero      = 40,
+    CompMultisetWeak      = 41,
+
+    NumTypes              = 42
 };
 
-constexpr std::array<const char*, static_cast<size_t>(PartitionType::NumTypes)>
-    PTypeNames {{
-        "RepStdAll",
-        "RepNoZero",
-        "RepShort",
-        "RepCapped",
-        "DstctStdAll",
-        "DstctMultiZero",
-        "DstctOneZero",
-        "DstctNoZero",
-        "DstctCapped",
-        "DstctCappedMZ",
-        "LengthOne",
-        "Multiset",
-        "CoarseGrained",
-        "CompRepNoZero",
-        "CompRepWeak",
-        "CmpRpZroNotWk",
-        "CmpDstctNoZero",
-        "CmpDstctZNotWk",
-        "CmpDstctWeak",
-        "CmpDstctMZWeak",
-        "CmpDstctCapped",
-        "CmpDstCapWeak",
-        "CmpDstCapMZNotWk",
-        "CmpDstCapMZWeak",
-        "CompMultiset",
-        "PrmRepPartNoZ",
-        "PrmRepPart",
-        "PrmRepCapped",
-        "PrmDstPartNoZ",
-        "PrmDstPrtOneZ",
-        "PrmDstPartMZ",
-        "PrmDstPrtCap",
-        "PrmDstPrtCapMZ",
-        "PrmMultiset",
-        "NotMapped",
-        "NoSolution",
-        "NotPartition",
-        "CompRepCapped",
-        "CmpRpCapZNotWk",
-        "CompRepWeakCap"
-    }};
+constexpr std::array<
+    const char*,
+    static_cast<size_t>(PartitionType::NumTypes)
+> PTypeNames {{
+    "RepStdAll",
+    "RepNoZero",
+    "RepShort",
+    "RepCapped",
+    "DistinctStdAll",
+    "DistinctMZ",
+    "DistinctOneZero",
+    "DistinctNoZero",
+    "DistinctCapped",
+    "DistinctCappedMZ",
+    "LengthOne",
+    "Multiset",
+    "CoarseGrained",
+    "CompRepNoZero",
+    "CompRepWeak",
+    "CompRepZero",
+    "CompDistinctNoZero",
+    "CompDistinctZero",
+    "CompDistinctWeak",
+    "CompDistinctMZWeak",
+    "CompDistinctCapped",
+    "CompDistinctCapWeak",
+    "CompDistinctCapMZ",
+    "CompDistinctCapMZWeak",
+    "CompMultiset",
+    "PrmRepPartNoZ",
+    "PrmRepPart",
+    "PrmRepCapped",
+    "PrmDstPartNoZ",
+    "PrmDstPrtOneZ",
+    "PrmDstPartMZ",
+    "PrmDstPrtCap",
+    "PrmDstPrtCapMZ",
+    "PrmMultiset",
+    "NotMapped",
+    "NoSolution",
+    "NotPartition",
+    "CompRepCapped",
+    "CompRepCapZero",
+    "CompRepWeakCap",
+    "CompMultisetZero",
+    "CompMultisetWeak"
+}};
 
 const std::array<PartitionType, 4> NoCountAlgoPTypeArr{{
     PartitionType::NotMapped, PartitionType::NotPartition,
@@ -409,20 +586,20 @@ const std::array<PartitionType, 4> NoCountAlgoPTypeArr{{
 }};
 
 const std::array<PartitionType, 13> CappedPTypeArr{{
-    PartitionType::RepCapped, PartitionType::DstctCapped,
-    PartitionType::DstctCappedMZ, PartitionType::PrmRepCapped,
+    PartitionType::RepCapped, PartitionType::DistinctCapped,
+    PartitionType::DistinctCappedMZ, PartitionType::PrmRepCapped,
     PartitionType::PrmDstPrtCap, PartitionType::PrmDstPrtCapMZ,
-    PartitionType::CmpDstctCapped, PartitionType::CmpDstCapWeak,
-    PartitionType::CmpDstCapMZWeak, PartitionType::CompRepCapped,
-    PartitionType::CmpDstCapMZNotWk, PartitionType::CmpRpCapZNotWk,
+    PartitionType::CompDistinctCapped, PartitionType::CompDistinctCapWeak,
+    PartitionType::CompDistinctCapMZWeak, PartitionType::CompRepCapped,
+    PartitionType::CompDistinctCapMZ, PartitionType::CompRepCapZero,
     PartitionType::CompRepWeakCap
 }};
 
-const std::array<PartitionType, 8> CmpDstPTypeArr{{
-    PartitionType::CmpDstctWeak, PartitionType::CmpDstCapWeak,
-    PartitionType::CmpDstctMZWeak, PartitionType::CmpDstctNoZero,
-    PartitionType::CmpDstctZNotWk, PartitionType::CmpDstctCapped,
-    PartitionType::CmpDstCapMZWeak, PartitionType::CmpDstCapMZNotWk
+const std::array<PartitionType, 8> CompDistinctPTypeArr{{
+    PartitionType::CompDistinctWeak, PartitionType::CompDistinctCapWeak,
+    PartitionType::CompDistinctMZWeak, PartitionType::CompDistinctNoZero,
+    PartitionType::CompDistinctZero, PartitionType::CompDistinctCapped,
+    PartitionType::CompDistinctCapMZWeak, PartitionType::CompDistinctCapMZ
 }};
 
 struct PartDesign {
