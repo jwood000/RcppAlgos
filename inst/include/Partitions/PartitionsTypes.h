@@ -585,6 +585,14 @@ const std::array<PartitionType, 4> NoCountAlgoPTypeArr{{
     PartitionType::NoSolution, PartitionType::CoarseGrained
 }};
 
+const std::array<PartitionType, 9> NoRankAlgoPTypeArr{{
+    PartitionType::NotMapped, PartitionType::NotPartition,
+    PartitionType::NoSolution, PartitionType::CoarseGrained,
+    PartitionType::CompMultiset, PartitionType::CompMultisetWeak,
+    PartitionType::CompMultisetZero, PartitionType::PrmMultiset,
+    PartitionType::Multiset
+}};
+
 const std::array<PartitionType, 13> CappedPTypeArr{{
     PartitionType::RepCapped, PartitionType::DistinctCapped,
     PartitionType::DistinctCappedMZ, PartitionType::PrmRepCapped,

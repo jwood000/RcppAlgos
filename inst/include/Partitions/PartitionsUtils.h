@@ -16,6 +16,6 @@ void CheckPartition(const std::vector<std::string> &compFunVec,
 void SetPartitionDesign(const std::vector<int> &Reps,
                         const std::vector<double> &v,
                         PartDesign &part, ConstraintType &ctype,
-                        int lenV, int &m, bool bIsCount);
+                        int lenV, int &m);
 
 std::string GetPTypeName(PartitionType ptype);

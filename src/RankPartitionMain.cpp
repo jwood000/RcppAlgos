@@ -184,12 +184,16 @@ SEXP RankPartitionMain(SEXP RIdx, SEXP Rv, SEXP RisRep,
                     part, ctype, n, m, compVec, mainFun, mainFun, myType,
                     Rtarget, RcompFun, Rtolerance, Rlow);
 
-    if (part.ptype == PartitionType::CoarseGrained ||
-        part.ptype == PartitionType::NotPartition  ||
-        part.ptype == PartitionType::NoSolution    ||
-        part.ptype == PartitionType::Multiset) {
+    if (part.ptype == PartitionType::NoSolution) {
+        cpp11::stop("There is no solution for the requested case");
+    }
 
-        cpp11::stop("Partition ranking not available for this case.");
+    const auto no_rank_it = std::find(
+        NoRankAlgoPTypeArr.cbegin(), NoRankAlgoPTypeArr.cend(), part.ptype
+    );
+
+    if (no_rank_it != NoRankAlgoPTypeArr.end()) {
+        cpp11::stop("Ranking not available for this case.");
     }
 
     if (part.isComp && !part.isWeak && part.includeZero) {
@@ -210,8 +214,6 @@ SEXP RankPartitionMain(SEXP RIdx, SEXP Rv, SEXP RisRep,
         }
     }
 
-    // See comment in SamplePartitions.cpp
-    if (part.numUnknown) PartitionsCount(myReps, part, n, true);
     const int numResults  = Rf_length(RIdx) / m;
 
     const int cap     = n - static_cast<int>(part.includeZero);

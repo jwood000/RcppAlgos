@@ -207,7 +207,7 @@ SEXP CombClassNew(SEXP RVals, SEXP RboolVec, SEXP freqInfo, SEXP Rparallel,
             ConstraintSetup(vNum, myReps, tarVals, vInt, tarIntVals,
                             funDbl, part, ctype, n, m, compVec, mainFun,
                             funTest, myType, Rtarget, RcompFun,
-                            Rtolerance, R_NilValue, true);
+                            Rtolerance, R_NilValue);
         }
 
         mpz_class computedRowsMpz;
