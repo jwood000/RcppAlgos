@@ -31,15 +31,15 @@ int PartsStdManager(
             return PartsRep(mat, z, width, lastElem, lastCol, nRows);
 
             // ----- PartsDistinct -----
-        case PartitionType::DstctStdAll:
-        case PartitionType::DstctMultiZero:
-        case PartitionType::DstctOneZero:
-        case PartitionType::DstctNoZero:
+        case PartitionType::DistinctStdAll:
+        case PartitionType::DistinctMZ:
+        case PartitionType::DistinctOneZero:
+        case PartitionType::DistinctNoZero:
             return PartsDistinct(mat, z, width, lastElem, lastCol, nRows);
 
             // ----- CompsRep -----
         case PartitionType::CompRepNoZero:
-        case PartitionType::CmpRpZroNotWk:
+        case PartitionType::CompRepZero:
             return CompsRep<1>(mat, z, width, nRows);
 
         case PartitionType::CompRepWeak:
@@ -61,12 +61,12 @@ int PartsStdManager(
             );
 
             // ----- CompsDistinct -----
-        case PartitionType::CmpDstctNoZero:
-        case PartitionType::CmpDstctZNotWk:
+        case PartitionType::CompDistinctNoZero:
+        case PartitionType::CompDistinctZero:
             return CompsDistinct(mat, z, width, nRows, false, zeroBudget);
 
-        case PartitionType::CmpDstctWeak:
-        case PartitionType::CmpDstctMZWeak:
+        case PartitionType::CompDistinctWeak:
+        case PartitionType::CompDistinctMZWeak:
             return CompsDistinct(mat, z, width, nRows, true, zeroBudget);
 
         default:
@@ -75,11 +75,12 @@ int PartsStdManager(
 }
 
 template <typename T>
-int PartsGenManager(T* mat, const std::vector<T> &v, std::vector<int> &z,
+int PartsGenManager(T* mat, const std::vector<T> &v,
+                    const std::vector<int> &Reps, std::vector<int> &z,
                     int width, int lastElem, int lastCol, int nRows,
                     PartitionType ptype, int zeroBudget) {
 
-    // PrmRepPart, PrmDstPrtOneZ, DstctStdAll, DstctOneZero, RepStdAll,
+    // PrmRepPart, PrmDstPrtOneZ, DistinctStdAll, DistinctOneZero, RepStdAll,
     // RepShort and CompRepWeak shouldn't happen. In any mapped case that
     // would trigger PartsGenManager, the zero would be mapped to some
     // non-zero integer.
@@ -101,16 +102,22 @@ int PartsGenManager(T* mat, const std::vector<T> &v, std::vector<int> &z,
             return PartsGenRep(mat, v, z, width, lastElem, lastCol, nRows);
 
             // ----- PartsGenDistinct -----
-        // case PartitionType::DstctStdAll:
-        // case PartitionType::DstctOneZero:
-        case PartitionType::DstctNoZero:
-        case PartitionType::DstctCapped:
-        case PartitionType::DstctCappedMZ:
-        case PartitionType::DstctMultiZero:
+        // case PartitionType::DistinctStdAll:
+        // case PartitionType::DistinctOneZero:
+        case PartitionType::DistinctNoZero:
+        case PartitionType::DistinctCapped:
+        case PartitionType::DistinctCappedMZ:
+        case PartitionType::DistinctMZ:
             return PartsGenDistinct(mat, v, z, width, lastElem, lastCol, nRows);
 
+            // ----- PartsGenMultiset -----
+        case PartitionType::Multiset:
+            return PartsGenMultiset(
+                mat, v, Reps, z, width, lastElem, lastCol, nRows
+            );
+
             // ----- CompsGenRep -----
-        case PartitionType::CmpRpZroNotWk:
+        case PartitionType::CompRepZero:
             return CompsGenRep<1>(mat, v, z, width, nRows);
 
         // case PartitionType::CompRepWeak:
@@ -121,7 +128,7 @@ int PartsGenManager(T* mat, const std::vector<T> &v, std::vector<int> &z,
         case PartitionType::CompRepWeakCap:
             return CompsGenRepCapped<0>(mat, v, z, width, nRows);
 
-        case PartitionType::CmpRpCapZNotWk:
+        case PartitionType::CompRepCapZero:
             return CompsGenRepCapped<1>(mat, v, z, width, nRows);
 
             // ----- PartsGenPerm -----
@@ -145,17 +152,22 @@ int PartsGenManager(T* mat, const std::vector<T> &v, std::vector<int> &z,
                 mat, v, z, width, lastElem, lastCol, nRows
             );
 
+        case PartitionType::PrmMultiset:
+            return PartsGenPermMultiset(
+                mat, v, Reps, z, width, lastElem, lastCol, nRows
+            );
+
             // ----- CompsGenDistinct -----
-        case PartitionType::CmpDstctNoZero:
-        case PartitionType::CmpDstctZNotWk:
-        case PartitionType::CmpDstctCapped:
-        case PartitionType::CmpDstCapMZNotWk:
+        case PartitionType::CompDistinctNoZero:
+        case PartitionType::CompDistinctZero:
+        case PartitionType::CompDistinctCapped:
+        case PartitionType::CompDistinctCapMZ:
             return CompsGenDistinct(mat, v, z, width, nRows, false, zeroBudget);
 
-        case PartitionType::CmpDstctWeak:
-        case PartitionType::CmpDstCapWeak:
-        case PartitionType::CmpDstctMZWeak:
-        case PartitionType::CmpDstCapMZWeak:
+        case PartitionType::CompDistinctWeak:
+        case PartitionType::CompDistinctCapWeak:
+        case PartitionType::CompDistinctMZWeak:
+        case PartitionType::CompDistinctCapMZWeak:
             return CompsGenDistinct(mat, v, z, width, nRows, true, zeroBudget);
 
         default:
@@ -168,7 +180,7 @@ int PartsGenManager(std::vector<T> &partsVec, const std::vector<T> &v,
                     const std::vector<int> &Reps, std::vector<int> &z,
                     int width, int nRows, PartitionType ptype) {
 
-    // LengthOne, RepCapped, DstctCapped, and PrmDstPrtCap should not happen.
+    // LengthOne, RepCapped, DistinctCapped, and PrmDstPrtCap should not happen.
     // In the past, we used a different algorithm for counting these types
     // of partitions that relied on allocating a large array that represented
     // three dimensions. We moved away from this to a more memory-friendly
@@ -181,16 +193,12 @@ int PartsGenManager(std::vector<T> &partsVec, const std::vector<T> &v,
         } case PartitionType::LengthOne: {
             if (nRows) partsVec.push_back(v[z.front()]);
             return 1;
-        } case PartitionType::DstctCapped: {
+        } case PartitionType::DistinctCapped: {
             return PartsGenDistinct(partsVec, v, z, width, nRows, true);
         } case PartitionType::PrmRepCapped : {
             return PartsGenRep(partsVec, v, z, width, nRows, false);
         } case PartitionType::RepCapped: {
             return PartsGenRep(partsVec, v, z, width, nRows, true);
-        } case PartitionType::PrmMultiset: {
-            return PartsGenMultiset(partsVec, v, Reps, z, width, nRows, false);
-        } case PartitionType::Multiset: {
-            return PartsGenMultiset(partsVec, v, Reps, z, width, nRows, true);
         } case PartitionType::PrmDstPrtCap: {
             return PartsGenDistinct(partsVec, v, z, width, nRows, false);
         } default: {
@@ -215,29 +223,29 @@ int PartsStdParallel(RcppParallel::RMatrix<int> &mat, std::vector<int> &z,
             return PartsRep(mat, z, strt, width, lastElem, lastCol, nRows);
 
             // ----- PartsDistinct -----
-        case PartitionType::DstctStdAll:
-        case PartitionType::DstctMultiZero:
-        case PartitionType::DstctOneZero:
-        case PartitionType::DstctNoZero:
+        case PartitionType::DistinctStdAll:
+        case PartitionType::DistinctMZ:
+        case PartitionType::DistinctOneZero:
+        case PartitionType::DistinctNoZero:
             return PartsDistinct(mat, z, strt, width, lastElem, lastCol, nRows);
 
             // ----- CompsRep -----
         case PartitionType::CompRepNoZero:
-        case PartitionType::CmpRpZroNotWk:
+        case PartitionType::CompRepZero:
             return CompsRep<1>(mat, z, strt, width, nRows);
 
         case PartitionType::CompRepWeak:
             return CompsRep<0>(mat, z, strt, width, nRows);
 
             // ----- CompsDistinct -----
-        case PartitionType::CmpDstctNoZero:
-        case PartitionType::CmpDstctZNotWk:
+        case PartitionType::CompDistinctNoZero:
+        case PartitionType::CompDistinctZero:
             return CompsDistinct(
                 mat, z, strt, width, nRows, false, zeroBudget
             );
 
-        case PartitionType::CmpDstctWeak:
-        case PartitionType::CmpDstctMZWeak:
+        case PartitionType::CompDistinctWeak:
+        case PartitionType::CompDistinctMZWeak:
             return CompsDistinct(
                 mat, z, strt, width, nRows, true, zeroBudget
             );
@@ -248,12 +256,12 @@ int PartsStdParallel(RcppParallel::RMatrix<int> &mat, std::vector<int> &z,
 }
 
 template <typename T>
-int PartsGenParallel(RcppParallel::RMatrix<T> &mat,
-                     const std::vector<T> &v, std::vector<int> &z, int strt,
-                     int width, int lastElem, int lastCol, int nRows,
-                     PartitionType ptype, int zeroBudget) {
+int PartsGenParallel(RcppParallel::RMatrix<T> &mat, const std::vector<T> &v,
+                     const std::vector<int> &Reps, std::vector<int> &z,
+                     int strt, int width, int lastElem, int lastCol,
+                     int nRows, PartitionType ptype, int zeroBudget) {
 
-    // DstctStdAll, DstctOneZero, RepStdAll, RepShort and CompRepWeak
+    // DistinctStdAll, DistinctOneZero, RepStdAll, RepShort and CompRepWeak
     // shouldn't happen just as in the non-Parallel case. In any mapped case
     // that would trigger PartsGenManager, the zero would be mapped to some
     // non-zero integer.
@@ -273,19 +281,25 @@ int PartsGenParallel(RcppParallel::RMatrix<T> &mat,
             );
 
             // ----- PartsGenDistinct -----
-        // case PartitionType::DstctStdAll:
-        // case PartitionType::DstctOneZero:
+        // case PartitionType::DistinctStdAll:
+        // case PartitionType::DistinctOneZero:
 
-        case PartitionType::DstctNoZero:
-        case PartitionType::DstctCapped:
-        case PartitionType::DstctCappedMZ:
-        case PartitionType::DstctMultiZero:
+        case PartitionType::DistinctNoZero:
+        case PartitionType::DistinctCapped:
+        case PartitionType::DistinctCappedMZ:
+        case PartitionType::DistinctMZ:
             return PartsGenDistinct(
                 mat, v, z, strt, width, lastElem, lastCol, nRows
             );
 
+            // ----- PartsGenMultiset ----- Coming Soon!
+        // case PartitionType::Multiset:
+        //     return PartsGenMultiset(
+        //         mat, v, Reps, z, strt, width, lastElem, lastCol, nRows
+        //     );
+
             // ----- CompsGenRep -----
-        case PartitionType::CmpRpZroNotWk:
+        case PartitionType::CompRepZero:
             return CompsGenRep<1>(mat, v, z, strt, width, nRows);
 
         // case PartitionType::CompRepWeak:
@@ -296,22 +310,22 @@ int PartsGenParallel(RcppParallel::RMatrix<T> &mat,
         case PartitionType::CompRepWeakCap:
             return CompsGenRepCapped<0>(mat, v, z, strt, width, nRows);
 
-        case PartitionType::CmpRpCapZNotWk:
+        case PartitionType::CompRepCapZero:
             return CompsGenRepCapped<1>(mat, v, z, strt, width, nRows);
 
             // ----- CompsGenDistinct -----
-        case PartitionType::CmpDstctNoZero:
-        case PartitionType::CmpDstctZNotWk:
-        case PartitionType::CmpDstctCapped:
-        case PartitionType::CmpDstCapMZNotWk:
+        case PartitionType::CompDistinctNoZero:
+        case PartitionType::CompDistinctZero:
+        case PartitionType::CompDistinctCapped:
+        case PartitionType::CompDistinctCapMZ:
             return CompsGenDistinct(
                 mat, v, z, strt, width, nRows, false, zeroBudget
             );
 
-        case PartitionType::CmpDstctWeak:
-        case PartitionType::CmpDstCapWeak:
-        case PartitionType::CmpDstctMZWeak:
-        case PartitionType::CmpDstCapMZWeak:
+        case PartitionType::CompDistinctWeak:
+        case PartitionType::CompDistinctCapWeak:
+        case PartitionType::CompDistinctMZWeak:
+        case PartitionType::CompDistinctCapMZWeak:
             return CompsGenDistinct(
                 mat, v, z, strt, width, nRows, true, zeroBudget
             );
@@ -322,11 +336,11 @@ int PartsGenParallel(RcppParallel::RMatrix<T> &mat,
 }
 
 template int PartsGenManager(int*, const std::vector<int>&,
-                             std::vector<int>&, int, int, int,
-                             int, PartitionType, int);
+                             const std::vector<int>&, std::vector<int>&,
+                             int, int, int, int, PartitionType, int);
 template int PartsGenManager(double*, const std::vector<double>&,
-                             std::vector<int>&, int, int, int,
-                             int, PartitionType, int);
+                             const std::vector<int>&, std::vector<int>&,
+                             int, int, int, int, PartitionType, int);
 
 template int PartsGenManager(std::vector<int>&, const std::vector<int>&,
                               const std::vector<int>&, std::vector<int>&,
@@ -337,9 +351,11 @@ template int PartsGenManager(std::vector<double>&, const std::vector<double>&,
 
 template int PartsGenParallel(
     RcppParallel::RMatrix<int>&, const std::vector<int>&,
-    std::vector<int>&, int, int, int, int, int, PartitionType, int
+    const std::vector<int>&, std::vector<int>&, int, int,
+    int, int, int, PartitionType, int
 );
 template int PartsGenParallel(
     RcppParallel::RMatrix<double>&, const std::vector<double>&,
-    std::vector<int>&, int, int, int, int, int, PartitionType, int
+    const std::vector<int>&, std::vector<int>&, int, int,
+    int, int, int, PartitionType, int
 );

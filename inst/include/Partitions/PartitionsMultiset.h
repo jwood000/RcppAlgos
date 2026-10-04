@@ -1,11 +1,22 @@
 #pragma once
 
+#include "RMatrix.h"
 #include <vector>
 
-bool keepGoing(const std::vector<int> &rpsCnt, int lastElem,
-               const std::vector<int> &z, int edge, int boundary);
+template <typename T>
+int PartsGenMultiset(T* mat, const std::vector<T> &v,
+                     const std::vector<int> &Reps, std::vector<int> &z,
+                     std::size_t width, int lastElem,
+                     int lastCol, std::size_t nRows);
 
 template <typename T>
-int PartsGenMultiset(std::vector<T> &partsVec, const std::vector<T> &v,
+int PartsGenMultiset(RcppParallel::RMatrix<T> &mat, const std::vector<T> &v,
                      const std::vector<int> &Reps, std::vector<int> &z,
-                     std::size_t width, std::size_t nRows, bool IsComb);
+                     int strt, std::size_t width, int lastElem,
+                     int lastCol, std::size_t nRows);
+
+template <typename T>
+int PartsGenPermMultiset(T* mat, const std::vector<T> &v,
+                         const std::vector<int> &Reps, std::vector<int> &z,
+                         std::size_t width, int lastElem,
+                         int lastCol, std::size_t nRows);

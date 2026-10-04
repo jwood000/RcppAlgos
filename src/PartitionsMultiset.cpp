@@ -1,58 +1,112 @@
 #include "Partitions/NextPartition.h"
 #include "PopulateUtils.h"
-
-bool keepGoing(const std::vector<int> &rpsCnt, int lastElem,
-               const std::vector<int> &z, int edge, int boundary) {
-
-    if (edge >= 0) {
-        const int myDiff = z[boundary] - z[edge];
-
-        if (myDiff < 2) {
-            return false;
-        } else if (myDiff == 2) {
-            return (rpsCnt[z[edge] + 1] > 1);
-        } else {
-            return (rpsCnt[z[edge] + 1] && rpsCnt[z[boundary] - 1]);
-        }
-    } else {
-        return false;
-    }
-}
+#include "RMatrix.h"
 
 template <typename T>
-int PartsGenMultiset(std::vector<T> &partsVec, const std::vector<T> &v,
+int PartsGenMultiset(T* mat, const std::vector<T> &v,
                      const std::vector<int> &Reps, std::vector<int> &z,
-                     std::size_t width, std::size_t nRows, bool IsComb) {
+                     std::size_t width, int lastElem,
+                     int lastCol, std::size_t nRows) {
 
     int b = 0;
     int p = 0;
     int e = 0;
 
-    const int lastCol  = width - 1;
-    const int lastElem = v.size() - 1;
     std::vector<int> rpsCnt(Reps.cbegin(), Reps.cend());
     PrepareMultisetPart(rpsCnt, z, b, p, e, lastCol, lastElem);
 
-    for (std::size_t count = 0; keepGoing(rpsCnt, lastElem, z, e, b);
-         NextMultisetGenPart(rpsCnt, z, e, b, p, lastCol, lastElem)) {
+    const int lastRow = nRows - 1;
 
-        PopulateVector(v, partsVec, z, count, width, nRows, IsComb);
-        if (count >= nRows) break;
+    for (int count = 0; count < lastRow; ++count,
+        NextMultisetGenPart(rpsCnt, z, e, b, p, lastCol, lastElem)) {
+
+        for (std::size_t k = 0; k < width; ++k) {
+            mat[count + nRows * k] = v[z[k]];
+        }
     }
 
-    std::size_t count = partsVec.size() / width;
-
-    if (count < nRows) {
-        PopulateVector(v, partsVec, z, count, width, nRows, IsComb);
+    for (std::size_t k = 0; k < width; ++k) {
+        mat[lastRow + nRows * k] = v[z[k]];
     }
 
     return 1;
 }
 
-template int PartsGenMultiset(std::vector<int>&, const std::vector<int>&,
+template <typename T>
+int PartsGenMultiset(RcppParallel::RMatrix<T> &mat, const std::vector<T> &v,
+                     const std::vector<int> &Reps, std::vector<int> &z,
+                     int strt, std::size_t width, int lastElem,
+                     int lastCol, std::size_t nRows) {
+
+    int b = 0;
+    int p = 0;
+    int e = 0;
+
+    std::vector<int> rpsCnt(Reps.cbegin(), Reps.cend());
+    PrepareMultisetPart(rpsCnt, z, b, p, e, lastCol, lastElem);
+
+    const int lastRow = nRows - 1;
+
+    for (int count = strt; count < lastRow; ++count,
+        NextMultisetGenPart(rpsCnt, z, e, b, p, lastCol, lastElem)) {
+
+        for (std::size_t k = 0; k < width; ++k) {
+            mat(count, k) = v[z[k]];
+        }
+    }
+
+    for (std::size_t k = 0; k < width; ++k) {
+        mat[lastRow + nRows * k] = v[z[k]];
+    }
+
+    return 1;
+}
+
+template <typename T>
+int PartsGenPermMultiset(T* mat, const std::vector<T> &v,
+                         const std::vector<int> &Reps, std::vector<int> &z,
+                         std::size_t width, int lastElem,
+                         int lastCol, std::size_t nRows) {
+
+    int b = 0;
+    int p = 0;
+    int e = 0;
+
+    std::vector<int> rpsCnt(Reps.cbegin(), Reps.cend());
+    PrepareMultisetPart(rpsCnt, z, b, p, e, lastCol, lastElem);
+
+    for (std::size_t count = 0;;
+         NextMultisetGenPart(rpsCnt, z, e, b, p, lastCol, lastElem)) {
+
+        PopulateMatrix(mat, v, z, count, width, nRows, false);
+        if (count >= nRows) {break;}
+    }
+
+    return 1;
+}
+
+template int PartsGenMultiset(int*, const std::vector<int>&,
                               const std::vector<int>&, std::vector<int>&,
-                              std::size_t, std::size_t, bool);
-template int PartsGenMultiset(std::vector<double>&,
+                              std::size_t, int, int, std::size_t);
+template int PartsGenMultiset(double*,
                               const std::vector<double>&,
                               const std::vector<int>&, std::vector<int>&,
-                               std::size_t, std::size_t, bool);
+                              std::size_t, int, int, std::size_t);
+
+template int PartsGenMultiset(RcppParallel::RMatrix<int>&,
+                              const std::vector<int>&,
+                              const std::vector<int>&, std::vector<int>&,
+                              int, std::size_t, int, int, std::size_t);
+template int PartsGenMultiset(RcppParallel::RMatrix<double>&,
+                              const std::vector<double>&,
+                              const std::vector<int>&, std::vector<int>&,
+                              int, std::size_t, int, int, std::size_t);
+
+template int PartsGenPermMultiset(
+    int*, const std::vector<int>&, const std::vector<int>&,
+    std::vector<int>&, std::size_t, int, int, std::size_t
+);
+template int PartsGenPermMultiset(
+    double*, const std::vector<double>&, const std::vector<int>&,
+    std::vector<int>&, std::size_t, int, int, std::size_t
+);
