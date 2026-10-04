@@ -237,7 +237,7 @@ test_that("numDivisorSieve produces appropriate error messages", {
 
 test_that("partitionsSample produces correct error messages", {
     expect_error(partitionsSample(3.3, 1),
-                 "Partition sampling not available for this case")
+                 "Sampling not available for this case")
 })
 
 test_that("combo/permuteGeneral produces correct error messages with Parallel", {
@@ -323,9 +323,9 @@ test_that("errors with table S3 method", {
     # expect_error(compositionsIter(table(s), 5, n = 10), err_string)
 
     expect_error(partitionsSample(table(s), 5, n = 4),
-                 "Partition sampling not available for this case.")
+                 "Sampling not available for this case.")
     expect_error(partitionsSample(table(s), 5, n = 4, seed = 42),
-                 "Partition sampling not available for this case.")
+                 "Sampling not available for this case.")
 })
 
 test_that("primeFactorize produces appropriate error messages", {
@@ -415,7 +415,7 @@ test_that("{combo|permute|partitions|compositions}Rank produces appropriate erro
                  "m must be less than or equal to the length of v")
 
     expect_error(partitionsRank(1:3, v = 5, freqs = 1:5, target = 6),
-                 "Partition ranking not available for this case.")
+                 "Ranking not available for this case.")
     expect_error(partitionsRank(letters, v = 100),
                  "Inputs must be of class numeric or integer")
     expect_error(partitionsRank(letters, v = 100),

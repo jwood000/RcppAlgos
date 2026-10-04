@@ -384,7 +384,7 @@ test_that("permuteGeneral produces correct results for special subset sum", {
     expect_true(testPermFun(seq(-1e10 - 300, -1e10, 100), 7, myRep = TRUE))
 
     testPermMultiset <- function(v, m, frqs, verbose = FALSE,
-                                 f = "sum", isExact = TRUE, my_p = F) {
+                                 f = "sum", isExact = TRUE, my_p = FALSE) {
         v <- sort(v)
         allSums <- permuteGeneral(v, m, freqs = frqs, constraintFun = f)
         tbl <- table(allSums[, m + 1])
@@ -437,7 +437,7 @@ test_that("permuteGeneral produces correct results for special subset sum", {
     for (i in 2:4) {
         for (m in 1:(i + 5)) {
             expect_true(testPermMultiset(0:5, m, c(i, rep(1, 5))))
-            expect_true(testPermMultiset(7L + 3L * 0:5, m, c(i, rep(1, 5)), my_p = F))
+            expect_true(testPermMultiset(7L + 3L * 0:5, m, c(i, rep(1, 5))))
         }
     }
 
