@@ -82,6 +82,11 @@ S3method(compositionsIter, table)
 S3method(compositionsCount, default)
 S3method(compositionsCount, table)
 
+S3method(partitionsMultisetCount, default)
+S3method(partitionsMultisetCount, table)
+S3method(compositionsMultisetCount, default)
+S3method(compositionsMultisetCount, table)
+
 export(
   comboGrid,
   expandGrid,
