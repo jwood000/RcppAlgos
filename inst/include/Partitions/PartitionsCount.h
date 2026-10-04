@@ -3,8 +3,7 @@
 #include "Partitions/PartitionsTypes.h"
 #include <memory>
 
-int PartitionsCount(const std::vector<int> &Reps,
-                    PartDesign &part, int lenV, bool bIsCount);
+int PartitionsCount(const std::vector<int> &Reps, PartDesign &part, int lenV);
 
 class CountClass {
 protected:
