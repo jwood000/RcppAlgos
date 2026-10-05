@@ -962,7 +962,9 @@ void SetPartitionDesign(
             ctype = ConstraintType::PartMapping;
             GetTarget(v, Reps, part, m, lenV);
 
-            if (part.isMult && part.isComp) {
+            if (!part.solnExist) {
+                part.ptype = PartitionType::NoSolution;
+            } else if (part.isMult && part.isComp) {
                 if (part.isWeak) {
                     part.ptype = PartitionType::CompMultisetWeak;
                 } else if (vHasZero) {
@@ -982,10 +984,8 @@ void SetPartitionDesign(
                 part.ptype = PartitionType::CompDistinctCapped;
             } else if (part.isDist) {
                 part.ptype = PartitionType::DistinctCapped;
-            } else if (part.solnExist) {
-                part.ptype = PartitionType::NotMapped;
             } else {
-                part.ptype = PartitionType::NoSolution;
+                part.ptype = PartitionType::NotMapped;
             }
 
             if (part.solnExist) {
@@ -1008,7 +1008,13 @@ void SetPartitionDesign(
             part.startZ.cbegin(), part.startZ.cend(), 0
         );
 
-        if (part.isMult && part.allOne && part.maxZeros == 1) {
+        const bool convertMultisetToDistinct =
+            part.maxZeros == 1 &&
+            part.solnExist     &&
+            part.isMult        &&
+            part.allOne;
+
+        if (convertMultisetToDistinct) {
             part.isDist = true;
             part.isMult = false;
             part.allOne = false;
@@ -1017,7 +1023,7 @@ void SetPartitionDesign(
         }
     }
 
-    if (part.width == 1) {
+    if (part.solnExist && part.width == 1) {
         // Note: LengthOne may be skipped here since the width begins > 1
         // and is only identified as 1 after additional validation.
         part.ptype = PartitionType::LengthOne;
