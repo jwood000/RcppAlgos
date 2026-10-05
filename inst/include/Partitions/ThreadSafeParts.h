@@ -11,8 +11,8 @@ void StandardPartitions(
 
 template <typename T>
 void GeneralPartitions(
-    T* mat, const std::vector<T> &v, std::vector<int> &z,
-    const PartDesign &part, double lower, mpz_class &lowerMpz,
-    int nCols, int nRows, int nThreads, int lastCol, int lastElem,
-    int strtLen, int cap, bool IsComb
+    T* mat, const std::vector<T> &v, const std::vector<int> &Reps,
+    std::vector<int> &z, const PartDesign &part, double lower,
+    mpz_class &lowerMpz, int nCols, int nRows, int nThreads,
+    int lastCol, int lastElem, int strtLen, int cap, bool IsComb
 );

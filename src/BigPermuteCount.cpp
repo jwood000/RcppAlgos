@@ -22,28 +22,19 @@
 //
 // PRECONDITIONS:
 // -------------
-// • x must be non-empty.
-// • first_idx must satisfy: 0 <= first_idx < x.size().
-// • The range [first_idx, x.size()) must be sorted in non-decreasing order.
+// • x must be non-empty and sorted
 //
 // These invariants are guaranteed by all callers (e.g. NumPermsWithRep,
 // partition/composition generators).
 //
-// An empty vector or invalid first_idx indicates an internal logic error,
-// not a recoverable run time condition.
-//
-static std::vector<int> rleCpp(const std::vector<int> &x, int first_idx) {
-
-    if (first_idx < 0 || static_cast<std::size_t>(first_idx) >= x.size()) {
-        cpp11::stop("Internal error: rleCpp first_idx out of range");
-    }
+static std::vector<int> rleCpp(const std::vector<int> &x) {
 
     std::vector<int> lengths;
-    int prev = x[first_idx];
+    int prev = x.front();
     std::size_t i = 0;
     lengths.push_back(1);
 
-    for(auto it = x.cbegin() + first_idx + 1; it != x.cend(); ++it) {
+    for(auto it = x.cbegin() + 1; it != x.cend(); ++it) {
         if (prev == *it) {
             ++lengths[i];
         } else {
@@ -56,28 +47,18 @@ static std::vector<int> rleCpp(const std::vector<int> &x, int first_idx) {
     return lengths;
 }
 
-void NumPermsWithRepGmp(
-    mpz_class &result, const std::vector<int> &v, bool includeZero
-) {
+void NumPermsWithRepGmp(mpz_class &result, const std::vector<int> &v) {
 
     result = 1;
+    if (v.empty()) return;
 
-    int first_idx = includeZero ? 0 : std::distance(
-        v.cbegin(),
-        std::find_if(v.cbegin(), v.cend(), [](int i) {return i != 0;})
-    );
-
-    // If all entries are zero or v is empty. This shouldn't happen,
-    // but here for safety.
-    if (first_idx == static_cast<int>(v.size())) return;
-
-    std::vector<int> myLens = rleCpp(v, first_idx);
+    std::vector<int> myLens = rleCpp(v);
     std::sort(myLens.begin(), myLens.end(), std::greater<int>());
 
     const int myMax = myLens[0];
     const int numUni = myLens.size();
 
-    for (int i = v.size() - first_idx; i > myMax; --i) {
+    for (int i = v.size(); i > myMax; --i) {
         result *= i;
     }
 
@@ -119,7 +100,7 @@ void MultisetPermRowNumGmp(mpz_class &result, int n, int m,
             }
         }
 
-        NumPermsWithRepGmp(result, freqs, true);
+        NumPermsWithRepGmp(result, freqs);
     } else {
         const int n1 = n - 1;
         int maxFreq = *std::max_element(myReps.cbegin(), myReps.cend());

@@ -536,9 +536,9 @@ void NextRepCompCapped(std::vector<int> &rpsCnt,
     NextCompositionRep<0>(z, lastCol, cap);
 }
 
-void NextRepCompNotWkCap(std::vector<int> &rpsCnt,
-                         std::vector<int> &z, int &e, int &b, int &cap,
-                         int &tarDiff, int lastCol, int lastElem) {
+void NextRepCompCapZero(std::vector<int> &rpsCnt,
+                        std::vector<int> &z, int &e, int &b, int &cap,
+                        int &tarDiff, int lastCol, int lastElem) {
     NextCompositionRep<1>(z, lastCol, cap);
 }
 
@@ -645,10 +645,10 @@ nextPartsPtr GetNextPartsPtr(PartitionType ptype, ConstraintType ctype) {
     if (ctype == ConstraintType::PartStandard) {
         switch (ptype) {
             case PartitionType::LengthOne:
-            case PartitionType::DstctStdAll:
-            case PartitionType::DstctMultiZero:
-            case PartitionType::DstctOneZero:
-            case PartitionType::DstctNoZero:
+            case PartitionType::DistinctStdAll:
+            case PartitionType::DistinctMZ:
+            case PartitionType::DistinctOneZero:
+            case PartitionType::DistinctNoZero:
                 return(nextPartsPtr(NextDistinct));
 
             case PartitionType::RepStdAll:
@@ -657,22 +657,22 @@ nextPartsPtr GetNextPartsPtr(PartitionType ptype, ConstraintType ctype) {
                 return(nextPartsPtr(NextRep));
 
             case PartitionType::CompRepNoZero:
-            case PartitionType::CmpRpZroNotWk:
+            case PartitionType::CompRepZero:
                 return(nextPartsPtr(NextRepCompOne));
 
             case PartitionType::CompRepWeak:
                 return(nextPartsPtr(NextRepCompZero));
 
-            case PartitionType::CmpDstctWeak:
-            case PartitionType::CmpDstCapWeak:
-            case PartitionType::CmpDstctMZWeak:
-            case PartitionType::CmpDstctNoZero:
-            case PartitionType::CmpDstctCapped:
-            case PartitionType::CmpDstCapMZWeak:
+            case PartitionType::CompDistinctWeak:
+            case PartitionType::CompDistinctCapWeak:
+            case PartitionType::CompDistinctMZWeak:
+            case PartitionType::CompDistinctNoZero:
+            case PartitionType::CompDistinctCapped:
+            case PartitionType::CompDistinctCapMZWeak:
                 return(nextPartsPtr(NextDistinctComp));
 
-            case PartitionType::CmpDstctZNotWk:
-            case PartitionType::CmpDstCapMZNotWk:
+            case PartitionType::CompDistinctZero:
+            case PartitionType::CompDistinctCapMZ:
                 return(nextPartsPtr(NextDistMZNotWeakComp));
 
             case PartitionType::NoSolution:
@@ -687,10 +687,10 @@ nextPartsPtr GetNextPartsPtr(PartitionType ptype, ConstraintType ctype) {
     } else {
         switch (ptype) {
             case PartitionType::LengthOne:
-            case PartitionType::DstctMultiZero:
-            case PartitionType::DstctNoZero:
-            case PartitionType::DstctCapped:
-            case PartitionType::DstctCappedMZ:
+            case PartitionType::DistinctMZ:
+            case PartitionType::DistinctNoZero:
+            case PartitionType::DistinctCapped:
+            case PartitionType::DistinctCappedMZ:
                 return(nextPartsPtr(NextDistinctGen));
 
             case PartitionType::RepNoZero:
@@ -707,22 +707,22 @@ nextPartsPtr GetNextPartsPtr(PartitionType ptype, ConstraintType ctype) {
             case PartitionType::CompRepWeakCap:
                 return(nextPartsPtr(NextRepCompCapped));
 
-            case PartitionType::CmpRpCapZNotWk:
-                return(nextPartsPtr(NextRepCompNotWkCap));
+            case PartitionType::CompRepCapZero:
+                return(nextPartsPtr(NextRepCompCapZero));
 
-            case PartitionType::CmpRpZroNotWk:
+            case PartitionType::CompRepZero:
                 return(nextPartsPtr(NextRepCompOne));
 
-            case PartitionType::CmpDstctWeak:
-            case PartitionType::CmpDstCapWeak:
-            case PartitionType::CmpDstctMZWeak:
-            case PartitionType::CmpDstctNoZero:
-            case PartitionType::CmpDstctCapped:
-            case PartitionType::CmpDstCapMZWeak:
+            case PartitionType::CompDistinctWeak:
+            case PartitionType::CompDistinctCapWeak:
+            case PartitionType::CompDistinctMZWeak:
+            case PartitionType::CompDistinctNoZero:
+            case PartitionType::CompDistinctCapped:
+            case PartitionType::CompDistinctCapMZWeak:
                 return(nextPartsPtr(NextDistinctComp));
 
-            case PartitionType::CmpDstctZNotWk:
-            case PartitionType::CmpDstCapMZNotWk:
+            case PartitionType::CompDistinctZero:
+            case PartitionType::CompDistinctCapMZ:
                 return(nextPartsPtr(NextDistMZNotWeakComp));
 
             case PartitionType::NoSolution:

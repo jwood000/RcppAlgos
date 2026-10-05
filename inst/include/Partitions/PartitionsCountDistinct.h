@@ -21,7 +21,7 @@ double CountPartsDistinct(
     int strtLen = 0
 );
 
-double CountPartsDistinctMultiZero(
+double CountPartsDistinctMZ(
     int n, int m, const std::vector<int> &allowed, int strtLen
 );
 
@@ -41,7 +41,7 @@ double CountCompsDistinctLen(
     int n, int m, const std::vector<int> &allowed = std::vector<int>(), int strtLen = 0
 );
 
-double CountCompsDistinctMultiZero(
+double CountCompsDistinctMZ(
     int n, int m, const std::vector<int> &allowed, int strtLen
 );
 

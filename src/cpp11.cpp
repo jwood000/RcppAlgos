@@ -54,6 +54,13 @@ extern "C" SEXP _RcppAlgos_ExpandGridCountCpp(SEXP RList) {
     return cpp11::as_sexp(ExpandGridCountCpp(cpp11::as_cpp<cpp11::decay_t<cpp11::list>>(RList)));
   END_CPP11
 }
+// CombinatoricsCount.cpp
+SEXP PartitionsMultisetCount(SEXP Rtarget, SEXP Rv, SEXP Rm, SEXP RFreqs, SEXP RIsComb, SEXP RcompFun, SEXP Rlow, SEXP Rtolerance, SEXP RIsComposition, SEXP RIsWeak, SEXP RCheckGmp);
+extern "C" SEXP _RcppAlgos_PartitionsMultisetCount(SEXP Rtarget, SEXP Rv, SEXP Rm, SEXP RFreqs, SEXP RIsComb, SEXP RcompFun, SEXP Rlow, SEXP Rtolerance, SEXP RIsComposition, SEXP RIsWeak, SEXP RCheckGmp) {
+  BEGIN_CPP11
+    return cpp11::as_sexp(PartitionsMultisetCount(cpp11::as_cpp<cpp11::decay_t<SEXP>>(Rtarget), cpp11::as_cpp<cpp11::decay_t<SEXP>>(Rv), cpp11::as_cpp<cpp11::decay_t<SEXP>>(Rm), cpp11::as_cpp<cpp11::decay_t<SEXP>>(RFreqs), cpp11::as_cpp<cpp11::decay_t<SEXP>>(RIsComb), cpp11::as_cpp<cpp11::decay_t<SEXP>>(RcompFun), cpp11::as_cpp<cpp11::decay_t<SEXP>>(Rlow), cpp11::as_cpp<cpp11::decay_t<SEXP>>(Rtolerance), cpp11::as_cpp<cpp11::decay_t<SEXP>>(RIsComposition), cpp11::as_cpp<cpp11::decay_t<SEXP>>(RIsWeak), cpp11::as_cpp<cpp11::decay_t<SEXP>>(RCheckGmp)));
+  END_CPP11
+}
 // CombinatoricsMain.cpp
 SEXP CombinatoricsStndrd(SEXP Rv, SEXP Rm, SEXP RisRep, SEXP RFreqs, SEXP Rlow, SEXP Rhigh, SEXP Rparallel, SEXP RNumThreads, SEXP RmaxThreads, SEXP RIsComb);
 extern "C" SEXP _RcppAlgos_CombinatoricsStndrd(SEXP Rv, SEXP Rm, SEXP RisRep, SEXP RFreqs, SEXP Rlow, SEXP Rhigh, SEXP Rparallel, SEXP RNumThreads, SEXP RmaxThreads, SEXP RIsComb) {
@@ -281,45 +288,46 @@ extern "C" SEXP _RcppAlgos_linked_version() {
 
 extern "C" {
 static const R_CallMethodDef CallEntries[] = {
-    {"_RcppAlgos_BackGlue",            (DL_FUNC) &_RcppAlgos_BackGlue,             1},
-    {"_RcppAlgos_CartClassNew",        (DL_FUNC) &_RcppAlgos_CartClassNew,         4},
-    {"_RcppAlgos_CheckConstrndCpp",    (DL_FUNC) &_RcppAlgos_CheckConstrndCpp,     3},
-    {"_RcppAlgos_CheckReturn",         (DL_FUNC) &_RcppAlgos_CheckReturn,          6},
-    {"_RcppAlgos_CombClassNew",        (DL_FUNC) &_RcppAlgos_CombClassNew,        14},
-    {"_RcppAlgos_CombinatoricsApply",  (DL_FUNC) &_RcppAlgos_CombinatoricsApply,  10},
-    {"_RcppAlgos_CombinatoricsCnstrt", (DL_FUNC) &_RcppAlgos_CombinatoricsCnstrt, 17},
-    {"_RcppAlgos_CombinatoricsCount",  (DL_FUNC) &_RcppAlgos_CombinatoricsCount,   5},
-    {"_RcppAlgos_CombinatoricsStndrd", (DL_FUNC) &_RcppAlgos_CombinatoricsStndrd, 10},
-    {"_RcppAlgos_ComboGridCpp",        (DL_FUNC) &_RcppAlgos_ComboGridCpp,         3},
-    {"_RcppAlgos_ComboGroupsCountCpp", (DL_FUNC) &_RcppAlgos_ComboGroupsCountCpp,  3},
-    {"_RcppAlgos_ComboGroupsCpp",      (DL_FUNC) &_RcppAlgos_ComboGroupsCpp,      16},
-    {"_RcppAlgos_CurrIterGlue",        (DL_FUNC) &_RcppAlgos_CurrIterGlue,         1},
-    {"_RcppAlgos_DivNumSieveCpp",      (DL_FUNC) &_RcppAlgos_DivNumSieveCpp,       6},
-    {"_RcppAlgos_ExpandGridCountCpp",  (DL_FUNC) &_RcppAlgos_ExpandGridCountCpp,   1},
-    {"_RcppAlgos_ExpandGridCpp",       (DL_FUNC) &_RcppAlgos_ExpandGridCpp,       13},
-    {"_RcppAlgos_FrontGlue",           (DL_FUNC) &_RcppAlgos_FrontGlue,            1},
-    {"_RcppAlgos_GetClassVals",        (DL_FUNC) &_RcppAlgos_GetClassVals,        14},
-    {"_RcppAlgos_MotleyContainer",     (DL_FUNC) &_RcppAlgos_MotleyContainer,      6},
-    {"_RcppAlgos_NextGatherGlue",      (DL_FUNC) &_RcppAlgos_NextGatherGlue,       1},
-    {"_RcppAlgos_NextIterGlue",        (DL_FUNC) &_RcppAlgos_NextIterGlue,         1},
-    {"_RcppAlgos_NextNumIterGlue",     (DL_FUNC) &_RcppAlgos_NextNumIterGlue,      2},
-    {"_RcppAlgos_PartitionsCount",     (DL_FUNC) &_RcppAlgos_PartitionsCount,     13},
-    {"_RcppAlgos_PollardRhoContainer", (DL_FUNC) &_RcppAlgos_PollardRhoContainer,  6},
-    {"_RcppAlgos_PrevGatherGlue",      (DL_FUNC) &_RcppAlgos_PrevGatherGlue,       1},
-    {"_RcppAlgos_PrevIterGlue",        (DL_FUNC) &_RcppAlgos_PrevIterGlue,         1},
-    {"_RcppAlgos_PrevNumIterGlue",     (DL_FUNC) &_RcppAlgos_PrevNumIterGlue,      2},
-    {"_RcppAlgos_PrimeCountCpp",       (DL_FUNC) &_RcppAlgos_PrimeCountCpp,        3},
-    {"_RcppAlgos_PrimeSieveCpp",       (DL_FUNC) &_RcppAlgos_PrimeSieveCpp,        5},
-    {"_RcppAlgos_RandomAccessGlue",    (DL_FUNC) &_RcppAlgos_RandomAccessGlue,     2},
-    {"_RcppAlgos_RankCombPerm",        (DL_FUNC) &_RcppAlgos_RankCombPerm,         8},
-    {"_RcppAlgos_RankPartitionMain",   (DL_FUNC) &_RcppAlgos_RankPartitionMain,   12},
-    {"_RcppAlgos_SampleCombPerm",      (DL_FUNC) &_RcppAlgos_SampleCombPerm,      16},
-    {"_RcppAlgos_SamplePartitions",    (DL_FUNC) &_RcppAlgos_SamplePartitions,    16},
-    {"_RcppAlgos_SourceVectorGlue",    (DL_FUNC) &_RcppAlgos_SourceVectorGlue,     1},
-    {"_RcppAlgos_StartOverGlue",       (DL_FUNC) &_RcppAlgos_StartOverGlue,        1},
-    {"_RcppAlgos_SummaryGlue",         (DL_FUNC) &_RcppAlgos_SummaryGlue,          1},
-    {"_RcppAlgos_cpp11GetNumThreads",  (DL_FUNC) &_RcppAlgos_cpp11GetNumThreads,   0},
-    {"_RcppAlgos_linked_version",      (DL_FUNC) &_RcppAlgos_linked_version,       0},
+    {"_RcppAlgos_BackGlue",                (DL_FUNC) &_RcppAlgos_BackGlue,                 1},
+    {"_RcppAlgos_CartClassNew",            (DL_FUNC) &_RcppAlgos_CartClassNew,             4},
+    {"_RcppAlgos_CheckConstrndCpp",        (DL_FUNC) &_RcppAlgos_CheckConstrndCpp,         3},
+    {"_RcppAlgos_CheckReturn",             (DL_FUNC) &_RcppAlgos_CheckReturn,              6},
+    {"_RcppAlgos_CombClassNew",            (DL_FUNC) &_RcppAlgos_CombClassNew,            14},
+    {"_RcppAlgos_CombinatoricsApply",      (DL_FUNC) &_RcppAlgos_CombinatoricsApply,      10},
+    {"_RcppAlgos_CombinatoricsCnstrt",     (DL_FUNC) &_RcppAlgos_CombinatoricsCnstrt,     17},
+    {"_RcppAlgos_CombinatoricsCount",      (DL_FUNC) &_RcppAlgos_CombinatoricsCount,       5},
+    {"_RcppAlgos_CombinatoricsStndrd",     (DL_FUNC) &_RcppAlgos_CombinatoricsStndrd,     10},
+    {"_RcppAlgos_ComboGridCpp",            (DL_FUNC) &_RcppAlgos_ComboGridCpp,             3},
+    {"_RcppAlgos_ComboGroupsCountCpp",     (DL_FUNC) &_RcppAlgos_ComboGroupsCountCpp,      3},
+    {"_RcppAlgos_ComboGroupsCpp",          (DL_FUNC) &_RcppAlgos_ComboGroupsCpp,          16},
+    {"_RcppAlgos_CurrIterGlue",            (DL_FUNC) &_RcppAlgos_CurrIterGlue,             1},
+    {"_RcppAlgos_DivNumSieveCpp",          (DL_FUNC) &_RcppAlgos_DivNumSieveCpp,           6},
+    {"_RcppAlgos_ExpandGridCountCpp",      (DL_FUNC) &_RcppAlgos_ExpandGridCountCpp,       1},
+    {"_RcppAlgos_ExpandGridCpp",           (DL_FUNC) &_RcppAlgos_ExpandGridCpp,           13},
+    {"_RcppAlgos_FrontGlue",               (DL_FUNC) &_RcppAlgos_FrontGlue,                1},
+    {"_RcppAlgos_GetClassVals",            (DL_FUNC) &_RcppAlgos_GetClassVals,            14},
+    {"_RcppAlgos_MotleyContainer",         (DL_FUNC) &_RcppAlgos_MotleyContainer,          6},
+    {"_RcppAlgos_NextGatherGlue",          (DL_FUNC) &_RcppAlgos_NextGatherGlue,           1},
+    {"_RcppAlgos_NextIterGlue",            (DL_FUNC) &_RcppAlgos_NextIterGlue,             1},
+    {"_RcppAlgos_NextNumIterGlue",         (DL_FUNC) &_RcppAlgos_NextNumIterGlue,          2},
+    {"_RcppAlgos_PartitionsCount",         (DL_FUNC) &_RcppAlgos_PartitionsCount,         13},
+    {"_RcppAlgos_PartitionsMultisetCount", (DL_FUNC) &_RcppAlgos_PartitionsMultisetCount, 11},
+    {"_RcppAlgos_PollardRhoContainer",     (DL_FUNC) &_RcppAlgos_PollardRhoContainer,      6},
+    {"_RcppAlgos_PrevGatherGlue",          (DL_FUNC) &_RcppAlgos_PrevGatherGlue,           1},
+    {"_RcppAlgos_PrevIterGlue",            (DL_FUNC) &_RcppAlgos_PrevIterGlue,             1},
+    {"_RcppAlgos_PrevNumIterGlue",         (DL_FUNC) &_RcppAlgos_PrevNumIterGlue,          2},
+    {"_RcppAlgos_PrimeCountCpp",           (DL_FUNC) &_RcppAlgos_PrimeCountCpp,            3},
+    {"_RcppAlgos_PrimeSieveCpp",           (DL_FUNC) &_RcppAlgos_PrimeSieveCpp,            5},
+    {"_RcppAlgos_RandomAccessGlue",        (DL_FUNC) &_RcppAlgos_RandomAccessGlue,         2},
+    {"_RcppAlgos_RankCombPerm",            (DL_FUNC) &_RcppAlgos_RankCombPerm,             8},
+    {"_RcppAlgos_RankPartitionMain",       (DL_FUNC) &_RcppAlgos_RankPartitionMain,       12},
+    {"_RcppAlgos_SampleCombPerm",          (DL_FUNC) &_RcppAlgos_SampleCombPerm,          16},
+    {"_RcppAlgos_SamplePartitions",        (DL_FUNC) &_RcppAlgos_SamplePartitions,        16},
+    {"_RcppAlgos_SourceVectorGlue",        (DL_FUNC) &_RcppAlgos_SourceVectorGlue,         1},
+    {"_RcppAlgos_StartOverGlue",           (DL_FUNC) &_RcppAlgos_StartOverGlue,            1},
+    {"_RcppAlgos_SummaryGlue",             (DL_FUNC) &_RcppAlgos_SummaryGlue,              1},
+    {"_RcppAlgos_cpp11GetNumThreads",      (DL_FUNC) &_RcppAlgos_cpp11GetNumThreads,       0},
+    {"_RcppAlgos_linked_version",          (DL_FUNC) &_RcppAlgos_linked_version,           0},
     {NULL, NULL, 0}
 };
 }

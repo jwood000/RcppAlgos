@@ -153,14 +153,14 @@ test_that("parttionsSample and compositionsSample produces correct results", {
 
     ##### *********** Torture Test < 2^.Machine$double.digits *********** #####
     ## Partitions
-    ## "DstctCapped"
+    ## "DistinctCapped"
     bench = partitionsGeneral(15, 5, target = 40)
     expect_identical(partitionsSample(15, 5, target = 40, nThreads = 2,
                                       sampleVec = seq_len(nrow(bench))), bench)
     expect_identical(partitionsRank(bench, v = 15, target = 40, nThreads = 2),
                      seq_len(nrow(bench)))
 
-    ## "DstctCappedMZ"
+    ## "DistinctCappedMZ"
     bench = partitionsGeneral(0:15, 5, freqs = c(3, rep(1, 15)), target = 40)
     expect_identical(partitionsSample(0:15, 5, target = 40, nThreads = 2,
                                       freqs = c(3, rep(1, 15)),
@@ -169,14 +169,14 @@ test_that("parttionsSample and compositionsSample produces correct results", {
                                     freqs = c(3, rep(1, 15))),
                      seq_len(nrow(bench)))
 
-    ## "DstctOneZero"
+    ## "DistinctOneZero"
     bench = partitionsGeneral(0:70, 8)
     expect_identical(partitionsSample(0:70, 8, nThreads = 2,
                                       sampleVec = seq_len(nrow(bench))), bench)
     expect_identical(partitionsRank(bench, v = 0:70, nThreads = 2),
                      seq_len(nrow(bench)))
 
-    ## "DstctMultiZero"
+    ## "DistinctMZ"
     bench = partitionsGeneral(0:60, 8, freqs = c(4, rep(1, 60)))
     expect_identical(partitionsSample(0:60, 8, freqs = c(4, rep(1, 60)),
                                       nThreads = 2,
@@ -185,7 +185,7 @@ test_that("parttionsSample and compositionsSample produces correct results", {
                                     freqs = c(4, rep(1, 60)), nThreads = 2),
                      seq_len(nrow(bench)))
 
-    ## "DstctStdAll"
+    ## "DistinctStdAll"
     bench = partitionsGeneral(0:50, freqs = c(40, rep(1, 50)))
     expect_identical(partitionsSample(0:50, freqs = c(40, rep(1, 50)),
                                       nThreads = 2,
@@ -219,7 +219,7 @@ test_that("parttionsSample and compositionsSample produces correct results", {
                                       nThreads = 2),
                      seq_len(nrow(bench)))
 
-    ## "CmpRpZroNotWk"
+    ## "CompRepZero"
     bench = compositionsGeneral(0:20, 7, TRUE)
     expect_identical(compositionsSample(0:20, 7, TRUE, nThreads = 2,
                                         sampleVec = seq_len(nrow(bench))), bench)
@@ -235,21 +235,21 @@ test_that("parttionsSample and compositionsSample produces correct results", {
                                       nThreads = 2, weak = TRUE),
                      seq_len(nrow(bench)))
 
-    ## "CmpDstctNoZero"
+    ## "CompDistinctNoZero"
     bench = compositionsGeneral(28, 5)
     expect_identical(compositionsSample(28, 5, nThreads = 2,
                                         sampleVec = seq_len(nrow(bench))), bench)
     expect_identical(compositionsRank(bench, v = 28, nThreads = 2),
                      seq_len(nrow(bench)))
 
-    ## "CmpDstctCapped"
+    ## "CompDistinctCapped"
     bench = compositionsGeneral(15, 5, target = 40)
     expect_identical(compositionsSample(15, 5, target = 40, nThreads = 2,
                                       sampleVec = seq_len(nrow(bench))), bench)
     expect_identical(compositionsRank(bench, v = 15, target = 40, nThreads = 2),
                      seq_len(nrow(bench)))
 
-    ## "CmpDstctWeak"
+    ## "CompDistinctWeak"
     bench = compositionsGeneral(0:25, 5, weak = TRUE)
     expect_identical(compositionsSample(0:25, 5, weak = TRUE, nThreads = 2,
                                         sampleVec = seq_len(nrow(bench))), bench)
@@ -257,7 +257,7 @@ test_that("parttionsSample and compositionsSample produces correct results", {
                                       weak = TRUE, nThreads = 2),
                      seq_len(nrow(bench)))
 
-    ## "CmpDstCapWeak"
+    ## "CompDistinctCapWeak"
     bench = compositionsGeneral(0:13, 5, weak = TRUE, target = 30)
     expect_identical(compositionsSample(0:13, 5, weak = TRUE,
                                         target = 30, nThreads = 2,
@@ -266,7 +266,7 @@ test_that("parttionsSample and compositionsSample produces correct results", {
                                       target = 30, nThreads = 2),
                      seq_len(nrow(bench)))
 
-    ## "CmpDstctZNotWk"
+    ## "CompDistinctZero"
     bench = compositionsGeneral(0:25, 5, freqs = c(3, rep(1, 25)))
     expect_identical(compositionsSample(0:25, 5, freqs = c(3, rep(1, 25)),
                                         nThreads = 2,
@@ -275,7 +275,7 @@ test_that("parttionsSample and compositionsSample produces correct results", {
                                       freqs = c(3, rep(1, 25)), nThreads = 2),
                      seq_len(nrow(bench)))
 
-    ## "CmpDstCapMZNotWk"
+    ## "CompDistinctCapMZ"
     bench = compositionsGeneral(0:15, 5, freqs = c(3, rep(1, 15)), target = 40)
     expect_identical(compositionsSample(0:15, 5, target = 40, nThreads = 2,
                                         freqs = c(3, rep(1, 15)),
@@ -285,14 +285,14 @@ test_that("parttionsSample and compositionsSample produces correct results", {
                                       freqs = c(3, rep(1, 15))),
                      seq_len(nrow(bench)))
 
-    ## "CmpDstctZNotWk"
+    ## "CompDistinctZero"
     bench = compositionsGeneral(0:30, 5)
     expect_identical(compositionsSample(0:30, 5, nThreads = 2,
                                         sampleVec = seq_len(nrow(bench))), bench)
     expect_identical(compositionsRank(bench, v = 0:30,nThreads = 2),
                      seq_len(nrow(bench)))
 
-    ## "CmpDstctMZWeak"
+    ## "CompDistinctMZWeak"
     bench = compositionsGeneral(0:25, 5, weak = TRUE, freqs = c(3, rep(1, 25)))
     expect_identical(compositionsSample(0:25, 5, freqs = c(3, rep(1, 25)),
                                         nThreads = 2, weak = TRUE,
@@ -301,7 +301,7 @@ test_that("parttionsSample and compositionsSample produces correct results", {
                                       freqs = c(3, rep(1, 25)), nThreads = 2),
                      seq_len(nrow(bench)))
 
-    ## "CmpDstCapMZWeak"
+    ## "CompDistinctCapMZWeak"
     bench = compositionsGeneral(0:15, 5, freqs = c(3, rep(1, 15)),
                                 weak = TRUE, target = 40)
     expect_identical(compositionsSample(0:15, 5, target = 40, nThreads = 2,
@@ -330,7 +330,7 @@ test_that("parttionsSample and compositionsSample produces correct results", {
                                       repetition = TRUE, weak = TRUE),
                      seq_len(nrow(bench)))
 
-    ## "CmpRpCapZNotWk"
+    ## "CompRepCapZero"
     bench = compositionsGeneral(0:12, 6, TRUE, target = 25)
     expect_identical(compositionsSample(0:12, 6, TRUE, target = 25,
                                         sampleVec = seq_len(nrow(bench)),
@@ -467,7 +467,7 @@ test_that("parttionsSample and compositionsSample produces correct results", {
                                   nThreads = 2, target = 200),
                  rownames(mySamp))
 
-    ## "CmpRpCapZNotWk"
+    ## "CompRepCapZero"
     mySamp = compositionsSample(0:20, 50, TRUE, target = 200,
                                 n = 4, namedSample = TRUE,
                                 nThreads = 2)

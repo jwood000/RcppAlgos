@@ -23,7 +23,8 @@ void StandardPartitions(
         for (int j = 0; j < (nThreads - 1);
              ++j, step += stepSize, nextStep += stepSize) {
 
-            threads.emplace_back(PartsStdParallel, std::ref(parMat), std::ref(zs[j]),
+            threads.emplace_back(
+                PartsStdParallel, std::ref(parMat), std::ref(zs[j]),
                 step, width, lastElem, lastCol, nextStep, ptype, zeroBudget
             );
 
@@ -42,7 +43,8 @@ void StandardPartitions(
             }
         }
 
-        threads.emplace_back(PartsStdParallel, std::ref(parMat), std::ref(zs.back()),
+        threads.emplace_back(
+            PartsStdParallel, std::ref(parMat), std::ref(zs.back()),
             step, width, lastElem, lastCol, nRows, ptype, zeroBudget
         );
 
@@ -58,10 +60,10 @@ void StandardPartitions(
 
 template <typename T>
 void GeneralPartitions(
-    T* mat, const std::vector<T> &v, std::vector<int> &z,
-    const PartDesign &part, double lower, mpz_class &lowerMpz,
-    int nCols, int nRows, int nThreads, int lastCol, int lastElem,
-    int strtLen, int cap, bool IsComb
+    T* mat, const std::vector<T> &v, const std::vector<int> &Reps,
+    std::vector<int> &z, const PartDesign &part, double lower,
+    mpz_class &lowerMpz, int nCols, int nRows, int nThreads,
+    int lastCol, int lastElem, int strtLen, int cap, bool IsComb
 ) {
 
     if (nThreads > 1 && (IsComb || part.isComp)) {
@@ -79,9 +81,10 @@ void GeneralPartitions(
         for (int j = 0; j < (nThreads - 1);
              ++j, step += stepSize, nextStep += stepSize) {
 
-            threads.emplace_back(PartsGenParallel<T>, std::ref(parMat),
-                std::cref(v), std::ref(zs[j]), step, part.width, lastElem,
-                lastCol, nextStep, part.ptype, part.maxZeros
+            threads.emplace_back(
+                PartsGenParallel<T>, std::ref(parMat), std::cref(v),
+                std::cref(Reps), std::ref(zs[j]), step, part.width,
+                lastElem, lastCol, nextStep, part.ptype, part.maxZeros
             );
 
             if (part.isGmp) {
@@ -94,26 +97,29 @@ void GeneralPartitions(
                                    cap, strtLen, lower, lowerMpz);
         }
 
-        threads.emplace_back(PartsGenParallel<T>, std::ref(parMat), std::cref(v),
-            std::ref(zs.back()), step, part.width, lastElem, lastCol, nRows,
-            part.ptype, part.maxZeros
+        threads.emplace_back(
+            PartsGenParallel<T>, std::ref(parMat), std::cref(v),
+            std::cref(Reps), std::ref(zs.back()), step, part.width,
+            lastElem, lastCol, nRows, part.ptype, part.maxZeros
         );
 
         for (auto& thr: threads) {
             thr.join();
         }
     } else {
-        PartsGenManager(mat, v, z, part.width, lastElem, lastCol,
-                        nRows, part.ptype, part.maxZeros);
+        PartsGenManager(mat, v, Reps, z, part.width, lastElem,
+                        lastCol, nRows, part.ptype, part.maxZeros);
     }
 }
 
-template void GeneralPartitions(int*, const std::vector<int>&,
-                                std::vector<int>&, const PartDesign&,
-                                double, mpz_class&, int, int, int, int,
-                                int, int, int, bool);
+template void GeneralPartitions(
+    int*, const std::vector<int>&, const std::vector<int>&,
+    std::vector<int>&, const PartDesign&, double, mpz_class&,
+    int, int, int, int, int, int, int, bool
+);
 
-template void GeneralPartitions(double*, const std::vector<double>&,
-                                std::vector<int>&, const PartDesign&,
-                                double, mpz_class&, int, int, int, int,
-                                int, int, int, bool);
+template void GeneralPartitions(
+    double*, const std::vector<double>&, const std::vector<int>&,
+    std::vector<int>&, const PartDesign&, double, mpz_class&,
+    int, int, int, int, int, int, int, bool
+);

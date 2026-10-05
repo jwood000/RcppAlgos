@@ -5,9 +5,9 @@
 #include <numeric>    // std::accumulate, std::partial_sum, std::iota
 #include <limits>     // std::numeric_limits
 
-double NumPermsWithRep(const std::vector<int> &v, bool includeZero) {
+double NumPermsWithRep(const std::vector<int> &v) {
     mpz_class result;
-    NumPermsWithRepGmp(result, v, includeZero);
+    NumPermsWithRepGmp(result, v);
     return result.get_d();
 }
 
@@ -41,7 +41,7 @@ double MultisetPermRowNum(int n, int m, const std::vector<int> &Reps) {
             }
         }
 
-        return NumPermsWithRep(freqs, true);
+        return NumPermsWithRep(freqs);
     }
 
     if (m > sumFreqs)

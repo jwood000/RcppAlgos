@@ -149,7 +149,7 @@ void CountPartsDistinct(
     res = qq[n];
 }
 
-void CountPartsDistinctMultiZero(
+void CountPartsDistinctMZ(
     mpz_class &res, std::vector<mpz_class> &p1, std::vector<mpz_class> &p2,
     int n, int m, const std::vector<int> &allowed, int strtLen
 ) {
@@ -231,7 +231,7 @@ void CountCompsDistinctLen(
 }
 
 
-void CountCompsDistinctMultiZero(
+void CountCompsDistinctMZ(
     mpz_class &res, std::vector<mpz_class> &p1, std::vector<mpz_class> &p2,
     int n, int m, const std::vector<int> &allowed, int strtLen
 ) {

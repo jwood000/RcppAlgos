@@ -227,7 +227,7 @@ double CountPartsDistinct(
     return qq.back();
 }
 
-double CountPartsDistinctMultiZero(
+double CountPartsDistinctMZ(
     int n, int m, const std::vector<int> &allowed, int strtLen
 ) {
 
@@ -299,7 +299,7 @@ double CountCompsDistinctLen(
     return CountPartsDistinctLen(n, m) * NumPermsNoRep(m, m);
 }
 
-double CountCompsDistinctMultiZero(
+double CountCompsDistinctMZ(
     int n, int m, const std::vector<int> &allowed, int strtLen
 ) {
 

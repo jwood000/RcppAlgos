@@ -117,7 +117,7 @@ SEXP ConstraintsReturn(
                 IsGmp, IsComb, part.includeZero, part.isComp, part.maxZeros
             );
         } else {
-            GeneralPartitions(matInt, vInt, z, part, lower, lowerMpz,
+            GeneralPartitions(matInt, vInt, Reps, z, part, lower, lowerMpz,
                               nCols, nRows, nThreads, lastCol, lastElem,
                               strtLen, cap, IsComb);
         }
@@ -128,7 +128,7 @@ SEXP ConstraintsReturn(
         cpp11::sexp res = Rf_allocMatrix(REALSXP, nRows, nCols);
         double* matDbl = REAL(res);
 
-        GeneralPartitions(matDbl, vNum, z, part, lower, lowerMpz,
+        GeneralPartitions(matDbl, vNum, Reps, z, part, lower, lowerMpz,
                           nCols, nRows, nThreads, lastCol, lastElem,
                           strtLen, cap, IsComb);
 
