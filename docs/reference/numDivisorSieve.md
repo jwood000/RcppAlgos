@@ -79,7 +79,7 @@ mySamp <- sample(10^6, 5*10^5)
 ## every number less than a million
 system.time(mySigmas <- numDivisorSieve(10^6))
 #>    user  system elapsed 
-#>   0.003   0.000   0.004 
+#>   0.009   0.000   0.014 
 
 ## Now use result in algorithm
 for (s in mySamp) {

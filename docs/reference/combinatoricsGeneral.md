@@ -265,16 +265,20 @@ See
 [`partitionsGeneral`](https://jwood000.github.io/RcppAlgos/reference/partitionsGeneral.md)
 for more information.
 
-When there are any negative values in `v` and `constraintFun = "prod"`,
-producing a monotonic set is non-trivial for the general case. As a
-result, performance will suffer as all combinations/permutations must be
-tested against the constraint criteria.
+When there are any negative values in `v`, `constraintFun = "prod"`, and
+`limitConstraints` is provided, producing a monotonic set is non-trivial
+for the general case. As a result, performance will suffer as all
+combinations/permutations must be tested against the constraint
+criteria. Throughout the documentation, this case is referred to as
+*special constraints*.
 
 ## Note
 
 - `Parallel` and `nThreads` will be ignored in the following cases:
 
-  - When the output is constrained (except for most partitions cases)
+  - When the output is constrained, except for most partition cases and
+    special constraints when `lower` is explicitly supplied (see the
+    last note below).
 
   - If the class of the vector passed is `character`, `raw`, and
     `complex` (N.B. `Rcpp::CharacterMatrix` is not thread safe).
@@ -305,6 +309,15 @@ tested against the constraint criteria.
   for the definition of `upper`.
 
 - `FUN` will be ignored if the constraint check is satisfied.
+
+- For special constraints (see the Details section), multithreading is
+  only available when `lower` is explicitly supplied. In this case, the
+  search space can be divided among threads beginning at the requested
+  lower bound. When `lower` is not supplied, RcppAlgos must continue
+  searching until the requested number of results satisfying the
+  constraints is found. Because the locations of these results are not
+  known in advance, this search is performed serially, even when
+  multiple threads are requested.
 
 ## Author
 

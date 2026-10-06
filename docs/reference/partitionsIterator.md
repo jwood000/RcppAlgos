@@ -169,6 +169,10 @@ Once you initialize a new iterator, the following methods are available:
 - The maximum number of partitions/compositions that can be generated at
   one time is \\2^{31} - 1\\.
 
+- If an error occurs while generating results, the iterator's internal
+  state is not guaranteed to remain at its previous position. Call
+  `startOver()` before continuing to use the iterator.
+
 ## See also
 
 [`partitionsGeneral`](https://jwood000.github.io/RcppAlgos/reference/partitionsGeneral.md),

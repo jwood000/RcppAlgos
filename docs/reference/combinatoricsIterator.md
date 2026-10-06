@@ -279,7 +279,14 @@ and
 
 - `Parallel` and `nThreads` will be ignored in the following cases:
 
-  - When the output is constrained (except for most partitions cases)
+  - When the output is constrained (except for most partitions cases).
+
+  - For special constraints (see the Details section of
+    [`comboGeneral`](https://jwood000.github.io/RcppAlgos/reference/combinatoricsGeneral.md)),
+    `nThreads` is ignored and generation is performed serially. Unlike
+    an explicitly supplied `lower` in the general interface, an
+    iterator's current position does not define a range of candidates
+    that can be safely divided among threads.
 
   - If the class of the vector passed is `character`, `raw`, and
     `complex` (N.B. `Rcpp::CharacterMatrix` is not thread safe).
@@ -303,6 +310,10 @@ and
   output is constrained.
 
 - `FUN` will be ignored if the constraint check is satisfied.
+
+- If an error occurs while generating results, the iterator's internal
+  state is not guaranteed to remain at its previous position. Call
+  `startOver()` before continuing to use the iterator.
 
 ## See also
 

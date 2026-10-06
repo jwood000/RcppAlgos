@@ -1,5 +1,5 @@
 pandoc: 3.8.3
-pkgdown: 2.2.0
+pkgdown: 2.2.1
 pkgdown_sha: ~
 articles:
   CombinatorialSampling: CombinatorialSampling.html
@@ -12,7 +12,7 @@ articles:
   IntegerPartitions: IntegerPartitions.html
   OtherCombinatorics: OtherCombinatorics.html
   SubsetSum: SubsetSum.html
-last_built: 2026-06-07T18:37Z
+last_built: 2026-10-06T13:14Z
 urls:
   reference: https://jwood000.github.io/RcppAlgos/reference
   article: https://jwood000.github.io/RcppAlgos/articles
