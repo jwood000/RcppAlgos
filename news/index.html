@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">RcppAlgos</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">2.10.1</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">2.10.2</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -45,6 +45,37 @@
       <small>Source: <a href="https://github.com/jwood000/RcppAlgos/blob/main/NEWS.md" class="external-link"><code>NEWS.md</code></a></small>
     </div>
 
+    <div class="section level2">
+<h2 class="pkg-version" data-toc-text="2.10.2" id="rcppalgos-2102">RcppAlgos 2.10.2<a class="anchor" aria-label="anchor" href="#rcppalgos-2102"></a></h2>
+<div class="section level3">
+<h3 id="new-features-2-10-2">New Features<a class="anchor" aria-label="anchor" href="#new-features-2-10-2"></a></h3>
+<ul><li>Added exact dynamic-programming counting for multiset partitions and compositions, including weak compositions and non-weak compositions with zero padding. Large counts use GMP-backed <code>bigz</code> arithmetic where needed.</li>
+</ul></div>
+<div class="section level3">
+<h3 id="bug-fixes-2-10-2">Bug Fixes<a class="anchor" aria-label="anchor" href="#bug-fixes-2-10-2"></a></h3>
+<ul><li>Fixed overflow in large multiset permutation counts. For example, <code>permuteCount(2, 2000, freqs = c(1000, 1000))</code> now returns the correct <code>bigz</code> result (<a href="https://github.com/jwood000/RcppAlgos/issues/72" class="external-link">Issue </a><a href="https://github.com/jwood000/RcppAlgos/issues/72" class="external-link">#72</a>, <a href="https://github.com/jwood000/RcppAlgos/pull/74" class="external-link">PR </a><a href="https://github.com/jwood000/RcppAlgos/issues/74" class="external-link">#74</a>).</li>
+<li>Fixed <code>FUN</code> being ignored for factor inputs in <code><a href="../reference/combinatoricsGeneral.html">comboGeneral()</a></code> and <code><a href="../reference/combinatoricsGeneral.html">permuteGeneral()</a></code>. Factors passed to <code>FUN</code> retain their levels and class, including ordered-factor status (<a href="https://github.com/jwood000/RcppAlgos/issues/71" class="external-link">Issue </a><a href="https://github.com/jwood000/RcppAlgos/issues/71" class="external-link">#71</a>, <a href="https://github.com/jwood000/RcppAlgos/pull/75" class="external-link">PR </a><a href="https://github.com/jwood000/RcppAlgos/issues/75" class="external-link">#75</a>).</li>
+</ul><p>The following five fixes are covered by <a href="https://github.com/jwood000/RcppAlgos/issues/70" class="external-link">Issue </a><a href="https://github.com/jwood000/RcppAlgos/issues/70" class="external-link">#70</a> and <a href="https://github.com/jwood000/RcppAlgos/pull/73" class="external-link">PR </a><a href="https://github.com/jwood000/RcppAlgos/issues/73" class="external-link">#73</a>:</p>
+<ul><li>Fixed product constraints involving negative values: explicitly supplying <code>lower = 1</code> now correctly restricts testing to the requested candidate range. Without <code>lower</code>, generation searches for the requested number of matching results and remains serial, even when multiple threads are requested.</li>
+<li>Fixed parallel iterator batches starting from an incorrect position when <code>constraintFun</code> is supplied without filtering.</li>
+<li>Corrected iterator positioning after oversized batch requests and exhaustion reporting for constrained iterators.</li>
+<li>Multi-index access to partition and composition iterators no longer alters subsequent traversal.</li>
+<li>Improved handling of non-finite count estimates by switching to arbitrary-precision arithmetic. Invalid non-finite numeric arguments are rejected before conversion.</li>
+</ul></div>
+<div class="section level3">
+<h3 id="improvements-2-10-2">Improvements<a class="anchor" aria-label="anchor" href="#improvements-2-10-2"></a></h3>
+<ul><li>Updated <code>partition_type</code> labels returned by design functions to use clearer names, such as <code>DistinctNoZero</code> and <code>CompRepZero</code>. Multiset composition designs now distinguish weak and zero-padded cases.</li>
+<li>Multiset partition generation now validates <code>upper</code> against the computed result count.</li>
+<li>Improved errors for unsupported partition and composition ranking or sampling, and for cases with no solution.</li>
+<li>Clarified threading restrictions for special constraints and documented calling <code>startOver()</code> before reusing an iterator after a generation error.</li>
+</ul></div>
+<div class="section level3">
+<h3 id="performance-2-10-2">Performance<a class="anchor" aria-label="anchor" href="#performance-2-10-2"></a></h3>
+<ul><li>Replaced enumeration-based multiset partition and composition counting with dynamic programming.</li>
+<li>Improved GMP-backed multiset counting with specialized partition and composition implementations that reduce intermediate allocation and arbitrary-precision arithmetic overhead.</li>
+<li>Reduced intermediate allocation and copying when generating multiset partitions and sum-constrained multiset permutations.</li>
+</ul></div>
+</div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="2.10.1" id="rcppalgos-2101">RcppAlgos 2.10.1<a class="anchor" aria-label="anchor" href="#rcppalgos-2101"></a></h2><p class="text-muted">CRAN release: 2026-06-08</p>
 <p>This is a maintenance release with targeted correctness and portability fixes.</p>

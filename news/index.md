@@ -1,5 +1,78 @@
 # Changelog
 
+## RcppAlgos 2.10.2
+
+### New Features
+
+- Added exact dynamic-programming counting for multiset partitions and
+  compositions, including weak compositions and non-weak compositions
+  with zero padding. Large counts use GMP-backed `bigz` arithmetic where
+  needed.
+
+### Bug Fixes
+
+- Fixed overflow in large multiset permutation counts. For example,
+  `permuteCount(2, 2000, freqs = c(1000, 1000))` now returns the correct
+  `bigz` result
+  ([Issue](https://github.com/jwood000/RcppAlgos/issues/72)
+  [\#72](https://github.com/jwood000/RcppAlgos/issues/72),
+  [PR](https://github.com/jwood000/RcppAlgos/pull/74)
+  [\#74](https://github.com/jwood000/RcppAlgos/issues/74)).
+- Fixed `FUN` being ignored for factor inputs in
+  [`comboGeneral()`](https://jwood000.github.io/RcppAlgos/reference/combinatoricsGeneral.md)
+  and
+  [`permuteGeneral()`](https://jwood000.github.io/RcppAlgos/reference/combinatoricsGeneral.md).
+  Factors passed to `FUN` retain their levels and class, including
+  ordered-factor status
+  ([Issue](https://github.com/jwood000/RcppAlgos/issues/71)
+  [\#71](https://github.com/jwood000/RcppAlgos/issues/71),
+  [PR](https://github.com/jwood000/RcppAlgos/pull/75)
+  [\#75](https://github.com/jwood000/RcppAlgos/issues/75)).
+
+The following five fixes are covered by
+[Issue](https://github.com/jwood000/RcppAlgos/issues/70)
+[\#70](https://github.com/jwood000/RcppAlgos/issues/70) and
+[PR](https://github.com/jwood000/RcppAlgos/pull/73)
+[\#73](https://github.com/jwood000/RcppAlgos/issues/73):
+
+- Fixed product constraints involving negative values: explicitly
+  supplying `lower = 1` now correctly restricts testing to the requested
+  candidate range. Without `lower`, generation searches for the
+  requested number of matching results and remains serial, even when
+  multiple threads are requested.
+- Fixed parallel iterator batches starting from an incorrect position
+  when `constraintFun` is supplied without filtering.
+- Corrected iterator positioning after oversized batch requests and
+  exhaustion reporting for constrained iterators.
+- Multi-index access to partition and composition iterators no longer
+  alters subsequent traversal.
+- Improved handling of non-finite count estimates by switching to
+  arbitrary-precision arithmetic. Invalid non-finite numeric arguments
+  are rejected before conversion.
+
+### Improvements
+
+- Updated `partition_type` labels returned by design functions to use
+  clearer names, such as `DistinctNoZero` and `CompRepZero`. Multiset
+  composition designs now distinguish weak and zero-padded cases.
+- Multiset partition generation now validates `upper` against the
+  computed result count.
+- Improved errors for unsupported partition and composition ranking or
+  sampling, and for cases with no solution.
+- Clarified threading restrictions for special constraints and
+  documented calling `startOver()` before reusing an iterator after a
+  generation error.
+
+### Performance
+
+- Replaced enumeration-based multiset partition and composition counting
+  with dynamic programming.
+- Improved GMP-backed multiset counting with specialized partition and
+  composition implementations that reduce intermediate allocation and
+  arbitrary-precision arithmetic overhead.
+- Reduced intermediate allocation and copying when generating multiset
+  partitions and sum-constrained multiset permutations.
+
 ## RcppAlgos 2.10.1
 
 CRAN release: 2026-06-08
