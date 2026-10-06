@@ -1,5 +1,5 @@
 Package: RcppAlgos
-Version: 2.10.1
+Version: 2.10.2
 Title: High Performance Tools for Combinatorics and Computational Mathematics
 Description: Provides optimized functions and flexible iterators implemented in
     C++ for solving problems in combinatorics and computational mathematics.
@@ -51,6 +51,12 @@ Authors@R: c(
             given = "Joseph", family = "Wood",
             role = c("aut", "cre"),
             email = "jwood000@gmail.com"
+        ),
+        person(
+            given = "Joseph J.",
+            family = "Allaire",
+            role = "ctb",
+            comment = "Original author of RMatrix.h, copied from RcppParallel"
         )
     )
 Encoding: UTF-8
