@@ -15,3 +15,5 @@ SO_Answers/*
 ^CRAN_RELEASE_CHECKLIST\.md$
 ^\.codacy\.yml$
 ^dev$
+^\.positai$
+^\.claude$
