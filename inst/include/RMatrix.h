@@ -1,3 +1,7 @@
+// Copied from RcppParallel: inst/include/RcppParallel/RMatrix.h
+// Original author: Joseph J. Allaire.
+// See inst/COPYRIGHTS for provenance and license information.
+
 #pragma once
 
 #include <cstddef>

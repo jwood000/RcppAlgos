@@ -1,7 +1,7 @@
 \name{NEWS}
 \title{News for Package \pkg{RcppAlgos}}
 
-\section{Changes in RcppAlgos version 2.10.1 (Release date: 2026-06-10)}{
+\section{Changes in RcppAlgos version 2.10.1 (Release date: 2026-06-08)}{
 
     This is a maintenance release with targeted correctness and portability fixes.
 
