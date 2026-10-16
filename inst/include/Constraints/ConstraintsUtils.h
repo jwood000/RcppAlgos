@@ -29,6 +29,12 @@ static const std::array<std::string, 5> compHelper = {
 constexpr double defaultTolerance =
     std::numeric_limits<float>::epsilon() / 8.0;
 
+inline void ValidatePartitionDesign(const PartDesign &part) {
+    if (part.isPart && part.ptype == PartitionType::NotMapped) {
+        cpp11::stop("Currently, there is no algorithm for this case.");
+    }
+}
+
 void InitialSetupPartDesign(
     PartDesign &part, SEXP RIsWeak, SEXP RIsComposition,
     bool IsRep, bool IsMult, bool mIsNull, bool IsComb

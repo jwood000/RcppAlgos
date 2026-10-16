@@ -323,7 +323,7 @@ void SetStartPartitionZ(const std::vector<int> &Reps,
 // this classification logic must be revisited (and CompRepWeak may become
 // reachable here).
 int DiscoverPType(const std::vector<int> &Reps,
-                  PartDesign &part, int lenV) {
+                  PartDesign &part, int lenV, bool vHasZero) {
 
     if (part.width == 1) {
         part.ptype = PartitionType::LengthOne;
@@ -501,7 +501,8 @@ int DiscoverPType(const std::vector<int> &Reps,
 
             if (isoz == part.startZ && IsCapped) {
                 if (part.isMult && part.allOne && part.isComp) {
-                    part.ptype = part.isWeak ? PartitionType::CompDistinctCapMZWeak :
+                    part.ptype = (part.isWeak || !vHasZero) ?
+                        PartitionType::CompDistinctCapMZWeak :
                         PartitionType::CompDistinctCapMZ;
                     return 1;
                 } else if (part.isMult && part.allOne) {
@@ -530,7 +531,8 @@ int DiscoverPType(const std::vector<int> &Reps,
                 }
             } else if (isoz == part.startZ) {
                 if (part.isMult && part.allOne && part.isComp) {
-                    part.ptype = part.isWeak ? PartitionType::CompDistinctMZWeak :
+                    part.ptype = (part.isWeak || !vHasZero) ?
+                        PartitionType::CompDistinctMZWeak :
                         PartitionType::CompDistinctZero;
                     return 1;
                 } else if (part.isMult && part.allOne) {
@@ -540,12 +542,13 @@ int DiscoverPType(const std::vector<int> &Reps,
                         PartitionType::PrmDstPartMZ : ptype;
                     return 1;
                 } else if (part.isDist && part.isComp && part.includeZero) {
-                    part.ptype = part.isWeak ?
+                    part.ptype = (part.isWeak || !vHasZero) ?
                         PartitionType::CompDistinctWeak :
                         PartitionType::CompDistinctZero;
                     return 1;
                 } else if (part.isDist && part.isComp) {
-                    part.ptype = part.isWeak ? PartitionType::CompDistinctWeak :
+                    part.ptype = part.isWeak ?
+                        PartitionType::CompDistinctWeak :
                         PartitionType::CompDistinctNoZero;
                     return 1;
                 } else if (part.isDist && part.isPerm) {
@@ -798,6 +801,31 @@ void StandardDesign(const std::vector<int> &Reps,
     part.shift = (part.mapTar * part.slope - part.target) / part.width;
 }
 
+/**
+ * Determine whether the supplied constraint represents a partition problem.
+ *
+ * A constraint qualifies for the specialized partition algorithms when:
+ *   - The comparison operator is equality and the constraint function is sum.
+ *   - The input values are integers forming an arithmetic progression,
+ *     within the supplied tolerance.
+ *   - The target is an integer and all target values are identical.
+ *
+ * When these conditions hold, part.isPart is set to true and part.target
+ * is initialized. The caller can then use SetPartitionDesign() to determine
+ * the appropriate partition algorithm.
+ *
+ * Otherwise, the problem remains outside the specialized partition
+ * framework. Certain equality or between-type constraints with an explicit
+ * width are classified as CoarseGrained, allowing subsequent processing
+ * by the general constraint machinery.
+ *
+ * This function identifies the problem category; it does not determine
+ * whether a particular counting, generation, or ranking algorithm exists.
+ *
+ * @param part       Partition design updated with the classification.
+ * @param tolerance  Tolerance used when checking arithmetic progression.
+ * @param IsBetween  Whether the constraint represents a between comparison.
+ */
 void CheckPartition(const std::vector<std::string> &compFunVec,
                     const std::vector<double> &v, const std::string &mainFun,
                     const std::vector<double> &target, PartDesign &part,
@@ -946,9 +974,7 @@ void SetPartitionDesign(
 
             // We can only have weak compositions when zero is included. We
             // can't use part.includeZero for the reasons in the below comment
-            const bool vHasZero          = (v.front() == 0);
-            const bool original_weak_val = part.isWeak;
-
+            const bool vHasZero = (v.front() == 0);
             part.isWeak = part.isWeak && vHasZero;
 
             const bool weakAllowed     = part.isComp && part.isWeak;
@@ -964,14 +990,12 @@ void SetPartitionDesign(
 
             if (!part.solnExist) {
                 part.ptype = PartitionType::NoSolution;
+            } else if (part.isMult && part.isComp && part.isWeak) {
+                part.ptype = PartitionType::CompMultisetWeak;
+            } else if (part.isMult && part.isComp && vHasZero) {
+                part.ptype = PartitionType::CompMultisetZero;
             } else if (part.isMult && part.isComp) {
-                if (part.isWeak) {
-                    part.ptype = PartitionType::CompMultisetWeak;
-                } else if (vHasZero) {
-                    part.ptype = PartitionType::CompMultisetZero;
-                } else {
-                    part.ptype = PartitionType::CompMultiset;
-                }
+                part.ptype = PartitionType::CompMultiset;
             } else if (part.isMult && part.isPerm) {
                 part.ptype = PartitionType::PrmMultiset;
             } else if (part.isMult) {
@@ -989,18 +1013,7 @@ void SetPartitionDesign(
             }
 
             if (part.solnExist) {
-                DiscoverPType(Reps, part, lenV);
-            }
-
-            if (part.ptype == PartitionType::CompDistinctZero && v.front() != 0) {
-                part.ptype = original_weak_val ?
-                    (part.isDist ?
-                        PartitionType::CompDistinctWeak :
-                            (part.isMult && part.allOne ?
-                                PartitionType::CompDistinctMZWeak :
-                                    PartitionType::NotMapped
-                            )
-                    ) : PartitionType::NotMapped;
+                DiscoverPType(Reps, part, lenV, vHasZero);
             }
         }
 

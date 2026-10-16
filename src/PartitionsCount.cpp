@@ -715,11 +715,7 @@ int PartitionsCount(const std::vector<int> &Reps, PartDesign &part, int lenV) {
         part.startZ.cbegin(), part.startZ.cend(), [](int i){return i > 0;}
     );
 
-    const auto no_algo_it = std::find(
-        NoCountAlgoPTypeArr.cbegin(), NoCountAlgoPTypeArr.cend(), part.ptype
-    );
-
-    if (no_algo_it != NoCountAlgoPTypeArr.end()) {
+    if (!HasCountAlgo(part.ptype)) {
         part.numUnknown = true;
         return 0;
     }

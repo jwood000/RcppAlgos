@@ -278,6 +278,20 @@ extern "C" SEXP _RcppAlgos_SamplePartitions(SEXP Rv, SEXP Rm, SEXP RisRep, SEXP 
     return cpp11::as_sexp(SamplePartitions(cpp11::as_cpp<cpp11::decay_t<SEXP>>(Rv), cpp11::as_cpp<cpp11::decay_t<SEXP>>(Rm), cpp11::as_cpp<cpp11::decay_t<SEXP>>(RisRep), cpp11::as_cpp<cpp11::decay_t<SEXP>>(RFreqs), cpp11::as_cpp<cpp11::decay_t<SEXP>>(RindexVec), cpp11::as_cpp<cpp11::decay_t<SEXP>>(RmySeed), cpp11::as_cpp<cpp11::decay_t<SEXP>>(RNumSamp), cpp11::as_cpp<cpp11::decay_t<SEXP>>(baseSample), cpp11::as_cpp<cpp11::decay_t<SEXP>>(RNumThreads), cpp11::as_cpp<cpp11::decay_t<SEXP>>(RmaxThreads), cpp11::as_cpp<cpp11::decay_t<SEXP>>(RNamed), cpp11::as_cpp<cpp11::decay_t<SEXP>>(RcompFun), cpp11::as_cpp<cpp11::decay_t<SEXP>>(Rtarget), cpp11::as_cpp<cpp11::decay_t<SEXP>>(myEnv), cpp11::as_cpp<cpp11::decay_t<SEXP>>(RIsComposition), cpp11::as_cpp<cpp11::decay_t<SEXP>>(RIsWeak)));
   END_CPP11
 }
+// TestEnumCoverage.cpp
+bool testRankCoverage();
+extern "C" SEXP _RcppAlgos_testRankCoverage() {
+  BEGIN_CPP11
+    return cpp11::as_sexp(testRankCoverage());
+  END_CPP11
+}
+// TestEnumCoverage.cpp
+bool testCountCoverage();
+extern "C" SEXP _RcppAlgos_testCountCoverage() {
+  BEGIN_CPP11
+    return cpp11::as_sexp(testCountCoverage());
+  END_CPP11
+}
 // version.cpp
 SEXP linked_version();
 extern "C" SEXP _RcppAlgos_linked_version() {
@@ -328,6 +342,8 @@ static const R_CallMethodDef CallEntries[] = {
     {"_RcppAlgos_SummaryGlue",             (DL_FUNC) &_RcppAlgos_SummaryGlue,              1},
     {"_RcppAlgos_cpp11GetNumThreads",      (DL_FUNC) &_RcppAlgos_cpp11GetNumThreads,       0},
     {"_RcppAlgos_linked_version",          (DL_FUNC) &_RcppAlgos_linked_version,           0},
+    {"_RcppAlgos_testCountCoverage",       (DL_FUNC) &_RcppAlgos_testCountCoverage,        0},
+    {"_RcppAlgos_testRankCoverage",        (DL_FUNC) &_RcppAlgos_testRankCoverage,         0},
     {NULL, NULL, 0}
 };
 }

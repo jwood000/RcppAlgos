@@ -1,5 +1,5 @@
-#include "Partitions/CompositionsUtils.h"
 #include "Partitions/PartitionsCountDistinct.h"
+#include "Partitions/CompositionsUtils.h"
 #include "Partitions/NextComposition.h"
 #include <algorithm>
 #include "RMatrix.h"
@@ -364,7 +364,7 @@ void CompsDistMZWorker(
 }
 
 int CompsDistinct(int* mat, std::vector<int> &z, std::size_t width,
-                  std::size_t nRows, bool isWeak, int zeroBudget) {
+                  std::size_t nRows, bool keepMappedZeros, int zeroBudget) {
 
     int tar = 0;
     int idx_1 = 0;
@@ -375,7 +375,7 @@ int CompsDistinct(int* mat, std::vector<int> &z, std::size_t width,
     std::vector<int> complement;
     const int nz = std::count(z.cbegin(), z.cend(), 0);
 
-    if (!isWeak && nz) {
+    if (!keepMappedZeros && nz) {
         if (nz > 1) z.erase(z.begin(), z.begin() + (nz - 1));
 
         for (std::size_t i = width - nz, j = nz, nextStep = 0;
@@ -416,10 +416,14 @@ int CompsDistinct(int* mat, std::vector<int> &z, std::size_t width,
         }
     }
 
-    zeroBudget = isWeak ? zeroBudget : std::count(z.cbegin(), z.cend(), 0);
+    zeroBudget = keepMappedZeros ? zeroBudget :
+        std::count(z.cbegin(), z.cend(), 0);
+
     CompsDistinctSetup(
-        z, complement, tar, idx_1, idx_2, myMax, max_int, isWeak, zeroBudget
+        z, complement, tar, idx_1, idx_2, myMax,
+        max_int, keepMappedZeros, zeroBudget
     );
+
     CompsDistStdWorker(
         mat, z, complement, idx_1, idx_2, myMax, tar, strt, width, nRows
     );
@@ -430,7 +434,7 @@ int CompsDistinct(int* mat, std::vector<int> &z, std::size_t width,
 template <typename T>
 int CompsGenDistinct(
     T* mat, const std::vector<T> &v, std::vector<int> &z,
-    std::size_t width, std::size_t nRows, bool isWeak, int zeroBudget
+    std::size_t width, std::size_t nRows, bool keepMappedZeros, int zeroBudget
 ) {
 
     int tar = 0;
@@ -443,7 +447,7 @@ int CompsGenDistinct(
     const int nz = std::count(z.cbegin(), z.cend(), 0);
     const int idx_max = static_cast<int>(v.size()) - 1;
 
-    if (!isWeak && nz && v.front() == 0) {
+    if (!keepMappedZeros && nz && v.front() == 0) {
         if (nz > 1) z.erase(z.begin(), z.begin() + (nz - 1));
         std::vector<int> allowed(idx_max);
         std::iota(allowed.begin(), allowed.end(), 1);
@@ -492,12 +496,17 @@ int CompsGenDistinct(
         }
     }
 
-    bool compZero = IsComplementZeroBased(v.front() == 0, isWeak, true);
-    zeroBudget = isWeak ? zeroBudget : std::count(z.cbegin(), z.cend(), 0);
+    bool compZero = IsComplementZeroBased(
+        v.front() == 0, keepMappedZeros, true
+    );
+
+    zeroBudget = keepMappedZeros ? zeroBudget :
+        std::count(z.cbegin(), z.cend(), 0);
 
     CompsDistinctSetup(
         z, complement, tar, idx_1, idx_2, myMax, idx_max, compZero, zeroBudget
     );
+
     CompsDistStdWorker(
         mat, v, z, complement, idx_1, idx_2, myMax, tar, strt, width, nRows
     );
@@ -508,7 +517,7 @@ int CompsGenDistinct(
 int CompsDistinct(
     RcppParallel::RMatrix<int> &mat, std::vector<int> &z,
     std::size_t strt, std::size_t width, std::size_t nRows,
-    bool isWeak, int zeroBudget
+    bool keepMappedZeros, int zeroBudget
 ) {
 
     int tar = 0;
@@ -519,7 +528,7 @@ int CompsDistinct(
     std::vector<int> complement;
     const int nz = std::count(z.cbegin(), z.cend(), 0);
 
-    if (!isWeak && nz) {
+    if (!keepMappedZeros && nz) {
         if (nz > 1) z.erase(z.begin(), z.begin() + (nz - 1));
 
         for (std::size_t i = width - nz, j = nz, nextStep = 0;
@@ -559,10 +568,14 @@ int CompsDistinct(
         }
     }
 
-    zeroBudget = isWeak ? zeroBudget : std::count(z.cbegin(), z.cend(), 0);
+    zeroBudget = keepMappedZeros ? zeroBudget :
+        std::count(z.cbegin(), z.cend(), 0);
+
     CompsDistinctSetup(
-        z, complement, tar, idx_1, idx_2, myMax, max_int, isWeak, zeroBudget
+        z, complement, tar, idx_1, idx_2, myMax,
+        max_int, keepMappedZeros, zeroBudget
     );
+
     CompsDistStdWorker(
         mat, z, complement, idx_1, idx_2, myMax, tar, strt, width, nRows
     );
@@ -574,7 +587,7 @@ template <typename T>
 int CompsGenDistinct(
     RcppParallel::RMatrix<T> &mat, const std::vector<T> &v,
     std::vector<int> &z, std::size_t strt, std::size_t width,
-    std::size_t nRows, bool isWeak, int zeroBudget
+    std::size_t nRows, bool keepMappedZeros, int zeroBudget
 ) {
 
     int tar = 0;
@@ -586,7 +599,7 @@ int CompsGenDistinct(
     const int nz = std::count(z.cbegin(), z.cend(), 0);
     const int idx_max = static_cast<int>(v.size()) - 1;
 
-    if (!isWeak && nz && v.front() == 0) {
+    if (!keepMappedZeros && nz && v.front() == 0) {
         if (nz > 1) z.erase(z.begin(), z.begin() + (nz - 1));
         std::vector<int> allowed(idx_max);
         std::iota(allowed.begin(), allowed.end(), 1);
@@ -634,12 +647,17 @@ int CompsGenDistinct(
         }
     }
 
-    bool compZero = IsComplementZeroBased(v.front() == 0, isWeak, true);
-    zeroBudget = isWeak ? zeroBudget : std::count(z.cbegin(), z.cend(), 0);
+    bool compZero = IsComplementZeroBased(
+        v.front() == 0, keepMappedZeros, true
+    );
+
+    zeroBudget = keepMappedZeros ? zeroBudget :
+        std::count(z.cbegin(), z.cend(), 0);
 
     CompsDistinctSetup(
         z, complement, tar, idx_1, idx_2, myMax, idx_max, compZero, zeroBudget
     );
+
     CompsDistStdWorker(
         mat, v, z, complement, idx_1, idx_2, myMax, tar, strt, width, nRows
     );
