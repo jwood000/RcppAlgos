@@ -224,6 +224,10 @@ SEXP RankPartitionMain(SEXP RIdx, SEXP Rv, SEXP RisRep,
 
     const rankPartsPtr rankFun = GetRankPartsFunc(part.ptype, part.isGmp);
 
+    if (!rankFun) {
+        cpp11::stop("No ranking algorithm available for this case.");
+    }
+
     if (part.isGmp) {
         std::vector<mpz_class> myVec(numResults);
         RankPartsGmp(myVec, idx, rankFun, part.mapTar, m,

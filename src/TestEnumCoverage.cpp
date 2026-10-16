@@ -13,25 +13,24 @@ bool testRankCoverage() {
     for (int i = 0; i < static_cast<int>(PartitionType::NumTypes); ++i) {
         const auto ptype = static_cast<PartitionType>(i);
 
-        if (!HasRankAlgo(ptype)) continue;
-
         for (const bool isGmp : {false, true}) {
-            const auto nth = GetNthPartsFunc(ptype, isGmp);
+            if (ptype == PartitionType::NoSolution) continue;
 
-            if (!nth) {
+            const auto nth = GetNthPartsFunc(ptype, isGmp);
+            const auto rank = GetRankPartsFunc(ptype, isGmp);
+            const bool advertised = HasRankAlgo(ptype);
+
+            if (static_cast<bool>(nth) != advertised) {
                 cpp11::stop(
-                    "Missing unranking algorithm for %s (%s)",
+                    "Unranking coverage mismatch for %s (%s)",
                     GetPTypeName(ptype).c_str(),
                     isGmp ? "GMP" : "double"
                 );
             }
 
-            // This factory throws if no implementation exists.
-            const auto rank = GetRankPartsFunc(ptype, isGmp);
-
-            if (!rank) {
+            if (static_cast<bool>(rank) != advertised) {
                 cpp11::stop(
-                    "Missing ranking algorithm for %s (%s)",
+                    "Ranking coverage mismatch for %s (%s)",
                     GetPTypeName(ptype).c_str(),
                     isGmp ? "GMP" : "double"
                 );
@@ -42,17 +41,15 @@ bool testRankCoverage() {
     return true;
 }
 
-
 [[cpp11::register]]
 bool testCountCoverage() {
     for (int i = 0; i < static_cast<int>(PartitionType::NumTypes); ++i) {
         const auto ptype = static_cast<PartitionType>(i);
 
-        if (!HasCountAlgo(ptype)) continue;
-
         // Handled directly by PartitionsCount().
         if (ptype == PartitionType::LengthOne) continue;
 
+        const bool advertised = HasCountAlgo(ptype);
         std::unique_ptr<CountClass> Counter = MakeCount(ptype);
 
         if (!Counter) {
@@ -60,9 +57,9 @@ bool testCountCoverage() {
             Counter = MakeMultisetCount(ptype, Reps);
         }
 
-        if (!Counter) {
+        if (static_cast<bool>(Counter) != advertised) {
             cpp11::stop(
-                "Missing counting algorithm for %s",
+                "Counting coverage mismatch for %s",
                 GetPTypeName(ptype).c_str()
             );
         }
