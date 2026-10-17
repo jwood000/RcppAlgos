@@ -188,11 +188,7 @@ SEXP RankPartitionMain(SEXP RIdx, SEXP Rv, SEXP RisRep,
         cpp11::stop("There is no solution for the requested case");
     }
 
-    const auto no_rank_it = std::find(
-        NoRankAlgoPTypeArr.cbegin(), NoRankAlgoPTypeArr.cend(), part.ptype
-    );
-
-    if (no_rank_it != NoRankAlgoPTypeArr.end()) {
+    if (!HasRankAlgo(part.ptype)) {
         cpp11::stop("Ranking not available for this case.");
     }
 
@@ -227,6 +223,10 @@ SEXP RankPartitionMain(SEXP RIdx, SEXP Rv, SEXP RisRep,
                myType, nThreads, RNumThreads, limit);
 
     const rankPartsPtr rankFun = GetRankPartsFunc(part.ptype, part.isGmp);
+
+    if (!rankFun) {
+        cpp11::stop("No ranking algorithm available for this case.");
+    }
 
     if (part.isGmp) {
         std::vector<mpz_class> myVec(numResults);

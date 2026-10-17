@@ -64,6 +64,23 @@ SEXP CombinatoricsCnstrt(SEXP Rv, SEXP Rm, SEXP RisRep, SEXP RFreqs,
         ConstraintSetup(vNum, myReps, tarVals, vInt, tarIntVals, funDbl, part,
                         ctype, n, m, compVec, mainFun, funTest, myType,
                         Rtarget, RcompFun, Rtolerance, Rlow);
+
+        ValidatePartitionDesign(part);
+
+        if (IsMultisetComposition(part.ptype)) {
+            if (part.ptype == PartitionType::CompMultisetZero) {
+                cpp11::stop(
+                    "Generation is not supported for this multiset composition."
+                    " permuteGeneral() treats zeros as actual elements and does"
+                    " not preserve non-weak zero-padding semantics."
+                );
+            }
+
+            cpp11::stop(
+                "Generation is not supported for this multiset composition. "
+                "Consider using permuteGeneral() instead."
+            );
+        }
     }
 
     const bool usePartCount = part.isPart && !part.numUnknown;
@@ -145,13 +162,7 @@ SEXP CombinatoricsCnstrt(SEXP Rv, SEXP Rm, SEXP RisRep, SEXP RFreqs,
     CppConvert::convertPrimitive(RmaxThreads, maxThreads,
                                    VecType::Integer, "maxThreads");
 
-    const auto cap_it = std::find(
-        CappedPTypeArr.cbegin(), CappedPTypeArr.cend(), part.ptype
-    );
-
-    const bool IsCapped = cap_it != CappedPTypeArr.cend();
-
-    const int limit = (part.isPart && IsCapped) ? 150000 :
+    const int limit = (part.isPart && IsCapped(part.ptype)) ? 150000 :
         (part.isPart ? 40000 : 20000);
 
     SetThreads(Parallel, maxThreads, nRows,

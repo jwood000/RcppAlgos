@@ -81,7 +81,7 @@ int PartsGenManager(T* mat, const std::vector<T> &v,
                     PartitionType ptype, int zeroBudget) {
 
     // PrmRepPart, PrmDstPrtOneZ, DistinctStdAll, DistinctOneZero, RepStdAll,
-    // RepShort and CompRepWeak shouldn't happen. In any mapped case that
+    // RepShort and CompRepWeak should not happen. In any mapped case that
     // would trigger PartsGenManager, the zero would be mapped to some
     // non-zero integer.
 

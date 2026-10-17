@@ -632,22 +632,25 @@ test_that("partitionsIter produces correct results", {
     expect_true(partitionClassTest(7 + (0:50) * 13, 9,
                                    fr = c(4, rep(1, 50)), tar = 713))
 
-    ## Currently, we don't have an algorithm for this case. We have to think
-    ## carefully here... Since there technically isn't an actual zero, the
-    ## idea of weakness doesn't come into play even though we can map a value
-    ## isomorphically to zero. Because of this coupled with the fact we are
-    ## dealing with compositions where order matters, we technically have
-    ## a strange compositions multiset case. Our current algorithm may in
-    ## fact work, but testing is still needed.
+    ## The mapped case would lead to 456330 results which would take too
+    ## long to test:
     ##
-    ## This will throw the error:
+    ##        compositionsCount(
+    ##            7 + (0:30) * 13, 7,
+    ##            freqs = c(4, rep(1, 30)),
+    ##            target = 439
+    ##        )
+    ##        [1] 456330
     ##
-    ## Error: Currently, there is no composition algorithm for this case.
-    ##  Use permuteCount, permuteIter, permuteGeneral, permuteSample, or
-    ##  permuteRank instead.
-    expect_error(partitionClassTest(7 + (0:30) * 13, 7, fr = c(4, rep(1, 30)),
-                                    tar = 439, IsComposition = TRUE),
-                 "Currently, there is no composition algorithm for this case")
+    ## Prior to version 2.10.2, we did not have a solution for this case. Now,
+    ## we found a clever way to map this to multi-zero weak case as the shifted
+    ## first value is treated as a normal part and not merely padding.
+    ##
+    ## For completeness, we reduced the size of the output while honoring the
+    ## original problem (a mapped case where the first value has a
+    ## multiplicity greater than 1).
+    expect_true(partitionClassTest(7 + (0:20) * 13, 7, fr = c(4, rep(1, 20)),
+                                   tar = 309, IsComposition = TRUE))
 
     ## If we don't shift the results, we should be able to yield results.
     ## - target will be determined internally to 13 * 30 = 390
@@ -679,12 +682,9 @@ test_that("partitionsIter produces correct results", {
     ## 30 * 13 + 7 * 5 = 425
     expect_true(partitionClassTest(7 + (0:50) * 13, 5,
                                    fr = c(8, rep(1, 50)), tar = 685))
-
-    ## Same as above... this will throw an error
-    expect_error(partitionClassTest(7 + (0:30) * 13, 5,
-                                    fr = c(7, rep(1, 30)), tar = 425,
-                                    IsComposition = TRUE),
-                 "Currently, there is no composition algorithm for this case")
+    expect_true(partitionClassTest(7 + (0:30) * 13, 5,
+                                   fr = c(7, rep(1, 30)), tar = 425,
+                                   IsComposition = TRUE))
 
     ## Again not shifting the source vector yields results.
     ## 30 * 13 = 390

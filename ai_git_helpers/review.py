@@ -13,7 +13,7 @@ from typing import Optional
 MAX_FILE_BYTES = 200_000
 MAX_DIFF_BYTES_TOTAL = 400_000
 MODEL = os.getenv("AI_REVIEW_MODEL", "gpt-5.5")
-MAX_OUTPUT_TOKENS = 4000
+MAX_OUTPUT_TOKENS = 12000
 
 SYSTEM_PROMPT = """\
 You are an expert C++ software engineer with deep knowledge of

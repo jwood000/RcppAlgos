@@ -2,10 +2,6 @@
 
 void Partitions::SetPartValues() {
 
-    bool IsCompDist = std::find(
-        CompDistinctPTypeArr.cbegin(), CompDistinctPTypeArr.cend(), part.ptype
-    ) != CompDistinctPTypeArr.cend();
-
     // CompRepCapped, CompRepWeakCap, and CompRepCapZero advances using the
     // composition-next routine (NextCompositionRep), not the general
     // PartitionType next-partition logic.
@@ -24,13 +20,19 @@ void Partitions::SetPartValues() {
         part.ptype == PartitionType::CompRepWeakCap ||
         part.ptype == PartitionType::CompRepCapZero) {
         pivot = n - 1;  // myMax/cap for NextCompositionRep
-    } else if (IsCompDist) {
-        bool compZero = IsComplementZeroBased(
-            part.includeZero, part.isWeak, ctype == ConstraintType::PartMapping
+
+    } else if (IsCompDistinct(part.ptype)) {
+        const bool keepMappedZeros =
+            part.isWeak || UsesVariableMappedZeros(part.ptype);
+
+        const bool compZero = IsComplementZeroBased(
+            part.includeZero, keepMappedZeros,
+            ctype == ConstraintType::PartMapping
         );
 
-        int zeroBudget = part.isWeak ? part.maxZeros :
-            std::count(z.cbegin(), z.cend(), 0);
+        const int zeroBudget = keepMappedZeros
+            ? part.maxZeros
+            : std::count(z.cbegin(), z.cend(), 0);
 
         CompsDistinctSetup(z, rpsCnt, tarDiff, edge, boundary,
                            pivot, n - 1, compZero, zeroBudget);

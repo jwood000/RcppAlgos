@@ -179,11 +179,7 @@ SEXP SamplePartitions(
         cpp11::stop("There is no solution for the requested case");
     }
 
-    const auto no_rank_it = std::find(
-        NoRankAlgoPTypeArr.cbegin(), NoRankAlgoPTypeArr.cend(), part.ptype
-    );
-
-    if (no_rank_it != NoRankAlgoPTypeArr.end()) {
+    if (!HasRankAlgo(part.ptype)) {
         cpp11::stop("Sampling not available for this case.");
     }
 

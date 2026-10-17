@@ -1008,7 +1008,7 @@ rankPartsPtr GetRankPartsFunc(PartitionType ptype, bool IsGmp) {
             } case PartitionType::CompDistinctCapMZWeak: {
                 return(rankPartsPtr(rankCompsDistinctMZWeakGmp));
             } default : {
-                cpp11::stop("No algorithm available");
+                return nullptr;
             }
         }
     } else {
@@ -1064,7 +1064,7 @@ rankPartsPtr GetRankPartsFunc(PartitionType ptype, bool IsGmp) {
             } case PartitionType::CompDistinctCapMZWeak: {
                 return(rankPartsPtr(rankCompsDistinctMZWeak));
             } default : {
-                cpp11::stop("No algorithm available");
+                return nullptr;
             }
         }
     }

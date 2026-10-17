@@ -208,6 +208,24 @@ SEXP CombClassNew(SEXP RVals, SEXP RboolVec, SEXP freqInfo, SEXP Rparallel,
                             funDbl, part, ctype, n, m, compVec, mainFun,
                             funTest, myType, Rtarget, RcompFun,
                             Rtolerance, R_NilValue);
+
+            ValidatePartitionDesign(part);
+
+            if (IsMultisetComposition(part.ptype)) {
+                if (part.ptype == PartitionType::CompMultisetZero) {
+                    cpp11::stop(
+                        "Generation is not supported for this multiset "
+                        "composition. permuteIter() treats zeros as actual "
+                        "elements and does not preserve non-weak zero-padding"
+                        "semantics."
+                    );
+                }
+
+                cpp11::stop(
+                    "Generation is not supported for this multiset composition."
+                    " Consider using permuteIter() instead."
+                );
+            }
         }
 
         mpz_class computedRowsMpz;

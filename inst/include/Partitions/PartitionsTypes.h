@@ -273,8 +273,11 @@
 // * "MZ" (MZ) means multiple zeros may be available through freqs[0]
 //   or an equivalent mapped representation. MZ does not imply weakness.
 //
-// * Composition types are non-weak unless "Weak" is explicitly present in the
-//   PartitionType name.
+// * "Weak" in a composition PartitionType indicates that zero is treated as
+//   an actual part rather than padding. This does not necessarily imply that
+//   the user requested weak compositions. In some mapped cases, zero represents
+//   the smallest positive input value, and weak-style algorithms are used
+//   as an implementation detail.
 //
 // * For non-weak compositions, zeros appearing in startZ are internal padding
 //   used to represent compositions having fewer than width positive parts.
@@ -580,35 +583,148 @@ constexpr std::array<
     "CompMultisetWeak"
 }};
 
-const std::array<PartitionType, 4> NoCountAlgoPTypeArr{{
-    PartitionType::NotMapped, PartitionType::NotPartition,
-    PartitionType::NoSolution, PartitionType::CoarseGrained
-}};
 
-const std::array<PartitionType, 9> NoRankAlgoPTypeArr{{
-    PartitionType::NotMapped, PartitionType::NotPartition,
-    PartitionType::NoSolution, PartitionType::CoarseGrained,
-    PartitionType::CompMultiset, PartitionType::CompMultisetWeak,
-    PartitionType::CompMultisetZero, PartitionType::PrmMultiset,
-    PartitionType::Multiset
-}};
+constexpr bool HasCountAlgo(const PartitionType ptype) {
+    switch (ptype) {
+        case PartitionType::RepStdAll:
+        case PartitionType::RepNoZero:
+        case PartitionType::RepShort:
+        case PartitionType::RepCapped:
+        case PartitionType::DistinctStdAll:
+        case PartitionType::DistinctMZ:
+        case PartitionType::DistinctOneZero:
+        case PartitionType::DistinctNoZero:
+        case PartitionType::DistinctCapped:
+        case PartitionType::DistinctCappedMZ:
+        case PartitionType::LengthOne:
+        case PartitionType::Multiset:
+        case PartitionType::CompRepNoZero:
+        case PartitionType::CompRepWeak:
+        case PartitionType::CompRepZero:
+        case PartitionType::CompDistinctNoZero:
+        case PartitionType::CompDistinctZero:
+        case PartitionType::CompDistinctWeak:
+        case PartitionType::CompDistinctMZWeak:
+        case PartitionType::CompDistinctCapped:
+        case PartitionType::CompDistinctCapWeak:
+        case PartitionType::CompDistinctCapMZ:
+        case PartitionType::CompDistinctCapMZWeak:
+        case PartitionType::CompMultiset:
+        case PartitionType::PrmRepPartNoZ:
+        case PartitionType::PrmRepPart:
+        case PartitionType::PrmRepCapped:
+        case PartitionType::PrmDstPartNoZ:
+        case PartitionType::PrmDstPrtOneZ:
+        case PartitionType::PrmDstPartMZ:
+        case PartitionType::PrmDstPrtCap:
+        case PartitionType::PrmDstPrtCapMZ:
+        case PartitionType::PrmMultiset:
+        case PartitionType::CompRepCapped:
+        case PartitionType::CompRepCapZero:
+        case PartitionType::CompRepWeakCap:
+        case PartitionType::CompMultisetZero:
+        case PartitionType::CompMultisetWeak:
+            return true;
 
-const std::array<PartitionType, 13> CappedPTypeArr{{
-    PartitionType::RepCapped, PartitionType::DistinctCapped,
-    PartitionType::DistinctCappedMZ, PartitionType::PrmRepCapped,
-    PartitionType::PrmDstPrtCap, PartitionType::PrmDstPrtCapMZ,
-    PartitionType::CompDistinctCapped, PartitionType::CompDistinctCapWeak,
-    PartitionType::CompDistinctCapMZWeak, PartitionType::CompRepCapped,
-    PartitionType::CompDistinctCapMZ, PartitionType::CompRepCapZero,
-    PartitionType::CompRepWeakCap
-}};
+        default:
+            return false;
+    }
+}
 
-const std::array<PartitionType, 8> CompDistinctPTypeArr{{
-    PartitionType::CompDistinctWeak, PartitionType::CompDistinctCapWeak,
-    PartitionType::CompDistinctMZWeak, PartitionType::CompDistinctNoZero,
-    PartitionType::CompDistinctZero, PartitionType::CompDistinctCapped,
-    PartitionType::CompDistinctCapMZWeak, PartitionType::CompDistinctCapMZ
-}};
+// Ranking and sampling require supported rank and unrank algorithms.
+// Permutation-based partition types are excluded because their generation
+// order is not supported by the ranking machinery.
+constexpr bool HasRankAlgo(const PartitionType ptype) {
+    switch (ptype) {
+        case PartitionType::RepStdAll:
+        case PartitionType::RepNoZero:
+        case PartitionType::RepShort:
+        case PartitionType::RepCapped:
+        case PartitionType::DistinctStdAll:
+        case PartitionType::DistinctMZ:
+        case PartitionType::DistinctOneZero:
+        case PartitionType::DistinctNoZero:
+        case PartitionType::DistinctCapped:
+        case PartitionType::DistinctCappedMZ:
+        case PartitionType::LengthOne:
+        case PartitionType::CompRepNoZero:
+        case PartitionType::CompRepWeak:
+        case PartitionType::CompRepZero:
+        case PartitionType::CompDistinctNoZero:
+        case PartitionType::CompDistinctZero:
+        case PartitionType::CompDistinctWeak:
+        case PartitionType::CompDistinctMZWeak:
+        case PartitionType::CompDistinctCapped:
+        case PartitionType::CompDistinctCapWeak:
+        case PartitionType::CompDistinctCapMZ:
+        case PartitionType::CompDistinctCapMZWeak:
+        case PartitionType::CompRepCapped:
+        case PartitionType::CompRepCapZero:
+        case PartitionType::CompRepWeakCap:
+            return true;
+
+        default:
+            return false;
+    }
+}
+
+constexpr bool IsCapped(const PartitionType ptype) {
+    switch (ptype) {
+        case PartitionType::RepCapped:
+        case PartitionType::DistinctCapped:
+        case PartitionType::DistinctCappedMZ:
+        case PartitionType::PrmRepCapped:
+        case PartitionType::PrmDstPrtCap:
+        case PartitionType::PrmDstPrtCapMZ:
+        case PartitionType::CompDistinctCapped:
+        case PartitionType::CompDistinctCapWeak:
+        case PartitionType::CompDistinctCapMZWeak:
+        case PartitionType::CompRepCapped:
+        case PartitionType::CompDistinctCapMZ:
+        case PartitionType::CompRepCapZero:
+        case PartitionType::CompRepWeakCap:
+            return true;
+        default:
+            return false;
+    }
+}
+
+constexpr bool IsMultisetComposition(const PartitionType ptype) {
+    switch (ptype) {
+        case PartitionType::CompMultiset:
+        case PartitionType::CompMultisetWeak:
+        case PartitionType::CompMultisetZero:
+            return true;
+        default:
+            return false;
+    }
+}
+
+constexpr bool IsCompDistinct(const PartitionType ptype) {
+    switch (ptype) {
+        case PartitionType::CompDistinctWeak:
+        case PartitionType::CompDistinctCapWeak:
+        case PartitionType::CompDistinctMZWeak:
+        case PartitionType::CompDistinctNoZero:
+        case PartitionType::CompDistinctZero:
+        case PartitionType::CompDistinctCapped:
+        case PartitionType::CompDistinctCapMZWeak:
+        case PartitionType::CompDistinctCapMZ:
+            return true;
+        default:
+            return false;
+    }
+}
+
+constexpr bool UsesVariableMappedZeros(const PartitionType ptype) {
+    switch (ptype) {
+        case PartitionType::CompDistinctMZWeak:
+        case PartitionType::CompDistinctCapMZWeak:
+            return true;
+        default:
+            return false;
+    }
+}
 
 struct PartDesign {
     // Maximum number of zeros permitted in generated results.
