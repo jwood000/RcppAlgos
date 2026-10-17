@@ -118,7 +118,7 @@ system.time(primeSieve(10^8))
 ## Generate large primes over interval
 system.time(myPs <- primeSieve(10^13+10^6, 10^13))
 #>    user  system elapsed 
-#>    0.01    0.00    0.01 
+#>   0.009   0.000   0.010 
 ## Object created is small
 object.size(myPs)
 #> 267696 bytes
@@ -126,5 +126,5 @@ object.size(myPs)
 ## Using nThreads
 system.time(primeSieve(1e7, nThreads = 2))
 #>    user  system elapsed 
-#>   0.016   0.000   0.008 
+#>   0.014   0.000   0.008 
 ```
