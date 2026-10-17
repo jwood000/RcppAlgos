@@ -9,7 +9,7 @@
 * Fixed overflow in large multiset permutation counts. For example, `permuteCount(2, 2000, freqs = c(1000, 1000))` now returns the correct `bigz` result ([Issue #72](<https://github.com/jwood000/RcppAlgos/issues/72>), [PR #74](<https://github.com/jwood000/RcppAlgos/pull/74>)).
 * Fixed `FUN` being ignored for factor inputs in `comboGeneral()` and `permuteGeneral()`. Factors passed to `FUN` retain their levels and class, including ordered-factor status ([Issue #71](<https://github.com/jwood000/RcppAlgos/issues/71>), [PR #75](<https://github.com/jwood000/RcppAlgos/pull/75>)).
 
-The following five fixes are covered by [Issue #70](https://github.com/jwood000/RcppAlgos/issues/70) and [PR #73](https://github.com/jwood000/RcppAlgos/pull/73):
+The following five fixes are covered by [Issue #70](<https://github.com/jwood000/RcppAlgos/issues/70>) and [PR #73](<https://github.com/jwood000/RcppAlgos/pull/73>):
 
 * Fixed product constraints involving negative values: explicitly supplying `lower = 1` now correctly restricts testing to the requested candidate range. Without `lower`, generation searches for the requested number of matching results and remains serial, even when multiple threads are requested.
 * Fixed parallel iterator batches starting from an incorrect position when `constraintFun` is supplied without filtering.
