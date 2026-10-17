@@ -90,19 +90,25 @@ SEXP PartitionsCount(
                     funDbl, part, ctype, n, m, compVec, mainFun,
                     mainFun, myType, Rtarget, RcompFun, Rtolerance, Rlow);
 
-    if (!part.numUnknown) {
-        if (bDesign) {
-            bool Verbose = CppConvert::convertFlag(Rshow, "showDetail");
-            return GetDesign(part, ctype, n, Verbose);
-        } else {
-            return CppConvert::GetCount(part.isGmp, part.bigCount, part.count);
-        }
-    } else if (bDesign) {
-        cpp11::stop("No design available for this case!");
-    } else {
-        cpp11::stop("The count is unknown for this case.\n To get the"
-                    " total number, generate all results!");
+    if (bDesign) {
+        const bool verbose = CppConvert::convertFlag(Rshow, "showDetail");
+        return GetDesign(part, ctype, n, verbose);
     }
+
+    if (part.numUnknown) {
+        if (part.ptype == PartitionType::NotMapped) {
+            cpp11::stop("No counting algorithm is available for this case.");
+        }
+
+        cpp11::stop(
+            "The count is unknown for this case.\n"
+            "To get the total number, generate all results!"
+        );
+    }
+
+    return CppConvert::GetCount(
+        part.isGmp, part.bigCount, part.count
+    );
 }
 
 [[cpp11::register]]
