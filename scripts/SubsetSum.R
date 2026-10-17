@@ -181,7 +181,7 @@ reprex::reprex({
     set.seed(101)
     v <- runif(1000, 1, 2)
 
-    prettyNum(comboCount(v, 100), big.mark = ",")
+    prettyNum(as.character(comboCount(v, 100)), big.mark = ",")
 
     system.time(prodAlmost100 <- comboGeneral(v, 100, constraintFun = "prod",
                                               comparisonFun = "==",
