@@ -1,7 +1,7 @@
 \name{NEWS}
 \title{News for Package \pkg{RcppAlgos}}
 
-\section{Changes in RcppAlgos version 2.10.2 (Release date: 2026-10-07)}{
+\section{Changes in RcppAlgos version 2.10.2 (Release date: 2026-10-17)}{
 
     \subsection{New Features}{
         \itemize{
@@ -13,8 +13,11 @@
         \itemize{
           \item Fixed overflow in large multiset permutation counts. For example, \code{permuteCount(2, 2000, freqs = c(1000, 1000))} now returns the correct \code{bigz} result (\href{https://github.com/jwood000/RcppAlgos/issues/72}{Issue #72}, \href{https://github.com/jwood000/RcppAlgos/pull/74}{PR #74}).
           \item Fixed \code{FUN} being ignored for factor inputs in \code{comboGeneral()} and \code{permuteGeneral()}. Factors passed to \code{FUN} retain their levels and class, including ordered-factor status (\href{https://github.com/jwood000/RcppAlgos/issues/71}{Issue #71}, \href{https://github.com/jwood000/RcppAlgos/pull/75}{PR #75}).
+          \item Improved handling of non-finite count estimates by switching to arbitrary-precision arithmetic. Invalid non-finite numeric arguments are rejected before conversion.
         }
+    }
 
+    \subsection{}{
         The following five fixes are covered by \href{https://github.com/jwood000/RcppAlgos/issues/70}{Issue #70} and \href{https://github.com/jwood000/RcppAlgos/pull/73}{PR #73}:
 
         \itemize{
@@ -32,6 +35,8 @@
           \item Multiset partition generation now validates \code{upper} against the computed result count.
           \item Improved errors for unsupported partition and composition ranking or sampling, and for cases with no solution.
           \item Clarified threading restrictions for special constraints and documented calling \code{startOver()} before reusing an iterator after a generation error.
+          \item Improved handling of unsupported multiset compositions. Counting remains available where supported, while generation now provides clearer errors and guidance about permutation-based alternatives.
+          \item Enhanced \code{compositionsDesign()} and \code{partitionsDesign()} diagnostics. Unknown counts are now reported as \code{NA} rather than preventing design inspection. Design output also includes additional classification metadata, improved GMP count formatting, and \code{NA} for unavailable equation checks.
         }
     }
 

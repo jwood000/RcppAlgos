@@ -76,11 +76,11 @@ library(RcppAlgos)
 options(width = 90)
 
 packageVersion("RcppAlgos")
-#> [1] '2.10.1'
+#> [1] '2.10.2'
 
 cat(paste(capture.output(sessionInfo())[1:3], collapse = "\n"))
-#> R version 4.5.2 (2025-10-31)
-#> Platform: aarch64-apple-darwin20
+#> R version 4.6.1 (2026-06-24)
+#> Platform: aarch64-apple-darwin23
 #> Running under: macOS Sequoia 15.7.4
 
 compositionsGeneral(0:3, repetition = TRUE)
@@ -293,9 +293,8 @@ Currently, we must use `permuteGeneral`.
 
 ## Generates error
 compositionsGeneral(5, 3, freqs = rep(2, 5))
-#> Error: Currently, there is no composition algorithm for this case.
-#>  Use permuteCount, permuteIter, permuteGeneral, permuteSample, or
-#>  permuteRank instead.
+#> Error:
+#> ! Generation is not supported for this multiset composition. Consider using permuteGeneral() instead.
 
 ## compositions of 5 into 3 parts where each part can
 ## be used a maximum of 2 times.
@@ -481,7 +480,7 @@ when generating compositions.
 ## compositions of 25
 system.time(compositionsGeneral(0:25, repetition = TRUE))
 #>    user  system elapsed 
-#>   1.245   0.051   1.296
+#>   1.197   0.053   1.251
 
 compositionsCount(0:25, repetition = TRUE)
 #> [1] 16777216
@@ -490,14 +489,14 @@ compositionsCount(0:25, repetition = TRUE)
 ## over 16 million compositions instantly
 system.time(compositionsGeneral(0:25, repetition = TRUE, nThreads = 4))
 #>    user  system elapsed 
-#>   1.370   0.055   0.378
+#>   1.373   0.060   0.379
 
 
 ## weak compositions of 12 using nThreads = 4
 system.time(weakComp12 <- compositionsGeneral(0:12, repetition = TRUE,
                                               weak = TRUE, nThreads = 4))
 #>    user  system elapsed 
-#>   0.008   0.003   0.003
+#>   0.009   0.004   0.003
 
 ## And using permuteGeneral
 system.time(weakPerm12 <- permuteGeneral(0:12, 12, repetition = TRUE,
@@ -505,7 +504,7 @@ system.time(weakPerm12 <- permuteGeneral(0:12, 12, repetition = TRUE,
                                          comparisonFun = "==",
                                          limitConstraints = 12))
 #>    user  system elapsed 
-#>   0.009   0.002   0.010
+#>   0.010   0.002   0.012
 
 dim(weakPerm12)
 #> [1] 1352078      12
@@ -517,7 +516,7 @@ identical(weakPerm12[do.call(order, as.data.frame(weakPerm12)), ],
 ## Distinct Parts
 system.time(compositionsGeneral(55, 8))
 #>    user  system elapsed 
-#>   0.664   0.015   0.678
+#>   0.630   0.017   0.647
 
 compositionsCount(55, 8)
 #> [1] 14192640
@@ -525,7 +524,7 @@ compositionsCount(55, 8)
 ## Similar to above... using 4 threads gets us the result instantly
 system.time(compositionsGeneral(55, 8, nThreads = 4))
 #>    user  system elapsed 
-#>   0.646   0.015   0.188
+#>   0.660   0.017   0.192
 
 ## General compositions with varying multiplicities
 system.time(comp25_gen <- permuteGeneral(25, 10, freqs = rep(4:8, 5),
@@ -533,7 +532,7 @@ system.time(comp25_gen <- permuteGeneral(25, 10, freqs = rep(4:8, 5),
                                          comparisonFun = "==",
                                          limitConstraints = 25))
 #>    user  system elapsed 
-#>   0.012   0.005   0.017
+#>   0.006   0.000   0.006
 
 dim(comp25_gen)
 #> [1] 946092     10

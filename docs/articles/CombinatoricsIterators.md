@@ -510,7 +510,7 @@ microbenchmark(v243 = test_nextIter(15, 8))
 #> avoid potential integer overflows
 #> Unit: milliseconds
 #>  expr      min       lq     mean   median       uq      max neval
-#>  v243 16.58975 17.05336 18.67597 17.12195 17.33861 160.6705   100
+#>  v243 16.39922 16.93144 18.51925 17.21211 17.60478 135.0304   100
 
 identical(test_nextIter(15, 8, get_val = TRUE),
           comboGeneral(15, 8))
@@ -521,7 +521,7 @@ comboCount(25, 10)
 
 system.time(test_nextIter(25, 10))
 #>    user  system elapsed 
-#>   8.772   0.026   8.858
+#>   8.836   0.018   8.856
 
 Rprof("Version243.out", memory.profiling = TRUE)
 test_nextIter(25, 10)
@@ -529,44 +529,44 @@ Rprof(NULL)
 lapply(summaryRprof("Version243.out", memory = "both"), head)
 #> $by.self
 #>                  self.time self.pct total.time total.pct mem.total
-#> "as.environment"      2.58    32.49       2.58     32.49     390.7
-#> "$"                   2.40    30.23       6.16     77.58     855.9
-#> "test_nextIter"       0.88    11.08       7.94    100.00    1233.1
-#> "exists"              0.62     7.81       0.62      7.81      73.4
-#> "get"                 0.56     7.05       0.56      7.05      74.4
-#> ".External"           0.54     6.80       0.54      6.80     106.3
+#> "as.environment"      2.40    31.33       2.40     31.33     350.7
+#> "$"                   2.04    26.63       5.86     76.50     896.5
+#> "test_nextIter"       0.80    10.44       7.64     99.74    1142.1
+#> "get"                 0.74     9.66       0.74      9.66      85.9
+#> "exists"              0.62     8.09       0.62      8.09      98.3
+#> ".External"           0.60     7.83       0.60      7.83      53.2
 #> 
 #> $by.total
 #>                             total.time total.pct mem.total self.time self.pct
-#> "test_nextIter"                   7.94       100    1233.1      0.88    11.08
-#> "<Anonymous>"                     7.94       100    1233.1      0.00     0.00
-#> "base::do.call"                   7.94       100    1233.1      0.00     0.00
-#> "base::saveRDS"                   7.94       100    1233.1      0.00     0.00
-#> "base::tryCatch"                  7.94       100    1233.1      0.00     0.00
-#> "base::withCallingHandlers"       7.94       100    1233.1      0.00     0.00
+#> "<Anonymous>"                     7.66       100    1142.3         0        0
+#> "base::do.call"                   7.66       100    1142.3         0        0
+#> "base::saveRDS"                   7.66       100    1142.3         0        0
+#> "base::tryCatch"                  7.66       100    1142.3         0        0
+#> "base::withCallingHandlers"       7.66       100    1142.3         0        0
+#> "block_exec"                      7.66       100    1142.3         0        0
 #> 
 #> $sample.interval
 #> [1] 0.02
 #> 
 #> $sampling.time
-#> [1] 7.94
+#> [1] 7.66
 ```
 
-### Version `2.10.1` (No `Rcpp`)
+### Version `2.10.2` (No `Rcpp`)
 
 ``` r
 
 curr_version <- as.integer(gsub("\\.", "", packageVersion("RcppAlgos")))
 curr_version
-#> [1] 2101
+#> [1] 2102
 microbenchmark(curr_v = test_nextIter(15, 8, v = curr_version))
 #> Unit: milliseconds
-#>    expr      min       lq     mean   median       uq      max neval
-#>  curr_v 1.959308 1.999344 2.065847 2.024129 2.046412 3.122929   100
+#>    expr     min       lq     mean   median       uq      max neval
+#>  curr_v 1.86755 1.925216 2.002506 1.966524 2.009841 2.800833   100
 
 system.time(test_nextIter(25, 10, v = curr_version))
 #>    user  system elapsed 
-#>   0.959   0.007   0.965
+#>   0.968   0.002   0.971
 
 identical(test_nextIter(15, 8, get_val = TRUE, v = curr_version),
           comboGeneral(15, 8))
@@ -579,24 +579,25 @@ Rprof(NULL)
 lapply(summaryRprof(curr_file_out, memory = "both"), head)
 #> $by.self
 #>                 self.time self.pct total.time total.pct mem.total
-#> ".Call"              0.36    39.13       0.36     39.13     109.8
-#> "<Anonymous>"        0.34    36.96       0.92    100.00     411.5
-#> "test_nextIter"      0.22    23.91       0.92    100.00     411.5
+#> ".Call"              0.30    36.59       0.30     36.59     205.1
+#> "<Anonymous>"        0.28    34.15       0.82    100.00     389.4
+#> "test_nextIter"      0.22    26.83       0.80     97.56     389.3
+#> "readBin"            0.02     2.44       0.02      2.44       0.1
 #> 
 #> $by.total
 #>                             total.time total.pct mem.total self.time self.pct
-#> "<Anonymous>"                     0.92       100     411.5      0.34    36.96
-#> "test_nextIter"                   0.92       100     411.5      0.22    23.91
-#> "base::do.call"                   0.92       100     411.5      0.00     0.00
-#> "base::saveRDS"                   0.92       100     411.5      0.00     0.00
-#> "base::tryCatch"                  0.92       100     411.5      0.00     0.00
-#> "base::withCallingHandlers"       0.92       100     411.5      0.00     0.00
+#> "<Anonymous>"                     0.82       100     389.4      0.28    34.15
+#> "base::do.call"                   0.82       100     389.4      0.00     0.00
+#> "base::saveRDS"                   0.82       100     389.4      0.00     0.00
+#> "base::tryCatch"                  0.82       100     389.4      0.00     0.00
+#> "base::withCallingHandlers"       0.82       100     389.4      0.00     0.00
+#> "block_exec"                      0.82       100     389.4      0.00     0.00
 #> 
 #> $sample.interval
 #> [1] 0.02
 #> 
 #> $sampling.time
-#> [1] 0.92
+#> [1] 0.82
 ```
 
 ### Caching Results w/ 2.4.3
@@ -605,11 +606,11 @@ lapply(summaryRprof(curr_file_out, memory = "both"), head)
 
 microbenchmark(v243cache = test_nextIter(15, 8, caching = TRUE))
 #> Unit: milliseconds
-#>       expr      min      lq     mean   median       uq      max neval
-#>  v243cache 2.152869 2.20498 2.308451 2.239338 2.295406 3.294637   100
+#>       expr      min       lq     mean   median       uq      max neval
+#>  v243cache 2.135977 2.222364 2.357865 2.248665 2.326811 4.913112   100
 system.time(test_nextIter(25, 10, caching = TRUE))
 #>    user  system elapsed 
-#>   1.099   0.005   1.103
+#>   1.138   0.004   1.142
 
 identical(test_nextIter(15, 8, get_val = TRUE, caching = TRUE),
           comboGeneral(15, 8))
@@ -621,38 +622,38 @@ Rprof(NULL)
 lapply(summaryRprof("Version243cache.out", memory = "both"), head)
 #> $by.self
 #>                 self.time self.pct total.time total.pct mem.total
-#> ".External"          0.62    63.27       0.62     63.27     134.9
-#> "f"                  0.28    28.57       0.90     91.84     246.6
-#> "test_nextIter"      0.08     8.16       0.98    100.00     307.7
+#> ".External"          0.48    51.06       0.48     51.06     119.1
+#> "f"                  0.32    34.04       0.80     85.11     191.9
+#> "test_nextIter"      0.14    14.89       0.94    100.00     258.8
 #> 
 #> $by.total
 #>                             total.time total.pct mem.total self.time self.pct
-#> "test_nextIter"                   0.98       100     307.7      0.08     8.16
-#> "<Anonymous>"                     0.98       100     307.7      0.00     0.00
-#> "base::do.call"                   0.98       100     307.7      0.00     0.00
-#> "base::saveRDS"                   0.98       100     307.7      0.00     0.00
-#> "base::tryCatch"                  0.98       100     307.7      0.00     0.00
-#> "base::withCallingHandlers"       0.98       100     307.7      0.00     0.00
+#> "test_nextIter"                   0.94       100     258.8      0.14    14.89
+#> "<Anonymous>"                     0.94       100     258.8      0.00     0.00
+#> "base::do.call"                   0.94       100     258.8      0.00     0.00
+#> "base::saveRDS"                   0.94       100     258.8      0.00     0.00
+#> "base::tryCatch"                  0.94       100     258.8      0.00     0.00
+#> "base::withCallingHandlers"       0.94       100     258.8      0.00     0.00
 #> 
 #> $sample.interval
 #> [1] 0.02
 #> 
 #> $sampling.time
-#> [1] 0.98
+#> [1] 0.94
 ```
 
-### Caching Results w/ `2.10.1`
+### Caching Results w/ `2.10.2`
 
 ``` r
 
 microbenchmark(curr_v = test_nextIter(15, 8, v = curr_version,
                                       caching = TRUE))
 #> Unit: milliseconds
-#>    expr      min       lq     mean   median       uq      max neval
-#>  curr_v 1.782639 1.816095 1.876918 1.839322 1.895655 2.562459   100
+#>    expr      min       lq     mean   median      uq      max neval
+#>  curr_v 1.772348 1.846312 1.932665 1.875647 1.90771 4.921804   100
 system.time(test_nextIter(25, 10, v = curr_version, caching = TRUE))
 #>    user  system elapsed 
-#>   0.906   0.003   0.909
+#>   0.917   0.003   0.920
 
 identical(test_nextIter(15, 8, get_val = TRUE,
                         v = curr_version, caching = TRUE),
@@ -666,24 +667,24 @@ Rprof(NULL)
 lapply(summaryRprof(curr_file_cache_out, memory = "both"), head)
 #> $by.self
 #>                 self.time self.pct total.time total.pct mem.total
-#> "g"                  0.42     50.0       0.74      88.1     289.5
-#> ".Call"              0.32     38.1       0.32      38.1      96.0
-#> "test_nextIter"      0.10     11.9       0.84     100.0     340.6
+#> "g"                  0.36    46.15       0.72     92.31     298.3
+#> ".Call"              0.36    46.15       0.36     46.15     173.1
+#> "test_nextIter"      0.06     7.69       0.78    100.00     346.5
 #> 
 #> $by.total
 #>                             total.time total.pct mem.total self.time self.pct
-#> "test_nextIter"                   0.84       100     340.6       0.1     11.9
-#> "<Anonymous>"                     0.84       100     340.6       0.0      0.0
-#> "base::do.call"                   0.84       100     340.6       0.0      0.0
-#> "base::saveRDS"                   0.84       100     340.6       0.0      0.0
-#> "base::tryCatch"                  0.84       100     340.6       0.0      0.0
-#> "base::withCallingHandlers"       0.84       100     340.6       0.0      0.0
+#> "test_nextIter"                   0.78       100     346.5      0.06     7.69
+#> "<Anonymous>"                     0.78       100     346.5      0.00     0.00
+#> "base::do.call"                   0.78       100     346.5      0.00     0.00
+#> "base::saveRDS"                   0.78       100     346.5      0.00     0.00
+#> "base::tryCatch"                  0.78       100     346.5      0.00     0.00
+#> "base::withCallingHandlers"       0.78       100     346.5      0.00     0.00
 #> 
 #> $sample.interval
 #> [1] 0.02
 #> 
 #> $sampling.time
-#> [1] 0.84
+#> [1] 0.78
 ```
 
 ### Access Efficiency Conclusions
@@ -709,41 +710,41 @@ v243 <- summaryRprof("Version243.out", memory = "stats", index = 1)
 v243
 #> index: "base::tryCatch"
 #>      vsize.small  max.vsize.small      vsize.large  max.vsize.large            nodes 
-#>           170393          5193152            18262          7249928          3230896 
+#>           168680          6753568            20151          7649136          3190938 
 #>        max.nodes     duplications tot.duplications          samples 
-#>         52086272            24687          9800665              397
+#>         82229168            25604          9806433              383
 
 ## Current version
 vCurr <- summaryRprof(curr_file_out, memory = "stats", index = 1)
 vCurr
 #> index: "base::tryCatch"
 #>      vsize.small  max.vsize.small      vsize.large  max.vsize.large            nodes 
-#>          1926877          8364160           159239          7324984          8975174 
+#>          1991383          6123648           182053          7395400          9332493 
 #>        max.nodes     duplications tot.duplications          samples 
-#>         61668096                2               84               46
+#>         50357776                3              109               41
 
 ## Version 2.4.3 with caching
 v243Cache <- summaryRprof("Version243cache.out", memory = "stats", index = 1)
 v243Cache
 #> index: "base::tryCatch"
 #>      vsize.small  max.vsize.small      vsize.large  max.vsize.large            nodes 
-#>          1745175          8831840           149587          7329784          6229210 
+#>          1588196         10165552           157393          7397488          5760813 
 #>        max.nodes     duplications tot.duplications          samples 
-#>         59218544            66501          3258546               49
+#>         63887768            69337          3258842               47
 
 ## Current version with caching
 vCurrCache <- summaryRprof(curr_file_cache_out, memory = "stats", index = 1)
 vCurrCache
 #> index: "base::tryCatch"
 #>      vsize.small  max.vsize.small      vsize.large  max.vsize.large            nodes 
-#>          1798149          9086400           174486          7328424          8463863 
+#>          1888455          6264192           189715          7398904          8913925 
 #>        max.nodes     duplications tot.duplications          samples 
-#>         64825432                2               84               42
+#>         51927680                2               84               39
 ```
 
 The duplication statistics reveal a clear pattern across the four cases.
-In version `2.4.3` without caching, the profiler records `9800665` total
-duplications. By comparison, the current version records only `84`
+In version `2.4.3` without caching, the profiler records `9806433` total
+duplications. By comparison, the current version records only `109`
 duplications.
 
 To better isolate the source of this difference, we repeat the
@@ -752,13 +753,13 @@ experiment while caching the accessor. Instead of repeatedly resolving
 (e.g. `f <- a$nextIter`) and call `f()` repeatedly.
 
 With caching enabled, the duplication count for version `2.4.3` drops to
-`3258546`. This substantial reduction indicates that a large portion of
+`3258842`. This substantial reduction indicates that a large portion of
 the work in earlier versions was associated with repeatedly resolving
 the accessor rather than executing the underlying combinatorial routine
 itself.
 
 In contrast, caching has little effect on the current implementation:
-the duplication counts remain essentially unchanged (`84` versus `84`).
+the duplication counts remain essentially unchanged (`84` versus `109`).
 This suggests that the accessor overhead has largely been eliminated in
 `2.5.0+`, where iterator methods are exposed through `S4` slots backed
 by external pointers.
@@ -832,7 +833,8 @@ p[[7]]
 
 ## No previous iterators
 p@prevIter()
-#> Error: no slot of name "prevIter" for this object of class "Partitions"
+#> Error:
+#> ! no slot of name "prevIter" for this object of class "Partitions"
 ```
 
 For compositions, we have the same functionality as with
@@ -898,7 +900,8 @@ p[[7]]
 
 ## No previous iterators
 p@prevIter()
-#> Error: no slot of name "prevIter" for this object of class "Partitions"
+#> Error:
+#> ! no slot of name "prevIter" for this object of class "Partitions"
 ```
 
 ## Iterating over Constrained Combinations/Permutations
@@ -1046,7 +1049,7 @@ time_all <- system.time({
 #> [1] 38935252
 time_all
 #>    user  system elapsed 
-#>   1.244   1.191   2.972
+#>   1.337   1.065   2.552
 
 ## Over 4 GBs of results
 (38935252 * 15 * 8) / 2^30
@@ -1089,7 +1092,7 @@ time_iter <- system.time({
 #> [1] NA
 time_iter
 #>    user  system elapsed 
-#>   0.950   0.184   1.134
+#>   0.966   0.204   1.169
 
 ## Only 1 MBs per iteration
 (1e4 * 15 * 8) / 2^20
@@ -1097,7 +1100,7 @@ time_iter
 ```
 
 Wow! Using the iterator approach is not only easier on your RAM, but
-faster as well (`2.972 / 1.134 ~= 2.6208`)! Our gains came strictly from
+faster as well (`2.552 / 1.169 ~= 2.1831`)! Our gains came strictly from
 memory efficiency (From over 4 GBs to just over 1 MB) as the underlying
 algorithm is exactly the same.
 
@@ -1147,7 +1150,7 @@ system.time({
 #> $totalRemaining
 #> [1] NA
 #>    user  system elapsed 
-#>   6.441   1.332   7.772
+#>   6.712   1.592   8.310
 ```
 
 ## Iterating over Partitions of Groups
@@ -1289,5 +1292,6 @@ cg[[7]]
 
 ## No previous iterators
 cg@prevIter()
-#> Error: no slot of name "prevIter" for this object of class "ComboGroups"
+#> Error:
+#> ! no slot of name "prevIter" for this object of class "ComboGroups"
 ```

@@ -28,18 +28,18 @@ microbenchmark(primeSieve(1e6))
 #> Warning in microbenchmark(primeSieve(1000000)): less accurate nanosecond times to avoid
 #> potential integer overflows
 #> Unit: microseconds
-#>               expr    min      lq     mean  median       uq     max neval
-#>  primeSieve(1e+06) 421.07 455.633 476.5504 460.389 471.6435 759.771   100
+#>               expr     min      lq     mean median     uq     max neval
+#>  primeSieve(1e+06) 470.762 478.798 507.6329 495.69 523.57 779.369   100
 
 ## Single threaded primes under a billion!!!
 system.time(primeSieve(10^9))
 #>    user  system elapsed 
-#>   0.693   0.020   0.712
+#>   0.689   0.021   0.710
 
 ## Using 8 threads we can get under 0.5 seconds!!!
 system.time(primeSieve(10^9, nThreads = 8))
 #>    user  system elapsed 
-#>   1.051   0.021   0.162
+#>   1.018   0.025   0.167
 
 ## Quickly generate large primes over small interval. N.B. The
 ## order for the bounds does not matter.
@@ -73,19 +73,19 @@ Oliveira](https://sweet.ua.pt/tos/software/prime_sieve.html).
 ## Version <= 2.2.0.. i.e. older versions
 system.time(old <- RcppAlgos220::primeSieve(1e15, 1e15 + 1e9))
 #>    user  system elapsed 
-#>   2.026   0.034   2.102
+#>   2.257   0.031   2.309
 
 invisible(gc())
 ## v2.3.0+ is faster
 system.time(a <- primeSieve(1e15, 1e15 + 1e9))
 #>    user  system elapsed 
-#>   0.958   0.024   0.982
+#>   0.961   0.022   0.984
 
 invisible(gc())
 ## And using nThreads is much much faster
 system.time(b <- primeSieve(1e15, 1e15 + 1e9, nThreads = 8))
 #>    user  system elapsed 
-#>   1.681   0.053   0.278
+#>   1.654   0.053   0.284
 
 identical(old, a)
 #> [1] TRUE
@@ -133,7 +133,7 @@ With this is mind, here are some results:
 ## Enumerate the number of primes below trillion
 system.time(underOneTrillion <- primeCount(10^12))
 #>    user  system elapsed 
-#>   0.084   0.001   0.085
+#>   0.085   0.001   0.086
 
 underOneTrillion
 #> [1] 37607912018
@@ -142,11 +142,11 @@ underOneTrillion
 microbenchmark(primeCount(10^10))
 #> Unit: milliseconds
 #>               expr      min       lq     mean   median       uq      max neval
-#>  primeCount(10^10) 1.201382 1.205605 1.217276 1.208782 1.213538 1.784689   100
+#>  primeCount(10^10) 1.197938 1.205297 1.222203 1.208516 1.216819 1.770093   100
 
 system.time(underOneHundredTrillion <- primeCount(1e14, nThreads = 8))
 #>    user  system elapsed 
-#>   4.974   0.412   0.910
+#>   5.017   0.419   0.918
 
 underOneHundredTrillion
 #> [1] 3204941750802
@@ -157,7 +157,7 @@ cat(paste(
     collapse = "\n"
 ))
 #> 3204941750802
-#> Seconds: 0.218
+#> Seconds: 0.212
 ```
 
 ## Other Sieving Functions
@@ -180,7 +180,7 @@ numDivisorSieve(20)
 ## If you want the complete factorization from 1 to n, use divisorsList
 system.time(allFacs <- divisorsSieve(10^5, namedList = TRUE))
 #>    user  system elapsed 
-#>   0.020   0.004   0.026
+#>   0.020   0.005   0.024
 
 allFacs[c(4339, 15613, 22080)]
 #> $`4339`
@@ -225,12 +225,12 @@ eulerPhiSieve(20, namedVector = TRUE)
 
 system.time(a <- eulerPhiSieve(1e12, 1e12 + 1e7))
 #>    user  system elapsed 
-#>   0.219   0.007   0.227
+#>   0.216   0.007   0.223
 
 ## Using nThreads for greater efficiency
 system.time(b <- eulerPhiSieve(1e12, 1e12 + 1e7, nThreads = 8))
 #>    user  system elapsed 
-#>   0.763   0.038   0.109
+#>   0.752   0.040   0.111
 
 identical(a, b)
 #> [1] TRUE
@@ -253,7 +253,7 @@ primeFactorize(123456789)
 ## N.B. The R Version you are using... random sampling
 ## has changed throughout the years
 R.version[["version.string"]]
-#> [1] "R version 4.5.2 (2025-10-31)"
+#> [1] "R version 4.6.1 (2026-06-24)"
 set.seed(100)
 
 myVec <- sample(-100000000:100000000, 5)
@@ -286,12 +286,12 @@ isPrimeRcpp(995:1000, namedVector = TRUE)
 
 system.time(a <- primeFactorize(1e12:(1e12 + 1e5)))
 #>    user  system elapsed 
-#>   0.495   0.007   0.502
+#>   0.496   0.005   0.503
 
 ## Using nThreads for greater efficiency
 system.time(b <- primeFactorize(1e12:(1e12 + 1e5), nThreads = 8))
 #>    user  system elapsed 
-#>   0.690   0.005   0.111
+#>   0.692   0.006   0.112
 
 identical(a, b)
 #> [1] TRUE
