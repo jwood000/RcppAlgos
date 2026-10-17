@@ -55,11 +55,11 @@ library(RcppAlgos)
 options(width = 90)
 
 packageVersion("RcppAlgos")
-#> [1] '2.10.1'
+#> [1] '2.10.2'
 
 cat(paste(capture.output(sessionInfo())[1:3], collapse = "\n"))
-#> R version 4.5.2 (2025-10-31)
-#> Platform: aarch64-apple-darwin20
+#> R version 4.6.1 (2026-06-24)
+#> Platform: aarch64-apple-darwin23
 #> Running under: macOS Sequoia 15.7.4
 
 partitionsGeneral(0:5, repetition = TRUE)
@@ -295,6 +295,15 @@ RcppAlgos:::partitionsDesign(
 #> 
 #> $partition_type
 #> [1] "RepNoZero"
+#> 
+#> $count_unknown
+#> [1] FALSE
+#> 
+#> $is_partition
+#> [1] TRUE
+#> 
+#> $constraint_type
+#> [1] "PartMapping"
 ```
 
 ##### Caveats Using `freqs`
@@ -561,12 +570,12 @@ partitionsCount(0:60, repetition = TRUE)
 ## Single threaded
 system.time(partitionsGeneral(0:60, repetition = TRUE))
 #>    user  system elapsed 
-#>   0.039   0.007   0.047
+#>   0.039   0.008   0.046
 
 ## Using nThreads
 system.time(partitionsGeneral(0:60, repetition = TRUE, nThreads = 4))
 #>    user  system elapsed 
-#>   0.024   0.013   0.011
+#>   0.025   0.018   0.012
 
 ## partitions of 120 into distinct parts
 partitionsCount(0:120, freqs = c(120, rep(1, 120)))
@@ -574,7 +583,7 @@ partitionsCount(0:120, freqs = c(120, rep(1, 120)))
 
 system.time(partitionsGeneral(0:120, freqs = c(120, rep(1, 120))))
 #>    user  system elapsed 
-#>   0.017   0.003   0.020
+#>   0.017   0.004   0.021
 
 system.time(partitionsGeneral(0:120, freqs = c(120, rep(1, 120)), nThreads = 4))
 #>    user  system elapsed 
@@ -587,5 +596,5 @@ partitionsCount(100, 15, freqs = rep(4:8, 20))
 ## Over 6 million almost instantly!
 system.time(partitionsGeneral(100, 15, freqs = rep(4:8, 20)))
 #>    user  system elapsed 
-#>   0.189   0.048   0.238
+#>   0.107   0.012   0.118
 ```

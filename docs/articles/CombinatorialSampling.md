@@ -54,7 +54,8 @@ pass `choose(100, 20)`, we will get an error:
 ``` r
 
 sample(choose(100, 20), 5)
-#> Error in sample.int(x, size, replace, prob): invalid first argument
+#> Error in `sample.int()`:
+#> ! invalid first argument
 ```
 
 We could also try calling `sample(100, 20)` a bunch of times and hope we
@@ -235,11 +236,11 @@ the naive approach above:
 ## the function "naive" is defined above
 system.time(naive(25, 10, 5, 15))
 #>    user  system elapsed 
-#>   1.022   0.012   1.036
+#>   1.178   0.012   1.190
 
 system.time(comboSample(25, 10, n = 5, seed = 15))
 #>    user  system elapsed 
-#>       0       0       0
+#>   0.000   0.000   0.001
 ```
 
 Even when dealing with extremely large numbers, these algorithms are
@@ -262,12 +263,12 @@ gmp::log10.bigz(comboCount(2500, 100))
 ## Still fast with larger samples
 system.time(comboSample(2500, 100, n = 1e4, seed = 157))
 #>    user  system elapsed 
-#>   0.403   0.001   0.404
+#>   0.401   0.001   0.403
 
 ## Using Parallel/nThreads in these cases has an even greater effect
 system.time(comboSample(2500, 100, n = 1e4, seed = 157, nThreads = 8))
 #>    user  system elapsed 
-#>   0.604   0.001   0.080
+#>   0.599   0.002   0.087
 ```
 
 #### User Defined Functions
@@ -341,13 +342,13 @@ partitionsCount(2500, 10)
 system.time(serial <- partitionsSample(2500, 10, n = 1e3,
                                        seed = 8128))
 #>    user  system elapsed 
-#>   2.317   0.007   2.324
+#>   2.329   0.004   2.334
 
 ## Use nThreads for greater efficiency
 system.time(multi <- partitionsSample(2500, 10, n = 1e3,
                                       seed = 8128, nThreads = 8))
 #>    user  system elapsed 
-#>   3.353   0.018   0.438
+#>   3.358   0.014   0.433
 
 identical(multi, serial)
 #> [1] TRUE
@@ -373,11 +374,13 @@ Observe the following:
 
 ## No sampling algorithm available when the source vector is not uniform
 partitionsSample(c(1, 4, 6, 7, 10, seq(11, 100, 7)), 10, n = 1, target = 340)
-#> Error: Partition sampling not available for this case.
+#> Error:
+#> ! Sampling not available for this case.
 
 ## As stated above, the standard multiset case doesn't work either
 partitionsSample(0:50, 6, freqs = rep(1:3, 17), n = 2)
-#> Error: Partition sampling not available for this case.
+#> Error:
+#> ! Sampling not available for this case.
 
 ## If we use freqs to indicate that zeros can repeat,
 ## then we can obtain random samples
@@ -444,7 +447,7 @@ system.time(serial <- compositionsSample(2500, 10, TRUE,
 system.time(multi <- compositionsSample(2500, 10, TRUE, n = 1e4,
                                         seed = 8128, nThreads = 8))
 #>    user  system elapsed 
-#>   0.299   0.001   0.041
+#>   0.293   0.002   0.043
 
 identical(multi, serial)
 #> [1] TRUE
@@ -484,7 +487,7 @@ compositionsSample(50, 8, TRUE, target = 100,
 system.time(compositionsSample(1500, 10, TRUE, target = 2500,
                                n = 1e4, seed = 28, nThreads = 8))
 #>    user  system elapsed 
-#>   1.749   0.005   0.237
+#>   1.678   0.004   0.233
 ```
 
 #### `compositionSample` with Distinct Parts
@@ -523,7 +526,7 @@ compositionsCount(150, 10, target = 300)
 system.time(compositionsSample(150, 10, target = 300, n = 1e3,
                                seed = 496, nThreads = 8))
 #>    user  system elapsed 
-#>   4.823   0.018   0.650
+#>   4.871   0.019   0.638
 ```
 
 ### Sampling Partitions of Groups with `comboGroupsSample`
@@ -653,7 +656,7 @@ comb = comboSample(25, 12, sampleVec = 2e6)[1, ]
 system.time(print(naive_rank(25, 12, comb)))
 #> [1] 2000000
 #>    user  system elapsed 
-#>   4.541   0.075   4.627
+#>   4.847   0.040   4.889
 ```
 
 ### RcppAlgos Solutions
