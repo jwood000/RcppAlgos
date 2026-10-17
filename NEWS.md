@@ -8,6 +8,7 @@
 
 * Fixed overflow in large multiset permutation counts. For example, `permuteCount(2, 2000, freqs = c(1000, 1000))` now returns the correct `bigz` result ([Issue #72](<https://github.com/jwood000/RcppAlgos/issues/72>), [PR #74](<https://github.com/jwood000/RcppAlgos/pull/74>)).
 * Fixed `FUN` being ignored for factor inputs in `comboGeneral()` and `permuteGeneral()`. Factors passed to `FUN` retain their levels and class, including ordered-factor status ([Issue #71](<https://github.com/jwood000/RcppAlgos/issues/71>), [PR #75](<https://github.com/jwood000/RcppAlgos/pull/75>)).
+* Fixed incomplete or unsupported generation of certain multiset compositions with positive input values. When the minimum input value maps internally to zero, it is now correctly treated as an actual part rather than zero padding. This also fixes related iterator, random-access, ranking, and sampling behavior.
 
 The following five fixes are covered by [Issue #70](<https://github.com/jwood000/RcppAlgos/issues/70>) and [PR #73](<https://github.com/jwood000/RcppAlgos/pull/73>):
 
@@ -23,6 +24,8 @@ The following five fixes are covered by [Issue #70](<https://github.com/jwood000
 * Multiset partition generation now validates `upper` against the computed result count.
 * Improved errors for unsupported partition and composition ranking or sampling, and for cases with no solution.
 * Clarified threading restrictions for special constraints and documented calling `startOver()` before reusing an iterator after a generation error.
+* Improved handling of unsupported multiset compositions. Counting remains available where supported, while generation now provides clearer errors and guidance about permutation-based alternatives.
+* Enhanced `compositionsDesign()` and `partitionsDesign()` diagnostics. Unknown counts are now reported as `NA` rather than preventing design inspection. Design output also includes additional classification metadata, improved GMP count formatting, and `NA` for unavailable equation checks.
 
 ## Performance
 
