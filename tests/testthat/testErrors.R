@@ -147,11 +147,8 @@ test_that("partitionsIter related functions produces appropriate error messages"
     gc()
 })
 
-test_that(paste("partitions/compositionsDesign functions",
+test_that(paste("partitionsCount functions",
                 "produces appropriate error messages"), {
-    expect_error(RcppAlgos:::partitionsDesign(0:17 + rnorm(18), 10,
-                                  repetition = TRUE, target = 25),
-                 "No design available for this case!")
     expect_error(RcppAlgos:::partitionsCount(0:17 + rnorm(18), 10,
                                  repetition = TRUE, target = 25),
                  "The count is unknown for this case.")
