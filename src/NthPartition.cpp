@@ -1,8 +1,9 @@
-#include "Partitions/NthPartition.h"
 #include "Partitions/PartitionsCountMultiset.h"
 #include "Partitions/PartitionsCountDistinct.h"
+#include "Partitions/MultisetCountEngine.h"
 #include "Partitions/PartitionsCountRep.h"
 #include "Partitions/PartitionsCount.h"
+#include "Partitions/NthPartition.h"
 #include <memory>
 #include <numeric>
 #include <vector>
@@ -513,6 +514,8 @@ std::vector<int> nthPartsMultiset(
     --n;
     --m;
 
+    MultisetCountEngine<false> counter;
+
     for (int i = 0, j = 0; i < (width - 1); ++i, --n, --m) {
         if (lclReps.size()) --lclReps.front();
 
@@ -527,7 +530,7 @@ std::vector<int> nthPartsMultiset(
         }
 
         double temp = lclReps.size()
-            ? CountPartsMultiset(n, m, allowed, lclReps) : 0;
+            ? counter.Count(n, m, allowed, lclReps) : 0;
 
         for (; temp <= dblIdx; ++j) {
             if (lclReps.size()) {
@@ -541,7 +544,7 @@ std::vector<int> nthPartsMultiset(
             n -= (m + 1);
             dblIdx -= temp;
             temp = lclReps.size()
-                ? CountPartsMultiset(n, m, allowed, lclReps) : 0;
+                ? counter.Count(n, m, allowed, lclReps) : 0;
         }
 
         res[i] = j;
