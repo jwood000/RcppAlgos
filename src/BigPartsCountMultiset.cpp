@@ -1,3 +1,5 @@
+#include "Partitions/BigPartsCountMultiset.h"
+#include "Partitions/BigPartsCountSection.h"
 #include "Combinations/BigComboCount.h"
 #include <algorithm>
 #include <gmpxx.h>
@@ -21,7 +23,9 @@ static inline std::size_t idx_b(std::size_t j, std::size_t s, std::size_t n1) {
 }
 
 void CountPartsMultisetWorker(
-    mpz_class &result, int n, int m,
+    mpz_class &result,
+    std::vector<mpz_class> &curr, std::vector<mpz_class> &next,
+    int n, int m,
     const std::vector<int>& allowed,
     const std::vector<int>& Reps,
     int strtLen = 0
@@ -29,10 +33,10 @@ void CountPartsMultisetWorker(
 
     const int k = static_cast<int>(allowed.size());
     const std::size_t n1 = static_cast<std::size_t>(n) + 1;
-    const std::size_t size = (static_cast<std::size_t>(m) + 1) * n1;
 
-    std::vector<mpz_class> curr(size, 0);
-    std::vector<mpz_class> next(size, 0);
+    // Both buffers may contain results from a previous count.
+    ResetP1D(curr);
+    ResetP1D(next);
 
     curr[idx_b(0, 0, n1)] = 1;
     int maxParts = 0;
@@ -93,7 +97,9 @@ void CountPartsMultisetWorker(
 }
 
 void CountCompsMultisetWorker(
-    mpz_class &result, int n, int m,
+    mpz_class &result,
+    std::vector<mpz_class> &curr, std::vector<mpz_class> &next,
+    int n, int m,
     const std::vector<int>& allowed,
     const std::vector<int>& Reps,
     int strtLen = 0
@@ -101,10 +107,10 @@ void CountCompsMultisetWorker(
 
     const int k = static_cast<int>(allowed.size());
     const std::size_t n1 = static_cast<std::size_t>(n) + 1;
-    const std::size_t size = (static_cast<std::size_t>(m) + 1) * n1;
 
-    std::vector<mpz_class> curr(size, 0);
-    std::vector<mpz_class> next(size, 0);
+    // Both buffers may contain results from a previous count.
+    ResetP1D(curr);
+    ResetP1D(next);
 
     curr[idx_b(0, 0, n1)] = 1;
     int maxParts = 0;
@@ -129,7 +135,7 @@ void CountCompsMultisetWorker(
         }
 
         const int t_max = std::min(f, m);
-        std::fill(next.begin(), next.end(), 0);
+        ResetP1D(next);
 
         for (int t = 0; t <= t_max; ++t) {
             const int shift = t * a;
@@ -172,21 +178,24 @@ void CountCompsMultisetWorker(
 }
 
 void CountPartsMultiset(
-    mpz_class &res, int n, int m, const std::vector<int>& allowed,
+    mpz_class &res, std::vector<mpz_class> &p1, std::vector<mpz_class> &p2,
+    int n, int m, const std::vector<int>& allowed,
     const std::vector<int>& Reps, int strtLen
 ) {
-    return CountPartsMultisetWorker(res, n, m, allowed, Reps);
+    return CountPartsMultisetWorker(res, p1, p2, n, m, allowed, Reps);
 }
 
 void CountCompsMultiset(
-    mpz_class &res, int n, int m, const std::vector<int>& allowed,
+    mpz_class &res, std::vector<mpz_class> &p1, std::vector<mpz_class> &p2,
+    int n, int m, const std::vector<int>& allowed,
     const std::vector<int>& Reps, int strtLen
 ) {
-    return CountCompsMultisetWorker(res, n, m, allowed, Reps);
+    return CountCompsMultisetWorker(res, p1, p2, n, m, allowed, Reps);
 }
 
 void CountCompsMultisetZero(
-    mpz_class &res, int n, int m, const std::vector<int>& allowed,
+    mpz_class &res, std::vector<mpz_class> &p1, std::vector<mpz_class> &p2,
+    int n, int m, const std::vector<int>& allowed,
     const std::vector<int>& Reps, int strtLen
 ) {
 
@@ -194,12 +203,13 @@ void CountCompsMultisetZero(
         // This means that z contains only zeros
         res = 1;
     } else {
-        CountCompsMultisetWorker(res, n, m, allowed, Reps, strtLen);
+        CountCompsMultisetWorker(res, p1, p2, n, m, allowed, Reps, strtLen);
     }
 }
 
 void CountCompsMultisetWeak(
-    mpz_class &res, int n, int m, const std::vector<int>& allowed,
+    mpz_class &res, std::vector<mpz_class> &p1, std::vector<mpz_class> &p2,
+    int n, int m, const std::vector<int>& allowed,
     const std::vector<int>& Reps, int strtLen
 ) {
 
@@ -207,6 +217,6 @@ void CountCompsMultisetWeak(
         // This means that z contains only zeros
         res = 1;
     } else {
-        return CountCompsMultisetWorker(res, n, m, allowed, Reps);
+        return CountCompsMultisetWorker(res, p1, p2, n, m, allowed, Reps);
     }
 }

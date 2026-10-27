@@ -1,5 +1,5 @@
-#include <gmpxx.h>
-#include <vector>
+#include "Partitions/BigPartsCountSection.h"
+#include <algorithm>
 
 void SumSection(const mpz_class &n, mpz_class &res) {
     mpz_class nIter(n / 3);
@@ -17,8 +17,12 @@ void SumSection(const mpz_class &n, mpz_class &res) {
     mpz_div_2exp(res.get_mpz_t(), res.get_mpz_t(), 1);
 }
 
+void ResetP1D(std::vector<mpz_class> &p) {
+    std::fill(p.begin(), p.end(), 0);
+}
+
 void ResetP2D(std::vector<std::vector<mpz_class>> &p2d) {
     for (auto& v : p2d) {
-        std::fill(v.begin(), v.end(), 0);
+        ResetP1D(v);
     }
 }
