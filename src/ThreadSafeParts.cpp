@@ -19,6 +19,7 @@ void StandardPartitions(
 
         const nthPartsPtr nthPartFun = GetNthPartsFuncOrStop(ptype, IsGmp);
         std::vector<std::vector<int>> zs(nThreads, z);
+        const std::vector<int> Reps;
 
         for (int j = 0; j < (nThreads - 1);
              ++j, step += stepSize, nextStep += stepSize) {
@@ -34,7 +35,9 @@ void StandardPartitions(
                 lower += stepSize;
             }
 
-            zs[j + 1] = nthPartFun(tar, width, cap, strtLen, lower, lowerMpz);
+            zs[j + 1] = nthPartFun(
+                tar, width, cap, strtLen, lower, lowerMpz, Reps
+            );
 
             if (!includeZero) {
                 for (auto &z_i: zs[j + 1]) {
@@ -93,8 +96,9 @@ void GeneralPartitions(
                 lower    += stepSize;
             }
 
-            zs[j + 1] = nthPartFun(part.mapTar, part.width,
-                                   cap, strtLen, lower, lowerMpz);
+            zs[j + 1] = nthPartFun(
+                part.mapTar, part.width, cap, strtLen, lower, lowerMpz, Reps
+            );
         }
 
         threads.emplace_back(

@@ -133,8 +133,9 @@ SEXP CombinatoricsCnstrt(SEXP Rv, SEXP Rm, SEXP RisRep, SEXP RFreqs,
     } else if (lower > 0) {
         const nthPartsPtr nthPartFun =
             GetNthPartsFuncOrStop(part.ptype, IsGmp);
-        startZ = nthPartFun(part.mapTar, part.width, cap,
-                            strtLen, lower, lowerMpz);
+        startZ = nthPartFun(
+            part.mapTar, part.width, cap, strtLen, lower, lowerMpz, myReps
+        );
 
         if (ctype == ConstraintType::PartStandard && !part.includeZero) {
             for (auto &z_i: startZ) {

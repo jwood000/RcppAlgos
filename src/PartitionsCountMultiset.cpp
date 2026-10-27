@@ -43,6 +43,8 @@ double CountMultisetWorker(int n, int m, const std::vector<int>& allowed,
     const std::size_t m1 = static_cast<std::size_t>(m) + 1;
 
     std::vector<double> dp(m1 * n1, 0.0);
+    std::vector<double> dp_old(dp.size());
+
     dp[idx(0, 0, n1)] = 1.0; // 0 parts sum to 0 in one way
     int maxParts = 0;
 
@@ -57,7 +59,7 @@ double CountMultisetWorker(int n, int m, const std::vector<int>& allowed,
         if (f < 1) continue;
 
         // Snapshot before using part size a
-        const std::vector<double> dp_old = dp;
+        std::copy(dp.begin(), dp.end(), dp_old.begin());
         const int t_max = std::min(f, m);
         const int oldMaxParts = maxParts;
 

@@ -15,8 +15,9 @@ void SampleResults(T* sampleMatrix, const std::vector<T> &v,
 
     if (IsGmp) {
         for (std::size_t i = 0; i < sampSize; ++i) {
-            const std::vector<int> z = nthPartFun(tar, m, cap, strtLen,
-                                                  0.0, myBigSamp[i]);
+            const std::vector<int> z = nthPartFun(
+                tar, m, cap, strtLen, 0.0, myBigSamp[i], myReps
+            );
             for (std::size_t j = 0; j < m; ++j) {
                 sampleMatrix[i + sampSize * j] = v[z[j]];
             }
@@ -25,8 +26,9 @@ void SampleResults(T* sampleMatrix, const std::vector<T> &v,
         mpz_class mpzDefault;
 
         for (std::size_t i = 0; i < sampSize; ++i) {
-            const std::vector<int> z = nthPartFun(tar, m, cap, strtLen,
-                                                  mySample[i], mpzDefault);
+            const std::vector<int> z = nthPartFun(
+                tar, m, cap, strtLen, mySample[i], mpzDefault, myReps
+            );
 
             for (std::size_t j = 0; j < m; ++j) {
                 sampleMatrix[i + sampSize * j] = v[z[j]];
@@ -46,8 +48,9 @@ void SampleResults(RcppParallel::RMatrix<T> &sampleMatrix,
 
     if (IsGmp) {
         for (int i = strtIdx; i < endIdx; ++i) {
-            const std::vector<int> z = nthPartFun(tar, m, cap, strtLen,
-                                                  0.0, myBigSamp[i]);
+            const std::vector<int> z = nthPartFun(
+                tar, m, cap, strtLen, 0.0, myBigSamp[i], myReps
+            );
             for (int j = 0; j < m; ++j) {
                 sampleMatrix(i, j) = v[z[j]];
             }
@@ -56,8 +59,9 @@ void SampleResults(RcppParallel::RMatrix<T> &sampleMatrix,
         mpz_class mpzDefault;
 
         for (int i = strtIdx; i < endIdx; ++i) {
-            const std::vector<int> z = nthPartFun(tar, m, cap, strtLen,
-                                                  mySample[i], mpzDefault);
+            const std::vector<int> z = nthPartFun(
+                tar, m, cap, strtLen, mySample[i], mpzDefault, myReps
+            );
             for (int j = 0; j < m; ++j) {
                 sampleMatrix(i, j) = v[z[j]];
             }

@@ -50,7 +50,9 @@ void Partitions::SetPartValues() {
 }
 
 void Partitions::MoveZToIndex() {
-    z = nthParts(part.mapTar, width, cap, strtLen, dblTemp, mpzTemp);
+    z = nthParts(
+        part.mapTar, width, cap, strtLen, dblTemp, mpzTemp, myReps
+    );
 
     if (ctype == ConstraintType::PartStandard) {
         for (auto &z_i: z) {
