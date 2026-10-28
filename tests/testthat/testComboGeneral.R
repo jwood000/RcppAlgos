@@ -846,3 +846,47 @@ test_that("internal useRangeSemantics with special constraints and gmp", {
 
     expect_equal(with_lower_parallel, ans)
 })
+
+
+test_that("Explicit lower = 1 dispatches generic constraints as ranges", {
+    v <- c(1L, 2L, 4L, 8L)
+    for (generate in list(comboGeneral, permuteGeneral)) {
+        candidates <- generate(v, 2L, upper = 3L)
+        for (comparison in c(">", "==")) {
+            # Inequality uses NotPartition; irregular equality is CoarseGrained.
+            target <- if (comparison == ">") 6L else 9L
+            matches <- if (comparison == ">") {
+                rowSums(candidates) > target
+            } else {
+                rowSums(candidates) == target
+            }
+            expect_identical(which(matches), 3L)
+
+            for (lower in list(1L, "1", gmp::as.bigz(1))) {
+                for (upper in c(1L, 3L)) {
+                    rows <- seq_len(upper)
+                    expected <- candidates[rows[matches[rows]], , drop = FALSE]
+                    expect_identical(
+                        generate(v, 2L, constraintFun = "sum",
+                                 comparisonFun = comparison,
+                                 limitConstraints = target,
+                                 lower = lower, upper = upper),
+                        expected
+                    )
+                }
+            }
+
+            # Without lower, upper still limits matches rather than candidates.
+            expect_equal(nrow(generate(
+                v, 2L, constraintFun = "sum", comparisonFun = comparison,
+                limitConstraints = target, upper = 1L
+            )), 1L)
+            expect_identical(
+                generate(v, 2L, constraintFun = "sum",
+                         comparisonFun = comparison, limitConstraints = target,
+                         lower = 2L, upper = 3L),
+                candidates[matches, , drop = FALSE]
+            )
+        }
+    }
+})

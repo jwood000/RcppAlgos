@@ -400,15 +400,13 @@ void ConstraintSetup(const std::vector<double> &vNum,
         myType = VecType::Integer;
     }
 
-    bool bLower = false;
+    // An explicit lower, including 1, requests a candidate range for the
+    // fallback cases in CheckSpecialCase. Validate it before dispatch.
+    const bool bLower = !Rf_isNull(Rlow);
 
-    // Currently, we are not able to generate the nth lexicographical
-    // partition for some cases. Thus, if lower is non-trivial, we must
-    // use the most general algorithm.
-    if (!Rf_isNull(Rlow)) {
+    if (bLower) {
         mpz_class tempLower;
         CppConvert::convertMpzClass(Rlow, tempLower, "lower");
-        bLower = cmp(tempLower, 1) > 0;
     }
 
     if (part.isPart) SetPartitionDesign(Reps, vNum, part, ctype, lenV, m);
