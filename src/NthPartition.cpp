@@ -499,8 +499,14 @@ std::vector<int> nthPartsDistinctCapMZGmp(
     return res;
 }
 
-// Both multiset unrankers require positive input multiplicities. Only the
-// front bucket is consumed; later buckets stay positive until reached.
+// Both multiset unrankers use the contract in NthPartition.h. Public freqs
+// validation rejects zero multiplicities; zero-valued parts are still valid.
+// Only the front bucket is consumed; later buckets stay positive until reached.
+// At each position, the residual index is inside the feasible suffix count.
+// With correct block counts, skipping a block cannot erase the last bucket:
+// some later block must contain that index. If reservation gives -1,
+// feasibility likewise guarantees a later bucket. Thus front() is unchecked.
+// A zero count is an empty block, not a signal to stop searching.
 // j is the original bucket offset, while allowed stays normalized to 1..k.
 // Dropping the front multiplicity therefore removes allowed.back(). Advancing
 // j shifts the candidate and its m remaining parts down by one, so n -= m + 1.

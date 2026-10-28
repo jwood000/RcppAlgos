@@ -428,6 +428,13 @@ void rankPartsDistinctCapMZGmp(
     }
 }
 
+// Both multiset rankers use the contract in RankPartition.h. Public freqs
+// validation rejects zero multiplicities; zero-valued parts are still valid.
+// Only the front bucket is consumed; later buckets stay positive until reached.
+// The validated row guarantees an available selected bucket. If reserving
+// the current bucket gives -1, that selection must be in a later bucket.
+// Otherwise, j < *iter guarantees a later bucket whenever we erase one.
+// These invariants keep front() valid without repeated emptiness checks.
 void rankPartsMultiset(
     std::vector<int>::iterator iter, int n, int m, int cap, int /* k */,
     double &dblIdx, mpz_class & /* mpzIdx */, const std::vector<int> &Reps

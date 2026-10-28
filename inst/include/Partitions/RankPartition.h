@@ -31,5 +31,12 @@ rankPartsFunc rankPartsDistinctCap;
 rankPartsFunc rankPartsDistinctCapGmp;
 rankPartsFunc rankPartsDistinctCapMZ;
 rankPartsFunc rankPartsDistinctCapMZGmp;
+
+// Multiset contract (double and GMP): m > 0, cap == Reps.size() > 0,
+// and every input multiplicity is positive. iter addresses m nondecreasing
+// bucket indices in [0, cap), summing to n - m, with no bucket used more
+// often than Reps permits. The result is zero-based.
+// GetRankPart checks membership/target; SetUpRank sorts and checks usage.
+// Direct C++ callers must establish these preconditions themselves.
 rankPartsFunc rankPartsMultiset;
 rankPartsFunc rankPartsMultisetGmp;

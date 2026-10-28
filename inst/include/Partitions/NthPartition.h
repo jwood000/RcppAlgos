@@ -40,5 +40,12 @@ nthPartsFunc nthPartsDistinctCap;
 nthPartsFunc nthPartsDistinctCapGmp;
 nthPartsFunc nthPartsDistinctCapMZ;
 nthPartsFunc nthPartsDistinctCapMZGmp;
+
+// Multiset contract (double and GMP): m > 0, cap == Reps.size() > 0,
+// and every input multiplicity is positive. n is the target for normalized
+// values 1..cap; the returned values are zero-based bucket indices.
+// The active index must satisfy 0 <= index < the count for (n, m, Reps).
+// Public sampleVec indices are one-based and validated before conversion;
+// direct C++ callers must establish these preconditions themselves.
 nthPartsFunc nthPartsMultiset;
 nthPartsFunc nthPartsMultisetGmp;
