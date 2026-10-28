@@ -25,7 +25,9 @@ Generate Combinations and Permutations of a Vector with/without Constraints
         \item The arguments \code{lower} and \code{upper} make it possible to generate combinations/permutations in chunks allowing for parallelization via the \code{\link{parallel-package}}. This is convenient when you want to apply a custom function to the output in parallel.
         \item Attack integer partition and general subset sum problems.
         \item GMP support allows for exploration of combinations/permutations of vectors with many elements.
-        \item The output is in lexicographical order.
+        \item Unconstrained output is in lexicographical order. For constrained
+        permutations, ordering depends on whether \code{lower} is supplied;
+        see \emph{Ordering and bounds} in Details.
     }
 }
 \usage{
@@ -84,10 +86,18 @@ permuteGeneral(v, m = NULL, ...)
   \item{\dots}{Further arguments passed to methods.}
   \item{repetition}{Logical value indicating whether combinations/permutations should be with or without repetition. The default is \code{FALSE}.}
   \item{freqs}{A vector of frequencies used for producing all combinations/permutations of a multiset of \code{v}. Each element of \code{freqs} represents how many times each element of the source vector, \code{v}, is repeated. It is analogous to the \code{times} argument in \code{\link[base]{rep}}. The default value is \code{NULL}.}
-  \item{lower}{The lower bound. Combinations/permutations are generated lexicographically, thus utilizing this argument will determine which specific combination/permutation to start generating from (\emph{e.g.} \code{comboGeneral(5, 3, lower = 6)} is equivalent to \code{comboGeneral(5, 3)[6:choose(5, 3), ]}). This argument along with \code{upper} is very useful for generating combinations/permutations in chunks allowing for easy parallelization.}
+  \item{lower}{The lower bound, using one-based ranks. Without constraints,
+  this is the rank of the first combination/permutation to generate
+  (\emph{e.g.} \code{comboGeneral(5, 3, lower = 6)} is equivalent to
+  \code{comboGeneral(5, 3)[6:choose(5, 3), ]}). For constrained
+  \code{permuteGeneral}, this always selects ordinary permutation ranks to
+  test, including when \code{lower = 1}. It does not select the rank of a
+  matching result. See \emph{Ordering and bounds} in Details for the
+  distinction from supported partition calls through \code{comboGeneral}.}
   \item{upper}{The upper bound. Similar to \code{lower}, however this parameter allows the user to \emph{stop} generation at a specific combination/permutation (\emph{e.g.} \code{comboGeneral(5, 3, upper = 5)} is equivalent to \code{comboGeneral(5, 3)[1:5, ]})
 
-  For generic constrained searches, if \code{lower} isn't supplied,
+  For constrained \code{permuteGeneral} and generic constrained searches,
+  if \code{lower} isn't supplied,
   \code{upper} caps the number of matching results returned. For example,
   \code{upper = 100} alone returns the first 100 matches, while
   \code{lower = 1} and \code{upper = 100} test the first 100 candidates.
@@ -132,6 +142,39 @@ permuteGeneral(v, m = NULL, ...)
     }
 }
 \details{
+\subsection{Ordering and bounds}{
+Without constraints, \code{permuteGeneral} generates ordinary permutations
+in lexicographical order, and \code{lower} and \code{upper} index that order.
+
+For supported partition cases with \code{constraintFun = "sum"} and
+\code{comparisonFun = "=="}, omitting \code{lower} uses
+\emph{partition-then-permute order}: matching partitions are visited in
+lexicographical order, and all distinct permutations of each partition are
+emitted in lexicographical order before moving to the next partition.
+The combined output need not be globally lexicographical. This applies
+also when an equivalent composition algorithm exists. \code{upper} alone
+caps the number of matching rows and may stop within a permutation block.
+These partition cases use integer-valued, evenly spaced source vectors
+and an integer target, including supported mapped and multiset cases;
+see \code{\link{partitionsGeneral}}.
+
+For any constrained \code{permuteGeneral} call with \code{lower} supplied,
+\code{lower} and \code{upper} instead specify an inclusive range of ordinary
+permutation ranks, ignoring the constraint when assigning ranks. Only
+matching candidates in that range are returned, in lexicographical order.
+If \code{upper} is omitted, testing continues through the remaining
+candidates. Thus \code{lower = 1} is not redundant: \code{upper = 100} alone
+caps matches, whereas \code{lower = 1, upper = 100} tests 100 candidates
+and can return fewer than 100 rows, including none.
+
+\code{\link{compositionsGeneral}} generates supported compositions in
+lexicographical order across all matching rows; its bounds index those
+matching rows. Supported partition calls through \code{comboGeneral} also
+use matching-result ranks. Other constrained calls without \code{lower}
+use their applicable constraint algorithms; their output positions should
+not be interpreted as composition ranks.
+}
+
 For the general case, finding all combinations/permutations with constraints is optimized by organizing them in such a way that when \code{constraintFun} is applied, a \emph{partially} monotonic sequence is produced. Combinations/permutations are added successively, until a particular combination exceeds the given constraint value for a given constraint/comparison function combo. After this point, we can safely skip several combinations knowing that they will exceed the given constraint value.
 
 There are special cases where more efficient algorithms are dyncamically deployed. These cases center around the subject of integer partitions. See \code{\link{partitionsGeneral}} for more information.
@@ -150,12 +193,16 @@ When there are any negative values in \code{v}, \code{constraintFun = "prod"}, a
         \item If either \code{constraintFun}, \code{comparisonFun} or \code{limitConstraints} is \code{NULL} --or-- if the class of the vector passed is \code{logical}, \code{character}, \code{raw}, \code{factor}, or \code{complex}, the constraint check will not be carried out. This is equivalent to simply finding all combinations/permutations of \eqn{v} choose \eqn{m}.
         \item The maximum number of combinations/permutations that can be generated at one time is \eqn{2^{31} - 1}{2^31 - 1}. Utilizing \code{lower} and \code{upper} makes it possible to generate additional combinations/permutations.
         \item Factor vectors are accepted. Class and level attributes are preserved except when \code{FUN} is used.
-        \item Lexicographical ordering isn't guaranteed for permutations if \code{lower} isn't supplied and the output is constrained.
+        \item Constrained \code{permuteGeneral} uses ordinary candidate ranks
+        when \code{lower} is supplied. Without \code{lower}, supported
+        sum/equality cases use partition-then-permute order. See
+        \emph{Ordering and bounds} in Details.
         \item For generic constrained searches with \code{lower} supplied,
         candidates in the lexicographical range \code{lower} to \code{upper}
         are tested. If \code{upper} is omitted, testing continues through all
-        remaining candidates. For supported partition algorithms, bounds
-        instead index matching partitions; see the definition of \code{upper}.
+        remaining candidates. Supported partition calls through
+        \code{comboGeneral} instead use matching-result ranks; see the
+        definition of \code{upper}.
         \item \code{FUN} will be ignored if the constraint check is satisfied.
         \item For special constraints (see the Details section), multithreading is only available when \code{lower} is explicitly supplied. In this case, the search space can be divided among threads beginning at the requested lower bound. When \code{lower} is not supplied, RcppAlgos must continue searching until the requested number of results satisfying the constraints is found. Because the locations of these results are not known in advance, this search is performed serially, even when multiple threads are requested.
     }
@@ -174,6 +221,19 @@ Joseph Wood
     }
 }
 \examples{
+## No lower: permute each matching partition before moving to the next.
+permuteGeneral(6, 3, repetition = TRUE, constraintFun = "sum",
+               comparisonFun = "==", limitConstraints = 6, upper = 4)
+
+## Explicit lower: test ordinary permutation ranks 1 through 4.
+## Only (1, 1, 4) matches; upper is not a request for four matches.
+permuteGeneral(6, 3, repetition = TRUE, constraintFun = "sum",
+               comparisonFun = "==", limitConstraints = 6,
+               lower = 1, upper = 4)
+
+## Compositions: return the first four matching rows in lexicographic order.
+compositionsGeneral(6, 3, repetition = TRUE, target = 6, upper = 4)
+
 comboGeneral(4, 3)
 permuteGeneral(3)
 

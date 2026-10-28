@@ -52,8 +52,9 @@ void VectorToMatrix(const std::vector<T> &cnstrntVec,
                     std::size_t width, std::size_t upperBound,
                     bool xtraCol, bool IsPart);
 
-bool CheckSpecialCase(bool bLower, const std::string &mainFun,
-                      const std::vector<double> &vNum);
+bool CheckSpecialCase(const std::vector<double> &vNum,
+                      const std::string &mainFun, PartitionType ptype,
+                      bool isPerm, bool bLower);
 
 bool CheckIsInteger(const std::string &funPass, int n,
                     int m, const std::vector<double> &vNum,

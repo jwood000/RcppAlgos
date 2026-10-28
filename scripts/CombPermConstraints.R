@@ -229,7 +229,23 @@ reprex::reprex({
     #'
     #' ### Output Order with `permuteGeneral`
     #'
-    #' Typically, when we call `permuteGeneral`, the output is in lexicographical order, however when we apply a constraint, the underlying algorithm checks against combinations only, as this is more efficient. If a particular combination meets a constraint, then all permutations of that vector also meet that constraint, so there is no need to check them. For this reason, the output isn't in order. Observe:
+    #' Unconstrained `permuteGeneral` output is in lexicographical order.
+    #' Constrained calls with an explicit `lower`, including `lower = 1`, test
+    #' ordinary permutation ranks from `lower` through `upper` and return only
+    #' matches, retaining that order. With no `upper`, testing continues through
+    #' all remaining candidates.
+    #'
+    #' Without `lower`, supported sum/equality cases use partition-then-permute
+    #' order: visit matching partitions in lexicographical order and emit each
+    #' partition's distinct permutations in lexicographical order before moving
+    #' to the next partition. `upper` alone caps matching rows in this order.
+    #' An equivalent composition algorithm does not change this choice;
+    #' `compositionsGeneral` provides lexicographic ordering across all matches.
+    #'
+    #' Other constraints can also work by testing combinations and then
+    #' permuting each match, as in the example below. Special constraints such
+    #' as products involving negative values instead test ordinary candidates.
+    #' Do not assume all constrained calls without `lower` have the same order.
     #'
 
     permuteGeneral(c(2, 3, 5, 7), 3, freqs = rep(2, 4),

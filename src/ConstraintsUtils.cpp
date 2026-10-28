@@ -69,18 +69,19 @@ void VectorToMatrix(const std::vector<T> &cnstrntVec,
 
 bool CheckSpecialCase(const std::vector<double> &vNum,
                       const std::string &mainFun, PartitionType ptype,
-                      ConstraintType ctype, bool bLower) {
+                      bool isPerm, bool bLower) {
 
     bool result = false;
 
-    // Generic constraints with an explicit lower filter candidate ranks.
+    // Permutations and generic constraints with an explicit lower filter
+    // candidate ranks. Without lower, upper still caps matching results.
     // Supported partitions, including multisets, use matching-result ranks.
 
     const bool NonStdPart = ptype == PartitionType::CoarseGrained ||
                             ptype == PartitionType::NotPartition  ||
                             ptype == PartitionType::NoSolution;
 
-    if (bLower && NonStdPart) {
+    if (bLower && (isPerm || NonStdPart)) {
         result = true;
     } else if (mainFun == "prod") {
         for (auto v_i: vNum) {
@@ -98,7 +99,7 @@ void SetConstraintType(const std::vector<double> &vNum,
                        const std::string &mainFun, PartDesign &part,
                        ConstraintType &ctype, bool bLower) {
 
-    if (CheckSpecialCase(vNum, mainFun, part.ptype, ctype, bLower)) {
+    if (CheckSpecialCase(vNum, mainFun, part.ptype, part.isPerm, bLower)) {
         part.isPart = false;
         ctype = ConstraintType::SpecialCnstrnt;
     } else if (part.ptype == PartitionType::CoarseGrained) {

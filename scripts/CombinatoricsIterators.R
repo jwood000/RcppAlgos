@@ -441,16 +441,20 @@ reprex::reprex({
     #'   1. Start checking from a particular lexicographical result without considering the constraint (as we do normally).
     #'   2. Start generating results from a particular result with regards to the final constrained output.
     #'
-    #' Generic constraint searches use the first interpretation, including when
-    #' `lower = 1` is explicitly supplied. These searches lack fast algorithms
-    #' for
-    #' counting and accessing matching results directly.
+    #' Generic constraint searches and all constrained `permuteGeneral` calls
+    #' use the first interpretation when `lower` is supplied, including
+    #' `lower = 1`: bounds select ordinary candidate ranks to test. Matching
+    #' permutations retain lexicographical order. Without `lower`, supported
+    #' sum/equality permutation calls instead visit matching partitions and
+    #' emit each partition's permutations before moving to the next partition.
+    #' `upper` alone caps matches in that partition-then-permute order.
     #'
     #' Supported partition and composition algorithms use the second
-    #' interpretation: bounds refer to matching results. This includes multiset
-    #' partitions and equivalent `comboGeneral` calls using `constraintFun =
-    #' "sum"`
-    #' and `comparisonFun = "=="`.
+    #' interpretation: bounds index matching results in lexicographical order.
+    #' This includes multiset partitions and equivalent `comboGeneral` calls
+    #' using `constraintFun = "sum"` and `comparisonFun = "=="`. Thus omitting
+    #' `lower` and supplying `lower = 1` select the same prefix for these calls,
+    #' but have different meanings for constrained `permuteGeneral`.
     #'
     #' With iterators, we can generate _n_ results with `nextNIter(n)` or calling `nextIter()` _n_ times (or some combination of the two). Then, if we want to continue iterating, we pick up where we left off fetching the _(n + 1)<sup>th</sup>_ result and beyond (if there are any results left). This allows us to keep memory low without sacrificing our current state.
     #'
