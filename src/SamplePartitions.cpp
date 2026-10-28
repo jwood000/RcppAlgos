@@ -191,9 +191,7 @@ SEXP SamplePartitions(
     std::vector<double> mySample;
 
     // PartitionsCount() handles non-finite counts by switching to GMP for
-    // supported partition types. Multiset partition counts do not currently
-    // provide this fallback, but multiset partitions are not supported for
-    // sampling and therefore cannot reach this path.
+    // supported partition types.
     const bool SampleGmp = part.isGmp || IsBeyondBound(part.count, SampleLimit);
 
     if (SampleGmp && !part.isGmp) {

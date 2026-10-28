@@ -28,7 +28,7 @@ URL: https://jwood000.github.io/RcppAlgos/,
         https://github.com/kimwalisch/primecount, https://ridiculousfish.com/,
         https://sweet.ua.pt/tos/software/prime_sieve.html
 BugReports: https://github.com/jwood000/RcppAlgos/issues
-LinkingTo: cpp11
+LinkingTo: cpp11, testthat
 Imports: gmp, methods
 Suggests:
     testthat,

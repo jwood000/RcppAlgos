@@ -327,19 +327,26 @@ void RepAll::GetCount(
 
 void PartsMultiset::GetCount(
     mpz_class &res, int n, int m, const std::vector<int> &allowed,
-    int strtLen, bool bLiteral
+    int strtLen, bool /* bLiteral */
+) {
+    GetCount(res, n, m, allowed, Reps, strtLen);
+}
+
+void PartsMultiset::GetCount(
+    mpz_class &res, int n, int m, const std::vector<int> &allowed,
+    const std::vector<int> &reps, int strtLen
 ) {
 
     double dblRes = 0;
     bool computedDouble = false;
 
     if (cmp(res, Significand53) < 0) {
-        dblRes = CountPartsMultiset(n, m, allowed, Reps);
+        dblRes = CountPartsMultiset(n, m, allowed, reps);
         computedDouble = true;
     }
 
     if (!computedDouble || IsBeyondBound(dblRes)) {
-        CountPartsMultiset(res, p1, p2, n, m, allowed, Reps);
+        CountPartsMultiset(res, p1, p2, n, m, allowed, reps);
     } else {
         res = dblRes;
     }

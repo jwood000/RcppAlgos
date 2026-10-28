@@ -13,7 +13,8 @@ using nthPartsPtr = nthPartsFunc *const;
 
 // Unranking uses zero-based indices and skips whole lexicographic blocks.
 // A zero completion count denotes an empty block and must be skipped normally.
-// Callers validate the index against the total count before unranking.
+// Callers supply a positive width and validate the index against the total
+// count before unranking.
 //
 // Positive/mapped algorithms return offset values: res[i] = part_i - 1.
 // Their final element is (target - width) - sum(res). Zero-based algorithms
@@ -40,3 +41,4 @@ nthPartsFunc nthPartsDistinctCapGmp;
 nthPartsFunc nthPartsDistinctCapMZ;
 nthPartsFunc nthPartsDistinctCapMZGmp;
 nthPartsFunc nthPartsMultiset;
+nthPartsFunc nthPartsMultisetGmp;

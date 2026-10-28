@@ -1,6 +1,7 @@
 #include "Partitions/PartitionsCountMultiset.h"
 #include "Partitions/PartitionsCountDistinct.h"
 #include "Partitions/MultisetCountEngine.h"
+#include "Partitions/MultisetCountClass.h"
 #include "Partitions/PartitionsCountRep.h"
 #include "Partitions/PartitionsCount.h"
 #include "Partitions/NthPartition.h"
@@ -498,8 +499,13 @@ std::vector<int> nthPartsDistinctCapMZGmp(
     return res;
 }
 
+// Both multiset unrankers require positive input multiplicities. Only the
+// front bucket is consumed; later buckets stay positive until reached.
+// j is the original bucket offset, while allowed stays normalized to 1..k.
+// Dropping the front multiplicity therefore removes allowed.back(). Advancing
+// j shifts the candidate and its m remaining parts down by one, so n -= m + 1.
 std::vector<int> nthPartsMultiset(
-    int n, int m, int cap, int k, double dblIdx,
+    int n, int m, int cap, int /* k */, double dblIdx,
     const mpz_class &mpzIdx, const std::vector<int> &Reps
 ) {
 
@@ -545,6 +551,72 @@ std::vector<int> nthPartsMultiset(
             dblIdx -= temp;
             temp = lclReps.size()
                 ? counter.Count(n, m, allowed, lclReps) : 0;
+        }
+
+        res[i] = j;
+    }
+
+    res.back() = (max_n - width) - std::accumulate(res.begin(), res.end(), 0);
+    return res;
+}
+
+std::vector<int> nthPartsMultisetGmp(
+    int n, int m, int cap, int /* k */, double /* dblIdx */,
+    const mpz_class &mpzIdx, const std::vector<int> &Reps
+) {
+
+    const int width = m;
+    const int max_n = n;
+
+    std::vector<int> allowed(cap);
+    std::iota(allowed.begin(), allowed.end(), 1);
+
+    std::vector<int> lclReps(Reps.begin(), Reps.end());
+    std::vector<int> res(width, 0);
+    --n;
+    --m;
+
+    mpz_class temp;
+    mpz_class index(mpzIdx);
+    PartsMultiset counter(Reps);
+    counter.SetArrSize(PartitionType::Multiset, n, m);
+    counter.InitializeMpz();
+
+    for (int i = 0, j = 0; i < (width - 1); ++i, --n, --m) {
+        if (lclReps.size()) --lclReps.front();
+
+        if (lclReps.size() && lclReps.front() < 0) {
+            lclReps.erase(lclReps.begin());
+            allowed.pop_back();
+            n -= (m + 1);
+            ++j;
+
+            // Reserve the candidate from the new bucket before counting.
+            if (lclReps.size()) --lclReps.front();
+        }
+
+        if (lclReps.size()) {
+            counter.GetCount(temp, n, m, allowed, lclReps);
+        } else {
+            temp = 0;
+        }
+
+        for (; cmp(temp, index) <= 0; ++j) {
+            if (lclReps.size()) {
+                lclReps.erase(lclReps.begin());
+                allowed.pop_back();
+            }
+
+            // Every new candidate consumes one occurrence of its own value.
+            if (lclReps.size()) --lclReps.front();
+
+            n -= (m + 1);
+            index -= temp;
+            if (lclReps.size()) {
+                counter.GetCount(temp, n, m, allowed, lclReps);
+            } else {
+                temp = 0;
+            }
         }
 
         res[i] = j;

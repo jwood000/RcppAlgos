@@ -5,24 +5,22 @@
 #include "cpp11/protect.hpp"
 
 namespace {
+    std::vector<int> nthLengthOne(
+        int n, int m, int cap, int k, double dblIdx,
+        const mpz_class &mpzIdx, const std::vector<int> & /* Reps */
+    ) {
 
-std::vector<int> nthLengthOne(
-    int n, int m, int cap, int k, double dblIdx,
-    const mpz_class &mpzIdx, const std::vector<int> & /* Reps */
-) {
+        std::vector<int> res(m, n - 1);
+        return res;
+    }
 
-    std::vector<int> res(m, n - 1);
-    return res;
-}
-
-std::vector<int> EmptyReturn(
-    int n, int m, int cap, int k, double dblIdx,
-    const mpz_class &mpzIdx, const std::vector<int> & /* Reps */
-) {
-    std::vector<int> res(m);
-    return(res);
-}
-
+    std::vector<int> EmptyReturn(
+        int n, int m, int cap, int k, double dblIdx,
+        const mpz_class &mpzIdx, const std::vector<int> & /* Reps */
+    ) {
+        std::vector<int> res(m);
+        return(res);
+    }
 } // namespace
 
 nthPartsPtr GetNthPartsFunc(PartitionType ptype, bool IsGmp) {
@@ -51,6 +49,8 @@ nthPartsPtr GetNthPartsFunc(PartitionType ptype, bool IsGmp) {
                 return nthPartsRepShortGmp;
             } case PartitionType::RepStdAll: {
                 return nthPartsRepGmp;
+            } case PartitionType::Multiset: {
+                return nthPartsMultisetGmp;
             } case PartitionType::CompRepNoZero: {
                 return nthCompsRepGmp;
             } case PartitionType::CompRepCapped: {

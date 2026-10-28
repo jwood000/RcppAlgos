@@ -40,6 +40,11 @@ namespace CppConvert {
                                 foundError = true;
                                 break;
                             }
+                        } else if (!negPoss &&
+                                   mpz_sgn(myVec[i].get_mpz_t()) == 0) {
+                            myError = suffix + " must be a positive number";
+                            foundError = true;
+                            break;
                         }
                     } else {
                         myError = suffix + " cannot be NA or NaN";
@@ -181,6 +186,10 @@ namespace CppConvert {
                             foundError = true;
                             break;
                         }
+                    } else if (!negPoss && mpz_sgn(result.get_mpz_t()) == 0) {
+                        myError = nameOfObject + " must be a positive number";
+                        foundError = true;
+                        break;
                     }
                 } else {
                     myError = nameOfObject + " cannot be NA or NaN";
