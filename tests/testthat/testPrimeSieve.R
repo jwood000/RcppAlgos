@@ -34,9 +34,9 @@ test_that("primeSieve generates correct numbers", {
                                     c(1693182318746371, 1693182318747503))
 
     ## Test Parallel
-    funTestPar <- function(b1, b2, nT = 2) {
+    funTestPar <- function(b1, b2) {
         ser <- primeSieve(b1, b2)
-        par <- primeSieve(b1, b2, nThreads = nT)
+        par <- primeSieve(b1, b2, nThreads = 2)
         all.equal(par, ser)
     }
 
@@ -52,5 +52,6 @@ test_that("primeSieve generates correct numbers", {
     gc()
     expect_equal(length(primeSieve(12e8)), 60454705)
     gc()
-    expect_equal(length(primeSieve(39582118599936, 39582718599936, nThreads = 4)), 19161558)
+    expect_equal(length(primeSieve(39582118599936, 39582718599936,
+                                   nThreads = 2)), 19161558)
 })

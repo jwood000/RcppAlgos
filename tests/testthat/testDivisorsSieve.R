@@ -34,6 +34,6 @@ test_that("divisorsSieve generates correct numbers", {
 
     ## Test Parallel
     expect_equal(divisorsSieve(1e9, 1e9 + 25000),
-                 divisorsSieve(1e9, 1e9 + 25000, nThreads = 3))
+                 divisorsSieve(1e9, 1e9 + 25000, nThreads = 2))
     expect_equal(divisorsSieve(3e4), divisorsSieve(3e4, nThreads = 2))
 })
