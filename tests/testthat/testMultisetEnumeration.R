@@ -19,7 +19,7 @@ enumerate_multiset_parts <- function(freqs, width) {
     do.call(rbind, rows)
 }
 
-test_that("multiset public counts and samples match exhaustive enumeration", {
+test_that("multiset counts, samples and ranks match exhaustive enumeration", {
     for (cap in 1:5) {
         frequencies <- expand.grid(rep(list(1:3), cap))
         for (case in seq_len(nrow(frequencies))) {
@@ -49,6 +49,13 @@ test_that("multiset public counts and samples match exhaustive enumeration", {
                     )
                     expect_identical(
                         actual, expected,
+                        info = paste0(inputs, "; target=", target)
+                    )
+                    expect_identical(
+                        partitionsRank(expected, v = seq_len(cap),
+                                       freqs = freqs, target = target,
+                                       nThreads = 1L),
+                        seq_len(nrow(expected)),
                         info = paste0(inputs, "; target=", target)
                     )
                 }

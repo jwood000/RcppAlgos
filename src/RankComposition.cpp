@@ -7,8 +7,10 @@
 #include <numeric>
 #include <vector>
 
-void rankCompsRep(std::vector<int>::iterator iter, int n, int m,
-                  int cap, int k, double &dblIdx, mpz_class &mpzIdx) {
+void rankCompsRep(
+    std::vector<int>::iterator iter, int n, int m, int cap, int k,
+    double &dblIdx, mpz_class &mpzIdx, const std::vector<int> & /* Reps */
+) {
 
     const int width = m;
     dblIdx = 0;
@@ -27,8 +29,10 @@ void rankCompsRep(std::vector<int>::iterator iter, int n, int m,
     }
 }
 
-void rankCompsRepGmp(std::vector<int>::iterator iter, int n, int m,
-                     int cap, int k, double &dblIdx, mpz_class &mpzIdx) {
+void rankCompsRepGmp(
+    std::vector<int>::iterator iter, int n, int m, int cap, int k,
+    double &dblIdx, mpz_class &mpzIdx, const std::vector<int> & /* Reps */
+) {
 
     const int width = m;
     mpz_class temp;
@@ -52,8 +56,10 @@ void rankCompsRepGmp(std::vector<int>::iterator iter, int n, int m,
     }
 }
 
-void rankCompsRepCapped(std::vector<int>::iterator iter, int n, int m,
-                        int cap, int k, double &dblIdx, mpz_class &mpzIdx) {
+void rankCompsRepCapped(
+    std::vector<int>::iterator iter, int n, int m, int cap, int k,
+    double &dblIdx, mpz_class &mpzIdx, const std::vector<int> & /* Reps */
+) {
 
     // All we are doing in CountCompsRepLenCap is getting the max of allowed
     std::vector<int> allowed(1, cap);
@@ -74,8 +80,10 @@ void rankCompsRepCapped(std::vector<int>::iterator iter, int n, int m,
     }
 }
 
-void rankCompsRepCappedGmp(std::vector<int>::iterator iter, int n, int m,
-                           int cap, int k, double &dblIdx, mpz_class &mpzIdx) {
+void rankCompsRepCappedGmp(
+    std::vector<int>::iterator iter, int n, int m, int cap, int k,
+    double &dblIdx, mpz_class &mpzIdx, const std::vector<int> & /* Reps */
+) {
 
     std::vector<int> allowed(1, cap);
     const int width = m;
@@ -100,8 +108,10 @@ void rankCompsRepCappedGmp(std::vector<int>::iterator iter, int n, int m,
     }
 }
 
-void rankCompsRepZero(std::vector<int>::iterator iter, int n, int m,
-                      int cap, int k, double &dblIdx, mpz_class &mpzIdx) {
+void rankCompsRepZero(
+    std::vector<int>::iterator iter, int n, int m, int cap, int k,
+    double &dblIdx, mpz_class &mpzIdx, const std::vector<int> & /* Reps */
+) {
 
     const int width = m;
     dblIdx = 0;
@@ -124,8 +134,10 @@ void rankCompsRepZero(std::vector<int>::iterator iter, int n, int m,
     }
 }
 
-void rankCompsRepZeroGmp(std::vector<int>::iterator iter, int n, int m,
-                         int cap, int k, double &dblIdx, mpz_class &mpzIdx) {
+void rankCompsRepZeroGmp(
+    std::vector<int>::iterator iter, int n, int m, int cap, int k,
+    double &dblIdx, mpz_class &mpzIdx, const std::vector<int> & /* Reps */
+) {
 
     const int width = m;
     mpzIdx = 0;
@@ -155,8 +167,10 @@ void rankCompsRepZeroGmp(std::vector<int>::iterator iter, int n, int m,
     }
 }
 
-void rankCompsRepZeroCap(std::vector<int>::iterator iter, int n, int m,
-                         int cap, int k, double &dblIdx, mpz_class &mpzIdx) {
+void rankCompsRepZeroCap(
+    std::vector<int>::iterator iter, int n, int m, int cap, int k,
+    double &dblIdx, mpz_class &mpzIdx, const std::vector<int> & /* Reps */
+) {
 
     // All we are doing in CountCompsRepLenCap is getting the max of allowed
     std::vector<int> allowed(1, cap);
@@ -182,8 +196,8 @@ void rankCompsRepZeroCap(std::vector<int>::iterator iter, int n, int m,
 }
 
 void rankCompsRepZeroCapGmp(
-    std::vector<int>::iterator iter, int n, int m,
-    int cap, int k, double &dblIdx, mpz_class &mpzIdx
+    std::vector<int>::iterator iter, int n, int m, int cap, int k,
+    double &dblIdx, mpz_class &mpzIdx, const std::vector<int> & /* Reps */
 ) {
 
     std::vector<int> allowed(1, cap);
@@ -213,8 +227,10 @@ void rankCompsRepZeroCapGmp(
     }
 }
 
-void rankCompsDistinct(std::vector<int>::iterator iter, int n, int m,
-                       int cap, int k, double &dblIdx, mpz_class &mpzIdx) {
+void rankCompsDistinct(
+    std::vector<int>::iterator iter, int n, int m, int cap, int k,
+    double &dblIdx, mpz_class &mpzIdx, const std::vector<int> & /* Reps */
+) {
 
     const int width = m;
     const int max_val = std::min(cap, n - (width * (width - 1)) / 2);
@@ -263,8 +279,10 @@ void rankCompsDistinct(std::vector<int>::iterator iter, int n, int m,
     }
 }
 
-void rankCompsDistinctGmp(std::vector<int>::iterator iter, int n, int m,
-                          int cap, int k, double &dblIdx, mpz_class &mpzIdx) {
+void rankCompsDistinctGmp(
+    std::vector<int>::iterator iter, int n, int m, int cap, int k,
+    double &dblIdx, mpz_class &mpzIdx, const std::vector<int> & /* Reps */
+) {
 
     const int width = m;
     const int max_val = std::min(cap, n - (width * (width - 1)) / 2);
@@ -320,8 +338,10 @@ void rankCompsDistinctGmp(std::vector<int>::iterator iter, int n, int m,
     }
 }
 
-void rankCompsDistinctMZ(std::vector<int>::iterator iter, int n, int m,
-                         int cap, int k, double &dblIdx, mpz_class &mpzIdx) {
+void rankCompsDistinctMZ(
+    std::vector<int>::iterator iter, int n, int m, int cap, int k,
+    double &dblIdx, mpz_class &mpzIdx, const std::vector<int> &Reps
+) {
 
     std::vector<int> allowed(cap);
     std::iota(allowed.begin(), allowed.end(), 1);
@@ -352,11 +372,13 @@ void rankCompsDistinctMZ(std::vector<int>::iterator iter, int n, int m,
                 CountCompsDistLenRstrctd(n, k, allowed);
     }
 
-    rankCompsDistinct(z_it, n, k, cap, k, dblIdx, mpzIdx);
+    rankCompsDistinct(z_it, n, k, cap, k, dblIdx, mpzIdx, Reps);
 }
 
-void rankCompsDistinctMZGmp(std::vector<int>::iterator iter, int n, int m,
-                            int cap, int k, double &dblIdx, mpz_class &mpzIdx) {
+void rankCompsDistinctMZGmp(
+    std::vector<int>::iterator iter, int n, int m, int cap, int k,
+    double &dblIdx, mpz_class &mpzIdx, const std::vector<int> &Reps
+) {
 
     mpz_class temp;
 
@@ -404,12 +426,12 @@ void rankCompsDistinctMZGmp(std::vector<int>::iterator iter, int n, int m,
         }
     }
 
-    rankCompsDistinctGmp(z_it, n, k, cap, k, dblIdx, mpzIdx);
+    rankCompsDistinctGmp(z_it, n, k, cap, k, dblIdx, mpzIdx, Reps);
 }
 
 void rankCompsDistinctMZWeak(
     std::vector<int>::iterator iter, int n, int m, int cap, int k,
-    double &dblIdx, mpz_class &mpzIdx
+    double &dblIdx, mpz_class &mpzIdx, const std::vector<int> & /* Reps */
 ) {
 
     const int width = m;
@@ -474,7 +496,7 @@ void rankCompsDistinctMZWeak(
 
 void rankCompsDistinctMZWeakGmp(
     std::vector<int>::iterator iter, int n, int m, int cap, int k,
-    double &dblIdx, mpz_class &mpzIdx
+    double &dblIdx, mpz_class &mpzIdx, const std::vector<int> & /* Reps */
 ) {
 
     const int width = m;

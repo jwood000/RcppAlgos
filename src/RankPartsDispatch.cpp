@@ -2,8 +2,10 @@
 #include "Partitions/RankComposition.h"
 
 namespace {
-    void rankLengthOne(std::vector<int>::iterator iter, int n, int m,
-                       int cap, int k, double &dblIdx, mpz_class &mpzIdx) {
+    void rankLengthOne(
+        std::vector<int>::iterator iter, int n, int m, int cap, int k,
+        double &dblIdx, mpz_class &mpzIdx, const std::vector<int> & /* Reps */
+    ) {
         dblIdx = 0;
         mpzIdx = 0;
     }
@@ -35,6 +37,8 @@ rankPartsPtr GetRankPartsFunc(PartitionType ptype, bool IsGmp) {
                 return(rankPartsPtr(rankPartsRepShortGmp));
             } case PartitionType::RepStdAll: {
                 return(rankPartsPtr(rankPartsRepGmp));
+            } case PartitionType::Multiset: {
+                return(rankPartsPtr(rankPartsMultisetGmp));
             } case PartitionType::CompRepNoZero: {
                 return(rankPartsPtr(rankCompsRepGmp));
             } case PartitionType::CompRepCapped: {
@@ -91,6 +95,8 @@ rankPartsPtr GetRankPartsFunc(PartitionType ptype, bool IsGmp) {
                 return(rankPartsPtr(rankPartsRepShort));
             } case PartitionType::RepStdAll: {
                 return(rankPartsPtr(rankPartsRep));
+            } case PartitionType::Multiset: {
+                return(rankPartsPtr(rankPartsMultiset));
             } case PartitionType::CompRepNoZero: {
                 return(rankPartsPtr(rankCompsRep));
             } case PartitionType::CompRepCapped: {

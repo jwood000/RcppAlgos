@@ -1,5 +1,6 @@
 #include "Partitions/MultisetCountClass.h"
 #include "Partitions/NthPartition.h"
+#include "Partitions/RankPartition.h"
 #include "Partitions/PartitionsCountMultiset.h"
 #include <numeric>
 #include <stdexcept>
@@ -71,14 +72,18 @@ context("GMP multiset internals") {
         expect_true(counts == 58032);
     }
 
-    test_that("GMP dispatch agrees with double unranking on small counts") {
+    test_that("GMP ranking and unranking agree with double on small counts") {
         const auto nth = GetNthPartsFunc(PartitionType::Multiset, true);
         expect_true(nth == &nthPartsMultisetGmp);
-        if (!nth) return;
+        const auto rankGmp = GetRankPartsFunc(PartitionType::Multiset, true);
+        const auto rankDbl = GetRankPartsFunc(PartitionType::Multiset, false);
+        expect_true(rankGmp == &rankPartsMultisetGmp);
+        expect_true(rankDbl == &rankPartsMultiset);
+        if (!nth || !rankGmp || !rankDbl) return;
         std::size_t checked = 0;
 
         // Public R tests independently enumerate these small cases. Direct
-        // dispatch here forces GMP unranking despite their small counts.
+        // dispatch here forces GMP entry points despite their small counts.
         for (int cap = 1; cap <= 5; ++cap) {
             std::vector<int> allowed(cap);
             std::iota(allowed.begin(), allowed.end(), 1);
@@ -100,7 +105,7 @@ context("GMP multiset internals") {
                         );
                         for (int rank = 0; rank < total; ++rank) {
                             const mpz_class index(rank);
-                            const auto actual = nth(
+                            auto actual = nth(
                                 target, width, cap, 0, 0, index, reps
                             );
                             const auto expected = nthPartsMultiset(
@@ -109,6 +114,22 @@ context("GMP multiset internals") {
                             if (actual != expected || index != rank) {
                                 throw std::runtime_error(
                                     "GMP unranking mismatch: cap=" +
+                                    std::to_string(cap) + " width=" +
+                                    std::to_string(width) + " target=" +
+                                    std::to_string(target) + " reps-code=" +
+                                    std::to_string(combination) + " rank=" +
+                                    std::to_string(rank)
+                                );
+                            }
+                            double dblRank = -1;
+                            mpz_class mpzRank = -1;
+                            rankGmp(actual.begin(), target, width, cap, 0,
+                                    dblRank, mpzRank, reps);
+                            rankDbl(actual.begin(), target, width, cap, 0,
+                                    dblRank, mpzRank, reps);
+                            if (mpzRank != rank || dblRank != rank) {
+                                throw std::runtime_error(
+                                    "Multiset ranking mismatch: cap=" +
                                     std::to_string(cap) + " width=" +
                                     std::to_string(width) + " target=" +
                                     std::to_string(target) + " reps-code=" +

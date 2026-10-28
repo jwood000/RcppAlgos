@@ -6,7 +6,7 @@
 
 using rankPartsFunc = void(
     std::vector<int>::iterator iter, int n, int m, int cap, int k,
-    double &dblIdx, mpz_class &mpzIdx
+    double &dblIdx, mpz_class &mpzIdx, const std::vector<int> &Reps
 );
 using rankPartsPtr = rankPartsFunc *const;
 
@@ -31,3 +31,5 @@ rankPartsFunc rankPartsDistinctCap;
 rankPartsFunc rankPartsDistinctCapGmp;
 rankPartsFunc rankPartsDistinctCapMZ;
 rankPartsFunc rankPartsDistinctCapMZGmp;
+rankPartsFunc rankPartsMultiset;
+rankPartsFunc rankPartsMultisetGmp;

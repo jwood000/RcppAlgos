@@ -1,4 +1,6 @@
 #include "Partitions/RankPartition.h"
+#include "Partitions/MultisetCountEngine.h"
+#include "Partitions/MultisetCountClass.h"
 #include "Partitions/PartitionsCountDistinct.h"
 #include "Partitions/PartitionsCountRep.h"
 #include "Partitions/PartitionsCount.h"
@@ -6,8 +8,10 @@
 #include <numeric>
 #include <vector>
 
-void rankPartsRepLen(std::vector<int>::iterator iter, int n, int m,
-                     int cap, int k, double &dblIdx, mpz_class &mpzIdx) {
+void rankPartsRepLen(
+    std::vector<int>::iterator iter, int n, int m, int cap, int k,
+    double &dblIdx, mpz_class &mpzIdx, const std::vector<int> & /* Reps */
+) {
 
     const int width = m;
     dblIdx = 0;
@@ -26,8 +30,10 @@ void rankPartsRepLen(std::vector<int>::iterator iter, int n, int m,
     }
 }
 
-void rankPartsRepLenGmp(std::vector<int>::iterator iter, int n, int m,
-                        int cap, int k, double &dblIdx, mpz_class &mpzIdx) {
+void rankPartsRepLenGmp(
+    std::vector<int>::iterator iter, int n, int m, int cap, int k,
+    double &dblIdx, mpz_class &mpzIdx, const std::vector<int> & /* Reps */
+) {
 
     const int width = m;
     mpzIdx = 0;
@@ -53,32 +59,42 @@ void rankPartsRepLenGmp(std::vector<int>::iterator iter, int n, int m,
     }
 }
 
-void rankPartsRepShort(std::vector<int>::iterator iter, int n, int m,
-                       int cap, int k, double &dblIdx, mpz_class &mpzIdx) {
+void rankPartsRepShort(
+    std::vector<int>::iterator iter, int n, int m, int cap, int k,
+    double &dblIdx, mpz_class &mpzIdx, const std::vector<int> &Reps
+) {
 
-    rankPartsRepLen(iter, n, m, cap, k, dblIdx, mpzIdx);
+    rankPartsRepLen(iter, n, m, cap, k, dblIdx, mpzIdx, Reps);
 }
 
-void rankPartsRepShortGmp(std::vector<int>::iterator iter, int n, int m,
-                          int cap, int k, double &dblIdx, mpz_class &mpzIdx) {
+void rankPartsRepShortGmp(
+    std::vector<int>::iterator iter, int n, int m, int cap, int k,
+    double &dblIdx, mpz_class &mpzIdx, const std::vector<int> &Reps
+) {
 
-    rankPartsRepLenGmp(iter, n, m, cap, k, dblIdx, mpzIdx);
+    rankPartsRepLenGmp(iter, n, m, cap, k, dblIdx, mpzIdx, Reps);
 }
 
-void rankPartsRep(std::vector<int>::iterator iter, int n, int m,
-                  int cap, int k, double &dblIdx, mpz_class &mpzIdx) {
+void rankPartsRep(
+    std::vector<int>::iterator iter, int n, int m, int cap, int k,
+    double &dblIdx, mpz_class &mpzIdx, const std::vector<int> &Reps
+) {
 
-    rankPartsRepLen(iter, n * 2, m, cap, k, dblIdx, mpzIdx);
+    rankPartsRepLen(iter, n * 2, m, cap, k, dblIdx, mpzIdx, Reps);
 }
 
-void rankPartsRepGmp(std::vector<int>::iterator iter, int n, int m,
-                     int cap, int k, double &dblIdx, mpz_class &mpzIdx) {
+void rankPartsRepGmp(
+    std::vector<int>::iterator iter, int n, int m, int cap, int k,
+    double &dblIdx, mpz_class &mpzIdx, const std::vector<int> &Reps
+) {
 
-    rankPartsRepLenGmp(iter, n * 2, m, cap, k, dblIdx, mpzIdx);
+    rankPartsRepLenGmp(iter, n * 2, m, cap, k, dblIdx, mpzIdx, Reps);
 }
 
-void rankPartsRepCap(std::vector<int>::iterator iter, int n, int m,
-                     int cap, int k, double &dblIdx, mpz_class &mpzIdx) {
+void rankPartsRepCap(
+    std::vector<int>::iterator iter, int n, int m, int cap, int k,
+    double &dblIdx, mpz_class &mpzIdx, const std::vector<int> & /* Reps */
+) {
 
     const int width = m;
     dblIdx = 0;
@@ -101,8 +117,10 @@ void rankPartsRepCap(std::vector<int>::iterator iter, int n, int m,
     }
 }
 
-void rankPartsRepCapGmp(std::vector<int>::iterator iter, int n, int m,
-                        int cap, int k, double &dblIdx, mpz_class &mpzIdx) {
+void rankPartsRepCapGmp(
+    std::vector<int>::iterator iter, int n, int m, int cap, int k,
+    double &dblIdx, mpz_class &mpzIdx, const std::vector<int> & /* Reps */
+) {
 
     const int width = m;
     mpzIdx = 0;
@@ -132,8 +150,10 @@ void rankPartsRepCapGmp(std::vector<int>::iterator iter, int n, int m,
     }
 }
 
-void rankPartsDistinctLen(std::vector<int>::iterator iter, int n, int m,
-                          int cap, int k, double &dblIdx, mpz_class &mpzIdx) {
+void rankPartsDistinctLen(
+    std::vector<int>::iterator iter, int n, int m, int cap, int k,
+    double &dblIdx, mpz_class &mpzIdx, const std::vector<int> & /* Reps */
+) {
 
     const int width = m;
     dblIdx = 0;
@@ -152,8 +172,10 @@ void rankPartsDistinctLen(std::vector<int>::iterator iter, int n, int m,
     }
 }
 
-void rankPartsDistinctLenGmp(std::vector<int>::iterator iter, int n, int m,
-                            int cap, int k, double &dblIdx, mpz_class &mpzIdx) {
+void rankPartsDistinctLenGmp(
+    std::vector<int>::iterator iter, int n, int m, int cap, int k,
+    double &dblIdx, mpz_class &mpzIdx, const std::vector<int> & /* Reps */
+) {
 
     const int width = m;
     mpzIdx = 0;
@@ -180,23 +202,24 @@ void rankPartsDistinctLenGmp(std::vector<int>::iterator iter, int n, int m,
 }
 
 void rankPartsDistinctOneZero(
-    std::vector<int>::iterator iter, int n, int m,
-    int cap, int k, double &dblIdx, mpz_class &mpzIdx
+    std::vector<int>::iterator iter, int n, int m, int cap, int k,
+    double &dblIdx, mpz_class &mpzIdx, const std::vector<int> &Reps
 ) {
 
-    rankPartsDistinctLen(iter, n, m, cap, k, dblIdx, mpzIdx);
+    rankPartsDistinctLen(iter, n, m, cap, k, dblIdx, mpzIdx, Reps);
 }
 
-void rankPartsDistinctOneZeroGmp(std::vector<int>::iterator iter,
-                                 int n, int m, int cap, int k,
-                                 double &dblIdx, mpz_class &mpzIdx) {
+void rankPartsDistinctOneZeroGmp(
+    std::vector<int>::iterator iter, int n, int m, int cap, int k,
+    double &dblIdx, mpz_class &mpzIdx, const std::vector<int> &Reps
+) {
 
-    rankPartsDistinctLenGmp(iter, n, m, cap, k, dblIdx, mpzIdx);
+    rankPartsDistinctLenGmp(iter, n, m, cap, k, dblIdx, mpzIdx, Reps);
 }
 
 void rankPartsDistinctMZ(
-    std::vector<int>::iterator iter, int n, int m,
-    int cap, int k, double &dblIdx, mpz_class &mpzIdx
+    std::vector<int>::iterator iter, int n, int m, int cap, int k,
+    double &dblIdx, mpz_class &mpzIdx, const std::vector<int> & /* Reps */
 ) {
 
     const int width = m;
@@ -226,9 +249,10 @@ void rankPartsDistinctMZ(
     }
 }
 
-void rankPartsDistinctMZGmp(std::vector<int>::iterator iter,
-                                   int n, int m, int cap, int k,
-                                   double &dblIdx, mpz_class &mpzIdx) {
+void rankPartsDistinctMZGmp(
+    std::vector<int>::iterator iter, int n, int m, int cap, int k,
+    double &dblIdx, mpz_class &mpzIdx, const std::vector<int> & /* Reps */
+) {
 
     const int width = m;
     mpzIdx = 0;
@@ -263,8 +287,10 @@ void rankPartsDistinctMZGmp(std::vector<int>::iterator iter,
     }
 }
 
-void rankPartsDistinctCap(std::vector<int>::iterator iter, int n, int m,
-                          int cap, int k, double &dblIdx, mpz_class &mpzIdx) {
+void rankPartsDistinctCap(
+    std::vector<int>::iterator iter, int n, int m, int cap, int k,
+    double &dblIdx, mpz_class &mpzIdx, const std::vector<int> & /* Reps */
+) {
 
     const int width = m;
     dblIdx = 0;
@@ -290,9 +316,10 @@ void rankPartsDistinctCap(std::vector<int>::iterator iter, int n, int m,
     }
 }
 
-void rankPartsDistinctCapGmp(std::vector<int>::iterator iter,
-                             int n, int m, int cap, int k,
-                             double &dblIdx, mpz_class &mpzIdx) {
+void rankPartsDistinctCapGmp(
+    std::vector<int>::iterator iter, int n, int m, int cap, int k,
+    double &dblIdx, mpz_class &mpzIdx, const std::vector<int> & /* Reps */
+) {
 
     const int width = m;
     mpzIdx = 0;
@@ -325,8 +352,10 @@ void rankPartsDistinctCapGmp(std::vector<int>::iterator iter,
     }
 }
 
-void rankPartsDistinctCapMZ(std::vector<int>::iterator iter, int n, int m,
-                            int cap, int k, double &dblIdx, mpz_class &mpzIdx) {
+void rankPartsDistinctCapMZ(
+    std::vector<int>::iterator iter, int n, int m, int cap, int k,
+    double &dblIdx, mpz_class &mpzIdx, const std::vector<int> & /* Reps */
+) {
 
     const int width = m;
     dblIdx = 0;
@@ -358,9 +387,10 @@ void rankPartsDistinctCapMZ(std::vector<int>::iterator iter, int n, int m,
     }
 }
 
-void rankPartsDistinctCapMZGmp(std::vector<int>::iterator iter,
-                               int n, int m, int cap, int k,
-                               double &dblIdx, mpz_class &mpzIdx) {
+void rankPartsDistinctCapMZGmp(
+    std::vector<int>::iterator iter, int n, int m, int cap, int k,
+    double &dblIdx, mpz_class &mpzIdx, const std::vector<int> & /* Reps */
+) {
 
     const int width = m;
     mpzIdx = 0;
@@ -394,6 +424,93 @@ void rankPartsDistinctCapMZGmp(std::vector<int>::iterator iter,
             ++j;
             n -= m;
             allowed.pop_back();
+        }
+    }
+}
+
+void rankPartsMultiset(
+    std::vector<int>::iterator iter, int n, int m, int cap, int /* k */,
+    double &dblIdx, mpz_class & /* mpzIdx */, const std::vector<int> &Reps
+) {
+
+    const int width = m;
+    dblIdx = 0;
+
+    std::vector<int> allowed(cap);
+    std::iota(allowed.begin(), allowed.end(), 1);
+    std::vector<int> lclReps(Reps);
+    MultisetCountEngine<false> counter;
+    --n;
+    --m;
+
+    // As in unranking, j is the original bucket offset and allowed is 1..k.
+    // Reserve each candidate before counting its suffix. Advancing a bucket
+    // shifts the candidate and all m remaining parts, so n -= m + 1.
+    for (int i = 0, j = 0; i < (width - 1); ++i, --n, --m, ++iter) {
+        --lclReps.front();
+
+        if (lclReps.front() < 0) {
+            lclReps.erase(lclReps.begin());
+            allowed.pop_back();
+            n -= (m + 1);
+            ++j;
+            --lclReps.front();
+        }
+
+        // Input values and multiplicities are validated by the caller.
+        // Only blocks preceding the selected value contribute to its rank.
+        for (; j < *iter; ++j) {
+            dblIdx += counter.Count(n, m, allowed, lclReps);
+            lclReps.erase(lclReps.begin());
+            allowed.pop_back();
+            --lclReps.front();
+            n -= (m + 1);
+        }
+    }
+}
+
+void rankPartsMultisetGmp(
+    std::vector<int>::iterator iter, int n, int m, int cap, int /* k */,
+    double & /* dblIdx */, mpz_class &mpzIdx, const std::vector<int> &Reps
+) {
+
+    const int width = m;
+    mpzIdx = 0;
+
+    std::vector<int> allowed(cap);
+    std::iota(allowed.begin(), allowed.end(), 1);
+    std::vector<int> lclReps(Reps);
+    --n;
+    --m;
+
+    mpz_class temp;
+    PartsMultiset counter(Reps);
+    counter.SetArrSize(PartitionType::Multiset, n, m);
+    counter.InitializeMpz();
+
+    // As in unranking, j is the original bucket offset and allowed is 1..k.
+    // Reserve each candidate before counting its suffix. Advancing a bucket
+    // shifts the candidate and all m remaining parts, so n -= m + 1.
+    for (int i = 0, j = 0; i < (width - 1); ++i, --n, --m, ++iter) {
+        --lclReps.front();
+
+        if (lclReps.front() < 0) {
+            lclReps.erase(lclReps.begin());
+            allowed.pop_back();
+            n -= (m + 1);
+            ++j;
+            --lclReps.front();
+        }
+
+        // Input values and multiplicities are validated by the caller.
+        // Only blocks preceding the selected value contribute to its rank.
+        for (; j < *iter; ++j) {
+            counter.GetCount(temp, n, m, allowed, lclReps);
+            mpzIdx += temp;
+            lclReps.erase(lclReps.begin());
+            allowed.pop_back();
+            --lclReps.front();
+            n -= (m + 1);
         }
     }
 }

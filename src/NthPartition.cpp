@@ -523,34 +523,30 @@ std::vector<int> nthPartsMultiset(
     MultisetCountEngine<false> counter;
 
     for (int i = 0, j = 0; i < (width - 1); ++i, --n, --m) {
-        if (lclReps.size()) --lclReps.front();
+        --lclReps.front();
 
-        if (lclReps.size() && lclReps.front() < 0) {
+        if (lclReps.front() < 0) {
             lclReps.erase(lclReps.begin());
             allowed.pop_back();
             n -= (m + 1);
             ++j;
 
             // Reserve the candidate from the new bucket before counting.
-            if (lclReps.size()) --lclReps.front();
+            --lclReps.front();
         }
 
-        double temp = lclReps.size()
-            ? counter.Count(n, m, allowed, lclReps) : 0;
+        double temp = counter.Count(n, m, allowed, lclReps);
 
         for (; temp <= dblIdx; ++j) {
-            if (lclReps.size()) {
-                lclReps.erase(lclReps.begin());
-                allowed.pop_back();
-            }
+            lclReps.erase(lclReps.begin());
+            allowed.pop_back();
 
             // Every new candidate consumes one occurrence of its own value.
-            if (lclReps.size()) --lclReps.front();
+            --lclReps.front();
 
             n -= (m + 1);
             dblIdx -= temp;
-            temp = lclReps.size()
-                ? counter.Count(n, m, allowed, lclReps) : 0;
+            temp = counter.Count(n, m, allowed, lclReps);
         }
 
         res[i] = j;
@@ -583,40 +579,30 @@ std::vector<int> nthPartsMultisetGmp(
     counter.InitializeMpz();
 
     for (int i = 0, j = 0; i < (width - 1); ++i, --n, --m) {
-        if (lclReps.size()) --lclReps.front();
+        --lclReps.front();
 
-        if (lclReps.size() && lclReps.front() < 0) {
+        if (lclReps.front() < 0) {
             lclReps.erase(lclReps.begin());
             allowed.pop_back();
             n -= (m + 1);
             ++j;
 
             // Reserve the candidate from the new bucket before counting.
-            if (lclReps.size()) --lclReps.front();
+            --lclReps.front();
         }
 
-        if (lclReps.size()) {
-            counter.GetCount(temp, n, m, allowed, lclReps);
-        } else {
-            temp = 0;
-        }
+        counter.GetCount(temp, n, m, allowed, lclReps);
 
         for (; cmp(temp, index) <= 0; ++j) {
-            if (lclReps.size()) {
-                lclReps.erase(lclReps.begin());
-                allowed.pop_back();
-            }
+            lclReps.erase(lclReps.begin());
+            allowed.pop_back();
 
             // Every new candidate consumes one occurrence of its own value.
-            if (lclReps.size()) --lclReps.front();
+            --lclReps.front();
 
             n -= (m + 1);
             index -= temp;
-            if (lclReps.size()) {
-                counter.GetCount(temp, n, m, allowed, lclReps);
-            } else {
-                temp = 0;
-            }
+            counter.GetCount(temp, n, m, allowed, lclReps);
         }
 
         res[i] = j;
