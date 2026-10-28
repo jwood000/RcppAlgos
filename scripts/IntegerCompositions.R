@@ -16,7 +16,10 @@ reprex::reprex({
     #'
     #' The output with `compositionsGeneral` is in lexicographical order across
     #' all matching compositions. Its `lower` and `upper` index those matching
-    #' rows. Supplying `lower = 1` gives the same prefix as omitting `lower`.
+    #' rows. When matches exist, `lower = 1` gives the same prefix as
+    #' omitting `lower`. With no matches, omitting both bounds returns an
+    #' empty matrix; explicit positive bounds exceed the zero result count
+    #' and raise an error.
     #' When `weak = TRUE` and zero is included, zeros are actual parts of the
     #' sequence: `c(0, 0, 5)`, `c(0, 5, 0)`, and `c(5, 0, 0)` are weak
     #' compositions of 5. Increasing the width permits additional zeros.

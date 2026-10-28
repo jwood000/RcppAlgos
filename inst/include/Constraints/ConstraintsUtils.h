@@ -30,6 +30,13 @@ constexpr double defaultTolerance =
     std::numeric_limits<float>::epsilon() / 8.0;
 
 inline void ValidatePartitionDesign(const PartDesign &part) {
+    // Generic constraint fallbacks do not preserve composition semantics.
+    if (part.isComp &&
+        (part.ptype == PartitionType::CoarseGrained ||
+         part.ptype == PartitionType::NotPartition)) {
+        cpp11::stop("Generation is not supported for this composition.");
+    }
+
     if (part.isPart && part.ptype == PartitionType::NotMapped) {
         cpp11::stop("Currently, there is no algorithm for this case.");
     }

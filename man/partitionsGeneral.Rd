@@ -65,7 +65,10 @@ compositionsGeneral(v, m = NULL, ...)
 \code{compositionsGeneral} generates supported compositions in
 lexicographical order across all matching rows. Its \code{lower} and
 \code{upper} bounds index those matching rows, so \code{lower = 1} returns
-the same prefix as omitting \code{lower}.
+the same prefix as omitting \code{lower} when matching rows exist.
+For supported partitions and compositions with no matches, omitting both
+bounds returns an empty matrix. Explicit positive bounds, including
+\code{lower = 1}, exceed the zero result count and raise an error.
 
 This differs from sum/equality calls to \code{\link{permuteGeneral}}.
 Without \code{lower}, supported constrained permutation calls generate

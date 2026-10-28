@@ -314,7 +314,9 @@ SEXP CombClassNew(SEXP RVals, SEXP RboolVec, SEXP freqInfo, SEXP Rparallel,
         // This is a correctness safeguard. Dedicated iterator support could be
         // added in the future if needed.
 
+        // Known-empty permutations can use the empty partition iterator.
         const bool isPermPartition = part.isPerm &&
+            part.ptype != PartitionType::NoSolution &&
             (
                 ctype == ConstraintType::PartMapping ||
                 ctype == ConstraintType::PartStandard

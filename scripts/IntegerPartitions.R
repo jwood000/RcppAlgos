@@ -161,10 +161,12 @@ reprex::reprex({
     #' ### Bounds for multiset partitions
     #'
     #' For supported multiset partitions, `lower` and `upper` select rows of the
-    #' matching partitions in lexicographical order. Supplying `lower = 1` gives
-    #' the same prefix as omitting `lower`. Equivalent `comboGeneral` calls with
-    #' a
-    #' sum/equality constraint use these same partition ranks.
+    #' matching partitions in lexicographical order. When matches exist,
+    #' `lower = 1` gives the same prefix as omitting `lower`. With no matches,
+    #' omitting both bounds returns an empty matrix; explicit positive
+    #' bounds exceed the zero result count and raise an error. Equivalent
+    #' `comboGeneral` calls with a sum/equality constraint use these same
+    #' partition ranks.
     #'
 
     fr <- rep(1:5, 2)

@@ -452,9 +452,12 @@ reprex::reprex({
     #' Supported partition and composition algorithms use the second
     #' interpretation: bounds index matching results in lexicographical order.
     #' This includes multiset partitions and equivalent `comboGeneral` calls
-    #' using `constraintFun = "sum"` and `comparisonFun = "=="`. Thus omitting
-    #' `lower` and supplying `lower = 1` select the same prefix for these calls,
-    #' but have different meanings for constrained `permuteGeneral`.
+    #' using `constraintFun = "sum"` and `comparisonFun = "=="`. When matches
+    #' exist, omitting `lower` and supplying `lower = 1` select the same
+    #' prefix for these calls, but have different meanings for constrained
+    #' `permuteGeneral`. For an empty partition or composition result set,
+    #' omitting both bounds returns an empty matrix; explicit positive
+    #' bounds exceed the zero result count and raise an error.
     #'
     #' With iterators, we can generate _n_ results with `nextNIter(n)` or calling `nextIter()` _n_ times (or some combination of the two). Then, if we want to continue iterating, we pick up where we left off fetching the _(n + 1)<sup>th</sup>_ result and beyond (if there are any results left). This allows us to keep memory low without sacrificing our current state.
     #'

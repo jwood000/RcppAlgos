@@ -75,11 +75,11 @@ bool CheckSpecialCase(const std::vector<double> &vNum,
 
     // Permutations and generic constraints with an explicit lower filter
     // candidate ranks. Without lower, upper still caps matching results.
-    // Supported partitions, including multisets, use matching-result ranks.
+    // Supported partitions, including multisets and empty result sets,
+    // use matching-result ranks.
 
     const bool NonStdPart = ptype == PartitionType::CoarseGrained ||
-                            ptype == PartitionType::NotPartition  ||
-                            ptype == PartitionType::NoSolution;
+                            ptype == PartitionType::NotPartition;
 
     if (bLower && (isPerm || NonStdPart)) {
         result = true;

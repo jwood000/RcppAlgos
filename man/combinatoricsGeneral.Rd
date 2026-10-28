@@ -107,7 +107,9 @@ permuteGeneral(v, m = NULL, ...)
   multiset partitions, both bounds index matching partitions in
   lexicographical order. These calls use the same bounds as
   \code{\link{partitionsGeneral}}: supplying \code{lower = 1} or omitting
-  \code{lower} returns the same prefix.
+  \code{lower} returns the same prefix when matches exist. If there are
+  no matches, omitting both bounds returns an empty matrix; explicit
+  positive bounds exceed the zero result count and raise an error.
 
   In addition to the benefits listed for \code{lower}, this parameter is useful when the total number of combinations/permutations without constraint is large and you expect/need a small number of combinations/permutations that meet a certain criteria. Using \code{upper} can improve run time if used judiciously as we call the member function \href{https://en.cppreference.com/cpp/container/vector/reserve}{reserve} of \href{https://en.cppreference.com/cpp/container/vector}{std::vector}. See examples below.}
   \item{constraintFun}{Function to be applied to the elements of \code{v} that should be passed as a string (\emph{e.g.} \code{constraintFun = "sum"}). The possible constraint functions are: \code{"sum"}, \code{"prod"}, \code{"mean"}, \code{"max"}, & \code{"min"}. The default is \code{NULL}, meaning no function is applied.}

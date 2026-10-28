@@ -121,6 +121,23 @@ SEXP CombinatoricsCnstrt(SEXP Rv, SEXP Rm, SEXP RisRep, SEXP RFreqs,
     SetBounds(Rlow, Rhigh, IsGmp, bLower, bUpper, lower, upper,
               lowerMpz, upperMpz, computedRowsMpz, computedRows);
 
+    if (part.ptype == PartitionType::NoSolution) {
+        // Permutation bounds refer to candidates even when no matches exist.
+        // Validate their order before skipping candidate sizing and search.
+        // SetBounds decremented lower but not upper, so equal user bounds
+        // still satisfy lower < upper here.
+        if (bLower && bUpper &&
+            (IsGmp ? cmp(lowerMpz, upperMpz) >= 0 : lower >= upper)) {
+            cpp11::stop("The lowerBound is greater than the upperBound.");
+        }
+
+        const int width = part.isPart ? part.width : m;
+        const int nCols = width + KeepRes;
+        return Rf_allocMatrix(
+            myType == VecType::Integer ? INTSXP : REALSXP, 0, nCols
+        );
+    }
+
     std::vector<int> startZ(m);
     const int cap     = n - part.includeZero;
     const int strtLen = std::count_if(part.startZ.cbegin(),
