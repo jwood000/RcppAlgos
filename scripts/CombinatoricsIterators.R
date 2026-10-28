@@ -369,7 +369,10 @@ reprex::reprex({
     #'
     #' ## Iterating over Partitions and Compositions of a Number
     #'
-    #' For most partition cases, we have all of the capabilities of the standard `comboIter` and `permuteIter` except for bidirectionality (i.e. the `prevIter` methods). For cases involving standard multisets we also don't have random access methods.
+    #' For most partition cases, we have all of the capabilities of the standard
+    #' `comboIter` and `permuteIter` except for bidirectionality (i.e. the
+    #' `prevIter` methods). Supported multiset partition cases also provide
+    #' random access methods.
     #'
 
     ## Similar illustration of comboIter(5, 3) at the top
@@ -438,7 +441,16 @@ reprex::reprex({
     #'   1. Start checking from a particular lexicographical result without considering the constraint (as we do normally).
     #'   2. Start generating results from a particular result with regards to the final constrained output.
     #'
-    #' In `RcppAlgos` we have always used the first interpretation. A big downside for the second point is that we don't have any fast algorithms for enumerating the total number of results, which reduces determining the _n<sup>th</sup>_ result to a brute force approach.
+    #' Generic constraint searches use the first interpretation, including when
+    #' `lower = 1` is explicitly supplied. These searches lack fast algorithms
+    #' for
+    #' counting and accessing matching results directly.
+    #'
+    #' Supported partition and composition algorithms use the second
+    #' interpretation: bounds refer to matching results. This includes multiset
+    #' partitions and equivalent `comboGeneral` calls using `constraintFun =
+    #' "sum"`
+    #' and `comparisonFun = "=="`.
     #'
     #' With iterators, we can generate _n_ results with `nextNIter(n)` or calling `nextIter()` _n_ times (or some combination of the two). Then, if we want to continue iterating, we pick up where we left off fetching the _(n + 1)<sup>th</sup>_ result and beyond (if there are any results left). This allows us to keep memory low without sacrificing our current state.
     #'

@@ -202,3 +202,101 @@ test_that("GMP multiset unranking respects binding multiplicities", {
         actual * 2e9
     )
 })
+
+
+test_that("Multiset bounds index the same partitions through both APIs", {
+    freqs <- rep(1:5, 2)
+    for (mapping in list(c(1L, 0L), c(1L, -1L), c(2e9, 7))) {
+        v <- (1:10) * mapping[1L] + mapping[2L]
+        target <- 25L * mapping[1L] + 5L * mapping[2L]
+        candidates <- comboGeneral(v, 5, freqs = freqs)
+        bench <- candidates[rowSums(candidates) == target, , drop = FALSE]
+        total <- nrow(bench)
+        expect_identical(total, 74L)
+        expect_identical(
+            partitionsGeneral(v, 5, freqs = freqs, target = target, upper = 5),
+            bench[1:5, , drop = FALSE]
+        )
+        for (bounds in list(c(1L, 5L), c(2L, 6L),
+                            c(total - 1L, total), c(total, total))) {
+            lower <- bounds[1L]
+            upper <- bounds[2L]
+            expected <- bench[lower:upper, , drop = FALSE]
+            expect_identical(
+                partitionsGeneral(v, 5, freqs = freqs, target = target,
+                                  lower = lower, upper = upper),
+                expected
+            )
+            expect_identical(
+                comboGeneral(v, 5, freqs = freqs, constraintFun = "sum",
+                             comparisonFun = "==", limitConstraints = target,
+                             lower = lower, upper = upper, keepResults = FALSE),
+                expected
+            )
+            expect_identical(
+                comboGeneral(v, 5, freqs = freqs, constraintFun = "sum",
+                             comparisonFun = "==", limitConstraints = target,
+                             lower = lower, upper = upper, keepResults = TRUE),
+                unname(cbind(expected, target))
+            )
+        }
+        expect_identical(
+            partitionsGeneral(v, 5, freqs = freqs, target = target,
+                              lower = total - 1L),
+            bench[(total - 1L):total, , drop = FALSE]
+        )
+        expect_error(
+            partitionsGeneral(v, 5, freqs = freqs, target = target,
+                              lower = 500),
+            "bounds cannot exceed"
+        )
+        expect_error(
+            comboGeneral(v, 5, freqs = freqs, constraintFun = "sum",
+                         comparisonFun = "==", limitConstraints = target,
+                         lower = 500),
+            "bounds cannot exceed"
+        )
+    }
+    tab <- table(rep(1:10, freqs))
+    expected <- partitionsSample(10, 5, freqs = freqs, target = 25,
+                                 sampleVec = 2:6)
+    expect_identical(
+        partitionsGeneral(tab, 5, target = 25, lower = 2, upper = 6), expected
+    )
+    expect_identical(
+        comboGeneral(tab, 5, constraintFun = "sum", comparisonFun = "==",
+                     limitConstraints = 25, lower = 2, upper = 6,
+                     keepResults = FALSE),
+        expected
+    )
+})
+
+test_that("Large multiset bounds preserve double and GMP partition ranks", {
+    for (case in list(list(cap = 50L, width = 12L, target = 240L),
+                      list(cap = 100L, width = 20L, target = 500L))) {
+        v <- seq_len(case$cap)
+        freqs <- rep(2:4, length.out = case$cap)
+        total <- partitionsCount(v, case$width, freqs = freqs,
+                                 target = case$target)
+        expect_identical(inherits(total, "bigz"), case$cap == 100L)
+        expect_gt(total, .Machine$integer.max)
+        lower <- total - 2L
+        expected <- partitionsSample(v, case$width, freqs = freqs,
+                                     target = case$target,
+                                     sampleVec = lower + 0:2)
+        for (bound in list(lower, as.character(lower))) {
+            expect_identical(
+                partitionsGeneral(v, case$width, freqs = freqs,
+                                  target = case$target, lower = bound),
+                expected
+            )
+            expect_identical(
+                comboGeneral(v, case$width, freqs = freqs,
+                             constraintFun = "sum", comparisonFun = "==",
+                             limitConstraints = case$target, lower = bound,
+                             upper = total, keepResults = FALSE),
+                expected
+            )
+        }
+    }
+})

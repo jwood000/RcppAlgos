@@ -87,7 +87,17 @@ permuteGeneral(v, m = NULL, ...)
   \item{lower}{The lower bound. Combinations/permutations are generated lexicographically, thus utilizing this argument will determine which specific combination/permutation to start generating from (\emph{e.g.} \code{comboGeneral(5, 3, lower = 6)} is equivalent to \code{comboGeneral(5, 3)[6:choose(5, 3), ]}). This argument along with \code{upper} is very useful for generating combinations/permutations in chunks allowing for easy parallelization.}
   \item{upper}{The upper bound. Similar to \code{lower}, however this parameter allows the user to \emph{stop} generation at a specific combination/permutation (\emph{e.g.} \code{comboGeneral(5, 3, upper = 5)} is equivalent to \code{comboGeneral(5, 3)[1:5, ]})
 
-  If the output is constrained and \code{lower} isn't supplied, \code{upper} serves as a cap for how many results will be returned that meet the criteria (\emph{e.g.} setting \code{upper = 100} alone will return the first 100 results that meet the criteria, while setting \code{lower = 1} and \code{upper = 100} will test the first 100 results against the criteria).
+  For generic constrained searches, if \code{lower} isn't supplied,
+  \code{upper} caps the number of matching results returned. For example,
+  \code{upper = 100} alone returns the first 100 matches, while
+  \code{lower = 1} and \code{upper = 100} test the first 100 candidates.
+
+  When \code{comboGeneral} uses a supported partition algorithm with
+  \code{constraintFun = "sum"} and \code{comparisonFun = "=="}, including
+  multiset partitions, both bounds index matching partitions in
+  lexicographical order. These calls use the same bounds as
+  \code{\link{partitionsGeneral}}: supplying \code{lower = 1} or omitting
+  \code{lower} returns the same prefix.
 
   In addition to the benefits listed for \code{lower}, this parameter is useful when the total number of combinations/permutations without constraint is large and you expect/need a small number of combinations/permutations that meet a certain criteria. Using \code{upper} can improve run time if used judiciously as we call the member function \href{https://en.cppreference.com/cpp/container/vector/reserve}{reserve} of \href{https://en.cppreference.com/cpp/container/vector}{std::vector}. See examples below.}
   \item{constraintFun}{Function to be applied to the elements of \code{v} that should be passed as a string (\emph{e.g.} \code{constraintFun = "sum"}). The possible constraint functions are: \code{"sum"}, \code{"prod"}, \code{"mean"}, \code{"max"}, & \code{"min"}. The default is \code{NULL}, meaning no function is applied.}
@@ -141,7 +151,11 @@ When there are any negative values in \code{v}, \code{constraintFun = "prod"}, a
         \item The maximum number of combinations/permutations that can be generated at one time is \eqn{2^{31} - 1}{2^31 - 1}. Utilizing \code{lower} and \code{upper} makes it possible to generate additional combinations/permutations.
         \item Factor vectors are accepted. Class and level attributes are preserved except when \code{FUN} is used.
         \item Lexicographical ordering isn't guaranteed for permutations if \code{lower} isn't supplied and the output is constrained.
-        \item If \code{lower} is supplied and the output is constrained, the combinations/permutations that will be tested will be in the lexicographical range \code{lower} to \code{upper} or up to the total possible number of results if \code{upper} is not given. See the second paragraph for the definition of \code{upper}.
+        \item For generic constrained searches with \code{lower} supplied,
+        candidates in the lexicographical range \code{lower} to \code{upper}
+        are tested. If \code{upper} is omitted, testing continues through all
+        remaining candidates. For supported partition algorithms, bounds
+        instead index matching partitions; see the definition of \code{upper}.
         \item \code{FUN} will be ignored if the constraint check is satisfied.
         \item For special constraints (see the Details section), multithreading is only available when \code{lower} is explicitly supplied. In this case, the search space can be divided among threads beginning at the requested lower bound. When \code{lower} is not supplied, RcppAlgos must continue searching until the requested number of results satisfying the constraints is found. Because the locations of these results are not known in advance, this search is performed serially, even when multiple threads are requested.
     }

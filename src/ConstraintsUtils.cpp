@@ -73,15 +73,12 @@ bool CheckSpecialCase(const std::vector<double> &vNum,
 
     bool result = false;
 
-    // If bLower, the user is looking to test a particular range. Otherwise,
-    // the constraint algo will simply return (upper - lower) # of
-    // combinations/permutations that meet the criteria. This applies when
-    // we have anything other than non standard partitions
+    // Generic constraints with an explicit lower filter candidate ranks.
+    // Supported partitions, including multisets, use matching-result ranks.
 
     const bool NonStdPart = ptype == PartitionType::CoarseGrained ||
                             ptype == PartitionType::NotPartition  ||
-                            ptype == PartitionType::NoSolution    ||
-                            ptype == PartitionType::Multiset;
+                            ptype == PartitionType::NoSolution;
 
     if (bLower && NonStdPart) {
         result = true;

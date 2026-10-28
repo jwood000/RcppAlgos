@@ -158,6 +158,35 @@ reprex::reprex({
 
 
     #'
+    #' ### Bounds for multiset partitions
+    #'
+    #' For supported multiset partitions, `lower` and `upper` select rows of the
+    #' matching partitions in lexicographical order. Supplying `lower = 1` gives
+    #' the same prefix as omitting `lower`. Equivalent `comboGeneral` calls with
+    #' a
+    #' sum/equality constraint use these same partition ranks.
+    #'
+
+    fr <- rep(1:5, 2)
+    all_parts <- partitionsGeneral(10, 5, freqs = fr, target = 25)
+    nrow(all_parts)
+
+    first_five <- partitionsGeneral(10, 5, freqs = fr, target = 25,
+                                    lower = 1, upper = 5)
+    identical(first_five, all_parts[1:5, , drop = FALSE])
+
+    identical(first_five,
+              comboGeneral(10, 5, freqs = fr, constraintFun = "sum",
+                           comparisonFun = "==", limitConstraints = 25,
+                           lower = 1, upper = 5, keepResults = FALSE))
+
+    #'
+    #' There are only 74 matching partitions here, so `lower = 500` is invalid
+    #' through either API. It does not mean to start filtering at the 500th
+    #' unconstrained combination. Multiset partitions also support generation
+    #' with `nThreads = 2` when enough rows are requested to use multiple
+    #' threads.
+    #'
     #' ## Using the `table` S3 Method
     #'
     #' For both the multiset case and the distinct case with repeating zeros, we can take advantage of the `table()` S3 method. This is a natural fit for multisets, since problems are often framed in terms of multiplicities:

@@ -68,7 +68,6 @@ A matrix is returned with each row containing a vector of length \eqn{m}.
     \itemize{
         \item{\code{nThreads} will be ignored in the following cases (i.e. Generating the \eqn{n^{th}}{nth} partition in these cases are currently unavailable):
             \itemize{
-                \item With standard multisets. If zero is the only element with a non-trivial multiplicity, multithreading is possible (\emph{e.g.} \code{partitionsGeneral(0:100, freqs = c(100, rep(1, 100)), nThreads = 4)}).
                 \item If the source vector is not isomorphic to \code{1:length(v)} (\emph{e.g.} \code{v = c(1, 4, 6, 7, 8)}).
             }
         }
