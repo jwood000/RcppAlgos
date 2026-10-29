@@ -13,11 +13,12 @@ test_that("GMP scalar bounds and seeds reject zero", {
                  "lower must be a positive number")
     expect_error(comboGeneral(100, 20, upper = zero),
                  "upper must be a positive number")
-    expect_error(comboSample(100, 20, n = 1, seed = zero),
+    # The public wrapper also passes seed through base::set.seed().
+    expect_error(comboSample(100, 20, n = 1, seed = 0),
                  "seed must be a positive number")
 })
 
-test_that("Positive bigz ranks, bounds and seeds retain exact conversions", {
+test_that("Positive GMP ranks, bounds and seeds retain exact conversions", {
     indices <- c("1", "9007199254740993", "9007199254740994")
     expect_identical(
         comboSample(100, 20, sampleVec = gmp::as.bigz(indices)),
@@ -29,7 +30,7 @@ test_that("Positive bigz ranks, bounds and seeds retain exact conversions", {
         comboGeneral(100, 20, lower = indices[2], upper = indices[3])
     )
     expect_identical(
-        comboSample(100, 20, n = 3, seed = gmp::as.bigz(42)),
+        comboSample(100, 20, n = 3, seed = 42),
         comboSample(100, 20, n = 3, seed = "42")
     )
 })
