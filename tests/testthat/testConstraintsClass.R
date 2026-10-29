@@ -255,10 +255,19 @@ test_that("ConstraintsClass produces correct results", {
         )
     )
 
-    ## "PrmRepPartNoZ"
+    ## "PrmRepCapped"
     expect_true(
         constraintsClassTest(
             12, 5, TRUE, fun = "sum", comp = "==", tar = 30, IsComb = FALSE
+        )
+    )
+
+    ## "PrmDstPartNoZ"
+    expect_identical(permutePartsDesign(8, 3, target = 8)$partition_type,
+                     "PrmDstPartNoZ")
+    expect_true(
+        constraintsClassTest(
+            8, 3, fun = "sum", comp = "==", tar = 8, IsComb = FALSE
         )
     )
 

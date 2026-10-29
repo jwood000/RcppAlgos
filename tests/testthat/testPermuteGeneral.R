@@ -401,6 +401,31 @@ test_that("permuteGeneral produces correct results with very large results", {
 })
 
 test_that("permuteCount produces correct results under partition constraints", {
+    cases <- list(
+        PrmRepPart = list(v = 0:8, m = 3, repetition = TRUE, target = 8),
+        PrmRepCapped = list(v = 1:5, m = 3, repetition = TRUE, target = 9),
+        PrmDstPrtCap = list(v = 1:5, m = 3, target = 9),
+        PrmDstPrtCapMZ = list(v = 0:3, m = 4, freqs = c(3, 1, 1, 1),
+                             target = 5)
+    )
+    for (ptype in names(cases)) {
+        args <- cases[[ptype]]
+        expect_identical(do.call(permutePartsDesign, args)$partition_type,
+                         ptype)
+        target <- args$target
+        args$target <- NULL
+        # Filter ordinary permutations independently of partition counting.
+        candidates <- do.call(permuteGeneral, args)
+        expected <- sum(rowSums(candidates) == target)
+        expect_equal(
+            do.call(permuteCount, c(args, list(
+                constraintFun = "sum", comparisonFun = "==",
+                limitConstraints = target
+            ))),
+            expected
+        )
+    }
+
     expect_equal(
         permuteCount(
             10, 5, TRUE, constraintFun = "sum",

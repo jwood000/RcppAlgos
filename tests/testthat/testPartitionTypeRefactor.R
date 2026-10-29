@@ -189,6 +189,23 @@ test_that("random-access continuation can reintroduce the mapped minimum", {
 
 # ---- 8. General multiset: count is supported; generation is not ------------
 
+expect_multiset_generation_unsupported <- function(args) {
+    for (bounds in list(list(), list(upper = 3L),
+                        list(lower = 1L), list(lower = 2L),
+                        list(lower = 1L, upper = 3L),
+                        list(lower = 2L, upper = 3L))) {
+        expect_error(
+            do.call(compositionsGeneral, c(args, bounds)),
+            "Generation is not supported.*permuteGeneral"
+        )
+    }
+    # Iterator construction has no lower/upper arguments.
+    expect_error(
+        do.call(compositionsIter, args),
+        "Generation is not supported.*permuteIter"
+    )
+}
+
 test_that("general multiset composition allows counts but rejects generation", {
     v <- 1:7
     fr <- c(2L, 2L, rep(1L, 5))
@@ -209,13 +226,8 @@ test_that("general multiset composition allows counts but rejects generation", {
     )
     expect_equal(as.numeric(d$num_partitions), nrow(oracle))
 
-    expect_error(
-        compositionsGeneral(v, 4L, freqs = fr, target = 14L),
-        "permuteGeneral"
-    )
-    expect_error(
-        compositionsIter(v, 4L, freqs = fr, target = 14L),
-        "permuteIter"
+    expect_multiset_generation_unsupported(
+        list(v = v, m = 4L, freqs = fr, target = 14L)
     )
 })
 
@@ -266,6 +278,9 @@ test_that("actual zero distinguishes weak and zero-padded multisets", {
         oracle_count <- oracle_count + nrow(sub)
     }
     expect_equal(as.numeric(padded$num_partitions), oracle_count)
+
+    expect_multiset_generation_unsupported(args)
+    expect_multiset_generation_unsupported(c(args, list(weak = TRUE)))
 })
 
 # ---- 10. Partition and ordinary-distinct controls --------------------------

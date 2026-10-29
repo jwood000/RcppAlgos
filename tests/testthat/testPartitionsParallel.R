@@ -1243,6 +1243,7 @@ test_that("Bounded multiset generation agrees across APIs and threads", {
         v <- seq_len(case$cap)
         total <- partitionsCount(v, case$width, freqs = case$freqs,
                                  target = case$target)
+        expect_identical(inherits(total, "bigz"), case$cap == 100L)
         lower <- if (inherits(total, "bigz")) total - size + 1L else 17L
         upper <- lower + size - 1L
         bench <- partitionsGeneral(v, case$width, freqs = case$freqs,
@@ -1272,6 +1273,13 @@ test_that("Bounded multiset generation agrees across APIs and threads", {
                              limitConstraints = target, lower = lower,
                              upper = upper, nThreads = 2, keepResults = FALSE),
                 expected
+            )
+            expect_identical(
+                comboGeneral(mapped, case$width, freqs = case$freqs,
+                             constraintFun = "sum", comparisonFun = "==",
+                             limitConstraints = target, lower = lower,
+                             upper = upper, nThreads = 2, keepResults = TRUE),
+                unname(cbind(expected, rep(target, size)))
             )
         }
     }
