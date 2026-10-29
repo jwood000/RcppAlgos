@@ -473,7 +473,33 @@ test_that("permuteCount produces correct results under partition constraints", {
 })
 
 
+test_that("Multiset permutation boundaries have independent counts", {
+    freqs <- c(3L, 1L, 1L, 1L)
+    for (width in c(4L, 6L)) {
+        expected <- if (width == 4L) 72L else 120L
+        rows <- permuteGeneral(0:3, width, freqs = freqs)
+        expect_identical(dim(rows), c(expected, width))
+        expect_identical(nrow(unique(rows)), expected)
+    }
+
+    rows <- permuteGeneral(
+        0:3, 4L, freqs = freqs, lower = 1L,
+        constraintFun = "sum", comparisonFun = "==", limitConstraints = 5L
+    )
+    # Exactly 4! / 2! arrangements of two zeros, a two, and a three.
+    expect_identical(dim(rows), c(12L, 4L))
+    expect_identical(nrow(unique(rows)), 12L)
+    expect_true(all(apply(rows, 1L, function(row) {
+        identical(sort(row), c(0L, 0L, 2L, 3L))
+    })))
+})
+
 test_that("Permutation sum bounds filter ordinary candidate ranks", {
+    expect_identical(
+        permutePartsDesign(0:3, 4, freqs = c(3, 1, 1, 1),
+                           target = 5)$partition_type,
+        "PrmDstPrtCapMZ"
+    )
     cases <- list(
         list(args = list(v = 1:8, m = 3, repetition = TRUE), target = 8),
         list(args = list(v = 0:8, m = 3, repetition = TRUE), target = 8),
@@ -486,6 +512,10 @@ test_that("Permutation sum bounds filter ordinary candidate ranks", {
         list(args = list(v = 0:5, m = 3, freqs = c(2, rep(1, 5))),
              target = 9),
         list(args = list(v = 0:5, m = 3, freqs = rep(1:3, 2)), target = 8),
+        # Four distinct values, but six occurrences: width four is partial.
+        list(args = list(v = 0:3, m = 4, freqs = c(3, 1, 1, 1)), target = 5),
+        list(args = list(v = table(c(0L, 0L, 0L, 1:3)), m = 4), target = 5),
+        list(args = list(v = 0:3, m = 6, freqs = c(3, 1, 1, 1)), target = 6),
         list(args = list(v = (1:5) * 2e9 + 7, m = 3,
                          freqs = c(1, 2, 3, 2, 1)), target = 8 * 2e9 + 21),
         list(args = list(v = c(0L, 1L, 3L, 7L), m = 3,

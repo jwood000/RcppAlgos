@@ -337,6 +337,14 @@ test_that("comboIter & permuteIter produces correct results", {
     expect_true(comboClassTest(as.raw(1:5), 3, IsComb = FALSE))
     expect_true(comboClassTest(factor(1:5), 3, IsComb = FALSE))
 
+    # Cross the distinct-value count and reach the full multiset width.
+    for (width in 3:6) {
+        expect_true(comboClassTest(0:3, width, freqs1 = c(3, 1, 1, 1),
+                                   IsComb = FALSE))
+        expect_true(comboClassTest(table(c(0L, 0L, 0L, 1:3)), width,
+                                   IsComb = FALSE))
+    }
+
     ## S3 table mehtod
     expect_true(comboClassTest(table(s), 3, IsComb = FALSE))
 
