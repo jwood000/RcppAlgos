@@ -69,21 +69,19 @@ void VectorToMatrix(const std::vector<T> &cnstrntVec,
 
 bool CheckSpecialCase(const std::vector<double> &vNum,
                       const std::string &mainFun, PartitionType ptype,
-                      ConstraintType ctype, bool bLower) {
+                      bool isPerm, bool bLower) {
 
     bool result = false;
 
-    // If bLower, the user is looking to test a particular range. Otherwise,
-    // the constraint algo will simply return (upper - lower) # of
-    // combinations/permutations that meet the criteria. This applies when
-    // we have anything other than non standard partitions
+    // Permutations and generic constraints with an explicit lower filter
+    // candidate ranks. Without lower, upper still caps matching results.
+    // Supported partitions, including multisets and empty result sets,
+    // use matching-result ranks.
 
     const bool NonStdPart = ptype == PartitionType::CoarseGrained ||
-                            ptype == PartitionType::NotPartition  ||
-                            ptype == PartitionType::NoSolution    ||
-                            ptype == PartitionType::Multiset;
+                            ptype == PartitionType::NotPartition;
 
-    if (bLower && NonStdPart) {
+    if (bLower && (isPerm || NonStdPart)) {
         result = true;
     } else if (mainFun == "prod") {
         for (auto v_i: vNum) {
@@ -101,7 +99,7 @@ void SetConstraintType(const std::vector<double> &vNum,
                        const std::string &mainFun, PartDesign &part,
                        ConstraintType &ctype, bool bLower) {
 
-    if (CheckSpecialCase(vNum, mainFun, part.ptype, ctype, bLower)) {
+    if (CheckSpecialCase(vNum, mainFun, part.ptype, part.isPerm, bLower)) {
         part.isPart = false;
         ctype = ConstraintType::SpecialCnstrnt;
     } else if (part.ptype == PartitionType::CoarseGrained) {
@@ -400,15 +398,13 @@ void ConstraintSetup(const std::vector<double> &vNum,
         myType = VecType::Integer;
     }
 
-    bool bLower = false;
+    // An explicit lower, including 1, requests a candidate range for the
+    // fallback cases in CheckSpecialCase. Validate it before dispatch.
+    const bool bLower = !Rf_isNull(Rlow);
 
-    // Currently, we are not able to generate the nth lexicographical
-    // partition for some cases. Thus, if lower is non-trivial, we must
-    // use the most general algorithm.
-    if (!Rf_isNull(Rlow)) {
+    if (bLower) {
         mpz_class tempLower;
         CppConvert::convertMpzClass(Rlow, tempLower, "lower");
-        bLower = cmp(tempLower, 1) > 0;
     }
 
     if (part.isPart) SetPartitionDesign(Reps, vNum, part, ctype, lenV, m);

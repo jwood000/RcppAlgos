@@ -230,7 +230,8 @@ int PartsPermDistinct(int* mat, std::vector<int> &z, std::size_t width,
     for (std::size_t count = 0;;
          NextDistinctPart(z, boundary, edge, tarDiff, lastCol)) {
 
-        for (int j = 0, myRow = 0; j < indexRows; ++count, ++j) {
+        for (int j = 0, myRow = 0; j < indexRows && count < nRows;
+             ++count, ++j) {
             for (std::size_t k = 0; k < width; ++k, ++myRow) {
                 mat[count + nRows * k] = z[indexMat[myRow]];
             }

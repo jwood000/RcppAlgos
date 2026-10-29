@@ -327,19 +327,26 @@ void RepAll::GetCount(
 
 void PartsMultiset::GetCount(
     mpz_class &res, int n, int m, const std::vector<int> &allowed,
-    int strtLen, bool bLiteral
+    int strtLen, bool /* bLiteral */
+) {
+    GetCount(res, n, m, allowed, Reps, strtLen);
+}
+
+void PartsMultiset::GetCount(
+    mpz_class &res, int n, int m, const std::vector<int> &allowed,
+    const std::vector<int> &reps, int strtLen
 ) {
 
     double dblRes = 0;
     bool computedDouble = false;
 
     if (cmp(res, Significand53) < 0) {
-        dblRes = CountPartsMultiset(n, m, allowed, Reps);
+        dblRes = CountPartsMultiset(n, m, allowed, reps);
         computedDouble = true;
     }
 
     if (!computedDouble || IsBeyondBound(dblRes)) {
-        CountPartsMultiset(res, n, m, allowed, Reps);
+        CountPartsMultiset(res, p1, p2, n, m, allowed, reps);
     } else {
         res = dblRes;
     }
@@ -466,7 +473,7 @@ void CompsMultiset::GetCount(
     }
 
     if (!computedDouble || IsBeyondBound(dblRes)) {
-        CountCompsMultiset(res, n, m, allowed, Reps);
+        CountCompsMultiset(res, p1, p2, n, m, allowed, Reps);
     } else {
         res = dblRes;
     }
@@ -486,7 +493,7 @@ void CompsMultisetZero::GetCount(
     }
 
     if (!computedDouble || IsBeyondBound(dblRes)) {
-        CountCompsMultisetZero(res, n, m, allowed, Reps, strtLen);
+        CountCompsMultisetZero(res, p1, p2, n, m, allowed, Reps, strtLen);
     } else {
         res = dblRes;
     }
@@ -506,7 +513,7 @@ void CompsMultisetWeak::GetCount(
     }
 
     if (!computedDouble || IsBeyondBound(dblRes)) {
-        CountCompsMultisetWeak(res, n, m, allowed, Reps, strtLen);
+        CountCompsMultisetWeak(res, p1, p2, n, m, allowed, Reps, strtLen);
     } else {
         res = dblRes;
     }
@@ -650,6 +657,16 @@ void CountClass::SetArrSize(PartitionType ptype, int n, int m) {
     size  = 0;
 
     switch (ptype) {
+        case PartitionType::Multiset:
+        case PartitionType::CompMultiset:
+        case PartitionType::CompMultisetZero:
+        case PartitionType::CompMultisetWeak:
+        case PartitionType::PrmMultiset: {
+            CheckMultIsInt(n + 1.0, m + 1.0);
+            size = (n + 1) * (m + 1);
+            return;
+        }
+
         case PartitionType::RepNoZero:
         case PartitionType::RepShort: {
             const int limit = std::min(n - m, m);

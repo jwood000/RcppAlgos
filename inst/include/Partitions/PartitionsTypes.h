@@ -646,6 +646,7 @@ constexpr bool HasRankAlgo(const PartitionType ptype) {
         case PartitionType::DistinctNoZero:
         case PartitionType::DistinctCapped:
         case PartitionType::DistinctCappedMZ:
+        case PartitionType::Multiset:
         case PartitionType::LengthOne:
         case PartitionType::CompRepNoZero:
         case PartitionType::CompRepWeak:

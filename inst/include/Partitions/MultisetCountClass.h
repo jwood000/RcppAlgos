@@ -45,6 +45,11 @@ public:
         const std::vector<int> &allowed = std::vector<int>(),
         int strtLen = 0, bool bLiteral = true
     ) override;
+
+    void GetCount(
+        mpz_class &res, int n, int m, const std::vector<int> &allowed,
+        const std::vector<int> &reps, int strtLen = 0
+    );
 };
 
 class CompsMultiset : public MultisetCountClass {

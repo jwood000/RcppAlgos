@@ -401,6 +401,31 @@ test_that("permuteGeneral produces correct results with very large results", {
 })
 
 test_that("permuteCount produces correct results under partition constraints", {
+    cases <- list(
+        PrmRepPart = list(v = 0:8, m = 3, repetition = TRUE, target = 8),
+        PrmRepCapped = list(v = 1:5, m = 3, repetition = TRUE, target = 9),
+        PrmDstPrtCap = list(v = 1:5, m = 3, target = 9),
+        PrmDstPrtCapMZ = list(v = 0:3, m = 4, freqs = c(3, 1, 1, 1),
+                             target = 5)
+    )
+    for (ptype in names(cases)) {
+        args <- cases[[ptype]]
+        expect_identical(do.call(permutePartsDesign, args)$partition_type,
+                         ptype)
+        target <- args$target
+        args$target <- NULL
+        # Filter ordinary permutations independently of partition counting.
+        candidates <- do.call(permuteGeneral, args)
+        expected <- sum(rowSums(candidates) == target)
+        expect_equal(
+            do.call(permuteCount, c(args, list(
+                constraintFun = "sum", comparisonFun = "==",
+                limitConstraints = target
+            ))),
+            expected
+        )
+    }
+
     expect_equal(
         permuteCount(
             10, 5, TRUE, constraintFun = "sum",
@@ -470,4 +495,184 @@ test_that("permuteCount produces correct results under partition constraints", {
         ),
         compositionsCount(1:15, 8, freqs = rep(5:1, each = 3), target = 40)
     )
+})
+
+
+test_that("Multiset permutation boundaries have independent counts", {
+    freqs <- c(3L, 1L, 1L, 1L)
+    for (width in c(4L, 6L)) {
+        expected <- if (width == 4L) 72L else 120L
+        rows <- permuteGeneral(0:3, width, freqs = freqs)
+        expect_identical(dim(rows), c(expected, width))
+        expect_identical(nrow(unique(rows)), expected)
+    }
+
+    rows <- permuteGeneral(
+        0:3, 4L, freqs = freqs, lower = 1L,
+        constraintFun = "sum", comparisonFun = "==", limitConstraints = 5L
+    )
+    # Exactly 4! / 2! arrangements of two zeros, a two, and a three.
+    expect_identical(dim(rows), c(12L, 4L))
+    expect_identical(nrow(unique(rows)), 12L)
+    expect_true(all(apply(rows, 1L, function(row) {
+        identical(sort(row), c(0L, 0L, 2L, 3L))
+    })))
+})
+
+test_that("Permutation sum bounds filter ordinary candidate ranks", {
+    expect_identical(
+        permutePartsDesign(0:3, 4, freqs = c(3, 1, 1, 1),
+                           target = 5)$partition_type,
+        "PrmDstPrtCapMZ"
+    )
+    cases <- list(
+        list(args = list(v = 1:8, m = 3, repetition = TRUE), target = 8),
+        list(args = list(v = 0:8, m = 3, repetition = TRUE), target = 8),
+        list(args = list(v = 1:5, m = 3, repetition = TRUE), target = 9),
+        list(args = list(v = 1:8, m = 3), target = 8),
+        list(args = list(v = 0:8, m = 3), target = 8),
+        list(args = list(v = 0:8, m = 3, freqs = c(2, rep(1, 8))),
+             target = 8),
+        list(args = list(v = 1:5, m = 3), target = 9),
+        list(args = list(v = 0:5, m = 3, freqs = c(2, rep(1, 5))),
+             target = 9),
+        list(args = list(v = 0:5, m = 3, freqs = rep(1:3, 2)), target = 8),
+        # Four distinct values, but six occurrences: width four is partial.
+        list(args = list(v = 0:3, m = 4, freqs = c(3, 1, 1, 1)), target = 5),
+        list(args = list(v = table(c(0L, 0L, 0L, 1:3)), m = 4), target = 5),
+        list(args = list(v = 0:3, m = 6, freqs = c(3, 1, 1, 1)), target = 6),
+        list(args = list(v = (1:5) * 2e9 + 7, m = 3,
+                         freqs = c(1, 2, 3, 2, 1)), target = 8 * 2e9 + 21),
+        list(args = list(v = c(0L, 1L, 3L, 7L), m = 3,
+                         freqs = c(2, 1, 2, 1)), target = 8),
+        list(args = list(v = 1:3, freqs = c(2, 1, 1)), target = 7),
+        list(args = list(v = 1:5, m = 1), target = 3),
+        list(args = list(v = 1:5, m = 3), target = 100)
+    )
+    for (case in cases) {
+        candidates <- do.call(permuteGeneral, case$args)
+        sums <- rowSums(candidates)
+        total <- nrow(candidates)
+        args <- c(case$args, list(constraintFun = "sum", comparisonFun = "==",
+                                 limitConstraints = case$target))
+        for (bounds in list(c(1L, min(25L, total)),
+                            c(2L, total), c(total, total))) {
+            rows <- seq.int(bounds[1L], bounds[2L])
+            expected <- candidates[rows[sums[rows] == case$target], ,
+                                   drop = FALSE]
+            for (keep in c(FALSE, TRUE)) {
+                actual <- do.call(permuteGeneral, c(args, list(
+                    lower = bounds[1L], upper = bounds[2L], keepResults = keep
+                )))
+                bench <- if (keep) {
+                    unname(cbind(expected, rep(case$target, nrow(expected))))
+                } else expected
+                expect_equal(actual, bench)
+            }
+        }
+        expect_equal(
+            do.call(permuteGeneral, c(args, list(lower = 2))),
+            candidates[which(sums == case$target & seq_len(total) >= 2L), ,
+                       drop = FALSE]
+        )
+        # Omitting lower preserves the existing partition-based output order.
+        if (any(sums == case$target)) {
+            all_matches <- do.call(permuteGeneral, args)
+            size <- min(3L, nrow(all_matches))
+            expect_equal(
+                do.call(permuteGeneral, c(args, list(upper = size))),
+                all_matches[seq_len(size), , drop = FALSE]
+            )
+        }
+    }
+})
+
+test_that("Permutation candidate bounds preserve exact GMP ranks", {
+    lower <- gmp::as.bigz(2)^53 + 1L
+    upper <- lower + 40L
+    for (mode in list(list(), list(repetition = TRUE),
+                      list(freqs = rep(2L, 30)))) {
+        args <- c(list(v = 1:30, m = 12), mode)
+        candidates <- do.call(permuteSample, c(args, list(
+            sampleVec = lower + 0:40
+        )))
+        sums <- rowSums(candidates)
+        target <- sums[21L]
+        expected <- candidates[sums == target, , drop = FALSE]
+        expect_gt(nrow(expected), 0L)
+        expect_lt(nrow(expected), nrow(candidates))
+        for (bound in list(lower, as.character(lower))) {
+            expect_equal(
+                do.call(permuteGeneral, c(args, list(
+                    constraintFun = "sum", comparisonFun = "==",
+                    limitConstraints = target, lower = bound, upper = upper
+                ))),
+                expected
+            )
+        }
+    }
+})
+
+test_that("Permutation candidate ranges agree across one and two threads", {
+    # The special-constraint worker threshold is 20,000 candidates.
+    args <- list(v = 1:10, m = 5, freqs = rep(1:5, 2))
+    lower <- 17L
+    upper <- lower + 20000L
+    candidates <- do.call(permuteGeneral, c(args, list(
+        lower = lower, upper = upper
+    )))
+    sums <- rowSums(candidates)
+    target <- sums[10001L]
+    rows <- sums == target
+    expected <- unname(cbind(candidates[rows, , drop = FALSE], sums[rows]))
+    for (threads in 1:2) {
+        expect_equal(
+            do.call(permuteGeneral, c(args, list(
+                constraintFun = "sum", comparisonFun = "==",
+                limitConstraints = target, lower = lower, upper = upper,
+                keepResults = TRUE, nThreads = threads
+            ))),
+            expected
+        )
+    }
+})
+
+
+test_that("Distinct permutation caps stop within the final partition block", {
+    for (width in 3:4) {
+        target <- if (width == 3L) 8L else 14L
+        for (first in 0:1) {
+            v <- first:target
+            # Independently form each partition's lexicographic permutations.
+            parts <- comboGeneral(v, width)
+            parts <- parts[rowSums(parts) == target, , drop = FALSE]
+            blocks <- lapply(seq_len(nrow(parts)), function(i) {
+                permuteGeneral(parts[i, ], width)
+            })
+            expected <- do.call(rbind, blocks)
+            block_size <- factorial(width)
+            total <- nrow(expected)
+            expect_gt(total, block_size)
+            expect_identical(
+                permuteGeneral(v, width, constraintFun = "sum",
+                               comparisonFun = "==", limitConstraints = target),
+                expected
+            )
+            for (upper in unique(c(1L, 3L, block_size - 1L, block_size,
+                                   block_size + 1L, total - 1L, total))) {
+                prefix <- expected[seq_len(upper), , drop = FALSE]
+                for (keep in c(FALSE, TRUE)) {
+                    actual <- permuteGeneral(
+                        v, width, constraintFun = "sum", comparisonFun = "==",
+                        limitConstraints = target, upper = upper,
+                        keepResults = keep
+                    )
+                    bench <- if (keep) {
+                        unname(cbind(prefix, rep(target, upper)))
+                    } else prefix
+                    expect_identical(actual, bench)
+                }
+            }
+        }
+    }
 })

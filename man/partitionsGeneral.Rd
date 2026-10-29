@@ -61,6 +61,26 @@ compositionsGeneral(v, m = NULL, ...)
   \item{nThreads}{Specific number of threads to be used. The default is \code{NULL}.}
   \item{tolerance}{A numeric value greater than or equal to zero. This parameter is utilized when a constraint is applied on a numeric vector. The default value is 0 when it can be determined that whole values are being utilized, otherwise it is \code{sqrt(.Machine$double.eps)} which is approximately \eqn{1.5e-8}. N.B. If the input vector is of type integer, this parameter will be ignored and strict equality will be enforced.}
 }
+\details{
+\code{compositionsGeneral} generates supported compositions in
+lexicographical order across all matching rows. Its \code{lower} and
+\code{upper} bounds index those matching rows, so \code{lower = 1} returns
+the same prefix as omitting \code{lower} when matching rows exist.
+For supported partitions and compositions with no matches, omitting both
+bounds returns an empty matrix. Explicit positive bounds, including
+\code{lower = 1}, exceed the zero result count and raise an error.
+
+This differs from sum/equality calls to \code{\link{permuteGeneral}}.
+Without \code{lower}, supported constrained permutation calls generate
+matching partitions and then all distinct permutations of each partition;
+\code{upper} caps matching rows in that order. With \code{lower} supplied,
+permutation bounds select ordinary candidate ranks to filter instead.
+See \emph{Ordering and bounds} in \code{\link{comboGeneral}}.
+
+When zero is present, \code{permuteGeneral} treats it as an actual element
+that can occupy any position, subject to multiplicities. It does not use
+the zero-padding convention of non-weak compositions.
+}
 \value{
 A matrix is returned with each row containing a vector of length \eqn{m}.
 }
@@ -68,7 +88,6 @@ A matrix is returned with each row containing a vector of length \eqn{m}.
     \itemize{
         \item{\code{nThreads} will be ignored in the following cases (i.e. Generating the \eqn{n^{th}}{nth} partition in these cases are currently unavailable):
             \itemize{
-                \item With standard multisets. If zero is the only element with a non-trivial multiplicity, multithreading is possible (\emph{e.g.} \code{partitionsGeneral(0:100, freqs = c(100, rep(1, 100)), nThreads = 4)}).
                 \item If the source vector is not isomorphic to \code{1:length(v)} (\emph{e.g.} \code{v = c(1, 4, 6, 7, 8)}).
             }
         }

@@ -53,10 +53,10 @@ SEXP ConstraintsReturn(
 
     if (part.isPart && !part.solnExist) {
         if (myType == VecType::Integer) {
-            cpp11::sexp res = Rf_allocMatrix(INTSXP, 0, width);
+            cpp11::sexp res = Rf_allocMatrix(INTSXP, 0, nCols);
             return res;
         } else {
-            cpp11::sexp res = Rf_allocMatrix(REALSXP, 0, width);
+            cpp11::sexp res = Rf_allocMatrix(REALSXP, 0, nCols);
             return res;
         }
     } else if (myType == VecType::Integer && numUnknown) {

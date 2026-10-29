@@ -119,9 +119,10 @@ void ConstraintsSpecial(
     bool xtraCol, bool IsComb, bool IsMult, bool IsGmp, bool useRangeSemantics
 ) {
 
-    // Needed to determine if nextFullPerm or nextPerm will be called
-    const bool IsFullPerm = (IsComb || IsRep) ? false :
-                            (m == n || m == static_cast<int>(freqs.size()));
+    // For multisets, freqs contains one entry per occurrence.
+    // A full multiset permutation uses every occurrence.
+    const bool IsFullPerm = !IsComb && !IsRep &&
+        m == (IsMult ? static_cast<int>(freqs.size()) : n);
 
     if (!IsComb && freqs.size() == 0) {
         freqs.resize(v.size());

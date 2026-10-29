@@ -236,7 +236,7 @@ test_that("partitionsIter produces correct results", {
     partitionClassTest <- function(
         v_pass, m_pass = NULL, rep = FALSE, fr = NULL, tar = NULL,
         testRand = TRUE, IsComposition = FALSE, IsWeak = FALSE,
-        sanity = TRUE, requiresWidthRebuild = FALSE
+        sanity = TRUE, requiresWidthRebuild = FALSE, maxSample = Inf
     ) {
 
         start_time <- Sys.time()
@@ -448,7 +448,7 @@ test_that("partitionsIter produces correct results", {
                 myResults <- c(myResults, is.null(noMore))
                 myResults <- c(myResults, "No more results." == msg[1])
 
-                samp <- sample(myRows, numTest)
+                samp <- sample(myRows, min(numTest, maxSample))
                 myResults <- c(myResults, isTRUE(all.equal(a[[samp]], b[samp, ])))
 
                 ## Now we check Multi-index Partitions sampling followed by
@@ -917,11 +917,10 @@ test_that("partitionsIter produces correct results", {
 
     #### Multiset; class table;
     expect_true(partitionClassTest(table(sample(10, 100, TRUE)),
-                                   15, tar = 55, testRand = FALSE))
+                                   15, tar = 55))
 
     #### Multiset: Specific Length;
-    expect_true(partitionClassTest(50, 6, fr = rep(4, 50),
-                                   testRand = FALSE))
+    expect_true(partitionClassTest(50, 6, fr = rep(4, 50)))
 
     #### Multiset; Mapped;
     # $num_partitions
@@ -944,7 +943,7 @@ test_that("partitionsIter produces correct results", {
     # $partition_type
     # [1] "Multiset"
     expect_true(partitionClassTest(79L + -2L * (1:70), 13, fr = rep(1:10, 7),
-                                   tar = 887L, testRand = FALSE))
+                                   tar = 887L, maxSample = 100L))
 
     ## N.B. In the above we see the mapped target is 853. We must remember to
     ## also reverse freqs as the mapped vector is 1:70
@@ -969,16 +968,16 @@ test_that("partitionsIter produces correct results", {
     # $partition_type
     # [1] "Multiset"
     expect_true(partitionClassTest(70, 13, fr = rep(10:1, 7),
-                                   tar = 853L, testRand = FALSE))
+                                   tar = 853L, maxSample = 100L))
 
     #### Multiset; Mapped; Double Precision
     expect_true(partitionClassTest((1:50) * 1e10, 13, fr = rep(1:10, 5),
-                                   tar = 6.17e12, testRand = FALSE))
+                                   tar = 6.17e12, maxSample = 100L))
 
     #### Multiset; zero included; random freqs; non-standard target
     set.seed(123)
     expect_true(partitionClassTest(0:50, 6, fr = sample(1:8, 51, TRUE),
-                                  tar = 60, testRand = FALSE,
+                                  tar = 60,
                                   requiresWidthRebuild = TRUE))
 
     ##******** BIG TESTS *********##
@@ -1144,6 +1143,11 @@ test_that("partitionsIter produces correct results", {
         gc()
         all(myResults)
     }
+
+    # Multiset GMP random access and traversal near both ends.
+    expect_true(partitionClassBigZTest(
+        100, 20, fr = rep(2:4, length.out = 100), tar = 500, lenCheck = 12
+    ))
 
     expect_true(partitionClassBigZTest(2000, 10, TRUE))
     #### Mapped version

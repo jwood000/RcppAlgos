@@ -61,9 +61,10 @@ SEXP GetClassVals(
     SET_VECTOR_ELT(freqsInfo, 0, cpp11::writable::integers(myReps));
     SET_VECTOR_ELT(freqsInfo, 1, cpp11::writable::integers(freqs));
 
-    // Needed to determine if nextFullPerm or nextPerm will be called
-    const bool IsFullPerm = (IsComb || IsRep) ? false :
-        (m == n || m == static_cast<int>(freqs.size()));
+    // For multisets, freqs contains one entry per occurrence.
+    // A full multiset permutation uses every occurrence.
+    const bool IsFullPerm = !IsComb && !IsRep &&
+        m == (IsMult ? static_cast<int>(freqs.size()) : n);
 
     cpp11::sexp bVec = Rf_allocVector(LGLSXP, 8);
     INTEGER(bVec)[0] = IsFactor;

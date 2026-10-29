@@ -56,7 +56,7 @@ int PartsGenMultiset(RcppParallel::RMatrix<T> &mat, const std::vector<T> &v,
     }
 
     for (std::size_t k = 0; k < width; ++k) {
-        mat[lastRow + nRows * k] = v[z[k]];
+        mat(lastRow, k) = v[z[k]];
     }
 
     return 1;

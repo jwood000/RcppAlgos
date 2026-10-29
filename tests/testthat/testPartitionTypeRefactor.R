@@ -189,6 +189,23 @@ test_that("random-access continuation can reintroduce the mapped minimum", {
 
 # ---- 8. General multiset: count is supported; generation is not ------------
 
+expect_multiset_generation_unsupported <- function(args) {
+    for (bounds in list(list(), list(upper = 3L),
+                        list(lower = 1L), list(lower = 2L),
+                        list(lower = 1L, upper = 3L),
+                        list(lower = 2L, upper = 3L))) {
+        expect_error(
+            do.call(compositionsGeneral, c(args, bounds)),
+            "Generation is not supported.*permuteGeneral"
+        )
+    }
+    # Iterator construction has no lower/upper arguments.
+    expect_error(
+        do.call(compositionsIter, args),
+        "Generation is not supported.*permuteIter"
+    )
+}
+
 test_that("general multiset composition allows counts but rejects generation", {
     v <- 1:7
     fr <- c(2L, 2L, rep(1L, 5))
@@ -209,13 +226,8 @@ test_that("general multiset composition allows counts but rejects generation", {
     )
     expect_equal(as.numeric(d$num_partitions), nrow(oracle))
 
-    expect_error(
-        compositionsGeneral(v, 4L, freqs = fr, target = 14L),
-        "permuteGeneral"
-    )
-    expect_error(
-        compositionsIter(v, 4L, freqs = fr, target = 14L),
-        "permuteIter"
+    expect_multiset_generation_unsupported(
+        list(v = v, m = 4L, freqs = fr, target = 14L)
     )
 })
 
@@ -266,6 +278,9 @@ test_that("actual zero distinguishes weak and zero-padded multisets", {
         oracle_count <- oracle_count + nrow(sub)
     }
     expect_equal(as.numeric(padded$num_partitions), oracle_count)
+
+    expect_multiset_generation_unsupported(args)
+    expect_multiset_generation_unsupported(c(args, list(weak = TRUE)))
 })
 
 # ---- 10. Partition and ordinary-distinct controls --------------------------
@@ -437,6 +452,241 @@ test_that("Ranking capabilities match dispatch factories", {
 
 test_that("Counting capabilities match dispatch factories", {
     expect_true(testCountCoverage())
+})
+
+# ---- 16. Unsupported generic composition fallbacks -------------------------
+
+test_that("generic composition fallbacks reject generation and iteration", {
+    for (case in list(
+        list(v = c(1L, 2L, 4L, 7L), target = 9L),
+        list(v = c(0L, 1L, 3L, 7L), target = 4L)
+    )) {
+        for (width in list(3L, NULL)) {
+            for (weak in c(FALSE, TRUE)) {
+                args <- c(case, list(m = width, repetition = TRUE, weak = weak))
+                design <- do.call(compositionsDesign, args)
+                expect_identical(
+                    design$partition_type,
+                    if (is.null(width)) "NotPartition" else "CoarseGrained"
+                )
+                for (bounds in list(list(), list(upper = 3L),
+                                    list(lower = 1L, upper = 20L),
+                                    list(lower = 2L, upper = 20L))) {
+                    expect_error(
+                        do.call(compositionsGeneral, c(args, bounds)),
+                        "Generation is not supported for this composition.",
+                        fixed = TRUE
+                    )
+                }
+                expect_error(
+                    do.call(compositionsIter, args),
+                    "Generation is not supported for this composition.",
+                    fixed = TRUE
+                )
+            }
+        }
+    }
+})
+
+test_that("generic combination and permutation fallbacks retain their bounds", {
+    v <- c(1L, 2L, 4L, 7L)
+    for (generate in list(comboGeneral, permuteGeneral)) {
+        for (width in list(3L, NULL)) {
+            args <- list(v = v, m = width, repetition = TRUE)
+            candidates <- do.call(generate, args)
+            matches <- candidates[rowSums(candidates) == 9L, , drop = FALSE]
+            constrained <- c(args, list(constraintFun = "sum",
+                                       comparisonFun = "==",
+                                       limitConstraints = 9L))
+            actual <- do.call(generate, constrained)
+            expect_identical(sort_rows(actual), matches)
+            expect_identical(
+                do.call(generate, c(constrained, list(upper = 3L))),
+                actual[seq_len(min(3L, nrow(actual))), , drop = FALSE]
+            )
+            for (lower in 1:2) {
+                window <- candidates[lower:20L, , drop = FALSE]
+                expect_identical(
+                    do.call(generate, c(constrained,
+                                        list(lower = lower, upper = 20L))),
+                    window[rowSums(window) == 9L, , drop = FALSE]
+                )
+            }
+        }
+    }
+})
+
+# ---- 17. Known-empty results retain their bounds and shape -----------------
+
+test_that("NoSolution uses matching-result bounds for partitions", {
+    for (case in list(
+        # Mapping establishes infeasibility; counting can also discover zero.
+        list(v = 1:5, m = 3L, target = 100L),
+        list(v = 1:5, m = 3L, target = 5L),
+        list(v = 1:50, m = 10L, freqs = rep(2L, 50L), target = 10000L)
+    )) {
+        expect_identical(do.call(partitionsDesign, case)$partition_type,
+                         "NoSolution")
+        expect_identical(do.call(compositionsDesign, case)$partition_type,
+                         "NoSolution")
+        for (generate in list(partitionsGeneral, compositionsGeneral)) {
+            expect_identical(dim(do.call(generate, case)), c(0L, case$m))
+            for (bounds in list(list(lower = 1L), list(upper = 1L),
+                                list(lower = 1L, upper = 3L),
+                                list(lower = gmp::as.bigz(1)))) {
+                expect_error(do.call(generate, c(case, bounds)),
+                             "bounds cannot exceed")
+            }
+        }
+        args <- list(v = case$v, m = case$m, freqs = case$freqs,
+                     constraintFun = "sum", comparisonFun = "==",
+                     limitConstraints = case$target)
+        expect_identical(dim(do.call(comboGeneral, args)), c(0L, case$m))
+        for (bounds in list(list(lower = 1L), list(upper = 1L),
+                            list(lower = 1L, upper = 3L))) {
+            expect_error(do.call(comboGeneral, c(args, bounds)),
+                         "bounds cannot exceed")
+        }
+    }
+})
+
+test_that("empty constrained matrices retain the result column and type", {
+    for (v in list(1:5, as.double(1:5))) {
+        for (target in c(5L, 100L)) {
+            for (generate in list(comboGeneral, permuteGeneral)) {
+                for (keep in c(FALSE, TRUE)) {
+                    actual <- generate(
+                        v, 3L, constraintFun = "sum", comparisonFun = "==",
+                        limitConstraints = target, keepResults = keep
+                    )
+                    expect_identical(actual, matrix(v[FALSE], 0L, 3L + keep))
+                }
+            }
+        }
+    }
+})
+
+test_that("NoSolution preserves permutation candidate bounds", {
+    for (case in list(list(), list(repetition = TRUE),
+                      list(freqs = c(2L, 1L, 2L, 1L, 1L)))) {
+        total <- do.call(permuteCount, c(list(v = 1:5, m = 3L), case))
+        args <- c(list(v = 1:5, m = 3L, constraintFun = "sum",
+                       comparisonFun = "==", limitConstraints = 100L), case)
+        for (bounds in list(list(lower = 1L), list(lower = 1L, upper = total),
+                            list(lower = total, upper = total))) {
+            expect_identical(
+                do.call(permuteGeneral,
+                        c(args, bounds, list(keepResults = TRUE))),
+                matrix(integer(), 0L, 4L)
+            )
+        }
+        for (bounds in list(list(lower = total + 1),
+                            list(lower = 1L, upper = total + 1),
+                            list(upper = 1L))) {
+            expect_error(do.call(permuteGeneral, c(args, bounds)),
+                         "bounds cannot exceed")
+        }
+        for (bounds in list(list(lower = 2L, upper = 1L),
+                            list(lower = 3L, upper = 1L))) {
+            expect_error(do.call(permuteGeneral, c(args, bounds)),
+                         "lowerBound.*upperBound")
+        }
+        for (bounds in list(list(lower = 0L), list(lower = -1L),
+                            list(lower = gmp::as.bigz(0)),
+                            list(lower = 1L, upper = 0L))) {
+            expect_error(do.call(permuteGeneral, c(args, bounds)))
+        }
+    }
+})
+
+test_that("known-empty GMP permutation ranges do not size or scan candidates", {
+    args <- list(v = 1:50, m = 10L, constraintFun = "sum",
+                 comparisonFun = "==", limitConstraints = 10000L)
+    total <- gmp::as.bigz(permuteCount(1:50, 10L))
+    expect_gt(total, gmp::as.bigz(2)^53)
+    for (bounds in list(list(lower = 1L), list(lower = 1L, upper = total),
+                        list(lower = total, upper = total))) {
+        expect_identical(do.call(permuteGeneral, c(args, bounds)),
+                         matrix(integer(), 0L, 10L))
+    }
+    for (bounds in list(list(lower = total + 1L),
+                        list(lower = 1L, upper = total + 1L))) {
+        expect_error(do.call(permuteGeneral, c(args, bounds)),
+                     "bounds cannot exceed")
+    }
+    expect_error(
+        do.call(permuteGeneral,
+                c(args, list(lower = total, upper = total - 1L))),
+        "lowerBound.*upperBound"
+    )
+})
+
+test_that("known-empty iterators report zero without searching", {
+    check_empty_iterator <- function(a) {
+        expect_equal(a@summary()$totalResults, 0)
+        for (get_next in list(a@nextIter, function() a@nextNIter(2L),
+                              a@nextRemaining)) {
+            a@startOver()
+            expect_equal(a@summary()$currentIndex, 0)
+            expect_equal(a@summary()$totalRemaining, 0)
+            invisible(capture.output(value <- a@currIter()))
+            expect_null(value)
+            invisible(capture.output(value <- get_next()))
+            expect_null(value)
+            invisible(capture.output(value <- a@currIter()))
+            expect_null(value)
+        }
+        a@startOver()
+        expect_equal(a@summary()$currentIndex, 0)
+        if (is(a, "Partitions")) {
+            expect_error(a@front(), "No random access available")
+            expect_error(a@back(), "No random access available")
+        }
+    }
+
+    # The last case enters setup with a GMP-sized ordinary permutation count.
+    expect_gt(gmp::as.bigz(permuteCount(1:50, 10L)), gmp::as.bigz(2)^53)
+    for (case in list(list(v = 1:5, m = 3L, target = 5L),
+                      list(v = 1:5, m = 3L, target = 100L),
+                      list(v = 1:5, target = 100L),
+                      list(v = 1:50, m = 10L, target = 10000L))) {
+        for (make_iter in list(partitionsIter, compositionsIter)) {
+            check_empty_iterator(do.call(make_iter, case))
+        }
+        for (make_iter in list(comboIter, permuteIter)) {
+            a <- make_iter(case$v, case$m, constraintFun = "sum",
+                           comparisonFun = "==", limitConstraints = case$target,
+                           keepResults = TRUE)
+            expect_match(a@summary()$description,
+                         if (identical(make_iter, permuteIter)) {
+                             "^Permutations of partitions "
+                         } else "^Partitions ")
+            check_empty_iterator(a)
+        }
+    }
+})
+
+test_that("known-empty generation preserves inferred and candidate widths", {
+    for (generate in list(partitionsGeneral, compositionsGeneral)) {
+        expect_identical(generate(1:5, target = 100L),
+                         matrix(integer(), 0L, 1L))
+    }
+    args <- list(v = 1:5, constraintFun = "sum", comparisonFun = "==",
+                 limitConstraints = 100L)
+    for (keep in c(FALSE, TRUE)) {
+        for (generate in list(comboGeneral, permuteGeneral)) {
+            expect_identical(
+                do.call(generate, c(args, list(keepResults = keep))),
+                matrix(integer(), 0L, 1L + keep)
+            )
+        }
+        # With lower, omitted m means the ordinary permutation width of five.
+        expect_identical(
+            do.call(permuteGeneral, c(args, list(lower = 1L, upper = 3L,
+                                                keepResults = keep))),
+            matrix(integer(), 0L, 5L + keep)
+        )
+    }
 })
 
 # ---- Follow-up fixture to add when confirmed --------------------------------

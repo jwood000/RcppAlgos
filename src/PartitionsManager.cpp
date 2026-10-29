@@ -292,11 +292,11 @@ int PartsGenParallel(RcppParallel::RMatrix<T> &mat, const std::vector<T> &v,
                 mat, v, z, strt, width, lastElem, lastCol, nRows
             );
 
-            // ----- PartsGenMultiset ----- Coming Soon!
-        // case PartitionType::Multiset:
-        //     return PartsGenMultiset(
-        //         mat, v, Reps, z, strt, width, lastElem, lastCol, nRows
-        //     );
+            // ----- PartsGenMultiset -----
+        case PartitionType::Multiset:
+            return PartsGenMultiset(
+                mat, v, Reps, z, strt, width, lastElem, lastCol, nRows
+            );
 
             // ----- CompsGenRep -----
         case PartitionType::CompRepZero:

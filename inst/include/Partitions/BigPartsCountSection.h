@@ -8,4 +8,5 @@
 constexpr int typeSwitchBnd = 328764948;
 
 void SumSection(const mpz_class &n, mpz_class &res);
+void ResetP1D(std::vector<mpz_class> &p);
 void ResetP2D(std::vector<std::vector<mpz_class>> &p2d);

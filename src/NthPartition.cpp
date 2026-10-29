@@ -1,415 +1,20 @@
-#include "cpp11/R.hpp"
-#include "cpp11/protect.hpp"
-
 #include "Partitions/PartitionsCountMultiset.h"
 #include "Partitions/PartitionsCountDistinct.h"
-#include "Partitions/BigPartsCountDistinct.h"
+#include "Partitions/MultisetCountEngine.h"
+#include "Partitions/MultisetCountClass.h"
 #include "Partitions/PartitionsCountRep.h"
-#include "Partitions/BigPartsCountRep.h"
-#include "Partitions/PartitionsUtils.h"
+#include "Partitions/PartitionsCount.h"
 #include "Partitions/NthPartition.h"
-#include "CppConvert/Constants.h"
-#include <numeric>  // std::accumulate
+#include <memory>
+#include <numeric>
+#include <vector>
 
-// ****************************************************************************
-// OFFSET (POSITIVE) REPRESENTATION NOTE
-//
-// Many nth/unranking routines in this file operate in the "positive/mapped"
-// domain where parts are conceptually >= 1, even if the user-facing problem
-// may have included 0 before mapping.
-//
-// In these paths we often store results in an OFFSET form:
-//
-//     res[i] = part_i - 1        (so part_i = res[i] + 1)
-//
-// This avoids repeatedly adding/subtracting 1 during counting/unranking.
-//
-// Consequence:
-//   The sum of the actual parts is:
-//
-//       sum(parts) = width + sum(res)
-//
-//   Therefore, when we compute the final element in OFFSET form we use:
-//
-//       res[last] = (target - width) - sum(res)
-//
-//   (equivalently: res[last] = target - (width + sum(res)) ).
-//
-// IMPORTANT:
-//   This is not specific to compositions vs partitions. Any routine in this file
-//   that is working in the positive/mapped domain and stores res as (part-1)
-//   should use the width-shift logic above.
-//
-// ****************************************************************************
-//
-// ****************************************************************************
-// BLOCK-SCAN UNRANKING INVARIANT
-//
-// All unranking routines in this file use the standard block-scan method:
-//
-//     temp = Count*(current state)
-//
-//     while (temp <= idx) {
-//         advance state;
-//         idx -= temp;
-//         temp = Count*(new state);
-//     }
-//
-// It is NORMAL for temp == 0 during this scan.
-//
-// Zero counts occur when the current state lies outside the feasible region.
-// These correspond to empty lexicographic blocks and are skipped.
-//
-// Termination is guaranteed because:
-//
-//   • the state progresses monotonically toward the feasible region, and
-//   • idx is validated upstream to lie in [0, total_count - 1]
-//
-// Therefore temp == 0 MUST NOT terminate the loop and does not cause
-// runaway execution.
-//
-// This invariant applies to ALL partition and composition unranking routines
-// in this file (capped, uncapped, distinct, repetition, etc.).
-//
-// ****************************************************************************
+// See NthPartition.h for block-scan and offset-representation conventions.
 
-std::vector<int> nthLengthOne(int n, int m, int cap, int k,
-                              double dblIdx, const mpz_class &mpzIdx) {
-
-    std::vector<int> res(m, n - 1);
-    return res;
-}
-
-//*********************** Compositions Functions **************************//
-
-std::vector<int> nthCompsRep(int n, int m, int cap, int k,
-                             double dblIdx, const mpz_class &mpzIdx) {
-
-    const int width = m;
-    const int max_n = n;
-
-    std::vector<int> res(width);
-    --n;
-    --m;
-
-    for (int i = 0, j = 0; i < (width - 1); ++i, --n, --m, j = 0) {
-        for (double temp = CountCompsRepLen(n, m); temp <= dblIdx; ++j) {
-            --n;
-            dblIdx -= temp;
-            temp = CountCompsRepLen(n, m);
-        }
-
-        res[i] = j;
-    }
-
-    // See OFFSET (POSITIVE) REPRESENTATION NOTE
-    res.back() = (max_n - width) - std::accumulate(res.begin(), res.end(), 0);
-    return res;
-}
-
-std::vector<int> nthCompsRepCapped(int n, int m, int cap, int k,
-                                   double dblIdx, const mpz_class &mpzIdx) {
-
-    const int width = m;
-    const int max_n = n;
-
-    // All we are doing in CountCompsRepLenCap is getting the max of allowed
-    std::vector<int> allowed(1, cap);
-    std::vector<int> res(width);
-
-    --n;
-    --m;
-
-    for (int i = 0, j = 0; i < (width - 1); ++i, --n, --m, j = 0) {
-        for (double temp = CountCompsRepLenCap(n, m, allowed);
-             temp <= dblIdx; ++j) {
-            --n;
-            dblIdx -= temp;
-            temp = CountCompsRepLenCap(n, m, allowed);
-        }
-
-        res[i] = j;
-    }
-
-    // See OFFSET (POSITIVE) REPRESENTATION NOTE
-    res.back() = (max_n - width) - std::accumulate(res.begin(), res.end(), 0);
-    return res;
-}
-
-std::vector<int> nthCompsRepZero(int n, int m, int cap, int k,
-                                 double dblIdx, const mpz_class &mpzIdx) {
-
-    const int width = m;
-    const int max_n = n;
-
-    std::vector<int> res(width);
-    bool incr_j = false;
-    --m;
-
-    for (int i = 0, j = 0; i < (width - 1); ++i, --m, j = incr_j) {
-        double temp = incr_j ? CountCompsRepLen(n, m) :
-                    CountCompsRepZero(n, m);
-
-        for (; temp <= dblIdx; ++j) {
-            incr_j = true;
-            --n;
-            dblIdx -= temp;
-            temp = CountCompsRepLen(n, m);
-        }
-
-        if (incr_j) --n;
-        res[i] = j;
-    }
-
-    res.back() = max_n - std::accumulate(res.begin(), res.end(), 0);
-    return res;
-}
-
-std::vector<int> nthCompsRepZeroCap(int n, int m, int cap, int k,
-                                    double dblIdx, const mpz_class &mpzIdx) {
-
-    const int width = m;
-    const int max_n = n;
-
-    // All we are doing in CountCompsRepLenCap is getting the max of allowed
-    std::vector<int> allowed(1, cap);
-    std::vector<int> res(width, 0);
-    bool incr_j = false;
-    --m;
-
-    for (int i = 0, j = 0; i < (width - 1); ++i, --m, j = incr_j) {
-        double temp = incr_j ? CountCompsRepLenCap(n, m, allowed) :
-            CountCompsRepCapZero(n, m, allowed);
-
-        for (; temp <= dblIdx; ++j) {
-            incr_j = true;
-            --n;
-            dblIdx -= temp;
-            temp = CountCompsRepLenCap(n, m, allowed);
-        }
-
-        if (incr_j) --n;
-        res[i] = j;
-    }
-
-    res.back() = max_n - std::accumulate(res.begin(), res.end(), 0);
-    return res;
-}
-
-// nthCompsDistinct
-// ----------------
-// Unranks the dblIdx-th distinct composition of n into width parts,
-// using positive integers, with each part distinct, and bounded by cap.
-//
-// Output ordering:
-//   - Lexicographic order on the resulting vector:
-//
-//                   (v[0], v[1], ...,v[width - 1])
-//
-//   - Because parts are distinct, each value can appear at most once.
-//
-// High-level strategy (classic unranking by "block subtraction"):
-//
-//   At each position i (left to right), we consider fixing the next part to
-//   each feasible candidate value in increasing order. For each candidate
-//   choice, we count how many full compositions exist with that fixed prefix.
-//   Those counts form contiguous "blocks" in lexicographic order.
-//
-//   If dblIdx is larger than the size of the first block, we subtract the
-//   block size and advance to the next candidate. Repeat until dblIdx falls
-//   inside the current candidate's block. That candidate is the correct value
-//   for position i.
-//
-// Key data structures:
-//
-//   - mask[v]:
-//       1 if value v has been used in the prefix, else 0. Used to enforce
-//       distinctness and to find the next unused candidate fast.
-//
-//   - allowed:
-//       A compact list of remaining feasible values for the suffix.
-//       It is continuously rebuilt (bounded) via UpdateAllowed so the DP
-//       counting stays small and fast.
-//
-//   - partial_sum:
-//       Sum of the fixed prefix so far (including the current chosen value).
-//
-//   - m (mutated inside the function):
-//       Number of parts remaining to fill *after* the current position.
-//       This is why the code does --m up front and then --m each iteration.
-//
-// Important feasibility bound:
-//
-//   The smallest possible sum of width distinct positive integers is
-//     1 + 2 + ... + width = width * (width + 1) / 2.
-//   If we fix a prefix, the minimal possible suffix is the sum of the smallest
-//   unused values. UpdateAllowed uses this to restrict candidate values.
-//
-// Notes about k/mpzIdx:
-//   In this double-based version, mpzIdx is unused; it exists to mirror
-//   a big-integer path elsewhere.
-//
-std::vector<int> nthCompsDistinct(int n, int m, int cap, int k,
-                                  double dblIdx, const mpz_class &mpzIdx) {
-
-    const int max_n = n;
-    const int width = m;
-    const int max_val = std::min(cap, n - (width * (width - 1)) / 2);
-
-    std::vector<char> mask(max_val + 1, 0);
-    const int mask_size = mask.size();
-    std::vector<int> res(width, 0);
-    --m;
-
-    mask[1] = 1;
-    std::vector<int> allowed(max_val - 1);
-    std::iota(allowed.begin(), allowed.end(), 2);
-
-    int partial_sum = 1;
-    int cur_val = 1;
-
-    for (int i = 0, j = 0; i < (width - 1); ++i, --m) {
-        double temp = CountCompsDistLenRstrctd(n - partial_sum, m, allowed);
-
-        for (; temp <= dblIdx; cur_val = j) {
-            while ((j + 1) < mask_size && mask[j + 1]) {
-                ++j;
-            }
-
-            partial_sum += (j + 1 - cur_val);
-            UpdateAllowed(mask, allowed, i, j + 1, width,
-                          n, cur_val, partial_sum);
-
-            dblIdx -= temp;
-            temp = CountCompsDistLenRstrctd(n - partial_sum, m, allowed);
-
-            if (temp <= dblIdx) {
-                ++j;
-            }
-        }
-
-        res[i] = j;
-        j = 0;
-
-        while ((j + 1) < mask_size && mask[j + 1]) {
-            ++j;
-        }
-
-        cur_val = j + 1;
-        partial_sum += (j + 1);
-        UpdateAllowed(mask, allowed, i + 1, j + 1, width,
-                      n, cur_val, partial_sum);
-    }
-
-    // See OFFSET (POSITIVE) REPRESENTATION NOTE
-    res.back() = (max_n - width) - std::accumulate(res.begin(), res.end(), 0);
-    return res;
-}
-
-std::vector<int> nthCompsDistinctMZ(int n, int m, int cap, int k,
-                                    double dblIdx, const mpz_class &mpzIdx) {
-
-    std::vector<int> allowed(cap);
-    std::iota(allowed.begin(), allowed.end(), 1);
-
-    double temp = (cap == n) ?
-        CountCompsDistinctLen(n, k) :
-        CountCompsDistLenRstrctd(n, k, allowed);
-
-    while (dblIdx >= temp && k < m) {
-        dblIdx -= temp;
-        ++k;
-        temp = (cap == n) ?
-            CountCompsDistinctLen(n, k) :
-            CountCompsDistLenRstrctd(n, k, allowed);
-    }
-
-    std::vector<int> res = nthCompsDistinct(n, k, cap, k, dblIdx, mpzIdx);
-
-    for (auto& z_i: res) {
-        ++z_i;
-    }
-
-    if (m > k) res.insert(res.begin(), m - k, 0);
-    return res;
-}
-
-std::vector<int> nthCompsDistinctMZWeak(
-    int n, int m, int cap, int k, double dblIdx, const mpz_class &mpzIdx
+std::vector<int> nthPartsRepLen(
+    int n, int m, int cap, int k, double dblIdx,
+    const mpz_class &mpzIdx, const std::vector<int> & /* Reps */
 ) {
-
-    const int width = m;
-    const int max_val = std::min(cap, n - (k * (k - 1)) / 2);
-    int zeros_remaining = width - k;
-
-    std::vector<char> mask(max_val + 1, 0);
-    std::vector<int> res(width, 0);
-
-    --zeros_remaining;
-    --m;
-
-    mask[0] = 1;
-    std::vector<int> allowed(max_val);
-    std::iota(allowed.begin(), allowed.end(), 1);
-
-    int partial_sum = 0;
-    int cur_val = 0;
-
-    bool anyZeros = true;
-    const int mask_size = mask.size();
-
-    for (int i = 0, j = 0; i < (width - 1); ++i, --m) {
-        int strtLen = std::max(1, m - zeros_remaining);
-        if (anyZeros) ++zeros_remaining;
-
-        double temp = CountCompsDistinctRstrctdMZWeak(
-            n - partial_sum, m, allowed, strtLen
-        );
-
-        for (; temp <= dblIdx && n > partial_sum; cur_val = j) {
-            ++j;
-
-            while (j < mask_size && mask[j]) {
-                ++j;
-            }
-
-            partial_sum += (j - cur_val);
-            UpdateAllowed(mask, allowed, i, j, width - zeros_remaining,
-                          n, cur_val, partial_sum);
-
-            dblIdx -= temp;
-            strtLen = std::max(1, m - zeros_remaining);
-            temp = CountCompsDistinctRstrctdMZWeak(
-                n - partial_sum, m, allowed, strtLen
-            );
-        }
-
-        if (j == 0) --zeros_remaining;
-        res[i] = j;
-
-        anyZeros = zeros_remaining > 0;
-        j = anyZeros ? 0 : 1;
-
-        while (!anyZeros && j < mask_size && mask[j]) {
-            ++j;
-        }
-
-        if (anyZeros) --zeros_remaining;
-        cur_val = j;
-        partial_sum += j;
-
-        UpdateAllowed(mask, allowed, i + 1, j, width - zeros_remaining,
-                      n, cur_val, partial_sum);
-    }
-
-    res.back() = n - std::accumulate(res.begin(), res.end(), 0);
-    return res;
-}
-
-//************************* Partition Functions ***************************//
-
-std::vector<int> nthPartsRepLen(int n, int m, int cap, int k,
-                                double dblIdx, const mpz_class &mpzIdx) {
 
     const int width = m;
     const int max_n = n;
@@ -433,532 +38,10 @@ std::vector<int> nthPartsRepLen(int n, int m, int cap, int k,
     return res;
 }
 
-std::vector<int> nthPartsRepShort(int n, int m, int cap, int k,
-                                  double dblIdx, const mpz_class &mpzIdx) {
-
-    return nthPartsRepLen(n, m, cap, k, dblIdx, mpzIdx);
-}
-
-std::vector<int> nthPartsRep(int n, int m, int cap, int k,
-                             double dblIdx, const mpz_class &mpzIdx) {
-
-    return nthPartsRepLen(n * 2, m, cap, k, dblIdx, mpzIdx);
-}
-
-std::vector<int> nthPartsRepCap(int n, int m, int cap, int k,
-                                double dblIdx, const mpz_class &mpzIdx) {
-
-    const int width = m;
-    const int max_n = n;
-
-    std::vector<int> res(width);
-    --n;
-    --m;
-
-    std::vector<int> allowed(cap);
-    std::iota(allowed.begin(), allowed.end(), 1);
-
-    for (int i = 0, j = 0; i < (width - 1); ++i, --n, --m) {
-        for (double temp = CountPartsRepLenRstrctd(n, m, allowed);
-             temp <= dblIdx; ++j) {
-            n -= (m + 1);
-            allowed.pop_back();
-            dblIdx -= temp;
-            temp = CountPartsRepLenRstrctd(n, m, allowed);
-        }
-
-        res[i] = j;
-    }
-
-    // See OFFSET (POSITIVE) REPRESENTATION NOTE
-    res.back() = (max_n - width) - std::accumulate(res.begin(), res.end(), 0);
-    return res;
-}
-
-std::vector<int> nthPartsDistinctLen(int n, int m, int cap, int k,
-                                     double dblIdx, const mpz_class &mpzIdx) {
-
-    const int width = m;
-    const int max_n = n;
-
-    std::vector<int> res(width);
-    n -= m;
-    --m;
-
-    for (int i = 0, j = 0; i < (width - 1); ++i, n -= m, --m, ++j) {
-        for (double temp = CountPartsDistinctLen(n, m); temp <= dblIdx; ++j) {
-            n -= (m + 1);
-            dblIdx -= temp;
-            temp = CountPartsDistinctLen(n, m);
-        }
-
-        res[i] = j;
-    }
-
-    // See OFFSET (POSITIVE) REPRESENTATION NOTE
-    res.back() = (max_n - width) - std::accumulate(res.begin(), res.end(), 0);
-    return res;
-}
-
-std::vector<int> nthPartsDistinctMZ(
-    int n, int m, int cap, int k, double dblIdx, const mpz_class &mpzIdx
+std::vector<int> nthPartsRepLenGmp(
+    int n, int m, int cap, int k, double dblIdx,
+    const mpz_class &mpzIdx, const std::vector<int> & /* Reps */
 ) {
-
-    const int width = m;
-    const int max_n = n;
-
-    std::vector<int> res(width);
-    bool incr_j = false;
-    --m;
-
-    std::vector<int> empty_allowed;
-
-    for (int i = 0, j = 0; i < (width - 1); ++i, --m) {
-        double temp = (incr_j || i >= (width - k)) ?
-                      CountPartsDistinctLen(n, m) :
-                      CountPartsDistinctMZ(n, m, empty_allowed, k);
-
-        for (; temp <= dblIdx; ++j) {
-            incr_j = true;
-            n -= (m + 1);
-            dblIdx -= temp;
-            temp = CountPartsDistinctLen(n, m);
-        }
-
-        res[i] = j;
-
-        if (incr_j || (i + 1) >= (width - k)) {
-            ++j;
-            n -= m;
-        }
-    }
-
-    res.back() = max_n - std::accumulate(res.begin(), res.end(), 0);
-    return res;
-}
-
-std::vector<int> nthPartsDistinctCap(int n, int m, int cap, int k,
-                                     double dblIdx, const mpz_class &mpzIdx) {
-
-    const int width = m;
-    const int max_n = n;
-
-    std::vector<int> res(width);
-    n -= m;
-    --cap;
-    --m;
-
-    std::vector<int> allowed(cap);
-    std::iota(allowed.begin(), allowed.end(), 1);
-
-    for (int i = 0, j = 0; i < (width - 1); ++i, n -= m, --m, ++j) {
-        for (double temp = CountPartsDistLenRstrctd(n, m, allowed);
-             temp <= dblIdx; ++j) {
-            n -= (m + 1);
-            allowed.pop_back();
-            dblIdx -= temp;
-            temp = CountPartsDistLenRstrctd(n, m, allowed);
-        }
-
-        res[i] = j;
-        allowed.pop_back();
-    }
-
-    // See OFFSET (POSITIVE) REPRESENTATION NOTE
-    res.back() = (max_n - width) - std::accumulate(res.begin(), res.end(), 0);
-    return res;
-}
-
-std::vector<int> nthPartsDistinctCapMZ(
-    int n, int m, int cap, int k, double dblIdx, const mpz_class &mpzIdx
-) {
-
-    const int width = m;
-    const int max_n = n;
-
-    std::vector<int> res(width);
-    bool incr_j = false;
-    --m;
-
-    std::vector<int> allowed(cap);
-    std::iota(allowed.begin(), allowed.end(), 1);
-
-    for (int i = 0, j = 0; i < (width - 1); ++i, --m) {
-        double temp = (incr_j || i >= (width - k)) ?
-                CountPartsDistLenRstrctd(n, m, allowed) :
-                CountPartsDistinctRstrctdMZ(n, m, allowed, k);
-
-        for (; temp <= dblIdx; ++j) {
-            incr_j = true;
-            n -= (m + 1);
-            allowed.pop_back();
-            dblIdx -= temp;
-            temp = CountPartsDistLenRstrctd(n, m, allowed);
-        }
-
-        res[i] = j;
-
-        if (incr_j || (i + 1) >= (width - k)) {
-            ++j;
-            n -= m;
-            allowed.pop_back();
-        }
-    }
-
-    res.back() = max_n - std::accumulate(res.begin(), res.end(), 0);
-    return res;
-}
-
-//*********************** Starting Gmp Functions **************************//
-
-std::vector<int> nthCompsRepGmp(int n, int m, int cap, int k,
-                                double dblIdx, const mpz_class &mpzIdx) {
-
-    const int width = m;
-    const int max_n = n;
-
-    std::vector<int> res(width);
-    --n;
-    --m;
-
-    mpz_class temp;
-    mpz_class index(mpzIdx);
-
-    std::unique_ptr<CountClass> Counter = MakeCount(
-        PartitionType::CompRepNoZero
-    );
-
-    for (int i = 0, j = 0; i < (width - 1); ++i, --n, --m, j = 0) {
-        Counter->GetCount(temp, n, m);
-
-        for (; cmp(temp, index) <= 0; ++j) {
-            --n;
-            index -= temp;
-            Counter->GetCount(temp, n, m);
-        }
-
-        res[i] = j;
-    }
-
-    // See OFFSET (POSITIVE) REPRESENTATION NOTE
-    res.back() = (max_n - width) - std::accumulate(res.begin(), res.end(), 0);
-    return res;
-}
-
-std::vector<int> nthCompsRepCappedGmp(int n, int m, int cap, int k,
-                                      double dblIdx, const mpz_class &mpzIdx) {
-
-    const int width = m;
-    const int max_n = n;
-
-    std::vector<int> allowed(1, cap);
-    std::vector<int> res(width);
-
-    --n;
-    --m;
-
-    mpz_class temp;
-    mpz_class index(mpzIdx);
-
-    std::unique_ptr<CountClass> Counter = MakeCount(
-        PartitionType::CompRepCapped
-    );
-
-    for (int i = 0, j = 0; i < (width - 1); ++i, --n, --m, j = 0) {
-        Counter->GetCount(temp, n, m, allowed);
-
-        for (; cmp(temp, index) <= 0; ++j) {
-            --n;
-            index -= temp;
-            Counter->GetCount(temp, n, m, allowed);
-        }
-
-        res[i] = j;
-    }
-
-    // See OFFSET (POSITIVE) REPRESENTATION NOTE
-    res.back() = (max_n - width) - std::accumulate(res.begin(), res.end(), 0);
-    return res;
-}
-
-std::vector<int> nthCompsRepZeroGmp(int n, int m, int cap, int k,
-                                    double dblIdx, const mpz_class &mpzIdx) {
-
-    const int width = m;
-    const int max_n = n;
-
-    std::vector<int> res(width);
-    bool incr_j = false;
-    --m;
-
-    mpz_class temp;
-    mpz_class index(mpzIdx);
-    std::unique_ptr<CountClass> Counter = MakeCount(
-        PartitionType::CompRepZero
-    );
-
-    std::vector<int> empty_allowed;
-
-    for (int i = 0, j = 0; i < (width - 1); ++i, --m, j = incr_j) {
-        Counter->GetCount(temp, n, m, empty_allowed, k, !incr_j);
-
-        for (; cmp(temp, index) <= 0; ++j) {
-            incr_j = true;
-            --n;
-            index -= temp;
-            Counter->GetCount(temp, n, m, empty_allowed, k, false);
-        }
-
-        temp = 0;
-        if (incr_j) --n;
-        res[i] = j;
-    }
-
-    res.back() = max_n - std::accumulate(res.begin(), res.end(), 0);
-    return res;
-}
-
-std::vector<int> nthCompsRepZeroCapGmp(
-    int n, int m, int cap, int k, double dblIdx, const mpz_class &mpzIdx
-) {
-
-    const int width = m;
-    const int max_n = n;
-
-    std::vector<int> allowed(1, cap);
-    std::vector<int> res(width);
-    bool incr_j = false;
-    --m;
-
-    mpz_class temp;
-    mpz_class index(mpzIdx);
-    std::unique_ptr<CountClass> Counter = MakeCount(
-        PartitionType::CompRepCapZero
-    );
-
-    for (int i = 0, j = 0; i < (width - 1); ++i, --m, j = incr_j) {
-        Counter->GetCount(temp, n, m, allowed, k, !incr_j);
-
-        for (; cmp(temp, index) <= 0; ++j) {
-            incr_j = true;
-            --n;
-            index -= temp;
-            Counter->GetCount(temp, n, m, allowed, k, false);
-        }
-
-        temp = 0;
-        if (incr_j) --n;
-        res[i] = j;
-    }
-
-    res.back() = max_n - std::accumulate(res.begin(), res.end(), 0);
-    return res;
-}
-
-std::vector<int> nthCompsDistinctGmp(int n, int m, int cap, int k,
-                                     double dblIdx, const mpz_class &mpzIdx) {
-
-    const int max_n = n;
-    const int width = m;
-    const int max_val = std::min(cap, n - (width * (width - 1)) / 2);
-
-    std::vector<char> mask(max_val + 1, 0);
-    const int mask_size = mask.size();
-    std::vector<int> res(width, 0);
-    --m;
-
-    mask[1] = 1;
-    std::vector<int> allowed(max_val - 1);
-    std::iota(allowed.begin(), allowed.end(), 2);
-
-    mpz_class temp;
-    mpz_class index(mpzIdx);
-
-    const PartitionType ptype = PartitionType::PrmDstPrtCap;
-    std::unique_ptr<CountClass> Counter = MakeCount(ptype);
-
-    Counter->SetArrSize(ptype, n, m);
-    Counter->InitializeMpz();
-
-    int partial_sum = 1;
-    int cur_val = 1;
-
-    for (int i = 0, j = 0; i < (width - 1); ++i, --m) {
-        Counter->GetCount(temp, n - partial_sum, m, allowed);
-
-        for (; cmp(temp, index) <= 0; cur_val = j) {
-            while ((j + 1) < mask_size && mask[j + 1]) {
-                ++j;
-            }
-
-            partial_sum += (j + 1 - cur_val);
-            UpdateAllowed(mask, allowed, i, j + 1, width,
-                          n, cur_val, partial_sum);
-
-            index -= temp;
-            Counter->GetCount(temp, n - partial_sum, m, allowed);
-
-            if (cmp(temp, index) <= 0) {
-                ++j;
-            }
-        }
-
-        res[i] = j;
-        j = 0;
-
-        while ((j + 1) < mask_size && mask[j + 1]) {
-            ++j;
-        }
-
-        cur_val = j + 1;
-        partial_sum += (j + 1);
-        UpdateAllowed(mask, allowed, i + 1, j + 1, width,
-                      n, cur_val, partial_sum);
-    }
-
-    // See OFFSET (POSITIVE) REPRESENTATION NOTE
-    res.back() = (max_n - width) - std::accumulate(res.begin(), res.end(), 0);
-    return res;
-}
-
-std::vector<int> nthCompsDistinctMZGmp(
-    int n, int m, int cap, int k, double dblIdx, const mpz_class &mpzIdx
-) {
-
-    mpz_class temp;
-    mpz_class index(mpzIdx);
-
-    if (cap == n) {
-        const PartitionType ptype = PartitionType::CompDistinctNoZero;
-        std::unique_ptr<CountClass> Counter = MakeCount(ptype);
-
-        Counter->SetArrSize(ptype, n, m);
-        Counter->InitializeMpz();
-        Counter->GetCount(temp, n, k);
-
-        while (cmp(index, temp) >= 0 && k < m) {
-            index -= temp;
-            ++k;
-            Counter->GetCount(temp, n, k);
-        }
-    } else {
-        std::vector<int> allowed(cap);
-        std::iota(allowed.begin(), allowed.end(), 1);
-
-        const PartitionType ptype = PartitionType::CompDistinctCapped;
-        std::unique_ptr<CountClass> Counter = MakeCount(ptype);
-
-        Counter->SetArrSize(ptype, n, m);
-        Counter->InitializeMpz();
-        Counter->GetCount(temp, n, k, allowed);
-
-        while (cmp(index, temp) >= 0 && k < m) {
-            index -= temp;
-            ++k;
-            Counter->GetCount(temp, n, k, allowed);
-        }
-    }
-
-    std::vector<int> res;
-
-    if (cmp(index, Significand53) > 0) {
-        res = nthCompsDistinctGmp(n, k, cap, k, dblIdx, index);
-    } else {
-        dblIdx = index.get_d();
-        res = nthCompsDistinct(n, k, cap, k, dblIdx, index);
-    }
-
-    for (auto& z_i: res) {
-        ++z_i;
-    }
-
-    if (m > k) res.insert(res.begin(), m - k, 0);
-    return res;
-}
-
-std::vector<int> nthCompsDistinctMZWeakGmp(
-    int n, int m, int cap, int k, double dblIdx, const mpz_class &mpzIdx
-) {
-
-    const int width = m;
-    const int max_val = std::min(cap, n - (k * (k - 1)) / 2);
-    int zeros_remaining = width - k;
-
-    std::vector<char> mask(max_val + 1, 0);
-    std::vector<int> res(width, 0);
-
-    --zeros_remaining;
-    --m;
-
-    mpz_class temp;
-    mpz_class index(mpzIdx);
-
-    mask[0] = 1;
-    std::vector<int> allowed(max_val);
-    std::iota(allowed.begin(), allowed.end(), 1);
-
-    int partial_sum = 0;
-    int cur_val = 0;
-
-    bool anyZeros = true;
-    const int mask_size = mask.size();
-
-    const PartitionType ptype = PartitionType::CompDistinctCapMZWeak;
-    std::unique_ptr<CountClass> Counter = MakeCount(ptype);
-
-    Counter->SetArrSize(ptype, n, m);
-    Counter->InitializeMpz();
-
-    for (int i = 0, j = 0; i < (width - 1); ++i, --m) {
-        int strtLen = std::max(1, m - zeros_remaining);
-        if (anyZeros) ++zeros_remaining;
-
-        Counter->GetCount(
-            temp, n - partial_sum, m, allowed, strtLen, true
-        );
-
-        for (; cmp(temp, index) <= 0 && n > partial_sum; cur_val = j) {
-            ++j;
-
-            while (j < mask_size && mask[j]) {
-                ++j;
-            }
-
-            partial_sum += (j - cur_val);
-            UpdateAllowed(mask, allowed, i, j, width - zeros_remaining,
-                          n, cur_val, partial_sum);
-
-            index -= temp;
-            strtLen = std::max(1, m - zeros_remaining);
-            Counter->GetCount(
-                temp, n - partial_sum, m, allowed, strtLen, true
-            );
-        }
-
-        if (j == 0) --zeros_remaining;
-        res[i] = j;
-
-        anyZeros = zeros_remaining > 0;
-        j = anyZeros ? 0 : 1;
-
-        while (!anyZeros && j < mask_size && mask[j]) {
-            ++j;
-        }
-
-        if (anyZeros) --zeros_remaining;
-        cur_val = j;
-        partial_sum += j;
-
-        UpdateAllowed(mask, allowed, i + 1, j, width - zeros_remaining,
-                      n, cur_val, partial_sum);
-    }
-
-    res.back() = n - std::accumulate(res.begin(), res.end(), 0);
-    return res;
-}
-
-std::vector<int> nthPartsRepLenGmp(int n, int m, int cap, int k,
-                                   double dblIdx, const mpz_class &mpzIdx) {
 
     const int width = m;
     const int max_n = n;
@@ -993,20 +76,74 @@ std::vector<int> nthPartsRepLenGmp(int n, int m, int cap, int k,
     return res;
 }
 
-std::vector<int> nthPartsRepShortGmp(int n, int m, int cap, int k,
-                                     double dblIdx, const mpz_class &mpzIdx) {
+std::vector<int> nthPartsRepShort(
+    int n, int m, int cap, int k, double dblIdx,
+    const mpz_class &mpzIdx, const std::vector<int> &Reps
+) {
 
-    return nthPartsRepLenGmp(n, m, cap, k, dblIdx, mpzIdx);
+    return nthPartsRepLen(n, m, cap, k, dblIdx, mpzIdx, Reps);
 }
 
-std::vector<int> nthPartsRepGmp(int n, int m, int cap, int k,
-                                double dblIdx, const mpz_class &mpzIdx) {
+std::vector<int> nthPartsRepShortGmp(
+    int n, int m, int cap, int k, double dblIdx,
+    const mpz_class &mpzIdx, const std::vector<int> &Reps
+) {
 
-    return nthPartsRepLenGmp(n * 2, m, cap, k, dblIdx, mpzIdx);
+    return nthPartsRepLenGmp(n, m, cap, k, dblIdx, mpzIdx, Reps);
 }
 
-std::vector<int> nthPartsRepCapGmp(int n, int m, int cap, int k,
-                                   double dblIdx, const mpz_class &mpzIdx) {
+std::vector<int> nthPartsRep(
+    int n, int m, int cap, int k, double dblIdx,
+    const mpz_class &mpzIdx, const std::vector<int> &Reps
+) {
+
+    return nthPartsRepLen(n * 2, m, cap, k, dblIdx, mpzIdx, Reps);
+}
+
+std::vector<int> nthPartsRepGmp(
+    int n, int m, int cap, int k, double dblIdx,
+    const mpz_class &mpzIdx, const std::vector<int> &Reps
+) {
+
+    return nthPartsRepLenGmp(n * 2, m, cap, k, dblIdx, mpzIdx, Reps);
+}
+
+std::vector<int> nthPartsRepCap(
+    int n, int m, int cap, int k, double dblIdx,
+    const mpz_class &mpzIdx, const std::vector<int> & /* Reps */
+) {
+
+    const int width = m;
+    const int max_n = n;
+
+    std::vector<int> res(width);
+    --n;
+    --m;
+
+    std::vector<int> allowed(cap);
+    std::iota(allowed.begin(), allowed.end(), 1);
+
+    for (int i = 0, j = 0; i < (width - 1); ++i, --n, --m) {
+        for (double temp = CountPartsRepLenRstrctd(n, m, allowed);
+             temp <= dblIdx; ++j) {
+            n -= (m + 1);
+            allowed.pop_back();
+            dblIdx -= temp;
+            temp = CountPartsRepLenRstrctd(n, m, allowed);
+        }
+
+        res[i] = j;
+    }
+
+    // See OFFSET (POSITIVE) REPRESENTATION NOTE
+    res.back() = (max_n - width) - std::accumulate(res.begin(), res.end(), 0);
+    return res;
+}
+
+std::vector<int> nthPartsRepCapGmp(
+    int n, int m, int cap, int k, double dblIdx,
+    const mpz_class &mpzIdx, const std::vector<int> & /* Reps */
+) {
 
     const int width = m;
     const int max_n = n;
@@ -1045,8 +182,36 @@ std::vector<int> nthPartsRepCapGmp(int n, int m, int cap, int k,
     return res;
 }
 
+std::vector<int> nthPartsDistinctLen(
+    int n, int m, int cap, int k, double dblIdx,
+    const mpz_class &mpzIdx, const std::vector<int> & /* Reps */
+) {
+
+    const int width = m;
+    const int max_n = n;
+
+    std::vector<int> res(width);
+    n -= m;
+    --m;
+
+    for (int i = 0, j = 0; i < (width - 1); ++i, n -= m, --m, ++j) {
+        for (double temp = CountPartsDistinctLen(n, m); temp <= dblIdx; ++j) {
+            n -= (m + 1);
+            dblIdx -= temp;
+            temp = CountPartsDistinctLen(n, m);
+        }
+
+        res[i] = j;
+    }
+
+    // See OFFSET (POSITIVE) REPRESENTATION NOTE
+    res.back() = (max_n - width) - std::accumulate(res.begin(), res.end(), 0);
+    return res;
+}
+
 std::vector<int> nthPartsDistinctLenGmp(
-    int n, int m, int cap, int k, double dblIdx, const mpz_class &mpzIdx
+    int n, int m, int cap, int k, double dblIdx,
+    const mpz_class &mpzIdx, const std::vector<int> & /* Reps */
 ) {
 
     const int width = m;
@@ -1082,8 +247,47 @@ std::vector<int> nthPartsDistinctLenGmp(
     return res;
 }
 
+std::vector<int> nthPartsDistinctMZ(
+    int n, int m, int cap, int k, double dblIdx,
+    const mpz_class &mpzIdx, const std::vector<int> & /* Reps */
+) {
+
+    const int width = m;
+    const int max_n = n;
+
+    std::vector<int> res(width);
+    bool incr_j = false;
+    --m;
+
+    std::vector<int> empty_allowed;
+
+    for (int i = 0, j = 0; i < (width - 1); ++i, --m) {
+        double temp = (incr_j || i >= (width - k)) ?
+                      CountPartsDistinctLen(n, m) :
+                      CountPartsDistinctMZ(n, m, empty_allowed, k);
+
+        for (; temp <= dblIdx; ++j) {
+            incr_j = true;
+            n -= (m + 1);
+            dblIdx -= temp;
+            temp = CountPartsDistinctLen(n, m);
+        }
+
+        res[i] = j;
+
+        if (incr_j || (i + 1) >= (width - k)) {
+            ++j;
+            n -= m;
+        }
+    }
+
+    res.back() = max_n - std::accumulate(res.begin(), res.end(), 0);
+    return res;
+}
+
 std::vector<int> nthPartsDistinctMZGmp(
-    int n, int m, int cap, int k, double dblIdx, const mpz_class &mpzIdx
+    int n, int m, int cap, int k, double dblIdx,
+    const mpz_class &mpzIdx, const std::vector<int> & /* Reps */
 ) {
 
     const int width = m;
@@ -1127,8 +331,43 @@ std::vector<int> nthPartsDistinctMZGmp(
     return res;
 }
 
+std::vector<int> nthPartsDistinctCap(
+    int n, int m, int cap, int k, double dblIdx,
+    const mpz_class &mpzIdx, const std::vector<int> & /* Reps */
+) {
+
+    const int width = m;
+    const int max_n = n;
+
+    std::vector<int> res(width);
+    n -= m;
+    --cap;
+    --m;
+
+    std::vector<int> allowed(cap);
+    std::iota(allowed.begin(), allowed.end(), 1);
+
+    for (int i = 0, j = 0; i < (width - 1); ++i, n -= m, --m, ++j) {
+        for (double temp = CountPartsDistLenRstrctd(n, m, allowed);
+             temp <= dblIdx; ++j) {
+            n -= (m + 1);
+            allowed.pop_back();
+            dblIdx -= temp;
+            temp = CountPartsDistLenRstrctd(n, m, allowed);
+        }
+
+        res[i] = j;
+        allowed.pop_back();
+    }
+
+    // See OFFSET (POSITIVE) REPRESENTATION NOTE
+    res.back() = (max_n - width) - std::accumulate(res.begin(), res.end(), 0);
+    return res;
+}
+
 std::vector<int> nthPartsDistinctCapGmp(
-    int n, int m, int cap, int k, double dblIdx, const mpz_class &mpzIdx
+    int n, int m, int cap, int k, double dblIdx,
+    const mpz_class &mpzIdx, const std::vector<int> & /* Reps */
 ) {
 
     const int width = m;
@@ -1170,8 +409,50 @@ std::vector<int> nthPartsDistinctCapGmp(
     return res;
 }
 
+std::vector<int> nthPartsDistinctCapMZ(
+    int n, int m, int cap, int k, double dblIdx,
+    const mpz_class &mpzIdx, const std::vector<int> & /* Reps */
+) {
+
+    const int width = m;
+    const int max_n = n;
+
+    std::vector<int> res(width);
+    bool incr_j = false;
+    --m;
+
+    std::vector<int> allowed(cap);
+    std::iota(allowed.begin(), allowed.end(), 1);
+
+    for (int i = 0, j = 0; i < (width - 1); ++i, --m) {
+        double temp = (incr_j || i >= (width - k)) ?
+                CountPartsDistLenRstrctd(n, m, allowed) :
+                CountPartsDistinctRstrctdMZ(n, m, allowed, k);
+
+        for (; temp <= dblIdx; ++j) {
+            incr_j = true;
+            n -= (m + 1);
+            allowed.pop_back();
+            dblIdx -= temp;
+            temp = CountPartsDistLenRstrctd(n, m, allowed);
+        }
+
+        res[i] = j;
+
+        if (incr_j || (i + 1) >= (width - k)) {
+            ++j;
+            n -= m;
+            allowed.pop_back();
+        }
+    }
+
+    res.back() = max_n - std::accumulate(res.begin(), res.end(), 0);
+    return res;
+}
+
 std::vector<int> nthPartsDistinctCapMZGmp(
-    int n, int m, int cap, int k, double dblIdx, const mpz_class &mpzIdx
+    int n, int m, int cap, int k, double dblIdx,
+    const mpz_class &mpzIdx, const std::vector<int> & /* Reps */
 ) {
 
     const int width = m;
@@ -1218,142 +499,121 @@ std::vector<int> nthPartsDistinctCapMZGmp(
     return res;
 }
 
-std::vector<int> EmptyReturn(
-    int n, int m, int cap, int k, double dblIdx, const mpz_class &mpzIdx
+// Both multiset unrankers use the contract in NthPartition.h. Public freqs
+// validation rejects zero multiplicities; zero-valued parts are still valid.
+// Only the front bucket is consumed; later buckets stay positive until reached.
+// At each position, the residual index is inside the feasible suffix count.
+// With correct block counts, skipping a block cannot erase the last bucket:
+// some later block must contain that index. If reservation gives -1,
+// feasibility likewise guarantees a later bucket. Thus front() is unchecked.
+// A zero count is an empty block, not a signal to stop searching.
+// j is the original bucket offset, while allowed stays normalized to 1..k.
+// Dropping the front multiplicity therefore removes allowed.back(). Advancing
+// j shifts the candidate and its m remaining parts down by one, so n -= m + 1.
+std::vector<int> nthPartsMultiset(
+    int n, int m, int cap, int /* k */, double dblIdx,
+    const mpz_class &mpzIdx, const std::vector<int> &Reps
 ) {
-    std::vector<int> res(m);
-    return(res);
-}
 
-nthPartsPtr GetNthPartsFunc(PartitionType ptype, bool IsGmp) {
+    const int width = m;
+    const int max_n = n;
 
-    if (IsGmp) {
-        switch (ptype) {
-            case PartitionType::LengthOne: {
-                return(nthPartsPtr(nthLengthOne));
-            } case PartitionType::DistinctCapped: {
-                return(nthPartsPtr(nthPartsDistinctCapGmp));
-            } case PartitionType::DistinctCappedMZ: {
-                return(nthPartsPtr(nthPartsDistinctCapMZGmp));
-            } case PartitionType::DistinctNoZero: {
-                return(nthPartsPtr(nthPartsDistinctLenGmp));
-            } case PartitionType::DistinctOneZero: {
-                return(nthPartsPtr(nthPartsDistinctLenGmp));
-            } case PartitionType::DistinctMZ: {
-                return(nthPartsPtr(nthPartsDistinctMZGmp));
-            } case PartitionType::DistinctStdAll: {
-                return(nthPartsPtr(nthPartsDistinctMZGmp));
-            } case PartitionType::RepCapped: {
-                return(nthPartsPtr(nthPartsRepCapGmp));
-            } case PartitionType::RepNoZero: {
-                return(nthPartsPtr(nthPartsRepLenGmp));
-            } case PartitionType::RepShort: {
-                return(nthPartsPtr(nthPartsRepShortGmp));
-            } case PartitionType::RepStdAll: {
-                return(nthPartsPtr(nthPartsRepGmp));
-            } case PartitionType::CompRepNoZero: {
-                return(nthPartsPtr(nthCompsRepGmp));
-            } case PartitionType::CompRepCapped: {
-                return(nthPartsPtr(nthCompsRepCappedGmp));
-            } case PartitionType::CompRepWeak: {
-                return(nthPartsPtr(nthCompsRepGmp));
-            } case PartitionType::CompRepWeakCap: {
-                return(nthPartsPtr(nthCompsRepCappedGmp));
-            } case PartitionType::CompRepZero: {
-                return(nthPartsPtr(nthCompsRepZeroGmp));
-            } case PartitionType::CompRepCapZero: {
-                return(nthPartsPtr(nthCompsRepZeroCapGmp));
-            } case PartitionType::CompDistinctNoZero: {
-                return(nthPartsPtr(nthCompsDistinctGmp));
-            } case PartitionType::CompDistinctCapped: {
-                return(nthPartsPtr(nthCompsDistinctGmp));
-            } case PartitionType::CompDistinctWeak: {
-                return(nthPartsPtr(nthCompsDistinctGmp));
-            } case PartitionType::CompDistinctCapWeak: {
-                return(nthPartsPtr(nthCompsDistinctGmp));
-            } case PartitionType::CompDistinctZero: {
-                return(nthPartsPtr(nthCompsDistinctMZGmp));
-            } case PartitionType::CompDistinctCapMZ: {
-                return(nthPartsPtr(nthCompsDistinctMZGmp));
-            } case PartitionType::CompDistinctMZWeak: {
-                return(nthPartsPtr(nthCompsDistinctMZWeakGmp));
-            } case PartitionType::CompDistinctCapMZWeak: {
-                return(nthPartsPtr(nthCompsDistinctMZWeakGmp));
-            } case PartitionType::NoSolution: {
-                return(nthPartsPtr(EmptyReturn));
-            } default : {
-                return nullptr;
-            }
+    std::vector<int> allowed(cap);
+    std::iota(allowed.begin(), allowed.end(), 1);
+
+    std::vector<int> lclReps(Reps.begin(), Reps.end());
+    std::vector<int> res(width, 0);
+    --n;
+    --m;
+
+    MultisetCountEngine<false> counter;
+
+    for (int i = 0, j = 0; i < (width - 1); ++i, --n, --m) {
+        --lclReps.front();
+
+        if (lclReps.front() < 0) {
+            lclReps.erase(lclReps.begin());
+            allowed.pop_back();
+            n -= (m + 1);
+            ++j;
+
+            // Reserve the candidate from the new bucket before counting.
+            --lclReps.front();
         }
-    } else {
-        switch (ptype) {
-            case PartitionType::LengthOne: {
-                return(nthPartsPtr(nthLengthOne));
-            } case PartitionType::DistinctCapped: {
-                return(nthPartsPtr(nthPartsDistinctCap));
-            } case PartitionType::DistinctCappedMZ: {
-                return(nthPartsPtr(nthPartsDistinctCapMZ));
-            } case PartitionType::DistinctNoZero: {
-                return(nthPartsPtr(nthPartsDistinctLen));
-            } case PartitionType::DistinctOneZero: {
-                return(nthPartsPtr(nthPartsDistinctLen));
-            } case PartitionType::DistinctMZ: {
-                return(nthPartsPtr(nthPartsDistinctMZ));
-            } case PartitionType::DistinctStdAll: {
-                return(nthPartsPtr(nthPartsDistinctMZ));
-            } case PartitionType::RepCapped: {
-                return(nthPartsPtr(nthPartsRepCap));
-            } case PartitionType::RepNoZero: {
-                return(nthPartsPtr(nthPartsRepLen));
-            } case PartitionType::RepShort: {
-                return(nthPartsPtr(nthPartsRepShort));
-            } case PartitionType::RepStdAll: {
-                return(nthPartsPtr(nthPartsRep));
-            } case PartitionType::CompRepNoZero: {
-                return(nthPartsPtr(nthCompsRep));
-            } case PartitionType::CompRepCapped: {
-                return(nthPartsPtr(nthCompsRepCapped));
-            } case PartitionType::CompRepWeak: {
-                return(nthPartsPtr(nthCompsRep));
-            } case PartitionType::CompRepWeakCap: {
-                return(nthPartsPtr(nthCompsRepCapped));
-            } case PartitionType::CompRepZero: {
-                return(nthPartsPtr(nthCompsRepZero));
-            } case PartitionType::CompRepCapZero: {
-                return(nthPartsPtr(nthCompsRepZeroCap));
-            } case PartitionType::CompDistinctNoZero: {
-                return(nthPartsPtr(nthCompsDistinct));
-            } case PartitionType::CompDistinctCapped: {
-                return(nthPartsPtr(nthCompsDistinct));
-            } case PartitionType::CompDistinctWeak: {
-                return(nthPartsPtr(nthCompsDistinct));
-            } case PartitionType::CompDistinctCapWeak: {
-                return(nthPartsPtr(nthCompsDistinct));
-            } case PartitionType::CompDistinctZero: {
-                return(nthPartsPtr(nthCompsDistinctMZ));
-            } case PartitionType::CompDistinctCapMZ: {
-                return(nthPartsPtr(nthCompsDistinctMZ));
-            } case PartitionType::CompDistinctMZWeak: {
-                return(nthPartsPtr(nthCompsDistinctMZWeak));
-            } case PartitionType::CompDistinctCapMZWeak: {
-                return(nthPartsPtr(nthCompsDistinctMZWeak));
-            } case PartitionType::NoSolution: {
-                return(nthPartsPtr(EmptyReturn));
-            } default : {
-                return nullptr;
-            }
-        }
-    }
-}
 
-nthPartsPtr GetNthPartsFuncOrStop(PartitionType ptype, bool IsGmp) {
-    if (auto res = GetNthPartsFunc(ptype, IsGmp)) {
-        return res;
+        double temp = counter.Count(n, m, allowed, lclReps);
+
+        for (; temp <= dblIdx; ++j) {
+            lclReps.erase(lclReps.begin());
+            allowed.pop_back();
+
+            // Every new candidate consumes one occurrence of its own value.
+            --lclReps.front();
+
+            n -= (m + 1);
+            dblIdx -= temp;
+            temp = counter.Count(n, m, allowed, lclReps);
+        }
+
+        res[i] = j;
     }
 
-    cpp11::stop(
-        "No algorithm available for PartitionType = " + GetPTypeName(ptype)
-    );
+    res.back() = (max_n - width) - std::accumulate(res.begin(), res.end(), 0);
+    return res;
+}
 
-    return nullptr;
+std::vector<int> nthPartsMultisetGmp(
+    int n, int m, int cap, int /* k */, double /* dblIdx */,
+    const mpz_class &mpzIdx, const std::vector<int> &Reps
+) {
+
+    const int width = m;
+    const int max_n = n;
+
+    std::vector<int> allowed(cap);
+    std::iota(allowed.begin(), allowed.end(), 1);
+
+    std::vector<int> lclReps(Reps.begin(), Reps.end());
+    std::vector<int> res(width, 0);
+    --n;
+    --m;
+
+    mpz_class temp;
+    mpz_class index(mpzIdx);
+    PartsMultiset counter(Reps);
+    counter.SetArrSize(PartitionType::Multiset, n, m);
+    counter.InitializeMpz();
+
+    for (int i = 0, j = 0; i < (width - 1); ++i, --n, --m) {
+        --lclReps.front();
+
+        if (lclReps.front() < 0) {
+            lclReps.erase(lclReps.begin());
+            allowed.pop_back();
+            n -= (m + 1);
+            ++j;
+
+            // Reserve the candidate from the new bucket before counting.
+            --lclReps.front();
+        }
+
+        counter.GetCount(temp, n, m, allowed, lclReps);
+
+        for (; cmp(temp, index) <= 0; ++j) {
+            lclReps.erase(lclReps.begin());
+            allowed.pop_back();
+
+            // Every new candidate consumes one occurrence of its own value.
+            --lclReps.front();
+
+            n -= (m + 1);
+            index -= temp;
+            counter.GetCount(temp, n, m, allowed, lclReps);
+        }
+
+        res[i] = j;
+    }
+
+    res.back() = (max_n - width) - std::accumulate(res.begin(), res.end(), 0);
+    return res;
 }

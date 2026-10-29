@@ -6,7 +6,8 @@
 
 template <typename T>
 void RankPartsResultsGeneric(
-    std::vector<T>& res, std::vector<int>& idx, rankPartsPtr rankFun,
+    std::vector<T>& res, std::vector<int>& idx,
+    const std::vector<int> &myReps, rankPartsPtr rankFun,
     int tar, int m, int cap, int strtLen, int numResults
 ) {
 
@@ -16,15 +17,15 @@ void RankPartsResultsGeneric(
     for (int i = 0, j = 0; i < numResults; ++i, j += m) {
         double dblIdx = 0;
         mpzIdx = 0;
-        rankFun(idx_strt + j, tar, m, cap, strtLen, dblIdx, mpzIdx);
+        rankFun(idx_strt + j, tar, m, cap, strtLen, dblIdx, mpzIdx, myReps);
         res[i] = RankResultTraits<T>::convert(dblIdx, mpzIdx);
     }
 }
 
 template <typename T>
 void RankPartsResults(
-    T* res, std::vector<int> &idx, rankPartsPtr rankFun,
-    int tar, int m, int cap, int strtLen, int numResults
+    T* res, std::vector<int> &idx, const std::vector<int> &myReps,
+    rankPartsPtr rankFun, int tar, int m, int cap, int strtLen, int numResults
 ) {
 
     mpz_class mpzIdx(0);
@@ -33,7 +34,7 @@ void RankPartsResults(
     for (int i = 0, j = 0; i < numResults; ++i, j += m) {
         double dblIdx = 0;
         mpzIdx = 0;
-        rankFun(idx_strt + j, tar, m, cap, strtLen, dblIdx, mpzIdx);
+        rankFun(idx_strt + j, tar, m, cap, strtLen, dblIdx, mpzIdx, myReps);
         res[i] = (dblIdx + 1);
     }
 }
@@ -41,7 +42,8 @@ void RankPartsResults(
 template <typename T>
 void RankPartsParallel(
     std::vector<std::vector<T>> &res_sec, std::vector<T> &last_res,
-    std::vector<int> &idx, rankPartsPtr rankFun, int tar, int m, int cap,
+    std::vector<int> &idx, const std::vector<int> &myReps,
+    rankPartsPtr rankFun, int tar, int m, int cap,
     int strtLen, int numResults, int nThreads, int stepSize, int last_sec
 ) {
 
@@ -52,13 +54,13 @@ void RankPartsParallel(
 
     for (int j = 0; j < (nThreads - 1); ++j) {
         threads.emplace_back(RankPartsResultsGeneric<T>, std::ref(res_sec[j]),
-            std::ref(idx_section[j]), rankFun, tar,
+            std::ref(idx_section[j]), std::cref(myReps), rankFun, tar,
             m, cap, strtLen, stepSize
         );
     }
 
     threads.emplace_back(RankPartsResultsGeneric<T>, std::ref(last_res),
-        std::ref(idx_section.back()), rankFun, tar, m, cap,
+        std::ref(idx_section.back()), std::cref(myReps), rankFun, tar, m, cap,
         strtLen, last_sec
     );
 
@@ -69,8 +71,9 @@ void RankPartsParallel(
 
 template <typename T>
 void RankPartsStd(
-    T* res, std::vector<int> &idx, rankPartsPtr rankFun, int tar,
-    int m, int cap, int strtLen, int numResults, int nThreads
+    T* res, std::vector<int> &idx, const std::vector<int> &myReps,
+    rankPartsPtr rankFun, int tar, int m, int cap, int strtLen,
+    int numResults, int nThreads
 ) {
 
     if (nThreads > 1) {
@@ -83,7 +86,7 @@ void RankPartsStd(
         const int last_sec = numResults - ((nThreads - 1) * stepSize);
         std::vector<T> last_res(last_sec);
 
-        RankPartsParallel(res_sec, last_res, idx, rankFun, tar, m, cap,
+        RankPartsParallel(res_sec, last_res, idx, myReps, rankFun, tar, m, cap,
                           strtLen, numResults, nThreads, stepSize, last_sec);
 
         int offset = 0;
@@ -95,15 +98,15 @@ void RankPartsStd(
 
         std::copy(last_res.begin(), last_res.end(), res + offset);
     } else {
-        RankPartsResults(res, idx, rankFun, tar,
+        RankPartsResults(res, idx, myReps, rankFun, tar,
                          m, cap, strtLen, numResults);
     }
 }
 
 void RankPartsGmp(
     std::vector<mpz_class> &res, std::vector<int> &idx,
-    rankPartsPtr rankFun, int tar, int m, int cap,
-    int strtLen, int numResults, int nThreads
+    const std::vector<int> &myReps, rankPartsPtr rankFun,
+    int tar, int m, int cap, int strtLen, int numResults, int nThreads
 ) {
 
     if (nThreads > 1) {
@@ -116,7 +119,7 @@ void RankPartsGmp(
         const int last_sec = numResults - ((nThreads - 1) * stepSize);
         std::vector<mpz_class> last_res(last_sec);
 
-        RankPartsParallel(res_sec, last_res, idx, rankFun, tar, m, cap,
+        RankPartsParallel(res_sec, last_res, idx, myReps, rankFun, tar, m, cap,
                           strtLen, numResults, nThreads, stepSize, last_sec);
 
         int offset = 0;
@@ -129,7 +132,7 @@ void RankPartsGmp(
 
         std::copy(last_res.begin(), last_res.end(), res.begin() + offset);
     } else {
-        RankPartsResultsGeneric(res, idx, rankFun, tar,
+        RankPartsResultsGeneric(res, idx, myReps, rankFun, tar,
                                 m, cap, strtLen, numResults);
     }
 }
@@ -230,14 +233,14 @@ SEXP RankPartitionMain(SEXP RIdx, SEXP Rv, SEXP RisRep,
 
     if (part.isGmp) {
         std::vector<mpz_class> myVec(numResults);
-        RankPartsGmp(myVec, idx, rankFun, part.mapTar, m,
+        RankPartsGmp(myVec, idx, myReps, rankFun, part.mapTar, m,
                      cap, strtLen, numResults, nThreads);
         return MpzReturn(myVec, numResults);
     } else if (part.count <= std::numeric_limits<int>::max()) {
         cpp11::sexp res_std_int = Rf_allocVector(INTSXP, numResults);
         int* res_int = INTEGER(res_std_int);
 
-        RankPartsStd(res_int, idx, rankFun, part.mapTar,
+        RankPartsStd(res_int, idx, myReps, rankFun, part.mapTar,
                      m, cap, strtLen, numResults, nThreads);
 
         return res_std_int;
@@ -245,7 +248,7 @@ SEXP RankPartitionMain(SEXP RIdx, SEXP Rv, SEXP RisRep,
         cpp11::sexp res_std_dbl = Rf_allocVector(REALSXP, numResults);
         double* res_dbl = REAL(res_std_dbl);
 
-        RankPartsStd(res_dbl, idx, rankFun, part.mapTar,
+        RankPartsStd(res_dbl, idx, myReps, rankFun, part.mapTar,
                      m, cap, strtLen, numResults, nThreads);
 
         return res_std_dbl;

@@ -283,12 +283,11 @@ test_that("comboGeneral produces correct results with constraints", {
                               comparisonFun = "==",
                               limitConstraints = 25, keepResults = TRUE)[,6], 25)
 
-    all_combs = comboGeneral(10, 5, freqs = rep(1:5, 2), constraintFun = "sum")
-    all_combs = all_combs[500:nrow(all_combs), ]
-    expect_equal(comboGeneral(10, 5, freqs = rep(1:5, 2), keepResults = TRUE,
+    # Multiset sum/equality bounds index the 74 matching partitions.
+    expect_error(comboGeneral(10, 5, freqs = rep(1:5, 2), keepResults = TRUE,
                               constraintFun = "sum", comparisonFun = "==",
-                              limitConstraints =  25, lower = 500),
-                 all_combs[all_combs[,6] == 25, ])
+                              limitConstraints = 25, lower = 500),
+                 "bounds cannot exceed")
 
 
     test = comboGeneral(10, 5, freqs = rep(1:5, 2),
@@ -845,4 +844,48 @@ test_that("internal useRangeSemantics with special constraints and gmp", {
     )
 
     expect_equal(with_lower_parallel, ans)
+})
+
+
+test_that("Explicit lower = 1 dispatches generic constraints as ranges", {
+    v <- c(1L, 2L, 4L, 8L)
+    for (generate in list(comboGeneral, permuteGeneral)) {
+        candidates <- generate(v, 2L, upper = 3L)
+        for (comparison in c(">", "==")) {
+            # Inequality uses NotPartition; irregular equality is CoarseGrained.
+            target <- if (comparison == ">") 6L else 9L
+            matches <- if (comparison == ">") {
+                rowSums(candidates) > target
+            } else {
+                rowSums(candidates) == target
+            }
+            expect_identical(which(matches), 3L)
+
+            for (lower in list(1L, "1", gmp::as.bigz(1))) {
+                for (upper in c(1L, 3L)) {
+                    rows <- seq_len(upper)
+                    expected <- candidates[rows[matches[rows]], , drop = FALSE]
+                    expect_identical(
+                        generate(v, 2L, constraintFun = "sum",
+                                 comparisonFun = comparison,
+                                 limitConstraints = target,
+                                 lower = lower, upper = upper),
+                        expected
+                    )
+                }
+            }
+
+            # Without lower, upper still limits matches rather than candidates.
+            expect_equal(nrow(generate(
+                v, 2L, constraintFun = "sum", comparisonFun = comparison,
+                limitConstraints = target, upper = 1L
+            )), 1L)
+            expect_identical(
+                generate(v, 2L, constraintFun = "sum",
+                         comparisonFun = comparison, limitConstraints = target,
+                         lower = 2L, upper = 3L),
+                candidates[matches, , drop = FALSE]
+            )
+        }
+    }
 })

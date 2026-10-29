@@ -1021,8 +1021,10 @@ void SetPartitionDesign(
             part.startZ.cbegin(), part.startZ.cend(), 0
         );
 
+        // If the first result uses the minimum at most once, every result
+        // is distinct: all other values already have multiplicity one.
         const bool convertMultisetToDistinct =
-            part.maxZeros == 1 &&
+            part.maxZeros <= 1 &&
             part.solnExist     &&
             part.isMult        &&
             part.allOne;

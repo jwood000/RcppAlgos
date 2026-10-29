@@ -1,6 +1,6 @@
 #include "cpp11/R.hpp"
 
-const char* RcppAlgos_version = "2.10.2";
+const char* RcppAlgos_version = "2.10.3";
 
 /**
  * This file records the expected package version in the shared

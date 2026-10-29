@@ -1492,31 +1492,11 @@ test_that("Unsupported ranking/sampling behavior", {
         "Multiset"
     )
 
-    expect_multiset_unsupported(
-        partitionsSample(
-            1:10, 5,
-            freqs = fr,
-            target = 20,
-            n = 5
-        )
-    )
-
     x <- partitionsGeneral(
         1:10, 5,
         freqs = fr,
         target = 20,
         upper = 1
-    )
-
-    expect_multiset_unsupported(
-        partitionsRank(
-            x,
-            v = 1:10,
-            freqs = fr,
-            target = 20,
-            n = 5
-        ),
-        ranking = TRUE
     )
 
     ## Positive multiset composition

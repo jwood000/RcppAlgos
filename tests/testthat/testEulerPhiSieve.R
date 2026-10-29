@@ -30,7 +30,7 @@ test_that("eulerPhiSieve generates correct numbers", {
     expect_equal(as.numeric(names(eulerPhiSieve(10^12, 10^12 + 100,
                                                 namedVector = TRUE))), (10^12):(10^12 + 100))
     ## Parallel tests
-    expect_equal(eulerPhiSieve(198, 2e5, nThreads = 3), eulerPhiSieve(198, 2e5))
+    expect_equal(eulerPhiSieve(198, 2e5, nThreads = 2), eulerPhiSieve(198, 2e5))
     expect_equal(eulerPhiSieve(2e5, nThreads = 2), eulerPhiSieve(2e5))
 
     expect_equal(eulerPhiSieve(1e12, 1e12 + 1e6, nThreads = 2),

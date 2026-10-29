@@ -134,11 +134,6 @@ test_that("comboIter related functions produces appropriate error messages", {
 })
 
 test_that("partitionsIter related functions produces appropriate error messages", {
-    a <- partitionsIter(100, 10, freqs = rep(1:10, 10))
-    expect_error(a@front(), "No random access available for this scenario")
-    expect_error(a@back(), "No random access available for this scenario")
-    expect_error(a[[10]], "No random access available for this scenario")
-    expect_error(a@back(), "No random access available for this scenario")
     a <- partitionsIter(400, 25, TRUE)
     expect_error(a@nextRemaining(), "The number of requested rows is greater")
     a <- partitionsIter(300, 20, TRUE)
@@ -306,25 +301,6 @@ test_that("primeCount produces appropriate error messages", {
     expect_error(primeCount("100000"), "must be of type numeric or integer")
 })
 
-test_that("errors with table S3 method", {
-    s <- sample(10, 100, TRUE)
-    err_string <- paste(
-        "Currently, there is no composition algorithm",
-        "for this case.\n Use permuteCount, permuteIter, permuteGeneral,",
-        "permuteSample, or\n permuteRank instead."
-    )
-    # expect_error(compositionsCount(table(s), 5), err_string)
-    # expect_error(compositionsGeneral(table(s), 5), err_string)
-    # expect_error(compositionsSample(table(s), 5, n = 10, seed = 42),
-    #              err_string)
-    # expect_error(compositionsIter(table(s), 5, n = 10), err_string)
-
-    expect_error(partitionsSample(table(s), 5, n = 4),
-                 "Sampling not available for this case.")
-    expect_error(partitionsSample(table(s), 5, n = 4, seed = 42),
-                 "Sampling not available for this case.")
-})
-
 test_that("primeFactorize produces appropriate error messages", {
     expect_error(primeFactorize(2^53),
                  "The abs value of each element in v must be less than")
@@ -411,8 +387,6 @@ test_that("{combo|permute|partitions|compositions}Rank produces appropriate erro
     expect_error(comboRank(c(1, 2, 3, 3), v = 3),
                  "m must be less than or equal to the length of v")
 
-    expect_error(partitionsRank(1:3, v = 5, freqs = 1:5, target = 6),
-                 "Ranking not available for this case.")
     expect_error(partitionsRank(letters, v = 100),
                  "Inputs must be of class numeric or integer")
     expect_error(partitionsRank(letters, v = 100),

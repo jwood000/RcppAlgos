@@ -1231,3 +1231,56 @@ test_that("partitionGeneral Repetition Parallel Lower", {
                      partitionsGeneral(1001 + (1:18) * 107, 10, TRUE,
                                        target = 20710, lower = 2121))
 })
+
+
+test_that("Bounded multiset generation agrees across APIs and threads", {
+    # Exceed the 40,000-row threshold and split into unequal worker ranges.
+    size <- 40001L
+    for (case in list(list(cap = 40L, width = 10L, target = 100L,
+                          freqs = rep(5:1, each = 8)),
+                      list(cap = 100L, width = 20L, target = 500L,
+                           freqs = rep(2:4, length.out = 100)))) {
+        v <- seq_len(case$cap)
+        total <- partitionsCount(v, case$width, freqs = case$freqs,
+                                 target = case$target)
+        expect_identical(inherits(total, "bigz"), case$cap == 100L)
+        lower <- if (inherits(total, "bigz")) total - size + 1L else 17L
+        upper <- lower + size - 1L
+        bench <- partitionsGeneral(v, case$width, freqs = case$freqs,
+                                   target = case$target, lower = lower,
+                                   upper = upper, nThreads = 1)
+        expect_identical(nrow(bench), size)
+        selected <- c(1L, size %/% 2L, size %/% 2L + 1L, size)
+        expect_identical(
+            partitionsSample(v, case$width, freqs = case$freqs,
+                             target = case$target,
+                             sampleVec = lower + selected - 1L),
+            bench[selected, , drop = FALSE]
+        )
+        for (mapping in list(c(1L, 0L), c(1L, -1L), c(2e9, 7))) {
+            mapped <- v * mapping[1L] + mapping[2L]
+            target <- case$target * mapping[1L] + case$width * mapping[2L]
+            expected <- bench * mapping[1L] + mapping[2L]
+            expect_identical(
+                partitionsGeneral(mapped, case$width, freqs = case$freqs,
+                                  target = target, lower = lower,
+                                  upper = upper, nThreads = 2),
+                expected
+            )
+            expect_identical(
+                comboGeneral(mapped, case$width, freqs = case$freqs,
+                             constraintFun = "sum", comparisonFun = "==",
+                             limitConstraints = target, lower = lower,
+                             upper = upper, nThreads = 2, keepResults = FALSE),
+                expected
+            )
+            expect_identical(
+                comboGeneral(mapped, case$width, freqs = case$freqs,
+                             constraintFun = "sum", comparisonFun = "==",
+                             limitConstraints = target, lower = lower,
+                             upper = upper, nThreads = 2, keepResults = TRUE),
+                unname(cbind(expected, rep(target, size)))
+            )
+        }
+    }
+})

@@ -301,6 +301,9 @@ extern "C" SEXP _RcppAlgos_linked_version() {
 }
 
 extern "C" {
+/* .Call calls */
+extern SEXP run_testthat_tests(SEXP);
+
 static const R_CallMethodDef CallEntries[] = {
     {"_RcppAlgos_BackGlue",                (DL_FUNC) &_RcppAlgos_BackGlue,                 1},
     {"_RcppAlgos_CartClassNew",            (DL_FUNC) &_RcppAlgos_CartClassNew,             4},
@@ -344,6 +347,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_RcppAlgos_linked_version",          (DL_FUNC) &_RcppAlgos_linked_version,           0},
     {"_RcppAlgos_testCountCoverage",       (DL_FUNC) &_RcppAlgos_testCountCoverage,        0},
     {"_RcppAlgos_testRankCoverage",        (DL_FUNC) &_RcppAlgos_testRankCoverage,         0},
+    {"run_testthat_tests",                 (DL_FUNC) &run_testthat_tests,                  1},
     {NULL, NULL, 0}
 };
 }
