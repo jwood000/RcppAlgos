@@ -4,6 +4,7 @@
 LICENSE
 remove_whitespace.sh
 ^\.github$
+^AGENTS\.md$
 ^docs$
 ^vignettes/*.html
 scripts/*
