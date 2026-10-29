@@ -35,7 +35,7 @@ The output is in lexicographical order.
 
     <a class="navbar-brand me-2" href="../index.html">RcppAlgos</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">2.10.2</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">2.10.3</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -154,14 +154,32 @@ The output is in lexicographical order.
 
 </dl></div>
     <div class="section level2">
+    <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
+    <p><code>compositionsGeneral</code> generates supported compositions in
+lexicographical order across all matching rows. Its <code>lower</code> and
+<code>upper</code> bounds index those matching rows, so <code>lower = 1</code> returns
+the same prefix as omitting <code>lower</code> when matching rows exist.
+For supported partitions and compositions with no matches, omitting both
+bounds returns an empty matrix. Explicit positive bounds, including
+<code>lower = 1</code>, exceed the zero result count and raise an error.</p>
+<p>This differs from sum/equality calls to <code><a href="combinatoricsGeneral.html">permuteGeneral</a></code>.
+Without <code>lower</code>, supported constrained permutation calls generate
+matching partitions and then all distinct permutations of each partition;
+<code>upper</code> caps matching rows in that order. With <code>lower</code> supplied,
+permutation bounds select ordinary candidate ranks to filter instead.
+See <em>Ordering and bounds</em> in <code><a href="combinatoricsGeneral.html">comboGeneral</a></code>.</p>
+<p>When zero is present, <code>permuteGeneral</code> treats it as an actual element
+that can occupy any position, subject to multiplicities. It does not use
+the zero-padding convention of non-weak compositions.</p>
+    </div>
+    <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
     <p>A matrix is returned with each row containing a vector of length \(m\).</p>
     </div>
     <div class="section level2">
     <h2 id="note">Note<a class="anchor" aria-label="anchor" href="#note"></a></h2>
     <p></p><ul><li><p><code>nThreads</code> will be ignored in the following cases (i.e. Generating the \(n^{th}\) partition in these cases are currently unavailable):
-            </p><ul><li><p>With standard multisets. If zero is the only element with a non-trivial multiplicity, multithreading is possible (<em>e.g.</em> <code>partitionsGeneral(0:100, freqs = c(100, rep(1, 100)), nThreads = 4)</code>).</p></li>
-<li><p>If the source vector is not isomorphic to <code>1:length(v)</code> (<em>e.g.</em> <code>v = c(1, 4, 6, 7, 8)</code>).</p></li>
+            </p><ul><li><p>If the source vector is not isomorphic to <code>1:length(v)</code> (<em>e.g.</em> <code>v = c(1, 4, 6, 7, 8)</code>).</p></li>
 </ul></li>
 <li><p>The maximum number of partitions/compositions that can be generated at one time is \(2^{31} - 1\). Utilizing <code>lower</code> and <code>upper</code> makes it possible to generate additional partitions/compositions.</p></li>
 </ul></div>
@@ -965,10 +983,10 @@ The output is in lexicographical order.
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/system.time.html" class="external-link">system.time</a></span><span class="op">(</span><span class="va">one_thread</span>  <span class="op">&lt;-</span> <span class="fu">partitionsGeneral</span><span class="op">(</span><span class="fl">80</span>, <span class="fl">10</span>, <span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>    user  system elapsed </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   0.008   0.001   0.009 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   0.007   0.005   0.012 </span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/system.time.html" class="external-link">system.time</a></span><span class="op">(</span><span class="va">two_threads</span> <span class="op">&lt;-</span> <span class="fu">partitionsGeneral</span><span class="op">(</span><span class="fl">80</span>, <span class="fl">10</span>, <span class="cn">TRUE</span>, nThreads <span class="op">=</span> <span class="fl">2</span><span class="op">)</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>    user  system elapsed </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   0.008   0.003   0.005 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   0.005   0.007   0.007 </span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/identical.html" class="external-link">identical</a></span><span class="op">(</span><span class="va">one_thread</span>, <span class="va">two_threads</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] TRUE</span>
 </code></pre></div>

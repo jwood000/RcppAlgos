@@ -129,6 +129,29 @@ compositionsGeneral(
   approximately \\1.5e-8\\. N.B. If the input vector is of type integer,
   this parameter will be ignored and strict equality will be enforced.
 
+## Details
+
+`compositionsGeneral` generates supported compositions in
+lexicographical order across all matching rows. Its `lower` and `upper`
+bounds index those matching rows, so `lower = 1` returns the same prefix
+as omitting `lower` when matching rows exist. For supported partitions
+and compositions with no matches, omitting both bounds returns an empty
+matrix. Explicit positive bounds, including `lower = 1`, exceed the zero
+result count and raise an error.
+
+This differs from sum/equality calls to
+[`permuteGeneral`](https://jwood000.github.io/RcppAlgos/reference/combinatoricsGeneral.md).
+Without `lower`, supported constrained permutation calls generate
+matching partitions and then all distinct permutations of each
+partition; `upper` caps matching rows in that order. With `lower`
+supplied, permutation bounds select ordinary candidate ranks to filter
+instead. See *Ordering and bounds* in
+[`comboGeneral`](https://jwood000.github.io/RcppAlgos/reference/combinatoricsGeneral.md).
+
+When zero is present, `permuteGeneral` treats it as an actual element
+that can occupy any position, subject to multiplicities. It does not use
+the zero-padding convention of non-weak compositions.
+
 ## Value
 
 A matrix is returned with each row containing a vector of length \\m\\.
@@ -137,10 +160,6 @@ A matrix is returned with each row containing a vector of length \\m\\.
 
 - `nThreads` will be ignored in the following cases (i.e. Generating the
   \\n^{th}\\ partition in these cases are currently unavailable):
-
-  - With standard multisets. If zero is the only element with a
-    non-trivial multiplicity, multithreading is possible (*e.g.*
-    `partitionsGeneral(0:100, freqs = c(100, rep(1, 100)), nThreads = 4)`).
 
   - If the source vector is not isomorphic to `1:length(v)` (*e.g.*
     `v = c(1, 4, 6, 7, 8)`).
@@ -955,10 +974,10 @@ partitionsGeneral(sample(1000, 20), 5, TRUE, target = 2500)
 
 system.time(one_thread  <- partitionsGeneral(80, 10, TRUE))
 #>    user  system elapsed 
-#>   0.008   0.001   0.009 
+#>   0.007   0.005   0.012 
 system.time(two_threads <- partitionsGeneral(80, 10, TRUE, nThreads = 2))
 #>    user  system elapsed 
-#>   0.008   0.003   0.005 
+#>   0.005   0.007   0.007 
 identical(one_thread, two_threads)
 #> [1] TRUE
 ```

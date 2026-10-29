@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">RcppAlgos</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">2.10.2</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">2.10.3</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -46,7 +46,40 @@
     </div>
 
     <div class="section level2">
-<h2 class="pkg-version" data-toc-text="2.10.2" id="rcppalgos-2102">RcppAlgos 2.10.2<a class="anchor" aria-label="anchor" href="#rcppalgos-2102"></a></h2>
+<h2 class="pkg-version" data-toc-text="2.10.3" id="rcppalgos-2103">RcppAlgos 2.10.3<a class="anchor" aria-label="anchor" href="#rcppalgos-2103"></a></h2>
+<div class="section level3">
+<h3 id="new-features-2-10-3">New Features<a class="anchor" aria-label="anchor" href="#new-features-2-10-3"></a></h3>
+<ul><li>Added ranking, sampling, and iterator random access for supported multiset partitions, including GMP support for large ranks.</li>
+<li>Added parallel generation of supported multiset partitions. <code>lower</code> and <code>upper</code> now index matching partitions in lexicographical order, including equivalent sum/equality calls to <code><a href="../reference/combinatoricsGeneral.html">comboGeneral()</a></code>. Previously, supplying <code>lower</code> could select ordinary combination candidates instead of matching partitions, so existing bounded calls may return different results.</li>
+</ul></div>
+<div class="section level3">
+<h3 id="bug-fixes-2-10-3">Bug Fixes<a class="anchor" aria-label="anchor" href="#bug-fixes-2-10-3"></a></h3>
+<ul><li>Fixed generic constrained searches with explicit <code>lower = 1</code> to use candidate-range semantics consistently. Constrained <code><a href="../reference/combinatoricsGeneral.html">permuteGeneral()</a></code> calls with <code>lower</code> supplied filter ordinary permutation ranks; <code>upper</code> alone continues to cap matching results.</li>
+<li>Fixed partial multiset permutations being treated as full permutations when the requested width equals the number of distinct values rather than the total multiplicity.</li>
+<li>Fixed out-of-bounds writes when <code>upper</code> stops constrained distinct-permutation generation within a partition’s permutation block.</li>
+<li>Unsupported composition generation and iteration now raise an error instead of falling back to algorithms that do not preserve composition semantics.</li>
+<li>Fixed handling of empty constrained results, preserving matrix type and the additional column requested by <code>keepResults</code>. Explicit positive bounds for empty supported partition and composition result sets now raise an error; constrained permutations retain candidate-bound validation.</li>
+<li>Fixed validation of zero-valued <code>bigz</code> ranks, bounds, and seeds where positive values are required.</li>
+<li>Fixed classification of certain multiset cases where the repeated minimum value cannot occur in any result.</li>
+</ul></div>
+<div class="section level3">
+<h3 id="improvements-2-10-3">Improvements<a class="anchor" aria-label="anchor" href="#improvements-2-10-3"></a></h3>
+<ul><li>Documented that supported sum/equality permutation calls without <code>lower</code> generate matching partitions followed by each partition’s permutations. Supplying <code>lower</code> selects ordinary permutation candidates instead. Supported partitions and compositions use lexicographical matching-result order.</li>
+<li>Clarified that zeros in permutations are actual elements, unlike padding in non-weak compositions.</li>
+</ul></div>
+<div class="section level3">
+<h3 id="performance-2-10-3">Performance<a class="anchor" aria-label="anchor" href="#performance-2-10-3"></a></h3>
+<ul><li>Reduced allocation overhead in multiset partition and composition counting by reusing working storage.</li>
+<li>Known-empty constrained permutation generation and iteration now avoid unnecessary candidate searches, including GMP-sized search spaces.</li>
+</ul></div>
+<div class="section level3">
+<h3 id="other-2-10-3">Other<a class="anchor" aria-label="anchor" href="#other-2-10-3"></a></h3>
+<ul><li>Added <code>testthat</code> to <code>LinkingTo</code>, making it a dependency when building the package from source.</li>
+<li>Installed C++ partition/composition ranking and unranking signatures now include a <code>Reps</code> argument. Direct C++ callers must update their calls and function-pointer types and rebuild. The R function signatures are unchanged.</li>
+</ul></div>
+</div>
+    <div class="section level2">
+<h2 class="pkg-version" data-toc-text="2.10.2" id="rcppalgos-2102">RcppAlgos 2.10.2<a class="anchor" aria-label="anchor" href="#rcppalgos-2102"></a></h2><p class="text-muted">CRAN release: 2026-10-17</p>
 <div class="section level3">
 <h3 id="new-features-2-10-2">New Features<a class="anchor" aria-label="anchor" href="#new-features-2-10-2"></a></h3>
 <ul><li>Added exact dynamic-programming counting for multiset partitions and compositions, including weak compositions and non-weak compositions with zero padding. Large counts use GMP-backed <code>bigz</code> arithmetic where needed.</li>

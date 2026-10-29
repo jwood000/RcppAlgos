@@ -5,7 +5,9 @@ Produce results in parallel using the Parallel or nThreads arguments. You can al
 The arguments lower and upper make it possible to generate combinations/permutations in chunks allowing for parallelization via the parallel-package. This is convenient when you want to apply a custom function to the output in parallel.
 Attack integer partition and general subset sum problems.
 GMP support allows for exploration of combinations/permutations of vectors with many elements.
-The output is in lexicographical order.
+Unconstrained output is in lexicographical order. For constrained
+        permutations, ordering depends on whether lower is supplied;
+        see Ordering and bounds in Details.
 
 "><meta property="og:description" content="
 Generate combinations or permutations of a vector with or without constraints.
@@ -13,7 +15,9 @@ Produce results in parallel using the Parallel or nThreads arguments. You can al
 The arguments lower and upper make it possible to generate combinations/permutations in chunks allowing for parallelization via the parallel-package. This is convenient when you want to apply a custom function to the output in parallel.
 Attack integer partition and general subset sum problems.
 GMP support allows for exploration of combinations/permutations of vectors with many elements.
-The output is in lexicographical order.
+Unconstrained output is in lexicographical order. For constrained
+        permutations, ordering depends on whether lower is supplied;
+        see Ordering and bounds in Details.
 
 "></head><body>
     <a href="#main" class="visually-hidden-focusable">Skip to contents</a>
@@ -23,7 +27,7 @@ The output is in lexicographical order.
 
     <a class="navbar-brand me-2" href="../index.html">RcppAlgos</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">2.10.2</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">2.10.3</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -68,7 +72,9 @@ The output is in lexicographical order.
 <li><p>The arguments <code>lower</code> and <code>upper</code> make it possible to generate combinations/permutations in chunks allowing for parallelization via the <code>parallel-package</code>. This is convenient when you want to apply a custom function to the output in parallel.</p></li>
 <li><p>Attack integer partition and general subset sum problems.</p></li>
 <li><p>GMP support allows for exploration of combinations/permutations of vectors with many elements.</p></li>
-<li><p>The output is in lexicographical order.</p></li>
+<li><p>Unconstrained output is in lexicographical order. For constrained
+        permutations, ordering depends on whether <code>lower</code> is supplied;
+        see <em>Ordering and bounds</em> in Details.</p></li>
 </ul></div>
 
     <div class="section level2">
@@ -152,11 +158,30 @@ The output is in lexicographical order.
 <dd><p>A vector of frequencies used for producing all combinations/permutations of a multiset of <code>v</code>. Each element of <code>freqs</code> represents how many times each element of the source vector, <code>v</code>, is repeated. It is analogous to the <code>times</code> argument in <code><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></code>. The default value is <code>NULL</code>.</p></dd>
 
   <dt id="arg-lower">lower<a class="anchor" aria-label="anchor" href="#arg-lower"></a></dt>
-<dd><p>The lower bound. Combinations/permutations are generated lexicographically, thus utilizing this argument will determine which specific combination/permutation to start generating from (<em>e.g.</em> <code>comboGeneral(5, 3, lower = 6)</code> is equivalent to <code>comboGeneral(5, 3)[6:choose(5, 3), ]</code>). This argument along with <code>upper</code> is very useful for generating combinations/permutations in chunks allowing for easy parallelization.</p></dd>
+<dd><p>The lower bound, using one-based ranks. Without constraints,
+  this is the rank of the first combination/permutation to generate
+  (<em>e.g.</em> <code>comboGeneral(5, 3, lower = 6)</code> is equivalent to
+  <code>comboGeneral(5, 3)[6:choose(5, 3), ]</code>). For constrained
+  <code>permuteGeneral</code>, this always selects ordinary permutation ranks to
+  test, including when <code>lower = 1</code>. It does not select the rank of a
+  matching result. See <em>Ordering and bounds</em> in Details for the
+  distinction from supported partition calls through <code>comboGeneral</code>.</p></dd>
 
   <dt id="arg-upper">upper<a class="anchor" aria-label="anchor" href="#arg-upper"></a></dt>
 <dd><p>The upper bound. Similar to <code>lower</code>, however this parameter allows the user to <em>stop</em> generation at a specific combination/permutation (<em>e.g.</em> <code>comboGeneral(5, 3, upper = 5)</code> is equivalent to <code>comboGeneral(5, 3)[1:5, ]</code>)</p>
-<p>If the output is constrained and <code>lower</code> isn't supplied, <code>upper</code> serves as a cap for how many results will be returned that meet the criteria (<em>e.g.</em> setting <code>upper = 100</code> alone will return the first 100 results that meet the criteria, while setting <code>lower = 1</code> and <code>upper = 100</code> will test the first 100 results against the criteria).</p>
+<p>For constrained <code>permuteGeneral</code> and generic constrained searches,
+  if <code>lower</code> isn't supplied,
+  <code>upper</code> caps the number of matching results returned. For example,
+  <code>upper = 100</code> alone returns the first 100 matches, while
+  <code>lower = 1</code> and <code>upper = 100</code> test the first 100 candidates.</p>
+<p>When <code>comboGeneral</code> uses a supported partition algorithm with
+  <code>constraintFun = "sum"</code> and <code>comparisonFun = "=="</code>, including
+  multiset partitions, both bounds index matching partitions in
+  lexicographical order. These calls use the same bounds as
+  <code><a href="partitionsGeneral.html">partitionsGeneral</a></code>: supplying <code>lower = 1</code> or omitting
+  <code>lower</code> returns the same prefix when matches exist. If there are
+  no matches, omitting both bounds returns an empty matrix; explicit
+  positive bounds exceed the zero result count and raise an error.</p>
 <p>In addition to the benefits listed for <code>lower</code>, this parameter is useful when the total number of combinations/permutations without constraint is large and you expect/need a small number of combinations/permutations that meet a certain criteria. Using <code>upper</code> can improve run time if used judiciously as we call the member function <a href="https://en.cppreference.com/cpp/container/vector/reserve" class="external-link">reserve</a> of <a href="https://en.cppreference.com/cpp/container/vector" class="external-link">std::vector</a>. See examples below.</p></dd>
 
   <dt id="arg-constraintfun">constraintFun<a class="anchor" aria-label="anchor" href="#arg-constraintfun"></a></dt>
@@ -201,7 +226,39 @@ The output is in lexicographical order.
 </ul></div>
     <div class="section level2">
     <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
-    <p>For the general case, finding all combinations/permutations with constraints is optimized by organizing them in such a way that when <code>constraintFun</code> is applied, a <em>partially</em> monotonic sequence is produced. Combinations/permutations are added successively, until a particular combination exceeds the given constraint value for a given constraint/comparison function combo. After this point, we can safely skip several combinations knowing that they will exceed the given constraint value.</p>
+
+<div class="section">
+<h3 id="ordering-and-bounds">Ordering and bounds<a class="anchor" aria-label="anchor" href="#ordering-and-bounds"></a></h3>
+<p>Without constraints, <code>permuteGeneral</code> generates ordinary permutations
+in lexicographical order, and <code>lower</code> and <code>upper</code> index that order.</p>
+<p>For supported partition cases with <code>constraintFun = "sum"</code> and
+<code>comparisonFun = "=="</code>, omitting <code>lower</code> uses
+<em>partition-then-permute order</em>: matching partitions are visited in
+lexicographical order, and all distinct permutations of each partition are
+emitted in lexicographical order before moving to the next partition.
+The combined output need not be globally lexicographical. This applies
+also when an equivalent composition algorithm exists. <code>upper</code> alone
+caps the number of matching rows and may stop within a permutation block.
+These partition cases use integer-valued, evenly spaced source vectors
+and an integer target, including supported mapped and multiset cases;
+see <code><a href="partitionsGeneral.html">partitionsGeneral</a></code>.</p>
+<p>For any constrained <code>permuteGeneral</code> call with <code>lower</code> supplied,
+<code>lower</code> and <code>upper</code> instead specify an inclusive range of ordinary
+permutation ranks, ignoring the constraint when assigning ranks. Only
+matching candidates in that range are returned, in lexicographical order.
+If <code>upper</code> is omitted, testing continues through the remaining
+candidates. Thus <code>lower = 1</code> is not redundant: <code>upper = 100</code> alone
+caps matches, whereas <code>lower = 1, upper = 100</code> tests 100 candidates
+and can return fewer than 100 rows, including none.</p>
+<p><code><a href="partitionsGeneral.html">compositionsGeneral</a></code> generates supported compositions in
+lexicographical order across all matching rows; its bounds index those
+matching rows. Supported partition calls through <code>comboGeneral</code> also
+use matching-result ranks. Other constrained calls without <code>lower</code>
+use their applicable constraint algorithms; their output positions should
+not be interpreted as composition ranks.</p>
+</div>
+
+<p>For the general case, finding all combinations/permutations with constraints is optimized by organizing them in such a way that when <code>constraintFun</code> is applied, a <em>partially</em> monotonic sequence is produced. Combinations/permutations are added successively, until a particular combination exceeds the given constraint value for a given constraint/comparison function combo. After this point, we can safely skip several combinations knowing that they will exceed the given constraint value.</p>
 <p>There are special cases where more efficient algorithms are dyncamically deployed. These cases center around the subject of integer partitions. See <code><a href="partitionsGeneral.html">partitionsGeneral</a></code> for more information.</p>
 <p>When there are any negative values in <code>v</code>, <code>constraintFun = "prod"</code>, and <code>limitConstraints</code> is provided, producing a monotonic set is non-trivial for the general case. As a result, performance will suffer as all combinations/permutations must be tested against the constraint criteria. Throughout the documentation, this case is referred to as <em>special constraints</em>.</p>
     </div>
@@ -215,8 +272,16 @@ The output is in lexicographical order.
 <li><p>If either <code>constraintFun</code>, <code>comparisonFun</code> or <code>limitConstraints</code> is <code>NULL</code> –or– if the class of the vector passed is <code>logical</code>, <code>character</code>, <code>raw</code>, <code>factor</code>, or <code>complex</code>, the constraint check will not be carried out. This is equivalent to simply finding all combinations/permutations of \(v\) choose \(m\).</p></li>
 <li><p>The maximum number of combinations/permutations that can be generated at one time is \(2^{31} - 1\). Utilizing <code>lower</code> and <code>upper</code> makes it possible to generate additional combinations/permutations.</p></li>
 <li><p>Factor vectors are accepted. Class and level attributes are preserved except when <code>FUN</code> is used.</p></li>
-<li><p>Lexicographical ordering isn't guaranteed for permutations if <code>lower</code> isn't supplied and the output is constrained.</p></li>
-<li><p>If <code>lower</code> is supplied and the output is constrained, the combinations/permutations that will be tested will be in the lexicographical range <code>lower</code> to <code>upper</code> or up to the total possible number of results if <code>upper</code> is not given. See the second paragraph for the definition of <code>upper</code>.</p></li>
+<li><p>Constrained <code>permuteGeneral</code> uses ordinary candidate ranks
+        when <code>lower</code> is supplied. Without <code>lower</code>, supported
+        sum/equality cases use partition-then-permute order. See
+        <em>Ordering and bounds</em> in Details.</p></li>
+<li><p>For generic constrained searches with <code>lower</code> supplied,
+        candidates in the lexicographical range <code>lower</code> to <code>upper</code>
+        are tested. If <code>upper</code> is omitted, testing continues through all
+        remaining candidates. Supported partition calls through
+        <code>comboGeneral</code> instead use matching-result ranks; see the
+        definition of <code>upper</code>.</p></li>
 <li><p><code>FUN</code> will be ignored if the constraint check is satisfied.</p></li>
 <li><p>For special constraints (see the Details section), multithreading is only available when <code>lower</code> is explicitly supplied. In this case, the search space can be divided among threads beginning at the requested lower bound. When <code>lower</code> is not supplied, RcppAlgos must continue searching until the requested number of results satisfying the constraints is found. Because the locations of these results are not known in advance, this search is performed serially, even when multiple threads are requested.</p></li>
 </ul></div>
@@ -236,7 +301,32 @@ The output is in lexicographical order.
 
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="fu">comboGeneral</span><span class="op">(</span><span class="fl">4</span>, <span class="fl">3</span><span class="op">)</span></span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="co">## No lower: permute each matching partition before moving to the next.</span></span></span>
+<span class="r-in"><span><span class="fu">permuteGeneral</span><span class="op">(</span><span class="fl">6</span>, <span class="fl">3</span>, repetition <span class="op">=</span> <span class="cn">TRUE</span>, constraintFun <span class="op">=</span> <span class="st">"sum"</span>,</span></span>
+<span class="r-in"><span>               comparisonFun <span class="op">=</span> <span class="st">"=="</span>, limitConstraints <span class="op">=</span> <span class="fl">6</span>, upper <span class="op">=</span> <span class="fl">4</span><span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>      [,1] [,2] [,3]</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1,]    1    1    4</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [2,]    1    4    1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [3,]    4    1    1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [4,]    1    2    3</span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co">## Explicit lower: test ordinary permutation ranks 1 through 4.</span></span></span>
+<span class="r-in"><span><span class="co">## Only (1, 1, 4) matches; upper is not a request for four matches.</span></span></span>
+<span class="r-in"><span><span class="fu">permuteGeneral</span><span class="op">(</span><span class="fl">6</span>, <span class="fl">3</span>, repetition <span class="op">=</span> <span class="cn">TRUE</span>, constraintFun <span class="op">=</span> <span class="st">"sum"</span>,</span></span>
+<span class="r-in"><span>               comparisonFun <span class="op">=</span> <span class="st">"=="</span>, limitConstraints <span class="op">=</span> <span class="fl">6</span>,</span></span>
+<span class="r-in"><span>               lower <span class="op">=</span> <span class="fl">1</span>, upper <span class="op">=</span> <span class="fl">4</span><span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>      [,1] [,2] [,3]</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1,]    1    1    4</span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co">## Compositions: return the first four matching rows in lexicographic order.</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="partitionsGeneral.html">compositionsGeneral</a></span><span class="op">(</span><span class="fl">6</span>, <span class="fl">3</span>, repetition <span class="op">=</span> <span class="cn">TRUE</span>, target <span class="op">=</span> <span class="fl">6</span>, upper <span class="op">=</span> <span class="fl">4</span><span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>      [,1] [,2] [,3]</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1,]    1    1    4</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [2,]    1    2    3</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [3,]    1    3    2</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [4,]    1    4    1</span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="fu">comboGeneral</span><span class="op">(</span><span class="fl">4</span>, <span class="fl">3</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>      [,1] [,2] [,3]</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1,]    1    2    3</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [2,]    1    2    4</span>

@@ -17,7 +17,9 @@
 - GMP support allows for exploration of combinations/permutations of
   vectors with many elements.
 
-- The output is in lexicographical order.
+- Unconstrained output is in lexicographical order. For constrained
+  permutations, ordering depends on whether `lower` is supplied; see
+  *Ordering and bounds* in Details.
 
 ## Usage
 
@@ -116,13 +118,14 @@ permuteGeneral(v, m = NULL, repetition = FALSE,
 
 - lower:
 
-  The lower bound. Combinations/permutations are generated
-  lexicographically, thus utilizing this argument will determine which
-  specific combination/permutation to start generating from (*e.g.*
+  The lower bound, using one-based ranks. Without constraints, this is
+  the rank of the first combination/permutation to generate (*e.g.*
   `comboGeneral(5, 3, lower = 6)` is equivalent to
-  `comboGeneral(5, 3)[6:choose(5, 3), ]`). This argument along with
-  `upper` is very useful for generating combinations/permutations in
-  chunks allowing for easy parallelization.
+  `comboGeneral(5, 3)[6:choose(5, 3), ]`). For constrained
+  `permuteGeneral`, this always selects ordinary permutation ranks to
+  test, including when `lower = 1`. It does not select the rank of a
+  matching result. See *Ordering and bounds* in Details for the
+  distinction from supported partition calls through `comboGeneral`.
 
 - upper:
 
@@ -131,11 +134,21 @@ permuteGeneral(v, m = NULL, repetition = FALSE,
   (*e.g.* `comboGeneral(5, 3, upper = 5)` is equivalent to
   `comboGeneral(5, 3)[1:5, ]`)
 
-  If the output is constrained and `lower` isn't supplied, `upper`
-  serves as a cap for how many results will be returned that meet the
-  criteria (*e.g.* setting `upper = 100` alone will return the first 100
-  results that meet the criteria, while setting `lower = 1` and
-  `upper = 100` will test the first 100 results against the criteria).
+  For constrained `permuteGeneral` and generic constrained searches, if
+  `lower` isn't supplied, `upper` caps the number of matching results
+  returned. For example, `upper = 100` alone returns the first 100
+  matches, while `lower = 1` and `upper = 100` test the first 100
+  candidates.
+
+  When `comboGeneral` uses a supported partition algorithm with
+  `constraintFun = "sum"` and `comparisonFun = "=="`, including multiset
+  partitions, both bounds index matching partitions in lexicographical
+  order. These calls use the same bounds as
+  [`partitionsGeneral`](https://jwood000.github.io/RcppAlgos/reference/partitionsGeneral.md):
+  supplying `lower = 1` or omitting `lower` returns the same prefix when
+  matches exist. If there are no matches, omitting both bounds returns
+  an empty matrix; explicit positive bounds exceed the zero result count
+  and raise an error.
 
   In addition to the benefits listed for `lower`, this parameter is
   useful when the total number of combinations/permutations without
@@ -250,6 +263,40 @@ permuteGeneral(v, m = NULL, repetition = FALSE,
 
 ## Details
 
+### Ordering and bounds
+
+Without constraints, `permuteGeneral` generates ordinary permutations in
+lexicographical order, and `lower` and `upper` index that order.
+
+For supported partition cases with `constraintFun = "sum"` and
+`comparisonFun = "=="`, omitting `lower` uses *partition-then-permute
+order*: matching partitions are visited in lexicographical order, and
+all distinct permutations of each partition are emitted in
+lexicographical order before moving to the next partition. The combined
+output need not be globally lexicographical. This applies also when an
+equivalent composition algorithm exists. `upper` alone caps the number
+of matching rows and may stop within a permutation block. These
+partition cases use integer-valued, evenly spaced source vectors and an
+integer target, including supported mapped and multiset cases; see
+[`partitionsGeneral`](https://jwood000.github.io/RcppAlgos/reference/partitionsGeneral.md).
+
+For any constrained `permuteGeneral` call with `lower` supplied, `lower`
+and `upper` instead specify an inclusive range of ordinary permutation
+ranks, ignoring the constraint when assigning ranks. Only matching
+candidates in that range are returned, in lexicographical order. If
+`upper` is omitted, testing continues through the remaining candidates.
+Thus `lower = 1` is not redundant: `upper = 100` alone caps matches,
+whereas `lower = 1, upper = 100` tests 100 candidates and can return
+fewer than 100 rows, including none.
+
+[`compositionsGeneral`](https://jwood000.github.io/RcppAlgos/reference/partitionsGeneral.md)
+generates supported compositions in lexicographical order across all
+matching rows; its bounds index those matching rows. Supported partition
+calls through `comboGeneral` also use matching-result ranks. Other
+constrained calls without `lower` use their applicable constraint
+algorithms; their output positions should not be interpreted as
+composition ranks.
+
 For the general case, finding all combinations/permutations with
 constraints is optimized by organizing them in such a way that when
 `constraintFun` is applied, a *partially* monotonic sequence is
@@ -299,14 +346,15 @@ criteria. Throughout the documentation, this case is referred to as
 - Factor vectors are accepted. Class and level attributes are preserved
   except when `FUN` is used.
 
-- Lexicographical ordering isn't guaranteed for permutations if `lower`
-  isn't supplied and the output is constrained.
+- Constrained `permuteGeneral` uses ordinary candidate ranks when
+  `lower` is supplied. Without `lower`, supported sum/equality cases use
+  partition-then-permute order. See *Ordering and bounds* in Details.
 
-- If `lower` is supplied and the output is constrained, the
-  combinations/permutations that will be tested will be in the
-  lexicographical range `lower` to `upper` or up to the total possible
-  number of results if `upper` is not given. See the second paragraph
-  for the definition of `upper`.
+- For generic constrained searches with `lower` supplied, candidates in
+  the lexicographical range `lower` to `upper` are tested. If `upper` is
+  omitted, testing continues through all remaining candidates. Supported
+  partition calls through `comboGeneral` instead use matching-result
+  ranks; see the definition of `upper`.
 
 - `FUN` will be ignored if the constraint check is satisfied.
 
@@ -343,6 +391,31 @@ Joseph Wood
 ## Examples
 
 ``` r
+## No lower: permute each matching partition before moving to the next.
+permuteGeneral(6, 3, repetition = TRUE, constraintFun = "sum",
+               comparisonFun = "==", limitConstraints = 6, upper = 4)
+#>      [,1] [,2] [,3]
+#> [1,]    1    1    4
+#> [2,]    1    4    1
+#> [3,]    4    1    1
+#> [4,]    1    2    3
+
+## Explicit lower: test ordinary permutation ranks 1 through 4.
+## Only (1, 1, 4) matches; upper is not a request for four matches.
+permuteGeneral(6, 3, repetition = TRUE, constraintFun = "sum",
+               comparisonFun = "==", limitConstraints = 6,
+               lower = 1, upper = 4)
+#>      [,1] [,2] [,3]
+#> [1,]    1    1    4
+
+## Compositions: return the first four matching rows in lexicographic order.
+compositionsGeneral(6, 3, repetition = TRUE, target = 6, upper = 4)
+#>      [,1] [,2] [,3]
+#> [1,]    1    1    4
+#> [2,]    1    2    3
+#> [3,]    1    3    2
+#> [4,]    1    4    1
+
 comboGeneral(4, 3)
 #>      [,1] [,2] [,3]
 #> [1,]    1    2    3

@@ -1,6 +1,74 @@
 # Changelog
 
+## RcppAlgos 2.10.3
+
+### New Features
+
+- Added ranking, sampling, and iterator random access for supported
+  multiset partitions, including GMP support for large ranks.
+- Added parallel generation of supported multiset partitions. `lower`
+  and `upper` now index matching partitions in lexicographical order,
+  including equivalent sum/equality calls to
+  [`comboGeneral()`](https://jwood000.github.io/RcppAlgos/reference/combinatoricsGeneral.md).
+  Previously, supplying `lower` could select ordinary combination
+  candidates instead of matching partitions, so existing bounded calls
+  may return different results.
+
+### Bug Fixes
+
+- Fixed generic constrained searches with explicit `lower = 1` to use
+  candidate-range semantics consistently. Constrained
+  [`permuteGeneral()`](https://jwood000.github.io/RcppAlgos/reference/combinatoricsGeneral.md)
+  calls with `lower` supplied filter ordinary permutation ranks; `upper`
+  alone continues to cap matching results.
+- Fixed partial multiset permutations being treated as full permutations
+  when the requested width equals the number of distinct values rather
+  than the total multiplicity.
+- Fixed out-of-bounds writes when `upper` stops constrained
+  distinct-permutation generation within a partition’s permutation
+  block.
+- Unsupported composition generation and iteration now raise an error
+  instead of falling back to algorithms that do not preserve composition
+  semantics.
+- Fixed handling of empty constrained results, preserving matrix type
+  and the additional column requested by `keepResults`. Explicit
+  positive bounds for empty supported partition and composition result
+  sets now raise an error; constrained permutations retain
+  candidate-bound validation.
+- Fixed validation of zero-valued `bigz` ranks, bounds, and seeds where
+  positive values are required.
+- Fixed classification of certain multiset cases where the repeated
+  minimum value cannot occur in any result.
+
+### Improvements
+
+- Documented that supported sum/equality permutation calls without
+  `lower` generate matching partitions followed by each partition’s
+  permutations. Supplying `lower` selects ordinary permutation
+  candidates instead. Supported partitions and compositions use
+  lexicographical matching-result order.
+- Clarified that zeros in permutations are actual elements, unlike
+  padding in non-weak compositions.
+
+### Performance
+
+- Reduced allocation overhead in multiset partition and composition
+  counting by reusing working storage.
+- Known-empty constrained permutation generation and iteration now avoid
+  unnecessary candidate searches, including GMP-sized search spaces.
+
+### Other
+
+- Added `testthat` to `LinkingTo`, making it a dependency when building
+  the package from source.
+- Installed C++ partition/composition ranking and unranking signatures
+  now include a `Reps` argument. Direct C++ callers must update their
+  calls and function-pointer types and rebuild. The R function
+  signatures are unchanged.
+
 ## RcppAlgos 2.10.2
+
+CRAN release: 2026-10-17
 
 ### New Features
 
