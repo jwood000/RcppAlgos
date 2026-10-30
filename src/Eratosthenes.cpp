@@ -65,9 +65,11 @@ namespace PrimeSieve {
 
         if (maxNum <= smallPrimeBase.back()) {
             int ind = 0;
-            for (; smallPrimeBase[ind] < minNum; ++ind) {}
+            const int smPriBaseSize = smallPrimeBase.size();
 
-            for (; smallPrimeBase[ind] <= maxNum; ++ind) {
+            for (; ind < smPriBaseSize && smallPrimeBase[ind] < minNum; ++ind) {}
+
+            for (; ind < smPriBaseSize && smallPrimeBase[ind] <= maxNum; ++ind) {
                 primes.push_back(smallPrimeBase[ind]);
             }
         } else {
