@@ -718,7 +718,7 @@ namespace PrimeSieve {
         std::vector<int> svPriMain;
 
         const std::int_fast64_t medCut = sqrtMedCut * sqrtMedCut;
-        std::vector<char> check30030(NUM30030, 1);
+        std::vector<char> check30030(maxNum > medCut ? NUM30030 : 0, 1);
         std::int_fast64_t segUnitSize = NUM30030;
 
         // bool bAddZero, bool bAddExtraPrime, bool bAddTwo
