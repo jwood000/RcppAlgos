@@ -56,6 +56,19 @@ test_that("primeSieve agrees with trial division across segment boundaries", {
                      primeSieveTrialPrimes(lower, upper))
 })
 
+test_that("primeSieve carries offsets across the small-sieve marking threshold", {
+    # PrimeSieveSmall switches marking strategies at segSize^2 / 4.
+    # Span both branches with full segments and partial first/last segments.
+    segmentSize <- 32340
+    threshold <- segmentSize^2 / 4
+    lower <- threshold - 2 * segmentSize - 17
+    upper <- threshold + 2 * segmentSize + 23
+
+    values <- seq.int(lower, upper)
+    expected <- as.integer(values[isPrimeRcpp(values)])
+    expect_identical(primeSieve(lower, upper, nThreads = 1), expected)
+})
+
 test_that("primeSieve excludes prime squares at interval boundaries", {
     # Exercise the small and medium kernels; these are all prime bases.
     for (p in c(181, 257, 65537)) {

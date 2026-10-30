@@ -185,27 +185,23 @@ namespace PrimeSieve {
 
                 if (lowerBnd + segSize < (segSize * segSize / 4)) {
                     for (std::size_t i = strt2310; i < nextStrt.size(); ++i) {
-                        for (int k = sievePrimes[i] * 2, j = nextStrt[i];
-                             j < segSize; j += k) {
+                        int j = nextStrt[i];
 
+                        for (int k = sievePrimes[i] * 2; j < segSize; j += k) {
                             sieve[j] = 0;
                         }
 
-                        nextStrt[i] = (sievePrimes[i] * 2) - (
-                            (segSize - nextStrt[i]) % (sievePrimes[i] * 2)
-                        );
+                        nextStrt[i] = j - segSize;
                     }
                 } else {
                     for (int i = strt2310; i < halfSegSize2310Idx; ++i) {
-                        for (int k = sievePrimes[i] * 2, j = nextStrt[i];
-                             j < segSize; j += k) {
+                        int j = nextStrt[i];
 
+                        for (int k = sievePrimes[i] * 2; j < segSize; j += k) {
                             sieve[j] = 0;
                         }
 
-                        nextStrt[i] = (sievePrimes[i] * 2) - (
-                            (segSize - nextStrt[i]) % (sievePrimes[i] * 2)
-                        );
+                        nextStrt[i] = j - segSize;
                     }
 
                     for (std::size_t i = halfSegSize2310Idx; i < nextStrt.size(); ++i) {
