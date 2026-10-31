@@ -669,19 +669,22 @@ namespace PrimeSieve {
             if (bAddExtraPrime)
                 sievePrimes.push_back(smallPrimeBase[ind]);
         } else {
-            int sqrtSqrtBound = static_cast<int>(std::sqrt(static_cast<double>(sqrtBound)));
-            std::vector<int> sqrtSievePrimes;
-            sqrtSmallPrimes(sqrtSqrtBound, sqrtSievePrimes);
-
-            // The number, 225, comes from the observation that the largest prime
+            // The number, 225, comes from the fact that the largest prime
             // gap less than 100 million is 219 @ 47,326,693. This is important
             // because we need to guarantee that we obtain the smallest prime
             // greater than sqrt(n). We know that the largest number that this
             // algo can except is 2^53 - 1, which gives a sqrt of 94,906,266
 
-            int myLower = 3;
             int myUpper = bAddExtraPrime ? sqrtBound + 225 : sqrtBound;
-            const std::size_t sqrtReserve = EstimatePiPrime(1.0, static_cast<double>(myUpper));
+            int sqrtSqrtBound =
+                static_cast<int>(std::sqrt(static_cast<double>(myUpper)));
+            std::vector<int> sqrtSievePrimes;
+            sqrtSmallPrimes(sqrtSqrtBound, sqrtSievePrimes);
+
+            int myLower = 3;
+            const std::size_t sqrtReserve = EstimatePiPrime(
+                1.0, static_cast<double>(myUpper)
+            );
             sievePrimes.reserve(sqrtReserve);
 
             if (bAddZero) sievePrimes.push_back(0);
