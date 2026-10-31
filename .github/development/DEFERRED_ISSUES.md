@@ -51,3 +51,28 @@ Review the table loop's termination and add coverage for the exact final
 table entry. The existing `primeSieve(31625, 31630)` test takes a different
 path and does not cover this boundary. No implementation fix or GitHub
 issue was created during the performance investigation.
+
+## Prime sieve bucket scheduling can exceed the final bucket
+
+Status: Confirmed defect; fix pending discussion
+Discovered during: Prime sieve optimization investigation
+
+`PrimeSieveBig()` in `src/Eratosthenes.cpp` sets `maxIndex = myRange + 1`,
+although the final requested offset is `myRange - 1`. An admitted strike
+past the upper bound can therefore index beyond `myBuckets`.
+
+A native reproduction calls `PrimeSieve::PrimeSieveMain<double>` with bounds
+`1037517761278999, 1037517761279999`, initially empty output vectors,
+`Parallel = false`, and `nThreads = 1, maxThreads = 10, maxCores = 1`.
+The segment size is 19,219,200 and only one bucket is allocated.
+The sieving prime 10,000,019 schedules its multiple
+`10000019 * 103751579 = 1037517761280001` at offset `segSize + 1`,
+leading to `myBuckets[1].push_back(...)`.
+
+Apple Clang 17 with AddressSanitizer and UndefinedBehaviorSanitizer confirmed
+a `container-overflow` in the unchanged native implementation. This was a
+native reproduction; public R dispatch depends on detected core/thread settings.
+
+Review the inclusive scheduling limit and add regression coverage around
+aligned final-segment boundaries. Keep this correctness fix separate from
+performance experiments. No implementation fix or GitHub issue was created.
