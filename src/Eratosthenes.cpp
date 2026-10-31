@@ -76,6 +76,11 @@ namespace PrimeSieve {
             constexpr int segSize = Almost2310L1Cache;
             const int flrMaxNum   = segSize * (maxNum / segSize);
 
+            // Reused per wheel: only accepted candidates advance writeTo.
+            // Rejected candidates are overwritten by the next write; append
+            // only [compact, writeTo). One slot per candidate bounds all writes.
+            T compact[SZ_WHEEL2310];
+
             int lowerBnd = segSize * (minNum / segSize);
             std::vector<char> sieve(segSize, 1);
 
@@ -149,16 +154,16 @@ namespace PrimeSieve {
                     int sieveInd = myNum - lowerBnd;
 
                     for (int q = strtChunk; q < N_WHEELS2310_PER_SEG; ++q) {
-                        for (int w = 0; w < SZ_WHEEL2310; sieveInd += ARR_WHEEL2310[w + 7], w += 8) {
-                            if (sieve[sieveInd]) primes.push_back(sieveInd + lowerBnd);
-                            if (sieve[sieveInd += ARR_WHEEL2310[w]]) primes.push_back(sieveInd + lowerBnd);
-                            if (sieve[sieveInd += ARR_WHEEL2310[w + 1]]) primes.push_back(sieveInd + lowerBnd);
-                            if (sieve[sieveInd += ARR_WHEEL2310[w + 2]]) primes.push_back(sieveInd + lowerBnd);
-                            if (sieve[sieveInd += ARR_WHEEL2310[w + 3]]) primes.push_back(sieveInd + lowerBnd);
-                            if (sieve[sieveInd += ARR_WHEEL2310[w + 4]]) primes.push_back(sieveInd + lowerBnd);
-                            if (sieve[sieveInd += ARR_WHEEL2310[w + 5]]) primes.push_back(sieveInd + lowerBnd);
-                            if (sieve[sieveInd += ARR_WHEEL2310[w + 6]]) primes.push_back(sieveInd + lowerBnd);
+
+                        T* writeTo = compact;
+
+                        for (int w = 0; w < SZ_WHEEL2310; ++w) {
+                            *writeTo = sieveInd + lowerBnd;
+                            writeTo += (sieve[sieveInd] != 0);
+                            sieveInd += ARR_WHEEL2310[w];
                         }
+
+                        primes.insert(primes.end(), compact, writeTo);
                     }
 
                     myNum = sieveInd + lowerBnd;
@@ -215,16 +220,15 @@ namespace PrimeSieve {
                 }
 
                 for (int q = 0, idx = myNum - lowerBnd; q < N_WHEELS2310_PER_SEG; ++q) {
-                    for (int w = 0; w < SZ_WHEEL2310; idx += ARR_WHEEL2310[w + 7], w += 8) {
-                        if (sieve[idx]) primes.push_back(idx + lowerBnd);
-                        if (sieve[idx += ARR_WHEEL2310[w]]) primes.push_back(idx + lowerBnd);
-                        if (sieve[idx += ARR_WHEEL2310[w + 1]]) primes.push_back(idx + lowerBnd);
-                        if (sieve[idx += ARR_WHEEL2310[w + 2]]) primes.push_back(idx + lowerBnd);
-                        if (sieve[idx += ARR_WHEEL2310[w + 3]]) primes.push_back(idx + lowerBnd);
-                        if (sieve[idx += ARR_WHEEL2310[w + 4]]) primes.push_back(idx + lowerBnd);
-                        if (sieve[idx += ARR_WHEEL2310[w + 5]]) primes.push_back(idx + lowerBnd);
-                        if (sieve[idx += ARR_WHEEL2310[w + 6]]) primes.push_back(idx + lowerBnd);
+                    T* writeTo = compact;
+
+                    for (int w = 0; w < SZ_WHEEL2310; ++w) {
+                        *writeTo = idx + lowerBnd;
+                        writeTo += (sieve[idx] != 0);
+                        idx += ARR_WHEEL2310[w];
                     }
+
+                    primes.insert(primes.end(), compact, writeTo);
                 }
 
                 myNum += segSize;
@@ -247,7 +251,8 @@ namespace PrimeSieve {
                 }
 
                 for (int q = 0; q < N_WHEELS2310_PER_SEG && myNum <= maxNum; ++q) {
-                    for (int w = 0; w < SZ_WHEEL2310 && myNum <= maxNum; myNum += ARR_WHEEL2310[w], ++w) {
+                    for (int w = 0; w < SZ_WHEEL2310 && myNum <= maxNum;
+                         myNum += ARR_WHEEL2310[w], ++w) {
                         if (sieve[myNum - lowerBnd]) {
                             primes.push_back(myNum);
                         }
@@ -268,6 +273,11 @@ namespace PrimeSieve {
             1.0, std::ceil(std::sqrt(static_cast<double>(maxNum)) / sz30030))
         );
         const std::int_fast64_t segSize = nWheels * sz30030;
+
+        // Reused per wheel: only accepted candidates advance writeTo.
+        // Rejected candidates are overwritten by the next write; append
+        // only [compact, writeTo). One slot per candidate bounds all writes.
+        T compact[SZ_WHEEL30030];
 
         // We have to add primes.size() because we could have started in PrimeSieveSmall
         primes.reserve(
@@ -324,8 +334,9 @@ namespace PrimeSieve {
 
             for (std::size_t w = 0u; w < szWheel30030 && myNum <= maxNum;
                  myNum += ARR_WHEEL30030[w], ++w) {
-
-                if (myNum >= minNum && sieve[myNum - lowerBnd]) primes.push_back(myNum);
+                if (myNum >= minNum && sieve[myNum - lowerBnd]) {
+                    primes.push_back(myNum);
+                }
             }
 
             ++strtChunk;
@@ -335,10 +346,16 @@ namespace PrimeSieve {
             std::size_t sieveInd = myNum - lowerBnd;
 
             for (std::size_t q = strtChunk; q < nWheels; ++q) {
+
+                T* writeTo = compact;
+
                 for (auto w: ARR_WHEEL30030) {
-                    if (sieve[sieveInd]) primes.push_back(sieveInd + lowerBnd);
+                    *writeTo = sieveInd + lowerBnd;
+                    writeTo += (sieve[sieveInd] != 0);
                     sieveInd += w;
                 }
+
+                primes.insert(primes.end(), compact, writeTo);
             }
 
             myNum = sieveInd + lowerBnd;
@@ -372,10 +389,15 @@ namespace PrimeSieve {
             }
 
             for (std::size_t q = 0u, sieveInd = myNum - lowerBnd; q < nWheels; ++q) {
+                T* writeTo = compact;
+
                 for (auto w: ARR_WHEEL30030) {
-                    if (sieve[sieveInd]) primes.push_back(sieveInd + lowerBnd);
+                    *writeTo = sieveInd + lowerBnd;
+                    writeTo += (sieve[sieveInd] != 0);
                     sieveInd += w;
                 }
+
+                primes.insert(primes.end(), compact, writeTo);
             }
 
             myNum += segSize;
@@ -417,6 +439,11 @@ namespace PrimeSieve {
         const int segSize = nBigSegs * sz30030;
         const std::size_t numWheelSegs = nBigSegs;
         const std::size_t szWheel30030 = SZ_WHEEL30030;
+
+        // Reused per wheel: only accepted candidates advance writeTo.
+        // Rejected candidates are overwritten by the next write; append
+        // only [compact, writeTo). One slot per candidate bounds all writes.
+        T compact[SZ_WHEEL30030];
 
         // We have to add primes.size() because we could have started in PrimeSieveMedium
         primes.reserve(
@@ -523,8 +550,11 @@ namespace PrimeSieve {
                 strtChunk = (minNum - myNum) / NUM30030;
                 myNum += strtChunk * NUM30030;
 
-                for (std::size_t w = 0u; w < szWheel30030 && myNum <= maxNum; myNum += ARR_WHEEL30030[w], ++w) {
-                    if (myNum >= minNum && sieve[myNum - lowerBnd]) primes.push_back(myNum);
+                for (std::size_t w = 0u; w < szWheel30030 && myNum <= maxNum;
+                     myNum += ARR_WHEEL30030[w], ++w) {
+                    if (myNum >= minNum && sieve[myNum - lowerBnd]) {
+                        primes.push_back(myNum);
+                    }
                 }
 
                 ++strtChunk;
@@ -534,10 +564,15 @@ namespace PrimeSieve {
                 std::int_fast64_t sieveInd = myNum - lowerBnd;
 
                 for (std::size_t q = strtChunk; q < numWheelSegs; ++q) {
+                    T* writeTo = compact;
+
                     for (auto w: ARR_WHEEL30030) {
-                        if (sieve[sieveInd]) primes.push_back(sieveInd + lowerBnd);
+                        *writeTo = sieveInd + lowerBnd;
+                        writeTo += (sieve[sieveInd] != 0);
                         sieveInd += w;
                     }
+
+                    primes.insert(primes.end(), compact, writeTo);
                 }
 
                 myNum = sieveInd + lowerBnd;
@@ -573,10 +608,16 @@ namespace PrimeSieve {
             std::int_fast64_t sieveInd = myNum - lowerBnd;
 
             for (std::size_t q = 0u; q < numWheelSegs; ++q) {
+
+                T* writeTo = compact;
+
                 for (auto w: ARR_WHEEL30030) {
-                    if (sieve[sieveInd]) primes.push_back(sieveInd + lowerBnd);
+                    *writeTo = sieveInd + lowerBnd;
+                    writeTo += (sieve[sieveInd] != 0);
                     sieveInd += w;
                 }
+
+                primes.insert(primes.end(), compact, writeTo);
             }
 
             myNum = sieveInd + lowerBnd;
