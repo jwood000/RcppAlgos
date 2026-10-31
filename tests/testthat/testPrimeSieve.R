@@ -127,6 +127,36 @@ test_that("primeSieve preserves results across the medium/large cutoff", {
                      expected[expected > cutoff])
 })
 
+test_that("primeSieve bounds bucket scheduling at the final segment", {
+    # Fix nThreads = 1, maxCores = 1, maxThreads = 10 so PrimeSieveBig
+    # uses 640 wheels of 30030 integers, regardless of the host core count.
+    nativeSieve <- function(lower, upper) {
+        .Call(RcppAlgos:::`_RcppAlgos_PrimeSieveCpp`,
+              lower, upper, 1L, 1L, 10L)
+    }
+    segmentSize <- 640 * 30030
+    composite <- 10000019 * 103751579
+    boundary <- composite - 1
+    expect_equal(boundary %% segmentSize, 0)
+
+    # The first factor belongs to the bucketed primes. Its product lies at
+    # offset segSize + 1 from the preceding segment's start. Previously an
+    # upper bound of boundary - 1 allocated one bucket but scheduled this
+    # product in bucket 1 (past the end). Sanitizers detect the invalid access.
+    lower <- boundary - 1001
+    values <- seq.int(lower, boundary + 100)
+    expected <- values[isPrimeRcpp(values)]
+    expect_false(isPrimeRcpp(composite))
+
+    # Include an exact composite endpoint to ensure the final valid strike
+    # is retained, and a prime endpoint to check inclusive result extraction.
+    endpoints <- c(boundary + c(-2, -1, 0, 1, 2), tail(expected, 1L))
+    for (upper in endpoints) {
+        expect_identical(nativeSieve(lower, upper),
+                         expected[expected <= upper])
+    }
+})
+
 test_that("primeSieve handles uneven parallel workloads", {
     maxThreads <- get("pkgEnv", asNamespace("RcppAlgos"))$maxThreads
     skip_if(maxThreads < 2L, "At least two supported threads are required")

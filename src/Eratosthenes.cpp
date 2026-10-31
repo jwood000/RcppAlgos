@@ -454,8 +454,7 @@ namespace PrimeSieve {
         std::deque<std::vector<int>> myBuckets(numCacheSegs,
                                                std::vector<int>());
 
-        for (int i = 0, idx = 0, maxIndex = myRange + 1,
-             size = svPriTwo.size(); i < size; ++i) {
+        for (int i = 0, idx = 0, size = svPriTwo.size(); i < size; ++i) {
 
             int remTest = (lowerBnd % svPriTwo[i]);
 
@@ -469,13 +468,13 @@ namespace PrimeSieve {
             remTest = (idx % sz30030) - 1;
             int timesTwo = (2 * svPriTwo[i]);
             int remPrime = (timesTwo % sz30030);
-            bool bKeepGoing = (idx <= maxIndex);
+            bool bKeepGoing = (idx < myRange);
 
             // Populate rest of the buckets
             while (bKeepGoing) {
                 while (check30030[remTest] && bKeepGoing) {
                     idx += timesTwo;
-                    bKeepGoing = (idx <= maxIndex);
+                    bKeepGoing = (idx < myRange);
                     remTest += remPrime;
                     if (remTest >= sz30030) {remTest -= sz30030;}
                 }
@@ -489,7 +488,7 @@ namespace PrimeSieve {
                 }
 
                 idx = tempInd + timesTwo;
-                bKeepGoing = (idx <= maxIndex);
+                bKeepGoing = (idx < myRange);
                 remTest += remPrime;
                 if (remTest >= sz30030) remTest -= sz30030;
             }
