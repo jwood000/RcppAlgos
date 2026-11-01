@@ -23,6 +23,10 @@ git <- function(arguments) run("git", c("-C", root, arguments))
 revision <- git(c("rev-parse", "--verify", if (length(args) == 2L) {
     paste0(args[2L], "^{commit}")
 } else "HEAD"))
+study <- file.path(toolkit, "studies", "2026-11-01")
+pinned <- length(args) == 2L &&
+    revision == readLines(file.path(study, "base-revision.txt"), warn = FALSE)
+assets <- if (pinned) study else toolkit
 dir.create(output)
 package <- file.path(output, "package")
 library <- file.path(output, "library")
@@ -30,7 +34,8 @@ dir.create(package); dir.create(library)
 metadata <- list(source_revision = revision,
     mode = if (length(args) == 2L) "Git revision" else "working tree",
     toolkit = toolkit, package = package, library = library, status = "preparing",
-    patch_md5 = unname(tools::md5sum(file.path(toolkit, "instrumentation.patch"))))
+    instrumentation_bundle = if (pinned) "studies/2026-11-01" else "current",
+    patch_md5 = unname(tools::md5sum(file.path(assets, "instrumentation.patch"))))
 saveRDS(metadata, file.path(output, "build.rds"))
 
 if (length(args) == 2L) {
@@ -60,7 +65,7 @@ for (name in files) {
 write.csv(data.frame(path = files, md5 = unname(tools::md5sum(file.path(package, files)))),
           file.path(output, "base-files.csv"), row.names = FALSE)
 
-patch <- file.path(toolkit, "instrumentation.patch")
+patch <- file.path(assets, "instrumentation.patch")
 # Always check first; no fuzzy/partial application, no changes to the real checkout.
 invisible(run("git", c("-C", package, "apply", "--check", patch)))
 invisible(run("git", c("-C", package, "apply", patch)))
@@ -70,14 +75,16 @@ for (name in helpers) {
     target <- file.path(package, name)
     if (file.exists(target)) stop("Inspector helper already exists in source: ", name)
     dir.create(dirname(target), recursive = TRUE, showWarnings = FALSE)
-    if (!file.copy(file.path(toolkit, name), target)) stop("Could not copy ", name)
+    if (!file.copy(file.path(assets, name), target)) stop("Could not copy ", name)
 }
 
-expected <- read.csv(file.path(toolkit, "instrumented-files.csv"), stringsAsFactors = FALSE)
-actual <- data.frame(path = expected$path,
-    md5 = unname(tools::md5sum(file.path(package, expected$path))))
+instrumented <- c("inst/include/NumbersUtils/Eratosthenes.h", "src/Eratosthenes.cpp",
+                  "src/PrimeSieve.cpp", "src/cpp11.cpp", helpers)
+actual <- data.frame(path = instrumented,
+    md5 = unname(tools::md5sum(file.path(package, instrumented))))
 write.csv(actual, file.path(output, "instrumented-files.csv"), row.names = FALSE)
-if (length(args) == 2L && revision == readLines(file.path(toolkit, "base-revision.txt"))) {
+if (pinned) {
+    expected <- read.csv(file.path(assets, "instrumented-files.csv"), stringsAsFactors = FALSE)
     if (!identical(actual, expected)) stop("Pinned reconstruction did not match the preserved source hashes")
 }
 

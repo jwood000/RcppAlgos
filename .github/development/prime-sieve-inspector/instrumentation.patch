@@ -552,17 +552,15 @@ index b9ca575..083b343 100644
  
          if (maxNum > medCut) {
              // Similar to sqrtMedCut above (see comment). This formulation
-@@ -804,6 +949,10 @@ namespace PrimeSieve {
+@@ -813,3 +958,8 @@ namespace PrimeSieve {
              // we reduce the segment size as nThreads increases.
              nBigSegs = ((maxThreads / nThreads) * 2 * 1024 * 1024) /  L1_CACHE_SIZE;
- 
++
 +            if (inspector && inspector->bigSegmentSpan) {
 +                nBigSegs = inspector->bigSegmentSpan / NUM30030;
 +            }
 +
-             std::size_t ind = 0u;
              const int limitOne = static_cast<int>(nBigSegs * segUnitSize);
-             const std::size_t svMainSize = svPriMain.size();
 @@ -851,6 +1000,21 @@ namespace PrimeSieve {
              }
          }

@@ -48,7 +48,8 @@ were instrumented appropriately—review phase boundaries when the sieve changes
 
 ## Reconstruct the recorded study
 
-`base-revision.txt` records `0364f49bc64476829c6feae63ec55148521e5c79`.
+`studies/2026-11-01/` preserves the original patch, helpers, source hashes, and
+`base-revision.txt` recording `0364f49bc64476829c6feae63ec55148521e5c79`.
 To reconstruct its exact instrumented sources, without switching branches:
 
 ```sh
@@ -61,6 +62,12 @@ recorded hashes before installation. The archived `base/` and `base.tar` also
 remain in the output directory. The revision must exist locally; no fetch or
 checkout occurs. Exact source reconstruction does not guarantee identical
 binaries or timings across toolchains or hosts.
+
+An explicit revision resolving to that commit selects the archived study bundle.
+Working-tree builds and other revisions use the current patch and helpers at
+the toolkit root; older revisions may conflict with that patch. `build.rds`
+records which bundle was used. The current patch follows production edits
+independently of the archived study, including edits not yet committed.
 
 ## Use the isolated build
 
@@ -99,10 +106,11 @@ in that disposable copy when interfaces change; the patch currently preserves
 the previously generated registration, not hand-written registration code.
 Review the generated R wrapper against the project's hand-written wrappers.
 
-The base revision and expected hashes describe a specific reconstruction. Update
-them together only when deliberately replacing that baseline; preserve a dated
-study's original reconstruction materials if doing so. Historical measurements
-and their hashes should not be rewritten to imply they came from a newer build.
+Keep the dated study bundle unchanged when updating the current patch or helpers.
+Its base revision and expected hashes describe the original reconstruction;
+current builds record their own source hashes in the output directory.
+Historical measurements and their hashes should not be rewritten to imply they
+came from a newer build.
 
 The November 1 report and results remain in
 [`../prime-sieve-benchmarks/`](../prime-sieve-benchmarks/REPORT.md).
@@ -124,3 +132,10 @@ registration, and passed the prime-sieve tests. Existing-build protection and
 the benchmark driver's library/source pairing checks were also exercised.
 Validation used the local macOS/R toolchain; a full `R CMD check` and other
 platforms were not run for this relocation.
+
+After the base-prime range-copy changes, the refreshed current-source build and
+the archived-study build both passed the two focused test files again. The
+archived bundle remained byte-for-byte identical to its original materials,
+and its reconstruction matched all eight source hashes. Reverse-applying the
+current patch restored all four production files exactly. This refresh did not
+rerun performance benchmarks or a full `R CMD check`.

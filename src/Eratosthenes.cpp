@@ -687,15 +687,24 @@ namespace PrimeSieve {
                        bool bAddTwo, std::vector<T> &sievePrimes) {
 
         if (sqrtBound < smallPrimeBase.back()) {
-            if (bAddZero) sievePrimes.push_back(0);
-            std::size_t ind = (bAddTwo) ? 0u : 1u;
+            const auto first = smallPrimeBase.cbegin() + (bAddTwo ? 0 : 1);
+            auto last = std::upper_bound(
+                first, smallPrimeBase.cend(), sqrtBound
+            );
 
-            for (; smallPrimeBase[ind] <= sqrtBound; ++ind) {
-                sievePrimes.push_back(smallPrimeBase[ind]);
+            if (bAddExtraPrime) {
+                ++last;
             }
 
-            if (bAddExtraPrime)
-                sievePrimes.push_back(smallPrimeBase[ind]);
+            sievePrimes.reserve(
+                sievePrimes.size() + (last - first) + (bAddZero ? 1u : 0u)
+            );
+
+            if (bAddZero) {
+                sievePrimes.push_back(0);
+            }
+
+            sievePrimes.insert(sievePrimes.end(), first, last);
         } else {
             // The number, 225, comes from the fact that the largest prime
             // gap less than 100 million is 219 @ 47,326,693. This is important
@@ -803,24 +812,19 @@ namespace PrimeSieve {
             // of the data structures necessary to produce primes, thus
             // we reduce the segment size as nThreads increases.
             nBigSegs = ((maxThreads / nThreads) * 2 * 1024 * 1024) /  L1_CACHE_SIZE;
-
-            std::size_t ind = 0u;
             const int limitOne = static_cast<int>(nBigSegs * segUnitSize);
-            const std::size_t svMainSize = svPriMain.size();
 
-            // Get the primes that are guaranteed to mark an index in every segment interval
-            for (; ind < svMainSize && (2 * svPriMain[ind]) < limitOne; ++ind) {
-                svPriOne.push_back(svPriMain[ind]);
-            }
+            // limitOne is even: 2 * prime < limitOne means prime < limitOne / 2.
+            const auto split = std::lower_bound(
+                svPriMain.cbegin(), svPriMain.cend(), limitOne / 2
+            );
 
-            // Get the rest
-            for (; ind < svMainSize; ++ind) {
-                svPriTwo.push_back(svPriMain[ind]);
-            }
+            svPriOne.assign(svPriMain.cbegin(), split);
+            svPriTwo.assign(split, svPriMain.cend());
 
-            for (std::size_t i = 0u, ind = 0u; i < SZ_WHEEL30030;
-                 ind += ARR_WHEEL30030[i], ++i) {
-                check30030[ind] = 0;
+            for (std::size_t i = 0u, idx = 0u; i < SZ_WHEEL30030;
+                 idx += ARR_WHEEL30030[i], ++i) {
+                check30030[idx] = 0;
             }
 
         } else if (maxNum > smallCut) {
