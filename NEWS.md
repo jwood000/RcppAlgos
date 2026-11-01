@@ -14,6 +14,9 @@
 * Fixed handling of empty constrained results, preserving matrix type and the additional column requested by `keepResults`. Explicit positive bounds for empty supported partition and composition result sets now raise an error; constrained permutations retain candidate-bound validation.
 * Fixed validation of zero-valued `bigz` ranks, bounds, and seeds where positive values are required.
 * Fixed classification of certain multiset cases where the repeated minimum value cannot occur in any result.
+* Fixed an out-of-bounds read in `primeSieve()` when the upper bound equals the final precomputed prime, 31627 ([Issue #82](<https://github.com/jwood000/RcppAlgos/issues/82>)).
+* Fixed out-of-bounds bucket scheduling in `primeSieve()` near segment boundaries for large intervals ([Issue #83](<https://github.com/jwood000/RcppAlgos/issues/83>)).
+* Fixed insufficient base-prime preparation for extended sieve bounds, which could cause `primeSieve()` to hang or access memory out of bounds for intervals such as `primeSieve(1.5e9, 1.5e9 + 1e5)` ([Issue #84](<https://github.com/jwood000/RcppAlgos/issues/84>)).
 
 ## Improvements
 
@@ -24,11 +27,14 @@
 
 * Reduced allocation overhead in multiset partition and composition counting by reusing working storage.
 * Known-empty constrained permutation generation and iteration now avoid unnecessary candidate searches, including GMP-sized search spaces.
+* Improved `primeSieve()` extraction with reusable buffers and avoided marking outside the requested interval in the small, medium, and large sieve implementations.
+* Reduced sieve setup allocation and copying overhead, and simplified segment-offset updates by reusing the marking loop's final offset.
 
 ## Other
 
 * Added `testthat` to `LinkingTo`, making it a dependency when building the package from source.
 * Installed C++ partition/composition ranking and unranking signatures now include a `Reps` argument. Direct C++ callers must update their calls and function-pointer types and rebuild. The R function signatures are unchanged.
+* Added a developer-only prime sieve inspector and reproducible benchmark materials under `.github/development/`, excluded from package distributions.
 
 # RcppAlgos 2.10.2
 
