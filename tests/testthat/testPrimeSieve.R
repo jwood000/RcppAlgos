@@ -69,6 +69,34 @@ test_that("primeSieve carries offsets across the small-sieve marking threshold",
     expect_identical(primeSieve(lower, upper, nThreads = 1), expected)
 })
 
+test_that("primeSieve preserves results when cropping small-sieve segments", {
+    segmentSize <- 32340
+    # Prime factors with only the smaller factor within the sieving bound.
+    # 101 marks densely; 20011 has a stride larger than one Small segment.
+    for (composite in c(101 * 1009, 20011 * 40009)) {
+        boundary <- floor(composite / segmentSize) * segmentSize
+        intervals <- list(
+            odd_start = c(composite, composite + 100),
+            even_start = c(composite - 1, composite + 100),
+            composite_at_end = c(composite - 100, composite),
+            aligned_start = c(boundary, boundary + 100),
+            full_segment_carry = c(composite, composite + 4 * segmentSize + 101)
+        )
+
+        # Short interior ranges crop both ends and must still strike the
+        # composite at either endpoint. The longer range includes full
+        # segments, including one skipped by the sparse prime's carry.
+        for (caseName in names(intervals)) {
+            bounds <- intervals[[caseName]]
+            values <- seq.int(bounds[1], bounds[2])
+            expected <- as.integer(values[isPrimeRcpp(values)])
+            expect_identical(primeSieve(bounds[1], bounds[2], nThreads = 1),
+                             expected,
+                             info = paste("composite =", composite, caseName))
+        }
+    }
+})
+
 test_that("primeSieve excludes prime squares at interval boundaries", {
     # Exercise the small and medium kernels; these are all prime bases.
     for (p in c(181, 257, 65537)) {
@@ -105,6 +133,68 @@ test_that("primeSieve preserves values and types at the integer limit", {
         reference <- expected[expected <= upper]
         if (upper <= limit) reference <- as.integer(reference)
         expect_identical(primeSieve(limit - 50, upper), reference)
+    }
+})
+
+test_that("primeSieve preserves square starts and carry when cropping medium segments", {
+    # Fix dispatch inputs so these intervals use PrimeSieveMedium on any host.
+    nativeSieve <- function(lower, upper) {
+        .Call(RcppAlgos:::`_RcppAlgos_PrimeSieveCpp`,
+              lower, upper, 1L, 1L, 1L)
+    }
+
+    # Prime squares in the medium range, with integer and double outputs.
+    for (p in c(32771, 1000003)) {
+        square <- p * p
+        segmentSize <- ceiling(sqrt(square + 101) / 30030) * 30030
+        boundary <- floor(square / segmentSize) * segmentSize
+        intervals <- list(
+            square_at_end = c(square - 100, square),
+            square_at_start = c(square, square + 100),
+            after_square = c(square + 1, square + 101),
+            aligned_start = c(boundary, boundary + 100),
+            crossing_boundary = c(boundary - 50, boundary + 50)
+        )
+
+        # Exercise minNum below, equal to, and above p^2. The square must
+        # still be marked at either inclusive endpoint. The short ranges
+        # also cover a single cropped segment and carry into a second one.
+        for (caseName in names(intervals)) {
+            bounds <- intervals[[caseName]]
+            values <- seq.int(bounds[1], bounds[2])
+            expected <- values[isPrimeRcpp(values)]
+            if (bounds[2] <= .Machine$integer.max) {
+                expected <- as.integer(expected)
+            }
+            expect_identical(nativeSieve(bounds[1], bounds[2]), expected,
+                             info = paste("p =", p, caseName))
+        }
+    }
+})
+
+test_that("primeSieve carries cropped medium offsets through several full segments", {
+    # Fix dispatch inputs to exercise Medium with integer and double outputs.
+    nativeSieve <- function(lower, upper) {
+        .Call(RcppAlgos:::`_RcppAlgos_PrimeSieveCpp`,
+              lower, upper, 1L, 1L, 1L)
+    }
+
+    for (base in c(1.5e9, 4e9)) {
+        # Medium's segment size stays constant over each selected interval.
+        segmentSize <- ceiling(sqrt(base) / 30030) * 30030
+        boundary <- floor(base / segmentSize) * segmentSize
+        lower <- boundary + segmentSize / 2 + 17
+        upper <- boundary + 4 * segmentSize + 101
+
+        # A partial first segment, three full segments, and a partial last
+        # segment. Use independent primality checks, not another sieve run.
+        values <- seq.int(lower, upper)
+        expected <- values[isPrimeRcpp(values)]
+        if (upper <= .Machine$integer.max) {
+            expected <- as.integer(expected)
+        }
+        expect_identical(nativeSieve(lower, upper), expected,
+                         info = paste("base =", base))
     }
 })
 
@@ -154,6 +244,43 @@ test_that("primeSieve bounds bucket scheduling at the final segment", {
     for (upper in endpoints) {
         expect_identical(nativeSieve(lower, upper),
                          expected[expected <= upper])
+    }
+})
+
+test_that("primeSieve preserves results when cropping large-sieve segments", {
+    # Force PrimeSieveBig with 640 wheels per segment, independent of the host.
+    nativeSieve <- function(lower, upper) {
+        .Call(RcppAlgos:::`_RcppAlgos_PrimeSieveCpp`,
+              lower, upper, 1L, 1L, 10L)
+    }
+    segmentSize <- 640 * 30030
+    boundary <- floor(1e14 / segmentSize) * segmentSize
+
+    # Both factors are prime. Only the smaller factor is within the sieving
+    # bound: 1000003 is dense (2*p < segmentSize), while 10000019 is bucketed.
+    # Neither product is removed by the 30030 wheel itself.
+    denseComposite <- 1000003 * 100000007
+    bucketComposite <- 10000019 * 100000007
+    intervals <- list(
+        interior = c(boundary + segmentSize / 2 + 17,
+                     boundary + segmentSize / 2 + 1017),
+        aligned_start = c(boundary, boundary + 1000),
+        crossing_boundary = c(boundary - 50, boundary + 50),
+        dense_odd_start = c(denseComposite, denseComposite + 1000),
+        dense_even_start = c(denseComposite - 1, denseComposite + 1000),
+        bucket_odd_start = c(bucketComposite, bucketComposite + 1000),
+        bucket_even_start = c(bucketComposite - 1, bucketComposite + 1000)
+    )
+
+    # Odd composite starts must be marked inclusively. The preceding even
+    # starts exercise finding that multiple from a non-divisible lower bound.
+    # Short interior ranges crop both ends; crossing a boundary tests carry.
+    for (caseName in names(intervals)) {
+        bounds <- intervals[[caseName]]
+        values <- seq.int(bounds[1], bounds[2])
+        expected <- values[isPrimeRcpp(values)]
+        expect_identical(nativeSieve(bounds[1], bounds[2]), expected,
+                         info = caseName)
     }
 })
 

@@ -45,11 +45,11 @@ namespace PrimeSieve {
     // The following function is based off of the prime number theorem
     std::size_t EstimatePiPrime(double minNum, double maxNum) {
         const auto it = std::upper_bound(CUTPOINTS.cbegin(), CUTPOINTS.cend(), maxNum);
-        const std::size_t myIndex = it - CUTPOINTS.cbegin();
-        double dblRes = std::ceil((maxNum / std::log(maxNum)) * (1 + PERCINC[myIndex]));
+        const std::size_t idx = it - CUTPOINTS.cbegin();
+        double dblRes = std::ceil((maxNum / std::log(maxNum)) * (1 + PERCINC[idx]));
 
         if (minNum > 1000) {
-            dblRes -= std::floor((minNum / std::log(minNum)) * (1 + PERCINC[myIndex]));
+            dblRes -= std::floor((minNum / std::log(minNum)) * (1 + PERCINC[idx]));
         }
 
         return dblRes;
@@ -104,30 +104,32 @@ namespace PrimeSieve {
             if (minNum > 2) {
                 const int upperBnd = std::min(lowerBnd + segSize, maxNum);
 
-                for (int myIndex = 0; sqrPrime <= upperBnd; ++p) {
-                    if (lowerBnd > sqrPrime) {
-                        const int remTest = lowerBnd % sievePrimes[p - 1];
-                        if (remTest == 0) {
-                            myIndex = sievePrimes[p - 1];
-                        } else {
-                            myIndex = sievePrimes[p - 1] - remTest;
+                for (int idx = 0; sqrPrime <= upperBnd; ++p) {
+                    if (minNum > sqrPrime) {
+                        const int prime = sievePrimes[p - 1u];
+                        const int remTest = minNum % prime;
+                        int first = minNum + (remTest ? prime - remTest : 0);
 
-                            if ((myIndex % 2) == 0) {
-                                myIndex += sievePrimes[p - 1];
-                            }
+                        if (first % 2 == 0) {
+                            first += prime;
                         }
+
+                        idx = first - lowerBnd;
                     } else {
-                        myIndex = sqrPrime - lowerBnd;
+                        idx = sqrPrime - lowerBnd;
                     }
 
-                    nextStrt.push_back(myIndex);
+                    nextStrt.push_back(idx);
                     sqrPrime = sievePrimes[p] * sievePrimes[p];
                 }
+
+                const std::int_fast64_t offsetLim =
+                    std::min(segSize, maxNum - lowerBnd + 1);
 
                 for (std::size_t i = strt2310; i < nextStrt.size(); ++i) {
                     int j = nextStrt[i];
 
-                    for (int k = sievePrimes[i] * 2; j < segSize; j += k) {
+                    for (int k = sievePrimes[i] * 2; j < offsetLim; j += k) {
                         sieve[j] = 0;
                     }
 
@@ -242,9 +244,11 @@ namespace PrimeSieve {
                     sqrPrime = sievePrimes[p] * sievePrimes[p];
                 }
 
+                const std::int_fast64_t offsetLim = maxNum - lowerBnd + 1;
+
                 for (int i = strt2310, size = nextStrt.size(); i < size; ++i) {
                     for (int k = sievePrimes[i] * 2, j = nextStrt[i];
-                         j < segSize; j += k) {
+                         j < offsetLim; j += k) {
 
                         sieve[j] = 0;
                     }
@@ -289,37 +293,44 @@ namespace PrimeSieve {
         std::vector<bool> sieve(segSize, true);
 
         std::int_fast64_t lowerBnd = segSize * (minNum / segSize);
-        const std::int_fast64_t upperBnd = std::min(lowerBnd + segSize,
-                                                    maxNum);
+        const std::int_fast64_t upperBnd = std::min(
+            lowerBnd + segSize, maxNum
+        );
         std::int_fast64_t myNum = 1 + lowerBnd;
 
         std::size_t p = 1u;
         std::int_fast64_t sqrPrime = 9;
         std::vector<int> nextStrt;
 
-        for (std::int_fast64_t myIndex = 0; sqrPrime <= upperBnd; ++p) {
-            if (lowerBnd > sqrPrime) {
-                const int remTest = lowerBnd % sievePrimes[p - 1u];
+        for (std::int_fast64_t idx = 0; sqrPrime <= upperBnd; ++p) {
+            if (minNum > sqrPrime) {
+                const int prime = sievePrimes[p - 1u];
+                const int remTest = minNum % prime;
 
-                if (remTest == 0) {
-                    myIndex = sievePrimes[p - 1u];
-                } else {
-                    myIndex = sievePrimes[p - 1u] - remTest;
-                    if ((myIndex % 2) == 0) {myIndex += sievePrimes[p - 1u];}
+                std::int_fast64_t first =
+                    minNum + (remTest ? prime - remTest : 0);
+
+                if (first % 2 == 0) {
+                    first += prime;
                 }
+
+                idx = first - lowerBnd;
             } else {
-                myIndex = sqrPrime - lowerBnd;
+                idx = sqrPrime - lowerBnd;
             }
 
-            nextStrt.push_back(myIndex);
+            nextStrt.push_back(idx);
             sqrPrime = static_cast<std::int_fast64_t>(sievePrimes[p]) *
                 static_cast<std::int_fast64_t>(sievePrimes[p]);
         }
 
+        const std::int_fast64_t offsetLim =
+            std::min(segSize, maxNum - lowerBnd + 1);
+
         for (std::size_t i = strt30030; i < nextStrt.size(); ++i) {
             int j = nextStrt[i];
 
-            for (int k = sievePrimes[i] * 2; j < segSize; j += k) {
+            for (int k = sievePrimes[i] * 2; j < offsetLim; j += k) {
                 sieve[j] = false;
             }
 
@@ -412,9 +423,11 @@ namespace PrimeSieve {
                     static_cast<std::int_fast64_t>(sievePrimes[p]);
             }
 
+            const std::int_fast64_t offsetLim = maxNum - lowerBnd + 1;
+
             for (std::size_t i = strt30030; i < nextStrt.size(); ++i) {
                 for (int k = sievePrimes[i] * 2, j = nextStrt[i];
-                     j < segSize; j += k) {
+                     j < offsetLim; j += k) {
                     sieve[j] = false;
                 }
             }
@@ -459,15 +472,15 @@ namespace PrimeSieve {
         std::vector<int> nextStrt(svPriOneSize);
 
         for (std::size_t i = 0, idx = 0; i < svPriOneSize; ++i) {
-            int remTest = lowerBnd % svPriOne[i];
+            int remTest = minNum % svPriOne[i];
+            std::int_fast64_t first =
+                minNum + (remTest ? svPriOne[i] - remTest : 0);
 
-            if (remTest == 0) {
-                idx = svPriOne[i];
-            } else {
-                idx = svPriOne[i] - remTest;
-                if (idx % 2 == 0) {idx += svPriOne[i];}
+            if (first % 2 == 0) {
+                first += svPriOne[i];
             }
 
+            idx = first - lowerBnd;
             nextStrt[i] = idx;
         }
 
@@ -483,15 +496,15 @@ namespace PrimeSieve {
 
         for (int i = 0, idx = 0, size = svPriTwo.size(); i < size; ++i) {
 
-            int remTest = (lowerBnd % svPriTwo[i]);
+            int remTest = minNum % svPriTwo[i];
+            std::int_fast64_t first =
+                minNum + (remTest ? svPriTwo[i] - remTest : 0);
 
-            if (remTest == 0) {
-                idx = svPriTwo[i];
-            } else {
-                idx = (svPriTwo[i] - remTest);
-                if ((idx % 2) == 0) {idx += svPriTwo[i];}
+            if (first % 2 == 0) {
+                first += svPriTwo[i];
             }
 
+            idx = first - lowerBnd;
             remTest = (idx % sz30030) - 1;
             int timesTwo = (2 * svPriTwo[i]);
             int remPrime = (timesTwo % sz30030);
@@ -503,7 +516,10 @@ namespace PrimeSieve {
                     idx += timesTwo;
                     bKeepGoing = (idx < myRange);
                     remTest += remPrime;
-                    if (remTest >= sz30030) {remTest -= sz30030;}
+
+                    if (remTest >= sz30030) {
+                        remTest -= sz30030;
+                    }
                 }
 
                 int tempInd = idx;
@@ -517,7 +533,10 @@ namespace PrimeSieve {
                 idx = tempInd + timesTwo;
                 bKeepGoing = (idx < myRange);
                 remTest += remPrime;
-                if (remTest >= sz30030) remTest -= sz30030;
+
+                if (remTest >= sz30030) {
+                    remTest -= sz30030;
+                }
             }
         }
 
@@ -529,10 +548,16 @@ namespace PrimeSieve {
         std::vector<bool> sieve(segSize, true);
 
         if (minNum != lowerBnd) {
+            const int offsetLim = static_cast<int>(
+                std::min<std::int_fast64_t>(
+                    segSize, maxNum - lowerBnd + 1
+                )
+            );
+
             for (std::size_t i = strt30030; i < svPriOneSize; ++i) {
                 int j = nextStrt[i];
 
-                for (int k = svPriOne[i] * 2; j < segSize; j += k) {
+                for (int k = svPriOne[i] * 2; j < offsetLim; j += k) {
                     sieve[j] = false;
                 }
 
@@ -626,8 +651,11 @@ namespace PrimeSieve {
 
         // Get remaining primes that are greater than flrMaxNum and less than maxNum
         if (lowerBnd < maxNum) {
+            const int offsetLim = static_cast<int>(maxNum - lowerBnd + 1);
+
             for (std::size_t i = strt30030; i < svPriOneSize; ++i) {
-                for (int k = svPriOne[i] * 2, j = nextStrt[i]; j < segSize; j += k) {
+                for (int k = svPriOne[i] * 2, j = nextStrt[i];
+                     j < offsetLim; j += k) {
                     sieve[j] = false;
                 }
             }
