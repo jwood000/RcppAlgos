@@ -1,0 +1,62 @@
+Started: 2026-11-01 00:46:58 EDT
+Revision: 0364f49bc64476829c6feae63ec55148521e5c79
+Policy physical cores: 10
+Policy max threads: 10
+Serial Big cutoff: 3958241859993600
+Random seed: 20261101
+Screening repeats: 7
+No affinity, frequency locking, cache flushing, or hardware counters.
+Each timed call freshly generates its base primes; repeated process is warm.
+R version 4.6.1 (2026-06-24)
+Platform: aarch64-apple-darwin23
+Running under: macOS Sequoia 15.7.4
+
+Matrix products: default
+BLAS:   /Library/Frameworks/R.framework/Versions/4.6/Resources/lib/libRblas.0.dylib 
+LAPACK: /Library/Frameworks/R.framework/Versions/4.6/Resources/lib/libRlapack.dylib;  LAPACK version 3.12.1
+
+locale:
+[1] C.UTF-8/C.UTF-8/C.UTF-8/C/C.UTF-8/C.UTF-8
+
+time zone: America/New_York
+tzcode source: internal
+
+attached base packages:
+[1] stats     graphics  grDevices utils     datasets  methods   base     
+
+other attached packages:
+[1] RcppAlgos_2.10.3
+
+loaded via a namespace (and not attached):
+[1] compiler_4.6.1 parallel_4.6.1 gmp_0.7-5.1   
+Git status:
+ M inst/include/NumbersUtils/Eratosthenes.h
+ M src/Eratosthenes.cpp
+ M src/PrimeSieve.cpp
+ M src/cpp11.cpp
+?? .github/development/cache-inspector.md
+?? .github/development/prime-sieve-benchmarks/
+?? R/CacheInspector.R
+?? inst/include/NumbersUtils/CacheInspector.h
+?? src/CacheInspector.cpp
+?? tests/testthat/testCacheInspector.R
+Hardware reports (missing keys are explicit):
+machdep.cpu.brand_string: Apple M4
+hw.model: Mac16,13
+hw.physicalcpu: 10
+hw.logicalcpu: 10
+hw.cachelinesize: 128
+hw.l1dcachesize: 65536
+hw.l2cachesize: 4194304
+hw.perflevel0.name: Performance
+hw.perflevel0.physicalcpu: 4
+hw.perflevel0.l1dcachesize: 131072
+hw.perflevel0.l2cachesize: 16777216
+hw.perflevel0.cpusperl2: 4
+hw.perflevel1.name: Efficiency
+hw.perflevel1.physicalcpu: 6
+hw.perflevel1.l1dcachesize: 65536
+hw.perflevel1.l2cachesize: 4194304
+hw.perflevel1.cpusperl2: 6
+Completed: 2026-11-01 00:48:15 EDT
+Timed calls: 879
