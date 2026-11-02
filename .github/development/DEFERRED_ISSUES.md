@@ -23,31 +23,27 @@ to std::int64_t, resulting in undefined behavior.
 
 Defer to a dedicated investigation and PR.
 
-## Prime sieve lookup-table endpoint reads past the table
+## Findings transferred to GitHub
 
-Status: Confirmed defect; fix pending discussion
-Discovered during: Prime sieve performance investigation
+The following sieve findings have fixes and regression coverage in
+[PR #85](https://github.com/jwood000/RcppAlgos/pull/85). As of November 1, 2026,
+the PR and issues remain open; the fixes are implemented on
+`investigate-prime-sieve` and await merge. Follow GitHub for current review,
+merge, and issue-closure status. The issues preserve the original reproductions
+and sanitizer evidence.
 
-### Observation and evidence
+- [Issue #82: Precomputed prime-table endpoint read](https://github.com/jwood000/RcppAlgos/issues/82).
+  Commit [`204b6f9`](https://github.com/jwood000/RcppAlgos/commit/204b6f9)
+  bounds table traversal in `PrimeSieveSmall()`, including the final prime,
+  31627.
+- [Issue #83: Scheduling past the final bucket](https://github.com/jwood000/RcppAlgos/issues/83).
+  Commit [`3b8e620`](https://github.com/jwood000/RcppAlgos/commit/3b8e620)
+  restricts `PrimeSieveBig()` scheduling to `idx < myRange`, preserving the
+  inclusive upper endpoint without admitting offsets beyond it.
+- [Issue #84: Insufficient base primes for an extended range](https://github.com/jwood000/RcppAlgos/issues/84).
+  Commit [`11d464c`](https://github.com/jwood000/RcppAlgos/commit/11d464c)
+  makes `sqrtBigPrimes()` prepare base primes using `myUpper`, including the
+  extension needed by `bAddExtraPrime`.
 
-`PrimeSieveSmall()` in `src/Eratosthenes.cpp` takes the precomputed-table
-path when `maxNum <= smallPrimeBase.back()`. Its output loop checks
-`smallPrimeBase[ind] <= maxNum` without checking the array boundary.
-At `maxNum == 31627`, it emits the final entry and then reads element 3402,
-one past the 3402-element table in `inst/include/NumbersUtils/PrimesSegSieve.h`.
-This is undefined behavior, even if an ordinary build returns expected results.
-
-A standalone build of the unchanged sieve source with Apple Clang 17,
-`-std=c++11 -O1 -g -fsanitize=address -fno-omit-frame-pointer`, confirmed a
-`global-buffer-overflow` (4-byte read immediately after `smallPrimeBase`).
-The reproduction called `PrimeSieve::PrimeSieveMain<int>` with bounds
-`1, 31627`, one thread, and initially empty output vectors. The R call
-`primeSieve(31627)` reaches the same path; the sanitizer reproduction used
-the native entry point rather than an installed R package.
-
-### Follow-up
-
-Review the table loop's termination and add coverage for the exact final
-table entry. The existing `primeSieve(31625, 31630)` test takes a different
-path and does not cover this boundary. No implementation fix or GitHub
-issue was created during the performance investigation.
+The implementations are in `src/Eratosthenes.cpp`; permanent regression tests
+are in `tests/testthat/testPrimeSieve.R`.

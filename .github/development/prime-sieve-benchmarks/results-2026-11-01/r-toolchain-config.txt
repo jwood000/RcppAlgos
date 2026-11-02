@@ -1,0 +1,10 @@
+R toolchain configuration queried after measurements (not a retained build log):
+CXX: clang++ -arch arm64 -std=gnu++20
+CXXFLAGS: -falign-functions=64 -Wall -g -O2 -O3 -Wall -pipe -pedantic
+CXX20: clang++ -arch arm64
+CXX20FLAGS: -falign-functions=64 -Wall -g -O2
+CXX20STD: -std=gnu++20
+
+Package src/Makevars:
+PKG_CPPFLAGS = -I../inst/include/
+PKG_LIBS = -lgmp

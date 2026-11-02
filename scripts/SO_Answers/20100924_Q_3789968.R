@@ -11,7 +11,7 @@ reprex::reprex({
 
     #' ### Using Multiple Threads
     #'
-    #' And in recent versions (i.e. `>= 2.3.0`), we can utilize multiple threads for even faster generation. For example, now we can generate the primes up to **1 billion in under a quarter of a second!**
+    #' And in recent versions (i.e. `>= 2.3.0`), we can utilize multiple threads for even faster generation. For example, now we can generate the primes up to **1 billion in under a tenth of a second!**
 
     par <- system.time(RcppAlgos::primeSieve(10^9, nThreads = 8))
     par
@@ -230,7 +230,7 @@ reprex::reprex({
                    priPrimes = primes::generate_primes(10^9, 10^9 + 10^6),
                    unit = "relative", times = 20)
 
-    #' ### Primes up to 10 billion in Under 3 Seconds
+    #' ### Primes up to 10 billion in Just Over 1 Second
 
     ##  primes less than 10 billion
     system.time(tenBillion <- RcppAlgos::primeSieve(10^10, nThreads = 8))

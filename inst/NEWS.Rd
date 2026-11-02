@@ -19,6 +19,9 @@
           \item Fixed handling of empty constrained results, preserving matrix type and the additional column requested by \code{keepResults}. Explicit positive bounds for empty supported partition and composition result sets now raise an error; constrained permutations retain candidate-bound validation.
           \item Fixed validation of zero-valued \code{bigz} ranks, bounds, and seeds where positive values are required.
           \item Fixed classification of certain multiset cases where the repeated minimum value cannot occur in any result.
+          \item Fixed an out-of-bounds read in \code{primeSieve()} when the upper bound equals the final precomputed prime, 31627 (\href{https://github.com/jwood000/RcppAlgos/issues/82}{Issue #82}).
+          \item Fixed out-of-bounds bucket scheduling in \code{primeSieve()} near segment boundaries for large intervals (\href{https://github.com/jwood000/RcppAlgos/issues/83}{Issue #83}).
+          \item Fixed insufficient base-prime preparation for extended sieve bounds, which could cause \code{primeSieve()} to hang or access memory out of bounds for intervals such as \code{primeSieve(1.5e9, 1.5e9 + 1e5)} (\href{https://github.com/jwood000/RcppAlgos/issues/84}{Issue #84}).
         }
     }
 
@@ -33,6 +36,8 @@
         \itemize{
           \item Reduced allocation overhead in multiset partition and composition counting by reusing working storage.
           \item Known-empty constrained permutation generation and iteration now avoid unnecessary candidate searches, including GMP-sized search spaces.
+          \item Improved \code{primeSieve()} extraction with reusable buffers and avoided marking outside the requested interval in the small, medium, and large sieve implementations.
+          \item Reduced sieve setup allocation and copying overhead, and simplified segment-offset updates by reusing the marking loop's final offset.
         }
     }
 
@@ -40,6 +45,7 @@
         \itemize{
           \item Added \code{testthat} to \code{LinkingTo}, making it a dependency when building the package from source.
           \item Installed C++ partition/composition ranking and unranking signatures now include a \code{Reps} argument. Direct C++ callers must update their calls and function-pointer types and rebuild. The R function signatures are unchanged.
+          \item Added a developer-only prime sieve inspector and reproducible benchmark materials under \file{.github/development/}, excluded from package distributions.
         }
     }
 }

@@ -1,0 +1,63 @@
+{
+  "started_utc": "2026-11-01T04:51:42.668958+00:00",
+  "host": "macOS-15.7.4-arm64-arm-64bit",
+  "temporary_build_retained": "/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-native-confirmation-b6zeqhlz",
+  "source_substitution": {
+    "before": "const auto worker = inspector ? PrimeWorker<T, true> : PrimeWorker<T, false>;",
+    "after": "const auto worker = PrimeWorker<T, false>;"
+  },
+  "configurations": [
+    [
+      "default",
+      0
+    ],
+    [
+      "4MiB",
+      4194304
+    ],
+    [
+      "1MiB",
+      1048576
+    ]
+  ],
+  "requested_threads": [
+    1,
+    4
+  ],
+  "max_threads": 10,
+  "max_cores": 10,
+  "repeats": 15,
+  "seed": 20261102,
+  "compiler": "Apple clang version 17.0.0 (clang-1700.0.13.3)\nTarget: arm64-apple-darwin24.6.0\nThread model: posix\nInstalledDir: /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin\n",
+  "compile_command": "clang++ -std=c++11 -O3 -pthread -I/Users/owacasa/RcppAlgos/inst/include /var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-native-confirmation-b6zeqhlz/confirm-native.cpp /Users/owacasa/RcppAlgos/src/CacheInspector.cpp -o /var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-native-confirmation-b6zeqhlz/confirm-native",
+  "run_command": "/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-native-confirmation-b6zeqhlz/confirm-native /Users/owacasa/RcppAlgos/.github/development/prime-sieve-benchmarks/results-2026-11-01/native-confirmation.csv 15 20261102 10 10 default 0 4MiB 4194304 1MiB 1048576",
+  "hash_algorithm": "sha256",
+  "source_hashes": {
+    "/Users/owacasa/RcppAlgos/src/Eratosthenes.cpp": "ec39068eb3a3239154991fb7deac08c2075943c7c8096944423dd58573606981",
+    "/Users/owacasa/RcppAlgos/src/CacheInspector.cpp": "0ce66732b020492e689695f6cab0e8ef766db4743f92513937dd6485be5107da",
+    "/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-native-confirmation-b6zeqhlz/confirm-native.cpp": "3351413af809a69d4b17a27dcc47f9382dedfeb16ddaf01da26d3bc25188af6a",
+    "/Users/owacasa/RcppAlgos/.github/development/prime-sieve-benchmarks/confirm-native.py": "d3336afde0f371e636c26d4e4cb4d40634f2cb4e2c61de669753f48ebda70b6e",
+    "/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-native-confirmation-b6zeqhlz/sieve-clone.cpp": "e8ce9839add32939da19658644a1f078aec8b667605d83fb639b5f5e6c728d92",
+    "/Users/owacasa/RcppAlgos/.github/development/prime-sieve-benchmarks/results-2026-11-01/selected-configurations.txt": "a5e0764085b4b8ea825ccdc8340598c5d2239f3f547ed42d05867aca0a1fd392",
+    "/Users/owacasa/RcppAlgos/.github/development/prime-sieve-benchmarks/results-2026-11-01/runs.csv": "49792846002a109d868e6febf2f024ae916600b18144de08cd7f09e84bff5f11",
+    "/Users/owacasa/RcppAlgos/inst/include/NumbersUtils/CacheInspector.h": "568e3df9465494bd9834b8e5c7fd285b8183c77fb8f39811dabaabe32e57a841",
+    "/Users/owacasa/RcppAlgos/inst/include/NumbersUtils/Eratosthenes.h": "c350a07050c68e4533661f95d8f89b898f1a111a938164a87a8e94d86218d622",
+    "/Users/owacasa/RcppAlgos/inst/include/NumbersUtils/EulerPhiSieve.h": "4eb451961463a76b1bf2d0ccbafd2fd380b58e18ce9099ff92c5c49f1cf639ac",
+    "/Users/owacasa/RcppAlgos/inst/include/NumbersUtils/MotleyStartIndex.h": "199da65e2ba818f629eff9d40546900a0f86e2f6ee65e97510f71bcde491adbb",
+    "/Users/owacasa/RcppAlgos/inst/include/NumbersUtils/PhiTinyLookup.h": "6040f88288a1eddbd51718f2fdafb1deeb56852f9a08603045c1c81d0bfd8dd2",
+    "/Users/owacasa/RcppAlgos/inst/include/NumbersUtils/PollardRhoDepends.h": "4b36439e1df2bf9de34636bc2a6c43300bdabffe2b0af71dab90ebafdb8826a9",
+    "/Users/owacasa/RcppAlgos/inst/include/NumbersUtils/PollardRhoUtils.h": "efc57545250a430c09c62944340535c2c7244674f3ad95368285dfe698ae7b4c",
+    "/Users/owacasa/RcppAlgos/inst/include/NumbersUtils/PrimeFactorizeSieve.h": "b7a13ac4a2294fb0acd297e0434c686f98aba1ac682b241b86d9357e2200eaa8",
+    "/Users/owacasa/RcppAlgos/inst/include/NumbersUtils/PrimesPolRho.h": "c19ca7572d509b3972e0f3ab396ef0b84035d878a38f2ff413764fdc5bea9c0c",
+    "/Users/owacasa/RcppAlgos/inst/include/NumbersUtils/PrimesSegSieve.h": "761d5d425b4fcfd34a6a179aa492cfecd47e5a368a26d72370dc86f88ba69660",
+    "/Users/owacasa/RcppAlgos/inst/include/NumbersUtils/Wheel.h": "db1b8fe0ecbdf7e98423bade583b95a0d7abaf63378c0b90f5a9a3101a36c03d",
+    "/Users/owacasa/RcppAlgos/inst/include/NumbersUtils/libdivide.h": "f4355cb1c7fb6c02ffcdef93ec6cdc4568914f2dbb96e0361fb3b2fa81878aab"
+  },
+  "timing": "PrimeSieveMain only; excludes output concatenation and comparison, R, and report serialization. Kernel instrumentation is disabled; coarse Main clocks and inspector setup remain enabled for every configuration.",
+  "verification": "Every warmup and timed output is compared exactly, outside the timer, with the current null-inspector default-policy output.",
+  "ordering": "Each configuration runs once per round, shuffled with std::mt19937. The CSV records actual order; shuffle order may vary across C++ libraries.",
+  "status": "completed",
+  "binary_sha256": "f3025cfb456f18b771662eccbab3fc04915aa7bceb42188e7b45e88c721e7b54",
+  "output_sha256": "9aa926330611a26adf1f341dfa6d8808340b9d7e6ec14faf640c0054fa30fd71",
+  "finished_utc": "2026-11-01T04:52:21.407323+00:00"
+}

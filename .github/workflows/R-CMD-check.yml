@@ -24,7 +24,8 @@ jobs:
       fail-fast: false
       matrix:
         config:
-          - {os: macos-latest, r: 'release'}
+          # Restore macos-latest once its GMP headers build without the
+          # deprecated literal-operator warnings from newer Apple Clang.
           - {os: macos-15,     r: 'release'}
 
           - {os: windows-latest, r: 'devel'}
