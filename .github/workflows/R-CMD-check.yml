@@ -24,7 +24,8 @@ jobs:
       fail-fast: false
       matrix:
         config:
-          - {os: macos-latest, r: 'release'}
+          # Restore macos-latest once its GMP headers build without the
+          # deprecated literal-operator warnings from newer Apple Clang.
           - {os: macos-15,     r: 'release'}
 
           - {os: windows-latest, r: 'devel'}
@@ -61,15 +62,6 @@ jobs:
         with:
           extra-packages: any::rcmdcheck
           needs: check
-
-      - name: Suppress upstream GMP literal-operator warning on macOS
-        if: runner.os == 'macOS'
-        shell: bash
-        run: |
-          mkdir -p ~/.R
-          # GMP's gmpxx.h uses deprecated spacing in literal operators.
-          # This package uses R's default C++ settings, not CXX17FLAGS.
-          echo 'CXXFLAGS += -Wno-deprecated-literal-operator' >> ~/.R/Makevars
 
       - uses: r-lib/actions/check-r-package@v2
         with:
