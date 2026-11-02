@@ -39,6 +39,23 @@
   positive values are required.
 - Fixed classification of certain multiset cases where the repeated
   minimum value cannot occur in any result.
+- Fixed an out-of-bounds read in
+  [`primeSieve()`](https://jwood000.github.io/RcppAlgos/reference/primeSieve.md)
+  when the upper bound equals the final precomputed prime, 31627
+  ([Issue](https://github.com/jwood000/RcppAlgos/issues/82)
+  [\#82](https://github.com/jwood000/RcppAlgos/issues/82)).
+- Fixed out-of-bounds bucket scheduling in
+  [`primeSieve()`](https://jwood000.github.io/RcppAlgos/reference/primeSieve.md)
+  near segment boundaries for large intervals
+  ([Issue](https://github.com/jwood000/RcppAlgos/issues/83)
+  [\#83](https://github.com/jwood000/RcppAlgos/issues/83)).
+- Fixed insufficient base-prime preparation for extended sieve bounds,
+  which could cause
+  [`primeSieve()`](https://jwood000.github.io/RcppAlgos/reference/primeSieve.md)
+  to hang or access memory out of bounds for intervals such as
+  `primeSieve(1.5e9, 1.5e9 + 1e5)`
+  ([Issue](https://github.com/jwood000/RcppAlgos/issues/84)
+  [\#84](https://github.com/jwood000/RcppAlgos/issues/84)).
 
 ### Improvements
 
@@ -56,6 +73,13 @@
   counting by reusing working storage.
 - Known-empty constrained permutation generation and iteration now avoid
   unnecessary candidate searches, including GMP-sized search spaces.
+- Improved
+  [`primeSieve()`](https://jwood000.github.io/RcppAlgos/reference/primeSieve.md)
+  extraction with reusable buffers and avoided marking outside the
+  requested interval in the small, medium, and large sieve
+  implementations.
+- Reduced sieve setup allocation and copying overhead, and simplified
+  segment-offset updates by reusing the marking loop’s final offset.
 
 ### Other
 
@@ -65,6 +89,9 @@
   now include a `Reps` argument. Direct C++ callers must update their
   calls and function-pointer types and rebuild. The R function
   signatures are unchanged.
+- Added a developer-only prime sieve inspector and reproducible
+  benchmark materials under `.github/development/`, excluded from
+  package distributions.
 
 ## RcppAlgos 2.10.2
 
