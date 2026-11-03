@@ -17,6 +17,21 @@ test_that("parallel primeCount handles cache growth and reuse", {
     }
 })
 
+test_that("parallel primeCount handles the batch boundary and repeated calls", {
+    maxThreads <- RcppAlgos:::pkgEnv$maxThreads
+    skip_if(maxThreads < 2L, "At least two available threads are needed")
+
+    ## Cross the single/multiple-batch boundary, then repeat the multiple-batch call.
+    inputs <- c(1e10 + 1, 1e10 - 1, 1e10, 1e10 + 1)
+    threadCounts <- c(2L, 3L, 4L)
+    threadCounts <- threadCounts[threadCounts <= maxThreads]
+
+    for (nThreads in threadCounts) {
+        actual <- vapply(inputs, primeCount, numeric(1), nThreads = nThreads)
+        expect_equal(actual, rep(455052511, length(inputs)))
+    }
+})
+
 test_that("primeCount generates correct numbers", {
     expect_equal(primeCount(10), 4)
 

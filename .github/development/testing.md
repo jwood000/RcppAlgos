@@ -161,6 +161,84 @@ above passed. A full package check was not run for this localized internal
 change. Validation used Apple clang 17 on arm64 macOS; other platforms have not
 been checked in this investigation.
 
+## Worker-reuse experiment (not retained)
+
+On November 3, 2026, a per-call `PhiBatchPool` prototype reused workers for
+parallel inputs above `1e10`, preserving the existing intervals and batch
+barriers. Each worker received one interval per batch and slept between
+batches using condition variables. A mutex protected dispatch and completion;
+the counting work ran outside that mutex. Workers were joined at call exit.
+Serial counting and the single-batch path at or below `1e10` were unchanged.
+
+Decision: retain the original create/join-per-batch implementation. The small,
+inconsistent timing differences below did not justify the extra synchronization
+and lifecycle code. The prototype was removed; the atomic cache, 32-bit pi
+table, setup improvements, and batch-boundary regression test were retained.
+A fresh package build and both focused R test files passed again after
+restoring the pre-pool source.
+
+The prototype passed the existing native checker with
+ThreadSanitizer at 2, 3, 4, 8, and 10 workers and AddressSanitizer/
+UndefinedBehaviorSanitizer at four workers. Each run checked 662 independent
+prime counts and 1,394,803 populated cache entries. A clean package build had
+no compiler warnings; `testPrimeCount.R` (15 expectations) and `testErrors.R`
+passed. The retained R regression crosses `1e10 - 1`, `1e10`, and `1e10 + 1` and
+repeats the multiple-batch call with available worker counts from 2 through 4.
+
+Two temporary diagnostics provided additional evidence:
+
+- A compiled comparison replaced `phiForeman` with interval logging and
+  compared the old and new schedules, sorting within each batch and excluding
+  empty slots. All 3,398 batches and 13,027 nonempty intervals matched in 40
+  cases: threshold neighbors and powers of ten through `1e15`, with 2, 3, 4,
+  8, and 10 workers. These cases also had contiguous interval coverage.
+- A harness extracting the pool class tested 804 batches, empty slots,
+  once-only slot execution, worker exceptions followed by reuse, and idle
+  shutdown. A modified diagnostic injected 100 constructor failures after
+  zero through three successful launches. ThreadSanitizer reported no races.
+  The fault injection was confined to the diagnostic, not production code.
+
+These checks used Apple clang on arm64 macOS and C++11 for the native builds.
+The experiment did not include a full package check or testing on other
+platforms. It did not address the previously identified bounds problems at
+excessive effective worker counts.
+
+### Worker-reuse timings
+
+Before/after native binaries used the same compiler and `-std=c++11 -O3
+-pthread`. The baseline (`6cff583`) already contained the atomic cache, 32-bit pi table,
+prime-vector move, and reuse of the setup count. Execution order was shuffled
+with seed 20261103, with no other investigation builds or diagnostics running.
+Calls included setup and pool destruction, but excluded process/R startup.
+
+At `1e10`, `1e10 + 1`, `1e12`, and `1e13`, each version/worker combination
+used seven fresh processes with one cold and three warm calls. The `1e14`
+cases used three processes with one cold and two warm calls. The serial
+`1e12` control used five processes with one cold and three warm calls.
+All 524 counts matched. Median times in milliseconds were:
+
+| Input | Workers | Before cold | Pool cold | Before warm | Pool warm |
+| ---: | ---: | ---: | ---: | ---: | ---: |
+| `1e10` (control) | 4 | 2.524 | 2.349 | 0.944 | 0.889 |
+| `1e10` (control) | 8 | 2.333 | 2.394 | 0.784 | 0.770 |
+| `1e10 + 1` | 4 | 1.922 | 1.907 | 0.997 | 0.993 |
+| `1e10 + 1` | 8 | 1.557 | 1.570 | 0.843 | 0.868 |
+| `1e12` (serial control) | 1 | 90.300 | 88.509 | 55.134 | 54.359 |
+| `1e12` | 4 | 28.685 | 27.915 | 18.804 | 18.385 |
+| `1e12` | 8 | 25.131 | 25.194 | 16.900 | 16.552 |
+| `1e13` | 4 | 169.418 | 165.382 | 145.663 | 144.065 |
+| `1e13` | 8 | 141.419 | 138.838 | 126.845 | 127.900 |
+| `1e14` | 4 | 1142.360 | 1103.988 | 1130.194 | 1095.499 |
+| `1e14` | 8 | 935.681 | 941.031 | 934.904 | 944.292 |
+
+The launch reduction was substantial: for example, `1e14` with eight workers
+used eight threads instead of 875 launches across 110 batches. Elapsed-time
+benefits were small and inconsistent, however. Four-worker `1e14` calls
+improved about 3%, while eight-worker calls were about 1% slower. Unchanged
+control paths also varied, so small differences should not be attributed
+confidently to the pool. The prototype passed correctness checks, but did not
+demonstrate a compelling performance advantage on this machine.
+
 ## Native registration
 
 No registration changes are needed for internal prime-counting fixes. When a
