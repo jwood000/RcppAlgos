@@ -4,11 +4,12 @@
 #include "CppConvert.h"
 #include <algorithm>
 #include <numeric>
+#include <utility>
 #include <thread>
 #include <mutex>
 #include <atomic>
-#include <new>
 #include <cmath>
+#include <new>
 
 // "MainPrimeCount" based off of the highly optimized
 // "pi_legendre.cpp" algorithm by Kim Walisch, which calculates
@@ -147,7 +148,7 @@ namespace PrimeCounting {
     // as our index (i.e. phiTiny[a]). The first entry in phiTiny will
     // be empty. The same goes for phiPrimes and phiPi.
     std::vector<std::int64_t> phiPrimes;
-    std::vector<std::int64_t> phiPi;
+    std::vector<int> phiPi;
 
     // The arrays below are utilized by phiTiny
     // primeProds[n] = \prod_{i=1}^{n} primes[i]
@@ -213,8 +214,12 @@ namespace PrimeCounting {
     }
 
     std::int64_t getStrt(std::int64_t y) {
-        static constexpr std::array<int, 7> myTinyPrimes = {{0, 2, 3, 5, 7, 11, 13}};
-        static constexpr std::array<int, 13> myTinyPi = {{0, 0, 1, 2, 2, 3, 3, 4, 4, 4, 4, 5, 5}};
+        static constexpr std::array<int, 7> myTinyPrimes = {
+            {0, 2, 3, 5, 7, 11, 13}
+        };
+        static constexpr std::array<int, 13> myTinyPi = {
+            {0, 0, 1, 2, 2, 3, 3, 4, 4, 4, 4, 5, 5}
+        };
 
         if (y >= myTinyPrimes.back())
             return phiTinySize;
@@ -229,7 +234,7 @@ namespace PrimeCounting {
         } else if (a <= phiTinySize) {
             return phiTinyCalc(x, a) * SIGN;
         } else if (isPix(x, a)) {
-            return (phiPi[x] - a + 1) * SIGN;
+            return (static_cast<std::int64_t>(phiPi[x]) - a + 1) * SIGN;
         } else {
             const std::int64_t cachedPhi = getCachedPhi(x, a);
             if (cachedPhi) return cachedPhi * SIGN;
@@ -248,7 +253,7 @@ namespace PrimeCounting {
                 std::int64_t x2 = x / phiPrimes[i + 1];
 
                 if (isPix(x2, i)) {
-                    mySum += (phiPi[x2] - i + 1) * -SIGN;
+                    mySum += (static_cast<std::int64_t>(phiPi[x2]) - i + 1) * -SIGN;
                 } else {
                     mySum += phiWorker<-SIGN>(x2, i);
                 }
@@ -428,10 +433,10 @@ namespace PrimeCounting {
         const std::int64_t sqrtBound = std::sqrt(static_cast<double>(n));
         std::vector<std::int64_t> resetPhiPrimes;
         PrimeSieve::sqrtBigPrimes(sqrtBound, true, false, true, resetPhiPrimes);
-        phiPrimes = resetPhiPrimes;
+        phiPrimes = std::move(resetPhiPrimes);
 
         phiPi.resize(sqrtBound + 1);
-        std::int64_t count = 0;
+        int count = 0;
         const std::int64_t maxPrime = phiPrimes.back();
 
         for (std::int64_t i = 1; i <= maxPrime; ++i) {
@@ -454,7 +459,7 @@ namespace PrimeCounting {
             if (n < 1e7) Parallel = false;
         }
 
-        const std::int64_t piSqrt = PiPrime(sqrtBound);
+        const std::int64_t piSqrt = phiPi.back();
         const std::int64_t phiSqrt = phiMain(n, piSqrt, nThreads, Parallel);
         const std::int64_t int64result = piSqrt + phiSqrt - 1;
 
