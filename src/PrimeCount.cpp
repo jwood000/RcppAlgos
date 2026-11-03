@@ -6,6 +6,8 @@
 #include <numeric>
 #include <thread>
 #include <mutex>
+#include <atomic>
+#include <new>
 #include <cmath>
 
 // "MainPrimeCount" based off of the highly optimized
@@ -106,8 +108,38 @@ namespace PrimeCounting {
     }
 
     constexpr int MAX_A = 100;
-    std::array<std::vector<std::uint16_t>, MAX_A> phiCache;
-    std::mutex theBlocker;
+    constexpr unsigned CACHE_PAGE_BITS = 12;
+    constexpr std::size_t CACHE_PAGE_SIZE = 1u << CACHE_PAGE_BITS;
+    constexpr std::size_t CACHE_PAGE_COUNT = 65536u / CACHE_PAGE_SIZE;
+
+    struct PhiCell {
+        std::atomic<std::uint16_t> value;
+        PhiCell() : value(0) {}
+    };
+
+    struct PhiPage {
+        PhiCell cells[CACHE_PAGE_SIZE];
+    };
+
+    struct PublishedPhiPage {
+        std::atomic<PhiPage*> value;
+        PublishedPhiPage() : value(nullptr) {}
+    };
+
+    struct PhiCacheRow {
+        std::mutex allocationMutex;
+        PublishedPhiPage pages[CACHE_PAGE_COUNT];
+
+        // Published pages stay at the same address across batches and calls.
+        // Cache destruction requires all workers to have joined.
+        ~PhiCacheRow() {
+            for (auto& page : pages) {
+                delete page.value.load(std::memory_order_relaxed);
+            }
+        }
+    };
+
+    std::array<PhiCacheRow, MAX_A> phiCache;
 
     // Increment MAX_A, so we can have easier access to indexing. E.g.
     // when a = 3 (i.e. the number of primes is 3), instead of accessing
@@ -129,19 +161,50 @@ namespace PrimeCounting {
     }
 
     void updateCache(std::uint64_t x, std::uint64_t a, std::int64_t mySum) {
-        if (a < phiCache.size() &&
-            x <= std::numeric_limits<std::uint16_t>::max()) {
-            // Protect phiCache while its being updated
-            std::lock_guard<std::mutex> guard(theBlocker);
-            if (x >= phiCache[a].size()) phiCache[a].resize(x + 1, 0);
-            phiCache[a][x] = static_cast<std::uint16_t>(std::abs(mySum));
+        if (a >= phiCache.size() ||
+            x > std::numeric_limits<std::uint16_t>::max()) {
+            return;
         }
+
+        auto& row = phiCache[a];
+        auto& published = row.pages[x >> CACHE_PAGE_BITS].value;
+        PhiPage* page = published.load(std::memory_order_acquire);
+
+        if (!page) {
+            std::lock_guard<std::mutex> guard(row.allocationMutex);
+            // Another worker may have published the page before we locked.
+            page = published.load(std::memory_order_acquire);
+
+            if (!page) {
+                page = new (std::nothrow) PhiPage;
+                // Caching is optional; the caller already has its answer.
+                if (!page) return;
+
+                // Readers must see the initialized cells before using a page.
+                published.store(page, std::memory_order_release);
+            }
+        }
+
+        // Each cell holds the complete positive phi(x, a), not a ready flag.
+        // Duplicate computations store the same answer; zero denotes a miss.
+        page->cells[x & (CACHE_PAGE_SIZE - 1)].value.store(
+            static_cast<std::uint16_t>(std::abs(mySum)),
+            std::memory_order_relaxed
+        );
     }
 
-    bool isCached(std::uint64_t x, std::uint64_t a) {
-        return a < phiCache.size() &&
-               x < phiCache[a].size() &&
-               phiCache[a][x];
+    std::int64_t getCachedPhi(std::uint64_t x, std::uint64_t a) {
+        if (a >= phiCache.size() ||
+            x > std::numeric_limits<std::uint16_t>::max()) {
+            return 0;
+        }
+
+        const PhiPage* page = phiCache[a].pages[x >> CACHE_PAGE_BITS].value.load(
+            std::memory_order_acquire
+        );
+        return page ? page->cells[x & (CACHE_PAGE_SIZE - 1)].value.load(
+            std::memory_order_relaxed
+        ) : 0;
     }
 
     bool isPix(std::int64_t x, std::int64_t a) {
@@ -167,9 +230,10 @@ namespace PrimeCounting {
             return phiTinyCalc(x, a) * SIGN;
         } else if (isPix(x, a)) {
             return (phiPi[x] - a + 1) * SIGN;
-        } else if (isCached(x, a)) {
-            return phiCache[a][x] * SIGN;
         } else {
+            const std::int64_t cachedPhi = getCachedPhi(x, a);
+            if (cachedPhi) return cachedPhi * SIGN;
+
             std::size_t sqrtx = static_cast<std::size_t>(std::sqrt(static_cast<double>(x)));
             std::int64_t piSqrtx = a;
             std::int64_t strt = getStrt(sqrtx);

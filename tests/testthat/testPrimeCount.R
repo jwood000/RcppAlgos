@@ -1,5 +1,22 @@
 context("testing primeCount")
 
+test_that("parallel primeCount handles cache growth and reuse", {
+    skip_if(RcppAlgos:::pkgEnv$maxThreads < 2L,
+            "At least two available threads are needed")
+
+    ## Run before the serial cases so a standalone run starts with a cold cache.
+    ## Known counts avoid warming the cache with a serial reference calculation.
+    inputs <- c(1e7, 1e8, 1e9, 1e10, 1e11, 1e12)
+    counts <- c(664579, 5761455, 50847534, 455052511, 4118054813, 37607912018)
+    order <- c(3L, 1L, 5L, 2L, 6L, 4L, 3L, 1L)
+
+    for (nThreads in c(2L, 3L, 4L)) {
+        actual <- vapply(inputs[order], primeCount, numeric(1),
+                         nThreads = nThreads)
+        expect_equal(actual, counts[order])
+    }
+})
+
 test_that("primeCount generates correct numbers", {
     expect_equal(primeCount(10), 4)
 
