@@ -249,14 +249,18 @@ namespace PrimeCounting {
 
             std::int64_t mySum = (piSqrtx - a) * SIGN + phiTinyCalc(x, strt) * SIGN;
 
-            for (std::int64_t i = strt; i < piSqrtx; ++i) {
-                std::int64_t x2 = x / phiPrimes[i + 1];
+            std::int64_t i = strt;
+            for (; i < piSqrtx; ++i) {
+                const std::int64_t x2 = x / phiPrimes[i + 1];
+                if (isPix(x2, i)) break;
+                mySum += phiWorker<-SIGN>(x2, i);
+            }
 
-                if (isPix(x2, i)) {
-                    mySum += (static_cast<std::int64_t>(phiPi[x2]) - i + 1) * -SIGN;
-                } else {
-                    mySum += phiWorker<-SIGN>(x2, i);
-                }
+            // As i increases, x / p[i + 1] cannot increase and p[i + 1]^2
+            // increases. Once isPix holds, it holds for every remaining term.
+            for (; i < piSqrtx; ++i) {
+                const std::int64_t x2 = x / phiPrimes[i + 1];
+                mySum += (static_cast<std::int64_t>(phiPi[x2]) - i + 1) * -SIGN;
             }
 
             updateCache(x, a, mySum);

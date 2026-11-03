@@ -15,15 +15,31 @@ namespace {
         if (!condition) throw std::runtime_error(message);
     }
 
-    std::vector<int> PhiReference(const std::vector<int>& primes, int a) {
-        std::vector<char> survives(65536, 1);
+    std::vector<int> PhiReference(const std::vector<int>& primes, int a,
+                                  int maximum = 65535) {
+        std::vector<char> survives(maximum + 1, 1);
         survives[0] = 0;
         for (int i = 0; i < a; ++i) {
-            for (int x = primes[i]; x < 65536; x += primes[i]) survives[x] = 0;
+            for (int x = primes[i]; x <= maximum; x += primes[i]) survives[x] = 0;
         }
-        std::vector<int> counts(65536, 0);
-        for (int x = 1; x < 65536; ++x) counts[x] = counts[x-1] + survives[x];
+        std::vector<int> counts(maximum + 1, 0);
+        for (int x = 1; x <= maximum; ++x) counts[x] = counts[x-1] + survives[x];
         return counts;
+    }
+
+    int CheckPhiWorker(const std::vector<int>& primes, int a,
+                       const std::vector<int>& inputs) {
+        const auto phi = PhiReference(primes, a,
+                                      *std::max_element(inputs.begin(), inputs.end()));
+        for (int x : inputs) {
+            const auto positive = PrimeCounting::phiWorker<1>(x, a);
+            const auto negative = PrimeCounting::phiWorker<-1>(x, a);
+            if (positive != phi[x] || negative != -phi[x]) {
+                throw std::runtime_error("independent phi mismatch at x=" +
+                    std::to_string(x) + ", a=" + std::to_string(a));
+            }
+        }
+        return 2 * inputs.size();
     }
 }
 
@@ -104,6 +120,37 @@ int main(int argc, char** argv) {
             return 0;
         }
 
+        // Match the tables for parent n=10^8, using only the independent sieve.
+        // Disable cache publication so both signs exercise the worker itself.
+        const int parentRoot = 10000;
+        PrimeCounting::phiPi.assign(pi.begin(), pi.begin() + parentRoot + 1);
+        PrimeCounting::phiPrimes.assign(1, 0);
+        for (int p : primes) {
+            if (p > parentRoot) break;
+            PrimeCounting::phiPrimes.push_back(p);
+        }
+        failPageAllocation.store(true, std::memory_order_relaxed);
+        int phiComparisons = 0;
+        for (int p : {41, 43, 47}) {
+            const int cube = p * p * p;
+            for (int delta = -1; delta <= 1; ++delta) {
+                // Stop before, at, and after the prime whose cube is crossed.
+                phiComparisons += CheckPhiWorker(primes, pi[p] + delta,
+                                                {cube - 1, cube, cube + 1});
+            }
+        }
+        const int tableBoundary = 127 * static_cast<int>(PrimeCounting::phiPi.size());
+        for (int delta = -1; delta <= 1; ++delta) {
+            // Here the square condition already holds; table membership decides.
+            phiComparisons += CheckPhiWorker(primes, pi[127] + delta,
+                {tableBoundary - 1, tableBoundary, tableBoundary + 1});
+        }
+        phiComparisons += CheckPhiWorker(primes, 8, {4000}); // Entire loop is direct.
+        // An empty recursive loop is preempted by the initial direct shortcut
+        // for valid tables; exercise that degenerate input without artificial state.
+        phiComparisons += CheckPhiWorker(primes, 7, {169});
+        failPageAllocation.store(false, std::memory_order_relaxed);
+
         struct Case { std::int64_t n, expected; };
         const Case cases[] = {{10000000000LL, 455052511LL}, {100000000, 5761455},
             {1000000000000LL, 37607912018LL}, {10000000, 664579},
@@ -144,6 +191,7 @@ int main(int argc, char** argv) {
         PrimeCounting::PhiCell cell;
         PrimeCounting::PublishedPhiPage page;
         std::cout << "PASS threads=" << threads << " independent_pi=" << comparisons
+                  << " independent_phi=" << phiComparisons
                   << " valid_cache_cells=" << populated
                   << " atomic16_bytes=" << sizeof(cell.value)
                   << " atomic16_lock_free=" << cell.value.is_lock_free()

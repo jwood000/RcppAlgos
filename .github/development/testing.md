@@ -62,9 +62,11 @@ inspect every populated cache entry without exposing production test hooks.
 Its optional second argument replaces page allocations with failures in the
 standalone executable. The package itself does not replace allocation functions.
 
-The default mode runs known counts in increasing/decreasing order, compares
-small counts and prime-square neighbors with an independent Eratosthenes sieve,
-and compares every populated phi cell with independent partial-sieve counts.
+The default mode checks both signs of `phiWorker` against independent partial
+sieves around its direct-table transition, with cache publication disabled.
+It then runs known counts in increasing/decreasing order, compares small counts
+and prime-square neighbors with an independent Eratosthenes sieve, and compares
+every populated phi cell with independent partial-sieve counts.
 The failure mode checks the result with no page allocations, verifies that no
 page was published, then checks recovery, signs, zero entries, page boundaries,
 and the final valid cache key.
@@ -238,6 +240,71 @@ improved about 3%, while eight-worker calls were about 1% slower. Unchanged
 control paths also varied, so small differences should not be attributed
 confidently to the pool. The prototype passed correctness checks, but did not
 demonstrate a compelling performance advantage on this machine.
+
+## Monotonic direct-table suffix
+
+The November 3, 2026 loop change splits `phiWorker` into a recursive prefix
+and a direct-table suffix. The prefix stops at the first successful `isPix`
+check; the suffix includes that same term and all remaining terms. No terms
+are reordered or omitted, and initialization, signs, cache behavior, and
+thread scheduling are unchanged. The simple two-loop implementation repeats
+one division at the transition rather than carrying extra state between loops.
+
+For a fixed frame, let `q = floor(x / p[i + 1])` and let `L` be the pi-table
+length. As `i` increases, `q` cannot increase and `p[i + 1]^2` increases.
+Thus once `q < L` and `q < p[i + 1]^2` hold, both continue to hold. This
+justifies using the direct formula unconditionally for the remaining terms.
+The equivalent thresholds are `x < p^3` and `x < p * L`; production code
+retains the quotient comparisons to avoid introducing larger products.
+
+The native checker adds 76 signed phi comparisons using independently built
+tables for parent input `1e8`. Cases cover `p^3 - 1`, `p^3`, and `p^3 + 1`
+for primes 41, 43, and 47, with cutoffs before, at, and after each transition.
+It also checks `127 * L` and its neighbors, where table membership controls
+the transition, plus an entirely direct loop and an early-direct degenerate
+case. Cache publication is disabled for these checks so neither sign can
+bypass the changed loop through a previously computed cache value.
+
+A clean package build had no compiler warnings, and `testPrimeCount.R`
+(15 expectations) and `testErrors.R` passed. The extended native checker
+passed ThreadSanitizer with four workers and AddressSanitizer/
+UndefinedBehaviorSanitizer with 1, 4, and 8 workers. Each default run checked
+662 independent prime counts, 76 signed phi results, and 1,394,803 populated
+cache entries. Both sanitizer builds also passed cache-allocation failure and
+recovery checks. These checks used C++11 and Apple clang on arm64 macOS;
+a full package check and other platforms have not been tested for this change.
+
+The native timing comparison used baseline `4c487bb` and the two-loop version,
+both built with `-std=c++11 -O3 -pthread`. Execution order was shuffled with
+seed 20261103 after builds and diagnostics finished. Inputs through `1e13`
+used seven fresh processes per version/worker combination, each with one cold
+and three warm calls. The `1e14` cases used three fresh processes with one cold
+and two warm calls. Timings included native setup and excluded R/process
+startup. All 764 counts matched. Median milliseconds were:
+
+| Input | Workers | Before cold | Suffix cold | Before warm | Suffix warm |
+| ---: | ---: | ---: | ---: | ---: | ---: |
+| `1e5` | 1 | 0.03658 | 0.03908 | 0.00083 | 0.00083 |
+| `1e8` | 1 | 0.17821 | 0.18804 | 0.05717 | 0.05433 |
+| `1e8` | 4 | 0.20354 | 0.20567 | 0.06458 | 0.06175 |
+| `1e8` | 8 | 0.22117 | 0.23613 | 0.08533 | 0.08950 |
+| `1e10` | 1 | 3.137 | 3.311 | 1.256 | 1.244 |
+| `1e10` | 4 | 2.379 | 2.334 | 0.897 | 0.834 |
+| `1e10` | 8 | 2.281 | 2.245 | 0.777 | 0.725 |
+| `1e12` | 1 | 84.695 | 78.300 | 52.756 | 47.207 |
+| `1e12` | 4 | 28.112 | 26.165 | 18.263 | 16.475 |
+| `1e12` | 8 | 25.230 | 23.288 | 16.702 | 15.177 |
+| `1e13` | 1 | 475.864 | 427.472 | 415.801 | 370.456 |
+| `1e13` | 4 | 157.516 | 139.549 | 135.088 | 121.667 |
+| `1e13` | 8 | 135.592 | 124.833 | 120.819 | 108.320 |
+| `1e14` | 4 | 1060.480 | 921.348 | 1054.790 | 922.452 |
+| `1e14` | 8 | 944.286 | 832.732 | 926.667 | 832.038 |
+
+Warmed calls from `1e12` through `1e14` improved by approximately 9–13% in
+these measurements; cold calls improved by approximately 7–13%. Smaller
+workloads were mixed: some cold medians increased by 5–7%, including serial
+`1e10` (3.137 to 3.311 ms). These results do not establish a universal speedup
+or isolate the cause of the smaller regressions.
 
 ## Native registration
 
