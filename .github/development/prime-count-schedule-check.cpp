@@ -5,7 +5,6 @@
 #include <cstdint>
 #include <cstdlib>
 #include <exception>
-#include <exception>
 #include <iostream>
 #include <limits>
 #include <sstream>
