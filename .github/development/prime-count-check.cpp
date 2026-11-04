@@ -1,13 +1,10 @@
-// Native driver for the extracted prime-counting core; see testing.md.
+// Native driver for the production Legendre implementation; see testing.md.
+#include "NumbersUtils/PrimeCount.h"
 #include <chrono>
 #include <iostream>
 #include <iomanip>
 #include <cstdlib>
 #include <cstdint>
-
-namespace PrimeCounting {
-    std::int64_t MainPrimeCount(std::int64_t, int, int);
-}
 
 int main(int argc, char** argv) {
     if (argc != 5) return 2;
@@ -19,7 +16,7 @@ int main(int argc, char** argv) {
 
     for (int i = 0; i < repeats; ++i) {
         const auto start = std::chrono::steady_clock::now();
-        const auto result = PrimeCounting::MainPrimeCount(n, threads, threads);
+        const auto result = PrimeCounting::PiLegendre(n, threads, threads);
         const double ms = std::chrono::duration<double, std::milli>(
             std::chrono::steady_clock::now() - start).count();
         std::cout << n << "," << threads << "," << i << ","
