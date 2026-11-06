@@ -106,6 +106,38 @@ share prepared tables; Phi and P2 also reuse the bounded atomic Phi cache.
 Dense table memory remains `O(sqrt(n))`. The drivers add no helper, dependency,
 R entry point, registration change, or new scheduling policy.
 
+### Memory requirements
+
+Legendre, Meissel and Lehmer each prepare one `PhiTables` context per call.
+For a prepared table limit `L`, the dense `int32_t` pi array contains `L + 1`
+elements, requiring `4 * (L + 1)` bytes of element storage. The
+`int64_t` prime vector, shared Phi cache, and other runtime allocations add
+to this `O(sqrt(n))` storage requirement.
+
+At `n = 2^53 - 1`, `L = 94,906,265`. Calculated sizes for the current
+implementation are:
+
+| Component | Bytes | MiB (`2^20` bytes) |
+| --- | ---: | ---: |
+| Dense pi element payload | 379,625,064 | 362.039 |
+| Prime-vector reservation request: 5,534,701 `int64_t` elements | 44,277,608 | 42.226 |
+| Sum of those two sizes | 423,902,672 | 404.265 |
+
+The reservation comes from the current `EstimatePiPrime` call in prime-table
+preparation. These are arithmetic storage estimates, not measured peak resident
+memory or a bound on total allocation. Actual vector capacities, allocator
+overhead, lazy Phi cache pages, tiny Phi tables, P3 row metadata, and worker
+resources also contribute. Prime-generation scratch is destroyed before the
+dense pi array is allocated, though the allocator may retain freed memory.
+Full-range runtime and peak memory have not yet been measured.
+
+Sequential phases and their workers share the same prepared table, so an
+eight-worker call does not allocate eight copies. Concurrent top-level calls
+each allocate their own table; the bounded Phi cache is shared process-wide.
+This storage design is also used by the existing Legendre implementation.
+The supported numeric range does not guarantee that every input is practical
+for the available memory.
+
 ### Reproducing native validation and timings
 
 ```sh
@@ -340,7 +372,7 @@ internal C++ interfaces; no R registration or method selector was added.
 
 P2 requires a table through `floor(sqrt(x))` for `x >= 4`. Let
 `b = pi(floor(sqrt(x)))`. Its sum over `a < i <= b` is
-`pi(floor(x/p[i])) - (i - 1)`. This orders each pair as `p[i] <= p[j]`, so
+`pi(floor(x/p[i])) - (i - 1)`. Each pair is nondecreasing, `p[i] <= p[j]`, so
 squares count once and swapped factors are not duplicated. If `a >= b`, the
 sum is zero without accessing `p[a+1]`.
 
@@ -386,7 +418,7 @@ exist, it additionally requires coverage through
 At Lehmer's cutoff a square-root table suffices. A smaller arbitrary `a` may
 need more coverage than `PhiTables` currently supports.
 
-For triples ordered `i <= j <= k`, the outer index ends at
+For nondecreasing triples `i <= j <= k`, the outer index ends at
 `pi(floor(cbrt(x)))`; the inner index runs from `i` through
 `pi(floor(sqrt(floor(x/p[i]))))`. Each pair contributes
 `pi(floor(floor(x/p[i])/p[j])) - (j - 1)`. The largest required lookup also

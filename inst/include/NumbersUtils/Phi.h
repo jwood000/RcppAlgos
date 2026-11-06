@@ -7,6 +7,10 @@ namespace PrimeCounting {
 
     // Canonical primes and pi values through an inclusive limit. Preparation
     // is separate from evaluation so callers can reuse these tables.
+    // The dense pi payload is 4 * (limit + 1) bytes: about 362 MiB at the
+    // maximum limit, plus the int64 prime vector and allocation overhead.
+    // Workers can share one immutable context; separate contexts own separate
+    // storage. See .github/development/testing.md for memory estimates.
     class PhiTables {
         std::vector<std::int64_t> primes_;
         std::vector<std::int32_t> pi_;
@@ -24,6 +28,10 @@ namespace PrimeCounting {
 
         // Read-only, one-based prime sequence; element zero is a sentinel.
         const std::vector<std::int64_t>& primes() const { return primes_; }
+
+        // Read-only pi[n] for 0 <= n <= limit(). Counting kernels validate
+        // their required coverage once before using these direct lookups.
+        const std::vector<std::int32_t>& pi() const { return pi_; }
     };
 
     // Count integers in [1, x] not divisible by the first a primes.
