@@ -10,6 +10,9 @@ investigation does not replace the normally installed package.
 - `src/PiPrime.cpp` implements the sieve counter used for small inputs.
 - `src/PiLegendre.cpp` prepares a local, immutable `PhiTables` object, clamps
   the requested workers, and applies Legendre's formula using `PhiParallel`.
+- `src/PiMeissel.cpp` and `src/PiLehmer.cpp` prepare square-root tables once,
+  evaluate Phi at the cube-root or fourth-root cutoff, and subtract their
+  P2 or P2/P3 corrections. They reuse the existing helpers and worker policies.
 - `src/PhiParallel.cpp` evaluates the outer Phi sum over the requested cutoff
   `a`, independently of the table extent. It retains the existing Legendre
   interval formulas, batch barriers, and serial/parallel thresholds; their
@@ -21,14 +24,18 @@ investigation does not replace the normally installed package.
   tables, and shared atomic cache. `inst/include/NumbersUtils/Phi.h` declares
   `Phi`, `PhiParallel`, and the reusable tables, including a read-only prime
   sequence. Worker evaluation through `Phi` remains serial.
-- `inst/include/NumbersUtils/PrimeCount.h` declares the two native entry points
+- `src/P2.cpp` counts two-prime products using direct pi lookups and shared
+  serial Phi for larger quotients. `src/P3.cpp` counts three-prime
+  products with direct lookups. `NumbersUtils/PartialSieve.h` declares these
+  internal kernels; `PartialSieveUtils.h` shares validation and corrected roots.
+  Neither kernel changes the R driver or selects a prime-counting method.
+- `inst/include/NumbersUtils/PrimeCount.h` declares the four native counters
   without R dependencies. It does not expose cache internals or phi helpers.
 
-This split preserves the existing R interface and dispatch thresholds. It does
-not introduce a method selector or a Lehmer implementation. Future algorithms
-can use the shared phi infrastructure after their mathematical and architectural
-design is agreed upon. The legacy `PhiTinyLookup.h` is retained but is no longer
-included by production code; the shared evaluator owns the tiny tables.
+The R interface and dispatch thresholds are unchanged. Meissel and Lehmer are
+available as internal C++ functions; an R method selector and automatic dispatch
+remain separate design work. The legacy `PhiTinyLookup.h` is retained but is no
+longer included by production code; the shared evaluator owns the tiny tables.
 
 ### Source-split validation
 
@@ -68,6 +75,133 @@ cause: source organization and helper linkage changed together, and compiler
 optimization effects were not isolated. Validation used arm64 macOS; a full
 package check and other platforms were not run for this refactor.
 
+## Meissel and Lehmer native drivers
+
+`PiMeissel(n, nThreads, maxThreads)` and `PiLehmer(n, nThreads, maxThreads)`
+accept integer `0 <= n <= 2^53 - 1`. Invalid inputs throw `std::out_of_range`
+before preparation; zero and one return zero immediately. Both thread controls
+default to one. Their minimum supplies the phase budget, and budgets at most
+one select serial execution. Legendre and the public R driver are unchanged.
+
+Each call prepares one immutable `PhiTables(floor(sqrt(n)))` and borrows it
+across sequential phases. Meissel chooses `a = pi(floor(cbrt(n)))` and returns
+`PhiParallel(n,a) + a - 1 - P2(n,a)`. Lehmer chooses
+`a = pi(floor(n^(1/4)))` and additionally subtracts `P3(n,a)`. Corrected integer
+roots supply both cutoffs: `floor(sqrt(floor(sqrt(n))))` is exactly the fourth
+root floor, so no new root helper or floating fourth-root estimate is needed.
+
+The identities follow by partitioning the survivors counted by Phi. They
+include one, the `pi(n) - a` surviving primes, and composite survivors. After
+the cube-root cutoff every surviving factor exceeds `cbrt(n)`, so a composite
+has exactly two prime factors. After the fourth-root cutoff it has two or
+three. Repeated factors are included by P2/P3. At the latter cutoff the
+smallest surviving prime `p` satisfies `p^2 > sqrt(n)`; therefore
+`floor(n/p^2) <= floor(sqrt(n))`, covering all P3 lookups in the shared table.
+The first cutoff cannot exceed the prepared square-root limit either.
+
+`PhiParallel`, P2 and P3 finish their workers before the next phase starts.
+Their serial worker kernels avoid nested parallel launches, and their existing
+`ThreadBatch` lifetimes propagate exceptions only after joining. All phases
+share prepared tables; Phi and P2 also reuse the bounded atomic Phi cache.
+Dense table memory remains `O(sqrt(n))`. The drivers add no helper, dependency,
+R entry point, registration change, or new scheduling policy.
+
+### Reproducing native validation and timings
+
+```sh
+prime_methods_check=$(mktemp -d)
+clang++ -std=c++11 -O1 -g -pthread -Wall -Wextra \
+    -fsanitize=address,undefined -fno-omit-frame-pointer -Iinst/include \
+    .github/development/prime-count-methods-check.cpp \
+    src/PiMeissel.cpp src/PiLehmer.cpp src/PiLegendre.cpp \
+    src/PhiParallel.cpp src/P2.cpp src/P3.cpp src/Phi.cpp src/Eratosthenes.cpp \
+    -o "$prime_methods_check/check"
+ASAN_OPTIONS=halt_on_error=1 UBSAN_OPTIONS=halt_on_error=1 \
+    "$prime_methods_check/check"
+```
+
+Build a separate executable with `-fsanitize=thread` and use
+`TSAN_OPTIONS=halt_on_error=1:symbolize=0` for concurrency checks. The fixture
+uses an independent segmented Eratosthenes sieve for exhaustive inputs through
+3,000, deterministic samples, and prime square/cube/fourth-power neighbors.
+It also checks known counts through `1e12`, thread budgets, invalid-input
+recovery, simultaneous different methods, and supplemental Legendre results.
+
+```sh
+clang++ -std=c++11 -O3 -pthread -Wall -Wextra -Wpedantic -Iinst/include \
+    .github/development/prime-count-methods-benchmark.cpp \
+    src/PiMeissel.cpp src/PiLehmer.cpp src/PiLegendre.cpp \
+    src/PhiParallel.cpp src/P2.cpp src/P3.cpp src/Phi.cpp src/Eratosthenes.cpp \
+    -o "$prime_methods_check/benchmark"
+"$prime_methods_check/benchmark" lehmer 1000000000000 4 5 37607912018
+```
+
+The first argument selects `legendre`, `meissel`, or `lehmer`. Output columns
+are `method,n,threads,repeat,count,total_ms`. Every count is verified, and total
+time includes table construction and destruction. Repetition zero is cold;
+later calls reuse the process-wide cache but reconstruct the tables. Use fresh
+processes for each configuration, since running one method can warm another's
+cache. The threads column is a budget, not a promise that each phase launches
+that many workers. Existing P2/P3 kernel timings exclude preparation and have
+different cache histories, so they cannot simply be added to predict totals.
+
+### Driver validation and timings (November 6, 2026)
+
+Both ASan/UBSan and TSan runs passed all 6,272 checks: 6,002 exhaustive counts,
+140 sampled counts, 72 cutoff boundaries, 14 known counts, 20 thread-budget
+cases, six supplemental Legendre results, eight invalid inputs, eight recovery
+counts, and two concurrent results. The independent sieve streamed through 88,529,282
+to cover the largest fourth-power neighbors while retaining a 64 KiB block.
+No compiler warnings or sanitizer diagnostics were reported.
+
+A clean isolated package installation compiled both new sources and passed
+`testPrimeCount.R` (15 expectations) and `testErrors.R` (207 expectations),
+without warnings, failures or skips. Source review checked the identities,
+table coverage, signed accumulation, small inputs, and exception lifetimes.
+Existing production helpers and R dispatch were unchanged, as verified against
+the initial working-tree snapshot; the Git index was also unchanged.
+
+Complete native timings used Apple clang, C++11, `-O3 -pthread`, and arm64
+macOS. Three fresh processes per method/input/thread configuration each made
+one cold and four warm calls. Configuration order and the three method orders
+were shuffled with seed 202611061 after other builds and checks finished.
+All 540 timed results matched known counts, extending driver validation through
+`1e13`. Each cell below is **cold / warm milliseconds**: median first call and
+median of per-process warm medians.
+
+| Input | Threads | Legendre | Meissel | Lehmer |
+| ---: | ---: | ---: | ---: | ---: |
+| `1e8` | 1 | 0.242 / 0.065 | 0.250 / 0.047 | 0.271 / 0.052 |
+| `1e8` | 4 | 0.235 / 0.071 | 0.292 / 0.083 | 0.310 / 0.089 |
+| `1e8` | 8 | 0.258 / 0.100 | 0.317 / 0.106 | 0.337 / 0.117 |
+| `1e10` | 1 | 3.510 / 1.226 | 3.462 / 1.249 | 3.585 / 1.301 |
+| `1e10` | 4 | 2.596 / 0.867 | 1.479 / 0.661 | 1.461 / 0.673 |
+| `1e10` | 8 | 2.434 / 0.774 | 1.442 / 0.625 | 1.502 / 0.692 |
+| `1e12` | 1 | 83.097 / 49.760 | 82.711 / 49.386 | 84.757 / 51.188 |
+| `1e12` | 4 | 26.818 / 16.710 | 25.902 / 15.902 | 25.728 / 16.141 |
+| `1e12` | 8 | 23.817 / 15.829 | 23.538 / 14.544 | 22.002 / 14.060 |
+| `1e13` | 1 | 449.170 / 388.530 | 453.270 / 392.303 | 454.806 / 394.427 |
+| `1e13` | 4 | 142.698 / 121.994 | 136.561 / 117.832 | 134.650 / 116.550 |
+| `1e13` | 8 | 128.483 / 108.476 | 112.804 / 95.584 | 109.401 / 94.147 |
+
+At `1e13` with eight requested threads, Meissel and Lehmer warm medians were
+about 12% and 13% below Legendre, respectively. Their single-thread medians
+were close to Legendre's, and small-input/cold behavior was mixed. These first
+drivers reuse Phi-backed P2 and Legendre's Phi scheduling; the measurements do
+not establish a generally fastest method or justify an automatic dispatch rule.
+No scheduling or kernel tuning was included in this integration.
+
+No full package check, other-platform validation, or nonempty driver count at
+the `2^53 - 1` ceiling was run. Prior helper tests cover exact-root boundaries
+there, but full-range runtime and peak memory remain unmeasured. The independent
+oracle and known results are computational evidence alongside the identities
+above, not proof from exhaustive testing of the entire domain.
+
+The initial source snapshot, test/build logs, benchmark executable, raw timing
+JSON and shuffled timing script are retained under the directory recorded by
+`/tmp/rcppalgos-prime-methods-path`:
+`/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-prime-methods-a8o1v9kw`.
+
 ## Shared parallel Phi orchestration
 
 `PhiParallel(x, a, nThreads, tables)` uses the same input domain and error
@@ -101,8 +235,8 @@ The helper does not call R APIs or reuse workers between batches.
 
 The interval policy remains the one tuned for Legendre, including its first,
 middle, final, and small-input batches. General cutoff correctness does not
-establish that these chunk sizes are optimal for Meissel or Lehmer. Those
-algorithms and their correction sums remain separate future work.
+establish that these chunk sizes are optimal for Meissel or Lehmer. The new
+drivers use this policy unchanged; tuning it for their cutoffs remains open.
 
 The direct parallel-Phi checker uses independent partial sieves and
 inclusion-exclusion, differential checks against serial Phi, concurrent callers,
@@ -191,6 +325,203 @@ Meissel/Lehmer cutoffs.
 Sources, fixture hashes, build/test logs, raw timing JSON, and the timing script
 are retained under the directory recorded by `/tmp/rcppalgos-phi-parallel-path`:
 `/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-phi-parallel-fnn6bu6s`.
+
+## P2 and P3 counting kernels
+
+`P2(x, a, nThreads, tables)` and `P3(x, a, nThreads, tables)` count integers
+through `x` with exactly two or three prime factors, counted with multiplicity,
+all greater than `p[a]`. `a == 0` permits all primes. They borrow immutable
+`PhiTables`, whose new `pi()` accessor exposes only a const reference. Both
+validate `0 <= x <= 2^53 - 1` and `0 <= a <= tables.primeCount()` before any
+empty-sum return. `nThreads <= 1` requests serial evaluation. The APIs are
+internal C++ interfaces; no R registration or method selector was added.
+
+### Preparation and counting invariants
+
+P2 requires a table through `floor(sqrt(x))` for `x >= 4`. Let
+`b = pi(floor(sqrt(x)))`. Its sum over `a < i <= b` is
+`pi(floor(x/p[i])) - (i - 1)`. This orders each pair as `p[i] <= p[j]`, so
+squares count once and swapped factors are not duplicated. If `a >= b`, the
+sum is zero without accessing `p[a+1]`.
+
+P2 answers quotients within the prepared table directly. The exact split is
+`floor(x/p) <= limit` iff `p > floor(x/(limit+1))`; it separates this suffix once
+instead of testing table membership in every expensive iteration. Larger
+quotients use `pi(q) = Phi(q, pi(floor(sqrt(q))), tables) +
+pi(floor(sqrt(q))) - 1`. Since `q >= p[i] >= 2` and `sqrt(q) <= sqrt(x)`, both
+the identity and the prepared-table coverage hold. The existing serial Phi
+implementation and its bounded atomic cache are reused. No additional dense
+pi table, segmented sieve, or vector of quotient results is allocated.
+
+P2 workers obtain contiguous chunks of 32 indices from a relaxed atomic
+counter. Each claim owns disjoint work; the counter does not publish other
+data. Thread launch makes immutable tables visible, and join makes independent
+subtotals visible. Dynamic assignment accommodates the uneven cost of pi
+queries. Worker selection initially requires 2,048 terms per worker, and
+small jobs remain serial. These are measured implementation choices, not
+mathematical limits or universally optimal settings for arbitrary cutoffs.
+
+An initial segmented P2 prototype passed correctness checks and scaled across
+threads, but the simpler Phi-backed formula was substantially faster for some
+warmed workloads. At `1e10` with the fourth-root cutoff, one-worker warm medians
+were 8.457 ms for streaming versus 0.951 ms for the straightforward Phi-backed
+formula. At the cube-root cutoff they were 1.159 versus 0.670 ms. Cold behavior
+was mixed: at `1e10`/cube root streaming took 1.200 ms versus 2.088 ms, while at
+the fourth-root cutoff it took 8.480 ms versus 2.883 ms. This comparison used
+three shuffled fresh processes and one cold plus two warm calls each, with
+prepared-table setup excluded. All 234 timed partial counts in that initial
+screen matched their expected values.
+
+The maintainer chose the simpler Phi-backed implementation after this result.
+The segmented source, executable, and full timing results are retained in the
+`segmented-experiment` directory under the artifact path recorded below. P2
+still evaluates its explicit pair-count sum; neither kernel delegates the
+whole requested prime count to another method. Performance at the 53-bit
+ceiling has not been established.
+
+P3 requires table coverage through `floor(cbrt(x))` for `x >= 8`. If triples
+exist, it additionally requires coverage through
+`floor(floor(x/p[a+1])/p[a+1])`. Insufficient preparation throws
+`std::out_of_range`; the kernel does not silently allocate a larger table.
+At Lehmer's cutoff a square-root table suffices. A smaller arbitrary `a` may
+need more coverage than `PhiTables` currently supports.
+
+For triples ordered `i <= j <= k`, the outer index ends at
+`pi(floor(cbrt(x)))`; the inner index runs from `i` through
+`pi(floor(sqrt(floor(x/p[i]))))`. Each pair contributes
+`pi(floor(floor(x/p[i])/p[j])) - (j - 1)`. The largest required lookup also
+covers every inner square-root lookup and prime index. Equal factors are
+included. With multiple requested workers, cumulative inner-iteration counts
+partition contiguous outer rows. At least 131,072 total inner iterations are
+required before launching workers, with a 32,768-iteration grain per worker.
+A cheap first-row bound skips scheduling allocation when the sum is certainly
+small. The exact work sum handles other small cases. Serial evaluation avoids
+this scheduling storage.
+
+Both kernels use `ThreadBatch` for join-before-propagation and partial-launch
+cleanup. Referenced tables, rows and results outlive their batches. Roots are
+corrected by exact integer comparisons; successive divisions avoid forming
+potentially overflowing products. Contributions are nonnegative and the total
+count is at most `x`, so signed 64-bit accumulation is sufficient.
+
+### Native checks and timings
+
+```sh
+partial_sieve_check=$(mktemp -d)
+clang++ -std=c++11 -O1 -g -pthread -fsanitize=address,undefined \
+    -fno-omit-frame-pointer -Iinst/include \
+    .github/development/partial-sieve-check.cpp \
+    src/P2.cpp src/P3.cpp src/Phi.cpp src/Eratosthenes.cpp \
+    -o "$partial_sieve_check/check"
+ASAN_OPTIONS=halt_on_error=1 UBSAN_OPTIONS=halt_on_error=1 \
+    "$partial_sieve_check/check"
+```
+
+Build a separate executable with `-fsanitize=thread` and use
+`TSAN_OPTIONS=halt_on_error=1:symbolize=0` for concurrency checks.
+
+```sh
+clang++ -std=c++11 -O3 -pthread -Iinst/include \
+    .github/development/partial-sieve-benchmark.cpp \
+    src/P2.cpp src/P3.cpp src/Phi.cpp src/Eratosthenes.cpp \
+    -o "$partial_sieve_check/benchmark"
+"$partial_sieve_check/benchmark" verify 10000000000 4 4 1 455052511
+```
+
+The verification mode checks the Meissel/Lehmer identity against a supplied
+known prime count and reports `P2,P3,Phi,a`; it evaluates the expression in the
+fixture rather than calling the production drivers added afterward. Timing
+modes `p2`, `p3`, and `reference`
+accept the same arguments but take the expected partial count as the last
+argument. The `reference` mode independently evaluates every P2 quotient using
+serial Phi/Legendre with shared tables. It is a straightforward formula
+baseline, not a comparison with an optimized external prime-counting library.
+Output is `method,x,root_power,threads,repetition,count,setup_ms,kernel_ms`;
+prepared-table setup is measured separately from the kernel. Use fresh
+processes, shuffle order, and finish other builds/checks before timing.
+
+### Final validation and performance (November 6, 2026)
+
+The final Phi-backed P2 and tuned P3 passed both ASan/UBSan and TSan:
+
+- 100,548 independent small counts from a smallest-prime-factor/Omega sieve.
+- 72 repeated-factor boundaries, 18 larger/quotient/worker-boundary P2 cases,
+  seven independent P3 checks (including explicit triple enumeration), and
+  two concurrent calls.
+- 196 integer-root checks against independent binary-search roots, including
+  large square/cube neighbors and the 53-bit boundary; 22 preparation/empty
+  cases, including valid maximal-x empty P3; 44 invalid-input/coverage cases.
+- Twelve known-prime-count identities: Meissel through `1e12` and Lehmer
+  through `1e10`. An additional optimized driver verified both cutoffs through
+  `1e12` and the fourth-root identity at `1e13`.
+
+An initial clean isolated package build and a rebuild of the final P2/P3
+sources both passed `testPrimeCount.R` and `testErrors.R`. Native builds used
+Apple clang, C++11, and `-Wall -Wextra -Wpedantic`, without warnings or sanitizer
+diagnostics. Review checked the counting identities, table coverage, exact-once
+chunk/row ownership, signed arithmetic, and failure-path object lifetimes.
+No full package check, other-platform validation, or full-range P2 performance
+run was performed.
+
+The final timing matrix used `-std=c++11 -O3 -pthread`, three fresh processes
+per case, one cold and two warm calls, shuffled with seed 202611055 after all
+builds and tests finished. All 234 timed counts matched. The following are
+kernel milliseconds, excluding shared-table preparation. Cold values are
+medians of first calls; warm values are medians of per-process warm medians.
+Threads are requested budgets: small jobs can use fewer workers.
+
+| Kernel | Input | Cutoff root | Threads | Cold | Warm |
+| --- | ---: | ---: | ---: | ---: | ---: |
+| P2 | `1e8` | 3 | 1 | 0.111 | 0.018 |
+| P2 | `1e8` | 3 | 4 | 0.115 | 0.018 |
+| P2 | `1e10` | 3 | 1 | 2.085 | 0.641 |
+| P2 | `1e10` | 3 | 4 | 0.789 | 0.233 |
+| P2 | `1e10` | 3 | 8 | 0.728 | 0.235 |
+| P2 | `1e10` | 4 | 1 | 2.750 | 0.902 |
+| P2 | `1e10` | 4 | 4 | 0.941 | 0.308 |
+| P2 | `1e10` | 4 | 8 | 0.960 | 0.308 |
+| P2 | `1e12` | 3 | 1 | 55.749 | 31.438 |
+| P2 | `1e12` | 3 | 4 | 15.915 | 8.585 |
+| P2 | `1e12` | 3 | 8 | 13.264 | 7.148 |
+| P2 | `1e12` | 4 | 1 | 69.963 | 40.868 |
+| P2 | `1e12` | 4 | 4 | 19.821 | 11.416 |
+| P2 | `1e12` | 4 | 8 | 16.089 | 9.245 |
+| P3 | `1e10` | 4 | 1 | 0.032 | 0.031 |
+| P3 | `1e10` | 4 | 4 | 0.033 | 0.031 |
+| P3 | `1e10` | 4 | 8 | 0.033 | 0.031 |
+| P3 | `1e12` | 4 | 1 | 0.673 | 0.585 |
+| P3 | `1e12` | 4 | 4 | 0.277 | 0.260 |
+| P3 | `1e12` | 4 | 8 | 0.249 | 0.234 |
+| P3 | `1e13` | 4 | 1 | 2.858 | 2.643 |
+| P3 | `1e13` | 4 | 4 | 1.236 | 1.081 |
+| P3 | `1e13` | 4 | 8 | 0.923 | 0.806 |
+
+Table preparation was approximately 0.034 ms at `1e8`, 0.26 ms at `1e10`,
+2.5 ms at `1e12`, and 7.7 ms at `1e13`; the new drivers share that setup
+with Phi and the applicable kernels. At `1e12`/fourth-root cutoff, warmed P2 improved
+from 40.868 ms with one worker to 9.245 ms with eight (about 4.4x). P3 at that
+input improved from 0.585 to 0.234 ms; at `1e13` it improved from 2.643 to
+0.806 ms. P2 at `1e10` caps requested eight workers at four. P3 at `1e10`
+stays serial, avoiding the launch overhead seen in the initial version.
+
+The simpler P2 is not uniformly faster than the rejected segmented prototype.
+At `1e12`/cube-root cutoff, the prototype had one-worker cold/warm medians of
+29.429/29.378 ms versus 55.749/31.438 ms for the final implementation; with
+eight workers they were 6.034/5.888 versus 13.265/7.148 ms. Conversely, at the
+fourth-root cutoff, prototype one-worker cold/warm times were 363.199/358.478
+ms versus 69.963/40.868 ms, and eight-worker times were 67.991/71.293 versus
+16.089/9.245 ms. These are separate shuffled runs on the same machine, not a
+claim of a universal crossover. The selected design favors simplicity and
+the shared Phi infrastructure; a hybrid was explicitly deferred.
+
+A focused P3 tuning screen also rejected doubling its per-worker grain: that
+slowed a `5e10` four-worker midpoint from about 0.059 to 0.071 ms. The retained
+change only adds the minimum total-work cutoff, preserving useful parallelism
+on larger workloads. Its timing artifacts are under `p3-small-work`.
+
+Sources, old and final timing JSON, scripts, and validation logs are retained
+under the directory recorded by `/tmp/rcppalgos-partial-sieve-path`:
+`/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-partial-sieve-k6jpym97`.
 
 ## Shared Phi integration
 
