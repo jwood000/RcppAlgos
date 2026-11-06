@@ -2,6 +2,7 @@
 
 ## New Features
 
+* Added `method = "auto"`, `"legendre"`, `"meissel"`, and `"lehmer"` to `primeCount()`. Explicit choices use the named algorithm for all accepted inputs. The new argument follows `nThreads`, preserving existing positional calls. The current `"auto"` policy retains lookup/sieve counting below 100000 and Legendre otherwise; it does not yet select the fastest method from benchmarks.
 * Added ranking, sampling, and iterator random access for supported multiset partitions, including GMP support for large ranks.
 * Added parallel generation of supported multiset partitions. `lower` and `upper` now index matching partitions in lexicographical order, including equivalent sum/equality calls to `comboGeneral()`. Previously, supplying `lower` could select ordinary combination candidates instead of matching partitions, so existing bounded calls may return different results.
 
@@ -20,6 +21,7 @@
 
 ## Improvements
 
+* Corrected the `primeCount()` help's inclusive endpoint, Legendre cutoff, and Phi recurrence, and documented the Meissel and Lehmer formulas, threading behavior, exact result types, and memory requirements.
 * Documented that supported sum/equality permutation calls without `lower` generate matching partitions followed by each partition's permutations. Supplying `lower` selects ordinary permutation candidates instead. Supported partitions and compositions use lexicographical matching-result order.
 * Clarified that zeros in permutations are actual elements, unlike padding in non-weak compositions.
 

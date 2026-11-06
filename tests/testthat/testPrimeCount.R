@@ -45,3 +45,108 @@ test_that("primeCount generates correct numbers", {
     expect_equal(primeCount(1), 0)
     expect_equal(sapply(1:9, primeCount), c(0,1,2,2,3,3,4,4,4))
 })
+
+test_that("primeCount methods agree with an independent sieve at boundaries", {
+    methods <- c("auto", "legendre", "meissel", "lehmer")
+    powers <- as.vector(outer(c(2, 3, 17, 37), 2:4, "^"))
+    inputs <- sort(unique(c(1:12, 99999:100001,
+                            as.vector(outer(powers, -1:1, "+")))))
+
+    ## A base-R Eratosthenes sieve supplies the expected counts independently
+    ## of primeCount, primeSieve, and the shared native Phi infrastructure.
+    sieve <- rep(TRUE, max(inputs))
+    sieve[1] <- FALSE
+    for (p in 2:floor(sqrt(length(sieve)))) {
+        if (sieve[p]) sieve[seq.int(p * p, length(sieve), by = p)] <- FALSE
+    }
+    expected <- as.integer(cumsum(sieve)[inputs])
+
+    for (method in methods) {
+        actual <- vapply(inputs, primeCount, integer(1), method = method)
+        expect_identical(actual, expected)
+    }
+})
+
+test_that("primeCount methods preserve known counts and result types", {
+    inputs <- list(1000000L, 1e10, 1e11)
+    expected <- list(78498L, 455052511L, 4118054813)
+
+    for (method in c("auto", "legendre", "meissel", "lehmer")) {
+        expect_identical(lapply(inputs, primeCount, method = method), expected)
+    }
+})
+
+test_that("primeCount appends method without changing positional calls", {
+    inputs <- list(1, 10, 99999, 100000, 1e10, 1e11)
+    expect_identical(lapply(inputs, primeCount),
+                     lapply(inputs, primeCount, method = "auto"))
+    expect_identical(primeCount(1e10, 2L), 455052511L)
+
+    for (method in c("auto", "legendre", "meissel", "lehmer")) {
+        expect_identical(primeCount(1e10, 2L, method), 455052511L)
+    }
+})
+
+test_that("primeCount uses standard method matching", {
+    abbreviations <- c("a", "leg", "m", "leh")
+    actual <- lapply(abbreviations, function(method) {
+        primeCount(1e6, method = method)
+    })
+    expect_identical(actual, rep(list(78498L), length(abbreviations)))
+    expect_identical(primeCount(1e6, method = NULL),
+                     primeCount(1e6, method = "auto"))
+
+    invalidMethods <- list("le", "l", "unknown", "Legendre", "", NA_character_,
+                           character(), 1, TRUE, c("auto", "lehmer"))
+    for (method in invalidMethods) {
+        expect_error(primeCount(1e6, method = method), "arg")
+    }
+})
+
+test_that("explicit primeCount methods support parallel calls and reuse", {
+    maxThreads <- RcppAlgos:::pkgEnv$maxThreads
+    skip_if(maxThreads < 2L, "At least two available threads are needed")
+    threadCounts <- unique(pmin(c(2L, 4L), as.integer(maxThreads)))
+    inputs <- c(1e10 + 1, 1e7, 1e11, 1e10 + 1)
+    expected <- c(455052511, 664579, 4118054813, 455052511)
+
+    for (method in c("legendre", "meissel", "lehmer")) {
+        for (nThreads in threadCounts) {
+            actual <- vapply(inputs, primeCount, numeric(1),
+                             nThreads = nThreads, method = method)
+            expect_identical(actual, expected)
+        }
+    }
+})
+
+test_that("primeCount methods retain input validation", {
+    invalidInputs <- list(0, -1, 2^53, 1.5, NA_real_, Inf, "100000")
+    messages <- c("positive", "positive", "less than", "whole number",
+                  "NA or NaN", "less than", "numeric or integer")
+
+    for (method in c("auto", "legendre", "meissel", "lehmer")) {
+        for (i in seq_along(invalidInputs)) {
+            expect_error(primeCount(invalidInputs[[i]], method = method), messages[i])
+        }
+        expect_identical(primeCount(100, method = method), 25L)
+    }
+})
+
+test_that("primeCount methods retain the thread-validation threshold", {
+    invalidThreads <- list(0L, -1L, 1.5, NA_integer_, Inf, "two", numeric())
+
+    for (method in c("auto", "legendre", "meissel", "lehmer")) {
+        ## Historically these inputs ignore nThreads and execute serially.
+        actual <- vapply(invalidThreads, function(nThreads) {
+            primeCount(99999, nThreads = nThreads, method = method)
+        }, integer(1))
+        expect_identical(actual, rep(9592L, length(invalidThreads)))
+
+        for (nThreads in invalidThreads) {
+            expect_error(primeCount(100000, nThreads = nThreads, method = method),
+                         "nThreads")
+        }
+        expect_identical(primeCount(100000, nThreads = .Machine$integer.max,
+                                   method = method), 9592L)
+    }
+})

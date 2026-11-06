@@ -42,6 +42,8 @@ isPrimeRcpp <- function(v, namedVector = FALSE, nThreads = NULL) {
                  FALSE, nThreads, pkgEnv$maxThreads))
 }
 
-primeCount <- function(n, nThreads = NULL) {
-    return(.Call(`_RcppAlgos_PrimeCountCpp`, n, nThreads, pkgEnv$maxThreads))
+primeCount <- function(n, nThreads = NULL, method = "auto") {
+    method <- match.arg(method, c("auto", "legendre", "meissel", "lehmer"))
+    return(.Call(`_RcppAlgos_PrimeCountCpp`, n, nThreads,
+                 pkgEnv$maxThreads, method))
 }

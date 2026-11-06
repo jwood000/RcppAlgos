@@ -230,10 +230,10 @@ extern "C" SEXP _RcppAlgos_PollardRhoContainer(SEXP Rv, SEXP RNamed, SEXP RbPrim
   END_CPP11
 }
 // PrimeCount.cpp
-SEXP PrimeCountCpp(SEXP Rn, SEXP RNumThreads, SEXP RmaxThreads);
-extern "C" SEXP _RcppAlgos_PrimeCountCpp(SEXP Rn, SEXP RNumThreads, SEXP RmaxThreads) {
+SEXP PrimeCountCpp(SEXP Rn, SEXP RNumThreads, SEXP RmaxThreads, std::string method);
+extern "C" SEXP _RcppAlgos_PrimeCountCpp(SEXP Rn, SEXP RNumThreads, SEXP RmaxThreads, SEXP method) {
   BEGIN_CPP11
-    return cpp11::as_sexp(PrimeCountCpp(cpp11::as_cpp<cpp11::decay_t<SEXP>>(Rn), cpp11::as_cpp<cpp11::decay_t<SEXP>>(RNumThreads), cpp11::as_cpp<cpp11::decay_t<SEXP>>(RmaxThreads)));
+    return cpp11::as_sexp(PrimeCountCpp(cpp11::as_cpp<cpp11::decay_t<SEXP>>(Rn), cpp11::as_cpp<cpp11::decay_t<SEXP>>(RNumThreads), cpp11::as_cpp<cpp11::decay_t<SEXP>>(RmaxThreads), cpp11::as_cpp<cpp11::decay_t<std::string>>(method)));
   END_CPP11
 }
 // PrimeSieve.cpp
@@ -333,7 +333,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_RcppAlgos_PrevGatherGlue",          (DL_FUNC) &_RcppAlgos_PrevGatherGlue,           1},
     {"_RcppAlgos_PrevIterGlue",            (DL_FUNC) &_RcppAlgos_PrevIterGlue,             1},
     {"_RcppAlgos_PrevNumIterGlue",         (DL_FUNC) &_RcppAlgos_PrevNumIterGlue,          2},
-    {"_RcppAlgos_PrimeCountCpp",           (DL_FUNC) &_RcppAlgos_PrimeCountCpp,            3},
+    {"_RcppAlgos_PrimeCountCpp",           (DL_FUNC) &_RcppAlgos_PrimeCountCpp,            4},
     {"_RcppAlgos_PrimeSieveCpp",           (DL_FUNC) &_RcppAlgos_PrimeSieveCpp,            5},
     {"_RcppAlgos_RandomAccessGlue",        (DL_FUNC) &_RcppAlgos_RandomAccessGlue,         2},
     {"_RcppAlgos_RankCombPerm",            (DL_FUNC) &_RcppAlgos_RankCombPerm,             8},

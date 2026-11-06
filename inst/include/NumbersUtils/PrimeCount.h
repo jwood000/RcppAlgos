@@ -7,7 +7,7 @@ namespace PrimeCounting {
     // Sieve counter used by the R driver for 10 <= n < 100000.
     std::int64_t PiPrime(std::int64_t n);
 
-    // Legendre counter for 100000 <= n <= 2^53 - 1; inputs are validated by
+    // Legendre counter for 1 <= n <= 2^53 - 1; inputs are validated by
     // the R driver. Each call owns its prepared tables and uses PhiParallel;
     // workers share the general Phi evaluator's bounded, thread-safe cache.
     std::int64_t PiLegendre(std::int64_t n, int nThreads = 1,
@@ -17,8 +17,8 @@ namespace PrimeCounting {
     // std::out_of_range before table preparation. Each call prepares one
     // immutable square-root table shared by its Phi/P2/P3 phases. Phases run
     // sequentially with at most min(nThreads, maxThreads) requested workers;
-    // budgets <= 1 use serial execution. These are internal native entry
-    // points; the R method selector and automatic dispatch are separate work.
+    // budgets <= 1 use serial execution. The R driver selects the native
+    // counter after validating its public inputs and method argument.
     std::int64_t PiMeissel(std::int64_t n, int nThreads = 1,
                            int maxThreads = 1);
 

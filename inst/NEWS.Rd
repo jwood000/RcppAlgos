@@ -5,6 +5,7 @@
 
     \subsection{New Features}{
         \itemize{
+          \item Added \code{method = "auto"}, \code{"legendre"}, \code{"meissel"}, and \code{"lehmer"} to \code{primeCount()}. Explicit choices use the named algorithm for all accepted inputs. The new argument follows \code{nThreads}, preserving existing positional calls. The current \code{"auto"} policy retains lookup/sieve counting below 100000 and Legendre otherwise; it does not yet select the fastest method from benchmarks.
           \item Added ranking, sampling, and iterator random access for supported multiset partitions, including GMP support for large ranks.
           \item Added parallel generation of supported multiset partitions. \code{lower} and \code{upper} now index matching partitions in lexicographical order, including equivalent sum/equality calls to \code{comboGeneral()}. Previously, supplying \code{lower} could select ordinary combination candidates instead of matching partitions, so existing bounded calls may return different results.
         }
@@ -27,6 +28,7 @@
 
     \subsection{Improvements}{
         \itemize{
+          \item Corrected the \code{primeCount()} help's inclusive endpoint, Legendre cutoff, and Phi recurrence, and documented the Meissel and Lehmer formulas, threading behavior, exact result types, and memory requirements.
           \item Documented that supported sum/equality permutation calls without \code{lower} generate matching partitions followed by each partition's permutations. Supplying \code{lower} selects ordinary permutation candidates instead. Supported partitions and compositions use lexicographical matching-result order.
           \item Clarified that zeros in permutations are actual elements, unlike padding in non-weak compositions.
         }

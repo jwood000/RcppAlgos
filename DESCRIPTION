@@ -20,8 +20,9 @@ Description: Provides optimized functions and flexible iterators implemented in
     'libdivide'. The primeSieve function is based on the segmented sieve of
     Eratosthenes implementation by Kim Walisch. It is also efficient for large
     numbers by using the cache friendly improvements originally developed by
-    Tomás Oliveira. Finally, there is a prime counting function that implements
-    Legendre's formula based on the work of Kim Walisch.
+    Tomás Oliveira. Prime counting supports Legendre, Meissel, and Lehmer
+    methods. The Legendre implementation and shared partial-sieve calculation
+    build on the work of Kim Walisch.
 URL: https://jwood000.github.io/RcppAlgos/,
         https://github.com/jwood000/RcppAlgos, https://gmplib.org/,
         https://github.com/kimwalisch/primesieve, https://libdivide.com,
