@@ -98,7 +98,7 @@ namespace {
     // Pages are allocated only when needed; out-of-range inputs are still
     // evaluated normally, without caching. Zero denotes a cache miss.
     // For positive x, 1 <= Phi(x, a) <= x, so cached answers fit in uint16_t.
-    // The evaluator handles x = 0 before consulting or populating the cache.
+    // Public Phi handles x = 0 before consulting or populating the cache.
     constexpr std::size_t CACHE_ROWS = 100;
     constexpr unsigned PAGE_BITS = 12;
     constexpr std::size_t PAGE_SIZE = 1u << PAGE_BITS;
@@ -218,29 +218,20 @@ namespace {
         const std::vector<std::int32_t>& pi;
         PhiCache& cache;
 
-        bool isPi(std::int64_t x, std::int64_t a) const {
-            // A final prepared prime need not have a lookahead prime. Missing
-            // lookahead disables this shortcut, not the recursive evaluation.
-            return x < static_cast<std::int64_t>(pi.size()) &&
-                   a + 1 < static_cast<std::int64_t>(primes.size()) &&
-                   x < primes[a + 1] * primes[a + 1];
-        }
-
     public:
         PhiEvaluator(const std::vector<std::int64_t>& preparedPrimes,
                      const std::vector<std::int32_t>& preparedPi)
             : primes(preparedPrimes), pi(preparedPi), cache(sharedCache()) {}
 
+        // Private kernel: a >= 6, x > p[a], and the direct pi shortcut has
+        // already been ruled out. Public Phi checks the initial call.
+        // A recursive call exists only when b > min(b, 6), so i >= 6.
+        // Also p[i + 1] <= floor(sqrt(x)), hence its quotient is at least
+        // p[i + 1] > p[i]. The parent tests the shortcut before recursing.
+        // These invariants let children skip the initial checks safely.
         template <std::int64_t SIGN>
         std::int64_t evaluate(std::int64_t x, std::int64_t a) {
-            if (x == 0) return 0;
-            if (a == 0) return x * SIGN;
-            if (x <= primes[a]) return SIGN;
-            if (a <= TINY_A) return phiTiny(x, a) * SIGN;
-
-            if (isPi(x, a)) {
-                return (static_cast<std::int64_t>(pi[x]) - a + 1) * SIGN;
-            }
+            if (a == TINY_A) return phiTiny(x, TINY_A) * SIGN;
 
             const std::int64_t cached = cache.get(x, a);
             if (cached) return cached * SIGN;
@@ -253,6 +244,8 @@ namespace {
             }
 
             // Otherwise every prepared prime is below root, so b = a exactly.
+            // Keep the general base here: b can be below 6 even though a >= 6.
+            // For example, Phi(18, 7) with a table through 17 has b = c = 2.
             const std::int64_t c = std::min(
                 b, static_cast<std::int64_t>(TINY_A)
             );
@@ -264,7 +257,10 @@ namespace {
 
             for (; i < b; ++i) {
                 const std::int64_t quotient = x / primes[i + 1];
-                if (isPi(quotient, i)) break;
+                // i + 1 <= b <= a guarantees the lookahead prime exists.
+                // A child is called only after this shortcut has failed.
+                if (quotient < static_cast<std::int64_t>(pi.size()) &&
+                    quotient < primes[i + 1] * primes[i + 1]) break;
                 sum += evaluate<-SIGN>(quotient, i);
             }
 
@@ -320,6 +316,15 @@ namespace {
         if (a == 0) return x;
         if (x <= tables.primes_[a]) return 1;
         if (a <= TINY_A) return phiTiny(x, a);
+
+        // Check the initial direct shortcut here; recursive children are
+        // checked by their parent. A final prepared prime may have no
+        // lookahead prime, which disables only this shortcut, not evaluation.
+        if (x < static_cast<std::int64_t>(tables.pi_.size()) &&
+            a + 1 < static_cast<std::int64_t>(tables.primes_.size()) &&
+            x < tables.primes_[a + 1] * tables.primes_[a + 1]) {
+            return static_cast<std::int64_t>(tables.pi_[x]) - a + 1;
+        }
 
         PhiEvaluator evaluator(tables.primes_, tables.pi_);
         return evaluator.evaluate<1>(x, a);

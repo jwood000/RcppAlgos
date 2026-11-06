@@ -80,10 +80,17 @@ namespace {
     };
 
     const double getChunkFactor(std::int64_t x) {
-        static constexpr std::array<double, 9> nums = {{1e10, 1e12, 2e13, 5e13, 8e13, 1e14, 5e14, 1e15, 1e16}};
-        static constexpr std::array<double, 9> factor = {{1.3, 1.2, 1.1, 1.07, 1.05, 1.01, 1.007, 1.006, 1.005}};
+        static constexpr std::array<double, 9> nums = {
+            {1e10, 1e12, 2e13, 5e13, 8e13, 1e14, 5e14, 1e15, 1e16}
+        };
 
-        const auto it = std::upper_bound(nums.cbegin(), nums.cend(), static_cast<double>(x));
+        static constexpr std::array<double, 9> factor = {
+            {1.3, 1.2, 1.1, 1.07, 1.05, 1.01, 1.007, 1.006, 1.005}
+        };
+
+        const auto it = std::upper_bound(
+            nums.cbegin(), nums.cend(), static_cast<double>(x)
+        );
         return std::log(factor[it - nums.cbegin()]);
     }
 
@@ -236,15 +243,15 @@ namespace {
 
     // Historical timings before shared-Phi integration (nThreads = 8).
     // Counts verified by Kim Walisch's primecount library.
-    //  10^9 -->>          50,847,534   -->>   167.5 microseconds
-    // 10^10 -->>         455,052,511   -->>   677.6 microseconds
-    // 10^11 -->>       4,118,054,813   -->>   2.623 milliseconds
-    // 10^12 -->>      37,607,912,018   -->>   14.40 milliseconds
-    // 10^13 -->>     346,065,536,839   -->>   103.3 milliseconds
-    // 10^14 -->>   3,204,941,750,802   -->>   0.689 seconds
-    // 10^15 -->>  29,844,570,422,669   -->>   5.096 seconds
+    //  10^9 -->>          50,847,534   -->>   192.8 microseconds
+    // 10^10 -->>         455,052,511   -->>   800.9 microseconds
+    // 10^11 -->>       4,118,054,813   -->>   2.799 milliseconds
+    // 10^12 -->>      37,607,912,018   -->>   14.72 milliseconds
+    // 10^13 -->>     346,065,536,839   -->>   104.3 milliseconds
+    // 10^14 -->>   3,204,941,750,802   -->>   0.770 seconds
+    // 10^15 -->>  29,844,570,422,669   -->>   5.779 seconds
     // MAX VALUE (2^53 - 1) -->>
-    //            252,252,704,148,404   -->>  37.234 seconds
+    //            252,252,704,148,404   -->>  42.165 seconds
 
     std::int64_t PiLegendre(std::int64_t n, int nThreads, int maxThreads) {
 
