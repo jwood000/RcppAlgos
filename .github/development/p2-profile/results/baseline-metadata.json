@@ -1,0 +1,18 @@
+{
+  "seed": 202611071,
+  "processes": 3,
+  "repeats": 4,
+  "verified_rows": 432,
+  "timing": "uninstrumented production kernels",
+  "compiler_command_file": "build-command.json",
+  "thread_budgets": [
+    1,
+    4,
+    8
+  ],
+  "input_counts": {
+    "10000000000": 455052511,
+    "1000000000000": 37607912018,
+    "10000000000000": 346065536839
+  }
+}

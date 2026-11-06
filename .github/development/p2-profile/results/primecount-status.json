@@ -1,0 +1,44 @@
+{
+  "version": "primecount 8.0, <https://github.com/kimwalisch/primecount>\nCopyright (C) 2013 - 2025 Kim Walisch\nBSD 2-Clause License <https://opensource.org/licenses/BSD-2-Clause>\n",
+  "runs": [
+    {
+      "method": "meissel",
+      "command": [
+        "primecount",
+        "1000000000000000",
+        "--threads=8",
+        "--meissel",
+        "--status",
+        "--time"
+      ],
+      "stdout": "\n=== pi_meissel(x) ===\npi(x) = phi(x, a) + a - 1 - P2\nx = 1000000000000000\ny = 100000\na = 9592\nthreads = 8\n\n=== phi(x, a) ===\n\n\u001b[KStatus: 100%\nphi = 49112706074339\nSeconds: 0.383\n\n=== P2(x, y) ===\n\n\u001b[KStatus: 0%\n\u001b[KStatus: 63%\n\u001b[KStatus: 100%\nP2 = 19268135661261\nSeconds: 0.178\n\n29844570422669\nSeconds: 0.561\n",
+      "stderr": ""
+    },
+    {
+      "method": "lehmer",
+      "command": [
+        "primecount",
+        "1000000000000000",
+        "--threads=8",
+        "--lehmer",
+        "--status",
+        "--time"
+      ],
+      "stdout": "\n=== pi_lehmer(x) ===\npi(x) = phi(x, a) + a - 1 - P2 - P3\nx = 1000000000000000\ny = 5623\na = 739\nthreads = 8\n\n=== phi(x, a) ===\n\n\u001b[KStatus: 100%\nphi = 64937559519089\nSeconds: 0.093\n\n=== P2(x, y) ===\n\n\u001b[KStatus: 0%\n\u001b[KStatus: 13%\n\u001b[KStatus: 25%\n\u001b[KStatus: 36%\n\u001b[KStatus: 38%\n\u001b[KStatus: 48%\n\u001b[KStatus: 50%\n\u001b[KStatus: 59%\n\u001b[KStatus: 63%\n\u001b[KStatus: 72%\n\u001b[KStatus: 75%\n\u001b[KStatus: 86%\n\u001b[KStatus: 88%\n\u001b[KStatus: 94%\n\u001b[KStatus: 96%\n\u001b[KStatus: 97%\n\u001b[KStatus: 100%\n\u001b[KStatus: 100%\nP2 = 31498133075580\nSeconds: 3.595\n\n=== P3(x, a) ===\n\n\u001b[KStatus: 100%\nP3 = 3594856021578\nSeconds: 0.020\n\n29844570422669\nSeconds: 3.708\n",
+      "stderr": ""
+    },
+    {
+      "method": "legendre",
+      "command": [
+        "primecount",
+        "1000000000000000",
+        "--threads=8",
+        "--legendre",
+        "--status",
+        "--time"
+      ],
+      "stdout": "\n=== pi_legendre(x) ===\npi(x) = phi(x, a) + a - 1\nx = 1000000000000000\na = 1951957\nthreads = 8\n\n=== phi(x, a) ===\n\n\u001b[KStatus: 100%\nphi = 29844568470713\nSeconds: 1.466\n\n29844570422669\nSeconds: 1.466\n",
+      "stderr": ""
+    }
+  ]
+}

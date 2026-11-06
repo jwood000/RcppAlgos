@@ -1,0 +1,31 @@
+[
+  {
+    "file": "sample-lehmer-10000000000000-t1.txt",
+    "thread_samples": 4292,
+    "main_thread_samples": 4292,
+    "leaf_samples": {
+      "PrimeCounting::(anonymous namespace)::PhiEvaluator::evaluate<1ll>(long long, long long)  (in profile)": 4283,
+      "PrimeCounting::Phi(long long, long long, PrimeCounting::PhiTables const&)  (in profile)": 7
+    }
+  },
+  {
+    "file": "sample-lehmer-10000000000000-t8.txt",
+    "thread_samples": 37575,
+    "main_thread_samples": 4179,
+    "leaf_samples": {
+      "PrimeCounting::(anonymous namespace)::PhiEvaluator::evaluate<1ll>(long long, long long)  (in profile)": 33284,
+      "__ulock_wait  (in libsystem_kernel.dylib)": 4174,
+      "PrimeCounting::Phi(long long, long long, PrimeCounting::PhiTables const&)  (in profile)": 78,
+      "std::__thread_proxy[abi:ne190102]<std::tuple<std::unique_ptr<std::__thread_struct>, void PrimeCounting::ThreadBatch::launch<PrimeCounting::P2(long long, long long, int, PrimeCounting::PhiTables const&)::$_0>(PrimeCounting::P2(long long, long long, int, PrimeCounting::PhiTables const&)::$_0)::'lambda'()>>(void*)  (in profile)": 28
+    }
+  },
+  {
+    "file": "sample-meissel-10000000000000-t1.txt",
+    "thread_samples": 4309,
+    "main_thread_samples": 4309,
+    "leaf_samples": {
+      "PrimeCounting::(anonymous namespace)::PhiEvaluator::evaluate<1ll>(long long, long long)  (in profile)": 4300,
+      "PrimeCounting::Phi(long long, long long, PrimeCounting::PhiTables const&)  (in profile)": 5
+    }
+  }
+]

@@ -21,7 +21,7 @@ namespace {
     }
 
     std::vector<int> PhiReference(const std::vector<int>& primes, int a,
-                                  int maximum = 65535) {
+                                  int maximum = 131071) {
         std::vector<char> survives(maximum + 1, 1);
         survives[0] = 0;
         for (int i = 0; i < a; ++i) {
@@ -96,7 +96,7 @@ int main(int argc, char** argv) {
             Check(pageAllocations.load(std::memory_order_relaxed) == 0,
                   "a page allocation succeeded in failure mode");
             for (std::size_t a = 0; a < PrimeCounting::CACHE_ROWS; ++a) {
-                for (int x = 0; x < 65536; ++x) {
+                for (int x = 0; x < 131072; ++x) {
                     Check(PrimeCounting::sharedCache().get(x, a) == 0,
                           "cache lookup was not a miss after failed allocations");
                 }
@@ -114,15 +114,18 @@ int main(int argc, char** argv) {
                       "unallocated block was not a miss");
                 Check(PrimeCounting::sharedCache().get(4097, a) == 0,
                       "new cells were not initialized to zero");
-                for (int x : {1, 4095, 4097, 65535}) {
+                // Keep the former upper edge and cross page boundaries in
+                // both the original and newly cacheable halves.
+                for (int x : {1, 4095, 4097, 65535, 65536, 65537,
+                              69631, 69632, 126975, 126976, 131070, 131071}) {
                     PrimeCounting::sharedCache().put(x, a, phi[x]);
                     Check(PrimeCounting::sharedCache().get(x, a) == phi[x],
                           "cache boundary mismatch");
                 }
             }
-            PrimeCounting::sharedCache().put(65536, 7, 1);
+            PrimeCounting::sharedCache().put(131072, 7, 1);
             PrimeCounting::sharedCache().put(1, 100, 1);
-            Check(PrimeCounting::sharedCache().get(65536, 7) == 0 &&
+            Check(PrimeCounting::sharedCache().get(131072, 7) == 0 &&
                   PrimeCounting::sharedCache().get(1, 100) == 0,
                   "out-of-range cache key was accepted");
             Check(PrimeCounting::PiLegendre(10000000, threads, threads) == 664579,
@@ -259,7 +262,7 @@ int main(int argc, char** argv) {
         std::size_t populated = 0;
         for (int a = 1; a < static_cast<int>(PrimeCounting::CACHE_ROWS); ++a) {
             const auto phi = PhiReference(primes, a);
-            for (int x = 1; x < 65536; ++x) {
+            for (int x = 1; x < 131072; ++x) {
                 const auto value = PrimeCounting::sharedCache().get(x, a);
                 if (value) {
                     Check(value == phi[x], "cached phi mismatch");

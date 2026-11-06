@@ -5,8 +5,10 @@ investigation does not replace the normally installed package.
 
 ## Prime-counting source layout
 
-- `src/PrimeCount.cpp` owns the registered R entry point, input conversion,
-  small-input dispatch, thread arguments, and R result conversion.
+- `R/NumberTheory.R` exposes `primeCount(n, nThreads = NULL, method = "auto")`
+  and matches the method argument. `src/PrimeCount.cpp` owns the registered R
+  entry point, input conversion, method dispatch, thread arguments, and result
+  conversion.
 - `src/PiPrime.cpp` implements the sieve counter used for small inputs.
 - `src/PiLegendre.cpp` prepares a local, immutable `PhiTables` object, clamps
   the requested workers, and applies Legendre's formula using `PhiParallel`.
@@ -32,12 +34,88 @@ investigation does not replace the normally installed package.
 - `inst/include/NumbersUtils/PrimeCount.h` declares the four native counters
   without R dependencies. It does not expose cache internals or phi helpers.
 
-The R interface and dispatch thresholds are unchanged. Meissel and Lehmer are
-available as internal C++ functions; an R method selector and automatic dispatch
-remain separate design work. The legacy `PhiTinyLookup.h` is retained but is no
-longer included by production code; the shared evaluator owns the tiny tables.
+The R method selector exposes Legendre, Meissel and Lehmer. The default `auto`
+policy preserves the historical small-input dispatch and Legendre cutoff;
+broader performance and memory measurements are needed before tuning that
+policy. The legacy `PhiTinyLookup.h` is retained but is no longer included by
+production code; the shared evaluator owns the tiny tables.
 
-### Source-split validation
+## R prime-counting method selection
+
+`primeCount(n, nThreads = NULL, method = "auto")` appends the new argument so
+existing positional thread arguments keep their meaning. `match.arg` accepts
+`auto`, `legendre`, `meissel`, and `lehmer`, with case-sensitive unique prefixes;
+`le` is ambiguous and errors, while `leg` and `leh` distinguish the two methods.
+As with standard `match.arg`, `NULL` selects the first choice, `auto`.
+
+The current automatic policy is the previous implementation: a tiny lookup
+below 10, the sieve counter from 10 through 99,999, and Legendre from 100,000
+upward. Explicit choices call the named native algorithm for every accepted
+positive input, including small values. Legendre's native positive-input
+contract is now documented as `1 <= n <= 2^53 - 1`; its algorithm is unchanged.
+The automatic policy may be tuned after broader measurement and does not
+promise the fastest method for every input or machine.
+
+Input validation and result types retain the existing contract: `n` must be a
+positive whole number at most `2^53 - 1`, and the result is integer when the
+count fits in R's integer range and double otherwise. `nThreads = NULL` supplies
+one requested worker. All methods ignore `nThreads` below 100,000 and execute
+serially, preserving the old validation threshold. At larger inputs, positive
+whole thread requests are converted as before, capped by the detected maximum,
+and can be reduced further by individual kernels. Result allocation now uses
+`cpp11::as_sexp` so R allocation errors unwind C++ objects, including the new
+method string, safely.
+
+The registered `PrimeCountCpp` signature has a fourth argument containing the
+matched method string. Its native validation also rejects unknown names.
+Registration was regenerated with `cpp11::cpp_register()` in a temporary
+package copy; only the generated `src/cpp11.cpp` was copied back. The repository
+continues to use its handwritten R wrappers, with no generated `R/cpp11.R`.
+
+`tests/testthat/testPrimeCount.R` includes an independent base-R sieve, cutoff
+neighbors, known counts and result types, positional compatibility, method
+matching, parallel calls, and validation/recovery. Existing parallel cache
+tests remain first so focused runs retain their cold-cache coverage.
+
+To verify dispatch independently of the algorithms agreeing on a count, run:
+
+```sh
+Rscript --vanilla .github/development/prime-count-dispatch-check.R
+```
+
+An optional output-directory argument preserves the generated build in a
+chosen temporary location. This fixture compiles unchanged copies of the real
+adapter and converters against sentinel counters, then evaluates the unchanged
+R wrapper through a local bridge to the generated cpp11 entry point. It checks
+which counter was called, forwarded thread arguments, integer/double conversion
+at `INT_MAX`, invalid inputs, and C++ exception translation/recovery. It does
+not validate counting mathematics, actual worker scheduling, or worker failures;
+the independent counting and thread-failure checks cover those separately.
+
+### API validation
+
+A clean isolated installation passed 540 expectations across the ten focused
+number-theory/error test files: 115 in `testPrimeCount.R`, 207 in `testErrors.R`,
+and 218 across prime sieving, factorization, primality, Euler phi, and divisor
+tests. No failures, errors, warnings, or skips were reported. The sentinel
+dispatch fixture passed all 138 checks. Installed formals match the documented
+signature, native registration reports four arguments, all five help examples
+run, and `tools::codoc()` reports no package-wide documentation mismatches.
+Both updated Rd files passed parsing and `tools::checkRd`.
+
+Validation used arm64 macOS and R 4.6.1. The R build selected its configured
+compiler standard; the dispatch fixture is an R/cpp11 integration check, not
+a separate C++11 portability or sanitizer run. Existing numerical kernels,
+cache operations and worker scheduling were not modified, and their earlier
+sanitizer evidence remains separate. No full `R CMD check`, other-platform
+run, or new timing/peak-memory study was performed for this API integration.
+
+Commands, build/test logs, the unchanged source copies used by the sentinel
+fixture, and source hashes are retained under the directory recorded by
+`/tmp/rcppalgos-prime-api-path`:
+`/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-prime-api-loxkonkr`.
+
+## Source-split validation
 
 The November 3, 2026 split was checked against baseline `a44c760`. Exact text
 comparisons confirmed that the sieve, cache, phi recurrence, scheduler, and
@@ -81,7 +159,8 @@ package check and other platforms were not run for this refactor.
 accept integer `0 <= n <= 2^53 - 1`. Invalid inputs throw `std::out_of_range`
 before preparation; zero and one return zero immediately. Both thread controls
 default to one. Their minimum supplies the phase budget, and budgets at most
-one select serial execution. Legendre and the public R driver are unchanged.
+one select serial execution. The native integration left Legendre unchanged;
+the R selector described above now exposes all three counters.
 
 Each call prepares one immutable `PhiTables(floor(sqrt(n)))` and borrows it
 across sequential phases. Meissel chooses `a = pi(floor(cbrt(n)))` and returns
@@ -103,8 +182,9 @@ The first cutoff cannot exceed the prepared square-root limit either.
 Their serial worker kernels avoid nested parallel launches, and their existing
 `ThreadBatch` lifetimes propagate exceptions only after joining. All phases
 share prepared tables; Phi and P2 also reuse the bounded atomic Phi cache.
-Dense table memory remains `O(sqrt(n))`. The drivers add no helper, dependency,
-R entry point, registration change, or new scheduling policy.
+Dense table memory remains `O(sqrt(n))`. The native drivers added no helper,
+dependency, or new scheduling policy. Their later R integration extends the
+existing registered entry point with a method argument.
 
 ### Memory requirements
 
@@ -246,8 +326,8 @@ For `a >= 6`, telescoping the Phi recurrence gives
 Disjoint half-open intervals partition exactly these terms; worker results are
 combined only after joining. This identity does not assume Legendre's choice
 of `a`. `PiLegendre` still chooses its prepared square-root prime count and adds
-`a - 1` after the shared evaluation. Root preparation and the public R interface
-are unchanged.
+`a - 1` after the shared evaluation. That extraction preserved root preparation
+and the then-existing public R interface.
 
 Validation precedes scheduling, including invalid `a` when `x == 0`. Tiny
 cutoffs (`a <= 6`) and inputs within the prepared table use serial `Phi`, which
@@ -360,13 +440,31 @@ are retained under the directory recorded by `/tmp/rcppalgos-phi-parallel-path`:
 
 ## P2 and P3 counting kernels
 
+The initial [P2 profiling study](p2-profile/README.md) separates complete-driver
+phase timing, isolated cold/warm P2, OS stack sampling, and diagnostic work
+counters. It retains reproducible harnesses and measured results without
+changing the production kernels. At `1e13`, warm P2 accounts for about 67%/87%
+of serial Meissel/Lehmer time; the dominant sampled work is inside Phi.
+The same note now includes exact cache-ineligible state traces and serial
+memoization replays. Reuse concentrates in small descendants; a prospective
+doubling of the cache's argument limit removes 9.66%/14.34% of evaluator calls
+at `1e13`, with 7.20 MiB of additional occupied-page cell payload. These are
+work and storage estimates, not measured speedups or an implemented change.
+The subsequent doubled-cache benchmark in that note measures all
+three complete drivers. Warm `1e13` calls improve about 24–28%, while first
+`1e10` calls regress about 14–20%; observed large-input cache storage increases
+by 7.21 MiB. The candidate passed ASan/UBSan and TSan. The approved change is
+now applied to production, with `x <= 131071` and 32 pages per row; the original
+comparison patch and data remain as historical records.
+
 `P2(x, a, nThreads, tables)` and `P3(x, a, nThreads, tables)` count integers
 through `x` with exactly two or three prime factors, counted with multiplicity,
 all greater than `p[a]`. `a == 0` permits all primes. They borrow immutable
 `PhiTables`, whose new `pi()` accessor exposes only a const reference. Both
 validate `0 <= x <= 2^53 - 1` and `0 <= a <= tables.primeCount()` before any
 empty-sum return. `nThreads <= 1` requests serial evaluation. The APIs are
-internal C++ interfaces; no R registration or method selector was added.
+internal C++ interfaces; the R method selector calls the complete counting
+drivers rather than exposing these partial counts directly.
 
 ### Preparation and counting invariants
 
@@ -1107,11 +1205,17 @@ they do not establish a speedup or isolate the small helper overhead.
 
 ## Atomic-cache contract
 
-The shared cache preserves the original bounds (`a < 100`, `x <= 65535`) and
-reuse across worker batches and calls. Each row owns up to sixteen fixed blocks
+The shared cache uses `a < 100`, `x <= 131071` and retains reuse across worker
+batches and calls. Each row owns up to thirty-two fixed blocks
 of 4,096 atomic cells, allocated on demand. Cells and pointers are explicitly
 initialized for C++11. Published blocks remain alive and stationary until cache
 destruction, which requires all workers to have joined.
+
+The larger argument limit retains 16-bit answer cells. Only positive arguments
+with `a >= 7` reach the cache, so monotonicity gives
+`1 <= Phi(x,a) <= Phi(131071,6) = 25142 < 65536`. The page count derives from
+the explicit argument bound, independently of the answer type. The permanent
+cache checker covers both the former boundary and the new endpoint/page edges.
 
 The row mutex protects allocation only. Release/acquire publication makes block
 initialization visible to readers. Cell loads/stores are relaxed: zero is a

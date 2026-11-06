@@ -1,0 +1,67 @@
+{
+  "platform": "macOS-15.7.4-arm64-arm-64bit",
+  "compiler": "Apple clang version 17.0.0 (clang-1700.0.13.3)\nTarget: arm64-apple-darwin24.6.0\nThread model: posix\nInstalledDir: /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin\n",
+  "files": {
+    "benchmark.cpp": "79e69b84dee34ac8247fa1bea7de699f31bb7942c5833758949d87bdfcc524e9",
+    "memory.cpp": "1832a9e109567646cec3c9c0bec6e826e9f9b3ec52f2ad7408c42add68b5c875",
+    "variants/baseline/Phi.cpp": "f43fc0c7d67d963da6194b9a8bc85d5fb73413944cd824db1c5ca5c81cc36756",
+    "variants/double-memory/Phi.cpp": "923e4d3f8161b8db317dacb4917d8170b227251ccb471f09d80d5c5cd8dcd1a1",
+    "variants/double/Phi.cpp": "a84673455c7271f2b7fa14b3196027735bf70884497fcec63243f4eb3c04530f",
+    "variants/baseline-memory/Phi.cpp": "9de4d1a1a04fe3014eb5df2865a83a9f6eb79d87e34f127dab3e11ca12b19802",
+    "variants/cache_memory_probe.h": "65f97f806a6d8a64f4a344d46d35eb8b527bdda56b340e973c56758535cae9e2"
+  },
+  "production_sources": {
+    "PiLegendre.cpp": "58a7ec33e92f49d848f8a156f8d9aa2f5eea5dc24ff111610d857e4a167f6ff4",
+    "PiMeissel.cpp": "30be5d07038ef01b066ccac6adf92069c18550ba2f478de229fc1f84aa37e3a8",
+    "PiLehmer.cpp": "b07b5d4c5b1c86086365f02096fa43a26bfb95540b187a79f9a3998240e388c7",
+    "PhiParallel.cpp": "afeceed0f06490bc013dbb082c036e6a18493cdcaf24c15f8d4decddc6cfb60d",
+    "P2.cpp": "9234a232b99861dc4d447d62ee3c0482aa43174f083dd0f47cd69cf4cf711af7",
+    "P3.cpp": "31c1a2e73e85993122e11d7af0aa7635c3395c2e3936f52329f6be1db7fd26d3",
+    "Eratosthenes.cpp": "98904804fb7c2f79d31cb1161d4313e6c2c7e7f99089730694bfb019c67275c7"
+  },
+  "variant_manifest": {
+    "source_root": "/private/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-phi-cache-double-p_f2o5aw/source",
+    "source_sha256": "f43fc0c7d67d963da6194b9a8bc85d5fb73413944cd824db1c5ca5c81cc36756",
+    "baseline_max_x": 65535,
+    "candidate_max_x": 131071,
+    "cache_rows": 100,
+    "page_size": 4096,
+    "baseline_page_count": 16,
+    "candidate_page_count": 32,
+    "answer_bits": 16,
+    "six_prime_upper_bound": 25142,
+    "memory_probes": true,
+    "generated_sha256": {
+      "baseline/Phi.cpp": "f43fc0c7d67d963da6194b9a8bc85d5fb73413944cd824db1c5ca5c81cc36756",
+      "double/Phi.cpp": "a84673455c7271f2b7fa14b3196027735bf70884497fcec63243f4eb3c04530f",
+      "baseline-memory/Phi.cpp": "9de4d1a1a04fe3014eb5df2865a83a9f6eb79d87e34f127dab3e11ca12b19802",
+      "double-memory/Phi.cpp": "923e4d3f8161b8db317dacb4917d8170b227251ccb471f09d80d5c5cd8dcd1a1",
+      "cache_memory_probe.h": "65f97f806a6d8a64f4a344d46d35eb8b527bdda56b340e973c56758535cae9e2"
+    }
+  },
+  "validation": {
+    "sanitizers": [
+      "ASan/UBSan",
+      "TSan"
+    ],
+    "runs_per_sanitizer": [
+      "boundary",
+      "cache",
+      "cache-failure",
+      "phi",
+      "phi-no-cache",
+      "methods"
+    ],
+    "native_method_checks": 6272,
+    "validated_populated_cache_cells": 2025842,
+    "warnings": false
+  },
+  "artifact_pointer": "/tmp/rcppalgos-phi-cache-double-path",
+  "artifact_directory": "/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-phi-cache-double-p_f2o5aw",
+  "fixture_hashes": {
+    "fixtures/cache_double_check.cpp": "926d78eac47554a1946371e327ec9348a0102d324feee9f095915b10ccaa6ee7",
+    "fixtures/cache_double_memory.cpp": "1832a9e109567646cec3c9c0bec6e826e9f9b3ec52f2ad7408c42add68b5c875",
+    "fixtures/prepare_cache_double.py": "794f945d5170be57584d35711599ec120cc12720b55577da715482190dc6ed24",
+    "fixtures/cache_double_bench.py": "e5d54b7e6f7f932f9a4d660483bbe7b25380c3af39e235f2096ec74fd9b7eb79"
+  }
+}

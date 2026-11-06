@@ -1,0 +1,8 @@
+{
+  "seed": 202611082,
+  "verified_rows": 120,
+  "paired_cases": 21,
+  "methodology": "Fresh process per variant/configuration/pair, randomized paired order; first call separate, warm median per process; complete native drivers include table construction/destruction, exclude process/R startup.",
+  "summary": "Median of paired ratios; min/max are variability ranges, not confidence intervals.",
+  "large_screen": "1e15: one fresh process per variant, first plus one warm call."
+}
