@@ -33,4 +33,14 @@ namespace PrimeCounting {
     // Evaluation is serial. Concurrent calls may share immutable tables;
     // the bounded cache is shared safely across calls and table instances.
     std::int64_t Phi(std::int64_t x, std::int64_t a, const PhiTables& tables);
+
+    // Evaluate the same function by partitioning its outer sum into batches.
+    // The input/table contract and validation errors match Phi. The caller
+    // supplies prepared tables and a worker budget; nThreads <= 1 is serial.
+    // Small inputs and cheap boundary cases also use serial evaluation. The
+    // current chunk policy was tuned for Legendre; other cutoffs need their
+    // own performance measurements. Workers call serial Phi, so this function
+    // should be used at the caller's chosen outer parallel level only.
+    std::int64_t PhiParallel(std::int64_t x, std::int64_t a, int nThreads,
+                            const PhiTables& tables);
 }

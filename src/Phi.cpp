@@ -13,7 +13,7 @@
 
 // General partial-sieve evaluator developed from PiLegendre.cpp's
 // recurrence and shortcuts (based on Kim Walisch's primecount implementation).
-// Legendre uses this evaluator while retaining its own work scheduling.
+// PhiParallel partitions the outer sum; each worker uses this serial evaluator.
 
 namespace PrimeCounting {
 namespace {
