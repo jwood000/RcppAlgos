@@ -250,6 +250,11 @@ int main(int argc, char** argv) {
         }
 
         std::size_t targeted = 0;
+        // With no prepared prime after 17, Phi(18, 7) reaches the general
+        // recurrence with c=pi(floor(sqrt(18)))=2. Keep c<6 valid, including
+        // the neighboring square boundary at 25; only 1 survives at x=18.
+        targeted += CheckInputs(sieve, *contexts.at(17), 7,
+                                {17, 18, 19, 24, 25, 26});
         for (int limit : {2, 13, 17, 19, 97, 100}) {
             const int a = sieve.pi[limit];
             const int p = sieve.primes[a - 1];

@@ -8,12 +8,19 @@ investigation does not replace the normally installed package.
 - `src/PrimeCount.cpp` owns the registered R entry point, input conversion,
   small-input dispatch, thread arguments, and R result conversion.
 - `src/PiPrime.cpp` implements the sieve counter used for small inputs.
-- `src/PiLegendre.cpp` implements Legendre's formula and its serial or
-  batched parallel summation. Each call prepares a local, immutable `PhiTables`
-  object, and the exception-safe batches keep it alive until all workers join.
+- `src/PiLegendre.cpp` prepares a local, immutable `PhiTables` object, clamps
+  the requested workers, and applies Legendre's formula using `PhiParallel`.
+- `src/PhiParallel.cpp` evaluates the outer Phi sum over the requested cutoff
+  `a`, independently of the table extent. It retains the existing Legendre
+  interval formulas, batch barriers, and serial/parallel thresholds; their
+  performance with other cutoffs has not yet been tuned.
+- `inst/include/NumbersUtils/ThreadBatch.h` owns one batch's threads and
+  exception slots. Callables supply the work; captured tables and result
+  storage must outlive the batch, which joins before propagating failures.
 - `src/Phi.cpp` implements the general partial-sieve evaluator, periodic tiny
   tables, and shared atomic cache. `inst/include/NumbersUtils/Phi.h` declares
-  `Phi` and the reusable tables, including a read-only prime sequence.
+  `Phi`, `PhiParallel`, and the reusable tables, including a read-only prime
+  sequence. Worker evaluation through `Phi` remains serial.
 - `inst/include/NumbersUtils/PrimeCount.h` declares the two native entry points
   without R dependencies. It does not expose cache internals or phi helpers.
 
@@ -60,6 +67,130 @@ No regression appeared in this timing check. Lower medians do not identify the
 cause: source organization and helper linkage changed together, and compiler
 optimization effects were not isolated. Validation used arm64 macOS; a full
 package check and other platforms were not run for this refactor.
+
+## Shared parallel Phi orchestration
+
+`PhiParallel(x, a, nThreads, tables)` uses the same input domain and error
+messages as serial `Phi`. It borrows the caller's immutable tables and returns
+`phi(x, a)`; it does not choose a prime-counting method or prepare another table.
+The upper summation index is the requested `a`, not `tables.primeCount()`.
+
+For `a >= 6`, telescoping the Phi recurrence gives
+`phi(x,a) = phi(x,6) - sum(i=6..a-1, phi(floor(x/p[i+1]),i))`.
+Disjoint half-open intervals partition exactly these terms; worker results are
+combined only after joining. This identity does not assume Legendre's choice
+of `a`. `PiLegendre` still chooses its prepared square-root prime count and adds
+`a - 1` after the shared evaluation. Root preparation and the public R interface
+are unchanged.
+
+Validation precedes scheduling, including invalid `a` when `x == 0`. Tiny
+cutoffs (`a <= 6`) and inputs within the prepared table use serial `Phi`, which
+retains its boundary and direct pi-table shortcuts. Other inputs retain the
+existing outer sum even on the serial path. Parallel work requires `x >= 1e7`
+and more than one requested worker, and workers are capped at `a - 6` before
+allocation. Recursive worker calls use serial `Phi`; callers choose the outer
+parallel level to avoid nested worker launches.
+
+`ThreadBatch` accepts copyable C++11 callables and owns their threads and fixed
+exception slots. Bounds are captured by value; tables and distinct result slots
+are captured by reference and must outlive the batch. All workers are joined
+before a worker exception is rethrown in launch order. If starting a later
+thread fails, the batch destructor joins earlier workers before the launch
+exception propagates. Exceeding the declared capacity throws `std::length_error`.
+The helper does not call R APIs or reuse workers between batches.
+
+The interval policy remains the one tuned for Legendre, including its first,
+middle, final, and small-input batches. General cutoff correctness does not
+establish that these chunk sizes are optimal for Meissel or Lehmer. Those
+algorithms and their correction sums remain separate future work.
+
+The direct parallel-Phi checker uses independent partial sieves and
+inclusion-exclusion, differential checks against serial Phi, concurrent callers,
+and focused generic batch-lifetime checks:
+
+```sh
+phi_parallel_check=$(mktemp -d)
+clang++ -std=c++11 -O1 -g -pthread -fsanitize=address,undefined \
+    -fno-omit-frame-pointer -Iinst/include \
+    .github/development/phi-parallel-check.cpp \
+    src/PhiParallel.cpp src/Phi.cpp src/Eratosthenes.cpp \
+    -o "$phi_parallel_check/check"
+ASAN_OPTIONS=halt_on_error=1 UBSAN_OPTIONS=halt_on_error=1 \
+    "$phi_parallel_check/check"
+```
+
+Use a separate executable with `-fsanitize=thread` and
+`TSAN_OPTIONS=halt_on_error=1:symbolize=0` for race detection. The scheduler and
+worker-failure preparers below now instrument the extracted sources together,
+without adding production test hooks.
+
+### Extraction validation (November 5, 2026)
+
+The before baseline is the working source immediately before this extraction,
+including the approved private-evaluator check optimization and the maintainer's
+staged formatting/timing comments. The Git index was not changed.
+
+- Before/after scheduler dumps matched all 708 records from 53 existing cases.
+  The extended synchronous scheduler checker passed ASan/UBSan with 136 cases:
+  14 known prime counts, 54 general Phi counts, and 65,451 bounded contiguous
+  intervals, including oversized worker requests and `a` below the table count.
+- The new direct `PhiParallel` checker passed ASan/UBSan and TSan: 6,966 small
+  independent cases, 10 near the parallel threshold, 8 exact large inputs
+  (including `2^53 - 1`), 14 serial/parallel differential cases, two concurrent
+  callers, 18 invalid inputs, and four generic batch checks.
+- The real-worker failure harness passed both sanitizer builds: 28 scenarios,
+  24 blocked-join checks, and 32 successful counts. Its cpp11/R bridge passed
+  20 error/recovery pairs, verifying errors reach R only after workers join.
+- The production cache/count checker passed both sanitizer builds at four
+  workers, including allocation failure and recovery. Each normal run checked
+  662 independent Legendre counts, 1,172 small counts, 84 signed Phi values,
+  two concurrent Legendre calls, and 1,425,075 populated cache cells.
+- A clean isolated package installation passed `testPrimeCount.R` and
+  `testErrors.R`. The native builds explicitly used C++11 with Apple clang on
+  arm64 macOS. No compiler warnings or sanitizer diagnostics were reported.
+
+A source review also compared the extracted foreman, chunk-factor function,
+and scheduler against the snapshot: interval arithmetic is unchanged after the
+intended name/call substitutions and removal of the cancelling `a - a` term.
+No full package check or validation on other platforms was run for this focused
+internal extraction.
+
+### Extraction timing check
+
+The before/after native binaries used `-std=c++11 -O3 -pthread`. Five fresh
+processes per version/input/worker combination each made one cold and three
+warm calls. Paired version order and case order were shuffled with seed
+202611054, after all other builds and checks finished. All 560 counts matched.
+Times below are milliseconds: cold medians of first calls, warm medians of
+per-process warm medians.
+
+| Input | Workers | Before cold | After cold | Before warm | After warm | Warm change |
+| ---: | ---: | ---: | ---: | ---: | ---: | ---: |
+| `1e8` | 1 | 0.228 | 0.228 | 0.065 | 0.065 | -0.38% |
+| `1e8` | 4 | 0.246 | 0.241 | 0.070 | 0.073 | +4.28% |
+| `1e8` | 8 | 0.261 | 0.245 | 0.101 | 0.104 | +3.03% |
+| `1e10` | 1 | 3.450 | 3.503 | 1.229 | 1.222 | -0.59% |
+| `1e10` | 4 | 2.561 | 2.575 | 0.869 | 0.865 | -0.55% |
+| `1e10` | 8 | 2.418 | 2.457 | 0.784 | 0.761 | -2.91% |
+| `1e10 + 1` | 4 | 2.006 | 2.019 | 0.965 | 0.970 | +0.52% |
+| `1e10 + 1` | 8 | 1.620 | 1.706 | 0.834 | 0.863 | +3.51% |
+| `1e12` | 1 | 81.881 | 81.792 | 48.313 | 48.335 | +0.05% |
+| `1e12` | 4 | 26.637 | 26.590 | 16.541 | 16.526 | -0.09% |
+| `1e12` | 8 | 23.620 | 23.720 | 15.038 | 15.067 | +0.20% |
+| `1e13` | 1 | 445.507 | 448.454 | 383.914 | 385.695 | +0.46% |
+| `1e13` | 4 | 139.254 | 138.902 | 119.287 | 118.936 | -0.29% |
+| `1e13` | 8 | 125.481 | 124.974 | 108.775 | 108.161 | -0.56% |
+
+The larger warmed cases (`1e12` and `1e13`) differed by less than 0.6% in
+either direction. Small warmed cases ranged from -2.9% to +4.3%; these small
+absolute differences and mixed directions do not establish a consistent
+regression or improvement. This comparison measures the extraction with
+Legendre inputs, not the suitability of its scheduling policy for future
+Meissel/Lehmer cutoffs.
+
+Sources, fixture hashes, build/test logs, raw timing JSON, and the timing script
+are retained under the directory recorded by `/tmp/rcppalgos-phi-parallel-path`:
+`/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-phi-parallel-fnn6bu6s`.
 
 ## Shared Phi integration
 
@@ -132,6 +263,235 @@ helped modestly. At `1e12`/one worker, warm medians were 43.166 ms for baseline,
 55.594 ms for direct integration, and 54.975 ms with both diagnostic changes.
 These measurements do not isolate the dominant cause. Further hot-path
 optimization requires discussion before expanding the integration scope.
+
+### November 5 performance investigation (diagnostic only)
+
+No production changes were applied. Temporary variants used the current
+working `Phi.cpp` (including explanatory comments), `PiLegendre.cpp` from
+`034712d`, and the retained pre-integration Legendre snapshot. All native
+builds used Apple clang 17, arm64 macOS, and `-std=c++11 -O3 -pthread`.
+Clock readings inside the counter separated table preparation from the
+summation; the external driver also measured total call time, including table
+destruction. Instrumentation was identical across compared implementations.
+
+The first three screens varied translation-unit visibility, evaluator reuse
+per foreman (both signs), tiny-table reference reuse, constant six-prime
+arithmetic, exact-root correction by products, prepared-table representation,
+and redundant private checks. Each screen shuffled fresh processes, with
+three processes per input/worker/variant and one cold plus four warm calls.
+Combining source files, reusing the evaluator, and tiny-table changes did not
+recover the main regression. Product-based root correction also recovered
+little. These experiments do not prove those costs are zero or predict other
+compilers' results.
+
+Separate serial work counters at `1e12` showed identical warmed counts of
+1,382,174 recursive expansions, 9,514,107 cache hits, 33,501,450 direct suffix
+terms, and 2,764,350 tiny-table evaluations before/after integration. The
+public Phi fast path accounts for one fewer private evaluator entry. These
+counts support a higher cost per operation, rather than extra recursive work,
+for this input; instrumented counter builds were not used for timings.
+
+The most promising diagnostic combination (`lean_raw` in the artifacts):
+
+- Captured prepared-table data pointers and sizes once per evaluator, while
+  retaining the same immutable owning tables and lifetimes.
+- Retained public zero/range validation, but omitted the private evaluator's
+  zero-x/zero-a checks: public callers handle these cases, and recursive calls
+  use positive quotients and positive sieve indices.
+- Omitted only the recursive loop's redundant lookahead-bound test. Since
+  `i < b <= a`, the prepared prime at `i + 1 <= a` exists. The general entry
+  shortcut retained its missing-lookahead guard.
+
+A second, independently shuffled confirmation used five fresh processes per
+input/worker/version, one cold and four warm calls per process. The table shows
+medians of the five per-process warm medians, in milliseconds. No other builds
+or tests ran concurrently with these benchmarks.
+
+| Input | Workers | Before integration | Current | Diagnostic combination | Reduction vs current |
+| ---: | ---: | ---: | ---: | ---: | ---: |
+| `1e10` | 1 | 1.071 | 1.372 | 1.285 | 6.3% |
+| `1e10` | 4 | 0.753 | 0.939 | 0.904 | 3.7% |
+| `1e10` | 8 | 0.657 | 0.832 | 0.807 | 3.0% |
+| `1e12` | 1 | 43.089 | 55.762 | 51.701 | 7.3% |
+| `1e12` | 4 | 15.506 | 18.734 | 17.406 | 7.1% |
+| `1e12` | 8 | 14.112 | 17.043 | 16.072 | 5.7% |
+| `1e13` | 1 | 334.463 | 448.815 | 413.201 | 7.9% |
+| `1e13` | 4 | 107.485 | 138.361 | 128.175 | 7.4% |
+| `1e13` | 8 | 97.076 | 122.289 | 113.417 | 7.3% |
+
+At `1e12`/one worker, median preparation times were about 1.92 ms before
+integration and 2.56 ms currently, versus total warm times of 43.09 and
+55.76 ms. Preparation explains only a small part of this serial gap. The
+combination recovers about 4.06 ms, but still trails the old implementation
+by about 8.61 ms. The remaining dominant machine-code cause has not been
+isolated; do not attribute the entire regression to validation or object
+construction. Cold-call timings exclude process startup, including the old
+implementation's eager tiny-table initialization.
+
+All 2,475 timed counts across the screens and confirmation matched known
+answers. The diagnostic combination also passed the standalone general-Phi
+checker and native cache checker under ASan/UBSan: exhaustive/general-domain
+and invalid-input cases, independent counts, signed phi values, concurrent
+calls, and cache-cell validation. These checks support further investigation;
+they are not approval to apply the prototype. No R package build, TSan run,
+full package check, or other-platform benchmark was performed for these
+unapplied variants.
+
+Reproduction scripts, exact variant sources, compiler commands, source hashes,
+raw timings, work counts, and sanitizer logs are retained in the temporary
+artifact directory recorded by `/tmp/rcppalgos-phi-performance-path`:
+`/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-phi-performance-kbl3iz9q`.
+The benchmark seeds are 20261105 for the screens and 11052026 for confirmation.
+
+### Follow-up: private evaluator invariants (diagnostic only)
+
+The follow-up found a smaller candidate that retains the existing vector
+references, cache, table ownership, exact-root correction, public API, and
+scheduling. These variants were temporary during the investigation; the
+subsequent approved implementation is recorded below.
+
+The private evaluator has stronger preconditions than the public Phi API:
+
+- Public entry already handles zero inputs, `x <= p[a]`, and `a <= 6`.
+- A recursive loop exists only if `b > c = min(b, 6)`. Therefore `c = 6`
+  and its index `i >= 6`.
+- For `j = i + 1 <= b`, `p[j] <= floor(sqrt(x))`, including when the
+  prepared table ends below that root. Thus the child quotient satisfies
+  `floor(x / p[j]) >= p[j] > p[i]`.
+
+By induction, every private call has `a >= 6` and `x > p[a]`. Its zero-input
+and `x <= p[a]` branches are unreachable; its tiny case can explicitly use
+`a == 6` and the fixed six-prime formula. The general expansion must still
+retain `c = min(b, 6)`: `Phi(18, 7, PhiTables(17))` needs `b = c = 2`.
+
+A further duplicate check can be moved out of private entry. The parent tests
+`isPi(quotient, i)` before recursing, and a successful test breaks into the
+direct suffix. Therefore every recursive child has already failed that test.
+Moving the initial direct-table shortcut into public Phi permits omitting it
+at private entry. Public entry retains its table and lookahead bounds;
+inside the loop, `i + 1 <= b <= a` guarantees the lookahead prime exists.
+Immutable tables make these conditions stable across calls and threads.
+
+The resulting `checks_hoist` candidate makes only these invariant-based
+changes; `lean_hoist` also retains the preceding raw-pointer/size experiment.
+Additional screens tested a directly addressed global cache, outlining cold
+allocation code, const pointer members, separated expansion helpers, and
+controlled recursive inlining. These did not supply a compelling additional
+improvement. Compiler-specific noinline attributes were diagnostic only.
+Static assembly counts included cold initialization/unwinding code and were
+not treated as dynamic instruction costs.
+
+Confirmation used the same Apple clang 17/arm64/C++11/-O3 setup, five fresh
+processes per input/worker/variant, one cold plus four warm calls per process,
+and shuffled order (seed 202611052). No builds or validation ran concurrently.
+Warm numbers below are medians of the five per-process medians, in ms.
+"Earlier candidate" is `lean_raw` from the preceding investigation.
+
+| Input | Workers | Before integration | Current | Earlier candidate | Checks only | Checks + pointers | Reduction, checks only |
+| ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
+| `1e8` | 1 | 0.050 | 0.069 | 0.065 | 0.064 | 0.066 | 7.5% |
+| `1e10` | 1 | 1.056 | 1.340 | 1.286 | 1.221 | 1.245 | 8.9% |
+| `1e12` | 1 | 42.967 | 55.828 | 51.796 | 48.412 | 48.150 | 13.3% |
+| `1e12` | 4 | 15.923 | 19.115 | 17.562 | 16.635 | 16.532 | 13.0% |
+| `1e12` | 8 | 14.591 | 17.030 | 16.288 | 15.477 | 15.138 | 9.1% |
+| `1e13` | 1 | 336.469 | 449.383 | 414.700 | 384.973 | 384.240 | 14.3% |
+| `1e13` | 4 | 111.081 | 139.122 | 130.993 | 124.666 | 119.374 | 10.4% |
+| `1e13` | 8 | 98.056 | 123.767 | 116.433 | 110.185 | 108.271 | 11.0% |
+
+The checks-only candidate recovers about 57% of the serial integration gap
+at both `1e12` and `1e13`, while still trailing the old code by about 13-14%.
+Raw pointers add only about 0.5% and 0.2% over that candidate in these serial
+cases. Parallel medians sometimes favor pointers, but process-median ranges
+overlap substantially: at `1e13`/four workers, 117.75-125.90 ms for vector
+references versus 118.30-124.48 ms for pointers. Pointer conversion is therefore
+a separate choice, not a prerequisite for the stronger optimization. Exact
+root correction by products also added little and is not part of the smaller
+candidate. The remaining regression has not been fully explained.
+
+All 2,055 timed counts across two screens and confirmation matched known
+answers. Both `checks_hoist` and `lean_hoist` passed the general-Phi and native
+cache checkers under ASan/UBSan and TSan, including cached/uncached modes,
+allocation failure, and concurrent calls. Each candidate also checked the
+explicit `Phi(18,7,PhiTables(17)) = 1` boundary by independent enumeration.
+There were no compiler warnings or sanitizer findings.
+
+Validation linked the unchanged production PiLegendre launcher: its diagnostic
+copy has global phase timers appropriate only to the timing driver's sequential
+calls, not concurrent-call tests. The private signed checker still includes
+some direct-shortcut inputs (e.g. `(169,7)`) outside the narrowed private-entry
+contract; their existing expectations were retained and passed. Public Phi
+continues to support these inputs normally. The invariant proof, rather than
+these private tests alone, justifies the narrower recursive contract.
+
+This investigation supported the subsequent checks-only implementation. The
+diagnostic variants did not restore pre-integration performance completely and
+were not tested through an R package build or on other platforms. Artifacts (sources, compiler
+commands, scripts, timing JSON, proof, sanitizer logs) are under the directory
+recorded by `/tmp/rcppalgos-phi-deeper-path`:
+`/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-phi-deeper-1jrq1mc8`.
+
+### Implemented: private evaluator checks
+
+The approved checks-only change was applied on November 5, 2026. Public Phi
+retains input validation and all general base cases, and now handles the initial
+direct pi-table shortcut. Private recursive entry relies on the documented
+`a >= 6`, `x > p[a]` invariants and the parent's failed shortcut check. Its tiny
+case explicitly uses six primes; the expansion retains `c = min(b, 6)`.
+The unused private shortcut helper was removed, and the loop checks table
+membership and the prime square directly, using its proven lookahead bound.
+Vector references, cache synchronization, table ownership, root correction,
+public signatures, and Legendre scheduling are unchanged.
+
+Regression coverage adds the short-table cases at 17/18/19 and 24/25/26 with
+`a = 7`, and both signs of the private six-prime terminal case at 289 and the
+30030-period neighbors. All existing cases and expectations remain. The general
+checker now has 171 targeted cases; the cache checker has 84 signed phi checks.
+
+Validation of the actual production source passed without compiler warnings
+or sanitizer findings:
+
+- General Phi, cached and uncached, under ASan/UBSan and TSan: 2,621,310
+  exhaustive cases, 171 targeted cases, 220 large-input cases, 3,328 concurrent
+  evaluations, 57 invalid inputs, and known counts through `1e12` (through
+  `1e8` without caching).
+- Native cache checks at four workers under both sanitizer builds, including
+  allocation failure/recovery: 662 independent Legendre counts, 1,172 small
+  counts, 84 signed phi checks, two concurrent Legendre calls, and 1,425,075
+  populated cache cells.
+- The worker-failure harness under ASan/UBSan: 28 scenarios, 24 blocked-join
+  checks, and 32 successful recovery counts.
+- A clean temporary R package installation, followed by `testPrimeCount.R`
+  and `testErrors.R` against that installation.
+
+A final native timing comparison compiled the before/after production sources
+with Apple clang 17 and `-std=c++11 -O3 -pthread`, using the unchanged timing
+driver and scheduler. No internal phase instrumentation was used. Three fresh
+processes per version/input/worker combination each made one cold and three
+warm calls. Process order was shuffled with seed 202611053 after all builds
+and tests finished. All 192 results matched known answers. Cold values are
+medians of first calls; warm values are medians of per-process warm medians,
+in milliseconds.
+
+| Input | Workers | Before cold | After cold | Before warm | After warm | Warm reduction |
+| ---: | ---: | ---: | ---: | ---: | ---: | ---: |
+| `1e8` | 1 | 0.246 | 0.233 | 0.067 | 0.065 | 2.9% |
+| `1e10` | 1 | 3.710 | 3.422 | 1.339 | 1.225 | 8.5% |
+| `1e12` | 1 | 90.594 | 81.644 | 54.588 | 48.299 | 11.5% |
+| `1e12` | 4 | 29.125 | 26.656 | 18.609 | 16.567 | 11.0% |
+| `1e12` | 8 | 25.886 | 23.673 | 16.958 | 15.102 | 10.9% |
+| `1e13` | 1 | 507.436 | 444.734 | 445.575 | 384.194 | 13.8% |
+| `1e13` | 4 | 157.022 | 139.370 | 137.705 | 118.235 | 14.1% |
+| `1e13` | 8 | 139.517 | 119.535 | 121.755 | 106.496 | 12.5% |
+
+The larger warmed cases improved about 11-14% in this run. This does not remove
+the entire regression against the pre-integration implementation. No full
+package check or other-platform validation was run for this focused change.
+The existing worker harness was rerun under ASan/UBSan; its earlier TSan results
+are not claimed as a new run here. Native checks explicitly used C++11.
+
+Before-source snapshots, build/test logs, benchmark script, and raw timing JSON
+are retained under the directory recorded by `/tmp/rcppalgos-phi-checks-path`:
+`/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-phi-checks-phr1r05m`.
 
 ## Legendre scheduling bounds
 
@@ -218,7 +578,7 @@ prime_count_check=$(mktemp -d)
 clang++ -std=c++11 -O1 -g -pthread -fsanitize=thread \
     -fno-omit-frame-pointer -Iinst/include \
     .github/development/prime-count-cache-check.cpp \
-    src/PiLegendre.cpp src/PiPrime.cpp src/Eratosthenes.cpp \
+    src/PiLegendre.cpp src/PhiParallel.cpp src/PiPrime.cpp src/Eratosthenes.cpp \
     -o "$prime_count_check/prime-count-tsan"
 TSAN_OPTIONS=halt_on_error=1 \
     "$prime_count_check/prime-count-tsan" 4
@@ -252,7 +612,7 @@ AddressSanitizer and UndefinedBehaviorSanitizer use a separate executable:
 clang++ -std=c++11 -O1 -g -pthread -fsanitize=address,undefined \
     -fno-omit-frame-pointer -Iinst/include \
     .github/development/prime-count-cache-check.cpp \
-    src/PiLegendre.cpp src/PiPrime.cpp src/Eratosthenes.cpp \
+    src/PiLegendre.cpp src/PhiParallel.cpp src/PiPrime.cpp src/Eratosthenes.cpp \
     -o "$prime_count_check/prime-count-asan-ubsan"
 ASAN_OPTIONS=halt_on_error=1 UBSAN_OPTIONS=halt_on_error=1 \
     "$prime_count_check/prime-count-asan-ubsan" 4
@@ -413,7 +773,7 @@ Compile the production native sources with the separate timing driver:
 ```sh
 clang++ -std=c++11 -O3 -pthread -Iinst/include \
     .github/development/prime-count-check.cpp \
-    src/PiLegendre.cpp src/Phi.cpp src/PiPrime.cpp src/Eratosthenes.cpp \
+    src/PiLegendre.cpp src/PhiParallel.cpp src/Phi.cpp src/PiPrime.cpp src/Eratosthenes.cpp \
     -o "$prime_count_check/prime-count-timing"
 "$prime_count_check/prime-count-timing" 1000000000000 10 4 37607912018
 ```

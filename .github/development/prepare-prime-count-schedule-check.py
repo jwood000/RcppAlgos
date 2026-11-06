@@ -14,12 +14,23 @@ def main():
                         help="optional before-change PiLegendre.cpp snapshot")
     args = parser.parse_args()
     repository = Path(__file__).resolve().parents[2]
-    source = (args.source or repository / "src/PiLegendre.cpp").read_text()
+    driver_path = args.source or repository / "src/PiLegendre.cpp"
+    source = driver_path.read_text()
+    extracted = "std::vector<std::thread> threads;" not in source
+    if extracted:
+        root = driver_path.resolve().parents[1]
+        batch = (root / "inst/include/NumbersUtils/ThreadBatch.h").read_text()
+        parallel = (root / "src/PhiParallel.cpp").read_text()
+        include = '#include "NumbersUtils/ThreadBatch.h"\n'
+        if parallel.count(include) != 1:
+            raise RuntimeError("expected one ThreadBatch include in PhiParallel.cpp")
+        parallel = parallel.replace(include, "")
+        source = batch.replace("#pragma once\n", "", 1) + "\n" + parallel + "\n" + source
     source_hash = hashlib.sha256(source.encode()).hexdigest()
 
     storage = "std::vector<std::thread> threads;"
     if source.count(storage) != 1:
-        raise RuntimeError("expected exactly one PhiThreadBatch thread vector")
+        raise RuntimeError("expected exactly one batch thread vector")
     source = source.replace(storage, "std::vector<ScheduleCheck::Thread> threads;")
 
     foreman = re.compile(
@@ -36,15 +47,18 @@ def main():
     # This location follows the production cap, when present, and precedes
     # every allocation sized by nThreads. It makes an unfixed INT_MAX request
     # fail safely instead of attempting a multi-gigabyte test allocation.
-    allocation_guard = "            std::int64_t myRange = (piSqrtx - strt) + 1;"
+    bound = "a" if extracted else "piSqrtx"
+    allocation_guard = "            std::int64_t myRange = (" + bound + " - strt) + 1;"
     if source.count(allocation_guard) != 1:
         raise RuntimeError("parallel schedule entry no longer matches the fixture")
     source = source.replace(allocation_guard,
                             "            ScheduleCheck::BeforeSchedule(nThreads);\n" +
                             allocation_guard)
 
-    construction = re.compile(r"^([ \t]*)PhiThreadBatch batch\(nThreads, tables\);$",
-                              re.MULTILINE)
+    construction = re.compile(
+        r"^([ \t]*)(?:PhiThreadBatch batch\(nThreads, tables\)|ThreadBatch batch\(nThreads\));$",
+        re.MULTILINE
+    )
     if len(list(construction.finditer(source))) != 4:
         raise RuntimeError("expected first, middle, final, and small-input batch sites")
     sites = iter((("first", "intermediate"), ("middle", "intermediate"),
@@ -59,6 +73,7 @@ def main():
     args.output_directory.mkdir(parents=True, exist_ok=True)
     output = args.output_directory / "prime-count-schedule-core.cpp"
     output.write_text("// Test-only copy; production source SHA-256: " + source_hash +
+                      "\n#define SCHEDULE_HAS_PHI_PARALLEL " + str(int(extracted)) +
                       "\n" + source)
     print(output)
 

@@ -186,9 +186,14 @@ int main(int argc, char** argv) {
             phiComparisons += CheckPhiWorker(evaluator, primes, pi[127] + delta,
                 {tableBoundary - 1, tableBoundary, tableBoundary + 1});
         }
+        // Exercise the signed a=6 terminal case at valid private-entry inputs,
+        // including both sides of the six-prime product's periodic boundary.
+        phiComparisons += CheckPhiWorker(evaluator, primes, 6,
+                                        {289, 30029, 30030, 30031});
         phiComparisons += CheckPhiWorker(evaluator, primes, 8, {4000}); // Entire loop is direct.
-        // An empty recursive loop is preempted by the initial direct shortcut
-        // for valid tables; exercise that degenerate input without artificial state.
+        // Public Phi handles (169, 7) through its direct shortcut. Keep this
+        // private call as extra coverage of the general recurrence's empty
+        // loop, beyond the evaluator's normal call path.
         phiComparisons += CheckPhiWorker(evaluator, primes, 7, {169});
         failPageAllocation.store(false, std::memory_order_relaxed);
 

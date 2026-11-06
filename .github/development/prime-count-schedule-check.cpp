@@ -22,7 +22,7 @@ namespace ScheduleCheck {
 
     struct State {
         bool scheduleOnly = false;
-        std::int64_t next = 6, a = -1;
+        std::int64_t next = 6, a = -1, requestedA = -1;
         int effectiveThreads = 0, batch = -1, started = 0, joined = 0;
         const char* region = "serial";
         std::int64_t* sums = nullptr;
@@ -77,9 +77,11 @@ namespace ScheduleCheck {
     }
 
     bool BeforeForeman(std::int64_t& sum, std::int64_t lower,
-                       std::int64_t upper, std::int64_t a) {
+                       std::int64_t upper, std::int64_t tableCount) {
+        const std::int64_t a = state.requestedA < 0 ? tableCount : state.requestedA;
         state.a = a;
-        if (lower < 6 || lower > upper || upper > a || lower != state.next) {
+        if (a > tableCount || lower < 6 || lower > upper || upper > a ||
+            lower != state.next) {
             std::ostringstream error;
             error << "invalid interval [" << lower << ',' << upper
                   << "), expected next=" << state.next << " within [6," << a
@@ -107,7 +109,7 @@ namespace ScheduleCheck {
 #include "prime-count-schedule-core.cpp"
 
 namespace {
-    int cases = 0, realCounts = 0;
+    int cases = 0, realCounts = 0, phiCounts = 0;
     std::size_t intervals = 0;
 
     void Check(std::int64_t n, int threads, int maximum, bool scheduleOnly,
@@ -169,6 +171,67 @@ namespace {
             Check(10000000001LL, 1000, maximum, true, -1, dump);
         }
     }
+
+#if SCHEDULE_HAS_PHI_PARALLEL
+    // Independent inclusion-exclusion for the short prefixes used below.
+    // Each recursive branch adds one selected prime to the denominator.
+    std::int64_t InclusionExclusion(std::int64_t x, std::int64_t first,
+                                    std::int64_t a,
+                                    const std::vector<std::int64_t>& primes) {
+        std::int64_t result = x;
+        for (std::int64_t i = first; i <= a && primes[i] <= x; ++i) {
+            result -= InclusionExclusion(x / primes[i], i + 1, a, primes);
+        }
+        return result;
+    }
+
+    void CheckPhi(std::int64_t x, std::int64_t a, int threads,
+                  const PrimeCounting::PhiTables& tables) {
+        ScheduleCheck::state = ScheduleCheck::State();
+        ScheduleCheck::state.requestedA = a;
+        const std::int64_t expected = a <= 12 ?
+            InclusionExclusion(x, 1, a, tables.primes()) :
+            PrimeCounting::Phi(x, a, tables);
+        const std::int64_t result = PrimeCounting::PhiParallel(x, a, threads, tables);
+        const auto& state = ScheduleCheck::state;
+        const bool delegated = a <= 6 || x <= tables.limit();
+        const bool parallel = !delegated && x >= 10000000 && threads > 1;
+        const bool coverage = delegated ? state.intervals.empty() :
+            state.a == a && state.next == a;
+        if (result != expected || !coverage ||
+            parallel != (state.effectiveThreads != 0) ||
+            state.started != state.joined ||
+            (parallel && (state.effectiveThreads > a - 6 ||
+                static_cast<std::size_t>(state.started) != state.intervals.size()))) {
+            throw std::runtime_error("general Phi coverage/count failure: x=" +
+                std::to_string(x) + " a=" + std::to_string(a) +
+                " threads=" + std::to_string(threads));
+        }
+        ++cases;
+        ++phiCounts;
+        intervals += state.intervals.size();
+    }
+
+    void GeneralPhiSchedules() {
+        const PrimeCounting::PhiTables tables(100000);
+        const int huge = std::numeric_limits<int>::max();
+        // The requested a is deliberately smaller than tables.primeCount().
+        // a=7 leaves one term, and a=8 leaves two; excessive requests must
+        // cap against this requested prefix rather than the prepared extent.
+        for (std::int64_t x : {9999999LL, 10000000LL, 10000000001LL}) {
+            for (std::int64_t a : {7, 8, 12, 64}) {
+                for (int threads : {1, 4, huge}) CheckPhi(x, a, threads, tables);
+            }
+        }
+        for (std::int64_t x : {0, 17, 100000}) {
+            for (std::int64_t a : {0, 6, 7, 64}) CheckPhi(x, a, huge, tables);
+        }
+        for (int threads : {-1, 0, 1, 4, huge}) {
+            CheckPhi(10000000001LL, tables.primeCount() - 1, threads, tables);
+        }
+        CheckPhi(10000000001LL, 6, huge, tables);
+    }
+#endif
 }
 
 int main(int argc, char** argv) {
@@ -203,11 +266,14 @@ int main(int argc, char** argv) {
             }
             Check(10000000, huge, 1, false, 664579);
             Check(10000000, huge, 4, false, 664579);
+#if SCHEDULE_HAS_PHI_PARALLEL
+            GeneralPhiSchedules();
+#endif
         } else {
             throw std::runtime_error("usage: checker [--dump-normal | --case n threads real|schedule]");
         }
         std::cout << "PASS: " << cases << " cases, " << realCounts
-                  << " real prime counts, " << intervals
+                  << " real prime counts, " << phiCounts << " general Phi counts, " << intervals
                   << " contiguous bounded intervals; no OS workers created\n";
         return 0;
     } catch (const std::exception& error) {
