@@ -93,16 +93,23 @@ namespace {
 
     // Bounded cache of positive Phi(x, a) answers, shared across evaluations:
     //   PhiCache -> 100 rows indexed by a
-    //   PhiCacheRow -> 16 atomic page pointers, indexed by x / 4096
+    //   PhiCacheRow -> 32 atomic page pointers, indexed by x / 4096
     //   PhiPage -> 4096 contiguous atomic cells, indexed by x % 4096
     // Pages are allocated only when needed; out-of-range inputs are still
     // evaluated normally, without caching. Zero denotes a cache miss.
-    // For positive x, 1 <= Phi(x, a) <= x, so cached answers fit in uint16_t.
+    // Only a >= 7 reaches this cache: a <= 6 returns before the lookup.
+    // For positive x <= 131071 and a >= 7, monotonicity gives
+    // 1 <= Phi(x, a) <= Phi(131071, 6) = 25142 < 65536.
+    // The bound follows independently by six-prime inclusion-exclusion,
+    // so doubling the argument range preserves uint16_t answer cells.
     // Public Phi handles x = 0 before consulting or populating the cache.
     constexpr std::size_t CACHE_ROWS = 100;
     constexpr unsigned PAGE_BITS = 12;
     constexpr std::size_t PAGE_SIZE = 1u << PAGE_BITS;
-    constexpr std::size_t PAGE_COUNT = 65536u / PAGE_SIZE;
+    constexpr std::uint64_t CACHE_MAX_X = 131071;
+    constexpr std::size_t PAGE_COUNT = (CACHE_MAX_X + 1) / PAGE_SIZE;
+    static_assert((CACHE_MAX_X + 1) % PAGE_SIZE == 0,
+                  "cache pages must cover the complete argument range");
 
     struct PhiCell {
         std::atomic<std::uint16_t> value;
@@ -145,7 +152,7 @@ namespace {
 
     public:
         std::int64_t get(std::uint64_t x, std::uint64_t a) const {
-            if (a >= CACHE_ROWS || x > std::numeric_limits<std::uint16_t>::max()) {
+            if (a >= CACHE_ROWS || x > CACHE_MAX_X) {
                 return 0;
             }
 
@@ -165,7 +172,7 @@ namespace {
         }
 
         void put(std::uint64_t x, std::uint64_t a, std::int64_t value) {
-            if (a >= CACHE_ROWS || x > std::numeric_limits<std::uint16_t>::max()) {
+            if (a >= CACHE_ROWS || x > CACHE_MAX_X) {
                 return;
             }
 
