@@ -83,7 +83,7 @@ SEXP PrimePhiCpp(SEXP Rn, SEXP Ra, SEXP RNumThreads, SEXP RmaxThreads) {
 }
 
 [[cpp11::register]]
-SEXP SemiprimeCountCpp(SEXP Rn, SEXP Ra, SEXP RNumThreads, SEXP RmaxThreads) {
+SEXP SemiPrimeCountCpp(SEXP Rn, SEXP Ra, SEXP RNumThreads, SEXP RmaxThreads) {
     const std::int64_t n = getNonnegativeWhole(Rn, "n");
     const std::int64_t a = getNonnegativeWhole(Ra, "a");
     const int nThreads = getThreadCount(RNumThreads, RmaxThreads);
@@ -101,7 +101,7 @@ SEXP SemiprimeCountCpp(SEXP Rn, SEXP Ra, SEXP RNumThreads, SEXP RmaxThreads) {
 }
 
 [[cpp11::register]]
-SEXP TriprimeCountCpp(SEXP Rn, SEXP Ra, SEXP RNumThreads, SEXP RmaxThreads) {
+SEXP TriPrimeCountCpp(SEXP Rn, SEXP Ra, SEXP RNumThreads, SEXP RmaxThreads) {
     const std::int64_t n = getNonnegativeWhole(Rn, "n");
     const std::int64_t a = getNonnegativeWhole(Ra, "a");
     const int nThreads = getThreadCount(RNumThreads, RmaxThreads);

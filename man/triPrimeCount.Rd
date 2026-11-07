@@ -2,7 +2,7 @@
 \encoding{UTF-8}
 \alias{triPrimeCount}
 \title{
-Count Triprimes With an Optional Partial-Sieve Cutoff
+Count TriPrimes With an Optional Partial-Sieve Cutoff
 }
 \description{
 Count positive integers less than or equal to \eqn{n} with exactly three

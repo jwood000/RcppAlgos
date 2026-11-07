@@ -54,11 +54,11 @@ primePhi <- function(n, a, nThreads = NULL) {
 }
 
 semiPrimeCount <- function(n, a = 0, nThreads = NULL) {
-    return(.Call(`_RcppAlgos_SemiprimeCountCpp`, n, a, nThreads,
+    return(.Call(`_RcppAlgos_SemiPrimeCountCpp`, n, a, nThreads,
                  pkgEnv$maxThreads))
 }
 
 triPrimeCount <- function(n, a = 0, nThreads = NULL) {
-    return(.Call(`_RcppAlgos_TriprimeCountCpp`, n, a, nThreads,
+    return(.Call(`_RcppAlgos_TriPrimeCountCpp`, n, a, nThreads,
                  pkgEnv$maxThreads))
 }
