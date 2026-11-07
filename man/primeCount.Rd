@@ -92,7 +92,8 @@ exact throughout the supported range.
 Joseph Wood
 }
 \seealso{
-\code{\link{primeSieve}}
+\code{\link{primeSieve}}, \code{\link{primePhi}},
+\code{\link{semiPrimeCount}}, \code{\link{triPrimeCount}}
 }
 \examples{
 ## Get the number of primes less than or equal to a billion

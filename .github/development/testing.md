@@ -9,6 +9,10 @@ investigation does not replace the normally installed package.
   and matches the method argument. `src/PrimeCount.cpp` owns the registered R
   entry point, input conversion, method dispatch, thread arguments, and result
   conversion.
+- `src/PartialSieve.cpp` adapts `primePhi`, `semiPrimeCount`, and
+  `triPrimeCount` to the existing Phi/P2/P3 kernels. It validates the public
+  arguments, prepares each kernel's tables, handles cutoffs beyond those
+  tables, and converts exact counts to R scalars.
 - `src/PiPrime.cpp` implements the sieve counter used for small inputs.
 - `src/PiLegendre.cpp` prepares a local, immutable `PhiTables` object, clamps
   the requested workers, and applies Legendre's formula using `PhiParallel`.
@@ -39,6 +43,79 @@ policy preserves the historical small-input dispatch and Legendre cutoff;
 broader performance and memory measurements are needed before tuning that
 policy. The legacy `PhiTinyLookup.h` is retained but is no longer included by
 production code; the shared evaluator owns the tiny tables.
+
+## R partial-sieve functions
+
+The public interfaces in `R/NumberTheory.R` are
+`primePhi(n, a, nThreads = NULL)`,
+`semiPrimeCount(n, a = 0, nThreads = NULL)`, and
+`triPrimeCount(n, a = 0, nThreads = NULL)`. They count integers, not distinct
+prime factors or permutations of factors. All product factors must have
+indices greater than `a`, and multiplicities count toward the required two
+or three factors. Phi also includes 1 when `n > 0`.
+
+Both `n` and `a` must be scalar integer/numeric values, whole and nonnegative,
+at most `2^53 - 1`. The public cutoff is not constrained to the prepared prime
+count. `NULL` requests serial execution; other `nThreads` values must be
+positive integer/numeric scalars at most `INT_MAX`. All three arguments are
+validated even for immediate results. This differs from `primeCount`'s
+preserved legacy small-input thread-validation exception. Requests are capped
+by the package's detected hardware maximum and the kernels' useful work.
+Results use R integer through `INT_MAX` and exact double above it.
+
+For Phi, `a <= 6` uses a tiny context. Other nontrivial calls prepare the
+square-root table. Let `b = pi(floor(sqrt(n)))`. When `a > b`, the adapter
+evaluates `Phi(n, b)` using the same table, then returns
+`max(1, Phi(n, b) - (a - b))`. After excluding primes through the square root,
+only 1 and primes survive; each additional excluded prime removes one until
+only 1 remains. No table through `p[a]` is needed. P2 uses a square-root table
+and returns zero when `a >= b`.
+
+P3 first prepares cube-root coverage to determine emptiness and `p[a + 1]`.
+For a nonempty sum it needs coverage through `floor(n / p[a + 1]^2)`, computed
+by staged integer division. The initial table is released before preparing a
+larger one. Coverage above the existing `PhiTables` limit of 94,906,265 raises
+an R error before the larger allocation. Thus the default `a = 0` supports
+`n <= 379625063`; larger cutoffs can permit larger `n`. This is an explicit
+limit of the current dense-table P3 implementation, not a mathematical limit.
+The engines, shared cache and worker scheduling are unchanged.
+
+Native registration was generated in an isolated package copy using
+`cpp11::cpp_register()`, retaining only `src/cpp11.cpp` in the repository.
+The handwritten R wrappers remain the public interface. Run the focused
+tests against an isolated installed library:
+
+```sh
+Rscript --vanilla - /path/to/temporary/library <<'RS'
+library(RcppAlgos, lib.loc = commandArgs(TRUE)[1])
+testthat::test_file("tests/testthat/testPartialSieve.R", stop_on_failure = TRUE)
+RS
+```
+
+### Partial-sieve API validation
+
+On arm64 macOS with R 4.6.1, a clean isolated package installation succeeded.
+The new test file passed 314 expectations with no failures, errors, warnings
+or skips. Its independent trial-division oracle covers all `n = 0..120` and
+cutoffs through one beyond `pi(120)`, plus larger prime-power/product
+neighbors. Other cases cover exact values through `2^53 - 1`, integer/double
+result boundaries, large cutoffs, known prime-count identities, actual P2/P3
+worker workloads, invalid arguments before shortcuts, and P3's table-limit
+error without allocating an oversized table. The ten existing number-theory
+and error files passed another 540 expectations without failures, errors,
+warnings or skips.
+
+All three new exports and four-argument native registrations were verified.
+The new help examples run, all three new Rd files pass `tools::checkRd`, and
+package-wide `tools::codoc()` reports no signature mismatches. The existing
+Euler-phi help retains its five pre-existing strict Rd brace notices; only
+its cross-links changed. A separate Apple Clang `-std=c++11 -fsyntax-only`
+check of the new adapter passed with the configured R, cpp11 and GMP headers.
+
+No full `R CMD check`, new sanitizer build, or performance benchmark was run
+for this API addition. The counting kernels and worker/cache code are
+unchanged; their previous checks remain separate. A successful allocation at
+the largest permitted P3 table size was not exercised by the routine R tests.
 
 ## R prime-counting method selection
 

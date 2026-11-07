@@ -126,5 +126,8 @@ export(
   divisorsRcpp,
   isPrimeRcpp,
   primeCount,
+  primePhi,
+  semiPrimeCount,
+  triPrimeCount,
   stdThreadMax
 )

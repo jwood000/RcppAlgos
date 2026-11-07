@@ -5,6 +5,7 @@
 
     \subsection{New Features}{
         \itemize{
+          \item Added \code{primePhi()}, \code{semiPrimeCount()}, and \code{triPrimeCount()} for exploring the partial sieve functions used in prime counting. The optional cutoff in the product counters excludes an initial set of primes; repeated prime factors are included. Each function documents its mathematical definition, supported inputs, and memory requirements.
           \item Added \code{method = "auto"}, \code{"legendre"}, \code{"meissel"}, and \code{"lehmer"} to \code{primeCount()}. Explicit choices use the named algorithm for all accepted inputs. The new argument follows \code{nThreads}, preserving existing positional calls. The current \code{"auto"} policy retains lookup/sieve counting below 100000 and Legendre otherwise; it does not yet select the fastest method from benchmarks.
           \item Added ranking, sampling, and iterator random access for supported multiset partitions, including GMP support for large ranks.
           \item Added parallel generation of supported multiset partitions. \code{lower} and \code{upper} now index matching partitions in lexicographical order, including equivalent sum/equality calls to \code{comboGeneral()}. Previously, supplying \code{lower} could select ordinary combination candidates instead of matching partitions, so existing bounded calls may return different results.

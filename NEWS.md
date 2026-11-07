@@ -2,6 +2,7 @@
 
 ## New Features
 
+* Added `primePhi()`, `semiPrimeCount()`, and `triPrimeCount()` for exploring the partial sieve functions used in prime counting. The optional cutoff in the product counters excludes an initial set of primes; repeated prime factors are included. Each function documents its mathematical definition, supported inputs, and memory requirements.
 * Added `method = "auto"`, `"legendre"`, `"meissel"`, and `"lehmer"` to `primeCount()`. Explicit choices use the named algorithm for all accepted inputs. The new argument follows `nThreads`, preserving existing positional calls. The current `"auto"` policy retains lookup/sieve counting below 100000 and Legendre otherwise; it does not yet select the fastest method from benchmarks.
 * Added ranking, sampling, and iterator random access for supported multiset partitions, including GMP support for large ranks.
 * Added parallel generation of supported multiset partitions. `lower` and `upper` now index matching partitions in lexicographical order, including equivalent sum/equality calls to `comboGeneral()`. Previously, supplying `lower` could select ordinary combination candidates instead of matching partitions, so existing bounded calls may return different results.
