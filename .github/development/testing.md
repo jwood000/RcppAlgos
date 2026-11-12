@@ -60,11 +60,16 @@ prime factors or permutations of factors. All product factors must have
 indices greater than `a`, and multiplicities count toward the required two
 or three factors. Phi also includes 1 when `n > 0`.
 
-Both `n` and `a` must be scalar integer/numeric values, whole and nonnegative,
-at most `2^53 - 1`. The public cutoff is not constrained to the prepared prime
-count. `NULL` requests serial execution; other `nThreads` values must be
-positive integer/numeric scalars at most `INT_MAX`. All three arguments are
-validated even for immediate results. This differs from `primeCount`'s
+The exported adapters call `CppConvert::convertPrimitive()` directly. Both
+`n` and `a` must be scalar whole, nonnegative values at most `2^53 - 1`.
+They use `checkWhole = true`, `negPoss = false`, and `decimalFraction = true`;
+the last flag permits zero in the sign check without disabling the whole-number
+check. The public cutoff is not constrained to the prepared prime count.
+`NULL` requests serial execution; other `nThreads` values must be positive
+scalars at most `INT_MAX`. Integer, numeric, and logical inputs follow the
+shared converter's rules: logical values become 0 or 1, so `FALSE` is valid for
+`n` and `a` but invalid for `nThreads`. All three arguments are validated even
+for immediate results. This differs from `primeCount`'s
 preserved legacy small-input thread-validation exception. Requests are capped
 by the package's detected hardware maximum and the kernels' useful work.
 Results use R integer through `INT_MAX` and exact double above it.
@@ -99,6 +104,15 @@ RS
 ```
 
 ### Partial-sieve API validation
+
+After switching the adapters to direct `CppConvert` calls, a clean isolated
+installation completed without compiler warnings. `testPartialSieve.R` passed
+371 expectations and `testPrimeCount.R` passed 122, with no failures, errors,
+or warnings. Coverage includes the newly accepted logical inputs and rejection
+of missing, empty, nonscalar, fractional, negative, and out-of-range inputs.
+All three Rd files passed parsing and checking without diagnostics. No full
+package check, sanitizer build, or benchmark was run for this adapter refactor;
+the shared converter and counting kernels were unchanged.
 
 On arm64 macOS with R 4.6.1, a clean isolated package installation succeeded.
 The new test file passed 314 expectations with no failures, errors, warnings

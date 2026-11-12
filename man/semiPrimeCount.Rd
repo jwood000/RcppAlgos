@@ -14,10 +14,10 @@ Meissel and Lehmer prime counting.
 semiPrimeCount(n, a = 0, nThreads = NULL)
 }
 \arguments{
-    \item{n}{A single nonnegative whole number, supplied as an integer or
-    numeric value, at most \eqn{2^{53} - 1}{2^53 - 1}.}
-    \item{a}{A single nonnegative whole number, supplied as an integer or
-    numeric value, at most \eqn{2^{53} - 1}{2^53 - 1}. This is the number of
+    \item{n}{A single nonnegative whole number, at most
+    \eqn{2^{53} - 1}{2^53 - 1}.}
+    \item{a}{A single nonnegative whole number, at most
+    \eqn{2^{53} - 1}{2^53 - 1}. This is the number of
     initial primes excluded as factors, not a prime value. The default,
     \code{a = 0}, permits every prime. For example, \code{a = 1} excludes
     the prime 2, so only odd semiprimes are counted.}
@@ -28,6 +28,10 @@ semiPrimeCount(n, a = 0, nThreads = NULL)
     is immediate.}
 }
 \details{
+Logical inputs \code{FALSE} and \code{TRUE} are converted to 0 and 1,
+respectively. The thread count must be positive, so
+\code{nThreads = FALSE} is not supported.
+
 \subsection{Mathematical definition}{
 Let \eqn{p_i} denote the \eqn{i}th prime. The function counts products
 \eqn{p_i p_j \le n}{p[i] * p[j] <= n} with

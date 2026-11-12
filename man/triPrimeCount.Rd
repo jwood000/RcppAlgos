@@ -15,13 +15,13 @@ input-dependent limit described below.
 triPrimeCount(n, a = 0, nThreads = NULL)
 }
 \arguments{
-    \item{n}{A single nonnegative whole number, supplied as an integer or
-    numeric value, at most \eqn{2^{53} - 1}{2^53 - 1}. The additional
+    \item{n}{A single nonnegative whole number, at most
+    \eqn{2^{53} - 1}{2^53 - 1}. The additional
     table limit in \sQuote{Details} may restrict the accepted value for a
     given \code{a}. With the default \code{a = 0}, the largest accepted
     \code{n} is 379,625,063.}
-    \item{a}{A single nonnegative whole number, supplied as an integer or
-    numeric value, at most \eqn{2^{53} - 1}{2^53 - 1}. This is the number of
+    \item{a}{A single nonnegative whole number, at most
+    \eqn{2^{53} - 1}{2^53 - 1}. This is the number of
     initial primes excluded as factors, not a prime value. The default,
     \code{a = 0}, permits every prime. For example, \code{a = 1} excludes
     the prime 2, so only odd triprimes are counted. Larger cutoffs can
@@ -33,6 +33,10 @@ triPrimeCount(n, a = 0, nThreads = NULL)
     is immediate.}
 }
 \details{
+Logical inputs \code{FALSE} and \code{TRUE} are converted to 0 and 1,
+respectively. The thread count must be positive, so
+\code{nThreads = FALSE} is not supported.
+
 \subsection{Mathematical definition}{
 Let \eqn{p_i} denote the \eqn{i}th prime. The function counts products
 \eqn{p_i p_j p_k \le n}{p[i] * p[j] * p[k] <= n} with

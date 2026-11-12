@@ -14,10 +14,10 @@ Euler's totient function.
 primePhi(n, a, nThreads = NULL)
 }
 \arguments{
-    \item{n}{A single nonnegative whole number, supplied as an integer or
-    numeric value, at most \eqn{2^{53} - 1}{2^53 - 1}.}
-    \item{a}{A single nonnegative whole number, supplied as an integer or
-    numeric value, at most \eqn{2^{53} - 1}{2^53 - 1}. This is the number of
+    \item{n}{A single nonnegative whole number, at most
+    \eqn{2^{53} - 1}{2^53 - 1}.}
+    \item{a}{A single nonnegative whole number, at most
+    \eqn{2^{53} - 1}{2^53 - 1}. This is the number of
     initial primes to exclude, not a prime value or an upper bound on the
     excluded primes. For example, \code{a = 3} excludes multiples of 2, 3,
     and 5. With \code{a = 0}, no primes are excluded.}
@@ -28,6 +28,10 @@ primePhi(n, a, nThreads = NULL)
     is immediate.}
 }
 \details{
+Logical inputs \code{FALSE} and \code{TRUE} are converted to 0 and 1,
+respectively. The thread count must be positive, so
+\code{nThreads = FALSE} is not supported.
+
 \subsection{Mathematical definition}{
 Write \eqn{p_1 = 2, p_2 = 3, p_3 = 5, \ldots}{p[1] = 2, p[2] = 3, p[3] = 5, ...}
 for the increasing sequence of primes. Then \eqn{\Phi(n, a)} counts

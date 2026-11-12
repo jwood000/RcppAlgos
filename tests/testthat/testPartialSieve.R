@@ -193,9 +193,9 @@ test_that("semiPrimeCount preserves large counts across cutoffs and threads", {
     }
 })
 
-test_that("partial prime sieves validate scalar numeric inputs before shortcuts", {
-    invalid <- list(-1, 1.5, NA_real_, NaN, Inf, -Inf, 2^53,
-                    numeric(), c(1, 2), "10", TRUE, NULL, list(1))
+test_that("partial prime sieves validate scalar inputs before shortcuts", {
+    invalid <- list(-1, 1.5, NA_real_, NA_integer_, NA, NaN, Inf, -Inf, 2^53,
+                    numeric(), logical(), c(1, 2), c(TRUE, FALSE), "10", NULL, list(1))
     for (fun in list(primePhi, semiPrimeCount, triPrimeCount)) {
         for (value in invalid) {
             expect_error(fun(value, 0))
@@ -205,14 +205,27 @@ test_that("partial prime sieves validate scalar numeric inputs before shortcuts"
     }
 })
 
+test_that("partial prime sieves use the shared logical input conversion", {
+    for (fun in list(primePhi, semiPrimeCount, triPrimeCount)) {
+        expect_identical(fun(FALSE, FALSE), 0L)
+        expect_identical(fun(TRUE, FALSE), fun(1L, 0L))
+        expect_identical(fun(100, FALSE), fun(100, 0L))
+        expect_identical(fun(100, TRUE, nThreads = TRUE), fun(100, 1L, 1L))
+        expect_identical(fun(0, 0, nThreads = TRUE), 0L)
+    }
+})
+
 test_that("partial prime sieves always validate nThreads", {
-    invalid <- list(0L, -1L, 1.5, NA_integer_, Inf, 2^31,
-                    numeric(), c(1, 2), "2", TRUE, list(1))
+    invalid <- list(0L, -1L, 1.5, NA_integer_, NA, Inf, 2^31,
+                    numeric(), logical(), c(1, 2), c(TRUE, FALSE), "2", FALSE)
     for (fun in list(primePhi, semiPrimeCount, triPrimeCount)) {
         for (value in invalid) {
             expect_error(fun(0, 0, nThreads = value), "nThreads")
             expect_error(fun(10, 2^53 - 1, nThreads = value), "nThreads")
         }
+        ## Unsupported types use the shared converter's generic error message.
+        expect_error(fun(0, 0, nThreads = list(1)))
+        expect_error(fun(10, 2^53 - 1, nThreads = list(1)))
         expect_identical(fun(0, 0, nThreads = .Machine$integer.max), 0L)
     }
 })
